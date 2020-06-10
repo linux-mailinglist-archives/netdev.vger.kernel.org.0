@@ -2,163 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42EBD1F4CDB
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 07:24:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E345E1F4CDF
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 07:26:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726119AbgFJFYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 01:24:11 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:11574 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725844AbgFJFYJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 01:24:09 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 05A5O3VO006229
-        for <netdev@vger.kernel.org>; Tue, 9 Jun 2020 22:24:07 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=wk4m97LslfaUbKnkIPM3HlF91jQHoSVwuKVhbCNMzqU=;
- b=MKrnhkVTPoCx+z0C5oGIA6WVhMOGSxDDL1t2gWb8QOGQePy0gRIoublyvdiRHnl8sNWs
- ifpBm3lqdsu/ud9iSjgOby3IzMPi1sZO2oH3TBy1f4DHLxtwuJP5RbjX6no4n64nql2i
- HzoK0dnZrsVS4D3RkqglKiEhoi1s+1ni56g= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 31g6tksead-8
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 22:24:07 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 9 Jun 2020 22:23:45 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id E087A2EC392F; Tue,  9 Jun 2020 22:23:41 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <jean-philippe@linaro.org>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] libbpf: handle GCC noreturn-turned-volatile quirk
-Date:   Tue, 9 Jun 2020 22:23:35 -0700
-Message-ID: <20200610052335.2862559-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726045AbgFJF0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 01:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725844AbgFJF0o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 01:26:44 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05B5C05BD1E;
+        Tue,  9 Jun 2020 22:26:43 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id k22so839186qtm.6;
+        Tue, 09 Jun 2020 22:26:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LVHd9w66jWmrnJqXfNVLpDFscMb5hc4Ib+H9kk2r9UM=;
+        b=UjqS8x6cb6jh5AR4v1mcKqyQuFqtt1ir9leW14shUwEsckZehe+Zgoo17YxgZRv+u6
+         SV2TJP7UhKpAdvP3JKHSXf1b/pWa3/O6vgJfe1vnsulhemTZYYaaoZKmCNWDFeBz/OIw
+         INLvP72F67hCJbK+bft8+dvIg5V0WRA0whUQDE02Y40mfoIApIjSdytDFcG0bZ1lo/5O
+         Lu+PTiGcvxh5mmTzREDzWruyzTF9LSxg5SiIEnvpR7tgaMcsL0rnu9S1kJKV6SP9/g6e
+         /I4ZRsnPLLkF1A5PGkwhUkNaj5E665S6+5+J6e/FtspYX1GmwTX9iBfQIHU+PNzc2unF
+         YdbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LVHd9w66jWmrnJqXfNVLpDFscMb5hc4Ib+H9kk2r9UM=;
+        b=NNaPBmfNLVcEj2l3caK1mO9V82WTwbUxwrkfGksZR1o7ijDHq/C7bw5eaKnD0hE7bB
+         L87g6zkHfq6x7wCorXhDPFP4LeXRxwGefoZELfo4PyjEXpqvh+HULKQccpEruRp1JSGH
+         OaCO60EcW0QgefFXjnQCy0ZKyV24A7VmtYD7uBVUU5A7+5C7IcPrFOfeozg9LHgvOyQL
+         o8Sx29wVZxaf2KK55+TOEduMuisntj+UuXopJxLHXa8EUxn9Nc3aTm354vH/8akhOz4z
+         nqMyajAVBsbiC5SDnQIzgEEAPQoBNCLDhNfNhuN28qjOmo3EpgxaPTTw46OZQ2QYJDzj
+         3yog==
+X-Gm-Message-State: AOAM530rBCzRLs32Y4qko2KUNDurKSxth7mlTXxAWeguoAO2UNQ+loNd
+        rz9ucatbsP/ZjfeL9CfL7bpyvX2M0I6C2Z1n+xA=
+X-Google-Smtp-Source: ABdhPJxk3NJJIbfbESXTsgwWAHXwuBrcKvVWoX1v0AyORaqqC7xH3x5+eCC3KY5WEY/iPhtm1plPedPuM5NITG4s4EA=
+X-Received: by 2002:aed:3f3b:: with SMTP id p56mr1394222qtf.93.1591766802782;
+ Tue, 09 Jun 2020 22:26:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-10_02:2020-06-10,2020-06-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- phishscore=0 spamscore=0 priorityscore=1501 mlxlogscore=756
- impostorscore=0 bulkscore=0 clxscore=1015 cotscore=-2147483648
- adultscore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006100040
-X-FB-Internal: deliver
+References: <20200608152052.898491-1-jean-philippe@linaro.org>
+ <CAEf4BzaNaHGBxNLdA1RA7VPou7ypO3Z5XBRG5gpkePx4g27yWA@mail.gmail.com> <20200609140504.GA915559@myrica>
+In-Reply-To: <20200609140504.GA915559@myrica>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 9 Jun 2020 22:26:31 -0700
+Message-ID: <CAEf4BzYhu_L3SwGuybaoz_S1MSXHLNRv=k4+K47xPG2DHqopOQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: Fix BTF-to-C conversion of noreturn function pointers
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc:     bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Handle a GCC quirk of emitting extra volatile modifier in DWARF (and
-subsequently preserved in BTF by pahole) for function pointers marked as
-__attribute__((noreturn)). This was the way to mark such functions before=
- GCC
-2.5 added noreturn attribute. Drop such func_proto modifiers, similarly t=
-o how
-it's done for array (also to handle GCC quirk/bug).
+On Tue, Jun 9, 2020 at 7:05 AM Jean-Philippe Brucker
+<jean-philippe@linaro.org> wrote:
+>
+> On Mon, Jun 08, 2020 at 04:50:37PM -0700, Andrii Nakryiko wrote:
+> > On Mon, Jun 8, 2020 at 8:23 AM Jean-Philippe Brucker
+> > <jean-philippe@linaro.org> wrote:
+> > >
+> > > When trying to convert the BTF for a function pointer marked "noreturn"
+> > > to C code, bpftool currently generates a syntax error. This happens with
+> > > the exit() pointer in drivers/firmware/efi/libstub/efistub.h, in an
+> > > arm64 vmlinux. When dealing with this declaration:
+> > >
+> > >         efi_status_t __noreturn (__efiapi *exit)(...);
+> > >
+> > > bpftool produces the following output:
+> > >
+> > >         efi_status_tvolatile  (*exit)(...);
+> >
+> >
+> > I'm curious where this volatile is coming from, I don't see it in
+> > __efiapi. But even if it's there, shouldn't it be inside parens
+> > instead:
+> >
+> > efi_status_t (volatile *exit)(...);
+>
+> It's the __noreturn attribute that becomes "volatile", not the __efiapi.
+> My reproducer is:
+>
+>   struct my_struct {
+>           void __attribute__((noreturn)) (*fn)(int);
+>   };
+>   struct my_struct a;
+>
+> When generating DWARF info for this, GCC inserts a DW_TAG_volatile_type.
+> Clang doesn't add a volatile tag, it just omits the noreturn qualifier.
+> From what I could find, it's due to legacy "noreturn" support in GCC [1]:
+> before version 2.5 the only way to declare a noreturn function was to
+> declare it volatile.
 
-Such volatile attribute is emitted by GCC only, so existing selftests can=
-'t
-express such test. Simple repro is like this (compiled with GCC + BTF
-generated by pahole):
+Ok, thanks a lot for extra context, it made it easier to understand
+and reproduce. For some reason, I can't repro it even for allyesconfig
+build, but your simple repro shows this pretty clearly.
 
-  struct my_struct {
-      void __attribute__((noreturn)) (*fn)(int);
-  };
-  struct my_struct a;
+>
+> [1] https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Function-Attributes.html
+>
+> Given that not all compilers turn "noreturn" into "volatile", and that I
+> haven't managed to insert any other modifier (volatile/const/restrict) in
+> this location (the efistub example above is the only issue on an
+> allyesconfig kernel), I was considering simply removing this call to
+> btf_dump_emit_mods(). But I'm not confident enough that it won't ever be
+> necessary.
 
-Without this fix, output will be:
+Just removing btf_dump_emit_mods() won't be correct. But there is a
+similar GCC-specific work-around for array modifiers. I've implemented
+the same for func_proto ([0]), tested with my local allyesconfig.
+There are no differences in generated vmlinux.h, so no regressions on
+my side. Your repro also is fixed, though. I just sent a patch with
+the alternative fix. Could you please test it with your setup and send
+your Tested-by: to confirm it fixes your issue?
 
-struct my_struct {
-    voidvolatile  (*fn)(int);
-};
+  [0] https://patchwork.ozlabs.org/project/netdev/patch/20200610052335.2862559-1-andriin@fb.com/
 
-With the fix:
+>
+> > > Fix the error by inserting the space before the function modifier.
+> > >
+> > > Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
+> > > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > > ---
+> >
+> > Can you please add tests for this case into selftests (probably
+> > progs/btf_dump_test_case_syntax.c?) So it's clear what's the input and
+> > what's the expected output.
+>
+> Those tests are built with clang, which doesn't emit the "volatile"
+> modifier. Should I add a separate test for GCC?
 
-struct my_struct {
-    void (*fn)(int);
-};
+Nah, I don't think it's worth it to try to introduce GCC-compiled
+tests just for this.
 
-Reported-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/btf_dump.c | 33 ++++++++++++++++++++++++---------
- 1 file changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index de07e559a11d..bbb430317260 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -1137,6 +1137,20 @@ static void btf_dump_emit_mods(struct btf_dump *d,=
- struct id_stack *decl_stack)
- 	}
- }
-=20
-+static void btf_dump_drop_mods(struct btf_dump *d, struct id_stack *decl=
-_stack)
-+{
-+	const struct btf_type *t;
-+	__u32 id;
-+
-+	while (decl_stack->cnt) {
-+		id =3D decl_stack->ids[decl_stack->cnt - 1];
-+		t =3D btf__type_by_id(d->btf, id);
-+		if (!btf_is_mod(t))
-+			return;
-+		decl_stack->cnt--;
-+	}
-+}
-+
- static void btf_dump_emit_name(const struct btf_dump *d,
- 			       const char *name, bool last_was_ptr)
- {
-@@ -1235,14 +1249,7 @@ static void btf_dump_emit_type_chain(struct btf_du=
-mp *d,
- 			 * a const/volatile modifier for array, so we are
- 			 * going to silently skip them here.
- 			 */
--			while (decls->cnt) {
--				next_id =3D decls->ids[decls->cnt - 1];
--				next_t =3D btf__type_by_id(d->btf, next_id);
--				if (btf_is_mod(next_t))
--					decls->cnt--;
--				else
--					break;
--			}
-+			btf_dump_drop_mods(d, decls);
-=20
- 			if (decls->cnt =3D=3D 0) {
- 				btf_dump_emit_name(d, fname, last_was_ptr);
-@@ -1270,7 +1277,15 @@ static void btf_dump_emit_type_chain(struct btf_du=
-mp *d,
- 			__u16 vlen =3D btf_vlen(t);
- 			int i;
-=20
--			btf_dump_emit_mods(d, decls);
-+			/*
-+			 * GCC emits extra volatile qualifier for
-+			 * __attribute__((noreturn)) function pointers. Clang
-+			 * doesn't do it. It's a GCC quirk for backwards
-+			 * compatibility with code written for GCC <2.5. So,
-+			 * similarly to extra qualifiers for array, just drop
-+			 * them, instead of handling them.
-+			 */
-+			btf_dump_drop_mods(d, decls);
- 			if (decls->cnt) {
- 				btf_dump_printf(d, " (");
- 				btf_dump_emit_type_chain(d, decls, fname, lvl);
---=20
-2.24.1
-
+>
+> Thanks,
+> Jean
