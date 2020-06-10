@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 253C31F4CA0
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 06:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A61D61F4C9B
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 06:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726121AbgFJEwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 00:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
+        id S1726100AbgFJEwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 00:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726042AbgFJEw3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 00:52:29 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E33C08C5C4
-        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 21:52:28 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id d66so565667pfd.6
-        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 21:52:28 -0700 (PDT)
+        with ESMTP id S1725988AbgFJEw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 00:52:28 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC4DC03E96F
+        for <netdev@vger.kernel.org>; Tue,  9 Jun 2020 21:52:27 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id 185so433606pgb.10
+        for <netdev@vger.kernel.org>; Tue, 09 Jun 2020 21:52:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IpKTUi8zMT5mefEhrEzwZrhQaGIJc3HKN7JY2SE/kS8=;
-        b=FMBc5emJpAkGHMWOKVOtDAmQj3qbqZAfXR2heIFezQ4IbPfJTDTryOUpws/u9JUR6g
-         SgnwRfSwlB5VgJZvdi6pkpvjgaIhtbj5AOVwJ+qalxO9pX3W8sq5r9PSDO8e8F7CFCJY
-         fyM3DTGdCMTgFlQH0fDiMjjep4C4ZoEc8ys44=
+        bh=wkHFge5iGK3mXqFQgWET256fV3n4uLgYr5BgBuJjdss=;
+        b=IlQ4B4jGpjVFzCfBAY1AhKLFFo7mRBGt6zmf8hjNQZEYkpLOR23fIxG7ZEtmNrekBj
+         JA2hXD3nOqt1gbawN3hC+RLfEgXW4vBqnoN6O7hdNd7g04N953l3sGGZGdNw8o4I3fXb
+         n8V1qyNZiLQ0SeYG9gtTyHO/79Vdo63tOZguw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IpKTUi8zMT5mefEhrEzwZrhQaGIJc3HKN7JY2SE/kS8=;
-        b=ExHErvsDfD1UOASGR3ul6CtB92GICvAPX4U8hZfLQ8RyCE+gmqNvcb723mU2ix9098
-         2o5PIWy3eWFF+SHyz2DR+nR0uv509O36EYXn4V2hcitzomhtyic564PPFQ7T/NpoGoX6
-         JAqDDQpbNXEiwz2Jan8sCEO/JhlUd2CbHxVNPEsJaaDBnZaWs51lJYFiNwRYqtOsQQbN
-         VAG7FSWd9Z6TJMElBN2TJbffILbU6G4+fAoqK3PexyyuslS5sYm7VX/vz3VNLw9uWw+h
-         xPInIVTXsSF77v5GxluZ9ZkDzyEoPWpOVzCzYCHGfz/ll4vOuWUA53ZDAqD+RR0MSVva
-         sztg==
-X-Gm-Message-State: AOAM5310JFIf215D1fPJq8Htf48fqrdEz4DyOgSfNrwoowUtyyV3k+Bz
-        JBhJHrT9J7LMD/KkS0tAAJhUfQ==
-X-Google-Smtp-Source: ABdhPJzH5vemnILm8vb66u6LiVfNO2Kf1NJ55FLIWgHE0qYp6ixujlGcGAhYweNUyYvFE2aeRXVBgQ==
-X-Received: by 2002:aa7:82cb:: with SMTP id f11mr1094677pfn.81.1591764747473;
-        Tue, 09 Jun 2020 21:52:27 -0700 (PDT)
+        bh=wkHFge5iGK3mXqFQgWET256fV3n4uLgYr5BgBuJjdss=;
+        b=Kh+paS8FG3cVok+OWyzslo4SvYx+rnl24QlrMfIWJ0GKBRSLbLTOdQWM0T4NryvaJE
+         kUmaXWTvGpo8XvjgTDkzoEvSssT4vWGU8ikkrkj065PYTmscPrfdE6VE/4DHf08E5rQF
+         mWeow+do9Tj+JEW4K6JXIuBshYi5GVzNdyw8HV0anr8zQ4SIVP60nRnjCT1W2ucBfGvy
+         ABsT6enwGpFao8HCI4vy6ETTUpkSqklnwslMJYXU6njerPj2vU492wB6aBRtdDgDKsoj
+         7+jQRSXBStUFq85Xk8ySLnnpT1+P1PMWcI0xoFz5dXiWjV3EAiNqTueime0vp2bxv59O
+         LHjA==
+X-Gm-Message-State: AOAM533reiGZzYPimLUoHV8Gjr0oQcOv5Ebl+ak/CGBlM4qMeyvk7oDi
+        gCUDI2+GhiUVtZkepmwYaQ5Hx60JLr51+w==
+X-Google-Smtp-Source: ABdhPJxu2hX4QwQz9hGpKtTPg7w3unlEM3xCOJBsWcwHUi5rdHBDHfh9fqkc15w5Lq2xF2OvyzVb2Q==
+X-Received: by 2002:aa7:8f1c:: with SMTP id x28mr1120001pfr.19.1591764746755;
+        Tue, 09 Jun 2020 21:52:26 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id 10sm11286258pfn.6.2020.06.09.21.52.25
+        by smtp.gmail.com with ESMTPSA id j17sm9837217pgk.66.2020.06.09.21.52.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 09 Jun 2020 21:52:25 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
@@ -51,9 +51,9 @@ Cc:     Kees Cook <keescook@chromium.org>, Christoph Hellwig <hch@lst.de>,
         Sargun Dhillon <sargun@sargun.me>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] net/scm: Regularize compat handling of scm_detach_fds()
-Date:   Tue,  9 Jun 2020 21:52:13 -0700
-Message-Id: <20200610045214.1175600-2-keescook@chromium.org>
+Subject: [PATCH 2/2] pidfd: Replace open-coded partial __scm_install_fd()
+Date:   Tue,  9 Jun 2020 21:52:14 -0700
+Message-Id: <20200610045214.1175600-3-keescook@chromium.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200610045214.1175600-1-keescook@chromium.org>
 References: <20200610045214.1175600-1-keescook@chromium.org>
@@ -64,22 +64,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Duplicate the cleanups from commit 2618d530dd8b ("net/scm: cleanup
-scm_detach_fds") into the compat code.
+The sock counting (sock_update_netprioidx() and sock_update_classid())
+was missing from this implementation of fd installation, compared to
+SCM_RIGHTS. Use the new scm helper to get the work done, after adjusting
+it to return the installed fd and accept a NULL user pointer.
 
-Also moves the check added in commit 1f466e1f15cf ("net: cleanly handle
-kernel vs user buffers for ->msg_control") to before the compat call, even
-though it should be impossible for an in-kernel call to also be compat.
-
-Regularized any remaining differences, including a whitespace issue, a
-checkpatch warning, and adding the check from commit 6900317f5eff ("net,
-scm: fix PaX detected msg_controllen overflow in scm_detach_fds") which
-fixed an overflow unique to 64-bit. To avoid confusion when comparing
-the compat handler to the native handler, just include the same check
-in the compat handler.
-
-Fixes: 48a87cc26c13 ("net: netprio: fd passed in SCM_RIGHTS datagram not set correctly")
-Fixes: d84295067fc7 ("net: net_cls: fd passed in SCM_RIGHTS datagram not set correctly")
+Fixes: 8649c322f75c ("pid: Implement pidfd_getfd syscall")
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
 AFAICT, the following patches are needed for back-porting this to stable:
@@ -89,159 +79,116 @@ AFAICT, the following patches are needed for back-porting this to stable:
 1f466e1f15cf ("net: cleanly handle kernel vs user buffers for ->msg_control")
 6e8a4f9dda38 ("net: ignore sock_from_file errors in __scm_install_fd")
 ---
- include/net/scm.h |  1 +
- net/compat.c      | 55 +++++++++++++++++++++--------------------------
- net/core/scm.c    | 16 +++++++-------
- 3 files changed, 34 insertions(+), 38 deletions(-)
+ kernel/pid.c   | 12 ++----------
+ net/compat.c   |  2 +-
+ net/core/scm.c | 27 ++++++++++++++++++++-------
+ 3 files changed, 23 insertions(+), 18 deletions(-)
 
-diff --git a/include/net/scm.h b/include/net/scm.h
-index 1ce365f4c256..4dcc766f15b3 100644
---- a/include/net/scm.h
-+++ b/include/net/scm.h
-@@ -37,6 +37,7 @@ struct scm_cookie {
- #endif
- };
+diff --git a/kernel/pid.c b/kernel/pid.c
+index f1496b757162..a7ce4ba898d3 100644
+--- a/kernel/pid.c
++++ b/kernel/pid.c
+@@ -42,6 +42,7 @@
+ #include <linux/sched/signal.h>
+ #include <linux/sched/task.h>
+ #include <linux/idr.h>
++#include <net/scm.h>
  
-+int __scm_install_fd(struct file *file, int __user *ufd, int o_flags);
- void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm);
- void scm_detach_fds_compat(struct msghdr *msg, struct scm_cookie *scm);
- int __scm_send(struct socket *sock, struct msghdr *msg, struct scm_cookie *scm);
+ struct pid init_struct_pid = {
+ 	.count		= REFCOUNT_INIT(1),
+@@ -635,18 +636,9 @@ static int pidfd_getfd(struct pid *pid, int fd)
+ 	if (IS_ERR(file))
+ 		return PTR_ERR(file);
+ 
+-	ret = security_file_receive(file);
+-	if (ret) {
+-		fput(file);
+-		return ret;
+-	}
+-
+-	ret = get_unused_fd_flags(O_CLOEXEC);
++	ret = __scm_install_fd(file, NULL, O_CLOEXEC);
+ 	if (ret < 0)
+ 		fput(file);
+-	else
+-		fd_install(ret, file);
+-
+ 	return ret;
+ }
+ 
 diff --git a/net/compat.c b/net/compat.c
-index 5e3041a2c37d..117f1869bf3b 100644
+index 117f1869bf3b..f8575555b6d7 100644
 --- a/net/compat.c
 +++ b/net/compat.c
-@@ -281,39 +281,31 @@ int put_cmsg_compat(struct msghdr *kmsg, int level, int type, int len, void *dat
- 	return 0;
- }
+@@ -299,7 +299,7 @@ void scm_detach_fds_compat(struct msghdr *msg, struct scm_cookie *scm)
  
--void scm_detach_fds_compat(struct msghdr *kmsg, struct scm_cookie *scm)
-+static int scm_max_fds_compat(struct msghdr *msg)
- {
--	struct compat_cmsghdr __user *cm = (struct compat_cmsghdr __user *) kmsg->msg_control;
--	int fdmax = (kmsg->msg_controllen - sizeof(struct compat_cmsghdr)) / sizeof(int);
--	int fdnum = scm->fp->count;
--	struct file **fp = scm->fp->fp;
--	int __user *cmfptr;
--	int err = 0, i;
-+	if (msg->msg_controllen <= sizeof(struct compat_cmsghdr))
-+		return 0;
-+	return (msg->msg_controllen - sizeof(struct compat_cmsghdr)) / sizeof(int);
-+}
- 
--	if (fdnum < fdmax)
--		fdmax = fdnum;
-+void scm_detach_fds_compat(struct msghdr *msg, struct scm_cookie *scm)
-+{
-+	struct compat_cmsghdr __user *cm =
-+		(struct compat_cmsghdr __user *)msg->msg_control;
-+	int o_flags = (msg->msg_flags & MSG_CMSG_CLOEXEC) ? O_CLOEXEC : 0;
-+	int fdmax = min_t(int, scm_max_fds_compat(msg), scm->fp->count);
-+	int __user *cmsg_data = CMSG_USER_DATA(cm);
-+	int err = 0, i;
- 
--	for (i = 0, cmfptr = (int __user *) CMSG_COMPAT_DATA(cm); i < fdmax; i++, cmfptr++) {
--		int new_fd;
--		err = security_file_receive(fp[i]);
-+	for (i = 0; i < fdmax; i++) {
-+		err = __scm_install_fd(scm->fp->fp[i], cmsg_data + i, o_flags);
- 		if (err)
+ 	for (i = 0; i < fdmax; i++) {
+ 		err = __scm_install_fd(scm->fp->fp[i], cmsg_data + i, o_flags);
+-		if (err)
++		if (err < 0)
  			break;
--		err = get_unused_fd_flags(MSG_CMSG_CLOEXEC & kmsg->msg_flags
--					  ? O_CLOEXEC : 0);
--		if (err < 0)
--			break;
--		new_fd = err;
--		err = put_user(new_fd, cmfptr);
--		if (err) {
--			put_unused_fd(new_fd);
--			break;
--		}
--		/* Bump the usage count and install the file. */
--		fd_install(new_fd, get_file(fp[i]));
  	}
  
- 	if (i > 0) {
- 		int cmlen = CMSG_COMPAT_LEN(i * sizeof(int));
-+
- 		err = put_user(SOL_SOCKET, &cm->cmsg_level);
- 		if (!err)
- 			err = put_user(SCM_RIGHTS, &cm->cmsg_type);
-@@ -321,16 +313,19 @@ void scm_detach_fds_compat(struct msghdr *kmsg, struct scm_cookie *scm)
- 			err = put_user(cmlen, &cm->cmsg_len);
- 		if (!err) {
- 			cmlen = CMSG_COMPAT_SPACE(i * sizeof(int));
--			kmsg->msg_control += cmlen;
--			kmsg->msg_controllen -= cmlen;
-+			if (msg->msg_controllen < cmlen)
-+				cmlen = msg->msg_controllen;
-+			msg->msg_control += cmlen;
-+			msg->msg_controllen -= cmlen;
- 		}
- 	}
--	if (i < fdnum)
--		kmsg->msg_flags |= MSG_CTRUNC;
-+
-+	if (i < scm->fp->count || (scm->fp->count && fdmax <= 0))
-+		msg->msg_flags |= MSG_CTRUNC;
- 
- 	/*
--	 * All of the files that fit in the message have had their
--	 * usage counts incremented, so we just free the list.
-+	 * All of the files that fit in the message have had their usage counts
-+	 * incremented, so we just free the list.
- 	 */
- 	__scm_destroy(scm);
- }
 diff --git a/net/core/scm.c b/net/core/scm.c
-index 875df1c2989d..86d96152646f 100644
+index 86d96152646f..e80648fb4da7 100644
 --- a/net/core/scm.c
 +++ b/net/core/scm.c
-@@ -280,7 +280,7 @@ void put_cmsg_scm_timestamping(struct msghdr *msg, struct scm_timestamping_inter
+@@ -280,6 +280,14 @@ void put_cmsg_scm_timestamping(struct msghdr *msg, struct scm_timestamping_inter
  }
  EXPORT_SYMBOL(put_cmsg_scm_timestamping);
  
--static int __scm_install_fd(struct file *file, int __user *ufd, int o_flags)
-+int __scm_install_fd(struct file *file, int __user *ufd, int o_flags)
++/**
++ * __scm_install_fd() - Install received file into file descriptor table
++ *
++ * Installs a received file into the file descriptor table, with appropriate
++ * checks and count updates.
++ *
++ * Returns fd installed or -ve on error.
++ */
+ int __scm_install_fd(struct file *file, int __user *ufd, int o_flags)
  {
  	struct socket *sock;
- 	int new_fd;
-@@ -319,29 +319,29 @@ static int scm_max_fds(struct msghdr *msg)
+@@ -294,20 +302,25 @@ int __scm_install_fd(struct file *file, int __user *ufd, int o_flags)
+ 	if (new_fd < 0)
+ 		return new_fd;
  
- void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
- {
--	struct cmsghdr __user *cm
--		= (__force struct cmsghdr __user*)msg->msg_control;
-+	struct cmsghdr __user *cm =
-+		(__force struct cmsghdr __user*)msg->msg_control;
- 	int o_flags = (msg->msg_flags & MSG_CMSG_CLOEXEC) ? O_CLOEXEC : 0;
- 	int fdmax = min_t(int, scm_max_fds(msg), scm->fp->count);
- 	int __user *cmsg_data = CMSG_USER_DATA(cm);
- 	int err = 0, i;
- 
-+	/* no use for FD passing from kernel space callers */
-+	if (WARN_ON_ONCE(!msg->msg_control_is_user))
-+		return;
-+
- 	if (msg->msg_flags & MSG_CMSG_COMPAT) {
- 		scm_detach_fds_compat(msg, scm);
- 		return;
+-	error = put_user(new_fd, ufd);
+-	if (error) {
+-		put_unused_fd(new_fd);
+-		return error;
++	if (ufd) {
++		error = put_user(new_fd, ufd);
++		if (error) {
++			put_unused_fd(new_fd);
++			return error;
++		}
  	}
  
--	/* no use for FD passing from kernel space callers */
--	if (WARN_ON_ONCE(!msg->msg_control_is_user))
--		return;
--
+-	/* Bump the usage count and install the file. */
++	/* Bump the usage count and install the file. The resulting value of
++	 * "error" is ignored here since we only need to take action when
++	 * the file is a socket and testing "sock" for NULL is sufficient.
++	 */
+ 	sock = sock_from_file(file, &error);
+ 	if (sock) {
+ 		sock_update_netprioidx(&sock->sk->sk_cgrp_data);
+ 		sock_update_classid(&sock->sk->sk_cgrp_data);
+ 	}
+ 	fd_install(new_fd, get_file(file));
+-	return 0;
++	return new_fd;
+ }
+ 
+ static int scm_max_fds(struct msghdr *msg)
+@@ -337,7 +350,7 @@ void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
+ 
  	for (i = 0; i < fdmax; i++) {
  		err = __scm_install_fd(scm->fp->fp[i], cmsg_data + i, o_flags);
- 		if (err)
+-		if (err)
++		if (err < 0)
  			break;
  	}
  
--	if (i > 0)  {
-+	if (i > 0) {
- 		int cmlen = CMSG_LEN(i * sizeof(int));
- 
- 		err = put_user(SOL_SOCKET, &cm->cmsg_level);
 -- 
 2.25.1
 
