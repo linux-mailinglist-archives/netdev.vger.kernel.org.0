@@ -2,163 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA1391F576B
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 17:14:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5F5D1F5793
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 17:18:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730072AbgFJPOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 11:14:01 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:43148 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730062AbgFJPN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 11:13:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591802036;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UCaS5B0zDLBWnfrEXUqdrW0d6LJpY2CfoA/LuwizqL4=;
-        b=iyeQxip+s5lRA+1HRVVaOY1Jr3cR/MCI5aOngU2MUut1pP3KbxOtetVHd/GWQGVU8WFiYg
-        azcUS1wqR8kHPm2YH2ETT7PGMUyYxuSn5J50u8FP4YF8WTKIU8urwkBwqseLZDOaFalCS8
-        tzrHLfeQdsJqVTUIcvf1s+kY5Hb9FbA=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-446-oPtb_D-GM4qMDGf90z0p0w-1; Wed, 10 Jun 2020 11:13:53 -0400
-X-MC-Unique: oPtb_D-GM4qMDGf90z0p0w-1
-Received: by mail-wm1-f71.google.com with SMTP id x6so566480wmj.9
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 08:13:52 -0700 (PDT)
+        id S1728411AbgFJPSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 11:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43078 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726979AbgFJPSd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 11:18:33 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDAAC03E96B
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 08:18:32 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id u5so1129193pgn.5
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 08:18:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=njwXkRLhpbwJpwE28Xoyp4QDD0utuEbplByiFs2TJNM=;
+        b=zcLg7VvaihtvTwWpJP+aFNIujEis7B74/M5WLWXj+2dFdGo0dY8K+UOqTGE9wp0GKQ
+         cDHlsfyuJRiugBCwZZV2qYlrnj4nnBmxdhYoxf42y/Uei2pBKacv4iKRpFbhxu72K+oF
+         ABDIa+jhzVBcpNN3f0vNCJ7t4ZD7zs8jPapE96ZHsF7lmlmd2TPQTZRjw3AdhnQq4Qr5
+         /W+3LI/ILR+Q3j2lQWsOcCafuzC47yRxGSYssSRELhmiGrUH7ATb8sHnu6yE61S3zVnU
+         cxZ7adbIRUDXYRXi5XDCTmNcncZBIPGM5EAS6HKPTJUQjUcp3/4ykEdb/hB5SATAOla2
+         qbZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UCaS5B0zDLBWnfrEXUqdrW0d6LJpY2CfoA/LuwizqL4=;
-        b=SL+e5AUy5tPTe8MlO5iS9zgVi01ypjgUFCEgRYbASSfXcrULJRH+UaD6N6rSiMZWwN
-         y9GWyn8XzAj/VsjwVn4QdAEe+mDMbkFO7AmYh72Xop+tXD8Pp+ltTS1OuulZ8Z9TAH7A
-         UJm6BpEjsp7AEbNSprkBvm5rWPbvw6iRuXhvq5N1Pfk7gdpxjNJTwOuwkLkchoT5+YvG
-         paYn5CoWwGEZ96Pg/hepQw+QOlD85k3Oftw4mc16dD43kz3gOCzNqg8mTPSE8EEYFJW1
-         dA+Gbq/7+6IfY5XcpZvxztch2D1XoNWAnpfmdh6ydby2jILVESOiaQPEOzEtVRYRB7NB
-         xKmw==
-X-Gm-Message-State: AOAM530EEA4lC3jX/ZNdn7YXQn/VphC7wIIUAp5wbJTPzD4vpCuQQwpZ
-        8f548rFSuBa3O7qbOhjwJpB/UbQYn6kgS0PbxPswbBwtFSGI4xAbbxI67A1yjpC1KdWjob1+Cs/
-        aHLxUH3xs6Xf3q9e6
-X-Received: by 2002:adf:e285:: with SMTP id v5mr4183931wri.129.1591802031334;
-        Wed, 10 Jun 2020 08:13:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy5S2qkrPk2gAmC4EmpHPkNmzHg3zetZnJqn/ot/vPFPTwl3usyYGmWEmhMX3VrjvnwAgO0OQ==
-X-Received: by 2002:adf:e285:: with SMTP id v5mr4183909wri.129.1591802031104;
-        Wed, 10 Jun 2020 08:13:51 -0700 (PDT)
-Received: from eperezma.remote.csb (109.141.78.188.dynamic.jazztel.es. [188.78.141.109])
-        by smtp.gmail.com with ESMTPSA id u12sm102944wrq.90.2020.06.10.08.13.49
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=njwXkRLhpbwJpwE28Xoyp4QDD0utuEbplByiFs2TJNM=;
+        b=RDyZ4upeYzltbX6MPhx2eurHfHbNdD/VRMtmRIuUq4jpw1GiKNc6RyVQSMei65wmCy
+         3cWB3s0RiEn062gvn2AzxRq5MI40B6d4htZ4N5d039D5KzP7XW2uyZkqk5ZZuRZ0hSH0
+         su+JjdMQBs5lzVqjAlGZLt+O5uSUpp3y71zDE59FIRfu/Z8TEbFRwHuxkAOT15VZlDPD
+         5DIlEQmnryWSJtscOj/w/gedDRi2h+97Po6DfQt9flBJZPh537P3GxxaM0JnshGx1R8J
+         DrezDc0DzkRdby4f3aWKyPM1G42t0Pk8AnvY2VMdvqK6sqt7rQ0FsMRywcJT0p/QLsQh
+         FVxA==
+X-Gm-Message-State: AOAM5310ACJOW47vGTewXDYKllg4m/F6lJ8HShtQfHDnMA2Uw00XNbWJ
+        v4Fe7d/h+AFI3GgzLAJhZlI58HgBx1Q=
+X-Google-Smtp-Source: ABdhPJyrZkFven5bSQTCdJ4Au++YjP3QZ2Klgbi26HD7WLcnm1KyW3yQ7iTGmo0d3AHxD63WuzGCjw==
+X-Received: by 2002:a63:c5a:: with SMTP id 26mr3034867pgm.270.1591802312390;
+        Wed, 10 Jun 2020 08:18:32 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id q92sm126927pjh.12.2020.06.10.08.18.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2020 08:13:50 -0700 (PDT)
-Message-ID: <f2e20055215fcfb63eb4839644c1578b21aeded9.camel@redhat.com>
-Subject: Re: [PATCH RFC v7 04/14] vhost/net: pass net specific struct pointer
-From:   Eugenio =?ISO-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>
-Date:   Wed, 10 Jun 2020 17:13:48 +0200
-In-Reply-To: <20200610113515.1497099-5-mst@redhat.com>
-References: <20200610113515.1497099-1-mst@redhat.com>
-         <20200610113515.1497099-5-mst@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-6.el8) 
-Mime-Version: 1.0
+        Wed, 10 Jun 2020 08:18:32 -0700 (PDT)
+Date:   Wed, 10 Jun 2020 08:18:23 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     netdev@vger.kernel.org
+Subject: Fw: [Bug 208121] New: IPsec AH ICV Padding for IPv4
+Message-ID: <20200610081823.35098936@hermes.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-06-10 at 07:36 -0400, Michael S. Tsirkin wrote:
-> In preparation for further cleanup, pass net specific pointer
-> to ubuf callbacks so we can move net specific fields
-> out to net structures.
+
+
+Begin forwarded message:
+
+Date: Wed, 10 Jun 2020 09:32:26 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 208121] New: IPsec AH ICV Padding for IPv4
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=208121
+
+            Bug ID: 208121
+           Summary: IPsec AH ICV Padding for IPv4
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.4.0.37.40
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: markus.gasser@elektrobit.com
+        Regression: No
+
+Created attachment 289597
+  --> https://bugzilla.kernel.org/attachment.cgi?id=289597&action=edit  
+packet capture
+
+According to RFC 4302[1]:
+
+> As mentioned in Section 2.6, the ICV field may include explicit
+> padding if required to ensure that the AH header is a multiple of 32
+> bits (IPv4) or 64 bits (IPv6).  If padding is required, its length is
+> determined by two factors:
 > 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  drivers/vhost/net.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-> index bf5e1d81ae25..ff594eec8ae3 100644
-> --- a/drivers/vhost/net.c
-> +++ b/drivers/vhost/net.c
-> @@ -94,7 +94,7 @@ struct vhost_net_ubuf_ref {
->  	 */
->  	atomic_t refcount;
->  	wait_queue_head_t wait;
-> -	struct vhost_virtqueue *vq;
-> +	struct vhost_net_virtqueue *nvq;
->  };
->  
->  #define VHOST_NET_BATCH 64
-> @@ -231,7 +231,7 @@ static void vhost_net_enable_zcopy(int vq)
->  }
->  
->  static struct vhost_net_ubuf_ref *
-> -vhost_net_ubuf_alloc(struct vhost_virtqueue *vq, bool zcopy)
-> +vhost_net_ubuf_alloc(struct vhost_net_virtqueue *nvq, bool zcopy)
->  {
->  	struct vhost_net_ubuf_ref *ubufs;
->  	/* No zero copy backend? Nothing to count. */
-> @@ -242,7 +242,7 @@ vhost_net_ubuf_alloc(struct vhost_virtqueue *vq, bool zcopy)
->  		return ERR_PTR(-ENOMEM);
->  	atomic_set(&ubufs->refcount, 1);
->  	init_waitqueue_head(&ubufs->wait);
-> -	ubufs->vq = vq;
-> +	ubufs->nvq = nvq;
->  	return ubufs;
->  }
->  
-> @@ -384,13 +384,13 @@ static void vhost_zerocopy_signal_used(struct vhost_net *net,
->  static void vhost_zerocopy_callback(struct ubuf_info *ubuf, bool success)
->  {
->  	struct vhost_net_ubuf_ref *ubufs = ubuf->ctx;
-> -	struct vhost_virtqueue *vq = ubufs->vq;
-> +	struct vhost_net_virtqueue *nvq = ubufs->nvq;
->  	int cnt;
->  
->  	rcu_read_lock_bh();
->  
->  	/* set len to mark this desc buffers done DMA */
-> -	vq->heads[ubuf->desc].len = success ?
-> +	nvq->vq.heads[ubuf->desc].in_len = success ?
+>            - the length of the ICV
+>            - the IP protocol version (v4 or v6)  
+[...]
+>    Inclusion of padding in excess of the minimum amount required to
+>    satisfy IPv4/IPv6 alignment requirements is prohibited.  
 
-Not like this matter a lot, because it will be override in next patches of the series, but `.len` has been replaced by
-`.in_len`, making compiler complain. This fixes it:
+However, in the Linux implementation padding is always added (and expected) so
+that the Authentication Header (AH) is a multiple of 64 bits, independent of
+the IP version used. This is an issue when the IPsec AH with IPv4 is used with
+HMAC authentication e.g. HMAC-sha256-128. In this case the ICV field is 128
+bits long, which results in an AH length of 96 + 128 = 224 bits. Even though
+this is a multiple of 32 bits, Linux adds an additional 32 bits of padding.
+Additionally, Linux drops incoming packets that do not have this padding.
 
-diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index ff594eec8ae3..fdecf39c9ac9 100644
---- a/drivers/vhost/net.c
-+++ b/drivers/vhost/net.c
-@@ -390,7 +390,7 @@ static void vhost_zerocopy_callback(struct ubuf_info *ubuf, bool success)
-        rcu_read_lock_bh();
- 
-        /* set len to mark this desc buffers done DMA */
--       nvq->vq.heads[ubuf->desc].in_len = success ?
-+       nvq->vq.heads[ubuf->desc].len = success ?
-                VHOST_DMA_DONE_LEN : VHOST_DMA_FAILED_LEN;
-        cnt = vhost_net_ubuf_put(ubufs);
+In the attached file the outgoing packets, that are wrongfully padded can be
+seen.
 
->  		VHOST_DMA_DONE_LEN : VHOST_DMA_FAILED_LEN;
->  	cnt = vhost_net_ubuf_put(ubufs);
->  
-> @@ -402,7 +402,7 @@ static void vhost_zerocopy_callback(struct ubuf_info *ubuf, bool success)
->  	 * less than 10% of times).
->  	 */
->  	if (cnt <= 1 || !(cnt % 16))
-> -		vhost_poll_queue(&vq->poll);
-> +		vhost_poll_queue(&nvq->vq.poll);
->  
->  	rcu_read_unlock_bh();
->  }
-> @@ -1525,7 +1525,7 @@ static long vhost_net_set_backend(struct vhost_net *n, unsigned index, int fd)
->  	/* start polling new socket */
->  	oldsock = vhost_vq_get_backend(vq);
->  	if (sock != oldsock) {
-> -		ubufs = vhost_net_ubuf_alloc(vq,
-> +		ubufs = vhost_net_ubuf_alloc(nvq,
->  					     sock && vhost_sock_zcopy(sock));
->  		if (IS_ERR(ubufs)) {
->  			r = PTR_ERR(ubufs);
+[1] https://tools.ietf.org/html/rfc4302#section-3.3.3.2.1
 
+-- 
+You are receiving this mail because:
+You are the assignee for the bug.
