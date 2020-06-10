@@ -2,76 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9845E1F5478
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 14:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F1DB1F54BA
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 14:26:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728981AbgFJMV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 08:21:27 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:48177 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728595AbgFJMV1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 08:21:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591791686;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TajccAc98eovcAxEmobow/lDPcnemSp9A9wMVl+c6QY=;
-        b=flZf5/3Sz0EEmU6II/6tjQoXWCugbeVh3hBrSyTW2HhxTyoQbM2PttrPgk03JFCuZQfo4e
-        1Kz3br/6yB0J12uyECLJwEfDHIwVjIcPB0CgN46SogAI3K3bg3cjQh4DOg5V+fyGr/S/x8
-        WCyu06OGexaaaqGLjSbdbUXDxPIdhFY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-2-04L32vYtOnSGPa6mM8RJQQ-1; Wed, 10 Jun 2020 08:21:22 -0400
-X-MC-Unique: 04L32vYtOnSGPa6mM8RJQQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EB99118CA26B;
-        Wed, 10 Jun 2020 12:21:20 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 046FD7BA19;
-        Wed, 10 Jun 2020 12:21:12 +0000 (UTC)
-Date:   Wed, 10 Jun 2020 14:21:10 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
-        john.fastabend@gmail.com, magnus.karlsson@intel.com,
-        netdev@vger.kernel.org, maciej.fijalkowski@intel.com,
-        bjorn.topel@intel.com, brouer@redhat.com
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf_redirect_map() tail call detection
- and xdp_do_redirect() avoidance
-Message-ID: <20200610142110.25fa5a14@carbon>
-In-Reply-To: <87o8ps80gc.fsf@toke.dk>
-References: <20200609172622.37990-1-bjorn.topel@gmail.com>
-        <87o8ps80gc.fsf@toke.dk>
+        id S1729155AbgFJM02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 08:26:28 -0400
+Received: from paleale.coelho.fi ([176.9.41.70]:36642 "EHLO
+        farmhouse.coelho.fi" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729140AbgFJM02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 08:26:28 -0400
+Received: from 91-156-6-193.elisa-laajakaista.fi ([91.156.6.193] helo=[127.0.1.1])
+        by farmhouse.coelho.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <luca@coelho.fi>)
+        id 1jizng-0015Qs-DI; Wed, 10 Jun 2020 15:25:48 +0300
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 7bit
+From:   Luca Coelho <luca@coelho.fi>
+In-Reply-To: <20200605154112.16277-7-f.suligoi@asem.it>
+References: <20200605154112.16277-7-f.suligoi@asem.it>
+To:     Flavio Suligoi <f.suligoi@asem.it>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Saurav Girepunje <saurav.girepunje@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        <linux-wireless@vger.kernel.org>, <b43-dev@lists.infradead.org>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        <netdev@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Flavio Suligoi <f.suligoi@asem.it>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.8.3
+Message-Id: <E1jizng-0015Qs-DI@farmhouse.coelho.fi>
+Date:   Wed, 10 Jun 2020 15:25:48 +0300
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on farmhouse.coelho.fi
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
+        TVD_RCVD_IP autolearn=ham autolearn_force=no version=3.4.4
+Subject: Re: [PATCH 6/9] net: wireless: intel: fix wiki website url
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Flavio Suligoi <f.suligoi@asem.it> wrote:
 
-> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
->=20
-> > Is this a good idea? I have only measured for AF_XDP redirects, but
-> > all XDP_REDIRECT targets should benefit. For AF_XDP the rxdrop
-> > scenario went from 21.5 to 23.2 Mpps on my machine. =20
+> In some Intel files, the wiki url is still the old
+> "wireless.kernel.org" instead of the new
+> "wireless.wiki.kernel.org"
+> 
+> Signed-off-by: Flavio Suligoi <f.suligoi@asem.it>
 
-Do remember that you are reporting saving 3.4 nanosec (from 21.5 to
-23.2 Mpps).  For comparison a function call cost around 1.2 ns, and I
-think you have avoided two function calls xdp_do_redirect() and
-dev_map_enqueue() (the rest should be inlined by compiler).  Thus, that
-alone account for 2.4 ns.
+Patch applied to iwlwifi-next.git, thanks.
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+e00c6d8d491b net: wireless: intel: fix wiki website url
 
