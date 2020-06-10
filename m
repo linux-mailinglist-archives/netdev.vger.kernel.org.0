@@ -2,123 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 834281F5DA6
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 23:20:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7109E1F5DC7
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 23:43:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726293AbgFJVUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 17:20:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59010 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726159AbgFJVUj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jun 2020 17:20:39 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726521AbgFJVng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 17:43:36 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:52402 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726134AbgFJVng (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 17:43:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591825415;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=EOMRCKTn4Cd3m8NbO22/XggcyOaKS9TbIVqVmA96gZE=;
+        b=XRcQ9dbSfnP9YaGDPPoMVgCFKDmtiwfSZV8RC6pnxX+bjFbyEQ13rk2QEdgPMm4VJTSl9z
+        hSKBKSD6WxUCQAYX/9AJqpXxWIZT7L9+/zz/LvlBtPmvYl3ZzBQVP8K2J+DVGXmTPZGjir
+        USiVer/LkxToW2cJytKbdZLmKXY8wDI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-133-KDUT5N1ON3KIhFWozUgDOA-1; Wed, 10 Jun 2020 17:43:33 -0400
+X-MC-Unique: KDUT5N1ON3KIhFWozUgDOA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 82AE8206F7;
-        Wed, 10 Jun 2020 21:20:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591824038;
-        bh=a+WMnH6/yPbuL8PSANPxjRC1KNz5QB8EwmMTF+RMAx4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=A16FxRcXHRu1mSq80RT2bJOKiY+VDw/HitLxKkH5R3vkHQbGEoTks3peZyQpfBxD3
-         HFAwI3j0E7lFoeFRStK+3Sa6VJPo77489H2zRdwQVXvf3S09UXixncGlUhoKV5DQvz
-         q3whNmnsFXTOiYlOP/FHlTxBqBcVS0RgK9oB/srY=
-Date:   Wed, 10 Jun 2020 14:20:36 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     dwilder <dwilder@us.ibm.com>
-Cc:     netdev@vger.kernel.org, wilder@us.ibm.com,
-        ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
-        somnath.kotur@broadcom.com
-Subject: Re: [(RFC) PATCH ] be2net: Allow a VF to use physical link state.
-Message-ID: <20200610142036.30c13bb9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <f2e408a1cd3b3e7327769f1b8d37aa74@linux.vnet.ibm.com>
-References: <20200609000059.12924-1-dwilder@us.ibm.com>
-        <20200609145839.36f1cbec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <f2e408a1cd3b3e7327769f1b8d37aa74@linux.vnet.ibm.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 137CC8014D4;
+        Wed, 10 Jun 2020 21:43:32 +0000 (UTC)
+Received: from new-host-5.redhat.com (unknown [10.40.194.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C7C5710013D0;
+        Wed, 10 Jun 2020 21:43:30 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Po Liu <Po.Liu@nxp.com>, Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net 0/2]  two fixes for 'act_gate' control plane
+Date:   Wed, 10 Jun 2020 23:42:45 +0200
+Message-Id: <cover.1591824863.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Jun 2020 10:22:22 -0700 dwilder wrote:
-> On 2020-06-09 14:58, Jakub Kicinski wrote:
-> > On Mon,  8 Jun 2020 17:00:59 -0700 David Wilder wrote:  
-> >> Hyper-visors owning a PF are allowed by Emulex specification to 
-> >> provide
-> >> a VF with separate physical and/or logical link states. However, on
-> >> linux, a VF driver must chose one or the other.
-> >> 
-> >> My scenario is a proprietary driver controlling the PF, be2net is the 
-> >> VF.
-> >> When I do a physical cable pull test the PF sends a link event
-> >> notification to the VF with the "physical" link status but this is
-> >> ignored in be2net (see be_async_link_state_process() ).
-> >> 
-> >> The PF is reporting the adapter type as:
-> >> 0xe228   /* Device id for VF in Lancer */
-> >> 
-> >> I added a module parameter "use_pf_link_state". When set the VF should
-> >> ignore logical link state and use the physical link state.
-> >> 
-> >> However I have an issue making this work.  When the cable is pulled I
-> >> see two link statuses reported:
-> >> [1706100.767718] be2net 8002:01:00.0 eth1: Link is Down
-> >> [1706101.189298] be2net 8002:01:00.0 eth1: Link is Up
-> >> 
-> >> be_link_status_update() is called twice, the first with the physical 
-> >> link
-> >> status called from be_async_link_state_process(), and the second with 
-> >> the
-> >> logical link status from be_get_link_ksettings().
-> >> 
-> >> I am unsure why be_async_link_state_process() is called from
-> >> be_get_link_ksettings(), it results in multiple link state changes
-> >> (even in the un-patched case). If I eliminate this call then it works.
-> >> But I am un-sure of this change.
-> >> 
-> >> Signed-off-by: David Wilder <dwilder@us.ibm.com>  
-> > 
-> > Hm. Just looking at the code in __be_cmd_set_logical_link_config():
-> > 
-> > 
-> > 	if (link_state == IFLA_VF_LINK_STATE_ENABLE ||
-> > 	    link_state == IFLA_VF_LINK_STATE_AUTO)
-> > 		link_config |= PLINK_ENABLE;
-> > 
-> > 	if (link_state == IFLA_VF_LINK_STATE_AUTO)
-> > 		link_config |= PLINK_TRACK;
-> > 
-> > Maybe we shouldn't set ENABLE for AUTO?  
-> 
-> If I am understanding this correctly, this is used by the linux PF 
-> driver to configure how link status is delivered to a VF.
-> 
-> My problem is one of interoperability between the PF (not linux) and the 
-> VF is running on linux.
+- patch 1/2 attempts to fix the error path of tcf_gate_init() when users
+  try to configure 'act_gate' rules with wrong parameters.
+- patch 2/2 is a follow-up of a recent fix for NULL dereference in
+  the error path of tcf_gate_init()
 
-I see.
+further work will introduce a tdc test for 'act_gate'.
 
-> The PF driver is implemented to the Emulex/Broadcom spec, which allows a 
-> PF driver to be configured such that the VF can be notified of both 
-> physical and logical link status, separately.
+Davide Caratti (2):
+  net/sched: act_gate: fix NULL dereference in tcf_gate_init()
+  net/sched: act_gate: fix configuration of the periodic timer
 
-We'd need a first-class support for this behavior both on PF and VF
-sides. A module parameter in one vendor driver to enable support for
-this behavior when running with a non-Linux PF driver is unlikely to
-succeed.
+ net/sched/act_gate.c | 130 ++++++++++++++++++++++++-------------------
+ 1 file changed, 72 insertions(+), 58 deletions(-)
 
-> > The module parameter is definitely not a good idea, what you're asking
-> > for seems to be well within the expectation from the
-> > .ndo_set_vf_link_state config, so it seems the driver / firmware is 
-> > just
-> > not implementing that right.  
-> 
-> I am attempting to resolve an issue that the linux implementation cant 
-> conform to the the Emulex specification due to the implementation on 
-> linux.
+-- 
+2.26.2
 
-Sadly I'd think that it's Emulex that needs to conform to Linux APIs,
-not the other way around.
