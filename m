@@ -2,112 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40F691F5066
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 10:38:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD4BB1F5081
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 10:46:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbgFJIiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 04:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37362 "EHLO
+        id S1726876AbgFJIqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 04:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726837AbgFJIiD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 04:38:03 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D7EC03E96F
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 01:38:03 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jiwF5-0000Il-SU; Wed, 10 Jun 2020 10:37:51 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jiwF2-0003Ir-R7; Wed, 10 Jun 2020 10:37:48 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        "John W. Linville" <linville@tuxdriver.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>,
-        Amit Cohen <amitc@mellanox.com>,
-        Petr Machata <petrm@mellanox.com>
-Subject: [PATCH v4 3/3] netlink: add LINKSTATE SQI support
-Date:   Wed, 10 Jun 2020 10:37:44 +0200
-Message-Id: <20200610083744.21322-4-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200610083744.21322-1-o.rempel@pengutronix.de>
-References: <20200610083744.21322-1-o.rempel@pengutronix.de>
+        with ESMTP id S1726081AbgFJIqS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 04:46:18 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A67C03E96B
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 01:46:17 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id n24so1677479ejd.0
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 01:46:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Fr9WSBy3gq5GY8giUE4KFe+ZLK4loVtHVClvYlgpVVQ=;
+        b=TqVVUJoSRKntkPgmQCHuFRGWI2BxlwxQqsTclCYQSCf3eaVZpD7azhD7/QG6YAJQKg
+         eI6na/W/DIwZ84Qt/aaZ/XVkVellNvzRI94eENitRi8ribFC5CRIvpEVJTba6+uJIT/D
+         fC3WJTBmPf6caQC9IyXy5jMWJ6vs61gRXJMwvfDkmEEkaydtTZe32inwrCGoGNopHZUm
+         K2Kev9SuC0Te4VLCcq0LagBi1XEOnohn16uumL+sxUHhJwcNyaoAJsmhkuJ9Fp+ieAd5
+         ZjUivzxPfztI3q0hHnzfnoiuJkqBT1Bt/c0xSX01IRZQZ28lefeFup44z2IVWqQjVS1P
+         hHMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Fr9WSBy3gq5GY8giUE4KFe+ZLK4loVtHVClvYlgpVVQ=;
+        b=TfhpZGUuXxBb4XHJeEMbHZMsbOdyH04NmEWAtLrC6BHHIoAthKat1H/pGvvLHNeshB
+         Pdgy6YVab/96KzdP+pT3bP7sc2zQxMQhFlOskUwNfGPsUEzUm49pl1cKgbL8nRAFGiJY
+         LVhDNu6+DlgqdTS2v/sUp4FWkPrf+P/PlMQ+BZ33AWgEXFoknx8Yzgks2tENwxiELAz/
+         75as7iYsbVRUT71YPaYhpel7qsnrMM0cvpABpHCR8j7HUFxl7nAYzdQuETcfCxUAZ43t
+         JjxEbSPN7tkEqBhoKqgoKWcZHwDRWQDPjg/Tr7bChnRxRbE7KrxERQ28cY4X4T7RU3z8
+         R01g==
+X-Gm-Message-State: AOAM530JXAT40kKFxRkehoJcb9bX+HH+DZGE/GgL57CmhxE1fYmPwFge
+        BLCD3bGsLvqjsdOcWNj3JJN6cQ==
+X-Google-Smtp-Source: ABdhPJzA97A3rrLRtTlBwR3B3e3BG33eFj9uqUFs9Ug4zmbFxTvGgBuwrDfFMBkC8/t0lc1NotIZ0w==
+X-Received: by 2002:a17:906:2b92:: with SMTP id m18mr2574832ejg.218.1591778776018;
+        Wed, 10 Jun 2020 01:46:16 -0700 (PDT)
+Received: from myrica ([2001:171b:226e:c200:116c:c27a:3e7f:5eaf])
+        by smtp.gmail.com with ESMTPSA id p13sm16608202edq.50.2020.06.10.01.46.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Jun 2020 01:46:15 -0700 (PDT)
+Date:   Wed, 10 Jun 2020 10:46:05 +0200
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH bpf] libbpf: handle GCC noreturn-turned-volatile quirk
+Message-ID: <20200610084605.GB6844@myrica>
+References: <20200610052335.2862559-1-andriin@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200610052335.2862559-1-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some PHYs provide Signal Quality Index (SQI) if the link is in active
-state. This information can help to diagnose cable and system design
-related issues.
+On Tue, Jun 09, 2020 at 10:23:35PM -0700, Andrii Nakryiko wrote:
+> Handle a GCC quirk of emitting extra volatile modifier in DWARF (and
+> subsequently preserved in BTF by pahole) for function pointers marked as
+> __attribute__((noreturn)). This was the way to mark such functions before GCC
+> 2.5 added noreturn attribute. Drop such func_proto modifiers, similarly to how
+> it's done for array (also to handle GCC quirk/bug).
+> 
+> Such volatile attribute is emitted by GCC only, so existing selftests can't
+> express such test. Simple repro is like this (compiled with GCC + BTF
+> generated by pahole):
+> 
+>   struct my_struct {
+>       void __attribute__((noreturn)) (*fn)(int);
+>   };
+>   struct my_struct a;
+> 
+> Without this fix, output will be:
+> 
+> struct my_struct {
+>     voidvolatile  (*fn)(int);
+> };
+> 
+> With the fix:
+> 
+> struct my_struct {
+>     void (*fn)(int);
+> };
+> 
+> Reported-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
----
- netlink/desc-ethtool.c |  2 ++
- netlink/settings.c     | 16 ++++++++++++++++
- 2 files changed, 18 insertions(+)
+Thanks, this fixes the issue I was seeing with the arm64 vmlinux
 
-diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
-index 00e6982..98b898e 100644
---- a/netlink/desc-ethtool.c
-+++ b/netlink/desc-ethtool.c
-@@ -93,6 +93,8 @@ static const struct pretty_nla_desc __linkstate_desc[] = {
- 	NLATTR_DESC_INVALID(ETHTOOL_A_LINKSTATE_UNSPEC),
- 	NLATTR_DESC_NESTED(ETHTOOL_A_LINKSTATE_HEADER, header),
- 	NLATTR_DESC_BOOL(ETHTOOL_A_LINKSTATE_LINK),
-+	NLATTR_DESC_U32(ETHTOOL_A_LINKSTATE_SQI),
-+	NLATTR_DESC_U32(ETHTOOL_A_LINKSTATE_SQI_MAX),
- };
- 
- static const struct pretty_nla_desc __debug_desc[] = {
-diff --git a/netlink/settings.c b/netlink/settings.c
-index 60e2c41..35ba2f5 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -627,6 +627,22 @@ int linkstate_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 		printf("\tLink detected: %s\n", val ? "yes" : "no");
- 	}
- 
-+	if (tb[ETHTOOL_A_LINKSTATE_SQI]) {
-+		uint32_t val = mnl_attr_get_u32(tb[ETHTOOL_A_LINKSTATE_SQI]);
-+
-+		print_banner(nlctx);
-+		printf("\tSQI: %u", val);
-+
-+		if (tb[ETHTOOL_A_LINKSTATE_SQI_MAX]) {
-+			uint32_t max;
-+
-+			max = mnl_attr_get_u32(tb[ETHTOOL_A_LINKSTATE_SQI_MAX]);
-+			printf("/%u\n", max);
-+		} else {
-+			printf("\n");
-+		}
-+	}
-+
- 	return MNL_CB_OK;
- }
- 
--- 
-2.27.0
+Tested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
