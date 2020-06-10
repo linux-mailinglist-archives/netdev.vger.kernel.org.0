@@ -2,88 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A44E1F4EC9
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 09:24:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69F6D1F4F5A
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 09:45:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726471AbgFJHYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 03:24:30 -0400
-Received: from smtprelay0191.hostedemail.com ([216.40.44.191]:33160 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726081AbgFJHY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 03:24:29 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 2364F180A7FCA;
-        Wed, 10 Jun 2020 07:24:28 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2693:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:4250:4321:5007:6119:6742:7903:8604:9393:10004:10400:10848:11026:11232:11658:11914:12050:12297:12663:12679:12740:12760:12895:13069:13255:13311:13357:13439:14096:14097:14659:14721:21080:21324:21433:21627:21939:21990:30054:30062:30075:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: toad10_2409db926dc9
-X-Filterd-Recvd-Size: 2861
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf13.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 10 Jun 2020 07:24:26 +0000 (UTC)
-Message-ID: <4b77ebf589ccc8ce0983539ce2fca4eba8f72a2a.camel@perches.com>
-Subject: Re: [PATCH v3 1/7] Documentation: dynamic-debug: Add description of
- level bitmask
-From:   Joe Perches <joe@perches.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Jason Baron <jbaron@akamai.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jim Cromie <jim.cromie@gmail.com>
-Date:   Wed, 10 Jun 2020 00:24:25 -0700
-In-Reply-To: <20200610070949.GB1923109@kroah.com>
-References: <20200609104604.1594-1-stanimir.varbanov@linaro.org>
-         <20200609104604.1594-2-stanimir.varbanov@linaro.org>
-         <20200609111615.GD780233@kroah.com>
-         <ba32bfa93ac2e147c2e0d3a4724815a7bbf41c59.camel@perches.com>
-         <20200610063103.GD1907120@kroah.com>
-         <f94b2abe85d7c849ca76677ff5a1e0b272bb3bdf.camel@perches.com>
-         <20200610070949.GB1923109@kroah.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.2-0ubuntu1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1726551AbgFJHo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 03:44:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726506AbgFJHoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 03:44:55 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7DCC08C5C1
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 00:44:55 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id s10so628690pgm.0
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 00:44:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=3N8ySBXCAGSToWzkhjg9Ns1STm80jOJIgncP/xxN3eY=;
+        b=xoSGSnf+KLwKshKMBjlYrdmyp9I/mKgs/ehf+r0czh6W2sBdz19OUpRNf2jQNbZ8eI
+         XkpysDx8EabZpnTU0HzEI/WZZPkbYy6KjWFQPNuGSlDBhar4Rim+IjgczRpmssPjGaFq
+         5q+EEIbBcHSXNKMOCUpXLtEVG1qvGo9eU766WhzeR7aL/XssyIVigCIRHKMCWPBiOhr4
+         JfdZ8qF3+/t9Gt3fAM9CmfdZYsK7qNR0xNu9WCYztpKPmUxdeoiZWjekG5yH7MTzKmP/
+         dwSSvI89/7/RxJqGYOFBW9hIxiwSogU/vjrni1TdE7bcElzLght6o7xpzpwUEl+hEVk6
+         D16A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3N8ySBXCAGSToWzkhjg9Ns1STm80jOJIgncP/xxN3eY=;
+        b=QTr4rSZ7WqAzXDmurCOoBeXAW3Celcyow8khjGIVUjsTQQmelWLMYeloaencTVAq19
+         +KYQk0U1wOsWT9Sz2LLRmCIF+ScwXcjWtOKCATaFwC4Z6SsM0Q+o/jDT/OBUe09FEs15
+         7abb/0u/g19FE1O4FIgorvHkZTAe/q6EFjO2d60fHejiPq4dCe8awMpInY4CMXvk/yoP
+         Fi0AeFc19qTPN6ojDciVqQDMphQzFD1abX5c9jRsI2+lZveovRB1vTy6ryYCgywEO5/D
+         FBbe3xjMUBcvs/xWWNkORoaiMvIGyvV9RaeQXl9+p58/LNqnuFul9Wd7iMEVFmburRGg
+         XAnA==
+X-Gm-Message-State: AOAM533nb68771P2uuEd22idH8/KNYeikxOE5e5h+3rxJwYm/SS3jXqJ
+        NHcF4f0LjKcC6/7dQDCXmr3d
+X-Google-Smtp-Source: ABdhPJzoYmIM8knPdWEYW86S20yr4Ag0e99GnUnirnhqSIY4sncQXGP46ZktYkt2XLetXnM3Hw3f9w==
+X-Received: by 2002:aa7:859a:: with SMTP id w26mr1547654pfn.10.1591775094260;
+        Wed, 10 Jun 2020 00:44:54 -0700 (PDT)
+Received: from Mani-XPS-13-9360.localdomain ([2409:4072:630f:1dba:c41:a14e:6586:388a])
+        by smtp.gmail.com with ESMTPSA id a20sm11516795pff.147.2020.06.10.00.44.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Jun 2020 00:44:53 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     wg@grandegger.com, mkl@pengutronix.de
+Cc:     kernel@martin.sperl.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 0/6] Add Microchip MCP25XXFD CAN driver
+Date:   Wed, 10 Jun 2020 13:14:36 +0530
+Message-Id: <20200610074442.10808-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-06-10 at 09:09 +0200, Greg Kroah-Hartman wrote:
-> On Tue, Jun 09, 2020 at 11:35:31PM -0700, Joe Perches wrote:
-> > On Wed, 2020-06-10 at 08:31 +0200, Greg Kroah-Hartman wrote:
-> > > On Tue, Jun 09, 2020 at 09:58:07AM -0700, Joe Perches wrote:
-> > > > On Tue, 2020-06-09 at 13:16 +0200, Greg Kroah-Hartman wrote:
-> > > > > What is wrong with the existing control of dynamic
-> > > > > debug messages that you want to add another type of arbitrary grouping
-> > > > > to it? 
-> > > > 
-> > > > There is no existing grouping mechanism.
-> > > 
-> > > info/warn/err/dbg is what I am referring to.
+Hello,
 
-This is specifically about dbg so that's not relevant is it.
-> But each "level" you all come up with will be intrepreted differently
-> per driver, causing total confusion (like we have today.)  Try to make
-> it better by just removing that mess.
+This series adds CAN network driver support for Microchip MCP25XXFD CAN
+Controller with MCP2517FD as the target controller version. This series is
+mostly inspired (or taken) from the previous iterations posted by Martin Sperl.
+I've trimmed down the parts which are not necessary for the initial version
+to ease review. Still the series is relatively huge but I hope to get some
+reviews (post -rcX ofc!).
 
-Or add value as it allows the developer to do what's
-necessary for their development.
+Link to the origial series posted by Martin:
+https://www.spinics.net/lists/devicetree/msg284462.html
 
-> > > In the beginning, yes, adding loads of different types of debugging
-> > > options to a driver is needed by the author, but by the time it is added
-> > > to the kernel, all of that should be able to be removed and only a
-> > > single "enable debug" should be all that is needed.
-> > 
-> > No one does that.
-> 
-> We did that for USB drivers a decade ago, it can be done.
+I've not changed the functionality much but done some considerable amount of
+cleanups and also preserved the authorship of Martin for all the patches he has
+posted earlier. This series has been tested on 96Boards RB3 platform by myself
+and Martin has tested the previous version on Rpi3 with external MCP2517FD
+controller.
 
-And nearly no one does it.
+Thanks,
+Mani
 
-btw: look up usbip_debug_flag and usbip_dbg_<foo> or the uhci driver
+Manivannan Sadhasivam (1):
+  MAINTAINERS: Add entry for Microchip MCP25XXFD CAN network driver
 
+Martin Sperl (5):
+  dt-bindings: can: Document devicetree bindings for MCP25XXFD
+  can: mcp25xxfd: Add Microchip MCP25XXFD CAN-FD driver infrastructure
+  can: mcp25xxfd: Add support for CAN reception
+  can: mcp25xxfd: Add CAN transmission support
+  can: mcp25xxfd: Optimize TEF read by avoiding unnecessary SPI
+    transfers
+
+ .../bindings/net/can/microchip,mcp25xxfd.yaml |  82 +++
+ MAINTAINERS                                   |   8 +
+ drivers/net/can/spi/Kconfig                   |   2 +
+ drivers/net/can/spi/Makefile                  |   2 +
+ drivers/net/can/spi/mcp25xxfd/Kconfig         |   5 +
+ drivers/net/can/spi/mcp25xxfd/Makefile        |  11 +
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_base.c    | 177 +++++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_base.h    |  14 +
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.c | 538 ++++++++++++++
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h |  52 ++
+ .../can/spi/mcp25xxfd/mcp25xxfd_can_fifo.c    | 305 ++++++++
+ .../can/spi/mcp25xxfd/mcp25xxfd_can_fifo.h    |  16 +
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_id.h  |  69 ++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_int.c | 674 ++++++++++++++++++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_int.h |  18 +
+ .../can/spi/mcp25xxfd/mcp25xxfd_can_priv.h    | 144 ++++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.c  | 233 ++++++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.h  |  18 +
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_tx.c  | 653 +++++++++++++++++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_can_tx.h  |  86 +++
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.c | 226 ++++++
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.h |  84 +++
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.c |  31 +
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.h |  15 +
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.c |  74 ++
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.h |  16 +
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.c |  71 ++
+ drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.h |  15 +
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_priv.h    |  50 ++
+ .../net/can/spi/mcp25xxfd/mcp25xxfd_regs.h    | 661 +++++++++++++++++
+ 30 files changed, 4350 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/can/microchip,mcp25xxfd.yaml
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/Kconfig
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/Makefile
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_base.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_fifo.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_fifo.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_id.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_int.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_int.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_priv.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_rx.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_tx.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_can_tx.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_cmd.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_crc.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_ecc.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.c
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_int.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_priv.h
+ create mode 100644 drivers/net/can/spi/mcp25xxfd/mcp25xxfd_regs.h
+
+-- 
+2.17.1
 
