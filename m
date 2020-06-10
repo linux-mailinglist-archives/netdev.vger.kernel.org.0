@@ -2,98 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C2A1F51D0
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 12:04:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE2D91F5221
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 12:19:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728096AbgFJKEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 06:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50686 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727946AbgFJKEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 06:04:08 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC1EC03E96B
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 03:04:07 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id o15so1844957ejm.12
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 03:04:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RuxjbfFH/DZII4QdkiYWrv3xZWCtMaNVtgJA0HHfTC4=;
-        b=kBNnX9gMzVqLGCNM36dt6FtEtx/WFYxPimKl1pnd9ENjoltbgjic3TLcpc8aLgQhKq
-         thKIivjR63DXsoMGeInY6dsV58N7V9hlNXYcR9tmmupd69zYuu3VSQC6dwhXzFv2d+LG
-         zy+L+cVvCO/qhyXvMfPDerbyN3tM134KT24llzehVbT1ZUhNkncKnpXgPowhLuqINDd5
-         VCvgFwmkDR8bW7eeC8ynBZvBrBAcTky3Zjx4hL9/rIOAV5nCX3eCLmpn7RWX8g78Nzps
-         HqnqKd/de2eyJq6pTyTODG1SZhMZOJKM8htMXaHZkyKfOMn9OoaGu8HzCk1DwysflxK7
-         3MGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RuxjbfFH/DZII4QdkiYWrv3xZWCtMaNVtgJA0HHfTC4=;
-        b=osOfNzTVWbVKxvJ6Ic6q5uSL6otA4fH1HBkqeia27RzPVW46UR7EPkT6xi040Fs64q
-         mpmIbgo5c+lnr22hSHcxaEw6mhxzcGixYbrRFxNQX0zM6UJK8SQkbalwGF8qqSrHbcgb
-         cP6CSghpa+LUKcFLQdtIVT2K/QVOym55D4yVeC2RPaupyEYTtM1EhauvtudbMhRW8ec7
-         eRo9v05NatYkUwr5/dVwWsQpCm/gfBFu26mUwR3d/9IiqvkGrk/CckLDBiCKfTby7VFg
-         BOa24imHj+DXF8yff47B1kqJ3bdI4tC2yuFm2MMsg02VEEVLOpobrl8qorpNCX4BA3La
-         jBUQ==
-X-Gm-Message-State: AOAM531jnMi1ydASu5yD+nbVht1sggEg5jTC5DwwUGL0rf4iQXKWvKes
-        vRJhqjEqrGrrFQvuS8r21J934lf0N7U=
-X-Google-Smtp-Source: ABdhPJy3P8GA55s5Pz8c+LYXIT3nvpjsLHqVb6eHHK5N68/2TYRYPb8+boUxukmyr1YOCZtNCyWiIw==
-X-Received: by 2002:a17:906:d0d7:: with SMTP id bq23mr2679890ejb.259.1591783445593;
-        Wed, 10 Jun 2020 03:04:05 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([79.132.248.22])
-        by smtp.gmail.com with ESMTPSA id b15sm16634252edj.37.2020.06.10.03.04.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jun 2020 03:04:05 -0700 (PDT)
-Subject: Re: [MPTCP] [PATCH net] mptcp: don't leak msk in token container
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
-References: <f52cfae0ddacd91b37a804f19a6ffa2f79efe56f.1591778889.git.pabeni@redhat.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <88f6e442-44a7-c33f-33ab-f88c90c35514@tessares.net>
-Date:   Wed, 10 Jun 2020 12:04:04 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1728190AbgFJKTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 06:19:17 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:42035 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726533AbgFJKTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 06:19:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591784355;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Sq1fQgJOtcNwBiRoiZA3xtIchQVFxSm66sn9FK6nJ8Y=;
+        b=XAVFIu8Rr2LzulqUD5MS18qXBDijVYfJOHwn+As2Odv/NC2OA6utd4C1ALGFjmzCPLoJKl
+        fPy7eQYGV4CSVWF94lGtYAfcBmHWa1DUZxzIuu5Ku8WyHX/wqzSupsJ6wuK5KnWUGpR/ff
+        m6AFsSLxUfdLk0EjGdRE9MjKDGFiFk4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-254-6egPKo7JOmicGVyvBdyReA-1; Wed, 10 Jun 2020 06:19:13 -0400
+X-MC-Unique: 6egPKo7JOmicGVyvBdyReA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A11D835B41;
+        Wed, 10 Jun 2020 10:19:12 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 212BB89290;
+        Wed, 10 Jun 2020 10:19:00 +0000 (UTC)
+Date:   Wed, 10 Jun 2020 12:18:59 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        brouer@redhat.com
+Subject: Re: [PATCHv4 bpf-next 1/2] xdp: add a new helper for dev map
+ multicast support
+Message-ID: <20200610121859.0412c111@carbon>
+In-Reply-To: <20200526140539.4103528-2-liuhangbin@gmail.com>
+References: <20200415085437.23028-1-liuhangbin@gmail.com>
+        <20200526140539.4103528-1-liuhangbin@gmail.com>
+        <20200526140539.4103528-2-liuhangbin@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <f52cfae0ddacd91b37a804f19a6ffa2f79efe56f.1591778889.git.pabeni@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paolo,
+On Tue, 26 May 2020 22:05:38 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-On 10/06/2020 10:49, Paolo Abeni wrote:
-> If a listening MPTCP socket has unaccepted sockets at close
-> time, the related msks are freed via mptcp_sock_destruct(),
-> which in turn does not invoke the proto->destroy() method
-> nor the mptcp_token_destroy() function.
-> 
-> Due to the above, the child msk socket is not removed from
-> the token container, leading to later UaF.
-> 
-> Address the issue explicitly removing the token even in the
-> above error path.
-> 
-> Fixes: 79c0949e9a09 ("mptcp: Add key generation and token tree")
- > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 90f44f382115..acdc63833b1f 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -475,3 +475,29 @@ void xdp_warn(const char *msg, const char *func, const int line)
+>  	WARN(1, "XDP_WARN: %s(line:%d): %s\n", func, line, msg);
+>  };
+>  EXPORT_SYMBOL_GPL(xdp_warn);
+> +
+> +struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf)
+> +{
+> +	unsigned int headroom, totalsize;
+> +	struct xdp_frame *nxdpf;
+> +	struct page *page;
+> +	void *addr;
+> +
+> +	headroom = xdpf->headroom + sizeof(*xdpf);
+> +	totalsize = headroom + xdpf->len;
+> +
+> +	if (unlikely(totalsize > PAGE_SIZE))
+> +		return NULL;
+> +	page = dev_alloc_page();
+> +	if (!page)
+> +		return NULL;
+> +	addr = page_to_virt(page);
+> +
+> +	memcpy(addr, xdpf, totalsize);
 
-Thank you for the patch, it looks good to me!
+I don't think this will work.  You are assuming that the memory model
+(xdp_mem_info) is the same.
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+You happened to use i40, that have MEM_TYPE_PAGE_SHARED, and you should
+have changed this to MEM_TYPE_PAGE_ORDER0, but it doesn't crash as they
+are compatible.  If you were using mlx5, I suspect that this would
+result in memory leaking.
 
-Cheers,
-Matt
+You also need to update xdpf->frame_sz, as you also cannot assume it is
+the same.
+
+> +
+> +	nxdpf = addr;
+> +	nxdpf->data = addr + headroom;
+> +
+> +	return nxdpf;
+> +}
+> +EXPORT_SYMBOL_GPL(xdpf_clone);
+
+
 -- 
-Matthieu Baerts | R&D Engineer
-matthieu.baerts@tessares.net
-Tessares SA | Hybrid Access Solutions
-www.tessares.net
-1 Avenue Jean Monnet, 1348 Louvain-la-Neuve, Belgium
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
+
+struct xdp_frame {
+	void *data;
+	u16 len;
+	u16 headroom;
+	u32 metasize:8;
+	u32 frame_sz:24;
+	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
+	 * while mem info is valid on remote CPU.
+	 */
+	struct xdp_mem_info mem;
+	struct net_device *dev_rx; /* used by cpumap */
+};
+
