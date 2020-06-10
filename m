@@ -2,81 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 938A11F5465
-	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 14:19:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9845E1F5478
+	for <lists+netdev@lfdr.de>; Wed, 10 Jun 2020 14:21:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728918AbgFJMTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 08:19:02 -0400
-Received: from mga11.intel.com ([192.55.52.93]:57083 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728540AbgFJMTB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jun 2020 08:19:01 -0400
-IronPort-SDR: s/bi49aKySkiwbs8663bQJ+alHT+8HYSYrFHTWHHR7jBY08gcg2eOEmKybHG3rxx8cTZEs1jnX
- GgwojsqzKWBw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2020 05:18:55 -0700
-IronPort-SDR: xyBzLieBBLsKIOmAea68QV63E8nLmS/k0Ib31fTDfHW9z0qJeN1wDvYkmntxkSU0fGdiImspmd
- f+zeTjf78rEQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,495,1583222400"; 
-   d="scan'208";a="473405781"
-Received: from tstralma-mobl.ger.corp.intel.com ([10.249.254.134])
-  by fmsmga005.fm.intel.com with ESMTP; 10 Jun 2020 05:18:52 -0700
-Message-ID: <1cbbb0dab91cad4ecf76cb6ca92f3c3bfe6ee5f7.camel@intel.com>
-Subject: Re: [PATCH 02/15] iwlwifi: mvm: fix gcc-10 zero-length-bounds
- warning
-From:   Luciano Coelho <luciano.coelho@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sara Sharon <sara.sharon@intel.com>
-Cc:     Andrei Otcheretianski <andrei.otcheretianski@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Date:   Wed, 10 Jun 2020 15:18:52 +0300
-In-Reply-To: <20200430213101.135134-3-arnd@arndb.de>
-References: <20200430213101.135134-1-arnd@arndb.de>
-         <20200430213101.135134-3-arnd@arndb.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.2-1 
+        id S1728981AbgFJMV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 08:21:27 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:48177 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728595AbgFJMV1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 08:21:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591791686;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TajccAc98eovcAxEmobow/lDPcnemSp9A9wMVl+c6QY=;
+        b=flZf5/3Sz0EEmU6II/6tjQoXWCugbeVh3hBrSyTW2HhxTyoQbM2PttrPgk03JFCuZQfo4e
+        1Kz3br/6yB0J12uyECLJwEfDHIwVjIcPB0CgN46SogAI3K3bg3cjQh4DOg5V+fyGr/S/x8
+        WCyu06OGexaaaqGLjSbdbUXDxPIdhFY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-2-04L32vYtOnSGPa6mM8RJQQ-1; Wed, 10 Jun 2020 08:21:22 -0400
+X-MC-Unique: 04L32vYtOnSGPa6mM8RJQQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EB99118CA26B;
+        Wed, 10 Jun 2020 12:21:20 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 046FD7BA19;
+        Wed, 10 Jun 2020 12:21:12 +0000 (UTC)
+Date:   Wed, 10 Jun 2020 14:21:10 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
+        john.fastabend@gmail.com, magnus.karlsson@intel.com,
+        netdev@vger.kernel.org, maciej.fijalkowski@intel.com,
+        bjorn.topel@intel.com, brouer@redhat.com
+Subject: Re: [RFC PATCH bpf-next 0/2] bpf_redirect_map() tail call detection
+ and xdp_do_redirect() avoidance
+Message-ID: <20200610142110.25fa5a14@carbon>
+In-Reply-To: <87o8ps80gc.fsf@toke.dk>
+References: <20200609172622.37990-1-bjorn.topel@gmail.com>
+        <87o8ps80gc.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-04-30 at 23:30 +0200, Arnd Bergmann wrote:
-> gcc-10 complains when a zero-length array is accessed:
-> 
-> drivers/net/wireless/intel/iwlwifi/mvm/tx.c: In function 'iwl_mvm_rx_ba_notif':
-> drivers/net/wireless/intel/iwlwifi/mvm/tx.c:1929:17: warning: array subscript 9 is outside the bounds of an interior zero-length array 'struct iwl_mvm_compressed_ba_tfd[0]' [-Wzero-length-bounds]
->  1929 |     &ba_res->tfd[i];
->       |      ~~~~~~~~~~~^~~
-> In file included from drivers/net/wireless/intel/iwlwifi/mvm/../fw/api/tdls.h:68,
->                  from drivers/net/wireless/intel/iwlwifi/mvm/fw-api.h:68,
->                  from drivers/net/wireless/intel/iwlwifi/mvm/sta.h:73,
->                  from drivers/net/wireless/intel/iwlwifi/mvm/mvm.h:83,
->                  from drivers/net/wireless/intel/iwlwifi/mvm/tx.c:72:
-> drivers/net/wireless/intel/iwlwifi/mvm/../fw/api/tx.h:769:35: note: while referencing 'tfd'
->   769 |  struct iwl_mvm_compressed_ba_tfd tfd[0];
->       |                                   ^~~
-> 
-> Change this structure to use a flexible-array member for 'tfd' instead,
-> along with the various structures using an zero-length ieee80211_hdr
-> array that do not show warnings today but might be affected by similar
-> issues in the future.
-> 
-> Fixes: 6f68cc367ab6 ("iwlwifi: api: annotate compressed BA notif array sizes")
-> Fixes: c46e7724bfe9 ("iwlwifi: mvm: support new BA notification response")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Patch applied to iwlwifi-next.git, thanks.
+> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+>=20
+> > Is this a good idea? I have only measured for AF_XDP redirects, but
+> > all XDP_REDIRECT targets should benefit. For AF_XDP the rxdrop
+> > scenario went from 21.5 to 23.2 Mpps on my machine. =20
 
-9cec1d547cb7 iwlwifi: mvm: fix gcc-10 zero-length-bounds warning
+Do remember that you are reporting saving 3.4 nanosec (from 21.5 to
+23.2 Mpps).  For comparison a function call cost around 1.2 ns, and I
+think you have avoided two function calls xdp_do_redirect() and
+dev_map_enqueue() (the rest should be inlined by compiler).  Thus, that
+alone account for 2.4 ns.
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
