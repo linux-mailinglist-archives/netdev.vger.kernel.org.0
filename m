@@ -2,132 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 380A91F6445
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 11:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF4DC1F64AA
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 11:24:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbgFKJGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 05:06:52 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:42244 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726697AbgFKJGs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 05:06:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591866407;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EMC0E2B827Ia2DQRzxKsWY/OK5Bg//cvAlofONDhk2Q=;
-        b=YzptH67dW4oHQlIfgj49adW81ZiLubTWGqoIKOMtNpmeloSVnlDJoIWdLlNGEsfNH8ZzTq
-        ZydGrU1yrXGgtWBKRdtxV8l/6ixKEFNyRv8QA/5Z5fTlmZXY9DhKl4OOzjJD8DHWile7f3
-        RxH4Q4Eoy+JekbpsBy2oNC40h/9XB7s=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-52-TFnDv4_hP52fa45K9z3I7Q-1; Thu, 11 Jun 2020 05:06:43 -0400
-X-MC-Unique: TFnDv4_hP52fa45K9z3I7Q-1
-Received: by mail-wr1-f69.google.com with SMTP id x15so939125wru.21
-        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 02:06:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=EMC0E2B827Ia2DQRzxKsWY/OK5Bg//cvAlofONDhk2Q=;
-        b=Teg2v3moUxcYiMMfuzc/GdK4iKDGOe9brMjtwEDaMjUbnVLG7kbaz9jeUIUlKL36Y1
-         rg67RzpxSGv+B0qOikKkApCNcxlrnsLIsJaPbK/O5lrykxGF+U7fR9pyM7MIih4TyMbS
-         svjkhh02cYmfRUxYmJAlCVgo/KODXOqr6bHo5v731JGknycZsHImIiv9d1MF+QX5PQu0
-         tQwG8kkn/oVRAQgAkbBIfD4cw+lQLNA7FDEvzw17pNTPhIUkT3no129ZUpJm7TMzzKA4
-         j3p2r4hd6V3W9yxCC4QR19EcH2Vnr1kvBTWpM5x1YCdtLIEwvC3UwWlDbrTUAKAJYiaC
-         xvuw==
-X-Gm-Message-State: AOAM531GIrulqyOY40aZl8cWn+B+seMYTbcyNUcy7C+YfxAzph/kWWi1
-        Lq+Z54K65/8P/L0MvgA/VemKvEd2BLbvcWXKSkNwDIDw+Ino1TL4p9ShRbHHpP1/qJJhjl9B3tt
-        XbKSj2mLrj1fBW0RF
-X-Received: by 2002:adf:dccc:: with SMTP id x12mr8242100wrm.72.1591866401981;
-        Thu, 11 Jun 2020 02:06:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwjS282NzyfgjaTUCOeu+TiuTHkZ19eiBXmK6U3BwQgdXs1XxcOHzbjcay7nTvobbz5n62KJQ==
-X-Received: by 2002:adf:dccc:: with SMTP id x12mr8242068wrm.72.1591866401733;
-        Thu, 11 Jun 2020 02:06:41 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-55-232.red.bezeqint.net. [79.181.55.232])
-        by smtp.gmail.com with ESMTPSA id y80sm3152548wmc.34.2020.06.11.02.06.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2020 02:06:40 -0700 (PDT)
-Date:   Thu, 11 Jun 2020 05:06:38 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        eperezma@redhat.com
-Subject: Re: [PATCH RFC v6 02/11] vhost: use batched get_vq_desc version
-Message-ID: <20200611050416-mutt-send-email-mst@kernel.org>
-References: <20200608125238.728563-1-mst@redhat.com>
- <20200608125238.728563-3-mst@redhat.com>
- <81904cc5-b662-028d-3b4a-bdfdbd2deb8c@redhat.com>
- <20200610070259-mutt-send-email-mst@kernel.org>
- <76b14132-407a-48bf-c4d5-9d0b2c700bb0@redhat.com>
+        id S1726992AbgFKJYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 05:24:20 -0400
+Received: from sitav-80046.hsr.ch ([152.96.80.46]:43440 "EHLO
+        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726817AbgFKJYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 05:24:20 -0400
+Received: from [IPv6:2a01:8b81:5407:2500:1db0:89c8:8124:d9bd] (unknown [IPv6:2a01:8b81:5407:2500:1db0:89c8:8124:d9bd])
+        by mail.strongswan.org (Postfix) with ESMTPSA id 939A340063;
+        Thu, 11 Jun 2020 11:24:17 +0200 (CEST)
+Subject: Re: [PATCHv2 ipsec] xfrm: fix a warning in xfrm_policy_insert_list
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Yuehaibing <yuehaibing@huawei.com>,
+        Andreas Steffen <andreas.steffen@strongswan.org>
+References: <7478dd2a6b6de5027ca96eaa93adae127e6c5894.1590386017.git.lucien.xin@gmail.com>
+ <70458451-6ece-5222-c46f-87c708eee81e@strongswan.org>
+ <CADvbK_cw0yeTdVuNfbc8MJ6+9+1RgnW7XGw1AgQQM7ybnbdaDQ@mail.gmail.com>
+ <b93d9e68-c2da-bb1c-e1f9-21c81f740242@strongswan.org>
+ <CADvbK_egkEe0Pw-Yy8eQggS-cfvndOnj7W2hqvpdNxS2xJ50xg@mail.gmail.com>
+ <CADvbK_faty7VayrEfgJ-Hcr2Ah-2au6uFvq1hU0ofdNZHODNHA@mail.gmail.com>
+From:   Tobias Brunner <tobias@strongswan.org>
+Autocrypt: addr=tobias@strongswan.org; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <162dc8e7-fa96-97a1-fb4a-e3bc03ae89cf@strongswan.org>
+Date:   Thu, 11 Jun 2020 11:24:17 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
+In-Reply-To: <CADvbK_faty7VayrEfgJ-Hcr2Ah-2au6uFvq1hU0ofdNZHODNHA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <76b14132-407a-48bf-c4d5-9d0b2c700bb0@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 11, 2020 at 11:02:57AM +0800, Jason Wang wrote:
-> 
-> On 2020/6/10 下午7:05, Michael S. Tsirkin wrote:
-> > > > +EXPORT_SYMBOL_GPL(vhost_get_vq_desc);
-> > > >    /* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
-> > > >    void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
-> > > >    {
-> > > > +	unfetch_descs(vq);
-> > > >    	vq->last_avail_idx -= n;
-> > > So unfetch_descs() has decreased last_avail_idx.
-> > > Can we fix this by letting unfetch_descs() return the number and then we can
-> > > do:
-> > > 
-> > > int d = unfetch_descs(vq);
-> > > vq->last_avail_idx -= (n > d) ? n - d: 0;
-> > > 
-> > > Thanks
-> > That's intentional I think - we need both.
-> 
-> 
-> Yes, but:
-> 
-> 
-> > 
-> > Unfetch_descs drops the descriptors in the cache that were
-> > *not returned to caller*  through get_vq_desc.
-> > 
-> > vhost_discard_vq_desc drops the ones that were returned through get_vq_desc.
-> > 
-> > Did I miss anything?
-> 
-> We could count some descriptors twice, consider the case e.g we only cache
-> on descriptor:
-> 
-> fetch_descs()
->     fetch_buf()
->         last_avail_idx++;
-> 
-> Then we want do discard it:
-> vhost_discard_avail_buf(1)
->     unfetch_descs()
->         last_avail_idx--;
->     last_avail_idx -= 1;
-> 
-> Thanks
+Hi Xin,
 
+> For 'new/update/del', we should do an exact match with
+> "mark.v == pol->mark.v && mark.m == pol->mark.m", as these are MSGs to
+> manage the policies, every policy should be able to be matched.
 
-I don't think that happens. vhost_discard_avail_buf(1) is only called
-after get vhost_get_avail_buf. vhost_get_avail_buf increments
-first_desc.  unfetch_descs only counts from first_desc to ndescs.
+Agreed, using an exact match for mark/mask would probably make the most
+sense here.
 
-If I'm wrong, could you show values of first_desc and ndescs in this
-scenario?
+> But for 'get', I'm not sure, shouldn't it be working as how it's used
+> in skb rx/tx path, like in xfrm_policy_match()?
+> (similar to 'ip route get')
+> But maybe for ipsec userland it may be different, what do you think?
 
--- 
-MST
+Interesting idea.  But I don't think it currently has the same semantics
+as RTM_GETROUTE, i.e. you don't pass it e.g. some IP addresses and get
+the "best" matching policy back.  We use it to query stats (curlft) of a
+specific policy.  Basically, we expect to get back the policy added with
+XFRM_MSG_NEWPOLICY or updated with XFRM_MSG_UPDPOLICY when we pass the
+same selector/mark.  So I think it should work the same way as the
+manipulation operations (i.e. it can continue to share the code path
+with delete).
 
+Regards,
+Tobias
