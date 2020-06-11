@@ -2,126 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0276B1F6DBB
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 21:09:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B1381F6DE9
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 21:19:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728258AbgFKTJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 15:09:41 -0400
-Received: from mout.web.de ([217.72.192.78]:58403 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726159AbgFKTJk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jun 2020 15:09:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1591902564;
-        bh=dbIwwHdiMV4teofJdCbf7Y1qEHsQkx0IKl88SrSI/wo=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=XDS3iBpE3K7mXWT0rZDRMSm0cFM23l9Gtv2zuOeATb5w0fdySOxwG8JScnBbOvqmz
-         ga5qxe+GOiZDOkhzBMFiMwkCz+QuBBQ/UgqOh/V8lZ2z9ejqkENKd16OcTIeyxwEfz
-         HRQm3ZCtoKZ2aIssjr/n2EmXfPDuHl+eVKMGT9n4=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.49.66.14]) by smtp.web.de (mrweb106
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1MzTPW-1ix0nE1PhA-00vKLa; Thu, 11
- Jun 2020 21:09:24 +0200
-Subject: Re: [PATCH v2 2/2] perf tools: Improve exception handling in two
- functions of perf events parser
-To:     Chen Wandun <chenwandun@huawei.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Cheng Jian <cj.chengjian@huawei.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-References: <20200611145605.21427-1-chenwandun@huawei.com>
- <20200611145605.21427-3-chenwandun@huawei.com>
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <685bb0ec-c08a-d7e5-6aa3-fb7ca842d0d0@web.de>
-Date:   Thu, 11 Jun 2020 21:09:22 +0200
+        id S1726786AbgFKTTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 15:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726109AbgFKTTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 15:19:02 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC550C08C5C1
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 12:19:02 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id g3so6508292ilq.10
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 12:19:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HM3AqGJPElOxspsL/TgvLbkiRo8IGOBuT4DTNJYHMg8=;
+        b=sUWBelGwQdBKxP7Q7+e4/aI/TBJ5MwVvNzCRTCmliTWWuRG0lAgYpIWjIYrYZ5WhWe
+         9y7sCsLXeD1KvkJHDUHLqwr7FnDGQ0eSN15TuQ1zT16B1rSpL8sMznuGOFuzys0cyWHD
+         kMhj4/4akmpox7YkPhF32LDhdY4lrR9NJgic9zaGaYU4lwgvg+O7mfLQPVMjTMbuUrdI
+         btLwJBEi8qlMjloeHPtLCzv7ZDJ5oxmZxkoM5SZsH17wHoosSYXw0WRw09GM3cyp9bLZ
+         8BIT6ODT0tBTmGWkODYamKpjb4WHFg0dERi5VTO2eHQV0td/Xj3p33tKqi5xlqKVIcfU
+         6lYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HM3AqGJPElOxspsL/TgvLbkiRo8IGOBuT4DTNJYHMg8=;
+        b=HI1by+7HUynaU3CTrAsMU9FjrH55dS7icif3KJD8lNMbTQPJULOW0uP3IqEUPl5g+C
+         QAmFJP3MpzW5RtJHue8BwpqT6q40reZGr6VkwYEGT1ZWIFocjESb0xluqIhWe3tF+AyB
+         k4RSNMk3sTmin72pXUS9XVRndbceIkGLBfVfp2fYy0vz18Y5PzmMg+MgiQXmHaxlv5d/
+         Mozm6T+7N15dKMSPRJ9WXtdr056mTbSsjd0mxC53yQcq35gw4n89+IAYbtou83zPwWsZ
+         6NI8ll5JnyOrGSDLYFzDVLUTS4bhwi3JgeMqaV9ObAIwrsRugxNZ+Rzs5seAOY52wvH3
+         4Jxw==
+X-Gm-Message-State: AOAM531FPGIxNXm+mV6q3uXilx7zG5mbPXy0Ry3a4MZmxG1s1vL2yRpT
+        gMAWoqfLyf8Y9Alu64KQhtiO3g==
+X-Google-Smtp-Source: ABdhPJyNPRrWvZNCyCyGu+KKHk2+mgEP/Y6Gc3xVljOvTqeQpLBInz1ETD28vaNjTn9xL0Wk4H40QA==
+X-Received: by 2002:a92:79d1:: with SMTP id u200mr8900913ilc.67.1591903141896;
+        Thu, 11 Jun 2020 12:19:01 -0700 (PDT)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id e8sm2060103ill.25.2020.06.11.12.18.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Jun 2020 12:19:00 -0700 (PDT)
+Subject: Re: [PATCH net 1/5] net: ipa: program metadata mask differently
+To:     kernel test robot <lkp@intel.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, evgreen@chromium.org,
+        subashab@codeaurora.org, cpratapa@codeaurora.org,
+        bjorn.andersson@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200610195332.2612233-2-elder@linaro.org>
+ <202006110832.hKzHUsMH%lkp@intel.com>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <c864cbed-39ff-3877-03a9-b51630fc2682@linaro.org>
+Date:   Thu, 11 Jun 2020 14:18:59 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200611145605.21427-3-chenwandun@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:8YHVMukXKwtYmbINvs1ODICL/ViARbrtJlTIw3xQBO4k6y08rvF
- Ze7MA1QiO9gvkEO0O4aQXL8wt94e96KVc8lLIFtU3//HofcRxa16etnlGih7SNdBg/jZrWL
- pThUHRFRP0FLX1ak/V4N8SneQ4ciYSs2PuUI1mY2MEXaeU9Q7UJ7DbWDVF4szlpesvz11P8
- /D0jaIYjpCwvoxnqUxQtw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2Qd2GijSBKA=:P6G5eqoRCj67AI7GF4twfg
- qfbE5CcbxG15OL0YYhw8P3ta0R+wLOfuzQ2e2HVwQolHzcj3T+63wIXDOrBmkN/7uiuDc/eSV
- GtTJjso1tJ1RsCrQtF08vlGmGKXcg4gULcKi3hZzpdhKLoOD+WfapcoHX0n5EkziQP/jdbwCL
- d9iHb7IaXl0F6UEXVoliuCMp/s0DnHgC6eTuTO9lIG9UTre1/U8IdH4yokiS/xK6Jnaen6BQE
- eeUDYYdFKBDErQiTVX9/KEnBj9d0gZv03mIhekZNzQzMfNGtHyJll2Gw1jzt8oP8UED20V6EO
- gHVHJmzn+ZR7QzcSafn+0YFB6F7NrbWmCslW0AIjdX2Gw9sz7yTZevgjYn5i0CDVeQmujhb8T
- KIikq3F17Zw0jW7TN85AT2wwQI9e4TAxpNtT8Mf8ZM2Ja4ReMEWshf9OL7NcWXg7xlw2h2DR5
- ETcN/1DMlgObatLAXrGROyC3uhj2U9Fr1Hoea190SBEAGXATIsq158APBlUs7e049918TSskp
- V3kAgGmZkGKv76ybyTousjicQxPVllr2YgqG1qV4ONb+PCTdF3XV38/74GLlgehTF/BvQhm4R
- tvpJCneYN6P4TzrtZE16O0aDdLROD2lEhup6o9+xtYgWOy7oaPatBDSNrDczXYg4kfpbeMvYz
- IcyWpSplWQXHFfdVjirxgj1LjmIUHtxVlHDtbfxyflploYy7g3EXOzES4YEThwEwYsTinSsCm
- DbdYFhJPalgWKHxaYVQdoE+V2iE+/k4Bn2N3IHI4+RVtJAUU151v5+dDzAJ10/uy5XbWZSGto
- mESk7YvUkLZmEA4cn2JQtsLZ4hp4bxjCb1SdPFM18l/P5zEwHHNBFRLNPP8i7pRxU2Skcnzst
- fh3O7w2IssZ77ec4CwI7R6PerbeRCfiDe4LC+tAbtWpDoRmGrDzVR0LoT7zQJR3X+XY2nTkLn
- l3FExDl0XcJPLiN1ZhNwllB8zbEalD+hF/31GostLD/neITp81SQt5PMJEX3IuMArlQNe4wwP
- zhtCjaAk+fwkkedA9c5DS9Q5f8DZazTL773X1r2UreEMOSWX0keoz7q0QSOw+1RQmmesWsk8/
- v8gSjX+4iQgKB4QjWqJtcuLbia4RDI97qYMHP6AtwvJV38KnNcmPLTe0SW6/wYyh9W7XUNOuF
- 7FaCs6Dfq3I3ylpsx8sYX7OGf0VpixV/0TxMy2BaMIcLUAtupZ7Hv6WeEL+mDufZ2RczQI0eN
- j7HivTZmOcrq6j5ug
+In-Reply-To: <202006110832.hKzHUsMH%lkp@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Fix potential memory leak. Function new_term may return error, so
-> it is need to free memory when the return value is negative.
+On 6/10/20 7:19 PM, kernel test robot wrote:
+> Hi Alex,
+> 
+> I love your patch! Perhaps something to improve:
 
-How do you think about a wording variant like the following?
+Thanks kernel test robot!
 
-   Add jump targets so that a configuration object and a duplicated string
-   are released after a call of the function =E2=80=9Cstrdup=E2=80=9D or =
-=E2=80=9Cnew_term=E2=80=9D failed.
+Somehow the "static" specifier got dropped in my patch.
 
-Regards,
-Markus
+I will fix this when I post version 2, shortly.
+
+					-Alex
+
+> [auto build test WARNING on net/master]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Alex-Elder/net-ipa-endpoint-configuration-fixes/20200611-035600
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 89dc68533b190117e1a2fb4298d88b96b3580abf
+> config: arm64-allyesconfig (attached as .config)
+> compiler: aarch64-linux-gcc (GCC) 9.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # save the attached .config to linux build tree
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=arm64 
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>, old ones prefixed by <<):
+> 
+> <<                  from drivers/net/ipa/ipa_endpoint.c:8:
+>>> drivers/net/ipa/ipa_endpoint.c:457:6: warning: no previous prototype for 'ipa_endpoint_init_hdr' [-Wmissing-prototypes]
+> 457 | void ipa_endpoint_init_hdr(struct ipa_endpoint *endpoint)
+> |      ^~~~~~~~~~~~~~~~~~~~~
+> In file included from include/linux/bits.h:23,
+> from include/linux/bitops.h:5,
+> from include/linux/kernel.h:12,
+> from include/linux/list.h:9,
+> from include/linux/rculist.h:10,
+> from include/linux/pid.h:5,
+> from include/linux/sched.h:14,
+> from include/linux/ratelimit.h:6,
+> from include/linux/dev_printk.h:16,
+> from include/linux/device.h:15,
+> from drivers/net/ipa/ipa_endpoint.c:8:
+> drivers/net/ipa/ipa_endpoint.c: In function 'ipa_endpoint_config':
+> include/linux/bits.h:26:28: warning: comparison of unsigned expression < 0 is always false [-Wtype-limits]
+> 26 |   __builtin_constant_p((l) > (h)), (l) > (h), 0)))
+> |                            ^
+> include/linux/build_bug.h:16:62: notkke: in definition of macro 'BUILD_BUG_ON_ZERO'
+> 16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+> |                                                              ^
+> include/linux/bits.h:39:3: note: in expansion of macro 'GENMASK_INPUT_CHECK'
+> 39 |  (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+> |   ^~~~~~~~~~~~~~~~~~~
+> drivers/net/ipa/ipa_endpoint.c:1546:12: note: in expansion of macro 'GENMASK'
+> 1546 |  tx_mask = GENMASK(max - 1, 0);
+> |            ^~~~~~~
+> include/linux/bits.h:26:40: warning: comparison of unsigned expression < 0 is always false [-Wtype-limits]
+> 26 |   __builtin_constant_p((l) > (h)), (l) > (h), 0)))
+> |                                        ^
+> include/linux/build_bug.h:16:62: note: in definition of macro 'BUILD_BUG_ON_ZERO'
+> 16 | #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+> |                                                              ^
+> include/linux/bits.h:39:3: note: in expansion of macro 'GENMASK_INPUT_CHECK'
+> 39 |  (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+> |   ^~~~~~~~~~~~~~~~~~~
+> drivers/net/ipa/ipa_endpoint.c:1546:12: note: in expansion of macro 'GENMASK'
+> 1546 |  tx_mask = GENMASK(max - 1, 0);
+> |            ^~~~~~~
+> 
+> vim +/ipa_endpoint_init_hdr +457 drivers/net/ipa/ipa_endpoint.c
+> 
+>    438	
+>    439	/**
+>    440	 * We program QMAP endpoints so each packet received is preceded by a QMAP
+>    441	 * header structure.  The QMAP header contains a 1-byte mux_id and 2-byte
+>    442	 * packet size field, and we have the IPA hardware populate both for each
+>    443	 * received packet.  The header is configured (in the HDR_EXT register)
+>    444	 * to use big endian format.
+>    445	 *
+>    446	 * The packet size is written into the QMAP header's pkt_len field.  That
+>    447	 * location is defined here using the HDR_OFST_PKT_SIZE field.
+>    448	 *
+>    449	 * The mux_id comes from a 4-byte metadata value supplied with each packet
+>    450	 * by the modem.  It is *not* a QMAP header, but it does contain the mux_id
+>    451	 * value that we want, in its low-order byte.  A bitmask defined in the
+>    452	 * endpoint's METADATA_MASK register defines which byte within the modem
+>    453	 * metadata contains the mux_id.  And the OFST_METADATA field programmed
+>    454	 * here indicates where the extracted byte should be placed within the QMAP
+>    455	 * header.
+>    456	 */
+>  > 457	void ipa_endpoint_init_hdr(struct ipa_endpoint *endpoint)
+>    458	{
+>    459		u32 offset = IPA_REG_ENDP_INIT_HDR_N_OFFSET(endpoint->endpoint_id);
+>    460		u32 val = 0;
+>    461	
+>    462		if (endpoint->data->qmap) {
+>    463			size_t header_size = sizeof(struct rmnet_map_header);
+>    464	
+>    465			/* We might supply a checksum header after the QMAP header */
+>    466			if (endpoint->toward_ipa && endpoint->data->checksum)
+>    467				header_size += sizeof(struct rmnet_map_ul_csum_header);
+>    468			val |= u32_encode_bits(header_size, HDR_LEN_FMASK);
+>    469	
+>    470			/* Define how to fill mux_id in a received QMAP header */
+>    471			if (!endpoint->toward_ipa) {
+>    472				u32 off;	/* Field offset within header */
+>    473	
+>    474				/* Where IPA will write the metadata value */
+>    475				off = offsetof(struct rmnet_map_header, mux_id);
+>    476				val |= u32_encode_bits(off, HDR_OFST_METADATA_FMASK);
+>    477	
+>    478				/* Where IPA will write the length */
+>    479				off = offsetof(struct rmnet_map_header, pkt_len);
+>    480				val |= HDR_OFST_PKT_SIZE_VALID_FMASK;
+>    481				val |= u32_encode_bits(off, HDR_OFST_PKT_SIZE_FMASK);
+>    482			}
+>    483			/* For QMAP TX, metadata offset is 0 (modem assumes this) */
+>    484			val |= HDR_OFST_METADATA_VALID_FMASK;
+>    485	
+>    486			/* HDR_ADDITIONAL_CONST_LEN is 0; (RX only) */
+>    487			/* HDR_A5_MUX is 0 */
+>    488			/* HDR_LEN_INC_DEAGG_HDR is 0 */
+>    489			/* HDR_METADATA_REG_VALID is 0 (TX only) */
+>    490		}
+>    491	
+>    492		iowrite32(val, endpoint->ipa->reg_virt + offset);
+>    493	}
+>    494	
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> 
+
