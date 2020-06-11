@@ -2,177 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF5851F60BE
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 06:07:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32E301F60C2
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 06:14:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726279AbgFKEHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 00:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48646 "EHLO
+        id S1725873AbgFKEOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 00:14:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725799AbgFKEHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 00:07:54 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0EFC08C5C1
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 21:07:53 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id k1so1719139pls.2
-        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 21:07:53 -0700 (PDT)
+        with ESMTP id S1725799AbgFKEOY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 00:14:24 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6556AC08C5C1
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 21:14:23 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id p20so4788095iop.11
+        for <netdev@vger.kernel.org>; Wed, 10 Jun 2020 21:14:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=rHsS/xGFMbGmBYnBz1wkXDsgi4xw5sNPxE43/rjjC+M=;
-        b=hAtskhse1S5Joo1cRvd0bANUjJX8Gk2rdGgJAXSGB1YIXPxeBYg04HZ5c1R3yCR8Kl
-         s4S2cBm9wn4pUH7R2ZxsX/xByKq2ELmR28rlEtPNgMmVnBs0VSw4lGZwALC7bcCApcdp
-         mPjWRqq0sbmXzp9iJuBTJLGZRqDhtnrRuEG/eHI8FXOx57VmuhKO30f4gLuyxoQjv+1J
-         GkoGmSEUhZe22HRuPhFzgQUq3QoWpL8kvUqIJ/v9DvXxsLmtExhjlCd1z0LKXdwnHEc4
-         dfTKeUaOwO21JeS2u9Bfb2St9g/hTVOzibqPnb+j9gkYR7CU/vqsvz9ho5qKjN577Fzc
-         gn8w==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Zj9VxvbB8VWLp0Wz/IIXNIsMLGe5YSuqFWnlLPBGBws=;
+        b=Z5Uhoj0R9XITPHQ1W7iAgXXIjRvM8PpsBvQ947ob/c6P8E+ka4nQmxw8cmtns+bVlM
+         Lu/Lrwy+91iRul+w6EMKQtdBKqoWLxt+rPHzVjwN4wUzrKS3JmlbcgTjXbtyxcwCga0i
+         H28cLRZ+PeiB2fjiSkh942NKQi7BaM1zSxaNRmavorDUpBLelq1LzdAEUjvpC9Huyafb
+         dExkld2Z5nHBMUcUOWMYOTAqgXhenD5ug9uDvu10ujDwrfhevn78mk61xJ3Jj4IajWIj
+         gxZNa2mNSPJl1tSnXkMKZPmMoqlMujoUeIvWUEHpGvWz+BDHl7woWn0NLRtgiV7rRGqI
+         2niA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=rHsS/xGFMbGmBYnBz1wkXDsgi4xw5sNPxE43/rjjC+M=;
-        b=okRp9Q83lsAPdaqHpdE9c1kBxLNzLefyXAtG7IHYwPGLAu3vt8tLjChQ+q1w4QtXDR
-         N+qOG+YhuhvP3wonIpygiYimqJzXKNooOwra10tEFQJUHSQpl7vQUYGjbNgKkY6/5ERT
-         sQBqUH5K7WunMyL3urT0nON6EfwdNNluqv4tL9kg75aydrO68bDH3xkn1Pvx1AHvNWrc
-         4OmUW1gNJoATPvYg8m9d84apROmZ7llMYF4xoPxBwUzNElLjYHDJa0xfaTM84H/s0O2/
-         0q92fBZS5Pkvjy2mOkBMwsQeP4ytwpfQPekVE6/xDN1ZGCw/lvWx7C30N6ZiGf3xWSTW
-         PXJw==
-X-Gm-Message-State: AOAM531FHajBf1Vck9JnqqhaKdhsHHXAk3Z25wVzSNJ9HtsFAM18nCOQ
-        KH2mMphnf9ljCsWG+2Acbe9GEVJt5aM=
-X-Google-Smtp-Source: ABdhPJzIPCVR8rS+oYdjHr/D2A15I9xfrUUCPiX1/WCyUvbcz8x8FtGAz4r4Kc+VME1P96tPLboGJQ==
-X-Received: by 2002:a17:902:8ecc:: with SMTP id x12mr2395510plo.32.1591848473144;
-        Wed, 10 Jun 2020 21:07:53 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id n4sm1483536pfq.9.2020.06.10.21.07.52
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Jun 2020 21:07:52 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net] ionic: remove support for mgmt device
-Date:   Wed, 10 Jun 2020 21:07:39 -0700
-Message-Id: <20200611040739.4109-1-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Zj9VxvbB8VWLp0Wz/IIXNIsMLGe5YSuqFWnlLPBGBws=;
+        b=GnvbnEF89OkQ9bCmvSm3s/Aqxf8b/XglS9IqCwNJSpQ2Sl/E+Cyv0hGaRjt+9NQcFo
+         WFOQpsXDsVzI32JiQkrx+7xMjGktowXYabnAGBcgj1WtTAuMiK50OtL6s8YRs2ypNcCN
+         7VURBhXCA2CYZ1i/uCUweBQxXEwPZgFEKElOisrYmudGvpDDtpwznQHcs6XMQMQ7IlpQ
+         L0whmwZuWLzsPA2IzQmkt7mr2SC3saxyZZTr7EMhcd9DIQnAdLDDtKkORFvG/6cI3oAT
+         8LNner+MiCjezhVI9ZIcgo9n4HLUCBCSdtGxiRpAOswnkttnmzrjJqh4rTbRJB77iUh+
+         YsPg==
+X-Gm-Message-State: AOAM531ZrmMz1+rcTynjjP+cs+tIOfcnsw8IziFgc0tFosL87WdjhTos
+        DnfD/wkZ7eKJIur5DT4uxdtUt40LzRQRxBUSkJJoLWnJ
+X-Google-Smtp-Source: ABdhPJxIXw4IFKpz0hg5f8wQatXIWvUnsTrwJ0umIN1B58UZ8fuvFXZnzj/85iDNN5gJJhS/7/2tqT5A0Hgk4R8YRtQ=
+X-Received: by 2002:a5d:9819:: with SMTP id a25mr6434875iol.85.1591848862205;
+ Wed, 10 Jun 2020 21:14:22 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200603044910.27259-1-xiyou.wangcong@gmail.com> <20200610142700.GA2174714@splinter>
+In-Reply-To: <20200610142700.GA2174714@splinter>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 10 Jun 2020 21:14:10 -0700
+Message-ID: <CAM_iQpVU14ky_L7PqhyB3_OSPpbY5ZKLn=GonLU88GcN5fEoHw@mail.gmail.com>
+Subject: Re: [Patch net v2] genetlink: fix memory leaks in genl_family_rcv_msg_dumpit()
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot+21f04f481f449c8db840@syzkaller.appspotmail.com,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Shaochun Chen <cscnull@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We no longer support the mgmt device in the ionic driver,
-so remove the device id and related code.
+On Wed, Jun 10, 2020 at 7:27 AM Ido Schimmel <idosch@idosch.org> wrote:
+> > @@ -548,7 +591,7 @@ static int genl_lock_done(struct netlink_callback *cb)
+> >               rc = ops->done(cb);
+> >               genl_unlock();
+> >       }
+> > -     genl_family_rcv_msg_attrs_free(info->family, info->attrs, true);
+> > +     genl_family_rcv_msg_attrs_free(info->family, info->attrs, false);
+>
+> Cong,
+>
+> This seems to result in a memory leak because 'info->attrs' is never
+> freed in the non-parallel case.
+>
+> Both the parallel and non-parallel code paths call genl_start() which
+> allocates the array, but the latter calls genl_lock_done() as its done()
+> callback which never frees it.
 
-Fixes: b3f064e9746d ("ionic: add support for device id 0x1004")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic.h         |  2 --
- drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c |  6 ------
- drivers/net/ethernet/pensando/ionic/ionic_devlink.c |  4 ----
- drivers/net/ethernet/pensando/ionic/ionic_lif.c     | 13 -------------
- 4 files changed, 25 deletions(-)
+Good catch! Looks like I should just revert the above chunk. The
+last parameter of genl_family_rcv_msg_attrs_free() is just confusing,
+genl_lock_done() is clearly not parallel at all..
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
-index 23ccc0da2341..f5a910c458ba 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic.h
-@@ -17,7 +17,6 @@ struct ionic_lif;
- 
- #define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF	0x1002
- #define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF	0x1003
--#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT	0x1004
- 
- #define DEVCMD_TIMEOUT  10
- 
-@@ -42,7 +41,6 @@ struct ionic {
- 	struct dentry *dentry;
- 	struct ionic_dev_bar bars[IONIC_BARS_MAX];
- 	unsigned int num_bars;
--	bool is_mgmt_nic;
- 	struct ionic_identity ident;
- 	struct list_head lifs;
- 	struct ionic_lif *master_lif;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-index 60fc191a35e5..0ac6acbc5f31 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-@@ -15,7 +15,6 @@
- static const struct pci_device_id ionic_id_table[] = {
- 	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF) },
- 	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF) },
--	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT) },
- 	{ 0, }	/* end of table */
- };
- MODULE_DEVICE_TABLE(pci, ionic_id_table);
-@@ -225,9 +224,6 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	pci_set_drvdata(pdev, ionic);
- 	mutex_init(&ionic->dev_cmd_lock);
- 
--	ionic->is_mgmt_nic =
--		ent->device == PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT;
--
- 	/* Query system for DMA addressing limitation for the device. */
- 	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(IONIC_ADDR_LEN));
- 	if (err) {
-@@ -252,8 +248,6 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	}
- 
- 	pci_set_master(pdev);
--	if (!ionic->is_mgmt_nic)
--		pcie_print_link_status(pdev);
- 
- 	err = ionic_map_bars(ionic);
- 	if (err)
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-index 273c889faaad..2d590e571133 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-@@ -77,10 +77,6 @@ int ionic_devlink_register(struct ionic *ionic)
- 		return err;
- 	}
- 
--	/* don't register the mgmt_nic as a port */
--	if (ionic->is_mgmt_nic)
--		return 0;
--
- 	devlink_port_attrs_set(&ionic->dl_port, DEVLINK_PORT_FLAVOUR_PHYSICAL,
- 			       0, false, 0, NULL, 0);
- 	err = devlink_port_register(dl, &ionic->dl_port, 0);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index fbc36e9e4729..9d8c969f21cb 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -99,9 +99,6 @@ static void ionic_link_status_check(struct ionic_lif *lif)
- 	if (!test_bit(IONIC_LIF_F_LINK_CHECK_REQUESTED, lif->state))
- 		return;
- 
--	if (lif->ionic->is_mgmt_nic)
--		return;
--
- 	link_status = le16_to_cpu(lif->info->status.link_status);
- 	link_up = link_status == IONIC_PORT_OPER_STATUS_UP;
- 
-@@ -1193,10 +1190,6 @@ static int ionic_init_nic_features(struct ionic_lif *lif)
- 	netdev_features_t features;
- 	int err;
- 
--	/* no netdev features on the management device */
--	if (lif->ionic->is_mgmt_nic)
--		return 0;
--
- 	/* set up what we expect to support by default */
- 	features = NETIF_F_HW_VLAN_CTAG_TX |
- 		   NETIF_F_HW_VLAN_CTAG_RX |
-@@ -2594,12 +2587,6 @@ int ionic_lifs_register(struct ionic *ionic)
- {
- 	int err;
- 
--	/* the netdev is not registered on the management device, it is
--	 * only used as a vehicle for napi operations on the adminq
--	 */
--	if (ionic->is_mgmt_nic)
--		return 0;
--
- 	INIT_WORK(&ionic->nb_work, ionic_lif_notify_work);
- 
- 	ionic->nb.notifier_call = ionic_lif_notify;
--- 
-2.17.1
+I will take a deeper look and send out a patch tomorrow.
 
+Thanks!
