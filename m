@@ -2,75 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA1551F6028
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 04:54:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F5661F6045
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 05:03:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726316AbgFKCyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 22:54:51 -0400
-Received: from smtp21.cstnet.cn ([159.226.251.21]:35400 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726279AbgFKCyu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Jun 2020 22:54:50 -0400
-X-Greylist: delayed 428 seconds by postgrey-1.27 at vger.kernel.org; Wed, 10 Jun 2020 22:52:47 EDT
-Received: from localhost.localdomain (unknown [159.226.5.100])
-        by APP-01 (Coremail) with SMTP id qwCowAB3KszDmuFe33kpAg--.46380S2;
-        Thu, 11 Jun 2020 10:45:24 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     ioana.ciornei@nxp.com, ruxandra.radulescu@nxp.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drivers: dpaa2: Use devm_kcalloc() in setup_dpni()
-Date:   Thu, 11 Jun 2020 02:45:20 +0000
-Message-Id: <20200611024520.630-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: qwCowAB3KszDmuFe33kpAg--.46380S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrtrW7tw1kZr1xXFW5CF45KFg_yoWkJFgEkr
-        47Zr17Ar4qkFySya1rKr4YvFyvkF4xZr48AFsaqFW3G3srArW8Ww4DXw13Ars3ur4xCry3
-        Jr1IyF13ZwnrKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbwxYjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwV
-        C2z280aVCY1x0267AKxVWxJr0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r
-        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCF04k20xvY0x0EwIxGrwCF
-        x2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14
-        v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY
-        67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2
-        IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AK
-        xVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjxUgg_TUUUUU
-X-Originating-IP: [159.226.5.100]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCAQEA102YMkl4wAAsP
+        id S1726552AbgFKDDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 23:03:09 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:27523 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726312AbgFKDDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 23:03:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591844586;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pW0TC9adqhgXolpM+bqi6ACajbaD8dcdKR1gGXD2XZ8=;
+        b=CPVVxfYGOTPOobCZqLEd74yuGdw6YQDaK1zYzktJTUjxQJt3tv5cQKRgTqz9FRRumvwfhr
+        n0Rsk3ZSCNCQATWH38EuTLuosjiYYm1mMeO4yfRwvmwqlViu6O7hrZhVFH+LRkJlHpycFA
+        wWOQ2Rh9OL9nxkadX+kEbIJ8DG00Wks=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-400-0vO_5UApMFapwqJRy4-PSw-1; Wed, 10 Jun 2020 23:03:04 -0400
+X-MC-Unique: 0vO_5UApMFapwqJRy4-PSw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A5A97BBE;
+        Thu, 11 Jun 2020 03:03:03 +0000 (UTC)
+Received: from [10.72.12.125] (ovpn-12-125.pek2.redhat.com [10.72.12.125])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9CBBA8929C;
+        Thu, 11 Jun 2020 03:02:58 +0000 (UTC)
+Subject: Re: [PATCH RFC v6 02/11] vhost: use batched get_vq_desc version
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        eperezma@redhat.com
+References: <20200608125238.728563-1-mst@redhat.com>
+ <20200608125238.728563-3-mst@redhat.com>
+ <81904cc5-b662-028d-3b4a-bdfdbd2deb8c@redhat.com>
+ <20200610070259-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <76b14132-407a-48bf-c4d5-9d0b2c700bb0@redhat.com>
+Date:   Thu, 11 Jun 2020 11:02:57 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+MIME-Version: 1.0
+In-Reply-To: <20200610070259-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A multiplication for the size determination of a memory allocation
-indicated that an array data structure should be processed.
-Thus use the corresponding function "devm_kcalloc".
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+On 2020/6/10 下午7:05, Michael S. Tsirkin wrote:
+>>> +EXPORT_SYMBOL_GPL(vhost_get_vq_desc);
+>>>    /* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
+>>>    void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
+>>>    {
+>>> +	unfetch_descs(vq);
+>>>    	vq->last_avail_idx -= n;
+>> So unfetch_descs() has decreased last_avail_idx.
+>> Can we fix this by letting unfetch_descs() return the number and then we can
+>> do:
+>>
+>> int d = unfetch_descs(vq);
+>> vq->last_avail_idx -= (n > d) ? n - d: 0;
+>>
+>> Thanks
+> That's intentional I think - we need both.
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 8fb48de5d18c..f150cd454fa4 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -2907,8 +2907,9 @@ static int setup_dpni(struct fsl_mc_device *ls_dev)
- 	if (err && err != -EOPNOTSUPP)
- 		goto close;
- 
--	priv->cls_rules = devm_kzalloc(dev, sizeof(struct dpaa2_eth_cls_rule) *
--				       dpaa2_eth_fs_count(priv), GFP_KERNEL);
-+	priv->cls_rules = devm_kcalloc(dev, dpaa2_eth_fs_count(priv),
-+				       sizeof(struct dpaa2_eth_cls_rule),
-+				       GFP_KERNEL);
- 	if (!priv->cls_rules) {
- 		err = -ENOMEM;
- 		goto close;
--- 
-2.17.1
+
+Yes, but:
+
+
+>
+> Unfetch_descs drops the descriptors in the cache that were
+> *not returned to caller*  through get_vq_desc.
+>
+> vhost_discard_vq_desc drops the ones that were returned through get_vq_desc.
+>
+> Did I miss anything?
+
+We could count some descriptors twice, consider the case e.g we only 
+cache on descriptor:
+
+fetch_descs()
+     fetch_buf()
+         last_avail_idx++;
+
+Then we want do discard it:
+vhost_discard_avail_buf(1)
+     unfetch_descs()
+         last_avail_idx--;
+     last_avail_idx -= 1;
+
+Thanks
 
