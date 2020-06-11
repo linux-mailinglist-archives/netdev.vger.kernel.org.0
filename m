@@ -2,87 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1C661F6313
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 09:58:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C521F636D
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 10:18:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbgFKH6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 03:58:34 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:5818 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726841AbgFKH6d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jun 2020 03:58:33 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id B5FCD816C6078CF54E4E;
-        Thu, 11 Jun 2020 15:58:27 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Thu, 11 Jun 2020
- 15:58:21 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>,
-        <liuhangbin@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <wanghai38@huawei.com>
-Subject: [PATCH] mld: fix memory leak in ipv6_mc_destroy_dev()
-Date:   Thu, 11 Jun 2020 15:57:50 +0800
-Message-ID: <20200611075750.18545-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726697AbgFKIS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 04:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58706 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726623AbgFKIS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 04:18:26 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA557C08C5C1;
+        Thu, 11 Jun 2020 01:18:25 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id g10so4109067wmh.4;
+        Thu, 11 Jun 2020 01:18:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=xvhEEziaD0FfHCKlfv5cuf+YUqxMaHEXYkHLcgvyDmU=;
+        b=oc7pk2e5KVuh8bNWXfOkQJrfJ0Z+VluieNKYM4GNBWazBfNe3xQfdeNvKyx7MQgsJ7
+         d4apRBu8UOuyR+4pf0JVk5MqwHw7BjSqkaqlJkUq8BgBS2G/PW8jCb+gSNX0MFqpIn58
+         kkmQ1ViZddVcTOK84olBE+tcqlFs/6RKWQnWn9Ti3x7qBpY8jGnze7CxG5nkpsUornGW
+         xf4I15xHeCjOt9FSIjrCJzkbtoh+yCthRQKA+A9GajcnGLxvd5VnL3C7lL8vIsSbDg/6
+         0mLpdjbCYFVgtolmtX3F0+2jSZZeC8g+mmCu7eZVdhCKeTrv5d+yR7QyZchMDsGGRKjE
+         U1Dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=xvhEEziaD0FfHCKlfv5cuf+YUqxMaHEXYkHLcgvyDmU=;
+        b=t8A1luy/ZC8vDVLI7/eAW5UYjeTiWSIjwi2WKo3rzJjPv4LAjJCsiPes/KBFpZwXWO
+         +mltD5klfGKH//eYTlstH6IbdXlMGZ5CJV2kaJX64Svr2zoaL43hx+YAjITj6W2MbJjU
+         bLHIRVI+EZoiYQNAmcRkKgMx0lN8VBeHEJaNxsDdXxXYtSrfLxHjiUwKcLbAzEnJ7PHC
+         oGsmx2Otwa7pWiUmPB/YnnaaNqVHlLyi8iPkumQdhLVVHLtMfrYtzffRrS6fsIO+Rqm7
+         q8qNqMeJio3Iv0PKL9uG6NKSyAbYjUTSgtW8JjRcbdEtBSU0jvzAz3CJ+ZtJxEf5tr5d
+         FV2Q==
+X-Gm-Message-State: AOAM5312Ih3YnFOqKXszoyPtttOTLhkeP64jw3NLCXwKkbAWV/Jqy0Bu
+        yBkmbENCYpFx1ushgPLaYbHzaEm1cbiqE+OexrQ=
+X-Google-Smtp-Source: ABdhPJzQFvdpfnypf5OeSq/SJug3YqBMGOC+UrURTBQIJXabDmQFloLFYjk19SP3TOx24bD7Yu9yFS+nQ4nfWtOG64s=
+X-Received: by 2002:a7b:cb93:: with SMTP id m19mr7160547wmi.165.1591863504444;
+ Thu, 11 Jun 2020 01:18:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-CFilter-Loop: Reflected
+References: <1591852266-24017-1-git-send-email-lirongqing@baidu.com>
+In-Reply-To: <1591852266-24017-1-git-send-email-lirongqing@baidu.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Thu, 11 Jun 2020 10:18:12 +0200
+Message-ID: <CAJ+HfNhq3yHOTH+v_UNTzarjCaftdw_v0WnebEphZ3niU8GEDQ@mail.gmail.com>
+Subject: Re: [PATCH] xdp: fix xsk_generic_xmit errno
+To:     Li RongQing <lirongqing@baidu.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit a84d01647989 ("mld: fix memory leak in mld_del_delrec()") fixed
-the memory leak of MLD, but missing the ipv6_mc_destroy_dev() path, in
-which mca_sources are leaked after ma_put().
+On Thu, 11 Jun 2020 at 07:11, Li RongQing <lirongqing@baidu.com> wrote:
+>
+> propagate sock_alloc_send_skb error code, not set it
+> to EAGAIN unconditionally, when fail to allocate skb,
+> which maybe causes that user space unnecessary loops
+>
+> Fixes: 35fcde7f8deb "(xsk: support for Tx)"
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
 
-Using ip6_mc_clear_src() to take care of the missing free.
 
-BUG: memory leak
-unreferenced object 0xffff8881113d3180 (size 64):
-  comm "syz-executor071", pid 389, jiffies 4294887985 (age 17.943s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 ff 02 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<000000002cbc483c>] kmalloc include/linux/slab.h:555 [inline]
-    [<000000002cbc483c>] kzalloc include/linux/slab.h:669 [inline]
-    [<000000002cbc483c>] ip6_mc_add1_src net/ipv6/mcast.c:2237 [inline]
-    [<000000002cbc483c>] ip6_mc_add_src+0x7f5/0xbb0 net/ipv6/mcast.c:2357
-    [<0000000058b8b1ff>] ip6_mc_source+0xe0c/0x1530 net/ipv6/mcast.c:449
-    [<000000000bfc4fb5>] do_ipv6_setsockopt.isra.12+0x1b2c/0x3b30 net/ipv6/ipv6_sockglue.c:754
-    [<00000000e4e7a722>] ipv6_setsockopt+0xda/0x150 net/ipv6/ipv6_sockglue.c:950
-    [<0000000029260d9a>] rawv6_setsockopt+0x45/0x100 net/ipv6/raw.c:1081
-    [<000000005c1b46f9>] __sys_setsockopt+0x131/0x210 net/socket.c:2132
-    [<000000008491f7db>] __do_sys_setsockopt net/socket.c:2148 [inline]
-    [<000000008491f7db>] __se_sys_setsockopt net/socket.c:2145 [inline]
-    [<000000008491f7db>] __x64_sys_setsockopt+0xba/0x150 net/socket.c:2145
-    [<00000000c7bc11c5>] do_syscall_64+0xa1/0x530 arch/x86/entry/common.c:295
-    [<000000005fb7a3f3>] entry_SYSCALL_64_after_hwframe+0x49/0xb3
+Thanks!
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 
-Fixes: 1666d49e1d41 ("mld: do not remove mld souce list info when set link down")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- net/ipv6/mcast.c | 1 +
- 1 file changed, 1 insertion(+)
+Alexei/Daniel: This should go into "bpf".
 
-diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
-index 7e12d2114158..8cd2782a31e4 100644
---- a/net/ipv6/mcast.c
-+++ b/net/ipv6/mcast.c
-@@ -2615,6 +2615,7 @@ void ipv6_mc_destroy_dev(struct inet6_dev *idev)
- 		idev->mc_list = i->next;
- 
- 		write_unlock_bh(&idev->lock);
-+		ip6_mc_clear_src(i);
- 		ma_put(i);
- 		write_lock_bh(&idev->lock);
- 	}
--- 
-2.17.1
 
+Bj=C3=B6rn
+
+> ---
+>  net/xdp/xsk.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index b6c0f08bd80d..1ba3ea262c15 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -353,7 +353,6 @@ static int xsk_generic_xmit(struct sock *sk)
+>                 len =3D desc.len;
+>                 skb =3D sock_alloc_send_skb(sk, len, 1, &err);
+>                 if (unlikely(!skb)) {
+> -                       err =3D -EAGAIN;
+>                         goto out;
+>                 }
+>
+> --
+> 2.16.2
+>
