@@ -2,148 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69BB81F6F11
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 22:57:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90EB91F6F20
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 23:04:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbgFKU5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 16:57:07 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45345 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726153AbgFKU5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 16:57:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591909025;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=stO8jQvqNcwOWNIQtMJm8gAm7jWS/z8vF2BB4pQqyOU=;
-        b=azRiEU0TpyN92JAp2Vov4x3PIWkmGi76qjcqo/q/762E+Z8ZX3JTWUlD3i/CBF/EPCgepa
-        PftcjM+/ygPonIQ9uMh940u3QtteHqfZItfrsIi50PADxjyAEeVEwSfjlh6Z1BLQQOD2A/
-        hwIiDwyYm0fkrYwukBI/+uE68AQ33II=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-360-avyxs7TKMRShXit6EtYNNQ-1; Thu, 11 Jun 2020 16:57:03 -0400
-X-MC-Unique: avyxs7TKMRShXit6EtYNNQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F229A107ACCA;
-        Thu, 11 Jun 2020 20:57:01 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-114-66.rdu2.redhat.com [10.10.114.66])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C5367F4DB;
-        Thu, 11 Jun 2020 20:57:01 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net] rxrpc: Fix race between incoming ACK parser and
- retransmitter
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 11 Jun 2020 21:57:00 +0100
-Message-ID: <159190902048.3557242.17524953697020439394.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/0.22
+        id S1726298AbgFKVEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 17:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725869AbgFKVEU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 17:04:20 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4522C08C5C2
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 14:04:18 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id i25so8023387iog.0
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 14:04:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=QOSq7LGEuq7joF0MKi0FZitcudqJi1UF8Oe0ZqqRITY=;
+        b=ejBFiBbtcNieZodpXk84vlOp76dBFyUz0It9ZB89Bm0gwwgSkiQ3Ld3c+E4rAHn+tc
+         Ky7P4kv0a3jv8tCtxGD7hbtix7zY1KY0C0+21gkKa3fwbxfDECedpuSWHULM6G/xucVO
+         BkK4P2urYL+E7Ek3rsHbB85Lw//zCtmOX3CyO6UXC0FDaJLJUPp61MYlLa6BW3CeUIQv
+         hz/3ghDmDm7MMNQwQC8ay46xt5gvI0xZrfxXiSLKUdIsvk2EZVb+fXb/dLexqaC4yak6
+         md8V7tpMgcI/yfHTw1GC0foKLJdIws+xSr6EsZpUXE4GwjxSpG9CQxLixDptY57BDvQS
+         6isw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=QOSq7LGEuq7joF0MKi0FZitcudqJi1UF8Oe0ZqqRITY=;
+        b=ZPv9s7he+AnaT3YGiY0GQek6ciLcEbQGbVh3j2aiwsSQuYYbWYQhrsAFviPgFW/S+p
+         TxDIJhMhvzALdvpGjU8M1FqpLuj0+qHVQ2iCvZSpovFB7ebW6bx658rMUZf9Go8dmKyO
+         NhilfS7lm7Der+r+yEJfYBRjUqth0ErXkC8GDfppVtmUEG689rxp4WboYNduXcjRa2iA
+         m8/QFEN2ctck7Nm1v4Fqwv94Xi8ncpZwj0LBi4P9s2KR/82F158xQjxky0s8/m3zAfWG
+         AB1fzXwkbuzZMeIzk7XqE2Q3K9Gz01vzLI5if12CDzA638LUdpDKsRMySVtGiIw3gRiQ
+         eaTw==
+X-Gm-Message-State: AOAM532iBnxpIxQwIaR7RP+DjsB+rPVXMM5kuUhLImXrsUZr62Ys+tlk
+        k0WzWXyURzl2CE82rbldawvltSoouhUP6k3Y1swqKQ==
+X-Google-Smtp-Source: ABdhPJyO4AzvzoVU07IvyqRN0BNwJCqq3fQQMT4qsrccrqgOXdW1x8Jpn2kXepafXKggJLeehXQ4LnD64mv/X7/NjJU=
+X-Received: by 2002:a05:6638:b:: with SMTP id z11mr4888189jao.114.1591909457976;
+ Thu, 11 Jun 2020 14:04:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20200611140139.17702-1-brgl@bgdev.pl> <20200611.125140.717118972991857444.davem@davemloft.net>
+In-Reply-To: <20200611.125140.717118972991857444.davem@davemloft.net>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Thu, 11 Jun 2020 23:04:07 +0200
+Message-ID: <CAMRc=MdcW-FQecZViyAEevpJrkREGTc4Xr8zPTAW_QvqGm7P1w@mail.gmail.com>
+Subject: Re: [PATCH] net: ethernet: mtk-star-emac: simplify interrupt handling
+To:     David Miller <davem@davemloft.net>
+Cc:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's a race between the retransmission code and the received ACK parser.
-The problem is that the retransmission loop has to drop the lock under
-which it is iterating through the transmission buffer in order to transmit
-a packet, but whilst the lock is dropped, the ACK parser can crank the Tx
-window round and discard the packets from the buffer.
+czw., 11 cze 2020 o 21:51 David Miller <davem@davemloft.net> napisa=C5=82(a=
+):
+>
+> From: Bartosz Golaszewski <brgl@bgdev.pl>
+> Date: Thu, 11 Jun 2020 16:01:39 +0200
+>
+> > Unfortunately after thorough testing of current mainline, we noticed th=
+e
+> > driver has become unstable under heavy load. While this is hard to
+> > reproduce, it's quite consistent in the driver's current form.
+>
+> Maybe you should work to pinpoint the actual problem before pushing forwa=
+rd
+> a solution?
 
-The retransmission code then updated the annotations for the wrong packet
-and a later retransmission thought it had to retransmit a packet that
-wasn't there, leading to a NULL pointer dereference.
+Why would you assume I didn't? I've been trying to figure out this
+problem since Monday but since I'm not sure how much time I will be
+able to spend on this going forward and due to the fact that this is
+now upstream (and broken), I sent this patch. As I said: it doesn't
+impact performance nor is this solution inherently wrong - many
+drivers do it this way.
 
-Fix this by:
+I will continue working on this driver on and off so I *do* intend on
+fixing it as well as extending it with more support, hence the FIXME
+and previous TODO.
 
- (1) Moving the annotation change to before we drop the lock prior to
-     transmission.  This means we can't vary the annotation depending on
-     the outcome of the transmission, but that's fine - we'll retransmit
-     again later if it failed now.
-
- (2) Skipping the packet if the skb pointer is NULL.
-
-The following oops was seen:
-
-	BUG: kernel NULL pointer dereference, address: 000000000000002d
-	Workqueue: krxrpcd rxrpc_process_call
-	RIP: 0010:rxrpc_get_skb+0x14/0x8a
-	...
-	Call Trace:
-	 rxrpc_resend+0x331/0x41e
-	 ? get_vtime_delta+0x13/0x20
-	 rxrpc_process_call+0x3c0/0x4ac
-	 process_one_work+0x18f/0x27f
-	 worker_thread+0x1a3/0x247
-	 ? create_worker+0x17d/0x17d
-	 kthread+0xe6/0xeb
-	 ? kthread_delayed_work_timer_fn+0x83/0x83
-	 ret_from_fork+0x1f/0x30
-
-Fixes: 248f219cb8bc ("rxrpc: Rewrite the data and ack handling code")
-Signed-off-by: David Howells <dhowells@redhat.com>
----
-
- net/rxrpc/call_event.c |   29 +++++++++++------------------
- 1 file changed, 11 insertions(+), 18 deletions(-)
-
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index 61a51c251e1b..aa1c8eee6557 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -248,7 +248,18 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
- 		if (anno_type != RXRPC_TX_ANNO_RETRANS)
- 			continue;
- 
-+		/* We need to reset the retransmission state, but we need to do
-+		 * so before we drop the lock as a new ACK/NAK may come in and
-+		 * confuse things
-+		 */
-+		annotation &= ~RXRPC_TX_ANNO_MASK;
-+		annotation |= RXRPC_TX_ANNO_RESENT;
-+		call->rxtx_annotations[ix] = annotation;
-+
- 		skb = call->rxtx_buffer[ix];
-+		if (!skb)
-+			continue;
-+
- 		rxrpc_get_skb(skb, rxrpc_skb_got);
- 		spin_unlock_bh(&call->lock);
- 
-@@ -262,24 +273,6 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
- 
- 		rxrpc_free_skb(skb, rxrpc_skb_freed);
- 		spin_lock_bh(&call->lock);
--
--		/* We need to clear the retransmit state, but there are two
--		 * things we need to be aware of: A new ACK/NAK might have been
--		 * received and the packet might have been hard-ACK'd (in which
--		 * case it will no longer be in the buffer).
--		 */
--		if (after(seq, call->tx_hard_ack)) {
--			annotation = call->rxtx_annotations[ix];
--			anno_type = annotation & RXRPC_TX_ANNO_MASK;
--			if (anno_type == RXRPC_TX_ANNO_RETRANS ||
--			    anno_type == RXRPC_TX_ANNO_NAK) {
--				annotation &= ~RXRPC_TX_ANNO_MASK;
--				annotation |= RXRPC_TX_ANNO_UNACK;
--			}
--			annotation |= RXRPC_TX_ANNO_RESENT;
--			call->rxtx_annotations[ix] = annotation;
--		}
--
- 		if (after(call->tx_hard_ack, seq))
- 			seq = call->tx_hard_ack;
- 	}
-
-
+Best regards,
+Bartosz
