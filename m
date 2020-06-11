@@ -2,115 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0DA71F69BB
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 16:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B73151F69D8
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 16:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728213AbgFKONo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 10:13:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34108 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727053AbgFKONo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jun 2020 10:13:44 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ECB812083E;
-        Thu, 11 Jun 2020 14:13:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591884823;
-        bh=0kiUXeRTZ66L3vUIP0L9Xwoi5v+ZUuZDVVJDelcBnp0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dVaGBquUHsmhWX/kn/9h9/JaM05ooLcC2/xQJKi+feAgsBmhaRhYQkpz/UsCny/SI
-         xUSVWtgbUqQa5Kv6njM5l0LjIpcq1gLFDKjxEj/LAdGx0y0ZO0+sDnzZjTY89YRYO2
-         h3F8Nm778TKQSUW78UgkXsQravd7KrXAqunDowv8=
-Date:   Thu, 11 Jun 2020 16:13:37 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Markus Elfring <Markus.Elfring@web.de>
-Cc:     Chen Wandun <chenwandun@huawei.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Cheng Jian <cj.chengjian@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ian Rogers <irogers@google.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>
-Subject: Re: [PATCH] perf tools: Fix potential memory leak in perf events
- parser
-Message-ID: <20200611141337.GB1134057@kroah.com>
-References: <ea548157-5cb0-ffa7-9bd5-ff3f9c66b1de@web.de>
+        id S1728132AbgFKOYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 10:24:11 -0400
+Received: from www62.your-server.de ([213.133.104.62]:57332 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726414AbgFKOYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 10:24:11 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jjO7i-0007xP-3y; Thu, 11 Jun 2020 16:24:06 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jjO7h-0001jm-Su; Thu, 11 Jun 2020 16:24:05 +0200
+Subject: Re: [PATCH] xdp: fix xsk_generic_xmit errno
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Li RongQing <lirongqing@baidu.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <1591852266-24017-1-git-send-email-lirongqing@baidu.com>
+ <CAJ+HfNhq3yHOTH+v_UNTzarjCaftdw_v0WnebEphZ3niU8GEDQ@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <2c2fb55d-d442-114a-f0d0-26be219eeeb1@iogearbox.net>
+Date:   Thu, 11 Jun 2020 16:24:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <CAJ+HfNhq3yHOTH+v_UNTzarjCaftdw_v0WnebEphZ3niU8GEDQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ea548157-5cb0-ffa7-9bd5-ff3f9c66b1de@web.de>
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25840/Thu Jun 11 14:52:31 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 11, 2020 at 03:17:17PM +0200, Markus Elfring wrote:
-> > Fix potential memory leak in function parse_events_term__sym_hw()
-> > and parse_events_term__clone().
+On 6/11/20 10:18 AM, Björn Töpel wrote:
+> On Thu, 11 Jun 2020 at 07:11, Li RongQing <lirongqing@baidu.com> wrote:
+>>
+>> propagate sock_alloc_send_skb error code, not set it
+>> to EAGAIN unconditionally, when fail to allocate skb,
+>> which maybe causes that user space unnecessary loops
+>>
+>> Fixes: 35fcde7f8deb "(xsk: support for Tx)"
+>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
 > 
-> Would you like to add the tag “Fixes” to the commit message?
+> Thanks!
+> Acked-by: Björn Töpel <bjorn.topel@intel.com>
 > 
-> 
-> …
-> > +++ b/tools/perf/util/parse-events.c
-> …
-> > @@ -2957,9 +2958,20 @@  int parse_events_term__sym_hw(struct parse_events_term **term,
-> >  	sym = &event_symbols_hw[idx];
-> >
-> >  	str = strdup(sym->symbol);
-> > -	if (!str)
-> > +	if (!str) {
-> > +		if (!config)
-> > +			free(temp.config);
-> >  		return -ENOMEM;
-> > -	return new_term(term, &temp, str, 0);
-> > +	}
-> > +
-> > +	ret = new_term(term, &temp, str, 0);
-> > +	if (ret < 0) {
-> > +		free(str);
-> > +		if (!config)
-> > +			free(temp.config);
-> > +	}
-> > +
-> > +	return ret;
-> >  }
-> …
-> 
-> How do you think about to add jump targets for a bit of
-> common exception handling code in these function implementations?
+> Alexei/Daniel: This should go into "bpf".
 
-
-Hi,
-
-This is the semi-friendly patch-bot of Greg Kroah-Hartman.
-
-Markus, you seem to have sent a nonsensical or otherwise pointless
-review comment to a patch submission on a Linux kernel developer mailing
-list.  I strongly suggest that you not do this anymore.  Please do not
-bother developers who are actively working to produce patches and
-features with comments that, in the end, are a waste of time.
-
-Patch submitter, please ignore Markus's suggestion; you do not need to
-follow it at all.  The person/bot/AI that sent it is being ignored by
-almost all Linux kernel maintainers for having a persistent pattern of
-behavior of producing distracting and pointless commentary, and
-inability to adapt to feedback.  Please feel free to also ignore emails
-from them.
-
-thanks,
-
-greg k-h's patch email bot
+Yep, applied, thanks!
