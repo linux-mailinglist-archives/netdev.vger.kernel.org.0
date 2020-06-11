@@ -2,88 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E0B1F642D
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 11:01:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 380A91F6445
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 11:06:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726959AbgFKJBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 05:01:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726928AbgFKJBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 05:01:38 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B18BC03E96F;
-        Thu, 11 Jun 2020 02:01:37 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id q19so5657856eja.7;
-        Thu, 11 Jun 2020 02:01:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f70qcp+8H8N+7vfQUf6lwsKTErk85DZiUNo0OM0KDKo=;
-        b=aKoVo3UVoRws3o5Y4Mxmlc5CpVRvnFOlr2j/nBlJVjQeEXtfxHzwrPhsJli6AvjnVV
-         D2ajORkKdG+Q6wYK5z170YS1tb3dUjrKgipBAFPNvZMBU8RZ5Sp2tdFwTv1FlKsMe7OW
-         XbdzdYBZJrRVLNOdydDj6PmG+jxHckRkGqscUUiKcxJO7OYqKZzlLyiEP/dAFB3tAFS6
-         Y+Gu8GaZ3SIkqci3/IlZqySJX+UgzwRGmIJr1shkLm7rqC41dE51gByJBdbcObQa+Vku
-         dmaUOxmJcrqwG/QvlIIMw/bCSFeSKIa+sHc4WDRDNWj9dURnpwiTLhEfpCeub4+GmGUh
-         79lw==
+        id S1726984AbgFKJGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 05:06:52 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:42244 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726697AbgFKJGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 05:06:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591866407;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EMC0E2B827Ia2DQRzxKsWY/OK5Bg//cvAlofONDhk2Q=;
+        b=YzptH67dW4oHQlIfgj49adW81ZiLubTWGqoIKOMtNpmeloSVnlDJoIWdLlNGEsfNH8ZzTq
+        ZydGrU1yrXGgtWBKRdtxV8l/6ixKEFNyRv8QA/5Z5fTlmZXY9DhKl4OOzjJD8DHWile7f3
+        RxH4Q4Eoy+JekbpsBy2oNC40h/9XB7s=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-52-TFnDv4_hP52fa45K9z3I7Q-1; Thu, 11 Jun 2020 05:06:43 -0400
+X-MC-Unique: TFnDv4_hP52fa45K9z3I7Q-1
+Received: by mail-wr1-f69.google.com with SMTP id x15so939125wru.21
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 02:06:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f70qcp+8H8N+7vfQUf6lwsKTErk85DZiUNo0OM0KDKo=;
-        b=lk1TzqMc/ZFgytuOlnyNJfgRRKHZWh5p1kXZopZXfTPqQbiLH/kNKaqPQwHg6ru4rW
-         xRneWioCozNvLwh9klfZwciJ/8PegFVcz5bl9f3D47ZjCKn2GYQtV3EhB2odD5r8eXHC
-         vIB2HATSbn1ig95+yqoz1Cx7xWU1NVESwW84zcnotq/3glU1pHCvd+f5l4VqmONBnWTP
-         5NvOAMxPbCfCg2FaLXMshsb4LMl1tprbYwqc4I21pm5bbN/eOSNIfhHlMkYtocYRzPU4
-         wjkla0B8x6ikf4Kd8JTohasz2VPpcBVPJXMcs5xnd7ppxZnNS/2RTAHprnODfThjMldH
-         iAkA==
-X-Gm-Message-State: AOAM532zGgKSDcmdZn6GvLAx7cpMFq0lmPGh2LJPEOXfzmSi+xPptzBV
-        oGsFetqYfiKo062slpdIUuSXV/1Itu4GYniiqJ4=
-X-Google-Smtp-Source: ABdhPJw0MVbn7mgfpkFtBg6RwYYq81Ac7XcqQYluRO6zP0wiUdzhOOBjlb6fIfKeADfYPAUQdunBXdk4whM5VcBN87o=
-X-Received: by 2002:a17:906:2e50:: with SMTP id r16mr7250012eji.305.1591866096170;
- Thu, 11 Jun 2020 02:01:36 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=EMC0E2B827Ia2DQRzxKsWY/OK5Bg//cvAlofONDhk2Q=;
+        b=Teg2v3moUxcYiMMfuzc/GdK4iKDGOe9brMjtwEDaMjUbnVLG7kbaz9jeUIUlKL36Y1
+         rg67RzpxSGv+B0qOikKkApCNcxlrnsLIsJaPbK/O5lrykxGF+U7fR9pyM7MIih4TyMbS
+         svjkhh02cYmfRUxYmJAlCVgo/KODXOqr6bHo5v731JGknycZsHImIiv9d1MF+QX5PQu0
+         tQwG8kkn/oVRAQgAkbBIfD4cw+lQLNA7FDEvzw17pNTPhIUkT3no129ZUpJm7TMzzKA4
+         j3p2r4hd6V3W9yxCC4QR19EcH2Vnr1kvBTWpM5x1YCdtLIEwvC3UwWlDbrTUAKAJYiaC
+         xvuw==
+X-Gm-Message-State: AOAM531GIrulqyOY40aZl8cWn+B+seMYTbcyNUcy7C+YfxAzph/kWWi1
+        Lq+Z54K65/8P/L0MvgA/VemKvEd2BLbvcWXKSkNwDIDw+Ino1TL4p9ShRbHHpP1/qJJhjl9B3tt
+        XbKSj2mLrj1fBW0RF
+X-Received: by 2002:adf:dccc:: with SMTP id x12mr8242100wrm.72.1591866401981;
+        Thu, 11 Jun 2020 02:06:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwjS282NzyfgjaTUCOeu+TiuTHkZ19eiBXmK6U3BwQgdXs1XxcOHzbjcay7nTvobbz5n62KJQ==
+X-Received: by 2002:adf:dccc:: with SMTP id x12mr8242068wrm.72.1591866401733;
+        Thu, 11 Jun 2020 02:06:41 -0700 (PDT)
+Received: from redhat.com (bzq-79-181-55-232.red.bezeqint.net. [79.181.55.232])
+        by smtp.gmail.com with ESMTPSA id y80sm3152548wmc.34.2020.06.11.02.06.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Jun 2020 02:06:40 -0700 (PDT)
+Date:   Thu, 11 Jun 2020 05:06:38 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        eperezma@redhat.com
+Subject: Re: [PATCH RFC v6 02/11] vhost: use batched get_vq_desc version
+Message-ID: <20200611050416-mutt-send-email-mst@kernel.org>
+References: <20200608125238.728563-1-mst@redhat.com>
+ <20200608125238.728563-3-mst@redhat.com>
+ <81904cc5-b662-028d-3b4a-bdfdbd2deb8c@redhat.com>
+ <20200610070259-mutt-send-email-mst@kernel.org>
+ <76b14132-407a-48bf-c4d5-9d0b2c700bb0@redhat.com>
 MIME-Version: 1.0
-References: <cover.1591816172.git.noodles@earth.li> <78519bc421a1cb7000a68d05e43c4208b26f37e5.1591816172.git.noodles@earth.li>
- <20200611085523.GV1551@shell.armlinux.org.uk>
-In-Reply-To: <20200611085523.GV1551@shell.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 11 Jun 2020 12:01:25 +0300
-Message-ID: <CA+h21hqyAKucPENVANwuNo-UuCY0W3z8QF1FZ-nhd0uQ8tyC+w@mail.gmail.com>
-Subject: Re: [PATCH 1/2] net: dsa: qca8k: Switch to PHYLINK instead of PHYLIB
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Jonathan McDowell <noodles@earth.li>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <76b14132-407a-48bf-c4d5-9d0b2c700bb0@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+On Thu, Jun 11, 2020 at 11:02:57AM +0800, Jason Wang wrote:
+> 
+> On 2020/6/10 下午7:05, Michael S. Tsirkin wrote:
+> > > > +EXPORT_SYMBOL_GPL(vhost_get_vq_desc);
+> > > >    /* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
+> > > >    void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
+> > > >    {
+> > > > +	unfetch_descs(vq);
+> > > >    	vq->last_avail_idx -= n;
+> > > So unfetch_descs() has decreased last_avail_idx.
+> > > Can we fix this by letting unfetch_descs() return the number and then we can
+> > > do:
+> > > 
+> > > int d = unfetch_descs(vq);
+> > > vq->last_avail_idx -= (n > d) ? n - d: 0;
+> > > 
+> > > Thanks
+> > That's intentional I think - we need both.
+> 
+> 
+> Yes, but:
+> 
+> 
+> > 
+> > Unfetch_descs drops the descriptors in the cache that were
+> > *not returned to caller*  through get_vq_desc.
+> > 
+> > vhost_discard_vq_desc drops the ones that were returned through get_vq_desc.
+> > 
+> > Did I miss anything?
+> 
+> We could count some descriptors twice, consider the case e.g we only cache
+> on descriptor:
+> 
+> fetch_descs()
+>     fetch_buf()
+>         last_avail_idx++;
+> 
+> Then we want do discard it:
+> vhost_discard_avail_buf(1)
+>     unfetch_descs()
+>         last_avail_idx--;
+>     last_avail_idx -= 1;
+> 
+> Thanks
 
-On Thu, 11 Jun 2020 at 11:57, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
 
->
-> Alternatively, phylink supports polling mode, but due to the layered
-> way DSA is written, DSA drivers don't have access to that as that is
-> in the DSA upper levels in net/dsa/slave.c (dsa_slave_phy_setup(),
-> it would be dp->pl_config.pcs_poll).
->
+I don't think that happens. vhost_discard_avail_buf(1) is only called
+after get vhost_get_avail_buf. vhost_get_avail_buf increments
+first_desc.  unfetch_descs only counts from first_desc to ndescs.
 
-They do, see https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/ocelot/felix.c#n606
+If I'm wrong, could you show values of first_desc and ndescs in this
+scenario?
 
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 503kbps up
+-- 
+MST
 
-Thanks,
--Vladimir
