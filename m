@@ -2,178 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2DDE1F66A6
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 13:30:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FBD81F66B0
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 13:31:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbgFKLaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 07:30:23 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:20286 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727084AbgFKLaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 07:30:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591875021;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9/jl7PRjuNx/C+pUMDHawKvKRMB5jFyju67YAOMh5Vw=;
-        b=K7vMxZEreFMxTGl9sC1Xvi09Zg/bq+oJvjcv5mvk4M3nsPR2DQVrqAISV5Fpjod4nfY0fZ
-        +M9cK2m17IX8fm1ru8e+tNogakwn3rFAn+V3TFl/Nw055WLbdq8sADW6tcxDM5CqA6TOcT
-        UelvBpknphft7BB6GVbKlrzIG+if/5s=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-10-9eFFSp3-OWyXtKl6Jxe3xw-1; Thu, 11 Jun 2020 07:30:19 -0400
-X-MC-Unique: 9eFFSp3-OWyXtKl6Jxe3xw-1
-Received: by mail-wr1-f69.google.com with SMTP id m14so2444199wrj.12
-        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 04:30:18 -0700 (PDT)
+        id S1726973AbgFKLbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 07:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727058AbgFKLbM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 07:31:12 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEDA7C08C5C5
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 04:31:11 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id l27so6125051ejc.1
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 04:31:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iZI0uRQuWUt+bbhxRlulOcMky2K69l8uS5RWj37ZKSU=;
+        b=O2eSC5h/UIUSN8YdTXYoM2GxMaLHDuLBL80QYWThofDsGoN2ZvZDRRRABrEyrHkaEI
+         K0j0bTbw35reBwy6NRKAeV4Kg2bGKdfRN6Rr/eO5ltxDH7bADZ00TU5bQWVhQcSvCJFq
+         7UljWwRep6eDGm0fydTBVFsCHIb/OAQs8X4iyu2KLchotcgWLCzWqabmVBxw1kCmNVqM
+         +h6KETWJPOF3So1hsyuxKCqvjudWGRJQliU2IDpvW64yNiOFDyZVprw/v5QcPhIMw0cf
+         35BSxMTc4umjRhqy3Uw+tQzWT0n18q/sO0i5xbe09Sw0KI0HOSdBooaFns7GEAoMUgi6
+         Z6dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9/jl7PRjuNx/C+pUMDHawKvKRMB5jFyju67YAOMh5Vw=;
-        b=VKt/q5iEWm8Ivd2L4ReBcyVakvSu9tl1CrCqOZpny41Cqi+BtuxO1PqQ3dXcN0AWIV
-         2RlTFG9m80GEvE4RKWK06LSUJi6svvVGK1g6lnG7KPjQfE96nUxMAK95kEheofA5ryQ1
-         8ZGOgLfJqluWBlmHxdfKrhH8+xymHRYSfJSlraCpH2J13bHOZjRrnvgV4QgAIshiZhqv
-         QyK/vMEKd+phwkIlFCz5xx0BljmzpFmoIzwAzF6Hsnv4gJAS3+BrsCmR/wAZAgxZiqiS
-         La+7p+8k2MFjY0SyXV3pqg5bpPNuZCW5UGh9bZkVvxiYKQD6xOPxpdPZkmryBzPnPjvo
-         oKcA==
-X-Gm-Message-State: AOAM532j7SfcNGqVo2qGS2b0BNQBzjcViqcq/5c9sUF7IkQQ2l3H4CMF
-        qmMyMBsGSvpnBDooQobM0qv3qbWdDHcx4+tsUOZw2OTaCtB1757HzauYS87BlWB0XfNWCFDYinG
-        fHZBDyVh2jM2Cs8GI
-X-Received: by 2002:a1c:3b8b:: with SMTP id i133mr7709148wma.111.1591875017440;
-        Thu, 11 Jun 2020 04:30:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzzJ6v/QkioaQycgPSzfq+keXBu76wlWx/mu62TPOFBjqUGGd1L5f5cXkoDx4uk2vFtzgVdWQ==
-X-Received: by 2002:a1c:3b8b:: with SMTP id i133mr7709124wma.111.1591875017186;
-        Thu, 11 Jun 2020 04:30:17 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-55-232.red.bezeqint.net. [79.181.55.232])
-        by smtp.gmail.com with ESMTPSA id b81sm4055054wmc.5.2020.06.11.04.30.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2020 04:30:16 -0700 (PDT)
-Date:   Thu, 11 Jun 2020 07:30:14 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eugenio Perez Martin <eperezma@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH RFC v7 03/14] vhost: use batched get_vq_desc version
-Message-ID: <20200611072702-mutt-send-email-mst@kernel.org>
-References: <20200610113515.1497099-1-mst@redhat.com>
- <20200610113515.1497099-4-mst@redhat.com>
- <CAJaqyWdGKh5gSTndGuVPyJSgt3jfjfW4xNCrJ2tQ9f+mD8=sMQ@mail.gmail.com>
- <20200610111147-mutt-send-email-mst@kernel.org>
- <CAJaqyWe6d19hFAbpqaQqOPuQQmBQyevyF4sTVkaXKhD729XDkw@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iZI0uRQuWUt+bbhxRlulOcMky2K69l8uS5RWj37ZKSU=;
+        b=lORbYwDKjzEagdExFOtx0Pks43DcUEdkfeQ7/5QgpiFHRIG7fZSfhgs4wyL156KI8s
+         rzposP8DHTSsLERSFISA8wSa5KlOybslG3qL7bNZooyWHlpzZZ8bVX1sxkSmKaOEuuHh
+         KYvqfoT3t8Clrqvn9XJh2svQZqZqLFEsD9CfBjzVxOsEzNPoygECZKGQKl01Ihzm+Bx2
+         E2mphCgO4xuJGaQKoWsUyOmXmVK1PvkpmKUlk617mQnnPAUI/gvHGdQJJuSHDiPiuvth
+         c+jvzenSpbFyLHwehf/P/QHUbkCpOpkipngs66PzSOML75RbSfT8bzZkh9n0X5O2BYF5
+         H/Nw==
+X-Gm-Message-State: AOAM530s2/IjV/JjuLJrlVishgEZlwNyyFOhIJ+8A4hOXND+AlqC8MWG
+        LBL7Jp9VTxrPdar/IpfIJT6JPQ==
+X-Google-Smtp-Source: ABdhPJyQ1qn7IO1LzSekQnj4oHhjiJ9BS1eH8JqyujBg91YWEFxFDPUx+MplfmXECktgGP6foP9h9A==
+X-Received: by 2002:a17:906:f155:: with SMTP id gw21mr7806470ejb.388.1591875070279;
+        Thu, 11 Jun 2020 04:31:10 -0700 (PDT)
+Received: from [192.168.1.5] (212-5-158-114.ip.btc-net.bg. [212.5.158.114])
+        by smtp.googlemail.com with ESMTPSA id q14sm1381962edj.47.2020.06.11.04.31.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Jun 2020 04:31:09 -0700 (PDT)
+Subject: Re: [PATCH v3 6/7] venus: Make debug infrastructure more flexible
+To:     Daniel Thompson <daniel.thompson@linaro.org>,
+        Joe Perches <joe@perches.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Jason Baron <jbaron@akamai.com>
+References: <20200609104604.1594-1-stanimir.varbanov@linaro.org>
+ <20200609104604.1594-7-stanimir.varbanov@linaro.org>
+ <20200609111414.GC780233@kroah.com>
+ <dc85bf9e-e3a6-15a1-afaa-0add3e878573@linaro.org>
+ <20200610133717.GB1906670@kroah.com>
+ <31e1aa72b41f9ff19094476033511442bb6ccda0.camel@perches.com>
+ <2fab7f999a6b5e5354b23d06aea31c5018b9ce18.camel@perches.com>
+ <20200611062648.GA2529349@kroah.com>
+ <bc92ee5948c3e71b8f1de1930336bbe162d00b34.camel@perches.com>
+ <20200611105217.73xwkd2yczqotkyo@holly.lan>
+From:   Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Message-ID: <ed7dd5b4-aace-7558-d012-fb16ce8c92d6@linaro.org>
+Date:   Thu, 11 Jun 2020 14:31:07 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJaqyWe6d19hFAbpqaQqOPuQQmBQyevyF4sTVkaXKhD729XDkw@mail.gmail.com>
+In-Reply-To: <20200611105217.73xwkd2yczqotkyo@holly.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 10, 2020 at 06:18:32PM +0200, Eugenio Perez Martin wrote:
-> On Wed, Jun 10, 2020 at 5:13 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Wed, Jun 10, 2020 at 02:37:50PM +0200, Eugenio Perez Martin wrote:
-> > > > +/* This function returns a value > 0 if a descriptor was found, or 0 if none were found.
-> > > > + * A negative code is returned on error. */
-> > > > +static int fetch_descs(struct vhost_virtqueue *vq)
-> > > > +{
-> > > > +       int ret;
-> > > > +
-> > > > +       if (unlikely(vq->first_desc >= vq->ndescs)) {
-> > > > +               vq->first_desc = 0;
-> > > > +               vq->ndescs = 0;
-> > > > +       }
-> > > > +
-> > > > +       if (vq->ndescs)
-> > > > +               return 1;
-> > > > +
-> > > > +       for (ret = 1;
-> > > > +            ret > 0 && vq->ndescs <= vhost_vq_num_batch_descs(vq);
-> > > > +            ret = fetch_buf(vq))
-> > > > +               ;
-> > >
-> > > (Expanding comment in V6):
-> > >
-> > > We get an infinite loop this way:
-> > > * vq->ndescs == 0, so we call fetch_buf() here
-> > > * fetch_buf gets less than vhost_vq_num_batch_descs(vq); descriptors. ret = 1
-> > > * This loop calls again fetch_buf, but vq->ndescs > 0 (and avail_vq ==
-> > > last_avail_vq), so it just return 1
-> >
-> > That's what
-> >          [PATCH RFC v7 08/14] fixup! vhost: use batched get_vq_desc version
-> > is supposed to fix.
-> >
+
+On 6/11/20 1:52 PM, Daniel Thompson wrote:
+> On Wed, Jun 10, 2020 at 11:42:43PM -0700, Joe Perches wrote:
+>> On Thu, 2020-06-11 at 08:26 +0200, Greg Kroah-Hartman wrote:
+>>> On Wed, Jun 10, 2020 at 01:23:56PM -0700, Joe Perches wrote:
+>>>> On Wed, 2020-06-10 at 12:49 -0700, Joe Perches wrote:
+>>>>> On Wed, 2020-06-10 at 15:37 +0200, Greg Kroah-Hartman wrote:
+>>>>>> Please work with the infrastructure we have, we have spent a lot of time
+>>>>>> and effort to make it uniform to make it easier for users and
+>>>>>> developers.
+>>>>>
+>>>>> Not quite.
+>>>>>
+>>>>> This lack of debug grouping by type has been a
+>>>>> _long_ standing issue with drivers.
+>>>>>
+>>>>>> Don't regress and try to make driver-specific ways of doing
+>>>>>> things, that way lies madness...
+>>>>>
+>>>>> It's not driver specific, it allows driver developers to
+>>>>> better isolate various debug states instead of keeping
+>>>>> lists of specific debug messages and enabling them
+>>>>> individually.
+>>>>
+>>>> For instance, look at the homebrew content in
+>>>> drivers/gpu/drm/drm_print.c that does _not_ use
+>>>> dynamic_debug.
+>>>>
+>>>> MODULE_PARM_DESC(debug, "Enable debug output, where each bit enables a debug category.\n"
+>>>> "\t\tBit 0 (0x01)  will enable CORE messages (drm core code)\n"
+>>>> "\t\tBit 1 (0x02)  will enable DRIVER messages (drm controller code)\n"
+>>>> "\t\tBit 2 (0x04)  will enable KMS messages (modesetting code)\n"
+>>>> "\t\tBit 3 (0x08)  will enable PRIME messages (prime code)\n"
+>>>> "\t\tBit 4 (0x10)  will enable ATOMIC messages (atomic code)\n"
+>>>> "\t\tBit 5 (0x20)  will enable VBL messages (vblank code)\n"
+>>>> "\t\tBit 7 (0x80)  will enable LEASE messages (leasing code)\n"
+>>>> "\t\tBit 8 (0x100) will enable DP messages (displayport code)");
+>>>> module_param_named(debug, __drm_debug, int, 0600);
+>>>>
+>>>> void drm_dev_dbg(const struct device *dev, enum drm_debug_category category,
+>>>> 		 const char *format, ...)
+>>>> {
+>>>> 	struct va_format vaf;
+>>>> 	va_list args;
+>>>>
+>>>> 	if (!drm_debug_enabled(category))
+>>>> 		return;
+>>>
+>>> Ok, and will this proposal be able to handle stuff like this?
+>>
+>> Yes, that's the entire point.
 > 
-> Sorry, I forgot to include that fixup.
-> 
-> With it I don't see CPU stalls, but with that version latency has
-> increased a lot and I see packet lost:
-> + ping -c 5 10.200.0.1
-> PING 10.200.0.1 (10.200.0.1) 56(84) bytes of data.
-> >From 10.200.0.2 icmp_seq=1 Destination Host Unreachable
-> >From 10.200.0.2 icmp_seq=2 Destination Host Unreachable
-> >From 10.200.0.2 icmp_seq=3 Destination Host Unreachable
-> 64 bytes from 10.200.0.1: icmp_seq=5 ttl=64 time=6848 ms
-> 
-> --- 10.200.0.1 ping statistics ---
-> 5 packets transmitted, 1 received, +3 errors, 80% packet loss, time 76ms
-> rtt min/avg/max/mdev = 6848.316/6848.316/6848.316/0.000 ms, pipe 4
-> --
-> 
-> I cannot even use netperf.
+> Currently I think there not enough "levels" to map something like
+> drm.debug to the new dyn dbg feature. I don't think it is intrinsic
+> but I couldn't find the bit of the code where the 5-bit level in struct
+> _ddebug is converted from a mask to a bit number and vice-versa.
 
-OK so that's the bug to try to find and fix I think.
+Here [1] is Joe's initial suggestion. But I decided that bitmask is a
+good start for the discussion.
 
+I guess we can add new member uint "level" in struct _ddebug so that we
+can cover more "levels" (types, groups).
 
-> If I modify with my proposed version:
-> + ping -c 5 10.200.0.1
-> PING 10.200.0.1 (10.200.0.1) 56(84) bytes of data.
-> 64 bytes from 10.200.0.1: icmp_seq=1 ttl=64 time=7.07 ms
-> 64 bytes from 10.200.0.1: icmp_seq=2 ttl=64 time=0.358 ms
-> 64 bytes from 10.200.0.1: icmp_seq=3 ttl=64 time=5.35 ms
-> 64 bytes from 10.200.0.1: icmp_seq=4 ttl=64 time=2.27 ms
-> 64 bytes from 10.200.0.1: icmp_seq=5 ttl=64 time=0.426 ms
+-- 
+regards,
+Stan
 
-
-Not sure which version this is.
-
-> [root@localhost ~]# netperf -H 10.200.0.1 -p 12865 -l 10 -t TCP_STREAM
-> MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to
-> 10.200.0.1 () port 0 AF_INET
-> Recv   Send    Send
-> Socket Socket  Message  Elapsed
-> Size   Size    Size     Time     Throughput
-> bytes  bytes   bytes    secs.    10^6bits/sec
-> 
-> 131072  16384  16384    10.01    4742.36
-> [root@localhost ~]# netperf -H 10.200.0.1 -p 12865 -l 10 -t UDP_STREAM
-> MIGRATED UDP STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to
-> 10.200.0.1 () port 0 AF_INET
-> Socket  Message  Elapsed      Messages
-> Size    Size     Time         Okay Errors   Throughput
-> bytes   bytes    secs            #      #   10^6bits/sec
-> 
-> 212992   65507   10.00        9214      0     482.83
-> 212992           10.00        9214            482.83
-> 
-> I will compare with the non-batch version for reference, but the
-> difference between the two is noticeable. Maybe it's worth finding a
-> good value for the if() inside fetch_buf?
-> 
-> Thanks!
-> 
-
-I don't think it's performance, I think it's a bug somewhere,
-e.g. maybe we corrupt a packet, or stall the queue, or
-something like this.
-
-Let's do this, I will squash the fixups and post v8 so you can bisect
-and then debug cleanly.
-
-> > --
-> > MST
-> >
-
+[1] https://lkml.org/lkml/2020/5/21/915
