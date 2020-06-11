@@ -2,122 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3551F7047
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 00:33:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E13B41F7088
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 00:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726357AbgFKWdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 18:33:51 -0400
-Received: from smtprelay0239.hostedemail.com ([216.40.44.239]:43012 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726270AbgFKWdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 18:33:50 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id D65CC18029123;
-        Thu, 11 Jun 2020 22:33:48 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2110:2393:2559:2562:2691:2828:3138:3139:3140:3141:3142:3355:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:4321:4605:5007:6119:7514:7875:7903:8526:9040:10004:10400:10848:11026:11232:11473:11658:11914:12296:12297:12740:12760:12895:13095:13141:13142:13161:13229:13230:13439:14096:14097:14180:14181:14659:14721:21060:21080:21324:21433:21627:21740:21795:21972:21990:30012:30034:30051:30054:30070:30083:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: cakes14_3209fc126dd7
-X-Filterd-Recvd-Size: 4066
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf14.hostedemail.com (Postfix) with ESMTPA;
-        Thu, 11 Jun 2020 22:33:46 +0000 (UTC)
-Message-ID: <3518483f1836bdfbc193292dc1639509ac33fe7c.camel@perches.com>
-Subject: Re: [PATCH v3 6/7] venus: Make debug infrastructure more flexible
-From:   Joe Perches <joe@perches.com>
-To:     Jason Baron <jbaron@akamai.com>, jim.cromie@gmail.com,
-        Daniel Thompson <daniel.thompson@linaro.org>
-Cc:     Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Documentation List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org
-Date:   Thu, 11 Jun 2020 15:33:45 -0700
-In-Reply-To: <e65d2c81-6d0b-3c1e-582c-56d707c0d1f1@akamai.com>
-References: <20200609104604.1594-7-stanimir.varbanov@linaro.org>
-         <20200609111414.GC780233@kroah.com>
-         <dc85bf9e-e3a6-15a1-afaa-0add3e878573@linaro.org>
-         <20200610133717.GB1906670@kroah.com>
-         <31e1aa72b41f9ff19094476033511442bb6ccda0.camel@perches.com>
-         <2fab7f999a6b5e5354b23d06aea31c5018b9ce18.camel@perches.com>
-         <20200611062648.GA2529349@kroah.com>
-         <bc92ee5948c3e71b8f1de1930336bbe162d00b34.camel@perches.com>
-         <20200611105217.73xwkd2yczqotkyo@holly.lan>
-         <ed7dd5b4-aace-7558-d012-fb16ce8c92d6@linaro.org>
-         <20200611121817.narzkqf5x7cvl6hp@holly.lan>
-         <CAJfuBxzE=A0vzsjNai_jU_16R_P0haYA-FHnjZcaHOR_3fy__A@mail.gmail.com>
-         <e65d2c81-6d0b-3c1e-582c-56d707c0d1f1@akamai.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.2-0ubuntu1 
+        id S1726287AbgFKWqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 18:46:35 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:8322 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726251AbgFKWqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 18:46:35 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05BMXEua152323;
+        Thu, 11 Jun 2020 18:46:20 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31kknyjvtp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Jun 2020 18:46:20 -0400
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 05BMZSB0162540;
+        Thu, 11 Jun 2020 18:46:19 -0400
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31kknyjvt5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Jun 2020 18:46:19 -0400
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05BMjYmr015758;
+        Thu, 11 Jun 2020 22:46:17 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03ams.nl.ibm.com with ESMTP id 31g2s82aed-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Jun 2020 22:46:17 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05BMiw9m60621252
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Jun 2020 22:44:58 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D8387AE067;
+        Thu, 11 Jun 2020 22:46:14 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 298A6AE065;
+        Thu, 11 Jun 2020 22:46:14 +0000 (GMT)
+Received: from sig-9-145-174-225.de.ibm.com (unknown [9.145.174.225])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 11 Jun 2020 22:46:14 +0000 (GMT)
+Message-ID: <e1823b9409720aadb14691fbc4e136ad36c5264c.camel@linux.ibm.com>
+Subject: Re: [RFC] .BTF section data alignment issue on s390
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     Jiri Olsa <jolsa@redhat.com>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Frantisek Hrbata <fhrbata@redhat.com>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+Date:   Fri, 12 Jun 2020 00:46:13 +0200
+In-Reply-To: <20200611205040.GA1853644@krava>
+References: <20200611205040.GA1853644@krava>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-11_23:2020-06-11,2020-06-11 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 phishscore=0 suspectscore=0 spamscore=0
+ cotscore=-2147483648 priorityscore=1501 mlxlogscore=999 clxscore=1011
+ adultscore=0 mlxscore=0 lowpriorityscore=0 bulkscore=0 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006110174
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-06-11 at 17:59 -0400, Jason Baron wrote:
+On Thu, 2020-06-11 at 22:50 +0200, Jiri Olsa wrote:
+> hi,
+> we're hitting a problem on s390 with BTF data alignment.
 > 
-> On 6/11/20 5:19 PM, jim.cromie@gmail.com wrote:
-> > trimmed..
-> > 
-> > > > > Currently I think there not enough "levels" to map something like
-> > > > > drm.debug to the new dyn dbg feature. I don't think it is intrinsic
-> > > > > but I couldn't find the bit of the code where the 5-bit level in struct
-> > > > > _ddebug is converted from a mask to a bit number and vice-versa.
-> > > > 
-> > > > Here [1] is Joe's initial suggestion. But I decided that bitmask is a
-> > > > good start for the discussion.
-> > > > 
-> > > > I guess we can add new member uint "level" in struct _ddebug so that we
-> > > > can cover more "levels" (types, groups).
-> > > 
-> > > I don't think it is allocating only 5 bits that is the problem!
-
-There were 6 unused bits in struct _ddebug;
-
-The original idea was to avoid expanding the already somewhat
-large struct _ddebug uses and the __verbose/__dyndbg section
-that can have quite a lot of these structs.
-
-I imagine adding another int or long wouldn't be too bad.
-
-> > > The problem is that those 5 bits need not be encoded as a bitmask by
-> > > dyndbg, that can simply be the category code for the message. They only
-> > > need be converted into a mask when we compare them to the mask provided
-> > > by the user.
-> > > 
-
-I also suggested adding a pointer to whatever is provided
-by the developer so the address of something like
-MODULE_PARM_DESC(variable, ...) can be also be used.
-
-> > heres what I have in mind.  whats described here is working.
-> > I'll send it out soon
+> When running simple test, we're getting this message from
+> verifier and console:
 > 
-> Cool. thanks for working on this!
+>   bpf_common.c:91: BROK: Failed verification: in-kernel BTF is
+> malformed
+>   [   41.545572] BPF:Total section length too long
+> 
+> 
+> AFAICS it happens when .BTF section data size is not an even number
+> ;-)
+> 
+> DISCLAIMER I'm quite ignorant of s390x arch details, so most likely
+> I'm
+> totally wrong and perhaps missing something important and there's
+> simple
+> explanation.. but here's what got me here:
+> 
+> 
+> ... so BTF data is placed in .BTF section via linker script:
+> 
+>         .BTF : AT(ADDR(.BTF) - LOAD_OFFSET)
+> {                           \
+>                 __start_BTF =
+> .;                                        \
+>                 *(.BTF)                                              
+>    \
+>                 __stop_BTF =
+> .;                                         \
+>         }
+> 
+> 
+> and the .BTF data size in btf_parse_vmlinux is computed as:
+> 
+>         btf->data_size = __stop_BTF - __start_BTF;
+> 
+> 
+> this computation is compiled as:
+> 
+>         00000000002aeb20 <btf_parse_vmlinux>:
+>         ...
+>           2aeb8a:  larl    %r1,cda3ac <__start_BTF+0x2084a8>    #
+> loads r1 with end
+>           2aeb90:  larl    %r2,ad1f04 <__start_BTF>             #
+> loads r2 with start
+>           2aeb96:  sgr     %r1,%r2                              #
+> substract r1 - r2 
+> 
+> 
+> having following values for start/stop_BTF symbols:
+> 
+>         # nm ./vmlinux | grep __start_BTF
+>         0000000000ad1f04 R __start_BTF
+>         # nm ./vmlinux | grep __stop_BTF
+>         0000000000cda3ad R __stop_BTF
+> 
+>         -> the BTF data size is 0x2084a9
+> 
+> 
+> but as you can see the instruction that loads the 'end' symbol:
+> 
+>         larl    %r1,cda3ac <__start_BTF+0x2084a8>
+> 
+> 
+> is loading '__start_BTF + 0x2084a8', which is '__stop_BTF - 1'
+> 
+> 
+> From spec it seems that larl instruction's argument must be even
+> number ([1] page 7-214):
+> 
+>         2.   For  LOAD  RELATIVE  LONG,  the  second  oper-and must
+> be aligned
+>         on an integral boundary cor-responding to the operand’s
+> size. 
+> 
+> 
+> I also found an older bug complaining about this issue [2]:
+> 
+>         ...
+>         larl instruction can only load even values - instructions on
+> s390 are 2-byte
+>         aligned and the instruction encodes offset to the target in
+> 2-byte units.
+>         ...
+>         The GNU BFD linker for s390 doesn't bother to check if
+> relocations fit or are
+>         properly aligned. 
+>         ...
+> 
+> 
+> I tried to fix that aligning the end to even number, but then
+> btf_check_sec_info logic needs to be adjusted as well, and
+> probably other places as well.. so I decided to share this
+> first.. because it all seems wrong ;-)
+> 
+> thoughts? thanks,
+> jirka
+> 
+> 
+> [1] http://publibfi.boulder.ibm.com/epubs/pdf/dz9zr008.pdf
+> [2] https://sourceware.org/bugzilla/show_bug.cgi?id=18960
+> 
+Hi Jiri,
 
-Truly, thank you both Jim and Stanimir.
+Actually I recently ran into it myself on Debian, and I believe your
+analysis is correct :-) The only thing to add to it is that the
+compiler emits the correct instruction (if you look at the .o file),
+it's linker that messes things up.
 
-Please remember that dynamic_debug is not required and
-pr_debug should still work.
+The linker bug in question is [1].
 
-> >     API:
-> > 
-> >     - change pr_debug(...)  -->  pr_debug_typed(type_id=0, ...)
-> >     - all existing uses have type_id=0
-> >     - developer creates exclusive types of log messages with type_id>0
-> >       1, 2, 3 are disjoint groups, for example: hi, mid, low
+I opened [2] to Debian folks, and I believe that other important
+distros (RH, SUSE, Ubuntu) have this fixed already.
 
-You could have a u8 for type if there are to be 3 classes
+Which distro are you using?
 
-	bitmask
-	level
-	group by value
+Best regards,
+Ilya
 
-though I believe group by value might as well just be bitmask
-and bool is_bitmask is enough (!is_bitmask would be level)
-
-cheers, Joe
+[1] 
+https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=e6213e09ed0e
+[2] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=961736
 
