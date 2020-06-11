@@ -2,139 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CED71F70A1
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 00:51:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 137D11F70BB
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 01:09:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726396AbgFKWvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 18:51:11 -0400
-Received: from mga18.intel.com ([134.134.136.126]:54985 "EHLO mga18.intel.com"
+        id S1726306AbgFKXJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 19:09:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45456 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726346AbgFKWvF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jun 2020 18:51:05 -0400
-IronPort-SDR: pew/jYRk7bC2v+t7ahjaVV+VGu4g+B/f/WgmonX9y2bmNGsfwuEzJRh1gwnoMtaJRIksDzNAmr
- PaOvUdDhf7ZQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2020 15:51:03 -0700
-IronPort-SDR: JafyYG0zkE95m8qIM0noqL1Lk4v0nh30beHaBOQGZhE6nyjSPxRdKOoUbt1NPLva91ri72dLhD
- 8AT8nuU1vraQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,501,1583222400"; 
-   d="scan'208";a="296755905"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga004.fm.intel.com with ESMTP; 11 Jun 2020 15:51:03 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Paul Greenwalt <paul.greenwalt@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net 4/4] iavf: increase reset complete wait time
-Date:   Thu, 11 Jun 2020 15:51:00 -0700
-Message-Id: <20200611225100.326062-5-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200611225100.326062-1-jeffrey.t.kirsher@intel.com>
-References: <20200611225100.326062-1-jeffrey.t.kirsher@intel.com>
+        id S1726277AbgFKXJP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jun 2020 19:09:15 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C8CDE20720;
+        Thu, 11 Jun 2020 23:09:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591916954;
+        bh=TOEnQBlvzDnn9jgmBu8COBmdJKW0e69SPmRBJIm2/Qc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=l2OaAu5TrLljQ8amapJ8rXfcVq9Rg7CQ8z2dftDZsbtWE7WhH9woJlw1M0r3AvQSM
+         92ceDH5mEvT4dDj9tN1aHyD8CLt5Yf88p7J7hpSzO9l1lCm6cCBkykoS+nSj9FxGjs
+         eyqkKesb8OVBtOt0FQg2KEm/dMJnaE5M3reWb/2c=
+Date:   Thu, 11 Jun 2020 16:09:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "klassert@kernel.org" <klassert@kernel.org>,
+        "akiyano@amazon.com" <akiyano@amazon.com>,
+        "irusskikh@marvell.com" <irusskikh@marvell.com>,
+        "ioana.ciornei@nxp.com" <ioana.ciornei@nxp.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "jdmason@kudzu.us" <jdmason@kudzu.us>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "GR-Linux-NIC-Dev@marvell.com" <GR-Linux-NIC-Dev@marvell.com>,
+        "stuyoder@gmail.com" <stuyoder@gmail.com>,
+        "sgoutham@marvell.com" <sgoutham@marvell.com>,
+        "luobin9@huawei.com" <luobin9@huawei.com>,
+        "csully@google.com" <csully@google.com>,
+        "kou.ishizaki@toshiba.co.jp" <kou.ishizaki@toshiba.co.jp>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "chessman@tux.org" <chessman@tux.org>
+Subject: Re: [RFC 1/8] docs: networking: reorganize driver documentation
+ again
+Message-ID: <20200611160912.7c2b3478@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200611151842.392642c5@hermes.lan>
+References: <20200611173010.474475-1-kuba@kernel.org>
+        <20200611173010.474475-2-kuba@kernel.org>
+        <61CC2BC414934749BD9F5BF3D5D94044986F4FAE@ORSMSX112.amr.corp.intel.com>
+        <20200611151842.392642c5@hermes.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Greenwalt <paul.greenwalt@intel.com>
+On Thu, 11 Jun 2020 15:18:42 -0700 Stephen Hemminger wrote:
+> > > Organize driver documentation by device type. Most documents
+> > > have fairly verbose yet uninformative names, so let users
+> > > first select a well defined device type, and then search for
+> > > a particular driver.
+> > > 
+> > > While at it rename the section from Vendor drivers to
+> > > Hardware drivers. This seems more accurate, besides people
+> > > sometimes refer to out-of-tree drivers as vendor drivers.
+> > > 
+> > > Signed-off-by: Jakub Kicinski <kuba@kernel.org>  
+> 
+> How much of it is still relevant and useful?
+> 
+> The last time I checked, lots of this had bad advice about settings.
+> And there was lots of drivers documenting what was generic Linux
+> functionality
+> 
+> And still there were references to old commands like ifconfig or ifenslave.
 
-With an increased number of VFs, it's possible to encounter the following
-issue during reset.
+For general documentation I hope now that it's slightly de-cluttered
+it's more likely folks (including myself, time allowing) will be more
+inclined to clean up / contribute. I haven't looked in detail, yet.
 
-    iavf b8d4:00:02.0: Hardware reset detected
-    iavf b8d4:00:02.0: Reset never finished (0)
-    iavf b8d4:00:02.0: Reset task did not complete, VF disabled
-
-Increase the reset complete wait count to allow for 128 VFs to complete
-reset.
-
-Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf.h      |  4 ++++
- drivers/net/ethernet/intel/iavf/iavf_main.c | 12 +++++-------
- 2 files changed, 9 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 2d4ce6fdba1a..10b805ba03ee 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -219,6 +219,10 @@ struct iavf_cloud_filter {
- 	bool add;		/* filter needs to be added */
- };
- 
-+#define IAVF_RESET_WAIT_MS 10
-+#define IAVF_RESET_WAIT_DETECTED_COUNT 500
-+#define IAVF_RESET_WAIT_COMPLETE_COUNT 2000
-+
- /* board specific private data structure */
- struct iavf_adapter {
- 	struct work_struct reset_task;
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 06c481e9ac5c..fa82768e5eda 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2046,8 +2046,6 @@ static void iavf_disable_vf(struct iavf_adapter *adapter)
- 	dev_info(&adapter->pdev->dev, "Reset task did not complete, VF disabled\n");
- }
- 
--#define IAVF_RESET_WAIT_MS 10
--#define IAVF_RESET_WAIT_COUNT 500
- /**
-  * iavf_reset_task - Call-back task to handle hardware reset
-  * @work: pointer to work_struct
-@@ -2101,20 +2099,20 @@ static void iavf_reset_task(struct work_struct *work)
- 	adapter->flags |= IAVF_FLAG_RESET_PENDING;
- 
- 	/* poll until we see the reset actually happen */
--	for (i = 0; i < IAVF_RESET_WAIT_COUNT; i++) {
-+	for (i = 0; i < IAVF_RESET_WAIT_DETECTED_COUNT; i++) {
- 		reg_val = rd32(hw, IAVF_VF_ARQLEN1) &
- 			  IAVF_VF_ARQLEN1_ARQENABLE_MASK;
- 		if (!reg_val)
- 			break;
- 		usleep_range(5000, 10000);
- 	}
--	if (i == IAVF_RESET_WAIT_COUNT) {
-+	if (i == IAVF_RESET_WAIT_DETECTED_COUNT) {
- 		dev_info(&adapter->pdev->dev, "Never saw reset\n");
- 		goto continue_reset; /* act like the reset happened */
- 	}
- 
- 	/* wait until the reset is complete and the PF is responding to us */
--	for (i = 0; i < IAVF_RESET_WAIT_COUNT; i++) {
-+	for (i = 0; i < IAVF_RESET_WAIT_COMPLETE_COUNT; i++) {
- 		/* sleep first to make sure a minimum wait time is met */
- 		msleep(IAVF_RESET_WAIT_MS);
- 
-@@ -2126,7 +2124,7 @@ static void iavf_reset_task(struct work_struct *work)
- 
- 	pci_set_master(adapter->pdev);
- 
--	if (i == IAVF_RESET_WAIT_COUNT) {
-+	if (i == IAVF_RESET_WAIT_COMPLETE_COUNT) {
- 		dev_err(&adapter->pdev->dev, "Reset never finished (%x)\n",
- 			reg_val);
- 		iavf_disable_vf(adapter);
-@@ -3429,7 +3427,7 @@ static int iavf_check_reset_complete(struct iavf_hw *hw)
- 	u32 rstat;
- 	int i;
- 
--	for (i = 0; i < 100; i++) {
-+	for (i = 0; i < IAVF_RESET_WAIT_COMPLETE_COUNT; i++) {
- 		rstat = rd32(hw, IAVF_VFGEN_RSTAT) &
- 			     IAVF_VFGEN_RSTAT_VFR_STATE_MASK;
- 		if ((rstat == VIRTCHNL_VFR_VFACTIVE) ||
--- 
-2.26.2
-
+As for the vendor docs - I guess that the obsolescence of the docs/
+instructions goes hand in hand with obsolescence of the HW itself.
