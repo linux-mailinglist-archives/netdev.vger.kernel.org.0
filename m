@@ -2,100 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 417701F6F03
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 22:50:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA5A61F6F07
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 22:51:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725873AbgFKUue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 16:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34094 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726186AbgFKUud (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 16:50:33 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5240C08C5C1
-        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 13:50:32 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id q8so7940559iow.7
-        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 13:50:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/nzXY/rjMjGOSpWYISd7S7NtrlCcPq12WC0DULXfYSI=;
-        b=B++PglUL+VGA1Ufft0gIqAeI3TG5SAqrSA7bJQerq70CahPOcuHHXhs2uF++LAJjwD
-         C6TIqVJ7yhiZGH7yyGQ4ZfHdRAXb11loYYhEqLdPynQ5zzmmgPq0NpE8tLPAGVaGhZ9n
-         CF1VM0YIvAmxTIYh34bYYXcNSRlKLTdqIhIwWGbbXNh4gmcNACP9vNqvnKuJGX3Gguju
-         HIz0yJWTueV7NfnSsP7KcI3w984FohdlWtjUBaEeMXbyIEUbMtJBwKIMbJDrDQP+AhAD
-         2hegK6kT6GpJEEGEFygE/cC9q1pbsEtMXx8rnmgPN6+y55n7vmwqLOLTSrkBi0TtVGDj
-         UasQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/nzXY/rjMjGOSpWYISd7S7NtrlCcPq12WC0DULXfYSI=;
-        b=doHjEpzc62ghXb/u7wJpLCqeKIuiobm0auNhkQ1Q52EkbJe93prZJP2VGLPr1np8cO
-         c8Bmv2U+OKjV8Qyik/+0aBtkVayNxYi/pctvQPuuNCRwud5hHVtRzEMuDF+SftYpvCIZ
-         ks0V1h3Maks//9i+Blqo+DC5g1tMDpHhNxYtz1bdrwIt1VraXY7A2AaqAjFTlPUy1IuO
-         kpBzEXUTP18NnlMp1RznXAzqYM72Ei197GkFTM9qwPI0mpMMpROw/vYP1D4IMgdk0+bO
-         f2cHklAGK5hnP9R4iVC6nQrzALNIaq7GUjoiIO1vguYPv4n2/evdhwbFYKtLLj110Vfl
-         SkEQ==
-X-Gm-Message-State: AOAM530Q86hdxgics5UT7VQqqTzv7eJWgBzQ6Eax+7eDNhgkTMjZ0URz
-        E95UkWlnm+b8BUHFVWksBqTZUC5uaGJLYk9Ct9c=
-X-Google-Smtp-Source: ABdhPJwJgJnYNogFFS7h63jLBsy2weG3crslAytDjeEdb9cbSvQtio4NhHiBMBQf+CkLNm17LvxIi7Z+Rp025qjGD98=
-X-Received: by 2002:a02:6cd8:: with SMTP id w207mr5079374jab.49.1591908632030;
- Thu, 11 Jun 2020 13:50:32 -0700 (PDT)
+        id S1726381AbgFKUvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 16:51:09 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:56320 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726153AbgFKUvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 16:51:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591908668;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2wJauOrh2sJagAyvMb41d/GChNhkUUFu5LwDnqBhpp8=;
+        b=aztPZ0ONQIEqcv0gDpiB8BjbPPiw3v4IoRnxaanTCvbBXNP/p/jAps9puKKEM40dNUFwPB
+        RmSXTXGw/e7WvASDClkeQNVQ/6qr+ofwmT06tOJ+85DVr1TgbX5qLvfhkr+lVGs6S3o1is
+        jvn++36LrSV7wOvdpkAnSmIrq1a4zAg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-174-hDqKBRRbMhWozcETuMPi-Q-1; Thu, 11 Jun 2020 16:50:49 -0400
+X-MC-Unique: hDqKBRRbMhWozcETuMPi-Q-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BB9858018A2;
+        Thu, 11 Jun 2020 20:50:47 +0000 (UTC)
+Received: from krava (unknown [10.40.194.223])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 593E4579A3;
+        Thu, 11 Jun 2020 20:50:41 +0000 (UTC)
+Date:   Thu, 11 Jun 2020 22:50:40 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Ilya Leoshkevich <iii@linux.ibm.com>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Frantisek Hrbata <fhrbata@redhat.com>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+Subject: [RFC] .BTF section data alignment issue on s390
+Message-ID: <20200611205040.GA1853644@krava>
 MIME-Version: 1.0
-References: <cover.1591824863.git.dcaratti@redhat.com> <8ef32bd7f2afa7e3eba5b67872b56440e6154d5a.1591824863.git.dcaratti@redhat.com>
-In-Reply-To: <8ef32bd7f2afa7e3eba5b67872b56440e6154d5a.1591824863.git.dcaratti@redhat.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 11 Jun 2020 13:50:20 -0700
-Message-ID: <CAM_iQpX33ZTz0UHwcpH7ehFE4MjmB14fuLHHRFkVYYOqv+FCwA@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] net/sched: act_gate: fix configuration of the
- periodic timer
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Po Liu <Po.Liu@nxp.com>, "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 10, 2020 at 2:43 PM Davide Caratti <dcaratti@redhat.com> wrote:
-> +static void gate_setup_timer(struct tcf_gate *gact, u64 basetime,
-> +                            enum tk_offsets tko, s32 clockid,
-> +                            bool do_init)
-> +{
-> +       bool timer_change = basetime != gact->param.tcfg_basetime ||
-> +                           tko != gact->tk_offset ||
-> +                           clockid != gact->param.tcfg_clockid;
-> +
-> +       if (!do_init) {
-> +               if (timer_change) {
-> +                       spin_unlock_bh(&gact->tcf_lock);
-> +                       hrtimer_cancel(&gact->hitimer);
-> +                       spin_lock_bh(&gact->tcf_lock);
-> +                       goto init_hitimer;
-> +               }
-> +               return;
-> +       }
-> +
-> +init_hitimer:
-> +       gact->param.tcfg_basetime = basetime;
-> +       gact->param.tcfg_clockid = clockid;
-> +       gact->tk_offset = tko;
-> +       hrtimer_init(&gact->hitimer, clockid, HRTIMER_MODE_ABS_SOFT);
-> +       gact->hitimer.function = gate_timer_func;
-> +}
+hi,
+we're hitting a problem on s390 with BTF data alignment.
 
-This function would be more readable if you rewrite it like this:
+When running simple test, we're getting this message from
+verifier and console:
 
-if (!do_init && !timer_change)
-  return;
-if (timer_change) {
-...
-}
-...
+  bpf_common.c:91: BROK: Failed verification: in-kernel BTF is malformed
+  [   41.545572] BPF:Total section length too long
 
-The rest looks good to me.
 
-Thanks.
+AFAICS it happens when .BTF section data size is not an even number ;-)
+
+DISCLAIMER I'm quite ignorant of s390x arch details, so most likely I'm
+totally wrong and perhaps missing something important and there's simple
+explanation.. but here's what got me here:
+
+
+... so BTF data is placed in .BTF section via linker script:
+
+        .BTF : AT(ADDR(.BTF) - LOAD_OFFSET) {                           \
+                __start_BTF = .;                                        \
+                *(.BTF)                                                 \
+                __stop_BTF = .;                                         \
+        }
+
+
+and the .BTF data size in btf_parse_vmlinux is computed as:
+
+        btf->data_size = __stop_BTF - __start_BTF;
+
+
+this computation is compiled as:
+
+        00000000002aeb20 <btf_parse_vmlinux>:
+        ...
+          2aeb8a:  larl    %r1,cda3ac <__start_BTF+0x2084a8>    # loads r1 with end
+          2aeb90:  larl    %r2,ad1f04 <__start_BTF>             # loads r2 with start
+          2aeb96:  sgr     %r1,%r2                              # substract r1 - r2 
+
+
+having following values for start/stop_BTF symbols:
+
+        # nm ./vmlinux | grep __start_BTF
+        0000000000ad1f04 R __start_BTF
+        # nm ./vmlinux | grep __stop_BTF
+        0000000000cda3ad R __stop_BTF
+
+        -> the BTF data size is 0x2084a9
+
+
+but as you can see the instruction that loads the 'end' symbol:
+
+        larl    %r1,cda3ac <__start_BTF+0x2084a8>
+
+
+is loading '__start_BTF + 0x2084a8', which is '__stop_BTF - 1'
+
+
+From spec it seems that larl instruction's argument must be even
+number ([1] page 7-214):
+
+        2.   For  LOAD  RELATIVE  LONG,  the  second  oper-and must be aligned
+        on an integral boundary cor-responding to the operand’s size. 
+
+
+I also found an older bug complaining about this issue [2]:
+
+        ...
+        larl instruction can only load even values - instructions on s390 are 2-byte
+        aligned and the instruction encodes offset to the target in 2-byte units.
+        ...
+        The GNU BFD linker for s390 doesn't bother to check if relocations fit or are
+        properly aligned. 
+        ...
+
+
+I tried to fix that aligning the end to even number, but then
+btf_check_sec_info logic needs to be adjusted as well, and
+probably other places as well.. so I decided to share this
+first.. because it all seems wrong ;-)
+
+thoughts? thanks,
+jirka
+
+
+[1] http://publibfi.boulder.ibm.com/epubs/pdf/dz9zr008.pdf
+[2] https://sourceware.org/bugzilla/show_bug.cgi?id=18960
+
