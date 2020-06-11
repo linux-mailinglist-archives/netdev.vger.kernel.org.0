@@ -2,104 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F5661F6045
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 05:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BDDC1F6063
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 05:15:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726552AbgFKDDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 23:03:09 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:27523 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726312AbgFKDDH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 23:03:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591844586;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pW0TC9adqhgXolpM+bqi6ACajbaD8dcdKR1gGXD2XZ8=;
-        b=CPVVxfYGOTPOobCZqLEd74yuGdw6YQDaK1zYzktJTUjxQJt3tv5cQKRgTqz9FRRumvwfhr
-        n0Rsk3ZSCNCQATWH38EuTLuosjiYYm1mMeO4yfRwvmwqlViu6O7hrZhVFH+LRkJlHpycFA
-        wWOQ2Rh9OL9nxkadX+kEbIJ8DG00Wks=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-400-0vO_5UApMFapwqJRy4-PSw-1; Wed, 10 Jun 2020 23:03:04 -0400
-X-MC-Unique: 0vO_5UApMFapwqJRy4-PSw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A5A97BBE;
-        Thu, 11 Jun 2020 03:03:03 +0000 (UTC)
-Received: from [10.72.12.125] (ovpn-12-125.pek2.redhat.com [10.72.12.125])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9CBBA8929C;
-        Thu, 11 Jun 2020 03:02:58 +0000 (UTC)
-Subject: Re: [PATCH RFC v6 02/11] vhost: use batched get_vq_desc version
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        eperezma@redhat.com
-References: <20200608125238.728563-1-mst@redhat.com>
- <20200608125238.728563-3-mst@redhat.com>
- <81904cc5-b662-028d-3b4a-bdfdbd2deb8c@redhat.com>
- <20200610070259-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <76b14132-407a-48bf-c4d5-9d0b2c700bb0@redhat.com>
-Date:   Thu, 11 Jun 2020 11:02:57 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1726418AbgFKDPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 23:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40682 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726279AbgFKDPY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 23:15:24 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15580C08C5C1;
+        Wed, 10 Jun 2020 20:15:24 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id s10so1924710pgm.0;
+        Wed, 10 Jun 2020 20:15:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ieezdRHhcmgP1Eab+GDG9Fm8oNf2bUgXlbKCTMG/yA8=;
+        b=UD3fllUhYn3n2k1bBAgag3980r5AE0luNBIYgI96Hv0pWE5Xs6Tf4JDXBl/nBs/LGx
+         uEpi9JOXwAzQzG8jlmxoxWSBddRc57ri6XT9w0dpkeQ7RqzeR48Jm9xLKdmTGK8APkdT
+         xncomGVnVpGqDB/HP4GJjDdcblz1cxGpy8fz6LRPc5MiuFH9EJs7bmWqIiY3ODGMmMw3
+         o6ZtxpvcpYQIi1syzFTQJxejHh7t5AnvbRBiCQZFYzDQH7KY0EIlAyFs/NF+wKJJj/4w
+         KxR3q6eV5CZSeBmWUX5hM9Jz5+clOYl2fL64f0gzaCDKrukwDkPT6t3/rS9mCes0IbKS
+         CZgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ieezdRHhcmgP1Eab+GDG9Fm8oNf2bUgXlbKCTMG/yA8=;
+        b=tSG1cOeQIdCa723rMNSn8xmJkoA1h3oDcwI5mua2yOZ2zz4dF4g1Fe8/Dhrgow0d/n
+         oIMSuJDl4C5SVBebPtAKwcc3D8fgxbaM1h328fPlYO8qJjrJnPtofDDN3bi1UJQZRBXf
+         SyXhf+XerwAClDvsvz2TJuNyLhtVtnwkEWL/oPjUIQHubZiW1bLmhIfH2lCFmgoqP8Ez
+         e+akOomw1+fu70MskMMZwJJiKYI5n9NnEmBKB9o7Rw3vOCYLJ3U8EcSKgw00N5x1nu4h
+         p5hzB7frZRFcdKJ8Bp1GQBDEcmffLzYa1byrfNANmLSufeLfN9mYGAzVY0Jr4XjEtTO3
+         7UUg==
+X-Gm-Message-State: AOAM531Bt/VRR0FLDLuG+9VnYOnlD3Novg2GnPAN8UXmYWqjET2alMGD
+        qk1Uqkh6015dcIQzvS2HA2Ay1zIl
+X-Google-Smtp-Source: ABdhPJxQ80OnCFFcFDNJ34AiR5BcgKnrhflKWecBBb6VQ0x9wc8yKiOCFdCbWTIcEnp0SlaffUGdZA==
+X-Received: by 2002:aa7:9a9c:: with SMTP id w28mr5012925pfi.295.1591845323100;
+        Wed, 10 Jun 2020 20:15:23 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id hi19sm997035pjb.49.2020.06.10.20.15.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Jun 2020 20:15:22 -0700 (PDT)
+Subject: Re: [PATCH 1/2] net: dsa: qca8k: Switch to PHYLINK instead of PHYLIB
+To:     Jonathan McDowell <noodles@earth.li>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1591816172.git.noodles@earth.li>
+ <78519bc421a1cb7000a68d05e43c4208b26f37e5.1591816172.git.noodles@earth.li>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <c5257ff7-0d0c-82a0-47ee-671692991a09@gmail.com>
+Date:   Wed, 10 Jun 2020 20:15:20 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <20200610070259-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <78519bc421a1cb7000a68d05e43c4208b26f37e5.1591816172.git.noodles@earth.li>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/6/10 下午7:05, Michael S. Tsirkin wrote:
->>> +EXPORT_SYMBOL_GPL(vhost_get_vq_desc);
->>>    /* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
->>>    void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
->>>    {
->>> +	unfetch_descs(vq);
->>>    	vq->last_avail_idx -= n;
->> So unfetch_descs() has decreased last_avail_idx.
->> Can we fix this by letting unfetch_descs() return the number and then we can
->> do:
->>
->> int d = unfetch_descs(vq);
->> vq->last_avail_idx -= (n > d) ? n - d: 0;
->>
->> Thanks
-> That's intentional I think - we need both.
 
+On 6/10/2020 12:14 PM, Jonathan McDowell wrote:
+> Update the driver to use the new PHYLINK callbacks, removing the
+> legacy adjust_link callback.
+> 
+> Signed-off-by: Jonathan McDowell <noodles@earth.li>
 
-Yes, but:
-
-
->
-> Unfetch_descs drops the descriptors in the cache that were
-> *not returned to caller*  through get_vq_desc.
->
-> vhost_discard_vq_desc drops the ones that were returned through get_vq_desc.
->
-> Did I miss anything?
-
-We could count some descriptors twice, consider the case e.g we only 
-cache on descriptor:
-
-fetch_descs()
-     fetch_buf()
-         last_avail_idx++;
-
-Then we want do discard it:
-vhost_discard_avail_buf(1)
-     unfetch_descs()
-         last_avail_idx--;
-     last_avail_idx -= 1;
-
-Thanks
-
+This looks reasonable to me, Russell would be the person you want to get
+an Acked-by/Reviewed-by tag from.
+-- 
+Florian
