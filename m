@@ -2,119 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34ECE1F6A85
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 17:02:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3B751F6ACE
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 17:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728416AbgFKPCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 11:02:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728273AbgFKPCh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 11:02:37 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC6EC08C5C1;
-        Thu, 11 Jun 2020 08:02:37 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id er17so2755575qvb.8;
-        Thu, 11 Jun 2020 08:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=r0hNAlb8gwk+2s8vLxqGkBolOrtvmVp5BagPwVX1Ajk=;
-        b=ZEnqBpV6x9tbdnOXrWgmoMoqpMcm7FzfGEskyPDedCcKDSQrsF1vEAxEx9ndKxbWHn
-         jS17XPJiB9YI1TnrV5zGnhtH5ObaNDQ3I4vVq8QLarWla8zcjHw4zwGELtxndGQOwjH0
-         SyYu47PN7bk5ooMJ3JhCYhDB5F8UESAwIAuQbkTRpu6xdomvxWEwTxSqNz2ARGfIfk00
-         7nMgwDnjIrThaEtNn/LPqSkJVIXO9Vx0qpjKRBnYmNqQSBNCc/+5vgHicWxPXQu6qh/s
-         5UdV1sorpqq+5yC5X116GTcMYS2IrTvZC1JKINbuGVo9vB+BW/lmgdlTi4aVQZUcZ1Xf
-         6BTw==
+        id S1728554AbgFKPTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 11:19:30 -0400
+Received: from mail-il1-f196.google.com ([209.85.166.196]:42611 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728484AbgFKPT0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 11:19:26 -0400
+Received: by mail-il1-f196.google.com with SMTP id j19so1611700ilk.9;
+        Thu, 11 Jun 2020 08:19:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=r0hNAlb8gwk+2s8vLxqGkBolOrtvmVp5BagPwVX1Ajk=;
-        b=QXQ0Y5/4O+C1igi4p0hkKxFPyn9uH44BL0vh9NuHwI8RtIybeMoGOQP9nyQE0waXC1
-         gB5Ud2m6NXx/wwiSBqxYsE6GYMiiAaxKiUDFW6PXvxfKic2/H0gjIjr6fv7pVBLbgZjz
-         HRC6uMZSmx2EiFO+toWdSODimC7xCp7IXOp/zTdN5X4vL5gBqp8j0PoOFBPYY1lljCj2
-         Bw2PSJIgvYWUtLlVHIbuuq457H5cRm/Qs7vA64D2VTLuXNfJacWxvOJNGu6ciZU9FC7u
-         brGK/FSvXq0Eo9F6WrWDazDyEkmPRdr3h30W5pKSsFnac8sSC/StNKaxusvJwaib+IaQ
-         zBvA==
-X-Gm-Message-State: AOAM530u01gU/T8u/S8df7zqWFPKk8zwLoqZkMCIBBMZnu3RwGzWMice
-        mMV72hMwo3UEHAChQd2JTrg=
-X-Google-Smtp-Source: ABdhPJxOTBEvquTX9k2vohWCjqbVEuu/GZqdZH7clWhzbcWr27EmLQ//jvq/zFCkjHzAGjdmWyUa1Q==
-X-Received: by 2002:ad4:4e14:: with SMTP id dl20mr8503813qvb.101.1591887756824;
-        Thu, 11 Jun 2020 08:02:36 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:f00a:33d2:6ec2:475c])
-        by smtp.googlemail.com with ESMTPSA id 78sm2230157qkg.65.2020.06.11.08.02.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Bzom5I0Qsx/lQuO9r3157DQxFx5Ipkb4zVlo1+AHki0=;
+        b=NNeDxr0AecAkZ4HRa1nydSUAeXZNp9nkI/lhJMYPBp0FXYGc5aItTdWp67nEiRzSdE
+         aLt0OFni0Lb068GbLSiN8CLBfae5JzsQgRmFPtJgY1qFjAKtxb/lClagJbtj12KImuTM
+         t80SQt5HPYRmajZE2WKzERzgARVmQo8dSpFtDm7P0pjsqDVbV5JXUGBEsa01cq+lgmRY
+         01VOHxfincKZNe9LtFpFZQ8PfzpkWaYA6Lhw83JhyPomofFwizdjSi0f+FNmDW30R6+N
+         GINPQIF9VnH8UufPBrumgrbLw9zGqrKbajupnuLRrXQ/vTO/MVTw6RdoZipeRj/LPd+s
+         1UkQ==
+X-Gm-Message-State: AOAM530YY+W/hzVth3mew2/XvdJ+WhjpKgh5X9NSUN3yleImE5iYPGRS
+        ARviH/AT8Uv3Zd5gmVfgJ/Q0SEM=
+X-Google-Smtp-Source: ABdhPJzBBFxrtcbhqbQcEvm2dr7A3emRqSD+5s6FURtJq4Jy7T00ZrsFE/lLZJrZDfQS7fz2X4MsgA==
+X-Received: by 2002:a05:6e02:e51:: with SMTP id l17mr8951200ilk.39.1591888764995;
+        Thu, 11 Jun 2020 08:19:24 -0700 (PDT)
+Received: from xps15.herring.priv ([64.188.179.251])
+        by smtp.googlemail.com with ESMTPSA id c20sm1587533iot.33.2020.06.11.08.19.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2020 08:02:35 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        Thu, 11 Jun 2020 08:19:24 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>,
+        Ezequiel Garcia <ezequiel@collabora.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        bpf@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] xdp_rxq_info_user: Replace malloc/memset w/calloc
-Date:   Thu, 11 Jun 2020 11:02:21 -0400
-Message-Id: <20200611150221.15665-1-gaurav1086@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: [PATCH] dt-bindings: Fix more incorrect 'reg' property sizes in examples
+Date:   Thu, 11 Jun 2020 09:19:23 -0600
+Message-Id: <20200611151923.1102796-1-robh@kernel.org>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace malloc/memset with calloc
+The examples template is a 'simple-bus' with a size of 1 cell for
+had between 2 and 4 cells which really only errors on I2C or SPI type
+devices with a single cell.
 
-Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+The easiest fix in most cases is to change the 'reg' property to 1 cell
+for address and size.
+
+Cc: "Heiko Stübner" <heiko@sntech.de>
+Cc: Ezequiel Garcia <ezequiel@collabora.com>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Miquel Raynal <miquel.raynal@bootlin.com>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Kishon Vijay Abraham I <kishon@ti.com>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: linux-rockchip@lists.infradead.org
+Cc: linux-media@vger.kernel.org
+Cc: linux-mtd@lists.infradead.org
+Cc: netdev@vger.kernel.org
+Cc: alsa-devel@alsa-project.org
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- samples/bpf/xdp_rxq_info_user.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ Documentation/devicetree/bindings/bus/baikal,bt1-apb.yaml     | 4 ++--
+ Documentation/devicetree/bindings/bus/baikal,bt1-axi.yaml     | 4 ++--
+ .../devicetree/bindings/display/rockchip/rockchip-vop.yaml    | 4 ++--
+ Documentation/devicetree/bindings/media/rockchip,vdec.yaml    | 2 +-
+ Documentation/devicetree/bindings/media/rockchip-vpu.yaml     | 2 +-
+ .../devicetree/bindings/mtd/arasan,nand-controller.yaml       | 2 +-
+ Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml   | 2 +-
+ .../devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml       | 2 +-
+ Documentation/devicetree/bindings/sound/fsl,easrc.yaml        | 2 +-
+ 9 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
-index 4fe47502ebed..caa4e7ffcfc7 100644
---- a/samples/bpf/xdp_rxq_info_user.c
-+++ b/samples/bpf/xdp_rxq_info_user.c
-@@ -198,11 +198,8 @@ static struct datarec *alloc_record_per_cpu(void)
- {
- 	unsigned int nr_cpus = bpf_num_possible_cpus();
- 	struct datarec *array;
--	size_t size;
+diff --git a/Documentation/devicetree/bindings/bus/baikal,bt1-apb.yaml b/Documentation/devicetree/bindings/bus/baikal,bt1-apb.yaml
+index d6a3b71ea835..68b0131a31d0 100644
+--- a/Documentation/devicetree/bindings/bus/baikal,bt1-apb.yaml
++++ b/Documentation/devicetree/bindings/bus/baikal,bt1-apb.yaml
+@@ -71,8 +71,8 @@ examples:
  
--	size = sizeof(struct datarec) * nr_cpus;
--	array = malloc(size);
--	memset(array, 0, size);
-+	array = calloc(nr_cpus, sizeof(struct datarec));
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
- 		exit(EXIT_FAIL_MEM);
-@@ -214,11 +211,8 @@ static struct record *alloc_record_per_rxq(void)
- {
- 	unsigned int nr_rxqs = bpf_map__def(rx_queue_index_map)->max_entries;
- 	struct record *array;
--	size_t size;
+     bus@1f059000 {
+       compatible = "baikal,bt1-apb", "simple-bus";
+-      reg = <0 0x1f059000 0 0x1000>,
+-            <0 0x1d000000 0 0x2040000>;
++      reg = <0x1f059000 0x1000>,
++            <0x1d000000 0x2040000>;
+       reg-names = "ehb", "nodev";
+       #address-cells = <1>;
+       #size-cells = <1>;
+diff --git a/Documentation/devicetree/bindings/bus/baikal,bt1-axi.yaml b/Documentation/devicetree/bindings/bus/baikal,bt1-axi.yaml
+index 203bc0e5346b..29e1aaea132b 100644
+--- a/Documentation/devicetree/bindings/bus/baikal,bt1-axi.yaml
++++ b/Documentation/devicetree/bindings/bus/baikal,bt1-axi.yaml
+@@ -85,8 +85,8 @@ examples:
  
--	size = sizeof(struct record) * nr_rxqs;
--	array = malloc(size);
--	memset(array, 0, size);
-+	array = calloc(nr_rxqs, sizeof(struct record));
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_rxqs:%u)\n", nr_rxqs);
- 		exit(EXIT_FAIL_MEM);
-@@ -232,8 +226,7 @@ static struct stats_record *alloc_stats_record(void)
- 	struct stats_record *rec;
- 	int i;
+     bus@1f05a000 {
+       compatible = "baikal,bt1-axi", "simple-bus";
+-      reg = <0 0x1f05a000 0 0x1000>,
+-            <0 0x1f04d110 0 0x8>;
++      reg = <0x1f05a000 0x1000>,
++            <0x1f04d110 0x8>;
+       reg-names = "qos", "ehb";
+       #address-cells = <1>;
+       #size-cells = <1>;
+diff --git a/Documentation/devicetree/bindings/display/rockchip/rockchip-vop.yaml b/Documentation/devicetree/bindings/display/rockchip/rockchip-vop.yaml
+index 1695e3e4bcec..ed8148e26e24 100644
+--- a/Documentation/devicetree/bindings/display/rockchip/rockchip-vop.yaml
++++ b/Documentation/devicetree/bindings/display/rockchip/rockchip-vop.yaml
+@@ -106,8 +106,8 @@ examples:
+     #include <dt-bindings/power/rk3288-power.h>
+     vopb: vopb@ff930000 {
+       compatible = "rockchip,rk3288-vop";
+-      reg = <0x0 0xff930000 0x0 0x19c>,
+-            <0x0 0xff931000 0x0 0x1000>;
++      reg = <0xff930000 0x19c>,
++            <0xff931000 0x1000>;
+       interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
+       clocks = <&cru ACLK_VOP0>,
+                <&cru DCLK_VOP0>,
+diff --git a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
+index 0c68cdad9a31..8d35c327018b 100644
+--- a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
++++ b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
+@@ -61,7 +61,7 @@ examples:
  
--	rec = malloc(sizeof(*rec));
--	memset(rec, 0, sizeof(*rec));
-+	rec = calloc(1, sizeof(struct stats_record));
- 	if (!rec) {
- 		fprintf(stderr, "Mem alloc error\n");
- 		exit(EXIT_FAIL_MEM);
+     vdec: video-codec@ff660000 {
+         compatible = "rockchip,rk3399-vdec";
+-        reg = <0x0 0xff660000 0x0 0x400>;
++        reg = <0xff660000 0x400>;
+         interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH 0>;
+         clocks = <&cru ACLK_VDU>, <&cru HCLK_VDU>,
+                  <&cru SCLK_VDU_CA>, <&cru SCLK_VDU_CORE>;
+diff --git a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
+index 27df18ad6a81..2b629456d75f 100644
+--- a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
++++ b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
+@@ -66,7 +66,7 @@ examples:
+ 
+         vpu: video-codec@ff9a0000 {
+                 compatible = "rockchip,rk3288-vpu";
+-                reg = <0x0 0xff9a0000 0x0 0x800>;
++                reg = <0xff9a0000 0x800>;
+                 interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
+                              <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>;
+                 interrupt-names = "vepu", "vdpu";
+diff --git a/Documentation/devicetree/bindings/mtd/arasan,nand-controller.yaml b/Documentation/devicetree/bindings/mtd/arasan,nand-controller.yaml
+index db8f115a13ec..cb9794edff24 100644
+--- a/Documentation/devicetree/bindings/mtd/arasan,nand-controller.yaml
++++ b/Documentation/devicetree/bindings/mtd/arasan,nand-controller.yaml
+@@ -53,7 +53,7 @@ examples:
+   - |
+     nfc: nand-controller@ff100000 {
+         compatible = "xlnx,zynqmp-nand-controller", "arasan,nfc-v3p10";
+-        reg = <0x0 0xff100000 0x0 0x1000>;
++        reg = <0xff100000 0x1000>;
+         clock-names = "controller", "bus";
+         clocks = <&clk200>, <&clk100>;
+         interrupt-parent = <&gic>;
+diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
+index af608f2ecfdf..9b7117920d90 100644
+--- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
++++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
+@@ -121,7 +121,7 @@ examples:
+ 
+     cpts@310d0000 {
+          compatible = "ti,am65-cpts";
+-         reg = <0x0 0x310d0000 0x0 0x400>;
++         reg = <0x310d0000 0x400>;
+          reg-names = "cpts";
+          clocks = <&main_cpts_mux>;
+          clock-names = "cpts";
+diff --git a/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml b/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
+index 574f890fab1d..4949a2851532 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
+@@ -65,7 +65,7 @@ examples:
+     #include <dt-bindings/clock/qcom,gcc-sm8150.h>
+     phy@88e2000 {
+         compatible = "qcom,sm8150-usb-hs-phy";
+-        reg = <0 0x088e2000 0 0x400>;
++        reg = <0x088e2000 0x400>;
+         #phy-cells = <0>;
+ 
+         clocks = <&rpmhcc RPMH_CXO_CLK>;
+diff --git a/Documentation/devicetree/bindings/sound/fsl,easrc.yaml b/Documentation/devicetree/bindings/sound/fsl,easrc.yaml
+index 9dd57a974b28..32d547af9ce7 100644
+--- a/Documentation/devicetree/bindings/sound/fsl,easrc.yaml
++++ b/Documentation/devicetree/bindings/sound/fsl,easrc.yaml
+@@ -80,7 +80,7 @@ examples:
+ 
+     easrc: easrc@300c0000 {
+            compatible = "fsl,imx8mn-easrc";
+-           reg = <0x0 0x300c0000 0x0 0x10000>;
++           reg = <0x300c0000 0x10000>;
+            interrupts = <0x0 122 0x4>;
+            clocks = <&clk IMX8MN_CLK_ASRC_ROOT>;
+            clock-names = "mem";
 -- 
-2.17.1
+2.25.1
 
