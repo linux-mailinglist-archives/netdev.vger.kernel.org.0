@@ -2,195 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 637A51F63C8
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 10:40:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8829C1F6411
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 10:55:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726949AbgFKIkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 04:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726907AbgFKIkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 04:40:10 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925E8C03E96F
-        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 01:40:09 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id x13so5238126wrv.4
-        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 01:40:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HCcqRvufHngdnLtX1g/5ePoPBfY/9UU3Id3Da3Dtz0U=;
-        b=L8/REVikw1NvXnAUbkc6SQmnyL2eo0jiY7xhCpdjo6krKNt/r4qN/lIjquF6Np6xvD
-         CpAB87S3EKTsuIVAHQGIZifTX1+xUnh+zPXfpZeislHcWHb3zJk1U13+l/kJmygzHUJh
-         XbNJ/NbeKmc4cT8gOueoG96G70rB2NVsx2TV2xieb9hIa7uYPAe9VkwUMy5Iei5fQ3uy
-         kN3QszlaquWx6olylOVWC4IeHmBB0gDDeAh1pN/+BONd34Cc0c33QSIx/8//Qw7SVA/1
-         TvjRXmxgx6d8UDquYTOYGpI69w+ucoin0mYBmTIVVe0mYsCST/Nsok7jh0IseL11xuwz
-         0aMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HCcqRvufHngdnLtX1g/5ePoPBfY/9UU3Id3Da3Dtz0U=;
-        b=jGlkY+vWt2DN3BIGYlHLu1qBjNLe2G/qd1EC9B2V/buVBGX6Lguuonk0buYe8Ii5dc
-         xn/Xn6VcZVCAPN+SqHx8CJP3gD+NefJxziRKIInZZuBhL8hFZE8/LCJ5CwYdFeUrP1f1
-         ffNhGuScFnZC+AMdKAcyavJPKyM6iYMZ42AyhZBR+9wYZQvTYhc4/txc1iDTXFlmyrhv
-         31Mvo/mlTa8cI1aRWQomLIJl38VRXNIhqEnIxCeyHksAsfs70PFC5Et5sW+x1MY3eZSN
-         y1NBBjFaJGtKcAMQJid+W3gNcOIc3LQeHRtuFbKj7tu1l1SwFjzQIAdJnT52K9rNsQDx
-         YGDw==
-X-Gm-Message-State: AOAM530MhJQ6mcMf83u+EfCoyMv6iQxGBf1Q/CEl/NOwkAgP+qQIckJW
-        zbrdQKEpf19zSKF1RpWx2XSHsQUjm7aP0QVhd7/eFWqfDrI=
-X-Google-Smtp-Source: ABdhPJweSqhaw1XI8OLtHJY00Egv6l9qeTOzaqwSCN/1NOqib1ixoZO5XzXpL+czf3qHVZxocp/Vq+zzFGRWO4Sy9Hk=
-X-Received: by 2002:a5d:6b83:: with SMTP id n3mr8301918wrx.395.1591864808168;
- Thu, 11 Jun 2020 01:40:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <7478dd2a6b6de5027ca96eaa93adae127e6c5894.1590386017.git.lucien.xin@gmail.com>
- <70458451-6ece-5222-c46f-87c708eee81e@strongswan.org> <CADvbK_cw0yeTdVuNfbc8MJ6+9+1RgnW7XGw1AgQQM7ybnbdaDQ@mail.gmail.com>
- <b93d9e68-c2da-bb1c-e1f9-21c81f740242@strongswan.org> <CADvbK_egkEe0Pw-Yy8eQggS-cfvndOnj7W2hqvpdNxS2xJ50xg@mail.gmail.com>
-In-Reply-To: <CADvbK_egkEe0Pw-Yy8eQggS-cfvndOnj7W2hqvpdNxS2xJ50xg@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 11 Jun 2020 16:48:17 +0800
-Message-ID: <CADvbK_faty7VayrEfgJ-Hcr2Ah-2au6uFvq1hU0ofdNZHODNHA@mail.gmail.com>
-Subject: Re: [PATCHv2 ipsec] xfrm: fix a warning in xfrm_policy_insert_list
-To:     Tobias Brunner <tobias@strongswan.org>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        id S1726918AbgFKIzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 04:55:44 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:59030 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726761AbgFKIzn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 04:55:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=KwDb/sopd5jsmmkWcfSHgFPCKOuRbiGST7C13mfN9cs=; b=shpts0uRr9dtUYuwTg489FmeO
+        VMnZw3UoMltWUBvE+BpbrPtg2VGNrfOlJPi+aaB8IcywCN2Uy4SaB17+yoJ16P4ZwIywbGKV3LKG8
+        gUVLd9DyPLgY+EXsnOMA2l8tKkQnqqLoXfH6JTjM5lnEWkMgxssujncEbnVWAjuEdRXXkvktxS9Kb
+        4QVSLXuMFlSQ8GG4NwWgehEgxA1oqTlKG6FppOfEZDW7ed002OZU0uNcRH902mP/YXfuOhj+NlAq9
+        CyhXPJI8Obgnv6oPRjMhfqq9TfOYJUNNp2b0ZsdCfXXHjfqXfclfj/77rlHaqE1cTNvpK9ceg3DLL
+        /WUShol2g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44110)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jjIzg-0008CK-Dj; Thu, 11 Jun 2020 09:55:28 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jjIzb-00052L-GW; Thu, 11 Jun 2020 09:55:23 +0100
+Date:   Thu, 11 Jun 2020 09:55:23 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Jonathan McDowell <noodles@earth.li>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Yuehaibing <yuehaibing@huawei.com>,
-        Andreas Steffen <andreas.steffen@strongswan.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] net: dsa: qca8k: Switch to PHYLINK instead of PHYLIB
+Message-ID: <20200611085523.GV1551@shell.armlinux.org.uk>
+References: <cover.1591816172.git.noodles@earth.li>
+ <78519bc421a1cb7000a68d05e43c4208b26f37e5.1591816172.git.noodles@earth.li>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <78519bc421a1cb7000a68d05e43c4208b26f37e5.1591816172.git.noodles@earth.li>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 11, 2020 at 12:32 AM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Tue, Jun 9, 2020 at 10:18 PM Tobias Brunner <tobias@strongswan.org> wrote:
-> >
-> > Hi Xin,
-> >
-> > >> I guess we could workaround this issue in strongSwan by installing
-> > >> policies that share the same mark and selector with the same priority,
-> > >> so only one instance is ever installed in the kernel.  But the inability
-> > >> to address the exact policy when querying/deleting still looks like a
-> > >> problem to me in general.
-> > >>
-> > > For deleting, yes, but for querying, I think it makes sense not to pass
-> > > the priority, and always get the policy with the highest priority.
-> >
-> > While I agree it's less of a problem (at least for strongSwan),  it
-> > should be possible to query the exact policy one wants.  Because as far
-> > as I understand, the whole point of Steffen's original patch was that
-> > all duplicate policies could get used concurrently, depending on the
-> > marks and masks on them and the traffic, so all of them must be queryable.
-> >
-> > But I actually think the previous check that viewed policies with the
-> > exact same mark and value as duplicates made sense, because those will
-> > never be used concurrently.  It would at least fix the default behavior
-> > with strongSwan (users have to configure marks/masks manually).
-> >
-> > > We can separate the deleting path from the querying path when
-> > > XFRMA_PRIORITY attribute is set.
-> > >
-> > > Is that enough for your case to only fix for the policy deleting?
-> >
-> > While such an attribute could be part of a solution, it does not fix the
-> > regression your patch created.  The kernel behavior changed and a
-> > userland modification is required to get back to something resembling
-> > the previous behavior (without an additional kernel patch we'll actually
-> > not be able to restore the previous behavior, where we separated
-> > different types of policies into priority classes).  That is, current
-> > and old strongSwan versions could create lots of duplicate/lingering
-> > policies, which is not good.
-> >
-> > A problem with such an attribute is how userland would learn when to use
-> > it.  We could query the kernel version, but patches might get
-> > backported.  So how can we know the kernel will create duplicates when
-> > we update a policy and change the priority, which we then have to delete
-> > (or even can delete with such a new attribute)?  Do we have to do a
-> > runtime check (e.g. install two duplicate policies with different
-> > priorities and delete twice to see if the second attempt results in an
-> > error)?  With marks it's relatively easy as users have to configure them
-> > explicitly and they work or they don't depending on the kernel version.
-> >  But here it's not so easy as the IKE daemon uses priorities extensively
-> > already.
-> >
-> > Like the marks it might work somehow if the new attribute also had to be
-> > passed in the message that creates a policy (marks have to be passed
-> > with every message, including querying them).  While that's not super
-> > ideal as we'd have two priority values in these messages (and have to
-> > keep track of them in the kernel state), there is some precedent with
-> > the anti-replay config for SAs (which can be passed via xfrm_usersa_info
-> > struct or as separate attribute with more options for ESN).  Userland
-> > would still have to learn somehow that the kernel understands the new
-> > attribute and duplicate policies with different priorities are possible.
-> >  But if there was any advantage in using this, we could perhaps later
-> > add an option for users to enable it.  At least the current behavior
-> > would not change (i.e. older strongSwan versions would continue to run
-> > on newer kernels without modifications).
-> >
-> Now I can see some about how userland is using "priority". We probably
-> need to revert both this patch and 7cb8a93968e3 ("xfrm: Allow inserting
-> policies with matching mark and different priorities").
->
-> Thanks for the explanation, I will think more about it tomorrow.
+On Wed, Jun 10, 2020 at 08:14:03PM +0100, Jonathan McDowell wrote:
+> Update the driver to use the new PHYLINK callbacks, removing the
+> legacy adjust_link callback.
 
-The issue here in xfrm_mark only exists in xfrm user interface.
-It's not consistent when doing get/del and new/update, see below:
+Looks good, there's a couple of issues / questions
 
-NOW:
-===
-xfrm_get_policy (XFRM_MSG_GETPOLICY):
-xfrm_get_policy (XFRM_MSG_DELPOLICY):
-        xfrm_policy_byid
-        xfrm_policy_bysel_ctx
-                __xfrm_policy_bysel_ctx
-                        (mark.v & pol->mark.m) == pol->mark.v <--
+>  static void
+> +qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+> +			 const struct phylink_link_state *state)
+>  {
+>  	struct qca8k_priv *priv = ds->priv;
+>  	u32 reg;
+>  
+> +	switch (port) {
+...
+> +	case 6: /* 2nd CPU port / external PHY */
+> +		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
+> +		    state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
+> +		    state->interface != PHY_INTERFACE_MODE_SGMII &&
+> +		    state->interface != PHY_INTERFACE_MODE_1000BASEX)
+> +			return;
+> +
+> +		reg = QCA8K_REG_PORT6_PAD_CTRL;
+> +		break;
+...
+> +	}
+> +
+> +	if (port != 6 && phylink_autoneg_inband(mode)) {
+> +		dev_err(ds->dev, "%s: in-band negotiation unsupported\n",
+> +			__func__);
+> +		return;
+> +	}
+> +
+> +	switch (state->interface) {
+...
+> +	case PHY_INTERFACE_MODE_SGMII:
+> +	case PHY_INTERFACE_MODE_1000BASEX:
+> +		/* Enable SGMII on the port */
+> +		qca8k_write(priv, reg, QCA8K_PORT_PAD_SGMII_EN);
+> +		break;
 
-xfrm_add_policy (XFRM_MSG_NEWPOLICY):
-xfrm_add_policy (XFRM_MSG_UPDPOLICY):
-        xfrm_policy_insert
-                xfrm_policy_insert_list
-                xfrm_policy_insert_inexact_list
-                        policy->mark.v == pol->mark.v &&
-                        policy->priority == pol->priority;  <--
+Is inband mode configurable?  What if the link partner does/doesn't
+send the configuration word?  How is the link state communicated to
+the MAC?
 
+> +static int
+> +qca8k_phylink_mac_link_state(struct dsa_switch *ds, int port,
+> +			     struct phylink_link_state *state)
+> +{
+> +	struct qca8k_priv *priv = ds->priv;
+> +	u32 reg;
+>  
+> +	reg = qca8k_read(priv, QCA8K_REG_PORT_STATUS(port));
+> +
+> +	state->link = !!(reg & QCA8K_PORT_STATUS_LINK_UP);
+> +	state->an_complete = state->link;
+> +	state->an_enabled = !!(reg & QCA8K_PORT_STATUS_LINK_AUTO);
+> +	state->duplex = (reg & QCA8K_PORT_STATUS_DUPLEX) ? DUPLEX_FULL :
+> +							   DUPLEX_HALF;
+> +
+> +	switch (reg & QCA8K_PORT_STATUS_SPEED) {
+> +	case QCA8K_PORT_STATUS_SPEED_10:
+> +		state->speed = SPEED_10;
+> +		break;
+> +	case QCA8K_PORT_STATUS_SPEED_100:
+> +		state->speed = SPEED_100;
+> +		break;
+> +	case QCA8K_PORT_STATUS_SPEED_1000:
+> +		state->speed = SPEED_1000;
+> +		break;
+> +	default:
+> +		state->speed = SPEED_UNKNOWN;
 
-For 'new/update/del', we should do an exact match with
-"mark.v == pol->mark.v && mark.m == pol->mark.m", as these are MSGs to
-manage the policies, every policy should be able to be matched.
+Maybe also force the link down in this case, since the state is invalid?
 
-But for 'get', I'm not sure, shouldn't it be working as how it's used
-in skb rx/tx path, like in xfrm_policy_match()?
-(similar to 'ip route get')
-But maybe for ipsec userland it may be different, what do you think?
+Do you have access to the link partner's configuration word?  If you do,
+you should use that to fill in state->lp_advertising.
 
-So my suggestion for the fix is as below, which would also keep the
-behavior in commit 7cb8a93968e3 ("xfrm: Allow inserting policies with
-matching mark and different priorities").
+> +		break;
+> +	}
+> +
+> +	state->pause = MLO_PAUSE_NONE;
+> +	if (reg & QCA8K_PORT_STATUS_RXFLOW)
+> +		state->pause |= MLO_PAUSE_RX;
+> +	if (reg & QCA8K_PORT_STATUS_TXFLOW)
+> +		state->pause |= MLO_PAUSE_TX;
+> +
+> +	return 1;
+> +}
+> +
+> +static void
+> +qca8k_phylink_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
+> +			    phy_interface_t interface)
+> +{
+> +	struct qca8k_priv *priv = ds->priv;
+>  
+>  	qca8k_port_set_status(priv, port, 0);
 
-WITH FIX:
-========
-xfrm_get_policy (XFRM_MSG_GETPOLICY):
-        xfrm_policy_byid
-        xfrm_policy_bysel_ctx
-                __xfrm_policy_bysel_ctx
-                        (mark.v & pol->mark.m) == pol->mark.v <--
+If operating in in-band mode, forcing the link down unconditionally
+will prevent the link coming up if the SGMII/1000base-X block
+automatically updates the MAC, and if this takes precedence.
 
-xfrm_get_policy (XFRM_MSG_DELPOLICY):
-        xfrm_policy_byid
-        xfrm_policy_bysel_ctx
-                __xfrm_policy_bysel_ctx
-                        mark.v == pol->mark.v &&
-                        mark.m == pol->mark.m;  <--
+When using in-band mode, you need to call dsa_port_phylink_mac_change()
+to keep phylink updated with the link status.
 
-xfrm_add_policy (XFRM_MSG_NEWPOLICY):
-xfrm_add_policy (XFRM_MSG_UPDPOLICY):
-        xfrm_policy_insert
-                xfrm_policy_insert_list
-                xfrm_policy_insert_inexact_list
-                        policy->mark.v == pol->mark.v &&
-                        policy->mark.m == pol->mark.m;  <--
+Alternatively, phylink supports polling mode, but due to the layered
+way DSA is written, DSA drivers don't have access to that as that is
+in the DSA upper levels in net/dsa/slave.c (dsa_slave_phy_setup(),
+it would be dp->pl_config.pcs_poll).
+
+Apart from those points, I think it looks fine, thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 503kbps up
