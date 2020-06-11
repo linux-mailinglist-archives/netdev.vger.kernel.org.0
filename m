@@ -2,86 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9C1C1F6AD5
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 17:21:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38F6C1F6AE4
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 17:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728570AbgFKPVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 11:21:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54924 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728365AbgFKPVF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jun 2020 11:21:05 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2DDE22067B;
-        Thu, 11 Jun 2020 15:21:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591888865;
-        bh=fU4053E/gEMjOvm/1ax+QwbZU9nEqKq0J4A2Bf6dWHQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=N5Tn1ZgbQacjixDiubcV1IE5JEiq9iPEMWmGtJ2uM8xzzrHlI2gqPF2Q5iGG1JqLI
-         A52kNMFN/6DvyS/5oAyXPU5yFTgGxFM4wQGGa3Q8/cyJWLM0NjP0KLKhMCXgaEEl3/
-         wxbew7LG7ar+YC4EVflLnlWgU9cUn3sgLjAXk7+8=
-Date:   Thu, 11 Jun 2020 16:21:03 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
-        Ezequiel Garcia <ezequiel@collabora.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH] dt-bindings: Fix more incorrect 'reg' property sizes in
- examples
-Message-ID: <20200611152103.GJ4671@sirena.org.uk>
-References: <20200611151923.1102796-1-robh@kernel.org>
+        id S1728584AbgFKPWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 11:22:22 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:35018 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728365AbgFKPWV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 11:22:21 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05BFGwIx189025;
+        Thu, 11 Jun 2020 15:22:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=F+errMLdvgi4MHt8jCQq09ZX5AvpbDZ+cZ9ta5vO2pQ=;
+ b=qQeRu8d9AseQvkn6mmiWlD6UFRviqGajGZpCB4mNg4zU8Yg0+3HgGizUcCZRBNQD4DS8
+ p8w8LmzJdXtq6u9UUWQQYHcXXXLHhk8hqI9y6gLjjt8hqxWlT0eGEYhx71kgkHGu6wII
+ bzUaU3VJ/Zh88Dkzg0+Nn5YMEyucRur96i524mcIawwORJ176PEbMaSMhH8MT+UtASSt
+ WX6ptbjkL6WVwZeKOa4VK/oUtoUJepBkRu7UI7wTNDdi8K0ggQHHm4KlzwwrpnIczYGU
+ 9GBJOstKJZoXKJGRhdwAANFY7GseOg93bG+y9h6L28r1oXrVE0GU07nBVApJRaQcR5Cj 8Q== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 31g3sn8cv9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 11 Jun 2020 15:22:15 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05BFIXc3033187;
+        Thu, 11 Jun 2020 15:22:14 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3020.oracle.com with ESMTP id 31gmwvhfn3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Jun 2020 15:22:14 +0000
+Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 05BFMDHj017504;
+        Thu, 11 Jun 2020 15:22:13 GMT
+Received: from char.us.oracle.com (/10.152.32.25)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 11 Jun 2020 08:22:13 -0700
+Received: by char.us.oracle.com (Postfix, from userid 1000)
+        id EBBF46A0100; Thu, 11 Jun 2020 11:22:57 -0400 (EDT)
+Date:   Thu, 11 Jun 2020 11:22:57 -0400
+From:   Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>, eperezma@redhat.com
+Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
+Message-ID: <20200611152257.GA1798@char.us.oracle.com>
+References: <20200611113404.17810-1-mst@redhat.com>
+ <20200611113404.17810-3-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="pMCBjikF2xGw87uL"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200611151923.1102796-1-robh@kernel.org>
-X-Cookie: I like your SNOOPY POSTER!!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200611113404.17810-3-mst@redhat.com>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9649 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0 adultscore=0
+ mlxscore=0 mlxlogscore=944 bulkscore=0 malwarescore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006110121
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9649 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 priorityscore=1501
+ lowpriorityscore=0 impostorscore=0 cotscore=-2147483648 suspectscore=0
+ spamscore=0 bulkscore=0 malwarescore=0 phishscore=0 mlxscore=0
+ mlxlogscore=995 clxscore=1011 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006110121
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jun 11, 2020 at 07:34:19AM -0400, Michael S. Tsirkin wrote:
+> As testing shows no performance change, switch to that now.
 
---pMCBjikF2xGw87uL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+What kind of testing? 100GiB? Low latency?
 
-On Thu, Jun 11, 2020 at 09:19:23AM -0600, Rob Herring wrote:
-> The examples template is a 'simple-bus' with a size of 1 cell for
-> had between 2 and 4 cells which really only errors on I2C or SPI type
-> devices with a single cell.
-
-Acked-by: Mark Brown <broonie@kernel.org>
-
---pMCBjikF2xGw87uL
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl7iS94ACgkQJNaLcl1U
-h9ALwgf9FJflzTQOP828gD9dhJPBLf9uqdG6GFRFf/iGqCG+0EHh1MxRNIBXMNFU
-pFc2qOrOXnTCvFmSwYib4Ic2S+mc1j9JMhrEjEp6ybbJzWwTmqImDlCydJ81it+0
-mJ2ohVbaOo8OsZprM11pEL6wflKweqzJgzQWsg7IgWJUebFsrzEXOKt0nElgxHwM
-DxIkj39TRFocuWU1NqkIBefPYWejxr1I8DppfhMBZnAI74UaODz+zAo+EYGPsj+a
-OFde9BISP8NNn/skIz7L+4sPP/vkKIw4NoG376dcODKCA88n9Z1clhYE5CkYLhlx
-c/Of3H7INUOo4nh6sqkC+DMhtfn58g==
-=GWWY
------END PGP SIGNATURE-----
-
---pMCBjikF2xGw87uL--
