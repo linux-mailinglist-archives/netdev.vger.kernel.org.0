@@ -2,141 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47EF61F6CCD
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 19:31:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46B531F6CDD
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 19:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726940AbgFKRbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 13:31:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55206 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726867AbgFKRbZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jun 2020 13:31:25 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EA35E20897;
-        Thu, 11 Jun 2020 17:31:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591896685;
-        bh=FPl7RpqbS3TnwMSE5/fJWM1JXPLNwRMS3V5/5udQ4rw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m7DZaI0It/5A0Re3V1bLAorAPW1Y5HK6EU/pijf1AW616ag/iHnnhfYXaXNgFK/SQ
-         L7NKM4cS+fC9tdCWy75pD/TB0ke/fSUflHM6fK/xLNhWCpPVyu1cgvUiNvJw/klAIC
-         nzzf6M5ZQEwvVmGkrmxOz+fEXEHoSqxFgrFBY3Xs=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, macro@linux-mips.org
-Subject: [RFC 8/8] docs: networking: move FDDI drivers to the hw driver section
-Date:   Thu, 11 Jun 2020 10:30:10 -0700
-Message-Id: <20200611173010.474475-9-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200611173010.474475-1-kuba@kernel.org>
-References: <20200611173010.474475-1-kuba@kernel.org>
+        id S1726809AbgFKRgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 13:36:13 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:46121 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726277AbgFKRgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 13:36:12 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@mellanox.com)
+        with SMTP; 11 Jun 2020 20:36:09 +0300
+Received: from mtr-vdi-191.wap.labs.mlnx. (mtr-vdi-191.wap.labs.mlnx [10.209.100.28])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 05BHa9Yf013972;
+        Thu, 11 Jun 2020 20:36:09 +0300
+From:   Roi Dayan <roid@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>, Roi Dayan <roid@mellanox.com>
+Subject: [PATCH iproute2] ip address: Fix loop initial declarations are only allowed in C99
+Date:   Thu, 11 Jun 2020 20:35:43 +0300
+Message-Id: <20200611173543.42371-1-roid@mellanox.com>
+X-Mailer: git-send-email 2.8.4
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move docs for defza and skfp under device_drivers/fddi.
+On some distros, i.e. rhel 7.6, compilation fails with the following:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
---
-CC: macro@linux-mips.org
+ipaddress.c: In function ‘lookup_flag_data_by_name’:
+ipaddress.c:1260:2: error: ‘for’ loop initial declarations are only allowed in C99 mode
+  for (int i = 0; i < ARRAY_SIZE(ifa_flag_data); ++i) {
+  ^
+ipaddress.c:1260:2: note: use option -std=c99 or -std=gnu99 to compile your code
+
+This commit fixes the single place needed for compilation to pass.
+
+Fixes: 9d59c86e575b ("iproute2: ip addr: Organize flag properties structurally")
+Signed-off-by: Roi Dayan <roid@mellanox.com>
 ---
- .../{ => device_drivers/fddi}/defza.rst       |  0
- .../networking/device_drivers/fddi/index.rst  | 19 +++++++++++++++++++
- .../{ => device_drivers/fddi}/skfp.rst        |  0
- .../networking/device_drivers/index.rst       |  1 +
- Documentation/networking/index.rst            |  2 --
- drivers/net/fddi/Kconfig                      |  4 ++--
- 6 files changed, 22 insertions(+), 4 deletions(-)
- rename Documentation/networking/{ => device_drivers/fddi}/defza.rst (100%)
- create mode 100644 Documentation/networking/device_drivers/fddi/index.rst
- rename Documentation/networking/{ => device_drivers/fddi}/skfp.rst (100%)
+ ip/ipaddress.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/defza.rst b/Documentation/networking/device_drivers/fddi/defza.rst
-similarity index 100%
-rename from Documentation/networking/defza.rst
-rename to Documentation/networking/device_drivers/fddi/defza.rst
-diff --git a/Documentation/networking/device_drivers/fddi/index.rst b/Documentation/networking/device_drivers/fddi/index.rst
-new file mode 100644
-index 000000000000..0b75294e6c8b
---- /dev/null
-+++ b/Documentation/networking/device_drivers/fddi/index.rst
-@@ -0,0 +1,19 @@
-+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+Fiber Distributed Data Interface (FDDI) Device Drivers
-+======================================================
-+
-+Contents:
-+
-+.. toctree::
-+   :maxdepth: 2
-+
-+   defza
-+   skfp
-+
-+.. only::  subproject and html
-+
-+   Indices
-+   =======
-+
-+   * :ref:`genindex`
-diff --git a/Documentation/networking/skfp.rst b/Documentation/networking/device_drivers/fddi/skfp.rst
-similarity index 100%
-rename from Documentation/networking/skfp.rst
-rename to Documentation/networking/device_drivers/fddi/skfp.rst
-diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
-index d6a73e4592e0..a3113ffd7a16 100644
---- a/Documentation/networking/device_drivers/index.rst
-+++ b/Documentation/networking/device_drivers/index.rst
-@@ -13,6 +13,7 @@ Hardware Device Drivers
-    cable/index
-    cellular/index
-    ethernet/index
-+   fddi/index
-    hamradio/index
-    wan/index
-    wifi/index
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index f48f1d19caff..c29496fff81c 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -47,7 +47,6 @@ Linux Networking Documentation
-    dccp
-    dctcp
-    decnet
--   defza
-    dns_resolver
-    driver
-    eql
-@@ -94,7 +93,6 @@ Linux Networking Documentation
-    sctp
-    secid
-    seg6-sysctl
--   skfp
-    strparser
-    switchdev
-    tc-actions-env-rules
-diff --git a/drivers/net/fddi/Kconfig b/drivers/net/fddi/Kconfig
-index da4f58eed08f..1cca61293577 100644
---- a/drivers/net/fddi/Kconfig
-+++ b/drivers/net/fddi/Kconfig
-@@ -77,8 +77,8 @@ config SKFP
- 	  - Netelligent 100 FDDI SAS UTP
- 	  - Netelligent 100 FDDI SAS Fibre MIC
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index 3b53933f4167..f97eaff3dbbf 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -1257,7 +1257,9 @@ static const struct ifa_flag_data_t {
  
--	  Read <file:Documentation/networking/skfp.rst> for information about
--	  the driver.
-+	  Read <file:Documentation/networking/device_drivers/fddi/skfp.rst>
-+	  for information about the driver.
- 
- 	  Questions concerning this driver can be addressed to:
- 	  <linux@syskonnect.de>
+ /* Returns a pointer to the data structure for a particular interface flag, or null if no flag could be found */
+ static const struct ifa_flag_data_t* lookup_flag_data_by_name(const char* flag_name) {
+-	for (int i = 0; i < ARRAY_SIZE(ifa_flag_data); ++i) {
++	unsigned int i;
++
++	for (i = 0; i < ARRAY_SIZE(ifa_flag_data); ++i) {
+ 		if (strcmp(flag_name, ifa_flag_data[i].name) == 0)
+ 			return &ifa_flag_data[i];
+ 	}
 -- 
-2.26.2
+2.8.4
 
