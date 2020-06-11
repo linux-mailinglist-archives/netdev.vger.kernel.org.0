@@ -2,208 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E13B41F7088
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 00:46:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76A6C1F708F
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 00:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726287AbgFKWqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 18:46:35 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:8322 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726251AbgFKWqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 18:46:35 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05BMXEua152323;
-        Thu, 11 Jun 2020 18:46:20 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 31kknyjvtp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 11 Jun 2020 18:46:20 -0400
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 05BMZSB0162540;
-        Thu, 11 Jun 2020 18:46:19 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 31kknyjvt5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 11 Jun 2020 18:46:19 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05BMjYmr015758;
-        Thu, 11 Jun 2020 22:46:17 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 31g2s82aed-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 11 Jun 2020 22:46:17 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05BMiw9m60621252
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 11 Jun 2020 22:44:58 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D8387AE067;
-        Thu, 11 Jun 2020 22:46:14 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 298A6AE065;
-        Thu, 11 Jun 2020 22:46:14 +0000 (GMT)
-Received: from sig-9-145-174-225.de.ibm.com (unknown [9.145.174.225])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 11 Jun 2020 22:46:14 +0000 (GMT)
-Message-ID: <e1823b9409720aadb14691fbc4e136ad36c5264c.camel@linux.ibm.com>
-Subject: Re: [RFC] .BTF section data alignment issue on s390
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     Jiri Olsa <jolsa@redhat.com>,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Frantisek Hrbata <fhrbata@redhat.com>,
-        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
-Date:   Fri, 12 Jun 2020 00:46:13 +0200
-In-Reply-To: <20200611205040.GA1853644@krava>
-References: <20200611205040.GA1853644@krava>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-MIME-Version: 1.0
+        id S1726364AbgFKWrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 18:47:41 -0400
+Received: from mail-vi1eur05on2064.outbound.protection.outlook.com ([40.107.21.64]:6125
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726254AbgFKWrk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jun 2020 18:47:40 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O9qGnaMRgMh3zZzwbbD/8A+6Xqu7/NXFuVGAaLVSI1TQcuADNmzlPpb4+PX/qwYQ0TleKjiv5fE4S4xvh+v4FN9gHD44iJAAizg5k0LFcXJu3UwFVnwC6xNauzWy98gLnIRzDib+8uKOoZdRkYbPZs59idJhHGJ60FWjv2w06ohXPd2dF6X2JuKhpQXC44JNJL6nc8YhzB4DShSREXBQGnb3LwTMmgr6eNZzzsq0P1NdqpXEPwYpEQiVXmqKT6F+lB60SDby3GFP97Gj/CcLaeNWIow0C65HR9ZgGfaMSHAdj9iiLEMyprdDBxG3mwepdswxhO/9S2ksoCf1aHHF/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MlPRJiyHZBUiYljvwtyXdcKh1TmqYvKtwndz3M+iLA4=;
+ b=eCLlizLR1narz8DMIVfqEHxym86rGp3xqQKkDN/hFlwHgVc6Se4JfJbaZuG69w9UDBqdpzO4XmiStKzKif8/8Q92bY1VCl25ZWcftn7Mpu8lSGY4Lx23Rf8FQqWZojrItjPiUUkZ6uKehZ0uPJ/X+j8Blb1tDuldr5dfjBt5AY+DWtUEr4gr5sSe7urPT+BrWQO272guodROVG9bEbdFiiV+7nuwtaDpUCKM5vZd8NK7bZV61G9GLJZCu3oY1WzD/7FpiRQnhq5311yRlAaf0mbwKyn54lK1eX+E05NatKGMr9HKfBQkHBOOgrgh6RM4Sjrewktg0GpU0ZW+A9Ke8A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MlPRJiyHZBUiYljvwtyXdcKh1TmqYvKtwndz3M+iLA4=;
+ b=JGEcc08BQJ4puwb5hYAPraqYKU7+w7kLdt6T1v/klO7+rS4gM9vuVJgdmgGAH2xcVyJUDvC80z3K+1oOL9UAh7M395oIQekFcZbcg2FsLlPuxihFyUhWktYrPvxgXxteNnAhs43tDicsotUPWHahZ8XzthVYgEOBJg0kG7iUyHg=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB4464.eurprd05.prod.outlook.com (2603:10a6:803:44::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.22; Thu, 11 Jun
+ 2020 22:47:37 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3088.021; Thu, 11 Jun 2020
+ 22:47:36 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net 00/10] mlx5 fixes 2020-06-11
+Date:   Thu, 11 Jun 2020 15:46:58 -0700
+Message-Id: <20200611224708.235014-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.26.2
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-11_23:2020-06-11,2020-06-11 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 phishscore=0 suspectscore=0 spamscore=0
- cotscore=-2147483648 priorityscore=1501 mlxlogscore=999 clxscore=1011
- adultscore=0 mlxscore=0 lowpriorityscore=0 bulkscore=0 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006110174
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR06CA0066.namprd06.prod.outlook.com
+ (2603:10b6:a03:14b::43) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BYAPR06CA0066.namprd06.prod.outlook.com (2603:10b6:a03:14b::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3088.20 via Frontend Transport; Thu, 11 Jun 2020 22:47:35 +0000
+X-Mailer: git-send-email 2.26.2
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 8ac75ca4-3c9f-4df2-dcee-08d80e596fd7
+X-MS-TrafficTypeDiagnostic: VI1PR05MB4464:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB4464ED3C78726BA2B3CCD286BE800@VI1PR05MB4464.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 0431F981D8
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /uAtPGqTkdgBRgNx/j2jV1srjCMVSTcaWz/fX2kp88byso6xW5dUbI4q7gvQzeCdTCEJ7oITj6fdeETm8za/0Vc/nt7cVVgSPfgqDkm4SCGpBFfn05/5aRkuGs943GzngwGtDneC1UJOwGYumzGazp52fpCAN8UIKsld+v0fct7BqXkbyeoqj3ny7YU0GEUnrjRfi3IvVjfVESS5IOYpkIrkh6oKonrd6nuyueyAlD2cLLkcPmHhW54saYQJV0f4dVjCskn+/j4KSbHoeNGgkdxX+xHO59HoMgvzKnD0CXbnlJaJoze2NucQDrEmy48uIUXut0ks24FN58DsCd8CmssZx+7N6sch3sE6bFiRsqo8K80Q9mNsHotc3iLzUyie
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(376002)(136003)(346002)(396003)(8936002)(16526019)(186003)(4326008)(316002)(8676002)(107886003)(5660300002)(478600001)(26005)(956004)(2616005)(6666004)(66556008)(86362001)(6512007)(6486002)(66946007)(1076003)(6506007)(36756003)(66476007)(83380400001)(2906002)(52116002)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: oXlWnCZcSfX7AZQKdDYa6IyYQn5nxeQSRX2kt1jtS7TLRTjPhbuoBEVC94sciVPq8a6+OzbaYBVyxH53HdjR7mbaU7a29/zXgVv/YZh+f+VKnshgOQopPAhIW+ByEQpSNKDGxbd4bUHSwTb1mykgqBN2x8IanuwNA9jF82E/ryzuCtplrhNCjaNGpcZIZMMpz3I02hu3yMXiK0Saw30BbTOB011DbHN3xoZhyPZIgs6Do0FatxvS3CYcy5NfoUyZF4QQQqMKCEyIPhfcn7ETA58K2r5OzbonoRQzpj5D1sWDMCKS6HG+IDKx/9JFEL+ipbbBOThjoa+zM8+FL4TftgXMu/+79WOkmre+MLCyb+tBTCAiPvOM2O/U7UJFsdq0n/7vpKOF1EbLY1gNksOjqQHpzeNh5fDnGafMwTPObBfvLoo4GJG6Tb2L1lSV8uRdydVb6JiOYW8e2W9+QXJFF4mPHZHJqzO8ONFcLMLvVDw=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ac75ca4-3c9f-4df2-dcee-08d80e596fd7
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2020 22:47:36.7829
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WBY20xznda2n8juJ4SrMNdPGoGXYImVv0kU7FbY3QBI6qw4J2H7So/HO/s0SZdupvkK8Lx/Q+4pu4plq2bwNiA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4464
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-06-11 at 22:50 +0200, Jiri Olsa wrote:
-> hi,
-> we're hitting a problem on s390 with BTF data alignment.
-> 
-> When running simple test, we're getting this message from
-> verifier and console:
-> 
->   bpf_common.c:91: BROK: Failed verification: in-kernel BTF is
-> malformed
->   [   41.545572] BPF:Total section length too long
-> 
-> 
-> AFAICS it happens when .BTF section data size is not an even number
-> ;-)
-> 
-> DISCLAIMER I'm quite ignorant of s390x arch details, so most likely
-> I'm
-> totally wrong and perhaps missing something important and there's
-> simple
-> explanation.. but here's what got me here:
-> 
-> 
-> ... so BTF data is placed in .BTF section via linker script:
-> 
->         .BTF : AT(ADDR(.BTF) - LOAD_OFFSET)
-> {                           \
->                 __start_BTF =
-> .;                                        \
->                 *(.BTF)                                              
->    \
->                 __stop_BTF =
-> .;                                         \
->         }
-> 
-> 
-> and the .BTF data size in btf_parse_vmlinux is computed as:
-> 
->         btf->data_size = __stop_BTF - __start_BTF;
-> 
-> 
-> this computation is compiled as:
-> 
->         00000000002aeb20 <btf_parse_vmlinux>:
->         ...
->           2aeb8a:  larl    %r1,cda3ac <__start_BTF+0x2084a8>    #
-> loads r1 with end
->           2aeb90:  larl    %r2,ad1f04 <__start_BTF>             #
-> loads r2 with start
->           2aeb96:  sgr     %r1,%r2                              #
-> substract r1 - r2 
-> 
-> 
-> having following values for start/stop_BTF symbols:
-> 
->         # nm ./vmlinux | grep __start_BTF
->         0000000000ad1f04 R __start_BTF
->         # nm ./vmlinux | grep __stop_BTF
->         0000000000cda3ad R __stop_BTF
-> 
->         -> the BTF data size is 0x2084a9
-> 
-> 
-> but as you can see the instruction that loads the 'end' symbol:
-> 
->         larl    %r1,cda3ac <__start_BTF+0x2084a8>
-> 
-> 
-> is loading '__start_BTF + 0x2084a8', which is '__stop_BTF - 1'
-> 
-> 
-> From spec it seems that larl instruction's argument must be even
-> number ([1] page 7-214):
-> 
->         2.   For  LOAD  RELATIVE  LONG,  the  second  oper-and must
-> be aligned
->         on an integral boundary cor-responding to the operand’s
-> size. 
-> 
-> 
-> I also found an older bug complaining about this issue [2]:
-> 
->         ...
->         larl instruction can only load even values - instructions on
-> s390 are 2-byte
->         aligned and the instruction encodes offset to the target in
-> 2-byte units.
->         ...
->         The GNU BFD linker for s390 doesn't bother to check if
-> relocations fit or are
->         properly aligned. 
->         ...
-> 
-> 
-> I tried to fix that aligning the end to even number, but then
-> btf_check_sec_info logic needs to be adjusted as well, and
-> probably other places as well.. so I decided to share this
-> first.. because it all seems wrong ;-)
-> 
-> thoughts? thanks,
-> jirka
-> 
-> 
-> [1] http://publibfi.boulder.ibm.com/epubs/pdf/dz9zr008.pdf
-> [2] https://sourceware.org/bugzilla/show_bug.cgi?id=18960
-> 
-Hi Jiri,
+Hi Dave,
 
-Actually I recently ran into it myself on Debian, and I believe your
-analysis is correct :-) The only thing to add to it is that the
-compiler emits the correct instruction (if you look at the .o file),
-it's linker that messes things up.
+This series introduces some fixes to mlx5 driver.
+For more information please see tag log below.
 
-The linker bug in question is [1].
+Please pull and let me know if there is any problem.
 
-I opened [2] to Debian folks, and I believe that other important
-distros (RH, SUSE, Ubuntu) have this fixed already.
+For -stable v5.2
+  ('net/mlx5: drain health workqueue in case of driver load error')
 
-Which distro are you using?
+For -stable v5.3
+  ('net/mlx5e: Fix repeated XSK usage on one channel')
+  ('net/mlx5: Fix fatal error handling during device load')
 
-Best regards,
-Ilya
+For -stable v5.5
+ ('net/mlx5: Disable reload while removing the device')
 
-[1] 
-https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=e6213e09ed0e
-[2] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=961736
+For -stable v5.7
+  ('net/mlx5e: CT: Fix ipv6 nat header rewrite actions')
 
+Thanks,
+Saeed.
+
+---
+The following changes since commit 9798278260e8f61d04415342544a8f701bc5ace7:
+
+  tipc: fix NULL pointer dereference in tipc_disc_rcv() (2020-06-11 12:48:08 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2020-06-11
+
+for you to fetch changes up to 09a9297574cb10b3d9fe722b2baa9a379b2d289c:
+
+  net/mlx5: E-Switch, Fix some error pointer dereferences (2020-06-11 15:38:08 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2020-06-11
+
+----------------------------------------------------------------
+Aya Levin (1):
+      net/mlx5e: Fix ethtool hfunc configuration change
+
+Dan Carpenter (1):
+      net/mlx5: E-Switch, Fix some error pointer dereferences
+
+Denis Efremov (1):
+      net/mlx5: DR, Fix freeing in dr_create_rc_qp()
+
+Leon Romanovsky (1):
+      net/mlx5: Don't fail driver on failure to create debugfs
+
+Maxim Mikityanskiy (1):
+      net/mlx5e: Fix repeated XSK usage on one channel
+
+Oz Shlomo (1):
+      net/mlx5e: CT: Fix ipv6 nat header rewrite actions
+
+Parav Pandit (2):
+      net/mlx5: Disable reload while removing the device
+      net/mlx5: Fix devlink objects and devlink device unregister sequence
+
+Shay Drory (2):
+      net/mlx5: drain health workqueue in case of driver load error
+      net/mlx5: Fix fatal error handling during device load
+
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |  2 --
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 16 ++++-----
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |  4 +++
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   | 41 ++++++++++++----------
+ .../mellanox/mlx5/core/esw/acl/ingress_lgcy.c      |  6 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/health.c   | 14 ++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     | 40 ++++++++++-----------
+ .../ethernet/mellanox/mlx5/core/steering/dr_send.c |  2 +-
+ 8 files changed, 70 insertions(+), 55 deletions(-)
