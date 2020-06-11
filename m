@@ -2,69 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F1721F6ED2
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 22:34:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 417701F6F03
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 22:50:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726186AbgFKUeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 16:34:06 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:42078 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725782AbgFKUeG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 16:34:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591907645;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SQbKg3UFY7FrbKtLcWPKiMVez16pv2xo8ZrBLK34aH0=;
-        b=aDE3/yoKWu9PDBIspZ3Gz90d0ou/OIsILs+NOHDatiwhfsTcowsr6bRbnkyYMrvchabQFc
-        AR80Bdhv+kxMTzrAjqc3EtmFlS03XbHc7sH5ASygcN6ZyuxTs4L4hWF73egy3C339lnRT+
-        RAiaoranYx291W3P328/Y6nLKjkT7sQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-107-SJSP2mTOMFqA7taPH1vehQ-1; Thu, 11 Jun 2020 16:34:02 -0400
-X-MC-Unique: SJSP2mTOMFqA7taPH1vehQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B73AEC1A0;
-        Thu, 11 Jun 2020 20:34:01 +0000 (UTC)
-Received: from [10.40.192.51] (unknown [10.40.192.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A6C3F78EE1;
-        Thu, 11 Jun 2020 20:34:00 +0000 (UTC)
-Subject: Re: [PATCH net] ionic: remove support for mgmt device
-To:     Shannon Nelson <snelson@pensando.io>
-References: <20200611040739.4109-1-snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-From:   Michal Schmidt <mschmidt@redhat.com>
-Message-ID: <9bf6b140-f099-29ce-011e-e46c950b8150@redhat.com>
-Date:   Thu, 11 Jun 2020 22:33:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1725873AbgFKUue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 16:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34094 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726186AbgFKUud (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 16:50:33 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5240C08C5C1
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 13:50:32 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id q8so7940559iow.7
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 13:50:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/nzXY/rjMjGOSpWYISd7S7NtrlCcPq12WC0DULXfYSI=;
+        b=B++PglUL+VGA1Ufft0gIqAeI3TG5SAqrSA7bJQerq70CahPOcuHHXhs2uF++LAJjwD
+         C6TIqVJ7yhiZGH7yyGQ4ZfHdRAXb11loYYhEqLdPynQ5zzmmgPq0NpE8tLPAGVaGhZ9n
+         CF1VM0YIvAmxTIYh34bYYXcNSRlKLTdqIhIwWGbbXNh4gmcNACP9vNqvnKuJGX3Gguju
+         HIz0yJWTueV7NfnSsP7KcI3w984FohdlWtjUBaEeMXbyIEUbMtJBwKIMbJDrDQP+AhAD
+         2hegK6kT6GpJEEGEFygE/cC9q1pbsEtMXx8rnmgPN6+y55n7vmwqLOLTSrkBi0TtVGDj
+         UasQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/nzXY/rjMjGOSpWYISd7S7NtrlCcPq12WC0DULXfYSI=;
+        b=doHjEpzc62ghXb/u7wJpLCqeKIuiobm0auNhkQ1Q52EkbJe93prZJP2VGLPr1np8cO
+         c8Bmv2U+OKjV8Qyik/+0aBtkVayNxYi/pctvQPuuNCRwud5hHVtRzEMuDF+SftYpvCIZ
+         ks0V1h3Maks//9i+Blqo+DC5g1tMDpHhNxYtz1bdrwIt1VraXY7A2AaqAjFTlPUy1IuO
+         kpBzEXUTP18NnlMp1RznXAzqYM72Ei197GkFTM9qwPI0mpMMpROw/vYP1D4IMgdk0+bO
+         f2cHklAGK5hnP9R4iVC6nQrzALNIaq7GUjoiIO1vguYPv4n2/evdhwbFYKtLLj110Vfl
+         SkEQ==
+X-Gm-Message-State: AOAM530Q86hdxgics5UT7VQqqTzv7eJWgBzQ6Eax+7eDNhgkTMjZ0URz
+        E95UkWlnm+b8BUHFVWksBqTZUC5uaGJLYk9Ct9c=
+X-Google-Smtp-Source: ABdhPJwJgJnYNogFFS7h63jLBsy2weG3crslAytDjeEdb9cbSvQtio4NhHiBMBQf+CkLNm17LvxIi7Z+Rp025qjGD98=
+X-Received: by 2002:a02:6cd8:: with SMTP id w207mr5079374jab.49.1591908632030;
+ Thu, 11 Jun 2020 13:50:32 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200611040739.4109-1-snelson@pensando.io>
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+References: <cover.1591824863.git.dcaratti@redhat.com> <8ef32bd7f2afa7e3eba5b67872b56440e6154d5a.1591824863.git.dcaratti@redhat.com>
+In-Reply-To: <8ef32bd7f2afa7e3eba5b67872b56440e6154d5a.1591824863.git.dcaratti@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 11 Jun 2020 13:50:20 -0700
+Message-ID: <CAM_iQpX33ZTz0UHwcpH7ehFE4MjmB14fuLHHRFkVYYOqv+FCwA@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] net/sched: act_gate: fix configuration of the
+ periodic timer
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Po Liu <Po.Liu@nxp.com>, "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dne 11. 06. 20 v 6:07 Shannon Nelson napsal(a):
-> We no longer support the mgmt device in the ionic driver,
-> so remove the device id and related code.
-...> @@ -252,8 +248,6 @@ static int ionic_probe(struct pci_dev *pdev, 
-const struct pci_device_id *ent)
->   	}
->   
->   	pci_set_master(pdev);
-> -	if (!ionic->is_mgmt_nic)
-> -		pcie_print_link_status(pdev);
+On Wed, Jun 10, 2020 at 2:43 PM Davide Caratti <dcaratti@redhat.com> wrote:
+> +static void gate_setup_timer(struct tcf_gate *gact, u64 basetime,
+> +                            enum tk_offsets tko, s32 clockid,
+> +                            bool do_init)
+> +{
+> +       bool timer_change = basetime != gact->param.tcfg_basetime ||
+> +                           tko != gact->tk_offset ||
+> +                           clockid != gact->param.tcfg_clockid;
+> +
+> +       if (!do_init) {
+> +               if (timer_change) {
+> +                       spin_unlock_bh(&gact->tcf_lock);
+> +                       hrtimer_cancel(&gact->hitimer);
+> +                       spin_lock_bh(&gact->tcf_lock);
+> +                       goto init_hitimer;
+> +               }
+> +               return;
+> +       }
+> +
+> +init_hitimer:
+> +       gact->param.tcfg_basetime = basetime;
+> +       gact->param.tcfg_clockid = clockid;
+> +       gact->tk_offset = tko;
+> +       hrtimer_init(&gact->hitimer, clockid, HRTIMER_MODE_ABS_SOFT);
+> +       gact->hitimer.function = gate_timer_func;
+> +}
 
-Was removing the call intentional? Notice the condition is negated.
+This function would be more readable if you rewrite it like this:
 
-Michal
+if (!do_init && !timer_change)
+  return;
+if (timer_change) {
+...
+}
+...
 
+The rest looks good to me.
+
+Thanks.
