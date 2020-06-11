@@ -2,104 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90C8A1F6015
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 04:41:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA1551F6028
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 04:54:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbgFKClF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Jun 2020 22:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726279AbgFKClF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Jun 2020 22:41:05 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11BF8C08C5C1;
-        Wed, 10 Jun 2020 19:41:05 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id w9so3557998qtv.3;
-        Wed, 10 Jun 2020 19:41:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=wTiC49GnZ5ZEBNWsG/S2XbISpIYn0F/SWZwBLcW/d2A=;
-        b=mLJu4gXzzMsz/IBbFLkr4QLmm3M3YXOfBvk576ubygCcnlm8I9VMZUgkm2nTfQ9ZSD
-         ONnGYD4+rO7gGeX7gzYNjf9AJlKUREeRHxupmKvL6xy8G2MJo5+MSg2AJJvHm7PBeNzz
-         IeQeL7DREZbwLWShJNRz7GZPUGTpCxrGwKej+sZXZXbZzUOIMtY6mPW47SP4TqXFc+4C
-         L6YgVDRl4nKgQw+VztXXtmdyrCv/RRaLDrzANJNs4rx5/Pj2skxlQfTUAX+QTCXmC2IT
-         YOf1XhQG2bPB6GmnYDQ6WwVJ/hLFCD2lVJykV0mYtGmjUNfZY24OwGBVQ2l1DwmoeUr5
-         bdCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=wTiC49GnZ5ZEBNWsG/S2XbISpIYn0F/SWZwBLcW/d2A=;
-        b=Z1xtnRsdWiiBf7OnZQAuOtZEZK1qWFtGoqDm4x63aXQwvEKd26Ns8ODyu4qOLJth5E
-         Shm8Wx2as5F5pWTugdRsd63u8dVJJ9msmQLFbR2mYkFIq23avKG/iY1LYU22y/phgDXb
-         wzhD32MvmYUkRJXddhnqN8bgUSK18fY3mRVjggNAn175JFlMMM7Ep5FT124+rayc89hv
-         a/NGI3Rq2pNvVRmFndk3rzfbe7ZGNK83OycSj0mJEvWCyGmd2d+dIEkFa/+JQNkc8rml
-         o0mQOg3n9Qto83FkrLuwitKQHkRGxMDAUIiIoXqcS0qzGv88gZF2UNhb0fWxiT8uPYWa
-         lcuQ==
-X-Gm-Message-State: AOAM530IkyxBMbJSkMhG6VKnd7918D8N8bY8Jitoa5mMnoM/cxdNnu4p
-        b+ylcyWliFrXaa/mWZ+2C3StGxsMjw5YtQ==
-X-Google-Smtp-Source: ABdhPJwkRdDdS5KBsTGSggDXQTHMfO9ECWm+ZUkwd4fu9vppbYNA0a5kdhFJ44GPc6tARd98iiOkiw==
-X-Received: by 2002:ac8:6bc6:: with SMTP id b6mr6537003qtt.101.1591843264037;
-        Wed, 10 Jun 2020 19:41:04 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:61ac:316c:1207:3fa6])
-        by smtp.googlemail.com with ESMTPSA id z194sm1265023qkb.73.2020.06.10.19.41.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2020 19:41:03 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Alex Dewar <alex.dewar@gmx.co.uk>,
-        linux-um@lists.infradead.org (open list:USER-MODE LINUX (UML)),
-        linux-kernel@vger.kernel.org (open list),
-        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools))
-Subject: [PATCH] Fix null pointer dereference in vector_user_bpf
-Date:   Wed, 10 Jun 2020 22:40:36 -0400
-Message-Id: <20200611024053.10429-1-gaurav1086@gmail.com>
+        id S1726316AbgFKCyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Jun 2020 22:54:51 -0400
+Received: from smtp21.cstnet.cn ([159.226.251.21]:35400 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726279AbgFKCyu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Jun 2020 22:54:50 -0400
+X-Greylist: delayed 428 seconds by postgrey-1.27 at vger.kernel.org; Wed, 10 Jun 2020 22:52:47 EDT
+Received: from localhost.localdomain (unknown [159.226.5.100])
+        by APP-01 (Coremail) with SMTP id qwCowAB3KszDmuFe33kpAg--.46380S2;
+        Thu, 11 Jun 2020 10:45:24 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     ioana.ciornei@nxp.com, ruxandra.radulescu@nxp.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drivers: dpaa2: Use devm_kcalloc() in setup_dpni()
+Date:   Thu, 11 Jun 2020 02:45:20 +0000
+Message-Id: <20200611024520.630-1-vulab@iscas.ac.cn>
 X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: qwCowAB3KszDmuFe33kpAg--.46380S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrtrW7tw1kZr1xXFW5CF45KFg_yoWkJFgEkr
+        47Zr17Ar4qkFySya1rKr4YvFyvkF4xZr48AFsaqFW3G3srArW8Ww4DXw13Ars3ur4xCry3
+        Jr1IyF13ZwnrKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbwxYjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwV
+        C2z280aVCY1x0267AKxVWxJr0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
+        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r
+        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCF04k20xvY0x0EwIxGrwCF
+        x2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14
+        v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY
+        67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2
+        IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AK
+        xVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjxUgg_TUUUUU
+X-Originating-IP: [159.226.5.100]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCAQEA102YMkl4wAAsP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bpf_prog is being checked for !NULL after uml_kmalloc but
-later its used directly for example:
-bpf_prog->filter = bpf and is also later returned upon success.
-Fix this, do a NULL check and return right away.
+A multiplication for the size determination of a memory allocation
+indicated that an array data structure should be processed.
+Thus use the corresponding function "devm_kcalloc".
 
-Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
 ---
- arch/um/drivers/vector_user.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/um/drivers/vector_user.c b/arch/um/drivers/vector_user.c
-index aa28e9eecb7b..71d043ae306f 100644
---- a/arch/um/drivers/vector_user.c
-+++ b/arch/um/drivers/vector_user.c
-@@ -730,10 +730,12 @@ void *uml_vector_user_bpf(char *filename)
- 		return false;
- 	}
- 	bpf_prog = uml_kmalloc(sizeof(struct sock_fprog), UM_GFP_KERNEL);
--	if (bpf_prog != NULL) {
--		bpf_prog->len = statbuf.st_size / sizeof(struct sock_filter);
--		bpf_prog->filter = NULL;
-+	if (bpf_prog == NULL) {
-+		printk(KERN_ERR "Failed to allocate bpf prog buffer");
-+		return NULL;
- 	}
-+	bpf_prog->len = statbuf.st_size / sizeof(struct sock_filter);
-+	bpf_prog->filter = NULL;
- 	ffd = os_open_file(filename, of_read(OPENFLAGS()), 0);
- 	if (ffd < 0) {
- 		printk(KERN_ERR "Error %d opening bpf file", -errno);
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 8fb48de5d18c..f150cd454fa4 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -2907,8 +2907,9 @@ static int setup_dpni(struct fsl_mc_device *ls_dev)
+ 	if (err && err != -EOPNOTSUPP)
+ 		goto close;
+ 
+-	priv->cls_rules = devm_kzalloc(dev, sizeof(struct dpaa2_eth_cls_rule) *
+-				       dpaa2_eth_fs_count(priv), GFP_KERNEL);
++	priv->cls_rules = devm_kcalloc(dev, dpaa2_eth_fs_count(priv),
++				       sizeof(struct dpaa2_eth_cls_rule),
++				       GFP_KERNEL);
+ 	if (!priv->cls_rules) {
+ 		err = -ENOMEM;
+ 		goto close;
 -- 
 2.17.1
 
