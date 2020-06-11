@@ -2,227 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F29721F6637
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 13:04:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 911701F6639
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 13:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727969AbgFKLEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 07:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56086 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727844AbgFKLEr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 07:04:47 -0400
-Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797BBC08C5C1;
-        Thu, 11 Jun 2020 04:04:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
-        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=CvFbGnYz+lQYgHeXrLshL7auugXlwdA1VE+LJ9ysFF8=; b=MJLDHgLH+pptuIbbqk2Easu/Jy
-        uj1sbNqVWlBmqWIuzK+STMcsTHlTU/PyX7bnjedWM3uMy5ElZVxTWNORpEsJsxye1h+pVIi1KZOU0
-        A7tg/LDeDYEsiPbz178HNugLNUeP86rDklgAdledlwdVMMm7lsL0BB1YEy+h9ebnLGyRA/f3FDxqF
-        wHVtmB9N8gPqVDrKKgT7Esc3BCpvmY9rhDX9EvNv9p6KovOCzv4Q1BtShIcowaOsZT73gkoJNvpnQ
-        GoUXUILWVGF+ni8zUmrcHyVqubeoc9s1vgkWgSfxrDAO/zZiZVffWLATRKBEmli2wH1DwXw6N8IpX
-        rCjx/BuA==;
-Received: from noodles by the.earth.li with local (Exim 4.92)
-        (envelope-from <noodles@earth.li>)
-        id 1jjL0h-00006R-9p; Thu, 11 Jun 2020 12:04:39 +0100
-Date:   Thu, 11 Jun 2020 12:04:39 +0100
-From:   Jonathan McDowell <noodles@earth.li>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] net: dsa: qca8k: Switch to PHYLINK instead of PHYLIB
-Message-ID: <20200611110439.GV311@earth.li>
-References: <cover.1591816172.git.noodles@earth.li>
- <78519bc421a1cb7000a68d05e43c4208b26f37e5.1591816172.git.noodles@earth.li>
- <CA+h21hr-5TCeYAiPueKce1Jo+s76mzDUaTpaM6JtjQj-mJPO6w@mail.gmail.com>
+        id S1727863AbgFKLFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 07:05:42 -0400
+Received: from correo.us.es ([193.147.175.20]:41094 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727124AbgFKLFl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jun 2020 07:05:41 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id CAC4C10FB0C
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 13:05:39 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id BB40CDA84B
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 13:05:39 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id BA520DA844; Thu, 11 Jun 2020 13:05:39 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7D6DFDA78E;
+        Thu, 11 Jun 2020 13:05:37 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 11 Jun 2020 13:05:37 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 5BC1041E4800;
+        Thu, 11 Jun 2020 13:05:37 +0200 (CEST)
+Date:   Thu, 11 Jun 2020 13:05:37 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     wenxu@ucloud.cn
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH net v2] flow_offload: fix incorrect cleanup for indirect
+ flow_blocks
+Message-ID: <20200611110537.GA6047@salvia>
+References: <1591869797-7264-1-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+h21hr-5TCeYAiPueKce1Jo+s76mzDUaTpaM6JtjQj-mJPO6w@mail.gmail.com>
+In-Reply-To: <1591869797-7264-1-git-send-email-wenxu@ucloud.cn>
 User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 11, 2020 at 11:58:43AM +0300, Vladimir Oltean wrote:
-> Hi Jonathan,
-> 
-> On Wed, 10 Jun 2020 at 23:19, Jonathan McDowell <noodles@earth.li> wrote:
-> >
-> > Update the driver to use the new PHYLINK callbacks, removing the
-> > legacy adjust_link callback.
-> >
-> > Signed-off-by: Jonathan McDowell <noodles@earth.li>
-...
-> >  static void
-> > -qca8k_adjust_link(struct dsa_switch *ds, int port, struct phy_device *phy)
-> > +qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
-> > +                        const struct phylink_link_state *state)
-> >  {
-> >         struct qca8k_priv *priv = ds->priv;
-> >         u32 reg;
-> >
-> > -       /* Force fixed-link setting for CPU port, skip others. */
-> > -       if (!phy_is_pseudo_fixed_link(phy))
-> > +       switch (port) {
-> > +       case 0: /* 1st CPU port */
-> > +               if (state->interface != PHY_INTERFACE_MODE_RGMII &&
-> > +                   state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
-> > +                   state->interface != PHY_INTERFACE_MODE_SGMII)
-> > +                       return;
-> > +
-> > +               reg = QCA8K_REG_PORT0_PAD_CTRL;
-> > +               break;
-> > +       case 1:
-> > +       case 2:
-> > +       case 3:
-> > +       case 4:
-> > +       case 5:
-> > +               /* Internal PHY, nothing to do */
-> > +               return;
-> > +       case 6: /* 2nd CPU port / external PHY */
-> > +               if (state->interface != PHY_INTERFACE_MODE_RGMII &&
-> > +                   state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
-> > +                   state->interface != PHY_INTERFACE_MODE_SGMII &&
-> > +                   state->interface != PHY_INTERFACE_MODE_1000BASEX)
-> > +                       return;
-> > +
-> > +               reg = QCA8K_REG_PORT6_PAD_CTRL;
-> > +               break;
-> > +       default:
-> > +               dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
-> > +               return;
-> > +       }
-> > +
-> > +       if (port != 6 && phylink_autoneg_inband(mode)) {
-> > +               dev_err(ds->dev, "%s: in-band negotiation unsupported\n",
-> > +                       __func__);
-> > +               return;
-> > +       }
-> > +
-> > +       switch (state->interface) {
-> > +       case PHY_INTERFACE_MODE_RGMII:
-> > +               /* RGMII mode means no delay so don't enable the delay */
-> > +               qca8k_write(priv, reg, QCA8K_PORT_PAD_RGMII_EN);
-> > +               break;
-> > +       case PHY_INTERFACE_MODE_RGMII_ID:
-> > +               /* RGMII_ID needs internal delay. This is enabled through
-> > +                * PORT5_PAD_CTRL for all ports, rather than individual port
-> > +                * registers
-> > +                */
-> > +               qca8k_write(priv, reg,
-> > +                           QCA8K_PORT_PAD_RGMII_EN |
-> > +                           QCA8K_PORT_PAD_RGMII_TX_DELAY(QCA8K_MAX_DELAY) |
-> > +                           QCA8K_PORT_PAD_RGMII_RX_DELAY(QCA8K_MAX_DELAY));
-> 
-> 3 points here:
-> - Should you prevalidate the device tree bindings that in case rgmii*
-> mode are used, same delay settings are applied to all ports?
-> - Can any RGMII port be connected to a PHY? If it can, won't the PHY
-> enable delays too for RGMII_ID? Will the link work in that case?
-> - Should you treat RGMII_TX_DELAY and RGMII_RX_DELAY independently for
-> the case where there may be PCB traces?
+On Thu, Jun 11, 2020 at 06:03:17PM +0800, wenxu@ucloud.cn wrote:
+[...]
+> diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+> index 0cfc35e..40eaf64 100644
+> --- a/net/core/flow_offload.c
+> +++ b/net/core/flow_offload.c
+> @@ -372,14 +372,13 @@ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
+>  }
+>  EXPORT_SYMBOL(flow_indr_dev_register);
+>  
+> -static void __flow_block_indr_cleanup(flow_setup_cb_t *setup_cb, void *cb_priv,
+> +static void __flow_block_indr_cleanup(void (*release)(void *cb_priv),
+>  				      struct list_head *cleanup_list)
+>  {
+>  	struct flow_block_cb *this, *next;
+>  
+>  	list_for_each_entry_safe(this, next, &flow_block_indr_list, indr.list) {
+> -		if (this->cb == setup_cb &&
+> -		    this->cb_priv == cb_priv) {
+> +		if (this->release == release) {
 
-The intent with this patch was to pull out the conversion to PHYLINK to
-be stand-alone, with no functional changes, as request by Andrew. I
-think there's room for some future clean-up here around the RGMII
-options, but my main purpose in this patch set is to improve the SGMII
-portion which my hardware uses that doesn't work with mainline.
+Are you sure this is correct?
 
-> > +static void
-> > +qca8k_phylink_validate(struct dsa_switch *ds, int port,
-> > +                      unsigned long *supported,
-> > +                      struct phylink_link_state *state)
-> > +{
-> > +       __ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-> > +
-> > +       switch (port) {
-> > +       case 0: /* 1st CPU port */
-> > +               if (state->interface != PHY_INTERFACE_MODE_NA &&
-> > +                   state->interface != PHY_INTERFACE_MODE_RGMII &&
-> > +                   state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
-> > +                   state->interface != PHY_INTERFACE_MODE_SGMII)
-> > +                       goto unsupported;
-> >                 break;
-> > -       case 100:
-> > -               reg = QCA8K_PORT_STATUS_SPEED_100;
-> > +       case 1:
-> > +       case 2:
-> > +       case 3:
-> > +       case 4:
-> > +       case 5:
-> > +               /* Internal PHY */
-> > +               if (state->interface != PHY_INTERFACE_MODE_NA &&
-> > +                   state->interface != PHY_INTERFACE_MODE_GMII)
-> > +                       goto unsupported;
-> >                 break;
-> > -       case 1000:
-> > -               reg = QCA8K_PORT_STATUS_SPEED_1000;
-> > +       case 6: /* 2nd CPU port / external PHY */
-> > +               if (state->interface != PHY_INTERFACE_MODE_NA &&
-> > +                   state->interface != PHY_INTERFACE_MODE_RGMII &&
-> > +                   state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
-> > +                   state->interface != PHY_INTERFACE_MODE_SGMII &&
-> > +                   state->interface != PHY_INTERFACE_MODE_1000BASEX)
-> > +                       goto unsupported;
-> >                 break;
-> >         default:
-> > -               dev_dbg(priv->dev, "port%d link speed %dMbps not supported.\n",
-> > -                       port, phy->speed);
-> > +               dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
-> 
-> phylink has a better validation error message than this, I'd say this
-> is unnecessary.
+This will remove _all_ existing representors in this driver.
 
-Ok.
+This will not work if only one representor is gone?
 
-> > +static void
-> > +qca8k_phylink_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
-> > +                         phy_interface_t interface, struct phy_device *phydev,
-> > +                         int speed, int duplex, bool tx_pause, bool rx_pause)
-> > +{
-> > +       struct qca8k_priv *priv = ds->priv;
-> > +       u32 reg;
-> > +
-> > +       if (phylink_autoneg_inband(mode)) {
-> > +               reg = QCA8K_PORT_STATUS_LINK_AUTO;
-> > +       } else {
-> > +               switch (speed) {
-> > +               case SPEED_10:
-> > +                       reg = QCA8K_PORT_STATUS_SPEED_10;
-> > +                       break;
-> > +               case SPEED_100:
-> > +                       reg = QCA8K_PORT_STATUS_SPEED_100;
-> > +                       break;
-> > +               case SPEED_1000:
-> > +                       reg = QCA8K_PORT_STATUS_SPEED_1000;
-> > +                       break;
-> > +               default:
-> > +                       reg = QCA8K_PORT_STATUS_LINK_AUTO;
-> > +                       break;
-> > +               }
-> > +
-> > +               if (duplex == DUPLEX_FULL)
-> > +                       reg |= QCA8K_PORT_STATUS_DUPLEX;
-> > +
-> > +               if (rx_pause | dsa_is_cpu_port(ds, port))
-> 
-> I think it is odd to do bitwise OR on booleans.
+Please, describe what scenario you are trying to fix.
 
-I agree; will fix in the next spin.
-
-J.
-
--- 
-I get the feeling that I've been cheated.
+Thank you.
