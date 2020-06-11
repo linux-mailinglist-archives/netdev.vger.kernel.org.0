@@ -2,127 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F34A81F641D
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 10:59:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E0B1F642D
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 11:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727019AbgFKI7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 04:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36694 "EHLO
+        id S1726959AbgFKJBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 05:01:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726833AbgFKI67 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 04:58:59 -0400
-X-Greylist: delayed 196 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 11 Jun 2020 01:58:59 PDT
-Received: from pandora.armlinux.org.uk (unknown [IPv6:2001:4d48:ad52:32c8:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094F9C03E96F;
-        Thu, 11 Jun 2020 01:58:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=g4cB48q84iF2x+YTctvj2vQzPcRRIUPbdwGd8ytPMJs=; b=yPCiYKdwo02fKO/iPRLDsIklK
-        vBXP/ZlL6LtWewhRVdjSfq+XXQb0XGO1gloD1ntYOGL9NeGC/tIZFALMOg+g0XY55XlPadWVFj6Br
-        9IifcYd2NCANKhBvjffoapNhI7Ksm9QJKWqeAa1Mbiv73vJk1ySr2R0nvPqrirGUDLMkvr99xPD0+
-        GoktE8KjB1nCDvVSWCj80Pr6MmeL29Uae1zsraDjW77jWQ2rAUHDG095XlGqlAoJdkDqhVFQUWj/2
-        DxcSFZjuDsYRHWc73aPvTdPCHBehcH3VMv+rfMU2gKNIASHeTYFTcxJqoUTf6107r08wr/VOggEQD
-        RE0dJ7a0A==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:52172)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jjJ2x-0008Cw-Fv; Thu, 11 Jun 2020 09:58:51 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jjJ2w-00052V-Rb; Thu, 11 Jun 2020 09:58:50 +0100
-Date:   Thu, 11 Jun 2020 09:58:50 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Jonathan McDowell <noodles@earth.li>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S1726928AbgFKJBi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 05:01:38 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B18BC03E96F;
+        Thu, 11 Jun 2020 02:01:37 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id q19so5657856eja.7;
+        Thu, 11 Jun 2020 02:01:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=f70qcp+8H8N+7vfQUf6lwsKTErk85DZiUNo0OM0KDKo=;
+        b=aKoVo3UVoRws3o5Y4Mxmlc5CpVRvnFOlr2j/nBlJVjQeEXtfxHzwrPhsJli6AvjnVV
+         D2ajORkKdG+Q6wYK5z170YS1tb3dUjrKgipBAFPNvZMBU8RZ5Sp2tdFwTv1FlKsMe7OW
+         XbdzdYBZJrRVLNOdydDj6PmG+jxHckRkGqscUUiKcxJO7OYqKZzlLyiEP/dAFB3tAFS6
+         Y+Gu8GaZ3SIkqci3/IlZqySJX+UgzwRGmIJr1shkLm7rqC41dE51gByJBdbcObQa+Vku
+         dmaUOxmJcrqwG/QvlIIMw/bCSFeSKIa+sHc4WDRDNWj9dURnpwiTLhEfpCeub4+GmGUh
+         79lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f70qcp+8H8N+7vfQUf6lwsKTErk85DZiUNo0OM0KDKo=;
+        b=lk1TzqMc/ZFgytuOlnyNJfgRRKHZWh5p1kXZopZXfTPqQbiLH/kNKaqPQwHg6ru4rW
+         xRneWioCozNvLwh9klfZwciJ/8PegFVcz5bl9f3D47ZjCKn2GYQtV3EhB2odD5r8eXHC
+         vIB2HATSbn1ig95+yqoz1Cx7xWU1NVESwW84zcnotq/3glU1pHCvd+f5l4VqmONBnWTP
+         5NvOAMxPbCfCg2FaLXMshsb4LMl1tprbYwqc4I21pm5bbN/eOSNIfhHlMkYtocYRzPU4
+         wjkla0B8x6ikf4Kd8JTohasz2VPpcBVPJXMcs5xnd7ppxZnNS/2RTAHprnODfThjMldH
+         iAkA==
+X-Gm-Message-State: AOAM532zGgKSDcmdZn6GvLAx7cpMFq0lmPGh2LJPEOXfzmSi+xPptzBV
+        oGsFetqYfiKo062slpdIUuSXV/1Itu4GYniiqJ4=
+X-Google-Smtp-Source: ABdhPJw0MVbn7mgfpkFtBg6RwYYq81Ac7XcqQYluRO6zP0wiUdzhOOBjlb6fIfKeADfYPAUQdunBXdk4whM5VcBN87o=
+X-Received: by 2002:a17:906:2e50:: with SMTP id r16mr7250012eji.305.1591866096170;
+ Thu, 11 Jun 2020 02:01:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1591816172.git.noodles@earth.li> <78519bc421a1cb7000a68d05e43c4208b26f37e5.1591816172.git.noodles@earth.li>
+ <20200611085523.GV1551@shell.armlinux.org.uk>
+In-Reply-To: <20200611085523.GV1551@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 11 Jun 2020 12:01:25 +0300
+Message-ID: <CA+h21hqyAKucPENVANwuNo-UuCY0W3z8QF1FZ-nhd0uQ8tyC+w@mail.gmail.com>
+Subject: Re: [PATCH 1/2] net: dsa: qca8k: Switch to PHYLINK instead of PHYLIB
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Jonathan McDowell <noodles@earth.li>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: dsa: qca8k: Improve SGMII interface handling
-Message-ID: <20200611085850.GW1551@shell.armlinux.org.uk>
-References: <cover.1591816172.git.noodles@earth.li>
- <2150f4c70c754aed179e46e166f3c305254cf85a.1591816172.git.noodles@earth.li>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2150f4c70c754aed179e46e166f3c305254cf85a.1591816172.git.noodles@earth.li>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 10, 2020 at 08:15:13PM +0100, Jonathan McDowell wrote:
-> This patch improves the handling of the SGMII interface on the QCA8K
-> devices. Previously the driver did no configuration of the port, even if
-> it was selected. We now configure it up in the appropriate
-> PHY/MAC/Base-X mode depending on what phylink tells us we are connected
-> to and ensure it is enabled.
-> 
-> Tested with a device where the CPU connection is RGMII (i.e. the common
-> current use case) + one where the CPU connection is SGMII. I don't have
-> any devices where the SGMII interface is brought out to something other
-> than the CPU.
-> 
-> Signed-off-by: Jonathan McDowell <noodles@earth.li>
-> ---
->  drivers/net/dsa/qca8k.c | 28 +++++++++++++++++++++++++++-
->  drivers/net/dsa/qca8k.h | 13 +++++++++++++
->  2 files changed, 40 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index dcd9e8fa99b6..33e62598289e 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -681,7 +681,7 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
->  			 const struct phylink_link_state *state)
->  {
->  	struct qca8k_priv *priv = ds->priv;
-> -	u32 reg;
-> +	u32 reg, val;
->  
->  	switch (port) {
->  	case 0: /* 1st CPU port */
-> @@ -740,6 +740,32 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
->  	case PHY_INTERFACE_MODE_1000BASEX:
->  		/* Enable SGMII on the port */
->  		qca8k_write(priv, reg, QCA8K_PORT_PAD_SGMII_EN);
-> +
-> +		/* Enable/disable SerDes auto-negotiation as necessary */
-> +		val = qca8k_read(priv, QCA8K_REG_PWS);
-> +		if (phylink_autoneg_inband(mode))
-> +			val &= ~QCA8K_PWS_SERDES_AEN_DIS;
-> +		else
-> +			val |= QCA8K_PWS_SERDES_AEN_DIS;
-> +		qca8k_write(priv, QCA8K_REG_PWS, val);
-> +
-> +		/* Configure the SGMII parameters */
-> +		val = qca8k_read(priv, QCA8K_REG_SGMII_CTRL);
-> +
-> +		val |= QCA8K_SGMII_EN_PLL | QCA8K_SGMII_EN_RX |
-> +			QCA8K_SGMII_EN_TX | QCA8K_SGMII_EN_SD;
-> +
-> +		val &= ~QCA8K_SGMII_MODE_CTRL_MASK;
-> +		if (dsa_is_cpu_port(ds, port)) {
-> +			/* CPU port, we're talking to the CPU MAC, be a PHY */
-> +			val |= QCA8K_SGMII_MODE_CTRL_PHY;
-> +		} else if (state->interface == PHY_INTERFACE_MODE_SGMII) {
-> +			val |= QCA8K_SGMII_MODE_CTRL_MAC;
-> +		} else {
-> +			val |= QCA8K_SGMII_MODE_CTRL_BASEX;
-> +		}
-> +
-> +		qca8k_write(priv, QCA8K_REG_SGMII_CTRL, val);
+Hi Russell,
 
-Ah, here it is!  Hmm, I suppose as the two patches will be applied
-together, it's fine to split it like this.
+On Thu, 11 Jun 2020 at 11:57, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 503kbps up
+>
+> Alternatively, phylink supports polling mode, but due to the layered
+> way DSA is written, DSA drivers don't have access to that as that is
+> in the DSA upper levels in net/dsa/slave.c (dsa_slave_phy_setup(),
+> it would be dp->pl_config.pcs_poll).
+>
+
+They do, see https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/ocelot/felix.c#n606
+
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC for 0.8m (est. 1762m) line in suburbia: sync at 13.1Mbps down 503kbps up
+
+Thanks,
+-Vladimir
