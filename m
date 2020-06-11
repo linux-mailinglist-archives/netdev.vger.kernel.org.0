@@ -2,120 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C6A41F6C87
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 19:03:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F511F6CBC
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 19:25:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbgFKRDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 13:03:44 -0400
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:2032 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbgFKRDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 13:03:41 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id A59565C167D;
-        Fri, 12 Jun 2020 00:52:07 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     pablo@netfilter.org
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net v3 2/2] flow_offload: fix incorrect cb_priv check for flow_block_cb
-Date:   Fri, 12 Jun 2020 00:52:07 +0800
-Message-Id: <1591894327-11915-2-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1591894327-11915-1-git-send-email-wenxu@ucloud.cn>
-References: <1591894327-11915-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS0hPQkJCQk1NTUlKT1lXWShZQU
-        lCN1dZLVlBSVdZDwkaFQgSH1lBWR0yNQs4HDgjQgMUSCIeMR4UCS0KOhxWVlVOSklKKElZV1kJDh
-        ceCFlBWTU0KTY6NyQpLjc#WVdZFhoPEhUdFFlBWTQwWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MCo6Nxw5Ajg1TjA0IwscLxA6
-        IxBPFBBVSlVKTkJKQ0JPSElMTE1PVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQU9JTko3Bg++
-X-HM-Tid: 0a72a44bc1852087kuqya59565c167d
+        id S1726719AbgFKRZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 13:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726260AbgFKRZr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 13:25:47 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C935C08C5C1
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 10:25:46 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id x14so7013992wrp.2
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 10:25:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GmHmPvjIL/uoQZEqL49hjtjHKbcvKuEnA1LiIhhiiv4=;
+        b=CMzvm+imQ9cB23Eiy1rEwYePeux7mfPlyD6M/FEjx5Hh6kdKtBGC6QkIrZj0C6FwWi
+         OffW2wZLvIpgYLzJFod41sU26hINgE+Otu9+lSQ8mdn+YYNLSd8m6rYUn7Zy0wqDRIlR
+         YrS2tofgEqd1VY32pehLP0/GCkbMu/RdT3GHU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GmHmPvjIL/uoQZEqL49hjtjHKbcvKuEnA1LiIhhiiv4=;
+        b=Ar3RT8bLGqDHLp7g8RWutUB+4Qrdmei7FV3Mfk1O6au8BMNO6SESa0rrHZlx85Di/P
+         VSYM1g7U/oRhKlFPoR6dFKJwAW+9sv++hYqY94NwOJ+93Hkp8NlLGbC6OHuokyTJSiYA
+         h49qCR/iENA4XjIA4bINxRRK94+hGhjDui5sEBAKKGKV8T7VNJTzzDSYr5rabgQmvpf+
+         96jSI9oyHyqjlaiJrZwUUwSj6l0SyGbrUf3gDYodH8jrwDHMFCjqcyEH+1fCqSylEtl5
+         yDecy7lwH/OGwAMamEnfExVcDGkXwPajZxA9z5GqgUK0b2vXSopog6R1jGQxUEQFeDCa
+         5Ecg==
+X-Gm-Message-State: AOAM532jWcBCVi8YVOktArlC6W0Um+oV4h/bID83+K3qD8fn3t5Wp2cr
+        12Nvez+fTLSq3UgzvKVzX2THxA==
+X-Google-Smtp-Source: ABdhPJzfvbquWMv3SW72gKgtUedJACAfw0cuil7ok4HdoKUCgxg9YSjE0tpPciptHEDo7nJ9xggemw==
+X-Received: by 2002:adf:d852:: with SMTP id k18mr10714394wrl.177.1591896345683;
+        Thu, 11 Jun 2020 10:25:45 -0700 (PDT)
+Received: from antares.lan (4.1.2.f.7.2.f.a.4.b.9.9.a.8.4.a.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:a48a:99b4:af27:f214])
+        by smtp.gmail.com with ESMTPSA id v7sm5971907wro.76.2020.06.11.10.25.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Jun 2020 10:25:45 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     kernel-team@cloudflare.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf] bpf: sockmap: don't attach programs to UDP sockets
+Date:   Thu, 11 Jun 2020 18:25:20 +0100
+Message-Id: <20200611172520.327602-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+The stream parser infrastructure isn't set up to deal with UDP
+sockets, so we mustn't try to attach programs to them.
 
-In the function __flow_block_indr_cleanup, The match stataments
-this->cb_priv == cb_priv is always false, the flow_block_cb->cb_priv
-is totally different data from the flow_indr_dev->cb_priv.
+I remember making this change at some point, but I must have lost
+it while rebasing or something similar.
 
-Store the representor cb_priv to the flow_block_cb->indr.cb_priv in
-the driver.
-
-Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
-Signed-off-by: wenxu <wenxu@ucloud.cn>
+Fixes: 7b98cd42b049 ("bpf: sockmap: Add UDP support")
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c        | 1 +
- drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c | 2 +-
- drivers/net/ethernet/netronome/nfp/flower/offload.c | 1 +
- include/net/flow_offload.h                          | 1 +
- net/core/flow_offload.c                             | 2 +-
- 5 files changed, 5 insertions(+), 2 deletions(-)
+ net/core/sock_map.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index ef7f6bc..042c285 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -1918,6 +1918,7 @@ static int bnxt_tc_setup_indr_block(struct net_device *netdev, struct bnxt *bp,
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index 00a26cf2cfe9..35cea36f3892 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -424,10 +424,7 @@ static int sock_map_get_next_key(struct bpf_map *map, void *key, void *next)
+ 	return 0;
+ }
  
- 		flow_block_cb_add(block_cb, f);
- 		list_add_tail(&block_cb->driver_list, &bnxt_block_cb_list);
-+		block_cb->indr.cb_priv = bp;
- 		break;
- 	case FLOW_BLOCK_UNBIND:
- 		cb_priv = bnxt_tc_indr_block_cb_lookup(bp, netdev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-index a62bcf0..187f84c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-@@ -447,7 +447,7 @@ static void mlx5e_rep_indr_block_unbind(void *cb_priv)
- 		}
- 		flow_block_cb_add(block_cb, f);
- 		list_add_tail(&block_cb->driver_list, &mlx5e_block_cb_list);
--
-+		block_cb->indr.cb_priv = rpriv;
- 		return 0;
- 	case FLOW_BLOCK_UNBIND:
- 		indr_priv = mlx5e_rep_indr_block_priv_lookup(rpriv, netdev);
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 28de905..ca2f01a 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -1687,6 +1687,7 @@ void nfp_flower_setup_indr_tc_release(void *cb_priv)
+-static bool sock_map_redirect_allowed(const struct sock *sk)
+-{
+-	return sk->sk_state != TCP_LISTEN;
+-}
++static bool sock_map_redirect_allowed(const struct sock *sk);
  
- 		flow_block_cb_add(block_cb, f);
- 		list_add_tail(&block_cb->driver_list, &nfp_block_cb_list);
-+		block_cb->indr.cb_priv = app;
- 		return 0;
- 	case FLOW_BLOCK_UNBIND:
- 		cb_priv = nfp_flower_indr_block_cb_priv_lookup(app, netdev);
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 3a2d6b4..ef4d8b0 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -450,6 +450,7 @@ struct flow_block_indr {
- 	struct net_device		*dev;
- 	enum flow_block_binder_type	binder_type;
- 	void				*data;
-+	void				*cb_priv;
- 	void				(*cleanup)(struct flow_block_cb *block_cb);
- };
+ static int sock_map_update_common(struct bpf_map *map, u32 idx,
+ 				  struct sock *sk, u64 flags)
+@@ -508,6 +505,11 @@ static bool sk_is_udp(const struct sock *sk)
+ 	       sk->sk_protocol == IPPROTO_UDP;
+ }
  
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index b288d2f..6614351 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -380,7 +380,7 @@ static void __flow_block_indr_cleanup(void (*release)(void *cb_priv),
- 
- 	list_for_each_entry_safe(this, next, &flow_block_indr_list, indr.list) {
- 		if (this->release == release &&
--		    this->cb_priv == cb_priv) {
-+		    this->indr.cb_priv == cb_priv) {
- 			list_move(&this->indr.list, cleanup_list);
- 			return;
- 		}
++static bool sock_map_redirect_allowed(const struct sock *sk)
++{
++	return sk_is_tcp(sk) && sk->sk_state != TCP_LISTEN;
++}
++
+ static bool sock_map_sk_is_suitable(const struct sock *sk)
+ {
+ 	return sk_is_tcp(sk) || sk_is_udp(sk);
 -- 
-1.8.3.1
+2.25.1
 
