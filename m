@@ -2,114 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44D431F6C5F
-	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 18:49:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B38F71F6C86
+	for <lists+netdev@lfdr.de>; Thu, 11 Jun 2020 19:03:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbgFKQtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 12:49:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726468AbgFKQts (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 12:49:48 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902F6C08C5C1
-        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 09:49:47 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id v24so2531860plo.6
-        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 09:49:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/OantHyM9J2rt/HLD05eWdtDypkgDi3XkLdWdsHZQYc=;
-        b=NfG8DHJU0NRmfrt9M40c0iLMdHR/Oy+5UON6bH0d/kCvmkjglNOzn7loXN0le9nSSo
-         m+T/Df9wi7J3d5t72WilWv7NV9BlesC9KrXNK7qAUG+tEggvOefW9KgaV9EWDoDpjCW6
-         CmLfD5axQPaQUZrFfrJdtq6bQCUTrJ6Rh8R+5yxrD+xR00dVgyIdmfug/Rh2wpLE/jj9
-         awsAQy0hdN7xLtnShM81echONmHq9IYTUyA5COMKyRjLwi63vraUCmdOF5nvkjTSku5q
-         MKp2V8tYfiGrPYXaiHqvmpSe/R3YT4iWjkSiQBGWGw1BoOpRgol3B6gU+6+RpQqEY2DI
-         /Ddw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/OantHyM9J2rt/HLD05eWdtDypkgDi3XkLdWdsHZQYc=;
-        b=g42Fg8B3/v/bEaL7B5c5jLumSR9voNI+u87dCgYL0AYtXnfZTPv7ZRy+mrtgALEdPb
-         0FkmHCpkhqQuPmIkjc7tc49V0kT9iXbIFmTWFbmAepKUFYOL/RjmcjXwbqW71U+hqBbG
-         Om/+dkxpCBMkv/HU9/H6aZFsLDmDL0U0czITyLVlxrB7W+xOb8VTm40N7MzNqIv3y4G/
-         idw6ENka6JPhdnMu8dPyROiqdmENJiUbBnybEYdD47B7G0hpvWlxBJ1z9Knl70Lb+o7b
-         cXMTSNpKD0ZIes/Owyv/EQ6B2KeWbQxUp9aKneNp7yWvZD14FdUSPnABLBQbfVDCFzyW
-         GN3A==
-X-Gm-Message-State: AOAM531EEPWAvt/um6wEYQ7uluQAy7qKR7pgtTL7CYf14WxA9zNRT2UR
-        V/G9TFipNdCuMzDfU/EakRmIMe7AnZk=
-X-Google-Smtp-Source: ABdhPJyd/HFZ3WEPpK7J4ga69kCNlX1LQReFWJ3FZEbGbwgmhKid3+ijFuvVPq6y5jXoJEaisZx5kA==
-X-Received: by 2002:a17:90a:34cc:: with SMTP id m12mr8981326pjf.123.1591894186317;
-        Thu, 11 Jun 2020 09:49:46 -0700 (PDT)
-Received: from hermes.corp.microsoft.com (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id b3sm3578501pft.127.2020.06.11.09.49.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2020 09:49:44 -0700 (PDT)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Dan Robertson <dan@dlrobertson.com>
-Subject: [PATCH] devlink: update include files
-Date:   Thu, 11 Jun 2020 09:49:36 -0700
-Message-Id: <20200611164936.19501-1-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200608140404.1449-2-dan@dlrobertson.com>
-References: <20200608140404.1449-2-dan@dlrobertson.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726680AbgFKRDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 13:03:40 -0400
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:2018 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726628AbgFKRDk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 13:03:40 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 9010A5C16D8;
+        Fri, 12 Jun 2020 00:52:07 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     pablo@netfilter.org
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net v3 1/2] flow_offload: fix incorrect cleanup for indirect flow_blocks
+Date:   Fri, 12 Jun 2020 00:52:06 +0800
+Message-Id: <1591894327-11915-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVPT0JLS0tKSUtKTUlCTVlXWShZQU
+        lCN1dZLVlBSVdZDwkaFQgSH1lBWRciNQs4HDkzFiQuSCIeMR4VLyEUOhxWVlVKT0pJKElZV1kJDh
+        ceCFlBWTU0KTY6NyQpLjc#WVdZFhoPEhUdFFlBWTQwWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Ok06Ezo4NDg8ATAuFQs5Lw0c
+        LBYaFDpVSlVKTkJKQ0JPSElMTU5OVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUxLTko3Bg++
+X-HM-Tid: 0a72a44bc12d2087kuqy9010a5c16d8
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the tool iwyu to get more complete list of includes for
-all the bits used by devlink.
+From: wenxu <wenxu@ucloud.cn>
 
-This should also fix build with musl libc.
+If the representor is removed, then identify the indirect
+flow_blocks that need to be removed by the release callback.
 
-Fixes: c4dfddccef4e ("fix JSON output of mon command")
-Reported-off-by: Dan Robertson <dan@dlrobertson.com>
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
-
+Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
+Signed-off-by: wenxu <wenxu@ucloud.cn>
 ---
-This is more complete version of suggested patch
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c        | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c | 2 +-
+ drivers/net/ethernet/netronome/nfp/flower/main.c    | 2 +-
+ drivers/net/ethernet/netronome/nfp/flower/main.h    | 3 +--
+ drivers/net/ethernet/netronome/nfp/flower/offload.c | 6 +++---
+ include/net/flow_offload.h                          | 2 +-
+ net/core/flow_offload.c                             | 9 +++++----
+ 7 files changed, 13 insertions(+), 13 deletions(-)
 
- devlink/devlink.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 507972c360a7..ce2e46766617 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -19,18 +19,25 @@
- #include <limits.h>
- #include <errno.h>
- #include <inttypes.h>
-+#include <signal.h>
-+#include <time.h>
-+#include <netinet/in.h>
-+#include <arpa/inet.h>
- #include <sys/sysinfo.h>
- #define _LINUX_SYSINFO_H /* avoid collision with musl header */
- #include <linux/genetlink.h>
- #include <linux/devlink.h>
-+#include <linux/netlink.h>
- #include <libmnl/libmnl.h>
- #include <netinet/ether.h>
-+#include <sys/select.h>
-+#include <sys/socket.h>
- #include <sys/types.h>
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+index 0eef4f5..ef7f6bc 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+@@ -2074,7 +2074,7 @@ void bnxt_shutdown_tc(struct bnxt *bp)
+ 		return;
  
- #include "SNAPSHOT.h"
- #include "list.h"
- #include "mnlg.h"
--#include "json_writer.h"
-+#include "json_print.h"
- #include "utils.h"
- #include "namespace.h"
+ 	flow_indr_dev_unregister(bnxt_tc_setup_indr_cb, bp,
+-				 bnxt_tc_setup_indr_block_cb);
++				 bnxt_tc_setup_indr_rel);
+ 	rhashtable_destroy(&tc_info->flow_table);
+ 	rhashtable_destroy(&tc_info->l2_table);
+ 	rhashtable_destroy(&tc_info->decap_l2_table);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+index 80713123..a62bcf0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+@@ -496,7 +496,7 @@ int mlx5e_rep_tc_netdevice_event_register(struct mlx5e_rep_priv *rpriv)
+ void mlx5e_rep_tc_netdevice_event_unregister(struct mlx5e_rep_priv *rpriv)
+ {
+ 	flow_indr_dev_unregister(mlx5e_rep_indr_setup_cb, rpriv,
+-				 mlx5e_rep_indr_setup_tc_cb);
++				 mlx5e_rep_indr_block_unbind);
+ }
  
+ #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
+index c393276..bb448c8 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
+@@ -861,7 +861,7 @@ static void nfp_flower_clean(struct nfp_app *app)
+ 	flush_work(&app_priv->cmsg_work);
+ 
+ 	flow_indr_dev_unregister(nfp_flower_indr_setup_tc_cb, app,
+-				 nfp_flower_setup_indr_block_cb);
++				 nfp_flower_setup_indr_tc_release);
+ 
+ 	if (app_priv->flower_ext_feats & NFP_FL_FEATS_VF_RLIM)
+ 		nfp_flower_qos_cleanup(app);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
+index 6c3dc3b..c983337 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
+@@ -460,8 +460,7 @@ int nfp_flower_setup_qos_offload(struct nfp_app *app, struct net_device *netdev,
+ void nfp_flower_stats_rlim_reply(struct nfp_app *app, struct sk_buff *skb);
+ int nfp_flower_indr_setup_tc_cb(struct net_device *netdev, void *cb_priv,
+ 				enum tc_setup_type type, void *type_data);
+-int nfp_flower_setup_indr_block_cb(enum tc_setup_type type, void *type_data,
+-				   void *cb_priv);
++void nfp_flower_setup_indr_tc_release(void *cb_priv);
+ 
+ void
+ __nfp_flower_non_repr_priv_get(struct nfp_flower_non_repr_priv *non_repr_priv);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+index 695d24b9..28de905 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+@@ -1619,8 +1619,8 @@ struct nfp_flower_indr_block_cb_priv {
+ 	return NULL;
+ }
+ 
+-int nfp_flower_setup_indr_block_cb(enum tc_setup_type type,
+-				   void *type_data, void *cb_priv)
++static int nfp_flower_setup_indr_block_cb(enum tc_setup_type type,
++					  void *type_data, void *cb_priv)
+ {
+ 	struct nfp_flower_indr_block_cb_priv *priv = cb_priv;
+ 	struct flow_cls_offload *flower = type_data;
+@@ -1637,7 +1637,7 @@ int nfp_flower_setup_indr_block_cb(enum tc_setup_type type,
+ 	}
+ }
+ 
+-static void nfp_flower_setup_indr_tc_release(void *cb_priv)
++void nfp_flower_setup_indr_tc_release(void *cb_priv)
+ {
+ 	struct nfp_flower_indr_block_cb_priv *priv = cb_priv;
+ 
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index f2c8311..3a2d6b4 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -536,7 +536,7 @@ typedef int flow_indr_block_bind_cb_t(struct net_device *dev, void *cb_priv,
+ 
+ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv);
+ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+-			      flow_setup_cb_t *setup_cb);
++			      void (*release)(void *cb_priv));
+ int flow_indr_dev_setup_offload(struct net_device *dev,
+ 				enum tc_setup_type type, void *data,
+ 				struct flow_block_offload *bo,
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 0cfc35e..b288d2f 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -372,13 +372,14 @@ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
+ }
+ EXPORT_SYMBOL(flow_indr_dev_register);
+ 
+-static void __flow_block_indr_cleanup(flow_setup_cb_t *setup_cb, void *cb_priv,
++static void __flow_block_indr_cleanup(void (*release)(void *cb_priv),
++				      void *cb_priv,
+ 				      struct list_head *cleanup_list)
+ {
+ 	struct flow_block_cb *this, *next;
+ 
+ 	list_for_each_entry_safe(this, next, &flow_block_indr_list, indr.list) {
+-		if (this->cb == setup_cb &&
++		if (this->release == release &&
+ 		    this->cb_priv == cb_priv) {
+ 			list_move(&this->indr.list, cleanup_list);
+ 			return;
+@@ -397,7 +398,7 @@ static void flow_block_indr_notify(struct list_head *cleanup_list)
+ }
+ 
+ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+-			      flow_setup_cb_t *setup_cb)
++			      void (*release)(void *cb_priv))
+ {
+ 	struct flow_indr_dev *this, *next, *indr_dev = NULL;
+ 	LIST_HEAD(cleanup_list);
+@@ -418,7 +419,7 @@ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+ 		return;
+ 	}
+ 
+-	__flow_block_indr_cleanup(setup_cb, cb_priv, &cleanup_list);
++	__flow_block_indr_cleanup(release, cb_priv, &cleanup_list);
+ 	mutex_unlock(&flow_indr_block_lock);
+ 
+ 	flow_block_indr_notify(&cleanup_list);
 -- 
-2.26.2
+1.8.3.1
 
