@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9184D1F7094
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 00:47:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C40CF1F7096
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 00:48:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726468AbgFKWr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 18:47:57 -0400
+        id S1726475AbgFKWsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 18:48:00 -0400
 Received: from mail-vi1eur05on2064.outbound.protection.outlook.com ([40.107.21.64]:6125
         "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726277AbgFKWrz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jun 2020 18:47:55 -0400
+        id S1726254AbgFKWr7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Jun 2020 18:47:59 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y4VoAQ/rDcSttXL38PpEwVDWW9Luv/oHb7g2b2V3z9uOL295Y8kNGQluWHJA0DfjmDpyZqChZHpD42elR9pDWmAXTye5MirfdTwu8qBrQoz5ZDhfTWmQXsoCgEHrlosDhhs6g6qFb/JpBA5M+IMIgjHc5CXpDNoh5XK4c95Lu/NGjGcmn6wXmoa6Nvm45rWtm7PhgB+PVS7jUkZXF6ufPDj/aGEHJMrNhGgSJiQXBSBmEa4W38f3yaOe5d9GWO0jXL6kxdqiqq5wj/eu181WqY15buEqQSxfA8MT2EqTbPFniU8jAvue5OK8cpt1bBZ6kfH3zAdbCxe2Ryqju2+ERA==
+ b=X9U/FRrs0FRVEUshHFzUly9VCY6o8AChHNFBvHG9gzjPNLG+qUcfCmERcVkVJ+NHS66apq7VYVLhZD2lWTZSrSmzLO7pQLcyujgrMeJUQf0ZYHdhTQTjfr4rhJipkNt5sGcip1K6RdEtpubbjZwBWeLeTC5hBMWJyPIDfWp8Lj0ALcrSJOGZfykMS1UPz0gNgWB5MFcHu9ZA2iPnNjn7uOWSK0DHS0ShHGuobyAqO5TVsB4h4jlLf/ps5HlDllX31uz8mlrcouRkSerynu1Fg3euSy5r8MjuO+1OcpoyGqiRK8QZvy5UiEzi0c90CK9DOBHrkuoZ4hAhqiWa5O0mjA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7+f2wtCKnN+XvYjqJtBF3Iim/45SCS5sciUiwHMcDxI=;
- b=JdHHlRjeosHY9sAWOIpSxLdSKPUn8r3t/TR9WwsAYWlSVj+sIqnjxaJZQSFQpUcHaTHuE9Qsmh7yF2PDkSfx8zU8Iy1cVJ64LVuHFJTT6hnIO7qj0Ir/tbuFdbGYgm5G9BItCNvHRcCeiPnBEqNd6DbKIDFSxzbQGIHV8CY9WMJZ2ONZmA2iC6DNOXOeR8R16NxL2Fk46UzP6IIYF5a93vtdHAD/24AddKgtFleWumvVRFkwW7ZMjunBrUWQNU2O9lYTV3bik/30JEuLMK+VhFRn5sWbr7oNQgFGEbGIuQyxvsL10h3ol6hlMlRzuqlDJWMB8tn2Q5W0ag10ubeSzQ==
+ bh=uZ5vUec3G6kAz9/mnRr0cxYRZhpt7ZEwbGljHQANd7c=;
+ b=LhgYbGqwnTlAIH96HNpK+yQQAGjuKo2JcGb94RjhVzPQx7FR7rFitySfKjvN8J0kajVLZ1XIRCr9V0H8p9nqP88d1tT1Xlvl5UM3erhUua6YoqCA2HRnv2qccWLOQxSncJS+EGpL6UiwM7RYLtJK1bXVL4ZKrmqNqckqHX5p5EGWCEZx5KGeG/YCswsA/VJt/BWaXFX0iLx6fM41rEp43B0jdzYT3V2Rj3/s0N3k89p/94ELhBvmi247Ui5y2cQ2bM+h04ExwFYR3byTiwNvECxvbff+zeQw7Nrrs0X/eFptkQ1AN1A5JG2HBJw4oOsURvPamLuzhtH4Xcacr4Q0PQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7+f2wtCKnN+XvYjqJtBF3Iim/45SCS5sciUiwHMcDxI=;
- b=mAnZMGo1qJgaMGNg/3kEHc2miUgDYTlmNFBKtt/kN7TlLbYFd40yF99TI4qHlDfnJQ725Wl+MXRJhkQRxOWZvabNeSVT0pwpDVDeNcmAt6bN4HJSnVCMl1iYXe8R6yAdy1q+AcwRur0ui46UI6YlEVVl8Fcin359jOyLUbwTOyc=
+ bh=uZ5vUec3G6kAz9/mnRr0cxYRZhpt7ZEwbGljHQANd7c=;
+ b=QMdm0FktXFwJCUd1HR2tVzJGYxrJ6kmvCunXPJ7HJJ/nv0yWA9TnrrMSHIxEa3h+Fj5qPVOp+US340HQoznhJrodBDtGzuHxIIBrQceUEuaSaiftPBDzP+G0pZN1QQ8W4UR3lomAc7Y084u413Y6urAQGh9RCpHxL7Bm6sxIQjo=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB4464.eurprd05.prod.outlook.com (2603:10a6:803:44::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.22; Thu, 11 Jun
- 2020 22:47:48 +0000
+ 2020 22:47:51 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3088.021; Thu, 11 Jun 2020
- 22:47:48 +0000
+ 22:47:51 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Aya Levin <ayal@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
+Cc:     netdev@vger.kernel.org, Parav Pandit <parav@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 05/10] net/mlx5e: Fix ethtool hfunc configuration change
-Date:   Thu, 11 Jun 2020 15:47:03 -0700
-Message-Id: <20200611224708.235014-6-saeedm@mellanox.com>
+Subject: [net 06/10] net/mlx5: Disable reload while removing the device
+Date:   Thu, 11 Jun 2020 15:47:04 -0700
+Message-Id: <20200611224708.235014-7-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200611224708.235014-1-saeedm@mellanox.com>
 References: <20200611224708.235014-1-saeedm@mellanox.com>
@@ -56,121 +56,102 @@ X-ClientProxiedBy: BYAPR06CA0066.namprd06.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR06CA0066.namprd06.prod.outlook.com (2603:10b6:a03:14b::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3088.20 via Frontend Transport; Thu, 11 Jun 2020 22:47:46 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR06CA0066.namprd06.prod.outlook.com (2603:10b6:a03:14b::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3088.20 via Frontend Transport; Thu, 11 Jun 2020 22:47:49 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 95c9a765-14e5-4bef-c782-08d80e597710
+X-MS-Office365-Filtering-Correlation-Id: 062614b7-7733-49ee-ace6-08d80e59784d
 X-MS-TrafficTypeDiagnostic: VI1PR05MB4464:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB4464B6DEAAC932B0901AA59BBE800@VI1PR05MB4464.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB44642142CB3FA08319FDB3C7BE800@VI1PR05MB4464.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
 X-Forefront-PRVS: 0431F981D8
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YUSPkL8gV5ADEKRK/6sKw4jLyaEb2UGrgQ9A5Sn6Pexea8Pvmoqv0xnQNkz4Glvw1q4jjZSQ2HwLcvNQlxJoGLF1nCgOe8ujEWV+h4cC2Uv2/Mtshzb7YN2ttJM0cnYptn+V8HAyE9jmTSUoo9+LEEEFHoxXbyJWsqI2SjL5GiG/98GoT7WkDScC1+DPJbdy03ATsJdLVnleubfYK4WYrZGSkfKGM6cpwvvPkXu1WsFIVBPvXmZLXVrSh+MWC89AqynitubP90ZaXJpDHO10GM1tx842cMdy27jWsY9NP9DfnI7UPBcB79zIjWFONjBI8G/HhgE4kwoq3s8995+km89pEXuNm773sYmpyxhgpFT/lKHDEph+krt7CQsM6X1b
+X-Microsoft-Antispam-Message-Info: POJXgYYiD++VUPVYjNreidPOAT4WVwPVgLLDfybZIRyei4MohK8ZFSjSzUj6+xDDiHKYaiNI41VAQIPCht1bmcUVMrlg/NiG/3D7CWFnXaEbVGeRqDTIqrFbxcNiMIqtyupg7SGjaeVrqIB3BPkYP8YGISjHn86myk7sXjSZPDL68E75Uu/l9BKJwY+5sTW3DQ03B/G6ohidElrFmX/pthTjULV/CupOuFiDIgoAedhhE7q70ZH26Pf2s4BpnaSAnhqkp7K6L7pULCF8ERQRmwzVAy9JCwkSVR898s+gwcuri5A8Okzj2HzTTiwPeJvjSz72oLEeRuN1BTw3ILq3cB3nuqFSxGK49bbVooQkPaZOv4CX8iz9eBa2AGkJguv7
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(376002)(136003)(346002)(396003)(8936002)(16526019)(186003)(4326008)(316002)(8676002)(107886003)(5660300002)(478600001)(26005)(956004)(2616005)(6666004)(66556008)(86362001)(6512007)(6486002)(66946007)(54906003)(1076003)(6506007)(36756003)(66476007)(83380400001)(2906002)(52116002)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: ZTfDTLLpW/BzF34kE35ENLwK70s8CWpQo+UdUXQSylMbeUvn5vonm3Ck/mvoBpD2tyqyEz58EfIGqJ+tNBQEUT86bpbFQqqRyiegTXvFNWJB06kHaXI4tpk72DAeFFzWLzzY87vpNdEcgc8EdNSUkrL+Nm2KSE0pJp0XMJxhJWfkiZ34sM4n8jZ7sYEq5qx64z91DGIETTKWpX1wKPm9zwuXy9S4gRaNDYxrc0kTYYSj9EIIF3v1zJtajaY+HVPa5vDgOE9aXxvDrNOwx0mVE9+VxJ2HduLPKetAmYNXm3uCetfcwIhHKDrRq5d1/KA+fA5nak7cIgIKLoNJeLxwTNdUAQOhftM8XxyB8p/DSXMrEK4jDHt2/nfh+ditKXmZA+tH8fqd6a5IfVnKcjspkFxV0i4wfgMM3VDIXKvYWWCxVeeLerdHUlFvH2JKvgvz1gvV25915iO7bNAj4A/Ri109fKlQ2429zAe71EdnupE=
+X-MS-Exchange-AntiSpam-MessageData: AJYlrTQ3xb32OlxfJk38aK/FhwRrJd6bramQ+ZrMpLlPuW43BjNjheUlNZDlEZldXLMHkjxg6BMySWFTnsSAfhYd7otLBBvRGUTnGEG6Bl5BVn8LZu+juKAFa6X8MlKC1unb3DCXYTQoPOkFAydXiaGTC0svnW4FEDboA/uIRV+nxPxREHix8Z6Lw+IAxW5lE/188yKm4T1PkdWDXAYSbm9taB5EA/t/GJVSWEFshJl++i3yOuDPPeSoSG19x7yyVvPSwOt/5/chH/7WtkZM9HkulSJNd3ycW4rmEbVQ3+g6Xe750uGWHA76q42NR9Da/Zn7AwaQxxUgRv8lGS+/PlqDR5NvHEjWKVNPnQuRwRXEi57EOYJQ50Q/lrbnIfANLouF9ZXns80dVkVmbSw6TPafBTb3dtuqvRdIqbxNNLuvGV+uC4h9fbw0EG9RDo7zas8pLZOx4hX48kBLQo3uylVPwrZYd4F7e8vMAkubOYg=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95c9a765-14e5-4bef-c782-08d80e597710
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2020 22:47:48.7450
+X-MS-Exchange-CrossTenant-Network-Message-Id: 062614b7-7733-49ee-ace6-08d80e59784d
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2020 22:47:51.0057
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YAulH5gMlSE85VmZAWror05/bghO2YVubJWnHsTE69Tnxp3ER5ihSVs6fevS65scP4w4DvRWcO041EFUFV5Eyg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: zCfFAqi0HxaCtw6Cx1I/5Sr1FP4bfBIm1t80Cn6bUOf3PM8uB6C7QNmD1oHOJJHi12szyt7uUFqsl5jsQgfywQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4464
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@mellanox.com>
+From: Parav Pandit <parav@mellanox.com>
 
-Changing RX hash function requires rearranging of RQT internal indexes,
-the user isn't exposed to such changes and these changes do not affect
-the user configured indirection table. Rebuild RQ table on hfunc change.
+While unregistration is in progress, user might be reloading the
+interface.
+This can race with unregistration in below flow which uses the
+resources which are getting disabled by reload flow.
 
-Fixes: bdfc028de1b3 ("net/mlx5e: Fix ethtool RX hash func configuration change")
-Signed-off-by: Aya Levin <ayal@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+Hence, disable the devlink reloading first when removing the device.
+
+     CPU0                                   CPU1
+     ----                                   ----
+local_pci_remove()                  devlink_mutex
+  remove_one()                       devlink_nl_cmd_reload()
+    mlx5_unregister_device()           devlink_reload()
+                                       ops->reload_down()
+                                         mlx5_unload_one()
+
+Fixes: 4383cfcc65e7 ("net/mlx5: Add devlink reload")
+Signed-off-by: Parav Pandit <parav@mellanox.com>
+Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/en_ethtool.c  | 41 ++++++++++---------
- 1 file changed, 22 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c | 2 --
+ drivers/net/ethernet/mellanox/mlx5/core/main.c    | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index 3ef2525e8de9c..ec5658bbe3c57 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -1173,7 +1173,8 @@ int mlx5e_set_rxfh(struct net_device *dev, const u32 *indir,
- 	struct mlx5e_priv *priv = netdev_priv(dev);
- 	struct mlx5e_rss_params *rss = &priv->rss_params;
- 	int inlen = MLX5_ST_SZ_BYTES(modify_tir_in);
--	bool hash_changed = false;
-+	bool refresh_tirs = false;
-+	bool refresh_rqt = false;
- 	void *in;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index e94f0c4d74a72..a99fe4b02b9b1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -283,7 +283,6 @@ int mlx5_devlink_register(struct devlink *devlink, struct device *dev)
+ 		goto params_reg_err;
+ 	mlx5_devlink_set_params_init_values(devlink);
+ 	devlink_params_publish(devlink);
+-	devlink_reload_enable(devlink);
+ 	return 0;
  
- 	if ((hfunc != ETH_RSS_HASH_NO_CHANGE) &&
-@@ -1189,36 +1190,38 @@ int mlx5e_set_rxfh(struct net_device *dev, const u32 *indir,
+ params_reg_err:
+@@ -293,7 +292,6 @@ int mlx5_devlink_register(struct devlink *devlink, struct device *dev)
  
- 	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != rss->hfunc) {
- 		rss->hfunc = hfunc;
--		hash_changed = true;
-+		refresh_rqt = true;
-+		refresh_tirs = true;
- 	}
+ void mlx5_devlink_unregister(struct devlink *devlink)
+ {
+-	devlink_reload_disable(devlink);
+ 	devlink_params_unregister(devlink, mlx5_devlink_params,
+ 				  ARRAY_SIZE(mlx5_devlink_params));
+ 	devlink_unregister(devlink);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 18d6c3752abe8..2729afc13ab48 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1367,6 +1367,7 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		dev_err(&pdev->dev, "mlx5_crdump_enable failed with error code %d\n", err);
  
- 	if (indir) {
- 		memcpy(rss->indirection_rqt, indir,
- 		       sizeof(rss->indirection_rqt));
--
--		if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
--			u32 rqtn = priv->indir_rqt.rqtn;
--			struct mlx5e_redirect_rqt_param rrp = {
--				.is_rss = true,
--				{
--					.rss = {
--						.hfunc = rss->hfunc,
--						.channels  = &priv->channels,
--					},
--				},
--			};
--
--			mlx5e_redirect_rqt(priv, rqtn, MLX5E_INDIR_RQT_SIZE, rrp);
--		}
-+		refresh_rqt = true;
- 	}
+ 	pci_save_state(pdev);
++	devlink_reload_enable(devlink);
+ 	return 0;
  
- 	if (key) {
- 		memcpy(rss->toeplitz_hash_key, key,
- 		       sizeof(rss->toeplitz_hash_key));
--		hash_changed = hash_changed || rss->hfunc == ETH_RSS_HASH_TOP;
-+		refresh_tirs = refresh_tirs || rss->hfunc == ETH_RSS_HASH_TOP;
-+	}
-+
-+	if (refresh_rqt && test_bit(MLX5E_STATE_OPENED, &priv->state)) {
-+		struct mlx5e_redirect_rqt_param rrp = {
-+			.is_rss = true,
-+			{
-+				.rss = {
-+					.hfunc = rss->hfunc,
-+					.channels  = &priv->channels,
-+				},
-+			},
-+		};
-+		u32 rqtn = priv->indir_rqt.rqtn;
-+
-+		mlx5e_redirect_rqt(priv, rqtn, MLX5E_INDIR_RQT_SIZE, rrp);
- 	}
+ err_load_one:
+@@ -1384,6 +1385,7 @@ static void remove_one(struct pci_dev *pdev)
+ 	struct mlx5_core_dev *dev  = pci_get_drvdata(pdev);
+ 	struct devlink *devlink = priv_to_devlink(dev);
  
--	if (hash_changed)
-+	if (refresh_tirs)
- 		mlx5e_modify_tirs_hash(priv, in);
++	devlink_reload_disable(devlink);
+ 	mlx5_crdump_disable(dev);
+ 	mlx5_devlink_unregister(devlink);
  
- 	mutex_unlock(&priv->state_lock);
 -- 
 2.26.2
 
