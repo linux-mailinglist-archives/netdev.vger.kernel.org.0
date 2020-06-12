@@ -2,108 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDDE11F7667
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 12:01:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CD6D1F7664
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 12:01:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726307AbgFLKBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 06:01:32 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:42637 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725805AbgFLKBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 06:01:30 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id CD8785C00C6;
-        Fri, 12 Jun 2020 06:01:27 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Fri, 12 Jun 2020 06:01:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=k9Hc0n0ZZ+r2PM/CxaFyy+acOdU
-        13GIRtpmvbo4Scvg=; b=D5L2iCYNJvs1gTEpItjsH85GlZQdEXixFw1xImAjDYh
-        KDXQu+rOyhfQ+V7T8pvJk290aZowGukLNGIRDftlZe/eg1g3qjrjagDPPUe9wGs9
-        Ikc0VfpF6fWsAJjCwnu5eq7Z3R/t1A3F0rFihxstBLei50s5yrd9h7E917qFuZ4R
-        k6Q1P3gX4TsLe1KCrRHwUIlj+WJumV561XjIrwie2sTGzVBuES72LoG2qufr167H
-        wppqGhfsyCCiyBbD/A9oTIFISQ1Q99dUTYIUXCHK9wCM7Wc5y8pv1UJrmhXbxeKM
-        qj+4kxxt2auxu1EUsFDteF45zY+danP6qp0ZioDUyHg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=k9Hc0n
-        0ZZ+r2PM/CxaFyy+acOdU13GIRtpmvbo4Scvg=; b=SqZY9HAvgKrAzKIwAteYtM
-        bHUxJ+E/+SOf+uczdqw8tuPaWBE1vBEzyvLFe0QsaZaR+/78zDIYUD3q0bE/igt9
-        x/dNzVBG231z/y9tLosoADDA2cTn5WJ88AQ/I0Iwt5rflDA6ZjoSdYCCVDOECd/E
-        vn27Xu6L0m+DJ3oiv6DxDGhWdS03WDQvPMrk+m+nVXOJCKRSKaMrXrFNG2Qs4uLT
-        ajKJFgRMGGiiXmr2vrQTFEb8oAQl9UT/yu6tVbOyztwR3IpldGerro2bRFJONJjO
-        KB5x54Cz+k4kabCJKsz8biKLFsLEGHdFXx5jJ8RZAacPVBJO2Dwhmk+39I+CEUdg
-        ==
-X-ME-Sender: <xms:c1LjXjtbUoLQLWh24Xw1PNX9tj9ckKsftBYTgk1LN8IAXyi5hkrp7g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudeiuddgvdegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
-    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
-    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucfkphepkeef
-    rdekiedrkeelrddutdejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
-    hilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
-X-ME-Proxy: <xmx:c1LjXkf2YQed55oCLiGxpGONoKGwz3_5Bzz7s7W28SwIdqFHt6b5EQ>
-    <xmx:c1LjXmz-zbq9KoJJYlstbCUaCmhDHp4u1BrI6iPw1WEYE8IpSNB-MA>
-    <xmx:c1LjXiPIvRQsyC1qBv12yXEl1eNsJ7pSkpyr4qc23OlFOkgHJQP_dQ>
-    <xmx:d1LjXukvL5SdC2m3M83mE2b74Bu4DICQVt7-6ZeUEMwQp2ukNnU5RA>
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id F3ACE328005E;
-        Fri, 12 Jun 2020 06:01:22 -0400 (EDT)
-Date:   Fri, 12 Jun 2020 12:01:11 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Markus Elfring <Markus.Elfring@web.de>
-Cc:     Cheng Jian <cj.chengjian@huawei.com>,
-        Chen Wandun <chenwandun@huawei.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v2 1/2] perf tools: Fix potential memory leaks in perf
- events parser
-Message-ID: <20200612100111.GA3157576@kroah.com>
-References: <20200611145605.21427-1-chenwandun@huawei.com>
- <20200611145605.21427-2-chenwandun@huawei.com>
- <51efcf82-4c0c-70d3-9700-6969e6decde1@web.de>
+        id S1726219AbgFLKBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 06:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725805AbgFLKBV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 06:01:21 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B721C03E96F;
+        Fri, 12 Jun 2020 03:01:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=FPRn34drjrS7tR0VZroA+Jb46I8CJY2q34LIxXnZ6lk=; b=dF/CBdt9MnfDvjtwqLZMvlIaL
+        C6ZdLaFTCJCLw8aiNpeUfiEs1c1xrhnqm3xiRYZgAad4zelL+ktgcQI3geQHpLoYGcKNA0+V2zm/s
+        Wt1zUQlFR2O8Fxi8+y90qWQAB2yuk9t4HlWOoW0RnuhAuC3EG+EjL3katLCL7SqjSp7jC9qbphiix
+        PRUSKMYBnS5OjuI8bjS3O60XTBGeECQZQLF+VAQFO8VZUzNKz1q0DnnnB6w6zBXHFI2Nk722gf+yF
+        5alegWwNXhs9+eqxdxOoGn0kcZDqOVItUHdHvmA4JA4NDq+DW9ckfMRkqQkLvjgMzfPlpvXtLyR/d
+        BnLshXokw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44562)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jjgUt-0002Y5-RJ; Fri, 12 Jun 2020 11:01:15 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jjgUt-00069j-3l; Fri, 12 Jun 2020 11:01:15 +0100
+Date:   Fri, 12 Jun 2020 11:01:15 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel@pengutronix.de
+Subject: Re: [PATCH v2] net: mvneta: Fix Serdes configuration for 2.5Gbps
+ modes
+Message-ID: <20200612100114.GE1551@shell.armlinux.org.uk>
+References: <20200612083847.29942-1-s.hauer@pengutronix.de>
+ <20200612084710.GC1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <51efcf82-4c0c-70d3-9700-6969e6decde1@web.de>
+In-Reply-To: <20200612084710.GC1551@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 11, 2020 at 08:50:58PM +0200, Markus Elfring wrote:
-> > Fix memory leak of in function parse_events_term__sym_hw()
-> > and parse_events_term__clone() when error occur.
+On Fri, Jun 12, 2020 at 09:47:10AM +0100, Russell King - ARM Linux admin wrote:
+> On Fri, Jun 12, 2020 at 10:38:47AM +0200, Sascha Hauer wrote:
+> > The Marvell MVNETA Ethernet controller supports a 2.5Gbps SGMII mode
+> > called DRSGMII. Depending on the Port MAC Control Register0 PortType
+> > setting this seems to be either an overclocked SGMII mode or 2500BaseX.
+> > 
+> > This patch adds the necessary Serdes Configuration setting for the
+> > 2.5Gbps modes. There is no phy interface mode define for overclocked
+> > SGMII, so only 2500BaseX is handled for now.
+> > 
+> > As phy_interface_mode_is_8023z() returns true for both
+> > PHY_INTERFACE_MODE_1000BASEX and PHY_INTERFACE_MODE_2500BASEX we
+> > explicitly test for 1000BaseX instead of using
+> > phy_interface_mode_is_8023z() to differentiate the different
+> > possibilities.
+> > 
+> > Fixes: da58a931f248f ("net: mvneta: Add support for 2500Mbps SGMII")
+> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 > 
-> How do you think about a wording variant like the following?
+> 2500base-X is used today on Armada 388 and Armada 3720 platforms and
+> works - it is known to interoperate with Marvell PP2.2 hardware, as
+> well was various SFPs such as the Huawei MA5671A at 2.5Gbps.  The way
+> it is handled on these platforms is via the COMPHY, requesting that
+> the serdes is upclocked from 1.25Gbps to 3.125Gbps.
 > 
->    Release a configuration object after a string duplication failed.
+> This "DRSGMII" mode is not mentioned in the functional specs for either
+> the Armada 388 or Armada 3720, the value you poke into the register is
+> not mentioned either.  As I've already requested, some information on
+> exactly what this "DRSGMII" is would be very useful, it can't be
+> "double-rate SGMII" because that would give you 2Gbps instead of 1Gbps.
 > 
-> Regards,
-> Markus
+> So, I suspect this breaks the platforms that are known to work.
+> 
+> We need a proper description of what DRSGMII is before we can consider
+> taking any patches for it.
 
-Hi,
+Okay, having dug through the Armada XP, 370, 388, 3720 specs, I think
+this is fine after all - but something that will help for the future
+would be to document that this register does not exist on the 388 and
+3720 devices (which brings up the question whether we should be writing
+it there.)  The field was moved into the comphy on those devices.
 
-This is the semi-friendly patch-bot of Greg Kroah-Hartman.
+So, it looks like if we have a comphy, we should not be writing this
+register.
 
-Markus, you seem to have sent a nonsensical or otherwise pointless
-review comment to a patch submission on a Linux kernel developer mailing
-list.  I strongly suggest that you not do this anymore.  Please do not
-bother developers who are actively working to produce patches and
-features with comments that, in the end, are a waste of time.
+What's more, the write to MVNETA_SERDES_CFG should not be in
+mvneta_port_power_up(); it's likely that XP and 370 will not work
+properly with phylink.  It needs to be done in a similar location to
+mvneta_comphy_init(), so that phylink can switch between 1G and 2.5G
+speeds.
 
-Patch submitter, please ignore Markus's suggestion; you do not need to
-follow it at all.  The person/bot/AI that sent it is being ignored by
-almost all Linux kernel maintainers for having a persistent pattern of
-behavior of producing distracting and pointless commentary, and
-inability to adapt to feedback.  Please feel free to also ignore emails
-from them.
+As you have an Armada XP system, you are best placed to test moving
+that write.
 
-thanks,
-
-greg k-h's patch email bot
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
