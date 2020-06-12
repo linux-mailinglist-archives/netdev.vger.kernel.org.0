@@ -2,83 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 038A91F756B
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 10:45:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B75B1F7581
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 10:54:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726335AbgFLIpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 04:45:54 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:54850 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726292AbgFLIpx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jun 2020 04:45:53 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id E02415AF6B508945B1B5;
-        Fri, 12 Jun 2020 16:45:50 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 12 Jun 2020 16:45:41 +0800
-From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     <netdev@vger.kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Peter Krystad <peter.krystad@linux.intel.com>
-CC:     Wei Yongjun <weiyongjun1@huawei.com>, <mptcp@lists.01.org>
-Subject: [PATCH] mptcp: fix memory leak in mptcp_subflow_create_socket()
-Date:   Fri, 12 Jun 2020 16:49:38 +0800
-Message-ID: <20200612084938.52083-1-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726367AbgFLIyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 04:54:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60642 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726327AbgFLIyU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 04:54:20 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E65DC03E96F;
+        Fri, 12 Jun 2020 01:54:20 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id a127so3981443pfa.12;
+        Fri, 12 Jun 2020 01:54:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1h0U0on2B5eieW//0BjOn1nuqwFmMt2z2UwHZRgs9sY=;
+        b=dzHSWgvHQidPUJPOLQ9tG26Ze1dNyZbBQPA7QTKYwDt5MfkokFNBdOLjWRC8beqoEr
+         g0vwJwBpvWAjWexk4EVyC6tvXOgR2fdCgXybAMhmcNwBRMc30y6cYoOd0XWW1HKHu5Re
+         jjj2nfe6r5JbHJXB7JxSUS0h/X1sT8zqXzhU/yh+mBTkgII8cMnN0J3CQF6FOakPZC/L
+         IEZD2OpqvmcnAIN1Bui/IYPv+DwbO0u6Q1GJQhZ8AELtaS9+kQKLd+TOtaE/z/eMIJO2
+         h/J/jpRzB05iQDU1qm5nhs3sxaDu7TKStKloYYofWRtkVhTkjlvf0Bj2h/JyQyF/TS66
+         8iKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1h0U0on2B5eieW//0BjOn1nuqwFmMt2z2UwHZRgs9sY=;
+        b=GBn825p8z/5FilAlrpZunSiJPc5wK51tLHG8i5NrwnzToEagwfyGcubtQz7w4GcHxB
+         RlcvxGfj6ywjyYsT0V5P/R56LoSYlKWZVe0xZTCExUJx/paxR85UW/+s2vYPWw0ivvo0
+         Ibj0TwncUrnsJnWSlo+htvYiWcq9j2P1ch8CEyvnVScPZR8lXYy/aKi5KHWhpuYyE8wB
+         twSOreOLjN0C9CoP2rZVeKqRE66j4twzVN6RH1PPR904QQ9Hd2aAjVkMlbte2Ta0BRdH
+         S/tiI3rOa/wB+7qo5ytk+skbFk/ETo03Fwg7ChwMOrBmXSB933YkKpBLBgaKwAvgvqq9
+         2XRw==
+X-Gm-Message-State: AOAM5313U2yCplrdO71nmnqxZKi0z4lx1aBZxi0EeOPZkRfHSIwkd1p2
+        1PaDOkxCPmrliY11d7VuP0M=
+X-Google-Smtp-Source: ABdhPJxfJkbaQXLHCaxdazaUT87ROcCfAiTKRl3Z3yo9Kf6Gpfn+YSk5DOH5/B9M0ANHrnr6QSK99g==
+X-Received: by 2002:aa7:979b:: with SMTP id o27mr1975531pfp.284.1591952059854;
+        Fri, 12 Jun 2020 01:54:19 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 130sm5208060pfw.176.2020.06.12.01.54.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jun 2020 01:54:19 -0700 (PDT)
+Date:   Fri, 12 Jun 2020 16:54:08 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Subject: Re: [PATCHv4 bpf-next 1/2] xdp: add a new helper for dev map
+ multicast support
+Message-ID: <20200612085408.GT102436@dhcp-12-153.nay.redhat.com>
+References: <20200415085437.23028-1-liuhangbin@gmail.com>
+ <20200526140539.4103528-1-liuhangbin@gmail.com>
+ <20200526140539.4103528-2-liuhangbin@gmail.com>
+ <20200610121859.0412c111@carbon>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200610121859.0412c111@carbon>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-socket malloced  by sock_create_kern() should be release before return
-in the error handling, otherwise it cause memory leak.
+On Wed, Jun 10, 2020 at 12:18:59PM +0200, Jesper Dangaard Brouer wrote:
+> On Tue, 26 May 2020 22:05:38 +0800
+> Hangbin Liu <liuhangbin@gmail.com> wrote:
+> 
+> > diff --git a/net/core/xdp.c b/net/core/xdp.c
+> > index 90f44f382115..acdc63833b1f 100644
+> > --- a/net/core/xdp.c
+> > +++ b/net/core/xdp.c
+> > @@ -475,3 +475,29 @@ void xdp_warn(const char *msg, const char *func, const int line)
+> >  	WARN(1, "XDP_WARN: %s(line:%d): %s\n", func, line, msg);
+> >  };
+> >  EXPORT_SYMBOL_GPL(xdp_warn);
+> > +
+> > +struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf)
+> > +{
+> > +	unsigned int headroom, totalsize;
+> > +	struct xdp_frame *nxdpf;
+> > +	struct page *page;
+> > +	void *addr;
+> > +
+> > +	headroom = xdpf->headroom + sizeof(*xdpf);
+> > +	totalsize = headroom + xdpf->len;
+> > +
+> > +	if (unlikely(totalsize > PAGE_SIZE))
+> > +		return NULL;
+> > +	page = dev_alloc_page();
+> > +	if (!page)
+> > +		return NULL;
+> > +	addr = page_to_virt(page);
+> > +
+> > +	memcpy(addr, xdpf, totalsize);
+> 
+> I don't think this will work.  You are assuming that the memory model
+> (xdp_mem_info) is the same.
+> 
+> You happened to use i40, that have MEM_TYPE_PAGE_SHARED, and you should
+> have changed this to MEM_TYPE_PAGE_ORDER0, but it doesn't crash as they
+> are compatible.  If you were using mlx5, I suspect that this would
+> result in memory leaking.
 
-unreferenced object 0xffff88810910c000 (size 1216):
-  comm "00000003_test_m", pid 12238, jiffies 4295050289 (age 54.237s)
-  hex dump (first 32 bytes):
-    01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 2f 30 0a 81 88 ff ff  ........./0.....
-  backtrace:
-    [<00000000e877f89f>] sock_alloc_inode+0x18/0x1c0
-    [<0000000093d1dd51>] alloc_inode+0x63/0x1d0
-    [<000000005673fec6>] new_inode_pseudo+0x14/0xe0
-    [<00000000b5db6be8>] sock_alloc+0x3c/0x260
-    [<00000000e7e3cbb2>] __sock_create+0x89/0x620
-    [<0000000023e48593>] mptcp_subflow_create_socket+0xc0/0x5e0
-    [<00000000419795e4>] __mptcp_socket_create+0x1ad/0x3f0
-    [<00000000b2f942e8>] mptcp_stream_connect+0x281/0x4f0
-    [<00000000c80cd5cc>] __sys_connect_file+0x14d/0x190
-    [<00000000dc761f11>] __sys_connect+0x128/0x160
-    [<000000008b14e764>] __x64_sys_connect+0x6f/0xb0
-    [<000000007b4f93bd>] do_syscall_64+0xa1/0x530
-    [<00000000d3e770b6>] entry_SYSCALL_64_after_hwframe+0x49/0xb3
+Is there anything else I should do except add the following line?
+	nxdpf->mem.type = MEM_TYPE_PAGE_ORDER0;
+> 
+> You also need to update xdpf->frame_sz, as you also cannot assume it is
+> the same.
 
-Fixes: 2303f994b3e1 ("mptcp: Associate MPTCP context with TCP socket")
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Won't the memcpy() copy xdpf->frame_sz to nxdpf? 
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index bf132575040d..bbdb74b8bc3c 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1053,8 +1053,10 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
- 	err = tcp_set_ulp(sf->sk, "mptcp");
- 	release_sock(sf->sk);
- 
--	if (err)
-+	if (err) {
-+		sock_release(sf);
- 		return err;
-+	}
- 
- 	/* the newly created socket really belongs to the owning MPTCP master
- 	 * socket, even if for additional subflows the allocation is performed
--- 
-2.25.1
+And I didn't see xdpf->frame_sz is set in xdp_convert_zc_to_xdp_frame(),
+do we need a fix?
 
+Thanks
+Hangbin
+> 
+> > +
+> > +	nxdpf = addr;
+> > +	nxdpf->data = addr + headroom;
+> > +
+> > +	return nxdpf;
+> > +}
+> > +EXPORT_SYMBOL_GPL(xdpf_clone);
+> 
+> 
+> -- 
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+> 
+> 
+> struct xdp_frame {
+> 	void *data;
+> 	u16 len;
+> 	u16 headroom;
+> 	u32 metasize:8;
+> 	u32 frame_sz:24;
+> 	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
+> 	 * while mem info is valid on remote CPU.
+> 	 */
+> 	struct xdp_mem_info mem;
+> 	struct net_device *dev_rx; /* used by cpumap */
+> };
+> 
