@@ -2,149 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4A6B1F731C
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 06:45:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD0A1F730E
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 06:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726364AbgFLEpd convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 12 Jun 2020 00:45:33 -0400
-Received: from asix.com.tw ([210.243.224.51]:31432 "EHLO freebsd2.asix.com.tw"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725763AbgFLEpd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jun 2020 00:45:33 -0400
-X-Greylist: delayed 1800 seconds by postgrey-1.27 at vger.kernel.org; Fri, 12 Jun 2020 00:45:32 EDT
-Received: from LouisSurfacePro (122-146-92-225.adsl.static.sparqnet.net [122.146.92.225] (may be forged))
-        (authenticated bits=0)
-        by freebsd2.asix.com.tw (8.15.2/8.15.2) with ESMTPSA id 05C4DwJs069313
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 12 Jun 2020 12:13:58 +0800 (CST)
-        (envelope-from louis@asix.com.tw)
-Authentication-Results: freebsd2.asix.com.tw; sender-id=softfail header.from=louis@asix.com.tw; auth=pass (LOGIN); spf=softfail smtp.mfrom=louis@asix.com.tw
-X-Authentication-Warning: freebsd2.asix.com.tw: Host 122-146-92-225.adsl.static.sparqnet.net [122.146.92.225] (may be forged) claimed to be LouisSurfacePro
-From:   <louis@asix.com.tw>
-To:     "'ASIX_Allan [Office]'" <allan@asix.com.tw>,
-        "'Jeremy Kerr'" <jk@ozlabs.org>,
-        "'Freddy Xin'" <freddy@asix.com.tw>
-Cc:     "'Peter Fink'" <pfink@christ-es.de>, <netdev@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>
-References: <20200527060334.19441-1-jk@ozlabs.org> <b9e1db7761761e321b23bd0d22ab981cbd5d6abe.camel@ozlabs.org> <000601d638a2$317f44d0$947dce70$@asix.com.tw>
-In-Reply-To: <000601d638a2$317f44d0$947dce70$@asix.com.tw>
-Subject: RE: [RFC PATCH] net: usb: ax88179_178a: fix packet alignment padding
-Date:   Fri, 12 Jun 2020 12:10:47 +0800
-Message-ID: <000801d6406f$757d45e0$6077d1a0$@asix.com.tw>
+        id S1726456AbgFLEhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 00:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbgFLEhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 00:37:02 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F893C03E96F
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 21:37:02 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id g18so6234618qtu.13
+        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 21:37:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=F97uV/ArOqgg3/t8g2ZR/V8/lEFaYz13EXKGPRdcTt4=;
+        b=j/CUCJm0VrxPmEBvvcLMcYsl8D7gvIApjW0OoVLaOkTaZbNvTBQqz1QkML6HGRjFC7
+         jXSiLzuLLZX84StWJ6gQshsZ+MkUfC6uQhGenGSA4UgmJrlRujH0z874NHusc4oKtxvD
+         4EINLwT6iW0S7KNRwxp+ZrUTMPYhd6p0/W9TaEwrKY9LpKpFZDMzFPD1RAoOX0847zZH
+         pZHTpT6Qs1y4Ted2xkfRAhxxQYv/A99IFS/Dmk1TfB/PPNBsaKjAi7rg2vteqyGH/l6j
+         DNyJEaCYMufX5/1+qycLRAjzY3D/AFJlBInOhY1EmUKcN6C0bTDR7fk8h9mMCcrXYqWh
+         blCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=F97uV/ArOqgg3/t8g2ZR/V8/lEFaYz13EXKGPRdcTt4=;
+        b=W4dgAEWAD5dGNyZkNiyV9bu3XDsg6JuozkO4KUPoW4BBdg+2QnrblttLxf/y/pnvQD
+         okYwms9W/DSmzvs+sLnRFGX/9zoyojRvXowtfMOTNlf5xc0bCT8c54ToUg75K/g960u1
+         QTsA6pNxYSMdKcbKNdDtRJg++Wf/5/TdlAWz/2zpzC0SpNoKO8kQzxe+D+/CV32DYiei
+         hWUiehYOrYr6o+pXRSYXzDeHaRewVB4W3brGd7XdgjdZcaMBtid6749Kd066nKPXVBHX
+         AG4NEFPHl3dE5kk8BVKXevnd7+aG2w0rexQXLtxpCFmDtR4tzqymJ17bkGNG3RALRn9U
+         AdVQ==
+X-Gm-Message-State: AOAM530LXDalVZllaSXNRivs430e7LXj0r6h2vm1j/LFKBtDyygQcyg9
+        H6B2PS3e4hBcfguaZp0/ex44WkPh
+X-Google-Smtp-Source: ABdhPJwqtVHcFLvjJ/rUshHkDB4qTN99rmQAf6mxEdrResdb1IJ0p3Pn985DPuCcv0Hv0qAWTqCKOg==
+X-Received: by 2002:ac8:3210:: with SMTP id x16mr1306222qta.192.1591936621347;
+        Thu, 11 Jun 2020 21:37:01 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:1179:8d76:2c34:5284? ([2601:282:803:7700:1179:8d76:2c34:5284])
+        by smtp.googlemail.com with ESMTPSA id c201sm3683592qkg.57.2020.06.11.21.37.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Jun 2020 21:37:00 -0700 (PDT)
+Subject: =?UTF-8?B?UmU6IOetlOWkjTogW1BBVENIXSBjYW4gY3VycmVudCBFQ01QIGltcGxl?=
+ =?UTF-8?Q?mentation_support_consistent_hashing_for_next_hop=3f?=
+To:     =?UTF-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
+        <yangyi01@inspur.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>
+References: <4037f805c6f842dcc429224ce28425eb@sslemail.net>
+ <8ff0c684-7d33-c785-94d7-c0e6f8b79d64@gmail.com>
+ <8867a00d26534ed5b84628db1a43017c@inspur.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <8da839b3-5b5d-b663-7d9c-0bc8351980dd@gmail.com>
+Date:   Thu, 11 Jun 2020 22:36:59 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQHmoCzAkPvBY+mFBa6Wg5HaQv5jdQFGCLaeAakD2h+onCO8kA==
-Content-Language: zh-tw
+In-Reply-To: <8867a00d26534ed5b84628db1a43017c@inspur.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jeremy,
-
-Thanks for the correction.
-Indeed, the hardware adds two bytes dummy data at beginning of Ethernet packet to make IP header aligned. 
-The original patch made by Freddy contains the length of dummy header. 
-Thanks for your concerning.
-Please let us know if you have any other question.
-
-Thank you,
-Louis.
-
----
-Best regards,
-Allan Chou
-ASIX Electronics Corporation
-TEL: 886-3-5799500 ext.228
-FAX: 886-3-5799558
-E-mail: allan@asix.com.tw 
-https://www.asix.com.tw/ 
-
-
-
------Original Message-----
-From: Jeremy Kerr <jk@ozlabs.org> 
-Sent: Tuesday, June 2, 2020 11:18 AM
-To: Freddy Xin <freddy@asix.com.tw>; Allan Chou <allan@asix.com.tw>
-Cc: Peter Fink <pfink@christ-es.de>; netdev@vger.kernel.org; linux-usb@vger.kernel.org
-Subject: Re: [RFC PATCH] net: usb: ax88179_178a: fix packet alignment padding
-
-Hi Freddy and Allan,
-
-Just following up on the RFC patch below: Can you confirm whether the packet len (in the hardware-provided packet RX metadata) includes the two-byte padding field? Is this the same for all ax88179 devices?
-
-Cheers,
-
-
-Jeremy
-
-> Using a AX88179 device (0b95:1790), I see two bytes of appended data 
-> on every RX packet. For example, this 48-byte ping, using 0xff as a 
-> payload byte:
+On 6/11/20 6:32 PM, Yi Yang (杨燚)-云服务集团 wrote:
+> David, thank you so much for confirming it can't, I did read your cumulus document before, resilient hashing is ok for next hop remove, but it still has the same issue there if add new next hop. I know most of kernel code in Cumulus Linux has been in upstream kernel, I'm wondering why you didn't push resilient hashing to upstream kernel.
 > 
->   04:20:22.528472 IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 2447, seq 1, length 64
-> 	0x0000:  000a cd35 ea50 000a cd35 ea4f 0800 4500
-> 	0x0010:  0054 c116 4000 4001 f63e c0a8 0101 c0a8
-> 	0x0020:  0102 0800 b633 098f 0001 87ea cd5e 0000
-> 	0x0030:  0000 dcf2 0600 0000 0000 ffff ffff ffff
-> 	0x0040:  ffff ffff ffff ffff ffff ffff ffff ffff
-> 	0x0050:  ffff ffff ffff ffff ffff ffff ffff ffff
-> 	0x0060:  ffff 961f
+> I think consistent hashing is must-have for a commercial load balancing solution, otherwise it is basically nonsense , do you Cumulus Linux have consistent hashing solution?
 > 
-> Those last two bytes - 96 1f - aren't part of the original packet.
-> 
-> In the ax88179 RX path, the usbnet rx_fixup function trims a 2-byte 
-> 'alignment pseudo header' from the start of the packet, and sets the 
-> length from a per-packet field populated by hardware. It looks like 
-> that length field *includes* the 2-byte header; the current driver 
-> assumes that it's excluded.
-> 
-> This change trims the 2-byte alignment header after we've set the 
-> packet length, so the resulting packet length is correct. While we're 
-> moving the comment around, this also fixes the spelling of 'pseudo'.
-> 
-> Signed-off-by: Jeremy Kerr <jk@ozlabs.org>
-> 
-> ---
-> RFC: I don't have access to docs for this hardware, so this is all 
-> based on observed behaviour of the reported packet length.
-> ---
->  drivers/net/usb/ax88179_178a.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/usb/ax88179_178a.c 
-> b/drivers/net/usb/ax88179_178a.c index 93044cf1417a..1fe4cc28d154 
-> 100644
-> --- a/drivers/net/usb/ax88179_178a.c
-> +++ b/drivers/net/usb/ax88179_178a.c
-> @@ -1414,10 +1414,10 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
->  		}
->  
->  		if (pkt_cnt == 0) {
-> -			/* Skip IP alignment psudo header */
-> -			skb_pull(skb, 2);
->  			skb->len = pkt_len;
-> -			skb_set_tail_pointer(skb, pkt_len);
-> +			/* Skip IP alignment pseudo header */
-> +			skb_pull(skb, 2);
-> +			skb_set_tail_pointer(skb, skb->len);
->  			skb->truesize = pkt_len + sizeof(struct sk_buff);
->  			ax88179_rx_checksum(skb, pkt_hdr);
->  			return 1;
-> @@ -1426,8 +1426,9 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
->  		ax_skb = skb_clone(skb, GFP_ATOMIC);
->  		if (ax_skb) {
->  			ax_skb->len = pkt_len;
-> -			ax_skb->data = skb->data + 2;
-> -			skb_set_tail_pointer(ax_skb, pkt_len);
-> +			/* Skip IP alignment pseudo header */
-> +			skb_pull(ax_skb, 2);
-> +			skb_set_tail_pointer(ax_skb, ax_skb->len);
->  			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
->  			ax88179_rx_checksum(ax_skb, pkt_hdr);
->  			usbnet_skb_return(dev, ax_skb);
-> 
+> Is "- replacing nexthop entries as LB's come and go" ithe stuff https://docs.cumulusnetworks.com/cumulus-linux/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#resilient-hashing is showing? It can't ensure the flow is distributed to the right backend server if a new next hop is added.
 
+I do not believe it is a problem to be solved in the kernel.
+
+If you follow the *intent* of the Cumulus document: what is the maximum
+number of load balancers you expect to have? 16? 32? 64? Define an ECMP
+route with that number of nexthops and fill in the weighting that meets
+your needs. When an LB is added or removed, you decide what the new set
+of paths is that maintains N-total paths with the distribution that
+meets your needs.
+
+I just sent patches for active-backup nexthops that allows an automatic
+fallback when one is removed to address the redistribution problem, but
+it still requires userspace to decide what the active-backup pairs are
+as well as the maximum number of paths.
