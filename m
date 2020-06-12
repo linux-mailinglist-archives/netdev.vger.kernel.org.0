@@ -2,125 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D44911F7D38
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 20:53:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85FB01F7D6C
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 21:14:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726085AbgFLSxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 14:53:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40240 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726310AbgFLSxj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 14:53:39 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC73C03E96F;
-        Fri, 12 Jun 2020 11:53:38 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id l17so9979441qki.9;
-        Fri, 12 Jun 2020 11:53:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=Qh641OHejXpMoiaqdfORBCnk81oMMYKOpl7AmvDd/qw=;
-        b=sK8ZIgksUWgBLZYVKp/MiKTt2re/4Di/h5B/xyVC8dkmzziuY/1cIkb85PITbY8PIb
-         tctq/P+GJFegS9YkoMsx5AU5Lkq0Vp807deCfhElDIWcobZVOJs1/ZuHlsOKkF8G9zkE
-         BJOiEv2iEzDEdYXf6FUInS3/M9IcdLnXz0qEToO38P8vkRJ/yG9CLjNGf8LOc2d9337m
-         J8adFRGzHKTHcx8hehD+qK98MLstkTJniCMB1ANol4TlMV9yHc1dcgLrWKZhpCGQNOJn
-         lMdL6ILIKqcZjxGJ/hpbGEp/bH/dip0vPKsgU+E/UMk+sSQ74ocESMuHuRV8D65ezGBS
-         wG+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references;
-        bh=Qh641OHejXpMoiaqdfORBCnk81oMMYKOpl7AmvDd/qw=;
-        b=J7By8jCDCTpfSClplUMudggw4gKiHMCdFnsryJgoK4v/s6EvRsp3tARwFINzhnAKpO
-         ZCOPCulwDL4BF5ERV4BzEJ2wYLSWpko+uS1K5wcIBp3tAKI0ffGAEGlxWIjIWvvSnL9w
-         L2UYeHq97YXH4UwVDyslX8SyPRgi1JOdfW3/9XnsW2jxaT5EZGy+0+R92byoIvHJlTyT
-         MNtYKMt1dvQuhPjaz7HSHHI60peRmDa4Q8fWK9/M3Ha2xNzcMOWLlPmAEEuzKz9yK+L1
-         TYDpYQ9WVlKsq90XrlllmaxR8yC0XpOwML3mYT3YVxFhvI3vQq4T8+I8EVXaogmSSrep
-         dAGw==
-X-Gm-Message-State: AOAM533l7WPPsfs1X/YARdpJFkBiG7zxmTyHEQhUrDPZ+LSR37AZJlXf
-        lxt7pLS+/DUarN8m4/zTD9o=
-X-Google-Smtp-Source: ABdhPJxSKn+a0LGaP3g0JoZhdw2t7p0eQrGpXb5LV8ZhEXVn/bgcKifKQYF7hdJ9C/3U1fewbNzNig==
-X-Received: by 2002:ae9:f80e:: with SMTP id x14mr4336586qkh.314.1591988017643;
-        Fri, 12 Jun 2020 11:53:37 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:549b:4a8:a945:10b9])
-        by smtp.googlemail.com with ESMTPSA id o6sm5079906qtd.59.2020.06.12.11.53.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2020 11:53:37 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        bpf@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] xdp_rxq_info_user: Fix null pointer dereference. Replace malloc/memset with calloc.
-Date:   Fri, 12 Jun 2020 14:53:27 -0400
-Message-Id: <20200612185328.4671-1-gaurav1086@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200611150221.15665-1-gaurav1086@gmail.com>
-References: <20200611150221.15665-1-gaurav1086@gmail.com>
+        id S1726290AbgFLTOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 15:14:40 -0400
+Received: from mga03.intel.com ([134.134.136.65]:37737 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726268AbgFLTOk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jun 2020 15:14:40 -0400
+IronPort-SDR: I1LJNZw0fq7yK45w9W1bcIv+TfJTlG0DJOD3p2sRbwAD2qoMkPKOOf3GyNX9mrjSVCyg401WTK
+ YoTYQL77ac2w==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2020 12:14:39 -0700
+IronPort-SDR: 2ucxtBPrseF6KSxLzGLcHfslxsW93c0Y+e4f+c6qPq2bwMZ+lzClyXJFuIXTt4xfEzAOOSUafa
+ ZL0ABPfh/2tA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,504,1583222400"; 
+   d="scan'208";a="474341619"
+Received: from unknown (HELO [10.255.231.235]) ([10.255.231.235])
+  by fmsmga005.fm.intel.com with ESMTP; 12 Jun 2020 12:14:39 -0700
+Date:   Fri, 12 Jun 2020 12:14:38 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@mjmartin-mac01.local
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+cc:     netdev@vger.kernel.org,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        mptcp@lists.01.org
+Subject: Re: [PATCH] mptcp: fix memory leak in
+ mptcp_subflow_create_socket()
+In-Reply-To: <20200612084938.52083-1-weiyongjun1@huawei.com>
+Message-ID: <alpine.OSX.2.22.394.2006121151020.74555@mjmartin-mac01.local>
+References: <20200612084938.52083-1-weiyongjun1@huawei.com>
+User-Agent: Alpine 2.22 (OSX 394 2020-01-19)
+MIME-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Memset on the pointer right after malloc can cause a
-null pointer deference if it failed to allocate memory.
-A simple fix is to replace malloc/memset with a calloc()
 
-Fixes: 0fca931a6f21 ("samples/bpf: program demonstrating access to xdp_rxq_info")
-Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
----
- samples/bpf/xdp_rxq_info_user.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+Hello Wei,
 
-diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
-index 4fe47502ebed..caa4e7ffcfc7 100644
---- a/samples/bpf/xdp_rxq_info_user.c
-+++ b/samples/bpf/xdp_rxq_info_user.c
-@@ -198,11 +198,8 @@ static struct datarec *alloc_record_per_cpu(void)
- {
- 	unsigned int nr_cpus = bpf_num_possible_cpus();
- 	struct datarec *array;
--	size_t size;
- 
--	size = sizeof(struct datarec) * nr_cpus;
--	array = malloc(size);
--	memset(array, 0, size);
-+	array = calloc(nr_cpus, sizeof(struct datarec));
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
- 		exit(EXIT_FAIL_MEM);
-@@ -214,11 +211,8 @@ static struct record *alloc_record_per_rxq(void)
- {
- 	unsigned int nr_rxqs = bpf_map__def(rx_queue_index_map)->max_entries;
- 	struct record *array;
--	size_t size;
- 
--	size = sizeof(struct record) * nr_rxqs;
--	array = malloc(size);
--	memset(array, 0, size);
-+	array = calloc(nr_rxqs, sizeof(struct record));
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_rxqs:%u)\n", nr_rxqs);
- 		exit(EXIT_FAIL_MEM);
-@@ -232,8 +226,7 @@ static struct stats_record *alloc_stats_record(void)
- 	struct stats_record *rec;
- 	int i;
- 
--	rec = malloc(sizeof(*rec));
--	memset(rec, 0, sizeof(*rec));
-+	rec = calloc(1, sizeof(struct stats_record));
- 	if (!rec) {
- 		fprintf(stderr, "Mem alloc error\n");
- 		exit(EXIT_FAIL_MEM);
--- 
-2.17.1
+On Fri, 12 Jun 2020, Wei Yongjun wrote:
 
+> socket malloced  by sock_create_kern() should be release before return
+> in the error handling, otherwise it cause memory leak.
+>
+> unreferenced object 0xffff88810910c000 (size 1216):
+>  comm "00000003_test_m", pid 12238, jiffies 4295050289 (age 54.237s)
+>  hex dump (first 32 bytes):
+>    01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
+>    00 00 00 00 00 00 00 00 00 2f 30 0a 81 88 ff ff  ........./0.....
+>  backtrace:
+>    [<00000000e877f89f>] sock_alloc_inode+0x18/0x1c0
+>    [<0000000093d1dd51>] alloc_inode+0x63/0x1d0
+>    [<000000005673fec6>] new_inode_pseudo+0x14/0xe0
+>    [<00000000b5db6be8>] sock_alloc+0x3c/0x260
+>    [<00000000e7e3cbb2>] __sock_create+0x89/0x620
+>    [<0000000023e48593>] mptcp_subflow_create_socket+0xc0/0x5e0
+>    [<00000000419795e4>] __mptcp_socket_create+0x1ad/0x3f0
+>    [<00000000b2f942e8>] mptcp_stream_connect+0x281/0x4f0
+>    [<00000000c80cd5cc>] __sys_connect_file+0x14d/0x190
+>    [<00000000dc761f11>] __sys_connect+0x128/0x160
+>    [<000000008b14e764>] __x64_sys_connect+0x6f/0xb0
+>    [<000000007b4f93bd>] do_syscall_64+0xa1/0x530
+>    [<00000000d3e770b6>] entry_SYSCALL_64_after_hwframe+0x49/0xb3
+>
+> Fixes: 2303f994b3e1 ("mptcp: Associate MPTCP context with TCP socket")
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+>
+> diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+> index bf132575040d..bbdb74b8bc3c 100644
+> --- a/net/mptcp/subflow.c
+> +++ b/net/mptcp/subflow.c
+> @@ -1053,8 +1053,10 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
+> 	err = tcp_set_ulp(sf->sk, "mptcp");
+> 	release_sock(sf->sk);
+>
+> -	if (err)
+> +	if (err) {
+> +		sock_release(sf);
+> 		return err;
+> +	}
+>
+> 	/* the newly created socket really belongs to the owning MPTCP master
+> 	 * socket, even if for additional subflows the allocation is performed
+> -- 
+> 2.25.1
+
+Thanks for catching this leak. Be sure to specify which git tree this 
+should be applied to in the subject line, I'm assuming in this case you'd 
+want [PATCH net].
+
+--
+Mat Martineau
+Intel
