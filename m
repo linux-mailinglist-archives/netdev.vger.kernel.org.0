@@ -2,165 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C83D1F7434
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 08:58:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DE9C1F7480
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 09:17:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726361AbgFLG55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 02:57:57 -0400
-Received: from helcar.hmeau.com ([216.24.177.18]:39012 "EHLO fornost.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726287AbgFLG55 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jun 2020 02:57:57 -0400
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1jjddB-0000xa-CX; Fri, 12 Jun 2020 16:57:38 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 12 Jun 2020 16:57:37 +1000
-Date:   Fri, 12 Jun 2020 16:57:37 +1000
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Sagi Grimberg <sagi@lightbitslabs.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: [v3 PATCH] iov_iter: Move unnecessary inclusion of crypto/hash.h
-Message-ID: <20200612065737.GA17176@gondor.apana.org.au>
-References: <20200611074332.GA12274@gondor.apana.org.au>
- <20200611114911.GA17594@gondor.apana.org.au>
+        id S1726403AbgFLHRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 03:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726298AbgFLHRF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 03:17:05 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02150C03E96F
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 00:17:04 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id 23so3871658pfw.10
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 00:17:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w55rsvJaZ+hDzoGKRPuFNtqms7c1RTN3yNwMVXMrMaE=;
+        b=Ng1FVAYiyUSRim/Hf89iBCjDQRYH3cJV3I/2OkSQ1ALUqQEeyNvYM0cS2e0JkSqVE2
+         aoiM8B/asQ2gaM5ncOtAHVdkjDPfiZHEZe2seHCgDNrUfjEsvPCPOoPdHsx9n/cIp9Cx
+         oQSSD77DbyRQ7jBUAYNW5m8wFiTKadMCN/nyi87bR/yYd1JG4QnXmDTcyd/+4nBtAXa6
+         MP+WYhO4Dqymhe5bErYVUME5WyfKmoklYVRpPCmtDht4GYm6b2E7v/CNViyylz/xXTNs
+         tgyt2zrM19YD7re239l55pv2jTaU3Xw10G8LdcaL9gB2AA8IoHfzQsTAq03TFUueGcl9
+         gl2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w55rsvJaZ+hDzoGKRPuFNtqms7c1RTN3yNwMVXMrMaE=;
+        b=Xpc/TkwckvOxwCYi8sDILxg1c28plrDavlG4No+jGMKq8EzXCb6ZWDLDn9O3PuPRD+
+         QmnizJfyC8di2j1P53B1dKTn/vuiKh+IT7Nwc7YiV/xWgyVzR3xloRmcLpCm0efqNakR
+         GQ7owC/G0XlfZjXAZm4QwGivwLZlhVQfdNDCNRHt2haAqnijzUt/ruvS+i6TqBYXrgXh
+         6r0RPUFGg3s6IebTvoiW/LPOQCNmtZDdlZ+jOpunJpnTCkt66W1POu2enQU5pXqJ4z7Y
+         V+DkagwbqYICKsuFPYb7FadfRb/R0URPTqyoyYkv931vJxU5HXTILmu3DpVhW6k6Ndo1
+         g4jg==
+X-Gm-Message-State: AOAM530WnglEP6a+g6+bFZv3GAgG4VQSd2Wk+rZp/Gxv/R+RPLLvVqZ5
+        Jq6gitR3FD6xZM4PDeJoR8x4wblv
+X-Google-Smtp-Source: ABdhPJwa9vXv2waFkjjFojVRRxtuW1gvoD0QErXGfw1tSuLs6O4cAUBDr4eV3bqulFw/QITiGuslXQ==
+X-Received: by 2002:aa7:8141:: with SMTP id d1mr11036350pfn.209.1591946224075;
+        Fri, 12 Jun 2020 00:17:04 -0700 (PDT)
+Received: from MacBookAir.linux-6brj.site (99-174-169-255.lightspeed.sntcca.sbcglobal.net. [99.174.169.255])
+        by smtp.gmail.com with ESMTPSA id dw17sm4461325pjb.40.2020.06.12.00.17.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jun 2020 00:17:03 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>
+Subject: [Patch net] genetlink: clean up family attributes allocations
+Date:   Fri, 12 Jun 2020 00:16:55 -0700
+Message-Id: <20200612071655.8009-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200611114911.GA17594@gondor.apana.org.au>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The header file linux/uio.h includes crypto/hash.h which pulls in
-most of the Crypto API.  Since linux/uio.h is used throughout the
-kernel this means that every tiny bit of change to the Crypto API
-causes the entire kernel to get rebuilt.
+genl_family_rcv_msg_attrs_parse() and genl_family_rcv_msg_attrs_free()
+take a boolean parameter to determine whether allocate/free the family
+attrs. This is unnecessary as we can just check family->parallel_ops.
+More importantly, callers would not need to worry about pairing these
+parameters correctly after this patch.
 
-This patch fixes this by moving it into lib/iov_iter.c instead
-where it is actually used.
+And this fixes a memory leak, as after commit c36f05559104
+("genetlink: fix memory leaks in genl_family_rcv_msg_dumpit()")
+we call genl_family_rcv_msg_attrs_parse() for both parallel and
+non-parallel cases.
 
-This patch also fixes the ifdef to use CRYPTO_HASH instead of just
-CRYPTO which does not guarantee the existence of ahash.
+Fixes: c36f05559104 ("genetlink: fix memory leaks in genl_family_rcv_msg_dumpit()")
+Reported-by: Ido Schimmel <idosch@idosch.org>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+---
+ net/netlink/genetlink.c | 28 ++++++++++++----------------
+ 1 file changed, 12 insertions(+), 16 deletions(-)
 
-Unfortunately a number of drivers were relying on linux/uio.h to
-provide access to linux/slab.h.  This patch adds inclusions of
-linux/slab.h as detected by build failures.
-
-Also skbuff.h was relying on this to provide a declaration for
-ahash_request.  This patch adds a forward declaration instead.
-
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-
-diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
-index 6d0bec947636..e237d6038407 100644
---- a/drivers/dma/sf-pdma/sf-pdma.c
-+++ b/drivers/dma/sf-pdma/sf-pdma.c
-@@ -20,6 +20,7 @@
- #include <linux/mod_devicetable.h>
- #include <linux/dma-mapping.h>
- #include <linux/of.h>
-+#include <linux/slab.h>
- 
- #include "sf-pdma.h"
- 
-diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-index d39307f060bd..5a984df0e95e 100644
---- a/drivers/misc/uacce/uacce.c
-+++ b/drivers/misc/uacce/uacce.c
-@@ -4,6 +4,7 @@
- #include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/poll.h>
-+#include <linux/slab.h>
- #include <linux/uacce.h>
- 
- static struct class *uacce_class;
-diff --git a/drivers/soc/qcom/pdr_interface.c b/drivers/soc/qcom/pdr_interface.c
-index 17ad3b8698e1..aa2e3fe19c0f 100644
---- a/drivers/soc/qcom/pdr_interface.c
-+++ b/drivers/soc/qcom/pdr_interface.c
-@@ -5,6 +5,7 @@
- 
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/slab.h>
- #include <linux/string.h>
- #include <linux/workqueue.h>
- 
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index 320d1062068d..d1e03b8cb6bb 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -3,6 +3,7 @@
-  * Copyright (C) 2007 Oracle.  All rights reserved.
-  */
- 
-+#include <crypto/hash.h>
- #include <linux/kernel.h>
- #include <linux/bio.h>
- #include <linux/buffer_head.h>
-diff --git a/include/linux/uio.h b/include/linux/uio.h
-index 9576fd8158d7..3835a8a8e9ea 100644
---- a/include/linux/uio.h
-+++ b/include/linux/uio.h
-@@ -7,7 +7,6 @@
- 
- #include <linux/kernel.h>
- #include <linux/thread_info.h>
--#include <crypto/hash.h>
- #include <uapi/linux/uio.h>
- 
- struct page;
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index 51595bf3af85..2830daf46c73 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0-only
-+#include <crypto/hash.h>
- #include <linux/export.h>
- #include <linux/bvec.h>
- #include <linux/uio.h>
-@@ -1566,7 +1567,7 @@ EXPORT_SYMBOL(csum_and_copy_to_iter);
- size_t hash_and_copy_to_iter(const void *addr, size_t bytes, void *hashp,
- 		struct iov_iter *i)
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index 6c19b91bbb86..55ee680e9db1 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -474,8 +474,7 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
+ 				struct netlink_ext_ack *extack,
+ 				const struct genl_ops *ops,
+ 				int hdrlen,
+-				enum genl_validate_flags no_strict_flag,
+-				bool parallel)
++				enum genl_validate_flags no_strict_flag)
  {
--#ifdef CONFIG_CRYPTO
-+#ifdef CONFIG_CRYPTO_HASH
- 	struct ahash_request *hash = hashp;
- 	struct scatterlist sg;
- 	size_t copied;
-diff --git a/drivers/mtd/mtdpstore.c b/drivers/mtd/mtdpstore.c
-index a4fe6060b960..a3ae8778f6a9 100644
---- a/drivers/mtd/mtdpstore.c
-+++ b/drivers/mtd/mtdpstore.c
-@@ -7,6 +7,7 @@
- #include <linux/pstore_blk.h>
- #include <linux/mtd/mtd.h>
- #include <linux/bitops.h>
-+#include <linux/slab.h>
+ 	enum netlink_validation validate = ops->validate & no_strict_flag ?
+ 					   NL_VALIDATE_LIBERAL :
+@@ -486,7 +485,7 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
+ 	if (!family->maxattr)
+ 		return NULL;
  
- static struct mtdpstore_context {
- 	int index;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 3a2ac7072dbb..36df5998d23c 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -238,6 +238,7 @@
- 			 SKB_DATA_ALIGN(sizeof(struct sk_buff)) +	\
- 			 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+-	if (parallel) {
++	if (family->parallel_ops) {
+ 		attrbuf = kmalloc_array(family->maxattr + 1,
+ 					sizeof(struct nlattr *), GFP_KERNEL);
+ 		if (!attrbuf)
+@@ -498,7 +497,7 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
+ 	err = __nlmsg_parse(nlh, hdrlen, attrbuf, family->maxattr,
+ 			    family->policy, validate, extack);
+ 	if (err) {
+-		if (parallel)
++		if (family->parallel_ops)
+ 			kfree(attrbuf);
+ 		return ERR_PTR(err);
+ 	}
+@@ -506,10 +505,9 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
+ }
  
-+struct ahash_request;
- struct net_device;
- struct scatterlist;
- struct pipe_inode_info;
+ static void genl_family_rcv_msg_attrs_free(const struct genl_family *family,
+-					   struct nlattr **attrbuf,
+-					   bool parallel)
++					   struct nlattr **attrbuf)
+ {
+-	if (parallel)
++	if (family->parallel_ops)
+ 		kfree(attrbuf);
+ }
+ 
+@@ -537,15 +535,14 @@ static int genl_start(struct netlink_callback *cb)
+ 
+ 	attrs = genl_family_rcv_msg_attrs_parse(ctx->family, ctx->nlh, ctx->extack,
+ 						ops, ctx->hdrlen,
+-						GENL_DONT_VALIDATE_DUMP_STRICT,
+-						true);
++						GENL_DONT_VALIDATE_DUMP_STRICT);
+ 	if (IS_ERR(attrs))
+ 		return PTR_ERR(attrs);
+ 
+ no_attrs:
+ 	info = genl_dumpit_info_alloc();
+ 	if (!info) {
+-		kfree(attrs);
++		genl_family_rcv_msg_attrs_free(ctx->family, attrs);
+ 		return -ENOMEM;
+ 	}
+ 	info->family = ctx->family;
+@@ -562,7 +559,7 @@ static int genl_start(struct netlink_callback *cb)
+ 	}
+ 
+ 	if (rc) {
+-		kfree(attrs);
++		genl_family_rcv_msg_attrs_free(info->family, info->attrs);
+ 		genl_dumpit_info_free(info);
+ 		cb->data = NULL;
+ 	}
+@@ -591,7 +588,7 @@ static int genl_lock_done(struct netlink_callback *cb)
+ 		rc = ops->done(cb);
+ 		genl_unlock();
+ 	}
+-	genl_family_rcv_msg_attrs_free(info->family, info->attrs, false);
++	genl_family_rcv_msg_attrs_free(info->family, info->attrs);
+ 	genl_dumpit_info_free(info);
+ 	return rc;
+ }
+@@ -604,7 +601,7 @@ static int genl_parallel_done(struct netlink_callback *cb)
+ 
+ 	if (ops->done)
+ 		rc = ops->done(cb);
+-	genl_family_rcv_msg_attrs_free(info->family, info->attrs, true);
++	genl_family_rcv_msg_attrs_free(info->family, info->attrs);
+ 	genl_dumpit_info_free(info);
+ 	return rc;
+ }
+@@ -671,8 +668,7 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
+ 
+ 	attrbuf = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
+ 						  ops, hdrlen,
+-						  GENL_DONT_VALIDATE_STRICT,
+-						  family->parallel_ops);
++						  GENL_DONT_VALIDATE_STRICT);
+ 	if (IS_ERR(attrbuf))
+ 		return PTR_ERR(attrbuf);
+ 
+@@ -698,7 +694,7 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
+ 		family->post_doit(ops, skb, &info);
+ 
+ out:
+-	genl_family_rcv_msg_attrs_free(family, attrbuf, family->parallel_ops);
++	genl_family_rcv_msg_attrs_free(family, attrbuf);
+ 
+ 	return err;
+ }
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.26.2
+
