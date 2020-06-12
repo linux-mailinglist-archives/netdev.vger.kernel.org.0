@@ -2,151 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 814031F728F
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 05:40:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4A6B1F731C
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 06:45:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726609AbgFLDk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 23:40:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40756 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726520AbgFLDk4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jun 2020 23:40:56 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 876B820835;
-        Fri, 12 Jun 2020 03:40:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591933255;
-        bh=vd7bcPbtbMIp5UdKF+DEUXSHMR5maubaM+1JjLQFxjg=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=oQ0K7OQ2UDESsf7QaLPKDXk5xUCQ866U57diPfIILFqyofgzracTuT21wt52wobNL
-         nAznRXNywEmSDssA8sLykfaoIgT5I97rcaqGSLcXfx+5Oa2M3YxmoJl8DLpT/uvnim
-         b8CitxSTqLsYQ71pNgE3YeUOgy206eRTM3mUYQOw=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 6A07135228C7; Thu, 11 Jun 2020 20:40:55 -0700 (PDT)
-Date:   Thu, 11 Jun 2020 20:40:55 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH RFC v3 bpf-next 1/4] bpf: Introduce sleepable BPF programs
-Message-ID: <20200612034055.GH4455@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200611222340.24081-1-alexei.starovoitov@gmail.com>
- <20200611222340.24081-2-alexei.starovoitov@gmail.com>
- <CAADnVQ+Ed86oOZPA1rOn_COKPpH1917Q6QUtETkciC8L8+u22A@mail.gmail.com>
- <20200612000447.GF4455@paulmck-ThinkPad-P72>
- <20200612021301.7esez3plqpmjf5wu@ast-mbp.dhcp.thefacebook.com>
+        id S1726364AbgFLEpd convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 12 Jun 2020 00:45:33 -0400
+Received: from asix.com.tw ([210.243.224.51]:31432 "EHLO freebsd2.asix.com.tw"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725763AbgFLEpd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jun 2020 00:45:33 -0400
+X-Greylist: delayed 1800 seconds by postgrey-1.27 at vger.kernel.org; Fri, 12 Jun 2020 00:45:32 EDT
+Received: from LouisSurfacePro (122-146-92-225.adsl.static.sparqnet.net [122.146.92.225] (may be forged))
+        (authenticated bits=0)
+        by freebsd2.asix.com.tw (8.15.2/8.15.2) with ESMTPSA id 05C4DwJs069313
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 12 Jun 2020 12:13:58 +0800 (CST)
+        (envelope-from louis@asix.com.tw)
+Authentication-Results: freebsd2.asix.com.tw; sender-id=softfail header.from=louis@asix.com.tw; auth=pass (LOGIN); spf=softfail smtp.mfrom=louis@asix.com.tw
+X-Authentication-Warning: freebsd2.asix.com.tw: Host 122-146-92-225.adsl.static.sparqnet.net [122.146.92.225] (may be forged) claimed to be LouisSurfacePro
+From:   <louis@asix.com.tw>
+To:     "'ASIX_Allan [Office]'" <allan@asix.com.tw>,
+        "'Jeremy Kerr'" <jk@ozlabs.org>,
+        "'Freddy Xin'" <freddy@asix.com.tw>
+Cc:     "'Peter Fink'" <pfink@christ-es.de>, <netdev@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>
+References: <20200527060334.19441-1-jk@ozlabs.org> <b9e1db7761761e321b23bd0d22ab981cbd5d6abe.camel@ozlabs.org> <000601d638a2$317f44d0$947dce70$@asix.com.tw>
+In-Reply-To: <000601d638a2$317f44d0$947dce70$@asix.com.tw>
+Subject: RE: [RFC PATCH] net: usb: ax88179_178a: fix packet alignment padding
+Date:   Fri, 12 Jun 2020 12:10:47 +0800
+Message-ID: <000801d6406f$757d45e0$6077d1a0$@asix.com.tw>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200612021301.7esez3plqpmjf5wu@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHmoCzAkPvBY+mFBa6Wg5HaQv5jdQFGCLaeAakD2h+onCO8kA==
+Content-Language: zh-tw
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 11, 2020 at 07:13:01PM -0700, Alexei Starovoitov wrote:
-> On Thu, Jun 11, 2020 at 05:04:47PM -0700, Paul E. McKenney wrote:
-> > On Thu, Jun 11, 2020 at 03:29:09PM -0700, Alexei Starovoitov wrote:
-> > > On Thu, Jun 11, 2020 at 3:23 PM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > >
-> > > >  /* dummy _ops. The verifier will operate on target program's ops. */
-> > > >  const struct bpf_verifier_ops bpf_extension_verifier_ops = {
-> > > > @@ -205,14 +206,12 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
-> > > >             tprogs[BPF_TRAMP_MODIFY_RETURN].nr_progs)
-> > > >                 flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
-> > > >
-> > > > -       /* Though the second half of trampoline page is unused a task could be
-> > > > -        * preempted in the middle of the first half of trampoline and two
-> > > > -        * updates to trampoline would change the code from underneath the
-> > > > -        * preempted task. Hence wait for tasks to voluntarily schedule or go
-> > > > -        * to userspace.
-> > > > +       /* the same trampoline can hold both sleepable and non-sleepable progs.
-> > > > +        * synchronize_rcu_tasks_trace() is needed to make sure all sleepable
-> > > > +        * programs finish executing. It also ensures that the rest of
-> > > > +        * generated tramopline assembly finishes before updating trampoline.
-> > > >          */
-> > > > -
-> > > > -       synchronize_rcu_tasks();
-> > > > +       synchronize_rcu_tasks_trace();
-> > > 
-> > > Hi Paul,
-> > > 
-> > > I've been looking at rcu_trace implementation and I think above change
-> > > is correct.
-> > > Could you please double check my understanding?
-> > 
-> > From an RCU Tasks Trace perspective, it looks good to me!
-> > 
-> > You have rcu_read_lock_trace() and rcu_read_unlock_trace() protecting
-> > the readers and synchronize_rcu_trace() waiting for them.
-> > 
-> > One question given my lack of understanding of BPF:  Are there still
-> > tramoplines for non-sleepable BPF programs?  If so, they might still
-> > need to use synchronize_rcu_tasks() or some such.
+Hi Jeremy,
+
+Thanks for the correction.
+Indeed, the hardware adds two bytes dummy data at beginning of Ethernet packet to make IP header aligned. 
+The original patch made by Freddy contains the length of dummy header. 
+Thanks for your concerning.
+Please let us know if you have any other question.
+
+Thank you,
+Louis.
+
+---
+Best regards,
+Allan Chou
+ASIX Electronics Corporation
+TEL: 886-3-5799500 ext.228
+FAX: 886-3-5799558
+E-mail: allan@asix.com.tw 
+https://www.asix.com.tw/ 
+
+
+
+-----Original Message-----
+From: Jeremy Kerr <jk@ozlabs.org> 
+Sent: Tuesday, June 2, 2020 11:18 AM
+To: Freddy Xin <freddy@asix.com.tw>; Allan Chou <allan@asix.com.tw>
+Cc: Peter Fink <pfink@christ-es.de>; netdev@vger.kernel.org; linux-usb@vger.kernel.org
+Subject: Re: [RFC PATCH] net: usb: ax88179_178a: fix packet alignment padding
+
+Hi Freddy and Allan,
+
+Just following up on the RFC patch below: Can you confirm whether the packet len (in the hardware-provided packet RX metadata) includes the two-byte padding field? Is this the same for all ax88179 devices?
+
+Cheers,
+
+
+Jeremy
+
+> Using a AX88179 device (0b95:1790), I see two bytes of appended data 
+> on every RX packet. For example, this 48-byte ping, using 0xff as a 
+> payload byte:
 > 
-> The same trampoline can hold both sleepable and non-sleepable progs.
-> The following is possible:
-> . trampoline asm starts
->   . rcu_read_lock + migrate_disable
->     . non-sleepable prog_A
->   . rcu_read_unlock + migrate_enable
-> . trampoline asm
->   . rcu_read_lock_trace
->     . sleepable prog_B
->   . rcu_read_unlock_trace
-> . trampoline asm
->   . rcu_read_lock + migrate_disable
->     . non-sleepable prog_C
->   . rcu_read_unlock + migrate_enable
-> . trampoline asm ends
-
-Ah, new one on me!
-
-> > The general principle is "never mix one type of RCU reader with another
-> > type of RCU updater".
-> > 
-> > But in this case, one approach is to use synchronize_rcu_mult():
-> > 
-> > 	synchronize_rcu_mult(call_rcu_tasks, call_rcu_tasks_trace);
+>   04:20:22.528472 IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 2447, seq 1, length 64
+> 	0x0000:  000a cd35 ea50 000a cd35 ea4f 0800 4500
+> 	0x0010:  0054 c116 4000 4001 f63e c0a8 0101 c0a8
+> 	0x0020:  0102 0800 b633 098f 0001 87ea cd5e 0000
+> 	0x0030:  0000 dcf2 0600 0000 0000 ffff ffff ffff
+> 	0x0040:  ffff ffff ffff ffff ffff ffff ffff ffff
+> 	0x0050:  ffff ffff ffff ffff ffff ffff ffff ffff
+> 	0x0060:  ffff 961f
 > 
-> That was my first approach, but I've started looking deeper and looks
-> like rcu_tasks_trace is stronger than rcu_tasks.
-> 'never mix' is a valid concern, so for future proofing the rcu_mult()
-> is cleaner, but from safety pov just sync*rcu_tasks_trace() is enough
-> even when trampoline doesn't hold sleepable progs, right ?
-
-You really can have synchronize_rcu_tasks_trace() return before
-synchronize_rcu_tasks().  And vice versa, though perhaps with less
-probability.  So if you need both, you need to use both.
-
-> Also timing wise rcu_mult() is obviously faster than doing
-> one at a time, but how do you sort their speeds:
-> A: synchronize_rcu_mult(call_rcu_tasks, call_rcu_tasks_trace);
-> B: synchronize_rcu_tasks();
-> C: synchronize_rcu_tasks_trace();
-
-duration(A) cannot be shorter than either duration(B) or duration(C).
-In theory, duration(A) = max(duration(B), duration(C)).  In practice,
-things are a bit messier, but the max() is not a bad rule of thumb.
-
-> > That would wait for both types of readers, and do so concurrently.
-> > And if there is also a need to wait on rcu_read_lock() and friends,
-> > you could do this:
-> > 
-> > 	synchronize_rcu_mult(call_rcu, call_rcu_tasks, call_rcu_tasks_trace);
+> Those last two bytes - 96 1f - aren't part of the original packet.
 > 
-> I was about to reply that trampoline doesn't need it and there is no such
-> case yet, but then realized that I can use it in hashtab freeing with:
-> synchronize_rcu_mult(call_rcu, call_rcu_tasks_trace);
-> That would be nice optimization.
+> In the ax88179 RX path, the usbnet rx_fixup function trims a 2-byte 
+> 'alignment pseudo header' from the start of the packet, and sets the 
+> length from a per-packet field populated by hardware. It looks like 
+> that length field *includes* the 2-byte header; the current driver 
+> assumes that it's excluded.
+> 
+> This change trims the 2-byte alignment header after we've set the 
+> packet length, so the resulting packet length is correct. While we're 
+> moving the comment around, this also fixes the spelling of 'pseudo'.
+> 
+> Signed-off-by: Jeremy Kerr <jk@ozlabs.org>
+> 
+> ---
+> RFC: I don't have access to docs for this hardware, so this is all 
+> based on observed behaviour of the reported packet length.
+> ---
+>  drivers/net/usb/ax88179_178a.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/usb/ax88179_178a.c 
+> b/drivers/net/usb/ax88179_178a.c index 93044cf1417a..1fe4cc28d154 
+> 100644
+> --- a/drivers/net/usb/ax88179_178a.c
+> +++ b/drivers/net/usb/ax88179_178a.c
+> @@ -1414,10 +1414,10 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+>  		}
+>  
+>  		if (pkt_cnt == 0) {
+> -			/* Skip IP alignment psudo header */
+> -			skb_pull(skb, 2);
+>  			skb->len = pkt_len;
+> -			skb_set_tail_pointer(skb, pkt_len);
+> +			/* Skip IP alignment pseudo header */
+> +			skb_pull(skb, 2);
+> +			skb_set_tail_pointer(skb, skb->len);
+>  			skb->truesize = pkt_len + sizeof(struct sk_buff);
+>  			ax88179_rx_checksum(skb, pkt_hdr);
+>  			return 1;
+> @@ -1426,8 +1426,9 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+>  		ax_skb = skb_clone(skb, GFP_ATOMIC);
+>  		if (ax_skb) {
+>  			ax_skb->len = pkt_len;
+> -			ax_skb->data = skb->data + 2;
+> -			skb_set_tail_pointer(ax_skb, pkt_len);
+> +			/* Skip IP alignment pseudo header */
+> +			skb_pull(ax_skb, 2);
+> +			skb_set_tail_pointer(ax_skb, ax_skb->len);
+>  			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
+>  			ax88179_rx_checksum(ax_skb, pkt_hdr);
+>  			usbnet_skb_return(dev, ax_skb);
+> 
 
-Very good!  ;-)
-
-							Thanx, Paul
