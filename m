@@ -2,108 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5153C1F7784
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 13:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CEAB1F7788
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 13:54:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726257AbgFLLw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 07:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
+        id S1726109AbgFLLyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 07:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725791AbgFLLw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 07:52:56 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BF0C03E96F
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 04:52:55 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jjiEt-0001TX-HX; Fri, 12 Jun 2020 13:52:51 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jjiEs-0008JZ-6d; Fri, 12 Jun 2020 13:52:50 +0200
-Date:   Fri, 12 Jun 2020 13:52:50 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
+        with ESMTP id S1725791AbgFLLyL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 07:54:11 -0400
+Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B593AC03E96F;
+        Fri, 12 Jun 2020 04:54:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
+         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
+        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=dpIpV/PSRomXKbHiMD9pRyZrzovTUR07LS3WQXsOVkU=; b=k/e36YCUqNdK4gRAE/dVmdBcxP
+        CLbvNUVkvYG+ubjNhtLmAPx2qRrPq6FCmUtqCVS4mIXkN5HvLeMLV4wR6W3d7Ht1Vn9PWe1VDN50S
+        b+jaEvDD/+HJmjlRiNmISNa7LTmZYko/QZr85pPurLPJyf3kCXOqk7HZEl6+ilfUROf6F8LbKvE0m
+        zzGH984ZpiffxDzpqszLVmlgnSNBs032U53cNVODYg6cVYiyVMhfwa0FnmEXL3YvkpuDpAbSUWhhm
+        xk+4WlZ8DcpQVlkw4ROFl3XEwVh6xluCBdEZ1RSbsg3iwcKIk69HNgN6/P9b7U9pUvjMdIXC45rgI
+        v0bIUkFQ==;
+Received: from noodles by the.earth.li with local (Exim 4.92)
+        (envelope-from <noodles@earth.li>)
+        id 1jjiFw-0007It-BX; Fri, 12 Jun 2020 12:53:56 +0100
+Date:   Fri, 12 Jun 2020 12:53:56 +0100
+From:   Jonathan McDowell <noodles@earth.li>
 To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel@pengutronix.de
-Subject: Re: [PATCH v2] net: mvneta: Fix Serdes configuration for 2.5Gbps
- modes
-Message-ID: <20200612115250.GS11869@pengutronix.de>
-References: <20200612083847.29942-1-s.hauer@pengutronix.de>
- <20200612084710.GC1551@shell.armlinux.org.uk>
- <20200612100114.GE1551@shell.armlinux.org.uk>
- <20200612101820.GF1551@shell.armlinux.org.uk>
- <20200612104208.GG1551@shell.armlinux.org.uk>
- <20200612112213.GH1551@shell.armlinux.org.uk>
- <20200612113031.GI1551@shell.armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] net: dsa: qca8k: Switch to PHYLINK instead of PHYLIB
+Message-ID: <20200612115356.GX311@earth.li>
+References: <cover.1591816172.git.noodles@earth.li>
+ <78519bc421a1cb7000a68d05e43c4208b26f37e5.1591816172.git.noodles@earth.li>
+ <20200611085523.GV1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200612113031.GI1551@shell.armlinux.org.uk>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 13:42:38 up 113 days, 19:13, 128 users,  load average: 0.04, 0.14,
- 0.15
+In-Reply-To: <20200611085523.GV1551@shell.armlinux.org.uk>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 12, 2020 at 12:30:31PM +0100, Russell King - ARM Linux admin wrote:
-> On Fri, Jun 12, 2020 at 12:22:13PM +0100, Russell King - ARM Linux admin wrote:
-> > On Fri, Jun 12, 2020 at 11:42:08AM +0100, Russell King - ARM Linux admin wrote:
-> > > With the obvious mistakes fixed (extraneous 'i' and lack of default
-> > > case), it seems to still work on Armada 388 Clearfog Pro with 2.5G
-> > > modules.
-> > 
-> > ... and the other bug fixed - mvneta_comphy_init() needs to be passed
-> > the interface mode.
+On Thu, Jun 11, 2020 at 09:55:23AM +0100, Russell King - ARM Linux admin wrote:
+> On Wed, Jun 10, 2020 at 08:14:03PM +0100, Jonathan McDowell wrote:
+> > Update the driver to use the new PHYLINK callbacks, removing the
+> > legacy adjust_link callback.
 > 
-> Unrelated to the patch, has anyone noticed that mvneta's performance
-> seems to have reduced?  I've only just noticed it (which makes 2.5Gbps
-> rather pointless).  This is iperf between two clearfogs with a 2.5G
-> fibre link:
+> Looks good, there's a couple of issues / questions
 > 
-> root@clearfog21:~# iperf -V -c fe80::250:43ff:fe02:303%eno2
-> ------------------------------------------------------------
-> Client connecting to fe80::250:43ff:fe02:303%eno2, TCP port 5001
-> TCP window size: 43.8 KByte (default)
-> ------------------------------------------------------------
-> [  3] local fe80::250:43ff:fe21:203 port 48928 connected with fe80::250:43ff:fe02:303 port 5001
-> [ ID] Interval       Transfer     Bandwidth
-> [  3]  0.0-10.0 sec   553 MBytes   464 Mbits/sec
+> >  static void
+> > +qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+> > +			 const struct phylink_link_state *state)
+> >  {
+> >  	struct qca8k_priv *priv = ds->priv;
+> >  	u32 reg;
+> >  
+> > +	switch (port) {
+> ...
+> > +	case 6: /* 2nd CPU port / external PHY */
+> > +		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
+> > +		    state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
+> > +		    state->interface != PHY_INTERFACE_MODE_SGMII &&
+> > +		    state->interface != PHY_INTERFACE_MODE_1000BASEX)
+> > +			return;
+> > +
+> > +		reg = QCA8K_REG_PORT6_PAD_CTRL;
+> > +		break;
+> ...
+> > +	}
+> > +
+> > +	if (port != 6 && phylink_autoneg_inband(mode)) {
+> > +		dev_err(ds->dev, "%s: in-band negotiation unsupported\n",
+> > +			__func__);
+> > +		return;
+> > +	}
+> > +
+> > +	switch (state->interface) {
+> ...
+> > +	case PHY_INTERFACE_MODE_SGMII:
+> > +	case PHY_INTERFACE_MODE_1000BASEX:
+> > +		/* Enable SGMII on the port */
+> > +		qca8k_write(priv, reg, QCA8K_PORT_PAD_SGMII_EN);
+> > +		break;
 > 
-> I checked with Jon Nettleton, and he confirms my recollection that
-> mvneta on Armada 388 used to be able to fill a 2.5Gbps link.
+> Is inband mode configurable?  What if the link partner does/doesn't
+> send the configuration word?  How is the link state communicated to
+> the MAC?
+
+I moved those over to the second patch on the request of Andrew Lunn,
+who wanted the phylink change to be separate from the addition of the
+SGMII changes. This first patch should result in no change of behaviour,
+just the move to phylink.
+
+> > +static int
+> > +qca8k_phylink_mac_link_state(struct dsa_switch *ds, int port,
+> > +			     struct phylink_link_state *state)
+> > +{
+> > +	struct qca8k_priv *priv = ds->priv;
+> > +	u32 reg;
+> >  
+> > +	reg = qca8k_read(priv, QCA8K_REG_PORT_STATUS(port));
+> > +
+> > +	state->link = !!(reg & QCA8K_PORT_STATUS_LINK_UP);
+> > +	state->an_complete = state->link;
+> > +	state->an_enabled = !!(reg & QCA8K_PORT_STATUS_LINK_AUTO);
+> > +	state->duplex = (reg & QCA8K_PORT_STATUS_DUPLEX) ? DUPLEX_FULL :
+> > +							   DUPLEX_HALF;
+> > +
+> > +	switch (reg & QCA8K_PORT_STATUS_SPEED) {
+> > +	case QCA8K_PORT_STATUS_SPEED_10:
+> > +		state->speed = SPEED_10;
+> > +		break;
+> > +	case QCA8K_PORT_STATUS_SPEED_100:
+> > +		state->speed = SPEED_100;
+> > +		break;
+> > +	case QCA8K_PORT_STATUS_SPEED_1000:
+> > +		state->speed = SPEED_1000;
+> > +		break;
+> > +	default:
+> > +		state->speed = SPEED_UNKNOWN;
 > 
-> If Armada 388 can't manage, then I suspect Armada XP will have worse
-> performance being an earlier revision SoC.
+> Maybe also force the link down in this case, since the state is invalid?
+> 
+> Do you have access to the link partner's configuration word?  If you do,
+> you should use that to fill in state->lp_advertising.
 
-I only have one board with a Armada XP here which has a loopback cable
-between two ports. It gives me:
+It doesn't seem to be available from my reading of the data sheet.
 
-[  3] local 172.16.1.4 port 47002 connected with 172.16.1.0 port 5001
-[ ID] Interval       Transfer     Bandwidth
-[  3]  0.0-10.0 sec  1.27 GBytes  1.09 Gbits/sec
+> > +		break;
+> > +	}
+> > +
+> > +	state->pause = MLO_PAUSE_NONE;
+> > +	if (reg & QCA8K_PORT_STATUS_RXFLOW)
+> > +		state->pause |= MLO_PAUSE_RX;
+> > +	if (reg & QCA8K_PORT_STATUS_TXFLOW)
+> > +		state->pause |= MLO_PAUSE_TX;
+> > +
+> > +	return 1;
+> > +}
+> > +
+> > +static void
+> > +qca8k_phylink_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
+> > +			    phy_interface_t interface)
+> > +{
+> > +	struct qca8k_priv *priv = ds->priv;
+> >  
+> >  	qca8k_port_set_status(priv, port, 0);
+> 
+> If operating in in-band mode, forcing the link down unconditionally
+> will prevent the link coming up if the SGMII/1000base-X block
+> automatically updates the MAC, and if this takes precedence.
+> 
+> When using in-band mode, you need to call dsa_port_phylink_mac_change()
+> to keep phylink updated with the link status.
+> 
+> Alternatively, phylink supports polling mode, but due to the layered
+> way DSA is written, DSA drivers don't have access to that as that is
+> in the DSA upper levels in net/dsa/slave.c (dsa_slave_phy_setup(),
+> it would be dp->pl_config.pcs_poll).
 
-Still not 2.5Gbps, but at least twice the data rate you get, plus my
-board has to handle both ends of the link.
+My reading of Vladimir's mail is I can set pcs_poll to get that
+functionality, and from the data sheet the link detection is keyed off a
+separate bit than the mac link down piece so I think I'm ok there.
 
-Sascha
+> Apart from those points, I think it looks fine, thanks.
+
+Thanks for the review. I'll get a new version out soon.
+
+J.
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+If a program is useless, it must be documented.
