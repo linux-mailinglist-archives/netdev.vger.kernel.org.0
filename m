@@ -2,124 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A2AA1F740E
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 08:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C83D1F7434
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 08:58:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726401AbgFLGqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 02:46:54 -0400
-Received: from nautica.notk.org ([91.121.71.147]:50528 "EHLO nautica.notk.org"
+        id S1726361AbgFLG55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 02:57:57 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:39012 "EHLO fornost.hmeau.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726095AbgFLGqu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jun 2020 02:46:50 -0400
-Received: by nautica.notk.org (Postfix, from userid 1001)
-        id BDA7BC009; Fri, 12 Jun 2020 08:46:47 +0200 (CEST)
-Date:   Fri, 12 Jun 2020 08:46:32 +0200
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     "wanghai (M)" <wanghai38@huawei.com>
-Cc:     ericvh@gmail.com, lucho@ionkov.net, davem@davemloft.net,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] 9p/trans_fd: Fix concurrency del of req_list in
- p9_fd_cancelled/p9_read_work
-Message-ID: <20200612064632.GA19461@nautica>
-References: <20200611014855.60550-1-wanghai38@huawei.com>
- <20200611145055.GA28945@nautica>
- <7bed531c-0ea5-b5f8-eaf8-4feb9ccf1b31@huawei.com>
+        id S1726287AbgFLG55 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jun 2020 02:57:57 -0400
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1jjddB-0000xa-CX; Fri, 12 Jun 2020 16:57:38 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 12 Jun 2020 16:57:37 +1000
+Date:   Fri, 12 Jun 2020 16:57:37 +1000
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Sagi Grimberg <sagi@lightbitslabs.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [v3 PATCH] iov_iter: Move unnecessary inclusion of crypto/hash.h
+Message-ID: <20200612065737.GA17176@gondor.apana.org.au>
+References: <20200611074332.GA12274@gondor.apana.org.au>
+ <20200611114911.GA17594@gondor.apana.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7bed531c-0ea5-b5f8-eaf8-4feb9ccf1b31@huawei.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20200611114911.GA17594@gondor.apana.org.au>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-wanghai (M) wrote on Fri, Jun 12, 2020:
-> You are right, I got a syzkaller bug.
-> 
-> "p9_read_work+0x7c3/0xd90" points to list_del(&m->rreq->req_list);
-> 
-> [   62.733598] kasan: CONFIG_KASAN_INLINE enabled
-> [   62.734484] kasan: GPF could be caused by NULL-ptr deref or user memory access
-> [   62.735670] general protection fault: 0000 [#1] SMP KASAN PTI
-> [   62.736577] CPU: 3 PID: 82 Comm: kworker/3:1 Not tainted 4.19.124+ #2
-> [   62.737582] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-> [   62.738988] Workqueue: events p9_read_work
-> [   62.739642] RIP: 0010:p9_read_work+0x7c3/0xd90
-> [   62.740348] Code: 48 c1 e9 03 80 3c 01 00 0f 85 cb 05 00 00 48 8d 7a 08 48 b9 00 00 00 00 00 fc ff df 49 8b 87 b8 00 00 00 48 89 fe 48 c1 ee 03 <80> 3c 0e 00 0f 85 89 05 00 00 48 89 c6 48 b9 00 00 00 00 00 fc ff
-> [   62.743236] RSP: 0018:ffff8883ece17ca0 EFLAGS: 00010a06
-> [   62.744059] RAX: dead000000000200 RBX: ffff8883d45666b0 RCX: dffffc0000000000
-> [   62.745173] RDX: dead000000000100 RSI: 1bd5a00000000021 RDI: dead000000000108
-> [   62.746279] RBP: ffff8883d4566590 R08: ffffed107a8acf31 R09: ffffed107a8acf31
-> [   62.747398] R10: 0000000000000001 R11: ffffed107a8acf30 R12: 1ffff1107d9c2f9b
-> [   62.748505] R13: ffff8883d45665d0 R14: ffff8883d4566608 R15: ffff8883e1f1c000
-> [   62.749615] FS:  0000000000000000(0000) GS:ffff8883ef180000(0000) knlGS:0000000000000000
-> [   62.750881] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   62.751784] CR2: 0000000000000000 CR3: 000000009c622003 CR4: 00000000007606e0
-> [   62.752898] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [   62.754011] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [   62.755126] PKRU: 55555554
-> [   62.755561] Call Trace:
-> [   62.755963]  ? p9_write_work+0xa00/0xa00
-> [   62.756592]  process_one_work+0xae4/0x1b20
-> [   62.757252]  ? apply_wqattrs_commit+0x3e0/0x3e0
-> [   62.757985]  worker_thread+0x8c/0xe80
-> [   62.758600]  ? __kthread_parkme+0xe9/0x190
-> [   62.759254]  ? process_one_work+0x1b20/0x1b20
-> [   62.759950]  kthread+0x341/0x410
-> [   62.760479]  ? kthread_create_worker_on_cpu+0xf0/0xf0
-> [   62.761296]  ret_from_fork+0x3a/0x50
-> [   62.761874] Modules linked in:
-> [   62.762378] Dumping ftrace buffer:
-> [   62.762942]    (ftrace buffer empty)
-> [   62.763547] ---[ end trace 69672816613947a3 ]---
+The header file linux/uio.h includes crypto/hash.h which pulls in
+most of the Crypto API.  Since linux/uio.h is used throughout the
+kernel this means that every tiny bit of change to the Crypto API
+causes the entire kernel to get rebuilt.
 
-This looks like:
-https://syzkaller.appspot.com/bug?id=5df4f85d764ee89863d0294b4e0c87ef2fd2c624
-I'm not sure how active this still is but please also add this
-Reported-by tag:
-Reported-by: syzbot+77a25acfa0382e06ab23@syzkaller.appspotmail.com
+This patch fixes this by moving it into lib/iov_iter.c instead
+where it is actually used.
 
-(can keep both)
+This patch also fixes the ifdef to use CRYPTO_HASH instead of just
+CRYPTO which does not guarantee the existence of ahash.
 
+Unfortunately a number of drivers were relying on linux/uio.h to
+provide access to linux/slab.h.  This patch adds inclusions of
+linux/slab.h as detected by build failures.
 
-> Yes，In this case,  all further 9p messages will not be read.
-> >p9_read_work probably should handle REQ_STATUS_FLSHD in a special case
-> >that just throws the message away without error as well.
-> 
-> Can it be solved like this?
-> 
-> --- a/net/9p/trans_fd.c
-> +++ b/net/9p/trans_fd.c
-> @@ -362,7 +362,7 @@ static void p9_read_work(struct work_struct *work)
->                 if (m->rreq->status == REQ_STATUS_SENT) {
->                         list_del(&m->rreq->req_list);
->                         p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);
-> -               } else {
-> +               } else if (m->rreq->status != REQ_STATUS_FLSHD) {
->                         spin_unlock(&m->client->lock);
->                         p9_debug(P9_DEBUG_ERROR,
->                                  "Request tag %d errored out while
-> we were reading the reply\n",
+Also skbuff.h was relying on this to provide a declaration for
+ahash_request.  This patch adds a forward declaration instead.
 
-Yes that is probably correct.
-Please add a comment above saying we ignore replies associated with a
-cancelled request.
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 
-> This patch "afd8d65411" just moved list_del into cancelled ops. It
-> is not actually the initial patch that caused the bug
-> 
-> In 60ff779c4abb ("9p: client: remove unused code and any reference
-> to "cancelled" function")
-> 
-> It moved spin_lock under "if (oldreq->status == REQ_STATUS_FLSH)" .
-> 
-> After "if (oldreq->status == REQ_STATUS_FLSH)", oldreq may be
-> changed by other thread.
-
-Ok, thank you for explaining; I agree now.
-
+diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
+index 6d0bec947636..e237d6038407 100644
+--- a/drivers/dma/sf-pdma/sf-pdma.c
++++ b/drivers/dma/sf-pdma/sf-pdma.c
+@@ -20,6 +20,7 @@
+ #include <linux/mod_devicetable.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/of.h>
++#include <linux/slab.h>
+ 
+ #include "sf-pdma.h"
+ 
+diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
+index d39307f060bd..5a984df0e95e 100644
+--- a/drivers/misc/uacce/uacce.c
++++ b/drivers/misc/uacce/uacce.c
+@@ -4,6 +4,7 @@
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/poll.h>
++#include <linux/slab.h>
+ #include <linux/uacce.h>
+ 
+ static struct class *uacce_class;
+diff --git a/drivers/soc/qcom/pdr_interface.c b/drivers/soc/qcom/pdr_interface.c
+index 17ad3b8698e1..aa2e3fe19c0f 100644
+--- a/drivers/soc/qcom/pdr_interface.c
++++ b/drivers/soc/qcom/pdr_interface.c
+@@ -5,6 +5,7 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/slab.h>
+ #include <linux/string.h>
+ #include <linux/workqueue.h>
+ 
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 320d1062068d..d1e03b8cb6bb 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -3,6 +3,7 @@
+  * Copyright (C) 2007 Oracle.  All rights reserved.
+  */
+ 
++#include <crypto/hash.h>
+ #include <linux/kernel.h>
+ #include <linux/bio.h>
+ #include <linux/buffer_head.h>
+diff --git a/include/linux/uio.h b/include/linux/uio.h
+index 9576fd8158d7..3835a8a8e9ea 100644
+--- a/include/linux/uio.h
++++ b/include/linux/uio.h
+@@ -7,7 +7,6 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/thread_info.h>
+-#include <crypto/hash.h>
+ #include <uapi/linux/uio.h>
+ 
+ struct page;
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index 51595bf3af85..2830daf46c73 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0-only
++#include <crypto/hash.h>
+ #include <linux/export.h>
+ #include <linux/bvec.h>
+ #include <linux/uio.h>
+@@ -1566,7 +1567,7 @@ EXPORT_SYMBOL(csum_and_copy_to_iter);
+ size_t hash_and_copy_to_iter(const void *addr, size_t bytes, void *hashp,
+ 		struct iov_iter *i)
+ {
+-#ifdef CONFIG_CRYPTO
++#ifdef CONFIG_CRYPTO_HASH
+ 	struct ahash_request *hash = hashp;
+ 	struct scatterlist sg;
+ 	size_t copied;
+diff --git a/drivers/mtd/mtdpstore.c b/drivers/mtd/mtdpstore.c
+index a4fe6060b960..a3ae8778f6a9 100644
+--- a/drivers/mtd/mtdpstore.c
++++ b/drivers/mtd/mtdpstore.c
+@@ -7,6 +7,7 @@
+ #include <linux/pstore_blk.h>
+ #include <linux/mtd/mtd.h>
+ #include <linux/bitops.h>
++#include <linux/slab.h>
+ 
+ static struct mtdpstore_context {
+ 	int index;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 3a2ac7072dbb..36df5998d23c 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -238,6 +238,7 @@
+ 			 SKB_DATA_ALIGN(sizeof(struct sk_buff)) +	\
+ 			 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+ 
++struct ahash_request;
+ struct net_device;
+ struct scatterlist;
+ struct pipe_inode_info;
 -- 
-Dominique
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
