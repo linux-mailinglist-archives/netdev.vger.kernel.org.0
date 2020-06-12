@@ -2,123 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BBAE1F7171
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 02:36:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EA1C1F71A3
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 03:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgFLAgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 20:36:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40732 "EHLO
+        id S1726369AbgFLBSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 21:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726321AbgFLAgt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 20:36:49 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C815C03E96F;
-        Thu, 11 Jun 2020 17:36:49 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id c12so5927705qtq.11;
-        Thu, 11 Jun 2020 17:36:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=boR49jpVVRV/Q0WW/lSHnRqxWQvt+zi1RK7D2cfa/KQ=;
-        b=rlAdwRm9hTb9aJanRInl8J1ga3yBiPstojKvPwkWPLmWuhIfnagqRf2036p2pa7Q8A
-         RWu+NMUefznT+bPIVBlAfmv7d5vyOOipVD8HsRVHKtu06OL3V2c11fgP/8QE4emjSNtD
-         33wi+hHa5G97wharcnrXbgMpWMylPcxvZYMHce+FHT6kEEn98NFDhOfnnwfux1qBHw3H
-         /gfdxPgeGbhjpmsyIK/k/5zOFWMtScvvhasE5yPPAdtTWMvY8sii62idNBcAM3Gl1Zss
-         +km/niDjnK5rAm8UvK6mCLrvTajNjdne/kuTXkXmmxlpvSQB9DNjrw7CeTeljT/V0Xaw
-         cfiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references;
-        bh=boR49jpVVRV/Q0WW/lSHnRqxWQvt+zi1RK7D2cfa/KQ=;
-        b=DbAIuxPnZPywXMrpvgd1mxIa6i62Z0S25q8GPxcOmvVht9ATE6CsEI3/Grh6ENWTEm
-         T1LD54yHKoDxWkOuyj64zQAIS0BXWJwttng+RuG2WgFarP2Dbrl/v4paDlfyni0hBbbW
-         KqKRjxntJiXvbtGRYdv+BOswOGXfLue0Q4YxnlCt3lLXtpO4FoNJfZ8lzLu0shn74ulM
-         ypZ28hVQQA+kHvviyjyyzRmf7MYE0CtOcLHtzpWK7w7jZW1qj8lOADzzudet+7glmjOZ
-         R2n1WIrWU0hD+EZP8Y8kWq5a2TePfbqETq5uAXNO5Qj8aUgz92SEEf7iCD8Zr+gajRum
-         2gPg==
-X-Gm-Message-State: AOAM531NL+KxMHB3bdPi2zQRRe7Jocvax45yuj4pnuODSuz2Ck6SrVvl
-        L/I2CtffeoQnZs9L4T0rm8s=
-X-Google-Smtp-Source: ABdhPJyMNFemg5AAjTj1xQ2S4u9yW3ZUeOWoSPep6xN2RyxhGudxiyuxJn96SJvdohjSw9lew8hQ8A==
-X-Received: by 2002:ac8:1742:: with SMTP id u2mr641083qtk.341.1591922208515;
-        Thu, 11 Jun 2020 17:36:48 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:f00a:33d2:6ec2:475c])
-        by smtp.googlemail.com with ESMTPSA id m126sm3432996qke.99.2020.06.11.17.36.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2020 17:36:48 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        bpf@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] xdp_rxq_info_user: Replace malloc/memset w/calloc
-Date:   Thu, 11 Jun 2020 20:36:40 -0400
-Message-Id: <20200612003640.16248-1-gaurav1086@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200611150221.15665-1-gaurav1086@gmail.com>
-References: <20200611150221.15665-1-gaurav1086@gmail.com>
+        with ESMTP id S1726305AbgFLBSt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 21:18:49 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360EEC03E96F;
+        Thu, 11 Jun 2020 18:18:49 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EC35A128AE837;
+        Thu, 11 Jun 2020 18:18:45 -0700 (PDT)
+Date:   Thu, 11 Jun 2020 18:18:42 -0700 (PDT)
+Message-Id: <20200611.181842.2083721665296210889.davem@davemloft.net>
+To:     dhowells@redhat.com
+Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] rxrpc: Fix race between incoming ACK parser and
+ retransmitter
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <159190902048.3557242.17524953697020439394.stgit@warthog.procyon.org.uk>
+References: <159190902048.3557242.17524953697020439394.stgit@warthog.procyon.org.uk>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 11 Jun 2020 18:18:46 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace malloc/memset with calloc
+From: David Howells <dhowells@redhat.com>
+Date: Thu, 11 Jun 2020 21:57:00 +0100
 
-Fixes: 0fca931a6f21 ("samples/bpf: program demonstrating access to xdp_rxq_info")
-Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
----
- samples/bpf/xdp_rxq_info_user.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+> There's a race between the retransmission code and the received ACK parser.
+> The problem is that the retransmission loop has to drop the lock under
+> which it is iterating through the transmission buffer in order to transmit
+> a packet, but whilst the lock is dropped, the ACK parser can crank the Tx
+> window round and discard the packets from the buffer.
+> 
+> The retransmission code then updated the annotations for the wrong packet
+> and a later retransmission thought it had to retransmit a packet that
+> wasn't there, leading to a NULL pointer dereference.
+> 
+> Fix this by:
+> 
+>  (1) Moving the annotation change to before we drop the lock prior to
+>      transmission.  This means we can't vary the annotation depending on
+>      the outcome of the transmission, but that's fine - we'll retransmit
+>      again later if it failed now.
+> 
+>  (2) Skipping the packet if the skb pointer is NULL.
+> 
+> The following oops was seen:
+> 
+> 	BUG: kernel NULL pointer dereference, address: 000000000000002d
+> 	Workqueue: krxrpcd rxrpc_process_call
+> 	RIP: 0010:rxrpc_get_skb+0x14/0x8a
+> 	...
+> 	Call Trace:
+> 	 rxrpc_resend+0x331/0x41e
+> 	 ? get_vtime_delta+0x13/0x20
+> 	 rxrpc_process_call+0x3c0/0x4ac
+> 	 process_one_work+0x18f/0x27f
+> 	 worker_thread+0x1a3/0x247
+> 	 ? create_worker+0x17d/0x17d
+> 	 kthread+0xe6/0xeb
+> 	 ? kthread_delayed_work_timer_fn+0x83/0x83
+> 	 ret_from_fork+0x1f/0x30
+> 
+> Fixes: 248f219cb8bc ("rxrpc: Rewrite the data and ack handling code")
+> Signed-off-by: David Howells <dhowells@redhat.com>
 
-diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
-index 4fe47502ebed..caa4e7ffcfc7 100644
---- a/samples/bpf/xdp_rxq_info_user.c
-+++ b/samples/bpf/xdp_rxq_info_user.c
-@@ -198,11 +198,8 @@ static struct datarec *alloc_record_per_cpu(void)
- {
- 	unsigned int nr_cpus = bpf_num_possible_cpus();
- 	struct datarec *array;
--	size_t size;
- 
--	size = sizeof(struct datarec) * nr_cpus;
--	array = malloc(size);
--	memset(array, 0, size);
-+	array = calloc(nr_cpus, sizeof(struct datarec));
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
- 		exit(EXIT_FAIL_MEM);
-@@ -214,11 +211,8 @@ static struct record *alloc_record_per_rxq(void)
- {
- 	unsigned int nr_rxqs = bpf_map__def(rx_queue_index_map)->max_entries;
- 	struct record *array;
--	size_t size;
- 
--	size = sizeof(struct record) * nr_rxqs;
--	array = malloc(size);
--	memset(array, 0, size);
-+	array = calloc(nr_rxqs, sizeof(struct record));
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_rxqs:%u)\n", nr_rxqs);
- 		exit(EXIT_FAIL_MEM);
-@@ -232,8 +226,7 @@ static struct stats_record *alloc_stats_record(void)
- 	struct stats_record *rec;
- 	int i;
- 
--	rec = malloc(sizeof(*rec));
--	memset(rec, 0, sizeof(*rec));
-+	rec = calloc(1, sizeof(struct stats_record));
- 	if (!rec) {
- 		fprintf(stderr, "Mem alloc error\n");
- 		exit(EXIT_FAIL_MEM);
--- 
-2.17.1
-
+Applied, thanks.
