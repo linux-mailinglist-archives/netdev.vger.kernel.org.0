@@ -2,93 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42E031F7A94
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 17:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E571F7B57
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 18:02:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726502AbgFLPTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 11:19:17 -0400
-Received: from smtprelay0012.hostedemail.com ([216.40.44.12]:56422 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726085AbgFLPTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 11:19:16 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id CD2A7100E4720;
-        Fri, 12 Jun 2020 15:19:14 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:968:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2553:2559:2562:2828:2895:2901:2911:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3870:3871:3872:3873:3874:4321:4425:5007:6119:6742:7514:7903:10004:10400:10848:10967:11026:11232:11658:11914:12297:12740:12760:12895:13069:13095:13311:13357:13439:14096:14097:14181:14659:14721:21067:21080:21212:21433:21451:21627:30012:30054:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: toy64_4f084a126ddd
-X-Filterd-Recvd-Size: 2858
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf16.hostedemail.com (Postfix) with ESMTPA;
-        Fri, 12 Jun 2020 15:19:12 +0000 (UTC)
-Message-ID: <0b82952a6e0b4a05c93f4d18b3d0b2f43b61ab98.camel@perches.com>
-Subject: Re: [PATCH] xdp_rxq_info_user: Replace malloc/memset w/calloc
-From:   Joe Perches <joe@perches.com>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Gaurav Singh <gaurav1086@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1726338AbgFLQCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 12:02:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726053AbgFLQCA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 12:02:00 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22E93C08C5C1
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 09:02:00 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id p5so10239543wrw.9
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 09:02:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CFpEfyDCKd+ROB+iqmoyjwPMNPUKHkA0Y5oDot+dn0s=;
+        b=qAABzAjm7oyQ4y1NqFm33ALKrsWUTBS3S09jG4BqvwbL0xCN56LMsAbtG51HFlJJAZ
+         3lEuMT+JxCIBTR/jTJile+umYMucfLBAk2oSartCDjmFOPV8RlhVnJYKxMHsbyjWFfDw
+         7eX9x99JBypZN8IsO8/xQR9TZ/5a98L1iUGqc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CFpEfyDCKd+ROB+iqmoyjwPMNPUKHkA0Y5oDot+dn0s=;
+        b=HqXxMoLBlafN/B1Hj+eUlPtps/qnCPVvUs2uExEfFiicIkC8RkcOIEwDbD4Y0LT0X/
+         ehCs+3SOzmck2Ux2nYghSFPAclywUKJxZeXgDAO/JZu79S0FD87/Yu24AaY4RGf5ZPX2
+         fpx8pIPr5cRWCm0BBel7FeC5QTLCRvx0/1x72lDuoh2NXtmA47M7eiyTgJ/U+vFL34Fy
+         MACBdaTp3YHk6NsS0DDqP1VutR0sdDaI+TOMXSK+s8oRLs6mOlSWWFzGTdm/LUgVfvEa
+         HalJQRkXiA3Rs36QAto8NSNOn3iX+ALRxY3eKlMkPsN2F+7l1rjSN1QmbI5M+5iCi8Ky
+         C6Eg==
+X-Gm-Message-State: AOAM531DDMUVUbF3iZ6MFRa4MsnA2hZZbkGny0oaUkvYyZwgSCh62wUE
+        qEVRStbDUlhppNjWg0bOtqu3pw==
+X-Google-Smtp-Source: ABdhPJzJqYbDDGNdygvO/gn5chT5tfnHECzwSmpvROBRkZCI0/ho0BoMfKX6FdsDVl3UTVhkTu/MAQ==
+X-Received: by 2002:a5d:498b:: with SMTP id r11mr14866701wrq.328.1591977718846;
+        Fri, 12 Jun 2020 09:01:58 -0700 (PDT)
+Received: from antares.lan (1.e.7.e.0.1.3.6.1.5.d.2.f.1.0.9.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:901f:2d51:6310:e7e1])
+        by smtp.gmail.com with ESMTPSA id k16sm11169941wrp.66.2020.06.12.09.01.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jun 2020 09:01:57 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "open list:XDP (eXpress Data Path)" <netdev@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Date:   Fri, 12 Jun 2020 08:19:10 -0700
-In-Reply-To: <20200612140520.1e3c0461@carbon>
-References: <20200611150221.15665-1-gaurav1086@gmail.com>
-         <20200612003640.16248-1-gaurav1086@gmail.com>
-         <20200612084244.4ab4f6c6@carbon>
-         <427be84b1154978342ef861f1f4634c914d03a94.camel@perches.com>
-         <20200612140520.1e3c0461@carbon>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.2-0ubuntu1 
+        Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf 1/2] flow_dissector: reject invalid attach_flags
+Date:   Fri, 12 Jun 2020 17:01:40 +0100
+Message-Id: <20200612160141.188370-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-06-12 at 14:05 +0200, Jesper Dangaard Brouer wrote:
-> On Fri, 12 Jun 2020 03:14:58 -0700
-> Joe Perches <joe@perches.com> wrote:
-> 
-> > On Fri, 2020-06-12 at 08:42 +0200, Jesper Dangaard Brouer wrote:
-> > > On Thu, 11 Jun 2020 20:36:40 -0400
-> > > Gaurav Singh <gaurav1086@gmail.com> wrote:
-> > >   
-> > > > Replace malloc/memset with calloc
-> > > > 
-> > > > Fixes: 0fca931a6f21 ("samples/bpf: program demonstrating access to xdp_rxq_info")
-> > > > Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>  
-> > > 
-> > > Above is the correct use of Fixes + Signed-off-by.
-> > > 
-> > > Now you need to update/improve the description, to also
-> > > mention/describe that this also solves the bug you found.  
-> > 
-> > This is not a fix, it's a conversion of one
-> > correct code to a shorter one.
-> 
-> Read the code again Joe.  There is a bug in the code that gets removed,
-> as it runs memset on the memory before checking if it was NULL.
-> 
-> IHMO this proves why is it is necessary to mention in the commit
-> message, as you didn't notice the bug in your code review.
+Using BPF_PROG_ATTACH on a flow dissector program supports neither flags
+nor target_fd but accepts any value. Return EINVAL if either are non-zero.
 
-I didn't review the code at all, just the commit message,
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+Fixes: b27f7bb590ba ("flow_dissector: Move out netns_bpf prog callbacks")
+---
+ kernel/bpf/net_namespace.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-It's important to have commit messages that describe the
-defect being corrected too.
-
-Otherwise, a simple malloc/memset(0) vs zalloc equivalent
-is not actually a defect.
-
+diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
+index 78cf061f8179..56133e78ae4f 100644
+--- a/kernel/bpf/net_namespace.c
++++ b/kernel/bpf/net_namespace.c
+@@ -192,6 +192,9 @@ int netns_bpf_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+ 	struct net *net;
+ 	int ret;
+ 
++	if (attr->attach_flags || attr->target_fd)
++		return -EINVAL;
++
+ 	type = to_netns_bpf_attach_type(attr->attach_type);
+ 	if (type < 0)
+ 		return -EINVAL;
+-- 
+2.25.1
 
