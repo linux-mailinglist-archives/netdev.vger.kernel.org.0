@@ -2,137 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37A631F74E1
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 09:56:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C5C11F74E3
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 09:56:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726490AbgFLH4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 03:56:07 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:12150 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726448AbgFLH4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 03:56:05 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1591948564; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=ZzC1af5/kY0rXx9fkoh5glgUBaUWdA6Gl4BLFlZ9AEk=; b=IzPCJDitKYnzKQch7kqM1zDiPPoDRAkJSEfum0OOFPFRrR74QOLYoX1QJMVXxIK4pMeXFo95
- BZByJYAUfJbCtUGvvKjN6xV0/YR1YDFyviDaHkt7v9MF2sFtc9HK2ThUB5G08whlej2oHG2k
- pZguqczUuNVdv9bcKhD9zrNG/3M=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n13.prod.us-east-1.postgun.com with SMTP id
- 5ee3350586de6ccd44d26341 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 12 Jun 2020 07:55:49
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C3B66C43391; Fri, 12 Jun 2020 07:55:48 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726485AbgFLH4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 03:56:33 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:60550 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726396AbgFLH4d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 03:56:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591948591;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LNbUY1q6FIZ97hLXxGpuj36BUNMuCI5VduaUjfayv64=;
+        b=ekA31TMRK/QcX/JPG6giBDTMkshPZnoP76i6uOl/QkXpQGsihcWDlzW20SGX14z5nKsjFS
+        B3zPJfBMZsmL8YVc2aOtb/UEGq1mExGq9pR6AEygQf/WYquWvolr5BkF8Vs51cwDsZby+8
+        vtfzD/eO7KKOZk/gYln3E1m+Mx7fKXA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-501-cab5DlpeObi7zj79e2LdIQ-1; Fri, 12 Jun 2020 03:56:23 -0400
+X-MC-Unique: cab5DlpeObi7zj79e2LdIQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D8066C433CB;
-        Fri, 12 Jun 2020 07:55:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D8066C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     johannes.berg@intel.com, linux-kernel@vger.kernel.org,
-        Dieter =?utf-8?Q?N=C3=BCtzel?= <Dieter@nuetzel-hh.de>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] iwl: fix crash in iwl_dbg_tlv_alloc_trigger
-References: <20200612073800.27742-1-jslaby@suse.cz>
-Date:   Fri, 12 Jun 2020 10:55:42 +0300
-In-Reply-To: <20200612073800.27742-1-jslaby@suse.cz> (Jiri Slaby's message of
-        "Fri, 12 Jun 2020 09:38:00 +0200")
-Message-ID: <87d064k9a9.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 796D7872FE2;
+        Fri, 12 Jun 2020 07:56:21 +0000 (UTC)
+Received: from krava (unknown [10.40.192.78])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 461295C1B2;
+        Fri, 12 Jun 2020 07:56:15 +0000 (UTC)
+Date:   Fri, 12 Jun 2020 09:56:14 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Frantisek Hrbata <fhrbata@redhat.com>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+Subject: Re: [RFC] .BTF section data alignment issue on s390
+Message-ID: <20200612075614.GA1885974@krava>
+References: <20200611205040.GA1853644@krava>
+ <e1823b9409720aadb14691fbc4e136ad36c5264c.camel@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e1823b9409720aadb14691fbc4e136ad36c5264c.camel@linux.ibm.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri Slaby <jslaby@suse.cz> writes:
+On Fri, Jun 12, 2020 at 12:46:13AM +0200, Ilya Leoshkevich wrote:
+> On Thu, 2020-06-11 at 22:50 +0200, Jiri Olsa wrote:
+> > hi,
+> > we're hitting a problem on s390 with BTF data alignment.
+> > 
+> > When running simple test, we're getting this message from
+> > verifier and console:
+> > 
+> >   bpf_common.c:91: BROK: Failed verification: in-kernel BTF is
+> > malformed
+> >   [   41.545572] BPF:Total section length too long
+> > 
+> > 
+> > AFAICS it happens when .BTF section data size is not an even number
+> > ;-)
+> > 
+> > DISCLAIMER I'm quite ignorant of s390x arch details, so most likely
+> > I'm
+> > totally wrong and perhaps missing something important and there's
+> > simple
+> > explanation.. but here's what got me here:
+> > 
+> > 
+> > ... so BTF data is placed in .BTF section via linker script:
+> > 
+> >         .BTF : AT(ADDR(.BTF) - LOAD_OFFSET)
+> > {                           \
+> >                 __start_BTF =
+> > .;                                        \
+> >                 *(.BTF)                                              
+> >    \
+> >                 __stop_BTF =
+> > .;                                         \
+> >         }
+> > 
+> > 
+> > and the .BTF data size in btf_parse_vmlinux is computed as:
+> > 
+> >         btf->data_size = __stop_BTF - __start_BTF;
+> > 
+> > 
+> > this computation is compiled as:
+> > 
+> >         00000000002aeb20 <btf_parse_vmlinux>:
+> >         ...
+> >           2aeb8a:  larl    %r1,cda3ac <__start_BTF+0x2084a8>    #
+> > loads r1 with end
+> >           2aeb90:  larl    %r2,ad1f04 <__start_BTF>             #
+> > loads r2 with start
+> >           2aeb96:  sgr     %r1,%r2                              #
+> > substract r1 - r2 
+> > 
+> > 
+> > having following values for start/stop_BTF symbols:
+> > 
+> >         # nm ./vmlinux | grep __start_BTF
+> >         0000000000ad1f04 R __start_BTF
+> >         # nm ./vmlinux | grep __stop_BTF
+> >         0000000000cda3ad R __stop_BTF
+> > 
+> >         -> the BTF data size is 0x2084a9
+> > 
+> > 
+> > but as you can see the instruction that loads the 'end' symbol:
+> > 
+> >         larl    %r1,cda3ac <__start_BTF+0x2084a8>
+> > 
+> > 
+> > is loading '__start_BTF + 0x2084a8', which is '__stop_BTF - 1'
+> > 
+> > 
+> > From spec it seems that larl instruction's argument must be even
+> > number ([1] page 7-214):
+> > 
+> >         2.   For  LOAD  RELATIVE  LONG,  the  second  oper-and must
+> > be aligned
+> >         on an integral boundary cor-responding to the operand’s
+> > size. 
+> > 
+> > 
+> > I also found an older bug complaining about this issue [2]:
+> > 
+> >         ...
+> >         larl instruction can only load even values - instructions on
+> > s390 are 2-byte
+> >         aligned and the instruction encodes offset to the target in
+> > 2-byte units.
+> >         ...
+> >         The GNU BFD linker for s390 doesn't bother to check if
+> > relocations fit or are
+> >         properly aligned. 
+> >         ...
+> > 
+> > 
+> > I tried to fix that aligning the end to even number, but then
+> > btf_check_sec_info logic needs to be adjusted as well, and
+> > probably other places as well.. so I decided to share this
+> > first.. because it all seems wrong ;-)
+> > 
+> > thoughts? thanks,
+> > jirka
+> > 
+> > 
+> > [1] http://publibfi.boulder.ibm.com/epubs/pdf/dz9zr008.pdf
+> > [2] https://sourceware.org/bugzilla/show_bug.cgi?id=18960
+> > 
+> Hi Jiri,
+> 
+> Actually I recently ran into it myself on Debian, and I believe your
+> analysis is correct :-) The only thing to add to it is that the
+> compiler emits the correct instruction (if you look at the .o file),
+> it's linker that messes things up.
+> 
+> The linker bug in question is [1].
+> 
+> I opened [2] to Debian folks, and I believe that other important
+> distros (RH, SUSE, Ubuntu) have this fixed already.
+> 
+> Which distro are you using?
 
-> The tlv passed to iwl_dbg_tlv_alloc_trigger comes from a loaded firmware
-> file. The memory can be marked as read-only as firmware could be
-> shared. In anyway, writing to this memory is not expected. So,
-> iwl_dbg_tlv_alloc_trigger can crash now:
->
->   BUG: unable to handle page fault for address: ffffae2c01bfa794
->   PF: supervisor write access in kernel mode
->   PF: error_code(0x0003) - permissions violation
->   PGD 107d51067 P4D 107d51067 PUD 107d52067 PMD 659ad2067 PTE 80000006622=
-98161
->   CPU: 2 PID: 161 Comm: kworker/2:1 Not tainted 5.7.0-3.gad96a07-default =
-#1 openSUSE Tumbleweed (unreleased)
->   RIP: 0010:iwl_dbg_tlv_alloc_trigger+0x25/0x60 [iwlwifi]
->   Code: eb f2 0f 1f 00 66 66 66 66 90 83 7e 04 33 48 89 f8 44 8b 46 10 48=
- 89 f7 76 40 41 8d 50 ff 83 fa 19 77 23 8b 56 20 85 d2 75 07 <c7> 46 20 ff =
-ff ff ff 4b 8d 14 40 48 c1 e2 04 48 8d b4 10 00 05 00
->   RSP: 0018:ffffae2c00417ce8 EFLAGS: 00010246
->   RAX: ffff8f0522334018 RBX: ffff8f0522334018 RCX: ffffffffc0fc26c0
->   RDX: 0000000000000000 RSI: ffffae2c01bfa774 RDI: ffffae2c01bfa774
->   RBP: 0000000000000000 R08: 0000000000000004 R09: 0000000000000001
->   R10: 0000000000000034 R11: ffffae2c01bfa77c R12: ffff8f0522334230
->   R13: 0000000001000009 R14: ffff8f0523fdbc00 R15: ffff8f051f395800
->   FS:  0000000000000000(0000) GS:ffff8f0527c80000(0000) knlGS:00000000000=
-00000
->   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->   CR2: ffffae2c01bfa794 CR3: 0000000389eba000 CR4: 00000000000006e0
->   Call Trace:
->    iwl_dbg_tlv_alloc+0x79/0x120 [iwlwifi]
->    iwl_parse_tlv_firmware.isra.0+0x57d/0x1550 [iwlwifi]
->    iwl_req_fw_callback+0x3f8/0x6a0 [iwlwifi]
->    request_firmware_work_func+0x47/0x90
->    process_one_work+0x1e3/0x3b0
->    worker_thread+0x46/0x340
->    kthread+0x115/0x140
->    ret_from_fork+0x1f/0x40
->
-> As can be seen, write bit is not set in the PTE. Read of
-> trig->occurrences succeeds in iwl_dbg_tlv_alloc_trigger, but
-> trig->occurrences =3D cpu_to_le32(-1); fails there, obviously.
->
-> This is likely because we (at SUSE) use compressed firmware and that is
-> marked as RO after decompression (see fw_map_paged_buf).
->
-> Fix it by creating a temporary buffer in case we need to change the
-> memory.
->
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Reported-by: Dieter N=C3=BCtzel <Dieter@nuetzel-hh.de>
-> Tested-by: Dieter N=C3=BCtzel <Dieter@nuetzel-hh.de>
-> Cc: Johannes Berg <johannes.berg@intel.com>
-> Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-> Cc: Luca Coelho <luciano.coelho@intel.com>
-> Cc: Intel Linux Wireless <linuxwifi@intel.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> ---
->  drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 16 ++++++++++++++--
+I'm on RHEL ;-) I wonder why that fix was missed,
+I'll follow up on that with our binutils guys
 
-The prefix should be "iwlwifi: ", I can fix that.
+thanks a lot for the info,
+jirka
 
-Luca, should I take this to wireless-drivers?
+> 
+> Best regards,
+> Ilya
+> 
+> [1] 
+> https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=e6213e09ed0e
+> [2] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=961736
+> 
 
---=20
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
