@@ -2,193 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DE9C1F7480
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 09:17:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD891F74B6
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 09:38:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726403AbgFLHRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 03:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45758 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726298AbgFLHRF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 03:17:05 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02150C03E96F
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 00:17:04 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id 23so3871658pfw.10
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 00:17:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w55rsvJaZ+hDzoGKRPuFNtqms7c1RTN3yNwMVXMrMaE=;
-        b=Ng1FVAYiyUSRim/Hf89iBCjDQRYH3cJV3I/2OkSQ1ALUqQEeyNvYM0cS2e0JkSqVE2
-         aoiM8B/asQ2gaM5ncOtAHVdkjDPfiZHEZe2seHCgDNrUfjEsvPCPOoPdHsx9n/cIp9Cx
-         oQSSD77DbyRQ7jBUAYNW5m8wFiTKadMCN/nyi87bR/yYd1JG4QnXmDTcyd/+4nBtAXa6
-         MP+WYhO4Dqymhe5bErYVUME5WyfKmoklYVRpPCmtDht4GYm6b2E7v/CNViyylz/xXTNs
-         tgyt2zrM19YD7re239l55pv2jTaU3Xw10G8LdcaL9gB2AA8IoHfzQsTAq03TFUueGcl9
-         gl2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w55rsvJaZ+hDzoGKRPuFNtqms7c1RTN3yNwMVXMrMaE=;
-        b=Xpc/TkwckvOxwCYi8sDILxg1c28plrDavlG4No+jGMKq8EzXCb6ZWDLDn9O3PuPRD+
-         QmnizJfyC8di2j1P53B1dKTn/vuiKh+IT7Nwc7YiV/xWgyVzR3xloRmcLpCm0efqNakR
-         GQ7owC/G0XlfZjXAZm4QwGivwLZlhVQfdNDCNRHt2haAqnijzUt/ruvS+i6TqBYXrgXh
-         6r0RPUFGg3s6IebTvoiW/LPOQCNmtZDdlZ+jOpunJpnTCkt66W1POu2enQU5pXqJ4z7Y
-         V+DkagwbqYICKsuFPYb7FadfRb/R0URPTqyoyYkv931vJxU5HXTILmu3DpVhW6k6Ndo1
-         g4jg==
-X-Gm-Message-State: AOAM530WnglEP6a+g6+bFZv3GAgG4VQSd2Wk+rZp/Gxv/R+RPLLvVqZ5
-        Jq6gitR3FD6xZM4PDeJoR8x4wblv
-X-Google-Smtp-Source: ABdhPJwa9vXv2waFkjjFojVRRxtuW1gvoD0QErXGfw1tSuLs6O4cAUBDr4eV3bqulFw/QITiGuslXQ==
-X-Received: by 2002:aa7:8141:: with SMTP id d1mr11036350pfn.209.1591946224075;
-        Fri, 12 Jun 2020 00:17:04 -0700 (PDT)
-Received: from MacBookAir.linux-6brj.site (99-174-169-255.lightspeed.sntcca.sbcglobal.net. [99.174.169.255])
-        by smtp.gmail.com with ESMTPSA id dw17sm4461325pjb.40.2020.06.12.00.17.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2020 00:17:03 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>
-Subject: [Patch net] genetlink: clean up family attributes allocations
-Date:   Fri, 12 Jun 2020 00:16:55 -0700
-Message-Id: <20200612071655.8009-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S1726506AbgFLHiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 03:38:05 -0400
+Received: from mx2.suse.de ([195.135.220.15]:55260 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726292AbgFLHiE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jun 2020 03:38:04 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 02A87AC9F;
+        Fri, 12 Jun 2020 07:38:05 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     johannes.berg@intel.com
+Cc:     linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
+        =?UTF-8?q?Dieter=20N=C3=BCtzel?= <Dieter@nuetzel-hh.de>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] iwl: fix crash in iwl_dbg_tlv_alloc_trigger
+Date:   Fri, 12 Jun 2020 09:38:00 +0200
+Message-Id: <20200612073800.27742-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-genl_family_rcv_msg_attrs_parse() and genl_family_rcv_msg_attrs_free()
-take a boolean parameter to determine whether allocate/free the family
-attrs. This is unnecessary as we can just check family->parallel_ops.
-More importantly, callers would not need to worry about pairing these
-parameters correctly after this patch.
+The tlv passed to iwl_dbg_tlv_alloc_trigger comes from a loaded firmware
+file. The memory can be marked as read-only as firmware could be
+shared. In anyway, writing to this memory is not expected. So,
+iwl_dbg_tlv_alloc_trigger can crash now:
 
-And this fixes a memory leak, as after commit c36f05559104
-("genetlink: fix memory leaks in genl_family_rcv_msg_dumpit()")
-we call genl_family_rcv_msg_attrs_parse() for both parallel and
-non-parallel cases.
+  BUG: unable to handle page fault for address: ffffae2c01bfa794
+  PF: supervisor write access in kernel mode
+  PF: error_code(0x0003) - permissions violation
+  PGD 107d51067 P4D 107d51067 PUD 107d52067 PMD 659ad2067 PTE 8000000662298161
+  CPU: 2 PID: 161 Comm: kworker/2:1 Not tainted 5.7.0-3.gad96a07-default #1 openSUSE Tumbleweed (unreleased)
+  RIP: 0010:iwl_dbg_tlv_alloc_trigger+0x25/0x60 [iwlwifi]
+  Code: eb f2 0f 1f 00 66 66 66 66 90 83 7e 04 33 48 89 f8 44 8b 46 10 48 89 f7 76 40 41 8d 50 ff 83 fa 19 77 23 8b 56 20 85 d2 75 07 <c7> 46 20 ff ff ff ff 4b 8d 14 40 48 c1 e2 04 48 8d b4 10 00 05 00
+  RSP: 0018:ffffae2c00417ce8 EFLAGS: 00010246
+  RAX: ffff8f0522334018 RBX: ffff8f0522334018 RCX: ffffffffc0fc26c0
+  RDX: 0000000000000000 RSI: ffffae2c01bfa774 RDI: ffffae2c01bfa774
+  RBP: 0000000000000000 R08: 0000000000000004 R09: 0000000000000001
+  R10: 0000000000000034 R11: ffffae2c01bfa77c R12: ffff8f0522334230
+  R13: 0000000001000009 R14: ffff8f0523fdbc00 R15: ffff8f051f395800
+  FS:  0000000000000000(0000) GS:ffff8f0527c80000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: ffffae2c01bfa794 CR3: 0000000389eba000 CR4: 00000000000006e0
+  Call Trace:
+   iwl_dbg_tlv_alloc+0x79/0x120 [iwlwifi]
+   iwl_parse_tlv_firmware.isra.0+0x57d/0x1550 [iwlwifi]
+   iwl_req_fw_callback+0x3f8/0x6a0 [iwlwifi]
+   request_firmware_work_func+0x47/0x90
+   process_one_work+0x1e3/0x3b0
+   worker_thread+0x46/0x340
+   kthread+0x115/0x140
+   ret_from_fork+0x1f/0x40
 
-Fixes: c36f05559104 ("genetlink: fix memory leaks in genl_family_rcv_msg_dumpit()")
-Reported-by: Ido Schimmel <idosch@idosch.org>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+As can be seen, write bit is not set in the PTE. Read of
+trig->occurrences succeeds in iwl_dbg_tlv_alloc_trigger, but
+trig->occurrences = cpu_to_le32(-1); fails there, obviously.
+
+This is likely because we (at SUSE) use compressed firmware and that is
+marked as RO after decompression (see fw_map_paged_buf).
+
+Fix it by creating a temporary buffer in case we need to change the
+memory.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Reported-by: Dieter Nützel <Dieter@nuetzel-hh.de>
+Tested-by: Dieter Nützel <Dieter@nuetzel-hh.de>
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Cc: Luca Coelho <luciano.coelho@intel.com>
+Cc: Intel Linux Wireless <linuxwifi@intel.com>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
 ---
- net/netlink/genetlink.c | 28 ++++++++++++----------------
- 1 file changed, 12 insertions(+), 16 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index 6c19b91bbb86..55ee680e9db1 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -474,8 +474,7 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
- 				struct netlink_ext_ack *extack,
- 				const struct genl_ops *ops,
- 				int hdrlen,
--				enum genl_validate_flags no_strict_flag,
--				bool parallel)
-+				enum genl_validate_flags no_strict_flag)
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+index 7987a288917b..27116c7d3f4f 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+@@ -271,6 +271,8 @@ static int iwl_dbg_tlv_alloc_trigger(struct iwl_trans *trans,
  {
- 	enum netlink_validation validate = ops->validate & no_strict_flag ?
- 					   NL_VALIDATE_LIBERAL :
-@@ -486,7 +485,7 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
- 	if (!family->maxattr)
- 		return NULL;
+ 	struct iwl_fw_ini_trigger_tlv *trig = (void *)tlv->data;
+ 	u32 tp = le32_to_cpu(trig->time_point);
++	struct iwl_ucode_tlv *dup = NULL;
++	int ret;
  
--	if (parallel) {
-+	if (family->parallel_ops) {
- 		attrbuf = kmalloc_array(family->maxattr + 1,
- 					sizeof(struct nlattr *), GFP_KERNEL);
- 		if (!attrbuf)
-@@ -498,7 +497,7 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
- 	err = __nlmsg_parse(nlh, hdrlen, attrbuf, family->maxattr,
- 			    family->policy, validate, extack);
- 	if (err) {
--		if (parallel)
-+		if (family->parallel_ops)
- 			kfree(attrbuf);
- 		return ERR_PTR(err);
- 	}
-@@ -506,10 +505,9 @@ genl_family_rcv_msg_attrs_parse(const struct genl_family *family,
- }
- 
- static void genl_family_rcv_msg_attrs_free(const struct genl_family *family,
--					   struct nlattr **attrbuf,
--					   bool parallel)
-+					   struct nlattr **attrbuf)
- {
--	if (parallel)
-+	if (family->parallel_ops)
- 		kfree(attrbuf);
- }
- 
-@@ -537,15 +535,14 @@ static int genl_start(struct netlink_callback *cb)
- 
- 	attrs = genl_family_rcv_msg_attrs_parse(ctx->family, ctx->nlh, ctx->extack,
- 						ops, ctx->hdrlen,
--						GENL_DONT_VALIDATE_DUMP_STRICT,
--						true);
-+						GENL_DONT_VALIDATE_DUMP_STRICT);
- 	if (IS_ERR(attrs))
- 		return PTR_ERR(attrs);
- 
- no_attrs:
- 	info = genl_dumpit_info_alloc();
- 	if (!info) {
--		kfree(attrs);
-+		genl_family_rcv_msg_attrs_free(ctx->family, attrs);
- 		return -ENOMEM;
- 	}
- 	info->family = ctx->family;
-@@ -562,7 +559,7 @@ static int genl_start(struct netlink_callback *cb)
+ 	if (le32_to_cpu(tlv->length) < sizeof(*trig))
+ 		return -EINVAL;
+@@ -283,10 +285,20 @@ static int iwl_dbg_tlv_alloc_trigger(struct iwl_trans *trans,
+ 		return -EINVAL;
  	}
  
- 	if (rc) {
--		kfree(attrs);
-+		genl_family_rcv_msg_attrs_free(info->family, info->attrs);
- 		genl_dumpit_info_free(info);
- 		cb->data = NULL;
- 	}
-@@ -591,7 +588,7 @@ static int genl_lock_done(struct netlink_callback *cb)
- 		rc = ops->done(cb);
- 		genl_unlock();
- 	}
--	genl_family_rcv_msg_attrs_free(info->family, info->attrs, false);
-+	genl_family_rcv_msg_attrs_free(info->family, info->attrs);
- 	genl_dumpit_info_free(info);
- 	return rc;
+-	if (!le32_to_cpu(trig->occurrences))
++	if (!le32_to_cpu(trig->occurrences)) {
++		dup = kmemdup(tlv, sizeof(*tlv) + le32_to_cpu(tlv->length),
++				GFP_KERNEL);
++		if (!dup)
++			return -ENOMEM;
++		trig = (void *)dup->data;
+ 		trig->occurrences = cpu_to_le32(-1);
++		tlv = dup;
++	}
++
++	ret = iwl_dbg_tlv_add(tlv, &trans->dbg.time_point[tp].trig_list);
++	kfree(dup);
+ 
+-	return iwl_dbg_tlv_add(tlv, &trans->dbg.time_point[tp].trig_list);
++	return ret;
  }
-@@ -604,7 +601,7 @@ static int genl_parallel_done(struct netlink_callback *cb)
  
- 	if (ops->done)
- 		rc = ops->done(cb);
--	genl_family_rcv_msg_attrs_free(info->family, info->attrs, true);
-+	genl_family_rcv_msg_attrs_free(info->family, info->attrs);
- 	genl_dumpit_info_free(info);
- 	return rc;
- }
-@@ -671,8 +668,7 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
- 
- 	attrbuf = genl_family_rcv_msg_attrs_parse(family, nlh, extack,
- 						  ops, hdrlen,
--						  GENL_DONT_VALIDATE_STRICT,
--						  family->parallel_ops);
-+						  GENL_DONT_VALIDATE_STRICT);
- 	if (IS_ERR(attrbuf))
- 		return PTR_ERR(attrbuf);
- 
-@@ -698,7 +694,7 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
- 		family->post_doit(ops, skb, &info);
- 
- out:
--	genl_family_rcv_msg_attrs_free(family, attrbuf, family->parallel_ops);
-+	genl_family_rcv_msg_attrs_free(family, attrbuf);
- 
- 	return err;
- }
+ static int (*dbg_tlv_alloc[])(struct iwl_trans *trans,
 -- 
-2.26.2
+2.27.0
 
