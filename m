@@ -2,104 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C0CD1F7E5B
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 23:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26EE21F7E68
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 23:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726319AbgFLVUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 17:20:30 -0400
-Received: from mail-eopbgr80044.outbound.protection.outlook.com ([40.107.8.44]:36209
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726290AbgFLVU3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jun 2020 17:20:29 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ImgG3ZfsKDWCJWUHZ0/ch2SGQrMuR07SW/XgIQS0AVfuFJspzxs3e3x36BPn4ZlWpfLjN/VF8xDv4ivL1yNtYfR2GjdsGwaASXx1XlDW0Qj45r1BPDlHDgvnvcOE05jqiTdEh9iTQZSyUlAG8xTyOLh2eN5f0w+BGZPScqu+tPfWPsAbAukARRHCfoR3qr/SdETaoZAZrRnqSxHQysBekdHsWRxNViz2YbyqLyxf1X3JWa73leh+x1PAV8ADf+4ylY2xO3gF/0kx3iGVYYi0KfWZ+Ybnw7AuDuP+GQyYuIQ04SV+COa7ukM+ZB7OYv7BXavv5rLr+G/4OFDRZWEjMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1+0soPW05JvdQNxQitAW4MMMV19OUVGv403Pphqiqh0=;
- b=GK+eH+CmLfya8rE5Oh+sHcru3kG0NqnmujPqYaNjy9BsaeoPGbhZ9EtvDtIYSO9Pd8MBbEybHJkOJHfkjt7sgo7TevzlUh12lCIOivOJdOyhEs9HGWIZuvxLWZl00ReUfsZ33zNj7bVJkc2j063N1hzcxKtiioZA3XR3Ed++fCOpzWius9HADEvQm8NLYl/1lee/wZacK0Oe3LHa39gnh00aEezFWebag/RsmgDVokk33HWDNZlBHOlL6IuLpRLWyCf8C5n1I0m5/FMhTPRY3voLFVz3lLiSnOdzOjDfAfHdzIaaxvGikb+tEOl9TXeCjpKZIPMrZtdzWaIIQwyW7Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1+0soPW05JvdQNxQitAW4MMMV19OUVGv403Pphqiqh0=;
- b=XOLd6rKWdkH7pguCsR6FelghXckVk52wmQTTti/ZUY5YIbZZ9IrvceYPZFiSYqT1LR6KSTONEo5m7wpi8QEq5P5ge1RvwtYGT7EQ205p/bcyBWT0Y2H64G3cyxzokXk70N/POv6R1s3Jbr69HttozUSW2oNrRew4Mu7P9EIxjGo=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB7054.eurprd05.prod.outlook.com (2603:10a6:800:181::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3088.19; Fri, 12 Jun
- 2020 21:20:25 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3088.021; Fri, 12 Jun 2020
- 21:20:25 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>
-CC:     "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [pull request][net 00/10] mlx5 fixes 2020-06-11
-Thread-Topic: [pull request][net 00/10] mlx5 fixes 2020-06-11
-Thread-Index: AQHWQEJNKuFfaiTr1EW8ILyP9IMA8qjUL58AgAFObYA=
-Date:   Fri, 12 Jun 2020 21:20:25 +0000
-Message-ID: <5b75e88f124d1afc1f6aec9f4270eef5b3c02515.camel@mellanox.com>
-References: <20200611224708.235014-1-saeedm@mellanox.com>
-         <20200611.182326.1387553567386071693.davem@davemloft.net>
-In-Reply-To: <20200611.182326.1387553567386071693.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.3 (3.36.3-1.fc32) 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 1aa51f86-a933-4f3e-405b-08d80f166c92
-x-ms-traffictypediagnostic: VI1PR05MB7054:
-x-microsoft-antispam-prvs: <VI1PR05MB705409D079409F1B5C552417BE810@VI1PR05MB7054.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0432A04947
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KimeWikPyIFwIpFQtaPeB/U2dg//lCZh8b+ykATaIGbR4WbcDBqZPPpVkI8qxeE1YZ3Xz1z3fHkYnJsK+SfAX7O8uTfHvhv2ZhSpPu3FUe3SXa3pTo/vspv30ry9+nVaWiP9yW2EdVf5q7kd3Lfd+mZ7u3VPsL40Z06oZ4SQnp2IRM68qf5LRYfo3ENtYYxGb/NGEso8qNCYdJj3azgM2hC41ewjDTJJVA4NnZhKf2O1ymMghQbACHtnJD+JKK5hkiWIbdBRr+CggsTrg35Mw8VWAnWq0CqQcDeaayGdDm0Udz1TeUsjKyx6y9wwOL0zK523wfIKMxRAVc2nyhTwFg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(346002)(366004)(39860400002)(376002)(396003)(186003)(478600001)(66476007)(4744005)(8936002)(4326008)(6486002)(91956017)(86362001)(76116006)(5660300002)(64756008)(2906002)(66946007)(8676002)(66556008)(66446008)(6916009)(2616005)(316002)(71200400001)(6512007)(26005)(6506007)(54906003)(36756003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: vs+qIU/LqASiyC6ck+HY934xtsHeWSxxr3b/FCmjAq/GJwD4wcnVtMZM2fdxbqi37fUlSzn5BcRvHtBnM29SGyHmb88eAPLk7HYYtHT9AhpoJw9KibbyMKu320fxmnjQhIJyQbxTuwM9FphRQURaS7IySE86RO52aQt/0omo/4EEidV1hN7zDP/KTNBfaD1qHSVekjj9mlDUn4TpnG/ZvJ0EcMAy5enLfUC8pgyVb7kOMvc1y8At4xZG7XtCHQcl5o+MlMJfvCN1aKknoBHc8dkxEWnhJZYv80Ijf/gJJkvbca5Y4JreTA0XWmaBJeYjO6w+852LqJ3JY88SpyAC8up0VjuWJ8pii5jV9qjR/yMO+xXRxhXof4phtXk7tI9e7SCLAdAjNq5S6kl8VIB29/C0LEurEnZ9O3Z6wEKVG8QBZ/2M3vfgN5Vuwmfb9CR+BejYOrSeLZsunHHHIOhkVfHVXHcQpGDkNyoyLfkP5c0=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <91302D15169365408631B4DA9C3F80B6@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726329AbgFLV20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 17:28:26 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46501 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726268AbgFLV20 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 17:28:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1591997304;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TW2nx5WWXbFPBi4Mk8tz3cvBo7pFmy+AvbWf/yoODgA=;
+        b=Tjbab+ynLo4KqZkK/U3Eje3idtaEYN+hkbCZ5HqiMI4eKAdN+vXlLXBW09+P/AGj2ZeEDi
+        NmtyvONpdeeJ/hO5Aa8qilLwS1nWydFohMAaBSydoHGN7Z5kKbsrkFO3l+VAVf33NLJy9j
+        lQb0L/NWEEwUiUGstZx5nm2bhevpRZU=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-461-jo6PRzqlOquOmQ0YSTtz2w-1; Fri, 12 Jun 2020 17:28:22 -0400
+X-MC-Unique: jo6PRzqlOquOmQ0YSTtz2w-1
+Received: by mail-wm1-f71.google.com with SMTP id a7so2462884wmf.1
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 14:28:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TW2nx5WWXbFPBi4Mk8tz3cvBo7pFmy+AvbWf/yoODgA=;
+        b=fiRuXQ9eRqU+cQUayse7KdTK1UEGOM9WFMuL7+3rJu+iAF2HhwMiXEELDIIWY4djEm
+         3/PZCFdz4mnkpX5f4JWPZyU8pYClR+33pdJ2MoJyww4tPU+AtEwj4MAyn3FQ0TOsgANo
+         Dd7H9qzPAHs/owF++ORlEEuKfdKjyy53D/dLq1u2niS97VUV00EjJHS2vuJE+P4PO50e
+         OWH5dRgWYh6cOM/M5qaOIpds0abjCBdgsYV1tH95e0HB6RlQnPmV/24fKzTVhsfnRQNC
+         7FgLHExADaBr7wdF9mSUmXJR4hl/emS8fl4J0joNQpi/9yUOatL87XwjXShAsjFMtpcW
+         uY9Q==
+X-Gm-Message-State: AOAM533RmDgTDIfu2tbKvfJJDcYZIPdI6GJAbzDupOLPpFH+DfLOGoPR
+        Mecmj9huF1e5pG1GRUR8dqkZ7brHypGt0GCkLCA9Qn3DLlZ+8xL+bUa/p0sDpdJVH4eRzMGU61/
+        69pf2JIS3ujV7DSbX
+X-Received: by 2002:a1c:4008:: with SMTP id n8mr893846wma.118.1591997301168;
+        Fri, 12 Jun 2020 14:28:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx1wFg10X4H7zfzWI1nhrnpvtQgip/lXEddA0f+MCya6ZKaxFsHYQvd9EwRMYPxbWHDb6ukzA==
+X-Received: by 2002:a1c:4008:: with SMTP id n8mr893841wma.118.1591997300926;
+        Fri, 12 Jun 2020 14:28:20 -0700 (PDT)
+Received: from localhost ([151.48.140.182])
+        by smtp.gmail.com with ESMTPSA id t188sm10668408wmt.27.2020.06.12.14.28.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jun 2020 14:28:19 -0700 (PDT)
+Date:   Fri, 12 Jun 2020 23:28:16 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     lorenzo@kernel.org, netdev@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, brouer@redhat.com
+Subject: Re: [PATCH net] net: mvneta: do not redirect frames during
+ reconfiguration
+Message-ID: <20200612212816.GB782829@localhost.localdomain>
+References: <fd076dae0536d823e136ab4c114346602e02b6d7.1591653494.git.lorenzo@kernel.org>
+ <20200609.142901.3888767961952002.davem@davemloft.net>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1aa51f86-a933-4f3e-405b-08d80f166c92
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jun 2020 21:20:25.6157
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NMrsjpaMfQtp0Z0jna07kikA14INuDCdd7nBUvRDSSaTuGtXKlTAiFTlVAQy1eytFbLiHTGhA6QM3OpMD8T5CA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB7054
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="s2ZSL+KKDSLx8OML"
+Content-Disposition: inline
+In-Reply-To: <20200609.142901.3888767961952002.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTA2LTExIGF0IDE4OjIzIC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+
-IEZyb206IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0KPiBEYXRlOiBUaHUs
-IDExIEp1biAyMDIwIDE1OjQ2OjU4IC0wNzAwDQo+IA0KPiA+IFRoaXMgc2VyaWVzIGludHJvZHVj
-ZXMgc29tZSBmaXhlcyB0byBtbHg1IGRyaXZlci4NCj4gPiBGb3IgbW9yZSBpbmZvcm1hdGlvbiBw
-bGVhc2Ugc2VlIHRhZyBsb2cgYmVsb3cuDQo+IA0KPiBUYWcgbG9nIGlzIGJhc2ljYWxseSBlbXB0
-eSA6LSkNCg0KU29ycnksIEkgd2lsbCBtYWtlIHN1cmUgdG8gZHJvcCB0aGlzIGxpbmUgb3IgYWRk
-IHNvbWUgbG9nIG5leHQgdGltZSA6KS4NCg0KPiANCj4gPiBQbGVhc2UgcHVsbCBhbmQgbGV0IG1l
-IGtub3cgaWYgdGhlcmUgaXMgYW55IHByb2JsZW0uDQo+IA0KPiBQdWxsZWQuDQo+IA0KPiA+IEZv
-ciAtc3RhYmxlIHY1LjINCj4gPiAgICgnbmV0L21seDU6IGRyYWluIGhlYWx0aCB3b3JrcXVldWUg
-aW4gY2FzZSBvZiBkcml2ZXIgbG9hZCBlcnJvcicpDQo+ID4gDQo+ID4gRm9yIC1zdGFibGUgdjUu
-Mw0KPiA+ICAgKCduZXQvbWx4NWU6IEZpeCByZXBlYXRlZCBYU0sgdXNhZ2Ugb24gb25lIGNoYW5u
-ZWwnKQ0KPiA+ICAgKCduZXQvbWx4NTogRml4IGZhdGFsIGVycm9yIGhhbmRsaW5nIGR1cmluZyBk
-ZXZpY2UgbG9hZCcpDQo+ID4gDQo+ID4gRm9yIC1zdGFibGUgdjUuNQ0KPiA+ICAoJ25ldC9tbHg1
-OiBEaXNhYmxlIHJlbG9hZCB3aGlsZSByZW1vdmluZyB0aGUgZGV2aWNlJykNCj4gPiANCj4gPiBG
-b3IgLXN0YWJsZSB2NS43DQo+ID4gICAoJ25ldC9tbHg1ZTogQ1Q6IEZpeCBpcHY2IG5hdCBoZWFk
-ZXIgcmV3cml0ZSBhY3Rpb25zJykNCj4gDQo+IFF1ZXVlZCB1cCwgdGhhbmtzLg0K
+
+--s2ZSL+KKDSLx8OML
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> From: Lorenzo Bianconi <lorenzo@kernel.org>
+> Date: Tue,  9 Jun 2020 00:02:39 +0200
+>=20
+> > Disable frames injection in mvneta_xdp_xmit routine during hw
+> > re-configuration in order to avoid hardware hangs
+> >=20
+> > Fixes: b0a43db9087a ("net: mvneta: add XDP_TX support")
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>=20
+> Looking around, I wonder if the fundamental difference from the normal
+> TX path is that the XDP path doesn't use the TXQ enable/disable
+> machinery and checks like the normal ndo_start_xmit() paths do.
+>=20
+> And that's why only the XDP path has this issue.
+
+yes, I agree
+
+>=20
+> I'll apply this, so that the bug is fixed, but note that I consider
+> this kind of change adding a new flags mask and one state bit to solve
+> a problem to be ultimately inelegant and ususally pointing out a more
+> fundamental issue.
+
+I am completely fine to find a common solution since it seems a pattern used
+even in other drivers (e.g. bnxt). Reviewing the code probably we need some
+checks in __xdp_enqueue() since xdp_ok_fwd_dev() checks just IFF_UP flag.
+
+Regards,
+Lorenzo
+
+>=20
+> Thank you.
+>=20
+
+--s2ZSL+KKDSLx8OML
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXuPzbQAKCRA6cBh0uS2t
+rDhlAP9cNTZhLxuzimBe9uhRXqIkZBpoSXQQlJ+eqs/3A6evYAD/cxSGfppBoNDy
+Pqfpb4QALvxe2z75P7FiG/jfYqAH3Q8=
+=l6SM
+-----END PGP SIGNATURE-----
+
+--s2ZSL+KKDSLx8OML--
+
