@@ -2,93 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BD0A1F730E
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 06:37:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E22FF1F737B
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 07:29:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726456AbgFLEhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 00:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49316 "EHLO
+        id S1726517AbgFLF3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 01:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbgFLEhC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 00:37:02 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F893C03E96F
-        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 21:37:02 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id g18so6234618qtu.13
-        for <netdev@vger.kernel.org>; Thu, 11 Jun 2020 21:37:02 -0700 (PDT)
+        with ESMTP id S1726497AbgFLF3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 01:29:43 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637D8C03E96F;
+        Thu, 11 Jun 2020 22:29:43 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id jz3so3207313pjb.0;
+        Thu, 11 Jun 2020 22:29:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=F97uV/ArOqgg3/t8g2ZR/V8/lEFaYz13EXKGPRdcTt4=;
-        b=j/CUCJm0VrxPmEBvvcLMcYsl8D7gvIApjW0OoVLaOkTaZbNvTBQqz1QkML6HGRjFC7
-         jXSiLzuLLZX84StWJ6gQshsZ+MkUfC6uQhGenGSA4UgmJrlRujH0z874NHusc4oKtxvD
-         4EINLwT6iW0S7KNRwxp+ZrUTMPYhd6p0/W9TaEwrKY9LpKpFZDMzFPD1RAoOX0847zZH
-         pZHTpT6Qs1y4Ted2xkfRAhxxQYv/A99IFS/Dmk1TfB/PPNBsaKjAi7rg2vteqyGH/l6j
-         DNyJEaCYMufX5/1+qycLRAjzY3D/AFJlBInOhY1EmUKcN6C0bTDR7fk8h9mMCcrXYqWh
-         blCw==
+        h=from:to:cc:subject:date:message-id;
+        bh=2+MyiVOMMMRwCJqg3ClQFi3RZVFZ8+7mEhIcP3WjEUk=;
+        b=b+eEs2mgpae7TC1YLRnFT4tXHrHiVUP4VDvK1d+AdG1vZrD0NUKtqywnoAkRjBUNPS
+         z7r+axDnSGUocAmq0Nsha1WzrGEoTJg6e5dF4Ubpmam7lk+0wF7/cyWmJpnTkcFJ0gNw
+         PpXcnB6b9I1NEavki35eoU8jnWmniUmfgOI8NfnuaL3LMmK2vlGJVxQmgXCmUuL/lgSr
+         R9JRrXs/d6PQy4qARIKLAtDeryVTnXPRR9nJi76l5PVIOqEzFyecvUVapNl/XJHnuGKE
+         WWo6LhTkBFgcm8d072/ORsfuA89pm1a1hrKDzbulSYEzNAX5GvXXmBzM4BkQ1uwMlzHb
+         5tRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=F97uV/ArOqgg3/t8g2ZR/V8/lEFaYz13EXKGPRdcTt4=;
-        b=W4dgAEWAD5dGNyZkNiyV9bu3XDsg6JuozkO4KUPoW4BBdg+2QnrblttLxf/y/pnvQD
-         okYwms9W/DSmzvs+sLnRFGX/9zoyojRvXowtfMOTNlf5xc0bCT8c54ToUg75K/g960u1
-         QTsA6pNxYSMdKcbKNdDtRJg++Wf/5/TdlAWz/2zpzC0SpNoKO8kQzxe+D+/CV32DYiei
-         hWUiehYOrYr6o+pXRSYXzDeHaRewVB4W3brGd7XdgjdZcaMBtid6749Kd066nKPXVBHX
-         AG4NEFPHl3dE5kk8BVKXevnd7+aG2w0rexQXLtxpCFmDtR4tzqymJ17bkGNG3RALRn9U
-         AdVQ==
-X-Gm-Message-State: AOAM530LXDalVZllaSXNRivs430e7LXj0r6h2vm1j/LFKBtDyygQcyg9
-        H6B2PS3e4hBcfguaZp0/ex44WkPh
-X-Google-Smtp-Source: ABdhPJwqtVHcFLvjJ/rUshHkDB4qTN99rmQAf6mxEdrResdb1IJ0p3Pn985DPuCcv0Hv0qAWTqCKOg==
-X-Received: by 2002:ac8:3210:: with SMTP id x16mr1306222qta.192.1591936621347;
-        Thu, 11 Jun 2020 21:37:01 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:1179:8d76:2c34:5284? ([2601:282:803:7700:1179:8d76:2c34:5284])
-        by smtp.googlemail.com with ESMTPSA id c201sm3683592qkg.57.2020.06.11.21.37.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Jun 2020 21:37:00 -0700 (PDT)
-Subject: =?UTF-8?B?UmU6IOetlOWkjTogW1BBVENIXSBjYW4gY3VycmVudCBFQ01QIGltcGxl?=
- =?UTF-8?Q?mentation_support_consistent_hashing_for_next_hop=3f?=
-To:     =?UTF-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
-        <yangyi01@inspur.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>
-References: <4037f805c6f842dcc429224ce28425eb@sslemail.net>
- <8ff0c684-7d33-c785-94d7-c0e6f8b79d64@gmail.com>
- <8867a00d26534ed5b84628db1a43017c@inspur.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8da839b3-5b5d-b663-7d9c-0bc8351980dd@gmail.com>
-Date:   Thu, 11 Jun 2020 22:36:59 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.9.0
-MIME-Version: 1.0
-In-Reply-To: <8867a00d26534ed5b84628db1a43017c@inspur.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=2+MyiVOMMMRwCJqg3ClQFi3RZVFZ8+7mEhIcP3WjEUk=;
+        b=r/fpieUuL+vT3EQ0C5GjdxYzbEA0kHaxINqjY3QlKWhDt05q/Gx8/pIwX4VhMiFUnA
+         RqHBmc75epn0eDdKU7aD5V7eLangZWe+5NgJ3NjYYB7wb757xh3P30B4NE2wakKXqBIH
+         iGdeu/QqXUVISkBgQBD7rXsYiqsUFOq84CVBpI6ikkgASq3NnyVv6i1PrwPNs+EXz00o
+         QAtMo+IVoIqAqwKkwQ19jF4k21pVeJ9BhPgkye84bF33XKBj+OXDvcgVkLjOAhUVJcct
+         pyzs06jW0aFxInrRmUNEnODYabn+MGGWYeGQPr+yXFlv7tA7OpxcGKg1IwVdmZgPTU54
+         4k3g==
+X-Gm-Message-State: AOAM5317ZLy3DZAk3akulUrgiKfmUu4fxr6LJp/QDBq2Rv0M3K+Ml61p
+        HBelZkctL8Sjrli2M75Y88A=
+X-Google-Smtp-Source: ABdhPJwitUwH3g0GPbo61bxPYJG68fSV41vlCANyUbkhTCoXBNZo59EfMXBska5JJMRHPO2YFCgpMA==
+X-Received: by 2002:a17:90a:d244:: with SMTP id o4mr11248313pjw.186.1591939782964;
+        Thu, 11 Jun 2020 22:29:42 -0700 (PDT)
+Received: from localhost ([43.224.245.180])
+        by smtp.gmail.com with ESMTPSA id i3sm4110162pjv.1.2020.06.11.22.29.41
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 11 Jun 2020 22:29:42 -0700 (PDT)
+From:   Geliang Tang <geliangtang@gmail.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] mptcp: unify MPTCP_PM_MAX_ADDR and MPTCP_PM_ADDR_MAX
+Date:   Fri, 12 Jun 2020 13:27:28 +0800
+Message-Id: <463f48a4f92aa403453d30a801259c68fda15387.1591939496.git.geliangtang@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/11/20 6:32 PM, Yi Yang (杨燚)-云服务集团 wrote:
-> David, thank you so much for confirming it can't, I did read your cumulus document before, resilient hashing is ok for next hop remove, but it still has the same issue there if add new next hop. I know most of kernel code in Cumulus Linux has been in upstream kernel, I'm wondering why you didn't push resilient hashing to upstream kernel.
-> 
-> I think consistent hashing is must-have for a commercial load balancing solution, otherwise it is basically nonsense , do you Cumulus Linux have consistent hashing solution?
-> 
-> Is "- replacing nexthop entries as LB's come and go" ithe stuff https://docs.cumulusnetworks.com/cumulus-linux/Layer-3/Equal-Cost-Multipath-Load-Sharing-Hardware-ECMP/#resilient-hashing is showing? It can't ensure the flow is distributed to the right backend server if a new next hop is added.
+Unify these two duplicate macros into 8.
 
-I do not believe it is a problem to be solved in the kernel.
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+---
+ net/mptcp/pm_netlink.c | 2 --
+ net/mptcp/protocol.h   | 2 +-
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-If you follow the *intent* of the Cumulus document: what is the maximum
-number of load balancers you expect to have? 16? 32? 64? Define an ECMP
-route with that number of nexthops and fill in the weighting that meets
-your needs. When an LB is added or removed, you decide what the new set
-of paths is that maintains N-total paths with the distribution that
-meets your needs.
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index b78edf237ba0..b694f13caba8 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -41,8 +41,6 @@ struct pm_nl_pernet {
+ 	unsigned int		next_id;
+ };
+ 
+-#define MPTCP_PM_ADDR_MAX	8
+-
+ static bool addresses_equal(const struct mptcp_addr_info *a,
+ 			    struct mptcp_addr_info *b, bool use_port)
+ {
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 809687d3f410..86d265500cf6 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -135,7 +135,7 @@ static inline __be32 mptcp_option(u8 subopt, u8 len, u8 nib, u8 field)
+ 		     ((nib & 0xF) << 8) | field);
+ }
+ 
+-#define MPTCP_PM_MAX_ADDR	4
++#define MPTCP_PM_ADDR_MAX	8
+ 
+ struct mptcp_addr_info {
+ 	sa_family_t		family;
+-- 
+2.17.1
 
-I just sent patches for active-backup nexthops that allows an automatic
-fallback when one is removed to address the redistribution problem, but
-it still requires userspace to decide what the active-backup pairs are
-as well as the maximum number of paths.
