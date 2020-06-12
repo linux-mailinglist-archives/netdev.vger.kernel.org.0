@@ -2,107 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 721451F7DE2
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 22:02:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A72AD1F7DE9
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 22:03:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbgFLUCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 16:02:00 -0400
-Received: from mta-p8.oit.umn.edu ([134.84.196.208]:34140 "EHLO
-        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726268AbgFLUB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 16:01:59 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 49kBT32b21z9vZTV
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 20:01:59 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p8.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id XHsw3Xeb3SQ7 for <netdev@vger.kernel.org>;
-        Fri, 12 Jun 2020 15:01:59 -0500 (CDT)
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 49kBT30t7Gz9vZTK
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 15:01:59 -0500 (CDT)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p8.oit.umn.edu 49kBT30t7Gz9vZTK
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p8.oit.umn.edu 49kBT30t7Gz9vZTK
-Received: by mail-io1-f72.google.com with SMTP id z12so6839031iow.15
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 13:01:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=imHRrGBvGVpcQig7cLuElCC6UJZ82NGJhVcu/IBvqQM=;
-        b=nn5atouCc/tNlop8bGQTSwAWR1UpUfAftV6DdLjiUZ8BpCnJokk+Xc/nFUSUXGqGXx
-         Z9ufGv1umv18UE2bvYoMJGJGiovJrb/fLS3rx//EFUYE2K0QFdN34Yjj9rXNH29dulnB
-         nLOe2RIbVYtscO7M0XkmkvhPBl/avIo1Rd1IxvFh4eD71h0em69a2Pe02mSp16teRu1w
-         mCxiUI+cFFwVu5AUPnLVl5wc8OvgYWutc+IuahNAW5xQxZzoLMdHlvK3vgeO19aPlqQi
-         wH9f0z5HwrtsktF6mqkBu7KvX3k4ufWYj12ozM2C+qdIN2LMOxPag/3jyGbJw9rYYRRp
-         phrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=imHRrGBvGVpcQig7cLuElCC6UJZ82NGJhVcu/IBvqQM=;
-        b=GyfggTWkq7GG//+dAGXf6BFEYFbb5/6WJKNg2mOzHFvQKo50W8toruvYwv/MHFT6fu
-         2+qHWahwLKfpNcYbv8UH4bkL/uM/LBvNDkWeGEJN51PB02IhAV9BPDrbo5L9B1h6JI+e
-         SSm1G/hx7pN8oUPi+7gY1alpSkpd8rV+YBR4Um97ZJL5+fwcTjm6Q+CUhg8giF6vTVV3
-         fupuQZgU3fOHc8y+0gk9JfWYVbtyoY7zOsCW5ihfYeWLoEXgbuJTie014QucJrymNC3L
-         633dwwpR+cf1FE+w330wmMb+0/+k6VyVzSNGnYgnNQIo8NNRxWOMJEEvZtlBpkf/iInU
-         /9pA==
-X-Gm-Message-State: AOAM530WeF/2aO6BZig1K6+zjSCJDYML2Cty6UhWNM8o2R2mlu4bRZac
-        OSZVryfPV4CL4PjoW3EQ4y8UNNyVaipVwao4O7Of7YORGGBWugXhzwxPfM1/ax9Q+LLl22HQrAn
-        jfHknbx+cy2D5y4CynFKM
-X-Received: by 2002:a6b:9054:: with SMTP id s81mr15219654iod.122.1591992118585;
-        Fri, 12 Jun 2020 13:01:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxRUmPTr/16TxYq2aOphiwdmxs3OwZOEejbQPuzgta6zECKOw59nmZGUZlqZ3H10vZwXLg9cQ==
-X-Received: by 2002:a6b:9054:: with SMTP id s81mr15219629iod.122.1591992118398;
-        Fri, 12 Jun 2020 13:01:58 -0700 (PDT)
-Received: from piston-t1.hsd1.mn.comcast.net ([2601:445:4380:5b90:79cf:2597:a8f1:4c97])
-        by smtp.googlemail.com with ESMTPSA id d1sm3559363ilq.3.2020.06.12.13.01.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2020 13:01:58 -0700 (PDT)
-From:   Aditya Pakki <pakki001@umn.edu>
-To:     pakki001@umn.edu
-Cc:     kjlu@umn.edu, wu000273@umn.edu, Jiri Pirko <jiri@mellanox.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] test_objagg: Fix potential memory leak in error handling
-Date:   Fri, 12 Jun 2020 15:01:54 -0500
-Message-Id: <20200612200154.55243-1-pakki001@umn.edu>
-X-Mailer: git-send-email 2.25.1
+        id S1726363AbgFLUDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 16:03:11 -0400
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14320 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726304AbgFLUDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 16:03:07 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5ee3df4d0000>; Fri, 12 Jun 2020 13:02:21 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Fri, 12 Jun 2020 13:03:07 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Fri, 12 Jun 2020 13:03:07 -0700
+Received: from [10.2.62.89] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 12 Jun
+ 2020 20:03:07 +0000
+Subject: Re: [PATCH 1/2] docs: mm/gup: pin_user_pages.rst: add a "case 5"
+To:     Matthew Wilcox <willy@infradead.org>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Jan Kara <jack@suse.cz>, Dave Chinner <david@fromorbit.com>,
+        Souptick Joarder <jrdr.linux@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        <linux-mm@kvack.org>
+References: <20200529234309.484480-1-jhubbard@nvidia.com>
+ <20200529234309.484480-2-jhubbard@nvidia.com>
+ <20200612192426.GK8681@bombadil.infradead.org>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <d717e596-4ac7-9350-8734-379852c151d2@nvidia.com>
+Date:   Fri, 12 Jun 2020 13:03:07 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200612192426.GK8681@bombadil.infradead.org>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1591992141; bh=fN6zAnkb8dRIBQrks+Oz4+vRiYcHSYaYUuw0BewGGEk=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=Mrwrs2/WN8fnEejZcAvFi1E+ICWIQc+5sT7wEIyruy1+L8O2vF2rU8etd+2m3Rcye
+         /0MGen72j1T2YMz8qzXatSCP76QXdLxycn/9MxrzFz+r0k+oGKr5wqPp43sFbsvvxJ
+         kG6DIrwJ31WVrfLqK6RrOt/FtCmOVWN8cByBMW2OYkwN5lYUueiqAzGuWU0cmQv94Q
+         Uvvv505bPXRH5YPkRvyIKX1owhLczul7/YDNdthyhbC86t0EtjEp8X1e75YFPqEGn9
+         iBucQvKo4smd+Vzmm9MOxV5oQ6ufLiUCUz2qRrkZ0AZiZ94MfBBuULhA48FkMlAfRC
+         xpX4UyB4FOplg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of failure of check_expect_hints_stats(), the resources
-allocated by objagg_hints_get should be freed. The patch fixes
-this issue.
+On 2020-06-12 12:24, Matthew Wilcox wrote:
+> On Fri, May 29, 2020 at 04:43:08PM -0700, John Hubbard wrote:
+>> +CASE 5: Pinning in order to write to the data within the page
+>> +-------------------------------------------------------------
+>> +Even though neither DMA nor Direct IO is involved, just a simple case of "pin,
+>> +access page's data, unpin" can cause a problem. Case 5 may be considered a
+>> +superset of Case 1, plus Case 2, plus anything that invokes that pattern. In
+>> +other words, if the code is neither Case 1 nor Case 2, it may still require
+>> +FOLL_PIN, for patterns like this:
+>> +
+>> +Correct (uses FOLL_PIN calls):
+>> +    pin_user_pages()
+>> +    access the data within the pages
+>> +    set_page_dirty_lock()
+>> +    unpin_user_pages()
+>> +
+>> +INCORRECT (uses FOLL_GET calls):
+>> +    get_user_pages()
+>> +    access the data within the pages
+>> +    set_page_dirty_lock()
+>> +    put_page()
+> 
+> Why does this case need to pin?  Why can't it just do ...
+> 
+> 	get_user_pages()
+> 	lock_page(page);
+> 	... modify the data ...
+> 	set_page_dirty(page);
+> 	unlock_page(page);
+> 
 
-Signed-off-by: Aditya Pakki <pakki001@umn.edu>
----
- lib/test_objagg.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Yes, it could do that. And that would also make a good additional "correct"
+example. Especially for the case of just dealing with a single page,
+lock_page() has the benefit of completely fixing the problem *today*,
+without waiting for the pin_user_pages*() handling improvements to get
+implemented.
 
-diff --git a/lib/test_objagg.c b/lib/test_objagg.c
-index 72c1abfa154d..da137939a410 100644
---- a/lib/test_objagg.c
-+++ b/lib/test_objagg.c
-@@ -979,10 +979,10 @@ static int test_hints_case(const struct hints_case *hints_case)
- err_world2_obj_get:
- 	for (i--; i >= 0; i--)
- 		world_obj_put(&world2, objagg, hints_case->key_ids[i]);
--	objagg_hints_put(hints);
--	objagg_destroy(objagg2);
- 	i = hints_case->key_ids_count;
-+	objagg_destroy(objagg2);
- err_check_expect_hints_stats:
-+	objagg_hints_put(hints);
- err_hints_get:
- err_check_expect_stats:
- err_world_obj_get:
+And it's also another (probably better) way to fix the vhost.c problem, than
+commit 690623e1b496 ("vhost: convert get_user_pages() --> pin_user_pages()").
+
+I'm inclined to leave vhost.c alone for now, unless someone really prefers
+it to be changed, but to update the Case 5 documentation with your point
+above. Sound about right?
+
+
+thanks,
 -- 
-2.25.1
-
+John Hubbard
+NVIDIA
