@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E22FF1F737B
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 07:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 327891F73B0
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 08:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726517AbgFLF3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 01:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57408 "EHLO
+        id S1726505AbgFLGHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 02:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726497AbgFLF3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 01:29:43 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637D8C03E96F;
-        Thu, 11 Jun 2020 22:29:43 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id jz3so3207313pjb.0;
-        Thu, 11 Jun 2020 22:29:43 -0700 (PDT)
+        with ESMTP id S1726332AbgFLGHt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 02:07:49 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8309FC03E96F;
+        Thu, 11 Jun 2020 23:07:48 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id ne5so3225318pjb.5;
+        Thu, 11 Jun 2020 23:07:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=2+MyiVOMMMRwCJqg3ClQFi3RZVFZ8+7mEhIcP3WjEUk=;
-        b=b+eEs2mgpae7TC1YLRnFT4tXHrHiVUP4VDvK1d+AdG1vZrD0NUKtqywnoAkRjBUNPS
-         z7r+axDnSGUocAmq0Nsha1WzrGEoTJg6e5dF4Ubpmam7lk+0wF7/cyWmJpnTkcFJ0gNw
-         PpXcnB6b9I1NEavki35eoU8jnWmniUmfgOI8NfnuaL3LMmK2vlGJVxQmgXCmUuL/lgSr
-         R9JRrXs/d6PQy4qARIKLAtDeryVTnXPRR9nJi76l5PVIOqEzFyecvUVapNl/XJHnuGKE
-         WWo6LhTkBFgcm8d072/ORsfuA89pm1a1hrKDzbulSYEzNAX5GvXXmBzM4BkQ1uwMlzHb
-         5tRg==
+        bh=JEvUUzirrseeTgZyQCQj6IhJaMAfwmJ6wJglPFtIGDY=;
+        b=GqiItGxEX8++bQb6zbVj9Cn+NBTVFDaXRPDlso+VvCigIG9NEsk6x9CCNr7BlxmxGo
+         ib8zzELIsm1PI9EKOO2okeTgH6pGQ0E9Nf0vaGgVeCoFWblMFGcmjKyDjTSDL++c/+2M
+         t2iX3GlptrM+anUdCphOGeJ1ePRRqPw7nM2TjFgAeAfgXR1A/AXzI5arGaqvy5+apQ+P
+         nFmijyHaiadtW3KA5BHxwf4wYqvAKg2ndBQzeF825qqyiMjTGSoEpKXLAiIf4e8eknho
+         NyC7E+IPQTC32ul7EziR3Ia2RR/I37tiTujejehjhhpWMaNrtlF1b6tEHcMT1LMkZAOB
+         7kfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=2+MyiVOMMMRwCJqg3ClQFi3RZVFZ8+7mEhIcP3WjEUk=;
-        b=r/fpieUuL+vT3EQ0C5GjdxYzbEA0kHaxINqjY3QlKWhDt05q/Gx8/pIwX4VhMiFUnA
-         RqHBmc75epn0eDdKU7aD5V7eLangZWe+5NgJ3NjYYB7wb757xh3P30B4NE2wakKXqBIH
-         iGdeu/QqXUVISkBgQBD7rXsYiqsUFOq84CVBpI6ikkgASq3NnyVv6i1PrwPNs+EXz00o
-         QAtMo+IVoIqAqwKkwQ19jF4k21pVeJ9BhPgkye84bF33XKBj+OXDvcgVkLjOAhUVJcct
-         pyzs06jW0aFxInrRmUNEnODYabn+MGGWYeGQPr+yXFlv7tA7OpxcGKg1IwVdmZgPTU54
-         4k3g==
-X-Gm-Message-State: AOAM5317ZLy3DZAk3akulUrgiKfmUu4fxr6LJp/QDBq2Rv0M3K+Ml61p
-        HBelZkctL8Sjrli2M75Y88A=
-X-Google-Smtp-Source: ABdhPJwitUwH3g0GPbo61bxPYJG68fSV41vlCANyUbkhTCoXBNZo59EfMXBska5JJMRHPO2YFCgpMA==
-X-Received: by 2002:a17:90a:d244:: with SMTP id o4mr11248313pjw.186.1591939782964;
-        Thu, 11 Jun 2020 22:29:42 -0700 (PDT)
+        bh=JEvUUzirrseeTgZyQCQj6IhJaMAfwmJ6wJglPFtIGDY=;
+        b=idTwzkBkvo+lCbtFfWSP+XH6KHc0psCxVIUvdJnany5CuhhGAfEmtnu4YqWtb0d2L4
+         e9YHV6RPcfkmINUY38952T/tqyfyYReh1aYACXuhpUh9Iaq+NfDTzIaNOZhTEo8y8xmy
+         6mxjbRDe5021yQm2yuAl7FyDv48nygeu2HjHjFtUSmYGxbBS7PoSO9gCsKlxNmpDoJJ8
+         Y6znUAaMBdxdMOCbBwjvU1lcDl9My0vyaGrPZdAOoko2Y2Ej3jr+M1EXhjCYLBzKS4jC
+         nunUuKaV1j2Zdm1b7cJcRYB5hfg5GL2e+VRO1F2fQL85s/CSoRT5c8L3/LeM83tUb9uG
+         O8Qg==
+X-Gm-Message-State: AOAM531YjYTeGtAy28MMwQ2GfG0qtmRKEZCLUXv+QGk7VI3NrFQtxmmq
+        ShMMZ2V6EeavZQ6cvjRLkjI=
+X-Google-Smtp-Source: ABdhPJwlwIrsbAmyWazk7Coz2Lk2SYiWLiHCF1bdWmovTv77Ds46gqIwP/z7hQRyEiINklZ1KqKWIg==
+X-Received: by 2002:a17:90a:5e0e:: with SMTP id w14mr11458586pjf.128.1591942068165;
+        Thu, 11 Jun 2020 23:07:48 -0700 (PDT)
 Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id i3sm4110162pjv.1.2020.06.11.22.29.41
+        by smtp.gmail.com with ESMTPSA id g19sm4808563pfo.209.2020.06.11.23.07.46
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Jun 2020 22:29:42 -0700 (PDT)
+        Thu, 11 Jun 2020 23:07:47 -0700 (PDT)
 From:   Geliang Tang <geliangtang@gmail.com>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
@@ -52,49 +52,38 @@ To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
         mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mptcp: unify MPTCP_PM_MAX_ADDR and MPTCP_PM_ADDR_MAX
-Date:   Fri, 12 Jun 2020 13:27:28 +0800
-Message-Id: <463f48a4f92aa403453d30a801259c68fda15387.1591939496.git.geliangtang@gmail.com>
+Subject: [PATCH] mptcp: use list_first_entry_or_null
+Date:   Fri, 12 Jun 2020 14:05:34 +0800
+Message-Id: <9958d3f15d2d181eb9d48ffe5bf3251ec900f27a.1591941826.git.geliangtang@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unify these two duplicate macros into 8.
+Use list_first_entry_or_null to simplify the code.
 
 Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 ---
- net/mptcp/pm_netlink.c | 2 --
- net/mptcp/protocol.h   | 2 +-
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ net/mptcp/protocol.h | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index b78edf237ba0..b694f13caba8 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -41,8 +41,6 @@ struct pm_nl_pernet {
- 	unsigned int		next_id;
- };
- 
--#define MPTCP_PM_ADDR_MAX	8
--
- static bool addresses_equal(const struct mptcp_addr_info *a,
- 			    struct mptcp_addr_info *b, bool use_port)
- {
 diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 809687d3f410..86d265500cf6 100644
+index 86d265500cf6..55c65abcad64 100644
 --- a/net/mptcp/protocol.h
 +++ b/net/mptcp/protocol.h
-@@ -135,7 +135,7 @@ static inline __be32 mptcp_option(u8 subopt, u8 len, u8 nib, u8 field)
- 		     ((nib & 0xF) << 8) | field);
+@@ -234,10 +234,7 @@ static inline struct mptcp_data_frag *mptcp_rtx_head(const struct sock *sk)
+ {
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+ 
+-	if (list_empty(&msk->rtx_queue))
+-		return NULL;
+-
+-	return list_first_entry(&msk->rtx_queue, struct mptcp_data_frag, list);
++	return list_first_entry_or_null(&msk->rtx_queue, struct mptcp_data_frag, list);
  }
  
--#define MPTCP_PM_MAX_ADDR	4
-+#define MPTCP_PM_ADDR_MAX	8
- 
- struct mptcp_addr_info {
- 	sa_family_t		family;
+ struct mptcp_subflow_request_sock {
 -- 
 2.17.1
 
