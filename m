@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEC251F7CA3
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 19:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32DA51F7CA7
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 19:51:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726392AbgFLRt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 13:49:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38616 "EHLO mail.kernel.org"
+        id S1726304AbgFLRvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 13:51:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39246 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726367AbgFLRtz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jun 2020 13:49:55 -0400
+        id S1726085AbgFLRvu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jun 2020 13:51:50 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7E46D20835;
-        Fri, 12 Jun 2020 17:49:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B1402207ED;
+        Fri, 12 Jun 2020 17:51:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591984195;
-        bh=J0DPukvkbx9lZmoUXIpR5Hr1tA3Fg6w8OyFfhndfJdg=;
+        s=default; t=1591984310;
+        bh=jE1Kxz2Q5wrlavTl5ZVstoZ1/4ZvO5O8KR250OyGjB8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ycGb4OgHXuBinxtKbBaVran6kE/iPBBGzgynhheGbRsY6QIsEiwJojYxeEGQswOR0
-         obF/zqOAsHYdcBZgVKUmtl6EQkO9WgdMJe1sOkTI6Qv7HJ2ot1FgPOOPp6JE6l4R38
-         3E6fPh2ncSMexCuYCljeTOleyf01XlgdhZA29T5w=
-Date:   Fri, 12 Jun 2020 10:49:52 -0700
+        b=2GWLVH09vN3J8G3JrxTqgRA1rtLQN8CflYHzrglIClD7/pAlMY2Hpfd9Sgga6+yCZ
+         uyWsEtFQcmyxbR0tTa8Y+VMjD2HohYsbM0y5W2ChDP+Hx/hopa2UtzSyMjpLAvZH53
+         ygcX6VXAZ0AOab9buV0Xkud/7HIxZCsINc84SIok=
+Date:   Fri, 12 Jun 2020 10:51:48 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Miao-chen Chou <mcchou@chromium.org>
-Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Alain Michaud <alainm@chromium.org>,
-        Michael Sun <michaelfsun@google.com>,
-        Yoni Shavit <yshavit@chromium.org>,
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>
+Cc:     David Ahern <dsahern@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 4/7] Bluetooth: Add handler of
- MGMT_OP_REMOVE_ADV_MONITOR
-Message-ID: <20200612104952.0955d965@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200611231459.v3.4.Ib4effd5813fb2f8585e2c7394735050c16a765eb@changeid>
-References: <20200611231459.v3.1.I636f906bf8122855dfd2ba636352bbdcb50c35ed@changeid>
-        <20200611231459.v3.4.Ib4effd5813fb2f8585e2c7394735050c16a765eb@changeid>
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Donald Sharp <sharpd@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Dinesh Dutt <didutt@gmail.com>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels@gmail.com>
+Subject: Re: [RFC,net-next, 1/5] l3mdev: add infrastructure for table to VRF
+ mapping
+Message-ID: <20200612105148.1b977dc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200612164937.5468-2-andrea.mayer@uniroma2.it>
+References: <20200612164937.5468-1-andrea.mayer@uniroma2.it>
+        <20200612164937.5468-2-andrea.mayer@uniroma2.it>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -49,20 +51,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Jun 2020 23:15:26 -0700 Miao-chen Chou wrote:
-> This adds the request handler of MGMT_OP_REMOVE_ADV_MONITOR command.
-> Note that the controller-based monitoring is not yet in place. This
-> removes the internal monitor(s) without sending HCI traffic, so the
-> request returns immediately.
+On Fri, 12 Jun 2020 18:49:33 +0200 Andrea Mayer wrote:
+> Add infrastructure to l3mdev (the core code for Layer 3 master devices) in
+> order to find out the corresponding VRF device for a given table id.
+> Therefore, the l3mdev implementations:
+>  - can register a callback that returns the device index of the l3mdev
+>    associated with a given table id;
+>  - can offer the lookup function (table to VRF device).
 > 
-> The following test was performed.
-> - Issue btmgmt advmon-remove with valid and invalid handles.
-> 
-> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
+> Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 
-Still doesn't build cleanly with W=1 C=1
+net/l3mdev/l3mdev.c:12:1: warning: symbol 'l3mdev_lock' was not declared. Should it be static?
 
-net/bluetooth/mgmt.c:4009:46: warning: incorrect type in argument 2 (different base types)
-net/bluetooth/mgmt.c:4009:46:    expected unsigned short [usertype] handle
-net/bluetooth/mgmt.c:4009:46:    got restricted __le16 [usertype] monitor_handle
-net/bluetooth/mgmt.c:4018:29: warning: cast from restricted __le16
+Please make sure it doesn't add errors with W=1 C=1 :)
