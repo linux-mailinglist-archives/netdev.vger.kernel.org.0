@@ -2,96 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8E3E1F756E
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 10:47:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 038A91F756B
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 10:45:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726371AbgFLIrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 04:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726292AbgFLIrT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 04:47:19 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF13C03E96F;
-        Fri, 12 Jun 2020 01:47:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ppaRPVGqkWM/OTbuguh/PjazU7yUJs4On6rOzMLESpI=; b=ztKNvNvAzydCyExul5EoZgwkb
-        C4KGYLiTsxS4f8AZ6muEDgVmGHxD3VdtY/CxbTX2ds/PNXB82y5ZyE+XpElwI9ZiwapI6/XQJC/N+
-        LB5PMOw2Z9fcG0fnSgHR9qUcTcuwkVwDDVIiyaASnT17SN0o2rHAhYv6hiCvoYBXr8Q7J7wnTKPyb
-        UL7cMwhM6JMj0HK8irvtWveTqtk7hxVrQU8WqmsgQj6QJ6PAO7UITGP3qkFAxvIUfwB0Ky0ZW0gDh
-        Rm4Kb6AlGflUyfLxlTS00wuJ9psA+jgjlHR8jtoUdLkex7EQ9Ewk/YgNeVm5ZalpVrs5MRNxygzna
-        6XJvOxulQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:52602)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jjfLG-0002Pe-EG; Fri, 12 Jun 2020 09:47:14 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jjfLC-00067G-Fq; Fri, 12 Jun 2020 09:47:11 +0100
-Date:   Fri, 12 Jun 2020 09:47:10 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH v2] net: mvneta: Fix Serdes configuration for 2.5Gbps
- modes
-Message-ID: <20200612084710.GC1551@shell.armlinux.org.uk>
-References: <20200612083847.29942-1-s.hauer@pengutronix.de>
+        id S1726335AbgFLIpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 04:45:54 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:54850 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726292AbgFLIpx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jun 2020 04:45:53 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id E02415AF6B508945B1B5;
+        Fri, 12 Jun 2020 16:45:50 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.487.0; Fri, 12 Jun 2020 16:45:41 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     <netdev@vger.kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Peter Krystad <peter.krystad@linux.intel.com>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <mptcp@lists.01.org>
+Subject: [PATCH] mptcp: fix memory leak in mptcp_subflow_create_socket()
+Date:   Fri, 12 Jun 2020 16:49:38 +0800
+Message-ID: <20200612084938.52083-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200612083847.29942-1-s.hauer@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 12, 2020 at 10:38:47AM +0200, Sascha Hauer wrote:
-> The Marvell MVNETA Ethernet controller supports a 2.5Gbps SGMII mode
-> called DRSGMII. Depending on the Port MAC Control Register0 PortType
-> setting this seems to be either an overclocked SGMII mode or 2500BaseX.
-> 
-> This patch adds the necessary Serdes Configuration setting for the
-> 2.5Gbps modes. There is no phy interface mode define for overclocked
-> SGMII, so only 2500BaseX is handled for now.
-> 
-> As phy_interface_mode_is_8023z() returns true for both
-> PHY_INTERFACE_MODE_1000BASEX and PHY_INTERFACE_MODE_2500BASEX we
-> explicitly test for 1000BaseX instead of using
-> phy_interface_mode_is_8023z() to differentiate the different
-> possibilities.
-> 
-> Fixes: da58a931f248f ("net: mvneta: Add support for 2500Mbps SGMII")
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+socket malloced  by sock_create_kern() should be release before return
+in the error handling, otherwise it cause memory leak.
 
-2500base-X is used today on Armada 388 and Armada 3720 platforms and
-works - it is known to interoperate with Marvell PP2.2 hardware, as
-well was various SFPs such as the Huawei MA5671A at 2.5Gbps.  The way
-it is handled on these platforms is via the COMPHY, requesting that
-the serdes is upclocked from 1.25Gbps to 3.125Gbps.
+unreferenced object 0xffff88810910c000 (size 1216):
+  comm "00000003_test_m", pid 12238, jiffies 4295050289 (age 54.237s)
+  hex dump (first 32 bytes):
+    01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 2f 30 0a 81 88 ff ff  ........./0.....
+  backtrace:
+    [<00000000e877f89f>] sock_alloc_inode+0x18/0x1c0
+    [<0000000093d1dd51>] alloc_inode+0x63/0x1d0
+    [<000000005673fec6>] new_inode_pseudo+0x14/0xe0
+    [<00000000b5db6be8>] sock_alloc+0x3c/0x260
+    [<00000000e7e3cbb2>] __sock_create+0x89/0x620
+    [<0000000023e48593>] mptcp_subflow_create_socket+0xc0/0x5e0
+    [<00000000419795e4>] __mptcp_socket_create+0x1ad/0x3f0
+    [<00000000b2f942e8>] mptcp_stream_connect+0x281/0x4f0
+    [<00000000c80cd5cc>] __sys_connect_file+0x14d/0x190
+    [<00000000dc761f11>] __sys_connect+0x128/0x160
+    [<000000008b14e764>] __x64_sys_connect+0x6f/0xb0
+    [<000000007b4f93bd>] do_syscall_64+0xa1/0x530
+    [<00000000d3e770b6>] entry_SYSCALL_64_after_hwframe+0x49/0xb3
 
-This "DRSGMII" mode is not mentioned in the functional specs for either
-the Armada 388 or Armada 3720, the value you poke into the register is
-not mentioned either.  As I've already requested, some information on
-exactly what this "DRSGMII" is would be very useful, it can't be
-"double-rate SGMII" because that would give you 2Gbps instead of 1Gbps.
+Fixes: 2303f994b3e1 ("mptcp: Associate MPTCP context with TCP socket")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 
-So, I suspect this breaks the platforms that are known to work.
-
-We need a proper description of what DRSGMII is before we can consider
-taking any patches for it.
-
-So, sorry, but NAK.
-
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index bf132575040d..bbdb74b8bc3c 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -1053,8 +1053,10 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
+ 	err = tcp_set_ulp(sf->sk, "mptcp");
+ 	release_sock(sf->sk);
+ 
+-	if (err)
++	if (err) {
++		sock_release(sf);
+ 		return err;
++	}
+ 
+ 	/* the newly created socket really belongs to the owning MPTCP master
+ 	 * socket, even if for additional subflows the allocation is performed
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
