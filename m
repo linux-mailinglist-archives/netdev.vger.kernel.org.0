@@ -2,104 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 914431F7771
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 13:47:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5153C1F7784
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 13:52:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbgFLLrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 07:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59118 "EHLO
+        id S1726257AbgFLLw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 07:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725791AbgFLLrm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 07:47:42 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E4AC03E96F;
-        Fri, 12 Jun 2020 04:47:42 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id v24so3646934plo.6;
-        Fri, 12 Jun 2020 04:47:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HbZcKA6Rhm4nCGMfP9Rvp1r28EhMhEPMy4TrCL8RdRE=;
-        b=F7ak+z3ro6mwAOVAPjbpePKPk1HpE4idBe9F7nEJ8IuSytT9FHSrtY2q0ypzgnaKOD
-         SxNdViTlOLsFhiAtjY9J+rEU0UgsHhl1B0JZB2+POC4M/V4MZ2dcUAx79NKsBVT9VB1k
-         qFT8SVXTrmGZjUqxB1b/g8d9GBBEQtFdVIuZJyLHM9A5YHF7T+/0uDdfnlrXLoqLbi2z
-         ddhwEEi8iIOJJwWv7k5yLGnYeujMBfvJxjyZmELN1Prq4qcBLLTNM/vZc7XuK91jA8Wn
-         VWyX/rqspi9i5IQFxTvvt+5VF4o0CQtK/bMMxqqCz5BJzE+Pkdxs2veEOZ74YEz1S7bd
-         BVbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HbZcKA6Rhm4nCGMfP9Rvp1r28EhMhEPMy4TrCL8RdRE=;
-        b=SbFRiZoAwwqXo3ovKLdoVl18az+q1ZLUN32lNBBKVjzH5MKGD5k/70yWX509ZZW9Zx
-         GcrblN7nlIB9y2LfMq0OJdIzbpybew0RbSI5clngVgsUzZjsqO5n0JWSp7xnb1p0pmk7
-         pSlv9jpuDn/SNeHuh9ZHmbnTUXhqyhBOScgPPxY7DcwjismAVgkG0tvRPOytMqCFDuy7
-         mK0jB82saCRJVn0mlf42fDoWQn4Wzj0tmiqY4/OZKCKUnfE3/6oANeZFm7Zqe+8s97Z/
-         ixqEqVYL1v1wly1K+LdEMPhGxo9xgU1rLDk8B49Mqfc96X4oiHwsqwm4mTfy/vrZ1yJS
-         TANg==
-X-Gm-Message-State: AOAM530TfZeaG9eyxFqqWHIbWiz6O5vAZL2ssPl5/L61+nbK7TchGK/Q
-        MSJTtstLtNDTcVud1rFD95PuVZIZAnM=
-X-Google-Smtp-Source: ABdhPJxpadzLW2w3UQlGH5ka4zIsvW0vagy1Xsm/dkF+Pkm3xn2KQUBOIoAUK2XGhw/Nq9EWCGynnA==
-X-Received: by 2002:a17:90a:d3d6:: with SMTP id d22mr12533184pjw.184.1591962461401;
-        Fri, 12 Jun 2020 04:47:41 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com (fmdmzpr03-ext.fm.intel.com. [192.55.54.38])
-        by smtp.gmail.com with ESMTPSA id h9sm3227266pjs.50.2020.06.12.04.47.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2020 04:47:40 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH net] i40e: fix crash when Rx descriptor count is changed
-Date:   Fri, 12 Jun 2020 13:47:31 +0200
-Message-Id: <20200612114731.144630-1-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1725791AbgFLLw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 07:52:56 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BF0C03E96F
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 04:52:55 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1jjiEt-0001TX-HX; Fri, 12 Jun 2020 13:52:51 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1jjiEs-0008JZ-6d; Fri, 12 Jun 2020 13:52:50 +0200
+Date:   Fri, 12 Jun 2020 13:52:50 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel@pengutronix.de
+Subject: Re: [PATCH v2] net: mvneta: Fix Serdes configuration for 2.5Gbps
+ modes
+Message-ID: <20200612115250.GS11869@pengutronix.de>
+References: <20200612083847.29942-1-s.hauer@pengutronix.de>
+ <20200612084710.GC1551@shell.armlinux.org.uk>
+ <20200612100114.GE1551@shell.armlinux.org.uk>
+ <20200612101820.GF1551@shell.armlinux.org.uk>
+ <20200612104208.GG1551@shell.armlinux.org.uk>
+ <20200612112213.GH1551@shell.armlinux.org.uk>
+ <20200612113031.GI1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200612113031.GI1551@shell.armlinux.org.uk>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 13:42:38 up 113 days, 19:13, 128 users,  load average: 0.04, 0.14,
+ 0.15
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On Fri, Jun 12, 2020 at 12:30:31PM +0100, Russell King - ARM Linux admin wrote:
+> On Fri, Jun 12, 2020 at 12:22:13PM +0100, Russell King - ARM Linux admin wrote:
+> > On Fri, Jun 12, 2020 at 11:42:08AM +0100, Russell King - ARM Linux admin wrote:
+> > > With the obvious mistakes fixed (extraneous 'i' and lack of default
+> > > case), it seems to still work on Armada 388 Clearfog Pro with 2.5G
+> > > modules.
+> > 
+> > ... and the other bug fixed - mvneta_comphy_init() needs to be passed
+> > the interface mode.
+> 
+> Unrelated to the patch, has anyone noticed that mvneta's performance
+> seems to have reduced?  I've only just noticed it (which makes 2.5Gbps
+> rather pointless).  This is iperf between two clearfogs with a 2.5G
+> fibre link:
+> 
+> root@clearfog21:~# iperf -V -c fe80::250:43ff:fe02:303%eno2
+> ------------------------------------------------------------
+> Client connecting to fe80::250:43ff:fe02:303%eno2, TCP port 5001
+> TCP window size: 43.8 KByte (default)
+> ------------------------------------------------------------
+> [  3] local fe80::250:43ff:fe21:203 port 48928 connected with fe80::250:43ff:fe02:303 port 5001
+> [ ID] Interval       Transfer     Bandwidth
+> [  3]  0.0-10.0 sec   553 MBytes   464 Mbits/sec
+> 
+> I checked with Jon Nettleton, and he confirms my recollection that
+> mvneta on Armada 388 used to be able to fill a 2.5Gbps link.
+> 
+> If Armada 388 can't manage, then I suspect Armada XP will have worse
+> performance being an earlier revision SoC.
 
-When the AF_XDP buffer allocator was introduced, the Rx SW ring
-"rx_bi" allocation was moved from i40e_setup_rx_descriptors()
-function, and was instead done in the i40e_configure_rx_ring()
-function.
+I only have one board with a Armada XP here which has a loopback cable
+between two ports. It gives me:
 
-This broke the ethtool set_ringparam() hook for changing the Rx
-descriptor count, which was relying on i40e_setup_rx_descriptors() to
-handle the alloction.
+[  3] local 172.16.1.4 port 47002 connected with 172.16.1.0 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec  1.27 GBytes  1.09 Gbits/sec
 
-Fix this by adding an explicit i40e_alloc_rx_bi() call to
-i40e_set_ringparam().
+Still not 2.5Gbps, but at least twice the data rate you get, plus my
+board has to handle both ends of the link.
 
-Fixes: be1222b585fd ("i40e: Separate kernel allocated rx_bi rings from AF_XDP rings")
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_ethtool.c | 3 +++
- 1 file changed, 3 insertions(+)
+Sascha
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-index aa8026b1eb81..67806b7b2f49 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-@@ -2070,6 +2070,9 @@ static int i40e_set_ringparam(struct net_device *netdev,
- 			 */
- 			rx_rings[i].tail = hw->hw_addr + I40E_PRTGEN_STATUS;
- 			err = i40e_setup_rx_descriptors(&rx_rings[i]);
-+			if (err)
-+				goto rx_unwind;
-+			err = i40e_alloc_rx_bi(&rx_rings[i]);
- 			if (err)
- 				goto rx_unwind;
- 
-
-base-commit: 18dbd4cd9b8c957025cf90a3c50102b31bde14f7
 -- 
-2.25.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
