@@ -2,129 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD2EF1F7692
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 12:15:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 313B61F76A0
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 12:18:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726272AbgFLKPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 06:15:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44950 "EHLO
+        id S1726335AbgFLKR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 06:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726253AbgFLKPd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 06:15:33 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27A0C03E96F
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 03:15:32 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jjgig-0004Gh-PK; Fri, 12 Jun 2020 12:15:30 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jjgig-0002A5-5L; Fri, 12 Jun 2020 12:15:30 +0200
-Date:   Fri, 12 Jun 2020 12:15:30 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH v2] net: mvneta: Fix Serdes configuration for 2.5Gbps
- modes
-Message-ID: <20200612101530.GR11869@pengutronix.de>
-References: <20200612083847.29942-1-s.hauer@pengutronix.de>
- <20200612084710.GC1551@shell.armlinux.org.uk>
+        with ESMTP id S1726009AbgFLKR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 06:17:56 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88AD2C08C5C2
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 03:17:55 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id c17so10426360lji.11
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 03:17:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=WZlUc07Rr8ksgIjTvwWUAkRdKf7159z7g2XNRXUltyI=;
+        b=Hwpa5+EBWwC9JsHgTzkp9L0UNfpjyRoItxBOXVRcDB6BTWyLsPP66VWj7jFMRA7Jfn
+         S3Ta3hY844UuAJyhy91+zzoZt3JF7YCMoR0+N42NKBr7WUwnBW0QqDaHbw/OCACM3R9x
+         IxLn99jsfxcVSimF8KQS7D5rCyRCEHKpf6pR4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=WZlUc07Rr8ksgIjTvwWUAkRdKf7159z7g2XNRXUltyI=;
+        b=Zjql37klKvjNnT/qlFplVudP5NcT8pwKFa8OAABzbMOxaxrCiSe2Q8xADxVI+EIT86
+         +quulHLmMN800uSxA222NxnLg63SgwK3nY4IQf1Gu/FG4AF5yF2gcXjbpSPfr7F5Gu9l
+         GRdvjoSvxWmoGHgAtqsB3q0S1c8vS8K5K0vnTEZVTzmNG6iWFRwYZrc6aLmYnQAwjh3k
+         PetHFwgjoQLURwPHeIP6mHOLRT2N/YdSNHoNS8cGD4GIlImtMCjBwrlcd+kkITxSgw7I
+         sJz4M1tMsGP3nez82zz4RpDVqdKCgxlpoexeIo6XWxs+D04+wHEvvj9URnura58Yecl5
+         aPvQ==
+X-Gm-Message-State: AOAM531z8psjnI/tjLrpk3Y/5YXrjRxXesyJqqwSinukV2eG+e2o0w9p
+        PV4jF5zPcwXIaIQF36f0PIDOPw==
+X-Google-Smtp-Source: ABdhPJwUV5CjBcNm4+qoH43nmTNZKJ7PSGvfl/7KprEX5/5c/ou5DN9IOooDPHtM807G80gC7++NLA==
+X-Received: by 2002:a2e:8690:: with SMTP id l16mr5792715lji.462.1591957073513;
+        Fri, 12 Jun 2020 03:17:53 -0700 (PDT)
+Received: from toad ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id w15sm1655270lfl.51.2020.06.12.03.17.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jun 2020 03:17:53 -0700 (PDT)
+Date:   Fri, 12 Jun 2020 12:17:50 +0200
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        kernel-team@cloudflare.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf] bpf: sockmap: don't attach programs to UDP sockets
+Message-ID: <20200612121750.0004c74d@toad>
+In-Reply-To: <20200611172520.327602-1-lmb@cloudflare.com>
+References: <20200611172520.327602-1-lmb@cloudflare.com>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200612084710.GC1551@shell.armlinux.org.uk>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 11:39:20 up 113 days, 17:09, 127 users,  load average: 0.05, 0.10,
- 0.10
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 12, 2020 at 09:47:10AM +0100, Russell King - ARM Linux admin wrote:
-> On Fri, Jun 12, 2020 at 10:38:47AM +0200, Sascha Hauer wrote:
-> > The Marvell MVNETA Ethernet controller supports a 2.5Gbps SGMII mode
-> > called DRSGMII. Depending on the Port MAC Control Register0 PortType
-> > setting this seems to be either an overclocked SGMII mode or 2500BaseX.
-> > 
-> > This patch adds the necessary Serdes Configuration setting for the
-> > 2.5Gbps modes. There is no phy interface mode define for overclocked
-> > SGMII, so only 2500BaseX is handled for now.
-> > 
-> > As phy_interface_mode_is_8023z() returns true for both
-> > PHY_INTERFACE_MODE_1000BASEX and PHY_INTERFACE_MODE_2500BASEX we
-> > explicitly test for 1000BaseX instead of using
-> > phy_interface_mode_is_8023z() to differentiate the different
-> > possibilities.
-> > 
-> > Fixes: da58a931f248f ("net: mvneta: Add support for 2500Mbps SGMII")
-> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+On Thu, 11 Jun 2020 18:25:20 +0100
+Lorenz Bauer <lmb@cloudflare.com> wrote:
+
+> The stream parser infrastructure isn't set up to deal with UDP
+> sockets, so we mustn't try to attach programs to them.
 > 
-> 2500base-X is used today on Armada 388 and Armada 3720 platforms and
-> works - it is known to interoperate with Marvell PP2.2 hardware, as
-> well was various SFPs such as the Huawei MA5671A at 2.5Gbps.  The way
-> it is handled on these platforms is via the COMPHY, requesting that
-> the serdes is upclocked from 1.25Gbps to 3.125Gbps.
-
-Unfortunately the functional specs I have available for the Armada 38x
-completely lack the ethernet registers, So I can't tell what has to be
-done there. What about the other values that are poked into
-MVNETA_SERDES_CFG? Are these documented in the Armada 388 functional
-spec or are they just ignored by this hardware? I'm talking about
-mvneta_port_power_up():
-
-        if (phy_mode == PHY_INTERFACE_MODE_QSGMII)
-                mvreg_write(pp, MVNETA_SERDES_CFG, MVNETA_QSGMII_SERDES_PROTO);
-        else if (phy_mode == PHY_INTERFACE_MODE_SGMII ||
-                 phy_mode == PHY_INTERFACE_MODE_1000BASEX)
-                mvreg_write(pp, MVNETA_SERDES_CFG, MVNETA_SGMII_SERDES_PROTO);
-        else if (!phy_interface_mode_is_rgmii(phy_mode))
-                return -EINVAL;
-
-In the Armada 38x functional specs we have this to configure the SGMII
-mode:
-
-PIN_PHY_GEN Setting:
-
-SGMII SGMII (1.25 Gbps) 0x6
-  HS-SGMII (3.125 Gbps) 0x8
-
-The Armada XP doesn't have Comphy, so I guess what is being done in
-mvneta_port_power_up() is just the old way for configuring the Serdes
-lanes for different bitrates. Also they seem to have renamed DRSGMII
-to HS-SGMII.
-
+> I remember making this change at some point, but I must have lost
+> it while rebasing or something similar.
 > 
-> This "DRSGMII" mode is not mentioned in the functional specs for either
-> the Armada 388 or Armada 3720, the value you poke into the register is
-> not mentioned either.  As I've already requested, some information on
-> exactly what this "DRSGMII" is would be very useful, it can't be
-> "double-rate SGMII" because that would give you 2Gbps instead of 1Gbps.
+> Fixes: 7b98cd42b049 ("bpf: sockmap: Add UDP support")
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
+>  net/core/sock_map.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> index 00a26cf2cfe9..35cea36f3892 100644
+> --- a/net/core/sock_map.c
+> +++ b/net/core/sock_map.c
+> @@ -424,10 +424,7 @@ static int sock_map_get_next_key(struct bpf_map *map, void *key, void *next)
+>  	return 0;
+>  }
+>  
+> -static bool sock_map_redirect_allowed(const struct sock *sk)
+> -{
+> -	return sk->sk_state != TCP_LISTEN;
+> -}
+> +static bool sock_map_redirect_allowed(const struct sock *sk);
+>  
+>  static int sock_map_update_common(struct bpf_map *map, u32 idx,
+>  				  struct sock *sk, u64 flags)
+> @@ -508,6 +505,11 @@ static bool sk_is_udp(const struct sock *sk)
+>  	       sk->sk_protocol == IPPROTO_UDP;
+>  }
+>  
+> +static bool sock_map_redirect_allowed(const struct sock *sk)
+> +{
+> +	return sk_is_tcp(sk) && sk->sk_state != TCP_LISTEN;
+> +}
+> +
+>  static bool sock_map_sk_is_suitable(const struct sock *sk)
+>  {
+>  	return sk_is_tcp(sk) || sk_is_udp(sk);
 
-As said, despite the fact that two times 1Gbps is not 2.5Gbps DRSGMII
-still stands for "Double Rated-SGMII", as found in the MV78260 Hardware
-specifications. Another place in the same document talks about "DRSGMII
-(SGMII at 2.5Gbps)". Otherwise documentation is sparse, to my
-information it is really only a higher bitrate.
-
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
