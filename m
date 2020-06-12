@@ -2,158 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 793F61F7CD3
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 20:24:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B86A31F7CE8
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 20:32:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726385AbgFLSYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 14:24:17 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:54009 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726272AbgFLSYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 14:24:15 -0400
-Received: by mail-il1-f197.google.com with SMTP id c29so6999413ilf.20
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 11:24:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=IdyGwOTrPxdodvIu8w1ax19AtuMuHO1Ym/F9HSipt30=;
-        b=emWL6CroZfitmqip+svu6JVgQqVlXSbrHhVGt5tUWC61MFJtSyePafLFE7wPXnqbsJ
-         TURlUnvDAW+jsv6M7cSRpfWnpZvHKzPSrJCpneHBrgV+Gr8yBiKTW/s2nSicaAIxsCgL
-         GFrAXz+dWVse2fUDekJVaiRULJqzf67pMjpVIjWb1JizliiifbSt0qvm7vS3CoaxhH1K
-         I7epebyLGl05mxWBlBMy1h/uqWL0qrSCEdvGQDVTLZsB0bqG4g9dyN64ydQYPpuzqA8L
-         MXCk3qNwUEbj9Q6xZGyodSSDIpltOda3XBZ+lFyG42KUOYadkocPUFSFPG3W6IiiiB0W
-         mMZg==
-X-Gm-Message-State: AOAM533ZJku6xLSrEQsDzN8u8g7tKYdFgYfJvs1boTE3DVrBfRDFqFlz
-        FYOjJcDAZMVHbrpHugWCgTb3zQki7KxtnZmoQMIaFYoP9ekf
-X-Google-Smtp-Source: ABdhPJwAAS9my4o1VRLp6PK98sOKFFJZWZfIVQi9U62+owNQEL39aMd+aOKnIeke1xLbVEIVeqlDgOfB6r8bqw46HhD1B9zwgvtU
-MIME-Version: 1.0
-X-Received: by 2002:a92:c50f:: with SMTP id r15mr14352497ilg.76.1591986252918;
- Fri, 12 Jun 2020 11:24:12 -0700 (PDT)
-Date:   Fri, 12 Jun 2020 11:24:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000017bacf05a7e72f45@google.com>
-Subject: net-next test error: BUG: using smp_processor_id() in preemptible
- code in ext4_mb_new_blocks
-From:   syzbot <syzbot+2ad52db2be557736dd15@syzkaller.appspotmail.com>
-To:     adilger.kernel@dilger.ca, davem@davemloft.net, kuba@kernel.org,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tytso@mit.edu
-Content-Type: text/plain; charset="UTF-8"
+        id S1726307AbgFLScF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 14:32:05 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:54704 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726263AbgFLScF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 14:32:05 -0400
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05CIW1G9047863;
+        Fri, 12 Jun 2020 14:32:01 -0400
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31kyem9d3s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 12 Jun 2020 14:31:47 -0400
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05CILIEk006647;
+        Fri, 12 Jun 2020 18:31:46 GMT
+Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
+        by ppma01dal.us.ibm.com with ESMTP id 31hyh0duv4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 12 Jun 2020 18:31:46 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05CIViBr26542436
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 12 Jun 2020 18:31:44 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 714D178063;
+        Fri, 12 Jun 2020 18:31:44 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C178A7805C;
+        Fri, 12 Jun 2020 18:31:43 +0000 (GMT)
+Received: from oc7186267434.ibm.com.com (unknown [9.160.93.4])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri, 12 Jun 2020 18:31:43 +0000 (GMT)
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org, danymadden@us.ibm.com,
+        Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: [PATCH net] ibmvnic: Harden device login requests
+Date:   Fri, 12 Jun 2020 13:31:39 -0500
+Message-Id: <1591986699-19484-1-git-send-email-tlfalcon@linux.ibm.com>
+X-Mailer: git-send-email 1.8.3.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-11_23:2020-06-11,2020-06-11 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=1
+ adultscore=0 malwarescore=0 spamscore=0 bulkscore=0 lowpriorityscore=0
+ mlxlogscore=999 clxscore=1015 cotscore=-2147483648 phishscore=0
+ priorityscore=1501 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006120134
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The VNIC driver's "login" command sequence is the final step
+in the driver's initialization process with device firmware,
+confirming the available device queue resources to be utilized
+by the driver. Under high system load, firmware may not respond
+to the request in a timely manner or may abort the request. In
+such cases, the driver should reattempt the login command
+sequence. In case of a device error, the number of retries
+is bounded.
 
-syzbot found the following crash on:
-
-HEAD commit:    af7b4801 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=15fe909e100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b366fd92adf6f8b4
-dashboard link: https://syzkaller.appspot.com/bug?extid=2ad52db2be557736dd15
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+2ad52db2be557736dd15@syzkaller.appspotmail.com
-
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2269
- worker_thread+0x96/0xe10 kernel/workqueue.c:2415
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:351
-BUG: using smp_processor_id() in preemptible [00000000] code: kworker/u4:1/21
-caller is ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
-CPU: 0 PID: 21 Comm: kworker/u4:1 Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: writeback wb_workfn (flush-8:0)
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
- ext4_ext_map_blocks+0x2044/0x3410 fs/ext4/extents.c:4244
- ext4_map_blocks+0x4cb/0x1640 fs/ext4/inode.c:626
- mpage_map_one_extent fs/ext4/inode.c:2377 [inline]
- mpage_map_and_submit_extent fs/ext4/inode.c:2430 [inline]
- ext4_writepages+0x1ab7/0x3400 fs/ext4/inode.c:2782
- do_writepages+0xfa/0x2a0 mm/page-writeback.c:2354
- __writeback_single_inode+0x12a/0x1410 fs/fs-writeback.c:1452
- writeback_sb_inodes+0x515/0xdd0 fs/fs-writeback.c:1716
- __writeback_inodes_wb+0xc3/0x250 fs/fs-writeback.c:1785
- wb_writeback+0x910/0xd90 fs/fs-writeback.c:1894
- wb_check_old_data_flush fs/fs-writeback.c:1996 [inline]
- wb_do_writeback fs/fs-writeback.c:2049 [inline]
- wb_workfn+0xadf/0x10d0 fs/fs-writeback.c:2078
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2269
- worker_thread+0x96/0xe10 kernel/workqueue.c:2415
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:351
-BUG: using smp_processor_id() in preemptible [00000000] code: kworker/u4:1/21
-caller is ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
-CPU: 0 PID: 21 Comm: kworker/u4:1 Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: writeback wb_workfn (flush-8:0)
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
- ext4_ext_map_blocks+0x2044/0x3410 fs/ext4/extents.c:4244
- ext4_map_blocks+0x4cb/0x1640 fs/ext4/inode.c:626
- mpage_map_one_extent fs/ext4/inode.c:2377 [inline]
- mpage_map_and_submit_extent fs/ext4/inode.c:2430 [inline]
- ext4_writepages+0x1ab7/0x3400 fs/ext4/inode.c:2782
- do_writepages+0xfa/0x2a0 mm/page-writeback.c:2354
- __writeback_single_inode+0x12a/0x1410 fs/fs-writeback.c:1452
- writeback_sb_inodes+0x515/0xdd0 fs/fs-writeback.c:1716
- __writeback_inodes_wb+0xc3/0x250 fs/fs-writeback.c:1785
- wb_writeback+0x910/0xd90 fs/fs-writeback.c:1894
- wb_check_old_data_flush fs/fs-writeback.c:1996 [inline]
- wb_do_writeback fs/fs-writeback.c:2049 [inline]
- wb_workfn+0xadf/0x10d0 fs/fs-writeback.c:2078
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2269
- worker_thread+0x96/0xe10 kernel/workqueue.c:2415
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:351
-BUG: using smp_processor_id() in preemptible [00000000] code: kworker/u4:1/21
-caller is ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
-CPU: 0 PID: 21 Comm: kworker/u4:1 Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: writeback wb_workfn (flush-8:0)
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
- ext4_ext_map_blocks+0x2044/0x3410 fs/ext4/extents.c:4244
- ext4_map_blocks+0x4cb/0x1640 fs/ext4/inode.c:626
- mpage_map_one_extent fs/ext4/inode.c:2377 [inline]
- mpage_map_and_submit_extent fs/ext4/inode.c:2430 [inline]
- ext4_writepages+0x1ab7/0x3400 fs/ext4/inode.c:2782
- do_writepages+0xfa/0x2a0 mm/page-writeback.c:2354
- __writeback_single_inode+0x12a/0x1410 fs/fs-writeback.c:1452
- writeback_sb_inodes+0x515/0xdd0 fs/fs-writeback.c:1716
- __writeback_inodes_wb+0xc3/0x250 fs/fs-writeback.c:1785
- wb_writeback+0x910/0xd90 fs/fs-writeback.c:1894
- wb_check_old_data_flush fs/fs-writeback.c:1996 [inline]
- wb_do_writeback fs/fs-writeback.c:2049 [inline]
- wb_workfn+0xadf/0x10d0 fs/fs-writeback.c:2078
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2269
- worker_thread+0x96/0xe10 kernel/workqueue.c:2415
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:351
-
-
+Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/net/ethernet/ibm/ibmvnic.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 197dc5b2c090..1cb2b7f3b2cb 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -841,13 +841,14 @@ static int ibmvnic_login(struct net_device *netdev)
+ {
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+ 	unsigned long timeout = msecs_to_jiffies(30000);
++	int retries = 10;
+ 	int retry_count = 0;
+ 	bool retry;
+ 	int rc;
+ 
+ 	do {
+ 		retry = false;
+-		if (retry_count > IBMVNIC_MAX_QUEUES) {
++		if (retry_count > retries) {
+ 			netdev_warn(netdev, "Login attempts exceeded\n");
+ 			return -1;
+ 		}
+@@ -862,11 +863,23 @@ static int ibmvnic_login(struct net_device *netdev)
+ 
+ 		if (!wait_for_completion_timeout(&adapter->init_done,
+ 						 timeout)) {
+-			netdev_warn(netdev, "Login timed out\n");
+-			return -1;
++			netdev_warn(netdev, "Login timed out, retrying...\n");
++			retry = true;
++			adapter->init_done_rc = 0;
++			retry_count++;
++			continue;
+ 		}
+ 
+-		if (adapter->init_done_rc == PARTIALSUCCESS) {
++		if (adapter->init_done_rc == ABORTED) {
++			netdev_warn(netdev, "Login aborted, retrying...\n");
++			retry = true;
++			adapter->init_done_rc = 0;
++			retry_count++;
++			/* FW or device may be busy, so
++			 * wait a bit before retrying login
++			 */
++			msleep(500);
++		} else if (adapter->init_done_rc == PARTIALSUCCESS) {
+ 			retry_count++;
+ 			release_sub_crqs(adapter, 1);
+ 
+-- 
+2.18.1
+
