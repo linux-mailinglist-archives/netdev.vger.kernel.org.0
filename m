@@ -2,100 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E511F7ED9
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 00:19:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 122671F7EE5
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 00:27:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726368AbgFLWTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 18:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43638 "EHLO
+        id S1726341AbgFLW1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 18:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726309AbgFLWTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 18:19:16 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6202BC03E96F
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 15:19:15 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id 9so12785477ljv.5
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 15:19:15 -0700 (PDT)
+        with ESMTP id S1726302AbgFLW1C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 18:27:02 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF32AC03E96F;
+        Fri, 12 Jun 2020 15:27:01 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id q19so12833842lji.2;
+        Fri, 12 Jun 2020 15:27:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=S69gyMNLaOGAiFr7qCBHHiwdlIohIgL0MhzrMbPUZUQ=;
-        b=CsOw4DppoW/KZukLdxx5XANt+gyx3ZCgkZNHwyXtURrAp1lCqlx15V5lmbjBu0H78U
-         mFwCZ6jbT5V1e1DaMb1cgDFnGJnW0gYnTAMGZXkrCOZybuHa10hRdXKqksVsf8hPtzTn
-         LEbL3zFL9ORq9OljOdAg2cp0L3kv14fiCKzjk=
+         :cc;
+        bh=etKK0PJEb1db058qQhJXVFpsTlugAG+cnL16z01cY8o=;
+        b=M/K6eexYQiZP+v489DoNeUNJc0xtkvhIymy/lKVPEG79FLY6p9iAgIZ6EY0IcLfpPc
+         C1FTksIO5lrv5XYIrAviQsfUDrge+1qOp7j9HimIMA7Q1SIUAmCAMwhlaZyYrsJLKpOX
+         WVjk92eZSkiGkCxeW/4TWIOFvENQ1UFljl8dj9vjNTPKYu3jD67sWZUCxAjVpxkoTLGO
+         5OLHDqFILSq9SFL+d+GKiHnrY5EPLRTMtBqXCbqsgWuq8rfKMyvOv8nT/dPjLkGpOCcI
+         r6H/qN4mEirZ9svv1oGVzNoigcxV+d0Rpp3JMMHgp91pAk3hxdiVQXxJKH1sQTrbhOh8
+         eC+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=S69gyMNLaOGAiFr7qCBHHiwdlIohIgL0MhzrMbPUZUQ=;
-        b=L/5jWF6OH4dLsK6zh4yNPaxVaSA5u/OiP8XYiMu8pcwdG71pkFL0svl8CzflvbiAyJ
-         cB+cikQrZ17KiohbYyzrGpjIvCI6OaZPnHFuLr0DAMqPlWg2uvliTCRFQuV7LeWo5lat
-         e7rBuEh2UNEIB0oWFLruvihUHR+EMLePq7N0rp9hkD0SRbXD9PSNt2OIhedbFEASa2cT
-         jPyvKygvak0RKMIF5IFZQj9FfDkMbRUuHA+YskUsU5Ph3RKB+LbEjgXNjTXgeJiWF+rr
-         pitxKIoTekXOyZf++r59YHDe3TaFMnqXf7xFvlG+MwImOSSHDjcj7obxP414Fg85X5Wk
-         gr5A==
-X-Gm-Message-State: AOAM5335H1z55Wg/kMfUuyewJi5PfqzdobkxGY6CPpGMnZ1b7ovm4zjU
-        VVTY0ZuoNmcls7WOpFhDcEb8xzn+CP3hNCKOohNcrg==
-X-Google-Smtp-Source: ABdhPJxos6YOXBcGtM2nVczNOEJuzWaHmxynVDeqAdFrSLAp8j+4lf4tWG0biGINRGjJZGeiHM/Yp2M/OmdbiTYDPIc=
-X-Received: by 2002:a2e:2202:: with SMTP id i2mr8031631lji.199.1592000352134;
- Fri, 12 Jun 2020 15:19:12 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=etKK0PJEb1db058qQhJXVFpsTlugAG+cnL16z01cY8o=;
+        b=U19wZ9Kf3xzIuHxNcqXlfQp/O87L4/umWWn0Zrgsc1G0YeRUXAOvoIR2RWYCm3YxpX
+         EQnKOazzjSlWHJrrH7ccXzH9yuqZCcR0k4s/1w8Ot9Arr1+Rw+i7IQDJS8/a+fkHPOIx
+         qn+tb04zivvpzbOYq1IrMdMFiErt6+gEq0JOS5H/Ihk+ukSGqjfeYm2nhBYz4BjDmkWm
+         Q5PKmvY6OpsPst67iUWd7MCNBwU5VpH4M/hdZzTB1dxJaSxyNhgqzOwTLBXRbbTv4Y7Y
+         lu3+jHb5+vvkqohUCtEput1EWxWcyuNpw8BTGlrNB8ADelc7stTJzL/XmOI2MdD+hW8E
+         Kr/A==
+X-Gm-Message-State: AOAM533RejlWdq6FU1adF1muF4EZN66Tso5The3xM+QAyib81NrogcyK
+        OaArfYjSp2LLk6U7sUgq9fsF1qrbEyjxygFDX/I=
+X-Google-Smtp-Source: ABdhPJzU3Ajj2pba/mzBGU5dNaLOgn81OQ4fAU3tcndyhMjQMzroJo9umsi3ROWn5K8zXlvxsi3BebvILKJoabwKp6s=
+X-Received: by 2002:a2e:9187:: with SMTP id f7mr8114683ljg.450.1592000820240;
+ Fri, 12 Jun 2020 15:27:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200603160058.v2.1.I636f906bf8122855dfd2ba636352bbdcb50c35ed@changeid>
- <2097432F-C4FA-4166-A221-DAE82B4A0C31@holtmann.org> <CABmPvSHKfS3fCfLzKCLAmf2p_JUYSkRrSfdkePVaHXSrLrXpbA@mail.gmail.com>
- <550BD45A-FE50-48C1-91CB-470D157A728B@holtmann.org>
-In-Reply-To: <550BD45A-FE50-48C1-91CB-470D157A728B@holtmann.org>
-From:   Miao-chen Chou <mcchou@chromium.org>
-Date:   Fri, 12 Jun 2020 15:19:01 -0700
-Message-ID: <CABmPvSE=eX_MqAWvgvOo9B6D+5Y0SzedAbRxrKmopvV+DTo5MQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/7] Bluetooth: Add definitions for advertisement
- monitor features
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Manish Mandlik <mmandlik@chromium.org>,
-        Michael Sun <michaelfsun@google.com>,
-        Yoni Shavit <yshavit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
+References: <20200612201603.680852-1-andriin@fb.com> <20200612220506.nad3zmcg7j75hnsz@distanz.ch>
+In-Reply-To: <20200612220506.nad3zmcg7j75hnsz@distanz.ch>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 12 Jun 2020 15:26:48 -0700
+Message-ID: <CAADnVQKiyCaqPAO0yCuiFJOmvrxexxkaXJNCQEwxpsHjcm6j8g@mail.gmail.com>
+Subject: Re: [PATCH bpf] tools/bpftool: fix skeleton codegen
+To:     Tobias Klauser <tklauser@distanz.ch>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
+On Fri, Jun 12, 2020 at 3:05 PM Tobias Klauser <tklauser@distanz.ch> wrote:
+>
+> On 2020-06-12 at 22:16:03 +0200, Andrii Nakryiko <andriin@fb.com> wrote:
+> > Remove unnecessary check at the end of codegen() routine which makes codegen()
+> > to always fail and exit bpftool with error code. Positive value of variable
+> > n is not an indicator of a failure.
+> >
+> > Cc: Tobias Klauser <tklauser@distanz.ch>
+> > Fixes: 2c4779eff837 ("tools, bpftool: Exit on error in function codegen")
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> Reviewed-by: Tobias Klauser <tklauser@distanz.ch>
+>
+> Sorry about this, thanks for fixing it.
 
-The name in the mgmt-api.txt doc is "Add Advertisement Patterns
-Monitor Command", and Luiz changed the name from
-MGMT_OP_ADD_ADV_PATTERNS_MONITOR to MGMT_OP_ADD_ADV_MONITOR before
-applied. So we either change the doc or change the header file to
-match. Based on the outcome I may need to change the name in mgmt.h in
-the kernel patch.
-
-Regards,
-Miao
-
-On Fri, Jun 12, 2020 at 6:21 AM Marcel Holtmann <marcel@holtmann.org> wrote=
-:
->
-> Hi Miao-chen,
->
-> > Thanks for reviewing. Please see v3 for the update.
-> > I am trying to settle down the name of Add Advertisement Pattern
-> > Monitor command with Luiz on the other thread. I will post the update
-> > here once it is sorted out.
->
-> I thought the name was just fine. Especially in the discussed context tha=
-t we might add another =E2=80=9CAdd=E2=80=9D command for future vendors, bu=
-t keep a single =E2=80=9CRemove=E2=80=9D command.
->
-> Regards
->
-> Marcel
->
+Applied. Thanks
