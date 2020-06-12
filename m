@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 122671F7EE5
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 00:27:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA0F21F7EE8
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 00:29:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726341AbgFLW1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 18:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
+        id S1726335AbgFLW3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 18:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726302AbgFLW1C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 18:27:02 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF32AC03E96F;
-        Fri, 12 Jun 2020 15:27:01 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id q19so12833842lji.2;
-        Fri, 12 Jun 2020 15:27:01 -0700 (PDT)
+        with ESMTP id S1726302AbgFLW3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 18:29:11 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18986C03E96F;
+        Fri, 12 Jun 2020 15:29:10 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id s1so12839871ljo.0;
+        Fri, 12 Jun 2020 15:29:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=etKK0PJEb1db058qQhJXVFpsTlugAG+cnL16z01cY8o=;
-        b=M/K6eexYQiZP+v489DoNeUNJc0xtkvhIymy/lKVPEG79FLY6p9iAgIZ6EY0IcLfpPc
-         C1FTksIO5lrv5XYIrAviQsfUDrge+1qOp7j9HimIMA7Q1SIUAmCAMwhlaZyYrsJLKpOX
-         WVjk92eZSkiGkCxeW/4TWIOFvENQ1UFljl8dj9vjNTPKYu3jD67sWZUCxAjVpxkoTLGO
-         5OLHDqFILSq9SFL+d+GKiHnrY5EPLRTMtBqXCbqsgWuq8rfKMyvOv8nT/dPjLkGpOCcI
-         r6H/qN4mEirZ9svv1oGVzNoigcxV+d0Rpp3JMMHgp91pAk3hxdiVQXxJKH1sQTrbhOh8
-         eC+w==
+        bh=VBSctRi6PehbvFyRdsaixGKXnCr9EQHvB+HGYrtZxRg=;
+        b=VETHs8vXVoP6oxOZODpHaIbwZjcKXGwfa3Tghg8qibF7uYieaLSYR4G0wuYaf1MO4C
+         bZSS4QDVaJoyi5OmXjmXXhK1G7QD/uyXmXk8Rr9v7q0BAgDRVVe6aONLItBq5pqa9uBL
+         Qfjuh2vsuISfaho1m0kJ4DKC9yGaKZifPmfOCZ2Hl26LaG8M6c8Cc24nN/n8cB9wVCXf
+         mHScHD1GOLKu8ACHOPYlKJPdZq9pnjvVlY5HNkKCkp0BE2snFOwcIfTMG73eWINlNxMM
+         NwcF4wVJln7AwLJofFQ5XXW93tuHQNbQJvbpN08s8fehkcGLSCCYZBfwusIqwGxNUzcu
+         gScQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=etKK0PJEb1db058qQhJXVFpsTlugAG+cnL16z01cY8o=;
-        b=U19wZ9Kf3xzIuHxNcqXlfQp/O87L4/umWWn0Zrgsc1G0YeRUXAOvoIR2RWYCm3YxpX
-         EQnKOazzjSlWHJrrH7ccXzH9yuqZCcR0k4s/1w8Ot9Arr1+Rw+i7IQDJS8/a+fkHPOIx
-         qn+tb04zivvpzbOYq1IrMdMFiErt6+gEq0JOS5H/Ihk+ukSGqjfeYm2nhBYz4BjDmkWm
-         Q5PKmvY6OpsPst67iUWd7MCNBwU5VpH4M/hdZzTB1dxJaSxyNhgqzOwTLBXRbbTv4Y7Y
-         lu3+jHb5+vvkqohUCtEput1EWxWcyuNpw8BTGlrNB8ADelc7stTJzL/XmOI2MdD+hW8E
-         Kr/A==
-X-Gm-Message-State: AOAM533RejlWdq6FU1adF1muF4EZN66Tso5The3xM+QAyib81NrogcyK
-        OaArfYjSp2LLk6U7sUgq9fsF1qrbEyjxygFDX/I=
-X-Google-Smtp-Source: ABdhPJzU3Ajj2pba/mzBGU5dNaLOgn81OQ4fAU3tcndyhMjQMzroJo9umsi3ROWn5K8zXlvxsi3BebvILKJoabwKp6s=
-X-Received: by 2002:a2e:9187:: with SMTP id f7mr8114683ljg.450.1592000820240;
- Fri, 12 Jun 2020 15:27:00 -0700 (PDT)
+        bh=VBSctRi6PehbvFyRdsaixGKXnCr9EQHvB+HGYrtZxRg=;
+        b=VLKwZ9AH4pC1QrDKox2OjLwsI6+A9NvUyJh2u+N2YDxxvwHi3pRsnrshq1SaVWNVMF
+         cGUgllmDmYVaHL4/jZPBpXlD/bl3QO/Cend3MVV7dxwhHOpfnNRHZPiXWtGhokKpIQ/h
+         Gb2oJh5tXCtq+dz1FIuMIntHU6MmviqWtdPq0V3CDUZndUSo357u4cTugfEmLMkAdDWw
+         YU9HFwe9OpV99NP73fG9OJB4UIbEtBFgHdapEIqCKPefOnWS1hp5Cu6TcGjNXUTzsAvX
+         x5eie+iU00SN10W9Hh/nGEH8d4mIBrI1xho7Q6Dobqoz0jlZvNRSfDHvPjEpNXURki8t
+         LmBQ==
+X-Gm-Message-State: AOAM532h6wBy1ZOqG0tZcC88zytkclKoxwZl/LNnY3ACvpBgLMrWsj55
+        Ih755eM78IYK8OwaXyj4G2tp2s2ETdliuCnp3MM=
+X-Google-Smtp-Source: ABdhPJyovprWcYVnZI8jJAEoXVpjq1i16qahkDZz0eRNK1wgCzuVueRv7FXd07BeDYqUP4755oOpwwYExHAN+koxk2Y=
+X-Received: by 2002:a2e:974a:: with SMTP id f10mr8132427ljj.283.1592000948468;
+ Fri, 12 Jun 2020 15:29:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200612201603.680852-1-andriin@fb.com> <20200612220506.nad3zmcg7j75hnsz@distanz.ch>
-In-Reply-To: <20200612220506.nad3zmcg7j75hnsz@distanz.ch>
+References: <20200612194504.557844-1-andriin@fb.com>
+In-Reply-To: <20200612194504.557844-1-andriin@fb.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 12 Jun 2020 15:26:48 -0700
-Message-ID: <CAADnVQKiyCaqPAO0yCuiFJOmvrxexxkaXJNCQEwxpsHjcm6j8g@mail.gmail.com>
-Subject: Re: [PATCH bpf] tools/bpftool: fix skeleton codegen
-To:     Tobias Klauser <tklauser@distanz.ch>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+Date:   Fri, 12 Jun 2020 15:28:57 -0700
+Message-ID: <CAADnVQ+HO3um5jU2qt3p8iEBt4_mC_MSGyA=uScck-N5Mp8t5w@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: support pre-initializing .bss global variables
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -63,19 +63,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 12, 2020 at 3:05 PM Tobias Klauser <tklauser@distanz.ch> wrote:
+On Fri, Jun 12, 2020 at 12:45 PM Andrii Nakryiko <andriin@fb.com> wrote:
 >
-> On 2020-06-12 at 22:16:03 +0200, Andrii Nakryiko <andriin@fb.com> wrote:
-> > Remove unnecessary check at the end of codegen() routine which makes codegen()
-> > to always fail and exit bpftool with error code. Positive value of variable
-> > n is not an indicator of a failure.
-> >
-> > Cc: Tobias Klauser <tklauser@distanz.ch>
-> > Fixes: 2c4779eff837 ("tools, bpftool: Exit on error in function codegen")
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> Remove invalid assumption in libbpf that .bss map doesn't have to be updated
+> in kernel. With addition of skeleton and memory-mapped initialization image,
+> .bss doesn't have to be all zeroes when BPF map is created, because user-code
+> might have initialized those variables from user-space.
 >
-> Reviewed-by: Tobias Klauser <tklauser@distanz.ch>
->
-> Sorry about this, thanks for fixing it.
+> Fixes: eba9c5f498a1 ("libbpf: Refactor global data map initialization")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
 Applied. Thanks
