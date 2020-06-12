@@ -2,122 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D22B11F715B
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 02:26:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5651A1F7169
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 02:32:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbgFLA0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 20:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39162 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726285AbgFLA0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 20:26:49 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3856FC03E96F;
-        Thu, 11 Jun 2020 17:26:49 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id c14so7453326qka.11;
-        Thu, 11 Jun 2020 17:26:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=XihjhM7PNDe6DTRFb+Tb27kII0d9sFsX2YnNNfTFAB8=;
-        b=avRfAddoVxJIjKVncxYfHxppQQ7YN8qOh8YfKqE4FfoemEVefjMYlKjkqkOznaYqmZ
-         pyZzyLpXUOiiBUHGxpFH3AH5eylL8l+dhxkqKAdgeii/rtRqL0SLBJrrWQqNuYkwGBih
-         8wfe6q6YWxLZ1TrsRGWbaYzaBoUJ1pwgoFcSiy7QMspcAeqycVXGF3yBXeyvxlm0sGye
-         XTpS48XBPAUwRr7PRrKM7G9huEk8qq6w8HcPzFegv2ldPlN26HldKlW+PguCO516uTtI
-         F3BWZndIqcsZi8O3yO7U34vRbY9mGR1XPmWJSZ5H6un/mTY0GAA8SAFGbzE9UGyzaP+f
-         4gmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references;
-        bh=XihjhM7PNDe6DTRFb+Tb27kII0d9sFsX2YnNNfTFAB8=;
-        b=MgXUmTEMzBLRn+RK6q4xLJLC/BPvzvKRUGBfrMTfILR/urnOzQuFSS+RBNDiBWVB63
-         WzYTt1EDH9ZkEhBKZkEZxkkcvBbpGQaJ7J09X5xugVTVtJGXJvKP+wnLGhH7gQFuvXzF
-         ZbOho2oAS3rGrHW/zbYk3eRiKcmFUvJOFuycAcmcyM7JWlCRVAyvEYAxx656RQE1pKVp
-         1TzNUuiScAO7QJFGNdsmfNhdo9XlqnmgBn2CkOGkD5PGeYYPgdsD8+3hwbzf4a9iuheL
-         Mp5SrDvwjL6OjdcBFcaSLh5E2FAKIU1tJXJGFX/4IkUXVOt9gaMtIK6BFYo7cE+BOP92
-         qmQg==
-X-Gm-Message-State: AOAM531rnSQj8ago5NDdPlk5puvTlyIj58duWOKkNZgqDDUWrY1HrtQY
-        l/5rHSWXJDmmEwFBDtT1U3xrLxXlk5Gs5Q==
-X-Google-Smtp-Source: ABdhPJxDqnEbvb8lxMuzHTWY9tCTZCqUUTQzLRifCeRxqyhsYTRHsS2yVdhnOePkUXI6mVlOUo7sUA==
-X-Received: by 2002:ae9:f40b:: with SMTP id y11mr604223qkl.107.1591921608305;
-        Thu, 11 Jun 2020 17:26:48 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:f00a:33d2:6ec2:475c])
-        by smtp.googlemail.com with ESMTPSA id g47sm3696421qtk.53.2020.06.11.17.26.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2020 17:26:47 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        bpf@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] xdp_rxq_info_user: Replace malloc/memset w/calloc
-Date:   Thu, 11 Jun 2020 20:26:33 -0400
-Message-Id: <20200612002639.32173-1-gaurav1086@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200611150221.15665-1-gaurav1086@gmail.com>
-References: <20200611150221.15665-1-gaurav1086@gmail.com>
+        id S1726511AbgFLAcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 20:32:53 -0400
+Received: from unicom146.biz-email.net ([210.51.26.146]:1684 "EHLO
+        unicom146.biz-email.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726285AbgFLAcx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 20:32:53 -0400
+X-Greylist: delayed 34569 seconds by postgrey-1.27 at vger.kernel.org; Thu, 11 Jun 2020 20:32:25 EDT
+Received: from ([60.208.111.195])
+        by unicom146.biz-email.net (Antispam) with ASMTP (SSL) id EGS47026;
+        Fri, 12 Jun 2020 08:32:26 +0800
+Received: from jtjnmail201605.home.langchao.com (10.100.2.5) by
+ jtjnmail201604.home.langchao.com (10.100.2.4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1591.10; Fri, 12 Jun 2020 08:32:18 +0800
+Received: from jtjnmail201605.home.langchao.com ([fe80::8d20:4cc5:1116:d16e])
+ by jtjnmail201605.home.langchao.com ([fe80::8d20:4cc5:1116:d16e%8]) with mapi
+ id 15.01.1591.008; Fri, 12 Jun 2020 08:32:18 +0800
+From:   =?utf-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
+        <yangyi01@inspur.com>
+To:     "dsahern@gmail.com" <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
+        =?utf-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
+        <yangyi01@inspur.com>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIGNhbiBjdXJyZW50IEVDTVAgaW1wbGVtZW50YXRp?=
+ =?utf-8?Q?on_support_consistent_hashing_for_next_hop=3F?=
+Thread-Topic: [PATCH] can current ECMP implementation support consistent
+ hashing for next hop?
+Thread-Index: AdY//dZZfdQesCHOTf2OFNYuxTSncv//uggA//8XLwA=
+Importance: high
+X-Priority: 1
+Date:   Fri, 12 Jun 2020 00:32:18 +0000
+Message-ID: <8867a00d26534ed5b84628db1a43017c@inspur.com>
+References: <4037f805c6f842dcc429224ce28425eb@sslemail.net>
+ <8ff0c684-7d33-c785-94d7-c0e6f8b79d64@gmail.com>
+In-Reply-To: <8ff0c684-7d33-c785-94d7-c0e6f8b79d64@gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.100.1.52]
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+        micalg=SHA1; boundary="----=_NextPart_000_0008_01D64093.FB3B5C70"
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace malloc/memset with calloc
+------=_NextPart_000_0008_01D64093.FB3B5C70
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: 0fca931a6f21 ("samples/bpf: program demonstrating access to xdp_rxq_info") Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
----
- samples/bpf/xdp_rxq_info_user.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+David, thank you so much for confirming it can't, I did read your =
+cumulus document before, resilient hashing is ok for next hop remove, =
+but it still has the same issue there if add new next hop. I know most =
+of kernel code in Cumulus Linux has been in upstream kernel, I'm =
+wondering why you didn't push resilient hashing to upstream kernel.
 
-diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
-index 4fe47502ebed..caa4e7ffcfc7 100644
---- a/samples/bpf/xdp_rxq_info_user.c
-+++ b/samples/bpf/xdp_rxq_info_user.c
-@@ -198,11 +198,8 @@ static struct datarec *alloc_record_per_cpu(void)
- {
- 	unsigned int nr_cpus = bpf_num_possible_cpus();
- 	struct datarec *array;
--	size_t size;
- 
--	size = sizeof(struct datarec) * nr_cpus;
--	array = malloc(size);
--	memset(array, 0, size);
-+	array = calloc(nr_cpus, sizeof(struct datarec));
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
- 		exit(EXIT_FAIL_MEM);
-@@ -214,11 +211,8 @@ static struct record *alloc_record_per_rxq(void)
- {
- 	unsigned int nr_rxqs = bpf_map__def(rx_queue_index_map)->max_entries;
- 	struct record *array;
--	size_t size;
- 
--	size = sizeof(struct record) * nr_rxqs;
--	array = malloc(size);
--	memset(array, 0, size);
-+	array = calloc(nr_rxqs, sizeof(struct record));
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_rxqs:%u)\n", nr_rxqs);
- 		exit(EXIT_FAIL_MEM);
-@@ -232,8 +226,7 @@ static struct stats_record *alloc_stats_record(void)
- 	struct stats_record *rec;
- 	int i;
- 
--	rec = malloc(sizeof(*rec));
--	memset(rec, 0, sizeof(*rec));
-+	rec = calloc(1, sizeof(struct stats_record));
- 	if (!rec) {
- 		fprintf(stderr, "Mem alloc error\n");
- 		exit(EXIT_FAIL_MEM);
--- 
-2.17.1
+I think consistent hashing is must-have for a commercial load balancing =
+solution, otherwise it is basically nonsense , do you Cumulus Linux have =
+consistent hashing solution?
 
+Is "- replacing nexthop entries as LB's come and go" ithe stuff =
+https://docs.cumulusnetworks.com/cumulus-linux/Layer-3/Equal-Cost-Multipa=
+th-Load-Sharing-Hardware-ECMP/#resilient-hashing is showing? It can't =
+ensure the flow is distributed to the right backend server if a new next =
+hop is added.
+
+-----=E9=82=AE=E4=BB=B6=E5=8E=9F=E4=BB=B6-----
+=E5=8F=91=E4=BB=B6=E4=BA=BA: David Ahern [mailto:dsahern@gmail.com]=20
+=E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B46=E6=9C=8812=E6=97=A5 =
+2:27
+=E6=94=B6=E4=BB=B6=E4=BA=BA: Yi Yang =
+(=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 =
+<yangyi01@inspur.com>; netdev@vger.kernel.org
+=E6=8A=84=E9=80=81: nikolay@cumulusnetworks.com
+=E4=B8=BB=E9=A2=98: Re: [PATCH] can current ECMP implementation support =
+consistent hashing for next hop?
+
+On 6/11/20 8:56 AM, Yi Yang =
+(=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 =
+wrote:
+> Hi, folks
+>=20
+> We need to use Linux ECMP to do active-active load balancer, but =
+consistent hash is necessary because load balance node may be added or =
+removed dynamically, so number of hash bucket is changeable, but we have =
+to distribute flow to load balance node which is handling this flow and =
+has current session state, I=E2=80=99m not sure if current Linux has =
+implemented the algorithm in  https://tools.ietf.org/html/rfc2992, =
+anybody can confirm yes or no?
+>=20
+> I checked source code in =
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/=
+net/ipv4/fib_semantics.c#n2176, every next hop in fib has a upper_bound, =
+fib_select_multipath just checks if hash value is greater than =
+upper_bound of next hop and decide if it is selected next hop, so I =
+don't think current linux has implemented consistent hash, please =
+correct me if I'm wrong.
+>=20
+> Thank you all so much in advance and sincerely appreciate your help.
+>=20
+
+The kernel does not do resilient hashing, but I believe you can do it =
+from userspace by updating route entries - replacing nexthop entries as =
+LB's come and go.
+
+Cumulus docs have a good description:
+https://docs.cumulusnetworks.com/cumulus-linux/Layer-3/Equal-Cost-Multipa=
+th-Load-Sharing-Hardware-ECMP/#resilient-hashing
+
+------=_NextPart_000_0008_01D64093.FB3B5C70
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+SIb3DQMEAgIAgDAHBgUrDgMCBzAKBggqhkiG9w0DBzAdBgNVHQ4EFgQUwS9Wt2AmUPVKr98VTbaf
+wjdIUXAwHwYDVR0jBBgwFoAUXlkDprRMWGCRTvYetaU5pjLBNWowgdEGA1UdHwSByTCBxjCBw6CB
+wKCBvYaBumxkYXA6Ly8vQ049SU5TUFVSLUNBLENOPUpUQ0EyMDEyLENOPUNEUCxDTj1QdWJsaWMl
+MjBLZXklMjBTZXJ2aWNlcyxDTj1TZXJ2aWNlcyxDTj1Db25maWd1cmF0aW9uLERDPWhvbWUsREM9
+bGFuZ2NoYW8sREM9Y29tP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT9vYmplY3RDbGFz
+cz1jUkxEaXN0cmlidXRpb25Qb2ludDCBxAYIKwYBBQUHAQEEgbcwgbQwgbEGCCsGAQUFBzAChoGk
+bGRhcDovLy9DTj1JTlNQVVItQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENO
+PVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9aG9tZSxEQz1sYW5nY2hhbyxEQz1jb20/Y0FD
+ZXJ0aWZpY2F0ZT9iYXNlP29iamVjdENsYXNzPWNlcnRpZmljYXRpb25BdXRob3JpdHkwQwYDVR0R
+BDwwOqAjBgorBgEEAYI3FAIDoBUME3lhbmd5aTAxQGluc3B1ci5jb22BE3lhbmd5aTAxQGluc3B1
+ci5jb20wDQYJKoZIhvcNAQELBQADggEBAApWKZfwQ5Gbpv3Pg2mJyUz8jhno5OBy2Hdku/euDQfD
+aOOPsUxsvr8ZnWU03E9rwTAHgD9oB10Oe27CNeS6G/kqJubOZt5Emrw9EJBA6NMz4GLZYPmm82ph
+l+1iajL8+U2fINJbqvTlj9Dv0VOzW+952fk9K5JiArDhWskKRLnO31YAESFfUUKaHe54l2u+2+cn
+MeuQyyNOGXu2zT0XicYRUsZBOCisXzLD6I9/LgyBcqWcpLBdRK1JdO/oih2/uznyWUp1pCvpi89r
+SmyUUdbfFd/FN0j8Qok4ZdKwoHNj3oi+vLaN8SHmUNHISOuUZyWcmfVzd7c5ydIDB9nQiHoxggOT
+MIIDjwIBATBwMFkxEzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hh
+bzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQQITfgAAPxhfXKY27C7W
+sQAAAAA/GDAJBgUrDgMCGgUAoIIB+DAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3
+DQEJBTEPFw0yMDA2MTIwMDMyMTdaMCMGCSqGSIb3DQEJBDEWBBQZAmHx8MhYsBbSqE6R4QOmsjSg
+zzB/BgkrBgEEAYI3EAQxcjBwMFkxEzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZ
+FghsYW5nY2hhbzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQQITfgAA
+PxhfXKY27C7WsQAAAAA/GDCBgQYLKoZIhvcNAQkQAgsxcqBwMFkxEzARBgoJkiaJk/IsZAEZFgNj
+b20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hhbzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNV
+BAMTCUlOU1BVUi1DQQITfgAAPxhfXKY27C7WsQAAAAA/GDCBkwYJKoZIhvcNAQkPMYGFMIGCMAsG
+CWCGSAFlAwQBKjALBglghkgBZQMEARYwCgYIKoZIhvcNAwcwCwYJYIZIAWUDBAECMA4GCCqGSIb3
+DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMCGjALBglghkgBZQMEAgMwCwYJYIZIAWUDBAIC
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQAIEZ8biq/LYsVFPl/ze6nydfSPsaCr6H8k
+jgD2ds+Ji7A5vga6fVl/kUBHC5gF2GS3LLmDmaAy0SJrdsrd74WqTXthPO5nbj/UyBRZPX1Rhj26
+IQF9Eu0Ax/axqLLFOC+2pSv5CLw89hAd97PIh2pBDEKStYFV7SCZT++p4EFUX7kQkErAYYfsp4Ku
+/OFYXKMAkz0x/8BGZJBniMoDtCf29BKA+TLaIcH4+WH4evvsHtJvmgxwQbxIbu88PSSJJkZbG8cM
+BLAxWQN19ncZ4402aZZh7NYiaVjNZ3v04adBDSY14XyTOwpOGsxOEqbi0mo7dwwdiuXf/igXWjB1
+TTVHAAAAAAAA
+
+------=_NextPart_000_0008_01D64093.FB3B5C70--
