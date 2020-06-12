@@ -2,222 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A991F7938
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 16:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8ED21F79B4
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 16:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726448AbgFLOAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 10:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51368 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726085AbgFLN77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 09:59:59 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB354C03E96F;
-        Fri, 12 Jun 2020 06:59:58 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id n9so3792765plk.1;
-        Fri, 12 Jun 2020 06:59:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :content-transfer-encoding:user-agent;
-        bh=Hh9i/SAu/XN5uCB1Th1rOCzGyl5/Jk4Mbw10dKZ3R6E=;
-        b=OoePVJ97S0dChRChmKkt7AZdBKjpcR90mt2XoX1NpjFvAFZux+NDX5hD7FdJ57lZ4r
-         oep2MH3ngXJ9XRFND/XFjFIpJv5zOKnyFcsfQzFarkY4V8GpPuI4aUQOUYhHAmxlCX7n
-         rbFBOlG0kJVFmEcT448PMtKFubQR9kl3W7ifFEU5NHHFMmym66azLUtF0ptySLy1Ca9F
-         QStlSBMJw/7ri0fsgxObQxO0ty2TTk4AFMHi+6EEeIs1Itpub4FeRk60Ao4OJN9AtEgC
-         EN9XHKhgeQLPodp+SfyJEBEwpr0hC+kNcRlohjzjdct9MMRypoXjaHLYrWrdb76WVVQ5
-         36qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:content-transfer-encoding:user-agent;
-        bh=Hh9i/SAu/XN5uCB1Th1rOCzGyl5/Jk4Mbw10dKZ3R6E=;
-        b=C/riOQwFBwypvPgbdqav5UlZMyfjh1tYaX/zq+2V+ChJ2evCbGkSUga2K0Yq9cfCk+
-         Zdt8mkcWXQG3ud8EkeBdEDN8UxpqK6FWXvbihPF292lUQA2kBd+WqOlzBzyZtnv6Ovxl
-         oSP+WcMHo13LmWKzpaRZ6Alnx1amHCqAwFxTk5FcuQ7sR8v4hOswooTatrq5KSmY/+tT
-         f2OZ3SaueL3WDfVS7SFz6hb8QAhTYVMjISwf4n2bljRqDMkXv2Rn61JrYkPHHnCOPV+h
-         YG+I0HN0SHGVYaPor73ERcx7t5AO/aORVuPt8GvGHoYI9b4pjB88Ipx+3pitC52mdqC1
-         rMDQ==
-X-Gm-Message-State: AOAM531wEpSEEzcabmj959bleAyvIkRI/d/NVwIUmmp6pSmg4UL0zMzj
-        puemG6jo+ULbYoTPwTviCQE=
-X-Google-Smtp-Source: ABdhPJwfDq9KD/nK8GaFnN8mgVzBT+KGWvP120y7TDStKqBKe0aV2wyZB9B++KCTdz45Pn0BLffHBg==
-X-Received: by 2002:a17:90a:a2d:: with SMTP id o42mr13282098pjo.101.1591970398192;
-        Fri, 12 Jun 2020 06:59:58 -0700 (PDT)
-Received: from VM_111_229_centos ([203.205.141.39])
-        by smtp.gmail.com with ESMTPSA id j13sm6317970pfe.48.2020.06.12.06.59.55
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 12 Jun 2020 06:59:57 -0700 (PDT)
-Date:   Fri, 12 Jun 2020 21:59:49 +0800
-From:   YangYuxi <yx.atom1@gmail.com>
-To:     wensong@linux-vs.org, horms@verge.net.au, ja@ssi.bg,
-        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        linux-kernel@vger.kernel.org, yx.atom1@gmail.com
-Subject: [PATCH] ipvs: avoid drop first packet to reuse conntrack
-Message-ID: <20200612135949.GA30179@VM_111_229_centos>
+        id S1726335AbgFLOVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 10:21:12 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:36255 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726307AbgFLOVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 10:21:12 -0400
+Received: from [192.168.1.6] (unknown [101.93.38.162])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 8CC9141627;
+        Fri, 12 Jun 2020 22:19:41 +0800 (CST)
+Subject: Re: [PATCH net 1/2] flow_offload: return zero for FLOW_BLOCK_UNBIND
+ type flow_indr_dev_setup_offload
+From:   wenxu <wenxu@ucloud.cn>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, pablo@netfilter.org, vladbu@mellanox.com
+References: <1591956510-15051-1-git-send-email-wenxu@ucloud.cn>
+Message-ID: <8e032ef9-c3cb-4a30-5d04-f66b5699d3ce@ucloud.cn>
+Date:   Fri, 12 Jun 2020 22:18:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <1591956510-15051-1-git-send-email-wenxu@ucloud.cn>
+Content-Type: text/plain; charset=gbk; format=flowed
 Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.5.21 (2010-09-15)
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSUtJS0tLSU1LSE5IS0JZV1koWU
+        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkdIjULOBw6SD0THUMRDjUeAhcpDTocVlZVSk5JTShJWVdZCQ
+        4XHghZQVk1NCk2OjckKS43PllXWRYaDxIVHRRZQVk0MFkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OS46HQw5PTg2HTATNBlLKTQN
+        AhkwFExVSlVKTkJKQkxKTkNJSExOVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLSlVC
+        SFVIQ1VKTUlZV1kIAVlBQkhPSDcG
+X-HM-Tid: 0a72a8e68f0a2086kuqy8cc9141627
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since 'commit f719e3754ee2 ("ipvs: drop first packet to
-redirect conntrack")', when a new TCP connection meet
-the conditions that need reschedule, the first syn packet
-is dropped, this cause one second latency for the new
-connection, more discussion about this problem can easy
-search from google, such as:
+Please drop this series.
 
-1)One second connection delay in masque
-https://marc.info/?t=151683118100004&r=1&w=2
+Thank you.
 
-2)IPVS low throughput #70747
-https://github.com/kubernetes/kubernetes/issues/70747
-
-3)Apache Bench can fill up ipvs service proxy in seconds #544
-https://github.com/cloudnativelabs/kube-router/issues/544
-
-4)Additional 1s latency in `host -> service IP -> pod`
-https://github.com/kubernetes/kubernetes/issues/90854
-
-The root cause is when the old session is expired, the
-conntrack related to the session is dropped by
-ip_vs_conn_drop_conntrack. The code is as follows:
-```
-static void ip_vs_conn_expire(struct timer_list *t)
-{
-...
-
-                if ((cp->flags & IP_VS_CONN_F_NFCT) &&
-                    !(cp->flags & IP_VS_CONN_F_ONE_PACKET)) {
-                        /* Do not access conntracks during subsys cleanup
-                         * because nf_conntrack_find_get can not be used after
-                         * conntrack cleanup for the net.
-                         */
-                        smp_rmb();
-                        if (ipvs->enable)
-                                ip_vs_conn_drop_conntrack(cp);
-                }
-...
-}
-```
-As the code show, only if the condition  (cp->flags & IP_VS_CONN_F_NFCT)
-is true, ip_vs_conn_drop_conntrack will be called.
-So we optimize this by following steps:
-1) erase the IP_VS_CONN_F_NFCT flag (it is safely because no packets will
-   use the old session)
-2) call ip_vs_conn_expire_now to release the old session, then the related
-   conntrack will not be dropped
-3) then ipvs unnecessary to drop the first syn packet,
-   it just continue to pass the syn packet to the next process,
-   create a new ipvs session, and the new session will related to
-   the old conntrack(which is reopened by conntrack as a new one),
-   the next whole things is just as normal as that the old session
-   isn't used to exist.
-
-The above scenario has no problems except passive FTP and
-connmarks (state matching (-m state)). So, ipvs can give
-users the right to choose, when FTP or connmarks is not used,
-they can choose a high performance one by set net.ipv4.vs.conn_reuse_old_conntrack=1,
-this is necessary because most scenarios, such as kubernetes,
-do not have FTP and connmarks scenarios, but are very sensitive
-to TCP short link performance.
-
-This patch has been verified on our thousands of kubernets node servers on Tencent Inc.
-Signed-off-by: YangYuxi <yx.atom1@gmail.com>
----
- include/net/ip_vs.h             | 11 +++++++++++
- net/netfilter/ipvs/ip_vs_core.c | 10 ++++++++--
- net/netfilter/ipvs/ip_vs_ctl.c  |  2 ++
- 3 files changed, 21 insertions(+), 2 deletions(-)
-
-diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
-index 83be2d93b407..052fa87d2a44 100644
---- a/include/net/ip_vs.h
-+++ b/include/net/ip_vs.h
-@@ -928,6 +928,7 @@ struct netns_ipvs {
- 	int			sysctl_pmtu_disc;
- 	int			sysctl_backup_only;
- 	int			sysctl_conn_reuse_mode;
-+	int			sysctl_conn_reuse_old_conntrack;
- 	int			sysctl_schedule_icmp;
- 	int			sysctl_ignore_tunneled;
- 
-@@ -1049,6 +1050,11 @@ static inline int sysctl_conn_reuse_mode(struct netns_ipvs *ipvs)
- 	return ipvs->sysctl_conn_reuse_mode;
- }
- 
-+static inline int sysctl_conn_reuse_old_conntrack(struct netns_ipvs *ipvs)
-+{
-+	return ipvs->sysctl_conn_reuse_old_conntrack;
-+}
-+
- static inline int sysctl_schedule_icmp(struct netns_ipvs *ipvs)
- {
- 	return ipvs->sysctl_schedule_icmp;
-@@ -1136,6 +1142,11 @@ static inline int sysctl_conn_reuse_mode(struct netns_ipvs *ipvs)
- 	return 1;
- }
- 
-+static inline int sysctl_conn_reuse_old_conntrack(struct netns_ipvs *ipvs)
-+{
-+	return 1;
-+}
-+
- static inline int sysctl_schedule_icmp(struct netns_ipvs *ipvs)
- {
- 	return 0;
-diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-index aa6a603a2425..0b89c872ea46 100644
---- a/net/netfilter/ipvs/ip_vs_core.c
-+++ b/net/netfilter/ipvs/ip_vs_core.c
-@@ -2066,7 +2066,7 @@ static int ip_vs_in_icmp_v6(struct netns_ipvs *ipvs, struct sk_buff *skb,
- 
- 	conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
- 	if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) && cp) {
--		bool uses_ct = false, resched = false;
-+		bool uses_ct = false, resched = false, drop = false;
- 
- 		if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest &&
- 		    unlikely(!atomic_read(&cp->dest->weight))) {
-@@ -2086,10 +2086,16 @@ static int ip_vs_in_icmp_v6(struct netns_ipvs *ipvs, struct sk_buff *skb,
- 		}
- 
- 		if (resched) {
-+			if (uses_ct) {
-+				if (likely(sysctl_conn_reuse_old_conntrack(ipvs)))
-+					cp->flags &= ~IP_VS_CONN_F_NFCT;
-+				else
-+					drop = true;
-+			}
- 			if (!atomic_read(&cp->n_control))
- 				ip_vs_conn_expire_now(cp);
- 			__ip_vs_conn_put(cp);
--			if (uses_ct)
-+			if (drop)
- 				return NF_DROP;
- 			cp = NULL;
- 		}
-diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-index 412656c34f20..eeb87994c21f 100644
---- a/net/netfilter/ipvs/ip_vs_ctl.c
-+++ b/net/netfilter/ipvs/ip_vs_ctl.c
-@@ -4049,7 +4049,9 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
- 	tbl[idx++].data = &ipvs->sysctl_pmtu_disc;
- 	tbl[idx++].data = &ipvs->sysctl_backup_only;
- 	ipvs->sysctl_conn_reuse_mode = 1;
-+	ipvs->sysctl_conn_reuse_old_conntrack = 1;
- 	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
-+	tbl[idx++].data = &ipvs->sysctl_conn_reuse_old_conntrack;
- 	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
- 	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
- 
--- 
-1.8.3.1
-
+ÔÚ 2020/6/12 18:08, wenxu@ucloud.cn Ð´µÀ:
+> From: wenxu <wenxu@ucloud.cn>
+>
+> block->nooffloaddevcnt warning with following dmesg log:
+>
+> When a indr device add in offload success. The block->nooffloaddevcnt
+> always zero. But When all the representors go away. All the flow_block_cb
+> cleanup. Then remove the indr device, The __tcf_block_put call
+> flow_indr_dev_setup_offload with FLOW_BLOCK_UNBIND will always return
+> -EOPNOTSUPP And make the warning comes out.
+>
+> [  760.667058] #####################################################
+> [  760.668186] ## TEST test-ecmp-add-vxlan-encap-disable-sriov.sh ##
+> [  760.669179] #####################################################
+> [  761.780655] :test: Fedora 30 (Thirty)
+> [  761.783794] :test: Linux reg-r-vrt-018-180 5.7.0+
+> [  761.822890] :test: NIC ens1f0 FW 16.26.6000 PCI 0000:81:00.0 DEVICE 0x1019 ConnectX-5 Ex
+> [  761.860244] mlx5_core 0000:81:00.0 ens1f0: Link up
+> [  761.880693] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
+> [  762.059732] mlx5_core 0000:81:00.1 ens1f1: Link up
+> [  762.234341] :test: unbind vfs of ens1f0
+> [  762.257825] :test: Change ens1f0 eswitch (0000:81:00.0) mode to switchdev
+> [  762.291363] :test: unbind vfs of ens1f1
+> [  762.306914] :test: Change ens1f1 eswitch (0000:81:00.1) mode to switchdev
+> [  762.309237] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(LEGACY), nvfs(2), active vports(3)
+> [  763.282598] mlx5_core 0000:81:00.1: E-Switch: Supported tc offload range - chains: 4294967294, prios: 4294967295
+> [  763.362825] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+> [  763.444465] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
+> [  763.460088] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+> [  763.502586] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+> [  763.552429] ens1f1_0: renamed from eth0
+> [  763.569569] mlx5_core 0000:81:00.1: E-Switch: Enable: mode(OFFLOADS), nvfs(2), active vports(3)
+> [  763.629694] ens1f1_1: renamed from eth1
+> [  764.631552] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_0: link becomes ready
+> [  764.670841] :test: unbind vfs of ens1f0
+> [  764.681966] :test: unbind vfs of ens1f1
+> [  764.726762] mlx5_core 0000:81:00.0 ens1f0: Link up
+> [  764.766511] mlx5_core 0000:81:00.1 ens1f1: Link up
+> [  764.797325] :test: Add multipath vxlan encap rule and disable sriov
+> [  764.798544] :test: config multipath route
+> [  764.812732] mlx5_core 0000:81:00.0: lag map port 1:2 port 2:2
+> [  764.874556] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:2
+> [  765.603681] :test: OK
+> [  765.659048] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_1: link becomes ready
+> [  765.675085] :test: verify rule in hw
+> [  765.694237] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
+> [  765.711892] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1: link becomes ready
+> [  766.979230] :test: OK
+> [  768.125419] :test: OK
+> [  768.127519] :test: - disable sriov ens1f1
+> [  768.131160] pci 0000:81:02.2: Removing from iommu group 75
+> [  768.132646] pci 0000:81:02.3: Removing from iommu group 76
+> [  769.179749] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
+> [  769.455627] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:1
+> [  769.703990] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+> [  769.988637] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
+> [  769.990022] :test: - disable sriov ens1f0
+> [  769.994922] pci 0000:81:00.2: Removing from iommu group 73
+> [  769.997048] pci 0000:81:00.3: Removing from iommu group 74
+> [  771.035813] mlx5_core 0000:81:00.0: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
+> [  771.339091] ------------[ cut here ]------------
+> [  771.340812] WARNING: CPU: 6 PID: 3448 at net/sched/cls_api.c:749 tcf_block_offload_unbind.isra.0+0x5c/0x60
+> [  771.341728] Modules linked in: act_mirred act_tunnel_key cls_flower dummy vxlan ip6_udp_tunnel udp_tunnel sch_ingress nfsv3 nfs_acl nfs lockd grace fscache tun bridge stp llc sunrpc rdma_ucm rdma_cm iw_cm ib_cm mlx5_ib ib_uverbs ib_core mlx5_core intel_rapl_msr intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp mlxfw act_ct nf_flow_table kvm_intel nf_nat kvm nf_conntrack irqbypass crct10dif_pclmul igb crc32_pclmul nf_defrag_ipv6 libcrc32c nf_defrag_ipv4 crc32c_intel ghash_clmulni_intel ptp ipmi_ssif intel_cstate pps_c
+> ore ses intel_uncore mei_me iTCO_wdt joydev ipmi_si iTCO_vendor_support i2c_i801 enclosure mei ioatdma dca lpc_ich wmi ipmi_devintf pcspkr acpi_power_meter ipmi_msghandler acpi_pad ast i2c_algo_bit drm_vram_helper drm_kms_helper drm_ttm_helper ttm drm mpt3sas raid_class scsi_transport_sas
+> [  771.347818] CPU: 6 PID: 3448 Comm: test-ecmp-add-v Not tainted 5.7.0+ #1146
+> [  771.348727] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+> [  771.349646] RIP: 0010:tcf_block_offload_unbind.isra.0+0x5c/0x60
+> [  771.350553] Code: 4a fd ff ff 83 f8 a1 74 0e 5b 4c 89 e7 5d 41 5c 41 5d e9 07 93 89 ff 8b 83 a0 00 00 00 8d 50 ff 89 93 a0 00 00 00 85 c0 75 df <0f> 0b eb db 0f 1f 44 00 00 41 57 41 56 41 55 41 89 cd 41 54 49 89
+> [  771.352420] RSP: 0018:ffffb33144cd3b00 EFLAGS: 00010246
+> [  771.353353] RAX: 0000000000000000 RBX: ffff8b37cf4b2800 RCX: 0000000000000000
+> [  771.354294] RDX: 00000000ffffffff RSI: ffff8b3b9aad0000 RDI: ffffffff8d5c6e20
+> [  771.355245] RBP: ffff8b37eb546948 R08: ffffffffc0b7a348 R09: ffff8b3b9aad0000
+> [  771.356189] R10: 0000000000000001 R11: ffff8b3ba7a0a1c0 R12: ffff8b37cf4b2850
+> [  771.357123] R13: ffff8b3b9aad0000 R14: ffff8b37cf4b2820 R15: ffff8b37cf4b2820
+> [  771.358039] FS:  00007f8a19b6e740(0000) GS:ffff8b3befa00000(0000) knlGS:0000000000000000
+> [  771.358965] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  771.359885] CR2: 00007f3afb91c1a0 CR3: 000000045133c004 CR4: 00000000001606e0
+> [  771.360825] Call Trace:
+> [  771.361764]  __tcf_block_put+0x84/0x150
+> [  771.362712]  ingress_destroy+0x1b/0x20 [sch_ingress]
+> [  771.363658]  qdisc_destroy+0x3e/0xc0
+> [  771.364594]  dev_shutdown+0x7a/0xa5
+> [  771.365522]  rollback_registered_many+0x20d/0x530
+> [  771.366458]  ? netdev_upper_dev_unlink+0x15d/0x1c0
+> [  771.367387]  unregister_netdevice_many.part.0+0xf/0x70
+> [  771.368310]  vxlan_netdevice_event+0xa4/0x110 [vxlan]
+> [  771.369454]  notifier_call_chain+0x4c/0x70
+> [  771.370579]  rollback_registered_many+0x2f5/0x530
+> [  771.371719]  rollback_registered+0x56/0x90
+> [  771.372843]  unregister_netdevice_queue+0x73/0xb0
+> [  771.373982]  unregister_netdev+0x18/0x20
+> [  771.375168]  mlx5e_vport_rep_unload+0x56/0xc0 [mlx5_core]
+> [  771.376327]  esw_offloads_disable+0x81/0x90 [mlx5_core]
+> [  771.377512]  mlx5_eswitch_disable_locked.cold+0xcb/0x1af [mlx5_core]
+> [  771.378679]  mlx5_eswitch_disable+0x44/0x60 [mlx5_core]
+> [  771.379822]  mlx5_device_disable_sriov+0xad/0xb0 [mlx5_core]
+> [  771.380968]  mlx5_core_sriov_configure+0xc1/0xe0 [mlx5_core]
+> [  771.382087]  sriov_numvfs_store+0xfc/0x130
+> [  771.383195]  kernfs_fop_write+0xce/0x1b0
+> [  771.384302]  vfs_write+0xb6/0x1a0
+> [  771.385410]  ksys_write+0x5f/0xe0
+> [  771.386500]  do_syscall_64+0x5b/0x1d0
+> [  771.387569]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>
+> Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> ---
+>   net/core/flow_offload.c | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+> index 6614351..359bd0a 100644
+> --- a/net/core/flow_offload.c
+> +++ b/net/core/flow_offload.c
+> @@ -471,6 +471,9 @@ int flow_indr_dev_setup_offload(struct net_device *dev,
+>   	__flow_block_indr_binding(bo, dev, data, cleanup);
+>   	mutex_unlock(&flow_indr_block_lock);
+>   
+> +	if (bo->command == FLOW_BLOCK_UNBIND)
+> +		return 0;
+> +
+>   	return list_empty(&bo->cb_list) ? -EOPNOTSUPP : 0;
+>   }
+>   EXPORT_SYMBOL(flow_indr_dev_setup_offload);
