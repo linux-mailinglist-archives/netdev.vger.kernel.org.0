@@ -2,84 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D46031F73FF
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 08:43:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A2AA1F740E
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 08:46:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbgFLGnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 02:43:01 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:54615 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726396AbgFLGnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 02:43:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1591944179;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5UhtuP90l943Isqu6Ks89etrSpmI2RwrlhSkwDRnr7w=;
-        b=KDIb675cJ0bDbkf24x/IkjlXhwtru3ryuXqBwqUGXOsJv6CFy6s5bjZWoeiSxIG2nayw46
-        kiNwBxvNTjClgOHYlfeiZkDJyalVo67aIj28uWFPzT0PxHSJJXMQm1Dmhmqx/D29nLexzZ
-        Bf4vsuwYLbyaJMfJboKFz92+dmn2XTY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-503-MK4jfssWMfSNJ0xQZQHuzw-1; Fri, 12 Jun 2020 02:42:55 -0400
-X-MC-Unique: MK4jfssWMfSNJ0xQZQHuzw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6C1F6801504;
-        Fri, 12 Jun 2020 06:42:53 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 992705D9CA;
-        Fri, 12 Jun 2020 06:42:48 +0000 (UTC)
-Date:   Fri, 12 Jun 2020 08:42:44 +0200
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-To:     Gaurav Singh <gaurav1086@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        bpf@vger.kernel.org (open list:XDP (eXpress Data Path)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: Re: [PATCH] xdp_rxq_info_user: Replace malloc/memset w/calloc
-Message-ID: <20200612084244.4ab4f6c6@carbon>
-In-Reply-To: <20200612003640.16248-1-gaurav1086@gmail.com>
-References: <20200611150221.15665-1-gaurav1086@gmail.com>
-        <20200612003640.16248-1-gaurav1086@gmail.com>
-Organization: Red Hat Inc.
+        id S1726401AbgFLGqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 02:46:54 -0400
+Received: from nautica.notk.org ([91.121.71.147]:50528 "EHLO nautica.notk.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726095AbgFLGqu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jun 2020 02:46:50 -0400
+Received: by nautica.notk.org (Postfix, from userid 1001)
+        id BDA7BC009; Fri, 12 Jun 2020 08:46:47 +0200 (CEST)
+Date:   Fri, 12 Jun 2020 08:46:32 +0200
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     "wanghai (M)" <wanghai38@huawei.com>
+Cc:     ericvh@gmail.com, lucho@ionkov.net, davem@davemloft.net,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] 9p/trans_fd: Fix concurrency del of req_list in
+ p9_fd_cancelled/p9_read_work
+Message-ID: <20200612064632.GA19461@nautica>
+References: <20200611014855.60550-1-wanghai38@huawei.com>
+ <20200611145055.GA28945@nautica>
+ <7bed531c-0ea5-b5f8-eaf8-4feb9ccf1b31@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7bed531c-0ea5-b5f8-eaf8-4feb9ccf1b31@huawei.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Jun 2020 20:36:40 -0400
-Gaurav Singh <gaurav1086@gmail.com> wrote:
-
-> Replace malloc/memset with calloc
+wanghai (M) wrote on Fri, Jun 12, 2020:
+> You are right, I got a syzkaller bug.
 > 
-> Fixes: 0fca931a6f21 ("samples/bpf: program demonstrating access to xdp_rxq_info")
-> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+> "p9_read_work+0x7c3/0xd90" points to list_del(&m->rreq->req_list);
+> 
+> [   62.733598] kasan: CONFIG_KASAN_INLINE enabled
+> [   62.734484] kasan: GPF could be caused by NULL-ptr deref or user memory access
+> [   62.735670] general protection fault: 0000 [#1] SMP KASAN PTI
+> [   62.736577] CPU: 3 PID: 82 Comm: kworker/3:1 Not tainted 4.19.124+ #2
+> [   62.737582] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+> [   62.738988] Workqueue: events p9_read_work
+> [   62.739642] RIP: 0010:p9_read_work+0x7c3/0xd90
+> [   62.740348] Code: 48 c1 e9 03 80 3c 01 00 0f 85 cb 05 00 00 48 8d 7a 08 48 b9 00 00 00 00 00 fc ff df 49 8b 87 b8 00 00 00 48 89 fe 48 c1 ee 03 <80> 3c 0e 00 0f 85 89 05 00 00 48 89 c6 48 b9 00 00 00 00 00 fc ff
+> [   62.743236] RSP: 0018:ffff8883ece17ca0 EFLAGS: 00010a06
+> [   62.744059] RAX: dead000000000200 RBX: ffff8883d45666b0 RCX: dffffc0000000000
+> [   62.745173] RDX: dead000000000100 RSI: 1bd5a00000000021 RDI: dead000000000108
+> [   62.746279] RBP: ffff8883d4566590 R08: ffffed107a8acf31 R09: ffffed107a8acf31
+> [   62.747398] R10: 0000000000000001 R11: ffffed107a8acf30 R12: 1ffff1107d9c2f9b
+> [   62.748505] R13: ffff8883d45665d0 R14: ffff8883d4566608 R15: ffff8883e1f1c000
+> [   62.749615] FS:  0000000000000000(0000) GS:ffff8883ef180000(0000) knlGS:0000000000000000
+> [   62.750881] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   62.751784] CR2: 0000000000000000 CR3: 000000009c622003 CR4: 00000000007606e0
+> [   62.752898] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [   62.754011] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [   62.755126] PKRU: 55555554
+> [   62.755561] Call Trace:
+> [   62.755963]  ? p9_write_work+0xa00/0xa00
+> [   62.756592]  process_one_work+0xae4/0x1b20
+> [   62.757252]  ? apply_wqattrs_commit+0x3e0/0x3e0
+> [   62.757985]  worker_thread+0x8c/0xe80
+> [   62.758600]  ? __kthread_parkme+0xe9/0x190
+> [   62.759254]  ? process_one_work+0x1b20/0x1b20
+> [   62.759950]  kthread+0x341/0x410
+> [   62.760479]  ? kthread_create_worker_on_cpu+0xf0/0xf0
+> [   62.761296]  ret_from_fork+0x3a/0x50
+> [   62.761874] Modules linked in:
+> [   62.762378] Dumping ftrace buffer:
+> [   62.762942]    (ftrace buffer empty)
+> [   62.763547] ---[ end trace 69672816613947a3 ]---
 
-Above is the correct use of Fixes + Signed-off-by.
+This looks like:
+https://syzkaller.appspot.com/bug?id=5df4f85d764ee89863d0294b4e0c87ef2fd2c624
+I'm not sure how active this still is but please also add this
+Reported-by tag:
+Reported-by: syzbot+77a25acfa0382e06ab23@syzkaller.appspotmail.com
 
-Now you need to update/improve the description, to also
-mention/describe that this also solves the bug you found.
+(can keep both)
+
+
+> Yes，In this case,  all further 9p messages will not be read.
+> >p9_read_work probably should handle REQ_STATUS_FLSHD in a special case
+> >that just throws the message away without error as well.
+> 
+> Can it be solved like this?
+> 
+> --- a/net/9p/trans_fd.c
+> +++ b/net/9p/trans_fd.c
+> @@ -362,7 +362,7 @@ static void p9_read_work(struct work_struct *work)
+>                 if (m->rreq->status == REQ_STATUS_SENT) {
+>                         list_del(&m->rreq->req_list);
+>                         p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);
+> -               } else {
+> +               } else if (m->rreq->status != REQ_STATUS_FLSHD) {
+>                         spin_unlock(&m->client->lock);
+>                         p9_debug(P9_DEBUG_ERROR,
+>                                  "Request tag %d errored out while
+> we were reading the reply\n",
+
+Yes that is probably correct.
+Please add a comment above saying we ignore replies associated with a
+cancelled request.
+
+> This patch "afd8d65411" just moved list_del into cancelled ops. It
+> is not actually the initial patch that caused the bug
+> 
+> In 60ff779c4abb ("9p: client: remove unused code and any reference
+> to "cancelled" function")
+> 
+> It moved spin_lock under "if (oldreq->status == REQ_STATUS_FLSH)" .
+> 
+> After "if (oldreq->status == REQ_STATUS_FLSH)", oldreq may be
+> changed by other thread.
+
+Ok, thank you for explaining; I agree now.
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Dominique
