@@ -2,144 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C51D1F7123
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 02:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF7071F7133
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 02:09:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbgFLAEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Jun 2020 20:04:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51412 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726285AbgFLAEt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Jun 2020 20:04:49 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 02D9820853;
-        Fri, 12 Jun 2020 00:04:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591920288;
-        bh=zhN9pvX/GHt+eRCGsoMJjH8TB6EC2vueYb5IyBukovA=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=Qjjwr5sPrc8GLc9zLoGnYgc6skDa0XU8ozi6PngAVEpeGbyRGnMAiTg7oBGNgiOte
-         K9gD7yabEJthl4+ZwnysDmCXySTCWAgSWdtUdlBTOKKo8BUqbFf6N70E+BeOqOYUIS
-         GnCEl9iwS10laOWamEefVDpr4Z0ySvF2b2A5ha04=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id D2C6F35228C7; Thu, 11 Jun 2020 17:04:47 -0700 (PDT)
-Date:   Thu, 11 Jun 2020 17:04:47 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH RFC v3 bpf-next 1/4] bpf: Introduce sleepable BPF programs
-Message-ID: <20200612000447.GF4455@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200611222340.24081-1-alexei.starovoitov@gmail.com>
- <20200611222340.24081-2-alexei.starovoitov@gmail.com>
- <CAADnVQ+Ed86oOZPA1rOn_COKPpH1917Q6QUtETkciC8L8+u22A@mail.gmail.com>
+        id S1726405AbgFLAJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Jun 2020 20:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726285AbgFLAJR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Jun 2020 20:09:17 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C0C0C08C5C1;
+        Thu, 11 Jun 2020 17:09:16 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id y123so4376330vsb.6;
+        Thu, 11 Jun 2020 17:09:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dQ0wVuVD5mbnL9oat3E9xbZZtGvABVpYY6zoc/gC/as=;
+        b=SM9Ay2c/2xgFdaM32eJi+cNPWo3yB3m6cBPUuiHhkD3ji1sb4saRSL6ZbZzg4xzfzC
+         Ego6OC6WRzAMugcreC7TNtKgVF2EXQj5tjsLBlWwGNxQd3g+pQo1WSDsHq8gLQPslSb3
+         qYCUJmIec6mluqiRWzPf7jmgb+UcRBbbgiD+kkwOSmXamFlGeqv4rRicZwBjhtddJv8N
+         hxYqaMTbKHEVg/CCboYR7XW4a4Mnh8K11q8r45irojfEgdFCz0TStwMS5vbQsV1yQuJY
+         XpiGeICTU6PeKdq0oLyX0cd2FXsHe8XhKZDRY8wtP+TxgbhYLu4/yAGowrLOVRya4fhn
+         VDdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dQ0wVuVD5mbnL9oat3E9xbZZtGvABVpYY6zoc/gC/as=;
+        b=KxVcX1WSjbFHFxzJsNjm66+1Nd8fZIjUBOxWAqCjBfSZtvAr2lYizKv4e8yHS8Pn2B
+         CBfj8hpvuoQAnr64xhYDZYFPiiPjWczM+DXEq4iRYFxTMxWUFyulST957AqmE3Vu7O/o
+         QJ6J14ZTaDCLHmJFGFL+zYxuxlFN2ucjvQgk/UisurfWDFETR9WHIu/BZxin5adIqLdJ
+         ECbusvOyIaJl2Iwr0R5jcZLbWMIAf9C3STo7J0AN9edJGCNnUk6IwVjX85AbOU133g4l
+         IYRRp2et5mQ9mbxbUZanVsTDbukPslQMqHZdHUldjXomyAFV4awQLe1DadD1AQN2NFb9
+         3r9g==
+X-Gm-Message-State: AOAM5338trVPdixgOYMt+U9XtV2SoiQxdJBkqn04IAv/+1Pji2z1D+sg
+        WRDH9EU/fscAkwkgyrU39rEx9PZRJcUGybdCBU0Yn2zJ
+X-Google-Smtp-Source: ABdhPJxKR4zwGXMlhODAP+l4ncod5fB9+ttu3+isDcOuBHeikejSU3l6mGXzKvhEiYWPJ02PLPMfcY/lN2W1EhnbQIk=
+X-Received: by 2002:a67:f918:: with SMTP id t24mr8872355vsq.18.1591920554784;
+ Thu, 11 Jun 2020 17:09:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQ+Ed86oOZPA1rOn_COKPpH1917Q6QUtETkciC8L8+u22A@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200609104604.1594-7-stanimir.varbanov@linaro.org>
+ <20200609111414.GC780233@kroah.com> <dc85bf9e-e3a6-15a1-afaa-0add3e878573@linaro.org>
+ <20200610133717.GB1906670@kroah.com> <31e1aa72b41f9ff19094476033511442bb6ccda0.camel@perches.com>
+ <2fab7f999a6b5e5354b23d06aea31c5018b9ce18.camel@perches.com>
+ <20200611062648.GA2529349@kroah.com> <bc92ee5948c3e71b8f1de1930336bbe162d00b34.camel@perches.com>
+ <20200611105217.73xwkd2yczqotkyo@holly.lan> <ed7dd5b4-aace-7558-d012-fb16ce8c92d6@linaro.org>
+ <20200611121817.narzkqf5x7cvl6hp@holly.lan> <CAJfuBxzE=A0vzsjNai_jU_16R_P0haYA-FHnjZcaHOR_3fy__A@mail.gmail.com>
+In-Reply-To: <CAJfuBxzE=A0vzsjNai_jU_16R_P0haYA-FHnjZcaHOR_3fy__A@mail.gmail.com>
+From:   jim.cromie@gmail.com
+Date:   Thu, 11 Jun 2020 18:08:48 -0600
+Message-ID: <CAJfuBxyUfzM-Jmf_39YJHgfy0jLXdRjhdsNLuUacZbJA2unjcg@mail.gmail.com>
+Subject: Re: [PATCH v3 6/7] venus: Make debug infrastructure more flexible
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+Cc:     Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Joe Perches <joe@perches.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
+        Jason Baron <jbaron@akamai.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 11, 2020 at 03:29:09PM -0700, Alexei Starovoitov wrote:
-> On Thu, Jun 11, 2020 at 3:23 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> >  /* dummy _ops. The verifier will operate on target program's ops. */
-> >  const struct bpf_verifier_ops bpf_extension_verifier_ops = {
-> > @@ -205,14 +206,12 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
-> >             tprogs[BPF_TRAMP_MODIFY_RETURN].nr_progs)
-> >                 flags = BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
-> >
-> > -       /* Though the second half of trampoline page is unused a task could be
-> > -        * preempted in the middle of the first half of trampoline and two
-> > -        * updates to trampoline would change the code from underneath the
-> > -        * preempted task. Hence wait for tasks to voluntarily schedule or go
-> > -        * to userspace.
-> > +       /* the same trampoline can hold both sleepable and non-sleepable progs.
-> > +        * synchronize_rcu_tasks_trace() is needed to make sure all sleepable
-> > +        * programs finish executing. It also ensures that the rest of
-> > +        * generated tramopline assembly finishes before updating trampoline.
-> >          */
-> > -
-> > -       synchronize_rcu_tasks();
-> > +       synchronize_rcu_tasks_trace();
-> 
-> Hi Paul,
-> 
-> I've been looking at rcu_trace implementation and I think above change
-> is correct.
-> Could you please double check my understanding?
+calling out some thinkos
 
-From an RCU Tasks Trace perspective, it looks good to me!
+On Thu, Jun 11, 2020 at 3:19 PM <jim.cromie@gmail.com> wrote:
+>
+> heres what I have in mind.  whats described here is working.
+> I'll send it out soon
+>
+> commit 20298ec88cc2ed64269c8be7b287a24e60a5347e
+> Author: Jim Cromie <jim.cromie@gmail.com>
+> Date:   Wed Jun 10 12:55:08 2020 -0600
+>
+>     dyndbg: WIP towards module->debugflags based callsite controls
+>
+>     There are *lots* of ad-hoc debug printing solutions in kernel,
+>     this is a 1st attempt at providing a common mechanism for many of them.
+>
+>     Basically, there are 2 styles of debug printing:
+>     - levels, with increasing verbosity, 1-10 forex
+>     - bits/flags, independently controlling separate groups of dprints
+>
+>     This patch does bits/flags (with no distinction made yet between 2)
+>
+>     API:
+>
+>     - change pr_debug(...)  -->  pr_debug_typed(type_id=0, ...)
 
-You have rcu_read_lock_trace() and rcu_read_unlock_trace() protecting
-the readers and synchronize_rcu_trace() waiting for them.
+pr_debug, pr_debug_n now in printk.h
 
-One question given my lack of understanding of BPF:  Are there still
-tramoplines for non-sleepable BPF programs?  If so, they might still
-need to use synchronize_rcu_tasks() or some such.
+_?_?dynamic_.+_cl  adaptations in dynamic_debug.h
 
-The general principle is "never mix one type of RCU reader with another
-type of RCU updater".
+>     - all existing uses have type_id=0
+>     - developer creates exclusive types of log messages with type_id>0
+>       1, 2, 3 are disjoint groups, for example: hi, mid, low
+>
+>     - !!type_id is just an additional callsite selection criterion
+>
+>       Qfoo() { echo module foo $* >/proc/dynamic_debug/control }
+>       Qfoo +p               # all groups, including default 0
+>       Qfoo mflags 1 +p      # only group 1
+>       Qfoo mflags 12 +p     # TBD[1]: groups 1 or 2
+>       Qfoo mflags 0 +p      # ignored atm TBD[2]
+>       Qfoo mflags af +p     # TBD[3]: groups a or f (10 or 15)
+>
+>     so patch does:
+>
+>     - add u32 debugflags to struct module. Each bit is a separate print-class.
 
-But in this case, one approach is to use synchronize_rcu_mult():
+this is feeling wrong now.
+setting these bits would have to trigger an update via ddebug_exec_query
+kinda like setting a bit would trigger
+       echo module $foo mflags $bitpos +p > control
 
-	synchronize_rcu_mult(call_rcu_tasks, call_rcu_tasks_trace);
+its possible, but not 1st, or 2nd perhaps.
+In general Im quite leery of rigging up some callback to do it.
 
-That would wait for both types of readers, and do so concurrently.
-And if there is also a need to wait on rcu_read_lock() and friends,
-you could do this:
+its prudent to effect all debug changes via >control
 
-	synchronize_rcu_mult(call_rcu, call_rcu_tasks, call_rcu_tasks_trace);
+>     - in ddebug_change()
+>       filter on !! module->debugflags,
+>       IFF query->module is given, and matches dt->mod_name
+>       and query->mflags is given, and bitmatches module->debugflags
 
-> Also see benchmarking numbers in the cover letter :)
+wrong, ddebug_change cannot respond to changes of debugflags,
+most it could do is consult it on queries
 
-Now -that- is what I am talking about!!!  Very nice!  ;-)
 
-							Thanx, Paul
+>     - in parse_query()
+>       accept new query term: mflags $arg
+>       populate query->mflags
+>       arg-type needs some attention, but basic plumbing is there
+>
+>     WIP: not included:
+>
+>     - pr_debug_typed( bitpos=0, ....)'
 
-> >         err = arch_prepare_bpf_trampoline(new_image, new_image + PAGE_SIZE / 2,
-> >                                           &tr->func.model, flags, tprogs,
-> > @@ -344,7 +343,14 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
-> >         if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
-> >                 goto out;
-> >         bpf_image_ksym_del(&tr->ksym);
-> > -       /* wait for tasks to get out of trampoline before freeing it */
-> > +       /* This code will be executed when all bpf progs (both sleepable and
-> > +        * non-sleepable) went through
-> > +        * bpf_prog_put()->call_rcu[_tasks_trace]()->bpf_prog_free_deferred().
-> > +        * Hence no need for another synchronize_rcu_tasks_trace() here,
-> > +        * but synchronize_rcu_tasks() is still needed, since trampoline
-> > +        * may not have had any sleepable programs and we need to wait
-> > +        * for tasks to get out of trampoline code before freeing it.
-> > +        */
-> >         synchronize_rcu_tasks();
-> >         bpf_jit_free_exec(tr->image);
-> >         hlist_del(&tr->hlist);
-> > @@ -394,6 +400,21 @@ void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start)
-> >         rcu_read_unlock();
-> >  }
-> >
-> > +/* when rcu_read_lock_trace is held it means that some sleepable bpf program is
-> > + * running. Those programs can use bpf arrays and preallocated hash maps. These
-> > + * map types are waiting on programs to complete via
-> > + * synchronize_rcu_tasks_trace();
-> > + */
-> > +void notrace __bpf_prog_enter_sleepable(void)
-> > +{
-> > +       rcu_read_lock_trace();
-> > +}
-> > +
-> > +void notrace __bpf_prog_exit_sleepable(void)
-> > +{
-> > +       rcu_read_unlock_trace();
-> > +}
-> > +
+now done, as pr_debug_n, pr_debug in printk.h
+
+Ive adapted the macros with a "_cl(cl, " insertion,
+
+also added trailing prcls to control output
+
+>
+>     - no way to exersize new code in ddebug_change
+>       need pr_debug_typed() to make a (not-null) typed callsite.
+>       also no way to set module->debugflags
+
+close enough to see the thinkos
