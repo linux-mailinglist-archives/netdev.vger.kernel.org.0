@@ -2,115 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5DB61F7C81
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 19:33:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEC251F7CA3
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 19:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726329AbgFLRdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 13:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726085AbgFLRdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 13:33:16 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E21BC03E96F
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 10:33:15 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id l12so10841782ejn.10
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 10:33:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=riq8oZ0YmVJgRL3JUnUAQs/ESUHxcGfiGOYYzkUX5O8=;
-        b=AYxlnsBvg3ciNGR1E/ZV3+KKfCnlMH/SzgcuP04PaGpjjC6k52kZtVZkh4m/ITJ+Zf
-         Rm8zrZcN01Yzw92PPCjDeufQhBsWDUG+qngwqFdb+FooHy2xtPkOFHFmeGqlPuN9izF5
-         5IKB2yEOjJM1kQrVRATM4tUuUgronSgbACTU26MbD4xozOPZKvbY08dkkUDMJ/DqdufL
-         5j0ZL2vBpCUGmN3BcnK1nTqlSJJxFc+jClRVuqYZMjJw3Z4yA7jwPDDgXMTE19fIYlFu
-         jwo9Lyc0ki8dV7R54SNKnlVUXdFhwrnXc7lg1O6IiaRpTtDyDuL+lMqK5gTocKmr5fZK
-         x1TA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=riq8oZ0YmVJgRL3JUnUAQs/ESUHxcGfiGOYYzkUX5O8=;
-        b=MX4EKm72h94gcaXJk22mY5J791gT6yUlufUrd9NxCxcTYPEvQo4nttLgE4Bjxz4msd
-         KdiAWSy+FA61xR9qLvHWLi9g+kXLADlvjhhlrWbfNWTGpI2+E3M52vg9H1AtPRYq2yT0
-         gHMgd/XG8UZ3YxN6kNRQEBhN/JGpVg0RVnlWlgvOQTfe21X6B4wLH8I53L9MUNZOHNO8
-         USRrsY6hHwXBFcH8dfJ/jRvWPNLVP3cJHP6rOHYw+VixQBGhMV8nPqVQTNHjPobCkiTd
-         KIxzVTMCc54PlDMQ2y0JENoQ9zoY+OHQxhazxO8qZJB67/QsyKWQuIVDbG5XqZJurgU+
-         +VGA==
-X-Gm-Message-State: AOAM5337ddZj0+xYPuLpAiHX+tRUjAlTfkMQsOOTSKu30nks15VjfyXd
-        79okQFa5/b80qEIeeqLsENC9Rw==
-X-Google-Smtp-Source: ABdhPJwlDJSLLm1eei1ZYYEczfbr65LnrIffTlsF8XlpG70TYl2jz2JOc++y8M2MsKVxGcGc4UAqUA==
-X-Received: by 2002:a17:906:5283:: with SMTP id c3mr13395606ejm.22.1591983194136;
-        Fri, 12 Jun 2020 10:33:14 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([79.132.248.22])
-        by smtp.gmail.com with ESMTPSA id us3sm3962154ejb.31.2020.06.12.10.33.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Jun 2020 10:33:13 -0700 (PDT)
-Subject: Re: [PATCH] mptcp: unify MPTCP_PM_MAX_ADDR and MPTCP_PM_ADDR_MAX
-To:     Geliang Tang <geliangtang@gmail.com>
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        id S1726392AbgFLRt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 13:49:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38616 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726367AbgFLRtz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Jun 2020 13:49:55 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7E46D20835;
+        Fri, 12 Jun 2020 17:49:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1591984195;
+        bh=J0DPukvkbx9lZmoUXIpR5Hr1tA3Fg6w8OyFfhndfJdg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ycGb4OgHXuBinxtKbBaVran6kE/iPBBGzgynhheGbRsY6QIsEiwJojYxeEGQswOR0
+         obF/zqOAsHYdcBZgVKUmtl6EQkO9WgdMJe1sOkTI6Qv7HJ2ot1FgPOOPp6JE6l4R38
+         3E6fPh2ncSMexCuYCljeTOleyf01XlgdhZA29T5w=
+Date:   Fri, 12 Jun 2020 10:49:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Miao-chen Chou <mcchou@chromium.org>
+Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Alain Michaud <alainm@chromium.org>,
+        Michael Sun <michaelfsun@google.com>,
+        Yoni Shavit <yshavit@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org
-References: <463f48a4f92aa403453d30a801259c68fda15387.1591939496.git.geliangtang@gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <2638593d-82bd-73be-8ff1-3a4a7d4d5968@tessares.net>
-Date:   Fri, 12 Jun 2020 19:33:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 4/7] Bluetooth: Add handler of
+ MGMT_OP_REMOVE_ADV_MONITOR
+Message-ID: <20200612104952.0955d965@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200611231459.v3.4.Ib4effd5813fb2f8585e2c7394735050c16a765eb@changeid>
+References: <20200611231459.v3.1.I636f906bf8122855dfd2ba636352bbdcb50c35ed@changeid>
+        <20200611231459.v3.4.Ib4effd5813fb2f8585e2c7394735050c16a765eb@changeid>
 MIME-Version: 1.0
-In-Reply-To: <463f48a4f92aa403453d30a801259c68fda15387.1591939496.git.geliangtang@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geliang,
+On Thu, 11 Jun 2020 23:15:26 -0700 Miao-chen Chou wrote:
+> This adds the request handler of MGMT_OP_REMOVE_ADV_MONITOR command.
+> Note that the controller-based monitoring is not yet in place. This
+> removes the internal monitor(s) without sending HCI traffic, so the
+> request returns immediately.
+> 
+> The following test was performed.
+> - Issue btmgmt advmon-remove with valid and invalid handles.
+> 
+> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
 
-On 12/06/2020 07:27, Geliang Tang wrote:
-> Unify these two duplicate macros into 8.
+Still doesn't build cleanly with W=1 C=1
 
-Thank you for this new patch!
-
-(...)
-
-> diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-> index 809687d3f410..86d265500cf6 100644
-> --- a/net/mptcp/protocol.h
-> +++ b/net/mptcp/protocol.h
-> @@ -135,7 +135,7 @@ static inline __be32 mptcp_option(u8 subopt, u8 len, u8 nib, u8 field)
->   		     ((nib & 0xF) << 8) | field);
->   }
->   
-> -#define MPTCP_PM_MAX_ADDR	4
-> +#define MPTCP_PM_ADDR_MAX	8
-
-I think it would be better to drop MPTCP_PM_MAX_ADDR and keep 
-MPTCP_PM_ADDR_MAX in pm_netlink.c where it is used. Each PM can decide 
-what's the maximum number of addresses it can support.
-
-MPTCP_PM_MAX_ADDR seems to be a left over from a previous implementation 
-of a PM that has not been upstreamed but replaced by the Netlink PM later.
-
-Also, please always add "net" or "net-next" prefix in the subject of 
-your email to help -net maintainers. Do not hesitate to look at the 
-netdev FAQ for more details.
-
-Here this patch looks like a fix so you should have [PATCH net] and a 
-"Fixes" tag. I guess for this patch you can use:
-
-   Fixes: 1b1c7a0ef7f3 ("mptcp: Add path manager interface")
-
-That's where MPTCP_PM_MAX_ADDR has been introduced. It was already not 
-used and never used later.
-
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+net/bluetooth/mgmt.c:4009:46: warning: incorrect type in argument 2 (different base types)
+net/bluetooth/mgmt.c:4009:46:    expected unsigned short [usertype] handle
+net/bluetooth/mgmt.c:4009:46:    got restricted __le16 [usertype] monitor_handle
+net/bluetooth/mgmt.c:4018:29: warning: cast from restricted __le16
