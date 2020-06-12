@@ -2,135 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FD891F74B6
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 09:38:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E2B51F74D9
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 09:54:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726506AbgFLHiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 03:38:05 -0400
-Received: from mx2.suse.de ([195.135.220.15]:55260 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726292AbgFLHiE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Jun 2020 03:38:04 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 02A87AC9F;
-        Fri, 12 Jun 2020 07:38:05 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     johannes.berg@intel.com
-Cc:     linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
-        =?UTF-8?q?Dieter=20N=C3=BCtzel?= <Dieter@nuetzel-hh.de>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] iwl: fix crash in iwl_dbg_tlv_alloc_trigger
-Date:   Fri, 12 Jun 2020 09:38:00 +0200
-Message-Id: <20200612073800.27742-1-jslaby@suse.cz>
-X-Mailer: git-send-email 2.27.0
+        id S1726401AbgFLHyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 03:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726292AbgFLHyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 03:54:00 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18DF2C03E96F;
+        Fri, 12 Jun 2020 00:54:00 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id l63so1515725pge.12;
+        Fri, 12 Jun 2020 00:54:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HSoq4fBhS29jXlxAf4nZSM1jPyTY7Z30awoY3tBw3PQ=;
+        b=nmTT6wctBTX45TLNOJwZ4VyRRvGUnMU5TSdZOv5y0Ho0eDYJv86f+kQvPQYDQWew6Z
+         4EE/Q408+iH+qIa+5q3Y99gTw5dUaV5DFaCjpunDVWbofWYPQmtyZyFIwjVcgtb9rMML
+         wWKBDx7MLOB4tbgCC8xDdEqMBJgnEA1nx4LLxv5beK8O5h6IG+66HOOM3ObveGvNuJMA
+         qEQWKNMXQy6bDBjbEyHArvMf8gb690IuiTwp0sfWMwbPgayFPLTEpZYTbA2hjzBmyoxv
+         mNTSV5s0paitouq/FGuMkuv96oaSFi9M9CaAhNsLfYZORK8OZQ7blm6nd+BB4YQtcWx3
+         FOcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HSoq4fBhS29jXlxAf4nZSM1jPyTY7Z30awoY3tBw3PQ=;
+        b=TuFV5XvIqDGAJQnxcqm/UvYUQgMDh+ncS1lAY1ki2oVvTyI0uM4S9EKJxAfCeNk1Aq
+         pavFGIw9WffbNdxAu7i4kWvOgzSMA23hNlYwpIBss0DcXfGqeHezQAY6k3P8KwCPFdlD
+         o0rQ5Zg/FAGVEjq1pYFDRF106xaitWnCx6VXjfX0sW9OS5tR0SRu9AwAX08EqFD04c5N
+         LZEh1RWKQDOBSxm2W+Y5AXj3vTpi30C5No5e9M6FrgfLNpc2ir36VWlNrP22u8WhtNA2
+         NXurK8IsT4GJcgfIwtPkVLhKaV6SJMgmX1rsIjjWxTwONf+GCDvy0eOPbDee0SVb8kLr
+         0d7w==
+X-Gm-Message-State: AOAM530xW1VmWwCYs7fyDQZejynCpkvzFTsMJBkbaqr4o5ZsOJ6lK1XD
+        sEV3VLepwui6oguLP2RugoVliORUgmL9Xw==
+X-Google-Smtp-Source: ABdhPJw14zTabvGzNU3WA59zgPm0zbxC+yUlYaSaCQt2fnFHW+xwviKmJdi0iiYY5IXr9qbkgC4TLg==
+X-Received: by 2002:a62:3183:: with SMTP id x125mr1553356pfx.3.1591948439461;
+        Fri, 12 Jun 2020 00:53:59 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id w18sm5350811pfq.121.2020.06.12.00.53.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jun 2020 00:53:58 -0700 (PDT)
+Date:   Fri, 12 Jun 2020 15:53:48 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Wang Hai <wanghai38@huawei.com>
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] mld: fix memory leak in ipv6_mc_destroy_dev()
+Message-ID: <20200612075348.GS102436@dhcp-12-153.nay.redhat.com>
+References: <20200611075750.18545-1-wanghai38@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200611075750.18545-1-wanghai38@huawei.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tlv passed to iwl_dbg_tlv_alloc_trigger comes from a loaded firmware
-file. The memory can be marked as read-only as firmware could be
-shared. In anyway, writing to this memory is not expected. So,
-iwl_dbg_tlv_alloc_trigger can crash now:
+On Thu, Jun 11, 2020 at 03:57:50PM +0800, Wang Hai wrote:
+> Commit a84d01647989 ("mld: fix memory leak in mld_del_delrec()") fixed
+> the memory leak of MLD, but missing the ipv6_mc_destroy_dev() path, in
+> which mca_sources are leaked after ma_put().
+> 
+> Using ip6_mc_clear_src() to take care of the missing free.
+> 
+> BUG: memory leak
+> unreferenced object 0xffff8881113d3180 (size 64):
+>   comm "syz-executor071", pid 389, jiffies 4294887985 (age 17.943s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 ff 02 00 00 00 00 00 00  ................
+>     00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<000000002cbc483c>] kmalloc include/linux/slab.h:555 [inline]
+>     [<000000002cbc483c>] kzalloc include/linux/slab.h:669 [inline]
+>     [<000000002cbc483c>] ip6_mc_add1_src net/ipv6/mcast.c:2237 [inline]
+>     [<000000002cbc483c>] ip6_mc_add_src+0x7f5/0xbb0 net/ipv6/mcast.c:2357
+>     [<0000000058b8b1ff>] ip6_mc_source+0xe0c/0x1530 net/ipv6/mcast.c:449
+>     [<000000000bfc4fb5>] do_ipv6_setsockopt.isra.12+0x1b2c/0x3b30 net/ipv6/ipv6_sockglue.c:754
+>     [<00000000e4e7a722>] ipv6_setsockopt+0xda/0x150 net/ipv6/ipv6_sockglue.c:950
+>     [<0000000029260d9a>] rawv6_setsockopt+0x45/0x100 net/ipv6/raw.c:1081
+>     [<000000005c1b46f9>] __sys_setsockopt+0x131/0x210 net/socket.c:2132
+>     [<000000008491f7db>] __do_sys_setsockopt net/socket.c:2148 [inline]
+>     [<000000008491f7db>] __se_sys_setsockopt net/socket.c:2145 [inline]
+>     [<000000008491f7db>] __x64_sys_setsockopt+0xba/0x150 net/socket.c:2145
+>     [<00000000c7bc11c5>] do_syscall_64+0xa1/0x530 arch/x86/entry/common.c:295
+>     [<000000005fb7a3f3>] entry_SYSCALL_64_after_hwframe+0x49/0xb3
+> 
+> Fixes: 1666d49e1d41 ("mld: do not remove mld souce list info when set link down")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+> ---
+>  net/ipv6/mcast.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+> index 7e12d2114158..8cd2782a31e4 100644
+> --- a/net/ipv6/mcast.c
+> +++ b/net/ipv6/mcast.c
+> @@ -2615,6 +2615,7 @@ void ipv6_mc_destroy_dev(struct inet6_dev *idev)
+>  		idev->mc_list = i->next;
+>  
+>  		write_unlock_bh(&idev->lock);
+> +		ip6_mc_clear_src(i);
+>  		ma_put(i);
+>  		write_lock_bh(&idev->lock);
+>  	}
+> -- 
+> 2.17.1
+> 
 
-  BUG: unable to handle page fault for address: ffffae2c01bfa794
-  PF: supervisor write access in kernel mode
-  PF: error_code(0x0003) - permissions violation
-  PGD 107d51067 P4D 107d51067 PUD 107d52067 PMD 659ad2067 PTE 8000000662298161
-  CPU: 2 PID: 161 Comm: kworker/2:1 Not tainted 5.7.0-3.gad96a07-default #1 openSUSE Tumbleweed (unreleased)
-  RIP: 0010:iwl_dbg_tlv_alloc_trigger+0x25/0x60 [iwlwifi]
-  Code: eb f2 0f 1f 00 66 66 66 66 90 83 7e 04 33 48 89 f8 44 8b 46 10 48 89 f7 76 40 41 8d 50 ff 83 fa 19 77 23 8b 56 20 85 d2 75 07 <c7> 46 20 ff ff ff ff 4b 8d 14 40 48 c1 e2 04 48 8d b4 10 00 05 00
-  RSP: 0018:ffffae2c00417ce8 EFLAGS: 00010246
-  RAX: ffff8f0522334018 RBX: ffff8f0522334018 RCX: ffffffffc0fc26c0
-  RDX: 0000000000000000 RSI: ffffae2c01bfa774 RDI: ffffae2c01bfa774
-  RBP: 0000000000000000 R08: 0000000000000004 R09: 0000000000000001
-  R10: 0000000000000034 R11: ffffae2c01bfa77c R12: ffff8f0522334230
-  R13: 0000000001000009 R14: ffff8f0523fdbc00 R15: ffff8f051f395800
-  FS:  0000000000000000(0000) GS:ffff8f0527c80000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: ffffae2c01bfa794 CR3: 0000000389eba000 CR4: 00000000000006e0
-  Call Trace:
-   iwl_dbg_tlv_alloc+0x79/0x120 [iwlwifi]
-   iwl_parse_tlv_firmware.isra.0+0x57d/0x1550 [iwlwifi]
-   iwl_req_fw_callback+0x3f8/0x6a0 [iwlwifi]
-   request_firmware_work_func+0x47/0x90
-   process_one_work+0x1e3/0x3b0
-   worker_thread+0x46/0x340
-   kthread+0x115/0x140
-   ret_from_fork+0x1f/0x40
-
-As can be seen, write bit is not set in the PTE. Read of
-trig->occurrences succeeds in iwl_dbg_tlv_alloc_trigger, but
-trig->occurrences = cpu_to_le32(-1); fails there, obviously.
-
-This is likely because we (at SUSE) use compressed firmware and that is
-marked as RO after decompression (see fw_map_paged_buf).
-
-Fix it by creating a temporary buffer in case we need to change the
-memory.
-
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Reported-by: Dieter Nützel <Dieter@nuetzel-hh.de>
-Tested-by: Dieter Nützel <Dieter@nuetzel-hh.de>
-Cc: Johannes Berg <johannes.berg@intel.com>
-Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Cc: Luca Coelho <luciano.coelho@intel.com>
-Cc: Intel Linux Wireless <linuxwifi@intel.com>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
----
- drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-index 7987a288917b..27116c7d3f4f 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-@@ -271,6 +271,8 @@ static int iwl_dbg_tlv_alloc_trigger(struct iwl_trans *trans,
- {
- 	struct iwl_fw_ini_trigger_tlv *trig = (void *)tlv->data;
- 	u32 tp = le32_to_cpu(trig->time_point);
-+	struct iwl_ucode_tlv *dup = NULL;
-+	int ret;
- 
- 	if (le32_to_cpu(tlv->length) < sizeof(*trig))
- 		return -EINVAL;
-@@ -283,10 +285,20 @@ static int iwl_dbg_tlv_alloc_trigger(struct iwl_trans *trans,
- 		return -EINVAL;
- 	}
- 
--	if (!le32_to_cpu(trig->occurrences))
-+	if (!le32_to_cpu(trig->occurrences)) {
-+		dup = kmemdup(tlv, sizeof(*tlv) + le32_to_cpu(tlv->length),
-+				GFP_KERNEL);
-+		if (!dup)
-+			return -ENOMEM;
-+		trig = (void *)dup->data;
- 		trig->occurrences = cpu_to_le32(-1);
-+		tlv = dup;
-+	}
-+
-+	ret = iwl_dbg_tlv_add(tlv, &trans->dbg.time_point[tp].trig_list);
-+	kfree(dup);
- 
--	return iwl_dbg_tlv_add(tlv, &trans->dbg.time_point[tp].trig_list);
-+	return ret;
- }
- 
- static int (*dbg_tlv_alloc[])(struct iwl_trans *trans,
--- 
-2.27.0
-
+Acked-by: Hangbin Liu <liuhangbin@gmail.com>
