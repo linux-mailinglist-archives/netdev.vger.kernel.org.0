@@ -2,124 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B86A31F7CE8
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 20:32:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7FF91F7CEF
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 20:34:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726307AbgFLScF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 14:32:05 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:54704 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726263AbgFLScF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 14:32:05 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05CIW1G9047863;
-        Fri, 12 Jun 2020 14:32:01 -0400
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 31kyem9d3s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 12 Jun 2020 14:31:47 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05CILIEk006647;
-        Fri, 12 Jun 2020 18:31:46 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma01dal.us.ibm.com with ESMTP id 31hyh0duv4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 12 Jun 2020 18:31:46 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05CIViBr26542436
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 12 Jun 2020 18:31:44 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 714D178063;
-        Fri, 12 Jun 2020 18:31:44 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C178A7805C;
-        Fri, 12 Jun 2020 18:31:43 +0000 (GMT)
-Received: from oc7186267434.ibm.com.com (unknown [9.160.93.4])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri, 12 Jun 2020 18:31:43 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     linuxppc-dev@lists.ozlabs.org, danymadden@us.ibm.com,
-        Thomas Falcon <tlfalcon@linux.ibm.com>
-Subject: [PATCH net] ibmvnic: Harden device login requests
-Date:   Fri, 12 Jun 2020 13:31:39 -0500
-Message-Id: <1591986699-19484-1-git-send-email-tlfalcon@linux.ibm.com>
-X-Mailer: git-send-email 1.8.3.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-11_23:2020-06-11,2020-06-11 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=1
- adultscore=0 malwarescore=0 spamscore=0 bulkscore=0 lowpriorityscore=0
- mlxlogscore=999 clxscore=1015 cotscore=-2147483648 phishscore=0
- priorityscore=1501 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006120134
+        id S1726304AbgFLSeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 14:34:20 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:47844 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726281AbgFLSeT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 14:34:19 -0400
+Received: by mail-io1-f70.google.com with SMTP id m11so6676717ioj.14
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 11:34:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=GP5kyNnAoMO+Y+j8GajalB1W8y9R1MA095I7NPSnTDs=;
+        b=HuUFuNO9I+6AL895VSg0Bu3zvsKM0KBCRqKoXNYpW8kCcPFIE0esJsHUEwy1Ka+dQK
+         Tz3FlfwK1G5LVN9jPckR1X1qTMX+0xjfFrNwUtxrKEa5WXGdOSTOMgB/kp/wqa8GDhR2
+         57Kuc7EHinpWy9bavdcthx8wIzyHA6VA76r7wfD5aXDfrmy1oZ/xd3+6mlY5Ua4PT7Te
+         FWMhUjuwQryH7OyoVU/iN1zgbj2n3IoB29+rAhJMTr4h8OAxGqkwc9+mAgEmbUESriEo
+         W+XT9y/VYcmYRhSnnvJI7fAY63aBQppWY0vmX7vC6bs37aqlPVjh8eHIRTvlWnI4pXj5
+         5NCw==
+X-Gm-Message-State: AOAM5308nfUWojfLoQqDyh8WsjdrmV23J7G/6cm7B6f+KQZHU8LgTgJj
+        Q4bS84rIU55emChkSaqRdZ6mi6IsExsrCnw9sII6qal6KxVh
+X-Google-Smtp-Source: ABdhPJxkzP1X/Sc4h5xBvzyleoSa7OQigmndmQWmhwM/LOvU0piOR/suDQx5LmuSsPprWS5mCsm1uSWYK6gTZMac3FGouptucEre
+MIME-Version: 1.0
+X-Received: by 2002:a05:6638:ce:: with SMTP id w14mr9773000jao.27.1591986857779;
+ Fri, 12 Jun 2020 11:34:17 -0700 (PDT)
+Date:   Fri, 12 Jun 2020 11:34:17 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000025269c05a7e753d0@google.com>
+Subject: net test error: BUG: using smp_processor_id() in preemptible code in ext4_mb_new_blocks
+From:   syzbot <syzbot+38af52cdcc116cee7742@syzkaller.appspotmail.com>
+To:     adilger.kernel@dilger.ca, davem@davemloft.net, kuba@kernel.org,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The VNIC driver's "login" command sequence is the final step
-in the driver's initialization process with device firmware,
-confirming the available device queue resources to be utilized
-by the driver. Under high system load, firmware may not respond
-to the request in a timely manner or may abort the request. In
-such cases, the driver should reattempt the login command
-sequence. In case of a device error, the number of retries
-is bounded.
+Hello,
 
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+syzbot found the following crash on:
+
+HEAD commit:    18dbd4cd Merge branch 'net-ipa-endpoint-configuration-fixes'
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=13f762ea100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b366fd92adf6f8b4
+dashboard link: https://syzkaller.appspot.com/bug?extid=38af52cdcc116cee7742
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+38af52cdcc116cee7742@syzkaller.appspotmail.com
+
+BUG: using smp_processor_id() in preemptible [00000000] code: systemd-rfkill/6838
+caller is ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
+CPU: 1 PID: 6838 Comm: systemd-rfkill Not tainted 5.7.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ check_preemption_disabled lib/smp_processor_id.c:47 [inline]
+ debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
+ ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
+ ext4_ext_map_blocks+0x2044/0x3410 fs/ext4/extents.c:4244
+ ext4_map_blocks+0x4cb/0x1640 fs/ext4/inode.c:626
+ ext4_getblk+0xad/0x520 fs/ext4/inode.c:833
+ ext4_bread+0x7c/0x380 fs/ext4/inode.c:883
+ ext4_append+0x153/0x360 fs/ext4/namei.c:67
+ ext4_init_new_dir fs/ext4/namei.c:2757 [inline]
+ ext4_mkdir+0x5e0/0xdf0 fs/ext4/namei.c:2802
+ vfs_mkdir+0x419/0x690 fs/namei.c:3627
+ do_mkdirat+0x21e/0x280 fs/namei.c:3650
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x7fa2f1d24687
+Code: 00 b8 ff ff ff ff c3 0f 1f 40 00 48 8b 05 09 d8 2b 00 64 c7 00 5f 00 00 00 b8 ff ff ff ff c3 0f 1f 40 00 b8 53 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e1 d7 2b 00 f7 d8 64 89 01 48
+RSP: 002b:00007fffeaa243a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000053
+RAX: ffffffffffffffda RBX: 00005638ed5e0985 RCX: 00007fa2f1d24687
+RDX: 00007fffeaa24270 RSI: 00000000000001ed RDI: 00005638ed5e0985
+RBP: 00007fa2f1d24680 R08: 0000000000000100 R09: 0000000000000000
+R10: 00005638ed5e0980 R11: 0000000000000246 R12: 00000000000001ed
+R13: 00007fffeaa24530 R14: 0000000000000000 R15: 0000000000000000
+
+
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 197dc5b2c090..1cb2b7f3b2cb 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -841,13 +841,14 @@ static int ibmvnic_login(struct net_device *netdev)
- {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 	unsigned long timeout = msecs_to_jiffies(30000);
-+	int retries = 10;
- 	int retry_count = 0;
- 	bool retry;
- 	int rc;
- 
- 	do {
- 		retry = false;
--		if (retry_count > IBMVNIC_MAX_QUEUES) {
-+		if (retry_count > retries) {
- 			netdev_warn(netdev, "Login attempts exceeded\n");
- 			return -1;
- 		}
-@@ -862,11 +863,23 @@ static int ibmvnic_login(struct net_device *netdev)
- 
- 		if (!wait_for_completion_timeout(&adapter->init_done,
- 						 timeout)) {
--			netdev_warn(netdev, "Login timed out\n");
--			return -1;
-+			netdev_warn(netdev, "Login timed out, retrying...\n");
-+			retry = true;
-+			adapter->init_done_rc = 0;
-+			retry_count++;
-+			continue;
- 		}
- 
--		if (adapter->init_done_rc == PARTIALSUCCESS) {
-+		if (adapter->init_done_rc == ABORTED) {
-+			netdev_warn(netdev, "Login aborted, retrying...\n");
-+			retry = true;
-+			adapter->init_done_rc = 0;
-+			retry_count++;
-+			/* FW or device may be busy, so
-+			 * wait a bit before retrying login
-+			 */
-+			msleep(500);
-+		} else if (adapter->init_done_rc == PARTIALSUCCESS) {
- 			retry_count++;
- 			release_sub_crqs(adapter, 1);
- 
--- 
-2.18.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
