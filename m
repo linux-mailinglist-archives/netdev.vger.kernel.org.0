@@ -2,114 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CD6D1F7664
-	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 12:01:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB0DE1F767B
+	for <lists+netdev@lfdr.de>; Fri, 12 Jun 2020 12:08:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726219AbgFLKBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 06:01:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbgFLKBV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 06:01:21 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B721C03E96F;
-        Fri, 12 Jun 2020 03:01:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=FPRn34drjrS7tR0VZroA+Jb46I8CJY2q34LIxXnZ6lk=; b=dF/CBdt9MnfDvjtwqLZMvlIaL
-        C6ZdLaFTCJCLw8aiNpeUfiEs1c1xrhnqm3xiRYZgAad4zelL+ktgcQI3geQHpLoYGcKNA0+V2zm/s
-        Wt1zUQlFR2O8Fxi8+y90qWQAB2yuk9t4HlWOoW0RnuhAuC3EG+EjL3katLCL7SqjSp7jC9qbphiix
-        PRUSKMYBnS5OjuI8bjS3O60XTBGeECQZQLF+VAQFO8VZUzNKz1q0DnnnB6w6zBXHFI2Nk722gf+yF
-        5alegWwNXhs9+eqxdxOoGn0kcZDqOVItUHdHvmA4JA4NDq+DW9ckfMRkqQkLvjgMzfPlpvXtLyR/d
-        BnLshXokw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44562)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jjgUt-0002Y5-RJ; Fri, 12 Jun 2020 11:01:15 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jjgUt-00069j-3l; Fri, 12 Jun 2020 11:01:15 +0100
-Date:   Fri, 12 Jun 2020 11:01:15 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel@pengutronix.de
-Subject: Re: [PATCH v2] net: mvneta: Fix Serdes configuration for 2.5Gbps
- modes
-Message-ID: <20200612100114.GE1551@shell.armlinux.org.uk>
-References: <20200612083847.29942-1-s.hauer@pengutronix.de>
- <20200612084710.GC1551@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200612084710.GC1551@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726255AbgFLKIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 06:08:40 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:19787 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725872AbgFLKIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 06:08:37 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 234E340F48;
+        Fri, 12 Jun 2020 18:08:31 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, pablo@netfilter.org, vladbu@mellanox.com
+Subject: [PATCH net 1/2] flow_offload: return zero for FLOW_BLOCK_UNBIND type flow_indr_dev_setup_offload
+Date:   Fri, 12 Jun 2020 18:08:29 +0800
+Message-Id: <1591956510-15051-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSFVOTkNCQkJMTE1DT0tJSllXWShZQU
+        lCN1dZLVlBSVdZDwkaFQgSH1lBWRcyNQs4HDgVDQEIHS00NR41DgsJOhxWVlVPQktPSihJWVdZCQ
+        4XHghZQVk1NCk2OjckKS43PllXWRYaDxIVHRRZQVk0MFkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6ORg6Gjo*Pjg*ATBCHxMaLEMX
+        FiIKFElVSlVKTkJKQk5NTkpKT0JNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUNOS0I3Bg++
+X-HM-Tid: 0a72a80099c32086kuqy234e340f48
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 12, 2020 at 09:47:10AM +0100, Russell King - ARM Linux admin wrote:
-> On Fri, Jun 12, 2020 at 10:38:47AM +0200, Sascha Hauer wrote:
-> > The Marvell MVNETA Ethernet controller supports a 2.5Gbps SGMII mode
-> > called DRSGMII. Depending on the Port MAC Control Register0 PortType
-> > setting this seems to be either an overclocked SGMII mode or 2500BaseX.
-> > 
-> > This patch adds the necessary Serdes Configuration setting for the
-> > 2.5Gbps modes. There is no phy interface mode define for overclocked
-> > SGMII, so only 2500BaseX is handled for now.
-> > 
-> > As phy_interface_mode_is_8023z() returns true for both
-> > PHY_INTERFACE_MODE_1000BASEX and PHY_INTERFACE_MODE_2500BASEX we
-> > explicitly test for 1000BaseX instead of using
-> > phy_interface_mode_is_8023z() to differentiate the different
-> > possibilities.
-> > 
-> > Fixes: da58a931f248f ("net: mvneta: Add support for 2500Mbps SGMII")
-> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> 
-> 2500base-X is used today on Armada 388 and Armada 3720 platforms and
-> works - it is known to interoperate with Marvell PP2.2 hardware, as
-> well was various SFPs such as the Huawei MA5671A at 2.5Gbps.  The way
-> it is handled on these platforms is via the COMPHY, requesting that
-> the serdes is upclocked from 1.25Gbps to 3.125Gbps.
-> 
-> This "DRSGMII" mode is not mentioned in the functional specs for either
-> the Armada 388 or Armada 3720, the value you poke into the register is
-> not mentioned either.  As I've already requested, some information on
-> exactly what this "DRSGMII" is would be very useful, it can't be
-> "double-rate SGMII" because that would give you 2Gbps instead of 1Gbps.
-> 
-> So, I suspect this breaks the platforms that are known to work.
-> 
-> We need a proper description of what DRSGMII is before we can consider
-> taking any patches for it.
+From: wenxu <wenxu@ucloud.cn>
 
-Okay, having dug through the Armada XP, 370, 388, 3720 specs, I think
-this is fine after all - but something that will help for the future
-would be to document that this register does not exist on the 388 and
-3720 devices (which brings up the question whether we should be writing
-it there.)  The field was moved into the comphy on those devices.
+block->nooffloaddevcnt warning with following dmesg log:
 
-So, it looks like if we have a comphy, we should not be writing this
-register.
+When a indr device add in offload success. The block->nooffloaddevcnt
+always zero. But When all the representors go away. All the flow_block_cb
+cleanup. Then remove the indr device, The __tcf_block_put call
+flow_indr_dev_setup_offload with FLOW_BLOCK_UNBIND will always return
+-EOPNOTSUPP And make the warning comes out.
 
-What's more, the write to MVNETA_SERDES_CFG should not be in
-mvneta_port_power_up(); it's likely that XP and 370 will not work
-properly with phylink.  It needs to be done in a similar location to
-mvneta_comphy_init(), so that phylink can switch between 1G and 2.5G
-speeds.
+[  760.667058] #####################################################
+[  760.668186] ## TEST test-ecmp-add-vxlan-encap-disable-sriov.sh ##
+[  760.669179] #####################################################
+[  761.780655] :test: Fedora 30 (Thirty)
+[  761.783794] :test: Linux reg-r-vrt-018-180 5.7.0+
+[  761.822890] :test: NIC ens1f0 FW 16.26.6000 PCI 0000:81:00.0 DEVICE 0x1019 ConnectX-5 Ex
+[  761.860244] mlx5_core 0000:81:00.0 ens1f0: Link up
+[  761.880693] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
+[  762.059732] mlx5_core 0000:81:00.1 ens1f1: Link up
+[  762.234341] :test: unbind vfs of ens1f0
+[  762.257825] :test: Change ens1f0 eswitch (0000:81:00.0) mode to switchdev
+[  762.291363] :test: unbind vfs of ens1f1
+[  762.306914] :test: Change ens1f1 eswitch (0000:81:00.1) mode to switchdev
+[  762.309237] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(LEGACY), nvfs(2), active vports(3)
+[  763.282598] mlx5_core 0000:81:00.1: E-Switch: Supported tc offload range - chains: 4294967294, prios: 4294967295
+[  763.362825] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+[  763.444465] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
+[  763.460088] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+[  763.502586] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+[  763.552429] ens1f1_0: renamed from eth0
+[  763.569569] mlx5_core 0000:81:00.1: E-Switch: Enable: mode(OFFLOADS), nvfs(2), active vports(3)
+[  763.629694] ens1f1_1: renamed from eth1
+[  764.631552] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_0: link becomes ready
+[  764.670841] :test: unbind vfs of ens1f0
+[  764.681966] :test: unbind vfs of ens1f1
+[  764.726762] mlx5_core 0000:81:00.0 ens1f0: Link up
+[  764.766511] mlx5_core 0000:81:00.1 ens1f1: Link up
+[  764.797325] :test: Add multipath vxlan encap rule and disable sriov
+[  764.798544] :test: config multipath route
+[  764.812732] mlx5_core 0000:81:00.0: lag map port 1:2 port 2:2
+[  764.874556] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:2
+[  765.603681] :test: OK
+[  765.659048] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_1: link becomes ready
+[  765.675085] :test: verify rule in hw
+[  765.694237] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
+[  765.711892] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1: link becomes ready
+[  766.979230] :test: OK
+[  768.125419] :test: OK
+[  768.127519] :test: - disable sriov ens1f1
+[  768.131160] pci 0000:81:02.2: Removing from iommu group 75
+[  768.132646] pci 0000:81:02.3: Removing from iommu group 76
+[  769.179749] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
+[  769.455627] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:1
+[  769.703990] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+[  769.988637] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
+[  769.990022] :test: - disable sriov ens1f0
+[  769.994922] pci 0000:81:00.2: Removing from iommu group 73
+[  769.997048] pci 0000:81:00.3: Removing from iommu group 74
+[  771.035813] mlx5_core 0000:81:00.0: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
+[  771.339091] ------------[ cut here ]------------
+[  771.340812] WARNING: CPU: 6 PID: 3448 at net/sched/cls_api.c:749 tcf_block_offload_unbind.isra.0+0x5c/0x60
+[  771.341728] Modules linked in: act_mirred act_tunnel_key cls_flower dummy vxlan ip6_udp_tunnel udp_tunnel sch_ingress nfsv3 nfs_acl nfs lockd grace fscache tun bridge stp llc sunrpc rdma_ucm rdma_cm iw_cm ib_cm mlx5_ib ib_uverbs ib_core mlx5_core intel_rapl_msr intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp mlxfw act_ct nf_flow_table kvm_intel nf_nat kvm nf_conntrack irqbypass crct10dif_pclmul igb crc32_pclmul nf_defrag_ipv6 libcrc32c nf_defrag_ipv4 crc32c_intel ghash_clmulni_intel ptp ipmi_ssif intel_cstate pps_c
+ore ses intel_uncore mei_me iTCO_wdt joydev ipmi_si iTCO_vendor_support i2c_i801 enclosure mei ioatdma dca lpc_ich wmi ipmi_devintf pcspkr acpi_power_meter ipmi_msghandler acpi_pad ast i2c_algo_bit drm_vram_helper drm_kms_helper drm_ttm_helper ttm drm mpt3sas raid_class scsi_transport_sas
+[  771.347818] CPU: 6 PID: 3448 Comm: test-ecmp-add-v Not tainted 5.7.0+ #1146
+[  771.348727] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+[  771.349646] RIP: 0010:tcf_block_offload_unbind.isra.0+0x5c/0x60
+[  771.350553] Code: 4a fd ff ff 83 f8 a1 74 0e 5b 4c 89 e7 5d 41 5c 41 5d e9 07 93 89 ff 8b 83 a0 00 00 00 8d 50 ff 89 93 a0 00 00 00 85 c0 75 df <0f> 0b eb db 0f 1f 44 00 00 41 57 41 56 41 55 41 89 cd 41 54 49 89
+[  771.352420] RSP: 0018:ffffb33144cd3b00 EFLAGS: 00010246
+[  771.353353] RAX: 0000000000000000 RBX: ffff8b37cf4b2800 RCX: 0000000000000000
+[  771.354294] RDX: 00000000ffffffff RSI: ffff8b3b9aad0000 RDI: ffffffff8d5c6e20
+[  771.355245] RBP: ffff8b37eb546948 R08: ffffffffc0b7a348 R09: ffff8b3b9aad0000
+[  771.356189] R10: 0000000000000001 R11: ffff8b3ba7a0a1c0 R12: ffff8b37cf4b2850
+[  771.357123] R13: ffff8b3b9aad0000 R14: ffff8b37cf4b2820 R15: ffff8b37cf4b2820
+[  771.358039] FS:  00007f8a19b6e740(0000) GS:ffff8b3befa00000(0000) knlGS:0000000000000000
+[  771.358965] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  771.359885] CR2: 00007f3afb91c1a0 CR3: 000000045133c004 CR4: 00000000001606e0
+[  771.360825] Call Trace:
+[  771.361764]  __tcf_block_put+0x84/0x150
+[  771.362712]  ingress_destroy+0x1b/0x20 [sch_ingress]
+[  771.363658]  qdisc_destroy+0x3e/0xc0
+[  771.364594]  dev_shutdown+0x7a/0xa5
+[  771.365522]  rollback_registered_many+0x20d/0x530
+[  771.366458]  ? netdev_upper_dev_unlink+0x15d/0x1c0
+[  771.367387]  unregister_netdevice_many.part.0+0xf/0x70
+[  771.368310]  vxlan_netdevice_event+0xa4/0x110 [vxlan]
+[  771.369454]  notifier_call_chain+0x4c/0x70
+[  771.370579]  rollback_registered_many+0x2f5/0x530
+[  771.371719]  rollback_registered+0x56/0x90
+[  771.372843]  unregister_netdevice_queue+0x73/0xb0
+[  771.373982]  unregister_netdev+0x18/0x20
+[  771.375168]  mlx5e_vport_rep_unload+0x56/0xc0 [mlx5_core]
+[  771.376327]  esw_offloads_disable+0x81/0x90 [mlx5_core]
+[  771.377512]  mlx5_eswitch_disable_locked.cold+0xcb/0x1af [mlx5_core]
+[  771.378679]  mlx5_eswitch_disable+0x44/0x60 [mlx5_core]
+[  771.379822]  mlx5_device_disable_sriov+0xad/0xb0 [mlx5_core]
+[  771.380968]  mlx5_core_sriov_configure+0xc1/0xe0 [mlx5_core]
+[  771.382087]  sriov_numvfs_store+0xfc/0x130
+[  771.383195]  kernfs_fop_write+0xce/0x1b0
+[  771.384302]  vfs_write+0xb6/0x1a0
+[  771.385410]  ksys_write+0x5f/0xe0
+[  771.386500]  do_syscall_64+0x5b/0x1d0
+[  771.387569]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-As you have an Armada XP system, you are best placed to test moving
-that write.
+Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
+Signed-off-by: wenxu <wenxu@ucloud.cn>
+---
+ net/core/flow_offload.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 6614351..359bd0a 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -471,6 +471,9 @@ int flow_indr_dev_setup_offload(struct net_device *dev,
+ 	__flow_block_indr_binding(bo, dev, data, cleanup);
+ 	mutex_unlock(&flow_indr_block_lock);
+ 
++	if (bo->command == FLOW_BLOCK_UNBIND)
++		return 0;
++
+ 	return list_empty(&bo->cb_list) ? -EOPNOTSUPP : 0;
+ }
+ EXPORT_SYMBOL(flow_indr_dev_setup_offload);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+1.8.3.1
+
