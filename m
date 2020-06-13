@@ -2,35 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1056F1F8146
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 08:26:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 927491F8156
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 08:37:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726392AbgFMG0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 02:26:46 -0400
-Received: from mout.web.de ([212.227.15.4]:53359 "EHLO mout.web.de"
+        id S1726362AbgFMGgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 02:36:45 -0400
+Received: from mout.web.de ([212.227.15.14]:35367 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725783AbgFMG0o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 13 Jun 2020 02:26:44 -0400
+        id S1725829AbgFMGgp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 13 Jun 2020 02:36:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1592029578;
+        s=dbaedf251592; t=1592030197;
         bh=k2s8eb/2vmpIhCxWfTUYQO1d5bc6ZGIHEINUn8mcBYQ=;
-        h=X-UI-Sender-Class:Cc:Subject:To:From:Date;
-        b=pwf4Gy1ouTee0XHXCHwbw69wX4wC8rDPUX9+p1GbVlnAWHRtLcJHeUJQiQvQ97k3F
-         EWJwhqHTz/eiZvlzFms/pKo7wvKlUCLYD0YTELqb8OnikDqu9qeNknHlb6UDoXitI4
-         UA5+ZMj1C3cdEq9hfitpcAgaD6KIS3Sn0hHEBjyg=
+        h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
+        b=msaEkurVfCeRrfBBs54vvu/2RGA7GuFXJ2bc1z9hznAefBtdBgJKFFXlEajUZ8fg4
+         1YZrI+JCRT+3bi1f0Y1mkUi7LTbjVa4ws+2KLdldrB7hrvDTAOF2w4VPZqdNPc7Xrk
+         PZlFow25j75aXyhQtt9cVbdaAAv4VqEmRjE9NYOg=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.132.51.155]) by smtp.web.de (mrweb002
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MGzK6-1jg5sp3duU-00DohX; Sat, 13
- Jun 2020 08:26:18 +0200
-Cc:     linux-kernel@vger.kernel.org, Allison Randal <allison@lohutok.net>,
-        Andrew Lunn <andrew@lunn.ch>, Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Kangjie Lu <kjlu@umn.edu>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Qiushi Wu <wu000273@umn.edu>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH] ethernet: Fix memory leak in ethoc_probe()
+Received: from [192.168.1.2] ([93.132.51.155]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lcxfc-1j26J30RHM-00i9RM; Sat, 13
+ Jun 2020 08:36:37 +0200
 To:     Aditya Pakki <pakki001@umn.edu>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
+        Kangjie Lu <kjlu@umn.edu>, Qiushi Wu <wu000273@umn.edu>
+Subject: Re: [PATCH] test_objagg: Fix memory leak in test_hints_case()
 From:   Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -75,38 +70,38 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <2a13092a-53ed-bfab-0a99-08196ad22f59@web.de>
-Date:   Sat, 13 Jun 2020 08:26:12 +0200
+Message-ID: <d248479f-7209-d8f8-6270-0580351d606a@web.de>
+Date:   Sat, 13 Jun 2020 08:36:36 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.9.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-GB
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:1vvjpuo4KjUv3OJpsfh+xNe8zatBcNeqekGMOmId6Ghuq+fZafm
- 98rdcmd3K0k9lMBL+p7KZ1M9j/UjG8D2MMtVN3nSNIy9HmZHTWJv/tL6c/0V1yD+D1I5Mw5
- sb7iimFgxpk1rYecMRzva9hcQ1RmMIzHfKloDiMr87Ee//xaDukO8pZlZRvbRF/3JjO3qUZ
- rdVjuYfdHHOJ/2KJQ/O+g==
+X-Provags-ID: V03:K1:gaX0WJqFoqG8TGAHIdw6lVhq+HMK45m/5S4T0Ei2rPskxBk464Q
+ Z58pCXDzmNyVZttO9heEBsAR3C1f287HZ8EAmLuzEceMh0K57lqcmIUrNq/deRF+KlnDqGD
+ 8F1WiwnA9fvJ/WiB5yKSCMgWOTykrMiE3mSPy7oY4xjOE1GxbAzYE7iVy5b4KKaoQywtIUY
+ 9voQh/xz5CF90Sk6jk+qA==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:p4UWuv8jf5w=:NZL3lzsVFd9Xuuoev6YIdC
- xdVRzGuAQJWLC9RhTdJ3h1P97Q538fn9KZmljwvN4MFDGAjuSrguUTNXOCwtDCLg1UPCToHLB
- +puyyJU6LHhsdSIuP1sCjL6CX/1Z7D0ZJZU53EIBFy+CiEsgnzlUsY3I8E+se4R9mSsmkPIMb
- TKQGrCcBc3nXJEiTMDstlxlRT7cbmcU5jfzl746cjRf0G2FVafirbOhO2MxQKUvn8NeDxDrZG
- vtOsnKNAOFcjftvg+zlrbZZAbMfp4SyJccl+jmD3mmQBzUm2YUR2y7CW0WgS43RdaCWsdIzAq
- UcONW80qWpSRL20PYJNrwBTw4ttdmWINm/fZSS/CQi5iwhZNyCyGR2ycRd2FIjz6OdZfagHxA
- GgvFQITS+3PV2hsfo02jDqWLzNDaobT7Pn42XyIRFdxSPxIX1bYMe7B9a/ADliCKDjsb/VvmN
- Iok25w+uMsSkkMdvZd4EUrmzC0+lbFMTA3k8oiQQ6HHdtL4VJalxx8/IOfratm/iWZgPJz3m4
- P3JVeItVgyTLCKqYRtzVx/2Wjgskp0P5Ix8JUelaLe+F3WD8Ovzkg8+Mr2trx4/feXY0j4qw1
- 3xZ8lPOmb08l/nbODrvqMgShstR3iXo8XRqseqrE/U6DEQwjiDmPhGPeOPinKsqNXnxJ/aM0G
- lSGZbuLQuB7Sxdhs0xOH6p73h+inwjH0fY2atPGHpvUVCpZLhthau9kJAOetoHV9fwkE00Vxe
- e2uPbowZJY70Xpz4SZ46VUnNBVmLugxQF04nnYcpIh5jJI+RTFodI5Vto14ade1FCBraWnL/+
- q1iK0ejJ1QW15Ue/i30Ydhxh6PbdwZk/ZzWKcM2C3aZ7LHolb5iFMxLlE7H5wncUUmJToCd7f
- uGCQjhUrqWQLW2OlBbvTZomUJIAl/e6QP/A4SmPlidCa1z572xlVTp5Rzv0yxhNLfgTo+BxKE
- 4cG1Tm1qzSZwoaJuq7rXwrOUWM4vb/Ya9D6Ud7+E+G/Rerz+a3Ec8xx3SdHwZWiuZRxiiUQiN
- 7Dfga/IDd5KcyaTieqSpDCCsfPkVEnla6UzrQWlbspaLiLT+OEP69qFX/Lu0MMCvvasdC+fbP
- oS1z1nxq9NdUOJDrS2hyS5FAihPz6pJXThXiKhlTqyGAPxBZ+rjqRtCRDzLv07EDDGWsffthj
- lCo/n6m5LNRAlSqjLi0wDbf4jjvWRMg+2k7rbEqtieal0sKPkqFGxz7UkYXDk5uS1EmsHEnCm
- Bxqt/H6Bzi+tquqrj
+X-UI-Out-Filterresults: notjunk:1;V03:K0:vNHyLViQvh0=:t4GWMd9t8ZQaw3lO7KeVDb
+ zFUJN4m+r6sH+s1DnI0bhDv1jVy7CjShuVHSOIf6lw3ijQvVIM909LCwyL0I0AlI5j7CUFj7H
+ 80sKZq09ZNiw3/G5BWnfrDhD8kDl0bbvqwvlV2mB7XusIuEku0K9qzG2YkIb4EAvf2+PcPxfP
+ 0qhbXVLpf6mJusVHOrWZlE5iv02TTeOewAP8ixiNIVLrqqmo96mfhyFjaulZPeraeTNEY0VEE
+ E5B086WHi0tAOdmkgiE6wKfPJCMjPLm7EJsdtaCsUNIMPMiOFlaZ8c1PqiomZE9ymYIpZDQNl
+ UmJHjPwN7W3my1s6mZTpEnS1evyJozGwbXHrl50hwBUckpn37CPzFGyi6YKPt6QZT1qgsqEFL
+ PdRADrwRa4PVYG+/rO51BfSwudTzCtlPOlv/lbAHxA4vJtOKmJ/LPB2dwtR1f7Di76jtUPZW3
+ PiUpBhY0wnbPHa38o7T9+MxlGHWiTrcenDh0ZJ4ZPycglO7LBlnz3pxtqGs34+3qd38f+Da6A
+ hd5xjUoUwMr4NX1FLpVwcWzgCbO8bzAKqo+/Xiu5IqQK8e5D27KveXum7c2e2sqxMaHmsDRVR
+ uGKBqDXD6oxADlcLo8Gubdq5J5YAKd7RgTfVVRUAjvAY+Hv+bW010+wH5YgrUUzNiRxvJpP15
+ 3ylm4gdvn2mSCWIslbtaotqTDsx9tmwxYu7/oIlYcdmQpCghLsKeEROH0JKNVKN+lK31nMWdR
+ 9afQFWdtxlBkhS5ZP/yrFF3bn2CiRW4yjF/PHW5cTgj4qP4AcKxTBaRTbbYQUDxWK+hkEr3uh
+ Gp+JdOCX1IqQ4JbidOxAdNWwY4UWodyaPEVyRrZrE/HN9uUG/pwkdbVraV9eV0ycOd+Ej5aDB
+ wvtMVOEKIpLMlmA7e0iNnhUxw3A45Gnz97RWMJE81sc/cysldHAUlf5SjbNM5X0iT3VOUkeqf
+ iuK3/ivb9R2ItoIJ8x/CrKcgNCHtLJDPYoYaUQQr7SH4sI/uo0CMHDxnJFxuNFD8zAzttlod8
+ 4Ic+fET4e9BbGl5u0Q76plxfP3vr39w55WFPSvDb9YlJU2auBTalLg/+4qTzkr3JnwitDZ+eA
+ fwplVIBSJrpt0PBh/iZpV4Ihz8DAtlxqtjWp5eW8eZAibRMlksnL0Mmfeglhc97Rjmez5FjHO
+ IbX/II2CQPvSk3vm+NDLFdoct9KZ4PMy01hUUiDTKrZmYsMgiryZyH+wHTNZ6Hism2fRmGaA/
+ py1JwqNmOX5BU73KM
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
