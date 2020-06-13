@@ -2,198 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C04E1F800E
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 02:45:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F9031F8017
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 03:03:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbgFMApv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 20:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37248 "EHLO
+        id S1726403AbgFMBDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 21:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726377AbgFMApu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 20:45:50 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5568DC03E96F;
-        Fri, 12 Jun 2020 17:45:50 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id r18so4898038pgk.11;
-        Fri, 12 Jun 2020 17:45:50 -0700 (PDT)
+        with ESMTP id S1726377AbgFMBDQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 21:03:16 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D93DC03E96F
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 18:03:16 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id dp10so5216871qvb.10
+        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 18:03:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qXn5fiVbJfuxAzRhFQhwC/94oLSF4HCE4NA+fdNKoxc=;
-        b=qSuX8PJy96dd7g9rjrcKcXErgaQv/EYXJeJ7veKgUK28j0V3EpMPjTN7VGQS3+JmUj
-         mvAriVq/wZTp7K22uZx2lOuTiCFY1exHWC87/xFCMUYls5eOL4VajmvlHrg7kl0K+P2m
-         ZjR6g6OJZwG1mIPQZOWxCIhyNiYWSQy65MC6clY8Ed8S0liiTU1xZkjFeNy35AiRCmHN
-         lQhuu9r2H/rmQb1pjBPEj15EAevRhZGQyKd6SN8UYIv8TZVv+Lqppy9ndun1JMo3D2lh
-         h7kZoSUta/K1P+nEdbyWUSxw8p6a7mZxz0LbVcclQZNAcIdkolsBhsrc/q3CnslXopZh
-         Nj4Q==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uWvi7+6qg8050KnLcF7RqqwsSRkHb7fXq+P8wk9d2x4=;
+        b=dXeqj+POezAcqsggGCMnvtUHFdTR71mDcabIgl3rJ2mVPchK0zVYtPp11m9wuc/Ag+
+         q04BUm0JH93+GwsRMvY3I5XTj9janG2a0A6uy+9MJHVxfsiqy8/KPFVOGGUgtDXBdr+F
+         Df3p6mHPtvAizrLnhYbVshvVMowwH/wQkgd4ceRDztG13SW4+uFxjxeVRc4UEmTijUlk
+         2HI8vdPDRfpyXq9pOfQZeNY8U69Xt33P1YhOQyK04Lxw5VRatcAQSXb1McNCI4hrJwd9
+         Zmd/Xl6rEYKfcY2XYP6BPaVKtO6oMwmGrQDoW60uaaaLkYdqiTraFtfRqCeieUQsEXsK
+         rRtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qXn5fiVbJfuxAzRhFQhwC/94oLSF4HCE4NA+fdNKoxc=;
-        b=Z0QEd4fSsz3AEbrNVc1ph1OmcLQzoZUDignhHhEllPNR5+kKYU68T9eS3Cja7Tc2Kg
-         IoE/CUb3PAJyIp6oWNForP9djy/UUIPQHKNxmQFBGwGBhW6s7LSATWOpAbOc4OeYAxfp
-         paHgqP0LaDwnISTIpkI5sgbjGgPcaXQ5h0JJPGbmf4E11K4UQa+dXE/Ww729QQu2qADs
-         HcvMnepi8lUMuscYRReQfYtxxYUq+BVzph21FVta7XxJr6OdhtHXCY2MjvTdN2GwxPuJ
-         /t/2xUOe/ZtpXOs/ibfU/l04EceKhgQFzOy9mEuuMOdTAP89L3+9x1ouKAfXqQC45UAO
-         HiYA==
-X-Gm-Message-State: AOAM532uceI/XUGOWJ83pI7bqYMC1ZTl1d8K2jqbWbmdOn/KM3/52A+5
-        Zx4y7lQqHgywq2lF//eJ7tg=
-X-Google-Smtp-Source: ABdhPJzWYiSbjDhsV+rQ80FbBUTZZT8niHe5QVY6Z0Cu97rCn9LbJ6QOT4TIzPFfXdyBCqWTOKB68A==
-X-Received: by 2002:aa7:8506:: with SMTP id v6mr14033638pfn.303.1592009149698;
-        Fri, 12 Jun 2020 17:45:49 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id y4sm6325187pgr.76.2020.06.12.17.45.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 12 Jun 2020 17:45:49 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: pull-request: bpf 2020-06-12
-Date:   Fri, 12 Jun 2020 17:45:47 -0700
-Message-Id: <20200613004547.82591-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uWvi7+6qg8050KnLcF7RqqwsSRkHb7fXq+P8wk9d2x4=;
+        b=KGgjZMSv4piFsYtt2NHAhAi6K6eGU9pP2buxHMQXk7gI91Bkz93U5syi3pMb67PMh/
+         LZoxuWEoPeYvIHtbaY9uNshG9t4UYheVoo8IMsgZQXbpBdppjhhDfdTyYuP915sL83Wy
+         VRgj7c/zUdxLChR+VgaUC51cLB5GwypCgYwczERcUvuIpwADdt8v7gU8UxSpYmd+BA9D
+         /techN0Pilqw76ovg26A1oc5FTIcJg5fzq+nhdq+HCS9j8UmlRn7IyO8kefoTJSBt6SM
+         ZiZzLq9jPygKW2OEa25+ZEHK/QbBOxUsOSoYJAdt4yEhHRD/ZgCjH6J9giAyFeyfCW0o
+         NXiQ==
+X-Gm-Message-State: AOAM533dQnPrbCC+YS5DXXlleI5c52O6Rk7AaQE0AGn+IKjCXlGlcbKC
+        HU0bptmiDrMxfGShP0XM0pDQicU/m8qzFMXIJQhjUA==
+X-Google-Smtp-Source: ABdhPJyU8I0/Bty6HNJsK/KEz5WXvQdFWli3DpOJ4ABCfmIEG0q1glpzaUwpyoMb58JU9fgMbUZKfe62oxVqiGaDuto=
+X-Received: by 2002:a0c:d444:: with SMTP id r4mr15090129qvh.67.1592010194225;
+ Fri, 12 Jun 2020 18:03:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20200608182748.6998-1-sdf@google.com> <20200613003356.sqp6zn3lnh4qeqyl@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200613003356.sqp6zn3lnh4qeqyl@ast-mbp.dhcp.thefacebook.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 12 Jun 2020 18:03:03 -0700
+Message-ID: <CAKH8qBuJpks_ny-8MDzzZ5axobn=35P3krVbyz2mtBBtR8Uv+A@mail.gmail.com>
+Subject: Re: [PATCH bpf v3 1/2] bpf: don't return EINVAL from {get,set}sockopt
+ when optlen > PAGE_SIZE
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Laight <David.Laight@aculab.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Fri, Jun 12, 2020 at 5:34 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Mon, Jun 08, 2020 at 11:27:47AM -0700, Stanislav Fomichev wrote:
+> > Attaching to these hooks can break iptables because its optval is
+> > usually quite big, or at least bigger than the current PAGE_SIZE limit.
+> > David also mentioned some SCTP options can be big (around 256k).
+> >
+> > There are two possible ways to fix it:
+> > 1. Increase the limit to match iptables max optval. There is, however,
+> >    no clear upper limit. Technically, iptables can accept up to
+> >    512M of data (not sure how practical it is though).
+> >
+> > 2. Bypass the value (don't expose to BPF) if it's too big and trigger
+> >    BPF only with level/optname so BPF can still decide whether
+> >    to allow/deny big sockopts.
+> >
+> > The initial attempt was implemented using strategy #1. Due to
+> > listed shortcomings, let's switch to strategy #2. When there is
+> > legitimate a real use-case for iptables/SCTP, we can consider increasing
+> > the PAGE_SIZE limit.
+> >
+> > v3:
+> > * don't increase the limit, bypass the argument
+> >
+> > v2:
+> > * proper comments formatting (Jakub Kicinski)
+> >
+> > Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+> > Cc: David Laight <David.Laight@ACULAB.COM>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  kernel/bpf/cgroup.c | 18 ++++++++++++++----
+> >  1 file changed, 14 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> > index fdf7836750a3..758082853086 100644
+> > --- a/kernel/bpf/cgroup.c
+> > +++ b/kernel/bpf/cgroup.c
+> > @@ -1276,9 +1276,18 @@ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+> >
+> >  static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+> >  {
+> > -     if (unlikely(max_optlen > PAGE_SIZE) || max_optlen < 0)
+> > +     if (unlikely(max_optlen < 0))
+> >               return -EINVAL;
+> >
+> > +     if (unlikely(max_optlen > PAGE_SIZE)) {
+> > +             /* We don't expose optvals that are greater than PAGE_SIZE
+> > +              * to the BPF program.
+> > +              */
+> > +             ctx->optval = NULL;
+> > +             ctx->optval_end = NULL;
+> > +             return 0;
+> > +     }
+>
+> It's probably ok, but makes me uneasy about verifier consequences.
+> ctx->optval is PTR_TO_PACKET and it's a valid pointer from verifier pov.
+> Do we have cases already where PTR_TO_PACKET == PTR_TO_PACKET_END ?
+> I don't think we have such tests. I guess bpf prog won't be able to read
+> anything and nothing will crash, but having PTR_TO_PACKET that is
+> actually NULL would be an odd special case to keep in mind for everyone
+> who will work on the verifier from now on.
+>
+> Also consider bpf prog that simply reads something small like 4 bytes.
+> IP_FREEBIND sockopt (like your selftest in the patch 2) will have
+> those 4 bytes, so it's natural for the prog to assume that it can read it.
+> It will have
+> p = ctx->optval;
+> if (p + 4 > ctx->optval_end)
+>  /* goto out and don't bother logging, since that never happens */
+> *(u32*)p;
+>
+> but 'clever' user space would pass long optlen and prog suddenly
+> 'not seeing' the sockopt. It didn't crash, but debugging would be
+> surprising.
+>
+> I feel it's better to copy the first 4k and let the program see it.
+Agreed with the IP_FREEBIND example wrt observability, however it's
+not clear what to do with the cropped buffer if the bpf program
+modifies it.
 
-The following pull-request contains BPF updates for your *net* tree.
-
-We've added 26 non-merge commits during the last 10 day(s) which contain
-a total of 27 files changed, 348 insertions(+), 93 deletions(-).
-
-The main changes are:
-
-1) sock_hash accounting fix, from Andrey.
-
-2) libbpf fix and probe_mem sanitizing, from Andrii.
-
-3) sock_hash fixes, from Jakub.
-
-4) devmap_val fix, from Jesper.
-
-5) load_bytes_relative fix, from YiFei.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Andrii Nakryiko, Björn Töpel, Eric Dumazet, Jakub Sitnicki, 
-Jean-Philippe Brucker, John Fastabend, Masami Hiramatsu, Song Liu, 
-Stanislav Fomichev, Tobias Klauser, Yonghong Song
-
-----------------------------------------------------------------
-
-The following changes since commit cb8e59cc87201af93dfbb6c3dccc8fcad72a09c2:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next (2020-06-03 16:27:18 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 29fcb05bbf1a7008900bb9bee347bdbfc7171036:
-
-  bpf: Undo internal BPF_PROBE_MEM in BPF insns dump (2020-06-12 17:35:38 -0700)
-
-----------------------------------------------------------------
-Andrey Ignatov (1):
-      bpf: Fix memlock accounting for sock_hash
-
-Andrii Nakryiko (5):
-      selftests/bpf: Fix ringbuf selftest sample counting undeterminism
-      libbpf: Handle GCC noreturn-turned-volatile quirk
-      tools/bpftool: Fix skeleton codegen
-      libbpf: Support pre-initializing .bss global variables
-      bpf: Undo internal BPF_PROBE_MEM in BPF insns dump
-
-Arnaldo Carvalho de Melo (1):
-      libbpf: Define __WORDSIZE if not available
-
-Brett Mastbergen (1):
-      tools, bpf: Do not force gcc as CC
-
-Dan Carpenter (1):
-      bpf: Fix an error code in check_btf_func()
-
-David Ahern (1):
-      bpf: Reset data_meta before running programs attached to devmap entry
-
-Jakub Sitnicki (2):
-      bpf, sockhash: Fix memory leak when unlinking sockets in sock_hash_free
-      bpf, sockhash: Synchronize delete from bucket list on map free
-
-Jean-Philippe Brucker (1):
-      tracing/probe: Fix bpf_task_fd_query() for kprobes and uprobes
-
-Jesper Dangaard Brouer (2):
-      bpf: Devmap adjust uapi for attach bpf program
-      bpf: Selftests and tools use struct bpf_devmap_val from uapi
-
-Li RongQing (1):
-      xdp: Fix xsk_generic_xmit errno
-
-Lorenz Bauer (3):
-      scripts: Require pahole v1.16 when generating BTF
-      bpf: cgroup: Allow multi-attach program to replace itself
-      bpf: sockmap: Don't attach programs to UDP sockets
-
-Matthieu Baerts (1):
-      bpf: Fix unused-var without NETDEVICES
-
-Sabrina Dubroca (1):
-      bpf: tcp: Recv() should return 0 when the peer socket is closed
-
-Tobias Klauser (2):
-      tools, bpftool: Fix memory leak in codegen error cases
-      tools, bpftool: Exit on error in function codegen
-
-YiFei Zhu (2):
-      net/filter: Permit reading NET in load_bytes_relative when MAC not set
-      selftests/bpf: Add cgroup_skb/egress test for load_bytes_relative
-
-dihu (1):
-      bpf/sockmap: Fix kernel panic at __tcp_bpf_recvmsg
-
- include/uapi/linux/bpf.h                           | 13 ++++
- kernel/bpf/cgroup.c                                |  2 +-
- kernel/bpf/devmap.c                                | 18 ++----
- kernel/bpf/syscall.c                               | 17 ++++--
- kernel/bpf/verifier.c                              |  2 +-
- kernel/trace/trace_kprobe.c                        |  2 +-
- kernel/trace/trace_uprobe.c                        |  2 +-
- net/core/filter.c                                  | 19 +++---
- net/core/sock_map.c                                | 38 ++++++++++--
- net/ipv4/tcp_bpf.c                                 |  6 ++
- net/xdp/xsk.c                                      |  4 +-
- scripts/link-vmlinux.sh                            |  4 +-
- tools/bpf/Makefile                                 |  1 -
- tools/bpf/bpftool/gen.c                            | 11 ++--
- tools/include/uapi/linux/bpf.h                     | 13 ++++
- tools/lib/bpf/btf_dump.c                           | 33 +++++++---
- tools/lib/bpf/hashmap.h                            |  7 +--
- tools/lib/bpf/libbpf.c                             |  4 --
- .../selftests/bpf/prog_tests/cgroup_attach_multi.c |  7 +++
- .../selftests/bpf/prog_tests/load_bytes_relative.c | 71 ++++++++++++++++++++++
- tools/testing/selftests/bpf/prog_tests/ringbuf.c   | 42 ++++++++++---
- tools/testing/selftests/bpf/prog_tests/skeleton.c  | 45 ++++++++++++--
- .../selftests/bpf/prog_tests/xdp_devmap_attach.c   |  8 ---
- .../selftests/bpf/progs/load_bytes_relative.c      | 48 +++++++++++++++
- tools/testing/selftests/bpf/progs/test_skeleton.c  | 19 ++++--
- .../selftests/bpf/progs/test_xdp_devmap_helpers.c  |  2 +-
- .../bpf/progs/test_xdp_with_devmap_helpers.c       |  3 +-
- 27 files changed, 348 insertions(+), 93 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/load_bytes_relative.c
- create mode 100644 tools/testing/selftests/bpf/progs/load_bytes_relative.c
+Consider that huge iptables setsockopts where the usespace passes
+PAGE_SIZE*10 optlen with real data and bpf prog sees only part of it.
+Now, if the bpf program modifies the buffer (say, flips some byte), we
+are back to square one. We either have to silently discard that buffer
+or reallocate/merge. My reasoning with data == NULL, is that at least
+there is a clear signal that the program can't access the data (and
+can look at optlen to see if the original buffer is indeed non-zero
+and maybe deny such requests?).
+At this point I'm really starting to think that maybe we should just
+vmalloc everything that is >PAGE_SIZE and add a sysclt to limit an
+upper bound :-/
+I'll try to think about this a bit more over the weekend.
