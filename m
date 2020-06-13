@@ -2,148 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBE4A1F83C6
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 16:54:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E4A31F8429
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 17:59:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726501AbgFMOy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 10:54:26 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:46538 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726479AbgFMOy0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 10:54:26 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05DEsM9l069851;
-        Sat, 13 Jun 2020 09:54:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1592060062;
-        bh=fharIubfP4/5q4WmJtQgrrpfXx2uoim9fw9RsMrQ1YA=;
-        h=From:To:CC:Subject:Date;
-        b=UqiuP/lhzX20rnk0cg2IBDABfVSvsmz4grzhQwdmE6KbDObzAzl1Yz1Nv41IRzXrq
-         RORtbktBjt4Ubai5bLp12+tAZgT0fZGflJfkrCiFi+UnkPT/eibcD8iCZ/2QqNrOQu
-         7kFRIlSUTjqcBKHfLzVuJryRvDcz6bCm1VKp059E=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 05DEsMQB089651
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 13 Jun 2020 09:54:22 -0500
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Sat, 13
- Jun 2020 09:54:22 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Sat, 13 Jun 2020 09:54:22 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05DEsLo3097626;
-        Sat, 13 Jun 2020 09:54:21 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Murali Karicheri <m-karicheri2@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH] net: ethernet: ti: ale: fix allmulti for nu type ale
-Date:   Sat, 13 Jun 2020 17:54:14 +0300
-Message-ID: <20200613145414.17190-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726762AbgFMP7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 11:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726609AbgFMP6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 11:58:22 -0400
+Received: from smtp.tuxdriver.com (tunnel92311-pt.tunnel.tserv13.ash1.ipv6.he.net [IPv6:2001:470:7:9c9::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 464A0C08C5C1;
+        Sat, 13 Jun 2020 08:58:22 -0700 (PDT)
+Received: from 2606-a000-111b-4634-0000-0000-0000-1bf2.inf6.spectrum.com ([2606:a000:111b:4634::1bf2] helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1jk8XY-0002Cu-MZ; Sat, 13 Jun 2020 11:57:55 -0400
+Date:   Sat, 13 Jun 2020 11:57:51 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yuanxzhang@fudan.edu.cn, kjlu@umn.edu,
+        Xin Tan <tanxin.ctf@gmail.com>
+Subject: Re: [PATCH] sctp: Fix sk_buff leak when receiving a datagram
+Message-ID: <20200613155751.GA161691@hmswarspite.think-freely.org>
+References: <1592051965-94731-1-git-send-email-xiyuyang19@fudan.edu.cn>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1592051965-94731-1-git-send-email-xiyuyang19@fudan.edu.cn>
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On AM65xx MCU CPSW2G NUSS and 66AK2E/L NUSS allmulti setting does not allow
-unregistered mcast packets to pass.
+On Sat, Jun 13, 2020 at 08:39:25PM +0800, Xiyu Yang wrote:
+> In sctp_skb_recv_datagram(), the function fetch a sk_buff object from
+> the receiving queue to "skb" by calling skb_peek() or __skb_dequeue()
+> and return its reference to the caller.
+> 
+> However, when calling __skb_dequeue() successfully, the function forgets
+> to hold a reference count of the "skb" object and directly return it,
+> causing a potential memory leak in the caller function.
+> 
+> Fix this issue by calling refcount_inc after __skb_dequeue()
+> successfully executed.
+> 
+> Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+> Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+> ---
+>  net/sctp/socket.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index d57e1a002ffc..4c8f0b83efd0 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -8990,6 +8990,8 @@ struct sk_buff *sctp_skb_recv_datagram(struct sock *sk, int flags,
+>  				refcount_inc(&skb->users);
+>  		} else {
+>  			skb = __skb_dequeue(&sk->sk_receive_queue);
+> +			if (skb)
+> +				refcount_inc(&skb->users);
+For completeness, you should probably use skb_get here, rather than refcount_inc
+directly.
 
-This happens, because ALE VLAN entries on these SoCs do not contain port
-masks for reg/unreg mcast packets, but instead store indexes of
-ALE_VLAN_MASK_MUXx_REG registers which intended for store port masks for
-reg/unreg mcast packets.
-This path was missed by commit 9d1f6447274f ("net: ethernet: ti: ale: fix
-seeing unreg mcast packets with promisc and allmulti disabled").
+Also, I'm not entirely sure I see how a memory leak can happen here.  we take an
+extra reference in the skb_peek clause of this code area because if we return an
+skb that continues to exist on the sk_receive_queue list, we legitimately have
+two users for the skb (the user who called sctp_skb_recv_datagram(...,MSG_PEEK),
+and the potential next caller who will actually dequeue the skb.
 
-Hence, fix it by taking into account ALE type in cpsw_ale_set_allmulti().
+In the else clause however, that condition doesn't exist.  the user count for
+the skb should alreday be 1, if the caller is the only user of the skb), or more
+than 1, if 1 or more callers have gotten a reference to the message using
+MSG_PEEK.
 
-Fixes: 9d1f6447274f ("net: ethernet: ti: ale: fix seeing unreg mcast packets with promisc and allmulti disabled")
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- drivers/net/ethernet/ti/cpsw_ale.c | 49 ++++++++++++++++++++++++------
- 1 file changed, 40 insertions(+), 9 deletions(-)
+I don't think this code is needed, and in fact will actually cause memory leaks,
+because theres no subsequent skb_unref call to drop refcount that you are adding
+here.
 
-diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
-index 8dc6be11b2ff..9ad872bfae3a 100644
---- a/drivers/net/ethernet/ti/cpsw_ale.c
-+++ b/drivers/net/ethernet/ti/cpsw_ale.c
-@@ -604,10 +604,44 @@ void cpsw_ale_set_unreg_mcast(struct cpsw_ale *ale, int unreg_mcast_mask,
- 	}
- }
- 
-+static void cpsw_ale_vlan_set_unreg_mcast(struct cpsw_ale *ale, u32 *ale_entry,
-+					  int allmulti)
-+{
-+	int unreg_mcast;
-+
-+	unreg_mcast =
-+		cpsw_ale_get_vlan_unreg_mcast(ale_entry,
-+					      ale->vlan_field_bits);
-+	if (allmulti)
-+		unreg_mcast |= ALE_PORT_HOST;
-+	else
-+		unreg_mcast &= ~ALE_PORT_HOST;
-+	cpsw_ale_set_vlan_unreg_mcast(ale_entry, unreg_mcast,
-+				      ale->vlan_field_bits);
-+}
-+
-+static void
-+cpsw_ale_vlan_set_unreg_mcast_idx(struct cpsw_ale *ale, u32 *ale_entry,
-+				  int allmulti)
-+{
-+	int unreg_mcast;
-+	int idx;
-+
-+	idx = cpsw_ale_get_vlan_unreg_mcast_idx(ale_entry);
-+
-+	unreg_mcast = readl(ale->params.ale_regs + ALE_VLAN_MASK_MUX(idx));
-+
-+	if (allmulti)
-+		unreg_mcast |= ALE_PORT_HOST;
-+	else
-+		unreg_mcast &= ~ALE_PORT_HOST;
-+
-+	writel(unreg_mcast, ale->params.ale_regs + ALE_VLAN_MASK_MUX(idx));
-+}
-+
- void cpsw_ale_set_allmulti(struct cpsw_ale *ale, int allmulti, int port)
- {
- 	u32 ale_entry[ALE_ENTRY_WORDS];
--	int unreg_mcast = 0;
- 	int type, idx;
- 
- 	for (idx = 0; idx < ale->params.ale_entries; idx++) {
-@@ -624,15 +658,12 @@ void cpsw_ale_set_allmulti(struct cpsw_ale *ale, int allmulti, int port)
- 		if (port != -1 && !(vlan_members & BIT(port)))
- 			continue;
- 
--		unreg_mcast =
--			cpsw_ale_get_vlan_unreg_mcast(ale_entry,
--						      ale->vlan_field_bits);
--		if (allmulti)
--			unreg_mcast |= ALE_PORT_HOST;
-+		if (!ale->params.nu_switch_ale)
-+			cpsw_ale_vlan_set_unreg_mcast(ale, ale_entry, allmulti);
- 		else
--			unreg_mcast &= ~ALE_PORT_HOST;
--		cpsw_ale_set_vlan_unreg_mcast(ale_entry, unreg_mcast,
--					      ale->vlan_field_bits);
-+			cpsw_ale_vlan_set_unreg_mcast_idx(ale, ale_entry,
-+							  allmulti);
-+
- 		cpsw_ale_write(ale, idx, ale_entry);
- 	}
- }
--- 
-2.17.1
+Neil
 
+>  		}
+>  
+>  		if (skb)
+> -- 
+> 2.7.4
+> 
+> 
