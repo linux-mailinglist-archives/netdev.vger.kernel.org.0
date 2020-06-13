@@ -2,131 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7988D1F8130
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 07:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 719371F8133
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 08:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726428AbgFMF6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 01:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725272AbgFMF6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 01:58:12 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6D4C03E96F;
-        Fri, 12 Jun 2020 22:58:11 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id b27so11123800qka.4;
-        Fri, 12 Jun 2020 22:58:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ooC6zDR4D9kUn0XYJNEVpFCkJ4RWM1cROne2/QW99bw=;
-        b=CXQ7IV7TIiEHNbDNvhZmY0SMeldOfH/MJdWYNQaFNLIUBdFbqeNnLSuzYfLeJMN4HO
-         8gsxX0QRFq9bIeUjfzZfZZc4j1/MAV0xV33rgAD+2xcIBAqzeHMMwZiBPpYeDQzZe7wz
-         1llbBQIinq+NLpjaGEFNT32Jry/c+4eaiIN7Ky2AiSRkGcN/3Euoa76wjK4UgKl8aWKa
-         3R3HijAfSH/+7ed7iCha7CVxtzOHTKdOBju7q8pok3a2qldlC9zsBlj674fbsRckqE15
-         97S1Cx3j519AS1csowGpJZL5i2DVTPPI0KWaAOXPYR0Fj4Y/SMyenzDNV5FgOYXatw9t
-         2wHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ooC6zDR4D9kUn0XYJNEVpFCkJ4RWM1cROne2/QW99bw=;
-        b=EuUqKRC9ye9XH9cXTx95HFoQMO1lUvmAvFOMpj70F1+iPn/60gphm3g/FSAg0k+VJ3
-         KlyUjNlsAUCQXU+KqNwDcaoQh3wXwspPNhyDIIgCaxF10PuOxTTtbhFC957qc1DuzJ74
-         U+tKfcV9zr8XmvSJ6oUm6gPuY5+ck8L+X84fv7s3NOad/Hd/skp7JMAKZcuybDQV2YGy
-         WltjsetQFjke5P4lbwALhqtFg3+28U/w2EWCY6XY/YQrq0WiENJY5F8G3MHXkzx2gL8k
-         FMAwueGN+Z/hlE8io/+xpw8OC7yyqj0SjpIKDWSsMvKPPJHjvZ3pnVVJGh1l62M6+2P1
-         4EDQ==
-X-Gm-Message-State: AOAM5324mLPbCpWyeqmGSdzECr4A1c/Qhj0+/7Mt/9onmfk3zMK2eDH/
-        K37Mc9WUGEGNwv5/GlIgQKpSZX8IJX4X2XH3r5s=
-X-Google-Smtp-Source: ABdhPJzYcSdDs9GKpPp+/VbL8vTr1s6QD/8Id1USDo94Qg4iufIANplx6KVZr+wKynEyAQi/TKRBJncRyhWVlhq/vT4=
-X-Received: by 2002:a37:a89:: with SMTP id 131mr6282241qkk.92.1592027890424;
- Fri, 12 Jun 2020 22:58:10 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200612223150.1177182-1-andriin@fb.com> <20200612223150.1177182-9-andriin@fb.com>
- <20200613034507.wjhd4z6dsda3pz7c@ast-mbp>
-In-Reply-To: <20200613034507.wjhd4z6dsda3pz7c@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 12 Jun 2020 22:57:59 -0700
-Message-ID: <CAEf4BzaHVRxkiDbTGashiuakXFBRYvDsQmJ0O08xFijKXiAwSg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 8/8] tools/bpftool: show PIDs with FDs open
- against BPF map/prog/link/btf
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>, Hao Luo <haoluo@google.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Quentin Monnet <quentin@isovalent.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726401AbgFMGA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 02:00:56 -0400
+Received: from mxhk.zte.com.cn ([63.217.80.70]:60772 "EHLO mxhk.zte.com.cn"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725272AbgFMGA4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 13 Jun 2020 02:00:56 -0400
+Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
+        by Forcepoint Email with ESMTPS id 89F1FD6F033CB2C894DE;
+        Sat, 13 Jun 2020 14:00:50 +0800 (CST)
+Received: from notes_smtp.zte.com.cn (notessmtp.zte.com.cn [10.30.1.239])
+        by mse-fl2.zte.com.cn with ESMTP id 05D60mhR008458;
+        Sat, 13 Jun 2020 14:00:48 +0800 (GMT-8)
+        (envelope-from wang.yi59@zte.com.cn)
+Received: from fox-host8.localdomain ([10.74.120.8])
+          by szsmtp06.zte.com.cn (Lotus Domino Release 8.5.3FP6)
+          with ESMTP id 2020061314013247-3927540 ;
+          Sat, 13 Jun 2020 14:01:32 +0800 
+From:   Yi Wang <wang.yi59@zte.com.cn>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, mst@redhat.com, hkallweit1@gmail.com,
+        snelson@pensando.io, andriy.shevchenko@linux.intel.com,
+        xiyou.wangcong@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
+        wang.yi59@zte.com.cn, wang.liang82@zte.com.cn,
+        Liao Pingfang <liao.pingfang@zte.com.cn>
+Subject: [PATCH v3] net: atm: Remove the error message according to the atomic context
+Date:   Sat, 13 Jun 2020 14:03:26 +0800
+Message-Id: <1592028206-19557-1-git-send-email-wang.yi59@zte.com.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-MIMETrack: Itemize by SMTP Server on SZSMTP06/server/zte_ltd(Release 8.5.3FP6|November
+ 21, 2013) at 2020-06-13 14:01:32,
+        Serialize by Router on notes_smtp/zte_ltd(Release 9.0.1FP7|August  17, 2016) at
+ 2020-06-13 14:00:49,
+        Serialize complete at 2020-06-13 14:00:49
+X-MAIL: mse-fl2.zte.com.cn 05D60mhR008458
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 12, 2020 at 8:45 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, Jun 12, 2020 at 03:31:50PM -0700, Andrii Nakryiko wrote:
-> > Add bpf_iter-based way to find all the processes that hold open FDs against
-> > BPF object (map, prog, link, btf). Add new flag (-o, for "ownership", given
-> > -p is already taken) to trigger collection and output of these PIDs.
-> >
-> > Sample output for each of 4 BPF objects:
-> >
-> > $ sudo ./bpftool -o prog show
-> > 1992: cgroup_skb  name egress_alt  tag 9ad187367cf2b9e8  gpl
-> >         loaded_at 2020-06-12T14:18:10-0700  uid 0
-> >         xlated 48B  jited 59B  memlock 4096B  map_ids 2074
-> >         btf_id 460
-> >         pids: 913709,913732,913733,913734
-> > 2062: cgroup_device  tag 8c42dee26e8cd4c2  gpl
-> >         loaded_at 2020-06-12T14:37:52-0700  uid 0
-> >         xlated 648B  jited 409B  memlock 4096B
-> >         pids: 1
-> >
-> > $ sudo ./bpftool -o map show
-> > 2074: array  name test_cgr.bss  flags 0x400
-> >         key 4B  value 8B  max_entries 1  memlock 8192B
-> >         btf_id 460
-> >         pids: 913709,913732,913733,913734
-> >
-> > $ sudo ./bpftool -o link show
-> > 82: cgroup  prog 1992
-> >         cgroup_id 0  attach_type egress
-> >         pids: 913709,913732,913733,913734
-> > 86: cgroup  prog 1992
-> >         cgroup_id 0  attach_type egress
-> >         pids: 913709,913732,913733,913734
->
-> This is awesome.
+From: Liao Pingfang <liao.pingfang@zte.com.cn>
 
-Thanks.
+Looking into the context (atomic!) and the error message should be dropped.
 
->
-> Why extra flag though? I think it's so useful that everyone would want to see
+Signed-off-by: Liao Pingfang <liao.pingfang@zte.com.cn>
+---
+Changes in v3: remove {} as there is only one statement left.
 
-No good reason apart from "being safe by default". If turned on by
-default, bpftool would need to probe for bpf_iter support first. I can
-add probing and do this by default.
+ net/atm/lec.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-> this by default. Also the word 'pid' has kernel meaning or user space meaning?
-> Looks like kernel then bpftool should say 'tid'.
+diff --git a/net/atm/lec.c b/net/atm/lec.c
+index ca37f5a..875fc0b 100644
+--- a/net/atm/lec.c
++++ b/net/atm/lec.c
+@@ -1536,10 +1536,8 @@ static struct lec_arp_table *make_entry(struct lec_priv *priv,
+ 	struct lec_arp_table *to_return;
+ 
+ 	to_return = kzalloc(sizeof(struct lec_arp_table), GFP_ATOMIC);
+-	if (!to_return) {
+-		pr_info("LEC: Arp entry kmalloc failed\n");
++	if (!to_return)
+ 		return NULL;
+-	}
+ 	ether_addr_copy(to_return->mac_addr, mac_addr);
+ 	INIT_HLIST_NODE(&to_return->next);
+ 	timer_setup(&to_return->timer, lec_arp_expire_arp, 0);
+-- 
+2.9.5
 
-No, its process ID in user-space sense. See task->tgid in
-pid_iter.bpf.c. I figured thread ID isn't all that useful.
-
-> Could you capture comm as well and sort it by comm, like:
->
-> $ sudo ./bpftool link show
-> 82: cgroup  prog 1992
->         cgroup_id 0  attach_type egress
->         systemd(1), firewall(913709 913732), logger(913733 913734)
-
-Yep, comm is useful, I'll add that. Grouping by comm is kind of a
-pain, though, plus usually there will be one process only. So let me
-start with doing comm (pid) for each PID independently. I think that
-will be as good in practice.
