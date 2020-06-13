@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 643F11F831C
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 13:32:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70F8D1F831E
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 13:32:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbgFMLbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 07:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50940 "EHLO
+        id S1726326AbgFMLcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 07:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbgFMLby (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 07:31:54 -0400
+        with ESMTP id S1726312AbgFMLcL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 07:32:11 -0400
 Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A8BC03E96F;
-        Sat, 13 Jun 2020 04:31:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24033C03E96F;
+        Sat, 13 Jun 2020 04:32:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
          s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
         :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=KyO0vGi2TjvDRxLPQB8Py79mqlEZvhNvikkwjGFldRc=; b=MC0GiR34PYZEvEf3JE1ZFNfduz
-        ygAdx6/Z9FsC1o8uwKI42UKkNdhQfYRp1BWZzkcdNxtDdYunJfcjBWFMwvm9jU/7s+0v0QH01sZhU
-        XEF4RaXwVH4LtRv1IEbdzTXyBnEUssp71Bnj3l4IbYJ72SgB3AvlskOL1f8kJOtVbPtvq7z1m3uPW
-        z6JB4yL1MsmXc30EOFxBwELSJBltRaw6udBrkCUzfbxwPtmI62TAggObVxZe/pDZ+JZdLf/BVgEdk
-        d5eq98khNqkubs1mJlzLdeGsmyE6Mmz8fmiIl0yQ/ysUr0OY0vaziZZfdzH0FAoMGheWhOEFLIivX
-        4C2pe+kA==;
+        bh=K79/iGq31+NZMS1KJxtKrY3GxVNiK0BSonqpEBccYWU=; b=goEKjyKqoKsL1ot1aQqRzLFVF/
+        86T4OJbuI4ondPkaVVT6CEW8BwbUb++EL+S8GyxwSfkLAB90r7rIGBMGoNvskdoJ21QjPvZZ+hAw2
+        WI3dYklfhvxWqxFWHdIKFZ8DmakgOzGuhmNPSnw7oXHog9p+Zo/N1n4DUmz24ZYiIPA7z/OIK80m2
+        yn+V0l+oYYjYFG8MOZ3Jj54n2oEW5wcIw/qR7d7nsCssxax1dsf5WTtq2999SpW8eHxwC6J6dvla+
+        0E8pbMs1M44mTsKasJ2kDYJNVgC97J3MduR4WbKzIvX66kV2Aqui3ETJ6Eckhn4QbYEKJlzVdAwAB
+        tSoeVbvw==;
 Received: from noodles by the.earth.li with local (Exim 4.92)
         (envelope-from <noodles@earth.li>)
-        id 1jk4O5-0000ay-EG; Sat, 13 Jun 2020 12:31:49 +0100
-Date:   Sat, 13 Jun 2020 12:31:49 +0100
+        id 1jk4ON-0000eL-8g; Sat, 13 Jun 2020 12:32:07 +0100
+Date:   Sat, 13 Jun 2020 12:32:07 +0100
 From:   Jonathan McDowell <noodles@earth.li>
 To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,8 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v4 1/2] net: dsa: qca8k: Switch to PHYLINK instead of
- PHYLIB
-Message-ID: <f0f9232fa46d04ba0037305098d8ef17b2ffcacc.1592047530.git.noodles@earth.li>
+Subject: [RFC PATCH v4 2/2] net: dsa: qca8k: Improve SGMII interface handling
+Message-ID: <05dba86946541267e64438c2001aaeea16916391.1592047530.git.noodles@earth.li>
 References: <cover.1592047530.git.noodles@earth.li>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -53,420 +52,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the driver to use the new PHYLINK callbacks, removing the
-legacy adjust_link callback.
+This patch improves the handling of the SGMII interface on the QCA8K
+devices. Previously the driver did no configuration of the port, even if
+it was selected. We now configure it up in the appropriate
+PHY/MAC/Base-X mode depending on what phylink tells us we are connected
+to and ensure it is enabled.
+
+Tested with a device where the CPU connection is RGMII (i.e. the common
+current use case) + one where the CPU connection is SGMII. I don't have
+any devices where the SGMII interface is brought out to something other
+than the CPU.
 
 Signed-off-by: Jonathan McDowell <noodles@earth.li>
 ---
- drivers/net/dsa/qca8k.c | 308 +++++++++++++++++++++++++++-------------
- 1 file changed, 211 insertions(+), 97 deletions(-)
+ drivers/net/dsa/qca8k.c | 33 ++++++++++++++++++++++++++++++++-
+ drivers/net/dsa/qca8k.h | 13 +++++++++++++
+ 2 files changed, 45 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index d2b5ab403e06..dadf9ab2c14a 100644
+index dadf9ab2c14a..da7d2b92ed3e 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -14,6 +14,7 @@
- #include <linux/of_platform.h>
- #include <linux/if_bridge.h>
- #include <linux/mdio.h>
-+#include <linux/phylink.h>
- #include <linux/gpio/consumer.h>
- #include <linux/etherdevice.h>
+@@ -673,6 +673,9 @@ qca8k_setup(struct dsa_switch *ds)
+ 	/* Flush the FDB table */
+ 	qca8k_fdb_flush(priv);
  
-@@ -418,55 +419,6 @@ qca8k_mib_init(struct qca8k_priv *priv)
- 	mutex_unlock(&priv->reg_mutex);
- }
- 
--static int
--qca8k_set_pad_ctrl(struct qca8k_priv *priv, int port, int mode)
--{
--	u32 reg, val;
--
--	switch (port) {
--	case 0:
--		reg = QCA8K_REG_PORT0_PAD_CTRL;
--		break;
--	case 6:
--		reg = QCA8K_REG_PORT6_PAD_CTRL;
--		break;
--	default:
--		pr_err("Can't set PAD_CTRL on port %d\n", port);
--		return -EINVAL;
--	}
--
--	/* Configure a port to be directly connected to an external
--	 * PHY or MAC.
--	 */
--	switch (mode) {
--	case PHY_INTERFACE_MODE_RGMII:
--		/* RGMII mode means no delay so don't enable the delay */
--		val = QCA8K_PORT_PAD_RGMII_EN;
--		qca8k_write(priv, reg, val);
--		break;
--	case PHY_INTERFACE_MODE_RGMII_ID:
--		/* RGMII_ID needs internal delay. This is enabled through
--		 * PORT5_PAD_CTRL for all ports, rather than individual port
--		 * registers
--		 */
--		qca8k_write(priv, reg,
--			    QCA8K_PORT_PAD_RGMII_EN |
--			    QCA8K_PORT_PAD_RGMII_TX_DELAY(QCA8K_MAX_DELAY) |
--			    QCA8K_PORT_PAD_RGMII_RX_DELAY(QCA8K_MAX_DELAY));
--		qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
--			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
--		break;
--	case PHY_INTERFACE_MODE_SGMII:
--		qca8k_write(priv, reg, QCA8K_PORT_PAD_SGMII_EN);
--		break;
--	default:
--		pr_err("xMII mode %d not supported\n", mode);
--		return -EINVAL;
--	}
--
--	return 0;
--}
--
- static void
- qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable)
- {
-@@ -639,9 +591,7 @@ static int
- qca8k_setup(struct dsa_switch *ds)
- {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
--	phy_interface_t phy_mode = PHY_INTERFACE_MODE_NA;
- 	int ret, i;
--	u32 mask;
- 
- 	/* Make sure that port 0 is the cpu port */
- 	if (!dsa_is_cpu_port(ds, 0)) {
-@@ -661,24 +611,9 @@ qca8k_setup(struct dsa_switch *ds)
- 	if (ret)
- 		return ret;
- 
--	/* Initialize CPU port pad mode (xMII type, delays...) */
--	ret = of_get_phy_mode(dsa_to_port(ds, QCA8K_CPU_PORT)->dn, &phy_mode);
--	if (ret) {
--		pr_err("Can't find phy-mode for master device\n");
--		return ret;
--	}
--	ret = qca8k_set_pad_ctrl(priv, QCA8K_CPU_PORT, phy_mode);
--	if (ret < 0)
--		return ret;
--
--	/* Enable CPU Port, force it to maximum bandwidth and full-duplex */
--	mask = QCA8K_PORT_STATUS_SPEED_1000 | QCA8K_PORT_STATUS_TXFLOW |
--	       QCA8K_PORT_STATUS_RXFLOW | QCA8K_PORT_STATUS_DUPLEX;
--	qca8k_write(priv, QCA8K_REG_PORT_STATUS(QCA8K_CPU_PORT), mask);
-+	/* Enable CPU Port */
- 	qca8k_reg_set(priv, QCA8K_REG_GLOBAL_FW_CTRL0,
- 		      QCA8K_GLOBAL_FW_CTRL0_CPU_PORT_EN);
--	qca8k_port_set_status(priv, QCA8K_CPU_PORT, 1);
--	priv->port_sts[QCA8K_CPU_PORT].enabled = 1;
- 
- 	/* Enable MIB counters */
- 	qca8k_mib_init(priv);
-@@ -693,10 +628,9 @@ qca8k_setup(struct dsa_switch *ds)
- 		qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(i),
- 			  QCA8K_PORT_LOOKUP_MEMBER, 0);
- 
--	/* Disable MAC by default on all user ports */
-+	/* Disable MAC by default on all ports */
- 	for (i = 1; i < QCA8K_NUM_PORTS; i++)
--		if (dsa_is_user_port(ds, i))
--			qca8k_port_set_status(priv, i, 0);
-+		qca8k_port_set_status(priv, i, 0);
- 
- 	/* Forward all unknown frames to CPU port for Linux processing */
- 	qca8k_write(priv, QCA8K_REG_GLOBAL_FW_CTRL1,
-@@ -713,7 +647,7 @@ qca8k_setup(struct dsa_switch *ds)
- 				  QCA8K_PORT_LOOKUP_MEMBER, dsa_user_ports(ds));
- 		}
- 
--		/* Invividual user ports get connected to CPU port only */
-+		/* Individual user ports get connected to CPU port only */
- 		if (dsa_is_user_port(ds, i)) {
- 			int shift = 16 * (i % 2);
- 
-@@ -743,44 +677,222 @@ qca8k_setup(struct dsa_switch *ds)
- }
- 
- static void
--qca8k_adjust_link(struct dsa_switch *ds, int port, struct phy_device *phy)
-+qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
-+			 const struct phylink_link_state *state)
- {
- 	struct qca8k_priv *priv = ds->priv;
- 	u32 reg;
- 
--	/* Force fixed-link setting for CPU port, skip others. */
--	if (!phy_is_pseudo_fixed_link(phy))
-+	switch (port) {
-+	case 0: /* 1st CPU port */
-+		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
-+		    state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
-+		    state->interface != PHY_INTERFACE_MODE_SGMII)
-+			return;
++	/* We don't have interrupts for link changes, so we need to poll */
++	priv->ds->pcs_poll = true;
 +
-+		reg = QCA8K_REG_PORT0_PAD_CTRL;
-+		break;
-+	case 1:
-+	case 2:
-+	case 3:
-+	case 4:
-+	case 5:
-+		/* Internal PHY, nothing to do */
-+		return;
-+	case 6: /* 2nd CPU port / external PHY */
-+		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
-+		    state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
-+		    state->interface != PHY_INTERFACE_MODE_SGMII &&
-+		    state->interface != PHY_INTERFACE_MODE_1000BASEX)
-+			return;
-+
-+		reg = QCA8K_REG_PORT6_PAD_CTRL;
-+		break;
-+	default:
-+		dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
-+		return;
-+	}
-+
-+	if (port != 6 && phylink_autoneg_inband(mode)) {
-+		dev_err(ds->dev, "%s: in-band negotiation unsupported\n",
-+			__func__);
-+		return;
-+	}
-+
-+	switch (state->interface) {
-+	case PHY_INTERFACE_MODE_RGMII:
-+		/* RGMII mode means no delay so don't enable the delay */
-+		qca8k_write(priv, reg, QCA8K_PORT_PAD_RGMII_EN);
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+		/* RGMII_ID needs internal delay. This is enabled through
-+		 * PORT5_PAD_CTRL for all ports, rather than individual port
-+		 * registers
-+		 */
-+		qca8k_write(priv, reg,
-+			    QCA8K_PORT_PAD_RGMII_EN |
-+			    QCA8K_PORT_PAD_RGMII_TX_DELAY(QCA8K_MAX_DELAY) |
-+			    QCA8K_PORT_PAD_RGMII_RX_DELAY(QCA8K_MAX_DELAY));
-+		qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
-+			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
-+		break;
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+		/* Enable SGMII on the port */
-+		qca8k_write(priv, reg, QCA8K_PORT_PAD_SGMII_EN);
-+		break;
-+	default:
-+		dev_err(ds->dev, "xMII mode %s not supported for port %d\n",
-+			phy_modes(state->interface), port);
- 		return;
-+	}
-+}
- 
--	/* Set port speed */
--	switch (phy->speed) {
--	case 10:
--		reg = QCA8K_PORT_STATUS_SPEED_10;
-+static void
-+qca8k_phylink_validate(struct dsa_switch *ds, int port,
-+		       unsigned long *supported,
-+		       struct phylink_link_state *state)
-+{
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-+
-+	switch (port) {
-+	case 0: /* 1st CPU port */
-+		if (state->interface != PHY_INTERFACE_MODE_NA &&
-+		    state->interface != PHY_INTERFACE_MODE_RGMII &&
-+		    state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
-+		    state->interface != PHY_INTERFACE_MODE_SGMII)
-+			goto unsupported;
- 		break;
--	case 100:
--		reg = QCA8K_PORT_STATUS_SPEED_100;
-+	case 1:
-+	case 2:
-+	case 3:
-+	case 4:
-+	case 5:
-+		/* Internal PHY */
-+		if (state->interface != PHY_INTERFACE_MODE_NA &&
-+		    state->interface != PHY_INTERFACE_MODE_GMII)
-+			goto unsupported;
- 		break;
--	case 1000:
--		reg = QCA8K_PORT_STATUS_SPEED_1000;
-+	case 6: /* 2nd CPU port / external PHY */
-+		if (state->interface != PHY_INTERFACE_MODE_NA &&
-+		    state->interface != PHY_INTERFACE_MODE_RGMII &&
-+		    state->interface != PHY_INTERFACE_MODE_RGMII_ID &&
-+		    state->interface != PHY_INTERFACE_MODE_SGMII &&
-+		    state->interface != PHY_INTERFACE_MODE_1000BASEX)
-+			goto unsupported;
- 		break;
- 	default:
--		dev_dbg(priv->dev, "port%d link speed %dMbps not supported.\n",
--			port, phy->speed);
-+unsupported:
-+		linkmode_zero(supported);
- 		return;
- 	}
- 
--	/* Set duplex mode */
--	if (phy->duplex == DUPLEX_FULL)
--		reg |= QCA8K_PORT_STATUS_DUPLEX;
-+	phylink_set_port_modes(mask);
-+	phylink_set(mask, Autoneg);
-+
-+	phylink_set(mask, 1000baseT_Full);
-+	phylink_set(mask, 10baseT_Half);
-+	phylink_set(mask, 10baseT_Full);
-+	phylink_set(mask, 100baseT_Half);
-+	phylink_set(mask, 100baseT_Full);
-+
-+	if (state->interface == PHY_INTERFACE_MODE_1000BASEX)
-+		phylink_set(mask, 1000baseX_Full);
-+
-+	phylink_set(mask, Pause);
-+	phylink_set(mask, Asym_Pause);
-+
-+	linkmode_and(supported, supported, mask);
-+	linkmode_and(state->advertising, state->advertising, mask);
-+}
-+
-+static int
-+qca8k_phylink_mac_link_state(struct dsa_switch *ds, int port,
-+			     struct phylink_link_state *state)
-+{
-+	struct qca8k_priv *priv = ds->priv;
-+	u32 reg;
- 
--	/* Force flow control */
--	if (dsa_is_cpu_port(ds, port))
--		reg |= QCA8K_PORT_STATUS_RXFLOW | QCA8K_PORT_STATUS_TXFLOW;
-+	reg = qca8k_read(priv, QCA8K_REG_PORT_STATUS(port));
-+
-+	state->link = !!(reg & QCA8K_PORT_STATUS_LINK_UP);
-+	state->an_complete = state->link;
-+	state->an_enabled = !!(reg & QCA8K_PORT_STATUS_LINK_AUTO);
-+	state->duplex = (reg & QCA8K_PORT_STATUS_DUPLEX) ? DUPLEX_FULL :
-+							   DUPLEX_HALF;
-+
-+	switch (reg & QCA8K_PORT_STATUS_SPEED) {
-+	case QCA8K_PORT_STATUS_SPEED_10:
-+		state->speed = SPEED_10;
-+		break;
-+	case QCA8K_PORT_STATUS_SPEED_100:
-+		state->speed = SPEED_100;
-+		break;
-+	case QCA8K_PORT_STATUS_SPEED_1000:
-+		state->speed = SPEED_1000;
-+		break;
-+	default:
-+		state->speed = SPEED_UNKNOWN;
-+		break;
-+	}
-+
-+	state->pause = MLO_PAUSE_NONE;
-+	if (reg & QCA8K_PORT_STATUS_RXFLOW)
-+		state->pause |= MLO_PAUSE_RX;
-+	if (reg & QCA8K_PORT_STATUS_TXFLOW)
-+		state->pause |= MLO_PAUSE_TX;
-+
-+	return 1;
-+}
-+
-+static void
-+qca8k_phylink_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
-+			    phy_interface_t interface)
-+{
-+	struct qca8k_priv *priv = ds->priv;
- 
--	/* Force link down before changing MAC options */
- 	qca8k_port_set_status(priv, port, 0);
-+}
-+
-+static void
-+qca8k_phylink_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
-+			  phy_interface_t interface, struct phy_device *phydev,
-+			  int speed, int duplex, bool tx_pause, bool rx_pause)
-+{
-+	struct qca8k_priv *priv = ds->priv;
-+	u32 reg;
-+
-+	if (phylink_autoneg_inband(mode)) {
-+		reg = QCA8K_PORT_STATUS_LINK_AUTO;
-+	} else {
-+		switch (speed) {
-+		case SPEED_10:
-+			reg = QCA8K_PORT_STATUS_SPEED_10;
-+			break;
-+		case SPEED_100:
-+			reg = QCA8K_PORT_STATUS_SPEED_100;
-+			break;
-+		case SPEED_1000:
-+			reg = QCA8K_PORT_STATUS_SPEED_1000;
-+			break;
-+		default:
-+			reg = QCA8K_PORT_STATUS_LINK_AUTO;
-+			break;
-+		}
-+
-+		if (duplex == DUPLEX_FULL)
-+			reg |= QCA8K_PORT_STATUS_DUPLEX;
-+
-+		if (rx_pause || dsa_is_cpu_port(ds, port))
-+			reg |= QCA8K_PORT_STATUS_RXFLOW;
-+
-+		if (tx_pause || dsa_is_cpu_port(ds, port))
-+			reg |= QCA8K_PORT_STATUS_TXFLOW;
-+	}
-+
-+	reg |= QCA8K_PORT_STATUS_TXMAC | QCA8K_PORT_STATUS_RXMAC;
-+
- 	qca8k_write(priv, QCA8K_REG_PORT_STATUS(port), reg);
--	qca8k_port_set_status(priv, port, 1);
- }
- 
- static void
-@@ -937,13 +1049,11 @@ qca8k_port_enable(struct dsa_switch *ds, int port,
- {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
- 
--	if (!dsa_is_user_port(ds, port))
--		return 0;
--
- 	qca8k_port_set_status(priv, port, 1);
- 	priv->port_sts[port].enabled = 1;
- 
--	phy_support_asym_pause(phy);
-+	if (dsa_is_user_port(ds, port))
-+		phy_support_asym_pause(phy);
- 
  	return 0;
  }
-@@ -1026,7 +1136,6 @@ qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
- static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.get_tag_protocol	= qca8k_get_tag_protocol,
- 	.setup			= qca8k_setup,
--	.adjust_link            = qca8k_adjust_link,
- 	.get_strings		= qca8k_get_strings,
- 	.get_ethtool_stats	= qca8k_get_ethtool_stats,
- 	.get_sset_count		= qca8k_get_sset_count,
-@@ -1040,6 +1149,11 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.port_fdb_add		= qca8k_port_fdb_add,
- 	.port_fdb_del		= qca8k_port_fdb_del,
- 	.port_fdb_dump		= qca8k_port_fdb_dump,
-+	.phylink_validate	= qca8k_phylink_validate,
-+	.phylink_mac_link_state	= qca8k_phylink_mac_link_state,
-+	.phylink_mac_config	= qca8k_phylink_mac_config,
-+	.phylink_mac_link_down	= qca8k_phylink_mac_link_down,
-+	.phylink_mac_link_up	= qca8k_phylink_mac_link_up,
- };
  
- static int
+@@ -681,7 +684,7 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 			 const struct phylink_link_state *state)
+ {
+ 	struct qca8k_priv *priv = ds->priv;
+-	u32 reg;
++	u32 reg, val;
+ 
+ 	switch (port) {
+ 	case 0: /* 1st CPU port */
+@@ -740,6 +743,34 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 	case PHY_INTERFACE_MODE_1000BASEX:
+ 		/* Enable SGMII on the port */
+ 		qca8k_write(priv, reg, QCA8K_PORT_PAD_SGMII_EN);
++
++		/* Enable/disable SerDes auto-negotiation as necessary */
++		val = qca8k_read(priv, QCA8K_REG_PWS);
++		if (phylink_autoneg_inband(mode))
++			val &= ~QCA8K_PWS_SERDES_AEN_DIS;
++		else
++			val |= QCA8K_PWS_SERDES_AEN_DIS;
++		qca8k_write(priv, QCA8K_REG_PWS, val);
++
++		/* Configure the SGMII parameters */
++		val = qca8k_read(priv, QCA8K_REG_SGMII_CTRL);
++
++		val |= QCA8K_SGMII_EN_PLL | QCA8K_SGMII_EN_RX |
++			QCA8K_SGMII_EN_TX | QCA8K_SGMII_EN_SD;
++
++		if (dsa_is_cpu_port(ds, port)) {
++			/* CPU port, we're talking to the CPU MAC, be a PHY */
++			val &= ~QCA8K_SGMII_MODE_CTRL_MASK;
++			val |= QCA8K_SGMII_MODE_CTRL_PHY;
++		} else if (state->interface == PHY_INTERFACE_MODE_SGMII) {
++			val &= ~QCA8K_SGMII_MODE_CTRL_MASK;
++			val |= QCA8K_SGMII_MODE_CTRL_MAC;
++		} else if (state->interface == PHY_INTERFACE_MODE_1000BASEX) {
++			val &= ~QCA8K_SGMII_MODE_CTRL_MASK;
++			val |= QCA8K_SGMII_MODE_CTRL_BASEX;
++		}
++
++		qca8k_write(priv, QCA8K_REG_SGMII_CTRL, val);
+ 		break;
+ 	default:
+ 		dev_err(ds->dev, "xMII mode %s not supported for port %d\n",
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index 42d6ea24eb14..10ef2bca2cde 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -36,6 +36,8 @@
+ #define   QCA8K_MAX_DELAY				3
+ #define   QCA8K_PORT_PAD_RGMII_RX_DELAY_EN		BIT(24)
+ #define   QCA8K_PORT_PAD_SGMII_EN			BIT(7)
++#define QCA8K_REG_PWS					0x010
++#define   QCA8K_PWS_SERDES_AEN_DIS			BIT(7)
+ #define QCA8K_REG_MODULE_EN				0x030
+ #define   QCA8K_MODULE_EN_MIB				BIT(0)
+ #define QCA8K_REG_MIB					0x034
+@@ -69,6 +71,7 @@
+ #define   QCA8K_PORT_STATUS_LINK_UP			BIT(8)
+ #define   QCA8K_PORT_STATUS_LINK_AUTO			BIT(9)
+ #define   QCA8K_PORT_STATUS_LINK_PAUSE			BIT(10)
++#define   QCA8K_PORT_STATUS_FLOW_AUTO			BIT(12)
+ #define QCA8K_REG_PORT_HDR_CTRL(_i)			(0x9c + (_i * 4))
+ #define   QCA8K_PORT_HDR_CTRL_RX_MASK			GENMASK(3, 2)
+ #define   QCA8K_PORT_HDR_CTRL_RX_S			2
+@@ -77,6 +80,16 @@
+ #define   QCA8K_PORT_HDR_CTRL_ALL			2
+ #define   QCA8K_PORT_HDR_CTRL_MGMT			1
+ #define   QCA8K_PORT_HDR_CTRL_NONE			0
++#define QCA8K_REG_SGMII_CTRL				0x0e0
++#define   QCA8K_SGMII_EN_PLL				BIT(1)
++#define   QCA8K_SGMII_EN_RX				BIT(2)
++#define   QCA8K_SGMII_EN_TX				BIT(3)
++#define   QCA8K_SGMII_EN_SD				BIT(4)
++#define   QCA8K_SGMII_CLK125M_DELAY			BIT(7)
++#define   QCA8K_SGMII_MODE_CTRL_MASK			(BIT(22) | BIT(23))
++#define   QCA8K_SGMII_MODE_CTRL_BASEX			(0 << 22)
++#define   QCA8K_SGMII_MODE_CTRL_PHY			(1 << 22)
++#define   QCA8K_SGMII_MODE_CTRL_MAC			(2 << 22)
+ 
+ /* EEE control registers */
+ #define QCA8K_REG_EEE_CTRL				0x100
 -- 
 2.20.1
 
