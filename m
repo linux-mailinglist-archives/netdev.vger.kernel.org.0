@@ -2,148 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CF111F8432
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 18:03:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 408351F8477
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 19:52:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726460AbgFMQDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 12:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
+        id S1726501AbgFMRwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 13:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726361AbgFMQDm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 12:03:42 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E837C03E96F
-        for <netdev@vger.kernel.org>; Sat, 13 Jun 2020 09:03:42 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id 9so14385535ljv.5
-        for <netdev@vger.kernel.org>; Sat, 13 Jun 2020 09:03:42 -0700 (PDT)
+        with ESMTP id S1726277AbgFMRwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 13:52:21 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1BF6C03E96F;
+        Sat, 13 Jun 2020 10:52:20 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id x189so4556771iof.9;
+        Sat, 13 Jun 2020 10:52:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/07B8VBrY9dx2b+nvEtQZF8YJfWZ/zNGmrpqGO1fpYQ=;
-        b=vAF6Nfc6yOR+w1Yc6S9vzGTNICwtnb+gKbummNGSd+8kaL62em58T4Geux+sQfL+oD
-         1FLEwkhbjfac6jJKVfTE9oXcxXMlFbt4mnNr+6uxkAmiYDFEBdiCFTeUr8VDpr92R6YQ
-         62qDMRxF4CGk++wS6XFzKhdpRBjJAjGkXZU4pcLlucL/TO95S9RyCtBqsth/6mBixEfB
-         Ci2YbkXs6cBXoTZQ3YcuPK562lOuo8n1k+/NaoTX/G/JlkZtl05TyQzmfcSKmbbJTcxj
-         HMOUohIQjthE2jvdxVTjQC6/Fu+lemRRwx4gK4M533znLdVt0w41VmmOXIDvA2zzCfzK
-         Ug3Q==
+        bh=zohJCjdH5WGCVYNdwZ7CTrdR3aOqxAG5fyOBK5BztPc=;
+        b=EUObILvwjkSPfOGbLkzWJI+bN4YkEE1QMRNu6obBM54ATHFDLMaR8jcldK29nUeBLh
+         4jdNSXAntcPwcBPMW19IVFfCQ3b6eT4uMd1knpz+5Ym01z2ht+dS9XmMBhriBt1bYkrR
+         8F14Hp8FNOGHuKK5kNoflJa0hQWBtXrgbTWKKXH8T/jvf3Z2y78fHcHAtSXevXhpOR3c
+         rbqd1cY0S8jO+i4iDRSWSaUlH3vJRTdlPWA3FDrc6/oKEnJdzCBc8QcBrbFuNgbIxlRW
+         AW8PKX2mdWIEVMKvBQv2Fn7hp6tSkaO+KfMclXgQfPHTCYQGmAyZ1IGzqKAJgAQEI5eV
+         gM9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/07B8VBrY9dx2b+nvEtQZF8YJfWZ/zNGmrpqGO1fpYQ=;
-        b=jkfi8ZSIOtZeIsMR41R1QplTNHCuS1wcSY7aLxOTN2HE+CDkK/jfcWJ7ryv8bR6c5L
-         +dhACeqeU8AafYP/mYfoLqv6STepreO07I0ywSq3AVb65T/7HqZS/eeFiA4KamA5kWdk
-         S9TnZLYJDiZYWTLc59etUdlTlh4+U/Pr2ohDO/ErSjSjo1BleujWVKKd7kzcWBbQDxc5
-         8+eVGitSQdpQtD/n32yXxgeiM1wjqz7IRCH7ssQV3zjA4bXCzCFtofoEGT83KX0ADqm3
-         knPURMIXLdSVDAiMbOnyg6uSfr+3UM7Rl0QvzkaLTvNVRp9HSpyixBVzH0RBkKZjZpha
-         1Ebw==
-X-Gm-Message-State: AOAM532e49oa6gxnkmRDryPnwDGpf/p2cu2w7HULGI3axsW6Zex8BtuX
-        qQbqnkJMZefXXxtNidKRZGEDH6aUqnv8mn+LcHo=
-X-Google-Smtp-Source: ABdhPJyHvVLjrUnI7+eG3qKf6BwVfsfz5eoTC+8OmQkCYh/uBdfLzSiyn9M1jKXETSJSs6koZqOT4BXPJGJXqyENbU4=
-X-Received: by 2002:a2e:974a:: with SMTP id f10mr9668894ljj.283.1592064220512;
- Sat, 13 Jun 2020 09:03:40 -0700 (PDT)
+        bh=zohJCjdH5WGCVYNdwZ7CTrdR3aOqxAG5fyOBK5BztPc=;
+        b=KF35/U6aUqUoNswvXKQO0aqKnirASX28D6HBITnDpAmGL63A3EuKz3qOXA6t4Qi4cI
+         IPOFmfrlAdOCVaY1tOfthky1hX0EYcLEm8Zi/8wowugJR+7eqyPRLI92Vf4HNn28POAL
+         Knfk5YKMcBAHKsa0Yio7cK+nM7JlEXJFy1baGo8NGk+c41KotDu7uPDivQfoIsafiQjN
+         PO7c8KOY6IbzlJK4iDC3xBjJFdYzORpR9mcm92WaPpedj5ySRS2MUNjg0ohFHw4V63qx
+         m9OtA9Wuq4NrarQVMsfO7Vy0bmBMOIRVZ9JzeSBG/LUpG17inzAA45YLN+60AEug7qGZ
+         Xh7Q==
+X-Gm-Message-State: AOAM532fGg46vEv7jzSOOGtoAJ0Wguh7zh+wG3YOhRN1QdsTQF2QZjT0
+        DIUqZwjeaoH8Z5Ji8Y08Iv5xHB+Fqb+3inBCxfM=
+X-Google-Smtp-Source: ABdhPJwjY/vl6qjusNuTDwyuBK/oHqui9HUITvTM3CJWb9devaQE+o7GXcDRCoU1S6cljuvkxQ/n7AArm90xf+58W1A=
+X-Received: by 2002:a05:6638:216:: with SMTP id e22mr13883777jaq.16.1592070740031;
+ Sat, 13 Jun 2020 10:52:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200608215301.26772-1-xiyou.wangcong@gmail.com>
- <CAMArcTUmqCqyyfs+vNtxoh_UsHZ2oZrcUkdWp8MPzW0tb6hKWA@mail.gmail.com> <CAM_iQpWM5Bxj-oEuF_mYBL9Qf-eWmoVbfPCo7a=SjOJ0LnMjAA@mail.gmail.com>
-In-Reply-To: <CAM_iQpWM5Bxj-oEuF_mYBL9Qf-eWmoVbfPCo7a=SjOJ0LnMjAA@mail.gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Sun, 14 Jun 2020 01:03:28 +0900
-Message-ID: <CAMArcTV6ZtW24CscBUt=OdRD4HdFnAYEJ-i6h5k5J8m0rfwnQA@mail.gmail.com>
-Subject: Re: [Patch net] net: change addr_list_lock back to static key
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        syzbot+f3a0e80c34b3fc28ac5e@syzkaller.appspotmail.com,
-        Dmitry Vyukov <dvyukov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+References: <CAMdYzYpKEOWCjb-kZj=HAkzQ0_QNs4N_6pXz1qPb1YQ2Xh5Jsg@mail.gmail.com>
+In-Reply-To: <CAMdYzYpKEOWCjb-kZj=HAkzQ0_QNs4N_6pXz1qPb1YQ2Xh5Jsg@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 13 Jun 2020 10:52:08 -0700
+Message-ID: <CAM_iQpUNNs4fzLAT8xmhbg+dhM0gdS+HVOtFD+fMJegeSHgUFA@mail.gmail.com>
+Subject: Re: [Crash] unhandled kernel memory read from unreadable memory
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org
+Content-Type: multipart/mixed; boundary="000000000000ead67105a7fadaa9"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Jun 2020 at 08:21, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+--000000000000ead67105a7fadaa9
+Content-Type: text/plain; charset="UTF-8"
+
+Hello,
+
+On Sat, Jun 13, 2020 at 5:41 AM Peter Geis <pgwipeout@gmail.com> wrote:
 >
-
-Hi Cong :)
-
-> On Wed, Jun 10, 2020 at 7:48 AM Taehee Yoo <ap420073@gmail.com> wrote:
-> >
-> > On Tue, 9 Jun 2020 at 06:53, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > >
-> >
-> > Hi Cong,
-> > Thank you for this work!
-> >
-> > > The dynamic key update for addr_list_lock still causes troubles,
-> > > for example the following race condition still exists:
-> > >
-> > > CPU 0:                          CPU 1:
-> > > (RCU read lock)                 (RTNL lock)
-> > > dev_mc_seq_show()               netdev_update_lockdep_key()
-> > >                                   -> lockdep_unregister_key()
-> > >  -> netif_addr_lock_bh()
-> > >
-> > > because lockdep doesn't provide an API to update it atomically.
-> > > Therefore, we have to move it back to static keys and use subclass
-> > > for nest locking like before.
-> > >
-> >
-> > I'm sorry for the late reply.
-> > I agree that using subclass mechanism to avoid too many lockdep keys.
+> Good Morning,
 >
-> Avoiding too many lockdep keys is not the real goal of my patch,
-> its main purpose is to fix a race condition shown above. Just FYI.
->
+> Last night I started experiencing crashes on my home server.
+> I updated to 5.6.17 from 5.6.15 a few days ago but I'm not sure if
+> that is related.
+> The crash occurred four times between last night and this morning.
 
-Thank you for notifying me.
+Yeah, this is known. Can you test the attached patch?
 
->
-> > But the subclass mechanism is also not updated its subclass key
-> > automatically. So, if upper/lower relationship is changed,
-> > interface would have incorrect subclass key.
-> > It eventually results in lockdep warning.
->
-> So dev->lower_level is not updated accordingly? I just blindly trust
-> dev->lower_level, as you use it in other places too.
->
-> > And, I think this patch doesn't contain bonding and team module part.
-> > So, an additional patch is needed.
->
-> Hmm, dev->lower_level is generic, so is addr_list_lock.
->
-> Again, I just assume you already update dev->lower_level each time
-> the topology changes. I added some printk() to verify it too for my
-> simple bond over bond case. So, I can't immediately see what is
-> wrong with dev->lower_level here. Do you mind to be more specific?
-> Or I misunderstand your point?
->
+Thanks.
 
-> > > +       lockdep_set_class_and_subclass(&dev->addr_list_lock,
-> > > +                                      &vlan_netdev_addr_lock_key,
-> > > +                                      subclass);
+--000000000000ead67105a7fadaa9
+Content-Type: text/x-patch; charset="US-ASCII"; name="cgroup_sk_alloc.diff"
+Content-Disposition: attachment; filename="cgroup_sk_alloc.diff"
+Content-Transfer-Encoding: base64
+Content-ID: <f_kbdxrsd10>
+X-Attachment-Id: f_kbdxrsd10
 
-In this patch, lockdep_set_class_and_subclass() is used.
-As far as I know, this function initializes lockdep key and subclass
-value with a given variable.
-A dev->lower_level variable is used as a subclass value in this patch.
-When dev->lower_level value is changed, the subclass value of this
-lockdep key is not changed automatically.
-If this value has to be changed, additional function is needed.
-
->>>        netif_addr_lock_bh(from);
-In this function, internally spin_lock_bh() is used and this function
-might use an 'initialized subclass value' not a current dev->lower_level.
-At this point, I think the lockdep splat might occur.
-
-+static inline void netif_addr_lock_nested(struct net_device *dev)
-+{
-+       spin_lock_nested(&dev->addr_list_lock, dev->lower_level);
-+}
-In this patch, you used netif_addr_lock_nested() too.
-These two subclass values could be different.
-But I'm not sure whether using spin_lock_nested with two different
-subclass values are the right way or not.
-
-If I misunderstood the lockdep and this logic, please let me know!
-
-Thanks :)
+ZGlmZiAtLWdpdCBhL2tlcm5lbC9jZ3JvdXAvY2dyb3VwLmMgYi9rZXJuZWwvY2dyb3VwL2Nncm91
+cC5jCmluZGV4IDZjOWM2YWM4MzkzNi4uYzAxMjQ1YTE5ZWEyIDEwMDY0NAotLS0gYS9rZXJuZWwv
+Y2dyb3VwL2Nncm91cC5jCisrKyBiL2tlcm5lbC9jZ3JvdXAvY2dyb3VwLmMKQEAgLTY0MzgsOSAr
+NjQzOCw2IEBAIHZvaWQgY2dyb3VwX3NrX2FsbG9jX2Rpc2FibGUodm9pZCkKIAogdm9pZCBjZ3Jv
+dXBfc2tfYWxsb2Moc3RydWN0IHNvY2tfY2dyb3VwX2RhdGEgKnNrY2QpCiB7Ci0JaWYgKGNncm91
+cF9za19hbGxvY19kaXNhYmxlZCkKLQkJcmV0dXJuOwotCiAJLyogU29ja2V0IGNsb25lIHBhdGgg
+Ki8KIAlpZiAoc2tjZC0+dmFsKSB7CiAJCS8qCkBAIC02NDUzLDYgKzY0NTAsOSBAQCB2b2lkIGNn
+cm91cF9za19hbGxvYyhzdHJ1Y3Qgc29ja19jZ3JvdXBfZGF0YSAqc2tjZCkKIAkJcmV0dXJuOwog
+CX0KIAorCWlmIChjZ3JvdXBfc2tfYWxsb2NfZGlzYWJsZWQpCisJCXJldHVybjsKKwogCS8qIERv
+bid0IGFzc29jaWF0ZSB0aGUgc29jayB3aXRoIHVucmVsYXRlZCBpbnRlcnJ1cHRlZCB0YXNrJ3Mg
+Y2dyb3VwLiAqLwogCWlmIChpbl9pbnRlcnJ1cHQoKSkKIAkJcmV0dXJuOwo=
+--000000000000ead67105a7fadaa9--
