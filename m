@@ -2,151 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D641F833F
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 14:39:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75B0C1F83BA
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 16:32:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726312AbgFMMjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 08:39:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
+        id S1726474AbgFMOb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 10:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726039AbgFMMjq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 08:39:46 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9608C03E96F;
-        Sat, 13 Jun 2020 05:39:45 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id p20so12696696ejd.13;
-        Sat, 13 Jun 2020 05:39:45 -0700 (PDT)
+        with ESMTP id S1726323AbgFMOb6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 10:31:58 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE2DC03E96F
+        for <netdev@vger.kernel.org>; Sat, 13 Jun 2020 07:31:58 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id i16so9346595qtr.7
+        for <netdev@vger.kernel.org>; Sat, 13 Jun 2020 07:31:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=rLYdWMneE4TVUY9aSOs8/2TEq8Z2KQLp41INl5IKYh0=;
-        b=oORIqEvjVM4ZMLb1sDdiGXA7Dp79k42spmbQA63GyvXfvZvTDlVAByDFp4LdE2FxHN
-         kVeBfr19R6eOj8puIaIIWbcExMPl4PB5J7mLTkTgBLM/xM7/FLeyGGDKzDRJt+P7ED1Q
-         iOjmyvmo7fLX7wCcdjg7zjSYYy5uzb2xBom6gnYz6l5D/fkB4rOVsZT/woS2Sz9uuvhW
-         zC3iksBAL7p4+8HoPHSMWeejQ73LViQPEWUSVrYBPUhcf9noUJUJwEGOPiDARW8QYJnF
-         tps/fq1tToMoCQum9vX/L4YMzxZ+scsjZxyNMcQGcUvcwH9lXTgmI0JCWkN5VtNbGKKB
-         YYFg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=60jtR6x6sT4nhAd2whYFNoR1fQ2RbLGDpVQJf9prCjA=;
+        b=lQnKahaAglFTdrDTWd/sHvn49JFe9tSJ20024ZbfUhuJMVJKpIZl3F5DRZLOlf+Q+T
+         bIRPqiy0RxUdRz/OypmE3VM6jx8BkwKsqT5A0W9B+nA9tWhLs1a2hI/8HQTpAdw6NSi1
+         FTnZ/lHbfSuM65MUGsNYhVYAXgadvDKVtXemwLVOeW23oemZ4YjSNjFr5YmRU93teiWd
+         dbxVXMVugx9CYbVj/CZgKj586XU7fPz2lVjRy1qEPGiD6lOdiKi3WtT1wIEVpml+T5n6
+         DUlx9c8di++w5FtSFkbpqK9+w7pc5LnXULa6PA2YEqoLIV+lvNbBkpMHaPh/G7YMDHem
+         TiZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=rLYdWMneE4TVUY9aSOs8/2TEq8Z2KQLp41INl5IKYh0=;
-        b=EGh8RgGuNiTNK6jg4bjDAPRhgg4seT6MsGv21HeAcUZ9Fdvv2Zn0FJpugGnYygteNG
-         7Ufudl3wQfnr2KYflMJO2esflU73n6XYKB6iWrLdmiie1jivUKDd4YT4AZat3O7eiQV8
-         UjRNFRwhixn+fhlRWabHoDqz/O7vQN2jDvRWyjPipIYlAWgrRKLwSE1e66UiUzMW6SCC
-         qAs4lIOkOLW7PwNqxQbS5tTUDTNcEuhVMc10E8hijIIxPDbgak1n3oYZjmTnmqPP4cxi
-         skQeU1xYXf+8jaTLzcWICP7cf3z6+3crCG00qcbj2hzQVHFuppPCmm1jl6mgpy8pgVqs
-         3caA==
-X-Gm-Message-State: AOAM530rMfgQ/WE4c1CvVaklWr43oM2Y7tSVbIwtbjWEHm8pWGwHEO6Y
-        Oh4C335ySHxy9B0HmYmKf03sJmjwnCka6gd1zak=
-X-Google-Smtp-Source: ABdhPJysRCa7yIX8FfZzFbBFY3gZOtUop9G2+iZF0fUZA9B2TXVj7BjV2V8LQigDxv3g85vf4gke44qavwc3cA3YZLA=
-X-Received: by 2002:a17:906:ce30:: with SMTP id sd16mr18271989ejb.374.1592051983520;
- Sat, 13 Jun 2020 05:39:43 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=60jtR6x6sT4nhAd2whYFNoR1fQ2RbLGDpVQJf9prCjA=;
+        b=QtyChWuqF+sJUxs/P4+kZj8JfRaF1zzcwjZUwUClZywkzjRYBgZfRKMg33yNx2gUKk
+         okXT0M/x0xygwpfWIWDUDFJC836iFZT/OrwIkDN9h8ZxD7eYVyychTzVd7At8mg1Jz8H
+         +9Yo3h+k1o5adv1p1banAky0j4n8ps0Y1XmjgJXMDGloLWuwrutnVeWTkpPQAUolmbqd
+         UT5HMf+NTnczgKpppqHfu0LMHHdCr+ciyjLtP7SvUlbXAJ5nDUxb7bTx5Mseh84yH0bP
+         whMK0cBNL0uzypNg/TG/Dr60Th5gvMgf2h/J8WhXMDpqv+ii7TbAkk0zha6EJsywQF0z
+         kcrg==
+X-Gm-Message-State: AOAM531h1JnTLvM6xRWhLX6h8gy1IymVOVQp7ZoDqDYV4rEfRcI8NDEI
+        a1gxtx43n1CkbNKCCnrcNMS80py2
+X-Google-Smtp-Source: ABdhPJwKVLLy2jgDSRSZQLZVo0ra/AzQDh9QEEm5bvp196HM0epXNQHSBNOQV5zM6BY+45EMEa47HA==
+X-Received: by 2002:ac8:1942:: with SMTP id g2mr8199732qtk.107.1592058716515;
+        Sat, 13 Jun 2020 07:31:56 -0700 (PDT)
+Received: from ?IPv6:2601:284:8202:10b0:c0a6:d168:a4bb:a408? ([2601:284:8202:10b0:c0a6:d168:a4bb:a408])
+        by smtp.googlemail.com with ESMTPSA id 69sm6751630qkh.15.2020.06.13.07.31.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 13 Jun 2020 07:31:55 -0700 (PDT)
+Subject: Re: [PATCH] net: Fix the arp error in some cases
+To:     guodeqing <geffrey.guo@huawei.com>, davem@davemloft.net
+Cc:     kuznet@ms2.inr.ac.ru, netdev@vger.kernel.org,
+        dsa@cumulusnetworks.com, kuba@kernel.org
+References: <1592030995-111190-1-git-send-email-geffrey.guo@huawei.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5679487d-cd17-fc91-2474-e12b182a59b7@gmail.com>
+Date:   Sat, 13 Jun 2020 08:31:54 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.9.0
 MIME-Version: 1.0
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Sat, 13 Jun 2020 08:39:32 -0400
-Message-ID: <CAMdYzYpKEOWCjb-kZj=HAkzQ0_QNs4N_6pXz1qPb1YQ2Xh5Jsg@mail.gmail.com>
-Subject: [Crash] unhandled kernel memory read from unreadable memory
-To:     "David S. Miller" <davem@davemloft.net>, kuznet@ms2.inr.ac.ru,
-        ast@kernel.org, daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1592030995-111190-1-git-send-email-geffrey.guo@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good Morning,
+On 6/13/20 12:49 AM, guodeqing wrote:
+> ie.,
+> $ ifconfig eth0 6.6.6.6 netmask 255.255.255.0
+> 
+> $ ip rule add from 6.6.6.6 table 6666
 
-Last night I started experiencing crashes on my home server.
-I updated to 5.6.17 from 5.6.15 a few days ago but I'm not sure if
-that is related.
-The crash occurred four times between last night and this morning.
+without a default entry in table 6666 the lookup proceeds to the next
+table - which by default is the main table.
 
-[23352.431106] rockpro64 kernel: Unable to handle kernel read from
-unreadable memory at virtual address 0000000000000010
-[23352.431938] rockpro64 kernel: Mem abort info:
-[23352.432199] rockpro64 kernel:   ESR = 0x96000004
-[23352.432485] rockpro64 kernel:   EC = 0x25: DABT (current EL), IL = 32 bits
-[23352.432965] rockpro64 kernel:   SET = 0, FnV = 0
-[23352.433248] rockpro64 kernel:   EA = 0, S1PTW = 0
-[23352.433536] rockpro64 kernel: Data abort info:
-[23352.433803] rockpro64 kernel:   ISV = 0, ISS = 0x00000004
-[23352.434153] rockpro64 kernel:   CM = 0, WnR = 0
-[23352.434475] rockpro64 kernel: user pgtable: 4k pages, 48-bit VAs,
-pgdp=0000000094d4c000
-[23352.435174] rockpro64 kernel: [0000000000000010]
-pgd=0000000094f3d003, pud=00000000bdb7f003, pmd=0000000000000000
-[23352.435963] rockpro64 kernel: Internal error: Oops: 96000004 [#1] SMP
-[23352.436396] rockpro64 kernel: Modules linked in: xt_TCPMSS
-nf_conntrack_netlink xfrm_user xt_addrtype br_netfilter ip_set_hash_ip
-ip_set_hash_net xt_set ip_set cfg80211 nft_counter xt_length
-xt_connmark xt_multiport xt_mark nf_log_ip>
-[23352.436519] rockpro64 kernel:  ghash_ce enclosure snd_soc_es8316
-scsi_transport_sas snd_seq_midi sha2_ce snd_seq_midi_event
-snd_soc_simple_card snd_rawmidi snd_soc_audio_graph_card sha256_arm64
-panfrost snd_soc_simple_card_utils sha1>
-[23352.444216] rockpro64 kernel:  async_pq async_xor xor xor_neon
-async_tx uas raid6_pq raid1 raid0 multipath linear usb_storage
-xhci_plat_hcd dwc3 rtc_rk808 clk_rk808 rk808_regulator ulpi udc_core
-fusb302 tcpm typec fan53555 rk808 pwm_>
-[23352.455532] rockpro64 kernel: CPU: 3 PID: 1237 Comm: nfsd Not
-tainted 5.6.17+ #74
-[23352.456054] rockpro64 kernel: Hardware name: pine64
-rockpro64_rk3399/rockpro64_rk3399, BIOS
-2020.07-rc2-00124-g515f613253-dirty 05/19/2020
-[23352.457010] rockpro64 kernel: pstate: 60400005 (nZCv daif +PAN -UAO)
-[23352.457445] rockpro64 kernel: pc : __cgroup_bpf_run_filter_skb+0x2a8/0x400
-[23352.457918] rockpro64 kernel: lr : ip_finish_output+0x98/0xd0
-[23352.458287] rockpro64 kernel: sp : ffff80001325b900
-[23352.458581] rockpro64 kernel: x29: ffff80001325b900 x28: ffff000012f0fae0
-[23352.459051] rockpro64 kernel: x27: 0000000000000001 x26: ffff00005f0ddc00
-[23352.459521] rockpro64 kernel: x25: 0000000000000118 x24: ffff0000dcd3c270
-[23352.459990] rockpro64 kernel: x23: 0000000000000010 x22: ffff800011b1aec0
-[23352.460458] rockpro64 kernel: x21: ffff0000efcacc40 x20: 0000000000000010
-[23352.460928] rockpro64 kernel: x19: ffff0000dcd3bf00 x18: 0000000000000000
-[23352.461396] rockpro64 kernel: x17: 0000000000000000 x16: 0000000000000000
-[23352.461863] rockpro64 kernel: x15: 0000000000000000 x14: 0000000000000004
-[23352.462332] rockpro64 kernel: x13: 0000000000000001 x12: 0000000000201400
-[23352.462802] rockpro64 kernel: x11: 0000000000000000 x10: 0000000000000000
-[23352.463271] rockpro64 kernel: x9 : ffff800010b6f6d0 x8 : 0000000000000260
-[23352.463738] rockpro64 kernel: x7 : 0000000000000000 x6 : ffff0000dc12a000
-[23352.464208] rockpro64 kernel: x5 : ffff0000dcd3bf00 x4 : 0000000000000028
-[23352.464677] rockpro64 kernel: x3 : 0000000000000000 x2 : ffff000012f0fb08
-[23352.465145] rockpro64 kernel: x1 : ffff00005f0ddd40 x0 : 0000000000000000
-[23352.465616] rockpro64 kernel: Call trace:
-[23352.465843] rockpro64 kernel:  __cgroup_bpf_run_filter_skb+0x2a8/0x400
-[23352.466283] rockpro64 kernel:  ip_finish_output+0x98/0xd0
-[23352.466625] rockpro64 kernel:  ip_output+0xb0/0x130
-[23352.466920] rockpro64 kernel:  ip_local_out+0x4c/0x60
-[23352.467233] rockpro64 kernel:  __ip_queue_xmit+0x128/0x380
-[23352.467584] rockpro64 kernel:  ip_queue_xmit+0x10/0x18
-[23352.467903] rockpro64 kernel:  __tcp_transmit_skb+0x470/0xaf0
-[23352.468274] rockpro64 kernel:  tcp_write_xmit+0x39c/0x1110
-[23352.468623] rockpro64 kernel:  __tcp_push_pending_frames+0x40/0x100
-[23352.469040] rockpro64 kernel:  tcp_send_fin+0x6c/0x240
-[23352.469358] rockpro64 kernel:  tcp_shutdown+0x60/0x68
-[23352.469669] rockpro64 kernel:  inet_shutdown+0xb0/0x120
-[23352.469997] rockpro64 kernel:  kernel_sock_shutdown+0x1c/0x28
-[23352.470464] rockpro64 kernel:  svc_tcp_sock_detach+0xd0/0x110 [sunrpc]
-[23352.470980] rockpro64 kernel:  svc_delete_xprt+0x74/0x240 [sunrpc]
-[23352.471445] rockpro64 kernel:  svc_recv+0x45c/0xb10 [sunrpc]
-[23352.471864] rockpro64 kernel:  nfsd+0xdc/0x150 [nfsd]
-[23352.472179] rockpro64 kernel:  kthread+0xfc/0x128
-[23352.472461] rockpro64 kernel:  ret_from_fork+0x10/0x18
-[23352.472785] rockpro64 kernel: Code: 9100c0c6 17ffff7b f9431cc0
-91004017 (f9400814)
-[23352.473324] rockpro64 kernel: ---[ end trace 978df9e144fd1235 ]---
-[29973.397069] rockpro64 kernel: Unable to handle kernel read from
-unreadable memory at virtual address 0000000000000010
-[29973.397966] rockpro64 kernel: Mem abort info:
-[29973.398224] rockpro64 kernel:   ESR = 0x96000004
-[29973.398503] rockpro64 kernel:   EC = 0x25: DABT (current EL), IL = 32 bits
-[29973.398976] rockpro64 kernel:   SET = 0, FnV = 0
-[29973.399254] rockpro64 kernel:   EA = 0, S1PTW = 0
-[29973.399537] rockpro64 kernel: Data abort info:
-[29973.399799] rockpro64 kernel:   ISV = 0, ISS = 0x00000004
-[29973.400143] rockpro64 kernel:   CM = 0, WnR = 0
-[29973.400416] rockpro64 kernel: user pgtable: 4k pages, 48-bit VAs,
-pgdp=00000000dcdd1000
-[29973.400989] rockpro64 kernel: [0000000000000010] pgd=0000000000000000
-[29973.401490] rockpro64 kernel: Internal error: Oops: 96000004 [#2] SMP
+> 
+> $ ip route add 9.9.9.9 via 6.6.6.6
+> 
+> $ ping -I 6.6.6.6 9.9.9.9
+> PING 9.9.9.9 (9.9.9.9) from 6.6.6.6 : 56(84) bytes of data.
+> 
+> ^C
+> --- 9.9.9.9 ping statistics ---
+> 3 packets transmitted, 0 received, 100% packet loss, time 2079ms
+> 
+> $ arp
+> Address     HWtype  HWaddress           Flags Mask            Iface
+> 6.6.6.6             (incomplete)                              eth0
+> 
+> The arp request address is error, this problem can be reproduced easily.
+> 
+> Fixes: 3bfd847203c6("net: Use passed in table for nexthop lookups")
+> Signed-off-by: guodeqing <geffrey.guo@huawei.com>
+> ---
+>  net/ipv4/fib_semantics.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> index e53871e..1f75dc6 100644
+> --- a/net/ipv4/fib_semantics.c
+> +++ b/net/ipv4/fib_semantics.c
+> @@ -1109,7 +1109,7 @@ static int fib_check_nh_v4_gw(struct net *net, struct fib_nh *nh, u32 table,
+>  		if (fl4.flowi4_scope < RT_SCOPE_LINK)
+>  			fl4.flowi4_scope = RT_SCOPE_LINK;
+>  
+> -		if (table)
+> +		if (table && table != RT_TABLE_MAIN)
+>  			tbl = fib_get_table(net, table);
+>  
+>  		if (tbl)
+> 
+
+how does gateway validation when the route is installed affect arp
+resolution?
+
+you are missing something in explaining the problem you are seeing.
