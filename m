@@ -2,174 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA28D1F80C4
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 05:50:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B3401F812E
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 07:57:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726416AbgFMDun (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 23:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbgFMDun (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 23:50:43 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA708C03E96F;
-        Fri, 12 Jun 2020 20:50:41 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id g12so4531369pll.10;
-        Fri, 12 Jun 2020 20:50:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0/P1ZKzk+L/46guAFv9xRPTp6fM6GL0Bl4FlXxMzOeA=;
-        b=PtwVycoOq4K2x6XW/uv7Hdv5nkelJdkJUc8siFpb+DWu+jppqQkUEeEDncoKATi9uI
-         jBtf5ksSND6fehA6zG/NKZ20X9uWHcamPYN+cJbbkv9ts6anJPvO1K19gi4U4vlxwe8t
-         mjf5AAMmew66rMkrPPEyqmDJqLrFjqb78OCI8yWpu0wzTAIL8Kj1Fmy6RAxtwd+XMtF5
-         g5/CLLqDwJOZG5TAanA24JxkefVBAqItwnUoqTGdy33fk7JWodD/Mu4WRuXIPobszrT8
-         HZEZFZGZPol3YbOr6KXbHe16IGAUjPMKSeVvHC5BLav0CAY4ifMQdjr6NSgG0g7wBFHI
-         NWew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0/P1ZKzk+L/46guAFv9xRPTp6fM6GL0Bl4FlXxMzOeA=;
-        b=FuiZevt6bO+TKEEoNiHVnaGtYoVUQrjtB8XAseRctFaUO2kYBYqstePxmmNxJ3itWk
-         VSM8yfyQzMKJXjedXNg64EuVpjGvegfRU40egRMf4rUE2o6LB2MOJ0hpNPQmymOO0kSV
-         T0u7BJWcDwarMAE7OCW0Q8n6hor2lhGcI50dYQEnRMQf9js6vSvta54vsEsbDPls2UaQ
-         5obCysgmm7xhKxjpO0FV2rCfGfAxWkC/r5qM8YxmhspPuRUV44tViFAmh2jxqVrNjgJn
-         2qhCkFMlell3eHXpewJLVsLvCkMhmT0Ts9GBXCiETtJwp1fOtAjHPIkgb/cMwWnWgOqV
-         ythA==
-X-Gm-Message-State: AOAM530hhBgs6EkT5+Go3bOlYwvsp5tyodj+QmZpymIPmzHuGqLXjHvq
-        HAiDDTr/NlJzoMb27vP9qZE=
-X-Google-Smtp-Source: ABdhPJz8MU/ErnveXCkuB5G1ZTMNZbwmYXdYFuZlyVTlccjJyNXcVbt1yJU5TdeAAdNgKaHN3vkUXw==
-X-Received: by 2002:a17:90a:1781:: with SMTP id q1mr2023649pja.8.1592020241139;
-        Fri, 12 Jun 2020 20:50:41 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:9709])
-        by smtp.gmail.com with ESMTPSA id p31sm6639945pgb.46.2020.06.12.20.50.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2020 20:50:40 -0700 (PDT)
-Date:   Fri, 12 Jun 2020 20:50:38 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Laight <David.Laight@aculab.com>
-Subject: Re: [PATCH bpf v3 1/2] bpf: don't return EINVAL from
- {get,set}sockopt when optlen > PAGE_SIZE
-Message-ID: <20200613035038.qmoxtf5mn3g3aiqe@ast-mbp>
-References: <20200608182748.6998-1-sdf@google.com>
- <20200613003356.sqp6zn3lnh4qeqyl@ast-mbp.dhcp.thefacebook.com>
- <CAKH8qBuJpks_ny-8MDzzZ5axobn=35P3krVbyz2mtBBtR8Uv+A@mail.gmail.com>
+        id S1726398AbgFMF4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 01:56:53 -0400
+Received: from mout.web.de ([212.227.15.3]:48967 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725272AbgFMF4w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 13 Jun 2020 01:56:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1592027800;
+        bh=cnJY+YCzTwmy3G4rlwIaVZSJC4XAT22QprxS3qAWiNU=;
+        h=X-UI-Sender-Class:Cc:Subject:From:To:Date;
+        b=rv3jjGxVYpJsFMM8+2Db8IqjzhKaFPIIAcqQ6ulhgev71RXGH+tlcX6fh39BvT7vS
+         ywypyw7hE6nd1DXVniazHX1y5Hgtf7aWlnUg8H2wcfZvsRBe7zvQFFXA48rRqzfenX
+         Q344uX5VUT2o7pqWhXW3zBaRjtw/PaasXeHh6TuE=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.132.51.155]) by smtp.web.de (mrweb005
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 1Mm9VU-1j25hQ1V8y-00iFqP; Sat, 13
+ Jun 2020 07:56:40 +0200
+Cc:     linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Kangjie Lu <kjlu@umn.edu>,
+        Qiushi Wu <wu000273@umn.edu>
+Subject: Re: [PATCH] NFC: Fix error handling in rawsock_connect()
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+To:     Aditya Pakki <pakki001@umn.edu>, netdev@vger.kernel.org
+Message-ID: <77ad4473-2c8a-f25a-51a8-be905d1414cd@web.de>
+Date:   Sat, 13 Jun 2020 07:56:36 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKH8qBuJpks_ny-8MDzzZ5axobn=35P3krVbyz2mtBBtR8Uv+A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:xHL6e45gpvPR3VjyPn5mu3Exfp4t2XwhtK9fDfrQus65PhVngH4
+ qjGkvYXKJg/rGbIP12qS2K8WdmhEzu1vbO5OOGywG6XXowIjzUJ0tiDeGdkbnpuUHc//o1a
+ 6cOaaTj502FtfnMe3sCLnBrPFC4w8rOvV3y5cXgaxqcKWbYKiWj8MvSzf86P045DJY9wbdL
+ QL2TEmmQ+xenHvMZR/7Rg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:FVhYn1S4/o4=:TcO9+NaFRTES+YOJHVslCk
+ k6nxVVSi1kbkA6oMBQkZcQziqBRu3KSxnVIHfFhuvHfFwZM4lsCHx6WZ9o7AErC5zvxp2MrBf
+ 0ZxmCpWGzgQ64JxOPn7RyPKadqznH5krs0lvDqCupzhQgwBm53/GqS6rWGLQwXzkzLJk9g2Jv
+ 4eS+uwlum1J+mvYAfSy7LmGF/1l7QB0GstpnDc7pYQ8qxGdHIXJf9sb0h5ZutMBj17PVx5dF7
+ GsADBGsXboBIdQeuM9qLejUE4wHKMuTYsxIR5DsmZraTxxvIPuhQKK0IWFd16Je/9zNeXTkNC
+ Zer9DrISz8jCQdCQYWadxnF/r1cf7O9K58K8v9E0dKnzwWwTq0atGpQosjXbRNvSuYc5UeqdU
+ RRba0jwXzjhfUO3kurKAWt3f8wTNqIp5rr4HSzFhBiKZlHyfHBiavq/CuKpd0TuYQZpQaKHGi
+ 3bg9jE15RtsS0xI17z7vvewuatwDCBfWqSS9pH4sNWrHaDX0F03vQo6SgJmtLf2l4XISxvhQE
+ MpxSOExmT88XLpJziYp1IgXC5TX9Ilb4iPee04rBkqYwsyE7hZvilTtBSksujuIBTHxZs6Z07
+ JC6E+GHqKHmX6fblcEZi1kbCEVun1gRkWy7sE2SoN0Mli50oZM8csDxA0/84y4v9ZgKoYAQTq
+ LMz92KFIMVYMBylQ54f/2GBO4/6uTetLZ7j8fetpjw9CVx2SM2hbxnrZxhaMK5sb6EuW7K64U
+ 0l636vjtAgH+GA+ySLpSdKZ6XiSAGY/fbhuVnPll0sSgKSK+wVch+cyKP+8xAqkY2coLNcsdj
+ KbylEbm/yvJG8+3IRvvBjQ3QBHjGV2SsZury22kUNGg9J/vZp4pCX78wQNe/IQMlNFlOZeNAp
+ giqjNgGAppWM8V44DCokdo6LW0C2Z5pAKUtuBLccEAvCGZFJ5tZnS+xrkzzFw+ZKy0ewR2XUH
+ KDpaqaM5oIS2usP1LUx+h26qXpV76iMsHFiseX3YbF8yUjaNVU6KoequLXUZ33GI4TAAzeIrX
+ o6kYfLIPAeRFt5LKgQPKowH6eq9wh2CW8e5OeBpviu20NkMIDmnk2VREVllKuM28zhlOP/m+R
+ hAiQZhwSAbMtKwU6jrTKbdQLj//oE8QPTvChn0lzo5DWJ9j2sECDYGtrvrsV+LwML9plbOZ8X
+ bK4odc4ZcL0Nr7rbAhCFiQJHD372HBIEJJKjZT9wwjSY5T+V98ClJHNPt3ypjOGSg0Dz794Er
+ AWGmrZonhXrAmaolo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 12, 2020 at 06:03:03PM -0700, Stanislav Fomichev wrote:
-> On Fri, Jun 12, 2020 at 5:34 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Mon, Jun 08, 2020 at 11:27:47AM -0700, Stanislav Fomichev wrote:
-> > > Attaching to these hooks can break iptables because its optval is
-> > > usually quite big, or at least bigger than the current PAGE_SIZE limit.
-> > > David also mentioned some SCTP options can be big (around 256k).
-> > >
-> > > There are two possible ways to fix it:
-> > > 1. Increase the limit to match iptables max optval. There is, however,
-> > >    no clear upper limit. Technically, iptables can accept up to
-> > >    512M of data (not sure how practical it is though).
-> > >
-> > > 2. Bypass the value (don't expose to BPF) if it's too big and trigger
-> > >    BPF only with level/optname so BPF can still decide whether
-> > >    to allow/deny big sockopts.
-> > >
-> > > The initial attempt was implemented using strategy #1. Due to
-> > > listed shortcomings, let's switch to strategy #2. When there is
-> > > legitimate a real use-case for iptables/SCTP, we can consider increasing
-> > > the PAGE_SIZE limit.
-> > >
-> > > v3:
-> > > * don't increase the limit, bypass the argument
-> > >
-> > > v2:
-> > > * proper comments formatting (Jakub Kicinski)
-> > >
-> > > Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
-> > > Cc: David Laight <David.Laight@ACULAB.COM>
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> > >  kernel/bpf/cgroup.c | 18 ++++++++++++++----
-> > >  1 file changed, 14 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> > > index fdf7836750a3..758082853086 100644
-> > > --- a/kernel/bpf/cgroup.c
-> > > +++ b/kernel/bpf/cgroup.c
-> > > @@ -1276,9 +1276,18 @@ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
-> > >
-> > >  static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
-> > >  {
-> > > -     if (unlikely(max_optlen > PAGE_SIZE) || max_optlen < 0)
-> > > +     if (unlikely(max_optlen < 0))
-> > >               return -EINVAL;
-> > >
-> > > +     if (unlikely(max_optlen > PAGE_SIZE)) {
-> > > +             /* We don't expose optvals that are greater than PAGE_SIZE
-> > > +              * to the BPF program.
-> > > +              */
-> > > +             ctx->optval = NULL;
-> > > +             ctx->optval_end = NULL;
-> > > +             return 0;
-> > > +     }
-> >
-> > It's probably ok, but makes me uneasy about verifier consequences.
-> > ctx->optval is PTR_TO_PACKET and it's a valid pointer from verifier pov.
-> > Do we have cases already where PTR_TO_PACKET == PTR_TO_PACKET_END ?
-> > I don't think we have such tests. I guess bpf prog won't be able to read
-> > anything and nothing will crash, but having PTR_TO_PACKET that is
-> > actually NULL would be an odd special case to keep in mind for everyone
-> > who will work on the verifier from now on.
-> >
-> > Also consider bpf prog that simply reads something small like 4 bytes.
-> > IP_FREEBIND sockopt (like your selftest in the patch 2) will have
-> > those 4 bytes, so it's natural for the prog to assume that it can read it.
-> > It will have
-> > p = ctx->optval;
-> > if (p + 4 > ctx->optval_end)
-> >  /* goto out and don't bother logging, since that never happens */
-> > *(u32*)p;
-> >
-> > but 'clever' user space would pass long optlen and prog suddenly
-> > 'not seeing' the sockopt. It didn't crash, but debugging would be
-> > surprising.
-> >
-> > I feel it's better to copy the first 4k and let the program see it.
-> Agreed with the IP_FREEBIND example wrt observability, however it's
-> not clear what to do with the cropped buffer if the bpf program
-> modifies it.
-> 
-> Consider that huge iptables setsockopts where the usespace passes
-> PAGE_SIZE*10 optlen with real data and bpf prog sees only part of it.
-> Now, if the bpf program modifies the buffer (say, flips some byte), we
-> are back to square one. We either have to silently discard that buffer
-> or reallocate/merge. My reasoning with data == NULL, is that at least
-> there is a clear signal that the program can't access the data (and
-> can look at optlen to see if the original buffer is indeed non-zero
-> and maybe deny such requests?).
-> At this point I'm really starting to think that maybe we should just
-> vmalloc everything that is >PAGE_SIZE and add a sysclt to limit an
-> upper bound :-/
-> I'll try to think about this a bit more over the weekend.
+> =E2=80=A6 The patch fixes this issue.
 
-Yeah. Tough choices.
-We can also detect in the verifier whether program accessed ctx->optval
-and skip alloc/copy if program didn't touch it, but I suspect in most
-case the program would want to read it.
-I think vmallocing what optlen said is DoS-able. It's better to
-stick with single page.
-Let's keep brainstorming.
+I suggest to replace this information by the tag =E2=80=9CFixes=E2=80=9D.
+Please choose another imperative wording for your change description.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Do=
+cumentation/process/submitting-patches.rst?id=3Ddf2fbf5bfa0e7fff8b4784507e=
+4d68f200454318#n151
+
+Regards,
+Markus
