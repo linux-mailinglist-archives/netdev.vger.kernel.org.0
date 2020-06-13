@@ -2,142 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 789FF1F8590
-	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 00:08:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EADDB1F8595
+	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 00:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726677AbgFMWIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 18:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726272AbgFMWIk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 18:08:40 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF21C03E96F;
-        Sat, 13 Jun 2020 15:08:38 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id p20so13534777ejd.13;
-        Sat, 13 Jun 2020 15:08:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tFwM9eMIugQqVr1lzeb1hUV6KdfGNOsIPEThUz0xWw8=;
-        b=Dn1m888vkM7N+KTjvgHD3PykUMll8FA5bz1Up4dPhOE6/lzd5BqzDd4ytB9w/AyHqT
-         //iU+2dlWgUx4AJIkHSu7H7SaLOvg8c5TnGI/eJXm1DlkkREgYMQOyrc/Rr/6zzRDgMi
-         DdzmOeHPNM1S6aHl0vLMzccqWmT5QRlYj9+9UQ/k7T7zdBFkRgu8C1/SlSRLFI0Nudss
-         n345v59GHXSyXxJQPNwPFCdQ9q+zeEwu4W77S/DpPFPZckH8rXU8ppryoPoLGptuxwFu
-         ad5zmj+xWDgAES50Iz3eAaUzttLkwdm/I7jqxRhucgDfI4OnRnDetz4MJQPHM/sZUo/X
-         xKiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tFwM9eMIugQqVr1lzeb1hUV6KdfGNOsIPEThUz0xWw8=;
-        b=DGHT4R3wHC5lC3BeMBQXOnYqQ7oEvCfhBGV8mApFqZ+iYQSE4lgQLaaROKCe3meHi7
-         L51ms4i4U+ErV4o18RwntidNbZgi7gVwwTDcSmWY+zkkyzWd4yP6S9lkHt/Z8Nlrn8JS
-         U4k+RBtV3HA8Zb1FJx7WKyIvVhg4iF15jURz1tV3jdTbTsBVjxkzcz18rPHc5so6qJNV
-         Q5GRw1qSlyjCUiRhjX0KYl/GFYiDRw6mWzL2MjXV88tSINow2GH/jge4EBRaloRYg6ZN
-         dnneSxzpPoFlmJlVSmfz7/kIifnt30hel9Mk8hDE739BiFl2P7+vuJ3iUQMpFD4pHZYS
-         x+YA==
-X-Gm-Message-State: AOAM533Se+QjTJEcrP3A4m6SoKPPIF62ufJ7Btn8MQPhTi1rf++eOiJB
-        qGHSUgt4LaI8+xFW+VMDcvq5ehjE
-X-Google-Smtp-Source: ABdhPJyPWAcNIekp1P8doyLkD7jhyQtYuap6gECNKAHQ1KMEAfL0d+QdbDbpzmt+iUgpTvoTmWCYxQ==
-X-Received: by 2002:a17:906:6403:: with SMTP id d3mr18783095ejm.386.1592086115860;
-        Sat, 13 Jun 2020 15:08:35 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.56.128])
-        by smtp.gmail.com with ESMTPSA id kt10sm6044774ejb.54.2020.06.13.15.08.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Jun 2020 15:08:35 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] MAINTAINERS: merge entries for felix and ocelot drivers
-Date:   Sun, 14 Jun 2020 01:07:53 +0300
-Message-Id: <20200613220753.948166-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1726652AbgFMWOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 18:14:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60528 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726272AbgFMWOW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 13 Jun 2020 18:14:22 -0400
+Received: from quaco.ghostprotocols.net (unknown [179.97.37.151])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6781C20789;
+        Sat, 13 Jun 2020 22:14:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592086461;
+        bh=pYMSq2imgTOvmvL665OX5Xw/S5VmKP/5qtwZkMvOoEw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X7SqHb999bhQvtvtS46PFUWV2jQv3LxTR28sZ9ADAoFKIWpYhG7PliHCQAe2ggmqK
+         BK1tXC9KKHi/Tf5wCP2EjEuZPEuZ2lf+pY0BIB5T7V1FshjYz9yOcwxbS8ApkFK2OE
+         S38QloZHFUcKFOq2PmJIaaCdLj6KtJ8+XLqDcpcQ=
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 8B1DF40AFD; Sat, 13 Jun 2020 19:14:19 -0300 (-03)
+Date:   Sat, 13 Jun 2020 19:14:19 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>, Hao Luo <haoluo@google.com>,
+        Song Liu <songliubraving@fb.com>,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: Re: [RFC PATCH bpf-next 8/8] tools/bpftool: show PIDs with FDs open
+ against BPF map/prog/link/btf
+Message-ID: <20200613221419.GB7488@kernel.org>
+References: <20200612223150.1177182-1-andriin@fb.com>
+ <20200612223150.1177182-9-andriin@fb.com>
+ <20200613034507.wjhd4z6dsda3pz7c@ast-mbp>
+ <CAEf4BzaHVRxkiDbTGashiuakXFBRYvDsQmJ0O08xFijKXiAwSg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzaHVRxkiDbTGashiuakXFBRYvDsQmJ0O08xFijKXiAwSg@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Em Fri, Jun 12, 2020 at 10:57:59PM -0700, Andrii Nakryiko escreveu:
+> On Fri, Jun 12, 2020 at 8:45 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Fri, Jun 12, 2020 at 03:31:50PM -0700, Andrii Nakryiko wrote:
+> > > Add bpf_iter-based way to find all the processes that hold open FDs against
+> > > BPF object (map, prog, link, btf). Add new flag (-o, for "ownership", given
+> > > -p is already taken) to trigger collection and output of these PIDs.
+> > >
+> > > Sample output for each of 4 BPF objects:
+> > >
+> > > $ sudo ./bpftool -o prog show
+> > > 1992: cgroup_skb  name egress_alt  tag 9ad187367cf2b9e8  gpl
+> > >         loaded_at 2020-06-12T14:18:10-0700  uid 0
+> > >         xlated 48B  jited 59B  memlock 4096B  map_ids 2074
+> > >         btf_id 460
+> > >         pids: 913709,913732,913733,913734
+> > > 2062: cgroup_device  tag 8c42dee26e8cd4c2  gpl
+> > >         loaded_at 2020-06-12T14:37:52-0700  uid 0
+> > >         xlated 648B  jited 409B  memlock 4096B
+> > >         pids: 1
+> > >
+> > > $ sudo ./bpftool -o map show
+> > > 2074: array  name test_cgr.bss  flags 0x400
+> > >         key 4B  value 8B  max_entries 1  memlock 8192B
+> > >         btf_id 460
+> > >         pids: 913709,913732,913733,913734
+> > >
+> > > $ sudo ./bpftool -o link show
+> > > 82: cgroup  prog 1992
+> > >         cgroup_id 0  attach_type egress
+> > >         pids: 913709,913732,913733,913734
+> > > 86: cgroup  prog 1992
+> > >         cgroup_id 0  attach_type egress
+> > >         pids: 913709,913732,913733,913734
+> >
+> > This is awesome.
 
-The ocelot switchdev driver also provides a set of library functions for
-the felix DSA driver, which in practice means that most of the patches
-will be of interest to both groups of driver maintainers.
-
-So, as also suggested in the discussion here, let's merge the 2 entries
-into a single larger one:
-https://www.spinics.net/lists/netdev/msg657412.html
-
-Note that the entry has been renamed into "OCELOT SWITCH" since neither
-Vitesse nor Microsemi exist any longer as company names, instead they
-are now named Microchip (which again might be subject to change in the
-future), so use the device family name instead.
-
-Suggested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- MAINTAINERS | 28 ++++++++++++----------------
- 1 file changed, 12 insertions(+), 16 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f08f290df174..621474172fdf 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11339,14 +11339,6 @@ L:	dmaengine@vger.kernel.org
- S:	Supported
- F:	drivers/dma/at_xdmac.c
+Indeed.
  
--MICROSEMI ETHERNET SWITCH DRIVER
--M:	Alexandre Belloni <alexandre.belloni@bootlin.com>
--M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
--L:	netdev@vger.kernel.org
--S:	Supported
--F:	drivers/net/ethernet/mscc/
--F:	include/soc/mscc/ocelot*
--
- MICROSEMI MIPS SOCS
- M:	Alexandre Belloni <alexandre.belloni@bootlin.com>
- M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-@@ -12305,6 +12297,18 @@ M:	Peter Zijlstra <peterz@infradead.org>
- S:	Supported
- F:	tools/objtool/
+> Thanks.
+> 
+> >
+> > Why extra flag though? I think it's so useful that everyone would want to see
+
+Agreed.
  
-+OCELOT ETHERNET SWITCH DRIVER
-+M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-+M:	Vladimir Oltean <vladimir.oltean@nxp.com>
-+M:	Claudiu Manoil <claudiu.manoil@nxp.com>
-+M:	Alexandre Belloni <alexandre.belloni@bootlin.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	include/soc/mscc/ocelot*
-+F:	drivers/net/ethernet/mscc/
-+F:	drivers/net/dsa/ocelot/*
-+F:	net/dsa/tag_ocelot.c
-+
- OCXL (Open Coherent Accelerator Processor Interface OpenCAPI) DRIVER
- M:	Frederic Barrat <fbarrat@linux.ibm.com>
- M:	Andrew Donnellan <ajd@linux.ibm.com>
-@@ -18188,14 +18192,6 @@ S:	Maintained
- F:	drivers/input/serio/userio.c
- F:	include/uapi/linux/userio.h
+> No good reason apart from "being safe by default". If turned on by
+> default, bpftool would need to probe for bpf_iter support first. I can
+> add probing and do this by default.
+
+I think this is the way to go.
  
--VITESSE FELIX ETHERNET SWITCH DRIVER
--M:	Vladimir Oltean <vladimir.oltean@nxp.com>
--M:	Claudiu Manoil <claudiu.manoil@nxp.com>
--L:	netdev@vger.kernel.org
--S:	Maintained
--F:	drivers/net/dsa/ocelot/*
--F:	net/dsa/tag_ocelot.c
--
- VIVID VIRTUAL VIDEO DRIVER
- M:	Hans Verkuil <hverkuil@xs4all.nl>
- L:	linux-media@vger.kernel.org
+> > this by default. Also the word 'pid' has kernel meaning or user space meaning?
+> > Looks like kernel then bpftool should say 'tid'.
+> 
+> No, its process ID in user-space sense. See task->tgid in
+> pid_iter.bpf.c. I figured thread ID isn't all that useful.
+> 
+> > Could you capture comm as well and sort it by comm, like:
+> >
+> > $ sudo ./bpftool link show
+> > 82: cgroup  prog 1992
+> >         cgroup_id 0  attach_type egress
+> >         systemd(1), firewall(913709 913732), logger(913733 913734)
+> 
+> Yep, comm is useful, I'll add that. Grouping by comm is kind of a
+> pain, though, plus usually there will be one process only. So let me
+> start with doing comm (pid) for each PID independently. I think that
+> will be as good in practice.
+
 -- 
-2.25.1
 
+- Arnaldo
