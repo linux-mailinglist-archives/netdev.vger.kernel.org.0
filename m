@@ -2,101 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 408351F8477
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 19:52:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E8081F84ED
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 21:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726501AbgFMRwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 13:52:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52474 "EHLO
+        id S1726665AbgFMT3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 15:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726277AbgFMRwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 13:52:21 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1BF6C03E96F;
-        Sat, 13 Jun 2020 10:52:20 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id x189so4556771iof.9;
-        Sat, 13 Jun 2020 10:52:20 -0700 (PDT)
+        with ESMTP id S1726304AbgFMT3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 15:29:11 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16D92C08C5C2
+        for <netdev@vger.kernel.org>; Sat, 13 Jun 2020 12:29:08 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id h185so5939873pfg.2
+        for <netdev@vger.kernel.org>; Sat, 13 Jun 2020 12:29:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zohJCjdH5WGCVYNdwZ7CTrdR3aOqxAG5fyOBK5BztPc=;
-        b=EUObILvwjkSPfOGbLkzWJI+bN4YkEE1QMRNu6obBM54ATHFDLMaR8jcldK29nUeBLh
-         4jdNSXAntcPwcBPMW19IVFfCQ3b6eT4uMd1knpz+5Ym01z2ht+dS9XmMBhriBt1bYkrR
-         8F14Hp8FNOGHuKK5kNoflJa0hQWBtXrgbTWKKXH8T/jvf3Z2y78fHcHAtSXevXhpOR3c
-         rbqd1cY0S8jO+i4iDRSWSaUlH3vJRTdlPWA3FDrc6/oKEnJdzCBc8QcBrbFuNgbIxlRW
-         AW8PKX2mdWIEVMKvBQv2Fn7hp6tSkaO+KfMclXgQfPHTCYQGmAyZ1IGzqKAJgAQEI5eV
-         gM9A==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xo8ytRHA8kMhSzgaf+vcCOJn1UirQ92SScXvh+BCUB4=;
+        b=L/1yEubsRWCHrnfgf6xtbij3KIJa1Fnvz53JJOSpVq9YiCmGymxgD3wLQCsX6X63ao
+         B0xS48rjEajSoNmCF7d/rhclbk0EPqpV3/tvUf87IC2FAwJp1lsO+GgAUQBbxLbdeZLl
+         SbeFjUa3cap1Ju+49TeV9PH48lqJhL6M9fmw9DwdOsJDIBc95U7/Ss2gcHLUUKDJyWGy
+         skT6e6GskED9pC/lurdufttvDWSCDJvjoKPuYzCKl8roKwX3jKWDuuoxDfcCezmwJ8gi
+         BQu9lTrTlli7icemq5yXKUVEQ4bo9D4QSmUwY+8TnzQy6TewvmTPMDELsCiMQv+ylAEc
+         kaOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zohJCjdH5WGCVYNdwZ7CTrdR3aOqxAG5fyOBK5BztPc=;
-        b=KF35/U6aUqUoNswvXKQO0aqKnirASX28D6HBITnDpAmGL63A3EuKz3qOXA6t4Qi4cI
-         IPOFmfrlAdOCVaY1tOfthky1hX0EYcLEm8Zi/8wowugJR+7eqyPRLI92Vf4HNn28POAL
-         Knfk5YKMcBAHKsa0Yio7cK+nM7JlEXJFy1baGo8NGk+c41KotDu7uPDivQfoIsafiQjN
-         PO7c8KOY6IbzlJK4iDC3xBjJFdYzORpR9mcm92WaPpedj5ySRS2MUNjg0ohFHw4V63qx
-         m9OtA9Wuq4NrarQVMsfO7Vy0bmBMOIRVZ9JzeSBG/LUpG17inzAA45YLN+60AEug7qGZ
-         Xh7Q==
-X-Gm-Message-State: AOAM532fGg46vEv7jzSOOGtoAJ0Wguh7zh+wG3YOhRN1QdsTQF2QZjT0
-        DIUqZwjeaoH8Z5Ji8Y08Iv5xHB+Fqb+3inBCxfM=
-X-Google-Smtp-Source: ABdhPJwjY/vl6qjusNuTDwyuBK/oHqui9HUITvTM3CJWb9devaQE+o7GXcDRCoU1S6cljuvkxQ/n7AArm90xf+58W1A=
-X-Received: by 2002:a05:6638:216:: with SMTP id e22mr13883777jaq.16.1592070740031;
- Sat, 13 Jun 2020 10:52:20 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xo8ytRHA8kMhSzgaf+vcCOJn1UirQ92SScXvh+BCUB4=;
+        b=SZ534LWCU4HlZnMfDCMOLZc77oBiFkGLGZ9iPj+uj5UmJGd7rq1r8h2TKmh2XYRYjk
+         j0VsnZd3GD17UuASjz27DImVPfgFyl2ke2J7eW/+JXEDziV1pLOmNTihuX41ZZpVgz9q
+         2vYOGL/KvoBRI0RIipqjmunAijilahqUYn+Uyu7U1IeHXZS1Erqir4A+LUCe1a9Ac0Yy
+         Uc+AqN4BNFwFF5tcLNLm0tpoGiaq7oWxboPxI4BEEUTW8rl5TSIREGdqz+JSuGSX73JJ
+         /m9ZOQ2m0CRqn7GcCsqOQUTA3zxryhW0gRxytH6BaUbDj82+Esanb5Hplb9uf0I+SXzF
+         yhgw==
+X-Gm-Message-State: AOAM53347wvPGfI63rFOwsm2dxjOigGFXt5oC0eNQNPnFQrdLlQsCtOG
+        GR8MYjgYGayTYkG196Wm2PblJg==
+X-Google-Smtp-Source: ABdhPJzK5lBTS6eJJybZBFDFzV+Je4R27TUx1fw5wg2waDHRc1M28kVvD4DdIG4PzGMG6/kz0yy3DQ==
+X-Received: by 2002:a62:7f58:: with SMTP id a85mr1385838pfd.89.1592076548331;
+        Sat, 13 Jun 2020 12:29:08 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id a10sm8313289pgv.72.2020.06.13.12.29.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 13 Jun 2020 12:29:07 -0700 (PDT)
+Date:   Sat, 13 Jun 2020 12:28:59 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>
+Cc:     David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Donald Sharp <sharpd@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Dinesh Dutt <didutt@gmail.com>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels@gmail.com>
+Subject: Re: [RFC,net-next, 2/5] vrf: track associations between VRF devices
+ and tables
+Message-ID: <20200613122859.4f5e2761@hermes.lan>
+In-Reply-To: <20200612164937.5468-3-andrea.mayer@uniroma2.it>
+References: <20200612164937.5468-1-andrea.mayer@uniroma2.it>
+        <20200612164937.5468-3-andrea.mayer@uniroma2.it>
 MIME-Version: 1.0
-References: <CAMdYzYpKEOWCjb-kZj=HAkzQ0_QNs4N_6pXz1qPb1YQ2Xh5Jsg@mail.gmail.com>
-In-Reply-To: <CAMdYzYpKEOWCjb-kZj=HAkzQ0_QNs4N_6pXz1qPb1YQ2Xh5Jsg@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat, 13 Jun 2020 10:52:08 -0700
-Message-ID: <CAM_iQpUNNs4fzLAT8xmhbg+dhM0gdS+HVOtFD+fMJegeSHgUFA@mail.gmail.com>
-Subject: Re: [Crash] unhandled kernel memory read from unreadable memory
-To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf@vger.kernel.org
-Content-Type: multipart/mixed; boundary="000000000000ead67105a7fadaa9"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000ead67105a7fadaa9
-Content-Type: text/plain; charset="UTF-8"
+On Fri, 12 Jun 2020 18:49:34 +0200
+Andrea Mayer <andrea.mayer@uniroma2.it> wrote:
 
-Hello,
+> +	/* shared_tables:
+> +	 * count how many distinct tables does not comply with the
+> +	 * strict mode requirement.
+> +	 * shared_table value must be 0 in order to switch to strict mode.
+> +	 *
+> +	 * example of evolution of shared_table:
+> +	 *                                                        | time
+> +	 * add  vrf0 --> table 100        shared_tables = 0       | t0
+> +	 * add  vrf1 --> table 101        shared_tables = 0       | t1
+> +	 * add  vrf2 --> table 100        shared_tables = 1       | t2
+> +	 * add  vrf3 --> table 100        shared_tables = 1       | t3
+> +	 * add  vrf4 --> table 101        shared_tables = 2       v t4
+> +	 *
+> +	 * shared_tables is a "step function" (or "staircase function")
+> +	 * and is increased by one when the second vrf is associated to a table
+> +	 *
+> +	 * at t2, vrf0 and vrf2 are bound to table 100: shared_table = 1.
+> +	 *
+> +	 * at t3, another dev (vrf3) is bound to the same table 100 but the
+> +	 * shared_table counters is still 1.
+> +	 * This means that no matter how many new vrfs will register on the
+> +	 * table 100, the shared_table will not increase (considering only
+> +	 * table 100).
+> +	 *
+> +	 * at t4, vrf4 is bound to table 101, and shared_table = 2.
+> +	 *
+> +	 * Looking at the value of shared_tables we can immediately know if
+> +	 * the strict_mode can or cannot be enforced. Indeed, strict_mode
+> +	 * can be enforced iff shared_table = 0.
+> +	 *
+> +	 * Conversely, shared_table is decreased when a vrf is de-associated
+> +	 * from a table with exactly two associated vrfs.
+> +	 */
+> +	int shared_tables;
 
-On Sat, Jun 13, 2020 at 5:41 AM Peter Geis <pgwipeout@gmail.com> wrote:
->
-> Good Morning,
->
-> Last night I started experiencing crashes on my home server.
-> I updated to 5.6.17 from 5.6.15 a few days ago but I'm not sure if
-> that is related.
-> The crash occurred four times between last night and this morning.
-
-Yeah, this is known. Can you test the attached patch?
-
-Thanks.
-
---000000000000ead67105a7fadaa9
-Content-Type: text/x-patch; charset="US-ASCII"; name="cgroup_sk_alloc.diff"
-Content-Disposition: attachment; filename="cgroup_sk_alloc.diff"
-Content-Transfer-Encoding: base64
-Content-ID: <f_kbdxrsd10>
-X-Attachment-Id: f_kbdxrsd10
-
-ZGlmZiAtLWdpdCBhL2tlcm5lbC9jZ3JvdXAvY2dyb3VwLmMgYi9rZXJuZWwvY2dyb3VwL2Nncm91
-cC5jCmluZGV4IDZjOWM2YWM4MzkzNi4uYzAxMjQ1YTE5ZWEyIDEwMDY0NAotLS0gYS9rZXJuZWwv
-Y2dyb3VwL2Nncm91cC5jCisrKyBiL2tlcm5lbC9jZ3JvdXAvY2dyb3VwLmMKQEAgLTY0MzgsOSAr
-NjQzOCw2IEBAIHZvaWQgY2dyb3VwX3NrX2FsbG9jX2Rpc2FibGUodm9pZCkKIAogdm9pZCBjZ3Jv
-dXBfc2tfYWxsb2Moc3RydWN0IHNvY2tfY2dyb3VwX2RhdGEgKnNrY2QpCiB7Ci0JaWYgKGNncm91
-cF9za19hbGxvY19kaXNhYmxlZCkKLQkJcmV0dXJuOwotCiAJLyogU29ja2V0IGNsb25lIHBhdGgg
-Ki8KIAlpZiAoc2tjZC0+dmFsKSB7CiAJCS8qCkBAIC02NDUzLDYgKzY0NTAsOSBAQCB2b2lkIGNn
-cm91cF9za19hbGxvYyhzdHJ1Y3Qgc29ja19jZ3JvdXBfZGF0YSAqc2tjZCkKIAkJcmV0dXJuOwog
-CX0KIAorCWlmIChjZ3JvdXBfc2tfYWxsb2NfZGlzYWJsZWQpCisJCXJldHVybjsKKwogCS8qIERv
-bid0IGFzc29jaWF0ZSB0aGUgc29jayB3aXRoIHVucmVsYXRlZCBpbnRlcnJ1cHRlZCB0YXNrJ3Mg
-Y2dyb3VwLiAqLwogCWlmIChpbl9pbnRlcnJ1cHQoKSkKIAkJcmV0dXJuOwo=
---000000000000ead67105a7fadaa9--
+Should this be unsigned?
+Should it be a fixed size?
