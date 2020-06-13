@@ -2,60 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FF811F85B4
-	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 00:38:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 813301F85C2
+	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 00:40:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726811AbgFMWiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 18:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39574 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726272AbgFMWiD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 18:38:03 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0719FC03E96F;
-        Sat, 13 Jun 2020 15:38:02 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4801B11F5F637;
-        Sat, 13 Jun 2020 15:38:02 -0700 (PDT)
-Date:   Sat, 13 Jun 2020 15:38:01 -0700 (PDT)
-Message-Id: <20200613.153801.1383724005122062451.davem@davemloft.net>
-To:     grygorii.strashko@ti.com
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, m-karicheri2@ti.com,
-        nsekhar@ti.com, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org
-Subject: Re: [PATCH] net: ethernet: ti: ale: fix allmulti for nu type ale
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200613145414.17190-1-grygorii.strashko@ti.com>
-References: <20200613145414.17190-1-grygorii.strashko@ti.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
+        id S1726863AbgFMWkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 18:40:37 -0400
+Received: from smtp.uniroma2.it ([160.80.6.16]:42150 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726728AbgFMWkh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 13 Jun 2020 18:40:37 -0400
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 05DMeKVd019295;
+        Sun, 14 Jun 2020 00:40:25 +0200
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id 641D9120069;
+        Sun, 14 Jun 2020 00:40:15 +0200 (CEST)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1592088015; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1YTwWfivUt1tSuIOMHks9jBd3XnLGThjeWZ7z8Bddco=;
+        b=8MRwRyzYlfnAFx9HqyjoOyTvtnIkg2PUo6gQ2SgqHvU+AGRoSdriRW0pD6Yx0CpcNQb0aE
+        ATNWS+xtCxu1I1Ag==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1592088015; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1YTwWfivUt1tSuIOMHks9jBd3XnLGThjeWZ7z8Bddco=;
+        b=A13y3PH2HLQNtp/dPt47GBNTTsXv6LqEG77h1Rsm4evjDwpO5fjwG6UXmGyIMh8q84f3i+
+        0nUMZ8JiSDSw3JOXNvpF867Ir3prnYX99b1lCdMIqeDnWWHX+zsy2Y3552SyuVhxGtzTcR
+        OE0uvu5HruAiGnO2TOd87k1vMyJUhgPDt1fa86572K72PMonc1uRqsi4TRJlk3VpI2yHHW
+        8hdEuoOkOueXUN8KgWoPHCjR1V1LI2Ovi1T/9zXEMQccMx6az4wNS2LF/GmAlvkCEBzdC0
+        cmeyUX4+MWVHYyIA0zQ9q4nVffCLCzv8ltdZ20b+v0cqM6/goNfn3jf/UpFEZw==
+Date:   Sun, 14 Jun 2020 00:40:14 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Donald Sharp <sharpd@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Dinesh Dutt <didutt@gmail.com>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [RFC,net-next, 3/5] vrf: add sysctl parameter for strict mode
+Message-Id: <20200614004014.582e20b9f2c2c786deca9779@uniroma2.it>
+In-Reply-To: <20200612105227.2f85e3d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200612164937.5468-1-andrea.mayer@uniroma2.it>
+        <20200612164937.5468-4-andrea.mayer@uniroma2.it>
+        <20200612105227.2f85e3d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 13 Jun 2020 15:38:02 -0700 (PDT)
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grygorii Strashko <grygorii.strashko@ti.com>
-Date: Sat, 13 Jun 2020 17:54:14 +0300
+On Fri, 12 Jun 2020 10:52:27 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-> On AM65xx MCU CPSW2G NUSS and 66AK2E/L NUSS allmulti setting does not allow
-> unregistered mcast packets to pass.
-> 
-> This happens, because ALE VLAN entries on these SoCs do not contain port
-> masks for reg/unreg mcast packets, but instead store indexes of
-> ALE_VLAN_MASK_MUXx_REG registers which intended for store port masks for
-> reg/unreg mcast packets.
-> This path was missed by commit 9d1f6447274f ("net: ethernet: ti: ale: fix
-> seeing unreg mcast packets with promisc and allmulti disabled").
-> 
-> Hence, fix it by taking into account ALE type in cpsw_ale_set_allmulti().
-> 
-> Fixes: 9d1f6447274f ("net: ethernet: ti: ale: fix seeing unreg mcast packets with promisc and allmulti disabled")
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> drivers/net/vrf.c:1771:49: warning: incorrect type in argument 3 (different address spaces)
+> drivers/net/vrf.c:1771:49:    expected void *
+> drivers/net/vrf.c:1771:49:    got void [noderef] <asn:1> *buffer
+> drivers/net/vrf.c:1785:35: warning: incorrect type in initializer (incompatible argument 3 (different address spaces))
+> drivers/net/vrf.c:1785:35:    expected int ( [usertype] *proc_handler )( ... )
+> drivers/net/vrf.c:1785:35:    got int ( * )( ... )
 
-Applied and queued up for v5.7 -stable.
+Hi Jakub,
+the fix will be in the next version of this patch set.
+
+Thank you,
+Andrea
