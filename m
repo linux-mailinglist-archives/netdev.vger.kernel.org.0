@@ -2,89 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CC5C1F8240
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 11:26:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 723121F831A
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 13:32:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbgFMJ0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 05:26:17 -0400
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:8076 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726317AbgFMJ0N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 05:26:13 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 2CC165C1729;
-        Sat, 13 Jun 2020 17:26:04 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     netdev@vger.kernel.org
-Cc:     pablo@netfilter.org, vladbu@mellanox.com
-Subject: [PATCH net v2 4/4] flow_offload: fix the list_del corruption in the driver list
-Date:   Sat, 13 Jun 2020 17:26:02 +0800
-Message-Id: <1592040362-25389-4-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1592040362-25389-1-git-send-email-wenxu@ucloud.cn>
-References: <1592040362-25389-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSUlPS0tLS0JNSElKSkpZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkdIjULOBw4FSgTLAgWUCkeKiQpDDocVlZVTk1CTihJWVdZCQ
-        4XHghZQVk1NCk2OjckKS43PllXWRYaDxIVHRRZQVk0MFkG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MBQ6Qyo5PzgwMzdPDEwOSQsD
-        F1EwCz9VSlVKTkJJS09LSE1PSU1KVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUlDQko3Bg++
-X-HM-Tid: 0a72ad0018a32087kuqy2cc165c1729
+        id S1726039AbgFMLbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 07:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725857AbgFMLbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 07:31:37 -0400
+Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE0EC03E96F;
+        Sat, 13 Jun 2020 04:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
+         s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject
+        :Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=2i9hfgGNeitd7hYzWmJeqbpBgVgM1F/BZAahxCgFTeY=; b=IpELI3FfbNtHLseeTGv6y2epuB
+        +iUSCoO2Q4VtWg0Miqfi06FN5SFybtWDv5YW+EJy21EsHhWEB6psWCLuOLZWr5cYIahHvNdIQqDHH
+        IL9UkvoYT4EW6c6EVMP/dKsyJ6qwjYp4/Hib5wUf09Fia9IigX2QW9FkPkqhZmp7m532nJDzGDkZD
+        3sFO3MAQNGnkCjG57O4LQwE4IEq5tNMKbVnVupjHhKMh0UnrAqxdrz8IDd3uMX8tIaC3w+67lJ9y/
+        DFg0WzFQ4I7JdSCsSLTGLpInMrF6idgMjtVrWijgYlIEMfeFRaB3AXwnBDt7x2qaiJKrwHC9JAfzU
+        uEZzu1hA==;
+Received: from noodles by the.earth.li with local (Exim 4.92)
+        (envelope-from <noodles@earth.li>)
+        id 1jk4Nk-0000Zr-LO; Sat, 13 Jun 2020 12:31:28 +0100
+Date:   Sat, 13 Jun 2020 12:31:28 +0100
+From:   Jonathan McDowell <noodles@earth.li>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v4 0/2] net: dsa: qca8k: Improve SGMII interface handling
+Message-ID: <cover.1592047530.git.noodles@earth.li>
+References: <cover.1591380105.git.noodles@earth.li>
+ <8ddd76e484e1bedd12c87ea0810826b60e004a65.1591380105.git.noodles@earth.li>
+ <20200605183843.GB1006885@lunn.ch>
+ <20200606074916.GM311@earth.li>
+ <20200606083741.GK1551@shell.armlinux.org.uk>
+ <20200606105909.GN311@earth.li>
+ <20200608183953.GR311@earth.li>
+ <cover.1591816172.git.noodles@earth.li>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1591816172.git.noodles@earth.li>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+Hopefully getting there, thanks for all the review comments.
 
-When a indr device add in offload success. After the representor
-go away. All the flow_block_cb cleanup but miss del form driver
-list.
+This 2 patch series migrates the qca8k switch driver over to PHYLINK,
+and then adds the SGMII clean-ups (i.e. the missing initialisation) on
+top of that as a second patch.
 
-Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
- net/netfilter/nf_flow_table_offload.c | 1 +
- net/netfilter/nf_tables_offload.c     | 1 +
- net/sched/cls_api.c                   | 1 +
- 3 files changed, 3 insertions(+)
+As before, tested with a device where the CPU connection is RGMII (i.e.
+the common current use case) + one where the CPU connection is SGMII. I
+don't have any devices where the SGMII interface is brought out to
+something other than the CPU.
 
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index 62651e6..5fff1e0 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -950,6 +950,7 @@ static void nf_flow_table_indr_cleanup(struct flow_block_cb *block_cb)
- 	nf_flow_table_gc_cleanup(flowtable, dev);
- 	down_write(&flowtable->flow_block_lock);
- 	list_del(&block_cb->list);
-+	list_del(&block_cb->driver_list);
- 	flow_block_cb_free(block_cb);
- 	up_write(&flowtable->flow_block_lock);
- }
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 185fc82..c7cf1cd 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -296,6 +296,7 @@ static void nft_indr_block_cleanup(struct flow_block_cb *block_cb)
- 	nft_flow_block_offload_init(&bo, dev_net(dev), FLOW_BLOCK_UNBIND,
- 				    basechain, &extack);
- 	mutex_lock(&net->nft.commit_mutex);
-+	list_del(&block_cb->driver_list);
- 	list_move(&block_cb->list, &bo.cb_list);
- 	nft_flow_offload_unbind(&bo, basechain);
- 	mutex_unlock(&net->nft.commit_mutex);
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 86c3937..faa78b7 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -652,6 +652,7 @@ static void tc_block_indr_cleanup(struct flow_block_cb *block_cb)
- 			       &block->flow_block, tcf_block_shared(block),
- 			       &extack);
- 	down_write(&block->cb_lock);
-+	list_del(&block_cb->driver_list);
- 	list_move(&block_cb->list, &bo.cb_list);
- 	up_write(&block->cb_lock);
- 	rtnl_lock();
+v4:
+- Enable pcs_poll so we keep phylink updated when doing in-band
+  negotiation
+- Explicitly check for PHY_INTERFACE_MODE_1000BASEX when setting SGMII
+  port mode.
+- Address Vladimir's review comments
+v3:
+- Move phylink changes to separate patch
+- Address rmk review comments
+v2:
+- Switch to phylink
+- Avoid need for device tree configuration options
+
+Jonathan McDowell (2):
+  net: dsa: qca8k: Switch to PHYLINK instead of PHYLIB
+  net: dsa: qca8k: Improve SGMII interface handling
+
+ drivers/net/dsa/qca8k.c | 341 ++++++++++++++++++++++++++++------------
+ drivers/net/dsa/qca8k.h |  13 ++
+ 2 files changed, 256 insertions(+), 98 deletions(-)
+
 -- 
-1.8.3.1
+2.20.1
 
