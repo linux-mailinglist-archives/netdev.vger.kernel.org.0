@@ -2,243 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBD891F8075
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 04:54:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC07F1F80C1
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 05:45:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726450AbgFMCyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Jun 2020 22:54:18 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:38936 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726397AbgFMCyS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 22:54:18 -0400
-Received: by mail-il1-f199.google.com with SMTP id o12so7779055ilf.6
-        for <netdev@vger.kernel.org>; Fri, 12 Jun 2020 19:54:15 -0700 (PDT)
+        id S1726445AbgFMDpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Jun 2020 23:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726381AbgFMDpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Jun 2020 23:45:10 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B250DC03E96F;
+        Fri, 12 Jun 2020 20:45:10 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id 23so5212723pfw.10;
+        Fri, 12 Jun 2020 20:45:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=08H7c2856vXPBHxCfukV73+cjVEFVJ7Byba+IAoJiWQ=;
+        b=B5P95fS8DQkB5ezZOpu/jiegMflrQkLT7wAupybYKM6E8fA0HvmaDJxPdWxKwBgHUi
+         5B+ZICBe8sZsQjymoUuStOijUC25JC+1jTYHS3JWn3yR+j6OxFJcV/Su/aF0DTBGT/bt
+         xn6K7rECZnrcNqwUvLmsnGjBVqG1xGFf96K59A7G2hX+YWDJ4vTGPfAXe6Mcnv8YG5rt
+         umN9xNFDvk0gxSSGQ3EroV3OFQRJXvTu9ef2T9WawSgCrNmaOd/YKCJqGkyM5VeJEgtw
+         N1bOzVcssMOGcuXdms/PvxHT0NLbgJGORcuqr4KT2+tg2lc14R/AytalBApRN6YiM06Y
+         ARoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=2sTEwf/dIwoLKdcZR4OJH4pgPYYKC7Y9Uyd/iQYIEmc=;
-        b=uGKBpj/cPWA647yJ7k83aT5gCUxs87HSs1ptge54PuNY6QAsjCnO4C6vyZK6UR9Cav
-         O85PkQbV8KN/Xe8jbPLY5cbQsa0fXtQIyGhSq4CNa7HZW2CtoGXi/PWOnegOvLdV0YHJ
-         d5jGt01tJe7X9nll/6rBap+NI6sP1bJ5r+Lp42tyy3DzOAVRMYl6uoOkspRwl4ZuWGF4
-         F5zr0KsjbZPE19f0eLCY6JmcnERYQbh0/Q9iRG12//ehLplqfrXQYfEYeLbllmAlRGqW
-         h1p+PapowizbJvt8s6EKkUTVxMgR+I+kjicz0kIyw7tF2Mrk0wo4SDCRBPl/w00xZyj0
-         5nhg==
-X-Gm-Message-State: AOAM530AMj06zifD/Id79fK8CPGT0MLSlsFJyLPIp8locnEPTNCijX1Z
-        8/EEh62kak2qjOz2cIzszNi/aheXaMz1xrOrwqtcFrH7KgiW
-X-Google-Smtp-Source: ABdhPJyTI2AmElM6YKf+llXBNJ0mP8Cc0Rmg6aWKuK96797tA+cQSAIFNoWLmJXkBJBJeC/6Cw35zYFbicZ3JZY60zs24jDyLeuq
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=08H7c2856vXPBHxCfukV73+cjVEFVJ7Byba+IAoJiWQ=;
+        b=KPxRxGQwpw+GgEcHYJhgo65a/1r/ckHjBYpIwBIF0wrO7P0xTyc1PCjTxbWSatlu7C
+         TSApOfCOxekMQCAW5+I36uS7YW7ZoVDBPGzhLwBMtPXbkdDrk1dxlhWvqaPZdPnNuJLf
+         dS3UOTVNTtAUOcZXGfl2S8jUH4TMO5HFYVEFTy1T8oZaQL0IwZKLQ2I/kp3SyoTpaRTy
+         56slo467ckDNKUO6mJGl8Pr6YGnWC08JyH2sht1o6eYqpNFQUHF+8vAmq0MvFxLUBo2R
+         LS5Y7maQ4sHHJdUQmNue6znV4E6S4khd1NK9LFwP7VDcLmUUdEbENkJ0P6pTeDiycbBM
+         OsIw==
+X-Gm-Message-State: AOAM532EHjypZGqsX3x7yjuOLcuaAr7PD8MvTQRq11neT9BHGD4c0ofi
+        x4rJ+gf2X3AeXOL5nbmvtc0=
+X-Google-Smtp-Source: ABdhPJxjWOcNdjnPdHnDkxreXUWtexy/v3hOi/EQJilP42FjJoMmZkwwNbiFzGqMtBxnse7ELzUOIA==
+X-Received: by 2002:aa7:9910:: with SMTP id z16mr13831845pff.53.1592019910249;
+        Fri, 12 Jun 2020 20:45:10 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:9709])
+        by smtp.gmail.com with ESMTPSA id r20sm7854683pfc.101.2020.06.12.20.45.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jun 2020 20:45:09 -0700 (PDT)
+Date:   Fri, 12 Jun 2020 20:45:07 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com,
+        kernel-team@fb.com, Hao Luo <haoluo@google.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: Re: [RFC PATCH bpf-next 8/8] tools/bpftool: show PIDs with FDs open
+ against BPF map/prog/link/btf
+Message-ID: <20200613034507.wjhd4z6dsda3pz7c@ast-mbp>
+References: <20200612223150.1177182-1-andriin@fb.com>
+ <20200612223150.1177182-9-andriin@fb.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:8b51:: with SMTP id n78mr16520705iod.120.1592016855260;
- Fri, 12 Jun 2020 19:54:15 -0700 (PDT)
-Date:   Fri, 12 Jun 2020 19:54:15 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000022653b05a7ee4f9a@google.com>
-Subject: net boot error: BUG: using smp_processor_id() in preemptible code in ext4_mb_new_blocks
-From:   syzbot <syzbot+e10468d1d0662fdb7c8c@syzkaller.appspotmail.com>
-To:     adilger.kernel@dilger.ca, davem@davemloft.net, kuba@kernel.org,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tytso@mit.edu
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200612223150.1177182-9-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Jun 12, 2020 at 03:31:50PM -0700, Andrii Nakryiko wrote:
+> Add bpf_iter-based way to find all the processes that hold open FDs against
+> BPF object (map, prog, link, btf). Add new flag (-o, for "ownership", given
+> -p is already taken) to trigger collection and output of these PIDs.
+> 
+> Sample output for each of 4 BPF objects:
+> 
+> $ sudo ./bpftool -o prog show
+> 1992: cgroup_skb  name egress_alt  tag 9ad187367cf2b9e8  gpl
+>         loaded_at 2020-06-12T14:18:10-0700  uid 0
+>         xlated 48B  jited 59B  memlock 4096B  map_ids 2074
+>         btf_id 460
+>         pids: 913709,913732,913733,913734
+> 2062: cgroup_device  tag 8c42dee26e8cd4c2  gpl
+>         loaded_at 2020-06-12T14:37:52-0700  uid 0
+>         xlated 648B  jited 409B  memlock 4096B
+>         pids: 1
+> 
+> $ sudo ./bpftool -o map show
+> 2074: array  name test_cgr.bss  flags 0x400
+>         key 4B  value 8B  max_entries 1  memlock 8192B
+>         btf_id 460
+>         pids: 913709,913732,913733,913734
+> 
+> $ sudo ./bpftool -o link show
+> 82: cgroup  prog 1992
+>         cgroup_id 0  attach_type egress
+>         pids: 913709,913732,913733,913734
+> 86: cgroup  prog 1992
+>         cgroup_id 0  attach_type egress
+>         pids: 913709,913732,913733,913734
 
-syzbot found the following crash on:
+This is awesome.
 
-HEAD commit:    6954a9e4 ibmvnic: Flush existing work items before device ..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=1367d939100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b366fd92adf6f8b4
-dashboard link: https://syzkaller.appspot.com/bug?extid=e10468d1d0662fdb7c8c
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+Why extra flag though? I think it's so useful that everyone would want to see
+this by default. Also the word 'pid' has kernel meaning or user space meaning?
+Looks like kernel then bpftool should say 'tid'.
+Could you capture comm as well and sort it by comm, like:
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+e10468d1d0662fdb7c8c@syzkaller.appspotmail.com
-
-BUG: using smp_processor_id() in preemptible [00000000] code: systemd-tmpfile/3971
-caller is ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
-CPU: 0 PID: 3971 Comm: systemd-tmpfile Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
- ext4_ext_map_blocks+0x2044/0x3410 fs/ext4/extents.c:4244
- ext4_map_blocks+0x4cb/0x1640 fs/ext4/inode.c:626
- ext4_getblk+0xad/0x520 fs/ext4/inode.c:833
- ext4_bread+0x7c/0x380 fs/ext4/inode.c:883
- ext4_append+0x153/0x360 fs/ext4/namei.c:67
- ext4_init_new_dir fs/ext4/namei.c:2757 [inline]
- ext4_mkdir+0x5e0/0xdf0 fs/ext4/namei.c:2802
- vfs_mkdir+0x419/0x690 fs/namei.c:3627
- do_mkdirat+0x21e/0x280 fs/namei.c:3650
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x7ffa928d3687
-Code: 00 b8 ff ff ff ff c3 0f 1f 40 00 48 8b 05 09 d8 2b 00 64 c7 00 5f 00 00 00 b8 ff ff ff ff c3 0f 1f 40 00 b8 53 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e1 d7 2b 00 f7 d8 64 89 01 48
-RSP: 002b:00007fff732d3c08 EFLAGS: 00000246 ORIG_RAX: 0000000000000053
-RAX: ffffffffffffffda RBX: 00005637eeaceda0 RCX: 00007ffa928d3687
-RDX: 0000000000000000 RSI: 00000000000001ed RDI: 00005637eeaceda0
-RBP: 00000000000001ed R08: 000000000000feff R09: 000000000000004c
-R10: 00005637eeaced80 R11: 0000000000000246 R12: 0000000000000012
-R13: 00005637eeacf640 R14: 0000000000000000 R15: 0000000000000000
-BUG: using smp_processor_id() in preemptible [00000000] code: systemd-tmpfile/3971
-caller is ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
-CPU: 0 PID: 3971 Comm: systemd-tmpfile Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
- ext4_ext_map_blocks+0x2044/0x3410 fs/ext4/extents.c:4244
- ext4_map_blocks+0x4cb/0x1640 fs/ext4/inode.c:626
- ext4_getblk+0xad/0x520 fs/ext4/inode.c:833
- ext4_bread+0x7c/0x380 fs/ext4/inode.c:883
- ext4_append+0x153/0x360 fs/ext4/namei.c:67
- ext4_init_new_dir fs/ext4/namei.c:2757 [inline]
- ext4_mkdir+0x5e0/0xdf0 fs/ext4/namei.c:2802
- vfs_mkdir+0x419/0x690 fs/namei.c:3627
- do_mkdirat+0x21e/0x280 fs/namei.c:3650
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x7ffa928d3687
-Code: 00 b8 ff ff ff ff c3 0f 1f 40 00 48 8b 05 09 d8 2b 00 64 c7 00 5f 00 00 00 b8 ff ff ff ff c3 0f 1f 40 00 b8 53 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e1 d7 2b 00 f7 d8 64 89 01 48
-RSP: 002b:00007fff732d3c08 EFLAGS: 00000246 ORIG_RAX: 0000000000000053
-RAX: ffffffffffffffda RBX: 00005637eead0870 RCX: 00007ffa928d3687
-RDX: 0000000000000000 RSI: 00000000000003ff RDI: 00005637eead0870
-RBP: 00000000000003ff R08: 000000000000fec0 R09: 000000000000004c
-R10: 00005637eead0840 R11: 0000000000000246 R12: 0000000000000012
-R13: 00005637eead0890 R14: 0000000000000000 R15: 0000000000000000
-BUG: using smp_processor_id() in preemptible [00000000] code: systemd-tmpfile/3971
-caller is ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
-CPU: 1 PID: 3971 Comm: systemd-tmpfile Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
- ext4_ext_map_blocks+0x2044/0x3410 fs/ext4/extents.c:4244
- ext4_map_blocks+0x4cb/0x1640 fs/ext4/inode.c:626
- ext4_getblk+0xad/0x520 fs/ext4/inode.c:833
- ext4_bread+0x7c/0x380 fs/ext4/inode.c:883
- ext4_append+0x153/0x360 fs/ext4/namei.c:67
- ext4_init_new_dir fs/ext4/namei.c:2757 [inline]
- ext4_mkdir+0x5e0/0xdf0 fs/ext4/namei.c:2802
- vfs_mkdir+0x419/0x690 fs/namei.c:3627
- do_mkdirat+0x21e/0x280 fs/namei.c:3650
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x7ffa928d3687
-Code: 00 b8 ff ff ff ff c3 0f 1f 40 00 48 8b 05 09 d8 2b 00 64 c7 00 5f 00 00 00 b8 ff ff ff ff c3 0f 1f 40 00 b8 53 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e1 d7 2b 00 f7 d8 64 89 01 48
-RSP: 002b:00007fff732d3c08 EFLAGS: 00000246 ORIG_RAX: 0000000000000053
-RAX: ffffffffffffffda RBX: 00005637eeace050 RCX: 00007ffa928d3687
-RDX: 0000000000000000 RSI: 00000000000003ff RDI: 00005637eeace050
-RBP: 00000000000003ff R08: 000000000000fec0 R09: 000000000000004c
-R10: 00005637eeace040 R11: 0000000000000246 R12: 0000000000000012
-R13: 00005637eeace070 R14: 0000000000000000 R15: 0000000000000000
-BUG: using smp_processor_id() in preemptible [00000000] code: systemd-tmpfile/3971
-caller is ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
-CPU: 0 PID: 3971 Comm: systemd-tmpfile Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
- ext4_ext_map_blocks+0x2044/0x3410 fs/ext4/extents.c:4244
- ext4_map_blocks+0x4cb/0x1640 fs/ext4/inode.c:626
- ext4_getblk+0xad/0x520 fs/ext4/inode.c:833
- ext4_bread+0x7c/0x380 fs/ext4/inode.c:883
- ext4_append+0x153/0x360 fs/ext4/namei.c:67
- ext4_init_new_dir fs/ext4/namei.c:2757 [inline]
- ext4_mkdir+0x5e0/0xdf0 fs/ext4/namei.c:2802
- vfs_mkdir+0x419/0x690 fs/namei.c:3627
- do_mkdirat+0x21e/0x280 fs/namei.c:3650
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x7ffa928d3687
-Code: 00 b8 ff ff ff ff c3 0f 1f 40 00 48 8b 05 09 d8 2b 00 64 c7 00 5f 00 00 00 b8 ff ff ff ff c3 0f 1f 40 00 b8 53 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e1 d7 2b 00 f7 d8 64 89 01 48
-RSP: 002b:00007fff732d3c08 EFLAGS: 00000246 ORIG_RAX: 0000000000000053
-RAX: ffffffffffffffda RBX: 00005637eeace160 RCX: 00007ffa928d3687
-RDX: 0000000000000000 RSI: 00000000000003ff RDI: 00005637eeace160
-RBP: 00000000000003ff R08: 000000000000fec0 R09: 000000000000004c
-R10: 00005637eeace140 R11: 0000000000000246 R12: 0000000000000012
-R13: 00005637eeace180 R14: 0000000000000000 R15: 0000000000000000
-BUG: using smp_processor_id() in preemptible [00000000] code: systemd-tmpfile/3971
-caller is ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
-CPU: 0 PID: 3971 Comm: systemd-tmpfile Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
- ext4_ext_map_blocks+0x2044/0x3410 fs/ext4/extents.c:4244
- ext4_map_blocks+0x4cb/0x1640 fs/ext4/inode.c:626
- ext4_getblk+0xad/0x520 fs/ext4/inode.c:833
- ext4_bread+0x7c/0x380 fs/ext4/inode.c:883
- ext4_append+0x153/0x360 fs/ext4/namei.c:67
- ext4_init_new_dir fs/ext4/namei.c:2757 [inline]
- ext4_mkdir+0x5e0/0xdf0 fs/ext4/namei.c:2802
- vfs_mkdir+0x419/0x690 fs/namei.c:3627
- do_mkdirat+0x21e/0x280 fs/namei.c:3650
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x7ffa928d3687
-Code: 00 b8 ff ff ff ff c3 0f 1f 40 00 48 8b 05 09 d8 2b 00 64 c7 00 5f 00 00 00 b8 ff ff ff ff c3 0f 1f 40 00 b8 53 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e1 d7 2b 00 f7 d8 64 89 01 48
-RSP: 002b:00007fff732d3c08 EFLAGS: 00000246 ORIG_RAX: 0000000000000053
-RAX: ffffffffffffffda RBX: 00005637eead1890 RCX: 00007ffa928d3687
-RDX: 0000000000000000 RSI: 00000000000003ff RDI: 00005637eead1890
-RBP: 00000000000003ff R08: 000000000000fec0 R09: 000000000000004c
-R10: 00005637eead1880 R11: 0000000000000246 R12: 0000000000000012
-R13: 00005637eead18b0 R14: 0000000000000000 R15: 0000000000000000
-BUG: using smp_processor_id() in preemptible [00000000] code: systemd-tmpfile/3971
-caller is ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
-CPU: 0 PID: 3971 Comm: systemd-tmpfile Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_preemption_disabled lib/smp_processor_id.c:47 [inline]
- debug_smp_processor_id.cold+0x88/0x9b lib/smp_processor_id.c:57
- ext4_mb_new_blocks+0xa77/0x3b30 fs/ext4/mballoc.c:4711
- ext4_ext_map_blocks+0x2044/0x3410 fs/ext4/extents.c:4244
- ext4_map_blocks+0x4cb/0x1640 fs/ext4/inode.c:626
- ext4_getblk+0xad/0x520 fs/ext4/inode.c:833
- ext4_bread+0x7c/0x380 fs/ext4/inode.c:883
- ext4_append+0x153/0x360 fs/ext4/namei.c:67
- ext4_init_new_dir fs/ext4/namei.c:2757 [inline]
- ext4_mkdir+0x5e0/0xdf0 fs/ext4/namei.c:2802
- vfs_mkdir+0x419/0x690 fs/namei.c:3627
- do_mkdirat+0x21e/0x280 fs/namei.c:3650
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x7ffa928d3687
-Code: 00 b8 ff ff ff ff c3 0f 1f 40 00 48 8b 05 09 d8 2b 00 64 c7 00 5f 00 00 00 b8 ff ff ff ff c3 0f 1f 40 00 b8 53 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e1 d7 2b 00 f7 d8 64 89 01 48
-RSP: 002b:00007fff732d3c08 EFLAGS: 00000246 ORIG_RAX: 0000000000000053
-RAX: ffffffffffffffda RBX: 00005637eead19a0 RCX: 00007ffa928d3687
-RDX: 0000000000000000 RSI: 00000000000003ff RDI: 00005637eead19a0
-RBP: 00000000000003ff R08: 000000000000fec0 R09: 000000000000004c
-R10: 00005637eead1980 R11: 0000000000000246 R12: 0000000000000012
-R13: 00005637eead19c0 R14: 0000000000000000 R15: 0000000000000000
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+$ sudo ./bpftool link show
+82: cgroup  prog 1992
+        cgroup_id 0  attach_type egress
+        systemd(1), firewall(913709 913732), logger(913733 913734)
