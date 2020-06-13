@@ -2,85 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9FB61F83C0
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 16:44:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAFFE1F83C3
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 16:53:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbgFMOoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 10:44:14 -0400
-Received: from mta-out1.inet.fi ([62.71.2.202]:54174 "EHLO johanna1.inet.fi"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726323AbgFMOoO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 13 Jun 2020 10:44:14 -0400
-X-RazorGate-Vade-Verdict: clean 0
-X-RazorGate-Vade-Classification: clean
-X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgeduhedrudeifedgkeduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuuffpveftnecuuegrihhlohhuthemuceftddtnecunecujfgurhepuffhvfhfkffffgggjggtgfesthekredttdefjeenucfhrhhomhepnfgruhhrihculfgrkhhkuhcuoehlrghurhhirdhjrghkkhhusehpphdrihhnvghtrdhfiheqnecuggftrfgrthhtvghrnhepkedutdfghfeuueeitdeghfdutdefueejlefgteegteegtdejledtjedvheeujeetnecuffhomhgrihhnpehmrghnjhgrrhhordhorhhgnecukfhppeekgedrvdegkedrfedtrdduleehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehhvghloheplgduledvrdduieekrddurddukedvngdpihhnvghtpeekgedrvdegkedrfedtrdduleehpdhmrghilhhfrhhomhepoehlrghujhgrkhdqfeesmhgsohigrdhinhgvthdrfhhiqecuuefqffgjpeekuefkvffokffogfdprhgtphhtthhopeeouggrvhgvmhesuggrvhgvmhhlohhfthdrnhgvtheqpdhrtghpthhtohepoehhkhgrlhhlfigvihhtudesghhmrghilhdrtghomheqpdhrtghpthhtohepoehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrgheq
-Received: from [192.168.1.182] (84.248.30.195) by johanna1.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
-        id 5E1C39AA791A4D3F; Sat, 13 Jun 2020 17:44:08 +0300
-Subject: Re: r816x driver
-From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
-To:     hkallweit1@gmail.com, davem@davemloft.net, netdev@vger.kernel.org
-References: <9c3fb65c-ff2d-a21e-98db-c5798dc9586e@pp.inet.fi>
-Message-ID: <3538ceba-5bb6-7b03-ac36-1bf23c29f771@pp.inet.fi>
-Date:   Sat, 13 Jun 2020 17:43:51 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        id S1726455AbgFMOxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 10:53:16 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:46418 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726258AbgFMOxP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 10:53:15 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05DErCMF069643;
+        Sat, 13 Jun 2020 09:53:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1592059992;
+        bh=8De/AOe/EMoDc+bfjvKtDPFHMj8PcrduA+Vt49AOtzs=;
+        h=From:To:CC:Subject:Date;
+        b=ikFcrtcWIXoH4iLc1VGrho4FbZjeF4K2G8RLquAzj7DhbonL8UZThv9jOOxojrpl/
+         VOyHTwNqZRp+ep7/DGHikgKfjLP0ojQIa1hiabZ2a9ns9z5J8QHZNJqvaljEejTZlq
+         Kg7s+ECRiXVA54hasPLeFCaKD4qSFXkuYEmJixsQ=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 05DErB6f087975
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sat, 13 Jun 2020 09:53:11 -0500
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Sat, 13
+ Jun 2020 09:53:11 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Sat, 13 Jun 2020 09:53:11 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05DErAZg008051;
+        Sat, 13 Jun 2020 09:53:11 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH] net: ethernet: ti: am65-cpsw-nuss: fix ale parameters init
+Date:   Sat, 13 Jun 2020 17:52:59 +0300
+Message-ID: <20200613145259.17044-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <9c3fb65c-ff2d-a21e-98db-c5798dc9586e@pp.inet.fi>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The ALE parameters structure is created on stack, so it has to be reset
+before passing to cpsw_ale_create() to avoid garbage values.
 
-On 13.6.2020 1.46, Lauri Jakku wrote:
-> Hi,
->
-> As you may recall i've started to debug r816x driver: Why it does not 
-> work, and i'm allmost
->
-> certain there is something fishy in probeing ... 1st try always fails, 
-> and second try with
->
-> my patch seems to work ok.
->
->
-> https://forum.manjaro.org/t/re-r8168-kernel-5-6-3-driver-broken/147727/2
->
->
-> Something is not done similar way compared to 1st and 2nd load of the 
-> module. I pin pointed,
->
-> or have a clue, that a line from drivers/net/phy/phy_device.c witch is 
-> not executed when
->
-> loading first time:
->
-> static int phy_probe(struct device *dev)
-> {
->         struct phy_device *phydev = to_phy_device(dev);
->         struct device_driver *drv = phydev->mdio.dev.driver;
->         struct phy_driver *phydrv = to_phy_driver(drv);
->         int err = 0;
->
->         phydev->drv = phydrv; <--- This is never done in probe of 
-> r8169_main.c
->
->
-> That line is not executed when driver is loaded with modprobe, but 
-> when load->remove->reload
->
-> cycle is done, it is ok. I have no clue now where to look, but when i 
-> got time i'll start
->
-> debugging some more.
->
->
->
+Fixes: 93a76530316a ("net: ethernet: ti: introduce am65x/j721e gigabit eth subsystem driver")
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 87a4775ed53a..1492648247d9 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -1981,7 +1981,7 @@ MODULE_DEVICE_TABLE(of, am65_cpsw_nuss_of_mtable);
+ 
+ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
+ {
+-	struct cpsw_ale_params ale_params;
++	struct cpsw_ale_params ale_params = { 0 };
+ 	const struct of_device_id *of_id;
+ 	struct device *dev = &pdev->dev;
+ 	struct am65_cpsw_common *common;
+-- 
+2.17.1
 
-> --Lja
->
