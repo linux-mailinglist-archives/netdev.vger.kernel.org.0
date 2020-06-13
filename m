@@ -2,78 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05AB31F8165
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 08:54:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36A3B1F823E
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 11:26:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbgFMGxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 02:53:54 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:5822 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725783AbgFMGxy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 13 Jun 2020 02:53:54 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 4B46BACB3D9C8199A159;
-        Sat, 13 Jun 2020 14:53:51 +0800 (CST)
-Received: from huawei.com (10.179.179.12) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Sat, 13 Jun 2020
- 14:53:43 +0800
-From:   guodeqing <geffrey.guo@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <kuznet@ms2.inr.ac.ru>, <netdev@vger.kernel.org>,
-        <dsa@cumulusnetworks.com>, <kuba@kernel.org>,
-        <geffrey.guo@huawei.com>
-Subject: [PATCH] net: Fix the arp error in some cases
-Date:   Sat, 13 Jun 2020 14:49:55 +0800
-Message-ID: <1592030995-111190-1-git-send-email-geffrey.guo@huawei.com>
-X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.179.179.12]
-X-CFilter-Loop: Reflected
+        id S1726367AbgFMJ0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 05:26:11 -0400
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:8050 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726304AbgFMJ0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 05:26:09 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 8FD495C17FF;
+        Sat, 13 Jun 2020 17:26:03 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     netdev@vger.kernel.org
+Cc:     pablo@netfilter.org, vladbu@mellanox.com
+Subject: [PATCH net v2 1/4] flow_offload: fix incorrect cleanup for indirect flow_blocks
+Date:   Sat, 13 Jun 2020 17:25:59 +0800
+Message-Id: <1592040362-25389-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVJQ09CQkJDT0xPSklKSllXWShZQU
+        lCN1dZLVlBSVdZDwkaFQgSH1lBWR0yNQs4HDkjNRMKCRZQKR41HQMMOhxWVlVKTE5LSyhJWVdZCQ
+        4XHghZQVk1NCk2OjckKS43PllXWRYaDxIVHRRZQVk0MFkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nxg6Pzo6UTg2PzcBKk0PSQ9W
+        Hh8KCxlVSlVKTkJJS09LSE1ITUJOVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUxLQk43Bg++
+X-HM-Tid: 0a72ad0016532087kuqy8fd495c17ff
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ie.,
-$ ifconfig eth0 6.6.6.6 netmask 255.255.255.0
+From: wenxu <wenxu@ucloud.cn>
 
-$ ip rule add from 6.6.6.6 table 6666
+If the representor is removed, then identify the indirect
+flow_blocks that need to be removed by the release callback.
 
-$ ip route add 9.9.9.9 via 6.6.6.6
-
-$ ping -I 6.6.6.6 9.9.9.9
-PING 9.9.9.9 (9.9.9.9) from 6.6.6.6 : 56(84) bytes of data.
-
-^C
---- 9.9.9.9 ping statistics ---
-3 packets transmitted, 0 received, 100% packet loss, time 2079ms
-
-$ arp
-Address     HWtype  HWaddress           Flags Mask            Iface
-6.6.6.6             (incomplete)                              eth0
-
-The arp request address is error, this problem can be reproduced easily.
-
-Fixes: 3bfd847203c6("net: Use passed in table for nexthop lookups")
-Signed-off-by: guodeqing <geffrey.guo@huawei.com>
+Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
+Signed-off-by: wenxu <wenxu@ucloud.cn>
 ---
- net/ipv4/fib_semantics.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c        | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c | 2 +-
+ drivers/net/ethernet/netronome/nfp/flower/main.c    | 2 +-
+ drivers/net/ethernet/netronome/nfp/flower/main.h    | 3 +--
+ drivers/net/ethernet/netronome/nfp/flower/offload.c | 6 +++---
+ include/net/flow_offload.h                          | 2 +-
+ net/core/flow_offload.c                             | 9 +++++----
+ 7 files changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index e53871e..1f75dc6 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1109,7 +1109,7 @@ static int fib_check_nh_v4_gw(struct net *net, struct fib_nh *nh, u32 table,
- 		if (fl4.flowi4_scope < RT_SCOPE_LINK)
- 			fl4.flowi4_scope = RT_SCOPE_LINK;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+index 0eef4f5..ef7f6bc 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+@@ -2074,7 +2074,7 @@ void bnxt_shutdown_tc(struct bnxt *bp)
+ 		return;
  
--		if (table)
-+		if (table && table != RT_TABLE_MAIN)
- 			tbl = fib_get_table(net, table);
+ 	flow_indr_dev_unregister(bnxt_tc_setup_indr_cb, bp,
+-				 bnxt_tc_setup_indr_block_cb);
++				 bnxt_tc_setup_indr_rel);
+ 	rhashtable_destroy(&tc_info->flow_table);
+ 	rhashtable_destroy(&tc_info->l2_table);
+ 	rhashtable_destroy(&tc_info->decap_l2_table);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+index 80713123..a62bcf0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+@@ -496,7 +496,7 @@ int mlx5e_rep_tc_netdevice_event_register(struct mlx5e_rep_priv *rpriv)
+ void mlx5e_rep_tc_netdevice_event_unregister(struct mlx5e_rep_priv *rpriv)
+ {
+ 	flow_indr_dev_unregister(mlx5e_rep_indr_setup_cb, rpriv,
+-				 mlx5e_rep_indr_setup_tc_cb);
++				 mlx5e_rep_indr_block_unbind);
+ }
  
- 		if (tbl)
+ #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
+index c393276..bb448c8 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
+@@ -861,7 +861,7 @@ static void nfp_flower_clean(struct nfp_app *app)
+ 	flush_work(&app_priv->cmsg_work);
+ 
+ 	flow_indr_dev_unregister(nfp_flower_indr_setup_tc_cb, app,
+-				 nfp_flower_setup_indr_block_cb);
++				 nfp_flower_setup_indr_tc_release);
+ 
+ 	if (app_priv->flower_ext_feats & NFP_FL_FEATS_VF_RLIM)
+ 		nfp_flower_qos_cleanup(app);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
+index 6c3dc3b..c983337 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
+@@ -460,8 +460,7 @@ int nfp_flower_setup_qos_offload(struct nfp_app *app, struct net_device *netdev,
+ void nfp_flower_stats_rlim_reply(struct nfp_app *app, struct sk_buff *skb);
+ int nfp_flower_indr_setup_tc_cb(struct net_device *netdev, void *cb_priv,
+ 				enum tc_setup_type type, void *type_data);
+-int nfp_flower_setup_indr_block_cb(enum tc_setup_type type, void *type_data,
+-				   void *cb_priv);
++void nfp_flower_setup_indr_tc_release(void *cb_priv);
+ 
+ void
+ __nfp_flower_non_repr_priv_get(struct nfp_flower_non_repr_priv *non_repr_priv);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+index 695d24b9..28de905 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+@@ -1619,8 +1619,8 @@ struct nfp_flower_indr_block_cb_priv {
+ 	return NULL;
+ }
+ 
+-int nfp_flower_setup_indr_block_cb(enum tc_setup_type type,
+-				   void *type_data, void *cb_priv)
++static int nfp_flower_setup_indr_block_cb(enum tc_setup_type type,
++					  void *type_data, void *cb_priv)
+ {
+ 	struct nfp_flower_indr_block_cb_priv *priv = cb_priv;
+ 	struct flow_cls_offload *flower = type_data;
+@@ -1637,7 +1637,7 @@ int nfp_flower_setup_indr_block_cb(enum tc_setup_type type,
+ 	}
+ }
+ 
+-static void nfp_flower_setup_indr_tc_release(void *cb_priv)
++void nfp_flower_setup_indr_tc_release(void *cb_priv)
+ {
+ 	struct nfp_flower_indr_block_cb_priv *priv = cb_priv;
+ 
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index f2c8311..3a2d6b4 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -536,7 +536,7 @@ typedef int flow_indr_block_bind_cb_t(struct net_device *dev, void *cb_priv,
+ 
+ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv);
+ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+-			      flow_setup_cb_t *setup_cb);
++			      void (*release)(void *cb_priv));
+ int flow_indr_dev_setup_offload(struct net_device *dev,
+ 				enum tc_setup_type type, void *data,
+ 				struct flow_block_offload *bo,
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 0cfc35e..b288d2f 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -372,13 +372,14 @@ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
+ }
+ EXPORT_SYMBOL(flow_indr_dev_register);
+ 
+-static void __flow_block_indr_cleanup(flow_setup_cb_t *setup_cb, void *cb_priv,
++static void __flow_block_indr_cleanup(void (*release)(void *cb_priv),
++				      void *cb_priv,
+ 				      struct list_head *cleanup_list)
+ {
+ 	struct flow_block_cb *this, *next;
+ 
+ 	list_for_each_entry_safe(this, next, &flow_block_indr_list, indr.list) {
+-		if (this->cb == setup_cb &&
++		if (this->release == release &&
+ 		    this->cb_priv == cb_priv) {
+ 			list_move(&this->indr.list, cleanup_list);
+ 			return;
+@@ -397,7 +398,7 @@ static void flow_block_indr_notify(struct list_head *cleanup_list)
+ }
+ 
+ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+-			      flow_setup_cb_t *setup_cb)
++			      void (*release)(void *cb_priv))
+ {
+ 	struct flow_indr_dev *this, *next, *indr_dev = NULL;
+ 	LIST_HEAD(cleanup_list);
+@@ -418,7 +419,7 @@ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+ 		return;
+ 	}
+ 
+-	__flow_block_indr_cleanup(setup_cb, cb_priv, &cleanup_list);
++	__flow_block_indr_cleanup(release, cb_priv, &cleanup_list);
+ 	mutex_unlock(&flow_indr_block_lock);
+ 
+ 	flow_block_indr_notify(&cleanup_list);
 -- 
-2.7.4
+1.8.3.1
 
