@@ -2,120 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B3401F812E
-	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 07:57:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7988D1F8130
+	for <lists+netdev@lfdr.de>; Sat, 13 Jun 2020 07:58:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbgFMF4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Jun 2020 01:56:53 -0400
-Received: from mout.web.de ([212.227.15.3]:48967 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725272AbgFMF4w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 13 Jun 2020 01:56:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1592027800;
-        bh=cnJY+YCzTwmy3G4rlwIaVZSJC4XAT22QprxS3qAWiNU=;
-        h=X-UI-Sender-Class:Cc:Subject:From:To:Date;
-        b=rv3jjGxVYpJsFMM8+2Db8IqjzhKaFPIIAcqQ6ulhgev71RXGH+tlcX6fh39BvT7vS
-         ywypyw7hE6nd1DXVniazHX1y5Hgtf7aWlnUg8H2wcfZvsRBe7zvQFFXA48rRqzfenX
-         Q344uX5VUT2o7pqWhXW3zBaRjtw/PaasXeHh6TuE=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.132.51.155]) by smtp.web.de (mrweb005
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1Mm9VU-1j25hQ1V8y-00iFqP; Sat, 13
- Jun 2020 07:56:40 +0200
-Cc:     linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Kangjie Lu <kjlu@umn.edu>,
-        Qiushi Wu <wu000273@umn.edu>
-Subject: Re: [PATCH] NFC: Fix error handling in rawsock_connect()
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-To:     Aditya Pakki <pakki001@umn.edu>, netdev@vger.kernel.org
-Message-ID: <77ad4473-2c8a-f25a-51a8-be905d1414cd@web.de>
-Date:   Sat, 13 Jun 2020 07:56:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1726428AbgFMF6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Jun 2020 01:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725272AbgFMF6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Jun 2020 01:58:12 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6D4C03E96F;
+        Fri, 12 Jun 2020 22:58:11 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id b27so11123800qka.4;
+        Fri, 12 Jun 2020 22:58:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ooC6zDR4D9kUn0XYJNEVpFCkJ4RWM1cROne2/QW99bw=;
+        b=CXQ7IV7TIiEHNbDNvhZmY0SMeldOfH/MJdWYNQaFNLIUBdFbqeNnLSuzYfLeJMN4HO
+         8gsxX0QRFq9bIeUjfzZfZZc4j1/MAV0xV33rgAD+2xcIBAqzeHMMwZiBPpYeDQzZe7wz
+         1llbBQIinq+NLpjaGEFNT32Jry/c+4eaiIN7Ky2AiSRkGcN/3Euoa76wjK4UgKl8aWKa
+         3R3HijAfSH/+7ed7iCha7CVxtzOHTKdOBju7q8pok3a2qldlC9zsBlj674fbsRckqE15
+         97S1Cx3j519AS1csowGpJZL5i2DVTPPI0KWaAOXPYR0Fj4Y/SMyenzDNV5FgOYXatw9t
+         2wHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ooC6zDR4D9kUn0XYJNEVpFCkJ4RWM1cROne2/QW99bw=;
+        b=EuUqKRC9ye9XH9cXTx95HFoQMO1lUvmAvFOMpj70F1+iPn/60gphm3g/FSAg0k+VJ3
+         KlyUjNlsAUCQXU+KqNwDcaoQh3wXwspPNhyDIIgCaxF10PuOxTTtbhFC957qc1DuzJ74
+         U+tKfcV9zr8XmvSJ6oUm6gPuY5+ck8L+X84fv7s3NOad/Hd/skp7JMAKZcuybDQV2YGy
+         WltjsetQFjke5P4lbwALhqtFg3+28U/w2EWCY6XY/YQrq0WiENJY5F8G3MHXkzx2gL8k
+         FMAwueGN+Z/hlE8io/+xpw8OC7yyqj0SjpIKDWSsMvKPPJHjvZ3pnVVJGh1l62M6+2P1
+         4EDQ==
+X-Gm-Message-State: AOAM5324mLPbCpWyeqmGSdzECr4A1c/Qhj0+/7Mt/9onmfk3zMK2eDH/
+        K37Mc9WUGEGNwv5/GlIgQKpSZX8IJX4X2XH3r5s=
+X-Google-Smtp-Source: ABdhPJzYcSdDs9GKpPp+/VbL8vTr1s6QD/8Id1USDo94Qg4iufIANplx6KVZr+wKynEyAQi/TKRBJncRyhWVlhq/vT4=
+X-Received: by 2002:a37:a89:: with SMTP id 131mr6282241qkk.92.1592027890424;
+ Fri, 12 Jun 2020 22:58:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:xHL6e45gpvPR3VjyPn5mu3Exfp4t2XwhtK9fDfrQus65PhVngH4
- qjGkvYXKJg/rGbIP12qS2K8WdmhEzu1vbO5OOGywG6XXowIjzUJ0tiDeGdkbnpuUHc//o1a
- 6cOaaTj502FtfnMe3sCLnBrPFC4w8rOvV3y5cXgaxqcKWbYKiWj8MvSzf86P045DJY9wbdL
- QL2TEmmQ+xenHvMZR/7Rg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:FVhYn1S4/o4=:TcO9+NaFRTES+YOJHVslCk
- k6nxVVSi1kbkA6oMBQkZcQziqBRu3KSxnVIHfFhuvHfFwZM4lsCHx6WZ9o7AErC5zvxp2MrBf
- 0ZxmCpWGzgQ64JxOPn7RyPKadqznH5krs0lvDqCupzhQgwBm53/GqS6rWGLQwXzkzLJk9g2Jv
- 4eS+uwlum1J+mvYAfSy7LmGF/1l7QB0GstpnDc7pYQ8qxGdHIXJf9sb0h5ZutMBj17PVx5dF7
- GsADBGsXboBIdQeuM9qLejUE4wHKMuTYsxIR5DsmZraTxxvIPuhQKK0IWFd16Je/9zNeXTkNC
- Zer9DrISz8jCQdCQYWadxnF/r1cf7O9K58K8v9E0dKnzwWwTq0atGpQosjXbRNvSuYc5UeqdU
- RRba0jwXzjhfUO3kurKAWt3f8wTNqIp5rr4HSzFhBiKZlHyfHBiavq/CuKpd0TuYQZpQaKHGi
- 3bg9jE15RtsS0xI17z7vvewuatwDCBfWqSS9pH4sNWrHaDX0F03vQo6SgJmtLf2l4XISxvhQE
- MpxSOExmT88XLpJziYp1IgXC5TX9Ilb4iPee04rBkqYwsyE7hZvilTtBSksujuIBTHxZs6Z07
- JC6E+GHqKHmX6fblcEZi1kbCEVun1gRkWy7sE2SoN0Mli50oZM8csDxA0/84y4v9ZgKoYAQTq
- LMz92KFIMVYMBylQ54f/2GBO4/6uTetLZ7j8fetpjw9CVx2SM2hbxnrZxhaMK5sb6EuW7K64U
- 0l636vjtAgH+GA+ySLpSdKZ6XiSAGY/fbhuVnPll0sSgKSK+wVch+cyKP+8xAqkY2coLNcsdj
- KbylEbm/yvJG8+3IRvvBjQ3QBHjGV2SsZury22kUNGg9J/vZp4pCX78wQNe/IQMlNFlOZeNAp
- giqjNgGAppWM8V44DCokdo6LW0C2Z5pAKUtuBLccEAvCGZFJ5tZnS+xrkzzFw+ZKy0ewR2XUH
- KDpaqaM5oIS2usP1LUx+h26qXpV76iMsHFiseX3YbF8yUjaNVU6KoequLXUZ33GI4TAAzeIrX
- o6kYfLIPAeRFt5LKgQPKowH6eq9wh2CW8e5OeBpviu20NkMIDmnk2VREVllKuM28zhlOP/m+R
- hAiQZhwSAbMtKwU6jrTKbdQLj//oE8QPTvChn0lzo5DWJ9j2sECDYGtrvrsV+LwML9plbOZ8X
- bK4odc4ZcL0Nr7rbAhCFiQJHD372HBIEJJKjZT9wwjSY5T+V98ClJHNPt3ypjOGSg0Dz794Er
- AWGmrZonhXrAmaolo
+References: <20200612223150.1177182-1-andriin@fb.com> <20200612223150.1177182-9-andriin@fb.com>
+ <20200613034507.wjhd4z6dsda3pz7c@ast-mbp>
+In-Reply-To: <20200613034507.wjhd4z6dsda3pz7c@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 12 Jun 2020 22:57:59 -0700
+Message-ID: <CAEf4BzaHVRxkiDbTGashiuakXFBRYvDsQmJ0O08xFijKXiAwSg@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 8/8] tools/bpftool: show PIDs with FDs open
+ against BPF map/prog/link/btf
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>, Hao Luo <haoluo@google.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Quentin Monnet <quentin@isovalent.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> =E2=80=A6 The patch fixes this issue.
+On Fri, Jun 12, 2020 at 8:45 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, Jun 12, 2020 at 03:31:50PM -0700, Andrii Nakryiko wrote:
+> > Add bpf_iter-based way to find all the processes that hold open FDs against
+> > BPF object (map, prog, link, btf). Add new flag (-o, for "ownership", given
+> > -p is already taken) to trigger collection and output of these PIDs.
+> >
+> > Sample output for each of 4 BPF objects:
+> >
+> > $ sudo ./bpftool -o prog show
+> > 1992: cgroup_skb  name egress_alt  tag 9ad187367cf2b9e8  gpl
+> >         loaded_at 2020-06-12T14:18:10-0700  uid 0
+> >         xlated 48B  jited 59B  memlock 4096B  map_ids 2074
+> >         btf_id 460
+> >         pids: 913709,913732,913733,913734
+> > 2062: cgroup_device  tag 8c42dee26e8cd4c2  gpl
+> >         loaded_at 2020-06-12T14:37:52-0700  uid 0
+> >         xlated 648B  jited 409B  memlock 4096B
+> >         pids: 1
+> >
+> > $ sudo ./bpftool -o map show
+> > 2074: array  name test_cgr.bss  flags 0x400
+> >         key 4B  value 8B  max_entries 1  memlock 8192B
+> >         btf_id 460
+> >         pids: 913709,913732,913733,913734
+> >
+> > $ sudo ./bpftool -o link show
+> > 82: cgroup  prog 1992
+> >         cgroup_id 0  attach_type egress
+> >         pids: 913709,913732,913733,913734
+> > 86: cgroup  prog 1992
+> >         cgroup_id 0  attach_type egress
+> >         pids: 913709,913732,913733,913734
+>
+> This is awesome.
 
-I suggest to replace this information by the tag =E2=80=9CFixes=E2=80=9D.
-Please choose another imperative wording for your change description.
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Do=
-cumentation/process/submitting-patches.rst?id=3Ddf2fbf5bfa0e7fff8b4784507e=
-4d68f200454318#n151
+Thanks.
 
-Regards,
-Markus
+>
+> Why extra flag though? I think it's so useful that everyone would want to see
+
+No good reason apart from "being safe by default". If turned on by
+default, bpftool would need to probe for bpf_iter support first. I can
+add probing and do this by default.
+
+> this by default. Also the word 'pid' has kernel meaning or user space meaning?
+> Looks like kernel then bpftool should say 'tid'.
+
+No, its process ID in user-space sense. See task->tgid in
+pid_iter.bpf.c. I figured thread ID isn't all that useful.
+
+> Could you capture comm as well and sort it by comm, like:
+>
+> $ sudo ./bpftool link show
+> 82: cgroup  prog 1992
+>         cgroup_id 0  attach_type egress
+>         systemd(1), firewall(913709 913732), logger(913733 913734)
+
+Yep, comm is useful, I'll add that. Grouping by comm is kind of a
+pain, though, plus usually there will be one process only. So let me
+start with doing comm (pid) for each PID independently. I think that
+will be as good in practice.
