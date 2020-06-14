@@ -2,105 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA641F8B57
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 01:34:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E1BF1F8B5E
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 01:57:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728033AbgFNXem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 19:34:42 -0400
-Received: from smtp.al2klimov.de ([78.46.175.9]:60206 "EHLO smtp.al2klimov.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727928AbgFNXel (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Jun 2020 19:34:41 -0400
-X-Greylist: delayed 13996 seconds by postgrey-1.27 at vger.kernel.org; Sun, 14 Jun 2020 19:34:40 EDT
-Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
-        by smtp.al2klimov.de (Postfix) with ESMTPA id D5E8B1B599B;
-        Sun, 14 Jun 2020 23:34:34 +0000 (UTC)
-Subject: Re: Good idea to rename files in include/uapi/ ?
-To:     Jan Engelhardt <jengelh@inai.de>,
-        David Howells <dhowells@redhat.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <9feded75-4b45-2821-287b-af00ec5f910f@al2klimov.de>
- <174102.1592165965@warthog.procyon.org.uk>
- <nycvar.YFH.7.77.849.2006142244200.30230@n3.vanv.qr>
-From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Message-ID: <ab88e504-c139-231a-0294-953ffd1a9442@al2klimov.de>
-Date:   Mon, 15 Jun 2020 01:34:33 +0200
-MIME-Version: 1.0
-In-Reply-To: <nycvar.YFH.7.77.849.2006142244200.30230@n3.vanv.qr>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: ++
-X-Spam-Level: **
-Authentication-Results: smtp.al2klimov.de;
-        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
+        id S1727954AbgFNX5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 19:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727928AbgFNX5f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 19:57:35 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78E1C05BD43
+        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 16:57:34 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id q19so15491019eja.7
+        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 16:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=RiuNObIpLs2bTzvlx4fAFRxCG127tk/G9KYxxm+N7uQ=;
+        b=aYVTD8B1bXEP+A6Y0dY/5i12JGSCoArH7X1fqoHUdyHLz7fRhSjNKDd9eSOsW5x36L
+         bCIikhOWKIxZediFx2TeGvOp64+2gYG81KhrQaySTtXQ7eNjjqpZFUDRnl/QBbqNP7Ti
+         2OuxycbsULkfhXFyWvxtzOjNqIrdvF2Qh55i8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=RiuNObIpLs2bTzvlx4fAFRxCG127tk/G9KYxxm+N7uQ=;
+        b=HIf0YWtd8jZwP+LWQYvmsgmTMJP5Ybh2LWAgSQ41000Jj2XhUPGfmvapADfSDpxN2w
+         ZxF31XQYceFz0ybwn3i0Pu98KKAK6Q3eutAOkfy37A/02GoHiJuc1SAqp0ixDZpNO9xE
+         SbLq90EtcRrhwzIEkAB2WhxMdAyIHMTr24BYbaa3nTGWUYu9wkDKiOprCChrF+jVwquN
+         G50uHlIi1dcvcR8CTtc1eiV3ns+JGo8WA7RY+pzqVBYR4NToPaik674NBMjzM9k8XxIG
+         QGCMXD9uk4Dzyzti4SKE32SdS6B9xa9FULBts1t2YXvzFrnI6MvHC10kVBm1K4AcBSUc
+         3JMA==
+X-Gm-Message-State: AOAM530xZV1ZaDBn5tDU1QcF31KpX6COcGKkGGnE7wzBdyyJQF4P1mIN
+        ROTJGU+3bW7qGi4V5X64c5MIM2byc+4=
+X-Google-Smtp-Source: ABdhPJyyxAThWunwbWi5zQtg4VWR4wKQ/zJOP2U1IWuMUQFXEHQTAm8qfax+2dDGPCC7qEqtfQt/rg==
+X-Received: by 2002:a17:907:1110:: with SMTP id qu16mr23994373ejb.539.1592179053314;
+        Sun, 14 Jun 2020 16:57:33 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id gj10sm7891398ejb.61.2020.06.14.16.57.31
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 14 Jun 2020 16:57:32 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 0/4] bnxt_en: Bug fixes.
+Date:   Sun, 14 Jun 2020 19:57:06 -0400
+Message-Id: <1592179030-4533-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Four fixes related to the bnxt_en driver's resume path, AER reset, and
+the timer function.
 
+Michael Chan (3):
+  bnxt_en: Simplify bnxt_resume().
+  bnxt_en: Re-enable SRIOV during resume.
+  bnxt_en: Fix AER reset logic on 57500 chips.
 
-Am 14.06.20 um 23:08 schrieb Jan Engelhardt:
-> 
-> On Sunday 2020-06-14 22:19, David Howells wrote:
->> Alexander A. Klimov <grandmaster@al2klimov.de> wrote:
->>
->>> *Is it a good idea to rename files in include/uapi/ ?*
->>
->> Very likely not.  If programs out there are going to be built on a
->> case-sensitive filesystem (which happens all the time), they're going to break
->> if you rename the headers.  We're kind of stuck with them.
-> 
-> Netfilter has precedent for removing old headers, e.g.
-> 7200135bc1e61f1437dc326ae2ef2f310c50b4eb's ipt_ULOG.h.
-> 
-> Even if kernels would not remove such headers, the iptables userspace
-> code wants to be buildable with all kinds of kernels, including past
-> releases, which do not have modern headers like xt_l2tp.h.
-> 
-> The mantra for userspace programs is therefore "copy the headers" —
-> because you never know what /usr/include/linux you get. iptables and
-> iproute2 are two example codebases that employ this. And when headers
-> do get copied, header removals from the kernel side are no longer a
-Absolutely correct, "*when* headers do get copied ..."
+Vasundhara Volam (1):
+  bnxt_en: Return from timer if interface is not in open state.
 
-> big deal either.
-> 
-> A header file rename is no problem. We even have dummy headers
-Hmm.. if I understand all of you correctly, David, Stefano, Pablo and Al 
-say like no, not a good idea, but only you, Jan, say like should be no 
-problem.
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 35 +++++++++++++++----------------
+ 1 file changed, 17 insertions(+), 18 deletions(-)
 
-Jan, do you have anything like commit messages in mainline or public 
-emails from maintainers confirming your opinion?
-What exactly makes you sure that Torvalds, the #1 protector of the 
-userspace, would tolerate a such patch from me?
-Yes, it would break the A*P*I, and not the A*B*I, but who knows..
+-- 
+1.8.3.1
 
-> already because of this... or related changes. Just look at
-> xt_MARK.h, all it does is include xt_mark.h. Cf.
-> 28b949885f80efb87d7cebdcf879c99db12c37bd .
-> 
-> The boilerplate for xt_*h is quite high thanks to the miniscule
-> splitting of headers. Does not feel right in this day and age.
-> 
