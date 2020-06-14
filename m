@@ -2,142 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7925D1F8AFC
-	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 23:53:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 678BF1F8B05
+	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 23:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728004AbgFNVxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 17:53:16 -0400
-Received: from correo.us.es ([193.147.175.20]:59956 "EHLO mail.us.es"
+        id S1727955AbgFNV4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 17:56:38 -0400
+Received: from smtp.uniroma2.it ([160.80.6.16]:46730 "EHLO smtp.uniroma2.it"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727954AbgFNVxO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Jun 2020 17:53:14 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id E8461B5703
-        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 23:53:12 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id DB49EDA78E
-        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 23:53:12 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id DA9A2DA78B; Sun, 14 Jun 2020 23:53:12 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A966ADA78D;
-        Sun, 14 Jun 2020 23:53:10 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sun, 14 Jun 2020 23:53:10 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 78535426CCBB;
-        Sun, 14 Jun 2020 23:53:10 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH 4/4] netfilter: nf_tables: hook list memleak in flowtable deletion
-Date:   Sun, 14 Jun 2020 23:53:01 +0200
-Message-Id: <20200614215301.9101-5-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200614215301.9101-1-pablo@netfilter.org>
-References: <20200614215301.9101-1-pablo@netfilter.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727918AbgFNV4i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Jun 2020 17:56:38 -0400
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 05ELuIDW016346;
+        Sun, 14 Jun 2020 23:56:23 +0200
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id EE0A8120925;
+        Sun, 14 Jun 2020 23:56:13 +0200 (CEST)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1592171774; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1JFmA7zQmwjamZvBBzBcAWOqtcPJgeXHYUvuSuVxnic=;
+        b=T/g7DF0hX49XAr/jZkQc4sR1ST6F6ytA011Dlcs4i+2Nj/z5Kj3w66bLVVfqGKX59SF1ap
+        hjTQUWEXGC07lDAQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1592171774; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1JFmA7zQmwjamZvBBzBcAWOqtcPJgeXHYUvuSuVxnic=;
+        b=tnha29J3cd5QfC0yMck+H910Xz4i3OVWnzUBgMDCnLmn/q2eo2B1EevHVnmUoK4S+nBijZ
+        40fvMolW3egtHBcKZXInfcV+zAduwF6a0IW4IDuk4tS8gHIUS1VNctbjYOSCp6+wFRx6g1
+        uvghRvCLGWVymAxDw9OK75NCkxx0+IkNKHABKCxnhV6Thcm206BYr0qDALwtWEYhD75HIJ
+        +kSg7xcHFzAqgr5dyQ4ukE6FSww32Pp74BfTGMIraq5nCqPctIDV9ZlhdEK7OWxmCBZU0e
+        AOuLT9w2oMn3adAHWhQSrC3r9znEwxHZZEXuCXcv6PwwRYN4L8ydgFFP5lt7Xw==
+Date:   Sun, 14 Jun 2020 23:56:13 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Donald Sharp <sharpd@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Dinesh Dutt <didutt@gmail.com>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [RFC,net-next, 1/5] l3mdev: add infrastructure for table to VRF
+ mapping
+Message-Id: <20200614235613.b16ef9bad3e93b8727a80abe@uniroma2.it>
+In-Reply-To: <983c5d6b-5366-dfd3-eab2-2727e056d5c5@gmail.com>
+References: <20200612164937.5468-1-andrea.mayer@uniroma2.it>
+        <20200612164937.5468-2-andrea.mayer@uniroma2.it>
+        <983c5d6b-5366-dfd3-eab2-2727e056d5c5@gmail.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After looking up for the flowtable hooks that need to be removed,
-release the hook objects in the deletion list. The error path needs to
-released these hook objects too.
+On Sat, 13 Jun 2020 18:37:09 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-Fixes: abadb2f865d7 ("netfilter: nf_tables: delete devices from flowtable")
-Reported-by: syzbot+eb9d5924c51d6d59e094@syzkaller.appspotmail.com
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_tables_api.c | 31 ++++++++++++++++++++++++-------
- 1 file changed, 24 insertions(+), 7 deletions(-)
+> On 6/12/20 10:49 AM, Andrea Mayer wrote:
+> > @@ -37,6 +45,15 @@ struct l3mdev_ops {
+> >  
+> >  #ifdef CONFIG_NET_L3_MASTER_DEV
+> >  
+> > +int l3mdev_table_lookup_register(enum l3mdev_type l3type,
+> > +				 int (*fn)(struct net *net, u32 table_id));
+> > +
+> > +void l3mdev_table_lookup_unregister(enum l3mdev_type l3type,
+> > +				    int (*fn)(struct net *net, u32 table_id));
+> > +
+> > +int l3mdev_ifindex_lookup_by_table_id(enum l3mdev_type l3type, struct net *net,
+> > +				      u32 table_id);
+> > +
+> >  int l3mdev_fib_rule_match(struct net *net, struct flowi *fl,
+> >  			  struct fib_lookup_arg *arg);
+> >  
+> > @@ -280,6 +297,26 @@ struct sk_buff *l3mdev_ip6_out(struct sock *sk, struct sk_buff *skb)
+> >  	return skb;
+> >  }
+> >  
+> > +static inline
+> > +int l3mdev_table_lookup_register(enum l3mdev_type l3type,
+> > +				 int (*fn)(struct net *net, u32 table_id))
+> > +{
+> > +	return -EOPNOTSUPP;
+> > +}
+> > +
+> > +static inline
+> > +void l3mdev_table_lookup_unregister(enum l3mdev_type l3type,
+> > +				    int (*fn)(struct net *net, u32 table_id))
+> > +{
+> > +}
+> > +
+> > +static inline
+> > +int l3mdev_ifindex_lookup_by_table_id(enum l3mdev_type l3type, struct net *net,
+> > +				      u32 table_id)
+> > +{
+> > +	return -ENODEV;
+> > +}
+> > +
+> >  static inline
+> >  int l3mdev_fib_rule_match(struct net *net, struct flowi *fl,
+> >  			  struct fib_lookup_arg *arg)
+> > diff --git a/net/l3mdev/l3mdev.c b/net/l3mdev/l3mdev.c
+> > index f35899d45a9a..6cc1fe7eb039 100644
+> > --- a/net/l3mdev/l3mdev.c
+> > +++ b/net/l3mdev/l3mdev.c
+> > @@ -9,6 +9,101 @@
+> >  #include <net/fib_rules.h>
+> >  #include <net/l3mdev.h>
+> >  
+> > +DEFINE_SPINLOCK(l3mdev_lock);
+> > +
+> > +typedef int (*lookup_by_table_id_t)(struct net *net, u32 table_d);
+> > +
+> 
+> I should have caught this earlier. Move lookup_by_table_id_t to l3mdev.h
+> and use above for 'fn' in l3mdev_table_lookup_{un,}register
+> 
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 073aa1051d43..7647ecfa0d40 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -6550,12 +6550,22 @@ static int nf_tables_newflowtable(struct net *net, struct sock *nlsk,
- 	return err;
- }
- 
-+static void nft_flowtable_hook_release(struct nft_flowtable_hook *flowtable_hook)
-+{
-+	struct nft_hook *this, *next;
-+
-+	list_for_each_entry_safe(this, next, &flowtable_hook->list, list) {
-+		list_del(&this->list);
-+		kfree(this);
-+	}
-+}
-+
- static int nft_delflowtable_hook(struct nft_ctx *ctx,
- 				 struct nft_flowtable *flowtable)
- {
- 	const struct nlattr * const *nla = ctx->nla;
- 	struct nft_flowtable_hook flowtable_hook;
--	struct nft_hook *this, *next, *hook;
-+	struct nft_hook *this, *hook;
- 	struct nft_trans *trans;
- 	int err;
- 
-@@ -6564,33 +6574,40 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
- 	if (err < 0)
- 		return err;
- 
--	list_for_each_entry_safe(this, next, &flowtable_hook.list, list) {
-+	list_for_each_entry(this, &flowtable_hook.list, list) {
- 		hook = nft_hook_list_find(&flowtable->hook_list, this);
- 		if (!hook) {
- 			err = -ENOENT;
- 			goto err_flowtable_del_hook;
- 		}
- 		hook->inactive = true;
--		list_del(&this->list);
--		kfree(this);
- 	}
- 
- 	trans = nft_trans_alloc(ctx, NFT_MSG_DELFLOWTABLE,
- 				sizeof(struct nft_trans_flowtable));
--	if (!trans)
--		return -ENOMEM;
-+	if (!trans) {
-+		err = -ENOMEM;
-+		goto err_flowtable_del_hook;
-+	}
- 
- 	nft_trans_flowtable(trans) = flowtable;
- 	nft_trans_flowtable_update(trans) = true;
- 	INIT_LIST_HEAD(&nft_trans_flowtable_hooks(trans));
-+	nft_flowtable_hook_release(&flowtable_hook);
- 
- 	list_add_tail(&trans->list, &ctx->net->nft.commit_list);
- 
- 	return 0;
- 
- err_flowtable_del_hook:
--	list_for_each_entry(hook, &flowtable_hook.list, list)
-+	list_for_each_entry(this, &flowtable_hook.list, list) {
-+		hook = nft_hook_list_find(&flowtable->hook_list, this);
-+		if (!hook)
-+			break;
-+
- 		hook->inactive = false;
-+	}
-+	nft_flowtable_hook_release(&flowtable_hook);
- 
- 	return err;
- }
--- 
-2.20.1
+Hi David,
+Ok, I will do it!
 
+Thank you,
+Andrea
