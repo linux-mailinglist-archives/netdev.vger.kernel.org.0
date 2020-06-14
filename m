@@ -2,164 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 205581F87C7
-	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 10:55:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6D111F87C9
+	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 10:56:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726856AbgFNIzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 04:55:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48786 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726099AbgFNIzo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 04:55:44 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81E6C03E96F
-        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 01:55:42 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id x6so14001908wrm.13
-        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 01:55:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=llpwFJx7bM20R9a6/mhnv06HJ/te3x1vavOQOVX/2CQ=;
-        b=S7dzRgrpCv/EKte3nuNXBUVvfSn6Nl5+56xXsIBrcFZDTH6ry7SkYeor2FuubMsuYY
-         4mgvYdZm1Sq8pCyD5XWASNJDqsrY9l6aIueXdnoj+HjjZ6OTB40a0jigH72PgSqypvSa
-         VckOVTMG2I+N2BVFHFIgtJc106U7SFL0UHTVs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=llpwFJx7bM20R9a6/mhnv06HJ/te3x1vavOQOVX/2CQ=;
-        b=Y7r2lD6D5P2JB73uCkJGnQVhIj139TBUH4Dep6AITaz+FYHPsl4ADgpzBynshseMUr
-         l1bwUdcfkfRAU4+vxt3cs5TNmQ2IggUF5KxvM+1PgojK8oUryefmUCejDR2b/HeQ41M+
-         kifgVUM9z8Lnr5AKD3rBZBwnZB7i/3PDH41sPt8Sk8nYnewAXOC+f/bhDn7+PT2Zv1OZ
-         WODqodAfSvfsGH86KnwlbrWOTGEW+crK/xJCrla8vJSPpHt7yASiMjNPROORCNs5VoRk
-         KXcQ2Gw61CZU1B5bNlxzIe5CAz4L00RlsDQJnlQX/tDtwW3Q0uC+3fY9dLeLo8VG+CeB
-         opzA==
-X-Gm-Message-State: AOAM530eGeCISTTR3jrI7lq6IcLsI2A6yrLxnvg5onYDd6mmPDKPa+k3
-        lBc3+0XG0qYtuDvVERR1850dAf5+xk6Y6Tft8E7yxg==
-X-Google-Smtp-Source: ABdhPJyHz5Bhhj8GoMeDgXuhUhmcgBPzIWtD0lcvZ73CyDndfoVYYyIdA6vV0AaurwANQRaXjov6ypLV5gq6aCZtlxw=
-X-Received: by 2002:a05:6000:1202:: with SMTP id e2mr22446338wrx.231.1592124941461;
- Sun, 14 Jun 2020 01:55:41 -0700 (PDT)
+        id S1726919AbgFNI4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 04:56:30 -0400
+Received: from mout.web.de ([212.227.17.11]:39239 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725265AbgFNI4a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Jun 2020 04:56:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1592124976;
+        bh=1XKwjy46DP0XP1BezOttDjslx/1Fvlxmazm0SmzeslA=;
+        h=X-UI-Sender-Class:Cc:Subject:From:To:Date;
+        b=NF9ccStdhdx4YYSPvH7fUAoH9YmOBXDbZpLo5nye251d5UFGudDBTFlZxHwyi6cjy
+         L/Q5AiaTJ4F57zLojdCngm9EDAKLrcenKG1Kw7UHZK3OJdH6gBBGOYsffTtW+jYLzf
+         oGWg5ITNIZ5fJiMPpjr/lLgv07/IfJqiC/WVVzs8=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.131.103.145]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MBTQo-1jb0Eg0S2w-00AUxb; Sun, 14
+ Jun 2020 10:56:16 +0200
+Cc:     Navid Emamdoost <emamd001@umn.edu>, Kangjie Lu <kjlu@umn.edu>,
+        Stephen McCamant <smccaman@umn.edu>,
+        Qiushi Wu <wu000273@umn.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: macb: fix ref count leaking via pm_runtime_get_sync
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+To:     Navid Emamdoost <navid.emamdoost@gmail.com>, netdev@vger.kernel.org
+Message-ID: <c145121b-3d69-a02a-17f5-f0eb2f166663@web.de>
+Date:   Sun, 14 Jun 2020 10:56:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <CAHApi-mMi2jYAOCrGhpkRVybz0sDpOSkLFCZfVe-2wOcAO_MqQ@mail.gmail.com>
- <CAHApi-=YSo=sOTkRxmY=fct3TePFFdG9oPTRHWYd1AXjk0ACfw@mail.gmail.com>
- <20190902110818.2f6a8894@carbon> <fd3ee317865e9743305c0e88e31f27a2d51a0575.camel@mellanox.com>
-In-Reply-To: <fd3ee317865e9743305c0e88e31f27a2d51a0575.camel@mellanox.com>
-From:   Kal Cutter Conley <kal.conley@dectris.com>
-Date:   Sun, 14 Jun 2020 10:55:30 +0200
-Message-ID: <CAHApi-k=9Szxm0QMD4N4PW9Lq8L4hW6e7VfyBePzrTgvKGRs5Q@mail.gmail.com>
-Subject: Re: net/mlx5e: bind() always returns EINVAL with XDP_ZEROCOPY
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "brouer@redhat.com" <brouer@redhat.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "toke.hoiland-jorgensen@kau.se" <toke.hoiland-jorgensen@kau.se>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "gospo@broadcom.com" <gospo@broadcom.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:YIGYcO6P89/n84JoJbJS+s6UtPxuIxy1TvrfeYMMdZk/xJySr6U
+ 59SvoFNUi7DB9aitWb7SwqJ3Bcawfo23Cvz1cIgzzX6Ih/dX9RgspQqpaRjtaQb/tA096T6
+ IRYipq5I3UDCCCuMnfHiXuviBWRK/+UUl5XAjJuB8sXsyVzwACthBX9XhHOtK3/zgkcpEw0
+ WuimbHrvGvebXWdOzUcww==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:eg7k3wsso20=:lcbrm8SQgQoTD/1/qEfMDy
+ cRuzbj3YLhaX0fCxLlo1QhztDSvpEFIElnQsBIZ8UZZFZecqQjOreWKnLedrid+XYIf0q/XBz
+ txTDAql446R4zGCDaRNl5zinbqVfgcLBEFY07FehG0da802LC4FlbWUiKwOQUJrF81DhgS0ZY
+ JgYeDynhn0xFYingk1o0xAr2hWARvSAz+ogeSX1QuZOZ4CJRXy3NlyVC7jwNvIN7tQWBkVSDg
+ LigGeg9YhOhBujOBJ9N7PjgXpZrfF5TFIxCWMGBF/Q6rAYoC/x80YIm40kgVp5CNwvDSJRk6x
+ B9IYYvkHEOYnn45Qn2/azW5K4bbgR3Rjt89bijkfTx0vauNI7J3865MXia1d0g+VdfmwNG/ey
+ rQqUb8IEaPXH2UoAUdySiGO6oNe0PYM/HlC/0oexMO85bu+8MrXUSz3BJYaEt8aDTxhhUVfmj
+ ra4fz+lhq2WMSyrkE2NWBTTIhhURrK3hs9Co2aEAZGaKyF3Njrii2qUeW1SsRMQjosvGn2Khy
+ Ein4fOgUojW4mzXoc9Q3Sz6NS/q6lJBZVXjDHLcwv8rFALX63D+MvW73w/m2ZWB8/laZG/CvJ
+ AuUcvrWg9CdFsYNkBFzmXyxrJQl2KM3XtTHnbjmuhAYO47D+w61jawcp5q0FO1WHKbyTzlaHU
+ ExqjGdmo7O4PQWdMBM7uyKBY4mTAxgxrD3oUQbU3FtlTcT2eZ0YeyDaQVw8xmXddidDuKh7/2
+ +alcdV8sT0XlXDL/P6Iaopia5uydBVjYGCCZvFROaiDgF97wIS8kiBZ1mvYckA/TORsUbk3cT
+ TtFlm2KiLE74qHlov5NAzEnoYtkt66dsveJ09/eMd/nW97hl0kklErQ/4IuF3JDxoBtIbRi+t
+ JL7PMBe/uX3B2gSvovxFb/LkXVT/Tizx3mb8gXi96aRKUX4MU2LbaB4rPTudQT0x7dQWA06Ip
+ SvaGEUBtQpkQ4tUx3Uneuo1F9cmEUhkfZApCYZB64TFIw408Z6jowscRxpGJquUsxHD6sz/Eu
+ zP2cB4X/z2sQx0p/p/P38136i3uaNM0+iajD1NKunSjH0S9rZyCPhFs+czsmVW6HAqAXBIda1
+ pTtgIR/QdSCuuEx0m10yPsE40K3sDUt4JJdKEaM2Yaf2kfMbFqI3GWMu6pmA5QoDZZQDe51w8
+ urEiH9d39zhiRF3C9119zfb90UZ0nTjrQucUrsdkOLCjTDzo38Fx2L4YctEQ49gbKtQquPpwd
+ x/uE/wqekthK8LF8h
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saeed,
-Thanks for explaining the reasoning behind the special mlx5 queue
-numbering with XDP zerocopy.
+> in macb_mdio_write, =E2=80=A6
 
-We have a process using AF_XDP that also shares the network interface
-with other processes on the system. ethtool rx flow classification
-rules are used to route the traffic to the appropriate XSK queue
-N..(2N-1). The issue is these queues are only valid as long they are
-active (as far as I can tell). This means if my AF_XDP process dies
-other processes no longer receive ingress traffic routed over queues
-N..(2N-1) even though my XDP program is still loaded and would happily
-always return XDP_PASS. Other drivers do not have this usability issue
-because they use queues that are always valid. Is there a simple
-workaround for this issue? It seems to me queues N..(2N-1) should
-simply map to 0..(N-1) when they are not active?
+* Will a desire evolve to improve also this commit message?
 
-Kal
+* Will the tag =E2=80=9CFixes=E2=80=9D become helpful?
 
 
-On Tue, Sep 3, 2019 at 10:19 PM Saeed Mahameed <saeedm@mellanox.com> wrote:
+=E2=80=A6
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+=E2=80=A6
+> @@ -3840,11 +3842,14 @@  static int at91ether_open(struct net_device *de=
+v)
 >
-> On Mon, 2019-09-02 at 11:08 +0200, Jesper Dangaard Brouer wrote:
-> > On Sun, 1 Sep 2019 18:47:15 +0200
-> > Kal Cutter Conley <kal.conley@dectris.com> wrote:
-> >
-> > > Hi,
-> > > I figured out the problem. Let me document the issue here for
-> > > others
-> > > and hopefully start a discussion.
-> > >
-> > > The mlx5 driver uses special queue ids for ZC. If N is the number
-> > > of
-> > > configured queues, then for XDP_ZEROCOPY the queue ids start at N.
-> > > So
-> > > queue ids [0..N) can only be used with XDP_COPY and queue ids
-> > > [N..2N)
-> > > can only be used with XDP_ZEROCOPY.
-> >
-> > Thanks for the followup and explanation on how mlx5 AF_XDP queue
-> > implementation is different from other vendors.
-> >
-> >
-> > > sudo ethtool -L eth0 combined 16
-> > > sudo samples/bpf/xdpsock -r -i eth0 -c -q 0   # OK
-> > > sudo samples/bpf/xdpsock -r -i eth0 -z -q 0   # ERROR
-> > > sudo samples/bpf/xdpsock -r -i eth0 -c -q 16  # ERROR
-> > > sudo samples/bpf/xdpsock -r -i eth0 -z -q 16  # OK
-> > >
-> > > Why was this done? To use zerocopy if available and fallback on
-> > > copy
-> > > mode normally you would set sxdp_flags=0. However, here this is no
-> > > longer possible. To support this driver, you have to first try
-> > > binding
-> > > with XDP_ZEROCOPY and the special queue id, then if that fails, you
-> > > have to try binding again with a normal queue id. Peculiarities
-> > > like
-> > > this complicate the XDP user api. Maybe someone can explain the
-> > > benefits?
-> >
+>  	ret =3D macb_phylink_connect(lp);
+>  	if (ret)
+> -		return ret;
+> +		goto out;
 >
-> in mlx5 we like to keep full functional separation between different
-> queues. Unlike other implementations in mlx5 kernel standard rx rings
-> can still function while xsk queues are opened. from user perspective
-> this should be very simple and very usefull:
+>  	netif_start_queue(dev);
 >
-> queues 0..(N-1): can't be used for XSK ZC since they are standard RX
-> queues managed by kernel  and driver
-> queues N..(2N-1): Are XSK user app managed queues, they can't be used
-> for anything else.
->
-> benefits:
-> - RSS is not interrupted, Ongoing traffic and Current RX queues keeps
-> going normally when XSK apps are activated/deactivated on the fly.
-> - Well-defined full logical separation between different types of RX
-> queue.
->
-> as Jesper explained we understand the confusion, and we will come up
-> with a solution the fits all vendors.
->
-> > Thanks for complaining, it is actually valuable. It really illustrate
-> > the kernel need to improve in this area, which is what our talk[1] at
-> > LPC2019 (Sep 10) is about.
-> >
-> > Title: "Making Networking Queues a First Class Citizen in the Kernel"
-> >  [1] https://linuxplumbersconf.org/event/4/contributions/462/
-> >
-> > As you can see, several vendors are actually involved. Kudos to
-> > Magnus
-> > for taking initiative here!  It's unfortunately not solved
-> > "tomorrow",
-> > as first we have to agree this is needed (facility to register
-> > queues),
-> > then agree on API and get commitment from vendors, as this requires
-> > drivers changes.  There is a long road ahead, but I think it will be
-> > worthwhile in the end, as effective use of dedicated hardware queues
-> > (both RX and TX) is key to performance.
-> >
+>  	return 0;
+> +out:
+> +	pm_runtime_put(&lp->pdev->dev);
+> +	return ret;
+>  }
+=E2=80=A6
+
+Perhaps use the label =E2=80=9Cput_runtime=E2=80=9D instead?
+
+Regards,
+Markus
