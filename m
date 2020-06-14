@@ -2,142 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 678BF1F8B05
-	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 23:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC7CF1F8B0B
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 00:01:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727955AbgFNV4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 17:56:38 -0400
-Received: from smtp.uniroma2.it ([160.80.6.16]:46730 "EHLO smtp.uniroma2.it"
+        id S1727971AbgFNWBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 18:01:08 -0400
+Received: from correo.us.es ([193.147.175.20]:33346 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727918AbgFNV4i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Jun 2020 17:56:38 -0400
-Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 05ELuIDW016346;
-        Sun, 14 Jun 2020 23:56:23 +0200
-Received: from lubuntu-18.04 (unknown [160.80.103.126])
-        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id EE0A8120925;
-        Sun, 14 Jun 2020 23:56:13 +0200 (CEST)
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
-        s=ed201904; t=1592171774; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1JFmA7zQmwjamZvBBzBcAWOqtcPJgeXHYUvuSuVxnic=;
-        b=T/g7DF0hX49XAr/jZkQc4sR1ST6F6ytA011Dlcs4i+2Nj/z5Kj3w66bLVVfqGKX59SF1ap
-        hjTQUWEXGC07lDAQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
-        t=1592171774; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1JFmA7zQmwjamZvBBzBcAWOqtcPJgeXHYUvuSuVxnic=;
-        b=tnha29J3cd5QfC0yMck+H910Xz4i3OVWnzUBgMDCnLmn/q2eo2B1EevHVnmUoK4S+nBijZ
-        40fvMolW3egtHBcKZXInfcV+zAduwF6a0IW4IDuk4tS8gHIUS1VNctbjYOSCp6+wFRx6g1
-        uvghRvCLGWVymAxDw9OK75NCkxx0+IkNKHABKCxnhV6Thcm206BYr0qDALwtWEYhD75HIJ
-        +kSg7xcHFzAqgr5dyQ4ukE6FSww32Pp74BfTGMIraq5nCqPctIDV9ZlhdEK7OWxmCBZU0e
-        AOuLT9w2oMn3adAHWhQSrC3r9znEwxHZZEXuCXcv6PwwRYN4L8ydgFFP5lt7Xw==
-Date:   Sun, 14 Jun 2020 23:56:13 +0200
-From:   Andrea Mayer <andrea.mayer@uniroma2.it>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>,
+        id S1727896AbgFNWBH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Jun 2020 18:01:07 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id DD347FF909
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 00:01:04 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id CFCBBDA853
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 00:01:04 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id B786BDA793; Mon, 15 Jun 2020 00:01:04 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 79E35DA72F;
+        Mon, 15 Jun 2020 00:01:02 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 15 Jun 2020 00:01:02 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 1FBD4426CCBA;
+        Mon, 15 Jun 2020 00:01:02 +0200 (CEST)
+Date:   Mon, 15 Jun 2020 00:01:01 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jan Engelhardt <jengelh@inai.de>
+Cc:     David Howells <dhowells@redhat.com>,
+        "Alexander A. Klimov" <grandmaster@al2klimov.de>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Donald Sharp <sharpd@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Dinesh Dutt <didutt@gmail.com>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
-        Ahmed Abdelsalam <ahabdels@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: Re: [RFC,net-next, 1/5] l3mdev: add infrastructure for table to VRF
- mapping
-Message-Id: <20200614235613.b16ef9bad3e93b8727a80abe@uniroma2.it>
-In-Reply-To: <983c5d6b-5366-dfd3-eab2-2727e056d5c5@gmail.com>
-References: <20200612164937.5468-1-andrea.mayer@uniroma2.it>
-        <20200612164937.5468-2-andrea.mayer@uniroma2.it>
-        <983c5d6b-5366-dfd3-eab2-2727e056d5c5@gmail.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        linux-arch@vger.kernel.org
+Subject: Re: Good idea to rename files in include/uapi/ ?
+Message-ID: <20200614220101.GA9367@salvia>
+References: <9feded75-4b45-2821-287b-af00ec5f910f@al2klimov.de>
+ <174102.1592165965@warthog.procyon.org.uk>
+ <nycvar.YFH.7.77.849.2006142244200.30230@n3.vanv.qr>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <nycvar.YFH.7.77.849.2006142244200.30230@n3.vanv.qr>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 13 Jun 2020 18:37:09 -0600
-David Ahern <dsahern@gmail.com> wrote:
-
-> On 6/12/20 10:49 AM, Andrea Mayer wrote:
-> > @@ -37,6 +45,15 @@ struct l3mdev_ops {
-> >  
-> >  #ifdef CONFIG_NET_L3_MASTER_DEV
-> >  
-> > +int l3mdev_table_lookup_register(enum l3mdev_type l3type,
-> > +				 int (*fn)(struct net *net, u32 table_id));
-> > +
-> > +void l3mdev_table_lookup_unregister(enum l3mdev_type l3type,
-> > +				    int (*fn)(struct net *net, u32 table_id));
-> > +
-> > +int l3mdev_ifindex_lookup_by_table_id(enum l3mdev_type l3type, struct net *net,
-> > +				      u32 table_id);
-> > +
-> >  int l3mdev_fib_rule_match(struct net *net, struct flowi *fl,
-> >  			  struct fib_lookup_arg *arg);
-> >  
-> > @@ -280,6 +297,26 @@ struct sk_buff *l3mdev_ip6_out(struct sock *sk, struct sk_buff *skb)
-> >  	return skb;
-> >  }
-> >  
-> > +static inline
-> > +int l3mdev_table_lookup_register(enum l3mdev_type l3type,
-> > +				 int (*fn)(struct net *net, u32 table_id))
-> > +{
-> > +	return -EOPNOTSUPP;
-> > +}
-> > +
-> > +static inline
-> > +void l3mdev_table_lookup_unregister(enum l3mdev_type l3type,
-> > +				    int (*fn)(struct net *net, u32 table_id))
-> > +{
-> > +}
-> > +
-> > +static inline
-> > +int l3mdev_ifindex_lookup_by_table_id(enum l3mdev_type l3type, struct net *net,
-> > +				      u32 table_id)
-> > +{
-> > +	return -ENODEV;
-> > +}
-> > +
-> >  static inline
-> >  int l3mdev_fib_rule_match(struct net *net, struct flowi *fl,
-> >  			  struct fib_lookup_arg *arg)
-> > diff --git a/net/l3mdev/l3mdev.c b/net/l3mdev/l3mdev.c
-> > index f35899d45a9a..6cc1fe7eb039 100644
-> > --- a/net/l3mdev/l3mdev.c
-> > +++ b/net/l3mdev/l3mdev.c
-> > @@ -9,6 +9,101 @@
-> >  #include <net/fib_rules.h>
-> >  #include <net/l3mdev.h>
-> >  
-> > +DEFINE_SPINLOCK(l3mdev_lock);
-> > +
-> > +typedef int (*lookup_by_table_id_t)(struct net *net, u32 table_d);
-> > +
+On Sun, Jun 14, 2020 at 11:08:08PM +0200, Jan Engelhardt wrote:
 > 
-> I should have caught this earlier. Move lookup_by_table_id_t to l3mdev.h
-> and use above for 'fn' in l3mdev_table_lookup_{un,}register
+> On Sunday 2020-06-14 22:19, David Howells wrote:
+> >Alexander A. Klimov <grandmaster@al2klimov.de> wrote:
+> >
+> >> *Is it a good idea to rename files in include/uapi/ ?*
+> >
+> >Very likely not.  If programs out there are going to be built on a
+> >case-sensitive filesystem (which happens all the time), they're going to break
+> >if you rename the headers.  We're kind of stuck with them.
 > 
+> Netfilter has precedent for removing old headers, e.g.
+> 7200135bc1e61f1437dc326ae2ef2f310c50b4eb's ipt_ULOG.h.
 
-Hi David,
-Ok, I will do it!
-
-Thank you,
-Andrea
+That's only because NFLOG has been there for ~10 years, so it was safe
+to remove ULOG support.
