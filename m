@@ -2,81 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 095671F8983
-	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 17:30:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26DEB1F899E
+	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 18:14:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726978AbgFNPaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 11:30:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53168 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725815AbgFNPaV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Jun 2020 11:30:21 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 51FCD206D7;
-        Sun, 14 Jun 2020 15:30:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592148620;
-        bh=BhI3AzDTgZ6FuNM+0FU5AEqv+pod8JXJS5xxEKM5s0k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=0ZLC6P+8vdV2mT8RnZ1waZEHQi7p3rZjFmTjjczHyidzQxwQhDSDvXUZIwEs8cies
-         1nBh89VCer1IwuIEsF33W10t0cmpL51kDkLacrMTN8rwmis4TTys6eA0JxKBzlDBYg
-         IuOFLujmbr0PfLATpdPPyVO1N7Gf4BF6rZ7LrrMY=
-Date:   Sun, 14 Jun 2020 17:30:18 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Markus Elfring <Markus.Elfring@web.de>
-Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
-        netdev@vger.kernel.org, Navid Emamdoost <emamd001@umn.edu>,
-        Kangjie Lu <kjlu@umn.edu>,
-        Stephen McCamant <mccamant@cs.umn.edu>,
-        Qiushi Wu <wu000273@umn.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: fec: fix ref count leaking when pm_runtime_get_sync
- fails
-Message-ID: <20200614153018.GA2663587@kroah.com>
-References: <38dcaa5d-98ad-e1df-6e83-2e6dd677a483@web.de>
+        id S1727027AbgFNQOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 12:14:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726772AbgFNQOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 12:14:20 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EAC7C05BD43
+        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 09:14:20 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id x13so14639357wrv.4
+        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 09:14:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TukYlSH90/lx+DZPwDOiJtp5ymqE/VSeT6bOu0/OzqI=;
+        b=nfM9ldS1XGEci/0nMcrxea7JnfJjZB0jDkmzkrAyTgZS08hIl3qUOiieMRpLo+OLvB
+         dSEqrAhfE5yd1NCgigP7X1HxT9pDfY9LbOc3v6dmLiqiXZ+DOdvcJhVRyo9EypanYJVD
+         tokGhb60yAkMW7SPgmftp/fS6VY6Oo1DTGHKcHecEOIcNS4slpPFRt3tR3rRZQjADcU+
+         2VJTMW7Q6/GTqn7sLDvwVUMAz6jVaZeVZOotjrcBsj2b4HA7yRZbBjtN63z43jDbamyM
+         zu48MPHRFWPLsCW2ZqmAwDe8gnDsyiJaeSXHIEoVx1xExivsZYd6Hzan0WDBpnxUCBei
+         aGdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TukYlSH90/lx+DZPwDOiJtp5ymqE/VSeT6bOu0/OzqI=;
+        b=TjqW4yU12YQbSDnAk/Q8i2FnWQlCvfFkltyB3k6KPzpRb5Dh+mEkKZ+kxjrXNC9l3s
+         rjsUpLS+o+ojklFj9hwerxCCWGZ/iwXIbalzxhrJmqZQdA1MI6LyRVHunkVzHetmDtAS
+         mMcuZn3Rf8GQVpzYw052zG+kYVYBkNxY7ER4IYCQbVJqC1Hv/iq0JqWgafMERYrOmDFy
+         /wU5AL0MjaxVtgtOuGb6cfGqUZDah+0UcjDCQd4Opq3XBahDizbm9tUsy9IPvXJ3kBkq
+         amxpU1ensx3YmwXyFn3A8cIAiJByL3Z2xwhnD+cgoG3cz3/UAW/u5iW00InjLWF7Mufw
+         Ddwg==
+X-Gm-Message-State: AOAM532kkSos3iGiOfVJKogWNnldfgpMSq/lFfnexV5e6ZUTfb9x3WiT
+        0lDvwCSoUw4bCOBQp5XMkwPfMH7Y
+X-Google-Smtp-Source: ABdhPJxacAK/kK2s/xQmteQrJnqlalVcahSBCasobhjvj2WXb6XBG4Oe5gaRM3Bf7vU+aZ2nyj317w==
+X-Received: by 2002:adf:a41a:: with SMTP id d26mr25297387wra.324.1592151258943;
+        Sun, 14 Jun 2020 09:14:18 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:b85b:4ddd:bc92:4bfb? (p200300ea8f235700b85b4dddbc924bfb.dip0.t-ipconnect.de. [2003:ea:8f23:5700:b85b:4ddd:bc92:4bfb])
+        by smtp.googlemail.com with ESMTPSA id o20sm21480082wra.29.2020.06.14.09.14.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Jun 2020 09:14:18 -0700 (PDT)
+Subject: Re: ethtool 5.7: netlink ENOENT error when setting WOL
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Michal Kubecek <mkubecek@suse.cz>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <77652728-722e-4d3b-6737-337bf4b391b7@gmail.com>
+ <6359d5f8-50e4-a504-ba26-c3b6867f3deb@gmail.com>
+ <20200610091328.evddgipbedykwaq6@lion.mk-sys.cz>
+ <a433a0b0-bf5e-ad90-8373-4f88e2ef991d@gmail.com>
+ <0353ce74-ffc6-4d40-bf0f-d2a7ad640b30@gmail.com>
+ <20200610200526.GB19869@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <2994dba7-c038-5702-a5ec-e11d5741a1e5@gmail.com>
+Date:   Sun, 14 Jun 2020 18:14:11 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
+In-Reply-To: <20200610200526.GB19869@lunn.ch>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <38dcaa5d-98ad-e1df-6e83-2e6dd677a483@web.de>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 14, 2020 at 10:25:38AM +0200, Markus Elfring wrote:
-> > in fec_enet_mdio_read, …
+On 10.06.2020 22:05, Andrew Lunn wrote:
+>> Not sure it makes sense to build ETHTOOL_NETLINK as a module, but at
+>> least ensuring that ETHTOOL_NETLINK is built into the kernel if PHYLIB=y
+>> or PHYLIB=m would make sense, or, better we find a way to decouple the
+>> two by using function pointers from the phy_driver directly that way
+>> there is no symbol dependency (but reference counting has to work).
 > 
-> I am curious under which circumstances you would like to improve
-> such commit messages.
+> Hi Florian
 > 
-> * Will the tag “Fixes” become helpful?
+> It is not so easy to make PHYLIB=m work. ethtool netlink needs to call
+> into the phylib core in order to trigger a cable test, not just PHY
+> drivers.
 > 
-> * Which source code analysis tools did trigger to send
->   update suggestions according to 16 similar issues for today?
+> Ideas welcome.
 > 
+When looking at functions like phy_start_cable_test() we could do the
+following: Most of it doesn't need phylib and could be moved to
+ethtool/cabletest.c. Or maybe into a separate ethtool phylib glue
+code source file. The phylib calls (phy_link_down, phy_trigger_machine)
+then would have to be moved into the cable_test_start callback.
+I see that each callback implementation then would have some
+boilerplate code. But maybe we could facilitate this with few helpers,
+so that a cable test callback would look like:
 
-Hi,
+phy_cable_test_boiler_start()
+actual_cable_test()
+phy_cable_test_boiler_end()
 
-This is the semi-friendly patch-bot of Greg Kroah-Hartman.
-
-Markus, you seem to have sent a nonsensical or otherwise pointless
-review comment to a patch submission on a Linux kernel developer mailing
-list.  I strongly suggest that you not do this anymore.  Please do not
-bother developers who are actively working to produce patches and
-features with comments that, in the end, are a waste of time.
-
-Patch submitter, please ignore Markus's suggestion; you do not need to
-follow it at all.  The person/bot/AI that sent it is being ignored by
-almost all Linux kernel maintainers for having a persistent pattern of
-behavior of producing distracting and pointless commentary, and
-inability to adapt to feedback.  Please feel free to also ignore emails
-from them.
-
-thanks,
-
-greg k-h's patch email bot
+>       Andrew
+> 
+Heiner
