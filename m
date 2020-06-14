@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F1F1F8B3C
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 00:48:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 229791F8B42
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 01:07:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728007AbgFNWrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 18:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34584 "EHLO
+        id S1727995AbgFNXHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 19:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727928AbgFNWrz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 18:47:55 -0400
-Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A90C05BD43;
-        Sun, 14 Jun 2020 15:47:54 -0700 (PDT)
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.93 #3 (Red Hat Linux))
-        id 1jkbPH-008wE4-VA; Sun, 14 Jun 2020 22:47:16 +0000
-Date:   Sun, 14 Jun 2020 23:47:15 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
+        with ESMTP id S1727928AbgFNXHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 19:07:19 -0400
+Received: from smtp.al2klimov.de (smtp.al2klimov.de [IPv6:2a01:4f8:c0c:1465::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354CCC05BD43;
+        Sun, 14 Jun 2020 16:07:19 -0700 (PDT)
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by smtp.al2klimov.de (Postfix) with ESMTPA id D5FF51B599B;
+        Sun, 14 Jun 2020 23:07:11 +0000 (UTC)
+Subject: Re: Good idea to rename files in include/uapi/ ?
+To:     Stefano Brivio <sbrivio@redhat.com>
 Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
         Jozsef Kadlecsik <kadlec@netfilter.org>,
         Florian Westphal <fw@strlen.de>,
@@ -39,45 +39,82 @@ Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
         linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
         coreteam@netfilter.org, netdev@vger.kernel.org,
         linux-arch@vger.kernel.org
-Subject: Re: Good idea to rename files in include/uapi/ ?
-Message-ID: <20200614224715.GJ23230@ZenIV.linux.org.uk>
 References: <9feded75-4b45-2821-287b-af00ec5f910f@al2klimov.de>
+ <20200614223456.13807a00@redhat.com>
+From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Message-ID: <5033402c-d95c-eecd-db84-75195b159fab@al2klimov.de>
+Date:   Mon, 15 Jun 2020 01:07:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9feded75-4b45-2821-287b-af00ec5f910f@al2klimov.de>
+In-Reply-To: <20200614223456.13807a00@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++
+X-Spam-Level: **
+Authentication-Results: smtp.al2klimov.de;
+        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 14, 2020 at 09:41:17PM +0200, Alexander A. Klimov wrote:
-> Hello there!
+
+
+Am 14.06.20 um 22:34 schrieb Stefano Brivio:
+> On Sun, 14 Jun 2020 21:41:17 +0200
+> "Alexander A. Klimov" <grandmaster@al2klimov.de> wrote:
 > 
-> At the moment one can't checkout a clean working directory w/o any changed
-> files on a case-insensitive FS as the following file names have lower-case
-> duplicates:
-
-And if you use a filesystem that is limited to 14 characters in name (or that
-weird 8 + 3 thing) you'll also have problems.  Doctor, it hurts when I do it...
-
-> Also even on a case-sensitive one VIm seems to have trouble with editing
-> both case-insensitively equal files at the same time.
-
-So file a bug report against vim.  Or use a vi variant without such a problem
-(FWIW, nvi has nothing of that sort).
-
-> I was going to make a patch renaming the respective duplicates, but I'm not
-> sure:
+>> Hello there!
+>>
+>> At the moment one can't checkout a clean working directory w/o any
+>> changed files on a case-insensitive FS as the following file names have
+>> lower-case duplicates:
 > 
-> *Is it a good idea to rename files in include/uapi/ ?*
+> They are not duplicates: matching extensions are lowercase, target
+> extensions are uppercase. DSCP is the extension to set DSCP bits, dscp
+> is the extension to match on those packet bits.
+> 
+>> ➜  linux git:(96144c58abe7) git ls-files |sort -f |uniq -id
+>> include/uapi/linux/netfilter/xt_CONNMARK.h
+>> include/uapi/linux/netfilter/xt_DSCP.h
+>> include/uapi/linux/netfilter/xt_MARK.h
+>> include/uapi/linux/netfilter/xt_RATEEST.h
+>> include/uapi/linux/netfilter/xt_TCPMSS.h
+>> include/uapi/linux/netfilter_ipv4/ipt_ECN.h
+>> include/uapi/linux/netfilter_ipv4/ipt_TTL.h
+>> include/uapi/linux/netfilter_ipv6/ip6t_HL.h
+>> net/netfilter/xt_DSCP.c
+>> net/netfilter/xt_HL.c
+>> net/netfilter/xt_RATEEST.c
+>> net/netfilter/xt_TCPMSS.c
+>> tools/memory-model/litmus-tests/Z6.0+pooncelock+poonceLock+pombonce.litmus
+>> ➜  linux git:(96144c58abe7)
+>>
+>> Also even on a case-sensitive one VIm seems to have trouble with editing
+>> both case-insensitively equal files at the same time.
+> 
+> ...what trouble exactly?
+vi -O2 include/uapi/linux/netfilter/xt_CONNMARK.h 
+include/uapi/linux/netfilter/xt_connmark.h
 
-It is not.  Strictly speaking, C99 allows implementation to consider the
-header names differing only in case as refering to the same file, but then
-it allows to ignore everything between the 8th character and the first
-dot in those.  Not done on Unices, so #include <Shite.h> is not going to
-pick /usr/include/shite.h
+... opens the first file two times.
 
-If it's used by any userland code, that's it - changing the name (in any fashion)
-will break that userland code.  If it isn't, it shouldn't have been in include/uabi
-in the first place.
+> 
+>> I was going to make a patch renaming the respective duplicates, but I'm
+>> not sure:
+>>
+>> *Is it a good idea to rename files in include/uapi/ ?*
+> 
+> I'm not sure it's a good idea to even use git on a case-insensitive
+> filesystem. I'm curious, what is your use case?
+My MacOS workstation. Now as I discovered the problem I've created a r/w 
+image with a c/s FS, but the need of that for a clean `git checkout .' 
+is IMAO pretty silly.
+
+Don't worry, I run Linux, but only on my servers.
+
+Also this issue should also apply to M$ Windows workstations. By the way 
+at work I actually use Git on Windows if needed and it also just works. 
+However the software I work on doesn't have this issue.
+
+> 
