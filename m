@@ -2,51 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF6EB1F8B4D
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 01:26:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EA641F8B57
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 01:34:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728028AbgFNX0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 19:26:10 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57692 "EHLO mx2.suse.de"
+        id S1728033AbgFNXem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 19:34:42 -0400
+Received: from smtp.al2klimov.de ([78.46.175.9]:60206 "EHLO smtp.al2klimov.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727928AbgFNX0K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Jun 2020 19:26:10 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id DF440AE65;
-        Sun, 14 Jun 2020 23:26:11 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 8A0A3603CB; Mon, 15 Jun 2020 01:26:07 +0200 (CEST)
-Date:   Mon, 15 Jun 2020 01:26:07 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: ethtool 5.7: netlink ENOENT error when setting WOL
-Message-ID: <20200614232607.itigyaqamm5sql63@lion.mk-sys.cz>
-References: <77652728-722e-4d3b-6737-337bf4b391b7@gmail.com>
- <6359d5f8-50e4-a504-ba26-c3b6867f3deb@gmail.com>
- <20200610091328.evddgipbedykwaq6@lion.mk-sys.cz>
- <a433a0b0-bf5e-ad90-8373-4f88e2ef991d@gmail.com>
- <20200610115350.wyba5rnpuavkzdl5@lion.mk-sys.cz>
- <b7c7634e-8912-856a-9590-74bd3895d1ed@gmail.com>
+        id S1727928AbgFNXel (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Jun 2020 19:34:41 -0400
+X-Greylist: delayed 13996 seconds by postgrey-1.27 at vger.kernel.org; Sun, 14 Jun 2020 19:34:40 EDT
+Received: from authenticated-user (PRIMARY_HOSTNAME [PUBLIC_IP])
+        by smtp.al2klimov.de (Postfix) with ESMTPA id D5E8B1B599B;
+        Sun, 14 Jun 2020 23:34:34 +0000 (UTC)
+Subject: Re: Good idea to rename files in include/uapi/ ?
+To:     Jan Engelhardt <jengelh@inai.de>,
+        David Howells <dhowells@redhat.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        linux-arch@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <9feded75-4b45-2821-287b-af00ec5f910f@al2klimov.de>
+ <174102.1592165965@warthog.procyon.org.uk>
+ <nycvar.YFH.7.77.849.2006142244200.30230@n3.vanv.qr>
+From:   "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Message-ID: <ab88e504-c139-231a-0294-953ffd1a9442@al2klimov.de>
+Date:   Mon, 15 Jun 2020 01:34:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b7c7634e-8912-856a-9590-74bd3895d1ed@gmail.com>
+In-Reply-To: <nycvar.YFH.7.77.849.2006142244200.30230@n3.vanv.qr>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++
+X-Spam-Level: **
+Authentication-Results: smtp.al2klimov.de;
+        auth=pass smtp.auth=aklimov@al2klimov.de smtp.mailfrom=grandmaster@al2klimov.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 12:35:30AM +0200, Heiner Kallweit wrote:
-> Seems that disabling ETHTOOL_NETLINK for PHYLIB=m has (at least) one
-> more side effect. I just saw that ifconfig doesn't report LOWER_UP
-> any longer. Reason seems to be that the ioctl fallback supports
-> 16 bits for the flags only (and IFF_LOWER_UP is bit 16).
-> See dev_ifsioc_locked().
 
-I don't think this is related to CONFIG_ETHTOOL_NETLINK; AFAIK ifconfig
-does not use netlink at all and device flags are certainly not passed
-via ethtool netlink.
 
-Michal
+Am 14.06.20 um 23:08 schrieb Jan Engelhardt:
+> 
+> On Sunday 2020-06-14 22:19, David Howells wrote:
+>> Alexander A. Klimov <grandmaster@al2klimov.de> wrote:
+>>
+>>> *Is it a good idea to rename files in include/uapi/ ?*
+>>
+>> Very likely not.  If programs out there are going to be built on a
+>> case-sensitive filesystem (which happens all the time), they're going to break
+>> if you rename the headers.  We're kind of stuck with them.
+> 
+> Netfilter has precedent for removing old headers, e.g.
+> 7200135bc1e61f1437dc326ae2ef2f310c50b4eb's ipt_ULOG.h.
+> 
+> Even if kernels would not remove such headers, the iptables userspace
+> code wants to be buildable with all kinds of kernels, including past
+> releases, which do not have modern headers like xt_l2tp.h.
+> 
+> The mantra for userspace programs is therefore "copy the headers" —
+> because you never know what /usr/include/linux you get. iptables and
+> iproute2 are two example codebases that employ this. And when headers
+> do get copied, header removals from the kernel side are no longer a
+Absolutely correct, "*when* headers do get copied ..."
+
+> big deal either.
+> 
+> A header file rename is no problem. We even have dummy headers
+Hmm.. if I understand all of you correctly, David, Stefano, Pablo and Al 
+say like no, not a good idea, but only you, Jan, say like should be no 
+problem.
+
+Jan, do you have anything like commit messages in mainline or public 
+emails from maintainers confirming your opinion?
+What exactly makes you sure that Torvalds, the #1 protector of the 
+userspace, would tolerate a such patch from me?
+Yes, it would break the A*P*I, and not the A*B*I, but who knows..
+
+> already because of this... or related changes. Just look at
+> xt_MARK.h, all it does is include xt_mark.h. Cf.
+> 28b949885f80efb87d7cebdcf879c99db12c37bd .
+> 
+> The boilerplate for xt_*h is quite high thanks to the miniscule
+> splitting of headers. Does not feel right in this day and age.
+> 
