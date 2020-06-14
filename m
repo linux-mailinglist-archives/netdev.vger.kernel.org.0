@@ -2,97 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 373481F8733
-	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 08:11:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23A2E1F875A
+	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 09:03:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726502AbgFNGLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 02:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725815AbgFNGLa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 02:11:30 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA17C08C5C2
-        for <netdev@vger.kernel.org>; Sat, 13 Jun 2020 23:11:30 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id n11so16601278ybg.15
-        for <netdev@vger.kernel.org>; Sat, 13 Jun 2020 23:11:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=oGqf1++ISmFDrH0evkdua75pRZ4Kzg4x3LpxsrrLQ3g=;
-        b=BrFABM4ag3AiIkSAHTtzYJj0AVfZShfyt1f0NnrQp455Jd0W0DB6UkLYIIE25QbI5i
-         4oQjlZJygOW9OsWUpbYo1FOpfEIcV525+YWblJxIUp9aQCvnP8kHIONSCdLKeF0QrGRC
-         kdy0lTibbcyCtdaHFnannbdLfSqoLIkJkzQ1+Zh0f8M6injkicSk1bqvW99lAsN5/Z4c
-         TfeVCsnX9LEaV9GoifSVE4TyA734e7k1z05IpAZaoEMaB1ddmnOSemdp2//KLKNqDSnd
-         +6Z9ybiyd8pKCkVBFOC5Al7D23LY/9LV92IsE9YVknh5lgDV2R0bT5Qyp0GDPxqorIRH
-         e0Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=oGqf1++ISmFDrH0evkdua75pRZ4Kzg4x3LpxsrrLQ3g=;
-        b=XM8JPw3mIP4aOJ4QkcOFdE+QMFvOBSMC2Vi9iOfruNWk1g9wu+u2lMZpW2TAF2XD6m
-         Z+M9INSGKveJKrvJ6DQxuXEKnnriKzFlvn7xvU0+IdrrKx789NGAzfAsYVOqpxnMss2k
-         3OLF9BPMjoVdeZ3Lj12bj87c8xJi/CIN9ZSJVNo6T1A/rIY7i5Pry3IlyaT9Wso+mQfF
-         n/KoMMJh75ypaOofBZG9ku5K1LG6DMpMT1SrtePcIRcuwlUXd6O4Jk0YcdUBidxJRou7
-         9chtZHxPKafi5A2jl9qGkeYVdrIycP9/DovwYQTpxA9LbeRb1BYERS99hTKzle/8VWz0
-         3jCg==
-X-Gm-Message-State: AOAM5312WbBjF8ixNJUqKSOO1rRVntxukJq3hnHm/jHdUPsqkM4RitkW
-        Nhv2UlwZ6xksk92uFb+vLgNKu+pKnJ2z
-X-Google-Smtp-Source: ABdhPJxxc0GMogasoSu0mC2tbZOz7tMTybNRR6DrolxuDsgmM7O1Gh44O1ln4xXp0yUDKzvhrDI33/b22P51
-X-Received: by 2002:a25:2604:: with SMTP id m4mr33252495ybm.470.1592115089241;
- Sat, 13 Jun 2020 23:11:29 -0700 (PDT)
-Date:   Sat, 13 Jun 2020 23:11:22 -0700
-Message-Id: <20200614061122.35928-1-gthelen@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.27.0.290.gba653c62da-goog
-Subject: [PATCH] e1000e: add ifdef to avoid dead code
-From:   Greg Thelen <gthelen@google.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vitaly Lifshits <vitaly.lifshits@intel.com>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Greg Thelen <gthelen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726770AbgFNHDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 03:03:42 -0400
+Received: from ivanoab7.miniserver.com ([37.128.132.42]:35680 "EHLO
+        www.kot-begemot.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725265AbgFNHDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 03:03:41 -0400
+X-Greylist: delayed 1478 seconds by postgrey-1.27 at vger.kernel.org; Sun, 14 Jun 2020 03:03:40 EDT
+Received: from tun252.jain.kot-begemot.co.uk ([192.168.18.6] helo=jain.kot-begemot.co.uk)
+        by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1jkMI9-0000V4-Ik; Sun, 14 Jun 2020 06:38:53 +0000
+Received: from sleer.kot-begemot.co.uk ([192.168.3.72])
+        by jain.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <anton.ivanov@cambridgegreys.com>)
+        id 1jkMI7-0007NR-F6; Sun, 14 Jun 2020 07:38:53 +0100
+Subject: Re: [PATCH] Fix null pointer dereference in vector_user_bpf
+To:     Gaurav Singh <gaurav1086@gmail.com>, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Alex Dewar <alex.dewar@gmx.co.uk>,
+        =?UTF-8?Q?Marc-Andr=c3=a9_Lureau?= <marcandre.lureau@redhat.com>,
+        "open list:USER-MODE LINUX (UML)" <linux-um@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>
+References: <20200614012001.18468-1-gaurav1086@gmail.com>
+From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Organization: Cambridge Greys
+Message-ID: <39158d22-9997-32ef-c599-7e6a98988a38@cambridgegreys.com>
+Date:   Sun, 14 Jun 2020 07:38:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
+MIME-Version: 1.0
+In-Reply-To: <20200614012001.18468-1-gaurav1086@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Score: -1.0
+X-Spam-Score: -1.0
+X-Clacks-Overhead: GNU Terry Pratchett
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME
-systems") added e1000e_check_me() but it's only called from
-CONFIG_PM_SLEEP protected code.  Thus builds without CONFIG_PM_SLEEP
-see:
-  drivers/net/ethernet/intel/e1000e/netdev.c:137:13: warning: 'e1000e_check_me' defined but not used [-Wunused-function]
+On 14/06/2020 02:19, Gaurav Singh wrote:
+> The bpf_prog is being checked for !NULL after uml_kmalloc
+> but later its used directly for example:
+> bpf_prog->filter = bpf and is also later returned upon
+> success. Fix this, do a NULL check and return right away.
+> 
+> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+> ---
+>   arch/um/drivers/vector_user.c | 8 +++++---
+>   1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/um/drivers/vector_user.c b/arch/um/drivers/vector_user.c
+> index c4a0f26b2824..0e6d6717bf73 100644
+> --- a/arch/um/drivers/vector_user.c
+> +++ b/arch/um/drivers/vector_user.c
+> @@ -789,10 +789,12 @@ void *uml_vector_user_bpf(char *filename)
+>   		return false;
+>   	}
+>   	bpf_prog = uml_kmalloc(sizeof(struct sock_fprog), UM_GFP_KERNEL);
+> -	if (bpf_prog != NULL) {
+> -		bpf_prog->len = statbuf.st_size / sizeof(struct sock_filter);
+> -		bpf_prog->filter = NULL;
+> +	if (bpf_prog == NULL) {
+> +		printk(KERN_ERR "Failed to allocate bpf prog buffer");
+> +		return NULL;
+>   	}
+> +	bpf_prog->len = statbuf.st_size / sizeof(struct sock_filter);
+> +	bpf_prog->filter = NULL;
+>   	ffd = os_open_file(filename, of_read(OPENFLAGS()), 0);
+>   	if (ffd < 0) {
+>   		printk(KERN_ERR "Error %d opening bpf file", -errno);
+> 
 
-Add CONFIG_PM_SLEEP ifdef guard to avoid dead code.
-
-Fixes: e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
-Signed-off-by: Greg Thelen <gthelen@google.com>
----
- drivers/net/ethernet/intel/e1000e/netdev.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index a279f4fa9962..165f0aea22c9 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -107,6 +107,7 @@ static const struct e1000_reg_info e1000_reg_info_tbl[] = {
- 	{0, NULL}
- };
- 
-+#ifdef CONFIG_PM_SLEEP
- struct e1000e_me_supported {
- 	u16 device_id;		/* supported device ID */
- };
-@@ -145,6 +146,7 @@ static bool e1000e_check_me(u16 device_id)
- 
- 	return false;
- }
-+#endif /* CONFIG_PM_SLEEP */
- 
- /**
-  * __ew32_prepare - prepare to write to MAC CSR register on certain parts
+Acked-By: Anton Ivanov <anton.ivanov@cambridgegreys.com>
 -- 
-2.27.0.290.gba653c62da-goog
-
+Anton R. Ivanov
+Cambridgegreys Limited. Registered in England. Company Number 10273661
+https://www.cambridgegreys.com/
