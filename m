@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FAAC1F8B61
+	by mail.lfdr.de (Postfix) with ESMTP id CB7471F8B62
 	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 01:57:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728032AbgFNX5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 19:57:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45236 "EHLO
+        id S1728045AbgFNX5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 19:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727995AbgFNX5k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 19:57:40 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DEEC05BD43
-        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 16:57:39 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id p20so15466307ejd.13
-        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 16:57:39 -0700 (PDT)
+        with ESMTP id S1727995AbgFNX5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 19:57:41 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D57FC05BD43
+        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 16:57:41 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id o26so10198515edq.0
+        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 16:57:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=jf/A/gK1QRhm6wRIfmSgoY2GZmGZiq12N5Yg+cGRqxY=;
-        b=Lw9uAnmQzSU/8TRu5uq9R7J6xInS453KNN7BKcAvYEBVWKyyZ6aUUIJ8P3ascgJx7F
-         +iVpAOwBYodDheI/M+KKVlBARL0Y4WTOwonuI3EKpE18XKXsAaqRUWt9fkUYtEJu0Lrw
-         Idz0ZYng9bWHk0wsx96UT/rpBnIsZLPGD93UA=
+        bh=rgTjsaP11dbLudZjdMdFXrjVySbOKRJcv7BkvXpvbww=;
+        b=H43+HvUrJpYMhXxVHyOGvEhyadWHEesQ7CAP1CFCRm/C6VgrFElDFWBjY8Ivc2vWCO
+         SLKW4p+HpJwoz8Hd5l86vZDGhz6FY6F64rjyQySX0nqhll3ECiIX624HE6CkjxhsVJio
+         MM5HjKO9x47AfulUct5fCi1JJZboavlwO4608=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=jf/A/gK1QRhm6wRIfmSgoY2GZmGZiq12N5Yg+cGRqxY=;
-        b=C8CZ9odN0IDypsrMvkIeZVEL4IEC2vfuXTNxBbALBETpKUTQqHsLw9oFVnmdmu269h
-         6yUfye3GJqvTRN+E8Kqhc3WFWZHg7X/vyFaAFGmAYOHqmx0gEcBEoyft3HZg9qorWl2c
-         a77Cg59OuHdjIla0MudvGBR8EhMghmqaI6vsz38qxiF0RLyvkTsDEW3oLWZIYORrJK5j
-         5ZdUlWoly8E5gL/ts1S8HNXAZj9yAzxrXQjvRR/Pem0VoSLBKHQWmMfHhjGPFo8SOULI
-         LOZhiNjQ5il/g6EtvNXa19ajujD3eGVl2Oy8DDIoeBEBtYOHE2RW1CaeZAKa8s7TlCIt
-         rzuw==
-X-Gm-Message-State: AOAM530HIVOPsPrRjd/bEWtcut1RknNutgPvTATYP0slQAFMo1pNLeo/
-        hwtjIcZl3w3CYsE8rU0TLlQbHg==
-X-Google-Smtp-Source: ABdhPJxORu3aEyq2icGKBdRtsbWWeen3fXhJecv3nrHaYexnB0D8F/4epMTZeFRbmeEgyq4F9ROnhQ==
-X-Received: by 2002:a17:906:b817:: with SMTP id dv23mr22782476ejb.185.1592179058475;
-        Sun, 14 Jun 2020 16:57:38 -0700 (PDT)
+        bh=rgTjsaP11dbLudZjdMdFXrjVySbOKRJcv7BkvXpvbww=;
+        b=stcGJeaWtwGwTqckFiqeDEXx8eE5VY+2rCXdbDfX1l0WglPT0vt0sVtPQ49xA32m85
+         yKsJ7XPNdJPi31fVtuVOPZxp/FmK93zbk8WBCgcuhMantROIFiK+LL+j6wDpLBWf71qR
+         S8jTRHI7Z+uUD2vGO5N0OptQGw98XsRna5kRQyaHGiAjxu9Qru36pd7eFA64AGGAf+Z2
+         dW7tZpgmxMZmfT8L5b/ppI7oNbh1tmA9N2zaHwUZPy6Mjkxw+DqQa/LzMaIxuHHVkj+T
+         Otrc1xpQZEjN09RMYqUBtTlLZFJJNeoG0RPRhouRQw582BlcAMi9xsDdedeN8TUKgoQG
+         3FJQ==
+X-Gm-Message-State: AOAM5335FkoT2xSLi7oXkJJE94iggXd1GAH4KryvxNlUYOgUdJTwXivr
+        2lZGStuKZ2ApKy8yfzJRkfgZyQ==
+X-Google-Smtp-Source: ABdhPJz/mCfIt7nPKceCS88xuJwwGnd35xwTNZQ6hS4sND4r9fl/7GyPcLMoAX/daYSNsBlMY9MN6g==
+X-Received: by 2002:a05:6402:8d8:: with SMTP id d24mr20977888edz.287.1592179060217;
+        Sun, 14 Jun 2020 16:57:40 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id gj10sm7891398ejb.61.2020.06.14.16.57.37
+        by smtp.gmail.com with ESMTPSA id gj10sm7891398ejb.61.2020.06.14.16.57.38
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 14 Jun 2020 16:57:38 -0700 (PDT)
+        Sun, 14 Jun 2020 16:57:39 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 3/4] bnxt_en: Fix AER reset logic on 57500 chips.
-Date:   Sun, 14 Jun 2020 19:57:09 -0400
-Message-Id: <1592179030-4533-4-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: [PATCH net 4/4] bnxt_en: Return from timer if interface is not in open state.
+Date:   Sun, 14 Jun 2020 19:57:10 -0400
+Message-Id: <1592179030-4533-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1592179030-4533-1-git-send-email-michael.chan@broadcom.com>
 References: <1592179030-4533-1-git-send-email-michael.chan@broadcom.com>
@@ -57,53 +58,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-AER reset should follow the same steps as suspend/resume.  We need to
-free context memory during AER reset and allocate new context memory
-during recovery by calling bnxt_hwrm_func_qcaps().  We also need
-to call bnxt_reenable_sriov() to restore the VFs.
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-Fixes: bae361c54fb6 ("bnxt_en: Improve AER slot reset.")
+This will avoid many uneccessary error logs when driver or firmware is
+in reset.
+
+Fixes: 230d1f0de754 ("bnxt_en: Handle firmware reset.")
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 0d97f47..47b45ea 100644
+index 47b45ea..b93e05f 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -12196,6 +12196,9 @@ static pci_ers_result_t bnxt_io_error_detected(struct pci_dev *pdev,
- 		bnxt_close(netdev);
+@@ -10037,7 +10037,7 @@ static void bnxt_timer(struct timer_list *t)
+ 	struct bnxt *bp = from_timer(bp, t, timer);
+ 	struct net_device *dev = bp->dev;
  
- 	pci_disable_device(pdev);
-+	bnxt_free_ctx_mem(bp);
-+	kfree(bp->ctx);
-+	bp->ctx = NULL;
- 	rtnl_unlock();
+-	if (!netif_running(dev))
++	if (!netif_running(dev) || !test_bit(BNXT_STATE_OPEN, &bp->state))
+ 		return;
  
- 	/* Request a slot slot reset. */
-@@ -12229,12 +12232,16 @@ static pci_ers_result_t bnxt_io_slot_reset(struct pci_dev *pdev)
- 		pci_set_master(pdev);
- 
- 		err = bnxt_hwrm_func_reset(bp);
--		if (!err && netif_running(netdev))
--			err = bnxt_open(netdev);
--
--		if (!err)
--			result = PCI_ERS_RESULT_RECOVERED;
-+		if (!err) {
-+			err = bnxt_hwrm_func_qcaps(bp);
-+			if (!err && netif_running(netdev))
-+				err = bnxt_open(netdev);
-+		}
- 		bnxt_ulp_start(bp, err);
-+		if (!err) {
-+			bnxt_reenable_sriov(bp);
-+			result = PCI_ERS_RESULT_RECOVERED;
-+		}
- 	}
- 
- 	if (result != PCI_ERS_RESULT_RECOVERED) {
+ 	if (atomic_read(&bp->intr_sem) != 0)
 -- 
 1.8.3.1
 
