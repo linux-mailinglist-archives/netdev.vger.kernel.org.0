@@ -2,147 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53F851F8A35
-	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 20:45:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 659221F8A3F
+	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 20:58:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbgFNSpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 14:45:51 -0400
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:22452 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726648AbgFNSpu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 14:45:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1592160349; x=1623696349;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sgsX8ySkFLBhREgHNtij5IKIrhlN4HxOXlYT+wYkyiQ=;
-  b=UUyYQbITE1Wr3rzArK9M1cTKYAoZ+iWEZSY1bGeLfKemYf44iDPECM1S
-   wIHviECgS1ad+b79zYaLUm7Cn9+CAW81BryT8ftwz96b9a+P4sU3qa06L
-   jyG48ZBX4Um4n6nyhAO5eYjn7wz/uABge5mce25UXwnZ7Zt/+LorzZAWj
-   I0PMkkN51+L1Q2wIk3iUVMz9YaXqo9pSxpyoobSx16+Q1ztTDmPe5AEST
-   mSI43yMV8CdVCstjYqkaDZBvvhHyOXkUS8LRr024C9UDsJeeZwFfpS9kO
-   /whQgw4ieJcQOutz/RzgDfCC7lYjeuwjnQ0wPCUniR1HELelbJ8p9aTvk
-   g==;
-IronPort-SDR: TEgTdmbmtAv7dsB6y9XEQzixIutkqK733LH0MqVdB8SSjYhTwmKz1WUnw/Yb8of4epU/vP4yl8
- 316yGdg0t3by+n7SbAzjGNkefa+blAeqGhuk7u608l0cD0nGyJz0lL/3R8VCVW2LS4rKRVMCpd
- vVmUHJpyL3/g1cmfVnxcGgUa34KHeqtXVXaVOUk8vs0+oy0LqPoqRpIRBV5yjNMXIEVuDbTor3
- 3FK5ItXujERWZ97pSrjNIThPuAJ9hEXYp5hgRAJEiJFwK+KQ8k0XZrdjdIIfPo0BBcC/dGtcLO
- s1M=
-X-IronPort-AV: E=Sophos;i="5.73,512,1583218800"; 
-   d="scan'208";a="15722889"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jun 2020 11:45:49 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Sun, 14 Jun 2020 11:45:48 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Sun, 14 Jun 2020 11:45:48 -0700
-Date:   Sun, 14 Jun 2020 20:45:47 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <claudiu.manoil@nxp.com>,
-        <alexandre.belloni@bootlin.com>, <andrew@lunn.ch>,
-        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>,
-        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] MAINTAINERS: merge entries for felix and ocelot
- drivers
-Message-ID: <20200614184547.ibnuhypftcix5evq@soft-dev3.localdomain>
-References: <20200613220753.948166-1-olteanv@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200613220753.948166-1-olteanv@gmail.com>
+        id S1727795AbgFNS6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 14:58:47 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:55666 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726905AbgFNS6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 14:58:46 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05EIwErC037412;
+        Sun, 14 Jun 2020 18:58:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=G8d/aFm0OTCgG9TstynHLheRBA0bCU94tXusK30fNPM=;
+ b=dU6PsS0XtzkNFUh/7jz9ShJtj8DxGWIM+S0A04EIT+FMZ2ZZhY07bIlmbbFvTbcc9ub1
+ bC5k/YJmhgHNHs1ZcM0Q+dC1XvSn+EnF+SavWMfnv6ius+RbE9aFY9BX/N5tjKhFhJTm
+ PSMNDDqKavTSFR/ffeMf+mpyQD0dRVuZtp5l1o+UIMwpap9vQp/w8zLcRqg3tEZigj9h
+ iNJKx1j6W9lvp/dwjeoVYO8wV1SZWwAQYHc+v4sBQxocCMXYNCBCQ9Fed31k8U3URFgh
+ xXNSGUVoiqr2d3aqlBemzac+CvalsAPEJWigovejGGhbs/OQIeShCpinsCnZfee5X+Fl dg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 31na6k1j22-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 14 Jun 2020 18:58:14 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05EIvsO3154764;
+        Sun, 14 Jun 2020 18:58:13 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 31n8jpu60j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 14 Jun 2020 18:58:13 +0000
+Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 05EIw0FP021590;
+        Sun, 14 Jun 2020 18:58:00 GMT
+Received: from anon-dhcp-153.1015granger.net (/68.61.232.219)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sun, 14 Jun 2020 11:57:59 -0700
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.14\))
+Subject: Re: [PATCH] SUNRPC: Add missing asm/cacheflush.h
+From:   Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <a356625c9aa1b5d711e320c39779e0c713f204cb.1592154127.git.christophe.leroy@csgroup.eu>
+Date:   Sun, 14 Jun 2020 14:57:58 -0400
+Cc:     Bruce Fields <bfields@fieldses.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        netdev@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <854D2842-6940-42BA-A48C-AE9DB48E6071@oracle.com>
+References: <a356625c9aa1b5d711e320c39779e0c713f204cb.1592154127.git.christophe.leroy@csgroup.eu>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+X-Mailer: Apple Mail (2.3445.104.14)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9652 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0 phishscore=0
+ mlxlogscore=999 adultscore=0 malwarescore=0 spamscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006140169
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9652 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 mlxlogscore=999
+ clxscore=1011 suspectscore=0 priorityscore=1501 phishscore=0 bulkscore=0
+ impostorscore=0 malwarescore=0 adultscore=0 spamscore=0
+ cotscore=-2147483648 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006140169
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 06/14/2020 01:07, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> The ocelot switchdev driver also provides a set of library functions for
-> the felix DSA driver, which in practice means that most of the patches
-> will be of interest to both groups of driver maintainers.
-> 
-> So, as also suggested in the discussion here, let's merge the 2 entries
-> into a single larger one:
-> https://www.spinics.net/lists/netdev/msg657412.html
-> 
-> Note that the entry has been renamed into "OCELOT SWITCH" since neither
-> Vitesse nor Microsemi exist any longer as company names, instead they
-> are now named Microchip (which again might be subject to change in the
-> future), so use the device family name instead.
-> 
-> Suggested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hi Christophe -
+
+> On Jun 14, 2020, at 1:07 PM, Christophe Leroy =
+<christophe.leroy@csgroup.eu> wrote:
+>=20
+> Even if that's only a warning, not including asm/cacheflush.h
+> leads to svc_flush_bvec() being empty allthough powerpc defines
+> ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE.
+>=20
+>  CC      net/sunrpc/svcsock.o
+> net/sunrpc/svcsock.c:227:5: warning: =
+"ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE" is not defined [-Wundef]
+> #if ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE
+>     ^
+>=20
+> Fixes: ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()")
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 > ---
->  MAINTAINERS | 28 ++++++++++++----------------
->  1 file changed, 12 insertions(+), 16 deletions(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index f08f290df174..621474172fdf 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -11339,14 +11339,6 @@ L:     dmaengine@vger.kernel.org
->  S:     Supported
->  F:     drivers/dma/at_xdmac.c
-> 
-> -MICROSEMI ETHERNET SWITCH DRIVER
-> -M:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-> -M:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-> -L:     netdev@vger.kernel.org
-> -S:     Supported
-> -F:     drivers/net/ethernet/mscc/
-> -F:     include/soc/mscc/ocelot*
-> -
->  MICROSEMI MIPS SOCS
->  M:     Alexandre Belloni <alexandre.belloni@bootlin.com>
->  M:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-> @@ -12305,6 +12297,18 @@ M:     Peter Zijlstra <peterz@infradead.org>
->  S:     Supported
->  F:     tools/objtool/
-> 
-> +OCELOT ETHERNET SWITCH DRIVER
-> +M:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-> +M:     Vladimir Oltean <vladimir.oltean@nxp.com>
-> +M:     Claudiu Manoil <claudiu.manoil@nxp.com>
-> +M:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-> +L:     netdev@vger.kernel.org
-> +S:     Supported
-> +F:     include/soc/mscc/ocelot*
-> +F:     drivers/net/ethernet/mscc/
-> +F:     drivers/net/dsa/ocelot/*
-> +F:     net/dsa/tag_ocelot.c
-> +
->  OCXL (Open Coherent Accelerator Processor Interface OpenCAPI) DRIVER
->  M:     Frederic Barrat <fbarrat@linux.ibm.com>
->  M:     Andrew Donnellan <ajd@linux.ibm.com>
-> @@ -18188,14 +18192,6 @@ S:     Maintained
->  F:     drivers/input/serio/userio.c
->  F:     include/uapi/linux/userio.h
-> 
-> -VITESSE FELIX ETHERNET SWITCH DRIVER
-> -M:     Vladimir Oltean <vladimir.oltean@nxp.com>
-> -M:     Claudiu Manoil <claudiu.manoil@nxp.com>
-> -L:     netdev@vger.kernel.org
-> -S:     Maintained
-> -F:     drivers/net/dsa/ocelot/*
-> -F:     net/dsa/tag_ocelot.c
-> -
->  VIVID VIRTUAL VIDEO DRIVER
->  M:     Hans Verkuil <hverkuil@xs4all.nl>
->  L:     linux-media@vger.kernel.org
-> --
-> 2.25.1
-> 
+> I detected this on linux-next on June 4th and warned Chuck. Seems like =
+it went into mainline anyway.
 
-Acked-by: Horatiu Vultur<horatiu.vultur@microchip.com>
+Thanks for your patch. I've searched my mailbox. It appears I never
+received your June 4th e-mail.
 
--- 
-/Horatiu
+Does your patch also address:
+
+   https://marc.info/?l=3Dlinux-kernel&m=3D159194369128024&w=3D2 ?
+
+If so, then
+
+   Reported-by: kernel test robot <lkp@intel.com>
+
+should be added to the patch description.
+
+Ideally, compilation on x86_64 should have thrown the same warning,
+but it didn't. Why would the x86_64 build behave differently than
+ppc64 or i386?
+
+
+> net/sunrpc/svcsock.c | 1 +
+> 1 file changed, 1 insertion(+)
+>=20
+> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+> index 5c4ec9386f81..d9e99cb09aab 100644
+> --- a/net/sunrpc/svcsock.c
+> +++ b/net/sunrpc/svcsock.c
+> @@ -45,6 +45,7 @@
+> #include <net/tcp_states.h>
+> #include <linux/uaccess.h>
+> #include <asm/ioctls.h>
+> +#include <asm/cacheflush.h>
+
+Nit: Let's include <linux/highmem.h> in net/sunrpc/svcsock.h instead
+of <asm/cacheflush.h> directly.
+
+
+> #include <linux/sunrpc/types.h>
+> #include <linux/sunrpc/clnt.h>
+> --=20
+> 2.25.0
+>=20
+
+--
+Chuck Lever
+
+
+
