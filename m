@@ -2,108 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C13D71F8A2D
-	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 20:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53F851F8A35
+	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 20:45:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727769AbgFNSlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 14:41:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726905AbgFNSlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 14:41:14 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAEEC08C5C2;
-        Sun, 14 Jun 2020 11:41:13 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id w90so10962081qtd.8;
-        Sun, 14 Jun 2020 11:41:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=gbKqT2VlDYF8btDBBV8p9eIC1+5x1Xv1FhkzFosEmBU=;
-        b=RJAqddZpsXCGmQpjMNeF1S88f1P16hTpZ2+l46ov5INy9TIDmVHe7PetkJY87R4Fu4
-         AF3R2azbrVDE1IPIgGHTFMEUSvNps1gCAnMbIaJtNDUEtiphriBeaJjAGTe12KJZ+Ak8
-         X5i2eNiVxrl1Ltb8MZGKPG8MMYltxeg10fD0hxSOtP0ml8TOjlTqzaLyxe5wSCEZfRNL
-         OzuVlCCVOCr/i8zIfYk3XBbkslH6OJ/iy60idJaY0JKahtzw51N1TceCL9kFGe/qHVdc
-         CSIS+KQRVRJgnnXiIRZivvS1Hwo2/7SI3UkJx+z9V+B9SPvr2oNYKYcJh8TgaZ+sFfxy
-         XPJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=gbKqT2VlDYF8btDBBV8p9eIC1+5x1Xv1FhkzFosEmBU=;
-        b=D5F+6CEFHThgE/grE46OdYfTfob3rAarUhnyLnbSjAW/2AlDmx/WbeRVJdJ5JSP89J
-         +UrFyPXLiQ1wir7I+ApN4z8kFMRZmmHZML6/4r17qGViRQcoWG2aoVi45tctjxhryQ8f
-         YWMMdIrxDr+gra1LHbZZla3XSjC8L9USIowtsOmc9fL4MixKTn4sm0yAa67vZbNsXBo5
-         ah9BxPnZmPLtyYbvR8k4byYwEEMK89NFzS3jMQcVCaArIHYXZ+7VEHN4dOmVSzxKsBoP
-         yCzOBUGWYo3ptyOkPMjPOsvwJCW9v8awAHCgbPNNLfssG/wT6SdQjRf1RBuxeaowvahx
-         sfGg==
-X-Gm-Message-State: AOAM533qBl8W0ctnEBw8LMjgY2QT/9ZWg9eKNiXUm0MGYvHRCKdVWWXT
-        Huec2vyGivN0bTbdQHJG9P4=
-X-Google-Smtp-Source: ABdhPJyJWjgaueHQFHNwYrQM6ovCIrix85cqkvPOlobJK8Krs+9ZNgUolsAiHTFNnLdNMGZrEROIUg==
-X-Received: by 2002:ac8:6a11:: with SMTP id t17mr12892740qtr.272.1592160072669;
-        Sun, 14 Jun 2020 11:41:12 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:b556:165b:f409:9052])
-        by smtp.googlemail.com with ESMTPSA id v189sm9378572qkb.64.2020.06.14.11.41.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Jun 2020 11:41:12 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] [bpf] xdp_monitor_user: Fix null pointer dereference
-Date:   Sun, 14 Jun 2020 14:41:02 -0400
-Message-Id: <20200614184102.30992-1-gaurav1086@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727092AbgFNSpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 14:45:51 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:22452 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726648AbgFNSpu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 14:45:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1592160349; x=1623696349;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sgsX8ySkFLBhREgHNtij5IKIrhlN4HxOXlYT+wYkyiQ=;
+  b=UUyYQbITE1Wr3rzArK9M1cTKYAoZ+iWEZSY1bGeLfKemYf44iDPECM1S
+   wIHviECgS1ad+b79zYaLUm7Cn9+CAW81BryT8ftwz96b9a+P4sU3qa06L
+   jyG48ZBX4Um4n6nyhAO5eYjn7wz/uABge5mce25UXwnZ7Zt/+LorzZAWj
+   I0PMkkN51+L1Q2wIk3iUVMz9YaXqo9pSxpyoobSx16+Q1ztTDmPe5AEST
+   mSI43yMV8CdVCstjYqkaDZBvvhHyOXkUS8LRr024C9UDsJeeZwFfpS9kO
+   /whQgw4ieJcQOutz/RzgDfCC7lYjeuwjnQ0wPCUniR1HELelbJ8p9aTvk
+   g==;
+IronPort-SDR: TEgTdmbmtAv7dsB6y9XEQzixIutkqK733LH0MqVdB8SSjYhTwmKz1WUnw/Yb8of4epU/vP4yl8
+ 316yGdg0t3by+n7SbAzjGNkefa+blAeqGhuk7u608l0cD0nGyJz0lL/3R8VCVW2LS4rKRVMCpd
+ vVmUHJpyL3/g1cmfVnxcGgUa34KHeqtXVXaVOUk8vs0+oy0LqPoqRpIRBV5yjNMXIEVuDbTor3
+ 3FK5ItXujERWZ97pSrjNIThPuAJ9hEXYp5hgRAJEiJFwK+KQ8k0XZrdjdIIfPo0BBcC/dGtcLO
+ s1M=
+X-IronPort-AV: E=Sophos;i="5.73,512,1583218800"; 
+   d="scan'208";a="15722889"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jun 2020 11:45:49 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Sun, 14 Jun 2020 11:45:48 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Sun, 14 Jun 2020 11:45:48 -0700
+Date:   Sun, 14 Jun 2020 20:45:47 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <claudiu.manoil@nxp.com>,
+        <alexandre.belloni@bootlin.com>, <andrew@lunn.ch>,
+        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] MAINTAINERS: merge entries for felix and ocelot
+ drivers
+Message-ID: <20200614184547.ibnuhypftcix5evq@soft-dev3.localdomain>
+References: <20200613220753.948166-1-olteanv@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20200613220753.948166-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Memset() on the pointer right after malloc() can cause
-a null pointer dereference if it failed to allocate memory.
-Fix this by replacing malloc/memset with a single calloc().
+The 06/14/2020 01:07, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> The ocelot switchdev driver also provides a set of library functions for
+> the felix DSA driver, which in practice means that most of the patches
+> will be of interest to both groups of driver maintainers.
+> 
+> So, as also suggested in the discussion here, let's merge the 2 entries
+> into a single larger one:
+> https://www.spinics.net/lists/netdev/msg657412.html
+> 
+> Note that the entry has been renamed into "OCELOT SWITCH" since neither
+> Vitesse nor Microsemi exist any longer as company names, instead they
+> are now named Microchip (which again might be subject to change in the
+> future), so use the device family name instead.
+> 
+> Suggested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  MAINTAINERS | 28 ++++++++++++----------------
+>  1 file changed, 12 insertions(+), 16 deletions(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index f08f290df174..621474172fdf 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -11339,14 +11339,6 @@ L:     dmaengine@vger.kernel.org
+>  S:     Supported
+>  F:     drivers/dma/at_xdmac.c
+> 
+> -MICROSEMI ETHERNET SWITCH DRIVER
+> -M:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+> -M:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+> -L:     netdev@vger.kernel.org
+> -S:     Supported
+> -F:     drivers/net/ethernet/mscc/
+> -F:     include/soc/mscc/ocelot*
+> -
+>  MICROSEMI MIPS SOCS
+>  M:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+>  M:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+> @@ -12305,6 +12297,18 @@ M:     Peter Zijlstra <peterz@infradead.org>
+>  S:     Supported
+>  F:     tools/objtool/
+> 
+> +OCELOT ETHERNET SWITCH DRIVER
+> +M:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+> +M:     Vladimir Oltean <vladimir.oltean@nxp.com>
+> +M:     Claudiu Manoil <claudiu.manoil@nxp.com>
+> +M:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+> +L:     netdev@vger.kernel.org
+> +S:     Supported
+> +F:     include/soc/mscc/ocelot*
+> +F:     drivers/net/ethernet/mscc/
+> +F:     drivers/net/dsa/ocelot/*
+> +F:     net/dsa/tag_ocelot.c
+> +
+>  OCXL (Open Coherent Accelerator Processor Interface OpenCAPI) DRIVER
+>  M:     Frederic Barrat <fbarrat@linux.ibm.com>
+>  M:     Andrew Donnellan <ajd@linux.ibm.com>
+> @@ -18188,14 +18192,6 @@ S:     Maintained
+>  F:     drivers/input/serio/userio.c
+>  F:     include/uapi/linux/userio.h
+> 
+> -VITESSE FELIX ETHERNET SWITCH DRIVER
+> -M:     Vladimir Oltean <vladimir.oltean@nxp.com>
+> -M:     Claudiu Manoil <claudiu.manoil@nxp.com>
+> -L:     netdev@vger.kernel.org
+> -S:     Maintained
+> -F:     drivers/net/dsa/ocelot/*
+> -F:     net/dsa/tag_ocelot.c
+> -
+>  VIVID VIRTUAL VIDEO DRIVER
+>  M:     Hans Verkuil <hverkuil@xs4all.nl>
+>  L:     linux-media@vger.kernel.org
+> --
+> 2.25.1
+> 
 
-Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
----
- samples/bpf/xdp_monitor_user.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+Acked-by: Horatiu Vultur<horatiu.vultur@microchip.com>
 
-diff --git a/samples/bpf/xdp_monitor_user.c b/samples/bpf/xdp_monitor_user.c
-index dd558cbb2309..ef53b93db573 100644
---- a/samples/bpf/xdp_monitor_user.c
-+++ b/samples/bpf/xdp_monitor_user.c
-@@ -509,11 +509,8 @@ static void *alloc_rec_per_cpu(int record_size)
- {
- 	unsigned int nr_cpus = bpf_num_possible_cpus();
- 	void *array;
--	size_t size;
- 
--	size = record_size * nr_cpus;
--	array = malloc(size);
--	memset(array, 0, size);
-+	array = calloc(nr_cpus, record_size);
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
- 		exit(EXIT_FAIL_MEM);
-@@ -528,8 +525,7 @@ static struct stats_record *alloc_stats_record(void)
- 	int i;
- 
- 	/* Alloc main stats_record structure */
--	rec = malloc(sizeof(*rec));
--	memset(rec, 0, sizeof(*rec));
-+	rec = calloc(1, sizeof(*rec));
- 	if (!rec) {
- 		fprintf(stderr, "Mem alloc error\n");
- 		exit(EXIT_FAIL_MEM);
 -- 
-2.17.1
-
+/Horatiu
