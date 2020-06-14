@@ -2,146 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9D451F8727
-	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 07:48:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 373481F8733
+	for <lists+netdev@lfdr.de>; Sun, 14 Jun 2020 08:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726222AbgFNFsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 01:48:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48470 "EHLO
+        id S1726502AbgFNGLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 02:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725267AbgFNFsL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 01:48:11 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E79C03E96F;
-        Sat, 13 Jun 2020 22:48:11 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id s18so14499267ioe.2;
-        Sat, 13 Jun 2020 22:48:11 -0700 (PDT)
+        with ESMTP id S1725815AbgFNGLa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 02:11:30 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA17C08C5C2
+        for <netdev@vger.kernel.org>; Sat, 13 Jun 2020 23:11:30 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id n11so16601278ybg.15
+        for <netdev@vger.kernel.org>; Sat, 13 Jun 2020 23:11:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=1Y5Nb8DOGpugitpmCfQchHa7yq0JSnRAL5HG43dCpt8=;
-        b=hD9MB3SaPs8Z1iMxecsjY11f9X1fSEThjr9YCDOVafg2OgO5B5R6PBZ25tu5D3iGcP
-         dm7oNWDqfiX94j/oNpwP+a5bvJwNsivz5/chflENZPpzz/5KZSjRXud/juv1cxrGGIf2
-         wXNUpBe46L8M5toSTOgImNHtQAnP6Qj9z8ih8ZgPywOU+wJ3MIOlV/RO52QPD/JwvFLW
-         EHdbwt0muQUbQD3TUmfqYyoXhc5Kl77OuR7lHZ87vh3ySEx0jGdHcJDuvMieWVxRY0Xp
-         NAXhCGDcIZVO4MFB9SWJ2qJ+6/WeDhxpXMwkAE+GEtgdzV4+uYdRKsYwt+5XUKPex2P3
-         KHVg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=oGqf1++ISmFDrH0evkdua75pRZ4Kzg4x3LpxsrrLQ3g=;
+        b=BrFABM4ag3AiIkSAHTtzYJj0AVfZShfyt1f0NnrQp455Jd0W0DB6UkLYIIE25QbI5i
+         4oQjlZJygOW9OsWUpbYo1FOpfEIcV525+YWblJxIUp9aQCvnP8kHIONSCdLKeF0QrGRC
+         kdy0lTibbcyCtdaHFnannbdLfSqoLIkJkzQ1+Zh0f8M6injkicSk1bqvW99lAsN5/Z4c
+         TfeVCsnX9LEaV9GoifSVE4TyA734e7k1z05IpAZaoEMaB1ddmnOSemdp2//KLKNqDSnd
+         +6Z9ybiyd8pKCkVBFOC5Al7D23LY/9LV92IsE9YVknh5lgDV2R0bT5Qyp0GDPxqorIRH
+         e0Ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=1Y5Nb8DOGpugitpmCfQchHa7yq0JSnRAL5HG43dCpt8=;
-        b=tkCKaKF/uouUI1OHVvghYoxbnrroY1EwQSBLxtzw6Qt7HEqkiw2oQ76WcdDIgHWkqs
-         8GMIGGBK2lLJe3ovZyXJu/ZGBN74Ssp0r3TYMxpKDQimGF91HpVj8sVeiU+5rPZ9T06N
-         SmKwixMOBvARH9w1b+HZLYSMNsEmFTW9MYFLbWrkdSIcA7ixMsMjHPLkxtvxX2pMDfgL
-         22ZLjw11zov6084pPapBnw47R8VVLHWpnIOGLZa2Fs4Xiy4AJ9lJNjhq6W1aqI7aifoY
-         jrwLSzj2DfaocAf6UxfBD4FHdEPdqfNGRC52Iqxp0NQhB4cfyH1yIKfhlXFiKHlslyT1
-         +qcg==
-X-Gm-Message-State: AOAM532ybwYROBMzf2HskaCIFrm30bMIys8iktZzgbiwF1/7E0J2sUEO
-        tXfwNoMGUV4xbJulU8I3naw=
-X-Google-Smtp-Source: ABdhPJzbEANZZ2E1dFVjCHfDCJkNC2TOm3k+TQLvPnYL9NpF7j+hTxbbr99dbuq79PUf54kzsHqHVA==
-X-Received: by 2002:a5d:890d:: with SMTP id b13mr15520809ion.19.1592113690198;
-        Sat, 13 Jun 2020 22:48:10 -0700 (PDT)
-Received: from cs-u-kase.dtc.umn.edu (cs-u-kase.cs.umn.edu. [160.94.64.2])
-        by smtp.googlemail.com with ESMTPSA id t12sm5832268ilj.75.2020.06.13.22.48.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Jun 2020 22:48:09 -0700 (PDT)
-From:   Navid Emamdoost <navid.emamdoost@gmail.com>
-To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     emamd001@umn.edu, wu000273@umn.edu, kjlu@umn.edu, smccaman@umn.edu,
-        Navid Emamdoost <navid.emamdoost@gmail.com>
-Subject: [PATCH] net: macb: fix ref count leaking via pm_runtime_get_sync
-Date:   Sun, 14 Jun 2020 00:48:03 -0500
-Message-Id: <20200614054803.26757-1-navid.emamdoost@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=oGqf1++ISmFDrH0evkdua75pRZ4Kzg4x3LpxsrrLQ3g=;
+        b=XM8JPw3mIP4aOJ4QkcOFdE+QMFvOBSMC2Vi9iOfruNWk1g9wu+u2lMZpW2TAF2XD6m
+         Z+M9INSGKveJKrvJ6DQxuXEKnnriKzFlvn7xvU0+IdrrKx789NGAzfAsYVOqpxnMss2k
+         3OLF9BPMjoVdeZ3Lj12bj87c8xJi/CIN9ZSJVNo6T1A/rIY7i5Pry3IlyaT9Wso+mQfF
+         n/KoMMJh75ypaOofBZG9ku5K1LG6DMpMT1SrtePcIRcuwlUXd6O4Jk0YcdUBidxJRou7
+         9chtZHxPKafi5A2jl9qGkeYVdrIycP9/DovwYQTpxA9LbeRb1BYERS99hTKzle/8VWz0
+         3jCg==
+X-Gm-Message-State: AOAM5312WbBjF8ixNJUqKSOO1rRVntxukJq3hnHm/jHdUPsqkM4RitkW
+        Nhv2UlwZ6xksk92uFb+vLgNKu+pKnJ2z
+X-Google-Smtp-Source: ABdhPJxxc0GMogasoSu0mC2tbZOz7tMTybNRR6DrolxuDsgmM7O1Gh44O1ln4xXp0yUDKzvhrDI33/b22P51
+X-Received: by 2002:a25:2604:: with SMTP id m4mr33252495ybm.470.1592115089241;
+ Sat, 13 Jun 2020 23:11:29 -0700 (PDT)
+Date:   Sat, 13 Jun 2020 23:11:22 -0700
+Message-Id: <20200614061122.35928-1-gthelen@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.290.gba653c62da-goog
+Subject: [PATCH] e1000e: add ifdef to avoid dead code
+From:   Greg Thelen <gthelen@google.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vitaly Lifshits <vitaly.lifshits@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-in macb_mdio_write, macb_mdio_read, and at91ether_open,
-pm_runtime_get_sync is called which increments the counter even in case of
-failure, leading to incorrect ref count.
-In case of failure, decrement the ref count before returning.
+Commit e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME
+systems") added e1000e_check_me() but it's only called from
+CONFIG_PM_SLEEP protected code.  Thus builds without CONFIG_PM_SLEEP
+see:
+  drivers/net/ethernet/intel/e1000e/netdev.c:137:13: warning: 'e1000e_check_me' defined but not used [-Wunused-function]
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Add CONFIG_PM_SLEEP ifdef guard to avoid dead code.
+
+Fixes: e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
+Signed-off-by: Greg Thelen <gthelen@google.com>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/e1000e/netdev.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index a0e8c5bbabc0..3646ab5a1e83 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -335,7 +335,7 @@ static int macb_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index a279f4fa9962..165f0aea22c9 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -107,6 +107,7 @@ static const struct e1000_reg_info e1000_reg_info_tbl[] = {
+ 	{0, NULL}
+ };
  
- 	status = pm_runtime_get_sync(&bp->pdev->dev);
- 	if (status < 0)
--		goto mdio_pm_exit;
-+		goto mdio_pm_put;
++#ifdef CONFIG_PM_SLEEP
+ struct e1000e_me_supported {
+ 	u16 device_id;		/* supported device ID */
+ };
+@@ -145,6 +146,7 @@ static bool e1000e_check_me(u16 device_id)
  
- 	status = macb_mdio_wait_for_idle(bp);
- 	if (status < 0)
-@@ -374,6 +374,7 @@ static int macb_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
- 
- mdio_read_exit:
- 	pm_runtime_mark_last_busy(&bp->pdev->dev);
-+mdio_pm_put:
- 	pm_runtime_put_autosuspend(&bp->pdev->dev);
- mdio_pm_exit:
- 	return status;
-@@ -387,7 +388,7 @@ static int macb_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- 
- 	status = pm_runtime_get_sync(&bp->pdev->dev);
- 	if (status < 0)
--		goto mdio_pm_exit;
-+		goto mdio_pm_put;
- 
- 	status = macb_mdio_wait_for_idle(bp);
- 	if (status < 0)
-@@ -426,6 +427,7 @@ static int macb_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- 
- mdio_write_exit:
- 	pm_runtime_mark_last_busy(&bp->pdev->dev);
-+mdio_pm_put:
- 	pm_runtime_put_autosuspend(&bp->pdev->dev);
- mdio_pm_exit:
- 	return status;
-@@ -3817,7 +3819,7 @@ static int at91ether_open(struct net_device *dev)
- 
- 	ret = pm_runtime_get_sync(&lp->pdev->dev);
- 	if (ret < 0)
--		return ret;
-+		goto out;
- 
- 	/* Clear internal statistics */
- 	ctl = macb_readl(lp, NCR);
-@@ -3827,7 +3829,7 @@ static int at91ether_open(struct net_device *dev)
- 
- 	ret = at91ether_start(dev);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	/* Enable MAC interrupts */
- 	macb_writel(lp, IER, MACB_BIT(RCOMP)	|
-@@ -3840,11 +3842,14 @@ static int at91ether_open(struct net_device *dev)
- 
- 	ret = macb_phylink_connect(lp);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	netif_start_queue(dev);
- 
- 	return 0;
-+out:
-+	pm_runtime_put(&lp->pdev->dev);
-+	return ret;
+ 	return false;
  }
++#endif /* CONFIG_PM_SLEEP */
  
- /* Close the interface */
+ /**
+  * __ew32_prepare - prepare to write to MAC CSR register on certain parts
 -- 
-2.17.1
+2.27.0.290.gba653c62da-goog
 
