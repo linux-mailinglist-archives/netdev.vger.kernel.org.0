@@ -2,136 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 958FE1F969D
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 14:34:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E821F9777
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 14:59:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729866AbgFOMeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 08:34:17 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:51412 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728510AbgFOMeQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 08:34:16 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05FCGm58071550;
-        Mon, 15 Jun 2020 12:33:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2020-01-29; bh=VfB/lu0AO11ypagGnxWqguiuvq46jiw7VSNH802i9v0=;
- b=FNZgppN31eRIYqIWCPvoie+HIghJzA0839ih/4QuvBoyjpDs9AztSyNaSrH9kJmSo4R3
- mDsBK7H8K84zCpQvrWgZrRW1aTE7+uqqrwALHiY9SZiq70CmcvKFbnL10rZ0DmZI9maG
- LupyZj159TRdmeYlch79GK6N0Dp4hPSCn6Altpb6A3U9FAAiZf2vdl9bMnIgbPN55Q1j
- VcvHLuQWiucK0HKNaq6kAOr+9Vs5kyBM9a6oibgKhDp/8bAf1sIQq4Q4t7DBpH9V4JCR
- mXPQT2RcLo+mY7/F+BHnxzDrnfyzsX1Nf3QxC+gNz5HiHigDEIBUFs51JDrx3k0cgxlZ zQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 31p6e7rs53-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 15 Jun 2020 12:33:52 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05FCIuI0188381;
-        Mon, 15 Jun 2020 12:33:52 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3020.oracle.com with ESMTP id 31p6dd6164-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Jun 2020 12:33:51 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 05FCXfcc027358;
-        Mon, 15 Jun 2020 12:33:42 GMT
-Received: from anon-dhcp-153.1015granger.net (/68.61.232.219)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 15 Jun 2020 05:33:41 -0700
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.14\))
-Subject: Re: [PATCH v2] SUNRPC: Add missing definition of
- ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE
-From:   Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <9e9882a2fb57b6f9d98a0a5d8b6bf9cff9fcbd93.1592202173.git.christophe.leroy@csgroup.eu>
-Date:   Mon, 15 Jun 2020 08:33:40 -0400
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <733E4CAF-A9E5-491F-B0C7-69CA84E5DFA5@oracle.com>
-References: <9e9882a2fb57b6f9d98a0a5d8b6bf9cff9fcbd93.1592202173.git.christophe.leroy@csgroup.eu>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Bruce Fields <bfields@fieldses.org>
-X-Mailer: Apple Mail (2.3445.104.14)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9652 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0 bulkscore=0
- phishscore=0 malwarescore=0 spamscore=0 mlxlogscore=999 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006150100
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9652 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 spamscore=0
- impostorscore=0 bulkscore=0 clxscore=1015 malwarescore=0 suspectscore=0
- mlxscore=0 phishscore=0 mlxlogscore=999 lowpriorityscore=0
- cotscore=-2147483648 priorityscore=1501 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006150100
+        id S1730243AbgFOM6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 08:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730071AbgFOM6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 08:58:46 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448C0C061A0E;
+        Mon, 15 Jun 2020 05:58:46 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id m7so6782517plt.5;
+        Mon, 15 Jun 2020 05:58:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=XitcCGm+N2xk+i04pt3A4f+pfim66XLwLBHkrjOHPeA=;
+        b=ZVr/Sb7MOhagf/RGhel4f7RhEI8nQ3l15ir4uqZwbq0/IUw01U7/hK4l9O6mmhpaQe
+         TH2PvZZczVErnPhIU4XubP9XEwIYH2ymLXfgTeP7G6KctMqFiJ6sdsKv2PuyNRbQTJgk
+         tLsUoZ8oj3NvigYd0YXBG+4zd+Esjx5kSTNVNapIuqBF4MlKSdnw/iNqb92Dwki7/8lQ
+         EYWHyEuqfGDqxAA1HKxN/Gct2whmlDSnPNCENYujxpSWEHQhKazOeoTeXCOtrx2gO19v
+         PuwpM6occwi3z8U1+cXSEccQSqJkzO4ASQSmx/BeL+BrCZF/AI5AUD0yFhc3KkJ/KwCW
+         K5pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XitcCGm+N2xk+i04pt3A4f+pfim66XLwLBHkrjOHPeA=;
+        b=oDyFk/5kCdpvGvhe6Il5gXrGhTvEPwbD1vQrW1GWVxWVw8Rp/kJ12pXMw+EiFQ2llN
+         1JWJDn1BbwQ4CzixBi31S430el6zB6W2/NVA4rl6Br2wSR28/Znath1Frrw2Cfp01p4b
+         kvfgLtF6IIqEbFBqe55llEVxeyH0dIIpIeDNJh86++DajgfjOm5rV+Ds1FtQq9yA8zyr
+         RSDVtbAQtmaGUNt3Ewer9VU3NwQ+czWiAFTAYDguPq2KqkkQ/6gUSW8Tb+Q1GWOFEt8S
+         jci6cT3/dJ/f+sYcHg/PKElvuP59zfcjsUP8aU24G5d1ihMSgbtmLbiqId15jaRqeMcG
+         XpuQ==
+X-Gm-Message-State: AOAM532fjSM6Ti19Zphl4WFryLIYtWSRmaRnL3vLKrvrwkUHV2SwsTXj
+        OFzShTf6UhOl9c6Nm4BLLlU=
+X-Google-Smtp-Source: ABdhPJwfxJvN6VGMc2O3Y02pnnTEat36EFoaAi15AnQE+izYbp/GXj23cVtK4kjHmr1rj/U2FhWHcQ==
+X-Received: by 2002:a17:90a:ed8f:: with SMTP id k15mr10829721pjy.63.1592225925722;
+        Mon, 15 Jun 2020 05:58:45 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id q129sm14496133pfc.60.2020.06.15.05.58.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Jun 2020 05:58:45 -0700 (PDT)
+Date:   Mon, 15 Jun 2020 05:58:43 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vinicius.gomes@intel.com
+Subject: Re: [PATCH net] net: dsa: sja1105: fix PTP timestamping with large
+ tc-taprio cycles
+Message-ID: <20200615125843.GC16362@localhost>
+References: <20200614205409.1580736-1-olteanv@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200614205409.1580736-1-olteanv@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> On Jun 15, 2020, at 2:25 AM, Christophe Leroy =
-<christophe.leroy@csgroup.eu> wrote:
->=20
-> Even if that's only a warning, not including asm/cacheflush.h
-> leads to svc_flush_bvec() being empty allthough powerpc defines
-> ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE.
->=20
->  CC      net/sunrpc/svcsock.o
-> net/sunrpc/svcsock.c:227:5: warning: =
-"ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE" is not defined [-Wundef]
-> #if ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE
->     ^
->=20
-> Include linux/highmem.h so that asm/cacheflush.h will be included.
->=20
-> Reported-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: Chuck Lever <chuck.lever@oracle.com>
-> Fixes: ca07eda33e01 ("SUNRPC: Refactor svc_recvfrom()")
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-
-LGTM.
-
-Acked-by: Chuck Lever <chuck.lever@oracle.com>
-
-
+On Sun, Jun 14, 2020 at 11:54:09PM +0300, Vladimir Oltean wrote:
+> So fix this case of premature optimization by simply reordering the
+> sja1105_ptpegr_ts_poll and the sja1105_ptpclkval_read function calls. It
+> turns out that in practice, the 135 ms hard deadline for PTP timestamp
+> wraparound is not so hard, since even the most bandwidth-intensive PTP
+> profiles, such as 802.1AS-2011, have a sync frame interval of 125 ms.
+> So if we couldn't deliver a timestamp in 135 ms (which we can), we're
+> toast and have much bigger problems anyway.
+> 
+> Fixes: 47ed985e97f5 ("net: dsa: sja1105: Add logic for TX timestamping")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > ---
-> v2: Use linux/highmem.h instead of asm/cacheflush.sh
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> ---
-> net/sunrpc/svcsock.c | 1 +
-> 1 file changed, 1 insertion(+)
->=20
-> diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
-> index 5c4ec9386f81..c537272f9c7e 100644
-> --- a/net/sunrpc/svcsock.c
-> +++ b/net/sunrpc/svcsock.c
-> @@ -44,6 +44,7 @@
-> #include <net/tcp.h>
-> #include <net/tcp_states.h>
-> #include <linux/uaccess.h>
-> +#include <linux/highmem.h>
-> #include <asm/ioctls.h>
->=20
-> #include <linux/sunrpc/types.h>
-> --=20
-> 2.25.0
->=20
 
---
-Chuck Lever
-
-
-
+Acked-by: Richard Cochran <richardcochran@gmail.com>
