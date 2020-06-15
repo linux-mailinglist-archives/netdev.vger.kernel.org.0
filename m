@@ -2,111 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E2451F9B17
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 16:57:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C81881F9B2E
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 16:59:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730847AbgFOO4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 10:56:35 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:15472 "EHLO m43-7.mailgun.net"
+        id S1730878AbgFOO7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 10:59:20 -0400
+Received: from m12-14.163.com ([220.181.12.14]:38337 "EHLO m12-14.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730405AbgFOO4f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jun 2020 10:56:35 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1592232994; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=RTqnmaAhKbyyX5m1MHI2x1eM5OG8zLQJxTp6BIGwfIk=; b=ffNKK/c64j1GQNR54vNuyufjjpx7JOMxPH3L+B+wmGecBfIVxfatxXH3nf2rioJbrnpPcfdJ
- 0dyYxHiQbKbi7YgZiFSkvUnI6471MQgE3BunsrkSglnSyGkHd+CLAtOaeihDRBrQwZNxYewJ
- +NPn5qd8hM+W8U5nF1HGnZvEeHE=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 5ee78c183a8a8b20b8539e93 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 15 Jun 2020 14:56:24
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E58F7C433C8; Mon, 15 Jun 2020 14:56:23 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id EB0F6C433CA;
-        Mon, 15 Jun 2020 14:56:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EB0F6C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, ath10k@lists.infradead.org,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        netdev <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, kuabhs@google.com
-Subject: Re: [PATCH] ath10k: Wait until copy complete is actually done before completing
-References: <20200609082015.1.Ife398994e5a0a6830e4d4a16306ef36e0144e7ba@changeid>
-        <20200615143237.519F3C433C8@smtp.codeaurora.org>
-        <CAD=FV=VaexjLaaZJSxndTEi6KCFaPWW=sUt6hjy9=0Qn68kH1g@mail.gmail.com>
-Date:   Mon, 15 Jun 2020 17:56:19 +0300
-In-Reply-To: <CAD=FV=VaexjLaaZJSxndTEi6KCFaPWW=sUt6hjy9=0Qn68kH1g@mail.gmail.com>
-        (Doug Anderson's message of "Mon, 15 Jun 2020 07:39:33 -0700")
-Message-ID: <87zh94idik.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1730697AbgFOO7T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jun 2020 10:59:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=dEe5e
+        43rDVb5syfbbJurCXIT1sjOVadZWQ34XIbuhM0=; b=ezIYXHaDQ2nTu9R7C36Fp
+        yLexiC0DX1Z2f548FKlV/lYJujSRvnzsD8oed7NuHXlI5K53VvUhpW6yOo5iEC3q
+        yVrQhBmNK+MicViLShCtRE0R3ZoCWhtdbZBjLiYUr2R6xF63VoewJu5e3UGOOyqy
+        bj43jtw0RabD4xwfBWzoSU=
+Received: from SZA191027643-PM.china.huawei.com (unknown [223.74.115.177])
+        by smtp10 (Coremail) with SMTP id DsCowABXOli7jOdeQnE4Gw--.52836S2;
+        Mon, 15 Jun 2020 22:59:08 +0800 (CST)
+From:   yunaixin03610@163.com
+To:     netdev@vger.kernel.org
+Cc:     yunaixin <yunaixin@huawei.com>
+Subject: [PATCH 0/5] Adding Huawei BMA drivers
+Date:   Mon, 15 Jun 2020 22:59:01 +0800
+Message-Id: <20200615145906.1013-1-yunaixin03610@163.com>
+X-Mailer: git-send-email 2.26.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+X-CM-TRANSID: DsCowABXOli7jOdeQnE4Gw--.52836S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxtw4DtFWUKrW3tr15Aw1UZFb_yoWxtFWrpa
+        yjya4UurWxKFy7Xw1vy3W8KFn8J3WDtry5u393Z3WrX3s2yry5JryDWF15uF1fWa97Gr4I
+        vF1Y9F1fWFZ8X3JanT9S1TB71UUUUjUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jjD7-UUUUU=
+X-Originating-IP: [223.74.115.177]
+X-CM-SenderInfo: 51xqtxx0lqijqwrqqiywtou0bp/1tbiVB9E5lUMNSUcfAABsB
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Doug Anderson <dianders@chromium.org> writes:
+From: yunaixin <yunaixin@huawei.com>
 
-> On Mon, Jun 15, 2020 at 7:32 AM Kalle Valo <kvalo@codeaurora.org> wrote:
->>
->> Douglas Anderson <dianders@chromium.org> wrote:
->>
->> > On wcn3990 we have "per_ce_irq = true".  That makes the
->> > ath10k_ce_interrupt_summary() function always return 0xfff. The
->> > ath10k_ce_per_engine_service_any() function will see this and think
->> > that _all_ copy engines have an interrupt.  Without checking, the
->> > ath10k_ce_per_engine_service() assumes that if it's called that the
->> > "copy complete" (cc) interrupt fired.  This combination seems bad.
->> >
->> > Let's add a check to make sure that the "copy complete" interrupt
->> > actually fired in ath10k_ce_per_engine_service().
->> >
->> > This might fix a hard-to-reproduce failure where it appears that the
->> > copy complete handlers run before the copy is really complete.
->> > Specifically a symptom was that we were seeing this on a Qualcomm
->> > sc7180 board:
->> >   arm-smmu 15000000.iommu: Unhandled context fault:
->> >   fsr=0x402, iova=0x7fdd45780, fsynr=0x30003, cbfrsynra=0xc1, cb=10
->> >
->> > Even on platforms that don't have wcn3990 this still seems like it
->> > would be a sane thing to do.  Specifically the current IRQ handler
->> > comments indicate that there might be other misc interrupt sources
->> > firing that need to be cleared.  If one of those sources was the one
->> > that caused the IRQ handler to be called it would also be important to
->> > double-check that the interrupt we cared about actually fired.
->> >
->> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
->> > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
->>
->> ath10k firmwares work very differently, on what hardware and firmware did you
->> test this? I'll add that information to the commit log.
->
-> I am running on a Qualcomm sc7180 SoC.
+This patch set contains 5 communication drivers for Huawei BMA software.=0D
+The BMA software is a system management software. It supports the status=0D
+monitoring, performance monitoring, and event monitoring of various=0D
+components, including server CPUs, memory, hard disks, NICs, IB cards,=0D
+PCIe cards, RAID controller cards, and optical modules.=0D
+=0D
+These 5 drivers are used to send/receive message through PCIe channel in=0D
+different ways by BMA software.
 
-Sorry, I was unclear, I meant the ath10k hardware :) I guess WCN3990 but
-what firmware version?
+yunaixin (5):
+  Huawei BMA: Adding Huawei BMA driver: host_edma_drv
+  Huawei BMA: Adding Huawei BMA driver: host_cdev_drv
+  Huawei BMA: Adding Huawei BMA driver: host_veth_drv
+  Huawei BMA: Adding Huawei BMA driver: cdev_veth_drv
+  Huawei BMA: Adding Huawei BMA driver: host_kbox_drv
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+ drivers/net/ethernet/huawei/Kconfig           |    1 +
+ drivers/net/ethernet/huawei/Makefile          |    1 +
+ drivers/net/ethernet/huawei/bma/Kconfig       |    5 +
+ drivers/net/ethernet/huawei/bma/Makefile      |    9 +
+ .../net/ethernet/huawei/bma/cdev_drv/Kconfig  |   11 +
+ .../net/ethernet/huawei/bma/cdev_drv/Makefile |    2 +
+ .../ethernet/huawei/bma/cdev_drv/bma_cdev.c   |  369 +++
+ .../ethernet/huawei/bma/cdev_veth_drv/Kconfig |   11 +
+ .../huawei/bma/cdev_veth_drv/Makefile         |    2 +
+ .../bma/cdev_veth_drv/virtual_cdev_eth_net.c  | 1839 ++++++++++++
+ .../bma/cdev_veth_drv/virtual_cdev_eth_net.h  |  300 ++
+ .../net/ethernet/huawei/bma/edma_drv/Kconfig  |   11 +
+ .../net/ethernet/huawei/bma/edma_drv/Makefile |    2 +
+ .../huawei/bma/edma_drv/bma_devintf.c         |  597 ++++
+ .../huawei/bma/edma_drv/bma_devintf.h         |   40 +
+ .../huawei/bma/edma_drv/bma_include.h         |  118 +
+ .../ethernet/huawei/bma/edma_drv/bma_pci.c    |  533 ++++
+ .../ethernet/huawei/bma/edma_drv/bma_pci.h    |   94 +
+ .../ethernet/huawei/bma/edma_drv/edma_host.c  | 1462 ++++++++++
+ .../ethernet/huawei/bma/edma_drv/edma_host.h  |  351 +++
+ .../huawei/bma/include/bma_ker_intf.h         |   91 +
+ .../net/ethernet/huawei/bma/kbox_drv/Kconfig  |   11 +
+ .../net/ethernet/huawei/bma/kbox_drv/Makefile |    2 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_dump.c  |  122 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_dump.h  |   33 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_hook.c  |  101 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_hook.h  |   33 +
+ .../huawei/bma/kbox_drv/kbox_include.h        |   42 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_main.c  |  168 ++
+ .../ethernet/huawei/bma/kbox_drv/kbox_main.h  |   23 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_mce.c   |  264 ++
+ .../ethernet/huawei/bma/kbox_drv/kbox_mce.h   |   23 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_panic.c |  187 ++
+ .../ethernet/huawei/bma/kbox_drv/kbox_panic.h |   25 +
+ .../huawei/bma/kbox_drv/kbox_printk.c         |  362 +++
+ .../huawei/bma/kbox_drv/kbox_printk.h         |   33 +
+ .../huawei/bma/kbox_drv/kbox_ram_drive.c      |  188 ++
+ .../huawei/bma/kbox_drv/kbox_ram_drive.h      |   31 +
+ .../huawei/bma/kbox_drv/kbox_ram_image.c      |  135 +
+ .../huawei/bma/kbox_drv/kbox_ram_image.h      |   84 +
+ .../huawei/bma/kbox_drv/kbox_ram_op.c         |  986 +++++++
+ .../huawei/bma/kbox_drv/kbox_ram_op.h         |   77 +
+ .../net/ethernet/huawei/bma/veth_drv/Kconfig  |   11 +
+ .../net/ethernet/huawei/bma/veth_drv/Makefile |    2 +
+ .../ethernet/huawei/bma/veth_drv/veth_hb.c    | 2508 +++++++++++++++++
+ .../ethernet/huawei/bma/veth_drv/veth_hb.h    |  442 +++
+ 46 files changed, 11742 insertions(+)
+ create mode 100644 drivers/net/ethernet/huawei/bma/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_drv/bma_cdev.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_veth_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_veth_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_veth_drv/virtual_c=
+dev_eth_net.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_veth_drv/virtual_c=
+dev_eth_net.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/bma_devintf.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/bma_devintf.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/bma_include.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/bma_pci.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/bma_pci.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/edma_host.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/include/bma_ker_intf.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_include.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive=
+.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive=
+.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image=
+.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image=
+.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.h
+
+--=20
+2.26.2.windows.1
+
+
