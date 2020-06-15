@@ -2,127 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4917E1F940A
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 11:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 991D71F9434
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 12:03:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729562AbgFOJ4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 05:56:38 -0400
-Received: from sitav-80046.hsr.ch ([152.96.80.46]:51630 "EHLO
-        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728369AbgFOJ4h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 05:56:37 -0400
-Received: from [192.168.2.100] (pub082136126227.dh-hfc.datazug.ch [82.136.126.227])
-        by mail.strongswan.org (Postfix) with ESMTPSA id 392634049C;
-        Mon, 15 Jun 2020 11:56:35 +0200 (CEST)
-Subject: Re: [PATCH ipsec] xfrm: policy: match with both mark and mask on user
- interfaces
-To:     Xin Long <lucien.xin@gmail.com>, netdev@vger.kernel.org
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <hadi@cyberus.ca>,
-        Sabrina Dubroca <sd@queasysnail.net>
-References: <8f83e18b1bed3a19b32b6632c563d86a88e6fa25.1592209510.git.lucien.xin@gmail.com>
-From:   Tobias Brunner <tobias@strongswan.org>
-Autocrypt: addr=tobias@strongswan.org; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <b1656226-4caf-466e-8175-48431752286d@strongswan.org>
-Date:   Mon, 15 Jun 2020 11:56:34 +0200
+        id S1729567AbgFOKC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 06:02:59 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:11534 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728833AbgFOKC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 06:02:58 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05F84Cte005797;
+        Mon, 15 Jun 2020 06:02:56 -0400
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 31p54p38pm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Jun 2020 06:02:48 -0400
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05F9pEHL014957;
+        Mon, 15 Jun 2020 10:01:40 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04fra.de.ibm.com with ESMTP id 31mpe81b0s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Jun 2020 10:01:39 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05FA1WJi42598536
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Jun 2020 10:01:33 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BE3E65205F;
+        Mon, 15 Jun 2020 10:01:32 +0000 (GMT)
+Received: from oc5500677777.ibm.com (unknown [9.145.75.207])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 5CDCB52050;
+        Mon, 15 Jun 2020 10:01:32 +0000 (GMT)
+Subject: Re: [REGRESSION] mlx5: Driver remove during hot unplug is broken
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        ubraun@linux.ibm.com, kgraul@linux.ibm.com, raspl@de.ibm.com
+References: <f942d546-ee7e-60f6-612a-ae093a9459a5@linux.ibm.com>
+ <7660d8e0d2cb1fbd40cf89ea4c9a0eff4807157c.camel@mellanox.com>
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+Message-ID: <26dedb23-819f-8121-6e04-72677110f3cc@linux.ibm.com>
+Date:   Mon, 15 Jun 2020 12:01:32 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <8f83e18b1bed3a19b32b6632c563d86a88e6fa25.1592209510.git.lucien.xin@gmail.com>
+In-Reply-To: <7660d8e0d2cb1fbd40cf89ea4c9a0eff4807157c.camel@mellanox.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-15_01:2020-06-15,2020-06-15 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ priorityscore=1501 clxscore=1015 cotscore=-2147483648 mlxscore=0
+ mlxlogscore=999 impostorscore=0 lowpriorityscore=0 adultscore=0
+ malwarescore=0 suspectscore=0 bulkscore=0 spamscore=0 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006150066
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Xin,
+Hello Saeed,
 
-> To fix this duplicated policies issue, and also fix the issue in
-> commit ed17b8d377ea ("xfrm: fix a warning in xfrm_policy_insert_list"),
-> when doing add/del/get/update on user interfaces, this patch is to change
-> to look up a policy with both mark and mask by doing:
+On 6/13/20 12:01 AM, Saeed Mahameed wrote:
+> On Fri, 2020-06-12 at 15:09 +0200, Niklas Schnelle wrote:
+>> Hello Parav, Hello Saeed,
+>>
+... snip ...
+>>
+>> So without really knowing anything about these functions I would
+>> guess that with the device still registered the drained
+>> queue does not remain empty as new entries are added.
+>> Does that sound plausible to you?
+>>
 > 
->   mark.v == pol->mark.v && mark.m == pol->mark.m
-
-Looks good, thanks a lot for your work on this.  All tests in our
-regression test suite complete successfully with this patch applied.
-
-Tested-by: Tobias Brunner <tobias@strongswan.org>
-
-> and leave the check:
+> I don't think it is related, maybe this is similar to some issues
+> addressed lately by Shay's patches:
 > 
->   ((mark.v & mark.m) & pol->mark.m) == pol->mark.v.
+> https://patchwork.ozlabs.org/project/netdev/patch/20200611224708.235014-2-saeedm@mellanox.com/
+> https://patchwork.ozlabs.org/project/netdev/patch/20200611224708.235014-3-saeedm@mellanox.com/
 > 
-> for tx/rx path only.
+> net/mlx5: drain health workqueue in case of driver load error
+> net/mlx5: Fix fatal error handling during device load
 
-If you are referring to the check in xfrm_policy_match() it's actually:
+I agree with your similarity assessment especially for the first commit.
+These do not fix the issue though, with mainline v5.8-rc1 which has
+both I'm still getting a hang over 50% of the time with the following
+detach sequence on z/VM:
 
-  (fl->flowi_mark & pol->mark.m) != pol->mark.v
+vmcp detach pcif <mlx_fid>; echo 1 > /proc/cio_settle
 
-Or more generically something like:
+Since now the commit 41798df9bfca ("net/mlx5: Drain wq first during PCI device removal")
+no longer reverts cleanly I used the following diff to move the mlx5_drain_health_wq(dev)
+after the mlx5_unregister_devices(dev).
 
-  (mark & pol->mark.m) == pol->mark.v
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 8b658908f044..63a196fd8e68 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1382,8 +1382,8 @@ static void remove_one(struct pci_dev *pdev)
 
-As we only have the mark on the packets/flow (no mask) to match against.
+        devlink_reload_disable(devlink);
+        mlx5_crdump_disable(dev);
+-       mlx5_drain_health_wq(dev);
+        mlx5_unload_one(dev, true);
++       mlx5_drain_health_wq(dev);
+        mlx5_pci_close(dev);
+        mlx5_mdev_uninit(dev);
+        mlx5_devlink_free(devlink);
 
-> -static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
-> +static bool xfrm_policy_mark_match(const struct xfrm_mark *mark,
->  				   struct xfrm_policy *pol)
->  {
-> -	if (policy->mark.v == pol->mark.v &&
-> -	    policy->priority == pol->priority)
-> -		return true;
-> -
-> -	return false;
-> +	return mark->v == pol->mark.v && mark->m == pol->mark.m;
->  }
 
-I guess you could make that function `static inline`.
+Note that this changed order also matches the call order in mlx5_pci_err_detected().
+With that change I've now done over two dozen detachments with varying time between
+attach and detach to have the driver at different stages of initialization.
+With the change all worked without a hitch.
 
-Regards,
-Tobias
+Best regards,
+Niklas Schnelle
+> 
+>> Best regards,
+>> Niklas Schnelle
+>>
+>> [0] dmesg output:
+... snip ...
+> 
+> Shay's patches also came to avoid such command timeouts.
+> 
+> 
