@@ -2,109 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 605EB1F9FFC
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 21:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CF861FA040
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 21:29:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731374AbgFOTLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 15:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729354AbgFOTLe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 15:11:34 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C06C061A0E;
-        Mon, 15 Jun 2020 12:11:34 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id c14so16801319qka.11;
-        Mon, 15 Jun 2020 12:11:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rdkpIsIw6sRIoGnuOlulGFCOXMxUltM2VCp1RbU21dg=;
-        b=iTbRo0q8FVkocB7ftDkONGmUYqNUIaF5aixAH33JB6cA3BpBLq8mUH2P05gbV+mD+5
-         +1hqspa9jCav+K4LYzZTDcu8yIvSew2jO3bOQFIQ0B/N7lGxaf0mp8uF0rwOa0mDFD9X
-         8sN1O6hdZQCY7O7uj4AfkTLge9tiBUVSjcB+ehx1RBYv7sZ1TMJECfOdWWR9kowJgcSY
-         9E3R+4ErJly+BRkXLb7VSJ/rLa/MA32yUajxPDrbtCqbemV4C+YTeflCke08QSdkWgTp
-         vOVcse2xxtrhTN3nuhiJrBG6ZnCiYj573kdAr9cpzGl7J9494r9BDrGOI5NWgMhSjz++
-         kUHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rdkpIsIw6sRIoGnuOlulGFCOXMxUltM2VCp1RbU21dg=;
-        b=Vo/IDYIo2RQPAIr2U87Lbqd7O3GB2mP2TLIqyiEw9OuGPIZ+cTKavd3NsLOeZ99HnT
-         ZTqzXGQEtQIZSB6P7S8hKUIfWXoE4DV2MWZ//pBeNPOgO85FM1cXsI0N0iVY6p8Rsx7z
-         dnDG/INZnl/9dJp1b/hLjbrGyBscRd1GCEKF5rzRj6HgdF/RNrqc3BZc3R1llAB2E2Cf
-         Z2A/pWG+4ORVglotO+SpST4/r9zIdEGLc7d4GCGqpOr9HzViiJGMMrn9XjxdbFIa0X/s
-         CSd+eMRZrmri1m6O5qH1e8yAlTwA6Z1H912kFb4fxDAZRf8MslsPM9DSAM/r1G7IzLma
-         RTzA==
-X-Gm-Message-State: AOAM531ahRLAaPvdstI5bEwlgRqp8HNlS5NBuE54tDSfydkJJUQw2hJX
-        N9s4d1wniX0Ke7skvcI7byVr+XowN68nhOHwMFA=
-X-Google-Smtp-Source: ABdhPJw22D438K5vly+hM9sl/edTx+Uc9e1F++PayshnqRM6JUYbgqIJfTcq8m9Iie5bdXGN5wk3uWagtlOBcmj2STc=
-X-Received: by 2002:a37:6508:: with SMTP id z8mr16940330qkb.39.1592248293220;
- Mon, 15 Jun 2020 12:11:33 -0700 (PDT)
+        id S1729643AbgFOT3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 15:29:42 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:22220 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728062AbgFOT3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 15:29:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592249380;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=x6QQn40MSW2Lkgfq7luEOkg74Yj2zlFB1OhbL0SDLFY=;
+        b=H/qIKgrDl0TqnPSZg04NRwxoJGxUGcznKQvjbWvCNKMCiPaMy3NcGTcBgT0LF8v2H3Utjg
+        Rtz8Ym/sT7rrcpZG0erewMNi4wbcPyTxK4GFiZo5X8CgoToFRVeBXCWQE20HEBdHDdqM2L
+        t2k2GGvAMw4YdmHdtWYVr7VXWPEdqMA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-7-3Jy1E_6aOZiO71QmncUuhw-1; Mon, 15 Jun 2020 15:29:37 -0400
+X-MC-Unique: 3Jy1E_6aOZiO71QmncUuhw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C124994B21;
+        Mon, 15 Jun 2020 19:29:36 +0000 (UTC)
+Received: from new-host-5.redhat.com (unknown [10.40.192.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8790B6ED96;
+        Mon, 15 Jun 2020 19:29:35 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Po Liu <Po.Liu@nxp.com>, Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net v2 0/2] two fixes for 'act_gate' control plane
+Date:   Mon, 15 Jun 2020 21:28:25 +0200
+Message-Id: <cover.1592247564.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-References: <20200612223150.1177182-1-andriin@fb.com> <20200612223150.1177182-4-andriin@fb.com>
- <CA+khW7jxdS1KRpk2syVGjDqbyn3wAd3Eh_LEMAEhkPUehuXMwg@mail.gmail.com>
-In-Reply-To: <CA+khW7jxdS1KRpk2syVGjDqbyn3wAd3Eh_LEMAEhkPUehuXMwg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 15 Jun 2020 12:11:22 -0700
-Message-ID: <CAEf4BzbQBNnNV2rGOJHUs1Yh2Njqu5bEtB_DsgF9AOruGorKHg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 3/8] selftests/bpf: add __ksym extern selftest
-To:     Hao Luo <haoluo@google.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Quentin Monnet <quentin@isovalent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 9:45 AM Hao Luo <haoluo@google.com> wrote:
->
-> Andrii, a couple of general comments on fixed_percpu_data.
->
-> I think it would be better to check the existence of fixed_percpu_data in=
- kallsyms first. If it's not there, just skip, or maybe warn but not fail.
+- patch 1/2 attempts to fix the error path of tcf_gate_init() when users
+  try to configure 'act_gate' rules with wrong parameters
+- patch 2/2 is a follow-up of a recent fix for NULL dereference in
+  the error path of tcf_gate_init()
 
-fixed_percpu_data is always there, but I missed the fact that it's
-x86-specific one. I'll switch to some bpf-specific symbol (e.g., like
-bpf_prog_fops or something along those lines).
+further work will introduce a tdc test for 'act_gate'.
 
->
-> Further, if we really want to be sure that  fixed_percpu_data is the firs=
-t percpu var, we can read the value of __per_cpu_start, which marks the beg=
-inning address of the percpu section. Checking the address of fixed_percpu_=
-data against __per_cpu_start rather than 0 should be more robust, I think, =
-given that fixed_percpu_data exists.
 
-There are assertions in Linux sources that fixed_percpu_data is 0, so
-I don't think that it necessary. But it's a moot point, as I'll use
-something less x86-specific.
+changes since v1:
+  coding style fixes in patch 1/2 and 2/2
 
->
-> Hao
->
-> On Fri, Jun 12, 2020 at 3:35 PM Andrii Nakryiko <andriin@fb.com> wrote:
->>
->> Validate libbpf is able to handle weak and strong kernel symbol externs =
-in BPF
->> code correctly.
->>
->> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->> ---
->>  .../testing/selftests/bpf/prog_tests/ksyms.c  | 71 +++++++++++++++++++
->>  .../testing/selftests/bpf/progs/test_ksyms.c  | 32 +++++++++
->>  2 files changed, 103 insertions(+)
->>  create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms.c
->>  create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms.c
->>
+Davide Caratti (2):
+  net/sched: act_gate: fix NULL dereference in tcf_gate_init()
+  net/sched: act_gate: fix configuration of the periodic timer
 
-[...]
+ net/sched/act_gate.c | 124 +++++++++++++++++++++++--------------------
+ 1 file changed, 66 insertions(+), 58 deletions(-)
+
+-- 
+2.26.2
+
