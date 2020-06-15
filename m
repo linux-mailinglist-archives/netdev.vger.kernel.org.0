@@ -2,136 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 744CF1F9B49
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:02:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C14D31F9B59
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730800AbgFOPCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 11:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
+        id S1730788AbgFOPEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 11:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730405AbgFOPCP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 11:02:15 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C015DC061A0E
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:02:14 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id k13so9500298vsm.13
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:02:14 -0700 (PDT)
+        with ESMTP id S1730213AbgFOPD6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 11:03:58 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26462C061A0E
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:03:57 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id i1so15525909ils.11
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:03:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TrvvsAEP4GTcir2Zy4zr3JBpHk31E0joGe1xHbcm+mg=;
-        b=H3A4uLXQWE02D9hYonsJYD+dAcZKqOzS19HfKOalhkBF4qwfzczgYQl1W0V8OQsYXD
-         95VWw7nAcce5a/v3X1xmaJEUAxd0JQhaKynN57OA1tKKU6N1LhVNw3fYE7ZH0++G+pva
-         EdI1a+96k5CQcCD5Of6MAu9qR7pjeDAfI0yPs=
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:cc
+         :content-transfer-encoding;
+        bh=TND/dkea/6B9c9Cz6xz/9sL6lwru28iRvx8kNBu287o=;
+        b=fDDa7nIzAYxVat05iwl1zHWct3Zg6QhC1uVn1bU//H1WT4hIZVB0pt0Vg4fXR1Vkfk
+         uDwFA5gb1aXX7MUgpa9akLBoZOsRwVg9Vt5HI1h3wvqJKTK+33VJBWOi7BeJbdBfvRWI
+         0JMAI9AypeLVyjb27vZimOfCoWjAnE45dn93C0vV3yPKt8YrWiNcT/rc1Ipzl88PojlP
+         gf54I+0e5jYFDyLMM83Q6BLH6pxWONPi2KJOH2jRQqPWlbU5qnX/XfsfBL/e5i7tV922
+         wvLMdyeGeCrvFiFkInMzx6Vcfp8JitHTsn69vxNw1x29HEAVq2daicZkJ5IEeV+ghK+K
+         JM6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TrvvsAEP4GTcir2Zy4zr3JBpHk31E0joGe1xHbcm+mg=;
-        b=thN0uOBAEq3T/wUaEoOA8iAi77evF6RwUsGC5KOcN6pZXY5hIaXHdKRRfkYM/on2dh
-         1gz26Oj0uZkuDpk+/nTZk35wxKBKjdPATxUmKlEHKur8JTUUgR+nJOhAajt3WrorLNCN
-         l+6ci8fL7WzmFwq0sMiYdPg0sMoFH/38UP8OJLvUCLnJXsNFaK3oMKzNS4pwiHEBG3WX
-         59kuosvDzEWAhUa0g7YxaHiZ3mthOK8Vqd2sD+Gl+QO/2NvzhFvPWZpzOAqlxDmy8GoN
-         Bqy82RPY3MtIsfjrouJU7rmPnpTVSJFAiGAOFNw7XBf+eNPBCW2p/538vsBejFyA/WqH
-         u5Bg==
-X-Gm-Message-State: AOAM530wWE/O0wOH3QBhAPJral1mnTKieIdCMhrAuXqFRivlGkJLheBd
-        7KguSSf1dcDvkf4Zb41unGdCYVksb5M=
-X-Google-Smtp-Source: ABdhPJy0Q6EayAMaKVQIE1wdqsfl1uvCoBASD3OPQ6hqg0vgF42bqOPp9HJvyotEGsNkl0L7NtLZSQ==
-X-Received: by 2002:a67:e957:: with SMTP id p23mr20740095vso.190.1592233333499;
-        Mon, 15 Jun 2020 08:02:13 -0700 (PDT)
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com. [209.85.217.42])
-        by smtp.gmail.com with ESMTPSA id 123sm1955165vsu.17.2020.06.15.08.02.13
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Jun 2020 08:02:13 -0700 (PDT)
-Received: by mail-vs1-f42.google.com with SMTP id d21so9501048vsh.12
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:02:13 -0700 (PDT)
-X-Received: by 2002:a67:8881:: with SMTP id k123mr19565964vsd.198.1592233331996;
- Mon, 15 Jun 2020 08:02:11 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:cc
+         :content-transfer-encoding;
+        bh=TND/dkea/6B9c9Cz6xz/9sL6lwru28iRvx8kNBu287o=;
+        b=a/5yi4g3XuDVUhrTXLmTvtFP7nC3iblc8ZRkePSuDJECstY4tsimfK/7XfUktPn9gn
+         UpSfK4eXuZzYhJjuQ6U8jo8ZzU3+cGyp0ZF+6RM3VPG9Y//iAcmV2MwuKZbADHc7X0pO
+         WCOoruEH2n5dzThJ/Dnf6/GVLOe+Mo8l7Ga8SI7z13UHmVstiTHzCQ8v4UaZycCGVC7D
+         GQoGsUuqJe7AOAd0oTLlvrtg9bOd9buw1j9MvC3tTHBl3TbFxcv/RTRpe+cQ2bxvX7mh
+         ggHB270QEr8AN6P21n/+cUm1S2TskRZN5F8HI1ZUzQORyd0QpkG/uVnSWFAT05ze3oBQ
+         RPag==
+X-Gm-Message-State: AOAM532IAqN1/ZuXWP09z0USSn6m1qiO4W3UYNbPSh+Ey50WQHZ88gZl
+        yJsi0mvbgSqW9++moBRLuMX0iL+kKGCck550mvCvQ0g=
+X-Received: by 2002:a92:5bd2:: with SMTP id c79mt25313783ilg.218.1592233436586;
+ Mon, 15 Jun 2020 08:03:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200609082015.1.Ife398994e5a0a6830e4d4a16306ef36e0144e7ba@changeid>
- <20200615143237.519F3C433C8@smtp.codeaurora.org> <CAD=FV=VaexjLaaZJSxndTEi6KCFaPWW=sUt6hjy9=0Qn68kH1g@mail.gmail.com>
- <87zh94idik.fsf@codeaurora.org>
-In-Reply-To: <87zh94idik.fsf@codeaurora.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 15 Jun 2020 08:02:00 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XfUHD=vw-mvQsdHcn=zhB9-mD6ivrM93jkfHdgb+odiA@mail.gmail.com>
-Message-ID: <CAD=FV=XfUHD=vw-mvQsdHcn=zhB9-mD6ivrM93jkfHdgb+odiA@mail.gmail.com>
-Subject: Re: [PATCH] ath10k: Wait until copy complete is actually done before completing
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, ath10k@lists.infradead.org,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        netdev <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, kuabhs@google.com
+Received: by 2002:a05:6e02:5ab:0:0:0:0 with HTTP; Mon, 15 Jun 2020 08:03:56
+ -0700 (PDT)
+From:   Magdalena Weidner <magdalenaweidner8@gmail.com>
+Date:   Mon, 15 Jun 2020 16:03:56 +0100
+Message-ID: <CAG4vnMq-DdWtv-oHeF86wpOMbs3UM4ohRLpSfQx0H0q5mdNYMg@mail.gmail.com>
+Subject: =?UTF-8?Q?Ben=C3=B6tigen_Sie_einen_Kredit_zwischen_Privatpersonen=3F?=
+Cc:     Emailhaukesteinberg@gmail.com, Hauke@gmail.com,
+        f.fainelli@gmail.com, hauke@hauke-m.de, davem@davemloft.net,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Mit Kredit  ohne Bank haben Sie eine andere M=C3=B6glichkeit zu leihen,
+ohne durch die Banken gehen zu m=C3=BCssen, wo Sie nach bestimmten
+Kriterien ausgew=C3=A4hlt werden, die unter anderem Ihre famili=C3=A4re und
+finanzielle Situation betreffen. Wenn Sie beispielsweise in einem
+tempor=C3=A4ren Gesch=C3=A4ft arbeiten, k=C3=B6nnen Sie immer noch Kredite =
+aufnehmen,
+da Sie keine Belege wie die letzten Gehaltsabrechnungen, die einen
+stabilen Arbeitsplatz bescheinigen, ben=C3=B6tigen. Ein Kredit ohne Bank
+ist auch die ideale L=C3=B6sung f=C3=BCr Menschen in einer Situation von
+Bankverboten, die aber einen Kredit aufnehmen m=C3=BCssen, um Arbeit zu
+erledigen, Geld aufzubauen, Haushaltsger=C3=A4te zu kaufen oder sogar ein
+Auto zu reparieren, das zum Beispiel zur Expansion dient der
+Jobsuchbereich f=C3=BCr Arbeitslose.
+F=C3=BCr den Kreditnehmer bietet der Kredit zwischen Einzelpersonen den
+Vorteil eines interessanten Zinssatzes, ohne durch verschiedene
+administrative Schritte zu gehen, was den Prozess beschleunigt, um die
+Mittel schnell zu erhalten. Der Kreditgeber hat seinerseits eine
+durchschnittliche Rendite von 3%, was oft dem Zinssatz entspricht, der
+f=C3=BCr diese Art von Verfahren eingef=C3=BChrt wurde und der viel niedrig=
+er
+ist als der von den Banken mit ihrem Produkt angebotene Zinssatz.
+F=C3=BCr weitere Informationen wenden Sie sich bitte an eine Adresse:
 
-On Mon, Jun 15, 2020 at 7:56 AM Kalle Valo <kvalo@codeaurora.org> wrote:
->
-> Doug Anderson <dianders@chromium.org> writes:
->
-> > On Mon, Jun 15, 2020 at 7:32 AM Kalle Valo <kvalo@codeaurora.org> wrote:
-> >>
-> >> Douglas Anderson <dianders@chromium.org> wrote:
-> >>
-> >> > On wcn3990 we have "per_ce_irq = true".  That makes the
-> >> > ath10k_ce_interrupt_summary() function always return 0xfff. The
-> >> > ath10k_ce_per_engine_service_any() function will see this and think
-> >> > that _all_ copy engines have an interrupt.  Without checking, the
-> >> > ath10k_ce_per_engine_service() assumes that if it's called that the
-> >> > "copy complete" (cc) interrupt fired.  This combination seems bad.
-> >> >
-> >> > Let's add a check to make sure that the "copy complete" interrupt
-> >> > actually fired in ath10k_ce_per_engine_service().
-> >> >
-> >> > This might fix a hard-to-reproduce failure where it appears that the
-> >> > copy complete handlers run before the copy is really complete.
-> >> > Specifically a symptom was that we were seeing this on a Qualcomm
-> >> > sc7180 board:
-> >> >   arm-smmu 15000000.iommu: Unhandled context fault:
-> >> >   fsr=0x402, iova=0x7fdd45780, fsynr=0x30003, cbfrsynra=0xc1, cb=10
-> >> >
-> >> > Even on platforms that don't have wcn3990 this still seems like it
-> >> > would be a sane thing to do.  Specifically the current IRQ handler
-> >> > comments indicate that there might be other misc interrupt sources
-> >> > firing that need to be cleared.  If one of those sources was the one
-> >> > that caused the IRQ handler to be called it would also be important to
-> >> > double-check that the interrupt we cared about actually fired.
-> >> >
-> >> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> >> > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-> >>
-> >> ath10k firmwares work very differently, on what hardware and firmware did you
-> >> test this? I'll add that information to the commit log.
-> >
-> > I am running on a Qualcomm sc7180 SoC.
->
-> Sorry, I was unclear, I meant the ath10k hardware :) I guess WCN3990 but
-> what firmware version?
-
-Ah, sorry!  Yes, it appears to be wcn3990 based on my device tree:
-
-$ git grep -A2 wifi -- arch/arm64/boot/dts/qcom/sc7180.dtsi
-
-wifi: wifi@18800000 {
-        compatible = "qcom,wcn3990-wifi";
-        reg = <0 0x18800000 0 0x800000>;
-        reg-names = "membase";
-
-Firmware isn't final yet, but currently my boot log shows:
-
-qmi fw_version 0x322a01ea
-fw_build_timestamp 2020-05-20 03:47
-QC_IMAGE_VERSION_STRING=WLAN.HL.3.2.2-00490-QCAHLSWMTPL-1
-
--Doug
+                                        FINANZIERUNG AUTO
+                         E-mail: financementauto51@gmail.com
