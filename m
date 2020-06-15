@@ -2,229 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BD751FA042
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 21:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE061FA048
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 21:31:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730095AbgFOT3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 15:29:47 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39015 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729780AbgFOT3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 15:29:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592249385;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AV2xqA1wqNYV+em9IYm4pp4fMrDQzxhV9zZdRR+JjNc=;
-        b=S9tcpmswpbK4ocuzLp6DkQsv/n5xMAsHd7oomHfWcM3fVYugKIearfNYUfQC2XFWtr97/N
-        +pGd4NDa35wb9zl4x9O5dt4yLTkyPdFIPsFuaEUgmBsjACcxX3cAZeCn6e1QNT+Go8ZBR9
-        w/b5fkn7Gdu6uWRL6Y+nu77agq/0W0M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-223-yFtPpP5DOGaBdXCnAK6CSQ-1; Mon, 15 Jun 2020 15:29:41 -0400
-X-MC-Unique: yFtPpP5DOGaBdXCnAK6CSQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2B1E5107B470;
-        Mon, 15 Jun 2020 19:29:40 +0000 (UTC)
-Received: from new-host-5.redhat.com (unknown [10.40.192.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DD15C6ED96;
-        Mon, 15 Jun 2020 19:29:38 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Po Liu <Po.Liu@nxp.com>, Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net v2 2/2] net/sched: act_gate: fix configuration of the periodic timer
-Date:   Mon, 15 Jun 2020 21:28:27 +0200
-Message-Id: <4a4a840333d6ba06042b9faf7e181048d5dc2433.1592247564.git.dcaratti@redhat.com>
-In-Reply-To: <cover.1592247564.git.dcaratti@redhat.com>
-References: <cover.1592247564.git.dcaratti@redhat.com>
+        id S1728495AbgFOTa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 15:30:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728093AbgFOTa6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 15:30:58 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE955C061A0E
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 12:30:57 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id c12so10244931lfc.10
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 12:30:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SVG0R77GDADcbwul/NNZuZ7RQBEGHIOWp6UvdEZeJZA=;
+        b=u5+tSdMGq7ll4ev8vV7palhrjeMZ1muBog/qdTGcjz6qPxY/hi7VIgBsEkLEErFeeI
+         tRqHGyQuEf07y8VNDrqLq+VuKYWy888uMbNIEdzW8CUkZqSDfrQ0I1iQWzoOa7kTieLP
+         BknMCglE3PLODwobGG6Ug4HiaY6kU6SLXPYnaEs4jM2s3cb6UlGnAqSKkH2+gY74kbg0
+         hqvpv/BUlS+vne5i/PFVc/CYHF2Mv4vZGRytneVgna3pgUzT19vUrHi/Rkb+Au2hI66t
+         TStHfyR9Ur4DpogYcLW52eCy3ZkT6P3hnDW95k1UPgCKNsukJFr1SG8Vbzg2zjcXb7vh
+         p7SA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SVG0R77GDADcbwul/NNZuZ7RQBEGHIOWp6UvdEZeJZA=;
+        b=ALt8x6G3ec1AuDJOw/qME5iGedTupHniSsMoKj5fD9JRYPEt41RjBgt8gzwsi5k5Fd
+         CvBSYdUoerClOIdKgFdM7j/osXzdo6+pLg6EwB0wQFXHBb2GksmxaDpbN93bi2O+T3DX
+         77HWKrt2qoAZkY116AqA5OykNt7l03FjCFIUcKj5iQve0sFP7hRsi40R4OTL++rvIKda
+         +f3c6IthLjfkA3E+JC511uvwV0ZZz1Lyt7WEt6nbIGxgBG2JNAuS1VpdQ+21CIy/IQpn
+         v9IhmV8k92YYl/V1oJLIjaI1In30FhgaXLJX02DRh565uDepXYqSuPPAdFVpFqtWqCy0
+         I3SA==
+X-Gm-Message-State: AOAM530/LTVDxyfToJlQ81NusAxx0w6sqhr7oQ2mJlZOYad3sHK4Gt0D
+        8vOCnwoS5Xc9Ll7i4mQimDOzWJiGYcQ=
+X-Google-Smtp-Source: ABdhPJw6vX50gXi9856w337tYg5gb49EcqYmrGUiM7hN2YTjFRaVIJHSN3a/A7/SvTgaJsnDGTvYQg==
+X-Received: by 2002:a05:6512:328d:: with SMTP id p13mr4029029lfe.139.1592249455725;
+        Mon, 15 Jun 2020 12:30:55 -0700 (PDT)
+Received: from dau-pc-work.sunlink.ru ([87.244.6.228])
+        by smtp.googlemail.com with ESMTPSA id w15sm4729020lfl.51.2020.06.15.12.30.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Jun 2020 12:30:55 -0700 (PDT)
+From:   Anton Danilov <littlesmilingcloud@gmail.com>
+To:     netdev@vger.kernel.org, stephen@networkplumber.org
+Cc:     Anton Danilov <littlesmilingcloud@gmail.com>
+Subject: [PATCH iproute2] tc: qdisc: filter qdisc's by parent/handle specification
+Date:   Mon, 15 Jun 2020 22:29:28 +0300
+Message-Id: <20200615192928.6667-1-littlesmilingcloud@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-assigning a dummy value of 'clock_id' to avoid cancellation of the cycle
-timer before its initialization was a temporary solution, and we still
-need to handle the case where act_gate timer parameters are changed by
-commands like the following one:
+There wasn't a way to get a qdisc info by handle or parent, only full
+dump of qdisc's with following grep/sed usage.
 
- # tc action replace action gate <parameters>
+The 'qdisc get' command have been added.
 
-the fix consists in the following items:
+tc qdisc { show | get } [ dev STRING ] [ QDISC_ID ] [ invisible ]
+  QDISC_ID := { root | ingress | handle QHANDLE | parent CLASSID }
 
-1) remove the workaround assignment of 'clock_id', and init the list of
-   entries before the first error path after IDR atomic check/allocation
-2) validate 'clock_id' earlier: there is no need to do IDR atomic
-   check/allocation if we know that 'clock_id' is a bad value
-3) use a dedicated function, 'gate_setup_timer()', to ensure that the
-   timer is cancelled and re-initialized on action overwrite, and also
-   ensure we initialize the timer in the error path of tcf_gate_init()
+This change doesn't require any changes in the kernel.
 
-v2: avoid 'goto' in gate_setup_timer (thanks to Cong Wang)
-
-CC: Ivan Vecera <ivecera@redhat.com>
-Fixes: a01c245438c5 ("net/sched: fix a couple of splats in the error path of tfc_gate_init()")
-Fixes: a51c328df310 ("net: qos: introduce a gate control flow action")
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+Signed-off-by: Anton Danilov <littlesmilingcloud@gmail.com>
 ---
- net/sched/act_gate.c | 88 ++++++++++++++++++++++++++------------------
- 1 file changed, 53 insertions(+), 35 deletions(-)
+ man/man8/tc.8 |   8 +++-
+ tc/tc_qdisc.c | 109 +++++++++++++++++++++++++++++++++++---------------
+ 2 files changed, 82 insertions(+), 35 deletions(-)
 
-diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c
-index 6775ccf355b0..3c529a4bcca5 100644
---- a/net/sched/act_gate.c
-+++ b/net/sched/act_gate.c
-@@ -272,6 +272,27 @@ static int parse_gate_list(struct nlattr *list_attr,
- 	return err;
+diff --git a/man/man8/tc.8 b/man/man8/tc.8
+index e8e0cd0f..8753088f 100644
+--- a/man/man8/tc.8
++++ b/man/man8/tc.8
+@@ -77,9 +77,13 @@ tc \- show / manipulate traffic control settings
+ .B tc
+ .RI "[ " OPTIONS " ]"
+ .RI "[ " FORMAT " ]"
+-.B qdisc show [ dev
++.B qdisc { show | get } [ dev
+ \fIDEV\fR
+-.B ]
++.B ] [ root | ingress | handle
++\fIQHANDLE\fR
++.B | parent
++\fICLASSID\fR
++.B ] [ invisible ]
+ .P
+ .B tc
+ .RI "[ " OPTIONS " ]"
+diff --git a/tc/tc_qdisc.c b/tc/tc_qdisc.c
+index 181fe2f0..45b78462 100644
+--- a/tc/tc_qdisc.c
++++ b/tc/tc_qdisc.c
+@@ -35,11 +35,12 @@ static int usage(void)
+ 		"       [ ingress_block BLOCK_INDEX ] [ egress_block BLOCK_INDEX ]\n"
+ 		"       [ [ QDISC_KIND ] [ help | OPTIONS ] ]\n"
+ 		"\n"
+-		"       tc qdisc show [ dev STRING ] [ ingress | clsact ] [ invisible ]\n"
++		"       tc qdisc { show | get } [ dev STRING ] [ QDISC_ID ] [ invisible ]\n"
+ 		"Where:\n"
+ 		"QDISC_KIND := { [p|b]fifo | tbf | prio | cbq | red | etc. }\n"
+ 		"OPTIONS := ... try tc qdisc add <desired QDISC_KIND> help\n"
+-		"STAB_OPTIONS := ... try tc qdisc add stab help\n");
++		"STAB_OPTIONS := ... try tc qdisc add stab help\n"
++		"QDISC_ID := { root | ingress | handle QHANDLE | parent CLASSID }\n");
+ 	return -1;
  }
  
-+static void gate_setup_timer(struct tcf_gate *gact, u64 basetime,
-+			     enum tk_offsets tko, s32 clockid,
-+			     bool do_init)
-+{
-+	if (!do_init) {
-+		if (basetime == gact->param.tcfg_basetime &&
-+		    tko == gact->tk_offset &&
-+		    clockid == gact->param.tcfg_clockid)
-+			return;
-+
-+		spin_unlock_bh(&gact->tcf_lock);
-+		hrtimer_cancel(&gact->hitimer);
-+		spin_lock_bh(&gact->tcf_lock);
-+	}
-+	gact->param.tcfg_basetime = basetime;
-+	gact->param.tcfg_clockid = clockid;
-+	gact->tk_offset = tko;
-+	hrtimer_init(&gact->hitimer, clockid, HRTIMER_MODE_ABS_SOFT);
-+	gact->hitimer.function = gate_timer_func;
-+}
-+
- static int tcf_gate_init(struct net *net, struct nlattr *nla,
- 			 struct nlattr *est, struct tc_action **a,
- 			 int ovr, int bind, bool rtnl_held,
-@@ -303,6 +324,27 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
- 	if (!tb[TCA_GATE_PARMS])
- 		return -EINVAL;
+@@ -212,6 +213,8 @@ static int tc_qdisc_modify(int cmd, unsigned int flags, int argc, char **argv)
+ }
  
-+	if (tb[TCA_GATE_CLOCKID]) {
-+		clockid = nla_get_s32(tb[TCA_GATE_CLOCKID]);
-+		switch (clockid) {
-+		case CLOCK_REALTIME:
-+			tk_offset = TK_OFFS_REAL;
-+			break;
-+		case CLOCK_MONOTONIC:
-+			tk_offset = TK_OFFS_MAX;
-+			break;
-+		case CLOCK_BOOTTIME:
-+			tk_offset = TK_OFFS_BOOT;
-+			break;
-+		case CLOCK_TAI:
-+			tk_offset = TK_OFFS_TAI;
-+			break;
-+		default:
-+			NL_SET_ERR_MSG(extack, "Invalid 'clockid'");
-+			return -EINVAL;
-+		}
-+	}
-+
- 	parm = nla_data(tb[TCA_GATE_PARMS]);
- 	index = parm->index;
+ static int filter_ifindex;
++static __u32 filter_parent;
++static __u32 filter_handle;
  
-@@ -326,10 +368,6 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
- 		tcf_idr_release(*a, bind);
- 		return -EEXIST;
+ int print_qdisc(struct nlmsghdr *n, void *arg)
+ {
+@@ -235,6 +238,12 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
+ 	if (filter_ifindex && filter_ifindex != t->tcm_ifindex)
+ 		return 0;
+ 
++	if (filter_handle && filter_handle != t->tcm_handle)
++		return 0;
++
++	if (filter_parent && filter_parent != t->tcm_parent)
++		return 0;
++
+ 	parse_rtattr_flags(tb, TCA_MAX, TCA_RTA(t), len, NLA_F_NESTED);
+ 
+ 	if (tb[TCA_KIND] == NULL) {
+@@ -344,21 +353,68 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
+ 
+ static int tc_qdisc_list(int argc, char **argv)
+ {
+-	struct tcmsg t = { .tcm_family = AF_UNSPEC };
++	struct {
++		struct nlmsghdr n;
++		struct tcmsg t;
++		char buf[256];
++	} req = {
++		.n.nlmsg_type = RTM_GETQDISC,
++		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct tcmsg)),
++		.t.tcm_family = AF_UNSPEC,
++	};
++
+ 	char d[IFNAMSIZ] = {};
++	bool arg_error = false;
+ 	bool dump_invisible = false;
++	__u32 handle;
+ 
+-	while (argc > 0) {
++	while (argc > 0 && !arg_error) {
+ 		if (strcmp(*argv, "dev") == 0) {
+ 			NEXT_ARG();
+ 			strncpy(d, *argv, sizeof(d)-1);
++		} else if (strcmp(*argv, "root") == 0) {
++			if (filter_parent || filter_handle) {
++				fprintf(stderr, "only one of parent/handle/root/ingress can be specified\n");
++				arg_error = true;
++				break;
++			}
++			filter_parent = TC_H_ROOT;
+ 		} else if (strcmp(*argv, "ingress") == 0 ||
+ 			   strcmp(*argv, "clsact") == 0) {
+-			if (t.tcm_parent) {
+-				fprintf(stderr, "Duplicate parent ID\n");
+-				usage();
++			if (filter_parent || filter_handle) {
++				fprintf(stderr, "only one of parent/handle/root/ingress can be specified\n");
++				arg_error = true;
++				break;
++			}
++			filter_parent = TC_H_INGRESS;
++		} else if (matches(*argv, "parent") == 0) {
++			if (filter_parent || filter_handle) {
++				fprintf(stderr, "only one of parent/handle/root/ingress can be specified\n");
++				arg_error = true;
++				break;
++			}
++			NEXT_ARG();
++			if(get_tc_classid(&handle, *argv)) {
++				invarg("invalid parent ID", *argv);
++				arg_error = true;
++				break;
++			} else {
++				filter_parent = handle;
++			}
++		} else if (matches(*argv, "handle") == 0) {
++			if (filter_parent || filter_handle) {
++				fprintf(stderr, "only one of parent/handle/root/ingress can be specified\n");
++				arg_error = true;
++				break;
++			}
++			NEXT_ARG();
++			if(get_qdisc_handle(&handle, *argv)) {
++				invarg("invalid handle ID", *argv);
++				arg_error = true;
++				break;
++			} else {
++				filter_handle = handle;
+ 			}
+-			t.tcm_parent = TC_H_INGRESS;
+ 		} else if (matches(*argv, "help") == 0) {
+ 			usage();
+ 		} else if (strcmp(*argv, "invisible") == 0) {
+@@ -371,35 +427,26 @@ static int tc_qdisc_list(int argc, char **argv)
+ 		argc--; argv++;
  	}
--	if (ret == ACT_P_CREATED) {
--		to_gate(*a)->param.tcfg_clockid = -1;
--		INIT_LIST_HEAD(&(to_gate(*a)->param.entries));
--	}
  
- 	if (tb[TCA_GATE_PRIORITY])
- 		prio = nla_get_s32(tb[TCA_GATE_PRIORITY]);
-@@ -340,33 +378,14 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
- 	if (tb[TCA_GATE_FLAGS])
- 		gflags = nla_get_u32(tb[TCA_GATE_FLAGS]);
++	if (arg_error) {
++		/* argument error message should be already displayed above */
++		return -1;
++	}
++
+ 	ll_init_map(&rth);
  
--	if (tb[TCA_GATE_CLOCKID]) {
--		clockid = nla_get_s32(tb[TCA_GATE_CLOCKID]);
--		switch (clockid) {
--		case CLOCK_REALTIME:
--			tk_offset = TK_OFFS_REAL;
--			break;
--		case CLOCK_MONOTONIC:
--			tk_offset = TK_OFFS_MAX;
--			break;
--		case CLOCK_BOOTTIME:
--			tk_offset = TK_OFFS_BOOT;
--			break;
--		case CLOCK_TAI:
--			tk_offset = TK_OFFS_TAI;
--			break;
--		default:
--			NL_SET_ERR_MSG(extack, "Invalid 'clockid'");
--			goto release_idr;
+ 	if (d[0]) {
+-		t.tcm_ifindex = ll_name_to_index(d);
+-		if (!t.tcm_ifindex)
++		req.t.tcm_ifindex = ll_name_to_index(d);
++		if (!req.t.tcm_ifindex)
+ 			return -nodev(d);
+-		filter_ifindex = t.tcm_ifindex;
++		filter_ifindex = req.t.tcm_ifindex;
+ 	}
+ 
+ 	if (dump_invisible) {
+-		struct {
+-			struct nlmsghdr n;
+-			struct tcmsg t;
+-			char buf[256];
+-		} req = {
+-			.n.nlmsg_type = RTM_GETQDISC,
+-			.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct tcmsg)),
+-		};
+-
+-		req.t.tcm_family = AF_UNSPEC;
+-
+ 		addattr(&req.n, 256, TCA_DUMP_INVISIBLE);
+-		if (rtnl_dump_request_n(&rth, &req.n) < 0) {
+-			perror("Cannot send dump request");
+-			return 1;
 -		}
--	}
-+	gact = to_gate(*a);
-+	if (ret == ACT_P_CREATED)
-+		INIT_LIST_HEAD(&gact->param.entries);
++	}
  
- 	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
- 	if (err < 0)
- 		goto release_idr;
+-	} else if (rtnl_dump_request(&rth, RTM_GETQDISC, &t, sizeof(t)) < 0) {
+-		perror("Cannot send dump request");
++	if (rtnl_dump_request_n(&rth, &req.n) < 0) {
++		perror("Cannot send request");
+ 		return 1;
+ 	}
  
--	gact = to_gate(*a);
--
- 	spin_lock_bh(&gact->tcf_lock);
- 	p = &gact->param;
- 
-@@ -397,14 +416,10 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
- 		p->tcfg_cycletime_ext =
- 			nla_get_u64(tb[TCA_GATE_CYCLE_TIME_EXT]);
- 
-+	gate_setup_timer(gact, basetime, tk_offset, clockid,
-+			 ret == ACT_P_CREATED);
- 	p->tcfg_priority = prio;
--	p->tcfg_basetime = basetime;
--	p->tcfg_clockid = clockid;
- 	p->tcfg_flags = gflags;
--
--	gact->tk_offset = tk_offset;
--	hrtimer_init(&gact->hitimer, clockid, HRTIMER_MODE_ABS_SOFT);
--	gact->hitimer.function = gate_timer_func;
- 	gate_get_start_time(gact, &start);
- 
- 	gact->current_close_time = start;
-@@ -433,6 +448,11 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
- 	if (goto_ch)
- 		tcf_chain_put_by_act(goto_ch);
- release_idr:
-+	/* action is not in: hitimer can be inited without taking tcf_lock */
-+	if (ret == ACT_P_CREATED)
-+		gate_setup_timer(gact, gact->param.tcfg_basetime,
-+				 gact->tk_offset, gact->param.tcfg_clockid,
-+				 true);
- 	tcf_idr_release(*a, bind);
- 	return err;
- }
-@@ -443,9 +463,7 @@ static void tcf_gate_cleanup(struct tc_action *a)
- 	struct tcf_gate_params *p;
- 
- 	p = &gact->param;
--	if (p->tcfg_clockid != -1)
--		hrtimer_cancel(&gact->hitimer);
--
-+	hrtimer_cancel(&gact->hitimer);
- 	release_entry_list(&p->entries);
- }
- 
+@@ -427,12 +474,8 @@ int do_qdisc(int argc, char **argv)
+ 		return tc_qdisc_modify(RTM_NEWQDISC, NLM_F_REPLACE, argc-1, argv+1);
+ 	if (matches(*argv, "delete") == 0)
+ 		return tc_qdisc_modify(RTM_DELQDISC, 0,  argc-1, argv+1);
+-#if 0
+-	if (matches(*argv, "get") == 0)
+-		return tc_qdisc_get(RTM_GETQDISC, 0,  argc-1, argv+1);
+-#endif
+ 	if (matches(*argv, "list") == 0 || matches(*argv, "show") == 0
+-	    || matches(*argv, "lst") == 0)
++	    || matches(*argv, "lst") == 0 || matches(*argv, "get") == 0 )
+ 		return tc_qdisc_list(argc-1, argv+1);
+ 	if (matches(*argv, "help") == 0) {
+ 		usage();
 -- 
 2.26.2
 
