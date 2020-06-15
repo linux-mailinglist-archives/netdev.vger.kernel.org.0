@@ -2,103 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BC3D1F9C55
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D52211F9C5D
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:55:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730742AbgFOPw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 11:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50990 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728585AbgFOPw6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 11:52:58 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7AD8C061A0E
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:52:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=CJU1WBE7XqUEUojZeC3eWFb2noipA7E6MzEdTAZ8cpc=; b=s/qrrBWvem745zhwXKoFaX7xt2
-        uJOxCogSKudKA/4cCulBwdVin5+JpMAEF5j/sx4Wg+hlcNXUzu3XLjGdX+qRBklHXjOeH+FME2nQ6
-        Hr6tgQWbPBi6JzFmuYA8NMhPALXBVEBG0yA32LV3bKOrTIoBT/KSMAwqDuKjE01KGmcbJ9loOC3m7
-        CRmw2LpgZAWabRssoYdFip0M98EAIvp8ELPCV5ia1VtmOMZ5vYPxV3PEIiO9boWstzlDZJIFmBSom
-        xUfYBe8D1DbVCIjgHPW3M7UE+1apVuC++qLf0d0I4QuRgospB0HB7ys6WeEBTa0brctOcB0bhBGs9
-        gsXAviRw==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jkrPt-0000mE-PN; Mon, 15 Jun 2020 15:52:57 +0000
-Subject: Re: [PATCH 1/5] Huawei BMA: Adding Huawei BMA driver: host_edma_drv
-To:     yunaixin03610@163.com, netdev@vger.kernel.org
-Cc:     yunaixin <yunaixin@huawei.com>
-References: <20200615145906.1013-1-yunaixin03610@163.com>
- <20200615145906.1013-2-yunaixin03610@163.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <0aaa651f-2b9e-074c-e815-75b7995376f7@infradead.org>
-Date:   Mon, 15 Jun 2020 08:52:56 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1729949AbgFOPzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 11:55:17 -0400
+Received: from mga09.intel.com ([134.134.136.24]:3486 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727785AbgFOPzR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jun 2020 11:55:17 -0400
+IronPort-SDR: 1ZW89ZvsqdIUrU029kUjyEtH+3uD3vNy/7zQ2HAGQXF4PvKAF4XQrnf0imrDC5szXPi3JtHZuq
+ I4lvfZhxPX4w==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2020 08:55:16 -0700
+IronPort-SDR: seU07Fxs5k/IX3atuuSktgojZOVWQgHbFR/GdGcRBkFl5WnrbFlQTuxAqM2IWFI0KR+oqClULQ
+ 4m5mgFHq18uw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,515,1583222400"; 
+   d="scan'208";a="382582849"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.163])
+  by fmsmga001.fm.intel.com with SMTP; 15 Jun 2020 08:55:13 -0700
+Received: by lahna (sSMTP sendmail emulation); Mon, 15 Jun 2020 18:55:12 +0300
+Date:   Mon, 15 Jun 2020 18:55:12 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Yehezkel Bernat <yehezkelshb@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Michael Jamet <michael.jamet@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>, netdev@vger.kernel.org
+Subject: Re: [PATCH 4/4] thunderbolt: Get rid of E2E workaround
+Message-ID: <20200615155512.GS247495@lahna.fi.intel.com>
+References: <20200615130139.83854-1-mika.westerberg@linux.intel.com>
+ <20200615130139.83854-5-mika.westerberg@linux.intel.com>
+ <CA+CmpXtpAaY+zKG-ofPNYHTChTiDtwCAnd8uYQSqyJ8hLE891Q@mail.gmail.com>
+ <20200615135112.GA1402792@kroah.com>
+ <CA+CmpXst-5i4L5nW-Z66ZmxuLhdihjeNkHU1JdzTwow1rNH7Ng@mail.gmail.com>
+ <20200615142247.GN247495@lahna.fi.intel.com>
+ <CA+CmpXuN+su50RYHvW4S-twqiUjScnqM5jvG4ipEvWORyKfd1g@mail.gmail.com>
+ <20200615153249.GR247495@lahna.fi.intel.com>
+ <CA+CmpXtRZ4JMe2V2-kWiYWR0pnnzLQMbXQESni6ne8eFeDCCXg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200615145906.1013-2-yunaixin03610@163.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+CmpXtRZ4JMe2V2-kWiYWR0pnnzLQMbXQESni6ne8eFeDCCXg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/15/20 7:59 AM, yunaixin03610@163.com wrote:
-> diff --git a/drivers/net/ethernet/huawei/bma/Kconfig b/drivers/net/ethernet/huawei/bma/Kconfig
-> new file mode 100644
-> index 000000000000..1a92c1dd83f3
-> --- /dev/null
-> +++ b/drivers/net/ethernet/huawei/bma/Kconfig
-> @@ -0,0 +1 @@
-> +source "drivers/net/ethernet/huawei/bma/edma_drv/Kconfig"
-> \ No newline at end of file
+On Mon, Jun 15, 2020 at 06:41:32PM +0300, Yehezkel Bernat wrote:
+> > I think you are talking about the "prtstns" property in the network
+> > driver. There we only set TBNET_MATCH_FRAGS_ID (bit 1). This is the
+> > thing that get exposed to the other side of the connection and we never
+> > announced support for full E2E.
+> 
+> 
+> Ah, yes, this one, Thanks!
+> As Windows driver uses it for flagging full-E2E, and we completely drop E2E
+> support here, it may worth to mention there that this is what bit 2 is used in
+> Windows so any reuse should consider the possible compatibility issue.
 
-Add newline.
+Note we only drop dead code in this patch. It is that workaround for
+Falcon Ridge controller we actually never used.
 
-> diff --git a/drivers/net/ethernet/huawei/bma/Makefile b/drivers/net/ethernet/huawei/bma/Makefile
-> new file mode 100644
-> index 000000000000..8f589f7986d6
-> --- /dev/null
-> +++ b/drivers/net/ethernet/huawei/bma/Makefile
-> @@ -0,0 +1,5 @@
-> +# 
-> +# Makefile for BMA software driver
-> +# 
-> +
-> +obj-$(CONFIG_BMA) += edma_drv/
-> \ No newline at end of file
+I can add a comment to the network driver about the full E2E support
+flag as a separate patch if you think it is useful.
 
-Add newline.
-
-> diff --git a/drivers/net/ethernet/huawei/bma/edma_drv/Kconfig b/drivers/net/ethernet/huawei/bma/edma_drv/Kconfig
-> new file mode 100644
-> index 000000000000..97829c5487c2
-> --- /dev/null
-> +++ b/drivers/net/ethernet/huawei/bma/edma_drv/Kconfig
-> @@ -0,0 +1,11 @@
-> +#
-> +# Huawei BMA software driver configuration
-> +#
-> +
-> +config BMA
-> +	tristate "Huawei BMA Software Communication Driver"
-> +
-> +	---help---
-
-	help
-
-> +	  This driver supports Huawei BMA Software. It is used 
-> +	  to communication between Huawei BMA and BMC software.
-
-	  to communicate
-
-> +
-
-
--- 
-~Randy
-
+The network protocol will be public soon I guess because USB4 spec
+refers to "USB4 Inter-Domain Specification, Revision 1.0, [to be
+published] – (USB4 Inter-Domain Specification)" so I would expect it to
+be explained there as well.
