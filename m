@@ -2,124 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 536B91F924A
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 10:54:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A5051F9255
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 10:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729201AbgFOIyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 04:54:35 -0400
-Received: from mout.web.de ([212.227.15.4]:51897 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728522AbgFOIyf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jun 2020 04:54:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1592211249;
-        bh=8kiclZYo4jXkElPbwv3WBlLcVhLVTrcSqSXXxlnioVo=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=o5aA/uMf2NYJEv/kKk9zdbOPoHDCrE5AVg0Rq+fgjZIM1B07YQP9IumaMBWDLX8kX
-         0oaaTYPQ8teAgfk7U1ZL/NgBoBgUxZ5LsX/JT4Nn40xT8lUDukTNtEss8uNtJazhl/
-         k9nlmYDD/z2v7Z5g2A/gcSZY39UpRqO3ZZQUM+G4=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.49.107.236]) by smtp.web.de (mrweb001
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MJCAc-1jmPZj1sDK-002oE8; Mon, 15
- Jun 2020 10:54:09 +0200
-Subject: Re: [PATCH v3 2/2] perf tools: Fix potential memory leaks in perf
- events parser
-To:     Chen Wandun <chenwandun@huawei.com>,
-        Cheng Jian <cj.chengjian@huawei.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-References: <20200615013614.8646-1-chenwandun@huawei.com>
- <20200615013614.8646-3-chenwandun@huawei.com>
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <f33f13bd-d337-bcb0-5aca-4b7900be9909@web.de>
-Date:   Mon, 15 Jun 2020 10:54:08 +0200
+        id S1729272AbgFOIz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 04:55:56 -0400
+Received: from mail-bn8nam12on2052.outbound.protection.outlook.com ([40.107.237.52]:6178
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728522AbgFOIzz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jun 2020 04:55:55 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Zt8BREdVhwAeVzCmv5MwlFTumq5+sMJRIdPzRHSiulQhPoSfYh8LBwa3ZR9qz+GJp11fFQe1fHaa56HepVGYV+k1ExMnZ7BoUS4LLGA+lw3+Vpc6sKo+aaLJc4UZ1NDqksuFLJzD1QmA8IMcn2CIbl4/gqOks7knZWUruobEaedAWvHe1n5+puIkG30ljhH4rRi03yYkfrfPav/UsNsWmRBOWO1H5/Bv4iHJtqhILmSwqolsvU9pzYWpuk0EMK9B6jA3rznvgxW5XMRt/Ha/TxCc0ktBkn595W4efsEAvguEJkzv3wMp/3mj4HFNmvdfWY7yT58Kh5fpSqd+PsD+nw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X3PzevvFwGCx8aQpkl021dctWbE4retiBmRf7+rmtDg=;
+ b=QsVb8RlVzxKELFVI1IHTTEQ/fkCCMId/0KZ8RcH2ZxBFhCB9q3gUzRZPAwW1Q7dg7ysRIcTRyC+huLzvTxTsZ2bc6pqG75z5vJlQzpkETSJUbsrZhQ7e/w9ao7QQhziG/fHLgBxPZp9ca33584S3Thrm6A5x+x6FzX4W1fxR2jgiOcXF9mnEeOF5V9KfwbJbUK3vOacUUO8ru3C3tlIcRTgc7onYjYBgVmnLpdIs9fjPhLX5IoQnHXX8zeatl/etlVCQ6pJKP3CZi+BCoZeQcUziBqQRMo/CbXQAI/SbddWqyZ5vVwiZeJDAhI0d6CKxhtgORqxhYlXRrytJB0bwTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=canonical.com smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X3PzevvFwGCx8aQpkl021dctWbE4retiBmRf7+rmtDg=;
+ b=f6i/VNPOhwh6/DM2+j1ARnA0m2eOPlUnsQNwdFo6JKEpoWHYWQAzE1aCCwMSgXGpE/V/y/0htfnDeMB16Wug67pG4IJ45J5hSR/pCDNlMb2im8uP9PJSRArLhxBl/9vdSWyebDyw9B4DFXic7sNfP1VstSqUYZfCvr7CxFZlM64=
+Received: from SN2PR01CA0036.prod.exchangelabs.com (2603:10b6:804:2::46) by
+ DM5PR02MB2316.namprd02.prod.outlook.com (2603:10b6:3:53::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3088.24; Mon, 15 Jun 2020 08:55:52 +0000
+Received: from SN1NAM02FT035.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:804:2:cafe::6) by SN2PR01CA0036.outlook.office365.com
+ (2603:10b6:804:2::46) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3088.19 via Frontend
+ Transport; Mon, 15 Jun 2020 08:55:52 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; canonical.com; dkim=none (message not signed)
+ header.d=none;canonical.com; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ SN1NAM02FT035.mail.protection.outlook.com (10.152.72.145) with Microsoft SMTP
+ Server id 15.20.3088.18 via Frontend Transport; Mon, 15 Jun 2020 08:55:52
+ +0000
+Received: from [149.199.38.66] (port=60206 helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.90)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1jkktG-0005zI-7P; Mon, 15 Jun 2020 01:54:50 -0700
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1jkkuF-0002Zh-NJ; Mon, 15 Jun 2020 01:55:51 -0700
+Received: from xsj-pvapsmtp01 (xsj-smtp1.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp2.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id 05F8tjFL030054;
+        Mon, 15 Jun 2020 01:55:45 -0700
+Received: from [172.30.17.109]
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <michals@xilinx.com>)
+        id 1jkku9-0002Y4-HZ; Mon, 15 Jun 2020 01:55:45 -0700
+Subject: Re: [PATCH] net: axienet: fix spelling mistake in comment "Exteneded"
+ -> "extended"
+To:     Colin King <colin.king@canonical.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200615082911.7252-1-colin.king@canonical.com>
+From:   Michal Simek <michal.simek@xilinx.com>
+Message-ID: <1e0ddd7d-5fd5-ec2a-2cda-ab3924de4762@xilinx.com>
+Date:   Mon, 15 Jun 2020 10:55:42 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200615013614.8646-3-chenwandun@huawei.com>
+In-Reply-To: <20200615082911.7252-1-colin.king@canonical.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:4W0dlm3kcJa7QOo0V2Dwx2C5qa0VPLn3YC2AfQkVkY3sdH6Efoi
- dYmRLng9APZhTry/m1YuZXehYaGNjBpSdrQ804HsXz419fD/L3vCWmEQ7YZkumO7JnUnT+Y
- KmEUvfyg8ykM9lS7LpPIbMZ6zbE5FlxZx5e0vo9SHjTVL25XDw3tmYfgZg6lB0JVnPvDCfW
- r4Hnot9yTia1jHMj9Rg3g==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:T9AwP/HRY4A=:0HOarJHIKjXFsZwOTz2qkE
- BHhML7i/2erQ/Gj7NODZhAhRMpkfM4YUEWuJuAD5zUPUZ+WClfIR00Aj3KPKyFSbwOCzAqem0
- BQyucPIlDUfVaAE6eGngv5M3Y6Ed9ZRXC1Jp1aBLwFgkBe+LMBTJBtQpSGcS1pzQ1KLqIU/0h
- VtAQBhNLoMgBprFKZHCbRV+nRV3WfoZ1aVFUTy0TWUs34lQA0Aq+TAQ5XpxcW6+JQ/oD0aeTy
- YozMHxLhq8ziJNmt5Hz9EHQIl5L8xsurZYFgOhJwIhhslBs5uXwLAjoq+writpufvQqg0FPBd
- NtBY+uUTAgBDNnWz5Yn5/hMvxbrEbtWMk8jv1ZLaJY4eC08weGcjtxXswa5gJ/D+oNF0z57Dq
- n0OKSYHYSFd19Hl7C6NeRb5AdKjYQtF3avIfPrHIhCj/r6HSxcCQ2opMp27uK+pCJTH/zjG3F
- 2AvR3dPFTlD5PL6QiRHzee1OA1ve04hdI8jr0blP4IZ5P20bfdsdur4h80BRqXCQq1tS78h9E
- olrhubuRtIGoymZEgjC5oZd+HFEcUDdyvb1cy6RVqqzfkJUVh+Svif3Ti+WnVBHxxAnV7whDe
- 9S62D9erlAPOiWOkMF4dX54G8rwpBrRGcQJZajF6d26gmysz3PKXjKdn3XtkOxZThEmMaC/4z
- OtDD6sWwPWFXsOsbPmls1qzB2E3zEAmkdpWMoC5ZLCXi/uanAeEYKHH5Pvd7V8N8Boruptj7C
- rQ1P3/mHu8zBrZze65NAo4X1Za2A0xxd0IjOFH+9KLqBT02G9v5kJ4o9wJmyUbgDPWayrfnI6
- Gaunm/nhXnZ3a+a9vYAnAJ9JfCCcg+0xSutfovQz8Ut1mWtWCF9IfK+bwKKlK4CK8jVZaiG1T
- RIZMKvwzGHcpnLfW/UoTb+73FMGR2odf+YUWoa4eZ4/9NCq4db1pH8pg3NW2REKezFos2oQCn
- I3Bxd8gPmnJcuEvhFqySkAW6tlx+SX90qEfhjiWaxJ7IQo6qh3yq0WyZEtP/6i0BWfmXx0JOd
- Ejc5J1PmchS/tkIfPVl5uV0JZ/jkoO6myklOFBC8BE1gWpyBSztymju7J/l2tUEzRt+BUO6z/
- ePes0jyNjM8LtwcbVbQs4haNB5famFjyJUmYJ8qGnGqO3pPv3/MFtsK9xuDEdZiQqpYu1IH4Q
- EQun6AWt2z9zyTsB/7vByI+Pshra72lOkdGKEQ0bsnMcjEF6rtIDzK9j0wDcnxphFSzJ/VQ/m
- jKH2fQhZ+kLHieIZT
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapsmtpgw01;PTR:unknown-60-83.xilinx.com;CAT:NONE;SFTY:;SFS:(396003)(346002)(136003)(376002)(39860400002)(46966005)(47076004)(2906002)(31696002)(31686004)(336012)(426003)(316002)(186003)(26005)(81166007)(9786002)(82310400002)(8676002)(2616005)(8936002)(83380400001)(356005)(82740400003)(4326008)(6666004)(478600001)(36756003)(70206006)(70586007)(110136005)(5660300002)(44832011)(43740500002);DIR:OUT;SFP:1101;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8618f19c-3bc3-4668-e4b7-08d81109e82e
+X-MS-TrafficTypeDiagnostic: DM5PR02MB2316:
+X-Microsoft-Antispam-PRVS: <DM5PR02MB23168C7C2B98E156B1642CE3C69C0@DM5PR02MB2316.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
+X-Forefront-PRVS: 04359FAD81
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DQgRVmHKucv/9MWwRADJvJzOJpWIBOT6mu6Ebt8zLDHxvEIljZNiPVTshe5QSIwfCbbMZomGOsxkCe0USJn2b1SAXsbeNvPQsVZ6XY+8FSrPDO3ih/8os88jXf5moiS2NkOOohLzIH0rYFmOOZpVxax5neh9DneTmFPySBVT26LCPEPQzGHR9TD6fSDb3JnMQ4pQXgiAYd+ERSLhi1Jabfn3a89IrKW+TcgKTYO8wNg/mkdRawHJSL/znRm3qtPj3N9DoasM6U6Us/PGl1KDuAqOU/C61duTKAUN3xRv9UizN2qkz5bme6rjW5QYjGEIhBWZzP9HDA//c5PeTgo4ZqH3AFrqc8xJWK3oq7TC6+JTQFwgv8W4BrHdBUn6oRH85UuFgeQ++Bq1Bg7tjeKkPeCckpETDWzJWTRn09seoXbTjFwG+aOYWOzVsZMXonEq
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2020 08:55:52.0590
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8618f19c-3bc3-4668-e4b7-08d81109e82e
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2316
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Fix potential memory leak. Function new_term may return error, so
-> it is need to free memory when the return value is negative.
+On 15. 06. 20 10:29, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> There is a spelling mistake in a comment. Fix it.
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>  drivers/net/ethernet/xilinx/xilinx_axienet.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> index fbaf3c987d9c..f34c7903ff52 100644
+> --- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> @@ -186,7 +186,7 @@
+>  #define XAE_RAF_TXVSTRPMODE_MASK	0x00000180 /* Tx VLAN STRIP mode */
+>  #define XAE_RAF_RXVSTRPMODE_MASK	0x00000600 /* Rx VLAN STRIP mode */
+>  #define XAE_RAF_NEWFNCENBL_MASK		0x00000800 /* New function mode */
+> -/* Exteneded Multicast Filtering mode */
+> +/* Extended Multicast Filtering mode */
+>  #define XAE_RAF_EMULTIFLTRENBL_MASK	0x00001000
+>  #define XAE_RAF_STATSRST_MASK		0x00002000 /* Stats. Counter Reset */
+>  #define XAE_RAF_RXBADFRMEN_MASK		0x00004000 /* Recv Bad Frame Enable */
+> 
 
-I hope that a typo will be avoided for the final commit message.
-Would you find any other description variant more pleasing?
+Acked-by: Michal Simek <michal.simek@xilinx.com>
 
-Regards,
-Markus
+Thanks,
+Michal
