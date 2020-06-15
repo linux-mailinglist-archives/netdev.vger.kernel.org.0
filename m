@@ -2,242 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C9221F9C1F
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:42:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BFE41F9C1D
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730447AbgFOPmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 11:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
+        id S1730356AbgFOPlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 11:41:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727785AbgFOPmH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 11:42:07 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D4BC061A0E;
-        Mon, 15 Jun 2020 08:42:06 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id b82so48819wmb.1;
-        Mon, 15 Jun 2020 08:42:06 -0700 (PDT)
+        with ESMTP id S1727785AbgFOPlu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 11:41:50 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5049BC061A0E;
+        Mon, 15 Jun 2020 08:41:50 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id o26so11867414edq.0;
+        Mon, 15 Jun 2020 08:41:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pAh7hXPGRHBjo/PFoe0HlRkn4NDf5lJ5Fqfadp23JQo=;
-        b=p/CG2HSHM2Vxe4vLz6JvWu6mEtKmKXkCq0B/x44m6da1I5ZrtRakC7zNayfsgGYJ/h
-         J9K9RIVonQf8JOUye3BZnWM/upjEOjsCSyqOXL3shw+IS+PA+F4lgT8W2di/wMeCfdPR
-         6kD1XbdFuhEGPJStP0FpwxNzl0s4RyRrL1WC+HW8Bj3czn4ylJbX4bSd6qY9M6+gM2kw
-         lUNFacrFoHUG2dyOU+mKPFy5sLWYGLMWuwRChR7i15D1FHfFjGbR8a09MOQVLtttCR50
-         boup2IRiyzVOX1fBVxonOW06uVJxvKp5Fuv7OozW3vRZnpqy6/hWor009cSJ6Xdw6NNw
-         K1ng==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=F8hJ5rGc1yt9gJcBhxVHwGATuGB6QrIWDgNmuWtUHcU=;
+        b=NiK0ob6PcHupDGlSao3KXhlaO2eD0vY3jWkQCXapgfyVDtvdximJgOO1FpxDJO2yj7
+         x7YI20+B1tW9KwL/XsujWeVvnWgpOIf0jCOED+uNIHBZVBZKqvrmw101BBlzPsRZ/R4L
+         53zPc8DYRCG/sXF6WD+wLN6e7jJ7fRcYlEQFK/EXvEHqFCjiCgHavUgz3wHTvIbCpONH
+         n1ROcCc70TOrvefzt7V8x0+8LvFEtat73HOjm50fTfbi9Qvx57CDer9jHiM8KLKzGgYL
+         Fww7AmrgaqJilm5qHQHzPmdrcPtYB9g7WbQTMSZSNTRF2ekskYu3W48uvoyggBh3Z8yu
+         aL5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pAh7hXPGRHBjo/PFoe0HlRkn4NDf5lJ5Fqfadp23JQo=;
-        b=p6oTCIZ+C1sS6dRawb8dL8p9hqyBSsmdfpsqbueg/NoR0Wewl3M+Pk1ss1Y3aFuuPp
-         GSGK2/ifagn27bEurmoNq5+uhyzHrWg1lvIfiXIa+PpdI2di2h/rvkE9K9SSS+aVG0hH
-         wM2loJhfqEs9OwIJ/MsqntcDe8/Qa2R7uHV9MTNQ/FMj7kjoXBlwPfvKzNMCHEB25bac
-         wdrbehnUCQnSH2E/q1HDJfUq15/Y8iFKFpwjcM8ZXOTjQAw/Zs8y4N/SEnTqu844/1Gn
-         83ZaZDTVkR0E32C8Z1D7K8imFiYd86VtVmX0Q56NFbTLahY+y2x2FDw+xAch7lFVRBfJ
-         AIwg==
-X-Gm-Message-State: AOAM533LQiEqZ4QEOs/mpZgjxkkUxuiBUeZbc8ASxk+pcM1qgIDqcymW
-        w/kM/OvbB7VUcAbIgX+imew=
-X-Google-Smtp-Source: ABdhPJzdrmN0ipGP+6b4MmwTothhPefBA8JJKwdk/Nlz51fDYgqjXmyqB/K/wK7SJHUOMShdfkoRag==
-X-Received: by 2002:a1c:dd44:: with SMTP id u65mr14738029wmg.180.1592235725422;
-        Mon, 15 Jun 2020 08:42:05 -0700 (PDT)
-Received: from unassigned-hostname.unassigned-domain (lputeaux-656-1-137-224.w193-252.abo.wanadoo.fr. [193.252.198.224])
-        by smtp.gmail.com with ESMTPSA id r5sm25301554wrq.0.2020.06.15.08.42.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Jun 2020 08:42:04 -0700 (PDT)
-From:   Era Mayflower <mayflowerera@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Era Mayflower <mayflowerera@gmail.com>
-Subject: [PATCH] macsec: Support 32bit PN netlink attribute for XPN links
-Date:   Tue, 16 Jun 2020 00:41:14 +0900
-Message-Id: <20200615154114.13184-1-mayflowerera@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=F8hJ5rGc1yt9gJcBhxVHwGATuGB6QrIWDgNmuWtUHcU=;
+        b=KR3eJkTPOPhedFvfA5Y6yV3O8l1fikrmBCumpf/d2APYCd7oivbjYSOe8EzbR3XAeu
+         daLoxjMCOxnFNbWZJX9rA146V7io5RfPkx0zcjJGTlmPG4r+Io7plOpIVAMoiUu9+0xA
+         fyTxG3+1ndG6YQ3zmyxKwa6TN0XLVhayx7c4aOLmqz7Z3tdvqtR2/SEybugOKFpLRiZX
+         40vJAC5ZDK9jyKvdB7l4UT5PwjuXLZEt+PKZtVn/ImSKzVXGF3AFSPorCHMKXhV7jzYg
+         RtApZzzw5kZa7/Y7kUHA5d+l9KmeE4+YELP3s2y+EwJnQ9Yk6RUvzQjY0X+x5Dej5l0y
+         XKMA==
+X-Gm-Message-State: AOAM531PpDOz+zDJcX5Psjel+22vi9I55uSxYUK6gXQN0WA02bOfmRhT
+        +BidtR2PP6ZkE2+P5fDkztSoDJbey4ekD5KsgV4=
+X-Google-Smtp-Source: ABdhPJxibbRCNd/tvyo6m20dcs2/YXa4Sxtc2dYQac2u97kF49P35ry4Ek9AMY/wWQ/IzxM8u6N8WLt8uyZVj293HgY=
+X-Received: by 2002:aa7:d98e:: with SMTP id u14mr24958056eds.247.1592235708904;
+ Mon, 15 Jun 2020 08:41:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200615130139.83854-1-mika.westerberg@linux.intel.com>
+ <20200615130139.83854-5-mika.westerberg@linux.intel.com> <CA+CmpXtpAaY+zKG-ofPNYHTChTiDtwCAnd8uYQSqyJ8hLE891Q@mail.gmail.com>
+ <20200615135112.GA1402792@kroah.com> <CA+CmpXst-5i4L5nW-Z66ZmxuLhdihjeNkHU1JdzTwow1rNH7Ng@mail.gmail.com>
+ <20200615142247.GN247495@lahna.fi.intel.com> <CA+CmpXuN+su50RYHvW4S-twqiUjScnqM5jvG4ipEvWORyKfd1g@mail.gmail.com>
+ <20200615153249.GR247495@lahna.fi.intel.com>
+In-Reply-To: <20200615153249.GR247495@lahna.fi.intel.com>
+From:   Yehezkel Bernat <yehezkelshb@gmail.com>
+Date:   Mon, 15 Jun 2020 18:41:32 +0300
+Message-ID: <CA+CmpXtRZ4JMe2V2-kWiYWR0pnnzLQMbXQESni6ne8eFeDCCXg@mail.gmail.com>
+Subject: Re: [PATCH 4/4] thunderbolt: Get rid of E2E workaround
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Michael Jamet <michael.jamet@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow using 32bit netlink attribute for packet number when creating or
-updating SA in an XPN link.
-Now utilities like iproute2's `ip` do not have to know the link type
-(XPN or not) when setting the packet number field of an SA.
+On Mon, Jun 15, 2020 at 6:32 PM Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
+>
+> On Mon, Jun 15, 2020 at 06:15:47PM +0300, Yehezkel Bernat wrote:
+> > On Mon, Jun 15, 2020 at 5:22 PM Mika Westerberg
+> > <mika.westerberg@linux.intel.com> wrote:
+> > >
+> > > On Mon, Jun 15, 2020 at 05:18:38PM +0300, Yehezkel Bernat wrote:
+> > > > On Mon, Jun 15, 2020 at 4:51 PM Greg Kroah-Hartman
+> > > > <gregkh@linuxfoundation.org> wrote:
+> > > > >
+> > > > > On Mon, Jun 15, 2020 at 04:45:22PM +0300, Yehezkel Bernat wrote:
+> > > > > > On Mon, Jun 15, 2020 at 4:02 PM Mika Westerberg
+> > > > > > <mika.westerberg@linux.intel.com> wrote:
+> > > > > > >
+> > > > > > > diff --git a/include/linux/thunderbolt.h b/include/linux/thunderbolt.h
+> > > > > > > index ff397c0d5c07..5db2b11ab085 100644
+> > > > > > > --- a/include/linux/thunderbolt.h
+> > > > > > > +++ b/include/linux/thunderbolt.h
+> > > > > > > @@ -504,8 +504,6 @@ struct tb_ring {
+> > > > > > >  #define RING_FLAG_NO_SUSPEND   BIT(0)
+> > > > > > >  /* Configure the ring to be in frame mode */
+> > > > > > >  #define RING_FLAG_FRAME                BIT(1)
+> > > > > > > -/* Enable end-to-end flow control */
+> > > > > > > -#define RING_FLAG_E2E          BIT(2)
+> > > > > > >
+> > > > > >
+> > > > > > Isn't it better to keep it (or mark it as reserved) so it'll not cause
+> > > > > > compatibility issues with older versions of the driver or with Windows?
+> > > > >
+> > > > >
+> > > > > How can you have "older versions of the driver"?  All drivers are in the
+> > > > > kernel tree at the same time, you can't ever mix-and-match drivers and
+> > > > > kernels.
+> > > > >
+> > > > > And how does Windows come into play here?
+> > > > >
+> > > >
+> > > > As much as I remember, this flag is sent as part of creating the
+> > > > interdomain connection.
+> > > > If we reuse this bit to something else, and the other host runs an
+> > > > older kernel or
+> > > > Windows, this seems to be an issue.
+> > > > But maybe I don't remember it correctly.
+> > >
+> > > We never send this flag anywhere. At the moment we do not announce
+> > > support the "full E2E" in the network driver. Basically this is dead
+> > > code what we remove.
+> >
+> > OK, maybe we never sent it, but Windows driver does send such a flag somewhere.
+>
+> It does yes but that is optional and we chose not to support it in
+> Linux TBT network driver.
+>
+> > This is the only way both sides can know both of them support it and that they
+> > should start using it. I'd prefer at least leaving a comment here that mentions
+> > this, so if someone goes to add flags in the future, they will know to
+> > take it into consideration.
+>
+> This flag here (RING_FLAG_E2E) is not exposed anywhere outside of
+> thunderbolt driver.
+>
+> I think you are talking about the "prtstns" property in the network
+> driver. There we only set TBNET_MATCH_FRAGS_ID (bit 1). This is the
+> thing that get exposed to the other side of the connection and we never
+> announced support for full E2E.
 
-Signed-off-by: Era Mayflower <mayflowerera@gmail.com>
----
- drivers/net/macsec.c | 95 ++++++++++++++++++++++++++++++++------------
- 1 file changed, 69 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index e56547bfdac9..7d3c3a38ea81 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1691,8 +1691,7 @@ static bool validate_add_rxsa(struct nlattr **attrs)
- 	if (nla_get_u8(attrs[MACSEC_SA_ATTR_AN]) >= MACSEC_NUM_AN)
- 		return false;
- 
--	if (attrs[MACSEC_SA_ATTR_PN] &&
--	    *(u64 *)nla_data(attrs[MACSEC_SA_ATTR_PN]) == 0)
-+	if (attrs[MACSEC_SA_ATTR_PN] && nla_get_u64(attrs[MACSEC_SA_ATTR_PN]) == 0)
- 		return false;
- 
- 	if (attrs[MACSEC_SA_ATTR_ACTIVE]) {
-@@ -1714,7 +1713,6 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	struct macsec_rx_sc *rx_sc;
- 	struct macsec_rx_sa *rx_sa;
- 	unsigned char assoc_num;
--	int pn_len;
- 	struct nlattr *tb_rxsc[MACSEC_RXSC_ATTR_MAX + 1];
- 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
- 	int err;
-@@ -1747,12 +1745,26 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 		return -EINVAL;
- 	}
- 
--	pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
--	if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
--		pr_notice("macsec: nl: add_rxsa: bad pn length: %d != %d\n",
--			  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
--		rtnl_unlock();
--		return -EINVAL;
-+	if (tb_sa[MACSEC_SA_ATTR_PN]) {
-+		switch (nla_len(tb_sa[MACSEC_SA_ATTR_PN])) {
-+		case MACSEC_DEFAULT_PN_LEN:
-+			break;
-+
-+		case MACSEC_XPN_PN_LEN:
-+			if (secy->xpn)
-+				break;
-+
-+			pr_notice("macsec: nl: add_rxsa: pn length on non-xpn links must be %d\n",
-+				  MACSEC_DEFAULT_PN_LEN);
-+			rtnl_unlock();
-+			return -EINVAL;
-+
-+		default:
-+			pr_notice("macsec: nl: add_rxsa: pn length must be %d or %d\n",
-+				  MACSEC_DEFAULT_PN_LEN, MACSEC_XPN_PN_LEN);
-+			rtnl_unlock();
-+			return -EINVAL;
-+		}
- 	}
- 
- 	if (secy->xpn) {
-@@ -1934,7 +1946,7 @@ static bool validate_add_txsa(struct nlattr **attrs)
- 	if (nla_get_u8(attrs[MACSEC_SA_ATTR_AN]) >= MACSEC_NUM_AN)
- 		return false;
- 
--	if (nla_get_u32(attrs[MACSEC_SA_ATTR_PN]) == 0)
-+	if (nla_get_u64(attrs[MACSEC_SA_ATTR_PN]) == 0)
- 		return false;
- 
- 	if (attrs[MACSEC_SA_ATTR_ACTIVE]) {
-@@ -1956,7 +1968,6 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 	struct macsec_tx_sc *tx_sc;
- 	struct macsec_tx_sa *tx_sa;
- 	unsigned char assoc_num;
--	int pn_len;
- 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
- 	bool was_operational;
- 	int err;
-@@ -1989,10 +2000,22 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 		return -EINVAL;
- 	}
- 
--	pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
--	if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
--		pr_notice("macsec: nl: add_txsa: bad pn length: %d != %d\n",
--			  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
-+	switch (nla_len(tb_sa[MACSEC_SA_ATTR_PN])) {
-+	case MACSEC_DEFAULT_PN_LEN:
-+		break;
-+
-+	case MACSEC_XPN_PN_LEN:
-+		if (secy->xpn)
-+			break;
-+
-+		pr_notice("macsec: nl: add_txsa: pn length on non-xpn links must be %d\n",
-+			  MACSEC_DEFAULT_PN_LEN);
-+		rtnl_unlock();
-+		return -EINVAL;
-+
-+	default:
-+		pr_notice("macsec: nl: add_txsa: pn length must be %d or %d\n",
-+			  MACSEC_DEFAULT_PN_LEN, MACSEC_XPN_PN_LEN);
- 		rtnl_unlock();
- 		return -EINVAL;
- 	}
-@@ -2288,7 +2311,7 @@ static bool validate_upd_sa(struct nlattr **attrs)
- 	if (nla_get_u8(attrs[MACSEC_SA_ATTR_AN]) >= MACSEC_NUM_AN)
- 		return false;
- 
--	if (attrs[MACSEC_SA_ATTR_PN] && nla_get_u32(attrs[MACSEC_SA_ATTR_PN]) == 0)
-+	if (attrs[MACSEC_SA_ATTR_PN] && nla_get_u64(attrs[MACSEC_SA_ATTR_PN]) == 0)
- 		return false;
- 
- 	if (attrs[MACSEC_SA_ATTR_ACTIVE]) {
-@@ -2332,12 +2355,22 @@ static int macsec_upd_txsa(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	if (tb_sa[MACSEC_SA_ATTR_PN]) {
--		int pn_len;
-+		switch (nla_len(tb_sa[MACSEC_SA_ATTR_PN])) {
-+		case MACSEC_DEFAULT_PN_LEN:
-+			break;
-+
-+		case MACSEC_XPN_PN_LEN:
-+			if (secy->xpn)
-+				break;
-+
-+			pr_notice("macsec: nl: upd_txsa: pn length on non-xpn links must be %d\n",
-+				  MACSEC_DEFAULT_PN_LEN);
-+			rtnl_unlock();
-+			return -EINVAL;
- 
--		pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
--		if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
--			pr_notice("macsec: nl: upd_txsa: bad pn length: %d != %d\n",
--				  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
-+		default:
-+			pr_notice("macsec: nl: upd_txsa: pn length must be %d or %d\n",
-+				  MACSEC_DEFAULT_PN_LEN, MACSEC_XPN_PN_LEN);
- 			rtnl_unlock();
- 			return -EINVAL;
- 		}
-@@ -2429,12 +2462,22 @@ static int macsec_upd_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	if (tb_sa[MACSEC_SA_ATTR_PN]) {
--		int pn_len;
-+		switch (nla_len(tb_sa[MACSEC_SA_ATTR_PN])) {
-+		case MACSEC_DEFAULT_PN_LEN:
-+			break;
-+
-+		case MACSEC_XPN_PN_LEN:
-+			if (secy->xpn)
-+				break;
- 
--		pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
--		if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
--			pr_notice("macsec: nl: upd_rxsa: bad pn length: %d != %d\n",
--				  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
-+			pr_notice("macsec: nl: upd_rxsa: pn length on non-xpn links must be %d\n",
-+				  MACSEC_DEFAULT_PN_LEN);
-+			rtnl_unlock();
-+			return -EINVAL;
-+
-+		default:
-+			pr_notice("macsec: nl: upd_rxsa: pn length must be %d or %d\n",
-+				  MACSEC_DEFAULT_PN_LEN, MACSEC_XPN_PN_LEN);
- 			rtnl_unlock();
- 			return -EINVAL;
- 		}
-
-base-commit: bc7d17d55762421b98089f5f7496e48cab89de50
--- 
-2.20.1
-
+Ah, yes, this one, Thanks!
+As Windows driver uses it for flagging full-E2E, and we completely drop E2E
+support here, it may worth to mention there that this is what bit 2 is used in
+Windows so any reuse should consider the possible compatibility issue.
