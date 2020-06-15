@@ -2,99 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CAB01F8BEE
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 02:24:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46C9E1F8C18
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 03:39:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728055AbgFOAX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 20:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49292 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727954AbgFOAX4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 20:23:56 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04FFC061A0E
-        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 17:23:56 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id z1so11351837qtn.2
-        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 17:23:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UFkdgd/PyQCkiqAKVLG696044+AVF6GXn25/XKsTdUE=;
-        b=qgsO4FAkP4/3LctbBMR5l7i1UYbTpLQ/quXMuC4rIT+VNEJVzZNMrTxZL/AW+E4AtJ
-         vdub6+ppxIGWBmyHpc5kZXcE4zvg6XF0VsGz6rmXDMk+TWvxoiVa8vx0XUDV4UufxntA
-         H9aIdc6UXlFtpUBB0mr0v6jDznz1VYwTjzxeIynNFD3nsyADAdm47m1FdVNAe4/iLs9A
-         trBOo7Ijvs3yd73jg1nJ+VVcP9Fh5ywPkEeSBFZT/dIiEyw/g7vd6WnJk21lze710s6M
-         iSF+W+O8+HNn5Z6hGRRreLeknQ0OEp+9LW+cMvCIH0Wx/idkLa2nGfs3tHDBGsdrUTlj
-         n1ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UFkdgd/PyQCkiqAKVLG696044+AVF6GXn25/XKsTdUE=;
-        b=YGnP9YE6wFhIPU4cTIoKqkBBMNpzMCcmTGog23jcco5yh1YeJsdIGHCLBTZRzA8BrY
-         /wUYhMwD/brHiqHuKZKfxoIflO92oD53U7F+gR805k1BPY6Jpjv1EjMt6/UF/kKAciDN
-         YfWbO0ERV7nuNRwfhbl64ziajARk70DBcSrNX+Hk33O7zmrMX+cv+ei3SPxA28OKVNyB
-         zDCPILu33BbePTyqXh3Hl1csgcfCevfKBgci+TjuNVhVDrkQFMrZVOHwFwHFOD3E5FeH
-         KA8DQwz9RyMWZ0acfuSfzdIt+oi32BljBvAaVVH89FkypMOJcGJ37BH/9eBSsSFdeUOv
-         3aTw==
-X-Gm-Message-State: AOAM531eAjaXXjf1loF/gtUggoGskIY3Uy2h4aSnbIjQ9kgmkpUYRIgW
-        X+XVqbPFXgSW+PUwbZdxD3gQG6Noxyy+pphJDTzq79JbopM=
-X-Google-Smtp-Source: ABdhPJxyc1Ev3EgYLBLR6AuvAijQqKIl3WN/0xW6tU2NVDVwQ3oegLbtodjdVDMzGIIV1IXFcwZGPSObtMEA3htIKY0=
-X-Received: by 2002:ac8:27b6:: with SMTP id w51mr13864036qtw.124.1592180635862;
- Sun, 14 Jun 2020 17:23:55 -0700 (PDT)
+        id S1728039AbgFOBbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Jun 2020 21:31:47 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5885 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727946AbgFOBbr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Jun 2020 21:31:47 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id E0DDAEABD68F208B8A26;
+        Mon, 15 Jun 2020 09:31:42 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 15 Jun 2020 09:31:33 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Peter Krystad <peter.krystad@linux.intel.com>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>,
+        <mptcp@lists.01.org>
+Subject: [PATCH net v2] mptcp: fix memory leak in mptcp_subflow_create_socket()
+Date:   Mon, 15 Jun 2020 09:35:22 +0800
+Message-ID: <20200615013522.96854-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20200614071917.k46e3wvumqp6bj3x@SvensMacBookAir.sven.lan>
-In-Reply-To: <20200614071917.k46e3wvumqp6bj3x@SvensMacBookAir.sven.lan>
-From:   Matteo Croce <technoboy85@gmail.com>
-Date:   Mon, 15 Jun 2020 00:23:20 +0000
-Message-ID: <CAFnufp3oqcqsuhTC975iVu5-ZPAVZm3RBsY2fdq10=g1eOu7Tg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] mvpp2: ethtool rxtx stats fix
-To:     Sven Auhagen <sven.auhagen@voleatech.de>
-Cc:     netdev@vger.kernel.org, antoine.tenart@bootlin.com,
-        gregory.clement@bootlin.com, maxime.chevallier@bootlin.com,
-        thomas.petazzoni@bootlin.com, miquel.raynal@bootlin.com,
-        Marcin Wojtas <mw@semihalf.com>, lorenzo@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 14, 2020 at 7:19 AM Sven Auhagen <sven.auhagen@voleatech.de> wrote:
->
-> The ethtool rx and tx queue statistics are reporting wrong values.
-> Fix reading out the correct ones.
->
-> Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
+socket malloced  by sock_create_kern() should be release before return
+in the error handling, otherwise it cause memory leak.
 
-Hi Sven,
+unreferenced object 0xffff88810910c000 (size 1216):
+  comm "00000003_test_m", pid 12238, jiffies 4295050289 (age 54.237s)
+  hex dump (first 32 bytes):
+    01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 2f 30 0a 81 88 ff ff  ........./0.....
+  backtrace:
+    [<00000000e877f89f>] sock_alloc_inode+0x18/0x1c0
+    [<0000000093d1dd51>] alloc_inode+0x63/0x1d0
+    [<000000005673fec6>] new_inode_pseudo+0x14/0xe0
+    [<00000000b5db6be8>] sock_alloc+0x3c/0x260
+    [<00000000e7e3cbb2>] __sock_create+0x89/0x620
+    [<0000000023e48593>] mptcp_subflow_create_socket+0xc0/0x5e0
+    [<00000000419795e4>] __mptcp_socket_create+0x1ad/0x3f0
+    [<00000000b2f942e8>] mptcp_stream_connect+0x281/0x4f0
+    [<00000000c80cd5cc>] __sys_connect_file+0x14d/0x190
+    [<00000000dc761f11>] __sys_connect+0x128/0x160
+    [<000000008b14e764>] __x64_sys_connect+0x6f/0xb0
+    [<000000007b4f93bd>] do_syscall_64+0xa1/0x530
+    [<00000000d3e770b6>] entry_SYSCALL_64_after_hwframe+0x49/0xb3
 
-seems to work as expected now:
+Fixes: 2303f994b3e1 ("mptcp: Associate MPTCP context with TCP socket")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+v1 -> v2: add net prefix to subject line
+---
+ net/mptcp/subflow.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-# ethtool -S eth2 |grep rxq
-    rxq_0_desc_enqueue: 983
-    rxq_0_queue_full_drops: 0
-    rxq_0_packets_early_drops: 0
-    rxq_0_packets_bm_drops: 0
-    rxq_1_desc_enqueue: 14
-    rxq_1_queue_full_drops: 0
-    rxq_1_packets_early_drops: 0
-    rxq_1_packets_bm_drops: 0
-    rxq_2_desc_enqueue: 12
-    rxq_2_queue_full_drops: 0
-    rxq_2_packets_early_drops: 0
-    rxq_2_packets_bm_drops: 0
-    rxq_3_desc_enqueue: 4
-    rxq_3_queue_full_drops: 0
-    rxq_3_packets_early_drops: 0
-    rxq_3_packets_bm_drops: 0
-
-If you manage to find the commit which introduced this tag, please add
-a Fixes tag.
-
-Thanks,
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index bf132575040d..bbdb74b8bc3c 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -1053,8 +1053,10 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
+ 	err = tcp_set_ulp(sf->sk, "mptcp");
+ 	release_sock(sf->sk);
+ 
+-	if (err)
++	if (err) {
++		sock_release(sf);
+ 		return err;
++	}
+ 
+ 	/* the newly created socket really belongs to the owning MPTCP master
+ 	 * socket, even if for additional subflows the allocation is performed
 -- 
-Matteo Croce
+2.25.1
 
-perl -e 'for($t=0;;$t++){print chr($t*($t>>8|$t>>13)&255)}' |aplay
