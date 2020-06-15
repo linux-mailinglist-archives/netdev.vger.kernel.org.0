@@ -2,87 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E74F01F9682
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 14:28:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A8AD1F968D
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 14:32:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729921AbgFOM2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 08:28:46 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:57843 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728773AbgFOM2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 08:28:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592224123;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sBg2fZ9D+qAlMaoxpCp/kIBmDKmXPzYejbkMJfk/U3o=;
-        b=LVL8PUHC4lo1QapW6QIkq6KkLsLth5BOXxda97PHOvh0y4UkKzGWmD7+a2RenZS21z7i3V
-        AGW2EiS7kp/zDcb8n83i5tmMyLBDaVAx4rtv6yToiosYD+dnKbU5GZBVHILMu4reKNUq4p
-        6gedND1PpECjZPWeRywfXi5NuFXefTU=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-244-PtQvL8zcPO-OMd2xuxrcHg-1; Mon, 15 Jun 2020 08:28:39 -0400
-X-MC-Unique: PtQvL8zcPO-OMd2xuxrcHg-1
-Received: by mail-qk1-f198.google.com with SMTP id p138so14121496qke.7
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 05:28:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sBg2fZ9D+qAlMaoxpCp/kIBmDKmXPzYejbkMJfk/U3o=;
-        b=BBrNn+mFpRk4ZgE2CHqxR7fOAi7ezoF1bUJ8cyS+J9Be9dWhxTetMBkpqZm72+hd1M
-         Y+Ey9E3VaD0XEMVjwIc8wHlOjCV4GUMH33ZCmLckxa6mjwehT24Y0mW1FO2eb76pYxtA
-         YuQnOVzpt8d/Mv59NK4AOeXB/WBQkaynU2CIElqKVLkyd7/+oXDnq1BV/LHEA828cBIU
-         iIVcruToNT+BeHoAOFQ9Pil2gHfZhTPcE3t8j14lKC5CT2BD9winH6gOmveLfee0806L
-         w5RKO2UChO6aoGw+ryyXL0x7Xheijvhbw0KFk8qVBotvmKPYZF8JOILQHtpwglgDFdPj
-         QY3w==
-X-Gm-Message-State: AOAM533JbAz/aAsDhFaKUohxGFiaKcrfLYn71lvz1+oOQ7Nfjspvmy5T
-        ezxbOqDJz3b+pS/WLJk6w7DamrQj5rzNkg8R13KJox9SZqFLtaUBJNAs4Rfqq93RM5UpQmzgQ7S
-        B/jbyjzk3N0Uh3q05IcswL4V4WkWefs2T
-X-Received: by 2002:a05:620a:1407:: with SMTP id d7mr14076422qkj.89.1592224119510;
-        Mon, 15 Jun 2020 05:28:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyMGtIFdrgid15Y38ee12F5MvFgWU29hVuUe2nr/sf233yxjKvAmpE8PkTLK0uLOi4+pmRt8SvQU4mlzAKXbyY=
-X-Received: by 2002:a05:620a:1407:: with SMTP id d7mr14076410qkj.89.1592224119276;
- Mon, 15 Jun 2020 05:28:39 -0700 (PDT)
+        id S1729826AbgFOMcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 08:32:09 -0400
+Received: from sonic315-20.consmr.mail.ne1.yahoo.com ([66.163.190.146]:40121
+        "EHLO sonic315-20.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728598AbgFOMcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 08:32:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1592224327; bh=zI0m+DRhZDm01EKX+YHsQU600DuE8AwybL7Vu4lblwE=; h=Date:From:Reply-To:Subject:References:From:Subject; b=TMP+x4gjHwkAyt+RLNuATXyTnuF5yLcGR4byIb4KhIjK3CK3Kti67ewrr6XVe5Oxa9vkApWVm5abk0Gpjc/3iP9BRXUYjp6LJaLZ6QAMJF8CZTm9yWzD8hZBvk8kVspCfIWPaZndAxiKaolQoBVU3m94YC3t9NNL1H5NDt/nH9EIu0ylapYgtcSgiYHwHxSGbOwosZ0/xquAGNV2lKlL1Df9sz9ynnu1/osYcDk07qO1sKYgo5xxbsfx/TejRI3m2K4GyzOn4P/LZFBQeIgAbVkgJvTovmA6tTyBWHZFFpQDKpK4B2tM1OYkl7G1N8abWOEobwjhlmqCUDAWApNOcA==
+X-YMail-OSG: gif8yHcVM1n0wYZTMhAWm7kgnzJiYCN.esrfwpag403Gm6fkLBkuLGkA2PQdDU7
+ rMvUH99_QVnZAwbcPLnYAmvuLjDAXYYW2S8IboMwzYLhcDnT90x.CvGNcT6xq.89S1riSx.sK7C5
+ L1iHpQheJ4S1_DerKidy.FuJhgL3P73LPXz8jkNhoiIM5opw5qdOf6jcZYXDs7osLxi1tGesVnze
+ YWAl4q_z2ysbsJRejZdvdiqFVAj_7pjIBNKNdxWdVEVkImMKcC2cTXU0iMuD7IUBUX4fFqWPTkhu
+ SdyGJfjM1KmuAq1Tdflc.90X9JcScRCj.o8e8K56.raI6gFe96VfQL8hv86Bud4C6cdWNFCgT83p
+ YFEvkrxVPMq7M8EeqqHjidS0wz3dQmlQxwlkYe5n.61PsGBaqQbtQXMip_.oruHcidJ8CDLxYXOi
+ QJF9HjaQlpG5iRca6_F5XkftQAAoaRW7GAFZZoGas4FuxP7vNi.wjTSpkQu__V2Jqew9grEhf1mX
+ JNvifNbwaIJKqK5h5LfWxZ6ixpIOQYsRKdu1ZoiUuDnaHvhAFERcEbNhAzIajsHT8aONJj4CXtWa
+ EivmaSJdCsxmor0naFh9fpch45T6QIK2M7Km6LxXTrkTcGtW6AkHRUWBe.F0XOTyZa48jDd.EPcK
+ cPzMJTIcSV9uHLBAk.jYaKFMzk_b.Bgs3u9.TmwHrmjfAk2yoUq6htON2uuJPl5TiNYj1DklFAG5
+ OGoBpc_NjG1LDevMA9R.F8FSU5F1pmblvey5x3hUhD8eWAvIYmRIIdMQ_jPTSpdl78AHRqyWmM1a
+ D7K1piY_wl9YBS9IsOJ8Yfw6IwKWetikkyaL0J8DhbKWOby9BOq1ZCIGEUmthHK4zSJ.dbFU6VnG
+ 8jVTFveR61xZYBNmfs00bUuQK4v4uloJ7Ik6G8lLvmbpe7t8tQe8uYPUnc2NkHdHMju3iYAOKBv4
+ i3k6VnERklTYWtdeRXM3sJFNCc0kPXSZ7Gdzn1s.dOwOXrdS.5PAxdeAJnrQLFTvdresrNx37usI
+ B95sBGfW0ENPyreesNkOOoJE_wzYSCOowtR5LDkpcBmEA_cIs__uOfIIC1R5XN0PYryCHSpcTXrG
+ MN9XUuqL3qeauJHzbw_VaZ13PeW5Ynq41fhK6I.kZNr4mrXK52srJE4Yw1iy5N5.5WgRDSfY5uEH
+ ZN14903Wbbd_KMX_AWFObgJbHhGUBiaUNgP3.RQtKXXkiCAeMFrwdKuOGbkdA0fPjH0swdAVZhRG
+ yt67qsvDSElubytHx5N730z13FQxW_zensn7haOsksnrk.NSkjGE64HJk1Az54Eekul9iAf._NaV
+ QEns-
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic315.consmr.mail.ne1.yahoo.com with HTTP; Mon, 15 Jun 2020 12:32:07 +0000
+Date:   Mon, 15 Jun 2020 12:32:04 +0000 (UTC)
+From:   Lisa Williams <lw716542@gmail.com>
+Reply-To: lisawilam@yahoo.com
+Message-ID: <1727543764.951746.1592224324796@mail.yahoo.com>
+Subject: Hi Dear
 MIME-Version: 1.0
-References: <20200611113404.17810-1-mst@redhat.com> <20200611113404.17810-3-mst@redhat.com>
- <20200611152257.GA1798@char.us.oracle.com>
-In-Reply-To: <20200611152257.GA1798@char.us.oracle.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Mon, 15 Jun 2020 14:28:03 +0200
-Message-ID: <CAJaqyWdwXMX0JGhmz6soH2ZLNdaH6HEdpBM8ozZzX9WUu8jGoQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
-To:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <1727543764.951746.1592224324796.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16119 YMailNodin Mozilla/5.0 (Windows NT 6.1; rv:76.0) Gecko/20100101 Firefox/76.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 11, 2020 at 5:22 PM Konrad Rzeszutek Wilk
-<konrad.wilk@oracle.com> wrote:
->
-> On Thu, Jun 11, 2020 at 07:34:19AM -0400, Michael S. Tsirkin wrote:
-> > As testing shows no performance change, switch to that now.
->
-> What kind of testing? 100GiB? Low latency?
->
 
-Hi Konrad.
 
-I tested this version of the patch:
-https://lkml.org/lkml/2019/10/13/42
+Hi Dear,
 
-It was tested for throughput with DPDK's testpmd (as described in
-http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html)
-and kernel pktgen. No latency tests were performed by me. Maybe it is
-interesting to perform a latency test or just a different set of tests
-over a recent version.
+ How are you doing hope you are fine and OK?
 
-Thanks!
+I was just going through the Internet search when I found your email address, I want to make a new and special friend, so I decided to contact you to see how we can make it work out if we can. Please I wish you will have the desire with me so that we can get to know each other better and see what happens in future.
 
+My name is Lisa Williams, I am an American, but presently I live in the UK, I will be glad to see your reply for us to know each other better to exchange pictures and details about us.
+
+Yours
+Lisa
