@@ -2,81 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 378431F9161
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 10:28:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A13221F9144
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 10:21:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729019AbgFOI2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 04:28:03 -0400
-Received: from elvis.franken.de ([193.175.24.41]:34090 "EHLO elvis.franken.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728426AbgFOI2C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jun 2020 04:28:02 -0400
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1jkkSm-0004iN-00; Mon, 15 Jun 2020 10:27:28 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 4D970C0687; Mon, 15 Jun 2020 10:13:46 +0200 (CEST)
-Date:   Mon, 15 Jun 2020 10:13:46 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sandy Huang <hjc@rock-chips.com>,
-        Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH 13/29] dt: fix broken links due to txt->yaml renames
-Message-ID: <20200615081346.GA5592@alpha.franken.de>
-References: <cover.1592203542.git.mchehab+huawei@kernel.org>
- <0e4a7f0b7efcc8109c8a41a2e13c8adde4d9c6b9.1592203542.git.mchehab+huawei@kernel.org>
+        id S1728861AbgFOIVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 04:21:13 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:41121 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728369AbgFOIVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 04:21:12 -0400
+Received: by mail-ot1-f68.google.com with SMTP id k15so12449290otp.8;
+        Mon, 15 Jun 2020 01:21:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=En0nCYVvJiHGZ5f4vKBhmUYFYKuL6510yItMIIk4SZU=;
+        b=LHsD9C+9751qC2/8gSKkh2/NRpzshKJQBmo2FZpI+1Z+bpweQdhjduSGFGdnWMiib9
+         /BrRcI7zdcqz0bcgLQxH45x6R2Bf0oU5NyfWqZmrWZJXwteoCL+V/z6cPWa2r2quZlTC
+         XdqCxkgyvnC8u5De1aSntITuBrPGHOCjiKGnW/hXIBTLrJBvTMht34c3nUEZeIX55bmQ
+         Dy2x3Bkzdz3vnLEotP8Gwi7EB3P/i4183H728YckhaRo5uZ1j+KpoLoGQ+DusNrZ+QgD
+         FCOdvkXjTulnpSl03QvwZ+qfgk1vKiwpqyj+T8/2RTjFWu38JQRWx4vXWWT4psy74ubk
+         d88A==
+X-Gm-Message-State: AOAM531V2QBzn66qmoczCJaK7Tm/U61RbmJjdVhP2E37eFAbt9p12BmW
+        YgC9u0kySMmXUpmgUygzjjkgU95BBlzOGF55Cnc3Pg==
+X-Google-Smtp-Source: ABdhPJy40zkzsPYW8++hzgqNwCVPGu4sKPknAWssY/tW+sl8cETPqOssgErLrK4lJtfvHS4LaP2fxrs+oOIl3FHgS6s=
+X-Received: by 2002:a9d:62c2:: with SMTP id z2mr19950177otk.145.1592209272006;
+ Mon, 15 Jun 2020 01:21:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0e4a7f0b7efcc8109c8a41a2e13c8adde4d9c6b9.1592203542.git.mchehab+huawei@kernel.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <b95930e8-0e6b-f37d-da51-afd682a4f1f6@cogentembedded.com>
+In-Reply-To: <b95930e8-0e6b-f37d-da51-afd682a4f1f6@cogentembedded.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 15 Jun 2020 10:21:00 +0200
+Message-ID: <CAMuHMdXxj4TTTFMtJNpwXpLNcZZ0=3rqLr8pMnPOCM9K=Bsk5w@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: switch to my private email for Renesas
+ Ethernet drivers
+To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 08:46:52AM +0200, Mauro Carvalho Chehab wrote:
-> There are some new broken doc links due to yaml renames
-> at DT. Developers should really run:
-> 
-> 	./scripts/documentation-file-ref-check
-> 
-> in order to solve those issues while submitting patches.
-> This tool can even fix most of the issues with:
-> 
-> 	./scripts/documentation-file-ref-check --fix
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->  Documentation/devicetree/bindings/display/bridge/sii902x.txt  | 2 +-
->  .../devicetree/bindings/display/rockchip/rockchip-drm.yaml    | 2 +-
->  Documentation/devicetree/bindings/net/mediatek-bluetooth.txt  | 2 +-
->  Documentation/devicetree/bindings/sound/audio-graph-card.txt  | 2 +-
->  Documentation/devicetree/bindings/sound/st,sti-asoc-card.txt  | 2 +-
->  Documentation/mips/ingenic-tcu.rst                            | 2 +-
->  MAINTAINERS                                                   | 4 ++--
->  7 files changed, 8 insertions(+), 8 deletions(-)
+Hi Sergei,
 
-Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+On Sat, Jun 13, 2020 at 10:59 PM Sergei Shtylyov
+<sergei.shtylyov@cogentembedded.com> wrote:
+> Subject: MAINTAINERS: switch to my private email for Renesas Ethernet drivers
+>
+> I no longer work for Cogent Embedded (but my old email still works :-)),
+> and still would like to continue looking after the Renesas Ethernet drivers
+> and bindings.  Let's switch to my private email.
+>
+> Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+
+Thanks a lot!
+
+Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
