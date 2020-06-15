@@ -2,102 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E4181F8C5B
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 04:55:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CFFB1F8D55
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 07:39:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728157AbgFOCzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Jun 2020 22:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44136 "EHLO
+        id S1726111AbgFOFjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 01:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727971AbgFOCzc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Jun 2020 22:55:32 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D807CC061A0E;
-        Sun, 14 Jun 2020 19:55:31 -0700 (PDT)
-Received: by ozlabs.org (Postfix, from userid 1023)
-        id 49lbYG1cQRz9sRW; Mon, 15 Jun 2020 12:55:30 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ozlabs.org; s=201707;
-        t=1592189730; bh=CPzKsT3Ce4QgyxpJFIvrEYxYN/4fT8HyoGm1GkPOq/k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dbhPbwHTbzM69QaCKvQJPdbrZ9PSijUXbvj6p4sI9Uew/9CR7JahGy0qrlnUvpI0n
-         CZAQ286o86G+YOCl7nIRWWwxLZt908xA1kI6k4SKK74ctLRKJNPKBhbETPwlTDn2Mq
-         TgA57B6ZgK95wzes9fTs/kN8FmXdp2T/5f0aKNwYwoofYO0pQlS6/spBXOkg/r8jUw
-         DxKed12QQ6TJhYVWDy4k1rd7wQz9y/IeT7a50/4wiGfYi1CvnVf1AXH89jXFG5sNLN
-         SVplfQZSZfWwW+gilLw3/18b/Z9jfrr6YtHac1IKGO4vrNSROASsJsw4EirmIKN8VK
-         fvarf9XLrhS8g==
-From:   Jeremy Kerr <jk@ozlabs.org>
-To:     netdev@vger.kernel.org
-Cc:     Allan Chou <allan@asix.com.tw>, Freddy Xin <freddy@asix.com.tw>,
-        Peter Fink <pfink@christ-es.de>, linux-usb@vger.kernel.org
-Subject: [PATCH] net: usb: ax88179_178a: fix packet alignment padding
-Date:   Mon, 15 Jun 2020 10:54:56 +0800
-Message-Id: <20200615025456.30219-1-jk@ozlabs.org>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S1725648AbgFOFjj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 01:39:39 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58104C061A0E
+        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 22:39:39 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id n2so6323044pld.13
+        for <netdev@vger.kernel.org>; Sun, 14 Jun 2020 22:39:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=pVTAL9z2QJC8yogPilM2xaZGGPdA9FdHY9ZXBKe7BqU=;
+        b=gpsQ6RB91sIssS/rmhPulji77m8RG9oyqIdK0jBHshfCkG0jEig9fst3NIaZWOOqR2
+         2/DmkS1NsYIwBoPyaNiiAd1JHvG9w0Rgd+WKvPDDTk5S3TSIP5lcW2KJK0l7XcF8tGh5
+         M8sz9rsFQnGZm5BYJ1BhXg2Wd4eYGcZPFAWt2UQcuvlfOhgCgUn9pejIkVRsVBjloeRG
+         ZSIO3lHydg9NPswNmjVjnYmDBQPKM4CidwToz54HlSokAOXvwuITB0HTYSzlZt8QbZ9j
+         ISXZ/8frad8i9IybsLDHp1mlXxQ+9bIORAdAoQv+CU68rit5RDdySdpzHQfFJ7LMwDov
+         FmqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=pVTAL9z2QJC8yogPilM2xaZGGPdA9FdHY9ZXBKe7BqU=;
+        b=TsIZobQVrHAaW3h0C4iT7wkgtF+6UEIt7kCZg5q3KHChBR+lx4ViDNp4w1IKlTUPZp
+         x+4M9IhGlmioOD/poA/x+6yfL8gQC3omu4ycnZyUJVHG9MuL4z2GxBGDZty5yasOUuxd
+         gHWzy85tV7wV2GS7nNLdWg6twwdgoMx9xqJZwXSWDA5hYtroBz5D0DrvDCu2uMx5ch2e
+         inrlmmyEViemHxjimPbFVDUdPPr2tuO71O0znBlCZACpNsj1HrSxRwohtyYq222LbUmP
+         YXxHQSyS819Tpd6tItCJbBMLsFHcFTBFl7PpQ/G9swt7J0yFcyXGujGHEDGBkmNah0kk
+         Y8Zw==
+X-Gm-Message-State: AOAM531KQh1RHBNWH0HQcqqUoTPZrlG7OKn6zRXxLmQ8hd2VdFf7Z+tV
+        g8bejkIQBRTP1jVaJCUrQRXvLYnU
+X-Google-Smtp-Source: ABdhPJw1BNYWhx/0zqi7UxM1CAUN+IfML9K+UIyUkWBRzp5gMoAWZiXRZsdb7/h87KkGJ7e+WBeqjQ==
+X-Received: by 2002:a17:90a:284b:: with SMTP id p11mr10514632pjf.22.1592199578035;
+        Sun, 14 Jun 2020 22:39:38 -0700 (PDT)
+Received: from martin-VirtualBox.vpn.alcatel-lucent.com ([137.97.160.52])
+        by smtp.gmail.com with ESMTPSA id a14sm12255199pfc.133.2020.06.14.22.39.35
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 14 Jun 2020 22:39:37 -0700 (PDT)
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Martin <martin.varghese@nokia.com>
+Subject: [PATCH net] bareudp: Fixed multiproto mode configuration
+Date:   Mon, 15 Jun 2020 11:09:29 +0530
+Message-Id: <1592199569-5243-1-git-send-email-martinvarghesenokia@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using a AX88179 device (0b95:1790), I see two bytes of appended data on
-every RX packet. For example, this 48-byte ping, using 0xff as a
-payload byte:
+From: Martin <martin.varghese@nokia.com>
 
-  04:20:22.528472 IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 2447, seq 1, length 64
-	0x0000:  000a cd35 ea50 000a cd35 ea4f 0800 4500
-	0x0010:  0054 c116 4000 4001 f63e c0a8 0101 c0a8
-	0x0020:  0102 0800 b633 098f 0001 87ea cd5e 0000
-	0x0030:  0000 dcf2 0600 0000 0000 ffff ffff ffff
-	0x0040:  ffff ffff ffff ffff ffff ffff ffff ffff
-	0x0050:  ffff ffff ffff ffff ffff ffff ffff ffff
-	0x0060:  ffff 961f
+Code to handle multiproto configuration is missing.
 
-Those last two bytes - 96 1f - aren't part of the original packet.
-
-In the ax88179 RX path, the usbnet rx_fixup function trims a 2-byte
-'alignment pseudo header' from the start of the packet, and sets the
-length from a per-packet field populated by hardware. It looks like that
-length field *includes* the 2-byte header; the current driver assumes
-that it's excluded.
-
-This change trims the 2-byte alignment header after we've set the packet
-length, so the resulting packet length is correct. While we're moving
-the comment around, this also fixes the spelling of 'pseudo'.
-
-Signed-off-by: Jeremy Kerr <jk@ozlabs.org>
+Fixes: 4b5f67232d95 ("net: Special handling for IP & MPLS")
+Signed-off-by: Martin <martin.varghese@nokia.com>
 ---
- drivers/net/usb/ax88179_178a.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/net/bareudp.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index 93044cf1417a..1fe4cc28d154 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1414,10 +1414,10 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 		}
+diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
+index efd1a1d..3dd46cd 100644
+--- a/drivers/net/bareudp.c
++++ b/drivers/net/bareudp.c
+@@ -552,6 +552,8 @@ static int bareudp_validate(struct nlattr *tb[], struct nlattr *data[],
+ static int bareudp2info(struct nlattr *data[], struct bareudp_conf *conf,
+ 			struct netlink_ext_ack *extack)
+ {
++	memset(conf, 0, sizeof(*conf));
++
+ 	if (!data[IFLA_BAREUDP_PORT]) {
+ 		NL_SET_ERR_MSG(extack, "port not specified");
+ 		return -EINVAL;
+@@ -570,6 +572,9 @@ static int bareudp2info(struct nlattr *data[], struct bareudp_conf *conf,
+ 	if (data[IFLA_BAREUDP_SRCPORT_MIN])
+ 		conf->sport_min =  nla_get_u16(data[IFLA_BAREUDP_SRCPORT_MIN]);
  
- 		if (pkt_cnt == 0) {
--			/* Skip IP alignment psudo header */
--			skb_pull(skb, 2);
- 			skb->len = pkt_len;
--			skb_set_tail_pointer(skb, pkt_len);
-+			/* Skip IP alignment pseudo header */
-+			skb_pull(skb, 2);
-+			skb_set_tail_pointer(skb, skb->len);
- 			skb->truesize = pkt_len + sizeof(struct sk_buff);
- 			ax88179_rx_checksum(skb, pkt_hdr);
- 			return 1;
-@@ -1426,8 +1426,9 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 		ax_skb = skb_clone(skb, GFP_ATOMIC);
- 		if (ax_skb) {
- 			ax_skb->len = pkt_len;
--			ax_skb->data = skb->data + 2;
--			skb_set_tail_pointer(ax_skb, pkt_len);
-+			/* Skip IP alignment pseudo header */
-+			skb_pull(ax_skb, 2);
-+			skb_set_tail_pointer(ax_skb, ax_skb->len);
- 			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
- 			ax88179_rx_checksum(ax_skb, pkt_hdr);
- 			usbnet_skb_return(dev, ax_skb);
++	if (data[IFLA_BAREUDP_MULTIPROTO_MODE])
++		conf->multi_proto_mode = true;
++
+ 	return 0;
+ }
+ 
 -- 
-2.17.1
+1.8.3.1
 
