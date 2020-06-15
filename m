@@ -2,77 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D4871FA1E7
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 22:46:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 281BF1FA1EC
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 22:46:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731487AbgFOUpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 16:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
+        id S1731590AbgFOUqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 16:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730995AbgFOUpt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 16:45:49 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D56C08C5C2
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 13:45:49 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id e16so13804865qtg.0
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 13:45:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6NB11slt87BU+4xj4RQk4kGC454YPuIt0Wk8mlOD8qk=;
-        b=XyChLv1QYsXD5ZuVVF4fG9lmqfNx/h8JnfCH2w2aLZmyMfg9fW63/yqx3dTabIZAL9
-         Q3EN4/VBshdINKbNRUouJBzlsurFl6ppvkSQPivADTlfTNbZ2dBdRYCooQtDBi91uBX3
-         fCDFeTuxjseCMpFGuxlKN+UO1Wpkv27H3zh6k=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6NB11slt87BU+4xj4RQk4kGC454YPuIt0Wk8mlOD8qk=;
-        b=WYWEZ8cq10upDkvIr1yAvZTnomP5r121EDlDdaK+xvf4ZBXzj1Ug6+X5kEwzHNRwHU
-         GfLciFA/IFsDrfoRhugh48U1fjS8JKHQpYt//BBBrWW/POz8B9dAytY1VADkBgd2zTAt
-         6kxkPmU+jnYd32Qus2S/SRyfVgG1llTPe5651+eeos1LMHYAI/rkeWKu/y6fHfhALPTv
-         QImBdFwsWey06StprJ1QfFj7apCNpNGwoxQjEAdrrvA4hJeJMxqCTii03SiE/hwHRR0i
-         /BL6hDNWAXByHWVOWAstjv+AvkYcB/YV+/U3Uc5eCcckeEjLmujTeKsuEPLXd9n7gZOL
-         +Grg==
-X-Gm-Message-State: AOAM531ME67ZZmMeGpRk/rmYrZ47JYn2PXgFpzq8qW9iHBA6WRdezsFV
-        bNp79XELWZ6Rpr6KOHhVmUn/5hbPkiPzXC9wt9g9LDnzzqg=
-X-Google-Smtp-Source: ABdhPJzS1j33q5F3QlrW3xLt0Lv+QX+HY5yC7a9+YDWovc8HBDcoIFoVVwjf5cJk1ADPwQiREl5cykqHZfnxVpdlK8c=
-X-Received: by 2002:ac8:43ce:: with SMTP id w14mr17451952qtn.80.1592253948476;
- Mon, 15 Jun 2020 13:45:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200615190119.382589-1-drc@linux.vnet.ibm.com>
-In-Reply-To: <20200615190119.382589-1-drc@linux.vnet.ibm.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Mon, 15 Jun 2020 13:45:36 -0700
-Message-ID: <CACKFLimd0a=Y8WyvqCt4BD7SU_Cg1vQ=baKs6-uPv0dZuCm=mw@mail.gmail.com>
-Subject: Re: [PATCH] tg3: driver sleeps indefinitely when EEH errors exceed eeh_max_freezes
-To:     David Christensen <drc@linux.vnet.ibm.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1731403AbgFOUqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 16:46:42 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F96CC061A0E;
+        Mon, 15 Jun 2020 13:46:42 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A96951210A401;
+        Mon, 15 Jun 2020 13:46:41 -0700 (PDT)
+Date:   Mon, 15 Jun 2020 13:46:40 -0700 (PDT)
+Message-Id: <20200615.134640.514632878913727284.davem@davemloft.net>
+To:     olteanv@gmail.com
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        richardcochran@gmail.com, vinicius.gomes@intel.com
+Subject: Re: [PATCH net] net: dsa: sja1105: fix PTP timestamping with large
+ tc-taprio cycles
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200614205409.1580736-1-olteanv@gmail.com>
+References: <20200614205409.1580736-1-olteanv@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 15 Jun 2020 13:46:42 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 12:01 PM David Christensen
-<drc@linux.vnet.ibm.com> wrote:
->
-> The driver function tg3_io_error_detected() calls napi_disable twice,
-> without an intervening napi_enable, when the number of EEH errors exceeds
-> eeh_max_freezes, resulting in an indefinite sleep while holding rtnl_lock.
->
-> The function is called once with the PCI state pci_channel_io_frozen and
-> then called again with the state pci_channel_io_perm_failure when the
-> number of EEH failures in an hour exceeds eeh_max_freezes.
->
-> Protecting the calls to napi_enable/napi_disable with a new state
-> variable prevents the long sleep.
+From: Vladimir Oltean <olteanv@gmail.com>
+Date: Sun, 14 Jun 2020 23:54:09 +0300
 
-This works, but I think a simpler fix is to check tp->pcierr_recovery
-in tg3_io_error_detected() and skip most of the tg3 calls (including
-the one that disables NAPI) if the flag is true.
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> It isn't actually described clearly at all in UM10944.pdf, but on TX of
+> a management frame (such as PTP), this needs to happen:
+> 
+> - The destination MAC address (i.e. 01-80-c2-00-00-0e), along with the
+>   desired destination port, need to be installed in one of the 4
+>   management slots of the switch, over SPI.
+> - The host can poll over SPI for that management slot's ENFPORT field.
+>   That gets unset when the switch has matched the slot to the frame.
+> 
+> And therein lies the problem. ENFPORT does not mean that the packet has
+> been transmitted. Just that it has been received over the CPU port, and
+> that the mgmt slot is yet again available.
+> 
+> This is relevant because of what we are doing in sja1105_ptp_txtstamp_skb,
+> which is called right after sja1105_mgmt_xmit. We are in a hard
+> real-time deadline, since the hardware only gives us 24 bits of TX
+> timestamp, so we need to read the full PTP clock to reconstruct it.
+> Because we're in a hurry (in an attempt to make sure that we have a full
+> 64-bit PTP time which is as close as possible to the actual transmission
+> time of the frame, to avoid 24-bit wraparounds), first we read the PTP
+> clock, then we poll for the TX timestamp to become available.
+> 
+> But of course, we don't know for sure that the frame has been
+> transmitted when we read the full PTP clock. We had assumed that ENFPORT
+> means it has, but the assumption is incorrect. And while in most
+> real-life scenarios this has never been caught due to software delays,
+> nowhere is this fact more obvious than with a tc-taprio offload, where
+> PTP traffic gets a small timeslot very rarely (example: 1 packet per 10
+> ms). In that case, we will be reading the PTP clock for timestamp
+> reconstruction too early (before the packet has been transmitted), and
+> this renders the reconstruction procedure incorrect (see the assumptions
+> described in the comments found on function sja1105_tstamp_reconstruct).
+> So the PTP TX timestamps will be off by 1<<24 clock ticks, or 135 ms
+> (1 tick is 8 ns).
+> 
+> So fix this case of premature optimization by simply reordering the
+> sja1105_ptpegr_ts_poll and the sja1105_ptpclkval_read function calls. It
+> turns out that in practice, the 135 ms hard deadline for PTP timestamp
+> wraparound is not so hard, since even the most bandwidth-intensive PTP
+> profiles, such as 802.1AS-2011, have a sync frame interval of 125 ms.
+> So if we couldn't deliver a timestamp in 135 ms (which we can), we're
+> toast and have much bigger problems anyway.
+> 
+> Fixes: 47ed985e97f5 ("net: dsa: sja1105: Add logic for TX timestamping")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Applied and queued up for -stable, thank you.
