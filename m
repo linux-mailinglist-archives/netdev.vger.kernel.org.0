@@ -2,92 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C3F71FA294
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 23:13:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CE31FA2D3
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 23:33:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731476AbgFOVNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 17:13:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39038 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726207AbgFOVNh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jun 2020 17:13:37 -0400
-Received: from embeddedor (unknown [189.207.59.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3A86A2078E;
-        Mon, 15 Jun 2020 21:13:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592255617;
-        bh=9hmhNMnytDn/12vZ0JJhYVVPOEacvK3Su5cLBW/296g=;
-        h=Date:From:To:Cc:Subject:From;
-        b=zwkav/Taf2V3vmB29SJyATCj765103/cMPGXfIToXae2+m2mXInGF22eQvWXPRdHH
-         xtdIDonAq3ni7NC9c5GdTbeoFyhamfX56YCA2yac1hu/pYVkBVGN5qqT2yS6JhLNIi
-         IwvUH1xZfl6IrCPI8OliPOn2ZUXy9gNcD935czzo=
-Date:   Mon, 15 Jun 2020 16:18:55 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Derek Chickles <dchickles@marvell.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] liquidio: Replace vmalloc_node + memset with vzalloc_node
- and use array_size
-Message-ID: <20200615211855.GA32663@embeddedor>
+        id S1730099AbgFOVdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 17:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726207AbgFOVdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 17:33:16 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338B2C061A0E
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 14:33:16 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id g3so1552106ilq.10
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 14:33:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RT0AeqNPrKTpqCF0KBmf+SFFyf8HFRHYuKnmIl1yWj8=;
+        b=vS+/OKyEf8/fVWchnS8moM3iNOoCkDpNpP5kHRaFhSfO+41e+gCMK4MEW9x4wAyQcp
+         sOpk8fiEbVLSuiBdlxp7mWyU3ctDKSzwWh/4rLswd+fZS/pK5Pdo1PXFvb38lfSOXM6I
+         Ga5FyRq7ebEPuVWk5fz2jEmUIy7U+SbqmxO9VxG9Sw8CKFaE10+/sGS3E5IWeouGQNg4
+         QAj6I8DrAMiv+bKPYK8lQTAs6arspCq5Ykme1cVFOTI7u4gt+1Ibzsvanv1w6MoNdDpy
+         Iw412G3hQOoMOhoxoQaQZGPG2cwRItszm2YuWUSzi0cZtCPYus7EFP74etOPoqLxuo1U
+         Icfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RT0AeqNPrKTpqCF0KBmf+SFFyf8HFRHYuKnmIl1yWj8=;
+        b=quZyUaRKuZccoU1rIo/5L+ynuQEoWB+DcgELPSJ1pDw1p392h2QAkgSt986Hwhwpck
+         mHGRi0iSjEdho01T88sqWowKiXJbNyAzavzlAPo3zi/qAW8CPJFpi+Vl5xzo1omq2mFJ
+         Q+YTsSiOiDgE+/o00VmdPqrBiqHtR5Kmq8K/c3La1s61YhBJP/PytZKxRKIEqr7fZ6BR
+         i1W0Uq8lJW/oBIssKjMGfD2PRuwhaTjhsbXDceTE4RXOaHUkjdflO19+mC4Sd1Y+3P0M
+         nkdtdK4Zv7GR6/YMqqnDuiq4aItq4/YMJH7rislnuQSpg51v7K8W0wmlvS+noseWskIl
+         81pg==
+X-Gm-Message-State: AOAM533kIROENl9Tmc/tlml1i+MGQfKd5ApLIZYJH6kbSULv9j+m0bdo
+        3OUrzM6VRzxU83KFo9+g/5VW8gvFECvq5hfuLZSOOQ+W
+X-Google-Smtp-Source: ABdhPJz/Ohu49Iax3vmSVJyYOAlDwHRqCfEq7yVC3zTNQmajP61vy1GTmhJNcVzZKMi/PL4KXuTsfNmYbUffawovPkM=
+X-Received: by 2002:a92:db44:: with SMTP id w4mr12182989ilq.305.1592256795260;
+ Mon, 15 Jun 2020 14:33:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200608215301.26772-1-xiyou.wangcong@gmail.com>
+ <CAMArcTUmqCqyyfs+vNtxoh_UsHZ2oZrcUkdWp8MPzW0tb6hKWA@mail.gmail.com>
+ <CAM_iQpWM5Bxj-oEuF_mYBL9Qf-eWmoVbfPCo7a=SjOJ0LnMjAA@mail.gmail.com> <CAMArcTV6ZtW24CscBUt=OdRD4HdFnAYEJ-i6h5k5J8m0rfwnQA@mail.gmail.com>
+In-Reply-To: <CAMArcTV6ZtW24CscBUt=OdRD4HdFnAYEJ-i6h5k5J8m0rfwnQA@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 15 Jun 2020 14:33:04 -0700
+Message-ID: <CAM_iQpVpiujEgTc0WEfESPSa-DmqyObSycQ+S2Eve53eK6AD_g@mail.gmail.com>
+Subject: Re: [Patch net] net: change addr_list_lock back to static key
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        syzbot+f3a0e80c34b3fc28ac5e@syzkaller.appspotmail.com,
+        Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use vzalloc/vzalloc_node instead of the vmalloc/vzalloc_node and memset.
+On Sat, Jun 13, 2020 at 9:03 AM Taehee Yoo <ap420073@gmail.com> wrote:
+>
+> On Thu, 11 Jun 2020 at 08:21, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+>
+> Hi Cong :)
+>
+> > On Wed, Jun 10, 2020 at 7:48 AM Taehee Yoo <ap420073@gmail.com> wrote:
+> > >
+> > > On Tue, 9 Jun 2020 at 06:53, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > >
+> > > > +       lockdep_set_class_and_subclass(&dev->addr_list_lock,
+> > > > +                                      &vlan_netdev_addr_lock_key,
+> > > > +                                      subclass);
+>
+> In this patch, lockdep_set_class_and_subclass() is used.
+> As far as I know, this function initializes lockdep key and subclass
+> value with a given variable.
+> A dev->lower_level variable is used as a subclass value in this patch.
+> When dev->lower_level value is changed, the subclass value of this
+> lockdep key is not changed automatically.
+> If this value has to be changed, additional function is needed.
 
-Also, notice that vzalloc_node() function has no 2-factor argument form
-to calculate the size for the allocation, so multiplication factors need
-to be wrapped in array_size().
+Hmm, but we pass a dynamic subclass to spin_lock_nested().
 
-This issue was found with the help of Coccinelle and, audited and fixed
-manually.
+So I guess I should just remove all the
+lockdep_set_class_and_subclass() and leave subclass to 0?
 
-Addresses-KSPP-ID: https://github.com/KSPP/linux/issues/83
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/ethernet/cavium/liquidio/request_manager.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+>
+> >>>        netif_addr_lock_bh(from);
+> In this function, internally spin_lock_bh() is used and this function
+> might use an 'initialized subclass value' not a current dev->lower_level.
+> At this point, I think the lockdep splat might occur.
+>
+> +static inline void netif_addr_lock_nested(struct net_device *dev)
+> +{
+> +       spin_lock_nested(&dev->addr_list_lock, dev->lower_level);
+> +}
+> In this patch, you used netif_addr_lock_nested() too.
+> These two subclass values could be different.
+> But I'm not sure whether using spin_lock_nested with two different
+> subclass values are the right way or not.
 
-diff --git a/drivers/net/ethernet/cavium/liquidio/request_manager.c b/drivers/net/ethernet/cavium/liquidio/request_manager.c
-index 6dd65f9b347c..8e59c2825533 100644
---- a/drivers/net/ethernet/cavium/liquidio/request_manager.c
-+++ b/drivers/net/ethernet/cavium/liquidio/request_manager.c
-@@ -95,12 +95,10 @@ int octeon_init_instr_queue(struct octeon_device *oct,
- 	/* Initialize a list to holds requests that have been posted to Octeon
- 	 * but has yet to be fetched by octeon
- 	 */
--	iq->request_list = vmalloc_node((sizeof(*iq->request_list) * num_descs),
--					       numa_node);
-+	iq->request_list = vzalloc_node(array_size(num_descs, sizeof(*iq->request_list)),
-+					numa_node);
- 	if (!iq->request_list)
--		iq->request_list =
--			vmalloc(array_size(num_descs,
--					   sizeof(*iq->request_list)));
-+		iq->request_list = vzalloc(array_size(num_descs, sizeof(*iq->request_list)));
- 	if (!iq->request_list) {
- 		lio_dma_free(oct, q_size, iq->base_addr, iq->base_addr_dma);
- 		dev_err(&oct->pci_dev->dev, "Alloc failed for IQ[%d] nr free list\n",
-@@ -108,8 +106,6 @@ int octeon_init_instr_queue(struct octeon_device *oct,
- 		return 1;
- 	}
- 
--	memset(iq->request_list, 0, sizeof(*iq->request_list) * num_descs);
--
- 	dev_dbg(&oct->pci_dev->dev, "IQ[%d]: base: %p basedma: %pad count: %d\n",
- 		iq_no, iq->base_addr, &iq->base_addr_dma, iq->max_count);
- 
--- 
-2.27.0
+Yeah, as long as dev->lower_level is different, it should be different
+subclass. I assume dev->lower_level is automatically adjusted
+whenever the topology changes, like the vlan over bond case above.
 
+Thanks.
