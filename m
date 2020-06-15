@@ -2,86 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 649A61F97FD
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 15:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B1E1F9824
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 15:19:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730109AbgFONMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 09:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729875AbgFONMT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 09:12:19 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452EFC061A0E
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 06:12:19 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id v13so13030635otp.4
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 06:12:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=aphiOP4h9v9T9OtJ9dBaBxGd9lSp1X6ehev+oAyP+7g=;
-        b=dsUpmkkS3CW+fdPzG9Ofai6EHnNsuVnN0xPpMyvJqAzChE7AhZ8Z1QOI6IJ091auMz
-         JvhWQpPAwV258nLrUK44if3s6Ic4Mf0HNreTXoVdfG0GRSMbA20cmwql7z2P9ZlLnxap
-         S48YXQKTQtNpCQadiEfL374PvBceZS1DVK35I9RBAgBD9mMPIEK418ZTtPAHopcHHrie
-         hCS6sguDnl6FviVHugsoUwOEkiPWZ2wUXNvCvYHv0AAS1alTfIPGLRRs2o8c5o+Iiilx
-         W71nwMeGPQRzSWYCz792pd3qTPJv5C/pYD7Y+RjXgDGwyiPsj5Y29Ie2uq4/UhHIq6mD
-         2u4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=aphiOP4h9v9T9OtJ9dBaBxGd9lSp1X6ehev+oAyP+7g=;
-        b=lvtDxJ9kcbyxJEteEWa806qgvPR9PcV4eBL14RVa3UWycd4Vfl5s0JonpElmjIgFP6
-         JkQJvuDeO8+kvs6OQQN5A1BkUxdhkhLI8viqVN7WKkWbmztRi/QdVE5By+WbfQ26nNvT
-         VL3ZA40+UxNEEo/gQhaZ8uTdDlMMFIoS009yB/CV4qRaQQtgV7vJi+ZrxwybkfUE5zvn
-         No15OhQ8YN91/QRKhSciazGD/X6ek+jTOmlXcEcNr9XCYJd2KbIGE2e80xVDTFPXgaQA
-         VFzSzzAyiiWCMnQZHHJ2ozFBJdr7JQVcDAxjoaifeo/hbuiDJKxm+AEIhs7mEEiBgJgz
-         MUMQ==
-X-Gm-Message-State: AOAM533fD3jqWDQX3OMH+pMVsZ/Y9ItvohYGTglNPiUQcrB3bH5lojSV
-        4MIjZtOM6+peisKXCBblg/HdI8+i8Ks5uz05X2k=
-X-Google-Smtp-Source: ABdhPJw3rOwaNRYQo+qPL4ITDDYW390ZHImuLxujVNOvueuzEOtn+LltN2nG0V8wGlb5zMbdN3V2pnQ5/6nqjKtIDXE=
-X-Received: by 2002:a05:6830:1e0f:: with SMTP id s15mr20327814otr.349.1592226738410;
- Mon, 15 Jun 2020 06:12:18 -0700 (PDT)
+        id S1730288AbgFONTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 09:19:03 -0400
+Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:64844 "EHLO
+        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730120AbgFONTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 09:19:01 -0400
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05FDDvWF006463;
+        Mon, 15 Jun 2020 08:18:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type;
+ s=PODMain02222019; bh=1dRfs36KYnwyGoVrRklSXMDuFrHPtd9eaNq3bCtvbWE=;
+ b=FGRV3fBXTdtIb+VbdE9e9rYJ71x1n0IJSfGE42C/RuYuSHrLP3cEfQg0xrt/SOwbNVOX
+ 5D2A7Ar3AsQPgK8ZQmCSlOGRBL/nz5uXd1pQo2OqgkoP/0mk9EqDnzA1AHCjEDPbk1P9
+ JGZHcnORKr/HYEgt+XqabBqM1KRhz0dE7fVgIeW6AsJrOX79Vf8+ZsfM5FotszA3CJOE
+ O36YAh6vx+k67EK7bnNoFHu4l6/4CuLnrGFDZrmNnA/RFRxYGUjXbInyruaurq9fuQAG
+ pgL9ge8l79UfQgNiFwXJCOEIhvq/IBwVX5ze8+gMr4mWQ0wpX6rdPJAod8zxmk8D0CuG zg== 
+Authentication-Results: ppops.net;
+        spf=fail smtp.mailfrom=ckeepax@opensource.cirrus.com
+Received: from ediex01.ad.cirrus.com ([87.246.76.36])
+        by mx0a-001ae601.pphosted.com with ESMTP id 31mv73jpeq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 15 Jun 2020 08:18:57 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Mon, 15 Jun
+ 2020 14:18:54 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.1913.5 via Frontend
+ Transport; Mon, 15 Jun 2020 14:18:54 +0100
+Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 5F5732C6;
+        Mon, 15 Jun 2020 13:18:54 +0000 (UTC)
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     <davem@davemloft.net>, <nicolas.ferre@microchip.com>,
+        <kuba@kernel.org>
+CC:     <clabbe@baylibre.com>, <netdev@vger.kernel.org>
+Subject: [PATCH] net: macb: Only disable NAPI on the actual error path
+Date:   Mon, 15 Jun 2020 14:18:54 +0100
+Message-ID: <20200615131854.12187-1-ckeepax@opensource.cirrus.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-Received: by 2002:a4a:d748:0:0:0:0:0 with HTTP; Mon, 15 Jun 2020 06:12:16
- -0700 (PDT)
-Reply-To: misssaifibrahim@gmail.com
-From:   SGT SAFI IBRAHIM <perezfosgateshirley@gmail.com>
-Date:   Mon, 15 Jun 2020 15:12:16 +0200
-Message-ID: <CAGdqUzZ7yehR_Cyg5Bq1eCVu5LgEDhfbUMVeDygdp+CPatRBOg@mail.gmail.com>
-Subject: Hello Greetings.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Proofpoint-SPF-Result: fail
+X-Proofpoint-SPF-Record: v=spf1 include:spf-001ae601.pphosted.com include:spf.protection.outlook.com
+ ip4:5.172.152.52 -all
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 mlxscore=0
+ phishscore=0 clxscore=1011 spamscore=0 impostorscore=0 mlxlogscore=808
+ malwarescore=0 bulkscore=0 adultscore=0 lowpriorityscore=0 suspectscore=0
+ cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2006150106
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Hello Greetings.
+A recent change added a disable to NAPI into macb_open, this was
+intended to only happen on the error path but accidentally applies
+to all paths. This causes NAPI to be disabled on the success path, which
+leads to the network to no longer functioning.
 
-I am happy to have you here as a friend, i hope all is well with you,
-and how are you enjoying your day over there in your country?
+Fixes: 014406babc1f ("net: cadence: macb: disable NAPI on error")
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+---
+ drivers/net/ethernet/cadence/macb_main.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-My name is SGT SAFI IBRAHIM,. I=E2=80=99m 28 years old an orphan my parents
-died when I was five years old nobody to help me,I send you my
-business proposal with tears and sorrow Please let this not be a
-surprised message to you.
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 5b9d7c60eebc0..67933079aeea5 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -2565,15 +2565,14 @@ static int macb_open(struct net_device *dev)
+ 	if (bp->ptp_info)
+ 		bp->ptp_info->ptp_init(dev);
+ 
++	return 0;
++
+ napi_exit:
+ 	for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
+ 		napi_disable(&queue->napi);
+ pm_exit:
+-	if (err) {
+-		pm_runtime_put_sync(&bp->pdev->dev);
+-		return err;
+-	}
+-	return 0;
++	pm_runtime_put_sync(&bp->pdev->dev);
++	return err;
+ }
+ 
+ static int macb_close(struct net_device *dev)
+-- 
+2.11.0
 
-I am single. an Nurse in America military but i am presently in
-Afghanistan for the fight against terrorism and peace keeping, I need
-an urgent help from you i have in my possession the sum of $3.5million
-USD I made here in Afghanistan.
-
-I want you to stand as my beneficiary receive the fund you will assist
-me to invest it in a good profitable Venture or you keep it for me
-until I arrive your country, I will give You 40% of the total money
-for your assistance after you have receive The money.
-
-Take good care of yourself.your urgent reply is needed is my private
-email address below sgtsafiibrahim@gmail.com, for more details.
-
-Best Resgards
-SGT SAFI IBRAHIM,
