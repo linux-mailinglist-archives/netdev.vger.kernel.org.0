@@ -2,116 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C55481F9A9A
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 16:44:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB221F9A9D
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 16:45:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730405AbgFOOn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 10:43:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730625AbgFOOn6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 10:43:58 -0400
-Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15093C05BD1E
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 07:43:58 -0700 (PDT)
-Received: by mail-oo1-xc43.google.com with SMTP id q188so3405148ooq.4
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 07:43:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r8im4dJtuxkkAaqZZS6bmcni2naI0KL21K/0KZhRnTg=;
-        b=Kvpm8lif52moFLeMmaNKGAHoyXK5aBJWB+oAUhzGn06yJXqIvn/PnfObLHY9dxrmon
-         3LBcru7CGHTqvQ2q9h7SG/2RHOsw3K4VKzqDapSU6QXnYY72ZBKse0+FifGxXpmZGSa2
-         WqECeuk02tQWmywJxEP3fjo9i0CJIQPSkhfB4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r8im4dJtuxkkAaqZZS6bmcni2naI0KL21K/0KZhRnTg=;
-        b=ZIvkir9hpsjizS+bdSkf2qbh5kgYtdqIoHM4Pcu7a3byb/JFHZlEyT1Kf+AWYH1Kbc
-         YUUyblF5RIVBnhF/qiSUbIZF9+6iF+MeaQtpzMr3eW/j+0jzkkLD2Zg5iP+ay8zL3TR6
-         DXCINOue02CZDiTrQD2zwOUvPqhAd/mSFB3VOwUK1UbpDSSP3CqtYsxMrH8rb6TFxRps
-         2w5dc9RTA5iYIriGkP3FPEM/cRTCXBotj9uHIfCCI5f3sMYoKKBEwwWW/NkKl3BUDTl/
-         NgFL4hFMdQm7nhr4PJH3Bo2Uhcoet2FJWjZxFKmEMHODr8M+3UW7GQhLkcBXNC86f6zq
-         u6ng==
-X-Gm-Message-State: AOAM533ywEuowIQ+MtyefjGomT4BgsNC9qru4SfIbalLOkr2ec6hfy9e
-        xDKI1wDrsvks74CapYMZ72cqzbVfECGpsw2fL3+wDarNPP7LnQ==
-X-Google-Smtp-Source: ABdhPJzQC7JHZFZ5lcxDRbQbodCqupHVOnlokMDpxwYb3ub+OdcyuaHCeS2Lw5IKYZvlIc7mtPcUVZqSHhJ+MgwjgzQ=
-X-Received: by 2002:a4a:3559:: with SMTP id w25mr21208459oog.6.1592232236922;
- Mon, 15 Jun 2020 07:43:56 -0700 (PDT)
+        id S1730669AbgFOOpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 10:45:17 -0400
+Received: from gloria.sntech.de ([185.11.138.130]:57632 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728304AbgFOOpP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jun 2020 10:45:15 -0400
+Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=phil.lan)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1jkqMC-0004iN-07; Mon, 15 Jun 2020 16:45:04 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, heiko@sntech.de,
+        christoph.muellner@theobroma-systems.com,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+Subject: [PATCH v3 1/3] net: phy: mscc: move shared probe code into a helper
+Date:   Mon, 15 Jun 2020 16:44:59 +0200
+Message-Id: <20200615144501.1140870-1-heiko@sntech.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20200612160141.188370-1-lmb@cloudflare.com> <CAADnVQ+owOvkZ03qyodmh+4NkZD=1LpgTN+YJqiKgr0_OKqRtA@mail.gmail.com>
-In-Reply-To: <CAADnVQ+owOvkZ03qyodmh+4NkZD=1LpgTN+YJqiKgr0_OKqRtA@mail.gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Mon, 15 Jun 2020 15:43:45 +0100
-Message-ID: <CACAyw9-Jy+r2t5Yy83EEZ8GDnxEsGOPdrqr2JSfVqcC2E6dYmQ@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] flow_dissector: reject invalid attach_flags
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 12 Jun 2020 at 23:36, Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, Jun 12, 2020 at 9:02 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
-> >
-> > Using BPF_PROG_ATTACH on a flow dissector program supports neither flags
-> > nor target_fd but accepts any value. Return EINVAL if either are non-zero.
-> >
-> > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> > Fixes: b27f7bb590ba ("flow_dissector: Move out netns_bpf prog callbacks")
-> > ---
-> >  kernel/bpf/net_namespace.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
-> > index 78cf061f8179..56133e78ae4f 100644
-> > --- a/kernel/bpf/net_namespace.c
-> > +++ b/kernel/bpf/net_namespace.c
-> > @@ -192,6 +192,9 @@ int netns_bpf_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
-> >         struct net *net;
-> >         int ret;
-> >
-> > +       if (attr->attach_flags || attr->target_fd)
-> > +               return -EINVAL;
-> > +
->
-> In theory it makes sense, but how did you test it?
+From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
 
-Not properly it seems, sorry!
+The different probe functions share a lot of code, so move the
+common parts into a helper to reduce duplication.
 
-> test_progs -t flow
-> fails 5 tests.
+This moves the devm_phy_package_join below the general allocation
+but as all components just allocate things, this should be ok.
 
-I spent today digging through this, and the issue is actually more annoying than
-I thought. BPF_PROG_DETACH for sockmap and flow_dissector ignores
-attach_bpf_fd. The cgroup and lirc2 attach point use this to make sure that the
-program being detached is actually what user space expects. We actually have
-tests that set attach_bpf_fd for these to attach points, which tells
-me that this is
-an easy mistake to make.
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+---
+changes in v3:
+- adapt to 5.8 merge-window results
+changes in v2:
+- new patch as suggested by Andrew
 
-Unfortunately I can't come up with a good fix that seems backportable:
-- Making sockmap and flow_dissector have the same semantics as cgroup
-  and lirc2 requires a bunch of changes (probably a new function for sockmap)
-- Returning EINVAL from BPF_PROG_DETACH if attach_bpf_fd is specified
-  leads to a lot of churn in selftests
+ drivers/net/phy/mscc/mscc_main.c | 123 +++++++++++++++----------------
+ 1 file changed, 60 insertions(+), 63 deletions(-)
 
-Is it worth just landing these fixes on bpf or bpf-next without
-backporting them?
-
+diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+index 5ddc44f87eaf..68308d3e9589 100644
+--- a/drivers/net/phy/mscc/mscc_main.c
++++ b/drivers/net/phy/mscc/mscc_main.c
+@@ -1935,12 +1935,11 @@ static int vsc85xx_read_status(struct phy_device *phydev)
+ 	return genphy_read_status(phydev);
+ }
+ 
+-static int vsc8514_probe(struct phy_device *phydev)
++static int vsc85xx_probe_helper(struct phy_device *phydev,
++				u32 *leds, int num_leds, u16 led_modes,
++				const struct vsc85xx_hw_stat *stats, int nstats)
+ {
+ 	struct vsc8531_private *vsc8531;
+-	u32 default_mode[4] = {VSC8531_LINK_1000_ACTIVITY,
+-	   VSC8531_LINK_100_ACTIVITY, VSC8531_LINK_ACTIVITY,
+-	   VSC8531_DUPLEX_COLLISION};
+ 
+ 	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
+ 	if (!vsc8531)
+@@ -1948,54 +1947,65 @@ static int vsc8514_probe(struct phy_device *phydev)
+ 
+ 	phydev->priv = vsc8531;
+ 
+-	vsc8584_get_base_addr(phydev);
+-	devm_phy_package_join(&phydev->mdio.dev, phydev,
+-			      vsc8531->base_addr, 0);
+-
+-	vsc8531->nleds = 4;
+-	vsc8531->supp_led_modes = VSC85XX_SUPP_LED_MODES;
+-	vsc8531->hw_stats = vsc85xx_hw_stats;
+-	vsc8531->nstats = ARRAY_SIZE(vsc85xx_hw_stats);
++	vsc8531->nleds = num_leds;
++	vsc8531->supp_led_modes = led_modes;
++	vsc8531->hw_stats = stats;
++	vsc8531->nstats = nstats;
+ 	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
+ 				      sizeof(u64), GFP_KERNEL);
+ 	if (!vsc8531->stats)
+ 		return -ENOMEM;
+ 
+-	return vsc85xx_dt_led_modes_get(phydev, default_mode);
++	return vsc85xx_dt_led_modes_get(phydev, leds);
+ }
+ 
+-static int vsc8574_probe(struct phy_device *phydev)
++static int vsc8514_probe(struct phy_device *phydev)
+ {
+ 	struct vsc8531_private *vsc8531;
++	int rc;
+ 	u32 default_mode[4] = {VSC8531_LINK_1000_ACTIVITY,
+ 	   VSC8531_LINK_100_ACTIVITY, VSC8531_LINK_ACTIVITY,
+ 	   VSC8531_DUPLEX_COLLISION};
+ 
+-	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
+-	if (!vsc8531)
+-		return -ENOMEM;
+-
+-	phydev->priv = vsc8531;
++	rc = vsc85xx_probe_helper(phydev, default_mode,
++				  ARRAY_SIZE(default_mode),
++				  VSC85XX_SUPP_LED_MODES,
++				  vsc85xx_hw_stats,
++				  ARRAY_SIZE(vsc85xx_hw_stats));
++	if (rc < 0)
++		return rc;
+ 
++	vsc8531 = phydev->priv;
+ 	vsc8584_get_base_addr(phydev);
+-	devm_phy_package_join(&phydev->mdio.dev, phydev,
+-			      vsc8531->base_addr, 0);
++	return devm_phy_package_join(&phydev->mdio.dev, phydev,
++				     vsc8531->base_addr, 0);
++}
+ 
+-	vsc8531->nleds = 4;
+-	vsc8531->supp_led_modes = VSC8584_SUPP_LED_MODES;
+-	vsc8531->hw_stats = vsc8584_hw_stats;
+-	vsc8531->nstats = ARRAY_SIZE(vsc8584_hw_stats);
+-	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
+-				      sizeof(u64), GFP_KERNEL);
+-	if (!vsc8531->stats)
+-		return -ENOMEM;
++static int vsc8574_probe(struct phy_device *phydev)
++{
++	struct vsc8531_private *vsc8531;
++	int rc;
++	u32 default_mode[4] = {VSC8531_LINK_1000_ACTIVITY,
++	   VSC8531_LINK_100_ACTIVITY, VSC8531_LINK_ACTIVITY,
++	   VSC8531_DUPLEX_COLLISION};
++
++	rc = vsc85xx_probe_helper(phydev, default_mode,
++				  ARRAY_SIZE(default_mode),
++				  VSC8584_SUPP_LED_MODES,
++				  vsc8584_hw_stats,
++				  ARRAY_SIZE(vsc8584_hw_stats));
++	if (rc < 0)
++		return rc;
+ 
+-	return vsc85xx_dt_led_modes_get(phydev, default_mode);
++	vsc8584_get_base_addr(phydev);
++	return devm_phy_package_join(&phydev->mdio.dev, phydev,
++				     vsc8531->base_addr, 0);
+ }
+ 
+ static int vsc8584_probe(struct phy_device *phydev)
+ {
+ 	struct vsc8531_private *vsc8531;
++	int rc;
+ 	u32 default_mode[4] = {VSC8531_LINK_1000_ACTIVITY,
+ 	   VSC8531_LINK_100_ACTIVITY, VSC8531_LINK_ACTIVITY,
+ 	   VSC8531_DUPLEX_COLLISION};
+@@ -2005,32 +2015,24 @@ static int vsc8584_probe(struct phy_device *phydev)
+ 		return -ENOTSUPP;
+ 	}
+ 
+-	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
+-	if (!vsc8531)
+-		return -ENOMEM;
+-
+-	phydev->priv = vsc8531;
++	rc = vsc85xx_probe_helper(phydev, default_mode,
++				  ARRAY_SIZE(default_mode),
++				  VSC8584_SUPP_LED_MODES,
++				  vsc8584_hw_stats,
++				  ARRAY_SIZE(vsc8584_hw_stats));
++	if (rc < 0)
++		return rc;
+ 
++	vsc8531 = phydev->priv;
+ 	vsc8584_get_base_addr(phydev);
+-	devm_phy_package_join(&phydev->mdio.dev, phydev,
+-			      vsc8531->base_addr, 0);
+-
+-	vsc8531->nleds = 4;
+-	vsc8531->supp_led_modes = VSC8584_SUPP_LED_MODES;
+-	vsc8531->hw_stats = vsc8584_hw_stats;
+-	vsc8531->nstats = ARRAY_SIZE(vsc8584_hw_stats);
+-	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
+-				      sizeof(u64), GFP_KERNEL);
+-	if (!vsc8531->stats)
+-		return -ENOMEM;
+-
+-	return vsc85xx_dt_led_modes_get(phydev, default_mode);
++	return devm_phy_package_join(&phydev->mdio.dev, phydev,
++				     vsc8531->base_addr, 0);
+ }
+ 
+ static int vsc85xx_probe(struct phy_device *phydev)
+ {
+ 	struct vsc8531_private *vsc8531;
+-	int rate_magic;
++	int rate_magic, rc;
+ 	u32 default_mode[2] = {VSC8531_LINK_1000_ACTIVITY,
+ 	   VSC8531_LINK_100_ACTIVITY};
+ 
+@@ -2038,23 +2040,18 @@ static int vsc85xx_probe(struct phy_device *phydev)
+ 	if (rate_magic < 0)
+ 		return rate_magic;
+ 
+-	vsc8531 = devm_kzalloc(&phydev->mdio.dev, sizeof(*vsc8531), GFP_KERNEL);
+-	if (!vsc8531)
+-		return -ENOMEM;
+-
+-	phydev->priv = vsc8531;
++	rc = vsc85xx_probe_helper(phydev, default_mode,
++				  ARRAY_SIZE(default_mode),
++				  VSC85XX_SUPP_LED_MODES,
++				  vsc85xx_hw_stats,
++				  ARRAY_SIZE(vsc85xx_hw_stats));
++	if (rc < 0)
++		return rc;
+ 
++	vsc8531 = phydev->priv;
+ 	vsc8531->rate_magic = rate_magic;
+-	vsc8531->nleds = 2;
+-	vsc8531->supp_led_modes = VSC85XX_SUPP_LED_MODES;
+-	vsc8531->hw_stats = vsc85xx_hw_stats;
+-	vsc8531->nstats = ARRAY_SIZE(vsc85xx_hw_stats);
+-	vsc8531->stats = devm_kcalloc(&phydev->mdio.dev, vsc8531->nstats,
+-				      sizeof(u64), GFP_KERNEL);
+-	if (!vsc8531->stats)
+-		return -ENOMEM;
+ 
+-	return vsc85xx_dt_led_modes_get(phydev, default_mode);
++	return 0;
+ }
+ 
+ /* Microsemi VSC85xx PHYs */
 -- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+2.26.2
 
-www.cloudflare.com
