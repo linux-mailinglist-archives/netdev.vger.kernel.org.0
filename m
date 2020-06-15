@@ -2,93 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A13C71F9A03
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 16:22:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0705C1F9A08
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 16:24:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730117AbgFOOWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 10:22:52 -0400
-Received: from mga12.intel.com ([192.55.52.136]:17447 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729733AbgFOOWw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jun 2020 10:22:52 -0400
-IronPort-SDR: XCUN/hN6A/HSr/hv5/HKxhbE2/XEJjh2ojJJUBlKzRTlTuB6Rv5Ov7Vae6fVT0hLYfozlvUsQU
- MWF1VWaNedDg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2020 07:22:51 -0700
-IronPort-SDR: e+z4N+ZRnRkdSSdt5CNKWCaqHTEqQWyUWRcVkB7hfbR1P8XG3L/HOifT43u+USQ1v25wgqWxYm
- TnLVDCAfMW0Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,514,1583222400"; 
-   d="scan'208";a="382560521"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.163])
-  by fmsmga001.fm.intel.com with SMTP; 15 Jun 2020 07:22:48 -0700
-Received: by lahna (sSMTP sendmail emulation); Mon, 15 Jun 2020 17:22:47 +0300
-Date:   Mon, 15 Jun 2020 17:22:47 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Yehezkel Bernat <yehezkelshb@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Michael Jamet <michael.jamet@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>, netdev@vger.kernel.org
-Subject: Re: [PATCH 4/4] thunderbolt: Get rid of E2E workaround
-Message-ID: <20200615142247.GN247495@lahna.fi.intel.com>
-References: <20200615130139.83854-1-mika.westerberg@linux.intel.com>
- <20200615130139.83854-5-mika.westerberg@linux.intel.com>
- <CA+CmpXtpAaY+zKG-ofPNYHTChTiDtwCAnd8uYQSqyJ8hLE891Q@mail.gmail.com>
- <20200615135112.GA1402792@kroah.com>
- <CA+CmpXst-5i4L5nW-Z66ZmxuLhdihjeNkHU1JdzTwow1rNH7Ng@mail.gmail.com>
+        id S1730279AbgFOOYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 10:24:42 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:43374 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728510AbgFOOYl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 10:24:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592231080;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UiGf3gARYDyYq7gcr6NhU0cCm6vwerWcROaD0jYBV/g=;
+        b=azcOgM8NHqARKGpEmfJhY5fEJY9e66pqAY17UvJ6+hsOaBzBqD8twIH5Re0Cizyacoy6hN
+        a25BIgK05YFhGx1m73QXFeS+VCm0+8kV5mE7slizUc8EWGyJuia3WRFysXhZse+yTBEnmp
+        gCrMwqDc7rcQ3nrC07/KwNoJJdm3SIk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-162-lvKCcVFKO2SHaBSHOEo0eg-1; Mon, 15 Jun 2020 10:24:38 -0400
+X-MC-Unique: lvKCcVFKO2SHaBSHOEo0eg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BD80718A0761;
+        Mon, 15 Jun 2020 14:24:36 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-114-23.rdu2.redhat.com [10.10.114.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4E22E1DC;
+        Mon, 15 Jun 2020 14:24:36 +0000 (UTC)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 4CD5FC08D9; Mon, 15 Jun 2020 11:24:34 -0300 (-03)
+Date:   Mon, 15 Jun 2020 11:24:34 -0300
+From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
+To:     Roi Dayan <roid@mellanox.com>
+Cc:     netdev@vger.kernel.org, pablo@netfilter.org, davem@davemloft.net,
+        Jiri Pirko <jiri@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>, Alaa Hleihel <alaa@mellanox.com>
+Subject: Re: [PATCH net 2/2] netfilter: flowtable: Make
+ nf_flow_table_offload_add/del_cb inline
+Message-ID: <20200615142434.GS47542@localhost.localdomain>
+References: <20200614111249.6145-1-roid@mellanox.com>
+ <20200614111249.6145-3-roid@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+CmpXst-5i4L5nW-Z66ZmxuLhdihjeNkHU1JdzTwow1rNH7Ng@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20200614111249.6145-3-roid@mellanox.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 05:18:38PM +0300, Yehezkel Bernat wrote:
-> On Mon, Jun 15, 2020 at 4:51 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Mon, Jun 15, 2020 at 04:45:22PM +0300, Yehezkel Bernat wrote:
-> > > On Mon, Jun 15, 2020 at 4:02 PM Mika Westerberg
-> > > <mika.westerberg@linux.intel.com> wrote:
-> > > >
-> > > > diff --git a/include/linux/thunderbolt.h b/include/linux/thunderbolt.h
-> > > > index ff397c0d5c07..5db2b11ab085 100644
-> > > > --- a/include/linux/thunderbolt.h
-> > > > +++ b/include/linux/thunderbolt.h
-> > > > @@ -504,8 +504,6 @@ struct tb_ring {
-> > > >  #define RING_FLAG_NO_SUSPEND   BIT(0)
-> > > >  /* Configure the ring to be in frame mode */
-> > > >  #define RING_FLAG_FRAME                BIT(1)
-> > > > -/* Enable end-to-end flow control */
-> > > > -#define RING_FLAG_E2E          BIT(2)
-> > > >
-> > >
-> > > Isn't it better to keep it (or mark it as reserved) so it'll not cause
-> > > compatibility issues with older versions of the driver or with Windows?
-> >
-> >
-> > How can you have "older versions of the driver"?  All drivers are in the
-> > kernel tree at the same time, you can't ever mix-and-match drivers and
-> > kernels.
-> >
-> > And how does Windows come into play here?
-> >
+On Sun, Jun 14, 2020 at 02:12:49PM +0300, Roi Dayan wrote:
+> From: Alaa Hleihel <alaa@mellanox.com>
 > 
-> As much as I remember, this flag is sent as part of creating the
-> interdomain connection.
-> If we reuse this bit to something else, and the other host runs an
-> older kernel or
-> Windows, this seems to be an issue.
-> But maybe I don't remember it correctly.
+> Currently, nf_flow_table_offload_add/del_cb are exported by nf_flow_table
+> module, therefore modules using them will have hard-dependency
+> on nf_flow_table and will require loading it all the time.
+> 
+> This can lead to an unnecessary overhead on systems that do not
+> use this API.
+> 
+> To relax the hard-dependency between the modules, we unexport these
+> functions and make them static inline.
+> 
+> Fixes: 978703f42549 ("netfilter: flowtable: Add API for registering to flow table events")
+> Signed-off-by: Alaa Hleihel <alaa@mellanox.com>
+> Reviewed-by: Roi Dayan <roid@mellanox.com>
 
-We never send this flag anywhere. At the moment we do not announce
-support the "full E2E" in the network driver. Basically this is dead
-code what we remove.
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+
+> ---
+>  include/net/netfilter/nf_flow_table.h | 49 ++++++++++++++++++++++++++++++++---
+>  net/netfilter/nf_flow_table_core.c    | 45 --------------------------------
+>  2 files changed, 45 insertions(+), 49 deletions(-)
+> 
+> diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+> index c54a7f707e50..8a8f0e64edc3 100644
+> --- a/include/net/netfilter/nf_flow_table.h
+> +++ b/include/net/netfilter/nf_flow_table.h
+> @@ -161,10 +161,51 @@ struct nf_flow_route {
+>  struct flow_offload *flow_offload_alloc(struct nf_conn *ct);
+>  void flow_offload_free(struct flow_offload *flow);
+>  
+> -int nf_flow_table_offload_add_cb(struct nf_flowtable *flow_table,
+> -				 flow_setup_cb_t *cb, void *cb_priv);
+> -void nf_flow_table_offload_del_cb(struct nf_flowtable *flow_table,
+> -				  flow_setup_cb_t *cb, void *cb_priv);
+> +static inline int
+> +nf_flow_table_offload_add_cb(struct nf_flowtable *flow_table,
+> +			     flow_setup_cb_t *cb, void *cb_priv)
+> +{
+> +	struct flow_block *block = &flow_table->flow_block;
+> +	struct flow_block_cb *block_cb;
+> +	int err = 0;
+> +
+> +	down_write(&flow_table->flow_block_lock);
+> +	block_cb = flow_block_cb_lookup(block, cb, cb_priv);
+> +	if (block_cb) {
+> +		err = -EEXIST;
+> +		goto unlock;
+> +	}
+> +
+> +	block_cb = flow_block_cb_alloc(cb, cb_priv, cb_priv, NULL);
+> +	if (IS_ERR(block_cb)) {
+> +		err = PTR_ERR(block_cb);
+> +		goto unlock;
+> +	}
+> +
+> +	list_add_tail(&block_cb->list, &block->cb_list);
+> +
+> +unlock:
+> +	up_write(&flow_table->flow_block_lock);
+> +	return err;
+> +}
+> +
+> +static inline void
+> +nf_flow_table_offload_del_cb(struct nf_flowtable *flow_table,
+> +			     flow_setup_cb_t *cb, void *cb_priv)
+> +{
+> +	struct flow_block *block = &flow_table->flow_block;
+> +	struct flow_block_cb *block_cb;
+> +
+> +	down_write(&flow_table->flow_block_lock);
+> +	block_cb = flow_block_cb_lookup(block, cb, cb_priv);
+> +	if (block_cb) {
+> +		list_del(&block_cb->list);
+> +		flow_block_cb_free(block_cb);
+> +	} else {
+> +		WARN_ON(true);
+> +	}
+> +	up_write(&flow_table->flow_block_lock);
+> +}
+>  
+>  int flow_offload_route_init(struct flow_offload *flow,
+>  			    const struct nf_flow_route *route);
+> diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+> index 42da6e337276..647680175213 100644
+> --- a/net/netfilter/nf_flow_table_core.c
+> +++ b/net/netfilter/nf_flow_table_core.c
+> @@ -387,51 +387,6 @@ static void nf_flow_offload_work_gc(struct work_struct *work)
+>  	queue_delayed_work(system_power_efficient_wq, &flow_table->gc_work, HZ);
+>  }
+>  
+> -int nf_flow_table_offload_add_cb(struct nf_flowtable *flow_table,
+> -				 flow_setup_cb_t *cb, void *cb_priv)
+> -{
+> -	struct flow_block *block = &flow_table->flow_block;
+> -	struct flow_block_cb *block_cb;
+> -	int err = 0;
+> -
+> -	down_write(&flow_table->flow_block_lock);
+> -	block_cb = flow_block_cb_lookup(block, cb, cb_priv);
+> -	if (block_cb) {
+> -		err = -EEXIST;
+> -		goto unlock;
+> -	}
+> -
+> -	block_cb = flow_block_cb_alloc(cb, cb_priv, cb_priv, NULL);
+> -	if (IS_ERR(block_cb)) {
+> -		err = PTR_ERR(block_cb);
+> -		goto unlock;
+> -	}
+> -
+> -	list_add_tail(&block_cb->list, &block->cb_list);
+> -
+> -unlock:
+> -	up_write(&flow_table->flow_block_lock);
+> -	return err;
+> -}
+> -EXPORT_SYMBOL_GPL(nf_flow_table_offload_add_cb);
+> -
+> -void nf_flow_table_offload_del_cb(struct nf_flowtable *flow_table,
+> -				  flow_setup_cb_t *cb, void *cb_priv)
+> -{
+> -	struct flow_block *block = &flow_table->flow_block;
+> -	struct flow_block_cb *block_cb;
+> -
+> -	down_write(&flow_table->flow_block_lock);
+> -	block_cb = flow_block_cb_lookup(block, cb, cb_priv);
+> -	if (block_cb) {
+> -		list_del(&block_cb->list);
+> -		flow_block_cb_free(block_cb);
+> -	} else {
+> -		WARN_ON(true);
+> -	}
+> -	up_write(&flow_table->flow_block_lock);
+> -}
+> -EXPORT_SYMBOL_GPL(nf_flow_table_offload_del_cb);
+>  
+>  static int nf_flow_nat_port_tcp(struct sk_buff *skb, unsigned int thoff,
+>  				__be16 port, __be16 new_port)
+> -- 
+> 2.8.4
+> 
+
