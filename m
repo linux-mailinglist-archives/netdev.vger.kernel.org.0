@@ -2,88 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 365911FA3A8
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 00:43:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 245E21FA3C4
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 00:54:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbgFOWm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 18:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57928 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725960AbgFOWm4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 18:42:56 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D4AC061A0E
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 15:42:55 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id b27so17410662qka.4
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 15:42:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9Nye8Ql6VwBR67ZCtzVWDrSvlcWgMab2WYMoX+UPnlc=;
-        b=qaXAb4IxrBcrc9gqJ9/fOqa2W1jK0dXpXInjtzxJgyvN013WYsRpHJT0D3HYh2HIlh
-         AT3seU0O2orQvVyBUj6SrSjmNEJriVri/LQ2vbP4n5qsFM45pmfInf3pNhDYm7wRi2o3
-         b30bUuYYIrDqC5qtbJsN1wAinCzKrXBs1W6BfuftsSMsca/wQhAKaxBKNHNB1PAA5B77
-         iVnotA6yPT+pvsuVgQPTVFd8zCFSB9tcDHGZg2+iawal6o5Vm8fq0PG7Lta/bZsGDqgU
-         /6XgAbAElncUhDSFoqR4O2n77unuHV0ISkuIKYxEKAuHY9PywZb//z3Q+ewZyepRaThr
-         Zefw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9Nye8Ql6VwBR67ZCtzVWDrSvlcWgMab2WYMoX+UPnlc=;
-        b=RgtNVLwXxrxMq2Up7Kkm3QSYT0DJNxaVsC6r1hyU0Q4YQQrWi6ikelyZIEe8T9xgh0
-         dHsSAG9z45QZwombvpSJpl3cYW+3K2FwhgZN/P8FYSatwBD4OBpdrOuVHbnmMSgZ9aoU
-         xkpQMOudxJ/ridUw8fPIoEFIe7aS0hb584iFEosqd1VkiRJNHlx1kVNWXGWk3Z3GgmD+
-         5DFS/7tIhKkNwmxQIHnDglbKDKsKVNAGWHUGHtmdV6T08QYWrC82MRDn1KQ74N/g/G3G
-         xf+5Z83L30BqSwAzMnlyVYSHWwEfDk+ijAVYzecMltNVPuLyNYoY7bVbVNQO8uHsdb05
-         OtIA==
-X-Gm-Message-State: AOAM53339utGzdCj2aKSg2C3+zMKVtrznWaocUKO5X2+yu/h+65C2+2+
-        i/gWL7+mdu/Yp5BeQ4OubC0JG51B
-X-Google-Smtp-Source: ABdhPJwXjujCpOZqp0zrY+MX3d2/9mauk01cHV92jVYy5A5suwUlCW7ON6R1C8cougkJJ9Y+vidGnw==
-X-Received: by 2002:a37:64ca:: with SMTP id y193mr17819938qkb.367.1592260974394;
-        Mon, 15 Jun 2020 15:42:54 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:b48d:5aec:2ff2:2476? ([2601:282:803:7700:b48d:5aec:2ff2:2476])
-        by smtp.googlemail.com with ESMTPSA id z3sm11731310qkl.111.2020.06.15.15.42.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Jun 2020 15:42:53 -0700 (PDT)
-Subject: =?UTF-8?B?UmU6IOetlOWkjTogW3ZnZXIua2VybmVsLm9yZ+S7o+WPkV1SZTog562U?=
- =?UTF-8?Q?=e5=a4=8d=3a_=5bPATCH=5d_can_current_ECMP_implementation_support_?=
- =?UTF-8?Q?consistent_hashing_for_next_hop=3f?=
-To:     =?UTF-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
-        <yangyi01@inspur.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>
-References: <4037f805c6f842dcc429224ce28425eb@sslemail.net>
- <8ff0c684-7d33-c785-94d7-c0e6f8b79d64@gmail.com>
- <8867a00d26534ed5b84628db1a43017c@inspur.com>
- <8da839b3-5b5d-b663-7d9c-0bc8351980dd@gmail.com>
- <b9e0245f58ca44ed80b07a58cd0399be@inspur.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <cdbeca15-da70-119b-9f0c-04813cb82766@gmail.com>
-Date:   Mon, 15 Jun 2020 16:42:52 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.9.0
+        id S1726527AbgFOWyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 18:54:04 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63878 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726408AbgFOWyE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 18:54:04 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05FMjVZb001817
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 15:54:03 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=2eD8IxW0E51tBxi6wZ/BHDjjdTMYLiR6zvpUup5wNqs=;
+ b=eR4pRF7Ofbhu6XBzmtXrsUxBdpXhk/I8haSru5ZU5P5yfBcHL8p4w+7Qur7KINIdmR6o
+ EZmgDzgPduPLFqzwVOdsVmBa24hfR7RsphENjg9tHLUkpJY2z11rs2bnWjemrvHZrB0O
+ gwkLD/YadwhQlQ6dYZO9Plqdt8mf8S5Ztnc= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 31mvamhrt1-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 15:54:02 -0700
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 15 Jun 2020 15:54:01 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 7E6422EC3A4B; Mon, 15 Jun 2020 15:53:57 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] tools/bpftool: add ringbuf map to a list of known map types
+Date:   Mon, 15 Jun 2020 15:53:55 -0700
+Message-ID: <20200615225355.366256-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <b9e0245f58ca44ed80b07a58cd0399be@inspur.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-15_11:2020-06-15,2020-06-15 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ suspectscore=0 malwarescore=0 adultscore=0 priorityscore=1501 spamscore=0
+ phishscore=0 cotscore=-2147483648 mlxlogscore=728 lowpriorityscore=0
+ mlxscore=0 clxscore=1015 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006150162
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/15/20 12:56 AM, Yi Yang (杨燚)-云服务集团 wrote:
-> My next hops are final real servers but not load balancers, say we sets maximum number of servers to 64, but next hop entry is added or removed dynamically, we are unlikely to know them beforehand. I can't understand how user space can attain consistent distribution without in-kernel consistent hashing, can you show how ip route cmds can attain this?
-> 
+Add symbolic name "ringbuf" to map to BPF_MAP_TYPE_RINGBUF. Without this,
+users will see "type 27" instead of "ringbuf" in `map show` output.
 
-I do not see how consistent hashing can be done in the kernel without
-affecting performance, and a second problem is having it do the right
-thing for all use cases. That said, feel free to try to implement it.
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/bpf/bpftool/map.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> I find routing cache can help fix this issue, if a flow has been routed to a real server, then its route has been cached, so packets in this flow should hit routing cache by fib_lookup, so this can make sure it can be always routed to right server, as far as the result is concerned, it is equivalent to consistent hashing. 
-> 
+diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
+index c5fac8068ba1..99109a6afe17 100644
+--- a/tools/bpf/bpftool/map.c
++++ b/tools/bpf/bpftool/map.c
+@@ -49,6 +49,7 @@ const char * const map_type_name[] =3D {
+ 	[BPF_MAP_TYPE_STACK]			=3D "stack",
+ 	[BPF_MAP_TYPE_SK_STORAGE]		=3D "sk_storage",
+ 	[BPF_MAP_TYPE_STRUCT_OPS]		=3D "struct_ops",
++	[BPF_MAP_TYPE_RINGBUF]			=3D "ringbuf",
+ };
+=20
+ const size_t map_type_name_size =3D ARRAY_SIZE(map_type_name);
+--=20
+2.24.1
 
-route cache is invalidated anytime there is a change to the FIB.
