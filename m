@@ -2,110 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 449761F9C33
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:48:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 686F21F9C42
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:51:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730135AbgFOPsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 11:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50254 "EHLO
+        id S1730678AbgFOPvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 11:51:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728585AbgFOPsQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 11:48:16 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C73C061A0E
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:48:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=th4gD7twGiu96ZuI2JLCZu8yW3lFiM55LOE9/NVfaaY=; b=ZFaeaMT0Aoi4T+B2zem2gvgRpr
-        xER3KhKdC7xqxwj2KCpfTQxxiC6I8UxcHWR2IgNJl5SnY5S+d3Lx3wCtH3ZxLZL+3eq6YRRULwwQ2
-        ddsN7LMkCKyyjudQThiB7TUusisLupYJa4gvleGg/62DVr+iLbO06ISaxAZFfGBv76CyKwp6uKxi8
-        BEKoDk5H/rYLFAEy53yaD5b7fxJBeCywClJ+C+WSJxA2WvhmUf2OvffpH/Yj8CVzRLT0nkwKzk7aW
-        FdFe2FVRigGPFyRXoFgNHItMYzpqWYci08YGFucLAwb+Pb7pVp31yTd3q6A7DrRcHzlWkGrAyb3Cp
-        fA2IRLjw==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jkrLL-0005RD-QB; Mon, 15 Jun 2020 15:48:15 +0000
-Subject: Re: [PATCH 2/5] Huawei BMA: Adding Huawei BMA driver: host_cdev_drv
-To:     yunaixin03610@163.com, netdev@vger.kernel.org
-Cc:     yunaixin <yunaixin@huawei.com>
-References: <20200615145906.1013-1-yunaixin03610@163.com>
- <20200615145906.1013-3-yunaixin03610@163.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <0c724b75-f90d-a0f2-fbdb-4cd220b8e142@infradead.org>
-Date:   Mon, 15 Jun 2020 08:48:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-In-Reply-To: <20200615145906.1013-3-yunaixin03610@163.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S1727785AbgFOPvB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 11:51:01 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021E8C061A0E;
+        Mon, 15 Jun 2020 08:51:01 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id dp10so7945017qvb.10;
+        Mon, 15 Jun 2020 08:51:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=N9MFjwIDkU/fRqTGThssGDIRUjhg7G4jDT1glvQytko=;
+        b=X6/gFRBEJqbq4+cK0EGmbFrgwomFmfr5VkoFKsDNSFrhhdfoslSRjoM7gQ42xcICsG
+         U/wljtL5OhFb8BZ0LZ48hCmYesemEBxVgbZPauTA9XPY1VUy4KEdyts95yq9dFN1OMeO
+         7gFqWfdIMqRv+mpONsnRV8MCNb/abPPIjyMYThcTOoK8hRcl0oukJZJV2Ql1xbdzzCZq
+         uPayhqVctr9ekAn1upOhXqEwEEpNwbII/kgrSAjd6DYfo4OlZ1PDpuupzqWJ/4C7LQ4Q
+         uJY9GfUIvEWEXUKS25KcAhaq/MLcmyJQNNrpjBYfcN+A3pmxwon1fcdwpbEUWUHUmzou
+         53eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=N9MFjwIDkU/fRqTGThssGDIRUjhg7G4jDT1glvQytko=;
+        b=CLmJ56AIRUFLcx+1MD0S3c9uqJyhZuKj66AMA3Vp/91H1/AihWnHZDuAAmoWMuP5bh
+         m/pesHKUi9vmIuiMvqhOzjlnF+iWlgqLaAzhigeA90YEZht69MYea1F4Rss+HGxG+4d0
+         l6mcyPNmn2iw0xUNyZ4Z4OyrCIFNePIdhPSU5YInegU0eRIZXWBjmeVW9A9u4crdvkr7
+         T5S3Q248OICq/MxzFks4qW9LioglmG9qMw9XlTrO0SPDol2Y8YEe+OstwLhfWotAMTAa
+         dofe8ejbTGx74LGQYp7FHSgEcNX7zmscsD1pKvEVvPBv2iO9f9aF9i50FqtMLhfZ6hDW
+         Ow2Q==
+X-Gm-Message-State: AOAM531CFqgTSQgw/U+v86ua00VUnYyeesE/AgjCYSbJyK0wvtfAFoCQ
+        31kqgvjno49Zs6QOh/4lIFA=
+X-Google-Smtp-Source: ABdhPJwS5pLhv+GpLxbnPFbPnNMz5u4jKgJdKqPDGY5OlRkFbGA76E8NSp8H1Sa6R8xxkGGx8TDq9Q==
+X-Received: by 2002:a0c:c303:: with SMTP id f3mr25899662qvi.240.1592236260121;
+        Mon, 15 Jun 2020 08:51:00 -0700 (PDT)
+Received: from buszk-y710.fios-router.home (pool-108-54-206-188.nycmny.fios.verizon.net. [108.54.206.188])
+        by smtp.googlemail.com with ESMTPSA id 185sm11757262qke.92.2020.06.15.08.50.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Jun 2020 08:50:59 -0700 (PDT)
+From:   Zekun Shen <bruceshenzk@gmail.com>
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net: alx: fix race condition in alx_remove
+Date:   Mon, 15 Jun 2020 11:50:29 -0400
+Message-Id: <20200615155029.21002-1-bruceshenzk@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200614165912.25622-1-bruceshenzk@gmail.com>
+References: <20200614165912.25622-1-bruceshenzk@gmail.com>
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi--
+There is a race condition exist during termination. The path is
+alx_stop and then alx_remove. An alx_schedule_link_check could be called
+before alx_stop by interrupt handler and invoke alx_link_check later.
+Alx_stop frees the napis, and alx_remove cancels any pending works.
+If any of the work is scheduled before termination and invoked before
+alx_remove, a null-ptr-deref occurs because both expect alx->napis[i].
 
-On 6/15/20 7:59 AM, yunaixin03610@163.com wrote:
-> diff --git a/drivers/net/ethernet/huawei/bma/Kconfig b/drivers/net/ethernet/huawei/bma/Kconfig
-> index 1a92c1dd83f3..12979128fa9d 100644
-> --- a/drivers/net/ethernet/huawei/bma/Kconfig
-> +++ b/drivers/net/ethernet/huawei/bma/Kconfig
-> @@ -1 +1,2 @@
-> -source "drivers/net/ethernet/huawei/bma/edma_drv/Kconfig"
-> \ No newline at end of file
-> +source "drivers/net/ethernet/huawei/bma/edma_drv/Kconfig"
-> +source "drivers/net/ethernet/huawei/bma/cdev_drv/Kconfig"
-> \ No newline at end of file
+This patch fix the race condition by moving cancel_work_sync functions
+before alx_free_napis inside alx_stop. Because interrupt handler can call
+alx_schedule_link_check again, alx_free_irq is moved before
+cancel_work_sync calls too.
 
-Please fix those warnings above.
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+---
+Changes in v2:
+- move alx_free_irq before cancel_work_sync calls
+- prevent another interrupt to cause race condition
 
-> diff --git a/drivers/net/ethernet/huawei/bma/Makefile b/drivers/net/ethernet/huawei/bma/Makefile
-> index 8f589f7986d6..c9bbcbf2a388 100644
-> --- a/drivers/net/ethernet/huawei/bma/Makefile
-> +++ b/drivers/net/ethernet/huawei/bma/Makefile
-> @@ -2,4 +2,5 @@
->  # Makefile for BMA software driver
->  # 
->  
-> -obj-$(CONFIG_BMA) += edma_drv/
-> \ No newline at end of file
-> +obj-$(CONFIG_BMA) += edma_drv/
-> +obj-$(CONFIG_BMA) += cdev_drv/
-> \ No newline at end of file
+ drivers/net/ethernet/atheros/alx/main.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Same here.
-
-> diff --git a/drivers/net/ethernet/huawei/bma/cdev_drv/Kconfig b/drivers/net/ethernet/huawei/bma/cdev_drv/Kconfig
-> new file mode 100644
-> index 000000000000..97829c5487c2
-> --- /dev/null
-> +++ b/drivers/net/ethernet/huawei/bma/cdev_drv/Kconfig
-> @@ -0,0 +1,11 @@
-> +#
-> +# Huawei BMA software driver configuration
-> +#
-> +
-> +config BMA
-> +	tristate "Huawei BMA Software Communication Driver"
-> +
-> +	---help---
-
-Just use
-	help
-here.  Use of ---help--- is being phased out.
-
-> +	  This driver supports Huawei BMA Software. It is used 
-> +	  to communication between Huawei BMA and BMC software.
-
-	  to communicate
-
-> +
-
-thanks.
+diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
+index b9b4edb91..9b7f1af5f 100644
+--- a/drivers/net/ethernet/atheros/alx/main.c
++++ b/drivers/net/ethernet/atheros/alx/main.c
+@@ -1249,8 +1249,12 @@ static int __alx_open(struct alx_priv *alx, bool resume)
+ 
+ static void __alx_stop(struct alx_priv *alx)
+ {
+-	alx_halt(alx);
+ 	alx_free_irq(alx);
++
++	cancel_work_sync(&alx->link_check_wk);
++	cancel_work_sync(&alx->reset_wk);
++
++	alx_halt(alx);
+ 	alx_free_rings(alx);
+ 	alx_free_napis(alx);
+ }
+@@ -1855,9 +1859,6 @@ static void alx_remove(struct pci_dev *pdev)
+ 	struct alx_priv *alx = pci_get_drvdata(pdev);
+ 	struct alx_hw *hw = &alx->hw;
+ 
+-	cancel_work_sync(&alx->link_check_wk);
+-	cancel_work_sync(&alx->reset_wk);
+-
+ 	/* restore permanent mac address */
+ 	alx_set_macaddr(hw, hw->perm_addr);
+ 
 -- 
-~Randy
+2.17.1
 
