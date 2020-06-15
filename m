@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 281A31F9B78
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:07:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B490F1F9B84
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730971AbgFOPGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 11:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
+        id S1730851AbgFOPIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 11:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730948AbgFOPGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 11:06:21 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0042C061A0E
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:06:21 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id u5so7727171pgn.5
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:06:21 -0700 (PDT)
+        with ESMTP id S1729875AbgFOPIU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 11:08:20 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADCF3C061A0E
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:08:20 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id ga6so6963042pjb.1
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 08:08:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=+fhlIkYbpaaYB4j9iL3ichkte9+iEISysEhJBZHu/JE=;
-        b=Q3CI4WuCmsgnxLL3+2JXAL4OG+9EJIT9w91lu8Rf/hIYFvmxi5eou4977bidrpBelP
-         f+j2M7qS21SXuljwLCpOfthYW2k3AZc0dHFg3EzPIlWEY29KG8NqfKFOX11vM4z6aP4M
-         wVUZX/8GB+5KsRclp0w2p6U6CHRltH1x4KBTW5175n0lbExnN0X2e0HcndZ8z8lBxTzO
-         kr7kRUwrQ6V2KIFZEi4/3S04IYzTAit/g4TBnC9uydfgWnjeFBxg7MIb9PnvVj18RKxy
-         vNyokysXvBfdbAFIJy/99qJh4jPbiduTaWFB45VWLUhFSmyZlyYv9YFqbRy2D2sBf7qF
-         oMNg==
+        bh=FZeA9UJwwLa5SWg2XkX4pcLkXrux9nlY8KoF84Uak6U=;
+        b=uzB8fO2OiptjlpvD7fQ9jN7wZUNoJTSaxECeQth149lsK+dPZlQdK2hJw5sQ2ygVcN
+         kjxiEsafPfBm7LBXM8yW59ZZIEPboNAzkg2uhU8TANNu7smQX/DVI1fB+hHi+THIhnQc
+         /VrRH0XGnzfgDRHe4W6XkbigUjOYQHqgoPgF309AKXnEuKVZRilWrZyHEAAc56vjSnav
+         1MkIMA5rpW3QrAWFgDvDAIK/QjUAdOI72UACswEThgU6axhqZY4g62Dd8nuKlQLcB1UZ
+         BsNUClNp5LNWzk6MTx2TP8AIDHiriR6F1ABtPdZJyAxVo66zg0DflaWRXBVIxn4duN3v
+         AHyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=+fhlIkYbpaaYB4j9iL3ichkte9+iEISysEhJBZHu/JE=;
-        b=m2Voy3ESg3ey3kDomD5tcmzS45rF5n5nYuPxzne+t+He/uQpyMqtnR8Gc/T6hdp+yF
-         lQvx+FMa7O0x+gq8WjL5bLCFy3+kVQuBXTolz0tEIcVf3aBJ3eUkcxIhLjg5U+BcP1yz
-         oQtzjEYUzFzOYH8NhfhfMaDA4nrHAKfOYUz5UCfFB8PPrUapjVRDxU2d/nAxzlDuIhsW
-         xDljQ6/yzdqjtvbLYZE5dHCgEb7XcwT/14tXQMOM0N+PZ9p84VzKegC00w/irzRBE7jg
-         dJ4teCa/TZmgUHtah1gTKZ404AJML0dMyP6aGJri7cYQ4+6MZOCEWKDRRd1kpwIA5Qzu
-         x33Q==
-X-Gm-Message-State: AOAM531+p+sDQJVs1JeV0GijvofC0Qivzj/b1WNat/Ps05zPSvxtVPs0
-        VkrdmN0+0SkDtp/OMtUCm7DD5PPedH8=
-X-Google-Smtp-Source: ABdhPJzSEXfhivSWyGcc5v++w0Fa0SWiyefcFOYVqyToCdTKJSAabpbMGerf3pml9JLQH7prLfREdA==
-X-Received: by 2002:a63:ef03:: with SMTP id u3mr21319843pgh.254.1592233580451;
-        Mon, 15 Jun 2020 08:06:20 -0700 (PDT)
+        bh=FZeA9UJwwLa5SWg2XkX4pcLkXrux9nlY8KoF84Uak6U=;
+        b=Qvv6AWUUn8jOvWWDga/LRqw/DxCQBIFDLgGWI0IxKextU1o0Q8K9MAUzucL27IHSl+
+         hdZc+wUoUQNRr4msB575bYd4tN2UJ1x41FQIykTkanosnRTpZYTmTis2yGNXp2yfHlE6
+         +y/H8BhczdobAkWJsZke1RjH9ZwziN02erO/8BrYStYqe8r4v8tUDoVNmtQi5n+ViUnM
+         CFQEDOXA7ond7NNAYr3dwtP4Z8VOQ75ZyMxzD+G6ffe/HqfkwSPHEW2Bt/0WK+cFzrRA
+         0ES4LcYODL/RXl9ebgxEE6R/oVnzTVCAtqDL7B1mSmRApZy4tc+A61DulHTbzpyaYSIG
+         jArw==
+X-Gm-Message-State: AOAM530yV0Ew5U4G0G1xxyXwNcnXteQcqpkgrsTqEJ8tZVu2r9slqu2I
+        qLLT4DUeziQRJ5GbaENnzWnudIHCpKM=
+X-Google-Smtp-Source: ABdhPJyPwYeEbCmgvnavlxbvEWLO1tUMoyJYlkAG9lyTGffUfFPae5icAoKi7hTzVL7t2ZZXrpOomw==
+X-Received: by 2002:a17:90a:fa04:: with SMTP id cm4mr12501119pjb.218.1592233700131;
+        Mon, 15 Jun 2020 08:08:20 -0700 (PDT)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id h5sm14823523pfb.120.2020.06.15.08.06.17
+        by smtp.gmail.com with ESMTPSA id g6sm14297240pfb.164.2020.06.15.08.08.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Jun 2020 08:06:19 -0700 (PDT)
+        Mon, 15 Jun 2020 08:08:18 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com, pshelar@nicira.com
-Subject: [PATCH net] ip_tunnel: fix use-after-free in ip_tunnel_lookup()
-Date:   Mon, 15 Jun 2020 15:06:13 +0000
-Message-Id: <20200615150613.21698-1-ap420073@gmail.com>
+Cc:     ap420073@gmail.com, xeb@mail.ru
+Subject: [PATCH net] ip6_gre: fix use-after-free in ip6gre_tunnel_lookup()
+Date:   Mon, 15 Jun 2020 15:07:51 +0000
+Message-Id: <20200615150751.21813-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the datapath, the ip_tunnel_lookup() is used and it internally uses
+In the datapath, the ip6gre_tunnel_lookup() is used and it internally uses
 fallback tunnel device pointer, which is fb_tunnel_dev.
 This pointer is protected by RTNL. It's not enough to be used
 in the datapath.
@@ -78,106 +78,109 @@ Test commands:
 
     ip netns exec A ip link set lo up
     ip netns exec A ip link set eth0 up
-    ip netns exec A ip link add gre1 type gre local 10.0.0.1 \
-	    remote 10.0.0.2
-    ip netns exec A ip link set gre1 up
-    ip netns exec A ip a a 10.0.100.1/24 dev gre1
-    ip netns exec A ip a a 10.0.0.1/24 dev eth0
+    ip netns exec A ip link add ip6gre1 type ip6gre local fc:0::1 \
+	    remote fc:0::2
+    ip netns exec A ip -6 a a fc:100::1/64 dev ip6gre1
+    ip netns exec A ip link set ip6gre1 up
+    ip netns exec A ip -6 a a fc:0::1/64 dev eth0
+    ip netns exec A ip link set ip6gre0 up
 
     ip netns exec B ip link set lo up
     ip netns exec B ip link set eth1 up
-    ip netns exec B ip link add gre1 type gre local 10.0.0.2 \
-	    remote 10.0.0.1
-    ip netns exec B ip link set gre1 up
-    ip netns exec B ip a a 10.0.100.2/24 dev gre1
-    ip netns exec B ip a a 10.0.0.2/24 dev eth1
-    ip netns exec A hping3 10.0.100.2 -2 --flood -d 60000 &
+    ip netns exec B ip link add ip6gre1 type ip6gre local fc:0::2 \
+	    remote fc:0::1
+    ip netns exec B ip -6 a a fc:100::2/64 dev ip6gre1
+    ip netns exec B ip link set ip6gre1 up
+    ip netns exec B ip -6 a a fc:0::2/64 dev eth1
+    ip netns exec B ip link set ip6gre0 up
+    ip netns exec A ping fc:100::2 -s 60000 &
     ip netns del B
 
 Splat looks like:
-[  133.319668][    C3] BUG: KASAN: use-after-free in ip_tunnel_lookup+0x9d6/0xde0
-[  133.343852][    C3] Read of size 4 at addr ffff8880b1701c84 by task hping3/1222
-[  133.344724][    C3]
-[  133.345002][    C3] CPU: 3 PID: 1222 Comm: hping3 Not tainted 5.7.0+ #591
-[  133.345814][    C3] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[  133.373336][    C3] Call Trace:
-[  133.374792][    C3]  <IRQ>
-[  133.375205][    C3]  dump_stack+0x96/0xdb
-[  133.375789][    C3]  print_address_description.constprop.6+0x2cc/0x450
-[  133.376720][    C3]  ? ip_tunnel_lookup+0x9d6/0xde0
-[  133.377431][    C3]  ? ip_tunnel_lookup+0x9d6/0xde0
-[  133.378130][    C3]  ? ip_tunnel_lookup+0x9d6/0xde0
-[  133.378851][    C3]  kasan_report+0x154/0x190
-[  133.379494][    C3]  ? ip_tunnel_lookup+0x9d6/0xde0
-[  133.380200][    C3]  ip_tunnel_lookup+0x9d6/0xde0
-[  133.380894][    C3]  __ipgre_rcv+0x1ab/0xaa0 [ip_gre]
-[  133.381630][    C3]  ? rcu_read_lock_sched_held+0xc0/0xc0
-[  133.382429][    C3]  gre_rcv+0x304/0x1910 [ip_gre]
+[   73.087285][    C1] BUG: KASAN: use-after-free in ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.088361][    C1] Read of size 4 at addr ffff888040559218 by task ping/1429
+[   73.089317][    C1]
+[   73.089638][    C1] CPU: 1 PID: 1429 Comm: ping Not tainted 5.7.0+ #602
+[   73.090531][    C1] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[   73.091725][    C1] Call Trace:
+[   73.092160][    C1]  <IRQ>
+[   73.092556][    C1]  dump_stack+0x96/0xdb
+[   73.093122][    C1]  print_address_description.constprop.6+0x2cc/0x450
+[   73.094016][    C1]  ? ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.094894][    C1]  ? ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.095767][    C1]  ? ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.096619][    C1]  kasan_report+0x154/0x190
+[   73.097209][    C1]  ? ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.097989][    C1]  ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.098750][    C1]  ? gre_del_protocol+0x60/0x60 [gre]
+[   73.099500][    C1]  gre_rcv+0x1c5/0x1450 [ip6_gre]
+[   73.100199][    C1]  ? ip6gre_header+0xf00/0xf00 [ip6_gre]
+[   73.100985][    C1]  ? rcu_read_lock_sched_held+0xc0/0xc0
+[   73.101830][    C1]  ? ip6_input_finish+0x5/0xf0
+[   73.102483][    C1]  ip6_protocol_deliver_rcu+0xcbb/0x1510
+[   73.103296][    C1]  ip6_input_finish+0x5b/0xf0
+[   73.103920][    C1]  ip6_input+0xcd/0x2c0
+[   73.104473][    C1]  ? ip6_input_finish+0xf0/0xf0
+[   73.105115][    C1]  ? rcu_read_lock_held+0x90/0xa0
+[   73.105783][    C1]  ? rcu_read_lock_sched_held+0xc0/0xc0
+[   73.106548][    C1]  ipv6_rcv+0x1f1/0x300
 [ ... ]
 
-Fixes: c54419321455 ("GRE: Refactor GRE tunneling code.")
+Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- include/net/ip_tunnels.h |  1 +
- net/ipv4/ip_tunnel.c     | 11 ++++++++---
- 2 files changed, 9 insertions(+), 3 deletions(-)
+ net/ipv6/ip6_gre.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
-index 076e5d7db7d3..7442c517bb75 100644
---- a/include/net/ip_tunnels.h
-+++ b/include/net/ip_tunnels.h
-@@ -164,6 +164,7 @@ struct ip_tunnel_net {
- 	struct rtnl_link_ops *rtnl_link_ops;
- 	struct hlist_head tunnels[IP_TNL_HASH_SIZE];
- 	struct ip_tunnel __rcu *collect_md_tun;
-+	struct ip_tunnel __rcu *fb_tun;
- 	int type;
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 781ca8c07a0d..6506ade70f3f 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -67,6 +67,7 @@ struct ip6gre_net {
+ 
+ 	struct ip6_tnl __rcu *collect_md_tun;
+ 	struct ip6_tnl __rcu *collect_md_tun_erspan;
++	struct ip6_tnl __rcu *fb_tun;
+ 	struct net_device *fb_tunnel_dev;
  };
  
-diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
-index f4f1d11eab50..285b863e2fcc 100644
---- a/net/ipv4/ip_tunnel.c
-+++ b/net/ipv4/ip_tunnel.c
-@@ -162,8 +162,9 @@ struct ip_tunnel *ip_tunnel_lookup(struct ip_tunnel_net *itn,
+@@ -238,9 +239,9 @@ static struct ip6_tnl *ip6gre_tunnel_lookup(struct net_device *dev,
  	if (t && t->dev->flags & IFF_UP)
  		return t;
  
--	if (itn->fb_tunnel_dev && itn->fb_tunnel_dev->flags & IFF_UP)
--		return netdev_priv(itn->fb_tunnel_dev);
-+	t = rcu_dereference(itn->fb_tun);
+-	dev = ign->fb_tunnel_dev;
+-	if (dev && dev->flags & IFF_UP)
+-		return netdev_priv(dev);
++	t = rcu_dereference(ign->fb_tun);
 +	if (t && t->dev->flags & IFF_UP)
 +		return t;
  
  	return NULL;
  }
-@@ -1059,6 +1060,7 @@ int ip_tunnel_init_net(struct net *net, unsigned int ip_tnl_net_id,
- 		it_init_net = net_generic(&init_net, ip_tnl_net_id);
- 		itn->type = it_init_net->type;
- 		itn->fb_tunnel_dev = NULL;
-+		RCU_INIT_POINTER(itn->fb_tun, NULL);
- 		return 0;
- 	}
+@@ -411,8 +412,12 @@ static void ip6gre_tunnel_uninit(struct net_device *dev)
+ 	struct ip6_tnl *t = netdev_priv(dev);
+ 	struct ip6gre_net *ign = net_generic(t->net, ip6gre_net_id);
  
-@@ -1074,8 +1076,9 @@ int ip_tunnel_init_net(struct net *net, unsigned int ip_tnl_net_id,
- 	if (!IS_ERR(itn->fb_tunnel_dev)) {
- 		itn->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
- 		itn->fb_tunnel_dev->mtu = ip_tunnel_bind_dev(itn->fb_tunnel_dev);
--		ip_tunnel_add(itn, netdev_priv(itn->fb_tunnel_dev));
- 		itn->type = itn->fb_tunnel_dev->type;
-+		rcu_assign_pointer(itn->fb_tun,
-+				   netdev_priv(itn->fb_tunnel_dev));
- 	}
- 	rtnl_unlock();
- 
-@@ -1262,6 +1265,8 @@ void ip_tunnel_uninit(struct net_device *dev)
- 	/* fb_tunnel_dev will be unregisted in net-exit call. */
- 	if (itn->fb_tunnel_dev != dev)
- 		ip_tunnel_del(itn, netdev_priv(dev));
-+	else
-+		rcu_assign_pointer(itn->fb_tun, NULL);
- 
- 	dst_cache_reset(&tunnel->dst_cache);
+-	ip6gre_tunnel_unlink_md(ign, t);
+-	ip6gre_tunnel_unlink(ign, t);
++	if (dev == ign->fb_tunnel_dev) {
++		RCU_INIT_POINTER(ign->fb_tun, NULL);
++	} else {
++		ip6gre_tunnel_unlink_md(ign, t);
++		ip6gre_tunnel_unlink(ign, t);
++	}
+ 	dst_cache_reset(&t->dst_cache);
+ 	dev_put(dev);
  }
+@@ -1584,7 +1589,7 @@ static int __net_init ip6gre_init_net(struct net *net)
+ 	if (err)
+ 		goto err_reg_dev;
+ 
+-	rcu_assign_pointer(ign->tunnels_wc[0],
++	rcu_assign_pointer(ign->fb_tun,
+ 			   netdev_priv(ign->fb_tunnel_dev));
+ 	return 0;
+ 
 -- 
 2.17.1
 
