@@ -2,113 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9015C1FA365
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 00:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 365911FA3A8
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 00:43:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726463AbgFOWVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 18:21:19 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:36166 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725843AbgFOWVS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 18:21:18 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05FM2NMR163141;
-        Mon, 15 Jun 2020 18:21:16 -0400
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 31msf012w2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Jun 2020 18:21:16 -0400
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05FMFk22026375;
-        Mon, 15 Jun 2020 22:21:15 GMT
-Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-        by ppma02wdc.us.ibm.com with ESMTP id 31pey48r1m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Jun 2020 22:21:15 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05FMLDr520185518
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Jun 2020 22:21:13 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DD0CEC605F;
-        Mon, 15 Jun 2020 22:21:14 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 80295C605A;
-        Mon, 15 Jun 2020 22:21:14 +0000 (GMT)
-Received: from Davids-MBP.randomparity.org (unknown [9.211.152.140])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon, 15 Jun 2020 22:21:14 +0000 (GMT)
-Subject: Re: [PATCH] tg3: driver sleeps indefinitely when EEH errors exceed
- eeh_max_freezes
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20200615190119.382589-1-drc@linux.vnet.ibm.com>
- <CACKFLimd0a=Y8WyvqCt4BD7SU_Cg1vQ=baKs6-uPv0dZuCm=mw@mail.gmail.com>
-From:   David Christensen <drc@linux.vnet.ibm.com>
-Message-ID: <95bf20c6-a812-32ad-fd38-45cba7e10491@linux.vnet.ibm.com>
-Date:   Mon, 15 Jun 2020 15:21:14 -0700
+        id S1726546AbgFOWm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 18:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725960AbgFOWm4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 18:42:56 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D4AC061A0E
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 15:42:55 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id b27so17410662qka.4
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 15:42:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=9Nye8Ql6VwBR67ZCtzVWDrSvlcWgMab2WYMoX+UPnlc=;
+        b=qaXAb4IxrBcrc9gqJ9/fOqa2W1jK0dXpXInjtzxJgyvN013WYsRpHJT0D3HYh2HIlh
+         AT3seU0O2orQvVyBUj6SrSjmNEJriVri/LQ2vbP4n5qsFM45pmfInf3pNhDYm7wRi2o3
+         b30bUuYYIrDqC5qtbJsN1wAinCzKrXBs1W6BfuftsSMsca/wQhAKaxBKNHNB1PAA5B77
+         iVnotA6yPT+pvsuVgQPTVFd8zCFSB9tcDHGZg2+iawal6o5Vm8fq0PG7Lta/bZsGDqgU
+         /6XgAbAElncUhDSFoqR4O2n77unuHV0ISkuIKYxEKAuHY9PywZb//z3Q+ewZyepRaThr
+         Zefw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9Nye8Ql6VwBR67ZCtzVWDrSvlcWgMab2WYMoX+UPnlc=;
+        b=RgtNVLwXxrxMq2Up7Kkm3QSYT0DJNxaVsC6r1hyU0Q4YQQrWi6ikelyZIEe8T9xgh0
+         dHsSAG9z45QZwombvpSJpl3cYW+3K2FwhgZN/P8FYSatwBD4OBpdrOuVHbnmMSgZ9aoU
+         xkpQMOudxJ/ridUw8fPIoEFIe7aS0hb584iFEosqd1VkiRJNHlx1kVNWXGWk3Z3GgmD+
+         5DFS/7tIhKkNwmxQIHnDglbKDKsKVNAGWHUGHtmdV6T08QYWrC82MRDn1KQ74N/g/G3G
+         xf+5Z83L30BqSwAzMnlyVYSHWwEfDk+ijAVYzecMltNVPuLyNYoY7bVbVNQO8uHsdb05
+         OtIA==
+X-Gm-Message-State: AOAM53339utGzdCj2aKSg2C3+zMKVtrznWaocUKO5X2+yu/h+65C2+2+
+        i/gWL7+mdu/Yp5BeQ4OubC0JG51B
+X-Google-Smtp-Source: ABdhPJwXjujCpOZqp0zrY+MX3d2/9mauk01cHV92jVYy5A5suwUlCW7ON6R1C8cougkJJ9Y+vidGnw==
+X-Received: by 2002:a37:64ca:: with SMTP id y193mr17819938qkb.367.1592260974394;
+        Mon, 15 Jun 2020 15:42:54 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:b48d:5aec:2ff2:2476? ([2601:282:803:7700:b48d:5aec:2ff2:2476])
+        by smtp.googlemail.com with ESMTPSA id z3sm11731310qkl.111.2020.06.15.15.42.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Jun 2020 15:42:53 -0700 (PDT)
+Subject: =?UTF-8?B?UmU6IOetlOWkjTogW3ZnZXIua2VybmVsLm9yZ+S7o+WPkV1SZTog562U?=
+ =?UTF-8?Q?=e5=a4=8d=3a_=5bPATCH=5d_can_current_ECMP_implementation_support_?=
+ =?UTF-8?Q?consistent_hashing_for_next_hop=3f?=
+To:     =?UTF-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
+        <yangyi01@inspur.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>
+References: <4037f805c6f842dcc429224ce28425eb@sslemail.net>
+ <8ff0c684-7d33-c785-94d7-c0e6f8b79d64@gmail.com>
+ <8867a00d26534ed5b84628db1a43017c@inspur.com>
+ <8da839b3-5b5d-b663-7d9c-0bc8351980dd@gmail.com>
+ <b9e0245f58ca44ed80b07a58cd0399be@inspur.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <cdbeca15-da70-119b-9f0c-04813cb82766@gmail.com>
+Date:   Mon, 15 Jun 2020 16:42:52 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <CACKFLimd0a=Y8WyvqCt4BD7SU_Cg1vQ=baKs6-uPv0dZuCm=mw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <b9e0245f58ca44ed80b07a58cd0399be@inspur.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-15_09:2020-06-15,2020-06-15 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=999
- lowpriorityscore=0 impostorscore=0 priorityscore=1501 adultscore=0
- suspectscore=0 malwarescore=0 mlxscore=0 clxscore=1011
- cotscore=-2147483648 phishscore=0 spamscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006150154
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/15/20 1:45 PM, Michael Chan wrote:
-> On Mon, Jun 15, 2020 at 12:01 PM David Christensen
-> <drc@linux.vnet.ibm.com> wrote:
->>
->> The driver function tg3_io_error_detected() calls napi_disable twice,
->> without an intervening napi_enable, when the number of EEH errors exceeds
->> eeh_max_freezes, resulting in an indefinite sleep while holding rtnl_lock.
->>
->> The function is called once with the PCI state pci_channel_io_frozen and
->> then called again with the state pci_channel_io_perm_failure when the
->> number of EEH failures in an hour exceeds eeh_max_freezes.
->>
->> Protecting the calls to napi_enable/napi_disable with a new state
->> variable prevents the long sleep.
+On 6/15/20 12:56 AM, Yi Yang (杨燚)-云服务集团 wrote:
+> My next hops are final real servers but not load balancers, say we sets maximum number of servers to 64, but next hop entry is added or removed dynamically, we are unlikely to know them beforehand. I can't understand how user space can attain consistent distribution without in-kernel consistent hashing, can you show how ip route cmds can attain this?
 > 
-> This works, but I think a simpler fix is to check tp->pcierr_recovery
-> in tg3_io_error_detected() and skip most of the tg3 calls (including
-> the one that disables NAPI) if the flag is true.
 
-This might be the smallest change that would work.  Does it make sense 
-to the reader?
+I do not see how consistent hashing can be done in the kernel without
+affecting performance, and a second problem is having it do the right
+thing for all use cases. That said, feel free to try to implement it.
 
-diff --git a/drivers/net/ethernet/broadcom/tg3.c 
-b/drivers/net/ethernet/broadcom/tg3.c
-index 7a3b22b35238..1f37c69d213d 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -18168,8 +18168,8 @@ static pci_ers_result_t 
-tg3_io_error_detected(struct pci_dev *pdev,
+> I find routing cache can help fix this issue, if a flow has been routed to a real server, then its route has been cached, so packets in this flow should hit routing cache by fib_lookup, so this can make sure it can be always routed to right server, as far as the result is concerned, it is equivalent to consistent hashing. 
+> 
 
-         rtnl_lock();
-
--       /* We probably don't have netdev yet */
--       if (!netdev || !netif_running(netdev))
-+       /* May be second call or maybe we don't have netdev yet */
-+       if (tp->pcierr_recovery || !netdev || !netif_running(netdev))
-                 goto done;
-
-         /* We needn't recover from permanent error */
-
+route cache is invalidated anytime there is a change to the FIB.
