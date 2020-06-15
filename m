@@ -2,278 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE061FA048
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 21:31:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 804C81FA056
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 21:33:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728495AbgFOTa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 15:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
+        id S1729983AbgFOTcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 15:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728093AbgFOTa6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 15:30:58 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE955C061A0E
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 12:30:57 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id c12so10244931lfc.10
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 12:30:57 -0700 (PDT)
+        with ESMTP id S1729780AbgFOTcx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 15:32:53 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C06C061A0E
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 12:32:51 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id k6so2252093pll.9
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 12:32:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SVG0R77GDADcbwul/NNZuZ7RQBEGHIOWp6UvdEZeJZA=;
-        b=u5+tSdMGq7ll4ev8vV7palhrjeMZ1muBog/qdTGcjz6qPxY/hi7VIgBsEkLEErFeeI
-         tRqHGyQuEf07y8VNDrqLq+VuKYWy888uMbNIEdzW8CUkZqSDfrQ0I1iQWzoOa7kTieLP
-         BknMCglE3PLODwobGG6Ug4HiaY6kU6SLXPYnaEs4jM2s3cb6UlGnAqSKkH2+gY74kbg0
-         hqvpv/BUlS+vne5i/PFVc/CYHF2Mv4vZGRytneVgna3pgUzT19vUrHi/Rkb+Au2hI66t
-         TStHfyR9Ur4DpogYcLW52eCy3ZkT6P3hnDW95k1UPgCKNsukJFr1SG8Vbzg2zjcXb7vh
-         p7SA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZjAXfZy5BudfnO86h+8mAf1S7F89/y7Ht34uQW17/+U=;
+        b=QBeg3rvb86U6Tj0IyJR5u6BBRDaGksrhbixbVGEFMNAmYYAm2vi8ezn7Pzjsx+8Y/N
+         0spIQQjXlTeZa6JYxyI0WQLYZewE/IOrv1eu80kZOYOGkcIsaJYdoUbYKY8F56IoVrW7
+         todjyiaALbdigpVH6qkq1a3bhohRwm98ntcpI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SVG0R77GDADcbwul/NNZuZ7RQBEGHIOWp6UvdEZeJZA=;
-        b=ALt8x6G3ec1AuDJOw/qME5iGedTupHniSsMoKj5fD9JRYPEt41RjBgt8gzwsi5k5Fd
-         CvBSYdUoerClOIdKgFdM7j/osXzdo6+pLg6EwB0wQFXHBb2GksmxaDpbN93bi2O+T3DX
-         77HWKrt2qoAZkY116AqA5OykNt7l03FjCFIUcKj5iQve0sFP7hRsi40R4OTL++rvIKda
-         +f3c6IthLjfkA3E+JC511uvwV0ZZz1Lyt7WEt6nbIGxgBG2JNAuS1VpdQ+21CIy/IQpn
-         v9IhmV8k92YYl/V1oJLIjaI1In30FhgaXLJX02DRh565uDepXYqSuPPAdFVpFqtWqCy0
-         I3SA==
-X-Gm-Message-State: AOAM530/LTVDxyfToJlQ81NusAxx0w6sqhr7oQ2mJlZOYad3sHK4Gt0D
-        8vOCnwoS5Xc9Ll7i4mQimDOzWJiGYcQ=
-X-Google-Smtp-Source: ABdhPJw6vX50gXi9856w337tYg5gb49EcqYmrGUiM7hN2YTjFRaVIJHSN3a/A7/SvTgaJsnDGTvYQg==
-X-Received: by 2002:a05:6512:328d:: with SMTP id p13mr4029029lfe.139.1592249455725;
-        Mon, 15 Jun 2020 12:30:55 -0700 (PDT)
-Received: from dau-pc-work.sunlink.ru ([87.244.6.228])
-        by smtp.googlemail.com with ESMTPSA id w15sm4729020lfl.51.2020.06.15.12.30.55
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZjAXfZy5BudfnO86h+8mAf1S7F89/y7Ht34uQW17/+U=;
+        b=CU0v0G+WW77CwTIe6xk7A1MmW/wR7KNZ5JwB378t8QJ00n+K6OiSMsTX8lBu5haDVZ
+         7Xn4lrhLlsTqiHLmQnngI3yoZ4iVHlP5tsybmv+5bbO4TqXTm1Nb+l0/ttmlR1hf1ivs
+         Ay1tUX86cgZIQBvAAGQjdzkm4/lmYrGlYB4xvClgLQevPbZyGHtDtHe34RDnj0zk1I2Y
+         itOw72b6pacQPzVcAsiVXeG86yt4VQJpxeZHovoATONe9ylQ4dspBDTB8hUprMT1lXAK
+         U74UVmaLVKLYQBoz4mkJqaOYL0ADXk9vHMzLusHsCAw85rEbUs6X4UL/Ki2v+RK7k1zd
+         VCgw==
+X-Gm-Message-State: AOAM5303W5vDvQDkkfSrIyyy1em9O7xiJBzwLOGYNtergWyQriTdiF5m
+        hLNht6fYmaVWcTaoMWRVJoEqVQ==
+X-Google-Smtp-Source: ABdhPJxugszkh+55zcQ6ID8nCD+Y2mp2lHGMEtD9VsXD4kV92TrXKjIOZPR9BYw/ID9xL1GXxiQnCg==
+X-Received: by 2002:a17:90b:23d2:: with SMTP id md18mr774459pjb.179.1592249571413;
+        Mon, 15 Jun 2020 12:32:51 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id n189sm14973604pfn.108.2020.06.15.12.32.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Jun 2020 12:30:55 -0700 (PDT)
-From:   Anton Danilov <littlesmilingcloud@gmail.com>
-To:     netdev@vger.kernel.org, stephen@networkplumber.org
-Cc:     Anton Danilov <littlesmilingcloud@gmail.com>
-Subject: [PATCH iproute2] tc: qdisc: filter qdisc's by parent/handle specification
-Date:   Mon, 15 Jun 2020 22:29:28 +0300
-Message-Id: <20200615192928.6667-1-littlesmilingcloud@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        Mon, 15 Jun 2020 12:32:50 -0700 (PDT)
+Date:   Mon, 15 Jun 2020 12:32:49 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Joe Perches <joe@perches.com>,
+        Andy Whitcroft <apw@canonical.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        b43-dev@lists.infradead.org,
+        Network Development <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-spi@vger.kernel.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Saravana Kannan <saravanak@google.com>
+Subject: Re: [PATCH 05/10] ide: Remove uninitialized_var() usage
+Message-ID: <202006151231.74D2315450@keescook>
+References: <20200603233203.1695403-1-keescook@chromium.org>
+ <20200603233203.1695403-6-keescook@chromium.org>
+ <CAKwvOdm5zDide5RuppY_jG=r46=UMdVJBrkBqD5x=dOMTG9cZg@mail.gmail.com>
+ <202006041318.B0EA9059C7@keescook>
+ <CAKwvOdk3Wc1gC0UMsFZsZqQ8n_bkPjNAJo5u3nfcyXcBaZCMHw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdk3Wc1gC0UMsFZsZqQ8n_bkPjNAJo5u3nfcyXcBaZCMHw@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There wasn't a way to get a qdisc info by handle or parent, only full
-dump of qdisc's with following grep/sed usage.
+On Thu, Jun 04, 2020 at 01:29:44PM -0700, Nick Desaulniers wrote:
+> On Thu, Jun 4, 2020 at 1:20 PM Kees Cook <keescook@chromium.org> wrote:
+> >
+> > On Thu, Jun 04, 2020 at 12:29:17PM -0700, Nick Desaulniers wrote:
+> > > On Wed, Jun 3, 2020 at 4:32 PM Kees Cook <keescook@chromium.org> wrote:
+> > > >
+> > > > Using uninitialized_var() is dangerous as it papers over real bugs[1]
+> > > > (or can in the future), and suppresses unrelated compiler warnings (e.g.
+> > > > "unused variable"). If the compiler thinks it is uninitialized, either
+> > > > simply initialize the variable or make compiler changes. As a precursor
+> > > > to removing[2] this[3] macro[4], just remove this variable since it was
+> > > > actually unused:
+> > > >
+> > > > drivers/ide/ide-taskfile.c:232:34: warning: unused variable 'flags' [-Wunused-variable]
+> > > >         unsigned long uninitialized_var(flags);
+> > > >                                         ^
+> > > >
+> > > > [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
+> > > > [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
+> > > > [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
+> > > > [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
+> > > >
+> > > > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > >
+> > > Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> >
+> > Thanks for the reviews!
+> >
+> > > Fixes ce1e518190ea ("ide: don't disable interrupts during kmap_atomic()")
+> >
+> > I originally avoided adding Fixes tags because I didn't want these
+> > changes backported into a -stable without -Wmaybe-uninitialized
+> > disabled, but in these cases (variable removal), that actually does make
+> > sense. Thanks!
+> 
+> Saravana showed me a cool trick for quickly finding commits that
+> removed a particular identifier that I find faster than `git blame` or
+> vim-fugitive for the purpose of Fixes tags:
+> $ git log -S <string> <file>
 
-The 'qdisc get' command have been added.
+Ah yes, I always have to look up "-S". Good reminder!
 
-tc qdisc { show | get } [ dev STRING ] [ QDISC_ID ] [ invisible ]
-  QDISC_ID := { root | ingress | handle QHANDLE | parent CLASSID }
+> I've added it to our wiki:
+> https://github.com/ClangBuiltLinux/linux/wiki/Command-line-tips-and-tricks#for-finding-which-commit-may-have-removed-a-string-try.
+> I should update the first tip; what was your suggestion for
+> constraining the search to the current remote?
 
-This change doesn't require any changes in the kernel.
+Ah cool. I've updated it now. It was really to narrow to a "known set of
+tags", and Linus's tree's tags always start with "v".
 
-Signed-off-by: Anton Danilov <littlesmilingcloud@gmail.com>
----
- man/man8/tc.8 |   8 +++-
- tc/tc_qdisc.c | 109 +++++++++++++++++++++++++++++++++++---------------
- 2 files changed, 82 insertions(+), 35 deletions(-)
-
-diff --git a/man/man8/tc.8 b/man/man8/tc.8
-index e8e0cd0f..8753088f 100644
---- a/man/man8/tc.8
-+++ b/man/man8/tc.8
-@@ -77,9 +77,13 @@ tc \- show / manipulate traffic control settings
- .B tc
- .RI "[ " OPTIONS " ]"
- .RI "[ " FORMAT " ]"
--.B qdisc show [ dev
-+.B qdisc { show | get } [ dev
- \fIDEV\fR
--.B ]
-+.B ] [ root | ingress | handle
-+\fIQHANDLE\fR
-+.B | parent
-+\fICLASSID\fR
-+.B ] [ invisible ]
- .P
- .B tc
- .RI "[ " OPTIONS " ]"
-diff --git a/tc/tc_qdisc.c b/tc/tc_qdisc.c
-index 181fe2f0..45b78462 100644
---- a/tc/tc_qdisc.c
-+++ b/tc/tc_qdisc.c
-@@ -35,11 +35,12 @@ static int usage(void)
- 		"       [ ingress_block BLOCK_INDEX ] [ egress_block BLOCK_INDEX ]\n"
- 		"       [ [ QDISC_KIND ] [ help | OPTIONS ] ]\n"
- 		"\n"
--		"       tc qdisc show [ dev STRING ] [ ingress | clsact ] [ invisible ]\n"
-+		"       tc qdisc { show | get } [ dev STRING ] [ QDISC_ID ] [ invisible ]\n"
- 		"Where:\n"
- 		"QDISC_KIND := { [p|b]fifo | tbf | prio | cbq | red | etc. }\n"
- 		"OPTIONS := ... try tc qdisc add <desired QDISC_KIND> help\n"
--		"STAB_OPTIONS := ... try tc qdisc add stab help\n");
-+		"STAB_OPTIONS := ... try tc qdisc add stab help\n"
-+		"QDISC_ID := { root | ingress | handle QHANDLE | parent CLASSID }\n");
- 	return -1;
- }
- 
-@@ -212,6 +213,8 @@ static int tc_qdisc_modify(int cmd, unsigned int flags, int argc, char **argv)
- }
- 
- static int filter_ifindex;
-+static __u32 filter_parent;
-+static __u32 filter_handle;
- 
- int print_qdisc(struct nlmsghdr *n, void *arg)
- {
-@@ -235,6 +238,12 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
- 	if (filter_ifindex && filter_ifindex != t->tcm_ifindex)
- 		return 0;
- 
-+	if (filter_handle && filter_handle != t->tcm_handle)
-+		return 0;
-+
-+	if (filter_parent && filter_parent != t->tcm_parent)
-+		return 0;
-+
- 	parse_rtattr_flags(tb, TCA_MAX, TCA_RTA(t), len, NLA_F_NESTED);
- 
- 	if (tb[TCA_KIND] == NULL) {
-@@ -344,21 +353,68 @@ int print_qdisc(struct nlmsghdr *n, void *arg)
- 
- static int tc_qdisc_list(int argc, char **argv)
- {
--	struct tcmsg t = { .tcm_family = AF_UNSPEC };
-+	struct {
-+		struct nlmsghdr n;
-+		struct tcmsg t;
-+		char buf[256];
-+	} req = {
-+		.n.nlmsg_type = RTM_GETQDISC,
-+		.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct tcmsg)),
-+		.t.tcm_family = AF_UNSPEC,
-+	};
-+
- 	char d[IFNAMSIZ] = {};
-+	bool arg_error = false;
- 	bool dump_invisible = false;
-+	__u32 handle;
- 
--	while (argc > 0) {
-+	while (argc > 0 && !arg_error) {
- 		if (strcmp(*argv, "dev") == 0) {
- 			NEXT_ARG();
- 			strncpy(d, *argv, sizeof(d)-1);
-+		} else if (strcmp(*argv, "root") == 0) {
-+			if (filter_parent || filter_handle) {
-+				fprintf(stderr, "only one of parent/handle/root/ingress can be specified\n");
-+				arg_error = true;
-+				break;
-+			}
-+			filter_parent = TC_H_ROOT;
- 		} else if (strcmp(*argv, "ingress") == 0 ||
- 			   strcmp(*argv, "clsact") == 0) {
--			if (t.tcm_parent) {
--				fprintf(stderr, "Duplicate parent ID\n");
--				usage();
-+			if (filter_parent || filter_handle) {
-+				fprintf(stderr, "only one of parent/handle/root/ingress can be specified\n");
-+				arg_error = true;
-+				break;
-+			}
-+			filter_parent = TC_H_INGRESS;
-+		} else if (matches(*argv, "parent") == 0) {
-+			if (filter_parent || filter_handle) {
-+				fprintf(stderr, "only one of parent/handle/root/ingress can be specified\n");
-+				arg_error = true;
-+				break;
-+			}
-+			NEXT_ARG();
-+			if(get_tc_classid(&handle, *argv)) {
-+				invarg("invalid parent ID", *argv);
-+				arg_error = true;
-+				break;
-+			} else {
-+				filter_parent = handle;
-+			}
-+		} else if (matches(*argv, "handle") == 0) {
-+			if (filter_parent || filter_handle) {
-+				fprintf(stderr, "only one of parent/handle/root/ingress can be specified\n");
-+				arg_error = true;
-+				break;
-+			}
-+			NEXT_ARG();
-+			if(get_qdisc_handle(&handle, *argv)) {
-+				invarg("invalid handle ID", *argv);
-+				arg_error = true;
-+				break;
-+			} else {
-+				filter_handle = handle;
- 			}
--			t.tcm_parent = TC_H_INGRESS;
- 		} else if (matches(*argv, "help") == 0) {
- 			usage();
- 		} else if (strcmp(*argv, "invisible") == 0) {
-@@ -371,35 +427,26 @@ static int tc_qdisc_list(int argc, char **argv)
- 		argc--; argv++;
- 	}
- 
-+	if (arg_error) {
-+		/* argument error message should be already displayed above */
-+		return -1;
-+	}
-+
- 	ll_init_map(&rth);
- 
- 	if (d[0]) {
--		t.tcm_ifindex = ll_name_to_index(d);
--		if (!t.tcm_ifindex)
-+		req.t.tcm_ifindex = ll_name_to_index(d);
-+		if (!req.t.tcm_ifindex)
- 			return -nodev(d);
--		filter_ifindex = t.tcm_ifindex;
-+		filter_ifindex = req.t.tcm_ifindex;
- 	}
- 
- 	if (dump_invisible) {
--		struct {
--			struct nlmsghdr n;
--			struct tcmsg t;
--			char buf[256];
--		} req = {
--			.n.nlmsg_type = RTM_GETQDISC,
--			.n.nlmsg_len = NLMSG_LENGTH(sizeof(struct tcmsg)),
--		};
--
--		req.t.tcm_family = AF_UNSPEC;
--
- 		addattr(&req.n, 256, TCA_DUMP_INVISIBLE);
--		if (rtnl_dump_request_n(&rth, &req.n) < 0) {
--			perror("Cannot send dump request");
--			return 1;
--		}
-+	}
- 
--	} else if (rtnl_dump_request(&rth, RTM_GETQDISC, &t, sizeof(t)) < 0) {
--		perror("Cannot send dump request");
-+	if (rtnl_dump_request_n(&rth, &req.n) < 0) {
-+		perror("Cannot send request");
- 		return 1;
- 	}
- 
-@@ -427,12 +474,8 @@ int do_qdisc(int argc, char **argv)
- 		return tc_qdisc_modify(RTM_NEWQDISC, NLM_F_REPLACE, argc-1, argv+1);
- 	if (matches(*argv, "delete") == 0)
- 		return tc_qdisc_modify(RTM_DELQDISC, 0,  argc-1, argv+1);
--#if 0
--	if (matches(*argv, "get") == 0)
--		return tc_qdisc_get(RTM_GETQDISC, 0,  argc-1, argv+1);
--#endif
- 	if (matches(*argv, "list") == 0 || matches(*argv, "show") == 0
--	    || matches(*argv, "lst") == 0)
-+	    || matches(*argv, "lst") == 0 || matches(*argv, "get") == 0 )
- 		return tc_qdisc_list(argc-1, argv+1);
- 	if (matches(*argv, "help") == 0) {
- 		usage();
 -- 
-2.26.2
-
+Kees Cook
