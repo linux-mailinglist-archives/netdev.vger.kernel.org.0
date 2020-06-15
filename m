@@ -2,79 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D52211F9C5D
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:55:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C64D1F9C70
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 17:58:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729949AbgFOPzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 11:55:17 -0400
-Received: from mga09.intel.com ([134.134.136.24]:3486 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727785AbgFOPzR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jun 2020 11:55:17 -0400
-IronPort-SDR: 1ZW89ZvsqdIUrU029kUjyEtH+3uD3vNy/7zQ2HAGQXF4PvKAF4XQrnf0imrDC5szXPi3JtHZuq
- I4lvfZhxPX4w==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2020 08:55:16 -0700
-IronPort-SDR: seU07Fxs5k/IX3atuuSktgojZOVWQgHbFR/GdGcRBkFl5WnrbFlQTuxAqM2IWFI0KR+oqClULQ
- 4m5mgFHq18uw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,515,1583222400"; 
-   d="scan'208";a="382582849"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.163])
-  by fmsmga001.fm.intel.com with SMTP; 15 Jun 2020 08:55:13 -0700
-Received: by lahna (sSMTP sendmail emulation); Mon, 15 Jun 2020 18:55:12 +0300
-Date:   Mon, 15 Jun 2020 18:55:12 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Yehezkel Bernat <yehezkelshb@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Michael Jamet <michael.jamet@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>, netdev@vger.kernel.org
-Subject: Re: [PATCH 4/4] thunderbolt: Get rid of E2E workaround
-Message-ID: <20200615155512.GS247495@lahna.fi.intel.com>
-References: <20200615130139.83854-1-mika.westerberg@linux.intel.com>
- <20200615130139.83854-5-mika.westerberg@linux.intel.com>
- <CA+CmpXtpAaY+zKG-ofPNYHTChTiDtwCAnd8uYQSqyJ8hLE891Q@mail.gmail.com>
- <20200615135112.GA1402792@kroah.com>
- <CA+CmpXst-5i4L5nW-Z66ZmxuLhdihjeNkHU1JdzTwow1rNH7Ng@mail.gmail.com>
- <20200615142247.GN247495@lahna.fi.intel.com>
- <CA+CmpXuN+su50RYHvW4S-twqiUjScnqM5jvG4ipEvWORyKfd1g@mail.gmail.com>
- <20200615153249.GR247495@lahna.fi.intel.com>
- <CA+CmpXtRZ4JMe2V2-kWiYWR0pnnzLQMbXQESni6ne8eFeDCCXg@mail.gmail.com>
+        id S1730611AbgFOP6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 11:58:47 -0400
+Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:47831 "EHLO
+        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727785AbgFOP6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 11:58:46 -0400
+Received: from callcc.thunk.org (pool-100-0-195-244.bstnma.fios.verizon.net [100.0.195.244])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 05FFweKd027351
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Jun 2020 11:58:40 -0400
+Received: by callcc.thunk.org (Postfix, from userid 15806)
+        id D9BEA42026D; Mon, 15 Jun 2020 11:58:39 -0400 (EDT)
+Date:   Mon, 15 Jun 2020 11:58:39 -0400
+From:   "Theodore Y. Ts'o" <tytso@mit.edu>
+To:     linux-kernel@vger.kernel.org, inux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        linux-block@vger.kernel.org,
+        "ksummit-discuss@lists.linuxfoundation.org" 
+        <ksummit-discuss@lists.linuxfoundation.org>
+Subject: Maintainers / Kernel Summit 2020 submissions
+Message-ID: <20200615155839.GF2863913@mit.edu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+CmpXtRZ4JMe2V2-kWiYWR0pnnzLQMbXQESni6ne8eFeDCCXg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 06:41:32PM +0300, Yehezkel Bernat wrote:
-> > I think you are talking about the "prtstns" property in the network
-> > driver. There we only set TBNET_MATCH_FRAGS_ID (bit 1). This is the
-> > thing that get exposed to the other side of the connection and we never
-> > announced support for full E2E.
-> 
-> 
-> Ah, yes, this one, Thanks!
-> As Windows driver uses it for flagging full-E2E, and we completely drop E2E
-> support here, it may worth to mention there that this is what bit 2 is used in
-> Windows so any reuse should consider the possible compatibility issue.
+So far, we have received 5 techinical topic submissions for the Kernel
+Summit; thanks to those who have submitted.  If you have some
+additional ideas of technical topics you'd like to discuss at the
+Kernel Summit, please submit them this week.  For details on how to
+proposal a topic for the Kernel Summit, please see [1].
 
-Note we only drop dead code in this patch. It is that workaround for
-Falcon Ridge controller we actually never used.
+[1] https://lore.kernel.org/r/20200515163956.GA2158595@mit.edu
 
-I can add a comment to the network driver about the full E2E support
-flag as a separate patch if you think it is useful.
+We have not, so far, gotten any submissions for the Maintainer's
+Summit.  It's unclear whether this is because people have been
+distracted with issues relating to the pandemic situation, or whether
+things have been going swimingly from a process perspective, or if
+people are just not as motivated to suggest topics if they can't
+discuss them in a face-to-face setting as opposed to a virtual setting
+---- or some combination of all of the above.
 
-The network protocol will be public soon I guess because USB4 spec
-refers to "USB4 Inter-Domain Specification, Revision 1.0, [to be
-published] – (USB4 Inter-Domain Specification)" so I would expect it to
-be explained there as well.
+If you do have some ideas for things that you think are worth the
+attention of a Maintainer's Summit this year, please kindly submit
+them this week.  (Again, please see [1] for submission instructions.)
+If we do not get sufficient submissions, we will need to consider
+whether or not it makes sense to hold a Maintainer's Summit this year.
+
+Thanks,
+
+					- Ted
