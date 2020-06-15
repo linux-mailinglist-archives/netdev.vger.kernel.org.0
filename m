@@ -2,36 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ADC91F9D8D
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 18:35:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF9901F9D96
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 18:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730701AbgFOQfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 12:35:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35976 "EHLO mail.kernel.org"
+        id S1730622AbgFOQhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 12:37:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38396 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730135AbgFOQfG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jun 2020 12:35:06 -0400
+        id S1729772AbgFOQhM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jun 2020 12:37:12 -0400
 Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4A7172078A;
-        Mon, 15 Jun 2020 16:35:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2B4BC20679;
+        Mon, 15 Jun 2020 16:37:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592238906;
-        bh=fgybvK2hoAkWg2kEUpThPvY4J/JYRs8GxBatSYNsifw=;
+        s=default; t=1592239032;
+        bh=9Mx52TqWdSdCtob3kgWa+UGpxsKlsgGNC4QVbFr/2C8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bkGdMaQ8WfZDzipbQYwQI1TOWsaOuGpZaslCXZHEMkvJ6OXilW718LqCNk9PZjCmU
-         djZdyvkFfkqj0Y2BVarS0eoZTMLNjZxblx9L25ysYmA7bFilW+2DW4iSC8Dm6VXShB
-         ojJdF51UXl0xGVGzSYQPweKdrJ4Jr96bkK++IA/A=
-Date:   Mon, 15 Jun 2020 09:35:04 -0700
+        b=MS5MmHRgg8f/hL8ShHv5g2bXO0qRAlHuebcMBuBfe8IRrGfU8tnxCxBC+vfthIuCj
+         e/EiwUh+YGoK4HSQxNbA0v2qisJERNpkJKqCSs9hbq2EqygZUf7HDcDVod/YhwUTHT
+         hbh4BU+X2/FTflDwJF/upEVEx75sMWLGpCVnRb4g=
+Date:   Mon, 15 Jun 2020 09:37:10 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     guodeqing <geffrey.guo@huawei.com>
-Cc:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <netdev@vger.kernel.org>, <dsa@cumulusnetworks.com>
-Subject: Re: [PATCH] net: Fix the arp error in some cases
-Message-ID: <20200615093504.37689a5c@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <1592030995-111190-1-git-send-email-geffrey.guo@huawei.com>
-References: <1592030995-111190-1-git-send-email-geffrey.guo@huawei.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] MAINTAINERS: merge entries for felix and ocelot
+ drivers
+Message-ID: <20200615093710.2d5e931e@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200613220753.948166-1-olteanv@gmail.com>
+References: <20200613220753.948166-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -40,30 +44,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 13 Jun 2020 14:49:55 +0800 guodeqing wrote:
-> ie.,
-> $ ifconfig eth0 6.6.6.6 netmask 255.255.255.0
+On Sun, 14 Jun 2020 01:07:53 +0300 Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> $ ip rule add from 6.6.6.6 table 6666
+> The ocelot switchdev driver also provides a set of library functions for
+> the felix DSA driver, which in practice means that most of the patches
+> will be of interest to both groups of driver maintainers.
 > 
-> $ ip route add 9.9.9.9 via 6.6.6.6
+> So, as also suggested in the discussion here, let's merge the 2 entries
+> into a single larger one:
+> https://www.spinics.net/lists/netdev/msg657412.html
 > 
-> $ ping -I 6.6.6.6 9.9.9.9
-> PING 9.9.9.9 (9.9.9.9) from 6.6.6.6 : 56(84) bytes of data.
+> Note that the entry has been renamed into "OCELOT SWITCH" since neither
+> Vitesse nor Microsemi exist any longer as company names, instead they
+> are now named Microchip (which again might be subject to change in the
+> future), so use the device family name instead.
 > 
-> ^C
-> --- 9.9.9.9 ping statistics ---
+> Suggested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Please don't put --- in the commit message like this, git will cut off
-the message here, since this is a footer separator.
+Looks like checkpatch is unhappy about the order of files?
 
-> 3 packets transmitted, 0 received, 100% packet loss, time 2079ms
-> 
-> $ arp
-> Address     HWtype  HWaddress           Flags Mask            Iface
-> 6.6.6.6             (incomplete)                              eth0
-> 
-> The arp request address is error, this problem can be reproduced easily.
-> 
-> Fixes: 3bfd847203c6("net: Use passed in table for nexthop lookups")
-> Signed-off-by: guodeqing <geffrey.guo@huawei.com>
+WARNING: Misordered MAINTAINERS entry - list file patterns in alphabetic order
+#58: FILE: MAINTAINERS:12308:
++F:	include/soc/mscc/ocelot*
++F:	drivers/net/ethernet/mscc/
+
+WARNING: Misordered MAINTAINERS entry - list file patterns in alphabetic order
+#59: FILE: MAINTAINERS:12309:
++F:	drivers/net/ethernet/mscc/
++F:	drivers/net/dsa/ocelot/*
+
+total: 0 errors, 2 warnings, 0 checks, 46 lines checked
