@@ -2,102 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C80E61FA0D0
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 21:55:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC241FA0D2
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 21:55:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729898AbgFOTzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 15:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60282 "EHLO
+        id S1730596AbgFOTzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 15:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728771AbgFOTzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 15:55:10 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F90C061A0E;
-        Mon, 15 Jun 2020 12:55:10 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id l12so18735993ejn.10;
-        Mon, 15 Jun 2020 12:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Dg1YNjR1qNbLYCs7KgBFBMAL18hU3eIRDmxwQbF0no8=;
-        b=UxWveGGilleiUwQZW5oAmSrQGr8eXhxAubb5laHbLR2j6KVqkNlxtINT/X38J3xvmx
-         6u40aWz1mOtI5yBusDV4MC/WWvEKnjIyMoRB0sQ+JeCsXze7mr2GRgz7pBkWAWKJT4uG
-         i19NJXvB4CZZrOsF/fZXUrkogtHoi+sS1RZdzipohxdaUOlVAp9wR5P3ToOOeAIcTJn9
-         dpuoexhok/6jZsnpwFktLmo4c1nIVuXpcLLzQbbyJHBJBAdTwg2f13T7bPUKEhzyBAKy
-         a5qfIsXteGWs6lAY469IUPzfhDr4zc0fyiP/yZKOZ9LWbF8z0BJvQYPO01Hjpx5GNEEM
-         G6bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Dg1YNjR1qNbLYCs7KgBFBMAL18hU3eIRDmxwQbF0no8=;
-        b=fPAz1LyF/kCO9luQNgF2zBkfsdKgZHhoIqGsK+6JoCn+gtDXza0W8qyhgGXGcY2YaO
-         qwVEICPAdQ7pYaoyTSz6jyGUgojzmqTAcidOq+vAv+otVskGJNkUcHVOT/YUrdfp63kQ
-         VYSc0GTuU3asNEZuw4jz92n6kUU2/9OSfcwBY9diFKBRqLwrw6FdR9orcs0YkwXI6GfV
-         h2MvSEmFt33xGAyC2EayCkncFQYYETFCVO29Vriz8POoZnhAg/fcfaZc5AnNnzx3l/a4
-         Uk8NiDXHkfEyX9NkxeFC82dztZZJO+tvc+kzX4WeZ5uQaZD+k3Bw6UC+i08ZelJdBhKH
-         UEjQ==
-X-Gm-Message-State: AOAM533tRprpTiVt8abDd6Uod9XIWBVki2Zyxcd3Y7yXsOi9BNlsMc00
-        E0kBo65SMeWSZqZ1j16xK3vV0+oiZcWcy4pw4zw=
-X-Google-Smtp-Source: ABdhPJyUAv4s1AG61rT6r8D1YlI3QbOIOGwWeOavOPfQRIAo6nUW5Uv7YsCJsIJ+dnguMmpI+FEBHz+Dbtkf65fZ11o=
-X-Received: by 2002:a17:906:35ca:: with SMTP id p10mr26443854ejb.392.1592250908994;
- Mon, 15 Jun 2020 12:55:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200615130139.83854-1-mika.westerberg@linux.intel.com>
- <20200615130139.83854-5-mika.westerberg@linux.intel.com> <CA+CmpXtpAaY+zKG-ofPNYHTChTiDtwCAnd8uYQSqyJ8hLE891Q@mail.gmail.com>
- <20200615135112.GA1402792@kroah.com> <CA+CmpXst-5i4L5nW-Z66ZmxuLhdihjeNkHU1JdzTwow1rNH7Ng@mail.gmail.com>
- <20200615142247.GN247495@lahna.fi.intel.com> <CA+CmpXuN+su50RYHvW4S-twqiUjScnqM5jvG4ipEvWORyKfd1g@mail.gmail.com>
- <20200615153249.GR247495@lahna.fi.intel.com> <CA+CmpXtRZ4JMe2V2-kWiYWR0pnnzLQMbXQESni6ne8eFeDCCXg@mail.gmail.com>
- <20200615155512.GS247495@lahna.fi.intel.com>
-In-Reply-To: <20200615155512.GS247495@lahna.fi.intel.com>
-From:   Yehezkel Bernat <yehezkelshb@gmail.com>
-Date:   Mon, 15 Jun 2020 22:54:52 +0300
-Message-ID: <CA+CmpXtOAUnSdhjwi5HXaJhPzbUUsZZsitFifyhyPk+X2c=wYw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] thunderbolt: Get rid of E2E workaround
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Michael Jamet <michael.jamet@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S1728771AbgFOTzZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 15:55:25 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52343C061A0E
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 12:55:25 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id DF016120ED49A;
+        Mon, 15 Jun 2020 12:55:24 -0700 (PDT)
+Date:   Mon, 15 Jun 2020 12:55:24 -0700 (PDT)
+Message-Id: <20200615.125524.1811736198326106801.davem@davemloft.net>
+To:     martinvarghesenokia@gmail.com
+Cc:     netdev@vger.kernel.org, martin.varghese@nokia.com
+Subject: Re: [PATCH net] bareudp: Fixed multiproto mode configuration
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1592199569-5243-1-git-send-email-martinvarghesenokia@gmail.com>
+References: <1592199569-5243-1-git-send-email-martinvarghesenokia@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 15 Jun 2020 12:55:25 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 6:55 PM Mika Westerberg
-<mika.westerberg@linux.intel.com> wrote:
->
-> On Mon, Jun 15, 2020 at 06:41:32PM +0300, Yehezkel Bernat wrote:
-> > > I think you are talking about the "prtstns" property in the network
-> > > driver. There we only set TBNET_MATCH_FRAGS_ID (bit 1). This is the
-> > > thing that get exposed to the other side of the connection and we nev=
-er
-> > > announced support for full E2E.
-> >
-> >
-> > Ah, yes, this one, Thanks!
-> > As Windows driver uses it for flagging full-E2E, and we completely drop=
- E2E
-> > support here, it may worth to mention there that this is what bit 2 is =
-used in
-> > Windows so any reuse should consider the possible compatibility issue.
->
-> Note we only drop dead code in this patch. It is that workaround for
-> Falcon Ridge controller we actually never used.
->
-> I can add a comment to the network driver about the full E2E support
-> flag as a separate patch if you think it is useful.
->
-> The network protocol will be public soon I guess because USB4 spec
-> refers to "USB4 Inter-Domain Specification, Revision 1.0, [to be
-> published] =E2=80=93 (USB4 Inter-Domain Specification)" so I would expect=
- it to
-> be explained there as well.
+From: Martin Varghese <martinvarghesenokia@gmail.com>
+Date: Mon, 15 Jun 2020 11:09:29 +0530
 
-I see. I leave it for your decision, then.
-Thanks for bearing with me.
+> From: Martin <martin.varghese@nokia.com>
+> 
+> Code to handle multiproto configuration is missing.
+> 
+> Fixes: 4b5f67232d95 ("net: Special handling for IP & MPLS")
+> Signed-off-by: Martin <martin.varghese@nokia.com>
+
+There are two bugs here.
+
+'conf' is not initialized and can contain garbage, for all fields
+not just the multiproto mode configuration.
+
+And also the multiproto mode configuration is not looked at.
+
+So there should be two patches, one for each bug.
