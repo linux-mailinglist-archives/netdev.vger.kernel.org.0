@@ -2,100 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B1E1F9824
-	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 15:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCE0B1F993A
+	for <lists+netdev@lfdr.de>; Mon, 15 Jun 2020 15:45:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730288AbgFONTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 09:19:03 -0400
-Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:64844 "EHLO
-        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730120AbgFONTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 09:19:01 -0400
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05FDDvWF006463;
-        Mon, 15 Jun 2020 08:18:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type;
- s=PODMain02222019; bh=1dRfs36KYnwyGoVrRklSXMDuFrHPtd9eaNq3bCtvbWE=;
- b=FGRV3fBXTdtIb+VbdE9e9rYJ71x1n0IJSfGE42C/RuYuSHrLP3cEfQg0xrt/SOwbNVOX
- 5D2A7Ar3AsQPgK8ZQmCSlOGRBL/nz5uXd1pQo2OqgkoP/0mk9EqDnzA1AHCjEDPbk1P9
- JGZHcnORKr/HYEgt+XqabBqM1KRhz0dE7fVgIeW6AsJrOX79Vf8+ZsfM5FotszA3CJOE
- O36YAh6vx+k67EK7bnNoFHu4l6/4CuLnrGFDZrmNnA/RFRxYGUjXbInyruaurq9fuQAG
- pgL9ge8l79UfQgNiFwXJCOEIhvq/IBwVX5ze8+gMr4mWQ0wpX6rdPJAod8zxmk8D0CuG zg== 
-Authentication-Results: ppops.net;
-        spf=fail smtp.mailfrom=ckeepax@opensource.cirrus.com
-Received: from ediex01.ad.cirrus.com ([87.246.76.36])
-        by mx0a-001ae601.pphosted.com with ESMTP id 31mv73jpeq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 15 Jun 2020 08:18:57 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Mon, 15 Jun
- 2020 14:18:54 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.1913.5 via Frontend
- Transport; Mon, 15 Jun 2020 14:18:54 +0100
-Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 5F5732C6;
-        Mon, 15 Jun 2020 13:18:54 +0000 (UTC)
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     <davem@davemloft.net>, <nicolas.ferre@microchip.com>,
-        <kuba@kernel.org>
-CC:     <clabbe@baylibre.com>, <netdev@vger.kernel.org>
-Subject: [PATCH] net: macb: Only disable NAPI on the actual error path
-Date:   Mon, 15 Jun 2020 14:18:54 +0100
-Message-ID: <20200615131854.12187-1-ckeepax@opensource.cirrus.com>
-X-Mailer: git-send-email 2.11.0
+        id S1730022AbgFONpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 09:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728326AbgFONpj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 09:45:39 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69789C061A0E;
+        Mon, 15 Jun 2020 06:45:39 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id y6so6282592edi.3;
+        Mon, 15 Jun 2020 06:45:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=je/VMIDu1HMLGM9aC5+ju34aZPTh4+EiQvNVe0yywUk=;
+        b=UKZqmBEO7ucC2dWiEPjv8XBFyyCpKog+HUQdeK6nO43meSndDKovPqIVFaJIcPKQt2
+         qis3DkREZXjjAYORy/k4S+tkgwk6V/PwZv2n+/9hMDrA3XXz9q8z8BJw/pyoUfdncHcN
+         FkHghwl4qLZrdQL8D33nauz1hUoWgEGgr29kHVcZ4Y8ZrkMfBYitaF0aLcqITqv2AJ5v
+         yo0rL2ZTuahGlxVWgfqfUM7T8F7uDPRfTK6wAd2rS0MkryI2XSNJheWIp0oeH265rDwV
+         QPKHp40UmdPIxdsAJfVS2hKbxhvGgIPIZt/bDzPIjMwJRdlG/MXKxBU8wR8UydLoWInN
+         jZvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=je/VMIDu1HMLGM9aC5+ju34aZPTh4+EiQvNVe0yywUk=;
+        b=WHx+WRxp6PYqP5F8WzTxiat2iPuXrZ7UjUntIU2yWDewMH+0rZ0XTj67u/LJRdCOGA
+         u6XTeuVjeDYHR9uQeyUAiGixyuaFVpyVzfWvD4iB3NB4g8nD98D3hOWd+ANE2cdrGgD9
+         jRZ9+IpmhS3JiLUTfYtZEh75sHyKsqKuelSy6pvgRNYE1bc/Lu6idnlboqVaISkrbovE
+         3VzvqSK8wBKVWl55/vi2DHnyuTEgIxZ6/oDeHmqiJLtJaIndYaFwTDL9Fn6BfhxW7OqT
+         i6kauHTKgcX06t/Efq+7NKbYWiSvBVYRS5B8gVfQBzeE0USCeWnTU1n1BzBdiemjqHjJ
+         p4cQ==
+X-Gm-Message-State: AOAM531gSic8Uek85h/oJCZaJQz6VjtohMFiR+KeCmwkCUQXCm/KU7rs
+        QF2+v8tI2bEq0l6+a+IaRGCE3ALhAylVQz1vS2c=
+X-Google-Smtp-Source: ABdhPJw+Q9GuP+rTVV18SrUjho/DrpUXxtFDKmvyMfNj1OIc3VoHXb3Eq/NloFIxXdW6iuD0q8Wbu+lEazNlaR1zGpI=
+X-Received: by 2002:aa7:da46:: with SMTP id w6mr23564896eds.31.1592228738168;
+ Mon, 15 Jun 2020 06:45:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-SPF-Result: fail
-X-Proofpoint-SPF-Record: v=spf1 include:spf-001ae601.pphosted.com include:spf.protection.outlook.com
- ip4:5.172.152.52 -all
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 mlxscore=0
- phishscore=0 clxscore=1011 spamscore=0 impostorscore=0 mlxlogscore=808
- malwarescore=0 bulkscore=0 adultscore=0 lowpriorityscore=0 suspectscore=0
- cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2004280000 definitions=main-2006150106
+References: <20200615130139.83854-1-mika.westerberg@linux.intel.com> <20200615130139.83854-5-mika.westerberg@linux.intel.com>
+In-Reply-To: <20200615130139.83854-5-mika.westerberg@linux.intel.com>
+From:   Yehezkel Bernat <yehezkelshb@gmail.com>
+Date:   Mon, 15 Jun 2020 16:45:22 +0300
+Message-ID: <CA+CmpXtpAaY+zKG-ofPNYHTChTiDtwCAnd8uYQSqyJ8hLE891Q@mail.gmail.com>
+Subject: Re: [PATCH 4/4] thunderbolt: Get rid of E2E workaround
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     linux-usb@vger.kernel.org, Michael Jamet <michael.jamet@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A recent change added a disable to NAPI into macb_open, this was
-intended to only happen on the error path but accidentally applies
-to all paths. This causes NAPI to be disabled on the success path, which
-leads to the network to no longer functioning.
+On Mon, Jun 15, 2020 at 4:02 PM Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
+>
+> diff --git a/include/linux/thunderbolt.h b/include/linux/thunderbolt.h
+> index ff397c0d5c07..5db2b11ab085 100644
+> --- a/include/linux/thunderbolt.h
+> +++ b/include/linux/thunderbolt.h
+> @@ -504,8 +504,6 @@ struct tb_ring {
+>  #define RING_FLAG_NO_SUSPEND   BIT(0)
+>  /* Configure the ring to be in frame mode */
+>  #define RING_FLAG_FRAME                BIT(1)
+> -/* Enable end-to-end flow control */
+> -#define RING_FLAG_E2E          BIT(2)
+>
 
-Fixes: 014406babc1f ("net: cadence: macb: disable NAPI on error")
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 5b9d7c60eebc0..67933079aeea5 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -2565,15 +2565,14 @@ static int macb_open(struct net_device *dev)
- 	if (bp->ptp_info)
- 		bp->ptp_info->ptp_init(dev);
- 
-+	return 0;
-+
- napi_exit:
- 	for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
- 		napi_disable(&queue->napi);
- pm_exit:
--	if (err) {
--		pm_runtime_put_sync(&bp->pdev->dev);
--		return err;
--	}
--	return 0;
-+	pm_runtime_put_sync(&bp->pdev->dev);
-+	return err;
- }
- 
- static int macb_close(struct net_device *dev)
--- 
-2.11.0
-
+Isn't it better to keep it (or mark it as reserved) so it'll not cause
+compatibility issues with older versions of the driver or with Windows?
