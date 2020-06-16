@@ -2,113 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8F931FA678
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 04:35:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8A591FA69C
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 05:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbgFPCfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 22:35:34 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:60192 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbgFPCfe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 22:35:34 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05G2XO3o113632;
-        Tue, 16 Jun 2020 02:35:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=aTxlffeYbsav4TKF61JSLE79Yzdwqgu+FksLc1C2joA=;
- b=mVk/6UZnYuwxUS8C89UzmYgP5FGltWyV/NW6Aguh2Mzo3FNzrAqQ6GDit0PyKmM5jI/O
- MEU6a1rUq/Or9m2qZIFmOEPjB2NqAbXX8yv18bW29I6Ovo04x6NrmaEyUbaezbF3pbJT
- CyiI724rGkrNxlQwT2tEGcr8xSXq6CzA5OYYchR/gdpzUZVZQT/TiknC6kWqjOoNgj0b
- 6xkidFsPr/OSTvm6G8s0MEDKGpTQWFK1xC8skzGRoCRTHmBUm35i2DNKO0R4cSbY7CV1
- NZnpD/Z23Ks0jTgCR2iXb8WDAXAuwWU3oHnjHpkRzcNuGHvSp8jmJiaOzRtIySyges/t fg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 31p6e7v5x7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 16 Jun 2020 02:35:29 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05G2T2ps024585;
-        Tue, 16 Jun 2020 02:33:29 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 31p6s6fbxy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 16 Jun 2020 02:33:29 +0000
-Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 05G2XRJG005968;
-        Tue, 16 Jun 2020 02:33:28 GMT
-Received: from [10.74.110.250] (/10.74.110.250)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 15 Jun 2020 19:33:27 -0700
-Subject: Re: [PATCH v3 03/13] RDMA/rds: Remove FMR support for memory
- registration
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        aron.silverton@oracle.com, Max Gurtovoy <maxg@mellanox.com>,
-        oren@mellanox.com, shlomin@mellanox.com, vladimirk@mellanox.com
-References: <3-v3-f58e6669d5d3+2cf-fmr_removal_jgg@mellanox.com>
- <27824c0c-06ba-40dd-34c2-2888fe8db5c8@oracle.com>
- <20200529191248.GB21651@ziepe.ca>
-From:   santosh.shilimkar@oracle.com
-Organization: Oracle Corporation
-Message-ID: <18e8c383-ceaa-a860-4a1c-2c92cfdd3c5a@oracle.com>
-Date:   Mon, 15 Jun 2020 19:33:25 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.1
-MIME-Version: 1.0
-In-Reply-To: <20200529191248.GB21651@ziepe.ca>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9653 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 mlxscore=0
- suspectscore=0 mlxlogscore=999 phishscore=0 bulkscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006160016
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9653 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 spamscore=0
- impostorscore=0 bulkscore=0 clxscore=1011 malwarescore=0 suspectscore=0
- mlxscore=0 phishscore=0 mlxlogscore=999 lowpriorityscore=0
- cotscore=-2147483648 priorityscore=1501 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006160016
+        id S1726392AbgFPDTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 23:19:53 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:38562 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726101AbgFPDTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 23:19:53 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 3B3DD410F4;
+        Tue, 16 Jun 2020 11:19:42 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, pablo@netfilter.org, vladbu@mellanox.com
+Subject: [PATCH net v3 0/4] several fixes for indirect flow_blocks offload
+Date:   Tue, 16 Jun 2020 11:19:36 +0800
+Message-Id: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVIS0hCQkJCS0tDSkxDTFlXWShZQU
+        lCN1dZLVlBSVdZDwkaFQgSH1lBWR0iNQs4HD9IHzkhNDQOEx5KMwNOOhxWVlVJQ0soSVlXWQkOFx
+        4IWUFZNTQpNjo3JCkuNz5ZV1kWGg8SFR0UWUFZNDBZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MD46MSo5HTg5SjZKAi5CCSsr
+        HhpPCSpVSlVKTkJJSUxMTkNJSEpJVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUhNQkk3Bg++
+X-HM-Tid: 0a72bb23c1b32086kuqy3b3dd410f4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/29/20 12:12 PM, Jason Gunthorpe wrote:
-> On Thu, May 28, 2020 at 01:21:33PM -0700, santosh.shilimkar@oracle.com wrote:
->> On 5/28/20 12:45 PM, Jason Gunthorpe wrote:
->>> From: Max Gurtovoy <maxg@mellanox.com>
->>>
->>> Use FRWR method for memory registration by default and remove the ancient
->>> and unsafe FMR method.
->>>
->>> Signed-off-by: Max Gurtovoy <maxg@mellanox.com>
->>> Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
->>
->>>    net/rds/Makefile  |   2 +-
->>>    net/rds/ib.c      |  20 ++--
->>>    net/rds/ib.h      |   2 -
->>>    net/rds/ib_cm.c   |   4 +-
->>>    net/rds/ib_fmr.c  | 269 ----------------------------------------------
->>>    net/rds/ib_frmr.c |   4 +-
->>>    net/rds/ib_mr.h   |  14 +--
->>>    net/rds/ib_rdma.c |  28 ++---
->>>    8 files changed, 21 insertions(+), 322 deletions(-)
->>>    delete mode 100644 net/rds/ib_fmr.c
->>>
->> Patch looks accurate to me Jason/Max. I wanted to get few regression
->> tests run with it before providing the ack. Will send a note once
->> its tested ok.
-> 
-> Okay, since we are at the merge window I'm going to put it in
-> linux-next to look for build regressions with the idea to send it on
-> Thursday
-> 
-I know you sent this to net-next already but just to close the loop, 
-regression testing went ok.
+From: wenxu <wenxu@ucloud.cn>
 
-Regards,
-Santosh
+v2:
+patch2: store the cb_priv of representor to the flow_block_cb->indr.cb_priv
+in the driver. And make the correct check with the statments
+this->indr.cb_priv == cb_priv
+
+patch4: del the driver list only in the indriect cleanup callbacks
+
+v3:
+add the cover letter and changlogs.
+
+This series fixes commit 1fac52da5942 ("net: flow_offload: consolidate
+indirect flow_block infrastructure") that revists the flow_block
+infrastructure.
+
+The first patch fix the miss cleanup for flowtable indirect flow_block. 
+The cleanup operation based on the setup callback. But in the mlx5e
+driver there are tc and flowtable indrict setup callback and shared
+the same release callbacks. So when the representor is removed,
+then identify the indirect flow_blocks that need to be removed by 
+the release callback.
+
+The second patch fix the incorrect cb_priv check in flow_block_cb.
+In the function __flow_block_indr_cleanup, stataments
+this->cb_priv == cb_priv is always false(the flow_block_cb->cb_priv
+is totally different data with the flow_indr_dev->cb_priv). So there
+will always miss cleanup when the HW goaway and lead the memory leak.
+
+After fix the first two patches. When the HW goaway, the indirect
+flow_block can be cleanup. But It takes another two problem.
+
+
+The third patch fix block->nooffloaddevcnt warning dmesg log.
+When a indr device add in offload success. The block->nooffloaddevcnt
+should be 0. After the representor go away. When the dir device go away
+the flow_block UNBIND operation with -EOPNOTSUPP which lead the warning
+demesg log. 
+The block->nooffloaddevcnt should always count for indr block.
+even the indr block offload successful. The representor maybe
+gone away and the ingress qdisc can work in software mode.
+
+The last patch fix the list_del corruption in the driver list.
+When a indr device add in offload success. After the representor
+go away. All the flow_block_cb cleanup but miss del form driver
+list.
+
+All the problem can be reproduce through making real hw go away
+after setup the block offoaded.
+
+wenxu (4):
+  flow_offload: fix incorrect cleanup for indirect flow_blocks
+  flow_offload: fix incorrect cb_priv check for flow_block_cb
+  net/sched: cls_api: fix nooffloaddevcnt warning dmesg log
+  flow_offload: fix the list_del corruption in the driver list
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c       |  3 ++-
+ .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c    |  4 ++--
+ drivers/net/ethernet/netronome/nfp/flower/main.c   |  2 +-
+ drivers/net/ethernet/netronome/nfp/flower/main.h   |  3 +--
+ .../net/ethernet/netronome/nfp/flower/offload.c    |  7 +++---
+ include/net/flow_offload.h                         |  3 ++-
+ net/core/flow_offload.c                            | 11 +++++-----
+ net/netfilter/nf_flow_table_offload.c              |  1 +
+ net/netfilter/nf_tables_offload.c                  |  1 +
+ net/sched/cls_api.c                                | 25 +++++++++++++---------
+ 10 files changed, 35 insertions(+), 25 deletions(-)
+
+-- 
+1.8.3.1
+
