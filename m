@@ -2,150 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4821FB52A
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:57:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF5D21FB537
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:58:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729776AbgFPO4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 10:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38602 "EHLO
+        id S1729817AbgFPO5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 10:57:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729543AbgFPO4a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 10:56:30 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8614CC0613EF;
-        Tue, 16 Jun 2020 07:56:29 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id q19so21841890eja.7;
-        Tue, 16 Jun 2020 07:56:29 -0700 (PDT)
+        with ESMTP id S1729005AbgFPO5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 10:57:34 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F324C06174E
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 07:57:34 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id b5so8373632pgm.8
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 07:57:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UBODMToDGTxlCalS6Z2hG3h1HW+N0PDRI8iyq9MQZQ0=;
-        b=tU2Lu70EhO2VSwXixs4LvyozzvHNBLDX1lMVYhsH34U2WJD0SrO+UFu1FG8+ilawMM
-         s4wnf0raGT5HJ6IAG/+XZjxRWmjMqtDx410PcQ1/B2izfnjfUizeHAn8DRrsv9UZI0Fm
-         7JuZ5LHhBZHG7aIoxVrOdhIvinypKyZKKLLdOTRVWBrbIFjeiSfZl9uq76ADgGnxl5MT
-         SR6Z6c5vTKE9Fc/oEvdJHJ+H1IB6Yp/WkwHwLAQZTpeBPqIbwyOUNjQu75BvSKHdwMcU
-         vkNH4ezbnAty5c7iptFet4S48gm44q/EnIYDD25KydLeB91Ih5EGH44kRapde6CRWGNg
-         rTOQ==
+        d=tycho-ws.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=yyBDmoMJVCXVgLjKdOMGSUnOzeYRsY+K7W79k+Q31OU=;
+        b=nIM3/IuiUKoFugU/l8Ba4esFLefiqTfBP651OEc9hms/rvYeU1qfGFF1kElz8uQe73
+         btGGtVNjLiDhNMb7zEFCQLFxb9OPOVYIYKYW0DRe1furc2JFYn9tihuMN4IMj1d+Ka7l
+         qB/b8ooTRMqgRtct2H67YtBcQPpNc2FNAyKwtAfKjQEPyNhIjh/VfVjwIHCwUYGpyuK3
+         8I4OnQnJKp2BvAN4IThih3qCQCy8onYBAmI0+v/MyhJD1956KsG7pGa35AAxNjidA/Uz
+         l5vEcerzy3hx1Xxk1EwOFM8VW54IEQUm28kJR6qnTpaqnQ8qsR7lwjjWo2JjSOxb30+4
+         j7mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UBODMToDGTxlCalS6Z2hG3h1HW+N0PDRI8iyq9MQZQ0=;
-        b=IjCRL6TA+ZPoRpqch7ylWnrjFxCE8nUWpcQtfF98bX83R7D+L3njIlRRSNkj+U3eF8
-         PU69yFpWxQfy9/ODkPWoMTr1wjpqH9q6KFUp32OFFSGVnoX29uKezB9PBQM6Pvpr80+N
-         SKS1qfzQ56955Jeat3by8B/XscLEMQqpZoJyxNuKk7rH2iUXfq8xRNizzyW7EnePYLgG
-         9U2NRa2kbq8Okko0rESlshLXQWbO2cDgRrwcJ4Ewn2w8eTKN/o/Aszt6HzWoTAWLg7eL
-         Wx+NqkTDnzd7IVFZQs/5B/Q2sJrVpUiEIvrkxPbCy9mNfX2VMWAU9gIvqdFwMBKf07zU
-         RXOQ==
-X-Gm-Message-State: AOAM532RvaDchrHwYGcw2BijiRQFg2UuhpLEHTecLuW3CI5//dACvBMn
-        bu+iAiJKlah1jluMyBTXwqtBBEAxVtaPHa4dS3ObzNCL
-X-Google-Smtp-Source: ABdhPJxQNsZTwxUR1yYmcxDHZlYSdVS9VScGb5TA3fpe40I6LtePnsty370NyZSoFj3E/kjt/P2XecRwYXeShdZUSqc=
-X-Received: by 2002:a17:906:851:: with SMTP id f17mr3012520ejd.396.1592319388216;
- Tue, 16 Jun 2020 07:56:28 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yyBDmoMJVCXVgLjKdOMGSUnOzeYRsY+K7W79k+Q31OU=;
+        b=o9nO6UIQ9n7CTZjefV+EOF/NT2vOPV1sew6QNAaKkpbW98rmtdpMS/RFmp2ERcukzf
+         vL1h3xn9EjCtVKHUXW3aGB9IWTfzFQBnxIZspGSYdYKSt9SgbeB2IPtGeit+W8Hdb39r
+         uaGiegsr4v46EZ1eFISfq/W1UYGb2tjUlwr+seGRdvV/bSpYnZnS36wKZVHbxJzwNB7t
+         obEIhNxvWvSUmkfge7XQ1HFBWz+km3JD4/XcbLDdcGgz2cwHtX3r7haIpJ1Y59br7BO0
+         JVvqn7onAodhRmXAuOB0O6Pof2k4FP+RxX5OsSsOYs955c51DwsCn3fV/5g4kIWU3ITO
+         VUAA==
+X-Gm-Message-State: AOAM532/s0AGQlziqeYxUDpxC4tswLk49wW/WTgCFojiPnqW9zm3Nz7m
+        XnU3N1JOVTBWMFq+7y0/+xmkMw==
+X-Google-Smtp-Source: ABdhPJyE8JhFShIC0P56tbNPmidfh2M1XS9DwI25mItrIXnidVWIBUOx6dRBg1QaUnua2nPobiBVoQ==
+X-Received: by 2002:a63:e008:: with SMTP id e8mr2348053pgh.451.1592319453558;
+        Tue, 16 Jun 2020 07:57:33 -0700 (PDT)
+Received: from cisco ([2001:420:c0c8:1007::16e])
+        by smtp.gmail.com with ESMTPSA id x17sm2893286pjr.29.2020.06.16.07.57.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jun 2020 07:57:32 -0700 (PDT)
+Date:   Tue, 16 Jun 2020 08:57:25 -0600
+From:   Tycho Andersen <tycho@tycho.ws>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, Sargun Dhillon <sargun@sargun.me>,
+        Christian Brauner <christian@brauner.io>,
+        "David S. Miller" <davem@davemloft.net>,
+        Christoph Hellwig <hch@lst.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
+        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 08/11] selftests/seccomp: Make kcmp() less required
+Message-ID: <20200616145725.GJ2893648@cisco>
+References: <20200616032524.460144-1-keescook@chromium.org>
+ <20200616032524.460144-9-keescook@chromium.org>
 MIME-Version: 1.0
-References: <20200616144118.3902244-1-olteanv@gmail.com> <20200616144118.3902244-3-olteanv@gmail.com>
- <acb765da28bde4dff4fc2cd9ea661fa1b3486947.camel@infinera.com>
-In-Reply-To: <acb765da28bde4dff4fc2cd9ea661fa1b3486947.camel@infinera.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 16 Jun 2020 17:56:17 +0300
-Message-ID: <CA+h21hoz_LJgvCiVeuPTUVHN2Nu9wWAVnzz9GS2bo=y+Y1hLJA@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] dpaa_eth: fix usage as DSA master, try 4
-To:     Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "madalin.bucur@oss.nxp.com" <madalin.bucur@oss.nxp.com>,
-        "fido_max@inbox.ru" <fido_max@inbox.ru>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200616032524.460144-9-keescook@chromium.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joakim,
+On Mon, Jun 15, 2020 at 08:25:21PM -0700, Kees Cook wrote:
+> The seccomp tests are a bit noisy without CONFIG_CHECKPOINT_RESTORE (due
+> to missing the kcmp() syscall). The seccomp tests are more accurate with
+> kcmp(), but it's not strictly required. Refactor the tests to use
+> alternatives (comparing fd numbers), and provide a central test for
+> kcmp() so there is a single XFAIL instead of many. Continue to produce
+> warnings for the other tests, though.
+> 
+> Additionally adds some more bad flag EINVAL tests to the addfd selftest.
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-On Tue, 16 Jun 2020 at 17:51, Joakim Tjernlund
-<Joakim.Tjernlund@infinera.com> wrote:
->
-> On Tue, 2020-06-16 at 17:41 +0300, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > The dpaa-eth driver probes on compatible string for the MAC node, and
-> > the fman/mac.c driver allocates a dpaa-ethernet platform device that
-> > triggers the probing of the dpaa-eth net device driver.
-> >
-> > All of this is fine, but the problem is that the struct device of the
-> > dpaa_eth net_device is 2 parents away from the MAC which can be
-> > referenced via of_node. So of_find_net_device_by_node can't find it, and
-> > DSA switches won't be able to probe on top of FMan ports.
-> >
-> > It would be a bit silly to modify a core function
-> > (of_find_net_device_by_node) to look for dev->parent->parent->of_node
-> > just for one driver. We're just 1 step away from implementing full
-> > recursion.
-> >
-> > On T1040, the /sys/class/net/eth0 symlink currently points to:
-> >
-> > ../../devices/platform/ffe000000.soc/ffe400000.fman/ffe4e6000.ethernet/net/eth0
->
-> Just want to point out that on 4.19.x, the above patch still exists:
-> cd /sys
-> find -name eth0
-> ./devices/platform/ffe000000.soc/ffe400000.fman/ffe4e6000.ethernet/net/eth0
-> ./class/net/eth
->
+This looks fine, but I wonder if this is enough motivation for taking
+kcmp() out of CONFIG_CHECKPOINT_RESTORE guards?
 
-By 'current' I mean 'the net tree just before this patch is applied',
-i.e. a v5.7 tree with "dpaa_eth: fix usage as DSA master, try 3"
-reverted.
-
-> >
-> > which pretty much illustrates the problem. The closest of_node we've got
-> > is the "fsl,fman-memac" at /soc@ffe000000/fman@400000/ethernet@e6000,
-> > which is what we'd like to be able to reference from DSA as host port.
-> >
-> > For of_find_net_device_by_node to find the eth0 port, we would need the
-> > parent of the eth0 net_device to not be the "dpaa-ethernet" platform
-> > device, but to point 1 level higher, aka the "fsl,fman-memac" node
-> > directly. The new sysfs path would look like this:
-> >
-> > ../../devices/platform/ffe000000.soc/ffe400000.fman/ffe4e6000.ethernet/dpaa-ethernet.0/net/eth0
-> >
-> > Actually this has worked before, through the SET_NETDEV_DEV mechanism,
-> > which sets the parent of the net_device as the parent of the platform
-> > device. But the device which was set as sysfs parent was inadvertently
-> > changed through commit 060ad66f9795 ("dpaa_eth: change DMA device"),
-> > which did not take into consideration the effect it would have upon
-> > of_find_net_device_by_node. So restore the old sysfs parent to make that
-> > work correctly.
-> >
-> > Fixes: 060ad66f9795 ("dpaa_eth: change DMA device")
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
-> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > index c4416a5f8816..2972244e6eb0 100644
-> > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > @@ -2914,7 +2914,7 @@ static int dpaa_eth_probe(struct platform_device *pdev)
-> >         }
-> >
-> >         /* Do this here, so we can be verbose early */
-> > -       SET_NETDEV_DEV(net_dev, dev);
-> > +       SET_NETDEV_DEV(net_dev, dev->parent);
-> >         dev_set_drvdata(dev, net_dev);
-> >
-> >         priv = netdev_priv(net_dev);
-> > --
-> > 2.25.1
-> >
->
-
-Thanks,
--Vladimir
+Tycho
