@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B8BB1FC1E5
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 00:54:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDBC91FC1E2
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 00:54:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726500AbgFPWyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 18:54:09 -0400
+        id S1726463AbgFPWyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 18:54:04 -0400
 Received: from mga01.intel.com ([192.55.52.88]:27234 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726456AbgFPWyF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jun 2020 18:54:05 -0400
-IronPort-SDR: aJC8e9wEl0VHgiCFixDQMWALmm9+OdcD5ri/UzUiyPhy1qBMBorl7vNb9+Nfzu3hORtAXMieFk
- wnDYo94zmYcQ==
+        id S1725964AbgFPWyE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Jun 2020 18:54:04 -0400
+IronPort-SDR: 1ltJcwNZz0NqfYTsz4Ws9msRLwQ8R86MZM3ZQ21wWwh7TWJpaMGCW7yDKbpVfprj02niMmYtjm
+ hPel3iygxP+g==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2020 15:54:02 -0700
-IronPort-SDR: R7nPnRYHbNGNjpgq9KitgTkpGlKjIL1xlwnw06ZmOWHY4V/GKTqwzip26Pmgoob3nfsBFt8wQE
- iOTKI0eE3sDA==
+IronPort-SDR: emVEg9a1qXm8HEInDW0EiO+eofzVRd1/MbiSbB80jIuxPWJqd3d/GjoNTO/qId76/xsetxNnL3
+ E24c3XNwKyWA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,520,1583222400"; 
-   d="scan'208";a="317362146"
+   d="scan'208";a="317362151"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 Jun 2020 15:53:56 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 16 Jun 2020 15:53:57 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
+Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net 2/3] e1000: use generic power management
-Date:   Tue, 16 Jun 2020 15:53:53 -0700
-Message-Id: <20200616225354.2744572-3-jeffrey.t.kirsher@intel.com>
+Subject: [net 3/3] e1000e: fix unused-function warning
+Date:   Tue, 16 Jun 2020 15:53:54 -0700
+Message-Id: <20200616225354.2744572-4-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200616225354.2744572-1-jeffrey.t.kirsher@intel.com>
 References: <20200616225354.2744572-1-jeffrey.t.kirsher@intel.com>
@@ -43,138 +43,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-With legacy PM hooks, it was the responsibility of a driver to manage PCI
-states and also the device's power state. The generic approach is to let PCI
-core handle the work.
+The CONFIG_PM_SLEEP #ifdef checks in this file are inconsistent,
+leading to a warning about sometimes unused function:
 
-e1000_suspend() calls __e1000_shutdown() to perform intermediate tasks.
-__e1000_shutdown() modifies the value of "wake" (device should be wakeup
-enabled or not), responsible for controlling the flow of legacy PM.
+drivers/net/ethernet/intel/e1000e/netdev.c:137:13: error: unused function 'e1000e_check_me' [-Werror,-Wunused-function]
 
-Since, PCI core has no idea about the value of "wake", new code for generic
-PM may produce unexpected results. Thus, use "device_set_wakeup_enable()"
-to wakeup-enable the device accordingly.
+Rather than adding more #ifdefs, just remove them completely
+and mark the PM functions as __maybe_unused to let the compiler
+work it out on it own.
 
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+Fixes: e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/e1000/e1000_main.c | 49 +++++--------------
- 1 file changed, 13 insertions(+), 36 deletions(-)
+ drivers/net/ethernet/intel/e1000e/netdev.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-index d9fa4600f745..4b2de08137be 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -151,10 +151,8 @@ static int e1000_vlan_rx_kill_vid(struct net_device *netdev,
- 				  __be16 proto, u16 vid);
- static void e1000_restore_vlan(struct e1000_adapter *adapter);
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index e2ad3f38c75c..6f6479ca1267 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -6349,7 +6349,6 @@ static void e1000e_flush_lpic(struct pci_dev *pdev)
+ 	pm_runtime_put_sync(netdev->dev.parent);
+ }
  
--#ifdef CONFIG_PM
--static int e1000_suspend(struct pci_dev *pdev, pm_message_t state);
--static int e1000_resume(struct pci_dev *pdev);
--#endif
-+static int __maybe_unused e1000_suspend(struct device *dev);
-+static int __maybe_unused e1000_resume(struct device *dev);
- static void e1000_shutdown(struct pci_dev *pdev);
+-#ifdef CONFIG_PM_SLEEP
+ /* S0ix implementation */
+ static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
+ {
+@@ -6571,7 +6570,6 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
+ 	mac_data &= ~E1000_CTRL_EXT_FORCE_SMBUS;
+ 	ew32(CTRL_EXT, mac_data);
+ }
+-#endif /* CONFIG_PM_SLEEP */
  
- #ifdef CONFIG_NET_POLL_CONTROLLER
-@@ -179,16 +177,16 @@ static const struct pci_error_handlers e1000_err_handler = {
- 	.resume = e1000_io_resume,
- };
- 
-+static SIMPLE_DEV_PM_OPS(e1000_pm_ops, e1000_suspend, e1000_resume);
-+
- static struct pci_driver e1000_driver = {
- 	.name     = e1000_driver_name,
- 	.id_table = e1000_pci_tbl,
- 	.probe    = e1000_probe,
- 	.remove   = e1000_remove,
--#ifdef CONFIG_PM
--	/* Power Management Hooks */
--	.suspend  = e1000_suspend,
--	.resume   = e1000_resume,
--#endif
-+	.driver = {
-+		.pm = &e1000_pm_ops,
-+	},
- 	.shutdown = e1000_shutdown,
- 	.err_handler = &e1000_err_handler
- };
-@@ -5060,9 +5058,6 @@ static int __e1000_shutdown(struct pci_dev *pdev, bool *enable_wake)
- 	struct e1000_hw *hw = &adapter->hw;
- 	u32 ctrl, ctrl_ext, rctl, status;
- 	u32 wufc = adapter->wol;
--#ifdef CONFIG_PM
--	int retval = 0;
--#endif
- 
- 	netif_device_detach(netdev);
- 
-@@ -5076,12 +5071,6 @@ static int __e1000_shutdown(struct pci_dev *pdev, bool *enable_wake)
- 		e1000_down(adapter);
- 	}
- 
--#ifdef CONFIG_PM
--	retval = pci_save_state(pdev);
--	if (retval)
--		return retval;
--#endif
--
- 	status = er32(STATUS);
- 	if (status & E1000_STATUS_LU)
- 		wufc &= ~E1000_WUFC_LNKC;
-@@ -5142,37 +5131,26 @@ static int __e1000_shutdown(struct pci_dev *pdev, bool *enable_wake)
- 	return 0;
+ static int e1000e_pm_freeze(struct device *dev)
+ {
+@@ -6875,7 +6873,6 @@ static int e1000e_pm_thaw(struct device *dev)
+ 	return rc;
  }
  
 -#ifdef CONFIG_PM
--static int e1000_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused e1000_suspend(struct device *dev)
+ static int __e1000_resume(struct pci_dev *pdev)
  {
- 	int retval;
-+	struct pci_dev *pdev = to_pci_dev(dev);
- 	bool wake;
- 
- 	retval = __e1000_shutdown(pdev, &wake);
--	if (retval)
--		return retval;
--
--	if (wake) {
--		pci_prepare_to_sleep(pdev);
--	} else {
--		pci_wake_from_d3(pdev, false);
--		pci_set_power_state(pdev, PCI_D3hot);
--	}
-+	device_set_wakeup_enable(dev, wake);
- 
--	return 0;
-+	return retval;
- }
- 
--static int e1000_resume(struct pci_dev *pdev)
-+static int __maybe_unused e1000_resume(struct device *dev)
- {
-+	struct pci_dev *pdev = to_pci_dev(dev);
  	struct net_device *netdev = pci_get_drvdata(pdev);
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct e1000_hw *hw = &adapter->hw;
- 	u32 err;
+@@ -6941,8 +6938,7 @@ static int __e1000_resume(struct pci_dev *pdev)
+ 	return 0;
+ }
  
--	pci_set_power_state(pdev, PCI_D0);
--	pci_restore_state(pdev);
--	pci_save_state(pdev);
--
- 	if (adapter->need_ioport)
- 		err = pci_enable_device(pdev);
- 	else
-@@ -5209,7 +5187,6 @@ static int e1000_resume(struct pci_dev *pdev)
+-#ifdef CONFIG_PM_SLEEP
+-static int e1000e_pm_suspend(struct device *dev)
++static __maybe_unused int e1000e_pm_suspend(struct device *dev)
+ {
+ 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
+@@ -6966,7 +6962,7 @@ static int e1000e_pm_suspend(struct device *dev)
+ 	return rc;
+ }
+ 
+-static int e1000e_pm_resume(struct device *dev)
++static __maybe_unused int e1000e_pm_resume(struct device *dev)
+ {
+ 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
+@@ -6985,9 +6981,8 @@ static int e1000e_pm_resume(struct device *dev)
+ 
+ 	return e1000e_pm_thaw(dev);
+ }
+-#endif /* CONFIG_PM_SLEEP */
+ 
+-static int e1000e_pm_runtime_idle(struct device *dev)
++static __maybe_unused int e1000e_pm_runtime_idle(struct device *dev)
+ {
+ 	struct net_device *netdev = dev_get_drvdata(dev);
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
+@@ -7003,7 +6998,7 @@ static int e1000e_pm_runtime_idle(struct device *dev)
+ 	return -EBUSY;
+ }
+ 
+-static int e1000e_pm_runtime_resume(struct device *dev)
++static __maybe_unused int e1000e_pm_runtime_resume(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+@@ -7020,7 +7015,7 @@ static int e1000e_pm_runtime_resume(struct device *dev)
+ 	return rc;
+ }
+ 
+-static int e1000e_pm_runtime_suspend(struct device *dev)
++static __maybe_unused int e1000e_pm_runtime_suspend(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+@@ -7045,7 +7040,6 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
  
  	return 0;
  }
--#endif
+-#endif /* CONFIG_PM */
  
  static void e1000_shutdown(struct pci_dev *pdev)
  {
