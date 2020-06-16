@@ -2,128 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F5681FAB85
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 10:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D2AA1FABAF
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 10:55:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727960AbgFPImm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 04:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726573AbgFPImm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 04:42:42 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3581C05BD43
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 01:42:41 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id t21so13618921edr.12
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 01:42:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=Ns3ALrq7vq0Xby5o6WWlFusxvEnhPfE1DCHASM4MEKA=;
-        b=B5N0QJAGQijBUbiugWX8RSEDaTS0SDQRimBt+gaaUvX1Phr241NTL12bk5OIDZiRLB
-         REVCwmzXEi6/x3wthPUOurd3/MctqzJij8qABtNWZjRJ5/niC77aw95nZUw3oBUwS57y
-         OSh8bIX5/L5aqqt95LP/dc6uZWTq2W0kuD25pEfjJVQdmEwps+HunGullei9xIUpWCfe
-         R6ip3fvc2E34FtuZ4TdSYV9tyzmSBtR5ICbzqCKnRMz7eozKQa1Dl8VNbQg9bWDMaSWo
-         lcCfCTSydnwIvH368oTtX5fwy77M58sj6UPWZO0WfcaZBIN+dfVbWFn+XHxkdEdzEV5Q
-         tUAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=Ns3ALrq7vq0Xby5o6WWlFusxvEnhPfE1DCHASM4MEKA=;
-        b=kWnG+44V7ufFEGXlDHPmjXSyIW/q73pbM3Tpf2G/rc+UfnTlzHOZ57wi5v31ZICDoW
-         WlTNfMafF7j0X/FGmvLqLPtfNk7sjUXfqLPr1sxo/gMYqiYeCjUupjU3Qy0vsJ+bEXzW
-         DySuT15+048g7IHZ2SZDEB7zW9YHOcUntv1DxpFcqnt6W0ScWg/9DE8BGfVmfaJDATze
-         wn8yPYLr8BVmchs3DWPii981/2tqG+DDn1khv2J7vRQCk1w6m6kiltrAjjOk1YBJ2uAz
-         Qa4g/Io5SzHZQMfuGOHyDz0BLB2pQXU+yXKIdKlXeCf/LKdyLkazfhY0RUhYHAVwEtbA
-         +LGw==
-X-Gm-Message-State: AOAM532w93hvM4X0epOCPk6Pa0s6hsSQ7j7fMovf0KgdUfl+HRrrQPKo
-        /HUcKHv05OO/sRSvfyD8ozxKrg==
-X-Google-Smtp-Source: ABdhPJzN2o4uFA6ecgjWZEOjRo135HN4vC/+V65pbb496qd9y9/pH2iAqB6dm4uw1g7mMRY2U5F+BQ==
-X-Received: by 2002:a50:98c1:: with SMTP id j59mr1649935edb.120.1592296960574;
-        Tue, 16 Jun 2020 01:42:40 -0700 (PDT)
-Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id p13sm9801073edx.69.2020.06.16.01.42.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 01:42:39 -0700 (PDT)
-Date:   Tue, 16 Jun 2020 10:42:39 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Xidong Wang <wangxidong_97@163.com>
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-Subject: Re: [ovs-dev] [PATCH 1/1] openvswitch: fix infoleak in conntrack
-Message-ID: <20200616084237.GA28981@netronome.com>
-References: <1592273581-31338-1-git-send-email-wangxidong_97@163.com>
+        id S1726526AbgFPIz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 04:55:26 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:22427 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726112AbgFPIzZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 04:55:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592297724;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wPF4qSfy9sktQyy2eeERuhgmZWCBKew9r91uHe9yaxg=;
+        b=KY2s0GGBwUcJZqzXtVC84ES0iG6TXmRYrpMf6uiXxQMoGC5B5ZagxKZZKUW1VKk6jbdIb6
+        KlwMDDjvcr5n5FSN4gpWkHEd+EGz7yoEb6OpRoaSuCjZykZbhSI91qlDQccb1nEiSN/L32
+        WIkj3Um/1PdzH4FSHYYeNRkjCJQceCo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-217-AjfjPjU3O7eoLgJpO1VzbQ-1; Tue, 16 Jun 2020 04:55:20 -0400
+X-MC-Unique: AjfjPjU3O7eoLgJpO1VzbQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 67A6C10AB647;
+        Tue, 16 Jun 2020 08:55:19 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.64])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 243D01002396;
+        Tue, 16 Jun 2020 08:55:07 +0000 (UTC)
+Date:   Tue, 16 Jun 2020 10:55:06 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        brouer@redhat.com
+Subject: Re: [PATCHv4 bpf-next 1/2] xdp: add a new helper for dev map
+ multicast support
+Message-ID: <20200616105506.163ea5a3@carbon>
+In-Reply-To: <20200612085408.GT102436@dhcp-12-153.nay.redhat.com>
+References: <20200415085437.23028-1-liuhangbin@gmail.com>
+        <20200526140539.4103528-1-liuhangbin@gmail.com>
+        <20200526140539.4103528-2-liuhangbin@gmail.com>
+        <20200610121859.0412c111@carbon>
+        <20200612085408.GT102436@dhcp-12-153.nay.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1592273581-31338-1-git-send-email-wangxidong_97@163.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 07:13:01PM -0700, Xidong Wang wrote:
-> From: xidongwang <wangxidong_97@163.com>
+On Fri, 12 Jun 2020 16:54:08 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
+
+> On Wed, Jun 10, 2020 at 12:18:59PM +0200, Jesper Dangaard Brouer wrote:
+> > On Tue, 26 May 2020 22:05:38 +0800
+> > Hangbin Liu <liuhangbin@gmail.com> wrote:
+> >   
+> > > diff --git a/net/core/xdp.c b/net/core/xdp.c
+> > > index 90f44f382115..acdc63833b1f 100644
+> > > --- a/net/core/xdp.c
+> > > +++ b/net/core/xdp.c
+> > > @@ -475,3 +475,29 @@ void xdp_warn(const char *msg, const char *func, const int line)
+> > >  	WARN(1, "XDP_WARN: %s(line:%d): %s\n", func, line, msg);
+> > >  };
+> > >  EXPORT_SYMBOL_GPL(xdp_warn);
+> > > +
+> > > +struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf)
+> > > +{
+> > > +	unsigned int headroom, totalsize;
+> > > +	struct xdp_frame *nxdpf;
+> > > +	struct page *page;
+> > > +	void *addr;
+> > > +
+> > > +	headroom = xdpf->headroom + sizeof(*xdpf);
+> > > +	totalsize = headroom + xdpf->len;
+> > > +
+> > > +	if (unlikely(totalsize > PAGE_SIZE))
+> > > +		return NULL;
+> > > +	page = dev_alloc_page();
+> > > +	if (!page)
+> > > +		return NULL;
+> > > +	addr = page_to_virt(page);
+> > > +
+> > > +	memcpy(addr, xdpf, totalsize);  
+> > 
+> > I don't think this will work.  You are assuming that the memory model
+> > (xdp_mem_info) is the same.
+> > 
+> > You happened to use i40, that have MEM_TYPE_PAGE_SHARED, and you should
+> > have changed this to MEM_TYPE_PAGE_ORDER0, but it doesn't crash as they
+> > are compatible.  If you were using mlx5, I suspect that this would
+> > result in memory leaking.  
 > 
-> The stack object “zone_limit” has 3 members. In function
-> ovs_ct_limit_get_default_limit(), the member "count" is
-> not initialized and sent out via “nla_put_nohdr”.
+> Is there anything else I should do except add the following line?
+> 	nxdpf->mem.type = MEM_TYPE_PAGE_ORDER0;
 
-Hi Xidong,
+You do realize that you also have copied over the mem.id, right?
 
-thanks for your patch.
+And as I wrote below you also need to update frame_sz.
 
-It appears that the patch is a fix. So I think that subject should be
-targeted at the net tree and thus the subject should include
-"[PATCH net]". (The other option being to target the net-next tree
-in which case the subject should include "[PATCH net-next]".)
-
-Also, as a fix it would be useful to include a fixes tag that references
-the patch that introduced the problem. This is to facilitate backporting
-to -stable branches of released kernels. In this case the following seems
-appropriate.
-
-Fixes: 11efd5cb04a1 ("openvswitch: Support conntrack zone limit")
-
-> Signed-off-by: xidongwang <wangxidong_97@163.com>
-> ---
->  net/openvswitch/conntrack.c | 1 +
->  1 file changed, 1 insertion(+)
+> > 
+> > You also need to update xdpf->frame_sz, as you also cannot assume it is
+> > the same.  
 > 
-> diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-> index 4340f25..1b7820a 100644
-> --- a/net/openvswitch/conntrack.c
-> +++ b/net/openvswitch/conntrack.c
-> @@ -2020,6 +2020,7 @@ static int ovs_ct_limit_get_default_limit(struct ovs_ct_limit_info *info,
->  {
->  	struct ovs_zone_limit zone_limit;
->  	int err;
+> Won't the memcpy() copy xdpf->frame_sz to nxdpf? 
 
-There should be a blank line here.
+You obviously cannot use the frame_sz from the existing frame, as you
+just allocated a new page for the new xdp_frame, that have another size
+(here PAGE_SIZE).
 
-> +	memset(&zone_limit, 0, sizeof(zone_limit));
 
-Moreover, initializing the entire structure to zero only to overwrite
-most of its fields immediately below seems a bit inefficient.
+> And I didn't see xdpf->frame_sz is set in xdp_convert_zc_to_xdp_frame(),
+> do we need a fix?
 
-Perhaps it would be better to just initialise count.
+Good catch, that sounds like a bug, that should be fixed.
+Will you send a fix?
 
->  	zone_limit.zone_id = OVS_ZONE_LIMIT_DEFAULT_ZONE;
->  	zone_limit.limit = info->default_limit;
-	zone_limit.count = 0;
 
-> -- 
-> 2.7.4
+> > > +
+> > > +	nxdpf = addr;
+> > > +	nxdpf->data = addr + headroom;
+> > > +
+> > > +	return nxdpf;
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(xdpf_clone);  
+> > 
+> > 
+> > struct xdp_frame {
+> > 	void *data;
+> > 	u16 len;
+> > 	u16 headroom;
+> > 	u32 metasize:8;
+> > 	u32 frame_sz:24;
+> > 	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
+> > 	 * while mem info is valid on remote CPU.
+> > 	 */
+> > 	struct xdp_mem_info mem;
+> > 	struct net_device *dev_rx; /* used by cpumap */
+> > };
+> >   
 > 
-> _______________________________________________
-> dev mailing list
-> dev@openvswitch.org
-> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+
+struct xdp_mem_info {
+	u32                        type;                 /*     0     4 */
+	u32                        id;                   /*     4     4 */
+
+	/* size: 8, cachelines: 1, members: 2 */
+	/* last cacheline: 8 bytes */
+};
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
