@@ -2,77 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CBE01FADAD
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 12:14:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C12361FADC2
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 12:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728332AbgFPKO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 06:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726052AbgFPKOX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 06:14:23 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86AB6C08C5C2;
-        Tue, 16 Jun 2020 03:14:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=YMNjtPkUP07OueOokG4fk77Nq73HNsl0a5WlXwfxR7g=; b=gt9Hi1QPxBoutmH3mi4JL7iRs
-        9UF/thJLliLHe2KCL9wnfKBJralaec4Mbl2VsPihwkzCQOgFNlypT0Oyt23nVPBmvqaGb1PH/Lqoq
-        PfomGQH7b5VGWIERc+e2TjJgdNHm1dPXs6NF6/JIaU67DyERIXPqD8xqSifOM8+guWOHmhs5McZB/
-        8KfHWhdncf/InaezM7VcgbomwexiC/OAUZXYSvwONUFHFHQcFM9uSgVA6xtViHYIyzFsE4X2PP+DQ
-        P414SVMD2c1o2/n37q3hIhNza3GW8pHA7Bx0ROgiun69ldGDuUXPUL1WoZNDL97XeYcUP0rI8GziU
-        M0yhbJgMQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57860)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jl8bS-0002HY-1X; Tue, 16 Jun 2020 11:14:02 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jl8bN-00022E-SX; Tue, 16 Jun 2020 11:13:57 +0100
-Date:   Tue, 16 Jun 2020 11:13:57 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
-        robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com
-Subject: Re: [PATCH v3 1/3] net: phy: mscc: move shared probe code into a
- helper
-Message-ID: <20200616101357.GM1551@shell.armlinux.org.uk>
-References: <20200615144501.1140870-1-heiko@sntech.de>
- <20200615.181129.570239999533845176.davem@davemloft.net>
- <20200615.181225.2016760272076151342.davem@davemloft.net>
- <1656001.WqWBulSbu3@diego>
+        id S1728217AbgFPKUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 06:20:31 -0400
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:46915 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726052AbgFPKUb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Jun 2020 06:20:31 -0400
+Received: from [192.168.0.6] (ip5f5af4df.dynamic.kabel-deutschland.de [95.90.244.223])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id DD048206442E6;
+        Tue, 16 Jun 2020 12:20:27 +0200 (CEST)
+Subject: Re: [Intel-wired-lan] [PATCH] e1000e: continue to init phy even when
+ failed to disable ULP
+To:     Aaron Ma <aaron.ma@canonical.com>, jeffrey.t.kirsher@intel.com,
+        davem@davemloft.net, kuba@kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vitaly.lifshits@intel.com,
+        kai.heng.feng@canonical.com, sasha.neftin@intel.com
+References: <20200616100512.22512-1-aaron.ma@canonical.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Message-ID: <74391e62-7226-b0f8-d129-768b88f13160@molgen.mpg.de>
+Date:   Tue, 16 Jun 2020 12:20:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1656001.WqWBulSbu3@diego>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200616100512.22512-1-aaron.ma@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 11:10:27AM +0200, Heiko Stübner wrote:
-> > 
-> > You also need to provide a proper header posting when you repost this series
-> > after fixing this bug.
+Dear Aaron,
+
+
+Thank you for your patch.
+
+(Rant: Some more fallout from the other patch, which nobody reverted.)
+
+Am 16.06.20 um 12:05 schrieb Aaron Ma:
+> After commit "e1000e: disable s0ix entry and exit flows for ME systems",
+> some ThinkPads always failed to disable ulp by ME.
+
+Please add the (short) commit hash from the master branch.
+
+s/ulp/ULP/
+
+Please list one ThinkPad as example.
+
+> commit "e1000e: Warn if disabling ULP failed" break out of init phy:
+
+1.  Please add the closing quote ".
+2.  Please add the commit hash.
+
+> error log:
+> [   42.364753] e1000e 0000:00:1f.6 enp0s31f6: Failed to disable ULP
+> [   42.524626] e1000e 0000:00:1f.6 enp0s31f6: PHY Wakeup cause - Unicast Packet
+> [   42.822476] e1000e 0000:00:1f.6 enp0s31f6: Hardware Error
 > 
-> not sure I understand what you mean with "header posting" here.
+> When disable s0ix, E1000_FWSM_ULP_CFG_DONE will never be 1.
+> If continue to init phy like before, it can work as before.
+> iperf test result good too.
+> 
+> Chnage e_warn to e_dbg, in case it confuses.
 
-David is requesting that you send a "0/N" email summarising the purpose
-of the patch series and any other relevant information to the series as
-a whole.  The subsequent patches should be threaded to the 0/N email.
+s/Chnage/Change/
 
-The 0/N email should also contain the overall diffstat for the series.
+Please leave the level warning, and improve the warning message instead, 
+so a user knows what is going on.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Could you please add a `Fixes:` tag and the URL to the bug report?
+
+> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+> ---
+>   drivers/net/ethernet/intel/e1000e/ich8lan.c | 3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+> index f999cca37a8a..63405819eb83 100644
+> --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
+> +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+> @@ -302,8 +302,7 @@ static s32 e1000_init_phy_workarounds_pchlan(struct e1000_hw *hw)
+>   	hw->dev_spec.ich8lan.ulp_state = e1000_ulp_state_unknown;
+>   	ret_val = e1000_disable_ulp_lpt_lp(hw, true);
+>   	if (ret_val) {
+> -		e_warn("Failed to disable ULP\n");
+> -		goto out;
+> +		e_dbg("Failed to disable ULP\n");
+>   	}
+>   
+>   	ret_val = hw->phy.ops.acquire(hw);
+> 
+
+Kind regards,
+
+Paul
