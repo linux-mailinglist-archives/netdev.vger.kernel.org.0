@@ -2,118 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6461F1FA72D
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 05:55:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD4241FA74A
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 06:01:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726789AbgFPDzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 23:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725985AbgFPDzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 23:55:41 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C53C061A0E;
-        Mon, 15 Jun 2020 20:55:39 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id n24so21715349lji.10;
-        Mon, 15 Jun 2020 20:55:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ef/c5sByl1dQLDC7ct1QT+x4ZA8mc0Ozfd+rnzLi0vM=;
-        b=HrDELnRkblGg4LR88wDhd2g+xC39qXUU+freDI0HxIr32SiRt0bcNNXO5LsyiY8AXi
-         ewFyq21sGR66Sk3yPq4kjEFg9wh01Zksx8Xh/zQijF4UDgK4KRmdKjrTr7LcSsEDXNGk
-         5y/Ng9nKELD7mNp0o5soNjSdedHsv4mVD1gbxQ1oUE8EtFjvpfbSM0UtVZdywBKCpLE8
-         5Lf1v7D2nP1P+Oa6Tpj/pyUqYMqqZ6+KeJVcexSqd3rJVmA6+COOHDRTUQvKZ78Og5Xj
-         etPBbaZ6p9NTtC7ce+LBrGjLvhQEWDCEOI7oLmDi8MF8wvZ+falTQDLzEfnRXSey5R2j
-         5uLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ef/c5sByl1dQLDC7ct1QT+x4ZA8mc0Ozfd+rnzLi0vM=;
-        b=baGb9OhFLWka1v7mOT3An66kWWiddJIu6QlcS2jj/jczlrOrjXMwBdhIL4traRLKHq
-         q5kIfSHsSd1CvY7qwYKXBOKU+W4LPVh7Vk7L/HjpzI/zfGjBABs+N0PEWpb2MP9Z57sn
-         P721XSGGG5n8AWnijOUiFg0hEuHtD0RrqwyOqasbiBPTqqzZHNKzkJGdmUuosQOnGyT2
-         BXcH5Y+9D9PZI29OLhaDkoAKiYhB2nPimyObgZkUCT7QuxarFYiNl0OYNhgBMIOM6tu0
-         hRf6Y4dsC1iu9M72crsSOg5BZvMiGC+UM/uWH2omOU7DIUpMFxf8xcaCuwT4nwByuGQK
-         bWZg==
-X-Gm-Message-State: AOAM532UkrvlBTI+2CB0vFgn/zXtufmP+uEImIyLk+zghPxR7oimO8YS
-        oFomSaxm7ZsVcrwXzZ5i7uMhHLa0kovkhDHJJCA=
-X-Google-Smtp-Source: ABdhPJwv30NCg1WqRnRZqVd0fR/+EmBquaNoRMIRqikQ4C3M04oWhogn6YZD9m5ky5fIo/FgLoaGmo/xTvK2NSZyO6w=
-X-Received: by 2002:a05:651c:1193:: with SMTP id w19mr401486ljo.121.1592279738042;
- Mon, 15 Jun 2020 20:55:38 -0700 (PDT)
+        id S1726979AbgFPEAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 00:00:39 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:41498 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726846AbgFPEAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 00:00:37 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05G3w8xb194145;
+        Tue, 16 Jun 2020 04:00:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=corp-2020-01-29;
+ bh=TkXWLHBUcq6GrqGb8B/sbaIZ/YHDymjYC75g5tesDI8=;
+ b=s0bTOq51QseDHq3DCV1eok86CuoPzPpKYMVoC9U62ArE0saDMsnZyPLX69xmMmiHf234
+ GhtCzXclPyAD2lvezqNJX8FgmH65sQ9KccDDY5XWfo8Aa7QHwrwmkBM3HdBxQgVizkwR
+ TWYYw16ccvp5fkc32sMx4T+djKHsND99VSK/XK3ZASboQzuMEu3UqLhJCMYcF1rztbLF
+ 8thcP+Q59Z1RQaqEhadQSZY1Ppzp8aM+nArYVhqLkdXswKRcQPS43Kk7a4rkdXR3hFtv
+ lGelrDKD8kNKh9uCoaCrNMnAejMfsXhLT4QgfQMCt4BhcPh9j0Tooxa1V88YIFFXPo+U 2Q== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 31p6e5vda1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 16 Jun 2020 04:00:10 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05G3xOvH131174;
+        Tue, 16 Jun 2020 04:00:09 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 31p6dcadma-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Jun 2020 04:00:09 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 05G406xx021363;
+        Tue, 16 Jun 2020 04:00:06 GMT
+Received: from ca-mkp.ca.oracle.com (/10.156.108.201)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 15 Jun 2020 21:00:06 -0700
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     Kieran Bingham <kieran.bingham@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        netdev@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-mm@kvack.org,
+        linux-rdma@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-scsi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-wireless@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-usb@vger.kernel.org, linux-gpio@vger.kernel.org,
+        ath10k@lists.infradead.org
+Subject: Re: [PATCH 00/17] spelling.txt: /decriptors/descriptors/
+Date:   Mon, 15 Jun 2020 23:59:55 -0400
+Message-Id: <159227986422.24883.1110692977647896521.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200609124610.3445662-1-kieran.bingham+renesas@ideasonboard.com>
+References: <20200609124610.3445662-1-kieran.bingham+renesas@ideasonboard.com>
 MIME-Version: 1.0
-References: <20200612160141.188370-1-lmb@cloudflare.com> <CAADnVQ+owOvkZ03qyodmh+4NkZD=1LpgTN+YJqiKgr0_OKqRtA@mail.gmail.com>
- <CACAyw9-Jy+r2t5Yy83EEZ8GDnxEsGOPdrqr2JSfVqcC2E6dYmQ@mail.gmail.com>
-In-Reply-To: <CACAyw9-Jy+r2t5Yy83EEZ8GDnxEsGOPdrqr2JSfVqcC2E6dYmQ@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 15 Jun 2020 20:55:26 -0700
-Message-ID: <CAADnVQJP_i+KsP771L=GwxousnE=w9o2KckZ7ZCbc064EqSq6w@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] flow_dissector: reject invalid attach_flags
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9653 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adultscore=0 suspectscore=0
+ mlxlogscore=999 mlxscore=0 phishscore=0 bulkscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006160028
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9653 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 adultscore=0
+ mlxscore=0 phishscore=0 mlxlogscore=999 lowpriorityscore=0 clxscore=1011
+ suspectscore=0 spamscore=0 bulkscore=0 malwarescore=0 impostorscore=0
+ cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2006160027
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 7:43 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
->
-> On Fri, 12 Jun 2020 at 23:36, Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Fri, Jun 12, 2020 at 9:02 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
-> > >
-> > > Using BPF_PROG_ATTACH on a flow dissector program supports neither flags
-> > > nor target_fd but accepts any value. Return EINVAL if either are non-zero.
-> > >
-> > > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> > > Fixes: b27f7bb590ba ("flow_dissector: Move out netns_bpf prog callbacks")
-> > > ---
-> > >  kernel/bpf/net_namespace.c | 3 +++
-> > >  1 file changed, 3 insertions(+)
-> > >
-> > > diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
-> > > index 78cf061f8179..56133e78ae4f 100644
-> > > --- a/kernel/bpf/net_namespace.c
-> > > +++ b/kernel/bpf/net_namespace.c
-> > > @@ -192,6 +192,9 @@ int netns_bpf_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
-> > >         struct net *net;
-> > >         int ret;
-> > >
-> > > +       if (attr->attach_flags || attr->target_fd)
-> > > +               return -EINVAL;
-> > > +
-> >
-> > In theory it makes sense, but how did you test it?
->
-> Not properly it seems, sorry!
->
-> > test_progs -t flow
-> > fails 5 tests.
->
-> I spent today digging through this, and the issue is actually more annoying than
-> I thought. BPF_PROG_DETACH for sockmap and flow_dissector ignores
-> attach_bpf_fd. The cgroup and lirc2 attach point use this to make sure that the
-> program being detached is actually what user space expects. We actually have
-> tests that set attach_bpf_fd for these to attach points, which tells
-> me that this is
-> an easy mistake to make.
->
-> Unfortunately I can't come up with a good fix that seems backportable:
-> - Making sockmap and flow_dissector have the same semantics as cgroup
->   and lirc2 requires a bunch of changes (probably a new function for sockmap)
+On Tue, 9 Jun 2020 13:45:53 +0100, Kieran Bingham wrote:
 
-making flow dissector pass prog_fd as cg and lirc is certainly my preference.
-Especially since tests are passing fd user code is likely doing the same,
-so breakage is unlikely. Also it wasn't done that long ago, so
-we can backport far enough.
-It will remove cap_net_admin ugly check in bpf_prog_detach()
-which is the only exception now in cap model.
+> I wouldn't normally go through spelling fixes, but I caught sight of
+> this typo twice, and then foolishly grepped the tree for it, and saw how
+> pervasive it was.
+> 
+> so here I am ... fixing a typo globally... but with an addition in
+> scripts/spelling.txt so it shouldn't re-appear ;-)
+> 
+> [...]
+
+Applied to 5.9/scsi-queue, thanks!
+
+[06/17] scsi: Fix trivial spelling
+        https://git.kernel.org/mkp/scsi/c/0a19a725c0ed
+
+-- 
+Martin K. Petersen	Oracle Linux Engineering
