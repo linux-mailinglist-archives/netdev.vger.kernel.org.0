@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FF7C1FAD7F
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 12:06:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B1421FAD83
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 12:06:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728416AbgFPKGO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Jun 2020 06:06:14 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:45973 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728329AbgFPKGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 06:06:10 -0400
+        id S1728440AbgFPKGX convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Jun 2020 06:06:23 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:38973 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728187AbgFPKGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 06:06:21 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-371-Lj4C1gQvNjqpGm3PO0QhvA-1; Tue, 16 Jun 2020 06:06:03 -0400
-X-MC-Unique: Lj4C1gQvNjqpGm3PO0QhvA-1
+ us-mta-32-KFQah0AnORS_9fv3r2C68w-1; Tue, 16 Jun 2020 06:06:11 -0400
+X-MC-Unique: KFQah0AnORS_9fv3r2C68w-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9DC1F83DE70;
-        Tue, 16 Jun 2020 10:05:59 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E6B86151308;
+        Tue, 16 Jun 2020 10:06:05 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.195.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 30C5C5D9D5;
-        Tue, 16 Jun 2020 10:05:54 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F01225D9D5;
+        Tue, 16 Jun 2020 10:05:59 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -37,13 +37,15 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Brendan Gregg <bgregg@netflix.com>,
         Florent Revest <revest@chromium.org>,
         Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH 08/11] bpf: Add BTF whitelist support
-Date:   Tue, 16 Jun 2020 12:05:09 +0200
-Message-Id: <20200616100512.2168860-9-jolsa@kernel.org>
+Subject: [PATCH 09/11] bpf: Add d_path helper
+Date:   Tue, 16 Jun 2020 12:05:10 +0200
+Message-Id: <20200616100512.2168860-10-jolsa@kernel.org>
 In-Reply-To: <20200616100512.2168860-1-jolsa@kernel.org>
 References: <20200616100512.2168860-1-jolsa@kernel.org>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: kernel.org
 Content-Type: text/plain; charset=WINDOWS-1252
@@ -53,144 +55,198 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support to define 'whitelist' of BTF IDs, which is
-also sorted.
+Adding d_path helper function that returns full path
+for give 'struct path' object, which needs to be the
+kernel BTF 'path' object.
 
-Following defines sorted list of BTF IDs that is accessible
-within kernel code as btf_whitelist_d_path and its count is
-in btf_whitelist_d_path_cnt variable.
+The helper calls directly d_path function.
 
-  extern int btf_whitelist_d_path[];
-  extern int btf_whitelist_d_path_cnt;
-
-  BTF_WHITELIST_ENTRY(btf_whitelist_d_path)
-  BTF_ID(func, vfs_truncate)
-  BTF_ID(func, vfs_fallocate)
-  BTF_ID(func, dentry_open)
-  BTF_ID(func, vfs_getattr)
-  BTF_ID(func, filp_close)
-  BTF_WHITELIST_END(btf_whitelist_d_path)
+Updating also bpf.h tools uapi header and adding
+'path' to bpf_helpers_doc.py script.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/bpf.h   |  3 +++
- kernel/bpf/btf.c      | 13 +++++++++++++
- kernel/bpf/btf_ids.h  | 38 ++++++++++++++++++++++++++++++++++++++
- kernel/bpf/verifier.c |  5 +++++
- 4 files changed, 59 insertions(+)
+ include/linux/bpf.h            |  4 ++++
+ include/uapi/linux/bpf.h       | 14 ++++++++++++-
+ kernel/bpf/btf_ids.c           | 11 ++++++++++
+ kernel/trace/bpf_trace.c       | 38 ++++++++++++++++++++++++++++++++++
+ scripts/bpf_helpers_doc.py     |  2 ++
+ tools/include/uapi/linux/bpf.h | 14 ++++++++++++-
+ 6 files changed, 81 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index e98c113a5d27..a94e85c2ec50 100644
+index a94e85c2ec50..d35265b6c574 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -283,6 +283,7 @@ struct bpf_func_proto {
- 		enum bpf_arg_type arg_type[5];
- 	};
- 	int *btf_id; /* BTF ids of arguments */
-+	bool (*allowed)(const struct bpf_prog *prog);
- };
- 
- /* bpf_context is intentionally undefined structure. Pointer to bpf_context is
-@@ -1745,6 +1746,8 @@ enum bpf_text_poke_type {
- int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- 		       void *addr1, void *addr2);
- 
-+bool btf_whitelist_search(int id, int list[], int cnt);
-+
- extern int bpf_skb_output_btf_ids[];
+@@ -1752,5 +1752,9 @@ extern int bpf_skb_output_btf_ids[];
  extern int bpf_seq_printf_btf_ids[];
  extern int bpf_seq_write_btf_ids[];
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 6924180a19c4..feda74d232c5 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -20,6 +20,7 @@
- #include <linux/btf.h>
- #include <linux/skmsg.h>
- #include <linux/perf_event.h>
-+#include <linux/bsearch.h>
- #include <net/sock.h>
- 
- /* BTF (BPF Type Format) is the meta data format which describes
-@@ -4669,3 +4670,15 @@ u32 btf_id(const struct btf *btf)
- {
- 	return btf->id;
- }
+ extern int bpf_xdp_output_btf_ids[];
++extern int bpf_d_path_btf_ids[];
 +
-+static int btf_id_cmp_func(const void *a, const void *b)
++extern int btf_whitelist_d_path[];
++extern int btf_whitelist_d_path_cnt;
+ 
+ #endif /* _LINUX_BPF_H */
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index c65b374a5090..e308746b9344 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3252,6 +3252,17 @@ union bpf_attr {
+  * 		case of **BPF_CSUM_LEVEL_QUERY**, the current skb->csum_level
+  * 		is returned or the error code -EACCES in case the skb is not
+  * 		subject to CHECKSUM_UNNECESSARY.
++ *
++ * int bpf_d_path(struct path *path, char *buf, u32 sz)
++ *	Description
++ *		Return full path for given 'struct path' object, which
++ *		needs to be the kernel BTF 'path' object. The path is
++ *		returned in buffer provided 'buf' of size 'sz'.
++ *
++ *	Return
++ *		length of returned string on success, or a negative
++ *		error in case of failure
++ *
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3389,7 +3400,8 @@ union bpf_attr {
+ 	FN(ringbuf_submit),		\
+ 	FN(ringbuf_discard),		\
+ 	FN(ringbuf_query),		\
+-	FN(csum_level),
++	FN(csum_level),			\
++	FN(d_path),
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+diff --git a/kernel/bpf/btf_ids.c b/kernel/bpf/btf_ids.c
+index d8d0df162f04..853c8fd59b06 100644
+--- a/kernel/bpf/btf_ids.c
++++ b/kernel/bpf/btf_ids.c
+@@ -13,3 +13,14 @@ BTF_ID(struct, seq_file)
+ 
+ BTF_ID_LIST(bpf_xdp_output_btf_ids)
+ BTF_ID(struct, xdp_buff)
++
++BTF_ID_LIST(bpf_d_path_btf_ids)
++BTF_ID(struct, path)
++
++BTF_WHITELIST_ENTRY(btf_whitelist_d_path)
++BTF_ID(func, vfs_truncate)
++BTF_ID(func, vfs_fallocate)
++BTF_ID(func, dentry_open)
++BTF_ID(func, vfs_getattr)
++BTF_ID(func, filp_close)
++BTF_WHITELIST_END(btf_whitelist_d_path)
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index c1866d76041f..0ff5d8434d40 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1016,6 +1016,42 @@ static const struct bpf_func_proto bpf_send_signal_thread_proto = {
+ 	.arg1_type	= ARG_ANYTHING,
+ };
+ 
++BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
 +{
-+	const int *pa = a, *pb = b;
++	char *p = d_path(path, buf, sz - 1);
++	int len;
 +
-+	return *pa - *pb;
-+}
-+
-+bool btf_whitelist_search(int id, int list[], int cnt)
-+{
-+	return bsearch(&id, list, cnt, sizeof(int), btf_id_cmp_func) != NULL;
-+}
-diff --git a/kernel/bpf/btf_ids.h b/kernel/bpf/btf_ids.h
-index 68aa5c38a37f..a90c09faa515 100644
---- a/kernel/bpf/btf_ids.h
-+++ b/kernel/bpf/btf_ids.h
-@@ -67,4 +67,42 @@ asm(							\
- #name ":;                                      \n"	\
- ".popsection;                                  \n");
- 
-+
-+/*
-+ * The BTF_WHITELIST_ENTRY/END macros pair defines sorted
-+ * list of BTF IDs plus its members count, with following
-+ * layout:
-+ *
-+ * BTF_WHITELIST_ENTRY(list2)
-+ * BTF_ID(type1, name1)
-+ * BTF_ID(type2, name2)
-+ * BTF_WHITELIST_END(list)
-+ *
-+ * __BTF_ID__sort__list:
-+ * list2_cnt:
-+ * .zero 4
-+ * list2:
-+ * __BTF_ID__type1__name1__3:
-+ * .zero 4
-+ * __BTF_ID__type2__name2__4:
-+ * .zero 4
-+ *
-+ */
-+#define BTF_WHITELIST_ENTRY(name)			\
-+asm(							\
-+".pushsection " SECTION ",\"a\";               \n"	\
-+".global __BTF_ID__sort__" #name ";            \n"	\
-+"__BTF_ID__sort__" #name ":;                   \n"	\
-+".global " #name "_cnt;                        \n"	\
-+#name "_cnt:;                                  \n"	\
-+".zero 4                                       \n"	\
-+".popsection;                                  \n");	\
-+BTF_ID_LIST(name)
-+
-+#define BTF_WHITELIST_END(name)				\
-+asm(							\
-+".pushsection " SECTION ",\"a\";              \n"	\
-+".size __BTF_ID__sort__" #name ", .-" #name " \n"	\
-+".popsection;                                 \n");
-+
- #endif
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index bee3da2cd945..5a9a6fd72907 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4633,6 +4633,11 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
- 		return -EINVAL;
- 	}
- 
-+	if (fn->allowed && !fn->allowed(env->prog)) {
-+		verbose(env, "helper call is not allowed in probe\n");
-+		return -EINVAL;
++	if (IS_ERR(p)) {
++		len = PTR_ERR(p);
++	} else {
++		len = strlen(p);
++		if (len && p != buf) {
++			memmove(buf, p, len);
++			buf[len] = 0;
++		}
 +	}
 +
- 	/* With LD_ABS/IND some JITs save/restore skb from r1. */
- 	changes_data = bpf_helper_changes_pkt_data(fn->func);
- 	if (changes_data && fn->arg1_type != ARG_PTR_TO_CTX) {
++	return len;
++}
++
++static bool bpf_d_path_allowed(const struct bpf_prog *prog)
++{
++	return btf_whitelist_search(prog->aux->attach_btf_id,
++				    btf_whitelist_d_path,
++				    btf_whitelist_d_path_cnt);
++}
++
++static const struct bpf_func_proto bpf_d_path_proto = {
++	.func		= bpf_d_path,
++	.gpl_only	= true,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_BTF_ID,
++	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg3_type	= ARG_CONST_SIZE,
++	.btf_id		= bpf_d_path_btf_ids,
++	.allowed	= bpf_d_path_allowed,
++};
++
+ const struct bpf_func_proto *
+ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ {
+@@ -1483,6 +1519,8 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return prog->expected_attach_type == BPF_TRACE_ITER ?
+ 		       &bpf_seq_write_proto :
+ 		       NULL;
++	case BPF_FUNC_d_path:
++		return &bpf_d_path_proto;
+ 	default:
+ 		return raw_tp_prog_func_proto(func_id, prog);
+ 	}
+diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
+index 91fa668fa860..3161bf4ccee4 100755
+--- a/scripts/bpf_helpers_doc.py
++++ b/scripts/bpf_helpers_doc.py
+@@ -425,6 +425,7 @@ class PrinterHelpers(Printer):
+             'struct __sk_buff',
+             'struct sk_msg_md',
+             'struct xdp_md',
++            'struct path',
+     ]
+     known_types = {
+             '...',
+@@ -458,6 +459,7 @@ class PrinterHelpers(Printer):
+             'struct sockaddr',
+             'struct tcphdr',
+             'struct seq_file',
++            'struct path',
+     }
+     mapped_types = {
+             'u8': '__u8',
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index c65b374a5090..e308746b9344 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3252,6 +3252,17 @@ union bpf_attr {
+  * 		case of **BPF_CSUM_LEVEL_QUERY**, the current skb->csum_level
+  * 		is returned or the error code -EACCES in case the skb is not
+  * 		subject to CHECKSUM_UNNECESSARY.
++ *
++ * int bpf_d_path(struct path *path, char *buf, u32 sz)
++ *	Description
++ *		Return full path for given 'struct path' object, which
++ *		needs to be the kernel BTF 'path' object. The path is
++ *		returned in buffer provided 'buf' of size 'sz'.
++ *
++ *	Return
++ *		length of returned string on success, or a negative
++ *		error in case of failure
++ *
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3389,7 +3400,8 @@ union bpf_attr {
+ 	FN(ringbuf_submit),		\
+ 	FN(ringbuf_discard),		\
+ 	FN(ringbuf_query),		\
+-	FN(csum_level),
++	FN(csum_level),			\
++	FN(d_path),
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
 -- 
 2.25.4
 
