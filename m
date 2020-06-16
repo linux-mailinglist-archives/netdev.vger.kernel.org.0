@@ -2,137 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5314F1FB90A
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 18:01:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C49C1FB93A
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 18:03:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730949AbgFPQAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 12:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
+        id S1733170AbgFPQCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 12:02:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732809AbgFPPws (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 11:52:48 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4004EC06174E
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:52:47 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id i12so1630550pju.3
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:52:47 -0700 (PDT)
+        with ESMTP id S1732840AbgFPQCD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 12:02:03 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7D7C061573
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 09:02:03 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id ga6so1646564pjb.1
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 09:02:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=bLqkpKmEFdo50WG+lxFzSE/gPYomjAyXGtI7bY1gfcc=;
-        b=ihA17bLiTDCpfMxM/wM2fbkUDeO1dPfwLluAAyO4L1Enjjf2SYHM82u5c3n91FCyiz
-         bM2hx3iZbJi/VGKITOmDiKP+NTlw+UbEli8ddWq3bfgpvdTDdZa4v3DBvL7EtVBgFSx1
-         H/3UcGpuHPIcvjs/0lb0BjmKxRBFo8l8N7hrf6bZBP3mqsGlZ6xmgFOZVaZxhTfA4ebu
-         4n9GYwCPpL1E/va3/8f0Dwe/fxl7u4UP2v0dh+pUWgJIxLoUV1mzj+H1k5FrU5cMuKw1
-         hW0NojZEeEpCNikcw58HHcF5PNWfH1z2TlTgPHxz7YTFAvzCC7V3OgNpgS8ONtqt2FKf
-         1DJQ==
+        bh=yvH4tKpCIZN3i9yS1tqHno2lbmWIQ0tG2BKc67c2Fi0=;
+        b=dkh2FvfwAgAG9DVEIzRDHxXwG1ZCmSDYbOG1wYoka7DYG4jS9aBNnoY4Uy3fqBvaNb
+         d1yd1l6fnoNpMQvfWThWeVxDa6LAp7LkXXbmOGPNNpKy84OnJ68uCOrV4VVe/MWnsT6C
+         3OjOvuYAuI3JNz6kYSe5G3IYUe6gedzOcg7o2JhTi7wbeKPSjuNhNc1EoyKmApLWs7Ll
+         iIOziINQyo8wWGfirntAhsZVHtEd4IL+Nvz33/PDftgogv9AhJK3UBm0NdV3ERJ07Ng7
+         xQ+Nb8n3niLB1NPB2/eDZmmgzF/Bx77rQGOGpANW1H28H6ktnBr7HMOjNpj1zL57yDRD
+         2BVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=bLqkpKmEFdo50WG+lxFzSE/gPYomjAyXGtI7bY1gfcc=;
-        b=Yo6df8ak+OS6tINBiQSB3rcZQp1bJyxpnWuGvnAfNDLuVUj1bspfk4k7gspjkXXBcl
-         lDnWRAtk4mnYHpmT8ViYj08QdIKU1/5xQieaPNs/gQ8/N2MstFluFudcWbCRcKHxa3aq
-         V6avJqPEgcz/78WkZqUZgYPSWe/EBwvkWhx2XHN9YrES1eYHRRAnR6tXlLi9OG+FSqWA
-         CWQwkJWTY4ojZJA8QaEGEoLVXEKdO3ICoG2JrMAODxw/zeBAnruO2wbg5YdjswcZAbBs
-         GjBK4wiG0VjImJgjP9JqY4hIWYpCEj6bcWX0A7U/oaQrHcKgwdgTR9QsnQtCSxzPis7F
-         iC5Q==
-X-Gm-Message-State: AOAM533OWXy7wSsfP3h7h4PIGK24I+/QeazIGZKYtnO6tUUPuX4H50yA
-        5pa+A3OUM2c0dChBlNmGvHw=
-X-Google-Smtp-Source: ABdhPJy2WlaPpdNyF1/xcr14rYQEcLTufKNAso9Yw0EX9HZYGb9OCn6vluAxC5dBaeNbZNGpWJA7WQ==
-X-Received: by 2002:a17:902:7288:: with SMTP id d8mr2736927pll.18.1592322766555;
-        Tue, 16 Jun 2020 08:52:46 -0700 (PDT)
+        bh=yvH4tKpCIZN3i9yS1tqHno2lbmWIQ0tG2BKc67c2Fi0=;
+        b=H++K8x+qAR5Rv2XIHbX6uvdjl740QQqf362XUXGELd4bdV/oydORKFEl3Ieqlc1TTx
+         zzaj8+hRcoInDj3lgosssGKPmq9QIKT1dpOLWOHlde3F1ZiiXifbEDSVBwNPmQkdSfqT
+         O34ibhEotkZa8WEUVGNVLB3XXRBa81/+lfMwOQ2Kzrn/ljJvVPas/G1oaLKrBY1O7beU
+         F9TZKe/7Xo/EmdMHKolHI8lMug/nLIVh1w+Oi0EJVLT0TrDkNC2SrAMhP3o5Fq1fC9Db
+         N1eX1rsVlzoyOQ4xkujVNzaU5vsfa6MaDumFazIbjc9gVUBK1vOgdmRSWZBbu9zcakEa
+         /elg==
+X-Gm-Message-State: AOAM5326N/05nUTBZdBc5ESm7nNHXFg5NrbOTttqXJuLE07xxmvdcH1D
+        /5XvlrokRBNzeqozq6lKVxM=
+X-Google-Smtp-Source: ABdhPJw/tis8qkh8fsnZQ3cu5zw37knAm1uXa8hUzSxpwXpf5Z//UASeYhVSsl7CXY85lridcYIgfQ==
+X-Received: by 2002:a17:90a:1781:: with SMTP id q1mr3912636pja.8.1592323321549;
+        Tue, 16 Jun 2020 09:02:01 -0700 (PDT)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id o20sm2872411pjw.19.2020.06.16.08.52.44
+        by smtp.gmail.com with ESMTPSA id ds11sm2928309pjb.0.2020.06.16.09.01.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 08:52:45 -0700 (PDT)
+        Tue, 16 Jun 2020 09:02:00 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com, fw@strlen.de
-Subject: [PATCH net v2] net: core: reduce recursion limit value
-Date:   Tue, 16 Jun 2020 15:52:05 +0000
-Message-Id: <20200616155205.8276-1-ap420073@gmail.com>
+Cc:     ap420073@gmail.com, pshelar@nicira.com, eric.dumazet@gmail.com
+Subject: [PATCH net v2] ip_tunnel: fix use-after-free in ip_tunnel_lookup()
+Date:   Tue, 16 Jun 2020 16:01:53 +0000
+Message-Id: <20200616160153.8479-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the current code, ->ndo_start_xmit() can be executed recursively only
-10 times because of stack memory.
-But, in the case of the vxlan, 10 recursion limit value results in
-a stack overflow.
-In the current code, the nested interface is limited by 8 depth.
-There is no critical reason that the recursion limitation value should
-be 10.
-So, it would be good to be the same value with the limitation value of
-nesting interface depth.
+In the datapath, the ip_tunnel_lookup() is used and it internally uses
+fallback tunnel device pointer, which is fb_tunnel_dev.
+This pointer variable should be set to NULL when a fb interface is deleted.
+But there is no routine to set fb_tunnel_dev pointer to NULL.
+So, this pointer will be still used after interface is deleted and
+it eventually results in the use-after-free problem.
 
 Test commands:
-    ip link add vxlan10 type vxlan vni 10 dstport 4789 srcport 4789 4789
-    ip link set vxlan10 up
-    ip a a 192.168.10.1/24 dev vxlan10
-    ip n a 192.168.10.2 dev vxlan10 lladdr fc:22:33:44:55:66 nud permanent
+    ip netns add A
+    ip netns add B
+    ip link add eth0 type veth peer name eth1
+    ip link set eth0 netns A
+    ip link set eth1 netns B
 
-    for i in {9..0}
-    do
-        let A=$i+1
-	ip link add vxlan$i type vxlan vni $i dstport 4789 srcport 4789 4789
-	ip link set vxlan$i up
-	ip a a 192.168.$i.1/24 dev vxlan$i
-	ip n a 192.168.$i.2 dev vxlan$i lladdr fc:22:33:44:55:66 nud permanent
-	bridge fdb add fc:22:33:44:55:66 dev vxlan$A dst 192.168.$i.2 self
-    done
-    hping3 192.168.10.2 -2 -d 60000
+    ip netns exec A ip link set lo up
+    ip netns exec A ip link set eth0 up
+    ip netns exec A ip link add gre1 type gre local 10.0.0.1 \
+	    remote 10.0.0.2
+    ip netns exec A ip link set gre1 up
+    ip netns exec A ip a a 10.0.100.1/24 dev gre1
+    ip netns exec A ip a a 10.0.0.1/24 dev eth0
+
+    ip netns exec B ip link set lo up
+    ip netns exec B ip link set eth1 up
+    ip netns exec B ip link add gre1 type gre local 10.0.0.2 \
+	    remote 10.0.0.1
+    ip netns exec B ip link set gre1 up
+    ip netns exec B ip a a 10.0.100.2/24 dev gre1
+    ip netns exec B ip a a 10.0.0.2/24 dev eth1
+    ip netns exec A hping3 10.0.100.2 -2 --flood -d 60000 &
+    ip netns del B
 
 Splat looks like:
-[  103.814237][ T1127] =============================================================================
-[  103.871955][ T1127] BUG kmalloc-2k (Tainted: G    B            ): Padding overwritten. 0x00000000897a2e4f-0x000
-[  103.873187][ T1127] -----------------------------------------------------------------------------
-[  103.873187][ T1127]
-[  103.874252][ T1127] INFO: Slab 0x000000005cccc724 objects=5 used=5 fp=0x0000000000000000 flags=0x10000000001020
-[  103.881323][ T1127] CPU: 3 PID: 1127 Comm: hping3 Tainted: G    B             5.7.0+ #575
-[  103.882131][ T1127] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[  103.883006][ T1127] Call Trace:
-[  103.883324][ T1127]  dump_stack+0x96/0xdb
-[  103.883716][ T1127]  slab_err+0xad/0xd0
-[  103.884106][ T1127]  ? _raw_spin_unlock+0x1f/0x30
-[  103.884620][ T1127]  ? get_partial_node.isra.78+0x140/0x360
-[  103.885214][ T1127]  slab_pad_check.part.53+0xf7/0x160
-[  103.885769][ T1127]  ? pskb_expand_head+0x110/0xe10
-[  103.886316][ T1127]  check_slab+0x97/0xb0
-[  103.886763][ T1127]  alloc_debug_processing+0x84/0x1a0
-[  103.887308][ T1127]  ___slab_alloc+0x5a5/0x630
-[  103.887765][ T1127]  ? pskb_expand_head+0x110/0xe10
-[  103.888265][ T1127]  ? lock_downgrade+0x730/0x730
-[  103.888762][ T1127]  ? pskb_expand_head+0x110/0xe10
-[  103.889244][ T1127]  ? __slab_alloc+0x3e/0x80
-[  103.889675][ T1127]  __slab_alloc+0x3e/0x80
-[  103.890108][ T1127]  __kmalloc_node_track_caller+0xc7/0x420
+[  133.319668][    C3] BUG: KASAN: use-after-free in ip_tunnel_lookup+0x9d6/0xde0
+[  133.343852][    C3] Read of size 4 at addr ffff8880b1701c84 by task hping3/1222
+[  133.344724][    C3]
+[  133.345002][    C3] CPU: 3 PID: 1222 Comm: hping3 Not tainted 5.7.0+ #591
+[  133.345814][    C3] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  133.373336][    C3] Call Trace:
+[  133.374792][    C3]  <IRQ>
+[  133.375205][    C3]  dump_stack+0x96/0xdb
+[  133.375789][    C3]  print_address_description.constprop.6+0x2cc/0x450
+[  133.376720][    C3]  ? ip_tunnel_lookup+0x9d6/0xde0
+[  133.377431][    C3]  ? ip_tunnel_lookup+0x9d6/0xde0
+[  133.378130][    C3]  ? ip_tunnel_lookup+0x9d6/0xde0
+[  133.378851][    C3]  kasan_report+0x154/0x190
+[  133.379494][    C3]  ? ip_tunnel_lookup+0x9d6/0xde0
+[  133.380200][    C3]  ip_tunnel_lookup+0x9d6/0xde0
+[  133.380894][    C3]  __ipgre_rcv+0x1ab/0xaa0 [ip_gre]
+[  133.381630][    C3]  ? rcu_read_lock_sched_held+0xc0/0xc0
+[  133.382429][    C3]  gre_rcv+0x304/0x1910 [ip_gre]
 [ ... ]
 
-Fixes: 11a766ce915f ("net: Increase xmit RECURSION_LIMIT to 10.")
+Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+Fixes: c54419321455 ("GRE: Refactor GRE tunneling code.")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
 
 v1 -> v2:
- - Fix a fix tag.
+ - Do not add a new variable.
 
- include/linux/netdevice.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/ip_tunnel.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 6fc613ed8eae..39e28e11863c 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3157,7 +3157,7 @@ static inline int dev_recursion_level(void)
- 	return this_cpu_read(softnet_data.xmit.recursion);
- }
- 
--#define XMIT_RECURSION_LIMIT	10
-+#define XMIT_RECURSION_LIMIT	8
- static inline bool dev_xmit_recursion(void)
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index f4f1d11eab50..701f150f11e1 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -85,9 +85,10 @@ struct ip_tunnel *ip_tunnel_lookup(struct ip_tunnel_net *itn,
+ 				   __be32 remote, __be32 local,
+ 				   __be32 key)
  {
- 	return unlikely(__this_cpu_read(softnet_data.xmit.recursion) >
+-	unsigned int hash;
+ 	struct ip_tunnel *t, *cand = NULL;
+ 	struct hlist_head *head;
++	struct net_device *ndev;
++	unsigned int hash;
+ 
+ 	hash = ip_tunnel_hash(key, remote);
+ 	head = &itn->tunnels[hash];
+@@ -162,8 +163,9 @@ struct ip_tunnel *ip_tunnel_lookup(struct ip_tunnel_net *itn,
+ 	if (t && t->dev->flags & IFF_UP)
+ 		return t;
+ 
+-	if (itn->fb_tunnel_dev && itn->fb_tunnel_dev->flags & IFF_UP)
+-		return netdev_priv(itn->fb_tunnel_dev);
++	ndev = READ_ONCE(itn->fb_tunnel_dev);
++	if (ndev && ndev->flags & IFF_UP)
++		return netdev_priv(ndev);
+ 
+ 	return NULL;
+ }
+@@ -1260,8 +1262,9 @@ void ip_tunnel_uninit(struct net_device *dev)
+ 
+ 	itn = net_generic(net, tunnel->ip_tnl_net_id);
+ 	/* fb_tunnel_dev will be unregisted in net-exit call. */
+-	if (itn->fb_tunnel_dev != dev)
+-		ip_tunnel_del(itn, netdev_priv(dev));
++	ip_tunnel_del(itn, netdev_priv(dev));
++	if (itn->fb_tunnel_dev == dev)
++		WRITE_ONCE(itn->fb_tunnel_dev, NULL);
+ 
+ 	dst_cache_reset(&tunnel->dst_cache);
+ }
 -- 
 2.17.1
 
