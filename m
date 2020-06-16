@@ -2,101 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40B961FB974
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 18:04:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A3E1FB978
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 18:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733129AbgFPQD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 12:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
+        id S1732421AbgFPQEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 12:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733094AbgFPQDy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 12:03:54 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F90C0613EF
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 09:03:53 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id y18so8596586plr.4
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 09:03:53 -0700 (PDT)
+        with ESMTP id S1731339AbgFPQEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 12:04:08 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEACCC061573
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 09:04:07 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id h95so1808848pje.4
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 09:04:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zKc/JpLrFA5C9B00OW//vjJ8ZMv5QimUc3F5i8rvet4=;
-        b=OllvnLopOjSAVN/rCkHGWJ500Le3/6Ku5c3o8ZlC+gP2RzGDWdyhUX0XwzoK6KZlXi
-         oVUvlUOsEvATG+ldK1KcrhLOS061oY8IpfnuZkqmEEiYnuh+gmbZps73C0AZ9cOBaHq1
-         exTGM1g9ghl69TYphlzSAJ8R2IcP6MK/Wv63w=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=yT6Z1OTi5mHwVMpenyr+HFOUuNQrNEy8iLf8X7i7M8c=;
+        b=qqQ4ztXk83H2k0an5Xc+bGtBCu/dCmq14YDs7VBXo8uel5uEm1wEnTa8Q+7ii1f0oN
+         aYqHzKsdL4pAHq2RRWZG7ACai30Q5UxzXBboh1AxEfiDUshM25EiF1oYE/MAKiHGRW/a
+         jwwgXrsuhpd47EdgEpVCnKBScuAGCbAuBYO8w3SV+TOA2a4TBCy9SnO20gfgaHbXKCkt
+         j/U5bGeQ9qd1O3qpWt91d8mhOxq2D3zJT/mV0YSpQrkMUDqMiDcKJhlFWUaE2Z8o0w72
+         K59qIe0tbDaTdRcyjMeOLutjU3o8g0YRKoNRpTKnPm59IEWOqc4Y8+MjTE4XvLZGuP5r
+         A3rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zKc/JpLrFA5C9B00OW//vjJ8ZMv5QimUc3F5i8rvet4=;
-        b=k33yNtal7ynHcU3ZxkBLk0d3I0UEuQ+d3fydFbPSL+bWYGP4gnQDput7//HJlOIVHk
-         E/e+Nls0O3VRmE13cuCbh98ElAiTFyZ5/S1TWX3sOGqPKwe3+wZo5AXQD84jT2VoOaiD
-         xEpyRtpEyI0Gq3DV9BLyeubnFj57ugT7W7Lcg31NoniJK8oNaP+yNmRUsvx6JIB+7TN2
-         qzofE/2s8uBXDTZQf/eBhJZd/pBwnWMKNIvUDRkO7PTP0pikpokzW3S7+/yGYKgMLnTn
-         8aRlAtWavo+EVLQfA/hmwoMimsLWDBWoXLrBV/TYUX0z/O9pPUrRU45zmoY5fkVTxhl7
-         xDBg==
-X-Gm-Message-State: AOAM530NLP2UBdTSPmdVta04vOlMwDQqQ9giIs8x+spZvHIjLbKTFAi4
-        qtIQXKb/e+tkn2Y+WqZkiKrVdQ==
-X-Google-Smtp-Source: ABdhPJwVjALfzLCAM/XOMQlngQM0/cTr6VlDaTe0C2TtJc/aiEyzOtzkrH1NE78arH20bNJ9zx2lfA==
-X-Received: by 2002:a17:902:e901:: with SMTP id k1mr2665677pld.92.1592323433244;
-        Tue, 16 Jun 2020 09:03:53 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id a14sm17059842pfc.133.2020.06.16.09.03.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=yT6Z1OTi5mHwVMpenyr+HFOUuNQrNEy8iLf8X7i7M8c=;
+        b=N7vzn9iUwwMMDWpBJ/6eKKadKCpLiSlFcQQuJqhjHCeWe0eCz5SH8Obhfc9jF/LbDw
+         +8XCp8/3YPBkuyPr4Ci3qLU4PRTEEki6JMOp5x5TQELTPiBbekbR/NHx5crgpUMZ8MOG
+         0gws7HYrwF0iu7k4Pq3THVXEX0YiBkrWuBUmv3+XjPeCTSes7zWaNHrQBgEAML17KYZE
+         zCBr19O8OpiLnT81hHQDT9OIRWqvr/FeaPKrHpxSPdDkJfAm97lM2FE0VOHeGlrtTiV0
+         SFG8DMAPIQaroWijGDZ3znHjim+nvPoALpHWs1kFJtVOHUgpUjp8TL2Wh1EIdLSZaFwP
+         +eTA==
+X-Gm-Message-State: AOAM530rd04gre0gJksBcoOr0bxrITtyNhFbcBTrWr38b+TfPYsUU+4v
+        /uhovo2P2ZtpKuffvPHbos2V1z7aNgE=
+X-Google-Smtp-Source: ABdhPJxaRClZeSsqwK2Da8qbrG6QvanDAFyfnCvkLY3n+JEr2B+fFTwH52VyqFV4AhtCR1zJH4gK2Q==
+X-Received: by 2002:a17:902:988e:: with SMTP id s14mr2577903plp.142.1592323447212;
+        Tue, 16 Jun 2020 09:04:07 -0700 (PDT)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id r4sm4270410pgp.60.2020.06.16.09.04.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 09:03:52 -0700 (PDT)
-Date:   Tue, 16 Jun 2020 09:03:51 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Tycho Andersen <tycho@tycho.ws>
-Cc:     linux-kernel@vger.kernel.org, Sargun Dhillon <sargun@sargun.me>,
-        Christian Brauner <christian@brauner.io>,
-        "David S. Miller" <davem@davemloft.net>,
-        Christoph Hellwig <hch@lst.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Matt Denton <mpdenton@google.com>,
-        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
-        Robert Sesek <rsesek@google.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
-        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 08/11] selftests/seccomp: Make kcmp() less required
-Message-ID: <202006160902.E331FF1917@keescook>
-References: <20200616032524.460144-1-keescook@chromium.org>
- <20200616032524.460144-9-keescook@chromium.org>
- <20200616145725.GJ2893648@cisco>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200616145725.GJ2893648@cisco>
+        Tue, 16 Jun 2020 09:04:06 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com, xeb@mail.ru, eric.dumazet@gmail.com
+Subject: [PATCH net v2] ip6_gre: fix use-after-free in ip6gre_tunnel_lookup()
+Date:   Tue, 16 Jun 2020 16:04:00 +0000
+Message-Id: <20200616160400.8579-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 08:57:25AM -0600, Tycho Andersen wrote:
-> On Mon, Jun 15, 2020 at 08:25:21PM -0700, Kees Cook wrote:
-> > The seccomp tests are a bit noisy without CONFIG_CHECKPOINT_RESTORE (due
-> > to missing the kcmp() syscall). The seccomp tests are more accurate with
-> > kcmp(), but it's not strictly required. Refactor the tests to use
-> > alternatives (comparing fd numbers), and provide a central test for
-> > kcmp() so there is a single XFAIL instead of many. Continue to produce
-> > warnings for the other tests, though.
-> > 
-> > Additionally adds some more bad flag EINVAL tests to the addfd selftest.
-> > 
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> 
-> This looks fine, but I wonder if this is enough motivation for taking
-> kcmp() out of CONFIG_CHECKPOINT_RESTORE guards?
+In the datapath, the ip6gre_tunnel_lookup() is used and it internally uses
+fallback tunnel device pointer, which is fb_tunnel_dev.
+This pointer variable should be set to NULL when a fb interface is deleted.
+But there is no routine to set fb_tunnel_dev pointer to NULL.
+So, this pointer will be still used after interface is deleted and
+it eventually results in the use-after-free problem.
 
-Do you mean in the kernel? I'd rather not -- it's a relatively powerful
-primitive. Maybe if there were other users needing it, but there doesn't
-seem to have been much demand.
+Test commands:
+    ip netns add A
+    ip netns add B
+    ip link add eth0 type veth peer name eth1
+    ip link set eth0 netns A
+    ip link set eth1 netns B
 
+    ip netns exec A ip link set lo up
+    ip netns exec A ip link set eth0 up
+    ip netns exec A ip link add ip6gre1 type ip6gre local fc:0::1 \
+	    remote fc:0::2
+    ip netns exec A ip -6 a a fc:100::1/64 dev ip6gre1
+    ip netns exec A ip link set ip6gre1 up
+    ip netns exec A ip -6 a a fc:0::1/64 dev eth0
+    ip netns exec A ip link set ip6gre0 up
+
+    ip netns exec B ip link set lo up
+    ip netns exec B ip link set eth1 up
+    ip netns exec B ip link add ip6gre1 type ip6gre local fc:0::2 \
+	    remote fc:0::1
+    ip netns exec B ip -6 a a fc:100::2/64 dev ip6gre1
+    ip netns exec B ip link set ip6gre1 up
+    ip netns exec B ip -6 a a fc:0::2/64 dev eth1
+    ip netns exec B ip link set ip6gre0 up
+    ip netns exec A ping fc:100::2 -s 60000 &
+    ip netns del B
+
+Splat looks like:
+[   73.087285][    C1] BUG: KASAN: use-after-free in ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.088361][    C1] Read of size 4 at addr ffff888040559218 by task ping/1429
+[   73.089317][    C1]
+[   73.089638][    C1] CPU: 1 PID: 1429 Comm: ping Not tainted 5.7.0+ #602
+[   73.090531][    C1] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[   73.091725][    C1] Call Trace:
+[   73.092160][    C1]  <IRQ>
+[   73.092556][    C1]  dump_stack+0x96/0xdb
+[   73.093122][    C1]  print_address_description.constprop.6+0x2cc/0x450
+[   73.094016][    C1]  ? ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.094894][    C1]  ? ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.095767][    C1]  ? ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.096619][    C1]  kasan_report+0x154/0x190
+[   73.097209][    C1]  ? ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.097989][    C1]  ip6gre_tunnel_lookup+0x1064/0x13f0 [ip6_gre]
+[   73.098750][    C1]  ? gre_del_protocol+0x60/0x60 [gre]
+[   73.099500][    C1]  gre_rcv+0x1c5/0x1450 [ip6_gre]
+[   73.100199][    C1]  ? ip6gre_header+0xf00/0xf00 [ip6_gre]
+[   73.100985][    C1]  ? rcu_read_lock_sched_held+0xc0/0xc0
+[   73.101830][    C1]  ? ip6_input_finish+0x5/0xf0
+[   73.102483][    C1]  ip6_protocol_deliver_rcu+0xcbb/0x1510
+[   73.103296][    C1]  ip6_input_finish+0x5b/0xf0
+[   73.103920][    C1]  ip6_input+0xcd/0x2c0
+[   73.104473][    C1]  ? ip6_input_finish+0xf0/0xf0
+[   73.105115][    C1]  ? rcu_read_lock_held+0x90/0xa0
+[   73.105783][    C1]  ? rcu_read_lock_sched_held+0xc0/0xc0
+[   73.106548][    C1]  ipv6_rcv+0x1f1/0x300
+[ ... ]
+
+Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+
+v1 -> v2:
+ - Do not add a new variable
+
+ net/ipv6/ip6_gre.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 781ca8c07a0d..6532bde82b40 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -127,6 +127,7 @@ static struct ip6_tnl *ip6gre_tunnel_lookup(struct net_device *dev,
+ 			gre_proto == htons(ETH_P_ERSPAN2)) ?
+ 		       ARPHRD_ETHER : ARPHRD_IP6GRE;
+ 	int score, cand_score = 4;
++	struct net_device *ndev;
+ 
+ 	for_each_ip_tunnel_rcu(t, ign->tunnels_r_l[h0 ^ h1]) {
+ 		if (!ipv6_addr_equal(local, &t->parms.laddr) ||
+@@ -238,9 +239,9 @@ static struct ip6_tnl *ip6gre_tunnel_lookup(struct net_device *dev,
+ 	if (t && t->dev->flags & IFF_UP)
+ 		return t;
+ 
+-	dev = ign->fb_tunnel_dev;
+-	if (dev && dev->flags & IFF_UP)
+-		return netdev_priv(dev);
++	ndev = READ_ONCE(ign->fb_tunnel_dev);
++	if (ndev && ndev->flags & IFF_UP)
++		return netdev_priv(ndev);
+ 
+ 	return NULL;
+ }
+@@ -413,6 +414,8 @@ static void ip6gre_tunnel_uninit(struct net_device *dev)
+ 
+ 	ip6gre_tunnel_unlink_md(ign, t);
+ 	ip6gre_tunnel_unlink(ign, t);
++	if (ign->fb_tunnel_dev == dev)
++		WRITE_ONCE(ign->fb_tunnel_dev, NULL);
+ 	dst_cache_reset(&t->dst_cache);
+ 	dev_put(dev);
+ }
 -- 
-Kees Cook
+2.17.1
+
