@@ -2,146 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B9171FA9D1
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 09:15:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D9FA1FA9D4
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 09:17:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726782AbgFPHPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 03:15:31 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:50857 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726052AbgFPHPa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 03:15:30 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 57AB45C015E;
-        Tue, 16 Jun 2020 03:15:29 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 16 Jun 2020 03:15:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=dLbh+kVi5+blXsWbo
-        sWMudymeXDMH1mWpUrTyXEPh2c=; b=OO1A9azAFdLgzZ8XCIQi3n4CPtDDSfDN+
-        KlE8Zwk9+SUhlCgtvHE9Y2nqmlz+5IwECQdND1ws2iYHLtr0Yn6ncgYGDr4SjQr+
-        hy0GzFEWYSyV4jt4ek6AX1jJRGykakhsAyhfjpTMJ6V8dZMKHokTBppZW0q6ZQB5
-        1QRfvTklAEvO6u6tnQlKltDdeEKqDZBc+2OJ3SwjIyaK2/L2njtOztNYQsV4keLy
-        5ENUaBe3HkGPHjd8MNONA+p1o2W2CMSuM2ExUYexmG+Gg5iXIYT/1nDbLxYZUiS8
-        9IOrlpHHIjUHbTVAoZ20SSYwIUAUhQUJMB0zol5mm9o+JQ1JWqvOg==
-X-ME-Sender: <xms:kXHoXmJ_ON31_bXUlXvErtcHEmypSfNDU-UeGRaY3NqFALWPx53KgA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudeiledguddulecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuhe
-    ehteffieekgeehveefvdegledvffduhfenucfkphepjeelrddujeelrdeltddrfedvnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:kXHoXuJkzqXrAWRU6K3K6W5y5xK1YhiZl2ysHeZOuzK3FQbpg38BxQ>
-    <xmx:kXHoXmtYPPuP2ofNMnAc4NOfUlb7GLqa2G8LPIdcjy_O2nKO6IpKJA>
-    <xmx:kXHoXrYzqcGl5faJRC14AU6pFjRNWBM0zmU1TW_5XCN4zmzk8VwmpA>
-    <xmx:kXHoXsy_kqz0YV0QOyoA4Vd6Agy5K7ALxRM5Pbmjm8bW5TZaQ5J2Rw>
-Received: from splinter.mtl.com (bzq-79-179-90-32.red.bezeqint.net [79.179.90.32])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CF06A30618B7;
-        Tue, 16 Jun 2020 03:15:27 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net] mlxsw: spectrum: Adjust headroom buffers for 8x ports
-Date:   Tue, 16 Jun 2020 10:14:58 +0300
-Message-Id: <20200616071458.192798-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
+        id S1726606AbgFPHRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 03:17:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51976 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725775AbgFPHRM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 03:17:12 -0400
+Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBEFC05BD43;
+        Tue, 16 Jun 2020 00:17:12 -0700 (PDT)
+Received: by mail-ua1-x941.google.com with SMTP id a10so6568248uan.8;
+        Tue, 16 Jun 2020 00:17:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9LYtGDwP5PdSta9rN7AHT/0i8mo67vKpZcwwXBQEekc=;
+        b=s6q4GSmmT/fgvqjShwMjZBqADAVAr8ri9DjZc1CuRZG3RsZyXDySUL6BCQ//HlRvTG
+         IWtUnd23kiKVhKGd7udNxaWI3lRFILnJRU710fqGQiYpmTZYyLzDRCwQ4W2PEa+qpm9M
+         2mPYAm63G2r3Gnw+9MjaIea6jsg+H4JeTRtmWo/J3uTZQmc3NLHKJh4uc8m7n1Qcb/QE
+         xX148ZwzaT/q3S7StdSmKdwUJZO8ggBq+YZrQ+F1IBlTnDYencE0ibZZ4OYNbwQ0h/Hq
+         ajPwDVzOyudAGmISEWGI1PWNhTkgl7VMzTGpEQg/X3eJTcrFE8v1DWMlb+ug7O4rXsTu
+         bLzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9LYtGDwP5PdSta9rN7AHT/0i8mo67vKpZcwwXBQEekc=;
+        b=Il5JdXJXWjLBxWTYDQ9jlq58NR4Gj0mSIcq0EyMAd76YXOA3yc4yYiznUxJKVkFGDc
+         s5XiDqbmhfSl8Lrzc3R+oeoEjVKAeq1GEev4CQCbcyYB9zZ/63KQgD+bFmFSq4rwfaQo
+         2xs/Mtu1pDQyhI+zSKBWYcs2yukI3EQo8SvXZVcKxkx94pJBH0QNqZsDF46Y7iMv+EXe
+         GyfqRyP+jC2KmfBG7qsh684Y8awICG7H3ky5RRChweCsYBzeaTZGA+/DLSTF+GbNynhr
+         DxqRKrZkc102UM+1OnK9qQNTaJuPhtwhovG/H37EUY3FjQvTKx6sxR/kGEa52eVbek5d
+         gq9w==
+X-Gm-Message-State: AOAM530ZSd7jyUoGgul+zyWua6H2LNFNgxRPmVRxA+Pg9MFiGw/FqRef
+        98JyVm1dcW9qiHBaIvEedrjjqRMJ1JChVXJBvlk=
+X-Google-Smtp-Source: ABdhPJxDc4ltOFg4e2D9idSg8cYMi8y5aUI/B9xqAR/M9yJuX0M5nyLtPkrhcm1sxd5CV8esSUi0dnYIRD5mhFuNJMQ=
+X-Received: by 2002:ab0:b0d:: with SMTP id b13mr828924uak.70.1592291831308;
+ Tue, 16 Jun 2020 00:17:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1592273581-31338-1-git-send-email-wangxidong_97@163.com>
+In-Reply-To: <1592273581-31338-1-git-send-email-wangxidong_97@163.com>
+From:   Pravin Shelar <pravin.ovn@gmail.com>
+Date:   Tue, 16 Jun 2020 00:17:00 -0700
+Message-ID: <CAOrHB_C2o31V1duzEFYAc4cqejR+P9m=7KuW=6trQa=aM8v7yg@mail.gmail.com>
+Subject: Re: [PATCH 1/1] openvswitch: fix infoleak in conntrack
+To:     Xidong Wang <wangxidong_97@163.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Mon, Jun 15, 2020 at 7:13 PM Xidong Wang <wangxidong_97@163.com> wrote:
+>
+> From: xidongwang <wangxidong_97@163.com>
+>
+> The stack object =E2=80=9Czone_limit=E2=80=9D has 3 members. In function
+> ovs_ct_limit_get_default_limit(), the member "count" is
+> not initialized and sent out via =E2=80=9Cnla_put_nohdr=E2=80=9D.
+>
+> Signed-off-by: xidongwang <wangxidong_97@163.com>
 
-The port's headroom buffers are used to store packets while they
-traverse the device's pipeline and also to store packets that are egress
-mirrored.
-
-On Spectrum-3, ports with eight lanes use two headroom buffers between
-which the configured headroom size is split.
-
-In order to prevent packet loss, multiply the calculated headroom size
-by two for 8x ports.
-
-Fixes: da382875c616 ("mlxsw: spectrum: Extend to support Spectrum-3 ASIC")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c      |  2 ++
- drivers/net/ethernet/mellanox/mlxsw/spectrum.h      | 13 +++++++++++++
- .../net/ethernet/mellanox/mlxsw/spectrum_buffers.c  |  1 +
- drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c |  1 +
- 4 files changed, 17 insertions(+)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 5ffa32b75e5f..55af877763ed 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -978,8 +978,10 @@ int __mlxsw_sp_port_headroom_set(struct mlxsw_sp_port *mlxsw_sp_port, int mtu,
- 
- 		lossy = !(pfc || pause_en);
- 		thres_cells = mlxsw_sp_pg_buf_threshold_get(mlxsw_sp, mtu);
-+		mlxsw_sp_port_headroom_8x_adjust(mlxsw_sp_port, &thres_cells);
- 		delay_cells = mlxsw_sp_pg_buf_delay_get(mlxsw_sp, mtu, delay,
- 							pfc, pause_en);
-+		mlxsw_sp_port_headroom_8x_adjust(mlxsw_sp_port, &delay_cells);
- 		total_cells = thres_cells + delay_cells;
- 
- 		taken_headroom_cells += total_cells;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index 6f96ca50c9ba..6e87457dd635 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -374,6 +374,19 @@ mlxsw_sp_port_vlan_find_by_vid(const struct mlxsw_sp_port *mlxsw_sp_port,
- 	return NULL;
- }
- 
-+static inline void
-+mlxsw_sp_port_headroom_8x_adjust(const struct mlxsw_sp_port *mlxsw_sp_port,
-+				 u16 *p_size)
-+{
-+	/* Ports with eight lanes use two headroom buffers between which the
-+	 * configured headroom size is split. Therefore, multiply the calculated
-+	 * headroom size by two.
-+	 */
-+	if (mlxsw_sp_port->mapping.width != 8)
-+		return;
-+	*p_size *= 2;
-+}
-+
- enum mlxsw_sp_flood_type {
- 	MLXSW_SP_FLOOD_TYPE_UC,
- 	MLXSW_SP_FLOOD_TYPE_BC,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
-index 21bfb2f6a6f0..f25a8b084b4b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
-@@ -312,6 +312,7 @@ static int mlxsw_sp_port_pb_init(struct mlxsw_sp_port *mlxsw_sp_port)
- 
- 		if (i == MLXSW_SP_PB_UNUSED)
- 			continue;
-+		mlxsw_sp_port_headroom_8x_adjust(mlxsw_sp_port, &size);
- 		mlxsw_reg_pbmc_lossy_buffer_pack(pbmc_pl, i, size);
- 	}
- 	mlxsw_reg_pbmc_lossy_buffer_pack(pbmc_pl,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-index 304eb8c3d8bd..f843545d3478 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
-@@ -782,6 +782,7 @@ mlxsw_sp_span_port_buffer_update(struct mlxsw_sp_port *mlxsw_sp_port, u16 mtu)
- 		speed = 0;
- 
- 	buffsize = mlxsw_sp_span_buffsize_get(mlxsw_sp, speed, mtu);
-+	mlxsw_sp_port_headroom_8x_adjust(mlxsw_sp_port, (u16 *) &buffsize);
- 	mlxsw_reg_sbib_pack(sbib_pl, mlxsw_sp_port->local_port, buffsize);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(sbib), sbib_pl);
- }
--- 
-2.26.2
-
+Looks good.
+Acked-by: Pravin B Shelar <pshelar@ovn.org>
