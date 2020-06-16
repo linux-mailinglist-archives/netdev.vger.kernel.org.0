@@ -2,118 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED4FA1FA95C
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 09:01:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD071FA95F
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 09:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbgFPHB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 03:01:29 -0400
-Received: from fallback16.mail.ru ([94.100.177.128]:54330 "EHLO
-        fallback16.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726091AbgFPHBW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 03:01:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:Message-ID:Subject:From:Cc:To; bh=A3tdJEqAEpP6nsYkVVawuYLfTcmomACvlqFaeQTXEPs=;
-        b=agCd2UZfh0JdCTRkB/VNNB/MF+3DYBZv+BB6oTDZu+BjizS6fYGt+DwsdBDG1ImIglr8B+BgUqylVWPMaCu19HEskM0shnk5VrIKAx5szoCJSQmrbtkPb/bOw2D6lMYkr9/bF0Dv4WzXaejdVfWXZq9znx4lT6cmV3HrEs7z3Lc=;
-Received: from [10.161.64.40] (port=36622 helo=smtp32.i.mail.ru)
-        by fallback16.i with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1jl5aw-0007ZZ-Sk
-        for netdev@vger.kernel.org; Tue, 16 Jun 2020 10:01:18 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:Message-ID:Subject:From:Cc:To; bh=A3tdJEqAEpP6nsYkVVawuYLfTcmomACvlqFaeQTXEPs=;
-        b=agCd2UZfh0JdCTRkB/VNNB/MF+3DYBZv+BB6oTDZu+BjizS6fYGt+DwsdBDG1ImIglr8B+BgUqylVWPMaCu19HEskM0shnk5VrIKAx5szoCJSQmrbtkPb/bOw2D6lMYkr9/bF0Dv4WzXaejdVfWXZq9znx4lT6cmV3HrEs7z3Lc=;
-Received: by smtp32.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1jl5av-0004fj-50; Tue, 16 Jun 2020 10:01:17 +0300
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH 02/02] net: phy: marvell: Add Marvell 88E1548 support
-Message-ID: <9646a4fc-ce74-ebd7-4d8a-100eefcbc371@inbox.ru>
-Date:   Tue, 16 Jun 2020 10:01:16 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        id S1726899AbgFPHBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 03:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726091AbgFPHBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 03:01:36 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16032C05BD43;
+        Tue, 16 Jun 2020 00:01:36 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id c8so20784383iob.6;
+        Tue, 16 Jun 2020 00:01:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=gfWOtJmAuKzy0/adAae/4szOh4OfnUS7wZP9kpJR7bw=;
+        b=e3Qyy981NcHQ5TKXw92ISB9PBm7DX/ADlMIESviTtLtVuAehT3xHFoeXEKXR1C7DOA
+         6d3gdDuyG0RyvaS8moYHRpWOHhlA89eB1czDdMhntLpLWo5V20RH963WWrJKn/UadmJZ
+         JZhFl7R/KYvjoko53qtFg562YhDQK0zidnL8sMU9i6fd8L56yDfl22ezYhZJoe3QPsZa
+         DKLAmWAnytENsXz4goZyc82txgVCASYm5VjW+eEtKQATcmYQlqnfY3K1RzoaJEDcirBO
+         6/t4IIs7hgB1Eg4pg69EHu0njcKUyB/crETKeOvWev0yMMQDJ9X1Sk/BHIj26l1qURoj
+         ZHxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=gfWOtJmAuKzy0/adAae/4szOh4OfnUS7wZP9kpJR7bw=;
+        b=JxFxekWG5ST0naisV+nSHdRliDLz5yEs6CtQYEX+qzOJT4Gt1X6d0jrDrL/akQhY18
+         q2xopQNPsnhz445sf4sx1CgTdLy6bN8gERznlIeGUxl6SmuH/Mx9+PHdGPIZ+5ap/Y8o
+         wq23F4QJsDxlj/1VnC/jm8oVWcF+wEdqhLTK1CDL70LWz5BOhKKoVD0IGftGO2svRm+2
+         aHK3jTQbRkk2rSOAYoCWLXerRLoi6FMw0b7CaAO3CQoAfPZJjo6mvNlPlHK9gLGCcULh
+         cdmCSPqnqWvHiXLAQbOYnVSDp3E0/+ZIFSnbYuRFGR55H8sjSmmkGd/i4H4J2fArdmwA
+         m+oA==
+X-Gm-Message-State: AOAM530fF5bqd1g7bu499pQMilAYdy+yRoxfqHTG0318XbFjRQB12uC4
+        F38T/CQl8dGOxeJiJE/4QJc=
+X-Google-Smtp-Source: ABdhPJyPjxsHOybrD8KP9INBaOeOj2FGmJCvZnnRUb939Ss81dG9U1pMsdYUMwvK38vWJzyMC4slWg==
+X-Received: by 2002:a5e:8703:: with SMTP id y3mr1253050ioj.61.1592290893151;
+        Tue, 16 Jun 2020 00:01:33 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id p5sm9225053ilg.88.2020.06.16.00.01.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jun 2020 00:01:32 -0700 (PDT)
+Date:   Tue, 16 Jun 2020 00:01:22 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Andrii Nakryiko <andriin@fb.com>,
+        Christoph Hellwig <hch@lst.de>
+Message-ID: <5ee86e42810c7_4be02ab1b668a5b430@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200616050432.1902042-1-andriin@fb.com>
+References: <20200616050432.1902042-1-andriin@fb.com>
+Subject: RE: [PATCH bpf 1/2] bpf: bpf_probe_read_kernel_str() has to return
+ amount of data read on success
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-7564579A: 78E4E2B564C1792B
-X-77F55803: 4F1203BC0FB41BD9F3DF18D84EDC53E04E388BD6EE8D009D8F3DEE1CE6130DC2182A05F538085040963F1F427133582BB7123DEBD36D67D95C8BA32928B3AA36AEC15BF9389B227B
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7E188839ED9CF357EEA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637E1095770799AEDE38638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FCF2B97552CBC98E4072FECF13E9A2ACBA8AE5EEA4D88BBC20389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C05A64D9A1E9CA65708941B15DA834481FCF19DD082D7633A0E7DDDDC251EA7DABA471835C12D1D977725E5C173C3A84C3A12191B5F2BB8629117882F4460429728AD0CFFFB425014E40A5AABA2AD371193AA81AA40904B5D9A18204E546F3947C241FAFF9BB01F7E76136E347CC761E074AD6D5ED66289B52F4A82D016A4342E36136E347CC761E07725E5C173C3A84C3362DC704A2970D9DBA3038C0950A5D36B5C8C57E37DE458B5049B37F7BD8658322CA9DD8327EE4930A3850AC1BE2E735E4A630A5B664A4FFC4224003CC836476C0CAF46E325F83A50BF2EBBBDD9D6B0F05F538519369F3743B503F486389A921A5CC5B56E945C8DA
-X-C8649E89: BDBC84246C63443C89367B65ABBD375FF68C7D17DECBEAB844C20EEBD8772FFD4EEA570653E905CF
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj4XA7CrCOa3+/+5cL+BZ7Pg==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24E48C9E44D85D98A124EDC104805D8A9CF25921C611F62F88EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: EEAE043A70213CC8
-X-77F55803: 5241C2F38277A35D7F9F52485CB584D7271FD7DF62800FDC04F40B17E92501B0F934448F3C0AA7E9DFD344D2B71C7A20A93D718B38860F14
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5xhPKz0ZEsZ5k6NOOPWz5QAiZSCXKGQRq3/7KxbCLSB2ESzQkaOXqCBFZPLWFrEGlV1shfWe2EVcxl5toh0c/aCGOghz/frdRhzMe95NxDFd1K00UbzW0HpWvSpm6HrUrw==
-X-Mailru-MI: 800
-X-Mras: Ok
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Marvell 88E1548 support
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
----
-  drivers/net/phy/marvell.c   | 24 ++++++++++++++++++++++++
-  include/linux/marvell_phy.h |  1 +
-  2 files changed, 25 insertions(+)
+Andrii Nakryiko wrote:
+> During recent refactorings, bpf_probe_read_kernel_str() started returning 0 on
+> success, instead of amount of data successfully read. This majorly breaks
+> applications relying on bpf_probe_read_kernel_str() and bpf_probe_read_str()
+> and their results. Fix this by returning actual number of bytes read.
+> 
+> Cc: Christoph Hellwig <hch@lst.de>
+> Fixes: 8d92db5c04d1 ("bpf: rework the compat kernel probe handling")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  kernel/trace/bpf_trace.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index e729c9e587a0..a3ac7de98baa 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -241,7 +241,7 @@ bpf_probe_read_kernel_str_common(void *dst, u32 size, const void *unsafe_ptr)
+>  	if (unlikely(ret < 0))
+>  		goto fail;
+>  
+> -	return 0;
+> +	return ret;
+>  fail:
+>  	memset(dst, 0, size);
+>  	return ret;
+> -- 
+> 2.24.1
+> 
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 4cc4e25fed2d..f0d4ca87e4bc 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -2481,6 +2481,29 @@ static struct phy_driver marvell_drivers[] = {
-  		.get_tunable = m88e1540_get_tunable,
-  		.set_tunable = m88e1540_set_tunable,
-  	},
-+	{
-+		.phy_id = MARVELL_PHY_ID_88E1548,
-+		.phy_id_mask = MARVELL_PHY_ID_MASK,
-+		.name = "Marvell 88E1548P",
-+		.probe = m88e1510_probe,
-+		.features = PHY_GBIT_FIBRE_FEATURES,
-+		.config_init = &marvell_config_init,
-+		.config_aneg = &m88e1510_config_aneg,
-+		.read_status = &marvell_read_status,
-+		.ack_interrupt = &marvell_ack_interrupt,
-+		.config_intr = &marvell_config_intr,
-+		.did_interrupt = &m88e1121_did_interrupt,
-+		.resume = &genphy_resume,
-+		.suspend = &genphy_suspend,
-+		.read_page = marvell_read_page,
-+		.write_page = marvell_write_page,
-+		.get_sset_count = marvell_get_sset_count,
-+		.get_strings = marvell_get_strings,
-+		.get_stats = marvell_get_stats,
-+		.get_tunable = m88e1540_get_tunable,
-+		.set_tunable = m88e1540_set_tunable,
-+	},
-+
-  };
-
-  module_phy_driver(marvell_drivers);
-@@ -2502,6 +2525,7 @@ static struct mdio_device_id __maybe_unused 
-marvell_tbl[] = {
-  	{ MARVELL_PHY_ID_88E3016, MARVELL_PHY_ID_MASK },
-  	{ MARVELL_PHY_ID_88E6390, MARVELL_PHY_ID_MASK },
-  	{ MARVELL_PHY_ID_88E1340, MARVELL_PHY_ID_MASK },
-+	{ MARVELL_PHY_ID_88E1548, MARVELL_PHY_ID_MASK },
-  	{ }
-  };
-
-diff --git a/include/linux/marvell_phy.h b/include/linux/marvell_phy.h
-index 39e8c382defb..3d8249c3e31d 100644
---- a/include/linux/marvell_phy.h
-+++ b/include/linux/marvell_phy.h
-@@ -20,6 +20,7 @@
-  #define MARVELL_PHY_ID_88E1510		0x01410dd0
-  #define MARVELL_PHY_ID_88E1540		0x01410eb0
-  #define MARVELL_PHY_ID_88E1545		0x01410ea0
-+#define MARVELL_PHY_ID_88E1548		0x01410ec0
-  #define MARVELL_PHY_ID_88E3016		0x01410e60
-  #define MARVELL_PHY_ID_88X3310		0x002b09a0
-  #define MARVELL_PHY_ID_88E2110		0x002b09b0
--- 
-2.25.1
+Acked-by: John Fastabend <john.fastabend@gmail.com>
