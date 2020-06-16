@@ -2,126 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A6531FAF1A
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 13:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 136361FAF93
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 13:55:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728168AbgFPL0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 07:26:36 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:50848 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725768AbgFPL0f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 07:26:35 -0400
-Received: from [114.249.250.117] (helo=[192.168.1.10])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <aaron.ma@canonical.com>)
-        id 1jl9jc-0005el-RY; Tue, 16 Jun 2020 11:26:33 +0000
-Subject: Re: [PATCH] e1000e: continue to init phy even when failed to disable
- ULP
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1728454AbgFPLz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 07:55:26 -0400
+Received: from mga18.intel.com ([134.134.136.126]:44132 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726261AbgFPLzZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Jun 2020 07:55:25 -0400
+IronPort-SDR: v7bwRE7z84WGNk5SbG7E6nnw5XjXuFXRPj3eZhp9WW77LYIVv3TTmQz1WhibWyHmZOy17SRhfj
+ Ai7/ylbqDrxg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2020 04:55:24 -0700
+IronPort-SDR: Gdf9x4vhfnBK9yRrH1GCDkAox6VRqjPK7PHG807wKts5Ku+qezPDs6y+HiDDjjwBUyh5Szfsp6
+ Ch44Km7jqGsA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,518,1583222400"; 
+   d="scan'208";a="382851130"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.163])
+  by fmsmga001.fm.intel.com with SMTP; 16 Jun 2020 04:55:21 -0700
+Received: by lahna (sSMTP sendmail emulation); Tue, 16 Jun 2020 14:55:20 +0300
+Date:   Tue, 16 Jun 2020 14:55:20 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Yehezkel Bernat <yehezkelshb@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Michael Jamet <michael.jamet@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, vitaly.lifshits@intel.com,
-        sasha.neftin@intel.com
-References: <20200616100512.22512-1-aaron.ma@canonical.com>
- <4CC928F1-02CC-4675-908E-42B26C151FA1@canonical.com>
-From:   Aaron Ma <aaron.ma@canonical.com>
-Autocrypt: addr=aaron.ma@canonical.com; prefer-encrypt=mutual; keydata=
- mQENBFffeLkBCACi4eE4dPsgWN6B9UDOVcAvb5QgU/hRG6yS0I1lGKQv4KA+bke0c5g8clbO
- 9gIlIl2bityfA9NzBsDik4Iei3AxMbFyxv9keMwcOFQBIOZF0P3f05qjxftF8P+yp9QTV4hp
- BkFzsXzWRgXN3r8hU8wqZybepF4B1C83sm2kQ5A5N0AUGbZli9i2G+/VscG9sWfLy8T7f4YW
- MjmlijCjoV6k29vsmTWQPZ7EApNpvR5BnZQPmQWzkkr0lNXlsKcyLgefQtlwg6drK4fe4wz0
- ouBIHJEiXE1LWK1hUzkCUASra4WRwKk1Mv/NLLE/aJRqEvF2ukt3uVuM77RWfl7/H/v5ABEB
- AAG0IUFhcm9uIE1hIDxhYXJvbi5tYUBjYW5vbmljYWwuY29tPokBNwQTAQgAIQUCV994uQIb
- AwULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRDNxCzQfVU6ntJ9B/9aVy0+RkLqF9QpLmw+
- LAf1m3Fd+4ZarPTerqDqkLla3ekYhbrEtlI1mYuB5f+gtrIjmcW27gacHdslKB9YwaL8B4ZB
- GJKhcrntLg4YPzYUnXZkHHTv1hMw7fBYw82cBT+EbG0Djh6Po6Ihqyr3auHhfFcp1PZH4Mtq
- 6hN5KaDZzF/go+tRF5e4bn61Nhdue7mrhFSlfkzLG2ehHWmRV+S91ksH81YDFnazK0sRINBx
- V1S8ts3WJ2f1AbgmnDlbK3c/AfI5YxnIHn/x2ZdXj1P/wn7DgZHmpMy5DMuk0gN34NLUPLA/
- cHeKoBAF8emugljiKecKBpMTLe8FrVOxbkrauQENBFffeLkBCACweKP3Wx+gK81+rOUpuQ00
- sCyKzdtMuXXJ7oL4GzYHbLfJq+F+UHpQbytVGTn3R5+Y61v41g2zTYZooaC+Hs1+ixf+buG2
- +2LZjPSELWPNzH9lsKNlCcEvu1XhyyHkBDbnFFHWlUlql3nSXMo//dOTG/XGKaEaZUxjCLUC
- 8ehLc16DJDvdXsPwWhHrCH/4k92F6qQ14QigBMsl75jDTDJMEYgRYEBT1D/bwxdIeoN1BfIG
- mYgf059RrWax4SMiJtVDSUuDOpdwoEcZ0FWesRfbFrM+k/XKiIbjMZSvLunA4FIsOdWYOob4
- Hh0rsm1G+fBLYtT+bE26OWpQ/lSn4TdhABEBAAGJAR8EGAEIAAkFAlffeLkCGwwACgkQzcQs
- 0H1VOp6p5Af/ap5EVuP1AhFdPD3pXLNrUUt72W3cuAOjXyss43qFC2YRjGfktrizsDjQU46g
- VKoD6EW9XUPgvYM+k8BJEoXDLhHWnCnMKlbHP3OImxzLRhF4kdlnLicz1zKRcessQatRpJgG
- NIiD+eFyh0CZcWBO1BB5rWikjO/idicHao2stFdaBmIeXvhT9Xp6XNFEmzOmfHps+kKpWshY
- 9LDAU0ERBNsW4bekOCa/QxfqcbZYRjrVQvya0EhrPhq0bBpzkIL/7QSBMcdv6IajTlHnLARF
- nAIofCEKeEl7+ksiRapL5Nykcbt4dldE3sQWxIybC94SZ4inENKw6I8RNpigWm0R5w==
-Message-ID: <dc46e68f-8af7-327e-3763-ebcb24df3a83@canonical.com>
-Date:   Tue, 16 Jun 2020 19:26:23 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        Andreas Noever <andreas.noever@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>, netdev@vger.kernel.org
+Subject: Re: [PATCH 4/4] thunderbolt: Get rid of E2E workaround
+Message-ID: <20200616115520.GK2795@lahna.fi.intel.com>
+References: <20200615130139.83854-5-mika.westerberg@linux.intel.com>
+ <CA+CmpXtpAaY+zKG-ofPNYHTChTiDtwCAnd8uYQSqyJ8hLE891Q@mail.gmail.com>
+ <20200615135112.GA1402792@kroah.com>
+ <CA+CmpXst-5i4L5nW-Z66ZmxuLhdihjeNkHU1JdzTwow1rNH7Ng@mail.gmail.com>
+ <20200615142247.GN247495@lahna.fi.intel.com>
+ <CA+CmpXuN+su50RYHvW4S-twqiUjScnqM5jvG4ipEvWORyKfd1g@mail.gmail.com>
+ <20200615153249.GR247495@lahna.fi.intel.com>
+ <CA+CmpXtRZ4JMe2V2-kWiYWR0pnnzLQMbXQESni6ne8eFeDCCXg@mail.gmail.com>
+ <20200615155512.GS247495@lahna.fi.intel.com>
+ <CA+CmpXtOAUnSdhjwi5HXaJhPzbUUsZZsitFifyhyPk+X2c=wYw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <4CC928F1-02CC-4675-908E-42B26C151FA1@canonical.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+CmpXtOAUnSdhjwi5HXaJhPzbUUsZZsitFifyhyPk+X2c=wYw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jun 15, 2020 at 10:54:52PM +0300, Yehezkel Bernat wrote:
+> On Mon, Jun 15, 2020 at 6:55 PM Mika Westerberg
+> <mika.westerberg@linux.intel.com> wrote:
+> >
+> > On Mon, Jun 15, 2020 at 06:41:32PM +0300, Yehezkel Bernat wrote:
+> > > > I think you are talking about the "prtstns" property in the network
+> > > > driver. There we only set TBNET_MATCH_FRAGS_ID (bit 1). This is the
+> > > > thing that get exposed to the other side of the connection and we never
+> > > > announced support for full E2E.
+> > >
+> > >
+> > > Ah, yes, this one, Thanks!
+> > > As Windows driver uses it for flagging full-E2E, and we completely drop E2E
+> > > support here, it may worth to mention there that this is what bit 2 is used in
+> > > Windows so any reuse should consider the possible compatibility issue.
+> >
+> > Note we only drop dead code in this patch. It is that workaround for
+> > Falcon Ridge controller we actually never used.
+> >
+> > I can add a comment to the network driver about the full E2E support
+> > flag as a separate patch if you think it is useful.
+> >
+> > The network protocol will be public soon I guess because USB4 spec
+> > refers to "USB4 Inter-Domain Specification, Revision 1.0, [to be
+> > published] – (USB4 Inter-Domain Specification)" so I would expect it to
+> > be explained there as well.
+> 
+> I see. I leave it for your decision, then.
+> Thanks for bearing with me.
 
-
-On 6/16/20 7:23 PM, Kai-Heng Feng wrote:
-> 
-> 
->> On Jun 16, 2020, at 18:05, Aaron Ma <aaron.ma@canonical.com> wrote:
->>
->> After commit "e1000e: disable s0ix entry and exit flows for ME systems",
->> some ThinkPads always failed to disable ulp by ME.
->> commit "e1000e: Warn if disabling ULP failed" break out of init phy:
->>
->> error log:
->> [   42.364753] e1000e 0000:00:1f.6 enp0s31f6: Failed to disable ULP
->> [   42.524626] e1000e 0000:00:1f.6 enp0s31f6: PHY Wakeup cause - Unicast Packet
->> [   42.822476] e1000e 0000:00:1f.6 enp0s31f6: Hardware Error
->>
->> When disable s0ix, E1000_FWSM_ULP_CFG_DONE will never be 1.
->> If continue to init phy like before, it can work as before.
->> iperf test result good too.
->>
->> Chnage e_warn to e_dbg, in case it confuses.
->>
->> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
->> ---
->> drivers/net/ethernet/intel/e1000e/ich8lan.c | 3 +--
->> 1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
->> index f999cca37a8a..63405819eb83 100644
->> --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
->> +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
->> @@ -302,8 +302,7 @@ static s32 e1000_init_phy_workarounds_pchlan(struct e1000_hw *hw)
->> 	hw->dev_spec.ich8lan.ulp_state = e1000_ulp_state_unknown;
->> 	ret_val = e1000_disable_ulp_lpt_lp(hw, true);
-> 
-> If si0x entry isn't enabled, maybe skip calling e1000_disable_ulp_lpt_lp() altogether?
-> We can use e1000e_check_me() to check that.
-> 
-
-No, s0ix is different feature with ULP mode.
-
-Aaron
-
->> 	if (ret_val) {
->> -		e_warn("Failed to disable ULP\n");
->> -		goto out;
->> +		e_dbg("Failed to disable ULP\n");
->> 	}
-> 
-> The change of "e1000e: Warn if disabling ULP failed" is intentional to catch bugs like this.
-> 
-> Kai-Heng
-> 
->>
->> 	ret_val = hw->phy.ops.acquire(hw);
->> -- 
->> 2.26.2
->>
-> 
+OK, I think it makes sense to add the comment so I'll do that as
+a separate patch (will probably go next week since I have some other
+patches to deal with this week, and Friday is holiday in Finland).
