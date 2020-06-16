@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A5D81FA70E
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 05:30:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E17B71FA70F
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 05:31:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726900AbgFPDaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 23:30:55 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:7307 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725978AbgFPDax (ORCPT
+        id S1726918AbgFPDa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 23:30:56 -0400
+Received: from mail-proxy25223.qiye.163.com ([103.129.252.23]:5212 "EHLO
+        mail-proxy25223.qiye.163.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726864AbgFPDax (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 23:30:53 -0400
+X-Greylist: delayed 543 seconds by postgrey-1.27 at vger.kernel.org; Mon, 15 Jun 2020 23:30:52 EDT
 Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 523FC41EE6;
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id AE24541EBC;
         Tue, 16 Jun 2020 11:19:42 +0800 (CST)
 From:   wenxu@ucloud.cn
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, pablo@netfilter.org, vladbu@mellanox.com
-Subject: [PATCH net v3 1/4] flow_offload: fix incorrect cleanup for flowtable indirect flow_blocks
-Date:   Tue, 16 Jun 2020 11:19:37 +0800
-Message-Id: <1592277580-5524-2-git-send-email-wenxu@ucloud.cn>
+Subject: [PATCH net v3 3/4] net/sched: cls_api: fix nooffloaddevcnt warning dmesg log
+Date:   Tue, 16 Jun 2020 11:19:39 +0800
+Message-Id: <1592277580-5524-4-git-send-email-wenxu@ucloud.cn>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
 References: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSkxOS0tLS0xKTklOTkxZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkdIjULOBw*SB85ITQ0DhMeSkgDTjocVlZVSUNJKElZV1kJDh
-        ceCFlBWTU0KTY6NyQpLjc#WVdZFhoPEhUdFFlBWTQwWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6M0k6Nio6Hzg6TjYNKCM2CTIr
-        EyoKFBdVSlVKTkJJSUxMTkNJT05CVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUxOTUs3Bg++
-X-HM-Tid: 0a72bb23c2102086kuqy523fc41ee6
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSUtOS0tLS09JQkpOSE9ZV1koWU
+        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkXIjULOBw*M04dITQ0DhMeMQ09STocVlZVT04oSVlXWQkOFx
+        4IWUFZNTQpNjo3JCkuNz5ZV1kWGg8SFR0UWUFZNDBZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PRQ6ODo6KTg4GTYNAiM3CT4Z
+        C0MwCQJVSlVKTkJJSUxMTkNISk1DVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUJNTks3Bg++
+X-HM-Tid: 0a72bb23c3892086kuqyae24541ebc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -37,153 +38,160 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: wenxu <wenxu@ucloud.cn>
 
-The cleanup operation based on the setup callback. But in the mlx5e
-driver there are tc and flowtable indrict setup callback and shared
-the same release callbacks. So when the representor is removed,
-then identify the indirect flow_blocks that need to be removed by  
-the release callback.
+When a indr device add in offload success. The block->nooffloaddevcnt
+should be 0. After the representor go away. When the dir device go away
+the flow_block UNBIND operation with -EOPNOTSUPP which lead the warning
+dmesg log. 
 
-Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
+The block->nooffloaddevcnt should always count for indr block.
+even the indr block offload successful. The representor maybe
+gone away and the ingress qdisc can work in software mode.
+
+block->nooffloaddevcnt warning with following dmesg log:
+
+[  760.667058] #####################################################
+[  760.668186] ## TEST test-ecmp-add-vxlan-encap-disable-sriov.sh ##
+[  760.669179] #####################################################
+[  761.780655] :test: Fedora 30 (Thirty)
+[  761.783794] :test: Linux reg-r-vrt-018-180 5.7.0+
+[  761.822890] :test: NIC ens1f0 FW 16.26.6000 PCI 0000:81:00.0 DEVICE 0x1019 ConnectX-5 Ex
+[  761.860244] mlx5_core 0000:81:00.0 ens1f0: Link up
+[  761.880693] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
+[  762.059732] mlx5_core 0000:81:00.1 ens1f1: Link up
+[  762.234341] :test: unbind vfs of ens1f0
+[  762.257825] :test: Change ens1f0 eswitch (0000:81:00.0) mode to switchdev
+[  762.291363] :test: unbind vfs of ens1f1
+[  762.306914] :test: Change ens1f1 eswitch (0000:81:00.1) mode to switchdev
+[  762.309237] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(LEGACY), nvfs(2), active vports(3)
+[  763.282598] mlx5_core 0000:81:00.1: E-Switch: Supported tc offload range - chains: 4294967294, prios: 4294967295
+[  763.362825] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+[  763.444465] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
+[  763.460088] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+[  763.502586] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+[  763.552429] ens1f1_0: renamed from eth0
+[  763.569569] mlx5_core 0000:81:00.1: E-Switch: Enable: mode(OFFLOADS), nvfs(2), active vports(3)
+[  763.629694] ens1f1_1: renamed from eth1
+[  764.631552] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_0: link becomes ready
+[  764.670841] :test: unbind vfs of ens1f0
+[  764.681966] :test: unbind vfs of ens1f1
+[  764.726762] mlx5_core 0000:81:00.0 ens1f0: Link up
+[  764.766511] mlx5_core 0000:81:00.1 ens1f1: Link up
+[  764.797325] :test: Add multipath vxlan encap rule and disable sriov
+[  764.798544] :test: config multipath route
+[  764.812732] mlx5_core 0000:81:00.0: lag map port 1:2 port 2:2
+[  764.874556] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:2
+[  765.603681] :test: OK
+[  765.659048] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_1: link becomes ready
+[  765.675085] :test: verify rule in hw
+[  765.694237] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
+[  765.711892] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1: link becomes ready
+[  766.979230] :test: OK
+[  768.125419] :test: OK
+[  768.127519] :test: - disable sriov ens1f1
+[  768.131160] pci 0000:81:02.2: Removing from iommu group 75
+[  768.132646] pci 0000:81:02.3: Removing from iommu group 76
+[  769.179749] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
+[  769.455627] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:1
+[  769.703990] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+[  769.988637] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
+[  769.990022] :test: - disable sriov ens1f0
+[  769.994922] pci 0000:81:00.2: Removing from iommu group 73
+[  769.997048] pci 0000:81:00.3: Removing from iommu group 74
+[  771.035813] mlx5_core 0000:81:00.0: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
+[  771.339091] ------------[ cut here ]------------
+[  771.340812] WARNING: CPU: 6 PID: 3448 at net/sched/cls_api.c:749 tcf_block_offload_unbind.isra.0+0x5c/0x60
+[  771.341728] Modules linked in: act_mirred act_tunnel_key cls_flower dummy vxlan ip6_udp_tunnel udp_tunnel sch_ingress nfsv3 nfs_acl nfs lockd grace fscache tun bridge stp llc sunrpc rdma_ucm rdma_cm iw_cm ib_cm mlx5_ib ib_uverbs ib_core mlx5_core intel_rapl_msr intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp mlxfw act_ct nf_flow_table kvm_intel nf_nat kvm nf_conntrack irqbypass crct10dif_pclmul igb crc32_pclmul nf_defrag_ipv6 libcrc32c nf_defrag_ipv4 crc32c_intel ghash_clmulni_intel ptp ipmi_ssif intel_cstate pps_c
+ore ses intel_uncore mei_me iTCO_wdt joydev ipmi_si iTCO_vendor_support i2c_i801 enclosure mei ioatdma dca lpc_ich wmi ipmi_devintf pcspkr acpi_power_meter ipmi_msghandler acpi_pad ast i2c_algo_bit drm_vram_helper drm_kms_helper drm_ttm_helper ttm drm mpt3sas raid_class scsi_transport_sas
+[  771.347818] CPU: 6 PID: 3448 Comm: test-ecmp-add-v Not tainted 5.7.0+ #1146
+[  771.348727] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+[  771.349646] RIP: 0010:tcf_block_offload_unbind.isra.0+0x5c/0x60
+[  771.350553] Code: 4a fd ff ff 83 f8 a1 74 0e 5b 4c 89 e7 5d 41 5c 41 5d e9 07 93 89 ff 8b 83 a0 00 00 00 8d 50 ff 89 93 a0 00 00 00 85 c0 75 df <0f> 0b eb db 0f 1f 44 00 00 41 57 41 56 41 55 41 89 cd 41 54 49 89
+[  771.352420] RSP: 0018:ffffb33144cd3b00 EFLAGS: 00010246
+[  771.353353] RAX: 0000000000000000 RBX: ffff8b37cf4b2800 RCX: 0000000000000000
+[  771.354294] RDX: 00000000ffffffff RSI: ffff8b3b9aad0000 RDI: ffffffff8d5c6e20
+[  771.355245] RBP: ffff8b37eb546948 R08: ffffffffc0b7a348 R09: ffff8b3b9aad0000
+[  771.356189] R10: 0000000000000001 R11: ffff8b3ba7a0a1c0 R12: ffff8b37cf4b2850
+[  771.357123] R13: ffff8b3b9aad0000 R14: ffff8b37cf4b2820 R15: ffff8b37cf4b2820
+[  771.358039] FS:  00007f8a19b6e740(0000) GS:ffff8b3befa00000(0000) knlGS:0000000000000000
+[  771.358965] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  771.359885] CR2: 00007f3afb91c1a0 CR3: 000000045133c004 CR4: 00000000001606e0
+[  771.360825] Call Trace:
+[  771.361764]  __tcf_block_put+0x84/0x150
+[  771.362712]  ingress_destroy+0x1b/0x20 [sch_ingress]
+[  771.363658]  qdisc_destroy+0x3e/0xc0
+[  771.364594]  dev_shutdown+0x7a/0xa5
+[  771.365522]  rollback_registered_many+0x20d/0x530
+[  771.366458]  ? netdev_upper_dev_unlink+0x15d/0x1c0
+[  771.367387]  unregister_netdevice_many.part.0+0xf/0x70
+[  771.368310]  vxlan_netdevice_event+0xa4/0x110 [vxlan]
+[  771.369454]  notifier_call_chain+0x4c/0x70
+[  771.370579]  rollback_registered_many+0x2f5/0x530
+[  771.371719]  rollback_registered+0x56/0x90
+[  771.372843]  unregister_netdevice_queue+0x73/0xb0
+[  771.373982]  unregister_netdev+0x18/0x20
+[  771.375168]  mlx5e_vport_rep_unload+0x56/0xc0 [mlx5_core]
+[  771.376327]  esw_offloads_disable+0x81/0x90 [mlx5_core]
+[  771.377512]  mlx5_eswitch_disable_locked.cold+0xcb/0x1af [mlx5_core]
+[  771.378679]  mlx5_eswitch_disable+0x44/0x60 [mlx5_core]
+[  771.379822]  mlx5_device_disable_sriov+0xad/0xb0 [mlx5_core]
+[  771.380968]  mlx5_core_sriov_configure+0xc1/0xe0 [mlx5_core]
+[  771.382087]  sriov_numvfs_store+0xfc/0x130
+[  771.383195]  kernfs_fop_write+0xce/0x1b0
+[  771.384302]  vfs_write+0xb6/0x1a0
+[  771.385410]  ksys_write+0x5f/0xe0
+[  771.386500]  do_syscall_64+0x5b/0x1d0
+[  771.387569]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
 Signed-off-by: wenxu <wenxu@ucloud.cn>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c        | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c | 2 +-
- drivers/net/ethernet/netronome/nfp/flower/main.c    | 2 +-
- drivers/net/ethernet/netronome/nfp/flower/main.h    | 3 +--
- drivers/net/ethernet/netronome/nfp/flower/offload.c | 6 +++---
- include/net/flow_offload.h                          | 2 +-
- net/core/flow_offload.c                             | 9 +++++----
- 7 files changed, 13 insertions(+), 13 deletions(-)
+ net/sched/cls_api.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index 0eef4f5..ef7f6bc 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -2074,7 +2074,7 @@ void bnxt_shutdown_tc(struct bnxt *bp)
- 		return;
- 
- 	flow_indr_dev_unregister(bnxt_tc_setup_indr_cb, bp,
--				 bnxt_tc_setup_indr_block_cb);
-+				 bnxt_tc_setup_indr_rel);
- 	rhashtable_destroy(&tc_info->flow_table);
- 	rhashtable_destroy(&tc_info->l2_table);
- 	rhashtable_destroy(&tc_info->decap_l2_table);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-index 80713123..a62bcf0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-@@ -496,7 +496,7 @@ int mlx5e_rep_tc_netdevice_event_register(struct mlx5e_rep_priv *rpriv)
- void mlx5e_rep_tc_netdevice_event_unregister(struct mlx5e_rep_priv *rpriv)
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index a00a203..86c3937 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -671,25 +671,29 @@ static int tcf_block_offload_cmd(struct tcf_block *block,
+ 				 struct netlink_ext_ack *extack)
  {
- 	flow_indr_dev_unregister(mlx5e_rep_indr_setup_cb, rpriv,
--				 mlx5e_rep_indr_setup_tc_cb);
-+				 mlx5e_rep_indr_block_unbind);
- }
+ 	struct flow_block_offload bo = {};
+-	int err;
  
- #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
-index c393276..bb448c8 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/main.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
-@@ -861,7 +861,7 @@ static void nfp_flower_clean(struct nfp_app *app)
- 	flush_work(&app_priv->cmsg_work);
+ 	tcf_block_offload_init(&bo, dev, command, ei->binder_type,
+ 			       &block->flow_block, tcf_block_shared(block),
+ 			       extack);
  
- 	flow_indr_dev_unregister(nfp_flower_indr_setup_tc_cb, app,
--				 nfp_flower_setup_indr_block_cb);
-+				 nfp_flower_setup_indr_tc_release);
+-	if (dev->netdev_ops->ndo_setup_tc)
++	if (dev->netdev_ops->ndo_setup_tc) {
++		int err;
++
+ 		err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
+-	else
+-		err = flow_indr_dev_setup_offload(dev, TC_SETUP_BLOCK, block,
+-						  &bo, tc_block_indr_cleanup);
++		if (err < 0) {
++			if (err != -EOPNOTSUPP)
++				NL_SET_ERR_MSG(extack, "Driver ndo_setup_tc failed");
++			return err;
++		}
  
- 	if (app_priv->flower_ext_feats & NFP_FL_FEATS_VF_RLIM)
- 		nfp_flower_qos_cleanup(app);
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
-index 6c3dc3b..c983337 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/main.h
-+++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
-@@ -460,8 +460,7 @@ int nfp_flower_setup_qos_offload(struct nfp_app *app, struct net_device *netdev,
- void nfp_flower_stats_rlim_reply(struct nfp_app *app, struct sk_buff *skb);
- int nfp_flower_indr_setup_tc_cb(struct net_device *netdev, void *cb_priv,
- 				enum tc_setup_type type, void *type_data);
--int nfp_flower_setup_indr_block_cb(enum tc_setup_type type, void *type_data,
--				   void *cb_priv);
-+void nfp_flower_setup_indr_tc_release(void *cb_priv);
- 
- void
- __nfp_flower_non_repr_priv_get(struct nfp_flower_non_repr_priv *non_repr_priv);
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 695d24b9..28de905 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -1619,8 +1619,8 @@ struct nfp_flower_indr_block_cb_priv {
- 	return NULL;
- }
- 
--int nfp_flower_setup_indr_block_cb(enum tc_setup_type type,
--				   void *type_data, void *cb_priv)
-+static int nfp_flower_setup_indr_block_cb(enum tc_setup_type type,
-+					  void *type_data, void *cb_priv)
- {
- 	struct nfp_flower_indr_block_cb_priv *priv = cb_priv;
- 	struct flow_cls_offload *flower = type_data;
-@@ -1637,7 +1637,7 @@ int nfp_flower_setup_indr_block_cb(enum tc_setup_type type,
- 	}
- }
- 
--static void nfp_flower_setup_indr_tc_release(void *cb_priv)
-+void nfp_flower_setup_indr_tc_release(void *cb_priv)
- {
- 	struct nfp_flower_indr_block_cb_priv *priv = cb_priv;
- 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index f2c8311..3a2d6b4 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -536,7 +536,7 @@ typedef int flow_indr_block_bind_cb_t(struct net_device *dev, void *cb_priv,
- 
- int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv);
- void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
--			      flow_setup_cb_t *setup_cb);
-+			      void (*release)(void *cb_priv));
- int flow_indr_dev_setup_offload(struct net_device *dev,
- 				enum tc_setup_type type, void *data,
- 				struct flow_block_offload *bo,
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index 0cfc35e..b288d2f 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -372,13 +372,14 @@ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
- }
- EXPORT_SYMBOL(flow_indr_dev_register);
- 
--static void __flow_block_indr_cleanup(flow_setup_cb_t *setup_cb, void *cb_priv,
-+static void __flow_block_indr_cleanup(void (*release)(void *cb_priv),
-+				      void *cb_priv,
- 				      struct list_head *cleanup_list)
- {
- 	struct flow_block_cb *this, *next;
- 
- 	list_for_each_entry_safe(this, next, &flow_block_indr_list, indr.list) {
--		if (this->cb == setup_cb &&
-+		if (this->release == release &&
- 		    this->cb_priv == cb_priv) {
- 			list_move(&this->indr.list, cleanup_list);
- 			return;
-@@ -397,7 +398,7 @@ static void flow_block_indr_notify(struct list_head *cleanup_list)
- }
- 
- void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
--			      flow_setup_cb_t *setup_cb)
-+			      void (*release)(void *cb_priv))
- {
- 	struct flow_indr_dev *this, *next, *indr_dev = NULL;
- 	LIST_HEAD(cleanup_list);
-@@ -418,7 +419,7 @@ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
- 		return;
+-	if (err < 0) {
+-		if (err != -EOPNOTSUPP)
+-			NL_SET_ERR_MSG(extack, "Driver ndo_setup_tc failed");
+-		return err;
++		return tcf_block_setup(block, &bo);
  	}
  
--	__flow_block_indr_cleanup(setup_cb, cb_priv, &cleanup_list);
-+	__flow_block_indr_cleanup(release, cb_priv, &cleanup_list);
- 	mutex_unlock(&flow_indr_block_lock);
+-	return tcf_block_setup(block, &bo);
++	flow_indr_dev_setup_offload(dev, TC_SETUP_BLOCK, block, &bo,
++				    tc_block_indr_cleanup);
++	tcf_block_setup(block, &bo);
++
++	return -EOPNOTSUPP;
+ }
  
- 	flow_block_indr_notify(&cleanup_list);
+ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
 -- 
 1.8.3.1
 
