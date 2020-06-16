@@ -2,125 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFB7E1FA98A
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 09:07:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B9171FA9D1
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 09:15:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727038AbgFPHHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 03:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50548 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726747AbgFPHHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 03:07:50 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E3BC05BD43;
-        Tue, 16 Jun 2020 00:07:50 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id w18so693645iom.5;
-        Tue, 16 Jun 2020 00:07:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:message-id:in-reply-to:references:subject:mime-version
-         :content-transfer-encoding;
-        bh=w2GZ9D1qoyvSkgnyjIsWsEO06r80xGwaHHmxaAjuloc=;
-        b=ZZsayt7bxxYDUT0hylS4GIkNoY9UaEBqjyZlYcjF1n2kbPwlgUHVWID4pm2nqznENy
-         lNaCpJ4vEkMn2GTetCOZjieycY1XNMwmHcw3boGkBasHphV+tfbXJG7RR0V4VIaxOUVU
-         RHwBJCgHJUGk1SglNtWwKLrvr9m82qh0t8XqPlBZ2tbjEgp8CcoSyBttRPjytaD718nv
-         IQyJTBOiEesaztsHWYIcHZ65+o+AyVmlmAWnDqIQ7ZEmWaGKnrbzl5yYUy0nm8wXHlwk
-         rMYoHRxEQNaZxCT2ocR3qp8YRmToOUFE02PW+RG19CgjdpTCrCJO1D38Ytekg5+YiHbc
-         Ubmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:message-id:in-reply-to:references
-         :subject:mime-version:content-transfer-encoding;
-        bh=w2GZ9D1qoyvSkgnyjIsWsEO06r80xGwaHHmxaAjuloc=;
-        b=ZZfY4LL84+kd4V47qEDcKeA+CFtu3l/jOPsLZpz/Sitx0EN6Tzg8HKJYYiFJ+qLqVZ
-         JDyfRCXdbzHhgqWvah962j503MiLv+8UOa8Qof5WC5hR8ZtdhkqAg8qpy/L0/lUQGnJu
-         wl8NrQCNIbr+uf9ENLcKSawcYhb+B29sDIpTRCMTBPAz+ZDimakDiofvEaYLJQzW2Qqq
-         HjNysorSEKRH6f8cV6/TgLqEi+Osw2OZMqZNqiCWSPlZsYkW2y0n7Wk2I7BaDioZqltW
-         DUkQqLpvWjRGkcICB6VHYIC8bID5mnsijB/jrvNwXivO2V5CnltXDif00XRck16rglqO
-         hvfA==
-X-Gm-Message-State: AOAM533LZsvP1hN3U47SJ4YvGwZv45spKhVebBavtiSNP25mBadTxHzX
-        IQ+Q8b38r8ubZWmLpUBl4eo=
-X-Google-Smtp-Source: ABdhPJy9CA6JH+8SHSFRTCswUNkoFiAoPMulGfLzeqIOWseCvdHKP4qg4kb8JKOvot5bAFrbUg5R+A==
-X-Received: by 2002:a02:7f4d:: with SMTP id r74mr24426375jac.51.1592291269465;
-        Tue, 16 Jun 2020 00:07:49 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id f18sm9242592ion.19.2020.06.16.00.07.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 00:07:48 -0700 (PDT)
-Date:   Tue, 16 Jun 2020 00:07:40 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Gaurav Singh <gaurav1086@gmail.com>, gaurav1086@gmail.com,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        "(open list:BPF \\(Safe dynamic programs and tools\\))" 
-        <netdev@vger.kernel.org>,
-        bpf@vger.kernel.org (open list:BPF \(Safe dynamic programs and tools\)),
-        "(open list:BPF \\(Safe dynamic programs and tools\\) open list)" 
-        <linux-kernel@vger.kernel.org>
-Message-ID: <5ee86fbc41c03_4be02ab1b668a5b422@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200614190434.31321-1-gaurav1086@gmail.com>
-References: <20200614190434.31321-1-gaurav1086@gmail.com>
-Subject: RE: [PATCH] [bpf] xdp_redirect_cpu_user: Fix null pointer dereference
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1726782AbgFPHPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 03:15:31 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:50857 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726052AbgFPHPa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 03:15:30 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 57AB45C015E;
+        Tue, 16 Jun 2020 03:15:29 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Tue, 16 Jun 2020 03:15:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=dLbh+kVi5+blXsWbo
+        sWMudymeXDMH1mWpUrTyXEPh2c=; b=OO1A9azAFdLgzZ8XCIQi3n4CPtDDSfDN+
+        KlE8Zwk9+SUhlCgtvHE9Y2nqmlz+5IwECQdND1ws2iYHLtr0Yn6ncgYGDr4SjQr+
+        hy0GzFEWYSyV4jt4ek6AX1jJRGykakhsAyhfjpTMJ6V8dZMKHokTBppZW0q6ZQB5
+        1QRfvTklAEvO6u6tnQlKltDdeEKqDZBc+2OJ3SwjIyaK2/L2njtOztNYQsV4keLy
+        5ENUaBe3HkGPHjd8MNONA+p1o2W2CMSuM2ExUYexmG+Gg5iXIYT/1nDbLxYZUiS8
+        9IOrlpHHIjUHbTVAoZ20SSYwIUAUhQUJMB0zol5mm9o+JQ1JWqvOg==
+X-ME-Sender: <xms:kXHoXmJ_ON31_bXUlXvErtcHEmypSfNDU-UeGRaY3NqFALWPx53KgA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudeiledguddulecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuhe
+    ehteffieekgeehveefvdegledvffduhfenucfkphepjeelrddujeelrdeltddrfedvnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:kXHoXuJkzqXrAWRU6K3K6W5y5xK1YhiZl2ysHeZOuzK3FQbpg38BxQ>
+    <xmx:kXHoXmtYPPuP2ofNMnAc4NOfUlb7GLqa2G8LPIdcjy_O2nKO6IpKJA>
+    <xmx:kXHoXrYzqcGl5faJRC14AU6pFjRNWBM0zmU1TW_5XCN4zmzk8VwmpA>
+    <xmx:kXHoXsy_kqz0YV0QOyoA4Vd6Agy5K7ALxRM5Pbmjm8bW5TZaQ5J2Rw>
+Received: from splinter.mtl.com (bzq-79-179-90-32.red.bezeqint.net [79.179.90.32])
+        by mail.messagingengine.com (Postfix) with ESMTPA id CF06A30618B7;
+        Tue, 16 Jun 2020 03:15:27 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net] mlxsw: spectrum: Adjust headroom buffers for 8x ports
+Date:   Tue, 16 Jun 2020 10:14:58 +0300
+Message-Id: <20200616071458.192798-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gaurav Singh wrote:
-> Memset() on the pointer right after malloc() can cause
-> a null pointer dereference if it failed to allocate memory.
-> Fix this by replacing malloc/memset with a single calloc().
-> 
-> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
-> ---
->  samples/bpf/xdp_redirect_cpu_user.c | 11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
-> 
-> diff --git a/samples/bpf/xdp_redirect_cpu_user.c b/samples/bpf/xdp_redirect_cpu_user.c
-> index f3468168982e..2ae7a9a1d950 100644
-> --- a/samples/bpf/xdp_redirect_cpu_user.c
-> +++ b/samples/bpf/xdp_redirect_cpu_user.c
-> @@ -207,11 +207,8 @@ static struct datarec *alloc_record_per_cpu(void)
->  {
->  	unsigned int nr_cpus = bpf_num_possible_cpus();
->  	struct datarec *array;
-> -	size_t size;
->  
-> -	size = sizeof(struct datarec) * nr_cpus;
-> -	array = malloc(size);
-> -	memset(array, 0, size);
-> +	array = calloc(nr_cpus, sizeof(struct datarec));
->  	if (!array) {
->  		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
->  		exit(EXIT_FAIL_MEM);
-> @@ -222,11 +219,9 @@ static struct datarec *alloc_record_per_cpu(void)
->  static struct stats_record *alloc_stats_record(void)
->  {
->  	struct stats_record *rec;
-> -	int i, size;
-> +	int i;
->  
-> -	size = sizeof(*rec) + n_cpus * sizeof(struct record);
-> -	rec = malloc(size);
-> -	memset(rec, 0, size);
-> +	rec = calloc(n_cpus + 1, sizeof(struct record));
->  	if (!rec) {
->  		fprintf(stderr, "Mem alloc error\n");
->  		exit(EXIT_FAIL_MEM);
-> -- 
-> 2.17.1
-> 
+From: Ido Schimmel <idosch@mellanox.com>
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+The port's headroom buffers are used to store packets while they
+traverse the device's pipeline and also to store packets that are egress
+mirrored.
+
+On Spectrum-3, ports with eight lanes use two headroom buffers between
+which the configured headroom size is split.
+
+In order to prevent packet loss, multiply the calculated headroom size
+by two for 8x ports.
+
+Fixes: da382875c616 ("mlxsw: spectrum: Extend to support Spectrum-3 ASIC")
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c      |  2 ++
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.h      | 13 +++++++++++++
+ .../net/ethernet/mellanox/mlxsw/spectrum_buffers.c  |  1 +
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c |  1 +
+ 4 files changed, 17 insertions(+)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 5ffa32b75e5f..55af877763ed 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -978,8 +978,10 @@ int __mlxsw_sp_port_headroom_set(struct mlxsw_sp_port *mlxsw_sp_port, int mtu,
+ 
+ 		lossy = !(pfc || pause_en);
+ 		thres_cells = mlxsw_sp_pg_buf_threshold_get(mlxsw_sp, mtu);
++		mlxsw_sp_port_headroom_8x_adjust(mlxsw_sp_port, &thres_cells);
+ 		delay_cells = mlxsw_sp_pg_buf_delay_get(mlxsw_sp, mtu, delay,
+ 							pfc, pause_en);
++		mlxsw_sp_port_headroom_8x_adjust(mlxsw_sp_port, &delay_cells);
+ 		total_cells = thres_cells + delay_cells;
+ 
+ 		taken_headroom_cells += total_cells;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index 6f96ca50c9ba..6e87457dd635 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -374,6 +374,19 @@ mlxsw_sp_port_vlan_find_by_vid(const struct mlxsw_sp_port *mlxsw_sp_port,
+ 	return NULL;
+ }
+ 
++static inline void
++mlxsw_sp_port_headroom_8x_adjust(const struct mlxsw_sp_port *mlxsw_sp_port,
++				 u16 *p_size)
++{
++	/* Ports with eight lanes use two headroom buffers between which the
++	 * configured headroom size is split. Therefore, multiply the calculated
++	 * headroom size by two.
++	 */
++	if (mlxsw_sp_port->mapping.width != 8)
++		return;
++	*p_size *= 2;
++}
++
+ enum mlxsw_sp_flood_type {
+ 	MLXSW_SP_FLOOD_TYPE_UC,
+ 	MLXSW_SP_FLOOD_TYPE_BC,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
+index 21bfb2f6a6f0..f25a8b084b4b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c
+@@ -312,6 +312,7 @@ static int mlxsw_sp_port_pb_init(struct mlxsw_sp_port *mlxsw_sp_port)
+ 
+ 		if (i == MLXSW_SP_PB_UNUSED)
+ 			continue;
++		mlxsw_sp_port_headroom_8x_adjust(mlxsw_sp_port, &size);
+ 		mlxsw_reg_pbmc_lossy_buffer_pack(pbmc_pl, i, size);
+ 	}
+ 	mlxsw_reg_pbmc_lossy_buffer_pack(pbmc_pl,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
+index 304eb8c3d8bd..f843545d3478 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
+@@ -782,6 +782,7 @@ mlxsw_sp_span_port_buffer_update(struct mlxsw_sp_port *mlxsw_sp_port, u16 mtu)
+ 		speed = 0;
+ 
+ 	buffsize = mlxsw_sp_span_buffsize_get(mlxsw_sp, speed, mtu);
++	mlxsw_sp_port_headroom_8x_adjust(mlxsw_sp_port, (u16 *) &buffsize);
+ 	mlxsw_reg_sbib_pack(sbib_pl, mlxsw_sp_port->local_port, buffsize);
+ 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(sbib), sbib_pl);
+ }
+-- 
+2.26.2
+
