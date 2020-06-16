@@ -2,114 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7497A1FABD2
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 11:04:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAD801FAC00
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 11:12:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbgFPJEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 05:04:22 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:28241 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725710AbgFPJEV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 05:04:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592298260;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ka0//B8iqVe7XF0DH1uWb/HCvgCVFTO+HcSeWwz6I0c=;
-        b=Wzrtg78swOHNV50zNFrjIhVOfOFqn5wY3L0BGQVkCEsZbvq/q2cE0NleSg+pjPGmdaIGBI
-        RETkeb44LOtvSBMQm53Q7PU1qpGNHytiPd/EhlUeivr3pGlA0+1OWLsg6a7OLg2RfPS00j
-        +liivgc0XGkAkCwEEdrRStfRBpAe73U=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-341-eTzddpHJOjmIAzN8h4b-kw-1; Tue, 16 Jun 2020 05:04:18 -0400
-X-MC-Unique: eTzddpHJOjmIAzN8h4b-kw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 29C1E100961D;
-        Tue, 16 Jun 2020 09:04:17 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.64])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 995B319D71;
-        Tue, 16 Jun 2020 09:04:05 +0000 (UTC)
-Date:   Tue, 16 Jun 2020 11:04:04 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        brouer@redhat.com
-Subject: Re: [PATCHv4 bpf-next 1/2] xdp: add a new helper for dev map
- multicast support
-Message-ID: <20200616110404.27149171@carbon>
-In-Reply-To: <87d0678b8w.fsf@toke.dk>
-References: <20200415085437.23028-1-liuhangbin@gmail.com>
-        <20200526140539.4103528-1-liuhangbin@gmail.com>
-        <20200526140539.4103528-2-liuhangbin@gmail.com>
-        <20200610122153.76d30e37@carbon>
-        <87d0678b8w.fsf@toke.dk>
+        id S1728090AbgFPJMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 05:12:34 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:48598 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725901AbgFPJMb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 05:12:31 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05G93Vcj108652;
+        Tue, 16 Jun 2020 09:10:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=vHFhOuRLkm8vQDg8Dof4S5HKAiKznh8tBQ+Mr1OID/Q=;
+ b=cVx0KE5h1EIzH/Nv6xjfZ5nTWCPzlMev+meeNe8ig/R6zGb1hcI4zPyrerRBxYg+mmc+
+ qKwemscmFpcbtZudgCHIJKFWU2+MEqUR3sjHNYzDUDCSWPx5pmD4LBuQpWhngStPV5H0
+ 4QQ1w6PiSDdHFWQ+ndzL39yxLvqknoA5VRhKUkk0TCj0AiX8q664S4ecxGUJH34dsTgv
+ f9QhZLAjaVCh+OyWTAfnAqTx90cKQuDChSnHHM+F7Utt0PRApBfU8iMActdQhiOLrCqP
+ +xx+YuMkqnBp9yLLOcyvwHAC7rCtpaJ69Rrf1s2Xt7AKk0laObtgJ3Pt4+o8dQUQESCt bA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 31p6e5wptp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 16 Jun 2020 09:10:36 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05G933ih037660;
+        Tue, 16 Jun 2020 09:08:35 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 31p6s6w4s2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Jun 2020 09:08:35 +0000
+Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 05G98O1L002227;
+        Tue, 16 Jun 2020 09:08:25 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 16 Jun 2020 02:08:24 -0700
+Date:   Tue, 16 Jun 2020 12:08:07 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Michal Hocko <mhocko@kernel.org>
+Cc:     Waiman Long <longman@redhat.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        linux-btrfs@vger.kernel.org,
+        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+        David Sterba <dsterba@suse.cz>,
+        David Howells <dhowells@redhat.com>, linux-mm@kvack.org,
+        linux-sctp@vger.kernel.org, keyrings@vger.kernel.org,
+        kasan-dev@googlegroups.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        devel@driverdev.osuosl.org, linux-cifs@vger.kernel.org,
+        linux-scsi@vger.kernel.org, James Morris <jmorris@namei.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        linux-wpan@vger.kernel.org, David Rientjes <rientjes@google.com>,
+        linux-pm@vger.kernel.org, ecryptfs@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        virtualization@lists.linux-foundation.org,
+        linux-integrity@vger.kernel.org, linux-nfs@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        target-devel@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        linux-crypto@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
+        Joe Perches <joe@perches.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        wireguard@lists.zx2c4.com, linux-ppp@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] mm/slab: Use memzero_explicit() in kzfree()
+Message-ID: <20200616090807.GK4151@kadam>
+References: <20200616015718.7812-1-longman@redhat.com>
+ <20200616015718.7812-2-longman@redhat.com>
+ <20200616064208.GA9499@dhcp22.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200616064208.GA9499@dhcp22.suse.cz>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9653 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 mlxscore=0
+ suspectscore=0 mlxlogscore=781 phishscore=0 bulkscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006160066
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9653 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 adultscore=0
+ mlxscore=0 phishscore=0 mlxlogscore=814 lowpriorityscore=0 clxscore=1011
+ suspectscore=0 spamscore=0 bulkscore=0 malwarescore=0 impostorscore=0
+ cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2006160066
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jun 16, 2020 at 08:42:08AM +0200, Michal Hocko wrote:
+> On Mon 15-06-20 21:57:16, Waiman Long wrote:
+> > The kzfree() function is normally used to clear some sensitive
+> > information, like encryption keys, in the buffer before freeing it back
+> > to the pool. Memset() is currently used for the buffer clearing. However,
+> > it is entirely possible that the compiler may choose to optimize away the
+> > memory clearing especially if LTO is being used. To make sure that this
+> > optimization will not happen, memzero_explicit(), which is introduced
+> > in v3.18, is now used in kzfree() to do the clearing.
+> > 
+> > Fixes: 3ef0e5ba4673 ("slab: introduce kzfree()")
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Waiman Long <longman@redhat.com>
+> 
+> Acked-by: Michal Hocko <mhocko@suse.com>
+> 
+> Although I am not really sure this is a stable material. Is there any
+> known instance where the memset was optimized out from kzfree?
 
-On Wed, 10 Jun 2020 12:29:35 +0200
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+I told him to add the stable.  Otherwise it will just get reported to
+me again.  It's a just safer to backport it before we forget.
 
-> Jesper Dangaard Brouer <brouer@redhat.com> writes:
->=20
-> > On Tue, 26 May 2020 22:05:38 +0800
-> > Hangbin Liu <liuhangbin@gmail.com> wrote:
-> > =20
-> >> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> >> index a51d9fb7a359..ecc5c44a5bab 100644
-> >> --- a/kernel/bpf/devmap.c
-> >> +++ b/kernel/bpf/devmap.c =20
-> > [...]
-> > =20
-> >> +int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *de=
-v_rx,
-> >> +			  struct bpf_map *map, struct bpf_map *ex_map,
-> >> +			  bool exclude_ingress)
-> >> +{
-[...]
-> >> +		if (!first) {
-> >> +			nxdpf =3D xdpf_clone(xdpf);
-> >> +			if (unlikely(!nxdpf))
-> >> +				return -ENOMEM;
-> >> +
-> >> +			bq_enqueue(dev, nxdpf, dev_rx);
-> >> +		} else {
-> >> +			bq_enqueue(dev, xdpf, dev_rx); =20
-> >
-> > This looks racy.  You enqueue the original frame, and then later
-> > xdpf_clone it.  The original frame might have been freed at that
-> > point. =20
->=20
-> This was actually my suggestion; on the assumption that bq_enqueue()
-> just puts the frame on a list that won't be flushed until we exit the
-> NAPI loop.
->=20
-> But I guess now that you mention it that bq_enqueue() may flush the
-> queue, so you're right that this won't work. Sorry about that, Hangbin :/
->=20
-> Jesper, the reason I suggested this was to avoid an "extra" copy (i.e.,
-> if we have two destinations, ideally we should only clone once instead
-> of twice). Got any clever ideas for a safe way to achieve this? :)
-
-Maybe you/we could avoid the clone on the last destination?
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+regards,
+dan carpenter
 
