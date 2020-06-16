@@ -2,215 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8A331FBFDA
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 22:18:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEFE91FBFE9
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 22:21:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731311AbgFPUR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 16:17:56 -0400
-Received: from correo.us.es ([193.147.175.20]:37610 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730725AbgFPUR4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jun 2020 16:17:56 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id CF07EF2367
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 22:17:53 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id BDFACDA78C
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 22:17:53 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id B3971DA78A; Tue, 16 Jun 2020 22:17:53 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5E23EDA722;
-        Tue, 16 Jun 2020 22:17:51 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 16 Jun 2020 22:17:51 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 40AC9426CCB9;
-        Tue, 16 Jun 2020 22:17:51 +0200 (CEST)
-Date:   Tue, 16 Jun 2020 22:17:50 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     wenxu@ucloud.cn
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, vladbu@mellanox.com
-Subject: Re: [PATCH net v3 3/4] net/sched: cls_api: fix nooffloaddevcnt
- warning dmesg log
-Message-ID: <20200616201750.GA27024@salvia>
-References: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
- <1592277580-5524-4-git-send-email-wenxu@ucloud.cn>
+        id S1731633AbgFPUVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 16:21:09 -0400
+Received: from www62.your-server.de ([213.133.104.62]:54006 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726856AbgFPUVJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 16:21:09 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jlI4w-0004C2-3O; Tue, 16 Jun 2020 22:21:06 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jlI4v-0000cm-Qx; Tue, 16 Jun 2020 22:21:05 +0200
+Subject: Re: [PATCH bpf 2/2] selftests/bpf: add variable-length data
+ concatenation pattern test
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Christoph Hellwig <hch@lst.de>
+References: <20200616050432.1902042-1-andriin@fb.com>
+ <20200616050432.1902042-2-andriin@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5fed920d-aeb6-c8de-18c0-7c046bbfb242@iogearbox.net>
+Date:   Tue, 16 Jun 2020 22:21:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1592277580-5524-4-git-send-email-wenxu@ucloud.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200616050432.1902042-2-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25845/Tue Jun 16 15:01:35 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 11:19:39AM +0800, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
+On 6/16/20 7:04 AM, Andrii Nakryiko wrote:
+> Add selftest that validates variable-length data reading and concatentation
+> with one big shared data array. This is a common pattern in production use for
+> monitoring and tracing applications, that potentially can read a lot of data,
+> but usually reads much less. Such pattern allows to determine precisely what
+> amount of data needs to be sent over perfbuf/ringbuf and maximize efficiency.
 > 
-> When a indr device add in offload success. The block->nooffloaddevcnt
-> should be 0. After the representor go away. When the dir device go away
-> the flow_block UNBIND operation with -EOPNOTSUPP which lead the warning
-> dmesg log. 
+> This is the first BPF selftest that at all looks at and tests
+> bpf_probe_read_str()-like helper's return value, closing a major gap in BPF
+> testing. It surfaced the problem with bpf_probe_read_kernel_str() returning
+> 0 on success, instead of amount of bytes successfully read.
 > 
-> The block->nooffloaddevcnt should always count for indr block.
-> even the indr block offload successful. The representor maybe
-> gone away and the ingress qdisc can work in software mode.
-> 
-> block->nooffloaddevcnt warning with following dmesg log:
-> 
-> [  760.667058] #####################################################
-> [  760.668186] ## TEST test-ecmp-add-vxlan-encap-disable-sriov.sh ##
-> [  760.669179] #####################################################
-> [  761.780655] :test: Fedora 30 (Thirty)
-> [  761.783794] :test: Linux reg-r-vrt-018-180 5.7.0+
-> [  761.822890] :test: NIC ens1f0 FW 16.26.6000 PCI 0000:81:00.0 DEVICE 0x1019 ConnectX-5 Ex
-> [  761.860244] mlx5_core 0000:81:00.0 ens1f0: Link up
-> [  761.880693] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
-> [  762.059732] mlx5_core 0000:81:00.1 ens1f1: Link up
-> [  762.234341] :test: unbind vfs of ens1f0
-> [  762.257825] :test: Change ens1f0 eswitch (0000:81:00.0) mode to switchdev
-> [  762.291363] :test: unbind vfs of ens1f1
-> [  762.306914] :test: Change ens1f1 eswitch (0000:81:00.1) mode to switchdev
-> [  762.309237] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(LEGACY), nvfs(2), active vports(3)
-> [  763.282598] mlx5_core 0000:81:00.1: E-Switch: Supported tc offload range - chains: 4294967294, prios: 4294967295
-> [  763.362825] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-> [  763.444465] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
-> [  763.460088] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-> [  763.502586] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-> [  763.552429] ens1f1_0: renamed from eth0
-> [  763.569569] mlx5_core 0000:81:00.1: E-Switch: Enable: mode(OFFLOADS), nvfs(2), active vports(3)
-> [  763.629694] ens1f1_1: renamed from eth1
-> [  764.631552] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_0: link becomes ready
-> [  764.670841] :test: unbind vfs of ens1f0
-> [  764.681966] :test: unbind vfs of ens1f1
-> [  764.726762] mlx5_core 0000:81:00.0 ens1f0: Link up
-> [  764.766511] mlx5_core 0000:81:00.1 ens1f1: Link up
-> [  764.797325] :test: Add multipath vxlan encap rule and disable sriov
-> [  764.798544] :test: config multipath route
-> [  764.812732] mlx5_core 0000:81:00.0: lag map port 1:2 port 2:2
-> [  764.874556] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:2
-> [  765.603681] :test: OK
-> [  765.659048] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_1: link becomes ready
-> [  765.675085] :test: verify rule in hw
-> [  765.694237] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
-> [  765.711892] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1: link becomes ready
-> [  766.979230] :test: OK
-> [  768.125419] :test: OK
-> [  768.127519] :test: - disable sriov ens1f1
-> [  768.131160] pci 0000:81:02.2: Removing from iommu group 75
-> [  768.132646] pci 0000:81:02.3: Removing from iommu group 76
-> [  769.179749] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
-> [  769.455627] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:1
-> [  769.703990] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-> [  769.988637] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
-> [  769.990022] :test: - disable sriov ens1f0
-> [  769.994922] pci 0000:81:00.2: Removing from iommu group 73
-> [  769.997048] pci 0000:81:00.3: Removing from iommu group 74
-> [  771.035813] mlx5_core 0000:81:00.0: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
-> [  771.339091] ------------[ cut here ]------------
-> [  771.340812] WARNING: CPU: 6 PID: 3448 at net/sched/cls_api.c:749 tcf_block_offload_unbind.isra.0+0x5c/0x60
-> [  771.341728] Modules linked in: act_mirred act_tunnel_key cls_flower dummy vxlan ip6_udp_tunnel udp_tunnel sch_ingress nfsv3 nfs_acl nfs lockd grace fscache tun bridge stp llc sunrpc rdma_ucm rdma_cm iw_cm ib_cm mlx5_ib ib_uverbs ib_core mlx5_core intel_rapl_msr intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp mlxfw act_ct nf_flow_table kvm_intel nf_nat kvm nf_conntrack irqbypass crct10dif_pclmul igb crc32_pclmul nf_defrag_ipv6 libcrc32c nf_defrag_ipv4 crc32c_intel ghash_clmulni_intel ptp ipmi_ssif intel_cstate pps_c
-> ore ses intel_uncore mei_me iTCO_wdt joydev ipmi_si iTCO_vendor_support i2c_i801 enclosure mei ioatdma dca lpc_ich wmi ipmi_devintf pcspkr acpi_power_meter ipmi_msghandler acpi_pad ast i2c_algo_bit drm_vram_helper drm_kms_helper drm_ttm_helper ttm drm mpt3sas raid_class scsi_transport_sas
-> [  771.347818] CPU: 6 PID: 3448 Comm: test-ecmp-add-v Not tainted 5.7.0+ #1146
-> [  771.348727] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-> [  771.349646] RIP: 0010:tcf_block_offload_unbind.isra.0+0x5c/0x60
-> [  771.350553] Code: 4a fd ff ff 83 f8 a1 74 0e 5b 4c 89 e7 5d 41 5c 41 5d e9 07 93 89 ff 8b 83 a0 00 00 00 8d 50 ff 89 93 a0 00 00 00 85 c0 75 df <0f> 0b eb db 0f 1f 44 00 00 41 57 41 56 41 55 41 89 cd 41 54 49 89
-> [  771.352420] RSP: 0018:ffffb33144cd3b00 EFLAGS: 00010246
-> [  771.353353] RAX: 0000000000000000 RBX: ffff8b37cf4b2800 RCX: 0000000000000000
-> [  771.354294] RDX: 00000000ffffffff RSI: ffff8b3b9aad0000 RDI: ffffffff8d5c6e20
-> [  771.355245] RBP: ffff8b37eb546948 R08: ffffffffc0b7a348 R09: ffff8b3b9aad0000
-> [  771.356189] R10: 0000000000000001 R11: ffff8b3ba7a0a1c0 R12: ffff8b37cf4b2850
-> [  771.357123] R13: ffff8b3b9aad0000 R14: ffff8b37cf4b2820 R15: ffff8b37cf4b2820
-> [  771.358039] FS:  00007f8a19b6e740(0000) GS:ffff8b3befa00000(0000) knlGS:0000000000000000
-> [  771.358965] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  771.359885] CR2: 00007f3afb91c1a0 CR3: 000000045133c004 CR4: 00000000001606e0
-> [  771.360825] Call Trace:
-> [  771.361764]  __tcf_block_put+0x84/0x150
-> [  771.362712]  ingress_destroy+0x1b/0x20 [sch_ingress]
-> [  771.363658]  qdisc_destroy+0x3e/0xc0
-> [  771.364594]  dev_shutdown+0x7a/0xa5
-> [  771.365522]  rollback_registered_many+0x20d/0x530
-> [  771.366458]  ? netdev_upper_dev_unlink+0x15d/0x1c0
-> [  771.367387]  unregister_netdevice_many.part.0+0xf/0x70
-> [  771.368310]  vxlan_netdevice_event+0xa4/0x110 [vxlan]
-> [  771.369454]  notifier_call_chain+0x4c/0x70
-> [  771.370579]  rollback_registered_many+0x2f5/0x530
-> [  771.371719]  rollback_registered+0x56/0x90
-> [  771.372843]  unregister_netdevice_queue+0x73/0xb0
-> [  771.373982]  unregister_netdev+0x18/0x20
-> [  771.375168]  mlx5e_vport_rep_unload+0x56/0xc0 [mlx5_core]
-> [  771.376327]  esw_offloads_disable+0x81/0x90 [mlx5_core]
-> [  771.377512]  mlx5_eswitch_disable_locked.cold+0xcb/0x1af [mlx5_core]
-> [  771.378679]  mlx5_eswitch_disable+0x44/0x60 [mlx5_core]
-> [  771.379822]  mlx5_device_disable_sriov+0xad/0xb0 [mlx5_core]
-> [  771.380968]  mlx5_core_sriov_configure+0xc1/0xe0 [mlx5_core]
-> [  771.382087]  sriov_numvfs_store+0xfc/0x130
-> [  771.383195]  kernfs_fop_write+0xce/0x1b0
-> [  771.384302]  vfs_write+0xb6/0x1a0
-> [  771.385410]  ksys_write+0x5f/0xe0
-> [  771.386500]  do_syscall_64+0x5b/0x1d0
-> [  771.387569]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
->  net/sched/cls_api.c | 24 ++++++++++++++----------
->  1 file changed, 14 insertions(+), 10 deletions(-)
-> 
-> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> index a00a203..86c3937 100644
-> --- a/net/sched/cls_api.c
-> +++ b/net/sched/cls_api.c
-> @@ -671,25 +671,29 @@ static int tcf_block_offload_cmd(struct tcf_block *block,
->  				 struct netlink_ext_ack *extack)
->  {
->  	struct flow_block_offload bo = {};
-> -	int err;
->  
->  	tcf_block_offload_init(&bo, dev, command, ei->binder_type,
->  			       &block->flow_block, tcf_block_shared(block),
->  			       extack);
->  
-> -	if (dev->netdev_ops->ndo_setup_tc)
-> +	if (dev->netdev_ops->ndo_setup_tc) {
-> +		int err;
-> +
->  		err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
-> -	else
-> -		err = flow_indr_dev_setup_offload(dev, TC_SETUP_BLOCK, block,
-> -						  &bo, tc_block_indr_cleanup);
-> +		if (err < 0) {
-> +			if (err != -EOPNOTSUPP)
-> +				NL_SET_ERR_MSG(extack, "Driver ndo_setup_tc failed");
-> +			return err;
-> +		}
->  
-> -	if (err < 0) {
-> -		if (err != -EOPNOTSUPP)
-> -			NL_SET_ERR_MSG(extack, "Driver ndo_setup_tc failed");
-> -		return err;
-> +		return tcf_block_setup(block, &bo);
->  	}
->  
-> -	return tcf_block_setup(block, &bo);
-> +	flow_indr_dev_setup_offload(dev, TC_SETUP_BLOCK, block, &bo,
-> +				    tc_block_indr_cleanup);
-> +	tcf_block_setup(block, &bo);
-> +
-> +	return -EOPNOTSUPP;
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-So tcf_block_offload_cmd() always return -EOPNOTSUPP for _BIND and
-_UNBIND operations after this patch ?
+Fix looks good, but I'm seeing an issue in the selftest on my side. With latest
+Clang/LLVM I'm getting:
+
+# ./test_progs -t varlen
+#86 varlen:OK
+Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+
+All good, however, the test_progs-no_alu32 fails for me with:
+
+# ./test_progs-no_alu32 -t varlen
+Switching to flavor 'no_alu32' subdirectory...
+libbpf: load bpf program failed: Invalid argument
+libbpf: -- BEGIN DUMP LOG ---
+libbpf:
+arg#0 type is not a struct
+Unrecognized arg#0 type PTR
+; int pid = bpf_get_current_pid_tgid() >> 32;
+0: (85) call bpf_get_current_pid_tgid#14
+; int pid = bpf_get_current_pid_tgid() >> 32;
+1: (77) r0 >>= 32
+; if (test_pid != pid || !capture)
+2: (18) r1 = 0xffffb14a4010c200
+4: (61) r1 = *(u32 *)(r1 +0)
+  R0_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1_w=map_value(id=0,off=512,ks=4,vs=1056,imm=0) R10=fp0
+; if (test_pid != pid || !capture)
+5: (5d) if r1 != r0 goto pc+43
+  R0_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R10=fp0
+6: (18) r1 = 0xffffb14a4010c204
+8: (71) r1 = *(u8 *)(r1 +0)
+  R0_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1_w=map_value(id=0,off=516,ks=4,vs=1056,imm=0) R10=fp0
+9: (15) if r1 == 0x0 goto pc+39
+  R0=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1=inv(id=0,umax_value=255,var_off=(0x0; 0xff)) R10=fp0
+; len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in1[0]);
+10: (18) r6 = 0xffffb14a4010c220
+12: (18) r1 = 0xffffb14a4010c220
+14: (b7) r2 = 256
+15: (18) r3 = 0xffffb14a4010c000
+17: (85) call bpf_probe_read_kernel_str#115
+  R0=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1_w=map_value(id=0,off=544,ks=4,vs=1056,imm=0) R2_w=inv256 R3_w=map_value(id=0,off=0,ks=4,vs=1056,imm=0) R6_w=map_value(id=0,off=544,ks=4,vs=1056,imm=0) R10=fp0
+last_idx 17 first_idx 9
+regs=4 stack=0 before 15: (18) r3 = 0xffffb14a4010c000
+regs=4 stack=0 before 14: (b7) r2 = 256
+18: (67) r0 <<= 32
+19: (bf) r1 = r0
+20: (77) r1 >>= 32
+; if (len <= MAX_LEN) {
+21: (25) if r1 > 0x100 goto pc+7
+  R0=inv(id=0,smax_value=1099511627776,umax_value=18446744069414584320,var_off=(0x0; 0xffffffff00000000),s32_min_value=0,s32_max_value=0,u32_max_value=0) R1=inv(id=0,umax_value=256,var_off=(0x0; 0x1ff)) R6=map_value(id=0,off=544,ks=4,vs=1056,imm=0) R10=fp0
+;
+22: (c7) r0 s>>= 32
+; payload1_len1 = len;
+23: (18) r1 = 0xffffb14a4010c208
+25: (7b) *(u64 *)(r1 +0) = r0
+  R0_w=inv(id=0,smin_value=-2147483648,smax_value=256) R1_w=map_value(id=0,off=520,ks=4,vs=1056,imm=0) R6=map_value(id=0,off=544,ks=4,vs=1056,imm=0) R10=fp0
+; payload += len;
+26: (18) r6 = 0xffffb14a4010c220
+28: (0f) r6 += r0
+last_idx 28 first_idx 21
+regs=1 stack=0 before 26: (18) r6 = 0xffffb14a4010c220
+regs=1 stack=0 before 25: (7b) *(u64 *)(r1 +0) = r0
+regs=1 stack=0 before 23: (18) r1 = 0xffffb14a4010c208
+regs=1 stack=0 before 22: (c7) r0 s>>= 32
+regs=1 stack=0 before 21: (25) if r1 > 0x100 goto pc+7
+  R0_rw=invP(id=0,smax_value=1099511627776,umax_value=18446744069414584320,var_off=(0x0; 0xffffffff00000000),s32_min_value=0,s32_max_value=0,u32_max_value=0) R1_rw=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R6_w=map_value(id=0,off=544,ks=4,vs=1056,imm=0) R10=fp0
+parent didn't have regs=1 stack=0 marks
+last_idx 20 first_idx 9
+regs=1 stack=0 before 20: (77) r1 >>= 32
+regs=1 stack=0 before 19: (bf) r1 = r0
+regs=1 stack=0 before 18: (67) r0 <<= 32
+regs=1 stack=0 before 17: (85) call bpf_probe_read_kernel_str#115
+value -2147483648 makes map_value pointer be out of bounds
+processed 22 insns (limit 1000000) max_states_per_insn 0 total_states 2 peak_states 2 mark_read 1
+
+libbpf: -- END LOG --
+libbpf: failed to load program 'raw_tp/sys_enter'
+libbpf: failed to load object 'test_varlen'
+libbpf: failed to load BPF skeleton 'test_varlen': -4007
+test_varlen:FAIL:skel_open failed to open skeleton
+#86 varlen:FAIL
+Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
