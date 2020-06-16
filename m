@@ -2,114 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD89F1FB9E5
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 18:07:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BF01FB9D2
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 18:07:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732270AbgFPQHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 12:07:19 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:40233 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732267AbgFPPrE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 11:47:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592322422;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=djkgmBs6vxKrnF2svfHTCwO6iJZv0MD8YpKSjFl2MGs=;
-        b=anxZyJvaFpuLChSMwUR/a7qLSGGcT0Nzy4aiSkqCpI/xVk6zVIcE9J7iV1341dFYQpdAwe
-        QNobub7hXN4Ms1OW18fOfvph9zqDj6d3Es9xcqmAm7V7WWOGLDbJFRK2rhytEAPFfTLrAb
-        z8prG6hZN2mOJEmSXgQ9/SksTn2gcSw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-218-nWeeH7oNN9eY6skcHYs3nQ-1; Tue, 16 Jun 2020 11:46:56 -0400
-X-MC-Unique: nWeeH7oNN9eY6skcHYs3nQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0B3678DEEE2;
-        Tue, 16 Jun 2020 15:46:51 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-114-66.rdu2.redhat.com [10.10.114.66])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3EC3B60C05;
-        Tue, 16 Jun 2020 15:46:41 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <56c2304c-73cc-8f48-d8d0-5dd6c39f33f3@redhat.com>
-References: <56c2304c-73cc-8f48-d8d0-5dd6c39f33f3@redhat.com> <20200616015718.7812-1-longman@redhat.com> <20200616015718.7812-2-longman@redhat.com> <20200616033035.GB902@sol.localdomain>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, ebiggers@kernel.org,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Rientjes <rientjes@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        David Sterba <dsterba@suse.cz>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>, linux-mm@kvack.org,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-ppp@vger.kernel.org, wireguard@lists.zx2c4.com,
-        linux-wireless@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
-        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] mm/slab: Use memzero_explicit() in kzfree()
+        id S1732545AbgFPQHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 12:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46400 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730426AbgFPPrU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 11:47:20 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8547C061573
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:47:20 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id t21so14608070edr.12
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:47:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=73aIY/LXErMgQ2L+mUUsaqmNocwnsmcGVQ05txUsy5w=;
+        b=h6Vr0XcBFwbnMKG9CkfRExmwjlKImK2hpthtODpP3Jv0GuA5/6BOWbMiiXE4Ty0xgS
+         /eLbmW+xWcswqVRvWjvM/yVyaPhlIdSGNZL1PM9IAfrC6eP/D5I7ptoiXU32w/uq8Jvb
+         VVQptMEB5x+EeY2HSSF5xCMLhSR6IkXcK8CNKWTjcDxdDEKNkGcfcTizeBYgtOvk4pc9
+         IG9BGN+xiEqtcpBmu7DRls91x6E8CV6lka5+WTuHVdWQ+HzK6DFDsmVWyGSjF53viVbl
+         /jPyi3LKxQu5YSlKjSEAJkol0Lpp489vT1Qx8hmFweSVKqgjhqz9icmVM4dTREYNghoI
+         F2cA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=73aIY/LXErMgQ2L+mUUsaqmNocwnsmcGVQ05txUsy5w=;
+        b=CEhIp0zpkeKeTKdrtIKSUvd4+IPbDIKqaeqKKxc03GmJcSNMBj5bV3Yj0jVnJ+YqMY
+         B21VORrjYKQqoV7e8wU7QNsVvHevpQbvZbpSUPAZx9WPO2z9T91qruxorTFiVEc8RXm1
+         9m+iQ+QL8jPyyDuX9rWJ4JjCU1C3J3QMQ2wH7OrboAoo3fukr1Mpg3pOQvD+kmtoDx8o
+         FG1kjxcYxR2I+osR/bsDRIZfWK4SvrZ6uzNxyQJlPY+ZQ4CbKUIFSzRZthMR94yqckyK
+         dRYOyo3exQJuhTfslQt16CIU9rBHRv5qq5smSdsqZvQv29lYllXO/FAuMi70JFTpyCVc
+         rG8A==
+X-Gm-Message-State: AOAM533Hxc2Rjn/nDwGXUg2unAP0dYGmBHGTcTpfZUAIzJRrLqjk021K
+        +3iNkuBL0tjJa+qlVl1FUkXJBg==
+X-Google-Smtp-Source: ABdhPJw+5qkITEPe/6eVUCGwOeh2bvQkl5yOkl8JEnAXdplXBprnMtLWEUOlTB9WNN9RAAv6xmOseQ==
+X-Received: by 2002:aa7:d0cb:: with SMTP id u11mr3033390edo.381.1592322439284;
+        Tue, 16 Jun 2020 08:47:19 -0700 (PDT)
+Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id k2sm11486130ejc.20.2020.06.16.08.47.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jun 2020 08:47:18 -0700 (PDT)
+Date:   Tue, 16 Jun 2020 17:47:17 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pablo@netfilter.org,
+        vladbu@mellanox.com
+Subject: Re: [PATCH net v3 2/4] flow_offload: fix incorrect cb_priv check for
+ flow_block_cb
+Message-ID: <20200616154716.GA16382@netronome.com>
+References: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
+ <1592277580-5524-3-git-send-email-wenxu@ucloud.cn>
+ <20200616105123.GA21396@netronome.com>
+ <aee3192c-7664-580b-1f37-9003c91f185b@ucloud.cn>
+ <20200616143427.GA8084@netronome.com>
+ <565dd609-1e20-16f4-f38d-8a0b15816f50@ucloud.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <879078.1592322400.1@warthog.procyon.org.uk>
-Date:   Tue, 16 Jun 2020 16:46:40 +0100
-Message-ID: <879079.1592322400@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <565dd609-1e20-16f4-f38d-8a0b15816f50@ucloud.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Waiman Long <longman@redhat.com> wrote:
+On Tue, Jun 16, 2020 at 11:18:16PM +0800, wenxu wrote:
+> 
+> 在 2020/6/16 22:34, Simon Horman 写道:
+> > On Tue, Jun 16, 2020 at 10:20:46PM +0800, wenxu wrote:
+> >> 在 2020/6/16 18:51, Simon Horman 写道:
+> >>> On Tue, Jun 16, 2020 at 11:19:38AM +0800, wenxu@ucloud.cn wrote:
+> >>>> From: wenxu <wenxu@ucloud.cn>
+> >>>>
+> >>>> In the function __flow_block_indr_cleanup, The match stataments
+> >>>> this->cb_priv == cb_priv is always false, the flow_block_cb->cb_priv
+> >>>> is totally different data with the flow_indr_dev->cb_priv.
+> >>>>
+> >>>> Store the representor cb_priv to the flow_block_cb->indr.cb_priv in
+> >>>> the driver.
+> >>>>
+> >>>> Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
+> >>>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> >>> Hi Wenxu,
+> >>>
+> >>> I wonder if this can be resolved by using the cb_ident field of struct
+> >>> flow_block_cb.
+> >>>
+> >>> I observe that mlx5e_rep_indr_setup_block() seems to be the only call-site
+> >>> where the value of the cb_ident parameter of flow_block_cb_alloc() is
+> >>> per-block rather than per-device. So part of my proposal is to change
+> >>> that.
+> >> I check all the xxdriver_indr_setup_block. It seems all the cb_ident parameter of
+> >>
+> >> flow_block_cb_alloc is per-block. Both in the nfp_flower_setup_indr_tc_block
+> >>
+> >> and bnxt_tc_setup_indr_block.
+> >>
+> >>
+> >> nfp_flower_setup_indr_tc_block:
+> >>
+> >> struct nfp_flower_indr_block_cb_priv *cb_priv;
+> >>
+> >> block_cb = flow_block_cb_alloc(nfp_flower_setup_indr_block_cb,
+> >>                                                cb_priv, cb_priv,
+> >>                                                nfp_flower_setup_indr_tc_release);
+> >>
+> >>
+> >> bnxt_tc_setup_indr_block:
+> >>
+> >> struct bnxt_flower_indr_block_cb_priv *cb_priv;
+> >>
+> >> block_cb = flow_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
+> >>                                                cb_priv, cb_priv,
+> >>                                                bnxt_tc_setup_indr_rel);
+> >>
+> >>
+> >> And the function flow_block_cb_is_busy called in most place. Pass the
+> >>
+> >> parameter as cb_priv but not cb_indent .
+> > Thanks, I see that now. But I still think it would be useful to understand
+> > the purpose of cb_ident. It feels like it would lead to a clean solution
+> > to the problem you have highlighted.
+> 
+> I think The cb_ident means identify.  It is used to identify the each flow block cb.
+> 
+> In the both flow_block_cb_is_busy and flow_block_cb_lookup function check
+> 
+> the block_cb->cb_ident == cb_ident.
 
-> The kzfree() function is normally used to clear some sensitive
-> information, like encryption keys, in the buffer before freeing it back
-> to the pool. Memset()
+Thanks, I think that I now see what you mean about the different scope of
+cb_ident and your proposal to allow cleanup by flow_indr_dev_unregister().
 
-"memset()" is all lowercase.
+I do, however, still wonder if there is a nicer way than reaching into
+the structure and manually setting block_cb->indr.cb_priv
+at each call-site.
 
-> is currently used for buffer clearing. However unlikely, there is still a
-> non-zero probability
-
-I'd say "a possibility".
-
-> that
-
-and I'd move "in [the] future" here.
-
-> the compiler may choose to optimize away the
-> memory clearing especially if LTO is being used in the future. To make sure
-> that this optimization will never happen
-
-"in these cases"
-
-> , memzero_explicit(), which is introduced in v3.18, is now used in
-
-"instead of"?
-
-> kzfree() to future-proof it.
-
-Davod
-
+Perhaps a variant of flow_block_cb_alloc() for indirect blocks
+would be nicer?
