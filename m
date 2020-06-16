@@ -2,105 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A67F51FAA47
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 09:45:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F8331FAA8C
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 09:56:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726773AbgFPHpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 03:45:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725979AbgFPHpU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 03:45:20 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF098C05BD43;
-        Tue, 16 Jun 2020 00:45:19 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id n24so20453783ejd.0;
-        Tue, 16 Jun 2020 00:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=9UCZeGHHHKkRG4zqXE/A7RhXHhHKairl1CSt+Zzjpak=;
-        b=Cz1fVZIzFqI9PLwQigltSabqGPa014dqi5tTEQERMjzOcSgf7y+ue4y3N0vZZTJSbN
-         ZOKE4/X8uLCun3yDYaxUiH58zvDGalQuzZ7f/ugYyXbQeZXuso6jxwiBQp2iL6LMw6yt
-         u8DO7WuaQck0yZ05+BcjkhkzWSV9GTaEiJUb6xL0O0YhzVora9je9ie5Sfc1oAgsMRkQ
-         HrSWhRxduuJqf0uqkwrxwAqsNzKHQZnxUllF9hzvdL5mdAVZw8kbhQ9owN0CZfidVfdR
-         lwJ5Sl2e71hp6PvYdVo9xU0A/Omzi10k2ddiz23eBCncm5z4q4/FGp0rdsmaCdrsHHc+
-         wIcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9UCZeGHHHKkRG4zqXE/A7RhXHhHKairl1CSt+Zzjpak=;
-        b=I4GbN+J65kAhZHKQD+rfXfTA31dkciQPaoubNgnWuIQPGsnwa1T+MBAhjWiDOlVUbZ
-         HMMmHb8GYEVS0+Bo/1Wbkkh+Y264WbdxZmFYOIEhsxl68m6e1EhdvPbT04h7MP9+itLr
-         e+fflr6ApPaRF94K9r3TXNAP2aQ5MHY+WaKo+p/WxCEnMCik+GfBeOM0s60prdsd5CfT
-         rKiSBEP7TsYpV1rATp2mrBd+8pO271omN9hPutOmSHIMc+BGTQEb58OX1ARlCAhalmfk
-         hgcAhhyb8fyJPTi1DcaiLSrGyOxCwIG+o3gLIwwyVa6Le+CUF1HVU4O5btYzFyfGrAhR
-         f4tw==
-X-Gm-Message-State: AOAM531vdNL9z6wuoMLET2HREh887wpaWlE6c3GpFfSH7KEu0yUzjDnS
-        NCNlw54c6DJzqYeniTCOY+RVIc+v//vCJfXm2Og=
-X-Google-Smtp-Source: ABdhPJy6meDuVQDBwcDUxWt/oUvxUZtl4JuICUdPAZf17Kj+yj3BRrYlPu9XsWDJsU86OiHGTJ1s8o6f04CkYtRK/Io=
-X-Received: by 2002:a17:906:3a43:: with SMTP id a3mr1504252ejf.121.1592293518424;
- Tue, 16 Jun 2020 00:45:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <1592273581-31338-1-git-send-email-wangxidong_97@163.com>
-In-Reply-To: <1592273581-31338-1-git-send-email-wangxidong_97@163.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Tue, 16 Jun 2020 15:44:14 +0800
-Message-ID: <CAMDZJNUnsQM93DiP8zGyxEAzRgDogQc7HgMhSE-3WdWJWSsW8A@mail.gmail.com>
-Subject: Re: [ovs-dev] [PATCH 1/1] openvswitch: fix infoleak in conntrack
-To:     Xidong Wang <wangxidong_97@163.com>
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1727017AbgFPH4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 03:56:12 -0400
+Received: from mail.intenta.de ([178.249.25.132]:38630 "EHLO mail.intenta.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726747AbgFPH4D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Jun 2020 03:56:03 -0400
+X-Greylist: delayed 360 seconds by postgrey-1.27 at vger.kernel.org; Tue, 16 Jun 2020 03:56:02 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=Content-Type:MIME-Version:Message-ID:Subject:To:From:Date; bh=PNZ7NtMf3xXLQ+yBO/wjiY8ZQUlLRCVcwPbjOsCsmPA=;
+        b=hK5N1ZZREg5On5XBnl+L87sUsehslutzEMPeEZ8892vhizcG0DlPNerdI0cmyEly2gLcTjDshEkTK0DNC1EKz/SZzxXBfsDXwqBH1+MGfexFseUOEWdipiap3AWPGta4X/kxB4aOSLLxDtWSAImQu0QXeQs2/v7TNdX5qGK+hJ8vKw88pkqWZK8bfUGSLZvTR6W6oiqTf8/7FDu7tfbs2hkq9wHuJGfIW6pkuL+hoN3pL+XpURK9OtIz1Q2o8r+yvZqfkRce7ty+K/GmIXHzATKhlh1CK0Ba1d0THt4ccf+xSnybAh1QCN+iJDfpd+vJ8txxWQr+JuF6eoHSxFuflQ==;
+Date:   Tue, 16 Jun 2020 09:49:56 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Russell King <linux@armlinux.org.uk>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH] net: macb: reject unsupported rgmii delays
+Message-ID: <20200616074955.GA9092@laureti-dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 10:13 AM Xidong Wang <wangxidong_97@163.com> wrote:
->
-> From: xidongwang <wangxidong_97@163.com>
->
-> The stack object =E2=80=9Czone_limit=E2=80=9D has 3 members. In function
-> ovs_ct_limit_get_default_limit(), the member "count" is
-> not initialized and sent out via =E2=80=9Cnla_put_nohdr=E2=80=9D.
->
-> Signed-off-by: xidongwang <wangxidong_97@163.com>
-> ---
->  net/openvswitch/conntrack.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-> index 4340f25..1b7820a 100644
-> --- a/net/openvswitch/conntrack.c
-> +++ b/net/openvswitch/conntrack.c
-> @@ -2020,6 +2020,7 @@ static int ovs_ct_limit_get_default_limit(struct ov=
-s_ct_limit_info *info,
->  {
->         struct ovs_zone_limit zone_limit;
->         int err;
-> +       memset(&zone_limit, 0, sizeof(zone_limit));
-why not init zone.count =3D=3D 0, instead of memset, because zone_id/limit
-will be inited later.
-memset uses more cpu cycles.
->         zone_limit.zone_id =3D OVS_ZONE_LIMIT_DEFAULT_ZONE;
->         zone_limit.limit =3D info->default_limit;
-> --
-> 2.7.4
->
-> _______________________________________________
-> dev mailing list
-> dev@openvswitch.org
-> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+The macb driver does not support configuring rgmii delays. At least for
+the Zynq GEM, delays are not supported by the hardware at all. However,
+the driver happily accepts and ignores any such delays.
 
+When operating in a mac to phy connection, the delay setting applies to
+the phy. Since the MAC does not support delays, the phy must provide
+them and the only supported mode is rgmii-id.  However, in a fixed mac
+to mac connection, the delay applies to the mac itself. Therefore the
+only supported rgmii mode is rgmii.
 
+Link: https://lore.kernel.org/netdev/20200610081236.GA31659@laureti-dev/
+Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
+---
+ drivers/net/ethernet/cadence/macb_main.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---=20
-Best regards, Tonghao
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 5b9d7c60eebc..bee5bf65e8b3 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -514,7 +514,7 @@ static void macb_validate(struct phylink_config *config,
+ 	    state->interface != PHY_INTERFACE_MODE_RMII &&
+ 	    state->interface != PHY_INTERFACE_MODE_GMII &&
+ 	    state->interface != PHY_INTERFACE_MODE_SGMII &&
+-	    !phy_interface_mode_is_rgmii(state->interface)) {
++	    state->interface != PHY_INTERFACE_MODE_RGMII_ID) {
+ 		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+ 		return;
+ 	}
+@@ -694,6 +694,13 @@ static int macb_phylink_connect(struct macb *bp)
+ 	struct phy_device *phydev;
+ 	int ret;
+ 
++	if (of_phy_is_fixed_link(dn) &&
++	    phy_interface_mode_is_rgmii(bp->phy_interface) &&
++	    bp->phy_interface != PHY_INTERFACE_MODE_RGMII) {
++		netdev_err(dev, "RGMII delays are not supported\n");
++		return -EINVAL;
++	}
++
+ 	if (dn)
+ 		ret = phylink_of_phy_connect(bp->phylink, dn, 0);
+ 
+-- 
+2.20.1
+
