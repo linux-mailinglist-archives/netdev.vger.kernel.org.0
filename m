@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40F8E1FB4A7
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D7C01FB4A5
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:42:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729291AbgFPOlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 10:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
+        id S1729326AbgFPOl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 10:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728501AbgFPOl2 (ORCPT
+        with ESMTP id S1729291AbgFPOl2 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 10:41:28 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98D7C061573;
-        Tue, 16 Jun 2020 07:41:25 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id g1so14441965edv.6;
-        Tue, 16 Jun 2020 07:41:25 -0700 (PDT)
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53175C06174E;
+        Tue, 16 Jun 2020 07:41:26 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id k8so14461876edq.4;
+        Tue, 16 Jun 2020 07:41:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=X4Zz5WMksNaBBzQHKfDm7bJwscvEi3U1et2P+ZKimX8=;
-        b=KcFoLD1+8TsmdC5BLHkTuO2dsNyVpbxMHMwZ2P0XhDoFPVk1lhDKBk2+Yexo/Ctvn9
-         AqvrZwQJipf+261/rW/DlVzFuUEABEiKxtb57SVgCJ4KrFZSZRTqb2FjcPsz962auRPK
-         GkfRgZ0JF3aloLz1aGHsXphOtZinC91AkxYONTiOpRTAQHlzS4q+0fLQj62fYL74evS5
-         gJS7eqBu9bIEuy2WAPfs9s2zd8QN6IRqeH4p2OlC5weUDzs2Me8L+eYlLYDCX9t7XLXr
-         yN0CqRN8QcS7PVZclpe8mJsJBxBTmgAx6SL/KQuXMOyGDJlEDT+evlQA7bG0I8Wu65AQ
-         ljdQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=l/4v4uNfxj2Ra/ecZb6XFusYhNP32Q1YssrDECez5T4=;
+        b=QO/3jZe8jE3IbTNSTGc0+rbL0jw1MTZPmVlOJ94+3cRo4NQ1kqOUK/ObupR+A7ko5p
+         4i6uHenHQWFkQgv/imQlO0FaMCy7EpKNKR7iU+n6N5+Zbx6eB0c5Uef3A1hhsMc9kgci
+         +KXZ/2wkQS0I/qy3HydUV/T0apsK55J5UTvI2mr0pk2V0I2XhkHHOdyFlSpRMQZKOvvL
+         4DoBRO5c6mYpwQQ8fr4xSJJ7+v4Em4YNRrUpx6iCumxEmbdHTeqwgqrQjzOemNQt76Dc
+         Nj3aiUUaeGPRNb7BJSc4tzt9ORV6Wjq55/3GqeOcKjuL6ia4Hqi1fmAycF3LEIQwksm/
+         HzuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=X4Zz5WMksNaBBzQHKfDm7bJwscvEi3U1et2P+ZKimX8=;
-        b=RrWJF+m+TRQu3qt21eScqC2q+DGA2zdcAAJ8qLe8wDwpYWtdmbpgVMwOrk3H/rjYs+
-         2znTk9JhRfyNUYx5rrXj4Z5giOdvtSnQAehwVq9pdY3hcEWh5UudUg/XolVy4SxZI4EX
-         Pmzn2wunSBNoPmP+9XRf2l37WKMKoXMQvT8ZDz8TEOyvB3vVXTrUnO2P+Tja/w8VA9Ea
-         qj758yIzIl3nZnEUnNCLmXae/4azeoDnQb9+fGxuGstrHxwyMBlRB77eav66cJSBXeFM
-         JJGAooqE4dPhKfaPRts4MxJ2CLowOP6Lc4uwiaLBS2UOugJNQbfAR6rCfQMaCMowntZ3
-         QH2w==
-X-Gm-Message-State: AOAM533nVAywTsVrJiIEqUR7Y12y3pH30kF9cW3hWQD2ENLD+zY7E6qY
-        lCxYRf5uOsOFOUNfmK9rWXw=
-X-Google-Smtp-Source: ABdhPJxMhk7Z4GrzrmwCOy25ig1nJSizyIe1Cv+hBp3Wu2T1XIkUcYcxIMUxy7YKQsLjtIKx1p/4/w==
-X-Received: by 2002:a05:6402:206e:: with SMTP id bd14mr2918141edb.105.1592318483672;
-        Tue, 16 Jun 2020 07:41:23 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=l/4v4uNfxj2Ra/ecZb6XFusYhNP32Q1YssrDECez5T4=;
+        b=sDJY/CbHFTFlKkF3uyNgLXBAinj9V9Y0fe+5M/Uf4JsVx1wST5E4Rf8svUcQ4DU6zp
+         DQZfXuwxrv3biZ6d0pTZxgp3+Xm48xwqpm7wSEo60tXloI+jsuEuqUNPcarE8GTsxCg2
+         7zhlJyCJsi+EiVUftsayADe4p7RD9ssQHpDoS0dBaAxyG/qVBsl+kRyStPSSZnnI9IG/
+         zuR/bjnE3PCowTYKJ2jg4REW4umeB1ADGZwHLs3n8cFO8yjXTSu7csGYFvll+4BemAVF
+         vw2G/hZb2pDj/77oHUdEvf9o3G055HPZ/RTybSN4/0pUAtXMGO98wkp8yGXo99elBFrx
+         reFQ==
+X-Gm-Message-State: AOAM531p/rlYuqz4WphL42xKc7Hyg90OIqgpHOjR/ZRPXFnI1GrahYuO
+        KI0WCtcI4iPU91XPG//R7ngo6M/g
+X-Google-Smtp-Source: ABdhPJxAjfTQ5MsYKQ3ahtPWJqCQ3jUFi5p3FWQNFGkS2dhGlHlrMeRqBZxr7ozocCWUlKHfVjwT8g==
+X-Received: by 2002:a05:6402:8d1:: with SMTP id d17mr2761655edz.38.1592318484856;
+        Tue, 16 Jun 2020 07:41:24 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.56.128])
-        by smtp.gmail.com with ESMTPSA id c17sm11264964eja.42.2020.06.16.07.41.22
+        by smtp.gmail.com with ESMTPSA id c17sm11264964eja.42.2020.06.16.07.41.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 07:41:23 -0700 (PDT)
+        Tue, 16 Jun 2020 07:41:24 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, joakim.tjernlund@infinera.com,
         madalin.bucur@oss.nxp.com, fido_max@inbox.ru,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net 0/2] Reapply DSA fix for dpaa-eth with proper Fixes: tag
-Date:   Tue, 16 Jun 2020 17:41:16 +0300
-Message-Id: <20200616144118.3902244-1-olteanv@gmail.com>
+Subject: [PATCH net 1/2] Revert "dpaa_eth: fix usage as DSA master, try 3"
+Date:   Tue, 16 Jun 2020 17:41:17 +0300
+Message-Id: <20200616144118.3902244-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200616144118.3902244-1-olteanv@gmail.com>
+References: <20200616144118.3902244-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -66,28 +68,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Joakim notified me that this breaks stable trees.
-It turns out that my assessment about who-broke-who was wrong.
-The real Fixes: tag should have been:
+This reverts commit 5d14c304bfc14b4fd052dc83d5224376b48f52f0.
 
-Fixes: 060ad66f9795 ("dpaa_eth: change DMA device")
+The Fixes: tag was incorrect, and it was subsequently backported to the
+incorrect stable trees, breaking them.
 
-which changes the device on which SET_NETDEV_DEV is made.
+Reported-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-git describe --tags 060ad66f97954
-v5.4-rc3-783-g060ad66f9795
-
-Which means that it shouldn't have been backported to 4.19 and below.
-This series reverts the commit with the misleading commit message, and
-reapplies it with a corrected one. The resulting code is exactly the
-same, but now, the revert should make it to the stable trees (along with
-the bad fix), and the new fix should only make it down to v5.4.y.
-
-Vladimir Oltean (2):
-  Revert "dpaa_eth: fix usage as DSA master, try 3"
-  dpaa_eth: fix usage as DSA master, try 4
-
-
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index 2972244e6eb0..c4416a5f8816 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -2914,7 +2914,7 @@ static int dpaa_eth_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/* Do this here, so we can be verbose early */
+-	SET_NETDEV_DEV(net_dev, dev->parent);
++	SET_NETDEV_DEV(net_dev, dev);
+ 	dev_set_drvdata(dev, net_dev);
+ 
+ 	priv = netdev_priv(net_dev);
 -- 
 2.25.1
 
