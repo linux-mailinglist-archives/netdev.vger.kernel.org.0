@@ -2,109 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08EA81FAAFC
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 10:21:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E0AE1FAB2C
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 10:29:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727837AbgFPIU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 04:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33626 "EHLO
+        id S1727812AbgFPI3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 04:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727829AbgFPIU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 04:20:57 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4BCC05BD43
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 01:20:56 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id mb16so20526049ejb.4
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 01:20:56 -0700 (PDT)
+        with ESMTP id S1725911AbgFPI3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 04:29:05 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FCA2C05BD43;
+        Tue, 16 Jun 2020 01:29:05 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id u8so1097479pje.4;
+        Tue, 16 Jun 2020 01:29:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nx102nMJD7m9CKmVQHFFSn4mFPyTSxDfnq/bvaKXpRs=;
-        b=uymIM/pgfXm4iFrKMkahcIIyGD5085KyZ1UOaqz7bOIlwf1nQYmD4jUnSCgQi+WaVa
-         vbgUyig/mhr301Ghi+9xXFEh1L1vXsM75Zc3iTqwcX2TjMuWhPee+cqMgl1FiRjsDjV2
-         UWCQDU1WtpNT3nVhBIgVIrySilu0tilZZLIXqyxNGQULTSiRQJUAX1QiK3i2lk/GUh4D
-         QniB3b0n+1TZ+KvjmSB6N/u1UhM7QhHUFx0Nn/kANFfwRm+Z+mv1MCbjwwU8hwb60T2/
-         8HZuKmcevOxF2QdGYvroFb/UQVtZqYC3+wmvK9murrmv+efGrXwhDFX2ltL1II4/qqS7
-         lZYg==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding:user-agent;
+        bh=ee7JBA4N+BXx5f1zTvLNBRShtRkjIFThGXMYifBNrAc=;
+        b=tGwUKJJP8WXY/P5hsPZn8pNVezAGaIgdZt9w3AW6VLNxdX7DYTJzHzl0q+G1bZtnWe
+         S0mVgam1f+VxKz/ei3gUKeGEDJDnmM0LqIOzN7pUynBKXv3XPIZOeUkF8mu8zbV6Z5ZN
+         vzeIVjJm7Ej4BiybplDSWMhXvJj6/NQxr6k6REuKykFZ2YeLGMj+Umq0R2o3jqUeS8kY
+         dx7Pxq3mWNeGLEuT1SUHhZNpmCh7qgSaK4ubN4aPsEqM6dOE5aBHcddvpWXuJOH/L9qO
+         etFha9VDAnKVp5CXgXaLva3YdxlZ0tjL7rPPfyHKOgQigLI5QmDivClue/BZmgx3143F
+         ECEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nx102nMJD7m9CKmVQHFFSn4mFPyTSxDfnq/bvaKXpRs=;
-        b=gbvj8tevAGTi8rVmRc2L+ZaZarRqRomB+q+KTyOKUnusvLZ/6Zh8neLAL37Ub2hJsl
-         /2RfUL5yNNfpfgYn41vG5M0Vt9H/yJzOQmrw2zJteDF5Bymba6SYfs3UDkFPVDT29El1
-         0MX9FfA9/eHS2WMLz/mS2N2e7bamm6ObGY73wy4+78QPrcyRM/73bTAb7PCuwJDB5pVq
-         MiBSYEgIkqbc7b8tIp7n0hdnbwiNbswKRZ8HGvXtAl5vKcFP7fOZ/aB26qCD694CBETe
-         scRcBGuSprE6w3agGEs+u/PLUMwrHT5mgSxM/RuCRF5Lx57eAb6DHywbl50+oRTv8rqX
-         g2pg==
-X-Gm-Message-State: AOAM532jmTTY3mR0f0GGcmkvWCQE6rHmkNPv1/iMslorGhiCI1R67NJj
-        pvsNNpcqLVGuk/Wl9CppV+cr2y0o0PN6CrUbfN4=
-X-Google-Smtp-Source: ABdhPJxb2/qy3JYBq6u074+sMDFI74eWflygZxFEkejZQOGKp73mcAQgYQITah2jQ0gv8bT2504Uw368lHUgPZJjbh4=
-X-Received: by 2002:a17:906:1149:: with SMTP id i9mr1782689eja.100.1592295655476;
- Tue, 16 Jun 2020 01:20:55 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding:user-agent;
+        bh=ee7JBA4N+BXx5f1zTvLNBRShtRkjIFThGXMYifBNrAc=;
+        b=BtFVB5EdJ7vxJ1WDHI1A7Hg21GAM5JNC4Vigmt6pNKoPbrly2Gqmr9xNKiBty806Nb
+         +dN6lO2vVU6soW7B0MU/X6udM/gEV1igoY1MggC0k5ikm9s3Z6x7huxPxXARZhPPx4d4
+         sG5f8c9vAn80pUxpiqMRzCWVmXEVQmwmSQ7qCeiONkslr1CumHrJKfSIyOa1/gKTiGsw
+         PEBKWmGSryPIMwU1bqxdDOTbNEkz9/PR0NLZQSsylses/TEkM1DZjijtYb8xJvAD9nG/
+         ZC+uZSJxYqT39j6IFIQK1oI1Oh0MBiTLFhXXNUGP++88hdgFY6r9F7pZxvjgNUzbBClX
+         y0NA==
+X-Gm-Message-State: AOAM530wI5Lkhp2Ue7rhQsLdubVYsZWpBaBMC9Zd8Nh863Nl0iP6k0Tc
+        kocpqubtmuGu7wmPmXBNxMA=
+X-Google-Smtp-Source: ABdhPJxZ7GjAo9cEG+DKSwmk6ezNz2ThkIxVV9sLpydZFwKkYVTF7DD9MUfHJUGy0ONZje6FX9MIVA==
+X-Received: by 2002:a17:90a:1ad0:: with SMTP id p74mr1840055pjp.117.1592296144709;
+        Tue, 16 Jun 2020 01:29:04 -0700 (PDT)
+Received: from VM_111_229_centos ([203.205.141.39])
+        by smtp.gmail.com with ESMTPSA id y136sm15944180pfg.55.2020.06.16.01.29.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 16 Jun 2020 01:29:04 -0700 (PDT)
+Date:   Tue, 16 Jun 2020 16:28:56 +0800
+From:   YangYuxi <yx.atom1@gmail.com>
+To:     wensong@linux-vs.org, horms@verge.net.au, ja@ssi.bg,
+        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel@vger.kernel.org, yx.atom1@gmail.com
+Subject: [PATCH] ipvs: avoid drop first packet by reusing conntrack
+Message-ID: <20200616082856.GA22668@VM_111_229_centos>
 MIME-Version: 1.0
-References: <cover.1592247564.git.dcaratti@redhat.com> <4a4a840333d6ba06042b9faf7e181048d5dc2433.1592247564.git.dcaratti@redhat.com>
- <CA+h21ho1x1-N+HyFXcy+pqdWcQioFWgRs0C+1h+kn6w8zHVUwQ@mail.gmail.com> <20200615.180022.2063479179425015644.davem@davemloft.net>
-In-Reply-To: <20200615.180022.2063479179425015644.davem@davemloft.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 16 Jun 2020 11:20:44 +0300
-Message-ID: <CA+h21hps0H21u16xYOOfoohXHmGZYLCK-zuDuxDWQvX3-NU0DQ@mail.gmail.com>
-Subject: Re: [PATCH net v2 2/2] net/sched: act_gate: fix configuration of the
- periodic timer
-To:     David Miller <davem@davemloft.net>
-Cc:     dcaratti@redhat.com, Po Liu <Po.Liu@nxp.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Jun 2020 at 04:00, David Miller <davem@davemloft.net> wrote:
->
-> From: Vladimir Oltean <olteanv@gmail.com>
-> Date: Tue, 16 Jun 2020 00:55:50 +0300
->
-> > On Mon, 15 Jun 2020 at 22:33, Davide Caratti <dcaratti@redhat.com> wrote:
-> >>
-> >> assigning a dummy value of 'clock_id' to avoid cancellation of the cycle
-> >> timer before its initialization was a temporary solution, and we still
-> >> need to handle the case where act_gate timer parameters are changed by
-> >> commands like the following one:
-> >>
-> >>  # tc action replace action gate <parameters>
-> >>
-> >> the fix consists in the following items:
-> >>
-> >> 1) remove the workaround assignment of 'clock_id', and init the list of
-> >>    entries before the first error path after IDR atomic check/allocation
-> >> 2) validate 'clock_id' earlier: there is no need to do IDR atomic
-> >>    check/allocation if we know that 'clock_id' is a bad value
-> >> 3) use a dedicated function, 'gate_setup_timer()', to ensure that the
-> >>    timer is cancelled and re-initialized on action overwrite, and also
-> >>    ensure we initialize the timer in the error path of tcf_gate_init()
-> >>
-> >> v2: avoid 'goto' in gate_setup_timer (thanks to Cong Wang)
-> >>
-> >
-> > The change log is put under the 3 '---' characters for a reason: it is
-> > relevant only to reviewers, and git automatically trims it when
-> > applying the patch. The way it is now, the commit message would
-> > contain this line about "v2 ...".
->
-> I completely disagree and I ask submitters of networking changes to keep
-> the changelog in the commit message.
->
-> Later people will look at this commit and ask "why didn't they do X
-> or Y" and if the changelog shows that the submitter was asked not to
-> do X or Y that is useful information.
+Since 'commit f719e3754ee2 ("ipvs: drop first packet to
+redirect conntrack")', when a new TCP connection meet
+the conditions that need reschedule, the first syn packet
+is dropped, this cause one second latency for the new
+connection, more discussion about this problem can easy
+search from google, such as:
 
-Interesting, I didn't know that. If there are really relevant changes
-which might matter post-review (which I don't consider "avoid 'goto'
-in gate_setup_timer" to be), I usually try to integrate them better
-into the main commit message. Nonetheless, sorry, feel free to ignore
-me!
+1)One second connection delay in masque
+https://marc.info/?t=151683118100004&r=1&w=2
 
--Vladimir
+2)IPVS low throughput #70747
+https://github.com/kubernetes/kubernetes/issues/70747
+
+3)Apache Bench can fill up ipvs service proxy in seconds #544
+https://github.com/cloudnativelabs/kube-router/issues/544
+
+4)Additional 1s latency in `host -> service IP -> pod`
+https://github.com/kubernetes/kubernetes/issues/90854
+
+5)kube-proxy ipvs conn_reuse_mode setting causes errors
+with high load from single client
+https://github.com/kubernetes/kubernetes/issues/81775
+
+The root cause is when the old session is expired, the
+conntrack related to the session is dropped by
+ip_vs_conn_drop_conntrack. The code is as follows:
+```
+static void ip_vs_conn_expire(struct timer_list *t)
+{
+...
+
+     if ((cp->flags & IP_VS_CONN_F_NFCT) &&
+         !(cp->flags & IP_VS_CONN_F_ONE_PACKET)) {
+             /* Do not access conntracks during subsys cleanup
+              * because nf_conntrack_find_get can not be used after
+              * conntrack cleanup for the net.
+              */
+             smp_rmb();
+             if (ipvs->enable)
+                     ip_vs_conn_drop_conntrack(cp);
+     }
+...
+}
+```
+As shown in the code, only when condition (cp->flags & IP_VS_CONN_F_NFCT)
+is true, the function ip_vs_conn_drop_conntrack will be called.
+
+So we optimize this by following steps (Administrators
+can choose the following optimization by setting
+net.ipv4.vs.conn_reuse_old_conntrack=1):
+1) erase the IP_VS_CONN_F_NFCT flag (it is safely because
+   no packets will use the old session)
+2) call ip_vs_conn_expire_now to release the old session,
+   then the related conntrack will not be dropped
+3) then ipvs unnecessary to drop the first syn packet, it
+   just continue to pass the syn packet to the next process,
+   create a new ipvs session, and the new session will related
+   to the old conntrack(which is reopened by conntrack as a new
+   one), the next whole things is just as normal as that the old
+   session isn't used to exist.
+
+The above processing has no problems except for passive FTP,
+for passive FTP situation, ipvs can judging from
+condition (atomic_read(&cp->n_control)) and condition (cp->control).
+So, for other conditions(means not FTP), ipvs should give users
+the right to choose，they can choose a high performance one processing
+logical by setting net.ipv4.vs.conn_reuse_old_conntrack=1. It is necessary
+because most business scenarios (such as kubernetes) are very sensitive
+to TCP short connection latency.
+
+This patch has been verified on our thousands of kubernets
+node servers on Tencent Inc.
+
+Signed-off-by: YangYuxi <yx.atom1@gmail.com>
+---
+ Documentation/networking/ipvs-sysctl.rst | 23 +++++++++++++++++++++++
+ include/net/ip_vs.h                      | 11 +++++++++++
+ net/netfilter/ipvs/ip_vs_core.c          | 11 +++++++++--
+ net/netfilter/ipvs/ip_vs_ctl.c           |  2 ++
+ 4 files changed, 45 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/networking/ipvs-sysctl.rst b/Documentation/networking/ipvs-sysctl.rst
+index be36c4600e8f..1c8eac824d2b 100644
+--- a/Documentation/networking/ipvs-sysctl.rst
++++ b/Documentation/networking/ipvs-sysctl.rst
+@@ -50,6 +50,29 @@ conn_reuse_mode - INTEGER
+ 	balancer in Direct Routing mode. This bit helps on adding new
+ 	real servers to a very busy cluster.
+ 
++conn_reuse_old_conntrack - BOOLEAN
++	- 0 - disabled
++	- not 0 - enabled (default)
++
++	If set, when a new TCP syn packet hit an old ipvs connection
++	table and need reschedule to a new dest: if
++		1) the packet use conntrack
++		2) the old ipvs connection table is not a master control
++		   connection (E.g the command connection of passived FTP)
++		3) the old ipvs connection table been not controlled by any
++		   connections (E.g the data connection of passived FTP)
++	ipvs Will not release the old conntrack, just let the conntrack
++	reopen the old session as it is a new one. This is an optimization
++	option selectable by the system administrator.
++
++	If not set, when a new TCP syn packet hit an old ipvs connection
++	table and need reschedule to a new dest: if
++		1) the packet use conntrack
++	ipvs just drop this syn packet, expire the old connection by timer.
++	This will cause the client tcp syn to retransmit.
++
++	Only has effect when conn_reuse_mode not 0.
++
+ conntrack - BOOLEAN
+ 	- 0 - disabled (default)
+ 	- not 0 - enabled
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index 83be2d93b407..052fa87d2a44 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -928,6 +928,7 @@ struct netns_ipvs {
+ 	int			sysctl_pmtu_disc;
+ 	int			sysctl_backup_only;
+ 	int			sysctl_conn_reuse_mode;
++	int			sysctl_conn_reuse_old_conntrack;
+ 	int			sysctl_schedule_icmp;
+ 	int			sysctl_ignore_tunneled;
+ 
+@@ -1049,6 +1050,11 @@ static inline int sysctl_conn_reuse_mode(struct netns_ipvs *ipvs)
+ 	return ipvs->sysctl_conn_reuse_mode;
+ }
+ 
++static inline int sysctl_conn_reuse_old_conntrack(struct netns_ipvs *ipvs)
++{
++	return ipvs->sysctl_conn_reuse_old_conntrack;
++}
++
+ static inline int sysctl_schedule_icmp(struct netns_ipvs *ipvs)
+ {
+ 	return ipvs->sysctl_schedule_icmp;
+@@ -1136,6 +1142,11 @@ static inline int sysctl_conn_reuse_mode(struct netns_ipvs *ipvs)
+ 	return 1;
+ }
+ 
++static inline int sysctl_conn_reuse_old_conntrack(struct netns_ipvs *ipvs)
++{
++	return 1;
++}
++
+ static inline int sysctl_schedule_icmp(struct netns_ipvs *ipvs)
+ {
+ 	return 0;
+diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+index aa6a603a2425..d1e9af6b5792 100644
+--- a/net/netfilter/ipvs/ip_vs_core.c
++++ b/net/netfilter/ipvs/ip_vs_core.c
+@@ -2066,7 +2066,7 @@ static int ip_vs_in_icmp_v6(struct netns_ipvs *ipvs, struct sk_buff *skb,
+ 
+ 	conn_reuse_mode = sysctl_conn_reuse_mode(ipvs);
+ 	if (conn_reuse_mode && !iph.fragoffs && is_new_conn(skb, &iph) && cp) {
+-		bool uses_ct = false, resched = false;
++		bool uses_ct = false, resched = false, drop = false;
+ 
+ 		if (unlikely(sysctl_expire_nodest_conn(ipvs)) && cp->dest &&
+ 		    unlikely(!atomic_read(&cp->dest->weight))) {
+@@ -2086,10 +2086,17 @@ static int ip_vs_in_icmp_v6(struct netns_ipvs *ipvs, struct sk_buff *skb,
+ 		}
+ 
+ 		if (resched) {
++			if (uses_ct) {
++				if (unlikely(!atomic_read(&cp->n_control) && !cp->control) &&
++				    likely(sysctl_conn_reuse_old_conntrack(ipvs)))
++					cp->flags &= ~IP_VS_CONN_F_NFCT;
++				else
++					drop = true;
++			}
+ 			if (!atomic_read(&cp->n_control))
+ 				ip_vs_conn_expire_now(cp);
+ 			__ip_vs_conn_put(cp);
+-			if (uses_ct)
++			if (drop)
+ 				return NF_DROP;
+ 			cp = NULL;
+ 		}
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index 412656c34f20..eeb87994c21f 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -4049,7 +4049,9 @@ static int __net_init ip_vs_control_net_init_sysctl(struct netns_ipvs *ipvs)
+ 	tbl[idx++].data = &ipvs->sysctl_pmtu_disc;
+ 	tbl[idx++].data = &ipvs->sysctl_backup_only;
+ 	ipvs->sysctl_conn_reuse_mode = 1;
++	ipvs->sysctl_conn_reuse_old_conntrack = 1;
+ 	tbl[idx++].data = &ipvs->sysctl_conn_reuse_mode;
++	tbl[idx++].data = &ipvs->sysctl_conn_reuse_old_conntrack;
+ 	tbl[idx++].data = &ipvs->sysctl_schedule_icmp;
+ 	tbl[idx++].data = &ipvs->sysctl_ignore_tunneled;
+ 
+-- 
+1.8.3.1
+
