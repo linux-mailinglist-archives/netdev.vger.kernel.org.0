@@ -2,150 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E721FB48E
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:38:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40F8E1FB4A7
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:42:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729067AbgFPOiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 10:38:25 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29550 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728919AbgFPOiY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 10:38:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592318302;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5nXojDArjm3fbdFQyCIywRTxpZLNfyYEE+NzV4MWLuM=;
-        b=gq/gm7jjhPk21GeQwvhqHvmHg7YW17x+OAwrTMKB42Cu+sLU6SBOysKWs917wwwhyCEF+V
-        +b+ileXRZsBqFGpYYUKUt2XaWAkRsi18K2ZTKyYvfNvAXfbjHeoNRpFWc7p0wpyucoA+7d
-        qj7RKT+t+w3JHh616dUrfDJNa1s9Q1M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-281-oIELlBwROymyFbPw2TibZQ-1; Tue, 16 Jun 2020 10:38:19 -0400
-X-MC-Unique: oIELlBwROymyFbPw2TibZQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BFCB1E919;
-        Tue, 16 Jun 2020 14:38:17 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.64])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 063C719D61;
-        Tue, 16 Jun 2020 14:38:05 +0000 (UTC)
-Date:   Tue, 16 Jun 2020 16:38:04 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>, Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        brouer@redhat.com
-Subject: Re: [PATCHv4 bpf-next 1/2] xdp: add a new helper for dev map
- multicast support
-Message-ID: <20200616163804.19d00d03@carbon>
-In-Reply-To: <20200616101133.GV102436@dhcp-12-153.nay.redhat.com>
-References: <20200415085437.23028-1-liuhangbin@gmail.com>
-        <20200526140539.4103528-1-liuhangbin@gmail.com>
-        <20200526140539.4103528-2-liuhangbin@gmail.com>
-        <20200610121859.0412c111@carbon>
-        <20200612085408.GT102436@dhcp-12-153.nay.redhat.com>
-        <20200616105506.163ea5a3@carbon>
-        <20200616101133.GV102436@dhcp-12-153.nay.redhat.com>
+        id S1729291AbgFPOlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 10:41:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728501AbgFPOl2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 10:41:28 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98D7C061573;
+        Tue, 16 Jun 2020 07:41:25 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id g1so14441965edv.6;
+        Tue, 16 Jun 2020 07:41:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=X4Zz5WMksNaBBzQHKfDm7bJwscvEi3U1et2P+ZKimX8=;
+        b=KcFoLD1+8TsmdC5BLHkTuO2dsNyVpbxMHMwZ2P0XhDoFPVk1lhDKBk2+Yexo/Ctvn9
+         AqvrZwQJipf+261/rW/DlVzFuUEABEiKxtb57SVgCJ4KrFZSZRTqb2FjcPsz962auRPK
+         GkfRgZ0JF3aloLz1aGHsXphOtZinC91AkxYONTiOpRTAQHlzS4q+0fLQj62fYL74evS5
+         gJS7eqBu9bIEuy2WAPfs9s2zd8QN6IRqeH4p2OlC5weUDzs2Me8L+eYlLYDCX9t7XLXr
+         yN0CqRN8QcS7PVZclpe8mJsJBxBTmgAx6SL/KQuXMOyGDJlEDT+evlQA7bG0I8Wu65AQ
+         ljdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=X4Zz5WMksNaBBzQHKfDm7bJwscvEi3U1et2P+ZKimX8=;
+        b=RrWJF+m+TRQu3qt21eScqC2q+DGA2zdcAAJ8qLe8wDwpYWtdmbpgVMwOrk3H/rjYs+
+         2znTk9JhRfyNUYx5rrXj4Z5giOdvtSnQAehwVq9pdY3hcEWh5UudUg/XolVy4SxZI4EX
+         Pmzn2wunSBNoPmP+9XRf2l37WKMKoXMQvT8ZDz8TEOyvB3vVXTrUnO2P+Tja/w8VA9Ea
+         qj758yIzIl3nZnEUnNCLmXae/4azeoDnQb9+fGxuGstrHxwyMBlRB77eav66cJSBXeFM
+         JJGAooqE4dPhKfaPRts4MxJ2CLowOP6Lc4uwiaLBS2UOugJNQbfAR6rCfQMaCMowntZ3
+         QH2w==
+X-Gm-Message-State: AOAM533nVAywTsVrJiIEqUR7Y12y3pH30kF9cW3hWQD2ENLD+zY7E6qY
+        lCxYRf5uOsOFOUNfmK9rWXw=
+X-Google-Smtp-Source: ABdhPJxMhk7Z4GrzrmwCOy25ig1nJSizyIe1Cv+hBp3Wu2T1XIkUcYcxIMUxy7YKQsLjtIKx1p/4/w==
+X-Received: by 2002:a05:6402:206e:: with SMTP id bd14mr2918141edb.105.1592318483672;
+        Tue, 16 Jun 2020 07:41:23 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.56.128])
+        by smtp.gmail.com with ESMTPSA id c17sm11264964eja.42.2020.06.16.07.41.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jun 2020 07:41:23 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, joakim.tjernlund@infinera.com,
+        madalin.bucur@oss.nxp.com, fido_max@inbox.ru,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net 0/2] Reapply DSA fix for dpaa-eth with proper Fixes: tag
+Date:   Tue, 16 Jun 2020 17:41:16 +0300
+Message-Id: <20200616144118.3902244-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Jun 2020 18:11:33 +0800
-Hangbin Liu <liuhangbin@gmail.com> wrote:
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> HI Jesper,
-> 
-> On Tue, Jun 16, 2020 at 10:55:06AM +0200, Jesper Dangaard Brouer wrote:
-> > > Is there anything else I should do except add the following line?
-> > > 	nxdpf->mem.type = MEM_TYPE_PAGE_ORDER0;  
-> > 
-> > You do realize that you also have copied over the mem.id, right?  
-> 
-> Thanks for the reminding. To confirm, set mem.id to 0 is enough, right?
+Joakim notified me that this breaks stable trees.
+It turns out that my assessment about who-broke-who was wrong.
+The real Fixes: tag should have been:
 
-Yes.
+Fixes: 060ad66f9795 ("dpaa_eth: change DMA device")
 
-> > And as I wrote below you also need to update frame_sz.
-> >   
-> > > > 
-> > > > You also need to update xdpf->frame_sz, as you also cannot assume it is
-> > > > the same.    
-> > > 
-> > > Won't the memcpy() copy xdpf->frame_sz to nxdpf?   
-> > 
-> > You obviously cannot use the frame_sz from the existing frame, as you
-> > just allocated a new page for the new xdp_frame, that have another size
-> > (here PAGE_SIZE).  
-> 
-> Thanks, I didn't understand the frame_sz correctly before.
-> > 
-> >   
-> > > And I didn't see xdpf->frame_sz is set in xdp_convert_zc_to_xdp_frame(),
-> > > do we need a fix?  
-> > 
-> > Good catch, that sounds like a bug, that should be fixed.
-> > Will you send a fix?  
-> 
-> OK, I will.
+which changes the device on which SET_NETDEV_DEV is made.
 
-Thanks.
- 
-> >   
-> > > > > +
-> > > > > +	nxdpf = addr;
-> > > > > +	nxdpf->data = addr + headroom;
-> > > > > +
-> > > > > +	return nxdpf;
-> > > > > +}
-> > > > > +EXPORT_SYMBOL_GPL(xdpf_clone);    
-> > > > 
-> > > > 
-> > > > struct xdp_frame {
-> > > > 	void *data;
-> > > > 	u16 len;
-> > > > 	u16 headroom;
-> > > > 	u32 metasize:8;
-> > > > 	u32 frame_sz:24;
-> > > > 	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
-> > > > 	 * while mem info is valid on remote CPU.
-> > > > 	 */
-> > > > 	struct xdp_mem_info mem;
-> > > > 	struct net_device *dev_rx; /* used by cpumap */
-> > > > };
-> > > >     
-> > >   
-> > 
-> > struct xdp_mem_info {
-> > 	u32                        type;                 /*     0     4 */
-> > 	u32                        id;                   /*     4     4 */
-> > 
-> > 	/* size: 8, cachelines: 1, members: 2 */
-> > 	/* last cacheline: 8 bytes */
-> > };
-> >   
-> 
-> Is this a struct reference or you want to remind me something else?
+git describe --tags 060ad66f97954
+v5.4-rc3-783-g060ad66f9795
 
-This is just a struct reference to help the readers of this email.
-I had to lookup the struct to review this code, so I included it to
-save time for other reviewers.
+Which means that it shouldn't have been backported to 4.19 and below.
+This series reverts the commit with the misleading commit message, and
+reapplies it with a corrected one. The resulting code is exactly the
+same, but now, the revert should make it to the stable trees (along with
+the bad fix), and the new fix should only make it down to v5.4.y.
+
+Vladimir Oltean (2):
+  Revert "dpaa_eth: fix usage as DSA master, try 3"
+  dpaa_eth: fix usage as DSA master, try 4
+
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.25.1
 
