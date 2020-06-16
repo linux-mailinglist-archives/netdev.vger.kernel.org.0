@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D5B41FBD1C
+	by mail.lfdr.de (Postfix) with ESMTP id 9B7D21FBD1D
 	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 19:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731104AbgFPRgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 13:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35290 "EHLO
+        id S1731169AbgFPRhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 13:37:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729113AbgFPRgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 13:36:52 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A500CC061573
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 10:36:52 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id u8so1739848pje.4
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 10:36:52 -0700 (PDT)
+        with ESMTP id S1729113AbgFPRhB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 13:37:01 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A47BC061573
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 10:37:01 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id j4so5441719plk.3
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 10:37:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=B9hXhRsmOU2I2Ul+h5EHdpmY0NsRHpe4vaSlkGqUhFM=;
-        b=LDWYgVpoZO0d2AYfMKbFLhxl535s5ghFsrparPJ2Nd1qCYnCmfPCha44rILFZI7oyN
-         57/Mj6MRHcZ5oA68P3rXm7Pz57EAz5duvlgHtivBbHffrwA8P5R35n2l+nih6fo744gc
-         0K9zAeqjfwsJi/np5VbWxhxvglCsXKQKgQkgWjK+7N/c9iHZFpo8zIzhbGrsme8p9pNQ
-         KUl6+PNQnm567z1cqaVyquVCknyq8tzC2m2b6XDXycGDnfWMt5/Q5SNhsfXUlflhw5nX
-         /Wlz2S9V9UDeiYgNz2hfVcAzkHOj6VtWlHjzTS4OO1U8PJ6KgtZZXXTx/ONgote7wKDr
-         8FgQ==
+        bh=wylqK8f9emW+9fTaWurvaXqAEbgEJfZzflg9Ru2l1nY=;
+        b=dn7dEWpMTeMG5m8Y5gmo52Q7l686f/x9q262WG4MgoiExDnBerbA18wU4SGOsbMhZH
+         ZE9tNcvG1Ws3mczBXTLehsjV6+Q5oZTi6+FYx27Mp0c5SdyuKWiftIhR0DBzIDw8WjOa
+         0QY+0gh77cF4sWI061d5UXWgEv5AvZT9dap8WG7H6y2cOw88vI8es1pNlKXhZwXI9jyy
+         7hiVaKGSYyegkGIt5Ag0r7wck1Dz1SZCRROlvFt0f5O7A7VbiRopB3piOD3KPBpQMYWI
+         kMTqX6Ay2qcjeliR4N1f5isO1WKeu3A0KgOWL9JJD+YJpgqEUvptdrN9ucyNfzZ4WOsQ
+         K5ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=B9hXhRsmOU2I2Ul+h5EHdpmY0NsRHpe4vaSlkGqUhFM=;
-        b=WdLpVtcd0dX/PpAF/7nuPklqBBf84e71vo0DSckLiAmuVfLgNz2IKzsQ8eP9fJ/+DE
-         2a9sPjsQ7GrLS/yaOyDuNpuIFzkarwCAOKKjKZH9xg65Cit6XnpRB5gIC1YMIXsB6Ywb
-         FK7DKR5LP0RfKvmuYXXT7IdN+U/l759GTFnF6QojtGOTRKmBDaj0LVLLV1gwHMUsAGH0
-         TKRfepTJOf118C3BAHHjDSTvOn477bkNtymp8DOsuv4hmbSdmiYI/SEJbs9LGhjH8UDx
-         n0P0zH4Tlf7m/YQ8RBh5SPc0hO5p/zAaYGlVQ74fmlzadWrY68BynFXNTKJi2Rje82SB
-         pWJA==
-X-Gm-Message-State: AOAM532M0mppR7eFDI2zhWW9344Ntvzu1hk/YMuz9UzAeBrfT5cMsnFH
-        OG5jBV8eU2mCwqoLdAkgcQvTkPQ07Tk=
-X-Google-Smtp-Source: ABdhPJwNnqezddQZhMOH7Q3jr3bItjwneG1GqIKJ0AEh7872oSbGPJ5Kfc4ryvooUfUhy9lNxmuiiA==
-X-Received: by 2002:a17:90a:297:: with SMTP id w23mr4039008pja.140.1592329011894;
-        Tue, 16 Jun 2020 10:36:51 -0700 (PDT)
+        bh=wylqK8f9emW+9fTaWurvaXqAEbgEJfZzflg9Ru2l1nY=;
+        b=mvAyhsa1ex+U9Rkc6yqJk2jh+AjJunY0BqOtCBRm1fgEfb4DXc43wIaGtb//U0/dFI
+         KgENSPgJhOlqW2IujQMmEvoHrg3ThaivSMjLoiAYAbA/jTHq75yg49Jn1EkUOFzSpggA
+         mR8ANOypezBnOrfF86V0tOyTTVW64BJjojRX2PBwq+OARXjs6dfEpCEFEdQMdcKWc2t7
+         c0I2b/rAXqKybT6S+aJtG/+ob1x/Der3R70f7LxAYTaLhBRqTu6+SXZ8xfnZezpM2JNJ
+         0Qfsi/lEztJjTZyluP7GdgT7lydjTQRjLCmFu8YrXxtUYy70WfwqNEAA9GuOSpZ0yYtz
+         xOrg==
+X-Gm-Message-State: AOAM532oap9kYR2OqvP9sFfgkRxAEMzwgrHuujiIG891bIrosF5kZuvK
+        kGprJSOCv3Cw9RBknQjgUJNcG/SbCOk=
+X-Google-Smtp-Source: ABdhPJw+9XP1kwlxSGZKu13UWuLsOce02bpNkQP628cUR5nX8Br1L8ttbGJxrDTer4GGneG7qrKzNw==
+X-Received: by 2002:a17:902:bb95:: with SMTP id m21mr2995700pls.111.1592329020383;
+        Tue, 16 Jun 2020 10:37:00 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y136sm17364363pfg.55.2020.06.16.10.36.50
+        by smtp.gmail.com with ESMTPSA id s197sm18234666pfc.188.2020.06.16.10.36.59
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Jun 2020 10:36:51 -0700 (PDT)
+        Tue, 16 Jun 2020 10:36:59 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         "David S. Miller" <davem@davemloft.net>,
         Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH ipsec-next 01/10] xfrm: add is_ipip to struct xfrm_input_afinfo
-Date:   Wed, 17 Jun 2020 01:36:26 +0800
-Message-Id: <84bcb772ea1b68f3b150106b9db1825b65742cef.1592328814.git.lucien.xin@gmail.com>
+Subject: [PATCH ipsec-next 02/10] tunnel4: add cb_handler to struct xfrm_tunnel
+Date:   Wed, 17 Jun 2020 01:36:27 +0800
+Message-Id: <5a63a0c47cc71476786873cbd32db8db3c0f7d1e.1592328814.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <cover.1592328814.git.lucien.xin@gmail.com>
+In-Reply-To: <84bcb772ea1b68f3b150106b9db1825b65742cef.1592328814.git.lucien.xin@gmail.com>
 References: <cover.1592328814.git.lucien.xin@gmail.com>
+ <84bcb772ea1b68f3b150106b9db1825b65742cef.1592328814.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1592328814.git.lucien.xin@gmail.com>
 References: <cover.1592328814.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -66,113 +67,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to add a new member is_ipip to struct xfrm_input_afinfo,
-to allow another group family of callback functions to be registered
-with is_ipip set.
+This patch is to register a callback function tunnel4_rcv_cb with
+is_ipip set in a xfrm_input_afinfo object for tunnel4 and tunnel64.
 
-This will be used for doing a callback for struct xfrm(6)_tunnel of
-ipip/ipv6 tunnels in xfrm_input() by calling xfrm_rcv_cb(), which is
-needed by ipip/ipv6 tunnels' support in ip(6)_vti and xfrm interface
-in the next patches.
+It will be called by xfrm_rcv_cb() from xfrm_input() when family
+is AF_INET and proto is IPPROTO_IPIP or IPPROTO_IPV6.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/net/xfrm.h    |  3 ++-
- net/xfrm/xfrm_input.c | 24 +++++++++++++-----------
- 2 files changed, 15 insertions(+), 12 deletions(-)
+ include/net/xfrm.h |  1 +
+ net/ipv4/tunnel4.c | 26 ++++++++++++++++++++++++++
+ 2 files changed, 27 insertions(+)
 
 diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 094fe68..4aa118d 100644
+index 4aa118d..c69410d 100644
 --- a/include/net/xfrm.h
 +++ b/include/net/xfrm.h
-@@ -372,7 +372,8 @@ struct xfrm_state_afinfo *xfrm_state_get_afinfo(unsigned int family);
- struct xfrm_state_afinfo *xfrm_state_afinfo_get_rcu(unsigned int family);
+@@ -1415,6 +1415,7 @@ struct xfrm6_protocol {
+ /* XFRM tunnel handlers.  */
+ struct xfrm_tunnel {
+ 	int (*handler)(struct sk_buff *skb);
++	int (*cb_handler)(struct sk_buff *skb, int err);
+ 	int (*err_handler)(struct sk_buff *skb, u32 info);
  
- struct xfrm_input_afinfo {
--	unsigned int		family;
-+	u8			family;
-+	bool			is_ipip;
- 	int			(*callback)(struct sk_buff *skb, u8 protocol,
- 					    int err);
- };
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index bd984ff..37456d0 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -42,7 +42,7 @@ struct xfrm_trans_cb {
- #define XFRM_TRANS_SKB_CB(__skb) ((struct xfrm_trans_cb *)&((__skb)->cb[0]))
- 
- static DEFINE_SPINLOCK(xfrm_input_afinfo_lock);
--static struct xfrm_input_afinfo const __rcu *xfrm_input_afinfo[AF_INET6 + 1];
-+static struct xfrm_input_afinfo const __rcu *xfrm_input_afinfo[2][AF_INET6 + 1];
- 
- static struct gro_cells gro_cells;
- static struct net_device xfrm_napi_dev;
-@@ -53,14 +53,14 @@ int xfrm_input_register_afinfo(const struct xfrm_input_afinfo *afinfo)
- {
- 	int err = 0;
- 
--	if (WARN_ON(afinfo->family >= ARRAY_SIZE(xfrm_input_afinfo)))
-+	if (WARN_ON(afinfo->family > AF_INET6))
- 		return -EAFNOSUPPORT;
- 
- 	spin_lock_bh(&xfrm_input_afinfo_lock);
--	if (unlikely(xfrm_input_afinfo[afinfo->family] != NULL))
-+	if (unlikely(xfrm_input_afinfo[afinfo->is_ipip][afinfo->family]))
- 		err = -EEXIST;
- 	else
--		rcu_assign_pointer(xfrm_input_afinfo[afinfo->family], afinfo);
-+		rcu_assign_pointer(xfrm_input_afinfo[afinfo->is_ipip][afinfo->family], afinfo);
- 	spin_unlock_bh(&xfrm_input_afinfo_lock);
- 	return err;
+ 	struct xfrm_tunnel __rcu *next;
+diff --git a/net/ipv4/tunnel4.c b/net/ipv4/tunnel4.c
+index c4b2ccb..5968d78 100644
+--- a/net/ipv4/tunnel4.c
++++ b/net/ipv4/tunnel4.c
+@@ -110,6 +110,30 @@ static int tunnel4_rcv(struct sk_buff *skb)
+ 	return 0;
  }
-@@ -71,11 +71,11 @@ int xfrm_input_unregister_afinfo(const struct xfrm_input_afinfo *afinfo)
- 	int err = 0;
  
- 	spin_lock_bh(&xfrm_input_afinfo_lock);
--	if (likely(xfrm_input_afinfo[afinfo->family] != NULL)) {
--		if (unlikely(xfrm_input_afinfo[afinfo->family] != afinfo))
-+	if (likely(xfrm_input_afinfo[afinfo->is_ipip][afinfo->family])) {
-+		if (unlikely(xfrm_input_afinfo[afinfo->is_ipip][afinfo->family] != afinfo))
- 			err = -EINVAL;
- 		else
--			RCU_INIT_POINTER(xfrm_input_afinfo[afinfo->family], NULL);
-+			RCU_INIT_POINTER(xfrm_input_afinfo[afinfo->is_ipip][afinfo->family], NULL);
++static int tunnel4_rcv_cb(struct sk_buff *skb, u8 proto, int err)
++{
++	struct xfrm_tunnel *head, *handler;
++	int ret;
++
++	head = (proto == IPPROTO_IPIP) ? tunnel4_handlers : tunnel64_handlers;
++
++	for_each_tunnel_rcu(head, handler) {
++		if (handler->cb_handler) {
++			ret = handler->cb_handler(skb, err);
++			if (ret <= 0)
++				return ret;
++		}
++	}
++
++	return 0;
++}
++
++static const struct xfrm_input_afinfo tunnel4_input_afinfo = {
++	.family		=	AF_INET,
++	.is_ipip	=	true,
++	.callback	=	tunnel4_rcv_cb,
++};
++
+ #if IS_ENABLED(CONFIG_IPV6)
+ static int tunnel64_rcv(struct sk_buff *skb)
+ {
+@@ -231,6 +255,7 @@ static int __init tunnel4_init(void)
+ 		goto err;
  	}
- 	spin_unlock_bh(&xfrm_input_afinfo_lock);
- 	synchronize_rcu();
-@@ -83,15 +83,15 @@ int xfrm_input_unregister_afinfo(const struct xfrm_input_afinfo *afinfo)
- }
- EXPORT_SYMBOL(xfrm_input_unregister_afinfo);
+ #endif
++	xfrm_input_register_afinfo(&tunnel4_input_afinfo);
+ 	return 0;
  
--static const struct xfrm_input_afinfo *xfrm_input_get_afinfo(unsigned int family)
-+static const struct xfrm_input_afinfo *xfrm_input_get_afinfo(u8 family, bool is_ipip)
+ err:
+@@ -240,6 +265,7 @@ static int __init tunnel4_init(void)
+ 
+ static void __exit tunnel4_fini(void)
  {
- 	const struct xfrm_input_afinfo *afinfo;
- 
--	if (WARN_ON_ONCE(family >= ARRAY_SIZE(xfrm_input_afinfo)))
-+	if (WARN_ON_ONCE(family > AF_INET6))
- 		return NULL;
- 
- 	rcu_read_lock();
--	afinfo = rcu_dereference(xfrm_input_afinfo[family]);
-+	afinfo = rcu_dereference(xfrm_input_afinfo[is_ipip][family]);
- 	if (unlikely(!afinfo))
- 		rcu_read_unlock();
- 	return afinfo;
-@@ -100,9 +100,11 @@ static const struct xfrm_input_afinfo *xfrm_input_get_afinfo(unsigned int family
- static int xfrm_rcv_cb(struct sk_buff *skb, unsigned int family, u8 protocol,
- 		       int err)
- {
-+	bool is_ipip = (protocol == IPPROTO_IPIP || protocol == IPPROTO_IPV6);
-+	const struct xfrm_input_afinfo *afinfo;
- 	int ret;
--	const struct xfrm_input_afinfo *afinfo = xfrm_input_get_afinfo(family);
- 
-+	afinfo = xfrm_input_get_afinfo(family, is_ipip);
- 	if (!afinfo)
- 		return -EAFNOSUPPORT;
- 
++	xfrm_input_unregister_afinfo(&tunnel4_input_afinfo);
+ #if IS_ENABLED(CONFIG_MPLS)
+ 	if (inet_del_protocol(&tunnelmpls4_protocol, IPPROTO_MPLS))
+ 		pr_err("tunnelmpls4 close: can't remove protocol\n");
 -- 
 2.1.0
 
