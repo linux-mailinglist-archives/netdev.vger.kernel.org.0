@@ -2,100 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 870E71FC23A
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 01:20:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74D981FC244
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 01:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726510AbgFPXUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 19:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60440 "EHLO
+        id S1726332AbgFPXZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 19:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725849AbgFPXUu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 19:20:50 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10AFC06174E
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 16:20:50 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id w9so157271qtv.3
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 16:20:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pqIyQnUzXL5D4KsY5srH61fM06Ml//ffTL2G2f2q/+I=;
-        b=nf1vgdPfxioxYb678T+PGpk3e9XZjrx5frEV88ZO9w+rxRFoN6I+vXrBwNxYikpAr0
-         4qgGlVtlEm1kj9qbcVzkraXqYUMzoi+elLGivjtl1o7AP53OX7jUviC3GoXe90UuMEwL
-         ZibG6EDWYTXBwiab8QOlX9NrGFuRo5RjsbMYMKJU01xxUK0GAqIE91/mWbKy8D4L+6ln
-         6eLNLjfujVEODkbXUH+sCopGW5oQzR0pQ67ONMrtW+mPrBRzm0dJVRPP6dAwDzUHrNSi
-         lHl7CD6cqUjZraEHRqeFrNewr9+8F8yXSWC7YxxtrFygZCRLsosptjVno/LwPr+wNZcJ
-         3iBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pqIyQnUzXL5D4KsY5srH61fM06Ml//ffTL2G2f2q/+I=;
-        b=AExlB4mkmRXmo6mCtNMyVUs7jNK8unjTH8IvHiu0isAi9JGJdWLfjKwONShXwpzlA3
-         P7JLdjTF3BKqFa/ZshAs9kVDHWUQQ1dkIvXrJmj+iS4B3/0sLDh0KmvRcya/zVzJVrsL
-         MmemngEC7pIv8Q8kkOvirqXXLJxZbqeWVNaixQAEIBUNoxL1KTDujcOEw+jLQMQ6MdZL
-         C8zN+dKRZ/oS+Wirw8lJiS0YPpfZdsjH4M4XXJ34dNl2bslSiVmWJh+GwENSx233IVjj
-         jkErt4t0Kg1R1t3ZBMghmR4yfqtjqC2UAIg0acVPx72heAX7FILBRCNo9vztUP8fBlUL
-         cq3Q==
-X-Gm-Message-State: AOAM531Tzf+NbBZArKKtjYNOH7MlNwX8QyChP4fo0TrrgbMSPoHSk2Uq
-        Dl/sSYUXfFzZN3nf1TF3kgGdfAIU2u6t5mki+Wo2hNDg
-X-Google-Smtp-Source: ABdhPJwD3v60Mm1RwFrItNO59U2z4MW3Y+zBVZD4ijXCaWBscZ76kjKPr6/TN7Q/V/cDiH0X8KSR88U3EhUcbxgFBI4=
-X-Received: by 2002:ac8:4c89:: with SMTP id j9mr23961366qtv.326.1592349649706;
- Tue, 16 Jun 2020 16:20:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200616225256.246769-1-sdf@google.com> <CAADnVQLS7=UmT9ivyuUiq8i9ZJRUyPNhN0dvdeiF32sUi=A3NQ@mail.gmail.com>
-In-Reply-To: <CAADnVQLS7=UmT9ivyuUiq8i9ZJRUyPNhN0dvdeiF32sUi=A3NQ@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 16 Jun 2020 16:20:38 -0700
-Message-ID: <CAKH8qBso=z3Thz0pimhLOVvPd2iGMmMoPvUA3j4dZYe1ivr97g@mail.gmail.com>
-Subject: Re: [PATCH bpf v4 1/2] bpf: don't return EINVAL from {get,set}sockopt
- when optlen > PAGE_SIZE
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Laight <David.Laight@aculab.com>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1725849AbgFPXZw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 19:25:52 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82754C061573;
+        Tue, 16 Jun 2020 16:25:52 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C3261128EB054;
+        Tue, 16 Jun 2020 16:25:51 -0700 (PDT)
+Date:   Tue, 16 Jun 2020 16:25:51 -0700 (PDT)
+Message-Id: <20200616.162551.466272432384185418.davem@davemloft.net>
+To:     torvalds@linux-foundation.org
+CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT] Networking
+From:   David Miller <davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 16 Jun 2020 16:25:52 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 4:05 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Jun 16, 2020 at 3:53 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > Attaching to these hooks can break iptables because its optval is
-> > usually quite big, or at least bigger than the current PAGE_SIZE limit.
-> > David also mentioned some SCTP options can be big (around 256k).
-> >
-> > There are two possible ways to fix it:
-> > 1. Increase the limit to match iptables max optval. There is, however,
-> >    no clear upper limit. Technically, iptables can accept up to
-> >    512M of data (not sure how practical it is though).
-> >
-> > 2. Bypass the value (don't expose to BPF) if it's too big and trigger
-> >    BPF only with level/optname so BPF can still decide whether
-> >    to allow/deny big sockopts.
-> >
-> > The initial attempt was implemented using strategy #1. Due to
-> > listed shortcomings, let's switch to strategy #2. When there is
-> > legitimate a real use-case for iptables/SCTP, we can consider increasing
-> >  the PAGE_SIZE limit.
-> >
-> > To support the cases where len(optval) > PAGE_SIZE we can
-> > leverage upcoming sleepable BPF work by providing a helper
-> > which can do copy_from_user (sleepable) at the given offset
-> > from the original large buffer.
-> >
-> > v4:
-> > * use temporary buffer to avoid optval == optval_end == NULL;
-> >   this removes the corner case in the verifier that might assume
-> >   non-zero PTR_TO_PACKET/PTR_TO_PACKET_END.
->
-> just replied with another idea in v3 thread...
-Yeah, sorry about that, posted 5 mins before your reply :-( Sorry for the noise.
+
+1) Don't get per-cpu pointer with preemption enabled in nft_set_pipapo,
+   fix from Stefano Brivio.
+
+2) Fix memory leak in ctnetlink, from Pablo Neira Ayuso.
+
+3) Multiple definitions of MPTCP_PM_MAX_ADDR, from Geliang Tang.
+
+4) Accidently disabling NAPI in non-error paths of macb_open(), from
+   Charles Keepax.
+
+5) Fix races between alx_stop and alx_remove, from Zekun Shen.
+
+6) We forget to re-enable SRIOV during resume in bnxt_en driver,
+   from Michael Chan.
+
+7) Fix memory leak in ipv6_mc_destroy_dev(), from Wang Hai.
+
+8) rxtx stats use wrong index in mvpp2 driver, from Sven Auhagen.
+
+9) Fix memory leak in mptcp_subflow_create_socket error path,
+   from Wei Yongjun.
+
+10) We should not adjust the TCP window advertised when sending dup
+    acks in non-SACK mode, because it won't be counted as a dup by the
+    sender if the window size changes.  From Eric Dumazet.
+
+11) Destroy the right number of queues during remove in mvpp2 driver,
+    from Sven Auhagen.
+
+12) Various WOL and PM fixes to e1000 driver, from Chen Yu, Vaibhav
+    Gupta, and Arnd Bergmann.
+
+Please pull, thanks a lot!
+
+The following changes since commit b3a9e3b9622ae10064826dccb4f7a52bd88c7407:
+
+  Linux 5.8-rc1 (2020-06-14 12:45:04 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net 
+
+for you to fetch changes up to c9f66b43ee27409e1b614434d87e0e722efaa5f2:
+
+  Merge branch '1GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/net-queue (2020-06-16 16:16:24 -0700)
+
+----------------------------------------------------------------
+Aditya Pakki (2):
+      test_objagg: Fix potential memory leak in error handling
+      rocker: fix incorrect error handling in dma_rings_init
+
+Alaa Hleihel (2):
+      net/sched: act_ct: Make tcf_ct_flow_table_restore_skb inline
+      netfilter: flowtable: Make nf_flow_table_offload_add/del_cb inline
+
+Arnd Bergmann (1):
+      e1000e: fix unused-function warning
+
+Bartosz Golaszewski (1):
+      net: ethernet: mtk-star-emac: simplify interrupt handling
+
+Charles Keepax (1):
+      net: macb: Only disable NAPI on the actual error path
+
+Chen Yu (1):
+      e1000e: Do not wake up the system via WOL if device wakeup is disabled
+
+Colin Ian King (1):
+      net: axienet: fix spelling mistake in comment "Exteneded" -> "extended"
+
+David S. Miller (4):
+      Merge git://git.kernel.org/.../pablo/nf
+      Merge branch 'bnxt_en-Bug-fixes'
+      Merge branch 'remove-dependency-between-mlx5-act_ct-nf_flow_table'
+      Merge branch '1GbE' of git://git.kernel.org/.../jkirsher/net-queue
+
+Eric Dumazet (1):
+      tcp: grow window for OOO packets only for SACK flows
+
+Geliang Tang (2):
+      mptcp: drop MPTCP_PM_MAX_ADDR
+      mptcp: use list_first_entry_or_null
+
+Ido Schimmel (1):
+      mlxsw: spectrum: Adjust headroom buffers for 8x ports
+
+Ka-Cheong Poon (1):
+      net/rds: NULL pointer de-reference in rds_ib_add_one()
+
+Martin (1):
+      bareudp: Fixed configuration to avoid having garbage values
+
+Michael Chan (3):
+      bnxt_en: Simplify bnxt_resume().
+      bnxt_en: Re-enable SRIOV during resume.
+      bnxt_en: Fix AER reset logic on 57500 chips.
+
+Pablo Neira Ayuso (2):
+      netfilter: ctnetlink: memleak in filter initialization error path
+      netfilter: nf_tables: hook list memleak in flowtable deletion
+
+Sergei Shtylyov (1):
+      MAINTAINERS: switch to my private email for Renesas Ethernet drivers
+
+Stefano Brivio (2):
+      netfilter: nft_set_rbtree: Don't account for expired elements on insertion
+      netfilter: nft_set_pipapo: Disable preemption before getting per-CPU pointer
+
+Sven Auhagen (2):
+      mvpp2: ethtool rxtx stats fix
+      mvpp2: remove module bugfix
+
+Thomas Falcon (1):
+      ibmvnic: Harden device login requests
+
+Tim Harvey (1):
+      lan743x: add MODULE_DEVICE_TABLE for module loading alias
+
+Vaibhav Gupta (1):
+      e1000: use generic power management
+
+Vasundhara Volam (1):
+      bnxt_en: Return from timer if interface is not in open state.
+
+Vladimir Oltean (2):
+      MAINTAINERS: merge entries for felix and ocelot drivers
+      net: dsa: sja1105: fix PTP timestamping with large tc-taprio cycles
+
+Wang Hai (1):
+      mld: fix memory leak in ipv6_mc_destroy_dev()
+
+Wang Qing (1):
+      qlcnic: Use kobj_to_dev() instead
+
+Wei Yongjun (1):
+      mptcp: fix memory leak in mptcp_subflow_create_socket()
+
+Zekun Shen (1):
+      net: alx: fix race condition in alx_remove
+
+ MAINTAINERS                                            |  30 ++++++++++-------------
+ drivers/net/bareudp.c                                  |   2 ++
+ drivers/net/dsa/sja1105/sja1105_ptp.c                  |   8 +++---
+ drivers/net/ethernet/atheros/alx/main.c                |   9 ++++---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c              |  35 +++++++++++++--------------
+ drivers/net/ethernet/cadence/macb_main.c               |   9 +++----
+ drivers/net/ethernet/ibm/ibmvnic.c                     |  21 +++++++++++++---
+ drivers/net/ethernet/intel/e1000/e1000_main.c          |  49 ++++++++++---------------------------
+ drivers/net/ethernet/intel/e1000e/netdev.c             |  30 +++++++++++------------
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c        |  11 ++++++---
+ drivers/net/ethernet/mediatek/mtk_star_emac.c          | 118 ++++++++++++++++++++++-------------------------------------------------------------------
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c         |   2 ++
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.h         |  13 ++++++++++
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c |   1 +
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c    |   1 +
+ drivers/net/ethernet/microchip/lan743x_main.c          |   2 ++
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_sysfs.c      |  34 +++++++++++++-------------
+ drivers/net/ethernet/rocker/rocker_main.c              |   4 +--
+ drivers/net/ethernet/xilinx/xilinx_axienet.h           |   2 +-
+ include/net/netfilter/nf_flow_table.h                  |  49 ++++++++++++++++++++++++++++++++++---
+ include/net/tc_act/tc_ct.h                             |  11 ++++++++-
+ lib/test_objagg.c                                      |   4 +--
+ net/ipv4/tcp_input.c                                   |  12 +++++++--
+ net/ipv6/mcast.c                                       |   1 +
+ net/mptcp/protocol.h                                   |   7 +-----
+ net/mptcp/subflow.c                                    |   4 ++-
+ net/netfilter/nf_conntrack_netlink.c                   |  32 ++++++++++++++++--------
+ net/netfilter/nf_flow_table_core.c                     |  45 ----------------------------------
+ net/netfilter/nf_tables_api.c                          |  31 ++++++++++++++++++------
+ net/netfilter/nft_set_pipapo.c                         |   6 ++++-
+ net/netfilter/nft_set_rbtree.c                         |  21 ++++++++++------
+ net/rds/ib.h                                           |   8 +++++-
+ net/sched/act_ct.c                                     |  11 ---------
+ 33 files changed, 309 insertions(+), 314 deletions(-)
