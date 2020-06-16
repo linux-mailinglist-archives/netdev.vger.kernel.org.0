@@ -2,174 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B38C21FB47B
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:34:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E721FB48E
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728861AbgFPOec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 10:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725775AbgFPOeb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 10:34:31 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A22C061573
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 07:34:31 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id o15so21722787ejm.12
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 07:34:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=O591g5+RZBhRkdZV73wJpRUbF0/DO5xVmTs597eh870=;
-        b=FRKPET5r0gN6DTeZjB9On0SjnG1Knumxb7FJwosFjlLJ0I73oPL+mMOVKrbDUQL3xr
-         d7KYgj27zAgRsJ6ryGFuTWLOGjETwVLhqLhOjqSonXIvBVJ9OS5N06oasfEQ+irKGZLY
-         /fmWM1n+xvQkzqUxOjCQHdx8OISa9Kztk1zmgEX4hRoYXDej4LZtlLpyfnw86KXoUCzB
-         3WaR9K2utOt2Ibn/vaKeCKM9McCzop+g6W/RLPM7d1+MMaXylvUscOceqCvMWK8nHLsx
-         Vd9nAWkEFJPM7UQgtJ3Q/VEP7kQEWg7fGO8ABS//ZbvNgV5hk5awH9Xjp+Gw72aeWGma
-         rkGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=O591g5+RZBhRkdZV73wJpRUbF0/DO5xVmTs597eh870=;
-        b=CLR4OwG45XVf0dgPdZBnhJqdvoNb4CDyg1xCPqKlF2UlU2IbDZYzXuy6MFSIdbuNHa
-         UWeq+flAzN0cBTFoTX325TjG6ysrAHgigizLePL3aalX/qQOAsNadpnW5c/gKDB+xOzT
-         nfhvdUAy2rIUKBU7kkI/ALwZ3J1eRZ2dToZrI/Mg/UzfMzs4FfnVgX/4FF3NigUlJO9U
-         2ywyhmK/l5gwC8DUnBcjAHb8FERnzt899tsn/AD4XhDdkPA2b4nIkSNEcvp+KvMtlbM1
-         TpM7qYOcnvqCBsrhE/8MHc9CJHhPTfNOWyQ/9HpR32dG9fscFlBm81IAtF8aDWyaxfR2
-         nnEw==
-X-Gm-Message-State: AOAM531DVCTqqn6n6ItMlbldXUZE8As6zVozOqZnx+qn1scbJv14TVGx
-        OXU2vOkmGn/KjbPYEbyEMFu8GdSfuXE=
-X-Google-Smtp-Source: ABdhPJx+9QaL1UYU7j+CfGXZwVXun4z8muKvEiH7RsqOWozrYjvJPkcFK3+q9toumaPVEq6BnxpN8A==
-X-Received: by 2002:a17:907:9d8:: with SMTP id bx24mr3005295ejc.517.1592318070101;
-        Tue, 16 Jun 2020 07:34:30 -0700 (PDT)
-Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id 64sm10154750eda.85.2020.06.16.07.34.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 07:34:29 -0700 (PDT)
-Date:   Tue, 16 Jun 2020 16:34:28 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pablo@netfilter.org,
-        vladbu@mellanox.com
-Subject: Re: [PATCH net v3 2/4] flow_offload: fix incorrect cb_priv check for
- flow_block_cb
-Message-ID: <20200616143427.GA8084@netronome.com>
-References: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
- <1592277580-5524-3-git-send-email-wenxu@ucloud.cn>
- <20200616105123.GA21396@netronome.com>
- <aee3192c-7664-580b-1f37-9003c91f185b@ucloud.cn>
+        id S1729067AbgFPOiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 10:38:25 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29550 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728919AbgFPOiY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 10:38:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592318302;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5nXojDArjm3fbdFQyCIywRTxpZLNfyYEE+NzV4MWLuM=;
+        b=gq/gm7jjhPk21GeQwvhqHvmHg7YW17x+OAwrTMKB42Cu+sLU6SBOysKWs917wwwhyCEF+V
+        +b+ileXRZsBqFGpYYUKUt2XaWAkRsi18K2ZTKyYvfNvAXfbjHeoNRpFWc7p0wpyucoA+7d
+        qj7RKT+t+w3JHh616dUrfDJNa1s9Q1M=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-281-oIELlBwROymyFbPw2TibZQ-1; Tue, 16 Jun 2020 10:38:19 -0400
+X-MC-Unique: oIELlBwROymyFbPw2TibZQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BFCB1E919;
+        Tue, 16 Jun 2020 14:38:17 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.64])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 063C719D61;
+        Tue, 16 Jun 2020 14:38:05 +0000 (UTC)
+Date:   Tue, 16 Jun 2020 16:38:04 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        brouer@redhat.com
+Subject: Re: [PATCHv4 bpf-next 1/2] xdp: add a new helper for dev map
+ multicast support
+Message-ID: <20200616163804.19d00d03@carbon>
+In-Reply-To: <20200616101133.GV102436@dhcp-12-153.nay.redhat.com>
+References: <20200415085437.23028-1-liuhangbin@gmail.com>
+        <20200526140539.4103528-1-liuhangbin@gmail.com>
+        <20200526140539.4103528-2-liuhangbin@gmail.com>
+        <20200610121859.0412c111@carbon>
+        <20200612085408.GT102436@dhcp-12-153.nay.redhat.com>
+        <20200616105506.163ea5a3@carbon>
+        <20200616101133.GV102436@dhcp-12-153.nay.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aee3192c-7664-580b-1f37-9003c91f185b@ucloud.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 10:20:46PM +0800, wenxu wrote:
-> 
-> 在 2020/6/16 18:51, Simon Horman 写道:
-> > On Tue, Jun 16, 2020 at 11:19:38AM +0800, wenxu@ucloud.cn wrote:
-> >> From: wenxu <wenxu@ucloud.cn>
-> >>
-> >> In the function __flow_block_indr_cleanup, The match stataments
-> >> this->cb_priv == cb_priv is always false, the flow_block_cb->cb_priv
-> >> is totally different data with the flow_indr_dev->cb_priv.
-> >>
-> >> Store the representor cb_priv to the flow_block_cb->indr.cb_priv in
-> >> the driver.
-> >>
-> >> Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
-> >> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> > Hi Wenxu,
-> >
-> > I wonder if this can be resolved by using the cb_ident field of struct
-> > flow_block_cb.
-> >
-> > I observe that mlx5e_rep_indr_setup_block() seems to be the only call-site
-> > where the value of the cb_ident parameter of flow_block_cb_alloc() is
-> > per-block rather than per-device. So part of my proposal is to change
-> > that.
-> 
-> I check all the xxdriver_indr_setup_block. It seems all the cb_ident parameter of
-> 
-> flow_block_cb_alloc is per-block. Both in the nfp_flower_setup_indr_tc_block
-> 
-> and bnxt_tc_setup_indr_block.
-> 
-> 
-> nfp_flower_setup_indr_tc_block:
-> 
-> struct nfp_flower_indr_block_cb_priv *cb_priv;
-> 
-> block_cb = flow_block_cb_alloc(nfp_flower_setup_indr_block_cb,
->                                                cb_priv, cb_priv,
->                                                nfp_flower_setup_indr_tc_release);
-> 
-> 
-> bnxt_tc_setup_indr_block:
-> 
-> struct bnxt_flower_indr_block_cb_priv *cb_priv;
-> 
-> block_cb = flow_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
->                                                cb_priv, cb_priv,
->                                                bnxt_tc_setup_indr_rel);
-> 
-> 
-> And the function flow_block_cb_is_busy called in most place. Pass the
-> 
-> parameter as cb_priv but not cb_indent .
+On Tue, 16 Jun 2020 18:11:33 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-Thanks, I see that now. But I still think it would be useful to understand
-the purpose of cb_ident. It feels like it would lead to a clean solution
-to the problem you have highlighted.
+> HI Jesper,
+> 
+> On Tue, Jun 16, 2020 at 10:55:06AM +0200, Jesper Dangaard Brouer wrote:
+> > > Is there anything else I should do except add the following line?
+> > > 	nxdpf->mem.type = MEM_TYPE_PAGE_ORDER0;  
+> > 
+> > You do realize that you also have copied over the mem.id, right?  
+> 
+> Thanks for the reminding. To confirm, set mem.id to 0 is enough, right?
 
-> > The other part of my proposal is to make use of cb_ident in
-> > __flow_block_indr_cleanup(). Which does seem to match the intended
-> > purpose of cb_ident. Perhaps it would also be good to document what
-> > the intended purpose of cb_ident (and the other fields of struct
-> > flow_block_cb) is.
-> >
-> > Compile tested only.
-> >
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-> > index a62bcf0cf512..4de6fcae5252 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-> > @@ -438,7 +438,7 @@ mlx5e_rep_indr_setup_block(struct net_device *netdev,
-> >  		list_add(&indr_priv->list,
-> >  			 &rpriv->uplink_priv.tc_indr_block_priv_list);
-> >  
-> > -		block_cb = flow_block_cb_alloc(setup_cb, indr_priv, indr_priv,
-> > +		block_cb = flow_block_cb_alloc(setup_cb, rpriv, indr_priv,
-> >  					       mlx5e_rep_indr_block_unbind);
-> >  		if (IS_ERR(block_cb)) {
-> >  			list_del(&indr_priv->list);
-> > diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-> > index b288d2f03789..d281fb182894 100644
-> > --- a/net/core/flow_offload.c
-> > +++ b/net/core/flow_offload.c
-> > @@ -373,14 +373,13 @@ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
-> >  EXPORT_SYMBOL(flow_indr_dev_register);
-> >  
-> >  static void __flow_block_indr_cleanup(void (*release)(void *cb_priv),
-> > -				      void *cb_priv,
-> > +				      void *cb_ident,
-> >  				      struct list_head *cleanup_list)
-> >  {
-> >  	struct flow_block_cb *this, *next;
-> >  
-> >  	list_for_each_entry_safe(this, next, &flow_block_indr_list, indr.list) {
-> > -		if (this->release == release &&
-> > -		    this->cb_priv == cb_priv) {
-> > +		if (this->release == release && this->cb_ident == cb_ident) {
-> >  			list_move(&this->indr.list, cleanup_list);
-> >  			return;
-> >  		}
-> >
+Yes.
+
+> > And as I wrote below you also need to update frame_sz.
+> >   
+> > > > 
+> > > > You also need to update xdpf->frame_sz, as you also cannot assume it is
+> > > > the same.    
+> > > 
+> > > Won't the memcpy() copy xdpf->frame_sz to nxdpf?   
+> > 
+> > You obviously cannot use the frame_sz from the existing frame, as you
+> > just allocated a new page for the new xdp_frame, that have another size
+> > (here PAGE_SIZE).  
+> 
+> Thanks, I didn't understand the frame_sz correctly before.
+> > 
+> >   
+> > > And I didn't see xdpf->frame_sz is set in xdp_convert_zc_to_xdp_frame(),
+> > > do we need a fix?  
+> > 
+> > Good catch, that sounds like a bug, that should be fixed.
+> > Will you send a fix?  
+> 
+> OK, I will.
+
+Thanks.
+ 
+> >   
+> > > > > +
+> > > > > +	nxdpf = addr;
+> > > > > +	nxdpf->data = addr + headroom;
+> > > > > +
+> > > > > +	return nxdpf;
+> > > > > +}
+> > > > > +EXPORT_SYMBOL_GPL(xdpf_clone);    
+> > > > 
+> > > > 
+> > > > struct xdp_frame {
+> > > > 	void *data;
+> > > > 	u16 len;
+> > > > 	u16 headroom;
+> > > > 	u32 metasize:8;
+> > > > 	u32 frame_sz:24;
+> > > > 	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
+> > > > 	 * while mem info is valid on remote CPU.
+> > > > 	 */
+> > > > 	struct xdp_mem_info mem;
+> > > > 	struct net_device *dev_rx; /* used by cpumap */
+> > > > };
+> > > >     
+> > >   
+> > 
+> > struct xdp_mem_info {
+> > 	u32                        type;                 /*     0     4 */
+> > 	u32                        id;                   /*     4     4 */
+> > 
+> > 	/* size: 8, cachelines: 1, members: 2 */
+> > 	/* last cacheline: 8 bytes */
+> > };
+> >   
+> 
+> Is this a struct reference or you want to remind me something else?
+
+This is just a struct reference to help the readers of this email.
+I had to lookup the struct to review this code, so I included it to
+save time for other reviewers.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
