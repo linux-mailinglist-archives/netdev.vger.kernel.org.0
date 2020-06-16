@@ -2,141 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEFE91FBFE9
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 22:21:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A6241FBFF8
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 22:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731633AbgFPUVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 16:21:09 -0400
-Received: from www62.your-server.de ([213.133.104.62]:54006 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726856AbgFPUVJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 16:21:09 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jlI4w-0004C2-3O; Tue, 16 Jun 2020 22:21:06 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jlI4v-0000cm-Qx; Tue, 16 Jun 2020 22:21:05 +0200
-Subject: Re: [PATCH bpf 2/2] selftests/bpf: add variable-length data
- concatenation pattern test
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        Christoph Hellwig <hch@lst.de>
-References: <20200616050432.1902042-1-andriin@fb.com>
- <20200616050432.1902042-2-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <5fed920d-aeb6-c8de-18c0-7c046bbfb242@iogearbox.net>
-Date:   Tue, 16 Jun 2020 22:21:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1731605AbgFPUZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 16:25:31 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:21764 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726428AbgFPUZa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 16:25:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592339128;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=n/DjqMIWjjy3ETi4hEtI89VCu+ofqjlxNZRzFeuPbFs=;
+        b=fVZE1T5OqYPCd7NLz3w9xgd0mCTVhD8Jyk4IdiXYyKDB2L6eztAbK3u6VZIcygmvj/Kq81
+        HhujQDDT5OKHQxUEoZtZBpRzz5oEjaLI8Z5JMm2i2TF1HcQNPWePs7P/6D3lBEju2Izsgy
+        LBv+tFxQ54f/OCKPwusD5ZdMtIL84hA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-414--_k5d8NnPYyhCqMfMV77nQ-1; Tue, 16 Jun 2020 16:25:26 -0400
+X-MC-Unique: -_k5d8NnPYyhCqMfMV77nQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6E8C1E919;
+        Tue, 16 Jun 2020 20:25:25 +0000 (UTC)
+Received: from new-host-5.redhat.com (unknown [10.40.194.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CBDB410013D6;
+        Tue, 16 Jun 2020 20:25:23 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Po Liu <Po.Liu@nxp.com>, Cong Wang <xiyou.wangcong@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net v3 0/2] two fixes for 'act_gate' control plane
+Date:   Tue, 16 Jun 2020 22:25:19 +0200
+Message-Id: <cover.1592338450.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200616050432.1902042-2-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25845/Tue Jun 16 15:01:35 2020)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/16/20 7:04 AM, Andrii Nakryiko wrote:
-> Add selftest that validates variable-length data reading and concatentation
-> with one big shared data array. This is a common pattern in production use for
-> monitoring and tracing applications, that potentially can read a lot of data,
-> but usually reads much less. Such pattern allows to determine precisely what
-> amount of data needs to be sent over perfbuf/ringbuf and maximize efficiency.
-> 
-> This is the first BPF selftest that at all looks at and tests
-> bpf_probe_read_str()-like helper's return value, closing a major gap in BPF
-> testing. It surfaced the problem with bpf_probe_read_kernel_str() returning
-> 0 on success, instead of amount of bytes successfully read.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+- patch 1/2 attempts to fix the error path of tcf_gate_init() when users
+  try to configure 'act_gate' rules with wrong parameters
+- patch 2/2 is a follow-up of a recent fix for NULL dereference in
+  the error path of tcf_gate_init()
 
-Fix looks good, but I'm seeing an issue in the selftest on my side. With latest
-Clang/LLVM I'm getting:
+further work will introduce a tdc test for 'act_gate'.
 
-# ./test_progs -t varlen
-#86 varlen:OK
-Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+changes since v2:
+  - fix undefined behavior in patch 1/2
+  - improve comment in patch 2/2
+changes since v1:
+  coding style fixes in patch 1/2 and 2/2
 
-All good, however, the test_progs-no_alu32 fails for me with:
+Davide Caratti (2):
+  net/sched: act_gate: fix NULL dereference in tcf_gate_init()
+  net/sched: act_gate: fix configuration of the periodic timer
 
-# ./test_progs-no_alu32 -t varlen
-Switching to flavor 'no_alu32' subdirectory...
-libbpf: load bpf program failed: Invalid argument
-libbpf: -- BEGIN DUMP LOG ---
-libbpf:
-arg#0 type is not a struct
-Unrecognized arg#0 type PTR
-; int pid = bpf_get_current_pid_tgid() >> 32;
-0: (85) call bpf_get_current_pid_tgid#14
-; int pid = bpf_get_current_pid_tgid() >> 32;
-1: (77) r0 >>= 32
-; if (test_pid != pid || !capture)
-2: (18) r1 = 0xffffb14a4010c200
-4: (61) r1 = *(u32 *)(r1 +0)
-  R0_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1_w=map_value(id=0,off=512,ks=4,vs=1056,imm=0) R10=fp0
-; if (test_pid != pid || !capture)
-5: (5d) if r1 != r0 goto pc+43
-  R0_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R10=fp0
-6: (18) r1 = 0xffffb14a4010c204
-8: (71) r1 = *(u8 *)(r1 +0)
-  R0_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1_w=map_value(id=0,off=516,ks=4,vs=1056,imm=0) R10=fp0
-9: (15) if r1 == 0x0 goto pc+39
-  R0=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1=inv(id=0,umax_value=255,var_off=(0x0; 0xff)) R10=fp0
-; len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in1[0]);
-10: (18) r6 = 0xffffb14a4010c220
-12: (18) r1 = 0xffffb14a4010c220
-14: (b7) r2 = 256
-15: (18) r3 = 0xffffb14a4010c000
-17: (85) call bpf_probe_read_kernel_str#115
-  R0=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R1_w=map_value(id=0,off=544,ks=4,vs=1056,imm=0) R2_w=inv256 R3_w=map_value(id=0,off=0,ks=4,vs=1056,imm=0) R6_w=map_value(id=0,off=544,ks=4,vs=1056,imm=0) R10=fp0
-last_idx 17 first_idx 9
-regs=4 stack=0 before 15: (18) r3 = 0xffffb14a4010c000
-regs=4 stack=0 before 14: (b7) r2 = 256
-18: (67) r0 <<= 32
-19: (bf) r1 = r0
-20: (77) r1 >>= 32
-; if (len <= MAX_LEN) {
-21: (25) if r1 > 0x100 goto pc+7
-  R0=inv(id=0,smax_value=1099511627776,umax_value=18446744069414584320,var_off=(0x0; 0xffffffff00000000),s32_min_value=0,s32_max_value=0,u32_max_value=0) R1=inv(id=0,umax_value=256,var_off=(0x0; 0x1ff)) R6=map_value(id=0,off=544,ks=4,vs=1056,imm=0) R10=fp0
-;
-22: (c7) r0 s>>= 32
-; payload1_len1 = len;
-23: (18) r1 = 0xffffb14a4010c208
-25: (7b) *(u64 *)(r1 +0) = r0
-  R0_w=inv(id=0,smin_value=-2147483648,smax_value=256) R1_w=map_value(id=0,off=520,ks=4,vs=1056,imm=0) R6=map_value(id=0,off=544,ks=4,vs=1056,imm=0) R10=fp0
-; payload += len;
-26: (18) r6 = 0xffffb14a4010c220
-28: (0f) r6 += r0
-last_idx 28 first_idx 21
-regs=1 stack=0 before 26: (18) r6 = 0xffffb14a4010c220
-regs=1 stack=0 before 25: (7b) *(u64 *)(r1 +0) = r0
-regs=1 stack=0 before 23: (18) r1 = 0xffffb14a4010c208
-regs=1 stack=0 before 22: (c7) r0 s>>= 32
-regs=1 stack=0 before 21: (25) if r1 > 0x100 goto pc+7
-  R0_rw=invP(id=0,smax_value=1099511627776,umax_value=18446744069414584320,var_off=(0x0; 0xffffffff00000000),s32_min_value=0,s32_max_value=0,u32_max_value=0) R1_rw=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R6_w=map_value(id=0,off=544,ks=4,vs=1056,imm=0) R10=fp0
-parent didn't have regs=1 stack=0 marks
-last_idx 20 first_idx 9
-regs=1 stack=0 before 20: (77) r1 >>= 32
-regs=1 stack=0 before 19: (bf) r1 = r0
-regs=1 stack=0 before 18: (67) r0 <<= 32
-regs=1 stack=0 before 17: (85) call bpf_probe_read_kernel_str#115
-value -2147483648 makes map_value pointer be out of bounds
-processed 22 insns (limit 1000000) max_states_per_insn 0 total_states 2 peak_states 2 mark_read 1
+ net/sched/act_gate.c | 126 +++++++++++++++++++++++--------------------
+ 1 file changed, 68 insertions(+), 58 deletions(-)
 
-libbpf: -- END LOG --
-libbpf: failed to load program 'raw_tp/sys_enter'
-libbpf: failed to load object 'test_varlen'
-libbpf: failed to load BPF skeleton 'test_varlen': -4007
-test_varlen:FAIL:skel_open failed to open skeleton
-#86 varlen:FAIL
-Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
+-- 
+2.26.2
+
