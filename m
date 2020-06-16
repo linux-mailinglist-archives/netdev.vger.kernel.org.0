@@ -2,121 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 903571FA8F3
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 08:42:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5ECE1FA914
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 08:50:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726907AbgFPGmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 02:42:19 -0400
-Received: from mail-ej1-f66.google.com ([209.85.218.66]:34150 "EHLO
-        mail-ej1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725775AbgFPGmQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 02:42:16 -0400
-Received: by mail-ej1-f66.google.com with SMTP id l27so20291324ejc.1;
-        Mon, 15 Jun 2020 23:42:11 -0700 (PDT)
+        id S1726355AbgFPGt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 02:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47732 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725775AbgFPGt7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 02:49:59 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6631FC05BD43;
+        Mon, 15 Jun 2020 23:49:59 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id n2so7938124pld.13;
+        Mon, 15 Jun 2020 23:49:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=k6KdWN1aWqxsRpli5fdDQkS+WbX+LNs+UJ489ru0UBA=;
+        b=B3TlP8oOplArpXS8xzAMHHSfevNnQVQvxI9CHKduig7MxHKOvNgQD8mXljhP5LP/NP
+         JF2bjzVwU7VvbkQmzvI0DbaJlWeYRlAXbvVxzmNbAYlL/F00D7VMABBlWoiNnGkxxDXC
+         8AEijVCGQOPg+EyOIxCWEJ+8Wkv6kj1eU35yw//ujiLYSbZf7VtFYu4J+dyh+v7AdBW4
+         nxJ7YTJs9W0qLyI3ejaIbR1xFQ8HtX2wMsN1RzBRyiqHxxQmQFTW+RRBHG1RasJefbZ8
+         ta/6++IF6ilbIuGRenEYJ6K+KvnWMOklBXnYzR+gm9XaoD1bJ8Nw0ikCHv/5JjV6Zg42
+         cESg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8yT+7Ta/B3BUGUR35Fz/0p22bghMwTUAxgTnwepounI=;
-        b=CrqjoVKTD3f3KdvDGIeuUsz+tApuK+psSd/zZznBL+PvDQ9kr/y3NysJrLCUvijZ0W
-         D1lMJFJjDjxCjK+3vtuSUx88E4FI/icqqmCPzoYqFy6r+CX7+frVJXkQBTdJvOi0k2H8
-         BQWo08oG78S63Nmuvi83IANQL4LNBYWwNm3J2aXU7+GGmL071iftqMsCEIxqPKRgxnoO
-         l2aRKff/cldTmTKB1sX4cPbWqW005Wxuza/3URs7J0zQObIlg8c0OKxW9NsQzskaJNhs
-         WYN8j8RMnmY+IrXoBKVYXvhwDHpIj4QOYGkzsnxSvMv3OoF06DPJymcAuYl6IFpm70uf
-         LBaQ==
-X-Gm-Message-State: AOAM531HP4eO0zbWwLMfP5GDnN825+ONW2qq1LmJWzlrQRrQ9tLmHjV1
-        pUaK0iSgeht2xDq1+zJMRIs=
-X-Google-Smtp-Source: ABdhPJwG7kr4DUIGgc4iCDEeodlEq5kx0AY8+Z/EURP92P+0Zf4E0UWpXqDGfffbUz9uBG+pBru51g==
-X-Received: by 2002:a17:906:ce2f:: with SMTP id sd15mr1306745ejb.445.1592289731375;
-        Mon, 15 Jun 2020 23:42:11 -0700 (PDT)
-Received: from localhost (ip-37-188-174-201.eurotel.cz. [37.188.174.201])
-        by smtp.gmail.com with ESMTPSA id j10sm9734428edf.97.2020.06.15.23.42.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Jun 2020 23:42:10 -0700 (PDT)
-Date:   Tue, 16 Jun 2020 08:42:08 +0200
-From:   Michal Hocko <mhocko@kernel.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Rientjes <rientjes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        David Sterba <dsterba@suse.cz>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>, linux-mm@kvack.org,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-ppp@vger.kernel.org, wireguard@lists.zx2c4.com,
-        linux-wireless@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
-        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] mm/slab: Use memzero_explicit() in kzfree()
-Message-ID: <20200616064208.GA9499@dhcp22.suse.cz>
-References: <20200616015718.7812-1-longman@redhat.com>
- <20200616015718.7812-2-longman@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200616015718.7812-2-longman@redhat.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=k6KdWN1aWqxsRpli5fdDQkS+WbX+LNs+UJ489ru0UBA=;
+        b=GM4Q0qYrjDRB5+u3bbY2oCxg0m7aTffzm6UM2WtbQr5MxC11Jsidu6Sq7d/61VdVGX
+         JqmBsg3QExTlv+ng6qrq6jpU+NvJvKg19tlNwykUARS4aFvoosR/Qu9ayaA0tTJLJVtV
+         Gwuw3aLwlqq2vGyiskVTRTU7fLZcKR+6TRqC3p7mbY+ypSWpBwIqVWcpX4cPKcUyfq/Q
+         gzmy2BitXimSz+8PMh3r042kVVQwCvKaq9UTX0FJ8ix5DV3FcWCuPLJW7Lb7c5njRcqh
+         5r+qDiniWP/rs5bXB1ucAopDbP+nWWbf6ux6FW7UVrTR/gWYUcjnCH+mr3x3sVY72v+L
+         gnLw==
+X-Gm-Message-State: AOAM530EQvTul95aKqP6VftVj7jgksnMz1im0OBcOvxxdcSkpPak8Nrn
+        lSVj5V8OLZg0XWsBvc2GiNQ=
+X-Google-Smtp-Source: ABdhPJwwpLsocmGibnn2+XMOZOy441mhMdeTmNlcabHbwMyk6o3zw1vfZlt7tKcxEMc+YT0a+H2fgg==
+X-Received: by 2002:a17:902:7043:: with SMTP id h3mr898978plt.200.1592290198934;
+        Mon, 15 Jun 2020 23:49:58 -0700 (PDT)
+Received: from localhost ([43.224.245.180])
+        by smtp.gmail.com with ESMTPSA id n65sm15409324pfn.17.2020.06.15.23.49.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 15 Jun 2020 23:49:58 -0700 (PDT)
+From:   Geliang Tang <geliangtang@gmail.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/3] add MP_PRIO, MP_FAIL and MP_FASTCLOSE suboptions handling
+Date:   Tue, 16 Jun 2020 14:47:35 +0800
+Message-Id: <cover.1592289629.git.geliangtang@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 15-06-20 21:57:16, Waiman Long wrote:
-> The kzfree() function is normally used to clear some sensitive
-> information, like encryption keys, in the buffer before freeing it back
-> to the pool. Memset() is currently used for the buffer clearing. However,
-> it is entirely possible that the compiler may choose to optimize away the
-> memory clearing especially if LTO is being used. To make sure that this
-> optimization will not happen, memzero_explicit(), which is introduced
-> in v3.18, is now used in kzfree() to do the clearing.
-> 
-> Fixes: 3ef0e5ba4673 ("slab: introduce kzfree()")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Waiman Long <longman@redhat.com>
+Add handling for sending and receiving the MP_PRIO, MP_FAIL, and
+MP_FASTCLOSE suboptions.
 
-Acked-by: Michal Hocko <mhocko@suse.com>
+Geliang Tang (3):
+  mptcp: add MP_PRIO suboption handling
+  mptcp: add MP_FAIL suboption handling
+  mptcp: add MP_FASTCLOSE suboption handling
 
-Although I am not really sure this is a stable material. Is there any
-known instance where the memset was optimized out from kzfree?
-
-> ---
->  mm/slab_common.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index 9e72ba224175..37d48a56431d 100644
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -1726,7 +1726,7 @@ void kzfree(const void *p)
->  	if (unlikely(ZERO_OR_NULL_PTR(mem)))
->  		return;
->  	ks = ksize(mem);
-> -	memset(mem, 0, ks);
-> +	memzero_explicit(mem, ks);
->  	kfree(mem);
->  }
->  EXPORT_SYMBOL(kzfree);
-> -- 
-> 2.18.1
-> 
+ net/mptcp/options.c  | 48 ++++++++++++++++++++++++++++++++++++++++++++
+ net/mptcp/protocol.h |  9 +++++++++
+ 2 files changed, 57 insertions(+)
 
 -- 
-Michal Hocko
-SUSE Labs
+2.17.1
+
