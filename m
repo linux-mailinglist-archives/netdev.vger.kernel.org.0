@@ -2,99 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B879C1FA55E
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 03:05:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 773B11FA560
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 03:07:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726665AbgFPBFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 21:05:24 -0400
-Received: from helcar.hmeau.com ([216.24.177.18]:50594 "EHLO fornost.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726369AbgFPBFY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jun 2020 21:05:24 -0400
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1jl02A-0005jD-Qw; Tue, 16 Jun 2020 11:05:03 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Tue, 16 Jun 2020 11:05:02 +1000
-Date:   Tue, 16 Jun 2020 11:05:02 +1000
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Al Viro <viro@ZenIV.linux.org.uk>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-Subject: Re: linux-next: build failures after merge of the vfs tree
-Message-ID: <20200616010502.GA28834@gondor.apana.org.au>
-References: <20200616103330.2df51a58@canb.auug.org.au>
- <20200616103440.35a80b4b@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200616103440.35a80b4b@canb.auug.org.au>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726710AbgFPBHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 21:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726369AbgFPBHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 21:07:11 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B3BC061A0E
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 18:07:11 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2CAA6122A98E0;
+        Mon, 15 Jun 2020 18:07:11 -0700 (PDT)
+Date:   Mon, 15 Jun 2020 18:07:10 -0700 (PDT)
+Message-Id: <20200615.180710.1879893853346546167.davem@davemloft.net>
+To:     roid@mellanox.com
+Cc:     netdev@vger.kernel.org, pablo@netfilter.org, jiri@mellanox.com,
+        paulb@mellanox.com, ozsh@mellanox.com, mleitner@redhat.com,
+        alaa@mellanox.com
+Subject: Re: [PATCH net 0/2] remove dependency between mlx5, act_ct,
+ nf_flow_table
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200614111249.6145-1-roid@mellanox.com>
+References: <20200614111249.6145-1-roid@mellanox.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 15 Jun 2020 18:07:11 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 10:34:40AM +1000, Stephen Rothwell wrote:
-> [Just adding Herbert to cc]
-> 
-> On Tue, 16 Jun 2020 10:33:30 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > Hi all,
-> > 
-> > After merging the vfs tree, today's linux-next build (x86_64 allmodconfig)
-> > failed like this:
+From: Roi Dayan <roid@mellanox.com>
+Date: Sun, 14 Jun 2020 14:12:47 +0300
 
-Thanks Stephen, here is an incremental patch to fix these up.
+> Some exported functions from act_ct and nf_flow_table being used in mlx5_core.
+> This leads that mlx5 module always require act_ct and nf_flow_table modules.
+> Those small exported functions can be moved to the header files to
+> avoid this module dependency.
 
----8<---
-Because linux/uio.h included crypto/hash.h a number of header
-files that should have been included weren't.  This patch adds
-linux/slab.h where kmalloc/kfree are used, as well as a forward
-declaration in linux/socket.h for struct file.
-
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Fixes: 	f0187db056dc ("iov_iter: Move unnecessary inclusion of...")
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-
-diff --git a/drivers/dma/st_fdma.c b/drivers/dma/st_fdma.c
-index 67087dbe2f9f..962b6e05287b 100644
---- a/drivers/dma/st_fdma.c
-+++ b/drivers/dma/st_fdma.c
-@@ -15,6 +15,7 @@
- #include <linux/platform_device.h>
- #include <linux/interrupt.h>
- #include <linux/remoteproc.h>
-+#include <linux/slab.h>
- 
- #include "st_fdma.h"
- 
-diff --git a/drivers/dma/uniphier-xdmac.c b/drivers/dma/uniphier-xdmac.c
-index 7b2f8a8c2d31..16b19654873d 100644
---- a/drivers/dma/uniphier-xdmac.c
-+++ b/drivers/dma/uniphier-xdmac.c
-@@ -12,6 +12,7 @@
- #include <linux/of.h>
- #include <linux/of_dma.h>
- #include <linux/platform_device.h>
-+#include <linux/slab.h>
- 
- #include "dmaengine.h"
- #include "virt-dma.h"
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 04d2bc97f497..e9cb30d8cbfb 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -10,6 +10,7 @@
- #include <linux/compiler.h>		/* __user			*/
- #include <uapi/linux/socket.h>
- 
-+struct file;
- struct pid;
- struct cred;
- struct socket;
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Series applied, thanks.
