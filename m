@@ -2,260 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AEB31FA815
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 07:04:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77A5D1FA83B
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 07:29:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726495AbgFPFEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 01:04:52 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:3050 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726052AbgFPFEs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 01:04:48 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05G4xf7O026086
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 22:04:46 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=PVwmhV2PrDu3ZbF6r4dNJymVeVSH6LlWOQKH14ICpPI=;
- b=aFz9X8PqpJwkVRSu3Te0/wCJu1d2y7fAt4v7VygxCWl6H2BidS6XGw6be4ZzVeGLsagY
- QXjN3Y8t3Zzt1O67kWUPp2WELSi6csVKstz+UTizlEExGwI6cYd43z0iEZizBGZ+6rfj
- NSNQ9VAROcC/vCHgdOZMuP6ybTurEbpUxBs= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 31pnd9ge3r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 22:04:46 -0700
-Received: from intmgw003.03.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 15 Jun 2020 22:04:45 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id CF7782EC2F00; Mon, 15 Jun 2020 22:04:36 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Christoph Hellwig <hch@lst.de>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf 2/2] selftests/bpf: add variable-length data concatenation pattern test
-Date:   Mon, 15 Jun 2020 22:04:31 -0700
-Message-ID: <20200616050432.1902042-2-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200616050432.1902042-1-andriin@fb.com>
-References: <20200616050432.1902042-1-andriin@fb.com>
+        id S1726883AbgFPF3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 01:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726392AbgFPF3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 01:29:46 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A224C08C5C3
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 22:29:44 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id h3so17629736ilh.13
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 22:29:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sargun.me; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=/atL1Ve60OqcVOW1A17eOHeeXaoo7IDTY4Z8Un8jaH8=;
+        b=193OWy+wrWHpQHLeiYDs4HwLjRR3lzkgnsBt2V+dkl6TagtCtHrBhNG24ihvS9W6Zf
+         zasBHbcZhYtRMZisoQXuaE9BeVT715PI0S1hhwE0J7wByQ95ip3Y+PHUh72iIzi+jHkx
+         GEj69+viDrq4GN/szP7+GnPsyYy7nNibYDgc0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/atL1Ve60OqcVOW1A17eOHeeXaoo7IDTY4Z8Un8jaH8=;
+        b=V0iFivvlN1Fe6C16OY8xy3SmMXq00djl8TLl3h9ZjiuGLkoMVQHdUqXOoNqIHD04NP
+         wLbVwdn8SH+ETodLX+hOaEjCK+qPJq7cn0HAPlXDaumCIgJh3s25m5aan/Q1N3Uq6kjJ
+         Fleu8poBEXtxjSsDM3mTL5GDQl91UkBcyiPRaVIgn7/mt4g/6WbHnV09udD9WQjcdaiY
+         jK2GXWRKCc062DjZ1qjbLZuphXL7tDyuzS2A0u/t8Iv7EwCGBRWqwmSDK3aCTNMP4gr0
+         v/YHBncbQyW6Zwck/jR/oN1PSY4Ln27gvGpN2uiAm3IUWvkBUAOrJlsiwoRUe20QEVxU
+         9BNA==
+X-Gm-Message-State: AOAM531ptMzVExWrfPcovX6MxFQzD0WB4UpL6RsfdsPQ+bw4fkv0z0MR
+        DDt5+highZSwT10qttzopwfVcg==
+X-Google-Smtp-Source: ABdhPJx5Rg1ST0KUj/PKC9lU9klQRZh96t9kjm/st69tOnr6RVzMkeGE8OyZPHSvj533a1JeUJYcxA==
+X-Received: by 2002:a92:c7c6:: with SMTP id g6mr1539412ilk.49.1592285383432;
+        Mon, 15 Jun 2020 22:29:43 -0700 (PDT)
+Received: from ircssh-2.c.rugged-nimbus-611.internal (80.60.198.104.bc.googleusercontent.com. [104.198.60.80])
+        by smtp.gmail.com with ESMTPSA id z16sm9204945ilz.64.2020.06.15.22.29.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 15 Jun 2020 22:29:43 -0700 (PDT)
+Date:   Tue, 16 Jun 2020 05:29:41 +0000
+From:   Sargun Dhillon <sargun@sargun.me>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Christian Brauner <christian@brauner.io>,
+        "David S. Miller" <davem@davemloft.net>,
+        Christoph Hellwig <hch@lst.de>,
+        Tycho Andersen <tycho@tycho.ws>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
+        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 02/11] fs: Move __scm_install_fd() to
+ __fd_install_received()
+Message-ID: <20200616052941.GB16032@ircssh-2.c.rugged-nimbus-611.internal>
+References: <20200616032524.460144-1-keescook@chromium.org>
+ <20200616032524.460144-3-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-15_11:2020-06-15,2020-06-15 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- clxscore=1015 mlxscore=0 spamscore=0 suspectscore=8 impostorscore=0
- phishscore=0 mlxlogscore=941 malwarescore=0 bulkscore=0 priorityscore=1501
- cotscore=-2147483648 lowpriorityscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006160035
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200616032524.460144-3-keescook@chromium.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add selftest that validates variable-length data reading and concatentati=
-on
-with one big shared data array. This is a common pattern in production us=
-e for
-monitoring and tracing applications, that potentially can read a lot of d=
-ata,
-but usually reads much less. Such pattern allows to determine precisely w=
-hat
-amount of data needs to be sent over perfbuf/ringbuf and maximize efficie=
-ncy.
+On Mon, Jun 15, 2020 at 08:25:15PM -0700, Kees Cook wrote:
+> In preparation for users of the "install a received file" logic outside
+> of net/ (pidfd and seccomp), relocate and rename __scm_install_fd() from
+> net/core/scm.c to __fd_install_received() in fs/file.c, and provide a
+> wrapper named fd_install_received_user(), as future patches will change
+> the interface to __fd_install_received().
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  fs/file.c            | 47 ++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/file.h |  8 ++++++++
+>  include/net/scm.h    |  1 -
+>  net/compat.c         |  2 +-
+>  net/core/scm.c       | 32 +-----------------------------
+>  5 files changed, 57 insertions(+), 33 deletions(-)
+> 
+> diff --git a/fs/file.c b/fs/file.c
+> index abb8b7081d7a..fcfddae0d252 100644
+> --- a/fs/file.c
+> +++ b/fs/file.c
+> @@ -11,6 +11,7 @@
+>  #include <linux/export.h>
+>  #include <linux/fs.h>
+>  #include <linux/mm.h>
+> +#include <linux/net.h>
+>  #include <linux/sched/signal.h>
+>  #include <linux/slab.h>
+>  #include <linux/file.h>
+> @@ -18,6 +19,8 @@
+>  #include <linux/bitops.h>
+>  #include <linux/spinlock.h>
+>  #include <linux/rcupdate.h>
+> +#include <net/cls_cgroup.h>
+> +#include <net/netprio_cgroup.h>
+>  
+>  unsigned int sysctl_nr_open __read_mostly = 1024*1024;
+>  unsigned int sysctl_nr_open_min = BITS_PER_LONG;
+> @@ -931,6 +934,50 @@ int replace_fd(unsigned fd, struct file *file, unsigned flags)
+>  	return err;
+>  }
+>  
+> +/**
+> + * __fd_install_received() - Install received file into file descriptor table
+> + *
+> + * @fd: fd to install into (if negative, a new fd will be allocated)
+> + * @file: struct file that was received from another process
+> + * @ufd_required: true to use @ufd for writing fd number to userspace
+> + * @ufd: __user pointer to write new fd number to
+> + * @o_flags: the O_* flags to apply to the new fd entry
+Probably doesn't matter, but this function doesn't take the fd, or ufd_required
+argument in this patch. 
 
-This is the first BPF selftest that at all looks at and tests
-bpf_probe_read_str()-like helper's return value, closing a major gap in B=
-PF
-testing. It surfaced the problem with bpf_probe_read_kernel_str() returni=
-ng
-0 on success, instead of amount of bytes successfully read.
+> + *
+> + * Installs a received file into the file descriptor table, with appropriate
+> + * checks and count updates. Optionally writes the fd number to userspace.
+ufd does not apppear options here.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../testing/selftests/bpf/prog_tests/varlen.c | 56 +++++++++++
- .../testing/selftests/bpf/progs/test_varlen.c | 96 +++++++++++++++++++
- 2 files changed, 152 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/varlen.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_varlen.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/varlen.c b/tools/test=
-ing/selftests/bpf/prog_tests/varlen.c
-new file mode 100644
-index 000000000000..e498e2b90da1
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/varlen.c
-@@ -0,0 +1,56 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include <test_progs.h>
-+#include <time.h>
-+#include "test_varlen.skel.h"
-+
-+#define CHECK_VAL(got, exp) \
-+	CHECK((got) !=3D (exp), "check", "got %ld !=3D exp %ld\n", \
-+	      (long)(got), (long)(exp))
-+
-+void test_varlen(void)
-+{
-+	int duration =3D 0, err;
-+	struct test_varlen* skel;
-+	struct test_varlen__bss *bss;
-+	struct test_varlen__data *data;
-+	const char str1[] =3D "Hello, ";
-+	const char str2[] =3D "World!";
-+	const char exp_str[] =3D "Hello, \0World!\0";
-+	const int size1 =3D sizeof(str1);
-+	const int size2 =3D sizeof(str2);
-+
-+	skel =3D test_varlen__open_and_load();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		return;
-+	bss =3D skel->bss;
-+	data =3D skel->data;
-+
-+	err =3D test_varlen__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	bss->test_pid =3D getpid();
-+
-+	/* trigger everything */
-+	memcpy(bss->buf_in1, str1, size1);
-+	memcpy(bss->buf_in2, str2, size2);
-+	bss->capture =3D true;
-+	usleep(1);
-+	bss->capture =3D false;
-+
-+	CHECK_VAL(bss->payload1_len1, size1);
-+	CHECK_VAL(bss->payload1_len2, size2);
-+	CHECK_VAL(bss->total1, size1 + size2);
-+	CHECK(memcmp(bss->payload1, exp_str, size1 + size2), "content_check",
-+	      "doesn't match!");
-+		=09
-+	CHECK_VAL(data->payload2_len1, size1);
-+	CHECK_VAL(data->payload2_len2, size2);
-+	CHECK_VAL(data->total2, size1 + size2);
-+	CHECK(memcmp(data->payload2, exp_str, size1 + size2), "content_check",
-+	      "doesn't match!");
-+cleanup:
-+	test_varlen__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_varlen.c b/tools/test=
-ing/selftests/bpf/progs/test_varlen.c
-new file mode 100644
-index 000000000000..09691852debf
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_varlen.c
-@@ -0,0 +1,96 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_core_read.h>
-+
-+#define MAX_LEN 256
-+
-+char buf_in1[MAX_LEN] =3D {};
-+char buf_in2[MAX_LEN] =3D {};
-+
-+int test_pid =3D 0;
-+bool capture =3D false;
-+
-+/* .bss */
-+long payload1_len1 =3D 0;
-+long payload1_len2 =3D 0;
-+long total1 =3D 0;
-+char payload1[MAX_LEN + MAX_LEN] =3D {};
-+
-+/* .data */
-+int payload2_len1 =3D -1;
-+int payload2_len2 =3D -1;
-+int total2 =3D -1;
-+char payload2[MAX_LEN + MAX_LEN] =3D { 1 };
-+
-+SEC("raw_tp/sys_enter")
-+int handler64(void *regs)
-+{
-+	int pid =3D bpf_get_current_pid_tgid() >> 32;
-+	void *payload =3D payload1;
-+	u64 len;
-+
-+	/* ignore irrelevant invocations */
-+	if (test_pid !=3D pid || !capture)
-+		return 0;
-+
-+	len =3D bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in1[0]);
-+	if (len <=3D MAX_LEN) {
-+		payload +=3D len;
-+		payload1_len1 =3D len;
-+	}
-+
-+	len =3D bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in2[0]);
-+	if (len <=3D MAX_LEN) {
-+		payload +=3D len;
-+		payload1_len2 =3D len;
-+	}
-+
-+	total1 =3D payload - (void *)payload1;
-+
-+	return 0;
-+}
-+
-+SEC("tp_btf/sys_enter")
-+int handler32(void *regs)
-+{
-+	int pid =3D bpf_get_current_pid_tgid() >> 32;
-+	void *payload =3D payload2;
-+	u32 len;
-+
-+	/* ignore irrelevant invocations */
-+	if (test_pid !=3D pid || !capture)
-+		return 0;
-+
-+	len =3D bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in1[0]);
-+	if (len <=3D MAX_LEN) {
-+		payload +=3D len;
-+		payload2_len1 =3D len;
-+	}
-+
-+	len =3D bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in2[0]);
-+	if (len <=3D MAX_LEN) {
-+		payload +=3D len;
-+		payload2_len2 =3D len;
-+	}
-+
-+	total2 =3D payload - (void *)payload2;
-+
-+	return 0;
-+}
-+
-+SEC("tp_btf/sys_exit")
-+int handler_exit(void *regs)
-+{
-+	long bla;
-+
-+	if (bpf_probe_read_kernel(&bla, sizeof(bla), 0))
-+		return 1;
-+	else
-+		return 0;
-+}
-+
-+char LICENSE[] SEC("license") =3D "GPL";
---=20
-2.24.1
-
+> + *
+> + * Returns -ve on error.
+> + */
+> +int __fd_install_received(struct file *file, int __user *ufd, unsigned int o_flags)
+> +{
+> +	struct socket *sock;
+> +	int new_fd;
+> +	int error;
+> +
+> +	error = security_file_receive(file);
+> +	if (error)
+> +		return error;
+> +
+> +	new_fd = get_unused_fd_flags(o_flags);
+> +	if (new_fd < 0)
+> +		return new_fd;
+> +
+> +	error = put_user(new_fd, ufd);
+> +	if (error) {
+> +		put_unused_fd(new_fd);
+> +		return error;
+> +	}
+> +
+> +	/* Bump the usage count and install the file. */
+> +	sock = sock_from_file(file, &error);
+> +	if (sock) {
+> +		sock_update_netprioidx(&sock->sk->sk_cgrp_data);
+> +		sock_update_classid(&sock->sk->sk_cgrp_data);
+> +	}
+> +	fd_install(new_fd, get_file(file));
+> +	return 0;
+> +}
+> +
+>  static int ksys_dup3(unsigned int oldfd, unsigned int newfd, int flags)
+>  {
+>  	int err = -EBADF;
+> diff --git a/include/linux/file.h b/include/linux/file.h
+> index 122f80084a3e..fe18a1a0d555 100644
+> --- a/include/linux/file.h
+> +++ b/include/linux/file.h
+> @@ -91,6 +91,14 @@ extern void put_unused_fd(unsigned int fd);
+>  
+>  extern void fd_install(unsigned int fd, struct file *file);
+>  
+> +extern int __fd_install_received(struct file *file, int __user *ufd,
+> +				 unsigned int o_flags);
+> +static inline int fd_install_received_user(struct file *file, int __user *ufd,
+> +					   unsigned int o_flags)
+> +{
+> +	return __fd_install_received(file, ufd, o_flags);
+> +}
+> +
+>  extern void flush_delayed_fput(void);
+>  extern void __fput_sync(struct file *);
+>  
+> diff --git a/include/net/scm.h b/include/net/scm.h
+> index 581a94d6c613..1ce365f4c256 100644
+> --- a/include/net/scm.h
+> +++ b/include/net/scm.h
+> @@ -37,7 +37,6 @@ struct scm_cookie {
+>  #endif
+>  };
+>  
+> -int __scm_install_fd(struct file *file, int __user *ufd, unsigned int o_flags);
+>  void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm);
+>  void scm_detach_fds_compat(struct msghdr *msg, struct scm_cookie *scm);
+>  int __scm_send(struct socket *sock, struct msghdr *msg, struct scm_cookie *scm);
+> diff --git a/net/compat.c b/net/compat.c
+> index 27d477fdcaa0..94f288e8dac5 100644
+> --- a/net/compat.c
+> +++ b/net/compat.c
+> @@ -298,7 +298,7 @@ void scm_detach_fds_compat(struct msghdr *msg, struct scm_cookie *scm)
+>  	int err = 0, i;
+>  
+>  	for (i = 0; i < fdmax; i++) {
+> -		err = __scm_install_fd(scm->fp->fp[i], cmsg_data + i, o_flags);
+> +		err = fd_install_received_user(scm->fp->fp[i], cmsg_data + i, o_flags);
+>  		if (err)
+>  			break;
+>  	}
+> diff --git a/net/core/scm.c b/net/core/scm.c
+> index 6151678c73ed..df190f1fdd28 100644
+> --- a/net/core/scm.c
+> +++ b/net/core/scm.c
+> @@ -280,36 +280,6 @@ void put_cmsg_scm_timestamping(struct msghdr *msg, struct scm_timestamping_inter
+>  }
+>  EXPORT_SYMBOL(put_cmsg_scm_timestamping);
+>  
+> -int __scm_install_fd(struct file *file, int __user *ufd, unsigned int o_flags)
+> -{
+> -	struct socket *sock;
+> -	int new_fd;
+> -	int error;
+> -
+> -	error = security_file_receive(file);
+> -	if (error)
+> -		return error;
+> -
+> -	new_fd = get_unused_fd_flags(o_flags);
+> -	if (new_fd < 0)
+> -		return new_fd;
+> -
+> -	error = put_user(new_fd, ufd);
+> -	if (error) {
+> -		put_unused_fd(new_fd);
+> -		return error;
+> -	}
+> -
+> -	/* Bump the usage count and install the file. */
+> -	sock = sock_from_file(file, &error);
+> -	if (sock) {
+> -		sock_update_netprioidx(&sock->sk->sk_cgrp_data);
+> -		sock_update_classid(&sock->sk->sk_cgrp_data);
+> -	}
+> -	fd_install(new_fd, get_file(file));
+> -	return 0;
+> -}
+> -
+>  static int scm_max_fds(struct msghdr *msg)
+>  {
+>  	if (msg->msg_controllen <= sizeof(struct cmsghdr))
+> @@ -336,7 +306,7 @@ void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
+>  	}
+>  
+>  	for (i = 0; i < fdmax; i++) {
+> -		err = __scm_install_fd(scm->fp->fp[i], cmsg_data + i, o_flags);
+> +		err = fd_install_received_user(scm->fp->fp[i], cmsg_data + i, o_flags);
+>  		if (err)
+>  			break;
+>  	}
+> -- 
+> 2.25.1
+> 
