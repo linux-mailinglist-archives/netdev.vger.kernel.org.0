@@ -2,98 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA9691FA56E
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 03:12:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D6441FA569
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 03:09:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726782AbgFPBMC convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 15 Jun 2020 21:12:02 -0400
-Received: from asix.com.tw ([210.243.224.51]:57329 "EHLO freebsd2.asix.com.tw"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726564AbgFPBMC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Jun 2020 21:12:02 -0400
-Received: from AllanWin10 ([210.243.224.52])
-        (authenticated bits=0)
-        by freebsd2.asix.com.tw (8.15.2/8.15.2) with ESMTPSA id 05G1BSwx057632
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 16 Jun 2020 09:11:35 +0800 (CST)
-        (envelope-from allan@asix.com.tw)
-Authentication-Results: freebsd2.asix.com.tw; sender-id=softfail header.from=allan@asix.com.tw; auth=pass (LOGIN); spf=softfail smtp.mfrom=allan@asix.com.tw
-X-Authentication-Warning: freebsd2.asix.com.tw: Host [210.243.224.52] claimed to be AllanWin10
-From:   "ASIX_Allan [Office]" <allan@asix.com.tw>
-To:     "'David Miller'" <davem@davemloft.net>, <jk@ozlabs.org>,
-        =?utf-8?B?QVNJWCBMb3VpcyBb6JiH5aiB6Zm4XQ==?= <louis@asix.com.tw>
-Cc:     <netdev@vger.kernel.org>, <pfink@christ-es.de>,
-        <linux-usb@vger.kernel.org>
-References: <20200615025456.30219-1-jk@ozlabs.org> <20200615.125220.492630206908309571.davem@davemloft.net>
-In-Reply-To: <20200615.125220.492630206908309571.davem@davemloft.net>
-Subject: RE: [PATCH] net: usb: ax88179_178a: fix packet alignment padding
-Date:   Tue, 16 Jun 2020 09:08:30 +0800
-Message-ID: <000f01d6437a$ab60b080$02221180$@asix.com.tw>
-MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: zh-tw
-Thread-Index: AQHuQNNAcJozatbpD9iQc3OpXVVaxAIJkOpNqJomUbA=
+        id S1726718AbgFPBJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 21:09:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52164 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726369AbgFPBJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 21:09:43 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D393C061A0E
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 18:09:43 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 91625122CBCB9;
+        Mon, 15 Jun 2020 18:09:42 -0700 (PDT)
+Date:   Mon, 15 Jun 2020 18:09:41 -0700 (PDT)
+Message-Id: <20200615.180941.204956390185248889.davem@davemloft.net>
+To:     weiyongjun1@huawei.com
+Cc:     mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        peter.krystad@linux.intel.com, netdev@vger.kernel.org,
+        mptcp@lists.01.org
+Subject: Re: [PATCH net v2] mptcp: fix memory leak in
+ mptcp_subflow_create_socket()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200615013522.96854-1-weiyongjun1@huawei.com>
+References: <20200615013522.96854-1-weiyongjun1@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 15 Jun 2020 18:09:42 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added ASIX S/W, Louis in the CC loop. 
+From: Wei Yongjun <weiyongjun1@huawei.com>
+Date: Mon, 15 Jun 2020 09:35:22 +0800
 
- 
----
-Best regards,
-Allan Chou
-ASIX Electronics Corporation
-TEL: 886-3-5799500 ext.228
-FAX: 886-3-5799558
-E-mail: allan@asix.com.tw 
-https://www.asix.com.tw/ 
-
-
-
------Original Message-----
-From: David Miller <davem@davemloft.net> 
-Sent: Tuesday, June 16, 2020 3:52 AM
-To: jk@ozlabs.org
-Cc: netdev@vger.kernel.org; allan@asix.com.tw; freddy@asix.com.tw; pfink@christ-es.de; linux-usb@vger.kernel.org
-Subject: Re: [PATCH] net: usb: ax88179_178a: fix packet alignment padding
-
-From: Jeremy Kerr <jk@ozlabs.org>
-Date: Mon, 15 Jun 2020 10:54:56 +0800
-
-> Using a AX88179 device (0b95:1790), I see two bytes of appended data 
-> on every RX packet. For example, this 48-byte ping, using 0xff as a 
-> payload byte:
+> socket malloced  by sock_create_kern() should be release before return
+> in the error handling, otherwise it cause memory leak.
 > 
->   04:20:22.528472 IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 2447, seq 1, length 64
-> 	0x0000:  000a cd35 ea50 000a cd35 ea4f 0800 4500
-> 	0x0010:  0054 c116 4000 4001 f63e c0a8 0101 c0a8
-> 	0x0020:  0102 0800 b633 098f 0001 87ea cd5e 0000
-> 	0x0030:  0000 dcf2 0600 0000 0000 ffff ffff ffff
-> 	0x0040:  ffff ffff ffff ffff ffff ffff ffff ffff
-> 	0x0050:  ffff ffff ffff ffff ffff ffff ffff ffff
-> 	0x0060:  ffff 961f
+> unreferenced object 0xffff88810910c000 (size 1216):
+>   comm "00000003_test_m", pid 12238, jiffies 4295050289 (age 54.237s)
+>   hex dump (first 32 bytes):
+>     01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
+>     00 00 00 00 00 00 00 00 00 2f 30 0a 81 88 ff ff  ........./0.....
+>   backtrace:
+>     [<00000000e877f89f>] sock_alloc_inode+0x18/0x1c0
+>     [<0000000093d1dd51>] alloc_inode+0x63/0x1d0
+>     [<000000005673fec6>] new_inode_pseudo+0x14/0xe0
+>     [<00000000b5db6be8>] sock_alloc+0x3c/0x260
+>     [<00000000e7e3cbb2>] __sock_create+0x89/0x620
+>     [<0000000023e48593>] mptcp_subflow_create_socket+0xc0/0x5e0
+>     [<00000000419795e4>] __mptcp_socket_create+0x1ad/0x3f0
+>     [<00000000b2f942e8>] mptcp_stream_connect+0x281/0x4f0
+>     [<00000000c80cd5cc>] __sys_connect_file+0x14d/0x190
+>     [<00000000dc761f11>] __sys_connect+0x128/0x160
+>     [<000000008b14e764>] __x64_sys_connect+0x6f/0xb0
+>     [<000000007b4f93bd>] do_syscall_64+0xa1/0x530
+>     [<00000000d3e770b6>] entry_SYSCALL_64_after_hwframe+0x49/0xb3
 > 
-> Those last two bytes - 96 1f - aren't part of the original packet.
+> Fixes: 2303f994b3e1 ("mptcp: Associate MPTCP context with TCP socket")
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> ---
+> v1 -> v2: add net prefix to subject line
 
-Does this happen for non-tail packets in a multi-packet cluster?
-
-Because that code in this loop makes the same calculations:
-
-		ax_skb = skb_clone(skb, GFP_ATOMIC);
-		if (ax_skb) {
-			ax_skb->len = pkt_len;
-			ax_skb->data = skb->data + 2;
-			skb_set_tail_pointer(ax_skb, pkt_len);
-			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
-			ax88179_rx_checksum(ax_skb, pkt_hdr);
-			usbnet_skb_return(dev, ax_skb);
-
-So if your change is right, it should be applied to this code block as well.
-
-And do we know that it's two extra tail bytes always?  Or some kind of alignment padding the chip performs for every sub-packet?
-
+Applied and queued up for v5.6 -stable, thanks.
