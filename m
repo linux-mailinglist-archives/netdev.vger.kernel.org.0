@@ -2,82 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 625281FB88B
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 17:57:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6B81FBAA0
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 18:13:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732470AbgFPPz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 11:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732774AbgFPPzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 11:55:10 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570EAC061573
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:55:10 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id p18so14643952eds.7
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=4MZz+gQSjrUiW8A5Rr9Cr5uWAGuLGgGCK1CinfFgSlU=;
-        b=tlnUH+VagKBnH9ClkpjWYL0SERYZg7BlqN9stIkcg71xVuSQ+oqkWnR+vu45BNYGH1
-         Et5y5B7NtMttydbUfa3FW7KL79Bxef0U8pGww+jPFhSSBUTptUfmCrC97zY5vO6j/s8C
-         aS0pA553dqyKS/mKSz729DF/OTw1yldb8osWPOYNjaPfsvJ5FfJ9hKDBvNIwtCYYHIQh
-         EXVVUAvJRabayHQdxWSaw3nLwxWot9c7Xpk6/uchbuA8hby42bNtruyErqyWDSpwDdx3
-         EwYsaAKZekIHIBQPa6w4JtrFIkzBmRrlGVCRuYz+vvNAncJjqs07BR6VXru5oPbBEBoN
-         ASHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=4MZz+gQSjrUiW8A5Rr9Cr5uWAGuLGgGCK1CinfFgSlU=;
-        b=gPbK0lkjnBddv2H8U3o3ccn8vSUIym5X7cR3nzW8akCPKB5coNXqprDnkyNTu6vyp4
-         kYhmTe7ayvO/yWaL+7TCvTwIM9565/CrhO7QuSHpF+lPNS6o4tPkh5z4tVPzm1C0Hyzp
-         ilNKY9Pd/ShwU35/+rvunJfUxWHxLOsEJhhGbeT/SAJE2rtxTrYnqdZMFN6tFLE+vvIX
-         o5CUogwVA1MA0Ue924u6dGxPiY0WHxe6QEivG30mgceJ/YN3vEjfPUK4ZXP7zqzjz1rM
-         MexX35fP03NZIcPdgGxtltGTDleIoeRGW5lGLMzQQhQ+ne4hKO4gMVgRq7da3uVSTwNE
-         yocQ==
-X-Gm-Message-State: AOAM532zZZ5QWKxsUxUABMcQAs58C1H9LT5oSJreCka6ya16qRyyuuRf
-        b7wYUVCpymGBy7abdVV/W73w9A==
-X-Google-Smtp-Source: ABdhPJyw6Haz8kay07oFbDG4pMcKeG0MwI2wMasmKqXJB3XnqQpZ3xYrOU2nXh0gnE4/MVjZwuoYmw==
-X-Received: by 2002:a05:6402:a49:: with SMTP id bt9mr3285952edb.300.1592322909106;
-        Tue, 16 Jun 2020 08:55:09 -0700 (PDT)
-Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id qt19sm11345955ejb.14.2020.06.16.08.55.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 08:55:08 -0700 (PDT)
-Date:   Tue, 16 Jun 2020 17:55:07 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     wenxu@ucloud.cn
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pablo@netfilter.org,
-        vladbu@mellanox.com
-Subject: Re: [PATCH net v3 1/4] flow_offload: fix incorrect cleanup for
- flowtable indirect flow_blocks
-Message-ID: <20200616155506.GA18143@netronome.com>
-References: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
- <1592277580-5524-2-git-send-email-wenxu@ucloud.cn>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1592277580-5524-2-git-send-email-wenxu@ucloud.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1732079AbgFPQMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 12:12:30 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:23897 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1731880AbgFPPn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 11:43:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592322235;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=n2vgEtySMMJw+Y6/Iz7yVj4GHK2o/g3YD4HMOMKMGxw=;
+        b=Kr0cwc+HRVHnmnKsYYV3UqzW3PHTGjd/Qb4fvvXrY9gxrA+fC4zPWzeE+63uGE7zkOtHoK
+        GfgiIfEKFyYdyuToX7/lqNCnV935c+cFQyZ7ZlZ2ZbVwnemwqwS/BOZQ2ttPGADs80G1Lz
+        Xl+sF7Gm/o42WUYge8t/5umo2Zca46c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-245-iVwDnxGCNeS1_dm-BMJ-EQ-1; Tue, 16 Jun 2020 11:43:51 -0400
+X-MC-Unique: iVwDnxGCNeS1_dm-BMJ-EQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8A261EC1A2;
+        Tue, 16 Jun 2020 15:43:45 +0000 (UTC)
+Received: from llong.com (ovpn-114-156.rdu2.redhat.com [10.10.114.156])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 68C6460C47;
+        Tue, 16 Jun 2020 15:43:37 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joe Perches <joe@perches.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Rientjes <rientjes@google.com>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>, linux-mm@kvack.org,
+        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-amlogic@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-ppp@vger.kernel.org, wireguard@lists.zx2c4.com,
+        linux-wireless@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-cifs@vger.kernel.org, linux-fscrypt@vger.kernel.org,
+        ecryptfs@vger.kernel.org, kasan-dev@googlegroups.com,
+        linux-bluetooth@vger.kernel.org, linux-wpan@vger.kernel.org,
+        linux-sctp@vger.kernel.org, linux-nfs@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org, Waiman Long <longman@redhat.com>
+Subject: [PATCH v5 0/2] mm, treewide: Rename kzfree() to kfree_sensitive()
+Date:   Tue, 16 Jun 2020 11:43:09 -0400
+Message-Id: <20200616154311.12314-1-longman@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 11:19:37AM +0800, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
-> 
-> The cleanup operation based on the setup callback. But in the mlx5e
-> driver there are tc and flowtable indrict setup callback and shared
-> the same release callbacks. So when the representor is removed,
-> then identify the indirect flow_blocks that need to be removed by  
-> the release callback.
-> 
-> Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
+ v5:
+  - Break the btrfs patch out as a separate patch to be processed
+    independently.
+  - Update the commit log of patch 1 to make it less scary.
+  - Add a kzfree backward compatibility macro in patch 2.
 
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
+ v4:
+  - Break out the memzero_explicit() change as suggested by Dan Carpenter
+    so that it can be backported to stable.
+  - Drop the "crypto: Remove unnecessary memzero_explicit()" patch for
+    now as there can be a bit more discussion on what is best. It will be
+    introduced as a separate patch later on after this one is merged.
+
+This patchset makes a global rename of the kzfree() to kfree_sensitive()
+to highlight the fact buffer clearing is only needed if the data objects
+contain sensitive information like encrpytion key. The fact that kzfree()
+uses memset() to do the clearing isn't totally safe either as compiler
+may compile out the clearing in their optimizer especially if LTO is
+used. Instead, the new kfree_sensitive() uses memzero_explicit() which
+won't get compiled out.
+
+
+Waiman Long (2):
+  mm/slab: Use memzero_explicit() in kzfree()
+  mm, treewide: Rename kzfree() to kfree_sensitive()
+
+ arch/s390/crypto/prng.c                       |  4 +--
+ arch/x86/power/hibernate.c                    |  2 +-
+ crypto/adiantum.c                             |  2 +-
+ crypto/ahash.c                                |  4 +--
+ crypto/api.c                                  |  2 +-
+ crypto/asymmetric_keys/verify_pefile.c        |  4 +--
+ crypto/deflate.c                              |  2 +-
+ crypto/drbg.c                                 | 10 +++---
+ crypto/ecc.c                                  |  8 ++---
+ crypto/ecdh.c                                 |  2 +-
+ crypto/gcm.c                                  |  2 +-
+ crypto/gf128mul.c                             |  4 +--
+ crypto/jitterentropy-kcapi.c                  |  2 +-
+ crypto/rng.c                                  |  2 +-
+ crypto/rsa-pkcs1pad.c                         |  6 ++--
+ crypto/seqiv.c                                |  2 +-
+ crypto/shash.c                                |  2 +-
+ crypto/skcipher.c                             |  2 +-
+ crypto/testmgr.c                              |  6 ++--
+ crypto/zstd.c                                 |  2 +-
+ .../allwinner/sun8i-ce/sun8i-ce-cipher.c      |  2 +-
+ .../allwinner/sun8i-ss/sun8i-ss-cipher.c      |  2 +-
+ drivers/crypto/amlogic/amlogic-gxl-cipher.c   |  4 +--
+ drivers/crypto/atmel-ecc.c                    |  2 +-
+ drivers/crypto/caam/caampkc.c                 | 28 +++++++--------
+ drivers/crypto/cavium/cpt/cptvf_main.c        |  6 ++--
+ drivers/crypto/cavium/cpt/cptvf_reqmanager.c  | 12 +++----
+ drivers/crypto/cavium/nitrox/nitrox_lib.c     |  4 +--
+ drivers/crypto/cavium/zip/zip_crypto.c        |  6 ++--
+ drivers/crypto/ccp/ccp-crypto-rsa.c           |  6 ++--
+ drivers/crypto/ccree/cc_aead.c                |  4 +--
+ drivers/crypto/ccree/cc_buffer_mgr.c          |  4 +--
+ drivers/crypto/ccree/cc_cipher.c              |  6 ++--
+ drivers/crypto/ccree/cc_hash.c                |  8 ++---
+ drivers/crypto/ccree/cc_request_mgr.c         |  2 +-
+ drivers/crypto/marvell/cesa/hash.c            |  2 +-
+ .../crypto/marvell/octeontx/otx_cptvf_main.c  |  6 ++--
+ .../marvell/octeontx/otx_cptvf_reqmgr.h       |  2 +-
+ drivers/crypto/mediatek/mtk-aes.c             |  2 +-
+ drivers/crypto/nx/nx.c                        |  4 +--
+ drivers/crypto/virtio/virtio_crypto_algs.c    | 12 +++----
+ drivers/crypto/virtio/virtio_crypto_core.c    |  2 +-
+ drivers/md/dm-crypt.c                         | 32 ++++++++---------
+ drivers/md/dm-integrity.c                     |  6 ++--
+ drivers/misc/ibmvmc.c                         |  6 ++--
+ .../hisilicon/hns3/hns3pf/hclge_mbx.c         |  2 +-
+ .../net/ethernet/intel/ixgbe/ixgbe_ipsec.c    |  6 ++--
+ drivers/net/ppp/ppp_mppe.c                    |  6 ++--
+ drivers/net/wireguard/noise.c                 |  4 +--
+ drivers/net/wireguard/peer.c                  |  2 +-
+ drivers/net/wireless/intel/iwlwifi/pcie/rx.c  |  2 +-
+ .../net/wireless/intel/iwlwifi/pcie/tx-gen2.c |  6 ++--
+ drivers/net/wireless/intel/iwlwifi/pcie/tx.c  |  6 ++--
+ drivers/net/wireless/intersil/orinoco/wext.c  |  4 +--
+ drivers/s390/crypto/ap_bus.h                  |  4 +--
+ drivers/staging/ks7010/ks_hostif.c            |  2 +-
+ drivers/staging/rtl8723bs/core/rtw_security.c |  2 +-
+ drivers/staging/wlan-ng/p80211netdev.c        |  2 +-
+ drivers/target/iscsi/iscsi_target_auth.c      |  2 +-
+ fs/cifs/cifsencrypt.c                         |  2 +-
+ fs/cifs/connect.c                             | 10 +++---
+ fs/cifs/dfs_cache.c                           |  2 +-
+ fs/cifs/misc.c                                |  8 ++---
+ fs/crypto/keyring.c                           |  6 ++--
+ fs/crypto/keysetup_v1.c                       |  4 +--
+ fs/ecryptfs/keystore.c                        |  4 +--
+ fs/ecryptfs/messaging.c                       |  2 +-
+ include/crypto/aead.h                         |  2 +-
+ include/crypto/akcipher.h                     |  2 +-
+ include/crypto/gf128mul.h                     |  2 +-
+ include/crypto/hash.h                         |  2 +-
+ include/crypto/internal/acompress.h           |  2 +-
+ include/crypto/kpp.h                          |  2 +-
+ include/crypto/skcipher.h                     |  2 +-
+ include/linux/slab.h                          |  4 ++-
+ lib/mpi/mpiutil.c                             |  6 ++--
+ lib/test_kasan.c                              |  6 ++--
+ mm/slab_common.c                              | 10 +++---
+ net/atm/mpoa_caches.c                         |  4 +--
+ net/bluetooth/ecdh_helper.c                   |  6 ++--
+ net/bluetooth/smp.c                           | 24 ++++++-------
+ net/core/sock.c                               |  2 +-
+ net/ipv4/tcp_fastopen.c                       |  2 +-
+ net/mac80211/aead_api.c                       |  4 +--
+ net/mac80211/aes_gmac.c                       |  2 +-
+ net/mac80211/key.c                            |  2 +-
+ net/mac802154/llsec.c                         | 20 +++++------
+ net/sctp/auth.c                               |  2 +-
+ net/sctp/socket.c                             |  2 +-
+ net/sunrpc/auth_gss/gss_krb5_crypto.c         |  4 +--
+ net/sunrpc/auth_gss/gss_krb5_keys.c           |  6 ++--
+ net/sunrpc/auth_gss/gss_krb5_mech.c           |  2 +-
+ net/tipc/crypto.c                             | 10 +++---
+ net/wireless/core.c                           |  2 +-
+ net/wireless/ibss.c                           |  4 +--
+ net/wireless/lib80211_crypt_tkip.c            |  2 +-
+ net/wireless/lib80211_crypt_wep.c             |  2 +-
+ net/wireless/nl80211.c                        | 24 ++++++-------
+ net/wireless/sme.c                            |  6 ++--
+ net/wireless/util.c                           |  2 +-
+ net/wireless/wext-sme.c                       |  2 +-
+ scripts/coccinelle/free/devm_free.cocci       |  4 +--
+ scripts/coccinelle/free/ifnullfree.cocci      |  4 +--
+ scripts/coccinelle/free/kfree.cocci           |  6 ++--
+ scripts/coccinelle/free/kfreeaddr.cocci       |  2 +-
+ security/apparmor/domain.c                    |  4 +--
+ security/apparmor/include/file.h              |  2 +-
+ security/apparmor/policy.c                    | 24 ++++++-------
+ security/apparmor/policy_ns.c                 |  6 ++--
+ security/apparmor/policy_unpack.c             | 14 ++++----
+ security/keys/big_key.c                       |  6 ++--
+ security/keys/dh.c                            | 14 ++++----
+ security/keys/encrypted-keys/encrypted.c      | 14 ++++----
+ security/keys/trusted-keys/trusted_tpm1.c     | 34 +++++++++----------
+ security/keys/user_defined.c                  |  6 ++--
+ 115 files changed, 323 insertions(+), 321 deletions(-)
+
+-- 
+2.18.1
 
