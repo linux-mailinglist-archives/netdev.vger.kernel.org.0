@@ -2,83 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D84091FABE5
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 11:08:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 600881FABED
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 11:09:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727953AbgFPJI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 05:08:27 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:46947 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727819AbgFPJI1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jun 2020 05:08:27 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727103AbgFPJJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 05:09:39 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:39017 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726112AbgFPJJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 05:09:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592298577;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=51BAkyLImqbEYwUqTNMdCgD6S574WH5eIIC98MtFJoI=;
+        b=M7yy8BTy3gVnT+6p86i/ReWEnJIGM2pGXc/o0Sr7cKKHtErnS0f2e/DpaIx/fAVeHzXfIw
+        onRdRvg2gEKffM5UEG/PjQbCCGGbELw2pfSM7F7Pp7zL+oX0iLx4Ce39dvUbLwBH/w32CV
+        phtNN8MrzA1ojL1rIOaoXIeR31hwL4k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-166-mQL88YqeOtafgpkKkzIXVw-1; Tue, 16 Jun 2020 05:09:35 -0400
+X-MC-Unique: mQL88YqeOtafgpkKkzIXVw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 49mMn40N2Nz9sR4;
-        Tue, 16 Jun 2020 19:08:23 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ozlabs.org; s=201707;
-        t=1592298505; bh=u1FRa3Ay1JFMfOQ5OAd+l2EnGRttEMM/Y3auoqc9gak=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=YYh3cpSOIs3PAB7FdMmy+XjumRkKpExTM1htZKx87R14wjigHoOHPtF5WHixWm2ll
-         k2xJU33UBJJyWpn85sfJXlqsGPbE29Xrd02lqJTTmb33tPYw3edMwTrYjgxC9HcY1z
-         0obdT9BRY60sYJG0fZhJ8Q9mH3dZp/ROlYBDnE73llyAuCcdYa3ErXGiHIL2Nc/fDG
-         g2YrvosbyPiACGmtaNAuAeWZOLn2xV7cuqGZq+Iz/3s/2UFSdv224xeETM6Fi+WfX4
-         sJndU39bXHDsBYak+hajaoROeeUF9o03PHdJ6A2CwWGPzEOzenCdNyWEMooEA3cEEX
-         Ks6XVWtyBhBzA==
-Message-ID: <e780f13fdde89d03ef863618d8de3dd67ba53c72.camel@ozlabs.org>
-Subject: Re: [PATCH] net: usb: ax88179_178a: fix packet alignment padding
-From:   Jeremy Kerr <jk@ozlabs.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, allan@asix.com.tw, freddy@asix.com.tw,
-        pfink@christ-es.de, linux-usb@vger.kernel.org, louis@asix.com.tw
-Date:   Tue, 16 Jun 2020 17:08:23 +0800
-In-Reply-To: <20200615.125220.492630206908309571.davem@davemloft.net>
-References: <20200615025456.30219-1-jk@ozlabs.org>
-         <20200615.125220.492630206908309571.davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 444208BF94F;
+        Tue, 16 Jun 2020 09:09:34 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.64])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3E10C60BEC;
+        Tue, 16 Jun 2020 09:09:23 +0000 (UTC)
+Date:   Tue, 16 Jun 2020 11:09:22 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        brouer@redhat.com
+Subject: Re: [PATCHv4 bpf-next 0/2] xdp: add dev map multicast support
+Message-ID: <20200616110922.1219ec5e@carbon>
+In-Reply-To: <87lfld1krx.fsf@toke.dk>
+References: <20200415085437.23028-1-liuhangbin@gmail.com>
+        <20200526140539.4103528-1-liuhangbin@gmail.com>
+        <87zh9t1xvh.fsf@toke.dk>
+        <20200527123858.GH102436@dhcp-12-153.nay.redhat.com>
+        <87lfld1krx.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Wed, 27 May 2020 17:04:50 +0200
+Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
 
-> > Those last two bytes - 96 1f - aren't part of the original packet.
-> 
-> Does this happen for non-tail packets in a multi-packet cluster?
+> Hangbin Liu <liuhangbin@gmail.com> writes:
+>=20
+> > On Wed, May 27, 2020 at 12:21:54PM +0200, Toke H=C3=83=C6=92=C3=82=C2=
+=B8iland-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote: =20
+> >> > The example in patch 2 is functional, but not a lot of effort
+> >> > has been made on performance optimisation. I did a simple test(pkt s=
+ize 64)
+> >> > with pktgen. Here is the test result with BPF_MAP_TYPE_DEVMAP_HASH
+> >> > arrays:
+> >> >
+> >> > bpf_redirect_map() with 1 ingress, 1 egress:
+> >> > generic path: ~1600k pps
+> >> > native path: ~980k pps
+> >> >
+> >> > bpf_redirect_map_multi() with 1 ingress, 3 egress:
+> >> > generic path: ~600k pps
+> >> > native path: ~480k pps
+> >> >
+> >> > bpf_redirect_map_multi() with 1 ingress, 9 egress:
+> >> > generic path: ~125k pps
+> >> > native path: ~100k pps
+> >> >
+> >> > The bpf_redirect_map_multi() is slower than bpf_redirect_map() as we=
+ loop
+> >> > the arrays and do clone skb/xdpf. The native path is slower than gen=
+eric
+> >> > path as we send skbs by pktgen. So the result looks reasonable. =20
+> >>=20
+> >> How are you running these tests? Still on virtual devices? We really =
+=20
+> >
+> > I run it with the test topology in patch 2/2. The test is run on physic=
+al
+> > machines, but I use veth interface. Do you mean use a physical NIC driv=
+er
+> > for testing? =20
+>=20
+> Yes, sorry, when I said 'physical machine' I should have also 'physical
+> NIC'. We really need to know how the performance of this is on the XDP
+> fast path, i.e., when there are no skbs involved at all.
+>=20
+> > BTW, when using pktgen, I got an panic because the skb don't have enough
+> > header room. The code path looks like
+> >
+> > do_xdp_generic()
+> >   - netif_receive_generic_xdp()
+> >     - skb_headroom(skb) < XDP_PACKET_HEADROOM
+> >       - pskb_expand_head()
+> >         - BUG_ON(skb_shared(skb))
+> >
+> > So I added a draft patch for pktgen, not sure if it has any influence. =
+=20
+>=20
+> Hmm, as Jesper said pktgen was really not intended to be used this way,
+> so I guess that's why. I guess I'll let him comment on whether he thinks
+> it's worth fixing; or you could send this as a proper patch and see if
+> anyone complains about it ;)
 
-I believe so, yes. I haven't been able to reliably reproduce the multi-
-packet behaviour though, so input from ASIX would be good.
+Don't use pktgen in this way with veth.  If anything pktgen should
+detect that you use pktgen in virtual interfaces and reject/disallow
+that you do this.
 
-> 
-> Because that code in this loop makes the same calculations:
-> 
->                 ax_skb = skb_clone(skb, GFP_ATOMIC);
->                 if (ax_skb) {
->                         ax_skb->len = pkt_len;
->                         ax_skb->data = skb->data + 2;
->                         skb_set_tail_pointer(ax_skb, pkt_len);
->                         ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
->                         ax88179_rx_checksum(ax_skb, pkt_hdr);
->                         usbnet_skb_return(dev, ax_skb);
-> 
-> So if your change is right, it should be applied to this code block
-> as well.
-
-Yep, my patch changes that block too (or did I miss something?)
-
-> And do we know that it's two extra tail bytes always?  Or some kind
-> of alignment padding the chip performs for every sub-packet?
-
-I've assumed it's a constant two bytes of prefix padding, as that's all
-I've seen. But it would be great to have more detail from ASIX if
-possible.
-
-Cheers,
-
-
-Jeremy
+=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
