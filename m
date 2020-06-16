@@ -2,147 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3140E1FAD9B
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 12:11:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DEBC1FADA1
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 12:13:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbgFPKLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 06:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726052AbgFPKLo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 06:11:44 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E971C08C5C2;
-        Tue, 16 Jun 2020 03:11:44 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id t7so9009371pgt.3;
-        Tue, 16 Jun 2020 03:11:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+DDvbXVX193o17UcLMTUbMeH8CTAaBYWS5DD7w7zZaU=;
-        b=lEK3UBVOkUsVf3zAPvTqQPR1zgadS22r1sA3WXu2swfUqsVGvEifaT6Ryx/3tA+KMl
-         twfELE9qS2bc9f51ZQsWVXL/O+FoR2680VoOBGA/h/OBZxkB8KER7Pij4tjevwKN2ylb
-         44Nvb2e6xwc463yygnahJZq76/1xWx5Gr6GAlwiRCdCyp9AW5u7oDvIzIjBmfny5HnqP
-         mvHDsr4VzVclADwxPl8tcufmihgH0MdJKPqyGT+83iq+0y0j6TOk1+zxI6QEjaQ1Yv1P
-         RzXxcIHf4J2vefTSXxhj+RhH0GA/Ek1zTa4VyiYPc0WJTHLWN5Qb1BM6niIOJW53jjG7
-         sncw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+DDvbXVX193o17UcLMTUbMeH8CTAaBYWS5DD7w7zZaU=;
-        b=pKOzxDy1DKpWPzdeMwdYCZzrwwQB6pM8m74gvwXxDicUYhaHWnw6S9UG1QCV/PwrTL
-         Wx0GIcZGfL4P2X3CTPxw4uCVFWCgolq0yI8IHaCpMkg0exN1xdBA0sI/Zr8zQlmx8Npp
-         MlmYPjSUY6s65aFAGheADSEqCg6k4HW8gTIdizRsq9UnMR3OLd91ObXpCbKKKw+KmV88
-         shlVUuYmpPcFix/MXbJ7JAYeD8LaBbftBUl/10w5zCbI897V7hTvR8pLpDfmOj/1Kj7/
-         z5RMx+CZ14MgBBXSYyKkdUQl1IOy+8kfHIJ8p1CZ5UKTzhpWpz6LenAoxW3TFzsrfEUh
-         hLJA==
-X-Gm-Message-State: AOAM533XqyOPGEVYPpCuHqyXIWONTKsOM0FMhCLeJLAR/1MINlDKOdFG
-        2xvhGAUXv76ENEDrxrYKuPuusGRLwt4=
-X-Google-Smtp-Source: ABdhPJw5R5Rqb6CDQM+EfFstskOgpiQ/u+MM6HY9i6ksDyACTBLgFn6HWI7V/jE+BotO6XBfZ3LGjg==
-X-Received: by 2002:a05:6a00:50:: with SMTP id i16mr1389551pfk.25.1592302303925;
-        Tue, 16 Jun 2020 03:11:43 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id b19sm1995089pjo.57.2020.06.16.03.11.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 03:11:43 -0700 (PDT)
-Date:   Tue, 16 Jun 2020 18:11:33 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCHv4 bpf-next 1/2] xdp: add a new helper for dev map
- multicast support
-Message-ID: <20200616101133.GV102436@dhcp-12-153.nay.redhat.com>
-References: <20200415085437.23028-1-liuhangbin@gmail.com>
- <20200526140539.4103528-1-liuhangbin@gmail.com>
- <20200526140539.4103528-2-liuhangbin@gmail.com>
- <20200610121859.0412c111@carbon>
- <20200612085408.GT102436@dhcp-12-153.nay.redhat.com>
- <20200616105506.163ea5a3@carbon>
+        id S1728121AbgFPKNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 06:13:08 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20672 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726052AbgFPKNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 06:13:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592302385;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Sl3LD/rN1iOztK/aRWc8fZxwrKmlZvGDsvlVzKYcl9k=;
+        b=jFeSPHiYImKk1vpLvwlp9gzh/36nzSN8luKqGhamH99HsPesOQi4HWIVQQMNoZSrm87BMU
+        OYJrTBlcDwLFJJLByn5K8KEvlsjjkM/4e1ze7qbkmeM5a1yCN8DrZIDDzCtRCbrgttVMza
+        yeXQD+R2922RhiCBjEN25XULe+xRcJI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-61-QcA-qDcvNKy7Hlc5mfO7zg-1; Tue, 16 Jun 2020 06:13:03 -0400
+X-MC-Unique: QcA-qDcvNKy7Hlc5mfO7zg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 41641100CCC8;
+        Tue, 16 Jun 2020 10:13:02 +0000 (UTC)
+Received: from new-host-5 (unknown [10.40.194.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BC02160C80;
+        Tue, 16 Jun 2020 10:13:00 +0000 (UTC)
+Message-ID: <fd20899c60d96695060ecb782421133829f09bc2.camel@redhat.com>
+Subject: Re: [PATCH net v2 2/2] net/sched: act_gate: fix configuration of
+ the periodic timer
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Po Liu <Po.Liu@nxp.com>, Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+In-Reply-To: <CA+h21ho1x1-N+HyFXcy+pqdWcQioFWgRs0C+1h+kn6w8zHVUwQ@mail.gmail.com>
+References: <cover.1592247564.git.dcaratti@redhat.com>
+         <4a4a840333d6ba06042b9faf7e181048d5dc2433.1592247564.git.dcaratti@redhat.com>
+         <CA+h21ho1x1-N+HyFXcy+pqdWcQioFWgRs0C+1h+kn6w8zHVUwQ@mail.gmail.com>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Tue, 16 Jun 2020 12:12:59 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200616105506.163ea5a3@carbon>
+User-Agent: Evolution 3.36.1 (3.36.1-1.fc32) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-HI Jesper,
+hello Vladimir,
 
-On Tue, Jun 16, 2020 at 10:55:06AM +0200, Jesper Dangaard Brouer wrote:
-> > Is there anything else I should do except add the following line?
-> > 	nxdpf->mem.type = MEM_TYPE_PAGE_ORDER0;
-> 
-> You do realize that you also have copied over the mem.id, right?
+thanks a lot for reviewing this.
 
-Thanks for the reminding. To confirm, set mem.id to 0 is enough, right?
-> 
-> And as I wrote below you also need to update frame_sz.
-> 
-> > > 
-> > > You also need to update xdpf->frame_sz, as you also cannot assume it is
-> > > the same.  
+On Tue, 2020-06-16 at 00:55 +0300, Vladimir Oltean wrote:
+
+[...]
+
+> > diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c
+> > index 6775ccf355b0..3c529a4bcca5 100644
+> > --- a/net/sched/act_gate.c
+> > +++ b/net/sched/act_gate.c
+> > @@ -272,6 +272,27 @@ static int parse_gate_list(struct nlattr *list_attr,
+> >         return err;
+> >  }
 > > 
-> > Won't the memcpy() copy xdpf->frame_sz to nxdpf? 
+> > +static void gate_setup_timer(struct tcf_gate *gact, u64 basetime,
+> > +                            enum tk_offsets tko, s32 clockid,
+> > +                            bool do_init)
+> > +{
+> > +       if (!do_init) {
+> > +               if (basetime == gact->param.tcfg_basetime &&
+> > +                   tko == gact->tk_offset &&
+> > +                   clockid == gact->param.tcfg_clockid)
+> > +                       return;
+> > +
+> > +               spin_unlock_bh(&gact->tcf_lock);
+> > +               hrtimer_cancel(&gact->hitimer);
+> > +               spin_lock_bh(&gact->tcf_lock);
 > 
-> You obviously cannot use the frame_sz from the existing frame, as you
-> just allocated a new page for the new xdp_frame, that have another size
-> (here PAGE_SIZE).
+> I think it's horrible to do this just to get out of atomic context.
+> What if you split the "replace" functionality of gate_setup_timer into
+> a separate gate_cancel_timer function, which you could call earlier
+> (before taking the spin lock)? 
 
-Thanks, I didn't understand the frame_sz correctly before.
-> 
-> 
-> > And I didn't see xdpf->frame_sz is set in xdp_convert_zc_to_xdp_frame(),
-> > do we need a fix?
-> 
-> Good catch, that sounds like a bug, that should be fixed.
-> Will you send a fix?
+I think it would introduce the following 2 problems:
 
-OK, I will.
+problem #1) a race condition, see below:
 
+> That change would look like this:
+> diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c
+> index 3c529a4bcca5..47c625a0e70c 100644
+> --- a/net/sched/act_gate.c
+> +++ b/net/sched/act_gate.c
+> @@ -273,19 +273,8 @@ static int parse_gate_list(struct nlattr *list_attr,
+>  }
 > 
+>  static void gate_setup_timer(struct tcf_gate *gact, u64 basetime,
+> -                 enum tk_offsets tko, s32 clockid,
+> -                 bool do_init)
+> +                 enum tk_offsets tko, s32 clockid)
+>  {
+> -    if (!do_init) {
+> -        if (basetime == gact->param.tcfg_basetime &&
+> -            tko == gact->tk_offset &&
+> -            clockid == gact->param.tcfg_clockid)
+> -            return;
+> -
+> -        spin_unlock_bh(&gact->tcf_lock);
+> -        hrtimer_cancel(&gact->hitimer);
+> -        spin_lock_bh(&gact->tcf_lock);
+> -    }
+>      gact->param.tcfg_basetime = basetime;
+>      gact->param.tcfg_clockid = clockid;
+>      gact->tk_offset = tko;
+> @@ -293,6 +282,17 @@ static void gate_setup_timer(struct tcf_gate
+> *gact, u64 basetime,
+>      gact->hitimer.function = gate_timer_func;
+>  }
 > 
-> > > > +
-> > > > +	nxdpf = addr;
-> > > > +	nxdpf->data = addr + headroom;
-> > > > +
-> > > > +	return nxdpf;
-> > > > +}
-> > > > +EXPORT_SYMBOL_GPL(xdpf_clone);  
-> > > 
-> > > 
-> > > struct xdp_frame {
-> > > 	void *data;
-> > > 	u16 len;
-> > > 	u16 headroom;
-> > > 	u32 metasize:8;
-> > > 	u32 frame_sz:24;
-> > > 	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
-> > > 	 * while mem info is valid on remote CPU.
-> > > 	 */
-> > > 	struct xdp_mem_info mem;
-> > > 	struct net_device *dev_rx; /* used by cpumap */
-> > > };
-> > >   
-> > 
-> 
-> struct xdp_mem_info {
-> 	u32                        type;                 /*     0     4 */
-> 	u32                        id;                   /*     4     4 */
-> 
-> 	/* size: 8, cachelines: 1, members: 2 */
-> 	/* last cacheline: 8 bytes */
-> };
+> +static void gate_cancel_timer(struct tcf_gate *gact, u64 basetime,
+> +                  enum tk_offsets tko, s32 clockid)
+> +{
+> +    if (basetime == gact->param.tcfg_basetime &&
+> +        tko == gact->tk_offset &&
+> +        clockid == gact->param.tcfg_clockid)
+> +        return;
+> +
+> +    hrtimer_cancel(&gact->hitimer);
+> +}
+> +
+
+the above function either cancels a timer, or does nothing: it depends on
+the value of the 3-ple {tcfg_basetime, tk_offset, tcfg_clockid}. If we run
+this function without holding tcf_lock, nobody will guarantee that
+{tcfg_basetime, tk_offset, tcfg_clockid} is not being concurrently
+rewritten by some other command like:
+
+# tc action replace action gate <parameters> index <x>
+
+>  static int tcf_gate_init(struct net *net, struct nlattr *nla,
+>               struct nlattr *est, struct tc_action **a,
+>               int ovr, int bind, bool rtnl_held,
+> @@ -381,6 +381,8 @@ static int tcf_gate_init(struct net *net, struct
+> nlattr *nla,
+>      gact = to_gate(*a);
+>      if (ret == ACT_P_CREATED)
+>          INIT_LIST_HEAD(&gact->param.entries);
+> +    else
+> +        gate_cancel_timer(gact, basetime, tk_offset, clockid);
 > 
 
-Is this a struct reference or you want to remind me something else?
+IOW, the above line is racy unless we do spin_lock()/spin_unlock() around
+the
 
-Thanks
-Hangbin
+if (<expression depending on gact-> members>)
+	return; 
+
+statement before hrtimer_cancel(), which does not seem much different
+than what I did in gate_setup_timer().
+
+[...]
+
+> @@ -433,6 +448,11 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
+> >         if (goto_ch)
+> >                 tcf_chain_put_by_act(goto_ch);
+> >  release_idr:
+> > +       /* action is not in: hitimer can be inited without taking tcf_lock */
+> > +       if (ret == ACT_P_CREATED)
+> > +               gate_setup_timer(gact, gact->param.tcfg_basetime,
+> > +                                gact->tk_offset, gact->param.tcfg_clockid,
+> > +                                true);
+
+please note, here I felt the need to add a comment, because when ret ==
+ACT_P_CREATED the action is not inserted in any list, so there is no
+concurrent writer of gact-> members for that action.
+
+> >         tcf_idr_release(*a, bind);
+> >         return err;
+> >  }
+
+problem #2) a functional issue that originates in how 'cycle_time' and
+'entries' are validated (*). See below:
+
+On Tue, 2020-06-16 at 00:55 +0300, Vladimir Oltean wrote:
+
+> static int tcf_gate_init(struct net *net, struct nlattr *nla,
+>               struct nlattr *est, struct tc_action **a,
+>               int ovr, int bind, bool rtnl_held,
+> @@ -381,6 +381,8 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
+>      gact = to_gate(*a);
+>      if (ret == ACT_P_CREATED)
+>          INIT_LIST_HEAD(&gact->param.entries);
+> +    else
+> +        gate_cancel_timer(gact, basetime, tk_offset, clockid);
+
+here you propose to cancel the timer, but few lines after we have this:
+
+385         err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
+386         if (err < 0)
+387                 goto release_idr;
+388 
+
+so, when users try the following commands:
+
+# tc action add action gate <good parameters> index 2
+# tc action replace action gate <other good parameters> goto chain 42 index 2
+
+and chain 42 does not exist, the second command will fail. But the timer
+is erroneously stopped, and never started again. So, the first rule is
+correctly inserted but it becomes no more functional after users try to
+replace it with another one having invalid control action.
+
+Moving the call to gate_cancel_timer() after the validation of the control
+action will not fix this problem, because 'cycle_time' and 'entries' are
+validated together, and with the spinlock taken. Because of this, we need
+to cancel that timer only when we know that we will not do
+tcf_idr_release() and return some error to the user.
+
+please let me know if you think my doubts are not well-founded.
+
+-- 
+davide
+
+(*) now that I see parse_gate_list() again, I noticed another potential
+issue with replace (that I need to verify first): apparently the list is
+not replaced, it's just "updated" with new entries appended at the end. I
+will try to write a fix for that (separate from this series).
+
+
