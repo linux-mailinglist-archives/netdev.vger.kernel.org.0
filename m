@@ -2,139 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D9271FBD29
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 19:38:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72CA31FBD82
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 20:04:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731342AbgFPRiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 13:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
+        id S1731370AbgFPSEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 14:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728561AbgFPRiJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 13:38:09 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46B6C061573
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 10:38:08 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id 64so9826321pfv.11
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 10:38:08 -0700 (PDT)
+        with ESMTP id S1727083AbgFPSEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 14:04:04 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B54BC061573
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 11:04:04 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id n9so8739948plk.1
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 11:04:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=WKu9u3hv9rVR67uUMDQunlL+aOETxRhcJUtcJ2h+N9s=;
-        b=MftSNA4kGgYMmB8RmmgEPDnBmM+OpO2YOmrGz4zciaUaGtoRRpLP+JKaBAVwM4g/c2
-         tlubfdSba0NR+pgX8cJyMvsswO+XCqQUKCEAhc9z573ea7NmDQGsFsVGZf0hXw2xNXnZ
-         t8GYns+GVtb4EPKmQQ7WDxM3VZjt3OTPvxOciVh/zjKgVPxfS2U1HD6Xo3E12Chop+Ss
-         1KZvHeW+Po1B0vZ1Vyfdge/NwlOS9L4r1a4qsTvpK0089+i634uXKmeu1FsDpfazL6WG
-         W+jCrO1cSiGe72zEvGBhEy5m0+OtrDr+we2tkEhbBIr+/0+8bAZalC5nZD97bHolA4wP
-         fqeQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sE5tk4DyHC1wtZTWO9Af7YqdSvi/8ycJjxBdwheg7pc=;
+        b=rNPlUMPgfUuA90ot1COk9fVbtUbo3x3X/V+fQiAk63DdeyTXDJB7sHxYEG9O/1kNaT
+         WmiFMW15hbF+enicMKjyx582iUWLE+nEBoEao4LKz2c1X62exxI7AvaBeq1vdzzOmXj7
+         kudXPS8mDFWymT05Mkmcpr+DkiM+hpwf1Jn6ZV/fHqNcQ1B09F04dOw+wdiCMv2AApKk
+         UPPa1aZTGzD4hd19V/OHVxbhBnLnzBPaFtnDydztY/WuO8S4I5E3jBl9gKUptrEKMtvY
+         UkPisyruCSxxgKJUmm40gl4MDoBfLrsllrUKxrQm1bRKOmmX+pwLxDsWZGtw827R3HKh
+         /E3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=WKu9u3hv9rVR67uUMDQunlL+aOETxRhcJUtcJ2h+N9s=;
-        b=JxzyhnoUcBkITbPo+2j78WQJHFK/htSPa2hII7VEQlNRu5nd52bX3iph5IyuiRpchs
-         VF1Bo64VwZhxOhYJr/7Z4kmBzEQAhjNZluLgmiSDOkpqFbk+4VynzkH446HADFAKeblg
-         dWTQq4ycPvF6rQ7uG0qAlC3819d6C+bFgpJmMf70/ESxWBUC/fyz/R3sr4NmoiJvkBkV
-         YeuRFltm3ItXyfyJTawA+byv+b+2EfRTmogPWhSsW3zjxKOGzxipSsXgTGYAQ4ZzmgsC
-         pChX1nYgXCIuTp1KsPSANbgyEAq2gDCUI1/LII4SkBLrXGW5760bULQfQdR4dsooOweA
-         7Vjg==
-X-Gm-Message-State: AOAM533t1z5WXxBwLmz9GaDZiJ+/e6rP7VOuRblI7Bd7kKihqt6siKD9
-        Y7PuoEBILi4siCiFDdZ7FPIPTJcY8YI=
-X-Google-Smtp-Source: ABdhPJyuERLkcVxxKipEF+uTaomcqCDrSNgqbs4MWI5X1ozlYZCrlnGkOVi/QG0WslriANYgIjkPZw==
-X-Received: by 2002:a63:1305:: with SMTP id i5mr2881531pgl.140.1592329087944;
-        Tue, 16 Jun 2020 10:38:07 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id g19sm17491517pfo.209.2020.06.16.10.38.06
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Jun 2020 10:38:07 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sE5tk4DyHC1wtZTWO9Af7YqdSvi/8ycJjxBdwheg7pc=;
+        b=pGXCBflLzbTTDzjtR3nxMZrWnpxbM0cGLBPyiJlOvGs31NYIX1JTmfrCXiAPKwPIj0
+         hWErBh+Vc+W1cCbQ1ezKDLyDmjq4u+kcjwgfitJ+VnXj0icK4ows4DJjeeqRIdNm/jrC
+         Woy5xaFnwLiOmi7S0uMNm76uVusVDNPdKujhigPH/7FvSq+OJY4SdJwLNkJRVo78KHhD
+         dyiy0Adv8ktxnlp5xy9HRKJQZJi6gIkoo2EQMmEJg+wgF2bf/0YD0jn9OijwVahNvGWO
+         YUGhSnY1CktH19/I9xhXjDoksvTT2oxQMUfa7EbkF1wTl/JqNGRFTXQ3Mnwn1gpqVbKu
+         CpYA==
+X-Gm-Message-State: AOAM531t/inUMzHpq+EZeaAnxESEoMjM0RoviM2YRPLsW7NOVCqBD883
+        KT9iLknUGqR+ImbIKWlG8oEvDiuu
+X-Google-Smtp-Source: ABdhPJy6AOJFAAaCDO5QtqEROLI/XqQWwO62Sn6NUUyUxbvmdDIJBUvjA74Rgq/6v05z5O//JnHqiQ==
+X-Received: by 2002:a17:90a:8083:: with SMTP id c3mr4169569pjn.83.1592330643601;
+        Tue, 16 Jun 2020 11:04:03 -0700 (PDT)
+Received: from MacBookAir.linux-6brj.site (99-174-169-255.lightspeed.sntcca.sbcglobal.net. [99.174.169.255])
+        by smtp.gmail.com with ESMTPSA id mw5sm3605888pjb.27.2020.06.16.11.04.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jun 2020 11:04:03 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH ipsec-next 10/10] xfrm: interface: support IPIP and IPIP6 tunnels processing with .cb_handler
-Date:   Wed, 17 Jun 2020 01:36:35 +0800
-Message-Id: <f099ad86380d396cfa836c409fa55d3c7518e684.1592328814.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <4fce36d122e92ab4165d5b7a380c231e9abda598.1592328814.git.lucien.xin@gmail.com>
-References: <cover.1592328814.git.lucien.xin@gmail.com>
- <84bcb772ea1b68f3b150106b9db1825b65742cef.1592328814.git.lucien.xin@gmail.com>
- <5a63a0c47cc71476786873cbd32db8db3c0f7d1e.1592328814.git.lucien.xin@gmail.com>
- <ed6925fb49c11273efb78fcd47e75e0dc302addd.1592328814.git.lucien.xin@gmail.com>
- <4ad2ff7658148645d2e1947d659d11061013c336.1592328814.git.lucien.xin@gmail.com>
- <cf734a0499457870c5d0fe493a83760aa1bf76c1.1592328814.git.lucien.xin@gmail.com>
- <af54ae84fe9a806e40050e815c975a36cf8e2db9.1592328814.git.lucien.xin@gmail.com>
- <870c43283bd6bd6c3b583c05ebc757879676edcd.1592328814.git.lucien.xin@gmail.com>
- <8edff44e79a29474a82406d2f2f395c1229f0993.1592328814.git.lucien.xin@gmail.com>
- <4fce36d122e92ab4165d5b7a380c231e9abda598.1592328814.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1592328814.git.lucien.xin@gmail.com>
-References: <cover.1592328814.git.lucien.xin@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Cameron Berkenpas <cam@neo-zeon.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
+        =?UTF-8?q?Dani=C3=ABl=20Sonck?= <dsonck92@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Zefan Li <lizefan@huawei.com>, Tejun Heo <tj@kernel.org>
+Subject: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
+Date:   Tue, 16 Jun 2020 11:03:52 -0700
+Message-Id: <20200616180352.18602-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to ip_vti, IPIP and IPIP6 tunnels processing can easily
-be done with .cb_handler for xfrm interface.
+When we clone a socket in sk_clone_lock(), its sk_cgrp_data is
+copied, so the cgroup refcnt must be taken too. And, unlike the
+sk_alloc() path, sock_update_netprioidx() is not called here.
+Therefore, it is safe and necessary to grab the cgroup refcnt
+even when cgroup_sk_alloc is disabled.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+sk_clone_lock() is in BH context anyway, the in_interrupt()
+would terminate this function if called there. And for sk_alloc()
+skcd->val is always zero. So it's safe to factor out the code
+to make it more readable.
+
+Fixes: 090e28b229af92dc5b ("netprio_cgroup: Fix unlimited memory leak of v2 cgroups")
+Reported-by: Cameron Berkenpas <cam@neo-zeon.de>
+Reported-by: Peter Geis <pgwipeout@gmail.com>
+Reported-by: Lu Fengqi <lufq.fnst@cn.fujitsu.com>
+Reported-by: Daniël Sonck <dsonck92@gmail.com>
+Tested-by: Cameron Berkenpas <cam@neo-zeon.de>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Zefan Li <lizefan@huawei.com>
+Cc: Tejun Heo <tj@kernel.org>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 ---
- net/xfrm/xfrm_interface.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ include/linux/cgroup.h |  2 ++
+ kernel/cgroup/cgroup.c | 26 ++++++++++++++------------
+ net/core/sock.c        |  2 +-
+ 3 files changed, 17 insertions(+), 13 deletions(-)
 
-diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-index 7be4d0d..0ddcd57 100644
---- a/net/xfrm/xfrm_interface.c
-+++ b/net/xfrm/xfrm_interface.c
-@@ -840,6 +840,18 @@ static struct xfrm4_protocol xfrmi_ipcomp4_protocol __read_mostly = {
- 	.priority	=	10,
- };
+diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
+index 4598e4da6b1b..818dc7b3ed6c 100644
+--- a/include/linux/cgroup.h
++++ b/include/linux/cgroup.h
+@@ -822,6 +822,7 @@ extern spinlock_t cgroup_sk_update_lock;
  
-+static int xfrmi4_rcv_tunnel(struct sk_buff *skb)
+ void cgroup_sk_alloc_disable(void);
+ void cgroup_sk_alloc(struct sock_cgroup_data *skcd);
++void cgroup_sk_clone(struct sock_cgroup_data *skcd);
+ void cgroup_sk_free(struct sock_cgroup_data *skcd);
+ 
+ static inline struct cgroup *sock_cgroup_ptr(struct sock_cgroup_data *skcd)
+@@ -847,6 +848,7 @@ static inline struct cgroup *sock_cgroup_ptr(struct sock_cgroup_data *skcd)
+ #else	/* CONFIG_CGROUP_DATA */
+ 
+ static inline void cgroup_sk_alloc(struct sock_cgroup_data *skcd) {}
++static inline void cgroup_sk_clone(struct sock_cgroup_data *skcd) {}
+ static inline void cgroup_sk_free(struct sock_cgroup_data *skcd) {}
+ 
+ #endif	/* CONFIG_CGROUP_DATA */
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index 1ea181a58465..6377045b7096 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -6442,18 +6442,6 @@ void cgroup_sk_alloc(struct sock_cgroup_data *skcd)
+ 	if (cgroup_sk_alloc_disabled)
+ 		return;
+ 
+-	/* Socket clone path */
+-	if (skcd->val) {
+-		/*
+-		 * We might be cloning a socket which is left in an empty
+-		 * cgroup and the cgroup might have already been rmdir'd.
+-		 * Don't use cgroup_get_live().
+-		 */
+-		cgroup_get(sock_cgroup_ptr(skcd));
+-		cgroup_bpf_get(sock_cgroup_ptr(skcd));
+-		return;
+-	}
+-
+ 	/* Don't associate the sock with unrelated interrupted task's cgroup. */
+ 	if (in_interrupt())
+ 		return;
+@@ -6475,6 +6463,20 @@ void cgroup_sk_alloc(struct sock_cgroup_data *skcd)
+ 	rcu_read_unlock();
+ }
+ 
++void cgroup_sk_clone(struct sock_cgroup_data *skcd)
 +{
-+	return xfrm4_rcv_spi(skb, IPPROTO_IPIP, ip_hdr(skb)->saddr);
++	/* Socket clone path */
++	if (skcd->val) {
++		/*
++		 * We might be cloning a socket which is left in an empty
++		 * cgroup and the cgroup might have already been rmdir'd.
++		 * Don't use cgroup_get_live().
++		 */
++		cgroup_get(sock_cgroup_ptr(skcd));
++		cgroup_bpf_get(sock_cgroup_ptr(skcd));
++	}
 +}
 +
-+static struct xfrm_tunnel xfrmi_ipip_handler __read_mostly = {
-+	.handler	=	xfrmi4_rcv_tunnel,
-+	.cb_handler	=	xfrmi_rcv_cb,
-+	.err_handler	=	xfrmi4_err,
-+	.priority	=	-1,
-+};
-+
- static int __init xfrmi4_init(void)
+ void cgroup_sk_free(struct sock_cgroup_data *skcd)
  {
- 	int err;
-@@ -853,9 +865,19 @@ static int __init xfrmi4_init(void)
- 	err = xfrm4_protocol_register(&xfrmi_ipcomp4_protocol, IPPROTO_COMP);
- 	if (err < 0)
- 		goto xfrm_proto_comp_failed;
-+	err = xfrm4_tunnel_register(&xfrmi_ipip_handler, AF_INET);
-+	if (err < 0)
-+		goto xfrm_tunnel_ipip_failed;
-+	err = xfrm4_tunnel_register(&xfrmi_ipip_handler, AF_INET6);
-+	if (err < 0)
-+		goto xfrm_tunnel_ipip6_failed;
+ 	struct cgroup *cgrp = sock_cgroup_ptr(skcd);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 6c4acf1f0220..b62f06fa5e37 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1925,7 +1925,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+ 		/* sk->sk_memcg will be populated at accept() time */
+ 		newsk->sk_memcg = NULL;
  
- 	return 0;
+-		cgroup_sk_alloc(&newsk->sk_cgrp_data);
++		cgroup_sk_clone(&newsk->sk_cgrp_data);
  
-+xfrm_tunnel_ipip6_failed:
-+	xfrm4_tunnel_deregister(&xfrmi_ipip_handler, AF_INET);
-+xfrm_tunnel_ipip_failed:
-+	xfrm4_protocol_deregister(&xfrmi_ipcomp4_protocol, IPPROTO_COMP);
- xfrm_proto_comp_failed:
- 	xfrm4_protocol_deregister(&xfrmi_ah4_protocol, IPPROTO_AH);
- xfrm_proto_ah_failed:
-@@ -866,6 +888,8 @@ static int __init xfrmi4_init(void)
- 
- static void xfrmi4_fini(void)
- {
-+	xfrm4_tunnel_deregister(&xfrmi_ipip_handler, AF_INET6);
-+	xfrm4_tunnel_deregister(&xfrmi_ipip_handler, AF_INET);
- 	xfrm4_protocol_deregister(&xfrmi_ipcomp4_protocol, IPPROTO_COMP);
- 	xfrm4_protocol_deregister(&xfrmi_ah4_protocol, IPPROTO_AH);
- 	xfrm4_protocol_deregister(&xfrmi_esp4_protocol, IPPROTO_ESP);
+ 		rcu_read_lock();
+ 		filter = rcu_dereference(sk->sk_filter);
 -- 
-2.1.0
+2.26.2
 
