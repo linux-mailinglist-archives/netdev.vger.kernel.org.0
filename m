@@ -2,99 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C061FAD06
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 11:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 255371FAD65
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 12:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727795AbgFPJrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 05:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726099AbgFPJry (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 05:47:54 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA720C05BD43;
-        Tue, 16 Jun 2020 02:47:54 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id d8so8145206plo.12;
-        Tue, 16 Jun 2020 02:47:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kyzotmJAnQ0cO3PA3sh0jydiotSQu+gi/7YbTkbxVqE=;
-        b=JVhzLE9IQDEj7CTZuW7r+KWDWaw4Kdq/aOJuO8edzp50C4uLNigiM63mI1eUXgmkQw
-         y++pw9y/L6I1hPhJOmKxrWDo/nAIuMM12Oj2WVhGP3+RQH0Ddgp4qRxNY7Gm0Cja8YF3
-         Z+s1/dkZLlz+JEzEurdnduIfDaGnlBSA5ckVgK46kzPbe7HgSwGMKVBAJV/P6hcDsjr5
-         ZTVjNNEUPZ8JbhRq5EIWQh13eW+R3O9lGbgvaVWnk+PYoXLpuTW4lOJq5QQIKOK5tNvw
-         Bb+8OmLpY9lwC4baj8bEwJyYDAWvS8H+VIBOMBCUZa2WQCSO3jCqkz8wBQVuIpPaAhU2
-         8LuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kyzotmJAnQ0cO3PA3sh0jydiotSQu+gi/7YbTkbxVqE=;
-        b=XPjZrLSvYpf8nV8QkxPXsj1grXea1ln841wAUJWGTkGHpWy/rzpHH46E4Mb9J4l60z
-         jUNpYW39mz0nVRJshuK5DGatFDTYPuQQL58bosbSaivj2QQjr2JLKshwhmq18YEeG8cm
-         EzgVgD7DCOFRPb4x1rinF8jqMmRwjH9NBjHoSwO+qfeCZdWr98BXG8+Dt66JA6tSU5bb
-         0faJN7T1Ly+rk43TNejWelHK+DiG8YbP4iKk1d4CIb3agMoEUtp8orPHxSFwwSfBk7Ds
-         FO1RXXOzg009zmyxirNdh1Di50iV6SrJ1Cu6Tnk+MentpmVGmqxQuJNQgr8zlf+FZxGP
-         5QHA==
-X-Gm-Message-State: AOAM532fMyuVhAjkSlv3dj334lHFX9WnYCtnehHHmUaFwwU0YjUmQpoS
-        WHi6DBjDZSlGLu6M3wuipQw=
-X-Google-Smtp-Source: ABdhPJyOcnV1ct/4P9EcX0Q1kCE4tXQukYRbQg8WHlAEskv8l362aw1Y0x97BrNubz8SGPdpUsjNzQ==
-X-Received: by 2002:a17:902:558f:: with SMTP id g15mr1383273pli.174.1592300872792;
-        Tue, 16 Jun 2020 02:47:52 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id j5sm7490428pgi.42.2020.06.16.02.47.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 02:47:52 -0700 (PDT)
-Date:   Tue, 16 Jun 2020 17:47:41 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [PATCHv4 bpf-next 0/2] xdp: add dev map multicast support
-Message-ID: <20200616094741.GU102436@dhcp-12-153.nay.redhat.com>
-References: <20200415085437.23028-1-liuhangbin@gmail.com>
- <20200526140539.4103528-1-liuhangbin@gmail.com>
- <87zh9t1xvh.fsf@toke.dk>
- <20200527123858.GH102436@dhcp-12-153.nay.redhat.com>
- <87lfld1krx.fsf@toke.dk>
- <20200616110922.1219ec5e@carbon>
+        id S1728232AbgFPKF1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 16 Jun 2020 06:05:27 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:27344 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728153AbgFPKF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 06:05:26 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-176-OCvmRSPqMxW0ZITAZort3A-1; Tue, 16 Jun 2020 06:05:19 -0400
+X-MC-Unique: OCvmRSPqMxW0ZITAZort3A-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 98F74192FD50;
+        Tue, 16 Jun 2020 10:05:17 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.195.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EA17F5D98B;
+        Tue, 16 Jun 2020 10:05:12 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCHv3 0/9] bpf: Add d_path helper
+Date:   Tue, 16 Jun 2020 12:05:01 +0200
+Message-Id: <20200616100512.2168860-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200616110922.1219ec5e@carbon>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 11:09:22AM +0200, Jesper Dangaard Brouer wrote:
-> > > BTW, when using pktgen, I got an panic because the skb don't have enough
-> > > header room. The code path looks like
-> > >
-> > > do_xdp_generic()
-> > >   - netif_receive_generic_xdp()
-> > >     - skb_headroom(skb) < XDP_PACKET_HEADROOM
-> > >       - pskb_expand_head()
-> > >         - BUG_ON(skb_shared(skb))
-> > >
-> > > So I added a draft patch for pktgen, not sure if it has any influence.  
-> > 
-> > Hmm, as Jesper said pktgen was really not intended to be used this way,
-> > so I guess that's why. I guess I'll let him comment on whether he thinks
-> > it's worth fixing; or you could send this as a proper patch and see if
-> > anyone complains about it ;)
-> 
-> Don't use pktgen in this way with veth.  If anything pktgen should
-> detect that you use pktgen in virtual interfaces and reject/disallow
-> that you do this.
+hi,
+adding d_path helper to return full path for 'path' object.
 
-OK, got it.
+I originally added and used 'file_path' helper, which did the same,
+but used 'struct file' object. Then realized that file_path is just
+a wrapper for d_path, so we'd cover more calling sites if we add
+d_path helper and allowed resolving BTF object within another object,
+so we could call d_path also with file pointer, like:
 
-Thanks
-Hangbin
+  bpf_d_path(&file->f_path, buf, size);
+
+This feature is mainly to be able to add dpath (filepath originally)
+function to bpftrace:
+
+  # bpftrace -e 'kfunc:vfs_open { printf("%s\n", dpath(args->path)); }'
+
+v3 changes:
+  - changed tests to use seleton and vmlinux.h [Andrii]
+  - refactored to define ID lists in C object [Andrii]
+  - changed btf_struct_access for nested ID check,
+    instead of adding new function for that [Andrii]
+  - fail build with CONFIG_DEBUG_INFO_BTF if libelf is not detected [Andrii]
+
+Also available at:
+  https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+  bpf/d_path
+
+thanks,
+jirka
+
+
+---
+Jiri Olsa (11):
+      bpf: Add btfid tool to resolve BTF IDs in ELF object
+      bpf: Compile btfid tool at kernel compilation start
+      bpf: Add btf_ids object
+      bpf: Resolve BTF IDs in vmlinux image
+      bpf: Remove btf_id helpers resolving
+      bpf: Do not pass enum bpf_access_type to btf_struct_access
+      bpf: Allow nested BTF object to be refferenced by BTF object + offset
+      bpf: Add BTF whitelist support
+      bpf: Add d_path helper
+      selftests/bpf: Add verifier test for d_path helper
+      selftests/bpf: Add test for d_path helper
+
+ Makefile                                        |  25 ++++-
+ include/asm-generic/vmlinux.lds.h               |   4 +
+ include/linux/bpf.h                             |  16 ++-
+ include/uapi/linux/bpf.h                        |  14 ++-
+ kernel/bpf/Makefile                             |   2 +-
+ kernel/bpf/btf.c                                | 149 +++++++++++--------------
+ kernel/bpf/btf_ids.c                            |  26 +++++
+ kernel/bpf/btf_ids.h                            | 108 ++++++++++++++++++
+ kernel/bpf/verifier.c                           |  39 +++++--
+ kernel/trace/bpf_trace.c                        |  40 ++++++-
+ net/core/filter.c                               |   2 -
+ net/ipv4/bpf_tcp_ca.c                           |   2 +-
+ scripts/bpf_helpers_doc.py                      |   2 +
+ scripts/link-vmlinux.sh                         |   6 +
+ tools/Makefile                                  |   3 +
+ tools/bpf/Makefile                              |   5 +-
+ tools/bpf/btfid/Build                           |  26 +++++
+ tools/bpf/btfid/Makefile                        |  71 ++++++++++++
+ tools/bpf/btfid/btfid.c                         | 627 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                  |  14 ++-
+ tools/testing/selftests/bpf/prog_tests/d_path.c | 153 +++++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/test_d_path.c |  55 +++++++++
+ tools/testing/selftests/bpf/test_verifier.c     |  13 ++-
+ tools/testing/selftests/bpf/verifier/d_path.c   |  38 +++++++
+ 24 files changed, 1329 insertions(+), 111 deletions(-)
+ create mode 100644 kernel/bpf/btf_ids.c
+ create mode 100644 kernel/bpf/btf_ids.h
+ create mode 100644 tools/bpf/btfid/Build
+ create mode 100644 tools/bpf/btfid/Makefile
+ create mode 100644 tools/bpf/btfid/btfid.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/d_path.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_d_path.c
+ create mode 100644 tools/testing/selftests/bpf/verifier/d_path.c
+
