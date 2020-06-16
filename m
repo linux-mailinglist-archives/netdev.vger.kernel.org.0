@@ -2,234 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B24AA1FA513
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 02:26:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06B821FA528
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 02:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbgFPAZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 20:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45388 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726757AbgFPAZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 20:25:19 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A838C08C5C5
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 17:25:19 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id b201so8645903pfb.0
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 17:25:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=t7gJ95niPWSsprqAZWceLiTUFn9lWfcF6iU6w7eWkzk=;
-        b=QWxNBw/xvbH9OteDbSE+M7EPyVqut54tTqtNHNGohcEhgktCzaN1p9mbbTFLHTENVr
-         gSwKFVOrjEbzENvId+TZ/GrvWy+ZeO7viEPIrm9+eCXscmYOro64tTuEDcEIHioeu+Ux
-         Uh7MtoO5TeuvY08K4m8fnBnP6/rspdXXwB/6E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=t7gJ95niPWSsprqAZWceLiTUFn9lWfcF6iU6w7eWkzk=;
-        b=Q8g9Y6wiWi4Ig/lhKgfFj2Vg0MDk5r9TvqwomEtFPNzisbbfMG3LviDp0rEy8VJ8wZ
-         Msbyvk6FWByDad3YgDcUly02GN+zuoZ5IpxIpbKpCN5oqiJcOJ4NkFLXsTTwdf0J7hfb
-         Cn/KQDiXL3L2I60N1ZUlJBB0GXR8eAfE5KyJ+8RdlJA8Ow0F8Z23/xtd+CzX148HWA8B
-         dxk+Q7M0ocT7MavyyMibWhVGQnXyvRPsmpuU3fekUmlgOZQTUH2BOXktQp/7n1a/TL6Z
-         55qGscTfcEGgLwKrbr7+yHZVl/TYU1CEnYaJ7dqZ6fUeRqIwTuOQhYvLc5tefZ+NHn3H
-         GpDQ==
-X-Gm-Message-State: AOAM530sJYhEgsN7aC1Ov0JHUFwspzjmrOtO1s4ShrcZbDpcg623mM0Y
-        61hA7Pq5clbnfVkOFlNoX0Z4yw==
-X-Google-Smtp-Source: ABdhPJyo9y2QdKAx86ZN1CLcejYPjfzo8XEuzXqcXtp7p9QXDsGT17W5RHX6eeh1YsDRje2rzCn9eg==
-X-Received: by 2002:a62:5c03:: with SMTP id q3mr215235pfb.58.1592267118959;
-        Mon, 15 Jun 2020 17:25:18 -0700 (PDT)
-Received: from mcchou0.mtv.corp.google.com ([2620:15c:202:201:b46:ac84:1014:9555])
-        by smtp.gmail.com with ESMTPSA id x2sm14783781pfr.186.2020.06.15.17.25.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 15 Jun 2020 17:25:18 -0700 (PDT)
-From:   Miao-chen Chou <mcchou@chromium.org>
-To:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Yoni Shavit <yshavit@chromium.org>,
-        Michael Sun <michaelfsun@google.com>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v5 7/7] Bluetooth: Update background scan and report device based on advertisement monitors
-Date:   Mon, 15 Jun 2020 17:25:05 -0700
-Message-Id: <20200615172440.v5.7.Id9ca021d5a3e8c748ea5c0a1c81582b9a8183f45@changeid>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200615172440.v5.1.I636f906bf8122855dfd2ba636352bbdcb50c35ed@changeid>
-References: <20200615172440.v5.1.I636f906bf8122855dfd2ba636352bbdcb50c35ed@changeid>
+        id S1726616AbgFPAbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 20:31:16 -0400
+Received: from unicom146.biz-email.net ([210.51.26.146]:4325 "EHLO
+        unicom146.biz-email.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725960AbgFPAbP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 20:31:15 -0400
+Received: from ([60.208.111.195])
+        by unicom146.biz-email.net (Antispam) with ASMTP (SSL) id IGT71627;
+        Tue, 16 Jun 2020 08:29:27 +0800
+Received: from jtjnmail201605.home.langchao.com (10.100.2.5) by
+ jtjnmail201604.home.langchao.com (10.100.2.4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1591.10; Tue, 16 Jun 2020 08:29:17 +0800
+Received: from jtjnmail201605.home.langchao.com ([fe80::8d20:4cc5:1116:d16e])
+ by jtjnmail201605.home.langchao.com ([fe80::8d20:4cc5:1116:d16e%8]) with mapi
+ id 15.01.1591.008; Tue, 16 Jun 2020 08:29:17 +0800
+From:   =?utf-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
+        <yangyi01@inspur.com>
+To:     "dsahern@gmail.com" <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>
+Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IFt2Z2VyLmtlcm5lbC5vcmfku6Plj5FdUmU6IA==?=
+ =?utf-8?B?562U5aSNOiBbUEFUQ0hdIGNhbiBjdXJyZW50IEVDTVAgaW1wbGVtZW50YXRp?=
+ =?utf-8?Q?on_support_consistent_hashing_for_next_hop=3F?=
+Thread-Topic: =?utf-8?B?562U5aSNOiBbdmdlci5rZXJuZWwub3Jn5Luj5Y+RXVJlOiDnrZTlpI06IFtQ?=
+ =?utf-8?B?QVRDSF0gY2FuIGN1cnJlbnQgRUNNUCBpbXBsZW1lbnRhdGlvbiBzdXBwb3J0?=
+ =?utf-8?Q?_consistent_hashing_for_next_hop=3F?=
+Thread-Index: AdY//dZZfdQesCHOTf2OFNYuxTSncv//uggA//8XLwCAAZM4gP/6qOcwgAs9fAD//12tEA==
+Importance: high
+X-Priority: 1
+Date:   Tue, 16 Jun 2020 00:29:16 +0000
+Message-ID: <f2d28100a24b438a9b656c247156f035@inspur.com>
+References: <4037f805c6f842dcc429224ce28425eb@sslemail.net>
+ <8ff0c684-7d33-c785-94d7-c0e6f8b79d64@gmail.com>
+ <8867a00d26534ed5b84628db1a43017c@inspur.com>
+ <8da839b3-5b5d-b663-7d9c-0bc8351980dd@gmail.com>
+ <b9e0245f58ca44ed80b07a58cd0399be@inspur.com>
+ <cdbeca15-da70-119b-9f0c-04813cb82766@gmail.com>
+In-Reply-To: <cdbeca15-da70-119b-9f0c-04813cb82766@gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.100.1.52]
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+        micalg=SHA1; boundary="----=_NextPart_000_00A7_01D643B8.38A1A750"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This calls hci_update_background_scan() when there is any update on the
-advertisement monitors. If there is at least one advertisement monitor,
-the filtering policy of scan parameters should be 0x00. This also reports
-device found mgmt events if there is at least one monitor.
+------=_NextPart_000_00A7_01D643B8.38A1A750
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-The following cases were tested with btmgmt advmon-* commands.
-(1) add a ADV monitor and observe that the passive scanning is
-triggered.
-(2) remove the last ADV monitor and observe that the passive scanning is
-terminated.
-(3) with a LE peripheral paired, repeat (1) and observe the passive
-scanning continues.
-(4) with a LE peripheral paired, repeat (2) and observe the passive
-scanning continues.
-(5) with a ADV monitor, suspend/resume the host and observe the passive
-scanning continues.
+Got it, thanks David,  so it is only one way to do it by ourselves :-), =
+yes performance has to been hurt by consistent hashing, but I also found =
+consistent hashing can't make sure the flows are always dispatched to =
+the server which is handling them, it can just ensure most of cases are =
+so. For our cases, consistent hashing is not enough.
 
-Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
----
+-----=E9=82=AE=E4=BB=B6=E5=8E=9F=E4=BB=B6-----
+=E5=8F=91=E4=BB=B6=E4=BA=BA: David Ahern [mailto:dsahern@gmail.com]=20
+=E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B46=E6=9C=8816=E6=97=A5 =
+6:43
+=E6=94=B6=E4=BB=B6=E4=BA=BA: Yi Yang =
+(=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 =
+<yangyi01@inspur.com>; netdev@vger.kernel.org
+=E6=8A=84=E9=80=81: nikolay@cumulusnetworks.com
+=E4=B8=BB=E9=A2=98: Re: =E7=AD=94=E5=A4=8D: =
+[vger.kernel.org=E4=BB=A3=E5=8F=91]Re: =E7=AD=94=E5=A4=8D: [PATCH] can =
+current ECMP implementation support consistent hashing for next hop?
 
-Changes in v5: None
-Changes in v4: None
-Changes in v3: None
-Changes in v2: None
+On 6/15/20 12:56 AM, Yi Yang =
+(=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 =
+wrote:
+> My next hops are final real servers but not load balancers, say we =
+sets maximum number of servers to 64, but next hop entry is added or =
+removed dynamically, we are unlikely to know them beforehand. I can't =
+understand how user space can attain consistent distribution without =
+in-kernel consistent hashing, can you show how ip route cmds can attain =
+this?
+>=20
 
- include/net/bluetooth/hci_core.h |  1 +
- net/bluetooth/hci_core.c         | 13 +++++++++++++
- net/bluetooth/hci_event.c        |  5 +++--
- net/bluetooth/hci_request.c      | 17 ++++++++++++++---
- net/bluetooth/mgmt.c             |  5 ++++-
- 5 files changed, 35 insertions(+), 6 deletions(-)
+I do not see how consistent hashing can be done in the kernel without =
+affecting performance, and a second problem is having it do the right =
+thing for all use cases. That said, feel free to try to implement it.
 
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 78ac7fd282d77..1ce89e546a64e 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -1243,6 +1243,7 @@ void hci_adv_monitors_clear(struct hci_dev *hdev);
- void hci_free_adv_monitor(struct adv_monitor *monitor);
- int hci_add_adv_monitor(struct hci_dev *hdev, struct adv_monitor *monitor);
- int hci_remove_adv_monitor(struct hci_dev *hdev, u16 handle);
-+bool hci_is_adv_monitoring(struct hci_dev *hdev);
- 
- void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb);
- 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index d0f30e2e29471..2d318916e9ebc 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3005,6 +3005,8 @@ void hci_adv_monitors_clear(struct hci_dev *hdev)
- 		hci_free_adv_monitor(monitor);
- 
- 	idr_destroy(&hdev->adv_monitors_idr);
-+
-+	hci_update_background_scan(hdev);
- }
- 
- void hci_free_adv_monitor(struct adv_monitor *monitor)
-@@ -3038,6 +3040,9 @@ int hci_add_adv_monitor(struct hci_dev *hdev, struct adv_monitor *monitor)
- 
- 	hdev->adv_monitors_cnt++;
- 	monitor->handle = handle;
-+
-+	hci_update_background_scan(hdev);
-+
- 	return 0;
- }
- 
-@@ -3069,9 +3074,17 @@ int hci_remove_adv_monitor(struct hci_dev *hdev, u16 handle)
- 		idr_for_each(&hdev->adv_monitors_idr, &free_adv_monitor, hdev);
- 	}
- 
-+	hci_update_background_scan(hdev);
-+
- 	return 0;
- }
- 
-+/* This function requires the caller holds hdev->lock */
-+bool hci_is_adv_monitoring(struct hci_dev *hdev)
-+{
-+	return !idr_is_empty(&hdev->adv_monitors_idr);
-+}
-+
- struct bdaddr_list *hci_bdaddr_list_lookup(struct list_head *bdaddr_list,
- 					 bdaddr_t *bdaddr, u8 type)
- {
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index cfeaee347db32..cbcc0b590fd41 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -5447,14 +5447,15 @@ static void process_adv_report(struct hci_dev *hdev, u8 type, bdaddr_t *bdaddr,
- 
- 	/* Passive scanning shouldn't trigger any device found events,
- 	 * except for devices marked as CONN_REPORT for which we do send
--	 * device found events.
-+	 * device found events, or advertisement monitoring requested.
- 	 */
- 	if (hdev->le_scan_type == LE_SCAN_PASSIVE) {
- 		if (type == LE_ADV_DIRECT_IND)
- 			return;
- 
- 		if (!hci_pend_le_action_lookup(&hdev->pend_le_reports,
--					       bdaddr, bdaddr_type))
-+					       bdaddr, bdaddr_type) &&
-+		    idr_is_empty(&hdev->adv_monitors_idr))
- 			return;
- 
- 		if (type == LE_ADV_NONCONN_IND || type == LE_ADV_SCAN_IND)
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 1acf5b8e0910c..d465dbbb1963c 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -418,11 +418,15 @@ static void __hci_update_background_scan(struct hci_request *req)
- 	 */
- 	hci_discovery_filter_clear(hdev);
- 
-+	BT_DBG("%s ADV monitoring is %s", hdev->name,
-+	       hci_is_adv_monitoring(hdev) ? "on" : "off");
-+
- 	if (list_empty(&hdev->pend_le_conns) &&
--	    list_empty(&hdev->pend_le_reports)) {
-+	    list_empty(&hdev->pend_le_reports) &&
-+	    !hci_is_adv_monitoring(hdev)) {
- 		/* If there is no pending LE connections or devices
--		 * to be scanned for, we should stop the background
--		 * scanning.
-+		 * to be scanned for or no ADV monitors, we should stop the
-+		 * background scanning.
- 		 */
- 
- 		/* If controller is not scanning we are done. */
-@@ -798,6 +802,13 @@ static u8 update_white_list(struct hci_request *req)
- 			return 0x00;
- 	}
- 
-+	/* Once the controller offloading of advertisement monitor is in place,
-+	 * the if condition should include the support of MSFT extension
-+	 * support.
-+	 */
-+	if (!idr_is_empty(&hdev->adv_monitors_idr))
-+		return 0x00;
-+
- 	/* Select filter policy to use white list */
- 	return 0x01;
- }
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index fed9c17b90dc9..514b1605cc973 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -8437,8 +8437,11 @@ void mgmt_device_found(struct hci_dev *hdev, bdaddr_t *bdaddr, u8 link_type,
- 	if (!hci_discovery_active(hdev)) {
- 		if (link_type == ACL_LINK)
- 			return;
--		if (link_type == LE_LINK && list_empty(&hdev->pend_le_reports))
-+		if (link_type == LE_LINK &&
-+		    list_empty(&hdev->pend_le_reports) &&
-+		    !hci_is_adv_monitoring(hdev)) {
- 			return;
-+		}
- 	}
- 
- 	if (hdev->discovery.result_filtering) {
--- 
-2.26.2
+> I find routing cache can help fix this issue, if a flow has been =
+routed to a real server, then its route has been cached, so packets in =
+this flow should hit routing cache by fib_lookup, so this can make sure =
+it can be always routed to right server, as far as the result is =
+concerned, it is equivalent to consistent hashing.=20
+>=20
 
+route cache is invalidated anytime there is a change to the FIB.
+
+------=_NextPart_000_00A7_01D643B8.38A1A750
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+SIb3DQMEAgIAgDAHBgUrDgMCBzAKBggqhkiG9w0DBzAdBgNVHQ4EFgQUwS9Wt2AmUPVKr98VTbaf
+wjdIUXAwHwYDVR0jBBgwFoAUXlkDprRMWGCRTvYetaU5pjLBNWowgdEGA1UdHwSByTCBxjCBw6CB
+wKCBvYaBumxkYXA6Ly8vQ049SU5TUFVSLUNBLENOPUpUQ0EyMDEyLENOPUNEUCxDTj1QdWJsaWMl
+MjBLZXklMjBTZXJ2aWNlcyxDTj1TZXJ2aWNlcyxDTj1Db25maWd1cmF0aW9uLERDPWhvbWUsREM9
+bGFuZ2NoYW8sREM9Y29tP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT9vYmplY3RDbGFz
+cz1jUkxEaXN0cmlidXRpb25Qb2ludDCBxAYIKwYBBQUHAQEEgbcwgbQwgbEGCCsGAQUFBzAChoGk
+bGRhcDovLy9DTj1JTlNQVVItQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENO
+PVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9aG9tZSxEQz1sYW5nY2hhbyxEQz1jb20/Y0FD
+ZXJ0aWZpY2F0ZT9iYXNlP29iamVjdENsYXNzPWNlcnRpZmljYXRpb25BdXRob3JpdHkwQwYDVR0R
+BDwwOqAjBgorBgEEAYI3FAIDoBUME3lhbmd5aTAxQGluc3B1ci5jb22BE3lhbmd5aTAxQGluc3B1
+ci5jb20wDQYJKoZIhvcNAQELBQADggEBAApWKZfwQ5Gbpv3Pg2mJyUz8jhno5OBy2Hdku/euDQfD
+aOOPsUxsvr8ZnWU03E9rwTAHgD9oB10Oe27CNeS6G/kqJubOZt5Emrw9EJBA6NMz4GLZYPmm82ph
+l+1iajL8+U2fINJbqvTlj9Dv0VOzW+952fk9K5JiArDhWskKRLnO31YAESFfUUKaHe54l2u+2+cn
+MeuQyyNOGXu2zT0XicYRUsZBOCisXzLD6I9/LgyBcqWcpLBdRK1JdO/oih2/uznyWUp1pCvpi89r
+SmyUUdbfFd/FN0j8Qok4ZdKwoHNj3oi+vLaN8SHmUNHISOuUZyWcmfVzd7c5ydIDB9nQiHoxggOT
+MIIDjwIBATBwMFkxEzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hh
+bzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQQITfgAAPxhfXKY27C7W
+sQAAAAA/GDAJBgUrDgMCGgUAoIIB+DAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3
+DQEJBTEPFw0yMDA2MTYwMDI5MTVaMCMGCSqGSIb3DQEJBDEWBBSAZxin8NXzb6PTHLqMTOWEBTZI
+uzB/BgkrBgEEAYI3EAQxcjBwMFkxEzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZ
+FghsYW5nY2hhbzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQQITfgAA
+PxhfXKY27C7WsQAAAAA/GDCBgQYLKoZIhvcNAQkQAgsxcqBwMFkxEzARBgoJkiaJk/IsZAEZFgNj
+b20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hhbzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNV
+BAMTCUlOU1BVUi1DQQITfgAAPxhfXKY27C7WsQAAAAA/GDCBkwYJKoZIhvcNAQkPMYGFMIGCMAsG
+CWCGSAFlAwQBKjALBglghkgBZQMEARYwCgYIKoZIhvcNAwcwCwYJYIZIAWUDBAECMA4GCCqGSIb3
+DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMCGjALBglghkgBZQMEAgMwCwYJYIZIAWUDBAIC
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQC/cenKcJqS3z85qnTFoyi4z7zGYB+llX3c
+jzP9zvA1jZgSkSL/TNnSQAt+rt/YWGWg5r6lgO+LOedDeStL7iGPCAVV3Ak+E7dMtDlCUDJdHA38
+63bS5TMaq10FuYr6PLAG5M3cW65WF4TaxHrL4RnTwnIdREuatY0qtGDXAhZzp8R7xm3h9mHsZVWo
+SM0imFujfK8oPzD7OmFmfleaBAfwNeyqDOfotTlKqOk9cHevZnOnkvBcdBbAEMdTjfkM8Zsj3VC0
+5L8pxaVGTzBernOGiBmrLBAS8Z0y/NqFr6oIT82F7iV5EnFrKx+97aQe4uZM/3FHvybW2Uj1PTJS
+uz+cAAAAAAAA
+
+------=_NextPart_000_00A7_01D643B8.38A1A750--
