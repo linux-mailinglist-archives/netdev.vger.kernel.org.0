@@ -2,49 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAA351FA596
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 03:23:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B12A1FA5AE
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 03:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgFPBXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 21:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54324 "EHLO
+        id S1726308AbgFPBdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Jun 2020 21:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726492AbgFPBXo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 21:23:44 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8A3C061A0E;
-        Mon, 15 Jun 2020 18:23:44 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 125EE123C069B;
-        Mon, 15 Jun 2020 18:23:44 -0700 (PDT)
-Date:   Mon, 15 Jun 2020 18:23:43 -0700 (PDT)
-Message-Id: <20200615.182343.221546986577273426.davem@davemloft.net>
-To:     mayflowerera@gmail.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] macsec: Support 32bit PN netlink attribute for XPN
- links
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200615154114.13184-1-mayflowerera@gmail.com>
-References: <20200615154114.13184-1-mayflowerera@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 15 Jun 2020 18:23:44 -0700 (PDT)
+        with ESMTP id S1725972AbgFPBdm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 21:33:42 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0122FC08C5C3
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 18:33:42 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id w9so14322106qtv.3
+        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 18:33:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cDOEIQV5YQAeIdEMMGx3+/GevUyhzhDnAbEIVpCOnXI=;
+        b=B8O7J4rJokQDXjU31zgPybo1cTW2Je/Kd6MMZp1L9D1ePsA7Yu4unjGsty4wjVY6y5
+         6KOLOawoFG95cEFHEsatqraAC7BNZXmTMnc1cgE/6paJHcMrwiZUwPlyLqKnmoXZzH6E
+         f8uVTRRbgDFf56GPhBFtDkrkqau8ltI7y0uho=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cDOEIQV5YQAeIdEMMGx3+/GevUyhzhDnAbEIVpCOnXI=;
+        b=D2vMm8ZljL2bfXB1ENQfXVt9FwlkTf8/SplqeYy9XprMGwS8jl8N5p7ZxP6U9eH5rB
+         tC95EvVmUeNZOeB6kBgH9qS9IGvJKVeVHJRxBYK7+ehaCDOS7+4JtOf5zrWDJ1tFOE1G
+         rxVt117CzFkM0ptKeZ/Fde/u+2jnGQvlD/CImw1uQAS+gG/GI7FTin9isA9TSnLwTmZa
+         KiLNiG71jAkLfWwFg7ZzXiMgxPMYchTiARgjcLjlffSxHTGi2aOwaJbtfa+xQlwm0cbN
+         UjsJmIQ9iWfo5Ipgq9HgimDgsVZsYBhWIcE+k20zjyhdDOBtjLoxWdr9MU8m0AhvvPfN
+         DOeg==
+X-Gm-Message-State: AOAM533ZmhlM4saI0qMql/OWU1zLNKSHXo5iGTVp5QjGRWHfFUZlaKjb
+        B1aIAwIMMFAJq25AO+hfgRlrtE52RdIxVKHLH+GnRw==
+X-Google-Smtp-Source: ABdhPJzfoS6eBeapghRz9PNlO0sf80T4JJIcwcg/RDgpsN2vhEmKNBk9sSWTfS/Osmsto+Bn7eoaf1doTxFmQlzCvjg=
+X-Received: by 2002:aed:35af:: with SMTP id c44mr18911337qte.349.1592271221067;
+ Mon, 15 Jun 2020 18:33:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200615190119.382589-1-drc@linux.vnet.ibm.com>
+ <CACKFLimd0a=Y8WyvqCt4BD7SU_Cg1vQ=baKs6-uPv0dZuCm=mw@mail.gmail.com> <95bf20c6-a812-32ad-fd38-45cba7e10491@linux.vnet.ibm.com>
+In-Reply-To: <95bf20c6-a812-32ad-fd38-45cba7e10491@linux.vnet.ibm.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Mon, 15 Jun 2020 18:33:29 -0700
+Message-ID: <CACKFLi=-2jUO4UU2BKERqee1XMOgf7OrGerurAf53B-axJwotw@mail.gmail.com>
+Subject: Re: [PATCH] tg3: driver sleeps indefinitely when EEH errors exceed eeh_max_freezes
+To:     David Christensen <drc@linux.vnet.ibm.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Era Mayflower <mayflowerera@gmail.com>
-Date: Tue, 16 Jun 2020 00:41:14 +0900
+On Mon, Jun 15, 2020 at 3:21 PM David Christensen
+<drc@linux.vnet.ibm.com> wrote:
+>
+> On 6/15/20 1:45 PM, Michael Chan wrote:
+> > On Mon, Jun 15, 2020 at 12:01 PM David Christensen
+> > <drc@linux.vnet.ibm.com> wrote:
+> >>
+> >> The driver function tg3_io_error_detected() calls napi_disable twice,
+> >> without an intervening napi_enable, when the number of EEH errors exceeds
+> >> eeh_max_freezes, resulting in an indefinite sleep while holding rtnl_lock.
+> >>
+> >> The function is called once with the PCI state pci_channel_io_frozen and
+> >> then called again with the state pci_channel_io_perm_failure when the
+> >> number of EEH failures in an hour exceeds eeh_max_freezes.
+> >>
+> >> Protecting the calls to napi_enable/napi_disable with a new state
+> >> variable prevents the long sleep.
+> >
+> > This works, but I think a simpler fix is to check tp->pcierr_recovery
+> > in tg3_io_error_detected() and skip most of the tg3 calls (including
+> > the one that disables NAPI) if the flag is true.
+>
+> This might be the smallest change that would work.  Does it make sense
+> to the reader?
+>
+> diff --git a/drivers/net/ethernet/broadcom/tg3.c
+> b/drivers/net/ethernet/broadcom/tg3.c
+> index 7a3b22b35238..1f37c69d213d 100644
+> --- a/drivers/net/ethernet/broadcom/tg3.c
+> +++ b/drivers/net/ethernet/broadcom/tg3.c
+> @@ -18168,8 +18168,8 @@ static pci_ers_result_t
+> tg3_io_error_detected(struct pci_dev *pdev,
+>
+>          rtnl_lock();
+>
+> -       /* We probably don't have netdev yet */
+> -       if (!netdev || !netif_running(netdev))
+> +       /* May be second call or maybe we don't have netdev yet */
+> +       if (tp->pcierr_recovery || !netdev || !netif_running(netdev))
 
-> +	if (tb_sa[MACSEC_SA_ATTR_PN]) {
+Dereferencing tp needs to be done after checking netdev.  If we don't
+have netdev, tp won't be valid.
 
-validate_add_rxsa() requires that MACSET_SA_ATTR_PN be non-NULL, so
-you don't need to add this check here.
+Other than that, I think the logic looks good and is quite clear.
 
+Thanks.
