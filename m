@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAFA61FB36D
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:05:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 064971FB3EB
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:14:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728861AbgFPOFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 10:05:36 -0400
-Received: from tk2.ibw.com.ni ([190.106.60.158]:44964 "EHLO tk2.ibw.com.ni"
+        id S1729025AbgFPOOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 10:14:33 -0400
+Received: from tk2.ibw.com.ni ([190.106.60.158]:45404 "EHLO tk2.ibw.com.ni"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729140AbgFPOFe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jun 2020 10:05:34 -0400
+        id S1726606AbgFPOOd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Jun 2020 10:14:33 -0400
 Received: from tk2.ibw.com.ni (localhost [127.0.0.1])
-        by tk2.ibw.com.ni (Proxmox) with ESMTP id 76AD320ABA
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:05:32 -0600 (CST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 japi.ibw.com.ni CF48D14A92DF
+        by tk2.ibw.com.ni (Proxmox) with ESMTP id 1A09C20ACE
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:14:32 -0600 (CST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 japi.ibw.com.ni 8595214A931C
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibw.com.ni;
-        s=B01EB49E-4102-11E9-ABBB-FDA7C1AECE99; t=1592316326;
-        bh=W4ew+X6Zmj5KnjFY+ojhrpV1YdeIWXJbGln1K0dDJes=;
+        s=B01EB49E-4102-11E9-ABBB-FDA7C1AECE99; t=1592316866;
+        bh=8oczgJSoZjcPzD4hp5B42nh2ce8dCEygtjK7MVkwosQ=;
         h=To:From:Message-ID:Date:MIME-Version;
-        b=HQLo/M8dRGDCIVgHEpCb+AABQELbr5Hgd5ZR5v/hUZl5v05TvbJi60sXGYjO51i/O
-         VvYeCLxPIDex2iw2cOGsquNVjuHvF/NWgDSmTK7XRkJfnsY57Lo8mxil7TQMbHqQHE
-         OB4hMuK3n/1sRjbq1pCvqNR6F4IbX8Pu8Q5fSqj9+96KGWHRGmnczjaccyb3wkNLsW
-         hrzn7LVnTHMgrYIGwFm7H6M78/rEFmF7dXMUkErqFwoX1h4L500YAtwCVtLFVeUPjp
-         FLevs8tvaLPS+9wuvMwRx6RLiF871tWKixS71xUxMWSORIKl8putaHXQXqjJjvADM2
-         uI2lLumPISQFg==
+        b=jxhS2qv7c7a9RV2kGFkp7yiYJUNWt595Zixaqf0wW3Cw06rijeEJICHfOJrvZiNzY
+         vjeiUUVtvfaaSuot2ZnPaNsckgdKcBEtwtQ3L0irVI0aAPGMzABvLyYIIolWIkaJPf
+         u6B6/ka6cxH2qt6KakcMtk7h+EHLGEghu9Q8PH40jxUmBHI/O1XAfo+atvlrWfSyBm
+         IZrecoOYsGKmQKPc5oejeeqpCucfuOuJR0YV51/lURZVHUlW4BdiYUHv8a4fzF1lDU
+         vFZFIeUsuAlHIuzT5KqcQCBYQeKESmGqVCCRx+efA0GjR8UROjWjbjgOpNA4pOECUD
+         f8LOMlg0erqZQ==
 To:     netdev@vger.kernel.org
 From:   "Roberto J. Blandino Cisneros" <roberto.blandino@ibw.com.ni>
 Subject: RATE not being printed on tc -s class show dev XXXX
-Message-ID: <d33998c7-f529-e1d1-31a5-626aa8dd44da@ibw.com.ni>
-Date:   Tue, 16 Jun 2020 08:05:26 -0600
+Message-ID: <22f9ee66-35b0-7aa0-bde3-fd63c5705110@ibw.com.ni>
+Date:   Tue, 16 Jun 2020 08:14:26 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.9.0
 MIME-Version: 1.0
@@ -150,18 +150,5 @@ Even i compile the last kernel 5.7.2.
 
 Any guide option or value that must need the processor, network card,=20
 hardware, etc for this?
-
-
---=20
-
-*Roberto Blandino*
-
-NOC
-
-IBW Nicaragua
-
-_roberto.blandino@ibw.com.ni_
-
-Tel: (505)=C2=A0 2278-6328 Ext-5315
 
 
