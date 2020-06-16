@@ -2,150 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 243D41FB102
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 14:43:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03BB71FB16A
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 15:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728271AbgFPMnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 08:43:15 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:54955 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725843AbgFPMnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 08:43:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592311393;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R3fYpvcRSbYmZ+sBV/eWTEF4S/6w7cKyAopBZy7FMBM=;
-        b=Ht9nEWi6sZSfp44N7Jd8UHq5Am5pxtJAvEQL34n5yrla4spEyxkaWgXx76O0IB3PAqCPRO
-        l2yEaOKz9xewkYC/itHHkOt7HoneGwtekagJmOIuFTHc7mFTfDQLQfNJ+t94HUgxJtEBmz
-        78wm5bTkv7sT9hy5rz88o9zphPzQdEA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-17-TXfB-LL3OnqgdBG8dq8e2Q-1; Tue, 16 Jun 2020 08:43:02 -0400
-X-MC-Unique: TXfB-LL3OnqgdBG8dq8e2Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0DD11835BAA;
-        Tue, 16 Jun 2020 12:43:01 +0000 (UTC)
-Received: from new-host-5 (unknown [10.40.194.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 92C0A7CABA;
-        Tue, 16 Jun 2020 12:42:59 +0000 (UTC)
-Message-ID: <429bc64106ac69c8291f4466ddbaa2b48b8e16c4.camel@redhat.com>
-Subject: Re: [PATCH net v2 2/2] net/sched: act_gate: fix configuration of
- the periodic timer
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Po Liu <Po.Liu@nxp.com>, Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-In-Reply-To: <CA+h21hrCScMMA9cm0fhF+eLRWda403pX=t3PKRoBhkE8rrR-rw@mail.gmail.com>
-References: <cover.1592247564.git.dcaratti@redhat.com>
-         <4a4a840333d6ba06042b9faf7e181048d5dc2433.1592247564.git.dcaratti@redhat.com>
-         <CA+h21ho1x1-N+HyFXcy+pqdWcQioFWgRs0C+1h+kn6w8zHVUwQ@mail.gmail.com>
-         <fd20899c60d96695060ecb782421133829f09bc2.camel@redhat.com>
-         <CA+h21hrCScMMA9cm0fhF+eLRWda403pX=t3PKRoBhkE8rrR-rw@mail.gmail.com>
-Organization: red hat
-Content-Type: text/plain; charset="UTF-8"
-Date:   Tue, 16 Jun 2020 14:42:58 +0200
+        id S1726606AbgFPNBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 09:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48838 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726306AbgFPNBJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 09:01:09 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3090C061573
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 06:01:08 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id w16so20854491ejj.5
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 06:01:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=M6lGu5uNWcxvXLf/vvOGNoYZob46ZZc5Vexati+wwhE=;
+        b=Bn4t8g3cRhJXPGyhidGVOvWXBftV6haGDEJb7m80pLuOt9zJcqsX1BIOcCUz0zuMS7
+         diQxGgidPZTFsqBjw6nZe4mUQWXE37bBcxWFE9ykdttaKsxWlZnuQQCNr3TWfGqBTUIS
+         yr5KK0JkzqcrrmBQDk0+AYOknPVxCu2UMmwjzaZ49sWQ5pTQJ9cq7NctZeSxARpYthgl
+         eaDZSW2/2zztg0j73jv3osjuFOouIyZ5mHukK5uHfX98c5wWLDrWHgfeCUFMLCe/l1VG
+         IcXpb9s4JxXFWUo03prgwKO/yQHBe4ycR0DP26gR9vtm2qNdUU4hqPecw109JP4QRLoF
+         Jt1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=M6lGu5uNWcxvXLf/vvOGNoYZob46ZZc5Vexati+wwhE=;
+        b=KXLuAltykHCZPw2fPQbXWBReAm+mVJNebYmCfBedff7Dv+d39Ifu/pGr6TsIe7yZ49
+         zQUBl5+JKFssCRmM8fdnuz0+xQ7HglmQzZqKTu0bsvbTwsxIKMggobOdkehIdp1sqRfw
+         7uezKqRk4CrELagePk6JJNh6Nlu+IXbNgXdIG+QHDj5Gt8MkdytUUZetd0H8B2ZMGwue
+         fAyWHKJpkpfhz7wd7AJ4Lx0cJ0j1ZItTznmiDyam5pVDQYVIoOJIR3VpPkPL5U/4Xtx9
+         Q1geiRzaFvdwp90MS5aHRFtS1bu9mj2dp+v++UKHFDdr+/TZCfHmJg3oL9f9siK2kZTb
+         MGqA==
+X-Gm-Message-State: AOAM532yIMry0lybkE6jG3Y9rkmER8cTdymYqAR8IT1Se213pECUrJGD
+        +qv3pJ8cSa6CWoMGcfdYIAc1mW9bUtf6IBaX650=
+X-Google-Smtp-Source: ABdhPJwEQpXC2tMjzd440KkskhJRqys+jwkY8fRRTVIAFuzzuZPBHBSf4OixXy6Q9d0bZU6GPlbozeVZl5xVfhbLrY4=
+X-Received: by 2002:a17:906:1d56:: with SMTP id o22mr2584696ejh.406.1592312466670;
+ Tue, 16 Jun 2020 06:01:06 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Evolution 3.36.1 (3.36.1-1.fc32) 
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+References: <20200524212251.3311546-1-olteanv@gmail.com> <20200525.175808.465482238114904305.davem@davemloft.net>
+In-Reply-To: <20200525.175808.465482238114904305.davem@davemloft.net>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 16 Jun 2020 16:00:55 +0300
+Message-ID: <CA+h21hoirCBZGGi45QvUjerFaf3-hmzEYWx2G=eNbByb9kgiZA@mail.gmail.com>
+Subject: Re: [PATCH] dpaa_eth: fix usage as DSA master, try 3
+To:     David Miller <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        netdev <netdev@vger.kernel.org>, joakim.tjernlund@infinera.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-06-16 at 13:38 +0300, Vladimir Oltean wrote:
-> Hi Davide,
-> 
-> On Tue, 16 Jun 2020 at 13:13, Davide Caratti <dcaratti@redhat.com> wrote:
-> > hello Vladimir,
-> > 
-> > thanks a lot for reviewing this.
-> > 
-> > On Tue, 2020-06-16 at 00:55 +0300, Vladimir Oltean wrote:
-
-[...]
-
-> > > What if you split the "replace" functionality of gate_setup_timer into
-> > > a separate gate_cancel_timer function, which you could call earlier
-> > > (before taking the spin lock)?
-> > 
-> > I think it would introduce the following 2 problems:
+On Tue, 26 May 2020 at 03:58, David Miller <davem@davemloft.net> wrote:
+>
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Date: Mon, 25 May 2020 00:22:51 +0300
+>
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > >
-> > problem #1) a race condition, see below:
+> > The dpaa-eth driver probes on compatible string for the MAC node, and
+> > the fman/mac.c driver allocates a dpaa-ethernet platform device that
+> > triggers the probing of the dpaa-eth net device driver.
+> >
+> > All of this is fine, but the problem is that the struct device of the
+> > dpaa_eth net_device is 2 parents away from the MAC which can be
+> > referenced via of_node. So of_find_net_device_by_node can't find it, and
+> > DSA switches won't be able to probe on top of FMan ports.
+> >
+> > It would be a bit silly to modify a core function
+> > (of_find_net_device_by_node) to look for dev->parent->parent->of_node
+> > just for one driver. We're just 1 step away from implementing full
+> > recursion.
+> >
+> > Actually there have already been at least 2 previous attempts to make
+> > this work:
+> > - Commit a1a50c8e4c24 ("fsl/man: Inherit parent device and of_node")
+> > - One or more of the patches in "[v3,0/6] adapt DPAA drivers for DSA":
+> >   https://patchwork.ozlabs.org/project/netdev/cover/1508178970-28945-1-git-send-email-madalin.bucur@nxp.com/
+> >   (I couldn't really figure out which one was supposed to solve the
+> >   problem and how).
+> >
+> > Point being, it looks like this is still pretty much a problem today.
+> > On T1040, the /sys/class/net/eth0 symlink currently points to
+> >
+> > ../../devices/platform/ffe000000.soc/ffe400000.fman/ffe4e6000.ethernet/dpaa-ethernet.0/net/eth0
+> >
+> > which pretty much illustrates the problem. The closest of_node we've got
+> > is the "fsl,fman-memac" at /soc@ffe000000/fman@400000/ethernet@e6000,
+> > which is what we'd like to be able to reference from DSA as host port.
+> >
+> > For of_find_net_device_by_node to find the eth0 port, we would need the
+> > parent of the eth0 net_device to not be the "dpaa-ethernet" platform
+> > device, but to point 1 level higher, aka the "fsl,fman-memac" node
+> > directly. The new sysfs path would look like this:
+> >
+> > ../../devices/platform/ffe000000.soc/ffe400000.fman/ffe4e6000.ethernet/net/eth0
+> >
+> > And this is exactly what SET_NETDEV_DEV does. It sets the parent of the
+> > net_device. The new parent has an of_node associated with it, and
+> > of_dev_node_match already checks for the of_node of the device or of its
+> > parent.
+> >
+> > Fixes: a1a50c8e4c24 ("fsl/man: Inherit parent device and of_node")
+> > Fixes: c6e26ea8c893 ("dpaa_eth: change device used")
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>
+> Applied and queued up for -stable, thanks.
 
-[...]
+Joakim notified me that this breaks stable trees.
+It turns out that my assessment about who-broke-who was wrong.
+The real Fixes: tag should have been:
 
-> > > @@ -433,6 +448,11 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
-> > > >         if (goto_ch)
-> > > >                 tcf_chain_put_by_act(goto_ch);
-> > > >  release_idr:
-> > > > +       /* action is not in: hitimer can be inited without taking tcf_lock */
-> > > > +       if (ret == ACT_P_CREATED)
-> > > > +               gate_setup_timer(gact, gact->param.tcfg_basetime,
-> > > > +                                gact->tk_offset, gact->param.tcfg_clockid,
-> > > > +                                true);
-> > 
-> > please note, here I felt the need to add a comment, because when ret ==
-> > ACT_P_CREATED the action is not inserted in any list, so there is no
-> > concurrent writer of gact-> members for that action.
-> > 
-> 
-> Then please rephrase the comment. I had read it and it still wasn't
-> clear at all for me what you were talking about.
+Fixes: 060ad66f9795 ("dpaa_eth: change DMA device")
 
-something like:
+which changes the device on which SET_NETDEV_DEV is made.
 
-/* action is not yet inserted in any list: it's safe to init hitimer 
- * without taking tcf_lock.
- */
+git describe --tags 060ad66f97954
+v5.4-rc3-783-g060ad66f9795
 
-would be ok?
+Which means that it shouldn't have been backported to 4.19 and below.
 
-[...]
+What is the procedure to revert it from those stable trees? Would I
+need to revert this patch in "net" and apply another one with the
+correct Fixes: tag?
 
-> I wonder, could you call tcf_gate_cleanup instead of just canceling the
-> hrtimer?
-
-not with the current tcf_gate_cleanup() [1] and parse_gate_list() [2],
-because it would introduce another bug: 'p->entries' gets cleared on
-action overwrite after being successfully created here:
-
-395         if (tb[TCA_GATE_ENTRY_LIST]) {
-396                 err = parse_gate_list(tb[TCA_GATE_ENTRY_LIST], p, extack);
-397                 if (err < 0)
-398                         goto chain_put;
-399         }
-
-
-like mentioned earlier, 'hitimer' can not be canceled/re-initialized easily when
-tcf_gate_init() still has a possible error path. And in my understanding
-'p->entries' must be consistent when the timer is initialized.
-
-IMO, the correct way to handle 'entries' is to:
-
-- populate the list on a local variable, before taking the spinlock and
-allocating the IDR
-
-- assign to p->entries after validation is successful (with the spinlock
-taken). Same as what was done with 'cycletime' in patch 1/2, but with the
-variable initialized (btw, thanks for catching this), and free the old
-list in case of action replace
-
-- release the newly allocated list in the error path of tcf_gate_init()
-
-(but again, this would be a fix for 'entries' - not for 'hitimer', so I
-plan to work on it as a separate patch, that fits better 'net-next' rather
-than 'net').
-
--- 
-davide
-
-[1] https://elixir.bootlin.com/linux/v5.8-rc1/source/net/sched/act_gate.c#L450
-[2] https://elixir.bootlin.com/linux/v5.8-rc1/source/net/sched/act_gate.c#L235
-
+Thanks,
+-Vladimir
