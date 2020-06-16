@@ -2,222 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 317D91FC008
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 22:32:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5D3A1FC018
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 22:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731728AbgFPUaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 16:30:30 -0400
-Received: from correo.us.es ([193.147.175.20]:40706 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726428AbgFPUaa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jun 2020 16:30:30 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 922CEF2366
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 22:30:26 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 83A40DA78D
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 22:30:26 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 791D8DA78B; Tue, 16 Jun 2020 22:30:26 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0A23ADA722;
-        Tue, 16 Jun 2020 22:30:24 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 16 Jun 2020 22:30:24 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id E1F1E426CCBA;
-        Tue, 16 Jun 2020 22:30:23 +0200 (CEST)
-Date:   Tue, 16 Jun 2020 22:30:23 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     wenxu@ucloud.cn
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, vladbu@mellanox.com
-Subject: Re: [PATCH net v3 3/4] net/sched: cls_api: fix nooffloaddevcnt
- warning dmesg log
-Message-ID: <20200616203023.GA26605@salvia>
-References: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
- <1592277580-5524-4-git-send-email-wenxu@ucloud.cn>
- <20200616201750.GA27024@salvia>
+        id S1731708AbgFPUh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 16:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35154 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726428AbgFPUhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 16:37:24 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8F5C061573;
+        Tue, 16 Jun 2020 13:37:24 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id y11so123989ljm.9;
+        Tue, 16 Jun 2020 13:37:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ED+E05jFvuSbF1d6fG9JM8s3vB5/r4QTyu/6Ssk0hqI=;
+        b=pyXB6lOygv7d3fpovp/hfSOGjPv5ee22Kh91pmpyuPkSH3cPe3xSSoKSv3zqwVnXx5
+         +hhuHw8IAeyT6YN+YmeJ8SISZmCPqA8fh5VAgYKlNwFqozX8D6KxPnyN0eqUlSB4iFjy
+         0H9mr/YUYfncmuJd4v0jGbf+5gecaMKPZpgz/EwdlODlfHSUFP3c36q+sN12qIfRSTDc
+         9XvqhgIfIAJ3h5l+xUN6yALuo9i/u+p6vm4CfhHzmRPyRrib0DNg9SrFIynm1eDiW+fz
+         a5WjoU7rKP3KdkSRkTyfBDEWwObdz/xvMkdbgkD/hVLLtcLk5LAtPzC1lrDPU//KAnpI
+         ENvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ED+E05jFvuSbF1d6fG9JM8s3vB5/r4QTyu/6Ssk0hqI=;
+        b=rObWlGhHfsQITvObmKX8O7ZhbsJPwqDAl0r2llWXj6F1NK0P4JazhUNGqKTVUPFCpL
+         BaeIt1GfZyudkP6aAnt9GXDvOcT30TcGB/QenrOWOO5xbrBWI8T2CAHNEgRAZz/5sn1z
+         9bqHchEdngon6xgX+Exqgq4QjBuP+ddR54ubaFzvCFGUsOPZ+9aziwkrLO+JdzJVBOSz
+         /NTT3jtUwnadKCd1ltUVsshnM70CA/wjQL2W+2YeaXU2VP0R2CT+0YuDjzvqj23dUIuO
+         XYu8rNwMiaHTyaBwiBQ/Hz5y8OP0f5JVoiP6EUQt2qowV6DWQWy61eP3fdrb2G4T1SPo
+         n5eg==
+X-Gm-Message-State: AOAM53399Cyn5DCg2Uim0DwN/DovUOGwwOSrq79sM9jbNZUMcVyC9JLn
+        CabeBx9z99ASy/Mnf2uz0DXL+8ly/jYnLBclG8A=
+X-Google-Smtp-Source: ABdhPJwE2lMLvVUrdVYb5jqSp16Jt51lzYQ+YF39c3LoNZ6rdQE19vSQ2lSbpLa+BE9LdtTZnOw2WK0Z27HR99wUpn4=
+X-Received: by 2002:a2e:98d7:: with SMTP id s23mr2376050ljj.2.1592339842579;
+ Tue, 16 Jun 2020 13:37:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200616201750.GA27024@salvia>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <20200612160141.188370-1-lmb@cloudflare.com> <CAADnVQ+owOvkZ03qyodmh+4NkZD=1LpgTN+YJqiKgr0_OKqRtA@mail.gmail.com>
+ <CACAyw9-Jy+r2t5Yy83EEZ8GDnxEsGOPdrqr2JSfVqcC2E6dYmQ@mail.gmail.com>
+ <CAADnVQJP_i+KsP771L=GwxousnE=w9o2KckZ7ZCbc064EqSq6w@mail.gmail.com> <CACAyw99Szs3nUTx=DSmh0x8iTBLNF9TTLGC0GQLZ=FifVnbzBA@mail.gmail.com>
+In-Reply-To: <CACAyw99Szs3nUTx=DSmh0x8iTBLNF9TTLGC0GQLZ=FifVnbzBA@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 16 Jun 2020 13:37:11 -0700
+Message-ID: <CAADnVQLXEq5+ko_ojmuh1Oc84HiPrfLF-7Cdh1xwwm-PhoFwBQ@mail.gmail.com>
+Subject: Re: [PATCH bpf 1/2] flow_dissector: reject invalid attach_flags
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 10:17:50PM +0200, Pablo Neira Ayuso wrote:
-> On Tue, Jun 16, 2020 at 11:19:39AM +0800, wenxu@ucloud.cn wrote:
-> > From: wenxu <wenxu@ucloud.cn>
-> > 
-> > When a indr device add in offload success. The block->nooffloaddevcnt
-> > should be 0. After the representor go away. When the dir device go away
-> > the flow_block UNBIND operation with -EOPNOTSUPP which lead the warning
-> > dmesg log. 
-> > 
-> > The block->nooffloaddevcnt should always count for indr block.
-> > even the indr block offload successful. The representor maybe
-> > gone away and the ingress qdisc can work in software mode.
-> > 
-> > block->nooffloaddevcnt warning with following dmesg log:
-> > 
-> > [  760.667058] #####################################################
-> > [  760.668186] ## TEST test-ecmp-add-vxlan-encap-disable-sriov.sh ##
-> > [  760.669179] #####################################################
-> > [  761.780655] :test: Fedora 30 (Thirty)
-> > [  761.783794] :test: Linux reg-r-vrt-018-180 5.7.0+
-> > [  761.822890] :test: NIC ens1f0 FW 16.26.6000 PCI 0000:81:00.0 DEVICE 0x1019 ConnectX-5 Ex
-> > [  761.860244] mlx5_core 0000:81:00.0 ens1f0: Link up
-> > [  761.880693] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
-> > [  762.059732] mlx5_core 0000:81:00.1 ens1f1: Link up
-> > [  762.234341] :test: unbind vfs of ens1f0
-> > [  762.257825] :test: Change ens1f0 eswitch (0000:81:00.0) mode to switchdev
-> > [  762.291363] :test: unbind vfs of ens1f1
-> > [  762.306914] :test: Change ens1f1 eswitch (0000:81:00.1) mode to switchdev
-> > [  762.309237] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(LEGACY), nvfs(2), active vports(3)
-> > [  763.282598] mlx5_core 0000:81:00.1: E-Switch: Supported tc offload range - chains: 4294967294, prios: 4294967295
-> > [  763.362825] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-> > [  763.444465] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
-> > [  763.460088] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-> > [  763.502586] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-> > [  763.552429] ens1f1_0: renamed from eth0
-> > [  763.569569] mlx5_core 0000:81:00.1: E-Switch: Enable: mode(OFFLOADS), nvfs(2), active vports(3)
-> > [  763.629694] ens1f1_1: renamed from eth1
-> > [  764.631552] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_0: link becomes ready
-> > [  764.670841] :test: unbind vfs of ens1f0
-> > [  764.681966] :test: unbind vfs of ens1f1
-> > [  764.726762] mlx5_core 0000:81:00.0 ens1f0: Link up
-> > [  764.766511] mlx5_core 0000:81:00.1 ens1f1: Link up
-> > [  764.797325] :test: Add multipath vxlan encap rule and disable sriov
-> > [  764.798544] :test: config multipath route
-> > [  764.812732] mlx5_core 0000:81:00.0: lag map port 1:2 port 2:2
-> > [  764.874556] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:2
-> > [  765.603681] :test: OK
-> > [  765.659048] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_1: link becomes ready
-> > [  765.675085] :test: verify rule in hw
-> > [  765.694237] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
-> > [  765.711892] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1: link becomes ready
-> > [  766.979230] :test: OK
-> > [  768.125419] :test: OK
-> > [  768.127519] :test: - disable sriov ens1f1
-> > [  768.131160] pci 0000:81:02.2: Removing from iommu group 75
-> > [  768.132646] pci 0000:81:02.3: Removing from iommu group 76
-> > [  769.179749] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
-> > [  769.455627] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:1
-> > [  769.703990] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-> > [  769.988637] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
-> > [  769.990022] :test: - disable sriov ens1f0
-> > [  769.994922] pci 0000:81:00.2: Removing from iommu group 73
-> > [  769.997048] pci 0000:81:00.3: Removing from iommu group 74
-> > [  771.035813] mlx5_core 0000:81:00.0: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
-> > [  771.339091] ------------[ cut here ]------------
-> > [  771.340812] WARNING: CPU: 6 PID: 3448 at net/sched/cls_api.c:749 tcf_block_offload_unbind.isra.0+0x5c/0x60
-> > [  771.341728] Modules linked in: act_mirred act_tunnel_key cls_flower dummy vxlan ip6_udp_tunnel udp_tunnel sch_ingress nfsv3 nfs_acl nfs lockd grace fscache tun bridge stp llc sunrpc rdma_ucm rdma_cm iw_cm ib_cm mlx5_ib ib_uverbs ib_core mlx5_core intel_rapl_msr intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp mlxfw act_ct nf_flow_table kvm_intel nf_nat kvm nf_conntrack irqbypass crct10dif_pclmul igb crc32_pclmul nf_defrag_ipv6 libcrc32c nf_defrag_ipv4 crc32c_intel ghash_clmulni_intel ptp ipmi_ssif intel_cstate pps_c
-> > ore ses intel_uncore mei_me iTCO_wdt joydev ipmi_si iTCO_vendor_support i2c_i801 enclosure mei ioatdma dca lpc_ich wmi ipmi_devintf pcspkr acpi_power_meter ipmi_msghandler acpi_pad ast i2c_algo_bit drm_vram_helper drm_kms_helper drm_ttm_helper ttm drm mpt3sas raid_class scsi_transport_sas
-> > [  771.347818] CPU: 6 PID: 3448 Comm: test-ecmp-add-v Not tainted 5.7.0+ #1146
-> > [  771.348727] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-> > [  771.349646] RIP: 0010:tcf_block_offload_unbind.isra.0+0x5c/0x60
-> > [  771.350553] Code: 4a fd ff ff 83 f8 a1 74 0e 5b 4c 89 e7 5d 41 5c 41 5d e9 07 93 89 ff 8b 83 a0 00 00 00 8d 50 ff 89 93 a0 00 00 00 85 c0 75 df <0f> 0b eb db 0f 1f 44 00 00 41 57 41 56 41 55 41 89 cd 41 54 49 89
-> > [  771.352420] RSP: 0018:ffffb33144cd3b00 EFLAGS: 00010246
-> > [  771.353353] RAX: 0000000000000000 RBX: ffff8b37cf4b2800 RCX: 0000000000000000
-> > [  771.354294] RDX: 00000000ffffffff RSI: ffff8b3b9aad0000 RDI: ffffffff8d5c6e20
-> > [  771.355245] RBP: ffff8b37eb546948 R08: ffffffffc0b7a348 R09: ffff8b3b9aad0000
-> > [  771.356189] R10: 0000000000000001 R11: ffff8b3ba7a0a1c0 R12: ffff8b37cf4b2850
-> > [  771.357123] R13: ffff8b3b9aad0000 R14: ffff8b37cf4b2820 R15: ffff8b37cf4b2820
-> > [  771.358039] FS:  00007f8a19b6e740(0000) GS:ffff8b3befa00000(0000) knlGS:0000000000000000
-> > [  771.358965] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [  771.359885] CR2: 00007f3afb91c1a0 CR3: 000000045133c004 CR4: 00000000001606e0
-> > [  771.360825] Call Trace:
-> > [  771.361764]  __tcf_block_put+0x84/0x150
-> > [  771.362712]  ingress_destroy+0x1b/0x20 [sch_ingress]
-> > [  771.363658]  qdisc_destroy+0x3e/0xc0
-> > [  771.364594]  dev_shutdown+0x7a/0xa5
-> > [  771.365522]  rollback_registered_many+0x20d/0x530
-> > [  771.366458]  ? netdev_upper_dev_unlink+0x15d/0x1c0
-> > [  771.367387]  unregister_netdevice_many.part.0+0xf/0x70
-> > [  771.368310]  vxlan_netdevice_event+0xa4/0x110 [vxlan]
-> > [  771.369454]  notifier_call_chain+0x4c/0x70
-> > [  771.370579]  rollback_registered_many+0x2f5/0x530
-> > [  771.371719]  rollback_registered+0x56/0x90
-> > [  771.372843]  unregister_netdevice_queue+0x73/0xb0
-> > [  771.373982]  unregister_netdev+0x18/0x20
-> > [  771.375168]  mlx5e_vport_rep_unload+0x56/0xc0 [mlx5_core]
-> > [  771.376327]  esw_offloads_disable+0x81/0x90 [mlx5_core]
-> > [  771.377512]  mlx5_eswitch_disable_locked.cold+0xcb/0x1af [mlx5_core]
-> > [  771.378679]  mlx5_eswitch_disable+0x44/0x60 [mlx5_core]
-> > [  771.379822]  mlx5_device_disable_sriov+0xad/0xb0 [mlx5_core]
-> > [  771.380968]  mlx5_core_sriov_configure+0xc1/0xe0 [mlx5_core]
-> > [  771.382087]  sriov_numvfs_store+0xfc/0x130
-> > [  771.383195]  kernfs_fop_write+0xce/0x1b0
-> > [  771.384302]  vfs_write+0xb6/0x1a0
-> > [  771.385410]  ksys_write+0x5f/0xe0
-> > [  771.386500]  do_syscall_64+0x5b/0x1d0
-> > [  771.387569]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > 
-> > Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
-> > Signed-off-by: wenxu <wenxu@ucloud.cn>
-> > ---
-> >  net/sched/cls_api.c | 24 ++++++++++++++----------
-> >  1 file changed, 14 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> > index a00a203..86c3937 100644
-> > --- a/net/sched/cls_api.c
-> > +++ b/net/sched/cls_api.c
-> > @@ -671,25 +671,29 @@ static int tcf_block_offload_cmd(struct tcf_block *block,
-> >  				 struct netlink_ext_ack *extack)
-> >  {
-> >  	struct flow_block_offload bo = {};
-> > -	int err;
-> >  
-> >  	tcf_block_offload_init(&bo, dev, command, ei->binder_type,
-> >  			       &block->flow_block, tcf_block_shared(block),
-> >  			       extack);
-> >  
-> > -	if (dev->netdev_ops->ndo_setup_tc)
-> > +	if (dev->netdev_ops->ndo_setup_tc) {
-> > +		int err;
-> > +
-> >  		err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
-> > -	else
-> > -		err = flow_indr_dev_setup_offload(dev, TC_SETUP_BLOCK, block,
-> > -						  &bo, tc_block_indr_cleanup);
-> > +		if (err < 0) {
-> > +			if (err != -EOPNOTSUPP)
-> > +				NL_SET_ERR_MSG(extack, "Driver ndo_setup_tc failed");
-> > +			return err;
-> > +		}
-> >  
-> > -	if (err < 0) {
-> > -		if (err != -EOPNOTSUPP)
-> > -			NL_SET_ERR_MSG(extack, "Driver ndo_setup_tc failed");
-> > -		return err;
-> > +		return tcf_block_setup(block, &bo);
-> >  	}
-> >  
-> > -	return tcf_block_setup(block, &bo);
-> > +	flow_indr_dev_setup_offload(dev, TC_SETUP_BLOCK, block, &bo,
-> > +				    tc_block_indr_cleanup);
-> > +	tcf_block_setup(block, &bo);
-> > +
-> > +	return -EOPNOTSUPP;
-> 
-> So tcf_block_offload_cmd() always return -EOPNOTSUPP for _BIND and
-> _UNBIND operations after this patch ?
+On Tue, Jun 16, 2020 at 1:30 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> On Tue, 16 Jun 2020 at 04:55, Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Mon, Jun 15, 2020 at 7:43 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+> > >
+> > > On Fri, 12 Jun 2020 at 23:36, Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > On Fri, Jun 12, 2020 at 9:02 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+> > > > >
+> > > > > Using BPF_PROG_ATTACH on a flow dissector program supports neither flags
+> > > > > nor target_fd but accepts any value. Return EINVAL if either are non-zero.
+> > > > >
+> > > > > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> > > > > Fixes: b27f7bb590ba ("flow_dissector: Move out netns_bpf prog callbacks")
+> > > > > ---
+> > > > >  kernel/bpf/net_namespace.c | 3 +++
+> > > > >  1 file changed, 3 insertions(+)
+> > > > >
+> > > > > diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
+> > > > > index 78cf061f8179..56133e78ae4f 100644
+> > > > > --- a/kernel/bpf/net_namespace.c
+> > > > > +++ b/kernel/bpf/net_namespace.c
+> > > > > @@ -192,6 +192,9 @@ int netns_bpf_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+> > > > >         struct net *net;
+> > > > >         int ret;
+> > > > >
+> > > > > +       if (attr->attach_flags || attr->target_fd)
+> > > > > +               return -EINVAL;
+> > > > > +
+> > > >
+> > > > In theory it makes sense, but how did you test it?
+> > >
+> > > Not properly it seems, sorry!
+> > >
+> > > > test_progs -t flow
+> > > > fails 5 tests.
+> > >
+> > > I spent today digging through this, and the issue is actually more annoying than
+> > > I thought. BPF_PROG_DETACH for sockmap and flow_dissector ignores
+> > > attach_bpf_fd. The cgroup and lirc2 attach point use this to make sure that the
+> > > program being detached is actually what user space expects. We actually have
+> > > tests that set attach_bpf_fd for these to attach points, which tells
+> > > me that this is
+> > > an easy mistake to make.
+> > >
+> > > Unfortunately I can't come up with a good fix that seems backportable:
+> > > - Making sockmap and flow_dissector have the same semantics as cgroup
+> > >   and lirc2 requires a bunch of changes (probably a new function for sockmap)
+> >
+> > making flow dissector pass prog_fd as cg and lirc is certainly my preference.
+> > Especially since tests are passing fd user code is likely doing the same,
+> > so breakage is unlikely. Also it wasn't done that long ago, so
+> > we can backport far enough.
+> > It will remove cap_net_admin ugly check in bpf_prog_detach()
+> > which is the only exception now in cap model.
+>
+> SGTM. What about sockmap though? The code for that has been around for ages.
 
-tcf_block_offload_unbind() is not called from the
-tc_block_indr_cleanup() path.
+you mean the second patch that enforces sock_map_get_from_fd doesn't
+use attach_flags?
+I think it didn't break anything, so enforcing is fine.
 
-How is this patch related to 1/4, 2/4 and 4/4 ?
+or the detach part that doesn't use prog_fd ?
+I'm not sure what's the best here.
+At least from cap perspective it's fine because map_fd is there.
+
+John, wdyt?
