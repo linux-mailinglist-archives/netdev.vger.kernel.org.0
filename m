@@ -2,148 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5BF01FB9D2
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 18:07:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5314F1FB90A
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 18:01:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732545AbgFPQHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 12:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46400 "EHLO
+        id S1730949AbgFPQAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 12:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730426AbgFPPrU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 11:47:20 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8547C061573
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:47:20 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id t21so14608070edr.12
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:47:20 -0700 (PDT)
+        with ESMTP id S1732809AbgFPPws (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 11:52:48 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4004EC06174E
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:52:47 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id i12so1630550pju.3
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 08:52:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=73aIY/LXErMgQ2L+mUUsaqmNocwnsmcGVQ05txUsy5w=;
-        b=h6Vr0XcBFwbnMKG9CkfRExmwjlKImK2hpthtODpP3Jv0GuA5/6BOWbMiiXE4Ty0xgS
-         /eLbmW+xWcswqVRvWjvM/yVyaPhlIdSGNZL1PM9IAfrC6eP/D5I7ptoiXU32w/uq8Jvb
-         VVQptMEB5x+EeY2HSSF5xCMLhSR6IkXcK8CNKWTjcDxdDEKNkGcfcTizeBYgtOvk4pc9
-         IG9BGN+xiEqtcpBmu7DRls91x6E8CV6lka5+WTuHVdWQ+HzK6DFDsmVWyGSjF53viVbl
-         /jPyi3LKxQu5YSlKjSEAJkol0Lpp489vT1Qx8hmFweSVKqgjhqz9icmVM4dTREYNghoI
-         F2cA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=bLqkpKmEFdo50WG+lxFzSE/gPYomjAyXGtI7bY1gfcc=;
+        b=ihA17bLiTDCpfMxM/wM2fbkUDeO1dPfwLluAAyO4L1Enjjf2SYHM82u5c3n91FCyiz
+         bM2hx3iZbJi/VGKITOmDiKP+NTlw+UbEli8ddWq3bfgpvdTDdZa4v3DBvL7EtVBgFSx1
+         H/3UcGpuHPIcvjs/0lb0BjmKxRBFo8l8N7hrf6bZBP3mqsGlZ6xmgFOZVaZxhTfA4ebu
+         4n9GYwCPpL1E/va3/8f0Dwe/fxl7u4UP2v0dh+pUWgJIxLoUV1mzj+H1k5FrU5cMuKw1
+         hW0NojZEeEpCNikcw58HHcF5PNWfH1z2TlTgPHxz7YTFAvzCC7V3OgNpgS8ONtqt2FKf
+         1DJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=73aIY/LXErMgQ2L+mUUsaqmNocwnsmcGVQ05txUsy5w=;
-        b=CEhIp0zpkeKeTKdrtIKSUvd4+IPbDIKqaeqKKxc03GmJcSNMBj5bV3Yj0jVnJ+YqMY
-         B21VORrjYKQqoV7e8wU7QNsVvHevpQbvZbpSUPAZx9WPO2z9T91qruxorTFiVEc8RXm1
-         9m+iQ+QL8jPyyDuX9rWJ4JjCU1C3J3QMQ2wH7OrboAoo3fukr1Mpg3pOQvD+kmtoDx8o
-         FG1kjxcYxR2I+osR/bsDRIZfWK4SvrZ6uzNxyQJlPY+ZQ4CbKUIFSzRZthMR94yqckyK
-         dRYOyo3exQJuhTfslQt16CIU9rBHRv5qq5smSdsqZvQv29lYllXO/FAuMi70JFTpyCVc
-         rG8A==
-X-Gm-Message-State: AOAM533Hxc2Rjn/nDwGXUg2unAP0dYGmBHGTcTpfZUAIzJRrLqjk021K
-        +3iNkuBL0tjJa+qlVl1FUkXJBg==
-X-Google-Smtp-Source: ABdhPJw+5qkITEPe/6eVUCGwOeh2bvQkl5yOkl8JEnAXdplXBprnMtLWEUOlTB9WNN9RAAv6xmOseQ==
-X-Received: by 2002:aa7:d0cb:: with SMTP id u11mr3033390edo.381.1592322439284;
-        Tue, 16 Jun 2020 08:47:19 -0700 (PDT)
-Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id k2sm11486130ejc.20.2020.06.16.08.47.18
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bLqkpKmEFdo50WG+lxFzSE/gPYomjAyXGtI7bY1gfcc=;
+        b=Yo6df8ak+OS6tINBiQSB3rcZQp1bJyxpnWuGvnAfNDLuVUj1bspfk4k7gspjkXXBcl
+         lDnWRAtk4mnYHpmT8ViYj08QdIKU1/5xQieaPNs/gQ8/N2MstFluFudcWbCRcKHxa3aq
+         V6avJqPEgcz/78WkZqUZgYPSWe/EBwvkWhx2XHN9YrES1eYHRRAnR6tXlLi9OG+FSqWA
+         CWQwkJWTY4ojZJA8QaEGEoLVXEKdO3ICoG2JrMAODxw/zeBAnruO2wbg5YdjswcZAbBs
+         GjBK4wiG0VjImJgjP9JqY4hIWYpCEj6bcWX0A7U/oaQrHcKgwdgTR9QsnQtCSxzPis7F
+         iC5Q==
+X-Gm-Message-State: AOAM533OWXy7wSsfP3h7h4PIGK24I+/QeazIGZKYtnO6tUUPuX4H50yA
+        5pa+A3OUM2c0dChBlNmGvHw=
+X-Google-Smtp-Source: ABdhPJy2WlaPpdNyF1/xcr14rYQEcLTufKNAso9Yw0EX9HZYGb9OCn6vluAxC5dBaeNbZNGpWJA7WQ==
+X-Received: by 2002:a17:902:7288:: with SMTP id d8mr2736927pll.18.1592322766555;
+        Tue, 16 Jun 2020 08:52:46 -0700 (PDT)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id o20sm2872411pjw.19.2020.06.16.08.52.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 08:47:18 -0700 (PDT)
-Date:   Tue, 16 Jun 2020 17:47:17 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pablo@netfilter.org,
-        vladbu@mellanox.com
-Subject: Re: [PATCH net v3 2/4] flow_offload: fix incorrect cb_priv check for
- flow_block_cb
-Message-ID: <20200616154716.GA16382@netronome.com>
-References: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
- <1592277580-5524-3-git-send-email-wenxu@ucloud.cn>
- <20200616105123.GA21396@netronome.com>
- <aee3192c-7664-580b-1f37-9003c91f185b@ucloud.cn>
- <20200616143427.GA8084@netronome.com>
- <565dd609-1e20-16f4-f38d-8a0b15816f50@ucloud.cn>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <565dd609-1e20-16f4-f38d-8a0b15816f50@ucloud.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Tue, 16 Jun 2020 08:52:45 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com, fw@strlen.de
+Subject: [PATCH net v2] net: core: reduce recursion limit value
+Date:   Tue, 16 Jun 2020 15:52:05 +0000
+Message-Id: <20200616155205.8276-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 11:18:16PM +0800, wenxu wrote:
-> 
-> 在 2020/6/16 22:34, Simon Horman 写道:
-> > On Tue, Jun 16, 2020 at 10:20:46PM +0800, wenxu wrote:
-> >> 在 2020/6/16 18:51, Simon Horman 写道:
-> >>> On Tue, Jun 16, 2020 at 11:19:38AM +0800, wenxu@ucloud.cn wrote:
-> >>>> From: wenxu <wenxu@ucloud.cn>
-> >>>>
-> >>>> In the function __flow_block_indr_cleanup, The match stataments
-> >>>> this->cb_priv == cb_priv is always false, the flow_block_cb->cb_priv
-> >>>> is totally different data with the flow_indr_dev->cb_priv.
-> >>>>
-> >>>> Store the representor cb_priv to the flow_block_cb->indr.cb_priv in
-> >>>> the driver.
-> >>>>
-> >>>> Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
-> >>>> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> >>> Hi Wenxu,
-> >>>
-> >>> I wonder if this can be resolved by using the cb_ident field of struct
-> >>> flow_block_cb.
-> >>>
-> >>> I observe that mlx5e_rep_indr_setup_block() seems to be the only call-site
-> >>> where the value of the cb_ident parameter of flow_block_cb_alloc() is
-> >>> per-block rather than per-device. So part of my proposal is to change
-> >>> that.
-> >> I check all the xxdriver_indr_setup_block. It seems all the cb_ident parameter of
-> >>
-> >> flow_block_cb_alloc is per-block. Both in the nfp_flower_setup_indr_tc_block
-> >>
-> >> and bnxt_tc_setup_indr_block.
-> >>
-> >>
-> >> nfp_flower_setup_indr_tc_block:
-> >>
-> >> struct nfp_flower_indr_block_cb_priv *cb_priv;
-> >>
-> >> block_cb = flow_block_cb_alloc(nfp_flower_setup_indr_block_cb,
-> >>                                                cb_priv, cb_priv,
-> >>                                                nfp_flower_setup_indr_tc_release);
-> >>
-> >>
-> >> bnxt_tc_setup_indr_block:
-> >>
-> >> struct bnxt_flower_indr_block_cb_priv *cb_priv;
-> >>
-> >> block_cb = flow_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
-> >>                                                cb_priv, cb_priv,
-> >>                                                bnxt_tc_setup_indr_rel);
-> >>
-> >>
-> >> And the function flow_block_cb_is_busy called in most place. Pass the
-> >>
-> >> parameter as cb_priv but not cb_indent .
-> > Thanks, I see that now. But I still think it would be useful to understand
-> > the purpose of cb_ident. It feels like it would lead to a clean solution
-> > to the problem you have highlighted.
-> 
-> I think The cb_ident means identify.  It is used to identify the each flow block cb.
-> 
-> In the both flow_block_cb_is_busy and flow_block_cb_lookup function check
-> 
-> the block_cb->cb_ident == cb_ident.
+In the current code, ->ndo_start_xmit() can be executed recursively only
+10 times because of stack memory.
+But, in the case of the vxlan, 10 recursion limit value results in
+a stack overflow.
+In the current code, the nested interface is limited by 8 depth.
+There is no critical reason that the recursion limitation value should
+be 10.
+So, it would be good to be the same value with the limitation value of
+nesting interface depth.
 
-Thanks, I think that I now see what you mean about the different scope of
-cb_ident and your proposal to allow cleanup by flow_indr_dev_unregister().
+Test commands:
+    ip link add vxlan10 type vxlan vni 10 dstport 4789 srcport 4789 4789
+    ip link set vxlan10 up
+    ip a a 192.168.10.1/24 dev vxlan10
+    ip n a 192.168.10.2 dev vxlan10 lladdr fc:22:33:44:55:66 nud permanent
 
-I do, however, still wonder if there is a nicer way than reaching into
-the structure and manually setting block_cb->indr.cb_priv
-at each call-site.
+    for i in {9..0}
+    do
+        let A=$i+1
+	ip link add vxlan$i type vxlan vni $i dstport 4789 srcport 4789 4789
+	ip link set vxlan$i up
+	ip a a 192.168.$i.1/24 dev vxlan$i
+	ip n a 192.168.$i.2 dev vxlan$i lladdr fc:22:33:44:55:66 nud permanent
+	bridge fdb add fc:22:33:44:55:66 dev vxlan$A dst 192.168.$i.2 self
+    done
+    hping3 192.168.10.2 -2 -d 60000
 
-Perhaps a variant of flow_block_cb_alloc() for indirect blocks
-would be nicer?
+Splat looks like:
+[  103.814237][ T1127] =============================================================================
+[  103.871955][ T1127] BUG kmalloc-2k (Tainted: G    B            ): Padding overwritten. 0x00000000897a2e4f-0x000
+[  103.873187][ T1127] -----------------------------------------------------------------------------
+[  103.873187][ T1127]
+[  103.874252][ T1127] INFO: Slab 0x000000005cccc724 objects=5 used=5 fp=0x0000000000000000 flags=0x10000000001020
+[  103.881323][ T1127] CPU: 3 PID: 1127 Comm: hping3 Tainted: G    B             5.7.0+ #575
+[  103.882131][ T1127] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  103.883006][ T1127] Call Trace:
+[  103.883324][ T1127]  dump_stack+0x96/0xdb
+[  103.883716][ T1127]  slab_err+0xad/0xd0
+[  103.884106][ T1127]  ? _raw_spin_unlock+0x1f/0x30
+[  103.884620][ T1127]  ? get_partial_node.isra.78+0x140/0x360
+[  103.885214][ T1127]  slab_pad_check.part.53+0xf7/0x160
+[  103.885769][ T1127]  ? pskb_expand_head+0x110/0xe10
+[  103.886316][ T1127]  check_slab+0x97/0xb0
+[  103.886763][ T1127]  alloc_debug_processing+0x84/0x1a0
+[  103.887308][ T1127]  ___slab_alloc+0x5a5/0x630
+[  103.887765][ T1127]  ? pskb_expand_head+0x110/0xe10
+[  103.888265][ T1127]  ? lock_downgrade+0x730/0x730
+[  103.888762][ T1127]  ? pskb_expand_head+0x110/0xe10
+[  103.889244][ T1127]  ? __slab_alloc+0x3e/0x80
+[  103.889675][ T1127]  __slab_alloc+0x3e/0x80
+[  103.890108][ T1127]  __kmalloc_node_track_caller+0xc7/0x420
+[ ... ]
+
+Fixes: 11a766ce915f ("net: Increase xmit RECURSION_LIMIT to 10.")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+
+v1 -> v2:
+ - Fix a fix tag.
+
+ include/linux/netdevice.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 6fc613ed8eae..39e28e11863c 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3157,7 +3157,7 @@ static inline int dev_recursion_level(void)
+ 	return this_cpu_read(softnet_data.xmit.recursion);
+ }
+ 
+-#define XMIT_RECURSION_LIMIT	10
++#define XMIT_RECURSION_LIMIT	8
+ static inline bool dev_xmit_recursion(void)
+ {
+ 	return unlikely(__this_cpu_read(softnet_data.xmit.recursion) >
+-- 
+2.17.1
+
