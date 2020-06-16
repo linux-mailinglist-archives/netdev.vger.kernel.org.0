@@ -2,51 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 773B11FA560
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 03:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA9691FA56E
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 03:12:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726710AbgFPBHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Jun 2020 21:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726369AbgFPBHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Jun 2020 21:07:11 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B3BC061A0E
-        for <netdev@vger.kernel.org>; Mon, 15 Jun 2020 18:07:11 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2CAA6122A98E0;
-        Mon, 15 Jun 2020 18:07:11 -0700 (PDT)
-Date:   Mon, 15 Jun 2020 18:07:10 -0700 (PDT)
-Message-Id: <20200615.180710.1879893853346546167.davem@davemloft.net>
-To:     roid@mellanox.com
-Cc:     netdev@vger.kernel.org, pablo@netfilter.org, jiri@mellanox.com,
-        paulb@mellanox.com, ozsh@mellanox.com, mleitner@redhat.com,
-        alaa@mellanox.com
-Subject: Re: [PATCH net 0/2] remove dependency between mlx5, act_ct,
- nf_flow_table
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200614111249.6145-1-roid@mellanox.com>
-References: <20200614111249.6145-1-roid@mellanox.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 15 Jun 2020 18:07:11 -0700 (PDT)
+        id S1726782AbgFPBMC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 15 Jun 2020 21:12:02 -0400
+Received: from asix.com.tw ([210.243.224.51]:57329 "EHLO freebsd2.asix.com.tw"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726564AbgFPBMC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Jun 2020 21:12:02 -0400
+Received: from AllanWin10 ([210.243.224.52])
+        (authenticated bits=0)
+        by freebsd2.asix.com.tw (8.15.2/8.15.2) with ESMTPSA id 05G1BSwx057632
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 16 Jun 2020 09:11:35 +0800 (CST)
+        (envelope-from allan@asix.com.tw)
+Authentication-Results: freebsd2.asix.com.tw; sender-id=softfail header.from=allan@asix.com.tw; auth=pass (LOGIN); spf=softfail smtp.mfrom=allan@asix.com.tw
+X-Authentication-Warning: freebsd2.asix.com.tw: Host [210.243.224.52] claimed to be AllanWin10
+From:   "ASIX_Allan [Office]" <allan@asix.com.tw>
+To:     "'David Miller'" <davem@davemloft.net>, <jk@ozlabs.org>,
+        =?utf-8?B?QVNJWCBMb3VpcyBb6JiH5aiB6Zm4XQ==?= <louis@asix.com.tw>
+Cc:     <netdev@vger.kernel.org>, <pfink@christ-es.de>,
+        <linux-usb@vger.kernel.org>
+References: <20200615025456.30219-1-jk@ozlabs.org> <20200615.125220.492630206908309571.davem@davemloft.net>
+In-Reply-To: <20200615.125220.492630206908309571.davem@davemloft.net>
+Subject: RE: [PATCH] net: usb: ax88179_178a: fix packet alignment padding
+Date:   Tue, 16 Jun 2020 09:08:30 +0800
+Message-ID: <000f01d6437a$ab60b080$02221180$@asix.com.tw>
+MIME-Version: 1.0
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: zh-tw
+Thread-Index: AQHuQNNAcJozatbpD9iQc3OpXVVaxAIJkOpNqJomUbA=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@mellanox.com>
-Date: Sun, 14 Jun 2020 14:12:47 +0300
+Added ASIX S/W, Louis in the CC loop. 
 
-> Some exported functions from act_ct and nf_flow_table being used in mlx5_core.
-> This leads that mlx5 module always require act_ct and nf_flow_table modules.
-> Those small exported functions can be moved to the header files to
-> avoid this module dependency.
+ 
+---
+Best regards,
+Allan Chou
+ASIX Electronics Corporation
+TEL: 886-3-5799500 ext.228
+FAX: 886-3-5799558
+E-mail: allan@asix.com.tw 
+https://www.asix.com.tw/ 
 
-Series applied, thanks.
+
+
+-----Original Message-----
+From: David Miller <davem@davemloft.net> 
+Sent: Tuesday, June 16, 2020 3:52 AM
+To: jk@ozlabs.org
+Cc: netdev@vger.kernel.org; allan@asix.com.tw; freddy@asix.com.tw; pfink@christ-es.de; linux-usb@vger.kernel.org
+Subject: Re: [PATCH] net: usb: ax88179_178a: fix packet alignment padding
+
+From: Jeremy Kerr <jk@ozlabs.org>
+Date: Mon, 15 Jun 2020 10:54:56 +0800
+
+> Using a AX88179 device (0b95:1790), I see two bytes of appended data 
+> on every RX packet. For example, this 48-byte ping, using 0xff as a 
+> payload byte:
+> 
+>   04:20:22.528472 IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 2447, seq 1, length 64
+> 	0x0000:  000a cd35 ea50 000a cd35 ea4f 0800 4500
+> 	0x0010:  0054 c116 4000 4001 f63e c0a8 0101 c0a8
+> 	0x0020:  0102 0800 b633 098f 0001 87ea cd5e 0000
+> 	0x0030:  0000 dcf2 0600 0000 0000 ffff ffff ffff
+> 	0x0040:  ffff ffff ffff ffff ffff ffff ffff ffff
+> 	0x0050:  ffff ffff ffff ffff ffff ffff ffff ffff
+> 	0x0060:  ffff 961f
+> 
+> Those last two bytes - 96 1f - aren't part of the original packet.
+
+Does this happen for non-tail packets in a multi-packet cluster?
+
+Because that code in this loop makes the same calculations:
+
+		ax_skb = skb_clone(skb, GFP_ATOMIC);
+		if (ax_skb) {
+			ax_skb->len = pkt_len;
+			ax_skb->data = skb->data + 2;
+			skb_set_tail_pointer(ax_skb, pkt_len);
+			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
+			ax88179_rx_checksum(ax_skb, pkt_hdr);
+			usbnet_skb_return(dev, ax_skb);
+
+So if your change is right, it should be applied to this code block as well.
+
+And do we know that it's two extra tail bytes always?  Or some kind of alignment padding the chip performs for every sub-packet?
+
