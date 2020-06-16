@@ -2,160 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 492701FC1D7
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 00:46:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 133571FC1DC
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 00:52:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbgFPWqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 18:46:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59280 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725941AbgFPWqO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jun 2020 18:46:14 -0400
-Received: from embeddedor (unknown [189.207.59.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7327C207E8;
-        Tue, 16 Jun 2020 22:46:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592347573;
-        bh=ZAs7GT5Hxz71cY/X1yUf6UmpNbaDaFyhGT9dvQA8WSg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=tOtTUn6i9JsmvvjEEcLkyE+BYqlTRTvJf4uHci8yqejVU0er62cLvJj2gbUOPAzfJ
-         up5vztwPIEe0amz4UFOILuMoruoFTt4kWOB+2IIa/cvjIXlldniAsFFGvq04+wnYVS
-         XN6RxJJynwG497vXF3GeNuZyE8Of68agP6gaGGiI=
-Date:   Tue, 16 Jun 2020 17:51:32 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] ath10k: wmi: Use struct_size() helper in
- ath10k_wmi_alloc_skb()
-Message-ID: <20200616225132.GA19873@embeddedor>
+        id S1726271AbgFPWvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 18:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725849AbgFPWvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 18:51:53 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16462C061573
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 15:51:53 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id gl26so143668ejb.11
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 15:51:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=97TuI7n8PbPxq+xxAi1MriubLWSTps8BbVmvWhkKvmo=;
+        b=PSZxctjQhvtPeBCBfsx2KncYtz7j6V95s/riUUBQxqh8acRTCV9Et+yxMNOX4BUG0g
+         +/uNAAH3/136cNWlLetchzaZ9fA6Scoh96Hey/Bp7GJJL7eXTISeaKjtFUMtAwPAzfxu
+         gmM5ezIG8ZB3TaNEsbA3N4giN4x/Lk8CijUKlP6luUTstVzEhb60KF/m2fPhLXVr3YSv
+         j/nfHFcnHGDpjmS9z+7DlmggTw/E0iUisTcJRIFLzVKVL/zzJ6UKh3qtP89ApJaJF6vF
+         K8m9hwsalyXq2/zSZNPYB+kkgFjfSjHMakrm+vKQimnMnS+kHURH7i59wF1Y33qwTtIs
+         ePjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=97TuI7n8PbPxq+xxAi1MriubLWSTps8BbVmvWhkKvmo=;
+        b=SP/e5ofRv1zf1B2vvnwHRROU+A0GwX9Kerao2fd77qHFLkigDNkTJQTPAA9U422mvi
+         ETqfUcEjM8yWjNw4VcPEI0zyC9LZEul1s//XL6o+76DPPe/t7gGHrUoOKuKI1gCMmjwZ
+         w4YI9VkRwNuTaptYlMdB4QUm+mzl0T5V2R+ls2Wbmkr4SOOz5oqtQz+XDDK3WHvekDRW
+         +tLCykihEvx+h5TN7I9GiDnVJ6vfG3c7DL9J0dE1QLBpHB7efa9I7c4UyVshUe1l84st
+         N+VstsdQUgBGBiznm89Qk6mw7gHRvHm1+vFAucwFoygo67SIyn14ZDYMTfLBXRJKPLAR
+         /4nw==
+X-Gm-Message-State: AOAM530nR2IY9pzc1HAOlB4tyG4CzyzIrDMwCTnJaSEnog2vz5YOClRI
+        T5S/zDtiBWaUvuQECOjw+0GKKvOFdWR47kHn/EU=
+X-Google-Smtp-Source: ABdhPJzRapW4HDqga29EPUADZQXROqy9e68r0btyr8rEj3atvgf0n7NvjS7jwXUNSxUnyL3CcFl4/gE4Ka/BEnU3/XI=
+X-Received: by 2002:a17:906:af84:: with SMTP id mj4mr4652755ejb.473.1592347911574;
+ Tue, 16 Jun 2020 15:51:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <cover.1592338450.git.dcaratti@redhat.com> <d20f15f7241892ab7f042a8361103287aaf6a83f.1592338450.git.dcaratti@redhat.com>
+In-Reply-To: <d20f15f7241892ab7f042a8361103287aaf6a83f.1592338450.git.dcaratti@redhat.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 17 Jun 2020 01:51:40 +0300
+Message-ID: <CA+h21hrnVtsWH7dFpSXnss+OqL-6ggVPxM=bnWM=H_mrDC3Wyw@mail.gmail.com>
+Subject: Re: [PATCH net v3 1/2] net/sched: act_gate: fix NULL dereference in tcf_gate_init()
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Po Liu <Po.Liu@nxp.com>, Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make use of the struct_size() helper instead of an open-coded version
-in order to avoid any potential type mistakes. Also, remove unnecessary
-variable _len_.
+On Tue, 16 Jun 2020 at 23:25, Davide Caratti <dcaratti@redhat.com> wrote:
+>
+> it is possible to see a KASAN use-after-free, immediately followed by a
+> NULL dereference crash, with the following command:
+>
+>  # tc action add action gate index 3 cycle-time 100000000ns \
+>  > cycle-time-ext 100000000ns clockid CLOCK_TAI
+>
+>  BUG: KASAN: use-after-free in tcf_action_init_1+0x8eb/0x960
+>  Write of size 1 at addr ffff88810a5908bc by task tc/883
+>
+>  CPU: 0 PID: 883 Comm: tc Not tainted 5.7.0+ #188
+>  Hardware name: Red Hat KVM, BIOS 1.11.1-4.module+el8.1.0+4066+0f1aadab 04/01/2014
+>  Call Trace:
+>   dump_stack+0x75/0xa0
+>   print_address_description.constprop.6+0x1a/0x220
+>   kasan_report.cold.9+0x37/0x7c
+>   tcf_action_init_1+0x8eb/0x960
+>   tcf_action_init+0x157/0x2a0
+>   tcf_action_add+0xd9/0x2f0
+>   tc_ctl_action+0x2a3/0x39d
+>   rtnetlink_rcv_msg+0x5f3/0x920
+>   netlink_rcv_skb+0x120/0x380
+>   netlink_unicast+0x439/0x630
+>   netlink_sendmsg+0x714/0xbf0
+>   sock_sendmsg+0xe2/0x110
+>   ____sys_sendmsg+0x5b4/0x890
+>   ___sys_sendmsg+0xe9/0x160
+>   __sys_sendmsg+0xd3/0x170
+>   do_syscall_64+0x9a/0x370
+>   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>
+> [...]
+>
+>  KASAN: null-ptr-deref in range [0x0000000000000070-0x0000000000000077]
+>  CPU: 0 PID: 883 Comm: tc Tainted: G    B             5.7.0+ #188
+>  Hardware name: Red Hat KVM, BIOS 1.11.1-4.module+el8.1.0+4066+0f1aadab 04/01/2014
+>  RIP: 0010:tcf_action_fill_size+0xa3/0xf0
+>  [....]
+>  RSP: 0018:ffff88813a48f250 EFLAGS: 00010212
+>  RAX: dffffc0000000000 RBX: 0000000000000094 RCX: ffffffffa47c3eb6
+>  RDX: 000000000000000e RSI: 0000000000000008 RDI: 0000000000000070
+>  RBP: ffff88810a590800 R08: 0000000000000004 R09: ffffed1027491e03
+>  R10: 0000000000000003 R11: ffffed1027491e03 R12: 0000000000000000
+>  R13: 0000000000000000 R14: dffffc0000000000 R15: ffff88810a590800
+>  FS:  00007f62cae8ce40(0000) GS:ffff888147c00000(0000) knlGS:0000000000000000
+>  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>  CR2: 00007f62c9d20a10 CR3: 000000013a52a000 CR4: 0000000000340ef0
+>  Call Trace:
+>   tcf_action_init+0x172/0x2a0
+>   tcf_action_add+0xd9/0x2f0
+>   tc_ctl_action+0x2a3/0x39d
+>   rtnetlink_rcv_msg+0x5f3/0x920
+>   netlink_rcv_skb+0x120/0x380
+>   netlink_unicast+0x439/0x630
+>   netlink_sendmsg+0x714/0xbf0
+>   sock_sendmsg+0xe2/0x110
+>   ____sys_sendmsg+0x5b4/0x890
+>   ___sys_sendmsg+0xe9/0x160
+>   __sys_sendmsg+0xd3/0x170
+>   do_syscall_64+0x9a/0x370
+>   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>
+> this is caused by the test on 'cycletime_ext', that is still unassigned
+> when the action is newly created. This makes the action .init() return 0
+> without calling tcf_idr_insert(), hence the UAF + crash.
+>
+> rework the logic that prevents zero values of cycle-time, as follows:
+>
+> 1) 'tcfg_cycletime_ext' seems to be unused in the action software path,
+>    and it was already possible by other means to obtain non-zero
+>    cycletime and zero cycletime-ext. So, removing that test should not
+>    cause any damage.
+> 2) while at it, we must prevent overwriting configuration data with wrong
+>    ones: use a temporary variable for 'tcfg_cycletime', and validate it
+>    preserving the original semantic (that allowed computing the cycle
+>    time as the sum of all intervals, when not specified by
+>    TCA_GATE_CYCLE_TIME).
+> 3) remove the test on 'tcfg_cycletime', no more useful, and avoid
+>    returning -EFAULT, which did not seem an appropriate return value for
+>    a wrong netlink attribute.
+>
+> v3: fix uninitialized 'cycletime' (thanks to Vladimir Oltean)
+> v2: remove useless 'return;' at the end of void gate_get_start_time()
+>
+> Fixes: a51c328df310 ("net: qos: introduce a gate control flow action")
+> CC: Ivan Vecera <ivecera@redhat.com>
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+> ---
 
-This code was detected with the help of Coccinelle and, audited and
-fixed manually.
+Acked-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/wireless/ath/ath10k/wmi.c | 32 +++++++--------------------
- 1 file changed, 8 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
-index a81a1ab2de19..b89681394a15 100644
---- a/drivers/net/wireless/ath/ath10k/wmi.c
-+++ b/drivers/net/wireless/ath/ath10k/wmi.c
-@@ -6551,7 +6551,7 @@ static struct sk_buff *ath10k_wmi_op_gen_init(struct ath10k *ar)
- 	struct wmi_init_cmd *cmd;
- 	struct sk_buff *buf;
- 	struct wmi_resource_config config = {};
--	u32 len, val;
-+	u32 val;
- 
- 	config.num_vdevs = __cpu_to_le32(TARGET_NUM_VDEVS);
- 	config.num_peers = __cpu_to_le32(TARGET_NUM_PEERS);
-@@ -6603,10 +6603,7 @@ static struct sk_buff *ath10k_wmi_op_gen_init(struct ath10k *ar)
- 	config.num_msdu_desc = __cpu_to_le32(TARGET_NUM_MSDU_DESC);
- 	config.max_frag_entries = __cpu_to_le32(TARGET_MAX_FRAG_ENTRIES);
- 
--	len = sizeof(*cmd) +
--	      (sizeof(struct host_memory_chunk) * ar->wmi.num_mem_chunks);
--
--	buf = ath10k_wmi_alloc_skb(ar, len);
-+	buf = ath10k_wmi_alloc_skb(ar, struct_size(cmd, mem_chunks.items, ar->wmi.num_mem_chunks));
- 	if (!buf)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -6624,7 +6621,7 @@ static struct sk_buff *ath10k_wmi_10_1_op_gen_init(struct ath10k *ar)
- 	struct wmi_init_cmd_10x *cmd;
- 	struct sk_buff *buf;
- 	struct wmi_resource_config_10x config = {};
--	u32 len, val;
-+	u32 val;
- 
- 	config.num_vdevs = __cpu_to_le32(TARGET_10X_NUM_VDEVS);
- 	config.num_peers = __cpu_to_le32(TARGET_10X_NUM_PEERS);
-@@ -6668,10 +6665,7 @@ static struct sk_buff *ath10k_wmi_10_1_op_gen_init(struct ath10k *ar)
- 	config.num_msdu_desc = __cpu_to_le32(TARGET_10X_NUM_MSDU_DESC);
- 	config.max_frag_entries = __cpu_to_le32(TARGET_10X_MAX_FRAG_ENTRIES);
- 
--	len = sizeof(*cmd) +
--	      (sizeof(struct host_memory_chunk) * ar->wmi.num_mem_chunks);
--
--	buf = ath10k_wmi_alloc_skb(ar, len);
-+	buf = ath10k_wmi_alloc_skb(ar, struct_size(cmd, mem_chunks.items, ar->wmi.num_mem_chunks));
- 	if (!buf)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -6689,7 +6683,7 @@ static struct sk_buff *ath10k_wmi_10_2_op_gen_init(struct ath10k *ar)
- 	struct wmi_init_cmd_10_2 *cmd;
- 	struct sk_buff *buf;
- 	struct wmi_resource_config_10x config = {};
--	u32 len, val, features;
-+	u32 val, features;
- 
- 	config.num_vdevs = __cpu_to_le32(TARGET_10X_NUM_VDEVS);
- 	config.num_peer_keys = __cpu_to_le32(TARGET_10X_NUM_PEER_KEYS);
-@@ -6741,10 +6735,7 @@ static struct sk_buff *ath10k_wmi_10_2_op_gen_init(struct ath10k *ar)
- 	config.num_msdu_desc = __cpu_to_le32(TARGET_10X_NUM_MSDU_DESC);
- 	config.max_frag_entries = __cpu_to_le32(TARGET_10X_MAX_FRAG_ENTRIES);
- 
--	len = sizeof(*cmd) +
--	      (sizeof(struct host_memory_chunk) * ar->wmi.num_mem_chunks);
--
--	buf = ath10k_wmi_alloc_skb(ar, len);
-+	buf = ath10k_wmi_alloc_skb(ar, struct_size(cmd, mem_chunks.items, ar->wmi.num_mem_chunks));
- 	if (!buf)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -6776,7 +6767,6 @@ static struct sk_buff *ath10k_wmi_10_4_op_gen_init(struct ath10k *ar)
- 	struct wmi_init_cmd_10_4 *cmd;
- 	struct sk_buff *buf;
- 	struct wmi_resource_config_10_4 config = {};
--	u32 len;
- 
- 	config.num_vdevs = __cpu_to_le32(ar->max_num_vdevs);
- 	config.num_peers = __cpu_to_le32(ar->max_num_peers);
-@@ -6838,10 +6828,7 @@ static struct sk_buff *ath10k_wmi_10_4_op_gen_init(struct ath10k *ar)
- 	config.iphdr_pad_config = __cpu_to_le32(TARGET_10_4_IPHDR_PAD_CONFIG);
- 	config.qwrap_config = __cpu_to_le32(TARGET_10_4_QWRAP_CONFIG);
- 
--	len = sizeof(*cmd) +
--	      (sizeof(struct host_memory_chunk) * ar->wmi.num_mem_chunks);
--
--	buf = ath10k_wmi_alloc_skb(ar, len);
-+	buf = ath10k_wmi_alloc_skb(ar, struct_size(cmd, mem_chunks.items, ar->wmi.num_mem_chunks));
- 	if (!buf)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -7549,12 +7536,9 @@ ath10k_wmi_op_gen_scan_chan_list(struct ath10k *ar,
- 	struct sk_buff *skb;
- 	struct wmi_channel_arg *ch;
- 	struct wmi_channel *ci;
--	int len;
- 	int i;
- 
--	len = sizeof(*cmd) + arg->n_channels * sizeof(struct wmi_channel);
--
--	skb = ath10k_wmi_alloc_skb(ar, len);
-+	skb = ath10k_wmi_alloc_skb(ar, struct_size(cmd, chan_info, arg->n_channels));
- 	if (!skb)
- 		return ERR_PTR(-EINVAL);
- 
--- 
-2.27.0
-
+>  net/sched/act_gate.c | 36 +++++++++++++-----------------------
+>  1 file changed, 13 insertions(+), 23 deletions(-)
+>
+> diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c
+> index 9c628591f452..94e560c2f81d 100644
+> --- a/net/sched/act_gate.c
+> +++ b/net/sched/act_gate.c
+> @@ -32,7 +32,7 @@ static ktime_t gate_get_time(struct tcf_gate *gact)
+>         return KTIME_MAX;
+>  }
+>
+> -static int gate_get_start_time(struct tcf_gate *gact, ktime_t *start)
+> +static void gate_get_start_time(struct tcf_gate *gact, ktime_t *start)
+>  {
+>         struct tcf_gate_params *param = &gact->param;
+>         ktime_t now, base, cycle;
+> @@ -43,18 +43,13 @@ static int gate_get_start_time(struct tcf_gate *gact, ktime_t *start)
+>
+>         if (ktime_after(base, now)) {
+>                 *start = base;
+> -               return 0;
+> +               return;
+>         }
+>
+>         cycle = param->tcfg_cycletime;
+>
+> -       /* cycle time should not be zero */
+> -       if (!cycle)
+> -               return -EFAULT;
+> -
+>         n = div64_u64(ktime_sub_ns(now, base), cycle);
+>         *start = ktime_add_ns(base, (n + 1) * cycle);
+> -       return 0;
+>  }
+>
+>  static void gate_start_timer(struct tcf_gate *gact, ktime_t start)
+> @@ -287,12 +282,12 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
+>         enum tk_offsets tk_offset = TK_OFFS_TAI;
+>         struct nlattr *tb[TCA_GATE_MAX + 1];
+>         struct tcf_chain *goto_ch = NULL;
+> +       u64 cycletime = 0, basetime = 0;
+>         struct tcf_gate_params *p;
+>         s32 clockid = CLOCK_TAI;
+>         struct tcf_gate *gact;
+>         struct tc_gate *parm;
+>         int ret = 0, err;
+> -       u64 basetime = 0;
+>         u32 gflags = 0;
+>         s32 prio = -1;
+>         ktime_t start;
+> @@ -375,11 +370,8 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
+>         spin_lock_bh(&gact->tcf_lock);
+>         p = &gact->param;
+>
+> -       if (tb[TCA_GATE_CYCLE_TIME]) {
+> -               p->tcfg_cycletime = nla_get_u64(tb[TCA_GATE_CYCLE_TIME]);
+> -               if (!p->tcfg_cycletime_ext)
+> -                       goto chain_put;
+> -       }
+> +       if (tb[TCA_GATE_CYCLE_TIME])
+> +               cycletime = nla_get_u64(tb[TCA_GATE_CYCLE_TIME]);
+>
+>         if (tb[TCA_GATE_ENTRY_LIST]) {
+>                 err = parse_gate_list(tb[TCA_GATE_ENTRY_LIST], p, extack);
+> @@ -387,14 +379,19 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
+>                         goto chain_put;
+>         }
+>
+> -       if (!p->tcfg_cycletime) {
+> +       if (!cycletime) {
+>                 struct tcfg_gate_entry *entry;
+>                 ktime_t cycle = 0;
+>
+>                 list_for_each_entry(entry, &p->entries, list)
+>                         cycle = ktime_add_ns(cycle, entry->interval);
+> -               p->tcfg_cycletime = cycle;
+> +               cycletime = cycle;
+> +               if (!cycletime) {
+> +                       err = -EINVAL;
+> +                       goto chain_put;
+> +               }
+>         }
+> +       p->tcfg_cycletime = cycletime;
+>
+>         if (tb[TCA_GATE_CYCLE_TIME_EXT])
+>                 p->tcfg_cycletime_ext =
+> @@ -408,14 +405,7 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
+>         gact->tk_offset = tk_offset;
+>         hrtimer_init(&gact->hitimer, clockid, HRTIMER_MODE_ABS_SOFT);
+>         gact->hitimer.function = gate_timer_func;
+> -
+> -       err = gate_get_start_time(gact, &start);
+> -       if (err < 0) {
+> -               NL_SET_ERR_MSG(extack,
+> -                              "Internal error: failed get start time");
+> -               release_entry_list(&p->entries);
+> -               goto chain_put;
+> -       }
+> +       gate_get_start_time(gact, &start);
+>
+>         gact->current_close_time = start;
+>         gact->current_gate_status = GATE_ACT_GATE_OPEN | GATE_ACT_PENDING;
+> --
+> 2.26.2
+>
