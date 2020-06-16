@@ -2,110 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C610D1FB45A
-	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24A001FB462
+	for <lists+netdev@lfdr.de>; Tue, 16 Jun 2020 16:28:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729128AbgFPO2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 10:28:04 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:44784 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726405AbgFPO2B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 10:28:01 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05GELOZQ057447;
-        Tue, 16 Jun 2020 14:26:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=UepsmQC/DlQFZ6+UxfaNjoC9RmBOSxOKZ2W1AkmRQd8=;
- b=WvEeJyFmKL8HM4eLekulNPcOb25Sw7YajmFzrepd+1TsQe+PNe2o6it9fFwXghV3FsHv
- QdrFGubdjTeCc6kAWKTDSEoqMv3it70YtNHwfwRr3qSfXcxJVIBcqm6X7SGsetYqkHWx
- H7ruRtQFUVaMSNzeIOu+jnB9ul0qpA74I5CLeOsjFOWmZFGD+qOJ1lRDn7UN2JHhoajF
- f/9ecfn6gkdb7upj+cJi6IY4VZZEPZcXh9vvLg7+i5e+33eQa6zJ2K1MWUsjTMUYhONT
- ZCDycK9k04JLa7cAHqpl868otcTeoTLOGNWMgNDyB7bEprwRuViNVIe1IhKb+72uVtQ1 Lw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 31p6e5y3y1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 16 Jun 2020 14:26:56 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05GEODoW027404;
-        Tue, 16 Jun 2020 14:26:56 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 31p6s7kbhq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 16 Jun 2020 14:26:56 +0000
-Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 05GEQfNL026862;
-        Tue, 16 Jun 2020 14:26:42 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 16 Jun 2020 07:26:41 -0700
-Date:   Tue, 16 Jun 2020 17:26:24 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Rientjes <rientjes@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        David Sterba <dsterba@suse.cz>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>, linux-mm@kvack.org,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-ppp@vger.kernel.org, wireguard@lists.zx2c4.com,
-        linux-wireless@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
-        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org
-Subject: Re: [PATCH v4 2/3] mm, treewide: Rename kzfree() to kfree_sensitive()
-Message-ID: <20200616142624.GO4282@kadam>
-References: <20200616015718.7812-1-longman@redhat.com>
- <20200616015718.7812-3-longman@redhat.com>
+        id S1729070AbgFPO2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 10:28:47 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:45267 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727804AbgFPO2q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 10:28:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592317725;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=AI16rQVkD7Ajxg/nYxiVD6rmlKmGpKvCI2wJJ+04RQ0=;
+        b=Zjcp9+1Yi0rPCW9rrJHLm3IRmsbZbt8VeCZrvj1ZntF/K3uVGgJBy+hnMLHRRHhaTYPX2q
+        dfrwur1DI5BApIOnMDYv7vDznlVsOveCdRqZ0t7wY/DIXFALUpsUHxj2mhbNfsa9Q628lC
+        tXYttNMyYuvOra1rpNR0Ng+LH8JcJjQ=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-138-QIjBLP0aM2mhDXoh0eXidg-1; Tue, 16 Jun 2020 10:28:43 -0400
+X-MC-Unique: QIjBLP0aM2mhDXoh0eXidg-1
+Received: by mail-wr1-f69.google.com with SMTP id s7so8346273wrm.16
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 07:28:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AI16rQVkD7Ajxg/nYxiVD6rmlKmGpKvCI2wJJ+04RQ0=;
+        b=X6wLL2oLr5VUjAjxKSKuleijZ1XfYVa34XhAFzGgQbaCLNWZLhH3zSSdFMl8pnZ0xo
+         eF3lHp3kfgeTktfCASF+HYgYhm4dvv2uPSWUxxGBpbSbb707khaHv2fRRFnU79xOav6O
+         hNKgIOvaOTEfzUWaNIf5RtYoKmZF9haXqRZEOn05zpt18gYfy6iWW6B6yFyG5IfBTNxf
+         Y46ahqSf/yT01w9RsUkBWkl2kwOGa3oEVT9JTEtpj2rAgGcT8OIzMqc2LpnfW2aoYJdr
+         bYXfKGQwOU3ee6gJKPfk3HTOZQRjlOG478eUGQUCeIpsqjok368Hhju8YbSkyNS7wEmx
+         U0yQ==
+X-Gm-Message-State: AOAM531pfg2j+yfs/0EEgWVsl+vb8uGu+WpKmUu0FCb90cqxrAm2w/4F
+        Fq58PBg4S4oTYCdj/cI8QpT1owCseq3wlcX7UrHniuobvoogVD0g/sQ/ddEYdAKRTnZiFOyb1Td
+        yhFbTGu4rhW1Hecaz
+X-Received: by 2002:a7b:cb99:: with SMTP id m25mr3520697wmi.0.1592317722156;
+        Tue, 16 Jun 2020 07:28:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwwQmy1lYG/gWNoBlK1yHHWXCKIpburSaJAz2yR+SMxJuNNKnChnO8WdefVi0oKx2gC6DZcig==
+X-Received: by 2002:a7b:cb99:: with SMTP id m25mr3520679wmi.0.1592317721896;
+        Tue, 16 Jun 2020 07:28:41 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id y19sm4025678wmi.6.2020.06.16.07.28.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jun 2020 07:28:41 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id D1B0D181513; Tue, 16 Jun 2020 16:28:39 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     daniel@iogearbox.net, ast@fb.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Xiumei Mu <xmu@redhat.com>
+Subject: [PATCH bpf] devmap: use bpf_map_area_alloc() for allocating hash buckets
+Date:   Tue, 16 Jun 2020 16:28:29 +0200
+Message-Id: <20200616142829.114173-1-toke@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200616015718.7812-3-longman@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9653 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
- mlxlogscore=886 adultscore=0 phishscore=0 bulkscore=0 spamscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2004280000 definitions=main-2006160106
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9653 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 adultscore=0
- mlxscore=0 phishscore=0 mlxlogscore=893 lowpriorityscore=0 clxscore=1011
- suspectscore=0 spamscore=0 bulkscore=0 malwarescore=0 impostorscore=0
- cotscore=-2147483648 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2004280000 definitions=main-2006160106
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Last time you sent this we couldn't decide which tree it should go
-through.  Either the crypto tree or through Andrew seems like the right
-thing to me.
+Syzkaller discovered that creating a hash of type devmap_hash with a large
+number of entries can hit the memory allocator limit for allocating
+contiguous memory regions. There's really no reason to use kmalloc_array()
+directly in the devmap code, so just switch it to the existing
+bpf_map_area_alloc() function that is used elsewhere.
 
-Also the other issue is that it risks breaking things if people add
-new kzfree() instances while we are doing the transition.  Could you
-just add a "#define kzfree kfree_sensitive" so that things continue to
-compile and we can remove it in the next kernel release?
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up devices by hashed index")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ kernel/bpf/devmap.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-regards,
-dan carpenter
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index 0cbb72cdaf63..5fdbc776a760 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -86,12 +86,13 @@ static DEFINE_PER_CPU(struct list_head, dev_flush_list);
+ static DEFINE_SPINLOCK(dev_map_lock);
+ static LIST_HEAD(dev_map_list);
+ 
+-static struct hlist_head *dev_map_create_hash(unsigned int entries)
++static struct hlist_head *dev_map_create_hash(unsigned int entries,
++					      int numa_node)
+ {
+ 	int i;
+ 	struct hlist_head *hash;
+ 
+-	hash = kmalloc_array(entries, sizeof(*hash), GFP_KERNEL);
++	hash = bpf_map_area_alloc(entries * sizeof(*hash), numa_node);
+ 	if (hash != NULL)
+ 		for (i = 0; i < entries; i++)
+ 			INIT_HLIST_HEAD(&hash[i]);
+@@ -145,7 +146,8 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
+ 		return -EINVAL;
+ 
+ 	if (attr->map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
+-		dtab->dev_index_head = dev_map_create_hash(dtab->n_buckets);
++		dtab->dev_index_head = dev_map_create_hash(dtab->n_buckets,
++							   dtab->map.numa_node);
+ 		if (!dtab->dev_index_head)
+ 			goto free_charge;
+ 
+@@ -232,7 +234,7 @@ static void dev_map_free(struct bpf_map *map)
+ 			}
+ 		}
+ 
+-		kfree(dtab->dev_index_head);
++		bpf_map_area_free(dtab->dev_index_head);
+ 	} else {
+ 		for (i = 0; i < dtab->map.max_entries; i++) {
+ 			struct bpf_dtab_netdev *dev;
+-- 
+2.27.0
 
