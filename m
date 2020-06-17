@@ -2,81 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E51D71FD30D
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 19:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B721C1FD314
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 19:03:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726840AbgFQRCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 13:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
+        id S1726854AbgFQRDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 13:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726329AbgFQRCW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 13:02:22 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8892BC06174E
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 10:02:21 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id b5so1422773pfp.9
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 10:02:21 -0700 (PDT)
+        with ESMTP id S1726540AbgFQRDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 13:03:17 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A25C06174E;
+        Wed, 17 Jun 2020 10:03:16 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id 9so3769198ljv.5;
+        Wed, 17 Jun 2020 10:03:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=3GcZ8LWFRCkQRzQQNnQbWUl7R/X7TAZh5qejiZs76Mw=;
-        b=YqtmrqJepFxVYYOW5/WCHShj1UQ1oqUFrUCV2sz8sH1VHzgrFZ+KT1JEFaI8XA7mqh
-         BCBeMrui8bPtfIraLWY+wn51r5rt+LFbSYQLZfLpe4ixwxGJWibz3+jSpn1caBh5Q27c
-         Ne5K/cG6PUq+Zxp6ecpo+H0SU9IeuQkWzxoyBYdqVhzeIBtlsXfve2XtA9SRW4MeeYua
-         F/xya5JLAILzHtpRZuCevCOmKi12l+4wO7UFCw5t+9d7aFxMsGtCK94AHRupRtmjWiRJ
-         t4EFcPiyvQGRaSf1kO5TPyUIAk5HIAMu4wl8fwfW4dGfz5JQhvknG4oMtDscYvA34klz
-         x0qw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=mtctRQxhH8ycAUAVu8GEW0mMFQIgVXaqkRpoRHlDMrE=;
+        b=gCUUBfrefOq4JRPNQOwvFVQPeB/MCisfJBbriZ1aZDCvYyekQ8hTnDCoQRsIylBCoK
+         pbzvIFFvv3InDi29Brp7hmcV4bcIKoUfOFMGPENCJYS10gCvbzp5xVXCbqxO5ISGQf0n
+         /0K2pnG8xnL7WhLPtyuXDS4szq8WPbwWIHiDgd9xMVKItMtLkqMgD/0MjPP8tJce+pUf
+         YzY11Cz2hw9Br9Q2l8SkPnm6AsNS3wlJa/mOk4Y7pPnnqBmd7VEy86unoG0tRscjDKqz
+         B9Mp6NDVeqrlIBJltYc8+nhjW5aXoA92WoAqjQ4E4mapenlYQVO8KSefRi9WKq6h2JYR
+         8FYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3GcZ8LWFRCkQRzQQNnQbWUl7R/X7TAZh5qejiZs76Mw=;
-        b=oGBxkuXDv0pkpXNPq8OrcciRLoWAfEZ1AtRW2glveUFY1K/vvU9ohu1w/lomPnAL1B
-         3z7LPu1+ERkC4cXb1wDHHp1sDEvXLN2hU8qt3r8R0Ppb8VbSjTfRXROugSwIc5QhYrRa
-         o8TzAVMZSWh8+W20ypXa9bJTLheee26C0XTACyPSKcq5xZckzOQPzeAU+tilgLg5/Jkd
-         qm3vmxExffiJrZuH8IEXcZXZHhVGB/iCw3eYBKPshJbsxumxN4eD7NbSEmVZpB68qbhr
-         58UoDWa63UTAV9mfFjoJK1BpOBt5PeEBhYkpsFGG8DOcVrhEc1e/YT8Iouwoo5/gm7Qj
-         8VOw==
-X-Gm-Message-State: AOAM530riEaciqsCRGP9tHX3V0asIlaIcuN8yxoS79rzo+1hfSG6IaFE
-        mJx8lhv+p3ZsY+/eTWALHu4=
-X-Google-Smtp-Source: ABdhPJxcqExRvKFqpcWEsj/VRbmE0KyauRd9LJtQj7uUquOoLt6UA+Lpmac7icoMuFd5Xkffu6bmZg==
-X-Received: by 2002:a65:4487:: with SMTP id l7mr7400345pgq.221.1592413340931;
-        Wed, 17 Jun 2020 10:02:20 -0700 (PDT)
-Received: from martin-VirtualBox ([137.97.149.246])
-        by smtp.gmail.com with ESMTPSA id o1sm135366pja.49.2020.06.17.10.02.19
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Wed, 17 Jun 2020 10:02:20 -0700 (PDT)
-Date:   Wed, 17 Jun 2020 22:32:16 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Martin <martin.varghese@nokia.com>
-Subject: Re: [PATCH net v2] bareudp: Fixed multiproto mode configuration
-Message-ID: <20200617170216.GA9136@martin-VirtualBox>
-References: <1592368299-8428-1-git-send-email-martinvarghesenokia@gmail.com>
- <20200617092137.72ef352d@kicinski-fedora-PC1C0HJN>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mtctRQxhH8ycAUAVu8GEW0mMFQIgVXaqkRpoRHlDMrE=;
+        b=FZFbczz1qvjRM0qvzpO9PK6VFTn5q0f2C1XjUBz3PqadrqWF+SkkHNsxvpJnzcaHo2
+         RrgM+11DCrfEeXqc9j2tzJfmf8IrX56Jyp2s5JJHrXP64Ak2Kyxm498cXQILFcgZbicu
+         +hE6f48dpearFETFNhEMuonW+kxhWxHt2IO0lmlfv32ct5QsnLjcJRGFdHn6qIdUB2FT
+         IUubCOOIGudbXCg489NJzamSsGys2BCCsc00YX77LoFpR0kwyUTpLhvfdisk4wq0ZQLa
+         b9WH7ttI6HXHGdVf8ivcgwOoeox5u4hHB89OSKkBoThESSbTLBtrYEY4AJux4plhbVJn
+         eurQ==
+X-Gm-Message-State: AOAM5315Q2avdkoIwa7TYk3alpIEdqo6HI/T6W8ct5I+SM9SpvtOIEsj
+        4V+N5yjRKgFiKm3PPQgQOl/LT6Oq/HMqVtivmrlJ4g==
+X-Google-Smtp-Source: ABdhPJwaFFuBg+Pm5fxWk7QBjaGHpojRrtfTWQna9a6pDcSFN7U80WpY2bxYyjeNsS9HsfDJvGvA0T3Q37wEes/TY1A=
+X-Received: by 2002:a2e:2f07:: with SMTP id v7mr101173ljv.51.1592413395101;
+ Wed, 17 Jun 2020 10:03:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617092137.72ef352d@kicinski-fedora-PC1C0HJN>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+References: <20200616142829.114173-1-toke@redhat.com> <5ee9b2f6a7be2_1d4a2af9b18625c480@john-XPS-13-9370.notmuch>
+In-Reply-To: <5ee9b2f6a7be2_1d4a2af9b18625c480@john-XPS-13-9370.notmuch>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 17 Jun 2020 10:03:03 -0700
+Message-ID: <CAADnVQK5eSxpgc=-SoQgiQqQJfeYcAwho7AAZvdQBCuetK0w_A@mail.gmail.com>
+Subject: Re: [PATCH bpf] devmap: use bpf_map_area_alloc() for allocating hash buckets
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Xiumei Mu <xmu@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 09:21:37AM -0700, Jakub Kicinski wrote:
-> On Wed, 17 Jun 2020 10:01:39 +0530 Martin Varghese wrote:
-> > From: Martin <martin.varghese@nokia.com>
-> > 
-> > Code to handle multiproto configuration is missing.
-> > 
-> > Signed-off-by: Martin <martin.varghese@nokia.com>
-> 
-> No Fixes tag on this one?
+On Tue, Jun 16, 2020 at 11:07 PM John Fastabend
+<john.fastabend@gmail.com> wrote:
+>
+> Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> > Syzkaller discovered that creating a hash of type devmap_hash with a la=
+rge
+> > number of entries can hit the memory allocator limit for allocating
+> > contiguous memory regions. There's really no reason to use kmalloc_arra=
+y()
+> > directly in the devmap code, so just switch it to the existing
+> > bpf_map_area_alloc() function that is used elsewhere.
+> >
+> > Reported-by: Xiumei Mu <xmu@redhat.com>
+> > Fixes: 6f9d451ab1a3 ("xdp: Add devmap_hash map type for looking up devi=
+ces by hashed index")
+> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> > ---
+> >  kernel/bpf/devmap.c | 10 ++++++----
+> >  1 file changed, 6 insertions(+), 4 deletions(-)
+> >
+>
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
 
-Missed. Updated version sent with fixes tag
-
-Thanks
-Martin
+Applied. Thanks
