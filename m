@@ -2,76 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 318B91FD49C
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54AAD1FD4B0
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727777AbgFQSeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 14:34:05 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:57341 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726835AbgFQSeF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:34:05 -0400
-Received: by mail-il1-f199.google.com with SMTP id k13so2125047ilh.23
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:34:04 -0700 (PDT)
+        id S1727115AbgFQSk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 14:40:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41756 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726964AbgFQSkZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:40:25 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC099C0613ED
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:40:23 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id n9so1353545plk.1
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:40:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KcSum0XnLgDWG/9J1zd7huPRZUcbTdd3T0stJfNhXtU=;
+        b=hHeKJA5bpWojfm1pX2unVw+EfqUuRl8oPBdUNPLoCxjZ64sU0oStIKYfknHILmDFaZ
+         H9ZHJAe3xkt0qMgGgjNa6EjvRt/0qyjX/4NrDrZCZMQNniC1zsg9rGq+JkViIVv/0vWR
+         +7lVX4VJq+6OYKuN/6lWKksWFEEFKKkIWjELs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=F3B7POYganjcYcTK3xulmlzDnkNmuFC83gI/QGxJRTY=;
-        b=fh9iuRnvV7lDhZL1ZJ+/rbmoAF3d3rjlmG0WKChtuAWqW1A5KeQegz1drVQkWJo4B/
-         wu2M9Dzz0Qunfnc99bY2NrkkcvgnBIpHyuETGP+zqTAA2NRxPahUaidRWjETfVydvUxV
-         RDzSzz8+EqBthS7SLwfStSjOIRybS5FN4U/aC3xVUsiPUWIxjC+ugsCmOokdlSfDLotN
-         JwUEhs0+ctaDlrJgQsN/cU9VQkcY4Z4eTgeouOvaqXucp4llKA1DXig3xHJUsePqhg+8
-         L5Q8ywCd55zkFk5Mlv/+0+2Ozlno23YGQ8FqkVvsTQb++rCOPuFQfy4trNn5jQiwq8+F
-         6sIw==
-X-Gm-Message-State: AOAM533YeqWaVABOqkPcbtpKs8mfvvEFnq8p4WotGjnX7ufE2kq16y4l
-        e7pIKhFUJvqVCmye9KBrzhUysl+1yv3kNQ2+cHLZr+7MPXVr
-X-Google-Smtp-Source: ABdhPJygKKcZu/ebf2TevbrWJlM+0CuGBrPVjGvdAgLKjnmnW+3Wbg2+h5A3SrR7rk6IBnaFssLxIhPC1NUTeKocc3UNX41F5Ya9
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KcSum0XnLgDWG/9J1zd7huPRZUcbTdd3T0stJfNhXtU=;
+        b=HCPUvu+7bVYxlOWxaM/DzQ47iUpgFyZD0DB0E6OkhxQGVN8xVp3wXh3Bz8lspcLRpf
+         NpTt2cuLiow0sTHDsp97Sl4iSHwPTOi5ZTOkUqY+K9w0nbS2X9okeHcGSDW+DpQG9LqH
+         HuIHpD0ng3aTpsm0vDxI5kA1dHjLGft5GXBAJgb8APJGPPQjxfhAQ6MrDSJdtZekXVtG
+         vSFTtQiKYxl/Kc6d3/euOTUoF+EyEmna7J0ovVbNO2eIayqD3OUS1X3amW8J/e/C2HMJ
+         /aJ/NAXvXC2g6RoBu1NqJgxlnQFAx1BQ7gRQ1VRL0YK4aYYo3wioDvF8yTKlTqkz2iyz
+         tZjg==
+X-Gm-Message-State: AOAM530ZxGG+LOiBDZ90uTukZKpELKlsVwTffRU59MvjWSJAFTf3N8KF
+        R/ZDf8HCy2GiiaoByGc95qv3Xg==
+X-Google-Smtp-Source: ABdhPJzMCEeKbMD2vkbh+chVGcN7dvBNIk/GO49GvRnea+7Iwh7JIl8l4xjbafw6OC9ChWgKjmpkjA==
+X-Received: by 2002:a17:90a:218c:: with SMTP id q12mr383955pjc.116.1592419223126;
+        Wed, 17 Jun 2020 11:40:23 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id u128sm506788pfu.148.2020.06.17.11.40.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Jun 2020 11:40:21 -0700 (PDT)
+Date:   Wed, 17 Jun 2020 11:40:20 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sargun Dhillon <sargun@sargun.me>,
+        Christian Brauner <christian@brauner.io>,
+        "David S. Miller" <davem@davemloft.net>,
+        Christoph Hellwig <hch@lst.de>,
+        Tycho Andersen <tycho@tycho.ws>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "containers@lists.linux-foundation.org" 
+        <containers@lists.linux-foundation.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH v4 02/11] fs: Move __scm_install_fd() to
+ __fd_install_received()
+Message-ID: <202006171139.98B1735@keescook>
+References: <20200616032524.460144-1-keescook@chromium.org>
+ <20200616032524.460144-3-keescook@chromium.org>
+ <b58ef9a368214b69a86c7a78b67f84d5@AcuMS.aculab.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:770b:: with SMTP id g11mr621320jac.69.1592418844130;
- Wed, 17 Jun 2020 11:34:04 -0700 (PDT)
-Date:   Wed, 17 Jun 2020 11:34:04 -0700
-In-Reply-To: <0000000000000655c0057cd141f1@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000089c74405a84be7aa@google.com>
-Subject: Re: WARNING: locking bug in __queue_work
-From:   syzbot <syzbot+6174a6c5eba4b3cdd606@syzkaller.appspotmail.com>
-To:     agruenba@redhat.com, bp@alien8.de, cluster-devel@redhat.com,
-        davem@davemloft.net, hpa@zytor.com, jon.maloy@ericsson.com,
-        keescook@chromium.org, konrad.wilk@oracle.com,
-        kuznet@ms2.inr.ac.ru, len.brown@intel.com,
-        linux-kernel@vger.kernel.org, luto@amacapital.net,
-        mingo@redhat.com, netdev@vger.kernel.org, nstange@suse.de,
-        puwen@hygon.cn, rpeterso@redhat.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        tipc-discussion@lists.sourceforge.net, wad@chromium.org,
-        wang.yi59@zte.com.cn, x86@kernel.org, ying.xue@windriver.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b58ef9a368214b69a86c7a78b67f84d5@AcuMS.aculab.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
+On Wed, Jun 17, 2020 at 03:25:41PM +0000, David Laight wrote:
+> From: Kees Cook
+> > Sent: 16 June 2020 04:25
+>  
+> > In preparation for users of the "install a received file" logic outside
+> > of net/ (pidfd and seccomp), relocate and rename __scm_install_fd() from
+> > net/core/scm.c to __fd_install_received() in fs/file.c, and provide a
+> > wrapper named fd_install_received_user(), as future patches will change
+> > the interface to __fd_install_received().
+> 
+> Any reason for the leading __ ??
 
-commit ea22eee4e6027d8927099de344f7fff43c507ef9
-Author: Bob Peterson <rpeterso@redhat.com>
-Date:   Wed Apr 29 13:45:54 2020 +0000
+Mainly because of the code pattern of only using the inline helpers to
+call it.
 
-    gfs2: Allow lock_nolock mount to specify jid=X
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16fcf249100000
-start commit:   fe5cdef2 Merge tag 'for-linus-5.1-2' of git://github.com/c..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=856fc6d0fbbeede9
-dashboard link: https://syzkaller.appspot.com/bug?extid=6174a6c5eba4b3cdd606
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17f6c7e3200000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=101507fd200000
-
-If the result looks correct, please mark the bug fixed by replying with:
-
-#syz fix: gfs2: Allow lock_nolock mount to specify jid=X
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+-- 
+Kees Cook
