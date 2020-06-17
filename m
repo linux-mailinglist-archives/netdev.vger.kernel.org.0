@@ -2,136 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB9801FC902
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 10:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C16A1FC932
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 10:48:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726769AbgFQIjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 04:39:04 -0400
-Received: from esa3.hc3370-68.iphmx.com ([216.71.145.155]:44270 "EHLO
-        esa3.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725964AbgFQIjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 04:39:03 -0400
-Authentication-Results: esa3.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
-IronPort-SDR: rXJCpYrqKVrAxeK/HGufl69LKC4pcQTcUUGZYB534dwGmUxVSqjN+x/504zNn9i+YPShSGKfW0
- U0QMIZHnITxsotA99KOFT6OeNi8ZZ1m2L7oXIXDGt902t7cD4K5WSO+YP/COJ+vMNSTSziyGu7
- HNftc9oo9lXvpx57ycrXBxaltImFbOK3Us6eexDysElhroEjtq8q7fatJV8B7YHjav9ncYU2JC
- 6yWJiQKYqhQurhE6bspELNnpxxK4ZszRp06jGIM0AlVuGxTyJg6YOrknOiMVmGXdVj9Ks/74SW
- yzE=
-X-SBRS: 2.7
-X-MesageID: 20246153
-X-Ironport-Server: esa3.hc3370-68.iphmx.com
-X-Remote-IP: 162.221.158.21
-X-Policy: $RELAYED
-X-IronPort-AV: E=Sophos;i="5.73,522,1583211600"; 
-   d="scan'208";a="20246153"
-Date:   Wed, 17 Jun 2020 10:38:50 +0200
-From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
-To:     Anchal Agarwal <anchalag@amazon.com>
-CC:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "pavel@ucw.cz" <pavel@ucw.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
-Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and
- hibernation]
-Message-ID: <20200617083850.GX735@Air-de-Roger>
-References: <7FD7505E-79AA-43F6-8D5F-7A2567F333AB@amazon.com>
- <20200604070548.GH1195@Air-de-Roger>
- <20200616214925.GA21684@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200616223003.GA28769@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+        id S1726331AbgFQIri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 04:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725979AbgFQIri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 04:47:38 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDAFC061573
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 01:47:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=A5uBvHe/R8YOF3jyBgcnPbJZT+qcpuI30bs5+E03FhU=; b=RmYo/m9uPdI9Ju3KP8ps2WPyY
+        Pqo6/ZzU4vJ7yXdNe8rlqYS9NMmMix14qjDQJuLoM8X+FMU7iMduMKp5kd9UWtFk/DkP8R/Nz2S7p
+        BqBbqn1uDy9d1ZUjQRYvE3I7qmbVkAAkggoIQxe7yQgAZneLYbgV4oV8/dU1V9xAI2GZSJr0Vv2m8
+        GyF1Ewj6LdhP+3bOrxGlP28ejb3a4QChEu7PL1eGOJwVQasANjDhGnxqA1GEvMPe6iw3aTaTca3k4
+        lccvqX+nxs1TYAg+47btqFPHOKV4CLZNZ1q+OukZEaryb1U/aIp9NVLLoZf7eMgFeGrfzJfBSqAq9
+        Se4+n/FEQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58266)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jlTjH-0003VC-EL; Wed, 17 Jun 2020 09:47:31 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jlTjF-0003VA-LF; Wed, 17 Jun 2020 09:47:29 +0100
+Date:   Wed, 17 Jun 2020 09:47:29 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Maxim Kochetkov <fido_max@inbox.ru>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com
+Subject: Re: [PATCH v2 01/02] net: phy: marvell: Add Marvell 88E1340 support
+Message-ID: <20200617084729.GN1551@shell.armlinux.org.uk>
+References: <05f6912b-d529-ae7d-183e-efa6951e94b7@inbox.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200616223003.GA28769@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-X-ClientProxiedBy: AMSPEX02CAS02.citrite.net (10.69.22.113) To
- AMSPEX02CL02.citrite.net (10.69.22.126)
+In-Reply-To: <05f6912b-d529-ae7d-183e-efa6951e94b7@inbox.ru>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 10:30:03PM +0000, Anchal Agarwal wrote:
-> On Tue, Jun 16, 2020 at 09:49:25PM +0000, Anchal Agarwal wrote:
-> > On Thu, Jun 04, 2020 at 09:05:48AM +0200, Roger Pau Monné wrote:
-> > > On Wed, Jun 03, 2020 at 11:33:52PM +0000, Agarwal, Anchal wrote:
-> > > >     On Tue, May 19, 2020 at 11:27:50PM +0000, Anchal Agarwal wrote:
-> > > >     > From: Munehisa Kamata <kamatam@amazon.com>
-> > > >     > +             xenbus_dev_error(dev, err, "Freezing timed out;"
-> > > >     > +                              "the device may become inconsistent state");
-> > > >
-> > > >     Leaving the device in this state is quite bad, as it's in a closed
-> > > >     state and with the queues frozen. You should make an attempt to
-> > > >     restore things to a working state.
-> > > >
-> > > > You mean if backend closed after timeout? Is there a way to know that? I understand it's not good to
-> > > > leave it in this state however, I am still trying to find if there is a good way to know if backend is still connected after timeout.
-> > > > Hence the message " the device may become inconsistent state".  I didn't see a timeout not even once on my end so that's why
-> > > > I may be looking for an alternate perspective here. may be need to thaw everything back intentionally is one thing I could think of.
-> > > 
-> > > You can manually force this state, and then check that it will behave
-> > > correctly. I would expect that on a failure to disconnect from the
-> > > backend you should switch the frontend to the 'Init' state in order to
-> > > try to reconnect to the backend when possible.
-> > > 
-> > From what I understand forcing manually is, failing the freeze without
-> > disconnect and try to revive the connection by unfreezing the
-> > queues->reconnecting to backend [which never got diconnected]. May be even
-> > tearing down things manually because I am not sure what state will frontend
-> > see if backend fails to to disconnect at any point in time. I assumed connected.
-> > Then again if its "CONNECTED" I may not need to tear down everything and start
-> > from Initialising state because that may not work.
-> > 
-> > So I am not so sure about backend's state so much, lets say if  xen_blkif_disconnect fail,
-> > I don't see it getting handled in the backend then what will be backend's state?
-> > Will it still switch xenbus state to 'Closed'? If not what will frontend see, 
-> > if it tries to read backend's state through xenbus_read_driver_state ?
-> > 
-> > So the flow be like:
-> > Front end marks XenbusStateClosing
-> > Backend marks its state as XenbusStateClosing
-> >     Frontend marks XenbusStateClosed
-> >     Backend disconnects calls xen_blkif_disconnect
-> >        Backend fails to disconnect, the above function returns EBUSY
-> >        What will be state of backend here? 
-> >        Frontend did not tear down the rings if backend does not switches the
-> >        state to 'Closed' in case of failure.
-> > 
-> > If backend stays in CONNECTED state, then even if we mark it Initialised in frontend, backend
-> > won't be calling connect(). {From reading code in frontend_changed}
-> > IMU, Initialising will fail since backend dev->state != XenbusStateClosed plus
-> > we did not tear down anything so calling talk_to_blkback may not be needed
-> > 
-> > Does that sound correct?
-> Send that too quickly, I also meant to add XenBusIntialised state should be ok
-> only if we expect backend will stay in "Connected" state. Also, I experimented
-> with that notion. I am little worried about the correctness here. 
-> Can the backend  come to an Unknown state somehow?
+On Wed, Jun 17, 2020 at 07:52:45AM +0300, Maxim Kochetkov wrote:
+> Add Marvell 88E1340 support
+> Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+> ---
+>  drivers/net/phy/marvell.c   | 23 +++++++++++++++++++++++
+>  include/linux/marvell_phy.h |  1 +
+>  2 files changed, 24 insertions(+)
+> 
+> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+> index 7fc8e10c5f33..4cc4e25fed2d 100644
+> --- a/drivers/net/phy/marvell.c
+> +++ b/drivers/net/phy/marvell.c
+> @@ -2459,6 +2459,28 @@ static struct phy_driver marvell_drivers[] = {
+>  		.get_tunable = m88e1540_get_tunable,
+>  		.set_tunable = m88e1540_set_tunable,
+>  	},
+> +	{
+> +		.phy_id = MARVELL_PHY_ID_88E1340S,
+> +		.phy_id_mask = MARVELL_PHY_ID_MASK,
+> +		.name = "Marvell 88E1340S",
+> +		.probe = m88e1510_probe,
+> +		/* PHY_GBIT_FEATURES */
+> +		.config_init = &marvell_config_init,
+> +		.config_aneg = &m88e1510_config_aneg,
+> +		.read_status = &marvell_read_status,
+> +		.ack_interrupt = &marvell_ack_interrupt,
+> +		.config_intr = &marvell_config_intr,
+> +		.did_interrupt = &m88e1121_did_interrupt,
+> +		.resume = &genphy_resume,
+> +		.suspend = &genphy_suspend,
+> +		.read_page = marvell_read_page,
+> +		.write_page = marvell_write_page,
+> +		.get_sset_count = marvell_get_sset_count,
+> +		.get_strings = marvell_get_strings,
+> +		.get_stats = marvell_get_stats,
+> +		.get_tunable = m88e1540_get_tunable,
+> +		.set_tunable = m88e1540_set_tunable,
 
-Not really, there's no such thing as an Unknown state.
+Can we use a single style for referencing functions please?  The kernel
+in general does not use &func, it's more typing than is necessary.  The
+C99 standard says:
 
-There are no guarantees about what a backend can do really, so it
-could indeed switch to a not recognized state, but that would be a
-bug in the backend.
+   6.3.2.1  Lvalues, arrays, and function designators
 
-Roger.
+4  A function designator is an expression that has function type.
+   Except when it is the operand of the sizeof operator or the unary
+   & operator, a function designator with type ``function returning
+   type'' is converted to an expression that has type ``pointer to
+   function returning type''.
+
+Hence, 
+
+  .resume = &genphy_resume
+
+and
+
+  .resume = genphy_resume
+
+are equivalent but sizeof(genphy_resume) and sizeof(&genphy_resume) are
+not.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
