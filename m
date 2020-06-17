@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08BB51FD2E9
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 18:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A0E71FD2ED
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 18:55:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbgFQQzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 12:55:14 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:61196 "EHLO
+        id S1726955AbgFQQzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 12:55:23 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:61200 "EHLO
         m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726840AbgFQQzO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 12:55:14 -0400
+        with ESMTP id S1726867AbgFQQzU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 12:55:20 -0400
 Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id BA5804160F;
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id D881741605;
         Thu, 18 Jun 2020 00:55:09 +0800 (CST)
 From:   wenxu@ucloud.cn
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, pablo@netfilter.org, vladbu@mellanox.com,
         simon.horman@netronome.com
-Subject: [PATCH net v4 1/4] flow_offload: add flow_indr_block_cb_alloc/remove function
-Date:   Thu, 18 Jun 2020 00:55:04 +0800
-Message-Id: <1592412907-3856-2-git-send-email-wenxu@ucloud.cn>
+Subject: [PATCH net v4 2/4] flow_offload: use flow_indr_block_cb_alloc/remove function
+Date:   Thu, 18 Jun 2020 00:55:05 +0800
+Message-Id: <1592412907-3856-3-git-send-email-wenxu@ucloud.cn>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1592412907-3856-1-git-send-email-wenxu@ucloud.cn>
 References: <1592412907-3856-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS0hIS0tLSkpKTkxCQllXWShZQU
-        lCN1dZLVlBSVdZDwkaFQgSH1lBWRcyNQs4HDojIwENDygOCx4PUANQOhxWVlVJTUJOSihJWVdZCQ
-        4XHghZQVk1NCk2OjckKS43PllXWRYaDxIVHRRZQVk0MFkG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Mxw6Pgw*NjgwMzU0Sy8OHRwR
-        SDMaFDNVSlVKTkJJT0pJQktCQ01IVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQU9NTUM3Bg++
-X-HM-Tid: 0a72c334b0d52086kuqyba5804160f
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS01JQkJCQ09PTk5KS0JZV1koWU
+        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkXMjULOBw5FSQRCQ8oDgseDjQDUDocVlZVSkpJTU4oSVlXWQ
+        kOFx4IWUFZNTQpNjo3JCkuNz5ZV1kWGg8SFR0UWUFZNDBZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PT46Thw*CjgrATUpPCpIHQoZ
+        TSgaCThVSlVKTkJJT0pJQktCQkxMVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUpKSEhJNwY+
+X-HM-Tid: 0a72c334b14e2086kuqyd881741605
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -38,107 +38,263 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: wenxu <wenxu@ucloud.cn>
 
-Add flow_indr_block_cb_alloc/remove function prepare for the bug fix
-in the third patch.
+Prepare fix the bug in the next patch. use flow_indr_block_cb_alloc/remove
+function and remove the __flow_block_indr_binding.
 
 Signed-off-by: wenxu <wenxu@ucloud.cn>
 ---
- include/net/flow_offload.h | 13 +++++++++++++
- net/core/flow_offload.c    | 43 ++++++++++++++++++++++++++++++++-----------
- 2 files changed, 45 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c       | 19 ++++++++++++-------
+ .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c    | 21 ++++++++++++++-------
+ drivers/net/ethernet/netronome/nfp/flower/main.h   |  4 +++-
+ .../net/ethernet/netronome/nfp/flower/offload.c    | 18 +++++++++++-------
+ include/net/flow_offload.h                         |  4 +++-
+ net/core/flow_offload.c                            | 22 +---------------------
+ 6 files changed, 44 insertions(+), 44 deletions(-)
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index f2c8311..bf43430 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -467,6 +467,12 @@ struct flow_block_cb {
- struct flow_block_cb *flow_block_cb_alloc(flow_setup_cb_t *cb,
- 					  void *cb_ident, void *cb_priv,
- 					  void (*release)(void *cb_priv));
-+struct flow_block_cb *flow_indr_block_cb_alloc(flow_setup_cb_t *cb,
-+					       void *cb_ident, void *cb_priv,
-+					       void (*release)(void *cb_priv),
-+					       struct flow_block_offload *bo,
-+					       struct net_device *dev, void *data,
-+					       void (*cleanup)(struct flow_block_cb *block_cb));
- void flow_block_cb_free(struct flow_block_cb *block_cb);
- 
- struct flow_block_cb *flow_block_cb_lookup(struct flow_block *block,
-@@ -488,6 +494,13 @@ static inline void flow_block_cb_remove(struct flow_block_cb *block_cb,
- 	list_move(&block_cb->list, &offload->cb_list);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+index 0eef4f5..3e3a884 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+@@ -1889,7 +1889,8 @@ static void bnxt_tc_setup_indr_rel(void *cb_priv)
  }
  
-+static inline void flow_indr_block_cb_remove(struct flow_block_cb *block_cb,
-+					     struct flow_block_offload *offload)
-+{
-+	list_del(&block_cb->indr.list);
-+	list_move(&block_cb->list, &offload->cb_list);
-+}
-+
- bool flow_block_cb_is_busy(flow_setup_cb_t *cb, void *cb_ident,
- 			   struct list_head *driver_block_list);
+ static int bnxt_tc_setup_indr_block(struct net_device *netdev, struct bnxt *bp,
+-				    struct flow_block_offload *f)
++				    struct flow_block_offload *f, void *data,
++				    void (*cleanup)(struct flow_block_cb *block_cb))
+ {
+ 	struct bnxt_flower_indr_block_cb_priv *cb_priv;
+ 	struct flow_block_cb *block_cb;
+@@ -1907,9 +1908,10 @@ static int bnxt_tc_setup_indr_block(struct net_device *netdev, struct bnxt *bp,
+ 		cb_priv->bp = bp;
+ 		list_add(&cb_priv->list, &bp->tc_indr_block_list);
  
+-		block_cb = flow_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
+-					       cb_priv, cb_priv,
+-					       bnxt_tc_setup_indr_rel);
++		block_cb = flow_indr_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
++						    cb_priv, cb_priv,
++						    bnxt_tc_setup_indr_rel, f,
++						    netdev, data, cleanup);
+ 		if (IS_ERR(block_cb)) {
+ 			list_del(&cb_priv->list);
+ 			kfree(cb_priv);
+@@ -1930,7 +1932,7 @@ static int bnxt_tc_setup_indr_block(struct net_device *netdev, struct bnxt *bp,
+ 		if (!block_cb)
+ 			return -ENOENT;
+ 
+-		flow_block_cb_remove(block_cb, f);
++		flow_indr_block_cb_remove(block_cb, f);
+ 		list_del(&block_cb->driver_list);
+ 		break;
+ 	default:
+@@ -1945,14 +1947,17 @@ static bool bnxt_is_netdev_indr_offload(struct net_device *netdev)
+ }
+ 
+ static int bnxt_tc_setup_indr_cb(struct net_device *netdev, void *cb_priv,
+-				 enum tc_setup_type type, void *type_data)
++				 enum tc_setup_type type, void *type_data,
++				 void *data,
++				 void (*cleanup)(struct flow_block_cb *block_cb))
+ {
+ 	if (!bnxt_is_netdev_indr_offload(netdev))
+ 		return -EOPNOTSUPP;
+ 
+ 	switch (type) {
+ 	case TC_SETUP_BLOCK:
+-		return bnxt_tc_setup_indr_block(netdev, cb_priv, type_data);
++		return bnxt_tc_setup_indr_block(netdev, cb_priv, type_data, data,
++						cleanup);
+ 	default:
+ 		break;
+ 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+index 80713123..d629864 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+@@ -407,7 +407,9 @@ static void mlx5e_rep_indr_block_unbind(void *cb_priv)
+ mlx5e_rep_indr_setup_block(struct net_device *netdev,
+ 			   struct mlx5e_rep_priv *rpriv,
+ 			   struct flow_block_offload *f,
+-			   flow_setup_cb_t *setup_cb)
++			   flow_setup_cb_t *setup_cb,
++			   void *data,
++			   void (*cleanup)(struct flow_block_cb *block_cb))
+ {
+ 	struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
+ 	struct mlx5e_rep_indr_block_priv *indr_priv;
+@@ -438,8 +440,9 @@ static void mlx5e_rep_indr_block_unbind(void *cb_priv)
+ 		list_add(&indr_priv->list,
+ 			 &rpriv->uplink_priv.tc_indr_block_priv_list);
+ 
+-		block_cb = flow_block_cb_alloc(setup_cb, indr_priv, indr_priv,
+-					       mlx5e_rep_indr_block_unbind);
++		block_cb = flow_indr_block_cb_alloc(setup_cb, indr_priv, indr_priv,
++						    mlx5e_rep_indr_block_unbind,
++						    f, netdev, data, cleanup);
+ 		if (IS_ERR(block_cb)) {
+ 			list_del(&indr_priv->list);
+ 			kfree(indr_priv);
+@@ -458,7 +461,7 @@ static void mlx5e_rep_indr_block_unbind(void *cb_priv)
+ 		if (!block_cb)
+ 			return -ENOENT;
+ 
+-		flow_block_cb_remove(block_cb, f);
++		flow_indr_block_cb_remove(block_cb, f);
+ 		list_del(&block_cb->driver_list);
+ 		return 0;
+ 	default:
+@@ -469,15 +472,19 @@ static void mlx5e_rep_indr_block_unbind(void *cb_priv)
+ 
+ static
+ int mlx5e_rep_indr_setup_cb(struct net_device *netdev, void *cb_priv,
+-			    enum tc_setup_type type, void *type_data)
++			    enum tc_setup_type type, void *type_data,
++			    void *data,
++			    void (*cleanup)(struct flow_block_cb *block_cb))
+ {
+ 	switch (type) {
+ 	case TC_SETUP_BLOCK:
+ 		return mlx5e_rep_indr_setup_block(netdev, cb_priv, type_data,
+-						  mlx5e_rep_indr_setup_tc_cb);
++						  mlx5e_rep_indr_setup_tc_cb,
++						  data, cleanup);
+ 	case TC_SETUP_FT:
+ 		return mlx5e_rep_indr_setup_block(netdev, cb_priv, type_data,
+-						  mlx5e_rep_indr_setup_ft_cb);
++						  mlx5e_rep_indr_setup_ft_cb,
++						  data, cleanup);
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
+index 6c3dc3b..56b3b68 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
+@@ -459,7 +459,9 @@ int nfp_flower_setup_qos_offload(struct nfp_app *app, struct net_device *netdev,
+ 				 struct tc_cls_matchall_offload *flow);
+ void nfp_flower_stats_rlim_reply(struct nfp_app *app, struct sk_buff *skb);
+ int nfp_flower_indr_setup_tc_cb(struct net_device *netdev, void *cb_priv,
+-				enum tc_setup_type type, void *type_data);
++				enum tc_setup_type type, void *type_data,
++				void *data,
++				void (*cleanup)(struct flow_block_cb *block_cb));
+ int nfp_flower_setup_indr_block_cb(enum tc_setup_type type, void *type_data,
+ 				   void *cb_priv);
+ 
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+index 695d24b9..95c7525 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+@@ -1647,7 +1647,8 @@ static void nfp_flower_setup_indr_tc_release(void *cb_priv)
+ 
+ static int
+ nfp_flower_setup_indr_tc_block(struct net_device *netdev, struct nfp_app *app,
+-			       struct flow_block_offload *f)
++			       struct flow_block_offload *f, void *data,
++			       void (*cleanup)(struct flow_block_cb *block_cb))
+ {
+ 	struct nfp_flower_indr_block_cb_priv *cb_priv;
+ 	struct nfp_flower_priv *priv = app->priv;
+@@ -1676,9 +1677,10 @@ static void nfp_flower_setup_indr_tc_release(void *cb_priv)
+ 		cb_priv->app = app;
+ 		list_add(&cb_priv->list, &priv->indr_block_cb_priv);
+ 
+-		block_cb = flow_block_cb_alloc(nfp_flower_setup_indr_block_cb,
+-					       cb_priv, cb_priv,
+-					       nfp_flower_setup_indr_tc_release);
++		block_cb = flow_indr_block_cb_alloc(nfp_flower_setup_indr_block_cb,
++						    cb_priv, cb_priv,
++						    nfp_flower_setup_indr_tc_release,
++						    f, netdev, data, cleanup);
+ 		if (IS_ERR(block_cb)) {
+ 			list_del(&cb_priv->list);
+ 			kfree(cb_priv);
+@@ -1699,7 +1701,7 @@ static void nfp_flower_setup_indr_tc_release(void *cb_priv)
+ 		if (!block_cb)
+ 			return -ENOENT;
+ 
+-		flow_block_cb_remove(block_cb, f);
++		flow_indr_block_cb_remove(block_cb, f);
+ 		list_del(&block_cb->driver_list);
+ 		return 0;
+ 	default:
+@@ -1710,7 +1712,9 @@ static void nfp_flower_setup_indr_tc_release(void *cb_priv)
+ 
+ int
+ nfp_flower_indr_setup_tc_cb(struct net_device *netdev, void *cb_priv,
+-			    enum tc_setup_type type, void *type_data)
++			    enum tc_setup_type type, void *type_data,
++			    void *data,
++			    void (*cleanup)(struct flow_block_cb *block_cb))
+ {
+ 	if (!nfp_fl_is_netdev_to_offload(netdev))
+ 		return -EOPNOTSUPP;
+@@ -1718,7 +1722,7 @@ static void nfp_flower_setup_indr_tc_release(void *cb_priv)
+ 	switch (type) {
+ 	case TC_SETUP_BLOCK:
+ 		return nfp_flower_setup_indr_tc_block(netdev, cb_priv,
+-						      type_data);
++						      type_data, data, cleanup);
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index bf43430..1961c79 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -545,7 +545,9 @@ static inline void flow_block_init(struct flow_block *flow_block)
+ }
+ 
+ typedef int flow_indr_block_bind_cb_t(struct net_device *dev, void *cb_priv,
+-				      enum tc_setup_type type, void *type_data);
++				      enum tc_setup_type type, void *type_data,
++				      void *data,
++				      void (*cleanup)(struct flow_block_cb *block_cb));
+ 
+ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv);
+ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
 diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index 0cfc35e..9fe4b58 100644
+index 9fe4b58..ee0006c 100644
 --- a/net/core/flow_offload.c
 +++ b/net/core/flow_offload.c
-@@ -329,6 +329,38 @@ struct flow_indr_dev {
- 	struct rcu_head			rcu;
- };
- 
-+static void flow_block_indr_init(struct flow_block_cb *flow_block,
-+				 struct flow_block_offload *bo,
-+				 struct net_device *dev, void *data,
-+				 void (*cleanup)(struct flow_block_cb *block_cb))
-+{
-+	flow_block->indr.binder_type = bo->binder_type;
-+	flow_block->indr.data = data;
-+	flow_block->indr.dev = dev;
-+	flow_block->indr.cleanup = cleanup;
-+}
-+
-+struct flow_block_cb *flow_indr_block_cb_alloc(flow_setup_cb_t *cb,
-+					       void *cb_ident, void *cb_priv,
-+					       void (*release)(void *cb_priv),
-+					       struct flow_block_offload *bo,
-+					       struct net_device *dev, void *data,
-+					       void (*cleanup)(struct flow_block_cb *block_cb))
-+{
-+	struct flow_block_cb *block_cb;
-+
-+	block_cb = flow_block_cb_alloc(cb, cb_ident, cb_priv, release);
-+	if (IS_ERR(block_cb))
-+		goto out;
-+
-+	flow_block_indr_init(block_cb, bo, dev, data, cleanup);
-+	list_add(&block_cb->indr.list, &flow_block_indr_list);
-+
-+out:
-+	return block_cb;
-+}
-+EXPORT_SYMBOL(flow_indr_block_cb_alloc);
-+
- static struct flow_indr_dev *flow_indr_dev_alloc(flow_indr_block_bind_cb_t *cb,
- 						 void *cb_priv)
- {
-@@ -426,17 +458,6 @@ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+@@ -458,25 +458,6 @@ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
  }
  EXPORT_SYMBOL(flow_indr_dev_unregister);
  
--static void flow_block_indr_init(struct flow_block_cb *flow_block,
--				 struct flow_block_offload *bo,
--				 struct net_device *dev, void *data,
--				 void (*cleanup)(struct flow_block_cb *block_cb))
+-static void __flow_block_indr_binding(struct flow_block_offload *bo,
+-				      struct net_device *dev, void *data,
+-				      void (*cleanup)(struct flow_block_cb *block_cb))
 -{
--	flow_block->indr.binder_type = bo->binder_type;
--	flow_block->indr.data = data;
--	flow_block->indr.dev = dev;
--	flow_block->indr.cleanup = cleanup;
+-	struct flow_block_cb *block_cb;
+-
+-	list_for_each_entry(block_cb, &bo->cb_list, list) {
+-		switch (bo->command) {
+-		case FLOW_BLOCK_BIND:
+-			flow_block_indr_init(block_cb, bo, dev, data, cleanup);
+-			list_add(&block_cb->indr.list, &flow_block_indr_list);
+-			break;
+-		case FLOW_BLOCK_UNBIND:
+-			list_del(&block_cb->indr.list);
+-			break;
+-		}
+-	}
 -}
 -
- static void __flow_block_indr_binding(struct flow_block_offload *bo,
- 				      struct net_device *dev, void *data,
- 				      void (*cleanup)(struct flow_block_cb *block_cb))
+ int flow_indr_dev_setup_offload(struct net_device *dev,
+ 				enum tc_setup_type type, void *data,
+ 				struct flow_block_offload *bo,
+@@ -486,9 +467,8 @@ int flow_indr_dev_setup_offload(struct net_device *dev,
+ 
+ 	mutex_lock(&flow_indr_block_lock);
+ 	list_for_each_entry(this, &flow_block_indr_dev_list, list)
+-		this->cb(dev, this->cb_priv, type, bo);
++		this->cb(dev, this->cb_priv, type, bo, data, cleanup);
+ 
+-	__flow_block_indr_binding(bo, dev, data, cleanup);
+ 	mutex_unlock(&flow_indr_block_lock);
+ 
+ 	return list_empty(&bo->cb_list) ? -EOPNOTSUPP : 0;
 -- 
 1.8.3.1
 
