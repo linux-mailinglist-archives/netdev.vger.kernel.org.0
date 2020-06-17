@@ -2,109 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 003DD1FD33E
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 19:15:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9A461FD34D
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 19:19:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbgFQRPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 13:15:39 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:47948 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726329AbgFQRPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 13:15:38 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jlbex-0001c9-Ts; Wed, 17 Jun 2020 17:15:35 +0000
-To:     Ido Schimmel <idosch@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Subject: re: mlxsw: spectrum: Adjust headroom buffers for 8x ports
-Message-ID: <bae3b4f6-3e9b-bdde-72b0-b8f1e7575fd4@canonical.com>
-Date:   Wed, 17 Jun 2020 18:15:35 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1726809AbgFQRTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 13:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57478 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726341AbgFQRTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 13:19:19 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3689FC06174E
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 10:19:18 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id p22so3253596ybg.21
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 10:19:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=m13kTJ1NjOac60RYaNiwR+Kl1zyg1f1CHhviTMQRb58=;
+        b=QlO7eCTdVDclZRyBIK+U2UpFkAWi6lsZ/9yPDOfAsSx52HgaSti86p+i+J2t+9KIqW
+         kcD3vIoIiRP2PKIqyJV5v/P9gZRlcX+vykJAeLpIntxAivH509m6C6QXGg+y6tYcUHjt
+         /f4+eccjm6vyXk3GLe7hRB0/Z7FnLt8N3G4BNLnBOceMr7J9XJlXPhkcOMOJU/3x+x+n
+         tyR390ZyA3s+hbgqO7N0WdrnXaXsoBKbxahOC5QSzNgwfcYOZNv1Rm8J/g+vFsqdszuV
+         nlaowDiRc5bQ6N9sTzuYG8/a1T8MhY78nYpOzfO3hgBiL7jG/FocJugzAl25OFqa+xwG
+         /moQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=m13kTJ1NjOac60RYaNiwR+Kl1zyg1f1CHhviTMQRb58=;
+        b=MRl56Gi2P6H2pzsjbDOOLJKjyqEqxk7JBADMxRQpPFHnxBdKCIPHR5fh/q+0NbMJQI
+         wODL26j0oLJ/aLkikg2L4u+5BEMlKg7OCQ+MwGnmkNUhsoFZmvTwWaIXSQmSEfM2JE+Q
+         S7GcnV7g2HW7Rad/r/ZgjXv2Z1uy8Tr1Nt7cNhWMl2gTL8vtLvrbELBrZNVPre9UvPjF
+         BnY0ktIRZ5CFsCCG0svTjDKTKTBacrCu9xLXpdUTmNUDqDccHT4NkSCmG7XIx42HzPoC
+         bNcJfCY8oXZQeVbHpddj74vlT1/Efldojn0nN8SZl7H7PQZYmh7MXLvkqmi1IXcVzJ4m
+         O3aQ==
+X-Gm-Message-State: AOAM532B5qFZ7GESUPNTi4jz06I0LzcAHfP2zsMs4cgmBfiGtqoSq7gb
+        EIACqy24d8ZcxiZDWw+yyf+/X0XhaR+uoA==
+X-Google-Smtp-Source: ABdhPJzBiFcIUKgSewU4LjVGSzAGmL5TDLFtWPrmmRGOPGU4y5uTTP9734zfV82PqFL9TamRGnYuWpelihFc2A==
+X-Received: by 2002:a25:bb90:: with SMTP id y16mr13712959ybg.231.1592414357467;
+ Wed, 17 Jun 2020 10:19:17 -0700 (PDT)
+Date:   Wed, 17 Jun 2020 10:19:11 -0700
+Message-Id: <20200617171912.224416-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.290.gba653c62da-goog
+Subject: [PATCH net-next] net: tso: double TSO_HEADER_SIZE value
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+Transport header size could be 60 bytes, and network header
+size can also be 60 bytes. Add the Ethernet header and we
+are above 128 bytes.
 
-Static analysis with Coverity has detected an issue that relies on the
-machine endianness to work. The commit in question is:
+Since drivers using net/core/tso.c usually allocates
+one DMA coherent piece of memory per RX queue, this patch
+might cause issues if a driver was using too many slots.
 
-commit 60833d54d56c21e7538296eb2e00e104768fd047
-Author: Ido Schimmel <idosch@mellanox.com>
-Date:   Tue Jun 16 10:14:58 2020 +0300
+For 1024 slots, we would need 256 KB of physically
+contiguous memory instead of 128 KB.
 
-    mlxsw: spectrum: Adjust headroom buffers for 8x ports
+Alternative fix would be to add checks in the fast path,
+but this involves more work in all drivers using net/core/tso.c.
 
-in line:
-    mlxsw_sp_port_headroom_8x_adjust(mlxsw_sp_port, (u16 *) &buffsize);
+Fixes: f9cbe9a556af ("net: define the TSO header size in net/tso.h")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Antoine Tenart <antoine.tenart@bootlin.com>
+---
+Note: probably needs to stay in net-next for one release cycle.
 
+ include/net/tso.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The cast of the u32 buffsize to (u16 *) to scale buffsize in the call to
-to mlxsw_sp_port_headroom_8x_adjust() will behave differently on big
-endian architectures to that of little endian architectures.  I'm not
-sure if this is intentional or not.
-
-One solution is to either make buffsize a u16, but I am concerned this
-may be incorrect as the buffsize is assigned from the call
-mlxsw_sp_span_buffsize_get() and this returns a u32 so we may have
-overflow issues. Probably better to make
-mlxsw_sp_port_headroom_8x_adjust handle u32 integers and to return the
-adjusted value rather than modifying it by pass-by-reference.
-
-Colin
+diff --git a/include/net/tso.h b/include/net/tso.h
+index 7e166a5703497fadf4662acc474f827b2754da78..c33dd00c161f7a6aa65f586b0ceede46af2e8730 100644
+--- a/include/net/tso.h
++++ b/include/net/tso.h
+@@ -4,7 +4,7 @@
+ 
+ #include <net/ip.h>
+ 
+-#define TSO_HEADER_SIZE		128
++#define TSO_HEADER_SIZE		256
+ 
+ struct tso_t {
+ 	int next_frag_idx;
+-- 
+2.27.0.290.gba653c62da-goog
 
