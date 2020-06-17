@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69FBC1FCBFB
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 13:14:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F22DB1FCBFA
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 13:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbgFQLOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726950AbgFQLOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 17 Jun 2020 07:14:18 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:45564 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726271AbgFQLOP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 07:14:15 -0400
-Received: by mail-io1-f72.google.com with SMTP id r11so1525606ioa.12
+Received: from mail-io1-f69.google.com ([209.85.166.69]:39540 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726708AbgFQLOQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 07:14:16 -0400
+Received: by mail-io1-f69.google.com with SMTP id 5so1547361iou.6
         for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 04:14:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=74zgtILYzJ4Q87way40PouYE06q/enXdI9CPRRVKbMw=;
-        b=kcZK3NTEGuKdr+tQH/SQ7o9SoxNa+GbFjDCQ2XWuYlFswF3sLqoOnMk59Upi1vTjaF
-         gWcOIxAMG0DR9brbrWMkIrplkCqx3ohmykPwDNjwz9eaglc5UkokUJeu5DYqUB4AQwGd
-         2SvWhDTF3bx1V6KGvpbri6LcyvFDTLAL8/TTYogXY+wMzu0W+AkFgp73yvgVyF8fD7pw
-         Xw5CtbRKpF+mOdxukklUKu+mzzAG5Hze76VUXnnRzB4Jsrp9QplOW9EjUkCOdlEpboia
-         9uup6ulZZkmfKRYvMRctwOXprLEHYmq4U27+Tyv3d+CL5HLaAPPnpwcXpLB4/0Eb+VkO
-         RJyA==
-X-Gm-Message-State: AOAM533Brm0K4by6W5zWaRLIIbndZ6mh9VvCggfwB4+DTAEcAjd42Dbs
-        IRT/Db6S4e8Hl3IDqmsfGVW0UpSlALOFgzt08q3AoQzFSy0v
-X-Google-Smtp-Source: ABdhPJwUn7Urbx/hoTKHd4Gm1w2sqP4k6F6w3WvA7z3RQJFoKSEECvvFxhUKtO2/WV5p22MlP6XbgwIJ7XBZoOMCa4UnI10osKWZ
+        bh=Gyew2n14ljcQ2DKykw2+8f7BA8G7wj1M+bEWLsz621g=;
+        b=JEUO9+xF9X12Wl5xVB34GoZxUB/42QivAvXT9A3pG4QEFVB0Wv6XzfRAqdvInvk5Dz
+         lYoGzF1Smmwb/4HgLn5RvrnnCFw0Xw3S82FhpncR8DJ5nw0oRsjpywO+GOozUyC82rlB
+         rITKxG2XH70/NOoWYY/aJXSY3466PfOsY9oa+TPo7TI7NJDBt52PEptQkZRN9M8HaEas
+         keG3MRln2JXtxSHkPeMp6Q3LzZmP8rToI5rwX+xzUcifzMvsi7G8KlsBkVF2cKfB7A75
+         IJP9qB2XYnwsswJOI6vRWW6oKMQ73wOA6letOceuEyRaeEPfyqTvs2m8GFAcsq0rKIih
+         bmpA==
+X-Gm-Message-State: AOAM533VbESeAxqraL9TPj+IWXXoKi+CBKBuQjiQFXVLPqZ7RS1maXZM
+        TY64+iIpPSfTqylgplW1MjzmsIhEazl6ZHwce44M/Xsy27ZI
+X-Google-Smtp-Source: ABdhPJxIFdw/XHxqd0shSJ72f41ob9wNyGZYR2f2zUcWARsXiv0SYTCgJ7rm0n3OBDoshrC/4J6/bQNXMWBMfyrGBr4EnYWE9qNr
 MIME-Version: 1.0
-X-Received: by 2002:a92:d3d0:: with SMTP id c16mr7623005ilh.181.1592392454048;
+X-Received: by 2002:a92:ce48:: with SMTP id a8mr8033311ilr.23.1592392454376;
  Wed, 17 Jun 2020 04:14:14 -0700 (PDT)
 Date:   Wed, 17 Jun 2020 04:14:14 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009111c005a845c2bc@google.com>
-Subject: net-next test error: KASAN: use-after-free Write in afs_wake_up_async_call
-From:   syzbot <syzbot+d3eccef36ddbd02713e9@syzkaller.appspotmail.com>
+Message-ID: <00000000000096141f05a845c246@google.com>
+Subject: net test error: KASAN: use-after-free Write in afs_wake_up_async_call
+From:   syzbot <syzbot+5e590d73a9d01be6b1a1@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, dhowells@redhat.com, kuba@kernel.org,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
@@ -49,21 +49,21 @@ Hello,
 syzbot found the following crash on:
 
 HEAD commit:    69119673 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=151b62f1100000
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=1054fc4e100000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=b8ad29058cb749bc
-dashboard link: https://syzkaller.appspot.com/bug?extid=d3eccef36ddbd02713e9
+dashboard link: https://syzkaller.appspot.com/bug?extid=5e590d73a9d01be6b1a1
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+d3eccef36ddbd02713e9@syzkaller.appspotmail.com
+Reported-by: syzbot+5e590d73a9d01be6b1a1@syzkaller.appspotmail.com
 
 tipc: TX() has been purged, node left!
 ==================================================================
 BUG: KASAN: use-after-free in afs_wake_up_async_call+0x6aa/0x770 fs/afs/rxrpc.c:707
-Write of size 1 at addr ffff8880946c39e4 by task kworker/u4:1/21
+Write of size 1 at addr ffff888096b199e4 by task kworker/u4:6/262
 
-CPU: 0 PID: 21 Comm: kworker/u4:1 Not tainted 5.8.0-rc1-syzkaller #0
+CPU: 1 PID: 262 Comm: kworker/u4:6 Not tainted 5.8.0-rc1-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Workqueue: netns cleanup_net
 Call Trace:
@@ -88,7 +88,7 @@ Call Trace:
  kthread+0x3b5/0x4a0 kernel/kthread.c:291
  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
 
-Allocated by task 6820:
+Allocated by task 6821:
  save_stack+0x1b/0x40 mm/kasan/common.c:48
  set_track mm/kasan/common.c:56 [inline]
  __kasan_kmalloc mm/kasan/common.c:494 [inline]
@@ -112,7 +112,7 @@ Allocated by task 6820:
  do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Freed by task 21:
+Freed by task 262:
  save_stack+0x1b/0x40 mm/kasan/common.c:48
  set_track mm/kasan/common.c:56 [inline]
  kasan_set_free_info mm/kasan/common.c:316 [inline]
@@ -131,24 +131,24 @@ Freed by task 21:
  kthread+0x3b5/0x4a0 kernel/kthread.c:291
  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
 
-The buggy address belongs to the object at ffff8880946c3800
+The buggy address belongs to the object at ffff888096b19800
  which belongs to the cache kmalloc-1k of size 1024
 The buggy address is located 484 bytes inside of
- 1024-byte region [ffff8880946c3800, ffff8880946c3c00)
+ 1024-byte region [ffff888096b19800, ffff888096b19c00)
 The buggy address belongs to the page:
-page:ffffea000251b0c0 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0
+page:ffffea00025ac640 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0
 flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea0002546508 ffffea00024fa248 ffff8880aa000c40
-raw: 0000000000000000 ffff8880946c3000 0000000100000002 0000000000000000
+raw: 00fffe0000000200 ffffea00025df7c8 ffffea000261efc8 ffff8880aa000c40
+raw: 0000000000000000 ffff888096b19000 0000000100000002 0000000000000000
 page dumped because: kasan: bad access detected
 
 Memory state around the buggy address:
- ffff8880946c3880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880946c3900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff8880946c3980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888096b19880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888096b19900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff888096b19980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
                                                        ^
- ffff8880946c3a00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880946c3a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888096b19a00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888096b19a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
 ==================================================================
 
 
