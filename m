@@ -2,106 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAA2C1FC8AB
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 10:32:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 939031FC8DA
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 10:36:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726702AbgFQIbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 04:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60110 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726491AbgFQIbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 04:31:52 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D972BC06174E
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 01:31:51 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id n24so1779393lji.10
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 01:31:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SUl9pfAsz4Si0tDa+sd5wm5SlXtGYBUK2ZIBc7MpVLM=;
-        b=n8WepE2L4ZYHeJ3Oly0QADCCSjNV4KFQT8lLQt9YfomGx5PPbudefe/qiY0ZFC9LTg
-         ViJB2HhPuGPnDnMO8ApltxYtM3ES9pnH7R99SQFyFD7XSs0XoYrFt6SPULvKwoFB7PEz
-         Vv5QWjzC8Y+XcBGHS5HtWEtYAxtyeTIg/bwTBFEwbYvIcSOe1Qj8gbWSPetTx7956r7n
-         fx3fGJJXNuwzC0DePWI+EicfW49reDZd6eus6/GAuZ9MShP1cPb6DS2mhK2pRxp9a11p
-         3aWq7yn2TK080NkuhCR8CZ89nZYRpFydWV4OrdpQ5KKf8a+pwdWsRI26ZXmMv5FKAN1O
-         C1Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SUl9pfAsz4Si0tDa+sd5wm5SlXtGYBUK2ZIBc7MpVLM=;
-        b=niSwXEAwio6/DtOxnoUGkguyWBYaoem0wZ/lJ/hpZrrgJXhreVdBWc0HP1inera651
-         D/cQanR6i6O/q1KjLvFtp8sR1E5vxxji/bK03NDn/TkXXiJcJmNzH4mILWZ8YM2Ky+QX
-         ji+fk6TimTOABoFhzM8vePHdB2VYh6KQOxmaAwiP/99GLFFpo9/J8VuvZ8S56VATOVjI
-         djdsdDNmFLDRseAThoTtvrcCNfALMFeR+GTJlj1/6k+A2YJhIMMxqPr7nGpwedFNSZRm
-         bQypBzMOOkU9TAMvLEVXU6KvStcmtUO0x6Vioe5uiKgUczCn+9AtIuV2P4XG1zAvVF58
-         kLhA==
-X-Gm-Message-State: AOAM532I2loObhFZNXnYtAgPhw+eZfw945tLC0SZmVIQ6vuKcAVtBdBu
-        7O3gXIBgHdCb2nwDddb8ug9gNA==
-X-Google-Smtp-Source: ABdhPJwrrHzQMYHkP3uVyA+oZqep0Fw9qywn4alMakDlUtOzRLyik9ItjvOtfwTO66N5bMDZ9fX1Kw==
-X-Received: by 2002:a2e:b5d0:: with SMTP id g16mr3315702ljn.246.1592382710371;
-        Wed, 17 Jun 2020 01:31:50 -0700 (PDT)
-Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id c3sm89554lfi.91.2020.06.17.01.31.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jun 2020 01:31:49 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Subject: [net-next PATCH 5/5 v2] net: dsa: rtl8366: Use top VLANs for default
-Date:   Wed, 17 Jun 2020 10:31:32 +0200
-Message-Id: <20200617083132.1847234-5-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200617083132.1847234-1-linus.walleij@linaro.org>
-References: <20200617083132.1847234-1-linus.walleij@linaro.org>
+        id S1726785AbgFQIfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 04:35:41 -0400
+Received: from esa2.hc3370-68.iphmx.com ([216.71.145.153]:38612 "EHLO
+        esa2.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725967AbgFQIfl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 04:35:41 -0400
+Authentication-Results: esa2.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
+IronPort-SDR: KfZvMvC1oYnZ7gi+KDWOviH4clxbHShSY7Yli+xfkrqN6LkJMaGowI1WLqHxqcACgMUrxfkUAD
+ Ay5pg5WGOeqKL0CCypgK4qhxMgOHjyTIf64e1aNhYRAm71VGxZrK78hisJYBoO7fnRxdMgfY7b
+ vDubhXWnqwLSYTQ7ryxlfakGFVKT1POd8dRmcMBv35hFYrPvNJEhPlc4qaSrLIUxHxgq6p86dI
+ Fvz6UQo69l4R4knwvEj6X3MlFh19OkyWqWkPIwHX3MDCwr+2pRlebLitMY4MMI8I/Szkk6yaRS
+ 9UE=
+X-SBRS: 2.7
+X-MesageID: 20261029
+X-Ironport-Server: esa2.hc3370-68.iphmx.com
+X-Remote-IP: 162.221.158.21
+X-Policy: $RELAYED
+X-IronPort-AV: E=Sophos;i="5.73,522,1583211600"; 
+   d="scan'208";a="20261029"
+Date:   Wed, 17 Jun 2020 10:35:28 +0200
+From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
+To:     Anchal Agarwal <anchalag@amazon.com>
+CC:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
+Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and
+ hibernation]
+Message-ID: <20200617083528.GW735@Air-de-Roger>
+References: <7FD7505E-79AA-43F6-8D5F-7A2567F333AB@amazon.com>
+ <20200604070548.GH1195@Air-de-Roger>
+ <20200616214925.GA21684@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200616214925.GA21684@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+X-ClientProxiedBy: AMSPEX02CAS02.citrite.net (10.69.22.113) To
+ AMSPEX02CL02.citrite.net (10.69.22.126)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The RTL8366 DSA switches will not work unless we set
-up a default VLAN for each port. We are currently using
-e.g. VLAN 1..6 for a 5-port switch as default VLANs.
+On Tue, Jun 16, 2020 at 09:49:25PM +0000, Anchal Agarwal wrote:
+> On Thu, Jun 04, 2020 at 09:05:48AM +0200, Roger Pau Monné wrote:
+> > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > On Wed, Jun 03, 2020 at 11:33:52PM +0000, Agarwal, Anchal wrote:
+> > >  CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > >     > +             xenbus_dev_error(dev, err, "Freezing timed out;"
+> > >     > +                              "the device may become inconsistent state");
+> > >
+> > >     Leaving the device in this state is quite bad, as it's in a closed
+> > >     state and with the queues frozen. You should make an attempt to
+> > >     restore things to a working state.
+> > >
+> > > You mean if backend closed after timeout? Is there a way to know that? I understand it's not good to
+> > > leave it in this state however, I am still trying to find if there is a good way to know if backend is still connected after timeout.
+> > > Hence the message " the device may become inconsistent state".  I didn't see a timeout not even once on my end so that's why
+> > > I may be looking for an alternate perspective here. may be need to thaw everything back intentionally is one thing I could think of.
+> > 
+> > You can manually force this state, and then check that it will behave
+> > correctly. I would expect that on a failure to disconnect from the
+> > backend you should switch the frontend to the 'Init' state in order to
+> > try to reconnect to the backend when possible.
+> > 
+> From what I understand forcing manually is, failing the freeze without
+> disconnect and try to revive the connection by unfreezing the
+> queues->reconnecting to backend [which never got diconnected]. May be even
+> tearing down things manually because I am not sure what state will frontend
+> see if backend fails to to disconnect at any point in time. I assumed connected.
+> Then again if its "CONNECTED" I may not need to tear down everything and start
+> from Initialising state because that may not work.
+> 
+> So I am not so sure about backend's state so much, lets say if  xen_blkif_disconnect fail,
+> I don't see it getting handled in the backend then what will be backend's state?
+> Will it still switch xenbus state to 'Closed'? If not what will frontend see, 
+> if it tries to read backend's state through xenbus_read_driver_state ?
+> 
+> So the flow be like:
+> Front end marks XenbusStateClosing
+> Backend marks its state as XenbusStateClosing
+>     Frontend marks XenbusStateClosed
+>     Backend disconnects calls xen_blkif_disconnect
+>        Backend fails to disconnect, the above function returns EBUSY
+>        What will be state of backend here?
 
-This is not very helpful for users, move it to allocate
-the top VLANs for default instead, for example on
-RTL8366RB there are 16 VLANs so instead of using
-VLAN 1..6 as default use VLAN 10..15 so VLAN 1
-thru VLAN 9 is available for users.
+Backend should stay in state 'Closing' then, until it can finish
+tearing down.
 
-Cc: DENG Qingfang <dqfext@gmail.com>
-Cc: Mauri Sandberg <sandberg@mailfence.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v2:
-- Rebase on v5.8-rc1.
----
- drivers/net/dsa/rtl8366.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+>        Frontend did not tear down the rings if backend does not switches the
+>        state to 'Closed' in case of failure.
+> 
+> If backend stays in CONNECTED state, then even if we mark it Initialised in frontend, backend
 
-diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-index 7f0691a6da13..4e7562b41598 100644
---- a/drivers/net/dsa/rtl8366.c
-+++ b/drivers/net/dsa/rtl8366.c
-@@ -260,8 +260,8 @@ static int rtl8366_set_default_vlan_and_pvid(struct realtek_smi *smi,
- 	u16 vid;
- 	int ret;
- 
--	/* This is the reserved default VLAN for this port */
--	vid = port + 1;
-+	/* Use the top VLANs for per-port default VLAN */
-+	vid = smi->num_vlan_mc - smi->num_ports + port;
- 
- 	if (port == smi->cpu_port)
- 		/* For the CPU port, make all ports members of this
--- 
-2.26.2
+Backend will stay in state 'Closing' I think.
 
+> won't be calling connect(). {From reading code in frontend_changed}
+> IMU, Initialising will fail since backend dev->state != XenbusStateClosed plus
+> we did not tear down anything so calling talk_to_blkback may not be needed
+> 
+> Does that sound correct?
+
+I think switching to the initial state in order to try to attempt a
+reconnection would be our best bet here.
+
+Thanks, Roger.
