@@ -2,101 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B1AE1FD111
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 17:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 118381FD119
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 17:35:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726918AbgFQPdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 11:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40940 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726558AbgFQPdv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 11:33:51 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39B5C06174E;
-        Wed, 17 Jun 2020 08:33:51 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id z63so1316485pfb.1;
-        Wed, 17 Jun 2020 08:33:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9XYCr6Zy0SFc/eo2kKcuSj+TDFOwpW8ayTc9YaNvQW4=;
-        b=jL7+9eMJJS22Gqpqh5AtGiabAxqRW3TL1kfyDKeARpjfoLdm5DlqJPm2YFc7Uf2c8e
-         iiXwaEi5/fNkce1wIJhXRk5+bQ1nCxWhul9bHB4167Y9RMJMWBw2YopUQUWoSDLXDuZS
-         +rY9HipdU7tLK1LoKHontQjuq9r+qSThpIrGluB/AKf7YfFg9jNJtlnXehv7kzDxTm9R
-         4QbAp+jlWm3Z+fCjTP6ye3jh32Tc6LNPVgR7Lo/ykgiuJaRgmIEtz5Y2sKstd+Xh3hxo
-         e8ePuyiGn6mK8Zba3CyfQtU/sMJ1zad3OTRRdBXTlNjWAmXL5WxVq+7IIewimQzUzQUw
-         mLVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9XYCr6Zy0SFc/eo2kKcuSj+TDFOwpW8ayTc9YaNvQW4=;
-        b=uMBjfvJti32wVXU6Conak5YaUsyuyAvUtCOq9v/WGWdjQw0WWHQ6ekHbx0I/B9b6YO
-         OWCa4g6+ELSTwExuL6R/ZIatS+MkJ+eHQCppLB+vNmRDfg/0L9ohfiYQAnTGAVsSKk5K
-         3eRfb0fLdRT68E0UL/E6LkIkKRZQxvHovFjUbrG7zn1ef8v54Vf/hsBn0+rDfVKGUonL
-         988oSNre1yr0TX6jHZfC+0BpSc6foZSDFXMjX7hC3VPMmsjwAgupANTEc1CAXSTyvq45
-         G5MptyS7x1zVdl75qJkC5F3aziyja3OYeGfyGKoHvf4g9Wm92z60aS/O10BaGXh6JodR
-         pQWw==
-X-Gm-Message-State: AOAM532wQKLf05fjYaOTlZUZFXTS3wsjx7JiyWwYTlnjwLMLQB5MM/2M
-        Q8/3ymvpSnY2379FNqs3z1c0QsF7oR8=
-X-Google-Smtp-Source: ABdhPJy0mCD2xf2PUcMQKbv+6h9HAiiov65Br/IND4/ngNnMk7XnTejRwTuypmQ49c+OUM7F+J5fRQ==
-X-Received: by 2002:aa7:9404:: with SMTP id x4mr7284949pfo.158.1592408031222;
-        Wed, 17 Jun 2020 08:33:51 -0700 (PDT)
-Received: from localhost ([144.34.193.30])
-        by smtp.gmail.com with ESMTPSA id g17sm24275pju.11.2020.06.17.08.33.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 17 Jun 2020 08:33:50 -0700 (PDT)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>,
-        Kevin Groeneveld <kgroeneveld@gmail.com>
-Subject: [PATCH net v1] net: phy: smsc: fix printing too many logs
-Date:   Wed, 17 Jun 2020 23:33:40 +0800
-Message-Id: <20200617153340.17371-1-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.25.0
+        id S1726966AbgFQPf0 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jun 2020 11:35:26 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:20151 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726761AbgFQPfZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 11:35:25 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-215-GEsm37XKMp2mEZ5ZJK8SRg-1; Wed, 17 Jun 2020 16:35:22 +0100
+X-MC-Unique: GEsm37XKMp2mEZ5ZJK8SRg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 17 Jun 2020 16:35:20 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 17 Jun 2020 16:35:20 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Kees Cook' <keescook@chromium.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Sargun Dhillon <sargun@sargun.me>,
+        Christian Brauner <christian@brauner.io>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Christoph Hellwig" <hch@lst.de>, Tycho Andersen <tycho@tycho.ws>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "containers@lists.linux-foundation.org" 
+        <containers@lists.linux-foundation.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: RE: [PATCH v4 03/11] fs: Add fd_install_received() wrapper for
+ __fd_install_received()
+Thread-Topic: [PATCH v4 03/11] fs: Add fd_install_received() wrapper for
+ __fd_install_received()
+Thread-Index: AQHWQ44F2CX108LjrkCobo2loVeUYajc8NxQ
+Date:   Wed, 17 Jun 2020 15:35:20 +0000
+Message-ID: <6de12195ec3244b99e6026b4b46e5be2@AcuMS.aculab.com>
+References: <20200616032524.460144-1-keescook@chromium.org>
+ <20200616032524.460144-4-keescook@chromium.org>
+In-Reply-To: <20200616032524.460144-4-keescook@chromium.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 7ae7ad2f11ef47 ("net: phy: smsc: use phy_read_poll_timeout()
-to simplify the code") will print a lot of logs as follows when Ethernet
-cable is not connected:
+From: Kees Cook
+> Sent: 16 June 2020 04:25
+> 
+> For both pidfd and seccomp, the __user pointer is not used. Update
+> __fd_install_received() to make writing to ufd optional. (ufd
+> itself cannot checked for NULL because this changes the SCM_RIGHTS
+> interface behavior.) In these cases, the new fd needs to be returned
+> on success.  Update the existing callers to handle it. Add new wrapper
+> fd_install_received() for pidfd and seccomp that does not use the ufd
+> argument.
+...> 
+>  static inline int fd_install_received_user(struct file *file, int __user *ufd,
+>  					   unsigned int o_flags)
+>  {
+> -	return __fd_install_received(file, ufd, o_flags);
+> +	return __fd_install_received(file, true, ufd, o_flags);
+> +}
 
-[    4.473105] SMSC LAN8710/LAN8720 2188000.ethernet-1:00: lan87xx_read_status failed: -110
+Can you get rid of the 'return user' parameter by adding
+	if (!ufd) return -EFAULT;
+to the above wrapper, then checking for NULL in the function?
 
-So fix it by read_poll_timeout().
+Or does that do the wrong horrid things in the fail path?
 
-Fixes: 7ae7ad2f11ef47 ("net: phy: smsc: use phy_read_poll_timeout() to simplify the code")
-Reported-by: Kevin Groeneveld <kgroeneveld@gmail.com>
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
----
- drivers/net/phy/smsc.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+	David
 
-diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-index 93da7d3d0954..36c5a57917b8 100644
---- a/drivers/net/phy/smsc.c
-+++ b/drivers/net/phy/smsc.c
-@@ -123,9 +123,10 @@ static int lan87xx_read_status(struct phy_device *phydev)
- 			return rc;
- 
- 		/* Wait max 640 ms to detect energy */
--		phy_read_poll_timeout(phydev, MII_LAN83C185_CTRL_STATUS, rc,
--				      rc & MII_LAN83C185_ENERGYON, 10000,
--				      640000, true);
-+		read_poll_timeout(phy_read, rc,
-+				  rc & MII_LAN83C185_ENERGYON || rc < 0,
-+				  10000, 640000, true, phydev,
-+				  MII_LAN83C185_CTRL_STATUS);
- 		if (rc < 0)
- 			return rc;
- 
--- 
-2.25.0
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
