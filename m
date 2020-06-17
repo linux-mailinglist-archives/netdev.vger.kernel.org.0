@@ -2,131 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 371D51FCB79
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 12:55:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34FB11FCBA8
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 13:02:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726331AbgFQKzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 06:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbgFQKzc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 06:55:32 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7602FC061573
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 03:55:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=KtF7AHwx+IWjHeMNIIoYJUSw5kkF6TtU7N5IVTw4PmQ=; b=ERBCM48Nxul+mEUwO3o2Vdpqd
-        e/lt3DWi96iiW6MiXKNzQ0B/gtX58paP1c+DC5gSW6AzYx66+7I34o1PwmGuASM/2e3Is79WM0OnE
-        g/b870l7bGSomDyKAHhZIxQS7mLtgSoQzMCYoxmgqsLWYAPhZiz303xxgVAPzcuzd+cLYnHpAoblZ
-        Y1n+SIo8M/gThlCBhhJoKYYOS0TVOxM4JVB+3WAyRQDNnPc2MxyxHOXV9HFRcq3MUartnn4Hxvazy
-        Sb+q0MbvJ4FhzsKSL3MmcyaZ+rwZv6ZMhGrdm3k8o6s9siEbCJgse9QCXjJJqRnCoI1nv3f7PQ7lG
-        sBGDdxT5A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58442)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jlVj0-0003dJ-3V; Wed, 17 Jun 2020 11:55:22 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jlViw-0003fF-Df; Wed, 17 Jun 2020 11:55:18 +0100
-Date:   Wed, 17 Jun 2020 11:55:18 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Helmut Grohne <helmut.grohne@intenta.de>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] net: macb: reject unsupported rgmii delays
-Message-ID: <20200617105518.GO1551@shell.armlinux.org.uk>
-References: <20200616074955.GA9092@laureti-dev>
+        id S1726879AbgFQLCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 07:02:49 -0400
+Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:34060 "EHLO
+        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726480AbgFQLCs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 07:02:48 -0400
+Received: from mxbackcorp2j.mail.yandex.net (mxbackcorp2j.mail.yandex.net [IPv6:2a02:6b8:0:1619::119])
+        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id ACB552E1604;
+        Wed, 17 Jun 2020 14:02:40 +0300 (MSK)
+Received: from iva8-88b7aa9dc799.qloud-c.yandex.net (iva8-88b7aa9dc799.qloud-c.yandex.net [2a02:6b8:c0c:77a0:0:640:88b7:aa9d])
+        by mxbackcorp2j.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id 3KAzC31Kde-2cXuTXow;
+        Wed, 17 Jun 2020 14:02:40 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1592391760; bh=0G5nloM8KgXqobAqOq2gJFUTn/Fn9VU2NJE26BprJps=;
+        h=Message-Id:Date:Subject:To:From:Cc;
+        b=DPddCDfPAZwVKVvfmwUMSDge2Ml66g3z4UKA9CIBxqMfd8agZoAWzE0KeTAAN2QhK
+         cawjoSihv6jibf/xVQxfde8/DvjJubizgzGbbFWFfYYncvly0vcBXCq/jzDuqqLewP
+         zzNfKPn9CqPl/6EoGEhDWT1NdsQCtunkWsrKD3T4=
+Authentication-Results: mxbackcorp2j.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from 37.9.89.23-iva.dhcp.yndx.net (37.9.89.23-iva.dhcp.yndx.net [37.9.89.23])
+        by iva8-88b7aa9dc799.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id XJqgFOjlJF-2ckik3i3;
+        Wed, 17 Jun 2020 14:02:38 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+From:   Dmitry Yakunin <zeil@yandex-team.ru>
+To:     daniel@iogearbox.net, alexei.starovoitov@gmail.com
+Cc:     davem@davemloft.net, brakmo@fb.com, eric.dumazet@gmail.com,
+        kafai@fb.com, bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH bpf-next v4 1/3] sock: move sock_valbool_flag to header
+Date:   Wed, 17 Jun 2020 14:02:15 +0300
+Message-Id: <20200617110217.35669-1-zeil@yandex-team.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200616074955.GA9092@laureti-dev>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 09:49:56AM +0200, Helmut Grohne wrote:
-> The macb driver does not support configuring rgmii delays. At least for
-> the Zynq GEM, delays are not supported by the hardware at all. However,
-> the driver happily accepts and ignores any such delays.
-> 
-> When operating in a mac to phy connection, the delay setting applies to
-> the phy. Since the MAC does not support delays, the phy must provide
-> them and the only supported mode is rgmii-id.  However, in a fixed mac
-> to mac connection, the delay applies to the mac itself. Therefore the
-> only supported rgmii mode is rgmii.
+This is preparation for usage in bpf_setsockopt.
 
-This seems incorrect - see the phy documentation in
-Documentation/networking/phy.rst:
+Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+---
+ include/net/sock.h | 9 +++++++++
+ net/core/sock.c    | 9 ---------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-* PHY_INTERFACE_MODE_RGMII: the PHY is not responsible for inserting any
-  internal delay by itself, it assumes that either the Ethernet MAC (if capable
-  or the PCB traces) insert the correct 1.5-2ns delay
-
-* PHY_INTERFACE_MODE_RGMII_TXID: the PHY should insert an internal delay
-  for the transmit data lines (TXD[3:0]) processed by the PHY device
-
-* PHY_INTERFACE_MODE_RGMII_RXID: the PHY should insert an internal delay
-  for the receive data lines (RXD[3:0]) processed by the PHY device
-
-* PHY_INTERFACE_MODE_RGMII_ID: the PHY should insert internal delays for
-  both transmit AND receive data lines from/to the PHY device
-
-Note that PHY_INTERFACE_MODE_RGMII, the delay can be added by _either_
-the MAC or by PCB trace routing.
-
-The individual RGMII delay modes are more about what the PHY itself is
-asked to do with respect to inserting delays, so I don't think your
-patch makes sense.
-
-In any case...
-
-> Link: https://lore.kernel.org/netdev/20200610081236.GA31659@laureti-dev/
-> Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
-> ---
->  drivers/net/ethernet/cadence/macb_main.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index 5b9d7c60eebc..bee5bf65e8b3 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -514,7 +514,7 @@ static void macb_validate(struct phylink_config *config,
->  	    state->interface != PHY_INTERFACE_MODE_RMII &&
->  	    state->interface != PHY_INTERFACE_MODE_GMII &&
->  	    state->interface != PHY_INTERFACE_MODE_SGMII &&
-> -	    !phy_interface_mode_is_rgmii(state->interface)) {
-> +	    state->interface != PHY_INTERFACE_MODE_RGMII_ID) {
-
-Here you reject everything except PHY_INTERFACE_MODE_RGMII_ID.
-
->  		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
->  		return;
->  	}
-> @@ -694,6 +694,13 @@ static int macb_phylink_connect(struct macb *bp)
->  	struct phy_device *phydev;
->  	int ret;
->  
-> +	if (of_phy_is_fixed_link(dn) &&
-> +	    phy_interface_mode_is_rgmii(bp->phy_interface) &&
-> +	    bp->phy_interface != PHY_INTERFACE_MODE_RGMII) {
-
-but here you reject everything except PHY_INTERFACE_MODE_RGMII.  These
-can't both be right.  If you start with PHY_INTERFACE_MODE_RGMII, and
-have a fixed link, you'll have PHY_INTERFACE_MODE_RGMII passed into
-the validate function, which will then fail.
-
+diff --git a/include/net/sock.h b/include/net/sock.h
+index c53cc42..8ba438b 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -879,6 +879,15 @@ static inline void sock_reset_flag(struct sock *sk, enum sock_flags flag)
+ 	__clear_bit(flag, &sk->sk_flags);
+ }
+ 
++static inline void sock_valbool_flag(struct sock *sk, enum sock_flags bit,
++				     int valbool)
++{
++	if (valbool)
++		sock_set_flag(sk, bit);
++	else
++		sock_reset_flag(sk, bit);
++}
++
+ static inline bool sock_flag(const struct sock *sk, enum sock_flags flag)
+ {
+ 	return test_bit(flag, &sk->sk_flags);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 6c4acf1..5ba4753 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -695,15 +695,6 @@ static int sock_getbindtodevice(struct sock *sk, char __user *optval,
+ 	return ret;
+ }
+ 
+-static inline void sock_valbool_flag(struct sock *sk, enum sock_flags bit,
+-				     int valbool)
+-{
+-	if (valbool)
+-		sock_set_flag(sk, bit);
+-	else
+-		sock_reset_flag(sk, bit);
+-}
+-
+ bool sk_mc_loop(struct sock *sk)
+ {
+ 	if (dev_recursion_level())
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.7.4
+
