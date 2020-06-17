@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14A6C1FD012
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 16:55:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ECBB1FD018
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 16:55:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726942AbgFQOzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 10:55:06 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:19748 "EHLO
+        id S1726909AbgFQOzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 10:55:05 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:44002 "EHLO
         mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726494AbgFQOzE (ORCPT
+        by vger.kernel.org with ESMTP id S1726355AbgFQOzE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 10:55:04 -0400
 Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05HEcAeF040606;
-        Wed, 17 Jun 2020 10:55:00 -0400
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05HEcT6f041280;
+        Wed, 17 Jun 2020 10:55:01 -0400
 Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 31q6hbstst-1
+        by mx0b-001b2d01.pphosted.com with ESMTP id 31q6hbstt3-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 17 Jun 2020 10:55:00 -0400
+        Wed, 17 Jun 2020 10:55:01 -0400
 Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05HEkKVB006974;
+        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05HEkIQv006964;
         Wed, 17 Jun 2020 14:54:59 GMT
 Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 31q6bs982f-1
+        by ppma03ams.nl.ibm.com with ESMTP id 31q6bs982g-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 17 Jun 2020 14:54:58 +0000
+        Wed, 17 Jun 2020 14:54:59 +0000
 Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05HEsu0D8585354
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05HEsuIQ34013410
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Wed, 17 Jun 2020 14:54:56 GMT
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 26A4B42042;
+        by IMSVA (Postfix) with ESMTP id 9143E42049;
         Wed, 17 Jun 2020 14:54:56 +0000 (GMT)
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C537642047;
-        Wed, 17 Jun 2020 14:54:55 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 30AF74203F;
+        Wed, 17 Jun 2020 14:54:56 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 17 Jun 2020 14:54:55 +0000 (GMT)
+        Wed, 17 Jun 2020 14:54:56 +0000 (GMT)
 From:   Julian Wiedmann <jwi@linux.ibm.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -47,9 +47,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Ursula Braun <ubraun@linux.ibm.com>,
         Karsten Graul <kgraul@linux.ibm.com>,
         Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net 1/2] s390/qeth: fix error handling for isolation mode cmds
-Date:   Wed, 17 Jun 2020 16:54:52 +0200
-Message-Id: <20200617145453.61382-2-jwi@linux.ibm.com>
+Subject: [PATCH net 2/2] s390/qeth: let isolation mode override HW offload restrictions
+Date:   Wed, 17 Jun 2020 16:54:53 +0200
+Message-Id: <20200617145453.61382-3-jwi@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200617145453.61382-1-jwi@linux.ibm.com>
 References: <20200617145453.61382-1-jwi@linux.ibm.com>
@@ -66,44 +66,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current(?) OSA devices also store their cmd-specific return codes for
-SET_ACCESS_CONTROL cmds into the top-level cmd->hdr.return_code.
-So once we added stricter checking for the top-level field a while ago,
-none of the error logic that rolls back the user's configuration to its
-old state is applied any longer.
+When a device is configured with ISOLATION_MODE_FWD, traffic never goes
+through the internal switch. Don't apply the offload restrictions in
+this case.
 
-For this specific cmd, go back to the old model where we peek into the
-cmd structure even though the top-level field indicated an error.
-
-Fixes: 686c97ee29c8 ("s390/qeth: fix error handling in adapter command callbacks")
+Fixes: c619e9a6f52f ("s390/qeth: don't use restricted offloads for local traffic")
 Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
- drivers/s390/net/qeth_core_main.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/s390/net/qeth_core_main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 18a0fb75a710..9636415f810b 100644
+index 9636415f810b..88e998de2d03 100644
 --- a/drivers/s390/net/qeth_core_main.c
 +++ b/drivers/s390/net/qeth_core_main.c
-@@ -4544,9 +4544,6 @@ static int qeth_setadpparms_set_access_ctrl_cb(struct qeth_card *card,
- 	int fallback = *(int *)reply->param;
+@@ -6837,9 +6837,11 @@ netdev_features_t qeth_features_check(struct sk_buff *skb,
+ 				      struct net_device *dev,
+ 				      netdev_features_t features)
+ {
++	struct qeth_card *card = dev->ml_priv;
++
+ 	/* Traffic with local next-hop is not eligible for some offloads: */
+-	if (skb->ip_summed == CHECKSUM_PARTIAL) {
+-		struct qeth_card *card = dev->ml_priv;
++	if (skb->ip_summed == CHECKSUM_PARTIAL &&
++	    card->options.isolation != ISOLATION_MODE_FWD) {
+ 		netdev_features_t restricted = 0;
  
- 	QETH_CARD_TEXT(card, 4, "setaccb");
--	if (cmd->hdr.return_code)
--		return -EIO;
--	qeth_setadpparms_inspect_rc(cmd);
- 
- 	access_ctrl_req = &cmd->data.setadapterparms.data.set_access_ctrl;
- 	QETH_CARD_TEXT_(card, 2, "rc=%d",
-@@ -4556,7 +4553,7 @@ static int qeth_setadpparms_set_access_ctrl_cb(struct qeth_card *card,
- 		QETH_DBF_MESSAGE(3, "ERR:SET_ACCESS_CTRL(%#x) on device %x: %#x\n",
- 				 access_ctrl_req->subcmd_code, CARD_DEVID(card),
- 				 cmd->data.setadapterparms.hdr.return_code);
--	switch (cmd->data.setadapterparms.hdr.return_code) {
-+	switch (qeth_setadpparms_inspect_rc(cmd)) {
- 	case SET_ACCESS_CTRL_RC_SUCCESS:
- 		if (card->options.isolation == ISOLATION_MODE_NONE) {
- 			dev_info(&card->gdev->dev,
+ 		if (skb_is_gso(skb) && !netif_needs_gso(skb, features))
 -- 
 2.17.1
 
