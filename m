@@ -2,161 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 309041FCBAA
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 13:02:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE0701FCBD0
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 13:08:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726785AbgFQLCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 07:02:49 -0400
-Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:34040 "EHLO
-        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726541AbgFQLCr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 07:02:47 -0400
-Received: from mxbackcorp1o.mail.yandex.net (mxbackcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::301])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id BF7772E15D7;
-        Wed, 17 Jun 2020 14:02:44 +0300 (MSK)
-Received: from iva8-88b7aa9dc799.qloud-c.yandex.net (iva8-88b7aa9dc799.qloud-c.yandex.net [2a02:6b8:c0c:77a0:0:640:88b7:aa9d])
-        by mxbackcorp1o.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id 8bVd2SQGLV-2gaiHWLh;
-        Wed, 17 Jun 2020 14:02:44 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1592391764; bh=5DydsKYe2yyQXWLg6DiPRgeyXzchovJ5c/vHirY2OBM=;
-        h=In-Reply-To:Message-Id:References:Date:Subject:To:From:Cc;
-        b=lWUE07ugra6C9j8QsZ9UHg5NJpWMfzr4VEAJi046ySUvGuVZB+WjLSeIupsOu+bIo
-         bdkM2PXP2pjfZCpQzkgDRmMX/AlAbyprpKe/NcL4bR1GDXsc5jOCpOs/BQ4Hd2RdB4
-         gZbxDWgttRWFYnWs58vbwxS2gc2jYqRC09tXsC90=
-Authentication-Results: mxbackcorp1o.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from 37.9.89.23-iva.dhcp.yndx.net (37.9.89.23-iva.dhcp.yndx.net [37.9.89.23])
-        by iva8-88b7aa9dc799.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id XJqgFOjlJF-2gkiJtj6;
-        Wed, 17 Jun 2020 14:02:42 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     daniel@iogearbox.net, alexei.starovoitov@gmail.com
-Cc:     davem@davemloft.net, brakmo@fb.com, eric.dumazet@gmail.com,
-        kafai@fb.com, bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH bpf-next v4 3/3] bpf: add SO_KEEPALIVE and related options to bpf_setsockopt
-Date:   Wed, 17 Jun 2020 14:02:17 +0300
-Message-Id: <20200617110217.35669-3-zeil@yandex-team.ru>
-In-Reply-To: <20200617110217.35669-1-zeil@yandex-team.ru>
-References: <20200617110217.35669-1-zeil@yandex-team.ru>
+        id S1726912AbgFQLIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 07:08:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56104 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725554AbgFQLIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 07:08:39 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E515C061573;
+        Wed, 17 Jun 2020 04:08:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=6UMFO2TmbdpnJT0c5EXP2Aydp2MaQ5RYJc+GA8ZrxVg=; b=uEnXH1vpZaG2U8FFM/pYkfHc5Y
+        SeAjiiS0wb4uxVIyAse/Mlkd6U3qaJ4r4kEh9T7lE+/o5L5t1dNjJ28G/NIqVe0DWG/fV4/lQHo1o
+        QDwGZP0qomelniIocS0ybLZQjvlRxX/INLpmjUp5+LL4fh2HQo9F6qYCqhyg1imU2AHxFgkQk0jvm
+        8nOqGDFYb7CZcfryOG0jsO4VWYAKfvslQU5aBRvXZEAb7odmsPQzoqooHS6qL3UZV2AdZFQmkWhak
+        uKTLzMfmXR1ZbqokaLQoFEtbowD5zP+hhe/qVdQ+y0/QB4rOvsOqTW0JOhm+R3UUkEQZTtPszFNR9
+        vDBLz4ZQ==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jlVvY-0007BQ-88; Wed, 17 Jun 2020 11:08:20 +0000
+Date:   Wed, 17 Jun 2020 04:08:20 -0700
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Michal Hocko <mhocko@kernel.org>
+Cc:     dsterba@suse.cz, Joe Perches <joe@perches.com>,
+        Waiman Long <longman@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>, linux-mm@kvack.org,
+        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-amlogic@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-ppp@vger.kernel.org, wireguard@lists.zx2c4.com,
+        linux-wireless@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
+        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
+        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org
+Subject: Re: [PATCH v4 0/3] mm, treewide: Rename kzfree() to kfree_sensitive()
+Message-ID: <20200617110820.GG8681@bombadil.infradead.org>
+References: <20200616015718.7812-1-longman@redhat.com>
+ <fe3b9a437be4aeab3bac68f04193cb6daaa5bee4.camel@perches.com>
+ <20200616230130.GJ27795@twin.jikos.cz>
+ <20200617003711.GD8681@bombadil.infradead.org>
+ <20200617071212.GJ9499@dhcp22.suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200617071212.GJ9499@dhcp22.suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support of SO_KEEPALIVE flag and TCP related options
-to bpf_setsockopt() routine. This is helpful if we want to enable or tune
-TCP keepalive for applications which don't do it in the userspace code.
+On Wed, Jun 17, 2020 at 09:12:12AM +0200, Michal Hocko wrote:
+> On Tue 16-06-20 17:37:11, Matthew Wilcox wrote:
+> > Not just performance critical, but correctness critical.  Since kvfree()
+> > may allocate from the vmalloc allocator, I really think that kvfree()
+> > should assert that it's !in_atomic().  Otherwise we can get into trouble
+> > if we end up calling vfree() and have to take the mutex.
+> 
+> FWIW __vfree already checks for atomic context and put the work into a
+> deferred context. So this should be safe. It should be used as a last
+> resort, though.
 
-v2:
-  - update kernel-doc (Nikita Vetoshkin <nekto0n@yandex-team.ru>)
-
-Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
----
- include/uapi/linux/bpf.h |  7 +++++--
- net/core/filter.c        | 36 +++++++++++++++++++++++++++++++++++-
- 2 files changed, 40 insertions(+), 3 deletions(-)
-
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b9ed9f1..3b8815d 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1621,10 +1621,13 @@ union bpf_attr {
-  *
-  * 		* **SOL_SOCKET**, which supports the following *optname*\ s:
-  * 		  **SO_RCVBUF**, **SO_SNDBUF**, **SO_MAX_PACING_RATE**,
-- * 		  **SO_PRIORITY**, **SO_RCVLOWAT**, **SO_MARK**.
-+ * 		  **SO_PRIORITY**, **SO_RCVLOWAT**, **SO_MARK**,
-+ * 		  **SO_BINDTODEVICE**, **SO_KEEPALIVE**.
-  * 		* **IPPROTO_TCP**, which supports the following *optname*\ s:
-  * 		  **TCP_CONGESTION**, **TCP_BPF_IW**,
-- * 		  **TCP_BPF_SNDCWND_CLAMP**.
-+ * 		  **TCP_BPF_SNDCWND_CLAMP**, **TCP_SAVE_SYN**,
-+ * 		  **TCP_KEEPIDLE**, **TCP_KEEPINTVL**, **TCP_KEEPCNT**,
-+ * 		  **TCP_SYNCNT**, **TCP_USER_TIMEOUT**.
-  * 		* **IPPROTO_IP**, which supports *optname* **IP_TOS**.
-  * 		* **IPPROTO_IPV6**, which supports *optname* **IPV6_TCLASS**.
-  * 	Return
-diff --git a/net/core/filter.c b/net/core/filter.c
-index ae82bcb..674272c 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4249,10 +4249,10 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 			   char *optval, int optlen, u32 flags)
- {
- 	char devname[IFNAMSIZ];
-+	int val, valbool;
- 	struct net *net;
- 	int ifindex;
- 	int ret = 0;
--	int val;
- 
- 	if (!sk_fullsock(sk))
- 		return -EINVAL;
-@@ -4263,6 +4263,7 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 		if (optlen != sizeof(int) && optname != SO_BINDTODEVICE)
- 			return -EINVAL;
- 		val = *((int *)optval);
-+		valbool = val ? 1 : 0;
- 
- 		/* Only some socketops are supported */
- 		switch (optname) {
-@@ -4324,6 +4325,11 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 			ret = sock_bindtoindex(sk, ifindex, false);
- #endif
- 			break;
-+		case SO_KEEPALIVE:
-+			if (sk->sk_prot->keepalive)
-+				sk->sk_prot->keepalive(sk, valbool);
-+			sock_valbool_flag(sk, SOCK_KEEPOPEN, valbool);
-+			break;
- 		default:
- 			ret = -EINVAL;
- 		}
-@@ -4384,6 +4390,7 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 			ret = tcp_set_congestion_control(sk, name, false,
- 							 reinit, true);
- 		} else {
-+			struct inet_connection_sock *icsk = inet_csk(sk);
- 			struct tcp_sock *tp = tcp_sk(sk);
- 
- 			if (optlen != sizeof(int))
-@@ -4412,6 +4419,33 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 				else
- 					tp->save_syn = val;
- 				break;
-+			case TCP_KEEPIDLE:
-+				ret = tcp_sock_set_keepidle_locked(sk, val);
-+				break;
-+			case TCP_KEEPINTVL:
-+				if (val < 1 || val > MAX_TCP_KEEPINTVL)
-+					ret = -EINVAL;
-+				else
-+					tp->keepalive_intvl = val * HZ;
-+				break;
-+			case TCP_KEEPCNT:
-+				if (val < 1 || val > MAX_TCP_KEEPCNT)
-+					ret = -EINVAL;
-+				else
-+					tp->keepalive_probes = val;
-+				break;
-+			case TCP_SYNCNT:
-+				if (val < 1 || val > MAX_TCP_SYNCNT)
-+					ret = -EINVAL;
-+				else
-+					icsk->icsk_syn_retries = val;
-+				break;
-+			case TCP_USER_TIMEOUT:
-+				if (val < 0)
-+					ret = -EINVAL;
-+				else
-+					icsk->icsk_user_timeout = val;
-+				break;
- 			default:
- 				ret = -EINVAL;
- 			}
--- 
-2.7.4
-
+Actually, it only checks for in_interrupt().  If you call vfree() under
+a spinlock, you're in trouble.  in_atomic() only knows if we hold a
+spinlock for CONFIG_PREEMPT, so it's not safe to check for in_atomic()
+in __vfree().  So we need the warning in order that preempt people can
+tell those without that there is a bug here.
