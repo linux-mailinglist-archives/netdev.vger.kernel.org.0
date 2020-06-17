@@ -2,56 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8B5E1FD098
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 17:11:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC4431FD0DD
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 17:25:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727790AbgFQPLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 11:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726708AbgFQPLH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 11:11:07 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125A9C06174E;
-        Wed, 17 Jun 2020 08:11:07 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id y11so3290456ljm.9;
-        Wed, 17 Jun 2020 08:11:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=XKplk/49FzRhoeuSXRDg36gjhZd5p7mlQ+79XImMqL91rHx8Q15TlaHyIZiIodaZMS
-         6DKcp9/PqEhQ6VS0meG2WKLCFIjOftlRl+nVL00A6R7VQfZie6Mzt8qdp5L+on5QHoij
-         GIN4CYk7hNcrAbaKtnrAzJS9bWKIOZcVdsi9dC83VNLnSqntCwn/6m/Vfkan6LX99CEN
-         cqiI7lcolQ3+I7xfDM7wA+bQeg3PCWz6VHb/DVmmn8J2Nc6CGp+I3UaFKLG/Qp7CiWdS
-         NdU6lfHqYm+ix24f7ZYbbQ/p9Y643pMJoioZM25+4oULE3kjezwl2bnnO6rdbQSDS8eq
-         Y+Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=oA482Tb/bm9BpcLEMVTA93M3DH/UILM+eZJGFQfuxpCkopjtLUjas0SGmFAtqiA8zm
-         rLEE30YTAFyUpf53uf9Pvz+W3jGjKaIuotmetDezRi6pCRXpjkaY+jYEtMjR7VVCXZ/7
-         l22WVnwn6fIZgKcH3wybX9HRXQQcf21ucCUXOM/ZT2UjefGlq00XgaAC+SyaDHmaYXE4
-         g9GpuQmJP6k5i15aS65+tb3OfCpDwMs2YDkthwBtCDWLU7HFAFVvaeogP6gRvHZtLvjp
-         zhRWzadXPptbS075I/W0DjQmjXVCa8VcM8uldGjdHAe1Qv2W7f0QUYzDAcbmdS5WZ4mw
-         Oz5w==
-X-Gm-Message-State: AOAM5308+lJ5u8bO6g3GJaa7TMDh7Ls03yw0r491wPgeUPN8nae/ZURT
-        4AqHTH1/R5jyBk47w7HolxbIYuw5JM/cQ5eCbvQ7gg==
-X-Google-Smtp-Source: ABdhPJzBXZwVpnxJM00d1d01W/5k4VOHSmWwVKM3BMhaVNp5DdUU6KA32lFDhRrtiVhpai3zSVc3J6TA1eTfYC2ykNY=
-X-Received: by 2002:a2e:2f07:: with SMTP id v7mr4071982ljv.51.1592406665104;
- Wed, 17 Jun 2020 08:11:05 -0700 (PDT)
+        id S1726966AbgFQPZp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jun 2020 11:25:45 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:24319 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726958AbgFQPZp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 11:25:45 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-25-eup2Bh-aNyW7TJye3x3ncg-1; Wed, 17 Jun 2020 16:25:42 +0100
+X-MC-Unique: eup2Bh-aNyW7TJye3x3ncg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 17 Jun 2020 16:25:41 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 17 Jun 2020 16:25:41 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Kees Cook' <keescook@chromium.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Sargun Dhillon <sargun@sargun.me>,
+        Christian Brauner <christian@brauner.io>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Christoph Hellwig" <hch@lst.de>, Tycho Andersen <tycho@tycho.ws>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "containers@lists.linux-foundation.org" 
+        <containers@lists.linux-foundation.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: RE: [PATCH v4 02/11] fs: Move __scm_install_fd() to
+ __fd_install_received()
+Thread-Topic: [PATCH v4 02/11] fs: Move __scm_install_fd() to
+ __fd_install_received()
+Thread-Index: AQHWQ43M27/IXY9H5E6A6toMY/N8aajc78uQ
+Date:   Wed, 17 Jun 2020 15:25:41 +0000
+Message-ID: <b58ef9a368214b69a86c7a78b67f84d5@AcuMS.aculab.com>
+References: <20200616032524.460144-1-keescook@chromium.org>
+ <20200616032524.460144-3-keescook@chromium.org>
+In-Reply-To: <20200616032524.460144-3-keescook@chromium.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 17 Jun 2020 08:10:53 -0700
-Message-ID: <CAADnVQLm44icJp60R6xVimy3m1sK53+8m4dOTy-_-AWtgwRawA@mail.gmail.com>
-Subject: bpf-next is OPEN
-To:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Kees Cook
+> Sent: 16 June 2020 04:25
+ 
+> In preparation for users of the "install a received file" logic outside
+> of net/ (pidfd and seccomp), relocate and rename __scm_install_fd() from
+> net/core/scm.c to __fd_install_received() in fs/file.c, and provide a
+> wrapper named fd_install_received_user(), as future patches will change
+> the interface to __fd_install_received().
+
+Any reason for the leading __ ??
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
