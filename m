@@ -2,82 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CC0E1FD498
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:32:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F89A1FD49F
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:34:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727060AbgFQSbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 14:31:46 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51690 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726912AbgFQSbq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:31:46 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05HIR7w6003300
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:31:46 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=Hog2WRzHsPvlpflu20cK3q7w333zbbJl1cXOhbC1Ei0=;
- b=DEatwJA2NIk0QTg5shFrO5w8mepqD4fH/B36XCDgNnhz7RuLFRWbC3U+cpow4kfRRQpM
- n0aQP5qm1oJ766PW1N1gLDUAgszNtFdBeUSwf8Ztw6myBY2UQwh4vrh+7haEagAOUPW0
- 9xYB8W3IZHgzqpPJdXXhmP/e4KGVuTFYiYk= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 31q65sq1c0-13
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:31:46 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 17 Jun 2020 11:31:40 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id BE4212EC3CD6; Wed, 17 Jun 2020 11:31:38 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next] libbpf: bump version to 0.1.0
-Date:   Wed, 17 Jun 2020 11:31:32 -0700
-Message-ID: <20200617183132.1970836-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1727806AbgFQSeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 14:34:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40806 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726851AbgFQSeO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:34:14 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0855CC06174E;
+        Wed, 17 Jun 2020 11:34:13 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id h22so1490492pjf.1;
+        Wed, 17 Jun 2020 11:34:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o+F/tus9nfWB/lkL+XDSGiyd9Zu1ZndCCBPnUaGr8l0=;
+        b=uLfkhUyOKJ6uQejo3Uev90lS4/JK9YhrGIrm6FcdP0tQiroJyaJaXlGAQVb22Nr1hh
+         ASyYM1eoPc8X1j2MLOqe1xuSnYvuSSH5tLZcgxJ9PJjbLbSpFAmhxUZGhl0/ccc25DPA
+         AkCpFoCS18lBFqEXNwj5Mp2F/1i4wPbrsBfQ+qd30gFQmyHBNesEQgSKbRRh8M8PUSmR
+         PU/tM33er5KmIT4RIkdmvW9jtJjskKazBz/zrY1ibpaVJCnDJEW6ALeBw7nJYA3b3xWd
+         IxDIYThDAIFPON165gIhpkufZJAWXvah5VVouHbPyIYuRRWpo8LMZ4WszcTd3NObMR6+
+         Q93A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o+F/tus9nfWB/lkL+XDSGiyd9Zu1ZndCCBPnUaGr8l0=;
+        b=gcL823o1V6i7rkYGr82DZwpNzpdMIMJZwA838Ldko+q6A1078ppoNpcg3dL/YJUcvv
+         iMeOiJ6B1vFgh9NR/AaC8LuexfKMsk6H4H4+hmTU0U4FMY1stIpRJ/GKlJSFzLc3Dli3
+         aCIGr7sKWQEe1iNa3ngt9G73aP+Rskl8A4z1XiBD5kensmS3OmMqD/wTGlvjUOYYunC3
+         Q66rU/KtdZ8HOa77vksEmbGUehYL8yj5bHGKqyuRSdTqYYKBA0pvgHn77JSE6bwZJUhD
+         Iyrx9QHLOZIchoObPFXqOmg1RqhvNf9By0bpNIwx9AF3mRmGMWApfzW3sFkTkajAMMuf
+         /Hfg==
+X-Gm-Message-State: AOAM532M3l+JalgbzV91kg3OPnNjd1JFUrW8yZDbX4miYv4iofFAPn0w
+        aSR3WanxGT2l99xNC3CVX4Q=
+X-Google-Smtp-Source: ABdhPJwV4TA0oCueMlz9zIR8iM9tXELvIZhmCGHP3+JtTYDJjM1/jEM87S18slo5FC476bCbuOFj7A==
+X-Received: by 2002:a17:90a:930f:: with SMTP id p15mr383155pjo.85.1592418852544;
+        Wed, 17 Jun 2020 11:34:12 -0700 (PDT)
+Received: from localhost ([144.34.193.30])
+        by smtp.gmail.com with ESMTPSA id u74sm444372pgc.58.2020.06.17.11.34.11
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 17 Jun 2020 11:34:12 -0700 (PDT)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>,
+        Kevin Groeneveld <kgroeneveld@gmail.com>
+Subject: [PATCH net v2] net: phy: smsc: fix printing too many logs
+Date:   Thu, 18 Jun 2020 02:34:00 +0800
+Message-Id: <20200617183400.19386-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-17_10:2020-06-17,2020-06-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 cotscore=-2147483648
- phishscore=0 clxscore=1015 malwarescore=0 mlxscore=0 spamscore=0
- priorityscore=1501 lowpriorityscore=0 impostorscore=0 bulkscore=0
- mlxlogscore=706 suspectscore=8 adultscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006170143
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bump libbpf version to 0.1.0, as new development cycle starts.
+Commit 7ae7ad2f11ef47 ("net: phy: smsc: use phy_read_poll_timeout()
+to simplify the code") will print a lot of logs as follows when Ethernet
+cable is not connected:
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+[    4.473105] SMSC LAN8710/LAN8720 2188000.ethernet-1:00: lan87xx_read_status failed: -110
+
+The commit will change the original behavior in smsc driver.
+It does not has any error message whether it is timeout or
+phy_read() fails, but this commit will changed it and print some
+error messages by phy_read_poll_timeout() when it is timeout or
+phy_read() fails. so use the read_poll_timeout() function to replace
+phy_read_poll_timeout() for fix this issue. the read_poll_timeout()
+function does not print any log when it goes wrong.
+
+the original codes is that:
+
+	/* Wait max 640 ms to detect energy */
+	for (i = 0; i < 64; i++) {
+	        /* Sleep to allow link test pulses to be sent */
+	        msleep(10);
+	        rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
+	        if (rc < 0)
+	                return rc;
+	        if (rc & MII_LAN83C185_ENERGYON)
+	                break;
+	}
+
+the commit 7ae7ad2f11ef47 ("net: phy: smsc: use phy_read_poll_timeout()
+to simplify the code") modify it as this:
+
+	phy_read_poll_timeout(phydev, MII_LAN83C185_CTRL_STATUS,
+	                      rc & MII_LAN83C185_ENERGYON, 10000,
+	                      640000, true);
+	if (rc < 0)
+	        return rc;
+
+the phy_read_poll_timeout() will print a error log by phydev_err()
+when timeout or rc < 0. read_poll_timeout() just return timeout
+error and does not print any error log.
+
+ #define phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
+                                timeout_us, sleep_before_read) \
+({ \
+        int __ret = read_poll_timeout(phy_read, val, (cond) || val < 0, \
+                sleep_us, timeout_us, sleep_before_read, phydev, regnum); \
+        if (val <  0) \
+                __ret = val; \
+        if (__ret) \
+                phydev_err(phydev, "%s failed: %d\n", __func__, __ret); \
+        __ret; \
+})
+
+So use read_poll_timeout() to replace phy_read_poll_timeout() for
+be consistent with the original code and fix this issue.
+
+Fixes: 7ae7ad2f11ef47 ("net: phy: smsc: use phy_read_poll_timeout() to simplify the code")
+Reported-by: Kevin Groeneveld <kgroeneveld@gmail.com>
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 ---
- tools/lib/bpf/libbpf.map | 3 +++
- 1 file changed, 3 insertions(+)
+v1 -> v2:
+	- add more commit message spell out why has this commit
+	  and how to modify it.
 
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index f732c77b7ed0..c914347f5065 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -270,3 +270,6 @@ LIBBPF_0.0.9 {
- 		ring_buffer__new;
- 		ring_buffer__poll;
- } LIBBPF_0.0.8;
-+
-+LIBBPF_0.1.0 {
-+} LIBBPF_0.0.9;
---=20
-2.24.1
+ drivers/net/phy/smsc.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index 93da7d3d0954..36c5a57917b8 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -123,9 +123,10 @@ static int lan87xx_read_status(struct phy_device *phydev)
+ 			return rc;
+ 
+ 		/* Wait max 640 ms to detect energy */
+-		phy_read_poll_timeout(phydev, MII_LAN83C185_CTRL_STATUS, rc,
+-				      rc & MII_LAN83C185_ENERGYON, 10000,
+-				      640000, true);
++		read_poll_timeout(phy_read, rc,
++				  rc & MII_LAN83C185_ENERGYON || rc < 0,
++				  10000, 640000, true, phydev,
++				  MII_LAN83C185_CTRL_STATUS);
+ 		if (rc < 0)
+ 			return rc;
+ 
+-- 
+2.25.0
 
