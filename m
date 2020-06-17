@@ -2,102 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54AAD1FD4B0
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:40:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F0631FD4BA
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:43:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbgFQSk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 14:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726964AbgFQSkZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:40:25 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC099C0613ED
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:40:23 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id n9so1353545plk.1
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:40:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KcSum0XnLgDWG/9J1zd7huPRZUcbTdd3T0stJfNhXtU=;
-        b=hHeKJA5bpWojfm1pX2unVw+EfqUuRl8oPBdUNPLoCxjZ64sU0oStIKYfknHILmDFaZ
-         H9ZHJAe3xkt0qMgGgjNa6EjvRt/0qyjX/4NrDrZCZMQNniC1zsg9rGq+JkViIVv/0vWR
-         +7lVX4VJq+6OYKuN/6lWKksWFEEFKKkIWjELs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KcSum0XnLgDWG/9J1zd7huPRZUcbTdd3T0stJfNhXtU=;
-        b=HCPUvu+7bVYxlOWxaM/DzQ47iUpgFyZD0DB0E6OkhxQGVN8xVp3wXh3Bz8lspcLRpf
-         NpTt2cuLiow0sTHDsp97Sl4iSHwPTOi5ZTOkUqY+K9w0nbS2X9okeHcGSDW+DpQG9LqH
-         HuIHpD0ng3aTpsm0vDxI5kA1dHjLGft5GXBAJgb8APJGPPQjxfhAQ6MrDSJdtZekXVtG
-         vSFTtQiKYxl/Kc6d3/euOTUoF+EyEmna7J0ovVbNO2eIayqD3OUS1X3amW8J/e/C2HMJ
-         /aJ/NAXvXC2g6RoBu1NqJgxlnQFAx1BQ7gRQ1VRL0YK4aYYo3wioDvF8yTKlTqkz2iyz
-         tZjg==
-X-Gm-Message-State: AOAM530ZxGG+LOiBDZ90uTukZKpELKlsVwTffRU59MvjWSJAFTf3N8KF
-        R/ZDf8HCy2GiiaoByGc95qv3Xg==
-X-Google-Smtp-Source: ABdhPJzMCEeKbMD2vkbh+chVGcN7dvBNIk/GO49GvRnea+7Iwh7JIl8l4xjbafw6OC9ChWgKjmpkjA==
-X-Received: by 2002:a17:90a:218c:: with SMTP id q12mr383955pjc.116.1592419223126;
-        Wed, 17 Jun 2020 11:40:23 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id u128sm506788pfu.148.2020.06.17.11.40.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jun 2020 11:40:21 -0700 (PDT)
-Date:   Wed, 17 Jun 2020 11:40:20 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sargun Dhillon <sargun@sargun.me>,
-        Christian Brauner <christian@brauner.io>,
-        "David S. Miller" <davem@davemloft.net>,
-        Christoph Hellwig <hch@lst.de>,
-        Tycho Andersen <tycho@tycho.ws>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Matt Denton <mpdenton@google.com>,
-        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
-        Robert Sesek <rsesek@google.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "containers@lists.linux-foundation.org" 
-        <containers@lists.linux-foundation.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v4 02/11] fs: Move __scm_install_fd() to
- __fd_install_received()
-Message-ID: <202006171139.98B1735@keescook>
-References: <20200616032524.460144-1-keescook@chromium.org>
- <20200616032524.460144-3-keescook@chromium.org>
- <b58ef9a368214b69a86c7a78b67f84d5@AcuMS.aculab.com>
+        id S1727090AbgFQSmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 14:42:55 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:37587 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726851AbgFQSmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:42:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592419374;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sORNGbh4DVotTN6EW6Lo1a2t5jNMigfInKXxBxVJLYw=;
+        b=TxKaPDDo0VVnysy8YvSUzpW5vbixRqaAR/PT+cKltxCGE/uE9QnvvKvNiRj+dq9rkScxwr
+        YpufQ/S6Yvb3ummxozTKGAALwwnBVEQW0wIjkCqyzYdiNC0GN+rnyHjOJMNLBl6f/GXhhx
+        k6DTARVM1fT/FCq2tXCgFe0YKAC6Co8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-12-xCDEO3eIN7-nkWqi8JaVAg-1; Wed, 17 Jun 2020 14:42:48 -0400
+X-MC-Unique: xCDEO3eIN7-nkWqi8JaVAg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 214EE835B43;
+        Wed, 17 Jun 2020 18:42:47 +0000 (UTC)
+Received: from jtoppins.rdu.csb (ovpn-112-156.rdu2.redhat.com [10.10.112.156])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C54F879301;
+        Wed, 17 Jun 2020 18:42:46 +0000 (UTC)
+Reply-To: jtoppins@redhat.com
+Subject: Re: [PATCH net] ionic: export features for vlans to use
+To:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
+        davem@davemloft.net
+References: <20200616150626.42738-1-snelson@pensando.io>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+Organization: Red Hat
+Message-ID: <2696fad4-85e1-c969-438b-ce8f61c3d6b7@redhat.com>
+Date:   Wed, 17 Jun 2020 14:42:46 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b58ef9a368214b69a86c7a78b67f84d5@AcuMS.aculab.com>
+In-Reply-To: <20200616150626.42738-1-snelson@pensando.io>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 03:25:41PM +0000, David Laight wrote:
-> From: Kees Cook
-> > Sent: 16 June 2020 04:25
->  
-> > In preparation for users of the "install a received file" logic outside
-> > of net/ (pidfd and seccomp), relocate and rename __scm_install_fd() from
-> > net/core/scm.c to __fd_install_received() in fs/file.c, and provide a
-> > wrapper named fd_install_received_user(), as future patches will change
-> > the interface to __fd_install_received().
+On 6/16/20 11:06 AM, Shannon Nelson wrote:
+> Set up vlan_features for use by any vlans above us.
 > 
-> Any reason for the leading __ ??
+> Fixes: beead698b173 ("ionic: Add the basic NDO callbacks for netdev support")
+> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Acked-by: Jonathan Toppins <jtoppins@redhat.com>
 
-Mainly because of the code pattern of only using the inline helpers to
-call it.
-
--- 
-Kees Cook
