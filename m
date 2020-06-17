@@ -2,145 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 298E51FD573
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 21:29:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26CE21FD585
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 21:42:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726845AbgFQT3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 15:29:50 -0400
-Received: from correo.us.es ([193.147.175.20]:49366 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726558AbgFQT3u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 15:29:50 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 0103D8C3C56
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 21:29:47 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E77B0DA789
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 21:29:46 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id DCF82DA78E; Wed, 17 Jun 2020 21:29:46 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A741FDA78A;
-        Wed, 17 Jun 2020 21:29:44 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 17 Jun 2020 21:29:44 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726864AbgFQTl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 15:41:56 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:30206 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726558AbgFQTlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 15:41:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592422914;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FvAwU7BxjY8hKbO+SxVjRBLEMfAqHAfjpkXck0DeCAc=;
+        b=Q07RVqVP0Us+ITutEXQH1YIrcDtcgff4AVyoky6KyOhTuhaVCztd78zEvG+KVKS6zX9tcA
+        2+iyylIGjwAIdEp+dmxujP+OqxcAJ/dZ8XFsZnV08PBP9AUaLtiU6SUp4lEe5tXH/gEuqn
+        +EsxMFqbiQ3nwIvK8lq4av7rE1QleTw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-294-hOwNemexP3mRsdiJLoyPig-1; Wed, 17 Jun 2020 15:41:52 -0400
+X-MC-Unique: hOwNemexP3mRsdiJLoyPig-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 8D9C842EE395;
-        Wed, 17 Jun 2020 21:29:44 +0200 (CEST)
-Date:   Wed, 17 Jun 2020 21:29:44 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     wenxu@ucloud.cn
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, vladbu@mellanox.com,
-        simon.horman@netronome.com
-Subject: Re: [PATCH net v4 1/4] flow_offload: add
- flow_indr_block_cb_alloc/remove function
-Message-ID: <20200617192944.GA11655@salvia>
-References: <1592412907-3856-1-git-send-email-wenxu@ucloud.cn>
- <1592412907-3856-2-git-send-email-wenxu@ucloud.cn>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8403A108BD0F;
+        Wed, 17 Jun 2020 19:41:51 +0000 (UTC)
+Received: from jtoppins.rdu.csb (ovpn-112-156.rdu2.redhat.com [10.10.112.156])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 158831001925;
+        Wed, 17 Jun 2020 19:41:50 +0000 (UTC)
+Reply-To: jtoppins@redhat.com
+Subject: Re: [PATCH net] ionic: no link check while resetting queues
+To:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
+        davem@davemloft.net
+References: <20200616011459.30966-1-snelson@pensando.io>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+Organization: Red Hat
+Message-ID: <8fadc381-aa45-8710-fad7-c3cfdb01b802@redhat.com>
+Date:   Wed, 17 Jun 2020 15:41:50 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1592412907-3856-2-git-send-email-wenxu@ucloud.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200616011459.30966-1-snelson@pensando.io>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 12:55:04AM +0800, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
+On 6/15/20 9:14 PM, Shannon Nelson wrote:
+> If the driver is busy resetting queues after a change in
+> MTU or queue parameters, don't bother checking the link,
+> wait until the next watchdog cycle.
 > 
-> Add flow_indr_block_cb_alloc/remove function prepare for the bug fix
-> in the third patch.
-> 
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> Fixes: 987c0871e8ae ("ionic: check for linkup in watchdog")
+> Signed-off-by: Shannon Nelson <snelson@pensando.io>
 > ---
->  include/net/flow_offload.h | 13 +++++++++++++
->  net/core/flow_offload.c    | 43 ++++++++++++++++++++++++++++++++-----------
->  2 files changed, 45 insertions(+), 11 deletions(-)
+>  drivers/net/ethernet/pensando/ionic/ionic_lif.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-> index f2c8311..bf43430 100644
-> --- a/include/net/flow_offload.h
-> +++ b/include/net/flow_offload.h
-> @@ -467,6 +467,12 @@ struct flow_block_cb {
->  struct flow_block_cb *flow_block_cb_alloc(flow_setup_cb_t *cb,
->  					  void *cb_ident, void *cb_priv,
->  					  void (*release)(void *cb_priv));
-> +struct flow_block_cb *flow_indr_block_cb_alloc(flow_setup_cb_t *cb,
-> +					       void *cb_ident, void *cb_priv,
-> +					       void (*release)(void *cb_priv),
-> +					       struct flow_block_offload *bo,
-> +					       struct net_device *dev, void *data,
-> +					       void (*cleanup)(struct flow_block_cb *block_cb));
->  void flow_block_cb_free(struct flow_block_cb *block_cb);
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> index 9d8c969f21cb..bfadc4934702 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> @@ -96,7 +96,8 @@ static void ionic_link_status_check(struct ionic_lif *lif)
+>  	u16 link_status;
+>  	bool link_up;
 >  
->  struct flow_block_cb *flow_block_cb_lookup(struct flow_block *block,
-> @@ -488,6 +494,13 @@ static inline void flow_block_cb_remove(struct flow_block_cb *block_cb,
->  	list_move(&block_cb->list, &offload->cb_list);
->  }
+> -	if (!test_bit(IONIC_LIF_F_LINK_CHECK_REQUESTED, lif->state))
+> +	if (!test_bit(IONIC_LIF_F_LINK_CHECK_REQUESTED, lif->state) ||
+> +	    test_bit(IONIC_LIF_F_QUEUE_RESET, lif->state))
+>  		return;
 >  
-> +static inline void flow_indr_block_cb_remove(struct flow_block_cb *block_cb,
-> +					     struct flow_block_offload *offload)
-> +{
-> +	list_del(&block_cb->indr.list);
-> +	list_move(&block_cb->list, &offload->cb_list);
-> +}
-> +
->  bool flow_block_cb_is_busy(flow_setup_cb_t *cb, void *cb_ident,
->  			   struct list_head *driver_block_list);
->  
-> diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-> index 0cfc35e..9fe4b58 100644
-> --- a/net/core/flow_offload.c
-> +++ b/net/core/flow_offload.c
-> @@ -329,6 +329,38 @@ struct flow_indr_dev {
->  	struct rcu_head			rcu;
->  };
->  
-> +static void flow_block_indr_init(struct flow_block_cb *flow_block,
-> +				 struct flow_block_offload *bo,
-> +				 struct net_device *dev, void *data,
-> +				 void (*cleanup)(struct flow_block_cb *block_cb))
-> +{
-> +	flow_block->indr.binder_type = bo->binder_type;
-> +	flow_block->indr.data = data;
-> +	flow_block->indr.dev = dev;
-> +	flow_block->indr.cleanup = cleanup;
-> +}
-> +
-> +struct flow_block_cb *flow_indr_block_cb_alloc(flow_setup_cb_t *cb,
-> +					       void *cb_ident, void *cb_priv,
-> +					       void (*release)(void *cb_priv),
-> +					       struct flow_block_offload *bo,
-> +					       struct net_device *dev, void *data,
-> +					       void (*cleanup)(struct flow_block_cb *block_cb))
-> +{
-> +	struct flow_block_cb *block_cb;
-> +
-> +	block_cb = flow_block_cb_alloc(cb, cb_ident, cb_priv, release);
-> +	if (IS_ERR(block_cb))
-> +		goto out;
-> +
-> +	flow_block_indr_init(block_cb, bo, dev, data, cleanup);
-> +	list_add(&block_cb->indr.list, &flow_block_indr_list);
-> +
-> +out:
-> +	return block_cb;
-> +}
-> +EXPORT_SYMBOL(flow_indr_block_cb_alloc);
+>  	link_status = le16_to_cpu(lif->info->status.link_status);
+> 
 
-You can probably place flow_indr_block_cb_alloc() right before
-flow_indr_dev_setup_offload(), so you don't have to move
-flow_block_indr_init() ?
+Would a firmware reset bit being asserted also cause an issue here
+(IONIC_LIF_F_FW_RESET)? Meaning do we need to test for this bit as well?
+
