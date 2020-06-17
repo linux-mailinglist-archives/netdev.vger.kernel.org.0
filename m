@@ -2,191 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0FD11FD2EC
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 18:55:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE6551FD300
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 18:59:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbgFQQzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 12:55:19 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:61242 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726868AbgFQQzQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 12:55:16 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 2173A41650;
-        Thu, 18 Jun 2020 00:55:10 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, pablo@netfilter.org, vladbu@mellanox.com,
-        simon.horman@netronome.com
-Subject: [PATCH net v4 4/4] net/sched: cls_api: fix nooffloaddevcnt warning dmesg log
-Date:   Thu, 18 Jun 2020 00:55:07 +0800
-Message-Id: <1592412907-3856-5-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1592412907-3856-1-git-send-email-wenxu@ucloud.cn>
-References: <1592412907-3856-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS01JQkJCQ09PTk5KS0JZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkdMjULOBw4FTc5FQ4oDgseAh0COTocVlZVSkJMSEwoSVlXWQ
-        kOFx4IWUFZNTQpNjo3JCkuNz5ZV1kWGg8SFR0UWUFZNDBZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Oi46Hjo4GTg5HTUXSyg5HVYu
-        Oj4aCjxVSlVKTkJJT0pJQkpLT0xMVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUJPTE03Bg++
-X-HM-Tid: 0a72c334b2482086kuqy2173a41650
+        id S1726833AbgFQQ7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 12:59:39 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:43259 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726496AbgFQQ7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 12:59:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592413177;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kb0yzATnd2lljzO09RPqtTbpegJ3ONumGauveFSCTg4=;
+        b=SKupBOoRbIwany2cKFUpQsn81hv344WRPQxQIxnJ7wmasjsyRHwH5la0Fpa/mEjjBg9YKE
+        ua7MS8aotZ86gASJoMdVBl+Qnv3l8A8J/8U6s3I8DVZ+Lcl0wbuq9ZR0vwFaNE+SgCkqIF
+        rNZEkN1PMxapdBVFUnnCISbXNyTFzRI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-297-iYje2N36PASAP4kxzDWMzg-1; Wed, 17 Jun 2020 12:59:36 -0400
+X-MC-Unique: iYje2N36PASAP4kxzDWMzg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E8DAE106F733;
+        Wed, 17 Jun 2020 16:59:34 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.3.128.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3804979311;
+        Wed, 17 Jun 2020 16:59:33 +0000 (UTC)
+Message-ID: <1f5ecd2a1138dd39893b8d2b9e608067468de891.camel@redhat.com>
+Subject: Re: qmi_wwan not using netif_carrier_*()
+From:   Dan Williams <dcbw@redhat.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Tanjeff-Nicolai Moos <tmoos@eltec.de>
+Cc:     netdev@vger.kernel.org
+Date:   Wed, 17 Jun 2020 11:59:33 -0500
+In-Reply-To: <20200617164800.GG205574@lunn.ch>
+References: <20200617152153.2e66ccaf@pm-tm-ubuntu>
+         <20200617164800.GG205574@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+On Wed, 2020-06-17 at 18:48 +0200, Andrew Lunn wrote:
+> On Wed, Jun 17, 2020 at 03:21:53PM +0200, Tanjeff-Nicolai Moos wrote:
+> > Hi netdevs,
+> > 
+> > Kernel version:
+> > 
+> >   I'm working with kernel 4.14.137 (OpenWRT project). But I looked
+> > at
+> >   the source of kernel 5.7 and found the same situation.
+> > 
+> > Problem:
+> > 
+> >   I'm using the qmi_wwan driver for a Sierra Wireless EM7455 LTE
+> >   modem. This driver does not use
+> >   netif_carrier_on()/netif_carrier_off() to update its link status.
+> >   This confuses ledtrig_netdev which uses netif_carrier_ok() to
+> > obtain
+> >   the link status.
+> > 
+> > My solution:
+> > 
+> >   As a solution (or workaround?) I would try:
+> > 
+> >   1) In drivers/net/usb/qmi_wwan.c, lines 904/913: Add the flag
+> >      FLAG_LINK_INTR.
+> > 
+> >   2) In drivers/net/usb/usbnet.c, functions usbnet_open() and
+> >      usbnet_stop(): Add a call to netif_carrier_*(),
+> >      but only if FLAG_LINK_INTR is set.
+> > 
+> > Question:
+> > 
+> >   Is this the intended way to use FLAG_LINK_INTR and
+> > netif_carrier_*()?
+> >   Or is there another recommended way to obtain the link status of
+> >   network devices (I could change ledtrig_netdev)?
+> 
+> Hi Tanjeff
+> 
+> With Ethernet, having a carrier means there is a link partner, the
+> layer 2 of the OSI 7 layer stack model is working. If the interface
+> is
+> not open()ed, it clearly should not have carrier. However, just
+> because it is open, does not mean it has carrier. The cable could be
+> unplugged, etc.
+> 
+> This is an LTE modem. What does carrier mean here? I don't know if it
+> is well defined, but i would guess it is connected to a base station
+> which is offering service. I'm assuming you are interested in data
+> here, not wanting to make a 911/999/112/$EMERGENCY_SERVICE call which
+> in theory all base stations should accept.
+> 
+> Is there a way to get this state information from the hardware? That
+> would be the correct way to set the carrier.
 
-The block->nooffloaddevcnt should always count for indr block.
-even the indr block offload successful. The representor maybe
-gone away and the ingress qdisc can work in software mode.
+There isn't. All the setup that would result in IFF_LOWER_UP (eg
+ability to pass packets to the cellular network) happens over channels
+*other* than the ethernet one. eg CDC-WDM, CDC-ACM, CDC-MBIM, AT
+commands, QMI commands, MBIM commands, etc.
 
-block->nooffloaddevcnt warning with following dmesg log:
+Something in userspace handles the actual IP-level connection setup and
+once that's done, only then do you really have IFF_LOWER_UP. One way to
+solve this could be to require userspace connection managers to manage
+the carrier state of the device, which is possible for some drivers
+already IIRC.
 
-[  760.667058] #####################################################
-[  760.668186] ## TEST test-ecmp-add-vxlan-encap-disable-sriov.sh ##
-[  760.669179] #####################################################
-[  761.780655] :test: Fedora 30 (Thirty)
-[  761.783794] :test: Linux reg-r-vrt-018-180 5.7.0+
-[  761.822890] :test: NIC ens1f0 FW 16.26.6000 PCI 0000:81:00.0 DEVICE 0x1019 ConnectX-5 Ex
-[  761.860244] mlx5_core 0000:81:00.0 ens1f0: Link up
-[  761.880693] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
-[  762.059732] mlx5_core 0000:81:00.1 ens1f1: Link up
-[  762.234341] :test: unbind vfs of ens1f0
-[  762.257825] :test: Change ens1f0 eswitch (0000:81:00.0) mode to switchdev
-[  762.291363] :test: unbind vfs of ens1f1
-[  762.306914] :test: Change ens1f1 eswitch (0000:81:00.1) mode to switchdev
-[  762.309237] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(LEGACY), nvfs(2), active vports(3)
-[  763.282598] mlx5_core 0000:81:00.1: E-Switch: Supported tc offload range - chains: 4294967294, prios: 4294967295
-[  763.362825] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  763.444465] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
-[  763.460088] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  763.502586] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  763.552429] ens1f1_0: renamed from eth0
-[  763.569569] mlx5_core 0000:81:00.1: E-Switch: Enable: mode(OFFLOADS), nvfs(2), active vports(3)
-[  763.629694] ens1f1_1: renamed from eth1
-[  764.631552] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_0: link becomes ready
-[  764.670841] :test: unbind vfs of ens1f0
-[  764.681966] :test: unbind vfs of ens1f1
-[  764.726762] mlx5_core 0000:81:00.0 ens1f0: Link up
-[  764.766511] mlx5_core 0000:81:00.1 ens1f1: Link up
-[  764.797325] :test: Add multipath vxlan encap rule and disable sriov
-[  764.798544] :test: config multipath route
-[  764.812732] mlx5_core 0000:81:00.0: lag map port 1:2 port 2:2
-[  764.874556] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:2
-[  765.603681] :test: OK
-[  765.659048] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_1: link becomes ready
-[  765.675085] :test: verify rule in hw
-[  765.694237] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
-[  765.711892] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1: link becomes ready
-[  766.979230] :test: OK
-[  768.125419] :test: OK
-[  768.127519] :test: - disable sriov ens1f1
-[  768.131160] pci 0000:81:02.2: Removing from iommu group 75
-[  768.132646] pci 0000:81:02.3: Removing from iommu group 76
-[  769.179749] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
-[  769.455627] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:1
-[  769.703990] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
-[  769.988637] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
-[  769.990022] :test: - disable sriov ens1f0
-[  769.994922] pci 0000:81:00.2: Removing from iommu group 73
-[  769.997048] pci 0000:81:00.3: Removing from iommu group 74
-[  771.035813] mlx5_core 0000:81:00.0: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
-[  771.339091] ------------[ cut here ]------------
-[  771.340812] WARNING: CPU: 6 PID: 3448 at net/sched/cls_api.c:749 tcf_block_offload_unbind.isra.0+0x5c/0x60
-[  771.341728] Modules linked in: act_mirred act_tunnel_key cls_flower dummy vxlan ip6_udp_tunnel udp_tunnel sch_ingress nfsv3 nfs_acl nfs lockd grace fscache tun bridge stp llc sunrpc rdma_ucm rdma_cm iw_cm ib_cm mlx5_ib ib_uverbs ib_core mlx5_core intel_rapl_msr intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp mlxfw act_ct nf_flow_table kvm_intel nf_nat kvm nf_conntrack irqbypass crct10dif_pclmul igb crc32_pclmul nf_defrag_ipv6 libcrc32c nf_defrag_ipv4 crc32c_intel ghash_clmulni_intel ptp ipmi_ssif intel_cstate pps_c
-ore ses intel_uncore mei_me iTCO_wdt joydev ipmi_si iTCO_vendor_support i2c_i801 enclosure mei ioatdma dca lpc_ich wmi ipmi_devintf pcspkr acpi_power_meter ipmi_msghandler acpi_pad ast i2c_algo_bit drm_vram_helper drm_kms_helper drm_ttm_helper ttm drm mpt3sas raid_class scsi_transport_sas
-[  771.347818] CPU: 6 PID: 3448 Comm: test-ecmp-add-v Not tainted 5.7.0+ #1146
-[  771.348727] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-[  771.349646] RIP: 0010:tcf_block_offload_unbind.isra.0+0x5c/0x60
-[  771.350553] Code: 4a fd ff ff 83 f8 a1 74 0e 5b 4c 89 e7 5d 41 5c 41 5d e9 07 93 89 ff 8b 83 a0 00 00 00 8d 50 ff 89 93 a0 00 00 00 85 c0 75 df <0f> 0b eb db 0f 1f 44 00 00 41 57 41 56 41 55 41 89 cd 41 54 49 89
-[  771.352420] RSP: 0018:ffffb33144cd3b00 EFLAGS: 00010246
-[  771.353353] RAX: 0000000000000000 RBX: ffff8b37cf4b2800 RCX: 0000000000000000
-[  771.354294] RDX: 00000000ffffffff RSI: ffff8b3b9aad0000 RDI: ffffffff8d5c6e20
-[  771.355245] RBP: ffff8b37eb546948 R08: ffffffffc0b7a348 R09: ffff8b3b9aad0000
-[  771.356189] R10: 0000000000000001 R11: ffff8b3ba7a0a1c0 R12: ffff8b37cf4b2850
-[  771.357123] R13: ffff8b3b9aad0000 R14: ffff8b37cf4b2820 R15: ffff8b37cf4b2820
-[  771.358039] FS:  00007f8a19b6e740(0000) GS:ffff8b3befa00000(0000) knlGS:0000000000000000
-[  771.358965] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  771.359885] CR2: 00007f3afb91c1a0 CR3: 000000045133c004 CR4: 00000000001606e0
-[  771.360825] Call Trace:
-[  771.361764]  __tcf_block_put+0x84/0x150
-[  771.362712]  ingress_destroy+0x1b/0x20 [sch_ingress]
-[  771.363658]  qdisc_destroy+0x3e/0xc0
-[  771.364594]  dev_shutdown+0x7a/0xa5
-[  771.365522]  rollback_registered_many+0x20d/0x530
-[  771.366458]  ? netdev_upper_dev_unlink+0x15d/0x1c0
-[  771.367387]  unregister_netdevice_many.part.0+0xf/0x70
-[  771.368310]  vxlan_netdevice_event+0xa4/0x110 [vxlan]
-[  771.369454]  notifier_call_chain+0x4c/0x70
-[  771.370579]  rollback_registered_many+0x2f5/0x530
-[  771.371719]  rollback_registered+0x56/0x90
-[  771.372843]  unregister_netdevice_queue+0x73/0xb0
-[  771.373982]  unregister_netdev+0x18/0x20
-[  771.375168]  mlx5e_vport_rep_unload+0x56/0xc0 [mlx5_core]
-[  771.376327]  esw_offloads_disable+0x81/0x90 [mlx5_core]
-[  771.377512]  mlx5_eswitch_disable_locked.cold+0xcb/0x1af [mlx5_core]
-[  771.378679]  mlx5_eswitch_disable+0x44/0x60 [mlx5_core]
-[  771.379822]  mlx5_device_disable_sriov+0xad/0xb0 [mlx5_core]
-[  771.380968]  mlx5_core_sriov_configure+0xc1/0xe0 [mlx5_core]
-[  771.382087]  sriov_numvfs_store+0xfc/0x130
-[  771.383195]  kernfs_fop_write+0xce/0x1b0
-[  771.384302]  vfs_write+0xb6/0x1a0
-[  771.385410]  ksys_write+0x5f/0xe0
-[  771.386500]  do_syscall_64+0x5b/0x1d0
-[  771.387569]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
- net/sched/cls_api.c | 24 ++++++++++++++----------
- 1 file changed, 14 insertions(+), 10 deletions(-)
-
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index f8028d7..faa78b7 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -672,25 +672,29 @@ static int tcf_block_offload_cmd(struct tcf_block *block,
- 				 struct netlink_ext_ack *extack)
- {
- 	struct flow_block_offload bo = {};
--	int err;
- 
- 	tcf_block_offload_init(&bo, dev, command, ei->binder_type,
- 			       &block->flow_block, tcf_block_shared(block),
- 			       extack);
- 
--	if (dev->netdev_ops->ndo_setup_tc)
-+	if (dev->netdev_ops->ndo_setup_tc) {
-+		int err;
-+
- 		err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
--	else
--		err = flow_indr_dev_setup_offload(dev, TC_SETUP_BLOCK, block,
--						  &bo, tc_block_indr_cleanup);
-+		if (err < 0) {
-+			if (err != -EOPNOTSUPP)
-+				NL_SET_ERR_MSG(extack, "Driver ndo_setup_tc failed");
-+			return err;
-+		}
- 
--	if (err < 0) {
--		if (err != -EOPNOTSUPP)
--			NL_SET_ERR_MSG(extack, "Driver ndo_setup_tc failed");
--		return err;
-+		return tcf_block_setup(block, &bo);
- 	}
- 
--	return tcf_block_setup(block, &bo);
-+	flow_indr_dev_setup_offload(dev, TC_SETUP_BLOCK, block, &bo,
-+				    tc_block_indr_cleanup);
-+	tcf_block_setup(block, &bo);
-+
-+	return -EOPNOTSUPP;
- }
- 
- static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
--- 
-1.8.3.1
+Dan
 
