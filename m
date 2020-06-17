@@ -2,76 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 108C61FD489
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:27:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CC0E1FD498
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:32:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727829AbgFQS1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 14:27:15 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:38466 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727801AbgFQS1O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:27:14 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05HIR966014994;
-        Wed, 17 Jun 2020 13:27:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1592418429;
-        bh=q9IeiGcmHa7Cuowc/9kIPooap4gOmUa92yAlNd2M3p8=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=x092aJ7BnaJt7pJkKNOofQh//IyubKji8DqWfcbUvWNN7M+XHlvf9kVUsRo90Qsl9
-         NaAP3aL/137rJlTVYXvxjxbjpTU7zramn7OOe2yz5aP4V99y7eaKwPjY2g1RPST9aj
-         FqYC+ZtmJTBgq/9GCTD/tCOONgzNkob112PzOaJ8=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 05HIR9eY022851
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 17 Jun 2020 13:27:09 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 17
- Jun 2020 13:27:08 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 17 Jun 2020 13:27:09 -0500
-Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05HIR8gR010235;
-        Wed, 17 Jun 2020 13:27:08 -0500
-Subject: Re: [PATCH net-next v7 6/6] net: phy: DP83822: Add ability to
- advertise Fiber connection
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-References: <20200617182019.6790-1-dmurphy@ti.com>
- <20200617182019.6790-7-dmurphy@ti.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <4efcd835-e4e2-ddfa-d0f8-9f29f574eb9e@ti.com>
-Date:   Wed, 17 Jun 2020 13:27:08 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1727060AbgFQSbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 14:31:46 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51690 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726912AbgFQSbq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:31:46 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05HIR7w6003300
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:31:46 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=Hog2WRzHsPvlpflu20cK3q7w333zbbJl1cXOhbC1Ei0=;
+ b=DEatwJA2NIk0QTg5shFrO5w8mepqD4fH/B36XCDgNnhz7RuLFRWbC3U+cpow4kfRRQpM
+ n0aQP5qm1oJ766PW1N1gLDUAgszNtFdBeUSwf8Ztw6myBY2UQwh4vrh+7haEagAOUPW0
+ 9xYB8W3IZHgzqpPJdXXhmP/e4KGVuTFYiYk= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 31q65sq1c0-13
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:31:46 -0700
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 17 Jun 2020 11:31:40 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id BE4212EC3CD6; Wed, 17 Jun 2020 11:31:38 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next] libbpf: bump version to 0.1.0
+Date:   Wed, 17 Jun 2020 11:31:32 -0700
+Message-ID: <20200617183132.1970836-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200617182019.6790-7-dmurphy@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-17_10:2020-06-17,2020-06-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 cotscore=-2147483648
+ phishscore=0 clxscore=1015 malwarescore=0 mlxscore=0 spamscore=0
+ priorityscore=1501 lowpriorityscore=0 impostorscore=0 bulkscore=0
+ mlxlogscore=706 suspectscore=8 adultscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006170143
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All
+Bump libbpf version to 0.1.0, as new development cycle starts.
 
-On 6/17/20 1:20 PM, Dan Murphy wrote:
-> The DP83822 can be configured to use the RGMII interface. There are
-> independent fixed 3.5ns clock shift (aka internal delay) for the TX and RX
-> paths. This allow either one to be set if the MII interface is RGMII and
-> the value is set in the firmware node.
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/libbpf.map | 3 +++
+ 1 file changed, 3 insertions(+)
 
-$subject is wrong.  I used the 83822 fiber patch as my base as it had 
-90% of the work done that I needed for the
-
-internal delay.  I will fix it in v8 after review comments.
-
-Dan
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index f732c77b7ed0..c914347f5065 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -270,3 +270,6 @@ LIBBPF_0.0.9 {
+ 		ring_buffer__new;
+ 		ring_buffer__poll;
+ } LIBBPF_0.0.8;
++
++LIBBPF_0.1.0 {
++} LIBBPF_0.0.9;
+--=20
+2.24.1
 
