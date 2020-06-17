@@ -2,132 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B292D1FD8F6
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 00:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0386B1FD94D
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 00:59:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727004AbgFQWgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 18:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726758AbgFQWgv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 18:36:51 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D122C06174E
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 15:36:51 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1jlgfZ-0001JN-LG; Thu, 18 Jun 2020 00:36:33 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:21d2:558:c34a:b7bf] (unknown [IPv6:2a03:f580:87bc:d400:21d2:558:c34a:b7bf])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 746EC51B84C;
-        Wed, 17 Jun 2020 22:36:31 +0000 (UTC)
-Subject: Re: [PATCH 0/6] Add Microchip MCP25XXFD CAN driver
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        wg@grandegger.com, kernel@martin.sperl.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-References: <20200610074442.10808-1-manivannan.sadhasivam@linaro.org>
- <fbbca009-3c53-6aa9-94ed-7e9e337c31a4@pengutronix.de>
- <20200617165902.GB14228@x1.vandijck-laurijssen.be>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
- iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
- Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
- Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
- tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
- yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
- BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
- mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
- 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
- Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
- 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
-Message-ID: <2e80e2ed-d63d-5cc6-e1c6-e0c9e75c218e@pengutronix.de>
-Date:   Thu, 18 Jun 2020 00:36:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-In-Reply-To: <20200617165902.GB14228@x1.vandijck-laurijssen.be>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S1726945AbgFQW7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 18:59:21 -0400
+Received: from lists.gateworks.com ([108.161.130.12]:43580 "EHLO
+        lists.gateworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726763AbgFQW7V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 18:59:21 -0400
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by lists.gateworks.com with esmtp (Exim 4.82)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1jlh4l-0006j8-6D; Wed, 17 Jun 2020 23:02:35 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tim Harvey <tharvey@gateworks.com>
+Subject: [PATCH] lan743x: allow mac address to come from dt
+Date:   Wed, 17 Jun 2020 15:59:10 -0700
+Message-Id: <1592434750-8940-1-git-send-email-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/17/20 6:59 PM, Kurt Van Dijck wrote:
-> I'm in the process of getting a Variscite imx8m mini SOM online, with
+If a valid mac address is present in dt, use that before using
+CSR's or a random mac address.
 
-Have your heard about the imx8m plus? It has CAN cores! We have a board in the
-office to play with. :)
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+---
+ drivers/net/ethernet/microchip/lan743x_main.c | 41 ++++++++++++++++-----------
+ 1 file changed, 25 insertions(+), 16 deletions(-)
 
-> MCP2517FD. The 4.19 kernel that comes with it, has a driver that is
-
-You shall not start projects with 1,5 years old kernel.
-And you probably shall not use vendor kernel for new projects.
-:D
-
-> clearly inspired by the one of Martin Sperl (not investigated too much
-> yet). I have problems of probing the chip when the bus is under full
-> load (under not full load, the probing only occasionally fails) due to
-> the modeswitch test.
-> 
-> Is there a real difference in yours between the rpi and sunxi branches?
-
-The sunxi branch has some sunxi SPI driver improvements, the rpi branch some for
-the raspi SPI drivers. All branches with the same -xx should have the same
-mcp25xxfd driver.
-
-With the exception the latest version is v5.6-rpi/mcp25xxfd-20200607-41, which
-is cleaned up for mainlining (it has the logging and dump stuff removed).
-
-> Is there much evolution since -36 or would you mind to backport your
-> latest -42 to 4.19?
-
-Not much, some bus off cleanups, however I've backported all changes to
-v4.19-rpi/mcp25xxfd-20200429-41 (debug and log is still included).
-
-When you port this to your mx8 take all from (including)
-
-    097701d1ea4f can: dev: avoid long lines
-to
-    v4.19-rpi/mcp25xxfd-20200429-41
-
-> I will work on this the upcoming days. I can't do extensive tests, but
-> rather a works-for-me test that includes bitrate probe.
-> I only have 1 such board right now, and no other FD hardware.
-
-Great, looking for feedback! Especially how the driver copes with your fully
-loaded bus test.
-
-regards,
-Marc
-
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 7ef22bf..50ad56b 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -12,6 +12,7 @@
+ #include <linux/rtnetlink.h>
+ #include <linux/iopoll.h>
+ #include <linux/crc16.h>
++#include <linux/of_net.h>
+ #include "lan743x_main.h"
+ #include "lan743x_ethtool.h"
+ 
+@@ -804,26 +805,29 @@ static int lan743x_mac_init(struct lan743x_adapter *adapter)
+ 	data |= MAC_CR_CNTR_RST_;
+ 	lan743x_csr_write(adapter, MAC_CR, data);
+ 
+-	mac_addr_hi = lan743x_csr_read(adapter, MAC_RX_ADDRH);
+-	mac_addr_lo = lan743x_csr_read(adapter, MAC_RX_ADDRL);
+-	adapter->mac_address[0] = mac_addr_lo & 0xFF;
+-	adapter->mac_address[1] = (mac_addr_lo >> 8) & 0xFF;
+-	adapter->mac_address[2] = (mac_addr_lo >> 16) & 0xFF;
+-	adapter->mac_address[3] = (mac_addr_lo >> 24) & 0xFF;
+-	adapter->mac_address[4] = mac_addr_hi & 0xFF;
+-	adapter->mac_address[5] = (mac_addr_hi >> 8) & 0xFF;
++	if (!is_valid_ether_addr(adapter->mac_address)) {
++		mac_addr_hi = lan743x_csr_read(adapter, MAC_RX_ADDRH);
++		mac_addr_lo = lan743x_csr_read(adapter, MAC_RX_ADDRL);
++		adapter->mac_address[0] = mac_addr_lo & 0xFF;
++		adapter->mac_address[1] = (mac_addr_lo >> 8) & 0xFF;
++		adapter->mac_address[2] = (mac_addr_lo >> 16) & 0xFF;
++		adapter->mac_address[3] = (mac_addr_lo >> 24) & 0xFF;
++		adapter->mac_address[4] = mac_addr_hi & 0xFF;
++		adapter->mac_address[5] = (mac_addr_hi >> 8) & 0xFF;
++
++		if (((mac_addr_hi & 0x0000FFFF) == 0x0000FFFF) &&
++		    mac_addr_lo == 0xFFFFFFFF) {
++			mac_address_valid = false;
++		} else if (!is_valid_ether_addr(adapter->mac_address)) {
++			mac_address_valid = false;
++		}
+ 
+-	if (((mac_addr_hi & 0x0000FFFF) == 0x0000FFFF) &&
+-	    mac_addr_lo == 0xFFFFFFFF) {
+-		mac_address_valid = false;
+-	} else if (!is_valid_ether_addr(adapter->mac_address)) {
+-		mac_address_valid = false;
++		if (!mac_address_valid)
++			eth_random_addr(adapter->mac_address);
+ 	}
+-
+-	if (!mac_address_valid)
+-		eth_random_addr(adapter->mac_address);
+ 	lan743x_mac_set_address(adapter, adapter->mac_address);
+ 	ether_addr_copy(netdev->dev_addr, adapter->mac_address);
++
+ 	return 0;
+ }
+ 
+@@ -2756,6 +2760,7 @@ static int lan743x_pcidev_probe(struct pci_dev *pdev,
+ {
+ 	struct lan743x_adapter *adapter = NULL;
+ 	struct net_device *netdev = NULL;
++	const void *mac_addr;
+ 	int ret = -ENODEV;
+ 
+ 	netdev = devm_alloc_etherdev(&pdev->dev,
+@@ -2772,6 +2777,10 @@ static int lan743x_pcidev_probe(struct pci_dev *pdev,
+ 			      NETIF_MSG_IFDOWN | NETIF_MSG_TX_QUEUED;
+ 	netdev->max_mtu = LAN743X_MAX_FRAME_SIZE;
+ 
++	mac_addr = of_get_mac_address(pdev->dev.of_node);
++	if (!IS_ERR(mac_addr))
++		ether_addr_copy(adapter->mac_address, mac_addr);
++
+ 	ret = lan743x_pci_init(adapter, pdev);
+ 	if (ret)
+ 		goto return_error;
 -- 
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+2.7.4
+
