@@ -2,90 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE0701FCBD0
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 13:08:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A721C1FCBEC
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 13:13:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbgFQLIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 07:08:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56104 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725554AbgFQLIj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 07:08:39 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E515C061573;
-        Wed, 17 Jun 2020 04:08:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=6UMFO2TmbdpnJT0c5EXP2Aydp2MaQ5RYJc+GA8ZrxVg=; b=uEnXH1vpZaG2U8FFM/pYkfHc5Y
-        SeAjiiS0wb4uxVIyAse/Mlkd6U3qaJ4r4kEh9T7lE+/o5L5t1dNjJ28G/NIqVe0DWG/fV4/lQHo1o
-        QDwGZP0qomelniIocS0ybLZQjvlRxX/INLpmjUp5+LL4fh2HQo9F6qYCqhyg1imU2AHxFgkQk0jvm
-        8nOqGDFYb7CZcfryOG0jsO4VWYAKfvslQU5aBRvXZEAb7odmsPQzoqooHS6qL3UZV2AdZFQmkWhak
-        uKTLzMfmXR1ZbqokaLQoFEtbowD5zP+hhe/qVdQ+y0/QB4rOvsOqTW0JOhm+R3UUkEQZTtPszFNR9
-        vDBLz4ZQ==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jlVvY-0007BQ-88; Wed, 17 Jun 2020 11:08:20 +0000
-Date:   Wed, 17 Jun 2020 04:08:20 -0700
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Michal Hocko <mhocko@kernel.org>
-Cc:     dsterba@suse.cz, Joe Perches <joe@perches.com>,
-        Waiman Long <longman@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>, linux-mm@kvack.org,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-ppp@vger.kernel.org, wireguard@lists.zx2c4.com,
-        linux-wireless@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
-        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org
-Subject: Re: [PATCH v4 0/3] mm, treewide: Rename kzfree() to kfree_sensitive()
-Message-ID: <20200617110820.GG8681@bombadil.infradead.org>
-References: <20200616015718.7812-1-longman@redhat.com>
- <fe3b9a437be4aeab3bac68f04193cb6daaa5bee4.camel@perches.com>
- <20200616230130.GJ27795@twin.jikos.cz>
- <20200617003711.GD8681@bombadil.infradead.org>
- <20200617071212.GJ9499@dhcp22.suse.cz>
+        id S1726674AbgFQLNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 07:13:08 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:36634 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725964AbgFQLNH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 07:13:07 -0400
+Received: from [114.249.250.117] (helo=localhost.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <aaron.ma@canonical.com>)
+        id 1jlW01-0006g5-Cg; Wed, 17 Jun 2020 11:12:58 +0000
+From:   Aaron Ma <aaron.ma@canonical.com>
+To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, kuba@kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vitaly.lifshits@intel.com,
+        kai.heng.feng@canonical.com, sasha.neftin@intel.com
+Subject: [v2][PATCH] e1000e: continue to init phy even when failed to disable ULP
+Date:   Wed, 17 Jun 2020 19:12:48 +0800
+Message-Id: <20200617111249.20855-1-aaron.ma@canonical.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200616100512.22512-1-aaron.ma@canonical.com>
+References: <20200616100512.22512-1-aaron.ma@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617071212.GJ9499@dhcp22.suse.cz>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 09:12:12AM +0200, Michal Hocko wrote:
-> On Tue 16-06-20 17:37:11, Matthew Wilcox wrote:
-> > Not just performance critical, but correctness critical.  Since kvfree()
-> > may allocate from the vmalloc allocator, I really think that kvfree()
-> > should assert that it's !in_atomic().  Otherwise we can get into trouble
-> > if we end up calling vfree() and have to take the mutex.
-> 
-> FWIW __vfree already checks for atomic context and put the work into a
-> deferred context. So this should be safe. It should be used as a last
-> resort, though.
+After commit: e086ba2fccd ("e1000e: disable s0ix entry and exit flows
+ for ME systems").
+ThinkPad P14s always failed to disable ULP by ME.
+commit: 0c80cdbf33 ("e1000e: Warn if disabling ULP failed")
+break out of init phy:
 
-Actually, it only checks for in_interrupt().  If you call vfree() under
-a spinlock, you're in trouble.  in_atomic() only knows if we hold a
-spinlock for CONFIG_PREEMPT, so it's not safe to check for in_atomic()
-in __vfree().  So we need the warning in order that preempt people can
-tell those without that there is a bug here.
+error log:
+[   42.364753] e1000e 0000:00:1f.6 enp0s31f6: Failed to disable ULP
+[   42.524626] e1000e 0000:00:1f.6 enp0s31f6: PHY Wakeup cause - Unicast Packet
+[   42.822476] e1000e 0000:00:1f.6 enp0s31f6: Hardware Error
+
+When disable s0ix, E1000_FWSM_ULP_CFG_DONE will never be 1.
+If continue to init phy like before, it can work as before.
+iperf test result good too.
+
+Fixes: 0c80cdbf33 ("e1000e: Warn if disabling ULP failed")
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+---
+ drivers/net/ethernet/intel/e1000e/ich8lan.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+index f999cca37a8a..be7475c5529d 100644
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+@@ -303,7 +303,6 @@ static s32 e1000_init_phy_workarounds_pchlan(struct e1000_hw *hw)
+ 	ret_val = e1000_disable_ulp_lpt_lp(hw, true);
+ 	if (ret_val) {
+ 		e_warn("Failed to disable ULP\n");
+-		goto out;
+ 	}
+ 
+ 	ret_val = hw->phy.ops.acquire(hw);
+-- 
+2.26.2
+
