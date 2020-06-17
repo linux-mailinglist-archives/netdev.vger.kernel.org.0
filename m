@@ -2,82 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4082F1FC4C3
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 05:38:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D2491FC4E7
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 06:01:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbgFQDiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 23:38:15 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:2610 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726497AbgFQDiO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jun 2020 23:38:14 -0400
-Received: from nkgeml709-chm.china.huawei.com (unknown [172.30.72.57])
-        by Forcepoint Email with ESMTP id 0F926964A3111022ECF8;
-        Wed, 17 Jun 2020 11:38:12 +0800 (CST)
-Received: from nkgeml708-chm.china.huawei.com (10.98.57.160) by
- nkgeml709-chm.china.huawei.com (10.98.57.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1913.5; Wed, 17 Jun 2020 11:38:11 +0800
-Received: from nkgeml708-chm.china.huawei.com ([10.98.57.160]) by
- nkgeml708-chm.china.huawei.com ([10.98.57.160]) with mapi id 15.01.1913.007;
- Wed, 17 Jun 2020 11:38:11 +0800
-From:   "Guodeqing (A)" <geffrey.guo@huawei.com>
-To:     David Ahern <dsahern@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "dsa@cumulusnetworks.com" <dsa@cumulusnetworks.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIG5ldDogRml4IHRoZSBhcnAgZXJyb3IgaW4gc29t?=
- =?utf-8?Q?e_cases?=
-Thread-Topic: [PATCH] net: Fix the arp error in some cases
-Thread-Index: AQHWREyWidRQh+MCik6tWg2ID4mh6ajbmuIAgACNscA=
-Date:   Wed, 17 Jun 2020 03:38:11 +0000
-Message-ID: <55929b71c9b24aeeba760585fc59497f@huawei.com>
-References: <1592359636-107798-1-git-send-email-geffrey.guo@huawei.com>
- <39780a81-8ac8-871b-2176-2102322f9321@gmail.com>
-In-Reply-To: <39780a81-8ac8-871b-2176-2102322f9321@gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.164.122.165]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726830AbgFQEAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 00:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46688 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726811AbgFQEAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 00:00:36 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CBBC061755
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 21:00:35 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id x11so320115plo.7
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 21:00:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SB6NyllJ5c5QB2g83Rjs0/yw2ziAGwA5U5ta98dnIWI=;
+        b=l8NTvh6NB0BN6VPtWGd2MQ+oChxu/lYfMhCaPIFk3rpRmFXKlI/bxKFlggLgyXTa3x
+         /ZPad1Y3c/G2emO3S+dkCprNZ+AuF9POHsuUGhGQKJL3ddt6bkjC5MTaU83zGeL5vSrX
+         3dmvSZ9XiCrlE3jjBwACVs/mrgnE7ha9wjMDE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SB6NyllJ5c5QB2g83Rjs0/yw2ziAGwA5U5ta98dnIWI=;
+        b=FpZD6ZQUXjL4TtAQyCAsMt28wiuqLXRk8khPhg7fluPhQr3kFyiwQoWUnbMjHvk5yS
+         hasjytH5iHc0kavXk51t67T8PVxEI/4lrMqd8hVas8rh5cMGZssfJt1z1LmDildV32r0
+         FxETfrvqZCm/Jt/E7H5L+PvaDjpSlCT7d+3POaipRPHcl7LBrR70XshOJ3WB32X2FNrr
+         QijfzSHITBl5qjIngsYN7wMetkePaQDUsmxnTtnq7dil5Lm6cjv/VDqCcNAle/wxDybU
+         u/nsSMsV8vs5c+xb//saduFtFDSiGbSzkrT7Lfus2cLGkJxkwzZCCOkIxMVAp86O0bHP
+         fCrA==
+X-Gm-Message-State: AOAM533abaUh9EXrMGbYtl99NLCxykifKlLTCQy+Pz1iDeoHNHBdQxaI
+        0kacw0bWGrQ/7n8UD8mc0UmAKg==
+X-Google-Smtp-Source: ABdhPJyTI/VLL17J/OWOTs8c/3WLZNCAlQ/tnQ6y8hYmbQqn2Rmvw+OvZRZajSEcKcD6/Ttyxi4QyA==
+X-Received: by 2002:a17:90a:4d4e:: with SMTP id l14mr5967423pjh.10.1592366435399;
+        Tue, 16 Jun 2020 21:00:35 -0700 (PDT)
+Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
+        by smtp.gmail.com with ESMTPSA id q1sm20013089pfk.132.2020.06.16.21.00.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jun 2020 21:00:34 -0700 (PDT)
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
+Cc:     alainm@chromium.org, chromeos-bluetooth-upstreaming@chromium.org,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 0/4] Bluetooth: Implement get/set device flags and device flags changed
+Date:   Tue, 16 Jun 2020 21:00:18 -0700
+Message-Id: <20200617040022.174448-1-abhishekpandit@chromium.org>
+X-Mailer: git-send-email 2.27.0.290.gba653c62da-goog
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cnRfc2V0X25leHRob3AgaW4gX19ta3JvdXRlX291dHB1dCB3aWxsIGNoZWNrIHRoZSBuaC0+bmhf
-c2NvcGUgdmFsdWUgdG8gZGV0ZXJtaW5lIHdoZXRoZXIgdG8gdXNlIHRoZSBndyBvciBub3QuDQoJ
-CWlmIChuaC0+bmhfZ3cgJiYgbmgtPm5oX3Njb3BlID09IFJUX1NDT1BFX0xJTkspIHsNCgkJCXJ0
-LT5ydF9nYXRld2F5ID0gbmgtPm5oX2d3Ow0KCQkJcnQtPnJ0X3VzZXNfZ2F0ZXdheSA9IDE7DQoJ
-CX0NCg0KKGlwX3JvdXRlX291dHB1dF9rZXlfaGFzaC0+IGlwX3JvdXRlX291dHB1dF9rZXlfaGFz
-aF9yY3UtPiBfX21rcm91dGVfb3V0cHV0LT4gcnRfc2V0X25leHRob3ApDQoNCi0tLS0t6YKu5Lu2
-5Y6f5Lu2LS0tLS0NCuWPkeS7tuS6ujogRGF2aWQgQWhlcm4gW21haWx0bzpkc2FoZXJuQGdtYWls
-LmNvbV0gDQrlj5HpgIHml7bpl7Q6IFdlZG5lc2RheSwgSnVuZSAxNywgMjAyMCAxMToxMA0K5pS2
-5Lu25Lq6OiBHdW9kZXFpbmcgKEEpIDxnZWZmcmV5Lmd1b0BodWF3ZWkuY29tPjsgZGF2ZW1AZGF2
-ZW1sb2Z0Lm5ldA0K5oqE6YCBOiBrdXpuZXRAbXMyLmluci5hYy5ydTsgbmV0ZGV2QHZnZXIua2Vy
-bmVsLm9yZzsgZHNhQGN1bXVsdXNuZXR3b3Jrcy5jb207IGt1YmFAa2VybmVsLm9yZw0K5Li76aKY
-OiBSZTogW1BBVENIXSBuZXQ6IEZpeCB0aGUgYXJwIGVycm9yIGluIHNvbWUgY2FzZXMNCg0KT24g
-Ni8xNi8yMCA4OjA3IFBNLCBndW9kZXFpbmcgd3JvdGU6DQo+IGllLiwNCj4gJCBpZmNvbmZpZyBl
-dGgwIDYuNi42LjYgbmV0bWFzayAyNTUuMjU1LjI1NS4wDQo+IA0KPiAkIGlwIHJ1bGUgYWRkIGZy
-b20gNi42LjYuNiB0YWJsZSA2NjY2DQo+IA0KPiAkIGlwIHJvdXRlIGFkZCA5LjkuOS45IHZpYSA2
-LjYuNi42DQo+IA0KPiAkIHBpbmcgLUkgNi42LjYuNiA5LjkuOS45DQo+IFBJTkcgOS45LjkuOSAo
-OS45LjkuOSkgZnJvbSA2LjYuNi42IDogNTYoODQpIGJ5dGVzIG9mIGRhdGEuDQo+IA0KPiAzIHBh
-Y2tldHMgdHJhbnNtaXR0ZWQsIDAgcmVjZWl2ZWQsIDEwMCUgcGFja2V0IGxvc3MsIHRpbWUgMjA3
-OW1zDQo+IA0KPiAkIGFycA0KPiBBZGRyZXNzICAgICBIV3R5cGUgIEhXYWRkcmVzcyAgICAgICAg
-ICAgRmxhZ3MgTWFzayAgICAgICAgICAgIElmYWNlDQo+IDYuNi42LjYgICAgICAgICAgICAgKGlu
-Y29tcGxldGUpICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZXRoMA0KPiANCj4gVGhlIGFy
-cCByZXF1ZXN0IGFkZHJlc3MgaXMgZXJyb3IsIHRoaXMgaXMgYmVjYXVzZSBmaWJfdGFibGVfbG9v
-a3VwIGluIA0KPiBmaWJfY2hlY2tfbmggbG9va3VwIHRoZSBkZXN0bmF0aW9uIDkuOS45LjkgbmV4
-dGhvcCwgdGhlIHNjb3BlIG9mIHRoZSANCj4gZmliIHJlc3VsdCBpcyBSVF9TQ09QRV9MSU5LLHRo
-ZSBjb3JyZWN0IHNjb3BlIGlzIFJUX1NDT1BFX0hPU1QuDQo+IEhlcmUgSSBhZGQgYSBjaGVjayBv
-ZiB3aGV0aGVyIHRoaXMgaXMgUlRfVEFCTEVfTUFJTiB0byBzb2x2ZSB0aGlzIHByb2JsZW0uDQoN
-CmZpYl9jaGVja19uaCogaXMgb25seSB1c2VkIHdoZW4gdGhlIHJvdXRlIGlzIGluc3RhbGxlZCBp
-bnRvIHRoZSBGSUIgdG8gdmVyaWZ5IHRoZSBnYXRld2F5IGlzIGxlZ2l0LiBJdCBpcyBub3QgdXNl
-ZCB3aGVuIHByb2Nlc3NpbmcgYXJwIHJlcXVlc3RzLiBXaHkgdGhlbiwgZG8geW91IGJlbGlldmUg
-dGhpcyBmaXhlcyBzb21ldGhpbmc/DQo=
+
+Hi linux-bluetooth,
+
+This series adds support for configuring the Remote Wakeup flag on
+devices by implementing Get Device Flags, Set Device Flags and Device
+Flags Changed.
+
+This was tested with some userspace changes to update the Remote Wakeup
+flag (these changes will be upstreamed as Bluez patches once they're
+cleaned up). I verified that Add Device generates the Device Flags
+changed on all mgmt interfaces and Set Device Flags skips the one that
+requested it.
+
+This was tested on a Chromebook running kernel 5.4.
+
+Abhishek
+
+
+
+Abhishek Pandit-Subedi (4):
+  Bluetooth: Add bdaddr_list_with_flags for classic whitelist
+  Bluetooth: Replace wakeable list with flag
+  Bluetooth: Replace wakeable in hci_conn_params
+  Bluetooth: Add get/set device flags mgmt op
+
+ include/net/bluetooth/hci.h      |   1 +
+ include/net/bluetooth/hci_core.h |  31 ++++++-
+ include/net/bluetooth/mgmt.h     |  28 +++++++
+ net/bluetooth/hci_core.c         |  59 ++++++++++++-
+ net/bluetooth/hci_event.c        |   8 +-
+ net/bluetooth/hci_request.c      |  15 ++--
+ net/bluetooth/hci_sock.c         |   1 +
+ net/bluetooth/mgmt.c             | 139 ++++++++++++++++++++++++++++++-
+ 8 files changed, 266 insertions(+), 16 deletions(-)
+
+-- 
+2.27.0.290.gba653c62da-goog
+
