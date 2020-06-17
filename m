@@ -2,358 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B161FCA4A
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 11:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A4A91FCA56
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 12:00:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726282AbgFQJ7C convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jun 2020 05:59:02 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:50686 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725554AbgFQJ7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 05:59:01 -0400
-Received: from marcel-macbook.fritz.box (p5b3d2638.dip0.t-ipconnect.de [91.61.38.56])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 3CDC4CECD1;
-        Wed, 17 Jun 2020 12:08:49 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH 4/4] Bluetooth: Add get/set device flags mgmt op
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200616210008.4.If379101eba01fd9f0903e04cc817eb2c8e7f7d96@changeid>
-Date:   Wed, 17 Jun 2020 11:58:57 +0200
-Cc:     Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        Alain Michaud <alainm@chromium.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <6439C541-257B-4CF0-B171-118B374C5B72@holtmann.org>
-References: <20200617040022.174448-1-abhishekpandit@chromium.org>
- <20200616210008.4.If379101eba01fd9f0903e04cc817eb2c8e7f7d96@changeid>
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1726328AbgFQJ71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 05:59:27 -0400
+Received: from smtp32.i.mail.ru ([94.100.177.92]:48336 "EHLO smtp32.i.mail.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725554AbgFQJ70 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 05:59:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=b5MPf83zfr1gghG1pTsW6fVwYRf1CJQcdXFVKRwPte8=;
+        b=SRkciVJjNIne6q8Il6NEmqmhnDKOt4mKSDVc3N9gRrLyf3cKm1DrrjMwFl91z9QHx/Az1GbfrZk5xFczHcoKxfX8TKNsfZAdbCEql/i2GYdR2IeOByL1f4oUnmLq1wtW7VY3TkgdnZHbej0K9noC5qA4bGF8NFgGuy/lmKtySsY=;
+Received: by smtp32.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1jlUqp-0002d1-C6; Wed, 17 Jun 2020 12:59:23 +0300
+Subject: Re: [PATCH v2 01/02] net: phy: marvell: Add Marvell 88E1340 support
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com
+References: <05f6912b-d529-ae7d-183e-efa6951e94b7@inbox.ru>
+ <20200617084729.GN1551@shell.armlinux.org.uk>
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+Message-ID: <c06a1893-64bf-68df-9008-684506c5e354@inbox.ru>
+Date:   Wed, 17 Jun 2020 12:59:21 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200617084729.GN1551@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Authentication-Results: smtp32.i.mail.ru; auth=pass smtp.auth=fido_max@inbox.ru smtp.mailfrom=fido_max@inbox.ru
+X-7564579A: 646B95376F6C166E
+X-77F55803: 4F1203BC0FB41BD9F3DF18D84EDC53E03273ADD47276010DDF84FAD614EA721E182A05F538085040E5B1E094669FF15AEB90B2257F97810BF2F377E1B5D62914C8546C139DD2F8A6
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7A179494B5629353BEA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637B23888C9749F3CAC8638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC3465A7BABD88B4E59DDA71EE1AD65A340D0E5DBBB844B088389733CBF5DBD5E913377AFFFEAFD269A417C69337E82CC2CC7F00164DA146DAFE8445B8C89999725571747095F342E8C26CFBAC0749D213D2E47CDBA5A9658378DA827A17800CE71AE4D56B06699BBC9FA2833FD35BB23DF004C906525384303BDABC7E18AA350CD8FC6C240DEA76428AA50765F7900637F3743B84211EF447D81D268191BDAD3DBD4B6F7A4D31EC0BD28E6F1989ABE784D81D268191BDAD3D78DA827A17800CE7E34610862E5853DDEC76A7562686271E8729DE7A884B61D135872C767BF85DA29E625A9149C048EE0A3850AC1BE2E735D2457FAF19517CF24AD6D5ED66289B524E70A05D1297E1BB35872C767BF85DA227C277FBC8AE2E8BDAE3FA6833AEA0C275ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC85D9B7C4F32B44FF57285124B2A10EEC6C00306258E7E6ABB4E4A6367B16DE6309
+X-C8649E89: 66CAA23DAA1F5691FCB0006736781D6CC91D0936210FA9D64FE975E9D58273CAAA5209167E0B1095
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj1fDABIY57ZhKMJ+wnhYltw==
+X-Mailru-Internal-Actual: A:0.80966334383055
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB2478A6756CF8553D5E55D5009BE5192477C41A96CE181C003AEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek,
+I just copied this part from another marvell PHY description.
+I can remove &-style reference for all marvell PHY's at next patch.
 
-> Add the get device flags and set device flags mgmt ops and the device
-> flags changed event. Their behavior is described in detail in
-> mgmt-api.txt in bluez.
+17.06.2020 11:47, Russell King - ARM Linux admin wrote:
+> On Wed, Jun 17, 2020 at 07:52:45AM +0300, Maxim Kochetkov wrote:
+>> Add Marvell 88E1340 support
+>> Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+>> ---
+>>   drivers/net/phy/marvell.c   | 23 +++++++++++++++++++++++
+>>   include/linux/marvell_phy.h |  1 +
+>>   2 files changed, 24 insertions(+)
+>>
+>> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+>> index 7fc8e10c5f33..4cc4e25fed2d 100644
+>> --- a/drivers/net/phy/marvell.c
+>> +++ b/drivers/net/phy/marvell.c
+>> @@ -2459,6 +2459,28 @@ static struct phy_driver marvell_drivers[] = {
+>>   		.get_tunable = m88e1540_get_tunable,
+>>   		.set_tunable = m88e1540_set_tunable,
+>>   	},
+>> +	{
+>> +		.phy_id = MARVELL_PHY_ID_88E1340S,
+>> +		.phy_id_mask = MARVELL_PHY_ID_MASK,
+>> +		.name = "Marvell 88E1340S",
+>> +		.probe = m88e1510_probe,
+>> +		/* PHY_GBIT_FEATURES */
+>> +		.config_init = &marvell_config_init,
+>> +		.config_aneg = &m88e1510_config_aneg,
+>> +		.read_status = &marvell_read_status,
+>> +		.ack_interrupt = &marvell_ack_interrupt,
+>> +		.config_intr = &marvell_config_intr,
+>> +		.did_interrupt = &m88e1121_did_interrupt,
+>> +		.resume = &genphy_resume,
+>> +		.suspend = &genphy_suspend,
+>> +		.read_page = marvell_read_page,
+>> +		.write_page = marvell_write_page,
+>> +		.get_sset_count = marvell_get_sset_count,
+>> +		.get_strings = marvell_get_strings,
+>> +		.get_stats = marvell_get_stats,
+>> +		.get_tunable = m88e1540_get_tunable,
+>> +		.set_tunable = m88e1540_set_tunable,
 > 
-> Sample btmon trace when a HID device is added (trimmed to 75 chars):
+> Can we use a single style for referencing functions please?  The kernel
+> in general does not use &func, it's more typing than is necessary.  The
+> C99 standard says:
 > 
-> @ MGMT Command: Unknown (0x0050) plen 11        {0x0001} [hci0] 18:06:14.98
->        90 c5 13 cd f3 cd 02 01 00 00 00                 ...........
-> @ MGMT Event: Unknown (0x002a) plen 15          {0x0004} [hci0] 18:06:14.98
->        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
-> @ MGMT Event: Unknown (0x002a) plen 15          {0x0003} [hci0] 18:06:14.98
->        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
-> @ MGMT Event: Unknown (0x002a) plen 15          {0x0002} [hci0] 18:06:14.98
->        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
-> @ MGMT Event: Command Compl.. (0x0001) plen 10  {0x0001} [hci0] 18:06:14.98
->      Unknown (0x0050) plen 7
->        Status: Success (0x00)
->        90 c5 13 cd f3 cd 02                             .......
-> @ MGMT Command: Add Device (0x0033) plen 8      {0x0001} [hci0] 18:06:14.98
->        LE Address: CD:F3:CD:13:C5:90 (Static)
->        Action: Auto-connect remote device (0x02)
-> @ MGMT Event: Device Added (0x001a) plen 8      {0x0004} [hci0] 18:06:14.98
->        LE Address: CD:F3:CD:13:C5:90 (Static)
->        Action: Auto-connect remote device (0x02)
-> @ MGMT Event: Device Added (0x001a) plen 8      {0x0003} [hci0] 18:06:14.98
->        LE Address: CD:F3:CD:13:C5:90 (Static)
->        Action: Auto-connect remote device (0x02)
-> @ MGMT Event: Device Added (0x001a) plen 8      {0x0002} [hci0] 18:06:14.98
->        LE Address: CD:F3:CD:13:C5:90 (Static)
->        Action: Auto-connect remote device (0x02)
-> @ MGMT Event: Unknown (0x002a) plen 15          {0x0004} [hci0] 18:06:14.98
->        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
-> @ MGMT Event: Unknown (0x002a) plen 15          {0x0003} [hci0] 18:06:14.98
->        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
-> @ MGMT Event: Unknown (0x002a) plen 15          {0x0002} [hci0] 18:06:14.98
->        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
-> @ MGMT Event: Unknown (0x002a) plen 15          {0x0001} [hci0] 18:06:14.98
->        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
+>     6.3.2.1  Lvalues, arrays, and function designators
 > 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> Reviewed-by: Alain Michaud <alainm@chromium.org>
-> ---
+> 4  A function designator is an expression that has function type.
+>     Except when it is the operand of the sizeof operator or the unary
+>     & operator, a function designator with type ``function returning
+>     type'' is converted to an expression that has type ``pointer to
+>     function returning type''.
 > 
-> include/net/bluetooth/hci.h  |   1 +
-> include/net/bluetooth/mgmt.h |  28 ++++++++
-> net/bluetooth/hci_sock.c     |   1 +
-> net/bluetooth/mgmt.c         | 134 +++++++++++++++++++++++++++++++++++
-> 4 files changed, 164 insertions(+)
+> Hence,
 > 
-> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-> index 16ab6ce8788341..5e03aac76ad47f 100644
-> --- a/include/net/bluetooth/hci.h
-> +++ b/include/net/bluetooth/hci.h
-> @@ -259,6 +259,7 @@ enum {
-> 	HCI_MGMT_LOCAL_NAME_EVENTS,
-> 	HCI_MGMT_OOB_DATA_EVENTS,
-> 	HCI_MGMT_EXP_FEATURE_EVENTS,
-> +	HCI_MGMT_DEVICE_FLAGS_EVENTS,
-
-this part is not needed. We are doing this for commands where a client has to initiate a read command first before things get enabled. In this case the triggering command is Add Device and that has been there for a while. So no need to extra guard this.
-
-> };
+>    .resume = &genphy_resume
 > 
-> /*
-> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-> index e515288f328f47..8e47b0c5fe52bb 100644
-> --- a/include/net/bluetooth/mgmt.h
-> +++ b/include/net/bluetooth/mgmt.h
-> @@ -720,6 +720,27 @@ struct mgmt_rp_set_exp_feature {
-> #define MGMT_OP_SET_DEF_RUNTIME_CONFIG	0x004e
-> #define MGMT_SET_DEF_RUNTIME_CONFIG_SIZE	0
+> and
 > 
-> +#define MGMT_OP_GET_DEVICE_FLAGS	0x004F
-> +#define MGMT_GET_DEVICE_FLAGS_SIZE	7
-> +struct mgmt_cp_get_device_flags {
-> +	struct mgmt_addr_info addr;
-> +} __packed;
-> +struct mgmt_rp_get_device_flags {
-> +	struct mgmt_addr_info addr;
-> +	__le32 supported_flags;
-> +	__le32 current_flags;
-> +} __packed;
-> +
-> +#define MGMT_OP_SET_DEVICE_FLAGS	0x0050
-> +#define MGMT_SET_DEVICE_FLAGS_SIZE	11
-> +struct mgmt_cp_set_device_flags {
-> +	struct mgmt_addr_info addr;
-> +	__le32 current_flags;
-> +} __packed;
-> +struct mgmt_rp_set_device_flags {
-> +	struct mgmt_addr_info addr;
-> +} __packed;
-> +
-> #define MGMT_EV_CMD_COMPLETE		0x0001
-> struct mgmt_ev_cmd_complete {
-> 	__le16	opcode;
-> @@ -951,3 +972,10 @@ struct mgmt_ev_exp_feature_changed {
-> 	__u8	uuid[16];
-> 	__le32	flags;
-> } __packed;
-> +
-> +#define MGMT_EV_DEVICE_FLAGS_CHANGED		0x002a
-> +struct mgmt_ev_device_flags_changed {
-> +	struct mgmt_addr_info addr;
-> +	__le32 supported_flags;
-> +	__le32 current_flags;
-> +} __packed;
-> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-> index d5627967fc254f..a7903b6206620c 100644
-> --- a/net/bluetooth/hci_sock.c
-> +++ b/net/bluetooth/hci_sock.c
-> @@ -1354,6 +1354,7 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
-> 			hci_sock_set_flag(sk, HCI_MGMT_SETTING_EVENTS);
-> 			hci_sock_set_flag(sk, HCI_MGMT_DEV_CLASS_EVENTS);
-> 			hci_sock_set_flag(sk, HCI_MGMT_LOCAL_NAME_EVENTS);
-> +			hci_sock_set_flag(sk, HCI_MGMT_DEVICE_FLAGS_EVENTS);
-
-This is actually wrong. The other flags are there for event where you have multiple versions of the same event. If we ever introduce an Add Extended Device command, then yes, we need to guard things here. Right now, we don’t.
-
-> 		}
-> 		break;
-> 	}
-> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-> index 6d996e5e5bcc2d..2805f662d85695 100644
-> --- a/net/bluetooth/mgmt.c
-> +++ b/net/bluetooth/mgmt.c
-> @@ -114,6 +114,8 @@ static const u16 mgmt_commands[] = {
-> 	MGMT_OP_SET_EXP_FEATURE,
-> 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
-> 	MGMT_OP_SET_DEF_SYSTEM_CONFIG,
-> +	MGMT_OP_GET_DEVICE_FLAGS,
-> +	MGMT_OP_SET_DEVICE_FLAGS,
-> };
+>    .resume = genphy_resume
 > 
-> static const u16 mgmt_events[] = {
-> @@ -154,6 +156,7 @@ static const u16 mgmt_events[] = {
-> 	MGMT_EV_EXT_INFO_CHANGED,
-> 	MGMT_EV_PHY_CONFIGURATION_CHANGED,
-> 	MGMT_EV_EXP_FEATURE_CHANGED,
-> +	MGMT_EV_DEVICE_FLAGS_CHANGED,
-> };
+> are equivalent but sizeof(genphy_resume) and sizeof(&genphy_resume) are
+> not.
 > 
-> static const u16 mgmt_untrusted_commands[] = {
-> @@ -3853,6 +3856,122 @@ static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
-> 			       MGMT_STATUS_NOT_SUPPORTED);
-> }
+> Thanks.
 > 
-> +#define SUPPORTED_DEVICE_FLAGS() ((1U << HCI_CONN_FLAG_MAX) - 1)
-> +
-> +static int get_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
-> +			    u16 data_len)
-> +{
-> +	struct mgmt_cp_get_device_flags *cp = data;
-> +	struct mgmt_rp_get_device_flags rp;
-> +	struct bdaddr_list_with_flags *br_params;
-> +	struct hci_conn_params *params;
-> +	u32 supported_flags = SUPPORTED_DEVICE_FLAGS();
-> +	u32 current_flags = 0;
-> +	u8 status = MGMT_STATUS_INVALID_PARAMS;
-> +
-> +	bt_dev_dbg(hdev, "Get device flags %pMR (type 0x%x)\n",
-> +		   &cp->addr.bdaddr, cp->addr.type);
-> +
-> +	if (cp->addr.type == BDADDR_BREDR) {
-> +		br_params = hci_bdaddr_list_lookup_with_flags(&hdev->whitelist,
-> +							      &cp->addr.bdaddr,
-> +							      cp->addr.type);
-> +		if (!br_params)
-> +			goto done;
-> +
-> +		current_flags = br_params->current_flags;
-> +	} else {
-> +		params = hci_conn_params_lookup(hdev, &cp->addr.bdaddr,
-> +						le_addr_type(cp->addr.type));
-> +
-> +		if (!params)
-> +			goto done;
-> +
-> +		current_flags = params->current_flags;
-> +	}
-> +
-> +	bacpy(&rp.addr.bdaddr, &cp->addr.bdaddr);
-> +	rp.addr.type = cp->addr.type;
-> +	rp.supported_flags = cpu_to_le32(supported_flags);
-> +	rp.current_flags = cpu_to_le32(current_flags);
-> +
-> +	status = MGMT_STATUS_SUCCESS;
-> +
-> +done:
-> +	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_GET_DEVICE_FLAGS, status,
-> +				&rp, sizeof(rp));
-> +}
-> +
-> +static int device_flags_changed(struct hci_dev *hdev, bdaddr_t *bdaddr,
-> +				u8 bdaddr_type, u32 supported_flags,
-> +				u32 current_flags, struct sock *skip)
-> +{
-> +	struct mgmt_ev_device_flags_changed ev;
-> +
-> +	bacpy(&ev.addr.bdaddr, bdaddr);
-> +	ev.addr.type = bdaddr_type;
-> +	ev.supported_flags = cpu_to_le32(supported_flags);
-> +	ev.current_flags = cpu_to_le32(current_flags);
-> +
-> +	return mgmt_limited_event(MGMT_EV_DEVICE_FLAGS_CHANGED, hdev, &ev,
-> +				  sizeof(ev), HCI_MGMT_DEVICE_FLAGS_EVENTS,
-> +				  skip);
-> +}
-> +
-> +static int set_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
-> +			    u16 len)
-> +{
-> +	struct mgmt_cp_set_device_flags *cp = data;
-> +	struct bdaddr_list_with_flags *br_params;
-> +	struct hci_conn_params *params;
-> +	u8 status = MGMT_STATUS_INVALID_PARAMS;
-> +	u32 supported_flags = SUPPORTED_DEVICE_FLAGS();
-> +	u32 current_flags = __le32_to_cpu(cp->current_flags);
-> +
-> +	bt_dev_dbg(hdev, "Set device flags %pMR (type 0x%x) = 0x%x",
-> +		   &cp->addr.bdaddr, cp->addr.type,
-> +		   __le32_to_cpu(current_flags));
-> +
-> +	if ((supported_flags | current_flags) != supported_flags) {
-> +		bt_dev_warn(hdev, "Bad flag given (0x%x) vs supported (0x%0x)",
-> +			    current_flags, supported_flags);
-> +		goto done;
-> +	}
-> +
-> +	if (cp->addr.type == BDADDR_BREDR) {
-> +		br_params = hci_bdaddr_list_lookup_with_flags(&hdev->whitelist,
-> +							      &cp->addr.bdaddr,
-> +							      cp->addr.type);
-> +
-> +		if (br_params) {
-> +			br_params->current_flags = current_flags;
-> +			status = MGMT_STATUS_SUCCESS;
-> +		} else {
-> +			bt_dev_warn(hdev, "No such BR/EDR device %pMR (0x%x)",
-> +				    &cp->addr.bdaddr, cp->addr.type);
-> +		}
-> +	} else {
-> +		params = hci_conn_params_lookup(hdev, &cp->addr.bdaddr,
-> +						le_addr_type(cp->addr.type));
-> +		if (params) {
-> +			params->current_flags = current_flags;
-> +			status = MGMT_STATUS_SUCCESS;
-> +		} else {
-> +			bt_dev_warn(hdev, "No such LE device %pMR (0x%x)",
-> +				    &cp->addr.bdaddr,
-> +				    le_addr_type(cp->addr.type));
-> +		}
-> +	}
-> +
-> +done:
-> +	if (status == MGMT_STATUS_SUCCESS)
-> +		device_flags_changed(hdev, &cp->addr.bdaddr, cp->addr.type,
-> +				     supported_flags, current_flags, sk);
-> +
-> +	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_DEVICE_FLAGS, status,
-> +				 &cp->addr, sizeof(cp->addr));
-> +}
-> +
-> static void read_local_oob_data_complete(struct hci_dev *hdev, u8 status,
-> 				         u16 opcode, struct sk_buff *skb)
-> {
-> @@ -5970,7 +6089,9 @@ static int add_device(struct sock *sk, struct hci_dev *hdev,
-> {
-> 	struct mgmt_cp_add_device *cp = data;
-> 	u8 auto_conn, addr_type;
-> +	struct hci_conn_params *params;
-> 	int err;
-> +	u32 current_flags = 0;
-> 
-> 	bt_dev_dbg(hdev, "sock %p", sk);
-> 
-> @@ -6038,12 +6159,19 @@ static int add_device(struct sock *sk, struct hci_dev *hdev,
-> 					MGMT_STATUS_FAILED, &cp->addr,
-> 					sizeof(cp->addr));
-> 		goto unlock;
-> +	} else {
-> +		params = hci_conn_params_lookup(hdev, &cp->addr.bdaddr,
-> +						addr_type);
-> +		if (params)
-> +			current_flags = params->current_flags;
-> 	}
-> 
-> 	hci_update_background_scan(hdev);
-> 
-> added:
-> 	device_added(sk, hdev, &cp->addr.bdaddr, cp->addr.type, cp->action);
-> +	device_flags_changed(hdev, &cp->addr.bdaddr, cp->addr.type,
-> +			     SUPPORTED_DEVICE_FLAGS(), current_flags, NULL);
-> 
-> 	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_ADD_DEVICE,
-> 				MGMT_STATUS_SUCCESS, &cp->addr,
-> @@ -7306,6 +7434,12 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
-> 						HCI_MGMT_UNTRUSTED },
-> 	{ set_def_system_config,   MGMT_SET_DEF_SYSTEM_CONFIG_SIZE,
-> 						HCI_MGMT_VAR_LEN },
-> +
-> +	{ NULL }, /* Read default runtime config */
-> +	{ NULL }, /* Set default runtime config */
-> +
-> +	{ get_device_flags,        MGMT_GET_DEVICE_FLAGS_SIZE },
-> +	{ set_device_flags,        MGMT_SET_DEVICE_FLAGS_SIZE },
-> };
-
-I have create a local tree that has the read/set runtime config commands already in there. I added your patches 1-3 to the tree already. I might just remove the HCI_MGMT_DEVICE_FLAGS_EVENTS and add this patch as well. Everything else looks good.
-
-Regards
-
-Marcel
-
