@@ -2,93 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE111FD0EB
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 17:28:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B1AE1FD111
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 17:33:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726893AbgFQP15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 11:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40020 "EHLO
+        id S1726918AbgFQPdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 11:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726758AbgFQP14 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 11:27:56 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB3AC06174E
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 08:27:56 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id y9so1208285qvs.4
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 08:27:56 -0700 (PDT)
+        with ESMTP id S1726558AbgFQPdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 11:33:51 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39B5C06174E;
+        Wed, 17 Jun 2020 08:33:51 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id z63so1316485pfb.1;
+        Wed, 17 Jun 2020 08:33:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=7pfke35ATDBZQHizYBReHxNt7Q2DP0Z55RVh2qKQIjo=;
-        b=fD8c/evs+8Gafmz77OVS9YqXIwYxcDmurqBrkZfNnM+q51ee5p3wk0f/7GXxcsg00B
-         G+VRlVga3dNhJPu8w3hgdgyUs5ezAn28jSbP6HWZpetrZgF4VI4PR29ZNX3PSMw3dMvR
-         /CYGs22QQOjH5eZiTwv2xfZTksCzHogm+bdI35fUbKnDBor+2ZIHfF7zGS/ltFGzRMUU
-         CqNywVGIkZK4jM93rSLxaxgYJCUGOvsTAWoNwB5MkXxar/h/+QWb2ZVC99610g78vatg
-         Fb/mNFoVHaWXn71qokZJdlK0xjv4gnsw8TY/fU/jUabrISloQWc6MsKoLZ6prYD4wEWo
-         xuSA==
+        bh=9XYCr6Zy0SFc/eo2kKcuSj+TDFOwpW8ayTc9YaNvQW4=;
+        b=jL7+9eMJJS22Gqpqh5AtGiabAxqRW3TL1kfyDKeARpjfoLdm5DlqJPm2YFc7Uf2c8e
+         iiXwaEi5/fNkce1wIJhXRk5+bQ1nCxWhul9bHB4167Y9RMJMWBw2YopUQUWoSDLXDuZS
+         +rY9HipdU7tLK1LoKHontQjuq9r+qSThpIrGluB/AKf7YfFg9jNJtlnXehv7kzDxTm9R
+         4QbAp+jlWm3Z+fCjTP6ye3jh32Tc6LNPVgR7Lo/ykgiuJaRgmIEtz5Y2sKstd+Xh3hxo
+         e8ePuyiGn6mK8Zba3CyfQtU/sMJ1zad3OTRRdBXTlNjWAmXL5WxVq+7IIewimQzUzQUw
+         mLVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=7pfke35ATDBZQHizYBReHxNt7Q2DP0Z55RVh2qKQIjo=;
-        b=hPcWRHtRcgc6mBsiUndSGlmlh4KzXKaFsjtzavi++7Ht8wiCSVMrCMJMJeguxYx8fb
-         BnARGtLo/w4JSP5qMh8Wbm8Zx2J9DGk47mkRkDaU5CVn6EJww/bqh9MnZ0Jgk8P4I95C
-         TuFqK2oI9kV8PjrGeFWkbLwHtkWqB/QXDLFmmdZn6T02lXQiP/jIBVKopSLVU1sbZjJW
-         EbjP21ogOZFZhb27UvpHr04BzVB39+WvoiKCV3D5UQmqEwNnmDrwOSRN2wyZ15ZgIbom
-         /ZYeVHksTmXnlYbVebmtNoRk2smUJ1skgwmqHAurODM4WqTTYa97FTv0sksjZDzC2QQC
-         FAlQ==
-X-Gm-Message-State: AOAM531dkFzFyZRJgusV6qnV2FzGVsCadiDPD1kvYWSpCvzjXJFMMZgQ
-        97PKdh9UaMA2e6vme0sn0K8af0TSm7EtwBvGNQ==
-X-Google-Smtp-Source: ABdhPJwla73kt8o7qgdFJJQqy/pY2zksfKNZ6NzUFpIXfrrzGYleT7aNjEi8sy24RTrRFwUC3WRoB+X+9/GEZqjYzpw=
-X-Received: by 2002:a05:6214:964:: with SMTP id do4mr8353776qvb.84.1592407675591;
- Wed, 17 Jun 2020 08:27:55 -0700 (PDT)
+        bh=9XYCr6Zy0SFc/eo2kKcuSj+TDFOwpW8ayTc9YaNvQW4=;
+        b=uMBjfvJti32wVXU6Conak5YaUsyuyAvUtCOq9v/WGWdjQw0WWHQ6ekHbx0I/B9b6YO
+         OWCa4g6+ELSTwExuL6R/ZIatS+MkJ+eHQCppLB+vNmRDfg/0L9ohfiYQAnTGAVsSKk5K
+         3eRfb0fLdRT68E0UL/E6LkIkKRZQxvHovFjUbrG7zn1ef8v54Vf/hsBn0+rDfVKGUonL
+         988oSNre1yr0TX6jHZfC+0BpSc6foZSDFXMjX7hC3VPMmsjwAgupANTEc1CAXSTyvq45
+         G5MptyS7x1zVdl75qJkC5F3aziyja3OYeGfyGKoHvf4g9Wm92z60aS/O10BaGXh6JodR
+         pQWw==
+X-Gm-Message-State: AOAM532wQKLf05fjYaOTlZUZFXTS3wsjx7JiyWwYTlnjwLMLQB5MM/2M
+        Q8/3ymvpSnY2379FNqs3z1c0QsF7oR8=
+X-Google-Smtp-Source: ABdhPJy0mCD2xf2PUcMQKbv+6h9HAiiov65Br/IND4/ngNnMk7XnTejRwTuypmQ49c+OUM7F+J5fRQ==
+X-Received: by 2002:aa7:9404:: with SMTP id x4mr7284949pfo.158.1592408031222;
+        Wed, 17 Jun 2020 08:33:51 -0700 (PDT)
+Received: from localhost ([144.34.193.30])
+        by smtp.gmail.com with ESMTPSA id g17sm24275pju.11.2020.06.17.08.33.49
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 17 Jun 2020 08:33:50 -0700 (PDT)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>,
+        Kevin Groeneveld <kgroeneveld@gmail.com>
+Subject: [PATCH net v1] net: phy: smsc: fix printing too many logs
+Date:   Wed, 17 Jun 2020 23:33:40 +0800
+Message-Id: <20200617153340.17371-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Received: by 2002:a0c:da02:0:0:0:0:0 with HTTP; Wed, 17 Jun 2020 08:27:55
- -0700 (PDT)
-From:   Hassan clement <hassanclement10@gmail.com>
-Date:   Wed, 17 Jun 2020 15:27:55 +0000
-Message-ID: <CAFeK32jpj6CinjfQPVm=Eo-+Awf3Yav-LJ74JCa5aWyd+ue0hw@mail.gmail.com>
-Subject: =?UTF-8?B?RG9icsO9IGRlxYggcMOhbiAvIHBhbmks?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dobr=C3=BD de=C5=88 p=C3=A1n / pani,
-E-mail, ktor=C3=BD ste dostali, bol =C5=A1pecificky adresovan=C3=BD v=C3=A1=
-m. Va=C5=A1a
-e-mailov=C3=A1 adresa bola n=C3=A1hodne vybran=C3=A1 zo Spojen=C3=BDch =C5=
-=A1t=C3=A1tov americk=C3=BDch
-pre kompenza=C4=8Dn=C3=A9 velenie v spojen=C3=AD s Medzin=C3=A1rodn=C3=BDm =
-trestn=C3=BDm s=C3=BAdom (ICC)
-spolu s BTCI BANK LOME TOGO, kde va=C5=A1a platba tristo tis=C3=ADc dol=C3=
-=A1rov (
-300 000,00 USD) sa uskuto=C4=8Dn=C3=AD priamym prevodom na v=C3=A1=C5=A1 =
-=C3=BA=C4=8Det
-prostredn=C3=ADctvom BANKOVEJ BANKOVEJ PREVODY ALEBO AK=C3=89HOKO=C4=BDVEK =
-STREDU
-V=C3=81=C5=A0HO VO=C4=BDBY.
+Commit 7ae7ad2f11ef47 ("net: phy: smsc: use phy_read_poll_timeout()
+to simplify the code") will print a lot of logs as follows when Ethernet
+cable is not connected:
 
-Upozor=C5=88ujeme, =C5=BEe v=C3=A1=C5=A1 e-mail z=C3=ADskal kompenza=C4=8Dn=
-=C3=BD pr=C3=ADspevok vo v=C3=BD=C5=A1ke 300
-000,00 USD z vy=C5=A1=C5=A1ie uveden=C3=A9ho zv=C3=A4zku. Odpor=C3=BA=C4=8D=
-ame v=C3=A1m poskytn=C3=BA=C5=A5
-inform=C3=A1cie o form=C3=A1te uvedenom ni=C5=BE=C5=A1ie pre =C4=8Fal=C5=A1=
-ie spracovanie v=C3=A1=C5=A1ho
-dokumentu, ktor=C3=BD okam=C5=BEite po=C5=A1lete spolo=C4=8Dnosti BTCI BANK=
-. Poskytnite
-potrebn=C3=A9 inform=C3=A1cie ako je uveden=C3=A9 ni=C5=BE=C5=A1ie:
+[    4.473105] SMSC LAN8710/LAN8720 2188000.ethernet-1:00: lan87xx_read_status failed: -110
 
-1) Va=C5=A1e cel=C3=A9 meno
-2) Va=C5=A1e priame telef=C3=B3nne =C4=8D=C3=ADslo
-3) Va=C5=A1a =C3=BApln=C3=A1 adresa
-4) K=C3=B3pia va=C5=A1ej identifik=C3=A1cie I.D
-5) Zamestnanie a poz=C3=ADcia
+So fix it by read_poll_timeout().
 
-V=C4=8EAKA
-Pani Alima Dawoodov=C3=A1.
-Platobn=C3=BD =C3=BArad
+Fixes: 7ae7ad2f11ef47 ("net: phy: smsc: use phy_read_poll_timeout() to simplify the code")
+Reported-by: Kevin Groeneveld <kgroeneveld@gmail.com>
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+---
+ drivers/net/phy/smsc.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index 93da7d3d0954..36c5a57917b8 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -123,9 +123,10 @@ static int lan87xx_read_status(struct phy_device *phydev)
+ 			return rc;
+ 
+ 		/* Wait max 640 ms to detect energy */
+-		phy_read_poll_timeout(phydev, MII_LAN83C185_CTRL_STATUS, rc,
+-				      rc & MII_LAN83C185_ENERGYON, 10000,
+-				      640000, true);
++		read_poll_timeout(phy_read, rc,
++				  rc & MII_LAN83C185_ENERGYON || rc < 0,
++				  10000, 640000, true, phydev,
++				  MII_LAN83C185_CTRL_STATUS);
+ 		if (rc < 0)
+ 			return rc;
+ 
+-- 
+2.25.0
+
