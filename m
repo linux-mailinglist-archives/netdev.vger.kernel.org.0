@@ -2,90 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4431FD0DD
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 17:25:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAE111FD0EB
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 17:28:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726966AbgFQPZp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jun 2020 11:25:45 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:24319 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726958AbgFQPZp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 11:25:45 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-25-eup2Bh-aNyW7TJye3x3ncg-1; Wed, 17 Jun 2020 16:25:42 +0100
-X-MC-Unique: eup2Bh-aNyW7TJye3x3ncg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Wed, 17 Jun 2020 16:25:41 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Wed, 17 Jun 2020 16:25:41 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Kees Cook' <keescook@chromium.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Sargun Dhillon <sargun@sargun.me>,
-        Christian Brauner <christian@brauner.io>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Christoph Hellwig" <hch@lst.de>, Tycho Andersen <tycho@tycho.ws>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Matt Denton <mpdenton@google.com>,
-        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
-        Robert Sesek <rsesek@google.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "containers@lists.linux-foundation.org" 
-        <containers@lists.linux-foundation.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: RE: [PATCH v4 02/11] fs: Move __scm_install_fd() to
- __fd_install_received()
-Thread-Topic: [PATCH v4 02/11] fs: Move __scm_install_fd() to
- __fd_install_received()
-Thread-Index: AQHWQ43M27/IXY9H5E6A6toMY/N8aajc78uQ
-Date:   Wed, 17 Jun 2020 15:25:41 +0000
-Message-ID: <b58ef9a368214b69a86c7a78b67f84d5@AcuMS.aculab.com>
-References: <20200616032524.460144-1-keescook@chromium.org>
- <20200616032524.460144-3-keescook@chromium.org>
-In-Reply-To: <20200616032524.460144-3-keescook@chromium.org>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726893AbgFQP15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 11:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40020 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726758AbgFQP14 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 11:27:56 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB3AC06174E
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 08:27:56 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id y9so1208285qvs.4
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 08:27:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=7pfke35ATDBZQHizYBReHxNt7Q2DP0Z55RVh2qKQIjo=;
+        b=fD8c/evs+8Gafmz77OVS9YqXIwYxcDmurqBrkZfNnM+q51ee5p3wk0f/7GXxcsg00B
+         G+VRlVga3dNhJPu8w3hgdgyUs5ezAn28jSbP6HWZpetrZgF4VI4PR29ZNX3PSMw3dMvR
+         /CYGs22QQOjH5eZiTwv2xfZTksCzHogm+bdI35fUbKnDBor+2ZIHfF7zGS/ltFGzRMUU
+         CqNywVGIkZK4jM93rSLxaxgYJCUGOvsTAWoNwB5MkXxar/h/+QWb2ZVC99610g78vatg
+         Fb/mNFoVHaWXn71qokZJdlK0xjv4gnsw8TY/fU/jUabrISloQWc6MsKoLZ6prYD4wEWo
+         xuSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=7pfke35ATDBZQHizYBReHxNt7Q2DP0Z55RVh2qKQIjo=;
+        b=hPcWRHtRcgc6mBsiUndSGlmlh4KzXKaFsjtzavi++7Ht8wiCSVMrCMJMJeguxYx8fb
+         BnARGtLo/w4JSP5qMh8Wbm8Zx2J9DGk47mkRkDaU5CVn6EJww/bqh9MnZ0Jgk8P4I95C
+         TuFqK2oI9kV8PjrGeFWkbLwHtkWqB/QXDLFmmdZn6T02lXQiP/jIBVKopSLVU1sbZjJW
+         EbjP21ogOZFZhb27UvpHr04BzVB39+WvoiKCV3D5UQmqEwNnmDrwOSRN2wyZ15ZgIbom
+         /ZYeVHksTmXnlYbVebmtNoRk2smUJ1skgwmqHAurODM4WqTTYa97FTv0sksjZDzC2QQC
+         FAlQ==
+X-Gm-Message-State: AOAM531dkFzFyZRJgusV6qnV2FzGVsCadiDPD1kvYWSpCvzjXJFMMZgQ
+        97PKdh9UaMA2e6vme0sn0K8af0TSm7EtwBvGNQ==
+X-Google-Smtp-Source: ABdhPJwla73kt8o7qgdFJJQqy/pY2zksfKNZ6NzUFpIXfrrzGYleT7aNjEi8sy24RTrRFwUC3WRoB+X+9/GEZqjYzpw=
+X-Received: by 2002:a05:6214:964:: with SMTP id do4mr8353776qvb.84.1592407675591;
+ Wed, 17 Jun 2020 08:27:55 -0700 (PDT)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Received: by 2002:a0c:da02:0:0:0:0:0 with HTTP; Wed, 17 Jun 2020 08:27:55
+ -0700 (PDT)
+From:   Hassan clement <hassanclement10@gmail.com>
+Date:   Wed, 17 Jun 2020 15:27:55 +0000
+Message-ID: <CAFeK32jpj6CinjfQPVm=Eo-+Awf3Yav-LJ74JCa5aWyd+ue0hw@mail.gmail.com>
+Subject: =?UTF-8?B?RG9icsO9IGRlxYggcMOhbiAvIHBhbmks?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kees Cook
-> Sent: 16 June 2020 04:25
- 
-> In preparation for users of the "install a received file" logic outside
-> of net/ (pidfd and seccomp), relocate and rename __scm_install_fd() from
-> net/core/scm.c to __fd_install_received() in fs/file.c, and provide a
-> wrapper named fd_install_received_user(), as future patches will change
-> the interface to __fd_install_received().
+Dobr=C3=BD de=C5=88 p=C3=A1n / pani,
+E-mail, ktor=C3=BD ste dostali, bol =C5=A1pecificky adresovan=C3=BD v=C3=A1=
+m. Va=C5=A1a
+e-mailov=C3=A1 adresa bola n=C3=A1hodne vybran=C3=A1 zo Spojen=C3=BDch =C5=
+=A1t=C3=A1tov americk=C3=BDch
+pre kompenza=C4=8Dn=C3=A9 velenie v spojen=C3=AD s Medzin=C3=A1rodn=C3=BDm =
+trestn=C3=BDm s=C3=BAdom (ICC)
+spolu s BTCI BANK LOME TOGO, kde va=C5=A1a platba tristo tis=C3=ADc dol=C3=
+=A1rov (
+300 000,00 USD) sa uskuto=C4=8Dn=C3=AD priamym prevodom na v=C3=A1=C5=A1 =
+=C3=BA=C4=8Det
+prostredn=C3=ADctvom BANKOVEJ BANKOVEJ PREVODY ALEBO AK=C3=89HOKO=C4=BDVEK =
+STREDU
+V=C3=81=C5=A0HO VO=C4=BDBY.
 
-Any reason for the leading __ ??
+Upozor=C5=88ujeme, =C5=BEe v=C3=A1=C5=A1 e-mail z=C3=ADskal kompenza=C4=8Dn=
+=C3=BD pr=C3=ADspevok vo v=C3=BD=C5=A1ke 300
+000,00 USD z vy=C5=A1=C5=A1ie uveden=C3=A9ho zv=C3=A4zku. Odpor=C3=BA=C4=8D=
+ame v=C3=A1m poskytn=C3=BA=C5=A5
+inform=C3=A1cie o form=C3=A1te uvedenom ni=C5=BE=C5=A1ie pre =C4=8Fal=C5=A1=
+ie spracovanie v=C3=A1=C5=A1ho
+dokumentu, ktor=C3=BD okam=C5=BEite po=C5=A1lete spolo=C4=8Dnosti BTCI BANK=
+. Poskytnite
+potrebn=C3=A9 inform=C3=A1cie ako je uveden=C3=A9 ni=C5=BE=C5=A1ie:
 
-	David
+1) Va=C5=A1e cel=C3=A9 meno
+2) Va=C5=A1e priame telef=C3=B3nne =C4=8D=C3=ADslo
+3) Va=C5=A1a =C3=BApln=C3=A1 adresa
+4) K=C3=B3pia va=C5=A1ej identifik=C3=A1cie I.D
+5) Zamestnanie a poz=C3=ADcia
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+V=C4=8EAKA
+Pani Alima Dawoodov=C3=A1.
+Platobn=C3=BD =C3=BArad
