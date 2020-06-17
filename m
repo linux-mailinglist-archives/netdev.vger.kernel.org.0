@@ -2,127 +2,358 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FCB11FCA44
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 11:57:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B161FCA4A
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 11:59:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725964AbgFQJ5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 05:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45118 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgFQJ5f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 05:57:35 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA7AC061573
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 02:57:35 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id p18so1439918eds.7
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 02:57:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sieVdZ+7zUvBZAtBXeOWbxtzA5potHsDOyp/idhrePM=;
-        b=Wkr9Q41M2X/qwgshCpyGBYQVLBFgxOwo38Bxwg3xB3jRTgGETAms4rO7GuL7ooxVjX
-         WVlbc7nKpqR1eTn0jQX1eMPJASJFrzDUXlH3J/YkQN8w23xIa00T3TMlxKZtwUuDTGur
-         CNssiBxB4CeGnGMJ9wbDFSBE5gOB7D94pXTaIqKwYN9cG2w/jwjfIPachTaUfcCzDVCZ
-         jjaEMUp0WNmCJ94gmNBxF5bS6TYs7foeXc/yBJa3fPxAZ7lCG7828HRoPEGxuxCciwxq
-         FiAVCNHY0G4wMiqkRXCzWmIA3bQlT5gyc6zLFw95vYR+1ps/J3ehMK74Pa8cKHr89N79
-         uKUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sieVdZ+7zUvBZAtBXeOWbxtzA5potHsDOyp/idhrePM=;
-        b=lw6JWdAmUdl4L/fAodjuRHCYXfm+e71oEUBau8IJrzc+hYJUG1tX3NYwep/jMzs9B8
-         Pqa1nrI0DNCADmNnPKmy+kHoajyvtgHMi+i1HbiBfLkrwp6N8wYOCnHcrVdGgdKFsK3L
-         TKUJTD767SQ3yKv1jQFAongSNgg3SokC7oSA/6pBdAbmi41C0vJJ24ME67iXvkqHRpBY
-         YDdhwFsiEKHei8/NCM5Y/uJRQZdv0lg2fhlIJa4kTpXWy4+2xk/ucSw4dgl5BJbGDPSp
-         A3K9d+YCoDDWg2n/VjkD870fBXXbtlJmOfhlwJdYAxvSkjIiEqbcF7znhUz02phNdMz8
-         Fojg==
-X-Gm-Message-State: AOAM531Sa+XqVTweTuRzQYBvACLg6D+WjRn+MNLhY5ute9lJSuTJ8IVD
-        36BVCsyNMfqSGSDjsBMapzrYUlsdWO+i5mTpD3kh0Q==
-X-Google-Smtp-Source: ABdhPJzTngRr9JwF9z9PHWCX59xuO+mLXB8BjoiIRDATv7HdVmYR4VApKYJXxMSpvpM9t4wsIuWts2GS1SjUq0Dwvcs=
-X-Received: by 2002:a50:fb0b:: with SMTP id d11mr6678075edq.118.1592387853957;
- Wed, 17 Jun 2020 02:57:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200616074955.GA9092@laureti-dev>
-In-Reply-To: <20200616074955.GA9092@laureti-dev>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 17 Jun 2020 12:57:23 +0300
-Message-ID: <CA+h21hoTQzGwF5wYx3-0Fa_rUYWw+m2CVcBV8WUQ7OtK3DHpQA@mail.gmail.com>
-Subject: Re: [PATCH] net: macb: reject unsupported rgmii delays
-To:     Helmut Grohne <helmut.grohne@intenta.de>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        id S1726282AbgFQJ7C convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jun 2020 05:59:02 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:50686 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725554AbgFQJ7B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 05:59:01 -0400
+Received: from marcel-macbook.fritz.box (p5b3d2638.dip0.t-ipconnect.de [91.61.38.56])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 3CDC4CECD1;
+        Wed, 17 Jun 2020 12:08:49 +0200 (CEST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH 4/4] Bluetooth: Add get/set device flags mgmt op
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200616210008.4.If379101eba01fd9f0903e04cc817eb2c8e7f7d96@changeid>
+Date:   Wed, 17 Jun 2020 11:58:57 +0200
+Cc:     Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        Alain Michaud <alainm@chromium.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <6439C541-257B-4CF0-B171-118B374C5B72@holtmann.org>
+References: <20200617040022.174448-1-abhishekpandit@chromium.org>
+ <20200616210008.4.If379101eba01fd9f0903e04cc817eb2c8e7f7d96@changeid>
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Helmut,
+Hi Abhishek,
 
-On Tue, 16 Jun 2020 at 11:00, Helmut Grohne <helmut.grohne@intenta.de> wrote:
->
-> The macb driver does not support configuring rgmii delays. At least for
-> the Zynq GEM, delays are not supported by the hardware at all. However,
-> the driver happily accepts and ignores any such delays.
->
-> When operating in a mac to phy connection, the delay setting applies to
-> the phy. Since the MAC does not support delays, the phy must provide
-> them and the only supported mode is rgmii-id.  However, in a fixed mac
-> to mac connection, the delay applies to the mac itself. Therefore the
-> only supported rgmii mode is rgmii.
->
-> Link: https://lore.kernel.org/netdev/20200610081236.GA31659@laureti-dev/
-> Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
+> Add the get device flags and set device flags mgmt ops and the device
+> flags changed event. Their behavior is described in detail in
+> mgmt-api.txt in bluez.
+> 
+> Sample btmon trace when a HID device is added (trimmed to 75 chars):
+> 
+> @ MGMT Command: Unknown (0x0050) plen 11        {0x0001} [hci0] 18:06:14.98
+>        90 c5 13 cd f3 cd 02 01 00 00 00                 ...........
+> @ MGMT Event: Unknown (0x002a) plen 15          {0x0004} [hci0] 18:06:14.98
+>        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
+> @ MGMT Event: Unknown (0x002a) plen 15          {0x0003} [hci0] 18:06:14.98
+>        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
+> @ MGMT Event: Unknown (0x002a) plen 15          {0x0002} [hci0] 18:06:14.98
+>        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
+> @ MGMT Event: Command Compl.. (0x0001) plen 10  {0x0001} [hci0] 18:06:14.98
+>      Unknown (0x0050) plen 7
+>        Status: Success (0x00)
+>        90 c5 13 cd f3 cd 02                             .......
+> @ MGMT Command: Add Device (0x0033) plen 8      {0x0001} [hci0] 18:06:14.98
+>        LE Address: CD:F3:CD:13:C5:90 (Static)
+>        Action: Auto-connect remote device (0x02)
+> @ MGMT Event: Device Added (0x001a) plen 8      {0x0004} [hci0] 18:06:14.98
+>        LE Address: CD:F3:CD:13:C5:90 (Static)
+>        Action: Auto-connect remote device (0x02)
+> @ MGMT Event: Device Added (0x001a) plen 8      {0x0003} [hci0] 18:06:14.98
+>        LE Address: CD:F3:CD:13:C5:90 (Static)
+>        Action: Auto-connect remote device (0x02)
+> @ MGMT Event: Device Added (0x001a) plen 8      {0x0002} [hci0] 18:06:14.98
+>        LE Address: CD:F3:CD:13:C5:90 (Static)
+>        Action: Auto-connect remote device (0x02)
+> @ MGMT Event: Unknown (0x002a) plen 15          {0x0004} [hci0] 18:06:14.98
+>        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
+> @ MGMT Event: Unknown (0x002a) plen 15          {0x0003} [hci0] 18:06:14.98
+>        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
+> @ MGMT Event: Unknown (0x002a) plen 15          {0x0002} [hci0] 18:06:14.98
+>        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
+> @ MGMT Event: Unknown (0x002a) plen 15          {0x0001} [hci0] 18:06:14.98
+>        90 c5 13 cd f3 cd 02 01 00 00 00 01 00 00 00     ...............
+> 
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> Reviewed-by: Alain Michaud <alainm@chromium.org>
 > ---
->  drivers/net/ethernet/cadence/macb_main.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index 5b9d7c60eebc..bee5bf65e8b3 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -514,7 +514,7 @@ static void macb_validate(struct phylink_config *config,
->             state->interface != PHY_INTERFACE_MODE_RMII &&
->             state->interface != PHY_INTERFACE_MODE_GMII &&
->             state->interface != PHY_INTERFACE_MODE_SGMII &&
-> -           !phy_interface_mode_is_rgmii(state->interface)) {
-> +           state->interface != PHY_INTERFACE_MODE_RGMII_ID) {
+> 
+> include/net/bluetooth/hci.h  |   1 +
+> include/net/bluetooth/mgmt.h |  28 ++++++++
+> net/bluetooth/hci_sock.c     |   1 +
+> net/bluetooth/mgmt.c         | 134 +++++++++++++++++++++++++++++++++++
+> 4 files changed, 164 insertions(+)
+> 
+> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+> index 16ab6ce8788341..5e03aac76ad47f 100644
+> --- a/include/net/bluetooth/hci.h
+> +++ b/include/net/bluetooth/hci.h
+> @@ -259,6 +259,7 @@ enum {
+> 	HCI_MGMT_LOCAL_NAME_EVENTS,
+> 	HCI_MGMT_OOB_DATA_EVENTS,
+> 	HCI_MGMT_EXP_FEATURE_EVENTS,
+> +	HCI_MGMT_DEVICE_FLAGS_EVENTS,
 
-I don't think this change is correct though?
-What if there were PCB traces in place, for whatever reason? Then the
-driver would need to accept a phy with rgmii-txid, rgmii-rxid or
-rgmii.
+this part is not needed. We are doing this for commands where a client has to initiate a read command first before things get enabled. In this case the triggering command is Add Device and that has been there for a while. So no need to extra guard this.
 
->                 bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
->                 return;
->         }
-> @@ -694,6 +694,13 @@ static int macb_phylink_connect(struct macb *bp)
->         struct phy_device *phydev;
->         int ret;
->
-> +       if (of_phy_is_fixed_link(dn) &&
-> +           phy_interface_mode_is_rgmii(bp->phy_interface) &&
-> +           bp->phy_interface != PHY_INTERFACE_MODE_RGMII) {
-> +               netdev_err(dev, "RGMII delays are not supported\n");
-> +               return -EINVAL;
-> +       }
+> };
+> 
+> /*
+> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+> index e515288f328f47..8e47b0c5fe52bb 100644
+> --- a/include/net/bluetooth/mgmt.h
+> +++ b/include/net/bluetooth/mgmt.h
+> @@ -720,6 +720,27 @@ struct mgmt_rp_set_exp_feature {
+> #define MGMT_OP_SET_DEF_RUNTIME_CONFIG	0x004e
+> #define MGMT_SET_DEF_RUNTIME_CONFIG_SIZE	0
+> 
+> +#define MGMT_OP_GET_DEVICE_FLAGS	0x004F
+> +#define MGMT_GET_DEVICE_FLAGS_SIZE	7
+> +struct mgmt_cp_get_device_flags {
+> +	struct mgmt_addr_info addr;
+> +} __packed;
+> +struct mgmt_rp_get_device_flags {
+> +	struct mgmt_addr_info addr;
+> +	__le32 supported_flags;
+> +	__le32 current_flags;
+> +} __packed;
 > +
+> +#define MGMT_OP_SET_DEVICE_FLAGS	0x0050
+> +#define MGMT_SET_DEVICE_FLAGS_SIZE	11
+> +struct mgmt_cp_set_device_flags {
+> +	struct mgmt_addr_info addr;
+> +	__le32 current_flags;
+> +} __packed;
+> +struct mgmt_rp_set_device_flags {
+> +	struct mgmt_addr_info addr;
+> +} __packed;
+> +
+> #define MGMT_EV_CMD_COMPLETE		0x0001
+> struct mgmt_ev_cmd_complete {
+> 	__le16	opcode;
+> @@ -951,3 +972,10 @@ struct mgmt_ev_exp_feature_changed {
+> 	__u8	uuid[16];
+> 	__le32	flags;
+> } __packed;
+> +
+> +#define MGMT_EV_DEVICE_FLAGS_CHANGED		0x002a
+> +struct mgmt_ev_device_flags_changed {
+> +	struct mgmt_addr_info addr;
+> +	__le32 supported_flags;
+> +	__le32 current_flags;
+> +} __packed;
+> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+> index d5627967fc254f..a7903b6206620c 100644
+> --- a/net/bluetooth/hci_sock.c
+> +++ b/net/bluetooth/hci_sock.c
+> @@ -1354,6 +1354,7 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
+> 			hci_sock_set_flag(sk, HCI_MGMT_SETTING_EVENTS);
+> 			hci_sock_set_flag(sk, HCI_MGMT_DEV_CLASS_EVENTS);
+> 			hci_sock_set_flag(sk, HCI_MGMT_LOCAL_NAME_EVENTS);
+> +			hci_sock_set_flag(sk, HCI_MGMT_DEVICE_FLAGS_EVENTS);
 
-Have you checked that this doesn't break any existing in-tree users?
+This is actually wrong. The other flags are there for event where you have multiple versions of the same event. If we ever introduce an Add Extended Device command, then yes, we need to guard things here. Right now, we don’t.
 
->         if (dn)
->                 ret = phylink_of_phy_connect(bp->phylink, dn, 0);
->
-> --
-> 2.20.1
->
+> 		}
+> 		break;
+> 	}
+> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+> index 6d996e5e5bcc2d..2805f662d85695 100644
+> --- a/net/bluetooth/mgmt.c
+> +++ b/net/bluetooth/mgmt.c
+> @@ -114,6 +114,8 @@ static const u16 mgmt_commands[] = {
+> 	MGMT_OP_SET_EXP_FEATURE,
+> 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
+> 	MGMT_OP_SET_DEF_SYSTEM_CONFIG,
+> +	MGMT_OP_GET_DEVICE_FLAGS,
+> +	MGMT_OP_SET_DEVICE_FLAGS,
+> };
+> 
+> static const u16 mgmt_events[] = {
+> @@ -154,6 +156,7 @@ static const u16 mgmt_events[] = {
+> 	MGMT_EV_EXT_INFO_CHANGED,
+> 	MGMT_EV_PHY_CONFIGURATION_CHANGED,
+> 	MGMT_EV_EXP_FEATURE_CHANGED,
+> +	MGMT_EV_DEVICE_FLAGS_CHANGED,
+> };
+> 
+> static const u16 mgmt_untrusted_commands[] = {
+> @@ -3853,6 +3856,122 @@ static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
+> 			       MGMT_STATUS_NOT_SUPPORTED);
+> }
+> 
+> +#define SUPPORTED_DEVICE_FLAGS() ((1U << HCI_CONN_FLAG_MAX) - 1)
+> +
+> +static int get_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
+> +			    u16 data_len)
+> +{
+> +	struct mgmt_cp_get_device_flags *cp = data;
+> +	struct mgmt_rp_get_device_flags rp;
+> +	struct bdaddr_list_with_flags *br_params;
+> +	struct hci_conn_params *params;
+> +	u32 supported_flags = SUPPORTED_DEVICE_FLAGS();
+> +	u32 current_flags = 0;
+> +	u8 status = MGMT_STATUS_INVALID_PARAMS;
+> +
+> +	bt_dev_dbg(hdev, "Get device flags %pMR (type 0x%x)\n",
+> +		   &cp->addr.bdaddr, cp->addr.type);
+> +
+> +	if (cp->addr.type == BDADDR_BREDR) {
+> +		br_params = hci_bdaddr_list_lookup_with_flags(&hdev->whitelist,
+> +							      &cp->addr.bdaddr,
+> +							      cp->addr.type);
+> +		if (!br_params)
+> +			goto done;
+> +
+> +		current_flags = br_params->current_flags;
+> +	} else {
+> +		params = hci_conn_params_lookup(hdev, &cp->addr.bdaddr,
+> +						le_addr_type(cp->addr.type));
+> +
+> +		if (!params)
+> +			goto done;
+> +
+> +		current_flags = params->current_flags;
+> +	}
+> +
+> +	bacpy(&rp.addr.bdaddr, &cp->addr.bdaddr);
+> +	rp.addr.type = cp->addr.type;
+> +	rp.supported_flags = cpu_to_le32(supported_flags);
+> +	rp.current_flags = cpu_to_le32(current_flags);
+> +
+> +	status = MGMT_STATUS_SUCCESS;
+> +
+> +done:
+> +	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_GET_DEVICE_FLAGS, status,
+> +				&rp, sizeof(rp));
+> +}
+> +
+> +static int device_flags_changed(struct hci_dev *hdev, bdaddr_t *bdaddr,
+> +				u8 bdaddr_type, u32 supported_flags,
+> +				u32 current_flags, struct sock *skip)
+> +{
+> +	struct mgmt_ev_device_flags_changed ev;
+> +
+> +	bacpy(&ev.addr.bdaddr, bdaddr);
+> +	ev.addr.type = bdaddr_type;
+> +	ev.supported_flags = cpu_to_le32(supported_flags);
+> +	ev.current_flags = cpu_to_le32(current_flags);
+> +
+> +	return mgmt_limited_event(MGMT_EV_DEVICE_FLAGS_CHANGED, hdev, &ev,
+> +				  sizeof(ev), HCI_MGMT_DEVICE_FLAGS_EVENTS,
+> +				  skip);
+> +}
+> +
+> +static int set_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
+> +			    u16 len)
+> +{
+> +	struct mgmt_cp_set_device_flags *cp = data;
+> +	struct bdaddr_list_with_flags *br_params;
+> +	struct hci_conn_params *params;
+> +	u8 status = MGMT_STATUS_INVALID_PARAMS;
+> +	u32 supported_flags = SUPPORTED_DEVICE_FLAGS();
+> +	u32 current_flags = __le32_to_cpu(cp->current_flags);
+> +
+> +	bt_dev_dbg(hdev, "Set device flags %pMR (type 0x%x) = 0x%x",
+> +		   &cp->addr.bdaddr, cp->addr.type,
+> +		   __le32_to_cpu(current_flags));
+> +
+> +	if ((supported_flags | current_flags) != supported_flags) {
+> +		bt_dev_warn(hdev, "Bad flag given (0x%x) vs supported (0x%0x)",
+> +			    current_flags, supported_flags);
+> +		goto done;
+> +	}
+> +
+> +	if (cp->addr.type == BDADDR_BREDR) {
+> +		br_params = hci_bdaddr_list_lookup_with_flags(&hdev->whitelist,
+> +							      &cp->addr.bdaddr,
+> +							      cp->addr.type);
+> +
+> +		if (br_params) {
+> +			br_params->current_flags = current_flags;
+> +			status = MGMT_STATUS_SUCCESS;
+> +		} else {
+> +			bt_dev_warn(hdev, "No such BR/EDR device %pMR (0x%x)",
+> +				    &cp->addr.bdaddr, cp->addr.type);
+> +		}
+> +	} else {
+> +		params = hci_conn_params_lookup(hdev, &cp->addr.bdaddr,
+> +						le_addr_type(cp->addr.type));
+> +		if (params) {
+> +			params->current_flags = current_flags;
+> +			status = MGMT_STATUS_SUCCESS;
+> +		} else {
+> +			bt_dev_warn(hdev, "No such LE device %pMR (0x%x)",
+> +				    &cp->addr.bdaddr,
+> +				    le_addr_type(cp->addr.type));
+> +		}
+> +	}
+> +
+> +done:
+> +	if (status == MGMT_STATUS_SUCCESS)
+> +		device_flags_changed(hdev, &cp->addr.bdaddr, cp->addr.type,
+> +				     supported_flags, current_flags, sk);
+> +
+> +	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_DEVICE_FLAGS, status,
+> +				 &cp->addr, sizeof(cp->addr));
+> +}
+> +
+> static void read_local_oob_data_complete(struct hci_dev *hdev, u8 status,
+> 				         u16 opcode, struct sk_buff *skb)
+> {
+> @@ -5970,7 +6089,9 @@ static int add_device(struct sock *sk, struct hci_dev *hdev,
+> {
+> 	struct mgmt_cp_add_device *cp = data;
+> 	u8 auto_conn, addr_type;
+> +	struct hci_conn_params *params;
+> 	int err;
+> +	u32 current_flags = 0;
+> 
+> 	bt_dev_dbg(hdev, "sock %p", sk);
+> 
+> @@ -6038,12 +6159,19 @@ static int add_device(struct sock *sk, struct hci_dev *hdev,
+> 					MGMT_STATUS_FAILED, &cp->addr,
+> 					sizeof(cp->addr));
+> 		goto unlock;
+> +	} else {
+> +		params = hci_conn_params_lookup(hdev, &cp->addr.bdaddr,
+> +						addr_type);
+> +		if (params)
+> +			current_flags = params->current_flags;
+> 	}
+> 
+> 	hci_update_background_scan(hdev);
+> 
+> added:
+> 	device_added(sk, hdev, &cp->addr.bdaddr, cp->addr.type, cp->action);
+> +	device_flags_changed(hdev, &cp->addr.bdaddr, cp->addr.type,
+> +			     SUPPORTED_DEVICE_FLAGS(), current_flags, NULL);
+> 
+> 	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_ADD_DEVICE,
+> 				MGMT_STATUS_SUCCESS, &cp->addr,
+> @@ -7306,6 +7434,12 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
+> 						HCI_MGMT_UNTRUSTED },
+> 	{ set_def_system_config,   MGMT_SET_DEF_SYSTEM_CONFIG_SIZE,
+> 						HCI_MGMT_VAR_LEN },
+> +
+> +	{ NULL }, /* Read default runtime config */
+> +	{ NULL }, /* Set default runtime config */
+> +
+> +	{ get_device_flags,        MGMT_GET_DEVICE_FLAGS_SIZE },
+> +	{ set_device_flags,        MGMT_SET_DEVICE_FLAGS_SIZE },
+> };
 
-Thanks,
--Vladimir
+I have create a local tree that has the read/set runtime config commands already in there. I added your patches 1-3 to the tree already. I might just remove the HCI_MGMT_DEVICE_FLAGS_EVENTS and add this patch as well. Everything else looks good.
+
+Regards
+
+Marcel
+
