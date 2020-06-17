@@ -2,134 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 939031FC8DA
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 10:36:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEA791FC8FE
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 10:39:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726785AbgFQIfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 04:35:41 -0400
-Received: from esa2.hc3370-68.iphmx.com ([216.71.145.153]:38612 "EHLO
-        esa2.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725967AbgFQIfl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 04:35:41 -0400
-Authentication-Results: esa2.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
-IronPort-SDR: KfZvMvC1oYnZ7gi+KDWOviH4clxbHShSY7Yli+xfkrqN6LkJMaGowI1WLqHxqcACgMUrxfkUAD
- Ay5pg5WGOeqKL0CCypgK4qhxMgOHjyTIf64e1aNhYRAm71VGxZrK78hisJYBoO7fnRxdMgfY7b
- vDubhXWnqwLSYTQ7ryxlfakGFVKT1POd8dRmcMBv35hFYrPvNJEhPlc4qaSrLIUxHxgq6p86dI
- Fvz6UQo69l4R4knwvEj6X3MlFh19OkyWqWkPIwHX3MDCwr+2pRlebLitMY4MMI8I/Szkk6yaRS
- 9UE=
-X-SBRS: 2.7
-X-MesageID: 20261029
-X-Ironport-Server: esa2.hc3370-68.iphmx.com
-X-Remote-IP: 162.221.158.21
-X-Policy: $RELAYED
-X-IronPort-AV: E=Sophos;i="5.73,522,1583211600"; 
-   d="scan'208";a="20261029"
-Date:   Wed, 17 Jun 2020 10:35:28 +0200
-From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
-To:     Anchal Agarwal <anchalag@amazon.com>
-CC:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "pavel@ucw.cz" <pavel@ucw.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
-Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and
- hibernation]
-Message-ID: <20200617083528.GW735@Air-de-Roger>
-References: <7FD7505E-79AA-43F6-8D5F-7A2567F333AB@amazon.com>
- <20200604070548.GH1195@Air-de-Roger>
- <20200616214925.GA21684@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+        id S1726773AbgFQIiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 04:38:24 -0400
+Received: from correo.us.es ([193.147.175.20]:48542 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725964AbgFQIiX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 04:38:23 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 6679718FCE0
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 10:38:20 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5541FDA797
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 10:38:20 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 4ADA3DA722; Wed, 17 Jun 2020 10:38:20 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id EAD17DA73D;
+        Wed, 17 Jun 2020 10:38:17 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 17 Jun 2020 10:38:17 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id CA9C442EE38E;
+        Wed, 17 Jun 2020 10:38:17 +0200 (CEST)
+Date:   Wed, 17 Jun 2020 10:38:17 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     Simon Horman <simon.horman@netronome.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, vladbu@mellanox.com
+Subject: Re: [PATCH net v3 2/4] flow_offload: fix incorrect cb_priv check for
+ flow_block_cb
+Message-ID: <20200617083817.GA1744@salvia>
+References: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
+ <1592277580-5524-3-git-send-email-wenxu@ucloud.cn>
+ <20200616105123.GA21396@netronome.com>
+ <aee3192c-7664-580b-1f37-9003c91f185b@ucloud.cn>
+ <20200616143427.GA8084@netronome.com>
+ <565dd609-1e20-16f4-f38d-8a0b15816f50@ucloud.cn>
+ <20200616154716.GA16382@netronome.com>
+ <20200616203834.GA27394@salvia>
+ <d53fe351-6761-693c-7421-d489876eb3ad@ucloud.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200616214925.GA21684@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-X-ClientProxiedBy: AMSPEX02CAS02.citrite.net (10.69.22.113) To
- AMSPEX02CL02.citrite.net (10.69.22.126)
+In-Reply-To: <d53fe351-6761-693c-7421-d489876eb3ad@ucloud.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 09:49:25PM +0000, Anchal Agarwal wrote:
-> On Thu, Jun 04, 2020 at 09:05:48AM +0200, Roger Pau Monné wrote:
-> > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> > On Wed, Jun 03, 2020 at 11:33:52PM +0000, Agarwal, Anchal wrote:
-> > >  CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> > >     > +             xenbus_dev_error(dev, err, "Freezing timed out;"
-> > >     > +                              "the device may become inconsistent state");
-> > >
-> > >     Leaving the device in this state is quite bad, as it's in a closed
-> > >     state and with the queues frozen. You should make an attempt to
-> > >     restore things to a working state.
-> > >
-> > > You mean if backend closed after timeout? Is there a way to know that? I understand it's not good to
-> > > leave it in this state however, I am still trying to find if there is a good way to know if backend is still connected after timeout.
-> > > Hence the message " the device may become inconsistent state".  I didn't see a timeout not even once on my end so that's why
-> > > I may be looking for an alternate perspective here. may be need to thaw everything back intentionally is one thing I could think of.
-> > 
-> > You can manually force this state, and then check that it will behave
-> > correctly. I would expect that on a failure to disconnect from the
-> > backend you should switch the frontend to the 'Init' state in order to
-> > try to reconnect to the backend when possible.
-> > 
-> From what I understand forcing manually is, failing the freeze without
-> disconnect and try to revive the connection by unfreezing the
-> queues->reconnecting to backend [which never got diconnected]. May be even
-> tearing down things manually because I am not sure what state will frontend
-> see if backend fails to to disconnect at any point in time. I assumed connected.
-> Then again if its "CONNECTED" I may not need to tear down everything and start
-> from Initialising state because that may not work.
+On Wed, Jun 17, 2020 at 11:36:19AM +0800, wenxu wrote:
 > 
-> So I am not so sure about backend's state so much, lets say if  xen_blkif_disconnect fail,
-> I don't see it getting handled in the backend then what will be backend's state?
-> Will it still switch xenbus state to 'Closed'? If not what will frontend see, 
-> if it tries to read backend's state through xenbus_read_driver_state ?
+> On 6/17/2020 4:38 AM, Pablo Neira Ayuso wrote:
+> > On Tue, Jun 16, 2020 at 05:47:17PM +0200, Simon Horman wrote:
+> >> On Tue, Jun 16, 2020 at 11:18:16PM +0800, wenxu wrote:
+> >>> 在 2020/6/16 22:34, Simon Horman 写道:
+> >>>> On Tue, Jun 16, 2020 at 10:20:46PM +0800, wenxu wrote:
+> >>>>> 在 2020/6/16 18:51, Simon Horman 写道:
+> >>>>>> On Tue, Jun 16, 2020 at 11:19:38AM +0800, wenxu@ucloud.cn wrote:
+> >>>>>>> From: wenxu <wenxu@ucloud.cn>
+> >>>>>>>
+> >>>>>>> In the function __flow_block_indr_cleanup, The match stataments
+> >>>>>>> this->cb_priv == cb_priv is always false, the flow_block_cb->cb_priv
+> >>>>>>> is totally different data with the flow_indr_dev->cb_priv.
+> >>>>>>>
+> >>>>>>> Store the representor cb_priv to the flow_block_cb->indr.cb_priv in
+> >>>>>>> the driver.
+> >>>>>>>
+> >>>>>>> Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
+> >>>>>>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> >>>>>> Hi Wenxu,
+> >>>>>>
+> >>>>>> I wonder if this can be resolved by using the cb_ident field of struct
+> >>>>>> flow_block_cb.
+> >>>>>>
+> >>>>>> I observe that mlx5e_rep_indr_setup_block() seems to be the only call-site
+> >>>>>> where the value of the cb_ident parameter of flow_block_cb_alloc() is
+> >>>>>> per-block rather than per-device. So part of my proposal is to change
+> >>>>>> that.
+> >>>>> I check all the xxdriver_indr_setup_block. It seems all the cb_ident parameter of
+> >>>>>
+> >>>>> flow_block_cb_alloc is per-block. Both in the nfp_flower_setup_indr_tc_block
+> >>>>>
+> >>>>> and bnxt_tc_setup_indr_block.
+> >>>>>
+> >>>>>
+> >>>>> nfp_flower_setup_indr_tc_block:
+> >>>>>
+> >>>>> struct nfp_flower_indr_block_cb_priv *cb_priv;
+> >>>>>
+> >>>>> block_cb = flow_block_cb_alloc(nfp_flower_setup_indr_block_cb,
+> >>>>>                                                cb_priv, cb_priv,
+> >>>>>                                                nfp_flower_setup_indr_tc_release);
+> >>>>>
+> >>>>>
+> >>>>> bnxt_tc_setup_indr_block:
+> >>>>>
+> >>>>> struct bnxt_flower_indr_block_cb_priv *cb_priv;
+> >>>>>
+> >>>>> block_cb = flow_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
+> >>>>>                                                cb_priv, cb_priv,
+> >>>>>                                                bnxt_tc_setup_indr_rel);
+> >>>>>
+> >>>>>
+> >>>>> And the function flow_block_cb_is_busy called in most place. Pass the
+> >>>>>
+> >>>>> parameter as cb_priv but not cb_indent .
+> >>>> Thanks, I see that now. But I still think it would be useful to understand
+> >>>> the purpose of cb_ident. It feels like it would lead to a clean solution
+> >>>> to the problem you have highlighted.
+> >>> I think The cb_ident means identify.  It is used to identify the each flow block cb.
+> >>>
+> >>> In the both flow_block_cb_is_busy and flow_block_cb_lookup function check
+> >>>
+> >>> the block_cb->cb_ident == cb_ident.
+> >> Thanks, I think that I now see what you mean about the different scope of
+> >> cb_ident and your proposal to allow cleanup by flow_indr_dev_unregister().
+> >>
+> >> I do, however, still wonder if there is a nicer way than reaching into
+> >> the structure and manually setting block_cb->indr.cb_priv
+> >> at each call-site.
+> >>
+> >> Perhaps a variant of flow_block_cb_alloc() for indirect blocks
+> >> would be nicer?
+> > A follow up patch to add this new variant would be good. Probably
+> > __flow_block_indr_binding() can go away with this new variant to set
+> > up the indirect flow block.
 > 
-> So the flow be like:
-> Front end marks XenbusStateClosing
-> Backend marks its state as XenbusStateClosing
->     Frontend marks XenbusStateClosed
->     Backend disconnects calls xen_blkif_disconnect
->        Backend fails to disconnect, the above function returns EBUSY
->        What will be state of backend here?
-
-Backend should stay in state 'Closing' then, until it can finish
-tearing down.
-
->        Frontend did not tear down the rings if backend does not switches the
->        state to 'Closed' in case of failure.
 > 
-> If backend stays in CONNECTED state, then even if we mark it Initialised in frontend, backend
+> Maybe __flow_block_indr_binding() can't go away. The data and cleanup callback which should
+> init the flow_block_indr is only in the flow_indr_dev_setup_offload. This can't be gotten in
+> flow_indr_block_cb_alloc.
 
-Backend will stay in state 'Closing' I think.
-
-> won't be calling connect(). {From reading code in frontend_changed}
-> IMU, Initialising will fail since backend dev->state != XenbusStateClosed plus
-> we did not tear down anything so calling talk_to_blkback may not be needed
-> 
-> Does that sound correct?
-
-I think switching to the initial state in order to try to attempt a
-reconnection would be our best bet here.
-
-Thanks, Roger.
+Probably flow_indr_block_bind_cb_t can be updated to include the data
+and the cleanup callback.
