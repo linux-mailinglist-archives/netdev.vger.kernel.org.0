@@ -2,79 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D5D61FC406
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 04:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69E621FC425
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 04:30:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbgFQCLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Jun 2020 22:11:20 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:6350 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726275AbgFQCLT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Jun 2020 22:11:19 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id B965FC71FD1D614718BB;
-        Wed, 17 Jun 2020 10:11:17 +0800 (CST)
-Received: from huawei.com (10.179.179.12) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Wed, 17 Jun 2020
- 10:11:10 +0800
-From:   guodeqing <geffrey.guo@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <kuznet@ms2.inr.ac.ru>, <netdev@vger.kernel.org>,
-        <dsa@cumulusnetworks.com>, <kuba@kernel.org>,
-        <geffrey.guo@huawei.com>
-Subject: [PATCH] net: Fix the arp error in some cases
-Date:   Wed, 17 Jun 2020 10:07:16 +0800
-Message-ID: <1592359636-107798-1-git-send-email-geffrey.guo@huawei.com>
-X-Mailer: git-send-email 2.7.4
+        id S1726620AbgFQCaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Jun 2020 22:30:00 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:27734 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726494AbgFQCaA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Jun 2020 22:30:00 -0400
+Received: from [192.168.188.14] (unknown [106.75.220.2])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id B9D1D41E92;
+        Wed, 17 Jun 2020 10:29:46 +0800 (CST)
+Subject: Re: [PATCH net v3 3/4] net/sched: cls_api: fix nooffloaddevcnt
+ warning dmesg log
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, vladbu@mellanox.com
+References: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
+ <1592277580-5524-4-git-send-email-wenxu@ucloud.cn>
+ <20200616201750.GA27024@salvia>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <56140515-f116-91f8-b126-9b62bdce0022@ucloud.cn>
+Date:   Wed, 17 Jun 2020 10:29:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.179.179.12]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20200616201750.GA27024@salvia>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSUlNS0tLSkNCTENKSkJZV1koWU
+        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkXMjULOBw5FSQRFBocNBceNS89TDocVlZVSEtJQihJWVdZCQ
+        4XHghZQVk1NCk2OjckKS43PllXWRYaDxIVHRRZQVk0MFkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NE06DRw4CDgrPzYpHhw2MzJN
+        GRwaCTBVSlVKTkJJSE1LQkNMSENDVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
+        TlVJSUtVSVlXWQgBWUFKS0NLSDcG
+X-HM-Tid: 0a72c01c690b2086kuqyb9d1d41e92
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ie.,
-$ ifconfig eth0 6.6.6.6 netmask 255.255.255.0
 
-$ ip rule add from 6.6.6.6 table 6666
+On 6/17/2020 4:17 AM, Pablo Neira Ayuso wrote:
+> On Tue, Jun 16, 2020 at 11:19:39AM +0800, wenxu@ucloud.cn wrote:
+>> From: wenxu <wenxu@ucloud.cn>
+>>
+>> When a indr device add in offload success. The block->nooffloaddevcnt
+>> should be 0. After the representor go away. When the dir device go away
+>> the flow_block UNBIND operation with -EOPNOTSUPP which lead the warning
+>> dmesg log. 
+>>
+>> The block->nooffloaddevcnt should always count for indr block.
+>> even the indr block offload successful. The representor maybe
+>> gone away and the ingress qdisc can work in software mode.
+>>
+>> block->nooffloaddevcnt warning with following dmesg log:
+>>
+>> [  760.667058] #####################################################
+>> [  760.668186] ## TEST test-ecmp-add-vxlan-encap-disable-sriov.sh ##
+>> [  760.669179] #####################################################
+>> [  761.780655] :test: Fedora 30 (Thirty)
+>> [  761.783794] :test: Linux reg-r-vrt-018-180 5.7.0+
+>> [  761.822890] :test: NIC ens1f0 FW 16.26.6000 PCI 0000:81:00.0 DEVICE 0x1019 ConnectX-5 Ex
+>> [  761.860244] mlx5_core 0000:81:00.0 ens1f0: Link up
+>> [  761.880693] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
+>> [  762.059732] mlx5_core 0000:81:00.1 ens1f1: Link up
+>> [  762.234341] :test: unbind vfs of ens1f0
+>> [  762.257825] :test: Change ens1f0 eswitch (0000:81:00.0) mode to switchdev
+>> [  762.291363] :test: unbind vfs of ens1f1
+>> [  762.306914] :test: Change ens1f1 eswitch (0000:81:00.1) mode to switchdev
+>> [  762.309237] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(LEGACY), nvfs(2), active vports(3)
+>> [  763.282598] mlx5_core 0000:81:00.1: E-Switch: Supported tc offload range - chains: 4294967294, prios: 4294967295
+>> [  763.362825] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+>> [  763.444465] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
+>> [  763.460088] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+>> [  763.502586] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+>> [  763.552429] ens1f1_0: renamed from eth0
+>> [  763.569569] mlx5_core 0000:81:00.1: E-Switch: Enable: mode(OFFLOADS), nvfs(2), active vports(3)
+>> [  763.629694] ens1f1_1: renamed from eth1
+>> [  764.631552] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_0: link becomes ready
+>> [  764.670841] :test: unbind vfs of ens1f0
+>> [  764.681966] :test: unbind vfs of ens1f1
+>> [  764.726762] mlx5_core 0000:81:00.0 ens1f0: Link up
+>> [  764.766511] mlx5_core 0000:81:00.1 ens1f1: Link up
+>> [  764.797325] :test: Add multipath vxlan encap rule and disable sriov
+>> [  764.798544] :test: config multipath route
+>> [  764.812732] mlx5_core 0000:81:00.0: lag map port 1:2 port 2:2
+>> [  764.874556] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:2
+>> [  765.603681] :test: OK
+>> [  765.659048] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1_1: link becomes ready
+>> [  765.675085] :test: verify rule in hw
+>> [  765.694237] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f0: link becomes ready
+>> [  765.711892] IPv6: ADDRCONF(NETDEV_CHANGE): ens1f1: link becomes ready
+>> [  766.979230] :test: OK
+>> [  768.125419] :test: OK
+>> [  768.127519] :test: - disable sriov ens1f1
+>> [  768.131160] pci 0000:81:02.2: Removing from iommu group 75
+>> [  768.132646] pci 0000:81:02.3: Removing from iommu group 76
+>> [  769.179749] mlx5_core 0000:81:00.1: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
+>> [  769.455627] mlx5_core 0000:81:00.0: modify lag map port 1:1 port 2:1
+>> [  769.703990] mlx5_core 0000:81:00.1: MLX5E: StrdRq(1) RqSz(8) StrdSz(2048) RxCqeCmprss(0)
+>> [  769.988637] mlx5_core 0000:81:00.1 ens1f1: renamed from eth0
+>> [  769.990022] :test: - disable sriov ens1f0
+>> [  769.994922] pci 0000:81:00.2: Removing from iommu group 73
+>> [  769.997048] pci 0000:81:00.3: Removing from iommu group 74
+>> [  771.035813] mlx5_core 0000:81:00.0: E-Switch: Disable: mode(OFFLOADS), nvfs(2), active vports(3)
+>> [  771.339091] ------------[ cut here ]------------
+>> [  771.340812] WARNING: CPU: 6 PID: 3448 at net/sched/cls_api.c:749 tcf_block_offload_unbind.isra.0+0x5c/0x60
+>> [  771.341728] Modules linked in: act_mirred act_tunnel_key cls_flower dummy vxlan ip6_udp_tunnel udp_tunnel sch_ingress nfsv3 nfs_acl nfs lockd grace fscache tun bridge stp llc sunrpc rdma_ucm rdma_cm iw_cm ib_cm mlx5_ib ib_uverbs ib_core mlx5_core intel_rapl_msr intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp mlxfw act_ct nf_flow_table kvm_intel nf_nat kvm nf_conntrack irqbypass crct10dif_pclmul igb crc32_pclmul nf_defrag_ipv6 libcrc32c nf_defrag_ipv4 crc32c_intel ghash_clmulni_intel ptp ipmi_ssif intel_cstate pps_c
+>> ore ses intel_uncore mei_me iTCO_wdt joydev ipmi_si iTCO_vendor_support i2c_i801 enclosure mei ioatdma dca lpc_ich wmi ipmi_devintf pcspkr acpi_power_meter ipmi_msghandler acpi_pad ast i2c_algo_bit drm_vram_helper drm_kms_helper drm_ttm_helper ttm drm mpt3sas raid_class scsi_transport_sas
+>> [  771.347818] CPU: 6 PID: 3448 Comm: test-ecmp-add-v Not tainted 5.7.0+ #1146
+>> [  771.348727] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+>> [  771.349646] RIP: 0010:tcf_block_offload_unbind.isra.0+0x5c/0x60
+>> [  771.350553] Code: 4a fd ff ff 83 f8 a1 74 0e 5b 4c 89 e7 5d 41 5c 41 5d e9 07 93 89 ff 8b 83 a0 00 00 00 8d 50 ff 89 93 a0 00 00 00 85 c0 75 df <0f> 0b eb db 0f 1f 44 00 00 41 57 41 56 41 55 41 89 cd 41 54 49 89
+>> [  771.352420] RSP: 0018:ffffb33144cd3b00 EFLAGS: 00010246
+>> [  771.353353] RAX: 0000000000000000 RBX: ffff8b37cf4b2800 RCX: 0000000000000000
+>> [  771.354294] RDX: 00000000ffffffff RSI: ffff8b3b9aad0000 RDI: ffffffff8d5c6e20
+>> [  771.355245] RBP: ffff8b37eb546948 R08: ffffffffc0b7a348 R09: ffff8b3b9aad0000
+>> [  771.356189] R10: 0000000000000001 R11: ffff8b3ba7a0a1c0 R12: ffff8b37cf4b2850
+>> [  771.357123] R13: ffff8b3b9aad0000 R14: ffff8b37cf4b2820 R15: ffff8b37cf4b2820
+>> [  771.358039] FS:  00007f8a19b6e740(0000) GS:ffff8b3befa00000(0000) knlGS:0000000000000000
+>> [  771.358965] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> [  771.359885] CR2: 00007f3afb91c1a0 CR3: 000000045133c004 CR4: 00000000001606e0
+>> [  771.360825] Call Trace:
+>> [  771.361764]  __tcf_block_put+0x84/0x150
+>> [  771.362712]  ingress_destroy+0x1b/0x20 [sch_ingress]
+>> [  771.363658]  qdisc_destroy+0x3e/0xc0
+>> [  771.364594]  dev_shutdown+0x7a/0xa5
+>> [  771.365522]  rollback_registered_many+0x20d/0x530
+>> [  771.366458]  ? netdev_upper_dev_unlink+0x15d/0x1c0
+>> [  771.367387]  unregister_netdevice_many.part.0+0xf/0x70
+>> [  771.368310]  vxlan_netdevice_event+0xa4/0x110 [vxlan]
+>> [  771.369454]  notifier_call_chain+0x4c/0x70
+>> [  771.370579]  rollback_registered_many+0x2f5/0x530
+>> [  771.371719]  rollback_registered+0x56/0x90
+>> [  771.372843]  unregister_netdevice_queue+0x73/0xb0
+>> [  771.373982]  unregister_netdev+0x18/0x20
+>> [  771.375168]  mlx5e_vport_rep_unload+0x56/0xc0 [mlx5_core]
+>> [  771.376327]  esw_offloads_disable+0x81/0x90 [mlx5_core]
+>> [  771.377512]  mlx5_eswitch_disable_locked.cold+0xcb/0x1af [mlx5_core]
+>> [  771.378679]  mlx5_eswitch_disable+0x44/0x60 [mlx5_core]
+>> [  771.379822]  mlx5_device_disable_sriov+0xad/0xb0 [mlx5_core]
+>> [  771.380968]  mlx5_core_sriov_configure+0xc1/0xe0 [mlx5_core]
+>> [  771.382087]  sriov_numvfs_store+0xfc/0x130
+>> [  771.383195]  kernfs_fop_write+0xce/0x1b0
+>> [  771.384302]  vfs_write+0xb6/0x1a0
+>> [  771.385410]  ksys_write+0x5f/0xe0
+>> [  771.386500]  do_syscall_64+0x5b/0x1d0
+>> [  771.387569]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>
+>> Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
+>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+>> ---
+>>  net/sched/cls_api.c | 24 ++++++++++++++----------
+>>  1 file changed, 14 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+>> index a00a203..86c3937 100644
+>> --- a/net/sched/cls_api.c
+>> +++ b/net/sched/cls_api.c
+>> @@ -671,25 +671,29 @@ static int tcf_block_offload_cmd(struct tcf_block *block,
+>>  				 struct netlink_ext_ack *extack)
+>>  {
+>>  	struct flow_block_offload bo = {};
+>> -	int err;
+>>  
+>>  	tcf_block_offload_init(&bo, dev, command, ei->binder_type,
+>>  			       &block->flow_block, tcf_block_shared(block),
+>>  			       extack);
+>>  
+>> -	if (dev->netdev_ops->ndo_setup_tc)
+>> +	if (dev->netdev_ops->ndo_setup_tc) {
+>> +		int err;
+>> +
+>>  		err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
+>> -	else
+>> -		err = flow_indr_dev_setup_offload(dev, TC_SETUP_BLOCK, block,
+>> -						  &bo, tc_block_indr_cleanup);
+>> +		if (err < 0) {
+>> +			if (err != -EOPNOTSUPP)
+>> +				NL_SET_ERR_MSG(extack, "Driver ndo_setup_tc failed");
+>> +			return err;
+>> +		}
+>>  
+>> -	if (err < 0) {
+>> -		if (err != -EOPNOTSUPP)
+>> -			NL_SET_ERR_MSG(extack, "Driver ndo_setup_tc failed");
+>> -		return err;
+>> +		return tcf_block_setup(block, &bo);
+>>  	}
+>>  
+>> -	return tcf_block_setup(block, &bo);
+>> +	flow_indr_dev_setup_offload(dev, TC_SETUP_BLOCK, block, &bo,
+>> +				    tc_block_indr_cleanup);
+>> +	tcf_block_setup(block, &bo);
+>> +
+>> +	return -EOPNOTSUPP;
+> So tcf_block_offload_cmd() always return -EOPNOTSUPP for _BIND and
+> _UNBIND operations after this patch ?
 
-$ ip route add 9.9.9.9 via 6.6.6.6
+yes, The original design for tc subsystem block->nooffloaddevcnt should
 
-$ ping -I 6.6.6.6 9.9.9.9
-PING 9.9.9.9 (9.9.9.9) from 6.6.6.6 : 56(84) bytes of data.
+always inc for indr tunnel.
 
-3 packets transmitted, 0 received, 100% packet loss, time 2079ms
-
-$ arp
-Address     HWtype  HWaddress           Flags Mask            Iface
-6.6.6.6             (incomplete)                              eth0
-
-The arp request address is error, this is because fib_table_lookup in 
-fib_check_nh lookup the destnation 9.9.9.9 nexthop, the scope of 
-the fib result is RT_SCOPE_LINK,the correct scope is RT_SCOPE_HOST.  
-Here I add a check of whether this is RT_TABLE_MAIN to solve this problem. 
-
-Fixes: 3bfd847203c6("net: Use passed in table for nexthop lookups")
-Signed-off-by: guodeqing <geffrey.guo@huawei.com>
----
- net/ipv4/fib_semantics.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index e53871e..1f75dc6 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1109,7 +1109,7 @@ static int fib_check_nh_v4_gw(struct net *net, struct fib_nh *nh, u32 table,
- 		if (fl4.flowi4_scope < RT_SCOPE_LINK)
- 			fl4.flowi4_scope = RT_SCOPE_LINK;
- 
--		if (table)
-+		if (table && table != RT_TABLE_MAIN)
- 			tbl = fib_get_table(net, table);
- 
- 		if (tbl)
--- 
-2.7.4
-
+>
