@@ -2,64 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F0631FD4BA
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 230801FD4C0
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:44:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727090AbgFQSmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 14:42:55 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:37587 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726851AbgFQSmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:42:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592419374;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sORNGbh4DVotTN6EW6Lo1a2t5jNMigfInKXxBxVJLYw=;
-        b=TxKaPDDo0VVnysy8YvSUzpW5vbixRqaAR/PT+cKltxCGE/uE9QnvvKvNiRj+dq9rkScxwr
-        YpufQ/S6Yvb3ummxozTKGAALwwnBVEQW0wIjkCqyzYdiNC0GN+rnyHjOJMNLBl6f/GXhhx
-        k6DTARVM1fT/FCq2tXCgFe0YKAC6Co8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-12-xCDEO3eIN7-nkWqi8JaVAg-1; Wed, 17 Jun 2020 14:42:48 -0400
-X-MC-Unique: xCDEO3eIN7-nkWqi8JaVAg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 214EE835B43;
-        Wed, 17 Jun 2020 18:42:47 +0000 (UTC)
-Received: from jtoppins.rdu.csb (ovpn-112-156.rdu2.redhat.com [10.10.112.156])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C54F879301;
-        Wed, 17 Jun 2020 18:42:46 +0000 (UTC)
-Reply-To: jtoppins@redhat.com
-Subject: Re: [PATCH net] ionic: export features for vlans to use
-To:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
-        davem@davemloft.net
-References: <20200616150626.42738-1-snelson@pensando.io>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-Organization: Red Hat
-Message-ID: <2696fad4-85e1-c969-438b-ce8f61c3d6b7@redhat.com>
-Date:   Wed, 17 Jun 2020 14:42:46 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727796AbgFQSnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 14:43:41 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44696 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726851AbgFQSnk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 14:43:40 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jld26-0010lA-I1; Wed, 17 Jun 2020 20:43:34 +0200
+Date:   Wed, 17 Jun 2020 20:43:34 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dejin Zheng <zhengdejin5@gmail.com>
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kevin Groeneveld <kgroeneveld@gmail.com>
+Subject: Re: [PATCH net v1] net: phy: smsc: fix printing too many logs
+Message-ID: <20200617184334.GA240559@lunn.ch>
+References: <20200617153340.17371-1-zhengdejin5@gmail.com>
+ <20200617161925.GE205574@lunn.ch>
+ <20200617175039.GA18631@nuc8i5>
 MIME-Version: 1.0
-In-Reply-To: <20200616150626.42738-1-snelson@pensando.io>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200617175039.GA18631@nuc8i5>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/16/20 11:06 AM, Shannon Nelson wrote:
-> Set up vlan_features for use by any vlans above us.
+On Thu, Jun 18, 2020 at 01:50:39AM +0800, Dejin Zheng wrote:
+> On Wed, Jun 17, 2020 at 06:19:25PM +0200, Andrew Lunn wrote:
+> > On Wed, Jun 17, 2020 at 11:33:40PM +0800, Dejin Zheng wrote:
+> > > Commit 7ae7ad2f11ef47 ("net: phy: smsc: use phy_read_poll_timeout()
+> > > to simplify the code") will print a lot of logs as follows when Ethernet
+> > > cable is not connected:
+> > > 
+> > > [    4.473105] SMSC LAN8710/LAN8720 2188000.ethernet-1:00: lan87xx_read_status failed: -110
+> > > 
+> > > So fix it by read_poll_timeout().
+> > 
+> > Do you have a more detailed explanation of what is going on here?
+> > 
+> > After a lot of thought, i think i can see how this happens. But the
+> > commit message should really spell out why this is the correct fix.
+> >
+> Hi Andrew:
 > 
-> Fixes: beead698b173 ("ionic: Add the basic NDO callbacks for netdev support")
-> Signed-off-by: Shannon Nelson <snelson@pensando.io>
-Acked-by: Jonathan Toppins <jtoppins@redhat.com>
+> Kevin report a bug for me in link[1], I check the Commit 7ae7ad2f11ef47
+> ("net: phy: smsc: use phy_read_poll_timeout() to simplify the code") and
+> found it change the original behavior in smsc driver. It does not has
+> any error message whether it is timeout or phy_read fails, but this Commit
+> will changed it and will print some error messages by
+> phy_read_poll_timeout() when it is timeout or phy_read fails. so use the
+> read_poll_timeout() to replace phy_read_poll_timeout() to fix this
+> issue. the read_poll_timeout() does not print any log when it goes
+> wrong.
+> 
+> the original codes is that:
+> 
+> 	/* Wait max 640 ms to detect energy */
+> 	for (i = 0; i < 64; i++) {
+> 	        /* Sleep to allow link test pulses to be sent */
+> 	        msleep(10);
+> 	        rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
+> 	        if (rc < 0)
+> 	                return rc;
+> 	        if (rc & MII_LAN83C185_ENERGYON)
+> 	                break;
+> 	}
+> 
+> Commit 7ae7ad2f11ef47 modify it as this:
+> 
+> 	phy_read_poll_timeout(phydev, MII_LAN83C185_CTRL_STATUS,
+> 	                      rc & MII_LAN83C185_ENERGYON, 10000,
+> 	                      640000, true);
+> 	if (rc < 0)
+> 	        return rc;
+> 
+> the phy_read_poll_timeout() will print a error log by phydev_err()
+> when timeout or rc < 0. read_poll_timeout() just return timeout
+> error and does not print any error log.
+> 
+> #define phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
+>                                 timeout_us, sleep_before_read) \
+> ({ \
+>         int __ret = read_poll_timeout(phy_read, val, (cond) || val < 0, \
+>                 sleep_us, timeout_us, sleep_before_read, phydev, regnum); \
+>         if (val <  0) \
+>                 __ret = val; \
+>         if (__ret) \
+>                 phydev_err(phydev, "%s failed: %d\n", __func__, __ret); \
+>         __ret; \
+> })
+> 
+> So use read_poll_timeout Use read_poll_timeout() to be consistent with the
+> original code.
 
+You have explained what the change does. But not why it is
+needed. What exactly is happening. To me, the key thing is
+understanding why we get -110, and why it is not an actual error we
+should be reporting as an error. That is what needs explaining.
+
+And once that is understood, i think we might be looking at a
+different solution.
+
+       Andrew
