@@ -2,84 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A438B1FD7CC
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 23:45:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 157F91FD7F7
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 23:54:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727011AbgFQVpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 17:45:21 -0400
-Received: from mail-il1-f195.google.com ([209.85.166.195]:36732 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726763AbgFQVpV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 17:45:21 -0400
-Received: by mail-il1-f195.google.com with SMTP id a13so3844722ilh.3;
-        Wed, 17 Jun 2020 14:45:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BjlvMBzIShcaQWGwkxItv+d8i6VW4N+SZUqHAYVlP6c=;
-        b=icg8bqXT3GZfqczOBTTP/AhCkJ00b3/DRtVKtGZ6K9SgwZZRxrqcqtwkvCfLjir4ga
-         WYd1N8VkNl7cf+7ZLV7djMYE5pfhg3hjhQMFJImkQGcWs4pYBHIEJeILJ0W7SfHJNkKz
-         wQWo0V3LTZ+rSq+b+U4oMBPbI9weuqF0JCDE9lJpeuKfXJ3ei6qk+fDE4vo8pE53Kf+i
-         +f7TK38/vUJAdT2GfSNhAFyiBFnO2JuAXhAxFB+1SxVodVuNsSJnBm2T1x65NgIeQcca
-         1tuz69EgskuYsChZ9k7A8ofFvB/GWg+cveKHgSx5FpEvNB1qAEdtC2jyXHaAy5bC9B5d
-         T8lg==
-X-Gm-Message-State: AOAM531bQDU4fqw0IX5Avhjehi5JaXFMfgIAcd5L9V0zX1j68G5dXT61
-        cUlAnaQPNErbv03oowxapw==
-X-Google-Smtp-Source: ABdhPJyvZVvGEx/9dKdHyeObJsISCkDue5qqG3CloGJl6BqE//sfd8r9FcJk5NTDFBcfxE/37cgxUg==
-X-Received: by 2002:a05:6e02:1212:: with SMTP id a18mr889632ilq.159.1592430320379;
-        Wed, 17 Jun 2020 14:45:20 -0700 (PDT)
-Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id l26sm468583ild.59.2020.06.17.14.45.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jun 2020 14:45:19 -0700 (PDT)
-Received: (nullmailer pid 2881862 invoked by uid 1000);
-        Wed, 17 Jun 2020 21:45:18 -0000
-Date:   Wed, 17 Jun 2020 15:45:18 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-Subject: Re: [PATCH v2 2/2] net: phy: mscc: handle the clkout control on some
- phy variants
-Message-ID: <20200617214518.GA2870745@bogus>
-References: <20200609133140.1421109-1-heiko@sntech.de>
- <20200609133140.1421109-2-heiko@sntech.de>
+        id S1726977AbgFQVyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 17:54:22 -0400
+Received: from mx2.suse.de ([195.135.220.15]:60762 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726763AbgFQVyW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 17:54:22 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 95581ABE4;
+        Wed, 17 Jun 2020 21:54:22 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 07DD4602E9; Wed, 17 Jun 2020 23:54:17 +0200 (CEST)
+Date:   Wed, 17 Jun 2020 23:54:17 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Aya Levin <ayal@mellanox.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH resend net] net: ethtool: add missing
+ NETIF_F_GSO_FRAGLIST feature string
+Message-ID: <20200617215417.kx3fz2jw3qijqz7p@lion.mk-sys.cz>
+References: <9oPfKdiVuoDf251VBJXgNs-Hv-HWPnIJk52x-SQc1frfg8QSf9z3rCL-CBSafkp9SO0CjNzU8QvUv9Abe4SvoUpejeob9OImDPbflzRC-0Y=@pm.me>
+ <20200617211844.kupsyijuurjpb5kd@lion.mk-sys.cz>
+ <5u_BsHq6Jk0q09sGWsVKfvv0NRa5kBHjxdOr9VpNknRnxHpbRO_80JSHl_AWS-C_wBS7B15KetRleLaluF8tOysTNYyLVRUG4BRFQZxnhXw=@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200609133140.1421109-2-heiko@sntech.de>
+In-Reply-To: <5u_BsHq6Jk0q09sGWsVKfvv0NRa5kBHjxdOr9VpNknRnxHpbRO_80JSHl_AWS-C_wBS7B15KetRleLaluF8tOysTNYyLVRUG4BRFQZxnhXw=@pm.me>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 09, 2020 at 03:31:40PM +0200, Heiko Stuebner wrote:
-> From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+On Wed, Jun 17, 2020 at 09:38:47PM +0000, Alexander Lobakin wrote:
+> Hi Michal,
 > 
-> At least VSC8530/8531/8540/8541 contain a clock output that can emit
-> a predefined rate of 25, 50 or 125MHz.
+> On Thursday, 18 June 2020, 0:18, Michal Kubecek <mkubecek@suse.cz> wrote:
 > 
-> This may then feed back into the network interface as source clock.
-> So follow the example the at803x already set and introduce a
-> vsc8531,clk-out-frequency property to set that output.
+> > On Wed, Jun 17, 2020 at 08:42:47PM +0000, Alexander Lobakin wrote:
+> >
+> > > Commit 3b33583265ed ("net: Add fraglist GRO/GSO feature flags") missed
+> > > an entry for NETIF_F_GSO_FRAGLIST in netdev_features_strings array. As
+> > > a result, fraglist GSO feature is not shown in 'ethtool -k' output and
+> > > can't be toggled on/off.
+> > > The fix is trivial.
+> > >
+> > > Fixes: 3b33583265ed ("net: Add fraglist GRO/GSO feature flags")
+> > > Signed-off-by: Alexander Lobakin alobakin@pm.me
+> > >
+> > > ----------------------------------------------------------------------------------------------------------------
+> > >
+> > > net/ethtool/common.c | 1 +
+> > > 1 file changed, 1 insertion(+)
+> > > diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+> > > index 423e640e3876..47f63526818e 100644
+> > > --- a/net/ethtool/common.c
+> > > +++ b/net/ethtool/common.c
+> > > @@ -43,6 +43,7 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
+> > > [NETIF_F_GSO_SCTP_BIT] = "tx-sctp-segmentation",
+> > > [NETIF_F_GSO_ESP_BIT] = "tx-esp-segmentation",
+> > > [NETIF_F_GSO_UDP_L4_BIT] = "tx-udp-segmentation",
+> > >
+> > > -   [NETIF_F_GSO_FRAGLIST_BIT] = "tx-gso-list",
+> > >     [NETIF_F_FCOE_CRC_BIT] = "tx-checksum-fcoe-crc",
+> > >     [NETIF_F_SCTP_CRC_BIT] = "tx-checksum-sctp",
+> > >
+> >
+> > Reviewed-by: Michal Kubecekmkubecek@suse.cz
 > 
-> Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> ---
-> Hi Andrew,
+> Thanks!
 > 
-> I didn't change the property yet, do you have a suggestion on
-> how to name it though? Going by the other examples in the
-> ethernet-phy.yamls, something like enet-phy-clock-out-frequency ?
+> > AFAICS the name for NETIF_F_GSO_TUNNEL_REMCSUM_BIT is also missing but
+> > IMHO it will be better to fix that by a separate patch with its own
+> > Fixes tag.
+> 
+> Oh, nice catch! I'll make a separate for this one.
+> I also wanted to add any sort of static_assert() / BUILD_BUG_ON() to
+> prevent such misses, but don't see any easy pattern to check for now,
+> as netdev_features_strings[] is always NETDEV_FEATURE_COUNT-sized.
 
-The correct thing to do here is make the phy a clock provider and then 
-the client side use 'assigned-clock-rate' to set the rate. That has the 
-advantage that it also describes the connection of the clock signal. You 
-might not need that for a simple case, but I could imagine needing that 
-in a more complex case.
+The key problem is that unlike e.g. link modes, new netdev features are
+not always added at the end. So even if we changed
+netdev_features_strings[] array to have size determined automatically
+from initializers, adding new netdev feature somewhere in the middle
+(e.g. GSO one) without updating netdev_features_strings[] would not be
+caught as simple array size check would not notice the hole (actually,
+there are also two intended holes in the array).
 
-Rob
+Michal
