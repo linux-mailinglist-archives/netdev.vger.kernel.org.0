@@ -2,185 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B911FCE35
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 15:16:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 857051FCE90
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 15:38:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbgFQNQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 09:16:51 -0400
-Received: from mga06.intel.com ([134.134.136.31]:14612 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726270AbgFQNQu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 09:16:50 -0400
-IronPort-SDR: 86MdU50XUU4zS0DsTAWUKyECLZIxj7j5Ia/kboSY/ZNgM5gt3S5dIkeJE8odNNsaDhAqlJe1PF
- GBqyIAPvUkHQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2020 06:16:39 -0700
-IronPort-SDR: hjWTbMADNeyvXl88IerD0lKu82wey83F9e96kblqYl/55vhd5tqf465gTgx7haXSu/OaRP4ICU
- qYQ198y1qPOA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,522,1583222400"; 
-   d="scan'208";a="476845844"
-Received: from xsang-optiplex-9020.sh.intel.com (HELO xsang-OptiPlex-9020) ([10.239.159.140])
-  by fmsmga005.fm.intel.com with ESMTP; 17 Jun 2020 06:16:37 -0700
-Date:   Wed, 17 Jun 2020 21:28:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     yunaixin03610@163.com, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, yunaixin <yunaixin@huawei.com>
-Subject: Re: [PATCH 2/5] Huawei BMA: Adding Huawei BMA driver: host_cdev_drv
-Message-ID: <20200617132800.GC7376@xsang-OptiPlex-9020>
+        id S1726927AbgFQNgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 09:36:16 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:47973 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726480AbgFQNgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 09:36:15 -0400
+X-Originating-IP: 90.76.143.236
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id D0B9F1BF203;
+        Wed, 17 Jun 2020 13:36:08 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, richardcochran@gmail.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com,
+        foss@0leil.net, antoine.tenart@bootlin.com
+Subject: [PATCH net-next v2 0/8] net: phy: mscc: PHC and timestamping support
+Date:   Wed, 17 Jun 2020 15:31:19 +0200
+Message-Id: <20200617133127.628454-1-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200615145906.1013-3-yunaixin03610@163.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello,
 
-Thank you for the patch! Perhaps something to improve:
+This series aims at adding support for PHC and timestamping operations
+in the MSCC PHY driver, for the VSC858x and VSC8575. Those PHYs are
+capable of timestamping in 1-step and 2-step for both L2 and L4 traffic.
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v5.8-rc1 next-20200616]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+As of this series, only IPv4 support was implemented when using L4 mode.
+This is because of an hardware limitation which prevents us for
+supporting both IPv4 and IPv6 at the same time. Implementing support for
+IPv6 should be quite easy (I do have the modifications needed for the
+hardware configuration) but I did not see a way to retrieve this
+information in hwtstamp(). What would you suggest?
 
-url:    https://github.com/0day-ci/linux/commits/yunaixin03610-163-com/Adding-Huawei-BMA-drivers/20200616-102318
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git a5dc8300df75e8b8384b4c82225f1e4a0b4d9b55
-:::::: branch date: 23 hours ago
-:::::: commit date: 23 hours ago
-compiler: gcc-9 (Debian 9.3.0-13) 9.3.0
+Those PHYs are distributed in hardware packages containing multiple
+times the PHY. The VSC8584 for example is composed of 4 PHYs. With
+hardware packages, parts of the logic is usually common and one of the
+PHY has to be used for some parts of the initialization. Following this
+logic, the 1588 blocks of those PHYs are shared between two PHYs and
+accessing the registers has to be done using the "base" PHY of the
+group. This is handled thanks to helpers in the PTP code (and locks).
+We also need the MDIO bus lock while performing a single read or write
+to the 1588 registers as the read/write are composed of multiple MDIO
+transactions (and we don't want other threads updating the page).
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+To get and set the PHC time, a GPIO has to be used and changes are only
+retrieved or committed when on a rising edge. The same GPIO is shared by
+all PHYs, so the granularity of the lock protecting it has to be
+different from the ones protecting the 1588 registers (the VSC8584 PHY
+has 2 1588 blocks, and a single load/save pin).
 
+Patch 1 extends the recently added helpers to share information between
+PHYs of the same hardware package; to allow having part of the probe to
+be shared (in addition to the already supported init part). This will be
+used when adding support for PHC/TS to initialize locks.
 
-cppcheck warnings: (new ones prefixed by >>)
+Patches 2 and 3 are mostly cosmetic.
 
->> drivers/net/ethernet/huawei/bma/edma_drv/bma_pci.c:443:2: warning: Redundant assignment of 'ent' to itself. [selfAssignment]
-    UNUSED(ent);
-    ^
->> drivers/net/ethernet/huawei/bma/edma_drv/bma_pci.c:492:2: warning: Redundant assignment of 'pdev' to itself. [selfAssignment]
-    UNUSED(pdev);
-    ^
->> drivers/net/ethernet/huawei/bma/edma_drv/bma_pci.c:493:2: warning: Redundant assignment of 'state' to itself. [selfAssignment]
-    UNUSED(state);
-    ^
-   drivers/net/ethernet/huawei/bma/edma_drv/bma_pci.c:500:2: warning: Redundant assignment of 'pdev' to itself. [selfAssignment]
-    UNUSED(pdev);
-    ^
->> drivers/net/ethernet/huawei/bma/edma_drv/bma_pci.c:149:3: warning: Shifting signed 32-bit value by 31 bits is undefined behaviour [shiftTooManyBitsSigned]
-     REGION_DIR_INPUT + (region & REGION_INDEX_MASK));
-     ^
-   drivers/net/ethernet/huawei/bma/edma_drv/bma_pci.c:158:55: warning: Shifting signed 32-bit value by 31 bits is undefined behaviour [shiftTooManyBitsSigned]
-    (void)pci_write_config_dword(pdev, ATU_REGION_CTRL2, REGION_ENABLE);
-                                                         ^
---
->> drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c:63:9: warning: %d in format string (no. 1) requires 'int' but the argument type is 'unsigned int'. [invalidPrintfArgType_sint]
-    len += sprintf(buf + len, "lost_count   :%dn",
-           ^
-   drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c:65:9: warning: %d in format string (no. 1) requires 'int' but the argument type is 'unsigned int'. [invalidPrintfArgType_sint]
-    len += sprintf(buf + len, "b2h_int      :%dn",
-           ^
-   drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c:67:9: warning: %d in format string (no. 1) requires 'int' but the argument type is 'unsigned int'. [invalidPrintfArgType_sint]
-    len += sprintf(buf + len, "h2b_int      :%dn",
-           ^
-   drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c:69:9: warning: %d in format string (no. 1) requires 'int' but the argument type is 'unsigned int'. [invalidPrintfArgType_sint]
-    len += sprintf(buf + len, "dma_count    :%dn",
-           ^
-   drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c:71:9: warning: %d in format string (no. 1) requires 'int' but the argument type is 'unsigned int'. [invalidPrintfArgType_sint]
-    len += sprintf(buf + len, "recv_bytes   :%dn",
-           ^
-   drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c:73:9: warning: %d in format string (no. 1) requires 'int' but the argument type is 'unsigned int'. [invalidPrintfArgType_sint]
-    len += sprintf(buf + len, "send_bytes   :%dn",
-           ^
-   drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c:75:9: warning: %d in format string (no. 1) requires 'int' but the argument type is 'unsigned int'. [invalidPrintfArgType_sint]
-    len += sprintf(buf + len, "recv_pkgs    :%dn",
-           ^
-   drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c:77:9: warning: %d in format string (no. 1) requires 'int' but the argument type is 'unsigned int'. [invalidPrintfArgType_sint]
-    len += sprintf(buf + len, "send_pkgs    :%dn",
-           ^
-   drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c:79:9: warning: %d in format string (no. 1) requires 'int' but the argument type is 'unsigned int'. [invalidPrintfArgType_sint]
-    len += sprintf(buf + len, "drop_pkgs    :%dn",
-           ^
-   drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c:81:9: warning: %d in format string (no. 1) requires 'int' but the argument type is 'unsigned int'. [invalidPrintfArgType_sint]
-    len += sprintf(buf + len, "fail_count   :%dn",
-           ^
->> drivers/net/ethernet/huawei/bma/cdev_drv/bma_cdev.c:326:21: warning: Checking if unsigned variable 'count' is less than zero. [unsignedLessThanZero]
-    if (!data || count <= 0)
-                       ^
-   drivers/net/ethernet/huawei/bma/cdev_drv/bma_cdev.c:346:21: warning: Checking if unsigned variable 'count' is less than zero. [unsignedLessThanZero]
-    if (!data || count <= 0)
-                       ^
+Patch 4 takes into account the 1588 block in the MACsec initialization,
+to allow having both the MACsec and 1588 blocks initialized on a running
+system.
 
-# https://github.com/0day-ci/linux/commit/d0965c4179b69ddd204c1f795f0d6ac080c657af
-git remote add linux-review https://github.com/0day-ci/linux
-git remote update linux-review
-git checkout d0965c4179b69ddd204c1f795f0d6ac080c657af
-vim +122 drivers/net/ethernet/huawei/bma/cdev_drv/bma_cdev.c
+Patches 5 and 6 add support for PHC and timestamping operations in the
+MSCC driver. An initialization of the 1588 block (plus all the registers
+definition; and helpers) is added first; and then comes a patch to
+implement the PHC and timestamping API.
 
-d0965c4179b69d yunaixin 2020-06-15   92  
-d0965c4179b69d yunaixin 2020-06-15   93  static int cdev_param_get_statics(char *buf, const struct kernel_param *kp)
-d0965c4179b69d yunaixin 2020-06-15   94  {
-d0965c4179b69d yunaixin 2020-06-15   95  	int len = 0;
-d0965c4179b69d yunaixin 2020-06-15   96  	int i = 0;
-d0965c4179b69d yunaixin 2020-06-15   97  	__kernel_time_t running_time = 0;
-d0965c4179b69d yunaixin 2020-06-15   98  
-d0965c4179b69d yunaixin 2020-06-15   99  	if (!buf)
-d0965c4179b69d yunaixin 2020-06-15  100  		return 0;
-d0965c4179b69d yunaixin 2020-06-15  101  
-d0965c4179b69d yunaixin 2020-06-15  102  	GET_SYS_SECONDS(running_time);
-d0965c4179b69d yunaixin 2020-06-15  103  	running_time -= g_cdev_set.init_time;
-d0965c4179b69d yunaixin 2020-06-15  104  	len += sprintf(buf + len,
-d0965c4179b69d yunaixin 2020-06-15  105  		       "============================CDEV_DRIVER_INFO=======================\n");
-d0965c4179b69d yunaixin 2020-06-15  106  	len += sprintf(buf + len, "version      :%s\n", CDEV_VERSION);
-d0965c4179b69d yunaixin 2020-06-15  107  
-d0965c4179b69d yunaixin 2020-06-15  108  	len += sprintf(buf + len, "running_time :%luD %02lu:%02lu:%02lu\n",
-d0965c4179b69d yunaixin 2020-06-15  109  		       running_time / (SECONDS_PER_DAY),
-d0965c4179b69d yunaixin 2020-06-15  110  		       running_time % (SECONDS_PER_DAY) / SECONDS_PER_HOUR,
-d0965c4179b69d yunaixin 2020-06-15  111  		       running_time % SECONDS_PER_HOUR / SECONDS_PER_MINUTE,
-d0965c4179b69d yunaixin 2020-06-15  112  		       running_time % SECONDS_PER_MINUTE);
-d0965c4179b69d yunaixin 2020-06-15  113  
-d0965c4179b69d yunaixin 2020-06-15  114  	for (i = 0; i < g_cdev_set.dev_num; i++) {
-d0965c4179b69d yunaixin 2020-06-15  115  		len += sprintf(buf + len,
-d0965c4179b69d yunaixin 2020-06-15  116  			       "===================================================\n");
-d0965c4179b69d yunaixin 2020-06-15  117  		len += sprintf(buf + len, "name      :%s\n",
-d0965c4179b69d yunaixin 2020-06-15  118  			       g_cdev_set.dev_list[i].dev_name);
-d0965c4179b69d yunaixin 2020-06-15  119  		len +=
-d0965c4179b69d yunaixin 2020-06-15  120  		    sprintf(buf + len, "dev_id    :%08x\n",
-d0965c4179b69d yunaixin 2020-06-15  121  			    g_cdev_set.dev_list[i].dev_id);
-d0965c4179b69d yunaixin 2020-06-15 @122  		len += sprintf(buf + len, "type      :%u\n",
-d0965c4179b69d yunaixin 2020-06-15  123  			       g_cdev_set.dev_list[i].type);
-d0965c4179b69d yunaixin 2020-06-15  124  		len += sprintf(buf + len, "status    :%s\n",
-d0965c4179b69d yunaixin 2020-06-15  125  			       g_cdev_set.dev_list[i].s.open_status ==
-d0965c4179b69d yunaixin 2020-06-15  126  			       1 ? "open" : "close");
-d0965c4179b69d yunaixin 2020-06-15  127  		len += sprintf(buf + len, "send_pkgs :%u\n",
-d0965c4179b69d yunaixin 2020-06-15  128  			       g_cdev_set.dev_list[i].s.send_pkgs);
-d0965c4179b69d yunaixin 2020-06-15  129  		len +=
-d0965c4179b69d yunaixin 2020-06-15  130  		    sprintf(buf + len, "send_bytes:%u\n",
-d0965c4179b69d yunaixin 2020-06-15  131  			    g_cdev_set.dev_list[i].s.send_bytes);
-d0965c4179b69d yunaixin 2020-06-15  132  		len += sprintf(buf + len, "send_failed_count:%u\n",
-d0965c4179b69d yunaixin 2020-06-15  133  			       g_cdev_set.dev_list[i].s.send_failed_count);
-d0965c4179b69d yunaixin 2020-06-15  134  		len += sprintf(buf + len, "recv_pkgs :%u\n",
-d0965c4179b69d yunaixin 2020-06-15  135  			       g_cdev_set.dev_list[i].s.recv_pkgs);
-d0965c4179b69d yunaixin 2020-06-15  136  		len += sprintf(buf + len, "recv_bytes:%u\n",
-d0965c4179b69d yunaixin 2020-06-15  137  			       g_cdev_set.dev_list[i].s.recv_bytes);
-d0965c4179b69d yunaixin 2020-06-15  138  		len += sprintf(buf + len, "recv_failed_count:%u\n",
-d0965c4179b69d yunaixin 2020-06-15  139  			       g_cdev_set.dev_list[i].s.recv_failed_count);
-d0965c4179b69d yunaixin 2020-06-15  140  	}
-d0965c4179b69d yunaixin 2020-06-15  141  
-d0965c4179b69d yunaixin 2020-06-15  142  	return len;
-d0965c4179b69d yunaixin 2020-06-15  143  }
-d0965c4179b69d yunaixin 2020-06-15  144  module_param_call(statistics, NULL, cdev_param_get_statics, &debug, 0444);
-d0965c4179b69d yunaixin 2020-06-15  145  MODULE_PARM_DESC(statistics, "Statistics info of cdev driver,readonly");
-d0965c4179b69d yunaixin 2020-06-15  146  
+Patches 7 and 8 add the required hardware description for device trees,
+to be able to use the load/save GPIO pin on the PCB120 board.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+To use this on a PCB120 board, two other series are needed and have
+already been sent upstream (one is merged). There are no dependency
+between all those series.
+
+Thanks!
+Antoine
+
+Since v1:
+  - Removed checks in rxtstamp/txtstamp as skb cannot be NULL here.
+  - Reworked get_ptp_header_rx/get_ptp_header.
+  - Reworked the locking logic between the PHC and timestamping
+    operations.
+  - Fixed a compilation issue on x86 reported by Jakub.
+
+Antoine Tenart (5):
+  net: phy: add support for a common probe between shared PHYs
+  net: phy: mscc: fix copyright and author information in MACsec
+  net: phy: mscc: take into account the 1588 block in MACsec init
+  net: phy: mscc: timestamping and PHC support
+  dt-bindings: net: phy: vsc8531: document the load/save GPIO
+
+Quentin Schulz (3):
+  net: phy: mscc: remove the TR CLK disable magic value
+  net: phy: mscc: 1588 block initialization
+  MIPS: dts: ocelot: describe the load/save GPIO
+
+ .../bindings/net/mscc-phy-vsc8531.txt         |    3 +
+ arch/mips/boot/dts/mscc/ocelot_pcb120.dts     |   12 +-
+ drivers/net/phy/mscc/Makefile                 |    4 +
+ drivers/net/phy/mscc/mscc.h                   |   64 +
+ drivers/net/phy/mscc/mscc_fc_buffer.h         |    2 +-
+ drivers/net/phy/mscc/mscc_mac.h               |    2 +-
+ drivers/net/phy/mscc/mscc_macsec.c            |   10 +-
+ drivers/net/phy/mscc/mscc_macsec.h            |    2 +-
+ drivers/net/phy/mscc/mscc_main.c              |   63 +-
+ drivers/net/phy/mscc/mscc_ptp.c               | 1588 +++++++++++++++++
+ drivers/net/phy/mscc/mscc_ptp.h               |  477 +++++
+ include/linux/phy.h                           |   18 +-
+ 12 files changed, 2224 insertions(+), 21 deletions(-)
+ create mode 100644 drivers/net/phy/mscc/mscc_ptp.c
+ create mode 100644 drivers/net/phy/mscc/mscc_ptp.h
+
+-- 
+2.26.2
 
