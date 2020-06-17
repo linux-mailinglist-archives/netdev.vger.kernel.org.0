@@ -2,88 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF4651FC544
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 06:31:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C20C1FC55E
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 06:49:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726044AbgFQEbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 00:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbgFQEbs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 00:31:48 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC947C061573
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 21:31:47 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id ga6so406835pjb.1
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 21:31:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=0mjT1MJypGer4uJ9EAYwHqaOMGHx76A+XByV8fHG+qI=;
-        b=t1abTrQ9FE7azuJUZfnTwdNqUlqNQxeouR/XpRO4wwgEY+MwPU4TkulOPG+Bc49J6P
-         xqYaH8+yfuiKONQiClKhOCIUSVA2Np/P+rGhiCT3M6JrFx1rkAEo7LaFLkaYG7+gbRML
-         ePIt4DVFVQefMdJJCT9j17Mj148A7ynfvqTyeVdqyAOuL2t9wK5OY4+URmNietcnrtkA
-         YyIZEn1J6tMcuMU+SePcORsFEaSrjmcBQPtjvaR2jI3YuTI04Nf3xgI0xutaqSNYsXtw
-         JwukXHpwMmfamc12ageaEK2CFYy7bGL+U7G7zQf0RF0iqZ/tkXLj3pbWNnVB6SdKpp2w
-         51+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=0mjT1MJypGer4uJ9EAYwHqaOMGHx76A+XByV8fHG+qI=;
-        b=dciKp5YFJ4q7u3evCRPhLdsrg0X2vyjBVh9tcbg8/Ue4RXwReafjIKxQXD4H/lR/OF
-         ypqPWYVPqsdgJ/xSRUksLo4vGolpU16UjJ4ZmR8IyMM+ACl74D1wfTHtivXw4/WCFTml
-         /VN15tm5ox65sessLdZFkHjyfvVoMA56/2Mlk5Cbe5ijWuaYw/gIjzUGfIlH6tRMNymb
-         9GiBkNVCrnUDMWR4TlhwNjKt8/r2Y1RJWMrN9Xy530bckR6nwcQ4e7UN8MtnugudpPcJ
-         HP6AYVMx/z6X2DbncV9qoQcf5nGZdPzJnD42zzoQcW8SOH2CuZREvPbZEvMs/hagGMIi
-         Fyag==
-X-Gm-Message-State: AOAM531JcCi0BSbPcFeD4qDF/WG/fYWqPrjmrqIRAs3Y8EuZd3Gn7axi
-        DKZv1yZHP6ppHpSWsssM+X58lDaz
-X-Google-Smtp-Source: ABdhPJyUqH/M0/kUwSWrW/zOcs3s/dFlnZnBrrI1nxvhnTjfdl0bx5IzLPVkIvJpaJqTrt0iYZHMdg==
-X-Received: by 2002:a17:902:988e:: with SMTP id s14mr4802521plp.142.1592368307157;
-        Tue, 16 Jun 2020 21:31:47 -0700 (PDT)
-Received: from martin-VirtualBox.vpn.alcatel-lucent.com ([137.97.141.128])
-        by smtp.gmail.com with ESMTPSA id 5sm18789404pfc.143.2020.06.16.21.31.45
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Jun 2020 21:31:46 -0700 (PDT)
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Martin <martin.varghese@nokia.com>
-Subject: [PATCH net v2] bareudp: Fixed multiproto mode configuration
-Date:   Wed, 17 Jun 2020 10:01:39 +0530
-Message-Id: <1592368299-8428-1-git-send-email-martinvarghesenokia@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        id S1725929AbgFQEtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 00:49:33 -0400
+Received: from fallback23.m.smailru.net ([94.100.187.222]:33010 "EHLO
+        fallback23.mail.ru" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725814AbgFQEtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 00:49:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=/Mb3mfE1rfdSQx/cbf1Y+FcZh23F+QiNBr0Ln8hC8+4=;
+        b=Jwe6zp6ERjOXXvI6Qgr9X6zPRFkp0RD6/iJvHlno9RDXzv8ByX5VddqkZBNODT815VQCG0uSEOdupVxn6ljvk22dEMoC8MFe9xvdmVf+8E49s/PuwVEm1B9D4dliRRsMqeHW6HSlEHyAa8dX5+b33xJkcKUjLRB6cVCBtODgli8=;
+Received: from [10.161.45.21] (port=38288 helo=smtp21.mail.ru)
+        by fallback23.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
+        id 1jlQ0w-0001gH-4S
+        for netdev@vger.kernel.org; Wed, 17 Jun 2020 07:49:30 +0300
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject; bh=/Mb3mfE1rfdSQx/cbf1Y+FcZh23F+QiNBr0Ln8hC8+4=;
+        b=Jwe6zp6ERjOXXvI6Qgr9X6zPRFkp0RD6/iJvHlno9RDXzv8ByX5VddqkZBNODT815VQCG0uSEOdupVxn6ljvk22dEMoC8MFe9xvdmVf+8E49s/PuwVEm1B9D4dliRRsMqeHW6HSlEHyAa8dX5+b33xJkcKUjLRB6cVCBtODgli8=;
+Received: by smtp21.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1jlQ0t-0005yu-9r; Wed, 17 Jun 2020 07:49:27 +0300
+Subject: Re: [PATCH 01/02] net: phy: marvell: Add Marvell 88E1340 support
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk
+References: <3fcbc447-877d-0e95-af39-86fc72a34e10@inbox.ru>
+ <20200616145459.GA197468@lunn.ch>
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+Message-ID: <a2445457-2840-1746-122a-dc1b049bbd4a@inbox.ru>
+Date:   Wed, 17 Jun 2020 07:49:25 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200616145459.GA197468@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-7564579A: 646B95376F6C166E
+X-77F55803: 4F1203BC0FB41BD9F3DF18D84EDC53E02CCD416A9E30AA29B6A07E96EECCE937182A05F538085040B126BE264A673CFA22DEAFA1B8DD167C603EF782EFC169858077335FDAE59415
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7C11CF6C26C259300EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F790063784C66FAEA0C30C898638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC08D0347DBCEB45060BD24960513E2F7B028D4A63446F12F1389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C0A3E989B1926288338941B15DA834481FCF19DD082D7633A0E7DDDDC251EA7DABA471835C12D1D977725E5C173C3A84C317B107DEF921CE79117882F4460429728AD0CFFFB425014E40A5AABA2AD371193AA81AA40904B5D9A18204E546F3947C7A515FDF34F84F9CC0837EA9F3D197644AD6D5ED66289B52F4A82D016A4342E36136E347CC761E07725E5C173C3A84C3BFB946B114A5E036BA3038C0950A5D36B5C8C57E37DE458B0B4866841D68ED3522CA9DD8327EE4930A3850AC1BE2E735444A83B712AC0148C4224003CC836476C0CAF46E325F83A50BF2EBBBDD9D6B0F05F538519369F3743B503F486389A921A5CC5B56E945C8DA
+X-C8649E89: CBDD50479C6D7B15D5EF5346AD37FAE6F364F4645422435A873CC54848FE56D7B72EDFB0951E2363
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj1fDABIY57Zjq/kccX/TVmg==
+X-Mailru-Internal-Actual: A:0.80966334383055
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24BD4EE574923B39F9D550D8030F1C78019255D0F8401B32E0EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
+X-7564579A: EEAE043A70213CC8
+X-77F55803: 669901E4625912A97F9F52485CB584D7271FD7DF62800FDCF4495189053BE810577A77F5DEBFAC027869CBAB9ED14471AAE633CAFEF74400
+X-7FA49CB5: 0D63561A33F958A56A0AFF7D73AAA3357E6CD8601A6642F4BA1C29EB862A3C198941B15DA834481FA18204E546F3947C1D471462564A2E19F6B57BC7E64490618DEB871D839B7333395957E7521B51C2545D4CF71C94A83E9FA2833FD35BB23D27C277FBC8AE2E8BAA867293B0326636D2E47CDBA5A965834E70A05D1297E1BBBA3038C0950A5D3613377AFFFEAFD2691661749BA6B97735070C8203D0E313477B076A6E789B0E97A8DF7F3B2552694ABCFECBEA56A8F1E12DBA43225CD8A89F83C798A30B85E16B262FEC7FBD7D1F5BB5C8C57E37DE458B4C7702A67D5C3316FA3894348FB808DB48C21F01D89DB561574AF45C6390F7469DAA53EE0834AAEE
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj1fDABIY57ZixLwJAPB/wGg==
+X-Mailru-MI: 800
+X-Mailru-Sender: A5480F10D64C9005A3848B648EADCF77FDC2C2989C3F7B23577A77F5DEBFAC028E2658B254FBF15AC099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
+X-Mras: Ok
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin <martin.varghese@nokia.com>
+Yes. This is 88E1340S. My mistake.
 
-Code to handle multiproto configuration is missing.
-
-Signed-off-by: Martin <martin.varghese@nokia.com>
----
-Changes in v2:
-     - Initialization of conf structure is removed as that change is included
-       in another patch.
-
- drivers/net/bareudp.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index 5d3c691..3dd46cd 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -572,6 +572,9 @@ static int bareudp2info(struct nlattr *data[], struct bareudp_conf *conf,
- 	if (data[IFLA_BAREUDP_SRCPORT_MIN])
- 		conf->sport_min =  nla_get_u16(data[IFLA_BAREUDP_SRCPORT_MIN]);
- 
-+	if (data[IFLA_BAREUDP_MULTIPROTO_MODE])
-+		conf->multi_proto_mode = true;
-+
- 	return 0;
- }
- 
--- 
-1.8.3.1
-
+16.06.2020 17:54, Andrew Lunn wrote:
+> On Tue, Jun 16, 2020 at 10:01:11AM +0300, Maxim Kochetkov wrote:
+>> Add Marvell 88E1340 support
+> 
+> Hi Maxim
+> 
+> Are you sure this is an 88E1340, not a 88E1340S?
+> 
+> Marvells DSDT SDK has:
+> 
+>      MAD_88E1340S = 0x1C,    /* 88E1340S */
+>      MAD_88E1340  = 0x1e,    /* 88E1340/x0a */
+>      MAD_88E1340M = 0x1f,    /* 88E1340M/x0a */
+>   
+>>   #define MARVELL_PHY_ID_88E1149R		0x01410e50
+>>   #define MARVELL_PHY_ID_88E1240		0x01410e30
+>>   #define MARVELL_PHY_ID_88E1318S		0x01410e90
+>> +#define MARVELL_PHY_ID_88E1340		0x01410dc0
+>>   #define MARVELL_PHY_ID_88E1116R		0x01410e40
+>>   #define MARVELL_PHY_ID_88E1510		0x01410dd0
+>>   #define MARVELL_PHY_ID_88E1540		0x01410eb0
+> 
+> For 88E1340 i would expect the ID to be 0x01410de0
+> 
+>      Andrew
+> 
