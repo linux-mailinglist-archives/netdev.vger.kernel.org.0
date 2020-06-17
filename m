@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 273581FD683
+	by mail.lfdr.de (Postfix) with ESMTP id 93A0C1FD684
 	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 22:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726971AbgFQU4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 16:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34596 "EHLO
+        id S1727037AbgFQU4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 16:56:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726758AbgFQU4q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 16:56:46 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED94C06174E
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 13:56:45 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id b6so3815862wrs.11
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 13:56:45 -0700 (PDT)
+        with ESMTP id S1726758AbgFQU4r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 16:56:47 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7011C06174E
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 13:56:46 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id t194so3464305wmt.4
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 13:56:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ODJBbeZcCQquLoXgh17IK5pd3cIH+B4P1lBpzq8f/YE=;
-        b=hlHKcBqpJD1G3ikkD+HdvIXUTy1AYIIlbGP7QfACJ55ACoGIBuE1BWdlaWdxCHY8gk
-         MmdBFCSPOTFn/TBHWNV4ghwSRAa3zRmP0weYMhypuZW7nZNwKwPrEJ57+3xjDGnOJXvm
-         0OXfOyWTQPDI87Qr4nLysay7WWuh90OwrOuvuImroJ93IrDOK3n9IaAH6dtAYIIAVg1v
-         rCJNy8+YbeULzBpVEpEzfLbpesOY7UwE/eNct6BDT+PMnc93cM0G+LCPFaxLr3KtIF1K
-         BGCPgJaJq2w6ylS1oC9m/lxTVpHgnfD5VyKpk7rFBoXiDIHElzzPUa+ej77n4xR5Ak9G
-         daMA==
+        bh=4Oeovuqi32l3hxjPHw0Y0M/5WDKUegRwr7348TdN6HY=;
+        b=StKtprcAjTKQtc2t16H3FruSITde86BVN3V+yRkhlGLyU2/UrPdma1AOL9fztcyFOr
+         DH6i5twbVvGxuASXz5H8uRgoWtb+2omsOQ11dS3RUad4mhumVwy1hAlfJvRFRL8lS8ww
+         Ocr51A2NkQVRd77em39bzU3y5Tn/nvGqk+2LVvZxIYa7oilkkyvMFlJXvi84fmMHU34g
+         2kOU4pkYVWvhLeAwV/CLHspJpaJBf7zG7E1hh9RUZgj7WhgaEsNNF1CatWVMf3uRhibw
+         z4obkQ0vl4Koly3KZ/L27D/lnzmaKaxyqqr2yfg3zpJR+GR9nJoeshnkgrukt+J0SPJO
+         gNdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ODJBbeZcCQquLoXgh17IK5pd3cIH+B4P1lBpzq8f/YE=;
-        b=AnXBNDsKvuIxHhdz5pookwED9TliyZ+3UGJoW5mR1KTdmOaaT3KVSUK3SwndC6UCzZ
-         tm5Tme1sOQdfqFoPdXFb79Id1b1U2x51w4bLTPjIooV2rTAajEc7hTMVdyB2QKuvrMML
-         NpF10b9ta8dcuxdAL9h2jTGWUgufZff1AYRRP5oiLLACxh6MynqceXIyM34tY4XaOeal
-         gI+Y81Bsg4GRCXFA8f1xyc+rUzkQKKii+QwNKoYZoyvVzwRouwQ7sikRhc7wcGMAu4lV
-         CtpCDwMaht7ilIhLxC+mFp8RoEULiX2D+ePfONo4RSZMYSa5IiUB1LAqMrJhvlGA/l2Z
-         ypRA==
-X-Gm-Message-State: AOAM532mtunEF0yr/ULxJW/vWF//mA+xePn4OD37bQlYE3vCOm3HOd20
-        7YBNYdua/wmENAH21HjuyfBNdE16
-X-Google-Smtp-Source: ABdhPJz2q19hiHyYEv+kAKBmaAchJP8jYawWm1RKLV/8Jx5Pd/qsVHBkbfcgw8neFYnkb9Uhoe2Bbg==
-X-Received: by 2002:adf:f450:: with SMTP id f16mr1055648wrp.307.1592427404131;
-        Wed, 17 Jun 2020 13:56:44 -0700 (PDT)
+        bh=4Oeovuqi32l3hxjPHw0Y0M/5WDKUegRwr7348TdN6HY=;
+        b=F1rR7ds5v4P7llhZhvhxlYEsGP9yBWC+XKF5l2lV2gI/yznfIoAdkTcfIi/5w1lzQv
+         i4nh14S4mLjYymQJoMjprL+vihAcUD3GeyjK8n+kAwXY8Jn5gJTXKxBdUjQYQ4urU5PA
+         7DSQNKT34atzd03k3KOboUdwRCavBUfPgxIDLpdt8kPsS+Ig2oM2FRXcCtFD7LTN107W
+         v7alMzMOWLG4cbG7RYVqmsHBFuzj6RMeo+KtmMMFT2e+zXsbXfdXrGARryfZ4vPCjZMX
+         Li48Pc4+HRE4YIldrCbL2F3b4okrB71GKV8s85IVtNYXZEOOsERe/CLGP1L8T/1e00rE
+         ttvQ==
+X-Gm-Message-State: AOAM531466AEN5P83lnSE85NDN0R8eXwJUPYqJjXY7HnSua+pOpD6e4G
+        gXk35J/TCDCNtptZtSvUiDHP6VfG
+X-Google-Smtp-Source: ABdhPJw9NnSLq3o1Ny0wMxNSQMMWMwe53HYk4pR0XctItGlV4B+Jymhuv0m/crTUox7lpBBWMhl/8g==
+X-Received: by 2002:a1c:6a13:: with SMTP id f19mr588065wmc.142.1592427405179;
+        Wed, 17 Jun 2020 13:56:45 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f23:5700:c06e:b26:fa7c:aab? (p200300ea8f235700c06e0b26fa7c0aab.dip0.t-ipconnect.de. [2003:ea:8f23:5700:c06e:b26:fa7c:aab])
-        by smtp.googlemail.com with ESMTPSA id q128sm969776wma.38.2020.06.17.13.56.43
+        by smtp.googlemail.com with ESMTPSA id c143sm8285107wmd.1.2020.06.17.13.56.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Jun 2020 13:56:43 -0700 (PDT)
-Subject: [PATCH net-next 2/8] r8169: remove unused constant RsvdMask
+        Wed, 17 Jun 2020 13:56:44 -0700 (PDT)
+Subject: [PATCH net-next 3/8] r8169: improve setting WoL on runtime-resume
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <ef2a4cd4-1492-99d8-f94f-319eeb129137@gmail.com>
-Message-ID: <64643297-cbef-e72e-5822-9c95fdc3aa9c@gmail.com>
-Date:   Wed, 17 Jun 2020 22:51:46 +0200
+Message-ID: <5130b4ec-9de8-3c1a-8ef7-99be9084c93b@gmail.com>
+Date:   Wed, 17 Jun 2020 22:52:47 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.9.0
 MIME-Version: 1.0
@@ -69,27 +69,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since 9d3679fe0f30 ("r8169: inline rtl8169_make_unusable_by_asic")
-this constant isn't used any longer, so remove it.
+In the following scenario WoL isn't configured properly:
+- Driver is loaded, interface isn't brought up within 10s, so driver
+  runtime-suspends.
+- WoL is set.
+- Interface is brought up, stored WoL setting isn't applied.
+
+It has always been like that, but the scenario seems to be quite
+theoretical as I haven't seen any bug report yet. Therefore treat
+the change as an improvement.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 7bb26fb07..4bc6c5529 100644
+index 4bc6c5529..bd95c0ae6 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -529,8 +529,6 @@ enum rtl_rx_desc_bit {
- 	RxVlanTag	= (1 << 16), /* VLAN tag available */
- };
+@@ -4887,14 +4887,12 @@ static int rtl8169_runtime_resume(struct device *device)
  
--#define RsvdMask	0x3fffc000
+ 	rtl_rar_set(tp, tp->dev->dev_addr);
+ 
+-	if (!tp->TxDescArray)
+-		return 0;
 -
- #define RTL_GSO_MAX_SIZE_V1	32000
- #define RTL_GSO_MAX_SEGS_V1	24
- #define RTL_GSO_MAX_SIZE_V2	64000
+ 	rtl_lock_work(tp);
+ 	__rtl8169_set_wol(tp, tp->saved_wolopts);
+ 	rtl_unlock_work(tp);
+ 
+-	__rtl8169_resume(tp);
++	if (tp->TxDescArray)
++		__rtl8169_resume(tp);
+ 
+ 	return 0;
+ }
 -- 
 2.27.0
 
