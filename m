@@ -2,141 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C78A1FCA85
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 12:10:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A0D11FCAEC
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 12:32:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726538AbgFQKKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 06:10:13 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:33174 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgFQKKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 06:10:10 -0400
-Received: from [192.168.188.14] (unknown [106.75.220.2])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 5BAAC41FAC;
-        Wed, 17 Jun 2020 18:10:00 +0800 (CST)
-Subject: Re: [PATCH net v3 2/4] flow_offload: fix incorrect cb_priv check for
- flow_block_cb
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Simon Horman <simon.horman@netronome.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, vladbu@mellanox.com
-References: <1592277580-5524-1-git-send-email-wenxu@ucloud.cn>
- <1592277580-5524-3-git-send-email-wenxu@ucloud.cn>
- <20200616105123.GA21396@netronome.com>
- <aee3192c-7664-580b-1f37-9003c91f185b@ucloud.cn>
- <20200616143427.GA8084@netronome.com>
- <565dd609-1e20-16f4-f38d-8a0b15816f50@ucloud.cn>
- <20200616154716.GA16382@netronome.com> <20200616203834.GA27394@salvia>
- <d53fe351-6761-693c-7421-d489876eb3ad@ucloud.cn>
- <20200617083817.GA1744@salvia>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <3d770837-e316-e12e-e455-8a23077cf3ae@ucloud.cn>
-Date:   Wed, 17 Jun 2020 18:09:34 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
-MIME-Version: 1.0
-In-Reply-To: <20200617083817.GA1744@salvia>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEhNS0tLS0NPQ0xMS0pZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkXIjULOBw*M04kHU9NUBceOU4hUDocVlZVSEsoSVlXWQkOFx
-        4IWUFZNTQpNjo3JCkuNz5ZV1kWGg8SFR0UWUFZNDBZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NlE6LSo4HTg8LzVCEVZKIikK
-        LUMwChZVSlVKTkJJSENDTUtLTUlCVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
-        TlVJSUtVSVlXWQgBWUFNSEpONwY+
-X-HM-Tid: 0a72c1c1c2c62086kuqy5baac41fac
+        id S1726519AbgFQKcC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jun 2020 06:32:02 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:59193 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725901AbgFQKcB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 06:32:01 -0400
+Received: from marcel-macbook.fritz.box (p5b3d2638.dip0.t-ipconnect.de [91.61.38.56])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 5B372CECD1;
+        Wed, 17 Jun 2020 12:41:50 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH v5 1/7] Bluetooth: Add definitions for advertisement
+ monitor features
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200615172440.v5.1.I636f906bf8122855dfd2ba636352bbdcb50c35ed@changeid>
+Date:   Wed, 17 Jun 2020 12:31:57 +0200
+Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Alain Michaud <alainm@chromium.org>,
+        Yoni Shavit <yshavit@chromium.org>,
+        Michael Sun <michaelfsun@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <09444691-8D9E-4530-AFC9-5935D775C04C@holtmann.org>
+References: <20200615172440.v5.1.I636f906bf8122855dfd2ba636352bbdcb50c35ed@changeid>
+To:     Miao-chen Chou <mcchou@chromium.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Miao-chen,
 
-On 6/17/2020 4:38 PM, Pablo Neira Ayuso wrote:
-> On Wed, Jun 17, 2020 at 11:36:19AM +0800, wenxu wrote:
->> On 6/17/2020 4:38 AM, Pablo Neira Ayuso wrote:
->>> On Tue, Jun 16, 2020 at 05:47:17PM +0200, Simon Horman wrote:
->>>> On Tue, Jun 16, 2020 at 11:18:16PM +0800, wenxu wrote:
->>>>> 在 2020/6/16 22:34, Simon Horman 写道:
->>>>>> On Tue, Jun 16, 2020 at 10:20:46PM +0800, wenxu wrote:
->>>>>>> 在 2020/6/16 18:51, Simon Horman 写道:
->>>>>>>> On Tue, Jun 16, 2020 at 11:19:38AM +0800, wenxu@ucloud.cn wrote:
->>>>>>>>> From: wenxu <wenxu@ucloud.cn>
->>>>>>>>>
->>>>>>>>> In the function __flow_block_indr_cleanup, The match stataments
->>>>>>>>> this->cb_priv == cb_priv is always false, the flow_block_cb->cb_priv
->>>>>>>>> is totally different data with the flow_indr_dev->cb_priv.
->>>>>>>>>
->>>>>>>>> Store the representor cb_priv to the flow_block_cb->indr.cb_priv in
->>>>>>>>> the driver.
->>>>>>>>>
->>>>>>>>> Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
->>>>>>>>> Signed-off-by: wenxu <wenxu@ucloud.cn>
->>>>>>>> Hi Wenxu,
->>>>>>>>
->>>>>>>> I wonder if this can be resolved by using the cb_ident field of struct
->>>>>>>> flow_block_cb.
->>>>>>>>
->>>>>>>> I observe that mlx5e_rep_indr_setup_block() seems to be the only call-site
->>>>>>>> where the value of the cb_ident parameter of flow_block_cb_alloc() is
->>>>>>>> per-block rather than per-device. So part of my proposal is to change
->>>>>>>> that.
->>>>>>> I check all the xxdriver_indr_setup_block. It seems all the cb_ident parameter of
->>>>>>>
->>>>>>> flow_block_cb_alloc is per-block. Both in the nfp_flower_setup_indr_tc_block
->>>>>>>
->>>>>>> and bnxt_tc_setup_indr_block.
->>>>>>>
->>>>>>>
->>>>>>> nfp_flower_setup_indr_tc_block:
->>>>>>>
->>>>>>> struct nfp_flower_indr_block_cb_priv *cb_priv;
->>>>>>>
->>>>>>> block_cb = flow_block_cb_alloc(nfp_flower_setup_indr_block_cb,
->>>>>>>                                                cb_priv, cb_priv,
->>>>>>>                                                nfp_flower_setup_indr_tc_release);
->>>>>>>
->>>>>>>
->>>>>>> bnxt_tc_setup_indr_block:
->>>>>>>
->>>>>>> struct bnxt_flower_indr_block_cb_priv *cb_priv;
->>>>>>>
->>>>>>> block_cb = flow_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
->>>>>>>                                                cb_priv, cb_priv,
->>>>>>>                                                bnxt_tc_setup_indr_rel);
->>>>>>>
->>>>>>>
->>>>>>> And the function flow_block_cb_is_busy called in most place. Pass the
->>>>>>>
->>>>>>> parameter as cb_priv but not cb_indent .
->>>>>> Thanks, I see that now. But I still think it would be useful to understand
->>>>>> the purpose of cb_ident. It feels like it would lead to a clean solution
->>>>>> to the problem you have highlighted.
->>>>> I think The cb_ident means identify.  It is used to identify the each flow block cb.
->>>>>
->>>>> In the both flow_block_cb_is_busy and flow_block_cb_lookup function check
->>>>>
->>>>> the block_cb->cb_ident == cb_ident.
->>>> Thanks, I think that I now see what you mean about the different scope of
->>>> cb_ident and your proposal to allow cleanup by flow_indr_dev_unregister().
->>>>
->>>> I do, however, still wonder if there is a nicer way than reaching into
->>>> the structure and manually setting block_cb->indr.cb_priv
->>>> at each call-site.
->>>>
->>>> Perhaps a variant of flow_block_cb_alloc() for indirect blocks
->>>> would be nicer?
->>> A follow up patch to add this new variant would be good. Probably
->>> __flow_block_indr_binding() can go away with this new variant to set
->>> up the indirect flow block.
->>
->> Maybe __flow_block_indr_binding() can't go away. The data and cleanup callback which should
->> init the flow_block_indr is only in the flow_indr_dev_setup_offload. This can't be gotten in
->> flow_indr_block_cb_alloc.
-> Probably flow_indr_block_bind_cb_t can be updated to include the data
-> and the cleanup callback.
+> This adds support for Advertisement Monitor API. Here are the commands
+> and events added.
+> - Read Advertisement Monitor Feature command
+> - Add Advertisement Pattern Monitor command
+> - Remove Advertisement Monitor command
+> - Advertisement Monitor Added event
+> - Advertisement Monitor Removed event
+> 
+> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
+> ---
+> 
+> Changes in v5: None
+> Changes in v4: None
+> Changes in v3:
+> - Update command/event opcodes.
+> - Correct data types.
+> 
+> Changes in v2: None
+> 
+> include/net/bluetooth/mgmt.h | 49 ++++++++++++++++++++++++++++++++++++
+> 1 file changed, 49 insertions(+)
 
-Yes this can setup the indr_block info in the flow_indr_block_cb_alloc.
+I have added all 7 patches to my local tree. I added minor style modifications and merged it together with the device flags support.
 
-it also needs a flow_indr_block_cb_remove to handle the UNBIND setup.
+Regards
 
->
+Marcel
+
