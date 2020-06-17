@@ -2,110 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D28101FCC63
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 13:32:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C9EF1FCC68
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 13:32:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726815AbgFQLcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 07:32:07 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:39020 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725964AbgFQLcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 07:32:05 -0400
-Received: by mail-ed1-f68.google.com with SMTP id g1so1650415edv.6;
-        Wed, 17 Jun 2020 04:32:01 -0700 (PDT)
+        id S1726835AbgFQLcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 07:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725964AbgFQLcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 07:32:22 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096A5C061573
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 04:32:22 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id k8so1668188edq.4
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 04:32:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nfbmmuhZ1Ils/7SqoM25z4huCwIsjLlmdoRG7aHfHVE=;
+        b=sB7n2nYs7YpdAV29qHe0ofg1/oQIDoQcROA2t+Y3vlm00PUzSfAEFaK2mD0uRegcf2
+         p1RxelrwcKvfJYElLPk9a1ZWjZ/rX0io8rMTXUsneVBBKds/vt4Tep5gRv+JFdeb62QF
+         zxIJDM+nCi6NMh2840kx5B3MCm17nTFugvtRXWNjVhCENlRD+5UIuKHBJgx9fsevHuz2
+         lOpLaoAYAkztk9MMxusr+lTEj9jh8XJ1M/4pk+QpxN/ILjvHDbk5NyCUjlAt85BT7Oxb
+         or48NVF6L7wBzOWOhhhUULiR9g7remB8UcqOaVG5K73odmhmKrccJEIyjW4LJYjueu/c
+         Aj3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FYdkGKfQbhF4PHnRrzgzko0Pu9PmmGSrtwLwQw3bXCE=;
-        b=t8D2E0uBDkYjK1y9Qs1EMyA1SUGqB3Mf6ObN+D0ClXDCL+b2/gfY7/GEK+Lot5Uzqv
-         R4l3KI70Oy/KwE3FGhOK0fOJ1XSMm/EHYTINBBMe0Ju25U5dY5dJWMyeQmJv1ok57RAS
-         /PwUXvaoimMBOhvt/pGQ2C1w+tTPuV1V7nOLWMkQgpUzsCvY/UvoyMMhlBuN/0PdaOJb
-         eOFhsxolqE/KGMV7kWtLHkfYq5BWOFt7MFrWRfXAL7Tjvu8bIx5sxOh/EyZDl7kVYRXc
-         HaHuSpXefROoULG/euaDqznSpLhnbEAwtR7vFkV66F7GWpd/nhUoMUYYLfAjjqCRnfeD
-         CZyA==
-X-Gm-Message-State: AOAM5328JULnro5t04L3QQinjDJy6snLbZxdNjE6sAZzb61df7uD1Bik
-        5ZqFQ33fzMuGN70B2C132qWDrIA8Y5E=
-X-Google-Smtp-Source: ABdhPJzbijHiPBJ8QWNf9hQXsnh9CB5HA28VxqbN6FIY1pPr6HYmH8EGA0XHv2KQOLuy+zTeoR016w==
-X-Received: by 2002:a05:6402:3106:: with SMTP id dc6mr6587998edb.375.1592393520398;
-        Wed, 17 Jun 2020 04:32:00 -0700 (PDT)
-Received: from localhost (ip-37-188-158-19.eurotel.cz. [37.188.158.19])
-        by smtp.gmail.com with ESMTPSA id y62sm12010608edy.61.2020.06.17.04.31.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jun 2020 04:31:59 -0700 (PDT)
-Date:   Wed, 17 Jun 2020 13:31:57 +0200
-From:   Michal Hocko <mhocko@kernel.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     dsterba@suse.cz, Joe Perches <joe@perches.com>,
-        Waiman Long <longman@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>, linux-mm@kvack.org,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-ppp@vger.kernel.org, wireguard@lists.zx2c4.com,
-        linux-wireless@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
-        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org
-Subject: Re: [PATCH v4 0/3] mm, treewide: Rename kzfree() to kfree_sensitive()
-Message-ID: <20200617113157.GM9499@dhcp22.suse.cz>
-References: <20200616015718.7812-1-longman@redhat.com>
- <fe3b9a437be4aeab3bac68f04193cb6daaa5bee4.camel@perches.com>
- <20200616230130.GJ27795@twin.jikos.cz>
- <20200617003711.GD8681@bombadil.infradead.org>
- <20200617071212.GJ9499@dhcp22.suse.cz>
- <20200617110820.GG8681@bombadil.infradead.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nfbmmuhZ1Ils/7SqoM25z4huCwIsjLlmdoRG7aHfHVE=;
+        b=lzzTJ1QuoFJ1InhP7k5dO5sTCjY9JEnZlyIeZhbSBVFHBN0AAodaaEKhy++ovDa+GU
+         YTucQai+9+V7mM325T6cSh5DRUr9g3i0bE3QJfqp9RJUAEpMYtrgYAquoOC25cyA6elb
+         at5g2r7AJlMby0ZEm2yF/QpBgMFuq/4bde6YF6vZE3V0F/o8a2/oDCMB6YE1zNJw6N7p
+         8gikvzR/mA50w4+QGTtBXjqbm1i+4I62HgWgi5un+tZsqfsvCCFb1tv1xo5PlT4VvcBh
+         UvD2onKzfNcaCuSeMeiPnsHW9T05P3h0ttjDCFDwK5zmyV8ejVC3UWIEkp60WiHUtlLy
+         wY2A==
+X-Gm-Message-State: AOAM533vLhtUZUyfbPshxs8QrpzFuo+bgdX8yb0mGfIEObHFJXDxHIfS
+        lXbLLZRTIeRhbX7Qd8w/pbOXMtkOYvxu/e1Pn7I=
+X-Google-Smtp-Source: ABdhPJx06eMzzgyQj5sVIAKLOg0cDmTqVazkB1AF0dnk31YGzozSKCcuetRnjdK7VmjBein59Qg8AzR0xygUJlSZXyY=
+X-Received: by 2002:a05:6402:362:: with SMTP id s2mr6908368edw.337.1592393540713;
+ Wed, 17 Jun 2020 04:32:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617110820.GG8681@bombadil.infradead.org>
+References: <20200616074955.GA9092@laureti-dev> <20200617105518.GO1551@shell.armlinux.org.uk>
+In-Reply-To: <20200617105518.GO1551@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 17 Jun 2020 14:32:09 +0300
+Message-ID: <CA+h21hotpF58RrKsZsET9XT-vVD3EHPZ=kjQ2mKVT2ix5XAt=A@mail.gmail.com>
+Subject: Re: [PATCH] net: macb: reject unsupported rgmii delays
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Helmut Grohne <helmut.grohne@intenta.de>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 17-06-20 04:08:20, Matthew Wilcox wrote:
-> On Wed, Jun 17, 2020 at 09:12:12AM +0200, Michal Hocko wrote:
-> > On Tue 16-06-20 17:37:11, Matthew Wilcox wrote:
-> > > Not just performance critical, but correctness critical.  Since kvfree()
-> > > may allocate from the vmalloc allocator, I really think that kvfree()
-> > > should assert that it's !in_atomic().  Otherwise we can get into trouble
-> > > if we end up calling vfree() and have to take the mutex.
-> > 
-> > FWIW __vfree already checks for atomic context and put the work into a
-> > deferred context. So this should be safe. It should be used as a last
-> > resort, though.
-> 
-> Actually, it only checks for in_interrupt().
+On Wed, 17 Jun 2020 at 13:56, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> On Tue, Jun 16, 2020 at 09:49:56AM +0200, Helmut Grohne wrote:
+> > The macb driver does not support configuring rgmii delays. At least for
+> > the Zynq GEM, delays are not supported by the hardware at all. However,
+> > the driver happily accepts and ignores any such delays.
+> >
+> > When operating in a mac to phy connection, the delay setting applies to
+> > the phy. Since the MAC does not support delays, the phy must provide
+> > them and the only supported mode is rgmii-id.  However, in a fixed mac
+> > to mac connection, the delay applies to the mac itself. Therefore the
+> > only supported rgmii mode is rgmii.
+>
+> This seems incorrect - see the phy documentation in
+> Documentation/networking/phy.rst:
+>
+> * PHY_INTERFACE_MODE_RGMII: the PHY is not responsible for inserting any
+>   internal delay by itself, it assumes that either the Ethernet MAC (if capable
+>   or the PCB traces) insert the correct 1.5-2ns delay
+>
+> * PHY_INTERFACE_MODE_RGMII_TXID: the PHY should insert an internal delay
+>   for the transmit data lines (TXD[3:0]) processed by the PHY device
+>
+> * PHY_INTERFACE_MODE_RGMII_RXID: the PHY should insert an internal delay
+>   for the receive data lines (RXD[3:0]) processed by the PHY device
+>
+> * PHY_INTERFACE_MODE_RGMII_ID: the PHY should insert internal delays for
+>   both transmit AND receive data lines from/to the PHY device
+>
+> Note that PHY_INTERFACE_MODE_RGMII, the delay can be added by _either_
+> the MAC or by PCB trace routing.
+>
 
-You are right. I have misremembered. You have made me look (thanks) ...
+What does it mean "can" be added? Is it or is it not added? As a MAC
+driver, what do you do?
 
-> If you call vfree() under
-> a spinlock, you're in trouble.  in_atomic() only knows if we hold a
-> spinlock for CONFIG_PREEMPT, so it's not safe to check for in_atomic()
-> in __vfree().  So we need the warning in order that preempt people can
-> tell those without that there is a bug here.
+> The individual RGMII delay modes are more about what the PHY itself is
+> asked to do with respect to inserting delays, so I don't think your
+> patch makes sense.
+>
 
-... Unless I am missing something in_interrupt depends on preempt_count() as
-well so neither of the two is reliable without PREEMPT_COUNT configured.
+We all read the phy-mode documentation, but we aren't really any
+smarter. That document completely fails to address the existence of
+PCB traces.
+Helmut's link points to some more discussion around this topic.
 
--- 
-Michal Hocko
-SUSE Labs
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
