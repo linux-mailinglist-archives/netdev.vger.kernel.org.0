@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F51F1FD23A
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 18:32:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D7C1FD23D
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 18:33:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726873AbgFQQcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 12:32:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58626 "EHLO mail.kernel.org"
+        id S1726925AbgFQQdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 12:33:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59572 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726761AbgFQQcU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 12:32:20 -0400
+        id S1726540AbgFQQdB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 12:33:01 -0400
 Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2D98321527;
-        Wed, 17 Jun 2020 16:32:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E7885206E2;
+        Wed, 17 Jun 2020 16:33:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592411539;
-        bh=dosVYB527BP5Srr/9fHV6NJgxLs2rmKgkXamravjVTs=;
+        s=default; t=1592411581;
+        bh=qJL7rVXvI3peFbGg/V3qdpawcNNdsGR1k6j1oztYM1w=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gR3iYqxi/8pnlX85JZRtonRYglAcXRG48QIbQKHqB25TmMgQpFmEx6LddT/XI9CDq
-         CLpyGHk9BimZuu8alat9WAWRhy5iVT4d1Mf1S0LlP4V1Udh+Bk3fwb5CNsIn4Wa3zV
-         V1Eeua8z2rScaFbRk0dARUhwm4NqJLLqsinwka/k=
-Date:   Wed, 17 Jun 2020 09:32:17 -0700
+        b=EpLAJTcN16TDjipZbpmGB3rUirGOy9dVdGa/nlKxBM0lv0sn+H1Ip6IeJrQ2kTAcA
+         exig8INKhx9CNutzsY65DOXX+vmLkCr0aJRLL+AJVBPjqRY81e/vPzmbXfNSGN75V7
+         houPxNH2qaR5Aou4vJJLmMvVOgQ05ZmOm5mvDrJs=
+Date:   Wed, 17 Jun 2020 09:32:58 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Antoine Tenart <antoine.tenart@bootlin.com>
 Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
@@ -32,12 +32,12 @@ Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com,
         foss@0leil.net
-Subject: Re: [PATCH net-next v2 6/8] net: phy: mscc: timestamping and PHC
- support
-Message-ID: <20200617093217.2a664161@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200617133127.628454-7-antoine.tenart@bootlin.com>
+Subject: Re: [PATCH net-next v2 5/8] net: phy: mscc: 1588 block
+ initialization
+Message-ID: <20200617093258.52614fd8@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200617133127.628454-6-antoine.tenart@bootlin.com>
 References: <20200617133127.628454-1-antoine.tenart@bootlin.com>
-        <20200617133127.628454-7-antoine.tenart@bootlin.com>
+        <20200617133127.628454-6-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,22 +46,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Jun 2020 15:31:25 +0200 Antoine Tenart wrote:
-> This patch adds support for PHC and timestamping operations for the MSCC
-> PHY. PTP 1-step and 2-step modes are supported, over Ethernet and UDP.
-> 
-> To get and set the PHC time, a GPIO has to be used and changes are only
-> retrieved or committed when on a rising edge. The same GPIO is shared by
-> all PHYs, so the granularity of the lock protecting it has to be
-> different from the ones protecting the 1588 registers (the VSC8584 PHY
-> has 2 1588 blocks, and a single load/save pin).
-> 
-> Co-developed-by: Quentin Schulz <quentin.schulz@bootlin.com>
-> Signed-off-by: Quentin Schulz <quentin.schulz@bootlin.com>
-> Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+On Wed, 17 Jun 2020 15:31:24 +0200 Antoine Tenart wrote:
+> +/* Two PHYs share the same 1588 processor and it's to be entirely configured
+> + * through the base PHY of this processor.
+> + */
+> +/* phydev->bus->mdio_lock should be locked when using this function */
+> +static inline int phy_ts_base_write(struct phy_device *phydev, u32 regnum,
+> +				    u16 val)
 
-drivers/net/phy/mscc/mscc_ptp.c:406:24: warning: restricted __be16 degrades to integer
-drivers/net/phy/mscc/mscc_ptp.c:407:24: warning: restricted __be16 degrades to integer
-drivers/net/phy/mscc/mscc_ptp.c:1213:23: warning: symbol 'vsc85xx_clk_caps' was not declared. Should it be static?
+Please don't use static inline outside of headers in networking code.
+The compiler will know best what to inline and when.
 
-Please make sure you don't add warnings when built with W=1 C=1 flags.
+> +{
+> +	struct vsc8531_private *priv = phydev->priv;
+> +
+> +	WARN_ON_ONCE(!mutex_is_locked(&phydev->mdio.bus->mdio_lock));
+> +	return __mdiobus_write(phydev->mdio.bus, priv->ts_base_addr, regnum,
+> +			       val);
+> +}
+> +
+> +/* phydev->bus->mdio_lock should be locked when using this function */
+> +static inline int phy_ts_base_read(struct phy_device *phydev, u32 regnum)
+> +{
+> +	struct vsc8531_private *priv = phydev->priv;
+> +
+> +	WARN_ON_ONCE(!mutex_is_locked(&phydev->mdio.bus->mdio_lock));
+> +	return __mdiobus_read(phydev->mdio.bus, priv->ts_base_addr, regnum);
+> +}
