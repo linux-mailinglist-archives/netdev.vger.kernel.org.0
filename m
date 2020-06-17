@@ -2,20 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0220B1FCE91
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 15:38:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55DC21FCE96
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 15:38:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726981AbgFQNgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 09:36:19 -0400
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:40931 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726480AbgFQNgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 09:36:18 -0400
-X-Originating-IP: 90.76.143.236
+        id S1727018AbgFQNg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 09:36:26 -0400
+Received: from relay11.mail.gandi.net ([217.70.178.231]:46867 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726480AbgFQNgW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 09:36:22 -0400
 Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
         (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id BCEEAE000B;
-        Wed, 17 Jun 2020 13:36:13 +0000 (UTC)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id CE341100007;
+        Wed, 17 Jun 2020 13:36:17 +0000 (UTC)
 From:   Antoine Tenart <antoine.tenart@bootlin.com>
 To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
         hkallweit1@gmail.com, richardcochran@gmail.com,
@@ -23,9 +22,9 @@ To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com,
         foss@0leil.net, antoine.tenart@bootlin.com
-Subject: [PATCH net-next v2 1/8] net: phy: add support for a common probe between shared PHYs
-Date:   Wed, 17 Jun 2020 15:31:20 +0200
-Message-Id: <20200617133127.628454-2-antoine.tenart@bootlin.com>
+Subject: [PATCH net-next v2 2/8] net: phy: mscc: fix copyright and author information in MACsec
+Date:   Wed, 17 Jun 2020 15:31:21 +0200
+Message-Id: <20200617133127.628454-3-antoine.tenart@bootlin.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200617133127.628454-1-antoine.tenart@bootlin.com>
 References: <20200617133127.628454-1-antoine.tenart@bootlin.com>
@@ -36,60 +35,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shared PHYs (PHYs in the same hardware package) may have shared
-registers and their drivers would usually need to share information.
-There is currently a way to have a shared (part of the) init, by using
-phy_package_init_once(). This patch extends the logic to share parts of
-the probe to allow sharing the initialization of locks or resources
-retrieval.
+All headers in the MSCC PHY driver have been copied and pasted from the
+original mscc.c file. However the information is not necessarily
+correct, as in the MACsec support. Fix this.
 
 Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
 ---
- include/linux/phy.h | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ drivers/net/phy/mscc/mscc_fc_buffer.h | 2 +-
+ drivers/net/phy/mscc/mscc_mac.h       | 2 +-
+ drivers/net/phy/mscc/mscc_macsec.c    | 6 +++---
+ drivers/net/phy/mscc/mscc_macsec.h    | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 8c05d0fb5c00..058219b6441f 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -244,7 +244,8 @@ struct phy_package_shared {
- };
- 
- /* used as bit number in atomic bitops */
--#define PHY_SHARED_F_INIT_DONE 0
-+#define PHY_SHARED_F_INIT_DONE  0
-+#define PHY_SHARED_F_PROBE_DONE 1
- 
+diff --git a/drivers/net/phy/mscc/mscc_fc_buffer.h b/drivers/net/phy/mscc/mscc_fc_buffer.h
+index 3803e826c37d..399e803395a5 100644
+--- a/drivers/net/phy/mscc/mscc_fc_buffer.h
++++ b/drivers/net/phy/mscc/mscc_fc_buffer.h
+@@ -2,7 +2,7 @@
  /*
-  * The Bus class for PHYs.  Devices which provide access to
-@@ -1554,14 +1555,25 @@ static inline int __phy_package_write(struct phy_device *phydev,
- 	return __mdiobus_write(phydev->mdio.bus, shared->addr, regnum, val);
- }
+  * Driver for Microsemi VSC85xx PHYs
+  *
+- * Copyright (C) 2019 Microsemi Corporation
++ * Copyright (C) 2020 Microsemi Corporation
+  */
  
--static inline bool phy_package_init_once(struct phy_device *phydev)
-+static inline bool __phy_package_set_once(struct phy_device *phydev,
-+					  unsigned int b)
- {
- 	struct phy_package_shared *shared = phydev->shared;
+ #ifndef _MSCC_PHY_FC_BUFFER_H_
+diff --git a/drivers/net/phy/mscc/mscc_mac.h b/drivers/net/phy/mscc/mscc_mac.h
+index 59b6837c60b3..8dd38dc6edbf 100644
+--- a/drivers/net/phy/mscc/mscc_mac.h
++++ b/drivers/net/phy/mscc/mscc_mac.h
+@@ -2,7 +2,7 @@
+ /*
+  * Driver for Microsemi VSC85xx PHYs
+  *
+- * Copyright (c) 2017 Microsemi Corporation
++ * Copyright (c) 2020 Microsemi Corporation
+  */
  
- 	if (!shared)
- 		return false;
+ #ifndef _MSCC_PHY_LINE_MAC_H_
+diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
+index b4d3dc4068e2..c0eeb62cb940 100644
+--- a/drivers/net/phy/mscc/mscc_macsec.c
++++ b/drivers/net/phy/mscc/mscc_macsec.c
+@@ -1,10 +1,10 @@
+ // SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ /*
+- * Driver for Microsemi VSC85xx PHYs
++ * Driver for Microsemi VSC85xx PHYs - MACsec support
+  *
+- * Author: Nagaraju Lakkaraju
++ * Author: Antoine Tenart
+  * License: Dual MIT/GPL
+- * Copyright (c) 2016 Microsemi Corporation
++ * Copyright (c) 2020 Microsemi Corporation
+  */
  
--	return !test_and_set_bit(PHY_SHARED_F_INIT_DONE, &shared->flags);
-+	return !test_and_set_bit(b, &shared->flags);
-+}
-+
-+static inline bool phy_package_init_once(struct phy_device *phydev)
-+{
-+	return __phy_package_set_once(phydev, PHY_SHARED_F_INIT_DONE);
-+}
-+
-+static inline bool phy_package_probe_once(struct phy_device *phydev)
-+{
-+	return __phy_package_set_once(phydev, PHY_SHARED_F_PROBE_DONE);
- }
+ #include <linux/phy.h>
+diff --git a/drivers/net/phy/mscc/mscc_macsec.h b/drivers/net/phy/mscc/mscc_macsec.h
+index d751f2946b79..9c6d25e36de2 100644
+--- a/drivers/net/phy/mscc/mscc_macsec.h
++++ b/drivers/net/phy/mscc/mscc_macsec.h
+@@ -2,7 +2,7 @@
+ /*
+  * Driver for Microsemi VSC85xx PHYs
+  *
+- * Copyright (c) 2018 Microsemi Corporation
++ * Copyright (c) 2020 Microsemi Corporation
+  */
  
- extern struct bus_type mdio_bus_type;
+ #ifndef _MSCC_PHY_MACSEC_H_
 -- 
 2.26.2
 
