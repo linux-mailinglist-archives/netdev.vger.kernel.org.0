@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE4821FC4EA
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 06:01:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F5E61FC4EF
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 06:01:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726857AbgFQEAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 00:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46704 "EHLO
+        id S1726900AbgFQEAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 00:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726712AbgFQEAi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 00:00:38 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01854C0613EE
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 21:00:38 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id x22so484651pfn.3
-        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 21:00:37 -0700 (PDT)
+        with ESMTP id S1726842AbgFQEAl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 00:00:41 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A9BC061794
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 21:00:39 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id s135so627744pgs.2
+        for <netdev@vger.kernel.org>; Tue, 16 Jun 2020 21:00:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=12CQMLW8zmSrgKFzSh+r0y7cKk1f3YOfpNSAMUhjbUc=;
-        b=h8gh68mOHQHIj7mWB8bgLKRYk19xCBCgRI1kAoxM/LiqF74H19cbrjx+2QiPwKTHjY
-         Zgfu8Y2FQVoO8teD3IEyNJRw3pSjlBwnSQ8tK5qrebKzRfgf6f/n8vm2MdgrGZMPll40
-         SJ7WJJpT9iQK/ZkwAxI4bI8Y+YI+gZMNiEO2M=
+        bh=yDywz5KHsZfDtJjHD0TS1I12nciGz5p5dKSUU+dChcc=;
+        b=lCJhFNpvYxufbRcaNhjJjHftdOuPONUfQjBt1CQvwX0HZZZvQMm0uOaheKHnB7pm6O
+         dWdbFCFmnMEi8YUYmcrOno7ku3vMDrRTdUXn/TykKlpW76kKwWAFyAp4qmGCtsBshJHX
+         CVandVYErm+dOjXHip7tNRCsy7H41CfkpRS+Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=12CQMLW8zmSrgKFzSh+r0y7cKk1f3YOfpNSAMUhjbUc=;
-        b=t0PYuIpDFkW0U+ji488M1QcR7yGb98SHpx1tQjizIL5zTF+NU9pJ4FZT6qIt2oxSgJ
-         XZNUUVYV2vRdVF6o1onuYqRMgysBuWGhNCrWdHRECqcMQMRkbg4WVNDUjSGHFlpn8Pyl
-         IpGo8O2JgdN/UNiPtz36+fhRded8HnfLkhlOaLQKUCrBo8p5lQ10KcEN3hVS1qrmgqHO
-         kJP2iqwGSabinJxQ2XC5NC8aBdQ1yfXGY36h06Yn5IZqnhp/kHlJDrqFac4Oy8FuYnPI
-         /lR6RbRcCOG+8YqJcmgtLpaueyv/Rmeed4bv9X42hL7SGWKRJcpvDhjF3KgptSH6WUDT
-         z6RQ==
-X-Gm-Message-State: AOAM533tI51uQ/78WY+/anamDSMcYrNEh6h+UoqSDZ4NRg3QKGLgl90e
-        wayN4kM4kGULZ+z72fcfhwomaw==
-X-Google-Smtp-Source: ABdhPJyoKl99XxndMfj2zS2cjb84ilSQJswh72daWSynJYcRGmPoOb9p9VIUaP+6GQoMl15OzWu7vQ==
-X-Received: by 2002:a62:6286:: with SMTP id w128mr4815132pfb.117.1592366437515;
-        Tue, 16 Jun 2020 21:00:37 -0700 (PDT)
+        bh=yDywz5KHsZfDtJjHD0TS1I12nciGz5p5dKSUU+dChcc=;
+        b=BkJIuTA3tNMT3VcE64wXYeA0CPeSSaUZR65ttsWaeMnBqzK/sivYyvSRe28SYl3Aqk
+         ur1omfLVklnkHptJKG3MMzGC4nOsupPobo0UJWoAWg2OrrTeWPnhOJL1GSrjIqW7xIS+
+         mLnJb+NzNdqas0B/WGW9nHjZq1/WOgVtFg8eU/fdy19lgFTNQkW7ivI2WJlfs9XzitIv
+         dPaHVo6uLNm2eqtzSMDKvfbAsF5QdGoJhc4ZiCL7d54tFpuZ1grUQtcLjO6Q1Q3jCzTM
+         LthkJpqB2gi1n3vyd/WCEQPJMLyQuPNSvEv/gaMf6pcHN3Yf0BKX/PjB0iqIAk4Z98//
+         Vy4Q==
+X-Gm-Message-State: AOAM533+xhSy16F9cL+UtYUI32ej+lW7VGWh++pMrhMnChj0y3JutLuj
+        69mXlwobGMN5/CxgDPEe3kCTdA==
+X-Google-Smtp-Source: ABdhPJw1QfW93JDC0AuJjA+rzSVERRMzEN/6yoLeE+3q6yy2JlVaSyGQAMme57mJrbSrN7khxu7K3A==
+X-Received: by 2002:a62:1692:: with SMTP id 140mr5176705pfw.168.1592366438701;
+        Tue, 16 Jun 2020 21:00:38 -0700 (PDT)
 Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
-        by smtp.gmail.com with ESMTPSA id q1sm20013089pfk.132.2020.06.16.21.00.36
+        by smtp.gmail.com with ESMTPSA id q1sm20013089pfk.132.2020.06.16.21.00.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2020 21:00:37 -0700 (PDT)
+        Tue, 16 Jun 2020 21:00:38 -0700 (PDT)
 From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
 Cc:     alainm@chromium.org, chromeos-bluetooth-upstreaming@chromium.org,
@@ -52,9 +52,9 @@ Cc:     alainm@chromium.org, chromeos-bluetooth-upstreaming@chromium.org,
         Johan Hedberg <johan.hedberg@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 2/4] Bluetooth: Replace wakeable list with flag
-Date:   Tue, 16 Jun 2020 21:00:20 -0700
-Message-Id: <20200616210008.2.I577641918ec743663538eab7aa73c719daacb90d@changeid>
+Subject: [PATCH 3/4] Bluetooth: Replace wakeable in hci_conn_params
+Date:   Tue, 16 Jun 2020 21:00:21 -0700
+Message-Id: <20200616210008.3.I98a35b457f29a2c83e011519f44c529fea873ce8@changeid>
 X-Mailer: git-send-email 2.27.0.290.gba653c62da-goog
 In-Reply-To: <20200617040022.174448-1-abhishekpandit@chromium.org>
 References: <20200617040022.174448-1-abhishekpandit@chromium.org>
@@ -65,97 +65,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the classic device list now supports flags, convert the wakeable
-list into a flag on the existing device list.
+Replace the wakeable boolean with flags in hci_conn_params and all users
+of this boolean. This will be used by the get/set device flags mgmt op.
 
 Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 Reviewed-by: Alain Michaud <alainm@chromium.org>
 ---
 
- include/net/bluetooth/hci_core.h | 11 ++++++++++-
- net/bluetooth/hci_core.c         |  1 -
- net/bluetooth/hci_request.c      | 12 ++++++++----
- 3 files changed, 18 insertions(+), 6 deletions(-)
+ include/net/bluetooth/hci_core.h | 2 +-
+ net/bluetooth/hci_request.c      | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 95a3935325bbbc..0643c737ba8528 100644
+index 0643c737ba8528..6f88e5d81bd24f 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
-@@ -143,6 +143,16 @@ struct bdaddr_list_with_flags {
- 	u32 current_flags;
+@@ -660,7 +660,7 @@ struct hci_conn_params {
+ 
+ 	struct hci_conn *conn;
+ 	bool explicit_connect;
+-	bool wakeable;
++	u32 current_flags;
  };
  
-+enum hci_conn_flags {
-+	HCI_CONN_FLAG_REMOTE_WAKEUP,
-+	HCI_CONN_FLAG_MAX
-+};
-+
-+#define hci_conn_test_flag(nr, flags) ((flags) & (1U << nr))
-+
-+/* Make sure number of flags doesn't exceed sizeof(current_flags) */
-+static_assert(HCI_CONN_FLAG_MAX < 32);
-+
- struct bt_uuid {
- 	struct list_head list;
- 	u8 uuid[16];
-@@ -463,7 +473,6 @@ struct hci_dev {
- 	struct list_head	mgmt_pending;
- 	struct list_head	blacklist;
- 	struct list_head	whitelist;
--	struct list_head	wakeable;
- 	struct list_head	uuids;
- 	struct list_head	link_keys;
- 	struct list_head	long_term_keys;
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 8a471bec2731ed..8e01afb2ee8c5c 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3499,7 +3499,6 @@ struct hci_dev *hci_alloc_dev(void)
- 	INIT_LIST_HEAD(&hdev->mgmt_pending);
- 	INIT_LIST_HEAD(&hdev->blacklist);
- 	INIT_LIST_HEAD(&hdev->whitelist);
--	INIT_LIST_HEAD(&hdev->wakeable);
- 	INIT_LIST_HEAD(&hdev->uuids);
- 	INIT_LIST_HEAD(&hdev->link_keys);
- 	INIT_LIST_HEAD(&hdev->long_term_keys);
+ extern struct list_head hci_dev_list;
 diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index a7f572ad38ef08..a5b53d3ea50802 100644
+index a5b53d3ea50802..eee9c007a5fb40 100644
 --- a/net/bluetooth/hci_request.c
 +++ b/net/bluetooth/hci_request.c
-@@ -968,15 +968,19 @@ static void hci_req_clear_event_filter(struct hci_request *req)
- 
- static void hci_req_set_event_filter(struct hci_request *req)
- {
--	struct bdaddr_list *b;
-+	struct bdaddr_list_with_flags *b;
- 	struct hci_cp_set_event_filter f;
- 	struct hci_dev *hdev = req->hdev;
--	u8 scan;
-+	u8 scan = SCAN_DISABLED;
- 
- 	/* Always clear event filter when starting */
- 	hci_req_clear_event_filter(req);
- 
--	list_for_each_entry(b, &hdev->wakeable, list) {
-+	list_for_each_entry(b, &hdev->whitelist, list) {
-+		if (!hci_conn_test_flag(HCI_CONN_FLAG_REMOTE_WAKEUP,
-+					b->current_flags))
-+			continue;
-+
- 		memset(&f, 0, sizeof(f));
- 		bacpy(&f.addr_conn_flt.bdaddr, &b->bdaddr);
- 		f.flt_type = HCI_FLT_CONN_SETUP;
-@@ -985,9 +989,9 @@ static void hci_req_set_event_filter(struct hci_request *req)
- 
- 		bt_dev_dbg(hdev, "Adding event filters for %pMR", &b->bdaddr);
- 		hci_req_add(req, HCI_OP_SET_EVENT_FLT, sizeof(f), &f);
-+		scan = SCAN_PAGE;
+@@ -710,7 +710,8 @@ static int add_to_white_list(struct hci_request *req,
  	}
  
--	scan = !list_empty(&hdev->wakeable) ? SCAN_PAGE : SCAN_DISABLED;
- 	hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
- }
+ 	/* During suspend, only wakeable devices can be in whitelist */
+-	if (hdev->suspended && !params->wakeable)
++	if (hdev->suspended && !hci_conn_test_flag(HCI_CONN_FLAG_REMOTE_WAKEUP,
++						   params->current_flags))
+ 		return 0;
  
+ 	*num_entries += 1;
 -- 
 2.27.0.290.gba653c62da-goog
 
