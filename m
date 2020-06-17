@@ -2,65 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2DE01FCAF3
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 12:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 352321FCB1F
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 12:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbgFQKdu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jun 2020 06:33:50 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:60498 "EHLO
+        id S1726763AbgFQKn1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Jun 2020 06:43:27 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:43942 "EHLO
         mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725554AbgFQKdt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 06:33:49 -0400
+        with ESMTP id S1725860AbgFQKn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 06:43:27 -0400
 Received: from marcel-macbook.fritz.box (p5b3d2638.dip0.t-ipconnect.de [91.61.38.56])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 66051CECD1;
-        Wed, 17 Jun 2020 12:43:39 +0200 (CEST)
+        by mail.holtmann.org (Postfix) with ESMTPSA id 01995CECD2;
+        Wed, 17 Jun 2020 12:53:16 +0200 (CEST)
 Content-Type: text/plain;
-        charset=us-ascii
+        charset=utf-8
 Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH v2] Bluetooth: Terminate the link if pairing is cancelled
+Subject: Re: [PATCH v2] bluetooth: Adding a configurable autoconnect timeout
 From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200616092341.v2.1.I9dd050ead919f2cc3ef83d4e866de537c7799cf3@changeid>
-Date:   Wed, 17 Jun 2020 12:33:47 +0200
-Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Bluetooth Kernel Mailing List 
-        <linux-bluetooth@vger.kernel.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
+In-Reply-To: <20200615210638.132889-1-alainm@chromium.org>
+Date:   Wed, 17 Jun 2020 12:43:25 +0200
+Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Content-Transfer-Encoding: 8BIT
-Message-Id: <4F76321E-918F-4A16-B35A-888733D5B75D@holtmann.org>
-References: <20200616092341.v2.1.I9dd050ead919f2cc3ef83d4e866de537c7799cf3@changeid>
-To:     Manish Mandlik <mmandlik@google.com>
+Message-Id: <268B042A-802E-4472-ACDA-8C74CE59FAED@holtmann.org>
+References: <20200615210638.132889-1-alainm@chromium.org>
+To:     Alain Michaud <alainm@chromium.org>
 X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Manish,
+Hi Alain,
 
-> If user decides to cancel the ongoing pairing process (e.g. by clicking
-> the cancel button on pairing/passkey window), abort any ongoing pairing
-> and then terminate the link if it was created because of the pair
-> device action.
+> This patch adds a configurable LE autoconnect timeout.
 > 
-> Signed-off-by: Manish Mandlik <mmandlik@google.com>
+> Signed-off-by: Alain Michaud <alainm@chromium.org>
 > ---
 > 
-> Changes in v2:
-> - Added code to track if the connection was triggered because of the pair
->  device action and then only terminate the link on pairing cancel.
+> Changes in v1:
+> Fixing longer than 80 char line.
 > 
-> include/net/bluetooth/hci_core.h | 14 ++++++++++++--
-> net/bluetooth/hci_conn.c         | 11 ++++++++---
-> net/bluetooth/l2cap_core.c       |  6 ++++--
-> net/bluetooth/mgmt.c             | 22 ++++++++++++++++++----
-> 4 files changed, 42 insertions(+), 11 deletions(-)
+> include/net/bluetooth/hci_core.h |  1 +
+> net/bluetooth/hci_core.c         |  1 +
+> net/bluetooth/hci_event.c        |  2 +-
+> net/bluetooth/hci_request.c      |  4 ++--
+> net/bluetooth/mgmt_config.c      | 13 +++++++++++++
+> 5 files changed, 18 insertions(+), 3 deletions(-)
 
-patch has been added to my local tree. I will send an update with all pending patches in a bit.
+I created a local tree where I merged all pending patches together and then I send that out to the mailing list for review. This patch doesn’t apply cleanly anymore and thus I need you to resend it once we have that pending series merged into bluetooth-next tree.
 
 Regards
 
