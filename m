@@ -2,140 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21D491FD4D5
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:49:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ADE41FD4DD
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727894AbgFQSsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 14:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726835AbgFQSsm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:48:42 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660CCC06174E
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:48:42 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id s90so3626647ybi.6
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:48:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=MtgJnooZi1N2NHQfNjrP1tRVI5EJU+jkftfAJ6oddAg=;
-        b=cVts4akpBC0l1PMbwnCb4y9mhQWPFAKfDzPmLVUxdGXNYbeVkTSZ+U+1Ej1ljHlplE
-         AxqM5fnp846Rdr/x1vAbrQaf+9IUQy9wXcHrVud2d/f8rFxQJIHkD7/IW9J3qnck1Axj
-         LR3RN0+R/0PMtZz4f2JxILKqxFQsEE5Rp/0Q6b8X2w3omRxX/wP9CBx3lBZG0j/xvMpr
-         OSwy7f9/m+zlAXQAP9DaozIMayUdscvwnXPfD9j7DBlzHs4UgkkLXp5bVtJMkVZ9+P2T
-         4LNWg1bb4gGLfYwb1s2qwlkiDd7HJo8MwoxaTbDAdSNsYLDhREE/XnFrHPrDrSGWcsGz
-         MGeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=MtgJnooZi1N2NHQfNjrP1tRVI5EJU+jkftfAJ6oddAg=;
-        b=pFEW3SlGo7ly+VXoO3CwjRZaxT1Cv8/D88uj3b77F2pxUizYKk31mhyDNqgYFIBcaS
-         dco2RVHzExxj1bvs83brmhHURFbpKEdHp1GZx3LSrN5t+uC2+ry3yqS8aGpgT8Kq5Ern
-         Q4YeD1pTI8I7SRsoFADen8S8CehU1CofGOKRawxl2WMuk+YNudTj7+UA4WqWGJkMmdjb
-         Iv/0CPTA/dTamRUw/yFvw+o+Hx/SE3+3KYTpoq6t2mKvXFudOmUyKBKEzD/zltUiBlmd
-         Cq91s9z6iweW4q6RcVn4KL2MAY9IhRHV7YJ/t8cCT+JvEHcfcXH+QL5v/Q/FpjE0dbgN
-         y7QQ==
-X-Gm-Message-State: AOAM532n4nYwJKKAq6YY9FYXiGwWle5ityn9ezcU2+mqEQ9cyuIhmXNR
-        7wC/zyI7aSfYs6+kEkZ8zmEUXZd2ETo9WQ==
-X-Google-Smtp-Source: ABdhPJxnE7t0YBuYtfBs0lxyf8qQeGCO6hD3ieLmWFmvkOLDDXmzQRVdObN1gVWELipJD0otd9UJ3e1MhDvgiA==
-X-Received: by 2002:a25:ba03:: with SMTP id t3mr403950ybg.111.1592419721659;
- Wed, 17 Jun 2020 11:48:41 -0700 (PDT)
-Date:   Wed, 17 Jun 2020 11:48:19 -0700
-In-Reply-To: <20200617184819.49986-1-edumazet@google.com>
-Message-Id: <20200617184819.49986-6-edumazet@google.com>
-Mime-Version: 1.0
-References: <20200617184819.49986-1-edumazet@google.com>
-X-Mailer: git-send-email 2.27.0.290.gba653c62da-goog
-Subject: [PATCH net-next 5/5] net: tso: add UDP segmentation support
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727925AbgFQSvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 14:51:31 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:58566 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726851AbgFQSva (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:51:30 -0400
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05HIkML5029791;
+        Wed, 17 Jun 2020 14:51:29 -0400
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31qg6p9vu7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Jun 2020 14:51:29 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05HITRlG030842;
+        Wed, 17 Jun 2020 18:51:28 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma01wdc.us.ibm.com with ESMTP id 31q6bd5jhn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 17 Jun 2020 18:51:28 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05HIpRm212517910
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 17 Jun 2020 18:51:27 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8CDB428058;
+        Wed, 17 Jun 2020 18:51:27 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 747F52805A;
+        Wed, 17 Jun 2020 18:51:27 +0000 (GMT)
+Received: from localhost.localdomain (unknown [9.114.224.51])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 17 Jun 2020 18:51:27 +0000 (GMT)
+From:   David Christensen <drc@linux.vnet.ibm.com>
+To:     netdev@vger.kernel.org,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>
+Cc:     linux-kernel@vger.kernel.org,
+        David Christensen <drc@linux.vnet.ibm.com>
+Subject: [PATCH v2] tg3: driver sleeps indefinitely when EEH errors exceed eeh_max_freezes
+Date:   Wed, 17 Jun 2020 11:51:17 -0700
+Message-Id: <20200617185117.732849-1-drc@linux.vnet.ibm.com>
+X-Mailer: git-send-email 2.18.2
+In-Reply-To: <20200615190119.382589-1-drc@linux.vnet.ibm.com>
+References: <20200615190119.382589-1-drc@linux.vnet.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-17_07:2020-06-17,2020-06-17 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
+ mlxscore=0 lowpriorityscore=0 mlxlogscore=999 spamscore=0
+ cotscore=-2147483648 bulkscore=0 phishscore=0 impostorscore=0 adultscore=0
+ malwarescore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006170142
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Note that like TCP, we do not support additional encapsulations,
-and that checksums must be offloaded to the NIC.
+The driver function tg3_io_error_detected() calls napi_disable twice,
+without an intervening napi_enable, when the number of EEH errors exceeds
+eeh_max_freezes, resulting in an indefinite sleep while holding rtnl_lock.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Add check for pcierr_recovery which skips code already executed for the
+"Frozen" state.
+
+Signed-off-by: David Christensen <drc@linux.vnet.ibm.com>
 ---
- net/core/tso.c | 29 ++++++++++++++++++-----------
- 1 file changed, 18 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/broadcom/tg3.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/tso.c b/net/core/tso.c
-index 9f35518815bda275106d27bc5cc34b019429d254..4148f6d48953e1e1ebd878c3953f3e41d47832d9 100644
---- a/net/core/tso.c
-+++ b/net/core/tso.c
-@@ -16,7 +16,6 @@ EXPORT_SYMBOL(tso_count_descs);
- void tso_build_hdr(const struct sk_buff *skb, char *hdr, struct tso_t *tso,
- 		   int size, bool is_last)
- {
--	struct tcphdr *tcph;
- 	int hdr_len = skb_transport_offset(skb) + tso->tlen;
- 	int mac_hdr_len = skb_network_offset(skb);
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index 7a3b22b35238..ebff1fc0d8ce 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -18168,8 +18168,8 @@ static pci_ers_result_t tg3_io_error_detected(struct pci_dev *pdev,
  
-@@ -32,21 +31,29 @@ void tso_build_hdr(const struct sk_buff *skb, char *hdr, struct tso_t *tso,
+ 	rtnl_lock();
  
- 		iph->payload_len = htons(size + tso->tlen);
- 	}
--	tcph = (struct tcphdr *)(hdr + skb_transport_offset(skb));
--	put_unaligned_be32(tso->tcp_seq, &tcph->seq);
-+	hdr += skb_transport_offset(skb);
-+	if (tso->tlen != sizeof(struct udphdr)) {
-+		struct tcphdr *tcph = (struct tcphdr *)hdr;
+-	/* We probably don't have netdev yet */
+-	if (!netdev || !netif_running(netdev))
++	/* Could be second call or maybe we don't have netdev yet */
++	if (!netdev || tp->pcierr_recovery || !netif_running(netdev))
+ 		goto done;
  
--	if (!is_last) {
--		/* Clear all special flags for not last packet */
--		tcph->psh = 0;
--		tcph->fin = 0;
--		tcph->rst = 0;
-+		put_unaligned_be32(tso->tcp_seq, &tcph->seq);
-+
-+		if (!is_last) {
-+			/* Clear all special flags for not last packet */
-+			tcph->psh = 0;
-+			tcph->fin = 0;
-+			tcph->rst = 0;
-+		}
-+	} else {
-+		struct udphdr *uh = (struct udphdr *)hdr;
-+
-+		uh->len = htons(sizeof(*uh) + size);
- 	}
- }
- EXPORT_SYMBOL(tso_build_hdr);
- 
- void tso_build_data(const struct sk_buff *skb, struct tso_t *tso, int size)
- {
--	tso->tcp_seq += size;
-+	tso->tcp_seq += size; /* not worth avoiding this operation for UDP */
- 	tso->size -= size;
- 	tso->data += size;
- 
-@@ -64,12 +71,12 @@ EXPORT_SYMBOL(tso_build_data);
- 
- int tso_start(struct sk_buff *skb, struct tso_t *tso)
- {
--	int tlen = tcp_hdrlen(skb);
-+	int tlen = skb_is_gso_tcp(skb) ? tcp_hdrlen(skb) : sizeof(struct udphdr);
- 	int hdr_len = skb_transport_offset(skb) + tlen;
- 
- 	tso->tlen = tlen;
- 	tso->ip_id = ntohs(ip_hdr(skb)->id);
--	tso->tcp_seq = ntohl(tcp_hdr(skb)->seq);
-+	tso->tcp_seq = (tlen != sizeof(struct udphdr)) ? ntohl(tcp_hdr(skb)->seq) : 0;
- 	tso->next_frag_idx = 0;
- 	tso->ipv6 = vlan_get_protocol(skb) == htons(ETH_P_IPV6);
- 
+ 	/* We needn't recover from permanent error */
 -- 
-2.27.0.290.gba653c62da-goog
+2.18.2
 
