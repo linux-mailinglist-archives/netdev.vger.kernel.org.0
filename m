@@ -2,161 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C561FD3AD
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 19:45:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECAB11FD3AF
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 19:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726835AbgFQRo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 13:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33200 "EHLO
+        id S1726964AbgFQRpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 13:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726496AbgFQRo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 13:44:57 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67FD3C06174E
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 10:44:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=sP4esYTCr2LhkSIzZcK1ak7EiITZvWXf0AVx4fvIvzk=; b=uNJpwC8wb3tK1sNw/tWPixZdf
-        1rNjWEdAPu+vq9DSHt3VEJKQx4YZxjjgaGMMEkPvSjSS393S9pqWcg5Bdk3rC4e0uPl1BJB6XUibF
-        YXKN7p7JlPSJDGceqJH1hbdFrdmYuE/E6LLy3GM/XAAj06Cj1OxktvIbML/VBL5Vrfeyd2UsiMj+c
-        EP7Mwq0AsghYraRHQZQXGbh/5cYrWku/74Xh/KWe0vuItxk1cwMXVbQu2MtQjZDar1jsQzgm8cZPF
-        +5+c2hb+QXW+poHu1mz3Ssefzaxa+QhejJf3W/uu7+JLDiWdTEesWmQ7SkAaYMRd/JMB1seg90jsa
-        f1cb6uEHA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58570)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jlc7I-0003xQ-G0; Wed, 17 Jun 2020 18:44:52 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jlc7H-0003v4-Cj; Wed, 17 Jun 2020 18:44:51 +0100
-Date:   Wed, 17 Jun 2020 18:44:51 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Jeremy Linton <jeremy.linton@arm.com>, Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev@vger.kernel.org, linux.cj@gmail.com
-Subject: Re: [PATCH v1 1/3] net: phy: Allow mdio buses to auto-probe c45
- devices
-Message-ID: <20200617174451.GT1551@shell.armlinux.org.uk>
-References: <20200617171536.12014-1-calvin.johnson@oss.nxp.com>
- <20200617171536.12014-2-calvin.johnson@oss.nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617171536.12014-2-calvin.johnson@oss.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        with ESMTP id S1726496AbgFQRpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 13:45:11 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331C8C06174E
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 10:45:11 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id n11so3379393ybg.15
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 10:45:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=2nkwnHmiseLtKsFg64/v/NaKV+MbDPhYExgP2nPNZDE=;
+        b=VgEKdDMil+GgrkSmaxDoxUckFToSKqyUewnTJ0DMR4CWQ4vhoxMPVAj12FMGzskw27
+         RLfV5XR4bMBMZj1xHN/klQCxNAolpeku/duWA2NYEAwzLQ/L+5dJjux1wPlN+Ho3t/eq
+         jWd88MP7G4PKfsAuBTC/pa2EHmN9xaTw1KcF/vjf1e+A21AIPw+iNcjjn7JTXwVFIU9Q
+         otpNYHum/DrhuRux3wM2Bj5lKgQrdho4359Ayhl6OZ9Jb2hJ0q7XuHWEA8yjiLLKiWd4
+         hzqyZvGzlix6f1ropUviiDc5Z+a1zYoT46GbpGi8oJus49cJqqUJbbYFSnaWPy7lszVQ
+         0KKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=2nkwnHmiseLtKsFg64/v/NaKV+MbDPhYExgP2nPNZDE=;
+        b=IA0Cq15c0CaxwWFmHbuVxeSVcQz8y9eXx9+jmjbJ/Ea9ldAk2+VC1jF0mFju15za6n
+         ZDqznT6zNwN4OyNfSUqgyDc8UClGRJ09byrbyHpbbWkJGPxpYOQRmy9x1z0AeFPO5SIL
+         adhXKOosvUxlpMHU/pp7Klo2WzlBiLTC1h6ExX+FsM3RKEQoAtmf5g/XQbiXnBeNmlD6
+         LWiijg5tJlDy8fUehESi7vMEpmVdyfZFRGMm+htX2k5Tf217BZZhE4epU8DUaWTVW6zj
+         KpPis7ynrVfjhjUnpn+a3cYz1MoQaXbEMSSTtJp4x7EJMKPZWsjkp8z0KZw8fHwjKW1d
+         Tmpg==
+X-Gm-Message-State: AOAM533BdZQ29koBzYs2CjXJENNbp+2VcKrcOmxt2K8eFGrE5NMln4VZ
+        v1ZKmX6bCdu8YHjEc9UuZ4Kx4NI=
+X-Google-Smtp-Source: ABdhPJw6ZIAyTFJ9kTs1kWd+KdsRqknigPNRyis7J3SP3B4jWNgA40krMlqWmYTu8SEkVm6RfOp+gmI=
+X-Received: by 2002:a25:3851:: with SMTP id f78mr49390yba.212.1592415910411;
+ Wed, 17 Jun 2020 10:45:10 -0700 (PDT)
+Date:   Wed, 17 Jun 2020 10:45:08 -0700
+In-Reply-To: <20200617170909.koev3t5fmngla3c4@ast-mbp.dhcp.thefacebook.com>
+Message-Id: <20200617174508.GA246265@google.com>
+Mime-Version: 1.0
+References: <20200617010416.93086-1-sdf@google.com> <20200617170909.koev3t5fmngla3c4@ast-mbp.dhcp.thefacebook.com>
+Subject: Re: [PATCH bpf v5 1/3] bpf: don't return EINVAL from {get,set}sockopt
+ when optlen > PAGE_SIZE
+From:   sdf@google.com
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net,
+        David Laight <David.Laight@ACULAB.COM>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 10:45:33PM +0530, Calvin Johnson wrote:
-> From: Jeremy Linton <jeremy.linton@arm.com>
-> 
-> The mdiobus_scan logic is currently hardcoded to only
-> work with c22 devices. This works fairly well in most
-> cases, but its possible a c45 device doesn't respond
-> despite being a standard phy. If the parent hardware
-> is capable, it makes sense to scan for c22 devices before
-> falling back to c45.
-> 
-> As we want this to reflect the capabilities of the STA,
-> lets add a field to the mii_bus structure to represent
-> the capability. That way devices can opt into the extended
-> scanning. Existing users should continue to default to c22
-> only scanning as long as they are zero'ing the structure
-> before use.
-> 
-> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+On 06/17, Alexei Starovoitov wrote:
+> On Tue, Jun 16, 2020 at 06:04:14PM -0700, Stanislav Fomichev wrote:
+> > Attaching to these hooks can break iptables because its optval is
+> > usually quite big, or at least bigger than the current PAGE_SIZE limit.
+> > David also mentioned some SCTP options can be big (around 256k).
+> >
+> > For such optvals we expose only the first PAGE_SIZE bytes to
+> > the BPF program. BPF program has two options:
+> > 1. Set ctx->optlen to 0 to indicate that the BPF's optval
+> >    should be ignored and the kernel should use original userspace
+> >    value.
+> > 2. Set ctx->optlen to something that's smaller than the PAGE_SIZE.
+> >
+> > v5:
+> > * use ctx->optlen == 0 with trimmed buffer (Alexei Starovoitov)
+> > * update the docs accordingly
+> >
+> > v4:
+> > * use temporary buffer to avoid optval == optval_end == NULL;
+> >   this removes the corner case in the verifier that might assume
+> >   non-zero PTR_TO_PACKET/PTR_TO_PACKET_END.
+> >
+> > v3:
+> > * don't increase the limit, bypass the argument
+> >
+> > v2:
+> > * proper comments formatting (Jakub Kicinski)
+> >
+> > Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+> > Cc: David Laight <David.Laight@ACULAB.COM>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  kernel/bpf/cgroup.c | 53 ++++++++++++++++++++++++++++-----------------
+> >  1 file changed, 33 insertions(+), 20 deletions(-)
+> >
+> > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> > index 4d76f16524cc..ac53102e244a 100644
+> > --- a/kernel/bpf/cgroup.c
+> > +++ b/kernel/bpf/cgroup.c
+> > @@ -1276,16 +1276,23 @@ static bool  
+> __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+> >
+> >  static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int  
+> max_optlen)
+> >  {
+> > -	if (unlikely(max_optlen > PAGE_SIZE) || max_optlen < 0)
+> > +	if (unlikely(max_optlen < 0))
+> >  		return -EINVAL;
+> >
+> > +	if (unlikely(max_optlen > PAGE_SIZE)) {
+> > +		/* We don't expose optvals that are greater than PAGE_SIZE
+> > +		 * to the BPF program.
+> > +		 */
+> > +		max_optlen = PAGE_SIZE;
+> > +	}
+> > +
+> >  	ctx->optval = kzalloc(max_optlen, GFP_USER);
+> >  	if (!ctx->optval)
+> >  		return -ENOMEM;
+> >
+> >  	ctx->optval_end = ctx->optval + max_optlen;
+> >
+> > -	return 0;
+> > +	return max_optlen;
+> >  }
+> >
+> >  static void sockopt_free_buf(struct bpf_sockopt_kern *ctx)
+> > @@ -1319,13 +1326,13 @@ int __cgroup_bpf_run_filter_setsockopt(struct  
+> sock *sk, int *level,
+> >  	 */
+> >  	max_optlen = max_t(int, 16, *optlen);
+> >
+> > -	ret = sockopt_alloc_buf(&ctx, max_optlen);
+> > -	if (ret)
+> > -		return ret;
+> > +	max_optlen = sockopt_alloc_buf(&ctx, max_optlen);
+> > +	if (max_optlen < 0)
+> > +		return max_optlen;
+> >
+> >  	ctx.optlen = *optlen;
+> >
+> > -	if (copy_from_user(ctx.optval, optval, *optlen) != 0) {
+> > +	if (copy_from_user(ctx.optval, optval, min(*optlen, max_optlen)) !=  
+> 0) {
+> >  		ret = -EFAULT;
+> >  		goto out;
+> >  	}
+> > @@ -1353,8 +1360,14 @@ int __cgroup_bpf_run_filter_setsockopt(struct  
+> sock *sk, int *level,
+> >  		/* export any potential modifications */
+> >  		*level = ctx.level;
+> >  		*optname = ctx.optname;
+> > -		*optlen = ctx.optlen;
+> > -		*kernel_optval = ctx.optval;
+> > +
+> > +		/* optlen == 0 from BPF indicates that we should
+> > +		 * use original userspace data.
+> > +		 */
+> > +		if (ctx.optlen != 0) {
+> > +			*optlen = ctx.optlen;
 
-I know that we've hashed this out quite a bit already, but I would like
-to point out that include/linux/mdio.h contains:
+> I think it should be:
+> *optlen = min(ctx.optlen, max_optlen);
+We do have the following (existing) check above:
+	} else if (ctx.optlen > max_optlen || ctx.optlen < -1) {
+		/* optlen is out of bounds */
+		ret = -EFAULT;
+	} else {
 
- * struct mdio_if_info - Ethernet controller MDIO interface
- * @mode_support: MDIO modes supported.  If %MDIO_SUPPORTS_C22 is set then
- *      MII register access will be passed through with @devad =
- *      %MDIO_DEVAD_NONE.  If %MDIO_EMULATE_C22 is set then access to
- *      commonly used clause 22 registers will be translated into
- *      clause 45 registers.
+So we shouldn't need any min here? Or am I missing something?
 
-#define MDIO_SUPPORTS_C22               1
-#define MDIO_SUPPORTS_C45               2
-#define MDIO_EMULATE_C22                4
+> Otherwise when bpf prog doesn't adjust ctx.oplen the kernel will see
+> 4k only in kernel_optval whereas optlen will be > 4k.
+> I suspect iptables sockopt should have crashed at this point.
+> How did you test it?
+The selftests that I've attached in the series. The test is passing
+two pages and for IP_TOS we bypass the value via optlen=0 and
+for IP_FREEBIND we trim the buffer to 1 byte. I think this should
+cover this check here.
 
-While this structure is not applicable to phylib or mii_bus, it may be
-worth considering that there already exist definitions for identifying
-the properties of the underlying bus.
-
-> ---
-> 
->  drivers/net/phy/mdio_bus.c | 17 +++++++++++++++--
->  include/linux/phy.h        |  7 +++++++
->  2 files changed, 22 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> index 6ceee82b2839..e6c179b89907 100644
-> --- a/drivers/net/phy/mdio_bus.c
-> +++ b/drivers/net/phy/mdio_bus.c
-> @@ -739,10 +739,23 @@ EXPORT_SYMBOL(mdiobus_free);
->   */
->  struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr)
->  {
-> -	struct phy_device *phydev;
-> +	struct phy_device *phydev = ERR_PTR(-ENODEV);
->  	int err;
->  
-> -	phydev = get_phy_device(bus, addr, false);
-> +	switch (bus->probe_capabilities) {
-> +	case MDIOBUS_C22:
-> +		phydev = get_phy_device(bus, addr, false);
-> +		break;
-> +	case MDIOBUS_C45:
-> +		phydev = get_phy_device(bus, addr, true);
-> +		break;
-> +	case MDIOBUS_C22_C45:
-> +		phydev = get_phy_device(bus, addr, false);
-> +		if (IS_ERR(phydev))
-> +			phydev = get_phy_device(bus, addr, true);
-> +		break;
-> +	}
-> +
->  	if (IS_ERR(phydev))
->  		return phydev;
->  
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 9248dd2ce4ca..50e5312b2304 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -298,6 +298,13 @@ struct mii_bus {
->  	/* RESET GPIO descriptor pointer */
->  	struct gpio_desc *reset_gpiod;
->  
-> +	/* bus capabilities, used for probing */
-> +	enum {
-> +		MDIOBUS_C22 = 0,
-> +		MDIOBUS_C45,
-> +		MDIOBUS_C22_C45,
-> +	} probe_capabilities;
-
-I think it would be better to reserve "0" to mean that no capabilities
-have been declared.  We hae the situation where we have mii_bus that
-exist which do support C45, but as they stand, probe_capabilities will
-be zero, and with your definitions above, that means MDIOBUS_C22.
-
-It seems this could lock in some potential issues later down the line
-if we want to use this elsewhere.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+One thing I didn't really test is getsockopt when the kernel
+returns really large buffer (iptables). Right now, the test
+gets 4 bytes (trimmed) from the kernel. I think that's the only
+place that I didn't properly test. I wonder whether I should
+do a real iptables-like setsockopt/getsockopt :-/
