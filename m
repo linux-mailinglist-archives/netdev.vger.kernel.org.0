@@ -2,98 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A36001FD4FB
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 20:57:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8597C1FD522
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 21:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727901AbgFQS5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 14:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
+        id S1726941AbgFQTHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 15:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727894AbgFQS5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 14:57:09 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1AAEC06174E
-        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 11:57:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=9c/5XO2ZSjpjTcoNNpDqagMS/8PcdrjvAPEHJItnGRk=; b=Yrm1nGR5xKE/tYzc3aP2CplHN
-        X0HuV1xPWIjpMeF+LHwvLmii8kqsmMBbwrjMy0xLRnLEJP1XwQwc0An09T2hTCr6RhE9e+9fDhG7x
-        ErXDQ5GOEAzHbADXoZICn/9OQjZxQJGPn/pmyq2QkVBz2P1I+Bko+flxoGQ4fW9vM0BfVYVVnfEs7
-        uKt98QTYbBlT1O4Jzri8fgmmSpLlH/ZrfSWVwJbsFKWuhIYvPTsMIUWTITVua9Hthl6MbE3MV261k
-        SDWDaOD3fbJjVUFASL9pi/yQZw/qTp/7e9egOG28YVStWCezxyEdXK4pfeNlLlvZ/z9MZ77CvzAiz
-        IICTd63+A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58596)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jldFA-00040N-MO; Wed, 17 Jun 2020 19:57:04 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jldF9-0003xv-Ng; Wed, 17 Jun 2020 19:57:03 +0100
-Date:   Wed, 17 Jun 2020 19:57:03 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Jeremy Linton <jeremy.linton@arm.com>, Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev@vger.kernel.org, linux.cj@gmail.com
-Subject: Re: [PATCH v1 1/3] net: phy: Allow mdio buses to auto-probe c45
- devices
-Message-ID: <20200617185703.GW1551@shell.armlinux.org.uk>
-References: <20200617171536.12014-1-calvin.johnson@oss.nxp.com>
- <20200617171536.12014-2-calvin.johnson@oss.nxp.com>
- <20200617174451.GT1551@shell.armlinux.org.uk>
- <20200617185120.GB240559@lunn.ch>
+        with ESMTP id S1726758AbgFQTHV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 15:07:21 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52750C061755
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 12:07:21 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id c12so2423599qtq.11
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 12:07:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hExgXDZV3zpYGtiPY9jV9AWM1I/0OncMTJ8ouUg465o=;
+        b=Yq/UKsYvS0A5josQgPU+0t/qeW1UDwyO90aOpKP5PVYKTVQERWgvbxo7N6o4rLyGJV
+         jaouHK6XMXK4ToLxdbxpdYbs+FMmvt3Z4AyrWrXMOans4RMyzqar+6OvBPnP0VW9A7oP
+         lWU9WTEMPcH3OhvGA4Fdx4JuxoIj5K1Ll88ek=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hExgXDZV3zpYGtiPY9jV9AWM1I/0OncMTJ8ouUg465o=;
+        b=LZhItfTCMjk+Ksf5/n1cSp4kt4FSLezd78yjSIyPWlvg0fFKSp9MJjzGHNr2oDpXwQ
+         t2cDEJLHGv7QCA7F9Lc2hz32YnJW0lnTjj1UVsbTUR0Hrn+2Cd7yFqQ4NrJLwltJNKD0
+         I1fZq5txAb/nZShSexiMaIRF7eUqg1lIwJpOt3m0WM/i1Tzs1YaJE7YaXypBfPo3TVwj
+         7Wm4YpgQe0qYY25ltBcE4YMe38cl7LHeHgzowgfSn2guzWdB5tp4RK4RojYUMfawHSsl
+         uhSY3slDAJleWHMcaFY4fpLqriSFAMI1ZaxmpXW0+DCg4778VICDPDFxN1Ib1ojuA1oF
+         M+sA==
+X-Gm-Message-State: AOAM530yJkRUJEnkJ+WUUqhzhSNwGTuDJ0VQFiirO1nd51kqlhqihtSX
+        qdvtG8ic2CDXs8RHi0xT40yCMTFZN+uBbUHZVIQWrQ==
+X-Google-Smtp-Source: ABdhPJw2/X6M0huZ3wYR/5SR5uzm7PonmG3PRzsJ0BS0PeITaIZxz6pdiPRuA7pGlJKolACxFYkIkvqmU79DWDg14Qs=
+X-Received: by 2002:aed:3fa4:: with SMTP id s33mr663234qth.148.1592420840377;
+ Wed, 17 Jun 2020 12:07:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617185120.GB240559@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200615190119.382589-1-drc@linux.vnet.ibm.com> <20200617185117.732849-1-drc@linux.vnet.ibm.com>
+In-Reply-To: <20200617185117.732849-1-drc@linux.vnet.ibm.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Wed, 17 Jun 2020 12:07:08 -0700
+Message-ID: <CACKFLimXALz8LOPFiX7ar456CsucUf-wxmD4_KkJSmjXbZ-q+w@mail.gmail.com>
+Subject: Re: [PATCH v2] tg3: driver sleeps indefinitely when EEH errors exceed eeh_max_freezes
+To:     David Christensen <drc@linux.vnet.ibm.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 08:51:20PM +0200, Andrew Lunn wrote:
-> > > +	/* bus capabilities, used for probing */
-> > > +	enum {
-> > > +		MDIOBUS_C22 = 0,
-> > > +		MDIOBUS_C45,
-> > > +		MDIOBUS_C22_C45,
-> > > +	} probe_capabilities;
-> > 
-> > I think it would be better to reserve "0" to mean that no capabilities
-> > have been declared.  We hae the situation where we have mii_bus that
-> > exist which do support C45, but as they stand, probe_capabilities will
-> > be zero, and with your definitions above, that means MDIOBUS_C22.
-> > 
-> > It seems this could lock in some potential issues later down the line
-> > if we want to use this elsewhere.
-> 
-> Hi Russell
-> 
-> Actually, this patch already causes issues, i think.
-> 
-> drivers/net/ethernet/marvell/mvmdio.c contains two MDIO bus master
-> drivers. "marvell,orion-mdio" is C22 only. "marvell,xmdio" is C45
-> only. Because the capabilites is not initialized, it will default to
-> 0, aka MDIOBUS_C22, for the C45 only bus master, and i expect bad
-> things will happen.
-> 
-> We need the value of 0 to cause existing behaviour. Or all MDIO bus
-> drivers need reviewing, and the correct capabilities set.
+On Wed, Jun 17, 2020 at 11:51 AM David Christensen
+<drc@linux.vnet.ibm.com> wrote:
+>
+> The driver function tg3_io_error_detected() calls napi_disable twice,
+> without an intervening napi_enable, when the number of EEH errors exceeds
+> eeh_max_freezes, resulting in an indefinite sleep while holding rtnl_lock.
+>
+> Add check for pcierr_recovery which skips code already executed for the
+> "Frozen" state.
+>
+> Signed-off-by: David Christensen <drc@linux.vnet.ibm.com>
 
-Yes, that's basically what I was trying to say, thanks for putting it
-more clearly.
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks.
