@@ -2,109 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E70C1FC846
-	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 10:06:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85E401FC893
+	for <lists+netdev@lfdr.de>; Wed, 17 Jun 2020 10:28:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbgFQIGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 04:06:20 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:47889 "EHLO ozlabs.org"
+        id S1726495AbgFQI2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 04:28:02 -0400
+Received: from mail.intenta.de ([178.249.25.132]:42144 "EHLO mail.intenta.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725846AbgFQIGU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 04:06:20 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 49myLy0ZB8z9sRh;
-        Wed, 17 Jun 2020 18:06:18 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1592381178;
-        bh=7cdmiAE9EG/i09Attx7Op+wfkId2lPt1WP3cvD+UbR4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ahiJhq8YWhdLlolVgIgr2bVuINbtdrU0meaOgbW+HWe4UhMGWK3uwoYo7xqFU/rsO
-         MRwG301TIXr8o3NmRkv+57aOMcPzgP2tKwyGGVz/t05ygTTJEmf0N1nL74A4rhCCG5
-         2740u1PBAi5uJuVGATq60CpxE5H3VfI0/xjwcklJ0unVThD7hhaGkrRzUS8v2BNV6G
-         FdtF73jcm6e6/UdxrpadiWLiVIaKJ6bNvEsUxtcb4sw2NyDHyJ9OLO30Jr66XSaMdD
-         NGHH8SVlNuyV74qERPOA/vCM6UCRTAY/qHPvx+PZ3ZJA/e3jznPO9GJJkTW/ziiXQH
-         rtBThJiMkSVOQ==
-Date:   Wed, 17 Jun 2020 18:06:17 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-Subject: Re: linux-next: build failures after merge of the vfs tree
-Message-ID: <20200617180617.59e61438@canb.auug.org.au>
-In-Reply-To: <20200617070316.GA30348@gondor.apana.org.au>
-References: <20200616103330.2df51a58@canb.auug.org.au>
-        <20200616103440.35a80b4b@canb.auug.org.au>
-        <20200616010502.GA28834@gondor.apana.org.au>
-        <20200616033849.GL23230@ZenIV.linux.org.uk>
-        <20200616143807.GA1359@gondor.apana.org.au>
-        <20200617165715.577aa76d@canb.auug.org.au>
-        <20200617070316.GA30348@gondor.apana.org.au>
+        id S1726025AbgFQI2C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 04:28:02 -0400
+X-Greylist: delayed 319 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Jun 2020 04:28:02 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=Content-Type:MIME-Version:Message-ID:Subject:To:From:Date; bh=kkDhNBhEaYT5JLHZAjti8L6jDzOErc/SYnWwcbAl2Yk=;
+        b=IfO5zOFo1uA2tFb6c5GJbs8cpSrqpriAP0yxcUvMxm3yci4LF2AwpZ+wvPGaOQ8oaiG/eR95ZDFYmOE4Q/ALrqXv9ASnmDQ/uWrIiKoBKSX2OujceftvbQtZhkyYsX/KwkaY9eW9lReunQ9hBvktxtLtC7jgnS4xo4puii+CmZh9ZW3xwiKUGHovZOVLX+kuV9Nc4sJARHIqSo0n3WfJTWfJndZyw4P9B3yF6AikDAUThwxY92Do+PnkCC/68JjBJmCjJomSq7rrlJRyvqQoRZVz/+025Wf2wrBuhuKdQZdoB4hc2C6AHADi4v3BPZAcb6DqSHFjs4MMPlKddUSCeQ==;
+Date:   Wed, 17 Jun 2020 10:22:37 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: net/dsa/microchip: correct placement of dt property phy-mode?
+Message-ID: <20200617082235.GA1523@laureti-dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/rzaLdUCb00LybZJ4xG9HvTL";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/rzaLdUCb00LybZJ4xG9HvTL
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Hi Herbert,
+According to Documentation/devicetree/bindings/net/dsa/dsa.txt, the
+phy-mode property should be specified on port nodes rather than the
+enclosing switch node.
 
-On Wed, 17 Jun 2020 17:03:17 +1000 Herbert Xu <herbert@gondor.apana.org.au>=
- wrote:
->
-> On Wed, Jun 17, 2020 at 04:57:15PM +1000, Stephen Rothwell wrote:
-> >=20
-> > Presumably another include needed:
-> >=20
-> > arch/s390/lib/test_unwind.c:49:2: error: implicit declaration of functi=
-on 'kmalloc' [-Werror=3Dimplicit-function-declaration]
-> > arch/s390/lib/test_unwind.c:99:2: error: implicit declaration of functi=
-on 'kfree' [-Werror=3Dimplicit-function-declaration] =20
->=20
-> Hi Stephen:
->=20
-> It's not clear how this file manages to include linux/uio.h but
+In drivers/net/dsa/microchip/ksz_common.c, ksz_switch_register parses
+the phy-mode property from the switch node instead:
+| int ksz_switch_register(struct ksz_device *dev,
+|                         const struct ksz_dev_ops *ops)
+| {
+...
+|         /* Host port interface will be self detected, or specifically set in
+|          * device tree.
+|          */
+|         if (dev->dev->of_node) {
+|                 ret = of_get_phy_mode(dev->dev->of_node, &interface);
+|                 if (ret == 0)
+|                         dev->interface = interface;
+...
 
-arch/s390/lib/test_unwind.c
-arch/s390/include/asm/unwind.h
-include/linux/ftrace.h
-include/linux/kallsyms.h
-include/linux/module.h
-include/linux/elf.h
-arch/s390/include/asm/elf.h
-include/linux/compat.h
-include/linux/socket.h
-include/linux/uio.h
+In drivers/net/dsa/microchip/ksz9477.c, this phy_interface_t is used to
+configure the MAC ports:
+| static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+| {
+...
+|                 switch (dev->interface) {
+...
+|                 }
+|                 ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, data8);
 
-:-(
+KSZ9477 has two MAC interfaces (GMAC 6 -> RGMII/MII/RMII and GMAC 7 ->
+SGMII). Now we're trying to configure the same interface mode for both
+MACs here even though these MACs only support distinct interface modes.
+This may not be problematic in practice as GMAC 7 ignores most of the
+settings on the XMII Port Control 1 Register, but it still sounds wrong.
 
---=20
-Cheers,
-Stephen Rothwell
+If nothing else, it makes the device tree unintuitive to use.
 
---Sig_/rzaLdUCb00LybZJ4xG9HvTL
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Is this placement of the phy-mode on the switch intentional?
 
------BEGIN PGP SIGNATURE-----
+If yes: I think this should be prominently documented in
+Documentation/devicetree/bindings/net/dsa/ksz.txt.
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl7pzvkACgkQAVBC80lX
-0Gydsgf8C0QacF7ALL4x+Jgm45jOWTwR+kv83Hhyu8gOqoGOEhEAbtHtBJ9lwHIf
-mh7QdEzBLNAsomRZQox3GBUu4d4T9dhvHpftivmpprK7vWQl4whn9vZROwR1hOBA
-8t5I/5OkZCpbiqNhlptZc2JfqBcV148Obv3qDFz+PqaKmgwoIkP+0RTgkeIKVGRN
-cC/sswumVFgn4FcngB1HQFTtOPhj+UUshR5Qbm1FW4urzcyFNEQW+mY4OlvYtwoL
-l74akTRZ7cbZUJ2wFl8On8ecUf5IoSRvBxeKufth9psiMCKmnk04+pmB3rS+X1W8
-MVtSPS/ePn8r7F2mOchhptDGcgo2bA==
-=ZeYJ
------END PGP SIGNATURE-----
+If no: The microchip driver should follow the documented dsa convention
+and place the phy-mode on the relevant port nodes.
 
---Sig_/rzaLdUCb00LybZJ4xG9HvTL--
+If no: Do we have to support old device trees that have the phy-mode
+property on the switch?
+
+Helmut
