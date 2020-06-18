@@ -2,80 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDA181FFD51
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:21:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C7E81FFD5C
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729564AbgFRVVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 17:21:20 -0400
-Received: from mga05.intel.com ([192.55.52.43]:40849 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727001AbgFRVVU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 17:21:20 -0400
-IronPort-SDR: z0ePmumLLYRKhsN0mwGJ3gK/AAAFL4x6u/+b6kg/wbDE1AA3Qx5ltZPpFRunpTZ1hsG4CVBcVG
- QeG0iirBMStQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9656"; a="227435971"
-X-IronPort-AV: E=Sophos;i="5.75,253,1589266800"; 
-   d="scan'208";a="227435971"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2020 14:21:19 -0700
-IronPort-SDR: V72qSZfTE0OfLh2ZHfoHTaBTYgtOKBTX4UGgOCEW+ZiKYnt5L2dZvsummyx9IJLpUOjFezRCtp
- RbSBYPTPh5cA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,253,1589266800"; 
-   d="scan'208";a="317935839"
-Received: from anambiarhost.jf.intel.com ([10.166.224.238])
-  by FMSMGA003.fm.intel.com with ESMTP; 18 Jun 2020 14:21:19 -0700
-Subject: [net-next PATCH] net: Avoid overwriting valid skb->napi_id
-From:   Amritha Nambiar <amritha.nambiar@intel.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     edumazet@google.com, alexander.h.duyck@intel.com,
-        eliezer.tamir@linux.intel.com, sridhar.samudrala@intel.com,
-        amritha.nambiar@intel.com
-Date:   Thu, 18 Jun 2020 14:22:15 -0700
-Message-ID: <159251533557.7557.5381023439094175695.stgit@anambiarhost.jf.intel.com>
-User-Agent: StGit/unknown-version
+        id S1730142AbgFRV0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 17:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726835AbgFRV0B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:26:01 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7893DC06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 14:26:00 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id q11so7634305wrp.3
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 14:26:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:from:subject:cc:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=I3qqwWDNWdYZFTyk8lsfQ7HHxO6TIbaKLHN6k/9uAIA=;
+        b=fVrPd/l6BmuJJBGTW8nd2HhgKX7vV9w6LHjM0JT72TAry7tAtQMLx1wHdS/pPxob1D
+         k8XeDki9erMFwbGhTNxdlFFSJ3hdYkRxmdOlZ+QYw/qS5U09qDLv43JwOyCNxeEM2+qk
+         3icLcKiDaklKWsql99DfyrAtc2CCnt+TknoyJoY/uvYf1vTUgkMs4NWZAO2/+0MDHCqf
+         sOs8+cxKLZ55YpqAo4x5o6ujkaEsyIfamzTMm7EUrAaKa9pxwJ0wp1a6F01OQYFjVo7z
+         480YZIdQtFN1bmhZ8Y9S8DKHOYwa71snoMwAh1fKN6ueB1VTlECe8J4CTde3ELeTXkKu
+         4GaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:from:subject:cc:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=I3qqwWDNWdYZFTyk8lsfQ7HHxO6TIbaKLHN6k/9uAIA=;
+        b=a04vk/3pE1LGcvlaf5s0HiFnlaoZJeLkgL2DSWSeysYbPAYMGCfjsN3/pW4I4+uBVz
+         /1gt7SpFrzP37zw6wyBuodCLbGWhBaoXi1x3W3kMtkXhwLnegINSfY5gP1mU5v/Ck7x6
+         gbkuP89TTVcLqV9CYepFzQwR41+yZoMvPoOeIcarzVFQVefzkbQ8Lp/OmJLKmhv/BQUk
+         gENQX0qc99MYlc3hJcChYCqVJFWoemVcHevLXsjbZNNR3Zw4xtmMmooEhd9niIkLgc/J
+         B8Ee/aY2yD5uJI0D6VES2rpj6I3ZoX64jC6RXwvfaiEFbPx6fOUlD5SbS+tyOClSkhFN
+         YvPA==
+X-Gm-Message-State: AOAM533MtcEt3SbM5+EHLhF9BDNUBAmXYcE4CGwymQ/2N2IwxZzYfkwR
+        86KanZakR4katUVpczn+vwp0rtHX
+X-Google-Smtp-Source: ABdhPJx8PDHNUqvN4sNLuwMs/YUGqbfTiaxnwVFGsFPev0r0TDant/a0nSSF8q8dLA2ibv6BL7xHVg==
+X-Received: by 2002:a5d:570a:: with SMTP id a10mr439381wrv.215.1592515558983;
+        Thu, 18 Jun 2020 14:25:58 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:a51d:2e1e:1ddd:8088? (p200300ea8f235700a51d2e1e1ddd8088.dip0.t-ipconnect.de. [2003:ea:8f23:5700:a51d:2e1e:1ddd:8088])
+        by smtp.googlemail.com with ESMTPSA id 104sm4950873wrl.25.2020.06.18.14.25.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Jun 2020 14:25:58 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Aaron Ma <mapengyu@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] r8169: fix firmware not resetting tp->ocp_base
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <fa7fd9bd-15c0-4533-b698-c4814406ad74@gmail.com>
+Date:   Thu, 18 Jun 2020 23:25:50 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This will be useful to allow busy poll for tunneled traffic. In case of
-busy poll for sessions over tunnels, the underlying physical device's
-queues need to be polled.
+Typically the firmware takes care that tp->ocp_base is reset to its
+default value. That's not the case (at least) for RTL8117.
+As a result subsequent PHY access reads/writes the wrong page and
+the link is broken. Fix this be resetting tp->ocp_base explicitly.
 
-Tunnels schedule NAPI either via netif_rx() for backlog queue or
-schedule the gro_cell_poll(). netif_rx() propagates the valid skb->napi_id
-to the socket. OTOH, gro_cell_poll() stamps the skb->napi_id again by
-calling skb_mark_napi_id() with the tunnel NAPI which is not a busy poll
-candidate. This was preventing tunneled traffic to use busy poll. A valid
-NAPI ID in the skb indicates it was already marked for busy poll by a
-NAPI driver and hence needs to be copied into the socket.
-
-Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
+Fixes: 229c1e0dfd3d ("r8169: load firmware for RTL8168fp/RTL8117")
+Reported-by: Aaron Ma <mapengyu@gmail.com>
+Tested-by: Aaron Ma <mapengyu@gmail.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- include/net/busy_poll.h |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
-index 86e028388bad..b001fa91c14e 100644
---- a/include/net/busy_poll.h
-+++ b/include/net/busy_poll.h
-@@ -114,7 +114,11 @@ static inline void skb_mark_napi_id(struct sk_buff *skb,
- 				    struct napi_struct *napi)
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index a3c4187d9..98391797b 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -2116,8 +2116,11 @@ static void rtl_release_firmware(struct rtl8169_private *tp)
+ void r8169_apply_firmware(struct rtl8169_private *tp)
  {
- #ifdef CONFIG_NET_RX_BUSY_POLL
--	skb->napi_id = napi->napi_id;
-+	/* If the skb was already marked with a valid NAPI ID, avoid overwriting
-+	 * it.
-+	 */
-+	if (skb->napi_id < MIN_NAPI_ID)
-+		skb->napi_id = napi->napi_id;
- #endif
+ 	/* TODO: release firmware if rtl_fw_write_firmware signals failure. */
+-	if (tp->rtl_fw)
++	if (tp->rtl_fw) {
+ 		rtl_fw_write_firmware(tp, tp->rtl_fw);
++		/* At least one firmware doesn't reset tp->ocp_base. */
++		tp->ocp_base = OCP_STD_PHY_BASE;
++	}
  }
  
+ static void rtl8168_config_eee_mac(struct rtl8169_private *tp)
+-- 
+2.27.0
 
