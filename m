@@ -2,64 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F21A71FFD8F
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E5A91FFD99
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:56:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728466AbgFRVu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 17:50:58 -0400
-Received: from smtp4.emailarray.com ([65.39.216.22]:22296 "EHLO
-        smtp4.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725982AbgFRVu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:50:58 -0400
-Received: (qmail 50261 invoked by uid 89); 18 Jun 2020 21:50:55 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
-  by smtp4.emailarray.com with SMTP; 18 Jun 2020 21:50:55 -0000
-Date:   Thu, 18 Jun 2020 14:50:53 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com, axboe@kernel.dk,
-        Govindarajulu Varadarajan <gvaradar@cisco.com>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: [RFC PATCH 06/21] mlx5: add header_split flag
-Message-ID: <20200618215053.qxnjegm4h5i3mvfu@bsd-mbp.dhcp.thefacebook.com>
-References: <20200618160941.879717-1-jonathan.lemon@gmail.com>
- <20200618160941.879717-7-jonathan.lemon@gmail.com>
- <4b0e0916-2910-373c-82cf-d912a82502a4@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4b0e0916-2910-373c-82cf-d912a82502a4@gmail.com>
+        id S1731499AbgFRV4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 17:56:06 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:29284 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726573AbgFRV4G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:56:06 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05ILXIW1061138;
+        Thu, 18 Jun 2020 17:55:59 -0400
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 31repa32g3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Jun 2020 17:55:59 -0400
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05ILtFgt029872;
+        Thu, 18 Jun 2020 21:55:58 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma01dal.us.ibm.com with ESMTP id 31rdtr17k8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Jun 2020 21:55:58 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05ILtwj054198594
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 18 Jun 2020 21:55:58 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 164D2112062;
+        Thu, 18 Jun 2020 21:55:58 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 891A7112061;
+        Thu, 18 Jun 2020 21:55:57 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.65.202.56])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Thu, 18 Jun 2020 21:55:57 +0000 (GMT)
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+To:     kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: [PATCH net v2] ibmveth: Fix max MTU limit
+Date:   Thu, 18 Jun 2020 16:55:53 -0500
+Message-Id: <1592517353-16844-1-git-send-email-tlfalcon@linux.ibm.com>
+X-Mailer: git-send-email 1.8.3.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-18_21:2020-06-18,2020-06-18 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1
+ priorityscore=1501 spamscore=0 phishscore=0 adultscore=0 clxscore=1015
+ mlxscore=0 cotscore=-2147483648 mlxlogscore=999 malwarescore=0
+ lowpriorityscore=0 impostorscore=0 bulkscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006180163
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 11:12:57AM -0700, Eric Dumazet wrote:
-> 
-> 
-> On 6/18/20 9:09 AM, Jonathan Lemon wrote:
-> > Adds a "rx_hd_split" private flag parameter to ethtool.
-> > 
-> > This enables header splitting, and sets up the fragment mappings.
-> > The feature is currently only enabled for netgpu channels.
-> 
-> We are using a similar idea (pseudo header split) to implement 4096+(headers) MTU at Google,
-> to enable TCP RX zerocopy on x86.
-> 
-> Patch for mlx4 has not been sent upstream yet.
-> 
-> For mlx4, we are using a single buffer of 128*(number_of_slots_per_RX_RING),
-> and 86 bytes for the first frag, so that the payload exactly fits a 4096 bytes page.
-> 
-> (In our case, most of our data TCP packets only have 12 bytes of TCP options)
-> 
-> 
-> I suggest that instead of a flag, you use a tunable, that can be set by ethtool,
-> so that the exact number of bytes can be tuned, instead of hard coded in the driver.
+The max MTU limit defined for ibmveth is not accounting for
+virtual ethernet buffer overhead, which is twenty-two additional
+bytes set aside for the ethernet header and eight additional bytes
+of an opaque handle reserved for use by the hypervisor. Update the
+max MTU to reflect this overhead.
 
-Sounds reasonable - in the long run, it would be ideal to have the
-hardware actually perform header splitting, but for now using a tunable
-fixed offset will work.  In the same vein, there should be a similar
-setting for the TCP option padding on the sender side.
+Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+Fixes: d894be57ca92 ("ethernet: use net core MTU range checking in more drivers")
+Fixes: 110447f8269a ("ethernet: fix min/max MTU typos")
+---
+v2: Include Fixes tags suggested by Jakub Kicisnki
+---
+ drivers/net/ethernet/ibm/ibmveth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index 96d36ae5049e..c5c732601e35 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -1715,7 +1715,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	}
+ 
+ 	netdev->min_mtu = IBMVETH_MIN_MTU;
+-	netdev->max_mtu = ETH_MAX_MTU;
++	netdev->max_mtu = ETH_MAX_MTU - IBMVETH_BUFF_OH;
+ 
+ 	memcpy(netdev->dev_addr, mac_addr_p, ETH_ALEN);
+ 
 -- 
-Jonathan
+2.26.2
+
