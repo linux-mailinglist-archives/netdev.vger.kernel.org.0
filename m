@@ -2,53 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6A431FDBB0
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:14:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6E471FDCCC
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:22:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729171AbgFRBNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:13:39 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45354 "EHLO vps0.lunn.ch"
+        id S1728731AbgFRBWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:22:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54890 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729153AbgFRBNg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:13:36 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jlj7O-0012r4-Tx; Thu, 18 Jun 2020 03:13:26 +0200
-Date:   Thu, 18 Jun 2020 03:13:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-Subject: Re: [PATCH v4 1/3] net: phy: mscc: move shared probe code into a
- helper
-Message-ID: <20200618011326.GA249144@lunn.ch>
-References: <20200617213326.1532365-1-heiko@sntech.de>
- <20200617213326.1532365-2-heiko@sntech.de>
+        id S1728233AbgFRBWF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:22:05 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 31A3221974;
+        Thu, 18 Jun 2020 01:22:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592443325;
+        bh=av4bXigQgjGLTBKgKQcAkOoaKU+fXP8Fihq9vCp9qMY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xZCvwK+18qisGGmXUPX9rwGU2eg2PY65Af1Cm/QjJoViWCMqeqT5v0KCardwGert/
+         NHO0X4cCz1FNmwZG9UByNxCOPFBm2IU1Od2lD3wQDXakQcwnasZ+yePNZ9HU7pvWak
+         jugaz71hDPNA3AdbyiyfUeQEKxzrW5sF8LB/ht/c=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 5.4 258/266] libbpf: Handle GCC noreturn-turned-volatile quirk
+Date:   Wed, 17 Jun 2020 21:16:23 -0400
+Message-Id: <20200618011631.604574-258-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200618011631.604574-1-sashal@kernel.org>
+References: <20200618011631.604574-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617213326.1532365-2-heiko@sntech.de>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 11:33:24PM +0200, Heiko Stuebner wrote:
-> From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> 
-> The different probe functions share a lot of code, so move the
-> common parts into a helper to reduce duplication.
-> 
-> This moves the devm_phy_package_join below the general allocation
-> but as all components just allocate things, this should be ok.
-> 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+From: Andrii Nakryiko <andriin@fb.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+[ Upstream commit 32022fd97ed34f6812802bf1288db27c313576f4 ]
 
-    Andrew
+Handle a GCC quirk of emitting extra volatile modifier in DWARF (and
+subsequently preserved in BTF by pahole) for function pointers marked as
+__attribute__((noreturn)). This was the way to mark such functions before GCC
+2.5 added noreturn attribute. Drop such func_proto modifiers, similarly to how
+it's done for array (also to handle GCC quirk/bug).
+
+Such volatile attribute is emitted by GCC only, so existing selftests can't
+express such test. Simple repro is like this (compiled with GCC + BTF
+generated by pahole):
+
+  struct my_struct {
+      void __attribute__((noreturn)) (*fn)(int);
+  };
+  struct my_struct a;
+
+Without this fix, output will be:
+
+struct my_struct {
+    voidvolatile  (*fn)(int);
+};
+
+With the fix:
+
+struct my_struct {
+    void (*fn)(int);
+};
+
+Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
+Reported-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Tested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Link: https://lore.kernel.org/bpf/20200610052335.2862559-1-andriin@fb.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/lib/bpf/btf_dump.c | 33 ++++++++++++++++++++++++---------
+ 1 file changed, 24 insertions(+), 9 deletions(-)
+
+diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+index 87f27e2664c5..d9e386b8f47e 100644
+--- a/tools/lib/bpf/btf_dump.c
++++ b/tools/lib/bpf/btf_dump.c
+@@ -1141,6 +1141,20 @@ static void btf_dump_emit_mods(struct btf_dump *d, struct id_stack *decl_stack)
+ 	}
+ }
+ 
++static void btf_dump_drop_mods(struct btf_dump *d, struct id_stack *decl_stack)
++{
++	const struct btf_type *t;
++	__u32 id;
++
++	while (decl_stack->cnt) {
++		id = decl_stack->ids[decl_stack->cnt - 1];
++		t = btf__type_by_id(d->btf, id);
++		if (!btf_is_mod(t))
++			return;
++		decl_stack->cnt--;
++	}
++}
++
+ static void btf_dump_emit_name(const struct btf_dump *d,
+ 			       const char *name, bool last_was_ptr)
+ {
+@@ -1239,14 +1253,7 @@ static void btf_dump_emit_type_chain(struct btf_dump *d,
+ 			 * a const/volatile modifier for array, so we are
+ 			 * going to silently skip them here.
+ 			 */
+-			while (decls->cnt) {
+-				next_id = decls->ids[decls->cnt - 1];
+-				next_t = btf__type_by_id(d->btf, next_id);
+-				if (btf_is_mod(next_t))
+-					decls->cnt--;
+-				else
+-					break;
+-			}
++			btf_dump_drop_mods(d, decls);
+ 
+ 			if (decls->cnt == 0) {
+ 				btf_dump_emit_name(d, fname, last_was_ptr);
+@@ -1274,7 +1281,15 @@ static void btf_dump_emit_type_chain(struct btf_dump *d,
+ 			__u16 vlen = btf_vlen(t);
+ 			int i;
+ 
+-			btf_dump_emit_mods(d, decls);
++			/*
++			 * GCC emits extra volatile qualifier for
++			 * __attribute__((noreturn)) function pointers. Clang
++			 * doesn't do it. It's a GCC quirk for backwards
++			 * compatibility with code written for GCC <2.5. So,
++			 * similarly to extra qualifiers for array, just drop
++			 * them, instead of handling them.
++			 */
++			btf_dump_drop_mods(d, decls);
+ 			if (decls->cnt) {
+ 				btf_dump_printf(d, " (");
+ 				btf_dump_emit_type_chain(d, decls, fname, lvl);
+-- 
+2.25.1
+
