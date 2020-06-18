@@ -2,186 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 392AC1FFD9E
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:00:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B71811FFDA3
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:01:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731510AbgFRWAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 18:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
+        id S1731556AbgFRWBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 18:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729146AbgFRWAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:00:03 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF1CC06174E;
-        Thu, 18 Jun 2020 15:00:02 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id q8so7119330qkm.12;
-        Thu, 18 Jun 2020 15:00:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5ZR6CFkdg+ULcmL1AuVmvyE6nh/C3rjVxkIJ1sgDqbQ=;
-        b=BC5mxAFSilXrd3JCUQWquJqcr8kKpimZ9NIAe42gucS2lfu1N6vwgmiNkpktOxUz7j
-         REr8/00DR9yjalCs4Ph6hfJdgbaG+cB2fkRahF1av/36md39J9z2GtKr29iu2x9JRVTm
-         Sb1mSq58D7NmRVZUxCFex9kjQ+l0bc9hbfawdEg34aJPmHen9zYN1ZYIuiXLqD7LlmVG
-         oefj49l70jpwjlD0v41T3E2dus+lbeOLnMUZACvX0h/rZ0j9D8U/pjUrW8eU8JPg3Xc+
-         SuplnJSm9Mwf7hZFpUvMtCUpWrfbGKeoYuJHvZBzxRG6Du2ocLbJsRHmZIA7U6thM8cA
-         Rk1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5ZR6CFkdg+ULcmL1AuVmvyE6nh/C3rjVxkIJ1sgDqbQ=;
-        b=hJW53MRcZYyfs3+J95MLmJS7nEKsPMHCUUhZZUAiiPGvT3SyY5HgWNYriwAXhyWVa8
-         agEtlzMibEOkaWAD/wRBGP2lNfwFqGhHEDv5+AtXOndgH5ORGPqLO9EWo3Mggyq/8j/C
-         UkTRl1znidqSTCWMvTDFWfvvw8HUoupNvheLD4KvJUBklmqIKVM3e+BrzI2pjRbdLeu6
-         9KPPtoxWoX7BqFMquRGPmTOgZIv40tu0tlD8v2wmx8G8PvDxzcD6HfIMy58rfSrVlHKT
-         EUBc8hzKjNdFSZLP0Ct6xcHoTOoyltH74LR7afTjTHuhFrSG90yMGiauYJ7fwItjOp7R
-         UOtw==
-X-Gm-Message-State: AOAM530Pw1CF8hVdins49+d2Se34VctzxgUnm1x9wF544nr9EGvt13rw
-        N8vrFhhB4+p+N8oiiJCvXvBFf0eR7X/nAD0T12w=
-X-Google-Smtp-Source: ABdhPJzmXrg4YpkekEZQC+Pp+GUzrAhNmszq9ngGtgQ69nrnsyacxmAyBJIpIbawrrXb5HK84Dwgc9RZXQMxrYWeUmI=
-X-Received: by 2002:a05:620a:12d2:: with SMTP id e18mr526485qkl.437.1592517601927;
- Thu, 18 Jun 2020 15:00:01 -0700 (PDT)
+        with ESMTP id S1729551AbgFRWBJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:01:09 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54055C06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:01:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=HAYpVhiJYUDDYnvcQboPBzGHC5c6szhMB3cAD+KKAgc=; b=FC2eJycweFp7+ohuHmWM9CKll
+        DXVrC7t7E63eDJia394AIdC8jaZQXfvu6QfTR/9s0ZZY9Py5S5Wzwjq97/7ow52DTBVoZawmUw7qk
+        53BXPMMbAwkX2x3jZ+EntrT0CVpbIHowtqgxp49Cq1JseICkHh1fz9ggxp/jy0qNCYXMX1UnKNVHG
+        HKAFpIE4mc0M+WXIDbqkwdyYy4GNk7J3SVxmlU5PzFslcde3T454VKfKIcAXvMoILQfdq/WfxGdTY
+        weWvWozQ3dDjrNjPy0ERttHsfrORS/JkyG9Vu5VQe6LhSO4uh4CRPEPxsHgsKVNij1ge+om1F0i7T
+        MYAnSDQVQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58804)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jm2am-0005cE-J8; Thu, 18 Jun 2020 23:01:04 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jm2aj-00052h-7A; Thu, 18 Jun 2020 23:01:01 +0100
+Date:   Thu, 18 Jun 2020 23:01:01 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next 4/5] net: phy: add Lynx PCS MDIO module
+Message-ID: <20200618220101.GJ1551@shell.armlinux.org.uk>
+References: <20200618120837.27089-1-ioana.ciornei@nxp.com>
+ <20200618120837.27089-5-ioana.ciornei@nxp.com>
+ <20200618140623.GC1551@shell.armlinux.org.uk>
+ <VI1PR0402MB387191C53CE915E5AC060669E09B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+ <20200618165510.GG1551@shell.armlinux.org.uk>
+ <VI1PR0402MB38712F94BAAC32DB1C8AB7F8E09B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-References: <20200616050432.1902042-1-andriin@fb.com> <20200616050432.1902042-2-andriin@fb.com>
- <5eebbbef8f904_6d292ad5e7a285b883@john-XPS-13-9370.notmuch>
-In-Reply-To: <5eebbbef8f904_6d292ad5e7a285b883@john-XPS-13-9370.notmuch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 18 Jun 2020 14:59:51 -0700
-Message-ID: <CAEf4BzYNFddhDxLAkOC+q_ZWAet42aHybDiJT9odrzF8n5BBig@mail.gmail.com>
-Subject: Re: [PATCH bpf 2/2] selftests/bpf: add variable-length data
- concatenation pattern test
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Christoph Hellwig <hch@lst.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR0402MB38712F94BAAC32DB1C8AB7F8E09B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 12:09 PM John Fastabend
-<john.fastabend@gmail.com> wrote:
->
-> Andrii Nakryiko wrote:
-> > Add selftest that validates variable-length data reading and concatentation
-> > with one big shared data array. This is a common pattern in production use for
-> > monitoring and tracing applications, that potentially can read a lot of data,
-> > but usually reads much less. Such pattern allows to determine precisely what
-> > amount of data needs to be sent over perfbuf/ringbuf and maximize efficiency.
-> >
-> > This is the first BPF selftest that at all looks at and tests
-> > bpf_probe_read_str()-like helper's return value, closing a major gap in BPF
-> > testing. It surfaced the problem with bpf_probe_read_kernel_str() returning
-> > 0 on success, instead of amount of bytes successfully read.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
->
-> [...]
->
-> > +/* .data */
-> > +int payload2_len1 = -1;
-> > +int payload2_len2 = -1;
-> > +int total2 = -1;
-> > +char payload2[MAX_LEN + MAX_LEN] = { 1 };
-> > +
-> > +SEC("raw_tp/sys_enter")
-> > +int handler64(void *regs)
-> > +{
-> > +     int pid = bpf_get_current_pid_tgid() >> 32;
-> > +     void *payload = payload1;
-> > +     u64 len;
-> > +
-> > +     /* ignore irrelevant invocations */
-> > +     if (test_pid != pid || !capture)
-> > +             return 0;
-> > +
-> > +     len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in1[0]);
-> > +     if (len <= MAX_LEN) {
->
-> Took me a bit grok this. You are relying on the fact that in errors,
-> such as a page fault, will encode to a large u64 value and so you
-> verifier is happy. But most of my programs actually want to distinguish
-> between legitimate errors on the probe vs buffer overrun cases.
+On Thu, Jun 18, 2020 at 05:34:49PM +0000, Ioana Ciornei wrote:
+> I am not sure how this would work with Felix and DSA drivers in general
+> since the DSA core is hiding the phylink_pcs_ops from the actual switch
+> driver.
 
-What buffer overrun? bpf_probe_read_str() family cannot return higher
-value than MAX_LEN. If you want to detect truncated strings, then you
-can attempt reading MAX_LEN + 1 and then check that the return result
-is MAX_LEN exactly. But still, that would be something like:
+Here's an idea to work around DSA (untested):
 
-u64 len;
-
-len = bpf_probe_read_str(payload, MAX_LEN + 1, &buf);
-if (len > MAX_LEN)
-  return -1;
-if (len == MAX_LEN) {
-  /* truncated */
-} else {
-  /* full string */
-}
-
->
-> Can we make these tests do explicit check for errors. For example,
->
->   if (len < 0) goto abort;
->
-> But this also breaks your types here. This is what I was trying to
-> point out in the 1/2 patch thread. Wanted to make the point here as
-> well in case it wasn't clear. Not sure I did the best job explaining.
->
-
-I can write *a correct* C code in a lot of ways such that it will not
-pass verifier verification, not sure what that will prove, though.
-
-Have you tried using the pattern with two ifs with no-ALU32? Does it work?
-
-Also you are cheating in your example (in patch #1 thread). You are
-exiting on the first error and do not attempt to read any more data
-after that. In practice, you want to get as much info as possible,
-even if some of string reads fail (e.g., because argv might not be
-paged in, but env is, or vice versa). So you'll end up doing this:
-
-len = bpf_probe_read_str(...);
-if (len >= 0 && len <= MAX_LEN) {
-    payload += len;
-}
-...
-
-... and of course it spectacularly fails in no-ALU32.
-
-To be completely fair, this is a result of Clang optimization and
-Yonghong is trying to deal with it as we speak. Switching int to long
-for helpers doesn't help it either. But there are better code patterns
-(unsigned len + single if check) that do work with both ALU32 and
-no-ALU32.
-
-And I just double-checked, this pattern keeps working for ALU32 with
-both int and long types, so maybe there are unnecessary bit shifts,
-but at least code is still verifiable.
-
-So my point stands. int -> long helps in some cases and doesn't hurt
-in others, so I argue that it's a good thing to do :)
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index 1f8e0023f4f4..f578a5bb8ad0 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -67,6 +67,7 @@ enum phylink_op_type {
+ struct phylink_config {
+ 	struct device *dev;
+ 	enum phylink_op_type type;
++	void *pcs_private;
+ 	bool pcs_poll;
+ 	bool poll_fixed_state;
+ 	void (*get_fixed_state)(struct phylink_config *config,
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index a50d5007fd39..0fbb3a542b6e 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -742,6 +742,9 @@ int dsa_port_get_phy_strings(struct dsa_port *dp, uint8_t *data);
+ int dsa_port_get_ethtool_phy_stats(struct dsa_port *dp, uint64_t *data);
+ int dsa_port_get_phy_sset_count(struct dsa_port *dp);
+ void dsa_port_phylink_mac_change(struct dsa_switch *ds, int port, bool up);
++void dsa_slave_attach_phylink_pcs(struct dsa_switch *ds, int port,
++				  const struct phylink_pcs_ops *ops,
++				  void *priv);
+ 
+ struct dsa_tag_driver {
+ 	const struct dsa_device_ops *ops;
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 2ae17f95cb63..c80f62d88b63 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1619,6 +1619,17 @@ static int dsa_slave_phy_connect(struct net_device *slave_dev, int addr)
+ 	return phylink_connect_phy(dp->pl, slave_dev->phydev);
+ }
+ 
++void dsa_slave_attach_phylink_pcs(struct dsa_switch *ds, int port,
++				  const struct phylink_pcs_ops *ops,
++				  void *priv)
++{
++	const struct dsa_port *dp = dsa_to_port(ds, port);
++
++	dp->pl_config.pcs_private = priv;
++	phylink_add_pcs(dp->pl, ops);
++}
++EXPORT_SYMBOL_GPL(dsa_slave_attach_phylink_pcs);
++
+ static int dsa_slave_phy_setup(struct net_device *slave_dev)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(slave_dev);
 
 
+dsa_slave_attach_phylink_pcs() can be passed anything as it's priv
+argument - that could be "dp", or it could be a lynx PCS private
+data structure, but that's up to the driver code to decide.
 
+At least this gives a way for us to have some standardised PCS
+code that can be bolted into either DSA or a MAC driver by the
+higher levels without the PCS code having to know which it's
+connected to, and without having to have veneers to bridge into
+the PCS code.
 
-> > +             payload += len;
-> > +             payload1_len1 = len;
-> > +     }
-> > +
-> > +     len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in2[0]);
-> > +     if (len <= MAX_LEN) {
-> > +             payload += len;
-> > +             payload1_len2 = len;
-> > +     }
-> > +
-> > +     total1 = payload - (void *)payload1;
-> > +
-> > +     return 0;
-> > +}
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
