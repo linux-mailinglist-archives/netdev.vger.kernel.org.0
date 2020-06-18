@@ -2,173 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E48791FEB43
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 08:07:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C1991FEB75
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 08:30:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727814AbgFRGHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 02:07:12 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:29072 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727809AbgFRGHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 02:07:11 -0400
-Received: from vishal.asicdesigners.com ([10.193.191.100])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 05I66ob9030007;
-        Wed, 17 Jun 2020 23:07:07 -0700
-From:   Vishal Kulkarni <vishal@chelsio.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     nirranjan@chelsio.com, dt@chelsio.com,
-        Vishal Kulkarni <vishal@chelsio.com>
-Subject: [PATCH net-next v2 5/5] cxgb4: add support to read serial flash
-Date:   Thu, 18 Jun 2020 11:35:56 +0530
-Message-Id: <20200618060556.14410-6-vishal@chelsio.com>
-X-Mailer: git-send-email 2.21.1
-In-Reply-To: <20200618060556.14410-1-vishal@chelsio.com>
-References: <20200618060556.14410-1-vishal@chelsio.com>
+        id S1727809AbgFRG3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 02:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725898AbgFRG3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 02:29:53 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B5FC06174E;
+        Wed, 17 Jun 2020 23:29:53 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id n2so2007880pld.13;
+        Wed, 17 Jun 2020 23:29:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=KQ2KXadNszv6SfxDIzV7J9NVKQv2wwsb+/cXUurR5GM=;
+        b=DYrOt0uKM0IHriWam8HTNRN9UuM6nX+aOJ8xmUqqK/Op1aQNYNm2ZeJ3VvPooSUriO
+         C/GJJiDHNTciGVGXltJwSMuV7sGFD7zKdMshcUDaCL5Jxx1B1XKAzz7wFUqB3eyWkoIA
+         GArMFuV0upHXRjKwDFMMaBPOgjWGZJjuuHAaSpeTBaozQcKBdpHnFedPqmmvBSxRq3ZW
+         7GKwcrBWCkDdMbQ8xqFFkCJRodgU+LzjDJX3LycC2jgp9TYrFgNtPkhh07JGQ0gnt5Vv
+         65/psM96IaS9ZIFmD47TUTvtJwR3vSuvfjWW2Ig6lDlKQE2tC9+nmMpggtiIFC9noOBt
+         /0mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=KQ2KXadNszv6SfxDIzV7J9NVKQv2wwsb+/cXUurR5GM=;
+        b=jBny377DkbgrJVJ9Y7t58uOZCZYqPvygDtj37G3Ej5GOhqp5nXxUtY6E55uXpXthkV
+         JsVgAlVxcQKJlrkH9E5OQw+8vwxpaH8EmEIxogpWUJiOKXM2YV/bOkf0Z1TzALRLxT+L
+         erk9PShgatKiqtTukNxCE5AiSD1U6/MktFNFz/2ZRJBh02gaGfvvojx8xxg4g3OF36nY
+         N1XnC6UyDd0/zrf59VxriUznnfL6/Cs2cOXaCAfqo5bsCzRYMToghg0x01ur5J7kYGmS
+         bVYBRNW2PDfyjmMSleqN5yi8ZThkeIZODLFLfpgHllz+vC9Pxg2ZS4C78J0jPx4SWcO+
+         K8vg==
+X-Gm-Message-State: AOAM531GcjgNf2TlwoTHZxjmDnutM6Dclt2S4HiuW7ovrwhenhRUq3aE
+        Wq1Fc1Z0hP4Hx4xgTlI0R5Q=
+X-Google-Smtp-Source: ABdhPJzhNgB6nIJWV0vcJORiKu8vr3ckXLQInfPzfhQgk1wdu0Eh6YueIIVSZd/ictQ9XnPqUdWCLA==
+X-Received: by 2002:a17:90a:c7d0:: with SMTP id gf16mr2601883pjb.151.1592461792912;
+        Wed, 17 Jun 2020 23:29:52 -0700 (PDT)
+Received: from localhost ([43.224.245.180])
+        by smtp.gmail.com with ESMTPSA id oc6sm1426356pjb.43.2020.06.17.23.29.50
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 17 Jun 2020 23:29:51 -0700 (PDT)
+Date:   Thu, 18 Jun 2020 14:27:37 +0800
+From:   Geliang Tang <geliangtang@gmail.com>
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/3] add MP_PRIO, MP_FAIL and MP_FASTCLOSE
+ suboptions handling
+Message-ID: <20200618062737.GA21303@OptiPlex>
+References: <cover.1592289629.git.geliangtang@gmail.com>
+ <04ae76d9-231a-de8e-ad33-1e4e80bb314c@tessares.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <04ae76d9-231a-de8e-ad33-1e4e80bb314c@tessares.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support to dump flash memory via
-ethtool --get-dump
+On Tue, Jun 16, 2020 at 05:18:56PM +0200, Matthieu Baerts wrote:
+> Hi Geliang
+> 
+> On 16/06/2020 08:47, Geliang Tang wrote:
+> > Add handling for sending and receiving the MP_PRIO, MP_FAIL, and
+> > MP_FASTCLOSE suboptions.
+> 
+> Thank you for the patches!
+> 
+> Unfortunately, I don't think it would be wise to accept them now: for the
+> moment, these suboptions are ignored at the reception. If we accept them and
+> change some variables like you did, we would need to make sure the kernel is
+> still acting correctly. In other words, we would need tests:
+> * For MP_PRIO, there are still quite some works to do regarding the
+> scheduling of the packets between the different MPTCP subflows to do before
+> supporting this.
+> * For MP_FAIL, we should forward the info to the path manager.
+> * For MP_FASTCLOSE, we should close connections and ACK this.
+> 
+> Also, net-next is closed for the moment:
+> http://vger.kernel.org/~davem/net-next.html
+> 
+> I would suggest you to discuss about that on MPTCP mailing list. We also
+> have meetings every Thursday. New devs are always welcome to contribute to
+> new features and bug-fixes!
+> 
 
-Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cudbg_if.h |  3 +-
- .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 38 +++++++++++++++++++
- .../net/ethernet/chelsio/cxgb4/cudbg_lib.h    |  4 +-
- .../net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c  | 14 +++++++
- .../net/ethernet/chelsio/cxgb4/cxgb4_cudbg.h  |  1 +
- 5 files changed, 58 insertions(+), 2 deletions(-)
+Hi Matt,
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_if.h b/drivers/net/ethernet/chelsio/cxgb4/cudbg_if.h
-index fc3813050f0d..c84719e3ca08 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_if.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_if.h
-@@ -70,7 +70,8 @@ enum cudbg_dbg_entity_type {
- 	CUDBG_HMA_INDIRECT = 67,
- 	CUDBG_HMA = 68,
- 	CUDBG_QDESC = 70,
--	CUDBG_MAX_ENTITY = 71,
-+	CUDBG_FLASH = 71,
-+	CUDBG_MAX_ENTITY = 72,
- };
- 
- struct cudbg_init {
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-index 7b9cd69f9844..a09790989584 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-@@ -3156,3 +3156,41 @@ int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
- 
- 	return rc;
- }
-+
-+int cudbg_collect_flash(struct cudbg_init *pdbg_init,
-+			struct cudbg_buffer *dbg_buff,
-+			struct cudbg_error *cudbg_err)
-+{
-+	struct adapter *padap = pdbg_init->adap;
-+	u32 count = padap->params.sf_size, n;
-+	struct cudbg_buffer temp_buff = {0};
-+	u32 addr, i;
-+	int rc;
-+
-+	addr = FLASH_EXP_ROM_START;
-+
-+	for (i = 0; i < count; i += SF_PAGE_SIZE) {
-+		n = min_t(u32, count - i, SF_PAGE_SIZE);
-+
-+		rc = cudbg_get_buff(pdbg_init, dbg_buff, n, &temp_buff);
-+		if (rc) {
-+			cudbg_err->sys_warn = CUDBG_STATUS_PARTIAL_DATA;
-+			goto out;
-+		}
-+		rc = t4_read_flash(padap, addr, n, (u32 *)temp_buff.data, 0);
-+		if (rc)
-+			goto out;
-+
-+		addr += (n * 4);
-+		rc = cudbg_write_and_release_buff(pdbg_init, &temp_buff,
-+						  dbg_buff);
-+		if (rc) {
-+			cudbg_err->sys_warn = CUDBG_STATUS_PARTIAL_DATA;
-+			goto out;
-+		}
-+	}
-+
-+out:
-+	return rc;
-+}
-+
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.h b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.h
-index 10ee6ed1d932..0f488d52797b 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.h
-@@ -162,7 +162,9 @@ int cudbg_collect_hma_meminfo(struct cudbg_init *pdbg_init,
- int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
- 			struct cudbg_buffer *dbg_buff,
- 			struct cudbg_error *cudbg_err);
--
-+int cudbg_collect_flash(struct cudbg_init *pdbg_init,
-+			struct cudbg_buffer *dbg_buff,
-+			struct cudbg_error *cudbg_err);
- struct cudbg_entity_hdr *cudbg_get_entity_hdr(void *outbuf, int i);
- void cudbg_align_debug_buffer(struct cudbg_buffer *dbg_buff,
- 			      struct cudbg_entity_hdr *entity_hdr);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-index e374b413d9ac..d7afe0746878 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-@@ -66,6 +66,10 @@ static const struct cxgb4_collect_entity cxgb4_collect_hw_dump[] = {
- 	{ CUDBG_HMA_INDIRECT, cudbg_collect_hma_indirect },
- };
- 
-+static const struct cxgb4_collect_entity cxgb4_collect_flash_dump[] = {
-+	{ CUDBG_FLASH, cudbg_collect_flash },
-+};
-+
- static u32 cxgb4_get_entity_length(struct adapter *adap, u32 entity)
- {
- 	struct cudbg_tcam tcam_region = { 0 };
-@@ -330,6 +334,9 @@ u32 cxgb4_get_dump_length(struct adapter *adap, u32 flag)
- 		}
- 	}
- 
-+	if (flag & CXGB4_ETH_DUMP_FLASH)
-+		len += adap->params.sf_size;
-+
- 	/* If compression is enabled, a smaller destination buffer is enough */
- 	wsize = cudbg_get_workspace_size();
- 	if (wsize && len > CUDBG_DUMP_BUFF_SIZE)
-@@ -468,6 +475,13 @@ int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
- 					   buf,
- 					   &total_size);
- 
-+	if (flag & CXGB4_ETH_DUMP_FLASH)
-+		cxgb4_cudbg_collect_entity(&cudbg_init, &dbg_buff,
-+					   cxgb4_collect_flash_dump,
-+					   ARRAY_SIZE(cxgb4_collect_flash_dump),
-+					   buf,
-+					   &total_size);
-+
- 	cudbg_free_compress_buff(&cudbg_init);
- 	cudbg_hdr->data_len = total_size;
- 	if (cudbg_init.compress_type != CUDBG_COMPRESSION_NONE)
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.h
-index 66b805c7a92c..c04a49b6378d 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.h
-@@ -27,6 +27,7 @@ enum CXGB4_ETHTOOL_DUMP_FLAGS {
- 	CXGB4_ETH_DUMP_NONE = ETH_FW_DUMP_DISABLE,
- 	CXGB4_ETH_DUMP_MEM = (1 << 0), /* On-Chip Memory Dumps */
- 	CXGB4_ETH_DUMP_HW = (1 << 1), /* various FW and HW dumps */
-+	CXGB4_ETH_DUMP_FLASH = (1 << 2), /* Dump flash memory */
- };
- 
- #define CXGB4_ETH_DUMP_ALL (CXGB4_ETH_DUMP_MEM | CXGB4_ETH_DUMP_HW)
--- 
-2.21.1
+Thanks for your reply. I will do these tests and improve my patches.
 
+-Geliang
+
+> Cheers,
+> Matt
+> -- 
+> Tessares | Belgium | Hybrid Access Solutions
+> www.tessares.net
