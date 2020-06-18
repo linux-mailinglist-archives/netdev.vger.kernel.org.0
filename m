@@ -2,84 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA8E31FF7D4
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 17:46:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3ADD1FF7CB
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 17:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729006AbgFRPqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 11:46:14 -0400
-Received: from foss.arm.com ([217.140.110.172]:53214 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728171AbgFRPqN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 11:46:13 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ED3A5101E;
-        Thu, 18 Jun 2020 08:46:12 -0700 (PDT)
-Received: from [192.168.122.166] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 34CF43F6CF;
-        Thu, 18 Jun 2020 08:46:12 -0700 (PDT)
-Subject: Re: [PATCH v1 2/3] net/fsl: acpize xgmac_mdio
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev@vger.kernel.org, linux.cj@gmail.com
-References: <20200617171536.12014-1-calvin.johnson@oss.nxp.com>
- <20200617171536.12014-3-calvin.johnson@oss.nxp.com>
- <20200617173414.GI205574@lunn.ch>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-Message-ID: <a1ae8926-9082-74ca-298a-853d297c84e7@arm.com>
-Date:   Thu, 18 Jun 2020 10:43:24 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <20200617173414.GI205574@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1731917AbgFRPoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 11:44:04 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:49704 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730208AbgFRPoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 11:44:02 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05IFWYKr093995;
+        Thu, 18 Jun 2020 11:43:53 -0400
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 31r2vnqwgw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Jun 2020 11:43:53 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05IFdbiQ028770;
+        Thu, 18 Jun 2020 15:43:53 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma01wdc.us.ibm.com with ESMTP id 31q6bdcr1m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 18 Jun 2020 15:43:53 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05IFhniH31392078
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 18 Jun 2020 15:43:49 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8F9366A047;
+        Thu, 18 Jun 2020 15:43:51 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B93706A051;
+        Thu, 18 Jun 2020 15:43:50 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.160.31.222])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 18 Jun 2020 15:43:50 +0000 (GMT)
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: [PATCH net] ibmveth: Fix max MTU limit
+Date:   Thu, 18 Jun 2020 10:43:46 -0500
+Message-Id: <1592495026-27202-1-git-send-email-tlfalcon@linux.ibm.com>
+X-Mailer: git-send-email 1.8.3.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-18_13:2020-06-18,2020-06-18 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
+ phishscore=0 impostorscore=0 malwarescore=0 adultscore=0 clxscore=1015
+ mlxscore=0 mlxlogscore=901 cotscore=-2147483648 priorityscore=1501
+ suspectscore=1 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006180115
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The max MTU limit defined for ibmveth is not accounting for
+virtual ethernet buffer overhead, which is twenty-two additional
+bytes set aside for the ethernet header and eight additional bytes
+of an opaque handle reserved for use by the hypervisor. Update the
+max MTU to reflect this overhead.
 
-On 6/17/20 12:34 PM, Andrew Lunn wrote:
-> On Wed, Jun 17, 2020 at 10:45:34PM +0530, Calvin Johnson wrote:
->> From: Jeremy Linton <jeremy.linton@arm.com>
-> 
->> +static const struct acpi_device_id xgmac_acpi_match[] = {
->> +	{ "NXP0006", (kernel_ulong_t)NULL },
-> 
-> Hi Jeremy
-> 
-> What exactly does NXP0006 represent? An XGMAC MDIO bus master? Some
-> NXP MDIO bus master? An XGMAC Ethernet controller which has an NXP
-> MDIO bus master? A cluster of Ethernet controllers?
+Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmveth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Strictly speaking its a NXP defined (they own the "NXP" prefix per 
-https://uefi.org/pnp_id_list) id. So, they have tied it to a specific 
-bit of hardware. In this case it appears to be a shared MDIO master 
-which isn't directly contained in an Ethernet controller. Its somewhat 
-similar to a  "nxp,xxxxx" compatible id, depending on how they are using 
-it to identify an ACPI device object (_HID()/_CID()).
-
-So AFAIK, this is all valid ACPI usage as long as the ID maps to a 
-unique device/object.
-
-> 
-> Is this documented somewhere? In the DT world we have a clear
-> documentation for all the compatible strings. Is there anything
-> similar in the ACPI world for these magic numbers?
-
-Sadly not fully. The mentioned PNP and ACPI 
-(https://uefi.org/acpi_id_list) ids lists are requested and registered 
-to a given organization. But, once the prefix is owned, it becomes the 
-responsibility of that organization to assign & manage the ID's with 
-their prefix. There are various individuals/etc which have collected 
-lists, though like PCI ids, there aren't any formal publishing requirements.
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index 96d36ae5049e..c5c732601e35 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -1715,7 +1715,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	}
+ 
+ 	netdev->min_mtu = IBMVETH_MIN_MTU;
+-	netdev->max_mtu = ETH_MAX_MTU;
++	netdev->max_mtu = ETH_MAX_MTU - IBMVETH_BUFF_OH;
+ 
+ 	memcpy(netdev->dev_addr, mac_addr_p, ETH_ALEN);
+ 
+-- 
+2.26.2
 
