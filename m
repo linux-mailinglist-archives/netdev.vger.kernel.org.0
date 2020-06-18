@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D46FC1FE664
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:33:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A27A91FE629
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:31:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729417AbgFRCdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 22:33:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44584 "EHLO mail.kernel.org"
+        id S1729456AbgFRBPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:15:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729372AbgFRBOu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:14:50 -0400
+        id S1729454AbgFRBPS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:15:18 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D4A9E20EDD;
-        Thu, 18 Jun 2020 01:14:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id ACE5420EDD;
+        Thu, 18 Jun 2020 01:15:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592442889;
-        bh=lTf3psMkvzYLlXoW5mhe7q+SLED4DuOEqoOrFxakpfQ=;
+        s=default; t=1592442918;
+        bh=rutzPEl2f7cOnbva9y8pjKUQeM2RyFfBKGQFZIhc/3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mi+X8g9KwtoUf5wEK9Kdb9mU95tYdk+THgFZBo59VDO+C1xpYB47GZF9DXsb7A8tF
-         9SljUfqYp8Sb6jM1cD5/QR+AaBRQZjkmUfdoR6Oj4U99l0eGh3eJdKFjzpFfXQxtVv
-         V6jPAvqYqAtJD6aS9U/+N69+2UzyFqgiDTWWYcUI=
+        b=BbFKMkX8jzMmyE6WbLAlzlaS5zk77ITpjjmnJGxsbFDodDg50DEaklLv5IzZ7CiV1
+         jRwCJMjouEC/F3fBHyf1C+cLMmnmN9J4cy/WdrEGit0VZSCVOKrXm1jz0sHhU9Oqww
+         C6j/2BQVhnGRGxl7tZV9W7k4B7KwcKcav8TACQRQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 312/388] rxrpc: Adjust /proc/net/rxrpc/calls to display call->debug_id not user_ID
-Date:   Wed, 17 Jun 2020 21:06:49 -0400
-Message-Id: <20200618010805.600873-312-sashal@kernel.org>
+Cc:     Jiri Benc <jbenc@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 335/388] geneve: change from tx_error to tx_dropped on missing metadata
+Date:   Wed, 17 Jun 2020 21:07:12 -0400
+Message-Id: <20200618010805.600873-335-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
 References: <20200618010805.600873-1-sashal@kernel.org>
@@ -43,51 +43,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Jiri Benc <jbenc@redhat.com>
 
-[ Upstream commit 32f71aa497cfb23d37149c2ef16ad71fce2e45e2 ]
+[ Upstream commit 9d149045b3c0e44c049cdbce8a64e19415290017 ]
 
-The user ID value isn't actually much use - and leaks a kernel pointer or a
-userspace value - so replace it with the call debug ID, which appears in trace
-points.
+If the geneve interface is in collect_md (external) mode, it can't send any
+packets submitted directly to its net interface, as such packets won't have
+metadata attached. This is expected.
 
-Signed-off-by: David Howells <dhowells@redhat.com>
+However, the kernel itself sends some packets to the interface, most
+notably, IPv6 DAD, IPv6 multicast listener reports, etc. This is not wrong,
+as tunnel metadata can be specified in routing table (although technically,
+that has never worked for IPv6, but hopefully will be fixed eventually) and
+then the interface must correctly participate in IPv6 housekeeping.
+
+The problem is that any such attempt increases the tx_error counter. Just
+bringing up a geneve interface with IPv6 enabled is enough to see a number
+of tx_errors. That causes confusion among users, prompting them to find
+a network error where there is none.
+
+Change the counter used to tx_dropped. That better conveys the meaning
+(there's nothing wrong going on, just some packets are getting dropped) and
+hopefully will make admins panic less.
+
+Signed-off-by: Jiri Benc <jbenc@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/proc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/geneve.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
-index 8b179e3c802a..543afd9bd664 100644
---- a/net/rxrpc/proc.c
-+++ b/net/rxrpc/proc.c
-@@ -68,7 +68,7 @@ static int rxrpc_call_seq_show(struct seq_file *seq, void *v)
- 			 "Proto Local                                          "
- 			 " Remote                                         "
- 			 " SvID ConnID   CallID   End Use State    Abort   "
--			 " UserID           TxSeq    TW RxSeq    RW RxSerial RxTimo\n");
-+			 " DebugId  TxSeq    TW RxSeq    RW RxSerial RxTimo\n");
- 		return 0;
- 	}
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index 6b461be1820b..75266580b586 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -987,9 +987,10 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	if (geneve->collect_md) {
+ 		info = skb_tunnel_info(skb);
+ 		if (unlikely(!info || !(info->mode & IP_TUNNEL_INFO_TX))) {
+-			err = -EINVAL;
+ 			netdev_dbg(dev, "no tunnel metadata\n");
+-			goto tx_error;
++			dev_kfree_skb(skb);
++			dev->stats.tx_dropped++;
++			return NETDEV_TX_OK;
+ 		}
+ 	} else {
+ 		info = &geneve->info;
+@@ -1006,7 +1007,7 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
  
-@@ -100,7 +100,7 @@ static int rxrpc_call_seq_show(struct seq_file *seq, void *v)
- 	rx_hard_ack = READ_ONCE(call->rx_hard_ack);
- 	seq_printf(seq,
- 		   "UDP   %-47.47s %-47.47s %4x %08x %08x %s %3u"
--		   " %-8.8s %08x %lx %08x %02x %08x %02x %08x %06lx\n",
-+		   " %-8.8s %08x %08x %08x %02x %08x %02x %08x %06lx\n",
- 		   lbuff,
- 		   rbuff,
- 		   call->service_id,
-@@ -110,7 +110,7 @@ static int rxrpc_call_seq_show(struct seq_file *seq, void *v)
- 		   atomic_read(&call->usage),
- 		   rxrpc_call_states[call->state],
- 		   call->abort_code,
--		   call->user_call_ID,
-+		   call->debug_id,
- 		   tx_hard_ack, READ_ONCE(call->tx_top) - tx_hard_ack,
- 		   rx_hard_ack, READ_ONCE(call->rx_top) - rx_hard_ack,
- 		   call->rx_serial,
+ 	if (likely(!err))
+ 		return NETDEV_TX_OK;
+-tx_error:
++
+ 	dev_kfree_skb(skb);
+ 
+ 	if (err == -ELOOP)
 -- 
 2.25.1
 
