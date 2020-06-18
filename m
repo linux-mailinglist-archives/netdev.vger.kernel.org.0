@@ -2,74 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA5271FF2D8
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 15:18:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA4F11FF2F4
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 15:25:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730015AbgFRNSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 09:18:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40854 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728657AbgFRNSE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 09:18:04 -0400
-Received: from localhost (unknown [137.135.114.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 16B042073E;
-        Thu, 18 Jun 2020 13:18:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592486282;
-        bh=XUJOGwyVT0oPdt2Xr1/X/9sFB5BfGk+cjJL4hpPUA9k=;
-        h=Date:From:To:To:To:To:Cc:Cc:Cc:Subject:In-Reply-To:References:
-         From;
-        b=Mrx/rabAngAFQB3lZ2t+oKxpUtDoX5dXp8FnnNfCfSNpmoK00bXJpaR5EV0/Qq/TX
-         GyuY6HAI23vW1zSiRdx7GN1N1v0kxdz2y9FEl/Ie2ANu4OE9Hu25ck7oJ8TrX+EH79
-         d1Ed1rchxVkKPy9iAOW8aGZ6B8VX5NfSPiHYJdRc=
-Date:   Thu, 18 Jun 2020 13:18:01 +0000
-From:   Sasha Levin <sashal@kernel.org>
-To:     Sasha Levin <sashal@kernel.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     Chen Yu <yu.c.chen@intel.com>
-To:     davem@davemloft.net
-Cc:     Chen Yu <yu.c.chen@intel.com>, netdev@vger.kernel.org
-Cc:     <Stable@vger.kernel.org>
-Cc:     stable@vger.kernel.org
-Subject: Re: [net 1/3] e1000e: Do not wake up the system via WOL if device wakeup is disabled
-In-Reply-To: <20200616225354.2744572-2-jeffrey.t.kirsher@intel.com>
-References: <20200616225354.2744572-2-jeffrey.t.kirsher@intel.com>
-Message-Id: <20200618131802.16B042073E@mail.kernel.org>
+        id S1730146AbgFRNZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 09:25:26 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:43514 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728049AbgFRNZZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 09:25:25 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id CFA8533519274ED6305F;
+        Thu, 18 Jun 2020 21:25:20 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Thu, 18 Jun 2020
+ 21:25:12 +0800
+From:   Zheng Bin <zhengbin13@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <michael-dev@fami-braun.de>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <zhengbin13@huawei.com>, <yi.zhang@huawei.com>
+Subject: [PATCH -next] macvlan: Fix memleak in macvlan_changelink_sources
+Date:   Thu, 18 Jun 2020 21:26:29 +0800
+Message-ID: <20200618132629.659977-1-zhengbin13@huawei.com>
+X-Mailer: git-send-email 2.25.4
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+macvlan_changelink_sources
+  if (addr)
+    ret = macvlan_hash_add_source(vlan, addr)
+  nla_for_each_attr(nla, head, len, rem)
+    ret = macvlan_hash_add_source(vlan, addr)
+    -->If fail, need to free previous malloc memory
 
-[This is an automated email]
+Fixes: 79cf79abce71 ("macvlan: add source mode")
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+---
+ drivers/net/macvlan.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-This commit has been processed because it contains a "Fixes:" tag
-fixing commit: bc7f75fa9788 ("[E1000E]: New pci-express e1000 driver (currently for ICH9 devices only)").
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 6a6cc9f75307..0017c5d28a27 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -1379,8 +1379,10 @@ static int macvlan_changelink_sources(struct macvlan_dev *vlan, u32 mode,
 
-The bot has tested the following trees: v5.7.2, v5.4.46, v4.19.128, v4.14.184, v4.9.227, v4.4.227.
+ 			addr = nla_data(nla);
+ 			ret = macvlan_hash_add_source(vlan, addr);
+-			if (ret)
++			if (ret) {
++				macvlan_flush_sources(vlan->port, vlan);
+ 				return ret;
++			}
+ 		}
+ 	} else {
+ 		return -EINVAL;
+--
+2.25.4
 
-v5.7.2: Build OK!
-v5.4.46: Build OK!
-v4.19.128: Build OK!
-v4.14.184: Build OK!
-v4.9.227: Failed to apply! Possible dependencies:
-    c8744f44aeaee ("e1000e: Add Support for CannonLake")
-
-v4.4.227: Failed to apply! Possible dependencies:
-    16ecba59bc333 ("e1000e: Do not read ICR in Other interrupt")
-    18dd239207038 ("e1000e: use BIT() macro for bit defines")
-    74f31299a41e7 ("e1000e: Increase PHY PLL clock gate timing")
-    c8744f44aeaee ("e1000e: Add Support for CannonLake")
-    f3ed935de059b ("e1000e: initial support for i219-LM (3)")
-
-
-NOTE: The patch will not be queued to stable trees until it is upstream.
-
-How should we proceed with this patch?
-
--- 
-Thanks
-Sasha
