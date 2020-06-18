@@ -2,158 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18B351FF0F3
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 13:48:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09AEB1FF137
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 14:06:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728802AbgFRLsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 07:48:19 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:47231 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728291AbgFRLsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 07:48:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592480894;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uyIvvPBF+MpYQOOLrTvfIr/WJu5YGMFAZyoz1bbDjzM=;
-        b=JcH9EXyZ8qoXMbLpX6zyMtPZ02cUNq92OD1QASjitEl0ST4mk83HkfL2Z/JnUm04u7UtY4
-        4lKi/gVRx72L7zx08WAQdXtrGqKkKaQF4rHmygh/K/8CbGNk4OddG0y3502W6rz36ZEsD3
-        imQqk9MfJjqBetkNnjREFrxD2G+rX6Q=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-149-kRUP0nEkOZKbB_4tCwG95A-1; Thu, 18 Jun 2020 07:48:13 -0400
-X-MC-Unique: kRUP0nEkOZKbB_4tCwG95A-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C9DB81800D42;
-        Thu, 18 Jun 2020 11:48:10 +0000 (UTC)
-Received: from krava (unknown [10.40.194.92])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 677E41001E91;
-        Thu, 18 Jun 2020 11:48:07 +0000 (UTC)
-Date:   Thu, 18 Jun 2020 13:48:06 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masanori Misono <m.misono760@gmail.com>
-Subject: Re: [PATCH] bpf: Allow small structs to be type of function argument
-Message-ID: <20200618114806.GA2369163@krava>
-References: <20200616173556.2204073-1-jolsa@kernel.org>
- <5eeaa556c7a0e_38b82b28075185c46a@john-XPS-13-9370.notmuch>
+        id S1729340AbgFRMG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 08:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728048AbgFRMGY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 08:06:24 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1187AC0613EE
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 05:06:23 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id 64so2680077pfv.11
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 05:06:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=KnZMcd7hAByohLFNqoZ+jn6S/xUHmJ274kiUVqsCRiY=;
+        b=i3r8xzakfwZ3uk+CMdQ56vr7b6YalR5xVqKnNsXOUACwqn6g/kFD9NV2DtKAsfwJaV
+         dTBC6UOcltvDhwyOleA9nXDGIpHOG2RlCrdWU15Ljr1IGgxp9QnrdR1DY0w5foaTbGfH
+         2quSvqHaIzhOkFQBInGA1Qq04L+fJpUrRRnKhuk34E2+hhPa3RFn1/kFZfxUTtvqUWOq
+         YSZIcjsh2KErBcDAtrH01Ak3g7V8H3xn3tabJBhESZWrFZJFu1qqF5y7Ar4pHQL8gTJ8
+         roE5u9XlqcQxRP2KBd75xfWgYdqYVZdKr+71OZxiKcjPxRF1BcFDndGlXizFJEmaxt1n
+         UW4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=KnZMcd7hAByohLFNqoZ+jn6S/xUHmJ274kiUVqsCRiY=;
+        b=PvsVPpb7u+TvPpzp8A/DAuL7YFJiOjl8YD5Mg+7yqRx59b/3DUpCfRd02hjkpd2zSM
+         dHZpmNMfQtGBYUHjk6bsh7Ev2Wn2fTuRPL9acyF2cPSy/QL0/ZVfvH2/rastPW2y13Dz
+         hqcYiqKzrRQQJXVM/w0j5g53EpUtR7BWznX2t7/zRM0K5CN/bsfMKlbx3XRaq/oqfPPA
+         ivE3E6Rfw6xHN7IQ+UvM5XA6PMbqHu/pOhrfevrrYIl7SmkQl73me5UlRflZP3OhkIpH
+         OVEEAXjHuTmJXVesl5Ch6roVFOWK9RAxIVCsJHhEzIfZhDkKISuZZn0F7jrZYARK6Hya
+         w58g==
+X-Gm-Message-State: AOAM532zoXZElrg/TKeTp1RJoMlLMZTE7oVC2lvrk9jI6DzugdbHlHKZ
+        LTqfjdnstfwvQIBW52f1Rx5c
+X-Google-Smtp-Source: ABdhPJy6Et0T3fLfK70E25pbBoRMbq0GcwLBqfDU7X9MU0HLviPALhHwAj1hlrzRqKkBMR3NCwhJ4A==
+X-Received: by 2002:a63:1007:: with SMTP id f7mr3016539pgl.147.1592481983117;
+        Thu, 18 Jun 2020 05:06:23 -0700 (PDT)
+Received: from mani ([103.59.133.81])
+        by smtp.gmail.com with ESMTPSA id i22sm2780776pfo.92.2020.06.18.05.06.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 18 Jun 2020 05:06:22 -0700 (PDT)
+Date:   Thu, 18 Jun 2020 17:36:15 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     wg@grandegger.com, kernel@martin.sperl.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/6] Add Microchip MCP25XXFD CAN driver
+Message-ID: <20200618120615.GA3949@mani>
+References: <20200610074442.10808-1-manivannan.sadhasivam@linaro.org>
+ <fbbca009-3c53-6aa9-94ed-7e9e337c31a4@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5eeaa556c7a0e_38b82b28075185c46a@john-XPS-13-9370.notmuch>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+In-Reply-To: <fbbca009-3c53-6aa9-94ed-7e9e337c31a4@pengutronix.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 04:20:54PM -0700, John Fastabend wrote:
-> Jiri Olsa wrote:
-> > This way we can have trampoline on function
-> > that has arguments with types like:
-> > 
-> >   kuid_t uid
-> >   kgid_t gid
-> > 
-> > which unwind into small structs like:
-> > 
-> >   typedef struct {
-> >         uid_t val;
-> >   } kuid_t;
-> > 
-> >   typedef struct {
-> >         gid_t val;
-> >   } kgid_t;
-> > 
-> > And we can use them in bpftrace like:
-> > (assuming d_path changes are in)
-> > 
-> >   # bpftrace -e 'lsm:path_chown { printf("uid %d, gid %d\n", args->uid, args->gid) }'
-> >   Attaching 1 probe...
-> >   uid 0, gid 0
-> >   uid 1000, gid 1000
-> >   ...
-> > 
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  kernel/bpf/btf.c | 12 +++++++++++-
-> >  1 file changed, 11 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > index 58c9af1d4808..f8fee5833684 100644
-> > --- a/kernel/bpf/btf.c
-> > +++ b/kernel/bpf/btf.c
-> > @@ -362,6 +362,14 @@ static bool btf_type_is_struct(const struct btf_type *t)
-> >  	return kind == BTF_KIND_STRUCT || kind == BTF_KIND_UNION;
-> >  }
-> >  
-> > +/* type is struct and its size is within 8 bytes
-> > + * and it can be value of function argument
-> > + */
-> > +static bool btf_type_is_struct_arg(const struct btf_type *t)
-> > +{
-> > +	return btf_type_is_struct(t) && (t->size <= sizeof(u64));
-> 
-> Can you comment on why sizeof(u64) here? The int types can be larger
-> than 64 for example and don't have a similar check, maybe the should
-> as well?
-> 
-> Here is an example from some made up program I ran through clang and
-> bpftool.
-> 
-> [2] INT '__int128' size=16 bits_offset=0 nr_bits=128 encoding=SIGNED
-> 
-> We also have btf_type_int_is_regular to decide if the int is of some
-> "regular" size but I don't see it used in these paths.
+Hi,
 
-so this small structs are passed as scalars via function arguments,
-so the size limit is to fit teir value into register size which holds
-the argument
-
-I'm not sure how 128bit numbers are passed to function as argument,
-but I think we can treat them separately if there's a need
-
-jirka
-
-> 
-> > +}
-> > +
-> >  static bool __btf_type_is_struct(const struct btf_type *t)
-> >  {
-> >  	return BTF_INFO_KIND(t->info) == BTF_KIND_STRUCT;
-> > @@ -3768,7 +3776,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
-> >  	/* skip modifiers */
-> >  	while (btf_type_is_modifier(t))
-> >  		t = btf_type_by_id(btf, t->type);
-> > -	if (btf_type_is_int(t) || btf_type_is_enum(t))
-> > +	if (btf_type_is_int(t) || btf_type_is_enum(t) || btf_type_is_struct_arg(t))
-> >  		/* accessing a scalar */
-> >  		return true;
-> >  	if (!btf_type_is_ptr(t)) {
-> > @@ -4161,6 +4169,8 @@ static int __get_type_size(struct btf *btf, u32 btf_id,
-> >  		return sizeof(void *);
-> >  	if (btf_type_is_int(t) || btf_type_is_enum(t))
-> >  		return t->size;
-> > +	if (btf_type_is_struct_arg(t))
-> > +		return t->size;
-> >  	*bad_type = t;
-> >  	return -EINVAL;
-> >  }
-> > -- 
-> > 2.25.4
+On 0611, Marc Kleine-Budde wrote:
+> On 6/10/20 9:44 AM, Manivannan Sadhasivam wrote:
+> > Hello,
 > > 
+> > This series adds CAN network driver support for Microchip MCP25XXFD CAN
+> > Controller with MCP2517FD as the target controller version. This series is
+> > mostly inspired (or taken) from the previous iterations posted by Martin Sperl.
+> > I've trimmed down the parts which are not necessary for the initial version
+> > to ease review. Still the series is relatively huge but I hope to get some
+> > reviews (post -rcX ofc!).
+> > 
+> > Link to the origial series posted by Martin:
+> > https://www.spinics.net/lists/devicetree/msg284462.html
+> > 
+> > I've not changed the functionality much but done some considerable amount of
+> > cleanups and also preserved the authorship of Martin for all the patches he has
+> > posted earlier. This series has been tested on 96Boards RB3 platform by myself
+> > and Martin has tested the previous version on Rpi3 with external MCP2517FD
+> > controller.
 > 
+> I initially started looking at Martin's driver and it was not using several
+> modern CAN driver infrastructures. I then posted some cleanup patches but Martin
+> was not working on the driver any more. Then I decided to rewrite the driver,
+> that is the one I'm hoping to mainline soon.
+> 
+> Can you give it a try?
+> 
+> https://github.com/marckleinebudde/linux/commits/v5.6-rpi/mcp25xxfd-20200607-41
 > 
 
+Tested this version on my board with MCP2518FD and it works fine. I'm okay with
+moving forward with your version and would like to contribute. Please let me
+know how we can move forward.
+
+Thanks,
+Mani
+
+> Marc
+> 
+> -- 
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
