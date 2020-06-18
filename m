@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC1B1FF8D1
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 18:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93CF11FF8CA
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 18:10:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731858AbgFRQKP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 18 Jun 2020 12:10:15 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:33098 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731939AbgFRQKC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 12:10:02 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05IG9lES004749
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 09:10:01 -0700
+        id S1731931AbgFRQKA convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 18 Jun 2020 12:10:00 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17464 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731766AbgFRQJw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 12:09:52 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05IG9ju9029958
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 09:09:51 -0700
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 31q653mse9-9
+        by mx0a-00082601.pphosted.com with ESMTP id 31q644n0tx-9
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 09:10:01 -0700
-Received: from intmgw003.06.prn3.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 09:09:51 -0700
+Received: from intmgw001.06.prn3.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 18 Jun 2020 09:09:51 -0700
+ 15.1.1979.3; Thu, 18 Jun 2020 09:09:48 -0700
 Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
-        id 672EA3D44E14E; Thu, 18 Jun 2020 09:09:41 -0700 (PDT)
+        id 6B26F3D44E150; Thu, 18 Jun 2020 09:09:41 -0700 (PDT)
 Smtp-Origin-Hostprefix: devvm
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
 To:     <netdev@vger.kernel.org>
 CC:     <kernel-team@fb.com>, <axboe@kernel.dk>
 Smtp-Origin-Cluster: vll1c12
-Subject: [RFC PATCH 16/21] lib: have __zerocopy_sg_from_iter get netgpu pages for a sk
-Date:   Thu, 18 Jun 2020 09:09:36 -0700
-Message-ID: <20200618160941.879717-17-jonathan.lemon@gmail.com>
+Subject: [RFC PATCH 17/21] net/core: add the SO_REGISTER_DMA socket option
+Date:   Thu, 18 Jun 2020 09:09:37 -0700
+Message-ID: <20200618160941.879717-18-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200618160941.879717-1-jonathan.lemon@gmail.com>
 References: <20200618160941.879717-1-jonathan.lemon@gmail.com>
@@ -42,11 +42,11 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
  definitions=2020-06-18_14:2020-06-18,2020-06-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1034
- priorityscore=1501 impostorscore=0 cotscore=-2147483648 suspectscore=1
- spamscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0 bulkscore=0
- adultscore=0 mlxlogscore=632 malwarescore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ mlxlogscore=638 phishscore=0 spamscore=0 clxscore=1034 bulkscore=0
+ cotscore=-2147483648 suspectscore=1 adultscore=0 impostorscore=0
+ lowpriorityscore=0 malwarescore=0 priorityscore=1501 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
  definitions=main-2006180122
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -54,118 +54,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a sock is marked as sending zc data, have the iterator
-retrieve the correct zc pages from the netgpu module.
+This option says that the socket will be performing zero copy sends
+and receives through the netgpu module.
 
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- include/linux/uio.h |  4 ++++
- lib/iov_iter.c      | 45 +++++++++++++++++++++++++++++++++++++++++++++
- net/core/datagram.c |  6 +++++-
- 3 files changed, 54 insertions(+), 1 deletion(-)
+ include/uapi/asm-generic/socket.h |  2 ++
+ net/core/sock.c                   | 26 ++++++++++++++++++++++++++
+ 2 files changed, 28 insertions(+)
 
-diff --git a/include/linux/uio.h b/include/linux/uio.h
-index 9576fd8158d7..d4c15205a248 100644
---- a/include/linux/uio.h
-+++ b/include/linux/uio.h
-@@ -227,6 +227,10 @@ ssize_t iov_iter_get_pages(struct iov_iter *i, struct page **pages,
- ssize_t iov_iter_get_pages_alloc(struct iov_iter *i, struct page ***pages,
- 			size_t maxsize, size_t *start);
- int iov_iter_npages(const struct iov_iter *i, int maxpages);
-+struct sock;
-+ssize_t iov_iter_sk_get_pages(struct iov_iter *i, struct sock *sk,
-+                   size_t maxsize, struct page **pages, unsigned maxpages,
-+                   size_t *pgoff);
+diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
+index 77f7c1638eb1..5a8577c90e2a 100644
+--- a/include/uapi/asm-generic/socket.h
++++ b/include/uapi/asm-generic/socket.h
+@@ -119,6 +119,8 @@
  
- const void *dup_iter(struct iov_iter *new, struct iov_iter *old, gfp_t flags);
+ #define SO_DETACH_REUSEPORT_BPF 68
  
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index bf538c2bec77..a50fa3999de3 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -10,6 +10,9 @@
- #include <linux/scatterlist.h>
- #include <linux/instrumented.h>
- 
-+#include <net/netgpu.h>
-+#include <net/sock.h>
++#define SO_REGISTER_DMA		69
 +
- #define PIPE_PARANOIA /* for now */
+ #if !defined(__KERNEL__)
  
- #define iterate_iovec(i, n, __v, __p, skip, STEP) {	\
-@@ -1349,6 +1352,48 @@ ssize_t iov_iter_get_pages(struct iov_iter *i,
+ #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 6c4acf1f0220..c9e93ee675d6 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -828,6 +828,25 @@ void sock_set_rcvbuf(struct sock *sk, int val)
  }
- EXPORT_SYMBOL(iov_iter_get_pages);
+ EXPORT_SYMBOL(sock_set_rcvbuf);
  
-+ssize_t iov_iter_sk_get_pages(struct iov_iter *i, struct sock *sk,
-+		   size_t maxsize, struct page **pages, unsigned maxpages,
-+		   size_t *pgoff)
++extern int netgpu_register_dma(struct sock *sk, char __user *optval, unsigned int optlen);
++
++static int
++sock_register_dma(struct sock *sk, char __user *optval, unsigned int optlen)
 +{
-+	const struct iovec *iov;
-+	unsigned long addr;
-+	struct iovec v;
-+	size_t len;
-+	unsigned n;
-+	int ret;
++	int rc;
++	int (*fn)(struct sock *sk, char __user *optval, unsigned int optlen);
 +
-+	if (!sk->sk_user_data)
-+		return iov_iter_get_pages(i, pages, maxsize, maxpages, pgoff);
++	fn = symbol_get(netgpu_register_dma);
++	if (!fn)
++		return -EINVAL;
 +
-+	if (maxsize > i->count)
-+		maxsize = i->count;
++	rc = fn(sk, optval, optlen);
 +
-+	if (!iter_is_iovec(i))
-+		return -EFAULT;
++	symbol_put(netgpu_register_dma);
 +
-+	if (iov_iter_rw(i) != WRITE)
-+		return -EFAULT;
-+
-+	iterate_iovec(i, maxsize, v, iov, i->iov_offset, ({
-+		addr = (unsigned long)v.iov_base;
-+		*pgoff = addr & (PAGE_SIZE - 1);
-+		len = v.iov_len + *pgoff;
-+
-+		if (len > maxpages * PAGE_SIZE)
-+			len = maxpages * PAGE_SIZE;
-+
-+		n = DIV_ROUND_UP(len, PAGE_SIZE);
-+
-+		ret = __netgpu_get_pages(sk, pages, addr, n);
-+		if (ret > 0)
-+			ret = (ret == n ? len : ret * PAGE_SIZE) - *pgoff;
-+		return ret;
-+	0;}));
-+	return 0;
++	return rc;
 +}
-+EXPORT_SYMBOL(iov_iter_sk_get_pages);
 +
- static struct page **get_pages_array(size_t n)
- {
- 	return kvmalloc_array(n, sizeof(struct page *), GFP_KERNEL);
-diff --git a/net/core/datagram.c b/net/core/datagram.c
-index 639745d4f3b9..7dd8814c222a 100644
---- a/net/core/datagram.c
-+++ b/net/core/datagram.c
-@@ -530,6 +530,10 @@ int skb_copy_datagram_iter(const struct sk_buff *skb, int offset,
- 			   struct iov_iter *to, int len)
- {
- 	trace_skb_copy_datagram_iovec(skb, len);
-+	if (skb->zc_netgpu) {
-+		pr_err("skb netgpu datagram on !netgpu sk\n");
-+		return -EFAULT;
-+	}
- 	return __skb_datagram_iter(skb, offset, to, len, false,
- 			simple_copy_to_iter, NULL);
- }
-@@ -631,7 +635,7 @@ int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
- 		if (frag == MAX_SKB_FRAGS)
- 			return -EMSGSIZE;
+ /*
+  *	This is meant for all protocols to use and covers goings on
+  *	at the socket level. Everything here is generic.
+@@ -1232,6 +1251,13 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 		}
+ 		break;
  
--		copied = iov_iter_get_pages(from, pages, length,
-+		copied = iov_iter_sk_get_pages(from, sk, length, pages,
- 					    MAX_SKB_FRAGS - frag, &start);
- 		if (copied < 0)
- 			return -EFAULT;
++	case SO_REGISTER_DMA:
++		if (!sk->sk_bound_dev_if)
++			ret = -EINVAL;
++		else
++			ret = sock_register_dma(sk, optval, optlen);
++		break;
++
+ 	case SO_TXTIME:
+ 		if (optlen != sizeof(struct sock_txtime)) {
+ 			ret = -EINVAL;
 -- 
 2.24.1
 
