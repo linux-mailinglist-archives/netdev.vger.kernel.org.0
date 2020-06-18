@@ -2,92 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55CE11FFC93
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 22:36:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F4A1FFCBB
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 22:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729500AbgFRUgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 16:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55484 "EHLO
+        id S1732337AbgFRUk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 16:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728562AbgFRUgm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 16:36:42 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF23C06174E;
-        Thu, 18 Jun 2020 13:36:41 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id n11so6945893qkn.8;
-        Thu, 18 Jun 2020 13:36:41 -0700 (PDT)
+        with ESMTP id S1732312AbgFRUku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 16:40:50 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB1DC06174E;
+        Thu, 18 Jun 2020 13:40:49 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id t9so8724724ioj.13;
+        Thu, 18 Jun 2020 13:40:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=NEoxghrRUhl5ceeHjhF2kNYMbCKr0vgXum9mS/e/H34=;
-        b=In6Efq2RbfxHnF/MHdFcWVN6yrO4N3Cee0BWRcVxosKunH0hv3PAvDs2QM65kREgFH
-         d9KNsTXMhUEXDqJCIKVDaqTHRCsEUnWcT+qJ9ZMj39+WUi/oeDamzAGr/EHg6sLvodxg
-         IL1xZ7u5xUXa/Y28OvoKLZ418A2fA7IG1dNDF4RD8YQGAH+s2Ehnrc1lgqQ5z6asINUH
-         ZlKRIpNTCEVel7zK8ddo6QwSlpB147Sc5fGVmhwCKCzurBLukEtUiyrsZVOIZsMvwlGN
-         PHK+skevoIhzGjGf3HWrYO1Aek8vBYeJe3DByhN+KWOhGXz/KoEhPzIevjRvXkkC2GMd
-         Ljaw==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=CVfEDBcb6P1X9UPlG8iy7eKwin490vsgsKNHIJnNkzk=;
+        b=m5mKOPplUNdO+yrGpP+GLCFZ4eZY1ytfeCiJf1ndJz4xs0GgkSWxZuNOmK915BXp47
+         sI/xJZGA8pKZM09TWX1zIwCvfv8VvoPpRcZ6teBtrksuNwm0wAmrebQ2WZWrnWAILsxu
+         9+RDgDspLdm2q/vTs6bnIUTDal5qvCjfoDuZ5lTGkeA0vfVKN3P4LoAEmSKofPV/WGWP
+         USgnk8caV6F1BQ1sem+jMXjV4V7iXQqvI78TyE3H4mWIscj7AJ9kSKnZzY2hVi4FWX0p
+         PylgoAForxJgtMXJL1O4btEUuZCu0FJmQVivsI9Whb6qjJW51P7/1dcLnZWEwmdGncDu
+         wZFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references;
-        bh=NEoxghrRUhl5ceeHjhF2kNYMbCKr0vgXum9mS/e/H34=;
-        b=ik/Bim4suVA5hnBW8W8dW6H/uAwxnSCJHFy2JTDOXFd5sizIKwFfZjR+Tsuru1KtuY
-         2q8WBpGwxGJBiF/rFRujRiNUD3t9baO5dz/165QF+XeRDA5IMseR+2/BNpw66XX0Muy0
-         gl3gwdSsd2cUFScObNiUZJBQ0lO6G7XHUCjemeOsFsOeIJbuz9/5+gon/00+4s3fPmuy
-         ZRU2GZTVaiI8mmIJgLGbCDZzGkwqHHo9y6t+ulzg7SKpNkGAYtSMBPQFaaNmwxW+bn5B
-         fXMSV669FxVuH+OIFbw0AdAwXEKWoVQkgkmSZ4DHT9yTJnmnes89+ts++DWOSW6EkOUz
-         3m+A==
-X-Gm-Message-State: AOAM531CzFKj6pL9JmdgJ7am6YUOBjTYdLFn4yvXFB6NseMD+iL/fgnf
-        KkPuBVN0gyba6xLuzknxoas=
-X-Google-Smtp-Source: ABdhPJydw1D+WWgIU4/O5i1SIRQbQk5K5SCKueg5rQfMKoJW7gi6QO30Ux1t9XU17rDmJphExMkkmQ==
-X-Received: by 2002:a37:7902:: with SMTP id u2mr239777qkc.53.1592512600599;
-        Thu, 18 Jun 2020 13:36:40 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:25ba:8256:21eb:97ae])
-        by smtp.googlemail.com with ESMTPSA id n2sm4092745qtp.45.2020.06.18.13.36.39
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=CVfEDBcb6P1X9UPlG8iy7eKwin490vsgsKNHIJnNkzk=;
+        b=TWyRy172niqTrLfjaO6vnqC62LhNzY+MB0IWg5YF06BklFs9/iIz8KUDM/DpKadjVv
+         hB+4tBmovTPbFKqXcMKYAodS6i6oABB8/j9//AbOHHKGXm8TPJwzIvNOja+artjpw7wA
+         1qi7sxqfASDAO9Skr7QLXOU1HJdsojnZuZOmZfh6nh1kchwEBb116YFi2a4EqoA5cJ4P
+         W3eLkWGtzx2EXCCAjFeMvQ3p5OMOlKQMVhR09j24AnJyyUhkaUc+lCGwVgsfzxLvd7qL
+         mzp1uH99VVI/bPAR8SXN8d/XVCt9AMGMezY1HXttBgseMmQh0/hXsLxjePSMu+cXgDn1
+         iQfQ==
+X-Gm-Message-State: AOAM531RidXqBPe2zcnquCQymQpTmDRw95S8B5a/ZUtjgbk/u7BONCuP
+        SEItxAj9MpdPGhpZPuAVHyk=
+X-Google-Smtp-Source: ABdhPJyG+eHEb4WVHXY5HOBhhe2R4cY2/6gIo69dDbDHFg62DcMD/c1NyNzZW0yi3F41Ug7LQlgsCg==
+X-Received: by 2002:a02:3908:: with SMTP id l8mr408111jaa.121.1592512849282;
+        Thu, 18 Jun 2020 13:40:49 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id h13sm2047362ile.18.2020.06.18.13.40.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2020 13:36:39 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org (open list:TC subsystem),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] [net/sched]: Remove redundant condition in qdisc_graft
-Date:   Thu, 18 Jun 2020 16:36:31 -0400
-Message-Id: <20200618203632.15438-1-gaurav1086@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200618040056.30792-1-gaurav1086@gmail.com>
-References: <20200618040056.30792-1-gaurav1086@gmail.com>
+        Thu, 18 Jun 2020 13:40:48 -0700 (PDT)
+Date:   Thu, 18 Jun 2020 13:40:40 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Message-ID: <5eebd1486e46b_6d292ad5e7a285b817@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200616100512.2168860-3-jolsa@kernel.org>
+References: <20200616100512.2168860-1-jolsa@kernel.org>
+ <20200616100512.2168860-3-jolsa@kernel.org>
+Subject: RE: [PATCH 02/11] bpf: Compile btfid tool at kernel compilation start
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-parent cannot be NULL here since its in the else part
-of the if (parent == NULL) condition. Remove the extra
-check on parent pointer.
+Jiri Olsa wrote:
+> The btfid tool will be used during the vmlinux linking,
+> so it's necessary it's ready for it.
+> =
 
-Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
----
- net/sched/sch_api.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  Makefile           | 22 ++++++++++++++++++----
+>  tools/Makefile     |  3 +++
+>  tools/bpf/Makefile |  5 ++++-
+>  3 files changed, 25 insertions(+), 5 deletions(-)
 
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 9a3449b56bd6..11ebba60da3b 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1093,8 +1093,7 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
- 		int err;
- 
- 		/* Only support running class lockless if parent is lockless */
--		if (new && (new->flags & TCQ_F_NOLOCK) &&
--		    parent && !(parent->flags & TCQ_F_NOLOCK))
-+		if (new && (new->flags & TCQ_F_NOLOCK) && !(parent->flags & TCQ_F_NOLOCK))
- 			qdisc_clear_nolock(new);
- 
- 		if (!cops || !cops->graft)
--- 
-2.17.1
+This breaks the build for me. I fixed it with this but then I get warning=
+s,
 
+diff --git a/tools/bpf/btfid/btfid.c b/tools/bpf/btfid/btfid.c
+index 7cdf39bfb150..3697e8ae9efa 100644
+--- a/tools/bpf/btfid/btfid.c
++++ b/tools/bpf/btfid/btfid.c
+@@ -48,7 +48,7 @@
+ #include <errno.h>
+ #include <linux/rbtree.h>
+ #include <linux/zalloc.h>
+-#include <btf.h>
++#include <linux/btf.h>
+ #include <libbpf.h>
+ #include <parse-options.h>
+
+Here is the error. Is it something about my setup? bpftool/btf.c uses
+<btf.h>. Because this in top-level Makefile we probably don't want to
+push extra setup onto folks.
+
+In file included from btfid.c:51:
+/home/john/git/bpf-next/tools/lib/bpf/btf.h: In function =E2=80=98btf_is_=
+var=E2=80=99:
+/home/john/git/bpf-next/tools/lib/bpf/btf.h:254:24: error: =E2=80=98BTF_K=
+IND_VAR=E2=80=99 undeclared (first use in this function); did you mean =E2=
+=80=98BTF_KIND_PTR=E2=80=99?
+  return btf_kind(t) =3D=3D BTF_KIND_VAR;
+                        ^~~~~~~~~~~~
+                        BTF_KIND_PTR
+/home/john/git/bpf-next/tools/lib/bpf/btf.h:254:24: note: each undeclared=
+ identifier is reported only once for each function it appears in
+/home/john/git/bpf-next/tools/lib/bpf/btf.h: In function =E2=80=98btf_is_=
+datasec=E2=80=99:
+/home/john/git/bpf-next/tools/lib/bpf/btf.h:259:24: error: =E2=80=98BTF_K=
+IND_DATASEC=E2=80=99 undeclared (first use in this function); did you mea=
+n =E2=80=98BTF_KIND_PTR=E2=80=99?
+  return btf_kind(t) =3D=3D BTF_KIND_DATASEC;
+                        ^~~~~~~~~~~~~~~~
+                        BTF_KIND_PTR
+mv: cannot stat '/home/john/git/bpf-next/tools/bpf/btfid/.btfid.o.tmp': N=
+o such file or directory
+make[3]: *** [/home/john/git/bpf-next/tools/build/Makefile.build:97: /hom=
+e/john/git/bpf-next/tools/bpf/btfid/btfid.o] Error 1
+make[2]: *** [Makefile:59: /home/john/git/bpf-next/tools/bpf/btfid/btfid-=
+in.o] Error 2
+make[1]: *** [Makefile:71: bpf/btfid] Error 2
+make: *** [Makefile:1894: tools/bpf/btfid] Error 2=
