@@ -2,66 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55FD21FE094
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:50:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B70521FDF93
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:43:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731065AbgFRBs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:48:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45456 "EHLO vps0.lunn.ch"
+        id S1731176AbgFRBl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:41:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39334 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731984AbgFRB14 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:27:56 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jljLP-00131y-97; Thu, 18 Jun 2020 03:27:55 +0200
-Date:   Thu, 18 Jun 2020 03:27:55 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, DENG Qingfang <dqfext@gmail.com>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Subject: Re: [net-next PATCH 2/5 v2] net: dsa: rtl8366rb: Support the CPU DSA
- tag
-Message-ID: <20200618012755.GC249144@lunn.ch>
-References: <20200617083132.1847234-1-linus.walleij@linaro.org>
- <20200617083132.1847234-2-linus.walleij@linaro.org>
+        id S1730511AbgFRB3q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:29:46 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2057F22229;
+        Thu, 18 Jun 2020 01:29:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592443784;
+        bh=iZZmz+Ap5bLY4GuNSraezb984yLj0cyMICkNa8CYumg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JzV3bb5IYX/LOnp82PT6QdIRpR/fhQuCIxwMDBJdX+CKuQ8K3NkHl5nTrmul8KGwY
+         pnvkRF1KaZ5yDa+t0k7UboqSm/LvRfpBYd+6HfdjIpK8RXl+/xUtt+vcBgkNv9XIeP
+         Rq2R/9E72zMKpRZgdC2w+d3rV+peOEoscVY4AiE0=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Fedor Tokarev <ftokarev@gmail.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 66/80] net: sunrpc: Fix off-by-one issues in 'rpc_ntop6'
+Date:   Wed, 17 Jun 2020 21:28:05 -0400
+Message-Id: <20200618012819.609778-66-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200618012819.609778-1-sashal@kernel.org>
+References: <20200618012819.609778-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617083132.1847234-2-linus.walleij@linaro.org>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 10:31:29AM +0200, Linus Walleij wrote:
-> This activates the support to use the CPU tag to properly
-> direct ingress traffic to the right port.
-> 
-> Bit 15 in register RTL8368RB_CPU_CTRL_REG can be set to
-> 1 to disable the insertion of the CPU tag which is what
-> the code currently does. The bit 15 define calls this
-> setting RTL8368RB_CPU_INSTAG which is confusing since the
-> iverse meaning is implied: programmers may think that
+From: Fedor Tokarev <ftokarev@gmail.com>
 
-inverse
+[ Upstream commit 118917d696dc59fd3e1741012c2f9db2294bed6f ]
 
-> setting this bit to 1 will *enable* inserting the tag
-> rather than disablinbg it, so rename this setting in
+Fix off-by-one issues in 'rpc_ntop6':
+ - 'snprintf' returns the number of characters which would have been
+   written if enough space had been available, excluding the terminating
+   null byte. Thus, a return value of 'sizeof(scopebuf)' means that the
+   last character was dropped.
+ - 'strcat' adds a terminating null byte to the string, thus if len ==
+   buflen, the null byte is written past the end of the buffer.
 
-disabling
+Signed-off-by: Fedor Tokarev <ftokarev@gmail.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/sunrpc/addr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> bit 15 to RTL8368RB_CPU_NO_TAG which is more to the
-> point.
-> 
-> After this e.g. ping works out-of-the-box with the
-> RTL8366RB.
-> 
-> Cc: DENG Qingfang <dqfext@gmail.com>
-> Cc: Mauri Sandberg <sandberg@mailfence.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+diff --git a/net/sunrpc/addr.c b/net/sunrpc/addr.c
+index 2e0a6f92e563..8391c2785550 100644
+--- a/net/sunrpc/addr.c
++++ b/net/sunrpc/addr.c
+@@ -81,11 +81,11 @@ static size_t rpc_ntop6(const struct sockaddr *sap,
+ 
+ 	rc = snprintf(scopebuf, sizeof(scopebuf), "%c%u",
+ 			IPV6_SCOPE_DELIMITER, sin6->sin6_scope_id);
+-	if (unlikely((size_t)rc > sizeof(scopebuf)))
++	if (unlikely((size_t)rc >= sizeof(scopebuf)))
+ 		return 0;
+ 
+ 	len += rc;
+-	if (unlikely(len > buflen))
++	if (unlikely(len >= buflen))
+ 		return 0;
+ 
+ 	strcat(buf, scopebuf);
+-- 
+2.25.1
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
