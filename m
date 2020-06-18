@@ -2,132 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 975231FFDD6
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:17:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AB491FFDD9
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:17:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731911AbgFRWQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 18:16:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42634 "EHLO
+        id S1731899AbgFRWRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 18:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731898AbgFRWQu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:16:50 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D40C0613F0
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:16:48 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id b5so7546450iln.5
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:16:48 -0700 (PDT)
+        with ESMTP id S1731771AbgFRWRF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:17:05 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AB9C06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:17:05 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id i4so3391444pjd.0
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:17:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sargun.me; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=1SwhXxxcqMA/2xg9WoRLda6uaTbILklISXGnrNM7z5g=;
-        b=EV4OK8SyfSmB1iDadMyS6GSSAb/y8zP9pbU0Qq6cW8ldk3zk+IGjfY2mwBS7kzw4+U
-         MueNz1lmVzja+fcXE6FnhayjVrm0XuFnJWBq6+5FDBnmi1hHaih73zql3UKX/jPFPBij
-         cTvcS7wpwiveD7okKpYA13MpaMis17aHOXQ6U=
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7zVORohIVq8AyxCXbERjyhWI6QwOwI9f/EozLATge6M=;
+        b=duQkJlKRkLXmnAgnZc8GGFIlREHc3NZRPdAoDmYIWJrYMkxw3GAdvLsc8T4qokjHaZ
+         rQAPotNRkjKq+C/ObjIkzA1WX0RdpLhihPhVO7DOvwhE8h+UpmNyrzJr6juYk4+Lmy77
+         cNhIOrm0tljHBcEfcEFXyJvmrmdvm1u5BnyOMxgqtZYyxPUn5M1f2g8d4BmgNc+Kx/sH
+         KlRL8x2qgFqo3CvlK7bdhwxv77PqHrpAIx9MxqxDLyfyG/mH/KpL753Q6tCsxkTp4f5t
+         qWbjyDqS+euLscwc9yYCSk//nFNZ14JMskuRn75w+vZOV7klhyLuKPJP+OBe1RxmbiF8
+         E+5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1SwhXxxcqMA/2xg9WoRLda6uaTbILklISXGnrNM7z5g=;
-        b=NnepNpGeW0oVp3Eu6zwf7E7emrQeq+iCxDG0vllyojX4xkrlOWQflEQNLUJD4/u7Wq
-         2FIoVpMaJ1aY3diEmEwwHBHwcdyYCJL1mq20IP6JIjP/m8n919dfkfA9RNdhTe/aEfd1
-         JaJ5WYulvzAIDVqxuC5+yBHAUQdqbPbtvviCYfwf9p8JHFSGPXdIIZfmNsw/xsxPDgN5
-         GO0eVLbfciQjVQ/kwLUhL+LUuqTgJLZIlWKSGVIqIU1iVUTsvp6nvYZMsIVnaQ/tyKht
-         7KdmWxRXpCmHLy2VHXMjNNF5uBBFYdtmG+esMCZzAjFwiwlr1qCH5r4tEmZuCwAlpm0o
-         iATg==
-X-Gm-Message-State: AOAM533Ve52zZIY/RNkE7hwMzeBe957htfPhmK3ocwGMQxVzqwNtgS0y
-        bRnII/zKz9fruC27iwaNm2DS6w==
-X-Google-Smtp-Source: ABdhPJzNjXEHGSDFRIEtFgNEH0DkmyvOyUoU/9h2R+dUGaWvU4v5dYNDSJa/KV3ePKb8DIvlf17A1A==
-X-Received: by 2002:a92:d9c1:: with SMTP id n1mr673192ilq.148.1592518607785;
-        Thu, 18 Jun 2020 15:16:47 -0700 (PDT)
-Received: from ircssh-2.c.rugged-nimbus-611.internal (80.60.198.104.bc.googleusercontent.com. [104.198.60.80])
-        by smtp.gmail.com with ESMTPSA id j80sm2256501ili.65.2020.06.18.15.16.47
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 18 Jun 2020 15:16:47 -0700 (PDT)
-Date:   Thu, 18 Jun 2020 22:16:45 +0000
-From:   Sargun Dhillon <sargun@sargun.me>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Christian Brauner <christian@brauner.io>,
-        "David S. Miller" <davem@davemloft.net>,
-        Christoph Hellwig <hch@lst.de>,
-        Tycho Andersen <tycho@tycho.ws>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Matt Denton <mpdenton@google.com>,
-        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
-        Robert Sesek <rsesek@google.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
-        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 00/11] Add seccomp notifier ioctl that enables adding
- fds
-Message-ID: <20200618221644.GA31321@ircssh-2.c.rugged-nimbus-611.internal>
-References: <20200616032524.460144-1-keescook@chromium.org>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7zVORohIVq8AyxCXbERjyhWI6QwOwI9f/EozLATge6M=;
+        b=VqsNTDtPcGQz83tHXJ/U0iigZrYU73ISlctwgyD3OMeKOVkOx/ZKI9BqBC69TTpLjD
+         SZ0ydzwkl3C2EFDCqAbmw4BTUvouRpMniVinBFvdy7Y7gZfoqo+b2OTp/3xyqnhWhVZ1
+         GClppHUKQ++vuQdi5XbUvOU1fvuPDuc2pPcIO416AhGq1y3dH13l5LlZRqpG7BH5ECLg
+         VGd+AwMobxl7bkbAyPHKfZzXcXtG6gfmlSRSFKN7i3s39BXE9LfLM7CxY1bNs5EILq9p
+         unH8vP2ub98JH/v6SPPowPzIMR0aOhLMEToK2b0zxDa6HCE/DXuJOtVdt9Q2A3B0pfex
+         B4mw==
+X-Gm-Message-State: AOAM530+Wo1CwzxmKPURdTg9YdKRMZVy8C4+iB2CfnLZvBafYkSNeQDy
+        mZ4Y+ztDKf3ujx/4XfC3N4v3DA==
+X-Google-Smtp-Source: ABdhPJy6DaYueRUJeQDkBnKuS13KZ+1uArvn/Uqp5mgezscr3+srZIRrjkPfdeN8jLfIiy/d0ATEsg==
+X-Received: by 2002:a17:90b:4c0b:: with SMTP id na11mr485702pjb.176.1592518625423;
+        Thu, 18 Jun 2020 15:17:05 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id i20sm3920907pfd.81.2020.06.18.15.17.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jun 2020 15:17:05 -0700 (PDT)
+Date:   Thu, 18 Jun 2020 15:17:02 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Anton Danilov <littlesmilingcloud@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v2] tc: qdisc: filter qdisc's by parent/handle
+ specification
+Message-ID: <20200618151702.24c33261@hermes.lan>
+In-Reply-To: <20200616063902.15605-1-littlesmilingcloud@gmail.com>
+References: <20200616063902.15605-1-littlesmilingcloud@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200616032524.460144-1-keescook@chromium.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 08:25:13PM -0700, Kees Cook wrote:
-> Hello!
-> 
-> This is a bit of thread-merge between [1] and [2]. tl;dr: add a way for
-> a seccomp user_notif process manager to inject files into the managed
-> process in order to handle emulation of various fd-returning syscalls
-> across security boundaries. Containers folks and Chrome are in need
-> of the feature, and investigating this solution uncovered (and fixed)
-> implementation issues with existing file sending routines.
-> 
-> I intend to carry this in the seccomp tree, unless someone has objections.
-> :) Please review and test!
-> 
-> -Kees
-> 
-> [1] https://lore.kernel.org/lkml/20200603011044.7972-1-sargun@sargun.me/
-> [2] https://lore.kernel.org/lkml/20200610045214.1175600-1-keescook@chromium.org/
-> 
-> Kees Cook (9):
->   net/scm: Regularize compat handling of scm_detach_fds()
->   fs: Move __scm_install_fd() to __fd_install_received()
->   fs: Add fd_install_received() wrapper for __fd_install_received()
->   pidfd: Replace open-coded partial fd_install_received()
->   fs: Expand __fd_install_received() to accept fd
->   selftests/seccomp: Make kcmp() less required
->   selftests/seccomp: Rename user_trap_syscall() to user_notif_syscall()
->   seccomp: Switch addfd to Extensible Argument ioctl
->   seccomp: Fix ioctl number for SECCOMP_IOCTL_NOTIF_ID_VALID
-> 
-This looks much cleaner than the original patchset. Thanks.
+On Tue, 16 Jun 2020 09:39:02 +0300
+Anton Danilov <littlesmilingcloud@gmail.com> wrote:
 
-Reviewed-by: Sargun Dhillon <sargun@sargun.me>
+> +				fprintf(stderr,
+> +					"only one of parent/handle/root/ingress can be specified\n");
+> +				arg_error = true;
+> +				break;
 
-on the pidfd, change fs* changes.
+The concept is good, but it could be simplified.
 
-> Sargun Dhillon (2):
->   seccomp: Introduce addfd ioctl to seccomp user notifier
->   selftests/seccomp: Test SECCOMP_IOCTL_NOTIF_ADDFD
-> 
->  fs/file.c                                     |  65 ++++
->  include/linux/file.h                          |  16 +
->  include/uapi/linux/seccomp.h                  |  25 +-
->  kernel/pid.c                                  |  11 +-
->  kernel/seccomp.c                              | 181 ++++++++-
->  net/compat.c                                  |  55 ++-
->  net/core/scm.c                                |  50 +--
->  tools/testing/selftests/seccomp/seccomp_bpf.c | 350 +++++++++++++++---
->  8 files changed, 618 insertions(+), 135 deletions(-)
-> 
-> -- 
-> 2.25.1
-> 
+You are repeating same error message several places and it is not
+necessary to continue parsing after one bad argument.
+
+See what invarg() does.
+
