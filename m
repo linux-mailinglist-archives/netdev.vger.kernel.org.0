@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A3E91FE1B6
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:57:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64FD81FE164
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733273AbgFRB4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:56:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60566 "EHLO mail.kernel.org"
+        id S1731540AbgFRBZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:25:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33184 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731421AbgFRBZW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:25:22 -0400
+        id S1729472AbgFRBZ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:25:58 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 24D902088E;
-        Thu, 18 Jun 2020 01:25:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7A69B20897;
+        Thu, 18 Jun 2020 01:25:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443521;
-        bh=sZmVJGsjm8cOiF6qnbE+FPMSghI7+8vyht/2sURNHl8=;
+        s=default; t=1592443557;
+        bh=kdeBSY1UQnQcLc3FNUD5cVVOyGyzCfr9P780dxsXKuk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2o1iY9CQ7QDIbQyT/IfPLAWWH0drB/4xQN15Mdg9MW3tZgzhH47c/bu6hJD8ypOEH
-         Xjg4y0T2xa8Hh7DET2Qf/xEZdObJM4LPxQhSA349h6kNJT7knxqzWb3gG9aR3D3Cev
-         OLRS9Gti8hmpqA78zpbARbR/JuW/zMQrKF0Vmyvk=
+        b=PHFF1SfDSY1OlCZ0ZjgLf69QQcnPzZdHNGAeJvGwsYKwXU8YhLIMl3r7ZmmOCVfPj
+         1W55eOSz8ZSAlnNQQyQbjlk+9TZoyqNmtjvIqisEyezjQsdymZUwekPRKJHm10iiLj
+         2vZJCIkY8Z3eOQRGWsyIV5V5Xxo13y7Em5ok0JfI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Benc <jbenc@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 144/172] geneve: change from tx_error to tx_dropped on missing metadata
-Date:   Wed, 17 Jun 2020 21:21:50 -0400
-Message-Id: <20200618012218.607130-144-sashal@kernel.org>
+Cc:     YiFei Zhu <zhuyifei1999@gmail.com>,
+        YiFei Zhu <zhuyifei@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 171/172] net/filter: Permit reading NET in load_bytes_relative when MAC not set
+Date:   Wed, 17 Jun 2020 21:22:17 -0400
+Message-Id: <20200618012218.607130-171-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200618012218.607130-1-sashal@kernel.org>
 References: <20200618012218.607130-1-sashal@kernel.org>
@@ -43,62 +46,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Benc <jbenc@redhat.com>
+From: YiFei Zhu <zhuyifei1999@gmail.com>
 
-[ Upstream commit 9d149045b3c0e44c049cdbce8a64e19415290017 ]
+[ Upstream commit 0f5d82f187e1beda3fe7295dfc500af266a5bd80 ]
 
-If the geneve interface is in collect_md (external) mode, it can't send any
-packets submitted directly to its net interface, as such packets won't have
-metadata attached. This is expected.
+Added a check in the switch case on start_header that checks for
+the existence of the header, and in the case that MAC is not set
+and the caller requests for MAC, -EFAULT. If the caller requests
+for NET then MAC's existence is completely ignored.
 
-However, the kernel itself sends some packets to the interface, most
-notably, IPv6 DAD, IPv6 multicast listener reports, etc. This is not wrong,
-as tunnel metadata can be specified in routing table (although technically,
-that has never worked for IPv6, but hopefully will be fixed eventually) and
-then the interface must correctly participate in IPv6 housekeeping.
+There is no function to check NET header's existence and as far
+as cgroup_skb/egress is concerned it should always be set.
 
-The problem is that any such attempt increases the tx_error counter. Just
-bringing up a geneve interface with IPv6 enabled is enough to see a number
-of tx_errors. That causes confusion among users, prompting them to find
-a network error where there is none.
+Removed for ptr >= the start of header, considering offset is
+bounded unsigned and should always be true. len <= end - mac is
+redundant to ptr + len <= end.
 
-Change the counter used to tx_dropped. That better conveys the meaning
-(there's nothing wrong going on, just some packets are getting dropped) and
-hopefully will make admins panic less.
-
-Signed-off-by: Jiri Benc <jbenc@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 3eee1f75f2b9 ("bpf: fix bpf_skb_load_bytes_relative pkt length check")
+Signed-off-by: YiFei Zhu <zhuyifei@google.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
+Link: https://lore.kernel.org/bpf/76bb820ddb6a95f59a772ecbd8c8a336f646b362.1591812755.git.zhuyifei@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/geneve.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/core/filter.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 36444de701cd..817c290b78cd 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -911,9 +911,10 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
- 	if (geneve->collect_md) {
- 		info = skb_tunnel_info(skb);
- 		if (unlikely(!info || !(info->mode & IP_TUNNEL_INFO_TX))) {
--			err = -EINVAL;
- 			netdev_dbg(dev, "no tunnel metadata\n");
--			goto tx_error;
-+			dev_kfree_skb(skb);
-+			dev->stats.tx_dropped++;
-+			return NETDEV_TX_OK;
- 		}
- 	} else {
- 		info = &geneve->info;
-@@ -930,7 +931,7 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 40b3af05c883..b5521b60a2d4 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -1730,25 +1730,27 @@ BPF_CALL_5(bpf_skb_load_bytes_relative, const struct sk_buff *, skb,
+ 	   u32, offset, void *, to, u32, len, u32, start_header)
+ {
+ 	u8 *end = skb_tail_pointer(skb);
+-	u8 *net = skb_network_header(skb);
+-	u8 *mac = skb_mac_header(skb);
+-	u8 *ptr;
++	u8 *start, *ptr;
  
- 	if (likely(!err))
- 		return NETDEV_TX_OK;
--tx_error:
+-	if (unlikely(offset > 0xffff || len > (end - mac)))
++	if (unlikely(offset > 0xffff))
+ 		goto err_clear;
+ 
+ 	switch (start_header) {
+ 	case BPF_HDR_START_MAC:
+-		ptr = mac + offset;
++		if (unlikely(!skb_mac_header_was_set(skb)))
++			goto err_clear;
++		start = skb_mac_header(skb);
+ 		break;
+ 	case BPF_HDR_START_NET:
+-		ptr = net + offset;
++		start = skb_network_header(skb);
+ 		break;
+ 	default:
+ 		goto err_clear;
+ 	}
+ 
+-	if (likely(ptr >= mac && ptr + len <= end)) {
++	ptr = start + offset;
 +
- 	dev_kfree_skb(skb);
- 
- 	if (err == -ELOOP)
++	if (likely(ptr + len <= end)) {
+ 		memcpy(to, ptr, len);
+ 		return 0;
+ 	}
 -- 
 2.25.1
 
