@@ -2,42 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78F7C1FDC0A
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:16:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D92F41FDC43
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:18:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729580AbgFRBQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:16:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46972 "EHLO mail.kernel.org"
+        id S1729211AbgFRBSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:18:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728536AbgFRBQU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:16:20 -0400
+        id S1727098AbgFRBSK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:18:10 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B61B221D79;
-        Thu, 18 Jun 2020 01:16:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6119821D7E;
+        Thu, 18 Jun 2020 01:18:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592442980;
-        bh=RNPq6SF4ZWwRpZosC3065GmzXtKZyf+9MuZsESPrs74=;
+        s=default; t=1592443090;
+        bh=2qodh3uYCK+UWwNLdpcdGPCezWMVsZdyfkfnb++3Vr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BwvtPiCqJGuWzQ8ASi0VS4gbnyLklRgGx71JGVSWxNqGzGCBBL1JfP8rbs5M36LIr
-         cDp3+uE9Eid+xEhSJ4MC5ZaAsFIXSEReuF9weNDPjfZemNWJxTHxJ2E6Y1jJEvK7Jh
-         zHA6H/f3CpGtSUhoi8lm0Xwx/Kjc7LpCLUu+GzII=
+        b=rkAgnsYv0HB2NgMG1TiZYCvO06Vvdo3vIyrK61uZrDt6cuvCt84PCDtuYwZbKEaQU
+         dYehMWaquGKo1oXmTdkLY7wzfU9QEZoqWp0DmQx651ZX+14KenKfFRJmf+AW7cLADD
+         cjK/X4v6mWlo7v9dV38xpPuzBH4kayX5dYEyM69s=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Li RongQing <lirongqing@baidu.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 382/388] xdp: Fix xsk_generic_xmit errno
-Date:   Wed, 17 Jun 2020 21:07:59 -0400
-Message-Id: <20200618010805.600873-382-sashal@kernel.org>
+Cc:     Wang Hai <wanghai38@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 071/266] yam: fix possible memory leak in yam_init_driver
+Date:   Wed, 17 Jun 2020 21:13:16 -0400
+Message-Id: <20200618011631.604574-71-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
-References: <20200618010805.600873-1-sashal@kernel.org>
+In-Reply-To: <20200618011631.604574-1-sashal@kernel.org>
+References: <20200618011631.604574-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,40 +44,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Li RongQing <lirongqing@baidu.com>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit aa2cad0600ed2ca6a0ab39948d4db1666b6c962b ]
+[ Upstream commit 98749b7188affbf2900c2aab704a8853901d1139 ]
 
-Propagate sock_alloc_send_skb error code, not set it to
-EAGAIN unconditionally, when fail to allocate skb, which
-might cause that user space unnecessary loops.
+If register_netdev(dev) fails, free_netdev(dev) needs
+to be called, otherwise a memory leak will occur.
 
-Fixes: 35fcde7f8deb ("xsk: support for Tx")
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Björn Töpel <bjorn.topel@intel.com>
-Link: https://lore.kernel.org/bpf/1591852266-24017-1-git-send-email-lirongqing@baidu.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xdp/xsk.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/hamradio/yam.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index c350108aa38d..a4676107fad0 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -397,10 +397,8 @@ static int xsk_generic_xmit(struct sock *sk)
- 
- 		len = desc.len;
- 		skb = sock_alloc_send_skb(sk, len, 1, &err);
--		if (unlikely(!skb)) {
--			err = -EAGAIN;
-+		if (unlikely(!skb))
- 			goto out;
--		}
- 
- 		skb_put(skb, len);
- 		addr = desc.addr;
+diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
+index 71cdef9fb56b..5ab53e9942f3 100644
+--- a/drivers/net/hamradio/yam.c
++++ b/drivers/net/hamradio/yam.c
+@@ -1133,6 +1133,7 @@ static int __init yam_init_driver(void)
+ 		err = register_netdev(dev);
+ 		if (err) {
+ 			printk(KERN_WARNING "yam: cannot register net device %s\n", dev->name);
++			free_netdev(dev);
+ 			goto error;
+ 		}
+ 		yam_devs[i] = dev;
 -- 
 2.25.1
 
