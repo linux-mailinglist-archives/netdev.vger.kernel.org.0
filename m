@@ -2,86 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D99341FFB8F
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 21:10:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA6881FFBAE
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 21:19:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729460AbgFRTKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 15:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42150 "EHLO
+        id S1728386AbgFRTT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 15:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728027AbgFRTKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 15:10:24 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302EBC06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 12:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=QAZjagk/SI5MRG+A4XKOS/lZv5Y5TdDLvSEabVStRKc=; b=G7/4Qs93/ATO7lDa/aW+zJ3EV
-        CQAFnyXVApkuCiC2f8uds+srU3xEQBApl3Ii7naHPiYujAV+NDU3jke0zH8sfVI8qdq8pBFZ/Bml5
-        qSOML7y/g7nLZVOydcKQxAW1qNjBXgBEslJ/lEOE+BRt0DqCtLhy2AmpTKG3RMO19nWzggHOPEwMQ
-        48jsh6mGS5jag4gH/7avDiVxO4z0ysvbT5U181elYI0h6B1Vj02nMYQzttS3UC4cmyeL5LtYG6EVL
-        v8jfo8wWrGRWR7P0iCXb9Mh1efHsRtWdXg2XF3HyRM7J4SJxcJnW++ybDaMZIpM5QR8c/IBcwA0Fn
-        3CihhEhXA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58802)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jlzvW-0005XS-M3; Thu, 18 Jun 2020 20:10:18 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jlzvV-0004x3-Qk; Thu, 18 Jun 2020 20:10:17 +0100
-Date:   Thu, 18 Jun 2020 20:10:17 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Helmut Grohne <helmut.grohne@intenta.de>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net: macb: reject unsupported rgmii delays
-Message-ID: <20200618191017.GI1551@shell.armlinux.org.uk>
-References: <20200617105518.GO1551@shell.armlinux.org.uk>
- <20200617112153.GB28783@laureti-dev>
- <20200617114025.GQ1551@shell.armlinux.org.uk>
- <20200617115201.GA30172@laureti-dev>
- <20200617120809.GS1551@shell.armlinux.org.uk>
- <20200618081433.GA22636@laureti-dev>
- <20200618084554.GY1551@shell.armlinux.org.uk>
- <91866c2b-77ea-c175-d672-a9ca937835bd@gmail.com>
- <20200618184908.GH1551@shell.armlinux.org.uk>
- <3eb49188-fb74-99fe-a9d9-7e295d2eaa8b@gmail.com>
+        with ESMTP id S1726940AbgFRTT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 15:19:27 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD307C06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 12:19:25 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id i4so5360863iov.11
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 12:19:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1RoYwxOw8RI3OWUFlccnZ59wPh7dWuoC1CUmrqD5Htw=;
+        b=q8uh1UJ83BxLKuKJgE8VoEEgPxhJ8sLhigamAQMtliNhBipxAVMkpqW8KrOag/e/kv
+         MoF/7IsIoPs+AVIP7jTuFRHktUwVtzJFh/5UUw+fcuncCD2TFVINsc3nGjTUnNyTPoHC
+         cEl40LIQ1r0myftPWg5m+uA4a/OtFyINc5JbvC2DoiMcja6Snmch79lVPXotZ396RZqA
+         39jDwcGTg2TgXGxhW5E/G+5LZ9dSICoaJyVW75w7mV4nEVFG4APn9hD1Oi67jbPBhNTE
+         pMx607rLOhpIadem1XiNynx4qCBOBUeRHLmg3YAslwvVuxr5f56PPNWaTNAD5UEF7oiX
+         32fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1RoYwxOw8RI3OWUFlccnZ59wPh7dWuoC1CUmrqD5Htw=;
+        b=aa8CvPNsdZ2ExI7ceMgO9QZcpX+0WAvDDfkuXJBb65/LGfBVnH6saj6nyDmLT6gUM3
+         a3nM8BPLP0KjK+PF6u+aVLZOJWEojA/IVe9icTh4E7ccpajuKxAtJjagO56TuSubeye4
+         TQbLmH1EixVrbRsGf2jW5XG/VHzLNS1l05ylmLl1dEhSSAZV43GYqoeKhGLHI+rHc5cA
+         6ow0UTm3g32E7tWLeyzS1c2CBkQs3TXkoFTA+PChidyylCBwHgBBvVorK3RzhbShDAJt
+         y0RH5Ey61z4pR7zp7syF391BjGZYd9GnUEGtL5SlZYwfaLlL2yDLSWFwDHfXWJcBWqSv
+         +qAA==
+X-Gm-Message-State: AOAM532AJwuZ/fummOnyFbQP3O4uz3EUDOuN364T/Yzu6MoHC6r3dkLY
+        ychEGb6JkudsC0D4QgLa2wfr8Tu9mB7PxeIWuhg=
+X-Google-Smtp-Source: ABdhPJy+7FF0IbbSZFSQUrDwVzeeMbM/gmePn3j6IT/CTF2mY19fLEGwNrLVTVG2C5ZKux0SsjxI3UqoQDHL8GGipj4=
+X-Received: by 2002:a02:1a08:: with SMTP id 8mr124236jai.124.1592507964928;
+ Thu, 18 Jun 2020 12:19:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3eb49188-fb74-99fe-a9d9-7e295d2eaa8b@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200616180352.18602-1-xiyou.wangcong@gmail.com> <141629e1-55b5-34b1-b2ab-bab6b68f0671@huawei.com>
+In-Reply-To: <141629e1-55b5-34b1-b2ab-bab6b68f0671@huawei.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 18 Jun 2020 12:19:13 -0700
+Message-ID: <CAM_iQpUFFHPnMxS2sAHZqMUs80tTn0+C_jCcne4Ddx2b9omCxg@mail.gmail.com>
+Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
+To:     Zefan Li <lizefan@huawei.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Cameron Berkenpas <cam@neo-zeon.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
+        =?UTF-8?Q?Dani=C3=ABl_Sonck?= <dsonck92@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Tejun Heo <tj@kernel.org>, Roman Gushchin <guro@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 12:02:13PM -0700, Florian Fainelli wrote:
-> It should not, but that means that when you describe the fixed-link, the
-> 'phy-mode' within the local fixed-link node is meant to describe how the
-> other side is configured not how you are configured. For some reason I
-> did not consider that to be intuitive when I sent out my response, but I
-> suppose spelling it out would greatly help.
+On Wed, Jun 17, 2020 at 6:44 PM Zefan Li <lizefan@huawei.com> wrote:
+>
+> Cc: Roman Gushchin <guro@fb.com>
+>
+> Thanks for fixing this.
+>
+> On 2020/6/17 2:03, Cong Wang wrote:
+> > When we clone a socket in sk_clone_lock(), its sk_cgrp_data is
+> > copied, so the cgroup refcnt must be taken too. And, unlike the
+> > sk_alloc() path, sock_update_netprioidx() is not called here.
+> > Therefore, it is safe and necessary to grab the cgroup refcnt
+> > even when cgroup_sk_alloc is disabled.
+> >
+> > sk_clone_lock() is in BH context anyway, the in_interrupt()
+> > would terminate this function if called there. And for sk_alloc()
+> > skcd->val is always zero. So it's safe to factor out the code
+> > to make it more readable.
+> >
+> > Fixes: 090e28b229af92dc5b ("netprio_cgroup: Fix unlimited memory leak of v2 cgroups")
+>
+> but I don't think the bug was introduced by this commit, because there
+> are already calls to cgroup_sk_alloc_disable() in write_priomap() and
+> write_classid(), which can be triggered by writing to ifpriomap or
+> classid in cgroupfs. This commit just made it much easier to happen
+> with systemd invovled.
+>
+> I think it's 4bfc0bb2c60e2f4c ("bpf: decouple the lifetime of cgroup_bpf from cgroup itself"),
+> which added cgroup_bpf_get() in cgroup_sk_alloc().
 
-Right, so in the MAC-to-MAC setup that is being discussed in this
-thread, the _local_ side MAC where phy-mode is specified should not
-care which of the RGMII modes is specified, because the delays are
-a function of "the other side" of the link.
+Good point.
 
-So, the proposal that macb should limit itself to only accepting
-"rgmii" in it's _local_ phy-mode property because the _local_ MAC
-does not support delays is wrong.
+I take a deeper look, it looks like commit d979a39d7242e06
+is the one to blame, because it is the first commit that began to
+hold cgroup refcnt in cgroup_sk_alloc().
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+The commit you mentioned above merely adds a refcnt for
+cgroup bpf on to of cgroup refcnt.
+
+Thanks.
