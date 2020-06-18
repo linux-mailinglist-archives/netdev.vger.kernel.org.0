@@ -2,157 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3BC81FFC5E
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 22:13:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FA4F1FFC71
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 22:25:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731102AbgFRUNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 16:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731048AbgFRUNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 16:13:08 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2166C0613EE
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 13:13:06 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id n9so2929450plk.1
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 13:13:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TXh+yh53BzWcVX/QSWd/KMGYLJEd9W2Aq0rZcysTQP4=;
-        b=FsxI+GezYcq5Or+8LsyorXmnP7DpX4UiDy+yK2n1mRa4jblk1OUuhBfwLlpOjHyQqp
-         C6V9+4Qv73F1H1QEepi3l+DsjRE/Yl2ZyJ+uOnEqfoaKaafcdPEUmhUCBv5W6FnPX6Jc
-         GM0vUU2Qj7gRcd5fGdIsu83QlptQgL4TRyn7A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TXh+yh53BzWcVX/QSWd/KMGYLJEd9W2Aq0rZcysTQP4=;
-        b=In0Qq1SdiZU9y/u/e21f4V10wo/pJ9a5gNvXNc2AsWx2HZCNZXome0vos6UILY1FqA
-         URYjBBTGBnRBLjcpdo9iJzJ8b/rwPM8r9Ae/6EGXLku8KPjbUz1BRrOOJETL4PGB8K3q
-         8ClN3za7yGo+Q3M2FZgmEaeec/zDaDVcbVS9fERuWVT8c6jMfa5ai1d2z2AbHPW+pPdq
-         AVx8fHngDZhVf6dKmE1AM3GYPdPSt9djCvenOxUmmcsR77yWdTZ+2iCHjfwcAU8Sfnj4
-         2vimKHK5PtVnn9eob6NcAt+e7ImYf9MjxX5sK9tgRDSoSlWvqFpZGDTKWACyJBFGHN49
-         M5NQ==
-X-Gm-Message-State: AOAM533GP4DcGSJz97qd8jS5fGRZirn9BGLnjiSwC3778ayt52EVHQXb
-        XU4hv88l7T8+6sBSjHp0OBSCgg==
-X-Google-Smtp-Source: ABdhPJz0/H6VhaSxaYiFoMobAEqIMKy6r+p/NJ3edVxjTSX7edMf4m0+dOSHEEOoExU9RsAPGvhS7A==
-X-Received: by 2002:a17:90a:f508:: with SMTP id cs8mr71173pjb.16.1592511185631;
-        Thu, 18 Jun 2020 13:13:05 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id y136sm3759429pfg.55.2020.06.18.13.13.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2020 13:13:04 -0700 (PDT)
-Date:   Thu, 18 Jun 2020 13:13:03 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Sargun Dhillon <sargun@sargun.me>
-Cc:     linux-kernel@vger.kernel.org,
-        Christian Brauner <christian@brauner.io>,
-        Tycho Andersen <tycho@tycho.ws>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Matt Denton <mpdenton@google.com>,
-        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
-        Robert Sesek <rsesek@google.com>,
-        Giuseppe Scrivano <gscrivan@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
-        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 3/7] fs: Add fd_install_received() wrapper for
- __fd_install_received()
-Message-ID: <202006181305.01F1B08@keescook>
-References: <20200617220327.3731559-1-keescook@chromium.org>
- <20200617220327.3731559-4-keescook@chromium.org>
- <20200618054918.GB18669@ircssh-2.c.rugged-nimbus-611.internal>
+        id S1728851AbgFRUZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 16:25:28 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38992 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726964AbgFRUZ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 16:25:28 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 4A2CBACCE;
+        Thu, 18 Jun 2020 20:25:26 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 39F5260389; Thu, 18 Jun 2020 22:25:26 +0200 (CEST)
+Date:   Thu, 18 Jun 2020 22:25:26 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org,
+        kernel-team@fb.com, axboe@kernel.dk,
+        Govindarajulu Varadarajan <gvaradar@cisco.com>
+Subject: Re: [RFC PATCH 06/21] mlx5: add header_split flag
+Message-ID: <20200618202526.zcbuzzxtln2ljawn@lion.mk-sys.cz>
+References: <20200618160941.879717-1-jonathan.lemon@gmail.com>
+ <20200618160941.879717-7-jonathan.lemon@gmail.com>
+ <4b0e0916-2910-373c-82cf-d912a82502a4@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200618054918.GB18669@ircssh-2.c.rugged-nimbus-611.internal>
+In-Reply-To: <4b0e0916-2910-373c-82cf-d912a82502a4@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 05:49:19AM +0000, Sargun Dhillon wrote:
-> On Wed, Jun 17, 2020 at 03:03:23PM -0700, Kees Cook wrote:
-> > [...]
-> >  static inline int fd_install_received_user(struct file *file, int __user *ufd,
-> >  					   unsigned int o_flags)
-> >  {
-> > +	if (ufd == NULL)
-> > +		return -EFAULT;
-> Isn't this *technically* a behvaiour change? Nonetheless, I think this is a much better
-> approach than forcing everyone to do null checking, and avoids at least one error case
-> where the kernel installs FDs for SCM_RIGHTS, and they're not actualy usable.
+On Thu, Jun 18, 2020 at 11:12:57AM -0700, Eric Dumazet wrote:
+> On 6/18/20 9:09 AM, Jonathan Lemon wrote:
+> > Adds a "rx_hd_split" private flag parameter to ethtool.
+> > 
+> > This enables header splitting, and sets up the fragment mappings.
+> > The feature is currently only enabled for netgpu channels.
+> 
+> We are using a similar idea (pseudo header split) to implement 4096+(headers) MTU at Google,
+> to enable TCP RX zerocopy on x86.
+> 
+> Patch for mlx4 has not been sent upstream yet.
+> 
+> For mlx4, we are using a single buffer of 128*(number_of_slots_per_RX_RING),
+> and 86 bytes for the first frag, so that the payload exactly fits a 4096 bytes page.
+> 
+> (In our case, most of our data TCP packets only have 12 bytes of TCP options)
+> 
+> I suggest that instead of a flag, you use a tunable, that can be set by ethtool,
+> so that the exact number of bytes can be tuned, instead of hard coded in the driver.
 
-So, the only behavior change I see is that the order of sanity checks is
-changed.
+I fully agree that such generic parameter would be a better solution
+than a private flag. But I have my doubts about adding more tunables.
+The point is that the concept of tunables looks like a workaround for
+the lack of extensibility of the ioctl interface where the space for
+adding new parameters to existing subcommands was limited (or none).
 
-The loop in scm_detach_fds() is:
+With netlink, adding new parameters is much easier and as only three
+tunables were added in 6 years (or four with your proposal), we don't
+have to worry about having too many different attributes (current code
+isn't even designed to scale well to many tunables).
 
+This new header split parameter could IMHO be naturally put together
+with rx-copybreak and tx-copybreak and possibly any future parameters
+to control how packet contents is passed between NIC/driver and
+networking stack.
 
-        for (i = 0; i < fdmax; i++) {
-                err = __scm_install_fd(scm->fp->fp[i], cmsg_data + i, o_flags);
-                if (err < 0)
-                        break;
-        }
+> (Patch for the counter part of [1] was resent 10 days ago on netdev@ by Govindarajulu Varadarajan)
+> (Not sure if this has been merged yet)
 
-Before, __scm_install_fd() does:
+Not yet, I want to take another look in the rest of this week.
 
-        error = security_file_receive(file);
-        if (error)
-                return error;
+Michal
 
-        new_fd = get_unused_fd_flags(o_flags);
-        if (new_fd < 0)
-                return new_fd;
-
-        error = put_user(new_fd, ufd);
-        if (error) {
-                put_unused_fd(new_fd);
-                return error;
-        }
-	...
-
-After, fd_install_received_user() and __fd_install_received() does:
-
-        if (ufd == NULL)
-                return -EFAULT;
-	...
-        error = security_file_receive(file);
-        if (error)
-                return error;
-	...
-                new_fd = get_unused_fd_flags(o_flags);
-                if (new_fd < 0)
-                        return new_fd;
-	...
-                error = put_user(new_fd, ufd);
-                if (error) {
-                        put_unused_fd(new_fd);
-                        return error;
-                }
-
-i.e. if a caller attempts a receive that is rejected by LSM *and*
-includes a NULL userpointer destination, they will get an EFAULT now
-instead of an EPERM.
-
-I struggle to imagine a situation where this could possible matter
-(both fail, neither installs files). It is only the error code that
-is different. I am comfortable making this change and seeing if anyone
-screams. If they do, I can restore the v4 "ufd_required" way of doing it.
-
-> Reviewed-by: Sargun Dhillon <sargun@sargun.me>
-
-Thanks!
-
--- 
-Kees Cook
+> [1]
+> 
+> commit f0db9b073415848709dd59a6394969882f517da9
+> Author: Govindarajulu Varadarajan <_govind@gmx.com>
+> Date:   Wed Sep 3 03:17:20 2014 +0530
+> 
+>     ethtool: Add generic options for tunables
+>     
+>     This patch adds new ethtool cmd, ETHTOOL_GTUNABLE & ETHTOOL_STUNABLE for getting
+>     tunable values from driver.
+>     
+>     Add get_tunable and set_tunable to ethtool_ops. Driver implements these
+>     functions for getting/setting tunable value.
+>     
+>     Signed-off-by: Govindarajulu Varadarajan <_govind@gmx.com>
+>     Signed-off-by: David S. Miller <davem@davemloft.net>
