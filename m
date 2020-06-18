@@ -2,114 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09AEB1FF137
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 14:06:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75CCD1FF142
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 14:09:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729340AbgFRMG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 08:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728048AbgFRMGY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 08:06:24 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1187AC0613EE
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 05:06:23 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id 64so2680077pfv.11
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 05:06:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=KnZMcd7hAByohLFNqoZ+jn6S/xUHmJ274kiUVqsCRiY=;
-        b=i3r8xzakfwZ3uk+CMdQ56vr7b6YalR5xVqKnNsXOUACwqn6g/kFD9NV2DtKAsfwJaV
-         dTBC6UOcltvDhwyOleA9nXDGIpHOG2RlCrdWU15Ljr1IGgxp9QnrdR1DY0w5foaTbGfH
-         2quSvqHaIzhOkFQBInGA1Qq04L+fJpUrRRnKhuk34E2+hhPa3RFn1/kFZfxUTtvqUWOq
-         YSZIcjsh2KErBcDAtrH01Ak3g7V8H3xn3tabJBhESZWrFZJFu1qqF5y7Ar4pHQL8gTJ8
-         roE5u9XlqcQxRP2KBd75xfWgYdqYVZdKr+71OZxiKcjPxRF1BcFDndGlXizFJEmaxt1n
-         UW4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KnZMcd7hAByohLFNqoZ+jn6S/xUHmJ274kiUVqsCRiY=;
-        b=PvsVPpb7u+TvPpzp8A/DAuL7YFJiOjl8YD5Mg+7yqRx59b/3DUpCfRd02hjkpd2zSM
-         dHZpmNMfQtGBYUHjk6bsh7Ev2Wn2fTuRPL9acyF2cPSy/QL0/ZVfvH2/rastPW2y13Dz
-         hqcYiqKzrRQQJXVM/w0j5g53EpUtR7BWznX2t7/zRM0K5CN/bsfMKlbx3XRaq/oqfPPA
-         ivE3E6Rfw6xHN7IQ+UvM5XA6PMbqHu/pOhrfevrrYIl7SmkQl73me5UlRflZP3OhkIpH
-         OVEEAXjHuTmJXVesl5Ch6roVFOWK9RAxIVCsJHhEzIfZhDkKISuZZn0F7jrZYARK6Hya
-         w58g==
-X-Gm-Message-State: AOAM532zoXZElrg/TKeTp1RJoMlLMZTE7oVC2lvrk9jI6DzugdbHlHKZ
-        LTqfjdnstfwvQIBW52f1Rx5c
-X-Google-Smtp-Source: ABdhPJy6Et0T3fLfK70E25pbBoRMbq0GcwLBqfDU7X9MU0HLviPALhHwAj1hlrzRqKkBMR3NCwhJ4A==
-X-Received: by 2002:a63:1007:: with SMTP id f7mr3016539pgl.147.1592481983117;
-        Thu, 18 Jun 2020 05:06:23 -0700 (PDT)
-Received: from mani ([103.59.133.81])
-        by smtp.gmail.com with ESMTPSA id i22sm2780776pfo.92.2020.06.18.05.06.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 18 Jun 2020 05:06:22 -0700 (PDT)
-Date:   Thu, 18 Jun 2020 17:36:15 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     wg@grandegger.com, kernel@martin.sperl.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/6] Add Microchip MCP25XXFD CAN driver
-Message-ID: <20200618120615.GA3949@mani>
-References: <20200610074442.10808-1-manivannan.sadhasivam@linaro.org>
- <fbbca009-3c53-6aa9-94ed-7e9e337c31a4@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fbbca009-3c53-6aa9-94ed-7e9e337c31a4@pengutronix.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1728085AbgFRMJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 08:09:10 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:48784 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725944AbgFRMJH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 08:09:07 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 64EAE200D44;
+        Thu, 18 Jun 2020 14:09:05 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 54F87200D3F;
+        Thu, 18 Jun 2020 14:09:05 +0200 (CEST)
+Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id E15CB2048B;
+        Thu, 18 Jun 2020 14:09:04 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, michael@walle.cc, andrew@lunn.ch,
+        linux@armlinux.org.uk, f.fainelli@gmail.com,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next 0/5] net: phy: add Lynx PCS MDIO module
+Date:   Thu, 18 Jun 2020 15:08:32 +0300
+Message-Id: <20200618120837.27089-1-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Add support for the Lynx PCS as a separate module in drivers/net/phy/.
+The advantage of this structure is that multiple ethernet or switch
+drivers used on NXP hardware (ENETC, Felix DSA switch etc) can share the
+same implementation of PCS configuration and runtime management.
 
-On 0611, Marc Kleine-Budde wrote:
-> On 6/10/20 9:44 AM, Manivannan Sadhasivam wrote:
-> > Hello,
-> > 
-> > This series adds CAN network driver support for Microchip MCP25XXFD CAN
-> > Controller with MCP2517FD as the target controller version. This series is
-> > mostly inspired (or taken) from the previous iterations posted by Martin Sperl.
-> > I've trimmed down the parts which are not necessary for the initial version
-> > to ease review. Still the series is relatively huge but I hope to get some
-> > reviews (post -rcX ofc!).
-> > 
-> > Link to the origial series posted by Martin:
-> > https://www.spinics.net/lists/devicetree/msg284462.html
-> > 
-> > I've not changed the functionality much but done some considerable amount of
-> > cleanups and also preserved the authorship of Martin for all the patches he has
-> > posted earlier. This series has been tested on 96Boards RB3 platform by myself
-> > and Martin has tested the previous version on Rpi3 with external MCP2517FD
-> > controller.
-> 
-> I initially started looking at Martin's driver and it was not using several
-> modern CAN driver infrastructures. I then posted some cleanup patches but Martin
-> was not working on the driver any more. Then I decided to rewrite the driver,
-> that is the one I'm hoping to mainline soon.
-> 
-> Can you give it a try?
-> 
-> https://github.com/marckleinebudde/linux/commits/v5.6-rpi/mcp25xxfd-20200607-41
-> 
+The PCS is represented as a mdio_device and the callbacks exported are
+highly tied with PHYLINK and can't be used without it.
 
-Tested this version on my board with MCP2518FD and it works fine. I'm okay with
-moving forward with your version and would like to contribute. Please let me
-know how we can move forward.
+The first 3 patches add some missing pieces in PHYLINK and the locked
+mdiobus write accessor. Next, the Lynx PCS MDIO module is added as a
+standalone module. The majority of the code is extracted from the Felix
+DSA driver. The last patch makes the necessary changes in the Felix
+driver in order to use the new common PCS implementation.
 
-Thanks,
-Mani
+At the moment, USXGMII (only with in-band AN and speeds up to 2500),
+SGMII, QSGMII and 2500Base-X (only w/o in-band AN) are supported by the
+Lynx PCS MDIO module since these were also supported by Felix and no
+funtional change is intended at this time.
 
-> Marc
-> 
-> -- 
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+Ioana Ciornei (4):
+  net: phylink: consider QSGMII interface mode in
+    phylink_mii_c22_pcs_get_state
+  net: mdiobus: add clause 45 mdiobus write accessor
+  net: phy: add Lynx PCS MDIO module
+  net: dsa: felix: use the Lynx PCS helpers
+
+Russell King (1):
+  net: phylink: add interface to configure clause 22 PCS PHY
+
+ MAINTAINERS                            |   7 +
+ drivers/net/dsa/ocelot/Kconfig         |   1 +
+ drivers/net/dsa/ocelot/felix.c         |   5 +
+ drivers/net/dsa/ocelot/felix.h         |   7 +-
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 385 +++----------------------
+ drivers/net/phy/Kconfig                |   6 +
+ drivers/net/phy/Makefile               |   1 +
+ drivers/net/phy/mdio-lynx-pcs.c        | 358 +++++++++++++++++++++++
+ drivers/net/phy/phylink.c              |  38 +++
+ include/linux/fsl/enetc_mdio.h         |  21 --
+ include/linux/mdio-lynx-pcs.h          |  43 +++
+ include/linux/mdio.h                   |   6 +
+ include/linux/phylink.h                |   3 +
+ 13 files changed, 514 insertions(+), 367 deletions(-)
+ create mode 100644 drivers/net/phy/mdio-lynx-pcs.c
+ create mode 100644 include/linux/mdio-lynx-pcs.h
+
+-- 
+2.25.1
+
