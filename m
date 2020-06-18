@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1511FE35B
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:08:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB55A1FE342
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:07:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732259AbgFRCIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 22:08:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54804 "EHLO mail.kernel.org"
+        id S1730678AbgFRBWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:22:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55022 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730633AbgFRBWC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:22:02 -0400
+        id S1730659AbgFRBWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:22:09 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6616920B1F;
-        Thu, 18 Jun 2020 01:22:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D45C920CC7;
+        Thu, 18 Jun 2020 01:22:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443322;
-        bh=OC9h1BBLtnbRbYuhuP/ImaI0glFnt5/0DlTZ4avqXGM=;
+        s=default; t=1592443328;
+        bh=peDTYNHEUfnCxbVfnWAt6h2520DHO5lsM1u8rApleLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ySdtmu9xljEVE/9YnUBTxC2JTplt3yFzxXjDGVpwf3YACdwNv51jzDOWSXhfnRFlH
-         YjwzpaFdD8Snrm52YL0u+pW1LKlufaggvaCHigaHEH+YNPzLkNhVbSSp5AE03MYO+a
-         CK4qZ+We4tx4iIRPPSzDqjKYQWJtZ3g8HrEKVU8c=
+        b=0thg7zgOyui1J80AsUEj5ocV8iU5Fu10sa1i2RevOY27/8mQZzgX0Tu1fVptKUWvv
+         TQojQJaW/ywL4j+L1z5et9yrZ51PwtCsEq+tkyAYRaPSCIbzCQmyO6HxhG2Z6J6MMf
+         5xt88RaS+1YOGWqepUSScvZt7SGiXRwNejEEcbKM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
+Cc:     YiFei Zhu <zhuyifei1999@gmail.com>,
+        YiFei Zhu <zhuyifei@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stanislav Fomichev <sdf@google.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 256/266] tracing/probe: Fix bpf_task_fd_query() for kprobes and uprobes
-Date:   Wed, 17 Jun 2020 21:16:21 -0400
-Message-Id: <20200618011631.604574-256-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 261/266] net/filter: Permit reading NET in load_bytes_relative when MAC not set
+Date:   Wed, 17 Jun 2020 21:16:26 -0400
+Message-Id: <20200618011631.604574-261-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200618011631.604574-1-sashal@kernel.org>
 References: <20200618011631.604574-1-sashal@kernel.org>
@@ -46,55 +46,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+From: YiFei Zhu <zhuyifei1999@gmail.com>
 
-[ Upstream commit 22d5bd6867364b41576a712755271a7d6161abd6 ]
+[ Upstream commit 0f5d82f187e1beda3fe7295dfc500af266a5bd80 ]
 
-Commit 60d53e2c3b75 ("tracing/probe: Split trace_event related data from
-trace_probe") removed the trace_[ku]probe structure from the
-trace_event_call->data pointer. As bpf_get_[ku]probe_info() were
-forgotten in that change, fix them now. These functions are currently
-only used by the bpf_task_fd_query() syscall handler to collect
-information about a perf event.
+Added a check in the switch case on start_header that checks for
+the existence of the header, and in the case that MAC is not set
+and the caller requests for MAC, -EFAULT. If the caller requests
+for NET then MAC's existence is completely ignored.
 
-Fixes: 60d53e2c3b75 ("tracing/probe: Split trace_event related data from trace_probe")
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Link: https://lore.kernel.org/bpf/20200608124531.819838-1-jean-philippe@linaro.org
+There is no function to check NET header's existence and as far
+as cgroup_skb/egress is concerned it should always be set.
+
+Removed for ptr >= the start of header, considering offset is
+bounded unsigned and should always be true. len <= end - mac is
+redundant to ptr + len <= end.
+
+Fixes: 3eee1f75f2b9 ("bpf: fix bpf_skb_load_bytes_relative pkt length check")
+Signed-off-by: YiFei Zhu <zhuyifei@google.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
+Link: https://lore.kernel.org/bpf/76bb820ddb6a95f59a772ecbd8c8a336f646b362.1591812755.git.zhuyifei@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_kprobe.c | 2 +-
- kernel/trace/trace_uprobe.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/core/filter.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-index fba4b48451f6..26de9c654956 100644
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -1464,7 +1464,7 @@ int bpf_get_kprobe_info(const struct perf_event *event, u32 *fd_type,
- 	if (perf_type_tracepoint)
- 		tk = find_trace_kprobe(pevent, group);
- 	else
--		tk = event->tp_event->data;
-+		tk = trace_kprobe_primary_from_call(event->tp_event);
- 	if (!tk)
- 		return -EINVAL;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index f1f2304822e3..a0a492f7cf9c 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -1766,25 +1766,27 @@ BPF_CALL_5(bpf_skb_load_bytes_relative, const struct sk_buff *, skb,
+ 	   u32, offset, void *, to, u32, len, u32, start_header)
+ {
+ 	u8 *end = skb_tail_pointer(skb);
+-	u8 *net = skb_network_header(skb);
+-	u8 *mac = skb_mac_header(skb);
+-	u8 *ptr;
++	u8 *start, *ptr;
  
-diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
-index 2619bc5ed520..5294843de6ef 100644
---- a/kernel/trace/trace_uprobe.c
-+++ b/kernel/trace/trace_uprobe.c
-@@ -1405,7 +1405,7 @@ int bpf_get_uprobe_info(const struct perf_event *event, u32 *fd_type,
- 	if (perf_type_tracepoint)
- 		tu = find_probe_event(pevent, group);
- 	else
--		tu = event->tp_event->data;
-+		tu = trace_uprobe_primary_from_call(event->tp_event);
- 	if (!tu)
- 		return -EINVAL;
+-	if (unlikely(offset > 0xffff || len > (end - mac)))
++	if (unlikely(offset > 0xffff))
+ 		goto err_clear;
  
+ 	switch (start_header) {
+ 	case BPF_HDR_START_MAC:
+-		ptr = mac + offset;
++		if (unlikely(!skb_mac_header_was_set(skb)))
++			goto err_clear;
++		start = skb_mac_header(skb);
+ 		break;
+ 	case BPF_HDR_START_NET:
+-		ptr = net + offset;
++		start = skb_network_header(skb);
+ 		break;
+ 	default:
+ 		goto err_clear;
+ 	}
+ 
+-	if (likely(ptr >= mac && ptr + len <= end)) {
++	ptr = start + offset;
++
++	if (likely(ptr + len <= end)) {
+ 		memcpy(to, ptr, len);
+ 		return 0;
+ 	}
 -- 
 2.25.1
 
