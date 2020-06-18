@@ -2,585 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B18311FFD7D
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:42:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F7B41FFD8E
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:49:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728699AbgFRVmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 17:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37294 "EHLO
+        id S1731443AbgFRVtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 17:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728124AbgFRVmH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:42:07 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDBBC06174E;
-        Thu, 18 Jun 2020 14:42:07 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id dp10so3501796qvb.10;
-        Thu, 18 Jun 2020 14:42:06 -0700 (PDT)
+        with ESMTP id S1727109AbgFRVtA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:49:00 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE447C06174E;
+        Thu, 18 Jun 2020 14:48:59 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id x18so9121405lji.1;
+        Thu, 18 Jun 2020 14:48:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5AhSu/72d27Xtj7h/2kc01MozlAw9U98OJ3kJB1W/y8=;
-        b=b94GQFZ1Xj5vD/CvRsYptVuKKMEBfU3ORA6HqZB7H1okWG634jzKdNxnqgHpAhH+NY
-         64LrSCsVCbkoB/qg7o64WT63irs16pAS6gAIDyU2HqK0MMZYfir5ckTCWdqN22hSotrj
-         LRDZCbecqApX61i9VqJz4XtqGGy4xXPaNvBP7RVCv/tw4Yqy5XIizzvHYxAz5mcXwWGh
-         o/coGK1IjUW1ktR6pipB5rRJH76Pf2l+6lZyZEBLbsXBWk3vKNe9Jyo10LF1cgdrc/3K
-         fOac+zAil1oGa+lzkXY+/e+7F5+3eRLc9iPfo+se2onOncfG5JjsO4OdHnMzi42unEaf
-         8Idg==
+        bh=Q3SW089VJRQgJW9cl/e2kwpOjXCjLnxzYVYyNM7K6i8=;
+        b=n2qOA+/MUC8heWEYdwM9XoyNyQNGs7lYb5wS/S/AI2Lx3K/J6QaeQ0lGlPtr7jx2q4
+         u0M3xJxNsgK/k4GMAaDak5Zifay8CxEY/KtSucgOqetKCzoqDsqIzug0xMiSuXUuqr6P
+         g2O9SHbgC9a8DocgLHSe6ZiihxQ++2p0hc1smtchmtS0CswwXpjxm2iZ4+Ol5uvDZdY4
+         jgt6Ttt2cZE97tusxQr+l107GMKYtWA+GqrmBYf2DROfpnYbp6sTQ87mEd0mE7oJ8JU3
+         TKTapccQc4s42u5ArBhNTSDM6jEqobZ2+cGh2V9r7XV2/dCTs7osz/eGVzTy+miMOWMb
+         JpAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5AhSu/72d27Xtj7h/2kc01MozlAw9U98OJ3kJB1W/y8=;
-        b=IeuwWDnk96medaMbSpT9DGwYA3LN1GUmM6vrz5xfvKZkafxKA0whDDzVZDR7KKf0rs
-         N5HpOK9l7Ts62686qZA7qKjKJWK61Ql7JklzSsk4RTuETVDlgsZcpXBh7xUBb42y7oIW
-         eoFa80BNkQ7Uqx1g2kgF0cawbY+gxoPrMv1rsyWfWrR84wZSmhBI4/xU6xXiD67/U6tp
-         JoGtVnagzM/AffjTvfy1YPJ2P3B8mVOkcnf9rCqTXb0NnbX3iS93BfTvuvHn7ImelC6H
-         5KzxARJkbultAPG2pY8bg9v4/FnftcsxK89soMuJTPlladc1VEWS4fFOY7fzMZNS/Yjy
-         YErw==
-X-Gm-Message-State: AOAM533chzxrqSpBzlLz3/xUhiQsqCjd+94zTIP7VVyNoVSGgBSX8DuG
-        OWsBF1BmwMPKZFA/72bFTMDOONnHqODaLjSLF2g=
-X-Google-Smtp-Source: ABdhPJxVWxQcS0jNJznW1iNsBU7n7/tF+9LzMIeSZt5zvmluMTDMJYNXsFpHmoPYsxGblz4Tv9m6p9jSakFseZKB7NE=
-X-Received: by 2002:a0c:9ae2:: with SMTP id k34mr5601952qvf.247.1592516525699;
- Thu, 18 Jun 2020 14:42:05 -0700 (PDT)
+        bh=Q3SW089VJRQgJW9cl/e2kwpOjXCjLnxzYVYyNM7K6i8=;
+        b=gbntNg9qe9WFGm2MzJCWMpAqC6c92nnoqfBnDe8XyL9oOSM2WqsYc0bi0ASx4Z26iY
+         rcDoyKjJWtoLxlZP/qA0WRkpkMtjyCP5k1uOfmmd8t7CFUpTfaMcmDq+x5YfmQLHuau2
+         qaNyj716BWeM92otxtwizk51zuqtNh7J6dc3EP4FWDJ+Pd0JHmFleRnoI7niOQ0BlCQx
+         m0a1ZUfH03U531B/q3uED4SRqtO1J7ZsyWuIY8kYEP/kA+DJ2DqTQE7gCH6rJnjmI4Dj
+         OMR40zJ08nWVFlLSXWLP3nE6WBWxk2O449jgZTVo3Fwy5vb0eOOB8S7gp3VGwNKY8q8w
+         t94g==
+X-Gm-Message-State: AOAM533piTA2fR0TaYsRdKZSjDqTBm4jeUU7ADdqXnX9bb/1E2nP6/1M
+        UHGINBRY/nSmI9jSEDbXmqUKLsDWktf0WBBveCc=
+X-Google-Smtp-Source: ABdhPJwDLhJjOmZvAlLjeFBaZznMgbfHXpEz0LjAkaV22GeUBWzaN1Up0oSQbnBc45YrHKuwwtXoiCYed/DjndgEg60=
+X-Received: by 2002:a05:651c:1193:: with SMTP id w19mr214793ljo.121.1592516938204;
+ Thu, 18 Jun 2020 14:48:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200617202112.2438062-1-andriin@fb.com> <5eeb0e5dcb010_8712abba49be5bc91@john-XPS-13-9370.notmuch>
- <CAEf4BzZi5pMTC9Fq53Mi_mXUm-EQZDyqS_pxEYuGoc0J1ETGUA@mail.gmail.com> <5eebb95299a20_6d292ad5e7a285b835@john-XPS-13-9370.notmuch>
-In-Reply-To: <5eebb95299a20_6d292ad5e7a285b835@john-XPS-13-9370.notmuch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 18 Jun 2020 14:41:54 -0700
-Message-ID: <CAEf4BzZmWO=hO0kmtwkACEfHZm+H7+FZ+5moaLie2=13U3xU=g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf: switch most helper return values from
- 32-bit int to 64-bit long
+References: <20200617174226.2301909-1-kafai@fb.com> <5eeaf50fec904_38b82b28075185c44c@john-XPS-13-9370.notmuch>
+In-Reply-To: <5eeaf50fec904_38b82b28075185c44c@john-XPS-13-9370.notmuch>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 18 Jun 2020 14:48:46 -0700
+Message-ID: <CAADnVQK1zH4sByPUN-+58P4n3XUzdKZJVunu7t5u+07T61gv=Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: sk_storage: Prefer to get a free cache_idx
 To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
+Cc:     Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+        Kernel Team <kernel-team@fb.com>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 11:58 AM John Fastabend
+On Wed, Jun 17, 2020 at 10:01 PM John Fastabend
 <john.fastabend@gmail.com> wrote:
 >
-> Andrii Nakryiko wrote:
-> > On Wed, Jun 17, 2020 at 11:49 PM John Fastabend
-> > <john.fastabend@gmail.com> wrote:
-> > >
-> > > Andrii Nakryiko wrote:
-> > > > Switch most of BPF helper definitions from returning int to long. These
-> > > > definitions are coming from comments in BPF UAPI header and are used to
-> > > > generate bpf_helper_defs.h (under libbpf) to be later included and used from
-> > > > BPF programs.
-> > > >
-> > > > In actual in-kernel implementation, all the helpers are defined as returning
-> > > > u64, but due to some historical reasons, most of them are actually defined as
-> > > > returning int in UAPI (usually, to return 0 on success, and negative value on
-> > > > error).
-> > >
-> > > Could we change the helpers side to return correct types now? Meaning if the
-> > > UAPI claims its an int lets actually return the int.
+> Martin KaFai Lau wrote:
+> > The cache_idx is currently picked by RR.  There is chance that
+> > the same cache_idx will be picked by multiple sk_storage_maps while
+> > other cache_idx is still unused.  e.g. It could happen when the
+> > sk_storage_map is recreated during the restart of the user
+> > space process.
 > >
-> > I'm not sure how exactly you see this being done. BPF ABI dictates
-> > that the helper's result is passed in a full 64-bit r0 register. Are
-> > you suggesting that in addition to RET_ANYTHING we should add
-> > RET_ANYTHING32 and teach verifier that higher 32 bits of r0 are
-> > guaranteed to be zero? And then make helpers actually return 32-bit
-> > values without up-casting them to u64?
+> > This patch tracks the usage count for each cache_idx.  There is
+> > 16 of them now (defined in BPF_SK_STORAGE_CACHE_SIZE).
+> > It will try to pick the free cache_idx.  If none was found,
+> > it would pick one with the minimal usage count.
+> >
+> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > ---
+> >  net/core/bpf_sk_storage.c | 41 +++++++++++++++++++++++++++++++++++----
+> >  1 file changed, 37 insertions(+), 4 deletions(-)
+> >
 >
-> Yes this is what I was thinking, having a RET_ANYTHING32 but I would
-> assume the upper 32-bits could be anything not zeroed. For +alu32
-> and programmer using correct types I would expect clang to generate
-> good code here and mostly not need to zero upper bits.
->
-> I think this discussion can be independent of your changes though and
-> its not at the top of my todo list so probably wont get to investigating
-> more for awhile.
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
 
-I'm confused. If the verifier doesn't make any assumptions about upper
-32-bits for RET_ANYTHING32, how is it different from RET_ANYTHING and
-today's logic? What you described is exactly what is happening when
-bpf_helpers_def.h has BPF helpers defined as returning int.
-
->
-> >
-> > >
-> > > >
-> > > > This actually causes Clang to quite often generate sub-optimal code, because
-> > > > compiler believes that return value is 32-bit, and in a lot of cases has to be
-> > > > up-converted (usually with a pair of 32-bit bit shifts) to 64-bit values,
-> > > > before they can be used further in BPF code.
-> > > >
-> > > > Besides just "polluting" the code, these 32-bit shifts quite often cause
-> > > > problems for cases in which return value matters. This is especially the case
-> > > > for the family of bpf_probe_read_str() functions. There are few other similar
-> > > > helpers (e.g., bpf_read_branch_records()), in which return value is used by
-> > > > BPF program logic to record variable-length data and process it. For such
-> > > > cases, BPF program logic carefully manages offsets within some array or map to
-> > > > read variable-length data. For such uses, it's crucial for BPF verifier to
-> > > > track possible range of register values to prove that all the accesses happen
-> > > > within given memory bounds. Those extraneous zero-extending bit shifts,
-> > > > inserted by Clang (and quite often interleaved with other code, which makes
-> > > > the issues even more challenging and sometimes requires employing extra
-> > > > per-variable compiler barriers), throws off verifier logic and makes it mark
-> > > > registers as having unknown variable offset. We'll study this pattern a bit
-> > > > later below.
-> > >
-> > > With latest verifier zext with alu32 support should be implemented as a
-> > > MOV insn.
-> >
-> > Code generation is independent of verifier version or am I not getting
-> > what you are saying? Also all this code was compiled with up-to-date
-> > Clang.
->
-> Agh sorry I read the example too fast and too late. The above is a typo
-> what I meant is "With the latest _clang_ zext with alu32 support...". But,
-> I also read your code example wrong and the left/right shift pattern here,
->
-> > > >   19:   w1 = w0                              19:   r1 = 0 ll
-> > > >   20:   r1 <<= 32
-> > > >   21:   r1 s>>= 32
->
-> above is a _signed_ zext to deal with the types. OK thanks for bearing with me
-> on this one. Some more thoughts below.
-
-No worries, just trying to ensure we are on the same page in discussion :)
-
->
-> >
-> > >
-> > > >
-> > > > Another common pattern is to check return of BPF helper for non-zero state to
-> > > > detect error conditions and attempt alternative actions in such case. Even in
-> > > > this simple and straightforward case, this 32-bit vs BPF's native 64-bit mode
-> > > > quite often leads to sub-optimal and unnecessary extra code. We'll look at
-> > > > this pattern as well.
-> > > >
-> > > > Clang's BPF target supports two modes of code generation: ALU32, in which it
-> > > > is capable of using lower 32-bit parts of registers, and no-ALU32, in which
-> > > > only full 64-bit registers are being used. ALU32 mode somewhat mitigates the
-> > > > above described problems, but not in all cases.
-> > >
-> > > A bit curious, do you see users running with no-ALU32 support? I have enabled
-> > > it by default now. It seems to generate better code and with latest 32-bit
-> > > bounds tracking I haven't hit any issues with verifier.
-> >
-> > Yes, all Facebook apps are built with no-ALU32. And those apps have to
-> > run on quite old kernels as well, so relying on latest bug fixes in
-> > kernel is not an option right now.
->
-> OK got it.
->
-> >
-> > >
-> > > >
-> > > > This patch switches all the cases in which BPF helpers return 0 or negative
-> > > > error from returning int to returning long. It is shown below that such change
-> > > > in definition leads to equivalent or better code. No-ALU32 mode benefits more,
-> > > > but ALU32 mode doesn't degrade or still gets improved code generation.
-> > > >
-> > > > Another class of cases switched from int to long are bpf_probe_read_str()-like
-> > > > helpers, which encode successful case as non-negative values, while still
-> > > > returning negative value for errors.
-> > > >
-> > > > In all of such cases, correctness is preserved due to two's complement
-> > > > encoding of negative values and the fact that all helpers return values with
-> > > > 32-bit absolute value. Two's complement ensures that for negative values
-> > > > higher 32 bits are all ones and when truncated, leave valid negative 32-bit
-> > > > value with the same value. Non-negative values have upper 32 bits set to zero
-> > > > and similarly preserve value when high 32 bits are truncated. This means that
-> > > > just casting to int/u32 is correct and efficient (and in ALU32 mode doesn't
-> > > > require any extra shifts).
-> > > >
-> > > > To minimize the chances of regressions, two code patterns were investigated,
-> > > > as mentioned above. For both patterns, BPF assembly was analyzed in
-> > > > ALU32/NO-ALU32 compiler modes, both with current 32-bit int return type and
-> > > > new 64-bit long return type.
-> > > >
-> > > > Case 1. Variable-length data reading and concatenation. This is quite
-> > > > ubiquitous pattern in tracing/monitoring applications, reading data like
-> > > > process's environment variables, file path, etc. In such case, many pieces of
-> > > > string-like variable-length data are read into a single big buffer, and at the
-> > > > end of the process, only a part of array containing actual data is sent to
-> > > > user-space for further processing. This case is tested in test_varlen.c
-> > > > selftest (in the next patch). Code flow is roughly as follows:
-> > > >
-> > > >   void *payload = &sample->payload;
-> > > >   u64 len;
-> > > >
-> > > >   len = bpf_probe_read_kernel_str(payload, MAX_SZ1, &source_data1);
-> > > >   if (len <= MAX_SZ1) {
-> > > >       payload += len;
-> > > >       sample->len1 = len;
-> > > >   }
-> > > >   len = bpf_probe_read_kernel_str(payload, MAX_SZ2, &source_data2);
-> > > >   if (len <= MAX_SZ2) {
-> > > >       payload += len;
-> > > >       sample->len2 = len;
-> > > >   }
-> > > >   /* and so on */
-> > > >   sample->total_len = payload - &sample->payload;
-> > > >   /* send over, e.g., perf buffer */
-> > > >
-> > > > There could be two variations with slightly different code generated: when len
-> > > > is 64-bit integer and when it is 32-bit integer. Both variations were analysed.
-> > > > BPF assembly instructions between two successive invocations of
-> > > > bpf_probe_read_kernel_str() were used to check code regressions. Results are
-> > > > below, followed by short analysis. Left side is using helpers with int return
-> > > > type, the right one is after the switch to long.
-> > > >
-> > > > ALU32 + INT                                ALU32 + LONG
-> > > > ===========                                ============
-> > > >
-> > > > 64-BIT (13 insns):                         64-BIT (10 insns):
-> > > > ------------------------------------       ------------------------------------
-> > > >   17:   call 115                             17:   call 115
-> > > >   18:   if w0 > 256 goto +9 <LBB0_4>         18:   if r0 > 256 goto +6 <LBB0_4>
-> > > >   19:   w1 = w0                              19:   r1 = 0 ll
-> > > >   20:   r1 <<= 32                            21:   *(u64 *)(r1 + 0) = r0
-> > > >   21:   r1 s>>= 32                           22:   r6 = 0 ll
-> > >
-> > > What version of clang is this? That is probably a zext in llvm-ir that in
-> > > latest should be sufficient with the 'w1=w0'. I'm guessing (hoping?) you
-> > > might not have latest?
-> >
-> > Just double-checked, very latest Clang, built today. Still generates
-> > the same code.
-> >
-> > But I think this makes sense, because r1 is u64, and it gets assigned
-> > from int, so int first has to be converted to s64, then casted to u64.
-> > So sign extension is necessary. I've confirmed with this simple
-> > program:
-> >
-> > $ cat bla.c
-> > #include <stdio.h>
-> >
-> > int main() {
-> >         int a = -1;
-> >         unsigned long b = a;
-> >         printf("%lx\n", b);
-> >         return 0;
-> > }
-> > $ clang bla.c -o test && ./test
-> > ffffffffffffffff
-> >
-> > ^^^^^^^^--- not zeroes
-> >
-> > So I don't think it's a bug or inefficiency, C language requires that.
->
-> Agreed. Sorry for the confusion on my side. Poked at this a bit more this
-> morning trying to see why I don't hit the same pattern when we have many
-> cases very similar to above.
->
-> In your C code you never check for negative return codes? Oops, this
-> means you can walk backwards off the front of payload? This is probably
-> not valid either from program logic side and/or verifier will probably
-> yell. Commented where I think you want a <0 check here,
-
-You are missing that I'm using unsigned u64. So (s64)-1 ==
-(u64)0xFFFFFFFFFFFFFFFF. So negative errors are effectively turned
-into too large length and I filter them out with the same (len >
-MAX_SZ) check. This allows to do just one comparison instead of two,
-and also helps avoid some Clang optimizations that Yonghong is trying
-to undo right now (if (a > X && a < Y) turned into if (x < Y - X),
-with assembly that verifier can't verify). So no bug there, very
-deliberate choice of types.
-
->
->  void *payload = &sample->payload;
->  u64 len; // but how do you get a len < 0 check now with u64 type?
->
->  len = bpf_probe_read_kernel_str(payload, MAX_SZ1, &source_data1);
->  // should insert a negative case check here
->  // if (len < 0) goto abort;
->  if (len <= MAX_SZ1) {
->         payload += len;
->         sample->len1 = len;
->  }
->  // without the <0 case you may have walked backwards in payload?
->  len = bpf_probe_read_kernel_str(payload, MAX_SZ2, &source_data2);
->
-> So in all of my C code I have something like this,
->
->  int myfunc(void *a, void *b, void *c) {
->         void *payload = a;
->         int len;
->
->         len = probe_read_str(payload, 1000, b);
->         if (len < 0) return len;
->         if (len <= 1000) { // yeah we have room
->                 ayload += len;
->         }
->         len = probe_read_str(payload, 1000, c);
->         [...]
->  }
->
-> And then when I look at generated code I get this,
->
-> ; int myfunc(void *a, void *b, void *c) {
->        4:       call 45
-> ;       if (len < 0) return len;
->        5:       if w0 s< 0 goto +9 <LBB0_4>
-> ;       if (len <= 1000) {
->        6:       w2 = w0
->        7:       r1 = r7
->        8:       r1 += r2
->        9:       if w0 s< 1001 goto +1 <LBB0_3>
->       10:       r1 = r7
->
-> 0000000000000058 <LBB0_3>:
-> ;       len = probe_read_str(payload, 1000, b);
->       11:       w2 = 1000
->       12:       r3 = r6
->       13:       call 45
->
->
-> Here the <0 check means we can skip the sext and do a
-> simple zext which is just a w2=w0 by bpf zero extension
-> rules.
-
-See above. In practice (it might be no-ALU32-only thing, don't know),
-doing two ifs is both less efficient and quite often leads to
-unverifiable code. Users have to do hacks to complicate control flow
-enough to prevent Clang from doing Hi/Lo combining. I learned a new
-inlined assembly trick recently to prevent this, but either way it's
-unpleasant and unnecessary.
-
->
-> >
-> > >
-> > > >   22:   r2 = 0 ll                            24:   r6 += r0
-> > > >   24:   *(u64 *)(r2 + 0) = r1              00000000000000c8 <LBB0_4>:
-> > > >   25:   r6 = 0 ll                            25:   r1 = r6
-> > > >   27:   r6 += r1                             26:   w2 = 256
-> > > > 00000000000000e0 <LBB0_4>:                   27:   r3 = 0 ll
-> > > >   28:   r1 = r6                              29:   call 115
-> > > >   29:   w2 = 256
-> > > >   30:   r3 = 0 ll
-> > > >   32:   call 115
-> > > >
-> > > > 32-BIT (11 insns):                         32-BIT (12 insns):
-> > > > ------------------------------------       ------------------------------------
-> > > >   17:   call 115                             17:   call 115
-> > > >   18:   if w0 > 256 goto +7 <LBB1_4>         18:   if w0 > 256 goto +8 <LBB1_4>
-> > > >   19:   r1 = 0 ll                            19:   r1 = 0 ll
-> > > >   21:   *(u32 *)(r1 + 0) = r0                21:   *(u32 *)(r1 + 0) = r0
-> > > >   22:   w1 = w0                              22:   r0 <<= 32
-> > > >   23:   r6 = 0 ll                            23:   r0 >>= 32
-> > > >   25:   r6 += r1                             24:   r6 = 0 ll
-> > > > 00000000000000d0 <LBB1_4>:                   26:   r6 += r0
-> > > >   26:   r1 = r6                            00000000000000d8 <LBB1_4>:
-> > > >   27:   w2 = 256                             27:   r1 = r6
-> > > >   28:   r3 = 0 ll                            28:   w2 = 256
-> > > >   30:   call 115                             29:   r3 = 0 ll
-> > > >                                              31:   call 115
-> > > >
-> > > > In ALU32 mode, the variant using 64-bit length variable clearly wins and
-> > > > avoids unnecessary zero-extension bit shifts. In practice, this is even more
-> > > > important and good, because BPF code won't need to do extra checks to "prove"
-> > > > that payload/len are within good bounds.
-> > >
-> > > I bet with latest clang the shifts are removed. But if not we probably
-> > > should fix clang regardless of if helpers return longs or ints.
-> >
-> > are we still talking about bit shifts for INT HELPER + U64 len case?
-> > Or now about bit shifts in LONG HELPER + U32 len case?
->
-> Forget I was confused. I put the <0 checks in there mentally and it messed up
-> how I read your code.
->
-> >
-> > >
-> > > >
-> > > > 32-bit len is one instruction longer. Clang decided to do 64-to-32 casting
-> > > > with two bit shifts, instead of equivalent `w1 = w0` assignment. The former
-> > > > uses extra register. The latter might potentially lose some range information,
-> > > > but not for 32-bit value. So in this case, verifier infers that r0 is [0, 256]
-> > > > after check at 18:, and shifting 32 bits left/right keeps that range intact.
-> > > > We should probably look into Clang's logic and see why it chooses bitshifts
-> > > > over sub-register assignments for this.
-> > > >
-> > > > NO-ALU32 + INT                             NO-ALU32 + LONG
-> > > > ==============                             ===============
-> > > >
-> > > > 64-BIT (14 insns):                         64-BIT (10 insns):
-> > > > ------------------------------------       ------------------------------------
-> > > >   17:   call 115                             17:   call 115
-> > > >   18:   r0 <<= 32                            18:   if r0 > 256 goto +6 <LBB0_4>
-> > > >   19:   r1 = r0                              19:   r1 = 0 ll
-> > > >   20:   r1 >>= 32                            21:   *(u64 *)(r1 + 0) = r0
-> > > >   21:   if r1 > 256 goto +7 <LBB0_4>         22:   r6 = 0 ll
-> > > >   22:   r0 s>>= 32                           24:   r6 += r0
-> > > >   23:   r1 = 0 ll                          00000000000000c8 <LBB0_4>:
-> > > >   25:   *(u64 *)(r1 + 0) = r0                25:   r1 = r6
-> > > >   26:   r6 = 0 ll                            26:   r2 = 256
-> > > >   28:   r6 += r0                             27:   r3 = 0 ll
-> > > > 00000000000000e8 <LBB0_4>:                   29:   call 115
-> > > >   29:   r1 = r6
-> > > >   30:   r2 = 256
-> > > >   31:   r3 = 0 ll
-> > > >   33:   call 115
-> > > >
-> > > > 32-BIT (13 insns):                         32-BIT (13 insns):
-> > > > ------------------------------------       ------------------------------------
-> > > >   17:   call 115                             17:   call 115
-> > > >   18:   r1 = r0                              18:   r1 = r0
-> > > >   19:   r1 <<= 32                            19:   r1 <<= 32
-> > > >   20:   r1 >>= 32                            20:   r1 >>= 32
-> > > >   21:   if r1 > 256 goto +6 <LBB1_4>         21:   if r1 > 256 goto +6 <LBB1_4>
-> > > >   22:   r2 = 0 ll                            22:   r2 = 0 ll
-> > > >   24:   *(u32 *)(r2 + 0) = r0                24:   *(u32 *)(r2 + 0) = r0
-> > > >   25:   r6 = 0 ll                            25:   r6 = 0 ll
-> > > >   27:   r6 += r1                             27:   r6 += r1
-> > > > 00000000000000e0 <LBB1_4>:                 00000000000000e0 <LBB1_4>:
-> > > >   28:   r1 = r6                              28:   r1 = r6
-> > > >   29:   r2 = 256                             29:   r2 = 256
-> > > >   30:   r3 = 0 ll                            30:   r3 = 0 ll
-> > > >   32:   call 115                             32:   call 115
-> > > >
-> > > > In NO-ALU32 mode, for the case of 64-bit len variable, Clang generates much
-> > > > superior code, as expected, eliminating unnecessary bit shifts. For 32-bit
-> > > > len, code is identical.
-> > >
-> > > Right I can't think of any way clang can avoid it here. OTOH I fix this
-> > > by enabling alu32 ;)
-> > >
-> > > >
-> > > > So overall, only ALU-32 32-bit len case is more-or-less equivalent and the
-> > > > difference stems from internal Clang decision, rather than compiler lacking
-> > > > enough information about types.
-> > > >
-> > > > Case 2. Let's look at the simpler case of checking return result of BPF helper
-> > > > for errors. The code is very simple:
-> > > >
-> > > >   long bla;
-> > > >   if (bpf_probe_read_kenerl(&bla, sizeof(bla), 0))
-> > > >       return 1;
-> > > >   else
-> > > >       return 0;
-> > > >
-> > > > ALU32 + CHECK (9 insns)                    ALU32 + CHECK (9 insns)
-> > > > ====================================       ====================================
-> > > >   0:    r1 = r10                             0:    r1 = r10
-> > > >   1:    r1 += -8                             1:    r1 += -8
-> > > >   2:    w2 = 8                               2:    w2 = 8
-> > > >   3:    r3 = 0                               3:    r3 = 0
-> > > >   4:    call 113                             4:    call 113
-> > > >   5:    w1 = w0                              5:    r1 = r0
-> > > >   6:    w0 = 1                               6:    w0 = 1
-> > > >   7:    if w1 != 0 goto +1 <LBB2_2>          7:    if r1 != 0 goto +1 <LBB2_2>
-> > > >   8:    w0 = 0                               8:    w0 = 0
-> > > > 0000000000000048 <LBB2_2>:                 0000000000000048 <LBB2_2>:
-> > > >   9:    exit                                 9:    exit
-> > > >
-> > > > Almost identical code, the only difference is the use of full register
-> > > > assignment (r1 = r0) vs half-registers (w1 = w0) in instruction #5. On 32-bit
-> > > > architectures, new BPF assembly might be slightly less optimal, in theory. But
-> > > > one can argue that's not a big issue, given that use of full registers is
-> > > > still prevalent (e.g., for parameter passing).
-> > > >
-> > > > NO-ALU32 + CHECK (11 insns)                NO-ALU32 + CHECK (9 insns)
-> > > > ====================================       ====================================
-> > > >   0:    r1 = r10                             0:    r1 = r10
-> > > >   1:    r1 += -8                             1:    r1 += -8
-> > > >   2:    r2 = 8                               2:    r2 = 8
-> > > >   3:    r3 = 0                               3:    r3 = 0
-> > > >   4:    call 113                             4:    call 113
-> > > >   5:    r1 = r0                              5:    r1 = r0
-> > > >   6:    r1 <<= 32                            6:    r0 = 1
-> > > >   7:    r1 >>= 32                            7:    if r1 != 0 goto +1 <LBB2_2>
-> > > >   8:    r0 = 1                               8:    r0 = 0
-> > > >   9:    if r1 != 0 goto +1 <LBB2_2>        0000000000000048 <LBB2_2>:
-> > > >  10:    r0 = 0                               9:    exit
-> > > > 0000000000000058 <LBB2_2>:
-> > > >  11:    exit
-> > > >
-> > > > NO-ALU32 is a clear improvement, getting rid of unnecessary zero-extension bit
-> > > > shifts.
-> > >
-> > > It seems a win for the NO-ALU32 case but for the +ALU32 case I think its
-> > > the same with latest clang although I haven't tried yet. I was actually
-> > > considering going the other way and avoiding always returning u64 on
-> > > the other side. From a purely aesethetics point of view I prefer the
-> > > int type because it seems more clear/standard C. I'm also not so interested
-> > > in optimizing the no-alu32 case but curious if there is a use case for
-> > > that?
-> >
-> > My point was that this int -> long switch doesn't degrade ALU32 and
-> > helps no-ALU32, and thus is good :)
->
-> With the long vs int I do see worse code when using the <0 check.
-> Using C function below which I took from some real code and renamed
-> variables.
->
-> int myfunc(void *a, void *b, void *c) {
->         void *payload = a;
->         int len;
->
->         len = probe_read_str(payload, 1000, a);
->         if (len < 0) return len;
->         if (len <= 1000) {
->                 payload += len;
->         }
->         len = probe_read_str(payload, 1000, b);
->         if (len <= 1000) {
->                 payload += len;
->         }
->         return 1;
-> }
->
-> Then here is the side-by-side of generated code, with +ALU32.
->
->   int BPF_FUNC(probe_read, ...                  long BPF_FUNC(probe_read, ...
-> -------------------------------                ---------------------------------
->        0:       r6 = r2                         0:      r6 = r2
->        1:       r7 = r1                         1:      r7 = r1
->        2:       w2 = 1000                       2:      w2 = 1000
->        3:       r3 = r7                         3:      r3 = r7
->        4:       call 45                         4:      call 45
->        5:       if w0 s< 0 goto +9 <LBB0_4>     5:      r2 = r0
->        6:       w2 = w0                         6:      if w0 s< 0 goto +10 <LBB0_4>
->        7:       r1 = r7                         7:      r2 <<= 32
->        8:       r1 += r2                        8:      r2 s>>= 32
->        9:       if w0 s< 1001 goto +1 <LBB0_3>  9:      r1 = r7
->       10:       r1 = r7                        10:      r1 += r2
->       11:       w2 = 1000                      11:      if w0 s< 1001 goto +1 <LBB0_3>
->       12:       r3 = r6                        12:      r1 = r7
->       13:       call 45                        13:      w2 = 1000
->       14:       w0 = 1                         14:      r3 = r6
->       15:       exit                           15:      call 45
->                                                16:      w0 = 1
->                                                17:      exit
->
-> So a couple extra instruction, but more concerning we created a
-> <<=,s>> pattern. I'll need to do some more tests but my concern
-> is that could break verifier for real programs we have. I guess
-> it didn't in the selftests? Surely, this thread has at least
-> pointed out some gaps in our test cases. I guess I _could_ make
-> len a u64 type to remove the sext but then <0 check on a u64?!
-
-I addressed <0 check above. As for <<=,s>>=, I wish Clang was a bit
-smarter and just did w2 = w2 or something like that, given we just
-checked that w0 is non-negative. But then again, I wouldn't do two ifs
-and wouldn't use signed int for len.
-
->
-> >
-> > Overall, long as a return type matches reality and BPF ABI
-> > specification. BTW, one of the varlen programs from patch 2 doesn't
-> > even validate successfully on latest kernel with latest Clang right
-> > now, if helpers return int, even though it's completely correct code.
-> > That's a real problem we have to deal with in few major BPF
-> > applications right now, and we have to use inline assembly to enforce
-> > Clang to do the right thing. A bunch of those problems are simply
-> > avoided with correct return types for helpers.
->
-> Do the real programs check <0? Did I miss something? I'll try
-> applying your patch to our real code base and see what happens.
-
-That would be great. Self-tests do work, but having more testing with
-real-world application would certainly help as well.
+Applied. Thanks
