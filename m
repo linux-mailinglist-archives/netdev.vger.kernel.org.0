@@ -2,191 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AB501FEF28
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 12:02:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD391FEF3E
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 12:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728348AbgFRKCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 06:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727037AbgFRKCG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 06:02:06 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0882AC06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 03:02:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=+NcDSGbZ/yzgHU3zIkrxV//B3YANrC/s0HYkt4qOtfc=; b=YR3l3PDEHUN1sRHw3KXnYmRqW
-        dUz3JYkOYyr+RFlg1wEFfmI5CjD2wG6AgOel+LYh15QR+lrBRcD6t/O/vJXDQv4bmZky4MImXTxon
-        WxFuxBKMjOXaUwvX2cmiFYA1itk1m2R5P+iISjSbElNZOynsBfy3NKjEz3XiIMQxg31BqMMrg7ex/
-        MwXUeD6EFec1uz3uYu6MiTbmLs2wm2CTcPuGECDAzCBsAsoVKAbHhXW2tqYAvmi88SEvFtmx+KuOR
-        VkVWHpVcSSifRlAG+qTF4zt63LMsN8x/JNxs4qSYYPypR/KnuZwipZvttXe2PcZ+Crjj3iAYUnVAH
-        xvRV3+8WA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58774)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jlrMg-0004p1-Do; Thu, 18 Jun 2020 11:01:46 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jlrMd-0004cm-CB; Thu, 18 Jun 2020 11:01:43 +0100
-Date:   Thu, 18 Jun 2020 11:01:43 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Helmut Grohne <helmut.grohne@intenta.de>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        id S1728496AbgFRKEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 06:04:11 -0400
+Received: from mail-db8eur05on2084.outbound.protection.outlook.com ([40.107.20.84]:41682
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728361AbgFRKEI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 06:04:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MZIFW1QFvyT3aqrrx7Qktzde6E9OhxFd04qL4LFX+B8rCZJXj8iMwmx/lZw/hYZnV50nj1uoqghsk31GpPKtgLDGXe/Uj9+6jU5oP5AlpPdjsfkpr34Mq99kczU9ZCLLDxUMq9mI8149m++Nds4Gl6PGDCjsNIcVRz8/qYxb9iM3FJ3lwQdMGvZ5ecOXeNZ8kwUfG5WsXAg+1bX5c9KSzwlwtFSFpQJ9tVV9un/XnXNVuWSuAj566cij3JrtGKf/Q930QWuLp+vlIlhcj8vI+Y9esbUBhbQiCw95AfKtJ2mnPMgV2hlzxxsBYktwpn3Rndm/Sec3Z59wYXS7eOlfpQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ISdBk5NehdJqXzzakqohnN7YMDtwJt3j+om3TphjJjg=;
+ b=Sf1KV7N/swAHXAzVE9ehUBPmv1K4zKylSvI4REE5nPWA7oM48aTelH49Q9hq241NNpSFGhI0TlcVEn2CnCkLoE+sprqKX2vztNbCbNQPzuARf2a0gX7Cy63sWE0ALGtxBmd6Apng9dtTO+T4ytdd074Cybn7uYHgIfO987UBl4CKEA/l7ruXHDnyoBYUeHZ9oSZi/4f9z41WwpcVYAYV6Df7oZ8zlun6GU24saHeyaPWUKb9W8u2vjTsEHry036TYs/A4Wev2mpjj9aMouxDhdZ9sFvFH7t2c8MtGNyCcZPKswo7T7q6O6gm1P2CzxQr0D2ryBVSZaaDbFHY7SmCdg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ISdBk5NehdJqXzzakqohnN7YMDtwJt3j+om3TphjJjg=;
+ b=S2jdLKn3Gf1el9Ze67DqZnPLvxvwhg7ebkxkoVyIkhHwGbFJJlfqUsdlclBpDRmmkb/KMyeq2yXYwXSNP/KaXrSZ0eIY6Sjfpz/lgURPncywA08RFsiMexgL3O8jlTDHUnQJ8mFJnh01E8WpNMX9L7sx7EkP7Sd1m/S+MBL3log=
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
+ by AM0PR04MB4481.eurprd04.prod.outlook.com (2603:10a6:208:70::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3088.21; Thu, 18 Jun
+ 2020 10:04:04 +0000
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::cd55:fe92:2c43:63eb]) by AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::cd55:fe92:2c43:63eb%6]) with mapi id 15.20.3088.029; Thu, 18 Jun 2020
+ 10:04:04 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH] net: macb: reject unsupported rgmii delays
-Message-ID: <20200618100143.GZ1551@shell.armlinux.org.uk>
-References: <20200616074955.GA9092@laureti-dev>
- <20200617105518.GO1551@shell.armlinux.org.uk>
- <20200617112153.GB28783@laureti-dev>
- <20200617114025.GQ1551@shell.armlinux.org.uk>
- <20200617115201.GA30172@laureti-dev>
- <20200617120809.GS1551@shell.armlinux.org.uk>
- <20200618081433.GA22636@laureti-dev>
- <20200618084554.GY1551@shell.armlinux.org.uk>
- <20200618090526.GA10165@laureti-dev>
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: RE: [PATCH][next] enetc: Use struct_size() helper in kzalloc()
+Thread-Topic: [PATCH][next] enetc: Use struct_size() helper in kzalloc()
+Thread-Index: AQHWRNfSjLh15xR7Hku9D+4C2bLGL6jeJWxw
+Date:   Thu, 18 Jun 2020 10:04:04 +0000
+Message-ID: <AM0PR04MB6754FC0BE106F42DA7DDBF78969B0@AM0PR04MB6754.eurprd04.prod.outlook.com>
+References: <20200617185317.GA623@embeddedor>
+In-Reply-To: <20200617185317.GA623@embeddedor>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.76.66.138]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 80607d0a-099c-41c2-a16a-08d8136eeebe
+x-ms-traffictypediagnostic: AM0PR04MB4481:
+x-microsoft-antispam-prvs: <AM0PR04MB448135CE5F8E048A03C40414969B0@AM0PR04MB4481.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-forefront-prvs: 0438F90F17
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: gDM6OJEEZiseLQjd8id3iD59vmbNa4opdKEZnSQSQE5GHK2qcju8GjC/4VDrqQ03sfjCrpS/CH+ucG6opwmDRaqC0SMD0VGqHXLtmDZ+GIZHlBwEuGdGOYfj8iLzSYZTKSeKXOVHkcIDS1gVYya7Cq6oBkk+r5JnN3K26grlNiR6W5i1zjZpNnyIe55aG2TGBLu/67wfFFPSpc3avi/HUGW6YKPRDCY2n5SYj56qz9pYao6FIzyX31+W8npM6x3nWE8EksN9AauahR5CTjdzTrnS7X+KIMGjsY4dnjF1uDEGi8jVMQfBVzj6E3NMfZRKv6AK5dIoURXq68M48HJ4LQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(376002)(136003)(346002)(366004)(52536014)(71200400001)(76116006)(5660300002)(83380400001)(86362001)(7696005)(478600001)(8936002)(64756008)(4744005)(66476007)(54906003)(66556008)(66446008)(6506007)(316002)(110136005)(66946007)(33656002)(186003)(9686003)(26005)(2906002)(4326008)(8676002)(44832011)(55016002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: ypXVCGly7PzkhwhU+jv5vsZo0A27GyVsH2Kf/oMEJSL7Bk2RAfPMUQzoBRL7IhasiWRX3WKUh7vlDcNRuggkuLgC2q2UL6rsQufNZsLbom6UyCoTkAB0Wkfnh8ylRKZGICuV/H7zI2ft6fAayLWlf5VB/t9us+AkEOlyR59XWhUbesF/AK90gQb8QdgUaCc1i6eCiiYOxZ4pupph+yTEMJas3jv0B2yc7RySE9/cjsEH1nipxpRBCNPCIVeqRoJDSmLH8hNN6FFAYeITdBvIrClSgjawpNTcnHKNVt9zNI6UKdNwo8diUPJPWjOE+NuEJP9gGtUJ/pef1IwqK5xu3/jsR/nLBUEh1c69jKVTwORmbDSZTsoakc2CVQTbNGsr8PYoAqnNTKeEb6DYHuZ3AVlF8s72f2bdpSpFAsNtppSPgnasCrb5loqXowBjPYIGlapWX5p4WddIaibIU4JN++YoGmUqvT9pIR5ymHzyLmQ=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200618090526.GA10165@laureti-dev>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80607d0a-099c-41c2-a16a-08d8136eeebe
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2020 10:04:04.4556
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vI8YqMTQRRKPKbzZ90TPfPzlNROM9wVu3x+DNOa30V8zqfB1BqHiYNA0ldkDg7riBsOmjI4JK5qExJ4M0G2EoQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4481
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 11:05:26AM +0200, Helmut Grohne wrote:
-> On Thu, Jun 18, 2020 at 10:45:54AM +0200, Russell King - ARM Linux admin wrote:
-> > Why do we need that complexity?  If we decide that we can allow
-> > phy-mode = "rgmii" and introduce new properties to control the
-> > delay, then we just need:
-> > 
-> >   rgmii-tx-delay-ps = <nnn>;
-> >   rgmii-rx-delay-ps = <nnn>;
-> > 
-> > specified in the MAC node (to be applied only at the MAC end) or
-> > specified in the PHY node (to be applied only at the PHY end.)
-> > In the normal case, this would be the standard delay value, but
-> > in exceptional cases where supported, the delays can be arbitary.
-> > We know there are PHYs out there which allow other delays.
-> > 
-> > This means each end is responsible for parsing these properties in
-> > its own node and applying them - or raising an error if they can't
-> > be supported.
-> 
-> Thank you. That makes a lot more sense while keeping the (imo) important
-> properties of my proposal:
->  * It is backwards compatible. These properties override delays
->    specified inside phy-mode. Otherwise the vague phy-mode meaning is
->    retained.
->  * The ambiguity is resolved. It is always clear where delays should be
->    configure and the properties properly account for possible PCB
->    traces.
-> 
-> It also resolves my original problem. If support for these properties is
-> added to macb_main.c, it would simply check that both delays are 0 as
-> internal delays are not supported by the hardware.  When I would have
-> attempted to configure an rx delay, it would have nicely errored out.
+>-----Original Message-----
+>From: Gustavo A. R. Silva <gustavoars@kernel.org>
+>Sent: Wednesday, June 17, 2020 9:53 PM
+[...]
+>Subject: [PATCH][next] enetc: Use struct_size() helper in kzalloc()
+>
+>Make use of the struct_size() helper instead of an open-coded version
+>in order to avoid any potential type mistakes.
+>
+>This code was detected with the help of Coccinelle and, audited and
+>fixed manually.
+>
+>Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-I think we'd want a helper or two to do the parsing and return the
-delays, something like:
-
-#define PHY_RGMII_DELAY_PS_NONE	0
-#define PHY_RGMII_DELAY_PS_STD	1500
-
-/* @np here should be the MAC node */
-int of_mac_get_delays(struct device_node *np,
-		      phy_interface_mode interface,
-		      u32 *tx_delay_ps, u32 *rx_delay_ps)
-{
-	*tx_delay_ps = PHY_RGMII_DELAY_PS_NONE;
-	*rx_delay_ps = PHY_RGMII_DELAY_PS_NONE;
-
-	if (!np)
-		return 0;
-
-	if (interface == PHY_INTERFACE_MODE_RGMII) {
-		of_property_read_u32(np, "rgmii-tx-delay-ps", tx_delay_ps);
-		of_property_read_u32(np, "rgmii-rx-delay-ps", rx_delay_ps);
-	}
-
-	return 0;
-}
-
-/* @np here should be the PHY node */
-int of_phy_get_delays(struct device_node *np,
-		      phy_interface_mode interface,
-		      u32 *tx_delay_ps, u32 *rx_delay_ps)
-{
-	switch (interface) {
-	case PHY_INTERFACE_MODE_RGMII_ID:
-		*tx_delay_ps = PHY_RGMII_DELAY_PS_STD;
-		*rx_delay_ps = PHY_RGMII_DELAY_PS_STD;
-		return 0;
-
-	case PHY_INTERFACE_MODE_RGMII_RXID:
-		*tx_delay_ps = PHY_RGMII_DELAY_PS_NONE;
-		*rx_delay_ps = PHY_RGMII_DELAY_PS_STD;
-		return 0;
-
-	case PHY_INTERFACE_MODE_RGMII_TXID:
-		*tx_delay_ps = PHY_RGMII_DELAY_PS_STD;
-		*rx_delay_ps = PHY_RGMII_DELAY_PS_NONE;
-		return 0;
-
-	default:
-		return of_mac_get_delays(np, interface,
-					 tx_delay_ps, rx_delay_ps);
-	}
-}
-
-as a first cut - validation left up to the user of these.  At least
-we then have an easy interface for PHY drivers to use, for example:
-
-static int m88e1121_config_aneg_rgmii_delays(struct phy_device *phydev)
-{
-	u32 tx_delay_ps, rx_delay_ps;
-	int err;
-
-	err = of_phy_get_delays(phydev->mdio.dev.of_node,
-				phydev->interface, &tx_delay_ps,
-				&rx_delay_ps);
-	if (err)
-		return err;
-
-	mscr = 0;
-	if (tx_delay_ps == PHY_RGMII_DELAY_PS_STD)
-		mscr |= MII_88E1121_PHY_MSCR_TX_DELAY;
-	else if (tx_delay_ps != PHY_RGMII_DELAY_PS_NONE)
-		/* ... log an error to kernel log */
-		return -EINVAL;
-
-	if (rx_delay_ps == PHY_RGMII_DELAY_PS_STD)
-		mscr |= MII_88E1121_PHY_MSCR_RX_DELAY;
-	else if (rx_delay_ps != PHY_RGMII_DELAY_PS_NONE)
-		/* ... log an error to kernel log */
-		return -EINVAL;
-
-	return phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
-				MII_88E1121_PHY_MSCR_REG,
-				MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
-}
-
-> How can we achieve wider consensus on this and put it into the dt
-> specification? Should there be drivers supporting these first?
-
-Provide an illustration of the idea in code form for consideration? ;)
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
