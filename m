@@ -2,126 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A7E81FEEAF
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 11:31:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AB501FEF28
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 12:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729174AbgFRJbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 05:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37444 "EHLO
+        id S1728348AbgFRKCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 06:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728819AbgFRJbn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 05:31:43 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6F8C06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 02:31:43 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id ne5so2275867pjb.5
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 02:31:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DzxmerU97oT6v2amuGEClNWoK6S9GT7VzDYB3K5pcdE=;
-        b=NbbE554q8QtZumzHxzZb4jDApE4L+4UKfAx2JPiOrUowRgu7KfshoN6mktKA4/cpF3
-         0n1sd0dfKyUD+AzIwhZAslX1dDa0x52S+Mkqo8KH8eSjU4JI+VQmZfz1K3ZZHU1Mlz7O
-         lUTADke+tXhq8HIZ+PIcjxz2EwLN2UwK1PdUXnw1IAGPr6RUlij9Y3dS8ZjyzeBoZ+iP
-         7tdqeCcRssksDSi/OiAGB/ab7+Cdx3jFQp1y9kFzWkCvK+2QFQ8mntsQp9nPibcwoyM0
-         w4JJ4+WtFcEf2PyiTwi5ThT9skvfr7cBb7/5PuqZiKsXVU9HLzOpFtWL4OwqZUTje023
-         BNxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DzxmerU97oT6v2amuGEClNWoK6S9GT7VzDYB3K5pcdE=;
-        b=smiDNWOV/xAwaVtEAPs59hvTDVwANbNCM6hP/dNzBTLh9RPMRniyHTcIUibinwlcD9
-         HtF7fNou2aFkaG/ZzgHMH2q30jNwiT36OiTQJyV8SurTofhUV3Qq55RNdEn8Vmj6kmE3
-         icftNKMfuHkC8ppGVDr+Tg+yyaYOkykhgre/tki17Lzc53K5XT7lL/WkTOCcoJfaxcR7
-         DMG22sJudqxSz5Map2QlT9bYOySMxZf6RmmVAC/Q2FQgK0FGBylLpE31QCpjtE3XaI7z
-         w11gMsZAHlBQ4mVEt8uw1/leEAuxirUa2aG8pyZgxIz1wSKij19mRPCgHIwhI4gSs+CS
-         f9/Q==
-X-Gm-Message-State: AOAM531BvEgIxlEhtTEIVIymdbhazLl0P4COsdBMw3IJo7Rc0HMZw/w+
-        Wmc389X6quqEfktZQkNg+f0=
-X-Google-Smtp-Source: ABdhPJzT16M5yXAzG5fYv3HYcs8FGohD7Z/hTZw12Y4yWdhCw/6wuz+hFyCPLK4xbNJaZnH7iCwdMA==
-X-Received: by 2002:a17:90a:bf07:: with SMTP id c7mr3335175pjs.233.1592472702742;
-        Thu, 18 Jun 2020 02:31:42 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y18sm2197510pfn.177.2020.06.18.02.31.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2020 02:31:41 -0700 (PDT)
-Date:   Thu, 18 Jun 2020 17:31:31 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     netdev@vger.kernel.org,
-        Pieter Jansen van Vuuren 
-        <pieter.jansenvanvuuren@netronome.com>,
-        Lucas Bates <lucasb@mojatatu.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        David Miller <davem@davemloft.net>, lucien.xin@gmail.com,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH net] tc-testing: fix geneve options match in tunnel_key
- unit tests
-Message-ID: <20200618093131.GW102436@dhcp-12-153.nay.redhat.com>
-References: <20200618083705.449619-1-liuhangbin@gmail.com>
- <4c1589d4d2866cdfebf12bb32434210532b3b884.camel@redhat.com>
+        with ESMTP id S1727037AbgFRKCG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 06:02:06 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0882AC06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 03:02:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=+NcDSGbZ/yzgHU3zIkrxV//B3YANrC/s0HYkt4qOtfc=; b=YR3l3PDEHUN1sRHw3KXnYmRqW
+        dUz3JYkOYyr+RFlg1wEFfmI5CjD2wG6AgOel+LYh15QR+lrBRcD6t/O/vJXDQv4bmZky4MImXTxon
+        WxFuxBKMjOXaUwvX2cmiFYA1itk1m2R5P+iISjSbElNZOynsBfy3NKjEz3XiIMQxg31BqMMrg7ex/
+        MwXUeD6EFec1uz3uYu6MiTbmLs2wm2CTcPuGECDAzCBsAsoVKAbHhXW2tqYAvmi88SEvFtmx+KuOR
+        VkVWHpVcSSifRlAG+qTF4zt63LMsN8x/JNxs4qSYYPypR/KnuZwipZvttXe2PcZ+Crjj3iAYUnVAH
+        xvRV3+8WA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58774)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jlrMg-0004p1-Do; Thu, 18 Jun 2020 11:01:46 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jlrMd-0004cm-CB; Thu, 18 Jun 2020 11:01:43 +0100
+Date:   Thu, 18 Jun 2020 11:01:43 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Helmut Grohne <helmut.grohne@intenta.de>
+Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH] net: macb: reject unsupported rgmii delays
+Message-ID: <20200618100143.GZ1551@shell.armlinux.org.uk>
+References: <20200616074955.GA9092@laureti-dev>
+ <20200617105518.GO1551@shell.armlinux.org.uk>
+ <20200617112153.GB28783@laureti-dev>
+ <20200617114025.GQ1551@shell.armlinux.org.uk>
+ <20200617115201.GA30172@laureti-dev>
+ <20200617120809.GS1551@shell.armlinux.org.uk>
+ <20200618081433.GA22636@laureti-dev>
+ <20200618084554.GY1551@shell.armlinux.org.uk>
+ <20200618090526.GA10165@laureti-dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4c1589d4d2866cdfebf12bb32434210532b3b884.camel@redhat.com>
+In-Reply-To: <20200618090526.GA10165@laureti-dev>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 10:53:51AM +0200, Davide Caratti wrote:
-> On Thu, 2020-06-18 at 16:37 +0800, Hangbin Liu wrote:
-> > tc action print "geneve_opts" instead of "geneve_opt".
-> > Fix the typo, or we will unable to match correct action output.
+On Thu, Jun 18, 2020 at 11:05:26AM +0200, Helmut Grohne wrote:
+> On Thu, Jun 18, 2020 at 10:45:54AM +0200, Russell King - ARM Linux admin wrote:
+> > Why do we need that complexity?  If we decide that we can allow
+> > phy-mode = "rgmii" and introduce new properties to control the
+> > delay, then we just need:
 > > 
+> >   rgmii-tx-delay-ps = <nnn>;
+> >   rgmii-rx-delay-ps = <nnn>;
+> > 
+> > specified in the MAC node (to be applied only at the MAC end) or
+> > specified in the PHY node (to be applied only at the PHY end.)
+> > In the normal case, this would be the standard delay value, but
+> > in exceptional cases where supported, the delays can be arbitary.
+> > We know there are PHYs out there which allow other delays.
+> > 
+> > This means each end is responsible for parsing these properties in
+> > its own node and applying them - or raising an error if they can't
+> > be supported.
 > 
-> hello Hangbin,
+> Thank you. That makes a lot more sense while keeping the (imo) important
+> properties of my proposal:
+>  * It is backwards compatible. These properties override delays
+>    specified inside phy-mode. Otherwise the vague phy-mode meaning is
+>    retained.
+>  * The ambiguity is resolved. It is always clear where delays should be
+>    configure and the properties properly account for possible PCB
+>    traces.
 > 
-> > Fixes: cba54f9cf4ec ("tc-testing: add geneve options in tunnel_key unit tests")
-> 
-> this Fixes: tag is suspicious, when a tdc test is added I would expect to
-> see it passing. If I well read the code, the problem has been introduced
-> in iproute2, with commit 
-> 
-> commit f72c3ad00f3b7869e90840d0098a83cb88224892
-> Author: Xin Long <lucien.xin@gmail.com>
-> Date:   Mon Apr 27 18:27:48 2020 +0800
-> 
->     tc: m_tunnel_key: add options support for vxlan
->     
-> 
-> that did:
-> 
-> [...]
-> 
-> static void tunnel_key_print_geneve_options(const char *name,
-> -                                           struct rtattr *attr)
-> +static void tunnel_key_print_geneve_options(struct rtattr *attr)
->  {
->         struct rtattr *tb[TCA_TUNNEL_KEY_ENC_OPT_GENEVE_MAX + 1];
->         struct rtattr *i = RTA_DATA(attr);
->         int ii, data_len = 0, offset = 0;
->         int rem = RTA_PAYLOAD(attr);
-> +       char *name = "geneve_opts";
->         char strbuf[rem * 2 + 1];
->         char data[rem * 2 + 1];
->         uint8_t data_r[rem];
-> @@ -421,7 +464,7 @@ static void tunnel_key_print_geneve_options(const char *name,
->  
->         open_json_array(PRINT_JSON, name);
->         print_nl();
-> -       print_string(PRINT_FP, name, "\t%s ", "geneve_opt");
-> +       print_string(PRINT_FP, name, "\t%s ", name);
+> It also resolves my original problem. If support for these properties is
+> added to macb_main.c, it would simply check that both delays are 0 as
+> internal delays are not supported by the hardware.  When I would have
+> attempted to configure an rx delay, it would have nicely errored out.
 
-Ah, yes, you are right.
->  
-> 
-> (just speculating, because I didn't try older versions of iproute2). But if my
-> hypothesis is correct, then the fix should be done in iproute2, WDYT?
+I think we'd want a helper or two to do the parsing and return the
+delays, something like:
 
-If you and Stephen are both agree. I'm OK to fix it on iproute2.
+#define PHY_RGMII_DELAY_PS_NONE	0
+#define PHY_RGMII_DELAY_PS_STD	1500
 
-Thanks
-Hangbin
+/* @np here should be the MAC node */
+int of_mac_get_delays(struct device_node *np,
+		      phy_interface_mode interface,
+		      u32 *tx_delay_ps, u32 *rx_delay_ps)
+{
+	*tx_delay_ps = PHY_RGMII_DELAY_PS_NONE;
+	*rx_delay_ps = PHY_RGMII_DELAY_PS_NONE;
+
+	if (!np)
+		return 0;
+
+	if (interface == PHY_INTERFACE_MODE_RGMII) {
+		of_property_read_u32(np, "rgmii-tx-delay-ps", tx_delay_ps);
+		of_property_read_u32(np, "rgmii-rx-delay-ps", rx_delay_ps);
+	}
+
+	return 0;
+}
+
+/* @np here should be the PHY node */
+int of_phy_get_delays(struct device_node *np,
+		      phy_interface_mode interface,
+		      u32 *tx_delay_ps, u32 *rx_delay_ps)
+{
+	switch (interface) {
+	case PHY_INTERFACE_MODE_RGMII_ID:
+		*tx_delay_ps = PHY_RGMII_DELAY_PS_STD;
+		*rx_delay_ps = PHY_RGMII_DELAY_PS_STD;
+		return 0;
+
+	case PHY_INTERFACE_MODE_RGMII_RXID:
+		*tx_delay_ps = PHY_RGMII_DELAY_PS_NONE;
+		*rx_delay_ps = PHY_RGMII_DELAY_PS_STD;
+		return 0;
+
+	case PHY_INTERFACE_MODE_RGMII_TXID:
+		*tx_delay_ps = PHY_RGMII_DELAY_PS_STD;
+		*rx_delay_ps = PHY_RGMII_DELAY_PS_NONE;
+		return 0;
+
+	default:
+		return of_mac_get_delays(np, interface,
+					 tx_delay_ps, rx_delay_ps);
+	}
+}
+
+as a first cut - validation left up to the user of these.  At least
+we then have an easy interface for PHY drivers to use, for example:
+
+static int m88e1121_config_aneg_rgmii_delays(struct phy_device *phydev)
+{
+	u32 tx_delay_ps, rx_delay_ps;
+	int err;
+
+	err = of_phy_get_delays(phydev->mdio.dev.of_node,
+				phydev->interface, &tx_delay_ps,
+				&rx_delay_ps);
+	if (err)
+		return err;
+
+	mscr = 0;
+	if (tx_delay_ps == PHY_RGMII_DELAY_PS_STD)
+		mscr |= MII_88E1121_PHY_MSCR_TX_DELAY;
+	else if (tx_delay_ps != PHY_RGMII_DELAY_PS_NONE)
+		/* ... log an error to kernel log */
+		return -EINVAL;
+
+	if (rx_delay_ps == PHY_RGMII_DELAY_PS_STD)
+		mscr |= MII_88E1121_PHY_MSCR_RX_DELAY;
+	else if (rx_delay_ps != PHY_RGMII_DELAY_PS_NONE)
+		/* ... log an error to kernel log */
+		return -EINVAL;
+
+	return phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
+				MII_88E1121_PHY_MSCR_REG,
+				MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
+}
+
+> How can we achieve wider consensus on this and put it into the dt
+> specification? Should there be drivers supporting these first?
+
+Provide an illustration of the idea in code form for consideration? ;)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
