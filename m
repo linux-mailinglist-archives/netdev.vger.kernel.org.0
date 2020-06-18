@@ -2,102 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 571E81FE108
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:52:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A2CA1FE605
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:30:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733163AbgFRBvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:51:55 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45682 "EHLO vps0.lunn.ch"
+        id S1729523AbgFRBPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:15:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732198AbgFRBvx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:51:53 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jljiV-0013N7-K9; Thu, 18 Jun 2020 03:51:47 +0200
-Date:   Thu, 18 Jun 2020 03:51:47 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
-        robh@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v7 2/6] net: phy: Add a helper to return the
- index for of the internal delay
-Message-ID: <20200618015147.GH249144@lunn.ch>
-References: <20200617182019.6790-1-dmurphy@ti.com>
- <20200617182019.6790-3-dmurphy@ti.com>
+        id S1729520AbgFRBPw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:15:52 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 44A26206F1;
+        Thu, 18 Jun 2020 01:15:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592442950;
+        bh=bYRMw//X8rJwEygETmaSBUpaIrQsEaz+kvtKSZHbExQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=yZZhQMaCyllvZ8FEPAtn7FgJzVyUhGEn1PbMZwX/1l0iB64ciA4bbuiJErEc5Jwiq
+         ulSt4MIKuzX9/ZbNIwn6lEPYB0gsWi6B9cZVC2/JJyfruQ73zch6UD9c96vB1G38/A
+         EwN8R5QINnr52f/jZW7oABKY2ugyx1Gnbb4qlGic=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     tannerlove <tannerlove@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 359/388] selftests/net: in timestamping, strncpy needs to preserve null byte
+Date:   Wed, 17 Jun 2020 21:07:36 -0400
+Message-Id: <20200618010805.600873-359-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
+References: <20200618010805.600873-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617182019.6790-3-dmurphy@ti.com>
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 01:20:15PM -0500, Dan Murphy wrote:
-> Add a helper function that will return the index in the array for the
-> passed in internal delay value.  The helper requires the array, size and
-> delay value.
-> 
-> The helper will then return the index for the exact match or return the
-> index for the index to the closest smaller value.
-> 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> ---
->  drivers/net/phy/phy_device.c | 68 ++++++++++++++++++++++++++++++++++++
->  include/linux/phy.h          |  4 +++
->  2 files changed, 72 insertions(+)
-> 
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index 04946de74fa0..611d4e68e3c6 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -31,6 +31,7 @@
->  #include <linux/mdio.h>
->  #include <linux/io.h>
->  #include <linux/uaccess.h>
-> +#include <linux/property.h>
->  
->  MODULE_DESCRIPTION("PHY library");
->  MODULE_AUTHOR("Andy Fleming");
-> @@ -2657,6 +2658,73 @@ void phy_get_pause(struct phy_device *phydev, bool *tx_pause, bool *rx_pause)
->  }
->  EXPORT_SYMBOL(phy_get_pause);
->  
-> +/**
-> + * phy_get_delay_index - returns the index of the internal delay
-> + * @phydev: phy_device struct
-> + * @dev: pointer to the devices device struct
-> + * @delay_values: array of delays the PHY supports
-> + * @size: the size of the delay array
-> + * @is_rx: boolean to indicate to get the rx internal delay
-> + *
-> + * Returns the index within the array of internal delay passed in.
-> + * Or if size == 0 then the delay read from the firmware is returned.
-> + * The array must be in ascending order.
-> + * Return errno if the delay is invalid or cannot be found.
-> + */
-> +s32 phy_get_internal_delay(struct phy_device *phydev, struct device *dev,
-> +			   const int *delay_values, int size, bool is_rx)
-> +{
-> +	int ret;
-> +	int i;
-> +	s32 delay;
-> +
-> +	if (is_rx)
-> +		ret = device_property_read_u32(dev, "rx-internal-delay-ps",
-> +					       &delay);
-> +	else
-> +		ret = device_property_read_u32(dev, "tx-internal-delay-ps",
-> +					       &delay);
-> +	if (ret) {
-> +		phydev_err(phydev, "internal delay not defined\n");
+From: tannerlove <tannerlove@google.com>
 
-This is an optional property. So printing an error message seems heavy
-handed.
+[ Upstream commit 8027bc0307ce59759b90679fa5d8b22949586d20 ]
 
-Maybe it would be better to default to 0 if the property is not found,
-and continue with the lookup in the table to find what value should be
-written for a 0ps delay?
+If user passed an interface option longer than 15 characters, then
+device.ifr_name and hwtstamp.ifr_name became non-null-terminated
+strings. The compiler warned about this:
 
-	Andrew
+timestamping.c:353:2: warning: ‘strncpy’ specified bound 16 equals \
+destination size [-Wstringop-truncation]
+  353 |  strncpy(device.ifr_name, interface, sizeof(device.ifr_name));
+
+Fixes: cb9eff097831 ("net: new user space API for time stamping of incoming and outgoing packets")
+Signed-off-by: Tanner Love <tannerlove@google.com>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/net/timestamping.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/net/timestamping.c b/tools/testing/selftests/net/timestamping.c
+index aca3491174a1..f4bb4fef0f39 100644
+--- a/tools/testing/selftests/net/timestamping.c
++++ b/tools/testing/selftests/net/timestamping.c
+@@ -313,10 +313,16 @@ int main(int argc, char **argv)
+ 	int val;
+ 	socklen_t len;
+ 	struct timeval next;
++	size_t if_len;
+ 
+ 	if (argc < 2)
+ 		usage(0);
+ 	interface = argv[1];
++	if_len = strlen(interface);
++	if (if_len >= IFNAMSIZ) {
++		printf("interface name exceeds IFNAMSIZ\n");
++		exit(1);
++	}
+ 
+ 	for (i = 2; i < argc; i++) {
+ 		if (!strcasecmp(argv[i], "SO_TIMESTAMP"))
+@@ -350,12 +356,12 @@ int main(int argc, char **argv)
+ 		bail("socket");
+ 
+ 	memset(&device, 0, sizeof(device));
+-	strncpy(device.ifr_name, interface, sizeof(device.ifr_name));
++	memcpy(device.ifr_name, interface, if_len + 1);
+ 	if (ioctl(sock, SIOCGIFADDR, &device) < 0)
+ 		bail("getting interface IP address");
+ 
+ 	memset(&hwtstamp, 0, sizeof(hwtstamp));
+-	strncpy(hwtstamp.ifr_name, interface, sizeof(hwtstamp.ifr_name));
++	memcpy(hwtstamp.ifr_name, interface, if_len + 1);
+ 	hwtstamp.ifr_data = (void *)&hwconfig;
+ 	memset(&hwconfig, 0, sizeof(hwconfig));
+ 	hwconfig.tx_type =
+-- 
+2.25.1
+
