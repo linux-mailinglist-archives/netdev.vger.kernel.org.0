@@ -2,48 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06BC51FE174
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:55:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3A0A1FE06D
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:48:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731530AbgFRBZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:25:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45432 "EHLO vps0.lunn.ch"
+        id S1732011AbgFRB2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:28:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36492 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731493AbgFRBZu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:25:50 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jljJM-001303-JJ; Thu, 18 Jun 2020 03:25:48 +0200
-Date:   Thu, 18 Jun 2020 03:25:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, DENG Qingfang <dqfext@gmail.com>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Subject: Re: [net-next PATCH 1/5 v2] net: dsa: tag_rtl4_a: Implement Realtek
- 4 byte A tag
-Message-ID: <20200618012548.GB249144@lunn.ch>
-References: <20200617083132.1847234-1-linus.walleij@linaro.org>
+        id S1731997AbgFRB2C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:28:02 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EEE5922203;
+        Thu, 18 Jun 2020 01:28:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592443681;
+        bh=RbF7R6syy7S1waQY1MbRHQy3roS+yF1ctEbrIxMiiN4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=k+uRsnF8++DSqHwkx1UTm1jGW2rB5Pc4d17Hlzin1MITDIprfMgtFsZVT4L4gxVfl
+         MXeyRSNMtmRN12pW15qp3xWOzx45YB1ApXMI4zn9sWlxCSKIDUZqhL/R3vnK/zOtTy
+         jFD0wOgDnvF0LrH+lnbaOhHFVab79IDdRz/5vc/Q=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jiri Benc <jbenc@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 096/108] geneve: change from tx_error to tx_dropped on missing metadata
+Date:   Wed, 17 Jun 2020 21:25:48 -0400
+Message-Id: <20200618012600.608744-96-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200618012600.608744-1-sashal@kernel.org>
+References: <20200618012600.608744-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617083132.1847234-1-linus.walleij@linaro.org>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 10:31:28AM +0200, Linus Walleij wrote:
-> This implements the known parts of the Realtek 4 byte
-> tag protocol version 0xA, as found in the RTL8366RB
-> DSA switch.
+From: Jiri Benc <jbenc@redhat.com>
+
+[ Upstream commit 9d149045b3c0e44c049cdbce8a64e19415290017 ]
+
+If the geneve interface is in collect_md (external) mode, it can't send any
+packets submitted directly to its net interface, as such packets won't have
+metadata attached. This is expected.
+
+However, the kernel itself sends some packets to the interface, most
+notably, IPv6 DAD, IPv6 multicast listener reports, etc. This is not wrong,
+as tunnel metadata can be specified in routing table (although technically,
+that has never worked for IPv6, but hopefully will be fixed eventually) and
+then the interface must correctly participate in IPv6 housekeeping.
+
+The problem is that any such attempt increases the tx_error counter. Just
+bringing up a geneve interface with IPv6 enabled is enough to see a number
+of tx_errors. That causes confusion among users, prompting them to find
+a network error where there is none.
+
+Change the counter used to tx_dropped. That better conveys the meaning
+(there's nothing wrong going on, just some packets are getting dropped) and
+hopefully will make admins panic less.
+
+Signed-off-by: Jiri Benc <jbenc@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/geneve.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index 6d3fa36b1616..3c9f8770f7e7 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -915,9 +915,10 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	if (geneve->collect_md) {
+ 		info = skb_tunnel_info(skb);
+ 		if (unlikely(!info || !(info->mode & IP_TUNNEL_INFO_TX))) {
+-			err = -EINVAL;
+ 			netdev_dbg(dev, "no tunnel metadata\n");
+-			goto tx_error;
++			dev_kfree_skb(skb);
++			dev->stats.tx_dropped++;
++			return NETDEV_TX_OK;
+ 		}
+ 	} else {
+ 		info = &geneve->info;
+@@ -934,7 +935,7 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
  
-Hi Linus
+ 	if (likely(!err))
+ 		return NETDEV_TX_OK;
+-tx_error:
++
+ 	dev_kfree_skb(skb);
+ 
+ 	if (err == -ELOOP)
+-- 
+2.25.1
 
-David likes to have a 0/X patch which contains the big picture for the
-patchset. It gets used for the merge commit he makes for the patchset.
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
