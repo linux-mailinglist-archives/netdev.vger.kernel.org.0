@@ -2,39 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49E161FE5AE
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:27:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A828B1FE52C
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:24:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729590AbgFRBQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:16:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47202 "EHLO mail.kernel.org"
+        id S1731689AbgFRCXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 22:23:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49116 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729582AbgFRBQ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:16:29 -0400
+        id S1729829AbgFRBRv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:17:51 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D6DA121D90;
-        Thu, 18 Jun 2020 01:16:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DF8C021D82;
+        Thu, 18 Jun 2020 01:17:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592442988;
-        bh=oPsEYan8BzCNcN2rrolhf41sx7V3EaoYnpGBm9uEYJU=;
+        s=default; t=1592443071;
+        bh=m5MjLN5kHPqximv4jc7KfEfNo/8ZvUuXiLLO/NUGhaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lOQbH3tBuZG1yhlspRf2NDKrSrUHw8O95SORBxX+H+0AMyrZIj7gvvmXYVaur27Af
-         Qr2L/nIFnx3oQdpNH+/rEgTeOO9Z/xAMocZtB84UjD3RDPzi/5Im8uoV/xNsjVfK4/
-         I6Dod/OahhMPsP7UQTkbp8vVQ8pcidyuU9TSYuzA=
+        b=S9Wtqzx4iz3mO3jUbqEh14Z1RhHbvWIp+aRbxIPUWQt2I/FNB8CFh968yZ1dn4Sbf
+         t3eqkOaDj+9N2Ir2rnvXg92CByuBQp7dkRHhH/AbuMz1Em+kFSdVaG1QdTeKBhIjp6
+         2qoaJj4+ufhivzWOyFAh+UA8c6sYDiK+bfKKIZrA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 388/388] bpf: Undo internal BPF_PROBE_MEM in BPF insns dump
-Date:   Wed, 17 Jun 2020 21:08:05 -0400
-Message-Id: <20200618010805.600873-388-sashal@kernel.org>
+Cc:     Sudhakar Panneerselvam <sudhakar.panneerselvam@oracle.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Mike Christie <mchristi@redhat.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 059/266] scsi: vhost: Notify TCM about the maximum sg entries supported per command
+Date:   Wed, 17 Jun 2020 21:13:04 -0400
+Message-Id: <20200618011631.604574-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
-References: <20200618010805.600873-1-sashal@kernel.org>
+In-Reply-To: <20200618011631.604574-1-sashal@kernel.org>
+References: <20200618011631.604574-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,67 +50,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andriin@fb.com>
+From: Sudhakar Panneerselvam <sudhakar.panneerselvam@oracle.com>
 
-[ Upstream commit 29fcb05bbf1a7008900bb9bee347bdbfc7171036 ]
+[ Upstream commit 5ae6a6a915033bfee79e76e0c374d4f927909edc ]
 
-BPF_PROBE_MEM is kernel-internal implmementation details. When dumping BPF
-instructions to user-space, it needs to be replaced back with BPF_MEM mode.
+vhost-scsi pre-allocates the maximum sg entries per command and if a
+command requires more than VHOST_SCSI_PREALLOC_SGLS entries, then that
+command is failed by it. This patch lets vhost communicate the max sg limit
+when it registers vhost_scsi_ops with TCM. With this change, TCM would
+report the max sg entries through "Block Limits" VPD page which will be
+typically queried by the SCSI initiator during device discovery. By knowing
+this limit, the initiator could ensure the maximum transfer length is less
+than or equal to what is reported by vhost-scsi.
 
-Fixes: 2a02759ef5f8 ("bpf: Add support for BTF pointers to interpreter")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20200613002115.1632142-1-andriin@fb.com
+Link: https://lore.kernel.org/r/1590166317-953-1-git-send-email-sudhakar.panneerselvam@oracle.com
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Stefan Hajnoczi <stefanha@redhat.com>
+Reviewed-by: Mike Christie <mchristi@redhat.com>
+Signed-off-by: Sudhakar Panneerselvam <sudhakar.panneerselvam@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/syscall.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/vhost/scsi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 4e6dee19a668..5d1d24f56d53 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2923,6 +2923,7 @@ static struct bpf_insn *bpf_insn_prepare_dump(const struct bpf_prog *prog)
- 	struct bpf_insn *insns;
- 	u32 off, type;
- 	u64 imm;
-+	u8 code;
- 	int i;
- 
- 	insns = kmemdup(prog->insnsi, bpf_prog_insn_size(prog),
-@@ -2931,21 +2932,27 @@ static struct bpf_insn *bpf_insn_prepare_dump(const struct bpf_prog *prog)
- 		return insns;
- 
- 	for (i = 0; i < prog->len; i++) {
--		if (insns[i].code == (BPF_JMP | BPF_TAIL_CALL)) {
-+		code = insns[i].code;
-+
-+		if (code == (BPF_JMP | BPF_TAIL_CALL)) {
- 			insns[i].code = BPF_JMP | BPF_CALL;
- 			insns[i].imm = BPF_FUNC_tail_call;
- 			/* fall-through */
- 		}
--		if (insns[i].code == (BPF_JMP | BPF_CALL) ||
--		    insns[i].code == (BPF_JMP | BPF_CALL_ARGS)) {
--			if (insns[i].code == (BPF_JMP | BPF_CALL_ARGS))
-+		if (code == (BPF_JMP | BPF_CALL) ||
-+		    code == (BPF_JMP | BPF_CALL_ARGS)) {
-+			if (code == (BPF_JMP | BPF_CALL_ARGS))
- 				insns[i].code = BPF_JMP | BPF_CALL;
- 			if (!bpf_dump_raw_ok())
- 				insns[i].imm = 0;
- 			continue;
- 		}
-+		if (BPF_CLASS(code) == BPF_LDX && BPF_MODE(code) == BPF_PROBE_MEM) {
-+			insns[i].code = BPF_LDX | BPF_SIZE(code) | BPF_MEM;
-+			continue;
-+		}
- 
--		if (insns[i].code != (BPF_LD | BPF_IMM | BPF_DW))
-+		if (code != (BPF_LD | BPF_IMM | BPF_DW))
- 			continue;
- 
- 		imm = ((u64)insns[i + 1].imm << 32) | (u32)insns[i].imm;
+diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
+index a9caf1bc3c3e..88ce114790d7 100644
+--- a/drivers/vhost/scsi.c
++++ b/drivers/vhost/scsi.c
+@@ -2290,6 +2290,7 @@ static struct configfs_attribute *vhost_scsi_wwn_attrs[] = {
+ static const struct target_core_fabric_ops vhost_scsi_ops = {
+ 	.module				= THIS_MODULE,
+ 	.fabric_name			= "vhost",
++	.max_data_sg_nents		= VHOST_SCSI_PREALLOC_SGLS,
+ 	.tpg_get_wwn			= vhost_scsi_get_fabric_wwn,
+ 	.tpg_get_tag			= vhost_scsi_get_tpgt,
+ 	.tpg_check_demo_mode		= vhost_scsi_check_true,
 -- 
 2.25.1
 
