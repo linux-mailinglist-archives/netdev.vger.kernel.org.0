@@ -2,77 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 332FD1FF4F6
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 16:41:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3227F1FF5C5
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 16:54:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730883AbgFROl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 10:41:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32932 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730842AbgFROl0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 10:41:26 -0400
-Received: from embeddedor (unknown [189.207.59.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A94C320773;
-        Thu, 18 Jun 2020 14:41:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592491286;
-        bh=7gp9lAbSMGxCdwx2huG0GKPn1vcy2864xBqQ5wfvFgs=;
-        h=Date:From:To:Cc:Subject:From;
-        b=hrb8hB3NyEz9oREFqGGfYqRyu/IstUrpYQMlurWzN93I1vBLif5bnLGQhDPMuJESh
-         +5cNtcEoyjUcQKGqItA+D5c9gK4jg+aqO+sil/vEMTng0QuRg1YpuoU5lV5yWV7csf
-         QSyWYYJ3l6ASiQMKV2GTNXJotGjjOtMBS+0XA9ic=
-Date:   Thu, 18 Jun 2020 09:46:48 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] taprio: Use struct_size() in kzalloc()
-Message-ID: <20200618144648.GA11738@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1730943AbgFROxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 10:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725982AbgFROxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 10:53:38 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751EEC06174E;
+        Thu, 18 Jun 2020 07:53:38 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id F05FA120ED481;
+        Thu, 18 Jun 2020 07:53:33 -0700 (PDT)
+Date:   Thu, 18 Jun 2020 07:53:30 -0700 (PDT)
+Message-Id: <20200618.075330.1927214829648104806.davem@davemloft.net>
+To:     gaurav1086@gmail.com
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [net/sched]: Remove redundant condition in qdisc_graft
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200618040056.30792-1-gaurav1086@gmail.com>
+References: <20200618012308.28153-1-gaurav1086@gmail.com>
+        <20200618040056.30792-1-gaurav1086@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 18 Jun 2020 07:53:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make use of the struct_size() helper instead of an open-coded version
-in order to avoid any potential type mistakes. Also, remove unnecessary
-variable _size_.
+From: Gaurav Singh <gaurav1086@gmail.com>
+Date: Thu, 18 Jun 2020 00:00:56 -0400
 
-This code was detected with the help of Coccinelle and, audited and
-fixed manually.
+> parent cannot be NULL here since its in the else part
+> of the if (parent == NULL) condition. Remove the extra
+> check on parent pointer.
+> 
+> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+> ---
+>  net/sched/sch_api.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+> index 9a3449b56bd6..be93ebcdb18d 100644
+> --- a/net/sched/sch_api.c
+> +++ b/net/sched/sch_api.c
+> @@ -1094,7 +1094,7 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
+>  
+>  		/* Only support running class lockless if parent is lockless */
+>  		if (new && (new->flags & TCQ_F_NOLOCK) &&
+> -		    parent && !(parent->flags & TCQ_F_NOLOCK))
+> +			!(parent->flags & TCQ_F_NOLOCK))
 
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- net/sched/sch_taprio.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index b1eb12d33b9a..e981992634dd 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1108,11 +1108,10 @@ static void setup_txtime(struct taprio_sched *q,
- 
- static struct tc_taprio_qopt_offload *taprio_offload_alloc(int num_entries)
- {
--	size_t size = sizeof(struct tc_taprio_sched_entry) * num_entries +
--		      sizeof(struct __tc_taprio_qopt_offload);
- 	struct __tc_taprio_qopt_offload *__offload;
- 
--	__offload = kzalloc(size, GFP_KERNEL);
-+	__offload = kzalloc(struct_size(__offload, offload.entries, num_entries),
-+			    GFP_KERNEL);
- 	if (!__offload)
- 		return NULL;
- 
--- 
-2.27.0
-
+You've broken the indentation of this line, it was correctly indented
+before your change.
