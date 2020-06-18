@@ -2,133 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19CC51FFD06
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 892771FFD0E
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:02:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728880AbgFRVAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 17:00:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59102 "EHLO
+        id S1729147AbgFRVCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 17:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726478AbgFRVAH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:00:07 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91E8C06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 14:00:05 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id a13so7342852ilh.3
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 14:00:05 -0700 (PDT)
+        with ESMTP id S1725829AbgFRVCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:02:17 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31C3C06174E;
+        Thu, 18 Jun 2020 14:02:16 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id a9so8984751ljn.6;
+        Thu, 18 Jun 2020 14:02:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MAbaBBlgo2E41ap4KFAOnToVzorD8tzflU17/nIx9wY=;
-        b=E6+I0h/1ElPHBnZtlpB6xuKsRhj5eVQ43uwTfPEo51g0H6VifWYbIH1XzaiyDHfAH8
-         RKyZVibIbjLmMpuIfmzqr26khjXQWpbyvDe4FwiGdaydCAZTqU/tHrBQV8QLFY2Pk2pl
-         bqz0tCxg1sDBqHmFePllvknOsNxUYz7ds9Tsyk9CyRbSZjXWHbsEPRxOP9SqD4pcMGcj
-         WZ3XT+DOlmB1VstlWJIujmCGZDEzKBpUQeAYyJDAy85rfREHJlZGynu3wYeWcXVBTW+g
-         wKcYB52hROB3YiJ2QnEtHSx4DKInGq1QTz0DbgfWpW80VbicIkDt4oFG2KDf9Q9Z5RSV
-         tG9w==
+         :cc:content-transfer-encoding;
+        bh=TMDMECxtDyrKw7UR9Mx7zsMc3I+ujgCjjWQyhNCKNAU=;
+        b=JIpHXpZh15j6uf54OZ0ZaYctdkQNVT6WZHwFCP1LiZwKNzvnBVF+8tjbMrEc88y5AQ
+         miDd3UrB7aKm6rDb7mO19hDBDXrpnwDSwdGMSDeRpxlVbgFdf0FL/pk21CFdgHsY17fk
+         xOby98ybU65IY5qMB4KNYVwds9cwYmD4q7ZK//AQy0FB5CFh6vn7EQaSUMrJQ3+Udn2X
+         3IOs1361+GsLreppwlLNHbaEXuSQdoKa2eJKSayOgkDmRixQYALgeX0rhdNZ878UQJ2l
+         9G0ZWePa4mdDWeXl3I863UtIrJQGwgKGjhg1IUnlN6vpzrn7PCISfSaJF9RVEfVdDu+a
+         AXCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MAbaBBlgo2E41ap4KFAOnToVzorD8tzflU17/nIx9wY=;
-        b=TH9w/bDbEESSEPLbik0bVZ3bAzGAhckIsbscMiJ6WPb+Yfmjhwh5ww70GebX+epmRq
-         JwrYmj/4Wolh+BLzJ9xtoXM0lQE8PEGdG0tswqsHviqCSmuEZjtnnlyIRRxHSym81JtE
-         QsmrhIyYneBFVzudRWH35JzZCKexarMP8CiqGo53/2UO9eIprA7xMixdGn6VbEEC6SST
-         UPf/jlAGtzlaJtIPQUdU5IeN8xc/SID1ni9o8EH4b8hwCS60XVAL8ceUMIugXNrQRYfz
-         +BX+gR98+IpirH5PIsA65sym4a/9dtivxGQBZH8j2fCTQIw+pja23h2bV8yhq4QfLNMH
-         RBmg==
-X-Gm-Message-State: AOAM533MCK7NpwIn1U7vDKi6sGxblElxWMCihIb7B8iizA4XXGLty8in
-        L9U8AjrPzOIvNqULVh3QxLbYyGhq6nMzfLIhv6oGTpDN
-X-Google-Smtp-Source: ABdhPJyfQiohovxep2iZiwO1yd24RyWtRVoxzeLYubb2KnSzGO+Yl58P0B0tyHTwbeEA/xDmjMHOu1dolL86G7M2hcE=
-X-Received: by 2002:a92:d905:: with SMTP id s5mr402361iln.268.1592514005150;
- Thu, 18 Jun 2020 14:00:05 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TMDMECxtDyrKw7UR9Mx7zsMc3I+ujgCjjWQyhNCKNAU=;
+        b=CbLPeiZ51L5Tbdh/AWkHZ7ZP2RurCufbVYAS0Ym08kjifyfPEOc1UasmO5Ijz8zLcc
+         +Tule4ebPWyy5KBsRKIKKzFDcZCmDYc8Z461NvWIaUAnrutU4ZaytREWfO7VhukfaOY+
+         hU1WlabcPt2g53ay56GzrjE/jAnotTUCfvmMuHL3KxEjuDEGakclhax2zsWC3XAHhFG3
+         Bp9YROBRGk2xq8H0OiijWgc8s7twW6naMiK0KqPtPslI29jLtBI3F/qzMt6VSJwMbvAi
+         kJjWpxzm+4VzjU1SfRBQVZvgRyOWmpV33OuJRDlvs6tOJ5HKpzgORd5O2NkVb0K6/Dqs
+         KFkg==
+X-Gm-Message-State: AOAM530ws0s5CeFbQ/7okqK+oYYwwT2kI5OiHNJgisLvkeVOEmMS6Qbr
+        ATt/gn0J8TEx/5ZOZH1nTNy/ackvSqbflUbdMuo=
+X-Google-Smtp-Source: ABdhPJxFENU0n/CIub2ELxobC9S6sSTeFivCPAONBxIvjJt9i55UJif8lUyl0SU+Y60it3IJHnYrMzgihE2p4fr35D0=
+X-Received: by 2002:a2e:974a:: with SMTP id f10mr128843ljj.283.1592514135166;
+ Thu, 18 Jun 2020 14:02:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200608215301.26772-1-xiyou.wangcong@gmail.com>
- <CA+h21hr_epEqWukZMQmZ2ecS9Y0yvX9mzR3g3OA39rg_96FfnQ@mail.gmail.com>
- <CAM_iQpW-5WpaSvSmJgoqEbcjtrjvaZY3ngKzVy2S-v81MdK4iQ@mail.gmail.com>
- <CAM_iQpUBuk1D4JYZtPQ_yodkLJwAyExvGG5vSOazed2QN7NESw@mail.gmail.com> <CA+h21hpjsth_1t1ZaBcTd1i3RPXZGqzSyegSSPS2Ns=uq5-HJw@mail.gmail.com>
-In-Reply-To: <CA+h21hpjsth_1t1ZaBcTd1i3RPXZGqzSyegSSPS2Ns=uq5-HJw@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 18 Jun 2020 13:59:53 -0700
-Message-ID: <CAM_iQpUn85pDjURnn8QtN2Wk2U=zb2C8M7H6Gm=5j=L0cg0VZg@mail.gmail.com>
-Subject: Re: [Patch net] net: change addr_list_lock back to static key
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        syzbot+f3a0e80c34b3fc28ac5e@syzkaller.appspotmail.com,
-        Taehee Yoo <ap420073@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>
+References: <CAHo-OoyU5OHQuqpTEo-uAQcwcLpzkXezFY6Re-Hv6jGM9aSFSA@mail.gmail.com>
+ <20200618195956.73967-1-zenczykowski@gmail.com>
+In-Reply-To: <20200618195956.73967-1-zenczykowski@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 18 Jun 2020 14:02:03 -0700
+Message-ID: <CAADnVQ+BqPeVqbgojN+nhYTE0nDcGF2-TfaeqyfPLOF-+DLn5Q@mail.gmail.com>
+Subject: Re: [PATCH] restore behaviour of CAP_SYS_ADMIN allowing the loading
+ of net bpf program
+To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 1:33 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+On Thu, Jun 18, 2020 at 1:00 PM Maciej =C5=BBenczykowski
+<zenczykowski@gmail.com> wrote:
 >
-> On Thu, 18 Jun 2020 at 23:06, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Thu, Jun 18, 2020 at 12:56 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > >
-> > > On Thu, Jun 18, 2020 at 12:40 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> > > >
-> > > > It's me with the stacked DSA devices again:
-> > >
-> > > It looks like DSA never uses netdev API to link master
-> > > device with slave devices? If so, their dev->lower_level
-> > > are always 1, therefore triggers this warning.
-> > >
-> > > I think it should call one of these netdev_upper_dev_link()
-> > > API's when creating a slave device.
-> > >
-> >
-> > I don't know whether DSA is too special to use the API, but
-> > something like this should work:
-> >
-> > diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> > index 4c7f086a047b..f7a2a281e7f0 100644
-> > --- a/net/dsa/slave.c
-> > +++ b/net/dsa/slave.c
-> > @@ -1807,6 +1807,11 @@ int dsa_slave_create(struct dsa_port *port)
-> >                            ret, slave_dev->name);
-> >                 goto out_phy;
-> >         }
-> > +       ret = netdev_upper_dev_link(slave_dev, master, NULL);
-> > +       if (ret) {
-> > +               unregister_netdevice(slave_dev);
-> > +               goto out_phy;
-> > +       }
-> >
-> >         return 0;
-> >
-> > @@ -1832,6 +1837,7 @@ void dsa_slave_destroy(struct net_device *slave_dev)
-> >         netif_carrier_off(slave_dev);
-> >         rtnl_lock();
-> >         phylink_disconnect_phy(dp->pl);
-> > +       netdev_upper_dev_unlink(slave_dev, dp->master);
-> >         rtnl_unlock();
-> >
-> >         dsa_slave_notify(slave_dev, DSA_PORT_UNREGISTER);
+> From: Maciej =C5=BBenczykowski <maze@google.com>
 >
-> Thanks. This is a good approximation of what needed to be done:
-> - netdev_upper_dev_link needs to be under rtnl,
-> - "dp->master" should be "dsa_slave_to_master(slave_dev)" since it's
-> actually a union if you look at struct dsa_port).
-> - And, most importantly, I think the hierarchy should be reversed: a
-> (virtual) DSA switch port net device (slave) should be an upper of the
-> (real) DSA master (the host port). Think of it like this: a DSA switch
-> is a sort of port multiplier for a host port, based on a frame header.
-> But, it works!
+> This is a 5.8-rc1 regression.
 
-Please feel free to make any changes you need and submit it
-by yourself, as you know DSA better than me and I do not even
-have a DSA testing environment.
+Please add full explanation here.
 
+Also use [PATCH bpf] in the subject for future submission.
+
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Fixes: 2c78ee898d8f ("bpf: Implement CAP_BPF")
+
+Reported-by: John
+is missing?
+
+> Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
+> ---
+>  kernel/bpf/syscall.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> Do you mind if I submit your modified patch to "net"? What would be an
-> adequate Fixes: tag?
-
-If it is merely to fix the lockdep warning, my commit 845e0ebb4408d447
-is the right one to blame.
-
-Thanks.
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 8da159936bab..7d946435587d 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -2121,7 +2121,7 @@ static int bpf_prog_load(union bpf_attr *attr, unio=
+n bpf_attr __user *uattr)
+>             !bpf_capable())
+>                 return -EPERM;
+>
+> -       if (is_net_admin_prog_type(type) && !capable(CAP_NET_ADMIN))
+> +       if (is_net_admin_prog_type(type) && !capable(CAP_NET_ADMIN) && !c=
+apable(CAP_SYS_ADMIN))
+>                 return -EPERM;
+>         if (is_perfmon_prog_type(type) && !perfmon_capable())
+>                 return -EPERM;
+> --
+> 2.27.0.290.gba653c62da-goog
+>
