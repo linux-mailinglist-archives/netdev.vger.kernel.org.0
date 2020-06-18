@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B74D1FE3A5
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:12:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FFBE1FE384
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:12:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732762AbgFRCMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 22:12:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53916 "EHLO mail.kernel.org"
+        id S1730553AbgFRBVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:21:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54132 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730495AbgFRBVZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:21:25 -0400
+        id S1730540AbgFRBVg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:21:36 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6AA8C21941;
-        Thu, 18 Jun 2020 01:21:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3327E20776;
+        Thu, 18 Jun 2020 01:21:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443285;
-        bh=sjoUP2rUT81li5sGbRWLkKVRHBrm5n1OcUWBHUJXVG0=;
+        s=default; t=1592443296;
+        bh=Qjck8EbWyPCVno1+kOnWZaEQ2V1zZDtXuWvlXJk9zvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O2w7bwuVod+DMY0lgXbfcSpNWd9PPz6LvKsGOihEBbpud07GuiDOfEwqqJe+seLyC
-         E3nL5uQVqw63gcUtklXjq4xxypHkQU0TYZQR+0SFno2RwjeFwRAB1TORO3CFQRzFZl
-         FRozMga61jawOognXic9cXIYpS1oGzkmgLjMeBQk=
+        b=qDGCeKvnR2TbBffsTIoAoAPv2mJMzeuhcVOMBKgUfrm5N9aWbMhPC97Mtxh2kCssq
+         bcKn7HOJTXgh6XoSHvsE4ILdUqsTzTs/IKoWvCiP2ufXQB3kcCAWjDd6hUTN0CX4zA
+         FXFPFP6NLtPdZqBDNrdL0fMNu3iyxHoT8oDqI56A=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Benc <jbenc@redhat.com>,
+Cc:     Dan Murphy <dmurphy@ti.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 228/266] geneve: change from tx_error to tx_dropped on missing metadata
-Date:   Wed, 17 Jun 2020 21:15:53 -0400
-Message-Id: <20200618011631.604574-228-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 236/266] net: marvell: Fix OF_MDIO config check
+Date:   Wed, 17 Jun 2020 21:16:01 -0400
+Message-Id: <20200618011631.604574-236-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200618011631.604574-1-sashal@kernel.org>
 References: <20200618011631.604574-1-sashal@kernel.org>
@@ -43,62 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Benc <jbenc@redhat.com>
+From: Dan Murphy <dmurphy@ti.com>
 
-[ Upstream commit 9d149045b3c0e44c049cdbce8a64e19415290017 ]
+[ Upstream commit 5cd119d9a05f1c1a08778a7305b4ca0f16bc1e20 ]
 
-If the geneve interface is in collect_md (external) mode, it can't send any
-packets submitted directly to its net interface, as such packets won't have
-metadata attached. This is expected.
+When CONFIG_OF_MDIO is set to be a module the code block is not
+compiled. Use the IS_ENABLED macro that checks for both built in as
+well as module.
 
-However, the kernel itself sends some packets to the interface, most
-notably, IPv6 DAD, IPv6 multicast listener reports, etc. This is not wrong,
-as tunnel metadata can be specified in routing table (although technically,
-that has never worked for IPv6, but hopefully will be fixed eventually) and
-then the interface must correctly participate in IPv6 housekeeping.
-
-The problem is that any such attempt increases the tx_error counter. Just
-bringing up a geneve interface with IPv6 enabled is enough to see a number
-of tx_errors. That causes confusion among users, prompting them to find
-a network error where there is none.
-
-Change the counter used to tx_dropped. That better conveys the meaning
-(there's nothing wrong going on, just some packets are getting dropped) and
-hopefully will make admins panic less.
-
-Signed-off-by: Jiri Benc <jbenc@redhat.com>
+Fixes: cf41a51db8985 ("of/phylib: Use device tree properties to initialize Marvell PHYs.")
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/geneve.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/phy/marvell.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index aa101f72d405..cac75c7d1d01 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -987,9 +987,10 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
- 	if (geneve->collect_md) {
- 		info = skb_tunnel_info(skb);
- 		if (unlikely(!info || !(info->mode & IP_TUNNEL_INFO_TX))) {
--			err = -EINVAL;
- 			netdev_dbg(dev, "no tunnel metadata\n");
--			goto tx_error;
-+			dev_kfree_skb(skb);
-+			dev->stats.tx_dropped++;
-+			return NETDEV_TX_OK;
- 		}
- 	} else {
- 		info = &geneve->info;
-@@ -1006,7 +1007,7 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index a7796134e3be..91cf1d167263 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -358,7 +358,7 @@ static int m88e1101_config_aneg(struct phy_device *phydev)
+ 	return marvell_config_aneg(phydev);
+ }
  
- 	if (likely(!err))
- 		return NETDEV_TX_OK;
--tx_error:
-+
- 	dev_kfree_skb(skb);
- 
- 	if (err == -ELOOP)
+-#ifdef CONFIG_OF_MDIO
++#if IS_ENABLED(CONFIG_OF_MDIO)
+ /* Set and/or override some configuration registers based on the
+  * marvell,reg-init property stored in the of_node for the phydev.
+  *
 -- 
 2.25.1
 
