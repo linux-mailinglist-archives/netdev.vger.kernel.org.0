@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7C8F1FFE33
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:33:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BBD61FFE39
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:35:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730408AbgFRWdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 18:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45252 "EHLO
+        id S1732339AbgFRWfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 18:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727001AbgFRWdn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:33:43 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F03C06174E;
-        Thu, 18 Jun 2020 15:33:43 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id w1so7238894qkw.5;
-        Thu, 18 Jun 2020 15:33:43 -0700 (PDT)
+        with ESMTP id S1726835AbgFRWfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:35:02 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981EBC0613EE;
+        Thu, 18 Jun 2020 15:35:02 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id g28so7286341qkl.0;
+        Thu, 18 Jun 2020 15:35:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KBHYsW5yW1CAVvBFDgy/TGfxwLfAurjw5+HPPsQ8l00=;
-        b=GuvA39fiCMFlznSXXw9UFC8pVYn1ImBvDMaASeEWqJU5D8ZNCYt7WfT0BSMzmj5ICy
-         9H7+YhjqBBjTLZvAQRR/pTQ8alt3+a3row7J3+GG34ekhtfgOWaeIDmILcUgUuZ1ndQH
-         DlW2+vmM7BqMBDtanuh8DiknZPSr/R2a53YHBt7YRYybo6MGPjTk29Hl0o9it0oDRxf3
-         ZDFT8UiUjFYkXNiutkfJu3Xf+vTP/gIlPV7Zy9FYmwSUD2tCCiA6rglKEIGpcVhO4a1j
-         g2iSNvg+npagEqyVMq8AKXvW0giJPe5T5YQ9CTCR/sHMG5/u9sBk3bJhTj0lsieBQHd4
-         GE8A==
+        bh=5vJjS/jzXZ1TJgMwiikwMrcCpvPwYwlpwX3QKMzAXvU=;
+        b=d5IWrvMeSkS1Cg0/5+4DZYBJaOOxpocfjK6qmZWmWab0u1mKxBOL1hKmeJpBOddCTA
+         1Bt1qzWixU7R3giYuQyq4SW4jWHbGjdfh+ixWryGk/tEIgSrsc3LjgjGCc/BdlZ4/x3x
+         pCtGNs05JI+l/chu560LSLPZ2fepJSeGkbaJi42J7KiGeb//x3/nbuHaLIMn4/KP98kD
+         Y5hEhJjd6My+gEwyqyiSTwFPkzgoXnrnsaeTRd74cPgMrYFlgdv9CQkuEGU6brtH72E7
+         2DB6IX1aFBzxBsikVwhmEvWBZe2n6zgGrh3W7AHBb06OtuniTuEdQmHSeQTbdXC8kJa5
+         BKbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KBHYsW5yW1CAVvBFDgy/TGfxwLfAurjw5+HPPsQ8l00=;
-        b=ShmII9HtH+7MnYG1rp9Lv8qHMS6BHUOFWjPYQyb/4MfGL5aQgYsnDwic6O1sOlMaSg
-         P/1XxOHlFUIl6QPL9I9Q7TierdVrvYYCdPjmnxKKn0ySIs2nwD5ZkOKwQSlPsTts23Ot
-         nlIdVXLz3rLvlzvBc+GcDW6viRpR+ORrBLGHLjT2cQIlmsFZbPdsiAqYn2R9xXAJZsea
-         ZYfgLxOTz4ih4T2GscC/X6611FDOrh2o4BPF3WQuiNvQjj1n2ve5hGAuA91u/BG8nhCT
-         ePNY6HGZlUc4xVeTnVwClj/eFUwLqgIEzrEm745OPk94ksTYMDByaKTEEbZPLyngq76t
-         o5Jg==
-X-Gm-Message-State: AOAM533Z5SQ+yxpXiaS49IISxnPdJdVubA/dvz/nG7SxX2B8wiVYym03
-        Nnwt7rRcgtf4v6MpghyxbN2WJ6Q3rlRO69UE6Xs=
-X-Google-Smtp-Source: ABdhPJziqnDloFofEuz0ZgAXix27jMBCHHkjhYh2laJZmfmWMUi9c/PYPVufxUad3bKMZ/Dod5JJOdXNbbnSDW6Xy4g=
-X-Received: by 2002:a05:620a:b84:: with SMTP id k4mr683424qkh.39.1592519622309;
- Thu, 18 Jun 2020 15:33:42 -0700 (PDT)
+        bh=5vJjS/jzXZ1TJgMwiikwMrcCpvPwYwlpwX3QKMzAXvU=;
+        b=kHgeB3H2w1ijM+sfxftsi3nDpuNKltlADoRM6mRp6glQsf2hcHA8I//7KgGYsfCVMb
+         ptNoK7ccb87962/wxV+B0cNETWLnuhVsOaeZXFhRoRBUTjzLt0qfelpPWqwJLa0BVXA7
+         zL8E6ibx+jq2/VLG9ZfQ32bAneupUQrFEIDvj+jGKkKBb5+1d74rk6JDPNe/K8RuteeC
+         7J7345AH8BsbCB6z8PXq21LPNJz9u6d89aXLpiD1jLoDvdmsrluquio2VoL/QT+HXcbu
+         jUbvuB4xV562sp9/3UPDLYpXK1YV0DuVbiCVeopTIqC54gVMs1p4+mhy5iDC39Y1OmOg
+         NVmA==
+X-Gm-Message-State: AOAM530ey2Hjkcu7In51HNj9QJxhscY3hSWcc5sBeVDCtVWVnHSbmHXH
+        YsyKKLBwB4JF5UGQu0YPDX/zaTJRD140ysabCLM=
+X-Google-Smtp-Source: ABdhPJyfYDOjj2Vz9Ql197CU8hm8vPZt0Zv5Z8/mfrERbyF0PXwxRtRxamcwoSK1cKMo1gW6izC/mzw72P9+Qsfi/a0=
+X-Received: by 2002:a37:a89:: with SMTP id 131mr708766qkk.92.1592519701886;
+ Thu, 18 Jun 2020 15:35:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200611222340.24081-1-alexei.starovoitov@gmail.com> <20200611222340.24081-3-alexei.starovoitov@gmail.com>
-In-Reply-To: <20200611222340.24081-3-alexei.starovoitov@gmail.com>
+References: <20200611222340.24081-1-alexei.starovoitov@gmail.com> <20200611222340.24081-4-alexei.starovoitov@gmail.com>
+In-Reply-To: <20200611222340.24081-4-alexei.starovoitov@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 18 Jun 2020 15:33:31 -0700
-Message-ID: <CAEf4BzYbvuZoQb7Sz4Q7McyEA4khHm5RaQPR3bL67owLoyv1RQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v3 bpf-next 2/4] bpf: Add bpf_copy_from_user() helper.
+Date:   Thu, 18 Jun 2020 15:34:51 -0700
+Message-ID: <CAEf4Bza44nCC_1dCww_rQbo9+SNLgBgpF5vpg_9tmZu0aSOFLg@mail.gmail.com>
+Subject: Re: [PATCH RFC v3 bpf-next 3/4] libbpf: support sleepable progs
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -62,53 +62,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 11, 2020 at 3:24 PM Alexei Starovoitov
+On Thu, Jun 11, 2020 at 3:25 PM Alexei Starovoitov
 <alexei.starovoitov@gmail.com> wrote:
 >
 > From: Alexei Starovoitov <ast@kernel.org>
 >
-> Sleepable BPF programs can now use copy_from_user() to access user memory.
+> Pass request to load program as sleepable via ".s" suffix in the section name.
+> If it happens in the future that all map types and helpers are allowed with
+> BPF_F_SLEEPABLE flag "fmod_ret/" and "lsm/" can be aliased to "fmod_ret.s/" and
+> "lsm.s/" to make all lsm and fmod_ret programs sleepable by default. The fentry
+> and fexit programs would always need to have sleepable vs non-sleepable
+> distinction, since not all fentry/fexit progs will be attached to sleepable
+> kernel functions.
 >
 > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> Acked-by: KP Singh <kpsingh@google.com>
 > ---
->  include/linux/bpf.h            |  1 +
->  include/uapi/linux/bpf.h       | 11 ++++++++++-
->  kernel/bpf/helpers.c           | 22 ++++++++++++++++++++++
->  kernel/trace/bpf_trace.c       |  2 ++
->  tools/include/uapi/linux/bpf.h | 11 ++++++++++-
->  5 files changed, 45 insertions(+), 2 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 6819000682a5..c8c9217f3ac9 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1632,6 +1632,7 @@ extern const struct bpf_func_proto bpf_ringbuf_reserve_proto;
->  extern const struct bpf_func_proto bpf_ringbuf_submit_proto;
->  extern const struct bpf_func_proto bpf_ringbuf_discard_proto;
->  extern const struct bpf_func_proto bpf_ringbuf_query_proto;
-> +extern const struct bpf_func_proto bpf_copy_from_user_proto;
->
->  const struct bpf_func_proto *bpf_tracing_func_proto(
->         enum bpf_func_id func_id, const struct bpf_prog *prog);
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 0bef454c9598..a38c806d34ad 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3260,6 +3260,13 @@ union bpf_attr {
->   *             case of **BPF_CSUM_LEVEL_QUERY**, the current skb->csum_level
->   *             is returned or the error code -EACCES in case the skb is not
->   *             subject to CHECKSUM_UNNECESSARY.
-> + *
-> + * int bpf_copy_from_user(void *dst, u32 size, const void *user_ptr)
 
-Can we also add bpf_copy_str_from_user (or bpf_copy_from_user_str,
-whichever makes more sense) as well?
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-> + *     Description
-> + *             Read *size* bytes from user space address *user_ptr* and store
-> + *             the data in *dst*. This is a wrapper of copy_from_user().
-> + *     Return
-> + *             0 on success, or a negative error in case of failure.
->   */
+>  tools/lib/bpf/libbpf.c | 25 ++++++++++++++++++++++++-
+>  1 file changed, 24 insertions(+), 1 deletion(-)
+>
 
 [...]
