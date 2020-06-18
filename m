@@ -2,42 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68BEC1FE870
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:48:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 174C21FE859
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728315AbgFRBJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:09:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36516 "EHLO mail.kernel.org"
+        id S2387937AbgFRCsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 22:48:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37194 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728283AbgFRBJr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:09:47 -0400
+        id S1728418AbgFRBKL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:10:11 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE29221D7A;
-        Thu, 18 Jun 2020 01:09:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E8AF821D7B;
+        Thu, 18 Jun 2020 01:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592442587;
-        bh=FDpuhwIPKqTLeXCeJvNbdgB/8fO5E50d3SbB8nIMSsU=;
+        s=default; t=1592442610;
+        bh=2qodh3uYCK+UWwNLdpcdGPCezWMVsZdyfkfnb++3Vr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eO5HBc6fiVpzaUtjPohBuoEnGn7jVV04d1lkYbAWN6I4OsVRpv+68G9P9/I4LeOHL
-         kXs3bdjYP5D7lxnfzJgFjmiI/50Azvw5GN6soU7phWkJOFOL8tv/Z4PWRKn1LmC/pl
-         XLtIazZHqDTv6lLkj0lYdNFB6Nu0EtG6UQOCOVF4=
+        b=sW4RxGg/EbtV4qnxqA27QqE54e1P5pHc+HRbQkaXdzDw1pVQ3xvc5hm25OtWrpZLQ
+         2Lq0X+JjvYoae9espsrPXVm/rN7QfyQjwsVj7HM8YiR+4ZprNDWntZ/EHkFyvQ/c8J
+         enqkuPXCkNcQ2d6HFpucscQwefaTvLmgOK8mCH2U=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sudhakar Panneerselvam <sudhakar.panneerselvam@oracle.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Mike Christie <mchristi@redhat.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+Cc:     Wang Hai <wanghai38@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-hams@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 077/388] scsi: vhost: Notify TCM about the maximum sg entries supported per command
-Date:   Wed, 17 Jun 2020 21:02:54 -0400
-Message-Id: <20200618010805.600873-77-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.7 092/388] yam: fix possible memory leak in yam_init_driver
+Date:   Wed, 17 Jun 2020 21:03:09 -0400
+Message-Id: <20200618010805.600873-92-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
 References: <20200618010805.600873-1-sashal@kernel.org>
@@ -50,44 +44,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sudhakar Panneerselvam <sudhakar.panneerselvam@oracle.com>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit 5ae6a6a915033bfee79e76e0c374d4f927909edc ]
+[ Upstream commit 98749b7188affbf2900c2aab704a8853901d1139 ]
 
-vhost-scsi pre-allocates the maximum sg entries per command and if a
-command requires more than VHOST_SCSI_PREALLOC_SGLS entries, then that
-command is failed by it. This patch lets vhost communicate the max sg limit
-when it registers vhost_scsi_ops with TCM. With this change, TCM would
-report the max sg entries through "Block Limits" VPD page which will be
-typically queried by the SCSI initiator during device discovery. By knowing
-this limit, the initiator could ensure the maximum transfer length is less
-than or equal to what is reported by vhost-scsi.
+If register_netdev(dev) fails, free_netdev(dev) needs
+to be called, otherwise a memory leak will occur.
 
-Link: https://lore.kernel.org/r/1590166317-953-1-git-send-email-sudhakar.panneerselvam@oracle.com
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>
-Reviewed-by: Mike Christie <mchristi@redhat.com>
-Signed-off-by: Sudhakar Panneerselvam <sudhakar.panneerselvam@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/scsi.c | 1 +
+ drivers/net/hamradio/yam.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
-index c39952243fd3..8b104f76f324 100644
---- a/drivers/vhost/scsi.c
-+++ b/drivers/vhost/scsi.c
-@@ -2280,6 +2280,7 @@ static struct configfs_attribute *vhost_scsi_wwn_attrs[] = {
- static const struct target_core_fabric_ops vhost_scsi_ops = {
- 	.module				= THIS_MODULE,
- 	.fabric_name			= "vhost",
-+	.max_data_sg_nents		= VHOST_SCSI_PREALLOC_SGLS,
- 	.tpg_get_wwn			= vhost_scsi_get_fabric_wwn,
- 	.tpg_get_tag			= vhost_scsi_get_tpgt,
- 	.tpg_check_demo_mode		= vhost_scsi_check_true,
+diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
+index 71cdef9fb56b..5ab53e9942f3 100644
+--- a/drivers/net/hamradio/yam.c
++++ b/drivers/net/hamradio/yam.c
+@@ -1133,6 +1133,7 @@ static int __init yam_init_driver(void)
+ 		err = register_netdev(dev);
+ 		if (err) {
+ 			printk(KERN_WARNING "yam: cannot register net device %s\n", dev->name);
++			free_netdev(dev);
+ 			goto error;
+ 		}
+ 		yam_devs[i] = dev;
 -- 
 2.25.1
 
