@@ -2,97 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E00E1FEEAB
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 11:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7E81FEEAF
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 11:31:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729145AbgFRJay (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 05:30:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
+        id S1729174AbgFRJbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 05:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728819AbgFRJax (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 05:30:53 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FEE2C06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 02:30:53 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id fc4so2450075qvb.1
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 02:30:53 -0700 (PDT)
+        with ESMTP id S1728819AbgFRJbn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 05:31:43 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6F8C06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 02:31:43 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id ne5so2275867pjb.5
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 02:31:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pumpkinnet-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=LedYRrb0C2slcDatyr7KvhC9s9aUbf+92ltI8cL/D7Q=;
-        b=C6bJZl+JzLyv762KCHKpX3jzm0np2UR+30ctZJQYNI9Gvso+6pZ6FUBdp6LGhrRcob
-         iw7hsfZjURDGRPhWayzh/XpmgQ3SWsP0fFUB5K/fBdc6G44do4nb0AVaRwl7dYod0Cbj
-         DNHwSWyR6d+J396H8Di1OcC4X6cmfbgMxEnWGpw9spX0U5BT8p1q3W+TAQ9rUx2XrnE3
-         enLDI22SJMBLofYZQHKbjEFAZuJx7JILcQeyy2XNV4qEaMsjgKYK8BPUADHIkIzIayK0
-         75V//9yLMXLoM70lmlrGbORpC06XnieLR7NUOePPDQLp22siRVaFwQEN1dLbXbq/F0Vs
-         Oq3A==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DzxmerU97oT6v2amuGEClNWoK6S9GT7VzDYB3K5pcdE=;
+        b=NbbE554q8QtZumzHxzZb4jDApE4L+4UKfAx2JPiOrUowRgu7KfshoN6mktKA4/cpF3
+         0n1sd0dfKyUD+AzIwhZAslX1dDa0x52S+Mkqo8KH8eSjU4JI+VQmZfz1K3ZZHU1Mlz7O
+         lUTADke+tXhq8HIZ+PIcjxz2EwLN2UwK1PdUXnw1IAGPr6RUlij9Y3dS8ZjyzeBoZ+iP
+         7tdqeCcRssksDSi/OiAGB/ab7+Cdx3jFQp1y9kFzWkCvK+2QFQ8mntsQp9nPibcwoyM0
+         w4JJ4+WtFcEf2PyiTwi5ThT9skvfr7cBb7/5PuqZiKsXVU9HLzOpFtWL4OwqZUTje023
+         BNxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=LedYRrb0C2slcDatyr7KvhC9s9aUbf+92ltI8cL/D7Q=;
-        b=YWYKuY3qQCfrPrUWEp2ZY6Nes6HjrCDLsv579CqxqBmmGzLm07Cv0KoW0GmOtBszcP
-         jo35T0PNslzIA6ZxIDSLc8kLr/KHX5yg9wUpLK56D5Hww2gIVYB5CDqLkc8XSNRmAk1S
-         wHqYCoDRrK+hzd4kHNsFuDnVEQFZr6nac4a61OstJ4oHo0ucHP00wRhzS3BobAML3OtK
-         1cOzP7wa2+H+2QkcZf29BjBP+lXBUx9GxQT9eARv6jdEpETOReXnQKFxrT9a92TmiAbH
-         0FC2JvZmTJz9Du5wTOFqtTBikUZGA2oYaHF8pzueVtH11D3jf9HFoJK//oAg9Evsr1N1
-         nXGg==
-X-Gm-Message-State: AOAM532Nc50plDjapbw+xBMY0f9eC58LNOTOqxiBi84i1vu+xgiOMU8i
-        lV26OY3VKqlKyVdzGG6Wf3CVqvvw7p1qFBsJIr0r5w==
-X-Google-Smtp-Source: ABdhPJxUiguLw5oWAIWKbW4k75qrZvQbq52G/2cGJe6+URnSUBTEViph3YAm7+OGNXXyzNUuPGDdUkMxikp8n/8h5l8=
-X-Received: by 2002:ad4:590d:: with SMTP id ez13mr2835593qvb.177.1592472652394;
- Thu, 18 Jun 2020 02:30:52 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DzxmerU97oT6v2amuGEClNWoK6S9GT7VzDYB3K5pcdE=;
+        b=smiDNWOV/xAwaVtEAPs59hvTDVwANbNCM6hP/dNzBTLh9RPMRniyHTcIUibinwlcD9
+         HtF7fNou2aFkaG/ZzgHMH2q30jNwiT36OiTQJyV8SurTofhUV3Qq55RNdEn8Vmj6kmE3
+         icftNKMfuHkC8ppGVDr+Tg+yyaYOkykhgre/tki17Lzc53K5XT7lL/WkTOCcoJfaxcR7
+         DMG22sJudqxSz5Map2QlT9bYOySMxZf6RmmVAC/Q2FQgK0FGBylLpE31QCpjtE3XaI7z
+         w11gMsZAHlBQ4mVEt8uw1/leEAuxirUa2aG8pyZgxIz1wSKij19mRPCgHIwhI4gSs+CS
+         f9/Q==
+X-Gm-Message-State: AOAM531BvEgIxlEhtTEIVIymdbhazLl0P4COsdBMw3IJo7Rc0HMZw/w+
+        Wmc389X6quqEfktZQkNg+f0=
+X-Google-Smtp-Source: ABdhPJzT16M5yXAzG5fYv3HYcs8FGohD7Z/hTZw12Y4yWdhCw/6wuz+hFyCPLK4xbNJaZnH7iCwdMA==
+X-Received: by 2002:a17:90a:bf07:: with SMTP id c7mr3335175pjs.233.1592472702742;
+        Thu, 18 Jun 2020 02:31:42 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y18sm2197510pfn.177.2020.06.18.02.31.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jun 2020 02:31:41 -0700 (PDT)
+Date:   Thu, 18 Jun 2020 17:31:31 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     netdev@vger.kernel.org,
+        Pieter Jansen van Vuuren 
+        <pieter.jansenvanvuuren@netronome.com>,
+        Lucas Bates <lucasb@mojatatu.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        David Miller <davem@davemloft.net>, lucien.xin@gmail.com,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH net] tc-testing: fix geneve options match in tunnel_key
+ unit tests
+Message-ID: <20200618093131.GW102436@dhcp-12-153.nay.redhat.com>
+References: <20200618083705.449619-1-liuhangbin@gmail.com>
+ <4c1589d4d2866cdfebf12bb32434210532b3b884.camel@redhat.com>
 MIME-Version: 1.0
-From:   =?UTF-8?B?6rCV7Jyg6rG0?= <yugun819@pumpkinnet.com>
-Date:   Thu, 18 Jun 2020 18:30:00 +0900
-Message-ID: <CALMTMJLgfJaBM1N=NUG6NfJwtWDEfANnqKmbMdKP+a27Zf=RYw@mail.gmail.com>
-Subject: Question about ICMPv6 parameter problem code more than 3
-To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org
-Cc:     =?UTF-8?B?6rmA7KO87Jew?= <joykim@pumpkinnet.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4c1589d4d2866cdfebf12bb32434210532b3b884.camel@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+On Thu, Jun 18, 2020 at 10:53:51AM +0200, Davide Caratti wrote:
+> On Thu, 2020-06-18 at 16:37 +0800, Hangbin Liu wrote:
+> > tc action print "geneve_opts" instead of "geneve_opt".
+> > Fix the typo, or we will unable to match correct action output.
+> > 
+> 
+> hello Hangbin,
+> 
+> > Fixes: cba54f9cf4ec ("tc-testing: add geneve options in tunnel_key unit tests")
+> 
+> this Fixes: tag is suspicious, when a tdc test is added I would expect to
+> see it passing. If I well read the code, the problem has been introduced
+> in iproute2, with commit 
+> 
+> commit f72c3ad00f3b7869e90840d0098a83cb88224892
+> Author: Xin Long <lucien.xin@gmail.com>
+> Date:   Mon Apr 27 18:27:48 2020 +0800
+> 
+>     tc: m_tunnel_key: add options support for vxlan
+>     
+> 
+> that did:
+> 
+> [...]
+> 
+> static void tunnel_key_print_geneve_options(const char *name,
+> -                                           struct rtattr *attr)
+> +static void tunnel_key_print_geneve_options(struct rtattr *attr)
+>  {
+>         struct rtattr *tb[TCA_TUNNEL_KEY_ENC_OPT_GENEVE_MAX + 1];
+>         struct rtattr *i = RTA_DATA(attr);
+>         int ii, data_len = 0, offset = 0;
+>         int rem = RTA_PAYLOAD(attr);
+> +       char *name = "geneve_opts";
+>         char strbuf[rem * 2 + 1];
+>         char data[rem * 2 + 1];
+>         uint8_t data_r[rem];
+> @@ -421,7 +464,7 @@ static void tunnel_key_print_geneve_options(const char *name,
+>  
+>         open_json_array(PRINT_JSON, name);
+>         print_nl();
+> -       print_string(PRINT_FP, name, "\t%s ", "geneve_opt");
+> +       print_string(PRINT_FP, name, "\t%s ", name);
 
-I'm testing linux kernels to get ipv6ready logo certificate.
+Ah, yes, you are right.
+>  
+> 
+> (just speculating, because I didn't try older versions of iproute2). But if my
+> hypothesis is correct, then the fix should be done in iproute2, WDYT?
 
-Some test cases require that node send parameter problem with code 3
-("IPv6 First Fragment has incomplete IPv6 Header Chain" referred from IANA)
+If you and Stephen are both agree. I'm OK to fix it on iproute2.
 
-I found that parameter problem codes are defined only from 0 to 2 in
-the Linux kernel.
-
-So my question is as follows
-
-Why are the codes on IANA not implemented? Is it under discussion?
-If it's being implemented, can you tell me when it will be completed?
-
-Thank you!
-
-- Yugeon Kang
-
-
-=EA=B0=95 =EC=9C=A0 =EA=B1=B4 =EC=82=AC=EC=9B=90
-
-=ED=8E=8C=ED=82=A8=EB=84=A4=ED=8A=B8=EC=9B=8D=EC=8A=A4=E3=88=9C =EA=B0=9C=
-=EB=B0=9C1=ED=8C=80
-
-08380 =EC=84=9C=EC=9A=B8=EC=8B=9C =EA=B5=AC=EB=A1=9C=EA=B5=AC =EB=94=94=EC=
-=A7=80=ED=84=B8=EB=A1=9C31=EA=B8=B8 20 =EC=97=90=EC=9D=B4=EC=8A=A4=ED=85=8C=
-=ED=81=AC=EB=85=B8=ED=83=80=EC=9B=8C 5=EC=B0=A8 405=ED=98=B8
-
-Direct: 070-4263-9937
-
-Mobile: 010-9887-3517
-
-E-mail: yugun819@pumpkinnet.com
-
-Tel: 02-863-9380, Fax: 02-2109-6675
-
-www.pumpkinnet.co.kr
+Thanks
+Hangbin
