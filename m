@@ -2,114 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF68A1FFE13
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:27:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC55B1FFE2B
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:29:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732303AbgFRW1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 18:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
+        id S1729545AbgFRW3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 18:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732290AbgFRW13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:27:29 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7885C06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:27:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=g7zW+FhLoRqM5Cs284P0tjdipggPnTdNkH/p+1pFfcU=; b=ki5IqbCRSTeS9wTVlFFSU/E1s
-        bmcqIN/L0A4gWDNV38BiWcTu/NgNQ13UkyWVAQfEv58Lfk5gw1z87fg8EwU+jNMzZjYiT0eWp3DeQ
-        X/6AbtQYLCcrW4BtZ13GtsVpYR/Ftq1BbPe/Gd+QwqM76uDe1PJ2iULgYxfZDKK0WEHVzH4+F0s+f
-        uh0stuyyEGYJQFMTAvLTF9XfTNMJnNJQllrPvn5lNgpIZfQDs82WOtFkbKxlMhCCNUuS54hIbbQKI
-        I3yjDBQmotG4UiYgHy3yhZag42Bz9fdt/3h7XyLXHV87dVWB5kwNc02SmbX+DPgS87oFx83lbeIRv
-        RedhhbSuA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58810)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jm30K-0005dl-10; Thu, 18 Jun 2020 23:27:28 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jm30J-000545-Em; Thu, 18 Jun 2020 23:27:27 +0100
-Date:   Thu, 18 Jun 2020 23:27:27 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
-        michael@walle.cc, f.fainelli@gmail.com
-Subject: Re: [PATCH net-next 4/5] net: phy: add Lynx PCS MDIO module
-Message-ID: <20200618222727.GM1551@shell.armlinux.org.uk>
-References: <20200618120837.27089-1-ioana.ciornei@nxp.com>
- <20200618120837.27089-5-ioana.ciornei@nxp.com>
- <20200618221352.GB279339@lunn.ch>
+        with ESMTP id S1727787AbgFRW3o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:29:44 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D3FC06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:29:43 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id h39so3932822ybj.3
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:29:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A0DW2Q87RDIqsYkxNfDBfLjQHExQB4ve4CO+kxbtwYA=;
+        b=mjlBJPqMQn1HKw599yxONDAdbKeDRS0gWBEUFi3EQpmCXhRrnEWsT7xzzgi9PU9uON
+         yDKbvEBRQRh7t2vojDwcI3Vprv+CDf10FEoobL8SasgDiZkJMtlRc0YNa60ZwcCDxhmN
+         M/LgqFAtIBGUS3LNRPu5a+MMuYROr8iB6u7hqdXVbSD6ed1rDMpQBQ14hDYS1nfdIOWn
+         +gDGLSH91jDsbmwoSk0BO6vrJbOavJl4GJgh4QfKW6D2DlTCRhibIuMKyxNpJ/QvxqBy
+         0XBhPYWTBfPt22mVdWtIRJJnx2zYgzGopJTYNRJAriG51rm9QwP9YRCuDEXUpEnlJoL7
+         esmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A0DW2Q87RDIqsYkxNfDBfLjQHExQB4ve4CO+kxbtwYA=;
+        b=T7Gqu6uairuVxmpxWfEy9z1bL0jeN6C3MATQhhvsuoZWTnu3EqhxxFz/C91Yh3hIW2
+         Aa+mGrKyrtLHmHKW2Kz12UZAuXPElRqQzFOxf/zsBwzxy9clcsxZurUwjbWiX5W+GEMk
+         7CkrXma4nPLfrdtL/jflAa5WDo6qV3SG/BoBQlW1tx+cOcPXLm0JOiCZMS40mJUnEQhA
+         41I+kNE4uQniqCquw15PUQCT0NpEJh58EXq+RS5ITdR6kOTNIInqeGoUTxJOf7h7hVGb
+         gRd2wKKOcTm1Frl5fbYrDa6B1rBpnr1Tj8RojUXbv5LVr4bs08UkpN4ZHRorlsPi6W8V
+         OJ4g==
+X-Gm-Message-State: AOAM5331Xou4Etp1AWpFeMVc2wwwlSFrKwkCer+cYWSyv05mWOFHVyoi
+        AkhQbzpRnQbTWl6p0LZZYauyq7eh0PxUo7xdokSlTBbbFpo=
+X-Google-Smtp-Source: ABdhPJxlzKUAIrnYs65G0maMX2Bhh5yBmX/19RG2B8luGK9hiNx0YbCOBpk2RsTxRhtfWbO+KIRjd5VSyr9Q1QM5OnQ=
+X-Received: by 2002:a25:b88d:: with SMTP id w13mr1395208ybj.520.1592519382302;
+ Thu, 18 Jun 2020 15:29:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200618221352.GB279339@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <159251533557.7557.5381023439094175695.stgit@anambiarhost.jf.intel.com>
+In-Reply-To: <159251533557.7557.5381023439094175695.stgit@anambiarhost.jf.intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 18 Jun 2020 15:29:30 -0700
+Message-ID: <CANn89i+3CZE1V5AQt0MA_ptsjfHEqUL+LV2VwiD41_3dyXq2pQ@mail.gmail.com>
+Subject: Re: [net-next PATCH] net: Avoid overwriting valid skb->napi_id
+To:     Amritha Nambiar <amritha.nambiar@intel.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        Eliezer Tamir <eliezer.tamir@linux.intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 19, 2020 at 12:13:52AM +0200, Andrew Lunn wrote:
-> >  MAINTAINERS                     |   7 +
-> >  drivers/net/phy/Kconfig         |   6 +
-> >  drivers/net/phy/Makefile        |   1 +
-> >  drivers/net/phy/mdio-lynx-pcs.c | 358 ++++++++++++++++++++++++++++++++
-> >  include/linux/mdio-lynx-pcs.h   |  43 ++++
-> >  5 files changed, 415 insertions(+)
-> >  create mode 100644 drivers/net/phy/mdio-lynx-pcs.c
-> >  create mode 100644 include/linux/mdio-lynx-pcs.h
-> 
-> Hi Ioana
-> 
-> We should think about naming convention here.
-> 
-> All MDIO bus driver, MDIO multiplexors etc use mdio- as a prefix.
-> 
-> This is not a bus driver, so i don't think it should use the mdio-
-> prefix. How about pcs-lynx.c?
-> 
-> In terms of Kconfig, MDIO_ prefix is used for MDIO bus drivers etc.  I
-> don't think it is appropriate here. How about PCS_LYNX? I don't think
-> any other subsystem is using PCS_ as a prefix.
-> 
-> > --- a/drivers/net/phy/Kconfig
-> > +++ b/drivers/net/phy/Kconfig
-> > @@ -235,6 +235,12 @@ config MDIO_XPCS
-> >  	  This module provides helper functions for Synopsys DesignWare XPCS
-> >  	  controllers.
-> >  
-> > +config MDIO_LYNX_PCS
-> > +	bool
-> > +	help
-> > +	  This module provides helper functions for Lynx PCS enablement
-> > +	  representing the PCS as an MDIO device.
-> > +
-> >  endif
-> >  endif
-> 
-> Maybe add this at the end, and add a
-> 
-> comment "PCS device drivers"
-> 
-> before it? I'm assuming with time we will have more of these drivers.
+On Thu, Jun 18, 2020 at 2:21 PM Amritha Nambiar
+<amritha.nambiar@intel.com> wrote:
+>
+> This will be useful to allow busy poll for tunneled traffic. In case of
+> busy poll for sessions over tunnels, the underlying physical device's
+> queues need to be polled.
+>
+> Tunnels schedule NAPI either via netif_rx() for backlog queue or
+> schedule the gro_cell_poll(). netif_rx() propagates the valid skb->napi_id
+> to the socket. OTOH, gro_cell_poll() stamps the skb->napi_id again by
+> calling skb_mark_napi_id() with the tunnel NAPI which is not a busy poll
+> candidate.
 
-It think we will.
 
-The other thing is, drivers/net/phy is becoming a little cluttered -
-we have approaching 100 files there.
+Yes the tunnel NAPI id should be 0 really (look for NAPI_STATE_NO_BUSY_POLL)
 
-Should we be thinking about drivers/net/phy/mdio/ (for mdio*),
-drivers/net/phy/lib/ for the core phylib code or leaving it where
-it is, and, hmm, drivers/net/phy/media/ maybe for the PHY and PCS
-drivers?  Or something like that?
+> This was preventing tunneled traffic to use busy poll. A valid
+> NAPI ID in the skb indicates it was already marked for busy poll by a
+> NAPI driver and hence needs to be copied into the socket.
+>
+> Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
+> ---
+>  include/net/busy_poll.h |    6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+> index 86e028388bad..b001fa91c14e 100644
+> --- a/include/net/busy_poll.h
+> +++ b/include/net/busy_poll.h
+> @@ -114,7 +114,11 @@ static inline void skb_mark_napi_id(struct sk_buff *skb,
+>                                     struct napi_struct *napi)
+>  {
+>  #ifdef CONFIG_NET_RX_BUSY_POLL
+> -       skb->napi_id = napi->napi_id;
+> +       /* If the skb was already marked with a valid NAPI ID, avoid overwriting
+> +        * it.
+> +        */
+> +       if (skb->napi_id < MIN_NAPI_ID)
+> +               skb->napi_id = napi->napi_id;
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+It should be faster to not depend on MIN_NAPI_ID (aka NR_CPUS + 1)
+
+    if (napi->napi_id)
+       skb->napi_id = napi->napi_id;
+
+Probably not a big deal.
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+
+
+
+
+
+
+>
+>  #endif
+>  }
+>
+>
