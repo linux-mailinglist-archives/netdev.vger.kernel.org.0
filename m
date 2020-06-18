@@ -2,149 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14F561FFD4A
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:17:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31A761FFD48
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730675AbgFRVRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 17:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728058AbgFRVRf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:17:35 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408AEC06174E;
-        Thu, 18 Jun 2020 14:17:35 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id s88so3293559pjb.5;
-        Thu, 18 Jun 2020 14:17:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=pHNj4UcVkosY1weDmb/4q/zy1XVK8V4Pkn034oQkWkI=;
-        b=DHwac/agWYSz1ByqSwyw8AlaXCpipGczUNXLUPbl0gbyRAfTcfqCdctFpc6TRrW17E
-         HxFINyAhdsnniXc45f4ZIxxx+UEFVqjB7yhForM0CHzKWhYxO3RLOG2EXRDjd+Uu4C98
-         VG8jg+94RbyUHlZd6h0m4kRP/gUfyFJOgkvsewDFjVHtSJzTP4zDgr7CgAsfIvMstdGP
-         LpL9C84a34uG6EpDdikgmnKtiLlOUIZEM78W1kXLsuJKmyx0hb0OO+pVlN+nfiA1Pvei
-         1sIiMbPiMw4xiOLzZv1z/eckDPu0nXkyop++gnjhC1N+P1uYPcb55rZabjyXdGg607Ps
-         ShIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=pHNj4UcVkosY1weDmb/4q/zy1XVK8V4Pkn034oQkWkI=;
-        b=hIBbYhRLlafTrrO3jO0G3ndsFtYzvW11+rN32tHxY5cyes7AMWpwQ/acGMRGTtr6Nu
-         Orc1qZugQuiudlf2VKf0uT8UuAZJH+ogQAs1mzUNbznRHSQrnpahgDs8+z2s778Svkx6
-         6+wbRt9LFAJw/cEdBxJdPLTgSKfAyAAtout1eVtT8hqXc5ytNnPUUIRe/5Uw28L1aMjt
-         xI8mSEHUkbz8JUV1p/GhstCmSNPSoX3GfvDCa643sNKh6BC9pjdZ47Z7tmmacDxClLpb
-         /GAIdeVVr+08v02KWmRx90Pvlpzz/5Uhw5FCdNnBtc8T/ElUkiHWLbwRAVn8SDxqrgJx
-         QY3w==
-X-Gm-Message-State: AOAM533fhoFRPprUtrAHFPv1dwmM3A3SbZm/I0h5kdaotrs5B3zog1r4
-        wlZ/0FwH94PDc5Ry6GyYKN0=
-X-Google-Smtp-Source: ABdhPJzKbHdZDboo3vTT6Cbie9iC7kE5OGjuxUU003iOQM0Nm5gQUdIb+yFYDk6QX8KZrzQgWApETw==
-X-Received: by 2002:a17:90a:8083:: with SMTP id c3mr277783pjn.83.1592515054784;
-        Thu, 18 Jun 2020 14:17:34 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id f14sm3306510pjq.36.2020.06.18.14.17.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2020 14:17:33 -0700 (PDT)
-Date:   Thu, 18 Jun 2020 14:17:25 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Message-ID: <5eebd9e5a9509_6d292ad5e7a285b8e9@john-XPS-13-9370.notmuch>
-In-Reply-To: <5eebd1486e46b_6d292ad5e7a285b817@john-XPS-13-9370.notmuch>
-References: <20200616100512.2168860-1-jolsa@kernel.org>
- <20200616100512.2168860-3-jolsa@kernel.org>
- <5eebd1486e46b_6d292ad5e7a285b817@john-XPS-13-9370.notmuch>
-Subject: RE: [PATCH 02/11] bpf: Compile btfid tool at kernel compilation start
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S1730456AbgFRVRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 17:17:32 -0400
+Received: from mx2.suse.de ([195.135.220.15]:58282 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726896AbgFRVRa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 17:17:30 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id BFC9CB001;
+        Thu, 18 Jun 2020 21:17:26 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 47C0660389; Thu, 18 Jun 2020 23:17:26 +0200 (CEST)
+Date:   Thu, 18 Jun 2020 23:17:26 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
+        Alice Michael <alice.michael@intel.com>, nhorman@redhat.com,
+        sassmann@redhat.com, Alan Brady <alan.brady@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        Joshua Hay <joshua.a.hay@intel.com>,
+        Madhu Chittim <madhu.chittim@intel.com>,
+        Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
+        Donald Skidmore <donald.c.skidmore@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>
+Subject: Re: [net-next 13/15] iecm: Add ethtool
+Message-ID: <20200618211726.ijsafmx52ha3lamz@lion.mk-sys.cz>
+References: <20200618051344.516587-1-jeffrey.t.kirsher@intel.com>
+ <20200618051344.516587-14-jeffrey.t.kirsher@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200618051344.516587-14-jeffrey.t.kirsher@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Fastabend wrote:
-> Jiri Olsa wrote:
-> > The btfid tool will be used during the vmlinux linking,
-> > so it's necessary it's ready for it.
-> > =
+On Wed, Jun 17, 2020 at 10:13:42PM -0700, Jeff Kirsher wrote:
+> From: Alice Michael <alice.michael@intel.com>
+> 
+> Implement ethtool interface for the common module.
+> 
+> Signed-off-by: Alice Michael <alice.michael@intel.com>
+> Signed-off-by: Alan Brady <alan.brady@intel.com>
+> Signed-off-by: Phani Burra <phani.r.burra@intel.com>
+> Signed-off-by: Joshua Hay <joshua.a.hay@intel.com>
+> Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
+> Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
+> Reviewed-by: Donald Skidmore <donald.c.skidmore@intel.com>
+> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> ---
+[...]
+> +static int iecm_set_channels(struct net_device *netdev,
+> +			     struct ethtool_channels *ch)
+> +{
+> +	struct iecm_vport *vport = iecm_netdev_to_vport(netdev);
+> +	int num_req_q = ch->combined_count;
+> +
+> +	if (num_req_q == max(vport->num_txq, vport->num_rxq))
+> +		return 0;
+> +
+> +	/* All of these should have already been checked by ethtool before this
+> +	 * even gets to us, but just to be sure.
+> +	 */
+> +	if (num_req_q <= 0 || num_req_q > IECM_MAX_Q)
+> +		return -EINVAL;
+> +
+> +	if (ch->rx_count || ch->tx_count || ch->other_count != IECM_MAX_NONQ)
+> +		return -EINVAL;
 
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  Makefile           | 22 ++++++++++++++++++----
-> >  tools/Makefile     |  3 +++
-> >  tools/bpf/Makefile |  5 ++++-
-> >  3 files changed, 25 insertions(+), 5 deletions(-)
-> =
+I don't see much sense in duplicating the checks. Having the checks in
+common code allows us to simplify driver callbacks.
 
-> This breaks the build for me. I fixed it with this but then I get warni=
-ngs,
+> +	vport->adapter->config_data.num_req_qs = num_req_q;
+> +
+> +	return iecm_initiate_soft_reset(vport, __IECM_SR_Q_CHANGE);
+> +}
+[...]
+> +static int iecm_set_ringparam(struct net_device *netdev,
+> +			      struct ethtool_ringparam *ring)
+> +{
+> +	struct iecm_vport *vport = iecm_netdev_to_vport(netdev);
+> +	u32 new_rx_count, new_tx_count;
+> +
+> +	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
+> +		return -EINVAL;
+> +
+> +	new_tx_count = clamp_t(u32, ring->tx_pending,
+> +			       IECM_MIN_TXQ_DESC,
+> +			       IECM_MAX_TXQ_DESC);
+> +	new_tx_count = ALIGN(new_tx_count, IECM_REQ_DESC_MULTIPLE);
+> +
+> +	new_rx_count = clamp_t(u32, ring->rx_pending,
+> +			       IECM_MIN_RXQ_DESC,
+> +			       IECM_MAX_RXQ_DESC);
+> +	new_rx_count = ALIGN(new_rx_count, IECM_REQ_DESC_MULTIPLE);
 
-Also maybe fix below is not good because now I get a segfault in btfid.
+Same here. This is actually a bit misleading as it seems that count
+exceeding maximum would be silently clamped to it but such value would
+be rejected by common code.
 
-> =
+> +	/* if nothing to do return success */
+> +	if (new_tx_count == vport->txq_desc_count &&
+> +	    new_rx_count == vport->rxq_desc_count)
+> +		return 0;
+> +
+> +	vport->adapter->config_data.num_req_txq_desc = new_tx_count;
+> +	vport->adapter->config_data.num_req_rxq_desc = new_rx_count;
+> +
+> +	return iecm_initiate_soft_reset(vport, __IECM_SR_Q_DESC_CHANGE);
+> +}
+[...]
+> +/* For now we have one and only one private flag and it is only defined
+> + * when we have support for the SKIP_CPU_SYNC DMA attribute.  Instead
+> + * of leaving all this code sitting around empty we will strip it unless
+> + * our one private flag is actually available.
+> + */
 
-> diff --git a/tools/bpf/btfid/btfid.c b/tools/bpf/btfid/btfid.c
-> index 7cdf39bfb150..3697e8ae9efa 100644
-> --- a/tools/bpf/btfid/btfid.c
-> +++ b/tools/bpf/btfid/btfid.c
-> @@ -48,7 +48,7 @@
->  #include <errno.h>
->  #include <linux/rbtree.h>
->  #include <linux/zalloc.h>
-> -#include <btf.h>
-> +#include <linux/btf.h>
->  #include <libbpf.h>
->  #include <parse-options.h>
-> =
+The code below will always return 1 for ETH_SS_PRIV_FLAGS in
+iecm_get_sset_count() and an array of one string in iecm_get_strings().
+This would e.g. result in "ethtool -i" saying "supports-priv-flags: yes"
+but then "ethtool --show-priv-flags" failing with -EOPNOTSUPP. IMHO you
+should not return bogus string set if private flags are not implemented.
 
-> Here is the error. Is it something about my setup? bpftool/btf.c uses
-> <btf.h>. Because this in top-level Makefile we probably don't want to
-> push extra setup onto folks.
-> =
+Michal
 
-> In file included from btfid.c:51:
-> /home/john/git/bpf-next/tools/lib/bpf/btf.h: In function =E2=80=98btf_i=
-s_var=E2=80=99:
-> /home/john/git/bpf-next/tools/lib/bpf/btf.h:254:24: error: =E2=80=98BTF=
-_KIND_VAR=E2=80=99 undeclared (first use in this function); did you mean =
-=E2=80=98BTF_KIND_PTR=E2=80=99?
->   return btf_kind(t) =3D=3D BTF_KIND_VAR;
->                         ^~~~~~~~~~~~
->                         BTF_KIND_PTR
-> /home/john/git/bpf-next/tools/lib/bpf/btf.h:254:24: note: each undeclar=
-ed identifier is reported only once for each function it appears in
-> /home/john/git/bpf-next/tools/lib/bpf/btf.h: In function =E2=80=98btf_i=
-s_datasec=E2=80=99:
-> /home/john/git/bpf-next/tools/lib/bpf/btf.h:259:24: error: =E2=80=98BTF=
-_KIND_DATASEC=E2=80=99 undeclared (first use in this function); did you m=
-ean =E2=80=98BTF_KIND_PTR=E2=80=99?
->   return btf_kind(t) =3D=3D BTF_KIND_DATASEC;
->                         ^~~~~~~~~~~~~~~~
->                         BTF_KIND_PTR
-> mv: cannot stat '/home/john/git/bpf-next/tools/bpf/btfid/.btfid.o.tmp':=
- No such file or directory
-> make[3]: *** [/home/john/git/bpf-next/tools/build/Makefile.build:97: /h=
-ome/john/git/bpf-next/tools/bpf/btfid/btfid.o] Error 1
-> make[2]: *** [Makefile:59: /home/john/git/bpf-next/tools/bpf/btfid/btfi=
-d-in.o] Error 2
-> make[1]: *** [Makefile:71: bpf/btfid] Error 2
-> make: *** [Makefile:1894: tools/bpf/btfid] Error 2
-
-
+> +struct iecm_priv_flags {
+> +	char flag_string[ETH_GSTRING_LEN];
+> +	bool read_only;
+> +	u32 flag;
+> +};
+> +
+> +#define IECM_PRIV_FLAG(_name, _flag, _read_only) { \
+> +	.read_only = _read_only, \
+> +	.flag_string = _name, \
+> +	.flag = _flag, \
+> +}
+> +
+> +static const struct iecm_priv_flags iecm_gstrings_priv_flags[] = {
+> +	IECM_PRIV_FLAG("", 0, 0),
+> +};
+> +
+> +#define IECM_PRIV_FLAGS_STR_LEN ARRAY_SIZE(iecm_gstrings_priv_flags)
+[...]
+> +static void iecm_get_priv_flag_strings(struct net_device *netdev, u8 *data)
+> +{
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < IECM_PRIV_FLAGS_STR_LEN; i++) {
+> +		snprintf((char *)data, ETH_GSTRING_LEN, "%s",
+> +			 iecm_gstrings_priv_flags[i].flag_string);
+> +		data += ETH_GSTRING_LEN;
+> +	}
+> +}
