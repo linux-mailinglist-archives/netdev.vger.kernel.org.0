@@ -2,96 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B31A1FF983
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 18:44:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB8701FF9BF
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 18:55:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731978AbgFRQoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 12:44:37 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:35679 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728090AbgFRQog (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 12:44:36 -0400
-Received: by mail-io1-f68.google.com with SMTP id s18so7822174ioe.2;
-        Thu, 18 Jun 2020 09:44:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P6K0NMCQ9QdVvPAqikzClu5E67Y9Qrb4CGCZ1kreB7k=;
-        b=lQQF7kigInRkQfosEdD964L/MxE8WBfqhlcjat7uGcKAHLo05DRETCrqGSyks++q+N
-         LD4YhxofHAtxiU5+rHlIy3fj7hI2j+51pQtcM6jdo+VhoSuWboDrT/C3r1LucoJ5fPo8
-         XH90hJcCZpxLydo/zfi86U+YTKyjFpcCynbHwPNVBykLh/AwfkGFiYvV01UC7Njcn9Fm
-         i7JzC87Ts5XcXKgf8rWto+0uBp8pgMrufHPIklBNXVWtmArrkvPMRXYS+6uQQNqXM3nF
-         lkAvJYLMGcm+LVrud0JLT3mPZ6pXFG4l0Cfon9dqlnZ+CMrhPV3AS8sCW/3sHC9A7wxY
-         h+Og==
-X-Gm-Message-State: AOAM532zD6wytvJDMt90fD2r8Vx2DFdu1IjS513iNUXpDm7pYMOGOlBs
-        R7JCddqfLJIs+WZMZ6CLdg==
-X-Google-Smtp-Source: ABdhPJwkW4ZsJ4bdYKr0qKa9ryOy5g+2hE48HtjOUzrbj3WgzjP+FDJi5kL2BbFKLOci4Y0m6ArWyw==
-X-Received: by 2002:a5d:858a:: with SMTP id f10mr6056867ioj.184.1592498674934;
-        Thu, 18 Jun 2020 09:44:34 -0700 (PDT)
-Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id g21sm1969126ioc.14.2020.06.18.09.44.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2020 09:44:34 -0700 (PDT)
-Received: (nullmailer pid 504576 invoked by uid 1000);
-        Thu, 18 Jun 2020 16:44:31 -0000
-Date:   Thu, 18 Jun 2020 10:44:31 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-bluetooth@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-rockchip@lists.infradead.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        linux-arm-kernel@lists.infradead.org,
-        Sandy Huang <hjc@rock-chips.com>, alsa-devel@alsa-project.org,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH 13/29] dt: fix broken links due to txt->yaml renames
-Message-ID: <20200618164431.GA504444@bogus>
-References: <cover.1592203542.git.mchehab+huawei@kernel.org>
- <0e4a7f0b7efcc8109c8a41a2e13c8adde4d9c6b9.1592203542.git.mchehab+huawei@kernel.org>
+        id S1730289AbgFRQzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 12:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49578 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728664AbgFRQzN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 12:55:13 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538FEC06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 09:55:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=bNQEtVjSYN81l7myBTiMTW9h50u32Ff9Sf3/e7IE9GI=; b=qjyE/Ei6o3yWn8o70fh0yA2y9
+        TUd9p/08RE2PtxilrX067FeyphynRsxnyQuguwfiNqXjIz4YO7bXtvk+idhqsnggNwa6jKuBQSw69
+        5d4H0Fb8bf0FsHxD6KjepXnqSHIq3ZDlBdjnGHt/Hn46lmaQKFQO5B0aCI8X4cLItU1k7wHFCZft1
+        lIHyKlJ5LPlPivH4FGrYbR0sN+fPrvHY9e9IabpVNju/wDcGYbc3YYfr9iHFzOzoHk9ZoL54bDHrG
+        gBij7li1qeUC/7nI2hQrTZjUVJ7a5V9czCMepaHr89LUCOJ7YDy/HvdztZ4q9cyl8eSoEkFU34WSt
+        /Z6p09jrw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58794)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jlxol-0005QN-Bc; Thu, 18 Jun 2020 17:55:11 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jlxok-0004rj-JE; Thu, 18 Jun 2020 17:55:10 +0100
+Date:   Thu, 18 Jun 2020 17:55:10 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next 4/5] net: phy: add Lynx PCS MDIO module
+Message-ID: <20200618165510.GG1551@shell.armlinux.org.uk>
+References: <20200618120837.27089-1-ioana.ciornei@nxp.com>
+ <20200618120837.27089-5-ioana.ciornei@nxp.com>
+ <20200618140623.GC1551@shell.armlinux.org.uk>
+ <VI1PR0402MB387191C53CE915E5AC060669E09B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0e4a7f0b7efcc8109c8a41a2e13c8adde4d9c6b9.1592203542.git.mchehab+huawei@kernel.org>
+In-Reply-To: <VI1PR0402MB387191C53CE915E5AC060669E09B0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Jun 2020 08:46:52 +0200, Mauro Carvalho Chehab wrote:
-> There are some new broken doc links due to yaml renames
-> at DT. Developers should really run:
+On Thu, Jun 18, 2020 at 04:17:56PM +0000, Ioana Ciornei wrote:
+> > > +struct mdio_lynx_pcs *mdio_lynx_pcs_create(struct mdio_device
+> > > +*mdio_dev) {
+> > > +	struct mdio_lynx_pcs *pcs;
+> > > +
+> > > +	if (WARN_ON(!mdio_dev))
+> > > +		return NULL;
+> > > +
+> > > +	pcs = kzalloc(sizeof(*pcs), GFP_KERNEL);
+> > > +	if (!pcs)
+> > > +		return NULL;
+> > > +
+> > > +	pcs->dev = mdio_dev;
+> > > +	pcs->an_restart = lynx_pcs_an_restart;
+> > > +	pcs->get_state = lynx_pcs_get_state;
+> > > +	pcs->link_up = lynx_pcs_link_up;
+> > > +	pcs->config = lynx_pcs_config;
+> > 
+> > We really should not have these private structure interfaces.  Private structure-
+> > based driver specific interfaces really don't constitute a sane approach to
+> > interface design.
+> > 
+> > Would it work if there was a "struct mdio_device" add to the phylink_config
+> > structure, and then you could have the phylink_pcs_ops embedded into this
+> > driver?
 > 
-> 	./scripts/documentation-file-ref-check
-> 
-> in order to solve those issues while submitting patches.
-> This tool can even fix most of the issues with:
-> 
-> 	./scripts/documentation-file-ref-check --fix
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->  Documentation/devicetree/bindings/display/bridge/sii902x.txt  | 2 +-
->  .../devicetree/bindings/display/rockchip/rockchip-drm.yaml    | 2 +-
->  Documentation/devicetree/bindings/net/mediatek-bluetooth.txt  | 2 +-
->  Documentation/devicetree/bindings/sound/audio-graph-card.txt  | 2 +-
->  Documentation/devicetree/bindings/sound/st,sti-asoc-card.txt  | 2 +-
->  Documentation/mips/ingenic-tcu.rst                            | 2 +-
->  MAINTAINERS                                                   | 4 ++--
->  7 files changed, 8 insertions(+), 8 deletions(-)
-> 
+> I think that would restrict too much the usage.
+> I am afraid there will be instances where the PCS is not recognizable by PHY_ID,
+> thus no way of knowing which driver to probe which mdio_device.
+> Also, I would leave to the driver the choice of using (or not) the functions 
+> exported by Lynx.
 
-Applied, thanks!
+I think you've taken my point way too far.  What I'm complaining about
+is the indirection of lynx_pcs_an_restart() et.al. through a driver-
+private structure.
+
+In order to access lynx_pcs_an_restart(), we need to dereference
+struct mdio_lynx_pcs, which is a structure specific to this lynx PCS
+driver.  What this leads to is users doing this:
+
+	if (pcs_is_lynx) {
+		struct mdio_lynx_pcs *pcs = foo->bar;
+
+		pcs->an_restart(...);
+	} else if (pcs_is_something_else) {
+		struct mdio_somethingelse_pcs *pcs = foo->bar;
+
+		pcs->an_restart(...);
+	}
+
+which really does not scale.  A step forward would be:
+
+	if (pcs_is_lynx) {
+		lynx_pcs_an_restart(...);
+	} else if (pcs_is_something_else) {
+		something_else_pcs_an_restart(...);
+	}
+
+but that also scales horribly.
+
+Even better would be to have a generic set of operations for PCS
+devices that can be declared in the lynx PCS driver and used
+externally... like, maybe struct phylink_pcs_ops, which is made
+globally visible for MAC drivers to use with phylink_add_pcs().
+
+Or maybe a function in this lynx PCS driver that calls phylink_add_pcs()
+itself with its own PCS operations, and maybe also sets a field in
+struct phylink_config for the PCS mdio device?
+
+Or something like that - just some a way that doesn't force us down
+a path that we end up forcing people into code that has to decide
+what sort of PCS we have at runtime in all these method paths.
+
+> What if we directly export the helper functions directly as symbols which can
+> be used by the driver without any mdio_lynx_pcs in the middle
+> (just the mdio_device passed to the function).
+> This would be exactly as phylink_mii_c22_pcs_[an_restart/config] are currently
+> used.
+
+The difference is that phylink_mii_c22_pcs_* are designed as library
+functions - functions that are very likely to be re-used for multiple
+different PCS (because the format, location, and access method of
+these registers is defined by IEEE 802.3).  It's a bit like phylib's
+configuration of autoneg - we don't have all the individual drivers
+doing that, we have core code that does that for us in the form of
+helpers.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
