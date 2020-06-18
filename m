@@ -2,69 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD3211FF6DA
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 17:31:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11D911FF706
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 17:38:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731665AbgFRP34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 11:29:56 -0400
-Received: from smtp1.emailarray.com ([65.39.216.14]:24456 "HELO
-        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with SMTP id S1731643AbgFRP3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 11:29:51 -0400
-Received: (qmail 75919 invoked by uid 89); 18 Jun 2020 15:23:08 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 18 Jun 2020 15:23:08 -0000
-Date:   Thu, 18 Jun 2020 08:23:04 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Kal Cutter Conley <kal.conley@dectris.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "toke.hoiland-jorgensen@kau.se" <toke.hoiland-jorgensen@kau.se>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "gospo@broadcom.com" <gospo@broadcom.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>
-Subject: Re: net/mlx5e: bind() always returns EINVAL with XDP_ZEROCOPY
-Message-ID: <20200618150347.ihtdvsfuurgfka7i@bsd-mbp.dhcp.thefacebook.com>
-References: <CAHApi-mMi2jYAOCrGhpkRVybz0sDpOSkLFCZfVe-2wOcAO_MqQ@mail.gmail.com>
- <CAHApi-=YSo=sOTkRxmY=fct3TePFFdG9oPTRHWYd1AXjk0ACfw@mail.gmail.com>
- <20190902110818.2f6a8894@carbon>
- <fd3ee317865e9743305c0e88e31f27a2d51a0575.camel@mellanox.com>
- <CAHApi-k=9Szxm0QMD4N4PW9Lq8L4hW6e7VfyBePzrTgvKGRs5Q@mail.gmail.com>
+        id S1731504AbgFRPia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 11:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37692 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727911AbgFRPia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 11:38:30 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5877C06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 08:38:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=iLmJzyDXqHbkT1s65lXkWoB+OVj8aBWFOpmjfeTf6gA=; b=qZ4+oJ1gMM/HnmN3F6FzshRyW
+        7LeD9uUlCADK+e1qnh11rRRn9OWsZJEvzbetNl+m1e2/yOlkktsBJgA2CGoesfTUukCMZtl1GX+cD
+        e0+/KpvuyPMNk6HtxL7Ie0zISwEkPAFncJNDPDJjBc/k+yeQehOExVAXEq2FAJY83WbKKZPD/dm3W
+        ATPXK6kuNQTSzwjX6NdxID9EL4jEk0qWJpSy/rHZ2EMjC6wcT7e301rncNoJicr/qDsQNUH1du+0m
+        hmAGAUo1K6NDjRFaglSJs7TTDnyYAgLhUfJQhlsczPjgKuR9XuJRCczMmuSaSw5WBhz7i5ZkjpIAH
+        xPMJnKCVQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58786)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jlwcP-0005Hm-Uv; Thu, 18 Jun 2020 16:38:21 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jlwcM-0004oU-5G; Thu, 18 Jun 2020 16:38:18 +0100
+Date:   Thu, 18 Jun 2020 16:38:18 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/4] Marvell mvpp2 improvements
+Message-ID: <20200618153818.GD1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHApi-k=9Szxm0QMD4N4PW9Lq8L4hW6e7VfyBePzrTgvKGRs5Q@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 14, 2020 at 10:55:30AM +0200, Kal Cutter Conley wrote:
-> Hi Saeed,
-> Thanks for explaining the reasoning behind the special mlx5 queue
-> numbering with XDP zerocopy.
-> 
-> We have a process using AF_XDP that also shares the network interface
-> with other processes on the system. ethtool rx flow classification
-> rules are used to route the traffic to the appropriate XSK queue
-> N..(2N-1). The issue is these queues are only valid as long they are
-> active (as far as I can tell). This means if my AF_XDP process dies
-> other processes no longer receive ingress traffic routed over queues
-> N..(2N-1) even though my XDP program is still loaded and would happily
-> always return XDP_PASS. Other drivers do not have this usability issue
-> because they use queues that are always valid. Is there a simple
-> workaround for this issue? It seems to me queues N..(2N-1) should
-> simply map to 0..(N-1) when they are not active?
+Hi,
 
-If your XDP program returns XDP_PASS, the packet should be delivered to
-the xsk socket.  If the application isn't running, where would it go?
+This series primarily cleans up mvpp2, but also fixes a left-over from
+91a208f2185a ("net: phylink: propagate resolved link config via
+mac_link_up()").
 
-I do agree that the usability of this can be improved.  What if the flow
-rules are inserted and removed along with queue creatioin/destruction?
+Patch 1 introduces some port helpers:
+  mvpp2_port_supports_xlg() - does the port support the XLG MAC
+  mvpp2_port_supports_rgmii() - does the port support RGMII modes
+
+Patch 2 introduces mvpp2_phylink_to_port(), rather than having repeated
+  open coding of container_of().
+
+Patch 3 introduces mvpp2_modify(), which reads-modifies-writes a
+  register - I've converted the phylink specific code to use this
+  helper.
+
+Patch 4 moves the hardware control of the pause modes from
+  mvpp2_xlg_config() (which is called via the phylink_config method)
+  to mvpp2_mac_link_up() - a change that was missed in the above
+  referenced commit.
+
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 164 +++++++++++++-----------
+ 1 file changed, 89 insertions(+), 75 deletions(-)
+
 -- 
-Jonathan
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
