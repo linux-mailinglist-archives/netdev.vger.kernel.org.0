@@ -2,104 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B5A31FFC41
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 22:06:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3BC81FFC5E
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 22:13:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730652AbgFRUG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 16:06:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
+        id S1731102AbgFRUNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 16:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730355AbgFRUG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 16:06:28 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B25C06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 13:06:28 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id u13so8609570iol.10
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 13:06:28 -0700 (PDT)
+        with ESMTP id S1731048AbgFRUNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 16:13:08 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2166C0613EE
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 13:13:06 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id n9so2929450plk.1
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 13:13:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=thyaVO24iv2eF/B7JpSDsoF0DnYKWT+LxnLf/XcEDlM=;
-        b=rTZUxvWs4JlfHMg5AMfGDmnRhlNd62aVfZxn+mWWA3OKGcnuEjUXL6hnf1hzAP6n1g
-         NdX0tv7zKH/aeZHsi5bv2DIeKiN07QTmh86WeuCpQZQw6MH6u8lzTqRtlzrQzi2K7XSF
-         8YkJAVXpVi51Qbbc4xie20jAce5tp7uihALzoz+f4xIhQW3N87vzLQ3BDdhomCC4C4K4
-         43/qCAJSqV/kGlv0lcbDoZsw1FxMGam8ZH4CJmDOeRD0c2OTA0rkdqMC2Gkmcij4Pksu
-         xi34XFBUDqO5wcOmy3Y3Gh57yU6yIGHabaFWcn6YXRYE3qjjdX8VqMh3QugJbBGkr8L0
-         FsNg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TXh+yh53BzWcVX/QSWd/KMGYLJEd9W2Aq0rZcysTQP4=;
+        b=FsxI+GezYcq5Or+8LsyorXmnP7DpX4UiDy+yK2n1mRa4jblk1OUuhBfwLlpOjHyQqp
+         C6V9+4Qv73F1H1QEepi3l+DsjRE/Yl2ZyJ+uOnEqfoaKaafcdPEUmhUCBv5W6FnPX6Jc
+         GM0vUU2Qj7gRcd5fGdIsu83QlptQgL4TRyn7A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=thyaVO24iv2eF/B7JpSDsoF0DnYKWT+LxnLf/XcEDlM=;
-        b=bMUyDTV2z5a/OR0Fr4KkwGDgh8+hy5gWnCqqz2gVk9jmqefkBGA2zvx2ykDyRfKahc
-         mjsdHZRsZ1xHxwvHmC3t/7tLij9oGuwCywa6RlyuvZqFwhWm7IiOHH6rQzNTee4mW/qm
-         3IjalZotGRmok346wkr7PAM8vXbKNMQ7i80ZfARR83esoK5ju+QnA3x4uobC54CAfqUV
-         IWBFnUGFlaG8tFssoPyHm1SFtM0+PIbHtmlBUizjtQCtxCK5m8AvfdFDR4zAGRi4WE34
-         eQsG0fO5y31f1zOA5h+HynfO2XvbH7wsDwoht+HqJRgbVEt75Z/+yaWclOSsx1vjIv5P
-         INHA==
-X-Gm-Message-State: AOAM533o35R7jEKLDPRj0sWQWEbGnumbtDVTnXwwsQsXEiRGezjiZM49
-        xQ60WwKIYKurbGSvAKb1CBXEivAiAucgnAborys=
-X-Google-Smtp-Source: ABdhPJxNEHRN6i5K3Z+Q6L3UWCW2AFhUghBFuNoSaY1fv9Fo03jPHNtUyYE7+ma189BF3mug4BaYjVbzlMEw8yJrqOk=
-X-Received: by 2002:a05:6602:1204:: with SMTP id y4mr478062iot.44.1592510787759;
- Thu, 18 Jun 2020 13:06:27 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TXh+yh53BzWcVX/QSWd/KMGYLJEd9W2Aq0rZcysTQP4=;
+        b=In0Qq1SdiZU9y/u/e21f4V10wo/pJ9a5gNvXNc2AsWx2HZCNZXome0vos6UILY1FqA
+         URYjBBTGBnRBLjcpdo9iJzJ8b/rwPM8r9Ae/6EGXLku8KPjbUz1BRrOOJETL4PGB8K3q
+         8ClN3za7yGo+Q3M2FZgmEaeec/zDaDVcbVS9fERuWVT8c6jMfa5ai1d2z2AbHPW+pPdq
+         AVx8fHngDZhVf6dKmE1AM3GYPdPSt9djCvenOxUmmcsR77yWdTZ+2iCHjfwcAU8Sfnj4
+         2vimKHK5PtVnn9eob6NcAt+e7ImYf9MjxX5sK9tgRDSoSlWvqFpZGDTKWACyJBFGHN49
+         M5NQ==
+X-Gm-Message-State: AOAM533GP4DcGSJz97qd8jS5fGRZirn9BGLnjiSwC3778ayt52EVHQXb
+        XU4hv88l7T8+6sBSjHp0OBSCgg==
+X-Google-Smtp-Source: ABdhPJz0/H6VhaSxaYiFoMobAEqIMKy6r+p/NJ3edVxjTSX7edMf4m0+dOSHEEOoExU9RsAPGvhS7A==
+X-Received: by 2002:a17:90a:f508:: with SMTP id cs8mr71173pjb.16.1592511185631;
+        Thu, 18 Jun 2020 13:13:05 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id y136sm3759429pfg.55.2020.06.18.13.13.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jun 2020 13:13:04 -0700 (PDT)
+Date:   Thu, 18 Jun 2020 13:13:03 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Sargun Dhillon <sargun@sargun.me>
+Cc:     linux-kernel@vger.kernel.org,
+        Christian Brauner <christian@brauner.io>,
+        Tycho Andersen <tycho@tycho.ws>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
+        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 3/7] fs: Add fd_install_received() wrapper for
+ __fd_install_received()
+Message-ID: <202006181305.01F1B08@keescook>
+References: <20200617220327.3731559-1-keescook@chromium.org>
+ <20200617220327.3731559-4-keescook@chromium.org>
+ <20200618054918.GB18669@ircssh-2.c.rugged-nimbus-611.internal>
 MIME-Version: 1.0
-References: <20200608215301.26772-1-xiyou.wangcong@gmail.com>
- <CA+h21hr_epEqWukZMQmZ2ecS9Y0yvX9mzR3g3OA39rg_96FfnQ@mail.gmail.com> <CAM_iQpW-5WpaSvSmJgoqEbcjtrjvaZY3ngKzVy2S-v81MdK4iQ@mail.gmail.com>
-In-Reply-To: <CAM_iQpW-5WpaSvSmJgoqEbcjtrjvaZY3ngKzVy2S-v81MdK4iQ@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 18 Jun 2020 13:06:16 -0700
-Message-ID: <CAM_iQpUBuk1D4JYZtPQ_yodkLJwAyExvGG5vSOazed2QN7NESw@mail.gmail.com>
-Subject: Re: [Patch net] net: change addr_list_lock back to static key
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        syzbot+f3a0e80c34b3fc28ac5e@syzkaller.appspotmail.com,
-        Taehee Yoo <ap420073@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200618054918.GB18669@ircssh-2.c.rugged-nimbus-611.internal>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 12:56 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Thu, Jun 18, 2020 at 12:40 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> >
-> > It's me with the stacked DSA devices again:
->
-> It looks like DSA never uses netdev API to link master
-> device with slave devices? If so, their dev->lower_level
-> are always 1, therefore triggers this warning.
->
-> I think it should call one of these netdev_upper_dev_link()
-> API's when creating a slave device.
->
+On Thu, Jun 18, 2020 at 05:49:19AM +0000, Sargun Dhillon wrote:
+> On Wed, Jun 17, 2020 at 03:03:23PM -0700, Kees Cook wrote:
+> > [...]
+> >  static inline int fd_install_received_user(struct file *file, int __user *ufd,
+> >  					   unsigned int o_flags)
+> >  {
+> > +	if (ufd == NULL)
+> > +		return -EFAULT;
+> Isn't this *technically* a behvaiour change? Nonetheless, I think this is a much better
+> approach than forcing everyone to do null checking, and avoids at least one error case
+> where the kernel installs FDs for SCM_RIGHTS, and they're not actualy usable.
 
-I don't know whether DSA is too special to use the API, but
-something like this should work:
+So, the only behavior change I see is that the order of sanity checks is
+changed.
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 4c7f086a047b..f7a2a281e7f0 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1807,6 +1807,11 @@ int dsa_slave_create(struct dsa_port *port)
-                           ret, slave_dev->name);
-                goto out_phy;
+The loop in scm_detach_fds() is:
+
+
+        for (i = 0; i < fdmax; i++) {
+                err = __scm_install_fd(scm->fp->fp[i], cmsg_data + i, o_flags);
+                if (err < 0)
+                        break;
         }
-+       ret = netdev_upper_dev_link(slave_dev, master, NULL);
-+       if (ret) {
-+               unregister_netdevice(slave_dev);
-+               goto out_phy;
-+       }
 
-        return 0;
+Before, __scm_install_fd() does:
 
-@@ -1832,6 +1837,7 @@ void dsa_slave_destroy(struct net_device *slave_dev)
-        netif_carrier_off(slave_dev);
-        rtnl_lock();
-        phylink_disconnect_phy(dp->pl);
-+       netdev_upper_dev_unlink(slave_dev, dp->master);
-        rtnl_unlock();
+        error = security_file_receive(file);
+        if (error)
+                return error;
 
-        dsa_slave_notify(slave_dev, DSA_PORT_UNREGISTER);
+        new_fd = get_unused_fd_flags(o_flags);
+        if (new_fd < 0)
+                return new_fd;
+
+        error = put_user(new_fd, ufd);
+        if (error) {
+                put_unused_fd(new_fd);
+                return error;
+        }
+	...
+
+After, fd_install_received_user() and __fd_install_received() does:
+
+        if (ufd == NULL)
+                return -EFAULT;
+	...
+        error = security_file_receive(file);
+        if (error)
+                return error;
+	...
+                new_fd = get_unused_fd_flags(o_flags);
+                if (new_fd < 0)
+                        return new_fd;
+	...
+                error = put_user(new_fd, ufd);
+                if (error) {
+                        put_unused_fd(new_fd);
+                        return error;
+                }
+
+i.e. if a caller attempts a receive that is rejected by LSM *and*
+includes a NULL userpointer destination, they will get an EFAULT now
+instead of an EPERM.
+
+I struggle to imagine a situation where this could possible matter
+(both fail, neither installs files). It is only the error code that
+is different. I am comfortable making this change and seeing if anyone
+screams. If they do, I can restore the v4 "ufd_required" way of doing it.
+
+> Reviewed-by: Sargun Dhillon <sargun@sargun.me>
+
+Thanks!
+
+-- 
+Kees Cook
