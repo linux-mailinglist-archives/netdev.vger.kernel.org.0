@@ -2,150 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEE501FFDB3
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27F2C1FFDC2
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:12:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731660AbgFRWGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 18:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41022 "EHLO
+        id S1731702AbgFRWMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 18:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731651AbgFRWGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:06:19 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A367C06174E;
-        Thu, 18 Jun 2020 15:06:19 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id 10so3458005pfx.8;
-        Thu, 18 Jun 2020 15:06:19 -0700 (PDT)
+        with ESMTP id S1727827AbgFRWMe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:12:34 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9018C06174E;
+        Thu, 18 Jun 2020 15:12:33 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id t18so7728274wru.6;
+        Thu, 18 Jun 2020 15:12:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=LAFncSfCGWvLRoCJ8bDyyKXciwSiLuc1buVG0qkSipE=;
-        b=dyKvm0p8Xn8Ka8yXL4IqpnA9tpQuyPoTPA2kgTn0L65RV1h0W/95MZ/lo78FKYCEdm
-         wE3UajDwIgRfHq6eA4Glx2md7CUpKtsU+ndaOSXMzHccUinr6PDa/NEZpKDJbfn5eDSR
-         LvoB0Idcl4tYcs6qmUv9E6CiCC6y5cSzMvW3d+ZZItyGp7ATODmLz4CNU+UZc/t3DZWB
-         wXd74sEpoCgkDuC2BohcB6utiC6wqWjBYHlk4PvcE61oovn752TpFQvljo9IY3cIWGxR
-         h6UzM6pWg/5UQ9HBlkuFM12GWRd9uW6ybGyoYIAyiBSWWivaH9IqFO/ul4DFiHki1iua
-         Hokw==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=POBgBl3MI/dA6mNJ5+hGlqrhujuUmmxFrJ0pjJyUNc8=;
+        b=UaC02oShpxtI/MNfXzOqezN5e2CQ6fHyVgspS3Qf6YhYFCaq3LEhRQ+l2MfPPlnO1p
+         bvxQzuJgfDsAPSt4CRMaWsNHSdAqUc4EBV9Wy6eygFu68NNNGaE35eDA+U+EqIsvltl1
+         iUy5ALjPu6x9FrY1K9obF4jW55in+nio1robfbEM2zb7AAnczyLBp2bD5XBmUMZFmpvi
+         NOsfeBFemydvFxA7pMkHJI+5MS6HqxALBiD/vYUTgckQwMy4JQxUZ2qgFGG8wo/gbx/+
+         +o83wVSYbJHpQ/i8H7ER2YDYBp4Z0UBxzh2soQkz5eaZ+gS7oegrDmjsKd0xHWQOOn85
+         jpag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=LAFncSfCGWvLRoCJ8bDyyKXciwSiLuc1buVG0qkSipE=;
-        b=hvUtCQ3uQ/CVb5oMblqO95aBPvdRCy5TFdq1/X2vffUaFNdqpbDoHXF8VV0M5WG7kV
-         totH7ufLGcaEXCOpQQNqxGS+k1zHNmbeJf1ddrr1VZNzweY4E4U+6gVg2CsdkfLqev0B
-         DjQmmTaygE+nlvwhODWnPyxplXjwDOh5zzIUJRxz6iO69guNAosRA3ky6GaxiApUIgP6
-         fagvxc7LhciP87QYftP7BbO9VO51cBGKfyLdNDNt5lWZa2nKs2PN+8NmjWrV+trRGB+Z
-         7B6+BrN7KW9HucPyIJdAmS8psxSG4EoM8Vw/qoG1fLldLAX28r7g0YZFHWAMBVUK5xGB
-         grAw==
-X-Gm-Message-State: AOAM533LMToEB451norC9QSrYIZvUBTmT1o5GKvRuUTadnJ8rLJtgr5c
-        d3sHF0i5Rhsv0L6TjG0M8mJeWDlD1CE=
-X-Google-Smtp-Source: ABdhPJxAPLxUaSW11bH8DjM9DwDGQrCDeR2AvCudxlzs16mZFVRoTA3eO74fTBahhX9WmXuHuP357w==
-X-Received: by 2002:a63:591e:: with SMTP id n30mr538273pgb.429.1592517978456;
-        Thu, 18 Jun 2020 15:06:18 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id e5sm3234549pjv.18.2020.06.18.15.06.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2020 15:06:17 -0700 (PDT)
-Date:   Thu, 18 Jun 2020 15:06:10 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jiri Olsa <jolsa@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        KP Singh <kpsingh@chromium.org>,
-        Masanori Misono <m.misono760@gmail.com>
-Message-ID: <5eebe552dddc1_6d292ad5e7a285b83f@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200618114806.GA2369163@krava>
-References: <20200616173556.2204073-1-jolsa@kernel.org>
- <5eeaa556c7a0e_38b82b28075185c46a@john-XPS-13-9370.notmuch>
- <20200618114806.GA2369163@krava>
-Subject: Re: [PATCH] bpf: Allow small structs to be type of function argument
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=POBgBl3MI/dA6mNJ5+hGlqrhujuUmmxFrJ0pjJyUNc8=;
+        b=qhkezecl1sWGt3JatMgmx6kci/uajdY8vYpxMkoUvyF2iHt8qpEXLtWSfqAElVTrZT
+         /t4vfBgITaf3EqNzLyLBRkHkLgazn+CU3DUU4lAgZD21BaaWUuRbE0eQsFim8/cwJ7t/
+         QPfQzUYYJPSB9IXmUI7SQBPrnWhOglpmTi8HuCKw5YB02xN7zitsEv6ifzSj+zy1qPVd
+         13gJtZQbNA3NVdLzVtID1iyM8pYiImy040PNweEdgTV17FnVlFHiXRZ/Lg1BhWf6wYXY
+         SXArhD5vB1d83zqh8BRX6Wg+4mkhGKJiKQXKWlwyCX5HjqO9hiJ7VIqtDqxt1CuPot30
+         St+g==
+X-Gm-Message-State: AOAM531LhMXwhdQWses0zKMmwdgUTf1cspIBovpTN7Aswitotqrvje6d
+        e95xWUFvopj6ZCL4fHsQlpU=
+X-Google-Smtp-Source: ABdhPJx8hy6wOubeqxfTx/fn/AnNUMOEzQ6xLh5Mglw12uW4b0wv42gO0zYOEw+mTUgB1GWSiSN/Ig==
+X-Received: by 2002:a5d:4009:: with SMTP id n9mr575240wrp.97.1592518352590;
+        Thu, 18 Jun 2020 15:12:32 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id e25sm5677317wrc.69.2020.06.18.15.12.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Jun 2020 15:12:31 -0700 (PDT)
+Subject: Re: [PATCH net-next] of: mdio: preserve phy dev_flags in
+ of_phy_connect()
+To:     rentao.bupt@gmail.com, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org, taoren@fb.com
+References: <20200618220444.5064-1-rentao.bupt@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <f57e5c7f-88f0-d033-6f63-ab53addf9e20@gmail.com>
+Date:   Thu, 18 Jun 2020 15:12:28 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.9.0
+MIME-Version: 1.0
+In-Reply-To: <20200618220444.5064-1-rentao.bupt@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri Olsa wrote:
-> On Wed, Jun 17, 2020 at 04:20:54PM -0700, John Fastabend wrote:
-> > Jiri Olsa wrote:
-> > > This way we can have trampoline on function
-> > > that has arguments with types like:
-> > > 
-> > >   kuid_t uid
-> > >   kgid_t gid
-> > > 
-> > > which unwind into small structs like:
-> > > 
-> > >   typedef struct {
-> > >         uid_t val;
-> > >   } kuid_t;
-> > > 
-> > >   typedef struct {
-> > >         gid_t val;
-> > >   } kgid_t;
-> > > 
-> > > And we can use them in bpftrace like:
-> > > (assuming d_path changes are in)
-> > > 
-> > >   # bpftrace -e 'lsm:path_chown { printf("uid %d, gid %d\n", args->uid, args->gid) }'
-> > >   Attaching 1 probe...
-> > >   uid 0, gid 0
-> > >   uid 1000, gid 1000
-> > >   ...
-> > > 
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > ---
-> > >  kernel/bpf/btf.c | 12 +++++++++++-
-> > >  1 file changed, 11 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > > index 58c9af1d4808..f8fee5833684 100644
-> > > --- a/kernel/bpf/btf.c
-> > > +++ b/kernel/bpf/btf.c
-> > > @@ -362,6 +362,14 @@ static bool btf_type_is_struct(const struct btf_type *t)
-> > >  	return kind == BTF_KIND_STRUCT || kind == BTF_KIND_UNION;
-> > >  }
-> > >  
-> > > +/* type is struct and its size is within 8 bytes
-> > > + * and it can be value of function argument
-> > > + */
-> > > +static bool btf_type_is_struct_arg(const struct btf_type *t)
-> > > +{
-> > > +	return btf_type_is_struct(t) && (t->size <= sizeof(u64));
-> > 
-> > Can you comment on why sizeof(u64) here? The int types can be larger
-> > than 64 for example and don't have a similar check, maybe the should
-> > as well?
-> > 
-> > Here is an example from some made up program I ran through clang and
-> > bpftool.
-> > 
-> > [2] INT '__int128' size=16 bits_offset=0 nr_bits=128 encoding=SIGNED
-> > 
-> > We also have btf_type_int_is_regular to decide if the int is of some
-> > "regular" size but I don't see it used in these paths.
-> 
-> so this small structs are passed as scalars via function arguments,
-> so the size limit is to fit teir value into register size which holds
-> the argument
-> 
-> I'm not sure how 128bit numbers are passed to function as argument,
-> but I think we can treat them separately if there's a need
-> 
 
-Moving Andrii up to the TO field ;)
 
-Andrii, do we also need a guard on the int type with sizeof(u64)?
-Otherwise the arg calculation might be incorrect? wdyt did I follow
-along correctly.
+On 6/18/2020 3:04 PM, rentao.bupt@gmail.com wrote:
+> From: Tao Ren <rentao.bupt@gmail.com>
+> 
+> Replace assignment "=" with OR "|=" for "phy->dev_flags" so "dev_flags"
+> configured in phy probe() function can be preserved.
+> 
+> The idea is similar to commit e7312efbd5de ("net: phy: modify assignment
+> to OR for dev_flags in phy_attach_direct").
+> 
+> Signed-off-by: Tao Ren <rentao.bupt@gmail.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
