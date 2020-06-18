@@ -2,119 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A58A1FF672
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 17:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 663EE1FF67E
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 17:23:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730733AbgFRPUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 11:20:45 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:44670 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727045AbgFRPUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 11:20:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592493643;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MbTYWN0SzS/44xlIfRPBS7iXPj+sngLskZKbh8O1LbQ=;
-        b=I/TlLyiIkVxQrTa224gZLtTOK6/qKCTAVQ85nCGYIwBY8WmDzgca2Nv4o6SEjsx6qX+YD5
-        rRZDRW2VZVsZnYO2mlDllGS8APyODgr2xYCjqqgNAp9aumSNFbiCoSaE3T1+gAEfV8J37r
-        +U2lQwxQbABO+aEYfMCczDvu/rGDOWE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-218-r8ljWaW7PkilwOzOgeIg5Q-1; Thu, 18 Jun 2020 11:20:41 -0400
-X-MC-Unique: r8ljWaW7PkilwOzOgeIg5Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CCCB0107ACF4;
-        Thu, 18 Jun 2020 15:20:40 +0000 (UTC)
-Received: from localhost (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D19CF1E2265;
-        Thu, 18 Jun 2020 15:20:39 +0000 (UTC)
-Date:   Thu, 18 Jun 2020 17:20:35 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net] geneve: allow changing DF behavior after creation
-Message-ID: <20200618172035.37f99a30@redhat.com>
-In-Reply-To: <20200618130347.GA2557669@bistromath.localdomain>
-References: <3b72fc01841507f8439a90f618ef6f6240b9463f.1592473442.git.sd@queasysnail.net>
-        <20200618122629.54a66950@redhat.com>
-        <20200618130347.GA2557669@bistromath.localdomain>
-Organization: Red Hat
+        id S1731398AbgFRPWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 11:22:55 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46940 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729900AbgFRPWy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 11:22:54 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jlwNL-0018C1-Jd; Thu, 18 Jun 2020 17:22:47 +0200
+Date:   Thu, 18 Jun 2020 17:22:47 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [RFC PATCH 2/9] net: dsa: Add DSA driver for Hirschmann
+ Hellcreek switches
+Message-ID: <20200618152247.GF240559@lunn.ch>
+References: <20200618064029.32168-1-kurt@linutronix.de>
+ <20200618064029.32168-3-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200618064029.32168-3-kurt@linutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 18 Jun 2020 15:03:47 +0200
-Sabrina Dubroca <sd@queasysnail.net> wrote:
+> +static void __hellcreek_select_port(struct hellcreek *hellcreek, int port)
 
-> 2020-06-18, 12:26:29 +0200, Stefano Brivio wrote:
-> > On Thu, 18 Jun 2020 12:13:22 +0200
-> > Sabrina Dubroca <sd@queasysnail.net> wrote:
-> >   
-> > > Currently, trying to change the DF parameter of a geneve device does
-> > > nothing:
-> > > 
-> > >     # ip -d link show geneve1
-> > >     14: geneve1: <snip>
-> > >         link/ether <snip>
-> > >         geneve id 1 remote 10.0.0.1 ttl auto df set dstport 6081 <snip>
-> > >     # ip link set geneve1 type geneve id 1 df unset
-> > >     # ip -d link show geneve1
-> > >     14: geneve1: <snip>
-> > >         link/ether <snip>
-> > >         geneve id 1 remote 10.0.0.1 ttl auto df set dstport 6081 <snip>
-> > > 
-> > > We just need to update the value in geneve_changelink.
-> > > 
-> > > Fixes: a025fb5f49ad ("geneve: Allow configuration of DF behaviour")
-> > > Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
-> > > ---
-> > >  drivers/net/geneve.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > > 
-> > > diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-> > > index 75266580b586..4661ef865807 100644
-> > > --- a/drivers/net/geneve.c
-> > > +++ b/drivers/net/geneve.c
-> > > @@ -1649,6 +1649,7 @@ static int geneve_changelink(struct net_device *dev, struct nlattr *tb[],
-> > >  	geneve->collect_md = metadata;
-> > >  	geneve->use_udp6_rx_checksums = use_udp6_rx_checksums;
-> > >  	geneve->ttl_inherit = ttl_inherit;
-> > > +	geneve->df = df;  
-> > 
-> > I introduced this bug as I didn't notice the asymmetry with VXLAN,
-> > where vxlan_nl2conf() takes care of this for both new links and link
-> > changes.  
-> 
-> Yeah, I didn't notice either :/
-> 
-> > Here, this block is duplicated in geneve_configure(), which,
-> > somewhat surprisingly given the name, is not called from
-> > geneve_changelink(). Did you consider factoring out (at least) this
-> > block to have it shared?  
-> 
-> Then I'd have to introduce another lovely function with an absurdly
-> long argument list. I'd rather clean that up in all of geneve and
-> introduce something like struct vxlan_config, but it's a bit much for
-> net. I'll do that once this fix finds its way into net-next.
+Hi Kurt
 
-Yeah, sure, I didn't mean you should simply copy and paste that
-somewhere. Either something like struct vxlan_config used around the
-current logic, or perhaps even better, something like vxlan_nl2conf()
-does.
+In general, please can you drop all these __ prefixes. They are useful
+when you have for example hellcreek_select_port() takes a lock and
+then calls _hellcreek_select_port(), but here, there is no need for
+them.
 
-I didn't check whether something in GENEVE is so special compared to
-VXLAN as to prevent this, though.
+> +static int hellcreek_detect(struct hellcreek *hellcreek)
+> +{
+> +	u8 tgd_maj, tgd_min;
+> +	u16 id, rel_low, rel_high, date_low, date_high, tgd_ver;
+> +	u32 rel, date;
 
--- 
-Stefano
+Reverse Christmas tree please. Here and everywhere else.
 
+> +
+> +	id	  = hellcreek_read(hellcreek, HR_MODID_C);
+> +	rel_low	  = hellcreek_read(hellcreek, HR_REL_L_C);
+> +	rel_high  = hellcreek_read(hellcreek, HR_REL_H_C);
+> +	date_low  = hellcreek_read(hellcreek, HR_BLD_L_C);
+> +	date_high = hellcreek_read(hellcreek, HR_BLD_H_C);
+> +	tgd_ver   = hellcreek_read(hellcreek, TR_TGDVER);
+> +
+> +	if (id != HELLCREEK_MODULE_ID)
+> +		return -ENODEV;
+> +
+> +	rel	= rel_low | (rel_high << 16);
+> +	date	= date_low | (date_high << 16);
+> +	tgd_maj = (tgd_ver & TR_TGDVER_REV_MAJ_MASK) >> TR_TGDVER_REV_MAJ_SHIFT;
+> +	tgd_min = (tgd_ver & TR_TGDVER_REV_MIN_MASK) >> TR_TGDVER_REV_MIN_SHIFT;
+> +
+> +	dev_info(hellcreek->dev, "Module ID=%02x Release=%04x Date=%04x TGD Version=%02x.%02x\n",
+> +		 id, rel, date, tgd_maj, tgd_min);
+> +
+> +	return 0;
+> +}
+
+> +static int hellcreek_port_enable(struct dsa_switch *ds, int port,
+> +				 struct phy_device *phy)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +	struct hellcreek_port *hellcreek_port = &hellcreek->ports[port];
+> +	unsigned long flags;
+> +	u16 val;
+> +
+> +	if (port >= NUM_PORTS)
+> +		return -EINVAL;
+> +
+> +	dev_info(hellcreek->dev, "Enable port %d\n", port);
+
+dev_dbg().
+
++
+> +	spin_lock_irqsave(&hellcreek->reg_lock, flags);
+
+I've not seen any interrupt handling code in the driver, and there is
+no mention of an interrupt in the DT binding. Do you really need
+_irqsave spin locks?
+
+> +
+> +	__hellcreek_select_port(hellcreek, port);
+> +	val = hellcreek_port->ptcfg;
+> +	val |= HR_PTCFG_ADMIN_EN;
+> +	hellcreek_write(hellcreek, val, HR_PTCFG);
+> +	hellcreek_port->ptcfg = val;
+> +
+> +	spin_unlock_irqrestore(&hellcreek->reg_lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static void hellcreek_port_disable(struct dsa_switch *ds, int port)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +	struct hellcreek_port *hellcreek_port = &hellcreek->ports[port];
+> +	unsigned long flags;
+> +	u16 val;
+> +
+> +	if (port >= NUM_PORTS)
+> +		return;
+
+I don't think this test is actually needed, here or in any of the
+other callbacks. If it does happen, it means we have a core bug we
+should fix.
+
+> +
+> +	dev_info(hellcreek->dev, "Disable port %d\n", port);
+
+dev_dbg()
+
+> +	spin_lock_irqsave(&hellcreek->reg_lock, flags);
+> +
+> +	__hellcreek_select_port(hellcreek, port);
+> +	val = hellcreek_port->ptcfg;
+> +	val &= ~HR_PTCFG_ADMIN_EN;
+> +	hellcreek_write(hellcreek, val, HR_PTCFG);
+> +	hellcreek_port->ptcfg = val;
+> +
+> +	spin_unlock_irqrestore(&hellcreek->reg_lock, flags);
+> +}
+> +
+
+> +static void hellcreek_get_ethtool_stats(struct dsa_switch *ds, int port,
+> +					uint64_t *data)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +	struct hellcreek_port *hellcreek_port = &hellcreek->ports[port];
+> +	unsigned long flags;
+> +	int i;
+> +
+> +	if (port >= NUM_PORTS)
+> +		return;
+> +
+> +	spin_lock_irqsave(&hellcreek->reg_lock, flags);
+> +	for (i = 0; i < ARRAY_SIZE(hellcreek_counter); ++i) {
+> +		const struct hellcreek_counter *counter = &hellcreek_counter[i];
+> +		u8 offset = counter->offset + port * 64;
+> +		u16 high, low;
+> +		u64 value = 0;
+> +
+> +		__hellcreek_select_counter(hellcreek, offset);
+> +
+> +		high  = hellcreek_read(hellcreek, HR_CRDH);
+> +		low   = hellcreek_read(hellcreek, HR_CRDL);
+> +		value = (high << 16) | low;
+
+Is there some sort of snapshot happening here? Or do you need to read
+high again, to make sure it has not incremented when low was being
+read?
+
+> +
+> +		hellcreek_port->counter_values[i] += value;
+> +		data[i] = hellcreek_port->counter_values[i];
+> +	}
+> +	spin_unlock_irqrestore(&hellcreek->reg_lock, flags);
+> +}
+> +
+> +static int hellcreek_vlan_prepare(struct dsa_switch *ds, int port,
+> +				  const struct switchdev_obj_port_vlan *vlan)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +
+> +	/* Nothing todo */
+> +	dev_info(hellcreek->dev, "VLAN prepare for port %d\n", port);
+
+dev_dbg()
+
+> +
+> +	return 0;
+> +}
+> +
+
+> +static void hellcreek_vlan_add(struct dsa_switch *ds, int port,
+> +			       const struct switchdev_obj_port_vlan *vlan)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+> +	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+> +	unsigned long flags;
+> +	u16 vid;
+> +
+> +	if (port >= NUM_PORTS || vlan->vid_end >= 4096)
+
+Again, if vlan->vid_end >= 4096 is true, there is a core bug which
+needs fixing.
+
+> +		return;
+> +
+> +	dev_info(hellcreek->dev, "Add VLANs (%d -- %d) on port %d, %s, %s\n",
+> +		 vlan->vid_begin, vlan->vid_end, port,
+> +		 untagged ? "untagged" : "tagged",
+> +		 pvid ? "PVID" : "no PVID");
+
+Please go thought the driver and consider all you dev_info()
+statements. Should they be dev_dbg()?
+
+	    Andrew
