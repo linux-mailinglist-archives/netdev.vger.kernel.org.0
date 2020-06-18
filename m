@@ -2,85 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 562481FE0A4
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:50:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06BC51FE174
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:55:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733105AbgFRBtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:49:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36052 "EHLO mail.kernel.org"
+        id S1731530AbgFRBZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:25:52 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45432 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731930AbgFRB1p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:27:45 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2544F221FC;
-        Thu, 18 Jun 2020 01:27:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443664;
-        bh=iZZmz+Ap5bLY4GuNSraezb984yLj0cyMICkNa8CYumg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sibqRR4oa552VDqZOG59conmWkFBR8CXFyd/77VQ6E5RNXGz9eYoxwgGZkP6rFv6N
-         8KSlasLdgDD+JuBgeh+XgZzbN0YA6d1XWIt6XCevk3cORGnkuva5QfabWvtrDOuVSs
-         lWB/suBuvv+utZ7zObHVK8cslLKSduXnaxY0Kflg=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fedor Tokarev <ftokarev@gmail.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 082/108] net: sunrpc: Fix off-by-one issues in 'rpc_ntop6'
-Date:   Wed, 17 Jun 2020 21:25:34 -0400
-Message-Id: <20200618012600.608744-82-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200618012600.608744-1-sashal@kernel.org>
-References: <20200618012600.608744-1-sashal@kernel.org>
+        id S1731493AbgFRBZu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:25:50 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jljJM-001303-JJ; Thu, 18 Jun 2020 03:25:48 +0200
+Date:   Thu, 18 Jun 2020 03:25:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, DENG Qingfang <dqfext@gmail.com>,
+        Mauri Sandberg <sandberg@mailfence.com>
+Subject: Re: [net-next PATCH 1/5 v2] net: dsa: tag_rtl4_a: Implement Realtek
+ 4 byte A tag
+Message-ID: <20200618012548.GB249144@lunn.ch>
+References: <20200617083132.1847234-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200617083132.1847234-1-linus.walleij@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fedor Tokarev <ftokarev@gmail.com>
-
-[ Upstream commit 118917d696dc59fd3e1741012c2f9db2294bed6f ]
-
-Fix off-by-one issues in 'rpc_ntop6':
- - 'snprintf' returns the number of characters which would have been
-   written if enough space had been available, excluding the terminating
-   null byte. Thus, a return value of 'sizeof(scopebuf)' means that the
-   last character was dropped.
- - 'strcat' adds a terminating null byte to the string, thus if len ==
-   buflen, the null byte is written past the end of the buffer.
-
-Signed-off-by: Fedor Tokarev <ftokarev@gmail.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/sunrpc/addr.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/sunrpc/addr.c b/net/sunrpc/addr.c
-index 2e0a6f92e563..8391c2785550 100644
---- a/net/sunrpc/addr.c
-+++ b/net/sunrpc/addr.c
-@@ -81,11 +81,11 @@ static size_t rpc_ntop6(const struct sockaddr *sap,
+On Wed, Jun 17, 2020 at 10:31:28AM +0200, Linus Walleij wrote:
+> This implements the known parts of the Realtek 4 byte
+> tag protocol version 0xA, as found in the RTL8366RB
+> DSA switch.
  
- 	rc = snprintf(scopebuf, sizeof(scopebuf), "%c%u",
- 			IPV6_SCOPE_DELIMITER, sin6->sin6_scope_id);
--	if (unlikely((size_t)rc > sizeof(scopebuf)))
-+	if (unlikely((size_t)rc >= sizeof(scopebuf)))
- 		return 0;
- 
- 	len += rc;
--	if (unlikely(len > buflen))
-+	if (unlikely(len >= buflen))
- 		return 0;
- 
- 	strcat(buf, scopebuf);
--- 
-2.25.1
+Hi Linus
 
+David likes to have a 0/X patch which contains the big picture for the
+patchset. It gets used for the merge commit he makes for the patchset.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
