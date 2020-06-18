@@ -2,540 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 265161FEAC2
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 07:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 749461FEADD
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 07:23:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbgFRFOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 01:14:19 -0400
-Received: from mga14.intel.com ([192.55.52.115]:64356 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726971AbgFRFOO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 01:14:14 -0400
-IronPort-SDR: uvCwNMp6kf7+OFojqMAwQ0h6k2862IfJfhteEw0OLNPGWV/9zqAuu42JWXtx86AOx//nfXq4Q9
- 9jT3kRKaQlpA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9655"; a="141516121"
-X-IronPort-AV: E=Sophos;i="5.73,525,1583222400"; 
-   d="scan'208";a="141516121"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2020 22:13:53 -0700
-IronPort-SDR: zEw+msD7Za2wP2gHwRW2Mjw9TrLC5KADiWuK+N6rCJJLyC+ihecwjeNAxASS+PfmFBOYXSh2d6
- Lff+bSl/NOXQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,525,1583222400"; 
-   d="scan'208";a="263495634"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga008.fm.intel.com with ESMTP; 17 Jun 2020 22:13:53 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Alan Brady <alan.brady@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Alice Michael <alice.michael@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Joshua Hay <joshua.a.hay@intel.com>,
-        Madhu Chittim <madhu.chittim@intel.com>,
-        Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
-        Donald Skidmore <donald.c.skidmore@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 15/15] idpf: Introduce idpf driver
-Date:   Wed, 17 Jun 2020 22:13:44 -0700
-Message-Id: <20200618051344.516587-16-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200618051344.516587-1-jeffrey.t.kirsher@intel.com>
-References: <20200618051344.516587-1-jeffrey.t.kirsher@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726853AbgFRFXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 01:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725892AbgFRFXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 01:23:38 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C95C06174E
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 22:23:38 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id w9so5371266ybt.2
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 22:23:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=iHRcHsI5tmOPTYIcFbMvq65ROIUbbGna0uzyQnK/lZw=;
+        b=LeYuclsXEUuuGV7/OMFKj7PXlcbtG1mdsrFMcIHx654wLQZ83PmRoNd2DniPRKUehz
+         1KqKEju29SJuDRDfICOm+kEs3+yZtFiHr1o4T0DcJVz9qvZRDZj5gAqDGI6k0hDez4sv
+         YdPLXAe16xsTZpr/Y78PCkIYKQV4UNywvogG1IGIR0iIxa0VxNtGGC6j2Bg3qs1NvOuJ
+         4QNCdMs4vo9LZznZwyCMMn7gEpqUGXNW7heRSR6Hey9crrz4suJRn1RusTZC+NGyaWkC
+         vzvGX0w2/BHQdRQXgnfkVqCA/pvZLYavgBs3tX8vWYqO+DynxpMq3mEpo1s7xgoI4kSG
+         Fxnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=iHRcHsI5tmOPTYIcFbMvq65ROIUbbGna0uzyQnK/lZw=;
+        b=n/eMuoNE8kM6Z4+MD76Dx2jUcgMGrPDwKeDWT1nThJTF7EmdCZ+ZjeNMkGxLB3+EGy
+         84gApR2eyzSss3S+cx5hN17NCix5NsgaysH/hmLFPfAu3sy0RB6jCAWQuz8cltVEEU5h
+         mgBmk/88UmxhH+ImywxkIbt7dE07cRrg8H5JcQwgHa5ldjlGe24VYR1BXYV4SN3l3kBf
+         O0gWizDlY+Pp+bh1aLk8pcqNICz1KiMQItRV5ASmytyXNRFt3lGxHyFlx+YFxCP1N0i8
+         xI0rcRPDu5bQE6Oy1xINyvSka18jZpaxQ70V3BaZZg6MLz3FShW0eu8jrgzud1fQnguI
+         gGhw==
+X-Gm-Message-State: AOAM533ErC9TVmNh7fheIKJ+QY9O3jntnm2HedvvhEcEGFD9ObdHvJus
+        zoyi5IUDdmNOPASiyrtbYoOYZXPvCQmZUQ==
+X-Google-Smtp-Source: ABdhPJw7N2NaBDDRjiRGoONm/Uyr/eeohZklDWylT13DXbiMWUwRT8/pdzJWcs7k6Y8WV7qAHsZ3rd2IKtuZqw==
+X-Received: by 2002:a25:5186:: with SMTP id f128mr4015169ybb.293.1592457817719;
+ Wed, 17 Jun 2020 22:23:37 -0700 (PDT)
+Date:   Wed, 17 Jun 2020 22:23:25 -0700
+Message-Id: <20200618052325.78441-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.290.gba653c62da-goog
+Subject: [PATCH net] net: increment xmit_recursion level in dev_direct_xmit()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alan Brady <alan.brady@intel.com>
+Back in commit f60e5990d9c1 ("ipv6: protect skb->sk accesses
+from recursive dereference inside the stack") Hannes added code
+so that IPv6 stack would not trust skb->sk for typical cases
+where packet goes through 'standard' xmit path (__dev_queue_xmit())
 
-Utilizes the Intel Ethernet Common Module and provides
-a device specific implementation for data plane devices.
+Alas af_packet had a dev_direct_xmit() path that was not
+dealing yet with xmit_recursion level.
 
-Signed-off-by: Alan Brady <alan.brady@intel.com>
-Signed-off-by: Alice Michael <alice.michael@intel.com>
-Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-Signed-off-by: Joshua Hay <joshua.a.hay@intel.com>
-Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
-Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
-Reviewed-by: Donald Skidmore <donald.c.skidmore@intel.com>
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Also change sk_mc_loop() to dump a stack once only.
+
+Without this patch, syzbot was able to trigger :
+
+[1]
+[  153.567378] WARNING: CPU: 7 PID: 11273 at net/core/sock.c:721 sk_mc_loop=
++0x51/0x70
+[  153.567378] Modules linked in: nfnetlink ip6table_raw ip6table_filter ip=
+table_raw iptable_nat nf_nat nf_conntrack nf_defrag_ipv4 nf_defrag_ipv6 ipt=
+able_filter macsec macvtap tap macvlan 8021q hsr wireguard libblake2s blake=
+2s_x86_64 libblake2s_generic udp_tunnel ip6_udp_tunnel libchacha20poly1305 =
+poly1305_x86_64 chacha_x86_64 libchacha curve25519_x86_64 libcurve25519_gen=
+eric netdevsim batman_adv dummy team bridge stp llc w1_therm wire i2c_mux_p=
+ca954x i2c_mux cdc_acm ehci_pci ehci_hcd mlx4_en mlx4_ib ib_uverbs ib_core =
+mlx4_core
+[  153.567386] CPU: 7 PID: 11273 Comm: b159172088 Not tainted 5.8.0-smp-DEV=
+ #273
+[  153.567387] RIP: 0010:sk_mc_loop+0x51/0x70
+[  153.567388] Code: 66 83 f8 0a 75 24 0f b6 4f 12 b8 01 00 00 00 31 d2 d3 =
+e0 a9 bf ef ff ff 74 07 48 8b 97 f0 02 00 00 0f b6 42 3a 83 e0 01 5d c3 <0f=
+> 0b b8 01 00 00 00 5d c3 0f b6 87 18 03 00 00 5d c0 e8 04 83 e0
+[  153.567388] RSP: 0018:ffff95c69bb93990 EFLAGS: 00010212
+[  153.567388] RAX: 0000000000000011 RBX: ffff95c6e0ee3e00 RCX: 00000000000=
+00007
+[  153.567389] RDX: ffff95c69ae50000 RSI: ffff95c6c30c3000 RDI: ffff95c6c30=
+c3000
+[  153.567389] RBP: ffff95c69bb93990 R08: ffff95c69a77f000 R09: 00000000000=
+00008
+[  153.567389] R10: 0000000000000040 R11: 00003e0e00026128 R12: ffff95c6c30=
+c3000
+[  153.567390] R13: ffff95c6cc4fd500 R14: ffff95c6f84500c0 R15: ffff95c69aa=
+13c00
+[  153.567390] FS:  00007fdc3a283700(0000) GS:ffff95c6ff9c0000(0000) knlGS:=
+0000000000000000
+[  153.567390] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  153.567391] CR2: 00007ffee758e890 CR3: 0000001f9ba20003 CR4: 00000000001=
+606e0
+[  153.567391] Call Trace:
+[  153.567391]  ip6_finish_output2+0x34e/0x550
+[  153.567391]  __ip6_finish_output+0xe7/0x110
+[  153.567391]  ip6_finish_output+0x2d/0xb0
+[  153.567392]  ip6_output+0x77/0x120
+[  153.567392]  ? __ip6_finish_output+0x110/0x110
+[  153.567392]  ip6_local_out+0x3d/0x50
+[  153.567392]  ipvlan_queue_xmit+0x56c/0x5e0
+[  153.567393]  ? ksize+0x19/0x30
+[  153.567393]  ipvlan_start_xmit+0x18/0x50
+[  153.567393]  dev_direct_xmit+0xf3/0x1c0
+[  153.567393]  packet_direct_xmit+0x69/0xa0
+[  153.567394]  packet_sendmsg+0xbf0/0x19b0
+[  153.567394]  ? plist_del+0x62/0xb0
+[  153.567394]  sock_sendmsg+0x65/0x70
+[  153.567394]  sock_write_iter+0x93/0xf0
+[  153.567394]  new_sync_write+0x18e/0x1a0
+[  153.567395]  __vfs_write+0x29/0x40
+[  153.567395]  vfs_write+0xb9/0x1b0
+[  153.567395]  ksys_write+0xb1/0xe0
+[  153.567395]  __x64_sys_write+0x1a/0x20
+[  153.567395]  do_syscall_64+0x43/0x70
+[  153.567396]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  153.567396] RIP: 0033:0x453549
+[  153.567396] Code: Bad RIP value.
+[  153.567396] RSP: 002b:00007fdc3a282cc8 EFLAGS: 00000246 ORIG_RAX: 000000=
+0000000001
+[  153.567397] RAX: ffffffffffffffda RBX: 00000000004d32d0 RCX: 00000000004=
+53549
+[  153.567397] RDX: 0000000000000020 RSI: 0000000020000300 RDI: 00000000000=
+00003
+[  153.567398] RBP: 00000000004d32d8 R08: 0000000000000000 R09: 00000000000=
+00000
+[  153.567398] R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004=
+d32dc
+[  153.567398] R13: 00007ffee742260f R14: 00007fdc3a282dc0 R15: 00007fdc3a2=
+83700
+[  153.567399] ---[ end trace c1d5ae2b1059ec62 ]---
+
+f60e5990d9c1 ("ipv6: protect skb->sk accesses from recursive dereference in=
+side the stack")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 ---
- .../networking/device_drivers/intel/idpf.rst  |  47 ++++++
- MAINTAINERS                                   |   1 +
- drivers/net/ethernet/intel/Kconfig            |   8 +
- drivers/net/ethernet/intel/Makefile           |   1 +
- drivers/net/ethernet/intel/idpf/Makefile      |  12 ++
- drivers/net/ethernet/intel/idpf/idpf_dev.h    |  17 ++
- drivers/net/ethernet/intel/idpf/idpf_devids.h |  10 ++
- drivers/net/ethernet/intel/idpf/idpf_main.c   | 136 ++++++++++++++++
- drivers/net/ethernet/intel/idpf/idpf_reg.c    | 152 ++++++++++++++++++
- 9 files changed, 384 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/intel/idpf.rst
- create mode 100644 drivers/net/ethernet/intel/idpf/Makefile
- create mode 100644 drivers/net/ethernet/intel/idpf/idpf_dev.h
- create mode 100644 drivers/net/ethernet/intel/idpf/idpf_devids.h
- create mode 100644 drivers/net/ethernet/intel/idpf/idpf_main.c
- create mode 100644 drivers/net/ethernet/intel/idpf/idpf_reg.c
+ net/core/dev.c  | 2 ++
+ net/core/sock.c | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/device_drivers/intel/idpf.rst b/Documentation/networking/device_drivers/intel/idpf.rst
-new file mode 100644
-index 000000000000..973fa9613428
---- /dev/null
-+++ b/Documentation/networking/device_drivers/intel/idpf.rst
-@@ -0,0 +1,47 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==================================================================
-+Linux Base Driver for the Intel(R) Smart Network Adapter Family Series
-+==================================================================
-+
-+Intel idpf Linux driver.
-+Copyright(c) 2020 Intel Corporation.
-+
-+Contents
-+========
-+
-+- Enabling the driver
-+- Support
-+
-+The driver in this release supports Intel's Smart Network Adapter Family Series
-+of products. For more information, visit Intel's support page at
-+https://support.intel.com.
-+
-+Enabling the driver
-+===================
-+The driver is enabled via the standard kernel configuration system,
-+using the make command::
-+
-+  make oldconfig/menuconfig/etc.
-+
-+The driver is located in the menu structure at:
-+
-+  -> Device Drivers
-+    -> Network device support (NETDEVICES [=y])
-+      -> Ethernet driver support
-+        -> Intel devices
-+          -> Intel(R) Smart Network Adapter Family Series Support
-+
-+Support
-+=======
-+For general information, go to the Intel support website at:
-+
-+https://www.intel.com/support/
-+
-+or the Intel Wired Networking project hosted by Sourceforge at:
-+
-+https://sourceforge.net/projects/e1000
-+
-+If an issue is identified with the released source code on a supported kernel
-+with a supported adapter, email the specific information related to the issue
-+to e1000-devel@lists.sf.net.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 102ee1e4aef0..97ac0d417067 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8654,6 +8654,7 @@ F:	Documentation/networking/device_drivers/intel/fm10k.rst
- F:	Documentation/networking/device_drivers/intel/i40e.rst
- F:	Documentation/networking/device_drivers/intel/iavf.rst
- F:	Documentation/networking/device_drivers/intel/ice.rst
-+F:	Documentation/networking/device_drivers/intel/idpf.rst
- F:	Documentation/networking/device_drivers/intel/iecm.rst
- F:	Documentation/networking/device_drivers/intel/igb.rst
- F:	Documentation/networking/device_drivers/intel/igbvf.rst
-diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
-index 6dd985cbdb6d..9e0b3c1bf7c6 100644
---- a/drivers/net/ethernet/intel/Kconfig
-+++ b/drivers/net/ethernet/intel/Kconfig
-@@ -349,4 +349,12 @@ config IECM
- 	help
- 	 To compile this driver as a module, choose M here. The module
- 	 will be called iecm.  MSI-X interrupt support is required
-+
-+config IDPF
-+	tristate "Intel(R) Data Plane Function Support"
-+	default n
-+	depends on PCI
-+	help
-+	 To compile this driver as a module, choose M here. The module
-+	 will be called idpf.
- endif # NET_VENDOR_INTEL
-diff --git a/drivers/net/ethernet/intel/Makefile b/drivers/net/ethernet/intel/Makefile
-index c9eba9cc5087..3786c2269f3d 100644
---- a/drivers/net/ethernet/intel/Makefile
-+++ b/drivers/net/ethernet/intel/Makefile
-@@ -17,3 +17,4 @@ obj-$(CONFIG_IAVF) += iavf/
- obj-$(CONFIG_FM10K) += fm10k/
- obj-$(CONFIG_ICE) += ice/
- obj-$(CONFIG_IECM) += iecm/
-+obj-$(CONFIG_IDPF) += idpf/
-diff --git a/drivers/net/ethernet/intel/idpf/Makefile b/drivers/net/ethernet/intel/idpf/Makefile
-new file mode 100644
-index 000000000000..ac6cac6c6360
---- /dev/null
-+++ b/drivers/net/ethernet/intel/idpf/Makefile
-@@ -0,0 +1,12 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+# Copyright (C) 2020 Intel Corporation
-+
-+#
-+# Makefile for the Intel(R) Data Plane Function Linux Driver
-+#
-+
-+obj-$(CONFIG_IDPF) += idpf.o
-+
-+idpf-y := \
-+	idpf_main.o \
-+	idpf_reg.o
-diff --git a/drivers/net/ethernet/intel/idpf/idpf_dev.h b/drivers/net/ethernet/intel/idpf/idpf_dev.h
-new file mode 100644
-index 000000000000..1da33f5120a2
---- /dev/null
-+++ b/drivers/net/ethernet/intel/idpf/idpf_dev.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (C) 2020 Intel Corporation */
-+
-+#ifndef _IDPF_DEV_H_
-+#define _IDPF_DEV_H_
-+
-+#include <linux/net/intel/iecm.h>
-+
-+void idpf_intr_reg_init(struct iecm_vport *vport);
-+void idpf_mb_intr_reg_init(struct iecm_adapter *adapter);
-+void idpf_reset_reg_init(struct iecm_reset_reg *reset_reg);
-+void idpf_trigger_reset(struct iecm_adapter *adapter,
-+			enum iecm_flags trig_cause);
-+void idpf_vportq_reg_init(struct iecm_vport *vport);
-+void idpf_ctlq_reg_init(struct iecm_ctlq_create_info *cq);
-+
-+#endif /* _IDPF_DEV_H_ */
-diff --git a/drivers/net/ethernet/intel/idpf/idpf_devids.h b/drivers/net/ethernet/intel/idpf/idpf_devids.h
-new file mode 100644
-index 000000000000..ee373a04cb20
---- /dev/null
-+++ b/drivers/net/ethernet/intel/idpf/idpf_devids.h
-@@ -0,0 +1,10 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (C) 2020 Intel Corporation */
-+
-+#ifndef _IDPF_DEVIDS_H_
-+#define _IDPF_DEVIDS_H_
-+
-+/* Device IDs */
-+#define IDPF_DEV_ID_PF			0x1452
-+
-+#endif /* _IDPF_DEVIDS_H_ */
-diff --git a/drivers/net/ethernet/intel/idpf/idpf_main.c b/drivers/net/ethernet/intel/idpf/idpf_main.c
-new file mode 100644
-index 000000000000..56f20abd57ee
---- /dev/null
-+++ b/drivers/net/ethernet/intel/idpf/idpf_main.c
-@@ -0,0 +1,136 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2020 Intel Corporation */
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include "idpf_dev.h"
-+#include "idpf_devids.h"
-+
-+#define DRV_SUMMARY	"Intel(R) Data Plane Function Linux Driver"
-+static const char idpf_driver_string[] = DRV_SUMMARY;
-+static const char idpf_copyright[] = "Copyright (c) 2020, Intel Corporation.";
-+
-+MODULE_AUTHOR("Intel Corporation, <linux.nics@intel.com>");
-+MODULE_DESCRIPTION(DRV_SUMMARY);
-+MODULE_LICENSE("GPL v2");
-+
-+static int debug = -1;
-+module_param(debug, int, 0644);
-+#ifndef CONFIG_DYNAMIC_DEBUG
-+MODULE_PARM_DESC(debug, "netif level (0=none,...,16=all), hw debug_mask (0x8XXXXXXX)");
-+#else
-+MODULE_PARM_DESC(debug, "netif level (0=none,...,16=all)");
-+#endif /* !CONFIG_DYNAMIC_DEBUG */
-+
-+/**
-+ * idpf_reg_ops_init - Initialize register API function pointers
-+ * @adapter: Driver specific private structure
-+ */
-+static void idpf_reg_ops_init(struct iecm_adapter *adapter)
-+{
-+	adapter->dev_ops.reg_ops.ctlq_reg_init = idpf_ctlq_reg_init;
-+	adapter->dev_ops.reg_ops.vportq_reg_init = idpf_vportq_reg_init;
-+	adapter->dev_ops.reg_ops.intr_reg_init = idpf_intr_reg_init;
-+	adapter->dev_ops.reg_ops.mb_intr_reg_init = idpf_mb_intr_reg_init;
-+	adapter->dev_ops.reg_ops.reset_reg_init = idpf_reset_reg_init;
-+	adapter->dev_ops.reg_ops.trigger_reset = idpf_trigger_reset;
-+}
-+
-+/**
-+ * idpf_probe - Device initialization routine
-+ * @pdev: PCI device information struct
-+ * @ent: entry in idpf_pci_tbl
-+ *
-+ * Returns 0 on success, negative on failure
-+ */
-+int idpf_probe(struct pci_dev *pdev,
-+	       const struct pci_device_id __always_unused *ent)
-+{
-+	struct iecm_adapter *adapter = NULL;
-+	int err;
-+
-+	err = pcim_enable_device(pdev);
-+	if (err)
-+		return err;
-+
-+	adapter = kzalloc(sizeof(*adapter), GFP_KERNEL);
-+	if (!adapter)
-+		return -ENOMEM;
-+
-+	adapter->dev_ops.reg_ops_init = idpf_reg_ops_init;
-+
-+	err = iecm_probe(pdev, ent, adapter);
-+	if (err)
-+		kfree(adapter);
-+
-+	return err;
-+}
-+
-+/**
-+ * idpf_remove - Device removal routine
-+ * @pdev: PCI device information struct
-+ */
-+static void idpf_remove(struct pci_dev *pdev)
-+{
-+	struct iecm_adapter *adapter = pci_get_drvdata(pdev);
-+
-+	iecm_remove(pdev);
-+	kfree(adapter);
-+}
-+
-+/* idpf_pci_tbl - PCI Dev idpf ID Table
-+ *
-+ * Wildcard entries (PCI_ANY_ID) should come last
-+ * Last entry must be all 0s
-+ *
-+ * { Vendor ID, Deviecm ID, SubVendor ID, SubDevice ID,
-+ *   Class, Class Mask, private data (not used) }
-+ */
-+static const struct pci_device_id idpf_pci_tbl[] = {
-+	{ PCI_VDEVICE(INTEL, IDPF_DEV_ID_PF), 0 },
-+	/* required last entry */
-+	{ 0, }
-+};
-+MODULE_DEVICE_TABLE(pci, idpf_pci_tbl);
-+
-+static struct pci_driver idpf_driver = {
-+	.name = KBUILD_MODNAME,
-+	.id_table = idpf_pci_tbl,
-+	.probe = idpf_probe,
-+	.remove = idpf_remove,
-+	.shutdown = iecm_shutdown,
-+};
-+
-+/**
-+ * idpf_module_init - Driver registration routine
-+ *
-+ * idpf_module_init is the first routine called when the driver is
-+ * loaded. All it does is register with the PCI subsystem.
-+ */
-+static int __init idpf_module_init(void)
-+{
-+	int status;
-+
-+	pr_info("%s", idpf_driver_string);
-+	pr_info("%s\n", idpf_copyright);
-+
-+	status = pci_register_driver(&idpf_driver);
-+	if (status)
-+		pr_err("failed to register pci driver, err %d\n", status);
-+
-+	return status;
-+}
-+module_init(idpf_module_init);
-+
-+/**
-+ * idpf_module_exit - Driver exit cleanup routine
-+ *
-+ * idpf_module_exit is called just before the driver is removed
-+ * from memory.
-+ */
-+static void __exit idpf_module_exit(void)
-+{
-+	pci_unregister_driver(&idpf_driver);
-+	pr_info("module unloaded\n");
-+}
-+module_exit(idpf_module_exit);
-diff --git a/drivers/net/ethernet/intel/idpf/idpf_reg.c b/drivers/net/ethernet/intel/idpf/idpf_reg.c
-new file mode 100644
-index 000000000000..f5f364639cfc
---- /dev/null
-+++ b/drivers/net/ethernet/intel/idpf/idpf_reg.c
-@@ -0,0 +1,152 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2020 Intel Corporation */
-+
-+#include "idpf_dev.h"
-+#include <linux/net/intel/iecm_lan_pf_regs.h>
-+
-+/**
-+ * idpf_ctlq_reg_init - initialize default mailbox registers
-+ * @cq: pointer to the array of create control queues
-+ */
-+void idpf_ctlq_reg_init(struct iecm_ctlq_create_info *cq)
-+{
-+	int i;
-+
-+#define NUM_Q 2
-+	for (i = 0; i < NUM_Q; i++) {
-+		struct iecm_ctlq_create_info *ccq = cq + i;
-+
-+		switch (ccq->type) {
-+		case IECM_CTLQ_TYPE_MAILBOX_TX:
-+			/* set head and tail registers in our local struct */
-+			ccq->reg.head = PF_FW_ATQH;
-+			ccq->reg.tail = PF_FW_ATQT;
-+			ccq->reg.len = PF_FW_ATQLEN;
-+			ccq->reg.bah = PF_FW_ATQBAH;
-+			ccq->reg.bal = PF_FW_ATQBAL;
-+			ccq->reg.len_mask = PF_FW_ATQLEN_ATQLEN_M;
-+			ccq->reg.len_ena_mask = PF_FW_ATQLEN_ATQENABLE_M;
-+			ccq->reg.head_mask = PF_FW_ATQH_ATQH_M;
-+			break;
-+		case IECM_CTLQ_TYPE_MAILBOX_RX:
-+			/* set head and tail registers in our local struct */
-+			ccq->reg.head = PF_FW_ARQH;
-+			ccq->reg.tail = PF_FW_ARQT;
-+			ccq->reg.len = PF_FW_ARQLEN;
-+			ccq->reg.bah = PF_FW_ARQBAH;
-+			ccq->reg.bal = PF_FW_ARQBAL;
-+			ccq->reg.len_mask = PF_FW_ARQLEN_ARQLEN_M;
-+			ccq->reg.len_ena_mask = PF_FW_ARQLEN_ARQENABLE_M;
-+			ccq->reg.head_mask = PF_FW_ARQH_ARQH_M;
-+			break;
-+		default:
-+			break;
-+		}
-+	}
-+}
-+
-+/**
-+ * idpf_vportq_reg_init - Initialize tail registers
-+ * @vport: virtual port structure
-+ */
-+void idpf_vportq_reg_init(struct iecm_vport *vport)
-+{
-+	struct iecm_hw *hw = &vport->adapter->hw;
-+	struct iecm_queue *q;
-+	int i, j;
-+
-+	for (i = 0; i < vport->num_txq_grp; i++) {
-+		int num_txq = vport->txq_grps[i].num_txq;
-+
-+		for (j = 0; j < num_txq; j++) {
-+			q = &vport->txq_grps[i].txqs[j];
-+			q->tail = hw->hw_addr + PF_QTX_COMM_DBELL(q->q_id);
-+		}
-+	}
-+
-+	for (i = 0; i < vport->num_rxq_grp; i++) {
-+		struct iecm_rxq_group *rxq_grp = &vport->rxq_grps[i];
-+		int num_rxq;
-+
-+		if (iecm_is_queue_model_split(vport->rxq_model)) {
-+			for (j = 0; j < IECM_BUFQS_PER_RXQ_SET; j++) {
-+				q = &rxq_grp->splitq.bufq_sets[j].bufq;
-+				q->tail = hw->hw_addr +
-+					  PF_QRX_BUFFQ_TAIL(q->q_id);
-+			}
-+
-+			num_rxq = rxq_grp->splitq.num_rxq_sets;
-+		} else {
-+			num_rxq = rxq_grp->singleq.num_rxq;
-+		}
-+
-+		for (j = 0; j < num_rxq; j++) {
-+			if (iecm_is_queue_model_split(vport->rxq_model))
-+				q = &rxq_grp->splitq.rxq_sets[j].rxq;
-+			else
-+				q = &rxq_grp->singleq.rxqs[j];
-+			q->tail = hw->hw_addr + PF_QRX_TAIL(q->q_id);
-+		}
-+	}
-+}
-+
-+/**
-+ * idpf_mb_intr_reg_init - Initialize mailbox interrupt register
-+ * @adapter: adapter structure
-+ */
-+void idpf_mb_intr_reg_init(struct iecm_adapter *adapter)
-+{
-+	struct iecm_intr_reg *intr = &adapter->mb_vector.intr_reg;
-+	int vidx;
-+
-+	vidx = adapter->mb_vector.v_idx;
-+	intr->dyn_ctl = PF_GLINT_DYN_CTL(vidx);
-+	intr->dyn_ctl_intena_m = PF_GLINT_DYN_CTL_INTENA_M;
-+	intr->dyn_ctl_itridx_m = 0x3 << PF_GLINT_DYN_CTL_ITR_INDX_S;
-+}
-+
-+/**
-+ * idpf_intr_reg_init - Initialize interrupt registers
-+ * @vport: virtual port structure
-+ */
-+void idpf_intr_reg_init(struct iecm_vport *vport)
-+{
-+	int q_idx;
-+
-+	for (q_idx = 0; q_idx < vport->num_q_vectors; q_idx++) {
-+		struct iecm_q_vector *q_vector = &vport->q_vectors[q_idx];
-+		struct iecm_intr_reg *intr = &q_vector->intr_reg;
-+		u32 vidx = q_vector->v_idx;
-+
-+		intr->dyn_ctl = PF_GLINT_DYN_CTL(vidx);
-+		intr->dyn_ctl_clrpba_m = PF_GLINT_DYN_CTL_CLEARPBA_M;
-+		intr->dyn_ctl_intena_m = PF_GLINT_DYN_CTL_INTENA_M;
-+		intr->dyn_ctl_itridx_s = PF_GLINT_DYN_CTL_ITR_INDX_S;
-+		intr->dyn_ctl_intrvl_s = PF_GLINT_DYN_CTL_INTERVAL_S;
-+		intr->itr = PF_GLINT_ITR(VIRTCHNL_ITR_IDX_0, vidx);
-+	}
-+}
-+
-+/**
-+ * idpf_reset_reg_init - Initialize reset registers
-+ * @reset_reg: struct to be filled in with reset registers
-+ */
-+void idpf_reset_reg_init(struct iecm_reset_reg *reset_reg)
-+{
-+	reset_reg->rstat = PFGEN_RSTAT;
-+	reset_reg->rstat_m = PFGEN_RSTAT_PFR_STATE_M;
-+}
-+
-+/**
-+ * idpf_trigger_reset - trigger reset
-+ * @adapter: Driver specific private structure
-+ * @trig_cause: Reason to trigger a reset
-+ */
-+void idpf_trigger_reset(struct iecm_adapter *adapter,
-+			enum iecm_flags trig_cause)
-+{
-+	u32 reset_reg;
-+
-+	reset_reg = rd32(&adapter->hw, PFGEN_CTRL);
-+	wr32(&adapter->hw, PFGEN_CTRL, (reset_reg | PFGEN_CTRL_PFSWR));
-+}
--- 
-2.26.2
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6bc2388141f6fd7c66c0e8349514a326e5106db2..b16e2d3151ee30e555a89069021=
+b197a084bce58 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4192,10 +4192,12 @@ int dev_direct_xmit(struct sk_buff *skb, u16 queue_=
+id)
+=20
+ 	local_bh_disable();
+=20
++	dev_xmit_recursion_inc();
+ 	HARD_TX_LOCK(dev, txq, smp_processor_id());
+ 	if (!netif_xmit_frozen_or_drv_stopped(txq))
+ 		ret =3D netdev_start_xmit(skb, dev, txq, false);
+ 	HARD_TX_UNLOCK(dev, txq);
++	dev_xmit_recursion_dec();
+=20
+ 	local_bh_enable();
+=20
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 6c4acf1f0220b1f925ebcfaa847632ec0dbe0b9b..94391da277544e12c8a9c9eb52c=
+51b0678b46dc4 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -718,7 +718,7 @@ bool sk_mc_loop(struct sock *sk)
+ 		return inet6_sk(sk)->mc_loop;
+ #endif
+ 	}
+-	WARN_ON(1);
++	WARN_ON_ONCE(1);
+ 	return true;
+ }
+ EXPORT_SYMBOL(sk_mc_loop);
+--=20
+2.27.0.290.gba653c62da-goog
 
