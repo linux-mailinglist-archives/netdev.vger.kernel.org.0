@@ -2,42 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A828B1FE52C
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B97DF1FE4F4
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:22:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731689AbgFRCXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 22:23:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49116 "EHLO mail.kernel.org"
+        id S1729920AbgFRBSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:18:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49624 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729829AbgFRBRv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:17:51 -0400
+        id S1729900AbgFRBSR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:18:17 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DF8C021D82;
-        Thu, 18 Jun 2020 01:17:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9FBE621D80;
+        Thu, 18 Jun 2020 01:18:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443071;
-        bh=m5MjLN5kHPqximv4jc7KfEfNo/8ZvUuXiLLO/NUGhaQ=;
+        s=default; t=1592443096;
+        bh=yB7wWyi9+IYrPrdKr8DWQdWd+iR//4lrmBwaUYqQMNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S9Wtqzx4iz3mO3jUbqEh14Z1RhHbvWIp+aRbxIPUWQt2I/FNB8CFh968yZ1dn4Sbf
-         t3eqkOaDj+9N2Ir2rnvXg92CByuBQp7dkRHhH/AbuMz1Em+kFSdVaG1QdTeKBhIjp6
-         2qoaJj4+ufhivzWOyFAh+UA8c6sYDiK+bfKKIZrA=
+        b=yTMHOvG1agfF3XBQM0RYU5fjW/BOo/t7SUuDW47YQ3mKtZmuEA+t508XJkXsVT0yZ
+         mdEhB+tUr+NtU1DGusJiS4zDPe2I/b8BRR1f2o6fAevcBAnx+kWwRv0G8zntNdBlps
+         +tENtbM8Fscwp3rXrf3CKg+UGwcfTJd/EJ1OXH5Y=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sudhakar Panneerselvam <sudhakar.panneerselvam@oracle.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Mike Christie <mchristi@redhat.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 059/266] scsi: vhost: Notify TCM about the maximum sg entries supported per command
-Date:   Wed, 17 Jun 2020 21:13:04 -0400
-Message-Id: <20200618011631.604574-59-sashal@kernel.org>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 076/266] net: dsa: lantiq_gswip: fix and improve the unsupported interface error
+Date:   Wed, 17 Jun 2020 21:13:21 -0400
+Message-Id: <20200618011631.604574-76-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200618011631.604574-1-sashal@kernel.org>
 References: <20200618011631.604574-1-sashal@kernel.org>
@@ -50,44 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sudhakar Panneerselvam <sudhakar.panneerselvam@oracle.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 5ae6a6a915033bfee79e76e0c374d4f927909edc ]
+[ Upstream commit 4d3da2d8d91f66988a829a18a0ce59945e8ae4fb ]
 
-vhost-scsi pre-allocates the maximum sg entries per command and if a
-command requires more than VHOST_SCSI_PREALLOC_SGLS entries, then that
-command is failed by it. This patch lets vhost communicate the max sg limit
-when it registers vhost_scsi_ops with TCM. With this change, TCM would
-report the max sg entries through "Block Limits" VPD page which will be
-typically queried by the SCSI initiator during device discovery. By knowing
-this limit, the initiator could ensure the maximum transfer length is less
-than or equal to what is reported by vhost-scsi.
+While trying to use the lantiq_gswip driver on one of my boards I made
+a mistake when specifying the phy-mode (because the out-of-tree driver
+wants phy-mode "gmii" or "mii" for the internal PHYs). In this case the
+following error is printed multiple times:
+  Unsupported interface: 3
 
-Link: https://lore.kernel.org/r/1590166317-953-1-git-send-email-sudhakar.panneerselvam@oracle.com
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>
-Reviewed-by: Mike Christie <mchristi@redhat.com>
-Signed-off-by: Sudhakar Panneerselvam <sudhakar.panneerselvam@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+While it gives at least a hint at what may be wrong it is not very user
+friendly. Print the human readable phy-mode and also which port is
+configured incorrectly (this hardware supports ports 0..6) to improve
+the cases where someone made a mistake.
+
+Fixes: 14fceff4771e51 ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/scsi.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/dsa/lantiq_gswip.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
-index a9caf1bc3c3e..88ce114790d7 100644
---- a/drivers/vhost/scsi.c
-+++ b/drivers/vhost/scsi.c
-@@ -2290,6 +2290,7 @@ static struct configfs_attribute *vhost_scsi_wwn_attrs[] = {
- static const struct target_core_fabric_ops vhost_scsi_ops = {
- 	.module				= THIS_MODULE,
- 	.fabric_name			= "vhost",
-+	.max_data_sg_nents		= VHOST_SCSI_PREALLOC_SGLS,
- 	.tpg_get_wwn			= vhost_scsi_get_fabric_wwn,
- 	.tpg_get_tag			= vhost_scsi_get_tpgt,
- 	.tpg_check_demo_mode		= vhost_scsi_check_true,
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index a69c9b9878b7..636966e93517 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -1451,7 +1451,8 @@ static void gswip_phylink_validate(struct dsa_switch *ds, int port,
+ 
+ unsupported:
+ 	bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+-	dev_err(ds->dev, "Unsupported interface: %d\n", state->interface);
++	dev_err(ds->dev, "Unsupported interface '%s' for port %d\n",
++		phy_modes(state->interface), port);
+ 	return;
+ }
+ 
 -- 
 2.25.1
 
