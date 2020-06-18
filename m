@@ -2,121 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB1891FFED2
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 01:42:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68C331FFED5
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 01:43:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728053AbgFRXmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 19:42:35 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:42272 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725829AbgFRXmf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 19:42:35 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05INgOWb106387;
-        Thu, 18 Jun 2020 18:42:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1592523744;
-        bh=WqB3gWaQP6mPg47uckt0LvQ0Gj/lq4E6tx3hHJW7j0A=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=uP9Q5txuOubqoYf960FLd5xNqb1sxbiRiPdWXeAxd9o0XxQivdZ9Fr+GwJqcaTO4F
-         UpBGypviIGXTgScxQMCB1gif+pobTVC5Etn7IwF63jmvQuST3CoFxQcXSvH4tBjRNx
-         YTn4H/Ps1Gwi3yRFiVUZVmMMnp7AnReBXktXirEM=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 05INgOeI113983
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 18 Jun 2020 18:42:24 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 18
- Jun 2020 18:42:24 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 18 Jun 2020 18:42:24 -0500
-Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05INgNkh067455;
-        Thu, 18 Jun 2020 18:42:23 -0500
-Subject: Re: [PATCH net-next v8 2/5] net: phy: Add a helper to return the
- index for of the internal delay
-To:     kernel test robot <lkp@intel.com>, <andrew@lunn.ch>,
-        <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>
-CC:     <kbuild-all@lists.01.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20200618211011.28837-3-dmurphy@ti.com>
- <202006190753.uZWR7VTH%lkp@intel.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <83735f8a-efe6-5648-4925-d4a945e0c070@ti.com>
-Date:   Thu, 18 Jun 2020 18:42:23 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728142AbgFRXm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 19:42:58 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49030 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725829AbgFRXm5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 19:42:57 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jm4BL-0008RY-6J; Fri, 19 Jun 2020 01:42:55 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jm4BK-000VEZ-S3; Fri, 19 Jun 2020 01:42:54 +0200
+Subject: Re: [PATCH net-next 1/3] net/sched: Introduce action hash
+To:     Ariel Levkovich <lariel@mellanox.com>, netdev@vger.kernel.org
+Cc:     jiri@resnulli.us, kuba@kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, ast@kernel.org,
+        Jiri Pirko <jiri@mellanox.com>, bpf@vger.kernel.org
+References: <20200618221548.3805-1-lariel@mellanox.com>
+ <20200618221548.3805-2-lariel@mellanox.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <830de215-ec74-1c96-4a41-7b07608e3407@iogearbox.net>
+Date:   Fri, 19 Jun 2020 01:42:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <202006190753.uZWR7VTH%lkp@intel.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200618221548.3805-2-lariel@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25847/Thu Jun 18 14:58:52 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+On 6/19/20 12:15 AM, Ariel Levkovich wrote:
+> Allow setting a hash value to a packet for a future match.
+> 
+> The action will determine the packet's hash result according to
+> the selected hash type.
+> 
+> The first option is to select a basic asymmetric l4 hash calculation
+> on the packet headers which will either use the skb->hash value as
+> if such was already calculated and set by the device driver, or it
+> will perform the kernel jenkins hash function on the packet which will
+> generate the result otherwise.
+> 
+> The other option is for user to provide an BPF program which is
+> dedicated to calculate the hash. In such case the program is loaded
+> and used by tc to perform the hash calculation and provide it to
+> the hash action to be stored in skb->hash field.
 
-On 6/18/20 6:29 PM, kernel test robot wrote:
-> Hi Dan,
->
-> I love your patch! Yet something to improve:
->
-> [auto build test ERROR on net-next/master]
->
-> url:    https://github.com/0day-ci/linux/commits/Dan-Murphy/RGMII-Internal-delay-common-property/20200619-051238
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git cb8e59cc87201af93dfbb6c3dccc8fcad72a09c2
-> config: i386-defconfig (attached as .config)
-> compiler: gcc-9 (Debian 9.3.0-13) 9.3.0
-> reproduce (this is a W=1 build):
->          # save the attached .config to linux build tree
->          make W=1 ARCH=i386
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->     drivers/net/phy/phy_device.c: In function 'phy_get_int_delay_property':
->>> drivers/net/phy/phy_device.c:2678:1: error: expected ';' before '}' token
->      2678 | }
->           | ^
->
-> vim +2678 drivers/net/phy/phy_device.c
->
->    2660	
->    2661	#if IS_ENABLED(CONFIG_OF_MDIO)
->    2662	static int phy_get_int_delay_property(struct device *dev, const char *name)
->    2663	{
->    2664		s32 int_delay;
->    2665		int ret;
->    2666	
->    2667		ret = device_property_read_u32(dev, name, &int_delay);
->    2668		if (ret)
->    2669			return ret;
->    2670	
->    2671		return int_delay;
->    2672	}
->    2673	#else
->    2674	static inline int phy_get_int_delay_property(struct device *dev,
->    2675						     const char *name)
->    2676	{
->    2677		return -EINVAL
+The commit description is a bit misleading, since setting a custom skb->hash
+from BPF program can be done already via {cls,act}_bpf from *within* BPF in
+tc for ~3 years by now via [0].
 
-Ack missed compiling this use case.
+   [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ded092cd73c2c56a394b936f86897f29b2e131c0
 
-Dan
+> The BPF option can be useful for future HW offload support of the hash
+> calculation by emulating the HW hash function when it's different than
+> the kernel's but yet we want to maintain consistency between the SW and
+> the HW.
 
->> 2678	}
->    2679	#endif
->    2680	
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+... use case should say 'dummy SW module for HW offload'. ;-/
+
+> Usage is as follows:
+> 
+> $ tc filter add dev ens1f0_0 ingress \
+> prio 1 chain 0 proto ip \
+> flower ip_proto tcp \
+> action hash bpf object-file <bpf file> \
+> action goto chain 2
+[...]
+> 
+> Signed-off-by: Ariel Levkovich <lariel@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+[...]
+> +static int tcf_hash_act(struct sk_buff *skb, const struct tc_action *a,
+> +			struct tcf_result *res)
+> +{
+> +	struct tcf_hash *h = to_hash(a);
+> +	struct tcf_hash_params *p;
+> +	int action;
+> +	u32 hash;
+> +
+> +	tcf_lastuse_update(&h->tcf_tm);
+> +	tcf_action_update_bstats(&h->common, skb);
+> +
+> +	p = rcu_dereference_bh(h->hash_p);
+> +
+> +	action = READ_ONCE(h->tcf_action);
+> +
+> +	switch (p->alg) {
+> +	case TCA_HASH_ALG_L4:
+> +		hash = skb_get_hash(skb);
+> +		/* If a hash basis was provided, add it into
+> +		 * hash calculation here and re-set skb->hash
+> +		 * to the new result with sw_hash indication
+> +		 * and keeping the l4 hash indication.
+> +		 */
+> +		hash = jhash_1word(hash, p->basis);
+> +		__skb_set_sw_hash(skb, hash, skb->l4_hash);
+> +		break;
+> +	case TCA_HASH_ALG_BPF:
+> +		__skb_push(skb, skb->mac_len);
+> +		bpf_compute_data_pointers(skb);
+> +		hash = BPF_PROG_RUN(p->prog, skb);
+> +		__skb_pull(skb, skb->mac_len);
+> +		/* The BPF program hash function type is
+> +		 * unknown so only the sw hash bit is set.
+> +		 */
+> +		__skb_set_sw_hash(skb, hash, false);
+
+Given this runs BPF_PROG_TYPE_SCHED_ACT-typed programs, act_hash.c now becomes
+pretty much another clone of {cls,act}_bpf.c with the full feature set in terms
+of what it can do with the program, like header mangling, encap/decap, setting
+tunnel keys, cloning + redirecting skbs, etc. This is rather misleading given you
+basically would only want the direct pkt access bits and plain insns for calc'ing
+the hash, but none of the other features.
+
+> +		break;
+> +	}
+> +
+> +	return action;
+> +}
+[...]
+> +static int tcf_hash_bpf_init(struct nlattr **tb, struct tcf_hash_params *params)
+> +{
+> +	struct bpf_prog *fp;
+> +	char *name = NULL;
+> +	u32 bpf_fd;
+> +
+> +	bpf_fd = nla_get_u32(tb[TCA_HASH_BPF_FD]);
+> +
+> +	fp = bpf_prog_get_type(bpf_fd, BPF_PROG_TYPE_SCHED_ACT);
+> +	if (IS_ERR(fp))
+> +		return PTR_ERR(fp);
+> +
+> +	if (tb[TCA_HASH_BPF_NAME]) {
+> +		name = nla_memdup(tb[TCA_HASH_BPF_NAME], GFP_KERNEL);
+> +		if (!name) {
+> +			bpf_prog_put(fp);
+> +			return -ENOMEM;
+> +		}
+> +	}
+> +
+> +	params->bpf_name = name;
+> +	params->prog = fp;
+> +
+> +	return 0;
+> +}
