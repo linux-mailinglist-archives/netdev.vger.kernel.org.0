@@ -2,198 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E0A61FFEE4
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 01:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9357B1FFEE9
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 01:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727019AbgFRXsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 19:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726001AbgFRXsp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 19:48:45 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48FEFC06174E;
-        Thu, 18 Jun 2020 16:48:45 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id a45so3851787pje.1;
-        Thu, 18 Jun 2020 16:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=cGgzomHsmMiibZOiFHQpzS69L8geW6hLr8jvWa1/zL4=;
-        b=Nyre89On0UQFyud2sdz3I8zVgfKWaFWlfzPdQnduM1IDmK/B5cfLxvdr/JPFV5BOmm
-         doqFBHyhkSRQYPFmWq8YV1n3nIFjvur9G2UZG5YoHbgTkGP6f6VBf34BhZia49qw/Yw6
-         P8o6LVYJKcuehf1fY5MOAmlrVzgjMxLTGbOw3alE4jEgDiXrX/3f3/dGVDcrXXat1ZtN
-         ad1TePP0SNBWpannwphaR4ayqTwgaBdgdhssgB+PmMsj69azty42hKyvTWMe1wENI3k5
-         HWQ8i4btjRijLEskes6Mo0/xq1wJ6XpcskiuAPqMC+1M7gTq+srgy90HLT6zRpxhuqBb
-         vITg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=cGgzomHsmMiibZOiFHQpzS69L8geW6hLr8jvWa1/zL4=;
-        b=DX2PwWANgfIMwkq0kcddNmRofrY2UbuW2lldB8N5ZoHiIYzZumSsP3bgLqzFfJE9f9
-         GfcmPd/Aeiwwch0QDRNaShEk0PoOJ/cBQkoQWfUh7qTO9inPLOyH2OuITCtoVycFlInm
-         sAdGeB5A/UjNVSQ/wLBV6i5EY60dUQBxyRGtFNMxH0rSKN9rlYTj04ZTxzBuPJwDspK7
-         hVkTwetebNXxBVkstIU3dg3avIy7+9yNlNy9K6k+H491tApe54jfGAS9GpKlH1bi32iq
-         Zd0GCz1cOSfNoJ7x6LDewcsSKqwv8EwEZJZc4MuxBVBTOpkByyCvdWlZTi/DSWJ1DyE6
-         dQuQ==
-X-Gm-Message-State: AOAM533RGQmqLjWhpJZzFvMOFAPbkkW+kDWUkTzagmeYe6W4BDVLPjkJ
-        xuinJNdlNMKt4/ekm8oH2eU=
-X-Google-Smtp-Source: ABdhPJwKsBbbczybQnXu6vEp+IQaN9iI0Xr0prO0FSo4n1aUbeQ8fqoSd+qWsQ/M4NahWFrFAsI2yQ==
-X-Received: by 2002:a17:902:a585:: with SMTP id az5mr5648730plb.207.1592524124685;
-        Thu, 18 Jun 2020 16:48:44 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id nl11sm7633653pjb.0.2020.06.18.16.48.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2020 16:48:43 -0700 (PDT)
-Date:   Thu, 18 Jun 2020 16:48:36 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Christoph Hellwig <hch@lst.de>
-Message-ID: <5eebfd54ec54f_27ce2adb0816a5b876@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAEf4BzYNFddhDxLAkOC+q_ZWAet42aHybDiJT9odrzF8n5BBig@mail.gmail.com>
-References: <20200616050432.1902042-1-andriin@fb.com>
- <20200616050432.1902042-2-andriin@fb.com>
- <5eebbbef8f904_6d292ad5e7a285b883@john-XPS-13-9370.notmuch>
- <CAEf4BzYNFddhDxLAkOC+q_ZWAet42aHybDiJT9odrzF8n5BBig@mail.gmail.com>
-Subject: Re: [PATCH bpf 2/2] selftests/bpf: add variable-length data
- concatenation pattern test
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S1728080AbgFRXuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 19:50:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59978 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726001AbgFRXuK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 19:50:10 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D8B96207D8;
+        Thu, 18 Jun 2020 23:50:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592524210;
+        bh=p8RjmkFLLZDI7QuLOeEjhIGYbCEsHgGW33hVCOixeOk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ld33XPv0GdQzIcvHL11JuV3uSRk1h8NnJpTmXzUHJEN7vAyxhGBh0rpYxKLQ7xVr7
+         jmePw60CmCFbjK/ae6OS5ae2L+2R77C8/f3Km1TcVp/jlLoflX8FDYu0uW5sd1qUuv
+         0vTJJsh2jcyGJ0llWkPL3LsivlWMa5uXjtprKoK8=
+Date:   Thu, 18 Jun 2020 16:50:08 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, Alice Michael <alice.michael@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Alan Brady <alan.brady@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        Joshua Hay <joshua.a.hay@intel.com>,
+        Madhu Chittim <madhu.chittim@intel.com>,
+        Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
+        Donald Skidmore <donald.c.skidmore@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>
+Subject: Re: [net-next 13/15] iecm: Add ethtool
+Message-ID: <20200618165008.4d475087@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200618051344.516587-14-jeffrey.t.kirsher@intel.com>
+References: <20200618051344.516587-1-jeffrey.t.kirsher@intel.com>
+        <20200618051344.516587-14-jeffrey.t.kirsher@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko wrote:
-> On Thu, Jun 18, 2020 at 12:09 PM John Fastabend
-> <john.fastabend@gmail.com> wrote:
-> >
-> > Andrii Nakryiko wrote:
-> > > Add selftest that validates variable-length data reading and concatentation
-> > > with one big shared data array. This is a common pattern in production use for
-> > > monitoring and tracing applications, that potentially can read a lot of data,
-> > > but usually reads much less. Such pattern allows to determine precisely what
-> > > amount of data needs to be sent over perfbuf/ringbuf and maximize efficiency.
-> > >
-> > > This is the first BPF selftest that at all looks at and tests
-> > > bpf_probe_read_str()-like helper's return value, closing a major gap in BPF
-> > > testing. It surfaced the problem with bpf_probe_read_kernel_str() returning
-> > > 0 on success, instead of amount of bytes successfully read.
-> > >
-> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > ---
-> >
-> > [...]
-> >
-> > > +/* .data */
-> > > +int payload2_len1 = -1;
-> > > +int payload2_len2 = -1;
-> > > +int total2 = -1;
-> > > +char payload2[MAX_LEN + MAX_LEN] = { 1 };
-> > > +
-> > > +SEC("raw_tp/sys_enter")
-> > > +int handler64(void *regs)
-> > > +{
-> > > +     int pid = bpf_get_current_pid_tgid() >> 32;
-> > > +     void *payload = payload1;
-> > > +     u64 len;
-> > > +
-> > > +     /* ignore irrelevant invocations */
-> > > +     if (test_pid != pid || !capture)
-> > > +             return 0;
-> > > +
-> > > +     len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in1[0]);
-> > > +     if (len <= MAX_LEN) {
-> >
-> > Took me a bit grok this. You are relying on the fact that in errors,
-> > such as a page fault, will encode to a large u64 value and so you
-> > verifier is happy. But most of my programs actually want to distinguish
-> > between legitimate errors on the probe vs buffer overrun cases.
-> 
-> What buffer overrun? bpf_probe_read_str() family cannot return higher
-> value than MAX_LEN. If you want to detect truncated strings, then you
-> can attempt reading MAX_LEN + 1 and then check that the return result
-> is MAX_LEN exactly. But still, that would be something like:
-> u64 len;
-> 
-> len = bpf_probe_read_str(payload, MAX_LEN + 1, &buf);
-> if (len > MAX_LEN)
->   return -1;
-> if (len == MAX_LEN) {
->   /* truncated */
-> } else {
->   /* full string */
-> }
+On Wed, 17 Jun 2020 22:13:42 -0700 Jeff Kirsher wrote:
+> +static const struct ethtool_ops iecm_ethtool_ops = {
+> +	.get_drvinfo		= iecm_get_drvinfo,
+> +	.get_msglevel		= iecm_get_msglevel,
+> +	.set_msglevel		= iecm_set_msglevel,
+> +	.get_coalesce		= iecm_get_coalesce,
+> +	.set_coalesce		= iecm_set_coalesce,
+> +	.get_per_queue_coalesce	= iecm_get_per_q_coalesce,
+> +	.set_per_queue_coalesce	= iecm_set_per_q_coalesce,
+> +	.get_ethtool_stats	= iecm_get_ethtool_stats,
+> +	.get_strings		= iecm_get_strings,
+> +	.get_sset_count		= iecm_get_sset_count,
+> +	.get_rxnfc		= iecm_get_rxnfc,
+> +	.get_rxfh_key_size	= iecm_get_rxfh_key_size,
+> +	.get_rxfh_indir_size	= iecm_get_rxfh_indir_size,
+> +	.get_rxfh		= iecm_get_rxfh,
+> +	.set_rxfh		= iecm_set_rxfh,
+> +	.get_channels		= iecm_get_channels,
+> +	.set_channels		= iecm_set_channels,
+> +	.get_ringparam		= iecm_get_ringparam,
+> +	.set_ringparam		= iecm_set_ringparam,
+> +	.get_link_ksettings	= iecm_get_link_ksettings,
+> +};
 
-+1
+Oh wow. So you're upstreaming this driver based on at least a 3 month
+old tree? This:
 
-> 
-> >
-> > Can we make these tests do explicit check for errors. For example,
-> >
-> >   if (len < 0) goto abort;
-> >
-> > But this also breaks your types here. This is what I was trying to
-> > point out in the 1/2 patch thread. Wanted to make the point here as
-> > well in case it wasn't clear. Not sure I did the best job explaining.
-> >
-> 
-> I can write *a correct* C code in a lot of ways such that it will not
-> pass verifier verification, not sure what that will prove, though.
-> 
-> Have you tried using the pattern with two ifs with no-ALU32? Does it work?
+commit 9000edb71ab29d184aa33f5a77fa6e52d8812bb9
+Author: Jakub Kicinski <kuba@kernel.org>
+Date:   Mon Mar 16 13:47:12 2020 -0700
 
-Ran our CI on both mcpu=v2 and mcpu=v3 and the pattern with multiple
-ifs exists in those tests. They both passed so everything seems OK.
-In the real progs though things are a bit more complicated I didn't
-check the exact generate code. Some how I missed the case below.
-I put a compiler barrier in a few spots so I think this is blocking
-the optimization below causing no-alu32 failures. I'll remove the
-barriers after I wrap a few things reviews.. my own bug fixes ;) and
-see if I can trigger the case below.
++int ethtool_check_ops(const struct ethtool_ops *ops)
++{
++       if (WARN_ON(ops->set_coalesce && !ops->supported_coalesce_params))
++               return -EINVAL;
 
-> 
-> Also you are cheating in your example (in patch #1 thread). You are
-> exiting on the first error and do not attempt to read any more data
-> after that. In practice, you want to get as much info as possible,
-> even if some of string reads fail (e.g., because argv might not be
-> paged in, but env is, or vice versa). So you'll end up doing this:
+would have otherwise triggered.
 
-Sure.
-
-> 
-> len = bpf_probe_read_str(...);
-> if (len >= 0 && len <= MAX_LEN) {
->     payload += len;
-> }
-> ...
-> 
-> ... and of course it spectacularly fails in no-ALU32.
-> 
-> To be completely fair, this is a result of Clang optimization and
-> Yonghong is trying to deal with it as we speak. Switching int to long
-> for helpers doesn't help it either. But there are better code patterns
-> (unsigned len + single if check) that do work with both ALU32 and
-> no-ALU32.
-
-Great.
-
-> 
-> And I just double-checked, this pattern keeps working for ALU32 with
-> both int and long types, so maybe there are unnecessary bit shifts,
-> but at least code is still verifiable.
-> 
-> So my point stands. int -> long helps in some cases and doesn't hurt
-> in others, so I argue that it's a good thing to do :)
-
-Convinced me as well. I Acked the other patch thanks.
