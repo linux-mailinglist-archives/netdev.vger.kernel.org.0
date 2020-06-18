@@ -2,117 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0568C1FE995
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 05:44:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2864C1FE9A5
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 05:53:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727884AbgFRDoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 23:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40572 "EHLO
+        id S1726979AbgFRDxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 23:53:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726853AbgFRDoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 23:44:02 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF11C06174E;
-        Wed, 17 Jun 2020 20:44:02 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id u8so1914631pje.4;
-        Wed, 17 Jun 2020 20:44:02 -0700 (PDT)
+        with ESMTP id S1726853AbgFRDxc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Jun 2020 23:53:32 -0400
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61839C06174E
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 20:53:31 -0700 (PDT)
+Received: by mail-qt1-x84a.google.com with SMTP id w14so3387659qtv.19
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 20:53:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=1Rgq0ulDPtp4yL9OdQkGowJ9k/7ZXwP4nQO/fYmYMbM=;
-        b=Xh8lFTG082UWXegg2JpUiaBdyxR5+66Tax9pDwaZnh63dJCF3Wsx+Vb5MqF+DJiXWe
-         46+7dFEvdQq1GlwQ4y5KprkaYajwpovX5/iAHlGU5a3zbZ3PAJYnM3C6dEIw1dqruSIQ
-         fFSjnJbpsC/HjBInlX0Wcx6aWgix7nvVlUnmSrcoQc2xIe2J6gutgsXS144sPbjcgPzy
-         ZSKA2rpxwpXfWwsSyt8KoucZAga+s+82sNrN726YGAbg2nZDd/SIII+9XVioL7sTCFe/
-         SU5jTSYo1EtlR0xgmEzE/hm6sihHYIqqSRD+kXbHx41+Mk8SkAQF6FqHafpXOAhy0+vS
-         l2Bg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=FgdaRGKNID6s0Fi/dVkHB0Y6OYa/Mod09NPSlx3byds=;
+        b=CeuqRbKaaalIHGmGCYfSr+6TNSjS1sYGPLMD/88JJgET/S/dN4B8EEtnosn0YUhgLG
+         U6hJJWk3zp4HZKu9tV+mRzI+VcRl2Zi6Ba5Up6WYnCLaBoYSNcI212xc0uszQN/XiqUF
+         DslAUK4gYMcl9urVNcvD+37hXlNWrD2jYfRg/q+noyO8TCMdCGPpi1u8mDc1vSQPtWgx
+         yQT7xJOMcsQDdZ4G/y4oSx+WMES1iYVKDF5rrgi9ZLFCZ8nH/XocjOBNvq8TH1i21GY4
+         yopqZ7wKIfACoM6C6ry8eGSbw6Jrh/UmrZiKb61/QFhfQaSvcDXjf7n/gWcuBI+EYAHX
+         FVWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1Rgq0ulDPtp4yL9OdQkGowJ9k/7ZXwP4nQO/fYmYMbM=;
-        b=bVUuD8WsOhTZfwVZ8zcIFh8nvQJK3hrz/jZd68lVRHlvM5+JL4nzYN3AkTXQ2vrYRN
-         gBrVvcUQ575HgwyBtIIL62+t/UpaUQKOkDYv1Dg6lcTIxxJLGF8Xsftd9HmfbgVNiUDa
-         YZeJkbhmI/QA7MynTYfbbkSWG64o6Ygoxqia1YK8jHWFI56BeRuBc4QwoZ4cXcsaoQYi
-         Di5AEOD9712cuG3dV7gxZQ6PowO8hXA2nbW7c7UmsoWC1PkkLuLparUNJxA9dy1w+ab6
-         /HR5IsVr+GaK+3VO4uOr2O8VBimE0nO4m75Ta1Nl2PBVpGkEm9fGwh0a2eBHvHtreWpA
-         BvmA==
-X-Gm-Message-State: AOAM533TfZ/ShPr1BS1yMsCcQw4hNtMzdWnQuj6OwsNK1s7b8u/K3/0m
-        ikcDLq0cSW3rhrVFQVSPH92a125P
-X-Google-Smtp-Source: ABdhPJy83+fOVe5D78nh+uY3Ofr/Hi/62J/UjRsIJ5oTOKKnTAN5pZGy+pbcpkDkKjP3ONLWLAzFFQ==
-X-Received: by 2002:a17:90a:ac0f:: with SMTP id o15mr2212743pjq.105.1592451841385;
-        Wed, 17 Jun 2020 20:44:01 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id t76sm1193806pfc.220.2020.06.17.20.44.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Jun 2020 20:44:00 -0700 (PDT)
-Subject: Re: [PATCH] [net/sched] Fix null pointer deref skb in tc_ctl_action
-To:     Gaurav Singh <gaurav1086@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=FgdaRGKNID6s0Fi/dVkHB0Y6OYa/Mod09NPSlx3byds=;
+        b=j9g2ufolZ2nZ5Aw73r7aaXK9A8ibwOxDBmC+FWtpzH1L7PWmug85DTJ8YWbTVYXcqP
+         psrCZ49s96ge98JgfrS66aAspmCkPLNSB8d/MuAwcuLPMsbFmc0iqRTPFCDmOL5PJcQF
+         4j+iMJDLVXIePaxsoM6QhqxNgWkwkQWNUvMBXrTAXFDPGQYaW/TB8OGNb0Nb43Wm3RMC
+         Y73s6t42K0jKBVEqaos9NrBMs3C5ynx27sLRJ+Lw96ULRlnAWRawqaSiL4O+EAdLk0ZM
+         0y1inh4WcYnCrAp3U1/Kh/zR5G9cqD4ZgJ4jhh2EZs1fG8J9kpl+2X1LfC3GRor2cvZW
+         k2XQ==
+X-Gm-Message-State: AOAM5309S8M4PEv5ztuPiEw64gqw/Q2tmiURSwi1FGaM+iOAiyGudKGK
+        LOSHV/YeAisHrXaQsKNUy++DEqCS8aXY1g==
+X-Google-Smtp-Source: ABdhPJyJtKRf1N/BR38iaJzOyRJxkKGqHL7L+8KfRmulowYhgAoZyeBe35XZNvasZYKTksANswm6TyBcVvXFEA==
+X-Received: by 2002:ad4:494c:: with SMTP id o12mr1930185qvy.102.1592452409863;
+ Wed, 17 Jun 2020 20:53:29 -0700 (PDT)
+Date:   Wed, 17 Jun 2020 20:53:20 -0700
+Message-Id: <20200618035326.39686-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.290.gba653c62da-goog
+Subject: [PATCH v2 net-next 0/6] net: tso: expand to UDP support
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:TC subsystem" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20200618014328.28668-1-gaurav1086@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <c84daca7-4103-9f56-5cf8-a09a75159ebd@gmail.com>
-Date:   Wed, 17 Jun 2020 20:43:59 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <20200618014328.28668-1-gaurav1086@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Willem de Bruijn <willemb@google.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+With QUIC getting more attention these days, it is worth
+implementing UDP direct segmentation, the same we did for TCP.
 
+Drivers will need to advertize NETIF_F_GSO_UDP_L4 so that
+GSO stack does not do the (more expensive) segmentation.
 
-On 6/17/20 6:43 PM, Gaurav Singh wrote:
-> Add null check for skb
-> 
+Note the two first patches are stable candidates, after
+tests confirm they do not add regressions.
 
-Bad choice really.
+v2: addressed Jakub feedback :
+   1) Added a prep patch for octeontx2-af
+   2) calls tso_start() earlier in otx2_sq_append_tso()
 
-You have to really understand code intent before trying to fix it.
+Eric Dumazet (6):
+  octeontx2-af: change (struct qmem)->entry_sz from u8 to u16
+  net: tso: double TSO_HEADER_SIZE value
+  net: tso: shrink struct tso_t
+  net: tso: constify tso_count_descs() and friends
+  net: tso: cache transport header length
+  net: tso: add UDP segmentation support
 
-> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
-> ---
->  net/sched/act_api.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-> index 8ac7eb0a8309..fd584821d75a 100644
-> --- a/net/sched/act_api.c
-> +++ b/net/sched/act_api.c
-> @@ -1473,9 +1473,12 @@ static const struct nla_policy tcaa_policy[TCA_ROOT_MAX + 1] = {
->  static int tc_ctl_action(struct sk_buff *skb, struct nlmsghdr *n,
->  			 struct netlink_ext_ack *extack)
->  {
-> +	if (!skb)
-> +		return 0;
+ .../ethernet/cavium/thunder/nicvf_queues.c    |  5 ++-
+ drivers/net/ethernet/freescale/fec_main.c     |  5 +--
+ drivers/net/ethernet/marvell/mv643xx_eth.c    |  5 +--
+ drivers/net/ethernet/marvell/mvneta.c         |  5 +--
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  6 +--
+ .../ethernet/marvell/octeontx2/af/common.h    |  2 +-
+ .../marvell/octeontx2/nic/otx2_txrx.c         |  6 +--
+ include/net/tso.h                             | 23 +++++-----
+ net/core/tso.c                                | 44 ++++++++++++-------
+ 9 files changed, 55 insertions(+), 46 deletions(-)
 
-
-We do not allow this
-
-warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-
-> +
->  	struct net *net = sock_net(skb->sk);
->  	struct nlattr *tca[TCA_ROOT_MAX + 1];
-> -	u32 portid = skb ? NETLINK_CB(skb).portid : 0;
-> +	u32 portid = NETLINK_CB(skb).portid;
->  	int ret = 0, ovr = 0;
->  
->  	if ((n->nlmsg_type != RTM_GETACTION) &&
-> 
-
-Please compile your patches, do not expect us from doing this.
+-- 
+2.27.0.290.gba653c62da-goog
 
