@@ -2,102 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 789F81FF366
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 15:42:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8164E1FF36E
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 15:44:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730282AbgFRNmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 09:42:45 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46734 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727101AbgFRNmn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 09:42:43 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jluoR-0017Sl-Au; Thu, 18 Jun 2020 15:42:39 +0200
-Date:   Thu, 18 Jun 2020 15:42:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [RFC PATCH 1/9] net: dsa: Add tag handling for Hirschmann
- Hellcreek switches
-Message-ID: <20200618134239.GP249144@lunn.ch>
-References: <20200618064029.32168-1-kurt@linutronix.de>
- <20200618064029.32168-2-kurt@linutronix.de>
+        id S1730316AbgFRNoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 09:44:23 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:51642 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730306AbgFRNoS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 09:44:18 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05IDiDs2103690;
+        Thu, 18 Jun 2020 08:44:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1592487853;
+        bh=jrhWybePBkLjKFFokXcERsTDgrYSw3CTsM7TNQNBCNM=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=A2FxWZ/gV0Nix5vu1sBykSBIFsjc68WFsGdSy75rH/s33GaTqRlKsVrAj334UxncZ
+         goMEGiZAWPGI+NxwoSvucy8SuRftdeAnXF+oOdrNsSrzo1y7bZijjD3ktdC7KZ1+Zj
+         ZbPvM8p4IewZDcaTm9CH0ll3BOFEJpiLhkd6slRU=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 05IDiDuf015024
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 18 Jun 2020 08:44:13 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 18
+ Jun 2020 08:44:12 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 18 Jun 2020 08:44:12 -0500
+Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05IDiCem029547;
+        Thu, 18 Jun 2020 08:44:12 -0500
+Subject: Re: [PATCH net-next v7 1/6] dt-bindings: net: Add tx and rx internal
+ delays
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <robh@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+References: <20200617182019.6790-1-dmurphy@ti.com>
+ <20200617182019.6790-2-dmurphy@ti.com> <20200618020101.GJ249144@lunn.ch>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <71943ef1-3e64-47a9-2027-ad801795bdf5@ti.com>
+Date:   Thu, 18 Jun 2020 08:44:12 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200618064029.32168-2-kurt@linutronix.de>
+In-Reply-To: <20200618020101.GJ249144@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 08:40:21AM +0200, Kurt Kanzenbach wrote:
-> The Hirschmann Hellcreek TSN switches have a special tagging protocol for frames
-> exchanged between the CPU port and the master interface. The format is a one
-> byte trailer indicating the destination or origin port.
-> 
-> It's quite similar to the Micrel KSZ tagging. That's why the implementation is
-> based on that code.
-> 
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-> ---
->  include/net/dsa.h       |   2 +
->  net/dsa/Kconfig         |   6 +++
->  net/dsa/Makefile        |   1 +
->  net/dsa/tag_hellcreek.c | 101 ++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 110 insertions(+)
->  create mode 100644 net/dsa/tag_hellcreek.c
-> 
-> diff --git a/include/net/dsa.h b/include/net/dsa.h
-> index 50389772c597..2784c4851d92 100644
-> --- a/include/net/dsa.h
-> +++ b/include/net/dsa.h
-> @@ -44,6 +44,7 @@ struct phylink_link_state;
->  #define DSA_TAG_PROTO_KSZ8795_VALUE		14
->  #define DSA_TAG_PROTO_OCELOT_VALUE		15
->  #define DSA_TAG_PROTO_AR9331_VALUE		16
-> +#define DSA_TAG_PROTO_HELLCREEK_VALUE		17
->  
->  enum dsa_tag_protocol {
->  	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-> @@ -63,6 +64,7 @@ enum dsa_tag_protocol {
->  	DSA_TAG_PROTO_KSZ8795		= DSA_TAG_PROTO_KSZ8795_VALUE,
->  	DSA_TAG_PROTO_OCELOT		= DSA_TAG_PROTO_OCELOT_VALUE,
->  	DSA_TAG_PROTO_AR9331		= DSA_TAG_PROTO_AR9331_VALUE,
-> +	DSA_TAG_PROTO_HELLCREEK		= DSA_TAG_PROTO_HELLCREEK_VALUE,
->  };
->  
->  struct packet_type;
-> diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-> index d5bc6ac599ef..edc0c3ab6a4e 100644
-> --- a/net/dsa/Kconfig
-> +++ b/net/dsa/Kconfig
-> @@ -121,4 +121,10 @@ config NET_DSA_TAG_TRAILER
->  	  Say Y or M if you want to enable support for tagging frames at
->  	  with a trailed. e.g. Marvell 88E6060.
->  
-> +config NET_DSA_TAG_HELLCREEK
-> +	tristate "Tag driver for Hirschmann Hellcreek TSN switches"
-> +	help
-> +	  Say Y or M if you want to enable support for tagging frames
-> +	  for the Hirschmann Hellcreek TSN switches.
-> +
+Andrew
 
-Hi Kurt
+On 6/17/20 9:01 PM, Andrew Lunn wrote:
+> On Wed, Jun 17, 2020 at 01:20:14PM -0500, Dan Murphy wrote:
+>> tx-internal-delays and rx-internal-delays are a common setting for RGMII
+>> capable devices.
+>>
+>> These properties are used when the phy-mode or phy-controller is set to
+>> rgmii-id, rgmii-rxid or rgmii-txid.  These modes indicate to the
+>> controller that the PHY will add the internal delay for the connection.
+>>
+>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>> ---
+>>   .../devicetree/bindings/net/ethernet-phy.yaml         | 11 +++++++++++
+>>   1 file changed, 11 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+>> index 9b1f1147ca36..b2887476fe6a 100644
+>> --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+>> +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+>> @@ -162,6 +162,17 @@ properties:
+>>       description:
+>>         Specifies a reference to a node representing a SFP cage.
+>>   
+>> +
+>> +  rx-internal-delay-ps:
+>> +    description: |
+>> +      RGMII Receive PHY Clock Delay defined in pico seconds.  This is used for
+>> +      PHY's that have configurable RX internal delays.
+>> +
+>> +  tx-internal-delay-ps:
+>> +    description: |
+>> +      RGMII Transmit PHY Clock Delay defined in pico seconds.  This is used for
+>> +      PHY's that have configurable TX internal delays.
+>> +
+> So in a later patch you have:
+>
+> default: 2000
+>
+> That seems to apply that these values only apply when the phy mode
+> indicates a delay is needed. It would be good to document that here,
+> when each of these properties will be used. Also, that they default to
+> 2000 when not present.
 
-This file is roughly in alphabetic order based on the tristate
-string. Please move this before "Tag driver for Lantiq / Intel GSWIP
-switches" to keep with the sorting.
+The default of 2000ps is for the DP83869 only.  The DP83822 fixed delay 
+is 3500ps.
 
-Otherwise this looks good.
+So indicating that the default here is 2000ps for all devices is not 
+correct.
 
-	  Andrew
+But I can add a note that if these properties are present then the delay 
+is added by the PHY.
+
+Dan
+
+
+>       Andrew
