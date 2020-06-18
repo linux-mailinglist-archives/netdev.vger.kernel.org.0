@@ -2,126 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5C801FFDCA
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:16:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 975231FFDD6
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731033AbgFRWQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 18:16:23 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36893 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729278AbgFRWQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:16:19 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from lariel@mellanox.com)
-        with SMTP; 19 Jun 2020 01:16:15 +0300
-Received: from gen-l-vrt-029.mtl.labs.mlnx (gen-l-vrt-029.mtl.labs.mlnx [10.237.29.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 05IMG9Gg012581;
-        Fri, 19 Jun 2020 01:16:15 +0300
-From:   Ariel Levkovich <lariel@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jiri@resnulli.us, kuba@kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        Ariel Levkovich <lariel@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next 3/3] net/sched: cls_flower: Add hash info to flow classification
-Date:   Fri, 19 Jun 2020 01:15:48 +0300
-Message-Id: <20200618221548.3805-4-lariel@mellanox.com>
-X-Mailer: git-send-email 2.25.2
-In-Reply-To: <20200618221548.3805-1-lariel@mellanox.com>
-References: <20200618221548.3805-1-lariel@mellanox.com>
+        id S1731911AbgFRWQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 18:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42634 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731898AbgFRWQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:16:50 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D40C0613F0
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:16:48 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id b5so7546450iln.5
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:16:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sargun.me; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1SwhXxxcqMA/2xg9WoRLda6uaTbILklISXGnrNM7z5g=;
+        b=EV4OK8SyfSmB1iDadMyS6GSSAb/y8zP9pbU0Qq6cW8ldk3zk+IGjfY2mwBS7kzw4+U
+         MueNz1lmVzja+fcXE6FnhayjVrm0XuFnJWBq6+5FDBnmi1hHaih73zql3UKX/jPFPBij
+         cTvcS7wpwiveD7okKpYA13MpaMis17aHOXQ6U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1SwhXxxcqMA/2xg9WoRLda6uaTbILklISXGnrNM7z5g=;
+        b=NnepNpGeW0oVp3Eu6zwf7E7emrQeq+iCxDG0vllyojX4xkrlOWQflEQNLUJD4/u7Wq
+         2FIoVpMaJ1aY3diEmEwwHBHwcdyYCJL1mq20IP6JIjP/m8n919dfkfA9RNdhTe/aEfd1
+         JaJ5WYulvzAIDVqxuC5+yBHAUQdqbPbtvviCYfwf9p8JHFSGPXdIIZfmNsw/xsxPDgN5
+         GO0eVLbfciQjVQ/kwLUhL+LUuqTgJLZIlWKSGVIqIU1iVUTsvp6nvYZMsIVnaQ/tyKht
+         7KdmWxRXpCmHLy2VHXMjNNF5uBBFYdtmG+esMCZzAjFwiwlr1qCH5r4tEmZuCwAlpm0o
+         iATg==
+X-Gm-Message-State: AOAM533Ve52zZIY/RNkE7hwMzeBe957htfPhmK3ocwGMQxVzqwNtgS0y
+        bRnII/zKz9fruC27iwaNm2DS6w==
+X-Google-Smtp-Source: ABdhPJzNjXEHGSDFRIEtFgNEH0DkmyvOyUoU/9h2R+dUGaWvU4v5dYNDSJa/KV3ePKb8DIvlf17A1A==
+X-Received: by 2002:a92:d9c1:: with SMTP id n1mr673192ilq.148.1592518607785;
+        Thu, 18 Jun 2020 15:16:47 -0700 (PDT)
+Received: from ircssh-2.c.rugged-nimbus-611.internal (80.60.198.104.bc.googleusercontent.com. [104.198.60.80])
+        by smtp.gmail.com with ESMTPSA id j80sm2256501ili.65.2020.06.18.15.16.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 18 Jun 2020 15:16:47 -0700 (PDT)
+Date:   Thu, 18 Jun 2020 22:16:45 +0000
+From:   Sargun Dhillon <sargun@sargun.me>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Christian Brauner <christian@brauner.io>,
+        "David S. Miller" <davem@davemloft.net>,
+        Christoph Hellwig <hch@lst.de>,
+        Tycho Andersen <tycho@tycho.ws>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, containers@lists.linux-foundation.org,
+        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 00/11] Add seccomp notifier ioctl that enables adding
+ fds
+Message-ID: <20200618221644.GA31321@ircssh-2.c.rugged-nimbus-611.internal>
+References: <20200616032524.460144-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200616032524.460144-1-keescook@chromium.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding new cls flower keys for hash value and hash
-mask and dissect the hash info from the skb into
-the flow key towards flow classication.
+On Mon, Jun 15, 2020 at 08:25:13PM -0700, Kees Cook wrote:
+> Hello!
+> 
+> This is a bit of thread-merge between [1] and [2]. tl;dr: add a way for
+> a seccomp user_notif process manager to inject files into the managed
+> process in order to handle emulation of various fd-returning syscalls
+> across security boundaries. Containers folks and Chrome are in need
+> of the feature, and investigating this solution uncovered (and fixed)
+> implementation issues with existing file sending routines.
+> 
+> I intend to carry this in the seccomp tree, unless someone has objections.
+> :) Please review and test!
+> 
+> -Kees
+> 
+> [1] https://lore.kernel.org/lkml/20200603011044.7972-1-sargun@sargun.me/
+> [2] https://lore.kernel.org/lkml/20200610045214.1175600-1-keescook@chromium.org/
+> 
+> Kees Cook (9):
+>   net/scm: Regularize compat handling of scm_detach_fds()
+>   fs: Move __scm_install_fd() to __fd_install_received()
+>   fs: Add fd_install_received() wrapper for __fd_install_received()
+>   pidfd: Replace open-coded partial fd_install_received()
+>   fs: Expand __fd_install_received() to accept fd
+>   selftests/seccomp: Make kcmp() less required
+>   selftests/seccomp: Rename user_trap_syscall() to user_notif_syscall()
+>   seccomp: Switch addfd to Extensible Argument ioctl
+>   seccomp: Fix ioctl number for SECCOMP_IOCTL_NOTIF_ID_VALID
+> 
+This looks much cleaner than the original patchset. Thanks.
 
-Signed-off-by: Ariel Levkovich <lariel@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
----
- include/uapi/linux/pkt_cls.h |  3 +++
- net/sched/cls_flower.c       | 16 ++++++++++++++++
- 2 files changed, 19 insertions(+)
+Reviewed-by: Sargun Dhillon <sargun@sargun.me>
 
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 2fd93389d091..ef145320ee99 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -579,6 +579,9 @@ enum {
- 
- 	TCA_FLOWER_KEY_MPLS_OPTS,
- 
-+	TCA_FLOWER_KEY_HASH,		/* u32 */
-+	TCA_FLOWER_KEY_HASH_MASK,	/* u32 */
-+
- 	__TCA_FLOWER_MAX,
- };
- 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index b2da37286082..ff739e0d86fc 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -64,6 +64,7 @@ struct fl_flow_key {
- 		};
- 	} tp_range;
- 	struct flow_dissector_key_ct ct;
-+	struct flow_dissector_key_hash hash;
- } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
- 
- struct fl_flow_mask_range {
-@@ -318,6 +319,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 		skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
- 				    fl_ct_info_to_flower_map,
- 				    ARRAY_SIZE(fl_ct_info_to_flower_map));
-+		skb_flow_dissect_hash(skb, &mask->dissector, &skb_key);
- 		skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
- 
- 		f = fl_mask_lookup(mask, &skb_key);
-@@ -694,6 +696,9 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
- 	[TCA_FLOWER_KEY_CT_LABELS_MASK]	= { .type = NLA_BINARY,
- 					    .len = 128 / BITS_PER_BYTE },
- 	[TCA_FLOWER_FLAGS]		= { .type = NLA_U32 },
-+	[TCA_FLOWER_KEY_HASH]		= { .type = NLA_U32 },
-+	[TCA_FLOWER_KEY_HASH_MASK]	= { .type = NLA_U32 },
-+
- };
- 
- static const struct nla_policy
-@@ -1625,6 +1630,10 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 
- 	fl_set_key_ip(tb, true, &key->enc_ip, &mask->enc_ip);
- 
-+	fl_set_key_val(tb, &key->hash.hash, TCA_FLOWER_KEY_HASH,
-+		       &mask->hash.hash, TCA_FLOWER_KEY_HASH_MASK,
-+		       sizeof(key->hash.hash));
-+
- 	if (tb[TCA_FLOWER_KEY_ENC_OPTS]) {
- 		ret = fl_set_enc_opt(tb, key, mask, extack);
- 		if (ret)
-@@ -1739,6 +1748,8 @@ static void fl_init_dissector(struct flow_dissector *dissector,
- 			     FLOW_DISSECTOR_KEY_ENC_OPTS, enc_opts);
- 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
- 			     FLOW_DISSECTOR_KEY_CT, ct);
-+	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
-+			     FLOW_DISSECTOR_KEY_HASH, hash);
- 
- 	skb_flow_dissector_init(dissector, keys, cnt);
- }
-@@ -2959,6 +2970,11 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
- 	if (fl_dump_key_flags(skb, key->control.flags, mask->control.flags))
- 		goto nla_put_failure;
- 
-+	if (fl_dump_key_val(skb, &key->hash.hash, TCA_FLOWER_KEY_HASH,
-+			     &mask->hash.hash, TCA_FLOWER_KEY_HASH_MASK,
-+			     sizeof(key->hash.hash)))
-+		goto nla_put_failure;
-+
- 	return 0;
- 
- nla_put_failure:
--- 
-2.25.2
+on the pidfd, change fs* changes.
 
+> Sargun Dhillon (2):
+>   seccomp: Introduce addfd ioctl to seccomp user notifier
+>   selftests/seccomp: Test SECCOMP_IOCTL_NOTIF_ADDFD
+> 
+>  fs/file.c                                     |  65 ++++
+>  include/linux/file.h                          |  16 +
+>  include/uapi/linux/seccomp.h                  |  25 +-
+>  kernel/pid.c                                  |  11 +-
+>  kernel/seccomp.c                              | 181 ++++++++-
+>  net/compat.c                                  |  55 ++-
+>  net/core/scm.c                                |  50 +--
+>  tools/testing/selftests/seccomp/seccomp_bpf.c | 350 +++++++++++++++---
+>  8 files changed, 618 insertions(+), 135 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
