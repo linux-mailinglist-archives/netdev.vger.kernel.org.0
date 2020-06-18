@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A2CA1FE605
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D3B71FE5F5
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:29:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729523AbgFRBPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:15:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46134 "EHLO mail.kernel.org"
+        id S1729768AbgFRC3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 22:29:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46358 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729520AbgFRBPw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:15:52 -0400
+        id S1729283AbgFRBQB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:16:01 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 44A26206F1;
-        Thu, 18 Jun 2020 01:15:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 112C12088E;
+        Thu, 18 Jun 2020 01:15:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592442950;
-        bh=bYRMw//X8rJwEygETmaSBUpaIrQsEaz+kvtKSZHbExQ=;
+        s=default; t=1592442961;
+        bh=kE4r/DncWHkvPGYKD8JFmPlP3Dy3jow243D+vlxfFl4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yZZhQMaCyllvZ8FEPAtn7FgJzVyUhGEn1PbMZwX/1l0iB64ciA4bbuiJErEc5Jwiq
-         ulSt4MIKuzX9/ZbNIwn6lEPYB0gsWi6B9cZVC2/JJyfruQ73zch6UD9c96vB1G38/A
-         EwN8R5QINnr52f/jZW7oABKY2ugyx1Gnbb4qlGic=
+        b=nTTbtMmVfHW6AZE1kOfTycl3cXcd/upOqFbR+5RpAkqnCw7xzI47h5gh9on4Rk9Dd
+         PiPpzNY1BSDlt/Xma4KFUJQZOHOc8H37fb7NK5/t64N4zlWgSMmgC29tZr2x1GRcAA
+         M8fGBACy8jSGmS6V1U+OduEKHLEIqQcbkjB5OBhg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     tannerlove <tannerlove@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     dihu <anny.hu@linux.alibaba.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 359/388] selftests/net: in timestamping, strncpy needs to preserve null byte
-Date:   Wed, 17 Jun 2020 21:07:36 -0400
-Message-Id: <20200618010805.600873-359-sashal@kernel.org>
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.7 367/388] bpf/sockmap: Fix kernel panic at __tcp_bpf_recvmsg
+Date:   Wed, 17 Jun 2020 21:07:44 -0400
+Message-Id: <20200618010805.600873-367-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
 References: <20200618010805.600873-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,63 +46,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: tannerlove <tannerlove@google.com>
+From: dihu <anny.hu@linux.alibaba.com>
 
-[ Upstream commit 8027bc0307ce59759b90679fa5d8b22949586d20 ]
+[ Upstream commit 487082fb7bd2a32b66927d2b22e3a81b072b44f0 ]
 
-If user passed an interface option longer than 15 characters, then
-device.ifr_name and hwtstamp.ifr_name became non-null-terminated
-strings. The compiler warned about this:
+When user application calls read() with MSG_PEEK flag to read data
+of bpf sockmap socket, kernel panic happens at
+__tcp_bpf_recvmsg+0x12c/0x350. sk_msg is not removed from ingress_msg
+queue after read out under MSG_PEEK flag is set. Because it's not
+judged whether sk_msg is the last msg of ingress_msg queue, the next
+sk_msg may be the head of ingress_msg queue, whose memory address of
+sg page is invalid. So it's necessary to add check codes to prevent
+this problem.
 
-timestamping.c:353:2: warning: ‘strncpy’ specified bound 16 equals \
-destination size [-Wstringop-truncation]
-  353 |  strncpy(device.ifr_name, interface, sizeof(device.ifr_name));
+[20759.125457] BUG: kernel NULL pointer dereference, address:
+0000000000000008
+[20759.132118] CPU: 53 PID: 51378 Comm: envoy Tainted: G            E
+5.4.32 #1
+[20759.140890] Hardware name: Inspur SA5212M4/YZMB-00370-109, BIOS
+4.1.12 06/18/2017
+[20759.149734] RIP: 0010:copy_page_to_iter+0xad/0x300
+[20759.270877] __tcp_bpf_recvmsg+0x12c/0x350
+[20759.276099] tcp_bpf_recvmsg+0x113/0x370
+[20759.281137] inet_recvmsg+0x55/0xc0
+[20759.285734] __sys_recvfrom+0xc8/0x130
+[20759.290566] ? __audit_syscall_entry+0x103/0x130
+[20759.296227] ? syscall_trace_enter+0x1d2/0x2d0
+[20759.301700] ? __audit_syscall_exit+0x1e4/0x290
+[20759.307235] __x64_sys_recvfrom+0x24/0x30
+[20759.312226] do_syscall_64+0x55/0x1b0
+[20759.316852] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Fixes: cb9eff097831 ("net: new user space API for time stamping of incoming and outgoing packets")
-Signed-off-by: Tanner Love <tannerlove@google.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: dihu <anny.hu@linux.alibaba.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+Link: https://lore.kernel.org/bpf/20200605084625.9783-1-anny.hu@linux.alibaba.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/timestamping.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_bpf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/testing/selftests/net/timestamping.c b/tools/testing/selftests/net/timestamping.c
-index aca3491174a1..f4bb4fef0f39 100644
---- a/tools/testing/selftests/net/timestamping.c
-+++ b/tools/testing/selftests/net/timestamping.c
-@@ -313,10 +313,16 @@ int main(int argc, char **argv)
- 	int val;
- 	socklen_t len;
- 	struct timeval next;
-+	size_t if_len;
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 9c5540887fbe..7aa68f4aae6c 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -64,6 +64,9 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+ 		} while (i != msg_rx->sg.end);
  
- 	if (argc < 2)
- 		usage(0);
- 	interface = argv[1];
-+	if_len = strlen(interface);
-+	if (if_len >= IFNAMSIZ) {
-+		printf("interface name exceeds IFNAMSIZ\n");
-+		exit(1);
-+	}
- 
- 	for (i = 2; i < argc; i++) {
- 		if (!strcasecmp(argv[i], "SO_TIMESTAMP"))
-@@ -350,12 +356,12 @@ int main(int argc, char **argv)
- 		bail("socket");
- 
- 	memset(&device, 0, sizeof(device));
--	strncpy(device.ifr_name, interface, sizeof(device.ifr_name));
-+	memcpy(device.ifr_name, interface, if_len + 1);
- 	if (ioctl(sock, SIOCGIFADDR, &device) < 0)
- 		bail("getting interface IP address");
- 
- 	memset(&hwtstamp, 0, sizeof(hwtstamp));
--	strncpy(hwtstamp.ifr_name, interface, sizeof(hwtstamp.ifr_name));
-+	memcpy(hwtstamp.ifr_name, interface, if_len + 1);
- 	hwtstamp.ifr_data = (void *)&hwconfig;
- 	memset(&hwconfig, 0, sizeof(hwconfig));
- 	hwconfig.tx_type =
+ 		if (unlikely(peek)) {
++			if (msg_rx == list_last_entry(&psock->ingress_msg,
++						      struct sk_msg, list))
++				break;
+ 			msg_rx = list_next_entry(msg_rx, list);
+ 			continue;
+ 		}
 -- 
 2.25.1
 
