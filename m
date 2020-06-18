@@ -2,137 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E24D1FED76
+	by mail.lfdr.de (Postfix) with ESMTP id 22E421FED75
 	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 10:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728601AbgFRIUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 04:20:15 -0400
-Received: from mail.intenta.de ([178.249.25.132]:25093 "EHLO mail.intenta.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727039AbgFRIUE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 04:20:04 -0400
-X-Greylist: delayed 324 seconds by postgrey-1.27 at vger.kernel.org; Thu, 18 Jun 2020 04:20:03 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=H6dwnRKnSAwZ1mPEq8hnbpLALPJs7LiunanmFW679cw=;
-        b=XXvIJ/7Qw/ZRDRlJ3jea70RIpw+YvTdtr+uPlEFsRbubufdMxcugVt+SQI72jGEfLrKNpVG1q+7Ew9NIGIds8HgxHtxFzoOT28wCnB2IfDs+IGRdbzHaeEa3VRlQ288YBwWANM2/mRHWUity48JSANkWc03+eohD74J5fu79+IC8dmnjzDXeOdU/wiGfJfD7Nmjns0tqSUpsX2P7B5FNHJC5J6HQXI12ta6v5+s48RK2Z+n6/FBkVllRr5bpgORdztNVJTi9We3EXAc4UeOlsFLQmYLkenalUxwZG4/kadvjRbWWnzkJTM87RJhQYKQBH2Ii6FOQkecpbeCGUbCR6Q==;
-Date:   Thu, 18 Jun 2020 10:14:33 +0200
-From:   Helmut Grohne <helmut.grohne@intenta.de>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        id S1728588AbgFRIUO convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 18 Jun 2020 04:20:14 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:25992 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728401AbgFRIUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 04:20:04 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-60-xqW0qJM9OuOmp_SMWmfb5w-1; Thu, 18 Jun 2020 09:20:00 +0100
+X-MC-Unique: xqW0qJM9OuOmp_SMWmfb5w-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 18 Jun 2020 09:19:59 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 18 Jun 2020 09:19:59 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Kees Cook' <keescook@chromium.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Sargun Dhillon" <sargun@sargun.me>,
+        Christian Brauner <christian@brauner.io>,
         "David S. Miller" <davem@davemloft.net>,
+        Christoph Hellwig <hch@lst.de>,
+        "Tycho Andersen" <tycho@tycho.ws>,
         Jakub Kicinski <kuba@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Andy Lutomirski" <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH] net: macb: reject unsupported rgmii delays
-Message-ID: <20200618081433.GA22636@laureti-dev>
-References: <20200616074955.GA9092@laureti-dev>
- <20200617105518.GO1551@shell.armlinux.org.uk>
- <20200617112153.GB28783@laureti-dev>
- <20200617114025.GQ1551@shell.armlinux.org.uk>
- <20200617115201.GA30172@laureti-dev>
- <20200617120809.GS1551@shell.armlinux.org.uk>
+        "containers@lists.linux-foundation.org" 
+        <containers@lists.linux-foundation.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: RE: [PATCH v4 03/11] fs: Add fd_install_received() wrapper for
+ __fd_install_received()
+Thread-Topic: [PATCH v4 03/11] fs: Add fd_install_received() wrapper for
+ __fd_install_received()
+Thread-Index: AQHWQ44F2CX108LjrkCobo2loVeUYajc8NxQgAA6eACAANyJYA==
+Date:   Thu, 18 Jun 2020 08:19:59 +0000
+Message-ID: <bed4dbb349cf4dbda78652f9c2bf1090@AcuMS.aculab.com>
+References: <20200616032524.460144-1-keescook@chromium.org>
+ <20200616032524.460144-4-keescook@chromium.org>
+ <6de12195ec3244b99e6026b4b46e5be2@AcuMS.aculab.com>
+ <202006171141.4DA1174979@keescook>
+In-Reply-To: <202006171141.4DA1174979@keescook>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200617120809.GS1551@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
- (10.10.16.48)
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 02:08:09PM +0200, Russell King - ARM Linux admin wrote:
-> With a fixed link, we could be in either a MAC-to-PHY or MAC-to-MAC
-> setup; we just don't know.  However, we don't have is access to the
-> PHY (if it exists) in the fixed link case to configure it for the
-> delay.
+From: Kees Cook
+> Sent: 17 June 2020 20:58
+> On Wed, Jun 17, 2020 at 03:35:20PM +0000, David Laight wrote:
+> > From: Kees Cook
+> > > Sent: 16 June 2020 04:25
+> > >
+> > > For both pidfd and seccomp, the __user pointer is not used. Update
+> > > __fd_install_received() to make writing to ufd optional. (ufd
+> > > itself cannot checked for NULL because this changes the SCM_RIGHTS
+> > > interface behavior.) In these cases, the new fd needs to be returned
+> > > on success.  Update the existing callers to handle it. Add new wrapper
+> > > fd_install_received() for pidfd and seccomp that does not use the ufd
+> > > argument.
+> > ...>
+> > >  static inline int fd_install_received_user(struct file *file, int __user *ufd,
+> > >  					   unsigned int o_flags)
+> > >  {
+> > > -	return __fd_install_received(file, ufd, o_flags);
+> > > +	return __fd_install_received(file, true, ufd, o_flags);
+> > > +}
+> >
+> > Can you get rid of the 'return user' parameter by adding
+> > 	if (!ufd) return -EFAULT;
+> > to the above wrapper, then checking for NULL in the function?
+> >
+> > Or does that do the wrong horrid things in the fail path?
+> 
+> Oh, hm. No, that shouldn't break the failure path, since everything gets
+> unwound in __fd_install_received if the ufd write fails.
+> 
+> Effectively this (I'll chop it up into the correct patches):
 
-Let me twist that a little: We may have access to the PHY, but we don't
-always have access. When we do have access, we have a separate device
-tree node with another fixed-link and another phy-mode. For fixed-links,
-we specify the phy-mode for each end.
+Yep, that's what i was thinking...
 
-> In the MAC-to-MAC RGMII setup, where neither MAC can insert the
-> necessary delay, the only way to have a RGMII conformant link is to
-> have the PCB traces induce the necessary delay. That errs towards
-> PHY_INTERFACE_MODE_RGMII for this case.
+Personally I'm not sure that it matters whether the file is left
+attached to a process fd when the copy_to_user() fails.
+The kernel data structures are consistent either way.
+So sane code relies on catching SIGSEGV, fixing thigs up,
+and carrying on.
+(IIRC the original /bin/sh code called sbrk() in its SIGSEGV
+handler instead of doing the limit check in malloc()!)
 
-Yes.
+The important error path is 'failing to get an fd number'.
+In that case the caller needs to keep the 'file *' or close it.
 
-> However, considering the MAC-to-PHY RGMII fixed link case, where the
-> PHY may not be accessible, and may be configured with the necessary
-> delay, should that case also use PHY_INTERFACE_MODE_RGMII - clearly
-> that would be as wrong as using PHY_INTERFACE_MODE_RGMII_ID would
-> be for the MAC-to-MAC RGMII with PCB-delays case.
+I've not looked at the code, but I wonder if you need to pass
+the 'file *' by reference so that you can consume it (write NULL)
+and return an error.
 
-If you take into account that the PHY has a separate node with phy-mode
-being rgmii-id, it makes a lot more sense to use rgmii for the phy-mode
-of the MAC. So I don't think it is that clear that doing so is wrong.
+	David
 
-In an earlier discussion Florian Fainelli said:
-https://patchwork.ozlabs.org/project/netdev/patch/20190410005700.31582-19-olteanv@gmail.com/#2149183
-| fixed-link really should denote a MAC to MAC connection so if you have
-| "rgmii-id" on one side, you would expect "rgmii" on the other side
-| (unless PCB traces account for delays, grrr).
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-For these reasons, I still think that rgmii would be a useful
-description for the fixed-link to PHY connection where the PHY adds the
-delay.
-
-> So, I think a MAC driver should not care about the specific RGMII
-> mode being asked for in any case, and just accept them all.
-
-I would like to agree to this. However, the implication is that when you
-get your delays wrong, your driver silently ignores you and you never
-notice your mistake until you see no traffic passing and wonder why.
-
-In this case, I was faced with a PHY that would do rgmii-txid and I
-configured that on the MAC. Unfortunately, macb_main.c didn't tell me
-that it did rgmii-id instead.
-
-> I also think that some of this ought to be put in the documentation
-> as guidance for new implementations.
-
-That seems to be the part where everyone agrees.
-
-Given the state of the discussion, I'm wondering whether this could be
-fixed at a more fundamental level in the device tree bindings.
-
-A number of people (including you) pointed out that retroactively fixing
-the meaning of phy modes does not work and causes pain instead. That
-hints that the only way to fix this is adding new properties. How about
-this?
-
-rgmii-delay-type:
-  description:
-    Responsibility for adding the rgmii delay
-  enum:
-    # The remote PHY or MAC to this MAC is responsible for adding the
-    # delay.
-    - remote
-    # The delay is added by neither MAC nor MAC, but using PCB traces
-    # instead.
-    - pcb
-    # The MAC must add the delay.
-    - local
-rgmii-rx-delay:
-  # Responsibility for RX delay. Delay specification in the phy-mode is
-  # ignored when this is present.
-  $ref: "#/properties/rgmii-delay-type"
-rgmii-tx-delay:
-  # Responsibility for TX delay. Delay specification in the phy-mode is
-  # ignored when this is present.
-  $ref: "#/properties/rgmii-delay-type"
-
-The naming is up to discussion, but I think you get the idea. The core
-properties of this proposal are:
- * It does not break existing device trees.
- * It completely resolves the present ambiguity.
-The major downside is that you never know whether your driver supports
-such delay specifications already.
-
-Helmut
