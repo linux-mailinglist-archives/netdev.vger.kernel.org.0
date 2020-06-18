@@ -2,203 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A444B1FF78E
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 17:42:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA8E31FF7D4
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 17:46:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731868AbgFRPmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 11:42:12 -0400
-Received: from gloria.sntech.de ([185.11.138.130]:55232 "EHLO gloria.sntech.de"
+        id S1729006AbgFRPqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 11:46:14 -0400
+Received: from foss.arm.com ([217.140.110.172]:53214 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731863AbgFRPmG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 11:42:06 -0400
-Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1jlwfr-0001YL-55; Thu, 18 Jun 2020 17:41:55 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com
-Subject: Re: [PATCH v5 3/3] net: phy: mscc: handle the clkout control on some phy variants
-Date:   Thu, 18 Jun 2020 17:41:54 +0200
-Message-ID: <2277698.LFZWc9m3Y3@diego>
-In-Reply-To: <20200618134102.GA1551@shell.armlinux.org.uk>
-References: <20200618121139.1703762-1-heiko@sntech.de> <20200618132822.GN249144@lunn.ch> <20200618134102.GA1551@shell.armlinux.org.uk>
+        id S1728171AbgFRPqN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 11:46:13 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ED3A5101E;
+        Thu, 18 Jun 2020 08:46:12 -0700 (PDT)
+Received: from [192.168.122.166] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 34CF43F6CF;
+        Thu, 18 Jun 2020 08:46:12 -0700 (PDT)
+Subject: Re: [PATCH v1 2/3] net/fsl: acpize xgmac_mdio
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        netdev@vger.kernel.org, linux.cj@gmail.com
+References: <20200617171536.12014-1-calvin.johnson@oss.nxp.com>
+ <20200617171536.12014-3-calvin.johnson@oss.nxp.com>
+ <20200617173414.GI205574@lunn.ch>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+Message-ID: <a1ae8926-9082-74ca-298a-853d297c84e7@arm.com>
+Date:   Thu, 18 Jun 2020 10:43:24 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <20200617173414.GI205574@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Donnerstag, 18. Juni 2020, 15:41:02 CEST schrieb Russell King - ARM Linux admin:
-> On Thu, Jun 18, 2020 at 03:28:22PM +0200, Andrew Lunn wrote:
-> > On Thu, Jun 18, 2020 at 02:11:39PM +0200, Heiko Stuebner wrote:
-> > > From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> > > 
-> > > At least VSC8530/8531/8540/8541 contain a clock output that can emit
-> > > a predefined rate of 25, 50 or 125MHz.
-> > > 
-> > > This may then feed back into the network interface as source clock.
-> > > So expose a clock-provider from the phy using the common clock framework
-> > > to allow setting the rate.
-> > > 
-> > > Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> > > ---
-> > >  drivers/net/phy/mscc/mscc.h      |  13 +++
-> > >  drivers/net/phy/mscc/mscc_main.c | 182 +++++++++++++++++++++++++++++--
-> > >  2 files changed, 187 insertions(+), 8 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-> > > index fbcee5fce7b2..94883dab5cc1 100644
-> > > --- a/drivers/net/phy/mscc/mscc.h
-> > > +++ b/drivers/net/phy/mscc/mscc.h
-> > > @@ -218,6 +218,13 @@ enum rgmii_clock_delay {
-> > >  #define INT_MEM_DATA_M			  0x00ff
-> > >  #define INT_MEM_DATA(x)			  (INT_MEM_DATA_M & (x))
-> > >  
-> > > +#define MSCC_CLKOUT_CNTL		  13
-> > > +#define CLKOUT_ENABLE			  BIT(15)
-> > > +#define CLKOUT_FREQ_MASK		  GENMASK(14, 13)
-> > > +#define CLKOUT_FREQ_25M			  (0x0 << 13)
-> > > +#define CLKOUT_FREQ_50M			  (0x1 << 13)
-> > > +#define CLKOUT_FREQ_125M		  (0x2 << 13)
-> > > +
-> > >  #define MSCC_PHY_PROC_CMD		  18
-> > >  #define PROC_CMD_NCOMPLETED		  0x8000
-> > >  #define PROC_CMD_FAILED			  0x4000
-> > > @@ -360,6 +367,12 @@ struct vsc8531_private {
-> > >  	 */
-> > >  	unsigned int base_addr;
-> > >  
-> > > +#ifdef CONFIG_COMMON_CLK
-> > > +	struct clk_hw clkout_hw;
-> > > +#endif
-> > > +	u32 clkout_rate;
-> > > +	int clkout_enabled;
-> > > +
-> > >  #if IS_ENABLED(CONFIG_MACSEC)
-> > >  	/* MACsec fields:
-> > >  	 * - One SecY per device (enforced at the s/w implementation level)
-> > > diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-> > > index 5d2777522fb4..727a9dd58403 100644
-> > > --- a/drivers/net/phy/mscc/mscc_main.c
-> > > +++ b/drivers/net/phy/mscc/mscc_main.c
-> > > @@ -7,6 +7,7 @@
-> > >   * Copyright (c) 2016 Microsemi Corporation
-> > >   */
-> > >  
-> > > +#include <linux/clk-provider.h>
-> > >  #include <linux/firmware.h>
-> > >  #include <linux/jiffies.h>
-> > >  #include <linux/kernel.h>
-> > > @@ -431,7 +432,6 @@ static int vsc85xx_dt_led_mode_get(struct phy_device *phydev,
-> > >  
-> > >  	return led_mode;
-> > >  }
-> > > -
-> > >  #else
-> > >  static int vsc85xx_edge_rate_magic_get(struct phy_device *phydev)
-> > >  {
-> > > @@ -1508,6 +1508,43 @@ static int vsc85xx_config_init(struct phy_device *phydev)
-> > >  	return 0;
-> > >  }
-> > >  
-> > > +static int vsc8531_config_init(struct phy_device *phydev)
-> > > +{
-> > > +	struct vsc8531_private *vsc8531 = phydev->priv;
-> > > +	u16 val;
-> > > +	int rc;
-> > > +
-> > > +	rc = vsc85xx_config_init(phydev);
-> > > +	if (rc)
-> > > +		return rc;
-> > > +
-> > > +#ifdef CONFIG_COMMON_CLK
-> > > +	switch (vsc8531->clkout_rate) {
-> > > +	case 25000000:
-> > > +		val = CLKOUT_FREQ_25M;
-> > > +		break;
-> > > +	case 50000000:
-> > > +		val = CLKOUT_FREQ_50M;
-> > > +		break;
-> > > +	case 125000000:
-> > > +		val = CLKOUT_FREQ_125M;
-> > > +		break;
-> > > +	default:
-> > > +		return -EINVAL;
-> > > +	}
-> > > +
-> > > +	if (vsc8531->clkout_enabled)
-> > > +		val |= CLKOUT_ENABLE;
-> > > +
-> > > +	rc = phy_write_paged(phydev, MSCC_PHY_PAGE_EXTENDED_GPIO,
-> > > +			     MSCC_CLKOUT_CNTL, val);
-> > > +	if (rc)
-> > > +		return rc;
-> > > +#endif
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > 
-> > > +static int vsc8531_clkout_prepare(struct clk_hw *hw)
-> > > +{
-> > > +	struct vsc8531_private *vsc8531 = clkout_hw_to_vsc8531(hw);
-> > > +
-> > > +	vsc8531->clkout_enabled = true;
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static void vsc8531_clkout_unprepare(struct clk_hw *hw)
-> > > +{
-> > > +	struct vsc8531_private *vsc8531 = clkout_hw_to_vsc8531(hw);
-> > > +
-> > > +	vsc8531->clkout_enabled = false;
-> > > +}
-> > > +
-> > 
-> > > +static const struct clk_ops vsc8531_clkout_ops = {
-> > > +	.prepare = vsc8531_clkout_prepare,
-> > > +	.unprepare = vsc8531_clkout_unprepare,
-> > > +	.is_prepared = vsc8531_clkout_is_prepared,
-> > > +	.recalc_rate = vsc8531_clkout_recalc_rate,
-> > > +	.round_rate = vsc8531_clkout_round_rate,
-> > > +	.set_rate = vsc8531_clkout_set_rate,
-> > 
-> > I'm not sure this is the expected behaviour. The clk itself should
-> > only start ticking when the enable callback is called. But this code
-> > will enable the clock when config_init() is called. I think you should
-> > implement the enable and disable methods.
+Hi,
+
+On 6/17/20 12:34 PM, Andrew Lunn wrote:
+> On Wed, Jun 17, 2020 at 10:45:34PM +0530, Calvin Johnson wrote:
+>> From: Jeremy Linton <jeremy.linton@arm.com>
 > 
-> That is actually incorrect.  The whole "prepare" vs "enable" difference
-> is that prepare can schedule, enable isn't permitted.  So, if you need
-> to sleep to enable the clock, then enabling the clock in the prepare
-> callback is the right thing to do.
+>> +static const struct acpi_device_id xgmac_acpi_match[] = {
+>> +	{ "NXP0006", (kernel_ulong_t)NULL },
 > 
-> However, the above driver just sets a flag, which only gets used when
-> the PHY's config_init method is called; that really doesn't seem to be
-> sane - the clock is available from the point that the PHY has been
-> probed, and it'll be expected that once the clock is published, it can
-> be made functional.
+> Hi Jeremy
+> 
+> What exactly does NXP0006 represent? An XGMAC MDIO bus master? Some
+> NXP MDIO bus master? An XGMAC Ethernet controller which has an NXP
+> MDIO bus master? A cluster of Ethernet controllers?
 
-Though I'm not sure how this fits in the whole bringup of ethernet phys.
-Like the phy is dependent on the underlying ethernet controller to
-actually turn it on.
+Strictly speaking its a NXP defined (they own the "NXP" prefix per 
+https://uefi.org/pnp_id_list) id. So, they have tied it to a specific 
+bit of hardware. In this case it appears to be a shared MDIO master 
+which isn't directly contained in an Ethernet controller. Its somewhat 
+similar to a  "nxp,xxxxx" compatible id, depending on how they are using 
+it to identify an ACPI device object (_HID()/_CID()).
 
-I guess we should check the phy-state and if it's not accessible, just
-keep the values and if it's in a suitable state do the configuration.
+So AFAIK, this is all valid ACPI usage as long as the ID maps to a 
+unique device/object.
 
-Calling a vsc8531_config_clkout() from both the vsc8531_config_init()
-as well as the clk_(un-)prepare  and clk_set_rate functions and being
-protected by a check against phy_is_started() ?
+> 
+> Is this documented somewhere? In the DT world we have a clear
+> documentation for all the compatible strings. Is there anything
+> similar in the ACPI world for these magic numbers?
 
-
-Heiko
-
+Sadly not fully. The mentioned PNP and ACPI 
+(https://uefi.org/acpi_id_list) ids lists are requested and registered 
+to a given organization. But, once the prefix is owned, it becomes the 
+responsibility of that organization to assign & manage the ID's with 
+their prefix. There are various individuals/etc which have collected 
+lists, though like PCI ids, there aren't any formal publishing requirements.
 
