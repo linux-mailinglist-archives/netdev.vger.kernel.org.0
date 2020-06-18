@@ -2,110 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 892771FFD0E
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:02:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C725E1FFD13
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:03:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729147AbgFRVCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 17:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725829AbgFRVCR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:02:17 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31C3C06174E;
-        Thu, 18 Jun 2020 14:02:16 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id a9so8984751ljn.6;
-        Thu, 18 Jun 2020 14:02:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TMDMECxtDyrKw7UR9Mx7zsMc3I+ujgCjjWQyhNCKNAU=;
-        b=JIpHXpZh15j6uf54OZ0ZaYctdkQNVT6WZHwFCP1LiZwKNzvnBVF+8tjbMrEc88y5AQ
-         miDd3UrB7aKm6rDb7mO19hDBDXrpnwDSwdGMSDeRpxlVbgFdf0FL/pk21CFdgHsY17fk
-         xOby98ybU65IY5qMB4KNYVwds9cwYmD4q7ZK//AQy0FB5CFh6vn7EQaSUMrJQ3+Udn2X
-         3IOs1361+GsLreppwlLNHbaEXuSQdoKa2eJKSayOgkDmRixQYALgeX0rhdNZ878UQJ2l
-         9G0ZWePa4mdDWeXl3I863UtIrJQGwgKGjhg1IUnlN6vpzrn7PCISfSaJF9RVEfVdDu+a
-         AXCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TMDMECxtDyrKw7UR9Mx7zsMc3I+ujgCjjWQyhNCKNAU=;
-        b=CbLPeiZ51L5Tbdh/AWkHZ7ZP2RurCufbVYAS0Ym08kjifyfPEOc1UasmO5Ijz8zLcc
-         +Tule4ebPWyy5KBsRKIKKzFDcZCmDYc8Z461NvWIaUAnrutU4ZaytREWfO7VhukfaOY+
-         hU1WlabcPt2g53ay56GzrjE/jAnotTUCfvmMuHL3KxEjuDEGakclhax2zsWC3XAHhFG3
-         Bp9YROBRGk2xq8H0OiijWgc8s7twW6naMiK0KqPtPslI29jLtBI3F/qzMt6VSJwMbvAi
-         kJjWpxzm+4VzjU1SfRBQVZvgRyOWmpV33OuJRDlvs6tOJ5HKpzgORd5O2NkVb0K6/Dqs
-         KFkg==
-X-Gm-Message-State: AOAM530ws0s5CeFbQ/7okqK+oYYwwT2kI5OiHNJgisLvkeVOEmMS6Qbr
-        ATt/gn0J8TEx/5ZOZH1nTNy/ackvSqbflUbdMuo=
-X-Google-Smtp-Source: ABdhPJxFENU0n/CIub2ELxobC9S6sSTeFivCPAONBxIvjJt9i55UJif8lUyl0SU+Y60it3IJHnYrMzgihE2p4fr35D0=
-X-Received: by 2002:a2e:974a:: with SMTP id f10mr128843ljj.283.1592514135166;
- Thu, 18 Jun 2020 14:02:15 -0700 (PDT)
+        id S1729628AbgFRVCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 17:02:50 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:37765 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727982AbgFRVCu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:02:50 -0400
+Received: from [189.110.235.168] (helo=localhost.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <cascardo@canonical.com>)
+        id 1jm1gM-00073w-EZ; Thu, 18 Jun 2020 21:02:46 +0000
+From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+To:     Josef Bacik <josef@toxicpanda.com>
+Cc:     Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
+        nbd@other.debian.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, cascardo@canonical.com
+Subject: [PATCH] nbd: allocate sufficient space for NBD_CMD_STATUS
+Date:   Thu, 18 Jun 2020 18:02:39 -0300
+Message-Id: <20200618210240.157566-1-cascardo@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CAHo-OoyU5OHQuqpTEo-uAQcwcLpzkXezFY6Re-Hv6jGM9aSFSA@mail.gmail.com>
- <20200618195956.73967-1-zenczykowski@gmail.com>
-In-Reply-To: <20200618195956.73967-1-zenczykowski@gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 18 Jun 2020 14:02:03 -0700
-Message-ID: <CAADnVQ+BqPeVqbgojN+nhYTE0nDcGF2-TfaeqyfPLOF-+DLn5Q@mail.gmail.com>
-Subject: Re: [PATCH] restore behaviour of CAP_SYS_ADMIN allowing the loading
- of net bpf program
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 1:00 PM Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
->
-> From: Maciej =C5=BBenczykowski <maze@google.com>
->
-> This is a 5.8-rc1 regression.
+The nest attribute NBD_ATTR_DEVICE_LIST was not accounted for when
+allocating the message, resulting in -EMSGSIZE.
 
-Please add full explanation here.
+As __alloc_skb aligns size requests to SMP_CACHE_BYTES and SLUB will end up
+allocating more than requested, this can hardly be reproduced on most
+setups.
 
-Also use [PATCH bpf] in the subject for future submission.
+However, I managed to test this on a 32-bit x86 with 15 entries, by loading
+with nbds_max=15. It failed with -EMSGSIZE, while it worked with 14 or 16
+entries.
 
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Fixes: 2c78ee898d8f ("bpf: Implement CAP_BPF")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+---
+ drivers/block/nbd.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Reported-by: John
-is missing?
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 43cff01a5a67..19551d8ca355 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -2265,6 +2265,7 @@ static int nbd_genl_status(struct sk_buff *skb, struct genl_info *info)
+ 	msg_size = nla_total_size(nla_attr_size(sizeof(u32)) +
+ 				  nla_attr_size(sizeof(u8)));
+ 	msg_size *= (index == -1) ? nbd_total_devices : 1;
++	msg_size += nla_total_size(0); /* for NBD_ATTR_DEVICE_LIST */
+ 
+ 	reply = genlmsg_new(msg_size, GFP_KERNEL);
+ 	if (!reply)
+-- 
+2.25.1
 
-> Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
-> ---
->  kernel/bpf/syscall.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 8da159936bab..7d946435587d 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2121,7 +2121,7 @@ static int bpf_prog_load(union bpf_attr *attr, unio=
-n bpf_attr __user *uattr)
->             !bpf_capable())
->                 return -EPERM;
->
-> -       if (is_net_admin_prog_type(type) && !capable(CAP_NET_ADMIN))
-> +       if (is_net_admin_prog_type(type) && !capable(CAP_NET_ADMIN) && !c=
-apable(CAP_SYS_ADMIN))
->                 return -EPERM;
->         if (is_perfmon_prog_type(type) && !perfmon_capable())
->                 return -EPERM;
-> --
-> 2.27.0.290.gba653c62da-goog
->
