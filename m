@@ -2,127 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04641FF90D
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 18:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C37C91FF90F
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 18:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731128AbgFRQSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 12:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        id S1731453AbgFRQTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 12:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730775AbgFRQSm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 12:18:42 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0E3C06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 09:18:42 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id k22so4870722qtm.6
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 09:18:42 -0700 (PDT)
+        with ESMTP id S1726981AbgFRQTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 12:19:12 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289FAC06174E;
+        Thu, 18 Jun 2020 09:19:11 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id q2so4248614wrv.8;
+        Thu, 18 Jun 2020 09:19:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vYvgdhM5HqQ7GxLo0HF9mk4pQ8qZlYShOF7Z0aaxwJE=;
-        b=AKhFqoVahtvF3gPWNmXImC0b1cKuIsDdRKKIvOjJMye5wt8NypGRr7hLfh/cifIPh3
-         DnmBxaKqqQVq6LZaRpxs+RyyJ2wzXyORdKRfdVYSdENP0duzsODYcaqBHszE1ZZNyOab
-         wgvFODJWIWv4oquAUOynY06rLHIlIKU9EBrR1VQ4T3giIAjKKKF/cbac2pZnFhB5LQoy
-         3U/+N0Vm440MvRezKrQiInezngyzVpacA9Pp0IhR6jWnh020jIPdvAq1f0/O5zZGNfpa
-         JD9EUgyRTlRctjkQXLlRgqhbLkXwf1wY1IMyzQeJ9CYVRwS1/X7ARbqgnA8fPr5JUpgy
-         2Hyg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8WbWb/rh17O2FOPGzHzwKOpepFQSzXzuV1eAuPNrEak=;
+        b=mljGeutj7UU8b1Y0O2M3yVHAaoqSYhqxn/1afiqMJZJpSMUY+32Gyf8Tvyj/oW+kq7
+         FIgG7+uUWLNsAkD/iXE4P5XF3/VdUXdADvIQZBayJseob9MWvBoPpalg/dQ8U1WDNJ6h
+         LQXSabLZuVeq6t6//8dTrWZHiJKNcgTc2RRdu7WhBL5tcR7FBhdPJQzemi65u+/cwEhI
+         VycskAY2JbwMbjQBUepz5Mbv+t2YFv6Z8izKnGEDZ8rtdLUK0cuE33npqjLiQKopRz2z
+         FzBpJ7zEVDCOVEAWPzFkRjsvcScXej8x78lv4gq9gJHpglcafZrsusnxjWCxrHywfkPg
+         4NGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vYvgdhM5HqQ7GxLo0HF9mk4pQ8qZlYShOF7Z0aaxwJE=;
-        b=I78oudkA/9/cWMHHosbKuE8uJVPxqamYhanc0F5Gxtz8lp/izaiDuGxKu9VD5676dI
-         XdQeOKPDe9v9nPCRyG2hIR1W7uJ4HW8UAIuZRegrVWDTGwq/q/RSsfsDYD06ZmKhQyHr
-         vKQozRVXmOhYTYFUR3rS7BwFJyF32+61lY5Iv+S9X3xZLxImSiteS/fHALUfTnNRgSyo
-         IhLLOgBdBSVYZUSQw9cID7tmQpTwMuiLKML6cyVMz/9RU6DshoD4R98+EgS0h/IQHJUs
-         2LyLsuEyLRjaqpvK+jZB7TPs8LP1Saqp5cAjlPKIB/LjteIOCgwWsTW1+HqwYjMDFJjd
-         Icmw==
-X-Gm-Message-State: AOAM531ow2i9vx3Y2XX4BhJbVqtq8wTh1pZpD+WenvRPon+XRUBhJxyp
-        xn0qQ5ayE2CPOc0X363xpwcj+4KN
-X-Google-Smtp-Source: ABdhPJwY3WVFg2wqbz3fPG0b8D+ZJ4HWVDrmZFjbfeR8FtGaieYJo/t56XZLq1JTu3V9iOEjdxo7Bw==
-X-Received: by 2002:ac8:4742:: with SMTP id k2mr5326259qtp.304.1592497120766;
-        Thu, 18 Jun 2020 09:18:40 -0700 (PDT)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id n25sm3085766qkk.76.2020.06.18.09.18.39
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8WbWb/rh17O2FOPGzHzwKOpepFQSzXzuV1eAuPNrEak=;
+        b=KAFu6d1UzACLzPXtRUAcrcPFAjU/jLdajH1iHr/EcG2WNDD8TFN2N4rUhqXwqj8iwX
+         b6OrKCWSGY0S385vANEaEhGfHscLTSlY6kZiCmhhsPBUYglI/SnRUC7Fq62FA6HlS0r2
+         MFPP2F2+6WYKrTpRxD3upefC7yN0LgSsOJ5SPec9vSxK9Gu18md710y3BEJk0ZAcrnlc
+         obvsBJc437kq1EqsF6raNmZjrFYwEzuvRR4DhIQqw+TxMcbcS6RRMvvIV/33NHQkwk9s
+         D5w6PgHc+xUYE2LxIfQ1qrQJE1jmh2lKXQB2A1An4KZq2+1TJgJxIwd824VvQ2e3kxUF
+         GZzg==
+X-Gm-Message-State: AOAM533tXl2tFSJhZb9hooxjXUxWaMdQHR6cEfUS89bdIC3We5XyIJse
+        1CjICDMDaV5r2ig0yZF9Q8KSd8DZ
+X-Google-Smtp-Source: ABdhPJza/9Oyu5LS/XiF0vHJyPK5HtUWpZdrviopBqelEtl9zOklzWaZHM1/5DChsp5VNDlnWhKadQ==
+X-Received: by 2002:a5d:6a03:: with SMTP id m3mr5308757wru.293.1592497149579;
+        Thu, 18 Jun 2020 09:19:09 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id e8sm2368235wrv.24.2020.06.18.09.19.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Jun 2020 09:18:39 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id s1so3399356ybo.7
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 09:18:39 -0700 (PDT)
-X-Received: by 2002:a25:b8c:: with SMTP id 134mr8190668ybl.428.1592497119169;
- Thu, 18 Jun 2020 09:18:39 -0700 (PDT)
+        Thu, 18 Jun 2020 09:19:09 -0700 (PDT)
+Subject: Re: [PATCH net] net: dsa: bcm_sf2: Fix node reference count
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20200618034245.29928-1-f.fainelli@gmail.com>
+ <20200618125640.GL249144@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <d00c5ca2-5c49-b558-0dfd-fd3e9391abf4@gmail.com>
+Date:   Thu, 18 Jun 2020 09:19:05 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200618145549.37937-1-willemdebruijn.kernel@gmail.com> <20200618085416.48b44e51@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200618085416.48b44e51@kicinski-fedora-PC1C0HJN>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 18 Jun 2020 12:18:01 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSeLneTOB10Vd+wO2LFmU9eY_zQJJ0QvX7JbCW9C1ef=ew@mail.gmail.com>
-Message-ID: <CA+FuTSeLneTOB10Vd+wO2LFmU9eY_zQJJ0QvX7JbCW9C1ef=ew@mail.gmail.com>
-Subject: Re: [PATCH net] selftests/net: report etf errors correctly
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200618125640.GL249144@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 11:54 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 18 Jun 2020 10:55:49 -0400 Willem de Bruijn wrote:
-> > +             switch (err->ee_errno) {
-> > +             case ECANCELED:
-> > +                     if (err->ee_code != SO_EE_CODE_TXTIME_MISSED)
-> > +                             error(1, 0, "errqueue: unknown ECANCELED %u\n",
-> > +                                         err->ee_code);
-> > +                     reason = "missed txtime";
-> > +             break;
-> > +             case EINVAL:
-> > +                     if (err->ee_code != SO_EE_CODE_TXTIME_INVALID_PARAM)
-> > +                             error(1, 0, "errqueue: unknown EINVAL %u\n",
-> > +                                         err->ee_code);
-> > +                     reason = "invalid txtime";
-> > +             break;
-> > +             default:
-> > +                     error(1, 0, "errqueue: errno %u code %u\n",
-> > +                           err->ee_errno, err->ee_code);
-> > +             };
-> >
-> >               tstamp = ((int64_t) err->ee_data) << 32 | err->ee_info;
-> >               tstamp -= (int64_t) glob_tstart;
-> >               tstamp /= 1000 * 1000;
-> > -             fprintf(stderr, "send: pkt %c at %" PRId64 "ms dropped\n",
-> > -                             data[ret - 1], tstamp);
-> > +             fprintf(stderr, "send: pkt %c at %" PRId64 "ms dropped: %s\n",
-> > +                             data[ret - 1], tstamp, reason);
->
-> Hi Willem! Checkpatch is grumpy about some misalignment here:
->
-> CHECK: Alignment should match open parenthesis
-> #67: FILE: tools/testing/selftests/net/so_txtime.c:187:
-> +                               error(1, 0, "errqueue: unknown ECANCELED %u\n",
-> +                                           err->ee_code);
->
-> CHECK: Alignment should match open parenthesis
-> #73: FILE: tools/testing/selftests/net/so_txtime.c:193:
-> +                               error(1, 0, "errqueue: unknown EINVAL %u\n",
-> +                                           err->ee_code);
->
-> CHECK: Alignment should match open parenthesis
-> #87: FILE: tools/testing/selftests/net/so_txtime.c:205:
-> +               fprintf(stderr, "send: pkt %c at %" PRId64 "ms dropped: %s\n",
-> +                               data[ret - 1], tstamp, reason);
 
-Thanks for the heads-up, Jakub.
 
-I decided to follow the convention in the file, which is to align with
-the start of the string.
+On 6/18/2020 5:56 AM, Andrew Lunn wrote:
+> On Wed, Jun 17, 2020 at 08:42:44PM -0700, Florian Fainelli wrote:
+>> of_find_node_by_name() will do an of_node_put() on the "from" argument.
+> 
+>> Fixes: afa3b592953b ("net: dsa: bcm_sf2: Ensure correct sub-node is parsed")
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+>> ---
+>>  drivers/net/dsa/bcm_sf2.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+>> index c1bd21e4b15c..9f62ba3e4345 100644
+>> --- a/drivers/net/dsa/bcm_sf2.c
+>> +++ b/drivers/net/dsa/bcm_sf2.c
+>> @@ -1154,6 +1154,8 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
+>>  	set_bit(0, priv->cfp.used);
+>>  	set_bit(0, priv->cfp.unique);
+>>  
+>> +	/* Balance of_node_put() done by of_find_node_by_name() */
+>> +	of_node_get(dn);
+>>  	ports = of_find_node_by_name(dn, "ports");
+> 
+> That if_find_node_by_name() does a put is not very intuitive.
+> Maybe document that as well in the kerneldocs?
 
-Given that, do you want me to resubmit with the revised offset? I'm
-fine either way, of course.
+Yes that is the plan, most callers call it with a NULL from argument but
+that is a bit silly if you know what the Device Tree looks like, you can
+search quicker to the target node. Thanks.
 
-Also, which incantation of checkpatch do you use? I did run
-checkpatch, without extra args, and it did not warn me about this.
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> 
+>     Andrew
+> 
+
+-- 
+Florian
