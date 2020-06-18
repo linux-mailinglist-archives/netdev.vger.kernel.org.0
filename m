@@ -2,88 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9357B1FFEE9
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 01:50:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D6B01FFEF3
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 01:53:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728080AbgFRXuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 19:50:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59978 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726001AbgFRXuK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 19:50:10 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D8B96207D8;
-        Thu, 18 Jun 2020 23:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592524210;
-        bh=p8RjmkFLLZDI7QuLOeEjhIGYbCEsHgGW33hVCOixeOk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ld33XPv0GdQzIcvHL11JuV3uSRk1h8NnJpTmXzUHJEN7vAyxhGBh0rpYxKLQ7xVr7
-         jmePw60CmCFbjK/ae6OS5ae2L+2R77C8/f3Km1TcVp/jlLoflX8FDYu0uW5sd1qUuv
-         0vTJJsh2jcyGJ0llWkPL3LsivlWMa5uXjtprKoK8=
-Date:   Thu, 18 Jun 2020 16:50:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, Alice Michael <alice.michael@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Alan Brady <alan.brady@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Joshua Hay <joshua.a.hay@intel.com>,
-        Madhu Chittim <madhu.chittim@intel.com>,
-        Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
-        Donald Skidmore <donald.c.skidmore@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>
-Subject: Re: [net-next 13/15] iecm: Add ethtool
-Message-ID: <20200618165008.4d475087@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200618051344.516587-14-jeffrey.t.kirsher@intel.com>
-References: <20200618051344.516587-1-jeffrey.t.kirsher@intel.com>
-        <20200618051344.516587-14-jeffrey.t.kirsher@intel.com>
+        id S1727795AbgFRXxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 19:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57490 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726001AbgFRXxl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 19:53:41 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11149C06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 16:53:41 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id o4so4027730ybp.0
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 16:53:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XfA2vpsTvAx+sH2kwtUr7DSSpefvNgfSxzsg3LMcc8k=;
+        b=hIDBh6eO2p3WiU9TulbPMldJmakg0OhO1rFqwVbdZVGC1Jy68YJrgq5d+L9HPB5qE8
+         zzRjsU/NrESvOcJOfevmRUPLW4mzkpzxHvMc/6V9rchUKyr/5vwcZf31uAmuq1rDCvYe
+         07DvTXWEfNM1ALhbVU8oVEI9EpSc5h1zVCgovksaAeKMu6/jueE7mfdbe7e6udqJO3rd
+         R/Lg7ENAZ2fNA5H+rSldfB+VxUKLKfncDYudA2+c3abn3Tlm56Wo/aRdsOeG4dkqgbgA
+         WKHVAQHrfcZq0noK8wy0o86XLwkRBSJ46D8TU23b3/CsK9aH9tlLLeiUFJiYiSu6bzeA
+         a7+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XfA2vpsTvAx+sH2kwtUr7DSSpefvNgfSxzsg3LMcc8k=;
+        b=qXJ3v05qu0IHArEJxJ/WmYjwrHBkAOTVLlHGUA2bvkqLTACN0E2RExXGfWPPXAK2PC
+         0HVgZKbVVkPcGQyfOwvGBaGbIv8lpmaGtRYBHxBRFld8y+ynwethbRVH20ojxC87/UGd
+         KKgm/ELuLevfGJRD2BU/IZ5Vc0O7CjV487jEz27y47ZGCakg+RPqDwgqIOTbTxjzyTfb
+         EUg4ByDjVwETRrsoH3eb6J+Dih6tqmw4Q0da0/OyoeICbSehtkeBHsXkpwgEEbrnUzIV
+         joJrJ1pGA2crD9r2r51yEBbNKrvIhj30nVtlvfwS40EGNTosnF+P1i4VKdUR1lYCSBnq
+         ijVw==
+X-Gm-Message-State: AOAM530VFAwch4RtN+y8BA0OWPw2RwMeeqblyHRdm0Qz99VJg7VN7196
+        pm0fySsh/joGDU+snIONuZj1QqY/b86M6lYNzSUYfj9n
+X-Google-Smtp-Source: ABdhPJwBN9EG6niuZD/dPOVi+Uv6aWKrTWbG+gE1OC4lEtbsmtnwlEWXeqR4r9YdLA8OpctIcRoJsMTCmI3sIkDA6qM=
+X-Received: by 2002:a25:b8c6:: with SMTP id g6mr1935133ybm.101.1592524420149;
+ Thu, 18 Jun 2020 16:53:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <159251533557.7557.5381023439094175695.stgit@anambiarhost.jf.intel.com>
+ <CANn89i+3CZE1V5AQt0MA_ptsjfHEqUL+LV2VwiD41_3dyXq2pQ@mail.gmail.com> <b943b5d1-aa71-4eb2-ee77-d3c56cdf494a@intel.com>
+In-Reply-To: <b943b5d1-aa71-4eb2-ee77-d3c56cdf494a@intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 18 Jun 2020 16:53:28 -0700
+Message-ID: <CANn89iLgj16S_J1bY6gQ8gjduMDcbgVx2OpPfUBOdmPeerH6Tw@mail.gmail.com>
+Subject: Re: [net-next PATCH] net: Avoid overwriting valid skb->napi_id
+To:     "Nambiar, Amritha" <amritha.nambiar@intel.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        Eliezer Tamir <eliezer.tamir@linux.intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Jun 2020 22:13:42 -0700 Jeff Kirsher wrote:
-> +static const struct ethtool_ops iecm_ethtool_ops = {
-> +	.get_drvinfo		= iecm_get_drvinfo,
-> +	.get_msglevel		= iecm_get_msglevel,
-> +	.set_msglevel		= iecm_set_msglevel,
-> +	.get_coalesce		= iecm_get_coalesce,
-> +	.set_coalesce		= iecm_set_coalesce,
-> +	.get_per_queue_coalesce	= iecm_get_per_q_coalesce,
-> +	.set_per_queue_coalesce	= iecm_set_per_q_coalesce,
-> +	.get_ethtool_stats	= iecm_get_ethtool_stats,
-> +	.get_strings		= iecm_get_strings,
-> +	.get_sset_count		= iecm_get_sset_count,
-> +	.get_rxnfc		= iecm_get_rxnfc,
-> +	.get_rxfh_key_size	= iecm_get_rxfh_key_size,
-> +	.get_rxfh_indir_size	= iecm_get_rxfh_indir_size,
-> +	.get_rxfh		= iecm_get_rxfh,
-> +	.set_rxfh		= iecm_set_rxfh,
-> +	.get_channels		= iecm_get_channels,
-> +	.set_channels		= iecm_set_channels,
-> +	.get_ringparam		= iecm_get_ringparam,
-> +	.set_ringparam		= iecm_set_ringparam,
-> +	.get_link_ksettings	= iecm_get_link_ksettings,
-> +};
+On Thu, Jun 18, 2020 at 4:44 PM Nambiar, Amritha
+<amritha.nambiar@intel.com> wrote:
 
-Oh wow. So you're upstreaming this driver based on at least a 3 month
-old tree? This:
+>
+> Thanks for the review. Should I send a v2 with this change?
 
-commit 9000edb71ab29d184aa33f5a77fa6e52d8812bb9
-Author: Jakub Kicinski <kuba@kernel.org>
-Date:   Mon Mar 16 13:47:12 2020 -0700
-
-+int ethtool_check_ops(const struct ethtool_ops *ops)
-+{
-+       if (WARN_ON(ops->set_coalesce && !ops->supported_coalesce_params))
-+               return -EINVAL;
-
-would have otherwise triggered.
-
+No, this is really a matter of taste ;)
