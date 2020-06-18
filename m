@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D4351FEAC3
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 07:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 314131FEAB8
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 07:14:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727777AbgFRFOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 01:14:20 -0400
-Received: from mga07.intel.com ([134.134.136.100]:27995 "EHLO mga07.intel.com"
+        id S1727040AbgFRFOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 01:14:03 -0400
+Received: from mga07.intel.com ([134.134.136.100]:28000 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726949AbgFRFOO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 01:14:14 -0400
-IronPort-SDR: 47vIvCvWnsOMwcqRCizVguIbnCiOr8IoCv320+t/mZkOEe3icsgszXv53HqGsFU9nLNEuEx6Fw
- isgijdF921XA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9655"; a="207694699"
+        id S1726987AbgFRFOB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 01:14:01 -0400
+IronPort-SDR: fkmLeZuaG4v9dRN9RAnxvCgFwDJwN3JXXGXFJ9ZerxCzbxEiIrWRvYBjI5Rbolltu5YwDMLFru
+ umag3q4OGujQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9655"; a="207694702"
 X-IronPort-AV: E=Sophos;i="5.73,525,1583222400"; 
-   d="scan'208";a="207694699"
+   d="scan'208";a="207694702"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2020 22:13:50 -0700
-IronPort-SDR: McLwl+4qW4FJs/U6270NeS7XJA5yNme6w0xMHCvB4QtPgvV2rMewxQV8Ey7geyp+fpl1liw/Kl
- SplPMIb+MbYg==
+IronPort-SDR: pX4ODUEaGhAWXYnx4ETEfcm7hZiT6QO8W4OYNVpfAgY9P23O4BhGZMpmFt1dzy8/PqdvGmZbEY
+ ZmvxaI5ZmbOA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,525,1583222400"; 
-   d="scan'208";a="263495581"
+   d="scan'208";a="263495586"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by fmsmga008.fm.intel.com with ESMTP; 17 Jun 2020 22:13:49 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -40,9 +40,9 @@ Cc:     Alice Michael <alice.michael@intel.com>, netdev@vger.kernel.org,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Sridhar Samudrala <sridhar.samudrala@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 03/15] iecm: Add TX/RX header files
-Date:   Wed, 17 Jun 2020 22:13:32 -0700
-Message-Id: <20200618051344.516587-4-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 04/15] iecm: Common module introduction and function stubs
+Date:   Wed, 17 Jun 2020 22:13:33 -0700
+Message-Id: <20200618051344.516587-5-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200618051344.516587-1-jeffrey.t.kirsher@intel.com>
 References: <20200618051344.516587-1-jeffrey.t.kirsher@intel.com>
@@ -55,8 +55,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alice Michael <alice.michael@intel.com>
 
-Introduces the data for the TX/RX paths for use
-by the common module.
+This introduces function stubs for the framework of the common
+module.
 
 Signed-off-by: Alice Michael <alice.michael@intel.com>
 Signed-off-by: Alan Brady <alan.brady@intel.com>
@@ -69,1398 +69,2929 @@ Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- include/linux/net/intel/iecm_lan_pf_regs.h | 120 ++++
- include/linux/net/intel/iecm_lan_txrx.h    | 636 +++++++++++++++++++++
- include/linux/net/intel/iecm_txrx.h        | 610 ++++++++++++++++++++
- 3 files changed, 1366 insertions(+)
- create mode 100644 include/linux/net/intel/iecm_lan_pf_regs.h
- create mode 100644 include/linux/net/intel/iecm_lan_txrx.h
- create mode 100644 include/linux/net/intel/iecm_txrx.h
+ .../net/ethernet/intel/iecm/iecm_controlq.c   |  200 +++
+ .../ethernet/intel/iecm/iecm_controlq_setup.c |   84 ++
+ .../net/ethernet/intel/iecm/iecm_ethtool.c    |   16 +
+ drivers/net/ethernet/intel/iecm/iecm_lib.c    |  406 ++++++
+ drivers/net/ethernet/intel/iecm/iecm_main.c   |   47 +
+ drivers/net/ethernet/intel/iecm/iecm_osdep.c  |   15 +
+ .../ethernet/intel/iecm/iecm_singleq_txrx.c   |  255 ++++
+ drivers/net/ethernet/intel/iecm/iecm_txrx.c   | 1256 +++++++++++++++++
+ .../net/ethernet/intel/iecm/iecm_virtchnl.c   |  570 ++++++++
+ 9 files changed, 2849 insertions(+)
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_controlq.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_controlq_setup.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_ethtool.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_lib.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_main.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_osdep.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_singleq_txrx.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_txrx.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_virtchnl.c
 
-diff --git a/include/linux/net/intel/iecm_lan_pf_regs.h b/include/linux/net/intel/iecm_lan_pf_regs.h
+diff --git a/drivers/net/ethernet/intel/iecm/iecm_controlq.c b/drivers/net/ethernet/intel/iecm/iecm_controlq.c
 new file mode 100644
-index 000000000000..6690a2645608
+index 000000000000..390c499d9eb5
 --- /dev/null
-+++ b/include/linux/net/intel/iecm_lan_pf_regs.h
-@@ -0,0 +1,120 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
++++ b/drivers/net/ethernet/intel/iecm/iecm_controlq.c
+@@ -0,0 +1,200 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/* Copyright (c) 2020, Intel Corporation. */
 +
-+#ifndef _IECM_LAN_PF_REGS_H_
-+#define _IECM_LAN_PF_REGS_H_
-+
-+/* Receive queues */
-+#define PF_QRX_BASE			0x00000000
-+#define PF_QRX_TAIL(_QRX)		(PF_QRX_BASE + (((_QRX) * 0x1000)))
-+#define PF_QRX_BUFFQ_BASE		0x03000000
-+#define PF_QRX_BUFFQ_TAIL(_QRX)		\
-+	(PF_QRX_BUFFQ_BASE + (((_QRX) * 0x1000)))
-+
-+/* Transmit queues */
-+#define PF_QTX_BASE			0x05000000
-+#define PF_QTX_COMM_DBELL(_DBQM)	(PF_QTX_BASE + ((_DBQM) * 0x1000))
-+
-+/* Control(PF Mailbox) Queue */
-+#define PF_FW_BASE			0x08400000
-+
-+#define PF_FW_ARQBAL			(PF_FW_BASE)
-+#define PF_FW_ARQBAH			(PF_FW_BASE + 0x4)
-+#define PF_FW_ARQLEN			(PF_FW_BASE + 0x8)
-+#define PF_FW_ARQLEN_ARQLEN_S		0
-+#define PF_FW_ARQLEN_ARQLEN_M		MAKEMASK(0x1FFF, PF_FW_ARQLEN_ARQLEN_S)
-+#define PF_FW_ARQLEN_ARQVFE_S		28
-+#define PF_FW_ARQLEN_ARQVFE_M		BIT(PF_FW_ARQLEN_ARQVFE_S)
-+#define PF_FW_ARQLEN_ARQOVFL_S		29
-+#define PF_FW_ARQLEN_ARQOVFL_M		BIT(PF_FW_ARQLEN_ARQOVFL_S)
-+#define PF_FW_ARQLEN_ARQCRIT_S		30
-+#define PF_FW_ARQLEN_ARQCRIT_M		BIT(PF_FW_ARQLEN_ARQCRIT_S)
-+#define PF_FW_ARQLEN_ARQENABLE_S	31
-+#define PF_FW_ARQLEN_ARQENABLE_M	BIT(PF_FW_ARQLEN_ARQENABLE_S)
-+#define PF_FW_ARQH			(PF_FW_BASE + 0xC)
-+#define PF_FW_ARQH_ARQH_S		0
-+#define PF_FW_ARQH_ARQH_M		MAKEMASK(0x1FFF, PF_FW_ARQH_ARQH_S)
-+#define PF_FW_ARQT			(PF_FW_BASE + 0x10)
-+
-+#define PF_FW_ATQBAL			(PF_FW_BASE + 0x14)
-+#define PF_FW_ATQBAH			(PF_FW_BASE + 0x18)
-+#define PF_FW_ATQLEN			(PF_FW_BASE + 0x1C)
-+#define PF_FW_ATQLEN_ATQLEN_S		0
-+#define PF_FW_ATQLEN_ATQLEN_M		MAKEMASK(0x3FF, PF_FW_ATQLEN_ATQLEN_S)
-+#define PF_FW_ATQLEN_ATQVFE_S		28
-+#define PF_FW_ATQLEN_ATQVFE_M		BIT(PF_FW_ATQLEN_ATQVFE_S)
-+#define PF_FW_ATQLEN_ATQOVFL_S		29
-+#define PF_FW_ATQLEN_ATQOVFL_M		BIT(PF_FW_ATQLEN_ATQOVFL_S)
-+#define PF_FW_ATQLEN_ATQCRIT_S		30
-+#define PF_FW_ATQLEN_ATQCRIT_M		BIT(PF_FW_ATQLEN_ATQCRIT_S)
-+#define PF_FW_ATQLEN_ATQENABLE_S	31
-+#define PF_FW_ATQLEN_ATQENABLE_M	BIT(PF_FW_ATQLEN_ATQENABLE_S)
-+#define PF_FW_ATQH			(PF_FW_BASE + 0x20)
-+#define PF_FW_ATQH_ATQH_S		0
-+#define PF_FW_ATQH_ATQH_M		MAKEMASK(0x3FF, PF_FW_ATQH_ATQH_S)
-+#define PF_FW_ATQT			(PF_FW_BASE + 0x24)
-+
-+/* Interrupts */
-+#define PF_GLINT_BASE			0x08900000
-+#define PF_GLINT_DYN_CTL(_INT)		(PF_GLINT_BASE + ((_INT) * 0x1000))
-+#define PF_GLINT_DYN_CTL_INTENA_S	0
-+#define PF_GLINT_DYN_CTL_INTENA_M	BIT(PF_GLINT_DYN_CTL_INTENA_S)
-+#define PF_GLINT_DYN_CTL_CLEARPBA_S	1
-+#define PF_GLINT_DYN_CTL_CLEARPBA_M	BIT(PF_GLINT_DYN_CTL_CLEARPBA_S)
-+#define PF_GLINT_DYN_CTL_SWINT_TRIG_S	2
-+#define PF_GLINT_DYN_CTL_SWINT_TRIG_M	BIT(PF_GLINT_DYN_CTL_SWINT_TRIG_S)
-+#define PF_GLINT_DYN_CTL_ITR_INDX_S	3
-+#define PF_GLINT_DYN_CTL_INTERVAL_S	5
-+#define PF_GLINT_DYN_CTL_INTERVAL_M	BIT(PF_GLINT_DYN_CTL_INTERVAL_S)
-+#define PF_GLINT_DYN_CTL_SW_ITR_INDX_ENA_S	24
-+#define PF_GLINT_DYN_CTL_SW_ITR_INDX_ENA_M \
-+	BIT(PF_GLINT_DYN_CTL_SW_ITR_INDX_ENA_S)
-+#define PF_GLINT_DYN_CTL_SW_ITR_INDX_S	25
-+#define PF_GLINT_DYN_CTL_SW_ITR_INDX_M	BIT(PF_GLINT_DYN_CTL_SW_ITR_INDX_S)
-+#define PF_GLINT_DYN_CTL_INTENA_MSK_S	31
-+#define PF_GLINT_DYN_CTL_INTENA_MSK_M	BIT(PF_GLINT_DYN_CTL_INTENA_MSK_S)
-+#define PF_GLINT_ITR(_i, _INT) (PF_GLINT_BASE + (((_INT) + \
-+			       (((_i) + 1) * 4)) * 0x1000))
-+#define PF_GLINT_ITR_MAX_INDEX		2
-+#define PF_GLINT_ITR_INTERVAL_S		0
-+#define PF_GLINT_ITR_INTERVAL_M		MAKEMASK(0xFFF, PF_GLINT_ITR_INTERVAL_S)
-+
-+/* Generic registers */
-+#define PF_INT_DIR_OICR_ENA		0x08406000
-+#define PF_INT_DIR_OICR_ENA_S		0
-+#define PF_INT_DIR_OICR_ENA_M	MAKEMASK(0xFFFFFFFF, PF_INT_DIR_OICR_ENA_S)
-+#define PF_INT_DIR_OICR			0x08406004
-+#define PF_INT_DIR_OICR_TSYN_EVNT	0
-+#define PF_INT_DIR_OICR_PHY_TS_0	BIT(1)
-+#define PF_INT_DIR_OICR_PHY_TS_1	BIT(2)
-+#define PF_INT_DIR_OICR_CAUSE		0x08406008
-+#define PF_INT_DIR_OICR_CAUSE_CAUSE_S	0
-+#define PF_INT_DIR_OICR_CAUSE_CAUSE_M	\
-+	MAKEMASK(0xFFFFFFFF, PF_INT_DIR_OICR_CAUSE_CAUSE_S)
-+#define PF_INT_PBA_CLEAR		0x0840600C
-+
-+#define PF_FUNC_RID			0x08406010
-+#define PF_FUNC_RID_FUNCTION_NUMBER_S	0
-+#define PF_FUNC_RID_FUNCTION_NUMBER_M	\
-+	MAKEMASK(0x7, PF_FUNC_RID_FUNCTION_NUMBER_S)
-+#define PF_FUNC_RID_DEVICE_NUMBER_S	3
-+#define PF_FUNC_RID_DEVICE_NUMBER_M	\
-+	MAKEMASK(0x1F, PF_FUNC_RID_DEVICE_NUMBER_S)
-+#define PF_FUNC_RID_BUS_NUMBER_S	8
-+#define PF_FUNC_RID_BUS_NUMBER_M	MAKEMASK(0xFF, PF_FUNC_RID_BUS_NUMBER_S)
-+
-+/* Reset registers */
-+#define PFGEN_RTRIG			0x08407000
-+#define PFGEN_RTRIG_CORER_S		0
-+#define PFGEN_RTRIG_CORER_M		BIT(0)
-+#define PFGEN_RTRIG_LINKR_S		1
-+#define PFGEN_RTRIG_LINKR_M		BIT(1)
-+#define PFGEN_RTRIG_IMCR_S		2
-+#define PFGEN_RTRIG_IMCR_M		BIT(2)
-+#define PFGEN_RSTAT			0x08407008 /* PFR Status */
-+#define PFGEN_RSTAT_PFR_STATE_S		0
-+#define PFGEN_RSTAT_PFR_STATE_M		MAKEMASK(0x3, PFGEN_RSTAT_PFR_STATE_S)
-+#define PFGEN_CTRL			0x0840700C
-+#define PFGEN_CTRL_PFSWR		BIT(0)
-+
-+#endif
-diff --git a/include/linux/net/intel/iecm_lan_txrx.h b/include/linux/net/intel/iecm_lan_txrx.h
-new file mode 100644
-index 000000000000..6dc210925c7a
---- /dev/null
-+++ b/include/linux/net/intel/iecm_lan_txrx.h
-@@ -0,0 +1,636 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2020, Intel Corporation. */
-+
-+#ifndef _IECM_LAN_TXRX_H_
-+#define _IECM_LAN_TXRX_H_
 +#include <linux/net/intel/iecm_osdep.h>
++#include <linux/net/intel/iecm_controlq.h>
++#include <linux/net/intel/iecm_type.h>
 +
-+enum iecm_rss_hash {
-+	/* Values 0 - 28 are reserved for future use */
-+	IECM_HASH_INVALID		= 0,
-+	IECM_HASH_NONF_UNICAST_IPV4_UDP	= 29,
-+	IECM_HASH_NONF_MULTICAST_IPV4_UDP,
-+	IECM_HASH_NONF_IPV4_UDP,
-+	IECM_HASH_NONF_IPV4_TCP_SYN_NO_ACK,
-+	IECM_HASH_NONF_IPV4_TCP,
-+	IECM_HASH_NONF_IPV4_SCTP,
-+	IECM_HASH_NONF_IPV4_OTHER,
-+	IECM_HASH_FRAG_IPV4,
-+	/* Values 37-38 are reserved */
-+	IECM_HASH_NONF_UNICAST_IPV6_UDP	= 39,
-+	IECM_HASH_NONF_MULTICAST_IPV6_UDP,
-+	IECM_HASH_NONF_IPV6_UDP,
-+	IECM_HASH_NONF_IPV6_TCP_SYN_NO_ACK,
-+	IECM_HASH_NONF_IPV6_TCP,
-+	IECM_HASH_NONF_IPV6_SCTP,
-+	IECM_HASH_NONF_IPV6_OTHER,
-+	IECM_HASH_FRAG_IPV6,
-+	IECM_HASH_NONF_RSVD47,
-+	IECM_HASH_NONF_FCOE_OX,
-+	IECM_HASH_NONF_FCOE_RX,
-+	IECM_HASH_NONF_FCOE_OTHER,
-+	/* Values 51-62 are reserved */
-+	IECM_HASH_L2_PAYLOAD		= 63,
-+	IECM_HASH_MAX
-+};
-+
-+/* Supported RSS offloads */
-+#define IECM_DEFAULT_RSS_HASH ( \
-+	BIT_ULL(IECM_HASH_NONF_IPV4_UDP) | \
-+	BIT_ULL(IECM_HASH_NONF_IPV4_SCTP) | \
-+	BIT_ULL(IECM_HASH_NONF_IPV4_TCP) | \
-+	BIT_ULL(IECM_HASH_NONF_IPV4_OTHER) | \
-+	BIT_ULL(IECM_HASH_FRAG_IPV4) | \
-+	BIT_ULL(IECM_HASH_NONF_IPV6_UDP) | \
-+	BIT_ULL(IECM_HASH_NONF_IPV6_TCP) | \
-+	BIT_ULL(IECM_HASH_NONF_IPV6_SCTP) | \
-+	BIT_ULL(IECM_HASH_NONF_IPV6_OTHER) | \
-+	BIT_ULL(IECM_HASH_FRAG_IPV6) | \
-+	BIT_ULL(IECM_HASH_L2_PAYLOAD))
-+
-+#define IECM_DEFAULT_RSS_HASH_EXPANDED (IECM_DEFAULT_RSS_HASH | \
-+	BIT_ULL(IECM_HASH_NONF_IPV4_TCP_SYN_NO_ACK) | \
-+	BIT_ULL(IECM_HASH_NONF_UNICAST_IPV4_UDP) | \
-+	BIT_ULL(IECM_HASH_NONF_MULTICAST_IPV4_UDP) | \
-+	BIT_ULL(IECM_HASH_NONF_IPV6_TCP_SYN_NO_ACK) | \
-+	BIT_ULL(IECM_HASH_NONF_UNICAST_IPV6_UDP) | \
-+	BIT_ULL(IECM_HASH_NONF_MULTICAST_IPV6_UDP))
-+
-+/* For iecm_splitq_base_tx_compl_desc */
-+#define IECM_TXD_COMPLQ_GEN_S	15
-+#define IECM_TXD_COMPLQ_GEN_M		BIT_ULL(IECM_TXD_COMPLQ_GEN_S)
-+#define IECM_TXD_COMPLQ_COMPL_TYPE_S	11
-+#define IECM_TXD_COMPLQ_COMPL_TYPE_M	\
-+	MAKEMASK(0x7UL, IECM_TXD_COMPLQ_COMPL_TYPE_S)
-+#define IECM_TXD_COMPLQ_QID_S	0
-+#define IECM_TXD_COMPLQ_QID_M		MAKEMASK(0x3FFUL, IECM_TXD_COMPLQ_QID_S)
-+
-+/* For base mode TX descriptors */
-+#define IECM_TXD_CTX_QW1_MSS_S		50
-+#define IECM_TXD_CTX_QW1_MSS_M		\
-+	MAKEMASK(0x3FFFULL, IECM_TXD_CTX_QW1_MSS_S)
-+#define IECM_TXD_CTX_QW1_TSO_LEN_S	30
-+#define IECM_TXD_CTX_QW1_TSO_LEN_M	\
-+	MAKEMASK(0x3FFFFULL, IECM_TXD_CTX_QW1_TSO_LEN_S)
-+#define IECM_TXD_CTX_QW1_CMD_S		4
-+#define IECM_TXD_CTX_QW1_CMD_M		\
-+	MAKEMASK(0xFFFUL, IECM_TXD_CTX_QW1_CMD_S)
-+#define IECM_TXD_CTX_QW1_DTYPE_S	0
-+#define IECM_TXD_CTX_QW1_DTYPE_M	\
-+	MAKEMASK(0xFUL, IECM_TXD_CTX_QW1_DTYPE_S)
-+#define IECM_TXD_QW1_L2TAG1_S		48
-+#define IECM_TXD_QW1_L2TAG1_M		\
-+	MAKEMASK(0xFFFFULL, IECM_TXD_QW1_L2TAG1_S)
-+#define IECM_TXD_QW1_TX_BUF_SZ_S	34
-+#define IECM_TXD_QW1_TX_BUF_SZ_M	\
-+	MAKEMASK(0x3FFFULL, IECM_TXD_QW1_TX_BUF_SZ_S)
-+#define IECM_TXD_QW1_OFFSET_S		16
-+#define IECM_TXD_QW1_OFFSET_M		\
-+	MAKEMASK(0x3FFFFULL, IECM_TXD_QW1_OFFSET_S)
-+#define IECM_TXD_QW1_CMD_S		4
-+#define IECM_TXD_QW1_CMD_M		MAKEMASK(0xFFFUL, IECM_TXD_QW1_CMD_S)
-+#define IECM_TXD_QW1_DTYPE_S		0
-+#define IECM_TXD_QW1_DTYPE_M		MAKEMASK(0xFUL, IECM_TXD_QW1_DTYPE_S)
-+
-+/* TX Completion Descriptor Completion Types */
-+#define IECM_TXD_COMPLT_ITR_FLUSH	0
-+#define IECM_TXD_COMPLT_RULE_MISS	1
-+#define IECM_TXD_COMPLT_RS		2
-+#define IECM_TXD_COMPLT_REINJECTED	3
-+#define IECM_TXD_COMPLT_RE		4
-+#define IECM_TXD_COMPLT_SW_MARKER	5
-+
-+enum iecm_tx_desc_dtype_value {
-+	IECM_TX_DESC_DTYPE_DATA				= 0,
-+	IECM_TX_DESC_DTYPE_CTX				= 1,
-+	IECM_TX_DESC_DTYPE_REINJECT_CTX			= 2,
-+	IECM_TX_DESC_DTYPE_FLEX_DATA			= 3,
-+	IECM_TX_DESC_DTYPE_FLEX_CTX			= 4,
-+	IECM_TX_DESC_DTYPE_FLEX_TSO_CTX			= 5,
-+	IECM_TX_DESC_DTYPE_FLEX_TSYN_L2TAG1		= 6,
-+	IECM_TX_DESC_DTYPE_FLEX_L2TAG1_L2TAG2		= 7,
-+	IECM_TX_DESC_DTYPE_FLEX_TSO_L2TAG2_PARSTAG_CTX	= 8,
-+	IECM_TX_DESC_DTYPE_FLEX_HOSTSPLIT_SA_TSO_CTX	= 9,
-+	IECM_TX_DESC_DTYPE_FLEX_HOSTSPLIT_SA_CTX	= 10,
-+	IECM_TX_DESC_DTYPE_FLEX_L2TAG2_CTX		= 11,
-+	IECM_TX_DESC_DTYPE_FLEX_FLOW_SCHE		= 12,
-+	IECM_TX_DESC_DTYPE_FLEX_HOSTSPLIT_TSO_CTX	= 13,
-+	IECM_TX_DESC_DTYPE_FLEX_HOSTSPLIT_CTX		= 14,
-+	/* DESC_DONE - HW has completed write-back of descriptor */
-+	IECM_TX_DESC_DTYPE_DESC_DONE			= 15,
-+};
-+
-+enum iecm_tx_ctx_desc_cmd_bits {
-+	IECM_TX_CTX_DESC_TSO		= 0x01,
-+	IECM_TX_CTX_DESC_TSYN		= 0x02,
-+	IECM_TX_CTX_DESC_IL2TAG2	= 0x04,
-+	IECM_TX_CTX_DESC_RSVD		= 0x08,
-+	IECM_TX_CTX_DESC_SWTCH_NOTAG	= 0x00,
-+	IECM_TX_CTX_DESC_SWTCH_UPLINK	= 0x10,
-+	IECM_TX_CTX_DESC_SWTCH_LOCAL	= 0x20,
-+	IECM_TX_CTX_DESC_SWTCH_VSI	= 0x30,
-+	IECM_TX_CTX_DESC_FILT_AU_EN	= 0x40,
-+	IECM_TX_CTX_DESC_FILT_AU_EVICT	= 0x80,
-+	IECM_TX_CTX_DESC_RSVD1		= 0xF00
-+};
-+
-+enum iecm_tx_desc_len_fields {
-+	/* Note: These are predefined bit offsets */
-+	IECM_TX_DESC_LEN_MACLEN_S	= 0, /* 7 BITS */
-+	IECM_TX_DESC_LEN_IPLEN_S	= 7, /* 7 BITS */
-+	IECM_TX_DESC_LEN_L4_LEN_S	= 14 /* 4 BITS */
-+};
-+
-+enum iecm_tx_base_desc_cmd_bits {
-+	IECM_TX_DESC_CMD_EOP			= 0x0001,
-+	IECM_TX_DESC_CMD_RS			= 0x0002,
-+	 /* only on VFs else RSVD */
-+	IECM_TX_DESC_CMD_ICRC			= 0x0004,
-+	IECM_TX_DESC_CMD_IL2TAG1		= 0x0008,
-+	IECM_TX_DESC_CMD_RSVD1			= 0x0010,
-+	IECM_TX_DESC_CMD_IIPT_NONIP		= 0x0000, /* 2 BITS */
-+	IECM_TX_DESC_CMD_IIPT_IPV6		= 0x0020, /* 2 BITS */
-+	IECM_TX_DESC_CMD_IIPT_IPV4		= 0x0040, /* 2 BITS */
-+	IECM_TX_DESC_CMD_IIPT_IPV4_CSUM		= 0x0060, /* 2 BITS */
-+	IECM_TX_DESC_CMD_RSVD2			= 0x0080,
-+	IECM_TX_DESC_CMD_L4T_EOFT_UNK		= 0x0000, /* 2 BITS */
-+	IECM_TX_DESC_CMD_L4T_EOFT_TCP		= 0x0100, /* 2 BITS */
-+	IECM_TX_DESC_CMD_L4T_EOFT_SCTP		= 0x0200, /* 2 BITS */
-+	IECM_TX_DESC_CMD_L4T_EOFT_UDP		= 0x0300, /* 2 BITS */
-+	IECM_TX_DESC_CMD_RSVD3			= 0x0400,
-+	IECM_TX_DESC_CMD_RSVD4			= 0x0800,
-+};
-+
-+/* Transmit descriptors  */
-+/* splitq Tx buf, singleq Tx buf and singleq compl desc */
-+struct iecm_base_tx_desc {
-+	__le64 buf_addr; /* Address of descriptor's data buf */
-+	__le64 qw1; /* type_cmd_offset_bsz_l2tag1 */
-+};/* read used with buffer queues*/
-+
-+struct iecm_splitq_tx_compl_desc {
-+	/* qid=[10:0] comptype=[13:11] rsvd=[14] gen=[15] */
-+	__le16 qid_comptype_gen;
-+	union {
-+		__le16 q_head; /* Queue head */
-+		__le16 compl_tag; /* Completion tag */
-+	} q_head_compl_tag;
-+	u8 ts[3];
-+	u8 rsvd; /* Reserved */
-+};/* writeback used with completion queues*/
-+
-+/* Context descriptors */
-+struct iecm_base_tx_ctx_desc {
-+	struct {
-+		__le32 rsvd0;
-+		__le16 l2tag2;
-+		__le16 rsvd1;
-+	} qw0;
-+	__le64 qw1; /* type_cmd_tlen_mss/rt_hint */
-+};
-+
-+/* Common cmd field defines for all desc except Flex Flow Scheduler (0x0C) */
-+enum iecm_tx_flex_desc_cmd_bits {
-+	IECM_TX_FLEX_DESC_CMD_EOP			= 0x01,
-+	IECM_TX_FLEX_DESC_CMD_RS			= 0x02,
-+	IECM_TX_FLEX_DESC_CMD_RE			= 0x04,
-+	IECM_TX_FLEX_DESC_CMD_IL2TAG1			= 0x08,
-+	IECM_TX_FLEX_DESC_CMD_DUMMY			= 0x10,
-+	IECM_TX_FLEX_DESC_CMD_CS_EN			= 0x20,
-+	IECM_TX_FLEX_DESC_CMD_FILT_AU_EN		= 0x40,
-+	IECM_TX_FLEX_DESC_CMD_FILT_AU_EVICT		= 0x80,
-+};
-+
-+struct iecm_flex_tx_desc {
-+	__le64 buf_addr;	/* Packet buffer address */
-+	struct {
-+		__le16 cmd_dtype;
-+#define IECM_FLEX_TXD_QW1_DTYPE_S		0
-+#define IECM_FLEX_TXD_QW1_DTYPE_M		\
-+		(0x1FUL << IECM_FLEX_TXD_QW1_DTYPE_S)
-+#define IECM_FLEX_TXD_QW1_CMD_S		5
-+#define IECM_FLEX_TXD_QW1_CMD_M		MAKEMASK(0x7FFUL, IECM_TXD_QW1_CMD_S)
-+		union {
-+			/* DTYPE = IECM_TX_DESC_DTYPE_FLEX_DATA_(0x03) */
-+			u8 raw[4];
-+
-+			/* DTYPE = IECM_TX_DESC_DTYPE_FLEX_TSYN_L2TAG1 (0x06) */
-+			struct {
-+				__le16 l2tag1;
-+				u8 flex;
-+				u8 tsync;
-+			} tsync;
-+
-+			/* DTYPE=IECM_TX_DESC_DTYPE_FLEX_L2TAG1_L2TAG2 (0x07) */
-+			struct {
-+				__le16 l2tag1;
-+				__le16 l2tag2;
-+			} l2tags;
-+		} flex;
-+		__le16 buf_size;
-+	} qw1;
-+};
-+
-+struct iecm_flex_tx_sched_desc {
-+	__le64 buf_addr;	/* Packet buffer address */
-+
-+	/* DTYPE = IECM_TX_DESC_DTYPE_FLEX_FLOW_SCHE_16B (0x0C) */
-+	struct {
-+		u8 cmd_dtype;
-+#define IECM_TXD_FLEX_FLOW_DTYPE_M	0x1F
-+#define IECM_TXD_FLEX_FLOW_CMD_EOP	0x20
-+#define IECM_TXD_FLEX_FLOW_CMD_CS_EN	0x40
-+#define IECM_TXD_FLEX_FLOW_CMD_RE	0x80
-+
-+		/* [23:23] Horizon Overflow bit, [22:0] timestamp */
-+		u8 ts[3];
-+#define IECM_TXD_FLOW_SCH_HORIZON_OVERFLOW_M	0x80
-+
-+		__le16 compl_tag;
-+		__le16 rxr_bufsize;
-+#define IECM_TXD_FLEX_FLOW_RXR		0x4000
-+#define IECM_TXD_FLEX_FLOW_BUFSIZE_M	0x3FFF
-+	} qw1;
-+};
-+
-+/* Common cmd fields for all flex context descriptors
-+ * Note: these defines already account for the 5 bit dtype in the cmd_dtype
-+ * field
++/**
++ * iecm_ctlq_setup_regs - initialize control queue registers
++ * @cq: pointer to the specific control queue
++ * @q_create_info: structs containing info for each queue to be initialized
 + */
-+enum iecm_tx_flex_ctx_desc_cmd_bits {
-+	IECM_TX_FLEX_CTX_DESC_CMD_TSO			= 0x0020,
-+	IECM_TX_FLEX_CTX_DESC_CMD_TSYN_EN		= 0x0040,
-+	IECM_TX_FLEX_CTX_DESC_CMD_L2TAG2		= 0x0080,
-+	IECM_TX_FLEX_CTX_DESC_CMD_SWTCH_UPLNK		= 0x0200, /* 2 bits */
-+	IECM_TX_FLEX_CTX_DESC_CMD_SWTCH_LOCAL		= 0x0400, /* 2 bits */
-+	IECM_TX_FLEX_CTX_DESC_CMD_SWTCH_TARGETVSI	= 0x0600, /* 2 bits */
-+};
++static void
++iecm_ctlq_setup_regs(struct iecm_ctlq_info *cq,
++		     struct iecm_ctlq_create_info *q_create_info)
++{
++	/* stub */
++}
 +
-+/* Standard flex descriptor TSO context quad word */
-+struct iecm_flex_tx_tso_ctx_qw {
-+	__le32 flex_tlen;
-+#define IECM_TXD_FLEX_CTX_TLEN_M	0x1FFFF
-+#define IECM_TXD_FLEX_TSO_CTX_FLEX_S	24
-+	__le16 mss_rt;
-+#define IECM_TXD_FLEX_CTX_MSS_RT_M	0x3FFF
-+	u8 hdr_len;
-+	u8 flex;
-+};
++/**
++ * iecm_ctlq_init_regs - Initialize control queue registers
++ * @hw: pointer to hw struct
++ * @cq: pointer to the specific Control queue
++ * @is_rxq: true if receive control queue, false otherwise
++ *
++ * Initialize registers. The caller is expected to have already initialized the
++ * descriptor ring memory and buffer memory
++ */
++static enum iecm_status iecm_ctlq_init_regs(struct iecm_hw *hw,
++					    struct iecm_ctlq_info *cq,
++					    bool is_rxq)
++{
++	/* stub */
++}
 +
-+union iecm_flex_tx_ctx_desc {
-+	/* DTYPE = IECM_TX_DESC_DTYPE_FLEX_CTX (0x04) */
-+	struct {
-+		u8 qw0_flex[8];
-+		struct {
-+			__le16 cmd_dtype;
-+			__le16 l2tag1;
-+			u8 qw1_flex[4];
-+		} qw1;
-+	} gen;
++/**
++ * iecm_ctlq_init_rxq_bufs - populate receive queue descriptors with buf
++ * @cq: pointer to the specific Control queue
++ *
++ * Record the address of the receive queue DMA buffers in the descriptors.
++ * The buffers must have been previously allocated.
++ */
++static void iecm_ctlq_init_rxq_bufs(struct iecm_ctlq_info *cq)
++{
++	/* stub */
++}
 +
-+	/* DTYPE = IECM_TX_DESC_DTYPE_FLEX_TSO_CTX (0x05) */
-+	struct {
-+		struct iecm_flex_tx_tso_ctx_qw qw0;
-+		struct {
-+			__le16 cmd_dtype;
-+			u8 flex[6];
-+		} qw1;
-+	} tso;
++/**
++ * iecm_ctlq_shutdown - shutdown the CQ
++ * @hw: pointer to hw struct
++ * @cq: pointer to the specific Control queue
++ *
++ * The main shutdown routine for any controq queue
++ */
++static void iecm_ctlq_shutdown(struct iecm_hw *hw, struct iecm_ctlq_info *cq)
++{
++	/* stub */
++}
 +
-+	/* DTYPE = IECM_TX_DESC_DTYPE_FLEX_TSO_L2TAG2_PARSTAG_CTX (0x08) */
-+	struct {
-+		struct iecm_flex_tx_tso_ctx_qw qw0;
-+		struct {
-+			__le16 cmd_dtype;
-+			__le16 l2tag2;
-+			u8 flex0;
-+			u8 ptag;
-+			u8 flex1[2];
-+		} qw1;
-+	} tso_l2tag2_ptag;
++/**
++ * iecm_ctlq_add - add one control queue
++ * @hw: pointer to hardware struct
++ * @q_info: info for queue to be created
++ * @cq: (output) double pointer to control queue to be created
++ *
++ * Allocate and initialize a control queue and add it to the control queue list.
++ * The cq parameter will be allocated/initialized and passed back to the caller
++ * if no errors occur.
++ *
++ * Note: iecm_ctlq_init must be called prior to any calls to iecm_ctlq_add
++ */
++enum iecm_status iecm_ctlq_add(struct iecm_hw *hw,
++			       struct iecm_ctlq_create_info *qinfo,
++			       struct iecm_ctlq_info **cq)
++{
++	/* stub */
++}
 +
-+	/* DTYPE = IECM_TX_DESC_DTYPE_FLEX_L2TAG2_CTX (0x0B) */
-+	struct {
-+		u8 qw0_flex[8];
-+		struct {
-+			__le16 cmd_dtype;
-+			__le16 l2tag2;
-+			u8 flex[4];
-+		} qw1;
-+	} l2tag2;
++/**
++ * iecm_ctlq_remove - deallocate and remove specified control queue
++ * @hw: pointer to hardware struct
++ * @cq: pointer to control queue to be removed
++ */
++void iecm_ctlq_remove(struct iecm_hw *hw,
++		      struct iecm_ctlq_info *cq)
++{
++	/* stub */
++}
 +
-+	/* DTYPE = IECM_TX_DESC_DTYPE_REINJECT_CTX (0x02) */
-+	struct {
-+		struct {
-+			__le32 sa_domain;
-+#define IECM_TXD_FLEX_CTX_SA_DOM_M	0xFFFF
-+#define IECM_TXD_FLEX_CTX_SA_DOM_VAL	0x10000
-+			__le32 sa_idx;
-+#define IECM_TXD_FLEX_CTX_SAIDX_M	0x1FFFFF
-+		} qw0;
-+		struct {
-+			__le16 cmd_dtype;
-+			__le16 txr2comp;
-+#define IECM_TXD_FLEX_CTX_TXR2COMP	0x1
-+			__le16 miss_txq_comp_tag;
-+			__le16 miss_txq_id;
-+		} qw1;
-+	} reinjection_pkt;
-+};
++/**
++ * iecm_ctlq_init - main initialization routine for all control queues
++ * @hw: pointer to hardware struct
++ * @num_q: number of queues to initialize
++ * @q_info: array of structs containing info for each queue to be initialized
++ *
++ * This initializes any number and any type of control queues. This is an all
++ * or nothing routine; if one fails, all previously allocated queues will be
++ * destroyed. This must be called prior to using the individual add/remove
++ * APIs.
++ */
++enum iecm_status iecm_ctlq_init(struct iecm_hw *hw, u8 num_q,
++				struct iecm_ctlq_create_info *q_info)
++{
++	/* stub */
++}
 +
-+/* Host Split Context Descriptors */
-+struct iecm_flex_tx_hs_ctx_desc {
-+	union {
-+		struct {
-+			__le32 host_fnum_tlen;
-+#define IECM_TXD_FLEX_CTX_TLEN_S	0
-+#define IECM_TXD_FLEX_CTX_TLEN_M	0x1FFFF
-+#define IECM_TXD_FLEX_CTX_FNUM_S	18
-+#define IECM_TXD_FLEX_CTX_FNUM_M	0x7FF
-+#define IECM_TXD_FLEX_CTX_HOST_S	29
-+#define IECM_TXD_FLEX_CTX_HOST_M	0x7
-+			__le16 ftype_mss_rt;
-+#define IECM_TXD_FLEX_CTX_MSS_RT_0	0
-+#define IECM_TXD_FLEX_CTX_MSS_RT_M	0x3FFF
-+#define IECM_TXD_FLEX_CTX_FTYPE_S	14
-+#define IECM_TXD_FLEX_CTX_FTYPE_VF	MAKEMASK(0x0, IECM_TXD_FLEX_CTX_FTYPE_S)
-+#define IECM_TXD_FLEX_CTX_FTYPE_VDEV	MAKEMASK(0x1, IECM_TXD_FLEX_CTX_FTYPE_S)
-+#define IECM_TXD_FLEX_CTX_FTYPE_PF	MAKEMASK(0x2, IECM_TXD_FLEX_CTX_FTYPE_S)
-+			u8 hdr_len;
-+			u8 ptag;
-+		} tso;
-+		struct {
-+			u8 flex0[2];
-+			__le16 host_fnum_ftype;
-+			u8 flex1[3];
-+			u8 ptag;
-+		} no_tso;
-+	} qw0;
++/**
++ * iecm_ctlq_deinit - destroy all control queues
++ * @hw: pointer to hw struct
++ */
++enum iecm_status iecm_ctlq_deinit(struct iecm_hw *hw)
++{
++	/* stub */
++}
 +
-+	__le64 qw1_cmd_dtype;
-+#define IECM_TXD_FLEX_CTX_QW1_PASID_S		16
-+#define IECM_TXD_FLEX_CTX_QW1_PASID_M		0xFFFFF
-+#define IECM_TXD_FLEX_CTX_QW1_PASID_VALID_S	36
-+#define IECM_TXD_FLEX_CTX_QW1_PASID_VALID	\
-+	MAKEMASK(0x1,  IECM_TXD_FLEX_CTX_PASID_VALID_S)
-+#define IECM_TXD_FLEX_CTX_QW1_TPH_S		37
-+#define IECM_TXD_FLEX_CTX_QW1_TPH		\
-+	MAKEMASK(0x1, IECM_TXD_FLEX_CTX_TPH_S)
-+#define IECM_TXD_FLEX_CTX_QW1_PFNUM_S		38
-+#define IECM_TXD_FLEX_CTX_QW1_PFNUM_M		0xF
-+/* The following are only valid for DTYPE = 0x09 and DTYPE = 0x0A */
-+#define IECM_TXD_FLEX_CTX_QW1_SAIDX_S		42
-+#define IECM_TXD_FLEX_CTX_QW1_SAIDX_M		0x1FFFFF
-+#define IECM_TXD_FLEX_CTX_QW1_SAIDX_VAL_S	63
-+#define IECM_TXD_FLEX_CTX_QW1_SAIDX_VALID	\
-+	MAKEMASK(0x1,  IECM_TXD_FLEX_CTX_QW1_SAIDX_VAL_S)
-+/* The following are only valid for DTYPE = 0x0D and DTYPE = 0x0E */
-+#define IECM_TXD_FLEX_CTX_QW1_FLEX0_S		48
-+#define IECM_TXD_FLEX_CTX_QW1_FLEX0_M		0xFF
-+#define IECM_TXD_FLEX_CTX_QW1_FLEX1_S		56
-+#define IECM_TXD_FLEX_CTX_QW1_FLEX1_M		0xFF
-+};
++/**
++ * iecm_ctlq_send - send command to Control Queue (CTQ)
++ * @hw: pointer to hw struct
++ * @cq: handle to control queue struct to send on
++ * @num_q_msg: number of messages to send on control queue
++ * @q_msg: pointer to array of queue messages to be sent
++ *
++ * The caller is expected to allocate DMAable buffers and pass them to the
++ * send routine via the q_msg struct / control queue specific data struct.
++ * The control queue will hold a reference to each send message until
++ * the completion for that message has been cleaned.
++ */
++enum iecm_status iecm_ctlq_send(struct iecm_hw *hw,
++				struct iecm_ctlq_info *cq,
++				u16 num_q_msg,
++				struct iecm_ctlq_msg q_msg[])
++{
++	/* stub */
++}
 +
-+/* Rx */
-+/* For iecm_splitq_base_rx_flex desc members */
-+#define IECM_RXD_FLEX_PTYPE_S		0
-+#define IECM_RXD_FLEX_PTYPE_M		MAKEMASK(0x3FFUL, IECM_RXD_FLEX_PTYPE_S)
-+#define IECM_RXD_FLEX_UMBCAST_S		10
-+#define IECM_RXD_FLEX_UMBCAST_M		MAKEMASK(0x3UL, IECM_RXD_FLEX_UMBCAST_S)
-+#define IECM_RXD_FLEX_FF0_S		12
-+#define IECM_RXD_FLEX_FF0_M		MAKEMASK(0xFUL, IECM_RXD_FLEX_FF0_S)
-+#define IECM_RXD_FLEX_LEN_PBUF_S	0
-+#define IECM_RXD_FLEX_LEN_PBUF_M	\
-+	MAKEMASK(0x3FFFUL, IECM_RXD_FLEX_LEN_PBUF_S)
-+#define IECM_RXD_FLEX_GEN_S		14
-+#define IECM_RXD_FLEX_GEN_M		BIT_ULL(IECM_RXD_FLEX_GEN_S)
-+#define IECM_RXD_FLEX_BUFQ_ID_S		15
-+#define IECM_RXD_FLEX_BUFQ_ID_M		BIT_ULL(IECM_RXD_FLEX_BUFQ_ID_S)
-+#define IECM_RXD_FLEX_LEN_HDR_S		0
-+#define IECM_RXD_FLEX_LEN_HDR_M		\
-+	MAKEMASK(0x3FFUL, IECM_RXD_FLEX_LEN_HDR_S)
-+#define IECM_RXD_FLEX_RSC_S		10
-+#define IECM_RXD_FLEX_RSC_M		BIT_ULL(IECM_RXD_FLEX_RSC_S)
-+#define IECM_RXD_FLEX_SPH_S		11
-+#define IECM_RXD_FLEX_SPH_M		BIT_ULL(IECM_RXD_FLEX_SPH_S)
-+#define IECM_RXD_FLEX_MISS_S		12
-+#define IECM_RXD_FLEX_MISS_M		BIT_ULL(IECM_RXD_FLEX_MISS_S)
-+#define IECM_RXD_FLEX_FF1_S		13
-+#define IECM_RXD_FLEX_FF1_M		MAKEMASK(0x7UL, IECM_RXD_FLEX_FF1_M)
++/**
++ * iecm_ctlq_clean_sq - reclaim send descriptors on HW write back for the
++ * requested queue
++ * @hw: pointer to hw struct
++ * @cq: pointer to the specific Control queue
++ * @clean_count: (input|output) number of descriptors to clean as input, and
++ * number of descriptors actually cleaned as output
++ * @msg_status: (output) pointer to msg pointer array to be populated; needs
++ * to be allocated by caller
++ *
++ * Returns an an array of message pointers associated with the cleaned
++ * descriptors. The pointers are to the original ctlq_msgs sent on the cleaned
++ * descriptors.  The status will be returned for each; any messages that failed
++ * to send will have a non-zero status. The caller is expected to free original
++ * ctlq_msgs and free or reuse the DMA buffers.
++ */
++enum iecm_status iecm_ctlq_clean_sq(struct iecm_hw *hw,
++				    struct iecm_ctlq_info *cq,
++				    u16 *clean_count,
++				    struct iecm_ctlq_msg *msg_status[])
++{
++	/* stub */
++}
 +
-+/* For iecm_singleq_base_rx_legacy desc members */
-+#define IECM_RXD_QW1_LEN_SPH_S	63
-+#define IECM_RXD_QW1_LEN_SPH_M	BIT_ULL(IECM_RXD_QW1_LEN_SPH_S)
-+#define IECM_RXD_QW1_LEN_HBUF_S	52
-+#define IECM_RXD_QW1_LEN_HBUF_M	MAKEMASK(0x7FFULL, IECM_RXD_QW1_LEN_HBUF_S)
-+#define IECM_RXD_QW1_LEN_PBUF_S	38
-+#define IECM_RXD_QW1_LEN_PBUF_M	MAKEMASK(0x3FFFULL, IECM_RXD_QW1_LEN_PBUF_S)
-+#define IECM_RXD_QW1_PTYPE_S	30
-+#define IECM_RXD_QW1_PTYPE_M	MAKEMASK(0xFFULL, IECM_RXD_QW1_PTYPE_S)
-+#define IECM_RXD_QW1_ERROR_S	19
-+#define IECM_RXD_QW1_ERROR_M	MAKEMASK(0xFFUL, IECM_RXD_QW1_ERROR_S)
-+#define IECM_RXD_QW1_STATUS_S	0
-+#define IECM_RXD_QW1_STATUS_M	MAKEMASK(0x7FFFFUL, IECM_RXD_QW1_STATUS_S)
++/**
++ * iecm_ctlq_post_rx_buffs - post buffers to descriptor ring
++ * @hw: pointer to hw struct
++ * @cq: pointer to control queue handle
++ * @buff_count: (input|output) input is number of buffers caller is trying to
++ * return; output is number of buffers that were not posted
++ * @buffs: array of pointers to DMA mem structs to be given to hardware
++ *
++ * Caller uses this function to return DMA buffers to the descriptor ring after
++ * consuming them; buff_count will be the number of buffers.
++ *
++ * Note: this function needs to be called after a receive call even
++ * if there are no DMA buffers to be returned, i.e. buff_count = 0,
++ * buffs = NULL to support direct commands
++ */
++enum iecm_status iecm_ctlq_post_rx_buffs(struct iecm_hw *hw,
++					 struct iecm_ctlq_info *cq,
++					 u16 *buff_count,
++					 struct iecm_dma_mem **buffs)
++{
++	/* stub */
++}
 +
-+enum iecm_rx_flex_desc_status_error_0_qw1_bits {
-+	/* Note: These are predefined bit offsets */
-+	IECM_RX_FLEX_DESC_STATUS0_DD_S = 0,
-+	IECM_RX_FLEX_DESC_STATUS0_EOF_S,
-+	IECM_RX_FLEX_DESC_STATUS0_HBO_S,
-+	IECM_RX_FLEX_DESC_STATUS0_L3L4P_S,
-+	IECM_RX_FLEX_DESC_STATUS0_XSUM_IPE_S,
-+	IECM_RX_FLEX_DESC_STATUS0_XSUM_L4E_S,
-+	IECM_RX_FLEX_DESC_STATUS0_XSUM_EIPE_S,
-+	IECM_RX_FLEX_DESC_STATUS0_XSUM_EUDPE_S,
-+};
-+
-+enum iecm_rx_flex_desc_status_error_0_qw0_bits {
-+	IECM_RX_FLEX_DESC_STATUS0_LPBK_S = 0,
-+	IECM_RX_FLEX_DESC_STATUS0_IPV6EXADD_S,
-+	IECM_RX_FLEX_DESC_STATUS0_RXE_S,
-+	IECM_RX_FLEX_DESC_STATUS0_CRCP_S,
-+	IECM_RX_FLEX_DESC_STATUS0_RSS_VALID_S,
-+	IECM_RX_FLEX_DESC_STATUS0_L2TAG1P_S,
-+	IECM_RX_FLEX_DESC_STATUS0_XTRMD0_VALID_S,
-+	IECM_RX_FLEX_DESC_STATUS0_XTRMD1_VALID_S,
-+	IECM_RX_FLEX_DESC_STATUS0_LAST /* this entry must be last!!! */
-+};
-+
-+enum iecm_rx_flex_desc_status_error_1_bits {
-+	/* Note: These are predefined bit offsets */
-+	IECM_RX_FLEX_DESC_STATUS1_RSVD_S = 0, /* 2 bits */
-+	IECM_RX_FLEX_DESC_STATUS1_ATRAEFAIL_S = 2,
-+	IECM_RX_FLEX_DESC_STATUS1_L2TAG2P_S = 3,
-+	IECM_RX_FLEX_DESC_STATUS1_XTRMD2_VALID_S = 4,
-+	IECM_RX_FLEX_DESC_STATUS1_XTRMD3_VALID_S = 5,
-+	IECM_RX_FLEX_DESC_STATUS1_XTRMD4_VALID_S = 6,
-+	IECM_RX_FLEX_DESC_STATUS1_XTRMD5_VALID_S = 7,
-+	IECM_RX_FLEX_DESC_STATUS1_LAST /* this entry must be last!!! */
-+};
-+
-+enum iecm_rx_base_desc_status_bits {
-+	/* Note: These are predefined bit offsets */
-+	IECM_RX_BASE_DESC_STATUS_DD_S		= 0,
-+	IECM_RX_BASE_DESC_STATUS_EOF_S		= 1,
-+	IECM_RX_BASE_DESC_STATUS_L2TAG1P_S	= 2,
-+	IECM_RX_BASE_DESC_STATUS_L3L4P_S	= 3,
-+	IECM_RX_BASE_DESC_STATUS_CRCP_S		= 4,
-+	IECM_RX_BASE_DESC_STATUS_RSVD_S		= 5, /* 3 BITS */
-+	IECM_RX_BASE_DESC_STATUS_EXT_UDP_0_S	= 8,
-+	IECM_RX_BASE_DESC_STATUS_UMBCAST_S	= 9, /* 2 BITS */
-+	IECM_RX_BASE_DESC_STATUS_FLM_S		= 11,
-+	IECM_RX_BASE_DESC_STATUS_FLTSTAT_S	= 12, /* 2 BITS */
-+	IECM_RX_BASE_DESC_STATUS_LPBK_S		= 14,
-+	IECM_RX_BASE_DESC_STATUS_IPV6EXADD_S	= 15,
-+	IECM_RX_BASE_DESC_STATUS_RSVD1_S	= 16, /* 2 BITS */
-+	IECM_RX_BASE_DESC_STATUS_INT_UDP_0_S	= 18,
-+	IECM_RX_BASE_DESC_STATUS_LAST /* this entry must be last!!! */
-+};
-+
-+enum iecm_rx_desc_fltstat_values {
-+	IECM_RX_DESC_FLTSTAT_NO_DATA	= 0,
-+	IECM_RX_DESC_FLTSTAT_RSV_FD_ID	= 1, /* 16byte desc? FD_ID : RSV */
-+	IECM_RX_DESC_FLTSTAT_RSV	= 2,
-+	IECM_RX_DESC_FLTSTAT_RSS_HASH	= 3,
-+};
-+
-+enum iecm_rx_base_desc_error_bits {
-+	/* Note: These are predefined bit offsets */
-+	IECM_RX_BASE_DESC_ERROR_RXE_S		= 0,
-+	IECM_RX_BASE_DESC_ERROR_ATRAEFAIL_S	= 1,
-+	IECM_RX_BASE_DESC_ERROR_HBO_S		= 2,
-+	IECM_RX_BASE_DESC_ERROR_L3L4E_S		= 3, /* 3 BITS */
-+	IECM_RX_BASE_DESC_ERROR_IPE_S		= 3,
-+	IECM_RX_BASE_DESC_ERROR_L4E_S		= 4,
-+	IECM_RX_BASE_DESC_ERROR_EIPE_S		= 5,
-+	IECM_RX_BASE_DESC_ERROR_OVERSIZE_S	= 6,
-+	IECM_RX_BASE_DESC_ERROR_RSVD_S		= 7
-+};
-+
-+/* Receive Descriptors */
-+/* splitq buf*/
-+struct iecm_splitq_rx_buf_desc {
-+	struct {
-+		__le16  buf_id; /* Buffer Identifier */
-+		__le16  rsvd0;
-+		__le32  rsvd1;
-+	} qword0;
-+	__le64  pkt_addr; /* Packet buffer address */
-+	__le64  hdr_addr; /* Header buffer address */
-+	__le64  rsvd2;
-+}; /* read used with buffer queues*/
-+
-+/* singleq buf */
-+struct iecm_singleq_rx_buf_desc {
-+	__le64  pkt_addr; /* Packet buffer address */
-+	__le64  hdr_addr; /* Header buffer address */
-+	__le64  rsvd1;
-+	__le64  rsvd2;
-+}; /* read used with buffer queues*/
-+
-+union iecm_rx_buf_desc {
-+	struct iecm_singleq_rx_buf_desc		read;
-+	struct iecm_splitq_rx_buf_desc		split_rd;
-+};
-+
-+/* splitq compl */
-+struct iecm_flex_rx_desc {
-+	/* Qword 0 */
-+	u8 rxdid_ucast; /* profile_id=[3:0] */
-+			/* rsvd=[5:4] */
-+			/* ucast=[7:6] */
-+	u8 status_err0_qw0;
-+	__le16 ptype_err_fflags0;	/* ptype=[9:0] */
-+					/* ip_hdr_err=[10:10] */
-+					/* udp_len_err=[11:11] */
-+					/* ff0=[15:12] */
-+	__le16 pktlen_gen_bufq_id;	/* plen=[13:0] */
-+					/* gen=[14:14]  only in splitq */
-+					/* bufq_id=[15:15] only in splitq */
-+	__le16 hdrlen_flags;		/* header=[9:0] */
-+					/* rsc=[10:10] only in splitq */
-+					/* sph=[11:11] only in splitq */
-+					/* ext_udp_0=[12:12] */
-+					/* int_udp_0=[13:13] */
-+					/* trunc_mirr=[14:14] */
-+					/* miss_prepend=[15:15] */
-+	/* Qword 1 */
-+	u8 status_err0_qw1;
-+	u8 status_err1;
-+	u8 fflags1;
-+	u8 ts_low;
-+	union {
-+		__le16 fmd0;
-+		__le16 buf_id; /* only in splitq */
-+	} fmd0_bufid;
-+	union {
-+		__le16 fmd1;
-+		__le16 raw_cs;
-+		__le16 l2tag1;
-+		__le16 rscseglen;
-+	} fmd1_misc;
-+	/* Qword 2 */
-+	union {
-+		__le16 fmd2;
-+		__le16 hash1;
-+	} fmd2_hash1;
-+	union {
-+		u8 fflags2;
-+		u8 mirrorid;
-+		u8 hash2;
-+	} ff2_mirrid_hash2;
-+	u8 hash3;
-+	union {
-+		__le16 fmd3;
-+		__le16 l2tag2;
-+	} fmd3_l2tag2;
-+	__le16 fmd4;
-+	/* Qword 3 */
-+	union {
-+		__le16 fmd5;
-+		__le16 l2tag1;
-+	} fmd5_l2tag1;
-+	__le16 fmd6;
-+	union {
-+		struct {
-+			__le16 fmd7_0;
-+			__le16 fmd7_1;
-+		} fmd7;
-+		__le32 ts_high;
-+	} flex_ts;
-+}; /* writeback */
-+
-+/* singleq wb(compl) */
-+struct iecm_singleq_base_rx_desc {
-+	struct {
-+		struct {
-+			__le16 mirroring_status;
-+			__le16 l2tag1;
-+		} lo_dword;
-+		union {
-+			__le32 rss; /* RSS Hash */
-+			__le32 fd_id; /* Flow Director filter id */
-+		} hi_dword;
-+	} qword0;
-+	struct {
-+		/* status/error/PTYPE/length */
-+		__le64 status_error_ptype_len;
-+	} qword1;
-+	struct {
-+		__le16 ext_status; /* extended status */
-+		__le16 rsvd;
-+		__le16 l2tag2_1;
-+		__le16 l2tag2_2;
-+	} qword2;
-+	struct {
-+		__le32 reserved;
-+		__le32 fd_id;
-+	} qword3;
-+}; /* writeback */
-+
-+union iecm_rx_desc {
-+	struct iecm_singleq_rx_buf_desc	read;
-+	struct iecm_singleq_base_rx_desc	base_wb;
-+	struct iecm_flex_rx_desc		flex_wb;
-+};
-+#endif /* _IECM_LAN_TXRX_H_ */
-diff --git a/include/linux/net/intel/iecm_txrx.h b/include/linux/net/intel/iecm_txrx.h
++/**
++ * iecm_ctlq_recv - receive control queue message call back
++ * @hw: pointer to hw struct
++ * @cq: pointer to control queue handle to receive on
++ * @num_q_msg: (input|output) input number of messages that should be received;
++ * output number of messages actually received
++ * @q_msg: (output) array of received control queue messages on this q;
++ * needs to be pre-allocated by caller for as many messages as requested
++ *
++ * Called by interrupt handler or polling mechanism. Caller is expected
++ * to free buffers
++ */
++enum iecm_status iecm_ctlq_recv(struct iecm_hw *hw,
++				struct iecm_ctlq_info *cq,
++				u16 *num_q_msg, struct iecm_ctlq_msg *q_msg)
++{
++	/* stub */
++}
+diff --git a/drivers/net/ethernet/intel/iecm/iecm_controlq_setup.c b/drivers/net/ethernet/intel/iecm/iecm_controlq_setup.c
 new file mode 100644
-index 000000000000..bf6f02592bb7
+index 000000000000..2fd6e3d15a1a
 --- /dev/null
-+++ b/include/linux/net/intel/iecm_txrx.h
-@@ -0,0 +1,610 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
++++ b/drivers/net/ethernet/intel/iecm/iecm_controlq_setup.c
+@@ -0,0 +1,84 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (c) 2020, Intel Corporation. */
++
++#include <linux/net/intel/iecm_osdep.h>
++#include <linux/net/intel/iecm_type.h>
++
++/**
++ * iecm_ctlq_alloc_desc_ring - Allocate Control Queue (CQ) rings
++ * @hw: pointer to hw struct
++ * @cq: pointer to the specific Control queue
++ */
++static enum iecm_status
++iecm_ctlq_alloc_desc_ring(struct iecm_hw *hw,
++			  struct iecm_ctlq_info *cq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_ctlq_alloc_bufs - Allocate Control Queue (CQ) buffers
++ * @hw: pointer to hw struct
++ * @cq: pointer to the specific Control queue
++ *
++ * Allocate the buffer head for all control queues, and if it's a receive
++ * queue, allocate DMA buffers
++ */
++static enum iecm_status iecm_ctlq_alloc_bufs(struct iecm_hw *hw,
++					     struct iecm_ctlq_info *cq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_ctlq_free_desc_ring - Free Control Queue (CQ) rings
++ * @hw: pointer to hw struct
++ * @cq: pointer to the specific Control queue
++ *
++ * This assumes the posted send buffers have already been cleaned
++ * and de-allocated
++ */
++static void iecm_ctlq_free_desc_ring(struct iecm_hw *hw,
++				     struct iecm_ctlq_info *cq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_ctlq_free_bufs - Free CQ buffer info elements
++ * @hw: pointer to hw struct
++ * @cq: pointer to the specific Control queue
++ *
++ * Free the DMA buffers for RX queues, and DMA buffer header for both RX and TX
++ * queues.  The upper layers are expected to manage freeing of TX DMA buffers
++ */
++static void iecm_ctlq_free_bufs(struct iecm_hw *hw, struct iecm_ctlq_info *cq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_ctlq_dealloc_ring_res - Free memory allocated for control queue
++ * @hw: pointer to hw struct
++ * @cq: pointer to the specific Control queue
++ *
++ * Free the memory used by the ring, buffers and other related structures
++ */
++void iecm_ctlq_dealloc_ring_res(struct iecm_hw *hw, struct iecm_ctlq_info *cq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_ctlq_alloc_ring_res - allocate memory for descriptor ring and bufs
++ * @hw: pointer to hw struct
++ * @cq: pointer to control queue struct
++ *
++ * Do *NOT* hold the lock when calling this as the memory allocation routines
++ * called are not going to be atomic context safe
++ */
++enum iecm_status iecm_ctlq_alloc_ring_res(struct iecm_hw *hw,
++					  struct iecm_ctlq_info *cq)
++{
++	/* stub */
++}
+diff --git a/drivers/net/ethernet/intel/iecm/iecm_ethtool.c b/drivers/net/ethernet/intel/iecm/iecm_ethtool.c
+new file mode 100644
+index 000000000000..a6532592f2f4
+--- /dev/null
++++ b/drivers/net/ethernet/intel/iecm/iecm_ethtool.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/* Copyright (C) 2020 Intel Corporation */
 +
-+#ifndef _IECM_TXRX_H_
-+#define _IECM_TXRX_H_
++#include <linux/net/intel/iecm.h>
 +
-+#define IECM_MAX_Q				16
-+/* Mailbox Queue */
-+#define IECM_MAX_NONQ				1
-+#define IECM_MAX_TXQ_DESC			512
-+#define IECM_MAX_RXQ_DESC			512
-+#define IECM_MIN_TXQ_DESC			128
-+#define IECM_MIN_RXQ_DESC			128
-+#define IECM_REQ_DESC_MULTIPLE			32
-+
-+#define IECM_DFLT_SINGLEQ_TX_Q_GROUPS		1
-+#define IECM_DFLT_SINGLEQ_RX_Q_GROUPS		1
-+#define IECM_DFLT_SINGLEQ_TXQ_PER_GROUP		4
-+#define IECM_DFLT_SINGLEQ_RXQ_PER_GROUP		4
-+
-+#define IECM_COMPLQ_PER_GROUP			1
-+#define IECM_BUFQS_PER_RXQ_SET			2
-+
-+#define IECM_DFLT_SPLITQ_TX_Q_GROUPS		4
-+#define IECM_DFLT_SPLITQ_RX_Q_GROUPS		4
-+#define IECM_DFLT_SPLITQ_TXQ_PER_GROUP		1
-+#define IECM_DFLT_SPLITQ_RXQ_PER_GROUP		1
-+
-+/* Default vector sharing */
-+#define IECM_MAX_NONQ_VEC	1
-+#define IECM_MAX_Q_VEC		4 /* For Tx Completion queue and Rx queue */
-+#define IECM_MAX_RDMA_VEC	2 /* To share with RDMA */
-+#define IECM_MIN_RDMA_VEC	1 /* Minimum vectors to be shared with RDMA */
-+#define IECM_MIN_VEC		3 /* One for mailbox, one for data queues, one
-+				   * for RDMA
-+				   */
-+
-+#define IECM_DFLT_TX_Q_DESC_COUNT		512
-+#define IECM_DFLT_TX_COMPLQ_DESC_COUNT		512
-+#define IECM_DFLT_RX_Q_DESC_COUNT		512
-+#define IECM_DFLT_RX_BUFQ_DESC_COUNT		512
-+
-+#define IECM_RX_BUF_WRITE			16 /* Must be power of 2 */
-+#define IECM_RX_HDR_SIZE			256
-+#define IECM_RX_BUF_2048			2048
-+#define IECM_RX_BUF_STRIDE			64
-+#define IECM_LOW_WATERMARK			64
-+#define IECM_HDR_BUF_SIZE			256
-+#define IECM_PACKET_HDR_PAD	\
-+	(ETH_HLEN + ETH_FCS_LEN + (VLAN_HLEN * 2))
-+#define IECM_MAX_RXBUFFER			9728
-+#define IECM_MAX_MTU		\
-+	(IECM_MAX_RXBUFFER - IECM_PACKET_HDR_PAD)
-+
-+#define IECM_SINGLEQ_RX_BUF_DESC(R, i)	\
-+	(&(((struct iecm_singleq_rx_buf_desc *)((R)->desc_ring))[i]))
-+#define IECM_SPLITQ_RX_BUF_DESC(R, i)	\
-+	(&(((struct iecm_splitq_rx_buf_desc *)((R)->desc_ring))[i]))
-+
-+#define IECM_BASE_TX_DESC(R, i)	\
-+	(&(((struct iecm_base_tx_desc *)((R)->desc_ring))[i]))
-+#define IECM_SPLITQ_TX_COMPLQ_DESC(R, i)	\
-+	(&(((struct iecm_splitq_tx_compl_desc *)((R)->desc_ring))[i]))
-+
-+#define IECM_FLEX_TX_DESC(R, i)	\
-+	(&(((union iecm_tx_flex_desc *)((R)->desc_ring))[i]))
-+#define IECM_FLEX_TX_CTX_DESC(R, i)	\
-+	(&(((union iecm_flex_tx_ctx_desc *)((R)->desc_ring))[i]))
-+
-+#define IECM_DESC_UNUSED(R)	\
-+	((((R)->next_to_clean > (R)->next_to_use) ? 0 : (R)->desc_count) + \
-+	(R)->next_to_clean - (R)->next_to_use - 1)
-+
-+union iecm_tx_flex_desc {
-+	struct iecm_flex_tx_desc q; /* queue based scheduling */
-+	struct iecm_flex_tx_sched_desc flow; /* flow based scheduling */
-+};
-+
-+struct iecm_tx_buf {
-+	struct hlist_node hlist;
-+	void *next_to_watch;
-+	struct sk_buff *skb;
-+	unsigned int bytecount;
-+	unsigned short gso_segs;
-+#define IECM_TX_FLAGS_TSO	BIT(0)
-+	u32 tx_flags;
-+	DEFINE_DMA_UNMAP_ADDR(dma);
-+	DEFINE_DMA_UNMAP_LEN(len);
-+	u16 compl_tag;		/* Unique identifier for buffer; used to
-+				 * compare with completion tag returned
-+				 * in buffer completion event
-+				 */
-+};
-+
-+struct iecm_buf_lifo {
-+	u16 top;
-+	u16 size;
-+	struct iecm_tx_buf **bufs;
-+};
-+
-+struct iecm_tx_offload_params {
-+	u16 td_cmd;	/* command field to be inserted into descriptor */
-+	u32 tso_len;	/* total length of payload to segment */
-+	u16 mss;
-+	u8 tso_hdr_len;	/* length of headers to be duplicated */
-+
-+	/* Flow scheduling offload timestamp, formatting as hw expects it */
-+#define IECM_TW_TIME_STAMP_GRAN_512_DIV_S	9
-+#define IECM_TW_TIME_STAMP_GRAN_1024_DIV_S	10
-+#define IECM_TW_TIME_STAMP_GRAN_2048_DIV_S	11
-+#define IECM_TW_TIME_STAMP_GRAN_4096_DIV_S	12
-+	u64 desc_ts;
-+
-+	/* For legacy offloads */
-+	u32 hdr_offsets;
-+};
-+
-+struct iecm_tx_splitq_params {
-+	/* Descriptor build function pointer */
-+	void (*splitq_build_ctb)(union iecm_tx_flex_desc *desc,
-+				 struct iecm_tx_splitq_params *params,
-+				 u16 td_cmd, u16 size);
-+
-+	/* General descriptor info */
-+	enum iecm_tx_desc_dtype_value dtype;
-+	u16 eop_cmd;
-+	u16 compl_tag; /* only relevant for flow scheduling */
-+
-+	struct iecm_tx_offload_params offload;
-+};
-+
-+#define IECM_TX_COMPLQ_CLEAN_BUDGET	256
-+#define IECM_TX_MIN_LEN			17
-+#define IECM_TX_DESCS_FOR_SKB_DATA_PTR	1
-+#define IECM_TX_MAX_BUF			8
-+#define IECM_TX_DESCS_PER_CACHE_LINE	4
-+#define IECM_TX_DESCS_FOR_CTX		1
-+/* TX descriptors needed, worst case */
-+#define IECM_TX_DESC_NEEDED (MAX_SKB_FRAGS + IECM_TX_DESCS_FOR_CTX + \
-+			     IECM_TX_DESCS_PER_CACHE_LINE + \
-+			     IECM_TX_DESCS_FOR_SKB_DATA_PTR)
-+
-+/* The size limit for a transmit buffer in a descriptor is (16K - 1).
-+ * In order to align with the read requests we will align the value to
-+ * the nearest 4K which represents our maximum read request size.
-+ */
-+#define IECM_TX_MAX_READ_REQ_SIZE	4096
-+#define IECM_TX_MAX_DESC_DATA		(16 * 1024 - 1)
-+#define IECM_TX_MAX_DESC_DATA_ALIGNED \
-+	(~(IECM_TX_MAX_READ_REQ_SIZE - 1) & IECM_TX_MAX_DESC_DATA)
-+
-+#define IECM_RX_DMA_ATTR \
-+	(DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING)
-+#define IECM_RX_DESC(R, i)	\
-+	(&(((union iecm_rx_desc *)((R)->desc_ring))[i]))
-+
-+struct iecm_rx_buf {
-+	struct sk_buff *skb;
-+	dma_addr_t dma;
-+	struct page *page;
-+	unsigned int page_offset;
-+	u16 pagecnt_bias;
-+	u16 buf_id;
-+};
-+
-+/* Packet type non-ip values */
-+enum iecm_rx_ptype_l2 {
-+	IECM_RX_PTYPE_L2_RESERVED	= 0,
-+	IECM_RX_PTYPE_L2_MAC_PAY2	= 1,
-+	IECM_RX_PTYPE_L2_TIMESYNC_PAY2	= 2,
-+	IECM_RX_PTYPE_L2_FIP_PAY2	= 3,
-+	IECM_RX_PTYPE_L2_OUI_PAY2	= 4,
-+	IECM_RX_PTYPE_L2_MACCNTRL_PAY2	= 5,
-+	IECM_RX_PTYPE_L2_LLDP_PAY2	= 6,
-+	IECM_RX_PTYPE_L2_ECP_PAY2	= 7,
-+	IECM_RX_PTYPE_L2_EVB_PAY2	= 8,
-+	IECM_RX_PTYPE_L2_QCN_PAY2	= 9,
-+	IECM_RX_PTYPE_L2_EAPOL_PAY2	= 10,
-+	IECM_RX_PTYPE_L2_ARP		= 11,
-+};
-+
-+enum iecm_rx_ptype_outer_ip {
-+	IECM_RX_PTYPE_OUTER_L2	= 0,
-+	IECM_RX_PTYPE_OUTER_IP	= 1,
-+};
-+
-+enum iecm_rx_ptype_outer_ip_ver {
-+	IECM_RX_PTYPE_OUTER_NONE	= 0,
-+	IECM_RX_PTYPE_OUTER_IPV4	= 1,
-+	IECM_RX_PTYPE_OUTER_IPV6	= 2,
-+};
-+
-+enum iecm_rx_ptype_outer_fragmented {
-+	IECM_RX_PTYPE_NOT_FRAG	= 0,
-+	IECM_RX_PTYPE_FRAG	= 1,
-+};
-+
-+enum iecm_rx_ptype_tunnel_type {
-+	IECM_RX_PTYPE_TUNNEL_NONE		= 0,
-+	IECM_RX_PTYPE_TUNNEL_IP_IP		= 1,
-+	IECM_RX_PTYPE_TUNNEL_IP_GRENAT		= 2,
-+	IECM_RX_PTYPE_TUNNEL_IP_GRENAT_MAC	= 3,
-+	IECM_RX_PTYPE_TUNNEL_IP_GRENAT_MAC_VLAN	= 4,
-+};
-+
-+enum iecm_rx_ptype_tunnel_end_prot {
-+	IECM_RX_PTYPE_TUNNEL_END_NONE	= 0,
-+	IECM_RX_PTYPE_TUNNEL_END_IPV4	= 1,
-+	IECM_RX_PTYPE_TUNNEL_END_IPV6	= 2,
-+};
-+
-+enum iecm_rx_ptype_inner_prot {
-+	IECM_RX_PTYPE_INNER_PROT_NONE		= 0,
-+	IECM_RX_PTYPE_INNER_PROT_UDP		= 1,
-+	IECM_RX_PTYPE_INNER_PROT_TCP		= 2,
-+	IECM_RX_PTYPE_INNER_PROT_SCTP		= 3,
-+	IECM_RX_PTYPE_INNER_PROT_ICMP		= 4,
-+	IECM_RX_PTYPE_INNER_PROT_TIMESYNC	= 5,
-+};
-+
-+enum iecm_rx_ptype_payload_layer {
-+	IECM_RX_PTYPE_PAYLOAD_LAYER_NONE	= 0,
-+	IECM_RX_PTYPE_PAYLOAD_LAYER_PAY2	= 1,
-+	IECM_RX_PTYPE_PAYLOAD_LAYER_PAY3	= 2,
-+	IECM_RX_PTYPE_PAYLOAD_LAYER_PAY4	= 3,
-+};
-+
-+struct iecm_rx_ptype_decoded {
-+	u32 ptype:10;
-+	u32 known:1;
-+	u32 outer_ip:1;
-+	u32 outer_ip_ver:2;
-+	u32 outer_frag:1;
-+	u32 tunnel_type:3;
-+	u32 tunnel_end_prot:2;
-+	u32 tunnel_end_frag:1;
-+	u32 inner_prot:4;
-+	u32 payload_layer:3;
-+};
-+
-+enum iecm_rx_hsplit {
-+	IECM_RX_NO_HDR_SPLIT = 0,
-+	IECM_RX_HDR_SPLIT = 1,
-+	IECM_RX_HDR_SPLIT_PERF = 2,
-+};
-+
-+/* The iecm_ptype_lkup table is used to convert from the 10-bit ptype in the
-+ * hardware to a bit-field that can be used by SW to more easily determine the
-+ * packet type.
++/**
++ * iecm_set_ethtool_ops - Initialize ethtool ops struct
++ * @netdev: network interface device structure
 + *
-+ * Macros are used to shorten the table lines and make this table human
-+ * readable.
++ * Sets ethtool ops struct in our netdev so that ethtool can call
++ * our functions.
++ */
++void iecm_set_ethtool_ops(struct net_device *netdev)
++{
++	/* stub */
++}
+diff --git a/drivers/net/ethernet/intel/iecm/iecm_lib.c b/drivers/net/ethernet/intel/iecm/iecm_lib.c
+new file mode 100644
+index 000000000000..57a20204a7c8
+--- /dev/null
++++ b/drivers/net/ethernet/intel/iecm/iecm_lib.c
+@@ -0,0 +1,406 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Intel Corporation */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/net/intel/iecm.h>
++
++static const struct net_device_ops iecm_netdev_ops_splitq;
++static const struct net_device_ops iecm_netdev_ops_singleq;
++extern int debug;
++
++/**
++ * iecm_mb_intr_rel_irq - Free the IRQ association with the OS
++ * @adapter: adapter structure
++ */
++static void iecm_mb_intr_rel_irq(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_intr_rel - Release interrupt capabilities and free memory
++ * @adapter: adapter to disable interrupts on
++ */
++static void iecm_intr_rel(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_mb_intr_clean - Interrupt handler for the mailbox
++ * @irq: interrupt number
++ * @data: pointer to the adapter structure
++ */
++irqreturn_t iecm_mb_intr_clean(int __always_unused irq, void *data)
++{
++	/* stub */
++}
++
++/**
++ * iecm_mb_irq_enable - Enable MSIX interrupt for the mailbox
++ * @adapter: adapter to get the hardware address for register write
++ */
++void iecm_mb_irq_enable(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_mb_intr_req_irq - Request IRQ for the mailbox interrupt
++ * @adapter: adapter structure to pass to the mailbox IRQ handler
++ */
++int iecm_mb_intr_req_irq(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_get_mb_vec_id - Get vector index for mailbox
++ * @adapter: adapter structure to access the vector chunks
 + *
-+ * We store the PTYPE in the top byte of the bit field - this is just so that
-+ * we can check that the table doesn't have a row missing, as the index into
-+ * the table should be the PTYPE.
++ * The first vector id in the requested vector chunks from the CP is for
++ * the mailbox
++ */
++void iecm_get_mb_vec_id(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_mb_intr_init - Initialize the mailbox interrupt
++ * @adapter: adapter structure to store the mailbox vector
++ */
++int iecm_mb_intr_init(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_intr_distribute - Distribute MSIX vectors
++ * @adapter: adapter structure to get the vports
 + *
-+ * Typical work flow:
++ * Distribute the MSIX vectors acquired from the OS to the vports based on the
++ * num of vectors requested by each vport
++ */
++void iecm_intr_distribute(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_intr_req - Request interrupt capabilities
++ * @adapter: adapter to enable interrupts on
 + *
-+ * IF NOT iecm_ptype_lkup[ptype].known
-+ * THEN
-+ *      Packet is unknown
-+ * ELSE IF iecm_ptype_lkup[ptype].outer_ip == IECM_RX_PTYPE_OUTER_IP
-+ *      Use the rest of the fields to look at the tunnels, inner protocols, etc
-+ * ELSE
-+ *      Use the enum iecm_rx_ptype_l2 to decode the packet type
-+ * ENDIF
++ * Returns 0 on success, negative on failure
 + */
-+/* macro to make the table lines short */
-+#define IECM_PTT(PTYPE, OUTER_IP, OUTER_IP_VER, OUTER_FRAG, T, TE, TEF, I, PL)\
-+	{	PTYPE, \
-+		1, \
-+		IECM_RX_PTYPE_OUTER_##OUTER_IP, \
-+		IECM_RX_PTYPE_OUTER_##OUTER_IP_VER, \
-+		IECM_RX_PTYPE_##OUTER_FRAG, \
-+		IECM_RX_PTYPE_TUNNEL_##T, \
-+		IECM_RX_PTYPE_TUNNEL_END_##TE, \
-+		IECM_RX_PTYPE_##TEF, \
-+		IECM_RX_PTYPE_INNER_PROT_##I, \
-+		IECM_RX_PTYPE_PAYLOAD_LAYER_##PL }
++static int iecm_intr_req(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
 +
-+#define IECM_PTT_UNUSED_ENTRY(PTYPE) { PTYPE, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-+
-+/* shorter macros makes the table fit but are terse */
-+#define IECM_RX_PTYPE_NOF		IECM_RX_PTYPE_NOT_FRAG
-+#define IECM_RX_PTYPE_FRG		IECM_RX_PTYPE_FRAG
-+#define IECM_RX_PTYPE_INNER_PROT_TS	IECM_RX_PTYPE_INNER_PROT_TIMESYNC
-+#define IECM_RX_SUPP_PTYPE		18
-+#define IECM_RX_MAX_PTYPE		1024
-+
-+/* Lookup table mapping the HW PTYPE to the bit field for decoding */
-+static const
-+struct iecm_rx_ptype_decoded iecm_rx_ptype_lkup[IECM_RX_SUPP_PTYPE] = {
-+	/* L2 Packet types */
-+	IECM_PTT_UNUSED_ENTRY(0),
-+	IECM_PTT(1, L2, NONE, NOF, NONE, NONE, NOF, NONE, PAY2),
-+	IECM_PTT(11, L2, NONE, NOF, NONE, NONE, NOF, NONE, NONE),
-+	IECM_PTT_UNUSED_ENTRY(12),
-+
-+	/* Non Tunneled IPv4 */
-+	IECM_PTT(22, IP, IPV4, FRG, NONE, NONE, NOF, NONE, PAY3),
-+	IECM_PTT(23, IP, IPV4, NOF, NONE, NONE, NOF, NONE, PAY3),
-+	IECM_PTT(24, IP, IPV4, NOF, NONE, NONE, NOF, UDP,  PAY4),
-+	IECM_PTT_UNUSED_ENTRY(25),
-+	IECM_PTT(26, IP, IPV4, NOF, NONE, NONE, NOF, TCP,  PAY4),
-+	IECM_PTT(27, IP, IPV4, NOF, NONE, NONE, NOF, SCTP, PAY4),
-+	IECM_PTT(28, IP, IPV4, NOF, NONE, NONE, NOF, ICMP, PAY4),
-+
-+	/* Non Tunneled IPv6 */
-+	IECM_PTT(88, IP, IPV6, FRG, NONE, NONE, NOF, NONE, PAY3),
-+	IECM_PTT(89, IP, IPV6, NOF, NONE, NONE, NOF, NONE, PAY3),
-+	IECM_PTT(90, IP, IPV6, NOF, NONE, NONE, NOF, UDP,  PAY3),
-+	IECM_PTT_UNUSED_ENTRY(91),
-+	IECM_PTT(92, IP, IPV6, NOF, NONE, NONE, NOF, TCP,  PAY4),
-+	IECM_PTT(93, IP, IPV6, NOF, NONE, NONE, NOF, SCTP, PAY4),
-+	IECM_PTT(94, IP, IPV6, NOF, NONE, NONE, NOF, ICMP, PAY4),
-+};
-+
-+#define IECM_INT_NAME_STR_LEN	(IFNAMSIZ + 16)
-+
-+enum iecm_queue_flags_t {
-+	__IECM_Q_GEN_CHK,
-+	__IECM_Q_FLOW_SCH_EN,
-+	__IECM_Q_SW_MARKER,
-+	__IECM_Q_FLAGS_NBITS,
-+};
-+
-+struct iecm_intr_reg {
-+	u32 dyn_ctl;
-+	u32 dyn_ctl_intena_m;
-+	u32 dyn_ctl_clrpba_m;
-+	u32 dyn_ctl_itridx_s;
-+	u32 dyn_ctl_itridx_m;
-+	u32 dyn_ctl_intrvl_s;
-+	u32 itr;
-+};
-+
-+struct iecm_q_vector {
-+	struct iecm_vport *vport;
-+	cpumask_t affinity_mask;
-+	struct napi_struct napi;
-+	u16 v_idx;		/* index in the vport->q_vector array */
-+	u8 itr_countdown;	/* when 0 should adjust ITR */
-+	struct iecm_intr_reg intr_reg;
-+	int num_txq;
-+	struct iecm_queue **tx;
-+	int num_rxq;
-+	struct iecm_queue **rx;
-+	char name[IECM_INT_NAME_STR_LEN];
-+};
-+
-+struct iecm_rx_queue_stats {
-+	u64 packets;
-+	u64 bytes;
-+	u64 generic_csum;
-+	u64 basic_csum;
-+	u64 csum_err;
-+	u64 hsplit_hbo;
-+};
-+
-+struct iecm_tx_queue_stats {
-+	u64 packets;
-+	u64 bytes;
-+};
-+
-+union iecm_queue_stats {
-+	struct iecm_rx_queue_stats rx;
-+	struct iecm_tx_queue_stats tx;
-+};
-+
-+enum iecm_latency_range {
-+	IECM_LOWEST_LATENCY = 0,
-+	IECM_LOW_LATENCY = 1,
-+	IECM_BULK_LATENCY = 2,
-+};
-+
-+struct iecm_itr {
-+	u16 current_itr;
-+	u16 target_itr;
-+	enum virtchnl_itr_idx itr_idx;
-+	union iecm_queue_stats stats; /* will reset to 0 when adjusting ITR */
-+	enum iecm_latency_range latency_range;
-+	unsigned long next_update;	/* jiffies of last ITR update */
-+};
-+
-+/* indices into GLINT_ITR registers */
-+#define IECM_ITR_ADAPTIVE_MIN_INC	0x0002
-+#define IECM_ITR_ADAPTIVE_MIN_USECS	0x0002
-+#define IECM_ITR_ADAPTIVE_MAX_USECS	0x007e
-+#define IECM_ITR_ADAPTIVE_LATENCY	0x8000
-+#define IECM_ITR_ADAPTIVE_BULK		0x0000
-+#define ITR_IS_BULK(x) (!((x) & IECM_ITR_ADAPTIVE_LATENCY))
-+
-+#define IECM_ITR_DYNAMIC	0X8000	/* use top bit as a flag */
-+#define IECM_ITR_MAX		0x1FE0
-+#define IECM_ITR_100K		0x000A
-+#define IECM_ITR_50K		0x0014
-+#define IECM_ITR_20K		0x0032
-+#define IECM_ITR_18K		0x003C
-+#define IECM_ITR_GRAN_S		1	/* Assume ITR granularity is 2us */
-+#define IECM_ITR_MASK		0x1FFE	/* ITR register value alignment mask */
-+#define ITR_REG_ALIGN(setting)	__ALIGN_MASK(setting, ~IECM_ITR_MASK)
-+#define IECM_ITR_IS_DYNAMIC(setting) (!!((setting) & IECM_ITR_DYNAMIC))
-+#define IECM_ITR_SETTING(setting)	((setting) & ~IECM_ITR_DYNAMIC)
-+#define ITR_COUNTDOWN_START	100
-+#define IECM_ITR_TX_DEF		IECM_ITR_20K
-+#define IECM_ITR_RX_DEF		IECM_ITR_50K
-+
-+/* queue associated with a vport */
-+struct iecm_queue {
-+	struct device *dev;		/* Used for DMA mapping */
-+	struct iecm_vport *vport;	/* Back reference to associated vport */
-+	union {
-+		struct iecm_txq_group *txq_grp;
-+		struct iecm_rxq_group *rxq_grp;
-+	};
-+	/* bufq: Used as group id, either 0 or 1, on clean Buf Q uses this
-+	 *       index to determine which group of refill queues to clean.
-+	 *       Bufqs are use in splitq only.
-+	 * txq: Index to map between Tx Q group and hot path Tx ptrs stored in
-+	 *      vport.  Used in both single Q/split Q.
-+	 */
-+	u16 idx;
-+	/* Used for both Q models single and split. In split Q model relevant
-+	 * only to Tx Q and Rx Q
-+	 */
-+	u8 __iomem *tail;
-+	/* Used in both single and split Q.  In single Q, Tx Q uses tx_buf and
-+	 * Rx Q uses rx_buf.  In split Q, Tx Q uses tx_buf, Rx Q uses skb, and
-+	 * Buf Q uses rx_buf.
-+	 */
-+	union {
-+		struct iecm_tx_buf *tx_buf;
-+		struct {
-+			struct iecm_rx_buf *buf;
-+			struct iecm_rx_buf *hdr_buf;
-+		} rx_buf;
-+		struct sk_buff *skb;
-+	};
-+	enum virtchnl_queue_type q_type;
-+	/* Queue id(Tx/Tx compl/Rx/Bufq) */
-+	u16 q_id;
-+	u16 desc_count;		/* Number of descriptors */
-+
-+	/* Relevant in both split & single Tx Q & Buf Q*/
-+	u16 next_to_use;
-+	/* In split q model only relevant for Tx Compl Q and Rx Q */
-+	u16 next_to_clean;	/* used in interrupt processing */
-+	/* Used only for Rx. In split Q model only relevant to Rx Q */
-+	u16 next_to_alloc;
-+	/* Generation bit check stored, as HW flips the bit at Queue end */
-+	DECLARE_BITMAP(flags, __IECM_Q_FLAGS_NBITS);
-+
-+	union iecm_queue_stats q_stats;
-+	struct u64_stats_sync stats_sync;
-+
-+	enum iecm_rx_hsplit rx_hsplit_en;
-+
-+	u16 rx_hbuf_size;	/* Header buffer size */
-+	u16 rx_buf_size;
-+	u16 rx_max_pkt_size;
-+	u16 rx_buf_stride;
-+	u8 rsc_low_watermark;
-+	/* Used for both Q models single and split. In split Q model relevant
-+	 * only to Tx compl Q and Rx compl Q
-+	 */
-+	struct iecm_q_vector *q_vector;	/* Back reference to associated vector */
-+	struct iecm_itr itr;
-+	unsigned int size;		/* length of descriptor ring in bytes */
-+	dma_addr_t dma;			/* physical address of ring */
-+	void *desc_ring;		/* Descriptor ring memory */
-+
-+	struct iecm_buf_lifo buf_stack; /* Stack of empty buffers to store
-+					 * buffer info for out of order
-+					 * buffer completions
-+					 */
-+	u16 tx_buf_key;			/* 16 bit unique "identifier" (index)
-+					 * to be used as the completion tag when
-+					 * queue is using flow based scheduling
-+					 */
-+	DECLARE_HASHTABLE(sched_buf_hash, 12);
-+} ____cacheline_internodealigned_in_smp;
-+
-+/* Software queues are used in splitq mode to manage buffers between rxq
-+ * producer and the bufq consumer.  These are required in order to maintain a
-+ * lockless buffer management system and are strictly software only constructs.
-+ */
-+struct iecm_sw_queue {
-+	u16 next_to_clean ____cacheline_aligned_in_smp;
-+	u16 next_to_alloc ____cacheline_aligned_in_smp;
-+	DECLARE_BITMAP(flags, __IECM_Q_FLAGS_NBITS)
-+		____cacheline_aligned_in_smp;
-+	u16 *ring ____cacheline_aligned_in_smp;
-+	u16 q_entries;
-+} ____cacheline_internodealigned_in_smp;
-+
-+/* Splitq only.  iecm_rxq_set associates an rxq with at most two refillqs.
-+ * Each rxq needs a refillq to return used buffers back to the respective bufq.
-+ * Bufqs then clean these refillqs for buffers to give to hardware.
-+ */
-+struct iecm_rxq_set {
-+	struct iecm_queue rxq;
-+	/* refillqs assoc with bufqX mapped to this rxq */
-+	struct iecm_sw_queue *refillq0;
-+	struct iecm_sw_queue *refillq1;
-+};
-+
-+/* Splitq only.  iecm_bufq_set associates a bufq to an overflow and array of
-+ * refillqs.  In this bufq_set, there will be one refillq for each rxq in this
-+ * rxq_group.  Used buffers received by rxqs will be put on refillqs which
-+ * bufqs will clean to return new buffers back to hardware.
++/**
++ * iecm_cfg_netdev - Allocate, configure and register a netdev
++ * @vport: main vport structure
 + *
-+ * Buffers needed by some number of rxqs associated in this rxq_group are
-+ * managed by at most two bufqs (depending on performance configuration).
++ * Returns 0 on success, negative value on failure
 + */
-+struct iecm_bufq_set {
-+	struct iecm_queue bufq;
-+	struct iecm_sw_queue overflowq;
-+	/* This is always equal to num_rxq_sets in idfp_rxq_group */
-+	int num_refillqs;
-+	struct iecm_sw_queue *refillqs;
++static int iecm_cfg_netdev(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_cfg_hw - Initialize HW struct
++ * @adapter: adapter to setup hw struct for
++ *
++ * Returns 0 on success, negative on failure
++ */
++static int iecm_cfg_hw(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_get_free_slot - get the next non-NULL location index in array
++ * @array: array to search
++ * @size: size of the array
++ * @curr: last known occupied index to be used as a search hint
++ *
++ * void * is being used to keep the functionality generic. This lets us use this
++ * function on any array of pointers.
++ */
++static int iecm_get_free_slot(void *array, int size, int curr)
++{
++	/* stub */
++}
++
++/**
++ * iecm_netdev_to_vport - get a vport handle from a netdev
++ * @netdev: network interface device structure
++ */
++struct iecm_vport *iecm_netdev_to_vport(struct net_device *netdev)
++{
++	/* stub */
++}
++
++/**
++ * iecm_netdev_to_adapter - get an adapter handle from a netdev
++ * @netdev: network interface device structure
++ */
++struct iecm_adapter *iecm_netdev_to_adapter(struct net_device *netdev)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_stop - Disable a vport
++ * @vport: vport to disable
++ */
++static void iecm_vport_stop(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_stop - Disables a network interface
++ * @netdev: network interface device structure
++ *
++ * The stop entry point is called when an interface is de-activated by the OS,
++ * and the netdevice enters the DOWN state.  The hardware is still under the
++ * driver's control, but the netdev interface is disabled.
++ *
++ * Returns success only - not allowed to fail
++ */
++static int iecm_stop(struct net_device *netdev)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_rel - Delete a vport and free its resources
++ * @vport: the vport being removed
++ *
++ * Returns 0 on success or < 0 on error
++ */
++int iecm_vport_rel(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_rel_all - Delete all vports
++ * @adapter: adapter from which all vports are being removed
++ */
++static void iecm_vport_rel_all(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_set_hsplit - enable or disable header split on a given vport
++ * @vport: virtual port
++ * @prog: bpf_program attached to an interface or NULL
++ */
++void iecm_vport_set_hsplit(struct iecm_vport *vport, struct bpf_prog *prog)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_alloc - Allocates the next available struct vport in the adapter
++ * @adapter: board private structure
++ * @vport_type: type of vport
++ *
++ * returns a pointer to a vport on success, NULL on failure.
++ */
++static struct iecm_vport *
++iecm_vport_alloc(struct iecm_adapter *adapter, int vport_id)
++{
++	/* stub */
++}
++
++/**
++ * iecm_service_task - Delayed task for handling mailbox responses
++ * @work: work_struct handle to our data
++ *
++ */
++static void iecm_service_task(struct work_struct *work)
++{
++	/* stub */
++}
++
++/**
++ * iecm_up_complete - Complete interface up sequence
++ * @vport: virtual port structure
++ *
++ */
++static void iecm_up_complete(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_open - Bring up a vport
++ * @vport: vport to bring up
++ */
++static int iecm_vport_open(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_init_task - Delayed initialization task
++ * @work: work_struct handle to our data
++ *
++ * Init task finishes up pending work started in probe.  Due to the asynchronous
++ * nature in which the device communicates with hardware, we may have to wait
++ * several milliseconds to get a response.  Instead of busy polling in probe,
++ * pulling it out into a delayed work task prevents us from bogging down the
++ * whole system waiting for a response from hardware.
++ */
++static void iecm_init_task(struct work_struct *work)
++{
++	/* stub */
++}
++
++/**
++ * iecm_api_init - Initialize and verify device API
++ * @adapter: driver specific private structure
++ *
++ * Returns 0 on success, negative on failure
++ */
++static int iecm_api_init(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_deinit_task - Device deinit routine
++ * @adapter: Driver specific private structure
++ *
++ * Extended remove logic which will be used for
++ * hard reset as well
++ */
++void iecm_deinit_task(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_init_hard_reset - Initiate a hardware reset
++ * @adapter: Driver specific private structure
++ *
++ * Deallocate the vports and all the resources associated with them and
++ * reallocate. Also reinitialize the mailbox
++ */
++static enum iecm_status
++iecm_init_hard_reset(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vc_event_task - Handle virtchannel event logic
++ * @work: work queue struct
++ */
++static void iecm_vc_event_task(struct work_struct *work)
++{
++	/* stub */
++}
++
++/**
++ * iecm_initiate_soft_reset - Initiate a software reset
++ * @vport: virtual port data struct
++ * @reset_cause: reason for the soft reset
++ *
++ * Soft reset does not involve bringing down the mailbox queue and also we do
++ * not destroy vport.  Only queue resources are touched
++ */
++int iecm_initiate_soft_reset(struct iecm_vport *vport,
++			     enum iecm_flags reset_cause)
++{
++	/* stub */
++}
++
++/**
++ * iecm_probe - Device initialization routine
++ * @pdev: PCI device information struct
++ * @ent: entry in iecm_pci_tbl
++ * @adapter: driver specific private structure
++ *
++ * Returns 0 on success, negative on failure
++ */
++int iecm_probe(struct pci_dev *pdev,
++	       const struct pci_device_id __always_unused *ent,
++	       struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_probe);
++
++/**
++ * iecm_remove - Device removal routine
++ * @pdev: PCI device information struct
++ */
++void iecm_remove(struct pci_dev *pdev)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_remove);
++
++/**
++ * iecm_shutdown - PCI callback for shutting down device
++ * @pdev: PCI device information struct
++ */
++void iecm_shutdown(struct pci_dev *pdev)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_shutdown);
++
++/**
++ * iecm_open - Called when a network interface becomes active
++ * @netdev: network interface device structure
++ *
++ * The open entry point is called when a network interface is made
++ * active by the system (IFF_UP).  At this point all resources needed
++ * for transmit and receive operations are allocated, the interrupt
++ * handler is registered with the OS, the netdev watchdog is enabled,
++ * and the stack is notified that the interface is ready.
++ *
++ * Returns 0 on success, negative value on failure
++ */
++static int iecm_open(struct net_device *netdev)
++{
++	/* stub */
++}
++
++/**
++ * iecm_change_mtu - NDO callback to change the MTU
++ * @netdev: network interface device structure
++ * @new_mtu: new value for maximum frame size
++ *
++ * Returns 0 on success, negative on failure
++ */
++static int iecm_change_mtu(struct net_device *netdev, int new_mtu)
++{
++	/* stub */
++}
++
++static const struct net_device_ops iecm_netdev_ops_splitq = {
++	.ndo_open = iecm_open,
++	.ndo_stop = iecm_stop,
++	.ndo_start_xmit = iecm_tx_splitq_start,
++	.ndo_validate_addr = eth_validate_addr,
++	.ndo_get_stats64 = iecm_get_stats64,
 +};
 +
-+/* In singleq mode, an rxq_group is simply an array of rxqs.  In splitq, a
-+ * rxq_group contains all the rxqs, bufqs, refillqs, and overflowqs needed to
-+ * manage buffers in splitq mode.
-+ */
-+struct iecm_rxq_group {
-+	struct iecm_vport *vport; /* back pointer */
-+
-+	union {
-+		struct {
-+			int num_rxq;
-+			struct iecm_queue *rxqs;
-+		} singleq;
-+		struct {
-+			int num_rxq_sets;
-+			struct iecm_rxq_set *rxq_sets;
-+			struct iecm_bufq_set *bufq_sets;
-+		} splitq;
-+	};
++static const struct net_device_ops iecm_netdev_ops_singleq = {
++	.ndo_open = iecm_open,
++	.ndo_stop = iecm_stop,
++	.ndo_start_xmit = iecm_tx_singleq_start,
++	.ndo_validate_addr = eth_validate_addr,
++	.ndo_change_mtu = iecm_change_mtu,
++	.ndo_get_stats64 = iecm_get_stats64,
 +};
+diff --git a/drivers/net/ethernet/intel/iecm/iecm_main.c b/drivers/net/ethernet/intel/iecm/iecm_main.c
+new file mode 100644
+index 000000000000..0644581fc746
+--- /dev/null
++++ b/drivers/net/ethernet/intel/iecm/iecm_main.c
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Intel Corporation */
 +
-+/* Between singleq and splitq, a txq_group is largely the same except for the
-+ * complq.  In splitq a single complq is responsible for handling completions
-+ * for some number of txqs associated in this txq_group.
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/net/intel/iecm.h>
++
++char iecm_drv_name[] = "iecm";
++#define DRV_SUMMARY	"Intel(R) Data Plane Function Linux Driver"
++static const char iecm_driver_string[] = DRV_SUMMARY;
++static const char iecm_copyright[] = "Copyright (c) 2020, Intel Corporation.";
++
++MODULE_AUTHOR("Intel Corporation, <linux.nics@intel.com>");
++MODULE_DESCRIPTION(DRV_SUMMARY);
++MODULE_LICENSE("GPL v2");
++
++int debug = -1;
++module_param(debug, int, 0644);
++#ifndef CONFIG_DYNAMIC_DEBUG
++MODULE_PARM_DESC(debug, "netif level (0=none,...,16=all), hw debug_mask (0x8XXXXXXX)");
++#else
++MODULE_PARM_DESC(debug, "netif level (0=none,...,16=all)");
++#endif /* !CONFIG_DYNAMIC_DEBUG */
++
++/**
++ * iecm_module_init - Driver registration routine
++ *
++ * iecm_module_init is the first routine called when the driver is
++ * loaded. All it does is register with the PCI subsystem.
 + */
-+struct iecm_txq_group {
-+	struct iecm_vport *vport; /* back pointer */
++static int __init iecm_module_init(void)
++{
++	/* stub */
++}
++module_init(iecm_module_init);
 +
-+	int num_txq;
-+	struct iecm_queue *txqs;
++/**
++ * iecm_module_exit - Driver exit cleanup routine
++ *
++ * iecm_module_exit is called just before the driver is removed
++ * from memory.
++ */
++static void __exit iecm_module_exit(void)
++{
++	/* stub */
++}
++module_exit(iecm_module_exit);
+diff --git a/drivers/net/ethernet/intel/iecm/iecm_osdep.c b/drivers/net/ethernet/intel/iecm/iecm_osdep.c
+new file mode 100644
+index 000000000000..d0534df357d0
+--- /dev/null
++++ b/drivers/net/ethernet/intel/iecm/iecm_osdep.c
+@@ -0,0 +1,15 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (c) 2020 Intel Corporation. */
 +
-+	/* splitq only */
-+	struct iecm_queue *complq;
-+};
++#include <linux/net/intel/iecm_osdep.h>
++#include <linux/net/intel/iecm.h>
 +
-+int iecm_vport_singleq_napi_poll(struct napi_struct *napi, int budget);
-+void iecm_vport_init_num_qs(struct iecm_vport *vport,
-+			    struct virtchnl_create_vport *vport_msg);
-+void iecm_vport_calc_num_q_desc(struct iecm_vport *vport);
-+void iecm_vport_calc_total_qs(struct virtchnl_create_vport *vport_msg,
-+			      int num_req_qs);
-+void iecm_vport_calc_num_q_groups(struct iecm_vport *vport);
-+int iecm_vport_queues_alloc(struct iecm_vport *vport);
-+void iecm_vport_queues_rel(struct iecm_vport *vport);
-+void iecm_vport_calc_num_q_vec(struct iecm_vport *vport);
-+void iecm_vport_intr_dis_irq_all(struct iecm_vport *vport);
-+void iecm_vport_intr_clear_dflt_itr(struct iecm_vport *vport);
-+void iecm_vport_intr_update_itr_ena_irq(struct iecm_q_vector *q_vector);
-+void iecm_vport_intr_deinit(struct iecm_vport *vport);
-+int iecm_vport_intr_init(struct iecm_vport *vport);
-+irqreturn_t
-+iecm_vport_intr_clean_queues(int __always_unused irq, void *data);
-+void iecm_vport_intr_ena_irq_all(struct iecm_vport *vport);
-+int iecm_config_rss(struct iecm_vport *vport);
-+void iecm_get_rx_qid_list(struct iecm_vport *vport, u16 *qid_list);
-+void iecm_fill_dflt_rss_lut(struct iecm_vport *vport, u16 *qid_list);
-+int iecm_init_rss(struct iecm_vport *vport);
-+void iecm_deinit_rss(struct iecm_vport *vport);
-+int iecm_config_rss(struct iecm_vport *vport);
-+void iecm_rx_reuse_page(struct iecm_queue *rx_bufq, bool hsplit,
-+			struct iecm_rx_buf *old_buf);
-+void iecm_rx_add_frag(struct iecm_rx_buf *rx_buf, struct sk_buff *skb,
-+		      unsigned int size);
-+struct sk_buff *iecm_rx_construct_skb(struct iecm_queue *rxq,
-+				      struct iecm_rx_buf *rx_buf,
-+				      unsigned int size);
-+bool iecm_rx_cleanup_headers(struct sk_buff *skb);
-+bool iecm_rx_recycle_buf(struct iecm_queue *rx_bufq, bool hsplit,
-+			 struct iecm_rx_buf *rx_buf);
-+void iecm_rx_skb(struct iecm_queue *rxq, struct sk_buff *skb);
-+bool iecm_rx_buf_hw_alloc(struct iecm_queue *rxq, struct iecm_rx_buf *buf);
-+void iecm_rx_buf_hw_update(struct iecm_queue *rxq, u32 val);
-+void iecm_tx_buf_hw_update(struct iecm_queue *tx_q, u32 val,
-+			   struct sk_buff *skb);
-+void iecm_tx_buf_rel(struct iecm_queue *tx_q, struct iecm_tx_buf *tx_buf);
-+unsigned int iecm_tx_desc_count_required(struct sk_buff *skb);
-+int iecm_tx_maybe_stop(struct iecm_queue *tx_q, unsigned int size);
-+void iecm_tx_timeout(struct net_device *netdev,
-+		     unsigned int __always_unused txqueue);
-+netdev_tx_t iecm_tx_splitq_start(struct sk_buff *skb,
-+				 struct net_device *netdev);
++void *iecm_alloc_dma_mem(struct iecm_hw *hw, struct iecm_dma_mem *mem, u64 size)
++{
++	/* stub */
++}
++
++void iecm_free_dma_mem(struct iecm_hw *hw, struct iecm_dma_mem *mem)
++{
++	/* stub */
++}
+diff --git a/drivers/net/ethernet/intel/iecm/iecm_singleq_txrx.c b/drivers/net/ethernet/intel/iecm/iecm_singleq_txrx.c
+new file mode 100644
+index 000000000000..a85471e72d66
+--- /dev/null
++++ b/drivers/net/ethernet/intel/iecm/iecm_singleq_txrx.c
+@@ -0,0 +1,255 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Intel Corporation */
++
++#include <linux/prefetch.h>
++#include <linux/net/intel/iecm.h>
++
++/**
++ * iecm_tx_singleq_build_ctob - populate command tag offset and size
++ * @td_cmd: Command to be filled in desc
++ * @td_offset: Offset to be filled in desc
++ * @size: Size of the buffer
++ * @td_tag: VLAN tag to be filled
++ *
++ * Returns the 64 bit value populated with the input parameters
++ */
++static __le64
++iecm_tx_singleq_build_ctob(u64 td_cmd, u64 td_offset, unsigned int size,
++			   u64 td_tag)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_singleq_csum - Enable Tx checksum offloads
++ * @first: pointer to first descriptor
++ * @off: pointer to struct that holds offload parameters
++ *
++ * Returns 0 or error (negative) if checksum offload
++ */
++static
++int iecm_tx_singleq_csum(struct iecm_tx_buf *first,
++			 struct iecm_tx_offload_params *off)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_singleq_map - Build the Tx base descriptor
++ * @tx_q: queue to send buffer on
++ * @first: first buffer info buffer to use
++ * @offloads: pointer to struct that holds offload parameters
++ *
++ * This function loops over the skb data pointed to by *first
++ * and gets a physical address for each memory location and programs
++ * it and the length into the transmit base mode descriptor.
++ */
++static void
++iecm_tx_singleq_map(struct iecm_queue *tx_q, struct iecm_tx_buf *first,
++		    struct iecm_tx_offload_params *offloads)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_singleq_frame - Sends buffer on Tx ring using base descriptors
++ * @skb: send buffer
++ * @tx_q: queue to send buffer on
++ *
++ * Returns NETDEV_TX_OK if sent, else an error code
++ */
++static netdev_tx_t
++iecm_tx_singleq_frame(struct sk_buff *skb, struct iecm_queue *tx_q)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_singleq_start - Selects the right Tx queue to send buffer
++ * @skb: send buffer
++ * @netdev: network interface device structure
++ *
++ * Returns NETDEV_TX_OK if sent, else an error code
++ */
 +netdev_tx_t iecm_tx_singleq_start(struct sk_buff *skb,
-+				  struct net_device *netdev);
-+bool iecm_rx_singleq_buf_hw_alloc_all(struct iecm_queue *rxq,
-+				      u16 cleaned_count);
++				  struct net_device *netdev)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_singleq_clean - Reclaim resources from queue
++ * @tx_q: Tx queue to clean
++ * @napi_budget: Used to determine if we are in netpoll
++ *
++ */
++static bool iecm_tx_singleq_clean(struct iecm_queue *tx_q, int napi_budget)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_singleq_clean_all - Clean all Tx queues
++ * @q_vec: queue vector
++ * @budget: Used to determine if we are in netpoll
++ *
++ * Returns false if clean is not complete else returns true
++ */
++static inline bool
++iecm_tx_singleq_clean_all(struct iecm_q_vector *q_vec, int budget)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_singleq_test_staterr - tests bits in Rx descriptor
++ * status and error fields
++ * @rx_desc: pointer to receive descriptor (in le64 format)
++ * @stat_err_bits: value to mask
++ *
++ * This function does some fast chicanery in order to return the
++ * value of the mask which is really only used for boolean tests.
++ * The status_error_ptype_len doesn't need to be shifted because it begins
++ * at offset zero.
++ */
++static bool
++iecm_rx_singleq_test_staterr(struct iecm_singleq_base_rx_desc *rx_desc,
++			     const u64 stat_err_bits)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_singleq_is_non_eop - process handling of non-EOP buffers
++ * @rxq: Rx ring being processed
++ * @rx_desc: Rx descriptor for current buffer
++ * @skb: Current socket buffer containing buffer in progress
++ */
++static bool iecm_rx_singleq_is_non_eop(struct iecm_queue *rxq,
++				       struct iecm_singleq_base_rx_desc
++				       *rx_desc, struct sk_buff *skb)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_singleq_csum - Indicate in skb if checksum is good
++ * @rxq: Rx descriptor ring packet is being transacted on
++ * @skb: skb currently being received and modified
++ * @rx_desc: the receive descriptor
++ * @ptype: the packet type decoded by hardware
++ *
++ * skb->protocol must be set before this function is called
++ */
++static void iecm_rx_singleq_csum(struct iecm_queue *rxq, struct sk_buff *skb,
++				 struct iecm_singleq_base_rx_desc *rx_desc,
++				 u8 ptype)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_singleq_process_skb_fields - Populate skb header fields from Rx
++ * descriptor
++ * @rxq: Rx descriptor ring packet is being transacted on
++ * @skb: pointer to current skb being populated
++ *
++ * This function checks the ring, descriptor, and packet information in
++ * order to populate the hash, checksum, VLAN, protocol, and
++ * other fields within the skb.
++ */
++static void
++iecm_rx_singleq_process_skb_fields(struct iecm_queue *rxq, struct sk_buff *skb,
++				   struct iecm_singleq_base_rx_desc *rx_desc,
++				   u8 ptype)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_singleq_buf_hw_alloc_all - Replace used receive buffers
++ * @rx_q: queue for which the hw buffers are allocated
++ * @cleaned_count: number of buffers to replace
++ *
++ * Returns false if all allocations were successful, true if any fail
++ */
++bool iecm_rx_singleq_buf_hw_alloc_all(struct iecm_queue *rx_q,
++				      u16 cleaned_count)
++{
++	/* stub */
++}
++
++/**
++ * iecm_singleq_rx_put_buf - wrapper function to clean and recycle buffers
++ * @rx_bufq: Rx descriptor queue to transact packets on
++ * @rx_buf: Rx buffer to pull data from
++
++ * This function will update the next_to_use/next_to_alloc if the current
++ * buffer is recycled.
++ */
++static void iecm_singleq_rx_put_buf(struct iecm_queue *rx_bufq,
++				    struct iecm_rx_buf *rx_buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_bump_ntc - Bump and wrap q->next_to_clean value
++ * @q: queue to bump
++ */
++static void iecm_singleq_rx_bump_ntc(struct iecm_queue *q)
++{
++	/* stub */
++}
++
++/**
++ * iecm_singleq_rx_get_buf_page - Fetch Rx buffer page and synchronize data
++ * @rx_buf: Rx buf to fetch page for
++ * @size: size of buffer to add to skb
++ *
++ * This function will pull an Rx buffer page from the ring and synchronize it
++ * for use by the CPU.
++ */
++static struct sk_buff *
++iecm_singleq_rx_get_buf_page(struct device *dev, struct iecm_rx_buf *rx_buf,
++			     const unsigned int size)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_singleq_clean - Reclaim resources after receive completes
++ * @rx_q: Rx queue to clean
++ * @budget: Total limit on number of packets to process
++ *
++ * Returns true if there's any budget left (e.g. the clean is finished)
++ */
++static int iecm_rx_singleq_clean(struct iecm_queue *rx_q, int budget)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_singleq_clean_all - Clean all Rx queues
++ * @q_vec: queue vector
++ * @budget: Used to determine if we are in netpoll
++ * @cleaned: returns number of packets cleaned
++ *
++ * Returns false if clean is not complete else returns true
++ */
++static inline bool
++iecm_rx_singleq_clean_all(struct iecm_q_vector *q_vec, int budget,
++			  int *cleaned)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_singleq_napi_poll - NAPI handler
++ * @napi: struct from which you get q_vector
++ * @budget: budget provided by stack
++ */
++int iecm_vport_singleq_napi_poll(struct napi_struct *napi, int budget)
++{
++	/* stub */
++}
+diff --git a/drivers/net/ethernet/intel/iecm/iecm_txrx.c b/drivers/net/ethernet/intel/iecm/iecm_txrx.c
+new file mode 100644
+index 000000000000..b4688daa744d
+--- /dev/null
++++ b/drivers/net/ethernet/intel/iecm/iecm_txrx.c
+@@ -0,0 +1,1256 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Intel Corporation */
++
++#include <linux/net/intel/iecm.h>
++
++/**
++ * iecm_buf_lifo_push - push a buffer pointer onto stack
++ * @stack: pointer to stack struct
++ * @buf: pointer to buf to push
++ **/
++static enum iecm_status iecm_buf_lifo_push(struct iecm_buf_lifo *stack,
++					   struct iecm_tx_buf *buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_buf_lifo_pop - pop a buffer pointer from stack
++ * @stack: pointer to stack struct
++ **/
++static struct iecm_tx_buf *iecm_buf_lifo_pop(struct iecm_buf_lifo *stack)
++{
++	/* stub */
++}
++
++/**
++ * iecm_get_stats64 - get statistics for network device structure
++ * @netdev: network interface device structure
++ * @stats: main device statistics structure
++ */
 +void iecm_get_stats64(struct net_device *netdev,
-+		      struct rtnl_link_stats64 *stats);
-+#endif /* !_IECM_TXRX_H_ */
++		      struct rtnl_link_stats64 *stats)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_buf_rel - Release a Tx buffer
++ * @tx_q: the queue that owns the buffer
++ * @tx_buf: the buffer to free
++ */
++void iecm_tx_buf_rel(struct iecm_queue *tx_q, struct iecm_tx_buf *tx_buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_buf_rel all - Free any empty Tx buffers
++ * @txq: queue to be cleaned
++ */
++void iecm_tx_buf_rel_all(struct iecm_queue *txq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_desc_rel - Free Tx resources per queue
++ * @txq: Tx descriptor ring for a specific queue
++ * @bufq: buffer q or completion q
++ *
++ * Free all transmit software resources
++ */
++void iecm_tx_desc_rel(struct iecm_queue *txq, bool bufq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_desc_rel_all - Free Tx Resources for All Queues
++ * @vport: virtual port structure
++ *
++ * Free all transmit software resources
++ */
++void iecm_tx_desc_rel_all(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_buf_alloc_all - Allocate memory for all buffer resources
++ * @tx_q: queue for which the buffers are allocated
++ */
++static enum iecm_status iecm_tx_buf_alloc_all(struct iecm_queue *tx_q)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_desc_alloc - Allocate the Tx descriptors
++ * @tx_q: the Tx ring to set up
++ * @bufq: buffer or completion queue
++ */
++static enum iecm_status iecm_tx_desc_alloc(struct iecm_queue *tx_q, bool bufq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_desc_alloc_all - allocate all queues Tx resources
++ * @vport: virtual port private structure
++ */
++static enum iecm_status iecm_tx_desc_alloc_all(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_buf_rel - Release a Rx buffer
++ * @rxq: the queue that owns the buffer
++ * @rx_buf: the buffer to free
++ */
++static void iecm_rx_buf_rel(struct iecm_queue *rxq,
++			    struct iecm_rx_buf *rx_buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_buf_rel_all - Free all Rx buffer resources for a queue
++ * @rxq: queue to be cleaned
++ */
++void iecm_rx_buf_rel_all(struct iecm_queue *rxq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_desc_rel - Free a specific Rx q resources
++ * @rxq: queue to clean the resources from
++ * @bufq: buffer q or completion q
++ * @q_model: single or split q model
++ *
++ * Free a specific Rx queue resources
++ */
++void iecm_rx_desc_rel(struct iecm_queue *rxq, bool bufq,
++		      enum virtchnl_queue_model q_model)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_desc_rel_all - Free Rx Resources for All Queues
++ * @vport: virtual port structure
++ *
++ * Free all Rx queues resources
++ */
++void iecm_rx_desc_rel_all(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_buf_hw_update - Store the new tail and head values
++ * @rxq: queue to bump
++ * @val: new head index
++ */
++void iecm_rx_buf_hw_update(struct iecm_queue *rxq, u32 val)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_buf_hw_alloc - recycle or make a new page
++ * @rxq: ring to use
++ * @buf: rx_buffer struct to modify
++ *
++ * Returns true if the page was successfully allocated or
++ * reused.
++ */
++bool iecm_rx_buf_hw_alloc(struct iecm_queue *rxq, struct iecm_rx_buf *buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_hdr_buf_hw_alloc - recycle or make a new page for header buffer
++ * @rxq: ring to use
++ * @hdr_buf: rx_buffer struct to modify
++ *
++ * Returns true if the page was successfully allocated or
++ * reused.
++ */
++bool iecm_rx_hdr_buf_hw_alloc(struct iecm_queue *rxq,
++			      struct iecm_rx_buf *hdr_buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_buf_hw_alloc_all - Replace used receive buffers
++ * @rxq: queue for which the hw buffers are allocated
++ * @cleaned_count: number of buffers to replace
++ *
++ * Returns false if all allocations were successful, true if any fail
++ */
++static bool
++iecm_rx_buf_hw_alloc_all(struct iecm_queue *rxq,
++			 u16 cleaned_count)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_buf_alloc_all - Allocate memory for all buffer resources
++ * @rxq: queue for which the buffers are allocated
++ */
++static enum iecm_status iecm_rx_buf_alloc_all(struct iecm_queue *rxq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_desc_alloc - Allocate queue Rx resources
++ * @rxq: Rx queue for which the resources are setup
++ * @bufq: buffer or completion queue
++ * @q_model: single or split queue model
++ */
++static enum iecm_status iecm_rx_desc_alloc(struct iecm_queue *rxq, bool bufq,
++					   enum virtchnl_queue_model q_model)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_desc_alloc_all - allocate all RX queues resources
++ * @vport: virtual port structure
++ */
++static enum iecm_status iecm_rx_desc_alloc_all(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_txq_group_rel - Release all resources for txq groups
++ * @vport: vport to release txq groups on
++ */
++static void iecm_txq_group_rel(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rxq_group_rel - Release all resources for rxq groups
++ * @vport: vport to release rxq groups on
++ */
++static void iecm_rxq_group_rel(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_queue_grp_rel_all - Release all queue groups
++ * @vport: vport to release queue groups for
++ */
++static void iecm_vport_queue_grp_rel_all(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_queues_rel - Free memory for all queues
++ * @vport: virtual port
++ *
++ * Free the memory allocated for queues associated to a vport
++ */
++void iecm_vport_queues_rel(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_init_fast_path_txqs - Initialize fast path txq array
++ * @vport: vport to init txqs on
++ *
++ * We get a queue index from skb->queue_mapping and we need a fast way to
++ * dereference the queue from queue groups.  This allows us to quickly pull a
++ * txq based on a queue index.
++ */
++static enum iecm_status
++iecm_vport_init_fast_path_txqs(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_init_num_qs - Initialize number of queues
++ * @vport: vport to initialize qs
++ * @vport_msg: data to be filled into vport
++ */
++void iecm_vport_init_num_qs(struct iecm_vport *vport,
++			    struct virtchnl_create_vport *vport_msg)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_calc_num_q_desc - Calculate number of queue groups
++ * @vport: vport to calculate q groups for
++ */
++void iecm_vport_calc_num_q_desc(struct iecm_vport *vport)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_vport_calc_num_q_desc);
++
++/**
++ * iecm_vport_calc_total_qs - Calculate total number of queues
++ * @vport_msg: message to fill with data
++ * @num_req_qs: user requested queues
++ */
++void iecm_vport_calc_total_qs(struct virtchnl_create_vport *vport_msg,
++			      int num_req_qs)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_calc_num_q_groups - Calculate number of queue groups
++ * @vport: vport to calculate q groups for
++ */
++void iecm_vport_calc_num_q_groups(struct iecm_vport *vport)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_vport_calc_num_q_groups);
++
++/**
++ * iecm_vport_calc_numq_per_grp - Calculate number of queues per group
++ * @vport: vport to calculate queues for
++ * @num_txq: int return parameter
++ * @num_rxq: int return parameter
++ */
++static void iecm_vport_calc_numq_per_grp(struct iecm_vport *vport,
++					 int *num_txq, int *num_rxq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_calc_num_q_vec - Calculate total number of vectors required for
++ * this vport
++ * @vport: virtual port
++ *
++ */
++void iecm_vport_calc_num_q_vec(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_txq_group_alloc - Allocate all txq group resources
++ * @vport: vport to allocate txq groups for
++ * @num_txq: number of txqs to allocate for each group
++ */
++static enum iecm_status iecm_txq_group_alloc(struct iecm_vport *vport,
++					     int num_txq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rxq_group_alloc - Allocate all rxq group resources
++ * @vport: vport to allocate rxq groups for
++ * @num_rxq: number of rxqs to allocate for each group
++ */
++static enum iecm_status iecm_rxq_group_alloc(struct iecm_vport *vport,
++					     int num_rxq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_queue_grp_alloc_all - Allocate all queue groups/resources
++ * @vport: vport with qgrps to allocate
++ */
++static enum iecm_status
++iecm_vport_queue_grp_alloc_all(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_queues_alloc - Allocate memory for all queues
++ * @vport: virtual port
++ *
++ * Allocate memory for queues associated with a vport
++ */
++enum iecm_status iecm_vport_queues_alloc(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_find_q - Find the Tx q based on q id
++ * @vport: the vport we care about
++ * @q_id: Id of the queue
++ *
++ * Returns queue ptr if found else returns NULL
++ */
++static struct iecm_queue *
++iecm_tx_find_q(struct iecm_vport *vport, int q_id)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_handle_sw_marker - Handle queue marker packet
++ * @tx_q: Tx queue to handle software marker
++ */
++static void iecm_tx_handle_sw_marker(struct iecm_queue *tx_q)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_splitq_clean_buf - Clean TX buffer resources
++ * @tx_q: Tx queue to clean buffer from
++ * @tx_buf: buffer to be cleaned
++ * @napi_budget: Used to determine if we are in netpoll
++ *
++ * Returns the stats (bytes/packets) cleaned from this buffer
++ */
++static struct iecm_tx_queue_stats
++iecm_tx_splitq_clean_buf(struct iecm_queue *tx_q, struct iecm_tx_buf *tx_buf,
++			 int napi_budget)
++{
++	/* stub */
++}
++
++/**
++ * iecm_stash_flow_sch_buffers - store buffere parameter info to be freed at a
++ * later time (only relevant for flow scheduling mode)
++ * @txq: Tx queue to clean
++ * @tx_buf: buffer to store
++ */
++static int
++iecm_stash_flow_sch_buffers(struct iecm_queue *txq, struct iecm_tx_buf *tx_buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_splitq_clean - Reclaim resources from buffer queue
++ * @tx_q: Tx queue to clean
++ * @end: queue index until which it should be cleaned
++ * @napi_budget: Used to determine if we are in netpoll
++ * @descs_only: true if queue is using flow-based scheduling and should
++ * not clean buffers at this time
++ *
++ * Cleans the queue descriptor ring. If the queue is using queue-based
++ * scheduling, the buffers will be cleaned as well and this function will
++ * return the number of bytes/packets cleaned. If the queue is using flow-based
++ * scheduling, only the descriptors are cleaned at this time. Separate packet
++ * completion events will be reported on the completion queue, and the
++ * buffers will be cleaned separately. The stats returned from this function
++ * when using flow-based scheduling are irrelevant.
++ */
++static struct iecm_tx_queue_stats
++iecm_tx_splitq_clean(struct iecm_queue *tx_q, u16 end, int napi_budget,
++		     bool descs_only)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_hw_tstamp - report hw timestamp from completion desc to stack
++ * @skb: original skb
++ * @desc_ts: pointer to 3 byte timestamp from descriptor
++ */
++static inline void iecm_tx_hw_tstamp(struct sk_buff *skb, u8 *desc_ts)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_clean_flow_sch_bufs - clean bufs that were stored for
++ * out of order completions
++ * @txq: queue to clean
++ * @compl_tag: completion tag of packet to clean (from completion descriptor)
++ * @desc_ts: pointer to 3 byte timestamp from descriptor
++ * @budget: Used to determine if we are in netpoll
++ */
++static struct iecm_tx_queue_stats
++iecm_tx_clean_flow_sch_bufs(struct iecm_queue *txq, u16 compl_tag,
++			    u8 *desc_ts, int budget)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_clean_complq - Reclaim resources on completion queue
++ * @complq: Tx ring to clean
++ * @budget: Used to determine if we are in netpoll
++ *
++ * Returns true if there's any budget left (e.g. the clean is finished)
++ */
++static bool
++iecm_tx_clean_complq(struct iecm_queue *complq, int budget)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_splitq_build_ctb - populate command tag and size for queue
++ * based scheduling descriptors
++ * @desc: descriptor to populate
++ * @parms: pointer to Tx params struct
++ * @td_cmd: command to be filled in desc
++ * @size: size of buffer
++ */
++static inline void
++iecm_tx_splitq_build_ctb(union iecm_tx_flex_desc *desc,
++			 struct iecm_tx_splitq_params *parms,
++			 u16 td_cmd, u16 size)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_splitq_build_flow_desc - populate command tag and size for flow
++ * scheduling descriptors
++ * @desc: descriptor to populate
++ * @parms: pointer to Tx params struct
++ * @td_cmd: command to be filled in desc
++ * @size: size of buffer
++ */
++static inline void
++iecm_tx_splitq_build_flow_desc(union iecm_tx_flex_desc *desc,
++			       struct iecm_tx_splitq_params *parms,
++			       u16 td_cmd, u16 size)
++{
++	/* stub */
++}
++
++/**
++ * __iecm_tx_maybe_stop - 2nd level check for Tx stop conditions
++ * @tx_q: the queue to be checked
++ * @size: the size buffer we want to assure is available
++ *
++ * Returns -EBUSY if a stop is needed, else 0
++ */
++static int
++__iecm_tx_maybe_stop(struct iecm_queue *tx_q, unsigned int size)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_maybe_stop - 1st level check for Tx stop conditions
++ * @tx_q: the queue to be checked
++ * @size: number of descriptors we want to assure is available
++ *
++ * Returns 0 if stop is not needed
++ */
++int iecm_tx_maybe_stop(struct iecm_queue *tx_q, unsigned int size)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_buf_hw_update - Store the new tail and head values
++ * @tx_q: queue to bump
++ * @val: new head index
++ * @skb: skb for which the descriptors are updated
++ */
++void iecm_tx_buf_hw_update(struct iecm_queue *tx_q, u32 val,
++			   struct sk_buff *skb)
++{
++	/* stub */
++}
++
++/**
++ * __iecm_tx_desc_count required - Get the number of descriptors needed for Tx
++ * @size: transmit request size in bytes
++ *
++ * Due to hardware alignment restrictions (4K alignment), we need to
++ * assume that we can have no more than 12K of data per descriptor, even
++ * though each descriptor can take up to 16K - 1 bytes of aligned memory.
++ * Thus, we need to divide by 12K. But division is slow! Instead,
++ * we decompose the operation into shifts and one relatively cheap
++ * multiply operation.
++ *
++ * To divide by 12K, we first divide by 4K, then divide by 3:
++ *     To divide by 4K, shift right by 12 bits
++ *     To divide by 3, multiply by 85, then divide by 256
++ *     (Divide by 256 is done by shifting right by 8 bits)
++ * Finally, we add one to round up. Because 256 isn't an exact multiple of
++ * 3, we'll underestimate near each multiple of 12K. This is actually more
++ * accurate as we have 4K - 1 of wiggle room that we can fit into the last
++ * segment. For our purposes this is accurate out to 1M which is orders of
++ * magnitude greater than our largest possible GSO size.
++ *
++ * This would then be implemented as:
++ *     return (((size >> 12) * 85) >> 8) + IECM_TX_DESCS_FOR_SKB_DATA_PTR;
++ *
++ * Since multiplication and division are commutative, we can reorder
++ * operations into:
++ *     return ((size * 85) >> 20) + IECM_TX_DESCS_FOR_SKB_DATA_PTR;
++ */
++static unsigned int __iecm_tx_desc_count_required(unsigned int size)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_desc_count_required - calculate number of Tx descriptors needed
++ * @skb: send buffer
++ *
++ * Returns number of data descriptors needed for this skb.
++ */
++unsigned int iecm_tx_desc_count_required(struct sk_buff *skb)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_splitq_map - Build the Tx flex descriptor
++ * @tx_q: queue to send buffer on
++ * @off: pointer to offload params struct
++ * @first: first buffer info buffer to use
++ *
++ * This function loops over the skb data pointed to by *first
++ * and gets a physical address for each memory location and programs
++ * it and the length into the transmit flex descriptor.
++ */
++static void
++iecm_tx_splitq_map(struct iecm_queue *tx_q,
++		   struct iecm_tx_offload_params *off,
++		   struct iecm_tx_buf *first)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tso - computes mss and TSO length to prepare for TSO
++ * @first: pointer to struct iecm_tx_buf
++ * @off: pointer to struct that holds offload parameters
++ *
++ * Returns error (negative) if TSO doesn't apply to the given skb,
++ * 0 otherwise.
++ *
++ * Note: this function can be used in the splitq and singleq paths
++ */
++static int iecm_tso(struct iecm_tx_buf *first,
++		    struct iecm_tx_offload_params *off)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_splitq_frame - Sends buffer on Tx ring using flex descriptors
++ * @skb: send buffer
++ * @tx_q: queue to send buffer on
++ *
++ * Returns NETDEV_TX_OK if sent, else an error code
++ */
++static netdev_tx_t
++iecm_tx_splitq_frame(struct sk_buff *skb, struct iecm_queue *tx_q)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_splitq_start - Selects the right Tx queue to send buffer
++ * @skb: send buffer
++ * @netdev: network interface device structure
++ *
++ * Returns NETDEV_TX_OK if sent, else an error code
++ */
++netdev_tx_t iecm_tx_splitq_start(struct sk_buff *skb,
++				 struct net_device *netdev)
++{
++	/* stub */
++}
++
++/**
++ * iecm_ptype_to_htype - get a hash type
++ * @vport: virtual port data
++ * @ptype: the ptype value from the descriptor
++ *
++ * Returns appropriate hash type (such as PKT_HASH_TYPE_L2/L3/L4) to be used by
++ * skb_set_hash based on PTYPE as parsed by HW Rx pipeline and is part of
++ * Rx desc.
++ */
++static enum pkt_hash_types iecm_ptype_to_htype(struct iecm_vport *vport,
++					       u16 ptype)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_hash - set the hash value in the skb
++ * @rxq: Rx descriptor ring packet is being transacted on
++ * @skb: pointer to current skb being populated
++ * @rx_desc: Receive descriptor
++ * @ptype: the packet type decoded by hardware
++ */
++static void
++iecm_rx_hash(struct iecm_queue *rxq, struct sk_buff *skb,
++	     struct iecm_flex_rx_desc *rx_desc, u16 ptype)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_csum - Indicate in skb if checksum is good
++ * @rxq: Rx descriptor ring packet is being transacted on
++ * @skb: pointer to current skb being populated
++ * @rx_desc: Receive descriptor
++ * @ptype: the packet type decoded by hardware
++ *
++ * skb->protocol must be set before this function is called
++ */
++static void
++iecm_rx_csum(struct iecm_queue *rxq, struct sk_buff *skb,
++	     struct iecm_flex_rx_desc *rx_desc, u16 ptype)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_rsc - Set the RSC fields in the skb
++ * @rxq : Rx descriptor ring packet is being transacted on
++ * @skb : pointer to current skb being populated
++ * @rx_desc: Receive descriptor
++ * @ptype: the packet type decoded by hardware
++ *
++ * Populate the skb fields with the total number of RSC segments, RSC payload
++ * length and packet type.
++ */
++static bool iecm_rx_rsc(struct iecm_queue *rxq, struct sk_buff *skb,
++			struct iecm_flex_rx_desc *rx_desc, u16 ptype)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_hwtstamp - check for an RX timestamp and pass up
++ * the stack
++ * @rx_desc: pointer to Rx descriptor containing timestamp
++ * @skb: skb to put timestamp in
++ */
++static void iecm_rx_hwtstamp(struct iecm_flex_rx_desc *rx_desc,
++			     struct sk_buff __maybe_unused *skb)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_process_skb_fields - Populate skb header fields from Rx descriptor
++ * @rxq: Rx descriptor ring packet is being transacted on
++ * @skb: pointer to current skb being populated
++ * @rx_desc: Receive descriptor
++ *
++ * This function checks the ring, descriptor, and packet information in
++ * order to populate the hash, checksum, VLAN, protocol, and
++ * other fields within the skb.
++ */
++static bool
++iecm_rx_process_skb_fields(struct iecm_queue *rxq, struct sk_buff *skb,
++			   struct iecm_flex_rx_desc *rx_desc)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_skb - Send a completed packet up the stack
++ * @rxq: Rx ring in play
++ * @skb: packet to send up
++ *
++ * This function sends the completed packet (via. skb) up the stack using
++ * GRO receive functions
++ */
++void iecm_rx_skb(struct iecm_queue *rxq, struct sk_buff *skb)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_page_is_reserved - check if reuse is possible
++ * @page: page struct to check
++ */
++static bool iecm_rx_page_is_reserved(struct page *page)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_buf_adjust_pg_offset - Prepare Rx buffer for reuse
++ * @rx_buf: Rx buffer to adjust
++ * @size: Size of adjustment
++ *
++ * Update the offset within page so that Rx buf will be ready to be reused.
++ * For systems with PAGE_SIZE < 8192 this function will flip the page offset
++ * so the second half of page assigned to Rx buffer will be used, otherwise
++ * the offset is moved by the @size bytes
++ */
++static void
++iecm_rx_buf_adjust_pg_offset(struct iecm_rx_buf *rx_buf, unsigned int size)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_can_reuse_page - Determine if page can be reused for another Rx
++ * @rx_buf: buffer containing the page
++ *
++ * If page is reusable, we have a green light for calling iecm_reuse_rx_page,
++ * which will assign the current buffer to the buffer that next_to_alloc is
++ * pointing to; otherwise, the DMA mapping needs to be destroyed and
++ * page freed
++ */
++static bool iecm_rx_can_reuse_page(struct iecm_rx_buf *rx_buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_add_frag - Add contents of Rx buffer to sk_buff as a frag
++ * @rx_buf: buffer containing page to add
++ * @skb: sk_buff to place the data into
++ * @size: packet length from rx_desc
++ *
++ * This function will add the data contained in rx_buf->page to the skb.
++ * It will just attach the page as a frag to the skb.
++ * The function will then update the page offset.
++ */
++void iecm_rx_add_frag(struct iecm_rx_buf *rx_buf, struct sk_buff *skb,
++		      unsigned int size)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_reuse_page - page flip buffer and store it back on the queue
++ * @rx_bufq: Rx descriptor ring to store buffers on
++ * @hsplit: true if header buffer, false otherwise
++ * @old_buf: donor buffer to have page reused
++ *
++ * Synchronizes page for reuse by the adapter
++ */
++void iecm_rx_reuse_page(struct iecm_queue *rx_bufq,
++			bool hsplit,
++			struct iecm_rx_buf *old_buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_get_buf_page - Fetch Rx buffer page and synchronize data for use
++ * @rx_buf: Rx buf to fetch page for
++ * @size: size of buffer to add to skb
++ *
++ * This function will pull an Rx buffer page from the ring and synchronize it
++ * for use by the CPU.
++ */
++static void
++iecm_rx_get_buf_page(struct device *dev, struct iecm_rx_buf *rx_buf,
++		     const unsigned int size)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_construct_skb - Allocate skb and populate it
++ * @rxq: Rx descriptor queue
++ * @rx_buf: Rx buffer to pull data from
++ * @size: the length of the packet
++ *
++ * This function allocates an skb. It then populates it with the page
++ * data from the current receive descriptor, taking care to set up the
++ * skb correctly.
++ */
++struct sk_buff *
++iecm_rx_construct_skb(struct iecm_queue *rxq, struct iecm_rx_buf *rx_buf,
++		      unsigned int size)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_cleanup_headers - Correct empty headers
++ * @skb: pointer to current skb being fixed
++ *
++ * Also address the case where we are pulling data in on pages only
++ * and as such no data is present in the skb header.
++ *
++ * In addition if skb is not at least 60 bytes we need to pad it so that
++ * it is large enough to qualify as a valid Ethernet frame.
++ *
++ * Returns true if an error was encountered and skb was freed.
++ */
++bool iecm_rx_cleanup_headers(struct sk_buff *skb)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_splitq_test_staterr - tests bits in Rx descriptor
++ * status and error fields
++ * @stat_err_field: field from descriptor to test bits in
++ * @stat_err_bits: value to mask
++ *
++ */
++static bool
++iecm_rx_splitq_test_staterr(u8 stat_err_field, const u8 stat_err_bits)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_splitq_is_non_eop - process handling of non-EOP buffers
++ * @rx_desc: Rx descriptor for current buffer
++ *
++ * If the buffer is an EOP buffer, this function exits returning false,
++ * otherwise return true indicating that this is in fact a non-EOP buffer.
++ */
++static bool
++iecm_rx_splitq_is_non_eop(struct iecm_flex_rx_desc *rx_desc)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_recycle_buf - Clean up used buffer and either recycle or free
++ * @rx_bufq: Rx descriptor queue to transact packets on
++ * @hsplit: true if buffer is a header buffer
++ * @rx_buf: Rx buffer to pull data from
++ *
++ * This function will clean up the contents of the rx_buf. It will either
++ * recycle the buffer or unmap it and free the associated resources.
++ *
++ * Returns true if the buffer is reused, false if the buffer is freed.
++ */
++bool iecm_rx_recycle_buf(struct iecm_queue *rx_bufq, bool hsplit,
++			 struct iecm_rx_buf *rx_buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_splitq_put_bufs - wrapper function to clean and recycle buffers
++ * @rx_bufq: Rx descriptor queue to transact packets on
++ * @hdr_buf: Rx header buffer to pull data from
++ * @rx_buf: Rx buffer to pull data from
++ *
++ * This function will update the next_to_use/next_to_alloc if the current
++ * buffer is recycled.
++ */
++static void iecm_rx_splitq_put_bufs(struct iecm_queue *rx_bufq,
++				    struct iecm_rx_buf *hdr_buf,
++				    struct iecm_rx_buf *rx_buf)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_bump_ntc - Bump and wrap q->next_to_clean value
++ * @q: queue to bump
++ */
++static void iecm_rx_bump_ntc(struct iecm_queue *q)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_splitq_clean - Clean completed descriptors from Rx queue
++ * @rxq: Rx descriptor queue to retrieve receive buffer queue
++ * @budget: Total limit on number of packets to process
++ *
++ * This function provides a "bounce buffer" approach to Rx interrupt
++ * processing. The advantage to this is that on systems that have
++ * expensive overhead for IOMMU access this provides a means of avoiding
++ * it by maintaining the mapping of the page to the system.
++ *
++ * Returns amount of work completed
++ */
++static int iecm_rx_splitq_clean(struct iecm_queue *rxq, int budget)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_clean_queues - MSIX mode Interrupt Handler
++ * @irq: interrupt number
++ * @data: pointer to a q_vector
++ *
++ */
++irqreturn_t
++iecm_vport_intr_clean_queues(int __always_unused irq, void *data)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_napi_dis_all - Disable NAPI for all q_vectors in the vport
++ * @vport: main vport structure
++ */
++static void iecm_vport_intr_napi_dis_all(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_rel - Free memory allocated for interrupt vectors
++ * @vport: virtual port
++ *
++ * Free the memory allocated for interrupt vectors  associated to a vport
++ */
++static void iecm_vport_intr_rel(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_rel_irq - Free the IRQ association with the OS
++ * @vport: main vport structure
++ */
++static void iecm_vport_intr_rel_irq(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_dis_irq_all - Disable each interrupt
++ * @vport: main vport structure
++ */
++void iecm_vport_intr_dis_irq_all(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_buildreg_itr - Enable default interrupt generation settings
++ * @q_vector: pointer to q_vector
++ * @type: ITR index
++ * @itr: ITR value
++ */
++static u32 iecm_vport_intr_buildreg_itr(struct iecm_q_vector *q_vector,
++					const int type, u16 itr)
++{
++	/* stub */
++}
++
++static inline unsigned int iecm_itr_divisor(struct iecm_q_vector *q_vector)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_set_new_itr - update the ITR value based on statistics
++ * @q_vector: structure containing interrupt and ring information
++ * @itr: structure containing queue performance data
++ * @q_type: queue type
++ *
++ * Stores a new ITR value based on packets and byte
++ * counts during the last interrupt.  The advantage of per interrupt
++ * computation is faster updates and more accurate ITR for the current
++ * traffic pattern.  Constants in this function were computed
++ * based on theoretical maximum wire speed and thresholds were set based
++ * on testing data as well as attempting to minimize response time
++ * while increasing bulk throughput.
++ */
++static void iecm_vport_intr_set_new_itr(struct iecm_q_vector *q_vector,
++					struct iecm_itr *itr,
++					enum virtchnl_queue_type q_type)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_update_itr_ena_irq - Update ITR and re-enable MSIX interrupt
++ * @q_vector: q_vector for which ITR is being updated and interrupt enabled
++ */
++void iecm_vport_intr_update_itr_ena_irq(struct iecm_q_vector *q_vector)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_req_irq - get MSI-X vectors from the OS for the vport
++ * @vport: main vport structure
++ * @basename: name for the vector
++ */
++static int
++iecm_vport_intr_req_irq(struct iecm_vport *vport, char *basename)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_ena_irq_all - Enable IRQ for the given vport
++ * @vport: main vport structure
++ */
++void iecm_vport_intr_ena_irq_all(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_deinit - Release all vector associations for the vport
++ * @vport: main vport structure
++ */
++void iecm_vport_intr_deinit(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_napi_ena_all - Enable NAPI for all q_vectors in the vport
++ * @vport: main vport structure
++ */
++static void
++iecm_vport_intr_napi_ena_all(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_tx_splitq_clean_all- Clean completion queues
++ * @q_vec: queue vector
++ * @budget: Used to determine if we are in netpoll
++ *
++ * Returns false if clean is not complete else returns true
++ */
++static inline bool
++iecm_tx_splitq_clean_all(struct iecm_q_vector *q_vec, int budget)
++{
++	/* stub */
++}
++
++/**
++ * iecm_rx_splitq_clean_all- Clean completion queues
++ * @q_vec: queue vector
++ * @budget: Used to determine if we are in netpoll
++ * @cleaned: returns number of packets cleaned
++ *
++ * Returns false if clean is not complete else returns true
++ */
++static inline bool
++iecm_rx_splitq_clean_all(struct iecm_q_vector *q_vec, int budget,
++			 int *cleaned)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_splitq_napi_poll - NAPI handler
++ * @napi: struct from which you get q_vector
++ * @budget: budget provided by stack
++ */
++int iecm_vport_splitq_napi_poll(struct napi_struct *napi, int budget)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_map_vector_to_qs - Map vectors to queues
++ * @vport: virtual port
++ *
++ * Mapping for vectors to queues
++ */
++void iecm_vport_intr_map_vector_to_qs(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_init_vec_idx - Initialize the vector indexes
++ * @vport: virtual port
++ *
++ * Initialize vector indexes with values returned over mailbox
++ */
++static int iecm_vport_intr_init_vec_idx(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_alloc - Allocate memory for interrupt vectors
++ * @vport: virtual port
++ *
++ * We allocate one q_vector per queue interrupt. If allocation fails we
++ * return -ENOMEM.
++ */
++int iecm_vport_intr_alloc(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_intr_init - Setup all vectors for the given vport
++ * @vport: virtual port
++ *
++ * Returns 0 on success or negative on failure
++ */
++int iecm_vport_intr_init(struct iecm_vport *vport)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_vport_calc_num_q_vec);
++
++/**
++ * iecm_config_rss - Prepare for RSS
++ * @vport: virtual port
++ *
++ * Return 0 on success, negative on failure
++ */
++int iecm_config_rss(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_get_rx_qid_list - Create a list of RX QIDs
++ * @vport: virtual port
++ *
++ * qid_list is created and freed by the caller
++ */
++void iecm_get_rx_qid_list(struct iecm_vport *vport, u16 *qid_list)
++{
++	/* stub */
++}
++
++/**
++ * iecm_fill_dflt_rss_lut - Fill the indirection table with the default values
++ * @vport: virtual port structure
++ * @qid_list: List of the RX qid's
++ *
++ * qid_list is created and freed by the caller
++ */
++void iecm_fill_dflt_rss_lut(struct iecm_vport *vport, u16 *qid_list)
++{
++	/* stub */
++}
++
++/**
++ * iecm_init_rss - Prepare for RSS
++ * @vport: virtual port
++ *
++ * Return 0 on success, negative on failure
++ */
++int iecm_init_rss(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_deinit_rss - Prepare for RSS
++ * @vport: virtual port
++ *
++ */
++void iecm_deinit_rss(struct iecm_vport *vport)
++{
++	/* stub */
++}
+diff --git a/drivers/net/ethernet/intel/iecm/iecm_virtchnl.c b/drivers/net/ethernet/intel/iecm/iecm_virtchnl.c
+new file mode 100644
+index 000000000000..271009350503
+--- /dev/null
++++ b/drivers/net/ethernet/intel/iecm/iecm_virtchnl.c
+@@ -0,0 +1,570 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Intel Corporation */
++
++#include <linux/net/intel/iecm.h>
++
++/**
++ * iecm_recv_event_msg - Receive virtchnl event message
++ * @vport: virtual port structure
++ *
++ * Receive virtchnl event message
++ */
++void iecm_recv_event_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_mb_clean - Reclaim the send mailbox queue entries
++ * @adapter: Driver specific private structure
++ *
++ * Reclaim the send mailbox queue entries to be used to send further messages
++ *
++ * Returns success or failure
++ */
++enum iecm_status
++iecm_mb_clean(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_mb_msg - Send message over mailbox
++ * @adapter: Driver specific private structure
++ * @op: virtchnl opcode
++ * @msg_size: size of the payload
++ * @msg: pointer to buffer holding the payload
++ *
++ * Will prepare the control queue message and initiates the send API
++ *
++ * Returns success or failure
++ */
++enum iecm_status
++iecm_send_mb_msg(struct iecm_adapter *adapter, enum virtchnl_ops op,
++		 u16 msg_size, u8 *msg)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_send_mb_msg);
++
++/**
++ * iecm_recv_mb_msg - Receive message over mailbox
++ * @adapter: Driver specific private structure
++ * @op: virtchnl operation code
++ * @msg: Received message holding buffer
++ * @msg_size: message size
++ *
++ * Will receive control queue message and posts the receive buffer
++ */
++enum iecm_status
++iecm_recv_mb_msg(struct iecm_adapter *adapter, enum virtchnl_ops op,
++		 void *msg, int msg_size)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_recv_mb_msg);
++
++/**
++ * iecm_send_ver_msg - send virtchnl version message
++ * @adapter: Driver specific private structure
++ *
++ * Send virtchnl version message
++ */
++static enum iecm_status
++iecm_send_ver_msg(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_recv_ver_msg - Receive virtchnl version message
++ * @adapter: Driver specific private structure
++ *
++ * Receive virtchnl version message
++ */
++static enum iecm_status
++iecm_recv_ver_msg(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_get_caps_msg - Send virtchnl get capabilities message
++ * @adapter: Driver specific private structure
++ *
++ * send virtchnl get capabilities message
++ */
++enum iecm_status
++iecm_send_get_caps_msg(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_send_get_caps_msg);
++
++/**
++ * iecm_recv_get_caps_msg - Receive virtchnl get capabilities message
++ * @adapter: Driver specific private structure
++ *
++ * Receive virtchnl get capabilities message
++ */
++static enum iecm_status
++iecm_recv_get_caps_msg(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_create_vport_msg - Send virtchnl create vport message
++ * @adapter: Driver specific private structure
++ *
++ * send virtchnl create vport message
++ *
++ * Returns success or failure
++ */
++static enum iecm_status
++iecm_send_create_vport_msg(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_recv_create_vport_msg - Receive virtchnl create vport message
++ * @adapter: Driver specific private structure
++ * @vport_id: Virtual port identifier
++ *
++ * Receive virtchnl create vport message
++ *
++ * Returns success or failure
++ */
++static enum iecm_status
++iecm_recv_create_vport_msg(struct iecm_adapter *adapter,
++			   int *vport_id)
++{
++	/* stub */
++}
++
++/**
++ * iecm_wait_for_event - wait for virtchnl response
++ * @adapter: Driver private data structure
++ * @state: check on state upon timeout after 500ms
++ * @err_check: check if this specific error bit is set
++ *
++ * checks if state is set upon expiry of timeout
++ *
++ * Returns success or failure
++ */
++enum iecm_status
++iecm_wait_for_event(struct iecm_adapter *adapter,
++		    enum iecm_vport_vc_state state,
++		    enum iecm_vport_vc_state err_check)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_wait_for_event);
++
++/**
++ * iecm_send_destroy_vport_msg - Send virtchnl destroy vport message
++ * @vport: virtual port data structure
++ *
++ * send virtchnl destroy vport message
++ */
++enum iecm_status
++iecm_send_destroy_vport_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_enable_vport_msg - Send virtchnl enable vport message
++ * @vport: virtual port data structure
++ *
++ * send enable vport virtchnl message
++ */
++enum iecm_status
++iecm_send_enable_vport_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_disable_vport_msg - Send virtchnl disable vport message
++ * @vport: virtual port data structure
++ *
++ * send disable vport virtchnl message
++ */
++enum iecm_status
++iecm_send_disable_vport_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_config_tx_queues_msg - Send virtchnl config Tx queues message
++ * @vport: virtual port data structure
++ *
++ * send config Tx queues virtchnl message
++ *
++ * Returns success or failure
++ */
++enum iecm_status
++iecm_send_config_tx_queues_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_config_rx_queues_msg - Send virtchnl config Rx queues message
++ * @vport: virtual port data structure
++ *
++ * send config Rx queues virtchnl message
++ *
++ * Returns success or failure
++ */
++enum iecm_status
++iecm_send_config_rx_queues_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_ena_dis_queues_msg - Send virtchnl enable or disable
++ * queues message
++ * @vport: virtual port data structure
++ * @vc_op: virtchnl op code to send
++ *
++ * send enable or disable queues virtchnl message
++ *
++ * Returns success or failure
++ */
++static enum iecm_status
++iecm_send_ena_dis_queues_msg(struct iecm_vport *vport,
++			     enum virtchnl_ops vc_op)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_map_unmap_queue_vector_msg - Send virtchnl map or unmap queue
++ * vector message
++ * @vport: virtual port data structure
++ * @map: true for map and false for unmap
++ *
++ * send map or unmap queue vector virtchnl message
++ *
++ * Returns success or failure
++ */
++static enum iecm_status
++iecm_send_map_unmap_queue_vector_msg(struct iecm_vport *vport,
++				     bool map)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_enable_queues_msg - send enable queues virtchnl message
++ * @vport: Virtual port private data structure
++ *
++ * Will send enable queues virtchnl message
++ */
++static enum iecm_status
++iecm_send_enable_queues_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_disable_queues_msg - send disable queues virtchnl message
++ * @vport: Virtual port private data structure
++ *
++ * Will send disable queues virtchnl message
++ */
++static enum iecm_status
++iecm_send_disable_queues_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_delete_queues_msg - send delete queues virtchnl message
++ * @vport: Virtual port private data structure
++ *
++ * Will send delete queues virtchnl message
++ */
++enum iecm_status
++iecm_send_delete_queues_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_config_queues_msg - Send config queues virtchnl message
++ * @vport: Virtual port private data structure
++ *
++ * Will send config queues virtchnl message
++ */
++static enum iecm_status
++iecm_send_config_queues_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_add_queues_msg - Send virtchnl add queues message
++ * @vport: Virtual port private data structure
++ * @num_tx_q: number of transmit queues
++ * @num_complq: number of transmit completion queues
++ * @num_rx_q: number of receive queues
++ * @num_rx_bufq: number of receive buffer queues
++ *
++ * Returns success or failure
++ */
++enum iecm_status
++iecm_send_add_queues_msg(struct iecm_vport *vport, u16 num_tx_q,
++			 u16 num_complq, u16 num_rx_q, u16 num_rx_bufq)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_get_stats_msg - Send virtchnl get statistics message
++ * @adapter: Driver specific private structure
++ *
++ * Returns success or failure
++ */
++enum iecm_status
++iecm_send_get_stats_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_get_set_rss_hash_msg - Send set or get RSS hash message
++ * @vport: virtual port data structure
++ * @get: flag to get or set RSS hash
++ *
++ * Returns success or failure
++ */
++enum iecm_status
++iecm_send_get_set_rss_hash_msg(struct iecm_vport *vport, bool get)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_get_set_rss_lut_msg - Send virtchnl get or set RSS lut message
++ * @vport: virtual port data structure
++ * @get: flag to set or get RSS look up table
++ *
++ * Returns success or failure
++ */
++enum iecm_status
++iecm_send_get_set_rss_lut_msg(struct iecm_vport *vport, bool get)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_get_set_rss_key_msg - Send virtchnl get or set RSS key message
++ * @vport: virtual port data structure
++ * @get: flag to set or get RSS look up table
++ *
++ * Returns success or failure
++ */
++enum iecm_status
++iecm_send_get_set_rss_key_msg(struct iecm_vport *vport, bool get)
++{
++	/* stub */
++}
++
++/**
++ * iecm_send_get_rx_ptype_msg - Send virtchnl get or set RSS key message
++ * @vport: virtual port data structure
++ *
++ * Returns success or failure
++ */
++enum iecm_status iecm_send_get_rx_ptype_msg(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_find_ctlq - Given a type and id, find ctlq info
++ * @adapter: adapter info struct
++ * @type: type of ctrlq to find
++ * @id: ctlq id to find
++ *
++ * Returns pointer to found ctlq info struct, NULL otherwise.
++ */
++static struct iecm_ctlq_info *iecm_find_ctlq(struct iecm_hw *hw,
++					     enum iecm_ctlq_type type, int id)
++{
++	/* stub */
++}
++
++/**
++ * iecm_deinit_dflt_mbx - De initialize mailbox
++ * @adapter: adapter info struct
++ */
++void iecm_deinit_dflt_mbx(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_init_dflt_mbx - Setup default mailbox parameters and make request
++ * @adapter: adapter info struct
++ *
++ * Returns 0 on success, negative otherwise
++ */
++enum iecm_status iecm_init_dflt_mbx(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_params_buf_alloc - Allocate memory for mailbox resources
++ * @adapter: Driver specific private data structure
++ *
++ * Will alloc memory to hold the vport parameters received on mailbox
++ */
++int iecm_vport_params_buf_alloc(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_params_buf_rel - Release memory for mailbox resources
++ * @adapter: Driver specific private data structure
++ *
++ * Will release memory to hold the vport parameters received on mailbox
++ */
++void iecm_vport_params_buf_rel(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vc_core_init - Initialize mailbox and get resources
++ * @adapter: Driver specific private structure
++ * @vport_id: Virtual port identifier
++ *
++ * Will check if HW is ready with reset complete. Initializes the mailbox and
++ * communicate with master to get all the default vport parameters.
++ */
++int iecm_vc_core_init(struct iecm_adapter *adapter, int *vport_id)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_vc_core_init);
++
++/**
++ * iecm_vport_init - Initialize virtual port
++ * @vport: virtual port to be initialized
++ * @vport_id: Unique identification number of vport
++ *
++ * Will initialize vport with the info received through MB earlier
++ */
++static void iecm_vport_init(struct iecm_vport *vport, int vport_id)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_get_vec_ids - Initialize vector id from Mailbox parameters
++ * @vecids: Array of vector ids
++ * @num_vecids: number of vector ids
++ * @chunks: vector ids received over mailbox
++ *
++ * Will initialize all vector ids with ids received as mailbox parameters
++ * Returns number of ids filled
++ */
++int
++iecm_vport_get_vec_ids(u16 *vecids, int num_vecids,
++		       struct virtchnl_vector_chunks *chunks)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_get_queue_ids - Initialize queue id from Mailbox parameters
++ * @qids: Array of queue ids
++ * @num_qids: number of queue ids
++ * @q_type: queue model
++ * @chunks: queue ids received over mailbox
++ *
++ * Will initialize all queue ids with ids received as mailbox parameters
++ * Returns number of ids filled
++ */
++static int
++iecm_vport_get_queue_ids(u16 *qids, int num_qids,
++			 enum virtchnl_queue_type q_type,
++			 struct virtchnl_queue_chunks *chunks)
++{
++	/* stub */
++}
++
++/**
++ * __iecm_vport_queue_ids_init - Initialize queue ids from Mailbox parameters
++ * @vport: virtual port for which the queues ids are initialized
++ * @qids: queue ids
++ * @num_qids: number of queue ids
++ * @q_type: type of queue
++ *
++ * Will initialize all queue ids with ids received as mailbox
++ * parameters. Returns number of queue ids initialized.
++ */
++static int
++__iecm_vport_queue_ids_init(struct iecm_vport *vport, u16 *qids,
++			    int num_qids, enum virtchnl_queue_type q_type)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_queue_ids_init - Initialize queue ids from Mailbox parameters
++ * @vport: virtual port for which the queues ids are initialized
++ *
++ * Will initialize all queue ids with ids received as mailbox
++ * parameters. Returns error if all the queues are not initialized
++ */
++static
++enum iecm_status iecm_vport_queue_ids_init(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vport_adjust_qs - Adjust to new requested queues
++ * @vport: virtual port data struct
++ *
++ * Renegotiate queues
++ */
++enum iecm_status iecm_vport_adjust_qs(struct iecm_vport *vport)
++{
++	/* stub */
++}
++
++/**
++ * iecm_is_capability_ena - Default implementation of capability checking
++ * @adapter: Private data struct
++ * @flag: flag to check
++ *
++ * Return true if capability is supported, false otherwise
++ */
++static bool iecm_is_capability_ena(struct iecm_adapter *adapter, u64 flag)
++{
++	/* stub */
++}
++
++/**
++ * iecm_vc_ops_init - Initialize virtchnl common API
++ * @adapter: Driver specific private structure
++ *
++ * Initialize the function pointers with the extended feature set functions
++ * as APF will deal only with new set of opcodes.
++ */
++void iecm_vc_ops_init(struct iecm_adapter *adapter)
++{
++	/* stub */
++}
++EXPORT_SYMBOL(iecm_vc_ops_init);
 -- 
 2.26.2
 
