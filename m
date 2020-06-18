@@ -2,145 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5C291FEDC7
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 10:38:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6B881FEDC9
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 10:38:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728774AbgFRIhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 04:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728731AbgFRIhg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 04:37:36 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695AAC06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 01:37:36 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id k1so2162190pls.2
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 01:37:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6yWNMsNVNQUfzEh8JLitD73fcG9pyyOuyfUMr1PA9FE=;
-        b=juCsrLoVXJ8+8b2bwn/apsA6AS7zl7uk3GkO1jYZnjsSFgRNsXxjuvZIAWSjz+OntR
-         fihL13aMAlJsj1hO4MUCLciGDYwFvRUNwieULuXfg1AzdgzZt3uQDyNa0iH+tYupEVt6
-         IUEOu2b9K2EOfKBBid7h08yDsnoVpKMFES1QUnfyQ4YTWSPxeK4FtCkvTKV6RQ9uc7Hu
-         Is0iJb1JwpjDhnmW5uIOsIgyWqYeAiUFmRi4FoWL79y4vT5OKyes89QgQzXr3lQCSIUk
-         HAFEHnsRgiilr9YLA2igHSneHyTen0tzdd/DCCGL8eL8T53RuXJXgf2/jQnw1Z6y0VO9
-         LdoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6yWNMsNVNQUfzEh8JLitD73fcG9pyyOuyfUMr1PA9FE=;
-        b=VtX+8L7q39+ZApINz9vti0TetaElFm1CYfwtkW54cd6R+aiB4Y+IElm3pj3o4aw3Yp
-         sxYkP8df0UxBddr36dhCm3m9d8R3mu9JMV2XUmJjtAjvcfHHkQD4KoQgH3mdnh1K/1PQ
-         i9uAmfWorAHeuRG/o6VUR5ITV9Ut51hunPQDpU7TZKWMyx2kPKvomQJr1VojXlde/nVY
-         kmzMFKv3MUtjKVawnyO+JyiDX4LPRWdhx0yit3Ho9czXkyrx9l7hfMXMNF6nhibywUaD
-         1ihVjEsX7v9NvGwDqHuzNDGTSIoU8zOBXTmJ0aiwkoRum4gRHyRvx9aiH6fljym5kP/N
-         7Gcw==
-X-Gm-Message-State: AOAM533i4OPWZr9orf1fy2j1K0a91J9r5pFLuAmh2zk+SMVbxWsreZoz
-        aDKNo2NYSdBWMfPYH5HSXDGQIyv97kU=
-X-Google-Smtp-Source: ABdhPJzfRN/VJQHacDa0ByqF1mBYK+tr6hb95fA0Oa0i9UTRvI5rg9hwA6QSJL+Y45KnXrN8hbhWDg==
-X-Received: by 2002:a17:902:ed49:: with SMTP id y9mr2805037plb.284.1592469455627;
-        Thu, 18 Jun 2020 01:37:35 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v66sm2202248pfb.63.2020.06.18.01.37.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2020 01:37:35 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>,
-        Lucas Bates <lucasb@mojatatu.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        David Miller <davem@davemloft.net>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] tc-testing: fix geneve options match in tunnel_key unit tests
-Date:   Thu, 18 Jun 2020 16:37:05 +0800
-Message-Id: <20200618083705.449619-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.25.4
+        id S1728786AbgFRIiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 04:38:00 -0400
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:41730 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728731AbgFRIh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 04:37:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1592469478; x=1624005478;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=op9Dwd0owILrsaDW41uZbpQG/X+/tABWDFLpAQRIZB4=;
+  b=EmUXVCYblOXfXlO5FvERxo3CZ9rZH/j4nNHLTPYRX1FT4h7bTAr8ny01
+   CWfv5BPDA4r28X+NcLwOifiHTPeIwjlhxZRkbxvtwmd5zH+zINbx6Prn4
+   b+7NSHu/KSleoZtDxkdjRP8OxPJ2sUSM0EYdU9Y32C0F/iGy1HtF0o2sf
+   DFpsMgric1rZMY+Caxz2ApIssPET/m70Nk3hcEZsA4d8qGyRacUjaZz+W
+   jF1qr2YKxsNWVM0EUQXSYy4E1jlCug4SPitQV3rNqxjmDR+MDC3kku8Qa
+   IhwLra9gkdHIkFAwa3s59Wyny+0AJBOsHjj//bpJyYBkbtlvf5zQ3tcJY
+   Q==;
+IronPort-SDR: au0IV5Gn5V62aYnSuTdr0sQppXDQt0c0vpZtbIb7dDb2iuVlD2QVSxEYlx8oXTrN6jD7Ek/+oe
+ cleVbeORNQBSMWYk2zULg8s5x9htvzfXaf3vsfddhwHjBLUmonuBPONs3LLCiTHlvCRChDfDSO
+ BFUdIiL8eQrG+eVe7QCWBLakVRnNmYAbiro5oVn0lQ/KDAJlXAKb3UzeemwYwnoNgKH55QWc+u
+ D34Ibohb94mO3kFg84Xoa8mOTLFejnH/M30HViNSbL0xRmjkDhlNQGuZWhIvc+ISodgtNuugPM
+ stw=
+X-IronPort-AV: E=Sophos;i="5.73,526,1583218800"; 
+   d="scan'208";a="77021584"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Jun 2020 01:37:46 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 18 Jun 2020 01:37:39 -0700
+Received: from m18063-ThinkPad-T460p.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Thu, 18 Jun 2020 01:37:43 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>
+CC:     <antoine.tenart@bootlin.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v2] net: macb: undo operations in case of failure
+Date:   Thu, 18 Jun 2020 11:37:40 +0300
+Message-ID: <1592469460-17825-1-git-send-email-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tc action print "geneve_opts" instead of "geneve_opt".
-Fix the typo, or we will unable to match correct action output.
+Undo previously done operation in case macb_phylink_connect()
+fails. Since macb_reset_hw() is the 1st undo operation the
+napi_exit label was renamed to reset_hw.
 
-Fixes: cba54f9cf4ec ("tc-testing: add geneve options in tunnel_key unit tests")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Fixes: 7897b071ac3b ("net: macb: convert to phylink")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- .../tc-testing/tc-tests/actions/tunnel_key.json    | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json b/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
-index fbeb9197697d..f451915626eb 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
-@@ -629,7 +629,7 @@
-         "cmdUnderTest": "$TC actions add action tunnel_key set src_ip 1.1.1.1 dst_ip 2.2.2.2 id 42 dst_port 6081 geneve_opts 0102:80:00880022 index 1",
-         "expExitCode": "0",
-         "verifyCmd": "$TC actions get action tunnel_key index 1",
--        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opt 0102:80:00880022.*index 1",
-+        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opts 0102:80:00880022.*index 1",
-         "matchCount": "1",
-         "teardown": [
-             "$TC actions flush action tunnel_key"
-@@ -653,7 +653,7 @@
-         "cmdUnderTest": "$TC actions add action tunnel_key set src_ip 1.1.1.1 dst_ip 2.2.2.2 id 42 dst_port 6081 geneve_opts 0102:80:00880022,0408:42:0040007611223344,0111:02:1020304011223344 index 1",
-         "expExitCode": "0",
-         "verifyCmd": "$TC actions get action tunnel_key index 1",
--        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opt 0102:80:00880022,0408:42:0040007611223344,0111:02:1020304011223344.*index 1",
-+        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opts 0102:80:00880022,0408:42:0040007611223344,0111:02:1020304011223344.*index 1",
-         "matchCount": "1",
-         "teardown": [
-             "$TC actions flush action tunnel_key"
-@@ -677,7 +677,7 @@
-         "cmdUnderTest": "$TC actions add action tunnel_key set src_ip 1.1.1.1 dst_ip 2.2.2.2 id 42 dst_port 6081 geneve_opts 824212:80:00880022 index 1",
-         "expExitCode": "255",
-         "verifyCmd": "$TC actions get action tunnel_key index 1",
--        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opt 824212:80:00880022.*index 1",
-+        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opts 824212:80:00880022.*index 1",
-         "matchCount": "0",
-         "teardown": [
-             "$TC actions flush action tunnel_key"
-@@ -701,7 +701,7 @@
-         "cmdUnderTest": "$TC actions add action tunnel_key set src_ip 1.1.1.1 dst_ip 2.2.2.2 id 42 dst_port 6081 geneve_opts 0102:4224:00880022 index 1",
-         "expExitCode": "255",
-         "verifyCmd": "$TC actions get action tunnel_key index 1",
--        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opt 0102:4224:00880022.*index 1",
-+        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opts 0102:4224:00880022.*index 1",
-         "matchCount": "0",
-         "teardown": [
-             "$TC actions flush action tunnel_key"
-@@ -725,7 +725,7 @@
-         "cmdUnderTest": "$TC actions add action tunnel_key set src_ip 1.1.1.1 dst_ip 2.2.2.2 id 42 dst_port 6081 geneve_opts 0102:80:4288 index 1",
-         "expExitCode": "255",
-         "verifyCmd": "$TC actions get action tunnel_key index 1",
--        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opt 0102:80:4288.*index 1",
-+        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opts 0102:80:4288.*index 1",
-         "matchCount": "0",
-         "teardown": [
-             "$TC actions flush action tunnel_key"
-@@ -749,7 +749,7 @@
-         "cmdUnderTest": "$TC actions add action tunnel_key set src_ip 1.1.1.1 dst_ip 2.2.2.2 id 42 dst_port 6081 geneve_opts 0102:80:4288428822 index 1",
-         "expExitCode": "255",
-         "verifyCmd": "$TC actions get action tunnel_key index 1",
--        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opt 0102:80:4288428822.*index 1",
-+        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opts 0102:80:4288428822.*index 1",
-         "matchCount": "0",
-         "teardown": [
-             "$TC actions flush action tunnel_key"
-@@ -773,7 +773,7 @@
-         "cmdUnderTest": "$TC actions add action tunnel_key set src_ip 1.1.1.1 dst_ip 2.2.2.2 id 42 dst_port 6081 geneve_opts 0102:80:00880022,0408:42: index 1",
-         "expExitCode": "255",
-         "verifyCmd": "$TC actions get action tunnel_key index 1",
--        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opt 0102:80:00880022,0408:42:.*index 1",
-+        "matchPattern": "action order [0-9]+: tunnel_key.*set.*src_ip 1.1.1.1.*dst_ip 2.2.2.2.*key_id 42.*dst_port 6081.*geneve_opts 0102:80:00880022,0408:42:.*index 1",
-         "matchCount": "0",
-         "teardown": [
-             "$TC actions flush action tunnel_key"
+Changes in v2:
+- corrected fixes SHA1
+
+ drivers/net/ethernet/cadence/macb_main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 67933079aeea..257c4920cb88 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -2558,7 +2558,7 @@ static int macb_open(struct net_device *dev)
+ 
+ 	err = macb_phylink_connect(bp);
+ 	if (err)
+-		goto napi_exit;
++		goto reset_hw;
+ 
+ 	netif_tx_start_all_queues(dev);
+ 
+@@ -2567,9 +2567,11 @@ static int macb_open(struct net_device *dev)
+ 
+ 	return 0;
+ 
+-napi_exit:
++reset_hw:
++	macb_reset_hw(bp);
+ 	for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
+ 		napi_disable(&queue->napi);
++	macb_free_consistent(bp);
+ pm_exit:
+ 	pm_runtime_put_sync(&bp->pdev->dev);
+ 	return err;
 -- 
-2.25.4
+2.7.4
 
