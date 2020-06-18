@@ -2,173 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF9911FFE30
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:33:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7C8F1FFE33
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 00:33:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729211AbgFRWdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 18:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
+        id S1730408AbgFRWdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 18:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727776AbgFRWdK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:33:10 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846C5C06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:33:08 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id q19so8114075eja.7
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 15:33:08 -0700 (PDT)
+        with ESMTP id S1727001AbgFRWdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 18:33:43 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F03C06174E;
+        Thu, 18 Jun 2020 15:33:43 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id w1so7238894qkw.5;
+        Thu, 18 Jun 2020 15:33:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=CxniwLTDE3n+5gp+EtpDieNbAwNFPQ6+9L09qnZ3lYc=;
-        b=HZJInFZWbZ+a8MJWnmMqO90L8XI3mihTxZ6eujhqI4paF8OlUhwDqpMIG/y2ieyqRq
-         MvPoOHfoPY54rUfYVxK9SJE9j6gCAByPPrtaDuIi5DDPm9T7R5U96/KZN/YGuJwJuvmx
-         Q3EfKxWF1s2ltJ2tXCxBjBVwIJFtX0w+M5VqrS22rvEnr028naBJeaRk3h6E8Bt5ruUl
-         +RR2o+a1yltP9k577vAF+23vcqL1ygLCaqwyAQ7Kt+mRdVzdW+ulezRZ3OJjObFSBJeu
-         jBZUSzPhJjGH5lV5KHcnamIth2hkRMV3LcevM2oNgy9kjNwHX8E9mnxhXKQkZsdnJMZC
-         CZBA==
+        bh=KBHYsW5yW1CAVvBFDgy/TGfxwLfAurjw5+HPPsQ8l00=;
+        b=GuvA39fiCMFlznSXXw9UFC8pVYn1ImBvDMaASeEWqJU5D8ZNCYt7WfT0BSMzmj5ICy
+         9H7+YhjqBBjTLZvAQRR/pTQ8alt3+a3row7J3+GG34ekhtfgOWaeIDmILcUgUuZ1ndQH
+         DlW2+vmM7BqMBDtanuh8DiknZPSr/R2a53YHBt7YRYybo6MGPjTk29Hl0o9it0oDRxf3
+         ZDFT8UiUjFYkXNiutkfJu3Xf+vTP/gIlPV7Zy9FYmwSUD2tCCiA6rglKEIGpcVhO4a1j
+         g2iSNvg+npagEqyVMq8AKXvW0giJPe5T5YQ9CTCR/sHMG5/u9sBk3bJhTj0lsieBQHd4
+         GE8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CxniwLTDE3n+5gp+EtpDieNbAwNFPQ6+9L09qnZ3lYc=;
-        b=iCJZu69qpPZ95r/LOEfG3IIuWYuO/nJF2ceI7yQVj+xkXlCsRBYEmsx2zf2VuFgv4K
-         /+wjg8qEnfpajv92Y1KYyVo6zIPG6qNcjhTd79yTSn4uLc9nhOGgAt/JR7EdXdGd7Mfw
-         locCYzkPz5Eo5mofXL7s6VXEYwbabWmwY2QvJXB5797ah4xRYi0yGa96OQs7ZfLw7b+x
-         zHxdnmvNUx9Csn7zXvaEPWmMhA66LpuTc5fQel7xjV242+pCvwNymXC7oxW8rHAizqbJ
-         KN/7/4niae7c5T0bBx5AZhMb+LpRIyDl66OhE1WxHiDUuJlrsbeLYyAOBsnE11b7vi43
-         5LDA==
-X-Gm-Message-State: AOAM530gkOPyWKD2bE6yrgCLzmIONFlbbO8u+pkoI2i5VugwDJrcWh0F
-        9+SzcMPQFjgYzB+pzKaeOTT7Dd2fftJxs0byE88=
-X-Google-Smtp-Source: ABdhPJzf5ghF9Xsl4/XBmN0mKKBSEHsrxZbk6dT3s9jTP9YOR64B/oS2WvgHHlq/3Cq4thPS1/qcaKOJzcY7VOOufRM=
-X-Received: by 2002:a17:906:af84:: with SMTP id mj4mr546819ejb.473.1592519586932;
- Thu, 18 Jun 2020 15:33:06 -0700 (PDT)
+        bh=KBHYsW5yW1CAVvBFDgy/TGfxwLfAurjw5+HPPsQ8l00=;
+        b=ShmII9HtH+7MnYG1rp9Lv8qHMS6BHUOFWjPYQyb/4MfGL5aQgYsnDwic6O1sOlMaSg
+         P/1XxOHlFUIl6QPL9I9Q7TierdVrvYYCdPjmnxKKn0ySIs2nwD5ZkOKwQSlPsTts23Ot
+         nlIdVXLz3rLvlzvBc+GcDW6viRpR+ORrBLGHLjT2cQIlmsFZbPdsiAqYn2R9xXAJZsea
+         ZYfgLxOTz4ih4T2GscC/X6611FDOrh2o4BPF3WQuiNvQjj1n2ve5hGAuA91u/BG8nhCT
+         ePNY6HGZlUc4xVeTnVwClj/eFUwLqgIEzrEm745OPk94ksTYMDByaKTEEbZPLyngq76t
+         o5Jg==
+X-Gm-Message-State: AOAM533Z5SQ+yxpXiaS49IISxnPdJdVubA/dvz/nG7SxX2B8wiVYym03
+        Nnwt7rRcgtf4v6MpghyxbN2WJ6Q3rlRO69UE6Xs=
+X-Google-Smtp-Source: ABdhPJziqnDloFofEuz0ZgAXix27jMBCHHkjhYh2laJZmfmWMUi9c/PYPVufxUad3bKMZ/Dod5JJOdXNbbnSDW6Xy4g=
+X-Received: by 2002:a05:620a:b84:: with SMTP id k4mr683424qkh.39.1592519622309;
+ Thu, 18 Jun 2020 15:33:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200608215301.26772-1-xiyou.wangcong@gmail.com>
- <CA+h21hr_epEqWukZMQmZ2ecS9Y0yvX9mzR3g3OA39rg_96FfnQ@mail.gmail.com>
- <CAM_iQpW-5WpaSvSmJgoqEbcjtrjvaZY3ngKzVy2S-v81MdK4iQ@mail.gmail.com>
- <CAM_iQpUBuk1D4JYZtPQ_yodkLJwAyExvGG5vSOazed2QN7NESw@mail.gmail.com>
- <CA+h21hpjsth_1t1ZaBcTd1i3RPXZGqzSyegSSPS2Ns=uq5-HJw@mail.gmail.com> <20200618222959.GC279339@lunn.ch>
-In-Reply-To: <20200618222959.GC279339@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 19 Jun 2020 01:32:56 +0300
-Message-ID: <CA+h21hrZM8Dqi7AYPkKgsAm5-q=TxEdTaci=Tq35VfoOxt_5rw@mail.gmail.com>
-Subject: Re: [Patch net] net: change addr_list_lock back to static key
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot+f3a0e80c34b3fc28ac5e@syzkaller.appspotmail.com,
-        Taehee Yoo <ap420073@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>
+References: <20200611222340.24081-1-alexei.starovoitov@gmail.com> <20200611222340.24081-3-alexei.starovoitov@gmail.com>
+In-Reply-To: <20200611222340.24081-3-alexei.starovoitov@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 18 Jun 2020 15:33:31 -0700
+Message-ID: <CAEf4BzYbvuZoQb7Sz4Q7McyEA4khHm5RaQPR3bL67owLoyv1RQ@mail.gmail.com>
+Subject: Re: [PATCH RFC v3 bpf-next 2/4] bpf: Add bpf_copy_from_user() helper.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 19 Jun 2020 at 01:30, Andrew Lunn <andrew@lunn.ch> wrote:
+On Thu, Jun 11, 2020 at 3:24 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> On Thu, Jun 18, 2020 at 11:33:44PM +0300, Vladimir Oltean wrote:
-> > On Thu, 18 Jun 2020 at 23:06, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > >
-> > > On Thu, Jun 18, 2020 at 12:56 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > >
-> > > > On Thu, Jun 18, 2020 at 12:40 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> > > > >
-> > > > > It's me with the stacked DSA devices again:
-> > > >
-> > > > It looks like DSA never uses netdev API to link master
-> > > > device with slave devices? If so, their dev->lower_level
-> > > > are always 1, therefore triggers this warning.
-> > > >
-> > > > I think it should call one of these netdev_upper_dev_link()
-> > > > API's when creating a slave device.
-> > > >
-> > >
-> > > I don't know whether DSA is too special to use the API, but
-> > > something like this should work:
-> > >
-> > > diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> > > index 4c7f086a047b..f7a2a281e7f0 100644
-> > > --- a/net/dsa/slave.c
-> > > +++ b/net/dsa/slave.c
-> > > @@ -1807,6 +1807,11 @@ int dsa_slave_create(struct dsa_port *port)
-> > >                            ret, slave_dev->name);
-> > >                 goto out_phy;
-> > >         }
-> > > +       ret = netdev_upper_dev_link(slave_dev, master, NULL);
-> > > +       if (ret) {
-> > > +               unregister_netdevice(slave_dev);
-> > > +               goto out_phy;
-> > > +       }
-> > >
-> > >         return 0;
-> > >
-> > > @@ -1832,6 +1837,7 @@ void dsa_slave_destroy(struct net_device *slave_dev)
-> > >         netif_carrier_off(slave_dev);
-> > >         rtnl_lock();
-> > >         phylink_disconnect_phy(dp->pl);
-> > > +       netdev_upper_dev_unlink(slave_dev, dp->master);
-> > >         rtnl_unlock();
-> > >
-> > >         dsa_slave_notify(slave_dev, DSA_PORT_UNREGISTER);
-> >
-> > Thanks. This is a good approximation of what needed to be done:
-> > - netdev_upper_dev_link needs to be under rtnl,
-> > - "dp->master" should be "dsa_slave_to_master(slave_dev)" since it's
-> > actually a union if you look at struct dsa_port).
+> From: Alexei Starovoitov <ast@kernel.org>
 >
-> > - And, most importantly, I think the hierarchy should be reversed: a
-> > (virtual) DSA switch port net device (slave) should be an upper of the
-> > (real) DSA master (the host port). Think of it like this: a DSA switch
-> > is a sort of port multiplier for a host port, based on a frame header.
-> > But, it works!
+> Sleepable BPF programs can now use copy_from_user() to access user memory.
 >
-> Hi Vladimir
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  include/linux/bpf.h            |  1 +
+>  include/uapi/linux/bpf.h       | 11 ++++++++++-
+>  kernel/bpf/helpers.c           | 22 ++++++++++++++++++++++
+>  kernel/trace/bpf_trace.c       |  2 ++
+>  tools/include/uapi/linux/bpf.h | 11 ++++++++++-
+>  5 files changed, 45 insertions(+), 2 deletions(-)
 >
-> So you are suggesting this?
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 6819000682a5..c8c9217f3ac9 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1632,6 +1632,7 @@ extern const struct bpf_func_proto bpf_ringbuf_reserve_proto;
+>  extern const struct bpf_func_proto bpf_ringbuf_submit_proto;
+>  extern const struct bpf_func_proto bpf_ringbuf_discard_proto;
+>  extern const struct bpf_func_proto bpf_ringbuf_query_proto;
+> +extern const struct bpf_func_proto bpf_copy_from_user_proto;
 >
-> > > +       ret = netdev_upper_dev_link(master, slave_dev, NULL);
->
->   Andrew
+>  const struct bpf_func_proto *bpf_tracing_func_proto(
+>         enum bpf_func_id func_id, const struct bpf_prog *prog);
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 0bef454c9598..a38c806d34ad 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3260,6 +3260,13 @@ union bpf_attr {
+>   *             case of **BPF_CSUM_LEVEL_QUERY**, the current skb->csum_level
+>   *             is returned or the error code -EACCES in case the skb is not
+>   *             subject to CHECKSUM_UNNECESSARY.
+> + *
+> + * int bpf_copy_from_user(void *dst, u32 size, const void *user_ptr)
 
-Yes, basically this:
+Can we also add bpf_copy_str_from_user (or bpf_copy_from_user_str,
+whichever makes more sense) as well?
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 4c7f086a047b..6aff8cfc9cf1 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1807,6 +1807,13 @@ int dsa_slave_create(struct dsa_port *port)
-                           ret, slave_dev->name);
-                goto out_phy;
-        }
-+       rtnl_lock();
-+       ret = netdev_upper_dev_link(master, slave_dev, NULL);
-+       rtnl_unlock();
-+       if (ret) {
-+               unregister_netdevice(slave_dev);
-+               goto out_phy;
-+       }
+> + *     Description
+> + *             Read *size* bytes from user space address *user_ptr* and store
+> + *             the data in *dst*. This is a wrapper of copy_from_user().
+> + *     Return
+> + *             0 on success, or a negative error in case of failure.
+>   */
 
-        return 0;
-
-@@ -1826,12 +1833,14 @@ int dsa_slave_create(struct dsa_port *port)
-
- void dsa_slave_destroy(struct net_device *slave_dev)
- {
-+       struct net_device *master = dsa_slave_to_master(slave_dev);
-        struct dsa_port *dp = dsa_slave_to_port(slave_dev);
-        struct dsa_slave_priv *p = netdev_priv(slave_dev);
-
-        netif_carrier_off(slave_dev);
-        rtnl_lock();
-        phylink_disconnect_phy(dp->pl);
-+       netdev_upper_dev_unlink(master, slave_dev);
-        rtnl_unlock();
-
-        dsa_slave_notify(slave_dev, DSA_PORT_UNREGISTER);
-
-Do you see a problem with it?
-
-Thanks,
--Vladimir
+[...]
