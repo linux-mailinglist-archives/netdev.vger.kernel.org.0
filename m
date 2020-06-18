@@ -2,161 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDF0D1FFBE1
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 21:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F16641FFBE5
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 21:40:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727860AbgFRTh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 15:37:26 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:7624 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726879AbgFRThZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 15:37:25 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05IJTJas011242;
-        Thu, 18 Jun 2020 12:36:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=x5Mur3kRBc/WIfvKdYeMMZbV1QQqnngdTmAiLobFXHQ=;
- b=GUwfbl7q6iqvjeTmVqsBxwemXuxqNO0RZ51su+l8aiJBBhha8EHKkgv4PLCe4N7HNubk
- 27kFNy7ieA9cN9x25Zzs+NA2fzx8lPIRlgBZMOcdPogLSyvSBYt09tg1ixO+abzMWdZR
- X6eDRHzM/ea5RkLjJ2L+SqV4/osnvgnC/nM= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 31q8u6njfm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 18 Jun 2020 12:36:17 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 18 Jun 2020 12:36:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ol/B7PsJfS88N3YVan5YZ8FOvu0Bw7Qq/2XeTcTOfhTvnM6kt6NaF50RW/lQR6Fzi8f5HBr5RN6XdGNnY+/6xUg2hkk+OvYoB9CXJ2lZ0SqCyUwECtkz/DltKP2few2xx+mUsuFP1zc2nTHessdpNOLBzG3l0ohGyII91K2QiuPzi2lcHl9tPf7rg+clU9JTaNQ5LnlpVKnaM+b9a2JE9fg/Bgw052o1y2Zm79RA75CeGfrE9AYBmUmKwKnoGs5G0OPgKDWitn3+A+RUp+UA9DfnALUwJxGlpZHxvJNG7zDOaWiXKdpRkHQ4Q2hce2HcBv2LjKRZBZYd6v0Zi6U3TQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x5Mur3kRBc/WIfvKdYeMMZbV1QQqnngdTmAiLobFXHQ=;
- b=aTDB0DlQDnWS8vigfDeQCy8Te4/HbgwUZRlG8aUycYNlGSvepydDK1cDh/WTT3v6yZEpzGfPN6DwzNwsZFBBXyTtf69Nh6Wbo/BaaqrBw8nqDDg9H/rJ2l6TwGqqJOw+xDwsJSBFI+xI9rhNaLEC9S7fzqKMHqTgzxDBVMW4U/3s7+V+gG+CUvxWP8QXj6B+acFy2F7LJk3wAvDD6s/7TYLrtmKVivXSqkeudve3zU17XSq8Sch27mq1trGu2JfYTrzceShyrpn8SnkPYwVchbzSiMXG+Q+jhJFJhMrleKa993cevCqq/9ThtbwBOPRRpTNoApZl119r5MOrxg0NxQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x5Mur3kRBc/WIfvKdYeMMZbV1QQqnngdTmAiLobFXHQ=;
- b=A74FaY9BdHLghzlZVfHuqqVBnrwOOqCLox3oLogiHTldlP1rTi6h6coH90CECvVDQ/KOqCsIxJrU3DN2B4+1IMIPGEnVIlDy2O+dq8tS8AI9NrYOsFsmnUHjzvhpWNhFF3d7SOwdzjs3PJUS9ylMHn2q507p4Yt1e1vqhxplwO8=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com (2603:10b6:a03:96::24)
- by BYAPR15MB3143.namprd15.prod.outlook.com (2603:10b6:a03:b5::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Thu, 18 Jun
- 2020 19:36:15 +0000
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::48e3:c159:703d:a2f1]) by BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::48e3:c159:703d:a2f1%5]) with mapi id 15.20.3109.021; Thu, 18 Jun 2020
- 19:36:15 +0000
-Date:   Thu, 18 Jun 2020 12:36:11 -0700
-From:   Roman Gushchin <guro@fb.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Zefan Li <lizefan@huawei.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
-        =?iso-8859-1?Q?Dani=EBl?= Sonck <dsonck92@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Tejun Heo <tj@kernel.org>
-Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
-Message-ID: <20200618193611.GE24694@carbon.DHCP.thefacebook.com>
-References: <20200616180352.18602-1-xiyou.wangcong@gmail.com>
- <141629e1-55b5-34b1-b2ab-bab6b68f0671@huawei.com>
- <CAM_iQpUFFHPnMxS2sAHZqMUs80tTn0+C_jCcne4Ddx2b9omCxg@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpUFFHPnMxS2sAHZqMUs80tTn0+C_jCcne4Ddx2b9omCxg@mail.gmail.com>
-X-ClientProxiedBy: BYAPR05CA0079.namprd05.prod.outlook.com
- (2603:10b6:a03:e0::20) To BYAPR15MB4136.namprd15.prod.outlook.com
- (2603:10b6:a03:96::24)
+        id S1728400AbgFRTkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 15:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726969AbgFRTkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 15:40:17 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931AFC06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 12:40:16 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id w16so7667642ejj.5
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 12:40:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y/v5aKcfxhXMPWHtTiMG+KUzT2efX4Xpu97e2NX9mxU=;
+        b=OcJ0NLaBDtBR4yS/qmcMRMCrMt2wHUqO1I2v7BTwEvymkC980+/3XfAsVhXqh9191V
+         4v+O9SIvTuVLaIrbOJDlwJA/P0qGCwS7S6jMIJ2g8YYLrIrQMhv65db9SuXvdyTHlw4m
+         FBvu6isQiGoFZJXyYr4baHW0Vvx/idQQ4hJ+oi7V4QH5Vpwzc36fhcKbWxdRL+6px+iZ
+         9/7L+9iZMUqqvT/QWsU873I/Q8CEwg46zTUyq262zOPmyLwKJhI0sN+dLEZM+w95084t
+         IGiUgKfyRl2BFFynFxcgTsT67FZNa+2KyC0EMA1nFrmjpEFV971iHBAQbM/ivHJp1O+0
+         ZRYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y/v5aKcfxhXMPWHtTiMG+KUzT2efX4Xpu97e2NX9mxU=;
+        b=WWy7RT+wHtPXPWn27aOElJbLvZHM2ugtr6opb/yyY0Qq5Wx47ylpqAzwE0D4tMBO5C
+         nBTUrJ85cQxJYHhIwYj8j6PhFsBZgqt+2oOrmwSpb0Fhc05+pnQ9IPSqj9n/qZsWMbcw
+         RVbrCusVFHzb5U1hjAKLTRMuH5Lrf+SwsvzhjPTH73s1Ck3s69D4ZQISAsshl9wSzGC1
+         C1AJ46pJA531qQQD2SkO7YGuqWx61V4xEkGwuEpCL/KU8qwD5Lrr8WlsrBJuAb96YrVr
+         32LdTtUuNs52qdedlvEkWPZPnRb31dKDJwkZ9i4oGnUqsviJUEINxKo74Y4nwSJ6b2SW
+         KchA==
+X-Gm-Message-State: AOAM533dDZmil50nsVejAWRioTIGrDcTtkyWUXklxAVV75t6Siap1j/+
+        0WfVUxPiG9Q5u51N0FSUEtnQX8g439fFZbk3BIQ=
+X-Google-Smtp-Source: ABdhPJz0l++t+ak1XhAE/2pdjH2fQsMvtm4sVKYjQfcG7iUGNnNwxkfXXygteB6RnNd93zOTUi11yxEZH0mS+785BcI=
+X-Received: by 2002:a17:906:2e50:: with SMTP id r16mr244218eji.305.1592509215172;
+ Thu, 18 Jun 2020 12:40:15 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from carbon.DHCP.thefacebook.com (2620:10d:c090:400::5:632d) by BYAPR05CA0079.namprd05.prod.outlook.com (2603:10b6:a03:e0::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.10 via Frontend Transport; Thu, 18 Jun 2020 19:36:14 +0000
-X-Originating-IP: [2620:10d:c090:400::5:632d]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 30013670-75ea-43ce-2c9e-08d813bedd59
-X-MS-TrafficTypeDiagnostic: BYAPR15MB3143:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB3143C5831FC9CEEAB54A5D78BE9B0@BYAPR15MB3143.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 0438F90F17
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: S8376XTHwkD01MlFLR8G6djzHq7ZMyOec7LrmFB54Di3mlukGzuDEg4nfnnNOrLEZNs9nN5GT0Ml+KYQTcGE9fYIcjGQTFBoq20vGBMaNYPnfVpoLAIqKNapOs7ryBN4VTW9qAtH8AgAN0zZigQdqj09/XIv+9ex0rqBY+iQoVSwCj06hKRmkAr+XV0S+3398uUeExHy3IOG+fkAgce6TNMt0UYllgP4BebVA8AOpRVcY+cWgju+9MeO5CI57WpD+R2A+UAswsf+cwQbRzQa1k9S4L5oWumC2ox0+EnTt2e7MtH71pv7u52vevNzlBQddJS27xyJPPx/JH56bGt4zA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4136.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(136003)(346002)(376002)(39860400002)(366004)(66946007)(316002)(54906003)(16526019)(186003)(8936002)(66476007)(66556008)(2906002)(8676002)(33656002)(6916009)(83380400001)(6506007)(7696005)(52116002)(9686003)(1076003)(55016002)(86362001)(53546011)(4326008)(478600001)(5660300002)(6666004);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: blhfW0ew5q8HL7OsWEMpygLTY58IvMGo6bkb1O3Dv44qs+wipi4o0xvpujhqTYYdhWLLrrUPdcb/ma2ek4m54yErbEFREIqIgGyzQ1nJcSFSvJpNjfOQlkR4PGToBZj9FThDG92vIa03fkSDafkaCg0+bJppoeOWYsFYLXKqvk4E2r3j6cffCy1lTGfRZiNOULc9CSDjRJ0nLcxhYHuxzuaD5fzFpCv/eWHPXK+upVc8kOdPezzBRlVdlsiOvkYv3v7z6ediT+WRSvQXYpsTGnLiTnv926AKNr3uGETJ5f01NrZzI4qTRWFLK0L+iCk3XKY6hI5cqRNf2FmSG6WNTza/bONnphQHwdSe1uNoxklPoIUTflk50tz2s60WLAmOhBOVMoR89ZHRyq1wgSlOlywhKARO6JdJIOSYG2IAq4HG1xhNgVGS2bR4VY3Q5atrUOPUHoqprKWzyzW+Mq0Lch9BD5gamS1S8jY1+c1WgyRf/PCw34uXfoPkAlxGgKYiNvFCMqCph8d0gQ7Reeas4Q==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30013670-75ea-43ce-2c9e-08d813bedd59
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2020 19:36:15.3688
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gVmEDUiLRqQm1IiFe+oB68o+B8FWdR/QydlEq7c4sWh8qteKIuKFkK+lBgvO/KEC
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3143
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-18_15:2020-06-18,2020-06-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- impostorscore=0 spamscore=0 priorityscore=1501 clxscore=1011 phishscore=0
- cotscore=-2147483648 malwarescore=0 bulkscore=0 lowpriorityscore=0
- mlxlogscore=662 mlxscore=0 suspectscore=1 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006180148
-X-FB-Internal: deliver
+References: <20200608215301.26772-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <20200608215301.26772-1-xiyou.wangcong@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 18 Jun 2020 22:40:03 +0300
+Message-ID: <CA+h21hr_epEqWukZMQmZ2ecS9Y0yvX9mzR3g3OA39rg_96FfnQ@mail.gmail.com>
+Subject: Re: [Patch net] net: change addr_list_lock back to static key
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        syzbot+f3a0e80c34b3fc28ac5e@syzkaller.appspotmail.com,
+        Taehee Yoo <ap420073@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 12:19:13PM -0700, Cong Wang wrote:
-> On Wed, Jun 17, 2020 at 6:44 PM Zefan Li <lizefan@huawei.com> wrote:
-> >
-> > Cc: Roman Gushchin <guro@fb.com>
-> >
-> > Thanks for fixing this.
-> >
-> > On 2020/6/17 2:03, Cong Wang wrote:
-> > > When we clone a socket in sk_clone_lock(), its sk_cgrp_data is
-> > > copied, so the cgroup refcnt must be taken too. And, unlike the
-> > > sk_alloc() path, sock_update_netprioidx() is not called here.
-> > > Therefore, it is safe and necessary to grab the cgroup refcnt
-> > > even when cgroup_sk_alloc is disabled.
-> > >
-> > > sk_clone_lock() is in BH context anyway, the in_interrupt()
-> > > would terminate this function if called there. And for sk_alloc()
-> > > skcd->val is always zero. So it's safe to factor out the code
-> > > to make it more readable.
-> > >
-> > > Fixes: 090e28b229af92dc5b ("netprio_cgroup: Fix unlimited memory leak of v2 cgroups")
-> >
-> > but I don't think the bug was introduced by this commit, because there
-> > are already calls to cgroup_sk_alloc_disable() in write_priomap() and
-> > write_classid(), which can be triggered by writing to ifpriomap or
-> > classid in cgroupfs. This commit just made it much easier to happen
-> > with systemd invovled.
-> >
-> > I think it's 4bfc0bb2c60e2f4c ("bpf: decouple the lifetime of cgroup_bpf from cgroup itself"),
-> > which added cgroup_bpf_get() in cgroup_sk_alloc().
-> 
-> Good point.
-> 
-> I take a deeper look, it looks like commit d979a39d7242e06
-> is the one to blame, because it is the first commit that began to
-> hold cgroup refcnt in cgroup_sk_alloc().
+Hi Cong, Taehee,
 
-I agree, ut seems that the issue is not related to bpf and probably
-can be reproduced without CONFIG_CGROUP_BPF. d979a39d7242e06 indeed
-seems closer to the origin.
+On Tue, 9 Jun 2020 at 00:54, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> The dynamic key update for addr_list_lock still causes troubles,
+> for example the following race condition still exists:
+>
+> CPU 0:                          CPU 1:
+> (RCU read lock)                 (RTNL lock)
+> dev_mc_seq_show()               netdev_update_lockdep_key()
+>                                   -> lockdep_unregister_key()
+>  -> netif_addr_lock_bh()
+>
+> because lockdep doesn't provide an API to update it atomically.
+> Therefore, we have to move it back to static keys and use subclass
+> for nest locking like before.
+>
+> In commit 1a33e10e4a95 ("net: partially revert dynamic lockdep key
+> changes"), I already reverted most parts of commit ab92d68fc22f
+> ("net: core: add generic lockdep keys").
+>
+> This patch reverts the rest and also part of commit f3b0a18bb6cb
+> ("net: remove unnecessary variables and callback"). After this
+> patch, addr_list_lock changes back to using static keys and
+> subclasses to satisfy lockdep. Thanks to dev->lower_level, we do
+> not have to change back to ->ndo_get_lock_subclass().
+>
+> And hopefully this reduces some syzbot lockdep noises too.
+>
+> Reported-by: syzbot+f3a0e80c34b3fc28ac5e@syzkaller.appspotmail.com
+> Cc: Taehee Yoo <ap420073@gmail.com>
+> Cc: Dmitry Vyukov <dvyukov@google.com>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> ---
+>  drivers/net/bonding/bond_main.c               |  2 --
+>  drivers/net/bonding/bond_options.c            |  2 --
+>  drivers/net/hamradio/bpqether.c               |  2 ++
+>  drivers/net/macsec.c                          |  5 ++++
+>  drivers/net/macvlan.c                         | 13 ++++++--
+>  drivers/net/vxlan.c                           |  4 +--
+>  .../net/wireless/intersil/hostap/hostap_hw.c  |  3 ++
+>  include/linux/netdevice.h                     | 12 +++++---
+>  net/8021q/vlan_dev.c                          |  8 +++--
+>  net/batman-adv/soft-interface.c               |  2 ++
+>  net/bridge/br_device.c                        |  8 +++++
+>  net/core/dev.c                                | 30 ++++++++++---------
+>  net/core/dev_addr_lists.c                     | 12 ++++----
+>  net/core/rtnetlink.c                          |  1 -
+>  net/dsa/master.c                              |  4 +++
+>  net/netrom/af_netrom.c                        |  2 ++
+>  net/rose/af_rose.c                            |  2 ++
+>  17 files changed, 76 insertions(+), 36 deletions(-)
+>
 
-Btw, based on the number of reported-by tags it seems that there was
-a real issue which the patch is fixing. Maybe you'll a couple of words
-about how it reveals itself in the real life?
+It's me with the stacked DSA devices again:
 
-Thanks!
+[   11.424642] ============================================
+[   11.429967] WARNING: possible recursive locking detected
+[   11.435295] 5.8.0-rc1-00133-g923e4b5032dd-dirty #208 Not tainted
+[   11.441319] --------------------------------------------
+[   11.446646] dhcpcd/323 is trying to acquire lock:
+[   11.451362] ffff000066dd4268
+(&dsa_master_addr_list_lock_key/1){+...}-{2:2}, at:
+dev_mc_sync+0x44/0x90
+[   11.460713]
+[   11.460713] but task is already holding lock:
+[   11.466561] ffff00006608c268
+(&dsa_master_addr_list_lock_key/1){+...}-{2:2}, at:
+dev_mc_sync+0x44/0x90
+[   11.475905]
+[   11.475905] other info that might help us debug this:
+[   11.482450]  Possible unsafe locking scenario:
+[   11.482450]
+[   11.488386]        CPU0
+[   11.490833]        ----
+[   11.493280]   lock(&dsa_master_addr_list_lock_key/1);
+[   11.498347]   lock(&dsa_master_addr_list_lock_key/1);
+[   11.503413]
+[   11.503413]  *** DEADLOCK ***
+[   11.503413]
+[   11.509349]  May be due to missing lock nesting notation
+[   11.509349]
+[   11.516158] 3 locks held by dhcpcd/323:
+[   11.520001]  #0: ffffdbd1381dda18 (rtnl_mutex){+.+.}-{3:3}, at:
+rtnl_lock+0x24/0x30
+[   11.527688]  #1: ffff00006614b268 (_xmit_ETHER){+...}-{2:2}, at:
+dev_set_rx_mode+0x28/0x48
+[   11.535987]  #2: ffff00006608c268
+(&dsa_master_addr_list_lock_key/1){+...}-{2:2}, at:
+dev_mc_sync+0x44/0x90
+[   11.545766]
+[   11.545766] stack backtrace:
+[   11.564098] Call trace:
+[   11.566549]  dump_backtrace+0x0/0x1e0
+[   11.570220]  show_stack+0x20/0x30
+[   11.573544]  dump_stack+0xec/0x158
+[   11.576955]  __lock_acquire+0xca0/0x2398
+[   11.580886]  lock_acquire+0xe8/0x440
+[   11.584469]  _raw_spin_lock_nested+0x64/0x90
+[   11.588749]  dev_mc_sync+0x44/0x90
+[   11.592159]  dsa_slave_set_rx_mode+0x34/0x50
+[   11.596438]  __dev_set_rx_mode+0x60/0xa0
+[   11.600369]  dev_mc_sync+0x84/0x90
+[   11.603778]  dsa_slave_set_rx_mode+0x34/0x50
+[   11.608057]  __dev_set_rx_mode+0x60/0xa0
+[   11.611989]  dev_set_rx_mode+0x30/0x48
+[   11.615745]  __dev_open+0x10c/0x180
+[   11.619240]  __dev_change_flags+0x170/0x1c8
+[   11.623432]  dev_change_flags+0x2c/0x70
+[   11.627279]  devinet_ioctl+0x774/0x878
+[   11.631036]  inet_ioctl+0x348/0x3b0
+[   11.634532]  sock_do_ioctl+0x50/0x310
+[   11.638202]  sock_ioctl+0x1f8/0x580
+[   11.641698]  ksys_ioctl+0xb0/0xf0
+[   11.645019]  __arm64_sys_ioctl+0x28/0x38
+[   11.648951]  el0_svc_common.constprop.0+0x7c/0x180
+[   11.653753]  do_el0_svc+0x2c/0x98
+[   11.657075]  el0_sync_handler+0x9c/0x1b8
+[   11.661005]  el0_sync+0x158/0x180
+
+Could you please share some suggestions?
+
+Thanks,
+-Vladimir
