@@ -2,104 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B90841FED39
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 10:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E24D1FED76
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 10:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728448AbgFRIJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 04:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728389AbgFRIGd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 04:06:33 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DBE2C061755
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 01:06:32 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id q19so5411750eja.7
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 01:06:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jdqKWoOyO8tnt8jM6tOGRLXKdHHuxGrW259cHQOP1hQ=;
-        b=Bl68elqdqcLd30G17pvoe9exM0NJ8hGF7jB5cGALBgvffL4Hs4vGUKFwalT6qPJxtx
-         aN0oLBEu2Bslk9VDAdZ1c9MJn4xMHVUPPwi6RqIWall7j+JeZaDNq/J/EN2gjWCwy8qC
-         cBLJ6ske6QcdjduiZEMSUCX3LU3ylAdfULiUv3PIl976LvSQB6ZzuQACNqqumUqqgWTk
-         3vhZGYzvsXzvPPJANR/hs3aYPzHfozkXVPFSpI0P4jkCsJWPftzC8Po+fIxoZ2G3M806
-         OCvyRN8Ia/EjRPB2BwMcDt0XUdLekkm3HReRFNdmKXDemdcnOTOECUjY9ZYmEsgWtb32
-         +v3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jdqKWoOyO8tnt8jM6tOGRLXKdHHuxGrW259cHQOP1hQ=;
-        b=F2KcQPPLZvw1AKXs1bvOtECNq4cGCi9BSRKWsgFj5ISZBK7SBG6SsR4JE4rk1t/846
-         1uVXwa3c3aoQQekhtpPMl5h7Iptgil2+2sHrKMN1eF+AyyGOCaUBNhVnJpKoLJJavn5/
-         dLAqdU1hOX4lq7S8gHr7lcvWFvxqcJ1Qme3SNPY28Ucy4+FnSdFVNFPg0jvNuIX9A7J2
-         AgrjDYoPyoqemf+o3+L6F6tooeelS6LzKE3q1IPBXBSauwuRGIVa4OsmvfOlZORlPv4X
-         YVGWhYOL+3MrQAb0/ghMJ3qEerlUGPwWOQup5ZLyck4MvWIjvRNwemXvhNjvHc6xLqkb
-         qjgQ==
-X-Gm-Message-State: AOAM532V+wmoaQDGOuFHkK8TH5ZZsNqhdoxpqxGJH1HtfMdVbQ+gL2D/
-        O38F7sO712FVXo2x+zmewLMGGw==
-X-Google-Smtp-Source: ABdhPJwl82oiSxnfYLXazps1x+rq+d4v0E9PMnXQgh6ZFurD6BCgfQLUMtmWbYQrxHGMPNn408CItw==
-X-Received: by 2002:a17:906:4d18:: with SMTP id r24mr2781366eju.222.1592467590896;
-        Thu, 18 Jun 2020 01:06:30 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([79.132.248.22])
-        by smtp.gmail.com with ESMTPSA id nw22sm1711739ejb.48.2020.06.18.01.06.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Jun 2020 01:06:30 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/3] add MP_PRIO, MP_FAIL and MP_FASTCLOSE
- suboptions handling
-To:     Geliang Tang <geliangtang@gmail.com>
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev@vger.kernel.org, mptcp@lists.01.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1592289629.git.geliangtang@gmail.com>
- <04ae76d9-231a-de8e-ad33-1e4e80bb314c@tessares.net>
- <20200618062737.GA21303@OptiPlex>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <8397397f-d341-0593-9ba9-a87f1d63c26b@tessares.net>
-Date:   Thu, 18 Jun 2020 10:06:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1728601AbgFRIUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 04:20:15 -0400
+Received: from mail.intenta.de ([178.249.25.132]:25093 "EHLO mail.intenta.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727039AbgFRIUE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 04:20:04 -0400
+X-Greylist: delayed 324 seconds by postgrey-1.27 at vger.kernel.org; Thu, 18 Jun 2020 04:20:03 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=H6dwnRKnSAwZ1mPEq8hnbpLALPJs7LiunanmFW679cw=;
+        b=XXvIJ/7Qw/ZRDRlJ3jea70RIpw+YvTdtr+uPlEFsRbubufdMxcugVt+SQI72jGEfLrKNpVG1q+7Ew9NIGIds8HgxHtxFzoOT28wCnB2IfDs+IGRdbzHaeEa3VRlQ288YBwWANM2/mRHWUity48JSANkWc03+eohD74J5fu79+IC8dmnjzDXeOdU/wiGfJfD7Nmjns0tqSUpsX2P7B5FNHJC5J6HQXI12ta6v5+s48RK2Z+n6/FBkVllRr5bpgORdztNVJTi9We3EXAc4UeOlsFLQmYLkenalUxwZG4/kadvjRbWWnzkJTM87RJhQYKQBH2Ii6FOQkecpbeCGUbCR6Q==;
+Date:   Thu, 18 Jun 2020 10:14:33 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH] net: macb: reject unsupported rgmii delays
+Message-ID: <20200618081433.GA22636@laureti-dev>
+References: <20200616074955.GA9092@laureti-dev>
+ <20200617105518.GO1551@shell.armlinux.org.uk>
+ <20200617112153.GB28783@laureti-dev>
+ <20200617114025.GQ1551@shell.armlinux.org.uk>
+ <20200617115201.GA30172@laureti-dev>
+ <20200617120809.GS1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20200618062737.GA21303@OptiPlex>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200617120809.GS1551@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geliang,
+On Wed, Jun 17, 2020 at 02:08:09PM +0200, Russell King - ARM Linux admin wrote:
+> With a fixed link, we could be in either a MAC-to-PHY or MAC-to-MAC
+> setup; we just don't know.  However, we don't have is access to the
+> PHY (if it exists) in the fixed link case to configure it for the
+> delay.
 
-On 18/06/2020 08:27, Geliang Tang wrote:
-> On Tue, Jun 16, 2020 at 05:18:56PM +0200, Matthieu Baerts wrote:
->> On 16/06/2020 08:47, Geliang Tang wrote:
- >>
->> I would suggest you to discuss about that on MPTCP mailing list. We also
->> have meetings every Thursday. New devs are always welcome to contribute to
->> new features and bug-fixes!
- >
-> Thanks for your reply. I will do these tests and improve my patches.
+Let me twist that a little: We may have access to the PHY, but we don't
+always have access. When we do have access, we have a separate device
+tree node with another fixed-link and another phy-mode. For fixed-links,
+we specify the phy-mode for each end.
 
-Great, thank you! Looking forward to see new kernel selftests and/or 
-packetdrill tests!
+> In the MAC-to-MAC RGMII setup, where neither MAC can insert the
+> necessary delay, the only way to have a RGMII conformant link is to
+> have the PCB traces induce the necessary delay. That errs towards
+> PHY_INTERFACE_MODE_RGMII for this case.
 
-For any new features related to MPTCP or bug fixes involving significant 
-code modifications, please send it first to the MPTCP Upstream mailing 
-list only: mptcp@lists.01.org
+Yes.
 
-We will be able to give a first review without involving the whole 
-netdev community and if needed, we can "park" patches in our mptcp-next 
-repo.
+> However, considering the MAC-to-PHY RGMII fixed link case, where the
+> PHY may not be accessible, and may be configured with the necessary
+> delay, should that case also use PHY_INTERFACE_MODE_RGMII - clearly
+> that would be as wrong as using PHY_INTERFACE_MODE_RGMII_ID would
+> be for the MAC-to-MAC RGMII with PCB-delays case.
 
-For more details about the project, please check: 
-https://github.com/multipath-tcp/mptcp_net-next/wiki
+If you take into account that the PHY has a separate node with phy-mode
+being rgmii-id, it makes a lot more sense to use rgmii for the phy-mode
+of the MAC. So I don't think it is that clear that doing so is wrong.
 
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+In an earlier discussion Florian Fainelli said:
+https://patchwork.ozlabs.org/project/netdev/patch/20190410005700.31582-19-olteanv@gmail.com/#2149183
+| fixed-link really should denote a MAC to MAC connection so if you have
+| "rgmii-id" on one side, you would expect "rgmii" on the other side
+| (unless PCB traces account for delays, grrr).
+
+For these reasons, I still think that rgmii would be a useful
+description for the fixed-link to PHY connection where the PHY adds the
+delay.
+
+> So, I think a MAC driver should not care about the specific RGMII
+> mode being asked for in any case, and just accept them all.
+
+I would like to agree to this. However, the implication is that when you
+get your delays wrong, your driver silently ignores you and you never
+notice your mistake until you see no traffic passing and wonder why.
+
+In this case, I was faced with a PHY that would do rgmii-txid and I
+configured that on the MAC. Unfortunately, macb_main.c didn't tell me
+that it did rgmii-id instead.
+
+> I also think that some of this ought to be put in the documentation
+> as guidance for new implementations.
+
+That seems to be the part where everyone agrees.
+
+Given the state of the discussion, I'm wondering whether this could be
+fixed at a more fundamental level in the device tree bindings.
+
+A number of people (including you) pointed out that retroactively fixing
+the meaning of phy modes does not work and causes pain instead. That
+hints that the only way to fix this is adding new properties. How about
+this?
+
+rgmii-delay-type:
+  description:
+    Responsibility for adding the rgmii delay
+  enum:
+    # The remote PHY or MAC to this MAC is responsible for adding the
+    # delay.
+    - remote
+    # The delay is added by neither MAC nor MAC, but using PCB traces
+    # instead.
+    - pcb
+    # The MAC must add the delay.
+    - local
+rgmii-rx-delay:
+  # Responsibility for RX delay. Delay specification in the phy-mode is
+  # ignored when this is present.
+  $ref: "#/properties/rgmii-delay-type"
+rgmii-tx-delay:
+  # Responsibility for TX delay. Delay specification in the phy-mode is
+  # ignored when this is present.
+  $ref: "#/properties/rgmii-delay-type"
+
+The naming is up to discussion, but I think you get the idea. The core
+properties of this proposal are:
+ * It does not break existing device trees.
+ * It completely resolves the present ambiguity.
+The major downside is that you never know whether your driver supports
+such delay specifications already.
+
+Helmut
