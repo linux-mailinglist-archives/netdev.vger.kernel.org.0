@@ -2,85 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C088A1FDEA0
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:36:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9CB81FDE34
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:31:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732744AbgFRBbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:31:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41726 "EHLO mail.kernel.org"
+        id S1732775AbgFRBbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:31:24 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45494 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731360AbgFRBbL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:31:11 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 38353221EC;
-        Thu, 18 Jun 2020 01:31:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443871;
-        bh=iZZmz+Ap5bLY4GuNSraezb984yLj0cyMICkNa8CYumg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1oT4yCjQBrGRNzN+4tQ3qbaZQHcohx+dtnAq/Q1vsVJOecE+SsojUuOYH8wYb19L7
-         ORAmUknl7XaONSMsaH6fUO5nxSvifZh5mFyQC3TEWo1dBpLihyX1XyyPjJ7EWvdj0Q
-         h/ojk5x9UfIip3Kp38G2tLqhY7DJthZxDb08re5U=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fedor Tokarev <ftokarev@gmail.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 51/60] net: sunrpc: Fix off-by-one issues in 'rpc_ntop6'
-Date:   Wed, 17 Jun 2020 21:29:55 -0400
-Message-Id: <20200618013004.610532-51-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200618013004.610532-1-sashal@kernel.org>
-References: <20200618013004.610532-1-sashal@kernel.org>
+        id S1732759AbgFRBbX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:31:23 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jljOj-00134m-HC; Thu, 18 Jun 2020 03:31:21 +0200
+Date:   Thu, 18 Jun 2020 03:31:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, DENG Qingfang <dqfext@gmail.com>,
+        Mauri Sandberg <sandberg@mailfence.com>
+Subject: Re: [net-next PATCH 4/5 v2] net: dsa: rtl8366: VLAN 0 as disable
+ tagging
+Message-ID: <20200618013121.GE249144@lunn.ch>
+References: <20200617083132.1847234-1-linus.walleij@linaro.org>
+ <20200617083132.1847234-4-linus.walleij@linaro.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200617083132.1847234-4-linus.walleij@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fedor Tokarev <ftokarev@gmail.com>
+On Wed, Jun 17, 2020 at 10:31:31AM +0200, Linus Walleij wrote:
+> The code in net/8021q/vlan.c, vlan_device_event() sets
+> VLAN 0 for a VLAN-capable ethernet device when it
+> comes up.
+> 
+> Since the RTL8366 DSA switches must have a VLAN and
+> PVID set up for any packets to come through we have
+> already set up default VLAN for each port as part of
+> bringing the switch online.
+> 
+> Make sure that setting VLAN 0 has the same effect
+> and does not try to actually tell the hardware to use
+> VLAN 0 on the port because that will not work.
+> 
+> Cc: DENG Qingfang <dqfext@gmail.com>
+> Cc: Mauri Sandberg <sandberg@mailfence.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit 118917d696dc59fd3e1741012c2f9db2294bed6f ]
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Fix off-by-one issues in 'rpc_ntop6':
- - 'snprintf' returns the number of characters which would have been
-   written if enough space had been available, excluding the terminating
-   null byte. Thus, a return value of 'sizeof(scopebuf)' means that the
-   last character was dropped.
- - 'strcat' adds a terminating null byte to the string, thus if len ==
-   buflen, the null byte is written past the end of the buffer.
-
-Signed-off-by: Fedor Tokarev <ftokarev@gmail.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/sunrpc/addr.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/sunrpc/addr.c b/net/sunrpc/addr.c
-index 2e0a6f92e563..8391c2785550 100644
---- a/net/sunrpc/addr.c
-+++ b/net/sunrpc/addr.c
-@@ -81,11 +81,11 @@ static size_t rpc_ntop6(const struct sockaddr *sap,
- 
- 	rc = snprintf(scopebuf, sizeof(scopebuf), "%c%u",
- 			IPV6_SCOPE_DELIMITER, sin6->sin6_scope_id);
--	if (unlikely((size_t)rc > sizeof(scopebuf)))
-+	if (unlikely((size_t)rc >= sizeof(scopebuf)))
- 		return 0;
- 
- 	len += rc;
--	if (unlikely(len > buflen))
-+	if (unlikely(len >= buflen))
- 		return 0;
- 
- 	strcat(buf, scopebuf);
--- 
-2.25.1
-
+    Andrew
