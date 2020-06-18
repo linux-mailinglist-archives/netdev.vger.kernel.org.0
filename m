@@ -2,76 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 035E61FDFF1
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:45:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55FD21FE094
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 03:50:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732186AbgFRB24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 21:28:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37874 "EHLO mail.kernel.org"
+        id S1731065AbgFRBs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:48:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45456 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732178AbgFRB2x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:28:53 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AF0AB221FC;
-        Thu, 18 Jun 2020 01:28:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443732;
-        bh=t3bBVqo47N0Y5P0/j1DPexbAI0QVtdrSXf/vXuU66xo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bne0yDpftx4Qzh0sM5cjv/FvrYVrX2PgioxX2V6uEul6uvKudfypdcXuZf5RJE4PI
-         /vAronPxJC+Tc8mvR3I9EJThofw+hTxE/2KQFP1qLl7Xzy0dPTcbDtK2qxot2+aZFI
-         w5Pi+kOtqtiQOci2ZljLe6OrzMffg0UCbZeDHG4g=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Hai <wanghai38@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 24/80] yam: fix possible memory leak in yam_init_driver
-Date:   Wed, 17 Jun 2020 21:27:23 -0400
-Message-Id: <20200618012819.609778-24-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200618012819.609778-1-sashal@kernel.org>
-References: <20200618012819.609778-1-sashal@kernel.org>
+        id S1731984AbgFRB14 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:27:56 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jljLP-00131y-97; Thu, 18 Jun 2020 03:27:55 +0200
+Date:   Thu, 18 Jun 2020 03:27:55 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, DENG Qingfang <dqfext@gmail.com>,
+        Mauri Sandberg <sandberg@mailfence.com>
+Subject: Re: [net-next PATCH 2/5 v2] net: dsa: rtl8366rb: Support the CPU DSA
+ tag
+Message-ID: <20200618012755.GC249144@lunn.ch>
+References: <20200617083132.1847234-1-linus.walleij@linaro.org>
+ <20200617083132.1847234-2-linus.walleij@linaro.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200617083132.1847234-2-linus.walleij@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+On Wed, Jun 17, 2020 at 10:31:29AM +0200, Linus Walleij wrote:
+> This activates the support to use the CPU tag to properly
+> direct ingress traffic to the right port.
+> 
+> Bit 15 in register RTL8368RB_CPU_CTRL_REG can be set to
+> 1 to disable the insertion of the CPU tag which is what
+> the code currently does. The bit 15 define calls this
+> setting RTL8368RB_CPU_INSTAG which is confusing since the
+> iverse meaning is implied: programmers may think that
 
-[ Upstream commit 98749b7188affbf2900c2aab704a8853901d1139 ]
+inverse
 
-If register_netdev(dev) fails, free_netdev(dev) needs
-to be called, otherwise a memory leak will occur.
+> setting this bit to 1 will *enable* inserting the tag
+> rather than disablinbg it, so rename this setting in
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/hamradio/yam.c | 1 +
- 1 file changed, 1 insertion(+)
+disabling
 
-diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
-index aaff07c10058..a453b82d1077 100644
---- a/drivers/net/hamradio/yam.c
-+++ b/drivers/net/hamradio/yam.c
-@@ -1160,6 +1160,7 @@ static int __init yam_init_driver(void)
- 		err = register_netdev(dev);
- 		if (err) {
- 			printk(KERN_WARNING "yam: cannot register net device %s\n", dev->name);
-+			free_netdev(dev);
- 			goto error;
- 		}
- 		yam_devs[i] = dev;
--- 
-2.25.1
+> bit 15 to RTL8368RB_CPU_NO_TAG which is more to the
+> point.
+> 
+> After this e.g. ping works out-of-the-box with the
+> RTL8366RB.
+> 
+> Cc: DENG Qingfang <dqfext@gmail.com>
+> Cc: Mauri Sandberg <sandberg@mailfence.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
