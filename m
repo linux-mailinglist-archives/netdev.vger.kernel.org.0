@@ -2,29 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C725E1FFD13
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:03:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 155EA1FFD17
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:03:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729628AbgFRVCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 17:02:50 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:37765 "EHLO
+        id S1730261AbgFRVDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 17:03:03 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:37776 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727982AbgFRVCu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:02:50 -0400
+        with ESMTP id S1730008AbgFRVDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:03:02 -0400
 Received: from [189.110.235.168] (helo=localhost.localdomain)
         by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.86_2)
         (envelope-from <cascardo@canonical.com>)
-        id 1jm1gM-00073w-EZ; Thu, 18 Jun 2020 21:02:46 +0000
+        id 1jm1gZ-00073w-PC; Thu, 18 Jun 2020 21:03:00 +0000
 From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 To:     Josef Bacik <josef@toxicpanda.com>
 Cc:     Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
         nbd@other.debian.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, cascardo@canonical.com
 Subject: [PATCH] nbd: allocate sufficient space for NBD_CMD_STATUS
-Date:   Thu, 18 Jun 2020 18:02:39 -0300
-Message-Id: <20200618210240.157566-1-cascardo@canonical.com>
+Date:   Thu, 18 Jun 2020 18:02:40 -0300
+Message-Id: <20200618210240.157566-2-cascardo@canonical.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200618210240.157566-1-cascardo@canonical.com>
+References: <20200618210240.157566-1-cascardo@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
