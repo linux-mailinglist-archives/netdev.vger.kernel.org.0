@@ -2,136 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7F4A1FFCBB
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 22:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B9EA1FFCED
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 22:49:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732337AbgFRUk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 16:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732312AbgFRUku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 16:40:50 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB1DC06174E;
-        Thu, 18 Jun 2020 13:40:49 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id t9so8724724ioj.13;
-        Thu, 18 Jun 2020 13:40:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=CVfEDBcb6P1X9UPlG8iy7eKwin490vsgsKNHIJnNkzk=;
-        b=m5mKOPplUNdO+yrGpP+GLCFZ4eZY1ytfeCiJf1ndJz4xs0GgkSWxZuNOmK915BXp47
-         sI/xJZGA8pKZM09TWX1zIwCvfv8VvoPpRcZ6teBtrksuNwm0wAmrebQ2WZWrnWAILsxu
-         9+RDgDspLdm2q/vTs6bnIUTDal5qvCjfoDuZ5lTGkeA0vfVKN3P4LoAEmSKofPV/WGWP
-         USgnk8caV6F1BQ1sem+jMXjV4V7iXQqvI78TyE3H4mWIscj7AJ9kSKnZzY2hVi4FWX0p
-         PylgoAForxJgtMXJL1O4btEUuZCu0FJmQVivsI9Whb6qjJW51P7/1dcLnZWEwmdGncDu
-         wZFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=CVfEDBcb6P1X9UPlG8iy7eKwin490vsgsKNHIJnNkzk=;
-        b=TWyRy172niqTrLfjaO6vnqC62LhNzY+MB0IWg5YF06BklFs9/iIz8KUDM/DpKadjVv
-         hB+4tBmovTPbFKqXcMKYAodS6i6oABB8/j9//AbOHHKGXm8TPJwzIvNOja+artjpw7wA
-         1qi7sxqfASDAO9Skr7QLXOU1HJdsojnZuZOmZfh6nh1kchwEBb116YFi2a4EqoA5cJ4P
-         W3eLkWGtzx2EXCCAjFeMvQ3p5OMOlKQMVhR09j24AnJyyUhkaUc+lCGwVgsfzxLvd7qL
-         mzp1uH99VVI/bPAR8SXN8d/XVCt9AMGMezY1HXttBgseMmQh0/hXsLxjePSMu+cXgDn1
-         iQfQ==
-X-Gm-Message-State: AOAM531RidXqBPe2zcnquCQymQpTmDRw95S8B5a/ZUtjgbk/u7BONCuP
-        SEItxAj9MpdPGhpZPuAVHyk=
-X-Google-Smtp-Source: ABdhPJyG+eHEb4WVHXY5HOBhhe2R4cY2/6gIo69dDbDHFg62DcMD/c1NyNzZW0yi3F41Ug7LQlgsCg==
-X-Received: by 2002:a02:3908:: with SMTP id l8mr408111jaa.121.1592512849282;
-        Thu, 18 Jun 2020 13:40:49 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id h13sm2047362ile.18.2020.06.18.13.40.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2020 13:40:48 -0700 (PDT)
-Date:   Thu, 18 Jun 2020 13:40:40 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Message-ID: <5eebd1486e46b_6d292ad5e7a285b817@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200616100512.2168860-3-jolsa@kernel.org>
-References: <20200616100512.2168860-1-jolsa@kernel.org>
- <20200616100512.2168860-3-jolsa@kernel.org>
-Subject: RE: [PATCH 02/11] bpf: Compile btfid tool at kernel compilation start
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S1728588AbgFRUtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 16:49:55 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:34313 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728196AbgFRUtz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 16:49:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592513391;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=H4QaT2rCikmYcDoi3NfvZ3bj2jjx6iC0ZbXMLOdIUDk=;
+        b=bjVUYk9HW7satX/KOPM8GZFm2dj7CGqwjNQi2arJIfbCptFZ6g1q4YyWKUpsilkoEMoDCk
+        Ms+GWturLxJ01+lhWBtkVIQ4WEJtdi4hYGCU7LFcCvH4MKNiulADY2O+5cbjijpPB4Jya5
+        I4QAwZHZh0hGy0yF9sdcVKy+AezDTyk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-302-yXUE9CyvOguN8fA1ryxXHw-1; Thu, 18 Jun 2020 16:49:46 -0400
+X-MC-Unique: yXUE9CyvOguN8fA1ryxXHw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4E134107ACCA;
+        Thu, 18 Jun 2020 20:49:45 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.3.128.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 90FA060CD0;
+        Thu, 18 Jun 2020 20:49:44 +0000 (UTC)
+Message-ID: <ce29a52cabf10cdb8922eb816ebd92b57c869be4.camel@redhat.com>
+Subject: Re: qmi_wwan not using netif_carrier_*()
+From:   Dan Williams <dcbw@redhat.com>
+To:     Tanjeff-Nicolai Moos <tmoos@eltec.de>, Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+Date:   Thu, 18 Jun 2020 15:49:43 -0500
+In-Reply-To: <20200618120826.3d271e67@pm-tm-ubuntu>
+References: <20200617152153.2e66ccaf@pm-tm-ubuntu>
+         <20200617164800.GG205574@lunn.ch>
+         <1f5ecd2a1138dd39893b8d2b9e608067468de891.camel@redhat.com>
+         <20200617172434.GH205574@lunn.ch> <20200618120826.3d271e67@pm-tm-ubuntu>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri Olsa wrote:
-> The btfid tool will be used during the vmlinux linking,
-> so it's necessary it's ready for it.
-> =
+On Thu, 2020-06-18 at 12:08 +0200, Tanjeff-Nicolai Moos wrote:
+> 
+> On Wed, 17 Jun 2020 19:24:34 +0200
+> Andrew Lunn <andrew@lunn.ch> wrote:
+> 
+> > On Wed, Jun 17, 2020 at 11:59:33AM -0500, Dan Williams wrote:
+> > > On Wed, 2020-06-17 at 18:48 +0200, Andrew Lunn wrote:
+> > > > On Wed, Jun 17, 2020 at 03:21:53PM +0200, Tanjeff-Nicolai Moos
+> > > > wrote:
+> > > > > Hi netdevs,
+> > > > > 
+> > > > > Kernel version:
+> > > > > 
+> > > > >   I'm working with kernel 4.14.137 (OpenWRT project). But I
+> > > > > looked
+> > > > > at
+> > > > >   the source of kernel 5.7 and found the same situation.
+> > > > > 
+> > > > > Problem:
+> > > > > 
+> > > > >   I'm using the qmi_wwan driver for a Sierra Wireless EM7455
+> > > > > LTE
+> > > > >   modem. This driver does not use
+> > > > >   netif_carrier_on()/netif_carrier_off() to update its link
+> > > > > status.
+> > > > >   This confuses ledtrig_netdev which uses netif_carrier_ok()
+> > > > > to
+> > > > > obtain
+> > > > >   the link status.
+> > > > > 
+> > > > > My solution:
+> > > > > 
+> > > > >   As a solution (or workaround?) I would try:
+> > > > > 
+> > > > >   1) In drivers/net/usb/qmi_wwan.c, lines 904/913: Add the
+> > > > > flag
+> > > > >      FLAG_LINK_INTR.
+> > > > > 
+> > > > >   2) In drivers/net/usb/usbnet.c, functions usbnet_open() and
+> > > > >      usbnet_stop(): Add a call to netif_carrier_*(),
+> > > > >      but only if FLAG_LINK_INTR is set.
+> > > > > 
+> > > > > Question:
+> > > > > 
+> > > > >   Is this the intended way to use FLAG_LINK_INTR and
+> > > > > netif_carrier_*()?
+> > > > >   Or is there another recommended way to obtain the link
+> > > > > status of
+> > > > >   network devices (I could change ledtrig_netdev)?
+> > > > 
+> > > > Hi Tanjeff
+> > > > 
+> > > > With Ethernet, having a carrier means there is a link partner,
+> > > > the
+> > > > layer 2 of the OSI 7 layer stack model is working. If the
+> > > > interface
+> > > > is
+> > > > not open()ed, it clearly should not have carrier. However, just
+> > > > because it is open, does not mean it has carrier. The cable
+> > > > could be
+> > > > unplugged, etc.
+> > > > 
+> > > > This is an LTE modem. What does carrier mean here? I don't know
+> > > > if it
+> > > > is well defined, but i would guess it is connected to a base
+> > > > station
+> > > > which is offering service. I'm assuming you are interested in
+> > > > data
+> > > > here, not wanting to make a 911/999/112/$EMERGENCY_SERVICE call
+> > > > which
+> > > > in theory all base stations should accept.
+> > > > 
+> > > > Is there a way to get this state information from the hardware?
+> > > > That
+> > > > would be the correct way to set the carrier.
+> > > 
+> > > There isn't. All the setup that would result in IFF_LOWER_UP (eg
+> > > ability to pass packets to the cellular network) happens over
+> > > channels
+> > > *other* than the ethernet one. eg CDC-WDM, CDC-ACM, CDC-MBIM, AT
+> > > commands, QMI commands, MBIM commands, etc.
+> > > 
+> > > Something in userspace handles the actual IP-level connection
+> > > setup and
+> > > once that's done, only then do you really have IFF_LOWER_UP. One
+> > > way to
+> > > solve this could be to require userspace connection managers to
+> > > manage
+> > > the carrier state of the device, which is possible for some
+> > > drivers
+> > > already IIRC.
+> > 
+> > So Tanjeff, what is you real use case here? I assume you want to
+> > control an LED so it is on when the LTE modem is connected? Could
+> > you
+> > export the LED to user space and have a dhclient-enter/exit script
+> > change
+> > the state of the LED?
+> The LED should show whether the link is up (data transfer is
+> possible),
+> and it should blink when data is being transferred. This
+> functionality
+> is provided by the ledtrig_netdev driver. The blinking works already,
+> but the indicated link state is wrong, because the netif_carrier_ok()
+> function /always/ reports true.
+> 
+> When I control the LED by userspace software, it would probably not
+> blink during xfer. Therefore I would prefer to stick with
+> ledtrig_netdev (also, it will give me the same behavior as for WLAN,
+> where I also use ledtrig_netdev).
+> 
+> I observed that sierra.c does call netif_carrier_off(). Since I'm
+> using
+> a Sierra modem, maybe I'm actually using this driver (sorry for my
+> limited knowledge), and things should already work? Then I would have
+> some misconfiguration...
 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  Makefile           | 22 ++++++++++++++++++----
->  tools/Makefile     |  3 +++
->  tools/bpf/Makefile |  5 ++++-
->  3 files changed, 25 insertions(+), 5 deletions(-)
+The Sierra driver is only for their very old (2000s and early 2010s)
+devices that use DirectIP mode. It's very unlikely you're using it.
 
-This breaks the build for me. I fixed it with this but then I get warning=
-s,
+I don't think you're going to get qmi_wwan to set the carrier state
+like you expect. That would require qmi_wwan to snoop on the QMI
+control messages passed back and forth from the modem to userspace, and
+have some knowledge of the data sessions. That's not something qmi_wwan
+should be doing.
 
-diff --git a/tools/bpf/btfid/btfid.c b/tools/bpf/btfid/btfid.c
-index 7cdf39bfb150..3697e8ae9efa 100644
---- a/tools/bpf/btfid/btfid.c
-+++ b/tools/bpf/btfid/btfid.c
-@@ -48,7 +48,7 @@
- #include <errno.h>
- #include <linux/rbtree.h>
- #include <linux/zalloc.h>
--#include <btf.h>
-+#include <linux/btf.h>
- #include <libbpf.h>
- #include <parse-options.h>
+Instead, you can have a script that looks for an IP address assigned to
+the interface and if so, check its packet counters and if they change,
+blink the LED. Doesn't need to be done from kernel space.
+Dan
 
-Here is the error. Is it something about my setup? bpftool/btf.c uses
-<btf.h>. Because this in top-level Makefile we probably don't want to
-push extra setup onto folks.
+> I also observed that "ip address" shows the flags "UP" and "LOWER_UP"
+> when the interface is up. The kernel seems to know whether "the link"
+> is up, although I don't know which link is considered. Maybe it is
+> possible to get that knowledge from within qmi_wwan or usbnet and to
+> set the carrier accordingly.
+> 
+> Kind regards, tanjeff
+> 
+> 
+> --
+> 
+> Tanjeff-Nicolai Moos
+> Dipl.-Inf. (FH)
+> Senior Software Engineer
+> 
+> ELTEC Elektronik AG, Mainz
+> _________________________
+> 
+> Fon     +49 6131 918 342
+> Fax     +49 6131 918 195
+> Email   tmoos@eltec.de
+> Web     www.eltec.de
+> 
+> ________________________________
+> 
+> 
+> *********************************************************
+> ELTEC Elektronik AG
+> Galileo-Galilei-Straße 11
+> D-55129 Mainz
+> 
+> Vorstand: Peter Albert
+> Aufsichtsratsvorsitzender: Andreas Kochhäuser
+> 
+> Registergericht: Amtsgericht Mainz
+> Registernummer: HRB 7038
+> Ust-ID: DE 149 049 790
+> *********************************************************
+> Wichtiger Hinweis:
+> Diese E-Mail kann Betriebs- oder Geschäftsgeheimnisse oder sonstige
+> vertrauliche Informationen enthalten. Sollten Sie diese E-Mail
+> irrtümlich erhalten haben, ist Ihnen eine Kenntnisnahme des Inhalts,
+> eine Vervielfältigung oder Weitergabe der E-Mail ausdrücklich
+> untersagt.
+> Bitte benachrichtigen Sie uns und vernichten Sie die empfangene E-
+> Mail. Evtl. Anhänge dieser Nachricht wurden auf Viren überprüft!
+> Jede Form von Vervielfältigung, Abänderung, Verbreitung oder
+> Veröffentlichung dieser E-Mail Nachricht ist untersagt! Das Verwenden
+> von Informationen aus dieser Nachricht für irgendwelche Zwecke ist
+> strengstens untersagt.
+> Es gelten unsere Allgemeinen Geschäftsbedingungen, zu finden unter 
+> www.eltec.de.
+> 
 
-In file included from btfid.c:51:
-/home/john/git/bpf-next/tools/lib/bpf/btf.h: In function =E2=80=98btf_is_=
-var=E2=80=99:
-/home/john/git/bpf-next/tools/lib/bpf/btf.h:254:24: error: =E2=80=98BTF_K=
-IND_VAR=E2=80=99 undeclared (first use in this function); did you mean =E2=
-=80=98BTF_KIND_PTR=E2=80=99?
-  return btf_kind(t) =3D=3D BTF_KIND_VAR;
-                        ^~~~~~~~~~~~
-                        BTF_KIND_PTR
-/home/john/git/bpf-next/tools/lib/bpf/btf.h:254:24: note: each undeclared=
- identifier is reported only once for each function it appears in
-/home/john/git/bpf-next/tools/lib/bpf/btf.h: In function =E2=80=98btf_is_=
-datasec=E2=80=99:
-/home/john/git/bpf-next/tools/lib/bpf/btf.h:259:24: error: =E2=80=98BTF_K=
-IND_DATASEC=E2=80=99 undeclared (first use in this function); did you mea=
-n =E2=80=98BTF_KIND_PTR=E2=80=99?
-  return btf_kind(t) =3D=3D BTF_KIND_DATASEC;
-                        ^~~~~~~~~~~~~~~~
-                        BTF_KIND_PTR
-mv: cannot stat '/home/john/git/bpf-next/tools/bpf/btfid/.btfid.o.tmp': N=
-o such file or directory
-make[3]: *** [/home/john/git/bpf-next/tools/build/Makefile.build:97: /hom=
-e/john/git/bpf-next/tools/bpf/btfid/btfid.o] Error 1
-make[2]: *** [Makefile:59: /home/john/git/bpf-next/tools/bpf/btfid/btfid-=
-in.o] Error 2
-make[1]: *** [Makefile:71: bpf/btfid] Error 2
-make: *** [Makefile:1894: tools/bpf/btfid] Error 2=
