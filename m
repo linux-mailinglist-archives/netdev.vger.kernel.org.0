@@ -2,122 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FB771FEC98
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 09:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B9B21FECD8
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 09:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727812AbgFRHim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 03:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48174 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726282AbgFRHil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 03:38:41 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9430FC06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 00:38:40 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id f7so5335304ejq.6
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 00:38:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WsqMnvCKFxJyhNC7ybidXGV1GRm2icRQ48QWOQjllRE=;
-        b=Sl12n0Kum97AIsceam8gp1a92x2RrBKd5Y4Mz05DQQGla9CluMdC6oSvKGwzHvyANa
-         lkhjC8K3a14kQvijkMRbYrH3e2lnEYC1I3t9UrKtUNu+sY/fL7dnxp9tMdn18MnAapQC
-         VjsCMpzy5BNZnBqM+EIjWY+Xpe6WMm2mhYPVEsrQ+gOOD/xTHtLIyc+3YhUazDaNtauZ
-         b5LF50zr5HVx1C+VTtkcyCIptThDt5MBf6nOmydxyM7dqRWJJ1nSCjEkjhbyPlKiatAA
-         YrnpMj+mUu2OM4ubJCr1PblZ//JqjyRYdJEKvNF47VCTFyZtlxsC7ryZZBF9fHaXlodg
-         Q4+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WsqMnvCKFxJyhNC7ybidXGV1GRm2icRQ48QWOQjllRE=;
-        b=UQJk2JNXGZFtuX3pr/XTGeHJBmNtuRc5I3ez2OJQ43f0a8cHGrEOVd9zrwRf+0zZNp
-         +yGSKDSXRXAAy4+CRK9oKDnnyG7WHIghumMtTVw1a5zaLdCBTYsCNE5xIBFIkLftnNBC
-         6ZNHqtPOIWJV80xJguRIG41ycGO0n5ZGQNOpZ7FR4JLPqApQLf3M+p0gSbKnptrBmoRH
-         BJS/BriR0m4eX4unSKWjSZhzctJ4D70GFQkA5K1QILiBydq+90vNwzHKqDQc/HpIN0q5
-         Yoa11XStOAL4416c6jDg6sUaBURkzzsbQRD4jhx2Tz8Gusp/es4eop5nZJG39yVcqVe3
-         pIQQ==
-X-Gm-Message-State: AOAM533FsVrnD5ADSYSdl1drUIFQ+jCFfQ/OvLg49bPgp1drUhNjMK/6
-        cJwn+a/1x6o/eis8kuoB5REYauUKu5Us4/fDKuhsyg==
-X-Google-Smtp-Source: ABdhPJwiYE3EVwH1Gxwu4LmkBGUk+xTRMn97O31IQqCD83G3GqxIM1SXqhBcKJEJ7sdi+jI/MsfMNJuATGGApdc9gDQ=
-X-Received: by 2002:a17:906:2c5b:: with SMTP id f27mr2876832ejh.413.1592465919019;
- Thu, 18 Jun 2020 00:38:39 -0700 (PDT)
+        id S1728230AbgFRHuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 03:50:24 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:54302 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728144AbgFRHuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 03:50:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592466621;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=PDcgiaJNLiWYXI7v/eZt6zw/T0PDPCuZ8sjZurKJ94s=;
+        b=S+sNhKyrdQrWXH1W/PoKEUyNCXTEV7oqiVTK7sNmmbXEklIdW+wqEVmg8VI6WJ6z7y2iSj
+        X0YqmE/lkmvbcSATi5NACCFwnY0w9c+Fi0/ZOZYClFHgU21UhR2nwELkZaXTc/Drz6tgc9
+        H80kK2394XrTYOvTxABSeIkXy9Ib51U=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-73-gLG1G5RDM5C1hDqEODsWjQ-1; Thu, 18 Jun 2020 03:50:17 -0400
+X-MC-Unique: gLG1G5RDM5C1hDqEODsWjQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B8A601883607;
+        Thu, 18 Jun 2020 07:50:16 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-114-66.rdu2.redhat.com [10.10.114.66])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ECD401C4;
+        Thu, 18 Jun 2020 07:50:15 +0000 (UTC)
+Subject: [PATCH net 0/3] rxrpc: Performance drop fix and other fixes
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 18 Jun 2020 08:50:15 +0100
+Message-ID: <159246661514.1229328.4419873299996950969.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.22
 MIME-Version: 1.0
-References: <20200617161832.1438371-1-andriin@fb.com> <20200617161832.1438371-2-andriin@fb.com>
-In-Reply-To: <20200617161832.1438371-2-andriin@fb.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Thu, 18 Jun 2020 00:38:27 -0700
-Message-ID: <CA+khW7i2vjHuqExnkgAYMeHe9e556pUccjZXti3DxuTjPjiQQQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/9] libbpf: generalize libbpf externs support
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Quentin Monnet <quentin@isovalent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 9:21 AM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Switch existing Kconfig externs to be just one of few possible kinds of more
-> generic externs. This refactoring is in preparation for ksymbol extern
-> support, added in the follow up patch. There are no functional changes
-> intended.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
 
-[...]
+Here are three fixes for rxrpc:
 
-> @@ -5572,30 +5635,33 @@ static int bpf_object__resolve_externs(struct bpf_object *obj,
->  {
->         bool need_config = false;
->         struct extern_desc *ext;
-> +       void *kcfg_data;
->         int err, i;
-> -       void *data;
->
->         if (obj->nr_extern == 0)
->                 return 0;
->
-> -       data = obj->maps[obj->kconfig_map_idx].mmaped;
-> +       if (obj->kconfig_map_idx >= 0)
-> +               kcfg_data = obj->maps[obj->kconfig_map_idx].mmaped;
->
->         for (i = 0; i < obj->nr_extern; i++) {
->                 ext = &obj->externs[i];
->
-> -               if (strcmp(ext->name, "LINUX_KERNEL_VERSION") == 0) {
-> -                       void *ext_val = data + ext->data_off;
-> +               if (ext->type == EXT_KCFG &&
-> +                   strcmp(ext->name, "LINUX_KERNEL_VERSION") == 0) {
-> +                       void *ext_val = kcfg_data + ext->kcfg.data_off;
->                         __u32 kver = get_kernel_version();
->
->                         if (!kver) {
->                                 pr_warn("failed to get kernel version\n");
->                                 return -EINVAL;
->                         }
-> -                       err = set_ext_value_num(ext, ext_val, kver);
-> +                       err = set_kcfg_value_num(ext, ext_val, kver);
->                         if (err)
->                                 return err;
-> -                       pr_debug("extern %s=0x%x\n", ext->name, kver);
-> -               } else if (strncmp(ext->name, "CONFIG_", 7) == 0) {
-> +                       pr_debug("extern (kcfg) %s=0x%x\n", ext->name, kver);
-> +               } else if (ext->type == EXT_KCFG &&
-> +                          strncmp(ext->name, "CONFIG_", 7) == 0) {
->                         need_config = true;
->                 } else {
->                         pr_warn("unrecognized extern '%s'\n", ext->name);
+ (1) Fix a trace symbol mapping.  It doesn't seem to let you map to "".
 
-Ah, we need to initialize kcfg_data, otherwise the compiler will give
-a warning on potentially uninitialized data.
+ (2) Fix the handling of the remote receive window size when it increases
+     beyond the size we can support for our transmit window.
+
+ (3) Fix a performance drop caused by retransmitted packets being
+     accidentally marked as already ACK'd.
+
+The patches are tagged here:
+
+	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+	rxrpc-fixes-20200618
+
+and can also be found on the following branch:
+
+	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-fixes
+
+David
+---
+David Howells (1):
+      rxrpc: Fix afs large storage transmission performance drop
+
+
+ include/trace/events/rxrpc.h | 2 +-
+ net/rxrpc/call_event.c       | 2 +-
+ net/rxrpc/input.c            | 7 +++----
+ 3 files changed, 5 insertions(+), 6 deletions(-)
+
+
