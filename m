@@ -2,196 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 814CC1FFD41
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:11:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F561FFD4A
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 23:17:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731275AbgFRVKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 17:10:54 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:57058 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730989AbgFRVKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:10:48 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05ILAh43036218;
-        Thu, 18 Jun 2020 16:10:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1592514643;
-        bh=ehq+Ty1gZ2t4R0aAfzFJjltOQ0z7TJBMi3aVsQVQchg=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=opI/u/XVls5qmauY8k3rC4TzC+lQsGCbqkcL55OjFbLaMI5VFm0heUj5WIyJjLZM+
-         ylY+iYoz9W6kr6oxkcB/Gp15EhsWejlPcX+hPMgW/3U2KHOC+RCt+tWmS8l0rHEvXr
-         eIfB7PrmNSGMO1YAR4U7gINWilqGOrJxrmvmmBBg=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05ILAhSQ084551;
-        Thu, 18 Jun 2020 16:10:43 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 18
- Jun 2020 16:10:43 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 18 Jun 2020 16:10:43 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05ILAhgF015270;
-        Thu, 18 Jun 2020 16:10:43 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v8 5/5] net: phy: DP83822: Add setting the fixed internal delay
-Date:   Thu, 18 Jun 2020 16:10:11 -0500
-Message-ID: <20200618211011.28837-6-dmurphy@ti.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200618211011.28837-1-dmurphy@ti.com>
-References: <20200618211011.28837-1-dmurphy@ti.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        id S1730675AbgFRVRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 17:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728058AbgFRVRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 17:17:35 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408AEC06174E;
+        Thu, 18 Jun 2020 14:17:35 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id s88so3293559pjb.5;
+        Thu, 18 Jun 2020 14:17:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=pHNj4UcVkosY1weDmb/4q/zy1XVK8V4Pkn034oQkWkI=;
+        b=DHwac/agWYSz1ByqSwyw8AlaXCpipGczUNXLUPbl0gbyRAfTcfqCdctFpc6TRrW17E
+         HxFINyAhdsnniXc45f4ZIxxx+UEFVqjB7yhForM0CHzKWhYxO3RLOG2EXRDjd+Uu4C98
+         VG8jg+94RbyUHlZd6h0m4kRP/gUfyFJOgkvsewDFjVHtSJzTP4zDgr7CgAsfIvMstdGP
+         LpL9C84a34uG6EpDdikgmnKtiLlOUIZEM78W1kXLsuJKmyx0hb0OO+pVlN+nfiA1Pvei
+         1sIiMbPiMw4xiOLzZv1z/eckDPu0nXkyop++gnjhC1N+P1uYPcb55rZabjyXdGg607Ps
+         ShIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=pHNj4UcVkosY1weDmb/4q/zy1XVK8V4Pkn034oQkWkI=;
+        b=hIBbYhRLlafTrrO3jO0G3ndsFtYzvW11+rN32tHxY5cyes7AMWpwQ/acGMRGTtr6Nu
+         Orc1qZugQuiudlf2VKf0uT8UuAZJH+ogQAs1mzUNbznRHSQrnpahgDs8+z2s778Svkx6
+         6+wbRt9LFAJw/cEdBxJdPLTgSKfAyAAtout1eVtT8hqXc5ytNnPUUIRe/5Uw28L1aMjt
+         xI8mSEHUkbz8JUV1p/GhstCmSNPSoX3GfvDCa643sNKh6BC9pjdZ47Z7tmmacDxClLpb
+         /GAIdeVVr+08v02KWmRx90Pvlpzz/5Uhw5FCdNnBtc8T/ElUkiHWLbwRAVn8SDxqrgJx
+         QY3w==
+X-Gm-Message-State: AOAM533fhoFRPprUtrAHFPv1dwmM3A3SbZm/I0h5kdaotrs5B3zog1r4
+        wlZ/0FwH94PDc5Ry6GyYKN0=
+X-Google-Smtp-Source: ABdhPJzKbHdZDboo3vTT6Cbie9iC7kE5OGjuxUU003iOQM0Nm5gQUdIb+yFYDk6QX8KZrzQgWApETw==
+X-Received: by 2002:a17:90a:8083:: with SMTP id c3mr277783pjn.83.1592515054784;
+        Thu, 18 Jun 2020 14:17:34 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id f14sm3306510pjq.36.2020.06.18.14.17.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jun 2020 14:17:33 -0700 (PDT)
+Date:   Thu, 18 Jun 2020 14:17:25 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Message-ID: <5eebd9e5a9509_6d292ad5e7a285b8e9@john-XPS-13-9370.notmuch>
+In-Reply-To: <5eebd1486e46b_6d292ad5e7a285b817@john-XPS-13-9370.notmuch>
+References: <20200616100512.2168860-1-jolsa@kernel.org>
+ <20200616100512.2168860-3-jolsa@kernel.org>
+ <5eebd1486e46b_6d292ad5e7a285b817@john-XPS-13-9370.notmuch>
+Subject: RE: [PATCH 02/11] bpf: Compile btfid tool at kernel compilation start
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DP83822 can be configured to use the RGMII interface. There are
-independent fixed 3.5ns clock shift (aka internal delay) for the TX and RX
-paths. This allow either one to be set if the MII interface is RGMII and
-the value is set in the firmware node.
+John Fastabend wrote:
+> Jiri Olsa wrote:
+> > The btfid tool will be used during the vmlinux linking,
+> > so it's necessary it's ready for it.
+> > =
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83822.c | 78 ++++++++++++++++++++++++++++++++++-----
- 1 file changed, 68 insertions(+), 10 deletions(-)
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  Makefile           | 22 ++++++++++++++++++----
+> >  tools/Makefile     |  3 +++
+> >  tools/bpf/Makefile |  5 ++++-
+> >  3 files changed, 25 insertions(+), 5 deletions(-)
+> =
 
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index 1dd19d0cb269..0fe91119d57f 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -26,7 +26,9 @@
- #define MII_DP83822_PHYSCR	0x11
- #define MII_DP83822_MISR1	0x12
- #define MII_DP83822_MISR2	0x13
-+#define MII_DP83822_RCSR	0x17
- #define MII_DP83822_RESET_CTRL	0x1f
-+#define MII_DP83822_GENCFG	0x465
- 
- #define DP83822_HW_RESET	BIT(15)
- #define DP83822_SW_RESET	BIT(14)
-@@ -77,6 +79,10 @@
- #define DP83822_WOL_INDICATION_SEL BIT(8)
- #define DP83822_WOL_CLR_INDICATION BIT(11)
- 
-+/* RSCR bits */
-+#define DP83822_RX_CLK_SHIFT	BIT(12)
-+#define DP83822_TX_CLK_SHIFT	BIT(11)
-+
- static int dp83822_ack_interrupt(struct phy_device *phydev)
- {
- 	int err;
-@@ -255,7 +261,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
- 	return phy_write(phydev, MII_DP83822_PHYSCR, physcr_status);
- }
- 
--static int dp83822_config_init(struct phy_device *phydev)
-+static int dp8382x_disable_wol(struct phy_device *phydev)
- {
- 	int value = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
- 		    DP83822_WOL_SECURE_ON;
-@@ -264,6 +270,45 @@ static int dp83822_config_init(struct phy_device *phydev)
- 				  MII_DP83822_WOL_CFG, value);
- }
- 
-+static int dp83822_config_init(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	int rgmii_delay;
-+	s32 rx_int_delay;
-+	s32 tx_int_delay;
-+	int err = 0;
-+
-+	if (phy_interface_is_rgmii(phydev)) {
-+		rx_int_delay = phy_get_internal_delay(phydev, dev, NULL, 0,
-+						      true);
-+		if (rx_int_delay <= 0)
-+			rx_int_delay = 0;
-+		else
-+			rgmii_delay = DP83822_RX_CLK_SHIFT;
-+
-+		tx_int_delay = phy_get_internal_delay(phydev, dev, NULL, 0,
-+						      false);
-+		if (tx_int_delay <= 0)
-+			tx_int_delay = 0;
-+		else
-+			rgmii_delay |= DP83822_TX_CLK_SHIFT;
-+
-+		if (rgmii_delay) {
-+			err = phy_set_bits_mmd(phydev, DP83822_DEVADDR,
-+					       MII_DP83822_RCSR, rgmii_delay);
-+			if (err)
-+				return err;
-+		}
-+	}
-+
-+	return dp8382x_disable_wol(phydev);
-+}
-+
-+static int dp8382x_config_init(struct phy_device *phydev)
-+{
-+	return dp8382x_disable_wol(phydev);
-+}
-+
- static int dp83822_phy_reset(struct phy_device *phydev)
- {
- 	int err;
-@@ -272,9 +317,7 @@ static int dp83822_phy_reset(struct phy_device *phydev)
- 	if (err < 0)
- 		return err;
- 
--	dp83822_config_init(phydev);
--
--	return 0;
-+	return phydev->drv->config_init(phydev);
- }
- 
- static int dp83822_suspend(struct phy_device *phydev)
-@@ -318,14 +361,29 @@ static int dp83822_resume(struct phy_device *phydev)
- 		.resume = dp83822_resume,			\
- 	}
- 
-+#define DP8382X_PHY_DRIVER(_id, _name)				\
-+	{							\
-+		PHY_ID_MATCH_MODEL(_id),			\
-+		.name		= (_name),			\
-+		/* PHY_BASIC_FEATURES */			\
-+		.soft_reset	= dp83822_phy_reset,		\
-+		.config_init	= dp8382x_config_init,		\
-+		.get_wol = dp83822_get_wol,			\
-+		.set_wol = dp83822_set_wol,			\
-+		.ack_interrupt = dp83822_ack_interrupt,		\
-+		.config_intr = dp83822_config_intr,		\
-+		.suspend = dp83822_suspend,			\
-+		.resume = dp83822_resume,			\
-+	}
-+
- static struct phy_driver dp83822_driver[] = {
- 	DP83822_PHY_DRIVER(DP83822_PHY_ID, "TI DP83822"),
--	DP83822_PHY_DRIVER(DP83825I_PHY_ID, "TI DP83825I"),
--	DP83822_PHY_DRIVER(DP83826C_PHY_ID, "TI DP83826C"),
--	DP83822_PHY_DRIVER(DP83826NC_PHY_ID, "TI DP83826NC"),
--	DP83822_PHY_DRIVER(DP83825S_PHY_ID, "TI DP83825S"),
--	DP83822_PHY_DRIVER(DP83825CM_PHY_ID, "TI DP83825M"),
--	DP83822_PHY_DRIVER(DP83825CS_PHY_ID, "TI DP83825CS"),
-+	DP8382X_PHY_DRIVER(DP83825I_PHY_ID, "TI DP83825I"),
-+	DP8382X_PHY_DRIVER(DP83826C_PHY_ID, "TI DP83826C"),
-+	DP8382X_PHY_DRIVER(DP83826NC_PHY_ID, "TI DP83826NC"),
-+	DP8382X_PHY_DRIVER(DP83825S_PHY_ID, "TI DP83825S"),
-+	DP8382X_PHY_DRIVER(DP83825CM_PHY_ID, "TI DP83825M"),
-+	DP8382X_PHY_DRIVER(DP83825CS_PHY_ID, "TI DP83825CS"),
- };
- module_phy_driver(dp83822_driver);
- 
--- 
-2.26.2
+> This breaks the build for me. I fixed it with this but then I get warni=
+ngs,
+
+Also maybe fix below is not good because now I get a segfault in btfid.
+
+> =
+
+> diff --git a/tools/bpf/btfid/btfid.c b/tools/bpf/btfid/btfid.c
+> index 7cdf39bfb150..3697e8ae9efa 100644
+> --- a/tools/bpf/btfid/btfid.c
+> +++ b/tools/bpf/btfid/btfid.c
+> @@ -48,7 +48,7 @@
+>  #include <errno.h>
+>  #include <linux/rbtree.h>
+>  #include <linux/zalloc.h>
+> -#include <btf.h>
+> +#include <linux/btf.h>
+>  #include <libbpf.h>
+>  #include <parse-options.h>
+> =
+
+> Here is the error. Is it something about my setup? bpftool/btf.c uses
+> <btf.h>. Because this in top-level Makefile we probably don't want to
+> push extra setup onto folks.
+> =
+
+> In file included from btfid.c:51:
+> /home/john/git/bpf-next/tools/lib/bpf/btf.h: In function =E2=80=98btf_i=
+s_var=E2=80=99:
+> /home/john/git/bpf-next/tools/lib/bpf/btf.h:254:24: error: =E2=80=98BTF=
+_KIND_VAR=E2=80=99 undeclared (first use in this function); did you mean =
+=E2=80=98BTF_KIND_PTR=E2=80=99?
+>   return btf_kind(t) =3D=3D BTF_KIND_VAR;
+>                         ^~~~~~~~~~~~
+>                         BTF_KIND_PTR
+> /home/john/git/bpf-next/tools/lib/bpf/btf.h:254:24: note: each undeclar=
+ed identifier is reported only once for each function it appears in
+> /home/john/git/bpf-next/tools/lib/bpf/btf.h: In function =E2=80=98btf_i=
+s_datasec=E2=80=99:
+> /home/john/git/bpf-next/tools/lib/bpf/btf.h:259:24: error: =E2=80=98BTF=
+_KIND_DATASEC=E2=80=99 undeclared (first use in this function); did you m=
+ean =E2=80=98BTF_KIND_PTR=E2=80=99?
+>   return btf_kind(t) =3D=3D BTF_KIND_DATASEC;
+>                         ^~~~~~~~~~~~~~~~
+>                         BTF_KIND_PTR
+> mv: cannot stat '/home/john/git/bpf-next/tools/bpf/btfid/.btfid.o.tmp':=
+ No such file or directory
+> make[3]: *** [/home/john/git/bpf-next/tools/build/Makefile.build:97: /h=
+ome/john/git/bpf-next/tools/bpf/btfid/btfid.o] Error 1
+> make[2]: *** [Makefile:59: /home/john/git/bpf-next/tools/bpf/btfid/btfi=
+d-in.o] Error 2
+> make[1]: *** [Makefile:71: bpf/btfid] Error 2
+> make: *** [Makefile:1894: tools/bpf/btfid] Error 2
+
 
