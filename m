@@ -2,388 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D2B1FF876
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 18:02:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 166441FF8DB
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 18:12:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731712AbgFRQBi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 18 Jun 2020 12:01:38 -0400
-Received: from gloria.sntech.de ([185.11.138.130]:55568 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731467AbgFRQBf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Jun 2020 12:01:35 -0400
-Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1jlwyo-0001nB-55; Thu, 18 Jun 2020 18:01:30 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com
-Subject: Re: [PATCH v5 3/3] net: phy: mscc: handle the clkout control on some phy variants
-Date:   Thu, 18 Jun 2020 18:01:29 +0200
-Message-ID: <1723854.ZAnHLLU950@diego>
-In-Reply-To: <20200618154748.GE1551@shell.armlinux.org.uk>
-References: <20200618121139.1703762-1-heiko@sntech.de> <2277698.LFZWc9m3Y3@diego> <20200618154748.GE1551@shell.armlinux.org.uk>
+        id S1731827AbgFRQKY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 18 Jun 2020 12:10:24 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:57928 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731919AbgFRQJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 12:09:59 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05IG9lEL004749
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 09:09:57 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 31q653mse9-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 09:09:57 -0700
+Received: from intmgw003.06.prn3.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 18 Jun 2020 09:09:41 -0700
+Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
+        id 29E483D44E12F; Thu, 18 Jun 2020 09:09:41 -0700 (PDT)
+Smtp-Origin-Hostprefix: devvm
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
+To:     <netdev@vger.kernel.org>
+CC:     <kernel-team@fb.com>, <axboe@kernel.dk>
+Smtp-Origin-Cluster: vll1c12
+Subject: [RFC PATCH 00/21] netgpu: networking between NIC and GPU/CPU.
+Date:   Thu, 18 Jun 2020 09:09:20 -0700
+Message-ID: <20200618160941.879717-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-18_14:2020-06-18,2020-06-18 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1034
+ priorityscore=1501 impostorscore=0 cotscore=-2147483648 suspectscore=0
+ spamscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0 bulkscore=0
+ adultscore=0 mlxlogscore=903 malwarescore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006180122
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Donnerstag, 18. Juni 2020, 17:47:48 CEST schrieb Russell King - ARM Linux admin:
-> On Thu, Jun 18, 2020 at 05:41:54PM +0200, Heiko Stübner wrote:
-> > Am Donnerstag, 18. Juni 2020, 15:41:02 CEST schrieb Russell King - ARM Linux admin:
-> > > On Thu, Jun 18, 2020 at 03:28:22PM +0200, Andrew Lunn wrote:
-> > > > On Thu, Jun 18, 2020 at 02:11:39PM +0200, Heiko Stuebner wrote:
-> > > > > From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> > > > > 
-> > > > > At least VSC8530/8531/8540/8541 contain a clock output that can emit
-> > > > > a predefined rate of 25, 50 or 125MHz.
-> > > > > 
-> > > > > This may then feed back into the network interface as source clock.
-> > > > > So expose a clock-provider from the phy using the common clock framework
-> > > > > to allow setting the rate.
-> > > > > 
-> > > > > Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> > > > > ---
-> > > > >  drivers/net/phy/mscc/mscc.h      |  13 +++
-> > > > >  drivers/net/phy/mscc/mscc_main.c | 182 +++++++++++++++++++++++++++++--
-> > > > >  2 files changed, 187 insertions(+), 8 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-> > > > > index fbcee5fce7b2..94883dab5cc1 100644
-> > > > > --- a/drivers/net/phy/mscc/mscc.h
-> > > > > +++ b/drivers/net/phy/mscc/mscc.h
-> > > > > @@ -218,6 +218,13 @@ enum rgmii_clock_delay {
-> > > > >  #define INT_MEM_DATA_M			  0x00ff
-> > > > >  #define INT_MEM_DATA(x)			  (INT_MEM_DATA_M & (x))
-> > > > >  
-> > > > > +#define MSCC_CLKOUT_CNTL		  13
-> > > > > +#define CLKOUT_ENABLE			  BIT(15)
-> > > > > +#define CLKOUT_FREQ_MASK		  GENMASK(14, 13)
-> > > > > +#define CLKOUT_FREQ_25M			  (0x0 << 13)
-> > > > > +#define CLKOUT_FREQ_50M			  (0x1 << 13)
-> > > > > +#define CLKOUT_FREQ_125M		  (0x2 << 13)
-> > > > > +
-> > > > >  #define MSCC_PHY_PROC_CMD		  18
-> > > > >  #define PROC_CMD_NCOMPLETED		  0x8000
-> > > > >  #define PROC_CMD_FAILED			  0x4000
-> > > > > @@ -360,6 +367,12 @@ struct vsc8531_private {
-> > > > >  	 */
-> > > > >  	unsigned int base_addr;
-> > > > >  
-> > > > > +#ifdef CONFIG_COMMON_CLK
-> > > > > +	struct clk_hw clkout_hw;
-> > > > > +#endif
-> > > > > +	u32 clkout_rate;
-> > > > > +	int clkout_enabled;
-> > > > > +
-> > > > >  #if IS_ENABLED(CONFIG_MACSEC)
-> > > > >  	/* MACsec fields:
-> > > > >  	 * - One SecY per device (enforced at the s/w implementation level)
-> > > > > diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-> > > > > index 5d2777522fb4..727a9dd58403 100644
-> > > > > --- a/drivers/net/phy/mscc/mscc_main.c
-> > > > > +++ b/drivers/net/phy/mscc/mscc_main.c
-> > > > > @@ -7,6 +7,7 @@
-> > > > >   * Copyright (c) 2016 Microsemi Corporation
-> > > > >   */
-> > > > >  
-> > > > > +#include <linux/clk-provider.h>
-> > > > >  #include <linux/firmware.h>
-> > > > >  #include <linux/jiffies.h>
-> > > > >  #include <linux/kernel.h>
-> > > > > @@ -431,7 +432,6 @@ static int vsc85xx_dt_led_mode_get(struct phy_device *phydev,
-> > > > >  
-> > > > >  	return led_mode;
-> > > > >  }
-> > > > > -
-> > > > >  #else
-> > > > >  static int vsc85xx_edge_rate_magic_get(struct phy_device *phydev)
-> > > > >  {
-> > > > > @@ -1508,6 +1508,43 @@ static int vsc85xx_config_init(struct phy_device *phydev)
-> > > > >  	return 0;
-> > > > >  }
-> > > > >  
-> > > > > +static int vsc8531_config_init(struct phy_device *phydev)
-> > > > > +{
-> > > > > +	struct vsc8531_private *vsc8531 = phydev->priv;
-> > > > > +	u16 val;
-> > > > > +	int rc;
-> > > > > +
-> > > > > +	rc = vsc85xx_config_init(phydev);
-> > > > > +	if (rc)
-> > > > > +		return rc;
-> > > > > +
-> > > > > +#ifdef CONFIG_COMMON_CLK
-> > > > > +	switch (vsc8531->clkout_rate) {
-> > > > > +	case 25000000:
-> > > > > +		val = CLKOUT_FREQ_25M;
-> > > > > +		break;
-> > > > > +	case 50000000:
-> > > > > +		val = CLKOUT_FREQ_50M;
-> > > > > +		break;
-> > > > > +	case 125000000:
-> > > > > +		val = CLKOUT_FREQ_125M;
-> > > > > +		break;
-> > > > > +	default:
-> > > > > +		return -EINVAL;
-> > > > > +	}
-> > > > > +
-> > > > > +	if (vsc8531->clkout_enabled)
-> > > > > +		val |= CLKOUT_ENABLE;
-> > > > > +
-> > > > > +	rc = phy_write_paged(phydev, MSCC_PHY_PAGE_EXTENDED_GPIO,
-> > > > > +			     MSCC_CLKOUT_CNTL, val);
-> > > > > +	if (rc)
-> > > > > +		return rc;
-> > > > > +#endif
-> > > > > +
-> > > > > +	return 0;
-> > > > > +}
-> > > > > +
-> > > > 
-> > > > > +static int vsc8531_clkout_prepare(struct clk_hw *hw)
-> > > > > +{
-> > > > > +	struct vsc8531_private *vsc8531 = clkout_hw_to_vsc8531(hw);
-> > > > > +
-> > > > > +	vsc8531->clkout_enabled = true;
-> > > > > +	return 0;
-> > > > > +}
-> > > > > +
-> > > > > +static void vsc8531_clkout_unprepare(struct clk_hw *hw)
-> > > > > +{
-> > > > > +	struct vsc8531_private *vsc8531 = clkout_hw_to_vsc8531(hw);
-> > > > > +
-> > > > > +	vsc8531->clkout_enabled = false;
-> > > > > +}
-> > > > > +
-> > > > 
-> > > > > +static const struct clk_ops vsc8531_clkout_ops = {
-> > > > > +	.prepare = vsc8531_clkout_prepare,
-> > > > > +	.unprepare = vsc8531_clkout_unprepare,
-> > > > > +	.is_prepared = vsc8531_clkout_is_prepared,
-> > > > > +	.recalc_rate = vsc8531_clkout_recalc_rate,
-> > > > > +	.round_rate = vsc8531_clkout_round_rate,
-> > > > > +	.set_rate = vsc8531_clkout_set_rate,
-> > > > 
-> > > > I'm not sure this is the expected behaviour. The clk itself should
-> > > > only start ticking when the enable callback is called. But this code
-> > > > will enable the clock when config_init() is called. I think you should
-> > > > implement the enable and disable methods.
-> > > 
-> > > That is actually incorrect.  The whole "prepare" vs "enable" difference
-> > > is that prepare can schedule, enable isn't permitted.  So, if you need
-> > > to sleep to enable the clock, then enabling the clock in the prepare
-> > > callback is the right thing to do.
-> > > 
-> > > However, the above driver just sets a flag, which only gets used when
-> > > the PHY's config_init method is called; that really doesn't seem to be
-> > > sane - the clock is available from the point that the PHY has been
-> > > probed, and it'll be expected that once the clock is published, it can
-> > > be made functional.
-> > 
-> > Though I'm not sure how this fits in the whole bringup of ethernet phys.
-> > Like the phy is dependent on the underlying ethernet controller to
-> > actually turn it on.
-> > 
-> > I guess we should check the phy-state and if it's not accessible, just
-> > keep the values and if it's in a suitable state do the configuration.
-> > 
-> > Calling a vsc8531_config_clkout() from both the vsc8531_config_init()
-> > as well as the clk_(un-)prepare  and clk_set_rate functions and being
-> > protected by a check against phy_is_started() ?
-> 
-> It sounds like it doesn't actually fit the clk API paradym then.  I
-> see that Rob suggested it, and from the DT point of view, it makes
-> complete sense, but then if the hardware can't actually be used in
-> the way the clk API expects it to be used, then there's a semantic
-> problem.
-> 
-> What is this clock used for?
+This series is a working RFC proof-of-concept that implements DMA
+zero-copy between the NIC and a GPU device for the data path, while
+keeping the protocol processing on the host CPU.
 
-It provides a source for the mac-clk for the actual transfers, here to
-provide the 125MHz clock needed for the RGMII interface .
+This also works for zero-copy send/recv to host (CPU) memory.
 
-So right now the old rk3368-lion devicetree just declares a stub
-fixed-clock and instructs the soc's clock controller to use it [0] .
-And in the cover-letter here, I show the update variant with using
-the clock defined here.
+Current limitations:
+  - mlx5 only, header splitting is at a fixed offset.
+  - currently only TCP protocol delivery is performed.
+  - not optimized (hey, it works!)
+  - TX completion notification is planned, but not in this patchset.
+  - one socket per device
+  - not compatible with xsk (re-uses same datastructures)
+  - not compatible with bpf payload inspection
+  - x86 !iommu only; liberties are taken with PA addresses.
+
+The next section provides a brief overview of how things work, for this
+phase 0 proof of concept.
+
+A transport context is created on a device, which sets up the datapath,
+and the device queues.  Only specialized RX queues are needed, the
+standard TX queues are used for packet transmission.
+
+Memory areas which participate in zero-copy transmission are registered
+with the context.  These areas can be used as either RX packet buffers
+or TX data areas (or both).  The memory can come from either malloc/mmap
+or cudaMalloc().  The latter call provides a handle to the userspace
+application, but the memory region is only accessible to the GPU.
+
+A socket is created and registered with the context, which sets
+SOCK_ZEROCOPY, and is bound to the device with SO_BINDTODEVICE.
+
+Asymmetrical data paths are possible (zc TX, normal RX), and vice versa,
+but the curreent PoC sets things up for symmetrical transport.  The
+application needs to provide the RX buffers to the receive queue,
+similar to AF_XDP.
+
+Once things are set up, data is sent to the network with sendmsg().  The
+iovecs provided contain an address in the region previously registered.
+The normal protocol stack processing constructs the packet, but the data
+is not touched by the stack.  In this phase, the application is not
+notified when the protocol processing is complete and the data area is
+safe to modify again.
+
+For RX, packets undergo the usual protocol processing and are delivered
+up to the socket receive queue.  At this point, the skb data fragments
+are delivered to the application as iovecs through an AF_XDP style
+queue.  The application can poll for readability, but does not use
+read() to receive the data.
+
+The initial application used is iperf3, a modified version with the
+userspace library is available at:
+    https://github.com/jlemon/iperf
+    https://github.com/jlemon/netgpu
+
+Running "iperf3 -s -z --dport 8888" (host memory) on a 12Gbps link:
+    11.3 Gbit/sec receive
+    10.8 Gbit/sec tramsmit
+
+Running "iperf3 -s -z --dport 8888 --gpu" on a 25Gbps link:
+    22.5 Gbit/sec receive
+    12.6 Gbit/sec transmit  (!!!)
+
+For the GPU runs, the Intel PCI monitoring tools were used to confirm
+that the host PCI bus was mostly idle.  The TX performance needs further
+investigation.
+
+Comments welcome.  The next phase of the work will clean up the
+interface, adding completion notifications, and a flexible queue
+creation mechanism.
+--
+Jonathan
 
 
-I've added the idea from my previous mail like shown below [1].
-which would take into account the phy-state.
+Jonathan Lemon (21):
+  mm: add {add|release}_memory_pages
+  mm: Allow DMA mapping of pages which are not online
+  tcp: Pad TCP options out to a fixed size
+  mlx5: add definitions for header split and netgpu
+  mlx5/xsk: check that xsk does not conflict with netgpu
+  mlx5: add header_split flag
+  mlx5: remove the umem parameter from mlx5e_open_channel
+  misc: add shqueue.h for prototyping
+  include: add definitions for netgpu
+  mlx5: add netgpu queue functions
+  skbuff: add a zc_netgpu bitflag
+  mlx5: hook up the netgpu channel functions
+  netdevice: add SETUP_NETGPU to the netdev_bpf structure
+  kernel: export free_uid
+  netgpu: add network/gpu dma module
+  lib: have __zerocopy_sg_from_iter get netgpu pages for a sk
+  net/core: add the SO_REGISTER_DMA socket option
+  tcp: add MSG_NETDMA flag for sendmsg()
+  core: add page recycling logic for netgpu pages
+  core/skbuff: use skb_zdata for testing whether skb is zerocopy
+  mlx5: add XDP_SETUP_NETGPU hook
 
-But I guess I'll wait for more input before spamming people with v6.
+ drivers/misc/Kconfig                          |    1 +
+ drivers/misc/Makefile                         |    1 +
+ drivers/misc/netgpu/Kconfig                   |   10 +
+ drivers/misc/netgpu/Makefile                  |   11 +
+ drivers/misc/netgpu/nvidia.c                  | 1516 +++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |    3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |   22 +-
+ .../mellanox/mlx5/core/en/netgpu/setup.c      |  475 ++++++
+ .../mellanox/mlx5/core/en/netgpu/setup.h      |   42 +
+ .../net/ethernet/mellanox/mlx5/core/en/txrx.h |    3 +
+ .../ethernet/mellanox/mlx5/core/en/xsk/umem.c |    3 +
+ .../ethernet/mellanox/mlx5/core/en/xsk/umem.h |    3 +
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |   15 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  118 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   52 +-
+ .../net/ethernet/mellanox/mlx5/core/en_txrx.c |   15 +-
+ include/linux/dma-mapping.h                   |    4 +-
+ include/linux/memory_hotplug.h                |    4 +
+ include/linux/mmzone.h                        |    7 +
+ include/linux/netdevice.h                     |    6 +
+ include/linux/skbuff.h                        |   27 +-
+ include/linux/socket.h                        |    1 +
+ include/linux/uio.h                           |    4 +
+ include/net/netgpu.h                          |   65 +
+ include/uapi/asm-generic/socket.h             |    2 +
+ include/uapi/misc/netgpu.h                    |   43 +
+ include/uapi/misc/shqueue.h                   |  205 +++
+ kernel/user.c                                 |    1 +
+ lib/iov_iter.c                                |   45 +
+ mm/memory_hotplug.c                           |   65 +-
+ net/core/datagram.c                           |    6 +-
+ net/core/skbuff.c                             |   44 +-
+ net/core/sock.c                               |   26 +
+ net/ipv4/tcp.c                                |    8 +
+ net/ipv4/tcp_output.c                         |   16 +
+ 35 files changed, 2828 insertions(+), 41 deletions(-)
+ create mode 100644 drivers/misc/netgpu/Kconfig
+ create mode 100644 drivers/misc/netgpu/Makefile
+ create mode 100644 drivers/misc/netgpu/nvidia.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/netgpu/setup.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/netgpu/setup.h
+ create mode 100644 include/net/netgpu.h
+ create mode 100644 include/uapi/misc/netgpu.h
+ create mode 100644 include/uapi/misc/shqueue.h
 
-Thanks
-Heiko
-
-
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/boot/dts/rockchip/rk3368-lion.dtsi#n150
-[1]
-@@ -1508,6 +1508,157 @@ static int vsc85xx_config_init(struct phy_device *phydev)
- 	return 0;
- }
- 
-+#ifdef CONFIG_COMMON_CLK
-+#define clkout_hw_to_vsc8531(_hw) container_of(_hw, struct vsc8531_private, clkout_hw)
-+
-+static int clkout_rates[] = {
-+	125000000,
-+	50000000,
-+	25000000,
-+};
-+
-+static int vsc8531_config_clkout(struct phy_device *phydev)
-+{
-+	struct vsc8531_private *vsc8531 = phydev->priv;
-+	u16 val;
-+
-+	/* when called from clk functions, make sure phy is running */
-+	if (phy_is_started(phydev))
-+		return 0;
-+
-+	switch (vsc8531->clkout_rate) {
-+	case 25000000:
-+		val = CLKOUT_FREQ_25M;
-+		break;
-+	case 50000000:
-+		val = CLKOUT_FREQ_50M;
-+		break;
-+	case 125000000:
-+		val = CLKOUT_FREQ_125M;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	if (vsc8531->clkout_enabled)
-+		val |= CLKOUT_ENABLE;
-+
-+	return phy_write_paged(phydev, MSCC_PHY_PAGE_EXTENDED_GPIO,
-+			       MSCC_CLKOUT_CNTL, val);
-+}
-+
-+static unsigned long vsc8531_clkout_recalc_rate(struct clk_hw *hw,
-+						unsigned long parent_rate)
-+{
-+	struct vsc8531_private *vsc8531 = clkout_hw_to_vsc8531(hw);
-+
-+	return vsc8531->clkout_rate;
-+}
-+
-+static long vsc8531_clkout_round_rate(struct clk_hw *hw, unsigned long rate,
-+				      unsigned long *prate)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(clkout_rates); i++)
-+		if (clkout_rates[i] <= rate)
-+			return clkout_rates[i];
-+	return 0;
-+}
-+
-+static int vsc8531_clkout_set_rate(struct clk_hw *hw, unsigned long rate,
-+				   unsigned long parent_rate)
-+{
-+	struct vsc8531_private *vsc8531 = clkout_hw_to_vsc8531(hw);
-+	struct phy_device *phydev = vsc8531->phydev;
-+
-+	vsc8531->clkout_rate = rate;
-+	return vsc8531_config_clkout(phydev);
-+}
-+
-+static int vsc8531_clkout_prepare(struct clk_hw *hw)
-+{
-+	struct vsc8531_private *vsc8531 = clkout_hw_to_vsc8531(hw);
-+	struct phy_device *phydev = vsc8531->phydev;
-+
-+	vsc8531->clkout_enabled = true;
-+	return vsc8531_config_clkout(phydev);
-+}
-+
-+static void vsc8531_clkout_unprepare(struct clk_hw *hw)
-+{
-+	struct vsc8531_private *vsc8531 = clkout_hw_to_vsc8531(hw);
-+	struct phy_device *phydev = vsc8531->phydev;
-+
-+	vsc8531->clkout_enabled = false;
-+	vsc8531_config_clkout(phydev);
-+}
-+
-+static int vsc8531_clkout_is_prepared(struct clk_hw *hw)
-+{
-+	struct vsc8531_private *vsc8531 = clkout_hw_to_vsc8531(hw);
-+
-+	return vsc8531->clkout_enabled;
-+}
-+
-+static const struct clk_ops vsc8531_clkout_ops = {
-+	.prepare = vsc8531_clkout_prepare,
-+	.unprepare = vsc8531_clkout_unprepare,
-+	.is_prepared = vsc8531_clkout_is_prepared,
-+	.recalc_rate = vsc8531_clkout_recalc_rate,
-+	.round_rate = vsc8531_clkout_round_rate,
-+	.set_rate = vsc8531_clkout_set_rate,
-+};
-+
-+static int vsc8531_register_clkout(struct phy_device *phydev)
-+{
-+	struct vsc8531_private *vsc8531 = phydev->priv;
-+	struct device *dev = &phydev->mdio.dev;
-+	struct device_node *of_node = dev->of_node;
-+	struct clk_init_data init;
-+	int ret;
-+
-+	init.name = "vsc8531-clkout";
-+	init.ops = &vsc8531_clkout_ops;
-+	init.flags = 0;
-+	init.parent_names = NULL;
-+	init.num_parents = 0;
-+	vsc8531->clkout_hw.init = &init;
-+
-+	/* optional override of the clockname */
-+	of_property_read_string(of_node, "clock-output-names", &init.name);
-+
-+	/* register the clock */
-+	ret = devm_clk_hw_register(dev, &vsc8531->clkout_hw);
-+	if (!ret)
-+		ret = devm_of_clk_add_hw_provider(dev, of_clk_hw_simple_get,
-+						  &vsc8531->clkout_hw);
-+
-+	return ret;
-+}
-+#else
-+static int vsc8531_register_clkout(struct phy_device *phydev)
-+{
-+	return 0;
-+}
-+
-+static int vsc8531_config_clkout(struct phy_device *phydev)
-+{
-+	return 0;
-+}
-+#endif
-+
-+static int vsc8531_config_init(struct phy_device *phydev)
-+{
-+	int rc;
-+
-+	rc = vsc85xx_config_init(phydev);
-+	if (rc)
-+		return rc;
-+
-+	return vsc8531_config_clkout(phydev);
-+}
-+
-
-
-
+-- 
+2.24.1
 
