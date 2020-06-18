@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12A981FE33F
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:07:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13D741FE2BF
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 04:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731788AbgFRCHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Jun 2020 22:07:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55176 "EHLO mail.kernel.org"
+        id S1730478AbgFRBXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Jun 2020 21:23:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56706 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730699AbgFRBWQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:22:16 -0400
+        id S1730107AbgFRBXN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:23:13 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 14599221F0;
-        Thu, 18 Jun 2020 01:22:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 97C2721974;
+        Thu, 18 Jun 2020 01:23:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443335;
-        bh=84CiTjOmC6L1iB5HAl8uSFlVjOWCYawhCLhEijI3Jpk=;
+        s=default; t=1592443393;
+        bh=HMUNp5S7JgC4MKED6px7xVMS2rMtoj7TyHYEgUjlX8Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C8pE7w4gwpKdS7XbVZOaKNOnLQJMRYQAJGcol5219RrH4UcNFwZtq2Mscu9xhIZMH
-         mpUzpVnk19jOpsd+CoUuYBTKmzOqqWoLhuD/adIAOSStC/XCSaXC8dSSat5rq2zRt6
-         zfdJof+FtRMh93bNg8YV1HERA1NRDjKXGHxzkXCM=
+        b=1ihu6LRSyXyKrfkhblZIo3Dv1yl1+4CK834Jr3+xFQJnDGOmO93PLLnDQ9qeyKpey
+         idsRxaIte+pD/SMif5FeXbBLlYT1Ccw8VW0/bkCN8BVlhA3vVfc1IAA782clgR67Ic
+         uj1qGosRGKfb2tFxsVFX47rVNkZRQo9rOeXvrBAI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrey Ignatov <rdna@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 266/266] bpf: Fix memlock accounting for sock_hash
-Date:   Wed, 17 Jun 2020 21:16:31 -0400
-Message-Id: <20200618011631.604574-266-sashal@kernel.org>
+Cc:     Wang Hai <wanghai38@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 040/172] yam: fix possible memory leak in yam_init_driver
+Date:   Wed, 17 Jun 2020 21:20:06 -0400
+Message-Id: <20200618012218.607130-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200618011631.604574-1-sashal@kernel.org>
-References: <20200618011631.604574-1-sashal@kernel.org>
+In-Reply-To: <20200618012218.607130-1-sashal@kernel.org>
+References: <20200618012218.607130-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,57 +44,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrey Ignatov <rdna@fb.com>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit 60e5ca8a64bad8f3e2e20a1e57846e497361c700 ]
+[ Upstream commit 98749b7188affbf2900c2aab704a8853901d1139 ]
 
-Add missed bpf_map_charge_init() in sock_hash_alloc() and
-correspondingly bpf_map_charge_finish() on ENOMEM.
+If register_netdev(dev) fails, free_netdev(dev) needs
+to be called, otherwise a memory leak will occur.
 
-It was found accidentally while working on unrelated selftest that
-checks "map->memory.pages > 0" is true for all map types.
-
-Before:
-	# bpftool m l
-	...
-	3692: sockhash  name m_sockhash  flags 0x0
-		key 4B  value 4B  max_entries 8  memlock 0B
-
-After:
-	# bpftool m l
-	...
-	84: sockmap  name m_sockmap  flags 0x0
-		key 4B  value 4B  max_entries 8  memlock 4096B
-
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Andrey Ignatov <rdna@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20200612000857.2881453-1-rdna@fb.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/sock_map.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/hamradio/yam.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index b22e9f119180..6bbc118bf00e 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -837,11 +837,15 @@ static struct bpf_map *sock_hash_alloc(union bpf_attr *attr)
- 		err = -EINVAL;
- 		goto free_htab;
- 	}
-+	err = bpf_map_charge_init(&htab->map.memory, cost);
-+	if (err)
-+		goto free_htab;
- 
- 	htab->buckets = bpf_map_area_alloc(htab->buckets_num *
- 					   sizeof(struct bpf_htab_bucket),
- 					   htab->map.numa_node);
- 	if (!htab->buckets) {
-+		bpf_map_charge_finish(&htab->map.memory);
- 		err = -ENOMEM;
- 		goto free_htab;
- 	}
+diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
+index ba9df430fca6..fdab49872587 100644
+--- a/drivers/net/hamradio/yam.c
++++ b/drivers/net/hamradio/yam.c
+@@ -1148,6 +1148,7 @@ static int __init yam_init_driver(void)
+ 		err = register_netdev(dev);
+ 		if (err) {
+ 			printk(KERN_WARNING "yam: cannot register net device %s\n", dev->name);
++			free_netdev(dev);
+ 			goto error;
+ 		}
+ 		yam_devs[i] = dev;
 -- 
 2.25.1
 
