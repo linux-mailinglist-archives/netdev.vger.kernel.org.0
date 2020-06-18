@@ -2,91 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 985A41FE9BA
-	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 06:01:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AA621FE9C5
+	for <lists+netdev@lfdr.de>; Thu, 18 Jun 2020 06:04:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725912AbgFREBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 00:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725813AbgFREBE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 00:01:04 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F30C06174E;
-        Wed, 17 Jun 2020 21:01:04 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id b27so4351346qka.4;
-        Wed, 17 Jun 2020 21:01:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=nLCU3BeAJp62oE0ohSEc7wdaroH7R0ZRm4fHrbC9orM=;
-        b=LqlHSuLQ65Np1zhkoayftr2UXNQ8eEE/M4V6/MFxrelBs7C8VOxPv3o2ZFzdheHTbr
-         l/2+1okJK1OxCUNvq4/aVlnJOpOZzOuFj0JJX1t7R5Uy0pvGhXAFxF2Yy+Es9W/cSruH
-         iWZspYZ8O+MYwOqgxjEWFUIRn6w7JjXqe5Bkb0fqcn6f9H+0w5nzfhmp+4fxoN13tzeK
-         c6iQRDmwMGv0DA8Aw0711xADXWdoN5QgZfaBk9oeAKayvRVb4Ja/yPwSLoVGKQxgAxc/
-         LJJlmHa4bWyTgQga6AICtXkXk00rJ63uHpZaiqpxsrsBJsqsqLJD58/3HIBvrNfdChjF
-         UdHQ==
+        id S1726853AbgFREER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 00:04:17 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:37761 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725874AbgFREEN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 00:04:13 -0400
+Received: by mail-il1-f197.google.com with SMTP id n2so3159801ilq.4
+        for <netdev@vger.kernel.org>; Wed, 17 Jun 2020 21:04:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references;
-        bh=nLCU3BeAJp62oE0ohSEc7wdaroH7R0ZRm4fHrbC9orM=;
-        b=Y8zc0Osk41Y9BfY2g+6wDOc6VJh+7mKtonn1pBrQl0TKpHEldTtIR5sNQ3ZWqPzUvu
-         y+BgxnAI7SJt/ImHWhW2tMaubI77R8siZJC5pcQm8n0twG6tq4x4xmAYkKfnaPCXY71h
-         f39XyKUfy7imDS1rXUUJ0cavrAsB1jTYLLCds7Zr3AtsvkLqd/LfdnWyLg36qynsUvFp
-         jODJNHUIO7ErQY3SKmXL10hzhYfMxEvQ+wTJPwCQifdAhldv8+qgqOCaAPcub/2nF0ka
-         KmtI7pB9lF1LQMY4+5qvpTnOl50ngrMeQQkzHUqFXWZXfrg2CQZah6JNEP1V2/Li3KbG
-         4yrA==
-X-Gm-Message-State: AOAM533sf3YCP/cLwhxX7QmAvtG07JrJvsomEmPKigPxMxrQPQUJX8EG
-        Xsl8OHlyFPXh3sVwySUH/6s=
-X-Google-Smtp-Source: ABdhPJwX0x0Vg27Ije6SK4gt0QVQGyehvhGJ5GqW0IowRD2zcddjX/tJVgUvFaeR4OGk+M0uONehUQ==
-X-Received: by 2002:a37:850:: with SMTP id 77mr1894189qki.498.1592452863605;
-        Wed, 17 Jun 2020 21:01:03 -0700 (PDT)
-Received: from linux.home ([2604:2000:1344:41d:9c3:b47c:c995:4853])
-        by smtp.googlemail.com with ESMTPSA id m53sm1948825qtb.64.2020.06.17.21.01.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Jun 2020 21:01:03 -0700 (PDT)
-From:   Gaurav Singh <gaurav1086@gmail.com>
-To:     gaurav1086@gmail.com, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org (open list:TC subsystem),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] [net/sched]: Remove redundant condition in qdisc_graft
-Date:   Thu, 18 Jun 2020 00:00:56 -0400
-Message-Id: <20200618040056.30792-1-gaurav1086@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200618012308.28153-1-gaurav1086@gmail.com>
-References: <20200618012308.28153-1-gaurav1086@gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=rTEVJVzhYF0+asDXTaiqCwuTOUiOzz8nPDu9h9e0Uw0=;
+        b=TLf0n150WCrWWsaTL8mc1vMETHYSKThmz2Wx7wAs6NWD9cYVE6TSEHc9fiyxMUG1Wz
+         5C0MdQKTedQblIeQTVHCi6o25CWXGl/Uix+/wrWq32R/B6zIl5fZg0iAWi54ZayPWWLg
+         ccdBZf5eqybjOIXfFSoYVG/gMkaUslQksmDS6wLhD3XmRmNXhk2i6vmXklCeqUSwbZIQ
+         2KLGzDbtBnQAXX3zvQ3T5WHjmu+P8jEPvIjW0taejPmLbe1HzznciFJZh7wffuG2XfA1
+         2LGMTCf1HIT1GQjGmUEkcCJa4lQ2sIVMVXfFKU2iUZejxjcpiifHS9DqrthUoiyo4R/j
+         w0Qw==
+X-Gm-Message-State: AOAM530TWDezZPn7P4fjVN0JgIIflMIDNVoIq9OLMi/lN6nTk0CanjFY
+        qsyCqIlk33W+/BMYoW5At9agqPGj7rVoJFB8DegPIpGRE58h
+X-Google-Smtp-Source: ABdhPJzjMT+p4vZMWKN/uSdJKfqwwpC0gk8pe+u64+iDYWQHU5ayTgv6UccLWL/l+v6SDo9JcYQM7nS8kKdyQ7I5H7ALjgErTwbM
+MIME-Version: 1.0
+X-Received: by 2002:a05:6e02:d09:: with SMTP id g9mr2342684ilj.300.1592453052295;
+ Wed, 17 Jun 2020 21:04:12 -0700 (PDT)
+Date:   Wed, 17 Jun 2020 21:04:12 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000080f43805a853de9a@google.com>
+Subject: memory leak in macvlan_hash_add_source
+From:   syzbot <syzbot+62100d232f618b7da606@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-parent cannot be NULL here since its in the else part
-of the if (parent == NULL) condition. Remove the extra
-check on parent pointer.
+Hello,
 
-Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+syzbot found the following crash on:
+
+HEAD commit:    7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11fbb456100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9a1aa05456dfd557
+dashboard link: https://syzkaller.appspot.com/bug?extid=62100d232f618b7da606
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=163092a9100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12caed7a100000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+62100d232f618b7da606@syzkaller.appspotmail.com
+
+BUG: memory leak
+unreferenced object 0xffff888115ac4080 (size 64):
+  comm "syz-executor882", pid 6646, jiffies 4294954688 (age 14.840s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 20 ee 41 15 81 88 ff ff  ........ .A.....
+    00 09 92 15 81 88 ff ff aa aa aa aa aa 23 00 00  .............#..
+  backtrace:
+    [<00000000fe90004e>] kmalloc include/linux/slab.h:555 [inline]
+    [<00000000fe90004e>] macvlan_hash_add_source+0x52/0xe0 drivers/net/macvlan.c:161
+    [<000000005aee7a07>] macvlan_changelink_sources+0x8a/0x1f0 drivers/net/macvlan.c:1355
+    [<00000000e0e074d6>] macvlan_common_newlink+0x21a/0x570 drivers/net/macvlan.c:1463
+    [<00000000c89166a4>] __rtnl_newlink+0x843/0xb10 net/core/rtnetlink.c:3340
+    [<000000009677515c>] rtnl_newlink+0x49/0x70 net/core/rtnetlink.c:3398
+    [<00000000fab710c9>] rtnetlink_rcv_msg+0x173/0x4b0 net/core/rtnetlink.c:5461
+    [<00000000d3f45a45>] netlink_rcv_skb+0x5a/0x180 net/netlink/af_netlink.c:2469
+    [<00000000b9db6049>] netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+    [<00000000b9db6049>] netlink_unicast+0x20a/0x2f0 net/netlink/af_netlink.c:1329
+    [<000000006a00463c>] netlink_sendmsg+0x2b5/0x560 net/netlink/af_netlink.c:1918
+    [<00000000a31e18a9>] sock_sendmsg_nosec net/socket.c:652 [inline]
+    [<00000000a31e18a9>] sock_sendmsg+0x4c/0x60 net/socket.c:672
+    [<000000000ca330a5>] ____sys_sendmsg+0x118/0x2f0 net/socket.c:2352
+    [<000000006a5fc310>] ___sys_sendmsg+0x8a/0xd0 net/socket.c:2406
+    [<000000004d3b2570>] __sys_sendmmsg+0xda/0x230 net/socket.c:2496
+    [<00000000a524412c>] __do_sys_sendmmsg net/socket.c:2525 [inline]
+    [<00000000a524412c>] __se_sys_sendmmsg net/socket.c:2522 [inline]
+    [<00000000a524412c>] __x64_sys_sendmmsg+0x24/0x30 net/socket.c:2522
+    [<00000000333adef2>] do_syscall_64+0x6e/0x220 arch/x86/entry/common.c:295
+    [<00000000df7893d8>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+
+
 ---
- net/sched/sch_api.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 9a3449b56bd6..be93ebcdb18d 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1094,7 +1094,7 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
- 
- 		/* Only support running class lockless if parent is lockless */
- 		if (new && (new->flags & TCQ_F_NOLOCK) &&
--		    parent && !(parent->flags & TCQ_F_NOLOCK))
-+			!(parent->flags & TCQ_F_NOLOCK))
- 			qdisc_clear_nolock(new);
- 
- 		if (!cops || !cops->graft)
--- 
-2.17.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
