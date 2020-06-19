@@ -2,167 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F0EF2001B0
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 07:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A37B2001BA
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 07:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726201AbgFSFjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 01:39:39 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:18058 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726005AbgFSFji (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 01:39:38 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05J5Zov1032630;
-        Thu, 18 Jun 2020 22:39:21 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=hssOyjzmred26mwhielFG6kz6wChBN6jzCcSYO3fH5s=;
- b=PlrhxmncZV/rfvbw4yXwyNZQJP+SMWELv+0NpMIs4Nb2CoYBJqBk7RAx7xgQXF91c79b
- wI6A1avST4ri91ofiTH+14J5+2ydBMFvcmGUj5EVdVxbG3SwlbPR3dgXuSVBEnGwcGnf
- QoWdPGElHhPXrdyseuiZIECGgkAbNh5m6Lo= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31q66105re-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 18 Jun 2020 22:39:21 -0700
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 18 Jun 2020 22:39:19 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m4duUzXDIQbKTbofKKxqV0HyFNFcvd9uqgaVdnIcWuOox3TzcKCw3PhWk9QQ6BuNRWWDqkEgt8bSUGS/qxRq504OiX6JrnAlQBiLECfKSwiRX94x77ClR0UVdOz4Y6sQrTxT1YZOTZk2hSSF1t3v5VhgQrbtkhfLtfLF1aXdboMm4Ha3lyo0/kT67+CZzE5yvG2pS9L6Yd9rDREDT18qIeLz/ULhzQVQLG8q95dRmzN7cAi0eY/UZ9iou42oYdwT1jU0ronrCHyZyIIFNOGM0XVsZykBvJctpig8Chomwyoi/1pInexhJ5PJcjk9x1dmR+2Ag7rkk4qcxJa1OeKp1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hssOyjzmred26mwhielFG6kz6wChBN6jzCcSYO3fH5s=;
- b=cwsbrh43kiZA24Slc1H3l5B6GyBCCnEcdz5JVsRIv9qUZuMWKSGFRv1d3kIMmLAuYfODBSMd3hmuAE39+5ntApcJbyi36xl5hS2BvasktSSwu5MVWS7ohkAkPcY3a5DJK8Kf4rreErt8B6zdeJJiuRFGBIghdO5NagnLLSmKVgyFrK6Jw0Wx+WmHyLk5ncPHUr5tlEOGGtgCnlZW96MIeZY3NJcXh5MheME/PV5dbkFRKHw3MD7TZOYOKpwNZW/Nlmv/8OYTZq4BQcgLdjbABvtJ4qK7OSUhShBy4dGAFSGr11/34ko7+BHZmeI1Drw9WZKlm8oE7805Bb2RyoZC9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hssOyjzmred26mwhielFG6kz6wChBN6jzCcSYO3fH5s=;
- b=iTrcQhprRt4u4D0DjHYg7Z5YesarWRlfNql7+HMoeAe7ek18SNttqWY1DVSQubDE3u94/aI1o8ekqtJzjvUHUVE59YdVrWnyuhz5eTu0XPVjEwJ3OZlHD3UN3s0t2iLpH5X2r0X1/LWB2D+hG5eV1kRqAV7jEeMwO40Ea1i38nw=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BY5PR15MB3570.namprd15.prod.outlook.com (2603:10b6:a03:1f9::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3088.25; Fri, 19 Jun
- 2020 05:39:18 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.3109.021; Fri, 19 Jun 2020
- 05:39:18 +0000
-Subject: Re: [PATCH] bpf: Allow small structs to be type of function argument
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-CC:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>, Andrii Nakryiko <andriin@fb.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        KP Singh <kpsingh@chromium.org>,
-        Masanori Misono <m.misono760@gmail.com>
-References: <20200616173556.2204073-1-jolsa@kernel.org>
- <5eeaa556c7a0e_38b82b28075185c46a@john-XPS-13-9370.notmuch>
- <20200618114806.GA2369163@krava>
- <5eebe552dddc1_6d292ad5e7a285b83f@john-XPS-13-9370.notmuch>
- <CAEf4Bzb+U+A9i0VfGUHLVt28WCob7pb-0iVQA8d1fcR8A27ZpA@mail.gmail.com>
- <5eec061598dcf_403f2afa5de805bcde@john-XPS-13-9370.notmuch>
- <CAADnVQLGNUcDWmrgUBmdcgLMfUNf=-3yroA8a+b7s+Ki5Tb4Jg@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <4aec5fb8-9f9d-d01b-dd58-f15d50c5e827@fb.com>
-Date:   Thu, 18 Jun 2020 22:39:16 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.9.0
-In-Reply-To: <CAADnVQLGNUcDWmrgUBmdcgLMfUNf=-3yroA8a+b7s+Ki5Tb4Jg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR04CA0012.namprd04.prod.outlook.com
- (2603:10b6:a03:1d0::22) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1727922AbgFSFqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 01:46:16 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:33778 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725806AbgFSFqP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 01:46:15 -0400
+Received: by mail-io1-f69.google.com with SMTP id x2so5954544iof.0
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 22:46:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=wuVUV4cc/ccHGna9Tj+MB0CaAsOMVLHI+AmlYUkKH6o=;
+        b=WQ53QvWweUnhPFU/ZT578KaP6lZuQf0BUg+B/AbHRuH1lrIpVGy6rfH7EUryqOu9dg
+         AnwkOEjLioALNBdGojz0J0HeViZk88S+Xu5308JESsCyHbUfo7k6TKTSJPwNQQle8h/C
+         xUKNPqBCmOPqL6g+Tbm4tlp5Zt9khhKr0YNjFgMZixE4kDKCit+lYh6r3ukrcMW7EBdz
+         dkTzfo9PN3z8iXdhaFD0fSjyHjbT4yerPk7nTpwYOzHHY721x9e4tiIU/wJ1QHG/OxZ6
+         NFDPqVa0uJTWeCLfpnBKLlfTiQhuekx6kB4/K++lasxKoC4RO+AvU05dO+7sYNy4jOw5
+         PAVA==
+X-Gm-Message-State: AOAM530GcTVrOSOJD5uST7oObPHu65J8QEKoPjLXzZE4gU2R345XaxEj
+        9y6S6KvnlhEhijtDjUe6bw3hY3tRze+1l+0m+hWoLe1ivd93
+X-Google-Smtp-Source: ABdhPJwK4P0qOhMl4bxSyUe8fZgMOly9ZFX+lbfvbTfKDqawyld93VL9OuagDewsOqFcP6RgioUJ0ZLpfiwl/T6wbUf1jyTTlIzv
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21cf::11f0] (2620:10d:c090:400::5:b39d) by BY5PR04CA0012.namprd04.prod.outlook.com (2603:10b6:a03:1d0::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22 via Frontend Transport; Fri, 19 Jun 2020 05:39:17 +0000
-X-Originating-IP: [2620:10d:c090:400::5:b39d]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 136b5e40-9e75-4698-8619-08d814131c3b
-X-MS-TrafficTypeDiagnostic: BY5PR15MB3570:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BY5PR15MB35700D851FFD54D1C58182F6D3980@BY5PR15MB3570.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 0439571D1D
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Bp3JH1NTg06dE7nn5PnKmA6Ddrq+9jsT7S6nby+iOyVgn06Z+ipwfYANM0U5Q+IlhMEg+wo6L8IEHd/Vt+VAfxFcvSb5g9kqINKWuPc8P2kRuY1sVrVhVmFU/JgI1UdXqYLvtWUBu5bHZPU+Xe2ANysMekZnfW+flyDFdaaRM4eHrRGYRh0Rv1j26X4lBvHozracTPm8FN6MF4RHV4jrZH8kIr3Q0TMBOZjY8zg9hMLcitlTqX8/5LMc4/tBwn/wtzMf6Uxn+X7s8q6Q9y5lIodZAe6EnKGre+I+4YZ/EH2IEp0Rtx8MMV465aSARjjtvnsjYhQAiw40+xKVoqIoCZm4k5AwcOjG39oN1t8O45TmChLOoK8y2c0GB5zTP9RH
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(396003)(136003)(346002)(39860400002)(366004)(316002)(6486002)(16526019)(7416002)(31686004)(186003)(478600001)(8936002)(8676002)(110136005)(54906003)(5660300002)(52116002)(4326008)(31696002)(53546011)(36756003)(66946007)(66476007)(66556008)(2906002)(86362001)(2616005)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: vwJjoKju+g6ZE2SH6U5lCcuKOivTzeVcv8apihpdXaYSrkLx5+0m2gR2BT+mvS4mZTTTMNqwG/GgsQwBd9lzJps4Zy+eIvVlJdRGwu9xXorYHJmuiJ8g8s0w5gGKuWjj3egTP0di/dGoSSovW/hxdg9OsSIDShI77dTgGM1cMvrzBQ5nCfJRbGYCB2g7kUfUHhASwRvWQlB0LnM7PgtPEvo7Rpa9/ATGRpyDVfVzCNzv10aImGzu/MeMEehnbaF3o7T12/himDkWt7QQ/m7rNJ3SOizuL+YgeBWI5136LosvndSjCgljTWTnVBd4FMrrOGV5UqddM7LEemJNPOVb6nYAqtSlSU9dsFsA4kr0agGAAjaO5k6WZx4QW/stkvn9ecRUBMkGx2k6KuewIU068Wc7rOA9iVWchELfGUdL6J87ndRxU8ROQqGGrj63ALqel/zyiGu5Yg4v3psXjdyPXmWp/sxLE+3YXrTc2DnBzrgDB3xV/Qoa74SWnDbYBFifRBkah1DOZ6SY9g0t3AB2wg==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 136b5e40-9e75-4698-8619-08d814131c3b
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2020 05:39:18.5291
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PrWy1ZlrSCFLel31BUjWwImgunXQo0YtLYSbvHUL56herV3G2TSutH2ieqZzzXDq
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3570
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-19_01:2020-06-18,2020-06-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- clxscore=1011 mlxscore=0 spamscore=0 priorityscore=1501 lowpriorityscore=0
- phishscore=0 mlxlogscore=999 adultscore=0 impostorscore=0 malwarescore=0
- cotscore=-2147483648 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006190039
-X-FB-Internal: deliver
+X-Received: by 2002:a6b:c910:: with SMTP id z16mr2489288iof.199.1592545574580;
+ Thu, 18 Jun 2020 22:46:14 -0700 (PDT)
+Date:   Thu, 18 Jun 2020 22:46:14 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000042f7b405a86969e4@google.com>
+Subject: bpf test error: KASAN: use-after-free Write in afs_wake_up_async_call
+From:   syzbot <syzbot+0710b20f5412c027fefb@syzkaller.appspotmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    ef7232da ionic: export features for vlans to use
+git tree:       bpf
+console output: https://syzkaller.appspot.com/x/log.txt?x=173214d1100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b8ad29058cb749bc
+dashboard link: https://syzkaller.appspot.com/bug?extid=0710b20f5412c027fefb
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+0710b20f5412c027fefb@syzkaller.appspotmail.com
+
+tipc: TX() has been purged, node left!
+==================================================================
+BUG: KASAN: use-after-free in afs_wake_up_async_call+0x6aa/0x770 fs/afs/rxrpc.c:707
+Write of size 1 at addr ffff88809a0449e4 by task kworker/u4:0/7
+
+CPU: 0 PID: 7 Comm: kworker/u4:0 Not tainted 5.8.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd3/0x413 mm/kasan/report.c:383
+ __kasan_report mm/kasan/report.c:513 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
+ afs_wake_up_async_call+0x6aa/0x770 fs/afs/rxrpc.c:707
+ rxrpc_notify_socket+0x1db/0x5d0 net/rxrpc/recvmsg.c:40
+ __rxrpc_set_call_completion.part.0+0x172/0x410 net/rxrpc/recvmsg.c:76
+ __rxrpc_call_completed net/rxrpc/recvmsg.c:112 [inline]
+ rxrpc_call_completed+0xca/0xf0 net/rxrpc/recvmsg.c:111
+ rxrpc_discard_prealloc+0x781/0xab0 net/rxrpc/call_accept.c:233
+ rxrpc_listen+0x147/0x360 net/rxrpc/af_rxrpc.c:245
+ afs_close_socket+0x95/0x320 fs/afs/rxrpc.c:110
+ afs_net_exit+0x1bc/0x310 fs/afs/main.c:155
+ ops_exit_list.isra.0+0xa8/0x150 net/core/net_namespace.c:186
+ cleanup_net+0x511/0xa50 net/core/net_namespace.c:603
+ process_one_work+0x965/0x1690 kernel/workqueue.c:2269
+ worker_thread+0x96/0xe10 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+
+Allocated by task 6807:
+ save_stack+0x1b/0x40 mm/kasan/common.c:48
+ set_track mm/kasan/common.c:56 [inline]
+ __kasan_kmalloc mm/kasan/common.c:494 [inline]
+ __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:467
+ kmem_cache_alloc_trace+0x153/0x7d0 mm/slab.c:3551
+ kmalloc include/linux/slab.h:555 [inline]
+ kzalloc include/linux/slab.h:669 [inline]
+ afs_alloc_call+0x55/0x630 fs/afs/rxrpc.c:141
+ afs_charge_preallocation+0xe9/0x2d0 fs/afs/rxrpc.c:757
+ afs_open_socket+0x292/0x360 fs/afs/rxrpc.c:92
+ afs_net_init+0xa6c/0xe30 fs/afs/main.c:125
+ ops_init+0xaf/0x420 net/core/net_namespace.c:151
+ setup_net+0x2de/0x860 net/core/net_namespace.c:341
+ copy_net_ns+0x293/0x590 net/core/net_namespace.c:482
+ create_new_namespaces+0x3fb/0xb30 kernel/nsproxy.c:110
+ unshare_nsproxy_namespaces+0xbd/0x1f0 kernel/nsproxy.c:231
+ ksys_unshare+0x43d/0x8e0 kernel/fork.c:2983
+ __do_sys_unshare kernel/fork.c:3051 [inline]
+ __se_sys_unshare kernel/fork.c:3049 [inline]
+ __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3049
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Freed by task 7:
+ save_stack+0x1b/0x40 mm/kasan/common.c:48
+ set_track mm/kasan/common.c:56 [inline]
+ kasan_set_free_info mm/kasan/common.c:316 [inline]
+ __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:455
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x109/0x2b0 mm/slab.c:3757
+ afs_put_call+0x585/0xa40 fs/afs/rxrpc.c:190
+ rxrpc_discard_prealloc+0x764/0xab0 net/rxrpc/call_accept.c:230
+ rxrpc_listen+0x147/0x360 net/rxrpc/af_rxrpc.c:245
+ afs_close_socket+0x95/0x320 fs/afs/rxrpc.c:110
+ afs_net_exit+0x1bc/0x310 fs/afs/main.c:155
+ ops_exit_list.isra.0+0xa8/0x150 net/core/net_namespace.c:186
+ cleanup_net+0x511/0xa50 net/core/net_namespace.c:603
+ process_one_work+0x965/0x1690 kernel/workqueue.c:2269
+ worker_thread+0x96/0xe10 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+
+The buggy address belongs to the object at ffff88809a044800
+ which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 484 bytes inside of
+ 1024-byte region [ffff88809a044800, ffff88809a044c00)
+The buggy address belongs to the page:
+page:ffffea0002681100 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea000291db08 ffffea00028c27c8 ffff8880aa000c40
+raw: 0000000000000000 ffff88809a044000 0000000100000002 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88809a044880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88809a044900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff88809a044980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                       ^
+ ffff88809a044a00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88809a044a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
-On 6/18/20 7:04 PM, Alexei Starovoitov wrote:
-> On Thu, Jun 18, 2020 at 5:26 PM John Fastabend <john.fastabend@gmail.com> wrote:
->>
->>   foo(int a, __int128 b)
->>
->> would put a in r0 and b in r2 and r3 leaving a hole in r1. But that
->> was some old reference manual and  might no longer be the case
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-This should not happen if clang compilation with -target bpf.
-This MAY happen if they compile with 'clang -target riscv' as the IR
-could change before coming to bpf backend.
-
->> in reality. Perhaps just spreading hearsay, but the point is we
->> should say something about what the BPF backend convention
->> is and write it down. We've started to bump into these things
->> lately.
-> 
-> calling convention for int128 in bpf is _undefined_.
-> calling convention for struct by value in bpf is also _undefined_.
-
-Just to clarify a little bit. bpf backend did not do anything
-special about int128 and struct type. It is using llvm default.
-That is, int128 using two argument registers and struct passed
-by address. But I do see some other architectures having their
-own ways to handle these parameters like X86, AARCH64, AMDGPU, MIPS.
-
-int128 is not widely used. passing struct as the argument is not
-a good practice. So Agree with Alexei is not really worthwhile to
-handle them in the place of arguments.
-
-> 
-> In many cases the compiler has to have the backend code
-> so other parts of the compiler can function.
-> I didn't bother explicitly disabling every undefined case.
-> Please don't read too much into llvm generated code.
-> 
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
