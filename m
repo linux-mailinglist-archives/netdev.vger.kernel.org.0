@@ -2,87 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 447962001E7
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 08:22:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB302200206
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 08:40:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728868AbgFSGWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 02:22:19 -0400
-Received: from mga18.intel.com ([134.134.136.126]:50185 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728137AbgFSGWQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jun 2020 02:22:16 -0400
-IronPort-SDR: WVkscpUJVlEHkhfbBg7/gZSshJ7zGvGCmH2oTRuRzOIfNa0f4hsB9M9XgBkqUaFNi0Pd1ZDNDG
- 03wk79QcGnyA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9656"; a="130229729"
-X-IronPort-AV: E=Sophos;i="5.75,253,1589266800"; 
-   d="scan'208";a="130229729"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2020 23:22:13 -0700
-IronPort-SDR: 9CcV71emjPlftAqdNs8Fn8kVJZ2Zubg0pp5GoKUvZtARG7dyiddNS8R1dqDlCtXmFblKX8ijok
- ldVD55RTfJ+A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,253,1589266800"; 
-   d="scan'208";a="421753965"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by orsmga004.jf.intel.com with ESMTP; 18 Jun 2020 23:22:13 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net 4/4] i40e: fix crash when Rx descriptor count is changed
-Date:   Thu, 18 Jun 2020 23:22:10 -0700
-Message-Id: <20200619062210.3159291-5-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200619062210.3159291-1-jeffrey.t.kirsher@intel.com>
-References: <20200619062210.3159291-1-jeffrey.t.kirsher@intel.com>
+        id S1728815AbgFSGk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 02:40:26 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:58636 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725820AbgFSGkZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jun 2020 02:40:25 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 38FB89D1086A39C5E1FF;
+        Fri, 19 Jun 2020 14:40:23 +0800 (CST)
+Received: from [10.166.213.22] (10.166.213.22) by smtp.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 19 Jun
+ 2020 14:40:20 +0800
+Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
+To:     Cong Wang <xiyou.wangcong@gmail.com>, Roman Gushchin <guro@fb.com>
+CC:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "Cameron Berkenpas" <cam@neo-zeon.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
+        =?UTF-8?Q?Dani=c3=abl_Sonck?= <dsonck92@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Tejun Heo <tj@kernel.org>
+References: <20200616180352.18602-1-xiyou.wangcong@gmail.com>
+ <141629e1-55b5-34b1-b2ab-bab6b68f0671@huawei.com>
+ <CAM_iQpUFFHPnMxS2sAHZqMUs80tTn0+C_jCcne4Ddx2b9omCxg@mail.gmail.com>
+ <20200618193611.GE24694@carbon.DHCP.thefacebook.com>
+ <CAM_iQpWuNnHqNHKz5FMgAXoqQ5qGDEtNbBKDXpmpeNSadCZ-1w@mail.gmail.com>
+From:   Zefan Li <lizefan@huawei.com>
+Message-ID: <4f17229e-1843-5bfc-ea2f-67ebaa9056da@huawei.com>
+Date:   Fri, 19 Jun 2020 14:40:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAM_iQpWuNnHqNHKz5FMgAXoqQ5qGDEtNbBKDXpmpeNSadCZ-1w@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.166.213.22]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On 2020/6/19 5:09, Cong Wang wrote:
+> On Thu, Jun 18, 2020 at 12:36 PM Roman Gushchin <guro@fb.com> wrote:
+>>
+>> On Thu, Jun 18, 2020 at 12:19:13PM -0700, Cong Wang wrote:
+>>> On Wed, Jun 17, 2020 at 6:44 PM Zefan Li <lizefan@huawei.com> wrote:
+>>>>
+>>>> Cc: Roman Gushchin <guro@fb.com>
+>>>>
+>>>> Thanks for fixing this.
+>>>>
+>>>> On 2020/6/17 2:03, Cong Wang wrote:
+>>>>> When we clone a socket in sk_clone_lock(), its sk_cgrp_data is
+>>>>> copied, so the cgroup refcnt must be taken too. And, unlike the
+>>>>> sk_alloc() path, sock_update_netprioidx() is not called here.
+>>>>> Therefore, it is safe and necessary to grab the cgroup refcnt
+>>>>> even when cgroup_sk_alloc is disabled.
+>>>>>
+>>>>> sk_clone_lock() is in BH context anyway, the in_interrupt()
+>>>>> would terminate this function if called there. And for sk_alloc()
+>>>>> skcd->val is always zero. So it's safe to factor out the code
+>>>>> to make it more readable.
+>>>>>
+>>>>> Fixes: 090e28b229af92dc5b ("netprio_cgroup: Fix unlimited memory leak of v2 cgroups")
+>>>>
+>>>> but I don't think the bug was introduced by this commit, because there
+>>>> are already calls to cgroup_sk_alloc_disable() in write_priomap() and
+>>>> write_classid(), which can be triggered by writing to ifpriomap or
+>>>> classid in cgroupfs. This commit just made it much easier to happen
+>>>> with systemd invovled.
+>>>>
+>>>> I think it's 4bfc0bb2c60e2f4c ("bpf: decouple the lifetime of cgroup_bpf from cgroup itself"),
+>>>> which added cgroup_bpf_get() in cgroup_sk_alloc().
+>>>
+>>> Good point.
+>>>
+>>> I take a deeper look, it looks like commit d979a39d7242e06
+>>> is the one to blame, because it is the first commit that began to
+>>> hold cgroup refcnt in cgroup_sk_alloc().
+>>
+>> I agree, ut seems that the issue is not related to bpf and probably
+>> can be reproduced without CONFIG_CGROUP_BPF. d979a39d7242e06 indeed
+>> seems closer to the origin.
+> 
+> Yeah, I will update the Fixes tag and send V2.
+> 
 
-When the AF_XDP buffer allocator was introduced, the Rx SW ring
-"rx_bi" allocation was moved from i40e_setup_rx_descriptors()
-function, and was instead done in the i40e_configure_rx_ring()
-function.
+Commit d979a39d7242e06 looks innocent to me. With this commit when cgroup_sk_alloc
+is disabled and then a socket is cloned the cgroup refcnt will not be incremented,
+but this is fine, because when the socket is to be freed:
 
-This broke the ethtool set_ringparam() hook for changing the Rx
-descriptor count, which was relying on i40e_setup_rx_descriptors() to
-handle the allocation.
+ sk_prot_free()
+   cgroup_sk_free()
+     cgroup_put(sock_cgroup_ptr(skcd)) == cgroup_put(&cgrp_dfl_root.cgrp)
 
-Fix this by adding an explicit i40e_alloc_rx_bi() call to
-i40e_set_ringparam().
+cgroup_put() does nothing for the default root cgroup, so nothing bad will happen.
 
-Fixes: be1222b585fd ("i40e: Separate kernel allocated rx_bi rings from AF_XDP rings")
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_ethtool.c | 3 +++
- 1 file changed, 3 insertions(+)
+but cgroup_bpf_put() will decrement the bpf refcnt while this refcnt were not incremented
+as cgroup_sk_alloc has already been disabled. That's why I think it's 4bfc0bb2c60e2f4c
+that needs to be fixed.
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-index aa8026b1eb81..67806b7b2f49 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-@@ -2070,6 +2070,9 @@ static int i40e_set_ringparam(struct net_device *netdev,
- 			 */
- 			rx_rings[i].tail = hw->hw_addr + I40E_PRTGEN_STATUS;
- 			err = i40e_setup_rx_descriptors(&rx_rings[i]);
-+			if (err)
-+				goto rx_unwind;
-+			err = i40e_alloc_rx_bi(&rx_rings[i]);
- 			if (err)
- 				goto rx_unwind;
- 
--- 
-2.26.2
+>>
+>> Btw, based on the number of reported-by tags it seems that there was
+>> a real issue which the patch is fixing. Maybe you'll a couple of words
+>> about how it reveals itself in the real life?
+> 
+> I still have no idea how exactly this is triggered. According to the
+> people who reported this bug, they just need to wait for some hours
+> to trigger. So I am not sure what to add here, just the stack trace?
+> 
+> Thanks.
+> .
+> 
 
