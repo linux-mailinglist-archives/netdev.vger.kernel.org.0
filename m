@@ -2,93 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC76200AC0
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 15:52:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE8DA200AC9
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 15:56:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729513AbgFSNwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 09:52:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48956 "EHLO vps0.lunn.ch"
+        id S1731581AbgFSN44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 09:56:56 -0400
+Received: from tk2.ibw.com.ni ([190.106.60.158]:53450 "EHLO tk2.ibw.com.ni"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725806AbgFSNwQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jun 2020 09:52:16 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jmHRE-001HSy-FP; Fri, 19 Jun 2020 15:52:12 +0200
-Date:   Fri, 19 Jun 2020 15:52:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [RFC PATCH 7/9] net: dsa: hellcreek: Add PTP status LEDs
-Message-ID: <20200619135212.GE304147@lunn.ch>
-References: <20200618064029.32168-1-kurt@linutronix.de>
- <20200618064029.32168-8-kurt@linutronix.de>
- <20200618174650.GI240559@lunn.ch>
- <87366rqw9b.fsf@kurt>
+        id S1725974AbgFSN4z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jun 2020 09:56:55 -0400
+Received: from tk2.ibw.com.ni (localhost [127.0.0.1])
+        by tk2.ibw.com.ni (Proxmox) with ESMTP id 047CF20E6C
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 07:56:52 -0600 (CST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 japi.ibw.com.ni 983E11424CB7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibw.com.ni;
+        s=B01EB49E-4102-11E9-ABBB-FDA7C1AECE99; t=1592575006;
+        bh=VvlzMQWyRuuMw749uyo+SEc6kNI0QrMp9XFbsKCKiHk=;
+        h=To:From:Message-ID:Date:MIME-Version;
+        b=GIowRbaLfR8hFrB1iNsRbjDzCGag5HyenVW83guutKU8LO1iSaecedOMAtCScMNTh
+         OBeM6SRRkdrcAtqgVOwiM7U9sa5V1zcv9dQ0tE0enUEdhneWBfJ0QLQYF9pDqFoR5B
+         ldAJ5ox1FbioBTUhcebnNudkQEpGm+AC08E5QPO9zVHvvuJJIL75aoT1QHw/AMA/fM
+         Ykd9GFTD6dZ19SKeVU2ys6wR0R1wAgEuQxITJaZxDzZtWlLVgC2e1uxk0S2fvCij4s
+         8cvh5qdNDFGMhP4DjCHtbaw+KpKe1UKTgC6AwpWCJwyeUhIBJAmAEoo/LF9xivjE9h
+         hgShb7IOQH48A==
+Subject: Re: RATE not being printed on tc -s class show dev XXXX
+To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <d33998c7-f529-e1d1-31a5-626aa8dd44da@ibw.com.ni>
+ <CAM_iQpWa6KmiWv72YmB3ufR8Rw9RD9=PwLMamjOS6fSCM+zXbA@mail.gmail.com>
+From:   "Roberto J. Blandino Cisneros" <roberto.blandino@ibw.com.ni>
+Message-ID: <d746708a-f000-a6f7-d0d5-ab5905d080da@ibw.com.ni>
+Date:   Fri, 19 Jun 2020 07:56:46 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87366rqw9b.fsf@kurt>
+In-Reply-To: <CAM_iQpWa6KmiWv72YmB3ufR8Rw9RD9=PwLMamjOS6fSCM+zXbA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: es-NI
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 19, 2020 at 10:45:36AM +0200, Kurt Kanzenbach wrote:
-> Hi Andrew,
-> 
-> On Thu Jun 18 2020, Andrew Lunn wrote:
-> > On Thu, Jun 18, 2020 at 08:40:27AM +0200, Kurt Kanzenbach wrote:
-> >> The switch has two controllable I/Os which are usually connected to LEDs. This
-> >> is useful to immediately visually see the PTP status.
-> >> 
-> >> These provide two signals:
-> >> 
-> >>  * is_gm
-> >> 
-> >>    This LED can be activated if the current device is the grand master in that
-> >>    PTP domain.
-> >> 
-> >>  * sync_good
-> >> 
-> >>    This LED can be activated if the current device is in sync with the network
-> >>    time.
-> >> 
-> >> Expose these via the LED framework to be controlled via user space
-> >> e.g. linuxptp.
-> >
-> > Hi Kurt
-> >
-> > Is the hardware driving these signals at all? Or are these just
-> > suggested names in the documentation? It would not be an issue to have
-> > user space to configure them to use the heartbeat trigger, etc?
-> 
-> These are more like GPIOs. If a 1 is set into the register then the
-> hardware drives the signal to high. The names are from the
-> documentation:
-> 
->  * sync_good: This signal indicates that the switch is in sync
->  * is_gm:     This signal indicates that the switch is the grand master
-> 
-> However, these signals have to be set by user space. Most likely these
-> signals are connected to LEDs.
+My TC rules are as follow:
 
-Thanks
+TC=3D"/usr/sbin/tc"
+DEV=3D$1
+ip=3D$2
+MASTER1=3D"50000kbit"
+RATE1=3D"1000kbit"
+burst=3D"5k"
+$TC qdisc add dev $DEV root handle 1: htb default 10
+$TC class add dev $DEV parent 1: classid 1:1 htb rate ${MASTER1} ceil=20
+${MASTER1} burst $burst
+$TC class add dev $DEV parent 1:1 classid 1:10 htb rate ${RATE1} ceil=20
+${RATE1} prio 3 burst $burst
+$TC qdisc add dev $DEV parent 1:10 handle 10: sfq perturb 10
+$TC filter add dev $DEV parent 1: protocol all prio 1 u32 match ip dst=20
+$ip flowid 1:10
+$TC filter add dev $DEV parent 1: protocol all prio 1 u32 match ip src=20
+$ip flowid 1:10
 
-Since these are general purpose LEDs, you might want to look at
 
-Documentation/devicetree/bindings/leds/common.yaml
+El 18/6/20 a las 19:30, Cong Wang escribi=C3=B3:
+>
+> You either need to enable /sys/module/sch_htb/parameters/htb_rate_est
+> or specify a rate estimator when you create your HTB class.
+Does it need to be set on the "root handle"?
+>
+> Thanks.
+>
 
-and implement some of the common properties. The label should ideally
-correspond to the text on the case, not what the datasheet says. So
-getting it from DT is a good idea. Do Hirschmanns own cases use this
-text on there front plate?
-
-	    Andrew
