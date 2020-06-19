@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E3F200B4E
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 16:22:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A51E200B4F
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 16:22:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726934AbgFSOWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 10:22:12 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:7956 "EHLO
+        id S1728492AbgFSOWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 10:22:15 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:10459 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726873AbgFSOWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 10:22:10 -0400
+        with ESMTP id S1726873AbgFSOWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 10:22:13 -0400
 Received: from vishal.asicdesigners.com (chethan-pc.asicdesigners.com [10.193.177.170] (may be forged))
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 05JELtbc002529;
-        Fri, 19 Jun 2020 07:22:02 -0700
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 05JELtbd002529;
+        Fri, 19 Jun 2020 07:22:06 -0700
 From:   Vishal Kulkarni <vishal@chelsio.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     nirranjan@chelsio.com, rahul.lakkireddy@chelsio.com,
         Vishal Kulkarni <vishal@chelsio.com>
-Subject: [PATCH net-next 1/5] cxgb4: add skeleton for ethtool n-tuple filters
-Date:   Fri, 19 Jun 2020 19:51:35 +0530
-Message-Id: <20200619142139.27982-2-vishal@chelsio.com>
+Subject: [PATCH net-next 2/5] cxgb4: add ethtool n-tuple filter insertion
+Date:   Fri, 19 Jun 2020 19:51:36 +0530
+Message-Id: <20200619142139.27982-3-vishal@chelsio.com>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200619142139.27982-1-vishal@chelsio.com>
 References: <20200619142139.27982-1-vishal@chelsio.com>
@@ -31,254 +31,354 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allocate and manage resources required for ethtool n-tuple filters.
-Also fetch the HASH filter region size and calculate nhash entries.
+Add support to parse and insert ethtool n-tuple filters.
+Translate n-tuple spec to flow spec and use the existing tc-flower
+offload infra to insert ethtool n-tuple filters.
 
 Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    | 14 ++++
- .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 82 +++++++++++++++++++
- .../net/ethernet/chelsio/cxgb4/cxgb4_filter.h |  2 +
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   | 38 +++++----
- .../net/ethernet/chelsio/cxgb4/cxgb4_uld.h    |  2 +
- drivers/net/ethernet/chelsio/cxgb4/t4_regs.h  |  4 +
- 6 files changed, 126 insertions(+), 16 deletions(-)
+ .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 75 ++++++++++++++
+ .../net/ethernet/chelsio/cxgb4/cxgb4_filter.c |  5 +
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  2 +-
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_flower.c  | 97 ++++++++++---------
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_flower.h  |  3 +
+ 5 files changed, 135 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index 999816273328..466a61ba23ce 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -1066,6 +1066,17 @@ struct mps_entries_ref {
- 	refcount_t refcnt;
- };
- 
-+struct cxgb4_ethtool_filter_info {
-+	u32 *loc_array; /* Array holding the actual TIDs set to filters */
-+	unsigned long *bmap; /* Bitmap for managing filters in use */
-+	u32 in_use; /* # of filters in use */
-+};
-+
-+struct cxgb4_ethtool_filter {
-+	u32 nentries; /* Adapter wide number of supported filters */
-+	struct cxgb4_ethtool_filter_info *port; /* Per port entry */
-+};
-+
- struct adapter {
- 	void __iomem *regs;
- 	void __iomem *bar2;
-@@ -1191,6 +1202,9 @@ struct adapter {
- 
- 	/* TC MATCHALL classifier offload */
- 	struct cxgb4_tc_matchall *tc_matchall;
-+
-+	/* Ethtool n-tuple */
-+	struct cxgb4_ethtool_filter *ethtool_filters;
- };
- 
- /* Support for "sched-class" command to allow a TX Scheduling Class to be
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-index 0bfdc97e9083..51f1d5f87bc3 100644
+index 51f1d5f87bc3..82fc09b6dc8e 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-@@ -10,6 +10,7 @@
- #include "t4_regs.h"
+@@ -11,6 +11,7 @@
  #include "t4fw_api.h"
  #include "cxgb4_cudbg.h"
-+#include "cxgb4_filter.h"
+ #include "cxgb4_filter.h"
++#include "cxgb4_tc_flower.h"
  
  #define EEPROM_MAGIC 0x38E2F10C
  
-@@ -1853,6 +1854,87 @@ static const struct ethtool_ops cxgb_ethtool_ops = {
- 	.set_priv_flags    = cxgb4_set_priv_flags,
- };
+@@ -1635,6 +1636,79 @@ static int get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info,
+ 	return -EOPNOTSUPP;
+ }
  
-+void cxgb4_cleanup_ethtool_filters(struct adapter *adap)
++/* Add Ethtool n-tuple filters. */
++static int cxgb4_ntuple_set_filter(struct net_device *netdev,
++				   struct ethtool_rxnfc *cmd)
 +{
-+	struct cxgb4_ethtool_filter_info *eth_filter_info;
-+	u8 i;
-+
-+	if (!adap->ethtool_filters)
-+		return;
-+
-+	eth_filter_info = adap->ethtool_filters->port;
-+
-+	if (eth_filter_info) {
-+		for (i = 0; i < adap->params.nports; i++) {
-+			kvfree(eth_filter_info[i].loc_array);
-+			kfree(eth_filter_info[i].bmap);
-+		}
-+		kfree(eth_filter_info);
-+	}
-+
-+	kfree(adap->ethtool_filters);
-+}
-+
-+int cxgb4_init_ethtool_filters(struct adapter *adap)
-+{
-+	struct cxgb4_ethtool_filter_info *eth_filter_info;
-+	struct cxgb4_ethtool_filter *eth_filter;
-+	struct tid_info *tids = &adap->tids;
-+	u32 nentries, i;
++	struct ethtool_rx_flow_spec_input input = {};
++	struct cxgb4_ethtool_filter_info *filter_info;
++	struct adapter *adapter = netdev2adap(netdev);
++	struct port_info *pi = netdev_priv(netdev);
++	struct ch_filter_specification fs;
++	struct ethtool_rx_flow_rule *flow;
++	u32 tid;
 +	int ret;
 +
-+	eth_filter = kzalloc(sizeof(*eth_filter), GFP_KERNEL);
-+	if (!eth_filter)
-+		return -ENOMEM;
++	if (!(adapter->flags & CXGB4_FULL_INIT_DONE))
++		return -EAGAIN;  /* can still change nfilters */
 +
-+	eth_filter_info = kcalloc(adap->params.nports,
-+				  sizeof(*eth_filter_info),
-+				  GFP_KERNEL);
-+	if (!eth_filter_info) {
-+		ret = -ENOMEM;
-+		goto free_eth_filter;
++	if (!adapter->ethtool_filters)
++		return -EOPNOTSUPP;
++
++	if (cmd->fs.location >= adapter->ethtool_filters->nentries) {
++		dev_err(adapter->pdev_dev,
++			"Location must be < %u",
++			adapter->ethtool_filters->nentries);
++		return -ERANGE;
 +	}
 +
-+	eth_filter->port = eth_filter_info;
++	if (test_bit(cmd->fs.location,
++		     adapter->ethtool_filters->port[pi->port_id].bmap))
++		return -EEXIST;
 +
-+	nentries = tids->nhpftids + tids->nftids;
-+	if (is_hashfilter(adap))
-+		nentries += tids->nhash +
-+			    (adap->tids.stid_base - adap->tids.tid_base);
-+	eth_filter->nentries = nentries;
++	memset(&fs, 0, sizeof(fs));
 +
-+	for (i = 0; i < adap->params.nports; i++) {
-+		eth_filter->port[i].loc_array = kvzalloc(nentries, GFP_KERNEL);
-+		if (!eth_filter->port[i].loc_array) {
-+			ret = -ENOMEM;
-+			goto free_eth_finfo;
-+		}
-+
-+		eth_filter->port[i].bmap = kcalloc(BITS_TO_LONGS(nentries),
-+						   sizeof(unsigned long),
-+						   GFP_KERNEL);
-+		if (!eth_filter->port[i].bmap) {
-+			ret = -ENOMEM;
-+			goto free_eth_finfo;
-+		}
++	input.fs = &cmd->fs;
++	flow = ethtool_rx_flow_rule_create(&input);
++	if (IS_ERR(flow)) {
++		ret = PTR_ERR(flow);
++		goto exit;
 +	}
 +
-+	adap->ethtool_filters = eth_filter;
-+	return 0;
++	fs.hitcnts = 1;
 +
-+free_eth_finfo:
-+	while (i-- > 0) {
-+		kfree(eth_filter->port[i].bmap);
-+		kvfree(eth_filter->port[i].loc_array);
++	ret = cxgb4_flow_rule_replace(netdev, flow->rule, cmd->fs.location,
++				      NULL, &fs, &tid);
++	if (ret)
++		goto free;
++
++	filter_info = &adapter->ethtool_filters->port[pi->port_id];
++
++	filter_info->loc_array[cmd->fs.location] = tid;
++	set_bit(cmd->fs.location, filter_info->bmap);
++	filter_info->in_use++;
++
++free:
++	ethtool_rx_flow_rule_destroy(flow);
++exit:
++	return ret;
++}
++
++static int set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
++{
++	int ret = -EOPNOTSUPP;
++
++	switch (cmd->cmd) {
++	case ETHTOOL_SRXCLSRLINS:
++		ret = cxgb4_ntuple_set_filter(dev, cmd);
++		break;
++	default:
++		break;
 +	}
-+	kfree(eth_filter_info);
-+
-+free_eth_filter:
-+	kfree(eth_filter);
 +
 +	return ret;
 +}
 +
- void cxgb4_set_ethtool_ops(struct net_device *netdev)
+ static int set_dump(struct net_device *dev, struct ethtool_dump *eth_dump)
  {
- 	netdev->ethtool_ops = &cxgb_ethtool_ops;
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.h
-index b0751c0611ec..807a8dafec45 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.h
-@@ -53,4 +53,6 @@ void clear_all_filters(struct adapter *adapter);
- void init_hash_filter(struct adapter *adap);
- bool is_filter_exact_match(struct adapter *adap,
- 			   struct ch_filter_specification *fs);
-+void cxgb4_cleanup_ethtool_filters(struct adapter *adap);
-+int cxgb4_init_ethtool_filters(struct adapter *adap);
- #endif /* __CXGB4_FILTER_H */
+ 	struct adapter *adapter = netdev2adap(dev);
+@@ -1840,6 +1914,7 @@ static const struct ethtool_ops cxgb_ethtool_ops = {
+ 	.get_regs_len      = get_regs_len,
+ 	.get_regs          = get_regs,
+ 	.get_rxnfc         = get_rxnfc,
++	.set_rxnfc         = set_rxnfc,
+ 	.get_rxfh_indir_size = get_rss_table_size,
+ 	.get_rxfh	   = get_rss_table,
+ 	.set_rxfh	   = set_rss_table,
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
+index 796555255207..a12df792d832 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
+@@ -1152,6 +1152,11 @@ bool is_filter_exact_match(struct adapter *adap,
+ 	if (!is_hashfilter(adap))
+ 		return false;
+ 
++	if ((atomic_read(&adap->tids.hash_tids_in_use) +
++	     atomic_read(&adap->tids.tids_in_use)) >=
++	    (adap->tids.nhash + (adap->tids.stid_base - adap->tids.tid_base)))
++		return false;
++
+ 	 /* Keep tunnel VNI match disabled for hash-filters for now */
+ 	if (fs->mask.encap_vld)
+ 		return false;
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 854b1717a70d..501917751b7f 100644
+index 501917751b7f..7423980bc49a 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -5860,6 +5860,7 @@ static void free_some_resources(struct adapter *adapter)
- 	cxgb4_cleanup_tc_mqprio(adapter);
- 	cxgb4_cleanup_tc_flower(adapter);
- 	cxgb4_cleanup_tc_u32(adapter);
-+	cxgb4_cleanup_ethtool_filters(adapter);
- 	kfree(adapter->sge.egr_map);
- 	kfree(adapter->sge.ingr_map);
- 	kfree(adapter->sge.starving_fl);
-@@ -6493,6 +6494,24 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 				 i);
- 	}
+@@ -6371,7 +6371,7 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+ 			NETIF_F_RXCSUM | NETIF_F_RXHASH | NETIF_F_GRO |
+ 			NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
+-			NETIF_F_HW_TC;
++			NETIF_F_HW_TC | NETIF_F_NTUPLE;
  
-+	if (is_offload(adapter) || is_hashfilter(adapter)) {
-+		if (t4_read_reg(adapter, LE_DB_CONFIG_A) & HASHEN_F) {
-+			u32 v;
-+
-+			v = t4_read_reg(adapter, LE_DB_HASH_CONFIG_A);
-+			if (chip_ver <= CHELSIO_T5) {
-+				adapter->tids.nhash = 1 << HASHTIDSIZE_G(v);
-+				v = t4_read_reg(adapter, LE_DB_TID_HASHBASE_A);
-+				adapter->tids.hash_base = v / 4;
-+			} else {
-+				adapter->tids.nhash = HASHTBLSIZE_G(v) << 3;
-+				v = t4_read_reg(adapter,
-+						T6_LE_DB_HASH_TID_BASE_A);
-+				adapter->tids.hash_base = v;
-+			}
-+		}
-+	}
-+
- 	if (tid_init(&adapter->tids) < 0) {
- 		dev_warn(&pdev->dev, "could not allocate TID table, "
- 			 "continuing\n");
-@@ -6514,22 +6533,9 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		if (cxgb4_init_tc_matchall(adapter))
- 			dev_warn(&pdev->dev,
- 				 "could not offload tc matchall, continuing\n");
+ 		if (chip_ver > CHELSIO_T5) {
+ 			netdev->hw_enc_features |= NETIF_F_IP_CSUM |
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
+index 4a5fa9eba0b6..222f4bc19908 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
+@@ -81,19 +81,9 @@ static struct ch_tc_flower_entry *ch_flower_lookup(struct adapter *adap,
+ }
+ 
+ static void cxgb4_process_flow_match(struct net_device *dev,
+-				     struct flow_cls_offload *cls,
++				     struct flow_rule *rule,
+ 				     struct ch_filter_specification *fs)
+ {
+-	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
+-	u16 addr_type = 0;
+-
+-	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CONTROL)) {
+-		struct flow_match_control match;
+-
+-		flow_rule_match_control(rule, &match);
+-		addr_type = match.key->addr_type;
 -	}
 -
--	if (is_offload(adapter) || is_hashfilter(adapter)) {
--		if (t4_read_reg(adapter, LE_DB_CONFIG_A) & HASHEN_F) {
--			u32 hash_base, hash_reg;
--
--			if (chip_ver <= CHELSIO_T5) {
--				hash_reg = LE_DB_TID_HASHBASE_A;
--				hash_base = t4_read_reg(adapter, hash_reg);
--				adapter->tids.hash_base = hash_base / 4;
--			} else {
--				hash_reg = T6_LE_DB_HASH_TID_BASE_A;
--				hash_base = t4_read_reg(adapter, hash_reg);
--				adapter->tids.hash_base = hash_base;
--			}
--		}
-+		if (cxgb4_init_ethtool_filters(adapter))
-+			dev_warn(&pdev->dev,
-+				 "could not initialize ethtool filters, continuing\n");
+ 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
+ 		struct flow_match_basic match;
+ 		u16 ethtype_key, ethtype_mask;
+@@ -116,7 +106,7 @@ static void cxgb4_process_flow_match(struct net_device *dev,
+ 		fs->mask.proto = match.mask->ip_proto;
  	}
  
- 	/* See what interrupts we'll be using */
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-index dbce99b209d6..a963fd0b4540 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-@@ -106,6 +106,8 @@ struct tid_info {
- 	unsigned long *stid_bmap;
- 	unsigned int nstids;
- 	unsigned int stid_base;
-+
-+	unsigned int nhash;
- 	unsigned int hash_base;
+-	if (addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_IPV4_ADDRS)) {
+ 		struct flow_match_ipv4_addrs match;
  
- 	union aopen_entry *atid_tab;
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-index 4b697550f08d..065c01c654ff 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-@@ -3044,6 +3044,10 @@
- #define HASHTIDSIZE_M    0x3fU
- #define HASHTIDSIZE_G(x) (((x) >> HASHTIDSIZE_S) & HASHTIDSIZE_M)
+ 		flow_rule_match_ipv4_addrs(rule, &match);
+@@ -131,7 +121,7 @@ static void cxgb4_process_flow_match(struct net_device *dev,
+ 		memcpy(&fs->nat_fip[0], &match.key->src, sizeof(match.key->src));
+ 	}
  
-+#define HASHTBLSIZE_S    3
-+#define HASHTBLSIZE_M    0x1ffffU
-+#define HASHTBLSIZE_G(x) (((x) >> HASHTBLSIZE_S) & HASHTBLSIZE_M)
+-	if (addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_IPV6_ADDRS)) {
+ 		struct flow_match_ipv6_addrs match;
+ 
+ 		flow_rule_match_ipv6_addrs(rule, &match);
+@@ -224,9 +214,8 @@ static void cxgb4_process_flow_match(struct net_device *dev,
+ }
+ 
+ static int cxgb4_validate_flow_match(struct net_device *dev,
+-				     struct flow_cls_offload *cls)
++				     struct flow_rule *rule)
+ {
+-	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
+ 	struct flow_dissector *dissector = rule->match.dissector;
+ 	u16 ethtype_mask = 0;
+ 	u16 ethtype_key = 0;
+@@ -693,14 +682,11 @@ static void cxgb4_tc_flower_hash_prio_del(struct adapter *adap, u32 tc_prio)
+ 	spin_unlock_bh(&t->ftid_lock);
+ }
+ 
+-int cxgb4_tc_flower_replace(struct net_device *dev,
+-			    struct flow_cls_offload *cls)
++int cxgb4_flow_rule_replace(struct net_device *dev, struct flow_rule *rule,
++			    u32 tc_prio, struct netlink_ext_ack *extack,
++			    struct ch_filter_specification *fs, u32 *tid)
+ {
+-	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
+-	struct netlink_ext_ack *extack = cls->common.extack;
+ 	struct adapter *adap = netdev2adap(dev);
+-	struct ch_tc_flower_entry *ch_flower;
+-	struct ch_filter_specification *fs;
+ 	struct filter_ctx ctx;
+ 	u8 inet_family;
+ 	int fidx, ret;
+@@ -708,18 +694,10 @@ int cxgb4_tc_flower_replace(struct net_device *dev,
+ 	if (cxgb4_validate_flow_actions(dev, &rule->action, extack))
+ 		return -EOPNOTSUPP;
+ 
+-	if (cxgb4_validate_flow_match(dev, cls))
++	if (cxgb4_validate_flow_match(dev, rule))
+ 		return -EOPNOTSUPP;
+ 
+-	ch_flower = allocate_flower_entry();
+-	if (!ch_flower) {
+-		netdev_err(dev, "%s: ch_flower alloc failed.\n", __func__);
+-		return -ENOMEM;
+-	}
+-
+-	fs = &ch_flower->fs;
+-	fs->hitcnts = 1;
+-	cxgb4_process_flow_match(dev, cls, fs);
++	cxgb4_process_flow_match(dev, rule, fs);
+ 	cxgb4_process_flow_actions(dev, &rule->action, fs);
+ 
+ 	fs->hash = is_filter_exact_match(adap, fs);
+@@ -730,12 +708,11 @@ int cxgb4_tc_flower_replace(struct net_device *dev,
+ 	 * existing rules.
+ 	 */
+ 	fidx = cxgb4_get_free_ftid(dev, inet_family, fs->hash,
+-				   cls->common.prio);
++				   tc_prio);
+ 	if (fidx < 0) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+ 				   "No free LETCAM index available");
+-		ret = -ENOMEM;
+-		goto free_entry;
++		return -ENOMEM;
+ 	}
+ 
+ 	if (fidx < adap->tids.nhpftids) {
+@@ -749,42 +726,70 @@ int cxgb4_tc_flower_replace(struct net_device *dev,
+ 	if (fs->hash)
+ 		fidx = 0;
+ 
+-	fs->tc_prio = cls->common.prio;
+-	fs->tc_cookie = cls->cookie;
++	fs->tc_prio = tc_prio;
+ 
+ 	init_completion(&ctx.completion);
+ 	ret = __cxgb4_set_filter(dev, fidx, fs, &ctx);
+ 	if (ret) {
+ 		netdev_err(dev, "%s: filter creation err %d\n",
+ 			   __func__, ret);
+-		goto free_entry;
++		return ret;
+ 	}
+ 
+ 	/* Wait for reply */
+ 	ret = wait_for_completion_timeout(&ctx.completion, 10 * HZ);
+-	if (!ret) {
+-		ret = -ETIMEDOUT;
+-		goto free_entry;
+-	}
++	if (!ret)
++		return -ETIMEDOUT;
+ 
+-	ret = ctx.result;
+ 	/* Check if hw returned error for filter creation */
++	if (ctx.result)
++		return ctx.result;
 +
- #define LE_DB_HASH_TID_BASE_A 0x19c30
- #define LE_DB_HASH_TBL_BASE_ADDR_A 0x19c30
- #define LE_DB_INT_CAUSE_A 0x19c3c
++	*tid = ctx.tid;
++
++	if (fs->hash)
++		cxgb4_tc_flower_hash_prio_add(adap, tc_prio);
++
++	return 0;
++}
++
++int cxgb4_tc_flower_replace(struct net_device *dev,
++			    struct flow_cls_offload *cls)
++{
++	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
++	struct netlink_ext_ack *extack = cls->common.extack;
++	struct adapter *adap = netdev2adap(dev);
++	struct ch_tc_flower_entry *ch_flower;
++	struct ch_filter_specification *fs;
++	int ret;
++
++	ch_flower = allocate_flower_entry();
++	if (!ch_flower) {
++		netdev_err(dev, "%s: ch_flower alloc failed.\n", __func__);
++		return -ENOMEM;
++	}
++
++	fs = &ch_flower->fs;
++	fs->hitcnts = 1;
++	fs->tc_cookie = cls->cookie;
++
++	ret = cxgb4_flow_rule_replace(dev, rule, cls->common.prio, extack, fs,
++				      &ch_flower->filter_id);
+ 	if (ret)
+ 		goto free_entry;
+ 
+ 	ch_flower->tc_flower_cookie = cls->cookie;
+-	ch_flower->filter_id = ctx.tid;
+ 	ret = rhashtable_insert_fast(&adap->flower_tbl, &ch_flower->node,
+ 				     adap->flower_ht_params);
+ 	if (ret)
+ 		goto del_filter;
+ 
+-	if (fs->hash)
+-		cxgb4_tc_flower_hash_prio_add(adap, cls->common.prio);
+-
+ 	return 0;
+ 
+ del_filter:
++	if (fs->hash)
++		cxgb4_tc_flower_hash_prio_del(adap, cls->common.prio);
++
+ 	cxgb4_del_filter(dev, ch_flower->filter_id, &ch_flower->fs);
+ 
+ free_entry:
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.h
+index 0a30c96b81ff..7fa379749500 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.h
+@@ -121,6 +121,9 @@ int cxgb4_tc_flower_destroy(struct net_device *dev,
+ 			    struct flow_cls_offload *cls);
+ int cxgb4_tc_flower_stats(struct net_device *dev,
+ 			  struct flow_cls_offload *cls);
++int cxgb4_flow_rule_replace(struct net_device *dev, struct flow_rule *rule,
++			    u32 tc_prio, struct netlink_ext_ack *extack,
++			    struct ch_filter_specification *fs, u32 *tid);
+ 
+ int cxgb4_init_tc_flower(struct adapter *adap);
+ void cxgb4_cleanup_tc_flower(struct adapter *adap);
 -- 
 2.21.1
 
