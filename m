@@ -2,196 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91CCE2019A2
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 19:42:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5402F201983
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 19:34:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393231AbgFSRlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 13:41:40 -0400
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:36064 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730934AbgFSRlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 13:41:39 -0400
-Date:   Fri, 19 Jun 2020 17:35:10 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1592588113; bh=+6q9jCMs1YMxn+QrQJ+ZC1L8yFHVEKZ59NR+XfU2XrA=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=PtMOFRBkvdC0WfCR3euZ+gTBw+Tt02ulTnjyh7OWCoJbHI4lF/X/akbot/lrG6gCV
-         Mx0PHvVQcQLG6MalzP1A7cm9zprXLluzxyU32okvvEFAxrzU6lZsN8PcpBBFBELv6G
-         D4CHpnzDUzcwV3TNe9b29sptRN8viB2fj+9V+8YVnBScb+B/XIJAI/UKz98jrpgA3w
-         pb2uiw9QwtTw63JkfXzfiNl3xXBLBG1hYVpnsDq5RWoNvRSAh/p+P3I2gDH+//U1TS
-         wKgImEsQTgFpfLGtT1XXdeA9A5A2ZjBsQgmRy3WSufynde++1BJlb3wLROOGgrwzPt
-         QrebTrLIfoDHA==
+        id S2392643AbgFSRbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 13:31:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33556 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2392026AbgFSRbv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jun 2020 13:31:51 -0400
+Received: from embeddedor (unknown [189.207.59.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CB66720809;
+        Fri, 19 Jun 2020 17:31:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592587911;
+        bh=9mCNxE/8rXZYK27gbI7jREQY5FMFSwoWsy4EMvaeG3Y=;
+        h=Date:From:To:Cc:Subject:From;
+        b=unM1SajPAWGLO2RLvI4NOTywsFTs4JNz5ftkv1P4abcHdAiYJlLxxftqMzWVVdRYW
+         8LjabTaptFybYvdAORjLyRqioXRM8AthFwJhxSQKnZS4mxwSJlt2gbuQfd6hqSpuZf
+         2xrtAHAexLBnyUEGA3p6bjBJm9CePmO0zvcTHIao=
+Date:   Fri, 19 Jun 2020 12:37:15 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@mellanox.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Tom Herbert <therbert@google.com>,
-        Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net 2/3] net: ethtool: fix indentation of netdev_features_strings
-Message-ID: <jU_RtZK4S4t4c89SZyp3kPYgtU5AXRsAUfNQY1zQiyh2AEx9U-CFfDYgJSV_Dw2bikF21kF_yjyBchJPenh7Rry9K6Cpi9hg5_5rDUKARU8=@pm.me>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] ethernet: ti: am65-cpsw-qos: Use struct_size() in
+ devm_kzalloc()
+Message-ID: <20200619173715.GA6998@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=7.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on mail.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current indentation is an absolute mess of tabs, spaces and their
-mixes in different proportions. Convert it all to plain tabs and move
-assignment operation char to the right, which is the most commonly
-used style in Linux code.
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes. Also, remove unnecessary
+variable _size_.
 
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+This code was detected with the help of Coccinelle and, audited and
+fixed manually.
+
+Addresses-KSPP-ID: https://github.com/KSPP/linux/issues/83
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- net/ethtool/common.c | 120 +++++++++++++++++++++----------------------
- 1 file changed, 60 insertions(+), 60 deletions(-)
+ drivers/net/ethernet/ti/am65-cpsw-qos.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index aaecfc916a4d..c8e3fce6e48d 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -6,66 +6,66 @@
- #include "common.h"
-=20
- const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] =
-=3D {
--=09[NETIF_F_SG_BIT] =3D               "tx-scatter-gather",
--=09[NETIF_F_IP_CSUM_BIT] =3D          "tx-checksum-ipv4",
--=09[NETIF_F_HW_CSUM_BIT] =3D          "tx-checksum-ip-generic",
--=09[NETIF_F_IPV6_CSUM_BIT] =3D        "tx-checksum-ipv6",
--=09[NETIF_F_HIGHDMA_BIT] =3D          "highdma",
--=09[NETIF_F_FRAGLIST_BIT] =3D         "tx-scatter-gather-fraglist",
--=09[NETIF_F_HW_VLAN_CTAG_TX_BIT] =3D  "tx-vlan-hw-insert",
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-qos.c b/drivers/net/ethernet/ti/am65-cpsw-qos.c
+index 32eac04468bb..3bdd4dbcd2ff 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-qos.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-qos.c
+@@ -505,7 +505,6 @@ static int am65_cpsw_set_taprio(struct net_device *ndev, void *type_data)
+ 	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
+ 	struct tc_taprio_qopt_offload *taprio = type_data;
+ 	struct am65_cpsw_est *est_new;
+-	size_t size;
+ 	int ret = 0;
+ 
+ 	if (taprio->cycle_time_extension) {
+@@ -513,10 +512,9 @@ static int am65_cpsw_set_taprio(struct net_device *ndev, void *type_data)
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	size = sizeof(struct tc_taprio_sched_entry) * taprio->num_entries +
+-	       sizeof(struct am65_cpsw_est);
 -
--=09[NETIF_F_HW_VLAN_CTAG_RX_BIT] =3D  "rx-vlan-hw-parse",
--=09[NETIF_F_HW_VLAN_CTAG_FILTER_BIT] =3D "rx-vlan-filter",
--=09[NETIF_F_HW_VLAN_STAG_TX_BIT] =3D  "tx-vlan-stag-hw-insert",
--=09[NETIF_F_HW_VLAN_STAG_RX_BIT] =3D  "rx-vlan-stag-hw-parse",
--=09[NETIF_F_HW_VLAN_STAG_FILTER_BIT] =3D "rx-vlan-stag-filter",
--=09[NETIF_F_VLAN_CHALLENGED_BIT] =3D  "vlan-challenged",
--=09[NETIF_F_GSO_BIT] =3D              "tx-generic-segmentation",
--=09[NETIF_F_LLTX_BIT] =3D             "tx-lockless",
--=09[NETIF_F_NETNS_LOCAL_BIT] =3D      "netns-local",
--=09[NETIF_F_GRO_BIT] =3D              "rx-gro",
--=09[NETIF_F_GRO_HW_BIT] =3D           "rx-gro-hw",
--=09[NETIF_F_LRO_BIT] =3D              "rx-lro",
--
--=09[NETIF_F_TSO_BIT] =3D              "tx-tcp-segmentation",
--=09[NETIF_F_GSO_ROBUST_BIT] =3D       "tx-gso-robust",
--=09[NETIF_F_TSO_ECN_BIT] =3D          "tx-tcp-ecn-segmentation",
--=09[NETIF_F_TSO_MANGLEID_BIT] =3D=09 "tx-tcp-mangleid-segmentation",
--=09[NETIF_F_TSO6_BIT] =3D             "tx-tcp6-segmentation",
--=09[NETIF_F_FSO_BIT] =3D              "tx-fcoe-segmentation",
--=09[NETIF_F_GSO_GRE_BIT] =3D=09=09 "tx-gre-segmentation",
--=09[NETIF_F_GSO_GRE_CSUM_BIT] =3D=09 "tx-gre-csum-segmentation",
--=09[NETIF_F_GSO_IPXIP4_BIT] =3D=09 "tx-ipxip4-segmentation",
--=09[NETIF_F_GSO_IPXIP6_BIT] =3D=09 "tx-ipxip6-segmentation",
--=09[NETIF_F_GSO_UDP_TUNNEL_BIT] =3D=09 "tx-udp_tnl-segmentation",
--=09[NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT] =3D "tx-udp_tnl-csum-segmentation",
--=09[NETIF_F_GSO_PARTIAL_BIT] =3D=09 "tx-gso-partial",
--=09[NETIF_F_GSO_TUNNEL_REMCSUM_BIT] =3D "tx-tunnel-remcsum-segmentation",
--=09[NETIF_F_GSO_SCTP_BIT] =3D=09 "tx-sctp-segmentation",
--=09[NETIF_F_GSO_ESP_BIT] =3D=09=09 "tx-esp-segmentation",
--=09[NETIF_F_GSO_UDP_L4_BIT] =3D=09 "tx-udp-segmentation",
--=09[NETIF_F_GSO_FRAGLIST_BIT] =3D=09 "tx-gso-list",
--
--=09[NETIF_F_FCOE_CRC_BIT] =3D         "tx-checksum-fcoe-crc",
--=09[NETIF_F_SCTP_CRC_BIT] =3D        "tx-checksum-sctp",
--=09[NETIF_F_FCOE_MTU_BIT] =3D         "fcoe-mtu",
--=09[NETIF_F_NTUPLE_BIT] =3D           "rx-ntuple-filter",
--=09[NETIF_F_RXHASH_BIT] =3D           "rx-hashing",
--=09[NETIF_F_RXCSUM_BIT] =3D           "rx-checksum",
--=09[NETIF_F_NOCACHE_COPY_BIT] =3D     "tx-nocache-copy",
--=09[NETIF_F_LOOPBACK_BIT] =3D         "loopback",
--=09[NETIF_F_RXFCS_BIT] =3D            "rx-fcs",
--=09[NETIF_F_RXALL_BIT] =3D            "rx-all",
--=09[NETIF_F_HW_L2FW_DOFFLOAD_BIT] =3D "l2-fwd-offload",
--=09[NETIF_F_HW_TC_BIT] =3D=09=09 "hw-tc-offload",
--=09[NETIF_F_HW_ESP_BIT] =3D=09=09 "esp-hw-offload",
--=09[NETIF_F_HW_ESP_TX_CSUM_BIT] =3D=09 "esp-tx-csum-hw-offload",
--=09[NETIF_F_RX_UDP_TUNNEL_PORT_BIT] =3D=09 "rx-udp_tunnel-port-offload",
--=09[NETIF_F_HW_TLS_RECORD_BIT] =3D=09"tls-hw-record",
--=09[NETIF_F_HW_TLS_TX_BIT] =3D=09 "tls-hw-tx-offload",
--=09[NETIF_F_HW_TLS_RX_BIT] =3D=09 "tls-hw-rx-offload",
--=09[NETIF_F_GRO_FRAGLIST_BIT] =3D=09 "rx-gro-list",
--=09[NETIF_F_HW_MACSEC_BIT] =3D=09 "macsec-hw-offload",
-+=09[NETIF_F_SG_BIT]=09=09=09=3D "tx-scatter-gather",
-+=09[NETIF_F_IP_CSUM_BIT]=09=09=09=3D "tx-checksum-ipv4",
-+=09[NETIF_F_HW_CSUM_BIT]=09=09=09=3D "tx-checksum-ip-generic",
-+=09[NETIF_F_IPV6_CSUM_BIT]=09=09=09=3D "tx-checksum-ipv6",
-+=09[NETIF_F_HIGHDMA_BIT]=09=09=09=3D "highdma",
-+=09[NETIF_F_FRAGLIST_BIT]=09=09=09=3D "tx-scatter-gather-fraglist",
-+=09[NETIF_F_HW_VLAN_CTAG_TX_BIT]=09=09=3D "tx-vlan-hw-insert",
-+
-+=09[NETIF_F_HW_VLAN_CTAG_RX_BIT]=09=09=3D "rx-vlan-hw-parse",
-+=09[NETIF_F_HW_VLAN_CTAG_FILTER_BIT]=09=3D "rx-vlan-filter",
-+=09[NETIF_F_HW_VLAN_STAG_TX_BIT]=09=09=3D "tx-vlan-stag-hw-insert",
-+=09[NETIF_F_HW_VLAN_STAG_RX_BIT]=09=09=3D "rx-vlan-stag-hw-parse",
-+=09[NETIF_F_HW_VLAN_STAG_FILTER_BIT]=09=3D "rx-vlan-stag-filter",
-+=09[NETIF_F_VLAN_CHALLENGED_BIT]=09=09=3D "vlan-challenged",
-+=09[NETIF_F_GSO_BIT]=09=09=09=3D "tx-generic-segmentation",
-+=09[NETIF_F_LLTX_BIT]=09=09=09=3D "tx-lockless",
-+=09[NETIF_F_NETNS_LOCAL_BIT]=09=09=3D "netns-local",
-+=09[NETIF_F_GRO_BIT]=09=09=09=3D "rx-gro",
-+=09[NETIF_F_GRO_HW_BIT]=09=09=09=3D "rx-gro-hw",
-+=09[NETIF_F_LRO_BIT]=09=09=09=3D "rx-lro",
-+
-+=09[NETIF_F_TSO_BIT]=09=09=09=3D "tx-tcp-segmentation",
-+=09[NETIF_F_GSO_ROBUST_BIT]=09=09=3D "tx-gso-robust",
-+=09[NETIF_F_TSO_ECN_BIT]=09=09=09=3D "tx-tcp-ecn-segmentation",
-+=09[NETIF_F_TSO_MANGLEID_BIT]=09=09=3D "tx-tcp-mangleid-segmentation",
-+=09[NETIF_F_TSO6_BIT]=09=09=09=3D "tx-tcp6-segmentation",
-+=09[NETIF_F_FSO_BIT]=09=09=09=3D "tx-fcoe-segmentation",
-+=09[NETIF_F_GSO_GRE_BIT]=09=09=09=3D "tx-gre-segmentation",
-+=09[NETIF_F_GSO_GRE_CSUM_BIT]=09=09=3D "tx-gre-csum-segmentation",
-+=09[NETIF_F_GSO_IPXIP4_BIT]=09=09=3D "tx-ipxip4-segmentation",
-+=09[NETIF_F_GSO_IPXIP6_BIT]=09=09=3D "tx-ipxip6-segmentation",
-+=09[NETIF_F_GSO_UDP_TUNNEL_BIT]=09=09=3D "tx-udp_tnl-segmentation",
-+=09[NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT]=09=3D "tx-udp_tnl-csum-segmentation",
-+=09[NETIF_F_GSO_PARTIAL_BIT]=09=09=3D "tx-gso-partial",
-+=09[NETIF_F_GSO_TUNNEL_REMCSUM_BIT]=09=3D "tx-tunnel-remcsum-segmentation"=
-,
-+=09[NETIF_F_GSO_SCTP_BIT]=09=09=09=3D "tx-sctp-segmentation",
-+=09[NETIF_F_GSO_ESP_BIT]=09=09=09=3D "tx-esp-segmentation",
-+=09[NETIF_F_GSO_UDP_L4_BIT]=09=09=3D "tx-udp-segmentation",
-+=09[NETIF_F_GSO_FRAGLIST_BIT]=09=09=3D "tx-gso-list",
-+
-+=09[NETIF_F_FCOE_CRC_BIT]=09=09=09=3D "tx-checksum-fcoe-crc",
-+=09[NETIF_F_SCTP_CRC_BIT]=09=09=09=3D "tx-checksum-sctp",
-+=09[NETIF_F_FCOE_MTU_BIT]=09=09=09=3D "fcoe-mtu",
-+=09[NETIF_F_NTUPLE_BIT]=09=09=09=3D "rx-ntuple-filter",
-+=09[NETIF_F_RXHASH_BIT]=09=09=09=3D "rx-hashing",
-+=09[NETIF_F_RXCSUM_BIT]=09=09=09=3D "rx-checksum",
-+=09[NETIF_F_NOCACHE_COPY_BIT]=09=09=3D "tx-nocache-copy",
-+=09[NETIF_F_LOOPBACK_BIT]=09=09=09=3D "loopback",
-+=09[NETIF_F_RXFCS_BIT]=09=09=09=3D "rx-fcs",
-+=09[NETIF_F_RXALL_BIT]=09=09=09=3D "rx-all",
-+=09[NETIF_F_HW_L2FW_DOFFLOAD_BIT]=09=09=3D "l2-fwd-offload",
-+=09[NETIF_F_HW_TC_BIT]=09=09=09=3D "hw-tc-offload",
-+=09[NETIF_F_HW_ESP_BIT]=09=09=09=3D "esp-hw-offload",
-+=09[NETIF_F_HW_ESP_TX_CSUM_BIT]=09=09=3D "esp-tx-csum-hw-offload",
-+=09[NETIF_F_RX_UDP_TUNNEL_PORT_BIT]=09=3D "rx-udp_tunnel-port-offload",
-+=09[NETIF_F_HW_TLS_RECORD_BIT]=09=09=3D "tls-hw-record",
-+=09[NETIF_F_HW_TLS_TX_BIT]=09=09=09=3D "tls-hw-tx-offload",
-+=09[NETIF_F_HW_TLS_RX_BIT]=09=09=09=3D "tls-hw-rx-offload",
-+=09[NETIF_F_GRO_FRAGLIST_BIT]=09=09=3D "rx-gro-list",
-+=09[NETIF_F_HW_MACSEC_BIT]=09=09=09=3D "macsec-hw-offload",
- };
-=20
- const char
---=20
+-	est_new = devm_kzalloc(&ndev->dev, size, GFP_KERNEL);
++	est_new = devm_kzalloc(&ndev->dev,
++			       struct_size(est_new, taprio.entries, taprio->num_entries),
++			       GFP_KERNEL);
+ 	if (!est_new)
+ 		return -ENOMEM;
+ 
+-- 
 2.27.0
-
 
