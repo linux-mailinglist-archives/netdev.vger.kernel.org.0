@@ -2,72 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E97200756
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 12:54:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0313F20080D
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 13:48:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732525AbgFSKyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 06:54:49 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:40434 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732362AbgFSKys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 06:54:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592564087;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=6uVmM+RPaY2/k2K9krznbGg7AKPApCZ6PBYMbCZhb3o=;
-        b=DjfRj6FPGkRCiSGxuezzvWKKhyAS4Ys9ZbvydnKtJo1DdDNCFcZ5s9IRnQAzxiKb5XMrZH
-        Oa4TvgsVaZ9+aMEx6kEJecnUa0nE+rADiY2k4+TxZZE8WPjE12KCZdgCOPY/TSDW3VdDFE
-        ovHWQrHNVRM5uCTK8qj5moBKEcxyVE8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-292-iLyGEEd3OqOhXGZv4WmHyA-1; Fri, 19 Jun 2020 06:54:44 -0400
-X-MC-Unique: iLyGEEd3OqOhXGZv4WmHyA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1732172AbgFSLsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 07:48:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56142 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732090AbgFSLsq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jun 2020 07:48:46 -0400
+Received: from localhost.localdomain.com (unknown [151.48.138.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E954A1800D42;
-        Fri, 19 Jun 2020 10:54:42 +0000 (UTC)
-Received: from ovpn-115-30.ams2.redhat.com (ovpn-115-30.ams2.redhat.com [10.36.115.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A3CA871661;
-        Fri, 19 Jun 2020 10:54:41 +0000 (UTC)
-Message-ID: <c5b53444ca4c79b887629c93d954dadbc4a777da.camel@redhat.com>
-Subject: sock diag uAPI and MPTCP
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org
-Date:   Fri, 19 Jun 2020 12:54:40 +0200
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+        by mail.kernel.org (Postfix) with ESMTPSA id 7E66E20CC7;
+        Fri, 19 Jun 2020 11:48:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592567325;
+        bh=pIYFOsIO9JFOBAMAqjmb+st8lbhFlIO5wWXf/14Et40=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Rqv8xIA0FrS4Ygkw2yYy5g84FYP81lLIg6Q3Q9DXJaTDk0cruiK75IFEVGrelQv+o
+         /AwZyM7oUh1/wr0oWomIQkkRP7i3X4wUjT/u55ZWrtJzj9Lm4zvf3y6toGIWu5404V
+         lw22doxXtsfDb9RFnriPXkTVZ9iD73UAgk34xuhE=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, nusiddiq@redhat.com, gvrose8192@gmail.com,
+        pshelar@ovn.org, lorenzo.bianconi@redhat.com, dev@openvswitch.org
+Subject: [PATCH net] openvswitch: take into account de-fragmentation in execute_check_pkt_len
+Date:   Fri, 19 Jun 2020 13:48:32 +0200
+Message-Id: <74266291a0aba929919f71ff3dbd1c36392bb4c4.1592567032.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+ovs connection tracking module performs de-fragmentation on incoming
+fragmented traffic. Take info account if traffic has been de-fragmented
+in execute_check_pkt_len action otherwise we will perform the wrong
+nested action considering the original packet size. This issue typically
+occurs if ovs-vswitchd adds a rule in the pipeline that requires connection
+tracking (e.g. OVN stateful ACLs) before execute_check_pkt_len action.
 
-IPPROTO_MPTCP value (0x106) can't be represented using the current sock
-diag uAPI, as the 'sdiag_protocol' field is 8 bits wide.
+Fixes: 4d5ec89fc8d14 ("net: openvswitch: Add a new action check_pkt_len")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ net/openvswitch/actions.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-To implement diag support for MPTCP socket, we will likely need a
-'inet_diag_req_v3' with a wider 'sdiag_protocol'
-field. inet_diag_handler_cmd() could detect the version of
-the inet_diag_req_v* provided by user-space checking nlmsg_len() and
-convert _v2 reqs to _v3.
-
-This change will be a bit invasive, as all in kernel diag users will
-then operate only on 'inet_diag_req_v3' (many functions' signature
-change required), but the code-related changes will be encapsulated
-by inet_diag_handler_cmd().
-
-Would the above be acceptable?
-
-Thanks for any feedback!
-
-Paolo
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index fc0efd8833c8..9f4dd64e53bb 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -1169,9 +1169,10 @@ static int execute_check_pkt_len(struct datapath *dp, struct sk_buff *skb,
+ 				 struct sw_flow_key *key,
+ 				 const struct nlattr *attr, bool last)
+ {
++	struct ovs_skb_cb *ovs_cb = OVS_CB(skb);
+ 	const struct nlattr *actions, *cpl_arg;
+ 	const struct check_pkt_len_arg *arg;
+-	int rem = nla_len(attr);
++	int len, rem = nla_len(attr);
+ 	bool clone_flow_key;
+ 
+ 	/* The first netlink attribute in 'attr' is always
+@@ -1180,7 +1181,8 @@ static int execute_check_pkt_len(struct datapath *dp, struct sk_buff *skb,
+ 	cpl_arg = nla_data(attr);
+ 	arg = nla_data(cpl_arg);
+ 
+-	if (skb->len <= arg->pkt_len) {
++	len = ovs_cb->mru ? ovs_cb->mru : skb->len;
++	if (len <= arg->pkt_len) {
+ 		/* Second netlink attribute in 'attr' is always
+ 		 * 'OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_LESS_EQUAL'.
+ 		 */
+-- 
+2.26.2
 
