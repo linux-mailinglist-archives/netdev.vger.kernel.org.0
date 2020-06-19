@@ -2,152 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63D23200A3F
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 15:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD1B5200A42
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 15:34:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732695AbgFSNeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 09:34:16 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:49894 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728851AbgFSNeN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 09:34:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592573652;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bZ7nBz2nj1ENxTdDWGMIRru7l/EDwMR0YyKxALcYo6Y=;
-        b=FDz3dSXrX5fzN6doZXQkEUbf61WTgqJJ0WnBvvoi7AR9qLbHtsV58xIyaEwbn/jKwN4eNN
-        X5lYf0lBx0LZlHD/hTtFupYybhwx9UlgBmSdonwABnmYMdBKVWUoz4ihAlmlvvmnKYkLAb
-        +qlV9BJpDveSTqhf4OLmnz4GMlYUwPY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-197-irk7YSOMOLCFYFFPxWJjYQ-1; Fri, 19 Jun 2020 09:34:07 -0400
-X-MC-Unique: irk7YSOMOLCFYFFPxWJjYQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EF9E0835B40;
-        Fri, 19 Jun 2020 13:34:04 +0000 (UTC)
-Received: from krava (unknown [10.40.195.134])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 9E950BE81;
-        Fri, 19 Jun 2020 13:34:01 +0000 (UTC)
-Date:   Fri, 19 Jun 2020 15:34:00 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH 11/11] selftests/bpf: Add test for d_path helper
-Message-ID: <20200619133400.GL2465907@krava>
-References: <20200616100512.2168860-1-jolsa@kernel.org>
- <20200616100512.2168860-12-jolsa@kernel.org>
- <CAEf4BzZmNFUBdSzCLiiQ-anQRmnzd-E1qa0wVdXHu0pYV_-=Nw@mail.gmail.com>
+        id S1732879AbgFSNeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 09:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728973AbgFSNe3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 09:34:29 -0400
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7A1C06174E
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 06:34:28 -0700 (PDT)
+Received: by mail-vs1-xe41.google.com with SMTP id r11so5588076vsj.5
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 06:34:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=GGdUuLCAiwswGC8VwacUo3EobWtrXtsk7zxMEz4Czs0=;
+        b=TQC2zt3jbOi8uocyfTsDCbExR0xz0T5Kq2x3xmsKduYvLe4XD/CmZ5V2FJp8eZcvQz
+         Fo3czl0sFdJR96NsQCh1NXqKpzz0nbPC3ixLY+ezJAQTInAJN0sb59NET4JU7QsqsLaH
+         X2BMFqHr3XTVOAH88U8Z7Uoao1ejWG7IHdCDot0IHimceOHUjKGHCuaLaR2jKrQbEMx8
+         Eb7YvZeI5kLNLHvFKC/pwtFVXbMJtfbUnXBlno4/OYIjF7VHj1BD1jFRbK4XXDNIrS1a
+         AkH/sD3nDPfpOTvOxJeQ1KIj+h2a2in1qN3ESinJN7SjlW26s4IZKBm0IdRkMSW6shL8
+         varA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=GGdUuLCAiwswGC8VwacUo3EobWtrXtsk7zxMEz4Czs0=;
+        b=oreFlogPKdlbO2WCfgr2FnA+ktA9uMTj7rWpwXBXyOBpttkRgUzolOuZNd/EH20ydS
+         7lYuEa7U5xNPy2AxmuMJ7E3Le548KQippAyWUyNepZj2ezrlZYcpaFNApkXQeoZcEkEC
+         vGIboK69QFBMrEXxKyYa3cdxL+KtfzAclINHfpuzAM3DmSp2aSc6Hq7ij/bhmkZMY1DN
+         4h/iXG6qwSsDnzEWVom4Dfshu+zj8RD5zbNTCmkiyW7hwKhrXch5x822CxoMJs7L/Yf0
+         ZeC4k38L+yegoWnBKhQylQe5/shxDcBrTXeGJTQiswAZGqE+yc3eJ7Yf83y4Jssnn5X9
+         jPHA==
+X-Gm-Message-State: AOAM530ufDhR18FJ0ud8/1OPauobpguuyS4hCMzMJZdW2Nowzt55q/hb
+        Hx3lEHMdYEhTAxt6DamGaYRIlF7bo1k9/G+rGMY=
+X-Google-Smtp-Source: ABdhPJw9eZ8x4YOFSHoDSaMxhfkdcDV930jfkp3DqLFvKiVMI9AxWNyZbY3qe4tfep0xfm51p6Dc2W+5iya9r8Wc5pU=
+X-Received: by 2002:a67:dd0b:: with SMTP id y11mr7445767vsj.80.1592573667574;
+ Fri, 19 Jun 2020 06:34:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZmNFUBdSzCLiiQ-anQRmnzd-E1qa0wVdXHu0pYV_-=Nw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Reply-To: oliviaeorge@hotmail.com
+Received: by 2002:a67:2cc9:0:0:0:0:0 with HTTP; Fri, 19 Jun 2020 06:34:27
+ -0700 (PDT)
+From:   George Olivia <oliviaeorge@gmail.com>
+Date:   Fri, 19 Jun 2020 07:34:27 -0600
+X-Google-Sender-Auth: muAw7Bs3MLt8P9aTfFzXMvfgA5g
+Message-ID: <CAAkOt0cOGtYZ8JSw0KiQBYCqqbd92M5Augf1i65cbJReh8rm-w@mail.gmail.com>
+Subject: I wish you read my mail in a good heart.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 09:44:23PM -0700, Andrii Nakryiko wrote:
-> On Tue, Jun 16, 2020 at 3:07 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > Adding test for d_path helper which is pretty much
-> > copied from Wenbo Zhang's test for bpf_get_fd_path,
-> > which never made it in.
-> >
-> > I've failed so far to compile the test with <linux/fs.h>
-> > kernel header, so for now adding 'struct file' with f_path
-> > member that has same offset as kernel's file object.
-> >
-> > Original-patch-by: Wenbo Zhang <ethercflow@gmail.com>
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  .../testing/selftests/bpf/prog_tests/d_path.c | 153 ++++++++++++++++++
-> >  .../testing/selftests/bpf/progs/test_d_path.c |  55 +++++++
-> >  2 files changed, 208 insertions(+)
-> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/d_path.c
-> >  create mode 100644 tools/testing/selftests/bpf/progs/test_d_path.c
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
-> > new file mode 100644
-> > index 000000000000..e2b7dfeb506f
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
-> > @@ -0,0 +1,153 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#define _GNU_SOURCE
-> > +#include <test_progs.h>
-> > +#include <sys/stat.h>
-> > +#include <linux/sched.h>
-> > +#include <sys/syscall.h>
-> > +
-> > +#define MAX_PATH_LEN           128
-> > +#define MAX_FILES              7
-> > +#define MAX_EVENT_NUM          16
-> > +
-> > +struct d_path_test_data {
-> > +       pid_t pid;
-> > +       __u32 cnt_stat;
-> > +       __u32 cnt_close;
-> > +       char paths_stat[MAX_EVENT_NUM][MAX_PATH_LEN];
-> > +       char paths_close[MAX_EVENT_NUM][MAX_PATH_LEN];
-> > +};
-> 
-> with skeleton there is no point in defining this container struct, and
-> especially duplicating it between BPF code and user-space code. Just
-> declare all those fields as global variables and access them from
-> skeleton directly.
+With all due respect I got your details from an online directory and
+having been motivated by your personal status, I decided to approach
+you  I am Mrs. George Olivia; I have decided to donate what I have to
+you / Motherless babies/Less privileged/Widows' because I am dying and
+diagnosed for cancer for about 2 years ago. I have been touched by God
+Almighty to donate from what I have inherited from my late husband to
+you for good work of God Almighty. I have asked Almighty God to
+forgive me and believe he has, because he is a Merciful God I will be
+going in for an operation surgery soon.
 
-ok, will check
+I decided to will/donate the sum of ($ 8.1 million DOLLARS) to you for
+the good work of God Almighty, and also to help the motherless and
+less privilege and also forth assistance of the widows. At the moment
+I cannot take any telephone calls right now due to the fact that my
+relatives (that have squandered the funds gave them for this purpose
+before) are around me and my health status also. I have adjusted my
+will and my lawyer is aware.
 
-> 
-> [...]
-> 
-> > diff --git a/tools/testing/selftests/bpf/progs/test_d_path.c b/tools/testing/selftests/bpf/progs/test_d_path.c
-> > new file mode 100644
-> > index 000000000000..1b478c00ee7a
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/test_d_path.c
-> > @@ -0,0 +1,55 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +#include "vmlinux.h"
-> > +#include <bpf/bpf_helpers.h>
-> > +#include <bpf/bpf_tracing.h>
-> > +
-> > +#define MAX_PATH_LEN           128
-> > +#define MAX_EVENT_NUM          16
-> > +
-> > +static struct d_path_test_data {
-> > +       pid_t pid;
-> > +       __u32 cnt_stat;
-> > +       __u32 cnt_close;
-> > +       char paths_stat[MAX_EVENT_NUM][MAX_PATH_LEN];
-> > +       char paths_close[MAX_EVENT_NUM][MAX_PATH_LEN];
-> > +} data;
-> > +
-> > +struct path;
-> > +struct kstat;
-> 
-> both structs are in vmlinux.h, you shouldn't need this.
+I wish you all the best and May the good Lord bless you abundantly,
+and please use the funds judiciously and always extend the good work
+to others. As soon as you get back to me, I shall give you info on
+what I need from you, then you will contact the bank and tell them I
+have willed those properties to you by quoting my personal file
+routing and account information. And I have also notified the bank
+that I am willing that properties to you for a good, effective and
+prudent work. I know I don't know you but I have been directed to do
+this by God Almighty.
 
-leftover from earlier version, will remove
+I Have all my Hospital document which i can send to you as prove to
+what am tell you and my seriousness to this. If you are interested in
+carrying out this task, get back to me for more details on this noble
+project of mine.
 
-thanks,
-jirka
-
+Yours Faithfully,
+Mrs. George Olivia
