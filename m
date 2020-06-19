@@ -2,79 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBCD920028F
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 09:14:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F34C02002E4
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 09:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730163AbgFSHO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 03:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729685AbgFSHO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 03:14:28 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43780C06174E
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 00:14:28 -0700 (PDT)
-Received: from PC192.168.2.51 (p200300e9d71c614f3cb31ed73bdb933f.dip0.t-ipconnect.de [IPv6:2003:e9:d71c:614f:3cb3:1ed7:3bdb:933f])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S1730980AbgFSHnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 03:43:55 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:34760 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730921AbgFSHnu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jun 2020 03:43:50 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 089FD2055E;
+        Fri, 19 Jun 2020 09:43:49 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id IVLOKBZpXrcP; Fri, 19 Jun 2020 09:43:48 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 38C84C0547;
-        Fri, 19 Jun 2020 09:14:24 +0200 (CEST)
-Subject: Re: [PATCH 1/2] docs: net: ieee802154: change link to new project URL
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        alex.aring@gmail.com
-References: <20200616065814.816248-1-stefan@datenfreihafen.org>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <c8631876-8aea-c56d-105e-6866c74964ce@datenfreihafen.org>
-Date:   Fri, 19 Jun 2020 09:14:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        by a.mx.secunet.com (Postfix) with ESMTPS id 28F0A20573;
+        Fri, 19 Jun 2020 09:43:47 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Fri, 19 Jun 2020 09:43:46 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Fri, 19 Jun
+ 2020 09:43:46 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id DDF9E3180168;
+ Fri, 19 Jun 2020 09:43:45 +0200 (CEST)
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        <netdev@vger.kernel.org>
+Subject: pull request (net): ipsec 2020-06-19
+Date:   Fri, 19 Jun 2020 09:43:37 +0200
+Message-ID: <20200619074342.14095-1-steffen.klassert@secunet.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20200616065814.816248-1-stefan@datenfreihafen.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave.
+1) Fix double ESP trailer insertion in IPsec crypto offload if
+   netif_xmit_frozen_or_stopped is true. From Huy Nguyen.
 
-On 16.06.20 08:58, Stefan Schmidt wrote:
-> We finally came around to setup a new project website.
-> Update the reference here.
-> 
-> Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
-> ---
->   Documentation/networking/ieee802154.rst | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/networking/ieee802154.rst b/Documentation/networking/ieee802154.rst
-> index 36ca823a1122..6f4bf8447a21 100644
-> --- a/Documentation/networking/ieee802154.rst
-> +++ b/Documentation/networking/ieee802154.rst
-> @@ -30,8 +30,8 @@ Socket API
->   
->   The address family, socket addresses etc. are defined in the
->   include/net/af_ieee802154.h header or in the special header
-> -in the userspace package (see either http://wpan.cakelab.org/ or the
-> -git tree at https://github.com/linux-wpan/wpan-tools).
-> +in the userspace package (see either https://linux-wpan.org/wpan-tools.html
-> +or the git tree at https://github.com/linux-wpan/wpan-tools).
->   
->   6LoWPAN Linux implementation
->   ============================
-> 
+2) Merge fixup for "remove output_finish indirection from
+   xfrm_state_afinfo". From Stephen Rothwell.
 
-I see you marked both patches here as awaiting upstream in patchwork. I 
-am not really sure what to do best now. Am I supposed to pick them up 
-myself and send them in my usual ieee802154 pull request?
+3) Select CRYPTO_SEQIV for ESP as this is needed for GCM and several
+   other encryption algorithms. Also modernize the crypto algorithm
+   selections for ESP and AH, remove those that are maked as "MUST NOT"
+   and add those that are marked as "MUST" be implemented in RFC 8221.
+   From Eric Biggers.
 
-Before you had been picking up docs and MAINTAINERS patches directly. I 
-am fine with either way. Just want to check what you expect.
+Please note the merge conflict between commit:
 
-regards
-Stefan Schmidt
+a7f7f6248d97 ("treewide: replace '---help---' in Kconfig files with 'help'")
+
+from Linus' tree and commits:
+
+7d4e39195925 ("esp, ah: consolidate the crypto algorithm selections")
+be01369859b8 ("esp, ah: modernize the crypto algorithm selections")
+
+from the ipsec tree.
+
+Please pull or let me know if there are problems.
+
+Thanks!
+
+The following changes since commit cb8e59cc87201af93dfbb6c3dccc8fcad72a09c2:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next (2020-06-03 16:27:18 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git master
+
+for you to fetch changes up to be01369859b8aa07346e497381bb46d377da0d8c:
+
+  esp, ah: modernize the crypto algorithm selections (2020-06-15 06:52:16 +0200)
+
+----------------------------------------------------------------
+Eric Biggers (3):
+      esp, ah: consolidate the crypto algorithm selections
+      esp: select CRYPTO_SEQIV
+      esp, ah: modernize the crypto algorithm selections
+
+Huy Nguyen (1):
+      xfrm: Fix double ESP trailer insertion in IPsec crypto offload.
+
+Stephen Rothwell (1):
+      xfrm: merge fixup for "remove output_finish indirection from xfrm_state_afinfo"
+
+ include/net/xfrm.h     |  1 +
+ net/ipv4/Kconfig       | 34 ++++++++++++++++++----------------
+ net/ipv6/Kconfig       | 34 ++++++++++++++++++----------------
+ net/xfrm/Kconfig       | 24 ++++++++++++++++++++++++
+ net/xfrm/xfrm_device.c |  4 +++-
+ net/xfrm/xfrm_output.c |  4 ----
+ 6 files changed, 64 insertions(+), 37 deletions(-)
