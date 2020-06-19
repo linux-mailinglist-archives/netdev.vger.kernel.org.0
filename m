@@ -2,196 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70862201E1A
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 00:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4932E201E4C
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 00:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729462AbgFSWiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 18:38:25 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:57591 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729446AbgFSWiY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 18:38:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592606302;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=XBAMFpt5mjO6ZLivpEHGRQaVi/mePmSG2aOyU0W9mDw=;
-        b=dsGqYXHAvLFU9nQQy2LiuxKvDNogqfG9L1lHooqFirOScDtHXk1VtibndvnzFK1SgUWchP
-        /QQ0bsLuu0fhsxtsgR/riaW4r++JKHXVGtY/6Ps/JtGjpDRXmOUuiCThFzTc6CsRtc/jNY
-        yST7NEwvggRaIuzX4xFxN8ppZXlieoM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-366-1R9FaN5OPNGXF6gjH2a0jA-1; Fri, 19 Jun 2020 18:38:19 -0400
-X-MC-Unique: 1R9FaN5OPNGXF6gjH2a0jA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E1A261005512;
-        Fri, 19 Jun 2020 22:38:17 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-114-66.rdu2.redhat.com [10.10.114.66])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C9E5F7166E;
-        Fri, 19 Jun 2020 22:38:16 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net] rxrpc: Fix notification call on completion of discarded
- calls
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     syzbot+d3eccef36ddbd02713e9@syzkaller.appspotmail.com,
-        dhowells@redhat.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 19 Jun 2020 23:38:16 +0100
-Message-ID: <159260629601.2218121.13958646181773576175.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/0.22
+        id S1729966AbgFSW4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 18:56:50 -0400
+Received: from smtp.uniroma2.it ([160.80.6.16]:33339 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729890AbgFSW4r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jun 2020 18:56:47 -0400
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 05JMuRJA014086
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 20 Jun 2020 00:56:27 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     Donald Sharp <sharpd@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Dinesh Dutt <didutt@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: [net-next,v1,0/5] Strict mode for VRF
+Date:   Sat, 20 Jun 2020 00:54:42 +0200
+Message-Id: <20200619225447.1445-1-andrea.mayer@uniroma2.it>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When preallocated service calls are being discarded, they're passed to
-->discard_new_call() to have the caller clean up any attached higher-layer
-preallocated pieces before being marked completed.  However, the act of
-marking them completed now invokes the call's notification function - which
-causes a problem because that function might assume that the previously
-freed pieces of memory are still there.
+This patch set adds the new "strict mode" functionality to the Virtual
+Routing and Forwarding infrastructure (VRF). Hereafter we discuss the
+requirements and the main features of the "strict mode" for VRF.
 
-Fix this by setting a dummy notification function on the socket after
-calling ->discard_new_call().
+On VRF creation, it is necessary to specify the associated routing table used
+during the lookup operations. Currently, there is no mechanism that avoids
+creating multiple VRFs sharing the same routing table. In other words, it is not
+possible to force a one-to-one relationship between a specific VRF and the table
+associated with it.
 
-This results in the following kasan message when the kafs module is
-removed.
 
-==================================================================
-BUG: KASAN: use-after-free in afs_wake_up_async_call+0x6aa/0x770 fs/afs/rxrpc.c:707
-Write of size 1 at addr ffff8880946c39e4 by task kworker/u4:1/21
-
-CPU: 0 PID: 21 Comm: kworker/u4:1 Not tainted 5.8.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd3/0x413 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
- afs_wake_up_async_call+0x6aa/0x770 fs/afs/rxrpc.c:707
- rxrpc_notify_socket+0x1db/0x5d0 net/rxrpc/recvmsg.c:40
- __rxrpc_set_call_completion.part.0+0x172/0x410 net/rxrpc/recvmsg.c:76
- __rxrpc_call_completed net/rxrpc/recvmsg.c:112 [inline]
- rxrpc_call_completed+0xca/0xf0 net/rxrpc/recvmsg.c:111
- rxrpc_discard_prealloc+0x781/0xab0 net/rxrpc/call_accept.c:233
- rxrpc_listen+0x147/0x360 net/rxrpc/af_rxrpc.c:245
- afs_close_socket+0x95/0x320 fs/afs/rxrpc.c:110
- afs_net_exit+0x1bc/0x310 fs/afs/main.c:155
- ops_exit_list.isra.0+0xa8/0x150 net/core/net_namespace.c:186
- cleanup_net+0x511/0xa50 net/core/net_namespace.c:603
- process_one_work+0x965/0x1690 kernel/workqueue.c:2269
- worker_thread+0x96/0xe10 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:291
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
-
-Allocated by task 6820:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc mm/kasan/common.c:494 [inline]
- __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:467
- kmem_cache_alloc_trace+0x153/0x7d0 mm/slab.c:3551
- kmalloc include/linux/slab.h:555 [inline]
- kzalloc include/linux/slab.h:669 [inline]
- afs_alloc_call+0x55/0x630 fs/afs/rxrpc.c:141
- afs_charge_preallocation+0xe9/0x2d0 fs/afs/rxrpc.c:757
- afs_open_socket+0x292/0x360 fs/afs/rxrpc.c:92
- afs_net_init+0xa6c/0xe30 fs/afs/main.c:125
- ops_init+0xaf/0x420 net/core/net_namespace.c:151
- setup_net+0x2de/0x860 net/core/net_namespace.c:341
- copy_net_ns+0x293/0x590 net/core/net_namespace.c:482
- create_new_namespaces+0x3fb/0xb30 kernel/nsproxy.c:110
- unshare_nsproxy_namespaces+0xbd/0x1f0 kernel/nsproxy.c:231
- ksys_unshare+0x43d/0x8e0 kernel/fork.c:2983
- __do_sys_unshare kernel/fork.c:3051 [inline]
- __se_sys_unshare kernel/fork.c:3049 [inline]
- __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3049
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 21:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- kasan_set_free_info mm/kasan/common.c:316 [inline]
- __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:455
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x109/0x2b0 mm/slab.c:3757
- afs_put_call+0x585/0xa40 fs/afs/rxrpc.c:190
- rxrpc_discard_prealloc+0x764/0xab0 net/rxrpc/call_accept.c:230
- rxrpc_listen+0x147/0x360 net/rxrpc/af_rxrpc.c:245
- afs_close_socket+0x95/0x320 fs/afs/rxrpc.c:110
- afs_net_exit+0x1bc/0x310 fs/afs/main.c:155
- ops_exit_list.isra.0+0xa8/0x150 net/core/net_namespace.c:186
- cleanup_net+0x511/0xa50 net/core/net_namespace.c:603
- process_one_work+0x965/0x1690 kernel/workqueue.c:2269
- worker_thread+0x96/0xe10 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:291
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
-
-The buggy address belongs to the object at ffff8880946c3800
- which belongs to the cache kmalloc-1k of size 1024
-The buggy address is located 484 bytes inside of
- 1024-byte region [ffff8880946c3800, ffff8880946c3c00)
-The buggy address belongs to the page:
-page:ffffea000251b0c0 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea0002546508 ffffea00024fa248 ffff8880aa000c40
-raw: 0000000000000000 ffff8880946c3000 0000000100000002 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880946c3880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880946c3900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff8880946c3980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                       ^
- ffff8880946c3a00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880946c3a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-Reported-by: syzbot+d3eccef36ddbd02713e9@syzkaller.appspotmail.com
-Fixes: 5ac0d62226a0 ("rxrpc: Fix missing notification")
-Signed-off-by: David Howells <dhowells@redhat.com>
----
-
- net/rxrpc/call_accept.c |    7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index b7611cc159e5..032ed76c0166 100644
---- a/net/rxrpc/call_accept.c
-+++ b/net/rxrpc/call_accept.c
-@@ -22,6 +22,11 @@
- #include <net/ip.h>
- #include "ar-internal.h"
+The "strict mode" imposes that each VRF can be associated to a routing table
+only if such routing table is not already in use by any other VRF.
+In particular, the strict mode ensures that:
  
-+static void rxrpc_dummy_notify(struct sock *sk, struct rxrpc_call *call,
-+			       unsigned long user_call_ID)
-+{
-+}
-+
- /*
-  * Preallocate a single service call, connection and peer and, if possible,
-  * give them a user ID and attach the user's side of the ID to them.
-@@ -228,6 +233,8 @@ void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
- 		if (rx->discard_new_call) {
- 			_debug("discard %lx", call->user_call_ID);
- 			rx->discard_new_call(call, call->user_call_ID);
-+			if (call->notify_rx)
-+				call->notify_rx = rxrpc_dummy_notify;
- 			rxrpc_put_call(call, rxrpc_call_put_kernel);
- 		}
- 		rxrpc_call_completed(call);
+ 1) given a specific routing table, the VRF (if exists) is uniquely identified;
+ 2) given a specific VRF, the related table is not shared with any other VRF.
 
+Constraints (1) and (2) force a one-to-one relationship between each VRF and the
+corresponding routing table.
+
+
+The strict mode feature is designed to be network-namespace aware and it can be
+directly enabled/disabled acting on the "strict_mode" parameter.
+Read and write operations are carried out through the classic sysctl command on
+net.vrf.strict_mode path, i.e: sysctl -w net.vrf.strict_mode=1.
+
+Only two distinct values {0,1} are accepted by the strict_mode parameter:
+
+ - with strict_mode=0, multiple VRFs can be associated with the same table.
+   This is the (legacy) default kernel behavior, the same that we experience
+   when the strict mode patch set is not applied;
+
+ - with strict_mode=1, the one-to-one relationship between the VRFs and the
+   associated tables is guaranteed. In this configuration, the creation of a VRF
+   which refers to a routing table already associated with another VRF fails and
+   the error is returned to the user.
+
+
+The kernel keeps track of the associations between a VRF and the routing table
+during the VRF setup, in the "management" plane. Therefore, the strict mode does
+not impact the performance or the intrinsic functionality of the data plane in
+any way.
+
+When the strict mode is active it is always possible to disable the strict mode,
+while the reverse operation is not always allowed.
+Setting the strict_mode parameter to 0 is equivalent to removing the one-to-one
+constraint between any single VRF and its associated routing table.
+
+Conversely, if the strict mode is disabled and there are multiple VRFs that
+refer to the same routing table, then it is prohibited to set the strict_mode
+parameter to 1. In this configuration, any attempt to perform the operation will
+lead to an error and it will be reported to the user.
+To enable strict mode once again (by setting the strict_mode parameter to 1),
+you must first remove all the VRFs that share common tables.
+
+There are several use cases which can take advantage from the introduction of
+the strict mode feature. In particular, the strict mode allows us to:
+
+  i) guarantee the proper functioning of some applications which deal with
+     routing protocols;
+
+ ii) perform some tunneling decap operations which require to use specific
+     routing tables for segregating and forwarding the traffic.
+
+
+Considering (i), the creation of different VRFs that point to the same table
+leads to the situation where two different routing entities believe they have
+exclusive access to the same table. This leads to the situation where different
+routing daemons can conflict for gaining routes control due to overlapping
+tables. By enabling strict mode it is possible to prevent this situation which
+often occurs due to incorrect configurations done by the users. 
+The ability to enable/disable the strict mode functionality does not depend on
+the tool used for configuring the networking. In essence, the strict mode patch
+solves, at the kernel level, what some other patches [1] had tried to solve at
+the userspace level (using only iproute2) with all the related problems.
+
+Considering (ii), the introduction of the strict mode functionality allows us
+implementing the SRv6 End.DT4 behavior. Such behavior terminates a SR tunnel and
+it forwards the IPv4 traffic according to the routes present in the routing
+table supplied during the configuration. The SRv6 End.DT4 can be realized
+exploiting the routing capabilities made available by the VRF infrastructure.
+This behavior could leverage a specific VRF for forcing the traffic to be
+forwarded in accordance with the routes available in the VRF table.
+Anyway, in order to make the End.DT4 properly work, it must be guaranteed that
+the table used for the route lookup operations is bound to one and only one VRF.
+In this way, it is possible to use the table for uniquely retrieving the
+associated VRF and for routing packets.
+
+I would like to thank David Ahern for his constant and valuable support during
+the design and development phases of this patch set.
+
+Comments, suggestions and improvements are very welcome!
+
+Thanks,
+Andrea Mayer
+
+
+v1
+ l3mdev: add infrastructure for table to VRF mapping
+  - define l3mdev_lock as static, thanks to Jakub Kicinski;
+  - move lookup_by_table_id_t from l3mdev.c to l3mdev.h and update the
+    l3mdev_dev_table_lookup_{un}register functions accordingly, thanks to
+    David Ahern.
+
+ vrf: track associations between VRF devices and tables
+  - change shared_tables type from 'int' to 'u32', thanks to Stephen Hemminger
+    and David Ahern;
+  - update comments for share_tables.
+
+ vrf: add sysctl parameter for strict mode
+  - change type 'void __user *buffer' to 'void *buffer' in argument 3 of
+    vrf_shared_table_handler function, thanks to Jakub Kicinski.
+
+
+[1] https://lore.kernel.org/netdev/20200307205916.15646-1-sharpd@cumulusnetworks.com/
+
+Andrea Mayer (5):
+  l3mdev: add infrastructure for table to VRF mapping
+  vrf: track associations between VRF devices and tables
+  vrf: add sysctl parameter for strict mode
+  vrf: add l3mdev registration for table to VRF device lookup
+  selftests: add selftest for the VRF strict mode
+
+ drivers/net/vrf.c                             | 450 +++++++++++++++++-
+ include/net/l3mdev.h                          |  39 ++
+ net/l3mdev/l3mdev.c                           |  93 ++++
+ .../selftests/net/vrf_strict_mode_test.sh     | 390 +++++++++++++++
+ 4 files changed, 963 insertions(+), 9 deletions(-)
+ create mode 100755 tools/testing/selftests/net/vrf_strict_mode_test.sh
+
+-- 
+2.20.1
 
