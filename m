@@ -2,151 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01D4F2019EE
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 20:05:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BF022019E2
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 20:01:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387423AbgFSSEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 14:04:11 -0400
-Received: from forward102p.mail.yandex.net ([77.88.28.102]:44305 "EHLO
-        forward102p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727003AbgFSSEL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 14:04:11 -0400
-X-Greylist: delayed 345 seconds by postgrey-1.27 at vger.kernel.org; Fri, 19 Jun 2020 14:04:08 EDT
-Received: from mxback28g.mail.yandex.net (mxback28g.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:328])
-        by forward102p.mail.yandex.net (Yandex) with ESMTP id 169E21D40CA2;
-        Fri, 19 Jun 2020 20:58:17 +0300 (MSK)
-Received: from myt5-ca5ec8faf378.qloud-c.yandex.net (myt5-ca5ec8faf378.qloud-c.yandex.net [2a02:6b8:c12:2514:0:640:ca5e:c8fa])
-        by mxback28g.mail.yandex.net (mxback/Yandex) with ESMTP id yrlIGU87mc-wFO0RYVi;
-        Fri, 19 Jun 2020 20:58:17 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1592589497;
-        bh=dTABDPAC0TIJvPPbhyKvGl6SRvL9aurhWCWf7c3kue0=;
-        h=Subject:To:From:Cc:Date:Message-Id;
-        b=O3ucnUXJHdobJao47TJC+LUhCY9isFAos37C5xg8vuMACmoE1qNZczvvirtVNiPqk
-         BBMom4SxcxJf85ZK4ygJgy/6JndshlILOcHoN75TwzQ9odRQdovmIOFCPGzb7TdTTE
-         aALW6UyH/6oFzsj06x8eVwcTm2s0+bvmwVDTVN5A=
-Authentication-Results: mxback28g.mail.yandex.net; dkim=pass header.i=@yandex.ru
-Received: by myt5-ca5ec8faf378.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id 8kc9Js6YU8-wE0uc5mT;
-        Fri, 19 Jun 2020 20:58:15 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-From:   Alexander Lobakin <bloodyreaper@yandex.ru>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@mellanox.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Tom Herbert <therbert@google.com>,
-        Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexander Lobakin <bloodyreaper@yandex.ru>
-Subject: [PATCH net 3/3] net: ethtool: sync netdev_features_strings order with enum netdev_features
-Date:   Fri, 19 Jun 2020 20:58:05 +0300
-Message-Id: <20200619175805.34331-1-bloodyreaper@yandex.ru>
-X-Mailer: git-send-email 2.27.0
+        id S1730338AbgFSSAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 14:00:35 -0400
+Received: from mail-eopbgr50061.outbound.protection.outlook.com ([40.107.5.61]:61312
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726008AbgFSSAd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jun 2020 14:00:33 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DGYTpasZxFF2VZhOAhSDyHp5VeLFWX5iAWPTH0AGpnwov0tvYmIOUE8z/UgtBE1MTADR5fbghjGCxQTHe7c0x4oV5jhMPk7T7yl8b73rNqIjJRbcdRBSTooxcNPCLNJG4UmvoRBLJRejMTO416Ow8vtGIJXnI2jqQYo85M4uxaIfM/BtnFPJdKDNq2DGNJZZ+N9Km1AJOvmj+jAZkjzFgGhPz2QL4/yvGueZlGJNBISLHx4V1xV5CJkuLjAzGaPBC0JQ9Lfyjnp/97i7ERJSdQwARJQnZIP4BHb+bmsb3sc1GJMttOoDuCQB4hLwW9iX1sCneuJ5vIHWyrQvCIim9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vraE492OIDdU3mdqVBnYlBBV/tETIouHdnuiDm/JxCQ=;
+ b=Qfs34AgHfB2HEij8Qdx1G8HzhTgVGYn0I4avXm4fLMFZ58tt0koeH8GujW15bw4VoDIC0gZj0+yvXDmxDJuSiTiA0/Y9ykYhYl3yfjQVVi6pKusVz8+AKasV5E1BJMb+csVezYMcH3FCr/i7IWOe9eI1tZ4Nw333gzXZ0exu3zMMgDhXwTpyIxR64VcegmrDZ4uPH3cglk5JmOXjrD648fMfsfkssvyDgRRMqY/lE10vXUX56kL6VmtqzbwAzT4DCQyXFQgy1K5a0EwDXnJjMrV/808GGQ6/8XPXGhJ1FqdfEG2//shFN40rCSbj7HFebquauEhkC+sCNYsU/7UHnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vraE492OIDdU3mdqVBnYlBBV/tETIouHdnuiDm/JxCQ=;
+ b=F1zw2HhggHE+v6lUAtM7+LlqLUix3A/Y9X4ybbqAcHSpfexrm+5VXXIJuRRwSVTj5cOwA0eJwZvG6oUT7ATZxvVD1cOd97FK4oPMZXOo4WB4pLae9EyYz2fMmOKBZW729xBecZjfXI5E/zTOVlZW48UFlDj9ki9LuqLkdehbT4g=
+Authentication-Results: networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=none action=none
+ header.from=mellanox.com;
+Received: from AM7PR05MB6995.eurprd05.prod.outlook.com (2603:10a6:20b:1ad::15)
+ by AM7PR05MB7091.eurprd05.prod.outlook.com (2603:10a6:20b:1a8::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Fri, 19 Jun
+ 2020 18:00:29 +0000
+Received: from AM7PR05MB6995.eurprd05.prod.outlook.com
+ ([fe80::d067:e4b3:5d58:e3ab]) by AM7PR05MB6995.eurprd05.prod.outlook.com
+ ([fe80::d067:e4b3:5d58:e3ab%6]) with mapi id 15.20.3109.021; Fri, 19 Jun 2020
+ 18:00:29 +0000
+References: <20200324034745.30979-1-Po.Liu@nxp.com> <20200619060107.6325-1-po.liu@nxp.com>
+User-agent: mu4e 1.2.0; emacs 26.2.90
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Po Liu <po.liu@nxp.com>
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, jiri@resnulli.us, vinicius.gomes@intel.com,
+        vlad@buslov.dev, claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
+        alexandru.marginean@nxp.com, michael.chan@broadcom.com,
+        vishal@chelsio.com, saeedm@mellanox.com, leon@kernel.org,
+        jiri@mellanox.com, idosch@mellanox.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        kuba@kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        simon.horman@netronome.com, pablo@netfilter.org,
+        moshe@mellanox.com, m-karicheri2@ti.com,
+        andre.guedes@linux.intel.com, stephen@networkplumber.org
+Subject: Re: [v2,net-next] net: qos offload add flow status with dropped count
+In-reply-to: <20200619060107.6325-1-po.liu@nxp.com>
+Date:   Fri, 19 Jun 2020 21:00:23 +0300
+Message-ID: <vbfh7v7kkaw.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: MR2P264CA0025.FRAP264.PROD.OUTLOOK.COM (2603:10a6:500::13)
+ To AM7PR05MB6995.eurprd05.prod.outlook.com (2603:10a6:20b:1ad::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from reg-r-vrt-018-180.mellanox.com (37.142.13.130) by MR2P264CA0025.FRAP264.PROD.OUTLOOK.COM (2603:10a6:500::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.21 via Frontend Transport; Fri, 19 Jun 2020 18:00:26 +0000
+X-Originating-IP: [37.142.13.130]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 62229fd4-a105-4aa0-df13-08d8147aa6ca
+X-MS-TrafficTypeDiagnostic: AM7PR05MB7091:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM7PR05MB70915A418AA0D78528CA5488AD980@AM7PR05MB7091.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-Forefront-PRVS: 0439571D1D
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BuFMA9YTWmEzcXZbZtH4imlwf2v2LngBuweqhnz5nZ4nHHJM3aO4nBZQLXlgI5soiWpF9Q+/Ju9wVqqpcWTdIpKmh2Es8hul8UF/01AiTp3jm8QQb5VQDX2hhZgrhME5inA/rb1YbxnGIjJ843T9kHe7XaIYqE6ijqq43I2WM27V2BBpcKYf3m8EVVRTRvF7WBshZ/3zam/zFh3EPdut8NuOQscK6IOA/W5XgAl0p4YeKd+ue05h+eqbuGngDEPLguIjFHyBnQkj33+zHrWgTl/Cw7bjfh2cCXmbX7iN/xI4fpaVxntkPemWjPOt09wO5v1KdsrcGZbU/eC/G/r1WQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR05MB6995.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(136003)(39860400002)(396003)(346002)(376002)(52116002)(7696005)(2616005)(956004)(8936002)(36756003)(5660300002)(26005)(16526019)(6666004)(86362001)(8676002)(186003)(4744005)(83380400001)(2906002)(66556008)(6486002)(4326008)(316002)(66946007)(6916009)(7416002)(478600001)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: RQCwl6yTYLYZlxsvXs9ukJ+RGRnGhK3bVyautYjlRKtGIX610BfkJbCfsqFdzLkegpl/z0OiDhJF0arS/x8VrPlvT8UwbUek+KppzQJG+7Rq2zcZb2GDtMH5P8wXYDel1LDqKD6i/nayXIxQL+wnBj58gzgSYVjqhIAGIudcezaUUHBE0wHv5RMUfONUkF4WZ1jKdGUeva2piIBSEZs7pogLvunOr29+VFuu2Jp9nKRtG2UTssNpMU1U+YHpbQQpnhPk3RxQzmF2OA/KLTnb3elwbR+FYMWFNaobeTpzgKVdChsv1w5Rmfa/NYJxR88pvUXWZ/NjkJ2GgLXjpqUGzw38Y9njYdW/NHfpZYpKAG6P2ymmEF5KoTDs9jfgUsuhlm/EtYCwVcG4iknDTPKkE62n9y73SocO/xAj55f+KBuK4+012a+QT0BuPs1bxJ+ApIwZbBIWLtU0d9pv8xV9rMfw+HVp0Q9QGU6/2XffICM=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62229fd4-a105-4aa0-df13-08d8147aa6ca
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2020 18:00:29.2392
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3F8WoFtxtny3/7be6QJdQhB6cgyzLx2teZt8ce6bjgxEf7gJL+5mqgdv553pAJaY4oxgym76gnSGJUQMWZGlhQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR05MB7091
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ordering of netdev_features_strings[] makes no sense when it comes
-to user interaction, as list of features in `ethtool -k` input is sorted
-according to the corresponding bit's position.
-Instead, it *does* make sense when it comes to adding new netdev_features
-or modifying existing ones. We have at least 2 occasions of forgetting to
-add the strings for newly introduced features, and one of them existed
-since 3.1x times till now.
+On Fri 19 Jun 2020 at 09:01, Po Liu <po.liu@nxp.com> wrote:
+> From: Po Liu <Po.Liu@nxp.com>
+>
+> This patch adds a drop frames counter to tc flower offloading.
+> Reporting h/w dropped frames is necessary for some actions.
+> Some actions like police action and the coming introduced stream gate
+> action would produce dropped frames which is necessary for user. Status
+> update shows how many filtered packets increasing and how many dropped
+> in those packets.
+>
+> v2: Changes
+>  - Update commit comments suggest by Jiri Pirko.
+>
+> Signed-off-by: Po Liu <Po.Liu@nxp.com>
+> ---
 
-Let's keep this stringtable sorted according to bit's position in enum
-netdev_features, as this simplifies both reading and modification of the
-source code and can help not to miss or forget anything.
-
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- net/ethtool/common.c | 26 ++++++++++++++++++++------
- 1 file changed, 20 insertions(+), 6 deletions(-)
-
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index c8e3fce6e48d..24f35d47832d 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -8,25 +8,25 @@
- const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
- 	[NETIF_F_SG_BIT]			= "tx-scatter-gather",
- 	[NETIF_F_IP_CSUM_BIT]			= "tx-checksum-ipv4",
-+
-+	/* __UNUSED_NETIF_F_1 - deprecated */
-+
- 	[NETIF_F_HW_CSUM_BIT]			= "tx-checksum-ip-generic",
- 	[NETIF_F_IPV6_CSUM_BIT]			= "tx-checksum-ipv6",
- 	[NETIF_F_HIGHDMA_BIT]			= "highdma",
- 	[NETIF_F_FRAGLIST_BIT]			= "tx-scatter-gather-fraglist",
- 	[NETIF_F_HW_VLAN_CTAG_TX_BIT]		= "tx-vlan-hw-insert",
--
- 	[NETIF_F_HW_VLAN_CTAG_RX_BIT]		= "rx-vlan-hw-parse",
- 	[NETIF_F_HW_VLAN_CTAG_FILTER_BIT]	= "rx-vlan-filter",
--	[NETIF_F_HW_VLAN_STAG_TX_BIT]		= "tx-vlan-stag-hw-insert",
--	[NETIF_F_HW_VLAN_STAG_RX_BIT]		= "rx-vlan-stag-hw-parse",
--	[NETIF_F_HW_VLAN_STAG_FILTER_BIT]	= "rx-vlan-stag-filter",
- 	[NETIF_F_VLAN_CHALLENGED_BIT]		= "vlan-challenged",
- 	[NETIF_F_GSO_BIT]			= "tx-generic-segmentation",
- 	[NETIF_F_LLTX_BIT]			= "tx-lockless",
- 	[NETIF_F_NETNS_LOCAL_BIT]		= "netns-local",
- 	[NETIF_F_GRO_BIT]			= "rx-gro",
--	[NETIF_F_GRO_HW_BIT]			= "rx-gro-hw",
- 	[NETIF_F_LRO_BIT]			= "rx-lro",
- 
-+	/* NETIF_F_GSO_SHIFT = NETIF_F_TSO_BIT */
-+
- 	[NETIF_F_TSO_BIT]			= "tx-tcp-segmentation",
- 	[NETIF_F_GSO_ROBUST_BIT]		= "tx-gso-robust",
- 	[NETIF_F_TSO_ECN_BIT]			= "tx-tcp-ecn-segmentation",
-@@ -43,9 +43,14 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
- 	[NETIF_F_GSO_TUNNEL_REMCSUM_BIT]	= "tx-tunnel-remcsum-segmentation",
- 	[NETIF_F_GSO_SCTP_BIT]			= "tx-sctp-segmentation",
- 	[NETIF_F_GSO_ESP_BIT]			= "tx-esp-segmentation",
-+
-+	/* NETIF_F_GSO_UDP_BIT - deprecated */
-+
- 	[NETIF_F_GSO_UDP_L4_BIT]		= "tx-udp-segmentation",
- 	[NETIF_F_GSO_FRAGLIST_BIT]		= "tx-gso-list",
- 
-+	/* NETIF_F_GSO_LAST = NETIF_F_GSO_FRAGLIST_BIT */
-+
- 	[NETIF_F_FCOE_CRC_BIT]			= "tx-checksum-fcoe-crc",
- 	[NETIF_F_SCTP_CRC_BIT]			= "tx-checksum-sctp",
- 	[NETIF_F_FCOE_MTU_BIT]			= "fcoe-mtu",
-@@ -56,16 +61,25 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
- 	[NETIF_F_LOOPBACK_BIT]			= "loopback",
- 	[NETIF_F_RXFCS_BIT]			= "rx-fcs",
- 	[NETIF_F_RXALL_BIT]			= "rx-all",
-+	[NETIF_F_HW_VLAN_STAG_TX_BIT]		= "tx-vlan-stag-hw-insert",
-+	[NETIF_F_HW_VLAN_STAG_RX_BIT]		= "rx-vlan-stag-hw-parse",
-+	[NETIF_F_HW_VLAN_STAG_FILTER_BIT]	= "rx-vlan-stag-filter",
- 	[NETIF_F_HW_L2FW_DOFFLOAD_BIT]		= "l2-fwd-offload",
-+
- 	[NETIF_F_HW_TC_BIT]			= "hw-tc-offload",
- 	[NETIF_F_HW_ESP_BIT]			= "esp-hw-offload",
- 	[NETIF_F_HW_ESP_TX_CSUM_BIT]		= "esp-tx-csum-hw-offload",
- 	[NETIF_F_RX_UDP_TUNNEL_PORT_BIT]	= "rx-udp_tunnel-port-offload",
--	[NETIF_F_HW_TLS_RECORD_BIT]		= "tls-hw-record",
- 	[NETIF_F_HW_TLS_TX_BIT]			= "tls-hw-tx-offload",
- 	[NETIF_F_HW_TLS_RX_BIT]			= "tls-hw-rx-offload",
-+
-+	[NETIF_F_GRO_HW_BIT]			= "rx-gro-hw",
-+	[NETIF_F_HW_TLS_RECORD_BIT]		= "tls-hw-record",
- 	[NETIF_F_GRO_FRAGLIST_BIT]		= "rx-gro-list",
-+
- 	[NETIF_F_HW_MACSEC_BIT]			= "macsec-hw-offload",
-+
-+	/* NETDEV_FEATURE_COUNT */
- };
- 
- const char
--- 
-2.27.0
-
+Reviewed-by: Vlad Buslov <vladbu@mellanox.com>
