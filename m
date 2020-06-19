@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25DB320044D
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 10:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E44A20044F
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 10:49:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731419AbgFSIrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 04:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54670 "EHLO
+        id S1728430AbgFSIsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 04:48:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727115AbgFSIrr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 04:47:47 -0400
+        with ESMTP id S1726124AbgFSIse (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 04:48:34 -0400
 Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC24C06174E;
-        Fri, 19 Jun 2020 01:47:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00699C06174E;
+        Fri, 19 Jun 2020 01:48:33 -0700 (PDT)
 Received: from [5.158.153.52] (helo=kurt)
         by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
         (Exim 4.80)
         (envelope-from <kurt@linutronix.de>)
-        id 1jmCga-0004c7-Mg; Fri, 19 Jun 2020 10:47:44 +0200
+        id 1jmChM-0004dK-0I; Fri, 19 Jun 2020 10:48:32 +0200
 From:   Kurt Kanzenbach <kurt@linutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
@@ -31,10 +31,10 @@ Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
         ilias.apalodimas@linaro.org
 Subject: Re: [RFC PATCH 9/9] dt-bindings: net: dsa: Add documentation for Hellcreek switches
-In-Reply-To: <20200618134704.GQ249144@lunn.ch>
-References: <20200618064029.32168-1-kurt@linutronix.de> <20200618064029.32168-10-kurt@linutronix.de> <20200618134704.GQ249144@lunn.ch>
-Date:   Fri, 19 Jun 2020 10:47:43 +0200
-Message-ID: <87zh8zphlc.fsf@kurt>
+In-Reply-To: <e8085c6a-0b61-60f9-f411-2540dec80926@gmail.com>
+References: <20200618064029.32168-1-kurt@linutronix.de> <20200618064029.32168-10-kurt@linutronix.de> <e8085c6a-0b61-60f9-f411-2540dec80926@gmail.com>
+Date:   Fri, 19 Jun 2020 10:48:31 +0200
+Message-ID: <87wo43phk0.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: multipart/signed; boundary="=-=-=";
         micalg=pgp-sha512; protocol="application/pgp-signature"
@@ -45,62 +45,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 --=-=-=
 Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-Hi Andrew,
+Hi Florian,
 
-On Thu Jun 18 2020, Andrew Lunn wrote:
->> +Ethernet switch connected memory mapped to the host, CPU port wired to gmac0:
+On Thu Jun 18 2020, Florian Fainelli wrote:
+> On 6/17/2020 11:40 PM, Kurt Kanzenbach wrote:
+>> Add basic documentation and example.
+>>=20
+>> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+>> ---
+>>  .../devicetree/bindings/net/dsa/hellcreek.txt | 72 +++++++++++++++++++
+>>  1 file changed, 72 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/net/dsa/hellcreek.=
+txt
+>>=20
+>> diff --git a/Documentation/devicetree/bindings/net/dsa/hellcreek.txt b/D=
+ocumentation/devicetree/bindings/net/dsa/hellcreek.txt
+>> new file mode 100644
+>> index 000000000000..9ea6494dc554
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/net/dsa/hellcreek.txt
+>
+> This should be a YAML binding and we should also convert the DSA binding
+> to YAML one day.
+
+OK.
+
+>
+>> @@ -0,0 +1,72 @@
+>> +Hirschmann hellcreek switch driver
+>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> +
+>> +Required properties:
+>> +
+>> +- compatible:
+>> +	Must be one of:
+>> +	- "hirschmann,hellcreek"
+>> +
+>> +See Documentation/devicetree/bindings/net/dsa/dsa.txt for the list of s=
+tandard
+>> +DSA required and optional properties.
+>> +
+>> +Example
+>> +-------
+>> +
+>> +Ethernet switch connected memory mapped to the host, CPU port wired to =
+gmac0:
 >> +
 >> +soc {
 >> +        switch0: switch@0xff240000 {
->> +                compatible = "hirschmann,hellcreek";
->> +                status = "okay";
->> +                reg = <0xff240000 0x1000   /* TSN base */
->> +                       0xff250000 0x1000>; /* PTP base */
->> +                dsa,member = <0 0>;
->> +
->> +                ports {
->> +                        #address-cells = <1>;
->> +                        #size-cells = <0>;
->> +
->> +                        port@0 {
->> +                                reg = <0>;
->> +                                label = "cpu";
->> +                                ethernet = <&gmac0>;
->> +                        };
->> +
->> +                        port@2 {
->> +                                reg = <2>;
->> +                                label = "lan0";
->> +                                phy-handle = <&phy1>;
->> +                        };
->> +
->> +                        port@3 {
->> +                                reg = <3>;
->> +                                label = "lan1";
->> +                                phy-handle = <&phy2>;
->> +                        };
->> +                };
->> +        };
->> +};
->> +
->> +&gmac0 {
->> +        status = "okay";
->> +        phy-mode = "mii";
->> +
->> +        fixed-link {
->> +                speed = <100>;
->> +                full-duplex;
 >
-> Hi Kurt
->
-> The switch is 100/100Mbps right? The MAC is only Fast ethernet. Do you
-> need some properties in the port@0 node to tell the switch to only use
-> 100Mbps? I would expect it to default to 1G. Not looked at the code
-> yet...
+> Please remove the leading 0x from the unit address.
 
-No, that is not needed. That is a hardware configuration and AFAIK
-cannot be changed at run time.
+Sure.
 
 Thanks,
 Kurt
@@ -110,18 +109,18 @@ Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl7se68ACgkQeSpbgcuY
-8Ka0Nw//R69dCJB8c6OO+8xewEAX+LjZceywkiETCKDnq+fqXzkZc7OPhYBQViBR
-ARXcIAPlqG0+BBrmS5ttaIR3vfzLRxUJmeUHW521a55tCnD0d1A7LJo8HNap/5rO
-zVpidl5OcDELabjB7KRatOKnItYS21kkotwOX9BKAXHixcC+V3+0w7NSu13nLLmi
-pT/jR+bU29ttPTA6Q70xKYDrz3h+i3zAgFEF4h57H4PfJIeSJtNOTseEmNHP8l23
-S38wuDGSU1ZeJ7QJY/lQoyX3qvXmCR6MXuQbfi78kMRSzIGZJwfp3xR5eNAyf44i
-D2vClwcV591PqjkTwljjjufnu3l8CCHyL1jFHWyJiEDXYwtStnmiCyM6TRw6vGwH
-UncgkiEDhyymBwfahdbAV9SS+H28ng0kBG7r6NwFa1s1g4SJIof+IvqdBfV281nt
-t6NAtA/cU7yM3eUG0urX9q1Bmxwp7HOSyfEOIJb9WwTcrR5NvEHvW2Wqu6Z/V/MZ
-sa9/R3RyJFuNLRmwBI6mXx78nsvbC2sB/b2GIP55QZvgFXlQeBsoZgzp0mk9baLw
-jIz4IyU9jHAP1AZYwmHr4uNoekPj3en6n6yvO5PZgqFX+oCkCGdOYfm+jRzTXjyu
-GelCRIQODeI3j48laE6jajwYqt57k2xyBkWZYOVPc8qUGQ8qAz4=
-=DTYQ
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl7se98ACgkQeSpbgcuY
+8KZihxAAtHIIeyTkZwx0/as7qVqW1wxxU3ChFFfTerlQKv/oj7YsPZygmcF2JQ3F
+7EyOOQRfDCMtViZtrFnr+aOFpt0qtAWI5Qm1brhtSpc6CShIT4bYOKRurGj0cgD5
+S6VD6YLSlQAtekxieQGHXYgbwhPeVuOAYiNTJtRd7aZUrlPjvCDNoCWbYMSR2CdU
+MVRu1wWh/IyTfwx43XnRoEWQv24rZIkpJ2ZfA3UDeTZadE6lQlg54ixDjT0pfKZG
+62YG8vITGVNWnQtU4RoBsRWvj5ZD9yGe+wjVAnI18V6vEdStIY6qSXUCI6qv0lPk
+GL+jJF52Q2R7VXJbrt9nZxaKNUYGM6xmSTmm8opGpst9HrwVWQkjJ4K0CD90EPe6
+Szgr6gC6WNB99O8XtZ2m9gW3FSHweEKDm8vpPehb1WvmiEq3x+8UQJpaWh44I9Az
+RhCi8nnQ7Y0OY3DPO7HJCjMPJ6ILTF2pKNbx0q8RodrlXR++X658gC6HZrquJ/Rr
+UaKnr1sXkpnwj5SJqLqMkFjtWfSSOMMmh7P8mizp28yy+ggVQGJbgAt/yCJ1Gu9W
++EbrliE8grwOv2oKDXLirC5P6UV/sZLHRypniKsofJ+nm91ovLET9beIw8dBY3N9
+RU6IghxrTiey8rgKJsSaYdbNBnXXRcHJV6MIG5c4573RczcA9UM=
+=bP+p
 -----END PGP SIGNATURE-----
 --=-=-=--
