@@ -2,179 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE2C201E6F
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 00:59:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF47C201E7B
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 01:05:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730328AbgFSW6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 18:58:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53442 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730302AbgFSW6M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jun 2020 18:58:12 -0400
-Received: from localhost.localdomain.com (unknown [151.48.138.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AF4C2224B0;
-        Fri, 19 Jun 2020 22:58:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592607491;
-        bh=qe9KFVzAG67/y1OiDr9su8/VOCf451OZddY1SNKiaKw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u4LHbuNRN6F4pbewDGW6UfHbses/3upfvTm6RJ+vW7ib+Sn7QslQE54ynGj4zh5Lj
-         fr3gAwsN9XXo5ssKdCERg6taxRZZJT93qS7xmBg373eZERhOetgzGc/Xn8W1/IEgAZ
-         WlwKoAvasTBXQCYFDIgiwSf1S2mtlvr5ARGmmt9U=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, brouer@redhat.com,
-        daniel@iogearbox.net, toke@redhat.com, lorenzo.bianconi@redhat.com,
-        dsahern@kernel.org
-Subject: [PATCH v2 bpf-next 8/8] selftest: add tests for XDP programs in CPUMAP entries
-Date:   Sat, 20 Jun 2020 00:57:24 +0200
-Message-Id: <ebad39bb3d961a65733c33ed530b9d1ade916afa.1592606391.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <cover.1592606391.git.lorenzo@kernel.org>
-References: <cover.1592606391.git.lorenzo@kernel.org>
+        id S1730332AbgFSXEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 19:04:53 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:47504 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729996AbgFSXEw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 19:04:52 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05JN00Hq030497
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 16:04:52 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=6SMGNHMqEiT5yoSqQAHsmmbC2B1tn3KLG/YugBRYHdQ=;
+ b=aYSIysx6fIY6cGLPfkhYBi29HifmSo7hcqGJdCdSdM0kBYnvHtnpRgNUV0YTfWnCMEUQ
+ WbeUOtOajJwx0eKWAXPWo9gW1XxcuxZJa4p35vxmGCQHGRzhAvR1NWZY34/Zue1Ew34t
+ OK90khNaLUzNL7OapJy/qEMphf1/Vn0EtLk= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 31s2rcs79d-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 16:04:52 -0700
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 19 Jun 2020 16:04:26 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id C22C02EC3619; Fri, 19 Jun 2020 16:04:23 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] libbpf: fix CO-RE relocs against .text section
+Date:   Fri, 19 Jun 2020 16:04:22 -0700
+Message-ID: <20200619230423.691274-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-19_22:2020-06-19,2020-06-19 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ bulkscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0
+ cotscore=-2147483648 priorityscore=1501 clxscore=1015 adultscore=0
+ spamscore=0 mlxlogscore=999 impostorscore=0 phishscore=0 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006190161
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to what have been done for DEVMAP, introduce tests to verify
-ability to add a XDP program to an entry in a CPUMAP.
-Verify CPUMAP programs can not be attached to devices as a normal
-XDP program, and only programs with BPF_XDP_CPUMAP attach type can
-be loaded in a CPUMAP.
+bpf_object__find_program_by_title(), used by CO-RE relocation code, doesn=
+'t
+return .text "BPF program", if it is a function storage for sub-programs.
+Because of that, any CO-RE relocation in helper non-inlined functions wil=
+l
+fail. Fix this by searching for .text-corresponding BPF program manually.
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Adjust one of bpf_iter selftest to exhibit this pattern.
+
+Reported-by: Yonghong Song <yhs@fb.com>
+Fixes: ddc7c3042614 ("libbpf: implement BPF CO-RE offset relocation algor=
+ithm")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- .../bpf/prog_tests/xdp_cpumap_attach.c        | 70 +++++++++++++++++++
- .../bpf/progs/test_xdp_with_cpumap_helpers.c  | 38 ++++++++++
- 2 files changed, 108 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
+ tools/lib/bpf/libbpf.c                               | 8 +++++++-
+ tools/testing/selftests/bpf/progs/bpf_iter_netlink.c | 2 +-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-new file mode 100644
-index 000000000000..2baa41689f40
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
-@@ -0,0 +1,70 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <uapi/linux/bpf.h>
-+#include <linux/if_link.h>
-+#include <test_progs.h>
-+
-+#include "test_xdp_with_cpumap_helpers.skel.h"
-+
-+#define IFINDEX_LO	1
-+
-+void test_xdp_with_cpumap_helpers(void)
-+{
-+	struct test_xdp_with_cpumap_helpers *skel;
-+	struct bpf_prog_info info = {};
-+	struct bpf_cpumap_val val = {
-+		.qsize = 192,
-+	};
-+	__u32 duration = 0, idx = 0;
-+	__u32 len = sizeof(info);
-+	int err, prog_fd, map_fd;
-+
-+	skel = test_xdp_with_cpumap_helpers__open_and_load();
-+	if (CHECK_FAIL(!skel)) {
-+		perror("test_xdp_with_cpumap_helpers__open_and_load");
-+		return;
-+	}
-+
-+	/* can not attach program with cpumaps that allow programs
-+	 * as xdp generic
-+	 */
-+	prog_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
-+	err = bpf_set_link_xdp_fd(IFINDEX_LO, prog_fd, XDP_FLAGS_SKB_MODE);
-+	CHECK(err == 0, "Generic attach of program with 8-byte CPUMAP",
-+	      "should have failed\n");
-+
-+	prog_fd = bpf_program__fd(skel->progs.xdp_dummy_cm);
-+	map_fd = bpf_map__fd(skel->maps.cpu_map);
-+	err = bpf_obj_get_info_by_fd(prog_fd, &info, &len);
-+	if (CHECK_FAIL(err))
-+		goto out_close;
-+
-+	val.bpf_prog.fd = prog_fd;
-+	err = bpf_map_update_elem(map_fd, &idx, &val, 0);
-+	CHECK(err, "Add program to cpumap entry", "err %d errno %d\n",
-+	      err, errno);
-+
-+	err = bpf_map_lookup_elem(map_fd, &idx, &val);
-+	CHECK(err, "Read cpumap entry", "err %d errno %d\n", err, errno);
-+	CHECK(info.id != val.bpf_prog.id, "Expected program id in cpumap entry",
-+	      "expected %u read %u\n", info.id, val.bpf_prog.id);
-+
-+	/* can not attach BPF_XDP_CPUMAP program to a device */
-+	err = bpf_set_link_xdp_fd(IFINDEX_LO, prog_fd, XDP_FLAGS_SKB_MODE);
-+	CHECK(err == 0, "Attach of BPF_XDP_CPUMAP program",
-+	      "should have failed\n");
-+
-+	val.qsize = 192;
-+	val.bpf_prog.fd = bpf_program__fd(skel->progs.xdp_dummy_prog);
-+	err = bpf_map_update_elem(map_fd, &idx, &val, 0);
-+	CHECK(err == 0, "Add non-BPF_XDP_CPUMAP program to cpumap entry",
-+	      "should have failed\n");
-+
-+out_close:
-+	test_xdp_with_cpumap_helpers__destroy(skel);
-+}
-+
-+void test_xdp_cpumap_attach(void)
-+{
-+	if (test__start_subtest("CPUMAP with programs in entries"))
-+		test_xdp_with_cpumap_helpers();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c b/tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
-new file mode 100644
-index 000000000000..acbbc62efa55
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
-@@ -0,0 +1,38 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_CPUMAP);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(struct bpf_cpumap_val));
-+	__uint(max_entries, 4);
-+} cpu_map SEC(".maps");
-+
-+SEC("xdp_redir")
-+int xdp_redir_prog(struct xdp_md *ctx)
-+{
-+	return bpf_redirect_map(&cpu_map, 1, 0);
-+}
-+
-+SEC("xdp_dummy")
-+int xdp_dummy_prog(struct xdp_md *ctx)
-+{
-+	return XDP_PASS;
-+}
-+
-+SEC("xdp_cpumap")
-+int xdp_dummy_cm(struct xdp_md *ctx)
-+{
-+	char fmt[] = "devmap redirect: dev %u len %u\n";
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	unsigned int len = data_end - data;
-+
-+	bpf_trace_printk(fmt, sizeof(fmt), ctx->ingress_ifindex, len);
-+
-+	return XDP_PASS;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.26.2
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 477c679ed945..f17151d866e6 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -4818,7 +4818,13 @@ bpf_core_reloc_fields(struct bpf_object *obj, cons=
+t char *targ_btf_path)
+ 			err =3D -EINVAL;
+ 			goto out;
+ 		}
+-		prog =3D bpf_object__find_program_by_title(obj, sec_name);
++		prog =3D NULL;
++		for (i =3D 0; i < obj->nr_programs; i++) {
++			if (!strcmp(obj->programs[i].section_name, sec_name)) {
++				prog =3D &obj->programs[i];
++				break;
++			}
++		}
+ 		if (!prog) {
+ 			pr_warn("failed to find program '%s' for CO-RE offset relocation\n",
+ 				sec_name);
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c b/tools=
+/testing/selftests/bpf/progs/bpf_iter_netlink.c
+index e7b8753eac0b..75ecf956a2df 100644
+--- a/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
++++ b/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
+@@ -25,7 +25,7 @@ struct bpf_iter__netlink {
+ 	struct netlink_sock *sk;
+ } __attribute__((preserve_access_index));
+=20
+-static inline struct inode *SOCK_INODE(struct socket *socket)
++static __attribute__((noinline)) struct inode *SOCK_INODE(struct socket =
+*socket)
+ {
+ 	return &container_of(socket, struct socket_alloc, socket)->vfs_inode;
+ }
+--=20
+2.24.1
 
