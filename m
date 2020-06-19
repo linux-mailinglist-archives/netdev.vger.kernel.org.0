@@ -2,101 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ACD92019F8
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 20:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FF2F2019FB
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 20:09:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392847AbgFSSIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 14:08:42 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:20276 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2387936AbgFSSIk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 14:08:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592590119;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M1kqnSC0TnwwjU9pqdl+Jl6MnsvVIxbg1NKgAjCQLQk=;
-        b=cl1+652e+fWCtGoesj6yht07XsNuGao/aRLVpVL6aYALBdFfI2CtzuMyey99gio5cwLa4A
-        sj984r2RhF0u20QEphNqsM7xwo6pKjNhqxxrRdHqfj6/ilQswT2hXx1aycFGVmIx0Gdn4m
-        eevFSxmtm36zvY0BFfoaqZqCvbgP8kc=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-512-v7P3f8AsPuadnrH7LeMFSg-1; Fri, 19 Jun 2020 14:08:34 -0400
-X-MC-Unique: v7P3f8AsPuadnrH7LeMFSg-1
-Received: by mail-qv1-f69.google.com with SMTP id s15so7429029qvo.6
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:08:34 -0700 (PDT)
+        id S2403957AbgFSSI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 14:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56592 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388336AbgFSSI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 14:08:56 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA18CC06174E
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:08:55 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id h5so10583796wrc.7
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:08:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YD0k0ucldMZEEAW3H4tt7oRc0Nmlw99yW1X3umBjCPk=;
+        b=mcIDZ2lbM1Om2f9nIQud/jMEK2NqY+2Iui90Yz71qQ6OZTg/2Sx1DSY68uda5TUoxC
+         F5YOKhmAhCOa6hhZPtAfotdArbhjEh2h/BIiQeRsKWxdCfuXyUvItKdjL6/YMF4kZhex
+         Fj5q5ORi2YCBG68AewkQet7gtKV9/JLzZy/GPWqCoCEtZeCnrJWO2fY2WVuCn9Kg/6Au
+         biakNLQNwelVDkfBRgjsSOVGWCJoyHIroa354rjqDwUQZQ4wmdmFPA6zBu7qIFqITjjn
+         Ows2fD1agASSvxZKqoFFjIbesyKdf+EmW01/GZccpzbN95LijC8n/06bJEitymgBFbei
+         KJGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M1kqnSC0TnwwjU9pqdl+Jl6MnsvVIxbg1NKgAjCQLQk=;
-        b=q2CAUS/TyXirU/FVtq1n7DaIQwbsTZzG+mcir2C1C56CJXx85dL4gBvn7J6XJWPiYX
-         H8SSE+YgaWBC2ZcmRg/+OowzvWsSVZF5fRhEoOsZhRL+0l2ZyB+APQ71NZmEQVYK0K5K
-         D8yCAWJJpCohdkuTM8HFkjmtkEUYxLSjfrPsx+q4khN8zBzrxj60RL0eCK9qNZOzcLCD
-         yIHKvr/eslnqlsFUIqzqCC9HNRpfeA9909nr7XDjmBLrWaqTGvAErY2xBCeaXF9Ixun9
-         UtwEc8Wp+9zytgBhvm7psDRJ1lMDw/gnJTEWOEFhx1+rUeT8H6Lfz8GDB8OJUd9PDzY/
-         w/Zw==
-X-Gm-Message-State: AOAM530tuONvzPc+OcR0Ngemk6aKUvtaB4Zc+6SNZ0AHt9Awjnljva1i
-        Gy55bXqxgSHNm+W3XtCF2zu+Cmr9pxddcPL/nAFc2JrekT6wwCgD+5OEmnW5D25aTVhfYemZSeM
-        /LolnorGh8jENkEmLHzSB8vYhfOBoqqpx
-X-Received: by 2002:aed:2171:: with SMTP id 104mr2269423qtc.22.1592590114079;
-        Fri, 19 Jun 2020 11:08:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxb3LLfD5Gk7BoQBiwyBzy1qquwOQYCpCWEpfsWGm3cQ1kfZddE50/+gf0EU9STwwFtmiZcEeywa03jj7Vwsy0=
-X-Received: by 2002:aed:2171:: with SMTP id 104mr2269401qtc.22.1592590113830;
- Fri, 19 Jun 2020 11:08:33 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YD0k0ucldMZEEAW3H4tt7oRc0Nmlw99yW1X3umBjCPk=;
+        b=bVcF4M0sTAiCnXNU8vBLJnRPYsjJhzhIAWgIIi03cYERCJPrmIPrkzrb/NI6vlycxQ
+         g44ZrqFC8z1+jpyvNtLgwMnwweX/u10+TOWdADccr3UlpETDFjG6kw4FaPdvwgexEUGB
+         fpgg+OT5olpNHmgLVGZIY2aetJgAJGqS2Q9cPxQbXAA3l8KaDniqFMlCkgWx1RIHbtne
+         oF9sA2ttHgUln5dZvnpskH3Mz6hYTbBb8Bn+o05D6fP5HN0dlhwHIlRZ+u3e10F3Btyn
+         Luit25/DSN4XgGKrW3FyB+dcugzPwzz5u5zXTMFDnsCqoCUfuJNd8gQVQyaAjUby+hit
+         qe4Q==
+X-Gm-Message-State: AOAM5302RA/R+YtmOk31ruFw/FoK+0CLmwUNWP3vIV5sZNnA/FK+D2u9
+        k8N+FZk4xZ/C8VOtaE6vTJQ=
+X-Google-Smtp-Source: ABdhPJxM66HypyfkNjTVE2nus1tp/0uaWYUmYgdS60fKOXi+g6p+oKEWQo8UU/5sdgmO+IUSnNrPCA==
+X-Received: by 2002:adf:e6cb:: with SMTP id y11mr905175wrm.282.1592590134431;
+        Fri, 19 Jun 2020 11:08:54 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id g19sm7324370wmh.29.2020.06.19.11.08.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Jun 2020 11:08:53 -0700 (PDT)
+Subject: Re: [PATCH 1/3] net: phy: marvell: use a single style for referencing
+ functions
+To:     Maxim Kochetkov <fido_max@inbox.ru>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20200619084904.95432-1-fido_max@inbox.ru>
+ <20200619084904.95432-2-fido_max@inbox.ru>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <177fac6b-cfc0-d3bb-d6c0-a807bd3d7b89@gmail.com>
+Date:   Fri, 19 Jun 2020 11:08:49 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200611113404.17810-1-mst@redhat.com> <20200611113404.17810-3-mst@redhat.com>
- <20200611152257.GA1798@char.us.oracle.com> <CAJaqyWdwXMX0JGhmz6soH2ZLNdaH6HEdpBM8ozZzX9WUu8jGoQ@mail.gmail.com>
-In-Reply-To: <CAJaqyWdwXMX0JGhmz6soH2ZLNdaH6HEdpBM8ozZzX9WUu8jGoQ@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Fri, 19 Jun 2020 20:07:57 +0200
-Message-ID: <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com>
-Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
-To:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200619084904.95432-2-fido_max@inbox.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 15, 2020 at 2:28 PM Eugenio Perez Martin
-<eperezma@redhat.com> wrote:
->
-> On Thu, Jun 11, 2020 at 5:22 PM Konrad Rzeszutek Wilk
-> <konrad.wilk@oracle.com> wrote:
-> >
-> > On Thu, Jun 11, 2020 at 07:34:19AM -0400, Michael S. Tsirkin wrote:
-> > > As testing shows no performance change, switch to that now.
-> >
-> > What kind of testing? 100GiB? Low latency?
-> >
->
-> Hi Konrad.
->
-> I tested this version of the patch:
-> https://lkml.org/lkml/2019/10/13/42
->
-> It was tested for throughput with DPDK's testpmd (as described in
-> http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html)
-> and kernel pktgen. No latency tests were performed by me. Maybe it is
-> interesting to perform a latency test or just a different set of tests
-> over a recent version.
->
-> Thanks!
 
-I have repeated the tests with v9, and results are a little bit different:
-* If I test opening it with testpmd, I see no change between versions
-* If I forward packets between two vhost-net interfaces in the guest
-using a linux bridge in the host:
-  - netperf UDP_STREAM shows a performance increase of 1.8, almost
-doubling performance. This gets lower as frame size increase.
-  - rests of the test goes noticeably worse: UDP_RR goes from ~6347
-transactions/sec to 5830
-  - TCP_STREAM goes from ~10.7 gbps to ~7Gbps
-  - TCP_RR from 6223.64 transactions/sec to 5739.44
 
+On 6/19/2020 1:49 AM, Maxim Kochetkov wrote:
+> The kernel in general does not use &func referencing format.
+> 
+> Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
