@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9440E200151
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 06:35:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2C1200154
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 06:39:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729676AbgFSEfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 00:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
+        id S1725804AbgFSEjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 00:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726196AbgFSEfV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 00:35:21 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2669C06174E;
-        Thu, 18 Jun 2020 21:35:21 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id q198so18547qka.2;
-        Thu, 18 Jun 2020 21:35:21 -0700 (PDT)
+        with ESMTP id S1725290AbgFSEjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 00:39:08 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E112CC06174E;
+        Thu, 18 Jun 2020 21:39:07 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id r22so6359982qke.13;
+        Thu, 18 Jun 2020 21:39:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UHDqRDDn14CCzdKqC28UmPBH/SBHhyryYRfif8mXRbU=;
-        b=YoBRFl58kLm197oyvuhKNBW59LiqXC6iGENPVH0notwvCSDX76ytqUEKKF4GsStMyq
-         +wFPWrEeL3GJMnT8XVFVdOzMN8IbM5SOiIxIBxUxQrfnAB812ntJjTrbSNapdTPx1bLd
-         MVd0BEU2Rou9XWlKv2vu0j0L+AUhdxS03XYW655uzDVg3BXgiA1Hr4Tki4c2i9lVG2Fa
-         MC26/ByfpMY8TBhTCXvRJZ860D9ozQhmSbSVU06jLflNhQG9A6cG3jUPYSnm1hzUrxbA
-         pY7+QKZOojnIMFqPsq4u9QiMx59gCpPDsVOi8i5p7ILhJa0deqsmBiICIA8scM4LhWtJ
-         Fvuw==
+        bh=VEQDCbFai+4akoJzHfgmFatVzDlF/4lY5gd7vQ/lfaw=;
+        b=oIhEj0iTmZ5Rm1v4p0QkNmZR+8qXt+wv07LuTc9y0O9fjg1aH3scMraGPmlYm7Ty0o
+         EMWh4Xgki9d68f7lPuASvLJLxS1RBrL5fKDrjyNQ5XTDfEjlRsxQljmv/Mb8a02egeax
+         JXqd35V6VwnIoxgB+jcp5bTcyQ4GkJX0dc90Kfb23aeTxZm7OixRhrIDdxHrpCMk4nZd
+         CM5aGlZxgnUCREN1NAsBs3VlbYIy8NAj5GoThEaJz+PVf+0h+GGCFsF+Hjkn94c5E4Cy
+         LaCaRh74h6qSYZC5g3XuRsRwnkA9je/uu4Luez6LNcGeJWglkVuxPp7fhUkM06/ALWsv
+         1tIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UHDqRDDn14CCzdKqC28UmPBH/SBHhyryYRfif8mXRbU=;
-        b=WeZszqrnmo8mOZ+CMqxkHg4MBGiKI3bjyRww5syIw+KQn+ddQdXrzw7X8rW6/fqg4u
-         nZW6bCeZUwKEYNOT8fHbtwXp1/mpV2TBLf0gmcIdogvZryq9r8Rzz3FLM2Abd+S5Q28I
-         DE6rjk/0avxb/OgPDMoiFf1ciUNZHWajq6PW97rHv2ufk/y8b60exVeFqYoutBAySCMX
-         LZ0l7FbsWj55c+dIUBd9m21gYaW3PU7ae7sBV+tnOxf4I8QaGXLrYdM0RdidePzGLlPU
-         AwMP8Ke+43iQirffN0w+oQo4Ehp3ODigSG59Zuw9UxjIimKLNpCCnJDYzCy3rTOYKHlV
-         WvpQ==
-X-Gm-Message-State: AOAM532042LJlrmCtSXjVVWy+aNLRH+77MJmQ1k788iO4Uhr4VaOvK8a
-        mFDe0WkYoXlm1/ziFVH97bWAMFtm4d3Xv8rcrv8=
-X-Google-Smtp-Source: ABdhPJyXGoTJBEJ/bQVt361A2IU+wLuAOnopA8a3Mh76EofUBII6u5BH76GiTKt1KOaeVRdTGYeOn1yvnrtaLaqve00=
-X-Received: by 2002:a37:a89:: with SMTP id 131mr1769977qkk.92.1592541321008;
- Thu, 18 Jun 2020 21:35:21 -0700 (PDT)
+        bh=VEQDCbFai+4akoJzHfgmFatVzDlF/4lY5gd7vQ/lfaw=;
+        b=BWZX438J4MbTxlklMDZr4SHVx8FYIsK1oR+ffIxCKIuwLcSlJk4vPGt1NsfF+j4DNK
+         eNTTnYE4QP7MOsAfERGZ+990tPrsz2PIvrWHQIwkzs5RaNN4ErY3rhIEEV6DB58DyqoI
+         8KGAFPXDz+7c5KQD9UtY+lUGccWMem8cjXQsrYaFM/ET0YeWphgomDCdf/29kV61DXjx
+         CfBggYBxkZ//KNQpKS4iHQD6JPUieT0ww3LI9JDeqGNta6fZLXnRqDpd0SFXXEFwvHOL
+         0k+rXg3+QeD0tbDpnmOq+K0XnhLx5obthS5PvqUGutE15FuRO3Z9ud7b/pnR7kg3fp6I
+         +eBA==
+X-Gm-Message-State: AOAM530C5Zj0xQdJuwFraD2RK27rFVEFubF0F+NCzPLFijK7Fa+MBO01
+        JO+XJm7WJqB9paPtE0EAHzuCw9MrVyddxXoVqWo=
+X-Google-Smtp-Source: ABdhPJxM1e8I9Mxijq8vU5WfnT4Q+JuGKR5qlSTRDotFq/thtLDTjFOosfa2Za314ICRdNSufAXHYmow/2vvaGBqHjU=
+X-Received: by 2002:a37:6712:: with SMTP id b18mr1839624qkc.36.1592541547120;
+ Thu, 18 Jun 2020 21:39:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200616100512.2168860-1-jolsa@kernel.org> <20200616100512.2168860-10-jolsa@kernel.org>
-In-Reply-To: <20200616100512.2168860-10-jolsa@kernel.org>
+References: <20200616100512.2168860-1-jolsa@kernel.org> <20200616100512.2168860-11-jolsa@kernel.org>
+In-Reply-To: <20200616100512.2168860-11-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 18 Jun 2020 21:35:10 -0700
-Message-ID: <CAEf4BzY=d5y_-fXvomG7SjkbK7DZn5=-f+sdCYRdZh9qeynQrQ@mail.gmail.com>
-Subject: Re: [PATCH 09/11] bpf: Add d_path helper
+Date:   Thu, 18 Jun 2020 21:38:56 -0700
+Message-ID: <CAEf4BzYr6hwS5-XKAJt-QEyPiofNvj2M1WA_B-F29QCFoZU2jw@mail.gmail.com>
+Subject: Re: [PATCH 10/11] selftests/bpf: Add verifier test for d_path helper
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -70,110 +70,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 3:07 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Tue, Jun 16, 2020 at 3:06 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Adding d_path helper function that returns full path
-> for give 'struct path' object, which needs to be the
-> kernel BTF 'path' object.
->
-> The helper calls directly d_path function.
->
-> Updating also bpf.h tools uapi header and adding
-> 'path' to bpf_helpers_doc.py script.
+> Adding verifier test for attaching tracing program and
+> calling d_path helper from within and testing that it's
+> allowed for dentry_open function and denied for 'd_path'
+> function with appropriate error.
 >
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  include/linux/bpf.h            |  4 ++++
->  include/uapi/linux/bpf.h       | 14 ++++++++++++-
->  kernel/bpf/btf_ids.c           | 11 ++++++++++
->  kernel/trace/bpf_trace.c       | 38 ++++++++++++++++++++++++++++++++++
->  scripts/bpf_helpers_doc.py     |  2 ++
->  tools/include/uapi/linux/bpf.h | 14 ++++++++++++-
->  6 files changed, 81 insertions(+), 2 deletions(-)
+>  tools/testing/selftests/bpf/test_verifier.c   | 13 ++++++-
+>  tools/testing/selftests/bpf/verifier/d_path.c | 38 +++++++++++++++++++
+>  2 files changed, 50 insertions(+), 1 deletion(-)
+>  create mode 100644 tools/testing/selftests/bpf/verifier/d_path.c
 >
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index a94e85c2ec50..d35265b6c574 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1752,5 +1752,9 @@ extern int bpf_skb_output_btf_ids[];
->  extern int bpf_seq_printf_btf_ids[];
->  extern int bpf_seq_write_btf_ids[];
->  extern int bpf_xdp_output_btf_ids[];
-> +extern int bpf_d_path_btf_ids[];
-> +
-> +extern int btf_whitelist_d_path[];
-> +extern int btf_whitelist_d_path_cnt;
-
-So with suggestion from previous patch, this would be declared as:
-
-extern const struct btf_id_set btf_whitelist_d_path;
-
->
->  #endif /* _LINUX_BPF_H */
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index c65b374a5090..e308746b9344 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3252,6 +3252,17 @@ union bpf_attr {
->   *             case of **BPF_CSUM_LEVEL_QUERY**, the current skb->csum_level
->   *             is returned or the error code -EACCES in case the skb is not
->   *             subject to CHECKSUM_UNNECESSARY.
-> + *
-> + * int bpf_d_path(struct path *path, char *buf, u32 sz)
-> + *     Description
-> + *             Return full path for given 'struct path' object, which
-> + *             needs to be the kernel BTF 'path' object. The path is
-> + *             returned in buffer provided 'buf' of size 'sz'.
-> + *
-> + *     Return
-> + *             length of returned string on success, or a negative
-> + *             error in case of failure
-> + *
->   */
->  #define __BPF_FUNC_MAPPER(FN)          \
->         FN(unspec),                     \
-> @@ -3389,7 +3400,8 @@ union bpf_attr {
->         FN(ringbuf_submit),             \
->         FN(ringbuf_discard),            \
->         FN(ringbuf_query),              \
-> -       FN(csum_level),
-> +       FN(csum_level),                 \
-> +       FN(d_path),
->
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> diff --git a/kernel/bpf/btf_ids.c b/kernel/bpf/btf_ids.c
-> index d8d0df162f04..853c8fd59b06 100644
-> --- a/kernel/bpf/btf_ids.c
-> +++ b/kernel/bpf/btf_ids.c
-> @@ -13,3 +13,14 @@ BTF_ID(struct, seq_file)
->
->  BTF_ID_LIST(bpf_xdp_output_btf_ids)
->  BTF_ID(struct, xdp_buff)
-> +
-> +BTF_ID_LIST(bpf_d_path_btf_ids)
-> +BTF_ID(struct, path)
-> +
-> +BTF_WHITELIST_ENTRY(btf_whitelist_d_path)
-> +BTF_ID(func, vfs_truncate)
-> +BTF_ID(func, vfs_fallocate)
-> +BTF_ID(func, dentry_open)
-> +BTF_ID(func, vfs_getattr)
-> +BTF_ID(func, filp_close)
-> +BTF_WHITELIST_END(btf_whitelist_d_path)
-
-Oh, so that's why you added btf_ids.c. Do you think centralizing all
-those BTF ID lists in one file is going to be more convenient? I lean
-towards keeping them closer to where they are used, as it was with all
-those helper BTF IDS. But I wonder what others think...
-
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index c1866d76041f..0ff5d8434d40 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -1016,6 +1016,42 @@ static const struct bpf_func_proto bpf_send_signal_thread_proto = {
->         .arg1_type      = ARG_ANYTHING,
+> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+> index 78a6bae56ea6..3cce3dc766a2 100644
+> --- a/tools/testing/selftests/bpf/test_verifier.c
+> +++ b/tools/testing/selftests/bpf/test_verifier.c
+> @@ -114,6 +114,7 @@ struct bpf_test {
+>                 bpf_testdata_struct_t retvals[MAX_TEST_RUNS];
+>         };
+>         enum bpf_attach_type expected_attach_type;
+> +       const char *kfunc;
 >  };
 >
+>  /* Note we want this to be 64 bit aligned so that the end of our array is
+> @@ -984,8 +985,18 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
+>                 attr.log_level = 4;
+>         attr.prog_flags = pflags;
+>
+> +       if (prog_type == BPF_PROG_TYPE_TRACING && test->kfunc) {
+> +               attr.attach_btf_id = libbpf_find_vmlinux_btf_id(test->kfunc,
+> +                                               attr.expected_attach_type);
 
-[...]
+if (!attr.attach_btf_id)
+  emit more meaningful error, than later during load?
+
+> +       }
+> +
+>         fd_prog = bpf_load_program_xattr(&attr, bpf_vlog, sizeof(bpf_vlog));
+> -       if (fd_prog < 0 && !bpf_probe_prog_type(prog_type, 0)) {
+> +
+> +       /* BPF_PROG_TYPE_TRACING requires more setup and
+> +        * bpf_probe_prog_type won't give correct answer
+> +        */
+> +       if (fd_prog < 0 && (prog_type != BPF_PROG_TYPE_TRACING) &&
+
+nit: () are redundant
+
+> +           !bpf_probe_prog_type(prog_type, 0)) {
+>                 printf("SKIP (unsupported program type %d)\n", prog_type);
+>                 skips++;
+>                 goto close_fds;
+> diff --git a/tools/testing/selftests/bpf/verifier/d_path.c b/tools/testing/selftests/bpf/verifier/d_path.c
+> new file mode 100644
+> index 000000000000..e08181abc056
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/verifier/d_path.c
+> @@ -0,0 +1,38 @@
+> +{
+> +       "d_path accept",
+> +       .insns = {
+> +       BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 0),
+> +       BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
+> +       BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
+> +       BPF_MOV64_IMM(BPF_REG_6, 0),
+> +       BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_6, 0),
+> +       BPF_LD_IMM64(BPF_REG_3, 8),
+> +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_d_path),
+> +       BPF_MOV64_IMM(BPF_REG_0, 0),
+> +       BPF_EXIT_INSN(),
+> +       },
+> +       .errstr = "R0 max value is outside of the array range",
+> +       .result = ACCEPT,
+
+accept with error string expected?
+
+
+> +       .prog_type = BPF_PROG_TYPE_TRACING,
+> +       .expected_attach_type = BPF_TRACE_FENTRY,
+> +       .kfunc = "dentry_open",
+> +},
+> +{
+> +       "d_path reject",
+> +       .insns = {
+> +       BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 0),
+> +       BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
+> +       BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
+> +       BPF_MOV64_IMM(BPF_REG_6, 0),
+> +       BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_6, 0),
+> +       BPF_LD_IMM64(BPF_REG_3, 8),
+> +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_d_path),
+> +       BPF_MOV64_IMM(BPF_REG_0, 0),
+> +       BPF_EXIT_INSN(),
+> +       },
+> +       .errstr = "helper call is not allowed in probe",
+> +       .result = REJECT,
+> +       .prog_type = BPF_PROG_TYPE_TRACING,
+> +       .expected_attach_type = BPF_TRACE_FENTRY,
+> +       .kfunc = "d_path",
+> +},
+> --
+> 2.25.4
+>
