@@ -2,99 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B84DD200156
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 06:42:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94E53200158
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 06:44:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725935AbgFSEmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 00:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
+        id S1725788AbgFSEoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 00:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725290AbgFSEmT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 00:42:19 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86060C06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 21:42:19 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id x22so3884028pfn.3
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 21:42:19 -0700 (PDT)
+        with ESMTP id S1725290AbgFSEoi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 00:44:38 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDDAC06174E;
+        Thu, 18 Jun 2020 21:44:36 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id z2so4251767qts.5;
+        Thu, 18 Jun 2020 21:44:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=v83a1EaJVHh5k2oGMag77EQboZNzumvVqyic/XeROI8=;
-        b=krG7JER3wH+/NhcorWyc9Iz054NfeeT+6PTiOqhdKvmTmUB1XI1oy1PQYGA54dScn6
-         db+DkR42nOUz8hajNdcVTss+F/GPHUKnE3Nj9vxFSdlwybk8/uaWcv1uLIjLESQ5tNvq
-         eqJfY36Ef+GN/HGd3t9BxcjLw3tMrKFwAmghriMO5BWFuYg13LvT6M3pA7c040Le8g8j
-         QW8TkgkH4k9MSjJ5uNYhI8jk0Qto2Wu7D50sxqE8CI2Yvfd/MbsJRkBj4zXi/yOh1kwA
-         ZRZOFdE0VWm/hJ0r8I4WXMmduWDGP/mY9BERvUgDgWSZ4X2YWDHsOVWIMWl+9cze7mvG
-         teGw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SI3ZLIRsj68LNAmSivNJI1K6mDIGZCfGLgWYLBDxIJE=;
+        b=NSnEdblFPxqZLdG8kXUDSQbnLfZxXQkKuLZr7YQRgjAmpffk1UvixoZTrKbPw6t5Pp
+         IA8osdiedHsjjLh5OzSAmhApCg4DcDH5lc328HDhIXvhsXMceZ2TJQIUFcrSQyCw4IGd
+         fMGapCxVvihHeuftfatAgFk6tgQkivJDmm8cgbfjHS2wOKixcLihfwzsrfy7plqcHm3i
+         NCufYTYFpnOH3tglMaMs4ypOLxzUjVhjQunCcyiMWmbyU37wjjuX94IRYiZehlwfUrBc
+         eKltBJBSPQaLG9VijdWQsXsoN3J+qzlrETPDqHK12cdEXFvZf6AFW3fO7aydzqHqgjUh
+         T/eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=v83a1EaJVHh5k2oGMag77EQboZNzumvVqyic/XeROI8=;
-        b=hcF736qV9XdiLidOPjEl1NPhE+56MI+SZ5uEIieEQonAA4s47uVV5nyxA71ZNOnvlg
-         Ycej9nqXTw9bNr4IWBMGst3YsNpvcYevr1pWbaLdtFP9Pqr8+cwcdGkUhYStLwyk0aQW
-         9STRBpvX2Jl5+Gq0ChCtfjgzosLa/x0b58xDvZZ8jzxOOo+YaBqV8O1VxIKYeO4wv9bS
-         mx6ESLiL0EqTddpcDVoUKJHxMoGesyYLSpEwzpF8PIOmOfn5WOQUW86x4OqkqFhDRqJz
-         QM/+arjPaGwD+XP+KOAAxFgLOPCDEdqZFhLdR9Eje+IT1FOjju3+58sIK5l5PpXQCwPM
-         SaFA==
-X-Gm-Message-State: AOAM533DrpZq56z7wAsqDJABusFuKQJwFVN6I1VmsMEdhMGBCQzwnB+1
-        nnY9vt3acEWcu9FiO+za5J6qqjvm
-X-Google-Smtp-Source: ABdhPJxr/dlBHOvlHJsVCB99AXZ2JMv94MgqlPFueZv44qtYpkgpoJox0T0cwevG63Z4o5A0Ip1lLA==
-X-Received: by 2002:a62:7ccb:: with SMTP id x194mr6814240pfc.318.1592541739007;
-        Thu, 18 Jun 2020 21:42:19 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id a8sm1403723pga.64.2020.06.18.21.42.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Jun 2020 21:42:18 -0700 (PDT)
-Subject: Re: [PATCH net] net: increment xmit_recursion level in
- dev_direct_xmit()
-To:     David Miller <davem@davemloft.net>, edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com, kuba@kernel.org,
-        syzkaller@googlegroups.com
-References: <20200618052325.78441-1-edumazet@google.com>
- <20200618.204830.1094276610079682944.davem@davemloft.net>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <363832b8-1d7e-1e9e-8887-ef97d748b0c7@gmail.com>
-Date:   Thu, 18 Jun 2020 21:42:16 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SI3ZLIRsj68LNAmSivNJI1K6mDIGZCfGLgWYLBDxIJE=;
+        b=W4oto576ETSQYKdYPro9wVW1f/IedfLjF1drJ/KbcJXVGYOGNPBpgVso5MQmQ/CbVY
+         hSfvPgDw8cByetXQviz/D35adrgbtOag6XRtLB1Rqntgfxit2yPffWGS+OvubVVYRWkw
+         ZVP0Re30+41WoABTWYEKbKvTTHlcNbAAJlbZiI8cXkbyl8cnWl0hK7Q0tVPvw2ktvjif
+         0l1ORcl/PsrpmHTgSZspP4YMlPvJRIny1LQLpXBPYSnM/ZfaMwC2fBZoeaSPGy/BQ0gc
+         aGGxe9RsQ2cqa66wGeZDtTJW3ZdIp4QMM+syoR52Vebm5ZIlscDZe0oBpl7hNy7KXcSA
+         sePA==
+X-Gm-Message-State: AOAM5323y9pepvDbZbxLAtjOymjPfZkryOFgCk2HkxW826io8ZlafCUS
+        7exY2iTg0TBf4tc2Gv0iELfzrBoOElmgbOke1/erxSJK
+X-Google-Smtp-Source: ABdhPJxnZX0uZast0PWDypYVqW02DaXm7VCj3yp5tCzAnBwFtWoRYdazDhng+N0e+TqXxbNzcaN1rDreX4nFVzqf8wk=
+X-Received: by 2002:ac8:2bba:: with SMTP id m55mr1601745qtm.171.1592541874737;
+ Thu, 18 Jun 2020 21:44:34 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200618.204830.1094276610079682944.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200616100512.2168860-1-jolsa@kernel.org> <20200616100512.2168860-12-jolsa@kernel.org>
+In-Reply-To: <20200616100512.2168860-12-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 18 Jun 2020 21:44:23 -0700
+Message-ID: <CAEf4BzZmNFUBdSzCLiiQ-anQRmnzd-E1qa0wVdXHu0pYV_-=Nw@mail.gmail.com>
+Subject: Re: [PATCH 11/11] selftests/bpf: Add test for d_path helper
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jun 16, 2020 at 3:07 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Adding test for d_path helper which is pretty much
+> copied from Wenbo Zhang's test for bpf_get_fd_path,
+> which never made it in.
+>
+> I've failed so far to compile the test with <linux/fs.h>
+> kernel header, so for now adding 'struct file' with f_path
+> member that has same offset as kernel's file object.
+>
+> Original-patch-by: Wenbo Zhang <ethercflow@gmail.com>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  .../testing/selftests/bpf/prog_tests/d_path.c | 153 ++++++++++++++++++
+>  .../testing/selftests/bpf/progs/test_d_path.c |  55 +++++++
+>  2 files changed, 208 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/d_path.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_d_path.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
+> new file mode 100644
+> index 000000000000..e2b7dfeb506f
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
+> @@ -0,0 +1,153 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#define _GNU_SOURCE
+> +#include <test_progs.h>
+> +#include <sys/stat.h>
+> +#include <linux/sched.h>
+> +#include <sys/syscall.h>
+> +
+> +#define MAX_PATH_LEN           128
+> +#define MAX_FILES              7
+> +#define MAX_EVENT_NUM          16
+> +
+> +struct d_path_test_data {
+> +       pid_t pid;
+> +       __u32 cnt_stat;
+> +       __u32 cnt_close;
+> +       char paths_stat[MAX_EVENT_NUM][MAX_PATH_LEN];
+> +       char paths_close[MAX_EVENT_NUM][MAX_PATH_LEN];
+> +};
 
+with skeleton there is no point in defining this container struct, and
+especially duplicating it between BPF code and user-space code. Just
+declare all those fields as global variables and access them from
+skeleton directly.
 
-On 6/18/20 8:48 PM, David Miller wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> Date: Wed, 17 Jun 2020 22:23:25 -0700
-> 
->> Back in commit f60e5990d9c1 ("ipv6: protect skb->sk accesses
->> from recursive dereference inside the stack") Hannes added code
->> so that IPv6 stack would not trust skb->sk for typical cases
->> where packet goes through 'standard' xmit path (__dev_queue_xmit())
->>
->> Alas af_packet had a dev_direct_xmit() path that was not
->> dealing yet with xmit_recursion level.
->>
->> Also change sk_mc_loop() to dump a stack once only.
->>
->> Without this patch, syzbot was able to trigger :
->  ...
->> f60e5990d9c1 ("ipv6: protect skb->sk accesses from recursive dereference inside the stack")
->> Signed-off-by: Eric Dumazet <edumazet@google.com>
->> Reported-by: syzbot <syzkaller@googlegroups.com>
-> 
-> Applied and queued up for -stable.
-> 
-> I only noticed after pushing this out the missing "Fixes: " prefix, but not
-> much I can do about this now sorry :-/
+[...]
 
-Oh right, sorry for this.
+> diff --git a/tools/testing/selftests/bpf/progs/test_d_path.c b/tools/testing/selftests/bpf/progs/test_d_path.c
+> new file mode 100644
+> index 000000000000..1b478c00ee7a
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_d_path.c
+> @@ -0,0 +1,55 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include "vmlinux.h"
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_tracing.h>
+> +
+> +#define MAX_PATH_LEN           128
+> +#define MAX_EVENT_NUM          16
+> +
+> +static struct d_path_test_data {
+> +       pid_t pid;
+> +       __u32 cnt_stat;
+> +       __u32 cnt_close;
+> +       char paths_stat[MAX_EVENT_NUM][MAX_PATH_LEN];
+> +       char paths_close[MAX_EVENT_NUM][MAX_PATH_LEN];
+> +} data;
+> +
+> +struct path;
+> +struct kstat;
+
+both structs are in vmlinux.h, you shouldn't need this.
+
+[...]
+
+>
