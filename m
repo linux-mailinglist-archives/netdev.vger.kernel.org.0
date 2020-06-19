@@ -2,91 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F09EF20021C
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 08:46:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 301A420023E
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 08:56:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728948AbgFSGqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 02:46:24 -0400
-Received: from gloria.sntech.de ([185.11.138.130]:59148 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725778AbgFSGqY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jun 2020 02:46:24 -0400
-Received: from p5b127c2f.dip0.t-ipconnect.de ([91.18.124.47] helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1jmAn1-0007yi-Au; Fri, 19 Jun 2020 08:46:15 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com
-Subject: Re: [PATCH v5 2/3] dt-bindings: net: mscc-vsc8531: add optional clock properties
-Date:   Fri, 19 Jun 2020 08:46:14 +0200
-Message-ID: <1876004.CZoxnk3e8W@phil>
-In-Reply-To: <a877e41d-4c3c-c4c2-1875-71e1e08cf977@gmail.com>
-References: <20200618121139.1703762-1-heiko@sntech.de> <20200618121139.1703762-3-heiko@sntech.de> <a877e41d-4c3c-c4c2-1875-71e1e08cf977@gmail.com>
+        id S1729509AbgFSG4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 02:56:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725778AbgFSG4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 02:56:20 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A214C06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 23:56:20 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id x93so6713241ede.9
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 23:56:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xxZOYpHc/7cR5izoAzxqG3phWv6WD6NbgbQVWl706Ig=;
+        b=Z2O46mXW8OzoGyhI6V7p2uZ+A/FCD7CUXXDsSGptKK4pV0qRrFlgAMRKFT65KakhL/
+         kC1xIqg4K+rE9DRjN8lcD8PpeDZX7Ylpv6g9VNcLHLzCmfJ0mk/Mgn498rWkU1l4a36Q
+         qNnCgiXacbnHiAH2YnYTHEUUg8NL+hxL9nUiQLhHQUS4R52kug4xFip1SBe0QIlkKfP4
+         txPBnVAnBjPpNhW3HfeXPo8VyUQ+fNIXuoRfIRfBw67s7Mkqdmcw4y8cIvDVZfTBSZf6
+         WGTzFs/8peykI0MWAa0pAGCIFezLEaZVmuRApIVXAEIxWtL/CJAy0eDyF2f5xXF4mq5K
+         qTrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xxZOYpHc/7cR5izoAzxqG3phWv6WD6NbgbQVWl706Ig=;
+        b=eB580XvhHNEznw2dnrfTrShRQ2KogyPB7GpPoc59BOU/OlS3se+d89wg5z32JvlAgM
+         5B727ZeHvMKx84/sT048K00eeBbnmG3ilh/PTn+j569QwF4hVZkRiTBVU4+svMhlr+Vo
+         mJsetpd7aJHfqvsKTBpXGn63SxBGjbuOA4gKSqpisvDemeqAmrgsF+uAszLfiPoGBLJq
+         JzIbtpCWWOoy2DSNyQkORd0n3IfohKbt65YbLPnSbbFjYHsEiseKdQL8aPvb6kVtppcC
+         9XaCE6kMWRAtwTflf55EvVLa+wXo1WsZ28L2fXlu/+Zn8LA6lx31lz2r9IifpBs5TbsT
+         syng==
+X-Gm-Message-State: AOAM530qmoiQ8Y22YRPxT2drObCGiOX2eKHHe61zeDhlVNLCHy/xVfyw
+        t9ntJj1T26fRIHUVhjh7mqaqCzGCNrk=
+X-Google-Smtp-Source: ABdhPJw3n8SiF6kSblJbVOht4kUrvGtLGW/Tlg8mn7NY2PxfCpyZKIxlTxYKke3gDxtOJmKoJUkboQ==
+X-Received: by 2002:a05:6402:2070:: with SMTP id bd16mr1796620edb.35.1592549779295;
+        Thu, 18 Jun 2020 23:56:19 -0700 (PDT)
+Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id h9sm3877803edr.65.2020.06.18.23.56.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jun 2020 23:56:18 -0700 (PDT)
+Date:   Fri, 19 Jun 2020 08:56:18 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Lucas Bates <lucasb@mojatatu.com>,
+        David Miller <davem@davemloft.net>,
+        Davide Caratti <dcaratti@redhat.com>
+Subject: Re: [PATCHv2 net] tc-testing: update geneve options match in
+ tunnel_key unit tests
+Message-ID: <20200619065617.GB9312@netronome.com>
+References: <20200618083705.449619-1-liuhangbin@gmail.com>
+ <20200619032445.664868-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200619032445.664868-1-liuhangbin@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Freitag, 19. Juni 2020, 07:01:58 CEST schrieb Florian Fainelli:
+On Fri, Jun 19, 2020 at 11:24:45AM +0800, Hangbin Liu wrote:
+> Since iproute2 commit f72c3ad00f3b ("tc: m_tunnel_key: add options
+> support for vxlan"), the geneve opt output use key word "geneve_opts"
+> instead of "geneve_opt". To make compatibility for both old and new
+> iproute2, let's accept both "geneve_opt" and "geneve_opts".
 > 
-> On 6/18/2020 5:11 AM, Heiko Stuebner wrote:
-> > From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> > 
-> > Some mscc ethernet phys have a configurable clock output, so describe the
-> > generic properties to access them in devicetrees.
-> > 
-> > Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-> > ---
-> >  Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt b/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-> > index 5ff37c68c941..67625ba27f53 100644
-> > --- a/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-> > +++ b/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
-> > @@ -1,6 +1,8 @@
-> >  * Microsemi - vsc8531 Giga bit ethernet phy
-> >  
-> >  Optional properties:
-> > +- clock-output-names	: Name for the exposed clock output
-> > +- #clock-cells		: should be 0
-> >  - vsc8531,vddmac	: The vddmac in mV. Allowed values is listed
-> >  			  in the first row of Table 1 (below).
-> >  			  This property is only used in combination
-> > 
-> 
-> With that approach, you also need to be careful as a driver writer to
-> ensure that you have at least probed the MDIO bus to ensure that the PHY
-> device has been created (and therefore it is available as a clock
-> provider) if that same Ethernet MAC is a consumer of that clock (which
-> it appears to be). Otherwise you may just never probe and be trapped in
-> a circular dependency.
+> Suggested-by: Davide Caratti <dcaratti@redhat.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-Yep - although without anything like this, the phy won't emit any clock
-at all. Even when enabling the clock output in u-boot already, when the
-kernel starts that config is lost,  so no existing board should break.
-
-
-As you can see in the discussion about patch 3/3 the wanted solution
-is not so clear cut as well. With Rob suggesting this clock-provider way
-and Russell strongly encouraging taking a second look.
-
-[My first iteration (till v4) was doing it like other phys by specifying
-a property to just tell the phy what frequency to output]
-
-I don't really have a preference for one or the other, so
-maybe you can also give a vote over there ;-)
-
-Heiko
-
-
-
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
