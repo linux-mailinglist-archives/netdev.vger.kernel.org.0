@@ -2,153 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94E53200158
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 06:44:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F73B200162
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 06:48:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725788AbgFSEoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 00:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
+        id S1725850AbgFSEsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 00:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725290AbgFSEoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 00:44:38 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDDAC06174E;
-        Thu, 18 Jun 2020 21:44:36 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id z2so4251767qts.5;
-        Thu, 18 Jun 2020 21:44:36 -0700 (PDT)
+        with ESMTP id S1725290AbgFSEsL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 00:48:11 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBA6C06174E;
+        Thu, 18 Jun 2020 21:48:11 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id o26so6585630edq.0;
+        Thu, 18 Jun 2020 21:48:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SI3ZLIRsj68LNAmSivNJI1K6mDIGZCfGLgWYLBDxIJE=;
-        b=NSnEdblFPxqZLdG8kXUDSQbnLfZxXQkKuLZr7YQRgjAmpffk1UvixoZTrKbPw6t5Pp
-         IA8osdiedHsjjLh5OzSAmhApCg4DcDH5lc328HDhIXvhsXMceZ2TJQIUFcrSQyCw4IGd
-         fMGapCxVvihHeuftfatAgFk6tgQkivJDmm8cgbfjHS2wOKixcLihfwzsrfy7plqcHm3i
-         NCufYTYFpnOH3tglMaMs4ypOLxzUjVhjQunCcyiMWmbyU37wjjuX94IRYiZehlwfUrBc
-         eKltBJBSPQaLG9VijdWQsXsoN3J+qzlrETPDqHK12cdEXFvZf6AFW3fO7aydzqHqgjUh
-         T/eg==
+        h=from:to:cc:subject:date:message-id;
+        bh=Ig2R/GH+geDbBcQc05MQOh9FfNnoXhYYjeBjy90BgIs=;
+        b=qpBa2Leew5PV1KT37qWkid+SvbFBEMIIWf+oK559wigtq//I3dJq8D6Of9TqJq9bsR
+         PxmtEJ4dxXTfMVdHf9jjMsATC6Q9gH7pxNqsWROrCbxnUIzb+gOXshOHIiFXIGUzsJM6
+         9nVGjzGVbK9FLT1SGWrgAbe7Pjq0M1YxQ4juq1tJevon74O4j/Tm9+IZbp5hYmpSuBM4
+         nAd5oxWyhdCm0BcunM6RRNp2bSojAWAPtmNpwQS/Rz8kbzMD3hrbmdMswgAbPNk0+n6S
+         Wcwm3wwxmRFlVZ9BEww5t0NZlJD/vdnywvIPJP3zN7wLoiFgzojFkinT22Wg7NvpyXho
+         IaGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SI3ZLIRsj68LNAmSivNJI1K6mDIGZCfGLgWYLBDxIJE=;
-        b=W4oto576ETSQYKdYPro9wVW1f/IedfLjF1drJ/KbcJXVGYOGNPBpgVso5MQmQ/CbVY
-         hSfvPgDw8cByetXQviz/D35adrgbtOag6XRtLB1Rqntgfxit2yPffWGS+OvubVVYRWkw
-         ZVP0Re30+41WoABTWYEKbKvTTHlcNbAAJlbZiI8cXkbyl8cnWl0hK7Q0tVPvw2ktvjif
-         0l1ORcl/PsrpmHTgSZspP4YMlPvJRIny1LQLpXBPYSnM/ZfaMwC2fBZoeaSPGy/BQ0gc
-         aGGxe9RsQ2cqa66wGeZDtTJW3ZdIp4QMM+syoR52Vebm5ZIlscDZe0oBpl7hNy7KXcSA
-         sePA==
-X-Gm-Message-State: AOAM5323y9pepvDbZbxLAtjOymjPfZkryOFgCk2HkxW826io8ZlafCUS
-        7exY2iTg0TBf4tc2Gv0iELfzrBoOElmgbOke1/erxSJK
-X-Google-Smtp-Source: ABdhPJxnZX0uZast0PWDypYVqW02DaXm7VCj3yp5tCzAnBwFtWoRYdazDhng+N0e+TqXxbNzcaN1rDreX4nFVzqf8wk=
-X-Received: by 2002:ac8:2bba:: with SMTP id m55mr1601745qtm.171.1592541874737;
- Thu, 18 Jun 2020 21:44:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200616100512.2168860-1-jolsa@kernel.org> <20200616100512.2168860-12-jolsa@kernel.org>
-In-Reply-To: <20200616100512.2168860-12-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 18 Jun 2020 21:44:23 -0700
-Message-ID: <CAEf4BzZmNFUBdSzCLiiQ-anQRmnzd-E1qa0wVdXHu0pYV_-=Nw@mail.gmail.com>
-Subject: Re: [PATCH 11/11] selftests/bpf: Add test for d_path helper
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Ig2R/GH+geDbBcQc05MQOh9FfNnoXhYYjeBjy90BgIs=;
+        b=jCPgkfDmnEHtjYbIjqxnYBK0BTgYGhRpxEGlfYPDNXjZJeZZkDfETZQX8JKLnVHF2f
+         e5kmxISQLILYiKrpyBzVankRmn0oYrDttPO9i8J6nOP/Q+Y3P41YSxtAxdvARepMIxZZ
+         G89NZ1yRBwaA2qIeRf4lRH2rjvw105b7u0Uu+rmgkRE83OXnJNj13Pgla8B2baMeUoM3
+         Ks69cvIWMZEN2U+/3OjL4ctbW2ETv1u7ykMjpwmJHlg84t1esmDQcfABUhUWdJZV1XVW
+         XlF0Uo1xYI8MyWZFYGY8jQ8iJ7WYTDbEAqIwiLtXpOIZbmpaj16Dvlcn2qhRtdTQxYKl
+         yGig==
+X-Gm-Message-State: AOAM530QCgwtKRxyGcsUJDnKJVNb3ujTTenDW1vhxGFWGwAvK+edm7tD
+        XxIHM6AOhKfU0KwQKUx6UG3sp/NY
+X-Google-Smtp-Source: ABdhPJyvIze5msj6fBLxxtN9Z1WwMo1aOjRf1c8HWUd/t+O8n/Ns7PDTwrOwSsemhrVbI2V5ihOKZA==
+X-Received: by 2002:a05:6402:3c1:: with SMTP id t1mr1512789edw.350.1592542089518;
+        Thu, 18 Jun 2020 21:48:09 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id ew9sm3867852ejb.121.2020.06.18.21.48.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jun 2020 21:48:08 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Dajun Jin <adajunjin@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-kernel@vger.kernel.org (open list),
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE)
+Subject: [PATCH net 0/2] net: phy: MDIO bus scanning fixes
+Date:   Thu, 18 Jun 2020 21:47:57 -0700
+Message-Id: <20200619044759.11387-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 3:07 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Adding test for d_path helper which is pretty much
-> copied from Wenbo Zhang's test for bpf_get_fd_path,
-> which never made it in.
->
-> I've failed so far to compile the test with <linux/fs.h>
-> kernel header, so for now adding 'struct file' with f_path
-> member that has same offset as kernel's file object.
->
-> Original-patch-by: Wenbo Zhang <ethercflow@gmail.com>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  .../testing/selftests/bpf/prog_tests/d_path.c | 153 ++++++++++++++++++
->  .../testing/selftests/bpf/progs/test_d_path.c |  55 +++++++
->  2 files changed, 208 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/d_path.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_d_path.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
-> new file mode 100644
-> index 000000000000..e2b7dfeb506f
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
-> @@ -0,0 +1,153 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#define _GNU_SOURCE
-> +#include <test_progs.h>
-> +#include <sys/stat.h>
-> +#include <linux/sched.h>
-> +#include <sys/syscall.h>
-> +
-> +#define MAX_PATH_LEN           128
-> +#define MAX_FILES              7
-> +#define MAX_EVENT_NUM          16
-> +
-> +struct d_path_test_data {
-> +       pid_t pid;
-> +       __u32 cnt_stat;
-> +       __u32 cnt_close;
-> +       char paths_stat[MAX_EVENT_NUM][MAX_PATH_LEN];
-> +       char paths_close[MAX_EVENT_NUM][MAX_PATH_LEN];
-> +};
+Hi all,
 
-with skeleton there is no point in defining this container struct, and
-especially duplicating it between BPF code and user-space code. Just
-declare all those fields as global variables and access them from
-skeleton directly.
+This patch series fixes two problems with the current MDIO bus scanning
+logic which was identified while moving from 4.9 to 5.4 on devices that
+do rely on scanning the MDIO bus at runtime because they use pluggable
+cards.
 
-[...]
+Florian Fainelli (2):
+  of: of_mdio: Correct loop scanning logic
+  net: phy: Check harder for errors in get_phy_id()
 
-> diff --git a/tools/testing/selftests/bpf/progs/test_d_path.c b/tools/testing/selftests/bpf/progs/test_d_path.c
-> new file mode 100644
-> index 000000000000..1b478c00ee7a
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_d_path.c
-> @@ -0,0 +1,55 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include "vmlinux.h"
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_tracing.h>
-> +
-> +#define MAX_PATH_LEN           128
-> +#define MAX_EVENT_NUM          16
-> +
-> +static struct d_path_test_data {
-> +       pid_t pid;
-> +       __u32 cnt_stat;
-> +       __u32 cnt_close;
-> +       char paths_stat[MAX_EVENT_NUM][MAX_PATH_LEN];
-> +       char paths_close[MAX_EVENT_NUM][MAX_PATH_LEN];
-> +} data;
-> +
-> +struct path;
-> +struct kstat;
+ drivers/net/phy/phy_device.c | 6 ++++--
+ drivers/of/of_mdio.c         | 5 +++--
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-both structs are in vmlinux.h, you shouldn't need this.
+-- 
+2.17.1
 
-[...]
-
->
