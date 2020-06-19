@@ -2,72 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80D521FFFAB
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 03:31:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CCE5200001
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 04:05:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730277AbgFSBal (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 21:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
+        id S1728973AbgFSCFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 22:05:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727045AbgFSBaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 21:30:39 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC42C06174E
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 18:30:37 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id t9so9440672ioj.13
-        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 18:30:37 -0700 (PDT)
+        with ESMTP id S1725912AbgFSCE7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 22:04:59 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F93C06174E;
+        Thu, 18 Jun 2020 19:04:58 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id n23so9647405ljh.7;
+        Thu, 18 Jun 2020 19:04:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=IldwTwJCpq4wCvITuBrNOaV5+KoKVBhlQjwPCBSqlvo=;
-        b=Kg5pQ/LmvicG/ph00qE7TStfSMGtKQSe2UjeZV7RUM277ypJBSG02LumD2Y7IR34o0
-         7aEMv1wScPT8YRw5P5aaXwLksI9MF5KnP2ABOglJ4j2/TYmcinBQRSK+DOXQD+ReIIU+
-         8aiiKVooxSc5WbOLCZd6aHNkRM/0HKNxWUVQBjv8WmiCQ5OiUwY6hocFi4OE0QEfQK+0
-         7pOZ4BWn7Tao3EQBvvH1yEss7wHL7qpjr7Ry2zCgEZmcWK1rHi0N9eIqQ3LfhQD6Jqp0
-         0MFZtMQJEENbo8KUp5Pj21sKeIFgDMjHSjDynHPlyyw5hsWfmLhaxYr+WOZ9RS4hWrmG
-         WcTg==
+        bh=R3VKRlz6KhsBegBX4kZbzzxJb4mSrV2DKeZcEmCvB5A=;
+        b=pcp+r6tcnC4UiZHq2w3ecFsiqjQ5ZAl9c72euE9GDiimDstUoP0z5NtI9j714pIXcD
+         nY84AWFDehOFaLxDCFQdSz9BL3l3+eU/+aCCSY+BDpS05gg/hpjkY6IU5eDuXyUqOCAy
+         UpRuRSHAsfrmf3e89yqBwyMP2rsWpAuT8YXqGiqFkBec7wj5jfeCbQoGwOZIPaSnDsB3
+         YgjhhbAIyOb/XFQ2tVgPt+7KTKplRAS1jtvIcKnXjdFQfutW2eC7rrn/+92CrZI1Xuky
+         bn6bln2G3uFT7rP/YPHDpiGfOiAc86x+oW1WWUFE0VdXdDMiz2HtrpCy4aNzDFi1bgdk
+         VudA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=IldwTwJCpq4wCvITuBrNOaV5+KoKVBhlQjwPCBSqlvo=;
-        b=rzD6ygC8BVLfUOHf6DGbgPiAgYi0lotpnU8yL1i2ji3S+dCdntH7CD+PP8VsAHs8FR
-         0c3/yIcrJEMSJxYOHXlX/YcvTmXQqQDFIfYrmv8DDkt093yVv3RQwO81nQKujbj3iKQb
-         EPRcarMTSxR9W+BHILaTD2da1s+6YZm2pq0PqxsblIxvzN7nHUdDSeUGqRr0oWSBpcQ1
-         fPyYuupUO8cn7wSJRBT9ixKd7epukn1gYewXvRJPutDVZh7jP00f2LyPD9asL4eS+9p+
-         FPY9lxaM8x/jr1muVS8rVZZE0qGJEvJ3U6cU+tkWA+a5UojHiWAq3+RlhIqe0ebDIwTZ
-         LJyw==
-X-Gm-Message-State: AOAM5322eF67Mz5WU7cVRZLSuOFPnttX16/BghOtV8VdJfahc3SXLVaf
-        W8+K+QzAwZfOwc+ugp1inZ7dXvLQo94WSE97LrvN71vZ
-X-Google-Smtp-Source: ABdhPJx7AYnnbYgnQZwXrjezclv3ddly+Az5CXAx7xkK3sSmU2PoHd5Fg3Tas1XOwR8tr5vSd+GpbjyJSOuqSRzid7w=
-X-Received: by 2002:a5e:a705:: with SMTP id b5mr1772762iod.12.1592530234185;
- Thu, 18 Jun 2020 18:30:34 -0700 (PDT)
+        bh=R3VKRlz6KhsBegBX4kZbzzxJb4mSrV2DKeZcEmCvB5A=;
+        b=moUfglcmHC+/Bm36QGFVZuwYAz/ryppYv4hc+7SGVDNaOe970iPsK+D/ulN9RVVqmB
+         ixHu20PQa/OYgRRpMELo4yIAl4kpkn5ZPBODhKuSPuUrjcch9j0LJqd9KwXjsyTj38e8
+         AsLJI79swaRk+4lAvLEwFnETEIdaPQ+PexgLSvIza3n40oQ+TiWeke7vsLSPlTezh/UF
+         xk9mZP33mQGI+pM0+Y1dmXnjiKGjrWjnpruBCY1LGVMwsatnqbNr/OSCeGN6GUE8ZBhf
+         5l9j+3uYKXGRTlsA+auoI7pAvh5DAfzf+etmBXG1N7zPwHbyR4uWQJ+IdP1My9/9BvkV
+         5cqg==
+X-Gm-Message-State: AOAM533sW3sXwAHrVX9Q9Z4aySTm2NNF4uKvgnA2w/C8r16cK9mK7MEw
+        gr6WhdfnNQMQgP2dNUjs1M5dZ0OYKo0fKpD5S6g=
+X-Google-Smtp-Source: ABdhPJxBNRcKl6EbhjEr4KNQrGUoVgyLcm4OlhaMlCgQGrJLNqIRgY0a+Nzk5scH6yY6ndLUCvw9SLq7aCFNejJHc7k=
+X-Received: by 2002:a05:651c:1193:: with SMTP id w19mr620933ljo.121.1592532296809;
+ Thu, 18 Jun 2020 19:04:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <d33998c7-f529-e1d1-31a5-626aa8dd44da@ibw.com.ni>
-In-Reply-To: <d33998c7-f529-e1d1-31a5-626aa8dd44da@ibw.com.ni>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 18 Jun 2020 18:30:22 -0700
-Message-ID: <CAM_iQpWa6KmiWv72YmB3ufR8Rw9RD9=PwLMamjOS6fSCM+zXbA@mail.gmail.com>
-Subject: Re: RATE not being printed on tc -s class show dev XXXX
-To:     "Roberto J. Blandino Cisneros" <roberto.blandino@ibw.com.ni>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20200616173556.2204073-1-jolsa@kernel.org> <5eeaa556c7a0e_38b82b28075185c46a@john-XPS-13-9370.notmuch>
+ <20200618114806.GA2369163@krava> <5eebe552dddc1_6d292ad5e7a285b83f@john-XPS-13-9370.notmuch>
+ <CAEf4Bzb+U+A9i0VfGUHLVt28WCob7pb-0iVQA8d1fcR8A27ZpA@mail.gmail.com> <5eec061598dcf_403f2afa5de805bcde@john-XPS-13-9370.notmuch>
+In-Reply-To: <5eec061598dcf_403f2afa5de805bcde@john-XPS-13-9370.notmuch>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 18 Jun 2020 19:04:45 -0700
+Message-ID: <CAADnVQLGNUcDWmrgUBmdcgLMfUNf=-3yroA8a+b7s+Ki5Tb4Jg@mail.gmail.com>
+Subject: Re: [PATCH] bpf: Allow small structs to be type of function argument
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>, Andrii Nakryiko <andriin@fb.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        KP Singh <kpsingh@chromium.org>,
+        Masanori Misono <m.misono760@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 7:06 AM Roberto J. Blandino Cisneros
-<roberto.blandino@ibw.com.ni> wrote:
-> I am seing "rate 0bit".
+On Thu, Jun 18, 2020 at 5:26 PM John Fastabend <john.fastabend@gmail.com> wrote:
 >
-> But installing from debian package iproute2 i got nothing so i decide to
-> compile iproute2 using version 5.7.0
+>  foo(int a, __int128 b)
 >
-> But my output is the same as below:
+> would put a in r0 and b in r2 and r3 leaving a hole in r1. But that
+> was some old reference manual and  might no longer be the case
+> in reality. Perhaps just spreading hearsay, but the point is we
+> should say something about what the BPF backend convention
+> is and write it down. We've started to bump into these things
+> lately.
 
-You either need to enable /sys/module/sch_htb/parameters/htb_rate_est
-or specify a rate estimator when you create your HTB class.
+calling convention for int128 in bpf is _undefined_.
+calling convention for struct by value in bpf is also _undefined_.
 
-Thanks.
+In many cases the compiler has to have the backend code
+so other parts of the compiler can function.
+I didn't bother explicitly disabling every undefined case.
+Please don't read too much into llvm generated code.
