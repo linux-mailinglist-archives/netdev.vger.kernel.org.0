@@ -2,61 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 368DF201DE3
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 00:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6883B201DE8
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 00:13:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729162AbgFSWNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 18:13:01 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:23236 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728705AbgFSWNA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 18:13:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592604780;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H2+FgfKVWJ0OmMYlV9X2tHyMUlSlq4J73WMXUePK2hM=;
-        b=YW97kTMaqwaHuvLt+QYJHsX/OL1OT8PEkYvnWeLwjv9IHgumsh1TvTaR1eMQHMzeJx2dPM
-        0BlRG48Ed3SsHrjyyh5HJm+9tP5YpcokvVLgdDRBsv4fLKZA73fTU12iBi2vh84LunzHUI
-        b5XnFGmIagic1PST+sLMf/5VUq2z53A=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-366-BBau2pmlPCC1Al3-ZfRkBg-1; Fri, 19 Jun 2020 18:12:58 -0400
-X-MC-Unique: BBau2pmlPCC1Al3-ZfRkBg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A1B50107ACCA;
-        Fri, 19 Jun 2020 22:12:56 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-114-66.rdu2.redhat.com [10.10.114.66])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3E27B19C4F;
-        Fri, 19 Jun 2020 22:12:55 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <0000000000009111c005a845c2bc@google.com>
-References: <0000000000009111c005a845c2bc@google.com>
-To:     syzbot <syzbot+d3eccef36ddbd02713e9@syzkaller.appspotmail.com>
-Cc:     dhowells@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: net-next test error: KASAN: use-after-free Write in afs_wake_up_async_call
+        id S1729285AbgFSWNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 18:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729264AbgFSWNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 18:13:08 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C88DC06174E;
+        Fri, 19 Jun 2020 15:13:08 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id q14so8385866qtr.9;
+        Fri, 19 Jun 2020 15:13:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=in4oZ9U5BKIE1Z3z3573GOie9b5wsL/oh/8kyMjLAjA=;
+        b=SbgIjYy3Y5XjBIUzEqw2lhBdY0K2pXuVcSjIysAYyFQ6NdV4uNC6eOtuY4BlClZiRb
+         we1DCAIIeMbW23VPJo+Hx4ALcySXMCF7Jiht6sfSQk7uJWED8NEn87cUKIRl0QXHj6VN
+         4ilA5PnrMP57u0cXtYZvrOZWgUg8Sdbn1/G5jmNZIb3tAoo2joZfTgFoDrsfPaU/Yv+H
+         Jy87mOSm8X2aZc3C42iSWwjVTIJ7lBlwY9CDWk8exG6/e/PKKkqVB8vIu79HrDLLicRQ
+         vR+vkTnNHsSJLkKbWybK9Yr+svH97sTO3hyHoThij9Ze8tzBqFx1bt3pdigLCKMWzp26
+         35bQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=in4oZ9U5BKIE1Z3z3573GOie9b5wsL/oh/8kyMjLAjA=;
+        b=FI2FF8G0qr9jdfcAQP61dq52pnZwfXTyZ4FjmDNiFol2Lb1NdPCxl3jJrHUtxFluvz
+         k9jz5kl6C6gbnO3CRMoko2/2dSO14P25momElgorb+DCHVjBHSN4qrO1LLqnuAtCxpir
+         B/NWlWOjtxuPU5N7Eh793R0hT8O1v0l1agE7zbLmRvO3QwQD1RbmTbhZSB6JEvyMYcZf
+         joQ+fXiK7vmXGNc+uUOfR2JIN4Wmi+6LZRUzztZG3/zcRwJQY/BNpSEaEKsnarU8d/qA
+         VRHep/L0LRLRaadx0E3r4kCPwpW+IJnfX2iXbBHHnMeF1HEIlqNWSLCKEeucp4vNi3HR
+         zlhg==
+X-Gm-Message-State: AOAM533+kqkcRSiVfKTPbb7revjGMHrIbguSQ+pSeKAE8Q0fjgytaJFt
+        zNjhZMYgFY7/ejfiySe5mq1c7k4/OVU0fTBCsPY=
+X-Google-Smtp-Source: ABdhPJxQsxM4Et1u2C3EHPBVYfYsvtdVgNxhMG5AeSd/88hPYkiKkMQqiwQkpw+KbBbHRpnfQ3vcmWeIFFazEHOHoXI=
+X-Received: by 2002:aed:34a4:: with SMTP id x33mr5357608qtd.93.1592604787468;
+ Fri, 19 Jun 2020 15:13:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2214468.1592604774.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 19 Jun 2020 23:12:54 +0100
-Message-ID: <2214469.1592604774@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <20200619203026.78267-1-andriin@fb.com> <20200619203026.78267-2-andriin@fb.com>
+ <CA+khW7ji5gFXh1XN71CUy08+bofu=yKfopgXV7yOuhRkoSr1=w@mail.gmail.com>
+In-Reply-To: <CA+khW7ji5gFXh1XN71CUy08+bofu=yKfopgXV7yOuhRkoSr1=w@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 19 Jun 2020 15:12:56 -0700
+Message-ID: <CAEf4Bzazwb6kZHP_vD0yd_kgoxh9mbhV_x11c80YBuy=b6ZHpA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/9] libbpf: generalize libbpf externs support
+To:     Hao Luo <haoluo@google.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Quentin Monnet <quentin@isovalent.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs=
-.git 559f5964f95ce6096ae0aa858eaee202500ab9ca
+On Fri, Jun 19, 2020 at 2:57 PM Hao Luo <haoluo@google.com> wrote:
+>
+> Only two small places on this version, otherwise it looks good to me.
+> I can offer my reviewed-by, if need. :)
+>
+> Thanks for the patch!
+>
+> Reviewed-by: Hao Luo <haoluo@google.com>
+>
+> On Fri, Jun 19, 2020 at 1:34 PM Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > Switch existing Kconfig externs to be just one of few possible kinds of more
+> > generic externs. This refactoring is in preparation for ksymbol extern
+> > support, added in the follow up patch. There are no functional changes
+> > intended.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+>
+> [...]
+>
+> > @@ -2756,23 +2796,29 @@ static int cmp_externs(const void *_a, const void *_b)
+>
+> [...]
+>
+> > +
+> > +       if (a->type == EXT_KCFG) {
+> > +               /* descending order by alignment requirements */
+> > +               if (a->kcfg.align != b->kcfg.align)
+> > +                       return a->kcfg.align > b->kcfg.align ? -1 : 1;
+> > +               /* ascending order by size, within same alignment class */
+> > +               if (a->kcfg.sz != b->kcfg.sz)
+> > +                       return a->kcfg.sz < b->kcfg.sz ? -1 : 1;
+> > +               /* resolve ties by name */
+> > +       }
+> > +
+> >         return strcmp(a->name, b->name);
+> >  }
+>
+> I assume the comment /* resolve ties by name */ is intended to be
+> close to strcmp?
 
+yep
+
+>
+> > @@ -2818,22 +2864,39 @@ static int bpf_object__collect_externs(struct bpf_object *obj)
+> >                 ext->name = btf__name_by_offset(obj->btf, t->name_off);
+> >                 ext->sym_idx = i;
+> >                 ext->is_weak = GELF_ST_BIND(sym.st_info) == STB_WEAK;
+> > -               ext->sz = btf__resolve_size(obj->btf, t->type);
+> > -               if (ext->sz <= 0) {
+> > -                       pr_warn("failed to resolve size of extern '%s': %d\n",
+> > -                               ext_name, ext->sz);
+> > -                       return ext->sz;
+> > -               }
+> > -               ext->align = btf__align_of(obj->btf, t->type);
+> > -               if (ext->align <= 0) {
+> > -                       pr_warn("failed to determine alignment of extern '%s': %d\n",
+> > -                               ext_name, ext->align);
+> > -                       return -EINVAL;
+> > -               }
+> > -               ext->type = find_extern_type(obj->btf, t->type,
+> > -                                            &ext->is_signed);
+> > -               if (ext->type == EXT_UNKNOWN) {
+> > -                       pr_warn("extern '%s' type is unsupported\n", ext_name);
+> > +
+> > +               ext->sec_btf_id = find_extern_sec_btf_id(obj->btf, ext->btf_id);
+> > +               if (ext->btf_id <= 0) {
+> > +                       pr_warn("failed to find BTF for extern '%s' [%d] section: %d\n",
+> > +                               ext_name, ext->btf_id, ext->sec_btf_id);
+> > +                       return ext->sec_btf_id;
+> > +               }
+>
+> Did you mean "ext->sec_btf_id <= 0" rather than "ext->btf_id <= 0"?
+
+yep, argh...
