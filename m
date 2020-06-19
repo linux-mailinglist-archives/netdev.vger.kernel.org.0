@@ -2,103 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84F77200884
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 14:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 352882008AD
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 14:27:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732907AbgFSMSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 08:18:04 -0400
-Received: from mail-eopbgr80071.outbound.protection.outlook.com ([40.107.8.71]:13793
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728712AbgFSMSA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jun 2020 08:18:00 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QXMerSGxqgSi5scK88S6MhazvOLNDre+4VYQc87HGhs/EfWnppZByA5dd1cUbSnwkRvpHOAKrJLYJEWmfBN2YRinIbDzf13L0nndwAyZwOCTdFbdkHVZUHs0UdLySzpumhTbe1a/7BMS7WvhkvhJBz5p98+79vjHBd0+aq3MzmEje6umZICpPHLtw/NMvY6Z5EieVsuMf+SKj8BZ4LlFRKJqhowXbicZdemb/rkNQ/s9iEbWEK06/RRh8ogtfVXf1eVgnkZdmbqalj59GM5UE2oyO3L4/iymvAajunaaWK1j21Jq5uJHSc1t70t5kzzLYsdM7V+cN2L4Bynz60iMjQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gb/1za/q03HvKoD96QnPKcDsnXBqZffU3wRZFo5M72A=;
- b=G4Rs3MEa+Thd5c75D81bino16U80Icc2guRQzdiFKrB81/Xzq2ScbFjQomSIa59iNdMIVfcVC05vKaKWyb1hiVgk4Gj7Ai4SKyytSRrmXhjXAg3EncW7ANuJhZvrqg6fjpEMndYUkvelrE+dLtVSTPOibkHn+mglUvH1BU/vfsPDa0xwbG37Dboqtr/qUc5UsfsSI4HJ5ct2t1LI77d/7SBs0MMy6jXmJeEoAeO6aVu8dw0ZIyjFvy3Q7/OcR9yxtwrPvSSnIrKE44cF9xUY2weF13+Gq/10yCBDHYvXFn0+sl5fY5PDtCbLx7DE5/EY8QlGVakInIJ4Ll+j/f6oyA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gb/1za/q03HvKoD96QnPKcDsnXBqZffU3wRZFo5M72A=;
- b=BbFSgQ8xo5P/4jbEQFgHrGVwBEzDwAe3jr8kAHmz9hA9QrCn+9LmglWMWLN/7sq0E716HW+0v0Lk87Npwszr0xPQP3BvW3qv/6TH5aa5Dof+8tzMu6TGdZFLT+4Gym6yVWcuNSm9jS0sK5gqS6N0/ArV63GkCvsREk/QmlIO6xM=
-Authentication-Results: windriver.com; dkim=none (message not signed)
- header.d=none;windriver.com; dmarc=none action=none header.from=mellanox.com;
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR05MB4586.eurprd05.prod.outlook.com (2603:10a6:7:99::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3109.22; Fri, 19 Jun 2020 12:17:55 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::9de2:ec4b:e521:eece]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::9de2:ec4b:e521:eece%5]) with mapi id 15.20.3088.029; Fri, 19 Jun 2020
- 12:17:55 +0000
-References: <00000000000086d87305801011c4@google.com> <000000000000320bcb05a863a04c@google.com>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@mellanox.com>
-To:     syzbot <syzbot+c58fa3b1231d2ea0c4d3@syzkaller.appspotmail.com>
-Cc:     amitc@mellanox.com, andy.shevchenko@gmail.com,
-        bgolaszewski@baylibre.com, bp@alien8.de, davem@davemloft.net,
-        douly.fnst@cn.fujitsu.com, hpa@zytor.com, idosch@mellanox.com,
-        jon.maloy@ericsson.com, konrad.wilk@oracle.com,
-        len.brown@intel.com, linus.walleij@linaro.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mingo@redhat.com, netdev@vger.kernel.org, puwen@hygon.cn,
-        rppt@linux.vnet.ibm.com, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, tipc-discussion@lists.sourceforge.net,
-        x86@kernel.org, ying.xue@windriver.com
-Subject: Re: general protection fault in __bfs (2)
-In-reply-to: <000000000000320bcb05a863a04c@google.com>
-Date:   Fri, 19 Jun 2020 14:17:51 +0200
-Message-ID: <87wo43jllc.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR04CA0027.eurprd04.prod.outlook.com
- (2603:10a6:208:122::40) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+        id S1733131AbgFSM11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 08:27:27 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:43683 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732980AbgFSMZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 08:25:18 -0400
+X-Originating-IP: 90.76.143.236
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 622F0E0005;
+        Fri, 19 Jun 2020 12:25:06 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, richardcochran@gmail.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com,
+        foss@0leil.net, antoine.tenart@bootlin.com
+Subject: [PATCH net-next v3 0/8] net: phy: mscc: PHC and timestamping support
+Date:   Fri, 19 Jun 2020 14:22:52 +0200
+Message-Id: <20200619122300.2510533-1-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yaviefel (213.220.234.169) by AM0PR04CA0027.eurprd04.prod.outlook.com (2603:10a6:208:122::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22 via Frontend Transport; Fri, 19 Jun 2020 12:17:53 +0000
-X-Originating-IP: [213.220.234.169]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: afa3603f-dba0-499e-5d3d-08d8144acb95
-X-MS-TrafficTypeDiagnostic: HE1PR05MB4586:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB4586D93168C268FC4C099786DB980@HE1PR05MB4586.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:404;
-X-Forefront-PRVS: 0439571D1D
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +fg9RBaRuoNbGnbNpgvaPuPLUd0YeelsuIXxdZInV0zY72XKnEH1vtPjISiTR14emX/Vq/v73VCfYE0HJGGXYbQvyc61nXaEPXxWxCAKyULFI3ACMXsZ3oHFphKl/4ES17Y5pJd8pPnQ2prkStfMzC9RJk+yn2qse2KJQ2vYSf2b8iJhiuLWi7dhRYyNaWPBka+cnC/BDuVKZ+ETSkpWrTmxH71TM3cihz8V1ECGp5xQyNnowMenj/XgFXM0aV6E1Xi5C3FWHvRB9Vog68JgYuCPAlcGWESAFPMy4vRjnAvE/ob4tHrRkH4FnySG1g/pqMdu5UuTWhrMaYBU8wCszw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(39860400002)(366004)(376002)(136003)(396003)(4744005)(478600001)(52116002)(5660300002)(66556008)(66476007)(86362001)(316002)(66946007)(7416002)(6496006)(6486002)(16526019)(186003)(26005)(4326008)(8676002)(2906002)(8936002)(2616005)(956004)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: q4Hfn4idkjXoc+ZG+txbyFtV7QTmzDhLgiE63CsNeQty3uP/5gAwsG1/pZXLYIVREv8ubIOMRtgaMh4hsNu71n/j0D7ycPk/eur4rUd9whHi5P1ghC8RlX2m4H9bNPY8GeGh2XZs1yZz4ygDJF7oj6lqBa5njfELKGf0VRLf+iDXWHcfe+96pDun5NdMpl8j8PDBJwqWdD+MLLVNrsYjo2ufYcE3dX1kKs4omZr7fOWhoSV5Zc9CRBX5eaDs8TRsrf8fISXHPOUz6TkDJF7hhyCAn93F7d/sDGd383vNkwtLjJkvDiXrO7aUzFkIONqSZpJWjfEHkEfUCsyLyMLH0ThBoFacTwNR641WADHZtqf4Z5c3uvno9eRHZ8IXq+sGBuY8dUyqMYSJm2X4FllXY/v2NTDlmGo1gqIyembpKiPrlj6piVjibu+PEbJ8J2lOWnnPpkA2aKj65nxG7CPF4+SKg4/7KaEHNiVwIevqmsY=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: afa3603f-dba0-499e-5d3d-08d8144acb95
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2020 12:17:55.2441
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KhbgpnuZWCDxGR3hqwbJZLfsRfQwjZDKgCGAkWgWc8clqhPr3NIX9RrkoyBprPJZS3cylrn778Od8rMk+CdwqQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB4586
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-syzbot <syzbot+c58fa3b1231d2ea0c4d3@syzkaller.appspotmail.com> writes:
+This series aims at adding support for PHC and timestamping operations
+in the MSCC PHY driver, for the VSC858x and VSC8575. Those PHYs are
+capable of timestamping in 1-step and 2-step for both L2 and L4 traffic.
 
-> syzbot suspects this bug was fixed by commit:
->
-> commit 46ca11177ed593f39d534f8d2c74ec5344e90c11
-> Author: Amit Cohen <amitc@mellanox.com>
-> Date:   Thu May 21 12:11:45 2020 +0000
->
->     selftests: mlxsw: qos_mc_aware: Specify arping timeout as an integer
+As of this series, only IPv4 support was implemented when using L4 mode.
+This is because of an hardware limitation which prevents us for
+supporting both IPv4 and IPv6 at the same time. Implementing support for
+IPv6 should be quite easy (I do have the modifications needed for the
+hardware configuration) but I did not see a way to retrieve this
+information in hwtstamp(). What would you suggest?
 
-That does not sound right. The referenced commit is a shell script fix.
+Those PHYs are distributed in hardware packages containing multiple
+times the PHY. The VSC8584 for example is composed of 4 PHYs. With
+hardware packages, parts of the logic is usually common and one of the
+PHY has to be used for some parts of the initialization. Following this
+logic, the 1588 blocks of those PHYs are shared between two PHYs and
+accessing the registers has to be done using the "base" PHY of the
+group. This is handled thanks to helpers in the PTP code (and locks).
+We also need the MDIO bus lock while performing a single read or write
+to the 1588 registers as the read/write are composed of multiple MDIO
+transactions (and we don't want other threads updating the page).
+
+To get and set the PHC time, a GPIO has to be used and changes are only
+retrieved or committed when on a rising edge. The same GPIO is shared by
+all PHYs, so the granularity of the lock protecting it has to be
+different from the ones protecting the 1588 registers (the VSC8584 PHY
+has 2 1588 blocks, and a single load/save pin).
+
+Patch 1 extends the recently added helpers to share information between
+PHYs of the same hardware package; to allow having part of the probe to
+be shared (in addition to the already supported init part). This will be
+used when adding support for PHC/TS to initialize locks.
+
+Patches 2 and 3 are mostly cosmetic.
+
+Patch 4 takes into account the 1588 block in the MACsec initialization,
+to allow having both the MACsec and 1588 blocks initialized on a running
+system.
+
+Patches 5 and 6 add support for PHC and timestamping operations in the
+MSCC driver. An initialization of the 1588 block (plus all the registers
+definition; and helpers) is added first; and then comes a patch to
+implement the PHC and timestamping API.
+
+Patches 7 and 8 add the required hardware description for device trees,
+to be able to use the load/save GPIO pin on the PCB120 board.
+
+To use this on a PCB120 board, two other series are needed and have
+already been sent upstream (one is merged). There are no dependency
+between all those series.
+
+Thanks!
+Antoine
+
+Since v2:
+  - Removed explicit inlines from .c files.
+  - Fixed three warnings.
+
+Since v1:
+  - Removed checks in rxtstamp/txtstamp as skb cannot be NULL here.
+  - Reworked get_ptp_header_rx/get_ptp_header.
+  - Reworked the locking logic between the PHC and timestamping
+    operations.
+  - Fixed a compilation issue on x86 reported by Jakub.
+
+Antoine Tenart (5):
+  net: phy: add support for a common probe between shared PHYs
+  net: phy: mscc: fix copyright and author information in MACsec
+  net: phy: mscc: take into account the 1588 block in MACsec init
+  net: phy: mscc: timestamping and PHC support
+  dt-bindings: net: phy: vsc8531: document the load/save GPIO
+
+Quentin Schulz (3):
+  net: phy: mscc: remove the TR CLK disable magic value
+  net: phy: mscc: 1588 block initialization
+  MIPS: dts: ocelot: describe the load/save GPIO
+
+ .../bindings/net/mscc-phy-vsc8531.txt         |    3 +
+ arch/mips/boot/dts/mscc/ocelot_pcb120.dts     |   12 +-
+ drivers/net/phy/mscc/Makefile                 |    4 +
+ drivers/net/phy/mscc/mscc.h                   |   64 +
+ drivers/net/phy/mscc/mscc_fc_buffer.h         |    2 +-
+ drivers/net/phy/mscc/mscc_mac.h               |    2 +-
+ drivers/net/phy/mscc/mscc_macsec.c            |   10 +-
+ drivers/net/phy/mscc/mscc_macsec.h            |    2 +-
+ drivers/net/phy/mscc/mscc_main.c              |   63 +-
+ drivers/net/phy/mscc/mscc_ptp.c               | 1587 +++++++++++++++++
+ drivers/net/phy/mscc/mscc_ptp.h               |  477 +++++
+ include/linux/phy.h                           |   18 +-
+ 12 files changed, 2223 insertions(+), 21 deletions(-)
+ create mode 100644 drivers/net/phy/mscc/mscc_ptp.c
+ create mode 100644 drivers/net/phy/mscc/mscc_ptp.h
+
+-- 
+2.26.2
+
