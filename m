@@ -2,117 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3F51201352
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 18:01:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 306AE2013F4
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 18:08:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392315AbgFSQAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 12:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57814 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392324AbgFSPOk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 11:14:40 -0400
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57461C0613EF
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 08:14:39 -0700 (PDT)
-Received: from ramsan ([IPv6:2a02:1810:ac12:ed20:38b1:3718:f116:dc69])
-        by andre.telenet-ops.be with bizsmtp
-        id t3EW2200F1b8psi013EWwg; Fri, 19 Jun 2020 17:14:31 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jmIis-0005id-Co; Fri, 19 Jun 2020 17:14:30 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jmIis-0003tl-BB; Fri, 19 Jun 2020 17:14:30 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] dt-bindings: net: renesas,ether: Improve schema validation
-Date:   Fri, 19 Jun 2020 17:14:29 +0200
-Message-Id: <20200619151429.14944-1-geert+renesas@glider.be>
-X-Mailer: git-send-email 2.17.1
+        id S2393039AbgFSQGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 12:06:39 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:37454 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2394156AbgFSQGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 12:06:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592582784;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pI1rax/V9oHTSj2u7yISulPzydxjiPQ7BjYV44sXLw8=;
+        b=b1GNG45uIYPnIW9PBls5nnTth+46LosZT3K7ziBMltpTJfh2m1gAImPrMU7uHYSvp5f52X
+        KU8LwgXD5mKeJmPZ++I1MmmSB9uEKlwMFaR/wZlqWPR4Z/5cGsyxlx6dUMp9qDkG7Xv72P
+        DDPpsY/FWB/rhWnFOd4XSNt2UCg/FzE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-500-hjbPAmIBNcKUcLaVMv25jA-1; Fri, 19 Jun 2020 12:06:22 -0400
+X-MC-Unique: hjbPAmIBNcKUcLaVMv25jA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7DF75107B7C6;
+        Fri, 19 Jun 2020 16:06:21 +0000 (UTC)
+Received: from jtoppins.rdu.csb (ovpn-119-209.rdu2.redhat.com [10.10.119.209])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CA62C1C94D;
+        Fri, 19 Jun 2020 16:06:20 +0000 (UTC)
+Reply-To: jtoppins@redhat.com
+Subject: Re: [PATCH net] ionic: tame the watchdog timer on reconfig
+To:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
+        davem@davemloft.net
+References: <20200618172904.53814-1-snelson@pensando.io>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+Organization: Red Hat
+Message-ID: <086f01c2-b8ab-3a92-2a1b-b53fa1e0245b@redhat.com>
+Date:   Fri, 19 Jun 2020 12:06:20 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <20200618172904.53814-1-snelson@pensando.io>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  - Remove pinctrl consumer properties, as they are handled by core
-    dt-schema,
-  - Document missing properties,
-  - Document missing PHY child node,
-  - Add "additionalProperties: false".
+On 6/18/20 1:29 PM, Shannon Nelson wrote:
+> Even with moving netif_tx_disable() to an earlier point when
+> taking down the queues for a reconfiguration, we still end
+> up with the occasional netdev watchdog Tx Timeout complaint.
+> The old method of using netif_trans_update() works fine for
+> queue 0, but has no effect on the remaining queues.  Using
+> netif_device_detach() allows us to signal to the watchdog to
+> ignore us for the moment.
+> 
+> Fixes: beead698b173 ("ionic: Add the basic NDO callbacks for netdev support")
+> Signed-off-by: Shannon Nelson <snelson@pensando.io>
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- .../bindings/net/renesas,ether.yaml           | 22 +++++++++++++------
- 1 file changed, 15 insertions(+), 7 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/net/renesas,ether.yaml b/Documentation/devicetree/bindings/net/renesas,ether.yaml
-index 08678af5ed9364cd..8ce5ed8a58dd76e6 100644
---- a/Documentation/devicetree/bindings/net/renesas,ether.yaml
-+++ b/Documentation/devicetree/bindings/net/renesas,ether.yaml
-@@ -59,9 +59,15 @@ properties:
-   clocks:
-     maxItems: 1
- 
--  pinctrl-0: true
-+  power-domains:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
- 
--  pinctrl-names: true
-+  phy-mode: true
-+
-+  phy-handle: true
- 
-   renesas,no-ether-link:
-     type: boolean
-@@ -74,6 +80,11 @@ properties:
-       specify when the Ether LINK signal is active-low instead of normal
-       active-high
- 
-+patternProperties:
-+  "^ethernet-phy@[0-9a-f]$":
-+    type: object
-+    $ref: ethernet-phy.yaml#
-+
- required:
-   - compatible
-   - reg
-@@ -83,7 +94,8 @@ required:
-   - '#address-cells'
-   - '#size-cells'
-   - clocks
--  - pinctrl-0
-+
-+additionalProperties: false
- 
- examples:
-   # Lager board
-@@ -99,8 +111,6 @@ examples:
-         clocks = <&mstp8_clks R8A7790_CLK_ETHER>;
-         phy-mode = "rmii";
-         phy-handle = <&phy1>;
--        pinctrl-0 = <&ether_pins>;
--        pinctrl-names = "default";
-         renesas,ether-link-active-low;
-         #address-cells = <1>;
-         #size-cells = <0>;
-@@ -109,7 +119,5 @@ examples:
-             reg = <1>;
-             interrupt-parent = <&irqc0>;
-             interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
--            pinctrl-0 = <&phy1_pins>;
--            pinctrl-names = "default";
-         };
-     };
--- 
-2.17.1
+Acked-by: Jonathan Toppins <jtoppins@redhat.com>
 
