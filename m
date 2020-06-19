@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5D1420013D
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 06:30:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9440E200151
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 06:35:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728283AbgFSEaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 00:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
+        id S1729676AbgFSEfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 00:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725826AbgFSEaK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 00:30:10 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F100C06174E;
-        Thu, 18 Jun 2020 21:30:10 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id r16so3882809qvm.6;
-        Thu, 18 Jun 2020 21:30:10 -0700 (PDT)
+        with ESMTP id S1726196AbgFSEfV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 00:35:21 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2669C06174E;
+        Thu, 18 Jun 2020 21:35:21 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id q198so18547qka.2;
+        Thu, 18 Jun 2020 21:35:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=tfVK3SbKrt+6Uzzz8EjfTw/A94qiX/szBfHPEHTipj0=;
-        b=gaizaGEkIRGdzuV39rodmuylwlOMbdz1Jm8cDwAzLO0cRJX6mw2NSU/cPRr+L1fY2f
-         Fifs5T9t+gOdHwbp9S6YtJnkOUHa+OSuqvbDjeriuVW+uqoglmkldab54MSeJb1hNjQ+
-         Kd6tTgWKvlIgyTwPO5eccOOD9vWFuUYOT9S64MVoUcIolGMtQON8Fb6Rrb28cdCTwhbq
-         r++B1zWBvIDY3BytikcQOLBOEiemNG1cUoEsTc+glvKdMjjN/DFMhOTRORXAjiQcBJ1U
-         21U/H8uK46o2GeFl4xDe5vlvhS3qBdo+yb4l9oIO/dMEni7/rbG2GfqVj75JncRZKWkG
-         fAYg==
+        bh=UHDqRDDn14CCzdKqC28UmPBH/SBHhyryYRfif8mXRbU=;
+        b=YoBRFl58kLm197oyvuhKNBW59LiqXC6iGENPVH0notwvCSDX76ytqUEKKF4GsStMyq
+         +wFPWrEeL3GJMnT8XVFVdOzMN8IbM5SOiIxIBxUxQrfnAB812ntJjTrbSNapdTPx1bLd
+         MVd0BEU2Rou9XWlKv2vu0j0L+AUhdxS03XYW655uzDVg3BXgiA1Hr4Tki4c2i9lVG2Fa
+         MC26/ByfpMY8TBhTCXvRJZ860D9ozQhmSbSVU06jLflNhQG9A6cG3jUPYSnm1hzUrxbA
+         pY7+QKZOojnIMFqPsq4u9QiMx59gCpPDsVOi8i5p7ILhJa0deqsmBiICIA8scM4LhWtJ
+         Fvuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tfVK3SbKrt+6Uzzz8EjfTw/A94qiX/szBfHPEHTipj0=;
-        b=KnWTzlYNGMD5pN5vEyKYj9GohNBIxaozUGFP58tZFkPW24GVLkCO8druHk1ju/MSdV
-         TPRULarWPkuCn3O4JvquDEFR6nN+iwbCL17mmvbDkYUsbk8krB3vSMbuqMT0eeY2KEnn
-         TjdwDc+3d9TBymQbvymnLGO44jKYWUahJMWbJwdOtGsIrXjJuivt00GGPK6JDUuQntmT
-         DFVzk6pHItnVY6Hpw5mpBm/L9uuAVCGj034g2XNAZcKILa8nTKwfeLTHmRgaw6T+AQhX
-         kt4dMiVK0cX0Y+simjUoJBaedQQD3OS6WHmLnnXvBodt3hbsQ2+4m3vBytLHeCvaoS8k
-         WQ+g==
-X-Gm-Message-State: AOAM532bj13X8GLJU5yWDrYMQ4CSU2ZMLSQdAVoQRT/gQUv0m/PWy1G3
-        C6zogh2lbtFFW9pp7+xi49NJC3+YHT8aj5/O/GI=
-X-Google-Smtp-Source: ABdhPJwpcj9WdUAyNe+XRFmMaXWIW3qvmSU0T//IYBb4W+bJSl2f/hjYI2OBH7jyS2DrrO2A5JQFnuvg/OFmk/9PvVQ=
-X-Received: by 2002:ad4:4572:: with SMTP id o18mr6561740qvu.228.1592541009699;
- Thu, 18 Jun 2020 21:30:09 -0700 (PDT)
+        bh=UHDqRDDn14CCzdKqC28UmPBH/SBHhyryYRfif8mXRbU=;
+        b=WeZszqrnmo8mOZ+CMqxkHg4MBGiKI3bjyRww5syIw+KQn+ddQdXrzw7X8rW6/fqg4u
+         nZW6bCeZUwKEYNOT8fHbtwXp1/mpV2TBLf0gmcIdogvZryq9r8Rzz3FLM2Abd+S5Q28I
+         DE6rjk/0avxb/OgPDMoiFf1ciUNZHWajq6PW97rHv2ufk/y8b60exVeFqYoutBAySCMX
+         LZ0l7FbsWj55c+dIUBd9m21gYaW3PU7ae7sBV+tnOxf4I8QaGXLrYdM0RdidePzGLlPU
+         AwMP8Ke+43iQirffN0w+oQo4Ehp3ODigSG59Zuw9UxjIimKLNpCCnJDYzCy3rTOYKHlV
+         WvpQ==
+X-Gm-Message-State: AOAM532042LJlrmCtSXjVVWy+aNLRH+77MJmQ1k788iO4Uhr4VaOvK8a
+        mFDe0WkYoXlm1/ziFVH97bWAMFtm4d3Xv8rcrv8=
+X-Google-Smtp-Source: ABdhPJyXGoTJBEJ/bQVt361A2IU+wLuAOnopA8a3Mh76EofUBII6u5BH76GiTKt1KOaeVRdTGYeOn1yvnrtaLaqve00=
+X-Received: by 2002:a37:a89:: with SMTP id 131mr1769977qkk.92.1592541321008;
+ Thu, 18 Jun 2020 21:35:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200616100512.2168860-1-jolsa@kernel.org> <20200616100512.2168860-9-jolsa@kernel.org>
-In-Reply-To: <20200616100512.2168860-9-jolsa@kernel.org>
+References: <20200616100512.2168860-1-jolsa@kernel.org> <20200616100512.2168860-10-jolsa@kernel.org>
+In-Reply-To: <20200616100512.2168860-10-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 18 Jun 2020 21:29:58 -0700
-Message-ID: <CAEf4Bzaj-t0UYLiJh9czenqVtsi5UuviX_AqgpEq=gJx6WCHrw@mail.gmail.com>
-Subject: Re: [PATCH 08/11] bpf: Add BTF whitelist support
+Date:   Thu, 18 Jun 2020 21:35:10 -0700
+Message-ID: <CAEf4BzY=d5y_-fXvomG7SjkbK7DZn5=-f+sdCYRdZh9qeynQrQ@mail.gmail.com>
+Subject: Re: [PATCH 09/11] bpf: Add d_path helper
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -70,187 +70,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 3:06 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Tue, Jun 16, 2020 at 3:07 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Adding support to define 'whitelist' of BTF IDs, which is
-> also sorted.
+> Adding d_path helper function that returns full path
+> for give 'struct path' object, which needs to be the
+> kernel BTF 'path' object.
 >
-> Following defines sorted list of BTF IDs that is accessible
-> within kernel code as btf_whitelist_d_path and its count is
-> in btf_whitelist_d_path_cnt variable.
+> The helper calls directly d_path function.
 >
->   extern int btf_whitelist_d_path[];
->   extern int btf_whitelist_d_path_cnt;
->
->   BTF_WHITELIST_ENTRY(btf_whitelist_d_path)
->   BTF_ID(func, vfs_truncate)
->   BTF_ID(func, vfs_fallocate)
->   BTF_ID(func, dentry_open)
->   BTF_ID(func, vfs_getattr)
->   BTF_ID(func, filp_close)
->   BTF_WHITELIST_END(btf_whitelist_d_path)
+> Updating also bpf.h tools uapi header and adding
+> 'path' to bpf_helpers_doc.py script.
 >
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  include/linux/bpf.h   |  3 +++
->  kernel/bpf/btf.c      | 13 +++++++++++++
->  kernel/bpf/btf_ids.h  | 38 ++++++++++++++++++++++++++++++++++++++
->  kernel/bpf/verifier.c |  5 +++++
->  4 files changed, 59 insertions(+)
+>  include/linux/bpf.h            |  4 ++++
+>  include/uapi/linux/bpf.h       | 14 ++++++++++++-
+>  kernel/bpf/btf_ids.c           | 11 ++++++++++
+>  kernel/trace/bpf_trace.c       | 38 ++++++++++++++++++++++++++++++++++
+>  scripts/bpf_helpers_doc.py     |  2 ++
+>  tools/include/uapi/linux/bpf.h | 14 ++++++++++++-
+>  6 files changed, 81 insertions(+), 2 deletions(-)
 >
 > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index e98c113a5d27..a94e85c2ec50 100644
+> index a94e85c2ec50..d35265b6c574 100644
 > --- a/include/linux/bpf.h
 > +++ b/include/linux/bpf.h
-> @@ -283,6 +283,7 @@ struct bpf_func_proto {
->                 enum bpf_arg_type arg_type[5];
->         };
->         int *btf_id; /* BTF ids of arguments */
-> +       bool (*allowed)(const struct bpf_prog *prog);
->  };
->
->  /* bpf_context is intentionally undefined structure. Pointer to bpf_context is
-> @@ -1745,6 +1746,8 @@ enum bpf_text_poke_type {
->  int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
->                        void *addr1, void *addr2);
->
-> +bool btf_whitelist_search(int id, int list[], int cnt);
-> +
->  extern int bpf_skb_output_btf_ids[];
+> @@ -1752,5 +1752,9 @@ extern int bpf_skb_output_btf_ids[];
 >  extern int bpf_seq_printf_btf_ids[];
 >  extern int bpf_seq_write_btf_ids[];
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index 6924180a19c4..feda74d232c5 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -20,6 +20,7 @@
->  #include <linux/btf.h>
->  #include <linux/skmsg.h>
->  #include <linux/perf_event.h>
-> +#include <linux/bsearch.h>
->  #include <net/sock.h>
+>  extern int bpf_xdp_output_btf_ids[];
+> +extern int bpf_d_path_btf_ids[];
+> +
+> +extern int btf_whitelist_d_path[];
+> +extern int btf_whitelist_d_path_cnt;
+
+So with suggestion from previous patch, this would be declared as:
+
+extern const struct btf_id_set btf_whitelist_d_path;
+
 >
->  /* BTF (BPF Type Format) is the meta data format which describes
-> @@ -4669,3 +4670,15 @@ u32 btf_id(const struct btf *btf)
->  {
->         return btf->id;
->  }
-> +
-> +static int btf_id_cmp_func(const void *a, const void *b)
-> +{
-> +       const int *pa = a, *pb = b;
-> +
-> +       return *pa - *pb;
-> +}
-> +
-> +bool btf_whitelist_search(int id, int list[], int cnt)
-
-whitelist is a bit too specific, this functionality can be used for
-blacklisting as well, no?
-
-How about instead of "open coding" separately int list[] + int cnt, we
-define a struct:
-
-struct btf_id_set {
-    u32 cnt;
-    u32 ids[];
-};
-
-and pass that around?
-
-This function then can be generic
-
-bool btf_id_set_contains(struct btf_id_set *set, u32 id);
-
-Then it's usable for both whitelist and blacklist? _contains also
-clearly implies what's the return result, while _search isn't so clear
-in that regard.
-
-
-> +{
-> +       return bsearch(&id, list, cnt, sizeof(int), btf_id_cmp_func) != NULL;
-> +}
-> diff --git a/kernel/bpf/btf_ids.h b/kernel/bpf/btf_ids.h
-> index 68aa5c38a37f..a90c09faa515 100644
-> --- a/kernel/bpf/btf_ids.h
-> +++ b/kernel/bpf/btf_ids.h
-> @@ -67,4 +67,42 @@ asm(                                                 \
->  #name ":;                                      \n"     \
->  ".popsection;                                  \n");
->
-> +
-> +/*
-> + * The BTF_WHITELIST_ENTRY/END macros pair defines sorted
-> + * list of BTF IDs plus its members count, with following
-> + * layout:
+>  #endif /* _LINUX_BPF_H */
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index c65b374a5090..e308746b9344 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3252,6 +3252,17 @@ union bpf_attr {
+>   *             case of **BPF_CSUM_LEVEL_QUERY**, the current skb->csum_level
+>   *             is returned or the error code -EACCES in case the skb is not
+>   *             subject to CHECKSUM_UNNECESSARY.
 > + *
-> + * BTF_WHITELIST_ENTRY(list2)
-> + * BTF_ID(type1, name1)
-> + * BTF_ID(type2, name2)
-> + * BTF_WHITELIST_END(list)
-
-It kind of sucks you need two separate ENTRY/END macro (btw, START/END
-or BEGIN/END would be a bit more "paired"), and your example clearly
-shows why: it is not self-consistent (list2 on start, list on end ;).
-But doing variadic macro like this would be a nightmare as well,
-unfortunately. :(
-
+> + * int bpf_d_path(struct path *path, char *buf, u32 sz)
+> + *     Description
+> + *             Return full path for given 'struct path' object, which
+> + *             needs to be the kernel BTF 'path' object. The path is
+> + *             returned in buffer provided 'buf' of size 'sz'.
 > + *
-> + * __BTF_ID__sort__list:
-> + * list2_cnt:
-> + * .zero 4
-> + * list2:
-> + * __BTF_ID__type1__name1__3:
-> + * .zero 4
-> + * __BTF_ID__type2__name2__4:
-> + * .zero 4
+> + *     Return
+> + *             length of returned string on success, or a negative
+> + *             error in case of failure
 > + *
-> + */
-> +#define BTF_WHITELIST_ENTRY(name)                      \
-> +asm(                                                   \
-> +".pushsection " SECTION ",\"a\";               \n"     \
-> +".global __BTF_ID__sort__" #name ";            \n"     \
-> +"__BTF_ID__sort__" #name ":;                   \n"     \
-
-I mentioned in the previous patch already, I think "sort" is a bad
-name, consider "set" (or "list", but you used list name already for a
-slightly different macro).
-
-> +".global " #name "_cnt;                        \n"     \
-> +#name "_cnt:;                                  \n"     \
-
-This label/symbol isn't necessary, why polluting the symbol table?
-
-> +".zero 4                                       \n"     \
-> +".popsection;                                  \n");   \
-> +BTF_ID_LIST(name)
-> +
-> +#define BTF_WHITELIST_END(name)                                \
-> +asm(                                                   \
-> +".pushsection " SECTION ",\"a\";              \n"      \
-> +".size __BTF_ID__sort__" #name ", .-" #name " \n"      \
-> +".popsection;                                 \n");
-> +
->  #endif
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index bee3da2cd945..5a9a6fd72907 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -4633,6 +4633,11 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
->                 return -EINVAL;
->         }
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3389,7 +3400,8 @@ union bpf_attr {
+>         FN(ringbuf_submit),             \
+>         FN(ringbuf_discard),            \
+>         FN(ringbuf_query),              \
+> -       FN(csum_level),
+> +       FN(csum_level),                 \
+> +       FN(d_path),
 >
-> +       if (fn->allowed && !fn->allowed(env->prog)) {
-> +               verbose(env, "helper call is not allowed in probe\n");
-
-nit: probe -> program, or just drop "in probe" part altogether
-
-> +               return -EINVAL;
-> +       }
-> +
->         /* With LD_ABS/IND some JITs save/restore skb from r1. */
->         changes_data = bpf_helper_changes_pkt_data(fn->func);
->         if (changes_data && fn->arg1_type != ARG_PTR_TO_CTX) {
-> --
-> 2.25.4
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> diff --git a/kernel/bpf/btf_ids.c b/kernel/bpf/btf_ids.c
+> index d8d0df162f04..853c8fd59b06 100644
+> --- a/kernel/bpf/btf_ids.c
+> +++ b/kernel/bpf/btf_ids.c
+> @@ -13,3 +13,14 @@ BTF_ID(struct, seq_file)
 >
+>  BTF_ID_LIST(bpf_xdp_output_btf_ids)
+>  BTF_ID(struct, xdp_buff)
+> +
+> +BTF_ID_LIST(bpf_d_path_btf_ids)
+> +BTF_ID(struct, path)
+> +
+> +BTF_WHITELIST_ENTRY(btf_whitelist_d_path)
+> +BTF_ID(func, vfs_truncate)
+> +BTF_ID(func, vfs_fallocate)
+> +BTF_ID(func, dentry_open)
+> +BTF_ID(func, vfs_getattr)
+> +BTF_ID(func, filp_close)
+> +BTF_WHITELIST_END(btf_whitelist_d_path)
+
+Oh, so that's why you added btf_ids.c. Do you think centralizing all
+those BTF ID lists in one file is going to be more convenient? I lean
+towards keeping them closer to where they are used, as it was with all
+those helper BTF IDS. But I wonder what others think...
+
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index c1866d76041f..0ff5d8434d40 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -1016,6 +1016,42 @@ static const struct bpf_func_proto bpf_send_signal_thread_proto = {
+>         .arg1_type      = ARG_ANYTHING,
+>  };
+>
+
+[...]
