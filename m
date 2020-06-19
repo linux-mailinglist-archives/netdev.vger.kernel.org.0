@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E84A2019FD
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 20:09:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68985201A04
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 20:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390561AbgFSSJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 14:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56664 "EHLO
+        id S2394699AbgFSSJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 14:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388286AbgFSSJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 14:09:24 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9AFC06174E
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:09:23 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id g10so9243610wmh.4
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:09:23 -0700 (PDT)
+        with ESMTP id S2394603AbgFSSJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 14:09:55 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19A1C06174E
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:09:53 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id g18so1495852wrm.2
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:09:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SlfIFAUjnguc+JpsjlVfnRjFFMNQHOY/AMA58+Nfm8o=;
-        b=josKoLFuN1sbCDPL6qWenuZbAd1Iqfbo1CH3/5XNWrazs0Z0zCauEYwYOZi9s3kj1Y
-         EN2fD6p9ZzLe20bhJVt/zGlzQo9y43fp3sWJohex1Mcc0qiMBSuFGiv440jaD+eqJj/B
-         +LIWZV3Q9zmrIDudX9GMfI50p9hTQTKs3E1FrYyC7Jgkz7rJrm9QRbYhuyQZMZOE/amr
-         8rgNlNXK3gTqsLmM13A9er4OYikCmj/cBZh9e4fk3NpH4DTdBmnhartuCqBX0pzv7+0M
-         J0J/ZBzrZkGcsU8FT8NeCg0seSFApNNvuhEA+2DdKoeAbYIOCTXzEo+24O9EmPvj9OIQ
-         EakQ==
+        bh=CM2tIVPC0fBwFaKseXQd9HgBiDaWlbPW6hwGgoaNAr4=;
+        b=H4NnFfa9qcjhMxwsWvyRj6nGEkoAgui0je7OV6J3eekD2Bn/xesvGd627yubJRUOJz
+         fp/4p2bWYx63Nhc0pMIsVf9mwqQ7tN1tt6T8isfACvypzEDajz9CqsZwUXD/2c1h5C9p
+         dmgzUY6AaIWJyt9YKzH5kD3USQkc5Btay3ZXJD8HTlVGJZ3tUbODgDWamBqI29p5U2vO
+         SdAZrFqsAxIHd88tJmh9MkzIP1XghKcb5QtaSwCWSgV/gm+Oo4y9JoigoqNPqb7ZiqyO
+         duZSlU98NggmAxx+WioxQppadXuOV8yZNsA6MG1T/HpTpRbuA052/JTBU2IiSsLmz1i6
+         0aCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=SlfIFAUjnguc+JpsjlVfnRjFFMNQHOY/AMA58+Nfm8o=;
-        b=VaQtUuCtYRjw91LAAC6B8PYQs4r5e9zddUG6TFtb00GK2DT55CkgzNjj3REwt7Ab2H
-         BEMQG4xfgFCOFj6nuc6pJac5LGWPcow+5Mg+cmL0CVU0WylecBryVY1B/N3/zlIcCY4g
-         mEBmFvTPDSEwXsUnTevZiABML/zxAPEkmAI/vwwBljxjxluMLQ4IoCobzYX8IqBlfuni
-         AlwJa+NGV/mpxUOF2nS/FzZU7kfJCIW9sGSDIH9xIlsyiYBMImdtiysUXbZBMs9mCPg+
-         lksxEmnQB+OhOFSAdJAvHx+VnyOuLqugTQNvJBkiFEiApe0XbDfXWdIgRtPDRFTP4hjh
-         V0vQ==
-X-Gm-Message-State: AOAM533wa3hDu76grrp7YtEr4J6n3LZkXLSyV8u7lG1dbfGk5Z1mGiOO
-        8XfVOvmu0AldGMEGczOjHdY=
-X-Google-Smtp-Source: ABdhPJwxGO6aBtOFI1wnjXO233Ox5l4UEeHez7RH58zmfnKmlO20oaF+V3coc42EeDeRC6sH4LDHcA==
-X-Received: by 2002:a1c:2485:: with SMTP id k127mr2812633wmk.138.1592590162265;
-        Fri, 19 Jun 2020 11:09:22 -0700 (PDT)
+        bh=CM2tIVPC0fBwFaKseXQd9HgBiDaWlbPW6hwGgoaNAr4=;
+        b=I4zXApV2c68nJDy9lT32MCSHwPlEexvSyWuIUTHdlS65658YafLjYMvkOvcD0jnYZU
+         dcMNm3ZJRHBSqsbz51jMztsnfx3nt0+BkB73x8QqAFilxsw7CYwgS44u24/9g7s9Dp4K
+         gaWogP8146Kz0sGJYlG6hPsiI20tJrii+Od5My+f0tdDirGGAmbILinKVi1oKzUnZe9a
+         Ozyzbp30Qdxsw3EjfvoGT6yWF8aG3UNVVKP2xEbRavcdMW09X2XjxFr70nYsmBqrJCxf
+         1J5taZvQO6UumB3z7mMaggTmPobwSQR7A+2kURVIJT+xKkBlRrXzJkgOBBGX7M9psJTM
+         y8Ow==
+X-Gm-Message-State: AOAM533UUXHWUnmjQGu+EauRF3GfPvkrM1C2vJkAvbz0LMByxbps/Nyd
+        MkmbLEuLG+jLw0R2ajVs1n0=
+X-Google-Smtp-Source: ABdhPJxL5IxbU79buJcnxRleNhRUwdRWGQVyuuwwkmoFsH53149/Pc4/3CWp4gqVGXie08C0+fRbzg==
+X-Received: by 2002:a5d:46c5:: with SMTP id g5mr5288406wrs.15.1592590191939;
+        Fri, 19 Jun 2020 11:09:51 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id 30sm3307658wrm.74.2020.06.19.11.09.20
+        by smtp.gmail.com with ESMTPSA id 104sm7996561wrl.25.2020.06.19.11.09.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Jun 2020 11:09:21 -0700 (PDT)
-Subject: Re: [PATCH 2/3] net: phy: marvell: Add Marvell 88E1340S support
+        Fri, 19 Jun 2020 11:09:51 -0700 (PDT)
+Subject: Re: [PATCH 3/3] net: phy: marvell: Add Marvell 88E1548P support
 To:     Maxim Kochetkov <fido_max@inbox.ru>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -56,14 +56,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 References: <20200619084904.95432-1-fido_max@inbox.ru>
- <20200619084904.95432-3-fido_max@inbox.ru>
+ <20200619084904.95432-4-fido_max@inbox.ru>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <3ddc7d27-f555-006c-5785-0a07067edf09@gmail.com>
-Date:   Fri, 19 Jun 2020 11:09:17 -0700
+Message-ID: <0a2b1bff-6e4b-93cd-4778-dcae2430aed6@gmail.com>
+Date:   Fri, 19 Jun 2020 11:09:48 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <20200619084904.95432-3-fido_max@inbox.ru>
+In-Reply-To: <20200619084904.95432-4-fido_max@inbox.ru>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -76,7 +76,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On 6/19/2020 1:49 AM, Maxim Kochetkov wrote:
 > Add support for this new phy ID.
-> > Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+> 
+> Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
