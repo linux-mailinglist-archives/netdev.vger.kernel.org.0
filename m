@@ -2,94 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD1B5200A42
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 15:34:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 697D3200A47
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 15:36:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732879AbgFSNeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 09:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42390 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728973AbgFSNe3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 09:34:29 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7A1C06174E
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 06:34:28 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id r11so5588076vsj.5
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 06:34:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=GGdUuLCAiwswGC8VwacUo3EobWtrXtsk7zxMEz4Czs0=;
-        b=TQC2zt3jbOi8uocyfTsDCbExR0xz0T5Kq2x3xmsKduYvLe4XD/CmZ5V2FJp8eZcvQz
-         Fo3czl0sFdJR96NsQCh1NXqKpzz0nbPC3ixLY+ezJAQTInAJN0sb59NET4JU7QsqsLaH
-         X2BMFqHr3XTVOAH88U8Z7Uoao1ejWG7IHdCDot0IHimceOHUjKGHCuaLaR2jKrQbEMx8
-         Eb7YvZeI5kLNLHvFKC/pwtFVXbMJtfbUnXBlno4/OYIjF7VHj1BD1jFRbK4XXDNIrS1a
-         AkH/sD3nDPfpOTvOxJeQ1KIj+h2a2in1qN3ESinJN7SjlW26s4IZKBm0IdRkMSW6shL8
-         varA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=GGdUuLCAiwswGC8VwacUo3EobWtrXtsk7zxMEz4Czs0=;
-        b=oreFlogPKdlbO2WCfgr2FnA+ktA9uMTj7rWpwXBXyOBpttkRgUzolOuZNd/EH20ydS
-         7lYuEa7U5xNPy2AxmuMJ7E3Le548KQippAyWUyNepZj2ezrlZYcpaFNApkXQeoZcEkEC
-         vGIboK69QFBMrEXxKyYa3cdxL+KtfzAclINHfpuzAM3DmSp2aSc6Hq7ij/bhmkZMY1DN
-         4h/iXG6qwSsDnzEWVom4Dfshu+zj8RD5zbNTCmkiyW7hwKhrXch5x822CxoMJs7L/Yf0
-         ZeC4k38L+yegoWnBKhQylQe5/shxDcBrTXeGJTQiswAZGqE+yc3eJ7Yf83y4Jssnn5X9
-         jPHA==
-X-Gm-Message-State: AOAM530ufDhR18FJ0ud8/1OPauobpguuyS4hCMzMJZdW2Nowzt55q/hb
-        Hx3lEHMdYEhTAxt6DamGaYRIlF7bo1k9/G+rGMY=
-X-Google-Smtp-Source: ABdhPJw9eZ8x4YOFSHoDSaMxhfkdcDV930jfkp3DqLFvKiVMI9AxWNyZbY3qe4tfep0xfm51p6Dc2W+5iya9r8Wc5pU=
-X-Received: by 2002:a67:dd0b:: with SMTP id y11mr7445767vsj.80.1592573667574;
- Fri, 19 Jun 2020 06:34:27 -0700 (PDT)
+        id S1732611AbgFSNfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 09:35:52 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:44625 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730512AbgFSNfv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 09:35:51 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id C389C580354;
+        Fri, 19 Jun 2020 09:35:50 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Fri, 19 Jun 2020 09:35:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=hTzkPo
+        0nZf0l+04cu3f+Mx3KZiJZC5kWgKL24g9v/eI=; b=fa7Zb3NJdbg4NCX/WqSpp+
+        ZPgutFM5uMuJ04X16YAPBKyE07NaIltfkjsg1wx3eAYb978P5x65hLr+SKTZpPw9
+        +9zAzM9jSTLZF81g/T1PyXx/XT5y9i2hF4qQbdFDimQcrkowzHVKchpnm3DwpzEx
+        kh5Hwce5u0z/CTNBzmonjEKLgfylf65jxhQa/F67OXouk3rntAWGffksGjDkXcZ/
+        R9zj4mbytd0sr92gu3/hwYK/YqQy57NWAtUkprFCLsU3Vnr390kF+UrXHykk7yjS
+        qrBibf6PS6GwnNyY+vk+46ve2CpNqNQEHFzwQWpVpT0X/gNMCQdy8X4ZkvN1/cNw
+        ==
+X-ME-Sender: <xms:Nr_sXpcVPh7JplU7YH19Dfkl12FnUHjOHEZ64Kc-OEhoTcjWTvNQxQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudejiedgieejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnheptdffkeekfeduffevgeeujeffjefhte
+    fgueeugfevtdeiheduueeukefhudehleetnecukfhppedutdelrdeijedrkedruddvleen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    gthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:Nr_sXnP3_sgkYo3f7QCe571rNZO6XYYiGx3QQEeSd6MUuqwax-r56g>
+    <xmx:Nr_sXigGRXbTtUHmpSyn2V5rcx5oj0GHryQETKQgDGS_GJ006HrD5g>
+    <xmx:Nr_sXi_7rgArlPfV3kF5Ha5XCmNC7a7GM-9v6UJGU9xMOE69aShcIA>
+    <xmx:Nr_sXm9EMTn40dLUvj3V-2-RZEEWIVUEe_hPyqLi-huyQg1Y_ZDA4Q>
+Received: from localhost (bzq-109-67-8-129.red.bezeqint.net [109.67.8.129])
+        by mail.messagingengine.com (Postfix) with ESMTPA id DF2663061856;
+        Fri, 19 Jun 2020 09:35:49 -0400 (EDT)
+Date:   Fri, 19 Jun 2020 16:35:48 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     dsatish <satish.d@oneconvergence.com>
+Cc:     davem@davemloft.net, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, kuba@kernel.org, netdev@vger.kernel.org,
+        simon.horman@netronome.com, kesavac@gmail.com,
+        prathibha.nagooru@oneconvergence.com,
+        intiyaz.basha@oneconvergence.com, jai.rana@oneconvergence.com
+Subject: Re: [PATCH net-next 3/3] cls_flower: Allow flow offloading though
+ masked key exist.
+Message-ID: <20200619133548.GB400561@splinter>
+References: <20200619094156.31184-1-satish.d@oneconvergence.com>
+ <20200619094156.31184-4-satish.d@oneconvergence.com>
 MIME-Version: 1.0
-Reply-To: oliviaeorge@hotmail.com
-Received: by 2002:a67:2cc9:0:0:0:0:0 with HTTP; Fri, 19 Jun 2020 06:34:27
- -0700 (PDT)
-From:   George Olivia <oliviaeorge@gmail.com>
-Date:   Fri, 19 Jun 2020 07:34:27 -0600
-X-Google-Sender-Auth: muAw7Bs3MLt8P9aTfFzXMvfgA5g
-Message-ID: <CAAkOt0cOGtYZ8JSw0KiQBYCqqbd92M5Augf1i65cbJReh8rm-w@mail.gmail.com>
-Subject: I wish you read my mail in a good heart.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200619094156.31184-4-satish.d@oneconvergence.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With all due respect I got your details from an online directory and
-having been motivated by your personal status, I decided to approach
-you  I am Mrs. George Olivia; I have decided to donate what I have to
-you / Motherless babies/Less privileged/Widows' because I am dying and
-diagnosed for cancer for about 2 years ago. I have been touched by God
-Almighty to donate from what I have inherited from my late husband to
-you for good work of God Almighty. I have asked Almighty God to
-forgive me and believe he has, because he is a Merciful God I will be
-going in for an operation surgery soon.
+On Fri, Jun 19, 2020 at 03:11:56PM +0530, dsatish wrote:
+> A packet reaches OVS user space, only if, either there is no rule in
+> datapath/hardware or there is race condition that the flow is added
+> to hardware but before it is processed another packet arrives.
+> 
+> It is possible hardware as part of its limitations/optimizations
+> remove certain flows.
 
-I decided to will/donate the sum of ($ 8.1 million DOLLARS) to you for
-the good work of God Almighty, and also to help the motherless and
-less privilege and also forth assistance of the widows. At the moment
-I cannot take any telephone calls right now due to the fact that my
-relatives (that have squandered the funds gave them for this purpose
-before) are around me and my health status also. I have adjusted my
-will and my lawyer is aware.
+Which driver is doing this? I don't believe it's valid to remove filters
+from hardware and not tell anyone about it.
 
-I wish you all the best and May the good Lord bless you abundantly,
-and please use the funds judiciously and always extend the good work
-to others. As soon as you get back to me, I shall give you info on
-what I need from you, then you will contact the bank and tell them I
-have willed those properties to you by quoting my personal file
-routing and account information. And I have also notified the bank
-that I am willing that properties to you for a good, effective and
-prudent work. I know I don't know you but I have been directed to do
-this by God Almighty.
-
-I Have all my Hospital document which i can send to you as prove to
-what am tell you and my seriousness to this. If you are interested in
-carrying out this task, get back to me for more details on this noble
-project of mine.
-
-Yours Faithfully,
-Mrs. George Olivia
+> To handle such cases where the hardware lost
+> the flows, tc can offload to hardware if it receives a flow for which
+> there exists an entry in its flow table. To handle such cases TC when
+> it returns EEXIST error, also programs the flow in hardware, if
+> hardware offload is enabled.
+> 
+> Signed-off-by: Chandra Kesava <kesavac@gmail.com>
+> Signed-off-by: Prathibha Nagooru <prathibha.nagooru@oneconvergence.com>
+> Signed-off-by: Satish Dhote <satish.d@oneconvergence.com>
+> ---
+>  net/sched/cls_flower.c | 23 +++++++++++++++++++----
+>  1 file changed, 19 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+> index f1a5352cbb04..d718233cd5b9 100644
+> --- a/net/sched/cls_flower.c
+> +++ b/net/sched/cls_flower.c
+> @@ -431,7 +431,8 @@ static void fl_hw_destroy_filter(struct tcf_proto *tp, struct cls_fl_filter *f,
+>  
+>  static int fl_hw_replace_filter(struct tcf_proto *tp,
+>  				struct cls_fl_filter *f, bool rtnl_held,
+> -				struct netlink_ext_ack *extack)
+> +				struct netlink_ext_ack *extack,
+> +				unsigned long cookie)
+>  {
+>  	struct tcf_block *block = tp->chain->block;
+>  	struct flow_cls_offload cls_flower = {};
+> @@ -444,7 +445,7 @@ static int fl_hw_replace_filter(struct tcf_proto *tp,
+>  
+>  	tc_cls_common_offload_init(&cls_flower.common, tp, f->flags, extack);
+>  	cls_flower.command = FLOW_CLS_REPLACE;
+> -	cls_flower.cookie = (unsigned long) f;
+> +	cls_flower.cookie = cookie;
+>  	cls_flower.rule->match.dissector = &f->mask->dissector;
+>  	cls_flower.rule->match.mask = &f->mask->key;
+>  	cls_flower.rule->match.key = &f->mkey;
+> @@ -2024,11 +2025,25 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+>  	fl_init_unmasked_key_dissector(&fnew->unmasked_key_dissector);
+>  
+>  	err = fl_ht_insert_unique(fnew, fold, &in_ht);
+> -	if (err)
+> +	if (err) {
+> +		/* It is possible Hardware lost the flow even though TC has it,
+> +		 * and flow miss in hardware causes controller to offload flow again.
+> +		 */
+> +		if (err == -EEXIST && !tc_skip_hw(fnew->flags)) {
+> +			struct cls_fl_filter *f =
+> +				__fl_lookup(fnew->mask, &fnew->mkey);
+> +
+> +			if (f)
+> +				fl_hw_replace_filter(tp, fnew, rtnl_held,
+> +						     extack,
+> +						     (unsigned long)(f));
+> +		}
+>  		goto errout_mask;
+> +	}
+>  
+>  	if (!tc_skip_hw(fnew->flags)) {
+> -		err = fl_hw_replace_filter(tp, fnew, rtnl_held, extack);
+> +		err = fl_hw_replace_filter(tp, fnew, rtnl_held, extack,
+> +					   (unsigned long)fnew);
+>  		if (err)
+>  			goto errout_ht;
+>  	}
+> -- 
+> 2.17.1
+> 
