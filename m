@@ -2,65 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E547E201D3C
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 23:44:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92E9E201D3A
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 23:40:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728038AbgFSVoH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 19 Jun 2020 17:44:07 -0400
-Received: from mail.rmpsz.ro ([82.77.133.60]:52769 "EHLO mail.rmpsz.ro"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728005AbgFSVoG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jun 2020 17:44:06 -0400
-X-Greylist: delayed 5509 seconds by postgrey-1.27 at vger.kernel.org; Fri, 19 Jun 2020 17:44:06 EDT
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mail.rmpsz.ro (Postfix) with ESMTP id 2C9C421504A;
-        Fri, 19 Jun 2020 20:25:06 +0300 (EEST)
-Received: from mail.rmpsz.ro ([127.0.0.1])
-        by localhost (mail.rmpsz.ro [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id yLjL2d0oMKGt; Fri, 19 Jun 2020 20:25:05 +0300 (EEST)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mail.rmpsz.ro (Postfix) with ESMTP id DC32120FDE7;
-        Fri, 19 Jun 2020 18:10:52 +0300 (EEST)
-X-Virus-Scanned: amavisd-new at mail.rmpsz.ro
-Received: from mail.rmpsz.ro ([127.0.0.1])
-        by localhost (mail.rmpsz.ro [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 3BoWv3VYzXO3; Fri, 19 Jun 2020 18:10:52 +0300 (EEST)
-Received: from [172.20.10.3] (unknown [129.205.124.25])
-        by mail.rmpsz.ro (Postfix) with ESMTPSA id E4A58203C6A;
-        Fri, 19 Jun 2020 17:16:47 +0300 (EEST)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1728015AbgFSVkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 17:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728005AbgFSVkL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 17:40:11 -0400
+X-Greylist: delayed 542 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 19 Jun 2020 14:40:11 PDT
+Received: from mail.bugwerft.de (mail.bugwerft.de [IPv6:2a03:6000:1011::59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B60F3C06174E
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 14:40:11 -0700 (PDT)
+Received: from [192.168.178.106] (p57bc9d37.dip0.t-ipconnect.de [87.188.157.55])
+        by mail.bugwerft.de (Postfix) with ESMTPSA id E542742ADAF;
+        Fri, 19 Jun 2020 21:31:04 +0000 (UTC)
+From:   Daniel Mack <daniel@zonque.org>
+Subject: Question on DSA switches, IGMP forwarding and switchdev
+To:     netdev@vger.kernel.org
+Cc:     Ido Schimmel <idosch@idosch.org>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Message-ID: <59c5ede2-8b52-c250-7396-fd7b19ec6bc7@zonque.org>
+Date:   Fri, 19 Jun 2020 23:31:04 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Spende
-To:     Recipients <laszlofyp@rmpsz.ro>
-From:   laszlofyp@rmpsz.ro
-Date:   Fri, 19 Jun 2020 07:20:21 -0700
-Reply-To: mariaschaefflergruppe@gmail.com
-X-Antivirus: avast! (VPS 200619-0, 06/18/2020), Outbound message
-X-Antivirus-Status: Clean
-Message-Id: <20200619141647.E4A58203C6A@mail.rmpsz.ro>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo,
+Hi,
 
-Ich bin Maria Elisabeth Schaeffler, eine deutsche Geschäftsfrau, Investorin und Geschäftsführerin der Schaeffler Gruppe. Ich bin einer der Eigentümer der Schaeffler Gruppe. Ich habe 25 Prozent meines persönlichen Vermögens für wohltätige Zwecke verschenkt. Und ich habe auch zugesagt, den Rest von 25% in diesem Jahr 2020 an Einzelpersonen zu verschenken. Ich habe beschlossen, Ihnen 1.000.000,00 Euro zu spenden. Wenn Sie an meiner Spende interessiert sind, kontaktieren Sie mich für weitere Informationen.
+I'm working on a custom board featuring a Marvell mv88e6085 Ethernet
+switch controlled by the Linux DSA driver, and I'm facing an issue with
+IGMP packet flows.
 
-Sie können auch mehr über mich über den unten stehenden Link lesen
+Consider two Ethernet stations, each connected to the switch on a
+dedicated port. A Linux bridge combines the two ports. In my setup, I
+need these two stations to send and receive multicast traffic, with IGMP
+snooping enabled.
 
-https://en.wikipedia.org/wiki/Maria-Elisabeth_Schaeffler
+When an IGMP query enters the switch, it is redirected to the CPU port
+as all 'external' ports are configured for IGMP/MLP snooping by the
+driver. The issue that I'm seeing is that the Linux bridge does not
+forward the IGMP frames to any other port, no matter whether the bridge
+is in snooping mode or not. This needs to happen however, otherwise the
+stations will not see IGMP queries, and unsolicited membership reports
+are not being transferred either.
 
-==========================================
-Herzliche Grüße,
-Frau Maria-Elisabeth Schaeffler,
-CEO
-Schaeffler Gruppe.
-E-Mail: mariaschaefflergruppe@gmail.com
+I've traced these frames through the bridge code and figured forwarding
+fails in should_deliver() in net/bridge/br_forward.c because
+nbp_switchdev_allowed_egress() denies it due to the fact that the frame
+has already been forwarded by the same parent device. This check causes
+all manual software forwarding of frames between two such switch ports
+to fail. Note that IGMP traffic is the only class of communication that
+is affected by this as it is not handled in hardware.
 
----
-This email is free from viruses and malware because avast! Antivirus protection is active.
-https://www.avast.com/antivirus
+So my question now is how to fix that. Would the DSA driver need to mark
+the ports as independent somehow?
+
+
+Thanks,
+Daniel
 
