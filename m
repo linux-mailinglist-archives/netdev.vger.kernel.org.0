@@ -2,90 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CCE5200001
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 04:05:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58A68200013
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 04:08:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728973AbgFSCFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 22:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
+        id S1729469AbgFSCI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 22:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgFSCE7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 22:04:59 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F93C06174E;
-        Thu, 18 Jun 2020 19:04:58 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id n23so9647405ljh.7;
-        Thu, 18 Jun 2020 19:04:58 -0700 (PDT)
+        with ESMTP id S1727826AbgFSCI0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 22:08:26 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5948AC06174E;
+        Thu, 18 Jun 2020 19:08:25 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id c17so9627428lji.11;
+        Thu, 18 Jun 2020 19:08:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=R3VKRlz6KhsBegBX4kZbzzxJb4mSrV2DKeZcEmCvB5A=;
-        b=pcp+r6tcnC4UiZHq2w3ecFsiqjQ5ZAl9c72euE9GDiimDstUoP0z5NtI9j714pIXcD
-         nY84AWFDehOFaLxDCFQdSz9BL3l3+eU/+aCCSY+BDpS05gg/hpjkY6IU5eDuXyUqOCAy
-         UpRuRSHAsfrmf3e89yqBwyMP2rsWpAuT8YXqGiqFkBec7wj5jfeCbQoGwOZIPaSnDsB3
-         YgjhhbAIyOb/XFQ2tVgPt+7KTKplRAS1jtvIcKnXjdFQfutW2eC7rrn/+92CrZI1Xuky
-         bn6bln2G3uFT7rP/YPHDpiGfOiAc86x+oW1WWUFE0VdXdDMiz2HtrpCy4aNzDFi1bgdk
-         VudA==
+        bh=soNkQOjaxprLDPChf/O/i85nJT0zzxCisaanbV+LWSs=;
+        b=jzu23rTOCzCf6n9RJ7nwyxWhrzxw46Bm6Liznb8CIvy1HlUfIBOkd6D8MOSQVnJTf9
+         HEw7/eTwsZjd0KTeuqwE+Mcjy+fRoFZvPHOxnMghMMGc1BiZN2lW+aTbKePDyvn8KPBE
+         4cUPd+xJUcloiKedmfQLZVMuRqQhgLuIKwVl7+QfVtPuOsjGeugR55X57FQaLWv1rNmL
+         VmT1E7oQiwR4hZ9XHW4ve8IC9ZNoB/wHUyK9+DV72Ou1vclP4koodhip5vNShzuM3MoN
+         uGNWdzchucf6FEKADXz3b4Qze2EwvtFr6CpZ2s0z1i/ZMfbfeFwa2b3+ZRv7omrhEq6Z
+         WSdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=R3VKRlz6KhsBegBX4kZbzzxJb4mSrV2DKeZcEmCvB5A=;
-        b=moUfglcmHC+/Bm36QGFVZuwYAz/ryppYv4hc+7SGVDNaOe970iPsK+D/ulN9RVVqmB
-         ixHu20PQa/OYgRRpMELo4yIAl4kpkn5ZPBODhKuSPuUrjcch9j0LJqd9KwXjsyTj38e8
-         AsLJI79swaRk+4lAvLEwFnETEIdaPQ+PexgLSvIza3n40oQ+TiWeke7vsLSPlTezh/UF
-         xk9mZP33mQGI+pM0+Y1dmXnjiKGjrWjnpruBCY1LGVMwsatnqbNr/OSCeGN6GUE8ZBhf
-         5l9j+3uYKXGRTlsA+auoI7pAvh5DAfzf+etmBXG1N7zPwHbyR4uWQJ+IdP1My9/9BvkV
-         5cqg==
-X-Gm-Message-State: AOAM533sW3sXwAHrVX9Q9Z4aySTm2NNF4uKvgnA2w/C8r16cK9mK7MEw
-        gr6WhdfnNQMQgP2dNUjs1M5dZ0OYKo0fKpD5S6g=
-X-Google-Smtp-Source: ABdhPJxBNRcKl6EbhjEr4KNQrGUoVgyLcm4OlhaMlCgQGrJLNqIRgY0a+Nzk5scH6yY6ndLUCvw9SLq7aCFNejJHc7k=
-X-Received: by 2002:a05:651c:1193:: with SMTP id w19mr620933ljo.121.1592532296809;
- Thu, 18 Jun 2020 19:04:56 -0700 (PDT)
+        bh=soNkQOjaxprLDPChf/O/i85nJT0zzxCisaanbV+LWSs=;
+        b=jRKeHuRF87q6v63YSUmhBzermlgjnLQEv/oIMQZxQBCK6qvRQZdjpSbmMTakV6ZPJv
+         MfU7ZqW+Tefhe4GsoT7j+XiO8uExI6+jxbnjFP+1g5S+p5c7zGUj1JMIN1zi829n6ECH
+         utZ7qrHcOE+7u24gSnsS1tuRu4UruYQkW6qaQiTu42QZfq0P0JTPbfvau7hH/mFSiDWs
+         1X3ebtVy0bIcU9CbovRYeFeyWd6Yw+hINmUOFxMVDG6o4+eOsgQQcx0MPuJ8wYE1dXfM
+         c32MUOGY9JwPwb8dUynJSONr3i+NFCi86MMm5g81VoLEiRRPwVx+GIuYnBRq/E24rtsS
+         uFAg==
+X-Gm-Message-State: AOAM532R6c7vunpb+qOMqkkFss2E0aUBsX98gHRv0tVXwuYGjc7PzVL/
+        3SdGlHDCv2n1OelWkQOG1nqHm2ivUA45DEuUkCk=
+X-Google-Smtp-Source: ABdhPJwCtUioOjsIa3oMmG1n4R4u1FcinWC7Kn7zF6alYdDnw1BJLTh0NJfiKPzHZHFE/5o23msKKW018ewUjwmECPc=
+X-Received: by 2002:a2e:9187:: with SMTP id f7mr637190ljg.450.1592532503844;
+ Thu, 18 Jun 2020 19:08:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200616173556.2204073-1-jolsa@kernel.org> <5eeaa556c7a0e_38b82b28075185c46a@john-XPS-13-9370.notmuch>
- <20200618114806.GA2369163@krava> <5eebe552dddc1_6d292ad5e7a285b83f@john-XPS-13-9370.notmuch>
- <CAEf4Bzb+U+A9i0VfGUHLVt28WCob7pb-0iVQA8d1fcR8A27ZpA@mail.gmail.com> <5eec061598dcf_403f2afa5de805bcde@john-XPS-13-9370.notmuch>
-In-Reply-To: <5eec061598dcf_403f2afa5de805bcde@john-XPS-13-9370.notmuch>
+References: <20200616100512.2168860-1-jolsa@kernel.org> <20200616100512.2168860-3-jolsa@kernel.org>
+ <CAEf4BzaL3bc8Hmm20Y-qEqfr7kZS2s8-KeE8M6Mz9ni81CSu4w@mail.gmail.com> <F126D92D-E9D8-4895-AA4E-717B553AC45A@gmail.com>
+In-Reply-To: <F126D92D-E9D8-4895-AA4E-717B553AC45A@gmail.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 18 Jun 2020 19:04:45 -0700
-Message-ID: <CAADnVQLGNUcDWmrgUBmdcgLMfUNf=-3yroA8a+b7s+Ki5Tb4Jg@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Allow small structs to be type of function argument
-To:     John Fastabend <john.fastabend@gmail.com>
+Date:   Thu, 18 Jun 2020 19:08:12 -0700
+Message-ID: <CAADnVQKWfRCLSUYSnnMRR6jQhF1MFCE+Xhcp30E_7uJd_Jr2sg@mail.gmail.com>
+Subject: Re: [PATCH 02/11] bpf: Compile btfid tool at kernel compilation start
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
 Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>, Andrii Nakryiko <andriin@fb.com>,
         Jiri Olsa <jolsa@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
         David Miller <davem@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
-        Masanori Misono <m.misono760@gmail.com>
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 5:26 PM John Fastabend <john.fastabend@gmail.com> wrote:
+On Thu, Jun 18, 2020 at 5:47 PM Arnaldo Carvalho de Melo
+<arnaldo.melo@gmail.com> wrote:
 >
->  foo(int a, __int128 b)
 >
-> would put a in r0 and b in r2 and r3 leaving a hole in r1. But that
-> was some old reference manual and  might no longer be the case
-> in reality. Perhaps just spreading hearsay, but the point is we
-> should say something about what the BPF backend convention
-> is and write it down. We've started to bump into these things
-> lately.
+>
+> On June 18, 2020 9:40:32 PM GMT-03:00, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> >On Tue, Jun 16, 2020 at 3:06 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >>
+> >> The btfid tool will be used during the vmlinux linking,
+> >> so it's necessary it's ready for it.
+> >>
+> >
+> >Seeing troubles John runs into, I wonder if it maybe would be better
+> >to add it to pahole instead? It's already a dependency for anything
+> >BTF-related in the kernel. It has libelf, libbpf linked and set up.
+> >WDYT? I've cc'ed Arnaldo as well for an opinion.
+>
+> I was reading this thread with a low prio, but my gut feeling was that yeah, since pahole is already there, why not have it do this?
+>
+> I'll try to look at this tomorrow and see if this is more than just a hunch.
 
-calling convention for int128 in bpf is _undefined_.
-calling convention for struct by value in bpf is also _undefined_.
-
-In many cases the compiler has to have the backend code
-so other parts of the compiler can function.
-I didn't bother explicitly disabling every undefined case.
-Please don't read too much into llvm generated code.
+I think it's better to keep it separate like Jiri did.
+It is really vmlinux specific as far as I can see and can change in the future.
