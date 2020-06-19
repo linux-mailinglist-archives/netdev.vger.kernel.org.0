@@ -2,454 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1B03201E58
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 00:58:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00EB5201E5F
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 00:58:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730079AbgFSW5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 18:57:24 -0400
-Received: from smtp.uniroma2.it ([160.80.6.16]:33334 "EHLO smtp.uniroma2.it"
+        id S1730165AbgFSW5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 18:57:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53236 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729891AbgFSW4s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jun 2020 18:56:48 -0400
-Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 05JMuRJF014086
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sat, 20 Jun 2020 00:56:29 +0200
-From:   Andrea Mayer <andrea.mayer@uniroma2.it>
-To:     David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     Donald Sharp <sharpd@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Dinesh Dutt <didutt@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
-        Ahmed Abdelsalam <ahabdels@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net-next,v1,5/5] selftests: add selftest for the VRF strict mode
-Date:   Sat, 20 Jun 2020 00:54:47 +0200
-Message-Id: <20200619225447.1445-6-andrea.mayer@uniroma2.it>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200619225447.1445-1-andrea.mayer@uniroma2.it>
-References: <20200619225447.1445-1-andrea.mayer@uniroma2.it>
+        id S1730154AbgFSW5o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Jun 2020 18:57:44 -0400
+Received: from localhost.localdomain.com (unknown [151.48.138.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CED4F21D7D;
+        Fri, 19 Jun 2020 22:57:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592607463;
+        bh=3ZTl+A/Kacpq2EA0Kulq1UyudM0GeuQ/Ht1E3auto+w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DOZgSg/spKDM3Zz1thY8RJMn/BJUwXPDZukfdMYGZf/31Q6WJJb1y034UyB4Ps8pV
+         5O4up5g44OYM4VyTdApQgkVRwlGYInqe3aWafBGGthacRsOGoR0wn3e7f3hPZnFwtW
+         4o6XQxFxilD3zcT5egN5eEMmFJjoAg9lbclo6CUg=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, brouer@redhat.com,
+        daniel@iogearbox.net, toke@redhat.com, lorenzo.bianconi@redhat.com,
+        dsahern@kernel.org
+Subject: [PATCH v2 bpf-next 0/8] introduce support for XDP programs in CPUMAP
+Date:   Sat, 20 Jun 2020 00:57:16 +0200
+Message-Id: <cover.1592606391.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The new strict mode functionality is tested in different configurations and
-on different network namespaces.
+Similar to what David Ahern proposed in [1] for DEVMAPs, introduce the
+capability to attach and run a XDP program to CPUMAP entries.
+The idea behind this feature is to add the possibility to define on which CPU
+run the eBPF program if the underlying hw does not support RSS.
+I respin patch 1/6 from a previous series sent by David [2].
+The functionality has been tested on Marvell Espressobin, i40e and mlx5.
+Detailed tests results can be found here:
+https://github.com/xdp-project/xdp-project/blob/master/areas/cpumap/cpumap04-map-xdp-prog.org
 
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
----
- .../selftests/net/vrf_strict_mode_test.sh     | 390 ++++++++++++++++++
- 1 file changed, 390 insertions(+)
- create mode 100755 tools/testing/selftests/net/vrf_strict_mode_test.sh
+Changes since v1:
+- added performance test results
+- added kselftest support
+- fixed memory accounting with page_pool
+- extended xdp_redirect_cpu_user.c to load an external program to perform
+  redirect
+- reported ifindex to attached eBPF program
+- moved bpf_cpumap_val definition to include/uapi/linux/bpf.h
 
-diff --git a/tools/testing/selftests/net/vrf_strict_mode_test.sh b/tools/testing/selftests/net/vrf_strict_mode_test.sh
-new file mode 100755
-index 000000000000..5274f4a1fba1
---- /dev/null
-+++ b/tools/testing/selftests/net/vrf_strict_mode_test.sh
-@@ -0,0 +1,390 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# This test is designed for testing the new VRF strict_mode functionality.
-+
-+ret=0
-+
-+# identifies the "init" network namespace which is often called root network
-+# namespace.
-+INIT_NETNS_NAME="init"
-+
-+PAUSE_ON_FAIL=${PAUSE_ON_FAIL:=no}
-+
-+log_test()
-+{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
-+
-+	if [ ${rc} -eq ${expected} ]; then
-+		nsuccess=$((nsuccess+1))
-+		printf "\n    TEST: %-60s  [ OK ]\n" "${msg}"
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "\n    TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
-+}
-+
-+print_log_test_results()
-+{
-+	if [ "$TESTS" != "none" ]; then
-+		printf "\nTests passed: %3d\n" ${nsuccess}
-+		printf "Tests failed: %3d\n"   ${nfail}
-+	fi
-+}
-+
-+log_section()
-+{
-+	echo
-+	echo "################################################################################"
-+	echo "TEST SECTION: $*"
-+	echo "################################################################################"
-+}
-+
-+ip_expand_args()
-+{
-+	local nsname=$1
-+	local nsarg=""
-+
-+	if [ "${nsname}" != "${INIT_NETNS_NAME}" ]; then
-+		nsarg="-netns ${nsname}"
-+	fi
-+
-+	echo "${nsarg}"
-+}
-+
-+vrf_count()
-+{
-+	local nsname=$1
-+	local nsarg="$(ip_expand_args ${nsname})"
-+
-+	ip ${nsarg} -o link show type vrf | wc -l
-+}
-+
-+count_vrf_by_table_id()
-+{
-+	local nsname=$1
-+	local tableid=$2
-+	local nsarg="$(ip_expand_args ${nsname})"
-+
-+	ip ${nsarg} -d -o link show type vrf | grep "table ${tableid}" | wc -l
-+}
-+
-+add_vrf()
-+{
-+	local nsname=$1
-+	local vrfname=$2
-+	local vrftable=$3
-+	local nsarg="$(ip_expand_args ${nsname})"
-+
-+	ip ${nsarg} link add ${vrfname} type vrf table ${vrftable} &>/dev/null
-+}
-+
-+add_vrf_and_check()
-+{
-+	local nsname=$1
-+	local vrfname=$2
-+	local vrftable=$3
-+	local cnt
-+	local rc
-+
-+	add_vrf ${nsname} ${vrfname} ${vrftable}; rc=$?
-+
-+	cnt=$(count_vrf_by_table_id ${nsname} ${vrftable})
-+
-+	log_test ${rc} 0 "${nsname}: add vrf ${vrfname}, ${cnt} vrfs for table ${vrftable}"
-+}
-+
-+add_vrf_and_check_fail()
-+{
-+	local nsname=$1
-+	local vrfname=$2
-+	local vrftable=$3
-+	local cnt
-+	local rc
-+
-+	add_vrf ${nsname} ${vrfname} ${vrftable}; rc=$?
-+
-+	cnt=$(count_vrf_by_table_id ${nsname} ${vrftable})
-+
-+	log_test ${rc} 2 "${nsname}: CANNOT add vrf ${vrfname}, ${cnt} vrfs for table ${vrftable}"
-+}
-+
-+del_vrf_and_check()
-+{
-+	local nsname=$1
-+	local vrfname=$2
-+	local nsarg="$(ip_expand_args ${nsname})"
-+
-+	ip ${nsarg} link del ${vrfname}
-+	log_test $? 0 "${nsname}: remove vrf ${vrfname}"
-+}
-+
-+config_vrf_and_check()
-+{
-+	local nsname=$1
-+	local addr=$2
-+	local vrfname=$3
-+	local nsarg="$(ip_expand_args ${nsname})"
-+
-+	ip ${nsarg} link set dev ${vrfname} up && \
-+		ip ${nsarg} addr add ${addr} dev ${vrfname}
-+	log_test $? 0 "${nsname}: vrf ${vrfname} up, addr ${addr}"
-+}
-+
-+read_strict_mode()
-+{
-+	local nsname=$1
-+	local rval
-+	local rc=0
-+	local nsexec=""
-+
-+	if [ "${nsname}" != "${INIT_NETNS_NAME}" ]; then
-+		# a custom network namespace is provided
-+		nsexec="ip netns exec ${nsname}"
-+	fi
-+
-+	rval="$(${nsexec} bash -c "cat /proc/sys/net/vrf/strict_mode" | \
-+		grep -E "^[0-1]$")" &> /dev/null
-+	if [ $? -ne 0 ]; then
-+		# set errors
-+		rval=255
-+		rc=1
-+	fi
-+
-+	# on success, rval can be only 0 or 1; on error, rval is equal to 255
-+	echo ${rval}
-+	return ${rc}
-+}
-+
-+read_strict_mode_compare_and_check()
-+{
-+	local nsname=$1
-+	local expected=$2
-+	local res
-+
-+	res="$(read_strict_mode ${nsname})"
-+	log_test ${res} ${expected} "${nsname}: check strict_mode=${res}"
-+}
-+
-+set_strict_mode()
-+{
-+	local nsname=$1
-+	local val=$2
-+	local nsexec=""
-+
-+	if [ "${nsname}" != "${INIT_NETNS_NAME}" ]; then
-+		# a custom network namespace is provided
-+		nsexec="ip netns exec ${nsname}"
-+	fi
-+
-+	${nsexec} bash -c "echo ${val} >/proc/sys/net/vrf/strict_mode" &>/dev/null
-+}
-+
-+enable_strict_mode()
-+{
-+	local nsname=$1
-+
-+	set_strict_mode ${nsname} 1
-+}
-+
-+disable_strict_mode()
-+{
-+	local nsname=$1
-+
-+	set_strict_mode ${nsname} 0
-+}
-+
-+disable_strict_mode_and_check()
-+{
-+	local nsname=$1
-+
-+	disable_strict_mode ${nsname}
-+	log_test $? 0 "${nsname}: disable strict_mode (=0)"
-+}
-+
-+enable_strict_mode_and_check()
-+{
-+	local nsname=$1
-+
-+	enable_strict_mode ${nsname}
-+	log_test $? 0 "${nsname}: enable strict_mode (=1)"
-+}
-+
-+enable_strict_mode_and_check_fail()
-+{
-+	local nsname=$1
-+
-+	enable_strict_mode ${nsname}
-+	log_test $? 1 "${nsname}: CANNOT enable strict_mode"
-+}
-+
-+strict_mode_check_default()
-+{
-+	local nsname=$1
-+	local strictmode
-+	local vrfcnt
-+
-+	vrfcnt=$(vrf_count ${nsname})
-+	strictmode=$(read_strict_mode ${nsname})
-+	log_test ${strictmode} 0 "${nsname}: strict_mode=0 by default, ${vrfcnt} vrfs"
-+}
-+
-+setup()
-+{
-+	modprobe vrf
-+
-+	ip netns add testns
-+	ip netns exec testns ip link set lo up
-+}
-+
-+cleanup()
-+{
-+	ip netns del testns 2>/dev/null
-+
-+	ip link del vrf100 2>/dev/null
-+	ip link del vrf101 2>/dev/null
-+	ip link del vrf102 2>/dev/null
-+
-+	echo 0 >/proc/sys/net/vrf/strict_mode 2>/dev/null
-+}
-+
-+vrf_strict_mode_tests_init()
-+{
-+	vrf_strict_mode_check_support init
-+
-+	strict_mode_check_default init
-+
-+	add_vrf_and_check init vrf100 100
-+	config_vrf_and_check init 172.16.100.1/24 vrf100
-+
-+	enable_strict_mode_and_check init
-+
-+	add_vrf_and_check_fail init vrf101 100
-+
-+	disable_strict_mode_and_check init
-+
-+	add_vrf_and_check init vrf101 100
-+	config_vrf_and_check init 172.16.101.1/24 vrf101
-+
-+	enable_strict_mode_and_check_fail init
-+
-+	del_vrf_and_check init vrf101
-+
-+	enable_strict_mode_and_check init
-+
-+	add_vrf_and_check init vrf102 102
-+	config_vrf_and_check init 172.16.102.1/24 vrf102
-+
-+	# the strict_modle is enabled in the init
-+}
-+
-+vrf_strict_mode_tests_testns()
-+{
-+	vrf_strict_mode_check_support testns
-+
-+	strict_mode_check_default testns
-+
-+	enable_strict_mode_and_check testns
-+
-+	add_vrf_and_check testns vrf100 100
-+	config_vrf_and_check testns 10.0.100.1/24 vrf100
-+
-+	add_vrf_and_check_fail testns vrf101 100
-+
-+	add_vrf_and_check_fail testns vrf102 100
-+
-+	add_vrf_and_check testns vrf200 200
-+
-+	disable_strict_mode_and_check testns
-+
-+	add_vrf_and_check testns vrf101 100
-+
-+	add_vrf_and_check testns vrf102 100
-+
-+	#the strict_mode is disabled in the testns
-+}
-+
-+vrf_strict_mode_tests_mix()
-+{
-+	read_strict_mode_compare_and_check init 1
-+
-+	read_strict_mode_compare_and_check testns 0
-+
-+	del_vrf_and_check testns vrf101
-+
-+	del_vrf_and_check testns vrf102
-+
-+	disable_strict_mode_and_check init
-+
-+	enable_strict_mode_and_check testns
-+
-+	enable_strict_mode_and_check init
-+	enable_strict_mode_and_check init
-+
-+	disable_strict_mode_and_check testns
-+	disable_strict_mode_and_check testns
-+
-+	read_strict_mode_compare_and_check init 1
-+
-+	read_strict_mode_compare_and_check testns 0
-+}
-+
-+vrf_strict_mode_tests()
-+{
-+	log_section "VRF strict_mode test on init network namespace"
-+	vrf_strict_mode_tests_init
-+
-+	log_section "VRF strict_mode test on testns network namespace"
-+	vrf_strict_mode_tests_testns
-+
-+	log_section "VRF strict_mode test mixing init and testns network namespaces"
-+	vrf_strict_mode_tests_mix
-+}
-+
-+vrf_strict_mode_check_support()
-+{
-+	local nsname=$1
-+	local output
-+	local rc
-+
-+	output="$(lsmod | grep '^vrf' | awk '{print $1}')"
-+	if [ -z "${output}" ]; then
-+		modinfo vrf || return $?
-+	fi
-+
-+	# we do not care about the value of the strict_mode; we only check if
-+	# the strict_mode parameter is available or not.
-+	read_strict_mode ${nsname} &>/dev/null; rc=$?
-+	log_test ${rc} 0 "${nsname}: net.vrf.strict_mode is available"
-+
-+	return ${rc}
-+}
-+
-+if [ "$(id -u)" -ne 0 ];then
-+	echo "SKIP: Need root privileges"
-+	exit 0
-+fi
-+
-+if [ ! -x "$(command -v ip)" ]; then
-+	echo "SKIP: Could not run test without ip tool"
-+	exit 0
-+fi
-+
-+cleanup &> /dev/null
-+
-+setup
-+vrf_strict_mode_tests
-+cleanup
-+
-+print_log_test_results
-+
-+exit $ret
+[1] https://patchwork.ozlabs.org/project/netdev/cover/20200529220716.75383-1-dsahern@kernel.org/
+[2] https://patchwork.ozlabs.org/project/netdev/patch/20200513014607.40418-2-dsahern@kernel.org/
+
+
+David Ahern (1):
+  net: Refactor xdp_convert_buff_to_frame
+
+Lorenzo Bianconi (7):
+  samples/bpf: xdp_redirect_cpu_user: do not update bpf maps in option
+    loop
+  cpumap: formalize map value as a named struct
+  bpf: cpumap: add the possibility to attach an eBPF program to cpumap
+  bpf: cpumap: implement XDP_REDIRECT for eBPF programs attached to map
+    entries
+  libbpf: add SEC name for xdp programs attached to CPUMAP
+  samples/bpf: xdp_redirect_cpu: load a eBPF program on cpumap
+  selftest: add tests for XDP programs in CPUMAP entries
+
+ include/linux/bpf.h                           |   6 +
+ include/net/xdp.h                             |  41 ++--
+ include/trace/events/xdp.h                    |  16 +-
+ include/uapi/linux/bpf.h                      |  14 ++
+ kernel/bpf/cpumap.c                           | 161 +++++++++++---
+ net/core/dev.c                                |   8 +
+ samples/bpf/xdp_redirect_cpu_kern.c           |  25 ++-
+ samples/bpf/xdp_redirect_cpu_user.c           | 208 ++++++++++++++++--
+ tools/include/uapi/linux/bpf.h                |  14 ++
+ tools/lib/bpf/libbpf.c                        |   2 +
+ .../bpf/prog_tests/xdp_cpumap_attach.c        |  70 ++++++
+ .../bpf/progs/test_xdp_with_cpumap_helpers.c  |  38 ++++
+ 12 files changed, 531 insertions(+), 72 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
+
 -- 
-2.20.1
+2.26.2
 
