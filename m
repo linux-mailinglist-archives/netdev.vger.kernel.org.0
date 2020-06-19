@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0B9D201B0B
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 21:16:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A80D2201B0D
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 21:16:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733203AbgFSTQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 15:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38856 "EHLO
+        id S1733186AbgFSTQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 15:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733165AbgFSTQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 15:16:09 -0400
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AE3C0617B9
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 12:16:06 -0700 (PDT)
+        with ESMTP id S1733115AbgFSTQK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 15:16:10 -0400
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA82C0617BB
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 12:16:07 -0700 (PDT)
 Received: from ramsan ([IPv6:2a02:1810:ac12:ed20:e0be:48f2:cba4:1407])
-        by xavier.telenet-ops.be with bizsmtp
-        id t7Fx220034UASYb017FxCJ; Fri, 19 Jun 2020 21:16:05 +0200
+        by michel.telenet-ops.be with bizsmtp
+        id t7Fx220024UASYb067FxYB; Fri, 19 Jun 2020 21:16:04 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan with esmtp (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1jmMUX-0002JR-28; Fri, 19 Jun 2020 21:15:57 +0200
+        id 1jmMUX-0002JS-2I; Fri, 19 Jun 2020 21:15:57 +0200
 Received: from geert by rox.of.borg with local (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1jmMUX-0006V6-0C; Fri, 19 Jun 2020 21:15:57 +0200
+        id 1jmMUX-0006V8-1E; Fri, 19 Jun 2020 21:15:57 +0200
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -39,105 +39,88 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC 0/5] ravb: Add support for explicit internal clock delay configuration
-Date:   Fri, 19 Jun 2020 21:15:49 +0200
-Message-Id: <20200619191554.24942-1-geert+renesas@glider.be>
+Subject: [PATCH/RFC 1/5] dt-bindings: net: renesas,ravb: Document internal clock delay properties
+Date:   Fri, 19 Jun 2020 21:15:50 +0200
+Message-Id: <20200619191554.24942-2-geert+renesas@glider.be>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200619191554.24942-1-geert+renesas@glider.be>
+References: <20200619191554.24942-1-geert+renesas@glider.be>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-	Hi all,
+Some EtherAVB variants support internal clock delay configuration, which
+can add larger delays than the delays that are typically supported by
+the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
+properties).
 
-Some Renesas EtherAVB variants support internal clock delay
-configuration, which can add larger delays than the delays that are
-typically supported by the PHY (using an "rgmii-*id" PHY mode, and/or
-"[rt]xc-skew-ps" properties).
+Add properties for configuring the internal MAC delays.
+These properties are mandatory, even when specified as zero, to
+distinguish between old and new DTBs.
 
-Historically, the EtherAVB driver configured these delays based on the
-"rgmii-*id" PHY mode.  This caused issues with PHY drivers that
-implement PHY internal delays properly[1].  Hence a backwards-compatible
-workaround was added by masking the PHY mode[2].
+Update the example accordingly.
 
-This RFC patch series implements the next step of the plan outlined in
-[3], and adds proper support for explicit configuration of the MAC
-internal clock delays using new "renesas,[rt]xc-delay-ps" properties.
-If none of these properties is present, the driver falls back to the old
-handling.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ .../devicetree/bindings/net/renesas,ravb.txt  | 29 ++++++++++---------
+ 1 file changed, 16 insertions(+), 13 deletions(-)
 
-The series consists of 4 parts:
-  1. DT binding update documenting the new properties,
-  2. A preparatory improvement,
-  3. Driver update implementing support for the new properties,
-  4. DT updates, one for R-Car Gen3 and RZ/G2 SoC families each.
-
-Note that patches 4 and 5 depend on patch 3, and must not be applied
-before that dependency has hit upstream.
-
-Impacted, tested:
-  - Salvator-X(S) with R-Car H3 ES1.0 and ES2.0, M3-W, and M3-N.
-
-Not impacted, tested:
-  - Ebisu with R-Car E3.
-
-Impacted, not tested:
-  - Salvator-X(S) with other SoC variants,
-  - ULCB with R-Car H3/M3-W/M3-N variants,
-  - V3MSK and Eagle with R-Car V3M,
-  - Draak with R-Car V3H,
-  - HiHope RZ/G2[MN] with RZ/G2M or RZ/G2N.
-
-Thanks for your comments!
-
-References:
-  [1] Commit bcf3440c6dd78bfe ("net: phy: micrel: add phy-mode support
-      for the KSZ9031 PHY")
-  [2] Commit 9b23203c32ee02cd ("ravb: Mask PHY mode to avoid inserting
-      delays twice").
-      https://lore.kernel.org/r/20200529122540.31368-1-geert+renesas@glider.be/
-  [3] https://lore.kernel.org/r/CAMuHMdU+MR-2tr3-pH55G0GqPG9HwH3XUd=8HZxprFDMGQeWUw@mail.gmail.com/
-
-Geert Uytterhoeven (5):
-  dt-bindings: net: renesas,ravb: Document internal clock delay
-    properties
-  ravb: Split delay handling in parsing and applying
-  ravb: Add support for explicit internal clock delay configuration
-  arm64: dts: renesas: rcar-gen3: Convert EtherAVB to explicit delay
-    handling
-  arm64: dts: renesas: rzg2: Convert EtherAVB to explicit delay handling
-
- .../devicetree/bindings/net/renesas,ravb.txt  | 29 ++++++-----
- .../boot/dts/renesas/hihope-rzg2-ex.dtsi      |  2 +-
- arch/arm64/boot/dts/renesas/r8a774a1.dtsi     |  2 +
- arch/arm64/boot/dts/renesas/r8a774b1.dtsi     |  2 +
- arch/arm64/boot/dts/renesas/r8a774c0.dtsi     |  1 +
- arch/arm64/boot/dts/renesas/r8a77951.dtsi     |  2 +
- arch/arm64/boot/dts/renesas/r8a77960.dtsi     |  2 +
- arch/arm64/boot/dts/renesas/r8a77961.dtsi     |  2 +
- arch/arm64/boot/dts/renesas/r8a77965.dtsi     |  2 +
- .../arm64/boot/dts/renesas/r8a77970-eagle.dts |  3 +-
- .../arm64/boot/dts/renesas/r8a77970-v3msk.dts |  3 +-
- arch/arm64/boot/dts/renesas/r8a77970.dtsi     |  2 +
- arch/arm64/boot/dts/renesas/r8a77980.dtsi     |  2 +
- arch/arm64/boot/dts/renesas/r8a77990.dtsi     |  1 +
- arch/arm64/boot/dts/renesas/r8a77995.dtsi     |  1 +
- .../boot/dts/renesas/salvator-common.dtsi     |  2 +-
- arch/arm64/boot/dts/renesas/ulcb.dtsi         |  2 +-
- drivers/net/ethernet/renesas/ravb.h           |  5 +-
- drivers/net/ethernet/renesas/ravb_main.c      | 52 ++++++++++++++-----
- 19 files changed, 86 insertions(+), 31 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/renesas,ravb.txt b/Documentation/devicetree/bindings/net/renesas,ravb.txt
+index 032b76f14f4fdb38..488ada78b6169b8e 100644
+--- a/Documentation/devicetree/bindings/net/renesas,ravb.txt
++++ b/Documentation/devicetree/bindings/net/renesas,ravb.txt
+@@ -64,6 +64,18 @@ Optional properties:
+ 			 AVB_LINK signal.
+ - renesas,ether-link-active-low: boolean, specify when the AVB_LINK signal is
+ 				 active-low instead of normal active-high.
++- renesas,rxc-delay-ps: Internal RX clock delay.
++			This property is mandatory and valid only on R-Car Gen3
++			and RZ/G2 SoCs.
++			Valid values are 0 and 1800.
++			A non-zero value is allowed only if phy-mode = "rgmii".
++			Zero is not supported on R-Car D3.
++- renesas,txc-delay-ps: Internal TX clock delay.
++			This property is mandatory and valid only on R-Car H3,
++			M3-W, M3-W+, M3-N, V3M, and V3H, and RZ/G2M and RZ/G2N.
++			Valid values are 0 and 2000.
++			A non-zero value is allowed only if phy-mode = "rgmii".
++			Zero is not supported on R-Car V3H.
+ 
+ Example:
+ 
+@@ -105,8 +117,10 @@ Example:
+ 				  "ch24";
+ 		clocks = <&cpg CPG_MOD 812>;
+ 		power-domains = <&cpg>;
+-		phy-mode = "rgmii-id";
++		phy-mode = "rgmii";
+ 		phy-handle = <&phy0>;
++		renesas,rxc-delay-ps = <0>;
++		renesas,txc-delay-ps = <2000>;
+ 
+ 		pinctrl-0 = <&ether_pins>;
+ 		pinctrl-names = "default";
+@@ -115,18 +129,7 @@ Example:
+ 		#size-cells = <0>;
+ 
+ 		phy0: ethernet-phy@0 {
+-			rxc-skew-ps = <900>;
+-			rxdv-skew-ps = <0>;
+-			rxd0-skew-ps = <0>;
+-			rxd1-skew-ps = <0>;
+-			rxd2-skew-ps = <0>;
+-			rxd3-skew-ps = <0>;
+-			txc-skew-ps = <900>;
+-			txen-skew-ps = <0>;
+-			txd0-skew-ps = <0>;
+-			txd1-skew-ps = <0>;
+-			txd2-skew-ps = <0>;
+-			txd3-skew-ps = <0>;
++			rxc-skew-ps = <1500>;
+ 			reg = <0>;
+ 			interrupt-parent = <&gpio2>;
+ 			interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
 -- 
 2.17.1
 
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
