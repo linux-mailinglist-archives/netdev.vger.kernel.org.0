@@ -2,153 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23D33201E80
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 01:11:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BE42201EB3
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 01:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730354AbgFSXLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 19:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730253AbgFSXLT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 19:11:19 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68312C06174E;
-        Fri, 19 Jun 2020 16:11:19 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id cv17so5259031qvb.13;
-        Fri, 19 Jun 2020 16:11:19 -0700 (PDT)
+        id S1730544AbgFSXn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 19:43:28 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:44173 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730431AbgFSXn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 19:43:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ar26egJbF99kcPEeMmrjA86yF8a71qXeh2j+7ovsSZw=;
-        b=npX+WAy59xvh7eSJe9LYqsYVP+lIV5Rt3a/1E3Dh1GAdNViZ1ARk33U6AxxSr4zfoH
-         pdMqvSqA1kggRtCcZqL0gV+K8XoVw6f0Mj35OKqZKq5usvkNgE92ctQjybqdlatdYKeO
-         hmehPLp5L/a3Q/wzy8x6KkBr82J+PFhlNXQGTOYSZoMrdwNk8QWy2D19FopaSrp2TkRa
-         /scfcRNjd8wNKFrduobCb7ZWbXN5oKqQzjgW38WjNBlCZhkoVlpKEbyKUCZSEz3KTr0b
-         7JXjDXA30l7OncXcV0MaCmgrrpq73T3JXv4uf0RZmbnu9+80cAgsWbzNf7OT8+npIJt3
-         B84A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ar26egJbF99kcPEeMmrjA86yF8a71qXeh2j+7ovsSZw=;
-        b=mLvNRyFy+yS6Xnl8PoACKKTMer/9U7RuheVcScZa0Do7/PTRcfTUdmutRTL0YaODEN
-         LLZwSIS0dG/fEagjr8RJGEW1elLSuECOHEMrQ9bBbB316r55MMaI2ZVPLta5BCJQqSRe
-         LIPP3ZVAbsBPh/nUxgyQ4gnx6r8LFte3Ddgcjy8/6vEhTVCyklilZ42YlOMIyOG/Vriq
-         rmkH+vEDXpFggt3jB9JhMvuaOiIazUATnYJwj+A+KezKqGQ2cjYMEhQTbnoN2+OPbMDJ
-         Ovs3kChcy7hg7645fkUBrVBkEG+BAnb1vXlN/bguebdq3T176UGWAntZ+EYmHQOUOkUV
-         2NvA==
-X-Gm-Message-State: AOAM5327SVTxVpjsS0ozaXfkccMMbmQ4qko1X61CmkKFg0PDq6f4iTac
-        mmlS83/8OAFj+m3dIQdIK9y0RxSJchmboSZeu5E=
-X-Google-Smtp-Source: ABdhPJydr/ZESX9+fhLLtzP52CMGiwSuj0ybyuLBa6C6YxOf56sg07hsFNCJoZo+75GOLkN9sOua9TYh7GON66r8pNU=
-X-Received: by 2002:ad4:4baa:: with SMTP id i10mr11562273qvw.163.1592608278572;
- Fri, 19 Jun 2020 16:11:18 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1592610206; x=1624146206;
+  h=date:from:to:cc:message-id:references:mime-version:
+   content-transfer-encoding:in-reply-to:subject;
+  bh=SWB6zi6dk7H1UFvBjGxqa8Wz12tvOQnfaL06ZbePiho=;
+  b=iCs5SwS/NylRwk4d6Qp7VePyqT8XzosoPO2eCAW4WVlvxF1j8bSiowsf
+   w8QcF5DLBWdcy/nbkcBek4aLG4yk0e/hcV05R9EtSid7b1auy5eDUwK/B
+   T0R5KlYNdt5wCqt8sLdI7wHz1eoVn9s062383o5/5i2tj2jttS9tyhxKj
+   0=;
+IronPort-SDR: V0SG/zvLllpjNx79VHvm2vDaL3yuY6Sm12ogn2cv5SkcExVpFNIj0wUosu91G3vrCbL2gp8Rph
+ pcBrxyqWaheg==
+X-IronPort-AV: E=Sophos;i="5.75,256,1589241600"; 
+   d="scan'208";a="37314133"
+Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and hibernation]
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-53356bf6.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 19 Jun 2020 23:43:22 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-53356bf6.us-west-2.amazon.com (Postfix) with ESMTPS id 46E48A1ECE;
+        Fri, 19 Jun 2020 23:43:20 +0000 (UTC)
+Received: from EX13D05UWB003.ant.amazon.com (10.43.161.26) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 19 Jun 2020 23:43:12 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
+ EX13D05UWB003.ant.amazon.com (10.43.161.26) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 19 Jun 2020 23:43:11 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Fri, 19 Jun 2020 23:43:11 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id 1C38F40384; Fri, 19 Jun 2020 23:43:12 +0000 (UTC)
+Date:   Fri, 19 Jun 2020 23:43:12 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     Roger Pau =?iso-8859-1?Q?Monn=E9?= <roger.pau@citrix.com>
+CC:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
+Message-ID: <20200619234312.GA24846@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <7FD7505E-79AA-43F6-8D5F-7A2567F333AB@amazon.com>
+ <20200604070548.GH1195@Air-de-Roger>
+ <20200616214925.GA21684@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200617083528.GW735@Air-de-Roger>
 MIME-Version: 1.0
-References: <20200617202112.2438062-1-andriin@fb.com> <5eeb0e5dcb010_8712abba49be5bc91@john-XPS-13-9370.notmuch>
- <CAEf4BzZi5pMTC9Fq53Mi_mXUm-EQZDyqS_pxEYuGoc0J1ETGUA@mail.gmail.com>
- <5eebb95299a20_6d292ad5e7a285b835@john-XPS-13-9370.notmuch>
- <CAEf4BzZmWO=hO0kmtwkACEfHZm+H7+FZ+5moaLie2=13U3xU=g@mail.gmail.com>
- <5eebf9321e11a_519a2abc9795c5bc21@john-XPS-13-9370.notmuch>
- <5eec09418954e_27ce2adb0816a5b8f7@john-XPS-13-9370.notmuch>
- <45321002-2676-0f5b-c729-5526e503ebd2@iogearbox.net> <CAEf4Bzb-nqK0Z=GaWWejriSqqGd6D5Cz_w689N7_51D+daGyvw@mail.gmail.com>
- <24ac4e42-5831-f698-02f4-5f63d4620f1c@iogearbox.net>
-In-Reply-To: <24ac4e42-5831-f698-02f4-5f63d4620f1c@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 19 Jun 2020 16:11:07 -0700
-Message-ID: <CAEf4Bza6uGaxFURJaZirjVUt5yfFg5r-0mzaNPRg-irnA9CkcQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf: switch most helper return values from
- 32-bit int to 64-bit long
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200617083528.GW735@Air-de-Roger>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 19, 2020 at 3:21 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 6/19/20 8:41 PM, Andrii Nakryiko wrote:
-> > On Fri, Jun 19, 2020 at 6:08 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >> On 6/19/20 2:39 AM, John Fastabend wrote:
-> >>> John Fastabend wrote:
-> >>>> Andrii Nakryiko wrote:
-> >>>>> On Thu, Jun 18, 2020 at 11:58 AM John Fastabend
-> >>>>> <john.fastabend@gmail.com> wrote:
-> >>>
-> >>> [...]
-> >>>
-> >>>>> That would be great. Self-tests do work, but having more testing with
-> >>>>> real-world application would certainly help as well.
-> >>>>
-> >>>> Thanks for all the follow up.
-> >>>>
-> >>>> I ran the change through some CI on my side and it passed so I can
-> >>>> complain about a few shifts here and there or just update my code or
-> >>>> just not change the return types on my side but I'm convinced its OK
-> >>>> in most cases and helps in some so...
-> >>>>
-> >>>> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> >>>
-> >>> I'll follow this up with a few more selftests to capture a couple of our
-> >>> patterns. These changes are subtle and I worry a bit that additional
-> >>> <<,s>> pattern could have the potential to break something.
-> >>>
-> >>> Another one we didn't discuss that I found in our code base is feeding
-> >>> the output of a probe_* helper back into the size field (after some
-> >>> alu ops) of subsequent probe_* call. Unfortunately, the tests I ran
-> >>> today didn't cover that case.
-> >>>
-> >>> I'll put it on the list tomorrow and encode these in selftests. I'll
-> >>> let the mainainers decide if they want to wait for those or not.
-> >>
-> >> Given potential fragility on verifier side, my preference would be that we
-> >> have the known variations all covered in selftests before moving forward in
-> >> order to make sure they don't break in any way. Back in [0] I've seen mostly
-> >> similar cases in the way John mentioned in other projects, iirc, sysdig was
-> >> another one. If both of you could hack up the remaining cases we need to
-> >> cover and then submit a combined series, that would be great. I don't think
-> >> we need to rush this optimization w/o necessary selftests.
+On Wed, Jun 17, 2020 at 10:35:28AM +0200, Roger Pau Monné wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> 
+> 
+> 
+> On Tue, Jun 16, 2020 at 09:49:25PM +0000, Anchal Agarwal wrote:
+> > On Thu, Jun 04, 2020 at 09:05:48AM +0200, Roger Pau Monné wrote:
+> > > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > > On Wed, Jun 03, 2020 at 11:33:52PM +0000, Agarwal, Anchal wrote:
+> > > >  CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > > >     > +             xenbus_dev_error(dev, err, "Freezing timed out;"
+> > > >     > +                              "the device may become inconsistent state");
+> > > >
+> > > >     Leaving the device in this state is quite bad, as it's in a closed
+> > > >     state and with the queues frozen. You should make an attempt to
+> > > >     restore things to a working state.
+> > > >
+> > > > You mean if backend closed after timeout? Is there a way to know that? I understand it's not good to
+> > > > leave it in this state however, I am still trying to find if there is a good way to know if backend is still connected after timeout.
+> > > > Hence the message " the device may become inconsistent state".  I didn't see a timeout not even once on my end so that's why
+> > > > I may be looking for an alternate perspective here. may be need to thaw everything back intentionally is one thing I could think of.
+> > >
+> > > You can manually force this state, and then check that it will behave
+> > > correctly. I would expect that on a failure to disconnect from the
+> > > backend you should switch the frontend to the 'Init' state in order to
+> > > try to reconnect to the backend when possible.
+> > >
+> > From what I understand forcing manually is, failing the freeze without
+> > disconnect and try to revive the connection by unfreezing the
+> > queues->reconnecting to backend [which never got diconnected]. May be even
+> > tearing down things manually because I am not sure what state will frontend
+> > see if backend fails to to disconnect at any point in time. I assumed connected.
+> > Then again if its "CONNECTED" I may not need to tear down everything and start
+> > from Initialising state because that may not work.
 > >
-> > There is no rush, but there is also no reason to delay it. I'd rather
-> > land it early in the libbpf release cycle and let people try it in
-> > their prod environments, for those concerned about such code patterns.
+> > So I am not so sure about backend's state so much, lets say if  xen_blkif_disconnect fail,
+> > I don't see it getting handled in the backend then what will be backend's state?
+> > Will it still switch xenbus state to 'Closed'? If not what will frontend see,
+> > if it tries to read backend's state through xenbus_read_driver_state ?
+> >
+> > So the flow be like:
+> > Front end marks XenbusStateClosing
+> > Backend marks its state as XenbusStateClosing
+> >     Frontend marks XenbusStateClosed
+> >     Backend disconnects calls xen_blkif_disconnect
+> >        Backend fails to disconnect, the above function returns EBUSY
+> >        What will be state of backend here?
+> 
+> Backend should stay in state 'Closing' then, until it can finish
+> tearing down.
+> 
+It disconnects the ring after switching to connected state too. 
+> >        Frontend did not tear down the rings if backend does not switches the
+> >        state to 'Closed' in case of failure.
+> >
+> > If backend stays in CONNECTED state, then even if we mark it Initialised in frontend, backend
+> 
+> Backend will stay in state 'Closing' I think.
+> 
+> > won't be calling connect(). {From reading code in frontend_changed}
+> > IMU, Initialising will fail since backend dev->state != XenbusStateClosed plus
+> > we did not tear down anything so calling talk_to_blkback may not be needed
+> >
+> > Does that sound correct?
+> 
+> I think switching to the initial state in order to try to attempt a
+> reconnection would be our best bet here.
 >
-> Andrii, define 'delay'. John mentioned above to put together few more
-> selftests today so that there is better coverage at least, why is that
-> an 'issue'? I'm not sure how you read 'late in release cycle' out of it,
-> it's still as early. The unsigned optimization for len <= MAX_LEN is
-> reasonable and makes sense, but it's still one [specific] variant only.
+It does not seems to work correctly, I get hung tasks all over and all the
+requests to filesystem gets stuck. Backend does shows the state as connected
+after xenbus_dev_suspend fails but I think there may be something missing.
+I don't seem to get IO interrupts thereafter i.e hitting the function blkif_interrupts.
+I think just marking it initialised may not be the only thing.
+Here is a short description of what I am trying to do:
+So, on timeout:
+    Switch XenBusState to "Initialized"
+    unquiesce/unfreeze the queues and return
+    mark info->connected = BLKIF_STATE_CONNECTED
+    return EBUSY
 
-I'm totally fine waiting for John's tests, but I read your reply as a
-request to go dig up some more examples from sysdig and other
-projects, which I don't think I can commit to. So if it's just about
-waiting for John's examples, that's fine and sorry for
-misunderstanding.
+I even allowed blkfront_connect to switch state to "CONNECTED" rather me doing
+it explicitly as mentioned above without re-allocating/re-registering the device
+just to make sure bklfront_info object has all the right values.
+Do you see anythign missing here?
 
->
-> > I don't have a list of all the patterns that we might need to test.
-> > Going through all open-source BPF source code to identify possible
-> > patterns and then coding them up in minimal selftests is a bit too
-> > much for me, honestly.
->
-> I think we're probably talking past each other. John wrote above:
+Also, while wrapping my brain around this recovery, one of the reasons I see
+backend may not disconnct is if there are inflight I/O requests. There cannot be
+pending I/O on shared ring because that check is already there before we switch
+bus state to Closing. Also, queues are frozen so there will be no new I/O.
+The only situation I can think of is since there too much of memory state to be
+written and modified  that may not get completed within the timeout provided and
+disconnect may fail. In that case, the time out needs to be configurable by the 
+user since the hibernation may always fail depending on infrastructure or workload
+running during hibernation.
 
-Yep, sorry, I assumed more general context, not specifically John's reply.
-
->
->  >>> I'll follow this up with a few more selftests to capture a couple of our
->  >>> patterns. These changes are subtle and I worry a bit that additional
->  >>> <<,s>> pattern could have the potential to break something.
->
-> So submitting this as a full series together makes absolutely sense to me,
-> so there's maybe not perfect but certainly more confidence that also other
-> patterns where the shifts optimized out in one case are then appearing in
-> another are tested on a best effort and run our kselftest suite.
->
-> Thanks,
-> Daniel
+Thanks,
+Anchal
