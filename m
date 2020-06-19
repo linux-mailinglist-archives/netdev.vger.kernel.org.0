@@ -2,193 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7FEF1FFF39
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 02:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27EDC1FFF55
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 02:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728698AbgFSA0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Jun 2020 20:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726926AbgFSA0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Jun 2020 20:26:06 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917B2C06174E;
-        Thu, 18 Jun 2020 17:26:06 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id h22so3526912pjf.1;
-        Thu, 18 Jun 2020 17:26:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=aj0imADQg4RStSAonDZf7sUXgDdngAlbzeglnzpV/aM=;
-        b=mFfa+OD7OeQiJetxno6Uu4wfmDt3N19Wy0ic3Cio41JNJh0erskPnECViZVdlGb2MI
-         VWtY8wMO6HSZIjWxLVhjU571YFNypyYbO53q3CLeGM6XNI/h49BHmH+PfCIoMkJhTx4R
-         /atUw5t65unWzC5p1TS5fz87X6GaDXtDz+2kvGNat74+8qVczlmfR51uEUHWvn+GT+2C
-         fWHGp2iu+AkS+cc+t3neWLLJ8TmKzWdbADpHtfkn3OGfdOGzB+74hedUvqRat+S3rG4k
-         U8LKjbkv9QkHtPJH5EkkoRJvilpZ2JVcm8aiZWB3mDGNVz6ZUuVd9lYF8DkGsN1ItL3D
-         VqsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=aj0imADQg4RStSAonDZf7sUXgDdngAlbzeglnzpV/aM=;
-        b=r4PQnHbwcrd4Bf6eY5lHlDz4kQv8mlwAwvs7ayeebE0Le0Zckyi/l3EfIfQB+rzunX
-         yI86QIBCRR+8FFksr5/oM2LdNw6axs1U53Kx/lWbIQQOTFhtkuK4jfi0k7vYdnCgHELi
-         b2Xc5+ftb6LH/y16Eji33DM5/QxOgmjjjBA2wRyVFFP3XuYxH7xLgzfGmgx2zXy2+hwd
-         LO13WKGv7Ro1y56979bN6Vf8Oad4PTzRcaH3UgupMVZwLspbOp5R+BVEJMILuHOBmEBp
-         Ej9ua+Cjhcutr41aKk3F5xNTczakhwbGxJfMsl4H23UbO6UDYbUpUkbE/nuwEgdiwWaS
-         53Tg==
-X-Gm-Message-State: AOAM533Fh/rw2XZcZgrw0TDwmFVrlBljzj7zqJG48QuRUS6w9MmF35jj
-        PdcOajZDg+0A7lGptVT73f8=
-X-Google-Smtp-Source: ABdhPJwU4+Yl5BnuV+VHSrhXddxtutWKvJx62LeZVWGBnc1GkcJZgqToQbAD3q6rD4BA5HpOIo9Q9Q==
-X-Received: by 2002:a17:90a:39ce:: with SMTP id k14mr886264pjf.39.1592526365973;
-        Thu, 18 Jun 2020 17:26:05 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id q6sm3913172pff.79.2020.06.18.17.26.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2020 17:26:05 -0700 (PDT)
-Date:   Thu, 18 Jun 2020 17:25:57 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Andrii Nakryiko <andriin@fb.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        KP Singh <kpsingh@chromium.org>,
-        Masanori Misono <m.misono760@gmail.com>
-Message-ID: <5eec061598dcf_403f2afa5de805bcde@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAEf4Bzb+U+A9i0VfGUHLVt28WCob7pb-0iVQA8d1fcR8A27ZpA@mail.gmail.com>
-References: <20200616173556.2204073-1-jolsa@kernel.org>
- <5eeaa556c7a0e_38b82b28075185c46a@john-XPS-13-9370.notmuch>
- <20200618114806.GA2369163@krava>
- <5eebe552dddc1_6d292ad5e7a285b83f@john-XPS-13-9370.notmuch>
- <CAEf4Bzb+U+A9i0VfGUHLVt28WCob7pb-0iVQA8d1fcR8A27ZpA@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Allow small structs to be type of function argument
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1729211AbgFSAg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Jun 2020 20:36:26 -0400
+Received: from mga03.intel.com ([134.134.136.65]:56645 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728627AbgFSAgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Jun 2020 20:36:25 -0400
+IronPort-SDR: T7PjnCbbMVDQYXoMq5WZJkskNa2qJcpfhsY4ZgIsbupxo5DT+VOuIsv1ADZgJ/0Yra3O/QyWHk
+ L2QkOGBDSusg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9656"; a="142713500"
+X-IronPort-AV: E=Sophos;i="5.75,253,1589266800"; 
+   d="scan'208";a="142713500"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2020 17:36:24 -0700
+IronPort-SDR: RlpGUU2NyQRgWIzz4Ua1P4iJCDcC34L+OIhKl/+WHuN6kRQvnSZ3caoucWebw6LMYnTxEGeLIQ
+ a09Il0o0awdA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,253,1589266800"; 
+   d="scan'208";a="262166448"
+Received: from orsmsx101.amr.corp.intel.com ([10.22.225.128])
+  by fmsmga007.fm.intel.com with ESMTP; 18 Jun 2020 17:36:23 -0700
+Received: from orsmsx154.amr.corp.intel.com (10.22.226.12) by
+ ORSMSX101.amr.corp.intel.com (10.22.225.128) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 18 Jun 2020 17:36:23 -0700
+Received: from ORSEDG002.ED.cps.intel.com (10.7.248.5) by
+ ORSMSX154.amr.corp.intel.com (10.22.226.12) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 18 Jun 2020 17:36:23 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.103)
+ by edgegateway.intel.com (134.134.137.101) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 18 Jun 2020 17:36:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZsSNFCIH5AkXmUZakMbCcIIrdj/vHkrjvTXK0dL811Jll7Kc0eDC/V5MMsQkkwKh4r1Nij5gFS5IQ+0+HX6DARVw2ytIsZLTYmfoa3OfzUJCVwkx2sm33I+pFDTVd+XpIgyBXnv++sNHy5v4RcBCU2yhjQp9BZt4/eafprlUzOjnxH2ab3BxIuUKf9n2Wnm310gYk+Ws6Roov9lcplTcD99ffIIEcdeV2lvPRXI0YY//IdEERyl4YzO/ydZFbPzaZD9nW5PnCjt5mDnLmzY/FraboZtIIpIJ4a0txiPoMzZ+3QBC+Go9YJgvlyAOE4z6htSA70yri2cRbAWQfGCRgw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=T6zHuO/E+cHHJeYadzciVVt1ME6iRxD562diBhiIX6A=;
+ b=d28FIXM6MonJxo8Og09pR5iFPOgWliDmONo+GUFf5vfGhFcJD/xIrfSqgCBqA1WGIZSbQkRP1udgKwiY1YGFvf5OTjrHiGBNcvIV2ehonOL1Eiw++i+wIAX7ACvQeAIx/loA56XAMitkojpSbPRfGpwbIL/NJhl1B6UM2Ikpm9EuNmDD645skJ066iqs6pI98HoaXCA6N1a4oqU8xfL5Gsa5q4QmEzzcwCtHcAw4sgGytnkBDBYsAV+CctlWl7qxJsVm4OrLo7GlbV8hxm9eWDrR/sNj4UhEQKYltsfwNcIHjcesg/C2TaeH5zpLrIxGmdd6sthTxCUY/cmnAIOmMA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=T6zHuO/E+cHHJeYadzciVVt1ME6iRxD562diBhiIX6A=;
+ b=iMrc5AcZdB6USBbc+jGHFxH7G5opFDuXNmrkqHQbj8zVw2BKFhf6t9pU6AKXXhkNpZOSE43sXKsKl+4QUrZB0TxxYKyfYsOa3TiMp67MOrlkY8Y3lvm1JCXavlsw9V4Wp4RuhHGLM4+5c82532Ru07grPoNwRPWPVYHbhDXXvwg=
+Received: from MW3PR11MB4522.namprd11.prod.outlook.com (2603:10b6:303:2d::8)
+ by MW3PR11MB4667.namprd11.prod.outlook.com (2603:10b6:303:53::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Fri, 19 Jun
+ 2020 00:36:21 +0000
+Received: from MW3PR11MB4522.namprd11.prod.outlook.com
+ ([fe80::4021:b214:94b3:3c50]) by MW3PR11MB4522.namprd11.prod.outlook.com
+ ([fe80::4021:b214:94b3:3c50%7]) with mapi id 15.20.3109.021; Fri, 19 Jun 2020
+ 00:36:21 +0000
+From:   "Brady, Alan" <alan.brady@intel.com>
+To:     Michal Kubecek <mkubecek@suse.cz>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Michael, Alice" <alice.michael@intel.com>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Burra, Phani R" <phani.r.burra@intel.com>,
+        "Hay, Joshua A" <joshua.a.hay@intel.com>,
+        "Chittim, Madhu" <madhu.chittim@intel.com>,
+        "Linga, Pavan Kumar" <pavan.kumar.linga@intel.com>,
+        "Skidmore, Donald C" <donald.c.skidmore@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Subject: RE: [net-next 13/15] iecm: Add ethtool
+Thread-Topic: [net-next 13/15] iecm: Add ethtool
+Thread-Index: AQHWRS9L4yFt912xxEGh5OQAtUlWrKje4VwAgAA0hBA=
+Date:   Fri, 19 Jun 2020 00:36:21 +0000
+Message-ID: <MW3PR11MB4522EDBA35498230F418F96F8F980@MW3PR11MB4522.namprd11.prod.outlook.com>
+References: <20200618051344.516587-1-jeffrey.t.kirsher@intel.com>
+ <20200618051344.516587-14-jeffrey.t.kirsher@intel.com>
+ <20200618211726.ijsafmx52ha3lamz@lion.mk-sys.cz>
+In-Reply-To: <20200618211726.ijsafmx52ha3lamz@lion.mk-sys.cz>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+authentication-results: suse.cz; dkim=none (message not signed)
+ header.d=none;suse.cz; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.55.52.212]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 77c2d54e-dfa2-40dc-fbcd-08d813e8ca40
+x-ms-traffictypediagnostic: MW3PR11MB4667:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW3PR11MB46679FD482D639B74946546D8F980@MW3PR11MB4667.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0439571D1D
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rkJlvM9oP6V53Ub8wSWVYAyawiCn1Eibhx/TBeNMRees4NXWr+wD/q4/HOcfb5c7CHgXZMfGTBxk8bJOFkIY32m6kb3qubzxM72LkRGK2n4RGO22YA1y4jHaJT+p/1HW0/Op5VrtItwNHM4dEV9m09sDKRb3doiM5wjpyJbLzGiCOQbSspYhn8DZih3C5aoULyKlHl3dYrKCPMBj2Lo+H2wybw/eAQSmP/Vy1Xhww7FzQC2aE5in2sQSuRavHOf5RsTd+0Fv4aW9ZYIFuLKWidKJ+WI/NQjhjzPgaCVImIrfnQzI/rx7wV9ksz2VhV2d
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4522.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(396003)(346002)(136003)(376002)(8676002)(7696005)(33656002)(52536014)(9686003)(8936002)(71200400001)(107886003)(55016002)(4326008)(6506007)(5660300002)(53546011)(83380400001)(478600001)(66556008)(64756008)(316002)(66476007)(66446008)(2906002)(86362001)(186003)(76116006)(110136005)(26005)(66946007)(54906003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: 3DEJH2ZQbqtNBjlH292ZnkGEjraSxeoto6qmU5sJ0lbjIKmfdBw+Og5SW/5/tnu7fJsnsoaYkAgez7IJ5osv8ytngXTLk9wWOb+gCxe0xWl9syeo12JdGF1Eb1qBebh2NS0RiSwTjFnl6R5aWaKNEO3XsYcRIoTX1TAUbGn7TA0ZWkxFlcUxVJ6igNA1MWP9DIWxmRZsI6Sod5msZOA/p0A3whrwPEVyf36w0FwK1JJJysJWTadIoRychSW/YPpy5DLEN8aTeoWDjHO2q78//4NhlgXPLZczhPrUZzmkFRGv62Ti+8euoKbbnhF4YTMgCjMYBhsupwciVDcUUM578v4GkbV2jy91mYu0aLfk2Dqq6pGBaF5LYRdbtkKSyiHQByEkUe/dirquKELWjRP5YkJLNOyV8+uFfl6ZSu3kBCYRgLXj5Tx2imnYMIUnw5hIh9teDrzf6a+gvOIO0lrxEQqBFWKqpxDQZkhFNsrDPFo=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77c2d54e-dfa2-40dc-fbcd-08d813e8ca40
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jun 2020 00:36:21.7938
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kOXMBVisG3Y+yKtCLHKVoPP6jrJkec5NRr/scHv9qDsh5qqRl2JZ4II9I6ozaZ0PmDLFRl4LOSduRtzYQK7oHA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4667
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko wrote:
-> On Thu, Jun 18, 2020 at 3:50 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> -----Original Message-----
+> From: Michal Kubecek <mkubecek@suse.cz>
+> Sent: Thursday, June 18, 2020 2:17 PM
+> To: netdev@vger.kernel.org
+> Cc: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net=
+;
+> Michael, Alice <alice.michael@intel.com>; nhorman@redhat.com;
+> sassmann@redhat.com; Brady, Alan <alan.brady@intel.com>; Burra, Phani R
+> <phani.r.burra@intel.com>; Hay, Joshua A <joshua.a.hay@intel.com>; Chitti=
+m,
+> Madhu <madhu.chittim@intel.com>; Linga, Pavan Kumar
+> <pavan.kumar.linga@intel.com>; Skidmore, Donald C
+> <donald.c.skidmore@intel.com>; Brandeburg, Jesse
+> <jesse.brandeburg@intel.com>; Samudrala, Sridhar
+> <sridhar.samudrala@intel.com>
+> Subject: Re: [net-next 13/15] iecm: Add ethtool
+>=20
+> On Wed, Jun 17, 2020 at 10:13:42PM -0700, Jeff Kirsher wrote:
+> > From: Alice Michael <alice.michael@intel.com>
 > >
-> > Jiri Olsa wrote:
-> > > On Wed, Jun 17, 2020 at 04:20:54PM -0700, John Fastabend wrote:
-> > > > Jiri Olsa wrote:
-> > > > > This way we can have trampoline on function
-> > > > > that has arguments with types like:
-> > > > >
-> > > > >   kuid_t uid
-> > > > >   kgid_t gid
-> > > > >
-> > > > > which unwind into small structs like:
-> > > > >
-> > > > >   typedef struct {
-> > > > >         uid_t val;
-> > > > >   } kuid_t;
-> > > > >
-> > > > >   typedef struct {
-> > > > >         gid_t val;
-> > > > >   } kgid_t;
-> > > > >
-> > > > > And we can use them in bpftrace like:
-> > > > > (assuming d_path changes are in)
-> > > > >
-> > > > >   # bpftrace -e 'lsm:path_chown { printf("uid %d, gid %d\n", args->uid, args->gid) }'
-> > > > >   Attaching 1 probe...
-> > > > >   uid 0, gid 0
-> > > > >   uid 1000, gid 1000
-> > > > >   ...
-> > > > >
-> > > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > > > ---
-> > > > >  kernel/bpf/btf.c | 12 +++++++++++-
-> > > > >  1 file changed, 11 insertions(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > > > > index 58c9af1d4808..f8fee5833684 100644
-> > > > > --- a/kernel/bpf/btf.c
-> > > > > +++ b/kernel/bpf/btf.c
-> > > > > @@ -362,6 +362,14 @@ static bool btf_type_is_struct(const struct btf_type *t)
-> > > > >   return kind == BTF_KIND_STRUCT || kind == BTF_KIND_UNION;
-> > > > >  }
-> > > > >
-> > > > > +/* type is struct and its size is within 8 bytes
-> > > > > + * and it can be value of function argument
-> > > > > + */
-> > > > > +static bool btf_type_is_struct_arg(const struct btf_type *t)
-> > > > > +{
-> > > > > + return btf_type_is_struct(t) && (t->size <= sizeof(u64));
-> > > >
-> > > > Can you comment on why sizeof(u64) here? The int types can be larger
-> > > > than 64 for example and don't have a similar check, maybe the should
-> > > > as well?
-> > > >
-> > > > Here is an example from some made up program I ran through clang and
-> > > > bpftool.
-> > > >
-> > > > [2] INT '__int128' size=16 bits_offset=0 nr_bits=128 encoding=SIGNED
-> > > >
-> > > > We also have btf_type_int_is_regular to decide if the int is of some
-> > > > "regular" size but I don't see it used in these paths.
-> > >
-> > > so this small structs are passed as scalars via function arguments,
-> > > so the size limit is to fit teir value into register size which holds
-> > > the argument
-> > >
-> > > I'm not sure how 128bit numbers are passed to function as argument,
-> > > but I think we can treat them separately if there's a need
-> > >
+> > Implement ethtool interface for the common module.
 > >
-> > Moving Andrii up to the TO field ;)
-> 
-> I've got an upgrade, thanks :)
-> 
-> >
-> > Andrii, do we also need a guard on the int type with sizeof(u64)?
-> > Otherwise the arg calculation might be incorrect? wdyt did I follow
-> > along correctly.
-> 
-> Yes, we probably do. I actually never used __int128 in practice, but
-> decided to look at what Clang does for a function accepting __int128.
-> Turns out it passed it in two consecutive registers. So:
-> 
-> __weak int bla(__int128 x) { return (int)(x + 1); }
-> 
-> The assembly is:
-> 
->       38:       b7 01 00 00 fe ff ff ff r1 = -2
->       39:       b7 02 00 00 ff ff ff ff r2 = -1
->       40:       85 10 00 00 ff ff ff ff call -1
->       41:       bc 01 00 00 00 00 00 00 w1 = w0
-> 
-> So low 64-bits go into r1, high 64-bits into r2.
-> 
-> Which means the 1:1 mapping between registers and input arguments
-> breaks with __int128, at least for target BPF. I'm too lazy to check
-> for x86-64, though.
+> > Signed-off-by: Alice Michael <alice.michael@intel.com>
+> > Signed-off-by: Alan Brady <alan.brady@intel.com>
+> > Signed-off-by: Phani Burra <phani.r.burra@intel.com>
+> > Signed-off-by: Joshua Hay <joshua.a.hay@intel.com>
+> > Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
+> > Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
+> > Reviewed-by: Donald Skidmore <donald.c.skidmore@intel.com>
+> > Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> > Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+> > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> > ---
+> [...]
+> > +static int iecm_set_channels(struct net_device *netdev,
+> > +			     struct ethtool_channels *ch)
+> > +{
+> > +	struct iecm_vport *vport =3D iecm_netdev_to_vport(netdev);
+> > +	int num_req_q =3D ch->combined_count;
+> > +
+> > +	if (num_req_q =3D=3D max(vport->num_txq, vport->num_rxq))
+> > +		return 0;
+> > +
+> > +	/* All of these should have already been checked by ethtool before th=
+is
+> > +	 * even gets to us, but just to be sure.
+> > +	 */
+> > +	if (num_req_q <=3D 0 || num_req_q > IECM_MAX_Q)
+> > +		return -EINVAL;
+> > +
+> > +	if (ch->rx_count || ch->tx_count || ch->other_count !=3D
+> IECM_MAX_NONQ)
+> > +		return -EINVAL;
+>=20
+> I don't see much sense in duplicating the checks. Having the checks in co=
+mmon
+> code allows us to simplify driver callbacks.
+>=20
 
-OK confirms what I suspected. For a fix we should bound int types
-here to pointer word size which I think should be safe most everywhere.
-I can draft a patch if you haven't done one already. For what its worth
-RISC-V had some convention where it would use the even registers for
-things. So
+You're right it's better to remove these.  Will fix.
 
- foo(int a, __int128 b)
+> > +	vport->adapter->config_data.num_req_qs =3D num_req_q;
+> > +
+> > +	return iecm_initiate_soft_reset(vport, __IECM_SR_Q_CHANGE); }
+> [...]
+> > +static int iecm_set_ringparam(struct net_device *netdev,
+> > +			      struct ethtool_ringparam *ring) {
+> > +	struct iecm_vport *vport =3D iecm_netdev_to_vport(netdev);
+> > +	u32 new_rx_count, new_tx_count;
+> > +
+> > +	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
+> > +		return -EINVAL;
+> > +
+> > +	new_tx_count =3D clamp_t(u32, ring->tx_pending,
+> > +			       IECM_MIN_TXQ_DESC,
+> > +			       IECM_MAX_TXQ_DESC);
+> > +	new_tx_count =3D ALIGN(new_tx_count, IECM_REQ_DESC_MULTIPLE);
+> > +
+> > +	new_rx_count =3D clamp_t(u32, ring->rx_pending,
+> > +			       IECM_MIN_RXQ_DESC,
+> > +			       IECM_MAX_RXQ_DESC);
+> > +	new_rx_count =3D ALIGN(new_rx_count, IECM_REQ_DESC_MULTIPLE);
+>=20
+> Same here. This is actually a bit misleading as it seems that count excee=
+ding
+> maximum would be silently clamped to it but such value would be rejected =
+by
+> common code.
+>=20
 
-would put a in r0 and b in r2 and r3 leaving a hole in r1. But that
-was some old reference manual and  might no longer be the case
-in reality. Perhaps just spreading hearsay, but the point is we
-should say something about what the BPF backend convention
-is and write it down. We've started to bump into these things
-lately.
+Also agreed, will fix in next version.
+
+> > +	/* if nothing to do return success */
+> > +	if (new_tx_count =3D=3D vport->txq_desc_count &&
+> > +	    new_rx_count =3D=3D vport->rxq_desc_count)
+> > +		return 0;
+> > +
+> > +	vport->adapter->config_data.num_req_txq_desc =3D new_tx_count;
+> > +	vport->adapter->config_data.num_req_rxq_desc =3D new_rx_count;
+> > +
+> > +	return iecm_initiate_soft_reset(vport, __IECM_SR_Q_DESC_CHANGE); }
+> [...]
+> > +/* For now we have one and only one private flag and it is only
+> > +defined
+> > + * when we have support for the SKIP_CPU_SYNC DMA attribute.  Instead
+> > + * of leaving all this code sitting around empty we will strip it
+> > +unless
+> > + * our one private flag is actually available.
+> > + */
+>=20
+> The code below will always return 1 for ETH_SS_PRIV_FLAGS in
+> iecm_get_sset_count() and an array of one string in iecm_get_strings().
+> This would e.g. result in "ethtool -i" saying "supports-priv-flags: yes"
+> but then "ethtool --show-priv-flags" failing with -EOPNOTSUPP. IMHO you
+> should not return bogus string set if private flags are not implemented.
+>=20
+> Michal
+>=20
+
+I'm embarrassed we added a nice comment about stripping this because it doe=
+sn't do anything and then failed to do just that.  Agreed the priv flag stu=
+ff should not be here without any private flags existing, will fix.  Thanks=
+ for the review.
+
+Alan
