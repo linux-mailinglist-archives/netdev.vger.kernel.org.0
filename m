@@ -2,138 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20571201B03
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 21:16:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B154201B2E
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 21:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733171AbgFSTQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 15:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
+        id S2388038AbgFSTYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 15:24:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733120AbgFSTQI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 15:16:08 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41110C0613EF
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 12:16:06 -0700 (PDT)
-Received: from ramsan ([IPv6:2a02:1810:ac12:ed20:e0be:48f2:cba4:1407])
-        by albert.telenet-ops.be with bizsmtp
-        id t7Fx220084UASYb067Fx5g; Fri, 19 Jun 2020 21:16:04 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jmMUX-0002Jb-5e; Fri, 19 Jun 2020 21:15:57 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jmMUX-0006VK-4G; Fri, 19 Jun 2020 21:15:57 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S2387633AbgFSTYX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 15:24:23 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E8AC06174E;
+        Fri, 19 Jun 2020 12:24:23 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id y9so5010427qvs.4;
+        Fri, 19 Jun 2020 12:24:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:in-reply-to:references;
+        bh=cWkMvejmWQwS+jXBTx0owfMKl2kp7YwzCYHM7vLrpdk=;
+        b=H73cpLKrO/ZPNVmHWovgUxjS3P1lQoJSYQsORSDjq2GuKJEkUazqvFZPfC3bGgitnS
+         xHUjbIsScQ47yPy58Xa/QsZWKrwu/iaRl+P0Dr35cfmDqZKG79Rxpv6pmdFmbV3u9rH0
+         +cQiFbaCrtERnDmDvwhOd73+ZHoetXGCmj7hdYM44l5MlErfBorgc1PWlIS4d4Sk6x98
+         7RgLFN0d6f0CT4Pi6EM7/kTg0rsfqnKvxcJ9HItadDBkU6mP8GSVH1lS1zjNp11BO8IU
+         UV7FSV4URbH5+O3gDomF0IU4f0KnCP3NLNhV4ekKzdd4xJ2jR21DTclSYGS/iQpvdSV4
+         QcfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references;
+        bh=cWkMvejmWQwS+jXBTx0owfMKl2kp7YwzCYHM7vLrpdk=;
+        b=LO0Cg76Efy9ZT3i0TZ9SBj9ozQyaOzmnPXV2iFbrtImzNaFfUJOZFEX95OonHSu2gX
+         U+PzrcngBayf0Y0VzFLnXYuXQaixfGx2bvoRW+eTReqamosbfxilgYR+idIjIxNA2lQJ
+         5tp6aHnOfQMnvdvijQfPH3IQjpyvVfLhHk+zpNiekGJs/XyPzaYapO9ebuptEWHzN2UQ
+         dTzWh9BRGAlNNGBeJi8E5KW+6ZUiA1EfsJOwoNe9KwUZn435R63NKgCmSUIuskagw3mr
+         Kx+F3dsU6of8mhpylGKrhvAS0loRPlngxwMN3iQ6/djm62nKhRtYYru7FBLy2SFvew8v
+         aljg==
+X-Gm-Message-State: AOAM5324vctaK/8PMnlkLECvG8TaBwqHQl3/bSStY7D+bE79MJg181Sw
+        QuN40/wagDRBqxFri1XFvXU=
+X-Google-Smtp-Source: ABdhPJxiJa5+i3KgoU8gJhSNFcNzddYm9wnmR/nl3PoCtQ4TurdBhDYG5UCM7fvP5I7v1Wngfqt2BQ==
+X-Received: by 2002:ad4:4841:: with SMTP id t1mr10525591qvy.187.1592594662255;
+        Fri, 19 Jun 2020 12:24:22 -0700 (PDT)
+Received: from linux.home ([2604:2000:1344:41d:fda8:d752:6b93:379])
+        by smtp.googlemail.com with ESMTPSA id e2sm2132296qkm.115.2020.06.19.12.24.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Jun 2020 12:24:21 -0700 (PDT)
+From:   Gaurav Singh <gaurav1086@gmail.com>
+To:     gaurav1086@gmail.com, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC 5/5] arm64: dts: renesas: rzg2: Convert EtherAVB to explicit delay handling
-Date:   Fri, 19 Jun 2020 21:15:54 +0200
-Message-Id: <20200619191554.24942-6-geert+renesas@glider.be>
+        netdev@vger.kernel.org (open list:TC subsystem),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] [net/sched] Remove redundant skb null check
+Date:   Fri, 19 Jun 2020 15:24:13 -0400
+Message-Id: <20200619192414.22158-1-gaurav1086@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200619191554.24942-1-geert+renesas@glider.be>
-References: <20200619191554.24942-1-geert+renesas@glider.be>
+In-Reply-To: <20200618014328.28668-1-gaurav1086@gmail.com>
+References: <20200618014328.28668-1-gaurav1086@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some EtherAVB variants support internal clock delay configuration, which
-can add larger delays than the delays that are typically supported by
-the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
-properties).
+Remove the redundant null check for skb.
 
-Historically, the EtherAVB driver configured these delays based on the
-"rgmii-*id" PHY mode.  This was wrong, as these are meant solely for the
-PHY, not for the MAC.  Hence properties were introduced for explicit
-configuration of these delays.
-
-Convert the RZ/G2 DTS files from the old to the new scheme:
-  - Add default "renesas,rxc-delay-ps" and "renesas,txc-delay-ps"
-    properties to the SoC .dtsi files, to be overridden by board files
-    where needed,
-  - Convert board files from "rgmii-*id" PHY modes to "rgmii", adding
-    the appropriate "renesas,rxc-delay-ps" and/or "renesas,txc-delay-ps"
-    overrides.
-
-Notes:
-  - RZ/G2E does not support TX internal delay handling.
-
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
 ---
-This depends on "[PATCH/RFC 3/5] ravb: Add support for explicit internal
-clock delay configuration" and must not be applied before that
-dependency has hit upstream.
----
- arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi | 2 +-
- arch/arm64/boot/dts/renesas/r8a774a1.dtsi       | 2 ++
- arch/arm64/boot/dts/renesas/r8a774b1.dtsi       | 2 ++
- arch/arm64/boot/dts/renesas/r8a774c0.dtsi       | 1 +
- 4 files changed, 6 insertions(+), 1 deletion(-)
+ net/sched/act_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi b/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi
-index acfcfd050a6cb2d5..c2ce2aaea6e6d64b 100644
---- a/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi
-+++ b/arch/arm64/boot/dts/renesas/hihope-rzg2-ex.dtsi
-@@ -19,7 +19,7 @@
- 	pinctrl-0 = <&avb_pins>;
- 	pinctrl-names = "default";
- 	phy-handle = <&phy0>;
--	phy-mode = "rgmii-txid";
-+	renesas,txc-delay-ps = <2000>;
- 	status = "okay";
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 8ac7eb0a8309..90be8fe9128c 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -1475,7 +1475,7 @@ static int tc_ctl_action(struct sk_buff *skb, struct nlmsghdr *n,
+ {
+ 	struct net *net = sock_net(skb->sk);
+ 	struct nlattr *tca[TCA_ROOT_MAX + 1];
+-	u32 portid = skb ? NETLINK_CB(skb).portid : 0;
++	u32 portid = NETLINK_CB(skb).portid;
+ 	int ret = 0, ovr = 0;
  
- 	phy0: ethernet-phy@0 {
-diff --git a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-index 51a572898fd68a7d..192900c716990860 100644
---- a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-@@ -1115,6 +1115,8 @@
- 			power-domains = <&sysc R8A774A1_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			renesas,rxc-delay-ps = <0>;
-+			renesas,txc-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-index b221f2575e6328f9..3e50541750e93f88 100644
---- a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-@@ -989,6 +989,8 @@
- 			power-domains = <&sysc R8A774B1_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			renesas,rxc-delay-ps = <0>;
-+			renesas,txc-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-index 5c72a7efbb035d02..a478450090f20e0b 100644
---- a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-@@ -960,6 +960,7 @@
- 			power-domains = <&sysc R8A774C0_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-+			renesas,rxc-delay-ps = <0>;
- 			iommus = <&ipmmu_ds0 16>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
+ 	if ((n->nlmsg_type != RTM_GETACTION) &&
 -- 
 2.17.1
 
