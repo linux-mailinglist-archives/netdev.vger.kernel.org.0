@@ -2,130 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D852C20035D
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 10:15:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8BA2003B4
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 10:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731231AbgFSIPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 04:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729548AbgFSIN0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 04:13:26 -0400
-Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB37C06174E;
-        Fri, 19 Jun 2020 01:13:25 -0700 (PDT)
-Received: from [5.158.153.52] (helo=kurt)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <kurt@linutronix.de>)
-        id 1jmC9L-0003ir-MM; Fri, 19 Jun 2020 10:13:23 +0200
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [RFC PATCH 3/9] net: dsa: hellcreek: Add PTP clock support
-In-Reply-To: <20200618084614.7ef6b35c@kicinski-fedora-PC1C0HJN>
-References: <20200618064029.32168-1-kurt@linutronix.de> <20200618064029.32168-4-kurt@linutronix.de> <20200618084614.7ef6b35c@kicinski-fedora-PC1C0HJN>
-Date:   Fri, 19 Jun 2020 10:13:22 +0200
-Message-ID: <87bllfqxr1.fsf@kurt>
+        id S1731290AbgFSIXy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 19 Jun 2020 04:23:54 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:47570 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731300AbgFSIVH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 04:21:07 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-78-mkYMfPweOkGnJdWf_Vspzw-1; Fri, 19 Jun 2020 09:20:56 +0100
+X-MC-Unique: mkYMfPweOkGnJdWf_Vspzw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 19 Jun 2020 09:20:55 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 19 Jun 2020 09:20:55 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Kees Cook' <keescook@chromium.org>,
+        Sargun Dhillon <sargun@sargun.me>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Christian Brauner" <christian@brauner.io>,
+        Tycho Andersen <tycho@tycho.ws>,
+        "Christoph Hellwig" <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Matt Denton <mpdenton@google.com>,
+        Jann Horn <jannh@google.com>, Chris Palmer <palmer@google.com>,
+        Robert Sesek <rsesek@google.com>,
+        Giuseppe Scrivano <gscrivan@redhat.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "containers@lists.linux-foundation.org" 
+        <containers@lists.linux-foundation.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: RE: [PATCH v5 3/7] fs: Add fd_install_received() wrapper for
+ __fd_install_received()
+Thread-Topic: [PATCH v5 3/7] fs: Add fd_install_received() wrapper for
+ __fd_install_received()
+Thread-Index: AQHWRazi5O9oFyX6VkOfXGvu43vXPajfldBw
+Date:   Fri, 19 Jun 2020 08:20:55 +0000
+Message-ID: <c7d9f68d5dff4c54b4da0d96b03de2a0@AcuMS.aculab.com>
+References: <20200617220327.3731559-1-keescook@chromium.org>
+ <20200617220327.3731559-4-keescook@chromium.org>
+ <20200618054918.GB18669@ircssh-2.c.rugged-nimbus-611.internal>
+ <202006181305.01F1B08@keescook>
+In-Reply-To: <202006181305.01F1B08@keescook>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: Kees Cook
+> Sent: 18 June 2020 21:13
+> On Thu, Jun 18, 2020 at 05:49:19AM +0000, Sargun Dhillon wrote:
+> > On Wed, Jun 17, 2020 at 03:03:23PM -0700, Kees Cook wrote:
+> > > [...]
+> > >  static inline int fd_install_received_user(struct file *file, int __user *ufd,
+> > >  					   unsigned int o_flags)
+> > >  {
+> > > +	if (ufd == NULL)
+> > > +		return -EFAULT;
+> > Isn't this *technically* a behvaiour change? Nonetheless, I think this is a much better
+> > approach than forcing everyone to do null checking, and avoids at least one error case
+> > where the kernel installs FDs for SCM_RIGHTS, and they're not actualy usable.
+> 
+> So, the only behavior change I see is that the order of sanity checks is
+> changed.
+> 
+> The loop in scm_detach_fds() is:
+> 
+> 
+>         for (i = 0; i < fdmax; i++) {
+>                 err = __scm_install_fd(scm->fp->fp[i], cmsg_data + i, o_flags);
+>                 if (err < 0)
+>                         break;
+>         }
+> 
+> Before, __scm_install_fd() does:
+> 
+>         error = security_file_receive(file);
+>         if (error)
+>                 return error;
+> 
+>         new_fd = get_unused_fd_flags(o_flags);
+>         if (new_fd < 0)
+>                 return new_fd;
+> 
+>         error = put_user(new_fd, ufd);
+>         if (error) {
+>                 put_unused_fd(new_fd);
+>                 return error;
+>         }
+> 	...
+> 
+> After, fd_install_received_user() and __fd_install_received() does:
+> 
+>         if (ufd == NULL)
+>                 return -EFAULT;
+> 	...
+>         error = security_file_receive(file);
+>         if (error)
+>                 return error;
+> 	...
+>                 new_fd = get_unused_fd_flags(o_flags);
+>                 if (new_fd < 0)
+>                         return new_fd;
+> 	...
+>                 error = put_user(new_fd, ufd);
+>                 if (error) {
+>                         put_unused_fd(new_fd);
+>                         return error;
+>                 }
+> 
+> i.e. if a caller attempts a receive that is rejected by LSM *and*
+> includes a NULL userpointer destination, they will get an EFAULT now
+> instead of an EPERM.
 
-Hi Jakub,
+The 'user' pointer the fd is written to is in the middle of
+the 'cmsg' buffer.
+So to hit 'ufd == NULL' the program would have to pass a small
+negative integer!
 
-On Thu Jun 18 2020, Jakub Kicinski wrote:
-> On Thu, 18 Jun 2020 08:40:23 +0200 Kurt Kanzenbach wrote:
->> From: Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
->>=20
->> The switch has internal PTP hardware clocks. Add support for it. There a=
-re three
->> clocks:
->>=20
->>  * Synchronized
->>  * Syntonized
->>  * Free running
->>=20
->> Currently the synchronized clock is exported to user space which is a go=
-od
->> default for the beginning. The free running clock might be exported later
->> e.g. for implementing 802.1AS-2011/2020 Time Aware Bridges (TAB). The sw=
-itch
->> also supports cross time stamping for that purpose.
->>=20
->> The implementation adds support setting/getting the time as well as offs=
-et and
->> frequency adjustments. However, the clock only holds a partial timeofday
->> timestamp. This is why we track the seconds completely in software (see =
-overflow
->> work and last_ts).
->>=20
->> Furthermore, add the PTP multicast addresses into the FDB to forward that
->> packages only to the CPU port where they are processed by a PTP program.
->>=20
->> Signed-off-by: Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
->> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
->
-> Please make sure each patch in the series builds cleanly with the W=3D1
-> C=3D1 flags. Here we have:
->
-> ../drivers/net/dsa/hirschmann/hellcreek_ptp.c: In function =C3=A2=E2=82=
-=AC=CB=9C__hellcreek_ptp_clock_read=C3=A2=E2=82=AC=E2=84=A2:
-> ../drivers/net/dsa/hirschmann/hellcreek_ptp.c:30:28: warning: variable =
-=C3=A2=E2=82=AC=CB=9Csech=C3=A2=E2=82=AC=E2=84=A2 set but not used [-Wunuse=
-d-but-set-variable]
->    30 |  u16 nsl, nsh, secl, secm, sech;
->       |                            ^~~~
-> ../drivers/net/dsa/hirschmann/hellcreek_ptp.c:30:22: warning: variable =
-=C3=A2=E2=82=AC=CB=9Csecm=C3=A2=E2=82=AC=E2=84=A2 set but not used [-Wunuse=
-d-but-set-variable]
->    30 |  u16 nsl, nsh, secl, secm, sech;
->       |                      ^~~~
-> ../drivers/net/dsa/hirschmann/hellcreek_ptp.c:30:16: warning: variable =
-=C3=A2=E2=82=AC=CB=9Csecl=C3=A2=E2=82=AC=E2=84=A2 set but not used [-Wunuse=
-d-but-set-variable]
->    30 |  u16 nsl, nsh, secl, secm, sech;
->       |                ^~~~
->
-> Next patch adds a few more.
+The error paths are strange if there are multiple fd in the message.
+A quick look at the old code seems to imply that if the user doesn't
+supply a big enough buffer then the extra 'file *' just get closed.
+OTOH if there is an error processing one of the files the request
+fails with the earlier file allocated fd numbers.
 
-Sorry, I did test with C=3D1 only. I'll fix it.
+In addition most of the userspace buffer is written after the
+loop - any errors there return -EFAULT (SIGSEGV) without
+even trying to tidy up the allocated fd.
 
-Thanks,
-Kurt
+ISTM that the put_user(new_fd, ufd) could be done in __scm_install_fd()
+after __fd_install_received() returns.
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+scm_detach_fds() could do the put_user(SOL_SOCKET,...) before actually
+processing the first file - so that the state can be left unchanged
+when a naff buffer is passed.
 
------BEGIN PGP SIGNATURE-----
+	David
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl7sc6IACgkQeSpbgcuY
-8Kab/g//bnuFMwcRYTeeq+oslsXbELr8IchBtrL9xstckxXlqpzjmto23W4hbQik
-FnpQG+RCeLoE9SiVR9b2KL8ei2zX0uCU/lT5Vq75HycMJoCOuiN27FvuJx3QSVGz
-ph/dU6gl1ZZS44vIGMm351MSQX6DRMhm4pXzG9Fmk2Sent2h69gYtHDj/OPFnvze
-+625SHxqH+6lDSYTqc7Es/TavKRrLBivlgr6rqm6SVwHUR1pOBACxxjqIHHPionl
-hmha5Inzxuy7Qcwi7f1ocaHzq5F4enEtjtr8WbrxoOV6+vRTGQMLcJeO3ixnJtx9
-TmHFRgwFkzjzMw1+an3Qn4aKXrB00eIRtQQp7Vdqrg3qFOhrxiZ8iepS5lsahgD6
-7HAY9vmZ8OWEwaMEtiR5SBZwbwejRU6RLeyPKnfg/FeJ/nsEQ327O36Uinw6hY2O
-jQzI87jmpAO+AE+SPgZjalHw7fnI8GtoGkogkdWdQ1NIGCyfJpH6ewzEVxUob8Ql
-/SWeT9tdYWvEYtWvaZ6ovcLhFI5rSbbtIw825buIFDTy2k4pmzYmU17/+DsjI2Jn
-8C4GTew37u8g0k/196LHjjgOdYqABqXf0ilYW9bkeu7cIxwG+NnQ7qd+FTuDfmjg
-8QncvcSu5LthzwWqWcCQRe3r0rVDX5HPovBoU0s3wKdBz4/Euds=
-=7JQD
------END PGP SIGNATURE-----
---=-=-=--
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
