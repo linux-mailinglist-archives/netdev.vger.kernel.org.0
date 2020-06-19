@@ -2,203 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDC93201A45
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 20:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E4F7201A5C
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 20:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436618AbgFSSYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 14:24:08 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:32278 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2406028AbgFSSX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 14:23:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592591037;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tYgwx/S0czXjeI7eutEPjbQtilI+2+QRsI8jC+dRvu0=;
-        b=Dhcr79yi22O+0Yv6z5FUMiAm57BAJguUCirTnwAww1pTX3MunsJTG7YL4M8uB9NufxHCCz
-        V87psGe2pYT8zy942vBKFaozHdZf0q7bx/vIEvns3qOydeqgm3IPciZm8CO7smLaoObq2G
-        nXtUVOaPECpRO/LWIFolxKkCDNr8gLw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-156-tynZoVW8NMe7yZ9Pwu3JHg-1; Fri, 19 Jun 2020 14:23:53 -0400
-X-MC-Unique: tynZoVW8NMe7yZ9Pwu3JHg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 17D8C107B767;
-        Fri, 19 Jun 2020 18:23:52 +0000 (UTC)
-Received: from eperezma.remote.csb (ovpn-113-14.ams2.redhat.com [10.36.113.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6B6011CA;
-        Fri, 19 Jun 2020 18:23:42 +0000 (UTC)
-From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
-To:     mst@redhat.com
-Cc:     kvm list <kvm@vger.kernel.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Subject: [RFC v9 11/11] vhost: drop head based APIs
-Date:   Fri, 19 Jun 2020 20:23:02 +0200
-Message-Id: <20200619182302.850-12-eperezma@redhat.com>
-In-Reply-To: <20200619182302.850-1-eperezma@redhat.com>
-References: <20200619182302.850-1-eperezma@redhat.com>
+        id S1731228AbgFSSZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 14:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728712AbgFSSZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 14:25:39 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF1CC06174E;
+        Fri, 19 Jun 2020 11:25:39 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id u17so7955485qtq.1;
+        Fri, 19 Jun 2020 11:25:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UKQDrHfQKlAwRetqN3yWweOMe2a7d5XeUCsMt86IhZU=;
+        b=CoxRKf4Yb4EnJGtJlcc23tfjvdWywG5lvFfK3kQ3BgtRTJLl5ChNhKuooKerJ5LXor
+         Hh6CeksJ3q5uFnD0TDK8swFFXRyo6GTudVZyedIJm9YJNavgFv98tMHdYW9LKVoLM50J
+         pnw4WK2kyyGVJXfXVj9eHSXeK3dVgB9+AdCYpZ2FtpjZZa9wQt+lnCazwtxAYcP+hcpI
+         y1yLwgQbPaow/qiOCuVjWX3Gg2ozQelJmtG2CQR+6ur014n7ga1ZIuIJ/llnpX5at8y1
+         kvIXuuXUxBEeUSVdm/+aH35RmY9hFi53/6tF0fQcUR9phA3s/0dOIQVQvhceo+E5kwhr
+         E3sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UKQDrHfQKlAwRetqN3yWweOMe2a7d5XeUCsMt86IhZU=;
+        b=Dkx39GMZDixeY5bYFrAidyeXNy+lf1lO6Q9kUSmCD9XizgPEuFEbK6Tz/agdl/j/lE
+         n74KGdETXQHlFIaKPrUI0dudQKOJ7Naf+wNxAzoVIPP2+ksHelkE2GLG9+BFQI4Sv3lF
+         Y5gJED/9iZHovJu8DqxPN4JFWoYWYaSCCnbXrSVAkrYxh2qoYR+IZJPrxirOZcGYPEas
+         Vto81Gn1t40Hj6KNMS/fWN+ektqAptP843Iwg52cXOBbBzxfA81jkWeRhIXbN+5TjFPW
+         OqR0hyDC0MJVcIyklCZcL7IEvlIKQS/9SjJ+9i0dBLYPDetHxI0lLQUr6pb+4zlTlImG
+         mByQ==
+X-Gm-Message-State: AOAM530cM1axLRcUP9otmPbGF/W2Wop34o6/vm6wA6j4uwmZlREbBEeF
+        N29wA5ZEUk/x309BAPziPd/oQK5hnfTg9XEbh2A=
+X-Google-Smtp-Source: ABdhPJy1hobkBSHWIJdIcaUbIy4e9uYICyr0E/cEj+L0b26153zLZ3WhHbepdDK1to8A510PcOPo17ixrlGSogOlHes=
+X-Received: by 2002:ac8:342b:: with SMTP id u40mr4668299qtb.59.1592591138774;
+ Fri, 19 Jun 2020 11:25:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+References: <20200616100512.2168860-1-jolsa@kernel.org> <20200616100512.2168860-10-jolsa@kernel.org>
+ <CAEf4BzY=d5y_-fXvomG7SjkbK7DZn5=-f+sdCYRdZh9qeynQrQ@mail.gmail.com> <20200619133124.GJ2465907@krava>
+In-Reply-To: <20200619133124.GJ2465907@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 19 Jun 2020 11:25:27 -0700
+Message-ID: <CAEf4BzZDCtW-5r5rN+ufZi1hUXjw8QCF+CiyT5sOvQQEEOqtiQ@mail.gmail.com>
+Subject: Re: [PATCH 09/11] bpf: Add d_path helper
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Michael S. Tsirkin" <mst@redhat.com>
+On Fri, Jun 19, 2020 at 6:31 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Thu, Jun 18, 2020 at 09:35:10PM -0700, Andrii Nakryiko wrote:
+> > On Tue, Jun 16, 2020 at 3:07 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > >
+> > > Adding d_path helper function that returns full path
+> > > for give 'struct path' object, which needs to be the
+> > > kernel BTF 'path' object.
+> > >
+> > > The helper calls directly d_path function.
+> > >
+> > > Updating also bpf.h tools uapi header and adding
+> > > 'path' to bpf_helpers_doc.py script.
+> > >
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> > >  include/linux/bpf.h            |  4 ++++
+> > >  include/uapi/linux/bpf.h       | 14 ++++++++++++-
+> > >  kernel/bpf/btf_ids.c           | 11 ++++++++++
+> > >  kernel/trace/bpf_trace.c       | 38 ++++++++++++++++++++++++++++++++++
+> > >  scripts/bpf_helpers_doc.py     |  2 ++
+> > >  tools/include/uapi/linux/bpf.h | 14 ++++++++++++-
+> > >  6 files changed, 81 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > index a94e85c2ec50..d35265b6c574 100644
+> > > --- a/include/linux/bpf.h
+> > > +++ b/include/linux/bpf.h
+> > > @@ -1752,5 +1752,9 @@ extern int bpf_skb_output_btf_ids[];
+> > >  extern int bpf_seq_printf_btf_ids[];
+> > >  extern int bpf_seq_write_btf_ids[];
+> > >  extern int bpf_xdp_output_btf_ids[];
+> > > +extern int bpf_d_path_btf_ids[];
+> > > +
+> > > +extern int btf_whitelist_d_path[];
+> > > +extern int btf_whitelist_d_path_cnt;
+> >
+> > So with suggestion from previous patch, this would be declared as:
+> >
+> > extern const struct btf_id_set btf_whitelist_d_path;
+>
+> yes
+>
+> SNIP
+>
+> > >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> > >   * function eBPF program intends to call
+> > > diff --git a/kernel/bpf/btf_ids.c b/kernel/bpf/btf_ids.c
+> > > index d8d0df162f04..853c8fd59b06 100644
+> > > --- a/kernel/bpf/btf_ids.c
+> > > +++ b/kernel/bpf/btf_ids.c
+> > > @@ -13,3 +13,14 @@ BTF_ID(struct, seq_file)
+> > >
+> > >  BTF_ID_LIST(bpf_xdp_output_btf_ids)
+> > >  BTF_ID(struct, xdp_buff)
+> > > +
+> > > +BTF_ID_LIST(bpf_d_path_btf_ids)
+> > > +BTF_ID(struct, path)
+> > > +
+> > > +BTF_WHITELIST_ENTRY(btf_whitelist_d_path)
+> > > +BTF_ID(func, vfs_truncate)
+> > > +BTF_ID(func, vfs_fallocate)
+> > > +BTF_ID(func, dentry_open)
+> > > +BTF_ID(func, vfs_getattr)
+> > > +BTF_ID(func, filp_close)
+> > > +BTF_WHITELIST_END(btf_whitelist_d_path)
+> >
+> > Oh, so that's why you added btf_ids.c. Do you think centralizing all
+> > those BTF ID lists in one file is going to be more convenient? I lean
+> > towards keeping them closer to where they are used, as it was with all
+> > those helper BTF IDS. But I wonder what others think...
+>
+> either way works for me, but then BTF_ID_* macros needs to go
+> to include/linux/btf_ids.h header right?
+>
 
-Everyone's using buf APIs, no need for head based ones anymore.
+given it's internal API, I'd probably just put it in
+include/linux/btf.h or include/linux/bpf.h, don't think we need extra
+header just for these
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
----
- drivers/vhost/vhost.c | 58 +++----------------------------------------
- drivers/vhost/vhost.h | 12 ---------
- 2 files changed, 4 insertions(+), 66 deletions(-)
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index e227e0667790..736fa1a3cee5 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -2423,39 +2423,11 @@ EXPORT_SYMBOL_GPL(vhost_get_avail_buf);
- /* Reverse the effect of vhost_get_avail_buf. Useful for error handling. */
- void vhost_discard_avail_bufs(struct vhost_virtqueue *vq,
- 			      struct vhost_buf *buf, unsigned count)
--{
--	vhost_discard_vq_desc(vq, count);
--}
--EXPORT_SYMBOL_GPL(vhost_discard_avail_bufs);
--
--/* This function returns the descriptor number found, or vq->num (which is
-- * never a valid descriptor number) if none was found.  A negative code is
-- * returned on error. */
--int vhost_get_vq_desc(struct vhost_virtqueue *vq,
--		      struct iovec iov[], unsigned int iov_size,
--		      unsigned int *out_num, unsigned int *in_num,
--		      struct vhost_log *log, unsigned int *log_num)
--{
--	struct vhost_buf buf;
--	int ret = vhost_get_avail_buf(vq, &buf,
--				      iov, iov_size, out_num, in_num,
--				      log, log_num);
--
--	if (likely(ret > 0))
--		return buf.id;
--	if (likely(!ret))
--		return vq->num;
--	return ret;
--}
--EXPORT_SYMBOL_GPL(vhost_get_vq_desc);
--
--/* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
--void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
- {
- 	unfetch_descs(vq);
--	vq->last_avail_idx -= n;
-+	vq->last_avail_idx -= count;
- }
--EXPORT_SYMBOL_GPL(vhost_discard_vq_desc);
-+EXPORT_SYMBOL_GPL(vhost_discard_avail_bufs);
- 
- static int __vhost_add_used_n(struct vhost_virtqueue *vq,
- 			    struct vring_used_elem *heads,
-@@ -2491,7 +2463,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
- 
- /* After we've used one of their buffers, we tell them about it.  We'll then
-  * want to notify the guest, using eventfd. */
--int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
-+static int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
- 		     unsigned count)
- {
- 	int start, n, r;
-@@ -2524,11 +2496,10 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
- 	}
- 	return r;
- }
--EXPORT_SYMBOL_GPL(vhost_add_used_n);
- 
- /* After we've used one of their buffers, we tell them about it.  We'll then
-  * want to notify the guest, using eventfd. */
--int vhost_add_used(struct vhost_virtqueue *vq, unsigned int head, int len)
-+static int vhost_add_used(struct vhost_virtqueue *vq, unsigned int head, int len)
- {
- 	struct vring_used_elem heads = {
- 		cpu_to_vhost32(vq, head),
-@@ -2537,7 +2508,6 @@ int vhost_add_used(struct vhost_virtqueue *vq, unsigned int head, int len)
- 
- 	return vhost_add_used_n(vq, &heads, 1);
- }
--EXPORT_SYMBOL_GPL(vhost_add_used);
- 
- int vhost_put_used_buf(struct vhost_virtqueue *vq, struct vhost_buf *buf)
- {
-@@ -2605,26 +2575,6 @@ void vhost_signal(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- }
- EXPORT_SYMBOL_GPL(vhost_signal);
- 
--/* And here's the combo meal deal.  Supersize me! */
--void vhost_add_used_and_signal(struct vhost_dev *dev,
--			       struct vhost_virtqueue *vq,
--			       unsigned int head, int len)
--{
--	vhost_add_used(vq, head, len);
--	vhost_signal(dev, vq);
--}
--EXPORT_SYMBOL_GPL(vhost_add_used_and_signal);
--
--/* multi-buffer version of vhost_add_used_and_signal */
--void vhost_add_used_and_signal_n(struct vhost_dev *dev,
--				 struct vhost_virtqueue *vq,
--				 struct vring_used_elem *heads, unsigned count)
--{
--	vhost_add_used_n(vq, heads, count);
--	vhost_signal(dev, vq);
--}
--EXPORT_SYMBOL_GPL(vhost_add_used_and_signal_n);
--
- /* return true if we're sure that avaiable ring is empty */
- bool vhost_vq_avail_empty(struct vhost_dev *dev, struct vhost_virtqueue *vq)
- {
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index 28eea0155efb..264a2a2fae97 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -197,11 +197,6 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
- bool vhost_vq_access_ok(struct vhost_virtqueue *vq);
- bool vhost_log_access_ok(struct vhost_dev *);
- 
--int vhost_get_vq_desc(struct vhost_virtqueue *,
--		      struct iovec iov[], unsigned int iov_count,
--		      unsigned int *out_num, unsigned int *in_num,
--		      struct vhost_log *log, unsigned int *log_num);
--void vhost_discard_vq_desc(struct vhost_virtqueue *, int n);
- int vhost_get_avail_buf(struct vhost_virtqueue *, struct vhost_buf *buf,
- 			struct iovec iov[], unsigned int iov_count,
- 			unsigned int *out_num, unsigned int *in_num,
-@@ -209,13 +204,6 @@ int vhost_get_avail_buf(struct vhost_virtqueue *, struct vhost_buf *buf,
- void vhost_discard_avail_bufs(struct vhost_virtqueue *,
- 			      struct vhost_buf *, unsigned count);
- int vhost_vq_init_access(struct vhost_virtqueue *);
--int vhost_add_used(struct vhost_virtqueue *, unsigned int head, int len);
--int vhost_add_used_n(struct vhost_virtqueue *, struct vring_used_elem *heads,
--		     unsigned count);
--void vhost_add_used_and_signal(struct vhost_dev *, struct vhost_virtqueue *,
--			       unsigned int id, int len);
--void vhost_add_used_and_signal_n(struct vhost_dev *, struct vhost_virtqueue *,
--			       struct vring_used_elem *heads, unsigned count);
- int vhost_put_used_buf(struct vhost_virtqueue *, struct vhost_buf *buf);
- int vhost_put_used_n_bufs(struct vhost_virtqueue *,
- 			  struct vhost_buf *bufs, unsigned count);
--- 
-2.18.1
-
+> jirka
+>
+> >
+> > > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > > index c1866d76041f..0ff5d8434d40 100644
+> > > --- a/kernel/trace/bpf_trace.c
+> > > +++ b/kernel/trace/bpf_trace.c
+> > > @@ -1016,6 +1016,42 @@ static const struct bpf_func_proto bpf_send_signal_thread_proto = {
+> > >         .arg1_type      = ARG_ANYTHING,
+> > >  };
+> > >
+> >
+> > [...]
+> >
+>
