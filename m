@@ -2,175 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D2C1200154
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 06:39:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B84DD200156
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 06:42:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725804AbgFSEjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 00:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
+        id S1725935AbgFSEmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 00:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725290AbgFSEjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 00:39:08 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E112CC06174E;
-        Thu, 18 Jun 2020 21:39:07 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id r22so6359982qke.13;
-        Thu, 18 Jun 2020 21:39:07 -0700 (PDT)
+        with ESMTP id S1725290AbgFSEmT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 00:42:19 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86060C06174E
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 21:42:19 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id x22so3884028pfn.3
+        for <netdev@vger.kernel.org>; Thu, 18 Jun 2020 21:42:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VEQDCbFai+4akoJzHfgmFatVzDlF/4lY5gd7vQ/lfaw=;
-        b=oIhEj0iTmZ5Rm1v4p0QkNmZR+8qXt+wv07LuTc9y0O9fjg1aH3scMraGPmlYm7Ty0o
-         EMWh4Xgki9d68f7lPuASvLJLxS1RBrL5fKDrjyNQ5XTDfEjlRsxQljmv/Mb8a02egeax
-         JXqd35V6VwnIoxgB+jcp5bTcyQ4GkJX0dc90Kfb23aeTxZm7OixRhrIDdxHrpCMk4nZd
-         CM5aGlZxgnUCREN1NAsBs3VlbYIy8NAj5GoThEaJz+PVf+0h+GGCFsF+Hjkn94c5E4Cy
-         LaCaRh74h6qSYZC5g3XuRsRwnkA9je/uu4Luez6LNcGeJWglkVuxPp7fhUkM06/ALWsv
-         1tIg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=v83a1EaJVHh5k2oGMag77EQboZNzumvVqyic/XeROI8=;
+        b=krG7JER3wH+/NhcorWyc9Iz054NfeeT+6PTiOqhdKvmTmUB1XI1oy1PQYGA54dScn6
+         db+DkR42nOUz8hajNdcVTss+F/GPHUKnE3Nj9vxFSdlwybk8/uaWcv1uLIjLESQ5tNvq
+         eqJfY36Ef+GN/HGd3t9BxcjLw3tMrKFwAmghriMO5BWFuYg13LvT6M3pA7c040Le8g8j
+         QW8TkgkH4k9MSjJ5uNYhI8jk0Qto2Wu7D50sxqE8CI2Yvfd/MbsJRkBj4zXi/yOh1kwA
+         ZRZOFdE0VWm/hJ0r8I4WXMmduWDGP/mY9BERvUgDgWSZ4X2YWDHsOVWIMWl+9cze7mvG
+         teGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VEQDCbFai+4akoJzHfgmFatVzDlF/4lY5gd7vQ/lfaw=;
-        b=BWZX438J4MbTxlklMDZr4SHVx8FYIsK1oR+ffIxCKIuwLcSlJk4vPGt1NsfF+j4DNK
-         eNTTnYE4QP7MOsAfERGZ+990tPrsz2PIvrWHQIwkzs5RaNN4ErY3rhIEEV6DB58DyqoI
-         8KGAFPXDz+7c5KQD9UtY+lUGccWMem8cjXQsrYaFM/ET0YeWphgomDCdf/29kV61DXjx
-         CfBggYBxkZ//KNQpKS4iHQD6JPUieT0ww3LI9JDeqGNta6fZLXnRqDpd0SFXXEFwvHOL
-         0k+rXg3+QeD0tbDpnmOq+K0XnhLx5obthS5PvqUGutE15FuRO3Z9ud7b/pnR7kg3fp6I
-         +eBA==
-X-Gm-Message-State: AOAM530C5Zj0xQdJuwFraD2RK27rFVEFubF0F+NCzPLFijK7Fa+MBO01
-        JO+XJm7WJqB9paPtE0EAHzuCw9MrVyddxXoVqWo=
-X-Google-Smtp-Source: ABdhPJxM1e8I9Mxijq8vU5WfnT4Q+JuGKR5qlSTRDotFq/thtLDTjFOosfa2Za314ICRdNSufAXHYmow/2vvaGBqHjU=
-X-Received: by 2002:a37:6712:: with SMTP id b18mr1839624qkc.36.1592541547120;
- Thu, 18 Jun 2020 21:39:07 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=v83a1EaJVHh5k2oGMag77EQboZNzumvVqyic/XeROI8=;
+        b=hcF736qV9XdiLidOPjEl1NPhE+56MI+SZ5uEIieEQonAA4s47uVV5nyxA71ZNOnvlg
+         Ycej9nqXTw9bNr4IWBMGst3YsNpvcYevr1pWbaLdtFP9Pqr8+cwcdGkUhYStLwyk0aQW
+         9STRBpvX2Jl5+Gq0ChCtfjgzosLa/x0b58xDvZZ8jzxOOo+YaBqV8O1VxIKYeO4wv9bS
+         mx6ESLiL0EqTddpcDVoUKJHxMoGesyYLSpEwzpF8PIOmOfn5WOQUW86x4OqkqFhDRqJz
+         QM/+arjPaGwD+XP+KOAAxFgLOPCDEdqZFhLdR9Eje+IT1FOjju3+58sIK5l5PpXQCwPM
+         SaFA==
+X-Gm-Message-State: AOAM533DrpZq56z7wAsqDJABusFuKQJwFVN6I1VmsMEdhMGBCQzwnB+1
+        nnY9vt3acEWcu9FiO+za5J6qqjvm
+X-Google-Smtp-Source: ABdhPJxr/dlBHOvlHJsVCB99AXZ2JMv94MgqlPFueZv44qtYpkgpoJox0T0cwevG63Z4o5A0Ip1lLA==
+X-Received: by 2002:a62:7ccb:: with SMTP id x194mr6814240pfc.318.1592541739007;
+        Thu, 18 Jun 2020 21:42:19 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id a8sm1403723pga.64.2020.06.18.21.42.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Jun 2020 21:42:18 -0700 (PDT)
+Subject: Re: [PATCH net] net: increment xmit_recursion level in
+ dev_direct_xmit()
+To:     David Miller <davem@davemloft.net>, edumazet@google.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com, kuba@kernel.org,
+        syzkaller@googlegroups.com
+References: <20200618052325.78441-1-edumazet@google.com>
+ <20200618.204830.1094276610079682944.davem@davemloft.net>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <363832b8-1d7e-1e9e-8887-ef97d748b0c7@gmail.com>
+Date:   Thu, 18 Jun 2020 21:42:16 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
 MIME-Version: 1.0
-References: <20200616100512.2168860-1-jolsa@kernel.org> <20200616100512.2168860-11-jolsa@kernel.org>
-In-Reply-To: <20200616100512.2168860-11-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 18 Jun 2020 21:38:56 -0700
-Message-ID: <CAEf4BzYr6hwS5-XKAJt-QEyPiofNvj2M1WA_B-F29QCFoZU2jw@mail.gmail.com>
-Subject: Re: [PATCH 10/11] selftests/bpf: Add verifier test for d_path helper
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200618.204830.1094276610079682944.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 16, 2020 at 3:06 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Adding verifier test for attaching tracing program and
-> calling d_path helper from within and testing that it's
-> allowed for dentry_open function and denied for 'd_path'
-> function with appropriate error.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  tools/testing/selftests/bpf/test_verifier.c   | 13 ++++++-
->  tools/testing/selftests/bpf/verifier/d_path.c | 38 +++++++++++++++++++
->  2 files changed, 50 insertions(+), 1 deletion(-)
->  create mode 100644 tools/testing/selftests/bpf/verifier/d_path.c
->
-> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-> index 78a6bae56ea6..3cce3dc766a2 100644
-> --- a/tools/testing/selftests/bpf/test_verifier.c
-> +++ b/tools/testing/selftests/bpf/test_verifier.c
-> @@ -114,6 +114,7 @@ struct bpf_test {
->                 bpf_testdata_struct_t retvals[MAX_TEST_RUNS];
->         };
->         enum bpf_attach_type expected_attach_type;
-> +       const char *kfunc;
->  };
->
->  /* Note we want this to be 64 bit aligned so that the end of our array is
-> @@ -984,8 +985,18 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
->                 attr.log_level = 4;
->         attr.prog_flags = pflags;
->
-> +       if (prog_type == BPF_PROG_TYPE_TRACING && test->kfunc) {
-> +               attr.attach_btf_id = libbpf_find_vmlinux_btf_id(test->kfunc,
-> +                                               attr.expected_attach_type);
-
-if (!attr.attach_btf_id)
-  emit more meaningful error, than later during load?
-
-> +       }
-> +
->         fd_prog = bpf_load_program_xattr(&attr, bpf_vlog, sizeof(bpf_vlog));
-> -       if (fd_prog < 0 && !bpf_probe_prog_type(prog_type, 0)) {
-> +
-> +       /* BPF_PROG_TYPE_TRACING requires more setup and
-> +        * bpf_probe_prog_type won't give correct answer
-> +        */
-> +       if (fd_prog < 0 && (prog_type != BPF_PROG_TYPE_TRACING) &&
-
-nit: () are redundant
-
-> +           !bpf_probe_prog_type(prog_type, 0)) {
->                 printf("SKIP (unsupported program type %d)\n", prog_type);
->                 skips++;
->                 goto close_fds;
-> diff --git a/tools/testing/selftests/bpf/verifier/d_path.c b/tools/testing/selftests/bpf/verifier/d_path.c
-> new file mode 100644
-> index 000000000000..e08181abc056
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/verifier/d_path.c
-> @@ -0,0 +1,38 @@
-> +{
-> +       "d_path accept",
-> +       .insns = {
-> +       BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 0),
-> +       BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-> +       BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-> +       BPF_MOV64_IMM(BPF_REG_6, 0),
-> +       BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_6, 0),
-> +       BPF_LD_IMM64(BPF_REG_3, 8),
-> +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_d_path),
-> +       BPF_MOV64_IMM(BPF_REG_0, 0),
-> +       BPF_EXIT_INSN(),
-> +       },
-> +       .errstr = "R0 max value is outside of the array range",
-> +       .result = ACCEPT,
-
-accept with error string expected?
 
 
-> +       .prog_type = BPF_PROG_TYPE_TRACING,
-> +       .expected_attach_type = BPF_TRACE_FENTRY,
-> +       .kfunc = "dentry_open",
-> +},
-> +{
-> +       "d_path reject",
-> +       .insns = {
-> +       BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 0),
-> +       BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-> +       BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-> +       BPF_MOV64_IMM(BPF_REG_6, 0),
-> +       BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_6, 0),
-> +       BPF_LD_IMM64(BPF_REG_3, 8),
-> +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_d_path),
-> +       BPF_MOV64_IMM(BPF_REG_0, 0),
-> +       BPF_EXIT_INSN(),
-> +       },
-> +       .errstr = "helper call is not allowed in probe",
-> +       .result = REJECT,
-> +       .prog_type = BPF_PROG_TYPE_TRACING,
-> +       .expected_attach_type = BPF_TRACE_FENTRY,
-> +       .kfunc = "d_path",
-> +},
-> --
-> 2.25.4
->
+On 6/18/20 8:48 PM, David Miller wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> Date: Wed, 17 Jun 2020 22:23:25 -0700
+> 
+>> Back in commit f60e5990d9c1 ("ipv6: protect skb->sk accesses
+>> from recursive dereference inside the stack") Hannes added code
+>> so that IPv6 stack would not trust skb->sk for typical cases
+>> where packet goes through 'standard' xmit path (__dev_queue_xmit())
+>>
+>> Alas af_packet had a dev_direct_xmit() path that was not
+>> dealing yet with xmit_recursion level.
+>>
+>> Also change sk_mc_loop() to dump a stack once only.
+>>
+>> Without this patch, syzbot was able to trigger :
+>  ...
+>> f60e5990d9c1 ("ipv6: protect skb->sk accesses from recursive dereference inside the stack")
+>> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>> Reported-by: syzbot <syzkaller@googlegroups.com>
+> 
+> Applied and queued up for -stable.
+> 
+> I only noticed after pushing this out the missing "Fixes: " prefix, but not
+> much I can do about this now sorry :-/
+
+Oh right, sorry for this.
