@@ -2,110 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 567EB201A60
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 20:27:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0F96201A79
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 20:38:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731756AbgFSS03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 14:26:29 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26036 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725446AbgFSS02 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 14:26:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592591187;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=o7jACTPMklupBCcyQ4Eej+eEvNAjD27aYrs6PEc/vLM=;
-        b=Hu+g/wioYbreRDmEZA02uco8afd2fu9cS+f7wK2b9Huzy8mjkqz8MR4Dgxs5ZIezHNBloo
-        IPml2XoI6kQpYGC8ibLDTOL7eVtFBan2mMYCw4KydxsB420PXdPMthtSmXcK99sw1URPBt
-        xSafn/Qx+rq7TH6/8sryXdbS94rhG0Y=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-231-N8U9e-qjNDmOK5hv_2olCQ-1; Fri, 19 Jun 2020 14:26:25 -0400
-X-MC-Unique: N8U9e-qjNDmOK5hv_2olCQ-1
-Received: by mail-qv1-f71.google.com with SMTP id w12so7481977qvh.13
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:26:25 -0700 (PDT)
+        id S2388647AbgFSSiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 14:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730687AbgFSSiG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 14:38:06 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8948FC0613EE
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:38:06 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id c21so6122412lfb.3
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:38:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H3fbVijkwGqEXjgf746UVzNHZFijt5PEP/I+cIGFrOI=;
+        b=Pbi6ZcZ/j5UzKi4TuELv3vWZVoPaSRX4qHDHfjemlgk/7t9FABxdeWgh51bILfCKJ5
+         wi8F+rrtMy4gj2dpmCJd8yxSDI3bKAoHjCDk9Pmgk4ebmFXb7pgJH6u8Pl1d3HL2Cn+Y
+         CfZiRrUn8yF0xtr+Dhn2AXvWp8IgyXRWpqhQ8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=o7jACTPMklupBCcyQ4Eej+eEvNAjD27aYrs6PEc/vLM=;
-        b=gE1dEUiBgiCleg/kQFf3mLjcZ+/KcMibMa+XQxPCEmJT/tsTIPlSHNthxnTTdKml7D
-         6LYJ0I9DIaDcAO7ugCdzvIyaP59CgSj62kLkR4+dFhsPpv1RZ+xPQFbrEMaww1J+souV
-         kolqw/3vVi2n9T83VKnfDjanu8MNIV7902fkP+07B8H/ZUCmMz3MzI571XxquG3xCvF9
-         AAK9gQSQjQGSgHMGhaVubbAw2Uqy2AYjHONWJjCVCaGk2uRhHjpbwFHhNdoUPVYMri0K
-         V/zTykMzqZIbXwlLoZa8wjCSm2KGgJaD0mr0Y6+YokrX3fFfAcYr6/XR63dbHlKsBUQw
-         eqJw==
-X-Gm-Message-State: AOAM530iotkluJiZEfOazXB3wfFI71WOspqHXGyy31IGSEMvlTtmUWbi
-        YOntRokCaFbSakVbYzzbr4nfXsHba5AkMTbLkmhJ5z08OT4WddpZL0X7mp/xInWRwLaodiA6aA9
-        YAb+7X50sEBKOK496l/f4V8MvHC0if7vL
-X-Received: by 2002:aed:2171:: with SMTP id 104mr2351977qtc.22.1592591184839;
-        Fri, 19 Jun 2020 11:26:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzmu89J2VMwmehul4uuct4yakQaH6gNxgS333NyHo7rSAKDL/C3Yad8XzwEayBTHv1AAc0+ox+DOJ6fz/Cp2Vk=
-X-Received: by 2002:aed:2171:: with SMTP id 104mr2351958qtc.22.1592591184592;
- Fri, 19 Jun 2020 11:26:24 -0700 (PDT)
+        bh=H3fbVijkwGqEXjgf746UVzNHZFijt5PEP/I+cIGFrOI=;
+        b=qy6MOidr0c0Kg9uko8LG0ujoCSX1MD5x3RcnETlB9CqXqn22k1kR5kV/rkKq3CHzN9
+         rK4db/XX2BUHB0Kblxep6NxnHnA65+N3qbHWPJBfSC+V4HOUlAFF8KAfqmvPWL8G5xaL
+         FLG3M+aohGIX80779+NRpXqValekfOdX/jJZIHL5cWen7wrZ+XB1QHvp/l1YfsGvd4vh
+         LQvQiQTW49QzVfdHy3YL38Ok0MledjaHaentDvimoWOZi/V8UnzLdPIzp+zFicHdAkzD
+         UVzsOffqKJEvBl5XOSN8hAD1Zb1q/cqxKcTXvyk1tZ3r3GE56eVBS29Cs30QJwSp0bnq
+         U2tg==
+X-Gm-Message-State: AOAM531nedkUzEU0/7FEBxzhHSt1TKyKlgWuVGMNBV6gvXw4WKnqJNhB
+        kD2h5tgRiJxPXn8zQzabawmCswWCBog=
+X-Google-Smtp-Source: ABdhPJwN5BQP0LYNPYolrYS3tp7BdldSGAHZc6ckjz6svbm1am5UjyK8qHXwlsos01X7MFfp5VRSgA==
+X-Received: by 2002:a19:4301:: with SMTP id q1mr2638706lfa.96.1592591884615;
+        Fri, 19 Jun 2020 11:38:04 -0700 (PDT)
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com. [209.85.167.50])
+        by smtp.gmail.com with ESMTPSA id q13sm1540278lfb.55.2020.06.19.11.38.03
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Jun 2020 11:38:04 -0700 (PDT)
+Received: by mail-lf1-f50.google.com with SMTP id c21so6122360lfb.3
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 11:38:03 -0700 (PDT)
+X-Received: by 2002:a19:ae0f:: with SMTP id f15mr2684358lfc.142.1592591883165;
+ Fri, 19 Jun 2020 11:38:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200611113404.17810-1-mst@redhat.com> <20200611113404.17810-3-mst@redhat.com>
- <20200611152257.GA1798@char.us.oracle.com> <CAJaqyWdwXMX0JGhmz6soH2ZLNdaH6HEdpBM8ozZzX9WUu8jGoQ@mail.gmail.com>
- <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com>
-In-Reply-To: <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Fri, 19 Jun 2020 20:25:48 +0200
-Message-ID: <CAJaqyWe1+FmPC9L_+8oGfYUT63BaWuGrOnkRnUcGapvwtzqmPw@mail.gmail.com>
-Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
-To:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
+References: <20200618210645.GB2212102@localhost.localdomain>
+In-Reply-To: <20200618210645.GB2212102@localhost.localdomain>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 19 Jun 2020 11:37:47 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whz7xz1EBqfyS-C8zTx3_q54R1GuX9tDHdK1-TG91WH-Q@mail.gmail.com>
+Message-ID: <CAHk-=whz7xz1EBqfyS-C8zTx3_q54R1GuX9tDHdK1-TG91WH-Q@mail.gmail.com>
+Subject: Re: [PATCH] linux++, this: rename "struct notifier_block *this"
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 19, 2020 at 8:07 PM Eugenio Perez Martin
-<eperezma@redhat.com> wrote:
+On Thu, Jun 18, 2020 at 2:06 PM Alexey Dobriyan <adobriyan@gmail.com> wrote:
 >
-> On Mon, Jun 15, 2020 at 2:28 PM Eugenio Perez Martin
-> <eperezma@redhat.com> wrote:
-> >
-> > On Thu, Jun 11, 2020 at 5:22 PM Konrad Rzeszutek Wilk
-> > <konrad.wilk@oracle.com> wrote:
-> > >
-> > > On Thu, Jun 11, 2020 at 07:34:19AM -0400, Michael S. Tsirkin wrote:
-> > > > As testing shows no performance change, switch to that now.
-> > >
-> > > What kind of testing? 100GiB? Low latency?
-> > >
-> >
-> > Hi Konrad.
-> >
-> > I tested this version of the patch:
-> > https://lkml.org/lkml/2019/10/13/42
-> >
-> > It was tested for throughput with DPDK's testpmd (as described in
-> > http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html)
-> > and kernel pktgen. No latency tests were performed by me. Maybe it is
-> > interesting to perform a latency test or just a different set of tests
-> > over a recent version.
-> >
-> > Thanks!
+> Rename
+>         struct notifier_block *this
+> to
+>         struct notifier_block *nb
 >
-> I have repeated the tests with v9, and results are a little bit different:
-> * If I test opening it with testpmd, I see no change between versions
-> * If I forward packets between two vhost-net interfaces in the guest
-> using a linux bridge in the host:
->   - netperf UDP_STREAM shows a performance increase of 1.8, almost
-> doubling performance. This gets lower as frame size increase.
->   - rests of the test goes noticeably worse: UDP_RR goes from ~6347
-> transactions/sec to 5830
->   - TCP_STREAM goes from ~10.7 gbps to ~7Gbps
->   - TCP_RR from 6223.64 transactions/sec to 5739.44
+> "nb" is arguably a better name for notifier block.
 
-And I forgot to add: It seems that avoiding IOV length math helps,
-since performance increases in all tests from patch 02/11 ("vhost: use
-batched get_vq_desc version") to 11/11 ("vhost: drop head based
-APIs").
+Maybe it's a better name. But it doesn't seem worth it.
 
+Because C++ reserved words are entirely irrelevant.
+
+We did this same dance almost three decades ago, and the fact is, C++
+has other reserved words that make it all pointless.
+
+There is no way I will accept the renaming of various "new" variables.
+We did it, it was bad, we undid it, and we now have a _lot_ more uses
+of 'new' and 'old', and no, we're not changing it for a braindead
+language that isn't relevant to the kernel.
+
+The fact is, C++ chose bad identifiers to make reserved words.
+
+If you want to build the kernel with C++, you'd be a lot better off just doing
+
+   /* C++ braindamage */
+   #define this __this
+   #define new __new
+
+and deal with that instead.
+
+Because no, the 'new' renaming will never happen, and while 'this'
+isn't nearly as common or relevant a name, once you have the same
+issue with 'new', what's the point of trying to deal with 'this'?
+
+             Linus
