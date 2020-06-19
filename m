@@ -2,64 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BAD4201C3C
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 22:16:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63D28201C41
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 22:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391850AbgFSUQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 16:16:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48236 "EHLO
+        id S2388968AbgFSURu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 16:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391792AbgFSUQN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 16:16:13 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD26C06174E
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 13:16:13 -0700 (PDT)
-Received: from PC192.168.2.50 (p200300e9d71c614fed812a542701ea41.dip0.t-ipconnect.de [IPv6:2003:e9:d71c:614f:ed81:2a54:2701:ea41])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id DF568C051A;
-        Fri, 19 Jun 2020 22:16:06 +0200 (CEST)
-Subject: Re: [PATCH 1/2] docs: net: ieee802154: change link to new project URL
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        alex.aring@gmail.com
-References: <20200616065814.816248-1-stefan@datenfreihafen.org>
- <c8631876-8aea-c56d-105e-6866c74964ce@datenfreihafen.org>
- <20200619.125640.2128434436244521418.davem@davemloft.net>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <61652142-66cc-5693-9195-fa1a4b2b199c@datenfreihafen.org>
-Date:   Fri, 19 Jun 2020 22:16:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <20200619.125640.2128434436244521418.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        with ESMTP id S2388032AbgFSURu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 16:17:50 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDF6C06174E
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 13:17:50 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 242F1120ED481;
+        Fri, 19 Jun 2020 13:17:50 -0700 (PDT)
+Date:   Fri, 19 Jun 2020 13:17:49 -0700 (PDT)
+Message-Id: <20200619.131749.589289078892437281.davem@davemloft.net>
+To:     vishal@chelsio.com
+Cc:     netdev@vger.kernel.org, nirranjan@chelsio.com,
+        rahul.lakkireddy@chelsio.com
+Subject: Re: [PATCH net-next 0/5] cxgb4: add support for ethtool n-tuple
+ filters
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200619142139.27982-1-vishal@chelsio.com>
+References: <20200619142139.27982-1-vishal@chelsio.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 19 Jun 2020 13:17:50 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+From: Vishal Kulkarni <vishal@chelsio.com>
+Date: Fri, 19 Jun 2020 19:51:34 +0530
 
-On 19.06.20 21:56, David Miller wrote:
-> From: Stefan Schmidt <stefan@datenfreihafen.org>
-> Date: Fri, 19 Jun 2020 09:14:22 +0200
+> Patch 1: Adds data structure to maintain list of filters and handles init/dinit
+> 	 of the same.
 > 
->> I see you marked both patches here as awaiting upstream in
->> patchwork. I am not really sure what to do best now. Am I supposed to
->> pick them up myself and send them in my usual ieee802154 pull request?
->>
->> Before you had been picking up docs and MAINTAINERS patches
->> directly. I am fine with either way. Just want to check what you
->> expect.
+> Patch 2: Handles addition of filters via ETHTOOL_SRXCLSRLINS.
 > 
-> Please put it into a pull request, thank you.
+> Patch 3: Handles deletion of filtes via ETHTOOL_SRXCLSRLDEL.
+> 
+> Patch 4: Handles viewing of added filters.
+> 
+> Patch 5: Adds FLOW_ACTION_QUEUE support.
 
-Done now.
-
-regards
-Stefan Schmidt
+Series applied, thank you.
