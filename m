@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEBAB2003D4
-	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 10:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38150200429
+	for <lists+netdev@lfdr.de>; Fri, 19 Jun 2020 10:36:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731272AbgFSI0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 04:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51418 "EHLO
+        id S1731667AbgFSIgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 04:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730651AbgFSI0s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 04:26:48 -0400
+        with ESMTP id S1731524AbgFSIgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 04:36:48 -0400
 Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D41C06174E;
-        Fri, 19 Jun 2020 01:26:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AFE0C06174E;
+        Fri, 19 Jun 2020 01:36:48 -0700 (PDT)
 Received: from [5.158.153.52] (helo=kurt)
         by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
         (Exim 4.80)
         (envelope-from <kurt@linutronix.de>)
-        id 1jmCMH-00045F-OX; Fri, 19 Jun 2020 10:26:45 +0200
+        id 1jmCVx-0004OO-R0; Fri, 19 Jun 2020 10:36:45 +0200
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
@@ -30,11 +30,11 @@ Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
         ilias.apalodimas@linaro.org
-Subject: Re: [RFC PATCH 3/9] net: dsa: hellcreek: Add PTP clock support
-In-Reply-To: <20200618172304.GG240559@lunn.ch>
-References: <20200618064029.32168-1-kurt@linutronix.de> <20200618064029.32168-4-kurt@linutronix.de> <20200618172304.GG240559@lunn.ch>
-Date:   Fri, 19 Jun 2020 10:26:44 +0200
-Message-ID: <878sgjqx4r.fsf@kurt>
+Subject: Re: [RFC PATCH 6/9] net: dsa: hellcreek: Add debugging mechanisms
+In-Reply-To: <20200618173458.GH240559@lunn.ch>
+References: <20200618064029.32168-1-kurt@linutronix.de> <20200618064029.32168-7-kurt@linutronix.de> <20200618173458.GH240559@lunn.ch>
+Date:   Fri, 19 Jun 2020 10:36:45 +0200
+Message-ID: <875zbnqwo2.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: multipart/signed; boundary="=-=-=";
         micalg=pgp-sha512; protocol="application/pgp-signature"
@@ -49,66 +49,37 @@ Content-Type: text/plain
 Hi Andrew,
 
 On Thu Jun 18 2020, Andrew Lunn wrote:
->> +static u64 __hellcreek_ptp_clock_read(struct hellcreek *hellcreek)
+> On Thu, Jun 18, 2020 at 08:40:26AM +0200, Kurt Kanzenbach wrote:
+>> The switch has registers which are useful for debugging issues:
+>
+> debugfs is not particularly likes. Please try to find other means
+> where possible. Memory usage fits nicely into devlink. See mv88e6xxx
+> which exports the ATU fill for example.
+
+OK, I'll have a look at devlink and the mv88e6xxx driver to see if that
+could be utilized.
+
+> Are trace registers counters?
+
+No. The trace registers provide bits for error conditions and if packets
+have been dropped e.g. because of full queues or FCS errors, and so on.
+
+>
+>> +static int hellcreek_debugfs_init(struct hellcreek *hellcreek)
 >> +{
->> +	u16 nsl, nsh, secl, secm, sech;
+>> +	struct dentry *file;
 >> +
->> +	/* Take a snapshot */
->> +	hellcreek_ptp_write(hellcreek, PR_COMMAND_C_SS, PR_COMMAND_C);
->> +
->> +	/* The time of the day is saved as 96 bits. However, due to hardware
->> +	 * limitations the seconds are not or only partly kept in the PTP
->> +	 * core. That's why only the nanoseconds are used and the seconds are
->> +	 * tracked in software. Anyway due to internal locking all five
->> +	 * registers should be read.
->> +	 */
->> +	sech = hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
->> +	secm = hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
->> +	secl = hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
->> +	nsh  = hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
->> +	nsl  = hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
->> +
->> +	return (u64)nsl | ((u64)nsh << 16);
+>> +	hellcreek->debug_dir = debugfs_create_dir(dev_name(hellcreek->dev),
+>> +						  NULL);
+>> +	if (!hellcreek->debug_dir)
+>> +		return -ENOMEM;
 >
-> Hi Kurt
->
-> What are the hardware limitations? There seems to be 48 bits for
-> seconds? That allows for 8925104 years?
+> Just a general comment. You should not check the return value from any
+> debugfs call, since it is totally optional. It will also do the right
+> thing if the previous call has failed. There are numerous emails from
+> GregKH about this.
 
-In theory, yes. Due to hardware hardware considerations only a few or
-none of these bits are used for the seconds. The rest is zero. Meaning
-that the wraparound is not 8925104 years, but at e.g. 8 seconds when
-using 3 bits for the seconds.
-
-I've discussed this the Hirschmann people and they suggested to use the
-nanoseconds only. That's what I did here.
-
->
->> +static u64 __hellcreek_ptp_gettime(struct hellcreek *hellcreek)
->> +{
->> +	u64 ns;
->> +
->> +	ns = __hellcreek_ptp_clock_read(hellcreek);
->> +	if (ns < hellcreek->last_ts)
->> +		hellcreek->seconds++;
->> +	hellcreek->last_ts = ns;
->> +	ns += hellcreek->seconds * NSEC_PER_SEC;
->
-> So the assumption is, this gets called at least once per second. And
-> if that does not happen, there is no recovery. The second is lost.
-
-Yes, exactly. If a single overflow is missed, then the time is wrong.
-
->
-> I'm just wondering if there is something more robust using what the
-> hardware does provide, even if the hardware is not perfect.
-
-I don't think there's a more robust way to do this. The overflow period
-is a second which should be enough time to catch the overflow even if
-the system is loaded. We did long running tests for days and the
-mechanism worked fine. We could also consider to move the delayed work
-to a dedicated thread which could be run with real time (SCHED_FIFO)
-priority. But, I didn't see the need for it.
+OK.
 
 Thanks,
 Kurt
@@ -118,18 +89,18 @@ Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl7sdsQACgkQeSpbgcuY
-8KbFFBAA0dobohar7yXi0fNY+RHMDqZnkGjoqMsFXOs4jItq/gtu0Iq45nLnYM6F
-BrgFGQ17E4aKVKav98CeCOi8LfpzRSxg928o8fRdPqVHAIshJb9F97Zg1F0vZhT3
-8KrZhP6EkxoBiMkDYWdY613Y54yGi5c6Of8MrJHXwRlWHIfXaTc0T1of96o2jqYF
-50XS+ZMmp9CNfFKerVKOBd2wiNHXXYMkNllgAckXGWAMyIWASRi5SSqt8ItauVx5
-KduSgsQBvH2+1JXCZcOcIk+7SHDGrlNYtTq1uqstiz+SlYkLKWhrrOeWTzZbdQB1
-SDTtSoBaCCyQjcywzPh397FSUAupE/nIhPseOTdXzeCr/dH7Cs1WlRdyQyVom21F
-jbhMkr47R+0++1IktnoVgOt7/pOZ3YrXN/jt4ZgQsE00p7BN1zCxROe1HOkgkVzU
-rA95tU37Kiv38aYychbYvSp4jB4ebT1jjs7kQ6b9wMghJrt+9kJifzQUNvemhM10
-dq4ZwkLOxjqdvVeInp0GOhnQvoGMnoG4EnIVQiKrGzDmpB75GJvfASufFU/JTIMU
-mKF32D7AGjlxSZtl33zOjYetTt8aiSA6U7wG1z+om1Brvq6AxyC5lSeRzzstjBNK
-1Dw2YA1k3cWjgSTMGrNAB+uwP/oZjq70VO8P8p/1SqJ6bbMmYK4=
-=3IPt
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl7seR0ACgkQeSpbgcuY
+8Kb+qQ/+IjbOx2bG9yRnwH5A2kCYuKF4WCx01ZRX0ETEQBbIYFyH+FTVZi8gPTM3
+XPyQQv4BIMIimAimmmzpdvRSoiXU4GAYRyCALK4H/HbC7Xi0votg6q4ojVOHmjVJ
+EuzVqO93+YXQyatv1QhvuX+NfVua2ByRabPjJtAZPxUNKsUR5l3WGYHm7H5ykxdP
+qrIreJXVc9J2mY0+PtZryOd8dNmtx0XTH6x3PGrCBXfurPPnmUj8GQNghgnicq2t
+l2w6GxobQmDGWNE0fHPsypp4ZE6JddgVq/TKYwkljsUFC7NVvJIKJESu/7GUrjKm
+2OFcRgUlwJjJ84XQ92ZeK+4dNIW4D3+I/AKdnuUcMOToaTaeKGvzHIkTJeTsE+iP
+P6shpCD3eWes2fzTSSLfj9dVb2NSeuHZyXFa/r+N3YeofYISW5wIjoSSu80MDeOf
+T3vGkKvjbFFXNzETFUEiduVcTanZCjYd3G7qPh/AEjsJC3VyvFUk1AR68haOT5Xl
+/HhKN2ziNpO8GmKXmcFEQhZ0xPfQ6JAcNNCf3QSf2eg12nCcl0SxMgh9TROcUSuY
++VdIL0GYm1yguH4V/G1YZbF0u5XCrSuBN/DiwpKT0HotXfA9DL9u3FWlLdjAHJsv
+N++9lAV3+FtTztnwWOVhXwg5pcmJ9sbrtkJzfeXQhRJzCb8gmQs=
+=8VNm
 -----END PGP SIGNATURE-----
 --=-=-=--
