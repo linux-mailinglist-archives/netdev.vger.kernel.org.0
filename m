@@ -2,115 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CD1202656
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 22:16:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BAF4202663
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 22:34:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728777AbgFTUQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 16:16:07 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:42391 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728712AbgFTUQG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 16:16:06 -0400
-Received: by mail-lf1-f66.google.com with SMTP id y13so7470396lfe.9;
-        Sat, 20 Jun 2020 13:16:04 -0700 (PDT)
+        id S1728809AbgFTUes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 16:34:48 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:34356 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728775AbgFTUer (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 16:34:47 -0400
+Received: by mail-wr1-f66.google.com with SMTP id v3so5453523wrc.1
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 13:34:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bUpHKuGvXMoT2ANSX5o0C6Pui2UhEVNyY7Dw51pTMzQ=;
-        b=I5YfqFjS1MNpAA5fUkekX8lImcYybPU8i5LRszlPW7+W9dKLRe3m7XPSm5OE+w0c9b
-         5HXVnVtUxQlg+UD7RL2IxB/0/3C7NCu7K8Mee31mtL2mTAQFbe5C+CAtInh54NDp4UD6
-         9m4czhc3CLvcGBo2hSguh/0vC3GWwiv4PiHumh48B6IyoFvnS0wFEnCdrMtfj/o3HLXZ
-         BKWsi3WvmM68qMWUqqK9ChMos92Bmv7K+9qWxDnP6pr7zY9dMZEp54VjnTG35um3Jd8f
-         ujcCDuSqIk8AkWnTklK3DXpRnp6k79C4svheru40Mz9r+/qD3zw9dVKPN2k8ZTqsR9BO
-         c3Ow==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=JoX96TjMxFtePdOvoscS5oX/j557ydr0WMD6M2n8EyI=;
+        b=aOqf7F7T1r4iXLGyBD0ALh/CQoTmYNWnW7XrjWg88Cb0hbs7fU/jFIOsoJ5ejAX9fe
+         CZcETuVEIcvy5HG88Cyjw62xztp4COXXmrrfkDN9lopInkmglI2Nj3eRDioGr5T05yCZ
+         PkAqMkqQ4ZH7KlXubKLVodepr1VEu+peMlN6Z3iLv4TvAA5z1PcmguvHQnbx3BA9ZW8P
+         p+Um4CAvy0Pb0GfHNqoNmBEu0St2xMHPmAy2IURzFwyobEKRDUB/FdUIJElP4gBK35Ki
+         efbSK+E62k/4PZRw+JXp99gd/dqtagpyNvJRcfZ2rQvBkUHiPO54tD2CVi6bLi5qOXXt
+         tYLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bUpHKuGvXMoT2ANSX5o0C6Pui2UhEVNyY7Dw51pTMzQ=;
-        b=CLkQ3z5mvcPCmXIVXGd/lT+3xw5ARgR9o7NFQUnF2WrL0Pkd+1mghE/DI/4SOeIB+d
-         0PERm69f2mQTJ5jY/Cag4CPSBm+WYpPy92Nk5sk8WG+TgnKLzbgRVPzT+SWhKfG0RBKh
-         xKNTLK+4VgFRpM+cV0NDI3WHufmAJSxAERhLfDY76a27wvQyVHrsS0ldIoglMdHy9VMB
-         P+6ni162NO7bNgiZoz6wWZdZkI4QCyOJyiGAgfoEKM9pQyH65kJfuZTL5YTc1nrvW+2p
-         8gpATBTJZuGnKtLax02zGDR5BOBooS+5ClG7XOLdrv7cxn0AScG8hqFcfOuGTkr2mvxC
-         M7yg==
-X-Gm-Message-State: AOAM533YZR6EmI8HN+Ms6QsUlZKQuDLapauylKUSfxaoWBxJHAQDM/MN
-        cJmBhJHvfpirPJTLXUnadKlZ78YvRItSVA==
-X-Google-Smtp-Source: ABdhPJy6pTdJ/npXRzJulS4+XYrhRZgNFxdrISm39OyM67KApATxV7ttOA6JOqpzlpmfhSceF2D2lg==
-X-Received: by 2002:a19:4cd:: with SMTP id 196mr1349954lfe.136.1592684103363;
-        Sat, 20 Jun 2020 13:15:03 -0700 (PDT)
-Received: from pc-sasha.localdomain ([146.120.244.6])
-        by smtp.gmail.com with ESMTPSA id b6sm2641347lfa.54.2020.06.20.13.15.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Jun 2020 13:15:02 -0700 (PDT)
-From:   Alexander Kapshuk <alexander.kapshuk@gmail.com>
-To:     asmadeus@codewreck.org
-Cc:     lucho@ionkov.net, ericvh@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alexander.kapshuk@gmail.com
-Subject: [PATCH] net/9p: Validate current->sighand in client.c
-Date:   Sat, 20 Jun 2020 23:14:56 +0300
-Message-Id: <20200620201456.14304-1-alexander.kapshuk@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200618190807.GA20699@nautica>
-References: <20200618190807.GA20699@nautica>
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=JoX96TjMxFtePdOvoscS5oX/j557ydr0WMD6M2n8EyI=;
+        b=gjKrjXnz+7vqFd0ryXJg9BjAxmULbKRvuvBQyPdB/x2tSK1YueiZTRxzziEjR4SYT+
+         U3saJ5BuqY2Pm/aZ//ET41NUA1+7MgtyUbz+bIwdPZo4Ag3EywmBdm0Hj7KVAF4gvu72
+         c5MfY5MlxSAeGtDhOXYx/yaBGMU/R1AgDzfPffAWry1qUuQ8IcqUcVhbwEXTL8o0C++g
+         0Hl28wQPOTi4Q3viCGJO/wU2Z0gknGKyf6yDeeHq66m/KeSoFimzK0HgJIxuiaio5yZr
+         ZxWxMKK8gLUiMRiMBc41W9DlVo9ZH05tqtIxqaNl5Ag2Xy7R+pIh+CpPHi0JgKAtrngH
+         QNUQ==
+X-Gm-Message-State: AOAM533jQY/u8HAMr2FfsTgNSiWd29XktfWCVeKOOIJA4ou2VRkwxryu
+        /PkI++v5G8RG6Z/Tbut4Ohy8HGl9
+X-Google-Smtp-Source: ABdhPJxjd6UCbn+VEE7TUjYMZlJY4i81r/oi3pNRPoRH869QpbIZePdmxO32tniIhGRfsVVRxKKTSg==
+X-Received: by 2002:adf:c404:: with SMTP id v4mr10113986wrf.85.1592685225123;
+        Sat, 20 Jun 2020 13:33:45 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:b4cc:8098:204b:37c5? (p200300ea8f235700b4cc8098204b37c5.dip0.t-ipconnect.de. [2003:ea:8f23:5700:b4cc:8098:204b:37c5])
+        by smtp.googlemail.com with ESMTPSA id z12sm12746675wrg.9.2020.06.20.13.33.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 20 Jun 2020 13:33:44 -0700 (PDT)
+To:     David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/7] r8169: mark device as detached in PCI D3 and
+ improve locking
+Message-ID: <2e68df85-4f64-d45b-3c4c-bb8cb9a4411d@gmail.com>
+Date:   Sat, 20 Jun 2020 22:33:39 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use (un)lock_task_sighand instead of spin_lock_irqsave and
-spin_unlock_irqrestore to ensure current->sighand is a valid pointer as
-suggested in the email referenced below.
+Mark the netdevice as detached whenever parent is in PCI D3hot and not
+accessible. This mainly applies to runtime-suspend state.
+In addition take RTNL lock in suspend calls, this allows to remove
+the driver-specific mutex and improve PM callbacks in general.
 
-Signed-off-by: Alexander Kapshuk <alexander.kapshuk@gmail.com>
-Link: https://lore.kernel.org/lkml/20200618190807.GA20699@nautica/
----
- net/9p/client.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+Heiner Kallweit (7):
+  net: core: try to runtime-resume detached device in __dev_open
+  r8169: mark device as not present when in PCI D3
+  r8169: remove no longer needed checks for device being runtime-active
+  r8169: add rtl8169_up
+  r8169: use RTNL to protect critical sections
+  r8169: remove driver-specific mutex
+  r8169: improve rtl8169_runtime_resume
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index fc1f3635e5dd..15f16f2baa8f 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -787,9 +787,14 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
- 	}
- recalc_sigpending:
- 	if (sigpending) {
--		spin_lock_irqsave(&current->sighand->siglock, flags);
-+		if (!lock_task_sighand(current, &flags)) {
-+			pr_warn("%s (%d): current->sighand==NULL in recalc_sigpending\n",
-+				__func__, task_pid_nr(current));
-+			err = -ESRCH;
-+			goto reterr;
-+		}
- 		recalc_sigpending();
--		spin_unlock_irqrestore(&current->sighand->siglock, flags);
-+		unlock_task_sighand(current, &flags);
- 	}
- 	if (err < 0)
- 		goto reterr;
-@@ -869,9 +874,14 @@ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
- 	}
- recalc_sigpending:
- 	if (sigpending) {
--		spin_lock_irqsave(&current->sighand->siglock, flags);
-+		if (!lock_task_sighand(current, &flags)) {
-+			pr_warn("%s (%d): current->sighand==NULL in recalc_sigpending\n",
-+				__func__, task_pid_nr(current));
-+			err = -ESRCH;
-+			goto reterr;
-+		}
- 		recalc_sigpending();
--		spin_unlock_irqrestore(&current->sighand->siglock, flags);
-+		unlock_task_sighand(current, &flags);
- 	}
- 	if (err < 0)
- 		goto reterr;
---
+ drivers/net/ethernet/realtek/r8169_main.c | 181 +++++-----------------
+ net/core/dev.c                            |  10 +-
+ 2 files changed, 49 insertions(+), 142 deletions(-)
+
+-- 
 2.27.0
 
