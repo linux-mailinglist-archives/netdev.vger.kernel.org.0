@@ -2,217 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2119F2024E4
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 17:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BAA42024EC
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 17:57:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727855AbgFTPoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 11:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
+        id S1727030AbgFTP5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 11:57:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727864AbgFTPoJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 11:44:09 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C960C061794
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 08:44:09 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id t21so10094699edr.12
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 08:44:09 -0700 (PDT)
+        with ESMTP id S1726065AbgFTP5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 11:57:08 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09291C0613EE
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 08:57:07 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id s14so1294935plq.6
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 08:57:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Eope7FddXCZR+RWQxWuK75kXDpLZ2IFBmup8u0DZ9+k=;
-        b=Cq4HNy2So9Nm0thiGneNu5bZaBJGy7GH4+wFljGyrHLzFp2vkAIhSUHNod8r8AFHYU
-         C0gZ+kVoylXeA53cgybVbFTCMTISIKaV3PR5SbTlbpDwNACB6nHW3rOqSHCmVqk0wBtz
-         5JOnV0T6wHm6be9VrF3YV6bwk/TzCZfZJmRoAHYuWGzzeM4uIr4WGgFVEFvJ9PoZHxS/
-         w8oRiZuuiIZcxWEbOKnFW63TBUzdy+oWXByOVPeX3YuC2EmZWTGmqHw1LvyfJKwp2gkg
-         lhWUMmQAHl7SnF99a8RBEqm0Em2dl/I3tT++1cdfjAU9z+1+amaNyXtzeXFYhzeZnss1
-         brkA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9tYajToBSjCKrMeO3oPfRpy8eb8n4thx7RWSAT9gnU0=;
+        b=QDUi4+cS/+VkJarQJer8i54NB6wrYUApoWkctsr63KwWXWXArOZDidsHLokQDZp1dW
+         eZ4mUUVqPLdtc98QdwYojIxlVjsSvdT6uJdK2Pr6SfHfX+CS5ufDjNUbv4fBIhf1Kcxv
+         MQ/YY9T6qSNqLt4/98fJo5BCZXSyE37vzBS0w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Eope7FddXCZR+RWQxWuK75kXDpLZ2IFBmup8u0DZ9+k=;
-        b=LGwdwuwd9ucuqDLf/IAD23h0ykO1JFchlr8Fq9aLFJXu56Oh7MqI3ly6th9sTpYlt/
-         DlmU5knhcWGiI30c4R0BI+o+ex5tSV8EB6+vI/OK1OcICMEA7XCszH6VFKYTHWBHXe2C
-         2+n28aF012msCNYrKx/0v220uelSz34mRBMdroujXnrMHwMqMd/dhZQlEB0J4AKOhtLe
-         DFmdPhoq65inTK1Vw1H7xC/3Ys+5W6kF+75X+P3F6zlkyyn3Dx8qPVrjmuF9JwFcDGGI
-         fyQzCqaT+5mA8AvqhCxigsKKg3zJZCMsTVvW+nxu17hQ3q8D8nDGk8i2njgJQ9ilBu1I
-         /BqQ==
-X-Gm-Message-State: AOAM5300HC5ecJfnHtQtIl7kI+U73pUVAJbtIwpQzQoZ9lsYmNMsXTt6
-        fjye5UwcyJNADmzx+7LKxVI=
-X-Google-Smtp-Source: ABdhPJwQQ9Q6FWcqIwIiFRCsNrppjH0tTYgSKNXDFGLa1vKsLA7npJdXXelEtM6J+clJK+FCfC0pPw==
-X-Received: by 2002:aa7:da03:: with SMTP id r3mr8649675eds.158.1592667848261;
-        Sat, 20 Jun 2020 08:44:08 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.56.128])
-        by smtp.gmail.com with ESMTPSA id n25sm7721222edo.56.2020.06.20.08.44.07
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9tYajToBSjCKrMeO3oPfRpy8eb8n4thx7RWSAT9gnU0=;
+        b=ncZn0uLayq3oV/2k/hhT4zOlO+rxXQmo/3xVcabh5bnP/CIlfbpokYqx5CEiUYZhZV
+         6hO5Umq7yEof+bvmAE8sy0XXyemdqLhIAMMFjFIRUHiA6abc79TzL02vYFZAbll5CUX+
+         pPV6DTl4wrO4qFgr2mUAEWhyzdAlnjcvodj7M/SOBw5AYoimVUIK+LMcQ3N9HYwLd8AF
+         77Ds29AnLR6QEbNkrSnXRRYZhZAionZovzZ1gLF6EZmo9cP65fJ32osUp7oXS+nLvqd8
+         O6JtJGB15zilAtHnbjhQmmoyfOGSbc74Hk0L/hDhpdU0ZViqfmdWsPt/NphlBhtggnTZ
+         JgMQ==
+X-Gm-Message-State: AOAM533TzOeb935E8ecEvMMPEmFZQjBA/uMiwC/VcgoubO/hiKi4mdD3
+        KsoLgwnsc9iswzjzAvRgC34VcA==
+X-Google-Smtp-Source: ABdhPJxL62JhXi8o+nSID6QHqBiLZ4YAHSAeaQKUwiACFjUcLS2k4S/MAlD8WL4T8tKBotrZuujIYg==
+X-Received: by 2002:a17:902:b78a:: with SMTP id e10mr12682612pls.201.1592668627259;
+        Sat, 20 Jun 2020 08:57:07 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id y4sm8954278pfr.182.2020.06.20.08.57.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Jun 2020 08:44:07 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     UNGLinuxDriver@microchip.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, xiaoliang.yang_1@nxp.com
-Subject: [PATCH net-next 12/12] net: mscc: ocelot: unexpose ocelot_vcap_policer_{add,del}
-Date:   Sat, 20 Jun 2020 18:43:47 +0300
-Message-Id: <20200620154347.3587114-13-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200620154347.3587114-1-olteanv@gmail.com>
-References: <20200620154347.3587114-1-olteanv@gmail.com>
+        Sat, 20 Jun 2020 08:57:06 -0700 (PDT)
+Date:   Sat, 20 Jun 2020 08:57:04 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Sedat Dilek <sedat.dilek@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Joe Perches <joe@perches.com>,
+        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-mm@kvack.org,
+        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>
+Subject: Re: [PATCH v2 00/16] Remove uninitialized_var() macro
+Message-ID: <202006200854.B2D8F21@keescook>
+References: <20200620033007.1444705-1-keescook@chromium.org>
+ <CA+icZUWpHRR7ukyepiUH1dR3r4GMi-s2crfwR5vTszdt1SUTQw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+icZUWpHRR7ukyepiUH1dR3r4GMi-s2crfwR5vTszdt1SUTQw@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Sat, Jun 20, 2020 at 09:03:34AM +0200, Sedat Dilek wrote:
+> On Sat, Jun 20, 2020 at 5:30 AM Kees Cook <keescook@chromium.org> wrote:
+> >
+> > v2:
+> > - more special-cased fixes
+> > - add reviews
+> > v1: https://lore.kernel.org/lkml/20200603233203.1695403-1-keescook@chromium.org
+> >
+> > Using uninitialized_var() is dangerous as it papers over real bugs[1]
+> > (or can in the future), and suppresses unrelated compiler warnings
+> > (e.g. "unused variable"). If the compiler thinks it is uninitialized,
+> > either simply initialize the variable or make compiler changes.
+> >
+> > As recommended[2] by[3] Linus[4], remove the macro.
+> >
+> > Most of the 300 uses don't cause any warnings on gcc 9.3.0, so they're in
+> > a single treewide commit in this series. A few others needed to actually
+> > get cleaned up, and I broke those out into individual patches.
+> >
+> > The tree is:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/log/?h=kspp/uninit/macro
+> >
+> > -Kees
+> >
+> 
+> Hi Kees,
+> 
+> thanks for doing a v2 of your patchset.
+> 
+> As I saw Jason Yan providing some "uninitialized_var() macro" patches
+> to the MLs I pointen him to your tree "v1".
 
-Remove the function prototypes from ocelot_police.h and make these
-functions static. We need to move them above their callers. Note that
-moving the implementations to ocelot_police.c is not trivially possible
-due to dependency on is2_entry_set() which is static to ocelot_vcap.c.
+Thanks!
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/mscc/ocelot_police.h |  5 --
- drivers/net/ethernet/mscc/ocelot_vcap.c   | 96 +++++++++++------------
- 2 files changed, 45 insertions(+), 56 deletions(-)
+> BTW, I have tested your "v1" against Linux v5.7 (see [1]) - just
+> yesterday with Linux v5.7.5-rc1.
+> 
+> Is it possible to have a v2 of this patchset on top od Linux v5.7 - if
+> you do not mind.
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_police.h b/drivers/net/ethernet/mscc/ocelot_police.h
-index be6f2286a5cd..7adb05f71999 100644
---- a/drivers/net/ethernet/mscc/ocelot_police.h
-+++ b/drivers/net/ethernet/mscc/ocelot_police.h
-@@ -33,9 +33,4 @@ struct qos_policer_conf {
- int qos_policer_conf_set(struct ocelot *ocelot, int port, u32 pol_ix,
- 			 struct qos_policer_conf *conf);
- 
--int ocelot_vcap_policer_add(struct ocelot *ocelot, u32 pol_ix,
--			    struct ocelot_policer *pol);
--
--int ocelot_vcap_policer_del(struct ocelot *ocelot, u32 pol_ix);
--
- #endif /* _MSCC_OCELOT_POLICE_H_ */
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-index 8597034fd3b7..3ef620faf995 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-@@ -651,6 +651,49 @@ static void is2_entry_get(struct ocelot *ocelot, struct ocelot_vcap_filter *filt
- 	filter->stats.pkts = cnt;
- }
- 
-+static int ocelot_vcap_policer_add(struct ocelot *ocelot, u32 pol_ix,
-+				   struct ocelot_policer *pol)
-+{
-+	struct qos_policer_conf pp = { 0 };
-+
-+	if (!pol)
-+		return -EINVAL;
-+
-+	pp.mode = MSCC_QOS_RATE_MODE_DATA;
-+	pp.pir = pol->rate;
-+	pp.pbs = pol->burst;
-+
-+	return qos_policer_conf_set(ocelot, 0, pol_ix, &pp);
-+}
-+
-+static void ocelot_vcap_policer_del(struct ocelot *ocelot,
-+				    struct ocelot_vcap_block *block,
-+				    u32 pol_ix)
-+{
-+	struct ocelot_vcap_filter *filter;
-+	struct qos_policer_conf pp = {0};
-+	int index = -1;
-+
-+	if (pol_ix < block->pol_lpr)
-+		return;
-+
-+	list_for_each_entry(filter, &block->rules, list) {
-+		index++;
-+		if (filter->action == OCELOT_VCAP_ACTION_POLICE &&
-+		    filter->pol_ix < pol_ix) {
-+			filter->pol_ix += 1;
-+			ocelot_vcap_policer_add(ocelot, filter->pol_ix,
-+						&filter->pol);
-+			is2_entry_set(ocelot, index, filter);
-+		}
-+	}
-+
-+	pp.mode = MSCC_QOS_RATE_MODE_DISABLED;
-+	qos_policer_conf_set(ocelot, 0, pol_ix, &pp);
-+
-+	block->pol_lpr++;
-+}
-+
- static void ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
- 					    struct ocelot_vcap_block *block,
- 					    struct ocelot_vcap_filter *filter)
-@@ -848,55 +891,6 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
- 	return 0;
- }
- 
--int ocelot_vcap_policer_add(struct ocelot *ocelot, u32 pol_ix,
--			    struct ocelot_policer *pol)
--{
--	struct qos_policer_conf pp = { 0 };
--
--	if (!pol)
--		return -EINVAL;
--
--	pp.mode = MSCC_QOS_RATE_MODE_DATA;
--	pp.pir = pol->rate;
--	pp.pbs = pol->burst;
--
--	return qos_policer_conf_set(ocelot, 0, pol_ix, &pp);
--}
--
--int ocelot_vcap_policer_del(struct ocelot *ocelot, u32 pol_ix)
--{
--	struct qos_policer_conf pp = { 0 };
--
--	pp.mode = MSCC_QOS_RATE_MODE_DISABLED;
--
--	return qos_policer_conf_set(ocelot, 0, pol_ix, &pp);
--}
--
--static void ocelot_vcap_police_del(struct ocelot *ocelot,
--				   struct ocelot_vcap_block *block,
--				   u32 ix)
--{
--	struct ocelot_vcap_filter *filter;
--	int index = -1;
--
--	if (ix < block->pol_lpr)
--		return;
--
--	list_for_each_entry(filter, &block->rules, list) {
--		index++;
--		if (filter->action == OCELOT_VCAP_ACTION_POLICE &&
--		    filter->pol_ix < ix) {
--			filter->pol_ix += 1;
--			ocelot_vcap_policer_add(ocelot, filter->pol_ix,
--						&filter->pol);
--			is2_entry_set(ocelot, index, filter);
--		}
--	}
--
--	ocelot_vcap_policer_del(ocelot, block->pol_lpr);
--	block->pol_lpr++;
--}
--
- static void ocelot_vcap_block_remove_filter(struct ocelot *ocelot,
- 					    struct ocelot_vcap_block *block,
- 					    struct ocelot_vcap_filter *filter)
-@@ -908,8 +902,8 @@ static void ocelot_vcap_block_remove_filter(struct ocelot *ocelot,
- 		tmp = list_entry(pos, struct ocelot_vcap_filter, list);
- 		if (tmp->id == filter->id) {
- 			if (tmp->action == OCELOT_VCAP_ACTION_POLICE)
--				ocelot_vcap_police_del(ocelot, block,
--						       tmp->pol_ix);
-+				ocelot_vcap_policer_del(ocelot, block,
-+							tmp->pol_ix);
- 
- 			list_del(pos);
- 			kfree(tmp);
+Since it's only going to be for post-v5.8, I'm fine skipping the v5.7
+testing. Mainly I'm looking at v5.8 and linux-next.
+
+Thanks for looking at it!
+
 -- 
-2.25.1
-
+Kees Cook
