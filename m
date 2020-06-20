@@ -2,88 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF52F201FE2
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 04:47:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9650C201FF3
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 04:57:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732071AbgFTCrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 22:47:09 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:48676 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731973AbgFTCrI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 19 Jun 2020 22:47:08 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 4EFA8DE9F8059814A852;
-        Sat, 20 Jun 2020 10:47:06 +0800 (CST)
-Received: from huawei.com (10.175.104.57) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Sat, 20 Jun 2020
- 10:46:57 +0800
-From:   Li Heng <liheng40@huawei.com>
-To:     <vishal@chelsio.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <hariprasad@chelsio.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <liheng40@huawei.com>
-Subject: [PATCH resend] net: cxgb4: fix return error value in t4_prep_fw
-Date:   Sat, 20 Jun 2020 10:49:21 +0800
-Message-ID: <1592621361-39925-1-git-send-email-liheng40@huawei.com>
-X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.104.57]
-X-CFilter-Loop: Reflected
+        id S1732153AbgFTC5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 22:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53154 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732074AbgFTC5i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 22:57:38 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA7BC06174E;
+        Fri, 19 Jun 2020 19:57:37 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6C56412784D00;
+        Fri, 19 Jun 2020 19:57:37 -0700 (PDT)
+Date:   Fri, 19 Jun 2020 19:57:36 -0700 (PDT)
+Message-Id: <20200619.195736.867987052580774108.davem@davemloft.net>
+To:     dhowells@redhat.com
+Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 0/3] rxrpc: Performance drop fix and other fixes
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <159246661514.1229328.4419873299996950969.stgit@warthog.procyon.org.uk>
+References: <159246661514.1229328.4419873299996950969.stgit@warthog.procyon.org.uk>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 19 Jun 2020 19:57:37 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-t4_prep_fw goto bye tag with positive return value when something
-bad happened and which can not free resource in adap_init0.
-so fix it to return negative value.
+From: David Howells <dhowells@redhat.com>
+Date: Thu, 18 Jun 2020 08:50:15 +0100
 
-Fixes: 16e47624e76b ("cxgb4: Add new scheme to update T4/T5 firmware")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Li Heng <liheng40@huawei.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
+> 
+> Here are three fixes for rxrpc:
+> 
+>  (1) Fix a trace symbol mapping.  It doesn't seem to let you map to "".
+> 
+>  (2) Fix the handling of the remote receive window size when it increases
+>      beyond the size we can support for our transmit window.
+> 
+>  (3) Fix a performance drop caused by retransmitted packets being
+>      accidentally marked as already ACK'd.
+> 
+> The patches are tagged here:
+> 
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+> 	rxrpc-fixes-20200618
 
-resent with netdev cced
-
----
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index 2a3480f..9121cef 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -3493,7 +3493,7 @@ int t4_prep_fw(struct adapter *adap, struct fw_info *fw_info,
- 	drv_fw = &fw_info->fw_hdr;
-
- 	/* Read the header of the firmware on the card */
--	ret = -t4_read_flash(adap, FLASH_FW_START,
-+	ret = t4_read_flash(adap, FLASH_FW_START,
- 			    sizeof(*card_fw) / sizeof(uint32_t),
- 			    (uint32_t *)card_fw, 1);
- 	if (ret == 0) {
-@@ -3522,8 +3522,8 @@ int t4_prep_fw(struct adapter *adap, struct fw_info *fw_info,
- 		   should_install_fs_fw(adap, card_fw_usable,
- 					be32_to_cpu(fs_fw->fw_ver),
- 					be32_to_cpu(card_fw->fw_ver))) {
--		ret = -t4_fw_upgrade(adap, adap->mbox, fw_data,
--				     fw_size, 0);
-+		ret = t4_fw_upgrade(adap, adap->mbox, fw_data,
-+				    fw_size, 0);
- 		if (ret != 0) {
- 			dev_err(adap->pdev_dev,
- 				"failed to install firmware: %d\n", ret);
-@@ -3554,7 +3554,7 @@ int t4_prep_fw(struct adapter *adap, struct fw_info *fw_info,
- 			FW_HDR_FW_VER_MICRO_G(c), FW_HDR_FW_VER_BUILD_G(c),
- 			FW_HDR_FW_VER_MAJOR_G(k), FW_HDR_FW_VER_MINOR_G(k),
- 			FW_HDR_FW_VER_MICRO_G(k), FW_HDR_FW_VER_BUILD_G(k));
--		ret = EINVAL;
-+		ret = -EINVAL;
- 		goto bye;
- 	}
-
---
-2.7.4
-
+Pulled, thanks David.
