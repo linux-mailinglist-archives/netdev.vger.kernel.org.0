@@ -2,60 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC4DF20262F
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 21:29:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A35D6202636
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 21:39:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728695AbgFTT2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 15:28:08 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:40220 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728565AbgFTT2H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 15:28:07 -0400
-Received: by mail-ed1-f68.google.com with SMTP id p18so10465444eds.7;
-        Sat, 20 Jun 2020 12:28:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=scA6CqquoWk914rmLn3+nLtaspjuXK54NYNT8t78XLk=;
-        b=qbC+poHvs39ZVCGTzMyJeIJUpytQ6pFd5qeGE3oFWIyiMKZEs3zbCIIiubSaxryjqV
-         fHZRmmlzPFxZAmT4fjc315VsprFu9yXwFVTZN0vi4+ogvLhR+DUhLmUmDWlARfH4lqP0
-         r6IiIGw2ywL+HM32SWPgf681lb9qGq8eGvDXWEeP7vGDUbWHKB4A3orCW0P0W8Y6nkSZ
-         OgbgK/AvNr8N2kaXrsvn/ZibEN+NvJI3DnlZF4FJWQZOu5Cuhzmm1vvW9LZurAgweB8C
-         cz7vBuOmkMsfWs5srbSEo67PGDoGURRN6jPG9y+GnpFnomPdS9ocuZVCOabSLdFbm0uZ
-         2lHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=scA6CqquoWk914rmLn3+nLtaspjuXK54NYNT8t78XLk=;
-        b=RcqOrpg4NMSnAd+yvC74ESuwPsJ3FSUIm2PhPhyzN8LsLkiXV8+dva8lp8RnaHUdeh
-         pyKhnZNku0XpaTwaQpEBpmhYBC+VjubfEp9szS5e3zEpsTVZ8vhJTFFDnDszJB8UShUW
-         gAUiNmD4d9zmOcFEXQGGI4j/G6rkd8a1CL8Eteft9aKmryiqk9uGhDqKyW/uwFS7/nDE
-         sxUkqVkcFmmH0iYyrlNiGb3jBR2b+V6F0XSQuVw9o763hzvMDj+6s2DCYvh1U+UL3Cyf
-         P8SzlydAxDvwZJsd4OxlbTrGbI+8S+kV1KLEZ3qFdNtJMxnDIIIKqZV4woQnX5zYAqIN
-         f15Q==
-X-Gm-Message-State: AOAM531lmSTf+mfqCCWK8X+qyBWgFePNK1WMg5L7FbI7nsOEmGDCsw9s
-        XVKxsMqf4VV3I4DPovXW6i8=
-X-Google-Smtp-Source: ABdhPJy+PKswvEJEFTPfiOtJ7Poy9kSHj4bTMlki+nCfU+FckH9OWUmHYVZxY191m6NdiJ0yfebZbA==
-X-Received: by 2002:a50:d78f:: with SMTP id w15mr9700997edi.245.1592681224048;
-        Sat, 20 Jun 2020 12:27:04 -0700 (PDT)
-Received: from localhost.localdomain (p200300f1371df700428d5cfffeb99db8.dip0.t-ipconnect.de. [2003:f1:371d:f700:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id gv18sm8034044ejb.113.2020.06.20.12.27.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Jun 2020 12:27:03 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-amlogic@lists.infradead.org, robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 2/2] net: stmmac: dwmac-meson8b: add a compatible string for G12A SoCs
-Date:   Sat, 20 Jun 2020 21:26:41 +0200
-Message-Id: <20200620192641.175754-3-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200620192641.175754-1-martin.blumenstingl@googlemail.com>
-References: <20200620192641.175754-1-martin.blumenstingl@googlemail.com>
+        id S1728616AbgFTTjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 15:39:36 -0400
+Received: from mail.bugwerft.de ([46.23.86.59]:45656 "EHLO mail.bugwerft.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728376AbgFTTjg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 20 Jun 2020 15:39:36 -0400
+Received: from zenbar.fritz.box (pd95efea6.dip0.t-ipconnect.de [217.94.254.166])
+        by mail.bugwerft.de (Postfix) with ESMTPSA id A581242A3C8;
+        Sat, 20 Jun 2020 19:39:34 +0000 (UTC)
+From:   Daniel Mack <daniel@zonque.org>
+To:     netdev@vger.kernel.org
+Cc:     jcobham@questertangent.com, andrew@lunn.ch,
+        Daniel Mack <daniel@zonque.org>
+Subject: [PATCH v2] dsa: Allow forwarding of redirected IGMP traffic
+Date:   Sat, 20 Jun 2020 21:39:25 +0200
+Message-Id: <20200620193925.3166913-1-daniel@zonque.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,35 +29,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Amlogic Meson G12A, G12B and SM1 have the same (at least as far as we
-know at the time of writing) PRG_ETHERNET glue register implementation.
-This implementation however is slightly different from AXG as it now has
-an undocument "auto cali idx val" register in PRG_ETH1[17:16] which
-seems to be related to RGMII Ethernet.
+The driver for Marvell switches puts all ports in IGMP snooping mode
+which results in all IGMP/MLD frames that ingress on the ports to be
+forwarded to the CPU only.
 
-Add a new compatible string for G12A SoCs so the logic for this new
-register can be implemented in the future.
+The bridge code in the kernel can then interpret these frames and act
+upon them, for instance by updating the mdb in the switch to reflect
+multicast memberships of stations connected to the ports. However,
+the IGMP/MLD frames must then also be forwarded to other ports of the
+bridge so external IGMP queriers can track membership reports, and
+external multicast clients can receive query reports from foreign IGMP
+queriers.
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Currently, this is impossible as the EDSA tagger sets offload_fwd_mark
+on the skb when it unwraps the tagged frames, and that will make the
+switchdev layer prevent the skb from egressing on any other port of
+the same switch.
+
+To fix that, look at the To_CPU code in the DSA header and make
+forwarding of the frame possible for trapped IGMP packets.
+
+Introduce some #defines for the frame types to make the code a bit more
+comprehensive.
+
+This was tested on a Marvell 88E6352 variant.
+
+Signed-off-by: Daniel Mack <daniel@zonque.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 4 ++++
- 1 file changed, 4 insertions(+)
+v2:
+  * Limit IGMP handling to TO_CPU frames
+  * Use #defines for the TO_CPU codes and the frame types
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-index 234e8b6816ce..544bc621146c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-@@ -491,6 +491,10 @@ static const struct of_device_id meson8b_dwmac_match[] = {
- 		.compatible = "amlogic,meson-axg-dwmac",
- 		.data = &meson_axg_dwmac_data,
- 	},
-+	{
-+		.compatible = "amlogic,meson-g12a-dwmac",
-+		.data = &meson_axg_dwmac_data,
-+	},
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, meson8b_dwmac_match);
+ net/dsa/tag_edsa.c | 37 ++++++++++++++++++++++++++++++++++---
+ 1 file changed, 34 insertions(+), 3 deletions(-)
+
+diff --git a/net/dsa/tag_edsa.c b/net/dsa/tag_edsa.c
+index e8eaa804ccb9e..d6200ff982007 100644
+--- a/net/dsa/tag_edsa.c
++++ b/net/dsa/tag_edsa.c
+@@ -13,6 +13,16 @@
+ #define DSA_HLEN	4
+ #define EDSA_HLEN	8
+ 
++#define FRAME_TYPE_TO_CPU	0x00
++#define FRAME_TYPE_FORWARD	0x03
++
++#define TO_CPU_CODE_MGMT_TRAP		0x00
++#define TO_CPU_CODE_FRAME2REG		0x01
++#define TO_CPU_CODE_IGMP_MLD_TRAP	0x02
++#define TO_CPU_CODE_POLICY_TRAP		0x03
++#define TO_CPU_CODE_ARP_MIRROR		0x04
++#define TO_CPU_CODE_POLICY_MIRROR	0x05
++
+ static struct sk_buff *edsa_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+@@ -77,6 +87,8 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
+ 				struct packet_type *pt)
+ {
+ 	u8 *edsa_header;
++	int frame_type;
++	int code;
+ 	int source_device;
+ 	int source_port;
+ 
+@@ -91,8 +103,29 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	/*
+ 	 * Check that frame type is either TO_CPU or FORWARD.
+ 	 */
+-	if ((edsa_header[0] & 0xc0) != 0x00 && (edsa_header[0] & 0xc0) != 0xc0)
++	frame_type = edsa_header[0] >> 6;
++
++	switch (frame_type) {
++	case FRAME_TYPE_TO_CPU:
++		code = (edsa_header[1] & 0x6) | ((edsa_header[2] >> 4) & 1);
++
++		/*
++		 * Mark the frame to never egress on any port of the same switch
++		 * unless it's a trapped IGMP/MLD packet, in which case the
++		 * bridge might want to forward it.
++		 */
++		if (code != TO_CPU_CODE_IGMP_MLD_TRAP)
++			skb->offload_fwd_mark = 1;
++
++		break;
++
++	case FRAME_TYPE_FORWARD:
++		skb->offload_fwd_mark = 1;
++		break;
++
++	default:
+ 		return NULL;
++	}
+ 
+ 	/*
+ 	 * Determine source device and port.
+@@ -156,8 +189,6 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
+ 			2 * ETH_ALEN);
+ 	}
+ 
+-	skb->offload_fwd_mark = 1;
+-
+ 	return skb;
+ }
+ 
 -- 
-2.27.0
+2.26.2
 
