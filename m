@@ -2,60 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9650C201FF3
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 04:57:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94A0F201FFA
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 05:00:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732153AbgFTC5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 22:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53154 "EHLO
+        id S1732222AbgFTC74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 22:59:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732074AbgFTC5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 22:57:38 -0400
+        with ESMTP id S1732074AbgFTC7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 22:59:55 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA7BC06174E;
-        Fri, 19 Jun 2020 19:57:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC11CC06174E;
+        Fri, 19 Jun 2020 19:59:55 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6C56412784D00;
-        Fri, 19 Jun 2020 19:57:37 -0700 (PDT)
-Date:   Fri, 19 Jun 2020 19:57:36 -0700 (PDT)
-Message-Id: <20200619.195736.867987052580774108.davem@davemloft.net>
-To:     dhowells@redhat.com
-Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 0/3] rxrpc: Performance drop fix and other fixes
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 300A512784D15;
+        Fri, 19 Jun 2020 19:59:55 -0700 (PDT)
+Date:   Fri, 19 Jun 2020 19:59:54 -0700 (PDT)
+Message-Id: <20200619.195954.1222983733521693534.davem@davemloft.net>
+To:     claudiu.beznea@microchip.com
+Cc:     nicolas.ferre@microchip.com, kuba@kernel.org,
+        linux@armlinux.org.uk, antoine.tenart@bootlin.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: macb: undo operations in case of failure
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <159246661514.1229328.4419873299996950969.stgit@warthog.procyon.org.uk>
-References: <159246661514.1229328.4419873299996950969.stgit@warthog.procyon.org.uk>
+In-Reply-To: <1592469460-17825-1-git-send-email-claudiu.beznea@microchip.com>
+References: <1592469460-17825-1-git-send-email-claudiu.beznea@microchip.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 19 Jun 2020 19:57:37 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 19 Jun 2020 19:59:55 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
-Date: Thu, 18 Jun 2020 08:50:15 +0100
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
+Date: Thu, 18 Jun 2020 11:37:40 +0300
 
+> Undo previously done operation in case macb_phylink_connect()
+> fails. Since macb_reset_hw() is the 1st undo operation the
+> napi_exit label was renamed to reset_hw.
 > 
-> Here are three fixes for rxrpc:
-> 
->  (1) Fix a trace symbol mapping.  It doesn't seem to let you map to "".
-> 
->  (2) Fix the handling of the remote receive window size when it increases
->      beyond the size we can support for our transmit window.
-> 
->  (3) Fix a performance drop caused by retransmitted packets being
->      accidentally marked as already ACK'd.
-> 
-> The patches are tagged here:
-> 
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-> 	rxrpc-fixes-20200618
+> Fixes: 7897b071ac3b ("net: macb: convert to phylink")
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Pulled, thanks David.
+Applied and queued up for -stable, thank you.
