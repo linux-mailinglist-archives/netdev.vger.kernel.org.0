@@ -2,87 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB893201FD9
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 04:38:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF763201FDE
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 04:44:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731986AbgFTCiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 22:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
+        id S1732025AbgFTCoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 22:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731980AbgFTCiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 22:38:05 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85411C06174E
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 19:38:03 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id e1so11439483wrt.5
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 19:38:03 -0700 (PDT)
+        with ESMTP id S1731772AbgFTCoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 22:44:02 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31E7C0613EF
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 19:44:00 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id h22so5243161pjf.1
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 19:44:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=Z7qZkCC78niGrQpOK/h//rZ5fVXVPMkzzzEIQT+ASg4=;
-        b=J7cC0qLeJlT/VqZhvnD2xMFaAooRh0cFlbpXdwgaJkshm30ouU2BQ3F2FYJeUkDbp2
-         nsubJDMQzyBycD+NJWHECLMervuG4kBD8e5b1EAFHLY1Skui/nFM/1MGES+AK7x5xAhv
-         PosLZIHBa/qXYDnACzQ7L9n92goMth6eDBc50r09Mt32vxMrM1ZvmhwemoQNxM7EvfrF
-         E6T4HpZlcvIAcG+aaoxnDRRH+negGx8RZRJAerxywc8uQ9PRxppgNg33BQOcMO0DIZta
-         zugUq8CyX85f9fILsU6jM+Wu4rMRedDMyDJzSkpHOnIp3xbnagbS8upTXSiyXucZ1A3k
-         iS6Q==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=FLWT276u2aO9qAHRs8E3h1+NnyUeXGvQciwY1qNzilY=;
+        b=St45XTuKxoL4qMh9JNrnVKhDLmDM/4iTL6bjKrYy6QLHEttboehyDjG/4XA+Gsf0G8
+         /FxzQPFCADOTO4HhEohMQFuErk9XKheVZxB0wabwPgFl8XhHeVJmWC+O80H6XV+9I5y9
+         fN11ubcOXio/kR1AC7BNPDb6DObr/oVvnTiiLcPTIAB7ixfyTnPaqAlZTu72XIBJEp+O
+         LYwzPMmErpNCUiEcmHaLOCZReZEhoe7hfTcBOAAip/9v8I0NTKU2b76BUe8L88yaCoiN
+         RYtUhjLps0ByxhH9miMu9OUZd+OgSyjvwtMNp1bikf8oYlYWQKFyZIKS1WiB7QB+k3sm
+         n7Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=Z7qZkCC78niGrQpOK/h//rZ5fVXVPMkzzzEIQT+ASg4=;
-        b=EEjvgQpLOI0lu5XsvQjSHpcqgAXDHDZZmtNTS/oZOGpxf8PHt03THlNhcY+zjAUYEa
-         t41DAMMAHyEA5adebqcXCCLSKCZ+6c4JRfiyF+nqb1IUmmZEHx5A92xEWUi/YNFTkQpu
-         3J+6g3UwQd3pFIMuThHOjW1Fma6jDOo75GX+ytKrKY+sZe3X5aNhCWQ84oEU7nSCMV6n
-         pvGIzJKP1HVggsk3YZ6sNL8I8Ec56KrT4B+6p6rm7Fiqs+rhCV60L6JH3KzfHP/asrdt
-         N7tnySaE2VA7yusdwgj8WdJwLDx5MZavs4ydHeMSjKSUrkbbEH1/+dJ7W+iNEDbtepiz
-         Ckgg==
-X-Gm-Message-State: AOAM531288P3QHFKXP+HPJTdjSBThUcdmRdHhOahKbNSZK2PHvk9yme4
-        0iQWMtV/JsVfGlxem9i8E23y4M1GuAh0OUgqW122crkk
-X-Google-Smtp-Source: ABdhPJyXX1ebqWxOZKUSlRc8N6iZRGK/lsV+RkmwUpeWRWRY8wg3qZrngqm4W+FiUnMh0yaWzOO2L6b5lPyDSzs98A0=
-X-Received: by 2002:adf:f08b:: with SMTP id n11mr6826490wro.312.1592620681493;
- Fri, 19 Jun 2020 19:38:01 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=FLWT276u2aO9qAHRs8E3h1+NnyUeXGvQciwY1qNzilY=;
+        b=liRrwOJ1dveJkyTpHFyaXc7811of/9h3qYm4QNOJhbHWV1cfngwe/pA6MZJ67U1g/J
+         732ZYzmcBH/HvPzpX7BwzGJgejudvooZXXnwxYGCBtMq8i+MYeR5/z0O37/xqmmryN/x
+         leySEt5yHsnZdvrzgC5yKQBp3Pv8Y9RSiPZIaecOYVhUwZqC1KjefTH5ZUHFuQc0W9zd
+         6xYVKSr22xIW1MoTKJc7EsPV92IbyyvbyMj+2PUHEKrxDhtf7VarGV+3Tplu2jj/JSqH
+         N9SpmwW6407vLXP9Axne/brleMp3xpQNhFuTvdTC0f1oUnit4CMy1or8gSZD10o7Gr8a
+         Vb2g==
+X-Gm-Message-State: AOAM531KgvdaeHlhNdliOGnQgW4XOe7FChPpqFZNFgOId7zbgXVN1C0n
+        IQgK5mBaII/Z9I8WoBRhWoK5gB1sLQ==
+X-Google-Smtp-Source: ABdhPJz6e7aQ/jZVXcpBHCTWXtwI2uKAN2v8I1+qswnVkdxua9YKvO35sIeZLTi24n5yfLWTxU4m7g==
+X-Received: by 2002:a17:902:7b90:: with SMTP id w16mr10287749pll.339.1592621040019;
+        Fri, 19 Jun 2020 19:44:00 -0700 (PDT)
+Received: from Mani-XPS-13-9360 ([2409:4072:629d:f5bf:4d81:efb6:335e:3953])
+        by smtp.gmail.com with ESMTPSA id w10sm6113168pgm.70.2020.06.19.19.43.55
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 19 Jun 2020 19:43:59 -0700 (PDT)
+Date:   Sat, 20 Jun 2020 08:13:51 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     wg@grandegger.com, kernel@martin.sperl.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/6] Add Microchip MCP25XXFD CAN driver
+Message-ID: <20200620024351.GA18455@Mani-XPS-13-9360>
+References: <20200610074442.10808-1-manivannan.sadhasivam@linaro.org>
+ <fbbca009-3c53-6aa9-94ed-7e9e337c31a4@pengutronix.de>
+ <20200618085533.GA26093@mani>
 MIME-Version: 1.0
-Received: by 2002:a5d:630a:0:0:0:0:0 with HTTP; Fri, 19 Jun 2020 19:38:01
- -0700 (PDT)
-Reply-To: tofilbaman@gmail.com
-From:   Tofil Bama <aliftomarn4@gmail.com>
-Date:   Fri, 19 Jun 2020 19:38:01 -0700
-Message-ID: <CADxJPbVpDXODGsQuCxwBeQRLsRmgfNk3vVJzo=FnppU9Cr5djw@mail.gmail.com>
-Subject: KINDEST MESSAGE.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200618085533.GA26093@mani>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear,
+On Thu, Jun 18, 2020 at 02:25:33PM +0530, Manivannan Sadhasivam wrote:
+> Hi,
+> 
+> On 0611, Marc Kleine-Budde wrote:
+> > On 6/10/20 9:44 AM, Manivannan Sadhasivam wrote:
+> > > Hello,
+> > > 
+> > > This series adds CAN network driver support for Microchip MCP25XXFD CAN
+> > > Controller with MCP2517FD as the target controller version. This series is
+> > > mostly inspired (or taken) from the previous iterations posted by Martin Sperl.
+> > > I've trimmed down the parts which are not necessary for the initial version
+> > > to ease review. Still the series is relatively huge but I hope to get some
+> > > reviews (post -rcX ofc!).
+> > > 
+> > > Link to the origial series posted by Martin:
+> > > https://www.spinics.net/lists/devicetree/msg284462.html
+> > > 
+> > > I've not changed the functionality much but done some considerable amount of
+> > > cleanups and also preserved the authorship of Martin for all the patches he has
+> > > posted earlier. This series has been tested on 96Boards RB3 platform by myself
+> > > and Martin has tested the previous version on Rpi3 with external MCP2517FD
+> > > controller.
+> > 
+> > I initially started looking at Martin's driver and it was not using several
+> > modern CAN driver infrastructures. I then posted some cleanup patches but Martin
+> > was not working on the driver any more. Then I decided to rewrite the driver,
+> > that is the one I'm hoping to mainline soon.
+> > 
+> 
+> So how should we proceed from here? It is okay for me to work on adding some
+> features and also fixing the issues you've reported so far. But I want to reach
+> a consensus before moving forward.
+> 
+> If you think that it makes sense to go with your set of patches, then I need an
+> estimate on when you'll post the first revision.
+> 
 
-My name is Mr Alif Tomar, I am the Bill and Exchange (assistant)
-Manager of Bank of Africa Ouagadougou, Burkina Faso. In my department
-I discovered an abandoned sum of eighteen million three hundred
-thousand United State of American dollars (18.3MILLION USA DOLLARS) in
-an account that belongs to one of our foreign customer who died in
-airline that crashed on 4th October 2001.
+Ping!
 
-Since I got information about his death I have been expecting his next
-of kin to come over and claim his money because we can not release it
-unless somebody applies for it as the next of kin or relation to the
-deceased as indicated in our banking guidelines, but unfortunately we
-learnt that all his supposed next of kin or relation died alongside
-with him in the plane crash leaving nobody behind for the claim. It is
-therefore upon this discovery that I decided to make this business
-proposal to you and release the money to you as next of kin or
-relation to the deceased for safety and subsequent disbursement since
-nobody is coming for it and I don't want the money to go into the bank
-treasury as unclaimed bill.
-
-You will be entitled with 40% of the total sum while 60% will be for
-me after which I will visit your Country to invest my own share when
-the fund is successfully transferred into your account, Please I would
-like you to keep this transaction confidential and as a top secret as
-you may wish to know that I am a bank official.
-
-Yours sincerely,
-Mr Alif Tomar.
+> > Can you give it a try?
+> > 
+> > https://github.com/marckleinebudde/linux/commits/v5.6-rpi/mcp25xxfd-20200607-41
+> > 
+> 
+> Sure thing. Will do.
+> 
+> Thanks,
+> Mani
+> 
+> > Marc
+> > 
+> > -- 
+> > Pengutronix e.K.                 | Marc Kleine-Budde           |
+> > Embedded Linux                   | https://www.pengutronix.de  |
+> > Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> > Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
