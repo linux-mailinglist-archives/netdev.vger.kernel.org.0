@@ -2,110 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B083E2025CA
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 20:03:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E02D2025EE
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 20:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728306AbgFTSBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 14:01:40 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:45314 "EHLO mail.bugwerft.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728204AbgFTSBk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 20 Jun 2020 14:01:40 -0400
-Received: from [192.168.178.106] (pd95efea6.dip0.t-ipconnect.de [217.94.254.166])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id CFEDF42B018;
-        Sat, 20 Jun 2020 18:01:38 +0000 (UTC)
-Subject: Re: Question on DSA switches, IGMP forwarding and switchdev
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jason Cobham <jcobham@questertangent.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <59c5ede2-8b52-c250-7396-fd7b19ec6bc7@zonque.org>
- <20200619215817.GN279339@lunn.ch>
- <72f92622c69143b0880125dfe9f9a955@questertangent.com>
- <20200619223606.GO279339@lunn.ch>
- <eb6b5f84-2a5a-1938-0657-0eac9f2390df@zonque.org>
- <20200620143518.GG304147@lunn.ch>
-From:   Daniel Mack <daniel@zonque.org>
-Message-ID: <62c2327e-0094-3369-fc38-7f434324a348@zonque.org>
-Date:   Sat, 20 Jun 2020 20:01:38 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728372AbgFTSRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 14:17:04 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:46686 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728369AbgFTSRD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 14:17:03 -0400
+Received: by mail-lf1-f66.google.com with SMTP id m26so7360234lfo.13
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 11:17:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZYkYA7GIIhlmq6rZr8jPfVPdikjKFJ74S4uQrOZ8lX8=;
+        b=jiTaB2ldE/0CqQAoMrgIJlY4sEHHGKkEqhV6Xq8/q37E+Tn8RpLWxg3sWKMjsWF6H4
+         576KqLJUFxuFdaUfH6dS6fMdtiHOj48gA8H3AVYMF9IOa8lm9fzvBcpAafzbr8oOlHNn
+         ia2Qr8BKIM65Lr143XbZd93594eQzH1+GYVYXd/YUXcHmT5H5xpJY50L12DrmxZh9BJv
+         H3rlsMSuUodIU+bV3RJ/Nu3b4MxndDppcW4IjF6R3QOl10/gl1hl2Yu/lHpGG4u/mAj4
+         taV9VU/fiFVM34OszxcPwph5u/Xb30CanL+9yVntWcpElrtmZW8pLLZlQm0cHLKt7ecN
+         Tvjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=ZYkYA7GIIhlmq6rZr8jPfVPdikjKFJ74S4uQrOZ8lX8=;
+        b=O6hdyH7eemx5Z+GKrQM79/C5LlkeS9wXDooiRovmyjxzUKWXaUM94sniXfysspsWbz
+         amrwR8P3BtLqrt5OlUkfEP9CJivYgVViIwg2XjXzOxoVDCYyDl+Gu+j+CIliGDV9iWgN
+         4ZYDrq15dJhbRVAkR/Rh3ntXTtm4cqCWZB2TYjw92ErHcklv5aS3H/P7eR9PmjDkYECD
+         LgE6xY1Zdh/CWj4tPi1DAw7xlO9VZRNNfoz0qcMkGazgKWYwqpc2yiPtHnhAQ0eo7Ckd
+         c+deeOAEKOyE5dsRZp//04w/9oQCMgLzx8A3GZWoeL4BLkd1aR4UfRwej/lKwvCQiE7B
+         YcoA==
+X-Gm-Message-State: AOAM530ZS0Q/c6f1R/2IAFrC2wHAIB39jRaZ3T/0GvpFk6rvnRAY4AtU
+        AYawcO3vhNndVfQSqKQNbhbHTA==
+X-Google-Smtp-Source: ABdhPJwYTcUhykaqUtrSppn7BOgc04zksumGxOWHqE0qSBOnw4nB+XC8v6UBOTPrOEbQ2rpLWP9HsA==
+X-Received: by 2002:ac2:52af:: with SMTP id r15mr2675378lfm.24.1592676961072;
+        Sat, 20 Jun 2020 11:16:01 -0700 (PDT)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:462b:c4af:1cf5:65ea:51a9:9da1])
+        by smtp.gmail.com with ESMTPSA id x64sm130214lff.14.2020.06.20.11.15.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 20 Jun 2020 11:16:00 -0700 (PDT)
+Subject: Re: [PATCH/RFC 1/5] dt-bindings: net: renesas,ravb: Document internal
+ clock delay properties
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+References: <20200619191554.24942-1-geert+renesas@glider.be>
+ <20200619191554.24942-2-geert+renesas@glider.be>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <75d3e6c2-9dbd-eec0-12e6-55eaef7c745a@cogentembedded.com>
+Date:   Sat, 20 Jun 2020 21:15:59 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-In-Reply-To: <20200620143518.GG304147@lunn.ch>
+In-Reply-To: <20200619191554.24942-2-geert+renesas@glider.be>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Language: en-MW
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/20/20 4:35 PM, Andrew Lunn wrote:
->> So yes, we can read the code here, but I'm wondering which packet types
->> would then get this flag set, and which won't. Because in case of
->> IGMP/MLD, the packets are in fact forwarded, but the meaning of the flag
->> in skb is to prevent the skb from being forwarded further, which seems
->> wrong in all cases.
->>
->> I'm thinking maybe the flag should never be set?
+Hello!
+
+On 06/19/2020 10:15 PM, Geert Uytterhoeven wrote:
+
+> Some EtherAVB variants support internal clock delay configuration, which
+> can add larger delays than the delays that are typically supported by
+> the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
+> properties).
 > 
-> It is a while since i did much with multicast, so please correct me
-> when i'm wrong...
+> Add properties for configuring the internal MAC delays.
+> These properties are mandatory, even when specified as zero, to
+> distinguish between old and new DTBs.
 > 
-> IGMP can use different group addresses as far as i remember.
-> Join/leave uses the group address of interest. But query can use
-> 224.0.0.1 or the group address.
+> Update the example accordingly.
 > 
-> The bridge should learn from joins, either spontaneous or as a reply
-> to a query. When it sees a join, it should add a multicast FDB to the
-> hardware for the group, so traffic is forwarded out that port.
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  .../devicetree/bindings/net/renesas,ravb.txt  | 29 ++++++++++---------
+>  1 file changed, 16 insertions(+), 13 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/renesas,ravb.txt b/Documentation/devicetree/bindings/net/renesas,ravb.txt
+> index 032b76f14f4fdb38..488ada78b6169b8e 100644
+> --- a/Documentation/devicetree/bindings/net/renesas,ravb.txt
+> +++ b/Documentation/devicetree/bindings/net/renesas,ravb.txt
+> @@ -64,6 +64,18 @@ Optional properties:
+>  			 AVB_LINK signal.
+>  - renesas,ether-link-active-low: boolean, specify when the AVB_LINK signal is
+>  				 active-low instead of normal active-high.
+> +- renesas,rxc-delay-ps: Internal RX clock delay.
+> +			This property is mandatory and valid only on R-Car Gen3
+> +			and RZ/G2 SoCs.
+> +			Valid values are 0 and 1800.
+> +			A non-zero value is allowed only if phy-mode = "rgmii".
+> +			Zero is not supported on R-Car D3.
 
-Yes, except it's the MDB in this case. But the bridge must also forward
-the IGMP queries and reports to other ports, otherwise a cascaded
-multicast router won't see the membership reports and hence won't send
-frames to our switch.
+   Hm, where did you see about the D3 limitation?
 
-> So for real multicast traffic, we do want the flag set, the hardware
-> should be doing the forwarding. If we don't set the flag, we end up
-> with duplication when the SW bridge also forwards the multicast
-> traffic.
+> +- renesas,txc-delay-ps: Internal TX clock delay.
+> +			This property is mandatory and valid only on R-Car H3,
+> +			M3-W, M3-W+, M3-N, V3M, and V3H, and RZ/G2M and RZ/G2N.
+> +			Valid values are 0 and 2000.
+> +			A non-zero value is allowed only if phy-mode = "rgmii".
+> +			Zero is not supported on R-Car V3H.
 
-Yes, agreed.
+  Same question about V3H here...
 
-> For IGMP/MLD itself, we probably need to see what the switch does. For
-> IGMP using the group address, does the multicast FDB rule match and
-> cause the hardware to forward the IGMP?
+[...]
+> @@ -105,8 +117,10 @@ Example:
+>  				  "ch24";
+>  		clocks = <&cpg CPG_MOD 812>;
+>  		power-domains = <&cpg>;
+> -		phy-mode = "rgmii-id";
+> +		phy-mode = "rgmii";
+>  		phy-handle = <&phy0>;
+> +		renesas,rxc-delay-ps = <0>;
 
-No, because snooping is enabled on all ports of the switch by the
-driver, all IGMP frames are redirected to the CPU port and not egressed
-on any other port, regardless of the entries in the ATU.
+   Mhm, zero RX delay in RGMII-ID mode?
 
-> If yes, then we need the flag
-> set, otherwise the IGMP gets duplicated. If no, then we don't want the
-> flag set, and leave the SW bridge to do the forwarding, 
+> +		renesas,txc-delay-ps = <2000>;
+>  
+>  		pinctrl-0 = <&ether_pins>;
+>  		pinctrl-names = "default";
+> @@ -115,18 +129,7 @@ Example:
+>  		#size-cells = <0>;
+>  
+>  		phy0: ethernet-phy@0 {
+> -			rxc-skew-ps = <900>;
+> -			rxdv-skew-ps = <0>;
+> -			rxd0-skew-ps = <0>;
+> -			rxd1-skew-ps = <0>;
+> -			rxd2-skew-ps = <0>;
+> -			rxd3-skew-ps = <0>;
+> -			txc-skew-ps = <900>;
+> -			txen-skew-ps = <0>;
+> -			txd0-skew-ps = <0>;
+> -			txd1-skew-ps = <0>;
+> -			txd2-skew-ps = <0>;
+> -			txd3-skew-ps = <0>;
+> +			rxc-skew-ps = <1500>;
 
-Exactly.
+   Ah, you're relying on a PHY?
 
-> or reply
-> itself if it is the querier.
+[...]
 
-If it has memberships itself.
-
-> 6352 uses the EDSA tagger. But the same bits exist in the DSA tag,
-> which the 6390 uses, due to incompatibility reasons. So it would be
-> nice to extend both taggers.
-
-But the tag format seems to be a bit different on EDSA from what you
-described in your other mail. In my datasheet, the code bits are spread
-across octet 2 and 3.
-
-I'll send a patch for EDSA that works for me and solves the problem I
-had, and then leave it to someone with access to the datasheets of
-variants implementing the DSA tagging to replicate and test that.
-
-
-Thanks for your help!
-Daniel
+MBR, Sergei
