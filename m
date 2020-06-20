@@ -2,165 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E02D2025EE
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 20:17:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB8D92025F1
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 20:17:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728372AbgFTSRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 14:17:04 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:46686 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728369AbgFTSRD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 14:17:03 -0400
-Received: by mail-lf1-f66.google.com with SMTP id m26so7360234lfo.13
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 11:17:01 -0700 (PDT)
+        id S1728410AbgFTSR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 14:17:56 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:35672 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728346AbgFTSRz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 14:17:55 -0400
+Received: by mail-lj1-f194.google.com with SMTP id q19so15054228lji.2
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 11:17:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZYkYA7GIIhlmq6rZr8jPfVPdikjKFJ74S4uQrOZ8lX8=;
-        b=jiTaB2ldE/0CqQAoMrgIJlY4sEHHGKkEqhV6Xq8/q37E+Tn8RpLWxg3sWKMjsWF6H4
-         576KqLJUFxuFdaUfH6dS6fMdtiHOj48gA8H3AVYMF9IOa8lm9fzvBcpAafzbr8oOlHNn
-         ia2Qr8BKIM65Lr143XbZd93594eQzH1+GYVYXd/YUXcHmT5H5xpJY50L12DrmxZh9BJv
-         H3rlsMSuUodIU+bV3RJ/Nu3b4MxndDppcW4IjF6R3QOl10/gl1hl2Yu/lHpGG4u/mAj4
-         taV9VU/fiFVM34OszxcPwph5u/Xb30CanL+9yVntWcpElrtmZW8pLLZlQm0cHLKt7ecN
-         Tvjw==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fvNVjKHLtWO1dFhcir+/iDU+Lfgpi6JKmP8lzEdvB4E=;
+        b=XZhtEb+0zgTmk7p1FKGgpCykCJGCR4QhBQlCJIvFhX2gO0uR1pqoBoOBIBXk8xm1oo
+         nnYsLEAqabKP6xPYAXRe3MXkcyadqTMH+s5IProFdvebzb7pzQ6AkXwlDow2qmIdedzm
+         oZw5CZPotJ22BL1wUHzVnLaBOGBVpYDODO31o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=ZYkYA7GIIhlmq6rZr8jPfVPdikjKFJ74S4uQrOZ8lX8=;
-        b=O6hdyH7eemx5Z+GKrQM79/C5LlkeS9wXDooiRovmyjxzUKWXaUM94sniXfysspsWbz
-         amrwR8P3BtLqrt5OlUkfEP9CJivYgVViIwg2XjXzOxoVDCYyDl+Gu+j+CIliGDV9iWgN
-         4ZYDrq15dJhbRVAkR/Rh3ntXTtm4cqCWZB2TYjw92ErHcklv5aS3H/P7eR9PmjDkYECD
-         LgE6xY1Zdh/CWj4tPi1DAw7xlO9VZRNNfoz0qcMkGazgKWYwqpc2yiPtHnhAQ0eo7Ckd
-         c+deeOAEKOyE5dsRZp//04w/9oQCMgLzx8A3GZWoeL4BLkd1aR4UfRwej/lKwvCQiE7B
-         YcoA==
-X-Gm-Message-State: AOAM530ZS0Q/c6f1R/2IAFrC2wHAIB39jRaZ3T/0GvpFk6rvnRAY4AtU
-        AYawcO3vhNndVfQSqKQNbhbHTA==
-X-Google-Smtp-Source: ABdhPJwYTcUhykaqUtrSppn7BOgc04zksumGxOWHqE0qSBOnw4nB+XC8v6UBOTPrOEbQ2rpLWP9HsA==
-X-Received: by 2002:ac2:52af:: with SMTP id r15mr2675378lfm.24.1592676961072;
-        Sat, 20 Jun 2020 11:16:01 -0700 (PDT)
-Received: from wasted.cogentembedded.com ([2a00:1fa0:462b:c4af:1cf5:65ea:51a9:9da1])
-        by smtp.gmail.com with ESMTPSA id x64sm130214lff.14.2020.06.20.11.15.59
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 20 Jun 2020 11:16:00 -0700 (PDT)
-Subject: Re: [PATCH/RFC 1/5] dt-bindings: net: renesas,ravb: Document internal
- clock delay properties
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-References: <20200619191554.24942-1-geert+renesas@glider.be>
- <20200619191554.24942-2-geert+renesas@glider.be>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Organization: Cogent Embedded
-Message-ID: <75d3e6c2-9dbd-eec0-12e6-55eaef7c745a@cogentembedded.com>
-Date:   Sat, 20 Jun 2020 21:15:59 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fvNVjKHLtWO1dFhcir+/iDU+Lfgpi6JKmP8lzEdvB4E=;
+        b=Hltifp0OnFarRNDKjZOnHC4PmqrQO0ZU1rVhgDRmb3COOQbE7kp7QLNJRbnt1m8tKF
+         RjEV2Ip0TZ75ocSQNqAcDkHiUEoBetDXC5xr2Q0zFGoIaD3L/l4EVl7Qr8/ud+B4tcqo
+         5xYfC4kiEEbyTgi7EvwKicEsu8wCXhqCn/JrtTjH6KBq8TpM7aqkul8ln9SkqvCqso9x
+         clZxDC5jbt4aOEItorhVfQ5bAmY0GYs62uIMAhzvBe8e/OWUa+CIjOr711bIuB5CjuhK
+         UizXb3UOyBEzOadiznhxsQk5WDtpO1Qge+HUsm7EALGaEVZj472I4NZZ01h7tndD3phK
+         s1qw==
+X-Gm-Message-State: AOAM532mVYGVGSV7Zl/IREqV28zQKUqdeCk6rpSgLdb6glJSevrtoIHs
+        ntGRwLv9BLDfrAzyK7xBYBuDuqRbtdY=
+X-Google-Smtp-Source: ABdhPJwImdvqDJdtdEOg4v9vz5lwIlPWVXBRRDm/hxYFtDbjwCE+obp7zvDKLo79+20XW8DM8d7okw==
+X-Received: by 2002:a2e:7219:: with SMTP id n25mr4398615ljc.168.1592677012733;
+        Sat, 20 Jun 2020 11:16:52 -0700 (PDT)
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
+        by smtp.gmail.com with ESMTPSA id a23sm2220005lfb.10.2020.06.20.11.16.51
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 20 Jun 2020 11:16:51 -0700 (PDT)
+Received: by mail-lf1-f42.google.com with SMTP id u25so7400216lfm.1
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 11:16:51 -0700 (PDT)
+X-Received: by 2002:a19:ae0f:: with SMTP id f15mr5206631lfc.142.1592677011252;
+ Sat, 20 Jun 2020 11:16:51 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200619191554.24942-2-geert+renesas@glider.be>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+References: <20200618210645.GB2212102@localhost.localdomain>
+ <CAHk-=whz7xz1EBqfyS-C8zTx3_q54R1GuX9tDHdK1-TG91WH-Q@mail.gmail.com> <20200620075732.GA468070@localhost.localdomain>
+In-Reply-To: <20200620075732.GA468070@localhost.localdomain>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 20 Jun 2020 11:16:35 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjt=mTBqymWuRYeiXQxdEdf6si_it=Yzm7KR62ws0vknw@mail.gmail.com>
+Message-ID: <CAHk-=wjt=mTBqymWuRYeiXQxdEdf6si_it=Yzm7KR62ws0vknw@mail.gmail.com>
+Subject: Re: [PATCH] linux++, this: rename "struct notifier_block *this"
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Sat, Jun 20, 2020 at 12:57 AM Alexey Dobriyan <adobriyan@gmail.com> wrote:
+>
+> > If you want to build the kernel with C++, you'd be a lot better off just doing
+> >
+> >    /* C++ braindamage */
+> >    #define this __this
+> >    #define new __new
+> >
+> > and deal with that instead.
+>
+> Can't do this because of placement new.
 
-On 06/19/2020 10:15 PM, Geert Uytterhoeven wrote:
+Can you explain?
 
-> Some EtherAVB variants support internal clock delay configuration, which
-> can add larger delays than the delays that are typically supported by
-> the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
-> properties).
-> 
-> Add properties for configuring the internal MAC delays.
-> These properties are mandatory, even when specified as zero, to
-> distinguish between old and new DTBs.
-> 
-> Update the example accordingly.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  .../devicetree/bindings/net/renesas,ravb.txt  | 29 ++++++++++---------
->  1 file changed, 16 insertions(+), 13 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/renesas,ravb.txt b/Documentation/devicetree/bindings/net/renesas,ravb.txt
-> index 032b76f14f4fdb38..488ada78b6169b8e 100644
-> --- a/Documentation/devicetree/bindings/net/renesas,ravb.txt
-> +++ b/Documentation/devicetree/bindings/net/renesas,ravb.txt
-> @@ -64,6 +64,18 @@ Optional properties:
->  			 AVB_LINK signal.
->  - renesas,ether-link-active-low: boolean, specify when the AVB_LINK signal is
->  				 active-low instead of normal active-high.
-> +- renesas,rxc-delay-ps: Internal RX clock delay.
-> +			This property is mandatory and valid only on R-Car Gen3
-> +			and RZ/G2 SoCs.
-> +			Valid values are 0 and 1800.
-> +			A non-zero value is allowed only if phy-mode = "rgmii".
-> +			Zero is not supported on R-Car D3.
+> > Because no, the 'new' renaming will never happen, and while 'this'
+> > isn't nearly as common or relevant a name, once you have the same
+> > issue with 'new', what's the point of trying to deal with 'this'?
+>
+> I'm not sending "new".
 
-   Hm, where did you see about the D3 limitation?
+My point about 'new' is that
 
-> +- renesas,txc-delay-ps: Internal TX clock delay.
-> +			This property is mandatory and valid only on R-Car H3,
-> +			M3-W, M3-W+, M3-N, V3M, and V3H, and RZ/G2M and RZ/G2N.
-> +			Valid values are 0 and 2000.
-> +			A non-zero value is allowed only if phy-mode = "rgmii".
-> +			Zero is not supported on R-Car V3H.
+ (a) there's a lot more 'new' than 'this'
 
-  Same question about V3H here...
+ (b) without dealing with 'new', dealing with 'this' is pointless
 
-[...]
-> @@ -105,8 +117,10 @@ Example:
->  				  "ch24";
->  		clocks = <&cpg CPG_MOD 812>;
->  		power-domains = <&cpg>;
-> -		phy-mode = "rgmii-id";
-> +		phy-mode = "rgmii";
->  		phy-handle = <&phy0>;
-> +		renesas,rxc-delay-ps = <0>;
+So why bother? Without some kind of pre-processing phase to make our C
+code palatable to a C++ parser, it will never work.
 
-   Mhm, zero RX delay in RGMII-ID mode?
+And if you _do_ have a pre-processing phase (which might be a #define,
+but might also be a completely separate pass with some special tool),
+converting 'this' in the kernel sources isn't useful anyway, because
+you could just do it in the pre-processing phase instead.
 
-> +		renesas,txc-delay-ps = <2000>;
->  
->  		pinctrl-0 = <&ether_pins>;
->  		pinctrl-names = "default";
-> @@ -115,18 +129,7 @@ Example:
->  		#size-cells = <0>;
->  
->  		phy0: ethernet-phy@0 {
-> -			rxc-skew-ps = <900>;
-> -			rxdv-skew-ps = <0>;
-> -			rxd0-skew-ps = <0>;
-> -			rxd1-skew-ps = <0>;
-> -			rxd2-skew-ps = <0>;
-> -			rxd3-skew-ps = <0>;
-> -			txc-skew-ps = <900>;
-> -			txen-skew-ps = <0>;
-> -			txd0-skew-ps = <0>;
-> -			txd1-skew-ps = <0>;
-> -			txd2-skew-ps = <0>;
-> -			txd3-skew-ps = <0>;
-> +			rxc-skew-ps = <1500>;
+See? THAT is why I'm harping on 'new'. Not because you sent me a patch
+to deal with 'new', but because such a patch will never be accepted,
+and without that patch the pain from 'this' seems entirely irrelevant.
 
-   Ah, you're relying on a PHY?
+What's your plan for 'new'? And why doesn't that plan then work for 'this'?
 
-[...]
-
-MBR, Sergei
+              Linus
