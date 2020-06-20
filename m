@@ -2,26 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A35D6202636
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 21:39:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90CD1202656
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 22:16:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728616AbgFTTjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 15:39:36 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:45656 "EHLO mail.bugwerft.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728376AbgFTTjg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 20 Jun 2020 15:39:36 -0400
-Received: from zenbar.fritz.box (pd95efea6.dip0.t-ipconnect.de [217.94.254.166])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id A581242A3C8;
-        Sat, 20 Jun 2020 19:39:34 +0000 (UTC)
-From:   Daniel Mack <daniel@zonque.org>
-To:     netdev@vger.kernel.org
-Cc:     jcobham@questertangent.com, andrew@lunn.ch,
-        Daniel Mack <daniel@zonque.org>
-Subject: [PATCH v2] dsa: Allow forwarding of redirected IGMP traffic
-Date:   Sat, 20 Jun 2020 21:39:25 +0200
-Message-Id: <20200620193925.3166913-1-daniel@zonque.org>
-X-Mailer: git-send-email 2.26.2
+        id S1728777AbgFTUQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 16:16:07 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:42391 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728712AbgFTUQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 16:16:06 -0400
+Received: by mail-lf1-f66.google.com with SMTP id y13so7470396lfe.9;
+        Sat, 20 Jun 2020 13:16:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=bUpHKuGvXMoT2ANSX5o0C6Pui2UhEVNyY7Dw51pTMzQ=;
+        b=I5YfqFjS1MNpAA5fUkekX8lImcYybPU8i5LRszlPW7+W9dKLRe3m7XPSm5OE+w0c9b
+         5HXVnVtUxQlg+UD7RL2IxB/0/3C7NCu7K8Mee31mtL2mTAQFbe5C+CAtInh54NDp4UD6
+         9m4czhc3CLvcGBo2hSguh/0vC3GWwiv4PiHumh48B6IyoFvnS0wFEnCdrMtfj/o3HLXZ
+         BKWsi3WvmM68qMWUqqK9ChMos92Bmv7K+9qWxDnP6pr7zY9dMZEp54VjnTG35um3Jd8f
+         ujcCDuSqIk8AkWnTklK3DXpRnp6k79C4svheru40Mz9r+/qD3zw9dVKPN2k8ZTqsR9BO
+         c3Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=bUpHKuGvXMoT2ANSX5o0C6Pui2UhEVNyY7Dw51pTMzQ=;
+        b=CLkQ3z5mvcPCmXIVXGd/lT+3xw5ARgR9o7NFQUnF2WrL0Pkd+1mghE/DI/4SOeIB+d
+         0PERm69f2mQTJ5jY/Cag4CPSBm+WYpPy92Nk5sk8WG+TgnKLzbgRVPzT+SWhKfG0RBKh
+         xKNTLK+4VgFRpM+cV0NDI3WHufmAJSxAERhLfDY76a27wvQyVHrsS0ldIoglMdHy9VMB
+         P+6ni162NO7bNgiZoz6wWZdZkI4QCyOJyiGAgfoEKM9pQyH65kJfuZTL5YTc1nrvW+2p
+         8gpATBTJZuGnKtLax02zGDR5BOBooS+5ClG7XOLdrv7cxn0AScG8hqFcfOuGTkr2mvxC
+         M7yg==
+X-Gm-Message-State: AOAM533YZR6EmI8HN+Ms6QsUlZKQuDLapauylKUSfxaoWBxJHAQDM/MN
+        cJmBhJHvfpirPJTLXUnadKlZ78YvRItSVA==
+X-Google-Smtp-Source: ABdhPJy6pTdJ/npXRzJulS4+XYrhRZgNFxdrISm39OyM67KApATxV7ttOA6JOqpzlpmfhSceF2D2lg==
+X-Received: by 2002:a19:4cd:: with SMTP id 196mr1349954lfe.136.1592684103363;
+        Sat, 20 Jun 2020 13:15:03 -0700 (PDT)
+Received: from pc-sasha.localdomain ([146.120.244.6])
+        by smtp.gmail.com with ESMTPSA id b6sm2641347lfa.54.2020.06.20.13.15.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Jun 2020 13:15:02 -0700 (PDT)
+From:   Alexander Kapshuk <alexander.kapshuk@gmail.com>
+To:     asmadeus@codewreck.org
+Cc:     lucho@ionkov.net, ericvh@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, v9fs-developer@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alexander.kapshuk@gmail.com
+Subject: [PATCH] net/9p: Validate current->sighand in client.c
+Date:   Sat, 20 Jun 2020 23:14:56 +0300
+Message-Id: <20200620201456.14304-1-alexander.kapshuk@gmail.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20200618190807.GA20699@nautica>
+References: <20200618190807.GA20699@nautica>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -29,110 +63,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver for Marvell switches puts all ports in IGMP snooping mode
-which results in all IGMP/MLD frames that ingress on the ports to be
-forwarded to the CPU only.
+Use (un)lock_task_sighand instead of spin_lock_irqsave and
+spin_unlock_irqrestore to ensure current->sighand is a valid pointer as
+suggested in the email referenced below.
 
-The bridge code in the kernel can then interpret these frames and act
-upon them, for instance by updating the mdb in the switch to reflect
-multicast memberships of stations connected to the ports. However,
-the IGMP/MLD frames must then also be forwarded to other ports of the
-bridge so external IGMP queriers can track membership reports, and
-external multicast clients can receive query reports from foreign IGMP
-queriers.
-
-Currently, this is impossible as the EDSA tagger sets offload_fwd_mark
-on the skb when it unwraps the tagged frames, and that will make the
-switchdev layer prevent the skb from egressing on any other port of
-the same switch.
-
-To fix that, look at the To_CPU code in the DSA header and make
-forwarding of the frame possible for trapped IGMP packets.
-
-Introduce some #defines for the frame types to make the code a bit more
-comprehensive.
-
-This was tested on a Marvell 88E6352 variant.
-
-Signed-off-by: Daniel Mack <daniel@zonque.org>
+Signed-off-by: Alexander Kapshuk <alexander.kapshuk@gmail.com>
+Link: https://lore.kernel.org/lkml/20200618190807.GA20699@nautica/
 ---
-v2:
-  * Limit IGMP handling to TO_CPU frames
-  * Use #defines for the TO_CPU codes and the frame types
+ net/9p/client.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
- net/dsa/tag_edsa.c | 37 ++++++++++++++++++++++++++++++++++---
- 1 file changed, 34 insertions(+), 3 deletions(-)
-
-diff --git a/net/dsa/tag_edsa.c b/net/dsa/tag_edsa.c
-index e8eaa804ccb9e..d6200ff982007 100644
---- a/net/dsa/tag_edsa.c
-+++ b/net/dsa/tag_edsa.c
-@@ -13,6 +13,16 @@
- #define DSA_HLEN	4
- #define EDSA_HLEN	8
- 
-+#define FRAME_TYPE_TO_CPU	0x00
-+#define FRAME_TYPE_FORWARD	0x03
-+
-+#define TO_CPU_CODE_MGMT_TRAP		0x00
-+#define TO_CPU_CODE_FRAME2REG		0x01
-+#define TO_CPU_CODE_IGMP_MLD_TRAP	0x02
-+#define TO_CPU_CODE_POLICY_TRAP		0x03
-+#define TO_CPU_CODE_ARP_MIRROR		0x04
-+#define TO_CPU_CODE_POLICY_MIRROR	0x05
-+
- static struct sk_buff *edsa_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-@@ -77,6 +87,8 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
- 				struct packet_type *pt)
- {
- 	u8 *edsa_header;
-+	int frame_type;
-+	int code;
- 	int source_device;
- 	int source_port;
- 
-@@ -91,8 +103,29 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
- 	/*
- 	 * Check that frame type is either TO_CPU or FORWARD.
- 	 */
--	if ((edsa_header[0] & 0xc0) != 0x00 && (edsa_header[0] & 0xc0) != 0xc0)
-+	frame_type = edsa_header[0] >> 6;
-+
-+	switch (frame_type) {
-+	case FRAME_TYPE_TO_CPU:
-+		code = (edsa_header[1] & 0x6) | ((edsa_header[2] >> 4) & 1);
-+
-+		/*
-+		 * Mark the frame to never egress on any port of the same switch
-+		 * unless it's a trapped IGMP/MLD packet, in which case the
-+		 * bridge might want to forward it.
-+		 */
-+		if (code != TO_CPU_CODE_IGMP_MLD_TRAP)
-+			skb->offload_fwd_mark = 1;
-+
-+		break;
-+
-+	case FRAME_TYPE_FORWARD:
-+		skb->offload_fwd_mark = 1;
-+		break;
-+
-+	default:
- 		return NULL;
-+	}
- 
- 	/*
- 	 * Determine source device and port.
-@@ -156,8 +189,6 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
- 			2 * ETH_ALEN);
+diff --git a/net/9p/client.c b/net/9p/client.c
+index fc1f3635e5dd..15f16f2baa8f 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -787,9 +787,14 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
  	}
- 
--	skb->offload_fwd_mark = 1;
--
- 	return skb;
- }
- 
--- 
-2.26.2
+ recalc_sigpending:
+ 	if (sigpending) {
+-		spin_lock_irqsave(&current->sighand->siglock, flags);
++		if (!lock_task_sighand(current, &flags)) {
++			pr_warn("%s (%d): current->sighand==NULL in recalc_sigpending\n",
++				__func__, task_pid_nr(current));
++			err = -ESRCH;
++			goto reterr;
++		}
+ 		recalc_sigpending();
+-		spin_unlock_irqrestore(&current->sighand->siglock, flags);
++		unlock_task_sighand(current, &flags);
+ 	}
+ 	if (err < 0)
+ 		goto reterr;
+@@ -869,9 +874,14 @@ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
+ 	}
+ recalc_sigpending:
+ 	if (sigpending) {
+-		spin_lock_irqsave(&current->sighand->siglock, flags);
++		if (!lock_task_sighand(current, &flags)) {
++			pr_warn("%s (%d): current->sighand==NULL in recalc_sigpending\n",
++				__func__, task_pid_nr(current));
++			err = -ESRCH;
++			goto reterr;
++		}
+ 		recalc_sigpending();
+-		spin_unlock_irqrestore(&current->sighand->siglock, flags);
++		unlock_task_sighand(current, &flags);
+ 	}
+ 	if (err < 0)
+ 		goto reterr;
+--
+2.27.0
 
