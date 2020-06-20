@@ -2,105 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC380202099
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 05:31:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C66622020A3
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 05:32:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733302AbgFTDbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 23:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
+        id S2387442AbgFTDby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 23:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733070AbgFTDbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 23:31:14 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8947CC0604C1
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 20:30:28 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id h22so5296340pjf.1
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 20:30:28 -0700 (PDT)
+        with ESMTP id S1733184AbgFTDb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 23:31:28 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F41C06174E
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 20:31:27 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id p5so11156564ile.6
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 20:31:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QVK7j0hx8FBwbrQRQLiAwPLU1M0hFNtAd7ZF9cg10jo=;
-        b=TZW89t7zN77H873mcFo8WLKtwyPOC4zRyfDeh6db7mO8VCfzF/bLHMfK7vcAzedFuv
-         1RpGH6tOBLqduS8I/DdeF83mRRrdAlWtjSzOSaXCEmWDNlYtfmcl5HjH5pc0lKbkP/sk
-         L+yXY5n0mIFfGtE2LVxuNzfT527bZqkW9h24Q=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9f0Gjamj3Kf1oQmhcAGPYQZVAknbqBPeTdhd79AObF4=;
+        b=LrwN3if17HRccqgSMCdznchmJtkuCZNk9YjsewaXaa3YG6jV4MX7vPRzw8SMlbzkNK
+         KLdWTHPqlWxbUMnhCq9YtY+b5r7OkKjpeDxcwY/YWzMCLl9dm2w0TjfhHB6LmPUkcsOK
+         55tvuLllj3eYxNQMq8umuXh/I3lHUTNuHTdSn+E/PE6ZyqxsRfVPUD6XbulKFgyGlJmf
+         wzq/89rwPXHL4pSaLNPpekSGrR8vW1Mg8qoRrgQcFmOfXnryG7qy5cKtVPB414viERdm
+         SeBeWNyF1/pQwojLFbYvib0dA9Ss4I2+/RFgiR/txqKIdL3RyGsyZf1jhAx46yR3Dki+
+         id2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QVK7j0hx8FBwbrQRQLiAwPLU1M0hFNtAd7ZF9cg10jo=;
-        b=lOBhMf6dSTI78/2HY/kk2Ma/94fj+3eORpASG66K64V1qL30XLsO2MpU4LTv6iI/Y4
-         nrv0M8zbTG1KhkNTfCxR4qGrZMupDCF5IR9P6zkxCRd0SiQO8MLYEoarYR88Wm0k29hL
-         R189mEA4qY/qor7zZ9SmJNQ/liRe7Q+WMVtL8V8KP9ZAWfFPKV0q81sRo1R4Cug6h2ne
-         rHNBCccxofMjaClr6uOb9oaEWvR9UuZc9ir8QtpuCdfqP5E2BLKVPCdRZBP9/SdShXet
-         ZUKZuLligXxD4/TeZHrJIPbeRTKBCrM0q/+8ltTe1FbgatE183r2BYZVKMcBUVFTZ11S
-         mp5Q==
-X-Gm-Message-State: AOAM530O4x4W68oAo2OESQSq/iiv507J+IorGoJTKu4qQH84nPMM+AuM
-        MZBbtwJ8wXqu5aiXu85V5h4JLQ==
-X-Google-Smtp-Source: ABdhPJz8KX7mQAqh+M5lriaij/q9w5lLW8mo5TU5HFqGc/qxPYSRCJFCyD55HX6pgmlCF9isgzBqNQ==
-X-Received: by 2002:a17:90a:778c:: with SMTP id v12mr6634388pjk.34.1592623828165;
-        Fri, 19 Jun 2020 20:30:28 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id r1sm824770pjd.47.2020.06.19.20.30.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Jun 2020 20:30:26 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-mm@kvack.org,
-        clang-built-linux@googlegroups.com
-Subject: [PATCH v2 13/16] mm/debug_vm_pgtable: Remove uninitialized_var() usage
-Date:   Fri, 19 Jun 2020 20:30:07 -0700
-Message-Id: <20200620033007.1444705-17-keescook@chromium.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200620033007.1444705-1-keescook@chromium.org>
-References: <20200620033007.1444705-1-keescook@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9f0Gjamj3Kf1oQmhcAGPYQZVAknbqBPeTdhd79AObF4=;
+        b=ODmGJmnCCDvGx6AmgXHbJtybzj9vZaq/alQWEVFrakqV5Vro+5CttXfaOkwtQP5wmS
+         KUm6vaaEuVRaxtDTWnRa+G5mmQZ61sLl0FBim/8sPIPSDzzMi56IeytsAafJGnbgqCAb
+         QUivD3QnBo1Xh1wpR4ty7FFJ8xEJZi2wgUXGybjwjn8Qr6qHs/yn7Ali+AgWXnCkj3Ix
+         7uZCMBjcOjqyMZ77LKAdUETlaQ+uR02NBBju5f8ZT8S+TR54HKVfn5X4GpYu4hm9zUNy
+         xMDq77k+khUOdR4RMXQovyP3c93vXHbLP82IO950Unwkj4TuYEJlLfIiKjp0s7jZY4Kv
+         vFjQ==
+X-Gm-Message-State: AOAM532CGGz9DVJzUSFGRW0M8SSTanCVljFMYHG+dBkdi9w8ysOZWKIH
+        nAXSGGsFWs0qyDU/eT6yS7Kaa6GFPdulLn/eY5M=
+X-Google-Smtp-Source: ABdhPJw0VEd+6UjULOyoyy9x/Gcw83ipj0YP9MBZR5Jt826uR+03JjOsFurKk38DZa2hnYy/0QyV45QpI8OjsKLVwEo=
+X-Received: by 2002:a92:d905:: with SMTP id s5mr6696553iln.268.1592623887082;
+ Fri, 19 Jun 2020 20:31:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200616180352.18602-1-xiyou.wangcong@gmail.com>
+ <141629e1-55b5-34b1-b2ab-bab6b68f0671@huawei.com> <CAM_iQpUFFHPnMxS2sAHZqMUs80tTn0+C_jCcne4Ddx2b9omCxg@mail.gmail.com>
+ <20200618193611.GE24694@carbon.DHCP.thefacebook.com> <CAM_iQpWuNnHqNHKz5FMgAXoqQ5qGDEtNbBKDXpmpeNSadCZ-1w@mail.gmail.com>
+ <4f17229e-1843-5bfc-ea2f-67ebaa9056da@huawei.com> <CAM_iQpVKqFi00ohqPARxaDw2UN1m6CtjqsmBAP-pcK0GT2p_fQ@mail.gmail.com>
+ <459be87d-0272-9ea9-839a-823b01e354b6@huawei.com> <35480172-c77e-fb67-7559-04576f375ea6@huawei.com>
+In-Reply-To: <35480172-c77e-fb67-7559-04576f375ea6@huawei.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 19 Jun 2020 20:31:14 -0700
+Message-ID: <CAM_iQpXpZd6ZaQyQifWOHSnqgAgdu1qP+fF_Na7rQ_H1vQ6eig@mail.gmail.com>
+Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
+To:     Zefan Li <lizefan@huawei.com>
+Cc:     Roman Gushchin <guro@fb.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Cameron Berkenpas <cam@neo-zeon.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
+        =?UTF-8?Q?Dani=C3=ABl_Sonck?= <dsonck92@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Tejun Heo <tj@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using uninitialized_var() is dangerous as it papers over real bugs[1]
-(or can in the future), and suppresses unrelated compiler warnings (e.g.
-"unused variable"). If the compiler thinks it is uninitialized, either
-simply initialize the variable or make compiler changes. As a precursor
-to removing[2] this[3] macro[4], just initialize this variable to NULL.
+On Fri, Jun 19, 2020 at 5:51 PM Zefan Li <lizefan@huawei.com> wrote:
+>
+> =E5=9C=A8 2020/6/20 8:45, Zefan Li =E5=86=99=E9=81=93:
+> > On 2020/6/20 3:51, Cong Wang wrote:
+> >> On Thu, Jun 18, 2020 at 11:40 PM Zefan Li <lizefan@huawei.com> wrote:
+> >>>
+> >>> On 2020/6/19 5:09, Cong Wang wrote:
+> >>>> On Thu, Jun 18, 2020 at 12:36 PM Roman Gushchin <guro@fb.com> wrote:
+> >>>>>
+> >>>>> On Thu, Jun 18, 2020 at 12:19:13PM -0700, Cong Wang wrote:
+> >>>>>> On Wed, Jun 17, 2020 at 6:44 PM Zefan Li <lizefan@huawei.com> wrot=
+e:
+> >>>>>>>
+> >>>>>>> Cc: Roman Gushchin <guro@fb.com>
+> >>>>>>>
+> >>>>>>> Thanks for fixing this.
+> >>>>>>>
+> >>>>>>> On 2020/6/17 2:03, Cong Wang wrote:
+> >>>>>>>> When we clone a socket in sk_clone_lock(), its sk_cgrp_data is
+> >>>>>>>> copied, so the cgroup refcnt must be taken too. And, unlike the
+> >>>>>>>> sk_alloc() path, sock_update_netprioidx() is not called here.
+> >>>>>>>> Therefore, it is safe and necessary to grab the cgroup refcnt
+> >>>>>>>> even when cgroup_sk_alloc is disabled.
+> >>>>>>>>
+> >>>>>>>> sk_clone_lock() is in BH context anyway, the in_interrupt()
+> >>>>>>>> would terminate this function if called there. And for sk_alloc(=
+)
+> >>>>>>>> skcd->val is always zero. So it's safe to factor out the code
+> >>>>>>>> to make it more readable.
+> >>>>>>>>
+> >>>>>>>> Fixes: 090e28b229af92dc5b ("netprio_cgroup: Fix unlimited memory=
+ leak of v2 cgroups")
+> >>>>>>>
+> >>>>>>> but I don't think the bug was introduced by this commit, because =
+there
+> >>>>>>> are already calls to cgroup_sk_alloc_disable() in write_priomap()=
+ and
+> >>>>>>> write_classid(), which can be triggered by writing to ifpriomap o=
+r
+> >>>>>>> classid in cgroupfs. This commit just made it much easier to happ=
+en
+> >>>>>>> with systemd invovled.
+> >>>>>>>
+> >>>>>>> I think it's 4bfc0bb2c60e2f4c ("bpf: decouple the lifetime of cgr=
+oup_bpf from cgroup itself"),
+> >>>>>>> which added cgroup_bpf_get() in cgroup_sk_alloc().
+> >>>>>>
+> >>>>>> Good point.
+> >>>>>>
+> >>>>>> I take a deeper look, it looks like commit d979a39d7242e06
+> >>>>>> is the one to blame, because it is the first commit that began to
+> >>>>>> hold cgroup refcnt in cgroup_sk_alloc().
+> >>>>>
+> >>>>> I agree, ut seems that the issue is not related to bpf and probably
+> >>>>> can be reproduced without CONFIG_CGROUP_BPF. d979a39d7242e06 indeed
+> >>>>> seems closer to the origin.
+> >>>>
+> >>>> Yeah, I will update the Fixes tag and send V2.
+> >>>>
+> >>>
+> >>> Commit d979a39d7242e06 looks innocent to me. With this commit when cg=
+roup_sk_alloc
+> >>> is disabled and then a socket is cloned the cgroup refcnt will not be=
+ incremented,
+> >>> but this is fine, because when the socket is to be freed:
+> >>>
+> >>>  sk_prot_free()
+> >>>    cgroup_sk_free()
+> >>>      cgroup_put(sock_cgroup_ptr(skcd)) =3D=3D cgroup_put(&cgrp_dfl_ro=
+ot.cgrp)
+> >>>
+> >>> cgroup_put() does nothing for the default root cgroup, so nothing bad=
+ will happen.
+> >>
+> >> But skcd->val can be a pointer to a non-root cgroup:
+> >
+> > It returns a non-root cgroup when cgroup_sk_alloc is not disabled. The =
+bug happens
+> > when cgroup_sk_alloc is disabled.
+> >
+>
+> And please read those recent bug reports, they all happened when bpf cgro=
+up was in use,
+> and there was no bpf cgroup when d979a39d7242e06 was merged into mainline=
+.
 
-[1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
-[2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
-[3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
-[4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
+I am totally aware of this. My concern is whether cgroup
+has the same refcnt bug as it always pairs with the bpf refcnt.
 
-Fixes: 399145f9eb6c ("mm/debug: add tests validating architecture page table helpers")
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- mm/debug_vm_pgtable.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+But, after a second look, the non-root cgroup refcnt is immediately
+overwritten by sock_update_classid() or sock_update_netprioidx(),
+which effectively turns into a root cgroup again. :-/
 
-diff --git a/mm/debug_vm_pgtable.c b/mm/debug_vm_pgtable.c
-index e45623016aea..83c9e88a052a 100644
---- a/mm/debug_vm_pgtable.c
-+++ b/mm/debug_vm_pgtable.c
-@@ -307,7 +307,7 @@ static int __init debug_vm_pgtable(void)
- 	phys_addr_t paddr;
- 	unsigned long vaddr, pte_aligned, pmd_aligned;
- 	unsigned long pud_aligned, p4d_aligned, pgd_aligned;
--	spinlock_t *uninitialized_var(ptl);
-+	spinlock_t *ptl = NULL;
- 
- 	pr_info("Validating architecture page table helpers\n");
- 	prot = vm_get_page_prot(VMFLAGS);
--- 
-2.25.1
+(It seems we leak a refcnt here, but this is not related to my patch).
 
+Thanks.
