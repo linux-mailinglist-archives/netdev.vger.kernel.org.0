@@ -2,111 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FC6A2022D1
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 11:22:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A492022EA
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 11:44:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727883AbgFTJVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 05:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726533AbgFTJVo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 05:21:44 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93839C06174E
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 02:21:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=UpcgkCqf+ZwRMNEBVOVhOVEqCUwwLtSScWeu+WNIK+k=; b=eNaCBdGEH1DVfh9WHtK68TBcjR
-        xxB66JW2Pw9iFNtgmuXKP/pzMQWCVxVCvvUt/4YFNZISWqVsocsr/cWaZFXTOLdc7MVfiSCEH3P85
-        dL2PwY2GQCC3QzxYgN0sAaJAUOGVf2slhLNRdXn8wJyOTEJ/QRywuFXSpzuS0BEnIbZ7UeGf7LBGQ
-        a31I0+1oXGaeTtts5GWF2xIjAhlRazKpQM/Zffg2SMhJe1GYnovK0aI8j1ixjpRZQ3Ljfh2KZ7Ptk
-        3tKUaOVeQQh3yAUyu/LtMHaw6DcZICPMKWiomfRdu5yImBRKCU/oobX8bBMlTiLROXagvoS6R/9JS
-        1GfFkXdg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:49228 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jmZh0-0007Oi-I3; Sat, 20 Jun 2020 10:21:42 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jmZh0-0001Uf-A2; Sat, 20 Jun 2020 10:21:42 +0100
-In-Reply-To: <20200620092047.GR1551@shell.armlinux.org.uk>
-References: <20200620092047.GR1551@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next 4/4] net: mvpp2: set xlg flow control in
- mvpp2_mac_link_up()
+        id S1727880AbgFTJnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 05:43:51 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:45050 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727855AbgFTJnv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 20 Jun 2020 05:43:51 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 8AFD1A6764515297A373;
+        Sat, 20 Jun 2020 17:43:49 +0800 (CST)
+Received: from localhost.localdomain (10.175.118.36) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.487.0; Sat, 20 Jun 2020 17:43:43 +0800
+From:   Luo bin <luobin9@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
+        <cloud.wangxiaoyun@huawei.com>
+Subject: [PATCH net-next v1 0/5] hinic: add some ethtool ops support
+Date:   Sat, 20 Jun 2020 17:42:53 +0800
+Message-ID: <20200620094258.13181-1-luobin9@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jmZh0-0001Uf-A2@rmk-PC.armlinux.org.uk>
-Date:   Sat, 20 Jun 2020 10:21:42 +0100
+Content-Type: text/plain
+X-Originating-IP: [10.175.118.36]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set the flow control settings in mvpp2_mac_link_up() for 10G links
-just as we do for 1G and slower links. This is now the preferred
-location.
+patch #1: support to set and get pause params with
+          "ethtool -A/a" cmd
+patch #2: support to set and get irq coalesce params with
+          "ethtool -C/c" cmd
+patch #3: support to do self test with "ethtool -t" cmd
+patch #4: support to identify physical device with "ethtool -p" cmd
+patch #5: support to get eeprom information with "ethtool -m" cmd
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 23 +++++++++----------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+Luo bin (5):
+  hinic: add support to set and get pause params
+  hinic: add support to set and get irq coalesce
+  hinic: add self test support
+  hinic: add support to identify physical device
+  hinic: add support to get eeprom information
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 375e3c657162..22891f588c8a 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -4959,17 +4959,9 @@ static void mvpp2_xlg_config(struct mvpp2_port *port, unsigned int mode,
- {
- 	u32 val;
- 
--	val = MVPP22_XLG_CTRL0_MAC_RESET_DIS;
--	if (state->pause & MLO_PAUSE_TX)
--		val |= MVPP22_XLG_CTRL0_TX_FLOW_CTRL_EN;
--
--	if (state->pause & MLO_PAUSE_RX)
--		val |= MVPP22_XLG_CTRL0_RX_FLOW_CTRL_EN;
--
- 	mvpp2_modify(port->base + MVPP22_XLG_CTRL0_REG,
--		     MVPP22_XLG_CTRL0_MAC_RESET_DIS |
--		     MVPP22_XLG_CTRL0_TX_FLOW_CTRL_EN |
--		     MVPP22_XLG_CTRL0_RX_FLOW_CTRL_EN, val);
-+		     MVPP22_XLG_CTRL0_MAC_RESET_DIS,
-+		     MVPP22_XLG_CTRL0_MAC_RESET_DIS);
- 	mvpp2_modify(port->base + MVPP22_XLG_CTRL4_REG,
- 		     MVPP22_XLG_CTRL4_MACMODSELECT_GMAC |
- 		     MVPP22_XLG_CTRL4_EN_IDLE_CHECK |
-@@ -5159,10 +5151,17 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
- 
- 	if (mvpp2_is_xlg(interface)) {
- 		if (!phylink_autoneg_inband(mode)) {
-+			val = MVPP22_XLG_CTRL0_FORCE_LINK_PASS;
-+			if (tx_pause)
-+				val |= MVPP22_XLG_CTRL0_TX_FLOW_CTRL_EN;
-+			if (rx_pause)
-+				val |= MVPP22_XLG_CTRL0_RX_FLOW_CTRL_EN;
-+
- 			mvpp2_modify(port->base + MVPP22_XLG_CTRL0_REG,
- 				     MVPP22_XLG_CTRL0_FORCE_LINK_DOWN |
--				     MVPP22_XLG_CTRL0_FORCE_LINK_PASS,
--				     MVPP22_XLG_CTRL0_FORCE_LINK_PASS);
-+				     MVPP22_XLG_CTRL0_FORCE_LINK_PASS |
-+				     MVPP22_XLG_CTRL0_TX_FLOW_CTRL_EN |
-+				     MVPP22_XLG_CTRL0_RX_FLOW_CTRL_EN, val);
- 		}
- 	} else {
- 		if (!phylink_autoneg_inband(mode)) {
+ drivers/net/ethernet/huawei/hinic/hinic_dev.h |  14 +
+ .../net/ethernet/huawei/hinic/hinic_ethtool.c | 677 +++++++++++++++++-
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.c  |  66 ++
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.h  |  31 +
+ .../net/ethernet/huawei/hinic/hinic_hw_io.h   |  10 +
+ .../net/ethernet/huawei/hinic/hinic_hw_mgmt.h |   7 +-
+ .../net/ethernet/huawei/hinic/hinic_main.c    | 104 ++-
+ .../net/ethernet/huawei/hinic/hinic_port.c    | 200 ++++++
+ .../net/ethernet/huawei/hinic/hinic_port.h    |  99 +++
+ drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  58 +-
+ .../net/ethernet/huawei/hinic/hinic_sriov.c   |   4 +-
+ drivers/net/ethernet/huawei/hinic/hinic_tx.c  |  80 +++
+ drivers/net/ethernet/huawei/hinic/hinic_tx.h  |   2 +
+ 13 files changed, 1341 insertions(+), 11 deletions(-)
+
 -- 
-2.20.1
+2.17.1
 
