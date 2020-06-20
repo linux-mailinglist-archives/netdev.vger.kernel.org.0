@@ -2,141 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86D3D202275
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 09:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D11D20227A
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 09:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727004AbgFTHwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 03:52:53 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:6369 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725835AbgFTHwx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 20 Jun 2020 03:52:53 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id D35615793990ACFDD767;
-        Sat, 20 Jun 2020 15:52:50 +0800 (CST)
-Received: from [10.166.213.22] (10.166.213.22) by smtp.huawei.com
- (10.3.19.204) with Microsoft SMTP Server (TLS) id 14.3.487.0; Sat, 20 Jun
- 2020 15:52:49 +0800
-Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Roman Gushchin <guro@fb.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
-        =?UTF-8?Q?Dani=c3=abl_Sonck?= <dsonck92@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Tejun Heo <tj@kernel.org>
-References: <20200616180352.18602-1-xiyou.wangcong@gmail.com>
- <141629e1-55b5-34b1-b2ab-bab6b68f0671@huawei.com>
- <CAM_iQpUFFHPnMxS2sAHZqMUs80tTn0+C_jCcne4Ddx2b9omCxg@mail.gmail.com>
- <20200618193611.GE24694@carbon.DHCP.thefacebook.com>
- <CAM_iQpWuNnHqNHKz5FMgAXoqQ5qGDEtNbBKDXpmpeNSadCZ-1w@mail.gmail.com>
- <4f17229e-1843-5bfc-ea2f-67ebaa9056da@huawei.com>
- <CAM_iQpVKqFi00ohqPARxaDw2UN1m6CtjqsmBAP-pcK0GT2p_fQ@mail.gmail.com>
- <459be87d-0272-9ea9-839a-823b01e354b6@huawei.com>
- <35480172-c77e-fb67-7559-04576f375ea6@huawei.com>
- <CAM_iQpXpZd6ZaQyQifWOHSnqgAgdu1qP+fF_Na7rQ_H1vQ6eig@mail.gmail.com>
-From:   Zefan Li <lizefan@huawei.com>
-Message-ID: <17116b4b-7542-86b5-5e78-9d6ab00e2c07@huawei.com>
-Date:   Sat, 20 Jun 2020 15:52:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1727104AbgFTH5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 03:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725835AbgFTH5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 03:57:36 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86579C06174E;
+        Sat, 20 Jun 2020 00:57:36 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id l10so11754937wrr.10;
+        Sat, 20 Jun 2020 00:57:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+ni8LF6DiZ7e+Sa1bH9I96UUmF2BBDFC3xDwZDcw058=;
+        b=NiF4Ek5JpVCT1lkixtJWNHFOi/+jzvu5yqUj3bVi28nBXxd1qGW6SwIjRWQsHVZvQ1
+         /sN9tsPubXkYpuqaIOe2WnxiwZqgQAakf0KNEk2oKNHTdNO+l1Oj0svHDl4FSnAMkWg0
+         sjQSuriza/6E772gnStLKc8Dd+ZP24hlrXp1pQFOacPEJCRv7X5MnaV2n105XjmEVS+c
+         7t4HeE/LZWVXKY6rYGMkUtcMqVNx8jBnpGXPoNYK8/OBSesF0B3kuXHEPqVIuQQhwKza
+         R6ye/M+q2rTGF6UJbvBK0WlWpo0wqfwIYsh4RMJFfuYb/4J3XwOTd1Pg3Q/A8JtMiS5J
+         KJRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+ni8LF6DiZ7e+Sa1bH9I96UUmF2BBDFC3xDwZDcw058=;
+        b=effKCyDlDQeCPgiqd8WfGrAECWCVwvDTEwI3tOhp8P5FfsQ87uUT84LR+RHXjXNAlC
+         OUZieR9ZY6oWk1KKQ84PvTxmtGML20GOO4NWVcsFpMeN/lFKqy/yesRYyQ6wK38dzWQ9
+         HUPwtESq3r1zm+EmWXR4H2n/lDLIeM/L7zIEkjQsiauDPGcYSzv7fSSKZW4FYp3jC/wP
+         DLGqMbQs8AsmnR0CnV8lDqRymQCsGr4gnwe36vTcglZYSTvHSfcFUzJyd/i6GPlH0pAo
+         kJHdL+Vxk76i+jVSQkOrR/DpDTk1g1cfItD1fVa+KmVJyxocAHlwC60Zl1GcG0gmXEcp
+         Mfvw==
+X-Gm-Message-State: AOAM5301EQOHZmcA4V322O5uBJDtPlhv84AxgyNjEYoUF7qU5y51T2n4
+        FJ3QPIltlsEqHpAd+zdEJ2SkpGQ=
+X-Google-Smtp-Source: ABdhPJx2LzDP5vaEKmQra4DiB1bA7ic/ADuDUbl9U0GPCwzJ0K00W8lZUJcSkex4J9D5e32tWJ5TGQ==
+X-Received: by 2002:a05:6000:128e:: with SMTP id f14mr8750971wrx.276.1592639855172;
+        Sat, 20 Jun 2020 00:57:35 -0700 (PDT)
+Received: from localhost.localdomain ([46.53.252.34])
+        by smtp.gmail.com with ESMTPSA id e25sm10429252wrc.69.2020.06.20.00.57.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Jun 2020 00:57:34 -0700 (PDT)
+Date:   Sat, 20 Jun 2020 10:57:32 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>
+Subject: Re: [PATCH] linux++, this: rename "struct notifier_block *this"
+Message-ID: <20200620075732.GA468070@localhost.localdomain>
+References: <20200618210645.GB2212102@localhost.localdomain>
+ <CAHk-=whz7xz1EBqfyS-C8zTx3_q54R1GuX9tDHdK1-TG91WH-Q@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpXpZd6ZaQyQifWOHSnqgAgdu1qP+fF_Na7rQ_H1vQ6eig@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.166.213.22]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whz7xz1EBqfyS-C8zTx3_q54R1GuX9tDHdK1-TG91WH-Q@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2020/6/20 11:31, Cong Wang 写道:
-> On Fri, Jun 19, 2020 at 5:51 PM Zefan Li <lizefan@huawei.com> wrote:
->>
->> 在 2020/6/20 8:45, Zefan Li 写道:
->>> On 2020/6/20 3:51, Cong Wang wrote:
->>>> On Thu, Jun 18, 2020 at 11:40 PM Zefan Li <lizefan@huawei.com> wrote:
->>>>>
->>>>> On 2020/6/19 5:09, Cong Wang wrote:
->>>>>> On Thu, Jun 18, 2020 at 12:36 PM Roman Gushchin <guro@fb.com> wrote:
->>>>>>>
->>>>>>> On Thu, Jun 18, 2020 at 12:19:13PM -0700, Cong Wang wrote:
->>>>>>>> On Wed, Jun 17, 2020 at 6:44 PM Zefan Li <lizefan@huawei.com> wrote:
->>>>>>>>>
->>>>>>>>> Cc: Roman Gushchin <guro@fb.com>
->>>>>>>>>
->>>>>>>>> Thanks for fixing this.
->>>>>>>>>
->>>>>>>>> On 2020/6/17 2:03, Cong Wang wrote:
->>>>>>>>>> When we clone a socket in sk_clone_lock(), its sk_cgrp_data is
->>>>>>>>>> copied, so the cgroup refcnt must be taken too. And, unlike the
->>>>>>>>>> sk_alloc() path, sock_update_netprioidx() is not called here.
->>>>>>>>>> Therefore, it is safe and necessary to grab the cgroup refcnt
->>>>>>>>>> even when cgroup_sk_alloc is disabled.
->>>>>>>>>>
->>>>>>>>>> sk_clone_lock() is in BH context anyway, the in_interrupt()
->>>>>>>>>> would terminate this function if called there. And for sk_alloc()
->>>>>>>>>> skcd->val is always zero. So it's safe to factor out the code
->>>>>>>>>> to make it more readable.
->>>>>>>>>>
->>>>>>>>>> Fixes: 090e28b229af92dc5b ("netprio_cgroup: Fix unlimited memory leak of v2 cgroups")
->>>>>>>>>
->>>>>>>>> but I don't think the bug was introduced by this commit, because there
->>>>>>>>> are already calls to cgroup_sk_alloc_disable() in write_priomap() and
->>>>>>>>> write_classid(), which can be triggered by writing to ifpriomap or
->>>>>>>>> classid in cgroupfs. This commit just made it much easier to happen
->>>>>>>>> with systemd invovled.
->>>>>>>>>
->>>>>>>>> I think it's 4bfc0bb2c60e2f4c ("bpf: decouple the lifetime of cgroup_bpf from cgroup itself"),
->>>>>>>>> which added cgroup_bpf_get() in cgroup_sk_alloc().
->>>>>>>>
->>>>>>>> Good point.
->>>>>>>>
->>>>>>>> I take a deeper look, it looks like commit d979a39d7242e06
->>>>>>>> is the one to blame, because it is the first commit that began to
->>>>>>>> hold cgroup refcnt in cgroup_sk_alloc().
->>>>>>>
->>>>>>> I agree, ut seems that the issue is not related to bpf and probably
->>>>>>> can be reproduced without CONFIG_CGROUP_BPF. d979a39d7242e06 indeed
->>>>>>> seems closer to the origin.
->>>>>>
->>>>>> Yeah, I will update the Fixes tag and send V2.
->>>>>>
->>>>>
->>>>> Commit d979a39d7242e06 looks innocent to me. With this commit when cgroup_sk_alloc
->>>>> is disabled and then a socket is cloned the cgroup refcnt will not be incremented,
->>>>> but this is fine, because when the socket is to be freed:
->>>>>
->>>>>  sk_prot_free()
->>>>>    cgroup_sk_free()
->>>>>      cgroup_put(sock_cgroup_ptr(skcd)) == cgroup_put(&cgrp_dfl_root.cgrp)
->>>>>
->>>>> cgroup_put() does nothing for the default root cgroup, so nothing bad will happen.
->>>>
->>>> But skcd->val can be a pointer to a non-root cgroup:
->>>
->>> It returns a non-root cgroup when cgroup_sk_alloc is not disabled. The bug happens
->>> when cgroup_sk_alloc is disabled.
->>>
->>
->> And please read those recent bug reports, they all happened when bpf cgroup was in use,
->> and there was no bpf cgroup when d979a39d7242e06 was merged into mainline.
+On Fri, Jun 19, 2020 at 11:37:47AM -0700, Linus Torvalds wrote:
+> On Thu, Jun 18, 2020 at 2:06 PM Alexey Dobriyan <adobriyan@gmail.com> wrote:
+> >
+> > Rename
+> >         struct notifier_block *this
+> > to
+> >         struct notifier_block *nb
+> >
+> > "nb" is arguably a better name for notifier block.
 > 
-> I am totally aware of this. My concern is whether cgroup
-> has the same refcnt bug as it always pairs with the bpf refcnt.
+> Maybe it's a better name. But it doesn't seem worth it.
 > 
-> But, after a second look, the non-root cgroup refcnt is immediately
-> overwritten by sock_update_classid() or sock_update_netprioidx(),
-> which effectively turns into a root cgroup again. :-/
+> Because C++ reserved words are entirely irrelevant.
 > 
-> (It seems we leak a refcnt here, but this is not related to my patch).
-> 
+> We did this same dance almost three decades ago, and the fact is, C++
+> has other reserved words that make it all pointless.
 
-Indead, but it's well known, see bd1060a1d67128bb8fbe2. But now bpf cgroup comes into play...
+The real problems are "class" and "new" indeed.
 
-Your patch doesn't seem to fix the bug completely. If cgroup_sk_alloc_disable happens after
-socket cloning, then we will deref the bpf of the root cgroup while incref-ed the bpf of a
-non-root cgroup.
+> There is no way I will accept the renaming of various "new" variables.
+
+I'm not sending "new".
+
+> We did it, it was bad, we undid it, and we now have a _lot_ more uses
+> of 'new' and 'old', and no, we're not changing it for a braindead
+> language that isn't relevant to the kernel.
+> 
+> The fact is, C++ chose bad identifiers to make reserved words.
+> 
+> If you want to build the kernel with C++, you'd be a lot better off just doing
+> 
+>    /* C++ braindamage */
+>    #define this __this
+>    #define new __new
+> 
+> and deal with that instead.
+
+Can't do this because of placement new.
+
+> Because no, the 'new' renaming will never happen, and while 'this'
+> isn't nearly as common or relevant a name, once you have the same
+> issue with 'new', what's the point of trying to deal with 'this'?
+
+I'm not sending "new".
+
+There is stuff which can be merge without breaking source compatibility
+and readability of C version:
+
+	private		=> priv
+	virtual		=> virt
+	this		=> self (in some contexts)
+
+and those which can not. I'm not sending the latter.
