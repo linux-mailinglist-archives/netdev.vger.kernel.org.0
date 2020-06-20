@@ -2,93 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8BD1202552
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 18:34:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D457202595
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 19:19:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728112AbgFTQef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 12:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726043AbgFTQef (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 12:34:35 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040ABC06174E
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 09:34:35 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id b6so12513173wrs.11
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 09:34:34 -0700 (PDT)
+        id S1728235AbgFTRTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 13:19:44 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:38466 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728126AbgFTRTn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 13:19:43 -0400
+Received: by mail-ed1-f65.google.com with SMTP id cy7so3738194edb.5
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 10:19:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=HnfTIYVZ5wB9NzJ0He1gW/q1BGjjos8MabSfnh8sooI=;
-        b=GcioExfOe0cVPsVyN5HU71bI0bR5bt2+3aiyIqeondmOv9TKbOKeHuDX0AlI5RsLsc
-         PJfK6Pgwej0WWDlntpd9T/8qwr5EnonXwNs/PfnMqtVaMf85NMAq1TtzqK9jVPbh+6xN
-         WlFzKgz5X+6z7ySOEjodvGtL4DJgBk+tDUf2Y=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cTL0Xw2hdUb9ouCJUsBsnwjcw8ImcFxoNZxeUsGgPCk=;
+        b=t2lewog8isIjXiE/NwqnRhI6xB9FDapT2SIKUugIn8/5TQP66LiAcsRx6zcvnAH6Pu
+         Urqj62W2uqN+ZEvmmIru6r058dkRAcfUsgc4Dg2glTxGX8YJZdyeGUYRhs7lxU/PJ7rM
+         o39w0kw6yCVPrk/unk+CQSy5o7Y20ue31d9mOdZ+nGMM0CUecPUiyXTeaLgFQaoYcDuz
+         0dYCjMYDdrUXre+9dqD1B7MbfLg2eUNj2WAEUiJ3265TcwOS0lZi2nKKaRgj4oQENeSN
+         8tHqfsGOVxm0vz7YIx+ydcSICf71RaDp7M7jCsOCrE+8d1UPwyy0zBIn/cvxSPlnLc/S
+         /5WA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=HnfTIYVZ5wB9NzJ0He1gW/q1BGjjos8MabSfnh8sooI=;
-        b=DssFmGSrRY7gdqAu5etKSRyG2LTX0RRzpQJzknyrgAXGuDZOk1ivyOlGReVjEiWOJV
-         AWlm9geryDJiLcLH5B/rrjIvAd9XGmioCAbFPwM8b+mqOSUTdyUFaozZDl1aW3yHmtXV
-         EoNNBljbt4wgNeAW31TnjiM3tqYyEeoAYn8ljI8BJQjC1bPltfGFPepb99zsGTuiKKPJ
-         4q3HRxZCsonWWmcBMbEerp8gyIrriZeApO2UYZ7e/jdnE+9gLbhwIzfwXfN1yrwcPpcc
-         h0o4l8B7fDeeakT6yMQZuP7hdo/6+/RIMarXZyrBZgw47XefSKhEhuAw0GScRQEdfUrf
-         5cRQ==
-X-Gm-Message-State: AOAM533QjH2S7rxVvzidSFRZDtpzaAxLV27egEhJLhG+biebip8d67Gc
-        8+hkQbk4ofbr/cJ97NE2ZpECXA==
-X-Google-Smtp-Source: ABdhPJxiPBv2HTegp9FOj8XL4y5YpoS1mDJFfC7Tf8/ELKuJdmOHcwdFSTgaTgfgBS0u7rYsgtPFxw==
-X-Received: by 2002:a5d:40ca:: with SMTP id b10mr1958265wrq.56.1592670873602;
-        Sat, 20 Jun 2020 09:34:33 -0700 (PDT)
-Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id c6sm10825974wma.15.2020.06.20.09.34.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 20 Jun 2020 09:34:33 -0700 (PDT)
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com, kuba@kernel.org,
-        jiri@mellanox.com, jacob.e.keller@intel.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH v2 net-next 2/2] bnxt_en: Add board.serial_number field to info_get cb
-Date:   Sat, 20 Jun 2020 22:01:57 +0530
-Message-Id: <1592670717-28851-3-git-send-email-vasundhara-v.volam@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1592670717-28851-1-git-send-email-vasundhara-v.volam@broadcom.com>
-References: <1592670717-28851-1-git-send-email-vasundhara-v.volam@broadcom.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cTL0Xw2hdUb9ouCJUsBsnwjcw8ImcFxoNZxeUsGgPCk=;
+        b=XIpcio3JOyz8ay0vF40tpErRo+9AkzDFZ/rwrHVe6JwqYyEaRkPdEtWOkGIRaE9e93
+         BNynEpW3/riyxFoDBZ/9i4JgTOQMnP0Jp3nzNHz7QiObzt7L7hrLPf/Xw70xHUouncyO
+         6gvDKTqeP3E++e1aW0rY8upvHVqcWNmHeOksmUvAhxkZVpLhY3c3rJvQ5jIFYSAcpuWG
+         4LSM9IVrCMm4y93l+WvzxovxjkYD29THq8BtQ/QxeZJIqlQnf1YBjkhPQDhNiyx8OsHh
+         CKxhI25EuJtdzPdiNJZyvrQScpcm+zLGVQkB0caA5TjTkjAVcjufESzBoOMWjvN/dRQW
+         yveQ==
+X-Gm-Message-State: AOAM5330yVrSWoWRu6BLfMVJkndcjcetM3ySoif5HolxRfx0ZE7HbdGh
+        mi/CX1U19lhAGx8PvP6KYsQ=
+X-Google-Smtp-Source: ABdhPJzDEam/zoRZOh8sOb8T5RqWYbwoDybP5U67FDrS825eCireS3yHJ2i5+lmvc8U3zWNA81wyGQ==
+X-Received: by 2002:aa7:c245:: with SMTP id y5mr9086164edo.189.1592673521695;
+        Sat, 20 Jun 2020 10:18:41 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.56.128])
+        by smtp.gmail.com with ESMTPSA id a9sm7863476edr.23.2020.06.20.10.18.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Jun 2020 10:18:41 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com
+Subject: [PATCH net-next 0/3] Cosmetic cleanup in SJA1105 DSA driver
+Date:   Sat, 20 Jun 2020 20:18:29 +0300
+Message-Id: <20200620171832.3679837-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add board.serial_number field info to info_get cb via devlink,
-if driver can fetch the information from the device.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Cc: Jiri Pirko <jiri@mellanox.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
----
-v2: Combine 2 lines as column limit is increased to 100 now.
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+This removes the sparse warnings from the sja1105 driver and makes some
+structures constant.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index a812beb..2bd610f 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -411,6 +411,12 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 			return rc;
- 	}
- 
-+	if (strlen(bp->board_serialno)) {
-+		rc = devlink_info_board_serial_number_put(req, bp->board_serialno);
-+		if (rc)
-+			return rc;
-+	}
-+
- 	sprintf(buf, "%X", bp->chip_num);
- 	rc = devlink_info_version_fixed_put(req,
- 			DEVLINK_INFO_VERSION_GENERIC_ASIC_ID, buf);
+Vladimir Oltean (3):
+  net: dsa: sja1105: remove empty structures from config table ops
+  net: dsa: sja1105: make config table operation structures constant
+  net: dsa: sja1105: make the instantiations of struct sja1105_info
+    constant
+
+ drivers/net/dsa/sja1105/sja1105.h             | 12 +++----
+ .../net/dsa/sja1105/sja1105_dynamic_config.c  | 25 ++-----------
+ .../net/dsa/sja1105/sja1105_dynamic_config.h  |  4 +--
+ drivers/net/dsa/sja1105/sja1105_spi.c         | 17 +++++----
+ .../net/dsa/sja1105/sja1105_static_config.c   | 36 ++++---------------
+ .../net/dsa/sja1105/sja1105_static_config.h   | 12 +++----
+ 6 files changed, 33 insertions(+), 73 deletions(-)
+
 -- 
-1.8.3.1
+2.25.1
 
