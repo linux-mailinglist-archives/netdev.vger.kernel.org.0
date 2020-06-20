@@ -2,89 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB19920200F
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 05:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECA49202012
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 05:14:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732325AbgFTDNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Jun 2020 23:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55654 "EHLO
+        id S1732374AbgFTDOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Jun 2020 23:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732271AbgFTDNo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 23:13:44 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275F5C06174E
-        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 20:13:44 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5E6C0127853AD;
-        Fri, 19 Jun 2020 20:13:43 -0700 (PDT)
-Date:   Fri, 19 Jun 2020 20:13:42 -0700 (PDT)
-Message-Id: <20200619.201342.2288126609984082133.davem@davemloft.net>
-To:     wenxu@ucloud.cn
-Cc:     netdev@vger.kernel.org, pablo@netfilter.org, vladbu@mellanox.com,
-        simon.horman@netronome.com
-Subject: Re: [PATCH net v5 0/4] several fixes for indirect flow_blocks
- offload
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1592484551-16188-1-git-send-email-wenxu@ucloud.cn>
-References: <1592484551-16188-1-git-send-email-wenxu@ucloud.cn>
-X-Mailer: Mew version 6.8 on Emacs 26.3
+        with ESMTP id S1732360AbgFTDOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Jun 2020 23:14:37 -0400
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17564C0613EE
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 20:14:36 -0700 (PDT)
+Received: by mail-qt1-x84a.google.com with SMTP id y25so8589617qtb.6
+        for <netdev@vger.kernel.org>; Fri, 19 Jun 2020 20:14:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=zl+PzJjccgQ/z2IEdEeYMiws9NGR4cJmTEy3MFLmC3o=;
+        b=IVa4+NlsGbh2tuCONpmMignMX3tymio3t6JWrNzc5iXWlb7vOmjhAzN6NlhnjFhlfR
+         SLJ2gRLA6EgVpy6YonZqFX54AkwoQvKBOlkFwCsmWTooE2Q423aBY278CNa0BX7Yzzi5
+         lTmaofUZR7JB+xlA674HFVZ73jz5U7+ADJceLARAnFz+bA6LH/zrWy5QWqoeEotTqvOF
+         UmYtSmZeHun0CDabkfnTMDnFWZTfWR7TUYD5al6woWbY0Ul7IMyeEFTFpl6EedRllncg
+         SdzScVXpPGEAjKrWBCofUBL7hAbyMc2DncnGuAHznS6G6/EVpgXDGIDc1Q78yWZ0I/xm
+         5QTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=zl+PzJjccgQ/z2IEdEeYMiws9NGR4cJmTEy3MFLmC3o=;
+        b=bmQqmUkOJANLoiojtjmvI5yKNgPWA9yuXdM8863LM5j4q5WJ8280lkAKtHRETeiUZr
+         RzyjlPNg6EZ9yNf3N7hyz9V/nBIPBSSmPZ0RsPTkshTlmsYmZqXqaR0kWlOk7RoP9O5z
+         sx5ZmaJ043ysWkEN19kA9ixoyX8VUL8acoUb7Na7JInvEsRuGk8M5OKUBRkXtW+5Oite
+         pv3jIJusGudP0cvn/vTVH6uCPKJ5jhUfWguuTcQuuEnLlBXYM4698W2XtcsOWPWfJ6wl
+         hO4faVVxQrtuX3ivkRJHrqg5c6Jf3pxOoOdNjrEb6JCZZaoMroXzxdgr91KOzHrAs+cS
+         tkCg==
+X-Gm-Message-State: AOAM533bRqRw0O4q0s4xH2iKb9iUF/oVs09QJtZUzWNLHIx+CQVDFdnE
+        eqoL/VxhzpqPnci3Gu4S2Unfn063tIuy
+X-Google-Smtp-Source: ABdhPJx7Zb5WZN9Kyj9M9t0YipMDGf9555Hb9vWxW3rsrq8ChDSsTnnDsP2VsrGgbZFEcrS6B5seAkyx5hxN
+X-Received: by 2002:a05:6214:11b3:: with SMTP id u19mr11113254qvv.99.1592622875130;
+ Fri, 19 Jun 2020 20:14:35 -0700 (PDT)
+Date:   Fri, 19 Jun 2020 20:14:18 -0700
+Message-Id: <20200620031419.219106-1-brianvv@google.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 19 Jun 2020 20:13:43 -0700 (PDT)
+X-Mailer: git-send-email 2.27.0.111.gc72c7da667-goog
+Subject: [PATCH net-next 1/2] indirect_call_wrapper: extend indirect wrapper
+ to support up to 4 calls
+From:   Brian Vazquez <brianvv@google.com>
+To:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu@ucloud.cn
-Date: Thu, 18 Jun 2020 20:49:07 +0800
+There are many places where 2 annotations are not enough. This patch
+adds INDIRECT_CALL_3 and INDIRECT_CALL_4 to cover such cases.
 
-> From: wenxu <wenxu@ucloud.cn>
-> 
-> v2:
-> patch2: store the cb_priv of representor to the flow_block_cb->indr.cb_priv
-> in the driver. And make the correct check with the statments
-> this->indr.cb_priv == cb_priv
-> 
-> patch4: del the driver list only in the indriect cleanup callbacks
-> 
-> v3:
-> add the cover letter and changlogs.
-> 
-> v4:
-> collapsed 1/4, 2/4, 4/4 in v3 to one fix
-> Add the prepare patch 1 and 2
-> 
-> v5:
-> patch1: place flow_indr_block_cb_alloc() right before
-> flow_indr_dev_setup_offload() to avoid moving flow_block_indr_init()
-> 
-> This series fixes commit 1fac52da5942 ("net: flow_offload: consolidate
-> indirect flow_block infrastructure") that revists the flow_block
-> infrastructure.
-> 
-> patch #1 #2: prepare for fix patch #3
-> add and use flow_indr_block_cb_alloc/remove function
-> 
-> patch #3: fix flow_indr_dev_unregister path
-> If the representor is removed, then identify the indirect flow_blocks
-> that need to be removed by the release callback and the port representor
-> structure. To identify the port representor structure, a new 
-> indr.cb_priv field needs to be introduced. The flow_block also needs to
-> be removed from the driver list from the cleanup path
-> 
-> 
-> patch#4 fix block->nooffloaddevcnt warning dmesg log.
-> When a indr device add in offload success. The block->nooffloaddevcnt
-> should be 0. After the representor go away. When the dir device go away
-> the flow_block UNBIND operation with -EOPNOTSUPP which lead the warning
-> demesg log. 
-> The block->nooffloaddevcnt should always count for indr block.
-> even the indr block offload successful. The representor maybe
-> gone away and the ingress qdisc can work in software mode.
+Signed-off-by: Brian Vazquez <brianvv@google.com>
+---
+ include/linux/indirect_call_wrapper.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Series applied, thank you.
+diff --git a/include/linux/indirect_call_wrapper.h b/include/linux/indirect_call_wrapper.h
+index 00d7e8e919c6..54c02c84906a 100644
+--- a/include/linux/indirect_call_wrapper.h
++++ b/include/linux/indirect_call_wrapper.h
+@@ -23,6 +23,16 @@
+ 		likely(f == f2) ? f2(__VA_ARGS__) :			\
+ 				  INDIRECT_CALL_1(f, f1, __VA_ARGS__);	\
+ 	})
++#define INDIRECT_CALL_3(f, f3, f2, f1, ...)					\
++	({									\
++		likely(f == f3) ? f3(__VA_ARGS__) :				\
++				  INDIRECT_CALL_2(f, f2, f1, __VA_ARGS__);	\
++	})
++#define INDIRECT_CALL_4(f, f4, f3, f2, f1, ...)					\
++	({									\
++		likely(f == f4) ? f4(__VA_ARGS__) :				\
++				  INDIRECT_CALL_3(f, f3, f2, f1, __VA_ARGS__);	\
++	})
+ 
+ #define INDIRECT_CALLABLE_DECLARE(f)	f
+ #define INDIRECT_CALLABLE_SCOPE
+@@ -30,6 +40,8 @@
+ #else
+ #define INDIRECT_CALL_1(f, f1, ...) f(__VA_ARGS__)
+ #define INDIRECT_CALL_2(f, f2, f1, ...) f(__VA_ARGS__)
++#define INDIRECT_CALL_3(f, f3, f2, f1, ...) f(__VA_ARGS__)
++#define INDIRECT_CALL_4(f, f4, f3, f2, f1, ...) f(__VA_ARGS__)
+ #define INDIRECT_CALLABLE_DECLARE(f)
+ #define INDIRECT_CALLABLE_SCOPE		static
+ #endif
+-- 
+2.27.0.111.gc72c7da667-goog
+
