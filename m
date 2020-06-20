@@ -2,92 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC39202290
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 10:18:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94DD92022CC
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 11:21:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727094AbgFTISP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 04:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45720 "EHLO
+        id S1727854AbgFTJU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 05:20:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbgFTISO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 04:18:14 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5A7C06174E
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 01:18:14 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id l11so11824164wru.0
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 01:18:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=wSt8PyoA5q1rZor7Db/luhdamh92bCf4OvJWelYDTkM=;
-        b=cq3Rre1jdNgV/Xuw9KwR1O9yXtVsgkZdEE8nD+1sCyBa/x9bdrRZlke1NEjz5nEtRS
-         mtstB78/GaBGqhzPLFqhbkLu2PUGgdRNMgFF7hH+se+WTr/6ZxbeAKwDX5bj5IfX6DYe
-         8pIESHss6KkV9sgXT5NIFYSLUMt2AldX2ngrI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=wSt8PyoA5q1rZor7Db/luhdamh92bCf4OvJWelYDTkM=;
-        b=C9YsmjS5/EgSRsG5A7SW/cmPvxCfQfojzUW1t4ZKnelONrhGI/dYkIO5tXWRTfWjzj
-         zFumVek9aurjyZlEwggr+r9H9ioOFro27rJpse/anc1c2n51SAxnzG8ON43jHjjs6mce
-         xJOiIAHzuyI1ptVB2vtBAZ9vmpntMzqOu7nmI/DSNXaFprobzNrC6BXUxr32t1O2wYSf
-         Sp4kTk41eh3zWy9DoHfMl4BGhBV9qLaeKkt43jQDJclKq39v2Keb4xcJT/KpgYhe6rEV
-         vQvvZa7W1zEqCXr0++pJ9qqgI8riBXrU+GldXBs+ZpHVzbVRKgx6BYBMv96UdlIz0eK8
-         TJIQ==
-X-Gm-Message-State: AOAM533YQYAGPMXgcsA7tVCk8kpDgqWsE/4bv4FCvHz2dTb7G8F2R8o7
-        YqEkhTYDzGjI5Kb6MJHrhB1aNg==
-X-Google-Smtp-Source: ABdhPJxtSOhufvh8+JW9vh1DH2kMC8c2tQZJ8QWrbvAr7uWtPDu31ReS3dDGY7TkCC1T5AFx8eU9yw==
-X-Received: by 2002:a5d:4611:: with SMTP id t17mr7728808wrq.243.1592641092892;
-        Sat, 20 Jun 2020 01:18:12 -0700 (PDT)
-Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id b201sm9354152wmb.36.2020.06.20.01.18.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 20 Jun 2020 01:18:12 -0700 (PDT)
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com, kuba@kernel.org,
-        jiri@mellanox.com, jacob.e.keller@intel.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net-next 2/2] bnxt_en: Add board_serial_number field to info_get cb
-Date:   Sat, 20 Jun 2020 13:45:47 +0530
-Message-Id: <1592640947-10421-3-git-send-email-vasundhara-v.volam@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1592640947-10421-1-git-send-email-vasundhara-v.volam@broadcom.com>
-References: <1592640947-10421-1-git-send-email-vasundhara-v.volam@broadcom.com>
+        with ESMTP id S1726533AbgFTJU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 05:20:56 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FCE6C06174E
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 02:20:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=IPjHOtwd9gU+pWUzKcc2PQNMrCICe4njQwSm0fz27/w=; b=zMn/IFCCkhlHaz4PdDohwhBgJ
+        X21A1gvATn9s5mMX2eLonA0bYGSimg1XUp7wKA6O7hveBqO5J+PJaF00L7y8CG1VWlw4+McOEfaYj
+        3k/Vf6ba63qypcFeeyaP6DWzQRTFVB0Q8YhIEg1fIsR0kl4digm66rfmBmRdty5kq6LcHHOl4sz7U
+        nGmcNwEeYNLIzSrA4pr10SE/Pw2a4dfou7zEfSJs0q9KLROi6YhOXnQpsWtsGTgi/j3kPPoxnQG/3
+        bTl3/1wBIZ9xUGUfe2YG6jBhgkg92STBispedoDOCCaSCg6edqKhaefZY4na6mzfa92sgbA1kvqS2
+        Pl98rB+iw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58866)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jmZgA-0007O5-9d; Sat, 20 Jun 2020 10:20:50 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jmZg7-0006Vo-Kp; Sat, 20 Jun 2020 10:20:47 +0100
+Date:   Sat, 20 Jun 2020 10:20:47 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 0/4] Marvell mvpp2 improvements
+Message-ID: <20200620092047.GR1551@shell.armlinux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add board_serial_number field info to info_get cb via devlink,
-if driver can fetch the information from the device.
+Hi,
 
-Cc: Jiri Pirko <jiri@mellanox.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+This series primarily cleans up mvpp2, but also fixes a left-over from
+91a208f2185a ("net: phylink: propagate resolved link config via
+mac_link_up()").
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index a812beb..16eca3b 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -411,6 +411,13 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 			return rc;
- 	}
- 
-+	if (strlen(bp->board_serialno)) {
-+		rc = devlink_info_board_serial_number_put(req,
-+							  bp->board_serialno);
-+		if (rc)
-+			return rc;
-+	}
-+
- 	sprintf(buf, "%X", bp->chip_num);
- 	rc = devlink_info_version_fixed_put(req,
- 			DEVLINK_INFO_VERSION_GENERIC_ASIC_ID, buf);
+Patch 1 introduces some port helpers:
+  mvpp2_port_supports_xlg() - does the port support the XLG MAC
+  mvpp2_port_supports_rgmii() - does the port support RGMII modes
+
+Patch 2 introduces mvpp2_phylink_to_port(), rather than having repeated
+  open coding of container_of().
+
+Patch 3 introduces mvpp2_modify(), which reads-modifies-writes a
+  register - I've converted the phylink specific code to use this
+  helper.
+
+Patch 4 moves the hardware control of the pause modes from
+  mvpp2_xlg_config() (which is called via the phylink_config method)
+  to mvpp2_mac_link_up() - a change that was missed in the above
+  referenced commit.
+
+v2: remove "inline" in patch 2.
+
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 163 +++++++++++++-----------
+ 1 file changed, 88 insertions(+), 75 deletions(-)
+
 -- 
-1.8.3.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
