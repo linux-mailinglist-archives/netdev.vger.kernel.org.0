@@ -2,101 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF84A202550
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 18:34:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AC28202551
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 18:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728050AbgFTQeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 12:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36540 "EHLO
+        id S1728092AbgFTQea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 12:34:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726043AbgFTQeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 12:34:20 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C4FC06174E
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 09:34:20 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id z13so766350wrw.5
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 09:34:20 -0700 (PDT)
+        with ESMTP id S1726043AbgFTQe3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 12:34:29 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03850C06174E
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 09:34:29 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id r9so11076798wmh.2
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 09:34:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=Ul8LyqGSJnGpuv3v2kk+h3m2M9Mwub/8+VYndTjxwQw=;
-        b=KpyPOLMXs12FINVYgRZV6JMu/QPh5DCFRWs1bNDMvlCE2wfHDhOL3c/BDTBzewnzpY
-         bTay69GzRiJcGm8CFCVW4OXG5YaAQ13+oMDQz4ISB1RUR5asJhceoNiHv2S3MH1rYaC6
-         aVKjq+bxixdmeycAzjSfQhhgQZRWwoKDLGBDk=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=31efthsnIgEw33htSt61eNn8nBwAx55GKilb7C5Pa1E=;
+        b=GfalbJExog7KRYkhRwuBKDsIVMg4lzxTVJCub+WIsVuie+9msTfLX5+mpfnzSY3Fjb
+         /3eLzJDn480wiDBWmxajH77PLtGImaqj/8enpyUoF7ag19LD0GZxBHLHxUeTAsxTXB4x
+         GrxHaKjkBMnI7OiC8BY9d9rswYD9GXto5QomU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Ul8LyqGSJnGpuv3v2kk+h3m2M9Mwub/8+VYndTjxwQw=;
-        b=gquMCX9LFc2ahQCYe1Y3VPYHuJwIA6RHS07kGAg041t7C2vFZ7aMc3ZnlhGCWH0Ii4
-         6UDubo8LLKjUg+GXMpLrACwasPIVW8rgEk2JyvNJVQXzglYQt5+mgWQw2/SK1I6Majna
-         WBu/PUhA9Ardn3HN6XpKl1Lbx4FhCEcSPbpRgDbmhH4vlMkgFdpsHgp9YbPEnLP41Lbz
-         UyR3S8p1NIXTIXDSKjMTUX2Qy93XDLguqLZ2/8DAxB204h3/akZspxX5xTaoLw/aagDG
-         /7g7Zg6v8e0/cOW4LAPhIcMLMvFN1f8syQPKhO+BcsjvUv5OCaiDaiOuwn2JWzgafoDk
-         t98Q==
-X-Gm-Message-State: AOAM530y2bpvfIFYVnJbuAkRloi9u5VIYPmSFayik0Z8U01K7lyzmkm9
-        wfJw6eR9npp0FuqILPgl8GSeBw==
-X-Google-Smtp-Source: ABdhPJw66h9ruVlyLl1inNC36pkvUHJYM2uy7RBaO1nnUFuoGJ+B9ZK5Qcr5/P1xU/JQ10AO9ZiB6w==
-X-Received: by 2002:a5d:6749:: with SMTP id l9mr9721008wrw.63.1592670859020;
-        Sat, 20 Jun 2020 09:34:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=31efthsnIgEw33htSt61eNn8nBwAx55GKilb7C5Pa1E=;
+        b=IRQp+EK7vYXjfMvpx8CwxTw4NxdA5bhrWW3i2F4Y15r1oBCoSKVRhBhY3RiUoj5D20
+         MrCS7fW2ZGInFvR7UOFeVlNW0xou3Ld5F6BpQkY8h0lmW9RYreI0x45xEJ+YKfh+0bd5
+         wfiVpQ4JdNsrySeeXX84MCfGcLt0lR9zi+QfZ1izxlVWQkmvCpkTWFukkqSniJgaZhjo
+         Q9Db0NdAFgIr5IAynmOWNuLO+kcet9MzYB3nqBXd23pVRyDI2SneGor8YS/o+dz7U5H9
+         kFyv1g95F8sJ/ArchEKIVDJ+KTBfLV9I8j0j4GI6+aJ846eIc0rj+LQvMWJ0L9mDTe+d
+         0j5w==
+X-Gm-Message-State: AOAM531rgQ0DFod8X+gJZsto4w4eKO8ttehBrhogx4QxMprju6Iavi2i
+        awCtZHLl1jwOua/ZSPqWEHRXUQ==
+X-Google-Smtp-Source: ABdhPJwL8rF3XjUBrW2MZ3T4DaJY9hAteyvaKucU0P0hsgV4apiQbW1wvi8rKsiJQDQCCvmX7Mfqmg==
+X-Received: by 2002:a7b:cbcb:: with SMTP id n11mr2347465wmi.99.1592670867589;
+        Sat, 20 Jun 2020 09:34:27 -0700 (PDT)
 Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id c6sm10825974wma.15.2020.06.20.09.34.15
+        by smtp.gmail.com with ESMTPSA id c6sm10825974wma.15.2020.06.20.09.34.24
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 20 Jun 2020 09:34:18 -0700 (PDT)
+        Sat, 20 Jun 2020 09:34:27 -0700 (PDT)
 From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com, kuba@kernel.org,
         jiri@mellanox.com, jacob.e.keller@intel.com,
         Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH v2 net-next 0/2] devlink: Add board.serial_number field to info_get cb.
-Date:   Sat, 20 Jun 2020 22:01:55 +0530
-Message-Id: <1592670717-28851-1-git-send-email-vasundhara-v.volam@broadcom.com>
+Subject: [PATCH v2 net-next 1/2] devlink: Add support for board.serial_number to info_get cb.
+Date:   Sat, 20 Jun 2020 22:01:56 +0530
+Message-Id: <1592670717-28851-2-git-send-email-vasundhara-v.volam@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1592670717-28851-1-git-send-email-vasundhara-v.volam@broadcom.com>
+References: <1592670717-28851-1-git-send-email-vasundhara-v.volam@broadcom.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset adds support for board.serial_number to devlink info_get
-cb and also use it in bnxt_en driver.
+Board serial number is a serial number, often available in PCI
+*Vital Product Data*.
 
-Sample output:
+Also, update devlink-info.rst documentation file.
 
-$ devlink dev info pci/0000:af:00.1
-pci/0000:af:00.1:
-  driver bnxt_en
-  serial_number 00-10-18-FF-FE-AD-1A-00
-  board.serial_number 433551F+172300000
-  versions:
-      fixed:
-        board.id 7339763 Rev 0.
-        asic.id 16D7
-        asic.rev 1
-      running:
-        fw 216.1.216.0
-        fw.psid 0.0.0
-        fw.mgmt 216.1.192.0
-        fw.mgmt.api 1.10.1
-        fw.ncsi 0.0.0.0
-        fw.roce 216.1.16.0
-
+Cc: Jiri Pirko <jiri@mellanox.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
-v2:
-- Modify board_serial_number to board.serial_number for maintaining
-consistency.
-- Combine 2 lines in second patchset as column limit is 100 now
+v2: Modify board_serial_number to board.serial_number
 ---
-
-Vasundhara Volam (2):
-  devlink: Add support for board.serial_number to info_get cb.
-  bnxt_en: Add board.serial_number field to info_get cb
-
  Documentation/networking/devlink/devlink-info.rst | 12 +++++-------
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c |  6 ++++++
  include/net/devlink.h                             |  2 ++
  include/uapi/linux/devlink.h                      |  2 ++
  net/core/devlink.c                                |  8 ++++++++
- 5 files changed, 23 insertions(+), 7 deletions(-)
+ 4 files changed, 17 insertions(+), 7 deletions(-)
 
+diff --git a/Documentation/networking/devlink/devlink-info.rst b/Documentation/networking/devlink/devlink-info.rst
+index 3fe1140..7572bf6 100644
+--- a/Documentation/networking/devlink/devlink-info.rst
++++ b/Documentation/networking/devlink/devlink-info.rst
+@@ -44,9 +44,11 @@ versions is generally discouraged - here, and via any other Linux API.
+        reported for two ports of the same device or on two hosts of
+        a multi-host device should be identical.
+ 
+-       .. note:: ``devlink-info`` API should be extended with a new field
+-	  if devices want to report board/product serial number (often
+-	  reported in PCI *Vital Product Data* capability).
++   * - ``board.serial_number``
++     - Board serial number of the device.
++
++       This is usually the serial number of the board, often available in
++       PCI *Vital Product Data*.
+ 
+    * - ``fixed``
+      - Group for hardware identifiers, and versions of components
+@@ -201,10 +203,6 @@ Future work
+ 
+ The following extensions could be useful:
+ 
+- - product serial number - NIC boards often get labeled with a board serial
+-   number rather than ASIC serial number; it'd be useful to add board serial
+-   numbers to the API if they can be retrieved from the device;
+-
+  - on-disk firmware file names - drivers list the file names of firmware they
+    may need to load onto devices via the ``MODULE_FIRMWARE()`` macro. These,
+    however, are per module, rather than per device. It'd be useful to list
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 1df6dfe..a8ceb7b 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1262,6 +1262,8 @@ int devlink_info_serial_number_put(struct devlink_info_req *req,
+ 				   const char *sn);
+ int devlink_info_driver_name_put(struct devlink_info_req *req,
+ 				 const char *name);
++int devlink_info_board_serial_number_put(struct devlink_info_req *req,
++					 const char *bsn);
+ int devlink_info_version_fixed_put(struct devlink_info_req *req,
+ 				   const char *version_name,
+ 				   const char *version_value);
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index 08563e6..06eb29c 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -451,6 +451,8 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_TRAP_POLICER_RATE,			/* u64 */
+ 	DEVLINK_ATTR_TRAP_POLICER_BURST,		/* u64 */
+ 
++	DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER,	/* string */
++
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 2cafbc8..a97c169 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4378,6 +4378,14 @@ int devlink_info_serial_number_put(struct devlink_info_req *req, const char *sn)
+ }
+ EXPORT_SYMBOL_GPL(devlink_info_serial_number_put);
+ 
++int devlink_info_board_serial_number_put(struct devlink_info_req *req,
++					 const char *bsn)
++{
++	return nla_put_string(req->msg, DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER,
++			      bsn);
++}
++EXPORT_SYMBOL_GPL(devlink_info_board_serial_number_put);
++
+ static int devlink_info_version_put(struct devlink_info_req *req, int attr,
+ 				    const char *version_name,
+ 				    const char *version_value)
 -- 
 1.8.3.1
 
