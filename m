@@ -2,60 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BAF4202663
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 22:34:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FFE3202668
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 22:41:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728809AbgFTUes (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 16:34:48 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:34356 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728775AbgFTUer (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 16:34:47 -0400
-Received: by mail-wr1-f66.google.com with SMTP id v3so5453523wrc.1
-        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 13:34:46 -0700 (PDT)
+        id S1728842AbgFTUlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 16:41:03 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:50453 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728731AbgFTUlC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 16:41:02 -0400
+Received: by mail-wm1-f68.google.com with SMTP id l17so11500410wmj.0
+        for <netdev@vger.kernel.org>; Sat, 20 Jun 2020 13:41:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=JoX96TjMxFtePdOvoscS5oX/j557ydr0WMD6M2n8EyI=;
-        b=aOqf7F7T1r4iXLGyBD0ALh/CQoTmYNWnW7XrjWg88Cb0hbs7fU/jFIOsoJ5ejAX9fe
-         CZcETuVEIcvy5HG88Cyjw62xztp4COXXmrrfkDN9lopInkmglI2Nj3eRDioGr5T05yCZ
-         PkAqMkqQ4ZH7KlXubKLVodepr1VEu+peMlN6Z3iLv4TvAA5z1PcmguvHQnbx3BA9ZW8P
-         p+Um4CAvy0Pb0GfHNqoNmBEu0St2xMHPmAy2IURzFwyobEKRDUB/FdUIJElP4gBK35Ki
-         efbSK+E62k/4PZRw+JXp99gd/dqtagpyNvJRcfZ2rQvBkUHiPO54tD2CVi6bLi5qOXXt
-         tYLA==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=9VisfBKwEdlL5gfhqyqG2mtBtVY9G2cVZRgFvwxUHBw=;
+        b=nRPtSwILvaCIbd1tbS885ELCNxyGb2fRVweab/gcKGNL5MSSpkAhcx5vnUHKtmJYmt
+         x40tB/KezRPhv99aAPFkNbSJjwVuXS8VcAQ5Kikt0ND+fVghJFVKbAi5YTiUb/3qU3ss
+         FvO90KlZZwbU3EzlkyTUgezFmBfrBBTYXHXWqxJBcvtmj/BaMbFOBvZscX0J/YRTYt9w
+         dEjXKbfUado0PbjinFRfE1vh+mK9PQu7rT40K1RrGYhlyPbz1rw9CQjFUABkZsrm69N/
+         btEX9KcpKezxRgOKUh9nh8i/G1rS6lyHJgxNz3k8jFjl8F2u66tEKG/jYmBWp8H/C9JY
+         AbYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=JoX96TjMxFtePdOvoscS5oX/j557ydr0WMD6M2n8EyI=;
-        b=gjKrjXnz+7vqFd0ryXJg9BjAxmULbKRvuvBQyPdB/x2tSK1YueiZTRxzziEjR4SYT+
-         U3saJ5BuqY2Pm/aZ//ET41NUA1+7MgtyUbz+bIwdPZo4Ag3EywmBdm0Hj7KVAF4gvu72
-         c5MfY5MlxSAeGtDhOXYx/yaBGMU/R1AgDzfPffAWry1qUuQ8IcqUcVhbwEXTL8o0C++g
-         0Hl28wQPOTi4Q3viCGJO/wU2Z0gknGKyf6yDeeHq66m/KeSoFimzK0HgJIxuiaio5yZr
-         ZxWxMKK8gLUiMRiMBc41W9DlVo9ZH05tqtIxqaNl5Ag2Xy7R+pIh+CpPHi0JgKAtrngH
-         QNUQ==
-X-Gm-Message-State: AOAM533jQY/u8HAMr2FfsTgNSiWd29XktfWCVeKOOIJA4ou2VRkwxryu
-        /PkI++v5G8RG6Z/Tbut4Ohy8HGl9
-X-Google-Smtp-Source: ABdhPJxjd6UCbn+VEE7TUjYMZlJY4i81r/oi3pNRPoRH869QpbIZePdmxO32tniIhGRfsVVRxKKTSg==
-X-Received: by 2002:adf:c404:: with SMTP id v4mr10113986wrf.85.1592685225123;
-        Sat, 20 Jun 2020 13:33:45 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9VisfBKwEdlL5gfhqyqG2mtBtVY9G2cVZRgFvwxUHBw=;
+        b=mMcVUT1lxwRlQsUSzqCHR0BSCNL39Rrf81upS9UWHB9kRxdtxOdUzkfXEP9Z0621tO
+         +W/Xk9i1kDFB6YpBDymR1SUEKboJnqFpU69z3TBzAxrsAoO66t4+bDc/C9Slxr+HwMjH
+         wpyPNKWoIFDeShTU7eTU2IqudrNvc3GImwyrpntZCR0Lj0Wd2wqyjH9148v8vbbUlaPf
+         moS2AIjHy0MQDhv/MfuhtcDRL4khLUnJVTYUQtRvvRK8ul2xdVBVFwHe3gobKUbp9yZ6
+         bGTnBVSeAHv0UGI6h9m9FWdn5CiI6wjuKkIjyGVFU/5K56cOMVy3f8qKO87bgmZBs0aP
+         bryA==
+X-Gm-Message-State: AOAM530XZsOEaAAt3EWOfzOGXutzbohOMck97qwJIY04/z1QzeSSXMxf
+        AXK37wt2XLfP43HkaxaTV63X9gkY
+X-Google-Smtp-Source: ABdhPJz0oYW9oQriiwsGE0Z9mAPZD240fdk9xKOPYUc4usnsk8zNau2cWnFAQM9Gx+yF6F/I0GF0/Q==
+X-Received: by 2002:a1c:8186:: with SMTP id c128mr10749379wmd.114.1592685601021;
+        Sat, 20 Jun 2020 13:40:01 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f23:5700:b4cc:8098:204b:37c5? (p200300ea8f235700b4cc8098204b37c5.dip0.t-ipconnect.de. [2003:ea:8f23:5700:b4cc:8098:204b:37c5])
-        by smtp.googlemail.com with ESMTPSA id z12sm12746675wrg.9.2020.06.20.13.33.44
+        by smtp.googlemail.com with ESMTPSA id v24sm13311433wrd.92.2020.06.20.13.40.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 20 Jun 2020 13:33:44 -0700 (PDT)
+        Sat, 20 Jun 2020 13:40:00 -0700 (PDT)
+Subject: [PATCH net-next 1/7] net: core: try to runtime-resume detached device
+ in __dev_open
+From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     David Miller <davem@davemloft.net>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 0/7] r8169: mark device as detached in PCI D3 and
- improve locking
-Message-ID: <2e68df85-4f64-d45b-3c4c-bb8cb9a4411d@gmail.com>
-Date:   Sat, 20 Jun 2020 22:33:39 +0200
+References: <2e68df85-4f64-d45b-3c4c-bb8cb9a4411d@gmail.com>
+Message-ID: <89c52082-13ad-25ca-88b1-133573037e95@gmail.com>
+Date:   Sat, 20 Jun 2020 22:35:42 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.9.0
 MIME-Version: 1.0
+In-Reply-To: <2e68df85-4f64-d45b-3c4c-bb8cb9a4411d@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -64,24 +67,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mark the netdevice as detached whenever parent is in PCI D3hot and not
-accessible. This mainly applies to runtime-suspend state.
-In addition take RTNL lock in suspend calls, this allows to remove
-the driver-specific mutex and improve PM callbacks in general.
+A netdevice may be marked as detached because the parent is
+runtime-suspended and not accessible whilst interface or link is down.
+An example are PCI network devices that go into PCI D3hot, see e.g.
+__igc_shutdown() or rtl8169_net_suspend().
+If netdevice is down and marked as detached we can only open it if
+we runtime-resume it before __dev_open() calls netif_device_present().
 
-Heiner Kallweit (7):
-  net: core: try to runtime-resume detached device in __dev_open
-  r8169: mark device as not present when in PCI D3
-  r8169: remove no longer needed checks for device being runtime-active
-  r8169: add rtl8169_up
-  r8169: use RTNL to protect critical sections
-  r8169: remove driver-specific mutex
-  r8169: improve rtl8169_runtime_resume
+Therefore, if netdevice is detached, try to runtime-resume the parent
+and only return with an error if it's still detached.
 
- drivers/net/ethernet/realtek/r8169_main.c | 181 +++++-----------------
- net/core/dev.c                            |  10 +-
- 2 files changed, 49 insertions(+), 142 deletions(-)
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ net/core/dev.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6bc238814..ffa8c371d 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -143,6 +143,7 @@
+ #include <linux/net_namespace.h>
+ #include <linux/indirect_call_wrapper.h>
+ #include <net/devlink.h>
++#include <linux/pm_runtime.h>
+ 
+ #include "net-sysfs.h"
+ 
+@@ -1492,8 +1493,13 @@ static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
+ 
+ 	ASSERT_RTNL();
+ 
+-	if (!netif_device_present(dev))
+-		return -ENODEV;
++	if (!netif_device_present(dev)) {
++		/* may be detached because parent is runtime-suspended */
++		if (dev->dev.parent)
++			pm_runtime_resume(dev->dev.parent);
++		if (!netif_device_present(dev))
++			return -ENODEV;
++	}
+ 
+ 	/* Block netpoll from trying to do any rx path servicing.
+ 	 * If we don't do this there is a chance ndo_poll_controller
 -- 
 2.27.0
+
 
