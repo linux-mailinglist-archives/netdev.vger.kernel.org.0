@@ -2,128 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C2EE2024A2
-	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 16:56:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC022024A7
+	for <lists+netdev@lfdr.de>; Sat, 20 Jun 2020 17:00:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728278AbgFTOzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 10:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
+        id S1728287AbgFTPAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 11:00:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728225AbgFTOzs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 10:55:48 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D70C06174E;
-        Sat, 20 Jun 2020 07:55:47 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id h10so5896732pgq.10;
-        Sat, 20 Jun 2020 07:55:46 -0700 (PDT)
+        with ESMTP id S1728257AbgFTPAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 11:00:49 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93223C06174E;
+        Sat, 20 Jun 2020 08:00:49 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id b16so5925141pfi.13;
+        Sat, 20 Jun 2020 08:00:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xkN3Nqs8Mpsz6zRUijdY174ENwikcs7qGuesYlxrSjI=;
-        b=c/vKfuiFIYojCAck+RLxL9ApV//jFDePhwZZufsSsKLeVX2tc3rZjPSv9S6T3+/qs0
-         rOjdJn+yllo8QXwVEGYTYZzGsUNfAKpzXansURtgu+hmoq1GVEq/eLxBw09xnIcnf9n4
-         zOyjsUVhcZ5iaN/rDcm48u+nmTon9MjhPXvzH3vLgGvMHIcCW31oyKyogqU6dMyWw/GT
-         47YgGRxjeoHIVLSDYBIFoxo6+25/IBe7MwRYW4ZpveMMTT33bgb3SBpDhxgZhPYxlRxR
-         Yr4gVupt0LKAIa0t5y+EB4tT4fl5YLeIoXJEOGm94NLI1uirUAtZ4QQzJuXGl52npimw
-         7ciA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=DDyb+a3mzh7po6nWmFZIl2Ms9xrkB7LHenQj89oU6Mw=;
+        b=XZE2NUiD1Ye5NjZRYffV013e2osADlzoRtxaVTgkbMME/gmTaUL3Z+29wasLpN+0Ot
+         tqi1Gj+UU3+vdMlPgl3tLTkQCqoHs65TFxGjFhzLVKG9E1tZOdQv7uw+KhmHYUb3jQer
+         KhXXkjPnZ9v+0IpLIGVkkiD5mERQD0RIWvAnMFcychz0Rc0JYxr1srpwwuBef5SUyKJk
+         LpL1YJYbvYFjtDxWrkIapp3U0sq1m8ADFxo35hCTqt6/xyOENh4Ge/qQUw1xuBD3rwxj
+         0hVp9zjkF28/05qjrPggmkk6GJSc158jltORU695KMcTsQYsYvpFnHRz3FZC0pdNlOZh
+         OcYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xkN3Nqs8Mpsz6zRUijdY174ENwikcs7qGuesYlxrSjI=;
-        b=gKydBitcVjpZZBEv69jtHwi6D2XwibXyz0pnGMm4IYatYBvdd/8HPAH42Va4E9f+xS
-         TLCEXw/io8SEeoQSWsqWJkyF2iRKhF5zxKGC0hQ6o4sh+BH82LPRWtT4LNR1xSzQPe4P
-         4xp8ASXb8uRoRCVI+UX+ewv7l2JS8lEIbvsKpO8TI+RhHwzbbJMkTnZOXwtGmJL4rHSj
-         DdrHaPPHe/W5ZkChggieDqUxkAIX6tobODn7UWcNRCKKUPJ9fNxmfNPqx/A7AzkkI//h
-         AybQG+C7lXkUFt75nCrrWpHhfHyjg8TWAS3R3v6xYSCyANtAFjBYrqpeMcHzvEca2psx
-         kpQw==
-X-Gm-Message-State: AOAM532d0zeVQFFu2KoWOFxHqQSPc/vgUWpYpyx/5b2/pvWk1HtAj2+P
-        H1p67oPuGzsQ2wpWDuD1qb0=
-X-Google-Smtp-Source: ABdhPJxoPCcBLGeMiQ3QpPlJ+//5f8iSdU9r8eqC7Jpu/JZB1aaxjUp2Hbfe1EnTu8/kyNksRqGcHw==
-X-Received: by 2002:a62:7f44:: with SMTP id a65mr12781340pfd.258.1592664945810;
-        Sat, 20 Jun 2020 07:55:45 -0700 (PDT)
-Received: from localhost ([144.34.193.30])
-        by smtp.gmail.com with ESMTPSA id b29sm9205138pfr.159.2020.06.20.07.55.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 20 Jun 2020 07:55:45 -0700 (PDT)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>,
-        Kevin Groeneveld <kgroeneveld@gmail.com>
-Subject: [PATCH net v3] net: phy: smsc: fix printing too many logs
-Date:   Sat, 20 Jun 2020 22:55:34 +0800
-Message-Id: <20200620145534.10475-1-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.25.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DDyb+a3mzh7po6nWmFZIl2Ms9xrkB7LHenQj89oU6Mw=;
+        b=HXR6YNDXlN4On+MlMUfVSSmW7wWtAi6yqAfQIhuBmySBqTLWCY/usPNBUM7rkAQjdb
+         OPA3rtjlfguXf3wKuZoCLEpWU4/Qw+gw1iklSTxJghbU31Kf/lPEvnDD1Uy7L8RyPRnx
+         DIFRme3HoeGawrQBmeVD1iTSLawHdLj3sqbzJ1k1zOJM+A9HGZGUsyAgh0xasBFzllyy
+         xu+MiHplVZMh36CEQ7S3YqqvEAA0u8BjZeIvHAQxricQK5+UG7J+iZY3Qb9e8AUIUeox
+         GDGgjr+ZKMAV9K6l26iGXvIv8az6/ATJn4PyMX6369K3uM63fYDMxCT0gfXJ6ThfUOdu
+         CzmQ==
+X-Gm-Message-State: AOAM533RfJb/1hz/Z6Oavmxrm3VDPyswZNU/ujQweV0UoNmQrbBvtXLO
+        /YZ0mfDDDCjTvUaBUoDgei4=
+X-Google-Smtp-Source: ABdhPJyY6yijmOSY3tbo3eLGhiIZXCTei0YCd9ybr8hNcfFYowMYK88IBEDJP80uQJORnec+jIPH0A==
+X-Received: by 2002:a62:7ccb:: with SMTP id x194mr13275278pfc.318.1592665248712;
+        Sat, 20 Jun 2020 08:00:48 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id k19sm9423331pfg.153.2020.06.20.08.00.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Jun 2020 08:00:48 -0700 (PDT)
+Date:   Sat, 20 Jun 2020 08:00:45 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        allan.nielsen@microchip.com, foss@0leil.net
+Subject: Re: [PATCH net-next v3 6/8] net: phy: mscc: timestamping and PHC
+ support
+Message-ID: <20200620150045.GA2054@localhost>
+References: <20200619122300.2510533-1-antoine.tenart@bootlin.com>
+ <20200619122300.2510533-7-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200619122300.2510533-7-antoine.tenart@bootlin.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 7ae7ad2f11ef47 ("net: phy: smsc: use phy_read_poll_timeout()
-to simplify the code") will print a lot of logs as follows when Ethernet
-cable is not connected:
+On Fri, Jun 19, 2020 at 02:22:58PM +0200, Antoine Tenart wrote:
 
-[    4.473105] SMSC LAN8710/LAN8720 2188000.ethernet-1:00: lan87xx_read_status failed: -110
+> +static void vsc85xx_dequeue_skb(struct vsc85xx_ptp *ptp)
+> +{
+> +	struct skb_shared_hwtstamps shhwtstamps;
+> +	struct vsc85xx_ts_fifo fifo;
+> +	struct sk_buff *skb;
+> +	u8 skb_sig[16], *p;
+> +	int i, len;
+> +	u32 reg;
+> +
+> +	memset(&fifo, 0, sizeof(fifo));
+> +	p = (u8 *)&fifo;
+> +
+> +	reg = vsc85xx_ts_read_csr(ptp->phydev, PROCESSOR,
+> +				  MSCC_PHY_PTP_EGR_TS_FIFO(0));
+> +	if (reg & PTP_EGR_TS_FIFO_EMPTY)
+> +		return;
+> +
+> +	*p++ = reg & 0xff;
+> +	*p++ = (reg >> 8) & 0xff;
+> +
+> +	/* Read the current FIFO item. Reading FIFO6 pops the next one. */
+> +	for (i = 1; i < 7; i++) {
+> +		reg = vsc85xx_ts_read_csr(ptp->phydev, PROCESSOR,
+> +					  MSCC_PHY_PTP_EGR_TS_FIFO(i));
+> +		*p++ = reg & 0xff;
+> +		*p++ = (reg >> 8) & 0xff;
+> +		*p++ = (reg >> 16) & 0xff;
+> +		*p++ = (reg >> 24) & 0xff;
+> +	}
+> +
+> +	len = skb_queue_len(&ptp->tx_queue);
+> +	if (len < 1)
+> +		return;
+> +
+> +	while (len--) {
+> +		skb = __skb_dequeue(&ptp->tx_queue);
+> +		if (!skb)
+> +			return;
+> +
+> +		/* Can't get the signature of the packet, won't ever
+> +		 * be able to have one so let's dequeue the packet.
+> +		 */
+> +		if (get_sig(skb, skb_sig) < 0)
+> +			continue;
 
-When wait 640 ms for check ENERGYON bit, the timeout should not be
-regarded as an actual error and an error message also should not be
-printed. due to a hardware bug in LAN87XX device, it leads to unstable
-detection of plugging in Ethernet cable when LAN87xx is in Energy Detect
-Power-Down mode. the workaround for it involves, when the link is down,
-and at each read_status() call:
+This leaks the skb.
 
-- disable EDPD mode, forcing the PHY out of low-power mode
-- waiting 640ms to see if we have any energy detected from the media
-- re-enable entry to EDPD mode
+> +		/* Check if we found the signature we were looking for. */
+> +		if (!memcmp(skb_sig, fifo.sig, sizeof(fifo.sig))) {
+> +			memset(&shhwtstamps, 0, sizeof(shhwtstamps));
+> +			shhwtstamps.hwtstamp = ktime_set(fifo.secs, fifo.ns);
+> +			skb_complete_tx_timestamp(skb, &shhwtstamps);
+> +
+> +			return;
+> +		}
+> +
+> +		/* Valid signature but does not match the one of the
+> +		 * packet in the FIFO right now, reschedule it for later
+> +		 * packets.
+> +		 */
+> +		__skb_queue_tail(&ptp->tx_queue, skb);
+> +	}
+> +}
 
-This is presumably enough to allow the PHY to notice that a cable is
-connected, and resume normal operations to negotiate with the partner.
-The problem is that when no media is detected, the 640ms wait times
-out and this commit was modified to prints an error message. it is an
-inappropriate conversion by used phy_read_poll_timeout() to introduce
-this bug. so fix this issue by use read_poll_timeout() to replace
-phy_read_poll_timeout().
-
-Fixes: 7ae7ad2f11ef47 ("net: phy: smsc: use phy_read_poll_timeout() to simplify the code")
-Reported-by: Kevin Groeneveld <kgroeneveld@gmail.com>
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
----
-v2 -> v3:
-	- modify commit message to why need this patch. And many thanks
-	  to Andrew and Russell for their comments.
-v1 -> v2:
-	- add more commit message spell out what the change does.
-
- drivers/net/phy/smsc.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-index 93da7d3d0954..74568ae16125 100644
---- a/drivers/net/phy/smsc.c
-+++ b/drivers/net/phy/smsc.c
-@@ -122,10 +122,13 @@ static int lan87xx_read_status(struct phy_device *phydev)
- 		if (rc < 0)
- 			return rc;
- 
--		/* Wait max 640 ms to detect energy */
--		phy_read_poll_timeout(phydev, MII_LAN83C185_CTRL_STATUS, rc,
--				      rc & MII_LAN83C185_ENERGYON, 10000,
--				      640000, true);
-+		/* Wait max 640 ms to detect energy and the timeout is not
-+		 * an actual error.
-+		 */
-+		read_poll_timeout(phy_read, rc,
-+				  rc & MII_LAN83C185_ENERGYON || rc < 0,
-+				  10000, 640000, true, phydev,
-+				  MII_LAN83C185_CTRL_STATUS);
- 		if (rc < 0)
- 			return rc;
- 
--- 
-2.25.0
-
+Thanks,
+Richard
