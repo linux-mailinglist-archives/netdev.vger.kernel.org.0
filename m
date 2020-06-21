@@ -2,66 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04566202BB2
-	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 19:08:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CB32202BC1
+	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 19:29:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730470AbgFURI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 13:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
+        id S1730456AbgFURTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 13:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730420AbgFURI4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 13:08:56 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5EFC061794
-        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 10:08:54 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id t8so13903176ilm.7
-        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 10:08:54 -0700 (PDT)
+        with ESMTP id S1730450AbgFURTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 13:19:25 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03412C061794
+        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 10:19:24 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id a12so3423034ion.13
+        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 10:19:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=ReiCegvviEnxXcN9B7amB1T6WC+mfFX60FlcHwLHk9Y=;
-        b=GaIO3fRqKaP+B2V7a04gJgKmHyJxrbPK8orCslST/P6neKTrZkVUGO2ph7KJ5obQUO
-         EZQSc7VUyKpChw95GbVbkrfFERbPi466CBdDWbSJt24Vsi9t+Xzzou2IZR48uL1qN145
-         eiPE2JvtQJ4lT83PVtbmt9headTXjXDO1RlAnyxuzZ2mQJ66uWlFwGT20ljKcpHWh0rA
-         jssNXJ763shGKHZzjNj/APXJAbwvweaGmJw3Dy2NG0HG6dEtwXGxLhvCyY31mILzKZsb
-         FBJMJWF+Iq1yA16Rao9GmnvpVA9JxvseRFiNRtdshhAOs7Jg//o2JMUMNO+ypVh9xOfi
-         hZDA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=P7wAbrq3hZ+mGT3yAcBV6RPoRN+dQ9yLt/dmA5YVnrU=;
+        b=CMLbb1SISLL6pA00GXntFY6cCoqXcfJntRdxsHQ3qIjKLcTus0HvauuImIXH0MDy3u
+         jxjtZG5jHXUZg0mCo3VXMLuMF2/nYd3L+1lAFXOUTHmlGN5t0e9HqIFFk9CAfyXu6LUE
+         8/Q7glAH/rXIMNfXuLenBxLf8I3KzAtFNHTJrUF3twxdGMv/iy7bu39RA8Dm0hplSwO9
+         vbXTYHzPn5VeSUOu/OYJf5vmyZn9m1H1RJnT4QBgmui6Ofd2GkXYJJmkOZE9VerYWn4c
+         LPa2UoOx7PJLO6PWXJZixdxahpxXx+To7/sb8XpB8DAUm4yyEkifbtcnH9pHr/ol4Q1q
+         z7AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=ReiCegvviEnxXcN9B7amB1T6WC+mfFX60FlcHwLHk9Y=;
-        b=kF0lQIR8b6utTdmIAJCnL+W0p1X28dVo8NhdsWcHI1ttVLwS8KCpIjnxS4ptBM/3vT
-         wF/HdtcG8KEjva3mmBikyIR3efD4gvKDH1kWnQc6GVCPO10qJmqEZXVA+xo+BTmOgp2r
-         EbwO/AwiimlNfWi8XMlKG3a7/5j1BXrYbknF70c11/LOBHtjYFBq3GV5sx+caFY7YhXQ
-         03jyA+rskmax2dnIxL94RBms42uAmG8YZ3+aKUMMq+rdkUaRaEq1nLNgwiNY1FHqhjaw
-         8JCY4fi3M7ToJmCdFbzLXr+KwfQO0ToUzkota6KhxtzXLVpCCQxTabv9yw4T+078o7Gv
-         whxA==
-X-Gm-Message-State: AOAM531aQHXrnSDop9TyrsbBjJH3C3lnxm0gIzlf3PES/Nh/5qumbyCG
-        nJfu+JSydUxpyb0g0OTQR15irymwt0qVkTA7Ko4=
-X-Google-Smtp-Source: ABdhPJwZO2JchU8ORfDBWuPR44uFbi/+am9+YwJDKhczbW5/8pL/XQekmG4L1/nImFjVfSqcT1CUsb6I7ioYulmvvtU=
-X-Received: by 2002:a92:d604:: with SMTP id w4mr12933866ilm.285.1592759334133;
- Sun, 21 Jun 2020 10:08:54 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=P7wAbrq3hZ+mGT3yAcBV6RPoRN+dQ9yLt/dmA5YVnrU=;
+        b=PIad9BaZmKsJnQpPtex9sjkIddJrNhHN0x3dp7hn692Kxlvxf9+F4BbMw4LMQr1+F4
+         R47p4YV+4xwW1JBfAEhl5t6lyuyOTyeRJX/qhnMcqdLqW5OTfBHyqEksIvGl5tU0l443
+         pGBeYIDdrqhOarypIMf6AbgIWsrBrnLjV1JVgJUbud2wj4UpDnhlgC2RZ4k9/SfZItn6
+         zGxyiI0t6WiF1E9sCD2DfqOW+XL7ilJ5BCRCXgrlLMAOH0H0ATu0k4V5+LR9hx/T9b8S
+         L8fAjGOvKG5nLEOBSUTzqhZY2G//tFWxBTtKutDZPCWgwPfc6z+LwYBZGMxmxqHuMiIN
+         s/8g==
+X-Gm-Message-State: AOAM530mYU0voYm9aiwOGlgujJhSMorE/8r/WUuw4hAmtquWJyJM8Rta
+        CF3RsyyV7bXo6/TC3eL06ow=
+X-Google-Smtp-Source: ABdhPJxiiTqfhnELgm6A/6FCjIJvY3QBbq+zTvY7oh8zfGQJIUBM/hvq3YHv/Rhy7kgpl1RCJukvvg==
+X-Received: by 2002:a6b:b344:: with SMTP id c65mr1109547iof.123.1592759964261;
+        Sun, 21 Jun 2020 10:19:24 -0700 (PDT)
+Received: from [10.254.22.15] ([138.68.32.133])
+        by smtp.googlemail.com with ESMTPSA id h13sm6573875ile.18.2020.06.21.10.19.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 21 Jun 2020 10:19:23 -0700 (PDT)
+Subject: Re: missing retval check of call_netdevice_notifiers in
+ dev_change_net_namespace
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        David Miller <davem@davemloft.net>,
+        Petr Machata <petrm@mellanox.com>
+Cc:     Netdev <netdev@vger.kernel.org>, Ido Schimmel <idosch@mellanox.com>
+References: <CAHmME9rz0JQfEBfOKkopx6yBbK_gbKVy40rh82exy1d7BZDWGw@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9d71991b-2339-f569-b8d3-620473e3c004@gmail.com>
+Date:   Sun, 21 Jun 2020 10:19:21 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.9.0
 MIME-Version: 1.0
-Received: by 2002:a05:6638:769:0:0:0:0 with HTTP; Sun, 21 Jun 2020 10:08:53
- -0700 (PDT)
-Reply-To: albertschmidtsg@yahoo.com
-From:   "Mr. Albert " <ronaldomohamed746@gmail.com>
-Date:   Sun, 21 Jun 2020 17:08:53 +0000
-Message-ID: <CAKZ4a6ZQBT9JA3PYOK83y0FT5ZcjQcxhBBfjG7uK0pa6KkxwTw@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAHmME9rz0JQfEBfOKkopx6yBbK_gbKVy40rh82exy1d7BZDWGw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
++Ido
 
-I have a proposal of great benefit to discourse with you, kindly
-respond back for more details.
+On 6/21/20 1:58 AM, Jason A. Donenfeld wrote:
+> 
+> Finally, it could be the solution is that modules that use the netdev
+> notifier never really rely too heavily upon getting notifications, and
+> if they need something reliable, then they rearchitect their code to
+> not need that. I could imagine this attitude holding sway here
+> somehow, but it's also not very appealing from a code writing and
+> refactoring perspective.
+> 
 
-Thanks
-
-Mr. Albert
+The notifiers should be reliable and callers should handle the errors
+when a notifier vetoes the change. Anything else leaves networking in an
+unknown / inconsistent state.
