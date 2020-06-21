@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5108202A33
-	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 13:00:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95A16202A34
+	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 13:01:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729929AbgFULAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 07:00:35 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:37190 "EHLO inva021.nxp.com"
+        id S1729935AbgFULAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 07:00:38 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:37214 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729894AbgFULAV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729895AbgFULAV (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 21 Jun 2020 07:00:21 -0400
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5B8902004A6;
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E4D0020068C;
         Sun, 21 Jun 2020 13:00:17 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4D7472003B9;
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D3C2F2003B9;
         Sun, 21 Jun 2020 13:00:17 +0200 (CEST)
 Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id D2AEE203C2;
-        Sun, 21 Jun 2020 13:00:16 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 5C4B8203C2;
+        Sun, 21 Jun 2020 13:00:17 +0200 (CEST)
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
         alexandru.marginean@nxp.com, michael@walle.cc, andrew@lunn.ch,
         linux@armlinux.org.uk, f.fainelli@gmail.com, olteanv@gmail.com,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 4/5] net: phy: add Lynx PCS MDIO module
-Date:   Sun, 21 Jun 2020 14:00:04 +0300
-Message-Id: <20200621110005.23306-5-ioana.ciornei@nxp.com>
+Subject: [PATCH net-next v2 5/5] net: dsa: felix: use the Lynx PCS helpers
+Date:   Sun, 21 Jun 2020 14:00:05 +0300
+Message-Id: <20200621110005.23306-6-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200621110005.23306-1-ioana.ciornei@nxp.com>
 References: <20200621110005.23306-1-ioana.ciornei@nxp.com>
@@ -38,459 +38,593 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a Lynx PCS MDIO module which exposes the necessary operations to
-drive the PCS using PHYLINK.
+Use the helper functions introduced by the newly added
+Lynx PCS MDIO module.
 
-The majority of the code is extracted from the Felix DSA driver, which
-will be also modified in a later patch, and exposed as a separate module
-for code reusability purposes.
+Instead of representing the PCS as a phy_device, a mdio_device structure
+will be passed to the Lynx module which is now actually implementing all
+the PCS configuration and status reporting.
 
-At the moment, USXGMII (only with in-band AN and speeds up to 2500),
-SGMII, QSGMII and 2500Base-X (only w/o in-band AN) are supported by the
-Lynx PCS MDIO module since these were also supported by Felix.
+All code previously used for PCS momnitoring and runtime configuration
+is removed and replaced will calls to the Lynx PCS operations.
 
-The module can only be enabled by the drivers in need and not user
-selectable.
+Tested on the following SERDES protocols of LS1028A: 0x7777
+(2500Base-X), 0x85bb (QSGMII), 0x9999 (SGMII) and 0x13bb (USXGMII).
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
- * got rid of the mdio_lynx_pcs structure and directly exported the
- functions without the need of an indirection
- * solved the broken allmodconfig build test by making the module
- tristate instead of bool
+ * make the necessary adjustments for calling directly the exported Lynx
+ functions
+ * fixed a memory leakage in the Felix driver (the pcs structure was
+ allocated twice)
 
 
- MAINTAINERS                     |   7 +
- drivers/net/phy/Kconfig         |   6 +
- drivers/net/phy/Makefile        |   1 +
- drivers/net/phy/mdio-lynx-pcs.c | 337 ++++++++++++++++++++++++++++++++
- include/linux/mdio-lynx-pcs.h   |  25 +++
- 5 files changed, 376 insertions(+)
- create mode 100644 drivers/net/phy/mdio-lynx-pcs.c
- create mode 100644 include/linux/mdio-lynx-pcs.h
+ drivers/net/dsa/ocelot/Kconfig         |   1 +
+ drivers/net/dsa/ocelot/felix.c         |   5 +
+ drivers/net/dsa/ocelot/felix.h         |   7 +-
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 371 ++-----------------------
+ include/linux/fsl/enetc_mdio.h         |  21 --
+ 5 files changed, 38 insertions(+), 367 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 301330e02bca..febba4b0a1fd 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10529,6 +10529,13 @@ F:	Documentation/devicetree/bindings/net/ieee802154/mcr20a.txt
- F:	drivers/net/ieee802154/mcr20a.c
- F:	drivers/net/ieee802154/mcr20a.h
+diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
+index 3d3c2a6fb0c0..c35c6a57398d 100644
+--- a/drivers/net/dsa/ocelot/Kconfig
++++ b/drivers/net/dsa/ocelot/Kconfig
+@@ -9,6 +9,7 @@ config NET_DSA_MSCC_FELIX
+ 	select MSCC_OCELOT_SWITCH_LIB
+ 	select NET_DSA_TAG_OCELOT
+ 	select FSL_ENETC_MDIO
++	select MDIO_LYNX_PCS
+ 	help
+ 	  This driver supports the VSC9959 network switch, which is a member of
+ 	  the Vitesse / Microsemi / Microchip Ocelot family of switching cores.
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 66648986e6e3..7995695fae0a 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -277,6 +277,7 @@ static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
+ {
+ 	struct ocelot *ocelot = ds->priv;
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	struct felix *felix = ocelot_to_felix(ocelot);
  
-+MDIO LYNX PCS MODULE
-+M:	Ioana Ciornei <ioana.ciornei@nxp.com>
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	drivers/net/phy/mdio-lynx-pcs.c
-+F:	include/linux/mdio-lynx-pcs.h
+ 	/* Enable MAC module */
+ 	ocelot_port_writel(ocelot_port, DEV_MAC_ENA_CFG_RX_ENA |
+@@ -295,6 +296,10 @@ static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
+ 			 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
+ 			 QSYS_SWITCH_PORT_MODE_PORT_ENA,
+ 			 QSYS_SWITCH_PORT_MODE, port);
 +
- MEASUREMENT COMPUTING CIO-DAC IIO DRIVER
- M:	William Breathitt Gray <vilhelm.gray@gmail.com>
- L:	linux-iio@vger.kernel.org
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index f25702386d83..71f270f38fe0 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -235,6 +235,12 @@ config MDIO_XPCS
- 	  This module provides helper functions for Synopsys DesignWare XPCS
- 	  controllers.
++	if (felix->info->pcs_link_up)
++		felix->info->pcs_link_up(ocelot, port, link_an_mode, interface,
++					 speed, duplex);
+ }
  
-+config MDIO_LYNX_PCS
-+	tristate
-+	help
-+	  This module provides helper functions for Lynx PCS enablement
-+	  representing the PCS as an MDIO device.
-+
- endif
- endif
+ static void felix_port_qos_map_init(struct ocelot *ocelot, int port)
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index a891736ca006..4ad9767b89e8 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -4,6 +4,8 @@
+ #ifndef _MSCC_FELIX_H
+ #define _MSCC_FELIX_H
  
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index dc9e53b511d6..931d826b3a2b 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -47,6 +47,7 @@ obj-$(CONFIG_MDIO_SUN4I)	+= mdio-sun4i.o
- obj-$(CONFIG_MDIO_THUNDER)	+= mdio-thunder.o
- obj-$(CONFIG_MDIO_XGENE)	+= mdio-xgene.o
- obj-$(CONFIG_MDIO_XPCS)		+= mdio-xpcs.o
-+obj-$(CONFIG_MDIO_LYNX_PCS)	+= mdio-lynx-pcs.o
- 
- obj-$(CONFIG_NETWORK_PHY_TIMESTAMPING) += mii_timestamper.o
- 
-diff --git a/drivers/net/phy/mdio-lynx-pcs.c b/drivers/net/phy/mdio-lynx-pcs.c
-new file mode 100644
-index 000000000000..842e2b035b66
---- /dev/null
-+++ b/drivers/net/phy/mdio-lynx-pcs.c
-@@ -0,0 +1,337 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-+/* Copyright 2020 NXP
-+ * Lynx PCS MDIO helpers
-+ */
-+
-+#include <linux/mdio.h>
-+#include <linux/phylink.h>
 +#include <linux/mdio-lynx-pcs.h>
 +
-+#define SGMII_CLOCK_PERIOD_NS		8 /* PCS is clocked at 125 MHz */
-+#define SGMII_LINK_TIMER_VAL(ns)	((u32)((ns) / SGMII_CLOCK_PERIOD_NS))
-+
-+#define SGMII_AN_LINK_TIMER_NS		1600000 /* defined by SGMII spec */
-+
-+#define SGMII_LINK_TIMER_LO		0x12
-+#define SGMII_LINK_TIMER_HI		0x13
-+#define SGMII_IF_MODE			0x14
-+#define SGMII_IF_MODE_SGMII_EN		BIT(0)
-+#define SGMII_IF_MODE_USE_SGMII_AN	BIT(1)
-+#define SGMII_IF_MODE_SPEED(x)		(((x) << 2) & GENMASK(3, 2))
-+#define SGMII_IF_MODE_SPEED_MSK		GENMASK(3, 2)
-+#define SGMII_IF_MODE_DUPLEX		BIT(4)
-+
-+#define USXGMII_ADVERTISE_LSTATUS(x)	(((x) << 15) & BIT(15))
-+#define USXGMII_ADVERTISE_FDX		BIT(12)
-+#define USXGMII_ADVERTISE_SPEED(x)	(((x) << 9) & GENMASK(11, 9))
-+
-+#define USXGMII_LPA_LSTATUS(lpa)	((lpa) >> 15)
-+#define USXGMII_LPA_DUPLEX(lpa)		(((lpa) & GENMASK(12, 12)) >> 12)
-+#define USXGMII_LPA_SPEED(lpa)		(((lpa) & GENMASK(11, 9)) >> 9)
-+
-+enum usxgmii_speed {
-+	USXGMII_SPEED_10	= 0,
-+	USXGMII_SPEED_100	= 1,
-+	USXGMII_SPEED_1000	= 2,
-+	USXGMII_SPEED_2500	= 4,
-+};
-+
-+enum sgmii_speed {
-+	SGMII_SPEED_10		= 0,
-+	SGMII_SPEED_100		= 1,
-+	SGMII_SPEED_1000	= 2,
-+	SGMII_SPEED_2500	= 2,
-+};
-+
-+static void lynx_pcs_an_restart_usxgmii(struct mdio_device *pcs)
-+{
-+	mdiobus_c45_write(pcs->bus, pcs->addr,
-+			  MDIO_MMD_VEND2, MII_BMCR,
-+			  BMCR_RESET | BMCR_ANENABLE | BMCR_ANRESTART);
-+}
-+
-+void lynx_pcs_an_restart(struct mdio_device *pcs, phy_interface_t ifmode)
-+{
-+	switch (ifmode) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+		phylink_mii_c22_pcs_an_restart(pcs);
-+		break;
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		lynx_pcs_an_restart_usxgmii(pcs);
-+		break;
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		break;
-+	default:
-+		dev_err(&pcs->dev, "Invalid PCS interface type %s\n",
-+			phy_modes(ifmode));
-+		break;
-+	}
-+}
-+EXPORT_SYMBOL(lynx_pcs_an_restart);
-+
-+static void lynx_pcs_get_state_usxgmii(struct mdio_device *pcs,
-+				       struct phylink_link_state *state)
-+{
-+	struct mii_bus *bus = pcs->bus;
-+	int addr = pcs->addr;
-+	int status, lpa;
-+
-+	status = mdiobus_c45_read(bus, addr, MDIO_MMD_VEND2, MII_BMSR);
-+	if (status < 0)
-+		return;
-+
-+	state->link = !!(status & MDIO_STAT1_LSTATUS);
-+	state->an_complete = !!(status & MDIO_AN_STAT1_COMPLETE);
-+	if (!state->link || !state->an_complete)
-+		return;
-+
-+	lpa = mdiobus_c45_read(bus, addr, MDIO_MMD_VEND2, MII_LPA);
-+	if (lpa < 0)
-+		return;
-+
-+	switch (USXGMII_LPA_SPEED(lpa)) {
-+	case USXGMII_SPEED_10:
-+		state->speed = SPEED_10;
-+		break;
-+	case USXGMII_SPEED_100:
-+		state->speed = SPEED_100;
-+		break;
-+	case USXGMII_SPEED_1000:
-+		state->speed = SPEED_1000;
-+		break;
-+	case USXGMII_SPEED_2500:
-+		state->speed = SPEED_2500;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	if (USXGMII_LPA_DUPLEX(lpa))
-+		state->duplex = DUPLEX_FULL;
-+	else
-+		state->duplex = DUPLEX_HALF;
-+}
-+
-+static void lynx_pcs_get_state_2500basex(struct mdio_device *pcs,
-+					 struct phylink_link_state *state)
-+{
-+	struct mii_bus *bus = pcs->bus;
-+	int addr = pcs->addr;
-+	int bmsr, lpa;
-+
-+	bmsr = mdiobus_read(bus, addr, MII_BMSR);
-+	lpa = mdiobus_read(bus, addr, MII_LPA);
-+	if (bmsr < 0 || lpa < 0) {
-+		state->link = false;
-+		return;
-+	}
-+
-+	state->link = !!(bmsr & BMSR_LSTATUS);
-+	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
-+	if (!state->link)
-+		return;
-+
-+	state->speed = SPEED_2500;
-+	state->pause |= MLO_PAUSE_TX | MLO_PAUSE_RX;
-+}
-+
-+void lynx_pcs_get_state(struct mdio_device *pcs, phy_interface_t ifmode,
-+			struct phylink_link_state *state)
-+{
-+	switch (ifmode) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+		phylink_mii_c22_pcs_get_state(pcs, state);
-+		break;
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		lynx_pcs_get_state_2500basex(pcs, state);
-+		break;
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		lynx_pcs_get_state_usxgmii(pcs, state);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	dev_dbg(&pcs->dev,
-+		"mode=%s/%s/%s link=%u an_enabled=%u an_complete=%u\n",
-+		phy_modes(ifmode),
-+		phy_speed_to_str(state->speed),
-+		phy_duplex_to_str(state->duplex),
-+		state->link, state->an_enabled, state->an_complete);
-+}
-+EXPORT_SYMBOL(lynx_pcs_get_state);
-+
-+static int lynx_pcs_config_sgmii(struct mdio_device *pcs, unsigned int mode,
-+				 const unsigned long *advertising)
-+{
-+	struct mii_bus *bus = pcs->bus;
-+	int addr = pcs->addr;
-+	u16 if_mode;
-+	int err;
-+
-+	/* SGMII spec requires tx_config_Reg[15:0] to be exactly 0x4001
-+	 * for the MAC PCS in order to acknowledge the AN.
-+	 */
-+	mdiobus_write(bus, addr, MII_ADVERTISE,
-+		      ADVERTISE_SGMII | ADVERTISE_LPACK);
-+
-+	if_mode = SGMII_IF_MODE_SGMII_EN;
-+	if (mode == MLO_AN_INBAND) {
-+		u32 link_timer;
-+
-+		if_mode |= SGMII_IF_MODE_USE_SGMII_AN;
-+
-+		/* Adjust link timer for SGMII */
-+		link_timer = SGMII_LINK_TIMER_VAL(SGMII_AN_LINK_TIMER_NS);
-+		mdiobus_write(bus, addr, SGMII_LINK_TIMER_LO, link_timer & 0xffff);
-+		mdiobus_write(bus, addr, SGMII_LINK_TIMER_HI, link_timer >> 16);
-+	}
-+	mdiobus_modify(bus, addr, SGMII_IF_MODE,
-+		       SGMII_IF_MODE_SGMII_EN | SGMII_IF_MODE_USE_SGMII_AN,
-+		       if_mode);
-+
-+	err = phylink_mii_c22_pcs_config(pcs, mode, PHY_INTERFACE_MODE_SGMII,
-+					 advertising);
-+	return err;
-+}
-+
-+static int lynx_pcs_config_usxgmii(struct mdio_device *pcs, unsigned int mode,
-+				   const unsigned long *advertising)
-+{
-+	struct mii_bus *bus = pcs->bus;
-+	int addr = pcs->addr;
-+
-+	/* Configure device ability for the USXGMII Replicator */
-+	mdiobus_c45_write(bus, addr, MDIO_MMD_VEND2, MII_ADVERTISE,
-+			  USXGMII_ADVERTISE_SPEED(USXGMII_SPEED_2500) |
-+			  USXGMII_ADVERTISE_LSTATUS(1) |
-+			  ADVERTISE_SGMII |
-+			  ADVERTISE_LPACK |
-+			  USXGMII_ADVERTISE_FDX);
-+	return 0;
-+}
-+
-+int lynx_pcs_config(struct mdio_device *pcs, unsigned int mode,
-+		    phy_interface_t ifmode,
-+		    const unsigned long *advertising)
-+{
-+	switch (ifmode) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+		lynx_pcs_config_sgmii(pcs, mode, advertising);
-+		break;
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		/* 2500Base-X only works without in-band AN,
-+		 * thus nothing to do here
-+		 */
-+		break;
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		lynx_pcs_config_usxgmii(pcs, mode, advertising);
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(lynx_pcs_config);
-+
-+static void lynx_pcs_link_up_sgmii(struct mdio_device *pcs, unsigned int mode,
-+				   int speed, int duplex)
-+{
-+	struct mii_bus *bus = pcs->bus;
-+	u16 if_mode = 0, sgmii_speed;
-+	int addr = pcs->addr;
-+
-+	/* The PCS needs to be configured manually only
-+	 * when not operating on in-band mode
-+	 */
-+	if (mode == MLO_AN_INBAND)
-+		return;
-+
-+	if (duplex == DUPLEX_HALF)
-+		if_mode |= SGMII_IF_MODE_DUPLEX;
-+
-+	switch (speed) {
-+	case SPEED_1000:
-+		sgmii_speed = SGMII_SPEED_1000;
-+		break;
-+	case SPEED_100:
-+		sgmii_speed = SGMII_SPEED_100;
-+		break;
-+	case SPEED_10:
-+		sgmii_speed = SGMII_SPEED_10;
-+		break;
-+	case SPEED_UNKNOWN:
-+		/* Silently don't do anything */
-+		return;
-+	default:
-+		dev_err(&pcs->dev, "Invalid PCS speed %d\n", speed);
-+		return;
-+	}
-+	if_mode |= SGMII_IF_MODE_SPEED(sgmii_speed);
-+
-+	mdiobus_modify(bus, addr, SGMII_IF_MODE,
-+		       SGMII_IF_MODE_DUPLEX | SGMII_IF_MODE_SPEED_MSK,
-+		       if_mode);
-+}
-+
-+/* 2500Base-X is SerDes protocol 7 on Felix and 6 on ENETC. It is a SerDes lane
-+ * clocked at 3.125 GHz which encodes symbols with 8b/10b and does not have
-+ * auto-negotiation of any link parameters. Electrically it is compatible with
-+ * a single lane of XAUI.
-+ * The hardware reference manual wants to call this mode SGMII, but it isn't
-+ * really, since the fundamental features of SGMII:
-+ * - Downgrading the link speed by duplicating symbols
-+ * - Auto-negotiation
-+ * are not there.
-+ * The speed is configured at 1000 in the IF_MODE because the clock frequency
-+ * is actually given by a PLL configured in the Reset Configuration Word (RCW).
-+ * Since there is no difference between fixed speed SGMII w/o AN and 802.3z w/o
-+ * AN, we call this PHY interface type 2500Base-X. In case a PHY negotiates a
-+ * lower link speed on line side, the system-side interface remains fixed at
-+ * 2500 Mbps and we do rate adaptation through pause frames.
-+ */
-+static void lynx_pcs_link_up_2500basex(struct mdio_device *pcs,
-+				       unsigned int mode,
-+				       int speed, int duplex)
-+{
-+	struct mii_bus *bus = pcs->bus;
-+	int addr = pcs->addr;
-+
-+	if (mode == MLO_AN_INBAND) {
-+		dev_err(&pcs->dev, "AN not supported for 2500BaseX\n");
-+		return;
-+	}
-+
-+	mdiobus_write(bus, addr, SGMII_IF_MODE,
-+		      SGMII_IF_MODE_SGMII_EN |
-+		      SGMII_IF_MODE_SPEED(SGMII_SPEED_2500));
-+}
-+
-+void lynx_pcs_link_up(struct mdio_device *pcs, unsigned int mode,
-+		      phy_interface_t interface,
-+		      int speed, int duplex)
-+{
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+		lynx_pcs_link_up_sgmii(pcs, mode, speed, duplex);
-+		break;
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		lynx_pcs_link_up_2500basex(pcs, mode, speed, duplex);
-+		break;
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		/* At the moment, only in-band AN is supported for USXGMII
-+		 * so nothing to do in link_up
-+		 */
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+EXPORT_SYMBOL(lynx_pcs_link_up);
-+
-+MODULE_LICENSE("Dual BSD/GPL");
-diff --git a/include/linux/mdio-lynx-pcs.h b/include/linux/mdio-lynx-pcs.h
-new file mode 100644
-index 000000000000..38f65e499034
---- /dev/null
-+++ b/include/linux/mdio-lynx-pcs.h
-@@ -0,0 +1,25 @@
-+/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-+/* Copyright 2020 NXP
-+ * Lynx PCS MDIO helpers
-+ */
-+
-+#ifndef __LINUX_MDIO_LYNX_PCS_H
-+#define __LINUX_MDIO_LYNX_PCS_H
-+
-+#include <linux/phy.h>
-+#include <linux/mdio.h>
-+
-+void lynx_pcs_an_restart(struct mdio_device *pcs, phy_interface_t ifmode);
-+
-+void lynx_pcs_get_state(struct mdio_device *pcs, phy_interface_t ifmode,
-+			struct phylink_link_state *state);
-+
-+int lynx_pcs_config(struct mdio_device *pcs, unsigned int mode,
-+		    phy_interface_t ifmode,
-+		    const unsigned long *advertising);
-+
-+void lynx_pcs_link_up(struct mdio_device *pcs, unsigned int mode,
-+		      phy_interface_t interface,
-+		      int speed, int duplex);
-+
-+#endif /* __LINUX_MDIO_LYNX_PCS_H */
+ #define ocelot_to_felix(o)		container_of((o), struct felix, ocelot)
+ #define FELIX_NUM_TC			8
+ 
+@@ -34,6 +36,9 @@ struct felix_info {
+ 	void	(*pcs_an_restart)(struct ocelot *ocelot, int port);
+ 	void	(*pcs_link_state)(struct ocelot *ocelot, int port,
+ 				  struct phylink_link_state *state);
++	void	(*pcs_link_up)(struct ocelot *ocelot, int port,
++			       unsigned int mode, phy_interface_t interface,
++			       int speed, int duplex);
+ 	int	(*prevalidate_phy_mode)(struct ocelot *ocelot, int port,
+ 					phy_interface_t phy_mode);
+ 	int	(*port_setup_tc)(struct dsa_switch *ds, int port,
+@@ -55,7 +60,7 @@ struct felix {
+ 	struct felix_info		*info;
+ 	struct ocelot			ocelot;
+ 	struct mii_bus			*imdio;
+-	struct phy_device		**pcs;
++	struct mdio_device		**pcs;
+ };
+ 
+ #endif
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 2067776773f7..0b456c1e75f3 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -17,19 +17,6 @@
+ #define VSC9959_VCAP_IS2_ENTRY_WIDTH	376
+ #define VSC9959_VCAP_PORT_CNT		6
+ 
+-/* TODO: should find a better place for these */
+-#define USXGMII_BMCR_RESET		BIT(15)
+-#define USXGMII_BMCR_AN_EN		BIT(12)
+-#define USXGMII_BMCR_RST_AN		BIT(9)
+-#define USXGMII_BMSR_LNKS(status)	(((status) & GENMASK(2, 2)) >> 2)
+-#define USXGMII_BMSR_AN_CMPL(status)	(((status) & GENMASK(5, 5)) >> 5)
+-#define USXGMII_ADVERTISE_LNKS(x)	(((x) << 15) & BIT(15))
+-#define USXGMII_ADVERTISE_FDX		BIT(12)
+-#define USXGMII_ADVERTISE_SPEED(x)	(((x) << 9) & GENMASK(11, 9))
+-#define USXGMII_LPA_LNKS(lpa)		((lpa) >> 15)
+-#define USXGMII_LPA_DUPLEX(lpa)		(((lpa) & GENMASK(12, 12)) >> 12)
+-#define USXGMII_LPA_SPEED(lpa)		(((lpa) & GENMASK(11, 9)) >> 9)
+-
+ #define VSC9959_TAS_GCL_ENTRY_MAX	63
+ 
+ enum usxgmii_speed {
+@@ -728,181 +715,15 @@ static int vsc9959_reset(struct ocelot *ocelot)
+ 	return 0;
+ }
+ 
+-static void vsc9959_pcs_an_restart_sgmii(struct phy_device *pcs)
+-{
+-	phy_set_bits(pcs, MII_BMCR, BMCR_ANRESTART);
+-}
+-
+-static void vsc9959_pcs_an_restart_usxgmii(struct phy_device *pcs)
+-{
+-	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_BMCR,
+-		      USXGMII_BMCR_RESET |
+-		      USXGMII_BMCR_AN_EN |
+-		      USXGMII_BMCR_RST_AN);
+-}
+-
+ static void vsc9959_pcs_an_restart(struct ocelot *ocelot, int port)
+ {
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+-	struct phy_device *pcs = felix->pcs[port];
++	struct mdio_device *pcs = felix->pcs[port];
+ 
+ 	if (!pcs)
+ 		return;
+ 
+-	switch (pcs->interface) {
+-	case PHY_INTERFACE_MODE_SGMII:
+-	case PHY_INTERFACE_MODE_QSGMII:
+-		vsc9959_pcs_an_restart_sgmii(pcs);
+-		break;
+-	case PHY_INTERFACE_MODE_USXGMII:
+-		vsc9959_pcs_an_restart_usxgmii(pcs);
+-		break;
+-	default:
+-		dev_err(ocelot->dev, "Invalid PCS interface type %s\n",
+-			phy_modes(pcs->interface));
+-		break;
+-	}
+-}
+-
+-/* We enable SGMII AN only when the PHY has managed = "in-band-status" in the
+- * device tree. If we are in MLO_AN_PHY mode, we program directly state->speed
+- * into the PCS, which is retrieved out-of-band over MDIO. This also has the
+- * benefit of working with SGMII fixed-links, like downstream switches, where
+- * both link partners attempt to operate as AN slaves and therefore AN never
+- * completes.  But it also has the disadvantage that some PHY chips don't pass
+- * traffic if SGMII AN is enabled but not completed (acknowledged by us), so
+- * setting MLO_AN_INBAND is actually required for those.
+- */
+-static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
+-				   unsigned int link_an_mode,
+-				   const struct phylink_link_state *state)
+-{
+-	if (link_an_mode == MLO_AN_INBAND) {
+-		int bmsr, bmcr;
+-
+-		/* Some PHYs like VSC8234 don't like it when AN restarts on
+-		 * their system  side and they restart line side AN too, going
+-		 * into an endless link up/down loop.  Don't restart PCS AN if
+-		 * link is up already.
+-		 * We do check that AN is enabled just in case this is the 1st
+-		 * call, PCS detects a carrier but AN is disabled from power on
+-		 * or by boot loader.
+-		 */
+-		bmcr = phy_read(pcs, MII_BMCR);
+-		if (bmcr < 0)
+-			return;
+-
+-		bmsr = phy_read(pcs, MII_BMSR);
+-		if (bmsr < 0)
+-			return;
+-
+-		if ((bmcr & BMCR_ANENABLE) && (bmsr & BMSR_LSTATUS))
+-			return;
+-
+-		/* SGMII spec requires tx_config_Reg[15:0] to be exactly 0x4001
+-		 * for the MAC PCS in order to acknowledge the AN.
+-		 */
+-		phy_write(pcs, MII_ADVERTISE, ADVERTISE_SGMII |
+-					      ADVERTISE_LPACK);
+-
+-		phy_write(pcs, ENETC_PCS_IF_MODE,
+-			  ENETC_PCS_IF_MODE_SGMII_EN |
+-			  ENETC_PCS_IF_MODE_USE_SGMII_AN);
+-
+-		/* Adjust link timer for SGMII */
+-		phy_write(pcs, ENETC_PCS_LINK_TIMER1,
+-			  ENETC_PCS_LINK_TIMER1_VAL);
+-		phy_write(pcs, ENETC_PCS_LINK_TIMER2,
+-			  ENETC_PCS_LINK_TIMER2_VAL);
+-
+-		phy_write(pcs, MII_BMCR, BMCR_ANRESTART | BMCR_ANENABLE);
+-	} else {
+-		int speed;
+-
+-		if (state->duplex == DUPLEX_HALF) {
+-			phydev_err(pcs, "Half duplex not supported\n");
+-			return;
+-		}
+-		switch (state->speed) {
+-		case SPEED_1000:
+-			speed = ENETC_PCS_SPEED_1000;
+-			break;
+-		case SPEED_100:
+-			speed = ENETC_PCS_SPEED_100;
+-			break;
+-		case SPEED_10:
+-			speed = ENETC_PCS_SPEED_10;
+-			break;
+-		case SPEED_UNKNOWN:
+-			/* Silently don't do anything */
+-			return;
+-		default:
+-			phydev_err(pcs, "Invalid PCS speed %d\n", state->speed);
+-			return;
+-		}
+-
+-		phy_write(pcs, ENETC_PCS_IF_MODE,
+-			  ENETC_PCS_IF_MODE_SGMII_EN |
+-			  ENETC_PCS_IF_MODE_SGMII_SPEED(speed));
+-
+-		/* Yes, not a mistake: speed is given by IF_MODE. */
+-		phy_write(pcs, MII_BMCR, BMCR_RESET |
+-					 BMCR_SPEED1000 |
+-					 BMCR_FULLDPLX);
+-	}
+-}
+-
+-/* 2500Base-X is SerDes protocol 7 on Felix and 6 on ENETC. It is a SerDes lane
+- * clocked at 3.125 GHz which encodes symbols with 8b/10b and does not have
+- * auto-negotiation of any link parameters. Electrically it is compatible with
+- * a single lane of XAUI.
+- * The hardware reference manual wants to call this mode SGMII, but it isn't
+- * really, since the fundamental features of SGMII:
+- * - Downgrading the link speed by duplicating symbols
+- * - Auto-negotiation
+- * are not there.
+- * The speed is configured at 1000 in the IF_MODE and BMCR MDIO registers
+- * because the clock frequency is actually given by a PLL configured in the
+- * Reset Configuration Word (RCW).
+- * Since there is no difference between fixed speed SGMII w/o AN and 802.3z w/o
+- * AN, we call this PHY interface type 2500Base-X. In case a PHY negotiates a
+- * lower link speed on line side, the system-side interface remains fixed at
+- * 2500 Mbps and we do rate adaptation through pause frames.
+- */
+-static void vsc9959_pcs_init_2500basex(struct phy_device *pcs,
+-				       unsigned int link_an_mode,
+-				       const struct phylink_link_state *state)
+-{
+-	if (link_an_mode == MLO_AN_INBAND) {
+-		phydev_err(pcs, "AN not supported on 3.125GHz SerDes lane\n");
+-		return;
+-	}
+-
+-	phy_write(pcs, ENETC_PCS_IF_MODE,
+-		  ENETC_PCS_IF_MODE_SGMII_EN |
+-		  ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500));
+-
+-	phy_write(pcs, MII_BMCR, BMCR_SPEED1000 |
+-				 BMCR_FULLDPLX |
+-				 BMCR_RESET);
+-}
+-
+-static void vsc9959_pcs_init_usxgmii(struct phy_device *pcs,
+-				     unsigned int link_an_mode,
+-				     const struct phylink_link_state *state)
+-{
+-	if (link_an_mode != MLO_AN_INBAND) {
+-		phydev_err(pcs, "USXGMII only supports in-band AN for now\n");
+-		return;
+-	}
+-
+-	/* Configure device ability for the USXGMII Replicator */
+-	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_ADVERTISE,
+-		      USXGMII_ADVERTISE_SPEED(USXGMII_SPEED_2500) |
+-		      USXGMII_ADVERTISE_LNKS(1) |
+-		      ADVERTISE_SGMII |
+-		      ADVERTISE_LPACK |
+-		      USXGMII_ADVERTISE_FDX);
++	lynx_pcs_an_restart(pcs, ocelot->ports[port]->phy_mode);
+ }
+ 
+ static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
+@@ -910,178 +731,37 @@ static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
+ 			     const struct phylink_link_state *state)
+ {
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+-	struct phy_device *pcs = felix->pcs[port];
++	struct mdio_device *pcs = felix->pcs[port];
+ 
+ 	if (!pcs)
+ 		return;
+ 
+-	/* The PCS does not implement the BMSR register fully, so capability
+-	 * detection via genphy_read_abilities does not work. Since we can get
+-	 * the PHY config word from the LPA register though, there is still
+-	 * value in using the generic phy_resolve_aneg_linkmode function. So
+-	 * populate the supported and advertising link modes manually here.
+-	 */
+-	linkmode_set_bit_array(phy_basic_ports_array,
+-			       ARRAY_SIZE(phy_basic_ports_array),
+-			       pcs->supported);
+-	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, pcs->supported);
+-	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, pcs->supported);
+-	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, pcs->supported);
+-	if (pcs->interface == PHY_INTERFACE_MODE_2500BASEX ||
+-	    pcs->interface == PHY_INTERFACE_MODE_USXGMII)
+-		linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
+-				 pcs->supported);
+-	if (pcs->interface != PHY_INTERFACE_MODE_2500BASEX)
+-		linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+-				 pcs->supported);
+-	phy_advertise_supported(pcs);
+-
+-	switch (pcs->interface) {
+-	case PHY_INTERFACE_MODE_SGMII:
+-	case PHY_INTERFACE_MODE_QSGMII:
+-		vsc9959_pcs_init_sgmii(pcs, link_an_mode, state);
+-		break;
+-	case PHY_INTERFACE_MODE_2500BASEX:
+-		vsc9959_pcs_init_2500basex(pcs, link_an_mode, state);
+-		break;
+-	case PHY_INTERFACE_MODE_USXGMII:
+-		vsc9959_pcs_init_usxgmii(pcs, link_an_mode, state);
+-		break;
+-	default:
+-		dev_err(ocelot->dev, "Unsupported link mode %s\n",
+-			phy_modes(pcs->interface));
+-	}
+-}
+-
+-static void vsc9959_pcs_link_state_resolve(struct phy_device *pcs,
+-					   struct phylink_link_state *state)
+-{
+-	state->an_complete = pcs->autoneg_complete;
+-	state->an_enabled = pcs->autoneg;
+-	state->link = pcs->link;
+-	state->duplex = pcs->duplex;
+-	state->speed = pcs->speed;
+-	/* SGMII AN does not negotiate flow control, but that's ok,
+-	 * since phylink already knows that, and does:
+-	 *	link_state.pause |= pl->phy_state.pause;
+-	 */
+-	state->pause = MLO_PAUSE_NONE;
+-
+-	phydev_dbg(pcs,
+-		   "mode=%s/%s/%s adv=%*pb lpa=%*pb link=%u an_enabled=%u an_complete=%u\n",
+-		   phy_modes(pcs->interface),
+-		   phy_speed_to_str(pcs->speed),
+-		   phy_duplex_to_str(pcs->duplex),
+-		   __ETHTOOL_LINK_MODE_MASK_NBITS, pcs->advertising,
+-		   __ETHTOOL_LINK_MODE_MASK_NBITS, pcs->lp_advertising,
+-		   pcs->link, pcs->autoneg, pcs->autoneg_complete);
+-}
+-
+-static void vsc9959_pcs_link_state_sgmii(struct phy_device *pcs,
+-					 struct phylink_link_state *state)
+-{
+-	int err;
+-
+-	err = genphy_update_link(pcs);
+-	if (err < 0)
+-		return;
+-
+-	if (pcs->autoneg_complete) {
+-		u16 lpa = phy_read(pcs, MII_LPA);
+-
+-		mii_lpa_to_linkmode_lpa_sgmii(pcs->lp_advertising, lpa);
+-
+-		phy_resolve_aneg_linkmode(pcs);
+-	}
++	lynx_pcs_config(pcs, link_an_mode, state->interface, state->advertising);
+ }
+ 
+-static void vsc9959_pcs_link_state_2500basex(struct phy_device *pcs,
+-					     struct phylink_link_state *state)
+-{
+-	int err;
+-
+-	err = genphy_update_link(pcs);
+-	if (err < 0)
+-		return;
+-
+-	pcs->speed = SPEED_2500;
+-	pcs->asym_pause = true;
+-	pcs->pause = true;
+-}
+-
+-static void vsc9959_pcs_link_state_usxgmii(struct phy_device *pcs,
+-					   struct phylink_link_state *state)
++static void vsc9959_pcs_link_state(struct ocelot *ocelot, int port,
++				   struct phylink_link_state *state)
+ {
+-	int status, lpa;
+-
+-	status = phy_read_mmd(pcs, MDIO_MMD_VEND2, MII_BMSR);
+-	if (status < 0)
+-		return;
+-
+-	pcs->autoneg = true;
+-	pcs->autoneg_complete = USXGMII_BMSR_AN_CMPL(status);
+-	pcs->link = USXGMII_BMSR_LNKS(status);
+-
+-	if (!pcs->link || !pcs->autoneg_complete)
+-		return;
++	struct felix *felix = ocelot_to_felix(ocelot);
++	struct mdio_device *pcs = felix->pcs[port];
+ 
+-	lpa = phy_read_mmd(pcs, MDIO_MMD_VEND2, MII_LPA);
+-	if (lpa < 0)
++	if (!pcs)
+ 		return;
+ 
+-	switch (USXGMII_LPA_SPEED(lpa)) {
+-	case USXGMII_SPEED_10:
+-		pcs->speed = SPEED_10;
+-		break;
+-	case USXGMII_SPEED_100:
+-		pcs->speed = SPEED_100;
+-		break;
+-	case USXGMII_SPEED_1000:
+-		pcs->speed = SPEED_1000;
+-		break;
+-	case USXGMII_SPEED_2500:
+-		pcs->speed = SPEED_2500;
+-		break;
+-	default:
+-		break;
+-	}
+-
+-	if (USXGMII_LPA_DUPLEX(lpa))
+-		pcs->duplex = DUPLEX_FULL;
+-	else
+-		pcs->duplex = DUPLEX_HALF;
++	lynx_pcs_get_state(pcs, ocelot->ports[port]->phy_mode, state);
+ }
+ 
+-static void vsc9959_pcs_link_state(struct ocelot *ocelot, int port,
+-				   struct phylink_link_state *state)
++static void vsc9959_pcs_link_up(struct ocelot *ocelot, int port,
++				unsigned int mode, phy_interface_t interface,
++				int speed, int duplex)
+ {
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+-	struct phy_device *pcs = felix->pcs[port];
++	struct mdio_device *pcs = felix->pcs[port];
+ 
+ 	if (!pcs)
+ 		return;
+ 
+-	pcs->speed = SPEED_UNKNOWN;
+-	pcs->duplex = DUPLEX_UNKNOWN;
+-	pcs->pause = 0;
+-	pcs->asym_pause = 0;
+-
+-	switch (pcs->interface) {
+-	case PHY_INTERFACE_MODE_SGMII:
+-	case PHY_INTERFACE_MODE_QSGMII:
+-		vsc9959_pcs_link_state_sgmii(pcs, state);
+-		break;
+-	case PHY_INTERFACE_MODE_2500BASEX:
+-		vsc9959_pcs_link_state_2500basex(pcs, state);
+-		break;
+-	case PHY_INTERFACE_MODE_USXGMII:
+-		vsc9959_pcs_link_state_usxgmii(pcs, state);
+-		break;
+-	default:
+-		return;
+-	}
+-
+-	vsc9959_pcs_link_state_resolve(pcs, state);
++	lynx_pcs_link_up(pcs, mode, interface, speed, duplex);
+ }
+ 
+ static int vsc9959_prevalidate_phy_mode(struct ocelot *ocelot, int port,
+@@ -1123,7 +803,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	int rc;
+ 
+ 	felix->pcs = devm_kcalloc(dev, felix->info->num_ports,
+-				  sizeof(struct phy_device *),
++				  sizeof(struct mdio_device *),
+ 				  GFP_KERNEL);
+ 	if (!felix->pcs) {
+ 		dev_err(dev, "failed to allocate array for PCS PHYs\n");
+@@ -1177,17 +857,17 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 
+ 	for (port = 0; port < felix->info->num_ports; port++) {
+ 		struct ocelot_port *ocelot_port = ocelot->ports[port];
+-		struct phy_device *pcs;
+-		bool is_c45 = false;
++		struct mdio_device *pcs;
+ 
+-		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_USXGMII)
+-			is_c45 = true;
++		if (dsa_is_unused_port(felix->ds, port))
++			continue;
+ 
+-		pcs = get_phy_device(felix->imdio, port, is_c45);
+-		if (IS_ERR(pcs))
++		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_INTERNAL)
+ 			continue;
+ 
+-		pcs->interface = ocelot_port->phy_mode;
++		pcs = mdio_device_create(felix->imdio, port);
++		if (IS_ERR(pcs))
++			continue;
+ 		felix->pcs[port] = pcs;
+ 
+ 		dev_info(dev, "Found PCS at internal MDIO address %d\n", port);
+@@ -1202,12 +882,12 @@ static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
+ 	int port;
+ 
+ 	for (port = 0; port < ocelot->num_phys_ports; port++) {
+-		struct phy_device *pcs = felix->pcs[port];
++		struct mdio_device *pcs = felix->pcs[port];
+ 
+ 		if (!pcs)
+ 			continue;
+ 
+-		put_device(&pcs->mdio.dev);
++		mdio_device_free(pcs);
+ 	}
+ 	mdiobus_unregister(felix->imdio);
+ }
+@@ -1415,6 +1095,7 @@ struct felix_info felix_info_vsc9959 = {
+ 	.pcs_init		= vsc9959_pcs_init,
+ 	.pcs_an_restart		= vsc9959_pcs_an_restart,
+ 	.pcs_link_state		= vsc9959_pcs_link_state,
++	.pcs_link_up		= vsc9959_pcs_link_up,
+ 	.prevalidate_phy_mode	= vsc9959_prevalidate_phy_mode,
+ 	.port_setup_tc          = vsc9959_port_setup_tc,
+ 	.port_sched_speed_set   = vsc9959_sched_speed_set,
+diff --git a/include/linux/fsl/enetc_mdio.h b/include/linux/fsl/enetc_mdio.h
+index 4875dd38af7e..483679f53a91 100644
+--- a/include/linux/fsl/enetc_mdio.h
++++ b/include/linux/fsl/enetc_mdio.h
+@@ -6,27 +6,6 @@
+ 
+ #include <linux/phy.h>
+ 
+-/* PCS registers */
+-#define ENETC_PCS_LINK_TIMER1			0x12
+-#define ENETC_PCS_LINK_TIMER1_VAL		0x06a0
+-#define ENETC_PCS_LINK_TIMER2			0x13
+-#define ENETC_PCS_LINK_TIMER2_VAL		0x0003
+-#define ENETC_PCS_IF_MODE			0x14
+-#define ENETC_PCS_IF_MODE_SGMII_EN		BIT(0)
+-#define ENETC_PCS_IF_MODE_USE_SGMII_AN		BIT(1)
+-#define ENETC_PCS_IF_MODE_SGMII_SPEED(x)	(((x) << 2) & GENMASK(3, 2))
+-
+-/* Not a mistake, the SerDes PLL needs to be set at 3.125 GHz by Reset
+- * Configuration Word (RCW, outside Linux control) for 2.5G SGMII mode. The PCS
+- * still thinks it's at gigabit.
+- */
+-enum enetc_pcs_speed {
+-	ENETC_PCS_SPEED_10	= 0,
+-	ENETC_PCS_SPEED_100	= 1,
+-	ENETC_PCS_SPEED_1000	= 2,
+-	ENETC_PCS_SPEED_2500	= 2,
+-};
+-
+ struct enetc_hw;
+ 
+ struct enetc_mdio_priv {
 -- 
 2.25.1
 
