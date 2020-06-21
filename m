@@ -2,172 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F749202C25
+	by mail.lfdr.de (Postfix) with ESMTP id B52DE202C27
 	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 21:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729881AbgFUTUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 15:20:45 -0400
-Received: from smtp5.emailarray.com ([65.39.216.39]:56191 "EHLO
-        smtp5.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729279AbgFUTUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 15:20:45 -0400
-Received: (qmail 13676 invoked by uid 89); 21 Jun 2020 19:20:44 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
-  by smtp5.emailarray.com with SMTP; 21 Jun 2020 19:20:44 -0000
-Date:   Sun, 21 Jun 2020 12:20:40 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Kal Cutter Conley <kal.conley@dectris.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "toke.hoiland-jorgensen@kau.se" <toke.hoiland-jorgensen@kau.se>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "gospo@broadcom.com" <gospo@broadcom.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>
-Subject: Re: net/mlx5e: bind() always returns EINVAL with XDP_ZEROCOPY
-Message-ID: <20200621192040.wrwbbcvfycqvr23p@bsd-mbp>
-References: <CAHApi-mMi2jYAOCrGhpkRVybz0sDpOSkLFCZfVe-2wOcAO_MqQ@mail.gmail.com>
- <CAHApi-=YSo=sOTkRxmY=fct3TePFFdG9oPTRHWYd1AXjk0ACfw@mail.gmail.com>
- <20190902110818.2f6a8894@carbon>
- <fd3ee317865e9743305c0e88e31f27a2d51a0575.camel@mellanox.com>
- <CAHApi-k=9Szxm0QMD4N4PW9Lq8L4hW6e7VfyBePzrTgvKGRs5Q@mail.gmail.com>
- <20200618150347.ihtdvsfuurgfka7i@bsd-mbp.dhcp.thefacebook.com>
- <CAHApi-kMwnvRwJO8LT2UtrixVSd_bDgWybOP6H_eLTBmSFsd4A@mail.gmail.com>
- <20200620184202.q2a6hdsttssb55t4@bsd-mbp>
- <CAHApi-=5uHyRu54QHCWzFr1XpFuAhbRiy1QWFjudXuFOLC5dKA@mail.gmail.com>
+        id S1729999AbgFUTVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 15:21:13 -0400
+Received: from mail-vi1eur05on2045.outbound.protection.outlook.com ([40.107.21.45]:48961
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729942AbgFUTVM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Jun 2020 15:21:12 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jubGHTMUeY4VkNdCGL1oFF+zHyHypj3DPlpFlj2LQffSsddrPoMJqH9PDIBK7gyhJnN1me887mppmdX1Hpdh7C0b8jrp6DmzcOYJ97kLI5TLEkY+lLaH5eV2gEafi2daw+LpwsfWHDyMd3Z0ShqtbAYTH2hfUOnXQQlFf/r1fvI19QezLyKhqXK/u7xi6u9hnWn1WLh7uEQu312lR+beKtfj5CLa9ccAkcMGvEiwglJ/nl90WhBE/EL0vhroBWjUlyAS17cSGFQ/aV9kL83LIPdeNtlKU8wtg1IbcBHv2NKeC7HpUR+ONtOq6Yq1ey4ZmRihzZ8Fmk+xQzwrmNJ81g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FT1s6t1jO4KhOQ/gzlVQKz6byx+3LWjjdaf3Ugiw95Q=;
+ b=A1YXm4RbiloEwKdfdnwbZ+jga1JbPxhfz3yhkZK8EfY+REEPHtCjnB1aykc2KNzoLaKQ9u/ssuNTs7cC2H2fSwVfzlL4CteydLA3ciGNcwOdAAq6MMQ77itJy/fjC8fPANnSh0cbDD7fYdqf/xuwFgZ0R0vAa/Exe8SZB7qEYvv2zpbuPfyk/ywkgJhNuhMSVYFjWyiTx/sjF1JtoCuV1wy/EdHlx6D+1fxNsLJebhWLUjTQrlIakZDYgiRKChHxk1D1WH5PWBVY0OC6x58MXD+ahFEe8aibC+86jBvXX12uLdqjfDIp+2oNVk84y3tfulEWNzBtAmIcYRkhhu6QQg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FT1s6t1jO4KhOQ/gzlVQKz6byx+3LWjjdaf3Ugiw95Q=;
+ b=Ww35cOmkO0/h6KmsdwRg24yZbl2VaLd5WmjuKAHeaIYjkKo6BZuSIiN5A94FakdC82G2vJ04+B9hXMCeIlPzgIWOPnnHukMIKCFy0AgjmEE6ZfofcBadpF1yI5qJ8SAVi8G4lp9U6IV8fjDZhrvyuHdqM8yDV/b5idSjkj9IAd8=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR0402MB3760.eurprd04.prod.outlook.com
+ (2603:10a6:803:23::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Sun, 21 Jun
+ 2020 19:21:08 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::e5d7:ec32:1cfe:71f0]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::e5d7:ec32:1cfe:71f0%7]) with mapi id 15.20.3109.026; Sun, 21 Jun 2020
+ 19:21:08 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>
+Subject: RE: [PATCH net-next v2 0/5] net: phy: add Lynx PCS MDIO module
+Thread-Topic: [PATCH net-next v2 0/5] net: phy: add Lynx PCS MDIO module
+Thread-Index: AQHWR7sls0YTCmyy4kaE3RVI7kO2DqjjOE2AgAA3IZA=
+Date:   Sun, 21 Jun 2020 19:21:07 +0000
+Message-ID: <VI1PR0402MB3871F57E22774625FA9A0C0EE0960@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+References: <20200621110005.23306-1-ioana.ciornei@nxp.com>
+ <20200621155153.GC338481@lunn.ch>
+In-Reply-To: <20200621155153.GC338481@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.56.128]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 27e6605d-fcb5-4101-3831-08d81618405f
+x-ms-traffictypediagnostic: VI1PR0402MB3760:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB3760F0823ECEF4615D659C00E0960@VI1PR0402MB3760.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 04410E544A
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: dicSmhhRXeHxHbHmRXWo0FQvo1z9c+3PFly/UjwPHBbcwCLi4m1DwFM37TCdk3SzFx1juoH7xE5QPJ9/my8zt3G+73LivabY+MU8wWprwKFyOFg9e6KyKIZ8U9eQr5Hy+3qzLrQalwurJDF++tisqjSPb19NBmOg88Vf/puSJ2gFyyJFQOgsX8BCB232jiT3mo47RKGDW3eJm8ksNxnoYRbLfnIA9T4SHqZtFNRWrkpfIOML92Lq5rE0b6SZ7qVEycNekgtEs0UMiNtsUfMHh4BRA7X3lDtuaQO4r9/g4dITgUqvJ9YDQ+j6cfz+mOsl
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(136003)(39850400004)(376002)(346002)(478600001)(5660300002)(76116006)(8936002)(66946007)(8676002)(52536014)(66476007)(66556008)(64756008)(66446008)(316002)(54906003)(44832011)(9686003)(4326008)(86362001)(33656002)(26005)(186003)(83380400001)(7696005)(6916009)(71200400001)(55016002)(4744005)(6506007)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: c8jHmIods5p8eYcUhZbPi5AWzTQyED9iI+TlnXyr5NZwVIkR2zFX3B/BzpzzDXqYj+6PBwbfbxGLwuLrNhbiyyIoSeuQkPa188xg/A1Elv7it1b+pmhUIh7c0AzQEe3GBnLt+wP68SlRTRbVWkCmvT4ih4DABCu9XSh2e7Cx4ZRikJEEfp0Jh8nhqHOqYYEsmdNeVRQkIzmzQ7nBHk6yJz57E5JJ56GD6LmJSY8ASvzZ9x0dbHyYGuHA30W3Rk5dWwvcg8V3rfKR6DHScbxDkC4z6k4CCWRTrJaVmh3h7OknmDDPGIOrUJdqAMKAgusNnqVIP3H7U0CWp6MgF2t2kegqonjfrNIZg5Wj7vvanVYFA1zkORyEKZnip5wh+TCCMrTIpk42paDsAagzicEKZj4jeILk9NZPIB2LdevFgl6qFne/z98KyhAoKyW0vTCPqqhoYCLf8E5vIX8gG9T5cUJFeYjdkxdZZze1ETTSeNM=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHApi-=5uHyRu54QHCWzFr1XpFuAhbRiy1QWFjudXuFOLC5dKA@mail.gmail.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27e6605d-fcb5-4101-3831-08d81618405f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jun 2020 19:21:08.3875
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: B7TcU7YvFLPjVhTQydgti+LDylw2QaPMNzUkEVWsIZM4a6JEAqgfcEpttjs7RbZz7jP1UmvuQrLobqhiQ75FkA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3760
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 21, 2020 at 12:03:14PM +0200, Kal Cutter Conley wrote:
-> On Sat, Jun 20, 2020 at 8:42 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
-> >
-> > On Sat, Jun 20, 2020 at 12:42:36PM +0200, Kal Cutter Conley wrote:
-> > > On Thu, Jun 18, 2020 at 5:23 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
-> > > >
-> > > > On Sun, Jun 14, 2020 at 10:55:30AM +0200, Kal Cutter Conley wrote:
-> > > > > Hi Saeed,
-> > > > > Thanks for explaining the reasoning behind the special mlx5 queue
-> > > > > numbering with XDP zerocopy.
-> > > > >
-> > > > > We have a process using AF_XDP that also shares the network interface
-> > > > > with other processes on the system. ethtool rx flow classification
-> > > > > rules are used to route the traffic to the appropriate XSK queue
-> > > > > N..(2N-1). The issue is these queues are only valid as long they are
-> > > > > active (as far as I can tell). This means if my AF_XDP process dies
-> > > > > other processes no longer receive ingress traffic routed over queues
-> > > > > N..(2N-1) even though my XDP program is still loaded and would happily
-> > > > > always return XDP_PASS. Other drivers do not have this usability issue
-> > > > > because they use queues that are always valid. Is there a simple
-> > > > > workaround for this issue? It seems to me queues N..(2N-1) should
-> > > > > simply map to 0..(N-1) when they are not active?
-> > > >
-> > > > If your XDP program returns XDP_PASS, the packet should be delivered to
-> > > > the xsk socket.  If the application isn't running, where would it go?
-> > > >
-> > > > I do agree that the usability of this can be improved.  What if the flow
-> > > > rules are inserted and removed along with queue creatioin/destruction?
-> > >
-> > > I think I misunderstood your suggestion here. Do you mean the rules
-> > > should be inserted / removed on the hardware level but still show in
-> > > ethtool even if they are not active in the hardware? In this case the
-> > > rules always occupy a "location" but just never apply if the
-> > > respective queues are not "enabled". I think this would be the best
-> > > possible solution.
-> >
-> > No, that wasn't what I was suggesting.  I would think that having
-> > ethtool return something that isn't true woulld be really confusing -
-> > either the rules are enabled and active, or they should not be there.
-> 
-> I think how Mellanox handles XDP ZC queue numbering is confusing no
-> matter what (at least given the current ethtool interface). However,
-> in its current form, it is not only confusing, it is also problematic.
-> 
-> If they changed the behavior so that the rules no longer apply when
-> the respective queues are inactive, then at least it would be less
-> _problematic_.
-> 
-> Would it really be more confusing if they made this change? Consider
-> what ethtool currently shows. For example, if I have 8 RX channels
-> configured and a RX classification rule for (XSK) queue 15:
-> 
-> [root@localhost ~]# ethtool -n eth0
-> 8 RX rings available
-> Total 1 rules
-> 
-> Filter: 0
->         Rule Type: UDP over IPv4
->         Src IP addr: 0.0.0.0 mask: 255.255.255.255
->         Dest IP addr: 169.254.116.10 mask: 0.0.0.0
->         TOS: 0x0 mask: 0xff
->         Src port: 0 mask: 0xffff
->         Dest port: 0 mask: 0xffff
->         Action: Direct to queue 15
-> 
-> ethtool prints 8 available queues and at the same time filter 0
-> directs traffic to queue 15. So it's already apparent here that queue
-> 15 is special (since it says only 8 are available).
 
-True.  The issue is that ZC queues /are/ special, they are bound to an
-application which provides the packet memory, and are not truly general
-purpose queues for use by the system.
+> Subject: Re: [PATCH net-next v2 0/5] net: phy: add Lynx PCS MDIO module
+>=20
+> Hi Ioana
+>=20
+> I will be submitting a patchset soon which does as Russell requested, mov=
+ing
+> drivers into subdirectories.
+>=20
+> As part of that, i rename mdio-xpcs to pcs-xpcs, and change its Kconfig s=
+ymbol
+> to PCS_XPCS. It would be nice if you could follow this new naming, so all=
+ i need
+> to do is a move.
+>=20
+> Thanks
+> 	Andrew
 
+Sure, I will change the file to be named pcs-lynx.c and the Kconfig accordi=
+ngly.
+Should I wait for you to send the patch moving xpcs to another folder?
 
-> > I was thinking more along the lines of having the flow rules inserted
-> > and removed when the queue is created/destroyed, so the steering rule is
-> > a property of the queue itself rather than maintained externally through
-> > ethtool.
-> 
-> I think presenting the flow rules as a property of the interface makes
-> more sense (as they are now). Since:
->     (1) Flow rules affect all traffic for the interface.
+Ioana
 
-Queues are a property of the interface, in that adding or removing a queue
-changes the interface behavior.  It would seem reasonable that these
-queue changes would also change interface properties.
-
-
->     (2) Since flow rules are ordered (the first rule that matches is
-> used), a rule's "location" (priority) has to be global to the
-> interface anyway.
-
-The ordering of flow rules is an issue, I don't have an answer for that.
-
-
->     (3) Flow rules can be used to discard traffic. In this case, there
-> is no queue to be a property of.
-
-I'm only advocating adding rules which are specific for the queue.
-
-
->     (4) What if you wanted to support more complicated rules that
-> apply to multiple queues? E.g. Say all 10.0.0.0/8 traffic should use
-> queues 0-3 (which particular queue is used for a flow depends on
-> rxhash).
-
-Today, this could be done with the 'context' parameter to -X and -N.
-However, I don't think that -X accepts N..(2N-1) numbering, so only
-flow_steering to a specific queue is available.
-
-
-It might be nice to have:
-
-  ethtool -X eth0 context new empty         <--- empty context
-  ethtool -N eth0 flow-type ... context 1
-  ethtool -X eth0 context 1 queue 15        <--- add member
-
-Where the RSS context starts out empty (drop packets), and queues are
-explicitly added to them, intead of starting with a default context.
-This way flow rules don't change, just the RSS membership.  This does
-change the flow_hash steering as queues are added/removed, which could
-be an issue.  If the queue doesn't exist, then the packet is dropped.
--- 
-Jonathan
