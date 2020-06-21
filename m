@@ -2,135 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BB2B202B5F
-	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 17:35:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D975202B6A
+	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 17:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730339AbgFUPfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 11:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730206AbgFUPfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 11:35:07 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA717C061794
-        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 08:35:06 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id t194so13431734wmt.4
-        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 08:35:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=u1F47OjLEvdJLtomdPMpoNwNoPdGWwLJMwh9Gi35qIU=;
-        b=Mum9y8JufJdM5k7RMduK3Thua6GY4abqog0nMj3N25th+j+uIVbxpZYU5xM39J5vAW
-         z/kTf8ODOL3/C31L5RfNXAvascbAoaXVafVHQ9Pcvzi556+pH+OpgfY70RzJEjoJgmsn
-         x6fvoZXSWrWKJhPU4KiUGJAYVptSF50heuSD4LhODmFNCJjvSig21aUZq7mWHoSch3wR
-         T+thoZMAeGr0ptVDDAsHYXSkAMmQwcmLWkCVgfOoNRcjVnzlXgUW+nybBfwZlWln4ydF
-         oyP6USCRBxZYanerCiu755WjwuhG5YXGByRuicRVimfTA4IpjqhdKgcylZUththJKan/
-         trww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=u1F47OjLEvdJLtomdPMpoNwNoPdGWwLJMwh9Gi35qIU=;
-        b=iGj/pLXyNZ+yd6zvwol/f1dFYEOTTKCUFCQl/emWM319QXkKONa8W83LT3mJbL0AG/
-         42KaRpNyfio58Rzb/qHQPzHDl5I/s3ZqbeoTPttJAA6YctxM0fcO6/V8VjjYiijF28tj
-         gGduZq/6IRWj+pjm+K3NxxnBTjjA3c7+hHnD0aYF4xDeAodqTI2eNNmO0Rl1A4c+BU4I
-         /ywoZKE0Mip+jsrFav69PhLDM6/27GrGipfORSyLxSRvB0DOVN0R7gcYgvuY2k47K8aU
-         1tZNq3DZAHbGtgGtnWjPX0Qr4OGGjdUN0MRLtyotXdhmx+RdycLUgC94MQ0BSKdWqrTI
-         /owQ==
-X-Gm-Message-State: AOAM532leHS5CcKpOM+jDLmTfO3m3AOYArAw5O7mirb6sAKp0+1DhQJA
-        QqscsPdWAHhuXPH8RrHI92tuZC06ktZUwQ==
-X-Google-Smtp-Source: ABdhPJy59pd/6nCCo0YWAlYj1Sab369vLRQIk6RB+gyyFDkhbau17SRBN3JyHA7iBCODBVQ4pKFdqw==
-X-Received: by 2002:a7b:c842:: with SMTP id c2mr14075166wml.58.1592753705157;
-        Sun, 21 Jun 2020 08:35:05 -0700 (PDT)
-Received: from localhost.localdomain (82-64-167-122.subs.proxad.net. [82.64.167.122])
-        by smtp.gmail.com with ESMTPSA id b81sm14479968wmc.5.2020.06.21.08.35.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Jun 2020 08:35:04 -0700 (PDT)
-From:   Alexandre Cassen <acassen@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com,
-        nikolay@cumulusnetworks.com, idosch@mellanox.com,
-        dsahern@gmail.com, vladbu@mellanox.com
-Subject: [PATCH net-next] rtnetlink: add keepalived rtm_protocol
-Date:   Sun, 21 Jun 2020 17:34:54 +0200
-Message-Id: <20200621153454.3325-1-acassen@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1730415AbgFUPir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 11:38:47 -0400
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:57011 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730348AbgFUPir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 11:38:47 -0400
+Received: from webmail.gandi.net (webmail21.sd4.0x35.net [10.200.201.21])
+        (Authenticated sender: foss@0leil.net)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPA id 50CEEC0005;
+        Sun, 21 Jun 2020 15:38:42 +0000 (UTC)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Sun, 21 Jun 2020 17:38:42 +0200
+From:   Quentin Schulz <foss@0leil.net>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, richardcochran@gmail.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com
+Subject: Re: [PATCH net-next v3 4/8] net: phy: mscc: take into account the
+ 1588 block in MACsec init
+In-Reply-To: <20200619122300.2510533-5-antoine.tenart@bootlin.com>
+References: <20200619122300.2510533-1-antoine.tenart@bootlin.com>
+ <20200619122300.2510533-5-antoine.tenart@bootlin.com>
+Message-ID: <964739eb70dcd58153d8548f7b57719b@0leil.net>
+X-Sender: foss@0leil.net
+User-Agent: Roundcube Webmail/1.3.8
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Keepalived can set global static ip routes or virtual ip routes dynamically
-following VRRP protocol states. Using a dedicated rtm_protocol will help
-keeping track of it.
+Hi Antoine,
 
-Signed-off-by: Alexandre Cassen <acassen@gmail.com>
----
- include/uapi/linux/rtnetlink.h | 45 +++++++++++++++++-----------------
- 1 file changed, 23 insertions(+), 22 deletions(-)
+On 2020-06-19 14:22, Antoine Tenart wrote:
+> This patch takes in account the use of the 1588 block in the MACsec
+> initialization, as a conditional configuration has to be done (when the
+> 1588 block is used).
+> 
+> Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+> ---
+>  drivers/net/phy/mscc/mscc_macsec.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/phy/mscc/mscc_macsec.c
+> b/drivers/net/phy/mscc/mscc_macsec.c
+> index c0eeb62cb940..713c62b1d1f0 100644
+> --- a/drivers/net/phy/mscc/mscc_macsec.c
+> +++ b/drivers/net/phy/mscc/mscc_macsec.c
+> @@ -285,7 +285,9 @@ static void vsc8584_macsec_mac_init(struct
+> phy_device *phydev,
+>  				 MSCC_MAC_CFG_PKTINF_CFG_STRIP_PREAMBLE_ENA |
+>  				 MSCC_MAC_CFG_PKTINF_CFG_INSERT_PREAMBLE_ENA |
+>  				 (bank == HOST_MAC ?
+> -				  MSCC_MAC_CFG_PKTINF_CFG_ENABLE_TX_PADDING : 0));
+> +				  MSCC_MAC_CFG_PKTINF_CFG_ENABLE_TX_PADDING : 0) |
+> +				 (IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING) ?
+> +				  MSCC_MAC_CFG_PKTINF_CFG_MACSEC_BYPASS_NUM_PTP_STALL_CLKS(0x8) : 
+> 0));
 
-diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 073e71ef6bdd..1463a422d837 100644
---- a/include/uapi/linux/rtnetlink.h
-+++ b/include/uapi/linux/rtnetlink.h
-@@ -257,12 +257,12 @@ enum {
- 
- /* rtm_protocol */
- 
--#define RTPROT_UNSPEC	0
--#define RTPROT_REDIRECT	1	/* Route installed by ICMP redirects;
--				   not used by current IPv4 */
--#define RTPROT_KERNEL	2	/* Route installed by kernel		*/
--#define RTPROT_BOOT	3	/* Route installed during boot		*/
--#define RTPROT_STATIC	4	/* Route installed by administrator	*/
-+#define RTPROT_UNSPEC		0
-+#define RTPROT_REDIRECT		1	/* Route installed by ICMP redirects;
-+					   not used by current IPv4 */
-+#define RTPROT_KERNEL		2	/* Route installed by kernel		*/
-+#define RTPROT_BOOT		3	/* Route installed during boot		*/
-+#define RTPROT_STATIC		4	/* Route installed by administrator	*/
- 
- /* Values of protocol >= RTPROT_STATIC are not interpreted by kernel;
-    they are just passed from user and back as is.
-@@ -271,22 +271,23 @@ enum {
-    avoid conflicts.
-  */
- 
--#define RTPROT_GATED	8	/* Apparently, GateD */
--#define RTPROT_RA	9	/* RDISC/ND router advertisements */
--#define RTPROT_MRT	10	/* Merit MRT */
--#define RTPROT_ZEBRA	11	/* Zebra */
--#define RTPROT_BIRD	12	/* BIRD */
--#define RTPROT_DNROUTED	13	/* DECnet routing daemon */
--#define RTPROT_XORP	14	/* XORP */
--#define RTPROT_NTK	15	/* Netsukuku */
--#define RTPROT_DHCP	16      /* DHCP client */
--#define RTPROT_MROUTED	17      /* Multicast daemon */
--#define RTPROT_BABEL	42      /* Babel daemon */
--#define RTPROT_BGP	186     /* BGP Routes */
--#define RTPROT_ISIS	187     /* ISIS Routes */
--#define RTPROT_OSPF	188     /* OSPF Routes */
--#define RTPROT_RIP	189     /* RIP Routes */
--#define RTPROT_EIGRP	192     /* EIGRP Routes */
-+#define RTPROT_GATED		8	/* Apparently, GateD */
-+#define RTPROT_RA		9	/* RDISC/ND router advertisements */
-+#define RTPROT_MRT		10	/* Merit MRT */
-+#define RTPROT_ZEBRA		11	/* Zebra */
-+#define RTPROT_BIRD		12	/* BIRD */
-+#define RTPROT_DNROUTED		13	/* DECnet routing daemon */
-+#define RTPROT_XORP		14	/* XORP */
-+#define RTPROT_NTK		15	/* Netsukuku */
-+#define RTPROT_DHCP		16      /* DHCP client */
-+#define RTPROT_MROUTED		17      /* Multicast daemon */
-+#define RTPROT_KEEPALIVED	18      /* Keepalived daemon */
-+#define RTPROT_BABEL		42      /* Babel daemon */
-+#define RTPROT_BGP		186     /* BGP Routes */
-+#define RTPROT_ISIS		187     /* ISIS Routes */
-+#define RTPROT_OSPF		188     /* OSPF Routes */
-+#define RTPROT_RIP		189     /* RIP Routes */
-+#define RTPROT_EIGRP		192     /* EIGRP Routes */
- 
- /* rtm_scope
- 
--- 
-2.17.1
+Do we have more info on this 0x8? Where does it come from? What does it 
+mean?
 
+Also this starts to get a little bit hard to read. Would it make sense 
+to have
+two temp variables? e.g.:
+
+	padding = bank == HOST_MAC ? MSCC_MAC_CFG_PKTINF_CFG_ENABLE_TX_PADDING 
+: 0;
+	ptp_stall_clks = IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING) ?
+		MSCC_MAC_CFG_PKTINF_CFG_MACSEC_BYPASS_NUM_PTP_STALL_CLKS(0x8) : 0;
+
+	vsc8584_macsec_phy_write(phydev, bank, MSCC_MAC_CFG_PKTINF_CFG,
+				 MSCC_MAC_CFG_PKTINF_CFG_STRIP_FCS_ENA |
+				 MSCC_MAC_CFG_PKTINF_CFG_INSERT_FCS_ENA |
+				 MSCC_MAC_CFG_PKTINF_CFG_LPI_RELAY_ENA |
+				 MSCC_MAC_CFG_PKTINF_CFG_STRIP_PREAMBLE_ENA |
+				 MSCC_MAC_CFG_PKTINF_CFG_INSERT_PREAMBLE_ENA |
+				 padding |
+				 ptp_stall_clks);
+
+Thanks,
+Quentin
