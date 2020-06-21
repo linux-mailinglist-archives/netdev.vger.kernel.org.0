@@ -2,123 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81282202DA0
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 01:19:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 459D4202DB8
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 01:45:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730869AbgFUXTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 19:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58260 "EHLO
+        id S1730938AbgFUXok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 19:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726588AbgFUXTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 19:19:22 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F39C061794
-        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 16:19:22 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id i3so1882034qtq.13
-        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 16:19:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=/nJZItB4Dfa8vKhiYVgPlS63Gp++nsFSFrPWBgr+p/4=;
-        b=mo5vaY6Se8XCdltleao3pzcDOeVW95qafXE9GUyPDvf3YiFb4bL49Pv7bRyWazdbTo
-         dLkSfoLLbE1x4aZtvfoJEiMXiTK4SPFaDX16sMIse8EexHA8KjhoZtbazLnUwms/Qn8i
-         2t5xfy1ZFMuPlsTL74Lc0DkFXsR8Ew5K5vO6uoHvzKi2mcRZ9xyiyHZVpAAdEXg7iBdg
-         Ad1zHfPGvJXjORUhom/z3oIj7+sMuvMdyuknX0BgVtl6QHU+RqkQqCfdoMEPf3x94lFV
-         kJI3C17fZJIMF9JQ79oq8LdeOJdw7WtCjuCok94rk3k4XJj/IaUOp+CkG34pwYgwZvkc
-         99AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=/nJZItB4Dfa8vKhiYVgPlS63Gp++nsFSFrPWBgr+p/4=;
-        b=LLCnaC/ITIUwykF1BJQV+c5t1OctJ89opvZ78J7VCZDT5/7gwVudXAliqg3r2rcZy1
-         Szc8FHIsnCz0X6SgSHKaxPV20/SVncu047omc269vggaIuIZoC1eDSdl5B0suBbV7mDF
-         BRiqi7joujWS30OA55IzxuwqsKW6IEH2PXkf72xu8AFccoULbg5Z1MLRk4XnyFHdT/J5
-         QYhN36xwIVQtpt7KuC5f4KksxfV5a8c8CXcusQPPzY4KF/BNxiKYe+k3MIO968cwcZW9
-         AS5PICx6Lstkc8wsh5LjverjL0CVU+hmGABpEAoTdLs/axz79YohQI1r3Sx1NC8zMP8i
-         LUoA==
-X-Gm-Message-State: AOAM531EmpyPmIR6RMFzhBOPfpyJIRS4CnriJ0xextcdeA9xpnlfQHgJ
-        Z6r6pLOWbi9DsYZNwOU9RgF31gTffLhnjhEkmVWCo6SBnJw=
-X-Google-Smtp-Source: ABdhPJzgA3BiL3H1MolpAL7Pbw9rDxITTwg8obLo7kdRaXldamBXoUgx3BKsp6KSHjwZDEnrYPRrGjOcT0P9cCnqxe0=
-X-Received: by 2002:aed:221a:: with SMTP id n26mr7814551qtc.8.1592781561171;
- Sun, 21 Jun 2020 16:19:21 -0700 (PDT)
+        with ESMTP id S1726433AbgFUXoj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 19:44:39 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD69C061794
+        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 16:44:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=s9VNi/dZhd3qFNgmjAM+3nS18d8quoTwMfIFiL77wOY=; b=p/SW3MX4xWT6yJyEA3xo2mXVu
+        BkM6oCxGjsnxYgVkCSxHXrdlmWC+TQwTKamY51ggjiEehZEvFLaAMUmLVlc1hmP7sbHqVGtJDCx/v
+        8vkrhH7tlxOKoCuBQoHKvuU1mMlBZDuR2oQ71pRhu8eTFcTE95UBGOcoRpsSStr5eNtBkr84Hqw9q
+        WZR9kg3V/IXq0dRcMUP82ziGhdJPzbiipEnEoiLY8c1s8FkRLFyNuyZMPtu79fpcBYUloNo4yfS65
+        9llgxNElyegOEn86Bku/tORmCmqNEY9Bpgh+8HKoi+6G4tE9UIcKmAFBqMCXsfVXPb8yAy6ESoM4I
+        Yioud1B3g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58924)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jn9da-0008C9-2q; Mon, 22 Jun 2020 00:44:34 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jn9dX-0007wa-Fw; Mon, 22 Jun 2020 00:44:31 +0100
+Date:   Mon, 22 Jun 2020 00:44:31 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Colton Lewis <colton.w.lewis@protonmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: FWD: [PATCH 3/3] net: phylink: correct trivial kernel-doc
+ inconsistencies
+Message-ID: <20200621234431.GZ1551@shell.armlinux.org.uk>
+References: <20200621154248.GB338481@lunn.ch>
+ <20200621155345.GV1551@shell.armlinux.org.uk>
+ <3315816.iIbC2pHGDl@laptop.coltonlewis.name>
 MIME-Version: 1.0
-From:   Qiwei Wen <wenqiweiabcd@gmail.com>
-Date:   Mon, 22 Jun 2020 09:19:10 +1000
-Message-ID: <CADxRGxBfaWWvtYJmEebdzSMkVk6-YTx+jff2bGwS+TXBUPM-LA@mail.gmail.com>
-Subject: Multicast routing: wrong output interface selected unless VRF default
- route is added
-To:     netdev@vger.kernel.org
-Content-Type: multipart/mixed; boundary="00000000000028b26c05a8a05b74"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3315816.iIbC2pHGDl@laptop.coltonlewis.name>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000028b26c05a8a05b74
-Content-Type: text/plain; charset="UTF-8"
+On Sun, Jun 21, 2020 at 11:02:30PM +0000, Colton Lewis wrote:
+> On Sunday, June 21, 2020 10:53:45 AM CDT Russell King - ARM Linux admin wrote:
+> > > ---
+> > >   */
+> > >  struct phylink_config {
+> > >  	struct device *dev;
+> > > @@ -331,7 +333,7 @@ void pcs_get_state(struct phylink_config *config,
+> > >   *
+> > >   * For most 10GBASE-R, there is no advertisement.
+> > >   */
+> > > -int (*pcs_config)(struct phylink_config *config, unsigned int mode,
+> > > +int *pcs_config(struct phylink_config *config, unsigned int mode,
+> > >  		  phy_interface_t interface, const unsigned long *advertising);
+> > 
+> > *Definitely* a NAK on this and two changes below.  You're changing the
+> > function signature to be incorrect.  If the documentation can't parse
+> > a legitimate C function pointer declaration and allow it to be
+> > documented, then that's a problem with the documentation's parsing of
+> > C code, rather than a problem with the C code itself.
+> 
+> I realize this changes the signature, but this declaration is not compiled. It is under an #if 0 with a comment stating it exists for kernel-doc purposes only. The *real* function pointer declaration exists in struct phylink_pcs_ops.
+> 
+> Given the declaration is there exclusively for documentation, it makes sense to change it so the documentation system can parse it.
 
-Hi all,
+My objection is that you are changing the return type from (e.g.)
+"int" to "int *", which will then end up in the documentation as
+such, and the documentation will, therefore, be incorrect.
 
-While experimenting with FRRouting, I observed the following
-behaviour. I'm not sure whether it's intended or not.
+I have subsequently realised that I didn't follow my own pattern
+for documenting phylink_mac_ops - a correct solution would be to
+drop the parens _and_ the "*" preceding the function name, so:
 
-In a virtual machine set up as a multicast router, I added two
-networks, created a VRF, and enslaved interfaces to both networks to
-the VRF, like so:
+int pcs_config(struct phylink_config *config, unsigned int mode,
+...
 
-ip link add blue type vrf table 1001
-ip link set eth0 master blue
-ip link set eth1 master blue
+Thanks.
 
-I then set up PIM on the router VM (FRR configs attached) and started
-the multicast sender and receiver processes on two other VMs. The
-mroutes came up as expected (ip show mroute table 1001), but no
-packets came to the receiver. I added the following debug message to
-ipmr_queue_xmit, just before the NF_HOOK macro:
-
-+    pr_info("calling NF_HOOK! vif->dev is %s,"
-+            " dev is %s, skb->dev is %s\n",
-+            vif->dev->name, dev->name, skb->dev->name);
-
-and I found that "dev", the selected output interface, is in fact the
-output interface of the main table (unicast) default route. Running
-tcpdump on that (very wrong) output interface confirmed this.
-
-I then went back to networking/vrf.txt, and found that I forgot to do this:
-
-ip route add table 1001 unreachable default metric 4278198272
-
-after this step, multicast routing began to work correctly.
-
-Further debugging-by-printk lead to these observations:
-1. Using the main table (without VRFs), multicast routing works fine
-with or without the default unicast route; but in the function "
-ip_route_output_key_hash_rcu", the call to "fib_lookup" in fact fails
-with -101, "network unreachable".
-2. Using the VRF table 1001, the kernel stops routing multicast
-packets to the wrong interface once the unreachable default route is
-added. "fib_lookup" continues to fail, but with -113, "host
-unreachable".
-
-My questions are:
-1. is fib_lookup supposed to work with multicast daddr? If so, has
-multicast routing been working for the wrong reason?
-2. Why does the addition of a unicast default route affect multicast
-routing behaviour?
-
--Dave
-
---00000000000028b26c05a8a05b74
-Content-Type: application/octet-stream; name=frr-runn
-Content-Disposition: attachment; filename=frr-runn
-Content-Transfer-Encoding: base64
-Content-ID: <f_kbpp03w30>
-X-Attachment-Id: f_kbpp03w30
-
-IQpmcnIgdmVyc2lvbiA3LjMKZnJyIGRlZmF1bHRzIHRyYWRpdGlvbmFsCmhvc3RuYW1lIGRlYmlh
-bgpsb2cgc3lzbG9nIGluZm9ybWF0aW9uYWwKbm8gaXB2NiBmb3J3YXJkaW5nCnNlcnZpY2UgaW50
-ZWdyYXRlZC12dHlzaC1jb25maWcKIQp2cmYgYmx1ZQogaXAgcGltIHJwIDEwLjEuMi4yIDIyNC4w
-LjAuMC80CiBleGl0LXZyZgohCmludGVyZmFjZSBlbnAwczggdnJmIGJsdWUKIGlwIGlnbXAKIGlw
-IHBpbQohCmludGVyZmFjZSBlbnAwczkgdnJmIGJsdWUKIGlwIGlnbXAKIGlwIHBpbQohCmxpbmUg
-dnR5CiEKZW5kCg==
---00000000000028b26c05a8a05b74--
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
