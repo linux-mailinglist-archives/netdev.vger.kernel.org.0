@@ -2,194 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1360E202CA6
-	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 22:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12DB0202CAD
+	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 22:24:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730625AbgFUUQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 16:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730572AbgFUUQm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 16:16:42 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A072CC061794;
-        Sun, 21 Jun 2020 13:16:40 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id k6so2162223wrn.3;
-        Sun, 21 Jun 2020 13:16:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=K1bE7hioO+jCeg02N2LK3QidAcdsCxuVYmIXB9dPoQ8=;
-        b=NAqQ9+cchNxOX/8XjjaJ23UwqsEXMbnd9qBGlTvVlWkqwFzxrvFKE4wddAuikmi+iq
-         8+oe/oLHh8JrBW/NBhBq3UePr0bvNl/ZuDgqRpI60e3Pif3I2B7n1FjKLOw9L181aNW2
-         OtO5Wj4VrTYDcb+factsZYiFdOQVfiVlVnLPZG9GWp7oRFVzD3FpY19UH80F7ndzQd4B
-         byy8Ol3hwGyoO0UPKvObwwIPVfcwyncUyBCGRk4j6A5h8rvglHs6xxvCb7B7oO/u3DYT
-         HZbEHl9hi/JSOzw26TInfmjO+dRcUJsbRuw5KemW1WcLPFLupnnQsJ8puXkvdV/YCYqj
-         zFDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=K1bE7hioO+jCeg02N2LK3QidAcdsCxuVYmIXB9dPoQ8=;
-        b=pJmR8ozpCdrRNr5jMrYiL0sjYzM0fbCX6V5naG9Kyn0iZUDJZIMGy8RgslMDfDYuoP
-         gsDYrYkEK7Jb97ydz1nbkaqWGP8xzbGR4HkpVDQc6RJ+fkZLHY+Evj9U4MVnhdsmQjgD
-         AGhdytQkFeL7ZGIXChV+XNVBQ2Lhjwbn7BEMYmpNg4og/M2s+fdE+ym+KSWUhYma93tN
-         E2qW3m234+xHeNZskQJuuuMyHS6DAdxoxnf179StsSjHnaHBNxbrBEjP94AmsQa9w57t
-         cPISpLo6sP5lkb0YmBNOtTz8xR87rKZcqcu1qMSAGIe8X+PCP4r/c/chzqkxkw2pdGxo
-         U6Wg==
-X-Gm-Message-State: AOAM533DM9KbjPyIIt8YGthP3+mPrC2xNEAO/orpbewHHCaOw0B7hUA5
-        bYxMe8ZRhOsuHp5fGkL/TMm5ef+X
-X-Google-Smtp-Source: ABdhPJwid9A8vjptsbQu7XdBibwoYVW+sszApPGr3eOGNxVxWozirwOCThkH48DiSfprXVclDmjB4Q==
-X-Received: by 2002:adf:f707:: with SMTP id r7mr3352481wrp.70.1592770598974;
-        Sun, 21 Jun 2020 13:16:38 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:6017:5dc5:df4:d4ec? (p200300ea8f23570060175dc50df4d4ec.dip0.t-ipconnect.de. [2003:ea:8f23:5700:6017:5dc5:df4:d4ec])
-        by smtp.googlemail.com with ESMTPSA id x13sm15326146wre.83.2020.06.21.13.16.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Jun 2020 13:16:38 -0700 (PDT)
-Subject: Re: [PATCH] net: phy: realtek: clear interrupt during init for
- rtl8211f
-To:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200512184601.40b1758a@xhacker.debian>
- <7735a257-21ff-e6c0-acdc-f5ee187b1f57@gmail.com>
- <20200513145151.04a6ee46@xhacker.debian>
- <a0aac85d-064f-2672-370b-404fd83e83f3@gmail.com>
- <20200514142537.63b478fd@xhacker.debian>
- <bbb70281-d477-d227-d1d2-aeecffdb6299@gmail.com>
- <20200515154128.41ee2afa@xhacker.debian>
- <18d7bdc7-b9f3-080f-f9df-a6ff61cd6a87@gmail.com>
- <e81ad573-ba30-a449-4529-d9a578ce0ee7@gmail.com>
- <20200617170926.5e582bad@xhacker.debian>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <5657764c-3de8-667f-b4a7-5dbaf2e15303@gmail.com>
-Date:   Sun, 21 Jun 2020 22:16:31 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1730624AbgFUUYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 16:24:46 -0400
+Received: from mout.gmx.net ([212.227.17.22]:53849 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730288AbgFUUYq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Jun 2020 16:24:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1592771083;
+        bh=cgBslc2ghXmtaTi3tdkSE0LlHb26xDlfGMMSi5wSgPs=;
+        h=X-UI-Sender-Class:Reply-To:To:From:Subject:Date;
+        b=Sway3p291TbjQiCNp9hvpQW2qWM2P0LZjl+HQqrZUgih04yGl3kI20/Q4XIsYzGhB
+         +uKqgcUVDDWaD4NPAgzWGLoAXoIw52YCwCglzebRsOSONjDQWcH+fM77lUKHGfVjNC
+         XRfzVYcCCPrSvivFKqqXSAG5Y37rWQnNm9OwvMJc=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.84.205] ([134.101.160.167]) by mail.gmx.com (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MdNcG-1jDllb1Vrs-00ZQW6 for
+ <netdev@vger.kernel.org>; Sun, 21 Jun 2020 22:24:43 +0200
+Reply-To: vtol@gmx.net
+To:     netdev@vger.kernel.org
+From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Subject: secondary CPU port facing switch does not come up/online
+Message-ID: <d47ad9bb-280b-1c9c-a245-0aebd689ccf5@gmx.net>
+Date:   Sun, 21 Jun 2020 20:24:00 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0
 MIME-Version: 1.0
-In-Reply-To: <20200617170926.5e582bad@xhacker.debian>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="jwcYgZVjdvUjugKsGpoFVhVE1lmDRXwxn"
+X-Provags-ID: V03:K1:ACyfFYQ237yn6WvPxqSjMH28xARMQ7CSqCi5xOs8SvJhUpgnmu4
+ miFfezds39De6ZK9hN+PuIaBbE+r88koxMU7rOkmCNhaE9z7Cv6wMycYN9NMDz2vXQyNG5k
+ 13JlWyoZXaVAeXHGhRxbAZiPo4+HvU5nCxc2jTApg+vvzsGiwcfbJ25Fu/PBFlYkZ4H6zPH
+ mProaTv3oFnowYNmEi1sA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:JqfSk44wXRg=:pY/OexIOxqxrMNw6Qn42/8
+ SPmUmmYTPPx53T265/AKmwPqizeB410mu6wt/yIsDpYoIFQxtt6e8trlxRiwVoitmQzmXZCqU
+ UhdKJE6rV8hvGPO4ID7T+UWvKUbKBKQHIxjcN+wIfmrvDqipqh7p0cFwDmH0rnI2u1A1CGP8o
+ ANw7qIuCPcFpNVL8dKnNYkXNEQOR/vuBeCbo4Yae1Wa32smQVyfNuWMDBi9dutxatUDBAmUtk
+ ZvZ7BWIZ/b1ZyBkxjxcE6GPBp1ZV7I4Symw3e+yErhBM43iKfsRXlsNFBDXWOcMvgUCT6aY7N
+ 0VCkBuks3LABeIFrT7eQvSSC8Gw7rddA3hmnLLeGcCkrL4YxrZ6N8wBkzNlJlijkK0W+JmcjY
+ +fqJx60Nyit6a1spopoQqF09t5KRrcGcZZ+HxkPzmQVrCQ7AiVHVMqXcC0qdYg9wO3gkfAzXF
+ FT/PCwI87sqRBA/HTi6AISkk4dlonovDXPz/rxcOngLSNjFQttWKTM1PTeK1PEaVCVlSsH8Bw
+ 9YsGOvbmw16BChnt0sTZGyoMPyiOxMP8MDi/+nX7iiQRx7W0Yf87f8bdY5Y66TX7OWGFEhqke
+ r25zDBxRk+9i/c01SgXpIU+fs7aRo4zqFoTijWNqA0GrRbQewPlQjH3huVq2A5taBCHmxs0r5
+ fPjH91nlyQZ+bRm3iFtfXSounDGMo/LfLBZa3tQ4BBZQFZw/tPd8JH7akjcrwqr0EvY1OWUVE
+ 8T/oOdcRUTqxwkGE7lfguqUnWgsJ7CHEZ07dsHCZRd2pHDccV3aaqyEBA98h6WXcmPXpDFZV0
+ e9icNgW3bPeAOx8shBq1NsmzpbLovGpXUHIuPk/0Ljhd5Crl3YWkCeYENf0mSW7V7Ew5QEIBo
+ nx172UyWdd/ksg3dUWQ6+QaEMmcys2EilpgnfAlIO41ZVuJCTHexD8ylZNYj/kO7i+CCv4ZFQ
+ +wympKeWSYX8PWWb163V3HiDLYDNfE47TufWNF6g0nSjonPvaKsWL55xNInElxLsrCjM6H2N3
+ ++XvJFwrlRV7/FibSkctxv5hA6zMVM8opXRu7jywCP4CJlvmkGqg54PTsVcPeM/C8bcsB5R4H
+ K+b2Mf/Xn5GgONLqhii7IAzr+efrjoG7lVZXTfK63H6gLM2FlYmwW+V98mqJrbr6AWkOiWfDC
+ tifNiZ0odq6ISt4dqVJ7H8SRQaufkZOFQK2LmpDhoK/gTIMVaBB7oxL5iWzd1SR7QGJFs=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17.06.2020 11:09, Jisheng Zhang wrote:
-> On Fri, 15 May 2020 19:30:38 +0200 Heiner Kallweit wrote:
-> 
-> 
->>
->>
->> On 15.05.2020 18:18, Florian Fainelli wrote:
->>>
->>>
->>> On 5/15/2020 12:41 AM, Jisheng Zhang wrote:  
->>>> On Thu, 14 May 2020 21:50:53 +0200 Heiner Kallweit wrote:
->>>>  
->>>>>
->>>>>
->>>>> On 14.05.2020 08:25, Jisheng Zhang wrote:  
->>>>>> On Wed, 13 May 2020 20:45:13 +0200 Heiner Kallweit wrote:
->>>>>>  
->>>>>>>
->>>>>>> On 13.05.2020 08:51, Jisheng Zhang wrote:  
->>>>>>>> Hi,
->>>>>>>>
->>>>>>>> On Tue, 12 May 2020 20:43:40 +0200 Heiner Kallweit wrote:
->>>>>>>>  
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> On 12.05.2020 12:46, Jisheng Zhang wrote:  
->>>>>>>>>> The PHY Register Accessible Interrupt is enabled by default, so
->>>>>>>>>> there's such an interrupt during init. In PHY POLL mode case, the
->>>>>>>>>> INTB/PMEB pin is alway active, it is not good. Clear the interrupt by
->>>>>>>>>> calling rtl8211f_ack_interrupt().  
->>>>>>>>>
->>>>>>>>> As you say "it's not good" w/o elaborating a little bit more on it:
->>>>>>>>> Do you face any actual issue? Or do you just think that it's not nice?  
->>>>>>>>
->>>>>>>>
->>>>>>>> The INTB/PMEB pin can be used in two different modes:
->>>>>>>> INTB: used for interrupt
->>>>>>>> PMEB: special mode for Wake-on-LAN
->>>>>>>>
->>>>>>>> The PHY Register Accessible Interrupt is enabled by
->>>>>>>> default, there's always such an interrupt during the init. In PHY POLL mode
->>>>>>>> case, the pin is always active. If platforms plans to use the INTB/PMEB pin
->>>>>>>> as WOL, then the platform will see WOL active. It's not good.
->>>>>>>>  
->>>>>>> The platform should listen to this pin only once WOL has been configured and
->>>>>>> the pin has been switched to PMEB function. For the latter you first would
->>>>>>> have to implement the set_wol callback in the PHY driver.
->>>>>>> Or where in which code do you plan to switch the pin function to PMEB?  
->>>>>>
->>>>>> I think it's better to switch the pin function in set_wol callback. But this
->>>>>> is another story. No matter WOL has been configured or not, keeping the
->>>>>> INTB/PMEB pin active is not good. what do you think?
->>>>>>  
->>>>>
->>>>> It shouldn't hurt (at least it didn't hurt for the last years), because no
->>>>> listener should listen to the pin w/o having it configured before.
->>>>> So better extend the PHY driver first (set_wol, ..), and then do the follow-up
->>>>> platform changes (e.g. DT config of a connected GPIO).  
->>>>
->>>> There are two sides involved here: the listener, it should not listen to the pin
->>>> as you pointed out; the phy side, this patch tries to make the phy side
->>>> behave normally -- not keep the INTB/PMEB pin always active. The listener
->>>> side behaves correctly doesn't mean the phy side could keep the pin active.
->>>>
->>>> When .set_wol isn't implemented, this patch could make the system suspend/resume
->>>> work properly.
->>>>
->>>> PS: even with set_wol implemented as configure the pin mode, I think we
->>>> still need to clear the interrupt for phy poll mode either in set_wol
->>>> or as this patch does.  
->>>
->>> I agree with Jisheng here, Heiner, is there a reason you are pushing
->>> back on the change? Acknowledging prior interrupts while configuring the
->>> PHY is a common and established practice.
->>>  
->> First it's about the justification of the change as such, and second about the
->> question whether the change should be in the driver or in phylib.
->>
->> Acking interrupts we do already if the PHY is configured for interrupt mode,
->> we call phy_clear_interrupt() at the beginning of phy_enable_interrupts()
->> and at the end of phy_disable_interrupts().
->> When using polling mode there is no strict need to ack interrupts.
->> If we say however that interrupts should be acked in general, then I think
->> it's not specific to RTL8211F, but it's something for phylib. Most likely
->> we would have to add a call to phy_clear_interrupt() to phy_init_hw().
-> 
-> it's specific to RTL8211F from the following two PoV:
-> 1. the PIN is shared between INTB and PMEB.
-> 2. the PHY Register Accessible Interrupt is enabled by default
-> 
-If we clear the interrupt in config_init() and one interrupt source is
-active per chip default, then wouldn't the irq pin be active soon again?
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--jwcYgZVjdvUjugKsGpoFVhVE1lmDRXwxn
+Content-Type: multipart/mixed; boundary="bUPq9YjrSDQu0jJrvd0fiyqnwg7b3ezap";
+ protected-headers="v1"
+From: =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Reply-To: vtol@gmx.net
+To: netdev@vger.kernel.org
+Message-ID: <d47ad9bb-280b-1c9c-a245-0aebd689ccf5@gmx.net>
+Subject: secondary CPU port facing switch does not come up/online
 
-I was thinking about calling phy_disable_interrupts() in phy_init_hw(),
-to have a defined init state, as we don't know in which state the PHY is
-if the PHY driver is loaded. We shouldn't assume that it's the chip
-power-on defaults, BIOS or boot loader could have changed this.
-Or in case of dual-boot systems the other OS could leave the PHY in
-whatever state.
+--bUPq9YjrSDQu0jJrvd0fiyqnwg7b3ezap
+Content-Type: multipart/mixed;
+ boundary="------------D3C0045A19D403E3C8FD0162"
+Content-Language: en-GB
 
-This made me think about an issue we may have currently:
-Interrupts are enabled in phy_request_interrupt() only. If the system
-hibernates, then PHY may load power-on defaults on restore.
-And mdio_bus_phy_restore() just calls phy_init_hw() and doesn't
-care about interrupt config. Means after waking up from hibernation
-we may have lost PHY interrupt config.
+This is a multi-part message in MIME format.
+--------------D3C0045A19D403E3C8FD0162
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-> I didn't see such behaviors with other PHYs.
-> 
-> Thanks
-> 
-Heiner
+{"kernel":"5.4.46","hostname":"OpenWrt","system":"ARMv7 Processor rev 1=20
+(v7l)","model":"Turris=20
+Omnia","board_name":"cznic,turris-omnia","release":{"distribution":"OpenW=
+rt","version":"SNAPSHOT","revision":"r13600-9a477b833a","target":"mvebu/c=
+ortexa9","description":"OpenWrt=20
+SNAPSHOT r13600-9a477b833a"}}
+_____
+
+With the below cited DT both CPU ports facing the node's build-in switch =
+
+are brought online at boot time with kernel 4.14 but since having=20
+switched to kernel 5.4 only one CPU port gets online. It is as if the=20
+kernel discards the presence of the secondary CPU port. Kernel log only=20
+prints for the offline port just a single entry:
+
+mvneta f1070000.ethernet eth0: Using hardware mac address
+
+Swapping eth1 to port6 and eth0 to port6 then eth0 is brought online but =
+
+eth1 is not. Removing port5 then the port6 listed port is brought up/onli=
+ne.
+
+Once the node is booted the offline port can brought up with ip l set=20
+up. This seems like a regression bug in between the kernel versions.
+
+____
+DT
+
+cpu_port5: ports@5 {
+ =C2=A0=C2=A0=C2=A0 reg =3D <5>;
+ =C2=A0=C2=A0=C2=A0 label =3D "cpu";
+ =C2=A0=C2=A0=C2=A0 ethernet =3D <&eth1>;
+
+ =C2=A0=C2=A0=C2=A0 fixed-link {
+ =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 speed =3D <1000>;
+ =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 full-duplex;
+ =C2=A0=C2=A0=C2=A0 };
+};
+
+cpu_port6: ports@6 {
+ =C2=A0=C2=A0=C2=A0 reg =3D <6>;
+ =C2=A0=C2=A0=C2=A0 label =3D "cpu";
+ =C2=A0=C2=A0=C2=A0 ethernet =3D <&eth0>;
+
+ =C2=A0=C2=A0=C2=A0 fixed-link {
+ =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 speed =3D <1000>;
+ =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 full-duplex;
+ =C2=A0=C2=A0=C2=A0 };
+};
+------------
+kconf
+
+CONFIG_MTD_NAND_MARVELL=3Dy
+# CONFIG_PATA_MARVELL is not set
+CONFIG_NET_VENDOR_MARVELL=3Dy
+CONFIG_MARVELL_PHY=3Dy
+# CONFIG_MARVELL_10G_PHY is not set
+# CONFIG_WLAN_VENDOR_MARVELL is not set
+CONFIG_CRYPTO_DEV_MARVELL_CESA=3Dy
+
+--------------D3C0045A19D403E3C8FD0162
+Content-Type: application/pgp-keys;
+ name="OpenPGP_0xF4F735931F05C5CE.asc"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="OpenPGP_0xF4F735931F05C5CE.asc"
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xsFNBFnciLoBEADBsoGGx8dPCw216OeILh7+4A851grJgGjBpjv2bjGGxJlCpnevyCHf+D3SM=
+fsz
+ASwV23B1TXsp3YM4X2JVnRr9RAqr8+U8pUDb6c58U1Il182/vlk6utD8q1221o3XDp3RXhEqC=
+FR1
+K+0BlnFnE2//CPnEs94BJ94cksaxy14QpY4VL9w9u1O02KkSXA2f0j/R6sxnHGk6SAWTn7OE7=
+l57
+rJsiklq6AYuEQ2j/5rEa9rMe6yfryXsiuY++bUbAhlhnsWSalA56yl1FbfCW/lXNay9yrjYwi=
+/44
+nEMmuj79kXmMMMX87PpoaoQUGFI0PbkOhO2TkVXqSBY8lolTtMHeGm3XSRUo3LVEFWf2K4zWX=
+AKo
+K4rFg8zKEGzYZy2dlHbY777h6nqLjJ84tSQH7eimouPjuaklwK0ilmyBvpcWRnUpGuZbLv89s=
+p5S
+ThqZ+eYaur4p3mXOXift+vPM9sN9ycXg3SUBcq+Kz+Vo32dAd5jJhiNzW+FqaKMQMNfAsu/9s=
+WgP
+lwVBYywcW+oqN+T+94Vb4qJ8VjooVfSFSGZ+VEkxW9nDXh9TTQb6b0eDysgGiJ2ZaZbrzSQUE=
+fUl
+nAhvFLlfcxWI02EA9Dnj3vPuNPt6/mSV3d83tt8mE9gWMxYkY/aWyGWohczkMlj9vY+G+2k9+=
+AG1
+4BpNiGK7svsr9QARAQABzQx2dG9sQGdteC5uZXTCwZQEEwEIAD4WIQR6bKTYsnyC9Y8mc5H09=
+zWT
+HwXFzgUCWdyIugIbAwUJBhEmdgULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRD09zWTHwXFz=
+o0Y
+EACzVvOGrxWq7Igv7s1ikPhrzYLjGqfETgejkfpJ4Sm6A2siidOSvFZYB8UOso2+JSxq1SRIg=
+MvV
+MK/3tObL7yX0lcslg7PDoJ2ZLWIBqWmrtLWHPEubYYkZnPBtEsio/z4lt04Qmz/Ydx2zjR2cS=
+3+0
+k+Jb9qXxHAGynWiaUV4iQ/sIKjBki6okgM3cJTBRr3Y2mvQuf1WoekolqavHp+8yD9ESnGAGw=
+25K
+2Ya4BVQmzvSoK32xLbqIBe+sFfKtc8sjjk7ZR3rliM7+BTqvEYOMlMX9JKTKD9yIh8cYnonkq=
+EP+
+6OqrZFmk7qWVq33PGvl/JLLIA6lNDhDalWhlM5026Ti4g1dtnf6C2vvpPAQZuqKc3DboKkkPi=
++tl
+hyfmnLltUnHVAeu6h1lQjESNuNY0jpKDukchL+9jRBjWg4Tf6PbG5m0z/wMsF6rqJ7MF9V9hT=
+pbX
+hMH1LgA1HMibszs9kNufhZzIp1/ZYtgQp1L4+BDRDtWv1n32C7SBrTVNdhmCqOFGv047g9QIL=
+WlK
+JYUrCby70Lk74xGJeHpPvftXeoR157adv8T1h3o5dc5sLI/FnGJAa6HRRt5PetLc/pTC7qwT2=
+bTS
+tZtpF6KGLHcxR64BAu4uCUbgnl89Q3etEmHU3akDQIhJiM3rG5XjDuq3j6Kb0GPmWElTXWqX+=
+l7V
+Nc7BTQRZ3Ii6ARAA5XGN+cUiahtr/8q4pj7lB5FHlOUmLYRf+rN25Fg0Pr3lxx840wKLHYNxD=
+7Cj
+2XTmsxJseMPy9SbAKgA9uyBe5AaPQA8J2sP6tM0DuIssfuc+uGMgIXb3SnZvLL1ER849HtDGV=
+Jzn
+Oq7Aja5MACNCjWfY4xOA8ReAKK6MaDTO3xKoNSiLrFpA9nvMvMFDPK67pAdM/yeE844mzk4s9=
+UCT
+7fRUkf60YdoxUC6/kHz+6HInerqZQHEBxGkHVq3lkzo5InC0FrWDwmjG+Ol6PlwsWKn3uhMQI=
+6vm
+RlOetr00qRLFTQoGcVmOfZRgk2AoAiBanf9CWYWlRTGS0cgO7UsaLbuhAi24eR+cZccqFQ05V=
+aNN
+hCXZwHJa03riIJoz7LN9RCjd91e5uMs0qjKiMypgRD3K+xjf62VIAEn2d/BM+BwNirwwppqYl=
+d6h
+n4+igv5+ZHcotL7QBZF6+I0pcl4UVjAIJXV/ekW5g/OX0YwyesCh6xG/MukvISrmHadnY5UC8=
+lPA
+8rgNYahAx4jOMsmOdDcBz4gaEBJnssGCfSFvf6BEt2KjLGao7N0Z0s4dyHDosR6lJZEI3XLeq=
+Rgu
+6ZAGaK50V073hQ4GIFeclRA3uNcMUR6jEYw+PFh4KMD1NXuAJy9LI6r1+PBZfgk2F4GFh2rWK=
+Tnf
+kylyGhPqboLrxkUAEQEAAcLBfAQYAQgAJhYhBHpspNiyfIL1jyZzkfT3NZMfBcXOBQJZ3Ii6A=
+hsM
+BQkGESZ2AAoJEPT3NZMfBcXOgdkP/02/0ONJGu6i0lFnIJJ9gPZ4MkJqAqMwY8oUorXtNmmJg=
+YLE
+0CPugmcfSw+ozzPqbNbuPWYLf9UUv1sMI8HyCI4Me7WgUf7FDPU1+Os77W+5Si7o9u/Nuvh8T=
+jn2
+3O6Y+axTzzqdcB4MugkZMlENHdULfizL82SEONng9vK2Q5S76b6Hh0VjNUTv1ZMUjEXrPvFk2=
+Coq
+b+J3Myin3ptT+FKOjOn4UG4ItM88q5IfqPxawWNpbfrXbArmyOT5R9bSldgPejdAEglLSwoBY=
+7gW
+duf1vb28ik9iF1lFK19PYwy0gOQGgWzQTaEgTzREG3PUASeYrvR0O9zs+8jgxDwY9qWt5onsv=
+sLm
+rEkyuOXJYTxuITQ9z7Jgc8Qn0Hum+SvGPyL9n0ONL95X3bWjS8igkSOBopniayWq2Nd2s2fNW=
+mZP
+Nx7da6dJM1wbaeff7QNz8T8H/n62fifjcxWc5et0PH35/fM6u98EdzyUTiaGG+zxbX8AmwSGo=
+h4o
+9yxqayBp5yZ4ovW+tUlXWD6s0MZRdbCixLB18tQlC8VJdPtc2mHPCoC6aQ+XZwypG0j3K2JQp=
+xbH
+0M7nJopBOJZPDWR6TmwgtYjWbYjP23CxaIIgpw+wbWXIFQ9QFJUZlnR3XOBjmxWEHyq/jGqP6=
+68A
+6g49RhefId/b4RJ51vwUuFPvDlmm
+=3DEVfn
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------D3C0045A19D403E3C8FD0162--
+
+--bUPq9YjrSDQu0jJrvd0fiyqnwg7b3ezap--
+
+--jwcYgZVjdvUjugKsGpoFVhVE1lmDRXwxn
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEEemyk2LJ8gvWPJnOR9Pc1kx8Fxc4FAl7vwgwFAwAAAAAACgkQ9Pc1kx8Fxc5E
+BA/+I9SWPQw2BKzT8yUgp6mCszjyla+soz68sd+sbbKy1dKYTvjeyMTD05xfovTBWBw3oBMo8iIU
+bO3gGmkVvy5gtHlz/pctGHYCEL083JIQMNsmm7gHwDp9/U1kniunKfmkPguivd+j29F1QBj/Qwi2
+AqDOmJCS8DTqsyNPUvg1/zwBe0UDQQlPF+QLfMA6aR1nK7pGyH0YlAs5z1KMqyI1tvoFH3EFUObi
+J9sPbwieDe2wGgltLa5tMcj0M/g+FA7rjZNnZ1C2TpCJQIQZS/NAmi26H7YrWkiM7tnprFWTgYwW
+yOoSlyY91/t2rQ/oRphDcyyKX4Td+1JtLLPCwYfmAwNrIo+1kEE2eB+IViZe8orVNSyVGfb86SQF
+2DAIMk2uwRJJPR9djDP3D1rLC4VuJLR/EZqrXKfmUXbsGquAfItXZjb6qz7aA7s+CQthqaDaRBA5
+Iy8asgx5ASVoxlv7JJX9Q/EomB8bWFikFqv/U+s8ZBEPbtEiqCOLsoDIRVe9gEFTHIxecG30fopP
+XEHJRKZbkAh8XFp2mdUdTygV64f8+iUzN0WNAtvt/aviCo2iXBFtscRuY5KLgBk9G5mdcoFZEEOZ
+zklgQlSORshwi4BYC3GPadra8JSSzjrHJNNxLlCMBo5H5PwplmLOZZmlmpP+VWgCzgbEzoZYiBN+
+le4=
+=2YSP
+-----END PGP SIGNATURE-----
+
+--jwcYgZVjdvUjugKsGpoFVhVE1lmDRXwxn--
