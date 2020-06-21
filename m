@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 074262029E2
-	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 11:56:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 729772029E4
+	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 11:56:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729718AbgFUJ4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 05:56:01 -0400
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:59153 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729704AbgFUJ4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 05:56:00 -0400
-Date:   Sun, 21 Jun 2020 09:55:50 +0000
+        id S1729759AbgFUJ4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 05:56:49 -0400
+Received: from mail2.protonmail.ch ([185.70.40.22]:63556 "EHLO
+        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729573AbgFUJ4s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 05:56:48 -0400
+Date:   Sun, 21 Jun 2020 09:56:39 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1592733358; bh=4x5eYCNzPCn1hGiRUA0mGdrzZBJAKSMD6fuK9bbi8gs=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=SHcM/akZ6jU8Rc1wYNuBrFencBhtyVevqKROnLYW9gNudfjSmM99t2J+8dcP5c3/S
-         38V+Whpxl+pHeNwhwo5hhvnHy24o2/a+2BIcl/racfWFjKgrtuKfAhCKwCDXVA4eOT
-         g52PBCXWktyJawCTKLu9yao7G7Wo+ASzFPdkibsxd4RYsCgALD2Mgw5ZkyGXOjxqJX
-         pa3DfU5wT0kAi6Qn5pWrrUOA06DY8DyI9JGD4p8K0AcJq4Z4DobZyzR1YjV/ede+hB
-         AT5XtwPZZYWw9Mimf3gLP8/NsYo626Al49CrB7IPoH0xrVv27PTI62OHbQrAwJQIKM
-         kxTezvumuiCEw==
+        t=1592733407; bh=MDwLDc1JoR9QRgmmBefl/3rYHq3pLxsGdgTUQ1vf5S8=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=KkoxG0sNgBOw4fFiATyanWWZZcuee8CGTyEb+go31NvUDln3WjesTfeV4XrI4MsyI
+         F9ciAokBepwrgtxRwssrOsQg94CydPqGeEAQjYdHASSUwS8XzvX3rZ75jbUOV0vQbf
+         eAYNK8IuipbOWeSk7u+h/Xfdv13D85027CyaF3bJGpCE2Lae6X8LScoNphoy72GfTD
+         u85rkFDcnWGbUGTjHJXBJ32qfbUFFozKubN6FCfVuXSNCvDpVBTBIGR41ipUrzKD1E
+         z/prrP3wD1ZpJMr22ZT1g+05ZE9dQIrox1jqjhvtYz36k32xKIwi3H/O2qmLi2hq5m
+         SHde3IZEQFt2w==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -34,8 +34,10 @@ Cc:     Michal Kubecek <mkubecek@suse.cz>,
         Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v2 net 0/3] net: ethtool: netdev_features_strings[] cleanup
-Message-ID: <HPTrw9hrtm3e5151oH8oQfbr0HWTlzQ1n68bZn1hfd6yag38Tem57b4eTH-bhlaJgBxyhZb9U-qFFOafJoQqxcY-VX5fh5ZktTrnWhYeNB0=@pm.me>
+Subject: [PATCH v2 net 1/3] net: ethtool: add missing string for NETIF_F_GSO_TUNNEL_REMCSUM
+Message-ID: <ie96EMBWosqn2rSY71TZPFyuZoHHp_4r6ka8sT98tS0yKUuQp9r-lcBPxTfPm_Q2PS9eonqh04Kwu1S6bryuZOKS8ksodJ1QRbNY9rKXEZA=@pm.me>
+In-Reply-To: <HPTrw9hrtm3e5151oH8oQfbr0HWTlzQ1n68bZn1hfd6yag38Tem57b4eTH-bhlaJgBxyhZb9U-qFFOafJoQqxcY-VX5fh5ZktTrnWhYeNB0=@pm.me>
+References: <HPTrw9hrtm3e5151oH8oQfbr0HWTlzQ1n68bZn1hfd6yag38Tem57b4eTH-bhlaJgBxyhZb9U-qFFOafJoQqxcY-VX5fh5ZktTrnWhYeNB0=@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -48,32 +50,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This little series adds the last forgotten feature string for
-NETIF_F_GSO_TUNNEL_REMCSUM and attempts to prevent such losses
-in future.
+Commit e585f2363637 ("udp: Changes to udp_offload to support remote
+checksum offload") added new GSO type and a corresponding netdev
+feature, but missed Ethtool's 'netdev_features_strings' table.
+Give it a name so it will be exposed to userspace and become available
+for manual configuration.
 
-Patches 2-3 seem more like net-next candidates rather than net-fixes,
-but for me it seems a bit more suitable to pull it during "quiet" RC
-windows, so any new related code could start from this base.
+Fixes: e585f2363637 ("udp: Changes to udp_offload to support remote checksu=
+m offload")
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+---
+ net/ethtool/common.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-I was thinking about some kind of static assertion to have an early
-prevention mechanism for this, but the existing of 2 intended holes
-(former NO_CSUM and UFO) makes this problematic, at least at first
-sight.
-
-v2:
- - fix the "Fixes:" tag in the first patch;
- - no functional changes.
-
-Alexander Lobakin (3):
-  net: ethtool: add missing string for NETIF_F_GSO_TUNNEL_REMCSUM
-  net: ethtool: fix indentation of netdev_features_strings
-  net: ethtool: sync netdev_features_strings order with enum
-    netdev_features
-
- net/ethtool/common.c | 133 ++++++++++++++++++++++++-------------------
- 1 file changed, 74 insertions(+), 59 deletions(-)
-
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index 47f63526818e..aaecfc916a4d 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -40,6 +40,7 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][=
+ETH_GSTRING_LEN] =3D {
+ =09[NETIF_F_GSO_UDP_TUNNEL_BIT] =3D=09 "tx-udp_tnl-segmentation",
+ =09[NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT] =3D "tx-udp_tnl-csum-segmentation",
+ =09[NETIF_F_GSO_PARTIAL_BIT] =3D=09 "tx-gso-partial",
++=09[NETIF_F_GSO_TUNNEL_REMCSUM_BIT] =3D "tx-tunnel-remcsum-segmentation",
+ =09[NETIF_F_GSO_SCTP_BIT] =3D=09 "tx-sctp-segmentation",
+ =09[NETIF_F_GSO_ESP_BIT] =3D=09=09 "tx-esp-segmentation",
+ =09[NETIF_F_GSO_UDP_L4_BIT] =3D=09 "tx-udp-segmentation",
 --=20
 2.27.0
 
