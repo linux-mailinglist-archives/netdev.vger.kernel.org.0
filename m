@@ -2,116 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B52DE202C27
-	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 21:21:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D7BB202C6F
+	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 21:38:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729999AbgFUTVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 15:21:13 -0400
-Received: from mail-vi1eur05on2045.outbound.protection.outlook.com ([40.107.21.45]:48961
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729942AbgFUTVM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Jun 2020 15:21:12 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jubGHTMUeY4VkNdCGL1oFF+zHyHypj3DPlpFlj2LQffSsddrPoMJqH9PDIBK7gyhJnN1me887mppmdX1Hpdh7C0b8jrp6DmzcOYJ97kLI5TLEkY+lLaH5eV2gEafi2daw+LpwsfWHDyMd3Z0ShqtbAYTH2hfUOnXQQlFf/r1fvI19QezLyKhqXK/u7xi6u9hnWn1WLh7uEQu312lR+beKtfj5CLa9ccAkcMGvEiwglJ/nl90WhBE/EL0vhroBWjUlyAS17cSGFQ/aV9kL83LIPdeNtlKU8wtg1IbcBHv2NKeC7HpUR+ONtOq6Yq1ey4ZmRihzZ8Fmk+xQzwrmNJ81g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FT1s6t1jO4KhOQ/gzlVQKz6byx+3LWjjdaf3Ugiw95Q=;
- b=A1YXm4RbiloEwKdfdnwbZ+jga1JbPxhfz3yhkZK8EfY+REEPHtCjnB1aykc2KNzoLaKQ9u/ssuNTs7cC2H2fSwVfzlL4CteydLA3ciGNcwOdAAq6MMQ77itJy/fjC8fPANnSh0cbDD7fYdqf/xuwFgZ0R0vAa/Exe8SZB7qEYvv2zpbuPfyk/ywkgJhNuhMSVYFjWyiTx/sjF1JtoCuV1wy/EdHlx6D+1fxNsLJebhWLUjTQrlIakZDYgiRKChHxk1D1WH5PWBVY0OC6x58MXD+ahFEe8aibC+86jBvXX12uLdqjfDIp+2oNVk84y3tfulEWNzBtAmIcYRkhhu6QQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FT1s6t1jO4KhOQ/gzlVQKz6byx+3LWjjdaf3Ugiw95Q=;
- b=Ww35cOmkO0/h6KmsdwRg24yZbl2VaLd5WmjuKAHeaIYjkKo6BZuSIiN5A94FakdC82G2vJ04+B9hXMCeIlPzgIWOPnnHukMIKCFy0AgjmEE6ZfofcBadpF1yI5qJ8SAVi8G4lp9U6IV8fjDZhrvyuHdqM8yDV/b5idSjkj9IAd8=
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VI1PR0402MB3760.eurprd04.prod.outlook.com
- (2603:10a6:803:23::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Sun, 21 Jun
- 2020 19:21:08 +0000
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::e5d7:ec32:1cfe:71f0]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::e5d7:ec32:1cfe:71f0%7]) with mapi id 15.20.3109.026; Sun, 21 Jun 2020
- 19:21:08 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "michael@walle.cc" <michael@walle.cc>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>
-Subject: RE: [PATCH net-next v2 0/5] net: phy: add Lynx PCS MDIO module
-Thread-Topic: [PATCH net-next v2 0/5] net: phy: add Lynx PCS MDIO module
-Thread-Index: AQHWR7sls0YTCmyy4kaE3RVI7kO2DqjjOE2AgAA3IZA=
-Date:   Sun, 21 Jun 2020 19:21:07 +0000
-Message-ID: <VI1PR0402MB3871F57E22774625FA9A0C0EE0960@VI1PR0402MB3871.eurprd04.prod.outlook.com>
-References: <20200621110005.23306-1-ioana.ciornei@nxp.com>
- <20200621155153.GC338481@lunn.ch>
-In-Reply-To: <20200621155153.GC338481@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.26.56.128]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 27e6605d-fcb5-4101-3831-08d81618405f
-x-ms-traffictypediagnostic: VI1PR0402MB3760:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0402MB3760F0823ECEF4615D659C00E0960@VI1PR0402MB3760.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 04410E544A
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dicSmhhRXeHxHbHmRXWo0FQvo1z9c+3PFly/UjwPHBbcwCLi4m1DwFM37TCdk3SzFx1juoH7xE5QPJ9/my8zt3G+73LivabY+MU8wWprwKFyOFg9e6KyKIZ8U9eQr5Hy+3qzLrQalwurJDF++tisqjSPb19NBmOg88Vf/puSJ2gFyyJFQOgsX8BCB232jiT3mo47RKGDW3eJm8ksNxnoYRbLfnIA9T4SHqZtFNRWrkpfIOML92Lq5rE0b6SZ7qVEycNekgtEs0UMiNtsUfMHh4BRA7X3lDtuaQO4r9/g4dITgUqvJ9YDQ+j6cfz+mOsl
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(136003)(39850400004)(376002)(346002)(478600001)(5660300002)(76116006)(8936002)(66946007)(8676002)(52536014)(66476007)(66556008)(64756008)(66446008)(316002)(54906003)(44832011)(9686003)(4326008)(86362001)(33656002)(26005)(186003)(83380400001)(7696005)(6916009)(71200400001)(55016002)(4744005)(6506007)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: c8jHmIods5p8eYcUhZbPi5AWzTQyED9iI+TlnXyr5NZwVIkR2zFX3B/BzpzzDXqYj+6PBwbfbxGLwuLrNhbiyyIoSeuQkPa188xg/A1Elv7it1b+pmhUIh7c0AzQEe3GBnLt+wP68SlRTRbVWkCmvT4ih4DABCu9XSh2e7Cx4ZRikJEEfp0Jh8nhqHOqYYEsmdNeVRQkIzmzQ7nBHk6yJz57E5JJ56GD6LmJSY8ASvzZ9x0dbHyYGuHA30W3Rk5dWwvcg8V3rfKR6DHScbxDkC4z6k4CCWRTrJaVmh3h7OknmDDPGIOrUJdqAMKAgusNnqVIP3H7U0CWp6MgF2t2kegqonjfrNIZg5Wj7vvanVYFA1zkORyEKZnip5wh+TCCMrTIpk42paDsAagzicEKZj4jeILk9NZPIB2LdevFgl6qFne/z98KyhAoKyW0vTCPqqhoYCLf8E5vIX8gG9T5cUJFeYjdkxdZZze1ETTSeNM=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1730344AbgFUTh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 15:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730070AbgFUTh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 15:37:56 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B60EC061794
+        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 12:37:55 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id g1so11908082edv.6
+        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 12:37:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CWnDmafMP8vdilyoxxFZUfbSYi5dktxixw3zE/1zftY=;
+        b=W6ik+ZXtIbzTNKSv6N8O+4QSeapIxB20z6NxkIcRKFNHDkBakCdYkCM1Jd1KJ0fUqq
+         cSbvCh5ZTi1J/SV72vY336Ckq7HQ+txmKnFq0n10EYEtSktONBLEkNN3tLWdfTCFO14x
+         xMt6kPeU7EZZYZ7SRzR4dMNHLxRl1OyJTzzVH3fxLm3YBt1lxV3As0SaefPkoKic55vX
+         GYTd/gp0nacY5GI21XzrNby5+z0xmiHvHORU7XsHmp8X2daGXyo93oKTHaNFpuTco0Yg
+         RNCYM+KYIYiy8GwRxoRNiuz/pC7IEWWVLdZ6igEHjmpfX+v+WTErDV19w4TYnXyZfh1a
+         y1jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CWnDmafMP8vdilyoxxFZUfbSYi5dktxixw3zE/1zftY=;
+        b=NDPcVlwvI/BY/LZTDk53neie/HFvVVI/ewkm4V4nYxWG4FOCh0J8v8oOhIrg7UMqm1
+         RSR4w9nxcaZIJX8i4pFSUKB++sdvIV7STr5iKpEuyDHC1gbQMZNa2pjdBHS7AdRqABp2
+         Mg16jCXlhdZzAfpesariq5x+NHH3+fpe8DCZefOy6292kK9GREe5GAz/HuTVQNLQqj7E
+         0tQgAofew/sF6Icoe+OIdR30XMTp2F6JWZyTQK0SNeWtZqJ42gv/Ut+5MlAvlpW97ggx
+         UYqojyZNyNrJ+j0ercAZhEqLfD8md1IFLGn6j29Y/xT8rTa8WXG7BkDdJ5fxViSTxYIu
+         iQXw==
+X-Gm-Message-State: AOAM531l9pVYehrXqfgTvE1t6/qYr7wJOSLENwdGCt1MI+5ZU4jv07z5
+        WAWuTm8SeaKwX9CbksWM0BKytYwgU2cWFGuPINw=
+X-Google-Smtp-Source: ABdhPJwPwKYCd9e4PN1L+qYoI893fY/1Aj0ZXp5DfchyfiWroP3jBBC/zQ8sTcoXnkd5oip0Uisfl6yw7r2d3WSdCL8=
+X-Received: by 2002:aa7:c157:: with SMTP id r23mr14006468edp.139.1592768274080;
+ Sun, 21 Jun 2020 12:37:54 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 27e6605d-fcb5-4101-3831-08d81618405f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jun 2020 19:21:08.3875
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: B7TcU7YvFLPjVhTQydgti+LDylw2QaPMNzUkEVWsIZM4a6JEAqgfcEpttjs7RbZz7jP1UmvuQrLobqhiQ75FkA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3760
+References: <20200217172242.GZ25745@shell.armlinux.org.uk> <20200621143340.GI1605@shell.armlinux.org.uk>
+In-Reply-To: <20200621143340.GI1605@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sun, 21 Jun 2020 22:37:43 +0300
+Message-ID: <CA+h21ho2Papr2gXqap2LGE3N4LJAbor2WxzX1quDckVvw-mQ5Q@mail.gmail.com>
+Subject: Re: [CFT 0/8] rework phylink interface for split MAC/PCS support
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Felix Fietkau <nbd@openwrt.org>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Russell,
 
-> Subject: Re: [PATCH net-next v2 0/5] net: phy: add Lynx PCS MDIO module
->=20
-> Hi Ioana
->=20
-> I will be submitting a patchset soon which does as Russell requested, mov=
-ing
-> drivers into subdirectories.
->=20
-> As part of that, i rename mdio-xpcs to pcs-xpcs, and change its Kconfig s=
-ymbol
-> to PCS_XPCS. It would be nice if you could follow this new naming, so all=
- i need
-> to do is a move.
->=20
-> Thanks
-> 	Andrew
+On Sun, 21 Jun 2020 at 17:34, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> All,
+>
+> This is now almost four months old, but I see that I didn't copy the
+> message to everyone who should've been, especially for the five
+> remaining drivers.
+>
+> I had asked for input from maintainers to help me convert their
+> phylink-using drivers to the new style where mac_link_up() performs
+> the speed, duplex and pause setup rather than mac_config(). So far,
+> I have had very little assistance with this, and it is now standing
+> in the way of further changes to phylink, particularly with proper
+> PCS support. You are effectively blocking this work; I can't break
+> your code as that will cause a kernel regression.
+>
+> This is one of the reasons why there were not many phylink patches
+> merged for the last merge window.
+>
+> The following drivers in current net-next remain unconverted:
+>
+> drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> drivers/net/dsa/ocelot/felix.c
+> drivers/net/dsa/qca/ar9331.c
+> drivers/net/dsa/bcm_sf2.c
+> drivers/net/dsa/b53/b53_common.c
+>
+> These can be easily identified by grepping for conditionals where the
+> expression matches the "MLO_PAUSE_.X" regexp.
+>
+> I have an untested patch that I will be sending out today for
+> mtk_eth_soc.c, but the four DSA ones definitely require their authors
+> or maintainers to either make the changes, or assist with that since
+> their code is not straight forward.
+>
+> Essentially, if you are listed in this email's To: header, then you
+> are listed as a maintainer for one of the affected drivers, and I am
+> requesting assistance from you for this task please.
+>
+> Thanks.
+>
+> Russell.
+>
 
-Sure, I will change the file to be named pcs-lynx.c and the Kconfig accordi=
-ngly.
-Should I wait for you to send the patch moving xpcs to another folder?
+If forcing MAC speed is to be moved in mac_link_up(), and if (as you
+requested in the mdio-lynx-pcs thread) configuring the PCS is to be
+moved in pcs_link_up() and pcs_config() respectively, then what
+remains to be done in mac_config()?
 
-Ioana
-
+Regards,
+-Vladimir
