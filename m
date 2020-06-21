@@ -2,139 +2,402 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78158202CCF
-	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 22:52:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A761202CD4
+	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 22:54:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730691AbgFUUwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 16:52:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730663AbgFUUww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 16:52:52 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C3CC061794
-        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 13:52:52 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id s18so17413049ioe.2
-        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 13:52:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dfXzdlnyDO7H9YcupXoLQMAm1ClIi5bpyG1BKAHB964=;
-        b=sA6dVoMLOME6xe2SI+Lkjr6nRhxHjg24KRcodu1iFAkB5hKaf7xFNTsEv5AcFhpMjg
-         IiT5Y9z/b5pwt0Fk2yfBpp4GiRMcXnsB+StidHLTk1DveJJCg/Ay2g7ZBw9GD5wB2M49
-         g7t1yZG//p74ZGn2dTT9pVA6j0nNgGdbH2inGxpTZ2e/Nm+MWe5oeIb1SJyhNMKCyzbZ
-         QjCae+0mtwRIo1hlmzNJheYyMMvy0ZXLSWLCv9DLxk1OFTG1Rd1z/ipnYNQeMS8yT2OW
-         DvHjzgGvGhYLObDShcDopxX1dPR9m47cFn/OcpLN784uIS0PplxOKD8Bp7tEDNhddgdL
-         zgBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=dfXzdlnyDO7H9YcupXoLQMAm1ClIi5bpyG1BKAHB964=;
-        b=YSOfHHViaD+Y8A09AQa+IxNmKr4pHX7pkOBzzzV5CByKz9Rss3nNdOrAkhPf19oza2
-         KXiej95cUPY4Mwr2lHEvzNnOmyxBj+O3v7TSp/gQAWKw6XIUHpFUsvMCfc37THotLDRQ
-         +HKtOFO2aoYj9lsolKMo0Ey7RPc6r0igx3ZwZ2yhVu7KRHcci169/JUiPcFcFGbco0S9
-         ISosIaN6FThGeOcxT4WRXbg9ElGVdmnmdwt4Nb1XYDBD6XjXNklewIfKdNM6km1LK45F
-         CIYe3ST+catqLQqKy5Hyv3BJ51W+n5fULz/jbs784KBRvvz8i9yP4iSp7JGnqQutGVou
-         RcWQ==
-X-Gm-Message-State: AOAM532+H+568AYP5xbmn1UlIgS8k03VArfSWnWezcpdyDe8IBJDhr3N
-        jDaMBUCaQO0gMh4lj+GiA74=
-X-Google-Smtp-Source: ABdhPJw5CnNuZ7GSJHt8Ye2wXYHNR/IIz8pNhKvXEFSRqwoYWEiJSJKuMcDXf2Ru3il/FWajv0lc3A==
-X-Received: by 2002:a5d:87c4:: with SMTP id q4mr16420266ios.169.1592772772203;
-        Sun, 21 Jun 2020 13:52:52 -0700 (PDT)
-Received: from [192.168.1.2] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.googlemail.com with ESMTPSA id s2sm2667032iob.17.2020.06.21.13.52.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Jun 2020 13:52:51 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 0/3] Add Marvell 88E1340S, 88E1548P support
-To:     Maxim Kochetkov <fido_max@inbox.ru>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        id S1730727AbgFUUyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 16:54:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53202 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730663AbgFUUyT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Jun 2020 16:54:19 -0400
+Received: from localhost (unknown [151.48.138.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E6EA92528A;
+        Sun, 21 Jun 2020 20:54:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592772859;
+        bh=2eTd2YSiQ4jc/vVZeSfHDWa/Dk3CU1e4D9cG1p+gGc4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mV047qAm3pRt84Tvpu86rPB6W+QNHCsMDXTIECwyc4W0KJk1LrPqKJCd4m87VGWny
+         1w2K+PTxTN+rBTVfHHBEJ3rj9hVjBAET08sAIv+VBQLWv835riKxqBjGdpr0Tmj6hX
+         qBX9VugU95JyflsWT3+mv9HTWo+P57PeXovmgyaA=
+Date:   Sun, 21 Jun 2020 22:54:12 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Oleksandr Natalenko <oleksandr@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20200621075952.11970-1-fido_max@inbox.ru>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <314cd552-d265-5317-5892-aa224d74b74c@gmail.com>
-Date:   Sun, 21 Jun 2020 13:52:50 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.8.0
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: mt7612 suspend/resume issue
+Message-ID: <20200621205412.GB271428@localhost.localdomain>
+References: <20200618090556.pepjdbnba2gqzcbe@butterfly.localdomain>
+ <20200618111859.GC698688@lore-desk.lan>
+ <20200619150132.2zrc3ojqhtbn432u@butterfly.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <20200621075952.11970-1-fido_max@inbox.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ZfOjI3PrQbgiZnxM"
+Content-Disposition: inline
+In-Reply-To: <20200619150132.2zrc3ojqhtbn432u@butterfly.localdomain>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 2020-06-21 à 00:59, Maxim Kochetkov a écrit :
-> This patch series add new PHY id support.
-> Russell King asked to use single style for referencing functions.
-> 
-> Maxim Kochetkov (3):
->   net: phy: marvell: use a single style for referencing functions
->   net: phy: marvell: Add Marvell 88E1340S support
->   net: phy: marvell: Add Marvell 88E1548P support
 
-Andrew and I gave you Reviewed-by tags for these patches already, it
-would be nice to carry them around.
--- 
-Florian
+--ZfOjI3PrQbgiZnxM
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> Hello, Lorenzo.
+
+Hi Oleksandr,
+
+>=20
+> Thanks for the quick reply. Please see my observation below.
+>=20
+> On Thu, Jun 18, 2020 at 01:18:59PM +0200, Lorenzo Bianconi wrote:
+> > I have not reproduced the issue myself yet, but I guess we can try:
+> > 1- update to latest Felix's tree [1]
+> > 2- could you please try to apply the patch below? (compile-test only)
+>=20
+> I've started with trying your patch first (apllied to v5.7.4). Please
+> see my comments on it inline.
+>=20
+> > [1] https://github.com/nbd168/wireless
+> >=20
+> > From 400268a0ee5843cf736308504dfbd2f20a291eaf Mon Sep 17 00:00:00 2001
+> > Message-Id: <400268a0ee5843cf736308504dfbd2f20a291eaf.1592478809.git.lo=
+renzo@kernel.org>
+> > From: Lorenzo Bianconi <lorenzo@kernel.org>
+> > Date: Thu, 18 Jun 2020 13:10:11 +0200
+> > Subject: [PATCH] mt76: mt76x2: fix pci suspend
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+
+[...]
+
+> > +	for (i =3D 0; i < __MT_TXQ_MAX; i++)
+> > +		mt76_queue_tx_cleanup(dev, i, true);
+> > +	mt76_for_each_q_rx(&dev->mt76, i)
+>=20
+> Since v5.7.4 doesn't have this macro, I've pulled it manually.
+
+this is why I asked to use Felix's tree :)
+
+>=20
+> > +		mt76_queue_rx_reset(dev, i);
+> > +
+> > +	mt76x02_dma_enable(dev);
+> > +}
+>=20
+> I had to add EXPORT_SYMBOL_GPL(mt76x02_dma_reset) in order to get the
+> kernel linked successfully.
+
+ack, sorry
+
+>=20
+> > +
+> >  void mt76x02_mac_start(struct mt76x02_dev *dev)
+> >  {
+> >  	mt76x02_mac_reset_counters(dev);
+> > diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/=
+net/wireless/mediatek/mt76/mt76x2/pci.c
+> > index 53ca0cedf026..5543e242fb9b 100644
+> > --- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+> > +++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+> > @@ -103,6 +103,60 @@ mt76pci_remove(struct pci_dev *pdev)
+> >  	mt76_free_device(mdev);
+> >  }
+> > =20
+> > +static int __maybe_unused
+> > +mt76x2e_suspend(struct pci_dev *pdev, pm_message_t state)
+> > +{
+> > +	struct mt76_dev *mdev =3D pci_get_drvdata(pdev);
+> > +	struct mt76x02_dev *dev =3D container_of(mdev, struct mt76x02_dev, mt=
+76);
+> > +	int i, err;
+
+can you please double-check what is the PCI state requested during suspend?
+
+Regards,
+Lorenzo
+
+> > +
+> > +	napi_disable(&mdev->tx_napi);
+> > +	tasklet_kill(&mdev->pre_tbtt_tasklet);
+> > +	tasklet_kill(&mdev->tx_tasklet);
+> > +
+> > +	mt76_for_each_q_rx(mdev, i)
+> > +		napi_disable(&mdev->napi[i]);
+> > +
+> > +	mt76x02_dma_reset(dev);
+> > +
+> > +	pci_enable_wake(pdev, pci_choose_state(pdev, state), true);
+> > +	pci_save_state(pdev);
+> > +	err =3D pci_set_power_state(pdev, pci_choose_state(pdev, state));
+> > +	if (err)
+> > +		goto restore;
+> > +
+> > +	return 0;
+> > +
+> > +restore:
+> > +	mt76_for_each_q_rx(mdev, i)
+> > +		napi_enable(&mdev->napi[i]);
+> > +	napi_enable(&mdev->tx_napi);
+> > +
+> > +	return err;
+> > +}
+> > +
+> > +static int __maybe_unused
+> > +mt76x2e_resume(struct pci_dev *pdev)
+> > +{
+> > +	struct mt76_dev *mdev =3D pci_get_drvdata(pdev);
+> > +	int i, err;
+> > +
+> > +	err =3D pci_set_power_state(pdev, PCI_D0);
+> > +	if (err)
+> > +		return err;
+> > +
+> > +	pci_restore_state(pdev);
+> > +
+> > +	mt76_for_each_q_rx(mdev, i) {
+> > +		napi_enable(&mdev->napi[i]);
+> > +		napi_schedule(&mdev->napi[i]);
+> > +	}
+> > +	napi_enable(&mdev->tx_napi);
+> > +	napi_schedule(&mdev->tx_napi);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  MODULE_DEVICE_TABLE(pci, mt76pci_device_table);
+> >  MODULE_FIRMWARE(MT7662_FIRMWARE);
+> >  MODULE_FIRMWARE(MT7662_ROM_PATCH);
+> > @@ -113,6 +167,10 @@ static struct pci_driver mt76pci_driver =3D {
+> >  	.id_table	=3D mt76pci_device_table,
+> >  	.probe		=3D mt76pci_probe,
+> >  	.remove		=3D mt76pci_remove,
+> > +#ifdef CONFIG_PM
+> > +	.suspend	=3D mt76x2e_suspend,
+> > +	.resume		=3D mt76x2e_resume,
+> > +#endif /* CONFIG_PM */
+> >  };
+> > =20
+> >  module_pci_driver(mt76pci_driver);
+> > --=20
+> > 2.26.2
+>=20
+> Unfortunately, it seems it did little change to my setup. The resume
+> time shrunk it seems (but is still noticeable), and the system survived
+> 2 suspend/resume cycles, but after the third resume the following
+> happened:
+>=20
+> =3D=3D=3D
+> =C4=8Den 18 23:11:58 spock kernel: mt76x2e 0000:01:00.0: MCU message 2 (s=
+eq 11) timed out
+> =C4=8Den 18 23:11:58 spock kernel: mt76x2e 0000:01:00.0: MCU message 30 (=
+seq 12) timed out
+> =C4=8Den 18 23:11:58 spock kernel: mt76x2e 0000:01:00.0: MCU message 30 (=
+seq 13) timed out
+> =C4=8Den 18 23:11:58 spock kernel: mt76x2e 0000:01:00.0: Firmware Version=
+: 0.0.00
+> =C4=8Den 18 23:11:58 spock kernel: mt76x2e 0000:01:00.0: Build: 1
+> =C4=8Den 18 23:11:58 spock kernel: mt76x2e 0000:01:00.0: Build Time: 2015=
+07311614____
+> =C4=8Den 18 23:11:58 spock kernel: mt76x2e 0000:01:00.0: Firmware running!
+> =C4=8Den 18 23:11:58 spock kernel: ieee80211 phy0: Hardware restart was r=
+equested
+> =C4=8Den 18 23:11:59 spock kernel: mt76x2e 0000:01:00.0: MCU message 2 (s=
+eq 1) timed out
+> =C4=8Den 18 23:11:59 spock kernel: mt76x2e 0000:01:00.0: Firmware Version=
+: 0.0.00
+> =C4=8Den 18 23:11:59 spock kernel: mt76x2e 0000:01:00.0: Build: 1
+> =C4=8Den 18 23:11:59 spock kernel: mt76x2e 0000:01:00.0: Build Time: 2015=
+07311614____
+> =C4=8Den 18 23:11:59 spock kernel: mt76x2e 0000:01:00.0: Firmware running!
+> =C4=8Den 18 23:11:59 spock kernel: ieee80211 phy0: Hardware restart was r=
+equested
+> =C4=8Den 18 23:12:00 spock kernel: mt76x2e 0000:01:00.0: MCU message 30 (=
+seq 3) timed out
+> =C4=8Den 18 23:12:01 spock kernel: mt76x2e 0000:01:00.0: MCU message 30 (=
+seq 4) timed out
+> =C4=8Den 18 23:12:01 spock kernel: mt76x2e 0000:01:00.0: Firmware Version=
+: 0.0.00
+> =C4=8Den 18 23:12:01 spock kernel: mt76x2e 0000:01:00.0: Build: 1
+> =C4=8Den 18 23:12:01 spock kernel: mt76x2e 0000:01:00.0: Build Time: 2015=
+07311614____
+> =C4=8Den 18 23:12:01 spock kernel: mt76x2e 0000:01:00.0: Firmware running!
+> =C4=8Den 18 23:12:01 spock kernel: ieee80211 phy0: Hardware restart was r=
+equested
+> =C4=8Den 18 23:12:02 spock kernel: ------------[ cut here ]------------
+> =C4=8Den 18 23:12:02 spock kernel: WARNING: CPU: 3 PID: 171 at net/mac802=
+11/util.c:2270 ieee80211_reconfig+0x234/0x1700 [mac80211]
+> =C4=8Den 18 23:12:02 spock kernel: Modules linked in: cmac ccm bridge stp=
+ llc nft_ct nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nf_tables msr tun nf=
+netlink nls_iso8859_1 nls_cp437 vfat fat mt76x2e mt76x2_common mt76x02_lib =
+mt76 mac80211 intel_rapl_msr snd_hda_codec_hdmi snd_hda_codec_cirrus mei_hd=
+cp snd_hda_codec_generic cfg80211 intel_rapl_common x86_pkg_temp_thermal in=
+tel_powerclamp coretemp dell_laptop iTCO_wdt snd_hda_intel kvm_intel iTCO_v=
+endor_support dell_wmi snd_intel_dspcfg sparse_keymap snd_hda_codec ledtrig=
+_audio wmi_bmof dell_smbios snd_hda_core kvm rtsx_usb_ms dell_wmi_descripto=
+r memstick dcdbas snd_hwdep dell_smm_hwmon irqbypass psmouse intel_cstate s=
+nd_pcm intel_uncore joydev intel_rapl_perf mousedev mei_me alx rfkill input=
+_leds snd_timer i2c_i801 snd mei lpc_ich libarc4 mdio soundcore battery wmi=
+ evdev dell_smo8800 mac_hid ac tcp_bbr crypto_user ip_tables x_tables xfs d=
+m_thin_pool dm_persistent_data dm_bio_prison dm_bufio libcrc32c crc32c_gene=
+ric dm_crypt hid_logitech_hidpp hid_logitech_dj
+> =C4=8Den 18 23:12:02 spock kernel:  hid_generic usbhid hid rtsx_usb_sdmmc=
+ mmc_core rtsx_usb dm_mod raid10 serio_raw atkbd libps2 md_mod crct10dif_pc=
+lmul crc32_pclmul crc32c_intel ghash_clmulni_intel aesni_intel crypto_simd =
+cryptd glue_helper xhci_pci xhci_hcd ehci_pci ehci_hcd i8042 serio i915 int=
+el_gtt i2c_algo_bit drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys=
+_fops cec rc_core drm agpgart
+> =C4=8Den 18 23:12:02 spock kernel: CPU: 3 PID: 171 Comm: kworker/3:3 Not =
+tainted 5.7.0-pf3 #1
+> =C4=8Den 18 23:12:02 spock kernel: Hardware name: Dell Inc.          Vost=
+ro 3360/0F5DWF, BIOS A18 09/25/2013
+> =C4=8Den 18 23:12:02 spock kernel: Workqueue: events_freezable ieee80211_=
+restart_work [mac80211]
+> =C4=8Den 18 23:12:02 spock kernel: RIP: 0010:ieee80211_reconfig+0x234/0x1=
+700 [mac80211]
+> =C4=8Den 18 23:12:02 spock kernel: Code: 83 b8 0b 00 00 83 e0 fd 83 f8 04=
+ 74 e6 48 8b 83 90 04 00 00 a8 01 74 db 48 89 de 48 89 ef e8 03 dc fb ff 41=
+ 89 c7 85 c0 74 c9 <0f> 0b 48 8b 5b 08 4c 8b 24 24 48 3b 1c 24 75 12 e9 51 =
+fe ff ff 48
+> =C4=8Den 18 23:12:02 spock kernel: RSP: 0018:ffffa87c40403df0 EFLAGS: 000=
+10286
+> =C4=8Den 18 23:12:02 spock kernel: RAX: 00000000fffffff0 RBX: ffff9fe028f=
+6e900 RCX: 0000000000000008
+> =C4=8Den 18 23:12:02 spock kernel: RDX: 0000000000000000 RSI: 00000000000=
+00100 RDI: 0000000000000100
+> =C4=8Den 18 23:12:02 spock kernel: RBP: ffff9fe0283787e0 R08: 00000000000=
+00000 R09: 0000000000000001
+> =C4=8Den 18 23:12:02 spock kernel: R10: 0000000000000001 R11: 00000000000=
+00000 R12: ffff9fe0283798d0
+> =C4=8Den 18 23:12:02 spock kernel: R13: 00000000ffffffff R14: 00000000000=
+00000 R15: 00000000fffffff0
+> =C4=8Den 18 23:12:02 spock kernel: FS:  0000000000000000(0000) GS:ffff9fe=
+02f2c0000(0000) knlGS:0000000000000000
+> =C4=8Den 18 23:12:02 spock kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 00000=
+00080050033
+> =C4=8Den 18 23:12:02 spock kernel: CR2: 00007f313b33a940 CR3: 000000012ea=
+0a002 CR4: 00000000001706e0
+> =C4=8Den 18 23:12:02 spock kernel: Call Trace:
+> =C4=8Den 18 23:12:02 spock kernel:  ieee80211_restart_work+0xb7/0xe0 [mac=
+80211]
+> =C4=8Den 18 23:12:02 spock kernel:  process_one_work+0x1d4/0x3c0
+> =C4=8Den 18 23:12:02 spock kernel:  worker_thread+0x228/0x470
+> =C4=8Den 18 23:12:02 spock kernel:  ? process_one_work+0x3c0/0x3c0
+> =C4=8Den 18 23:12:02 spock kernel:  kthread+0x19c/0x1c0
+> =C4=8Den 18 23:12:02 spock kernel:  ? __kthread_init_worker+0x30/0x30
+> =C4=8Den 18 23:12:02 spock kernel:  ret_from_fork+0x35/0x40
+> =C4=8Den 18 23:12:02 spock kernel: ---[ end trace e017bc3573bd9bf2 ]---
+> =C4=8Den 18 23:12:02 spock kernel: ------------[ cut here ]------------
+> =C4=8Den 18 23:12:02 spock kernel: wlp1s0:  Failed check-sdata-in-driver =
+check, flags: 0x0
+> =C4=8Den 18 23:12:02 spock kernel: WARNING: CPU: 3 PID: 171 at net/mac802=
+11/driver-ops.h:17 drv_remove_interface+0x11f/0x130 [mac80211]
+> =C4=8Den 18 23:12:02 spock kernel: Modules linked in: cmac ccm bridge stp=
+ llc nft_ct nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nf_tables msr tun nf=
+netlink nls_iso8859_1 nls_cp437 vfat fat mt76x2e mt76x2_common mt76x02_lib =
+mt76 mac80211 intel_rapl_msr snd_hda_codec_hdmi snd_hda_codec_cirrus mei_hd=
+cp snd_hda_codec_generic cfg80211 intel_rapl_common x86_pkg_temp_thermal in=
+tel_powerclamp coretemp dell_laptop iTCO_wdt snd_hda_intel kvm_intel iTCO_v=
+endor_support dell_wmi snd_intel_dspcfg sparse_keymap snd_hda_codec ledtrig=
+_audio wmi_bmof dell_smbios snd_hda_core kvm rtsx_usb_ms dell_wmi_descripto=
+r memstick dcdbas snd_hwdep dell_smm_hwmon irqbypass psmouse intel_cstate s=
+nd_pcm intel_uncore joydev intel_rapl_perf mousedev mei_me alx rfkill input=
+_leds snd_timer i2c_i801 snd mei lpc_ich libarc4 mdio soundcore battery wmi=
+ evdev dell_smo8800 mac_hid ac tcp_bbr crypto_user ip_tables x_tables xfs d=
+m_thin_pool dm_persistent_data dm_bio_prison dm_bufio libcrc32c crc32c_gene=
+ric dm_crypt hid_logitech_hidpp hid_logitech_dj
+> =C4=8Den 18 23:12:02 spock kernel:  hid_generic usbhid hid rtsx_usb_sdmmc=
+ mmc_core rtsx_usb dm_mod raid10 serio_raw atkbd libps2 md_mod crct10dif_pc=
+lmul crc32_pclmul crc32c_intel ghash_clmulni_intel aesni_intel crypto_simd =
+cryptd glue_helper xhci_pci xhci_hcd ehci_pci ehci_hcd i8042 serio i915 int=
+el_gtt i2c_algo_bit drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys=
+_fops cec rc_core drm agpgart
+> =C4=8Den 18 23:12:02 spock kernel: CPU: 3 PID: 171 Comm: kworker/3:3 Tain=
+ted: G        W         5.7.0-pf3 #1
+> =C4=8Den 18 23:12:02 spock kernel: Hardware name: Dell Inc.          Vost=
+ro 3360/0F5DWF, BIOS A18 09/25/2013
+> =C4=8Den 18 23:12:02 spock kernel: Workqueue: events_freezable ieee80211_=
+restart_work [mac80211]
+> =C4=8Den 18 23:12:02 spock kernel: RIP: 0010:drv_remove_interface+0x11f/0=
+x130 [mac80211]
+> =C4=8Den 18 23:12:02 spock kernel: Code: a0 57 f0 c2 e9 4b ff ff ff 48 8b=
+ 86 78 04 00 00 48 8d b6 98 04 00 00 48 c7 c7 e8 ef f8 c0 48 85 c0 48 0f 45=
+ f0 e8 99 2e fa c2 <0f> 0b 5b 5d 41 5c c3 66 2e 0f 1f 84 00 00 00 00 00 0f =
+1f 44 00 00
+> =C4=8Den 18 23:12:02 spock kernel: RSP: 0018:ffffa87c40403c80 EFLAGS: 000=
+10282
+> =C4=8Den 18 23:12:02 spock kernel: RAX: 0000000000000000 RBX: ffff9fe028f=
+6e900 RCX: 0000000000000000
+> =C4=8Den 18 23:12:02 spock kernel: RDX: 0000000000000001 RSI: 00000000000=
+00082 RDI: 00000000ffffffff
+> =C4=8Den 18 23:12:02 spock kernel: RBP: ffff9fe028379930 R08: 00000000000=
+004c9 R09: 0000000000000001
+> =C4=8Den 18 23:12:02 spock kernel: R10: 0000000000000001 R11: 00000000000=
+06fc0 R12: ffff9fe028379000
+> =C4=8Den 18 23:12:02 spock kernel: R13: ffff9fe028f6f4b8 R14: ffff9fe0283=
+78ca0 R15: ffff9fe0283787e0
+> =C4=8Den 18 23:12:02 spock kernel: FS:  0000000000000000(0000) GS:ffff9fe=
+02f2c0000(0000) knlGS:0000000000000000
+> =C4=8Den 18 23:12:02 spock kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 00000=
+00080050033
+> =C4=8Den 18 23:12:02 spock kernel: CR2: 00007f313b33a940 CR3: 000000012ea=
+0a002 CR4: 00000000001706e0
+> =C4=8Den 18 23:12:02 spock kernel: Call Trace:
+> =C4=8Den 18 23:12:02 spock kernel:  ieee80211_do_stop+0x5af/0x8c0 [mac802=
+11]
+> =C4=8Den 18 23:12:02 spock kernel:  ieee80211_stop+0x16/0x20 [mac80211]
+> =C4=8Den 18 23:12:02 spock kernel:  __dev_close_many+0xaa/0x120
+> =C4=8Den 18 23:12:02 spock kernel:  dev_close_many+0xa1/0x2b0
+> =C4=8Den 18 23:12:02 spock kernel:  dev_close+0x6d/0x90
+> =C4=8Den 18 23:12:02 spock kernel:  cfg80211_shutdown_all_interfaces+0x71=
+/0xd0 [cfg80211]
+> =C4=8Den 18 23:12:02 spock kernel:  ieee80211_reconfig+0xa2/0x1700 [mac80=
+211]
+> =C4=8Den 18 23:12:02 spock kernel:  ieee80211_restart_work+0xb7/0xe0 [mac=
+80211]
+> =C4=8Den 18 23:12:02 spock kernel:  process_one_work+0x1d4/0x3c0
+> =C4=8Den 18 23:12:02 spock kernel:  worker_thread+0x228/0x470
+> =C4=8Den 18 23:12:02 spock kernel:  ? process_one_work+0x3c0/0x3c0
+> =C4=8Den 18 23:12:02 spock kernel:  kthread+0x19c/0x1c0
+> =C4=8Den 18 23:12:02 spock kernel:  ? __kthread_init_worker+0x30/0x30
+> =C4=8Den 18 23:12:02 spock kernel:  ret_from_fork+0x35/0x40
+> =C4=8Den 18 23:12:02 spock kernel: ---[ end trace e017bc3573bd9bf3 ]---
+> =3D=3D=3D
+>=20
+> Do you still want me to try Felix's tree, or there's something else I
+> can try?
+>=20
+> Thank you.
+>=20
+> --=20
+>   Best regards,
+>     Oleksandr Natalenko (post-factum)
+>     Principal Software Maintenance Engineer
+>=20
+
+--ZfOjI3PrQbgiZnxM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXu/I8gAKCRA6cBh0uS2t
+rEE+AQDx2hkk63uLsc/7Sf4eS10jiA1EBJTJ7hpmpdXn7pyKeAD/boCIEhi1pO0i
+IghcLeq0ZzD3ZEn9yGtAApA/AegTcwM=
+=SJQj
+-----END PGP SIGNATURE-----
+
+--ZfOjI3PrQbgiZnxM--
