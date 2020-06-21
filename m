@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A1CA2027F5
-	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 04:22:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49A402027F7
+	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 04:23:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729147AbgFUCWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Jun 2020 22:22:41 -0400
-Received: from mail-40136.protonmail.ch ([185.70.40.136]:32687 "EHLO
-        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729080AbgFUCWk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 22:22:40 -0400
-Date:   Sun, 21 Jun 2020 02:22:34 +0000
+        id S1729164AbgFUCXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Jun 2020 22:23:11 -0400
+Received: from mail2.protonmail.ch ([185.70.40.22]:34935 "EHLO
+        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729075AbgFUCXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Jun 2020 22:23:11 -0400
+Date:   Sun, 21 Jun 2020 02:23:04 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail; t=1592706158;
-        bh=J+OeX+4eyPga/gDUKZyWvFD1/UBFNesYDfkyLzSviPk=;
+        s=protonmail; t=1592706189;
+        bh=9vtL9EyMGLrCjnzNKQJYRm/rvKLXdTBp5VXi/Vh7cyM=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=sMeGhntT0p2Zs81ZgvFsiWUkGbBEF9AAei9xmh5FQ8rwcELwIfSj+XcMPw/0kSw7Y
-         mVUeo8aGjc3x6JfOEoEcMisDpjLG5k+aYFU3WCnlv79WUIGygmoio090PokIA2z50m
-         +hodmEds+Mqxs5wMUUOcXp5STUbD2fdIZjVnE6o4=
+        b=SpUNADc4KMVhEYe3XOs2aMhc+JvQxhdcX2tqty81sxhcjVvC9SBkrldGGV7D5fggu
+         3VzIgDpdE+Nt5XtS+BE7h+5/NGQGFhY8u4lrM5zVVv71mbDBaISm3nv3tK9xp0rMhp
+         qywZs8HtB4tWEIFaonQEJcvQJ/JccNVwDGh8Ep9U=
 To:     davem@davemloft.net
 From:   Colton Lewis <colton.w.lewis@protonmail.com>
 Cc:     netdev@vger.kernel.org,
         Colton Lewis <colton.w.lewis@protonmail.com>
 Reply-To: Colton Lewis <colton.w.lewis@protonmail.com>
-Subject: [PATCH 1/3] net: core: correct trivial kernel-doc inconsistencies
-Message-ID: <20200621022209.11814-2-colton.w.lewis@protonmail.com>
+Subject: [PATCH 3/3] net: phylink: correct trivial kernel-doc inconsistencies
+Message-ID: <20200621022209.11814-4-colton.w.lewis@protonmail.com>
 In-Reply-To: <20200621022209.11814-1-colton.w.lewis@protonmail.com>
 References: <20200621022209.11814-1-colton.w.lewis@protonmail.com>
 MIME-Version: 1.0
@@ -40,28 +40,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Silence documentation build warnings by correcting kernel-doc comments.
+Silence documentation build warnings by correcting kernel-doc
+comments. In the case of pcs_{config,an_restart,link_up}, change the
+declaration to a normal function since these only there for
+documentation anyway.
 
-./net/core/dev.c:7913: warning: Function parameter or member 'dev' not desc=
-ribed in 'netdev_get_xmit_slave'
+./include/linux/phylink.h:74: warning: Function parameter or member 'poll_f=
+ixed_state' not described in 'phylink_config'
+./include/linux/phylink.h:74: warning: Function parameter or member 'get_fi=
+xed_state' not described in 'phylink_config'
+./include/linux/phylink.h:336: warning: Function parameter or member 'pcs_c=
+onfig' not described in 'int'
+./include/linux/phylink.h:336: warning: Excess function parameter 'config' =
+description in 'int'
+./include/linux/phylink.h:336: warning: Excess function parameter 'mode' de=
+scription in 'int'
+./include/linux/phylink.h:336: warning: Excess function parameter 'interfac=
+e' description in 'int'
+./include/linux/phylink.h:336: warning: Excess function parameter 'advertis=
+ing' description in 'int'
+./include/linux/phylink.h:345: warning: Function parameter or member 'pcs_a=
+n_restart' not described in 'void'
+./include/linux/phylink.h:345: warning: Excess function parameter 'config' =
+description in 'void'
+./include/linux/phylink.h:361: warning: Function parameter or member 'pcs_l=
+ink_up' not described in 'void'
+./include/linux/phylink.h:361: warning: Excess function parameter 'config' =
+description in 'void'
+./include/linux/phylink.h:361: warning: Excess function parameter 'mode' de=
+scription in 'void'
+./include/linux/phylink.h:361: warning: Excess function parameter 'interfac=
+e' description in 'void'
+./include/linux/phylink.h:361: warning: Excess function parameter 'speed' d=
+escription in 'void'
+./include/linux/phylink.h:361: warning: Excess function parameter 'duplex' =
+description in 'void'
 
 Signed-off-by: Colton Lewis <colton.w.lewis@protonmail.com>
 ---
- net/core/dev.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/phylink.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 6bc2388141f6..cf20d286abfc 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -7898,6 +7898,7 @@ EXPORT_SYMBOL(netdev_bonding_info_change);
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index cc5b452a184e..cb3230590a1f 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -62,6 +62,8 @@ enum phylink_op_type {
+  * @dev: a pointer to a struct device associated with the MAC
+  * @type: operation type of PHYLINK instance
+  * @pcs_poll: MAC PCS cannot provide link change interrupt
++ * @poll_fixed_state: poll link state with @get_fixed_state
++ * @get_fixed_state: read link state into struct phylink_link_state
+  */
+ struct phylink_config {
+ =09struct device *dev;
+@@ -331,7 +333,7 @@ void pcs_get_state(struct phylink_config *config,
+  *
+  * For most 10GBASE-R, there is no advertisement.
+  */
+-int (*pcs_config)(struct phylink_config *config, unsigned int mode,
++int *pcs_config(struct phylink_config *config, unsigned int mode,
+ =09=09  phy_interface_t interface, const unsigned long *advertising);
 =20
  /**
-  * netdev_get_xmit_slave - Get the xmit slave of master device
-+ * @dev: The device
-  * @skb: The packet
-  * @all_slaves: assume all the slaves are active
-  *
+@@ -341,7 +343,7 @@ int (*pcs_config)(struct phylink_config *config, unsign=
+ed int mode,
+  * When PCS ops are present, this overrides mac_an_restart() in &struct
+  * phylink_mac_ops.
+  */
+-void (*pcs_an_restart)(struct phylink_config *config);
++void *pcs_an_restart(struct phylink_config *config);
+=20
+ /**
+  * pcs_link_up() - program the PCS for the resolved link configuration
+@@ -356,7 +358,7 @@ void (*pcs_an_restart)(struct phylink_config *config);
+  * mode without in-band AN needs to be manually configured for the link
+  * and duplex setting. Otherwise, this should be a no-op.
+  */
+-void (*pcs_link_up)(struct phylink_config *config, unsigned int mode,
++void *pcs_link_up(struct phylink_config *config, unsigned int mode,
+ =09=09    phy_interface_t interface, int speed, int duplex);
+ #endif
+=20
 --=20
 2.26.2
 
