@@ -2,143 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A4DE202C9D
-	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 22:03:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1360E202CA6
+	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 22:16:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730581AbgFUUDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 16:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
+        id S1730625AbgFUUQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 16:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730288AbgFUUDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 16:03:01 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660DBC061794
-        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 13:03:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=YnGEkAbcdPh8y0mY0AUxFoJMh+37//I3Ue5jhV0giYo=; b=hDif5lCQ7hvOv41B0bbtYj+J7
-        pLOVckJdQJa8HrOtyXBVrBV9NAJ1XJDqtSP/2daTFj0QjZa06sOJ59NMpQD1s8xTfCWrq7WPB9eGF
-        T88/52MsqXRQpT4Nl/5UYynvIGjBv9vPdA1kXvEWEQJFDu6j1EA3pbnVBl1x6Y27Av55HqK/hTnj1
-        2TrULdA/VW48N3QMMEgK7bg4HsJA1IVNC/tY889tbafrjjvjmWfXcjdBzPyCeUiG2dgfq+S6sYDmR
-        /M7DfvqmawMsGVekaKxNKfY3+OK3Euf2JamJ1gceBSbXg6TIXE/lLNBto/427Nk18tQUNTNSYCaKI
-        e9Bh5xevA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58916)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jn6At-000872-4a; Sun, 21 Jun 2020 21:02:43 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jn6Ah-0007nO-Bh; Sun, 21 Jun 2020 21:02:31 +0100
-Date:   Sun, 21 Jun 2020 21:02:31 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Felix Fietkau <nbd@openwrt.org>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [CFT 0/8] rework phylink interface for split MAC/PCS support
-Message-ID: <20200621200231.GX1551@shell.armlinux.org.uk>
-References: <20200217172242.GZ25745@shell.armlinux.org.uk>
- <20200621143340.GI1605@shell.armlinux.org.uk>
- <CA+h21ho2Papr2gXqap2LGE3N4LJAbor2WxzX1quDckVvw-mQ5Q@mail.gmail.com>
+        with ESMTP id S1730572AbgFUUQm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 16:16:42 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A072CC061794;
+        Sun, 21 Jun 2020 13:16:40 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id k6so2162223wrn.3;
+        Sun, 21 Jun 2020 13:16:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=K1bE7hioO+jCeg02N2LK3QidAcdsCxuVYmIXB9dPoQ8=;
+        b=NAqQ9+cchNxOX/8XjjaJ23UwqsEXMbnd9qBGlTvVlWkqwFzxrvFKE4wddAuikmi+iq
+         8+oe/oLHh8JrBW/NBhBq3UePr0bvNl/ZuDgqRpI60e3Pif3I2B7n1FjKLOw9L181aNW2
+         OtO5Wj4VrTYDcb+factsZYiFdOQVfiVlVnLPZG9GWp7oRFVzD3FpY19UH80F7ndzQd4B
+         byy8Ol3hwGyoO0UPKvObwwIPVfcwyncUyBCGRk4j6A5h8rvglHs6xxvCb7B7oO/u3DYT
+         HZbEHl9hi/JSOzw26TInfmjO+dRcUJsbRuw5KemW1WcLPFLupnnQsJ8puXkvdV/YCYqj
+         zFDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=K1bE7hioO+jCeg02N2LK3QidAcdsCxuVYmIXB9dPoQ8=;
+        b=pJmR8ozpCdrRNr5jMrYiL0sjYzM0fbCX6V5naG9Kyn0iZUDJZIMGy8RgslMDfDYuoP
+         gsDYrYkEK7Jb97ydz1nbkaqWGP8xzbGR4HkpVDQc6RJ+fkZLHY+Evj9U4MVnhdsmQjgD
+         AGhdytQkFeL7ZGIXChV+XNVBQ2Lhjwbn7BEMYmpNg4og/M2s+fdE+ym+KSWUhYma93tN
+         E2qW3m234+xHeNZskQJuuuMyHS6DAdxoxnf179StsSjHnaHBNxbrBEjP94AmsQa9w57t
+         cPISpLo6sP5lkb0YmBNOtTz8xR87rKZcqcu1qMSAGIe8X+PCP4r/c/chzqkxkw2pdGxo
+         U6Wg==
+X-Gm-Message-State: AOAM533DM9KbjPyIIt8YGthP3+mPrC2xNEAO/orpbewHHCaOw0B7hUA5
+        bYxMe8ZRhOsuHp5fGkL/TMm5ef+X
+X-Google-Smtp-Source: ABdhPJwid9A8vjptsbQu7XdBibwoYVW+sszApPGr3eOGNxVxWozirwOCThkH48DiSfprXVclDmjB4Q==
+X-Received: by 2002:adf:f707:: with SMTP id r7mr3352481wrp.70.1592770598974;
+        Sun, 21 Jun 2020 13:16:38 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:6017:5dc5:df4:d4ec? (p200300ea8f23570060175dc50df4d4ec.dip0.t-ipconnect.de. [2003:ea:8f23:5700:6017:5dc5:df4:d4ec])
+        by smtp.googlemail.com with ESMTPSA id x13sm15326146wre.83.2020.06.21.13.16.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 21 Jun 2020 13:16:38 -0700 (PDT)
+Subject: Re: [PATCH] net: phy: realtek: clear interrupt during init for
+ rtl8211f
+To:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200512184601.40b1758a@xhacker.debian>
+ <7735a257-21ff-e6c0-acdc-f5ee187b1f57@gmail.com>
+ <20200513145151.04a6ee46@xhacker.debian>
+ <a0aac85d-064f-2672-370b-404fd83e83f3@gmail.com>
+ <20200514142537.63b478fd@xhacker.debian>
+ <bbb70281-d477-d227-d1d2-aeecffdb6299@gmail.com>
+ <20200515154128.41ee2afa@xhacker.debian>
+ <18d7bdc7-b9f3-080f-f9df-a6ff61cd6a87@gmail.com>
+ <e81ad573-ba30-a449-4529-d9a578ce0ee7@gmail.com>
+ <20200617170926.5e582bad@xhacker.debian>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <5657764c-3de8-667f-b4a7-5dbaf2e15303@gmail.com>
+Date:   Sun, 21 Jun 2020 22:16:31 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21ho2Papr2gXqap2LGE3N4LJAbor2WxzX1quDckVvw-mQ5Q@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200617170926.5e582bad@xhacker.debian>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 21, 2020 at 10:37:43PM +0300, Vladimir Oltean wrote:
-> Hi Russell,
+On 17.06.2020 11:09, Jisheng Zhang wrote:
+> On Fri, 15 May 2020 19:30:38 +0200 Heiner Kallweit wrote:
 > 
-> On Sun, 21 Jun 2020 at 17:34, Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> >
-> > All,
-> >
-> > This is now almost four months old, but I see that I didn't copy the
-> > message to everyone who should've been, especially for the five
-> > remaining drivers.
-> >
-> > I had asked for input from maintainers to help me convert their
-> > phylink-using drivers to the new style where mac_link_up() performs
-> > the speed, duplex and pause setup rather than mac_config(). So far,
-> > I have had very little assistance with this, and it is now standing
-> > in the way of further changes to phylink, particularly with proper
-> > PCS support. You are effectively blocking this work; I can't break
-> > your code as that will cause a kernel regression.
-> >
-> > This is one of the reasons why there were not many phylink patches
-> > merged for the last merge window.
-> >
-> > The following drivers in current net-next remain unconverted:
-> >
-> > drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > drivers/net/dsa/ocelot/felix.c
-> > drivers/net/dsa/qca/ar9331.c
-> > drivers/net/dsa/bcm_sf2.c
-> > drivers/net/dsa/b53/b53_common.c
-> >
-> > These can be easily identified by grepping for conditionals where the
-> > expression matches the "MLO_PAUSE_.X" regexp.
-> >
-> > I have an untested patch that I will be sending out today for
-> > mtk_eth_soc.c, but the four DSA ones definitely require their authors
-> > or maintainers to either make the changes, or assist with that since
-> > their code is not straight forward.
-> >
-> > Essentially, if you are listed in this email's To: header, then you
-> > are listed as a maintainer for one of the affected drivers, and I am
-> > requesting assistance from you for this task please.
-> >
-> > Thanks.
-> >
-> > Russell.
-> >
 > 
-> If forcing MAC speed is to be moved in mac_link_up(), and if (as you
-> requested in the mdio-lynx-pcs thread) configuring the PCS is to be
-> moved in pcs_link_up() and pcs_config() respectively, then what
-> remains to be done in mac_config()?
+>>
+>>
+>> On 15.05.2020 18:18, Florian Fainelli wrote:
+>>>
+>>>
+>>> On 5/15/2020 12:41 AM, Jisheng Zhang wrote:  
+>>>> On Thu, 14 May 2020 21:50:53 +0200 Heiner Kallweit wrote:
+>>>>  
+>>>>>
+>>>>>
+>>>>> On 14.05.2020 08:25, Jisheng Zhang wrote:  
+>>>>>> On Wed, 13 May 2020 20:45:13 +0200 Heiner Kallweit wrote:
+>>>>>>  
+>>>>>>>
+>>>>>>> On 13.05.2020 08:51, Jisheng Zhang wrote:  
+>>>>>>>> Hi,
+>>>>>>>>
+>>>>>>>> On Tue, 12 May 2020 20:43:40 +0200 Heiner Kallweit wrote:
+>>>>>>>>  
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> On 12.05.2020 12:46, Jisheng Zhang wrote:  
+>>>>>>>>>> The PHY Register Accessible Interrupt is enabled by default, so
+>>>>>>>>>> there's such an interrupt during init. In PHY POLL mode case, the
+>>>>>>>>>> INTB/PMEB pin is alway active, it is not good. Clear the interrupt by
+>>>>>>>>>> calling rtl8211f_ack_interrupt().  
+>>>>>>>>>
+>>>>>>>>> As you say "it's not good" w/o elaborating a little bit more on it:
+>>>>>>>>> Do you face any actual issue? Or do you just think that it's not nice?  
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> The INTB/PMEB pin can be used in two different modes:
+>>>>>>>> INTB: used for interrupt
+>>>>>>>> PMEB: special mode for Wake-on-LAN
+>>>>>>>>
+>>>>>>>> The PHY Register Accessible Interrupt is enabled by
+>>>>>>>> default, there's always such an interrupt during the init. In PHY POLL mode
+>>>>>>>> case, the pin is always active. If platforms plans to use the INTB/PMEB pin
+>>>>>>>> as WOL, then the platform will see WOL active. It's not good.
+>>>>>>>>  
+>>>>>>> The platform should listen to this pin only once WOL has been configured and
+>>>>>>> the pin has been switched to PMEB function. For the latter you first would
+>>>>>>> have to implement the set_wol callback in the PHY driver.
+>>>>>>> Or where in which code do you plan to switch the pin function to PMEB?  
+>>>>>>
+>>>>>> I think it's better to switch the pin function in set_wol callback. But this
+>>>>>> is another story. No matter WOL has been configured or not, keeping the
+>>>>>> INTB/PMEB pin active is not good. what do you think?
+>>>>>>  
+>>>>>
+>>>>> It shouldn't hurt (at least it didn't hurt for the last years), because no
+>>>>> listener should listen to the pin w/o having it configured before.
+>>>>> So better extend the PHY driver first (set_wol, ..), and then do the follow-up
+>>>>> platform changes (e.g. DT config of a connected GPIO).  
+>>>>
+>>>> There are two sides involved here: the listener, it should not listen to the pin
+>>>> as you pointed out; the phy side, this patch tries to make the phy side
+>>>> behave normally -- not keep the INTB/PMEB pin always active. The listener
+>>>> side behaves correctly doesn't mean the phy side could keep the pin active.
+>>>>
+>>>> When .set_wol isn't implemented, this patch could make the system suspend/resume
+>>>> work properly.
+>>>>
+>>>> PS: even with set_wol implemented as configure the pin mode, I think we
+>>>> still need to clear the interrupt for phy poll mode either in set_wol
+>>>> or as this patch does.  
+>>>
+>>> I agree with Jisheng here, Heiner, is there a reason you are pushing
+>>> back on the change? Acknowledging prior interrupts while configuring the
+>>> PHY is a common and established practice.
+>>>  
+>> First it's about the justification of the change as such, and second about the
+>> question whether the change should be in the driver or in phylib.
+>>
+>> Acking interrupts we do already if the PHY is configured for interrupt mode,
+>> we call phy_clear_interrupt() at the beginning of phy_enable_interrupts()
+>> and at the end of phy_disable_interrupts().
+>> When using polling mode there is no strict need to ack interrupts.
+>> If we say however that interrupts should be acked in general, then I think
+>> it's not specific to RTL8211F, but it's something for phylib. Most likely
+>> we would have to add a call to phy_clear_interrupt() to phy_init_hw().
+> 
+> it's specific to RTL8211F from the following two PoV:
+> 1. the PIN is shared between INTB and PMEB.
+> 2. the PHY Register Accessible Interrupt is enabled by default
+> 
+If we clear the interrupt in config_init() and one interrupt source is
+active per chip default, then wouldn't the irq pin be active soon again?
 
-Hopefully very little, but I suspect there will still be a need for
-some kind of interface to configure the MAC interface type at the MAC.
+I was thinking about calling phy_disable_interrupts() in phy_init_hw(),
+to have a defined init state, as we don't know in which state the PHY is
+if the PHY driver is loaded. We shouldn't assume that it's the chip
+power-on defaults, BIOS or boot loader could have changed this.
+Or in case of dual-boot systems the other OS could leave the PHY in
+whatever state.
 
-Note that I have said many many many times that using state->{speed,
-duplex,pause} in mac_config() when in in-band mode is unreliable, yet
-still people insist on using them.  There _are_ and always _have been_
-paths in phylink where these members will be passed with an unresolved
-state, and they will corrupt the link settings when that happens.
+This made me think about an issue we may have currently:
+Interrupts are enabled in phy_request_interrupt() only. If the system
+hibernates, then PHY may load power-on defaults on restore.
+And mdio_bus_phy_restore() just calls phy_init_hw() and doesn't
+care about interrupt config. Means after waking up from hibernation
+we may have lost PHY interrupt config.
 
-I know that phylink was deficient in its handling of a split PCS, but
-I have worked to correct that.  That job still is not complete, because
-because I'm held up by these drivers that have not yet converted.  I've
-already waited a kernel cycle, despite having the next series of
-phylink patches ready and waiting since early February.
-
-I'm getting to the point of wishing that phylink did not have users
-except my own.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> I didn't see such behaviors with other PHYs.
+> 
+> Thanks
+> 
+Heiner
