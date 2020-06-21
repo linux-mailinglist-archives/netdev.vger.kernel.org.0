@@ -2,486 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A443F20298B
-	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 10:17:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E7CC202995
+	for <lists+netdev@lfdr.de>; Sun, 21 Jun 2020 10:23:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729500AbgFUIRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 04:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729457AbgFUIRU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 04:17:20 -0400
-Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCDBC061794
-        for <netdev@vger.kernel.org>; Sun, 21 Jun 2020 01:17:19 -0700 (PDT)
-Received: from ramsan ([IPv6:2a02:1810:ac12:ed20:e9c0:e579:e3cc:110a])
-        by michel.telenet-ops.be with bizsmtp
-        id tkHF2200P2LCT5J06kHFMo; Sun, 21 Jun 2020 10:17:16 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jmvAC-0006Di-9W; Sun, 21 Jun 2020 10:17:16 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jmvAC-0002fy-7q; Sun, 21 Jun 2020 10:17:16 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        id S1729521AbgFUIXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 04:23:34 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:45034 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729491AbgFUIXd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 04:23:33 -0400
+Received: by mail-ot1-f67.google.com with SMTP id e5so10640442ote.11;
+        Sun, 21 Jun 2020 01:23:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f/kB5/LF7NNLl7k0mRVPW29dPix+BPuhFaQSmA6xWOA=;
+        b=lc05jH9a2BKY6C6gatuIVjXVpLESU9kj1N+rB+BWNCB/NishjuyMZ8yBaVKMsCFbiS
+         4lFMePs+11yzWSX8evYu6tevOxQ9om6+lo8xeESi9lGnd3kv16LYMxkyqx/cdzBbrgty
+         hUV6yAs7iyYzXgEDtxgcP0QYUubrg3OCn+xww/NSFtZ5p4qfFvPfhe0ZKLCwKauUZNyG
+         FqSNjgy96DEdVEBpYWmD/wA+lPGwu2117pMeoU+j+Ni9IX1cc4+ctzIj6E5uOnzpkKtZ
+         HRLgAGsenu11mGF+NrPDNLWLjDtmv7JweQ6LqwH7RsWCZXYwUFnlv2MluNPLZRBkbKMR
+         kQaQ==
+X-Gm-Message-State: AOAM533J75prkn7uNfsDZ7k3nLCdPTIr2dM20Ksr1JDpsPf1YP6wEHX3
+        CYocze4Efmkmq7llNsLJZV7PB0u73p/F+cQesy8KJCun
+X-Google-Smtp-Source: ABdhPJxnrBI3Za7j7Qw4MtU9IVf31ymKxJ/yLGGSPsCdFiRxrP8l6kk2AYb2dZMzOIiojzJQWy/XoAxoxklOcL26B1w=
+X-Received: by 2002:a9d:62c2:: with SMTP id z2mr9389469otk.145.1592727812671;
+ Sun, 21 Jun 2020 01:23:32 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200619191554.24942-1-geert+renesas@glider.be>
+ <20200619191554.24942-2-geert+renesas@glider.be> <e6d0bfc5-9d75-2dc9-2bfa-671c32cb0b7c@rempel-privat.de>
+In-Reply-To: <e6d0bfc5-9d75-2dc9-2bfa-671c32cb0b7c@rempel-privat.de>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Sun, 21 Jun 2020 10:23:00 +0200
+Message-ID: <CAMuHMdWFA9YoeMgHGbhvW7Mqv6tBgcpqyYvWdNc1Vdn23KebLg@mail.gmail.com>
+Subject: Re: [PATCH/RFC 1/5] dt-bindings: net: renesas,ravb: Document internal
+ clock delay properties
+To:     Oleksij Rempel <linux@rempel-privat.de>
+Cc:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC] dt-bindings: net: renesas,etheravb: Convert to json-schema
-Date:   Sun, 21 Jun 2020 10:17:10 +0200
-Message-Id: <20200621081710.10245-1-geert+renesas@glider.be>
-X-Mailer: git-send-email 2.17.1
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Renesas Ethernet AVB (EthernetAVB-IF) Device Tree binding
-documentation to json-schema.
+Hi Oleksij,
 
-Add missing properties.
-Update the example to match reality.
+On Sat, Jun 20, 2020 at 7:47 AM Oleksij Rempel <linux@rempel-privat.de> wrote:
+> Am 19.06.20 um 21:15 schrieb Geert Uytterhoeven:
+> > Some EtherAVB variants support internal clock delay configuration, which
+> > can add larger delays than the delays that are typically supported by
+> > the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
+> > properties).
+> >
+> > Add properties for configuring the internal MAC delays.
+> > These properties are mandatory, even when specified as zero, to
+> > distinguish between old and new DTBs.
+> >
+> > Update the example accordingly.
+> >
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-This includes the changes made in "[PATCH/RFC 1/5] dt-bindings: net:
-renesas,ravb: Document internal clock delay properties"
-(http://lore.kernel.org/r/20200619191554.24942-2-geert+renesas@glider.be),
-which are still under review, hence the RFC.
+> > --- a/Documentation/devicetree/bindings/net/renesas,ravb.txt
+> > +++ b/Documentation/devicetree/bindings/net/renesas,ravb.txt
 
-I post it regardless, as it shows the validation of
-"renesas,[rt]xc-delay-ps" properties, which obviously wasn't present in
-the plain text bindings.
+> > +                     This property is mandatory and valid only on R-Car Gen3
+> > +                     and RZ/G2 SoCs.
+> > +                     Valid values are 0 and 1800.
+> > +                     A non-zero value is allowed only if phy-mode = "rgmii".
+> > +                     Zero is not supported on R-Car D3.
+> > +- renesas,txc-delay-ps: Internal TX clock delay.
+> > +                     This property is mandatory and valid only on R-Car H3,
+> > +                     M3-W, M3-W+, M3-N, V3M, and V3H, and RZ/G2M and RZ/G2N.
+> > +                     Valid values are 0 and 2000.
+>
+> In the driver i didn't found sanity check for valid values.
 
- .../bindings/net/renesas,etheravb.yaml        | 269 ++++++++++++++++++
- .../devicetree/bindings/net/renesas,ravb.txt  | 137 ---------
- 2 files changed, 269 insertions(+), 137 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/renesas,etheravb.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/renesas,ravb.txt
+As EtherAVB supports only zero and a single non-zero value, I didn't
+bother validating the actual non-zero value in the driver.
 
-diff --git a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
-new file mode 100644
-index 0000000000000000..c87d8c6389328eaa
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
-@@ -0,0 +1,269 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/renesas,etheravb.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Renesas Ethernet AVB
-+
-+maintainers:
-+  - Sergei Shtylyov <sergei.shtylyov@gmail.com>
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - renesas,etheravb-r8a7742      # RZ/G1H
-+              - renesas,etheravb-r8a7743      # RZ/G1M
-+              - renesas,etheravb-r8a7744      # RZ/G1N
-+              - renesas,etheravb-r8a7745      # RZ/G1E
-+              - renesas,etheravb-r8a77470     # RZ/G1C
-+              - renesas,etheravb-r8a7790      # R-Car H2
-+              - renesas,etheravb-r8a7791      # R-Car M2-W
-+              - renesas,etheravb-r8a7792      # R-Car V2H
-+              - renesas,etheravb-r8a7793      # R-Car M2-N
-+              - renesas,etheravb-r8a7794      # R-Car E2
-+          - const: renesas,etheravb-rcar-gen2 # R-Car Gen2 and RZ/G1
-+
-+      - items:
-+          - enum:
-+              - renesas,etheravb-r8a774a1     # RZ/G2M
-+              - renesas,etheravb-r8a774b1     # RZ/G2N
-+              - renesas,etheravb-r8a774c0     # RZ/G2E
-+              - renesas,etheravb-r8a7795      # R-Car H3
-+              - renesas,etheravb-r8a7796      # R-Car M3-W
-+              - renesas,etheravb-r8a77961     # R-Car M3-W+
-+              - renesas,etheravb-r8a77965     # R-Car M3-N
-+              - renesas,etheravb-r8a77970     # R-Car V3M
-+              - renesas,etheravb-r8a77980     # R-Car V3H
-+              - renesas,etheravb-r8a77990     # R-Car E3
-+              - renesas,etheravb-r8a77995     # R-Car D3
-+          - const: renesas,etheravb-rcar-gen3 # R-Car Gen3 and RZ/G2
-+
-+  reg: true
-+
-+  interrupts: true
-+
-+  interrupt-names: true
-+
-+  clocks:
-+    maxItems: 1
-+
-+  iommus:
-+    maxItems: 1
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+  phy-mode: true
-+
-+  phy-handle: true
-+
-+  '#address-cells':
-+    description: Number of address cells for the MDIO bus.
-+    const: 1
-+
-+  '#size-cells':
-+    description: Number of size cells on the MDIO bus.
-+    const: 0
-+
-+  renesas,no-ether-link:
-+    type: boolean
-+    description:
-+      Specify when a board does not provide a proper AVB_LINK signal.
-+
-+  renesas,ether-link-active-low:
-+    type: boolean
-+    description:
-+      Specify when the AVB_LINK signal is active-low instead of normal
-+      active-high.
-+
-+  renesas,rxc-delay-ps:
-+    description:
-+      Internal RX clock delay.
-+      A non-zero value is allowed only when phy-mode = "rgmii".
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [0, 1800]
-+
-+  renesas,txc-delay-ps:
-+    description:
-+      Internal TX clock delay.
-+      A non-zero value is allowed only when phy-mode = "rgmii".
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [0, 2000]
-+
-+patternProperties:
-+  "^ethernet-phy@[0-9a-f]$":
-+    type: object
-+    $ref: ethernet-phy.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - power-domains
-+  - resets
-+  - phy-mode
-+  - phy-handle
-+  - '#address-cells'
-+  - '#size-cells'
-+
-+allOf:
-+  - $ref: ethernet-controller.yaml#
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - renesas,etheravb-rcar-gen2
-+              - renesas,etheravb-r8a7795
-+              - renesas,etheravb-r8a7796
-+              - renesas,etheravb-r8a77961
-+              - renesas,etheravb-r8a77965
-+    then:
-+      properties:
-+        reg:
-+          items:
-+            - description: MAC register block
-+            - description: Stream buffer
-+    else:
-+      properties:
-+        reg:
-+          items:
-+            - description: MAC register block
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: renesas,etheravb-rcar-gen2
-+    then:
-+      properties:
-+        interrupts:
-+          maxItems: 1
-+        interrupt-names:
-+          items:
-+            - const: mux
-+        renesas,rxc-delay-ps: false
-+    else:
-+      properties:
-+        interrupts:
-+          minItems: 25
-+          maxItems: 25
-+        interrupt-names:
-+          items:
-+            pattern: '^ch[0-9]+$'
-+      required:
-+        - interrupt-names
-+        - renesas,rxc-delay-ps
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - renesas,etheravb-r8a774a1
-+              - renesas,etheravb-r8a774b1
-+              - renesas,etheravb-r8a7795
-+              - renesas,etheravb-r8a7796
-+              - renesas,etheravb-r8a77961
-+              - renesas,etheravb-r8a77965
-+              - renesas,etheravb-r8a77970
-+              - renesas,etheravb-r8a77980
-+    then:
-+      required:
-+        - renesas,txc-delay-ps
-+    else:
-+      properties:
-+        renesas,txc-delay-ps: false
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: renesas,etheravb-r8a77995
-+    then:
-+      properties:
-+        renesas,rxc-delay-ps:
-+          const: 1800
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: renesas,etheravb-r8a77980
-+    then:
-+      properties:
-+        renesas,txc-delay-ps:
-+          const: 2000
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/r8a7795-cpg-mssr.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/power/r8a7795-sysc.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    aliases {
-+            ethernet0 = &avb;
-+    };
-+
-+    avb: ethernet@e6800000 {
-+            compatible = "renesas,etheravb-r8a7795",
-+                         "renesas,etheravb-rcar-gen3";
-+            reg = <0xe6800000 0x800>, <0xe6a00000 0x10000>;
-+            interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 54 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 55 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 56 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 58 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 60 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 62 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>;
-+            interrupt-names = "ch0", "ch1", "ch2", "ch3", "ch4", "ch5", "ch6",
-+                              "ch7", "ch8", "ch9", "ch10", "ch11", "ch12",
-+                              "ch13", "ch14", "ch15", "ch16", "ch17", "ch18",
-+                              "ch19", "ch20", "ch21", "ch22", "ch23", "ch24";
-+            clocks = <&cpg CPG_MOD 812>;
-+            iommus = <&ipmmu_ds0 16>;
-+            power-domains = <&sysc R8A7795_PD_ALWAYS_ON>;
-+            resets = <&cpg 812>;
-+            phy-mode = "rgmii";
-+            phy-handle = <&phy0>;
-+            renesas,rxc-delay-ps = <0>;
-+            renesas,txc-delay-ps = <2000>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            phy0: ethernet-phy@0 {
-+                    rxc-skew-ps = <1500>;
-+                    reg = <0>;
-+                    interrupt-parent = <&gpio2>;
-+                    interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
-+                    reset-gpios = <&gpio2 10 GPIO_ACTIVE_LOW>;
-+            };
-+    };
-diff --git a/Documentation/devicetree/bindings/net/renesas,ravb.txt b/Documentation/devicetree/bindings/net/renesas,ravb.txt
-deleted file mode 100644
-index 488ada78b6169b8e..0000000000000000
---- a/Documentation/devicetree/bindings/net/renesas,ravb.txt
-+++ /dev/null
-@@ -1,137 +0,0 @@
--* Renesas Electronics Ethernet AVB
--
--This file provides information on what the device node for the Ethernet AVB
--interface contains.
--
--Required properties:
--- compatible: Must contain one or more of the following:
--      - "renesas,etheravb-r8a7742" for the R8A7742 SoC.
--      - "renesas,etheravb-r8a7743" for the R8A7743 SoC.
--      - "renesas,etheravb-r8a7744" for the R8A7744 SoC.
--      - "renesas,etheravb-r8a7745" for the R8A7745 SoC.
--      - "renesas,etheravb-r8a77470" for the R8A77470 SoC.
--      - "renesas,etheravb-r8a7790" for the R8A7790 SoC.
--      - "renesas,etheravb-r8a7791" for the R8A7791 SoC.
--      - "renesas,etheravb-r8a7792" for the R8A7792 SoC.
--      - "renesas,etheravb-r8a7793" for the R8A7793 SoC.
--      - "renesas,etheravb-r8a7794" for the R8A7794 SoC.
--      - "renesas,etheravb-rcar-gen2" as a fallback for the above
--		R-Car Gen2 and RZ/G1 devices.
--
--      - "renesas,etheravb-r8a774a1" for the R8A774A1 SoC.
--      - "renesas,etheravb-r8a774b1" for the R8A774B1 SoC.
--      - "renesas,etheravb-r8a774c0" for the R8A774C0 SoC.
--      - "renesas,etheravb-r8a7795" for the R8A7795 SoC.
--      - "renesas,etheravb-r8a7796" for the R8A77960 SoC.
--      - "renesas,etheravb-r8a77961" for the R8A77961 SoC.
--      - "renesas,etheravb-r8a77965" for the R8A77965 SoC.
--      - "renesas,etheravb-r8a77970" for the R8A77970 SoC.
--      - "renesas,etheravb-r8a77980" for the R8A77980 SoC.
--      - "renesas,etheravb-r8a77990" for the R8A77990 SoC.
--      - "renesas,etheravb-r8a77995" for the R8A77995 SoC.
--      - "renesas,etheravb-rcar-gen3" as a fallback for the above
--		R-Car Gen3 and RZ/G2 devices.
--
--	When compatible with the generic version, nodes must list the
--	SoC-specific version corresponding to the platform first followed by
--	the generic version.
--
--- reg: Offset and length of (1) the register block and (2) the stream buffer.
--       The region for the register block is mandatory.
--       The region for the stream buffer is optional, as it is only present on
--       R-Car Gen2 and RZ/G1 SoCs, and on R-Car H3 (R8A7795), M3-W (R8A77960),
--       M3-W+ (R8A77961), and M3-N (R8A77965).
--- interrupts: A list of interrupt-specifiers, one for each entry in
--	      interrupt-names.
--	      If interrupt-names is not present, an interrupt specifier
--	      for a single muxed interrupt.
--- phy-mode: see ethernet.txt file in the same directory.
--- phy-handle: see ethernet.txt file in the same directory.
--- #address-cells: number of address cells for the MDIO bus, must be equal to 1.
--- #size-cells: number of size cells on the MDIO bus, must be equal to 0.
--- clocks: clock phandle and specifier pair.
--- pinctrl-0: phandle, referring to a default pin configuration node.
--
--Optional properties:
--- interrupt-names: A list of interrupt names.
--		   For the R-Car Gen 3 SoCs this property is mandatory;
--		   it should include one entry per channel, named "ch%u",
--		   where %u is the channel number ranging from 0 to 24.
--		   For other SoCs this property is optional; if present
--		   it should contain "mux" for a single muxed interrupt.
--- pinctrl-names: pin configuration state name ("default").
--- renesas,no-ether-link: boolean, specify when a board does not provide a proper
--			 AVB_LINK signal.
--- renesas,ether-link-active-low: boolean, specify when the AVB_LINK signal is
--				 active-low instead of normal active-high.
--- renesas,rxc-delay-ps: Internal RX clock delay.
--			This property is mandatory and valid only on R-Car Gen3
--			and RZ/G2 SoCs.
--			Valid values are 0 and 1800.
--			A non-zero value is allowed only if phy-mode = "rgmii".
--			Zero is not supported on R-Car D3.
--- renesas,txc-delay-ps: Internal TX clock delay.
--			This property is mandatory and valid only on R-Car H3,
--			M3-W, M3-W+, M3-N, V3M, and V3H, and RZ/G2M and RZ/G2N.
--			Valid values are 0 and 2000.
--			A non-zero value is allowed only if phy-mode = "rgmii".
--			Zero is not supported on R-Car V3H.
--
--Example:
--
--	ethernet@e6800000 {
--		compatible = "renesas,etheravb-r8a7795", "renesas,etheravb-rcar-gen3";
--		reg = <0 0xe6800000 0 0x800>, <0 0xe6a00000 0 0x10000>;
--		interrupt-parent = <&gic>;
--		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 54 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 55 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 56 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 58 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 60 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 62 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>;
--		interrupt-names = "ch0", "ch1", "ch2", "ch3",
--				  "ch4", "ch5", "ch6", "ch7",
--				  "ch8", "ch9", "ch10", "ch11",
--				  "ch12", "ch13", "ch14", "ch15",
--				  "ch16", "ch17", "ch18", "ch19",
--				  "ch20", "ch21", "ch22", "ch23",
--				  "ch24";
--		clocks = <&cpg CPG_MOD 812>;
--		power-domains = <&cpg>;
--		phy-mode = "rgmii";
--		phy-handle = <&phy0>;
--		renesas,rxc-delay-ps = <0>;
--		renesas,txc-delay-ps = <2000>;
--
--		pinctrl-0 = <&ether_pins>;
--		pinctrl-names = "default";
--		renesas,no-ether-link;
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		phy0: ethernet-phy@0 {
--			rxc-skew-ps = <1500>;
--			reg = <0>;
--			interrupt-parent = <&gpio2>;
--			interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
--		};
--	};
+However, I did implement full validation in the json-schema version of
+the DT bindings, cfr. "[PATCH/RFC] dt-bindings: net: renesas,etheravb:
+Convert to json-schema"
+(https://lore.kernel.org/r/20200621081710.10245-1-geert+renesas@glider.be)
+(In hindsight, I should not have postponed posting that patch)
+
+> > @@ -105,8 +117,10 @@ Example:
+> >                                 "ch24";
+> >               clocks = <&cpg CPG_MOD 812>;
+> >               power-domains = <&cpg>;
+> > -             phy-mode = "rgmii-id";
+> > +             phy-mode = "rgmii";
+> >               phy-handle = <&phy0>;
+> > +             renesas,rxc-delay-ps = <0>;
+> > +             renesas,txc-delay-ps = <2000>;
+> >
+> >               pinctrl-0 = <&ether_pins>;
+> >               pinctrl-names = "default";
+> > @@ -115,18 +129,7 @@ Example:
+> >               #size-cells = <0>;
+> >
+> >               phy0: ethernet-phy@0 {
+> > -                     rxc-skew-ps = <900>;
+> > -                     rxdv-skew-ps = <0>;
+> > -                     rxd0-skew-ps = <0>;
+> > -                     rxd1-skew-ps = <0>;
+> > -                     rxd2-skew-ps = <0>;
+> > -                     rxd3-skew-ps = <0>;
+> > -                     txc-skew-ps = <900>;
+> > -                     txen-skew-ps = <0>;
+> > -                     txd0-skew-ps = <0>;
+> > -                     txd1-skew-ps = <0>;
+> > -                     txd2-skew-ps = <0>;
+> > -                     txd3-skew-ps = <0>;
+> > +                     rxc-skew-ps = <1500>;
+>
+>
+> I'm curios, how this numbers ware taken?
+> Old configurations was:
+> TX delay:
+> (txd*-skew-ps = 0) == -420ns
+> (txc-skew-ps = 900) == 0ns
+> resulting delays 0.420ns
+
+Please ignore the actual contents of the old example.  It was based on a
+very old DTS, which has received several fixes in the mean time.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.17.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
