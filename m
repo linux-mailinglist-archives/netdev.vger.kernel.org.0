@@ -2,139 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69D9020341A
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:58:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83406203423
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:59:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbgFVJ6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 05:58:41 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:60950 "EHLO
+        id S1726965AbgFVJ7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 05:59:49 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:54939 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726644AbgFVJ6k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 05:58:40 -0400
+        with ESMTP id S1726710AbgFVJ7t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 05:59:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592819919;
+        s=mimecast20190719; t=1592819988;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/upvzxEYyQIb9APt5NcJqrPf+k8Zwb/eAcI+TEU8Phc=;
-        b=NGh2VYQ2M3CK47uUzIbWyDmUEQUUK1TcFoDSnNA52Vy28i2TpF0nIhEpiv6ivnYuJJPd+e
-        osGqdFQ+uaP2rW3WKm5DtZ3RUIB2qMBFSbGJeY+rue0iGPcxwQFOMf5gY9kAQdN/fjuZOj
-        lg7TNUfGd7jyWr5H3A7Dru4IjlDo3YI=
+        bh=4BHHXAqs++6g+gSDQIVmyyKNCLq9QfvogN5UxkxuxLw=;
+        b=X7mYypGXclhPIecSchez54haUKHEknjBDzcLJWMsOsRRrIqM+ZqpPeRKvwSn3/tI7B80qw
+        vnT7d8oJhYzWMKJZZZXBQylXSkjv1gSFelRQdzvNK9Vb4PkYn0EpbOI0yFJIXtxKv2Swg4
+        yQ50XNVc0GIf6B1MAm9JEoDFFsrZV/Q=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-167-YT60IBDoPmOOMkwHdht_Zw-1; Mon, 22 Jun 2020 05:58:35 -0400
-X-MC-Unique: YT60IBDoPmOOMkwHdht_Zw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-130-Nygrqms9NTiaHOXIZlTUZg-1; Mon, 22 Jun 2020 05:59:46 -0400
+X-MC-Unique: Nygrqms9NTiaHOXIZlTUZg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4C846EC1D1;
-        Mon, 22 Jun 2020 09:58:29 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 346C47930F;
-        Mon, 22 Jun 2020 09:58:05 +0000 (UTC)
-Date:   Mon, 22 Jun 2020 11:58:04 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Denis Kirjanov <kda@linux-powerpc.org>
-Cc:     netdev@vger.kernel.org, jgross@suse.com, wei.liu@kernel.org,
-        paul@xen.org, ilias.apalodimas@linaro.org, brouer@redhat.com
-Subject: Re: [PATCH net-next v10 2/3] xen networking: add basic XDP support
- for xen-netfront
-Message-ID: <20200622115804.3c63aba9@carbon>
-In-Reply-To: <1592817672-2053-3-git-send-email-kda@linux-powerpc.org>
-References: <1592817672-2053-1-git-send-email-kda@linux-powerpc.org>
-        <1592817672-2053-3-git-send-email-kda@linux-powerpc.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0A008846375;
+        Mon, 22 Jun 2020 09:59:45 +0000 (UTC)
+Received: from localhost (ovpn-115-184.ams2.redhat.com [10.36.115.184])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B26E5D9D5;
+        Mon, 22 Jun 2020 09:59:39 +0000 (UTC)
+Date:   Mon, 22 Jun 2020 10:59:38 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
+Cc:     mst@redhat.com, kvm list <kvm@vger.kernel.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>
+Subject: Re: [RFC v9 10/11] vhost/vsock: switch to the buf API
+Message-ID: <20200622095938.GB6675@stefanha-x1.localdomain>
+References: <20200619182302.850-1-eperezma@redhat.com>
+ <20200619182302.850-11-eperezma@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20200619182302.850-11-eperezma@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="UHN/qo2QbUvPLonB"
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--UHN/qo2QbUvPLonB
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 22 Jun 2020 12:21:11 +0300 Denis Kirjanov <kda@linux-powerpc.org> wrote:
+On Fri, Jun 19, 2020 at 08:23:01PM +0200, Eugenio P=E9rez wrote:
+> From: "Michael S. Tsirkin" <mst@redhat.com>
+>=20
+> A straight-forward conversion.
+>=20
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> Signed-off-by: Eugenio P=E9rez <eperezma@redhat.com>
+> ---
+>  drivers/vhost/vsock.c | 30 ++++++++++++++++++------------
+>  1 file changed, 18 insertions(+), 12 deletions(-)
 
-> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-> index 482c6c8..1b9f49e 100644
-> --- a/drivers/net/xen-netfront.c
-> +++ b/drivers/net/xen-netfront.c
-[...]
-> @@ -560,6 +572,65 @@ static u16 xennet_select_queue(struct net_device *dev, struct sk_buff *skb,
->  	return queue_idx;
->  }
->  
-> +static int xennet_xdp_xmit_one(struct net_device *dev, struct xdp_frame *xdpf)
-> +{
-> +	struct netfront_info *np = netdev_priv(dev);
-> +	struct netfront_stats *tx_stats = this_cpu_ptr(np->tx_stats);
-> +	unsigned int num_queues = dev->real_num_tx_queues;
-> +	struct netfront_queue *queue = NULL;
-> +	struct xen_netif_tx_request *tx;
-> +	unsigned long flags;
-> +	int notify;
-> +
-> +	queue = &np->queues[smp_processor_id() % num_queues];
-> +
-> +	spin_lock_irqsave(&queue->tx_lock, flags);
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-Why are you taking a lock per packet (xdp_frame)?
+--UHN/qo2QbUvPLonB
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> +
-> +	tx = xennet_make_first_txreq(queue, NULL,
-> +				     virt_to_page(xdpf->data),
-> +				     offset_in_page(xdpf->data),
-> +				     xdpf->len);
-> +
-> +	RING_PUSH_REQUESTS_AND_CHECK_NOTIFY(&queue->tx, notify);
-> +	if (notify)
-> +		notify_remote_via_irq(queue->tx_irq);
-> +
-> +	u64_stats_update_begin(&tx_stats->syncp);
-> +	tx_stats->bytes += xdpf->len;
-> +	tx_stats->packets++;
-> +	u64_stats_update_end(&tx_stats->syncp);
-> +
-> +	xennet_tx_buf_gc(queue);
-> +
-> +	spin_unlock_irqrestore(&queue->tx_lock, flags);
+-----BEGIN PGP SIGNATURE-----
 
-Is the irqsave/irqrestore variant really needed here?
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl7wgQoACgkQnKSrs4Gr
+c8gaawf8CE0r7lmdy1n0zKbFGNwbeFg1iFtb/arJ8/pKg6QjAIlXaL2eYU04kVXV
+rOn/oN0avr1ji2MKbCL0eKOV2/FpmKhN0RmT/4mvVMfB7MrT/ooruRUoUBV5FsxE
+B0ET9VJG6JuUg0xbp2UP/x3QRYSLYwwTXKkc5WDJCflAAlbOJPjHjuK6Mpubgb4y
+vx26gYD2lK36TulNmBjkYiiQx72PE2LyA7Ss6Fe4E/DRCzeVNoDr5XQURcYIXjZw
+8x2qTEZ95YrJA/cxr36Po9hlycV4P8QHF/sj6Rq1vlTJgFHSFupE1Z21GCuz3kDV
+oqun+r8WanK92bkZqA2GYM5TCvZXZg==
+=+yyR
+-----END PGP SIGNATURE-----
 
-
-> +	return 0;
-> +}
-> +
-> +static int xennet_xdp_xmit(struct net_device *dev, int n,
-> +			   struct xdp_frame **frames, u32 flags)
-> +{
-> +	int drops = 0;
-> +	int i, err;
-> +
-> +	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-> +		return -EINVAL;
-> +
-> +	for (i = 0; i < n; i++) {
-> +		struct xdp_frame *xdpf = frames[i];
-> +
-> +		if (!xdpf)
-> +			continue;
-> +		err = xennet_xdp_xmit_one(dev, xdpf);
-> +		if (err) {
-> +			xdp_return_frame_rx_napi(xdpf);
-> +			drops++;
-> +		}
-> +	}
-> +
-> +	return n - drops;
-> +}
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+--UHN/qo2QbUvPLonB--
 
