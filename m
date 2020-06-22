@@ -2,86 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 248D8203D7B
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 19:09:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60AEA203DC7
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 19:23:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729918AbgFVRJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 13:09:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
+        id S1730038AbgFVRXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 13:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729881AbgFVRJu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 13:09:50 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCA7C061573
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 10:09:49 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id h5so17483852wrc.7
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 10:09:49 -0700 (PDT)
+        with ESMTP id S1730000AbgFVRXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 13:23:06 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E310EC06179B
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 10:23:05 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id d10so5939800pls.5
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 10:23:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=HOSV/U3JaxH9mKz5Yfxaejb5ofaS4BhJZP3QgqrmjGg=;
-        b=njdmDISZbpqmQKpamHXngWM+Xn1Ejd4bVLMwrUbF/wTMEDfZEtYXBDsYoNojXUIsZZ
-         tGS4qc80IqfsLOT2gI9AuNUkFZZbkhu1Qw2AFBxVknZgJIXN6jvTTKoKbfglyltvbK7I
-         wnimXlvJ26J+QLoaBPNrSSPtKm4k0iHwjbmaO5a7Frk1+c0upKt1teyAmhfbc7PaxGys
-         1/DQZXvcDOGKuNuUzi98Aov9dvzW30jpFOY4cwWZtjKMP1Otm8bFlurteglY8bgb7JJ4
-         BBF78BptyBK5xJFfXhopZewJWJIGL9FuNYzGeJGIrQ3DKXIjhR620EWkc5WGe+bZxX2J
-         1Gow==
+        bh=BqM48ZdR4QdYBTv2c7+F0igShsRmPGqVwAJTalrh3Vo=;
+        b=T/gZ4H2J+UpNQ96H4IQLTAW9jVMnZlvLzxm2OhJBDlYjOIQCD2FlzsoigqacLWJAhC
+         FAIymS/2Mdmvf5jp+PMPTZPszQlLdMUtLLlxEwYzzRg8451YxoBJQ2B6yep7Gr3zpQtx
+         oME5SyrfsBCu+p9qDBNWb5W0Ik4fADMMt3L3iqomKhLtenk4gH6tWYsAJe0N4bqlw6TY
+         e4kzYPrOVngrkzYP4ZO7qK52KTWkEaDOe/Hc26SYciu91gstYIuQ457fS2tO+3Fhc++S
+         J3tpbd0xhmS8RbKKoltaGvNLCIjSjHM0jjaUbZ0vQp8KhiEYCwyRbniMeg/jqRQHieMg
+         4n/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HOSV/U3JaxH9mKz5Yfxaejb5ofaS4BhJZP3QgqrmjGg=;
-        b=hGXSS/9nTOM8J+AHgMRepbjuZRu6PAG2HuoKsJRAB9pIJeDXpi8ITI/Mjtvx62DY06
-         5JjjFfTt7Jkefvq11DZV5AoKcP6StZH+Ndcyrbie44z24hd4In+7EjyvRYNJK5Su8anM
-         Cwj8kKJIdCnbZJtiNFdjqsDPISw59MJq/Rrg0xu7D0JY61QcPzfXbNRMIn9RlofuLKpK
-         6kvegcPODUr++BX7GjG0vAg7MmvM49QfdUD5DZLBk977RblqZ4t2OWoDw0z7BNwFK/CQ
-         yem9yq9rJ24P6p2erufinREMArOkgB7yLju5oG03h0lpMONvlEuBqsNnrlk4o7NEZI5I
-         7VMA==
-X-Gm-Message-State: AOAM530e59CL868yFWdAH3f+lOt306cCR9iXo2pWCoDOEtqJGLI6BPg/
-        IarM6mZiYQG2SOdeZ2BbUbkGZBg1AvzhOt0kpak=
-X-Google-Smtp-Source: ABdhPJzHiLM7op9ycY1S+ofrZGnXfeKDrz7ucgA6unnNanOb/Ymb3q1fZEy3+vEtkmySG97VsKFdmP+8GwdWr72kV3o=
-X-Received: by 2002:adf:f34e:: with SMTP id e14mr20047584wrp.299.1592845788330;
- Mon, 22 Jun 2020 10:09:48 -0700 (PDT)
+        bh=BqM48ZdR4QdYBTv2c7+F0igShsRmPGqVwAJTalrh3Vo=;
+        b=N5QSyXPVuKMcyc834QWjt6HaqHPHFAlcCPesJaysCszHHXe+g8/NfK6FX1tpJAQSHv
+         BHoPLA9BDALRCYQ7UFOS3+LoxbfvDhR1DfxwuWz+T1rb4mRHYyrhxQXJ1PnzHWUg736l
+         GXkD2E+pxTBl+NR6zDymN1SaO5DWCi78p93oEPLI279KoNr5q5MQqQZeJkGygsNNuXzp
+         nr+SN1JigCZadiHWOPDcHFBLdzDdz9bV87eOf4MBP3l9pOkutsapVCONqy4C5/Q3uJi9
+         4S8o+ofF5rQFqraJyWEdMjtSxiJIfjRCbUl75HE3t4y18rLzRzBfJ5RvMnXUeteoVb6Y
+         Tl9A==
+X-Gm-Message-State: AOAM532y7DX+A+9Rpc6kbgk8RviXkir+A2cIs5upcqmwHRtBlrtYfSi2
+        agW15Jp5xJW8eZxaKvmJz3WV+ewoW8NkmIMBov2TGQ==
+X-Google-Smtp-Source: ABdhPJzO+nq25CgrrJ901vreSYdCENCWSbB928SD41OoQSYC+oteTUNy5xrcCBXr3eXVXoqswpT2QCJu88gHklh2Xeo=
+X-Received: by 2002:a17:90a:1e:: with SMTP id 30mr18013542pja.25.1592846584932;
+ Mon, 22 Jun 2020 10:23:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1592328814.git.lucien.xin@gmail.com> <5a63a0c47cc71476786873cbd32db8db3c0f7d1e.1592328814.git.lucien.xin@gmail.com>
- <20200622131650.GD2557669@bistromath.localdomain>
-In-Reply-To: <20200622131650.GD2557669@bistromath.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 23 Jun 2020 01:18:39 +0800
-Message-ID: <CADvbK_ekuzyKkAYg1uMhYRQv-FWgHZwftCpdqdCc6gtvxDyajw@mail.gmail.com>
-Subject: Re: [PATCH ipsec-next 02/10] tunnel4: add cb_handler to struct xfrm_tunnel
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
+References: <20200620033007.1444705-1-keescook@chromium.org> <20200620033007.1444705-11-keescook@chromium.org>
+In-Reply-To: <20200620033007.1444705-11-keescook@chromium.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 22 Jun 2020 10:22:53 -0700
+Message-ID: <CAKwvOd=N3HQNZfKMQ7eZWdawwNn13=YNNgMO0WAng2ERYX4Juw@mail.gmail.com>
+Subject: Re: [PATCH v2 10/16] KVM: PPC: Book3S PR: Remove uninitialized_var() usage
+To:     Kees Cook <keescook@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Joe Perches <joe@perches.com>,
+        Andy Whitcroft <apw@canonical.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        b43-dev@lists.infradead.org,
+        Network Development <netdev@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-spi@vger.kernel.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 22, 2020 at 9:16 PM Sabrina Dubroca <sd@queasysnail.net> wrote:
+On Fri, Jun 19, 2020 at 8:30 PM Kees Cook <keescook@chromium.org> wrote:
 >
-> 2020-06-17, 01:36:27 +0800, Xin Long wrote:
-> > @@ -231,6 +255,7 @@ static int __init tunnel4_init(void)
-> >               goto err;
-> >       }
-> >  #endif
-> > +     xfrm_input_register_afinfo(&tunnel4_input_afinfo);
+> Using uninitialized_var() is dangerous as it papers over real bugs[1]
+> (or can in the future), and suppresses unrelated compiler warnings (e.g.
+> "unused variable"). If the compiler thinks it is uninitialized, either
+> simply initialize the variable or make compiler changes. As a precursor
+> to removing[2] this[3] macro[4], just remove this variable since it was
+> actually unused:
 >
-> This can fail. Shouldn't you handle that error?
-Yeah, I copied it from xfrm4_protocol_init().
-Now I see why it didn't in xfrm4_protocol_init().
+> arch/powerpc/kvm/book3s_pr.c:1832:16: warning: unused variable 'vrsave' [-Wunused-variable]
+>         unsigned long vrsave;
+>                       ^
+>
+> [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
+> [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
+> [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
+> [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
+>
+> Suggested-by: Nathan Chancellor <natechancellor@gmail.com>
+> Fixes: f05ed4d56e9c ("KVM: PPC: Split out code from book3s.c into book3s_pr.c")
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Thanks.
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
+> ---
+>  arch/powerpc/kvm/book3s_pr.c | 3 ---
+>  1 file changed, 3 deletions(-)
 >
-> >       return 0;
-> >
-> >  err:
+> diff --git a/arch/powerpc/kvm/book3s_pr.c b/arch/powerpc/kvm/book3s_pr.c
+> index ef54f917bdaf..ed12dfbf9bb5 100644
+> --- a/arch/powerpc/kvm/book3s_pr.c
+> +++ b/arch/powerpc/kvm/book3s_pr.c
+> @@ -1828,9 +1828,6 @@ static int kvmppc_vcpu_run_pr(struct kvm_vcpu *vcpu)
+>  {
+>         struct kvm_run *run = vcpu->run;
+>         int ret;
+> -#ifdef CONFIG_ALTIVEC
+> -       unsigned long uninitialized_var(vrsave);
+> -#endif
 >
+>         /* Check if we can run the vcpu at all */
+>         if (!vcpu->arch.sane) {
 > --
-> Sabrina
->
+
+-- 
+Thanks,
+~Nick Desaulniers
