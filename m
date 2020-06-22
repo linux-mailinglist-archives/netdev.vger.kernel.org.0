@@ -2,126 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E29A22032E0
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:07:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B62222032EA
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726808AbgFVJH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 05:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725952AbgFVJHZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 05:07:25 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96812C061794;
-        Mon, 22 Jun 2020 02:07:24 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id u13so18597462iol.10;
-        Mon, 22 Jun 2020 02:07:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=Q5S8rsZFww2RQBPdBUO2Ls9OyyX7I+zxItrTRXSG0Dc=;
-        b=byUv3cY+AOOV8gBuW1AflMUjWv5hGVN35Q9Puu+2+t56nc7VxjmYosOJG1J+HkPYXS
-         3TZxW1V6K6ebV03vKgzZrhV1bNWxEGJ5UehJHU4zA10lNahWo0JSu66sUiWH8hJRMcW8
-         0cAibGMRjdGlKjMMTw4Nsxq4CiHO5PyxWYzhDwz1a7N+yvueYFxdG5WwKEsQxjotkVAA
-         woFysNO8jzVb9O5LFFBPb3F5iLNRl/0IayvoEqgk8TZE6VLrmrSa8+XJdlpq9+29XBpc
-         4s6HD3c4+svqyGMv4cn+41pcfMqBcYZ21Ep9jDMR6pCISERYGxSxKOue3BQZbSUIQcwi
-         V2jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=Q5S8rsZFww2RQBPdBUO2Ls9OyyX7I+zxItrTRXSG0Dc=;
-        b=cY6HEeSXp+AV7ry2wyjWEimpN0nkA6K0BeJVIFyVBkQXtL4ZM0WcjkmKIrkt7b95vz
-         UNiqP4KV7o8Shkf7aHTwSpLvRO7cbZYvzrO1qvsjX9y/I0H2pjMepSmQsQgd36rC2ahA
-         88VquX2pHcDsqhJeuCHsP14f9baGusPjyjruc+kTCPb4I/MkVvcCQf9XylNhSEuh9jv1
-         ahsqDAb37FTk3+eeNamPG2ZIjbHRD6ag/Gl88FCC99s6nRwqEpkLK3FqPy6lnReczKZK
-         o6Q7canfHcuiWV3Jz/wK7BnZUax+UqF4QqORpZXLfJg2XXlFmAc/ZZxVnO1g20QdUip8
-         W3ow==
-X-Gm-Message-State: AOAM530qYGiPJP7z2Or4q3Z6bhvbGTLyVdPJH0EsbrkS7HPOivJnuSBr
-        4MAQwBflUEqPTLtaMzvOaUXUnEhxO/PoZIXDhjA=
-X-Google-Smtp-Source: ABdhPJwOiPKxd4xAeSQ6KNxpRqMrnK69wq8YYDF8YwjNAfHrsblHFiobqwkDYYJqyfrnzy4dcsM3nJ1AWGyTJWxwexs=
-X-Received: by 2002:a6b:780d:: with SMTP id j13mr18940211iom.66.1592816843974;
- Mon, 22 Jun 2020 02:07:23 -0700 (PDT)
+        id S1726837AbgFVJHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 05:07:47 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:40706 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725983AbgFVJHq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 05:07:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592816865;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uYoQXSzwclqSNX+q/yIlo00opb3YPsUI2zyXrlleGws=;
+        b=YvWCp+X5KnT+FEVjOlsm3JbvdQ5++UU3mq2Xawp95vY++phdZ7QcmmiJNxGyI/JYHyBspd
+        Qg/Yk9I+mGFnfYZZ2SaM6urYAZv3LggqKubqBYQ7xBUC6+tGH5p6g9s0HgC79QL5vm8zUq
+        EMWsIpPflI18ve2uJVQk38g5SCU2dl4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-51-SQJRxOhlMqa4Bpmmejm1fA-1; Mon, 22 Jun 2020 05:07:41 -0400
+X-MC-Unique: SQJRxOhlMqa4Bpmmejm1fA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 294EE801503;
+        Mon, 22 Jun 2020 09:07:40 +0000 (UTC)
+Received: from [10.72.13.194] (ovpn-13-194.pek2.redhat.com [10.72.13.194])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E1D2071664;
+        Mon, 22 Jun 2020 09:07:34 +0000 (UTC)
+Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
+To:     Eugenio Perez Martin <eperezma@redhat.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20200611113404.17810-1-mst@redhat.com>
+ <20200611113404.17810-3-mst@redhat.com>
+ <20200611152257.GA1798@char.us.oracle.com>
+ <CAJaqyWdwXMX0JGhmz6soH2ZLNdaH6HEdpBM8ozZzX9WUu8jGoQ@mail.gmail.com>
+ <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b6347dad-89e8-61f6-6394-65c301f91dd7@redhat.com>
+Date:   Mon, 22 Jun 2020 17:07:33 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200620033007.1444705-1-keescook@chromium.org>
- <CA+icZUWpHRR7ukyepiUH1dR3r4GMi-s2crfwR5vTszdt1SUTQw@mail.gmail.com> <202006200854.B2D8F21@keescook>
-In-Reply-To: <202006200854.B2D8F21@keescook>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Mon, 22 Jun 2020 11:07:14 +0200
-Message-ID: <CA+icZUV-gBgUnrm6pF2MHWC2SnK_ZBatAa9VrEJ2VbdARi1YBw@mail.gmail.com>
-Subject: Re: [PATCH v2 00/16] Remove uninitialized_var() macro
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-mm@kvack.org,
-        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 20, 2020 at 5:57 PM Kees Cook <keescook@chromium.org> wrote:
->
-> On Sat, Jun 20, 2020 at 09:03:34AM +0200, Sedat Dilek wrote:
-> > On Sat, Jun 20, 2020 at 5:30 AM Kees Cook <keescook@chromium.org> wrote:
-> > >
-> > > v2:
-> > > - more special-cased fixes
-> > > - add reviews
-> > > v1: https://lore.kernel.org/lkml/20200603233203.1695403-1-keescook@chromium.org
-> > >
-> > > Using uninitialized_var() is dangerous as it papers over real bugs[1]
-> > > (or can in the future), and suppresses unrelated compiler warnings
-> > > (e.g. "unused variable"). If the compiler thinks it is uninitialized,
-> > > either simply initialize the variable or make compiler changes.
-> > >
-> > > As recommended[2] by[3] Linus[4], remove the macro.
-> > >
-> > > Most of the 300 uses don't cause any warnings on gcc 9.3.0, so they're in
-> > > a single treewide commit in this series. A few others needed to actually
-> > > get cleaned up, and I broke those out into individual patches.
-> > >
-> > > The tree is:
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/log/?h=kspp/uninit/macro
-> > >
-> > > -Kees
-> > >
-> >
-> > Hi Kees,
-> >
-> > thanks for doing a v2 of your patchset.
-> >
-> > As I saw Jason Yan providing some "uninitialized_var() macro" patches
-> > to the MLs I pointen him to your tree "v1".
->
-> Thanks!
->
-> > BTW, I have tested your "v1" against Linux v5.7 (see [1]) - just
-> > yesterday with Linux v5.7.5-rc1.
-> >
-> > Is it possible to have a v2 of this patchset on top od Linux v5.7 - if
-> > you do not mind.
->
-> Since it's only going to be for post-v5.8, I'm fine skipping the v5.7
-> testing. Mainly I'm looking at v5.8 and linux-next.
->
-> Thanks for looking at it!
->
 
-Thanks for the feedback.
+On 2020/6/20 上午2:07, Eugenio Perez Martin wrote:
+> On Mon, Jun 15, 2020 at 2:28 PM Eugenio Perez Martin
+> <eperezma@redhat.com> wrote:
+>> On Thu, Jun 11, 2020 at 5:22 PM Konrad Rzeszutek Wilk
+>> <konrad.wilk@oracle.com> wrote:
+>>> On Thu, Jun 11, 2020 at 07:34:19AM -0400, Michael S. Tsirkin wrote:
+>>>> As testing shows no performance change, switch to that now.
+>>> What kind of testing? 100GiB? Low latency?
+>>>
+>> Hi Konrad.
+>>
+>> I tested this version of the patch:
+>> https://lkml.org/lkml/2019/10/13/42
+>>
+>> It was tested for throughput with DPDK's testpmd (as described in
+>> http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html)
+>> and kernel pktgen. No latency tests were performed by me. Maybe it is
+>> interesting to perform a latency test or just a different set of tests
+>> over a recent version.
+>>
+>> Thanks!
+> I have repeated the tests with v9, and results are a little bit different:
+> * If I test opening it with testpmd, I see no change between versions
+> * If I forward packets between two vhost-net interfaces in the guest
+> using a linux bridge in the host:
+>    - netperf UDP_STREAM shows a performance increase of 1.8, almost
+> doubling performance. This gets lower as frame size increase.
+>    - rests of the test goes noticeably worse: UDP_RR goes from ~6347
+> transactions/sec to 5830
+>    - TCP_STREAM goes from ~10.7 gbps to ~7Gbps
 
-"I knew you'd say that."
-( Judge Dredd )
 
-- Sedat -
+Which direction did you mean here? Guest TX or RX?
+
+
+>    - TCP_RR from 6223.64 transactions/sec to 5739.44
+
+
+Perf diff might help. I think we can start from the RR result which 
+should be easier. Maybe you can test it for each patch then you may see 
+which patch is the source of the regression.
+
+Thanks
+
