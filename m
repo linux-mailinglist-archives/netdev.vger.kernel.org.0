@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A732203443
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 12:02:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05548203436
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 12:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727846AbgFVKBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 06:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43848 "EHLO
+        id S1727860AbgFVKBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 06:01:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727815AbgFVKBU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 06:01:20 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDE8C061796
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 03:01:20 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id j18so716580wmi.3
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 03:01:20 -0700 (PDT)
+        with ESMTP id S1727841AbgFVKBX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 06:01:23 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD3F8C061797
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 03:01:21 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id c3so15967285wru.12
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 03:01:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TTj07T08NNZro/U2yWPFP3Dw02nhL5hB1K0t6Vwkyzw=;
-        b=umsqc560VgWzO4IFGB8xbm9+eHaBnWiZ8GN88xIPqibz5h05dlWPTFWVVY+f69KlG0
-         a4y7K5KJh92xDh9QC/FmqY1WMCLtVijDEi7mmlatAu20aNEY/OkwQAydZfniEo6v19ly
-         5UpNecI0rhyx7ljbmoN4ErSxXuJgzG2Pvn5qCM8hJ/gz7PmN8uAxqCEn0FKto6Yw3BQJ
-         MwlWbDZgiEh6Bxwf6FJ+KhsXROfVkjFYGLxKZrFtIx6c3oqVOLqL2qrekxNXHOXLjNu7
-         HsquwI/7md6BwXsqjVvJhh/XfV1XR78LuXr1JLkx4Xai6QrZExGPdzterXgVwn8Nlu2K
-         +Dwg==
+        bh=eg4utbhrf/3v6wZhuPotuFpmqRh7IC4ZAOzFVoP+DSU=;
+        b=MxEnyo505JlU2NM71Ns3rqf71HG9d+3e0DSgBr4zrwK8k/6QZkxukBWBPbXD0U7DOU
+         LTkBY0EmU2E4b1wfmzJjeUMAcwEQbL6bY0Hxl0Zle/ZEIhZf9HVji4mYG9zx7e5CQY4u
+         CCATyRl6NEWhTBKaJ58QnmPlrIe3Dpoz9v76MGezVbZdpfDsY8bQjSRNfPy0117mdmc7
+         ZWOILTIDUcfXtXy0/X7HXWgBFDWAUDVKV9VQFgANzt2cc9PVEsPMYZoVDpe/q0TWrtQm
+         vP1dPPAeTocwkUNR3FXFR7z6gj9eEexFguHwDu10Lr43tHqCkUMFiBLt0giJs6h4sjhU
+         4RRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TTj07T08NNZro/U2yWPFP3Dw02nhL5hB1K0t6Vwkyzw=;
-        b=ek/RyRDKTPqz3N6MvPt1NA1GZoSPqJVGATU3hoIwR+oklSWozyFZ+MIXRZDlb8irQn
-         9h6sRT+qJsCqJjXw7C3RLs6Xe9xaFnk56lM1f1p7I+zQxDrDhKxg3OLaKTT48Tlr54Rs
-         BR8B+zoE6LKECjcZD9C++YwJTYEOusdF9BOo8cHFgz1nCga3P0fc0dmBc9YiqYJJBFqH
-         U/dMDacs/otVSfnbFjKOIyD/FVUJyKQX8Wo7QvGGQHqGYCzCvdROfS/F5YGLqAfeKBDn
-         C7ievyUmBG1tpXpC/mT/1aw9u/MOf9tlqqTGxzz/Ox9t/FmqLDIcI66cVd8hT9rsAJfP
-         5w5w==
-X-Gm-Message-State: AOAM530z0M+n/pwmmZ6TXwxk2pVgbBWkMqHZ7zJAnYLR1vtfn5VAP7oq
-        GTxpOyvouFqvrwdzG900QFEAGA==
-X-Google-Smtp-Source: ABdhPJwbtQnwhgQy4/PGrqFbGi4Rm4Vlma7uhso1tRe0BeUVnkpoIf981M/hc/QiwEw6xXi5+FRkFQ==
-X-Received: by 2002:a05:600c:2dc1:: with SMTP id e1mr5038382wmh.108.1592820078894;
-        Mon, 22 Jun 2020 03:01:18 -0700 (PDT)
+        bh=eg4utbhrf/3v6wZhuPotuFpmqRh7IC4ZAOzFVoP+DSU=;
+        b=i1Ux/XGFTFyEVr2/sj7o+6EBSfegSRTiqp9x49Jm9FgspMnys5U3c9Ax/TaIxdFTBd
+         +2gwU7nXlrXyKiQ04tfmgsBvc1tpl/1S0NW3T4fzp95xsn11puGndMDdx7/9Zy0pJukm
+         MitCWe26S8gF0PfYBiotwhTEBcY2IRoMej7PnmOEI+95V5aAKBLJkF0ju+i5O2PIF6Kn
+         2fF12nPkqINWA/NPnrfZHhKXxQlOMTdL8PLtGqE07sXGIRVUETnCg5hv0/JhVd7rYffl
+         N4ENKfF2Ax4JUW9czYD03dCSi+Xe4tscEuupgEZkuqEAMC54RR5l0RGGxRUSQD2ViTZb
+         +wWg==
+X-Gm-Message-State: AOAM531AcFQeOUhbFsbaU+yC2HiV0PQwx1pcGKhSP+QT+ZVshJ5ScGiV
+        bY+Q1Bv/2HnuriqzP8eNL+ALLQ==
+X-Google-Smtp-Source: ABdhPJzUx9/chMNKmLzAYZpTwQ9uy6yZYRBRjyWPOHP+aXvq3C4Pttlm2e9Adw57f6qs+y2AureErg==
+X-Received: by 2002:adf:dd83:: with SMTP id x3mr16132134wrl.292.1592820080518;
+        Mon, 22 Jun 2020 03:01:20 -0700 (PDT)
 Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
-        by smtp.gmail.com with ESMTPSA id x205sm16822187wmx.21.2020.06.22.03.01.17
+        by smtp.gmail.com with ESMTPSA id x205sm16822187wmx.21.2020.06.22.03.01.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jun 2020 03:01:18 -0700 (PDT)
+        Mon, 22 Jun 2020 03:01:20 -0700 (PDT)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Jonathan Corbet <corbet@lwn.net>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
@@ -72,9 +72,9 @@ Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         Pedro Tsai <pedro.tsai@mediatek.com>,
         Andrew Perepech <andrew.perepech@mediatek.com>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH 08/11] net: phy: don't abuse devres in devm_mdiobus_register()
-Date:   Mon, 22 Jun 2020 12:00:53 +0200
-Message-Id: <20200622100056.10151-9-brgl@bgdev.pl>
+Subject: [PATCH 09/11] of: mdio: remove the 'extern' keyword from function declarations
+Date:   Mon, 22 Jun 2020 12:00:54 +0200
+Message-Id: <20200622100056.10151-10-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.26.1
 In-Reply-To: <20200622100056.10151-1-brgl@bgdev.pl>
 References: <20200622100056.10151-1-brgl@bgdev.pl>
@@ -87,275 +87,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-We currently have two managed helpers for mdiobus - devm_mdiobus_alloc()
-and devm_mdiobus_register(). The idea behind devres is that the release
-callback releases whatever resource the devm function allocates. In the
-mdiobus case however there's no devres associated with the device by
-devm_mdiobus_register(). Instead the release callback for
-devm_mdiobus_alloc(): _devm_mdiobus_free() unregisters the device if
-it is marked as managed.
-
-This all seems wrong. The managed structure shouldn't need to know or
-care about whether it's managed or not - and this is the case now for
-struct mii_bus. The devres wrapper should be opaque to the managed
-resource.
-
-This changeset makes devm_mdiobus_alloc() and devm_mdiobus_register()
-conform to common devres standards: devm_mdiobus_alloc() allocates a
-devres structure and registers a callback that will call mdiobus_free().
-__devm_mdiobus_register() allocated another devres and registers a
-callback that will unregister the bus. Similarily to how we modified
-devm_register_netdev() - we're not checking whether struct mii_bus is
-managed - it could have been allocated as part of a bigger structure.
+The 'extern' keyword in headers doesn't have any benefit. Remove them
+all from the of_mdio.h header.
 
 Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 ---
- .../driver-api/driver-model/devres.rst        |  1 -
- drivers/net/ethernet/realtek/r8169_main.c     |  2 +-
- drivers/net/phy/mdio_bus.c                    | 73 -------------------
- drivers/net/phy/mdio_devres.c                 | 70 ++++++++++++++++--
- include/linux/phy.h                           | 10 +--
- 5 files changed, 69 insertions(+), 87 deletions(-)
+ include/linux/of_mdio.h | 37 ++++++++++++++++++-------------------
+ 1 file changed, 18 insertions(+), 19 deletions(-)
 
-diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
-index 5463fc8a60c1..e0333d66a7f4 100644
---- a/Documentation/driver-api/driver-model/devres.rst
-+++ b/Documentation/driver-api/driver-model/devres.rst
-@@ -342,7 +342,6 @@ LED
- MDIO
-   devm_mdiobus_alloc()
-   devm_mdiobus_alloc_size()
--  devm_mdiobus_free()
-   devm_mdiobus_register()
+diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
+index 0f61a4ac6bcf..ba8e157f24ad 100644
+--- a/include/linux/of_mdio.h
++++ b/include/linux/of_mdio.h
+@@ -12,27 +12,26 @@
+ #include <linux/of.h>
  
- MEM
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index dad84ecf5a77..34d5797695ba 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5100,7 +5100,7 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
- 	new_bus->read = r8169_mdio_read_reg;
- 	new_bus->write = r8169_mdio_write_reg;
- 
--	ret = devm_mdiobus_register(new_bus);
-+	ret = devm_mdiobus_register(&pdev->dev, new_bus);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 6ceee82b2839..42192991f55d 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -165,79 +165,6 @@ struct mii_bus *mdiobus_alloc_size(size_t size)
- }
- EXPORT_SYMBOL(mdiobus_alloc_size);
- 
--static void _devm_mdiobus_free(struct device *dev, void *res)
--{
--	struct mii_bus *bus = *(struct mii_bus **)res;
+ #if IS_ENABLED(CONFIG_OF_MDIO)
+-extern bool of_mdiobus_child_is_phy(struct device_node *child);
+-extern int of_mdiobus_register(struct mii_bus *mdio, struct device_node *np);
+-extern struct phy_device *of_phy_find_device(struct device_node *phy_np);
+-extern struct phy_device *of_phy_connect(struct net_device *dev,
+-					 struct device_node *phy_np,
+-					 void (*hndlr)(struct net_device *),
+-					 u32 flags, phy_interface_t iface);
+-extern struct phy_device *
++bool of_mdiobus_child_is_phy(struct device_node *child);
++int of_mdiobus_register(struct mii_bus *mdio, struct device_node *np);
++struct phy_device *of_phy_find_device(struct device_node *phy_np);
++struct phy_device *
++of_phy_connect(struct net_device *dev, struct device_node *phy_np,
++	       void (*hndlr)(struct net_device *), u32 flags,
++	       phy_interface_t iface);
++struct phy_device *
+ of_phy_get_and_connect(struct net_device *dev, struct device_node *np,
+ 		       void (*hndlr)(struct net_device *));
+-struct phy_device *of_phy_attach(struct net_device *dev,
+-				 struct device_node *phy_np, u32 flags,
+-				 phy_interface_t iface);
 -
--	if (bus->is_managed_registered && bus->state == MDIOBUS_REGISTERED)
--		mdiobus_unregister(bus);
--
--	mdiobus_free(bus);
--}
--
--static int devm_mdiobus_match(struct device *dev, void *res, void *data)
--{
--	struct mii_bus **r = res;
--
--	if (WARN_ON(!r || !*r))
--		return 0;
--
--	return *r == data;
--}
--
--/**
-- * devm_mdiobus_alloc_size - Resource-managed mdiobus_alloc_size()
-- * @dev:		Device to allocate mii_bus for
-- * @sizeof_priv:	Space to allocate for private structure.
-- *
-- * Managed mdiobus_alloc_size. mii_bus allocated with this function is
-- * automatically freed on driver detach.
-- *
-- * If an mii_bus allocated with this function needs to be freed separately,
-- * devm_mdiobus_free() must be used.
-- *
-- * RETURNS:
-- * Pointer to allocated mii_bus on success, NULL on failure.
-- */
--struct mii_bus *devm_mdiobus_alloc_size(struct device *dev, int sizeof_priv)
--{
--	struct mii_bus **ptr, *bus;
--
--	ptr = devres_alloc(_devm_mdiobus_free, sizeof(*ptr), GFP_KERNEL);
--	if (!ptr)
--		return NULL;
--
--	/* use raw alloc_dr for kmalloc caller tracing */
--	bus = mdiobus_alloc_size(sizeof_priv);
--	if (bus) {
--		*ptr = bus;
--		devres_add(dev, ptr);
--		bus->is_managed = 1;
--	} else {
--		devres_free(ptr);
--	}
--
--	return bus;
--}
--EXPORT_SYMBOL_GPL(devm_mdiobus_alloc_size);
--
--/**
-- * devm_mdiobus_free - Resource-managed mdiobus_free()
-- * @dev:		Device this mii_bus belongs to
-- * @bus:		the mii_bus associated with the device
-- *
-- * Free mii_bus allocated with devm_mdiobus_alloc_size().
-- */
--void devm_mdiobus_free(struct device *dev, struct mii_bus *bus)
--{
--	int rc;
--
--	rc = devres_release(dev, _devm_mdiobus_free,
--			    devm_mdiobus_match, bus);
--	WARN_ON(rc);
--}
--EXPORT_SYMBOL_GPL(devm_mdiobus_free);
--
- /**
-  * mdiobus_release - mii_bus device release callback
-  * @d: the target struct device that contains the mii_bus
-diff --git a/drivers/net/phy/mdio_devres.c b/drivers/net/phy/mdio_devres.c
-index 3ee887733d4a..344d2c748c16 100644
---- a/drivers/net/phy/mdio_devres.c
-+++ b/drivers/net/phy/mdio_devres.c
-@@ -1,25 +1,83 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
-+#include <linux/device.h>
- #include <linux/phy.h>
-+#include <linux/stddef.h>
+-extern struct mii_bus *of_mdio_find_bus(struct device_node *mdio_np);
+-extern int of_phy_register_fixed_link(struct device_node *np);
+-extern void of_phy_deregister_fixed_link(struct device_node *np);
+-extern bool of_phy_is_fixed_link(struct device_node *np);
+-extern int of_mdiobus_phy_device_register(struct mii_bus *mdio,
+-				     struct phy_device *phy,
+-				     struct device_node *child, u32 addr);
++struct phy_device *
++of_phy_attach(struct net_device *dev, struct device_node *phy_np,
++	      u32 flags, phy_interface_t iface);
 +
-+struct mdiobus_devres {
-+	struct mii_bus *mii;
-+};
-+
-+static void devm_mdiobus_free(struct device *dev, void *this)
-+{
-+	struct mdiobus_devres *dr = this;
-+
-+	mdiobus_free(dr->mii);
-+}
-+
-+/**
-+ * devm_mdiobus_alloc_size - Resource-managed mdiobus_alloc_size()
-+ * @dev:		Device to allocate mii_bus for
-+ * @sizeof_priv:	Space to allocate for private structure
-+ *
-+ * Managed mdiobus_alloc_size. mii_bus allocated with this function is
-+ * automatically freed on driver detach.
-+ *
-+ * RETURNS:
-+ * Pointer to allocated mii_bus on success, NULL on out-of-memory error.
-+ */
-+struct mii_bus *devm_mdiobus_alloc_size(struct device *dev, int sizeof_priv)
-+{
-+	struct mdiobus_devres *dr;
-+
-+	dr = devres_alloc(devm_mdiobus_free, sizeof(*dr), GFP_KERNEL);
-+	if (!dr)
-+		return NULL;
-+
-+	dr->mii = mdiobus_alloc_size(sizeof_priv);
-+	if (!dr->mii) {
-+		devres_free(dr);
-+		return NULL;
-+	}
-+
-+	devres_add(dev, dr);
-+	return dr->mii;
-+}
-+EXPORT_SYMBOL(devm_mdiobus_alloc_size);
-+
-+static void devm_mdiobus_unregister(struct device *dev, void *this)
-+{
-+	struct mdiobus_devres *dr = this;
-+
-+	mdiobus_unregister(dr->mii);
-+}
++struct mii_bus *of_mdio_find_bus(struct device_node *mdio_np);
++int of_phy_register_fixed_link(struct device_node *np);
++void of_phy_deregister_fixed_link(struct device_node *np);
++bool of_phy_is_fixed_link(struct device_node *np);
++int of_mdiobus_phy_device_register(struct mii_bus *mdio, struct phy_device *phy,
++				   struct device_node *child, u32 addr);
  
- /**
-  * __devm_mdiobus_register - Resource-managed variant of mdiobus_register()
-+ * @dev:	Device to register mii_bus for
-  * @bus:	MII bus structure to register
-  * @owner:	Owning module
-  *
-  * Returns 0 on success, negative error number on failure.
-  */
--int __devm_mdiobus_register(struct mii_bus *bus, struct module *owner)
-+int __devm_mdiobus_register(struct device *dev, struct mii_bus *bus,
-+			    struct module *owner)
- {
-+	struct mdiobus_devres *dr;
- 	int ret;
- 
--	if (!bus->is_managed)
--		return -EPERM;
-+	dr = devres_alloc(devm_mdiobus_unregister, sizeof(*dr), GFP_KERNEL);
-+	if (!dr)
-+		return -ENOMEM;
- 
- 	ret = __mdiobus_register(bus, owner);
--	if (!ret)
--		bus->is_managed_registered = 1;
-+	if (ret) {
-+		devres_free(dr);
-+		return ret;
-+	}
- 
--	return ret;
-+	dr->mii = bus;
-+	devres_add(dev, dr);
-+	return 0;
- }
- EXPORT_SYMBOL(__devm_mdiobus_register);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 62149945c5b3..fa6697edefb3 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -260,9 +260,6 @@ struct mii_bus {
- 	int (*reset)(struct mii_bus *bus);
- 	struct mdio_bus_stats stats[PHY_MAX_ADDR];
- 
--	unsigned int is_managed:1;	/* is device-managed */
--	unsigned int is_managed_registered:1;
--
- 	/*
- 	 * A lock to ensure that only one thing can read/write
- 	 * the MDIO bus at a time
-@@ -313,9 +310,11 @@ static inline struct mii_bus *mdiobus_alloc(void)
- }
- 
- int __mdiobus_register(struct mii_bus *bus, struct module *owner);
--int __devm_mdiobus_register(struct mii_bus *bus, struct module *owner);
-+int __devm_mdiobus_register(struct device *dev, struct mii_bus *bus,
-+			    struct module *owner);
- #define mdiobus_register(bus) __mdiobus_register(bus, THIS_MODULE)
--#define devm_mdiobus_register(bus) __devm_mdiobus_register(bus, THIS_MODULE)
-+#define devm_mdiobus_register(dev, bus) \
-+		__devm_mdiobus_register(dev, bus, THIS_MODULE)
- 
- void mdiobus_unregister(struct mii_bus *bus);
- void mdiobus_free(struct mii_bus *bus);
-@@ -326,7 +325,6 @@ static inline struct mii_bus *devm_mdiobus_alloc(struct device *dev)
- }
- 
- struct mii_bus *mdio_find_bus(const char *mdio_name);
--void devm_mdiobus_free(struct device *dev, struct mii_bus *bus);
- struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr);
- 
- #define PHY_INTERRUPT_DISABLED	false
+ static inline int of_mdio_parse_addr(struct device *dev,
+ 				     const struct device_node *np)
 -- 
 2.26.1
 
