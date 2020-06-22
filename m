@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B94E203A08
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 16:53:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B3C5203A07
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 16:53:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729291AbgFVOx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 10:53:29 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:17180 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729157AbgFVOx0 (ORCPT
+        id S1729257AbgFVOx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 10:53:28 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:57754 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729244AbgFVOx0 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 10:53:26 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05MEZFAm003813;
-        Mon, 22 Jun 2020 07:53:24 -0700
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05MEYq9Q032123;
+        Mon, 22 Jun 2020 07:53:25 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=HJQX7r9PQXqRpJeYNeei1hmeVAwQxox9JL+9mKum+cw=;
- b=C9iEQk6LlUXplmOoOL9aCgc2ZHQ4Bq60uSxx53FVkthpt5wWAYmDK4JE3RxFjKtD9wbJ
- AkZIrgGnbyYnwIgUPjKEhWthivg07gXfaShjwZyDhTcjfLbAhUDWxyK/w9o9K1B6AkZx
- zrL6Ry7EqeATB0DzUq0+ct6TzvHCpDbHRJhqD++zYQU7q28yD/TV91CuRDef/e24fTAI
- eNkLq6D0WJuqXeLT2XXFcD4KADJtJcKDx49LMfSByTfj66JBTm3AMn6MpdHNzRAsGu7N
- sX8rOgczfxKokIRwmMrgpwXnjCBORAInw619PFGoHAwyXgyM60z8mQKAM4gE6bkd/Kgx Dw== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 31shynrhqu-1
+ content-type; s=pfpt0818; bh=x+rsUlWER+unYieWAzsloD9hTKCBZ0uXWjypRl7JHq0=;
+ b=pMi+pi9HdZJQm/cPqH029JTqwaj2769Pcs4GOJHaTtUEYpTXRMQQx/W/2XsW0SnU8iDC
+ wwUbfNOYp9dvS5K0IXBy7OJ13H40/cIAgEPvunrmfSMVL7W9jTpQ+tI10ohcRZTp04Aw
+ Dh0dto+JlL9EDvtyiNRt2NuqnCBvdUUI043FwWc/8J8G41gjIpfqwfrAGvXZt8qwbiPQ
+ 2hzTXLC+1NCU36YXvkGj9Y8Db/URbHoWpAYZ5jViOQQ5BE207yYot7FGu7A/5TViN3CO
+ yNpHcKmT76Kz7d/DuR0pXuXJ1/jQD0WKvCWxS9gLsR0jZ/DOt66HoXcGnVzI8xXRXUO/ Nw== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 31sftph244-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 22 Jun 2020 07:53:24 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 22 Jun
- 2020 07:53:22 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 22 Jun
- 2020 07:53:22 -0700
+        Mon, 22 Jun 2020 07:53:25 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 22 Jun
+ 2020 07:53:24 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 22 Jun 2020 07:53:22 -0700
+ Transport; Mon, 22 Jun 2020 07:53:24 -0700
 Received: from NN-LT0019.marvell.com (unknown [10.193.39.5])
-        by maili.marvell.com (Postfix) with ESMTP id CF1053F703F;
-        Mon, 22 Jun 2020 07:53:20 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id E3FB33F703F;
+        Mon, 22 Jun 2020 07:53:22 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Mark Starovoytov <mstarovoitov@marvell.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        "Dmitry Bogdanov" <dbogdanov@marvell.com>
-Subject: [PATCH net-next 4/6] net: atlantic: A2: flow control support
-Date:   Mon, 22 Jun 2020 17:53:07 +0300
-Message-ID: <20200622145309.455-5-irusskikh@marvell.com>
+        Dmitry Bogdanov <dbogdanov@marvell.com>,
+        "Igor Russkikh" <irusskikh@marvell.com>
+Subject: [PATCH net-next 5/6] net: atlantic: A2: report link partner capabilities
+Date:   Mon, 22 Jun 2020 17:53:08 +0300
+Message-ID: <20200622145309.455-6-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200622145309.455-1-irusskikh@marvell.com>
 References: <20200622145309.455-1-irusskikh@marvell.com>
@@ -59,129 +56,158 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds flow control support on A2.
+From: Dmitry Bogdanov <dbogdanov@marvell.com>
 
-Co-developed-by: Dmitry Bogdanov <dbogdanov@marvell.com>
+This patch adds link partner capabilities reporting support on A2.
+In particular, the following capabilities are available for reporting:
+* link rate;
+* EEE;
+* flow control.
+
 Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
+Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |  2 +-
- .../aquantia/atlantic/hw_atl/hw_atl_b0.h      |  2 ++
- .../aquantia/atlantic/hw_atl2/hw_atl2.c       |  3 ++
- .../atlantic/hw_atl2/hw_atl2_utils_fw.c       | 36 +++++++++++++++++++
- 4 files changed, 42 insertions(+), 1 deletion(-)
+ .../net/ethernet/aquantia/atlantic/aq_hw.h    |  2 +
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   | 49 +++++++++++++++++++
+ .../atlantic/hw_atl2/hw_atl2_utils_fw.c       | 30 ++++++++++++
+ 3 files changed, 81 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 14d79f70cad7..8ed6fd845969 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -108,7 +108,7 @@ static int hw_atl_b0_hw_reset(struct aq_hw_s *self)
- 	return err;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
+index 1408a522eff1..f2663ad22209 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
+@@ -71,6 +71,8 @@ struct aq_hw_caps_s {
+ struct aq_hw_link_status_s {
+ 	unsigned int mbps;
+ 	bool full_duplex;
++	u32 lp_link_speed_msk;
++	u32 lp_flow_control;
+ };
+ 
+ struct aq_stats_s {
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index 49528fcdc947..647b22d89b1a 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -935,6 +935,8 @@ static void aq_nic_update_ndev_stats(struct aq_nic_s *self)
+ void aq_nic_get_link_ksettings(struct aq_nic_s *self,
+ 			       struct ethtool_link_ksettings *cmd)
+ {
++	u32 lp_link_speed_msk;
++
+ 	if (self->aq_nic_cfg.aq_hw_caps->media_type == AQ_HW_MEDIA_TYPE_FIBRE)
+ 		cmd->base.port = PORT_FIBRE;
+ 	else
+@@ -1053,6 +1055,53 @@ void aq_nic_get_link_ksettings(struct aq_nic_s *self,
+ 		ethtool_link_ksettings_add_link_mode(cmd, advertising, FIBRE);
+ 	else
+ 		ethtool_link_ksettings_add_link_mode(cmd, advertising, TP);
++
++	ethtool_link_ksettings_zero_link_mode(cmd, lp_advertising);
++	lp_link_speed_msk = self->aq_hw->aq_link_status.lp_link_speed_msk;
++
++	if (lp_link_speed_msk & AQ_NIC_RATE_10G)
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     10000baseT_Full);
++
++	if (lp_link_speed_msk & AQ_NIC_RATE_5G)
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     5000baseT_Full);
++
++	if (lp_link_speed_msk & AQ_NIC_RATE_2G5)
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     2500baseT_Full);
++
++	if (lp_link_speed_msk & AQ_NIC_RATE_1G)
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     1000baseT_Full);
++
++	if (lp_link_speed_msk & AQ_NIC_RATE_1G_HALF)
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     1000baseT_Half);
++
++	if (lp_link_speed_msk & AQ_NIC_RATE_100M)
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     100baseT_Full);
++
++	if (lp_link_speed_msk & AQ_NIC_RATE_100M_HALF)
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     100baseT_Half);
++
++	if (lp_link_speed_msk & AQ_NIC_RATE_10M)
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     10baseT_Full);
++
++	if (lp_link_speed_msk & AQ_NIC_RATE_10M_HALF)
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     10baseT_Half);
++
++	if (self->aq_hw->aq_link_status.lp_flow_control & AQ_NIC_FC_RX)
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     Pause);
++	if (!!(self->aq_hw->aq_link_status.lp_flow_control & AQ_NIC_FC_TX) ^
++	    !!(self->aq_hw->aq_link_status.lp_flow_control & AQ_NIC_FC_RX))
++		ethtool_link_ksettings_add_link_mode(cmd, lp_advertising,
++						     Asym_Pause);
  }
  
--static int hw_atl_b0_set_fc(struct aq_hw_s *self, u32 fc, u32 tc)
-+int hw_atl_b0_set_fc(struct aq_hw_s *self, u32 fc, u32 tc)
- {
- 	hw_atl_rpb_rx_xoff_en_per_tc_set(self, !!(fc & AQ_NIC_FC_RX), tc);
- 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.h
-index 30f468f2084d..bd9a6fb005c9 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.h
-@@ -62,6 +62,8 @@ void hw_atl_b0_hw_init_rx_rss_ctrl1(struct aq_hw_s *self);
- 
- int hw_atl_b0_hw_mac_addr_set(struct aq_hw_s *self, u8 *mac_addr);
- 
-+int hw_atl_b0_set_fc(struct aq_hw_s *self, u32 fc, u32 tc);
-+
- int hw_atl_b0_hw_start(struct aq_hw_s *self);
- 
- int hw_atl_b0_hw_irq_enable(struct aq_hw_s *self, u64 mask);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
-index 239d077e21d7..c306c26e802b 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
-@@ -181,6 +181,8 @@ static int hw_atl2_hw_qos_set(struct aq_hw_s *self)
- 
- 		threshold = (rx_buff_size * (1024U / 32U) * 50U) / 100U;
- 		hw_atl_rpb_rx_buff_lo_threshold_per_tc_set(self, threshold, tc);
-+
-+		hw_atl_b0_set_fc(self, self->aq_nic_cfg->fc.req, tc);
- 	}
- 
- 	/* QoS 802.1p priority -> TC mapping */
-@@ -841,4 +843,5 @@ const struct aq_hw_ops hw_atl2_ops = {
- 	.hw_get_hw_stats             = hw_atl2_utils_get_hw_stats,
- 	.hw_get_fw_version           = hw_atl2_utils_get_fw_version,
- 	.hw_set_offload              = hw_atl_b0_hw_offload_set,
-+	.hw_set_fc                   = hw_atl_b0_set_fc,
- };
+ int aq_nic_set_link_ksettings(struct aq_nic_s *self,
 diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
-index 9216517f6e65..0edcc0253b2e 100644
+index 0edcc0253b2e..c5d1a1404042 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
-@@ -190,6 +190,15 @@ static int aq_a2_fw_set_link_speed(struct aq_hw_s *self, u32 speed)
- 	return hw_atl2_shared_buffer_finish_ack(self);
- }
- 
-+static void aq_a2_fw_set_mpi_flow_control(struct aq_hw_s *self,
-+					  struct link_options_s *link_options)
-+{
-+	u32 flow_control = self->aq_nic_cfg->fc.req;
-+
-+	link_options->pause_rx = !!(flow_control & AQ_NIC_FC_RX);
-+	link_options->pause_tx = !!(flow_control & AQ_NIC_FC_TX);
-+}
-+
- static void aq_a2_fw_upd_eee_rate_bits(struct aq_hw_s *self,
- 				       struct link_options_s *link_options,
- 				       u32 eee_speeds)
-@@ -213,6 +222,7 @@ static int aq_a2_fw_set_state(struct aq_hw_s *self,
- 		link_options.link_up = 1U;
- 		aq_a2_fw_upd_eee_rate_bits(self, &link_options,
- 					   self->aq_nic_cfg->eee_speeds);
-+		aq_a2_fw_set_mpi_flow_control(self, &link_options);
- 		break;
- 	case MPI_DEINIT:
- 		link_options.link_up = 0U;
-@@ -363,6 +373,30 @@ static int aq_a2_fw_renegotiate(struct aq_hw_s *self)
- 	return err;
- }
- 
-+static int aq_a2_fw_set_flow_control(struct aq_hw_s *self)
-+{
-+	struct link_options_s link_options;
-+
-+	hw_atl2_shared_buffer_get(self, link_options, link_options);
-+
-+	aq_a2_fw_set_mpi_flow_control(self, &link_options);
-+
-+	hw_atl2_shared_buffer_write(self, link_options, link_options);
-+
-+	return hw_atl2_shared_buffer_finish_ack(self);
-+}
-+
-+static u32 aq_a2_fw_get_flow_control(struct aq_hw_s *self, u32 *fcmode)
-+{
-+	struct link_status_s link_status;
-+
-+	hw_atl2_shared_buffer_read(self, link_status, link_status);
-+
-+	*fcmode = ((link_status.pause_rx) ? AQ_NIC_FC_RX : 0) |
-+		  ((link_status.pause_tx) ? AQ_NIC_FC_TX : 0);
-+	return 0;
-+}
-+
- u32 hw_atl2_utils_get_fw_version(struct aq_hw_s *self)
+@@ -164,6 +164,27 @@ static u32 a2_fw_lkp_to_mask(struct lkp_link_caps_s *lkp_link_caps)
  {
- 	struct version_s version;
-@@ -402,4 +436,6 @@ const struct aq_fw_ops aq_a2_fw_ops = {
- 	.update_stats       = aq_a2_fw_update_stats,
- 	.set_eee_rate       = aq_a2_fw_set_eee_rate,
- 	.get_eee_rate       = aq_a2_fw_get_eee_rate,
-+	.set_flow_control   = aq_a2_fw_set_flow_control,
-+	.get_flow_control   = aq_a2_fw_get_flow_control,
- };
+ 	u32 rate = 0;
+ 
++	if (lkp_link_caps->rate_10G)
++		rate |= AQ_NIC_RATE_10G;
++	if (lkp_link_caps->rate_5G)
++		rate |= AQ_NIC_RATE_5G;
++	if (lkp_link_caps->rate_N5G)
++		rate |= AQ_NIC_RATE_5GSR;
++	if (lkp_link_caps->rate_2P5G)
++		rate |= AQ_NIC_RATE_2G5;
++	if (lkp_link_caps->rate_1G)
++		rate |= AQ_NIC_RATE_1G;
++	if (lkp_link_caps->rate_1G_hd)
++		rate |= AQ_NIC_RATE_1G_HALF;
++	if (lkp_link_caps->rate_100M)
++		rate |= AQ_NIC_RATE_100M;
++	if (lkp_link_caps->rate_100M_hd)
++		rate |= AQ_NIC_RATE_100M_HALF;
++	if (lkp_link_caps->rate_10M)
++		rate |= AQ_NIC_RATE_10M;
++	if (lkp_link_caps->rate_10M_hd)
++		rate |= AQ_NIC_RATE_10M_HALF;
++
+ 	if (lkp_link_caps->eee_10G)
+ 		rate |= AQ_NIC_RATE_EEE_10G;
+ 	if (lkp_link_caps->eee_5G)
+@@ -240,6 +261,7 @@ static int aq_a2_fw_set_state(struct aq_hw_s *self,
+ 
+ static int aq_a2_fw_update_link_status(struct aq_hw_s *self)
+ {
++	struct lkp_link_caps_s lkp_link_caps;
+ 	struct link_status_s link_status;
+ 
+ 	hw_atl2_shared_buffer_read(self, link_status, link_status);
+@@ -268,6 +290,14 @@ static int aq_a2_fw_update_link_status(struct aq_hw_s *self)
+ 	}
+ 	self->aq_link_status.full_duplex = link_status.duplex;
+ 
++	hw_atl2_shared_buffer_read(self, lkp_link_caps, lkp_link_caps);
++
++	self->aq_link_status.lp_link_speed_msk =
++				 a2_fw_lkp_to_mask(&lkp_link_caps);
++	self->aq_link_status.lp_flow_control =
++				((lkp_link_caps.pause_rx) ? AQ_NIC_FC_RX : 0) |
++				((lkp_link_caps.pause_tx) ? AQ_NIC_FC_TX : 0);
++
+ 	return 0;
+ }
+ 
 -- 
 2.25.1
 
