@@ -2,85 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 508882042D2
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 23:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3351F2042D3
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 23:45:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730699AbgFVVov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 17:44:51 -0400
-Received: from mx2.suse.de ([195.135.220.15]:50596 "EHLO mx2.suse.de"
+        id S1730689AbgFVVpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 17:45:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38672 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727006AbgFVVov (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 17:44:51 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 84B88AF21;
-        Mon, 22 Jun 2020 21:44:49 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 134EE602E5; Mon, 22 Jun 2020 23:44:49 +0200 (CEST)
-Date:   Mon, 22 Jun 2020 23:44:49 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Oliver Herms <oliver.peter.herms@gmail.com>, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org
-Subject: Re: [PATCH] IPv6: Fix CPU contention on FIB6 GC
-Message-ID: <20200622214449.gyfn33ickesj2j2t@lion.mk-sys.cz>
-References: <20200622205355.GA869719@tws>
+        id S1730556AbgFVVpt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 17:45:49 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 72E6D2075A;
+        Mon, 22 Jun 2020 21:45:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592862348;
+        bh=/iDamTs9vjIgEUlpWcMEymikJ1C267Z2pP/3s/Qz5nU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eysYIJSx90LttU7dgNlebd4Wk8a+HaDDgcpEDdPZTGxaHhZ9sxBAJQ+2qpzwCFxMu
+         ZUWv0P5jVeNwEfiWuWNt7P0+JnVoBNy+Cv09/tH8M4fCsrgzmNtMIXBFuHNvA+xWVK
+         x6QhczrBiCnlJhHoEuWIYC3oz/UMG3V4qO0QGeSg=
+Date:   Mon, 22 Jun 2020 14:45:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ciara Loftus <ciara.loftus@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        magnus.karlsson@intel.com
+Subject: Re: [PATCH net-next 3/3] i40e: introduce new dump desc xdp command
+Message-ID: <20200622144546.04da25d6@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200622124624.18847-3-ciara.loftus@intel.com>
+References: <20200622124624.18847-1-ciara.loftus@intel.com>
+        <20200622124624.18847-3-ciara.loftus@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200622205355.GA869719@tws>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 22, 2020 at 10:53:55PM +0200, Oliver Herms wrote:
-> When fib6_run_gc is called with parameter force=true the spinlock in
-> /net/ipv6/ip6_fib.c:2310 can lock all CPUs in softirq when
-> net.ipv6.route.max_size is exceeded (seen this multiple times).
-> One sotirq/CPU get's the lock. All others spin to get it. It takes
-> substantial time until all are done. Effectively it's a DOS vector.
+On Mon, 22 Jun 2020 12:46:24 +0000 Ciara Loftus wrote:
+> Interfaces already exist for dumping rx and tx descriptor information.
+> Introduce another for doing the same for xdp descriptors.
 > 
-> As the splinlock is only enforcing that there is at most one GC running
-> at a time, it should IMHO be safe to use force=false here resulting
-> in spin_trylock_bh instead of spin_lock_bh, thus avoiding the lock
-> contention.
-> 
-> Finding a locked spinlock means some GC is going on already so it is
-> save to just skip another execution of the GC.
-> 
-> Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
+> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
 
-I wonder if it wouldn't suffice to revert commit 14956643550f ("ipv6:
-slight optimization in ip6_dst_gc") as the reasoning in its commit
-message seems wrong: we do not always skip fib6_run_gc() when
-entries <= rt_max_size, we do so only if the time since last garbage
-collector run is shorter than rt_min_interval.
+Please make sure things build cleanly with W=1 C=1
 
-Then you would prevent the "thundering herd" effect when only gc_thresh
-is exceeded but not max_size, as commit 2ac3ac8f86f2 ("ipv6: prevent
-fib6_run_gc() contention") intended, but would still preserve enforced
-garbage collect when max_size is exceeded.
-
-Michal
-
-> ---
->  net/ipv6/route.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index 82cbb46a2a4f..7e6fbaf43549 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -3205,7 +3205,7 @@ static int ip6_dst_gc(struct dst_ops *ops)
->  		goto out;
->  
->  	net->ipv6.ip6_rt_gc_expire++;
-> -	fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
-> +	fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, false);
->  	entries = dst_entries_get_slow(ops);
->  	if (entries < ops->gc_thresh)
->  		net->ipv6.ip6_rt_gc_expire = rt_gc_timeout>>1;
-> -- 
-> 2.25.1
-> 
+drivers/net/ethernet/intel/i40e/i40e_debugfs.c:543: warning: Function parameter or member 'type' not described in 'i40e_dbg_dump_desc'
+drivers/net/ethernet/intel/i40e/i40e_debugfs.c:543: warning: Excess function parameter 'ring_type' description in 'i40e_dbg_dump_desc'
