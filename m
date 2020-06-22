@@ -2,135 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC101203621
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 13:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6FE9203628
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 13:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728073AbgFVLsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 07:48:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53164 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727048AbgFVLsU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 07:48:20 -0400
-Received: from localhost (unknown [151.48.138.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6D48720716;
-        Mon, 22 Jun 2020 11:48:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592826500;
-        bh=WPIiRB4JSgUsHWtHb0b4M8XEW1JUPgE6hoxT2mGm6ek=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FD/umBmF9ODVSj6/3qqYiCgpwaBKbVWqbtvR9vAMLTh3NH0PRbW88bVq1IwLHuqo1
-         77ytEQmdpR5xTSA42WA5+UEBmy270NE5IJ6vyLAvgaIaTD+cSSo4kwTdVmGwhaccPT
-         uK+la5HcUo/grBvy2iOb5zA2cR7T6ei6xWq74opM=
-Date:   Mon, 22 Jun 2020 13:48:15 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net, toke@redhat.com,
-        lorenzo.bianconi@redhat.com, dsahern@kernel.org,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH v2 bpf-next 1/8] net: Refactor xdp_convert_buff_to_frame
-Message-ID: <20200622114815.GA14425@localhost.localdomain>
-References: <cover.1592606391.git.lorenzo@kernel.org>
- <dfeb25e5274b0895f29fc1960e1cbd6c01157f8a.1592606391.git.lorenzo@kernel.org>
- <20200621171513.066e78ed@carbon>
+        id S1727940AbgFVLuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 07:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727048AbgFVLuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 07:50:02 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DFBC061794
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 04:50:02 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id k11so17685014ejr.9
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 04:50:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fH4rNdOd/0DtPCmm7DTynSkeo7LxPbR8dmKw5LybOyU=;
+        b=VAmdyUsdN2ivud7I3BUybzNsHUoWtcliplXD1llq7mJ8rXj6Yo00x/zDCgoW7dvJeV
+         bhrmghsAG/kmbv4PKQNP/hIEvYBKYjzOlcxtFTHzuS3ulJEruyYSfW1tK/X6fno65QdL
+         qnfg0dy/L76P/M9ECK0zlhiG8aheuE+2YUtCMJTyr3n5plQwKFuw3oWCZYwcnuuqxsgL
+         7q32ZjqiNBAVsBojvHKsSkHZ7gAs6Pqa8lhXxbjphHS0h//reFYJvRb03tU6hsUe8HqA
+         YVrWpKm4Kms6Vt9bS6CbNfD9kNhp4T1vii7iuR0sP9gbCfcvSwHb0lSkH/j2kbiQK3Dk
+         uhQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fH4rNdOd/0DtPCmm7DTynSkeo7LxPbR8dmKw5LybOyU=;
+        b=L6+fsmsvzPut2qKYHW9Ep3kEyHObH/WGSgjMbSqouAkgQb0zYNYSXQ4q9h/WiNEowf
+         7GlMTy+KHk+UHeohDLsn12ZnQMBqzng9xHob8vmgIXNp/h/hRFkwsyPq1RvmlQsQAiAp
+         bSx0+9QkT3EQWTJ5zZDqzUJve3XuqAXEzbl8+hRoZmPRPSx1Uegvb5fTvzkmqqAkkYSk
+         wFPdPLv83G+tKTaNT19GquLhW2GOWroURlArzQ4+JBNH9ZUHSJfek9IjN8v2SWuaAa/S
+         qc04FUjj/c4dKJoWwsk25PwcGqwN/5Q+fgShWreFefNJmkwhaUlRn3HilWQ9ekiH/kjy
+         zlnw==
+X-Gm-Message-State: AOAM532E0oaWjb7LZ0UWpqAz8CrWKEBuYtBVAmMS4ACZE7/fN5OJ9Eo5
+        JTBarwjuRyvwupOReIIGBbMZMA==
+X-Google-Smtp-Source: ABdhPJwefaK1G+I1piFrT60Nt4bNSd1j4DovkLJsQ35G8yRg+d4lYAxcsGgWRNP18Z9VzsqIeGXryg==
+X-Received: by 2002:a17:906:3c10:: with SMTP id h16mr9735413ejg.87.1592826601230;
+        Mon, 22 Jun 2020 04:50:01 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([81.246.10.41])
+        by smtp.gmail.com with ESMTPSA id s2sm12389468edu.39.2020.06.22.04.50.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Jun 2020 04:50:00 -0700 (PDT)
+Subject: Re: [PATCH net v2] mptcp: drop sndr_key in mptcp_syn_options
+To:     Geliang Tang <geliangtang@gmail.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
+        linux-kernel@vger.kernel.org
+References: <60f8315d6ae7b62d175c573f75cee50f14ce988b.1592826171.git.geliangtang@gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <1c0f6f37-ede8-b341-f274-2b65b17dc141@tessares.net>
+Date:   Mon, 22 Jun 2020 13:50:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="0OAP2g/MAC+5xKAE"
-Content-Disposition: inline
-In-Reply-To: <20200621171513.066e78ed@carbon>
+In-Reply-To: <60f8315d6ae7b62d175c573f75cee50f14ce988b.1592826171.git.geliangtang@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Geliang,
 
---0OAP2g/MAC+5xKAE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 22/06/2020 13:45, Geliang Tang wrote:
+> In RFC 8684, we don't need to send sndr_key in SYN package anymore, so drop
 
-> On Sat, 20 Jun 2020 00:57:17 +0200
-> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->=20
-> > From: David Ahern <dahern@digitalocean.com>
-> >=20
+Please next time try to have max 72 chars per line in your commit message ;)
 
-[...]
+> it.
+> 
+> Fixes: cc7972ea1932 ("mptcp: parse and emit MP_CAPABLE option according to v1 spec")
+> Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 
-> >  	if (unlikely((headroom - metasize) < sizeof(*xdp_frame)))
-> > -		return NULL;
-> > +		return -ENOMEM;
->=20
-> IMHO I think ENOMEM is reserved for memory allocations failures.
-> I think ENOSPC will be more appropriate here (or EOVERFLOW).
+Thank you for this v2. It looks good to me!
 
-ack, I will fix it in v3
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-Regards,
-Lorenzo
-
->=20
-> > =20
-> >  	/* Catch if driver didn't reserve tailroom for skb_shared_info */
-> >  	if (unlikely(xdp->data_end > xdp_data_hard_end(xdp))) {
-> >  		XDP_WARN("Driver BUG: missing reserved tailroom");
-> > -		return NULL;
-> > +		return -ENOMEM;
->=20
-> Same here.
->=20
-> >  	}
-> > =20
-> > -	/* Store info in top of packet */
-> > -	xdp_frame =3D xdp->data_hard_start;
-> > -
-> >  	xdp_frame->data =3D xdp->data;
-> >  	xdp_frame->len  =3D xdp->data_end - xdp->data;
-> >  	xdp_frame->headroom =3D headroom - sizeof(*xdp_frame);
-> >  	xdp_frame->metasize =3D metasize;
-> >  	xdp_frame->frame_sz =3D xdp->frame_sz;
-> > =20
-> > +	return 0;
-> > +}
-> > +
-> > +/* Convert xdp_buff to xdp_frame */
-> > +static inline
-> > +struct xdp_frame *xdp_convert_buff_to_frame(struct xdp_buff *xdp)
-> > +{
-> > +	struct xdp_frame *xdp_frame;
-> > +
-> > +	if (xdp->rxq->mem.type =3D=3D MEM_TYPE_XSK_BUFF_POOL)
-> > +		return xdp_convert_zc_to_xdp_frame(xdp);
-> > +
-> > +	/* Store info in top of packet */
-> > +	xdp_frame =3D xdp->data_hard_start;
-> > +	if (unlikely(xdp_update_frame_from_buff(xdp, xdp_frame) < 0))
-> > +		return NULL;
-> > +
-> >  	/* rxq only valid until napi_schedule ends, convert to xdp_mem_info */
-> >  	xdp_frame->mem =3D xdp->rxq->mem;
-> > =20
->=20
->=20
->=20
-> --=20
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->=20
-
---0OAP2g/MAC+5xKAE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXvCafAAKCRA6cBh0uS2t
-rAIxAP9c/hvo/7R8oLOusEVUOdJe0fUG7NbYdz4YhnSfAHPN/gD/dZf8jki+MJzg
-etgdLe62+fTtRQeSyvdS1kmm4m/aNQ8=
-=c8Lq
------END PGP SIGNATURE-----
-
---0OAP2g/MAC+5xKAE--
+Cheers,
+Matt
+--
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
