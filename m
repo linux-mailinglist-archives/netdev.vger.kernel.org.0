@@ -2,174 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA204203E34
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 19:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00466203E4D
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 19:48:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730005AbgFVRna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 13:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729857AbgFVRn3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 13:43:29 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C286C061573
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 10:43:29 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id l6so12666655qkc.6
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 10:43:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f+PwSbbNoipG/smkaNRSaWjSuWv55Vp6nZQTyzFTU4w=;
-        b=GCEXgKZO0wG7/rSU0Pat0OKJo1Wpz1gXNkXt3B2l7CWLerDM/bNuRXMDKZE89mJHxK
-         4hWuEeQSLHbyftkW6wtFSUH/NAq7Qkp+Afbau67JjNztYtlrVBl3uJe/neEiMpsGashc
-         wdt1YiD4K9fbxTaSPs6Mxg2rDwGiU8K1yG5mkQFgnYjkV+dPaNYz1EM+VeeHB8fIsHiV
-         B9tbTRXKfkGevZJ6pEyQD8AsBdETmMc3e+1wU7unWnutNdgOJV3FoNdey8Xs5DjGC+Bc
-         tcAogrwRkf7gmgklIBRVd0CphbAW2H+XHAFcqw1pTMmKBuUrhRcVUXhWveKY4JOGO9KH
-         jJTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f+PwSbbNoipG/smkaNRSaWjSuWv55Vp6nZQTyzFTU4w=;
-        b=Tld1h+3xYgFwV3k9fBA57tSdXxWRw2XMZw5PXj0VipJkkQbOWUMkXZv/dcfzqJT0Zi
-         rQnwaBeMC3oVBcV1m8kYBlPwXbNGn1l5rzB0rUBAFM7R97ZSHglOl0u3MjHrUiw3elup
-         uXMGoKgck0BQckX9tZ0ka1pCLfN9iSwI3tZjmgO6ibRnSgnIvYxUBSgucBKBr/CvSLT0
-         s0Jxaw0WyLPXVSTFjqt9LbdQmXIcomZx0G9Mgr7UNRpUnsHtRrCJw4Uzs7YSk3C8nt1+
-         pU0KikzmAI2w3XPelEKXcEh4z/Gqery0uQvdZCmjpi3OPtovSiedMtXQGcHrlRi6KPAR
-         NKKQ==
-X-Gm-Message-State: AOAM531R6ecoAAEdTIHYqq9cKo88Nr8LDI4X5PvmBiXTpJuC+izt23DU
-        YP4BnpgNn1B1bHajXQ3mK9hvfTbm
-X-Google-Smtp-Source: ABdhPJyL5M3543HZ/eVKhBrgR3OlKAYLwy+J3auwaL5RKjBjpy9I8atEyeCtDu6t762I5KbfnayLng==
-X-Received: by 2002:ae9:f444:: with SMTP id z4mr3699916qkl.80.1592847808599;
-        Mon, 22 Jun 2020 10:43:28 -0700 (PDT)
-Received: from tannerlove.nyc.corp.google.com ([2620:0:1003:316:6db4:c56e:8332:4abd])
-        by smtp.gmail.com with ESMTPSA id x144sm4044996qkb.93.2020.06.22.10.43.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jun 2020 10:43:28 -0700 (PDT)
-From:   Tanner Love <tannerlove.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, tannerlove <tannerlove@google.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next] selftests/net: plug rxtimestamp test into kselftest framework
-Date:   Mon, 22 Jun 2020 13:43:24 -0400
-Message-Id: <20200622174324.42142-1-tannerlove.kernel@gmail.com>
-X-Mailer: git-send-email 2.27.0.111.gc72c7da667-goog
+        id S1730051AbgFVRsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 13:48:24 -0400
+Received: from out03.mta.xmission.com ([166.70.13.233]:42042 "EHLO
+        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729886AbgFVRsX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 13:48:23 -0400
+Received: from in01.mta.xmission.com ([166.70.13.51])
+        by out03.mta.xmission.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.90_1)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1jnQYL-0003Fi-Bu; Mon, 22 Jun 2020 11:48:17 -0600
+Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=x220.xmission.com)
+        by in01.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.87)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1jnQYJ-0006uf-KI; Mon, 22 Jun 2020 11:48:16 -0600
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        David Miller <davem@davemloft.net>,
+        Petr Machata <petrm@mellanox.com>,
+        David Ahern <dsahern@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+References: <CAHmME9rz0JQfEBfOKkopx6yBbK_gbKVy40rh82exy1d7BZDWGw@mail.gmail.com>
+Date:   Mon, 22 Jun 2020 12:43:53 -0500
+In-Reply-To: <CAHmME9rz0JQfEBfOKkopx6yBbK_gbKVy40rh82exy1d7BZDWGw@mail.gmail.com>
+        (Jason A. Donenfeld's message of "Sun, 21 Jun 2020 02:58:49 -0600")
+Message-ID: <87imfjt2qu.fsf@x220.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1jnQYJ-0006uf-KI;;;mid=<87imfjt2qu.fsf@x220.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1/f9sgkmlVbSetNxxaxtlEzgzzgwMc07kU=
+X-SA-Exim-Connect-IP: 68.227.160.95
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa07.xmission.com
+X-Spam-Level: *
+X-Spam-Status: No, score=1.0 required=8.0 tests=ALL_TRUSTED,BAYES_50,
+        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,XMGappySubj_01,XMSubLong
+        autolearn=disabled version=3.4.2
+X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.7 XMSubLong Long Subject
+        *  0.5 XMGappySubj_01 Very gappy subject
+        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
+        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
+        *      [sa07 0; Body=1 Fuz1=1 Fuz2=1]
+X-Spam-DCC: ; sa07 0; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: *;"Jason A. Donenfeld" <Jason@zx2c4.com>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 566 ms - load_scoreonly_sql: 0.06 (0.0%),
+        signal_user_changed: 11 (1.9%), b_tie_ro: 10 (1.7%), parse: 1.27
+        (0.2%), extract_message_metadata: 13 (2.4%), get_uri_detail_list: 3.4
+        (0.6%), tests_pri_-1000: 5 (0.9%), tests_pri_-950: 1.31 (0.2%),
+        tests_pri_-900: 1.08 (0.2%), tests_pri_-90: 71 (12.6%), check_bayes:
+        70 (12.3%), b_tokenize: 12 (2.2%), b_tok_get_all: 13 (2.3%),
+        b_comp_prob: 4.7 (0.8%), b_tok_touch_all: 35 (6.2%), b_finish: 0.99
+        (0.2%), tests_pri_0: 410 (72.3%), check_dkim_signature: 0.59 (0.1%),
+        check_dkim_adsp: 2.4 (0.4%), poll_dns_idle: 0.91 (0.2%), tests_pri_10:
+        2.9 (0.5%), tests_pri_500: 45 (8.0%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: missing retval check of call_netdevice_notifiers in dev_change_net_namespace
+X-Spam-Flag: No
+X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: tannerlove <tannerlove@google.com>
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
-Run rxtimestamp as part of TEST_PROGS. Analogous to other tests, add
-new rxtimestamp.sh wrapper script, so that the test runs isolated
-from background traffic in a private network namespace.
+> Hi,
 
-Also ignore failures of test case #6 by default. This case verifies
-that a receive timestamp is not reported if timestamp reporting is
-enabled for a socket, but generation is disabled. Receive timestamp
-generation has to be enabled globally, as no associated socket is
-known yet. A background process that enables rx timestamp generation
-therefore causes a false positive. Ntpd is one example that does.
+Adding Herbert Xu who added support for failing notifications in
+fcc5a03ac425 ("[NET]: Allow netdev REGISTER/CHANGENAME events to fail").
 
-Add a "--strict" option to cause failure in the event that any test
-case fails, including test #6. This is useful for environments that
-are known to not have such background processes.
+He might have some insight but 2007 was a long time ago.
 
-Tested:
-make -C tools/testing/selftests TARGETS="net" run_tests
+All I remember is the ability of NETDEV_CHANGENAME to fail was abused by
+sysfs to add a userspace ABI regression, and sysfs had to be fixed
+not to do that.
 
-Signed-off-by: Tanner Love <tannerlove@google.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
----
- tools/testing/selftests/net/Makefile       |  1 +
- tools/testing/selftests/net/rxtimestamp.c  | 11 +++++++++--
- tools/testing/selftests/net/rxtimestamp.sh |  4 ++++
- 3 files changed, 14 insertions(+), 2 deletions(-)
- create mode 100755 tools/testing/selftests/net/rxtimestamp.sh
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 895ec992b2f1..bfacb960450f 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -17,6 +17,7 @@ TEST_PROGS += route_localnet.sh
- TEST_PROGS += reuseaddr_ports_exhausted.sh
- TEST_PROGS += txtimestamp.sh
- TEST_PROGS += vrf-xfrm-tests.sh
-+TEST_PROGS += rxtimestamp.sh
- TEST_PROGS_EXTENDED := in_netns.sh
- TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
-diff --git a/tools/testing/selftests/net/rxtimestamp.c b/tools/testing/selftests/net/rxtimestamp.c
-index 422e7761254d..d4ea86a13e52 100644
---- a/tools/testing/selftests/net/rxtimestamp.c
-+++ b/tools/testing/selftests/net/rxtimestamp.c
-@@ -44,6 +44,7 @@ struct test_case {
- 	struct options sockopt;
- 	struct tstamps expected;
- 	bool enabled;
-+	bool warn_on_fail;
- };
- 
- struct sof_flag {
-@@ -89,7 +90,7 @@ static struct test_case test_cases[] = {
- 	},
- 	{
- 		{ so_timestamping: SOF_TIMESTAMPING_SOFTWARE },
--		{}
-+		warn_on_fail : true
- 	},
- 	{
- 		{ so_timestamping: SOF_TIMESTAMPING_RX_SOFTWARE
-@@ -115,6 +116,7 @@ static struct option long_options[] = {
- 	{ "tcp", no_argument, 0, 't' },
- 	{ "udp", no_argument, 0, 'u' },
- 	{ "ip", no_argument, 0, 'i' },
-+	{ "strict", no_argument, 0, 'S' },
- 	{ NULL, 0, NULL, 0 },
- };
- 
-@@ -327,6 +329,7 @@ int main(int argc, char **argv)
- {
- 	bool all_protocols = true;
- 	bool all_tests = true;
-+	bool strict = false;
- 	int arg_index = 0;
- 	int failures = 0;
- 	int s, t;
-@@ -363,6 +366,9 @@ int main(int argc, char **argv)
- 			all_protocols = false;
- 			socket_types[0].enabled = true;
- 			break;
-+		case 'S':
-+			strict = true;
-+			break;
- 		default:
- 			error(1, 0, "Failed to parse parameters.");
- 		}
-@@ -379,7 +385,8 @@ int main(int argc, char **argv)
- 
- 			printf("Starting testcase %d...\n", t);
- 			if (run_test_case(socket_types[s], test_cases[t])) {
--				failures++;
-+				if (strict || !test_cases[t].warn_on_fail)
-+					failures++;
- 				printf("FAILURE in test case ");
- 				print_test_case(&test_cases[t]);
- 			}
-diff --git a/tools/testing/selftests/net/rxtimestamp.sh b/tools/testing/selftests/net/rxtimestamp.sh
-new file mode 100755
-index 000000000000..91631e88bf46
---- /dev/null
-+++ b/tools/testing/selftests/net/rxtimestamp.sh
-@@ -0,0 +1,4 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+./in_netns.sh ./rxtimestamp $@
--- 
-2.27.0.111.gc72c7da667-goog
+> In register_netdevice, there's a call to
+> call_netdevice_notifiers(NETDEV_REGISTER), whose return value is
+> checked to determine whether or not to roll back the device
+> registration. The reason checking that return value is important is
+> because this represents an opportunity for the various notifiers to
+> veto the registration, or for another error to happen. It's good that
+> the error value is checked when that function is called from
+> register_netdevice. But from other functions, the error value is not
+> always checked.
+>
+> The notification is split up into two stages:
+>
+>         ret = raw_notifier_call_chain(&net->netdev_chain, val, info);
+>         if (ret & NOTIFY_STOP_MASK)
+>                 return ret;
+>         return raw_notifier_call_chain(&netdev_chain, val, info);
+>
+> One is per-net and the other is global. So there's ample space for
+> something in either chain to abort the whole process.
+>
+> The wireguard module uses the notifier to keep track of netns changes
+> in order to do some reference count bookkeeping. If this bookkeeping
+> goes wrong, there's UaF potential. However, I noticed that the call to
+> call_netdevice_notifiers(NETDEV_REGISTER) at the end of
+> dev_change_net_namespace doesn't check its return value and doesn't
+> implement any sort of rollback like register_netdevice does:
+>
+> int dev_change_net_namespace(struct net_device *dev, struct net *net,
+> const char *pat)
+> {
+>        struct net *net_old = dev_net(dev);
+>        int err, new_nsid, new_ifindex;
+>
+>        ASSERT_RTNL();
+> [...]
+>         /* Add the device back in the hashes */
+>         list_netdevice(dev);
+>
+>         /* Notify protocols, that a new device appeared. */
+>         call_netdevice_notifiers(NETDEV_REGISTER, dev);
+> [...]
+> }
+>
+> Notice that call_netdevice_notifiers isn't checking it's return value there.
+>
+> It seems like if any device vetoes the notification chain, it's bad
+> news bears for modules that depend on getting a netns change
+> notification.
 
+In general we are talking a subsystem not a device that will veto
+the change.  Implementations of devices should not need notifiers,
+as they have enough methods.
+
+It requires a level above a network device to care about your network
+namespace.  Now wireguard happens to be both. So you care but I don't
+believe an ordinary device will.
+
+Nitpicks aside, if we are going to make sense of this we need to find
+actualy notifiers that veto the change and look at them.
+
+> I've been trying to audit the various registered notifiers to see if
+> any of them pose a risk for wireguard. There are also unexpected
+> errors that can happen, such as OOM conditions for kmalloc(GFP_KERNEL)
+> or vmalloc and suchlike, which might be influenceable by attackers. In
+> other words, relying on those notifications always being delivered
+> seems kind of brittle. Not _super_ brittle, but brittle enough that
+> it's at the moment making me a bit nervous. (See: UaF potential.)
+>
+> I've been trying to come up with a good solution to this.
+
+The entire code consists of walking a linked list and calling the
+callback function at each node on the list.   There is nothing
+bad that can happen except list corruption and callback functions
+that do silly things.  AKA implementation bugs.
+
+There are no expected failures in walking a linked list.  So it should
+be perfectly valid to rely on receiving your notification.
+
+If callback function allocates memory or does something that is not 100%
+reliable in a notifier that is a different issue and it is that
+subystems problem.
+
+> I'm not sure how reasonable it'd be to implement rollback inside of
+> dev_change_net_namespace, but I guess that could technically be
+> possible. The way that'd work would be that when vetoed, the function
+> would complete, but then would start over again (a "goto top" sort of
+> pattern), with oldnet and newnet reversed. But that could of course
+> fail too and we could get ourselves in some sort of infinite loop. Not
+> good.
+
+Semantically it can't happen.  Once we reach dev_close we have caused
+userspace visible effects that simply can not be undone.  So the code
+has to validate that the change can happen before we it reaches
+dev_close.
+
+Which unfortunately makes the code incompatible with the concept of
+black boxes on the notification chain adding failure cases.
+
+It wouldn't hurt to add a warning:
+
+	err = call_netdevice_notifiers(NETDEV_REGISTER, dev)
+        WARN_ON_ONCE(err).
+
+Just to validate the assumption that nothing ever happens.
+
+> Finally, it could be the solution is that modules that use the netdev
+> notifier never really rely too heavily upon getting notifications, and
+> if they need something reliable, then they rearchitect their code to
+> not need that. I could imagine this attitude holding sway here
+> somehow, but it's also not very appealing from a code writing and
+> refactoring perspective.
+
+Perhaps we can architect the failure case out of NETDEV_REGISTER so
+people don't have to worry about it.
+
+> I figured before I go to town coding one of these up, maybe I should
+> bring up the issue here, in case anybody has more developed thoughts
+> than me about it.
+
+I hope this gives you some insight.  I think this may be a case where
+the code allows more than anyone has actually taken advantage of.
+
+Eric
