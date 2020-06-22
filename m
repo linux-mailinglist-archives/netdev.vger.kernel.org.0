@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43C9C203790
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:12:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD865203798
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:13:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728627AbgFVNMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 09:12:36 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51800 "EHLO vps0.lunn.ch"
+        id S1728740AbgFVNM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 09:12:58 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51844 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728614AbgFVNMg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 09:12:36 -0400
+        id S1728669AbgFVNMz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 09:12:55 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1jnMFK-001f7b-PC; Mon, 22 Jun 2020 15:12:22 +0200
-Date:   Mon, 22 Jun 2020 15:12:22 +0200
+        id 1jnMFd-001f8g-Hj; Mon, 22 Jun 2020 15:12:41 +0200
+Date:   Mon, 22 Jun 2020 15:12:41 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Bartosz Golaszewski <brgl@bgdev.pl>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -49,21 +49,21 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Pedro Tsai <pedro.tsai@mediatek.com>,
         Andrew Perepech <andrew.perepech@mediatek.com>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH 02/15] net: phy: arrange headers in mdio_device.c
+Subject: Re: [PATCH 03/15] net: phy: arrange headers in phy_device.c
  alphabetically
-Message-ID: <20200622131222.GG338481@lunn.ch>
+Message-ID: <20200622131241.GH338481@lunn.ch>
 References: <20200622093744.13685-1-brgl@bgdev.pl>
- <20200622093744.13685-3-brgl@bgdev.pl>
+ <20200622093744.13685-4-brgl@bgdev.pl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200622093744.13685-3-brgl@bgdev.pl>
+In-Reply-To: <20200622093744.13685-4-brgl@bgdev.pl>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 22, 2020 at 11:37:31AM +0200, Bartosz Golaszewski wrote:
+On Mon, Jun 22, 2020 at 11:37:32AM +0200, Bartosz Golaszewski wrote:
 > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
 > Keeping the headers in alphabetical order is better for readability and
