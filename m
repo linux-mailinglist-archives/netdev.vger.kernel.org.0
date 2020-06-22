@@ -2,126 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD5FA203331
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCA56203332
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbgFVJVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 05:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37604 "EHLO
+        id S1726770AbgFVJVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 05:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726391AbgFVJVf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 05:21:35 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DE3C061794
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 02:21:34 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id i3so18463695ljg.3
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 02:21:34 -0700 (PDT)
+        with ESMTP id S1726391AbgFVJVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 05:21:39 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3DAC061794
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 02:21:39 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id t9so255597lfl.5
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 02:21:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=R9FLDfsyypApvleCpjp113KOQ+iZgPcYjwUlmrkJIMM=;
-        b=ziifFybMVKl4ymdH0KTFoYqBWUVvKAjL2fNW8QyllqPIhQOOuadKDQoLlw6OzGfsjx
-         MRRmpKNCdGIAxU8UZJ2FLtHuHu2w3SNVqaSGDQhEl5G4Z64+UK7FzxshK8dBLIu9SY4M
-         pkJjJ7xyYlUo6XX1L75FhEkb+3GyyPlMYO/J9r0lkddwhRw27nGd9ce9u0go9sfdsq94
-         6J8u6cdBA/YLiVEbsSzWbxULJFWSpPxS/BVvhHNYAyiRGckIt/2Xz2uumx6NXfS/hoZV
-         2nd+7y4pTc0XQ9HqI20SxMWxvKxNnNedi9fGalfNatwfHTaMG7dDjwVm7/L/lloF+mTs
-         fPTw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=8Xd8fjc2sytIoCLdCRtbCKa1enjojI1vaikKj8znuu4=;
+        b=y9xdjtlisCrMkHjIYBoJ/6SSf2SeBUiBpvVT8rBkK3JBSnxCQ3j5egARScGhTrMsTn
+         LoeLhlw3g8i0MF0Ewo3Bn4HkALaIMv2S/ksq+P93wx4X0OWbRoWOLUmwny1T/Pcy0pMA
+         j1hNBGTFELvU+yrESDMphMwawxacsqLV/hxClvyqGKa5c75Wme0KB7GbytPdLNR3ejhl
+         cnILPnt1LhBOMP4m59LrL0SLXa9qDEWtZaFA7IUStaoIDPdIV1FaBE5gEAsGW6a/InGD
+         rrwcme7P9qtrdKgXXTS+NC4uH6AG/035VvvRvI756mjIkZ/BgPxCooADi+3Pa7T3q+L6
+         MK2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=R9FLDfsyypApvleCpjp113KOQ+iZgPcYjwUlmrkJIMM=;
-        b=UDe/9cy2frAC6PnKhacCkCz08Gx6wgGZ89viNRrBw3S0TWcLM28zlOCcNOb6GC7QD0
-         BB4ln9EWZIQTaKofFDZnJ6frtqjo/gAgpo+AC5e4+hF2FnDlzG2NYBm8q7xUslcQXDcS
-         r0AGZ8ytpZisAtx2Lj0XXJS8cu1QBiVC5wOLxcoYD1fkAGPJ3IEcErKIPYYbfwC4uMnr
-         z5QA2SKZAPnp46SBMbZmVnGQ2OmkNowkV0UnAYrQ3bwnN4PaY0J8IHYimND+jdNJ8G5t
-         uZVYpf55ktKvg0RlRjkan+uJWh6NuRUlO0sYUak9K9GtZJBlpcrCwPc56IFzZENaYT6G
-         MDfA==
-X-Gm-Message-State: AOAM531J4weYso8xXrDlRkBmzzwzvgfHq+IdkFOKoUplH2msjOa1lOoO
-        LoHhNtld/ILqANkwFKU25jWUNotL6UwuCQ==
-X-Google-Smtp-Source: ABdhPJz4PTpfzEdxbi+bc06khRqr+P5gjJQxl/bW4aNu383doZ+WYSaQeDQOFSnp984moSyrz6EX4A==
-X-Received: by 2002:a2e:581a:: with SMTP id m26mr8223979ljb.0.1592817693160;
-        Mon, 22 Jun 2020 02:21:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=8Xd8fjc2sytIoCLdCRtbCKa1enjojI1vaikKj8znuu4=;
+        b=rLcYa0JJ9dFkqMHIZAM9SY5R5jRZRl6OGjGJbxFMWtWsIJixxny99QsNSadweHCOVt
+         tHuh5auUgz4+ke/VDVFU0sbw9dJZNy8d61p2r46ODgyGrN4VCJ4rtA/wpvW+J4V8Y79S
+         yXn9snW3h8LxAgW0QLCT1ZLfifFHpg/3L/PjZ7mu+RpOZWiCAKV51LVkMuA2qpje4zXg
+         QzVFZj6b2332RcCur0d1RlK7mp2swqRKOAuChn6+fk7tNNsGraKoZIlp4NvQKJbHzIdH
+         hMFcLMUsaiEizBuz/IAal9/Twk6n/S2fuLsxjPGebvG9170BCw+IxUG+vpXZeLhzXfSR
+         uXZw==
+X-Gm-Message-State: AOAM5331Z8WcugG1BieMjVUq5xzehd97VQlHECG75TyrePv/j6ZMi48G
+        MX1W08gw4NpNw5IrwiEk2n1oxXhi9nFgiQ==
+X-Google-Smtp-Source: ABdhPJwkPq1XWHryaeq27HSTI+FjUBbHAMWa/sPsv+KaX6qEFWcdnWH2cly5Yl+P88Mgk/7o93tZSQ==
+X-Received: by 2002:a19:8b8a:: with SMTP id n132mr9135245lfd.45.1592817697389;
+        Mon, 22 Jun 2020 02:21:37 -0700 (PDT)
 Received: from centos7-pv-guest.localdomain ([5.35.13.201])
-        by smtp.gmail.com with ESMTPSA id w17sm3048028ljj.108.2020.06.22.02.21.32
+        by smtp.gmail.com with ESMTPSA id w17sm3048028ljj.108.2020.06.22.02.21.36
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 22 Jun 2020 02:21:32 -0700 (PDT)
+        Mon, 22 Jun 2020 02:21:37 -0700 (PDT)
 From:   Denis Kirjanov <kda@linux-powerpc.org>
 To:     netdev@vger.kernel.org
 Cc:     brouer@redhat.com, jgross@suse.com, wei.liu@kernel.org,
         paul@xen.org, ilias.apalodimas@linaro.org
-Subject: [PATCH net-next v10 0/3] xen networking: add XDP support to xen-netfront
-Date:   Mon, 22 Jun 2020 12:21:09 +0300
-Message-Id: <1592817672-2053-1-git-send-email-kda@linux-powerpc.org>
+Subject: [PATCH net-next v10 1/3] xen: netif.h: add a new extra type for XDP
+Date:   Mon, 22 Jun 2020 12:21:10 +0300
+Message-Id: <1592817672-2053-2-git-send-email-kda@linux-powerpc.org>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1592817672-2053-1-git-send-email-kda@linux-powerpc.org>
+References: <1592817672-2053-1-git-send-email-kda@linux-powerpc.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The first patch adds a new extra type to enable proper synchronization
-between an RX request/response pair.
-The second patch implements BFP interface for xen-netfront.
-The third patch enables extra space for XDP processing.
+The patch adds a new extra type to be able to diffirentiate
+between RX responses on xen-netfront side with the adjusted offset
+required for XDP processing.
 
-v10:
-- add a new xen_netif_extra_info type to enable proper synchronization
- between an RX request/response pair.
-- order local variable declarations
+The offset value from a guest is passed via xenstore.
 
-v9:
-- assign an xdp program before switching to Reconfiguring
-- minor cleanups
-- address checkpatch issues
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+---
+ include/xen/interface/io/netif.h | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-v8:
-- add PAGE_POOL config dependency
-- keep the state of XDP processing in netfront_xdp_enabled
-- fixed allocator type in xdp_rxq_info_reg_mem_model()
-- minor cleanups in xen-netback
-
-v7:
-- use page_pool_dev_alloc_pages() on page allocation
-- remove the leftover break statement from netback_changed
-
-v6:
-- added the missing SOB line
-- fixed subject
-
-v5:
-- split netfront/netback changes
-- added a sync point between backend/frontend on switching to XDP
-- added pagepool API
-
-v4:
-- added verbose patch descriprion
-- don't expose the XDP headroom offset to the domU guest
-- add a modparam to netback to toggle XDP offset
-- don't process jumbo frames for now
-
-v3:
-- added XDP_TX support (tested with xdping echoserver)
-- added XDP_REDIRECT support (tested with modified xdp_redirect_kern)
-- moved xdp negotiation to xen-netback
-
-v2:
-- avoid data copying while passing to XDP
-- tell xen-netback that we need the headroom space
-
-Denis Kirjanov (3):
-  xen: netif.h: add a new extra type for XDP
-  xen networking: add basic XDP support for xen-netfront
-  xen networking: add XDP offset adjustment to xen-netback
-
- drivers/net/Kconfig                 |   1 +
- drivers/net/xen-netback/common.h    |   4 +
- drivers/net/xen-netback/interface.c |   2 +
- drivers/net/xen-netback/netback.c   |   7 +
- drivers/net/xen-netback/rx.c        |  15 +-
- drivers/net/xen-netback/xenbus.c    |  32 ++++
- drivers/net/xen-netfront.c          | 332 ++++++++++++++++++++++++++++++++++--
- include/xen/interface/io/netif.h    |  18 +-
- 8 files changed, 399 insertions(+), 12 deletions(-)
-
+diff --git a/include/xen/interface/io/netif.h b/include/xen/interface/io/netif.h
+index 4f20dbc..c35a5165 100644
+--- a/include/xen/interface/io/netif.h
++++ b/include/xen/interface/io/netif.h
+@@ -161,6 +161,17 @@
+  */
+ 
+ /*
++ * "xdp-headroom" is used to request that extra space is added
++ * for XDP processing.  The value is measured in bytes and passed by
++ * the frontend to be consistent between both ends.
++ * If the value is greater than zero that means that
++ * an RX response is going to be passed to an XDP program for processing.
++ *
++ * "feature-xdp-headroom" is set to "1" by the netback side like other features
++ * so a guest can check if an XDP program can be processed.
++ */
++
++/*
+  * Control ring
+  * ============
+  *
+@@ -846,7 +857,8 @@ struct xen_netif_tx_request {
+ #define XEN_NETIF_EXTRA_TYPE_MCAST_ADD (2)	/* u.mcast */
+ #define XEN_NETIF_EXTRA_TYPE_MCAST_DEL (3)	/* u.mcast */
+ #define XEN_NETIF_EXTRA_TYPE_HASH      (4)	/* u.hash */
+-#define XEN_NETIF_EXTRA_TYPE_MAX       (5)
++#define XEN_NETIF_EXTRA_TYPE_XDP       (5)	/* u.xdp */
++#define XEN_NETIF_EXTRA_TYPE_MAX       (6)
+ 
+ /* xen_netif_extra_info_t flags. */
+ #define _XEN_NETIF_EXTRA_FLAG_MORE (0)
+@@ -879,6 +891,10 @@ struct xen_netif_extra_info {
+ 			uint8_t algorithm;
+ 			uint8_t value[4];
+ 		} hash;
++		struct {
++			uint16_t headroom;
++			uint16_t pad[2];
++		} xdp;
+ 		uint16_t pad[3];
+ 	} u;
+ };
 -- 
 1.8.3.1
 
