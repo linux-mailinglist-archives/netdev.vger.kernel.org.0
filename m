@@ -2,198 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C65C8203C78
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 18:24:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 936C1203C87
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 18:26:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729580AbgFVQYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 12:24:47 -0400
-Received: from mail-eopbgr140050.outbound.protection.outlook.com ([40.107.14.50]:19938
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729479AbgFVQYq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 12:24:46 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F6F7DUsxmLjvvTRLXyggYg8vUcjaipCsDdVOQqblwPU7pPhJ+MddmKhgZHJvS2TezPTGR27NyfxzO2ZVhRCa6NeqMuNm82p0wUu6JuxcaPNwpU+WB4gDcgTkww2sS9Hy0C3wB8YnyXdzi1wSsTPDWDxdlAZtGIWetgoy0oHP6V+jwgjVE/1pFkTr6v/6DHka4AotvzDGzsXzXaENJD1oyrm2rnYOSavlpcGnPF9x0ydsqIb61XpXvsGC4t+pTTKK0Hlpk2x+UVGX6pl8exyI4y5tcakzEe//qtYNClA4tcaJboiSv03GCFDMrt4MUhR+HIDGMDm7ZbaPJd+bNg4kIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VCaUrXnIs4hD9q6ElEISCdyre7jZ+oFWKWxmBF8tIKI=;
- b=drq4GsRnhxWjJkduggFtBafkitQU/CQDEWY+YtorYns8QIpya+vGM0/X8fdkPz7ET3INpA/FW4MRlSYuKc3xvM8oKNX5xAV2zwQop8kc78CNskZqyH3oxv7o8ku2cXePNEbOlGW56JF/UZiE7M+D0B+MzvP5fuMXR1VjmbDYDvmR/t32zikYAw2rPeVWOC4bQvvvLX0P1kHag/CrtCbah5eJHNU4CRJ6LeEG/PdXq0AsJefDtLXh6MQFTVxOrWBwJl6HT9pDn7XZ/9hezMxsWAseM79LxSK4XQtMYR/rA70tZSVbnEGDiAn+Y4JZpnUP2VdjVcXZLsDkKUrMwc9Zog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VCaUrXnIs4hD9q6ElEISCdyre7jZ+oFWKWxmBF8tIKI=;
- b=R37hMWK5xpvTJ9K3Ra9kHDf1iFUTMZz5qqPc9yx8pCvVARr23o13YAT2vXw6UNJKCOQfdMUjZ5issBA+TRjLVn0tXh0aZL+FChfhJMppSTEu8Ts0IZFIrJMUjoElsDbOcZFJiZnGGe9ZW0ix6exP4+IQNH2PewMrv0kOmKqgfcE=
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-Received: from VI1PR0501MB2205.eurprd05.prod.outlook.com
- (2603:10a6:800:2a::20) by VI1PR0501MB2781.eurprd05.prod.outlook.com
- (2603:10a6:800:99::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Mon, 22 Jun
- 2020 16:24:42 +0000
-Received: from VI1PR0501MB2205.eurprd05.prod.outlook.com
- ([fe80::d58c:3ca1:a6bb:e5fe]) by VI1PR0501MB2205.eurprd05.prod.outlook.com
- ([fe80::d58c:3ca1:a6bb:e5fe%5]) with mapi id 15.20.3109.027; Mon, 22 Jun 2020
- 16:24:42 +0000
-Subject: Re: [PATCH net] net: Do not clear the socket TX queue in
- sock_orphan()
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        Boris Pismenny <borisp@mellanox.com>
-References: <1592748544-41555-1-git-send-email-tariqt@mellanox.com>
- <4254dfec-0901-73c4-a1f5-c6609db2baec@gmail.com>
-From:   Tariq Toukan <tariqt@mellanox.com>
-Message-ID: <d5d84b99-0ee4-b03d-d927-d9dcb8d36326@mellanox.com>
-Date:   Mon, 22 Jun 2020 19:24:38 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-In-Reply-To: <4254dfec-0901-73c4-a1f5-c6609db2baec@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM3PR05CA0102.eurprd05.prod.outlook.com
- (2603:10a6:207:1::28) To VI1PR0501MB2205.eurprd05.prod.outlook.com
- (2603:10a6:800:2a::20)
+        id S1729777AbgFVQ0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 12:26:20 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:43473 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729621AbgFVQ0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 12:26:18 -0400
+Received: by mail-io1-f71.google.com with SMTP id c17so12862400ioi.10
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 09:26:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=cyZIF2H3aZtPptScOAlkeBePbmCsuB1UBF8HW0TTVUY=;
+        b=rTiw0R4dYWjNpRaZv8pYG+8F09Rr+w5qHgo/HBpqmQc/vGCx5nupQaAVcbw335fg1J
+         gjp2CkBmYDS3AT7rfVZEtJQA/Hk1FniOehBavH6b4G0yvfHAcT7o42hzoBEqSPR2Oo1u
+         zB1aypY93Dw6XJEmjRJGxbR0aS+g75WDAsmzOf2FSndjPriBSoR2GXcAE2pFn/ly7NI6
+         VxjuS+dzYnjAKDVjXQwrbJDxLJRKPRXVNIvobPetM+Ru/k/j53D9Xeg5911NMAqgIEpR
+         uoDuMaK1OTOc9OvB/nFshyQyM7FfdIlob3EVRtrW/dn5oLaArT7YFwPhqZVG4oJGKPpz
+         Zm4Q==
+X-Gm-Message-State: AOAM5331mQ7cl3pps1YTK6AcpL8Z+jZ007RZq7dmisDmzBoLnnA1z6h7
+        m7Yd9TsJPJWJBhblKsLjl0Frur1iY03I9oI3JsuBuAj53SAK
+X-Google-Smtp-Source: ABdhPJzITwe4jo35y6Eyr/qfMjz1XRwKjxWX3nuFeeThepVTl89xSbaXQ+KuyGv8PjGf47gJ3ptDg3s++/wMo40l9Kyu3ZDIudV6
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.110] (77.126.75.30) by AM3PR05CA0102.eurprd05.prod.outlook.com (2603:10a6:207:1::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22 via Frontend Transport; Mon, 22 Jun 2020 16:24:41 +0000
-X-Originating-IP: [77.126.75.30]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: c79a1021-58cf-42c6-4543-08d816c8c48c
-X-MS-TrafficTypeDiagnostic: VI1PR0501MB2781:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0501MB27816DC4F40C6729294B7D2EAE970@VI1PR0501MB2781.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-Forefront-PRVS: 0442E569BC
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QUJTk4YqQs+zO6bh+PM95YVTnSt3ZPrW0MFonJN8IKNbekzLSN/GSg+3lvGaA/w5ACEi9xXe+dMTpXOdMCS+rb6d4k1oGbDYUuUPjcwn/ONtWOXG6ETY5vT0a9aoVtE47U0rVFh08eKEwL2f73SjQnIBpILlRQJkIVg8UTxaK/YD7mQBHPAUgHtdMLU1yMPowdmF0k/YfmqKiP7PHN17U4uBVSBBsUX5YZ9wu/8DcGVzf5GXKEc9KzS7r8HDZF2l3g2Qss0alA6VFtMMaC75k+vLo7wjXF8lpJtpV0U+D4zUopvu0skCqq2cOLeS0ekgw4cUMirETtRR1DtjjiNxAKLldWAWCvBAxVjZzrflRtJOIwomIYuKnTud1yf/XKen
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0501MB2205.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(136003)(366004)(39860400002)(346002)(66556008)(66476007)(110136005)(107886003)(186003)(16526019)(8676002)(52116002)(2906002)(26005)(53546011)(4326008)(8936002)(478600001)(36756003)(6486002)(316002)(16576012)(31696002)(5660300002)(83380400001)(54906003)(66946007)(31686004)(6666004)(2616005)(956004)(86362001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: ybt7N9+7yubb0JR0vjL2dCX3AQ8hU4vsrCOaZMDs9FOT07a41jfY2Siffs1wgk1yXQPExSHKSxBMFEo0/XCSDjTEGXEOlllewzwxAEXG0aU2cCjjoO988wAETFs6cqKOYdWu/pH5Wpv+91+cGxyaGeUjmsLtgS2Mw3Jd5UV51T1RVMzyNV0idL1YrFFn6zWAXd7Cut3gARpGw+dxnc+pTXux7yyC6jdQMERrlviBzA6sgR+rkUXyOt1VaKk6ToUI1nlfdtDz7kj5klszmsJtt9SKgkMomgScsUxdYTxqv8Y5qvB5OtFjYuGVaBtyvNBSBIPTvl1GP0wmyQKYqUFQDr5sxOr3zaMkMLmDK3h3de0bZZHrBEw9nNo9U2vsF0twN1hHEJdRJbsUAJMXZNgDukJAA+6OtP/V91XR4zChXqtRwYJ/+gUCK0rTbC0y+W/zeMmuajQgDzDH7kldV4A+cVw0C7ewJu2YGM7xCR7Kz38=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c79a1021-58cf-42c6-4543-08d816c8c48c
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2020 16:24:42.1711
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vj81ZGY+byE85ps1FCYHPTU/rxiUAr+O1oAZfLeQL1n+rk6il+ddNzRcrTw9w8NF1KwPU/f0Y6vuKu//m2FKIA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2781
+X-Received: by 2002:a6b:1496:: with SMTP id 144mr12910815iou.6.1592843175940;
+ Mon, 22 Jun 2020 09:26:15 -0700 (PDT)
+Date:   Mon, 22 Jun 2020 09:26:15 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000af56a105a8aeb369@google.com>
+Subject: KMSAN: uninit-value in hash_net6_add
+From:   syzbot <syzbot+5d32b2edaf5048e61de0@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        glider@google.com, jeremy@azazel.net, kadlec@netfilter.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    f0d5ec90 kmsan: apply __no_sanitize_memory to dotraplinkag..
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=172113cd100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=86e4f8af239686c6
+dashboard link: https://syzkaller.appspot.com/bug?extid=5d32b2edaf5048e61de0
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+5d32b2edaf5048e61de0@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in __read_once_size include/linux/compiler.h:206 [inline]
+BUG: KMSAN: uninit-value in hash_net6_add+0x14f9/0x40c0 net/netfilter/ipset/ip_set_hash_gen.h:892
+CPU: 0 PID: 828 Comm: syz-executor.2 Not tainted 5.7.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ __read_once_size include/linux/compiler.h:206 [inline]
+ hash_net6_add+0x14f9/0x40c0 net/netfilter/ipset/ip_set_hash_gen.h:892
+ hash_net6_uadt+0xab6/0xd80 net/netfilter/ipset/ip_set_hash_net.c:343
+ call_ad+0x2dc/0xbc0 net/netfilter/ipset/ip_set_core.c:1732
+ ip_set_ad+0xad2/0x1110 net/netfilter/ipset/ip_set_core.c:1820
+ ip_set_uadd+0xf6/0x110 net/netfilter/ipset/ip_set_core.c:1845
+ nfnetlink_rcv_msg+0xb86/0xcf0 net/netfilter/nfnetlink.c:229
+ netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2469
+ nfnetlink_rcv+0x3b5/0x3ab0 net/netfilter/nfnetlink.c:563
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2362
+ ___sys_sendmsg net/socket.c:2416 [inline]
+ __sys_sendmsg+0x623/0x750 net/socket.c:2449
+ __do_sys_sendmsg net/socket.c:2458 [inline]
+ __se_sys_sendmsg+0x97/0xb0 net/socket.c:2456
+ __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2456
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45ca59
+Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f55d9193c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004fe420 RCX: 000000000045ca59
+RDX: 0000000000000000 RSI: 00000000200002c0 RDI: 0000000000000003
+RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 0000000000000946 R14: 00000000004cc0e0 R15: 00007f55d91946d4
+
+Uninit was stored to memory at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ __msan_chain_origin+0x50/0x90 mm/kmsan/kmsan_instr.c:165
+ ip6_netmask include/linux/netfilter/ipset/pfxlen.h:49 [inline]
+ hash_net6_uadt+0x9a8/0xd80 net/netfilter/ipset/ip_set_hash_net.c:334
+ call_ad+0x2dc/0xbc0 net/netfilter/ipset/ip_set_core.c:1732
+ ip_set_ad+0xad2/0x1110 net/netfilter/ipset/ip_set_core.c:1820
+ ip_set_uadd+0xf6/0x110 net/netfilter/ipset/ip_set_core.c:1845
+ nfnetlink_rcv_msg+0xb86/0xcf0 net/netfilter/nfnetlink.c:229
+ netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2469
+ nfnetlink_rcv+0x3b5/0x3ab0 net/netfilter/nfnetlink.c:563
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2362
+ ___sys_sendmsg net/socket.c:2416 [inline]
+ __sys_sendmsg+0x623/0x750 net/socket.c:2449
+ __do_sys_sendmsg net/socket.c:2458 [inline]
+ __se_sys_sendmsg+0x97/0xb0 net/socket.c:2456
+ __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2456
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Uninit was stored to memory at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
+ kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
+ kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
+ __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
+ ip_set_get_ipaddr6+0x26a/0x300 net/netfilter/ipset/ip_set_core.c:325
+ hash_net6_uadt+0x4a6/0xd80 net/netfilter/ipset/ip_set_hash_net.c:320
+ call_ad+0x2dc/0xbc0 net/netfilter/ipset/ip_set_core.c:1732
+ ip_set_ad+0xad2/0x1110 net/netfilter/ipset/ip_set_core.c:1820
+ ip_set_uadd+0xf6/0x110 net/netfilter/ipset/ip_set_core.c:1845
+ nfnetlink_rcv_msg+0xb86/0xcf0 net/netfilter/nfnetlink.c:229
+ netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2469
+ nfnetlink_rcv+0x3b5/0x3ab0 net/netfilter/nfnetlink.c:563
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2362
+ ___sys_sendmsg net/socket.c:2416 [inline]
+ __sys_sendmsg+0x623/0x750 net/socket.c:2449
+ __do_sys_sendmsg net/socket.c:2458 [inline]
+ __se_sys_sendmsg+0x97/0xb0 net/socket.c:2456
+ __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2456
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
+ slab_alloc_node mm/slub.c:2802 [inline]
+ __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4436
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1083 [inline]
+ netlink_alloc_large_skb net/netlink/af_netlink.c:1175 [inline]
+ netlink_sendmsg+0x7d3/0x14d0 net/netlink/af_netlink.c:1893
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2362
+ ___sys_sendmsg net/socket.c:2416 [inline]
+ __sys_sendmsg+0x623/0x750 net/socket.c:2449
+ __do_sys_sendmsg net/socket.c:2458 [inline]
+ __se_sys_sendmsg+0x97/0xb0 net/socket.c:2456
+ __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2456
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+=====================================================
 
 
-On 6/22/2020 6:53 PM, Eric Dumazet wrote:
-> 
-> 
-> On 6/21/20 7:09 AM, Tariq Toukan wrote:
->> sock_orphan() call to sk_set_socket() implies clearing the sock TX queue.
->> This might cause unexpected out-of-order transmit, as outstanding packets
->> can pick a different TX queue and bypass the ones already queued.
->> This is undesired in general. More specifically, it breaks the in-order
->> scheduling property guarantee for device-offloaded TLS sockets.
->>
->> Introduce a function variation __sk_set_socket() that does not clear
->> the TX queue, and call it from sock_orphan().
->> All other callers of sk_set_socket() do not operate on an active socket,
->> so they do not need this change.
->>
->> Fixes: e022f0b4a03f ("net: Introduce sk_tx_queue_mapping")
->> Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
->> Reviewed-by: Boris Pismenny <borisp@mellanox.com>
->> ---
->>   include/net/sock.h | 9 +++++++--
->>   1 file changed, 7 insertions(+), 2 deletions(-)
->>
->> Please queue for -stable.
->>
->> diff --git a/include/net/sock.h b/include/net/sock.h
->> index c53cc42b5ab9..23e43f3d79f0 100644
->> --- a/include/net/sock.h
->> +++ b/include/net/sock.h
->> @@ -1846,10 +1846,15 @@ static inline int sk_rx_queue_get(const struct sock *sk)
->>   }
->>   #endif
->>   
->> +static inline void __sk_set_socket(struct sock *sk, struct socket *sock)
->> +{
->> +	sk->sk_socket = sock;
->> +}
->> +
->>   static inline void sk_set_socket(struct sock *sk, struct socket *sock)
->>   {
->>   	sk_tx_queue_clear(sk);
->> -	sk->sk_socket = sock;
->> +	__sk_set_socket(sk, sock);
->>   }
->>   
-> 
-> Hmm...
-> 
-> I think we should have a single sk_set_socket() call, and remove
-> the sk_tx_queue_clear() from it.
-> 
-> sk_tx_queue_clear() should be put where it is needed, instead of being hidden
-> in sk_set_socket()
-> 
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Thanks Eric, sounds good to me, I will respin, just have some questions 
-below.
-
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index c53cc42b5ab92d0062519e60435b85c75564a967..3428619faae4340485b200f49d9cce4fb09086b3 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -1848,7 +1848,6 @@ static inline int sk_rx_queue_get(const struct sock *sk)
->   
->   static inline void sk_set_socket(struct sock *sk, struct socket *sock)
->   {
-> -       sk_tx_queue_clear(sk);
->          sk->sk_socket = sock;
->   }
->   
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 6c4acf1f0220b1f925ebcfaa847632ec0dbe0b9b..134de0d37f77ba781b2b3341c94a97a1b2d57a2d 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -1767,6 +1767,7 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
->                  cgroup_sk_alloc(&sk->sk_cgrp_data);
->                  sock_update_classid(&sk->sk_cgrp_data);
->                  sock_update_netprioidx(&sk->sk_cgrp_data);
-> +               sk_tx_queue_clear(sk);
-
-Why add it here?
-I don't see a call to sk_set_socket().
-
->          }
->   
->          return sk;
-> @@ -1990,6 +1991,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
->                   */
->                  sk_refcnt_debug_inc(newsk);
->                  sk_set_socket(newsk, NULL);
-> +               sk_tx_queue_clear(newsk);
->                  RCU_INIT_POINTER(newsk->sk_wq, NULL);
->   
->                  if (newsk->sk_prot->sockets_allocated)
-> 
-
-So in addition to sock_orphan(), now sk_tx_queue_clear() won't be called 
-also from:
-1. sock_graft(): Looks fine to me.
-2. sock_init_data(): I think we should add an explicit call to 
-sk_tx_queue_clear() here. The one for RX sk_rx_queue_clear() is already 
-there.
-3. mptcp_sock_graft(): Looks fine to me.
-
-Regards,
-Tariq
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
