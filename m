@@ -2,85 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FF4820320B
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 10:26:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66D582031F4
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 10:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726449AbgFVI0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 04:26:38 -0400
-Received: from correo.us.es ([193.147.175.20]:48912 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725957AbgFVI0i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 04:26:38 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 33A25130E28
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 10:26:36 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2642B114D74
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 10:26:36 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 253C9114D64; Mon, 22 Jun 2020 10:26:36 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id DE3C4DA72F;
-        Mon, 22 Jun 2020 10:26:33 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 22 Jun 2020 10:26:33 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id B994942EE38F;
-        Mon, 22 Jun 2020 10:26:33 +0200 (CEST)
-Date:   Mon, 22 Jun 2020 10:26:33 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     coreteam@netfilter.org, netfilter-devel@vger.kernel.org,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH] netfiler: ipset: fix unaligned atomic access
-Message-ID: <20200622082633.GA4512@salvia>
-References: <E1jj7gl-0008Bq-BQ@rmk-PC.armlinux.org.uk>
+        id S1726858AbgFVIUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 04:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726080AbgFVIUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 04:20:33 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B849FC061794
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 01:20:32 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id f18so2246056wml.3
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 01:20:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I2/77xZOPuFOPPv9J9YuPkow2vqhTG6kapE9uH4FzlI=;
+        b=CGv5xTihsuHTBi1j0tQz8YCcEnZ13wcEjNppho6byFD/x5QfjkKffxic0rD8PLR9Ac
+         2QtGyZVvdO5T6tLp6eHscKYdWdAD64Gde9ApvP3seWq4X9t9fuGglkQL3c9uQXelg13z
+         Je2i1Sacd19o8o4NMz+1oOuucZvSPQFcghYqqzhApt8wjrBYFGgQqubCTVqQnUXGnfc8
+         Fug7VtO8sIZpktY9wErppIyn1m9JTP8BmiALt/G+rZaXUgZ1/FsCxIs5byBFRJOwD98a
+         2jq/4XBWMymwbytKFbwOguTrSCStxIfeuoL+nqcmFbPJyaHQiyTq/KAamSwn4GGyNvVI
+         xQWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I2/77xZOPuFOPPv9J9YuPkow2vqhTG6kapE9uH4FzlI=;
+        b=QFOnQTfY7ejSct+MjiEUpa9vJbKRt7iXWcxmEhPq3Z6m+VWr1QN2CwGghGYLI/NIVI
+         gFURGJ4O5oaJQowsU/BpSN6ddA7kcPjKPImOTTui2rSs5qtqBl2Y8Ssio9u0Gz8VJtvC
+         MUqih04vfGxxoN7cOVKYlimeL/2wUCHkeLzoRrZ/qVyEessgkjRDD4ouSNSsh4YwxVbl
+         k5aMRbKA6MrICWw80l7g3J5No2qmV7ttPz4WTMDwhdxH6lmRTGWt9uJ+FG/ALhsw75up
+         S6wZWo6nqeYPfezBakw0ScUcMaxBCafE3byIIeZx4hZZnANe7ldJf26S5Bx2e8fr+hfr
+         Tq+A==
+X-Gm-Message-State: AOAM531iAc16CWGzV+Gl0ZYUvrPs+ysj1cx010+h6tOZbGPv1Hbt2cbW
+        xnfOCVBX5My6P/9zgn++aQP4zQ56XwM1JGiIjHb06/3uFbw=
+X-Google-Smtp-Source: ABdhPJxZdlTJIjXI/4EQDfB3n9BoDpDItkXoM6PMKp0AdvfvKAtP/4rJcfs5IeroGwVCHDtg2p/mzK4szYyHf9L+beM=
+X-Received: by 2002:a1c:7d54:: with SMTP id y81mr9057058wmc.110.1592814031522;
+ Mon, 22 Jun 2020 01:20:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1jj7gl-0008Bq-BQ@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <cover.1592328814.git.lucien.xin@gmail.com> <84bcb772ea1b68f3b150106b9db1825b65742cef.1592328814.git.lucien.xin@gmail.com>
+ <5a63a0c47cc71476786873cbd32db8db3c0f7d1e.1592328814.git.lucien.xin@gmail.com>
+ <20200617091905.2b007939@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200617091905.2b007939@kicinski-fedora-PC1C0HJN>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 22 Jun 2020 16:29:22 +0800
+Message-ID: <CADvbK_fbCdmo2s3mPs57i8DeK8st9d8fMi4SMa-Vrhis5NkaBQ@mail.gmail.com>
+Subject: Re: [PATCH ipsec-next 02/10] tunnel4: add cb_handler to struct xfrm_tunnel
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 10, 2020 at 09:51:11PM +0100, Russell King wrote:
-> When using ip_set with counters and comment, traffic causes the kernel
-> to panic on 32-bit ARM:
-> 
-> Alignment trap: not handling instruction e1b82f9f at [<bf01b0dc>]
-> Unhandled fault: alignment exception (0x221) at 0xea08133c
-> PC is at ip_set_match_extensions+0xe0/0x224 [ip_set]
-> 
-> The problem occurs when we try to update the 64-bit counters - the
-> faulting address above is not 64-bit aligned.  The problem occurs
-> due to the way elements are allocated, for example:
-> 
-> 	set->dsize = ip_set_elem_len(set, tb, 0, 0);
-> 	map = ip_set_alloc(sizeof(*map) + elements * set->dsize);
-> 
-> If the element has a requirement for a member to be 64-bit aligned,
-> and set->dsize is not a multiple of 8, but is a multiple of four,
-> then every odd numbered elements will be misaligned - and hitting
-> an atomic64_add() on that element will cause the kernel to panic.
-> 
-> ip_set_elem_len() must return a size that is rounded to the maximum
-> alignment of any extension field stored in the element.  This change
-> ensures that is the case.
+On Thu, Jun 18, 2020 at 12:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 17 Jun 2020 01:36:27 +0800 Xin Long wrote:
+> > This patch is to register a callback function tunnel4_rcv_cb with
+> > is_ipip set in a xfrm_input_afinfo object for tunnel4 and tunnel64.
+> >
+> > It will be called by xfrm_rcv_cb() from xfrm_input() when family
+> > is AF_INET and proto is IPPROTO_IPIP or IPPROTO_IPV6.
+> >
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+>
+> Please make sure W=1 C=1 builds don't add new warnings:
+>
+> net/ipv4/tunnel4.c:118:14: warning: incorrect type in assignment (different address spaces)
+> net/ipv4/tunnel4.c:118:14:    expected struct xfrm_tunnel *head
+> net/ipv4/tunnel4.c:118:14:    got struct xfrm_tunnel [noderef] <asn:4> *
+> net/ipv4/tunnel4.c:120:9: error: incompatible types in comparison expression (different address spaces):
+> net/ipv4/tunnel4.c:120:9:    struct xfrm_tunnel [noderef] <asn:4> *
+> net/ipv4/tunnel4.c:120:9:    struct xfrm_tunnel *
+I will change to on v2:
+ static int tunnel4_rcv_cb(struct sk_buff *skb, u8 proto, int err)
+ {
+-       struct xfrm_tunnel *head, *handler;
++       struct xfrm_tunnel __rcu *head;
++       struct xfrm_tunnel *handler;
+        int ret;
 
-Applied, thanks.
+Thanks.
