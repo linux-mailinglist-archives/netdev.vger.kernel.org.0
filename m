@@ -2,127 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80605203A47
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 17:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38F4E203A51
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 17:08:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729399AbgFVPGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 11:06:21 -0400
-Received: from mail-am6eur05on2047.outbound.protection.outlook.com ([40.107.22.47]:15660
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        id S1729417AbgFVPIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 11:08:41 -0400
+Received: from mail-eopbgr10088.outbound.protection.outlook.com ([40.107.1.88]:3166
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729365AbgFVPGU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 11:06:20 -0400
+        id S1728070AbgFVPIl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 11:08:41 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hr+JcPCWQHeDSZj5ZYsvD6SD3Ip5/j7FGokZfuuA3wU6sdnhvMsJD+zQDbhMBoTEJP1JTxuf76KD4SLZOrJS+5yUfS7kj5trRv9shbLxDyjXxcAmmVW/V234Qzsnh36rNoJHZkVuHu/3w2VNMASknOUs8jbkRnnkIJvv/fMS8uvc6Ic5mFp7XTLXsMXLqhgJWspUATUDYVME67HeinVOwJL3mwAOkBAghWTkaRrnFQwgPrYaXEwOi0nRhBEwSUumq1wSokl7Mt4eVQCUrJCpCKsW17x1OvzcbUztVh2SvjEznqQuqylIhQxivuWdg8JFJO9Osj0X62sD8R1kl+biWA==
+ b=CXtgm9ckzYPIk1ZGy+XVb+K77KApevxIz9GyCw6EL0Ijp8PcQdOtj5IOPLSrWIBKKueXxwJS0GWmewB6VHNOzt3pF4watLS8gZBhqgTCClsNo2DE/wnJVy1YN5orCNB/LjxM+jckDIM5LHtP2IV5ho6ioZ9oDtlwWycg+4KaHWQ0O5ZHNQ31L/786dG2xi5vWGiI1v/U418Zy7sQ2VkRVWQRuFPUcKBvko3lqKsxjmYtC5LYzPosAE/iRsLvQrIgzcpynrsbFW3zYiQ3l9YyXMarOVIMgl7ajCtKs2HPh2pFZf14gQFzuwVsQqqFnucPuLzLZcwjGpVRxMh+0bumaw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9RSMy93/Z670E4QZrOsK7Fyl1gPiV3rIn7Naw8XtO0Y=;
- b=cWWhSHoGwTdiMGOtEgm5BdCWtZN9M4AdpmS3zdbmc5Cm7zgDAyzofKl7KnEznrh7rZqd5V2Vs6WNkj5am3MWYdTzTyXy3axZJdozCYn3U+oofCbp1dvbB1QS9mH8OrpEXldN2ij/eAqF4chEuOlCKuSROx/TiPDp/QYnLTt3BzNVnqA+YOm70yFQ8m+F2EMZsQ9+w1tPV1iGhkZKitNIojmadPoIpDQ1a5UEt2FdncDbsz86Rglp4ictd+ej6BGxBK/TNmR9RoY1dRIbSywlAfTmBI0F7ZyAgD9O2PeYigpOTYLKm8MQkQMwS8PKdfz5zCvZHfhokfXo9iu+sGk1bQ==
+ bh=lLvjArFfes3MGz/Bmb7zBxxAZ50O7eGjBqSgkaUXRP0=;
+ b=HPxIB1WUulpvZZdkVU+uu2cIMYqZsrcYzXnd8M9phXD3BHu0Disdisr/TBI0yMeAWvYbYr4rrcwzDrLovFDev0MiD9GFyt60q07/YcJF+p+G+mZmNT3tUEGSREel4LolbGZu5z4ptBT4cNMaVt88ZWS+DD3UC4B2nrOFaVgjA/Ri3kw11VKWKYw/5rsjBCse1fkAtteKPWtpe6T1p17yBWqww9nj+pKZuKx0dKKiUvmMKvr+Ok26464rG0T46e6VMmK433HX3L6N/uYWapblBPOr8N8TiI6cI8n6cpQ4YoP4wNXvM58BcerbNfhvmmgBoqDMkvhoNoxRyYU+LZrSXw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9RSMy93/Z670E4QZrOsK7Fyl1gPiV3rIn7Naw8XtO0Y=;
- b=B1g1X5P4nRmCmylUclBvk4opyGaBA6I93xWfeMunPr/O31nW+G71WHB5RWZt+0/cZC8VoWAtKVs7XgdlV00GLpKU5bcINiuPvgPBNI88jgc8kHE+lIATgNZ8hkZdXqaLsyXLwH1ZJBzNcxxyXgJJUk5BR1XnroFjzdulqA+zSwU=
-Authentication-Results: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB4289.eurprd04.prod.outlook.com (2603:10a6:208:62::30) with
+ bh=lLvjArFfes3MGz/Bmb7zBxxAZ50O7eGjBqSgkaUXRP0=;
+ b=Fj0FpYCNgi3YAExc7kW0bA7UMYKReuFeuf5h4v8R23cLFQPZbZnuy7qzdgpOywMgmO/Mt7SmaKbSFpqVANdSp6CXt4f/AJHJFHOgI8YIs/YDyeVLkiEix0bfWyc1te9pnLNYZZATpKCU8GQ8pNhYVlcmdwUz2Et5vtc27DcTPL4=
+Received: from AM6PR04MB3976.eurprd04.prod.outlook.com (2603:10a6:209:3f::17)
+ by AM6PR04MB6325.eurprd04.prod.outlook.com (2603:10a6:20b:bc::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Mon, 22 Jun
- 2020 15:06:16 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::7dda:a30:6b25:4d45]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::7dda:a30:6b25:4d45%7]) with mapi id 15.20.3109.027; Mon, 22 Jun 2020
- 15:06:16 +0000
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Jeremy Linton <jeremy.linton@arm.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.21; Mon, 22 Jun
+ 2020 15:08:36 +0000
+Received: from AM6PR04MB3976.eurprd04.prod.outlook.com
+ ([fe80::8576:ca02:4334:31a3]) by AM6PR04MB3976.eurprd04.prod.outlook.com
+ ([fe80::8576:ca02:4334:31a3%5]) with mapi id 15.20.3109.027; Mon, 22 Jun 2020
+ 15:08:36 +0000
+From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florinel Iordache <florinel.iordache@nxp.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>
-Cc:     netdev@vger.kernel.org, linux.cj@gmail.com,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>
-Subject: [net-next PATCH v3 3/3] net/fsl: enable extended scanning in xgmac_mdio
-Date:   Mon, 22 Jun 2020 20:35:34 +0530
-Message-Id: <20200622150534.27482-4-calvin.johnson@oss.nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200622150534.27482-1-calvin.johnson@oss.nxp.com>
-References: <20200622150534.27482-1-calvin.johnson@oss.nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR03CA0115.apcprd03.prod.outlook.com
- (2603:1096:4:91::19) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next v3 4/7] net: phy: add backplane kr driver support
+Thread-Topic: [PATCH net-next v3 4/7] net: phy: add backplane kr driver
+ support
+Thread-Index: AQHWSJoP3RwMZ7Se1EqsHw8WDK+NGKjksHoAgAAIWpA=
+Date:   Mon, 22 Jun 2020 15:08:36 +0000
+Message-ID: <AM6PR04MB397677E90EFBD9749D01B061EC970@AM6PR04MB3976.eurprd04.prod.outlook.com>
+References: <1592832924-31733-1-git-send-email-florinel.iordache@nxp.com>
+ <1592832924-31733-5-git-send-email-florinel.iordache@nxp.com>
+ <20200622142430.GP279339@lunn.ch>
+In-Reply-To: <20200622142430.GP279339@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=oss.nxp.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [86.127.220.45]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: c3e7b1bd-e807-489b-63cc-08d816be237c
+x-ms-traffictypediagnostic: AM6PR04MB6325:
+x-ms-exchange-sharedmailbox-routingagent-processed: True
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR04MB6325CD55DD5963D765CFA412AD970@AM6PR04MB6325.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0442E569BC
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: J4sUZDWMsIO570svvjlLImWhMPKpgfCuBbs47umkDv4ydvX9qfi6BDCWNxVUF6Jkz5jgiNHGKCWmYBlY2LwRyL/KrAVNOVtSv/yOi5v+G1KhxB8HR0PfgFLS7Stj/n/38a+BfbY0lfjNEpNPW0Fdnd9qbyqfOQwByC9/+3Bs7L6X3EzN3O7JiDbWh1Jeu/Tc3+5QUYOxItTzpB46NUodQD4R3c3DchcsEe6V70kIJzuOGUv+vN31V/E4Tw5zMaCWdNP5OMlPcrf+QGntSF+FwskvHeMkp4zlNZcpYGNRiIkQRTMDHf0fbaCYB42m3oP+/veEZzUhi+nzMav1BCuc2Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(136003)(376002)(396003)(39860400002)(366004)(6506007)(110136005)(83380400001)(54906003)(53546011)(26005)(8676002)(7416002)(7696005)(316002)(2906002)(55016002)(9686003)(52536014)(186003)(478600001)(5660300002)(4326008)(71200400001)(66946007)(76116006)(64756008)(66556008)(8936002)(86362001)(66446008)(33656002)(66476007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: N49+JdfIs/ee67oXri8sMxJvjpxorxPPQDh/O2TFQbASEIAD8ApZQwpGi2ngAwHMFGNI5KP4wQiOf58+UHzh9+IXVkxG7VAWg8cyWfy2yIFU5ZmpzPeBzNjcvxJpBfrtAqoBOttQHefU+UZjV2QIb39QcldcXLwXbsjis9eBOM05bhsOmtDt0pBN/d5X0a7HhR0hVsjgkWFRc3cLKgxexMqE8jTE/4PTZUhAsfjfUKOqErGWCPFYBbVbAuEWKEYuJwttf5T0iFFEeVv1izhureTf1TBa8y+hyVYLZhiD7rG5lOiUqFlXvsHCW+5m88HQRm7CDqJyljsC+Pp9rfKDX5gEPsa7fpnOGDGxULEowUtBnZMiEfVN/eDs2+KleYObM8a1Wbgqoy++CllTLFkgCh3USqtQJO6Ofp88UgBQ26Z8S6FvzZz8qLr+xOuELt+2HMXkPp6ufdvyT+pa5cF+aN20ej7fJbJhF6slNgRkU+w=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR03CA0115.apcprd03.prod.outlook.com (2603:1096:4:91::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.10 via Frontend Transport; Mon, 22 Jun 2020 15:06:13 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [14.142.151.118]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: ce8e54b4-33fd-41e6-ee55-08d816bdcfb8
-X-MS-TrafficTypeDiagnostic: AM0PR04MB4289:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB428916784770F4F6EF630697D2970@AM0PR04MB4289.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-Forefront-PRVS: 0442E569BC
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EB/abq3HxrsyLoLSyyqk9e8zYfD1GmhN74uJjy+vTypc2JFEDyzn3pldkkuDpuul4mO9ztsbafbGWHmCpyEhoz16kXUzMPt5ZMol9aEmvJG7LDV8x6tsk5srpxddf4R+4i3Co4LDeRhPj7ajlfUXV2OjZnoZj/lXZ/OUjvoWMHRLl6Izc9FC0D5Gv3cpgD4cOa8XZIBkDW0nrcUAMu9wckFKwetqbcoZ8WmcZ6WyEEUgMgz/fVZxxemTFRO1lghcK4+1HaIY5MDKq/GGF2NaoGx3wTAX2/dnHdKJufP3YtlfAnmK03A0X0UofGSoHHuUrGmM7+hbGZiNr1olHZ+UkQQ9Fj1c1uJ3K6UZID5Slu/Gn8X6fPa3sSyRst4z7PKd
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(396003)(366004)(136003)(39860400002)(346002)(6506007)(478600001)(26005)(16526019)(52116002)(186003)(55236004)(316002)(8936002)(2616005)(1076003)(5660300002)(110136005)(66476007)(44832011)(66556008)(6636002)(6512007)(2906002)(66946007)(6666004)(6486002)(86362001)(4326008)(956004)(8676002)(1006002)(110426005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: fKV3SfeCDBPLCPW5jEAuYhQVMd2MSFjSWXnY8PANzb49r7Erd37P6Lz5DO/uc39KY18biyqz26EqXlibpQgek9grq3cEZT3z39WysqJMMSsOMtKlkDFe4wHmkurmdP9doPeoTNHfdvhCfJmIHsKthrU7AJHd+HScXHNQvttprDTvAitGa+jKYV2zHRfYo48bBwGpvsBW1/9dV0c3V+6O0tTc0DBLY9yJYU/8lhPba8L13lBPjQtXn+xOJQ4c5k6jK41a2EW4XwJpQLlX0PcUmQZ2oiSALLvw6i70voItAIZ9+9kQqno3NSHSkrQd4xRtMFgebuM/dSNMupLz9g9nKOnCwZBUD7INWeeGKDOKP+Q4BwAN5CeYsWMKiJUEE/PiVRHZx7SE2Uws9H20+6SqYyC6oGf0QexAl2IEmZo0JG2FJ4HqS4pCXVz8AEVRYjgs8pxaS69flHaLdCwDN5DSmsC1OF396YJolzFTK3DYlUehf0nQokIOmWa7yslRNbGo
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce8e54b4-33fd-41e6-ee55-08d816bdcfb8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2020 15:06:16.5986
+X-MS-Exchange-CrossTenant-Network-Message-Id: c3e7b1bd-e807-489b-63cc-08d816be237c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jun 2020 15:08:36.7037
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2FRrxmqrqZq2Ot9P4xjYTBe/qv1CoWTivrA1T86Qj7Sap08XfWc1eInsJBoHMmkp49c0tLKjifpUg93CA5Kxzg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4289
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AyIlyg8/HkFayMHJRX4KpUWOYJFME5BtXkabnzMBh7fEnLUgWn8ojEPNV5xpd/t3tX3Yuy1dRauGt7EpNX+4PA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6325
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeremy Linton <jeremy.linton@arm.com>
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Monday, June 22, 2020 5:25 PM
+> To: Florinel Iordache <florinel.iordache@nxp.com>
+> Cc: davem@davemloft.net; netdev@vger.kernel.org; f.fainelli@gmail.com;
+> hkallweit1@gmail.com; linux@armlinux.org.uk; devicetree@vger.kernel.org;
+> linux-doc@vger.kernel.org; robh+dt@kernel.org; mark.rutland@arm.com;
+> kuba@kernel.org; corbet@lwn.net; shawnguo@kernel.org; Leo Li
+> <leoyang.li@nxp.com>; Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>;
+> Ioana Ciornei <ioana.ciornei@nxp.com>; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH net-next v3 4/7] net: phy: add backplane kr driver
+> support
+>=20
+> On Mon, Jun 22, 2020 at 04:35:21PM +0300, Florinel Iordache wrote:
+> > Add support for backplane kr generic driver including link training
+> > (ieee802.3ap/ba) and fixed equalization algorithm
+>=20
+> Hi Florinel
+>=20
+> This is still a PHY device. I don't remember any discussions which
+> resolved the issues of if at the end of the backplane there is another
+> PHY.
+>=20
+> It makes little sense to repost this code until we have this problem
+> discussed and a way forward decided on. It fits into the discussion
+> Russell and Ioana are having about representing PCS drivers. Please
+> contribute to that.
+>=20
+> 	Andrew
 
-Since we know the xgmac hardware always has a c45
-compliant bus, let's try scanning for c22 capable
-PHYs first. If we fail to find any, then it will
-fall back to c45 automatically.
+Hi Andrew, the reasons behind this selection:
 
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+- the PCS that is controlled by the backplane driver belongs to the PHY
+layer so the representation as a PHY device is legitimate
+- the PHY driver provides the state machine that is required, not using
+this representation backplane would need to add a separate, duplicate
+state machine
+- the limitation, that only one PHY layer entity can be managed by the
+PHYLib, is a known limitation that always existed, is not introduced by
+the backplane support; the unsupported scenario with a backplane connection
+to a PHY entity that needs to be managed relates to that limitation and
+a solution for it should not be added through the backplane support
+- afaik, Russell and Ioana are discussing the PCS representation in the
+context of PHYLink, this submission is using PHYLib. If we are to discuss
+about the PCS representation, it's the problem of the simplistic "one devic=
+e
+in the PHY layer" issue that needs to be addressed to have a proper PCS
+representation at all times.
 
----
-
-Changes in v3: None
-Changes in v2: None
-
- drivers/net/ethernet/freescale/xgmac_mdio.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
-index b4ed5f837975..98be51d8b08c 100644
---- a/drivers/net/ethernet/freescale/xgmac_mdio.c
-+++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -268,6 +268,7 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
- 	bus->read = xgmac_mdio_read;
- 	bus->write = xgmac_mdio_write;
- 	bus->parent = &pdev->dev;
-+	bus->probe_capabilities = MDIOBUS_C22_C45;
- 	snprintf(bus->id, MII_BUS_ID_SIZE, "%pa", &res->start);
- 
- 	/* Set the PHY base address */
--- 
-2.17.1
-
+Madalin
