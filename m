@@ -2,74 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AE7A20410D
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 22:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2183E204175
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 22:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728878AbgFVUHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 16:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728539AbgFVUHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 16:07:38 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C017C061573
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 13:07:38 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2319B1295D5F8;
-        Mon, 22 Jun 2020 13:07:38 -0700 (PDT)
-Date:   Mon, 22 Jun 2020 13:07:37 -0700 (PDT)
-Message-Id: <20200622.130737.763192936886895186.davem@davemloft.net>
-To:     colton.w.lewis@protonmail.com
-Cc:     andrew@lunn.ch, linux@armlinux.org.uk, netdev@vger.kernel.org
-Subject: Re: [PATCH 3/3] net: phylink: correct trivial kernel-doc
- inconsistencies
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <3315816.iIbC2pHGDl@laptop.coltonlewis.name>
-References: <20200621154248.GB338481@lunn.ch>
-        <20200621155345.GV1551@shell.armlinux.org.uk>
-        <3315816.iIbC2pHGDl@laptop.coltonlewis.name>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 22 Jun 2020 13:07:38 -0700 (PDT)
+        id S1730812AbgFVUKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 16:10:02 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:43516 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730802AbgFVUJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 16:09:55 -0400
+Received: by mail-oi1-f194.google.com with SMTP id j189so16756559oih.10;
+        Mon, 22 Jun 2020 13:09:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OiePC4i/uqD+1c3W+5eApnEHXPxElxi4Y3ejQe4iWbM=;
+        b=SOcV7Ek+XJl/Z5MySWcz+Gj4FJ4CjEth1z+Y0TMrw7vjGuYTBqQwcplHBnyF87avJR
+         OfclI33KAc+s8FcncurRU61LFwPiwQw/PNApMExA7FMDpwEqAXYEZP0rR9+whHH9wyz5
+         vQCTgH+H6z+i9los66XxsC7URxfvwXtbN07FCMWSENuU9D9Z819t2UZ+WAYFUfYSEKXz
+         DogsY4ayz1DE2rbWmpJmR3miatx2JqncNJUt03ypP8OSFreKueTPOZXE5mJjDLq7JPrU
+         m9d8jw5G6UGeyZoZ03GIGdVLUyx2j8k4mU0e9Ezl+BBPtm+L5TlvPzAZC6Vvaz9zyImt
+         Vs+g==
+X-Gm-Message-State: AOAM533r80KqgqVw/21t7oNCbdoCo7EKIax9LEPSRsWb9IQ8OtjRRNel
+        +drmHRSAE3/lhpCQLpIFoLTKbEiCorrfKyqGHEm46onF
+X-Google-Smtp-Source: ABdhPJwm8jCWTZ8wTPreeBQUXPLsl6F4YxPDq2wFJCIfu8r7ux3hmF4g5TPzSR2txESMgnjTGIt4VHqMIsRVL+CEsfw=
+X-Received: by 2002:aca:1a19:: with SMTP id a25mr13968777oia.54.1592856594434;
+ Mon, 22 Jun 2020 13:09:54 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200621081710.10245-1-geert+renesas@glider.be> <8d90ef9a-32d3-659f-f808-5d62d1d7ac6d@cogentembedded.com>
+In-Reply-To: <8d90ef9a-32d3-659f-f808-5d62d1d7ac6d@cogentembedded.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 22 Jun 2020 22:09:43 +0200
+Message-ID: <CAMuHMdXN1o9iG+CM-S5DaikkD_W7zyYAwRpZbEE39EY8PjWHLw@mail.gmail.com>
+Subject: Re: [PATCH/RFC] dt-bindings: net: renesas,etheravb: Convert to json-schema
+To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colton Lewis <colton.w.lewis@protonmail.com>
-Date: Sun, 21 Jun 2020 23:02:30 +0000
+Hi Sergei,
 
-> On Sunday, June 21, 2020 10:53:45 AM CDT Russell King - ARM Linux admin wrote:
->> > ---
->> >   */
->> >  struct phylink_config {
->> >  	struct device *dev;
->> > @@ -331,7 +333,7 @@ void pcs_get_state(struct phylink_config *config,
->> >   *
->> >   * For most 10GBASE-R, there is no advertisement.
->> >   */
->> > -int (*pcs_config)(struct phylink_config *config, unsigned int mode,
->> > +int *pcs_config(struct phylink_config *config, unsigned int mode,
->> >  		  phy_interface_t interface, const unsigned long *advertising);
->> 
->> *Definitely* a NAK on this and two changes below.  You're changing the
->> function signature to be incorrect.  If the documentation can't parse
->> a legitimate C function pointer declaration and allow it to be
->> documented, then that's a problem with the documentation's parsing of
->> C code, rather than a problem with the C code itself.
-> 
-> I realize this changes the signature, but this declaration is not compiled. It is under an #if 0 with a comment stating it exists for kernel-doc purposes only. The *real* function pointer declaration exists in struct phylink_pcs_ops.
-> 
-> Given the declaration is there exclusively for documentation, it makes sense to change it so the documentation system can parse it.
+On Mon, Jun 22, 2020 at 10:04 PM Sergei Shtylyov
+<sergei.shtylyov@cogentembedded.com> wrote:
+> On 06/21/2020 11:17 AM, Geert Uytterhoeven wrote:
+> > Convert the Renesas Ethernet AVB (EthernetAVB-IF) Device Tree binding
+> > documentation to json-schema.
+> >
+> > Add missing properties.
+> > Update the example to match reality.
+> >
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>
+>    As I'm only seeing the formatting issues, here's my:
+>
+> Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 
-I agree with Russell, if the C code can't be accurately represented you
-make things worse for people trying to actually _use_ the documentation.
+Thank you!
 
-Can't you escape the parenthesis or something like that?
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+> > @@ -0,0 +1,269 @@
+> [...]
+> > +maintainers:
+> > +  - Sergei Shtylyov <sergei.shtylyov@gmail.com>
+>
+>    Thank you! :-)
 
-If you can't make it look accurate, leave it alone.
+You're (very) welcome ;-)
+
+>
+> > +
+> > +properties:
+> > +  compatible:
+> > +    oneOf:
+> > +      - items:
+> > +          - enum:
+> > +              - renesas,etheravb-r8a7742      # RZ/G1H
+> > +              - renesas,etheravb-r8a7743      # RZ/G1M
+> > +              - renesas,etheravb-r8a7744      # RZ/G1N
+> > +              - renesas,etheravb-r8a7745      # RZ/G1E
+> > +              - renesas,etheravb-r8a77470     # RZ/G1C
+> > +              - renesas,etheravb-r8a7790      # R-Car H2
+> > +              - renesas,etheravb-r8a7791      # R-Car M2-W
+> > +              - renesas,etheravb-r8a7792      # R-Car V2H
+> > +              - renesas,etheravb-r8a7793      # R-Car M2-N
+> > +              - renesas,etheravb-r8a7794      # R-Car E2
+>
+>    Hm, overindented starting with "- items:"?
+
+I believe this is consistent with e.g. commit 9f60a65bc5e6cd88
+("dt-bindings: Clean-up schema indentation formatting").
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
