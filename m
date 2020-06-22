@@ -2,191 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D0A120393B
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 16:27:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42F942039A3
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 16:36:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729637AbgFVO1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 10:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729498AbgFVO1E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 10:27:04 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8C1C061573
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 07:27:03 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id p20so18155623ejd.13
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 07:27:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=2lL1SuxbSfLbrjqAUhc2M9pezrQZtlHWXhMmnFl9PW4=;
-        b=Av8kQEruZpIUM3H3FHOROjOEqadC3vVfQI2bNgvUgU9qju8ASxmDIX+o0DY7kbdHw7
-         f0p6Nd5j4ke1dB8orpLmMOdhhPobSDlRma7MwAov0jmQF44tnOydQzvxjas14VK8juDa
-         0lwvWK1lo33Aya9o19BFQjGkpNmuu1+et0iEqxOpVXhoTiWA2FckCzJLjhJw/u431XgA
-         QGMQFqyhNcw945ekjKR57ja9aN+e9P2ju4JlXwk5xQGIWdGT/VhWui0d2Qht5dRlfbRs
-         jG0juGkcr+t6jmzToqrZoyNbSvfJrB2RE7Bh4GCbrkyUEsqJJy77O5YTVCcNkIvliXEF
-         rIAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=2lL1SuxbSfLbrjqAUhc2M9pezrQZtlHWXhMmnFl9PW4=;
-        b=Ic+cKwOyfsjpz1vS2Hw97VrMnjpZgPxF0iyd6PwPJPr5agmbfLXls+H+3wKZBREsiO
-         DPBTzT3pxwECOpuAob2KWAcnDkMXmp2L0EnPHy8KZe1YHCYGsCf9zFB2MVNAXyGK0PEi
-         8H1MCCUO9NBSxxHC8uSkIDMC6+XVX9uNrQILpLtmPWNjpeUcnKPMrxZ5OHNEx/YlFNgB
-         cqK7xm26rzRxE7CvFjYvjvBDYtvA20gA1fF315gv4GXeTtMFeG09rciLE0SvHhzUuwhd
-         H3mK7DY8mOF9c4PRe4WukWXj8BBkeMEOJfNKst3jVrmnzAAZi5xE5PWIXAivC89NvXvE
-         J0ww==
-X-Gm-Message-State: AOAM531jY4ETipGwvf2McW0Jca0FRaqb6oSAKid9laR+6MHb1xOZ/+Hk
-        1h/jWsKFbkqLq8v9tu0fbvYuTM6xHTq+SBLKsrYpvg==
-X-Google-Smtp-Source: ABdhPJwFMu+N0sF+nePFCPxamnkXSqDA23IzOacuZrXVmYLoade8FMIJodAu2JcDrSP3IimxuyiWlbKD6E8FGWqxY0I=
-X-Received: by 2002:a17:906:4554:: with SMTP id s20mr15534218ejq.241.1592836022456;
- Mon, 22 Jun 2020 07:27:02 -0700 (PDT)
+        id S1729106AbgFVOg3 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Jun 2020 10:36:29 -0400
+Received: from smtp.asem.it ([151.1.184.197]:57670 "EHLO smtp.asem.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728504AbgFVOg3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 10:36:29 -0400
+Received: from webmail.asem.it
+        by asem.it (smtp.asem.it)
+        (SecurityGateway 6.5.2)
+        with ESMTP id SG000333556.MSG 
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 16:36:27 +0200S
+Received: from ASAS044.asem.intra (172.16.16.44) by ASAS044.asem.intra
+ (172.16.16.44) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 22
+ Jun 2020 16:36:26 +0200
+Received: from ASAS044.asem.intra ([::1]) by ASAS044.asem.intra ([::1]) with
+ mapi id 15.01.1979.003; Mon, 22 Jun 2020 16:36:26 +0200
+From:   Flavio Suligoi <f.suligoi@asem.it>
+To:     Kalle Valo <kvalo@codeaurora.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Aditya Pakki <pakki001@umn.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/1] net: wireless: intersil: orinoco: fix spelling
+ mistake
+Thread-Topic: [PATCH 1/1] net: wireless: intersil: orinoco: fix spelling
+ mistake
+Thread-Index: AQHWRhxa5hLd24UfYkmM6jKYq99qSqjks8fwgAAEedA=
+Date:   Mon, 22 Jun 2020 14:36:25 +0000
+Message-ID: <572cf2c6607e4be88c429db11ed4b29b@asem.it>
+References: <20200619093102.29487-1-f.suligoi@asem.it>
+ <87wo3zfale.fsf@codeaurora.org>
+In-Reply-To: <87wo3zfale.fsf@codeaurora.org>
+Accept-Language: it-IT, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.17.208]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Received: by 2002:a50:3a1b:0:0:0:0:0 with HTTP; Mon, 22 Jun 2020 07:27:01
- -0700 (PDT)
-X-Originating-IP: [5.35.13.201]
-In-Reply-To: <20200622152828.368748ba@carbon>
-References: <1592817672-2053-1-git-send-email-kda@linux-powerpc.org>
- <1592817672-2053-3-git-send-email-kda@linux-powerpc.org> <20200622115804.3c63aba9@carbon>
- <CAOJe8K28RQuiAKADY2pgad8qAzVXYxYcZnb8m0AJGSZTnAfJqA@mail.gmail.com> <20200622152828.368748ba@carbon>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Mon, 22 Jun 2020 17:27:01 +0300
-Message-ID: <CAOJe8K0ix1RHUv4o=MquEJ4o2_F06Uyr9KFNTMatE8PAgDrUbw@mail.gmail.com>
-Subject: Re: [PATCH net-next v10 2/3] xen networking: add basic XDP support
- for xen-netfront
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, jgross@suse.com, wei.liu@kernel.org,
-        paul@xen.org, ilias.apalodimas@linaro.org
-Content-Type: text/plain; charset="UTF-8"
+X-SGHeloLookup-Result: pass smtp.helo=webmail.asem.it (ip=172.16.16.44)
+X-SGSPF-Result: none (smtp.asem.it)
+X-SGOP-RefID: str=0001.0A090214.5EF0C1EA.0075,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0 (_st=1 _vt=0 _iwf=0)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/22/20, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> On Mon, 22 Jun 2020 15:45:46 +0300
-> Denis Kirjanov <kda@linux-powerpc.org> wrote:
->
->> On 6/22/20, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
->> >
->> > On Mon, 22 Jun 2020 12:21:11 +0300 Denis Kirjanov
->> > <kda@linux-powerpc.org>
->> > wrote:
->> >
->> >> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
->> >> index 482c6c8..1b9f49e 100644
->> >> --- a/drivers/net/xen-netfront.c
->> >> +++ b/drivers/net/xen-netfront.c
->> > [...]
->> >> @@ -560,6 +572,65 @@ static u16 xennet_select_queue(struct net_device
->> >> *dev, struct sk_buff *skb,
->> >>  	return queue_idx;
->> >>  }
->> >>
->> >> +static int xennet_xdp_xmit_one(struct net_device *dev, struct
->> >> xdp_frame
->> >> *xdpf)
->> >> +{
->> >> +	struct netfront_info *np = netdev_priv(dev);
->> >> +	struct netfront_stats *tx_stats = this_cpu_ptr(np->tx_stats);
->> >> +	unsigned int num_queues = dev->real_num_tx_queues;
->> >> +	struct netfront_queue *queue = NULL;
->> >> +	struct xen_netif_tx_request *tx;
->> >> +	unsigned long flags;
->> >> +	int notify;
->> >> +
->> >> +	queue = &np->queues[smp_processor_id() % num_queues];
->> >> +
->> >> +	spin_lock_irqsave(&queue->tx_lock, flags);
->> >
->> > Why are you taking a lock per packet (xdp_frame)?
->> Hi Jesper,
->>
->> We have to protect shared ring indices.
->
-> Sure, I understand we need to protect the rings.
->
-> What I'm asking is why are doing this per-packet, and not once for the
-> entire bulk of packets?
+Hi Kalle,
 
-Now I see. I believe we can. Do you think it will give performance
-from the cache perspective?
->
-> (notice how xennet_xdp_xmit gets a bulk of packets)
->
->> >
->> >> +
->> >> +	tx = xennet_make_first_txreq(queue, NULL,
->> >> +				     virt_to_page(xdpf->data),
->> >> +				     offset_in_page(xdpf->data),
->> >> +				     xdpf->len);
->> >> +
->> >> +	RING_PUSH_REQUESTS_AND_CHECK_NOTIFY(&queue->tx, notify);
->> >> +	if (notify)
->> >> +		notify_remote_via_irq(queue->tx_irq);
->> >> +
->> >> +	u64_stats_update_begin(&tx_stats->syncp);
->> >> +	tx_stats->bytes += xdpf->len;
->> >> +	tx_stats->packets++;
->> >> +	u64_stats_update_end(&tx_stats->syncp);
->> >> +
->> >> +	xennet_tx_buf_gc(queue);
->> >> +
->> >> +	spin_unlock_irqrestore(&queue->tx_lock, flags);
->> >
->> > Is the irqsave/irqrestore variant really needed here?
->>
->> netpoll also invokes the tx completion handler.
->
-> I forgot about netpoll.
->
-> The netpoll code cannot call this code path xennet_xdp_xmit /
-> xennet_xdp_xmit_one, right?
->
-> Are the per-CPU ring queue's shared with normal network stack, that can
-> be called from netpoll code path?
+> 
+> Flavio Suligoi <f.suligoi@asem.it> writes:
+> 
+> > Fix typo: "EZUSB_REQUEST_TRIGER" --> "EZUSB_REQUEST_TRIGGER"
+> >
+> > Signed-off-by: Flavio Suligoi <f.suligoi@asem.it>
+> > ---
+> >  drivers/net/wireless/intersil/orinoco/orinoco_usb.c | 6 +++---
+> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> The prefix should be "orinoco_usb: ", but I can fix that.
 
-I meant that both xennet_start_xmit and xennet_poll_controller call
-xennet_tx_buf_gc
+ok, thank you!
 
->
->   queue = &np->queues[smp_processor_id() % num_queues];
->
->
->> >
->> >> +	return 0;
->> >> +}
->> >> +
->> >> +static int xennet_xdp_xmit(struct net_device *dev, int n,
->> >> +			   struct xdp_frame **frames, u32 flags)
->> >> +{
->> >> +	int drops = 0;
->> >> +	int i, err;
->> >> +
->> >> +	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
->> >> +		return -EINVAL;
->> >> +
->> >> +	for (i = 0; i < n; i++) {
->> >> +		struct xdp_frame *xdpf = frames[i];
->> >> +
->> >> +		if (!xdpf)
->> >> +			continue;
->> >> +		err = xennet_xdp_xmit_one(dev, xdpf);
->> >> +		if (err) {
->> >> +			xdp_return_frame_rx_napi(xdpf);
->> >> +			drops++;
->> >> +		}
->> >> +	}
->> >> +
->> >> +	return n - drops;
->> >> +}
->
+Flavio
+
+> 
 > --
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->
->
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpat
+> ches
