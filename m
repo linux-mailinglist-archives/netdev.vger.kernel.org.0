@@ -2,171 +2,315 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9DDA203252
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 10:46:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 041CD203247
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 10:40:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725976AbgFVIqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 04:46:04 -0400
-Received: from esa6.hc3370-68.iphmx.com ([216.71.155.175]:36212 "EHLO
-        esa6.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgFVIqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 04:46:04 -0400
-X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Mon, 22 Jun 2020 04:46:03 EDT
-Authentication-Results: esa6.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
-IronPort-SDR: 4TpWVnbtiqhHqTm8UcF3OpAb2ZHi7hzxMchVDlx84oPPC2OsOAjK2SGuA51o1ODupl2ywABbKs
- sTGTZwEKCHOWRk3j67f09FvjcIBqouRt4xz0ohd5suQxkDHg1yk+MHmJxOxAluIGqpnqFIF2OH
- 04YAJ30lc/a5kSPPrGakF2TBnKOjBMH1fUOJ6TzqIMxiVO3Q14HqKHl9cdBd1jOqInig3Z6IN1
- SRgzwpiMw315v8aBPVr76xaemjJo64jKEZKyF3QQUDhxS0lx2+OvdOzT0m389dE4n5hBxoFbH/
- 0mM=
-X-SBRS: 2.7
-X-MesageID: 20942116
-X-Ironport-Server: esa6.hc3370-68.iphmx.com
-X-Remote-IP: 162.221.158.21
-X-Policy: $RELAYED
-X-IronPort-AV: E=Sophos;i="5.75,266,1589256000"; 
-   d="scan'208";a="20942116"
-Date:   Mon, 22 Jun 2020 10:38:46 +0200
-From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
-To:     Anchal Agarwal <anchalag@amazon.com>
-CC:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "pavel@ucw.cz" <pavel@ucw.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
-Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and
- hibernation]
-Message-ID: <20200622083846.GF735@Air-de-Roger>
-References: <7FD7505E-79AA-43F6-8D5F-7A2567F333AB@amazon.com>
- <20200604070548.GH1195@Air-de-Roger>
- <20200616214925.GA21684@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200617083528.GW735@Air-de-Roger>
- <20200619234312.GA24846@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200619234312.GA24846@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-X-ClientProxiedBy: AMSPEX02CAS01.citrite.net (10.69.22.112) To
- AMSPEX02CL02.citrite.net (10.69.22.126)
+        id S1726899AbgFVIkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 04:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726061AbgFVIkj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 04:40:39 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6881C061794
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 01:40:38 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id g12so7275428pll.10
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 01:40:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=AyxQeC7+6hNTAAWq0x7WjVMU9DPaS1YaxTTs8F/Iaeg=;
+        b=eSvXVoi0IEvF7pG5vPeNZdtGzD2aNNBWVeFn7FGMSNKQRgLVEo1BnYMJiW0bU0pWnI
+         H9U95zVR52X1De0/QyELVzwZZDUrbiOE2pR7QpgUNPeSUySK5xo6c4drunDk5fnTSF/A
+         Utwkqy1OO3ZTMclmMH1CFm+uGIPRQnXjXEVOL3V2msDUh41DRSg/1AsxsXGCg8wavnhx
+         s3qfNT6GH4JZysp+7RuKZ54+7MZZw4yZ5amt3FRQkllCeIzy9yfauZICcBaNFpC51twr
+         adcfHU8fO3XaPrf5riybxbz/KLs/zlUDU+WewhAq3HZnrOdf/ao1dwWG/lMq0Vc1cexO
+         gBBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=AyxQeC7+6hNTAAWq0x7WjVMU9DPaS1YaxTTs8F/Iaeg=;
+        b=J1wWmzhtyibEM1Fgym4uLaKCgYWOe3EacKFONrqjinYCzr9ozgSiTwcYdjHS54xOUm
+         T4+OywsObf4QNjHe0Alqvvk9nFCbewfPIMkfpv1Hd1A5OUi2iI8S+PSiGwxQh+NRQVru
+         VdkNRyQF/djqrrvi3StZhlSZabfvCKAdaaDtmUZy7jzCs8DzXb/YVGfyEhOsME16hOhM
+         I2/N53xf91iUhUCruJS0pY0vUXEqtHCPPP4p4IpbHZDvQMYVIKRsGztVyGvlir/YBDzZ
+         pTtE4NUxvbOvktt4AAv/HIB0zCVp1V2coDT4nQhj4uvb6/2pFQSemWhMFnzVcRaBQf52
+         B03g==
+X-Gm-Message-State: AOAM530up6SwYEt8KSvNX4qu5kaasvdk/DZVRA2tnuhxlcoXDrgYhs9f
+        FRsHvgMJ/7Yo0mjJouskKjqWxgPUFGE=
+X-Google-Smtp-Source: ABdhPJzqapBwkV0tJbKdEzTpDoxrwG7rQwOR6ECUIgxhkI+4DjB4qq1fbOgD5vwsP3zE0xoR1AZ3bA==
+X-Received: by 2002:a17:902:c082:: with SMTP id j2mr18515121pld.70.1592815237807;
+        Mon, 22 Jun 2020 01:40:37 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id h3sm10704201pgk.67.2020.06.22.01.40.36
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 22 Jun 2020 01:40:37 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <hadi@cyberus.ca>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Tobias Brunner <tobias@strongswan.org>
+Subject: [PATCHv2 ipsec] xfrm: policy: match with both mark and mask on user interfaces
+Date:   Mon, 22 Jun 2020 16:40:29 +0800
+Message-Id: <e1e4d8b9fe775a7811afdbe0509d54286cf017e9.1592815229.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 19, 2020 at 11:43:12PM +0000, Anchal Agarwal wrote:
-> On Wed, Jun 17, 2020 at 10:35:28AM +0200, Roger Pau Monné wrote:
-> > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> > 
-> > 
-> > 
-> > On Tue, Jun 16, 2020 at 09:49:25PM +0000, Anchal Agarwal wrote:
-> > > On Thu, Jun 04, 2020 at 09:05:48AM +0200, Roger Pau Monné wrote:
-> > > > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> > > > On Wed, Jun 03, 2020 at 11:33:52PM +0000, Agarwal, Anchal wrote:
-> > > > >  CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> > > > >     > +             xenbus_dev_error(dev, err, "Freezing timed out;"
-> > > > >     > +                              "the device may become inconsistent state");
-> > > > >
-> > > > >     Leaving the device in this state is quite bad, as it's in a closed
-> > > > >     state and with the queues frozen. You should make an attempt to
-> > > > >     restore things to a working state.
-> > > > >
-> > > > > You mean if backend closed after timeout? Is there a way to know that? I understand it's not good to
-> > > > > leave it in this state however, I am still trying to find if there is a good way to know if backend is still connected after timeout.
-> > > > > Hence the message " the device may become inconsistent state".  I didn't see a timeout not even once on my end so that's why
-> > > > > I may be looking for an alternate perspective here. may be need to thaw everything back intentionally is one thing I could think of.
-> > > >
-> > > > You can manually force this state, and then check that it will behave
-> > > > correctly. I would expect that on a failure to disconnect from the
-> > > > backend you should switch the frontend to the 'Init' state in order to
-> > > > try to reconnect to the backend when possible.
-> > > >
-> > > From what I understand forcing manually is, failing the freeze without
-> > > disconnect and try to revive the connection by unfreezing the
-> > > queues->reconnecting to backend [which never got diconnected]. May be even
-> > > tearing down things manually because I am not sure what state will frontend
-> > > see if backend fails to to disconnect at any point in time. I assumed connected.
-> > > Then again if its "CONNECTED" I may not need to tear down everything and start
-> > > from Initialising state because that may not work.
-> > >
-> > > So I am not so sure about backend's state so much, lets say if  xen_blkif_disconnect fail,
-> > > I don't see it getting handled in the backend then what will be backend's state?
-> > > Will it still switch xenbus state to 'Closed'? If not what will frontend see,
-> > > if it tries to read backend's state through xenbus_read_driver_state ?
-> > >
-> > > So the flow be like:
-> > > Front end marks XenbusStateClosing
-> > > Backend marks its state as XenbusStateClosing
-> > >     Frontend marks XenbusStateClosed
-> > >     Backend disconnects calls xen_blkif_disconnect
-> > >        Backend fails to disconnect, the above function returns EBUSY
-> > >        What will be state of backend here?
-> > 
-> > Backend should stay in state 'Closing' then, until it can finish
-> > tearing down.
-> > 
-> It disconnects the ring after switching to connected state too. 
-> > >        Frontend did not tear down the rings if backend does not switches the
-> > >        state to 'Closed' in case of failure.
-> > >
-> > > If backend stays in CONNECTED state, then even if we mark it Initialised in frontend, backend
-> > 
-> > Backend will stay in state 'Closing' I think.
-> > 
-> > > won't be calling connect(). {From reading code in frontend_changed}
-> > > IMU, Initialising will fail since backend dev->state != XenbusStateClosed plus
-> > > we did not tear down anything so calling talk_to_blkback may not be needed
-> > >
-> > > Does that sound correct?
-> > 
-> > I think switching to the initial state in order to try to attempt a
-> > reconnection would be our best bet here.
-> >
-> It does not seems to work correctly, I get hung tasks all over and all the
-> requests to filesystem gets stuck. Backend does shows the state as connected
-> after xenbus_dev_suspend fails but I think there may be something missing.
-> I don't seem to get IO interrupts thereafter i.e hitting the function blkif_interrupts.
-> I think just marking it initialised may not be the only thing.
-> Here is a short description of what I am trying to do:
-> So, on timeout:
->     Switch XenBusState to "Initialized"
->     unquiesce/unfreeze the queues and return
->     mark info->connected = BLKIF_STATE_CONNECTED
+In commit ed17b8d377ea ("xfrm: fix a warning in xfrm_policy_insert_list"),
+it would take 'priority' to make a policy unique, and allow duplicated
+policies with different 'priority' to be added, which is not expected
+by userland, as Tobias reported in strongswan.
 
-If xenbus state is Initialized isn't it wrong to set info->connected
-== CONNECTED?
+To fix this duplicated policies issue, and also fix the issue in
+commit ed17b8d377ea ("xfrm: fix a warning in xfrm_policy_insert_list"),
+when doing add/del/get/update on user interfaces, this patch is to change
+to look up a policy with both mark and mask by doing:
 
-You should tear down all the internal state (like a proper close)?
+  mark.v == pol->mark.v && mark.m == pol->mark.m
 
->     return EBUSY
-> 
-> I even allowed blkfront_connect to switch state to "CONNECTED" rather me doing
-> it explicitly as mentioned above without re-allocating/re-registering the device
-> just to make sure bklfront_info object has all the right values.
-> Do you see anythign missing here?
+and leave the check:
 
-I'm afraid you will have to do a little bit of debugging here to
-figure out what's going on. You can add printk's to several places to
-see which path is taken, and why blkfront ends in such state.
+  (mark & pol->mark.m) == pol->mark.v
 
-Thanks, Roger.
+for tx/rx path only.
+
+As the userland expects an exact mark and mask match to manage policies.
+
+v1->v2:
+  - make xfrm_policy_mark_match inline and fix the changelog as
+    Tobias suggested.
+
+Fixes: 295fae568885 ("xfrm: Allow user space manipulation of SPD mark")
+Fixes: ed17b8d377ea ("xfrm: fix a warning in xfrm_policy_insert_list")
+Reported-by: Tobias Brunner <tobias@strongswan.org>
+Tested-by: Tobias Brunner <tobias@strongswan.org>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ include/net/xfrm.h     | 11 +++++++----
+ net/key/af_key.c       |  4 ++--
+ net/xfrm/xfrm_policy.c | 39 ++++++++++++++++-----------------------
+ net/xfrm/xfrm_user.c   | 18 +++++++++++-------
+ 4 files changed, 36 insertions(+), 36 deletions(-)
+
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index c7d213c..5c20953 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1630,13 +1630,16 @@ int xfrm_policy_walk(struct net *net, struct xfrm_policy_walk *walk,
+ 		     void *);
+ void xfrm_policy_walk_done(struct xfrm_policy_walk *walk, struct net *net);
+ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl);
+-struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, u32 mark, u32 if_id,
+-					  u8 type, int dir,
++struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net,
++					  const struct xfrm_mark *mark,
++					  u32 if_id, u8 type, int dir,
+ 					  struct xfrm_selector *sel,
+ 					  struct xfrm_sec_ctx *ctx, int delete,
+ 					  int *err);
+-struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u32 if_id, u8,
+-				     int dir, u32 id, int delete, int *err);
++struct xfrm_policy *xfrm_policy_byid(struct net *net,
++				     const struct xfrm_mark *mark, u32 if_id,
++				     u8 type, int dir, u32 id, int delete,
++				     int *err);
+ int xfrm_policy_flush(struct net *net, u8 type, bool task_valid);
+ void xfrm_policy_hash_rebuild(struct net *net);
+ u32 xfrm_get_acqseq(void);
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index b67ed3a..979c579 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2400,7 +2400,7 @@ static int pfkey_spddelete(struct sock *sk, struct sk_buff *skb, const struct sa
+ 			return err;
+ 	}
+ 
+-	xp = xfrm_policy_bysel_ctx(net, DUMMY_MARK, 0, XFRM_POLICY_TYPE_MAIN,
++	xp = xfrm_policy_bysel_ctx(net, &dummy_mark, 0, XFRM_POLICY_TYPE_MAIN,
+ 				   pol->sadb_x_policy_dir - 1, &sel, pol_ctx,
+ 				   1, &err);
+ 	security_xfrm_policy_free(pol_ctx);
+@@ -2651,7 +2651,7 @@ static int pfkey_spdget(struct sock *sk, struct sk_buff *skb, const struct sadb_
+ 		return -EINVAL;
+ 
+ 	delete = (hdr->sadb_msg_type == SADB_X_SPDDELETE2);
+-	xp = xfrm_policy_byid(net, DUMMY_MARK, 0, XFRM_POLICY_TYPE_MAIN,
++	xp = xfrm_policy_byid(net, &dummy_mark, 0, XFRM_POLICY_TYPE_MAIN,
+ 			      dir, pol->sadb_x_policy_id, delete, &err);
+ 	if (xp == NULL)
+ 		return -ENOENT;
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 564aa649..6847b35 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -1433,14 +1433,10 @@ static void xfrm_policy_requeue(struct xfrm_policy *old,
+ 	spin_unlock_bh(&pq->hold_queue.lock);
+ }
+ 
+-static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
+-				   struct xfrm_policy *pol)
++static inline bool xfrm_policy_mark_match(const struct xfrm_mark *mark,
++					  struct xfrm_policy *pol)
+ {
+-	if (policy->mark.v == pol->mark.v &&
+-	    policy->priority == pol->priority)
+-		return true;
+-
+-	return false;
++	return mark->v == pol->mark.v && mark->m == pol->mark.m;
+ }
+ 
+ static u32 xfrm_pol_bin_key(const void *data, u32 len, u32 seed)
+@@ -1503,7 +1499,7 @@ static void xfrm_policy_insert_inexact_list(struct hlist_head *chain,
+ 		if (pol->type == policy->type &&
+ 		    pol->if_id == policy->if_id &&
+ 		    !selector_cmp(&pol->selector, &policy->selector) &&
+-		    xfrm_policy_mark_match(policy, pol) &&
++		    xfrm_policy_mark_match(&policy->mark, pol) &&
+ 		    xfrm_sec_ctx_match(pol->security, policy->security) &&
+ 		    !WARN_ON(delpol)) {
+ 			delpol = pol;
+@@ -1538,7 +1534,7 @@ static struct xfrm_policy *xfrm_policy_insert_list(struct hlist_head *chain,
+ 		if (pol->type == policy->type &&
+ 		    pol->if_id == policy->if_id &&
+ 		    !selector_cmp(&pol->selector, &policy->selector) &&
+-		    xfrm_policy_mark_match(policy, pol) &&
++		    xfrm_policy_mark_match(&policy->mark, pol) &&
+ 		    xfrm_sec_ctx_match(pol->security, policy->security) &&
+ 		    !WARN_ON(delpol)) {
+ 			if (excl)
+@@ -1610,9 +1606,8 @@ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
+ EXPORT_SYMBOL(xfrm_policy_insert);
+ 
+ static struct xfrm_policy *
+-__xfrm_policy_bysel_ctx(struct hlist_head *chain, u32 mark, u32 if_id,
+-			u8 type, int dir,
+-			struct xfrm_selector *sel,
++__xfrm_policy_bysel_ctx(struct hlist_head *chain, const struct xfrm_mark *mark,
++			u32 if_id, u8 type, int dir, struct xfrm_selector *sel,
+ 			struct xfrm_sec_ctx *ctx)
+ {
+ 	struct xfrm_policy *pol;
+@@ -1623,7 +1618,7 @@ __xfrm_policy_bysel_ctx(struct hlist_head *chain, u32 mark, u32 if_id,
+ 	hlist_for_each_entry(pol, chain, bydst) {
+ 		if (pol->type == type &&
+ 		    pol->if_id == if_id &&
+-		    (mark & pol->mark.m) == pol->mark.v &&
++		    xfrm_policy_mark_match(mark, pol) &&
+ 		    !selector_cmp(sel, &pol->selector) &&
+ 		    xfrm_sec_ctx_match(ctx, pol->security))
+ 			return pol;
+@@ -1632,11 +1627,10 @@ __xfrm_policy_bysel_ctx(struct hlist_head *chain, u32 mark, u32 if_id,
+ 	return NULL;
+ }
+ 
+-struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, u32 mark, u32 if_id,
+-					  u8 type, int dir,
+-					  struct xfrm_selector *sel,
+-					  struct xfrm_sec_ctx *ctx, int delete,
+-					  int *err)
++struct xfrm_policy *
++xfrm_policy_bysel_ctx(struct net *net, const struct xfrm_mark *mark, u32 if_id,
++		      u8 type, int dir, struct xfrm_selector *sel,
++		      struct xfrm_sec_ctx *ctx, int delete, int *err)
+ {
+ 	struct xfrm_pol_inexact_bin *bin = NULL;
+ 	struct xfrm_policy *pol, *ret = NULL;
+@@ -1703,9 +1697,9 @@ struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, u32 mark, u32 if_id,
+ }
+ EXPORT_SYMBOL(xfrm_policy_bysel_ctx);
+ 
+-struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u32 if_id,
+-				     u8 type, int dir, u32 id, int delete,
+-				     int *err)
++struct xfrm_policy *
++xfrm_policy_byid(struct net *net, const struct xfrm_mark *mark, u32 if_id,
++		 u8 type, int dir, u32 id, int delete, int *err)
+ {
+ 	struct xfrm_policy *pol, *ret;
+ 	struct hlist_head *chain;
+@@ -1720,8 +1714,7 @@ struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u32 if_id,
+ 	ret = NULL;
+ 	hlist_for_each_entry(pol, chain, byidx) {
+ 		if (pol->type == type && pol->index == id &&
+-		    pol->if_id == if_id &&
+-		    (mark & pol->mark.m) == pol->mark.v) {
++		    pol->if_id == if_id && xfrm_policy_mark_match(mark, pol)) {
+ 			xfrm_pol_hold(pol);
+ 			if (delete) {
+ 				*err = security_xfrm_policy_delete(
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index e6cfaa6..fbb7d9d0 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -1863,7 +1863,6 @@ static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	struct km_event c;
+ 	int delete;
+ 	struct xfrm_mark m;
+-	u32 mark = xfrm_mark_get(attrs, &m);
+ 	u32 if_id = 0;
+ 
+ 	p = nlmsg_data(nlh);
+@@ -1880,8 +1879,11 @@ static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (attrs[XFRMA_IF_ID])
+ 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
+ 
++	xfrm_mark_get(attrs, &m);
++
+ 	if (p->index)
+-		xp = xfrm_policy_byid(net, mark, if_id, type, p->dir, p->index, delete, &err);
++		xp = xfrm_policy_byid(net, &m, if_id, type, p->dir,
++				      p->index, delete, &err);
+ 	else {
+ 		struct nlattr *rt = attrs[XFRMA_SEC_CTX];
+ 		struct xfrm_sec_ctx *ctx;
+@@ -1898,8 +1900,8 @@ static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			if (err)
+ 				return err;
+ 		}
+-		xp = xfrm_policy_bysel_ctx(net, mark, if_id, type, p->dir, &p->sel,
+-					   ctx, delete, &err);
++		xp = xfrm_policy_bysel_ctx(net, &m, if_id, type, p->dir,
++					   &p->sel, ctx, delete, &err);
+ 		security_xfrm_policy_free(ctx);
+ 	}
+ 	if (xp == NULL)
+@@ -2166,7 +2168,6 @@ static int xfrm_add_pol_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	u8 type = XFRM_POLICY_TYPE_MAIN;
+ 	int err = -ENOENT;
+ 	struct xfrm_mark m;
+-	u32 mark = xfrm_mark_get(attrs, &m);
+ 	u32 if_id = 0;
+ 
+ 	err = copy_from_user_policy_type(&type, attrs);
+@@ -2180,8 +2181,11 @@ static int xfrm_add_pol_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (attrs[XFRMA_IF_ID])
+ 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
+ 
++	xfrm_mark_get(attrs, &m);
++
+ 	if (p->index)
+-		xp = xfrm_policy_byid(net, mark, if_id, type, p->dir, p->index, 0, &err);
++		xp = xfrm_policy_byid(net, &m, if_id, type, p->dir, p->index,
++				      0, &err);
+ 	else {
+ 		struct nlattr *rt = attrs[XFRMA_SEC_CTX];
+ 		struct xfrm_sec_ctx *ctx;
+@@ -2198,7 +2202,7 @@ static int xfrm_add_pol_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			if (err)
+ 				return err;
+ 		}
+-		xp = xfrm_policy_bysel_ctx(net, mark, if_id, type, p->dir,
++		xp = xfrm_policy_bysel_ctx(net, &m, if_id, type, p->dir,
+ 					   &p->sel, ctx, 0, &err);
+ 		security_xfrm_policy_free(ctx);
+ 	}
+-- 
+2.1.0
+
