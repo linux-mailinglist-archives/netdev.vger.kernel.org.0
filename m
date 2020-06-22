@@ -2,123 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09E2A203308
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:13:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1AFA20332A
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:19:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726847AbgFVJN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 05:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726417AbgFVJNZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 05:13:25 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E30AC061794
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 02:13:25 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id mb16so17266590ejb.4
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 02:13:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=11fZbXrOPoHv0u2rPxbmmeFfnAoXQpO/h1fiZOIZ0jE=;
-        b=h8Gvqy6ABtYGbZS21QK1gBvhTh8t+2XefQolQA91DJzK081+VfNLyji+Jiosp3i5lU
-         tQYzNf3b71AmBCjVzD+OIfR4zcZDZ79olkyE9ngG4KFyjktBeeSv+SrqJNbnFaQYZlvb
-         7DT8jXltk0jNdfjVAtempMzGnfvHTo488R5yrmszZ197gVunfQfL0YkPnX6l9qMJzhRi
-         xXQw8glZfagFLfRyJTMqzIWQ6lOfPndI/QyMP6LxIpOXA49VvO31v34G2OZV0ktHgHpM
-         DX5PXXjWn56fRDHddQtNF/bmxNde3N4PLgHVLzc9mbD/v2DOdiZwZJMdCwRol9FsGC7e
-         HzHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=11fZbXrOPoHv0u2rPxbmmeFfnAoXQpO/h1fiZOIZ0jE=;
-        b=LCYlYjxhn4LAh7HeAnmUDyb1+4/BG+HbybmO7WW2YYuYfEUNTCoTrkDERK7iLias/v
-         km0Gs358yinem6aiHmOlObVrya+J42ZXIwwpMO92lq5qT1lee1YUUFAt2bIdD9ILITbP
-         qK/xonhQnymXeBae/TtgLVz8AM+Yf/5MSfcd2/tejlWraILTMa4OiXrs/2XFA2RzhTBK
-         PnARU7bW3ajGAqjoNTR5dZjT/KXyqjw0h1CB4Nkm0DF1uRQhDrEtn4eI+FbALrt5QZEf
-         dNn/qTQZRjiRFu4HFSS56D/yYKnwRXJx4eTALbLTGHI9aEFO2iFtJdG3xolEolm439UO
-         zTkw==
-X-Gm-Message-State: AOAM530Js6iAREWOsC8blkL6BturzdI+Zze/nIJxq09ByO1RxYcbYPsH
-        LGU+TT4WWxvWGe5IgdHA7vGMsQ==
-X-Google-Smtp-Source: ABdhPJy+2pt1tGrfRXH5NDRCeh2YhTlxlkUPVkSz8MiNVvUGaOXMwpAur1ri/CZp247LtZ/0f2R4Fw==
-X-Received: by 2002:a17:906:2bd1:: with SMTP id n17mr14391596ejg.147.1592817203241;
-        Mon, 22 Jun 2020 02:13:23 -0700 (PDT)
-Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id w17sm853510eju.42.2020.06.22.02.13.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jun 2020 02:13:22 -0700 (PDT)
-Date:   Mon, 22 Jun 2020 11:13:21 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     wenxu@ucloud.cn, netdev@vger.kernel.org, pablo@netfilter.org,
-        vladbu@mellanox.com
-Subject: Re: [PATCH net v5 0/4] several fixes for indirect flow_blocks offload
-Message-ID: <20200622091320.GA24715@netronome.com>
-References: <1592484551-16188-1-git-send-email-wenxu@ucloud.cn>
- <20200619.201342.2288126609984082133.davem@davemloft.net>
+        id S1726941AbgFVJTV convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Jun 2020 05:19:21 -0400
+Received: from gloria.sntech.de ([185.11.138.130]:48852 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725907AbgFVJTV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 05:19:21 -0400
+Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1jnIbd-0004j2-S3; Mon, 22 Jun 2020 11:19:09 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net
+Cc:     kuba@kernel.org, robh+dt@kernel.org, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        christoph.muellner@theobroma-systems.com,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH v5 3/3] net: phy: mscc: handle the clkout control on some phy variants
+Date:   Mon, 22 Jun 2020 11:19:08 +0200
+Message-ID: <12647360.rPbPzDV4QW@diego>
+In-Reply-To: <20200618164015.GF1551@shell.armlinux.org.uk>
+References: <20200618121139.1703762-1-heiko@sntech.de> <1723854.ZAnHLLU950@diego> <20200618164015.GF1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200619.201342.2288126609984082133.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="iso-8859-1"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 19, 2020 at 08:13:42PM -0700, David Miller wrote:
-> From: wenxu@ucloud.cn
-> Date: Thu, 18 Jun 2020 20:49:07 +0800
+Am Donnerstag, 18. Juni 2020, 18:40:15 CEST schrieb Russell King - ARM Linux admin:
+> On Thu, Jun 18, 2020 at 06:01:29PM +0200, Heiko Stübner wrote:
+> > Am Donnerstag, 18. Juni 2020, 17:47:48 CEST schrieb Russell King - ARM Linux admin:
+> > > On Thu, Jun 18, 2020 at 05:41:54PM +0200, Heiko Stübner wrote:
+> > > > Though I'm not sure how this fits in the whole bringup of ethernet phys.
+> > > > Like the phy is dependent on the underlying ethernet controller to
+> > > > actually turn it on.
+> > > > 
+> > > > I guess we should check the phy-state and if it's not accessible, just
+> > > > keep the values and if it's in a suitable state do the configuration.
+> > > > 
+> > > > Calling a vsc8531_config_clkout() from both the vsc8531_config_init()
+> > > > as well as the clk_(un-)prepare  and clk_set_rate functions and being
+> > > > protected by a check against phy_is_started() ?
+> > > 
+> > > It sounds like it doesn't actually fit the clk API paradym then.  I
+> > > see that Rob suggested it, and from the DT point of view, it makes
+> > > complete sense, but then if the hardware can't actually be used in
+> > > the way the clk API expects it to be used, then there's a semantic
+> > > problem.
+> > > 
+> > > What is this clock used for?
+> > 
+> > It provides a source for the mac-clk for the actual transfers, here to
+> > provide the 125MHz clock needed for the RGMII interface .
+> > 
+> > So right now the old rk3368-lion devicetree just declares a stub
+> > fixed-clock and instructs the soc's clock controller to use it [0] .
+> > And in the cover-letter here, I show the update variant with using
+> > the clock defined here.
+> > 
+> > 
+> > I've added the idea from my previous mail like shown below [1].
+> > which would take into account the phy-state.
+> > 
+> > But I guess I'll wait for more input before spamming people with v6.
 > 
-> > From: wenxu <wenxu@ucloud.cn>
-> > 
-> > v2:
-> > patch2: store the cb_priv of representor to the flow_block_cb->indr.cb_priv
-> > in the driver. And make the correct check with the statments
-> > this->indr.cb_priv == cb_priv
-> > 
-> > patch4: del the driver list only in the indriect cleanup callbacks
-> > 
-> > v3:
-> > add the cover letter and changlogs.
-> > 
-> > v4:
-> > collapsed 1/4, 2/4, 4/4 in v3 to one fix
-> > Add the prepare patch 1 and 2
-> > 
-> > v5:
-> > patch1: place flow_indr_block_cb_alloc() right before
-> > flow_indr_dev_setup_offload() to avoid moving flow_block_indr_init()
-> > 
-> > This series fixes commit 1fac52da5942 ("net: flow_offload: consolidate
-> > indirect flow_block infrastructure") that revists the flow_block
-> > infrastructure.
-> > 
-> > patch #1 #2: prepare for fix patch #3
-> > add and use flow_indr_block_cb_alloc/remove function
-> > 
-> > patch #3: fix flow_indr_dev_unregister path
-> > If the representor is removed, then identify the indirect flow_blocks
-> > that need to be removed by the release callback and the port representor
-> > structure. To identify the port representor structure, a new 
-> > indr.cb_priv field needs to be introduced. The flow_block also needs to
-> > be removed from the driver list from the cleanup path
-> > 
-> > 
-> > patch#4 fix block->nooffloaddevcnt warning dmesg log.
-> > When a indr device add in offload success. The block->nooffloaddevcnt
-> > should be 0. After the representor go away. When the dir device go away
-> > the flow_block UNBIND operation with -EOPNOTSUPP which lead the warning
-> > demesg log. 
-> > The block->nooffloaddevcnt should always count for indr block.
-> > even the indr block offload successful. The representor maybe
-> > gone away and the ingress qdisc can work in software mode.
+> Let's get a handle on exactly what this is.
 > 
-> Series applied, thank you.
+> The RGMII bus has two clocks: RXC and TXC, which are clocked at one
+> of 125MHz, 25MHz or 2.5MHz depending on the RGMII data rate.  Some
+> PHYs replace TXC with GTX clock, which always runs at 125MHz.  These
+> clocks are not what you're referring to.
+> 
+> You are referring to another commonly provided clock between the MAC
+> and the PHY, something which is not unique to your PHY.
+> 
+> We seem to be heading down a path where different PHYs end up doing
+> different things in DT for what is basically the same hardware setup,
+> which really isn't good. :(
+> 
+> We have at803x using:
+> 
+> qca,clk-out-frequency
+> qca,clk-out-strength
+> qca,keep-pll-enabled
+> 
+> which are used to control the CLK_25M output pin on the device, which
+> may be used to provide a reference clock for the MAC side, selecting
+> between 25M, 50M, 62.5M and 125MHz.  This was introduced in November
+> 2019, so not that long ago.
 
-Hi Dave,
+Because it was not that old, was the reason I followed that example in
+my v1 :-) 
 
-when you get a chance could you pull net into net-next
-to get these changes there?
+And Andrew then suggested to at least try to use a common property
+for the target frequency that other phys could migrate to.
 
-Thanks!
+
+> Broadcom PHYs configure their 125MHz clock through the PHY device
+> flags passed from the MAC at attach/connect time.
+> 
+> There's the dp83867 and dp83869 configuration (I'm not sure I can
+> make sense of it from reading the code) using ti,clk-output-sel -
+> but it looks like it's the same kind of thing.  Introduced February
+> 2018 into one driver, and November 2019 in the other.
+> 
+> It seems the Micrel PHYs produce a 125MHz clock irrespective of any
+> configuration (maybe configured by firmware, or hardware strapping?)
+> 
+> So it seems we have four ways of doing the same thing today, and now
+> the suggestion is to implement a fifth different way.  I think there
+> needs to be some consolidation here, maybe choosing one approach and
+> sticking with it.
+> 
+> Hence, I disagree with Rob - we don't need a fifth approach, we need
+> to choose one approach and decide that's our policy for this and
+> apply it evenly across the board, rather than making up something
+> different each time a new PHY comes along.
+
+@Dave, @Andrew: what's you opinion here?
+
+As Russell above (and Florian in the binding patch) pointed out,
+integrating this into the clock-framework may prove difficult not only
+for consistency but also for dependency reasons.
+
+Personally I'm fine with either solution, I just want to achieve a working
+ethernet on my board :-D .
+
+
+Thanks
+Heiko
+
+
