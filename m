@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 700AE203CC2
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 18:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 061E5203CC9
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 18:43:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729718AbgFVQmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 12:42:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49346 "EHLO
+        id S1729835AbgFVQnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 12:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729260AbgFVQmN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 12:42:13 -0400
+        with ESMTP id S1729458AbgFVQnV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 12:43:21 -0400
 Received: from casper.infradead.org (unknown [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56417C061573;
-        Mon, 22 Jun 2020 09:42:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4126C061573;
+        Mon, 22 Jun 2020 09:43:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
         In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
         Reply-To:Cc:Content-ID:Content-Description;
-        bh=zpd8SSxXRoaX+cZGjnG22oKdAJbs3fN7H0/b3RHBKt8=; b=queh67X456ZLTSW2hrPlNRjujn
-        S4zTz3+xV4epDsmHkiRfj4BbBRqvICvKcWrmZpQ9JNzVG072+8K3vKA0jf90FFQETjYcByXUq3Fjm
-        U/CbTEp75W1O+mYGxzDnU60ThUDyqTEaFnUCtHFi0elzCS8c6gfzp3VSXDfnsHTk4vynrA6r6SVR0
-        fOkFr8u8/6pBzD3WiU7wpDgb1oA0+EpN3KZ77fI6eRyNn4mw3MGe611dTr2xfDU60WNR3GlfmE++/
-        ODHhHPDw6a4QCX13/UIuyAfUrAlHtvwEg/tPmo+C4rZYBWY1Q10rvbx0GwWNQNmOOQsVRivi80kPk
-        hOLqFY5A==;
+        bh=CaWTfYYdh6pgg+kLLYceaxurrT4fdWAXB5VzJ6H/HiY=; b=P2K7//hF5X8GRKGgwW+CrGu9PQ
+        8PNkj2zc+d53x14aH4UACX4ayn/1LH4vyXz++oUmlOfXaWiRhP/LXZe/fQRX6zXLnlFIdTC9BfoM4
+        c/x1xMnQZ2378YnXhtPHacHNr6pqum23NPrJbZZtO+cP8/TIsARCI+iTtTFyqGdlkclbvQAk40Add
+        eyBkRcMnG+VzCG9lX756znLjB3MAMUxCaEs9XmH64xCTVly8Buca0nlg0/PFsiEjmqBhcnUrhM0YM
+        chsk7a11HgtmExEUcXUVms8rZzYDQ7FqoeG6FFh6OmkqLUK3gO5yh4VTjXFZIXMHKCcXRrsH2NV6L
+        NYRDSqhw==;
 Received: from [2601:1c0:6280:3f0::19c2]
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jnPW8-0007je-Ol; Mon, 22 Jun 2020 16:41:57 +0000
-Subject: Re: [PATCH 3/5] Huawei BMA: Adding Huawei BMA driver: host_veth_drv
+        id 1jnPXE-0007n0-BS; Mon, 22 Jun 2020 16:43:04 +0000
+Subject: Re: [PATCH 4/5] Huawei BMA: Adding Huawei BMA driver: cdev_veth_drv
 To:     yunaixin03610@163.com, netdev@vger.kernel.org, davem@davemloft.net,
         linux-kernel@vger.kernel.org, wuguanping@huawei.com,
         wangqindong@huawei.com
 References: <20200622160311.1533-1-yunaixin03610@163.com>
- <20200622160311.1533-4-yunaixin03610@163.com>
+ <20200622160311.1533-5-yunaixin03610@163.com>
 From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <11359034-656c-2fe6-aa5d-b609ed39b477@infradead.org>
-Date:   Mon, 22 Jun 2020 09:41:54 -0700
+Message-ID: <5a1badbb-19f7-09b5-0bb6-c2624e227b80@infradead.org>
+Date:   Mon, 22 Jun 2020 09:43:00 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <20200622160311.1533-4-yunaixin03610@163.com>
+In-Reply-To: <20200622160311.1533-5-yunaixin03610@163.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -50,25 +50,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On 6/22/20 9:03 AM, yunaixin03610@163.com wrote:
 > diff --git a/drivers/net/ethernet/huawei/bma/Makefile b/drivers/net/ethernet/huawei/bma/Makefile
-> index c9bbcbf2a388..e6e46d820082 100644
+> index e6e46d820082..c626618f47fb 100644
 > --- a/drivers/net/ethernet/huawei/bma/Makefile
 > +++ b/drivers/net/ethernet/huawei/bma/Makefile
-> @@ -3,4 +3,5 @@
->  # 
->  
+> @@ -5,3 +5,4 @@
 >  obj-$(CONFIG_BMA) += edma_drv/
-> -obj-$(CONFIG_BMA) += cdev_drv/
+>  obj-$(CONFIG_BMA) += cdev_drv/
+>  obj-$(CONFIG_BMA) += veth_drv/
+> +obj-$(CONFIG_BMA) += cdev_veth_drv/
 > \ No newline at end of file
 
 Please fix the "No newline" warning.
 
-> +obj-$(CONFIG_BMA) += cdev_drv/
-> +obj-$(CONFIG_BMA) += veth_drv/
-> diff --git a/drivers/net/ethernet/huawei/bma/veth_drv/Kconfig b/drivers/net/ethernet/huawei/bma/veth_drv/Kconfig
+> diff --git a/drivers/net/ethernet/huawei/bma/cdev_veth_drv/Kconfig b/drivers/net/ethernet/huawei/bma/cdev_veth_drv/Kconfig
 > new file mode 100644
 > index 000000000000..97829c5487c2
 > --- /dev/null
-> +++ b/drivers/net/ethernet/huawei/bma/veth_drv/Kconfig
+> +++ b/drivers/net/ethernet/huawei/bma/cdev_veth_drv/Kconfig
 > @@ -0,0 +1,11 @@
 > +#
 > +# Huawei BMA software driver configuration
