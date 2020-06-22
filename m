@@ -2,88 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66666203B00
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 17:36:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6697203B6C
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 17:47:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729167AbgFVPgD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Jun 2020 11:36:03 -0400
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:26739 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729150AbgFVPgC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 11:36:02 -0400
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 04959240002;
-        Mon, 22 Jun 2020 15:35:59 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1729576AbgFVPr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 11:47:29 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:41669 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729250AbgFVPr2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 11:47:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592840846;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WSF8UMj0qG7jLVHbYktfjNnfEK9wsId39MxDX59I23o=;
+        b=gfkpd0ZHZrZnZlsvk27rh3NQcdJMjC3w8cfaS+B+6puKzg0gobeCNp2Xc36fkc1KabRELO
+        FEzlzuSo+umkvTp9kH5OWsSvPAp57/g+3uBVzrdU5MxKXYPo7560p//5bkU0sGObokUikt
+        KRqzVrs1+1bqmwG/C5lvGVWnPwya/bo=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-480-uKAD75PxNfaMG56QYDShwg-1; Mon, 22 Jun 2020 11:47:24 -0400
+X-MC-Unique: uKAD75PxNfaMG56QYDShwg-1
+Received: by mail-ot1-f69.google.com with SMTP id d2so2722709otk.9
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 08:47:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WSF8UMj0qG7jLVHbYktfjNnfEK9wsId39MxDX59I23o=;
+        b=Ih6Dk0DJYpn+TtHiJ/LyN800wONpHpRyX4u5w7RqRMhy+uCBFX3n246G+x4Xdtl8TT
+         x3UfXMvmUhx/DR+C3jTMs8shaHWCJS9nLKNhyZ9YHVAazgM3yEaOX84qxmf9RnkUfvgl
+         4dLEsjKxKzxjgt1jGyJ2sR5r9DPAAXxQA9rAADJJIHt+tNlTijIba+GV55kfCUV8Iy9i
+         Cr1P9cwKbAJXBgpJtZjKesUvfCTiE/FVTi0p9QOO8V0UzwZXkbtkkLTd0UN0qGQylwiD
+         t719Jlx8XotImfqbNT/inaeaSQB20RVrdJapCF8sySkfaMaB7M7Pi8rS5ygCqtWzw1V6
+         r/Vw==
+X-Gm-Message-State: AOAM532t0Gq3PJ3wb7HsTdXQd/DQLr17LAccQLOy0867Ws5LkmZuGIP0
+        FRHgrSItbhZLhbQWoM/sHRqtC9wvgHgw0oPkfxO/9BFAhm1ljEkERh/wpvB1JvkC6623s9okejH
+        uYZjdTB1irSrNPZx3CjvwquqB9rEuzHf0
+X-Received: by 2002:aca:3841:: with SMTP id f62mr12481359oia.73.1592840843776;
+        Mon, 22 Jun 2020 08:47:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwBhgHwGj1eiXfkBF+0eixO3+eR7Q3mDOxpcP81LLNNTZ6PrhQY/bBTskBdBKEEzM8q3mO6eXhRshbbN0Q2cjU=
+X-Received: by 2002:aca:3841:: with SMTP id f62mr12481346oia.73.1592840843518;
+ Mon, 22 Jun 2020 08:47:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <7520915d32e185d2ca29f085b988d55e@0leil.net>
-References: <20200619122300.2510533-1-antoine.tenart@bootlin.com> <20200619122300.2510533-7-antoine.tenart@bootlin.com> <7520915d32e185d2ca29f085b988d55e@0leil.net>
-Subject: Re: [PATCH net-next v3 6/8] net: phy: mscc: timestamping and PHC support
-To:     Quentin Schulz <foss@0leil.net>
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, richardcochran@gmail.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com
-Message-ID: <159284015920.1456598.1495380569655598691@kwain>
-Date:   Mon, 22 Jun 2020 17:35:59 +0200
+References: <20200618090556.pepjdbnba2gqzcbe@butterfly.localdomain>
+ <20200618111859.GC698688@lore-desk.lan> <20200619150132.2zrc3ojqhtbn432u@butterfly.localdomain>
+ <20200621205412.GB271428@localhost.localdomain> <CAHcwAbR4govGK3RPyfKWRgFRhFanWtpJLrB_PEjcoiBDJ3_Adg@mail.gmail.com>
+ <20200622145338.GB27892@localhost.localdomain>
+In-Reply-To: <20200622145338.GB27892@localhost.localdomain>
+From:   Oleksandr Natalenko <oleksandr@redhat.com>
+Date:   Mon, 22 Jun 2020 17:47:12 +0200
+Message-ID: <CAHcwAbR1W_aOaozr=m48UCWKPr1m71bk-c+kwkGd6A2GTLGF6A@mail.gmail.com>
+Subject: Re: mt7612 suspend/resume issue
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Quentin,
+On Mon, Jun 22, 2020 at 4:53 PM Lorenzo Bianconi
+<lorenzo.bianconi@redhat.com> wrote:
+> > On Sun, Jun 21, 2020 at 10:54 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > > > > +static int __maybe_unused
+> > > > > +mt76x2e_suspend(struct pci_dev *pdev, pm_message_t state)
+> > > > > +{
+> > > > > +   struct mt76_dev *mdev = pci_get_drvdata(pdev);
+> > > > > +   struct mt76x02_dev *dev = container_of(mdev, struct mt76x02_dev, mt76);
+> > > > > +   int i, err;
+> > >
+> > > can you please double-check what is the PCI state requested during suspend?
+> >
+> > Do you mean ACPI S3 (this is the state the system enters)?  If not,
+> > what should I check and where?
+>
+> yes, right. Just for debugging, can you please force the card in PCI_D0 during the
+> suspend?
 
-Quoting Quentin Schulz (2020-06-21 19:35:20)
-> On 2020-06-19 14:22, Antoine Tenart wrote:
-> [...]
-> > @@ -999,9 +1553,35 @@ int vsc8584_ptp_probe(struct phy_device *phydev)
-> >       if (!vsc8531->ptp)
-> >               return -ENOMEM;
-> > 
-> > +     mutex_init(&vsc8531->phc_lock);
-> >       mutex_init(&vsc8531->ts_lock);
-> > 
-> > +     /* Retrieve the shared load/save GPIO. Request it as non exclusive as
-> > +      * the same GPIO can be requested by all the PHYs of the same 
-> > package.
-> > +      * Ths GPIO must be used with the phc_lock taken (the lock is shared
-> 
-> Typo + wrong lock named in the comment, instead:
-> 
->          * This GPIO must be used with the gpio_lock taken (the lock is shared
-> 
-> Though technically both are taken when access to the GPIO is requested 
-> AFAICT.
+Do you want me to do this:
 
-That's right, thanks for pointing this out! I'll fix it for v4.
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+index 5543e242fb9b..e558342cce03 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+@@ -119,9 +119,8 @@ mt76x2e_suspend(struct pci_dev *pdev, pm_message_t state)
 
-> Also on another note, maybe we could actually make vsc8531->base_addr
-> be a part of vsc85xx_shared_private structure.
-> 
-> We would still need to compute it to pass it to devm_phy_package_join
-> but it can easily be returned by vsc8584_get_base_addr instead of the
-> current void and it'd put all the things used for all PHYs in the
-> package at the same place.
+     mt76x02_dma_reset(dev);
 
-We actually do not use directly the base_addr anymore from within the
-driver, thanks to the shared package conversion. We're now using
-__phy_package_write/__phy_package_read which are using the base address.
+-    pci_enable_wake(pdev, pci_choose_state(pdev, state), true);
+     pci_save_state(pdev);
+-    err = pci_set_power_state(pdev, pci_choose_state(pdev, state));
++    err = pci_set_power_state(pdev, PCI_D0);
+     if (err)
+         goto restore;
 
-So the move could be to remove it from the vsc8531_private. If we were
-to do it, we would need to find a clean solution: it's still part of a
-structure as multiple values are computed in vsc8584_get_base_addr, and
-it's a lot easier and cleaner to have them all in the same struct. Also,
-that have nothing to do with the current series :)
-
-Thanks,
-Antoine
+?
 
 -- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+  Best regards,
+    Oleksandr Natalenko (post-factum)
+    Principal Software Maintenance Engineer
+
