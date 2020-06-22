@@ -2,104 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5709F203FF0
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 21:17:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1802203FF4
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 21:18:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728174AbgFVTRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 15:17:02 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:58306 "EHLO mail.bugwerft.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726308AbgFVTRC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 15:17:02 -0400
-Received: from [192.168.178.106] (p57bc9787.dip0.t-ipconnect.de [87.188.151.135])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 4E21642B88B;
-        Mon, 22 Jun 2020 19:17:00 +0000 (UTC)
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: Allow MAC configuration for ports
- with internal PHY
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com
-References: <20200622183443.3355240-1-daniel@zonque.org>
- <20200622184115.GE405672@lunn.ch>
- <b8a67f7d-9854-9854-3f53-983dd4eb8fda@zonque.org>
- <20200622185837.GN1551@shell.armlinux.org.uk>
-From:   Daniel Mack <daniel@zonque.org>
-Message-ID: <bb89fbef-bde7-2a7f-9089-bbe86323dd63@zonque.org>
-Date:   Mon, 22 Jun 2020 21:16:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728281AbgFVTSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 15:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726308AbgFVTSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 15:18:30 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7892C061573;
+        Mon, 22 Jun 2020 12:18:30 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id v19so11096732qtq.10;
+        Mon, 22 Jun 2020 12:18:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zUWrxO8L9/kU1qSxDxQyWOIHTSXGOu7H1Ujb2Wnde8U=;
+        b=X6OYBvfVBRjP2/eZ360mQpBpFJthSAde4QnXKW03durSaAq2YNUGlIX9ohL7Ct6fly
+         42q8UHU6NEqpaQfF59bTT22+wyFH3jW6NTHvbm2g5s1XiUJ9kiYsub+cT/Eyl10yMauw
+         4DEKeEM6rhJ/8xe/np4wWSG9j8gGPhXrSvau25rKXt/eOqbRzuU1vCY6pXJVPWrmVAAY
+         PkF19b424MqH7y/bRYg4r95wRy1vet4lPhdq5b7KX+SemNU1mmRgN1Ujs3xPl6vsoYdU
+         MndVOTCcI64IA8y6h8hP9qOqKsb9DXyURBxHpB/unvCZDjrbbsnPxRlMYXa0LsqYxW2E
+         D4xQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zUWrxO8L9/kU1qSxDxQyWOIHTSXGOu7H1Ujb2Wnde8U=;
+        b=O3pruL+oadXBx9ujey5qjgiA/cxlg605wYI7+S7ynP8EUJd1hA9t9KFbfXL8jWX0nw
+         B4y5WYd1sX3o/yPKwgxj4YTld8zFBG0f+JUMZWwuWk2FAZbXJRKJAjNaN1lIyx3sHzUv
+         /mr8dhfNY0CLBhOetygE+aLwFsRawlFGfYfiV9kin0nPyjNKM/aGEvzcNU36tINvVMxG
+         DL5qPKbC0MqipAZ9jIXTo9tC61djXmNA/e5ccJzbTc3ebEBcJgFe+onrZrtdwzfGCyvT
+         BTpFLk0vaV0JDBukF4qrHc4lW6UmxChzGqwHlCPNShbn6mT6T4VAaQU2JcuZTpY4ZRgQ
+         2lkA==
+X-Gm-Message-State: AOAM531dXlAljaf3pQQihwg/nofK9PeumBqOFC7k+TagNbTQHlQYyHq3
+        UfuqiXAiLWMeUlUxlOkEK4C0XA0o28/DcR/+KU4=
+X-Google-Smtp-Source: ABdhPJzIvRHZBCXuW7LZBzxqiTqmUQWHwglz/BYBjh/Iq/laADtnOyt8Cl1gWrRRWssHHCJj0zrNa6dKAhxNxEg/BOs=
+X-Received: by 2002:ac8:4cc9:: with SMTP id l9mr4211242qtv.59.1592853509964;
+ Mon, 22 Jun 2020 12:18:29 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200622185837.GN1551@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200616100512.2168860-1-jolsa@kernel.org> <20200616100512.2168860-10-jolsa@kernel.org>
+ <CAEf4BzY=d5y_-fXvomG7SjkbK7DZn5=-f+sdCYRdZh9qeynQrQ@mail.gmail.com>
+ <20200619133124.GJ2465907@krava> <CAEf4BzZDCtW-5r5rN+ufZi1hUXjw8QCF+CiyT5sOvQQEEOqtiQ@mail.gmail.com>
+ <20200622090205.GD2556590@krava>
+In-Reply-To: <20200622090205.GD2556590@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 22 Jun 2020 12:18:19 -0700
+Message-ID: <CAEf4BzZOph2EJLfq9FCYUhesi5NP0L_OQTrEKE-s0NPmt3HmWw@mail.gmail.com>
+Subject: Re: [PATCH 09/11] bpf: Add d_path helper
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+On Mon, Jun 22, 2020 at 2:02 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Fri, Jun 19, 2020 at 11:25:27AM -0700, Andrii Nakryiko wrote:
+>
+> SNIP
+>
+> > > > >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> > > > >   * function eBPF program intends to call
+> > > > > diff --git a/kernel/bpf/btf_ids.c b/kernel/bpf/btf_ids.c
+> > > > > index d8d0df162f04..853c8fd59b06 100644
+> > > > > --- a/kernel/bpf/btf_ids.c
+> > > > > +++ b/kernel/bpf/btf_ids.c
+> > > > > @@ -13,3 +13,14 @@ BTF_ID(struct, seq_file)
+> > > > >
+> > > > >  BTF_ID_LIST(bpf_xdp_output_btf_ids)
+> > > > >  BTF_ID(struct, xdp_buff)
+> > > > > +
+> > > > > +BTF_ID_LIST(bpf_d_path_btf_ids)
+> > > > > +BTF_ID(struct, path)
+> > > > > +
+> > > > > +BTF_WHITELIST_ENTRY(btf_whitelist_d_path)
+> > > > > +BTF_ID(func, vfs_truncate)
+> > > > > +BTF_ID(func, vfs_fallocate)
+> > > > > +BTF_ID(func, dentry_open)
+> > > > > +BTF_ID(func, vfs_getattr)
+> > > > > +BTF_ID(func, filp_close)
+> > > > > +BTF_WHITELIST_END(btf_whitelist_d_path)
+> > > >
+> > > > Oh, so that's why you added btf_ids.c. Do you think centralizing all
+> > > > those BTF ID lists in one file is going to be more convenient? I lean
+> > > > towards keeping them closer to where they are used, as it was with all
+> > > > those helper BTF IDS. But I wonder what others think...
+> > >
+> > > either way works for me, but then BTF_ID_* macros needs to go
+> > > to include/linux/btf_ids.h header right?
+> > >
+> >
+> > given it's internal API, I'd probably just put it in
+> > include/linux/btf.h or include/linux/bpf.h, don't think we need extra
+> > header just for these
+>
+> actually, I might end up with extra header, so it's possible
+> to add selftest for this
+>
 
-On 6/22/20 8:58 PM, Russell King - ARM Linux admin wrote:
-> On Mon, Jun 22, 2020 at 08:44:51PM +0200, Daniel Mack wrote:
->> On 6/22/20 8:41 PM, Andrew Lunn wrote:
+How does extra header help with selftest?
 
->>> How are you trying to change the speed?
->>
->> With ethtool for instance. But all userspace tools are bailing out early
->> on this port for the reason I described.
-> 
-> A simple "return" to ignore a call in a void function won't have that
-> effect.
-
-It has the effect that mv88e6xxx_port_setup_mac() is currently not being
-called from mv88e6xxx_mac_config().
-
-> I don't see an issue here:
-> 
-> # ethtool -s lan1 autoneg off speed 10 duplex half
-
-I've tried that of course, but that doesn't fix the problem here. Which
-switch port does 'lan1' map to in your setup? My CPU port maps to port 4.
-
-Correct me if I'm mistaken, but speed and duplex settings are only being
-communicated to the MAC driver through the aforementioned chain of
-calls, right?
-
-> I've also been able to change what is advertised just fine, and the
-> link comes up as expected - in fact, I was running one of the switch
-> ports at 10Mbps to one of my machines and using the 'scope on the
-> ethernet signals over the weekend to debug a problem, which turned
-> out to be broken RGMII clock delay timings.
-
-To recap, my setup features a Cadence GEM that is connected to a 88E1510
-PHY which is then connected to port 4 of the switch (which has an
-internal PHY) through a transformer-less link. I know this is not
-optimal as the speed is limited to 100M by that, but that was the only
-way as all other ports where used up.
-
-The setup works just fine in principle, I'm just struggling with a
-correct way of configuring the drivers to allow that setting.
-
-I can control what is advertised on eth0, which is the GEM, and the PHY
-there reports the correct link speed:
-
-
-# ethtool -s eth0 advertise 0x008
-[   79.573992] macb e000b000.ethernet eth0: Link is Down
-[   79.637048] mv88e6085 e000b000.ethernet-ffffffff:02: Link is Down
-[   81.221974] macb e000b000.ethernet eth0: Link is Up - 100Mbps/Full -
-flow control off
-[   81.285639] mv88e6085 e000b000.ethernet-ffffffff:02: Link is Up -
-100Mbps/Full - flow control off
-
-However, the MAC in the switch is not changed by that, and it was forced
-to 1 Gbit at probe time of the driver. Hence no packets are being seen
-by the GEM, even though the PHYs seem to see each other just fine
-(traffic is also signaled by an LED on the 88E1510).
-
-I'm happy to try other solutions of course.
-
-
-Thanks,
-Daniel
+> jirka
+>
