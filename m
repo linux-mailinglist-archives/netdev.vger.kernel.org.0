@@ -2,54 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF942042A5
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 23:27:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 185102042D0
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 23:44:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730546AbgFVV1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 17:27:05 -0400
-Received: from www62.your-server.de ([213.133.104.62]:42142 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730430AbgFVV1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 17:27:05 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jnTy2-0005QG-Nh; Mon, 22 Jun 2020 23:27:02 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jnTy2-000PVx-FX; Mon, 22 Jun 2020 23:27:02 +0200
-Subject: Re: [PATCH bpf] libbpf: forward-declare bpf_stats_type for systems
- with outdated UAPI headers
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
-References: <20200621031159.2279101-1-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <85bd6a92-5230-6b7b-a3de-d166e80913f4@iogearbox.net>
-Date:   Mon, 22 Jun 2020 23:27:02 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730686AbgFVVok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 17:44:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38006 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727015AbgFVVok (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 17:44:40 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C58A22075A;
+        Mon, 22 Jun 2020 21:44:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592862279;
+        bh=/aLLjvO2Ei7tSkktHMp36wTpSxd9jKlcG+dbuAYiODw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Sko3tfyKyexkmAphNm7aLC5lw5ejCsvu/y7x88Xvnmo6Bp8BXv6ZbOKzGjQGvMkYt
+         s+nZta1H0FcRTgk2n+8elnBz7Tq72ZCL+Nr1fhkmbt0rG6gMAOKkgUStuNE9kolPKQ
+         3av0CjWqVdgrbHbBj4bNzNgVEqdvTvGbfT5cO3u8=
+Date:   Mon, 22 Jun 2020 14:44:37 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexander Lobakin <alobakin@marvell.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Yuval Mintz <yuval.mintz@marvell.com>,
+        Denis Bolotin <denis.bolotin@marvell.com>,
+        "Ram Amrani" <ram.amrani@marvell.com>,
+        Tomer Tayar <tomer.tayar@marvell.com>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net 9/9] net: qed: fix "maybe uninitialized" warning
+Message-ID: <20200622144437.770e09e0@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200622111413.7006-10-alobakin@marvell.com>
+References: <20200622111413.7006-1-alobakin@marvell.com>
+        <20200622111413.7006-10-alobakin@marvell.com>
 MIME-Version: 1.0
-In-Reply-To: <20200621031159.2279101-1-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25851/Mon Jun 22 15:09:36 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/21/20 5:11 AM, Andrii Nakryiko wrote:
-> Systems that doesn't yet have the very latest linux/bpf.h header, enum
-> bpf_stats_type will be undefined, causing compilation warnings. Prevents this
-> by forward-declaring enum.
+On Mon, 22 Jun 2020 14:14:13 +0300 Alexander Lobakin wrote:
+> Variable 'abs_ppfid' in qed_dev.c:qed_llh_add_mac_filter() always gets
+> printed, but is initialized only under 'ref_cnt == 1' condition. This
+> results in:
 > 
-> Fixes: 0bee106716cf ("libbpf: Add support for command BPF_ENABLE_STATS")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> In file included from ./include/linux/kernel.h:15:0,
+>                  from ./include/asm-generic/bug.h:19,
+>                  from ./arch/x86/include/asm/bug.h:86,
+>                  from ./include/linux/bug.h:5,
+>                  from ./include/linux/io.h:11,
+>                  from drivers/net/ethernet/qlogic/qed/qed_dev.c:35:
+> drivers/net/ethernet/qlogic/qed/qed_dev.c: In function 'qed_llh_add_mac_filter':
+> ./include/linux/printk.h:358:2: warning: 'abs_ppfid' may be used uninitialized
+> in this function [-Wmaybe-uninitialized]
+>   printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+>   ^~~~~~
+> drivers/net/ethernet/qlogic/qed/qed_dev.c:983:17: note: 'abs_ppfid' was declared
+> here
+>   u8 filter_idx, abs_ppfid;
+>                  ^~~~~~~~~
+> 
+> ...under W=1+.
+> 
+> Fix this by initializing it with zero.
+> 
+> Fixes: 79284adeb99e ("qed: Add llh ppfid interface and 100g support for
+> offload protocols")
+> Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
+> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 
-Applied, thanks!
+Please don't wrap Fixes tags:
+
+Fixes tag: Fixes: 79284adeb99e ("qed: Add llh ppfid interface and 100g support for
+Has these problem(s):
+	- Subject has leading but no trailing parentheses
+	- Subject has leading but no trailing quotes
