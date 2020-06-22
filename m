@@ -2,87 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DDFB202E36
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 04:05:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C6E4202E45
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 04:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731012AbgFVCFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Jun 2020 22:05:14 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:2525 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726602AbgFVCFO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Jun 2020 22:05:14 -0400
-Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.55])
-        by Forcepoint Email with ESMTP id 5E7D43C679A44B4457E8;
-        Mon, 22 Jun 2020 10:05:09 +0800 (CST)
-Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
- DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Mon, 22 Jun 2020 10:05:07 +0800
-Received: from [10.174.61.242] (10.174.61.242) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Mon, 22 Jun 2020 10:05:07 +0800
-Subject: Re: [PATCH net-next v1 5/5] hinic: add support to get eeprom
- information
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
-References: <20200620094258.13181-1-luobin9@huawei.com>
- <20200620094258.13181-6-luobin9@huawei.com> <20200620160038.GQ304147@lunn.ch>
-From:   "luobin (L)" <luobin9@huawei.com>
-Message-ID: <14f91738-ae07-f56d-bf77-1cedb6d842d6@huawei.com>
-Date:   Mon, 22 Jun 2020 10:05:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
-MIME-Version: 1.0
-In-Reply-To: <20200620160038.GQ304147@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.61.242]
-X-ClientProxiedBy: dggeme708-chm.china.huawei.com (10.1.199.104) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+        id S1726973AbgFVCVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Jun 2020 22:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726456AbgFVCVZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Jun 2020 22:21:25 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0DEC061794;
+        Sun, 21 Jun 2020 19:21:24 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id b4so14213549qkn.11;
+        Sun, 21 Jun 2020 19:21:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=2YE9gPP5bCoYsurMhSnWjNJyyw00QRCWcTkQq56FnVc=;
+        b=MQSC7+8JsP0pBgEDfwg/fziotB/jhsLxre1enkWA/0pRx1zhCDstPx14yHBQaoXS8a
+         oX0K1DudDD9np+Is9tU4KA26xyO7Y5jFqafTkc/cRIOHyVENPPqZlZMoDhAD+OVktIDJ
+         umRMU8Y+mQW9Rs2j4HnYLXOWqvOX0tf5Que/4fqMXcrdL/rwzD3bgCkdXjxTUKHvomAo
+         qsozYHUFh+xN96kL732IPPZ8cRUnWPWEMhGa8UWvgmBEPrrxFjdxz/mRoKDcT1U4BrON
+         GduWUle3hJF9qP6h19pfXOVrol8Oxjz+J/hQ4WFMs+SEk/7NVnI85CKOnIL/ZuF4il5c
+         fjsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=2YE9gPP5bCoYsurMhSnWjNJyyw00QRCWcTkQq56FnVc=;
+        b=VBYTY9gvzBx2Wa72aOyo+NyjWn8km9Ym8ce0s+VbOJFiBLLg4K4ET28MJ8hHGK78LZ
+         vWiG/+XbOQA2iKkCq2SbMUYCwK4tYXFjqqoc0zDQFsBTM2bSyzl1sDvd+WbGqsgG2NdO
+         rUYxScxSJ8jClue0hNACRQ7EreHpKiO68M38mTLfPUxp6QcIXwBCKVZEsqtQeKfxBN2p
+         IKK304p9r1WkRn1sN9mvE86FFFOhsRgNVIHXg/PLh8GFH4+nACDZIstzw7vCmROX8vZE
+         MxZkAxhtC/jK1QnC2Qpsd2dYvmhHy/hnF2amiCNo0BBakVcX3rUdHOHu9jFfw+AAurdN
+         vD5g==
+X-Gm-Message-State: AOAM530RAKeOqsN1BxjJMOIPJcHXzJPpe/1M9X7CVpyV9tfz9tfBlwKd
+        cuSxin+F+FoDZBf6WU35PX44SmzBEBI=
+X-Google-Smtp-Source: ABdhPJwNHNw6nIS3omBcZml67Q873TZx3jnZ7lv3uMLIkAAIla8hsj7jyCAk0Fkt8jZtevE5u8fBlg==
+X-Received: by 2002:a05:620a:a1b:: with SMTP id i27mr7017238qka.429.1592792483901;
+        Sun, 21 Jun 2020 19:21:23 -0700 (PDT)
+Received: from buszk-y710.fios-router.home (pool-108-54-206-188.nycmny.fios.verizon.net. [108.54.206.188])
+        by smtp.googlemail.com with ESMTPSA id f54sm1435295qte.76.2020.06.21.19.21.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Jun 2020 19:21:23 -0700 (PDT)
+From:   Zekun Shen <bruceshenzk@gmail.com>
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: ath10k: santity check for ep connectivity
+Date:   Sun, 21 Jun 2020 22:20:54 -0400
+Message-Id: <20200622022055.16028-1-bruceshenzk@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/6/21 0:00, Andrew Lunn wrote:
->> +static int hinic_get_module_eeprom(struct net_device *netdev,
->> +				   struct ethtool_eeprom *ee, u8 *data)
->> +{
->> +	struct hinic_dev *nic_dev = netdev_priv(netdev);
->> +	u8 sfp_data[STD_SFP_INFO_MAX_SIZE];
-> 
-> sfp_data will contain whatever is on the stack.
-> 
->> +	u16 len;
->> +	int err;
->> +
->> +	if (!ee->len || ((ee->len + ee->offset) > STD_SFP_INFO_MAX_SIZE))
->> +		return -EINVAL;
->> +
->> +	memset(data, 0, ee->len);
-> 
-> This clears what you are going to return.
-> 
->> +
->> +	err = hinic_get_sfp_eeprom(nic_dev->hwdev, sfp_data, &len);
-> 
-> Upto len bytes of sfp_data now contain useful data. The rest of
-> sfp_data is still stack data.
-> 
-> 
->> +	if (err)
->> +		return err;
->> +
->> +	memcpy(data, sfp_data + ee->offset, ee->len);
-> 
-> If len < ee->len, you have just returned to user space some stack data.
-> 
->    Andrew
-> .
-> 
-The whole sfp_data will be assigned values in hinic_get_sfp_eeprom function,
-so stack data won't be returned to user space. Thanks for your review.
+Function ep_rx_complete is being called without NULL checking
+in ath10k_htc_rx_completion_handler. Without such check, mal-
+formed packet is able to cause jump to NULL.
+
+ep->service_id seems a good candidate for sanity check as it is
+used in usb.c.
+
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+---
+ drivers/net/wireless/ath/ath10k/htc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath10k/htc.c b/drivers/net/wireless/ath/ath10k/htc.c
+index 31df6dd04..e00794d97 100644
+--- a/drivers/net/wireless/ath/ath10k/htc.c
++++ b/drivers/net/wireless/ath/ath10k/htc.c
+@@ -450,6 +450,11 @@ void ath10k_htc_rx_completion_handler(struct ath10k *ar, struct sk_buff *skb)
+ 
+ 	ep = &htc->endpoint[eid];
+ 
++	if (ep->service_id == 0) {
++		ath10k_warn(ar, "HTC Rx: ep %d is not connect\n", eid);
++		goto out;
++	}
++
+ 	payload_len = __le16_to_cpu(hdr->len);
+ 
+ 	if (payload_len + sizeof(*hdr) > ATH10K_HTC_MAX_LEN) {
+-- 
+2.17.1
+
