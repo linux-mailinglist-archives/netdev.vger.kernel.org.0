@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F3E3203E35
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 19:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9A72203E2B
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 19:40:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730080AbgFVRoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 13:44:13 -0400
-Received: from m12-14.163.com ([220.181.12.14]:57751 "EHLO m12-14.163.com"
+        id S1729982AbgFVRkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 13:40:40 -0400
+Received: from m12-14.163.com ([220.181.12.14]:50380 "EHLO m12-14.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729811AbgFVRoN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 13:44:13 -0400
+        id S1729605AbgFVRkj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 13:40:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=XXHGi
-        dGqDit3+VS1j/NripAzz/zDXWkISAlUT0TpK58=; b=iACemB+dXKAwDRDGJgz75
-        JEnVVPMy2p8wJjyjsjstyZ/yEQ303tarHLsxkpgUWq4CUt51KspkgoDDzeB4xjuk
-        oKJltCJDd6Og+4kFZe+/wclq2d6VJaSLsmdCt1ro3hAOz7dQ70eo0IGRyof74gTW
-        LTTqSKuULD0E2nepyxvbIE=
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=lb++k
+        1jd6zkfqQ8xI9Z7oaD7anRUlvq7fkWyMm9yuP4=; b=fTtCy4EyUyIsrT+21RDpi
+        vLg8MK5V0s9pRsBbq5aDM/nPiN8wUJFpTBCKQeXYrTi7RG2pqs3bc3SdclfKXl05
+        XApyo2DUGRNnxZGFzgrg1adW35VlMcQhdNgOTf8+mRVLr7+XhkyiNjbpDckU+Y4f
+        XpehSzACMNLzD4/ApB1qIc=
 Received: from SZA191027643-PM.china.huawei.com (unknown [120.235.53.225])
-        by smtp10 (Coremail) with SMTP id DsCowABnbelA1vBeGrmZHw--.17892S5;
-        Tue, 23 Jun 2020 00:03:20 +0800 (CST)
+        by smtp10 (Coremail) with SMTP id DsCowABnbelA1vBeGrmZHw--.17892S7;
+        Tue, 23 Jun 2020 00:03:23 +0800 (CST)
 From:   yunaixin03610@163.com
 To:     netdev@vger.kernel.org, davem@davemloft.net,
         linux-kernel@vger.kernel.org, wuguanping@huawei.com,
         wangqindong@huawei.com
 Cc:     yunaixin <yunaixin03610@163.com>
-Subject: [PATCH 3/5] Huawei BMA: Adding Huawei BMA driver: host_veth_drv
-Date:   Tue, 23 Jun 2020 00:03:09 +0800
-Message-Id: <20200622160311.1533-4-yunaixin03610@163.com>
+Subject: [PATCH 5/5] Huawei BMA: Adding Huawei BMA driver: host_kbox_drv
+Date:   Tue, 23 Jun 2020 00:03:11 +0800
+Message-Id: <20200622160311.1533-6-yunaixin03610@163.com>
 X-Mailer: git-send-email 2.26.2.windows.1
 In-Reply-To: <20200622160311.1533-1-yunaixin03610@163.com>
 References: <20200622160311.1533-1-yunaixin03610@163.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsCowABnbelA1vBeGrmZHw--.17892S5
-X-Coremail-Antispam: 1Uf129KBjvAXoWkJr1xCF43KF4UWw13Cr1rZwb_yoW3uw13Jo
-        ZIqrsakrn3Gw17ArZ8Gan3Kr17Za4DGayDZr4YkrZ5X3Z5Zw4jqrWDGry3Jr1Fgw4Iqa48
-        WFsFqr4SqayUZw1rn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
-        AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjxUOApnDUUUU
+X-CM-TRANSID: DsCowABnbelA1vBeGrmZHw--.17892S7
+X-Coremail-Antispam: 1Uf129KBjvAXoWkWryftFyDKFykZw43WryxGrg_yoWfAFy5Ao
+        WSya15Aw4rCr42yrWkKF17GF17Zasrtr45Jw4Fvr4DXFyrAr15XFnxKw4Yy3W7Wrs09r4r
+        ua4xX3W3ur40qFn3n29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
+        AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvj4RE7KVUUUUU
 X-Originating-IP: [120.235.53.225]
-X-CM-SenderInfo: 51xqtxx0lqijqwrqqiywtou0bp/1tbiDglL5lXlwxcJVQAAsS
+X-CM-SenderInfo: 51xqtxx0lqijqwrqqiywtou0bp/1tbiQAxL5lSIfgMRkAAAsB
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -49,47 +49,84 @@ From: yunaixin <yunaixin03610@163.com>
 
 The BMA software is a system management software offered by Huawei. It supports the status monitoring, performance monitoring, and event monitoring of various components, including server CPUs, memory, hard disks, NICs, IB cards, PCIe cards, RAID controller cards, and optical modules.
 
-This host_veth_drv driver is one of the communication drivers used by BMA software. It depends on the host_edma_drv driver. The host_veth_drv driver will create a virtual net device "veth" once loaded. BMA software will use it to send/receive RESTful messages to/from BMC software.
+The host_kbox_drv driver serves the function of a black box. When a panic or mce event happen to the system, it will record the event time, system's status and system logs and send them to BMC before the OS shutdown. This driver depends on the host_edms_drv driver.
 
 Signed-off-by: yunaixin <yunaixin03610@163.com>
 ---
- drivers/net/ethernet/huawei/bma/Kconfig       |    1 +
- drivers/net/ethernet/huawei/bma/Makefile      |    3 +-
- .../net/ethernet/huawei/bma/veth_drv/Kconfig  |   11 +
- .../net/ethernet/huawei/bma/veth_drv/Makefile |    2 +
- .../ethernet/huawei/bma/veth_drv/veth_hb.c    | 2502 +++++++++++++++++
- .../ethernet/huawei/bma/veth_drv/veth_hb.h    |  440 +++
- 6 files changed, 2958 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/Kconfig
- create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/Makefile
- create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.c
- create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.h
+ drivers/net/ethernet/huawei/bma/Kconfig       |   3 +-
+ drivers/net/ethernet/huawei/bma/Makefile      |   1 +
+ .../net/ethernet/huawei/bma/kbox_drv/Kconfig  |  11 +
+ .../net/ethernet/huawei/bma/kbox_drv/Makefile |   2 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_dump.c  | 121 +++
+ .../ethernet/huawei/bma/kbox_drv/kbox_dump.h  |  33 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_hook.c  | 101 ++
+ .../ethernet/huawei/bma/kbox_drv/kbox_hook.h  |  33 +
+ .../huawei/bma/kbox_drv/kbox_include.h        |  40 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_main.c  | 168 +++
+ .../ethernet/huawei/bma/kbox_drv/kbox_main.h  |  23 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_mce.c   | 264 +++++
+ .../ethernet/huawei/bma/kbox_drv/kbox_mce.h   |  23 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_panic.c | 187 ++++
+ .../ethernet/huawei/bma/kbox_drv/kbox_panic.h |  25 +
+ .../huawei/bma/kbox_drv/kbox_printk.c         | 363 +++++++
+ .../huawei/bma/kbox_drv/kbox_printk.h         |  33 +
+ .../huawei/bma/kbox_drv/kbox_ram_drive.c      | 188 ++++
+ .../huawei/bma/kbox_drv/kbox_ram_drive.h      |  31 +
+ .../huawei/bma/kbox_drv/kbox_ram_image.c      | 135 +++
+ .../huawei/bma/kbox_drv/kbox_ram_image.h      |  84 ++
+ .../huawei/bma/kbox_drv/kbox_ram_op.c         | 986 ++++++++++++++++++
+ .../huawei/bma/kbox_drv/kbox_ram_op.h         |  77 ++
+ 23 files changed, 2931 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_include.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.h
 
 diff --git a/drivers/net/ethernet/huawei/bma/Kconfig b/drivers/net/ethernet/huawei/bma/Kconfig
-index 7abbb47fb5b2..fd842c5e2d87 100644
+index d8710b8e1c18..77041669d4b4 100644
 --- a/drivers/net/ethernet/huawei/bma/Kconfig
 +++ b/drivers/net/ethernet/huawei/bma/Kconfig
-@@ -1,2 +1,3 @@
+@@ -1,4 +1,5 @@
  source "drivers/net/ethernet/huawei/bma/edma_drv/Kconfig"
  source "drivers/net/ethernet/huawei/bma/cdev_drv/Kconfig"
-+source "drivers/net/ethernet/huawei/bma/veth_drv/Kconfig"
+ source "drivers/net/ethernet/huawei/bma/veth_drv/Kconfig"
+-source "drivers/net/ethernet/huawei/bma/cdev_veth_drv/Kconfig"
++source "drivers/net/ethernet/huawei/bma/kbox_drv/Kconfig"
++source "drivers/net/ethernet/huawei/bma/cdev_veth_drv/Kconfig"
+\ No newline at end of file
 diff --git a/drivers/net/ethernet/huawei/bma/Makefile b/drivers/net/ethernet/huawei/bma/Makefile
-index c9bbcbf2a388..e6e46d820082 100644
+index c626618f47fb..5caa8290a1f7 100644
 --- a/drivers/net/ethernet/huawei/bma/Makefile
 +++ b/drivers/net/ethernet/huawei/bma/Makefile
-@@ -3,4 +3,5 @@
- # 
- 
+@@ -5,4 +5,5 @@
  obj-$(CONFIG_BMA) += edma_drv/
--obj-$(CONFIG_BMA) += cdev_drv/
+ obj-$(CONFIG_BMA) += cdev_drv/
+ obj-$(CONFIG_BMA) += veth_drv/
++obj-$(CONFIG_BMA) += kbox_drv/
+ obj-$(CONFIG_BMA) += cdev_veth_drv/
 \ No newline at end of file
-+obj-$(CONFIG_BMA) += cdev_drv/
-+obj-$(CONFIG_BMA) += veth_drv/
-diff --git a/drivers/net/ethernet/huawei/bma/veth_drv/Kconfig b/drivers/net/ethernet/huawei/bma/veth_drv/Kconfig
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/Kconfig b/drivers/net/ethernet/huawei/bma/kbox_drv/Kconfig
 new file mode 100644
 index 000000000000..97829c5487c2
 --- /dev/null
-+++ b/drivers/net/ethernet/huawei/bma/veth_drv/Kconfig
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/Kconfig
 @@ -0,0 +1,11 @@
 +#
 +# Huawei BMA software driver configuration
@@ -102,21 +139,20 @@ index 000000000000..97829c5487c2
 +	  This driver supports Huawei BMA Software. It is used 
 +	  to communication between Huawei BMA and BMC software.
 +
-diff --git a/drivers/net/ethernet/huawei/bma/veth_drv/Makefile b/drivers/net/ethernet/huawei/bma/veth_drv/Makefile
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/Makefile b/drivers/net/ethernet/huawei/bma/kbox_drv/Makefile
 new file mode 100644
-index 000000000000..c9ab07371ef4
+index 000000000000..9565a00fee44
 --- /dev/null
-+++ b/drivers/net/ethernet/huawei/bma/veth_drv/Makefile
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/Makefile
 @@ -0,0 +1,2 @@
-+obj-$(CONFIG_BMA) += host_veth_drv.o
-+host_veth_drv-y := veth_hb.o
-\ No newline at end of file
-diff --git a/drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.c b/drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.c
++obj-$(CONFIG_BMA) += host_kbox_drv.o
++host_kbox_drv-y := kbox_main.o kbox_ram_drive.o kbox_ram_image.o kbox_ram_op.o kbox_printk.o kbox_dump.o kbox_hook.o kbox_panic.o
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.c b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.c
 new file mode 100644
-index 000000000000..9681ce3bfc7b
+index 000000000000..1f3a73ca9d1f
 --- /dev/null
-+++ b/drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.c
-@@ -0,0 +1,2502 @@
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.c
+@@ -0,0 +1,121 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Huawei iBMA driver.
 + * Copyright (c) 2017, Huawei Technologies Co., Ltd.
@@ -132,2938 +168,3013 @@ index 000000000000..9681ce3bfc7b
 + * GNU General Public License for more details.
 + */
 +
-+#include <linux/types.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+#include <linux/device.h>
-+#include <linux/kthread.h>
++#include <linux/spinlock.h>
++#include <linux/utsname.h>		/* system_utsname */
++#include <linux/rtc.h>		/* struct rtc_time */
++#include "kbox_include.h"
++#include "kbox_main.h"
++#include "kbox_printk.h"
++#include "kbox_ram_image.h"
++#include "kbox_ram_op.h"
++#include "kbox_dump.h"
++#include "kbox_panic.h"
 +
-+#include <linux/ethtool.h>
-+#include <linux/netdevice.h>
-+#include <linux/etherdevice.h>
-+#include <linux/skbuff.h>
-+
-+#include <linux/vmalloc.h>
-+#include <linux/atomic.h>
-+#include <linux/proc_fs.h>
-+#include <linux/mm.h>
-+#include <linux/gfp.h>
-+#include <asm/page.h>
-+
-+#include <linux/ip.h>
-+
-+#include "veth_hb.h"
-+
-+#define GET_QUEUE_STAT(node, stat) \
-+	((node) ? ((char *)(node) + (stat)->stat_offset) : NULL)
-+
-+#define GET_SHM_QUEUE_STAT(node, stat) \
-+	(((node) && (node)->pshmqhd_v) ? \
-+	 ((char *)(node)->pshmqhd_v + (stat)->stat_offset) : NULL)
-+
-+#define GET_STATS_VALUE(ptr, pstat) \
-+	((ptr) ? (((pstat)->sizeof_stat == sizeof(u64)) ? \
-+			(*(u64 *)(ptr)) : (*(u32 *)(ptr))) : 0)
-+
-+#define GET_DMA_DIRECTION(type) \
-+	(((type) == BSPVETH_RX) ? BMC_TO_HOST : HOST_TO_BMC)
-+
-+#define CHECK_DMA_QUEUE_EMPTY(type, queue) \
-+	(((type) == BSPVETH_RX && \
-+	  (queue)->pshmqhd_v->head == (queue)->pshmqhd_v->tail) || \
-+	 ((type) != BSPVETH_RX && (queue)->head == (queue)->tail))
-+
-+#define CHECK_DMA_RXQ_FAULT(queue, type, cnt) \
-+	((queue)->dmal_cnt > 1 && (cnt) < ((queue)->work_limit / 2) && \
-+	 (type) == BSPVETH_RX)
-+
-+static u32 veth_ethtool_get_link(struct net_device *dev);
-+
-+int debug;			/* debug switch*/
-+module_param_call(debug, &edma_param_set_debug, &param_get_int, &debug, 0644);
-+
-+MODULE_PARM_DESC(debug, "Debug switch (0=close debug, 1=open debug)");
-+
-+#define VETH_LOG(lv, fmt, args...)    \
-+do {	\
-+	if (debug < (lv))	\
-+		continue;	\
-+	if (lv == DLOG_DEBUG)	\
-+		netdev_dbg(g_bspveth_dev.pnetdev, "%s(), %d, " \
-+		fmt, __func__, __LINE__, ## args);	\
-+	else if (lv == DLOG_ERROR)	\
-+		netdev_err(g_bspveth_dev.pnetdev, "%s(), %d, " \
-+		fmt, __func__, __LINE__, ## args);	\
-+} while (0)
-+
-+#ifdef __UT_TEST
-+u32 g_testdma;
-+
-+u32 g_testlbk;
-+
++#ifdef CONFIG_X86
++#include "kbox_mce.h"
 +#endif
 +
-+struct bspveth_device g_bspveth_dev = {};
++#define THREAD_TMP_BUF_SIZE 256
 +
-+static int veth_int_handler(struct notifier_block *pthis, unsigned long ev,
-+			    void *unuse);
++static DEFINE_SPINLOCK(g_dump_lock);
 +
-+static struct notifier_block g_veth_int_nb = {
-+	.notifier_call = veth_int_handler,
++static const char g_day_in_month[] = {
++	31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 +};
 +
-+static const struct veth_stats veth_gstrings_stats[] = {
-+	{"rx_packets", NET_STATS, VETH_STAT_SIZE(stats.rx_packets),
-+	 VETH_STAT_OFFSET(stats.rx_packets)},
-+	{"rx_bytes", NET_STATS, VETH_STAT_SIZE(stats.rx_bytes),
-+	 VETH_STAT_OFFSET(stats.rx_bytes)},
-+	{"rx_dropped", NET_STATS, VETH_STAT_SIZE(stats.rx_dropped),
-+	 VETH_STAT_OFFSET(stats.rx_dropped)},
-+	{"rx_head", QUEUE_RX_STATS, QUEUE_TXRX_STAT_SIZE(head),
-+	 QUEUE_TXRX_STAT_OFFSET(head)},
-+	{"rx_tail", QUEUE_RX_STATS, QUEUE_TXRX_STAT_SIZE(tail),
-+	 QUEUE_TXRX_STAT_OFFSET(tail)},
-+	{"rx_next_to_fill", QUEUE_RX_STATS,
-+	 QUEUE_TXRX_STAT_SIZE(next_to_fill),
-+	 QUEUE_TXRX_STAT_OFFSET(next_to_fill)},
-+	{"rx_shmq_head", SHMQ_RX_STATS, SHMQ_TXRX_STAT_SIZE(head),
-+	 SHMQ_TXRX_STAT_OFFSET(head)},
-+	{"rx_shmq_tail", SHMQ_RX_STATS, SHMQ_TXRX_STAT_SIZE(tail),
-+	 SHMQ_TXRX_STAT_OFFSET(tail)},
-+	{"rx_shmq_next_to_free", SHMQ_RX_STATS,
-+	 SHMQ_TXRX_STAT_SIZE(next_to_free),
-+	 SHMQ_TXRX_STAT_OFFSET(next_to_free)},
-+	{"rx_queue_full", QUEUE_RX_STATS,
-+	 QUEUE_TXRX_STAT_SIZE(s.q_full),
-+	 QUEUE_TXRX_STAT_OFFSET(s.q_full)},
-+	{"rx_dma_busy", QUEUE_RX_STATS,
-+	 QUEUE_TXRX_STAT_SIZE(s.dma_busy),
-+	 QUEUE_TXRX_STAT_OFFSET(s.dma_busy)},
-+	{"rx_dma_failed", QUEUE_RX_STATS,
-+	 QUEUE_TXRX_STAT_SIZE(s.dma_failed),
-+	 QUEUE_TXRX_STAT_OFFSET(s.dma_failed)},
++#define LEAPS_THRU_END_OF(y) ((y) / 4 - (y) / 100 + (y) / 400)
++#define LEAP_YEAR(year) \
++	((!((year) % 4) && ((year) % 100)) || !((year) % 400))
++#define MONTH_DAYS(month, year) \
++	(g_day_in_month[(month)] + (int)(LEAP_YEAR(year) && (month == 1)))
 +
-+	{"tx_packets", NET_STATS, VETH_STAT_SIZE(stats.tx_packets),
-+	 VETH_STAT_OFFSET(stats.tx_packets)},
-+	{"tx_bytes", NET_STATS, VETH_STAT_SIZE(stats.tx_bytes),
-+	 VETH_STAT_OFFSET(stats.tx_bytes)},
-+	{"tx_dropped", NET_STATS, VETH_STAT_SIZE(stats.tx_dropped),
-+	 VETH_STAT_OFFSET(stats.tx_dropped)},
-+
-+	{"tx_head", QUEUE_TX_STATS, QUEUE_TXRX_STAT_SIZE(head),
-+	 QUEUE_TXRX_STAT_OFFSET(head)},
-+	{"tx_tail", QUEUE_TX_STATS, QUEUE_TXRX_STAT_SIZE(tail),
-+	 QUEUE_TXRX_STAT_OFFSET(tail)},
-+	{"tx_next_to_free", QUEUE_TX_STATS,
-+	 QUEUE_TXRX_STAT_SIZE(next_to_free),
-+	 QUEUE_TXRX_STAT_OFFSET(next_to_free)},
-+	{"tx_shmq_head", SHMQ_TX_STATS, SHMQ_TXRX_STAT_SIZE(head),
-+	 SHMQ_TXRX_STAT_OFFSET(head)},
-+	{"tx_shmq_tail", SHMQ_TX_STATS, SHMQ_TXRX_STAT_SIZE(tail),
-+	 SHMQ_TXRX_STAT_OFFSET(tail)},
-+	{"tx_shmq_next_to_free", SHMQ_TX_STATS,
-+	 SHMQ_TXRX_STAT_SIZE(next_to_free),
-+	 SHMQ_TXRX_STAT_OFFSET(next_to_free)},
-+
-+	{"tx_queue_full", QUEUE_TX_STATS,
-+	 QUEUE_TXRX_STAT_SIZE(s.q_full),
-+	 QUEUE_TXRX_STAT_OFFSET(s.q_full)},
-+	{"tx_dma_busy", QUEUE_TX_STATS,
-+	 QUEUE_TXRX_STAT_SIZE(s.dma_busy),
-+	 QUEUE_TXRX_STAT_OFFSET(s.dma_busy)},
-+	{"tx_dma_failed", QUEUE_TX_STATS,
-+	 QUEUE_TXRX_STAT_SIZE(s.dma_failed),
-+	 QUEUE_TXRX_STAT_OFFSET(s.dma_failed)},
-+
-+	{"recv_int", VETH_STATS, VETH_STAT_SIZE(recv_int),
-+	 VETH_STAT_OFFSET(recv_int)},
-+	{"tobmc_int", VETH_STATS, VETH_STAT_SIZE(tobmc_int),
-+	 VETH_STAT_OFFSET(tobmc_int)},
-+};
-+
-+#define VETH_GLOBAL_STATS_LEN	\
-+		(sizeof(veth_gstrings_stats) / sizeof(struct veth_stats))
-+
-+static int veth_param_get_statics(char *buf, const struct kernel_param *kp)
++static void kbox_show_kernel_version(void)
 +{
-+	int len = 0;
-+	int i = 0, j = 0, type = 0;
-+	struct bspveth_rxtx_q *pqueue = NULL;
-+	__kernel_time_t running_time = 0;
-+
-+	if (!buf)
-+		return 0;
-+
-+	GET_SYS_SECONDS(running_time);
-+
-+	running_time -= g_bspveth_dev.init_time;
-+
-+	len += sprintf(buf + len,
-+			"================VETH INFO=============\r\n");
-+	len += sprintf(buf + len, "[version     ]:" VETH_VERSION "\n");
-+	len += sprintf(buf + len, "[link state  ]:%d\n",
-+			veth_ethtool_get_link(g_bspveth_dev.pnetdev));
-+	len += sprintf(buf + len, "[running_time]:%luD %02lu:%02lu:%02lu\n",
-+			running_time / (SECONDS_PER_DAY),
-+			running_time % (SECONDS_PER_DAY) / SECONDS_PER_HOUR,
-+			running_time % SECONDS_PER_HOUR / SECONDS_PER_MINUTE,
-+			running_time % SECONDS_PER_MINUTE);
-+	len += sprintf(buf + len,
-+			"[bspveth_dev ]:MAX_QUEUE_NUM :0x%-16x	",
-+			MAX_QUEUE_NUM);
-+	len += sprintf(buf + len,
-+			"MAX_QUEUE_BDNUM :0x%-16x\r\n", MAX_QUEUE_BDNUM);
-+	len += sprintf(buf + len,
-+			"[bspveth_dev ]:pnetdev	  :0x%-16p	",
-+			g_bspveth_dev.pnetdev);
-+	len += sprintf(buf + len,
-+			"ppcidev		 :0x%-16p\r\n",
-+			g_bspveth_dev.ppcidev);
-+	len += sprintf(buf + len,
-+			"[bspveth_dev ]:pshmpool_p:0x%-16p	",
-+			g_bspveth_dev.pshmpool_p);
-+	len += sprintf(buf + len,
-+			"pshmpool_v	  :0x%-16p\r\n",
-+			g_bspveth_dev.pshmpool_v);
-+	len += sprintf(buf + len,
-+			"[bspveth_dev ]:shmpoolsize:0x%-16x	",
-+			g_bspveth_dev.shmpoolsize);
-+	len += sprintf(buf + len,
-+			"g_veth_dbg_lv		:0x%-16x\r\n", debug);
-+
-+	for (i = 0; i < MAX_QUEUE_NUM; i++) {
-+		for (j = 0, type = BSPVETH_RX; j < 2; j++, type++) {
-+			if (type == BSPVETH_RX) {
-+				pqueue = g_bspveth_dev.prx_queue[i];
-+				len += sprintf(buf + len,
-+				"=============RXQUEUE STATIS============\r\n");
-+			} else {
-+				pqueue = g_bspveth_dev.ptx_queue[i];
-+				len += sprintf(buf + len,
-+				"=============TXQUEUE STATIS============\r\n");
-+			}
-+
-+			if (!pqueue) {
-+				len += sprintf(buf + len, "NULL\r\n");
-+				continue;
-+			}
-+
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[pkt	] :%lld\r\n", i,
-+					pqueue->s.pkt);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[pktbyte	] :%lld\r\n", i,
-+					pqueue->s.pktbyte);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[refill	] :%lld\r\n", i,
-+					pqueue->s.refill);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[freetx	] :%lld\r\n", i,
-+					pqueue->s.freetx);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[dmapkt	] :%lld\r\n", i,
-+					pqueue->s.dmapkt);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[dmapktbyte	] :%lld\r\n", i,
-+					pqueue->s.dmapktbyte);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[next_to_fill ] :%d\r\n", i,
-+					pqueue->next_to_fill);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[next_to_free ] :%d\r\n", i,
-+					pqueue->next_to_free);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[head	] :%d\r\n", i,
-+					pqueue->head);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[tail	] :%d\r\n", i,
-+					pqueue->tail);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[work_limit	] :%d\r\n", i,
-+					pqueue->work_limit);
-+			len += sprintf(buf + len,
-+			"=================SHARE=================\r\n");
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[next_to_fill] :%d\r\n", i,
-+					pqueue->pshmqhd_v->next_to_fill);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[next_to_free] :%d\r\n", i,
-+					pqueue->pshmqhd_v->next_to_free);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[head	] :%d\r\n", i,
-+					pqueue->pshmqhd_v->head);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[tail	] :%d\r\n", i,
-+					pqueue->pshmqhd_v->tail);
-+			len += sprintf(buf + len,
-+			"=======================================\r\n");
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[dropped_pkt] :%d\r\n", i,
-+					pqueue->s.dropped_pkt);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[netifrx_err] :%d\r\n", i,
-+					pqueue->s.netifrx_err);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[null_point	] :%d\r\n", i,
-+					pqueue->s.null_point);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[retry_err	] :%d\r\n", i,
-+					pqueue->s.retry_err);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[allocskb_err  ] :%d\r\n",
-+					i, pqueue->s.allocskb_err);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[q_full	] :%d\r\n", i,
-+					pqueue->s.q_full);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[q_emp	] :%d\r\n", i,
-+					pqueue->s.q_emp);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[need_fill	] :%d\r\n", i,
-+					pqueue->s.need_fill);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[need_free	] :%d\r\n", i,
-+					pqueue->s.need_free);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[type_err	] :%d\r\n", i,
-+					pqueue->s.type_err);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[shm_full	] :%d\r\n", i,
-+					pqueue->s.shm_full);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[shm_emp	] :%d\r\n", i,
-+					pqueue->s.shm_emp);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[shmretry_err ] :%d\r\n", i,
-+					pqueue->s.shmretry_err);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[shmqueue_noinit] :%d\r\n",
-+					i, pqueue->s.shmqueue_noinit);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[dma_busy	] :%d\r\n", i,
-+					pqueue->s.dma_busy);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[dma_mapping_err] :%d\r\n",
-+					i, pqueue->s.dma_mapping_err);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[dma_failed	] :%d\r\n", i,
-+					pqueue->s.dma_failed);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[dma_burst	] :%d\r\n", i,
-+					pqueue->s.dma_burst);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[lbk_cnt	] :%d\r\n", i,
-+					pqueue->s.lbk_cnt);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[dma_need_offset] :%d\r\n",
-+					i, pqueue->s.dma_need_offset);
-+			len += sprintf(buf + len,
-+					"QUEUE[%d]--[lbk_txerr	] :%d\r\n", i,
-+					pqueue->s.lbk_txerr);
-+		}
-+	}
-+
-+	len += sprintf(buf + len, "=============BSPVETH STATIS===========\r\n");
-+	len += sprintf(buf + len,
-+				"[bspveth_dev]:run_dma_rx_task:0x%-8x(%d)\r\n",
-+				g_bspveth_dev.run_dma_rx_task,
-+				g_bspveth_dev.run_dma_rx_task);
-+	len += sprintf(buf + len,
-+				"[bspveth_dev]:run_dma_tx_task:0x%-8x(%d)\r\n",
-+				g_bspveth_dev.run_dma_tx_task,
-+				g_bspveth_dev.run_dma_tx_task);
-+	len += sprintf(buf + len,
-+				"[bspveth_dev]:run_skb_rx_task:0x%-8x(%d)\r\n",
-+				g_bspveth_dev.run_skb_rx_task,
-+				g_bspveth_dev.run_skb_rx_task);
-+	len += sprintf(buf + len,
-+				"[bspveth_dev]:run_skb_fr_task:0x%-8x(%d)\r\n",
-+				g_bspveth_dev.run_skb_fr_task,
-+				g_bspveth_dev.run_skb_fr_task);
-+	len += sprintf(buf + len,
-+				"[bspveth_dev]:recv_int	     :0x%-8x(%d)\r\n",
-+				g_bspveth_dev.recv_int, g_bspveth_dev.recv_int);
-+	len += sprintf(buf + len,
-+				"[bspveth_dev]:tobmc_int      :0x%-8x(%d)\r\n",
-+				g_bspveth_dev.tobmc_int,
-+				g_bspveth_dev.tobmc_int);
-+	len += sprintf(buf + len,
-+				"[bspveth_dev]:shutdown_cnt   :0x%-8x(%d)\r\n",
-+				g_bspveth_dev.shutdown_cnt,
-+				g_bspveth_dev.shutdown_cnt);
-+
-+	return len;
++	(void)kbox_dump_painc_info
++		("\nOS : %s,\nRelease : %s,\nVersion : %s,\n",
++		 init_uts_ns.name.sysname,
++		 init_uts_ns.name.release,
++		 init_uts_ns.name.version);
++	(void)kbox_dump_painc_info
++		("Machine : %s,\nNodename : %s\n",
++		 init_uts_ns.name.machine,
++		 init_uts_ns.name.nodename);
 +}
 +
-+module_param_call(statistics, NULL, veth_param_get_statics, &debug, 0444);
-+
-+MODULE_PARM_DESC(statistics, "Statistics info of veth driver,readonly");
-+
-+static void veth_reset_dma(int type)
++static void kbox_show_version(void)
 +{
-+	if (type == BSPVETH_RX)
-+		bma_intf_reset_dma(BMC_TO_HOST);
-+	else if (type == BSPVETH_TX)
-+		bma_intf_reset_dma(HOST_TO_BMC);
-+	else
-+		return;
++	(void)kbox_dump_painc_info("\nKBOX_VERSION         : %s\n",
++				   KBOX_VERSION);
 +}
 +
-+s32 bspveth_setup_tx_resources(struct bspveth_device *pvethdev,
-+			       struct bspveth_rxtx_q *ptx_queue)
++static void kbox_show_time_stamps(void)
 +{
-+	unsigned int size;
++	struct rtc_time rtc_time_val = { };
++	struct timespec64 uptime;
 +
-+	if (!pvethdev || !ptx_queue)
-+		return BSP_ERR_NULL_POINTER;
++	ktime_get_coarse_real_ts64(&uptime);
++	rtc_time64_to_tm(uptime.tv_sec, &rtc_time_val);
 +
-+	ptx_queue->count = MAX_QUEUE_BDNUM;
-+
-+	size = sizeof(struct bspveth_bd_info) * ptx_queue->count;
-+	ptx_queue->pbdinfobase_v = vmalloc(size);
-+	if (!ptx_queue->pbdinfobase_v)
-+		goto alloc_failed;
-+
-+	memset(ptx_queue->pbdinfobase_v, 0, size);
-+
-+	/* round up to nearest 4K */
-+	ptx_queue->size = ptx_queue->count * sizeof(struct bspveth_bd_info);
-+	ptx_queue->size = ALIGN(ptx_queue->size, 4096);
-+
-+	/* prepare  4096 send buffer */
-+	ptx_queue->pbdbase_v = kmalloc(ptx_queue->size, GFP_KERNEL);
-+	if (!ptx_queue->pbdbase_v) {
-+		VETH_LOG(DLOG_ERROR,
-+			 "Unable to kmalloc for the receive descriptor ring\n");
-+
-+		vfree(ptx_queue->pbdinfobase_v);
-+		ptx_queue->pbdinfobase_v = NULL;
-+
-+		goto alloc_failed;
-+	}
-+
-+	ptx_queue->pbdbase_p = (u8 *)(__pa((BSP_VETH_T)(ptx_queue->pbdbase_v)));
-+
-+	ptx_queue->next_to_fill = 0;
-+	ptx_queue->next_to_free = 0;
-+	ptx_queue->head = 0;
-+	ptx_queue->tail = 0;
-+	ptx_queue->work_limit = BSPVETH_WORK_LIMIT;
-+
-+	memset(&ptx_queue->s, 0, sizeof(struct bspveth_rxtx_statis));
-+
-+	return 0;
-+
-+alloc_failed:
-+	return -ENOMEM;
++	(void)kbox_dump_painc_info
++		("Current time         : %04d-%02d-%02d %02d:%02d:%02d\n",
++		 rtc_time_val.tm_year + 1900, rtc_time_val.tm_mon + 1,
++		 rtc_time_val.tm_mday, rtc_time_val.tm_hour,
++		 rtc_time_val.tm_min, rtc_time_val.tm_sec);
 +}
 +
-+void bspveth_free_tx_resources(struct bspveth_device *pvethdev,
-+			       struct bspveth_rxtx_q *ptx_queue)
++void kbox_dump_event(enum kbox_error_type_e type, unsigned long event,
++		     const char *msg)
 +{
-+	unsigned int i;
-+	unsigned long size;
-+	struct bspveth_bd_info *pbdinfobase_v = NULL;
-+	struct sk_buff *skb = NULL;
-+
-+	if (!ptx_queue || !pvethdev)
++	if (!spin_trylock(&g_dump_lock))
 +		return;
 +
-+	pbdinfobase_v = ptx_queue->pbdinfobase_v;
-+	if (!pbdinfobase_v)
-+		return;
-+
-+	for (i = 0; i < ptx_queue->count; i++) {
-+		skb = pbdinfobase_v[i].pdma_v;
-+		if (skb)
-+			dev_kfree_skb_any(skb);
-+
-+		pbdinfobase_v[i].pdma_v = NULL;
-+	}
-+
-+	size = sizeof(struct bspveth_bd_info) * ptx_queue->count;
-+	memset(ptx_queue->pbdinfobase_v, 0, size);
-+	memset(ptx_queue->pbdbase_v, 0, ptx_queue->size);
-+
-+	ptx_queue->next_to_fill = 0;
-+	ptx_queue->next_to_free = 0;
-+	ptx_queue->head = 0;
-+	ptx_queue->tail = 0;
-+
-+	vfree(ptx_queue->pbdinfobase_v);
-+	ptx_queue->pbdinfobase_v = NULL;
-+
-+	kfree(ptx_queue->pbdbase_v);
-+	ptx_queue->pbdbase_v = NULL;
-+
-+	VETH_LOG(DLOG_DEBUG, "bspveth free tx resources ok, count=%d\n",
-+		 ptx_queue->count);
-+}
-+
-+s32 bspveth_setup_all_tx_resources(struct bspveth_device *pvethdev)
-+{
-+	int qid = 0;
-+	int i = 0;
-+	int err = 0;
-+	u8 *shmq_head_p = NULL;
-+	struct bspveth_shmq_hd *shmq_head = NULL;
-+
-+	if (!pvethdev)
-+		return BSP_ERR_NULL_POINTER;
-+	for (qid = 0; qid < MAX_QUEUE_NUM; qid++) {
-+		pvethdev->ptx_queue[qid] =
-+			kmalloc(sizeof(*pvethdev->ptx_queue[qid]),
-+				GFP_KERNEL);
-+		if (!pvethdev->ptx_queue[qid]) {
-+			VETH_LOG(DLOG_ERROR,
-+				 "kmalloc failed for ptx_queue[%d]\n", qid);
-+			err = -1;
-+			goto failed;
-+		}
-+		memset(pvethdev->ptx_queue[qid],
-+		       0, sizeof(struct bspveth_rxtx_q));
-+		shmq_head = (struct bspveth_shmq_hd *)(pvethdev->pshmpool_v +
-+					 MAX_SHAREQUEUE_SIZE * (qid));
-+		pvethdev->ptx_queue[qid]->pshmqhd_v = shmq_head;
-+		shmq_head_p = pvethdev->pshmpool_p + MAX_SHAREQUEUE_SIZE * qid;
-+		pvethdev->ptx_queue[qid]->pshmqhd_p = shmq_head_p;
-+
-+		pvethdev->ptx_queue[qid]->pshmbdbase_v =
-+			(struct bspveth_dma_shmbd *)((BSP_VETH_T)(shmq_head)
-+			+ BSPVETH_SHMBDBASE_OFFSET);
-+		pvethdev->ptx_queue[qid]->pshmbdbase_p =
-+			(u8 *)((BSP_VETH_T)(shmq_head_p)
-+			+ BSPVETH_SHMBDBASE_OFFSET);
-+		pvethdev->ptx_queue[qid]->pdmalbase_v =
-+			(struct bspveth_dmal *)((BSP_VETH_T)(shmq_head)
-+			+ SHMDMAL_OFFSET);
-+		pvethdev->ptx_queue[qid]->pdmalbase_p =
-+			(u8 *)(u64)(VETH_SHAREPOOL_BASE_INBMC +
-+			MAX_SHAREQUEUE_SIZE * qid +
-+			SHMDMAL_OFFSET);
-+
-+		memset(pvethdev->ptx_queue[qid]->pdmalbase_v,
-+		       0, MAX_SHMDMAL_SIZE);
-+
-+		err = bspveth_setup_tx_resources(pvethdev,
-+						 pvethdev->ptx_queue[qid]);
-+		if (err) {
-+			pvethdev->ptx_queue[qid]->pshmqhd_v = NULL;
-+			kfree(pvethdev->ptx_queue[qid]);
-+			pvethdev->ptx_queue[i] = NULL;
-+			VETH_LOG(DLOG_ERROR,
-+				 "Allocation for Tx Queue %u failed\n", qid);
-+
-+			goto failed;
-+		}
-+	}
-+
-+	return 0;
-+failed:
-+	for (i = 0; i < MAX_QUEUE_NUM; i++) {
-+		bspveth_free_tx_resources(pvethdev, pvethdev->ptx_queue[i]);
-+		kfree(pvethdev->ptx_queue[i]);
-+		pvethdev->ptx_queue[i] = NULL;
-+	}
-+
-+	return err;
-+}
-+
-+void bspveth_free_all_tx_resources(struct bspveth_device *pvethdev)
-+{
-+	int i;
-+
-+	if (!pvethdev)
-+		return;
-+
-+	for (i = 0; i < MAX_QUEUE_NUM; i++) {
-+		if (pvethdev->ptx_queue[i])
-+			bspveth_free_tx_resources(pvethdev,
-+						  pvethdev->ptx_queue[i]);
-+
-+		kfree(pvethdev->ptx_queue[i]);
-+		pvethdev->ptx_queue[i] = NULL;
-+	}
-+}
-+
-+s32 veth_alloc_one_rx_skb(struct bspveth_rxtx_q *prx_queue, int idx)
-+{
-+	dma_addr_t dma = 0;
-+	struct sk_buff *skb;
-+	struct bspveth_bd_info *pbdinfobase_v = NULL;
-+	struct bspveth_dma_bd *pbdbase_v = NULL;
-+
-+	pbdinfobase_v = prx_queue->pbdinfobase_v;
-+	pbdbase_v = prx_queue->pbdbase_v;
-+
-+	skb = netdev_alloc_skb(g_bspveth_dev.pnetdev,
-+			       BSPVETH_SKB_SIZE + BSPVETH_CACHELINE_SIZE);
-+	if (!skb) {
-+		VETH_LOG(DLOG_ERROR, "netdev_alloc_skb failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	/* advance the data pointer to the next cache line */
-+	skb_reserve(skb, PTR_ALIGN(skb->data,
-+				   BSPVETH_CACHELINE_SIZE) - skb->data);
-+
-+	dma = dma_map_single(&g_bspveth_dev.ppcidev->dev,
-+			     skb->data, BSPVETH_SKB_SIZE, DMA_FROM_DEVICE);
-+	if (dma_mapping_error(&g_bspveth_dev.ppcidev->dev, dma)) {
-+		VETH_LOG(DLOG_ERROR, "dma_mapping_error failed\n");
-+		dev_kfree_skb_any(skb);
-+		return -EFAULT;
-+	}
-+
-+#ifdef __UT_TEST
-+	if (g_testdma)
-+		VETH_LOG(DLOG_ERROR,
-+			 "[refill]:dma=0x%llx,skb=%p,skb->len=%d\r\n",
-+			 dma, skb, skb->len);
-+#endif
-+
-+	pbdinfobase_v[idx].pdma_v = skb;
-+	pbdinfobase_v[idx].len = BSPVETH_SKB_SIZE;
-+
-+	pbdbase_v[idx].dma_p = dma;
-+	pbdbase_v[idx].len = BSPVETH_SKB_SIZE;
-+
-+	return 0;
-+}
-+
-+s32 veth_refill_rxskb(struct bspveth_rxtx_q *prx_queue, int queue)
-+{
-+	int i, work_limit;
-+	unsigned int next_to_fill, tail;
-+	int ret = BSP_OK;
-+
-+	if (!prx_queue)
-+		return BSP_ERR_AGAIN;
-+
-+	work_limit = prx_queue->work_limit;
-+	next_to_fill = prx_queue->next_to_fill;
-+	tail = prx_queue->tail;
-+
-+	for (i = 0; i < work_limit; i++) {
-+		if (!JUDGE_RX_QUEUE_SPACE(next_to_fill, tail, 1))
-+			break;
-+
-+		ret = veth_alloc_one_rx_skb(prx_queue, next_to_fill);
-+		if (ret)
-+			break;
-+
-+		g_bspveth_dev.prx_queue[queue]->s.refill++;
-+		next_to_fill = (next_to_fill + 1) & BSPVETH_POINT_MASK;
-+	}
-+
-+	prx_queue->next_to_fill = next_to_fill;
-+
-+	tail = prx_queue->tail;
-+	if (JUDGE_RX_QUEUE_SPACE(next_to_fill, tail, 1)) {
-+		VETH_LOG(DLOG_DEBUG, "next_to_fill(%d) != tail(%d)\n",
-+			 next_to_fill, tail);
-+
-+		return BSP_ERR_AGAIN;
-+	}
-+
-+	return 0;
-+}
-+
-+s32 bspveth_setup_rx_skb(struct bspveth_device *pvethdev,
-+			 struct bspveth_rxtx_q *prx_queue)
-+{
-+	u32 idx;
-+	int ret = 0;
-+
-+	if (!pvethdev || !prx_queue)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	VETH_LOG(DLOG_DEBUG, "waite setup rx skb ,count=%d\n",
-+		 prx_queue->count);
-+
-+	for (idx = 0; idx < prx_queue->count - 1; idx++) {
-+		ret = veth_alloc_one_rx_skb(prx_queue, idx);
-+		if (ret)
-+			break;
-+	}
-+
-+	if (!idx)	/* Can't alloc even one packets */
-+		return -EFAULT;
-+
-+	prx_queue->next_to_fill = idx;
-+
-+	VETH_LOG(DLOG_DEBUG, "prx_queue->next_to_fill=%d\n",
-+		 prx_queue->next_to_fill);
-+
-+	VETH_LOG(DLOG_DEBUG, "setup rx skb ok, count=%d\n", prx_queue->count);
-+
-+	return BSP_OK;
-+}
-+
-+void bspveth_free_rx_skb(struct bspveth_device *pvethdev,
-+			 struct bspveth_rxtx_q *prx_queue)
-+{
-+	u32 i = 0;
-+	struct bspveth_bd_info *pbdinfobase_v = NULL;
-+	struct bspveth_dma_bd *pbdbase_v = NULL;
-+	struct sk_buff *skb = NULL;
-+
-+	if (!pvethdev || !prx_queue)
-+		return;
-+
-+	pbdinfobase_v = prx_queue->pbdinfobase_v;
-+	pbdbase_v = prx_queue->pbdbase_v;
-+	if (!pbdinfobase_v || !pbdbase_v)
-+		return;
-+
-+	/* Free all the Rx ring pages */
-+	for (i = 0; i < prx_queue->count; i++) {
-+		skb = pbdinfobase_v[i].pdma_v;
-+		if (!skb)
-+			continue;
-+
-+		dma_unmap_single(&g_bspveth_dev.ppcidev->dev,
-+				 pbdbase_v[i].dma_p, BSPVETH_SKB_SIZE,
-+				 DMA_FROM_DEVICE);
-+		dev_kfree_skb_any(skb);
-+
-+		pbdinfobase_v[i].pdma_v = NULL;
-+	}
-+
-+	prx_queue->next_to_fill = 0;
-+}
-+
-+s32 bspveth_setup_all_rx_skb(struct bspveth_device *pvethdev)
-+{
-+	int qid, i, err = BSP_OK;
-+
-+	if (!pvethdev)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	for (qid = 0; qid < MAX_QUEUE_NUM; qid++) {
-+		err = bspveth_setup_rx_skb(pvethdev, pvethdev->prx_queue[qid]);
-+		if (err) {
-+			VETH_LOG(DLOG_ERROR, "queue[%d]setup RX skb failed\n",
-+				 qid);
-+			goto failed;
-+		}
-+
-+		VETH_LOG(DLOG_DEBUG, "queue[%d] bspveth_setup_rx_skb ok\n",
-+			 qid);
-+	}
-+
-+	return 0;
-+
-+failed:
-+	for (i = 0; i < MAX_QUEUE_NUM; i++)
-+		bspveth_free_rx_skb(pvethdev, pvethdev->prx_queue[i]);
-+
-+	return err;
-+}
-+
-+void bspveth_free_all_rx_skb(struct bspveth_device *pvethdev)
-+{
-+	int qid;
-+
-+	if (!pvethdev)
-+		return;
-+
-+	/* Free all the Rx ring pages */
-+	for (qid = 0; qid < MAX_QUEUE_NUM; qid++)
-+		bspveth_free_rx_skb(pvethdev, pvethdev->prx_queue[qid]);
-+}
-+
-+s32 bspveth_setup_rx_resources(struct bspveth_device *pvethdev,
-+			       struct bspveth_rxtx_q *prx_queue)
-+{
-+	int size;
-+
-+	if (!pvethdev || !prx_queue)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	prx_queue->count = MAX_QUEUE_BDNUM;
-+	size = sizeof(*prx_queue->pbdinfobase_v) * prx_queue->count;
-+	prx_queue->pbdinfobase_v = vmalloc(size);
-+	if (!prx_queue->pbdinfobase_v) {
-+		VETH_LOG(DLOG_ERROR,
-+			 "Unable to vmalloc for the receive descriptor ring\n");
-+
-+		goto alloc_failed;
-+	}
-+
-+	memset(prx_queue->pbdinfobase_v, 0, size);
-+
-+	/* Round up to nearest 4K */
-+	prx_queue->size = prx_queue->count * sizeof(*prx_queue->pbdbase_v);
-+	prx_queue->size = ALIGN(prx_queue->size, 4096);
-+	prx_queue->pbdbase_v = kmalloc(prx_queue->size, GFP_ATOMIC);
-+	if (!prx_queue->pbdbase_v) {
-+		VETH_LOG(DLOG_ERROR,
-+			 "Unable to kmalloc for the receive descriptor ring\n");
-+
-+		vfree(prx_queue->pbdinfobase_v);
-+		prx_queue->pbdinfobase_v = NULL;
-+
-+		goto alloc_failed;
-+	}
-+
-+	prx_queue->pbdbase_p = (u8 *)__pa((BSP_VETH_T) (prx_queue->pbdbase_v));
-+
-+	prx_queue->next_to_fill = 0;
-+	prx_queue->next_to_free = 0;
-+	prx_queue->head = 0;
-+	prx_queue->tail = 0;
-+
-+	prx_queue->work_limit = BSPVETH_WORK_LIMIT;
-+
-+	memset(&prx_queue->s, 0, sizeof(struct bspveth_rxtx_statis));
-+
-+	return 0;
-+
-+alloc_failed:
-+	return -ENOMEM;
-+}
-+
-+void bspveth_free_rx_resources(struct bspveth_device *pvethdev,
-+			       struct bspveth_rxtx_q *prx_queue)
-+{
-+	unsigned long size;
-+	struct bspveth_bd_info *pbdinfobase_v = NULL;
-+
-+	if (!pvethdev || !prx_queue)
-+		return;
-+
-+	pbdinfobase_v = prx_queue->pbdinfobase_v;
-+	if (!pbdinfobase_v)
-+		return;
-+
-+	if (!prx_queue->pbdbase_v)
-+		return;
-+
-+	size = sizeof(struct bspveth_bd_info) * prx_queue->count;
-+	memset(prx_queue->pbdinfobase_v, 0, size);
-+
-+	/* Zero out the descriptor ring */
-+	memset(prx_queue->pbdbase_v, 0, prx_queue->size);
-+
-+	vfree(prx_queue->pbdinfobase_v);
-+	prx_queue->pbdinfobase_v = NULL;
-+
-+	kfree(prx_queue->pbdbase_v);
-+	prx_queue->pbdbase_v = NULL;
-+
-+	VETH_LOG(DLOG_DEBUG, "bspveth free rx resources ok!!count=%d\n",
-+		 prx_queue->count);
-+}
-+
-+s32 bspveth_setup_all_rx_resources(struct bspveth_device *pvethdev)
-+{
-+	int qid, i, err = 0;
-+	struct bspveth_shmq_hd *shmq_head = NULL;
-+	u8 *shmq_head_p = NULL;
-+
-+	if (!pvethdev)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	for (qid = 0; qid < MAX_QUEUE_NUM; qid++) {
-+		pvethdev->prx_queue[qid] =
-+			kmalloc(sizeof(*pvethdev->prx_queue[qid]), GFP_KERNEL);
-+		if (!pvethdev->prx_queue[qid]) {
-+			VETH_LOG(DLOG_ERROR,
-+				 "kmalloc failed for prx_queue[%d]\n", qid);
-+
-+			goto failed;
-+		}
-+
-+		memset(pvethdev->prx_queue[qid], 0,
-+		       sizeof(struct bspveth_rxtx_q));
-+
-+		shmq_head = (struct bspveth_shmq_hd *)(pvethdev->pshmpool_v +
-+			     MAX_SHAREQUEUE_SIZE * (qid + 1));
-+
-+		pvethdev->prx_queue[qid]->pshmqhd_v = shmq_head;
-+		shmq_head_p =
-+			pvethdev->pshmpool_p + MAX_SHAREQUEUE_SIZE * (qid + 1);
-+		pvethdev->prx_queue[qid]->pshmqhd_p = shmq_head_p;
-+		pvethdev->prx_queue[qid]->pshmbdbase_v =
-+			(struct bspveth_dma_shmbd *)((BSP_VETH_T)(shmq_head)
-+			+ BSPVETH_SHMBDBASE_OFFSET);
-+		pvethdev->prx_queue[qid]->pshmbdbase_p =
-+			(u8 *)((BSP_VETH_T)(shmq_head_p)
-+			+ BSPVETH_SHMBDBASE_OFFSET);
-+		pvethdev->prx_queue[qid]->pdmalbase_v =
-+			(struct bspveth_dmal *)((BSP_VETH_T)(shmq_head)
-+			+ SHMDMAL_OFFSET);
-+		pvethdev->prx_queue[qid]->pdmalbase_p =
-+			(u8 *)(u64)(VETH_SHAREPOOL_BASE_INBMC
-+			+ MAX_SHAREQUEUE_SIZE * (qid + 1)
-+			+ SHMDMAL_OFFSET);
-+		memset(pvethdev->prx_queue[qid]->pdmalbase_v, 0,
-+		       MAX_SHMDMAL_SIZE);
-+
-+		err = bspveth_setup_rx_resources(pvethdev,
-+						 pvethdev->prx_queue[qid]);
-+		if (err) {
-+			kfree(pvethdev->prx_queue[qid]);
-+			pvethdev->prx_queue[qid] = NULL;
-+			VETH_LOG(DLOG_ERROR,
-+				 "Allocation for Rx Queue %u failed\n", qid);
-+
-+			goto failed;
-+		}
-+	}
-+
-+	return 0;
-+failed:
-+	for (i = 0; i < MAX_QUEUE_NUM; i++) {
-+		bspveth_free_rx_resources(pvethdev, pvethdev->prx_queue[i]);
-+		kfree(pvethdev->prx_queue[i]);
-+		pvethdev->prx_queue[i] = NULL;
-+	}
-+	return err;
-+}
-+
-+void bspveth_free_all_rx_resources(struct bspveth_device *pvethdev)
-+{
-+	int i;
-+
-+	if (!pvethdev)
-+		return;
-+
-+	for (i = 0; i < MAX_QUEUE_NUM; i++) {
-+		if (pvethdev->prx_queue[i]) {
-+			bspveth_free_rx_resources(pvethdev,
-+						  pvethdev->prx_queue[i]);
-+		}
-+
-+		kfree(pvethdev->prx_queue[i]);
-+		pvethdev->prx_queue[i] = NULL;
-+	}
-+}
-+
-+s32 bspveth_dev_install(void)
-+{
-+	int err;
-+
-+	err = bspveth_setup_all_rx_resources(&g_bspveth_dev);
-+	if (err != BSP_OK) {
-+		err = -1;
-+		goto err_setup_rx;
-+	}
-+
-+	err = bspveth_setup_all_tx_resources(&g_bspveth_dev);
-+	if (err != BSP_OK) {
-+		err = -1;
-+		goto err_setup_tx;
-+	}
-+
-+	err = bspveth_setup_all_rx_skb(&g_bspveth_dev);
-+	if (err != BSP_OK) {
-+		err = -1;
-+		goto err_setup_rx_skb;
-+	}
-+
-+	return BSP_OK;
-+
-+err_setup_rx_skb:
-+	bspveth_free_all_tx_resources(&g_bspveth_dev);
-+
-+err_setup_tx:
-+	bspveth_free_all_rx_resources(&g_bspveth_dev);
-+
-+err_setup_rx:
-+
-+	return err;
-+}
-+
-+s32 bspveth_dev_uninstall(void)
-+{
-+	int err = BSP_OK;
-+
-+	/* Free all the Rx ring pages */
-+	bspveth_free_all_rx_skb(&g_bspveth_dev);
-+
-+	bspveth_free_all_tx_resources(&g_bspveth_dev);
-+
-+	VETH_LOG(DLOG_DEBUG, "bspveth_free_all_tx_resources ok\n");
-+
-+	bspveth_free_all_rx_resources(&g_bspveth_dev);
-+
-+	VETH_LOG(DLOG_DEBUG, "bspveth_free_all_rx_resources ok\n");
-+
-+	return err;
-+}
-+
-+s32 veth_open(struct net_device *pstr_dev)
-+{
-+	s32 ret = BSP_OK;
-+
-+	if (!pstr_dev)
-+		return -1;
-+
-+	if (!g_bspveth_dev.pnetdev)
-+		g_bspveth_dev.pnetdev = pstr_dev;
-+
-+	ret = bspveth_dev_install();
-+	if (ret != BSP_OK) {
-+		ret = -1;
-+		goto failed1;
-+	}
-+
-+	veth_skbtimer_init();
-+
-+	veth_dmatimer_init_H();
-+
-+	ret = bma_intf_register_int_notifier(&g_veth_int_nb);
-+	if (ret != BSP_OK) {
-+		ret = -1;
-+		goto failed2;
-+	}
-+
-+	bma_intf_set_open_status(g_bspveth_dev.bma_priv, DEV_OPEN);
-+
-+	g_bspveth_dev.prx_queue[0]->pshmqhd_v->tail =
-+				g_bspveth_dev.prx_queue[0]->pshmqhd_v->head;
-+
-+	bma_intf_int_to_bmc(g_bspveth_dev.bma_priv);
-+
-+	netif_start_queue(g_bspveth_dev.pnetdev);
-+	netif_carrier_on(pstr_dev);
-+
-+	return BSP_OK;
-+
-+failed2:
-+	veth_dmatimer_close_H();
-+
-+	veth_skbtimer_close();
-+
-+	(void)bspveth_dev_uninstall();
-+
-+failed1:
-+	return ret;
-+}
-+
-+s32 veth_close(struct net_device *pstr_dev)
-+{
-+	(void)bma_intf_unregister_int_notifier(&g_veth_int_nb);
-+
-+	netif_carrier_off(pstr_dev);
-+
-+	bma_intf_set_open_status(g_bspveth_dev.bma_priv, DEV_CLOSE);
-+
-+	netif_stop_queue(g_bspveth_dev.pnetdev);
-+
-+	(void)veth_dmatimer_close_H();
-+	(void)veth_skbtimer_close();
-+
-+	(void)bspveth_dev_uninstall();
-+
-+	return BSP_OK;
-+}
-+
-+s32 veth_config(struct net_device *pstr_dev, struct ifmap *pstr_map)
-+{
-+	if (!pstr_dev || !pstr_map)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	/* can't act on a running interface */
-+	if (pstr_dev->flags & IFF_UP)
-+		return -EBUSY;
-+
-+	/* Don't allow changing the I/O address */
-+	if (pstr_map->base_addr != pstr_dev->base_addr)
-+		return -EOPNOTSUPP;
-+
-+	/* ignore other fields */
-+	return BSP_OK;
-+}
-+
-+void bspveth_initstatis(void)
-+{
-+	int i;
-+	struct bspveth_rxtx_q *prx_queue = NULL;
-+	struct bspveth_rxtx_q *ptx_queue = NULL;
-+
-+	for (i = 0; i < MAX_QUEUE_NUM; i++) {
-+		prx_queue = g_bspveth_dev.prx_queue[i];
-+		ptx_queue = g_bspveth_dev.ptx_queue[i];
-+
-+		if (prx_queue && ptx_queue) {
-+			memset(&prx_queue->s,
-+			       0, sizeof(struct bspveth_rxtx_statis));
-+
-+			memset(&ptx_queue->s,
-+			       0, sizeof(struct bspveth_rxtx_statis));
-+		} else {
-+			VETH_LOG(DLOG_ERROR,
-+				 "prx_queue OR ptx_queue is NULL\n");
-+		}
-+	}
-+
-+	VETH_LOG(DLOG_DEBUG, "bspveth initstatis ok\n");
-+}
-+
-+s32 veth_ioctl(struct net_device *pstr_dev, struct ifreq *pifr, s32 l_cmd)
-+{
-+	return -EFAULT;
-+}
-+
-+struct net_device_stats *veth_stats(struct net_device *pstr_dev)
-+{
-+	return &g_bspveth_dev.stats;
-+}
-+
-+s32 veth_mac_set(struct net_device *pstr_dev, void *p_mac)
-+{
-+	struct sockaddr *str_addr = NULL;
-+	u8 *puc_mac = NULL;
-+
-+	if (!pstr_dev || !p_mac)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	str_addr = (struct sockaddr *)p_mac;
-+	puc_mac = (u8 *)str_addr->sa_data;
-+
-+	pstr_dev->dev_addr[0] = puc_mac[0];
-+	pstr_dev->dev_addr[1] = puc_mac[1];
-+	pstr_dev->dev_addr[2] = puc_mac[2];
-+	pstr_dev->dev_addr[3] = puc_mac[3];
-+	pstr_dev->dev_addr[4] = puc_mac[4];
-+	pstr_dev->dev_addr[5] = puc_mac[5];
-+
-+	return BSP_OK;
-+}
-+
-+static u32 veth_ethtool_get_link(struct net_device *dev)
-+{
-+	if (!bma_intf_is_link_ok() || !netif_running(g_bspveth_dev.pnetdev))
-+		return 0;
-+
-+	if (g_bspveth_dev.ptx_queue[0] &&
-+	    g_bspveth_dev.ptx_queue[0]->pshmqhd_v)
-+		return (u32)((BSPVETH_SHMQUEUE_INITOK ==
-+			     g_bspveth_dev.ptx_queue[0]->pshmqhd_v->init) &&
-+			     netif_carrier_ok(dev));
-+
-+	return 0;
-+}
-+
-+static void veth_ethtool_get_drvinfo(struct net_device *dev,
-+				     struct ethtool_drvinfo *info)
-+{
-+	strlcpy(info->driver, MODULE_NAME, sizeof(info->driver));
-+	strlcpy(info->version, VETH_VERSION, sizeof(info->version));
-+
-+	info->n_stats = VETH_GLOBAL_STATS_LEN;
-+}
-+
-+static void veth_ethtool_get_stats(struct net_device *netdev,
-+				   struct ethtool_stats *tool_stats, u64 *data)
-+{
-+	unsigned int i = 0;
-+	char *p = NULL;
-+	const struct veth_stats *p_stat = veth_gstrings_stats;
-+	struct bspveth_rxtx_q *ptx_node = g_bspveth_dev.ptx_queue[0];
-+	struct bspveth_rxtx_q *prx_node = g_bspveth_dev.prx_queue[0];
-+	char * const pstat_map[] = {
-+		/* QUEUE TX STATS*/
-+		GET_QUEUE_STAT(ptx_node, p_stat),
-+		/* QUEUE RX STATS*/
-+		GET_QUEUE_STAT(prx_node, p_stat),
-+		/* VETH STATS */
-+		(char *)&g_bspveth_dev + p_stat->stat_offset,
-+		/* SHMQ TX STATS */
-+		GET_SHM_QUEUE_STAT(ptx_node, p_stat),
-+		/* SHMQ RX STATS */
-+		GET_SHM_QUEUE_STAT(prx_node, p_stat),
-+		/* NET STATS */
-+		(char *)&g_bspveth_dev + p_stat->stat_offset
-+	};
-+
-+	if (!data || !netdev || !tool_stats)
-+		return;
-+
-+	for (i = 0; i < VETH_GLOBAL_STATS_LEN; i++) {
-+		p = NULL;
-+
-+		if (p_stat->type > NET_STATS)
-+			break;
-+
-+		p = pstat_map[p_stat->type];
-+
-+		data[i] = GET_STATS_VALUE(p, p_stat);
-+
-+		p_stat++;
-+	}
-+}
-+
-+static void veth_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
-+{
-+	u8 *p = data;
-+	unsigned int i;
-+
-+	if (!p)
-+		return;
-+
-+	switch (stringset) {
-+	case ETH_SS_STATS:
-+		for (i = 0; i < VETH_GLOBAL_STATS_LEN; i++) {
-+			memcpy(p, veth_gstrings_stats[i].stat_string,
-+			       ETH_GSTRING_LEN);
-+
-+			p += ETH_GSTRING_LEN;
-+		}
-+
-+		break;
-+	}
-+}
-+
-+static int veth_get_sset_count(struct net_device *netdev, int sset)
-+{
-+	switch (sset) {
-+	case ETH_SS_STATS:
-+		return VETH_GLOBAL_STATS_LEN;
-+
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+const struct ethtool_ops veth_ethtool_ops = {
-+	.get_drvinfo = veth_ethtool_get_drvinfo,
-+	.get_link = veth_ethtool_get_link,
-+
-+	.get_ethtool_stats = veth_ethtool_get_stats,
-+	.get_strings = veth_get_strings,
-+	.get_sset_count = veth_get_sset_count,
-+
-+};
-+
-+static const struct net_device_ops veth_ops = {
-+	.ndo_open = veth_open,
-+	.ndo_stop = veth_close,
-+	.ndo_set_config = veth_config,
-+	.ndo_start_xmit = veth_tx,
-+	.ndo_do_ioctl = veth_ioctl,
-+	.ndo_get_stats = veth_stats,
-+	.ndo_set_mac_address = veth_mac_set,
-+};
-+
-+void veth_netdev_func_init(struct net_device *dev)
-+{
-+	struct tag_pcie_comm_priv *priv =
-+				(struct tag_pcie_comm_priv *)netdev_priv(dev);
-+
-+	VETH_LOG(DLOG_DEBUG, "eth init start\n");
-+
-+	ether_setup(dev);
-+
-+	dev->netdev_ops = &veth_ops;
-+
-+	dev->watchdog_timeo = BSPVETH_NET_TIMEOUT;
-+	dev->mtu = BSPVETH_MTU_MAX;
-+	dev->flags = IFF_BROADCAST;
-+	dev->tx_queue_len = BSPVETH_MAX_QUE_DEEP;
-+	dev->ethtool_ops = &veth_ethtool_ops;
-+
-+	/* Then, initialize the priv field. This encloses the statistics
-+	 * and a few private fields.
-+	 */
-+	memset(priv, 0, sizeof(struct tag_pcie_comm_priv));
-+	strncpy(priv->net_type, MODULE_NAME, NET_TYPE_LEN);
-+
-+	/*9C:7D:A3:28:6F:F9*/
-+	dev->dev_addr[0] = 0x9c;
-+	dev->dev_addr[1] = 0x7d;
-+	dev->dev_addr[2] = 0xa3;
-+	dev->dev_addr[3] = 0x28;
-+	dev->dev_addr[4] = 0x6f;
-+	dev->dev_addr[5] = 0xf9;
-+
-+	VETH_LOG(DLOG_DEBUG, "set veth MAC addr OK\n");
-+}
-+
-+s32 veth_send_one_pkt(struct sk_buff *skb, int queue)
-+{
-+	u32 head, next_to_free;
-+	dma_addr_t dma = 0;
-+	u32 off = 0;
-+	int ret = 0;
-+	int type = BSPVETH_TX;
-+	struct bspveth_bd_info *pbdinfo_v = NULL;
-+	struct bspveth_dma_bd *pbd_v = NULL;
-+	struct bspveth_rxtx_q *ptx_queue = g_bspveth_dev.ptx_queue[queue];
-+
-+	if (!skb || !ptx_queue || !ptx_queue->pbdinfobase_v ||
-+	    !ptx_queue->pbdbase_v) {
-+		INC_STATIS_RXTX(queue, null_point, 1, type);
-+		return BSP_ERR_NULL_POINTER;
-+	}
-+
-+	if (!bma_intf_is_link_ok() ||
-+	    ptx_queue->pshmqhd_v->init != BSPVETH_SHMQUEUE_INITOK)
-+		return -1;
-+
-+	head = ptx_queue->head;
-+	next_to_free = ptx_queue->next_to_free;
-+
-+	/* stop to send pkt when queue is going to full */
-+	if (!JUDGE_TX_QUEUE_SPACE(head, next_to_free, 3)) {
-+		netif_stop_subqueue(g_bspveth_dev.pnetdev, queue);
-+		VETH_LOG(DLOG_DEBUG,
-+			 "going to full, head: %d, nex to free: %d\n",
-+				head, next_to_free);
-+	}
-+
-+	if (!JUDGE_TX_QUEUE_SPACE(head, next_to_free, 1))
-+		return BSP_NETDEV_TX_BUSY;
-+
-+	if (skb_shinfo(skb)->nr_frags) {
-+		/* We don't support frags */
-+		ret = skb_linearize(skb);
-+		if (ret)
-+			return -ENOMEM;
-+	}
-+
-+	dma = dma_map_single(&g_bspveth_dev.ppcidev->dev, skb->data, skb->len,
-+			     DMA_TO_DEVICE);
-+
-+	ret = dma_mapping_error(&g_bspveth_dev.ppcidev->dev, dma);
-+	if (ret != BSP_OK) {
-+		ret = BSP_ERR_DMA_ERR;
-+		g_bspveth_dev.ptx_queue[queue]->s.dma_mapping_err++;
-+		goto failed;
-+	}
-+
-+	off = dma & 0x3;
-+	if (off)
-+		g_bspveth_dev.ptx_queue[queue]->s.dma_need_offset++;
-+
-+	pbdinfo_v = &ptx_queue->pbdinfobase_v[head];
-+	pbdinfo_v->pdma_v = skb;
-+	pbd_v = &ptx_queue->pbdbase_v[head];
-+	pbd_v->dma_p = dma & (~((u64)0x3));
-+	pbd_v->off = off;
-+	pbd_v->len = skb->len;
-+
-+	head = (head + 1) & BSPVETH_POINT_MASK;
-+	ptx_queue->head = head;
-+
-+	VETH_LOG(DLOG_DEBUG,
-+		 "[send]:oridma=0x%llx,skb=%p,skb->data=%p,skb->len=%d,",
-+		 (u64)dma, skb, skb->data, skb->len);
-+	VETH_LOG(DLOG_DEBUG, "head=%d,off=%d, alidma0x%llx\n", head, off,
-+		 (u64)(dma & (~((u64)0x3))));
-+
-+	return BSP_OK;
-+
-+failed:
-+	return ret;
-+}
-+
-+int veth_tx(struct sk_buff *skb, struct net_device *pstr_dev)
-+{
-+	u32 ul_ret = 0;
-+	int queue = 0;
-+
-+	VETH_LOG(DLOG_DEBUG, "===============enter==================\n");
-+
-+	if (!skb || !pstr_dev) {
-+		g_bspveth_dev.ptx_queue[queue]->s.null_point++;
-+		return NETDEV_TX_OK;
-+	}
-+
-+	VETH_LOG(DLOG_DEBUG, "skb->data=%p\n", skb->data);
-+	VETH_LOG(DLOG_DEBUG, "skb->len=%d\n", skb->len);
-+
-+	ul_ret = veth_send_one_pkt(skb, queue);
-+
-+	if (ul_ret == BSP_OK) {
-+		g_bspveth_dev.ptx_queue[queue]->s.pkt++;
-+		g_bspveth_dev.stats.tx_packets++;
-+		g_bspveth_dev.ptx_queue[queue]->s.pktbyte += skb->len;
-+		g_bspveth_dev.stats.tx_bytes += skb->len;
-+
-+#ifndef USE_TASKLET
-+		(void)mod_timer(&g_bspveth_dev.dmatimer, jiffies_64);
-+#else
-+		tasklet_hi_schedule(&g_bspveth_dev.dma_task);
-+#endif
-+
-+	} else {
-+		VETH_LOG(DLOG_DEBUG, "=======exit ret = %d=======\n", ul_ret);
-+		g_bspveth_dev.ptx_queue[queue]->s.dropped_pkt++;
-+		g_bspveth_dev.stats.tx_dropped++;
-+		dev_kfree_skb_any(skb);
-+	}
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+s32 veth_free_txskb(struct bspveth_rxtx_q *ptx_queue, int queue)
-+{
-+	int i, work_limit;
-+	unsigned int tail, next_to_free;
-+	struct bspveth_bd_info *ptx_bdinfo_v = NULL;
-+	struct sk_buff *skb = NULL;
-+	struct bspveth_dma_bd *pbd_v = NULL;
-+
-+	if (!ptx_queue)
-+		return BSP_ERR_AGAIN;
-+
-+	work_limit = ptx_queue->work_limit;
-+	tail = ptx_queue->tail;
-+	next_to_free = ptx_queue->next_to_free;
-+
-+	for (i = 0; i < work_limit; i++) {
-+		if (next_to_free == tail)
-+			break;
-+
-+		ptx_bdinfo_v = &ptx_queue->pbdinfobase_v[next_to_free];
-+
-+		pbd_v = &ptx_queue->pbdbase_v[next_to_free];
-+
-+		skb = ptx_bdinfo_v->pdma_v;
-+
-+		dma_unmap_single(&g_bspveth_dev.ppcidev->dev,
-+				 pbd_v->dma_p | pbd_v->off,
-+				 pbd_v->len, DMA_TO_DEVICE);
-+
-+		if (skb)
-+			dev_kfree_skb_any(skb);
-+		else
-+			VETH_LOG(DLOG_ERROR,
-+				 "skb is NULL,tail=%d next_to_free=%d\n",
-+				 tail, next_to_free);
-+
-+		ptx_bdinfo_v->pdma_v = NULL;
-+		g_bspveth_dev.ptx_queue[queue]->s.freetx++;
-+
-+		next_to_free = (next_to_free + 1) & BSPVETH_POINT_MASK;
-+	}
-+
-+	ptx_queue->next_to_free = next_to_free;
-+	tail = ptx_queue->tail;
-+
-+	if (next_to_free != tail) {
-+		VETH_LOG(DLOG_DEBUG, "next_to_free(%d) != tail(%d)\n",
-+			 next_to_free, tail);
-+
-+		return BSP_ERR_AGAIN;
-+	}
-+
-+	return BSP_OK;
-+}
-+
-+s32 veth_recv_pkt(struct bspveth_rxtx_q *prx_queue, int queue)
-+{
-+	int ret = BSP_OK, i, work_limit;
-+	u32 tail, head;
-+	struct bspveth_bd_info *prx_bdinfo_v = NULL;
-+	struct bspveth_dma_bd *pbd_v = NULL;
-+	struct sk_buff *skb = NULL;
-+	dma_addr_t dma_map = 0;
-+	u32 off = 0;
-+
-+	if (!prx_queue)
-+		return BSP_ERR_AGAIN;
-+
-+	work_limit = prx_queue->work_limit;
-+	tail = prx_queue->tail;
-+
-+	for (i = 0; i < work_limit; i++) {
-+		head = prx_queue->head;
-+		if (tail == head)
-+			break;
-+
-+		prx_bdinfo_v = &prx_queue->pbdinfobase_v[tail];
-+
-+		skb = prx_bdinfo_v->pdma_v;
-+		if (!skb) {
-+			tail = (tail + 1) & BSPVETH_POINT_MASK;
-+			continue;
-+		}
-+
-+		prx_bdinfo_v->pdma_v = NULL;
-+		pbd_v = &prx_queue->pbdbase_v[tail];
-+
-+		off = pbd_v->off;
-+		if (off)
-+			skb_reserve(skb, off);
-+
-+		dma_unmap_single(&g_bspveth_dev.ppcidev->dev, pbd_v->dma_p,
-+				 BSPVETH_SKB_SIZE, DMA_FROM_DEVICE);
-+
-+		tail = (tail + 1) & BSPVETH_POINT_MASK;
-+
-+		skb_put(skb, pbd_v->len);
-+
-+		skb->protocol = eth_type_trans(skb, g_bspveth_dev.pnetdev);
-+		skb->ip_summed = CHECKSUM_NONE;
-+
-+		VETH_LOG(DLOG_DEBUG,
-+			 "skb->len=%d,skb->protocol=%d\n",
-+			 skb->len, skb->protocol);
-+
-+		VETH_LOG(DLOG_DEBUG,
-+			 "dma_p=0x%llx,dma_map=0x%llx,",
-+			 pbd_v->dma_p, dma_map);
-+
-+		VETH_LOG(DLOG_DEBUG,
-+			 "skb=%p,skb->data=%p,skb->len=%d,tail=%d,shm_off=%d\n",
-+			 skb, skb->data, skb->len, tail, off);
-+
-+		VETH_LOG(DLOG_DEBUG,
-+			 "skb_transport_header=%p skb_mac_header=%p ",
-+			 skb_transport_header(skb), skb_mac_header(skb));
-+
-+		VETH_LOG(DLOG_DEBUG,
-+			 "skb_network_header=%p\n", skb_network_header(skb));
-+
-+		VETH_LOG(DLOG_DEBUG,
-+			 "skb->data=0x%p skb->tail=%08x skb->len=%08x\n",
-+			  skb->data,
-+			  (unsigned int)skb->tail,
-+			  (unsigned int)skb->len);
-+
-+		g_bspveth_dev.prx_queue[queue]->s.pkt++;
-+		g_bspveth_dev.stats.rx_packets++;
-+		g_bspveth_dev.prx_queue[queue]->s.pktbyte += skb->len;
-+		g_bspveth_dev.stats.rx_bytes += skb->len;
-+
-+		ret = netif_rx(skb);
-+		if (ret == NET_RX_DROP) {
-+			g_bspveth_dev.prx_queue[queue]->s.netifrx_err++;
-+			g_bspveth_dev.stats.rx_errors++;
-+
-+			VETH_LOG(DLOG_DEBUG, "netif_rx failed\n");
-+		}
-+	}
-+
-+	prx_queue->tail = tail;
-+	head = prx_queue->head;
-+
-+	ret = veth_refill_rxskb(prx_queue, queue);
-+	if (ret != BSP_OK)
-+		VETH_LOG(DLOG_DEBUG, "veth_refill_rxskb failed\n");
-+
-+	if (tail != head) {
-+		VETH_LOG(DLOG_DEBUG, "tail(%d) != head(%d)\n", tail, head);
-+
-+		return BSP_ERR_AGAIN;
-+	}
-+
-+	return BSP_OK;
-+}
-+
-+#if !defined(USE_TASKLET) && defined(HAVE_TIMER_SETUP)
-+void veth_skbtrtimer_do(struct timer_list *t)
-+#else
-+void veth_skbtrtimer_do(unsigned long data)
-+#endif
-+{
-+	int ret = 0;
-+
-+	ret = veth_skb_tr_task();
-+	if (ret == BSP_ERR_AGAIN) {
-+#ifndef USE_TASKLET
-+		(void)mod_timer(&g_bspveth_dev.skbtrtimer, jiffies_64);
-+#else
-+		tasklet_hi_schedule(&g_bspveth_dev.skb_task);
-+#endif
-+	}
-+}
-+
-+s32 veth_skbtimer_close(void)
-+{
-+#ifndef USE_TASKLET
-+	(void)del_timer_sync(&g_bspveth_dev.skbtrtimer);
-+#else
-+	tasklet_kill(&g_bspveth_dev.skb_task);
-+#endif
-+
-+	VETH_LOG(DLOG_DEBUG, "veth skbtimer close ok\n");
-+
-+	return 0;
-+}
-+
-+void veth_skbtimer_init(void)
-+{
-+#ifndef USE_TASKLET
-+#ifdef HAVE_TIMER_SETUP
-+	timer_setup(&g_bspveth_dev.skbtrtimer, veth_skbtrtimer_do, 0);
-+#else
-+	setup_timer(&g_bspveth_dev.skbtrtimer, veth_skbtrtimer_do,
-+		    (unsigned long)&g_bspveth_dev);
-+#endif
-+	(void)mod_timer(&g_bspveth_dev.skbtrtimer,
-+			jiffies_64 + BSPVETH_SKBTIMER_INTERVAL);
-+#else
-+	tasklet_init(&g_bspveth_dev.skb_task, veth_skbtrtimer_do,
-+		     (unsigned long)&g_bspveth_dev);
-+#endif
-+
-+	VETH_LOG(DLOG_DEBUG, "veth skbtimer init OK\n");
-+}
-+
-+void veth_netdev_exit(void)
-+{
-+	if (g_bspveth_dev.pnetdev) {
-+		netif_stop_queue(g_bspveth_dev.pnetdev);
-+		unregister_netdev(g_bspveth_dev.pnetdev);
-+		free_netdev(g_bspveth_dev.pnetdev);
-+
-+		VETH_LOG(DLOG_DEBUG, "veth netdev exit OK.\n");
-+	} else {
-+		VETH_LOG(DLOG_DEBUG, "veth_dev.pnetdev NULL.\n");
-+	}
-+}
-+
-+static void veth_shutdown_task(struct work_struct *work)
-+{
-+	struct net_device *netdev = g_bspveth_dev.pnetdev;
-+
-+	VETH_LOG(DLOG_ERROR, "veth is going down, please restart it manual\n");
-+
-+	g_bspveth_dev.shutdown_cnt++;
-+
-+	if (netif_carrier_ok(netdev)) {
-+		(void)bma_intf_unregister_int_notifier(&g_veth_int_nb);
-+
-+		netif_carrier_off(netdev);
-+
-+		bma_intf_set_open_status(g_bspveth_dev.bma_priv, DEV_CLOSE);
-+
-+		/* can't transmit any more */
-+		netif_stop_queue(g_bspveth_dev.pnetdev);
-+
-+		(void)veth_skbtimer_close();
-+
-+		(void)veth_dmatimer_close_H();
-+	}
-+}
-+
-+s32 veth_netdev_init(void)
-+{
-+	s32 l_ret = 0;
-+	struct net_device *netdev = NULL;
-+
-+	netdev = alloc_netdev_mq(sizeof(struct tag_pcie_comm_priv),
-+				 BSPVETH_DEV_NAME, NET_NAME_UNKNOWN,
-+				 veth_netdev_func_init, 1);
-+
-+	/* register netdev */
-+	l_ret = register_netdev(netdev);
-+	if (l_ret < 0) {
-+		VETH_LOG(DLOG_ERROR, "register_netdev failed!ret=%d\n", l_ret);
-+
-+		return -ENODEV;
-+	}
-+
-+	g_bspveth_dev.pnetdev = netdev;
-+
-+	VETH_LOG(DLOG_DEBUG, "veth netdev init OK\n");
-+
-+	INIT_WORK(&g_bspveth_dev.shutdown_task, veth_shutdown_task);
-+
-+	netif_carrier_off(netdev);
-+
-+	return BSP_OK;
-+}
-+
-+int veth_skb_tr_task(void)
-+{
-+	int rett = BSP_OK;
-+	int retr = BSP_OK;
-+	int i = 0;
-+	int task_state = BSP_OK;
-+	struct bspveth_rxtx_q *ptx_queue = NULL;
-+	struct bspveth_rxtx_q *prx_queue = NULL;
-+
-+	for (i = 0; i < MAX_QUEUE_NUM; i++) {
-+		prx_queue = g_bspveth_dev.prx_queue[i];
-+		if (prx_queue) {
-+			g_bspveth_dev.run_skb_rx_task++;
-+			retr = veth_recv_pkt(prx_queue, i);
-+		}
-+
-+		ptx_queue = g_bspveth_dev.ptx_queue[i];
-+		if (ptx_queue) {
-+			g_bspveth_dev.run_skb_fr_task++;
-+			rett = veth_free_txskb(ptx_queue, i);
-+			if (__netif_subqueue_stopped
-+				(g_bspveth_dev.pnetdev, i) &&
-+				JUDGE_TX_QUEUE_SPACE
-+					(ptx_queue->head,
-+					 ptx_queue->next_to_free, 5)) {
-+				netif_wake_subqueue(g_bspveth_dev.pnetdev, i);
-+				VETH_LOG(DLOG_DEBUG, "queue is free, ");
-+				VETH_LOG(DLOG_DEBUG,
-+					 "head: %d, next to free: %d\n",
-+					 ptx_queue->head,
-+					 ptx_queue->next_to_free);
-+			}
-+		}
-+
-+		if (rett == BSP_ERR_AGAIN || retr == BSP_ERR_AGAIN)
-+			task_state = BSP_ERR_AGAIN;
-+	}
-+
-+	return task_state;
-+}
-+
-+static int veth_int_handler(struct notifier_block *pthis, unsigned long ev,
-+			    void *unuse)
-+{
-+	g_bspveth_dev.recv_int++;
-+
-+	if (netif_running(g_bspveth_dev.pnetdev)) {
-+#ifndef USE_TASKLET
-+		(void)mod_timer(&g_bspveth_dev.dmatimer, jiffies_64);
-+#else
-+		tasklet_schedule(&g_bspveth_dev.dma_task);
-+
-+#endif
-+	} else {
-+		VETH_LOG(DLOG_DEBUG, "netif is not running\n");
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+#if !defined(USE_TASKLET) && defined(HAVE_TIMER_SETUP)
-+void veth_dma_tx_timer_do_H(struct timer_list *t)
-+#else
-+void veth_dma_tx_timer_do_H(unsigned long data)
-+#endif
-+{
-+	int txret, rxret;
-+
-+	txret = veth_dma_task_H(BSPVETH_TX);
-+
-+	rxret = veth_dma_task_H(BSPVETH_RX);
-+
-+	if (txret == BSP_ERR_AGAIN || rxret == BSP_ERR_AGAIN) {
-+#ifndef USE_TASKLET
-+		(void)mod_timer(&g_bspveth_dev.dmatimer, jiffies_64);
-+#else
-+		tasklet_hi_schedule(&g_bspveth_dev.dma_task);
-+#endif
-+	}
-+}
-+
-+s32 veth_dmatimer_close_H(void)
-+{
-+#ifndef USE_TASKLET
-+	(void)del_timer_sync(&g_bspveth_dev.dmatimer);
-+#else
-+	tasklet_kill(&g_bspveth_dev.dma_task);
-+#endif
-+
-+	VETH_LOG(DLOG_DEBUG, "bspveth_dmatimer_close RXTX TIMER ok\n");
-+
-+	return 0;
-+}
-+
-+void veth_dmatimer_init_H(void)
-+{
-+#ifndef USE_TASKLET
-+#ifdef HAVE_TIMER_SETUP
-+	timer_setup(&g_bspveth_dev.dmatimer, veth_dma_tx_timer_do_H, 0);
-+#else
-+	setup_timer(&g_bspveth_dev.dmatimer, veth_dma_tx_timer_do_H,
-+		    (unsigned long)&g_bspveth_dev);
-+#endif
-+	(void)mod_timer(&g_bspveth_dev.dmatimer,
-+			jiffies_64 + BSPVETH_DMATIMER_INTERVAL);
-+#else
-+	tasklet_init(&g_bspveth_dev.dma_task, veth_dma_tx_timer_do_H,
-+		     (unsigned long)&g_bspveth_dev);
-+#endif
-+
-+	VETH_LOG(DLOG_DEBUG, "bspveth_dmatimer_init RXTX TIMER OK\n");
-+}
-+
-+s32 dmacmp_err_deal(struct bspveth_rxtx_q *prxtx_queue, u32 queue,
-+		    u32 type)
-+{
-+	prxtx_queue->dmacmperr = 0;
-+	prxtx_queue->start_dma = 0;
-+
-+	(void)veth_reset_dma(type);
-+
-+	if (type == BSPVETH_RX) {
-+		VETH_LOG(DLOG_DEBUG,
-+			 "bmc->host dma time out,dma count:%d,work_limit:%d\n",
-+			 prxtx_queue->dmal_cnt,
-+			 prxtx_queue->work_limit);
-+
-+		g_bspveth_dev.prx_queue[queue]->s.dma_failed++;
-+	} else {
-+		VETH_LOG(DLOG_DEBUG,
-+			 "host->bmc dma time out,dma count:%d,work_limit:%d\n",
-+			 prxtx_queue->dmal_cnt,
-+			 prxtx_queue->work_limit);
-+
-+		g_bspveth_dev.ptx_queue[queue]->s.dma_failed++;
-+	}
-+
-+	if (prxtx_queue->dmal_cnt > 1)
-+		prxtx_queue->work_limit = (prxtx_queue->dmal_cnt >> 1);
-+
-+	prxtx_queue->dma_overtime++;
-+	if (prxtx_queue->dma_overtime > BSPVETH_MAX_QUE_DEEP) {
-+		schedule_work(&g_bspveth_dev.shutdown_task);
-+
-+		return -EFAULT;
-+	}
-+
-+	return BSP_OK;
-+}
-+
-+s32 veth_check_dma_status(struct bspveth_rxtx_q *prxtx_queue,
-+			  u32 queue, u32 type)
-+{
-+	int i = 0;
-+	enum dma_direction_e dir;
-+
-+	dir = GET_DMA_DIRECTION(type);
-+
-+	for (i = 0; i < BSPVETH_CHECK_DMA_STATUS_TIMES; i++) {
-+		if (bma_intf_check_dma_status(dir) == BSPVETH_DMA_OK)
-+			break;
-+
-+		cpu_relax();
-+
-+		if (i > 20)
-+			udelay(5);
-+	}
-+
-+	if (i >= BSPVETH_CHECK_DMA_STATUS_TIMES) {
-+		INC_STATIS_RXTX(queue, dma_busy, 1, type);
-+		prxtx_queue->dmacmperr++;
-+
-+		return -EFAULT;
-+	}
-+
-+	return BSP_OK;
-+}
-+
-+s32 __check_dmacmp_H(struct bspveth_rxtx_q *prxtx_queue, u32 queue,
-+		     u32 type)
-+{
-+	u16 start_dma = 0;
-+	u16 dmacmperr = 0;
-+	u32 cnt = 0;
-+	u32 len = 0;
-+	u32 host_head = 0;
-+	u32 host_tail = 0;
-+	u32 shm_head = 0;
-+	u32 shm_tail = 0;
-+	s32 ret = 0;
-+	struct bspveth_shmq_hd *pshmq_head = NULL;
-+
-+	if (!prxtx_queue || !prxtx_queue->pshmqhd_v)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	pshmq_head = prxtx_queue->pshmqhd_v;
-+	dmacmperr = prxtx_queue->dmacmperr;
-+	start_dma = prxtx_queue->start_dma;
-+	if (!start_dma)
-+		return BSP_OK;
-+
-+	if (dmacmperr > BSPVETH_WORK_LIMIT / 4)
-+		return dmacmp_err_deal(prxtx_queue, queue, type);
-+
-+	ret = veth_check_dma_status(prxtx_queue, queue, type);
-+	if (ret != BSP_OK)
-+		return ret;
-+
-+	prxtx_queue->start_dma = 0;
-+	prxtx_queue->dma_overtime = 0;
-+
-+	if (type == BSPVETH_RX) {
-+		cnt = prxtx_queue->dmal_cnt;
-+		len = prxtx_queue->dmal_byte;
-+
-+		host_head = prxtx_queue->head;
-+		shm_tail = pshmq_head->tail;
-+
-+		pshmq_head->tail = (shm_tail + cnt) & BSPVETH_POINT_MASK;
-+		prxtx_queue->head = (host_head + cnt) & BSPVETH_POINT_MASK;
-+
-+		g_bspveth_dev.prx_queue[queue]->s.dmapkt += cnt;
-+		g_bspveth_dev.prx_queue[queue]->s.dmapktbyte += len;
-+	} else {
-+		cnt = prxtx_queue->dmal_cnt;
-+		len = prxtx_queue->dmal_byte;
-+
-+		host_tail = prxtx_queue->tail;
-+		shm_head = pshmq_head->head;
-+
-+		prxtx_queue->tail = (host_tail + cnt) & BSPVETH_POINT_MASK;
-+		pshmq_head->head = (shm_head + cnt) & BSPVETH_POINT_MASK;
-+
-+		g_bspveth_dev.ptx_queue[queue]->s.dmapkt += cnt;
-+		g_bspveth_dev.ptx_queue[queue]->s.dmapktbyte += len;
-+	}
-+
-+#ifndef USE_TASKLET
-+	(void)mod_timer(&g_bspveth_dev.skbtrtimer, jiffies_64);
-+#else
-+	tasklet_hi_schedule(&g_bspveth_dev.skb_task);
-+#endif
-+
-+	(void)bma_intf_int_to_bmc(g_bspveth_dev.bma_priv);
-+
-+	g_bspveth_dev.tobmc_int++;
-+
-+	return BSP_OK;
-+}
-+
-+s32 __checkspace_H(struct bspveth_rxtx_q *prxtx_queue, u32 queue,
-+		   u32 type, u32 *pcnt)
-+{
-+	int ret = BSP_OK;
-+	u32 host_head, host_tail, host_nextfill;
-+	u32 shm_head, shm_tail, shm_nextfill;
-+	u32 shm_cnt, host_cnt, cnt_tmp, cnt;
-+	struct bspveth_shmq_hd *pshmq_head = NULL;
-+
-+	if (!prxtx_queue || !prxtx_queue->pshmqhd_v)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	pshmq_head = prxtx_queue->pshmqhd_v;
-+	host_head = prxtx_queue->head;
-+	host_tail = prxtx_queue->tail;
-+	host_nextfill = prxtx_queue->next_to_fill;
-+	shm_head = pshmq_head->head;
-+	shm_tail = pshmq_head->tail;
-+	shm_nextfill = pshmq_head->next_to_fill;
++	(void)kbox_dump_painc_info("\n====kbox begin dumping...====\n");
 +
 +	switch (type) {
-+	case BSPVETH_RX:
-+		if (shm_tail == shm_head) {
-+			INC_STATIS_RXTX(queue, shm_emp, 1, type);
-+			ret = BSP_ERR_NOT_TO_HANDLE;
-+			goto failed;
-+		}
++#ifdef CONFIG_X86
++	case KBOX_MCE_EVENT:
 +
-+		if (!JUDGE_RX_QUEUE_SPACE(host_head, host_nextfill, 1))
-+			return -EFAULT;
-+
-+		shm_cnt = (shm_head - shm_tail) & BSPVETH_POINT_MASK;
-+		cnt_tmp = min(shm_cnt, prxtx_queue->work_limit);
-+
-+		host_cnt = (host_nextfill - host_head) & BSPVETH_POINT_MASK;
-+		cnt = min(cnt_tmp, host_cnt);
++		kbox_handle_mce_dump(msg);
 +
 +		break;
++#endif
 +
-+	case BSPVETH_TX:
-+		if (host_tail == host_head) {
-+			INC_STATIS_RXTX(queue, q_emp, 1, type);
-+			ret = BSP_ERR_NOT_TO_HANDLE;
-+			goto failed;
-+		}
++	case KBOX_OPPS_EVENT:
 +
-+		if (!JUDGE_TX_QUEUE_SPACE(shm_head, shm_nextfill, 1))
-+			return -EFAULT;
++		break;
++	case KBOX_PANIC_EVENT:
++		if (kbox_handle_panic_dump(msg) == KBOX_FALSE)
++			goto end;
 +
-+		host_cnt = (host_head - host_tail) & BSPVETH_POINT_MASK;
-+		cnt_tmp = min(host_cnt, prxtx_queue->work_limit);
-+		shm_cnt = (shm_nextfill - (shm_head + 1)) & BSPVETH_POINT_MASK;
-+		cnt = min(cnt_tmp, shm_cnt);
++		break;
++	default:
++		break;
++	}
 +
++	kbox_show_kernel_version();
++
++	kbox_show_version();
++
++	kbox_show_time_stamps();
++
++	(void)kbox_dump_painc_info("\n====kbox end dump====\n");
++
++	kbox_output_syslog_info();
++	kbox_output_printk_info();
++
++end:
++	spin_unlock(&g_dump_lock);
++}
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.h b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.h
+new file mode 100644
+index 000000000000..cba31377fbf3
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.h
+@@ -0,0 +1,33 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _KBOX_DUMP_H_
++#define _KBOX_DUMP_H_
++
++#define DUMPSTATE_MCE_RESET 1
++#define DUMPSTATE_OPPS_RESET 2
++#define DUMPSTATE_PANIC_RESET 3
++
++enum kbox_error_type_e {
++	KBOX_MCE_EVENT = 1,
++	KBOX_OPPS_EVENT,
++	KBOX_PANIC_EVENT
++};
++
++int kbox_dump_thread_info(const char *fmt, ...);
++void kbox_dump_event(enum kbox_error_type_e type, unsigned long event,
++		     const char *msg);
++
++#endif
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.c b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.c
+new file mode 100644
+index 000000000000..b2acdf24188b
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.c
+@@ -0,0 +1,101 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/notifier.h>
++#include "kbox_include.h"
++#include "kbox_dump.h"
++#include "kbox_hook.h"
++
++int panic_notify(struct notifier_block *this,
++		 unsigned long event, void *msg);
++
++static int die_notify(struct notifier_block *self,
++		      unsigned long val, void *data);
++
++static struct notifier_block g_panic_nb = {
++	.notifier_call = panic_notify,
++	.priority = 100,
++};
++
++static struct notifier_block g_die_nb = {
++	.notifier_call = die_notify,
++};
++
++int panic_notify(struct notifier_block *pthis, unsigned long event, void *msg)
++{
++	UNUSED(pthis);
++	UNUSED(event);
++
++	kbox_dump_event(KBOX_PANIC_EVENT, DUMPSTATE_PANIC_RESET,
++			(const char *)msg);
++
++	return NOTIFY_OK;
++}
++
++int die_notify(struct notifier_block *self, unsigned long val, void *data)
++{
++	struct kbox_die_args *args = (struct kbox_die_args *)data;
++
++	if (!args)
++		return NOTIFY_OK;
++
++	switch (val) {
++	case 1:
++		break;
++	case 5:
++		if (strcmp(args->str, "nmi") == 0)
++			return NOTIFY_OK;
++#ifdef CONFIG_X86
++		kbox_dump_event(KBOX_MCE_EVENT, DUMPSTATE_MCE_RESET, args->str);
++#endif
 +		break;
 +
 +	default:
-+		INC_STATIS_RXTX(queue, type_err, 1, type);
-+		ret = -EFAULT;
-+		goto failed;
-+	}
-+
-+	if (cnt > (BSPVETH_DMABURST_MAX * 7 / 8))
-+		INC_STATIS_RXTX(queue, dma_burst, 1, type);
-+
-+#ifdef __UT_TEST
-+	if (g_testdma) {
-+		VETH_LOG(DLOG_ERROR,
-+			 "[type %d],host_cnt=%d cnt_tmp=%d shm_cnt=%d cnt=%d\n",
-+			 type, host_cnt, cnt_tmp, shm_cnt, cnt);
-+	}
-+#endif
-+
-+	*pcnt = cnt;
-+
-+	return BSP_OK;
-+
-+failed:
-+	return ret;
-+}
-+
-+int __make_dmalistbd_h2b_H(struct bspveth_rxtx_q *prxtx_queue,
-+			   u32 cnt, u32 type)
-+{
-+	u32 i = 0;
-+	u32 len = 0;
-+	u32 host_tail = 0;
-+	u32 shm_head = 0;
-+	u32 off = 0;
-+	struct bspveth_dmal *pdmalbase_v = NULL;
-+	struct bspveth_shmq_hd *pshmq_head = NULL;
-+	struct bspveth_bd_info *pbdinfobase_v = NULL;
-+	struct bspveth_dma_bd *pbdbase_v = NULL;
-+	struct bspveth_dma_shmbd *pshmbdbase_v = NULL;
-+
-+	if (!prxtx_queue)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	pdmalbase_v = prxtx_queue->pdmalbase_v;
-+	pshmq_head = prxtx_queue->pshmqhd_v;
-+	pbdinfobase_v = prxtx_queue->pbdinfobase_v;
-+	pbdbase_v = prxtx_queue->pbdbase_v;
-+	pshmbdbase_v = prxtx_queue->pshmbdbase_v;
-+	if (!pdmalbase_v || !pshmq_head || !pbdinfobase_v ||
-+	    !pbdbase_v || !pshmbdbase_v)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	host_tail = prxtx_queue->tail;
-+	shm_head = pshmq_head->head;
-+
-+	for (i = 0; i < cnt; i++) {
-+		off = pbdbase_v[QUEUE_MASK(host_tail + i)].off;
-+
-+		if (i == (cnt - 1))
-+			pdmalbase_v[i].chl = 0x9;
-+		else
-+			pdmalbase_v[i].chl = 0x0000001;
-+		pdmalbase_v[i].len =
-+		    (pbdinfobase_v[QUEUE_MASK(host_tail + i)].pdma_v)->len;
-+		pdmalbase_v[i].slow =
-+		    lower_32_bits(pbdbase_v[QUEUE_MASK(host_tail + i)].dma_p);
-+		pdmalbase_v[i].shi =
-+		    upper_32_bits(pbdbase_v[QUEUE_MASK(host_tail + i)].dma_p);
-+		pdmalbase_v[i].dlow =
-+		    lower_32_bits(pshmbdbase_v[QUEUE_MASK(shm_head + i)].dma_p);
-+		pdmalbase_v[i].dhi = 0;
-+
-+		pshmbdbase_v[QUEUE_MASK(shm_head + i)].len = pdmalbase_v[i].len;
-+
-+		pdmalbase_v[i].len += off;
-+
-+		pshmbdbase_v[QUEUE_MASK(shm_head + i)].off = off;
-+
-+		len += pdmalbase_v[i].len;
-+
-+#ifdef __UT_TEST
-+		if (g_testdma) {
-+			struct sk_buff *skb =
-+				pbdinfobase_v[QUEUE_MASK(host_tail + i)].pdma_v;
-+
-+			VETH_LOG(DLOG_ERROR,
-+				 "[%d][makebd-H2B]:chl=0x%x,len=%d,slow=0x%x,",
-+				 i, pdmalbase_v[i].chl, pdmalbase_v[i].len,
-+				 pdmalbase_v[i].slow);
-+			VETH_LOG(DLOG_ERROR,
-+				 "shi=0x%x,dlow=0x%x,dhi=0x%x,skb=%p,",
-+				 pdmalbase_v[i].shi, pdmalbase_v[i].dlow,
-+				 pdmalbase_v[i].dhi, skb);
-+			VETH_LOG(DLOG_ERROR,
-+				 "skb->data=%p,skb->len=%d,host_tail+i=%d,",
-+				 skb->data, skb->len,
-+				 QUEUE_MASK(host_tail + i));
-+			VETH_LOG(DLOG_ERROR,
-+				 "shm_head+i=%d,off=%d\n",
-+				 QUEUE_MASK(shm_head + i), off);
-+		}
-+#endif
-+	}
-+
-+	pdmalbase_v[i].chl = 0x7;
-+	pdmalbase_v[i].len = 0x0;
-+	pdmalbase_v[i].slow = lower_32_bits((u64)prxtx_queue->pdmalbase_p);
-+	pdmalbase_v[i].shi = upper_32_bits((u64)prxtx_queue->pdmalbase_p);
-+	pdmalbase_v[i].dlow = 0;
-+	pdmalbase_v[i].dhi = 0;
-+
-+	prxtx_queue->dmal_cnt = cnt;
-+	prxtx_queue->dmal_byte = len;
-+
-+#ifdef __UT_TEST
-+	if (g_testdma) {
-+		VETH_LOG(DLOG_ERROR,
-+			 "[END][makebd-H2B]:chl=0x%x,len=%d,slow=0x%x,",
-+			 pdmalbase_v[i].chl, pdmalbase_v[i].len,
-+			 pdmalbase_v[i].slow);
-+		VETH_LOG(DLOG_ERROR,
-+			 "shi=0x%x,dmal_cnt=%d,dmal_dir=%d,dmal_byte=%d,",
-+			 pdmalbase_v[i].shi, cnt, type, len);
-+		VETH_LOG(DLOG_ERROR, "pdmalbase_v=%p\n", pdmalbase_v);
-+	}
-+#endif
-+
-+	return 0;
-+}
-+
-+int __make_dmalistbd_b2h_H(struct bspveth_rxtx_q *prxtx_queue, u32 cnt,
-+			   u32 type)
-+{
-+	u32 i, len = 0, host_head, shm_tail, off;
-+	struct bspveth_dmal *pdmalbase_v = NULL;
-+	struct bspveth_shmq_hd *pshmq_head = NULL;
-+	struct bspveth_bd_info *pbdinfobase_v = NULL;
-+	struct bspveth_dma_bd *pbdbase_v = NULL;
-+	struct bspveth_dma_shmbd *pshmbdbase_v = NULL;
-+
-+	if (!prxtx_queue) {
-+		VETH_LOG(DLOG_ERROR,
-+			 "[END][makebd-B2H]:prxtx_queue NULL!!!\n");
-+		return BSP_ERR_NULL_POINTER;
-+	}
-+
-+	pdmalbase_v = prxtx_queue->pdmalbase_v;
-+	pshmq_head = prxtx_queue->pshmqhd_v;
-+	pbdinfobase_v = prxtx_queue->pbdinfobase_v;
-+	pbdbase_v = prxtx_queue->pbdbase_v;
-+	pshmbdbase_v = prxtx_queue->pshmbdbase_v;
-+	if (!pdmalbase_v || !pshmq_head || !pbdinfobase_v ||
-+	    !pbdbase_v || !pshmbdbase_v) {
-+		VETH_LOG(DLOG_ERROR,
-+			 "[END][makebd-B2H]:pdmalbase_v NULL!!!\n");
-+		return BSP_ERR_NULL_POINTER;
-+	}
-+
-+	host_head = prxtx_queue->head;
-+	shm_tail = pshmq_head->tail;
-+
-+	for (i = 0; i < cnt; i++) {
-+		off = pshmbdbase_v[QUEUE_MASK(shm_tail + i)].off;
-+		if (i == (cnt - 1))
-+			pdmalbase_v[i].chl = 0x9;
-+		else
-+			pdmalbase_v[i].chl = 0x0000001;
-+		pdmalbase_v[i].len = pshmbdbase_v[QUEUE_MASK(shm_tail + i)].len;
-+		pdmalbase_v[i].slow =
-+		    lower_32_bits(pshmbdbase_v[QUEUE_MASK(shm_tail + i)].dma_p);
-+		pdmalbase_v[i].shi = 0;
-+		pdmalbase_v[i].dlow =
-+		    lower_32_bits(pbdbase_v[QUEUE_MASK(host_head + i)].dma_p);
-+		pdmalbase_v[i].dhi =
-+		    upper_32_bits(pbdbase_v[QUEUE_MASK(host_head + i)].dma_p);
-+		pdmalbase_v[i].len += off;
-+
-+		pbdbase_v[QUEUE_MASK(host_head + i)].off = off;
-+		pbdbase_v[QUEUE_MASK(host_head + i)].len = pdmalbase_v[i].len;
-+
-+		len += pdmalbase_v[i].len;
-+
-+#ifdef __UT_TEST
-+		if (g_testdma) {
-+			struct sk_buff *skb =
-+				pbdinfobase_v[QUEUE_MASK(host_head + i)].pdma_v;
-+
-+			VETH_LOG(DLOG_ERROR,
-+				 "[%d][makebd-B2H]:chl=0x%x,len=%d,slow=0x%x,",
-+				 i, pdmalbase_v[i].chl, pdmalbase_v[i].len,
-+				 pdmalbase_v[i].slow);
-+			VETH_LOG(DLOG_ERROR,
-+				 "shi=0x%x,dlow=0x%x,dhi=0x%x,skb=%p,",
-+				 pdmalbase_v[i].shi, pdmalbase_v[i].dlow,
-+				 pdmalbase_v[i].dhi, skb);
-+			VETH_LOG(DLOG_ERROR,
-+				 "skb->data=%p,skb->len=%d,shm_tail+i=%d,",
-+				 skb->data, skb->len,
-+				 QUEUE_MASK(shm_tail + i));
-+			VETH_LOG(DLOG_ERROR,
-+				 "host_head+i=%d,off=%d\n",
-+				 QUEUE_MASK(host_head + i), off);
-+		}
-+#endif
-+	}
-+
-+	pdmalbase_v[i].chl = 0x0000007;
-+	pdmalbase_v[i].len = 0x0;
-+	pdmalbase_v[i].slow = lower_32_bits((u64)prxtx_queue->pdmalbase_p);
-+	pdmalbase_v[i].shi = upper_32_bits((u64)prxtx_queue->pdmalbase_p);
-+	pdmalbase_v[i].dlow = 0;
-+	pdmalbase_v[i].dhi = 0;
-+
-+	prxtx_queue->dmal_cnt = cnt;
-+	prxtx_queue->dmal_byte = len;
-+
-+#ifdef __UT_TEST
-+	if (g_testdma) {
-+		VETH_LOG(DLOG_ERROR,
-+			 "[END][makebd-B2H]:chl=0x%x,len=%d,slow=0x%x,",
-+			 pdmalbase_v[i].chl, pdmalbase_v[i].len,
-+			 pdmalbase_v[i].slow);
-+		VETH_LOG(DLOG_ERROR,
-+			 "shi=0x%x,dmal_cnt=%d,dmal_dir=%d,dmal_byte=%d ",
-+			 pdmalbase_v[i].shi, cnt, type, len);
-+		VETH_LOG(DLOG_ERROR, "pdmalbase_v=%p\n", pdmalbase_v);
-+	}
-+
-+#endif
-+
-+	return 0;
-+}
-+
-+s32 __start_dmalist_H(struct bspveth_rxtx_q *prxtx_queue, u32 cnt, u32 type)
-+{
-+	int ret = BSP_OK;
-+	struct bma_dma_transfer_s dma_transfer = { 0 };
-+
-+	if (!prxtx_queue)
-+		return -1;
-+
-+	switch (type) {
-+	case BSPVETH_RX:
-+		ret = __make_dmalistbd_b2h_H(prxtx_queue, cnt, type);
-+		if (ret)
-+			goto failed;
-+		dma_transfer.dir = BMC_TO_HOST;
-+
 +		break;
-+
-+	case BSPVETH_TX:
-+		ret = __make_dmalistbd_h2b_H(prxtx_queue, cnt, type);
-+		if (ret)
-+			goto failed;
-+		dma_transfer.dir = HOST_TO_BMC;
-+
-+		break;
-+
-+	default:
-+		ret = -1;
-+		goto failed;
 +	}
 +
-+	dma_transfer.type = DMA_LIST;
-+	dma_transfer.transfer.list.dma_addr =
-+		(dma_addr_t)prxtx_queue->pdmalbase_p;
-+
-+	ret = bma_intf_start_dma(g_bspveth_dev.bma_priv, &dma_transfer);
-+	if (ret < 0)
-+		goto failed;
-+
-+	prxtx_queue->start_dma = 1;
-+
-+	return BSP_OK;
-+
-+failed:
-+	return ret;
++	return NOTIFY_OK;
 +}
 +
-+int check_dma_queue_fault(struct bspveth_rxtx_q *prxtx_queue,
-+			  u32 queue, u32 type, u32 *pcnt)
-+{
-+	int ret = BSP_OK;
-+	u32 cnt = 0;
-+
-+	if (prxtx_queue->dma_overtime > BSPVETH_MAX_QUE_DEEP)
-+		return -EFAULT;
-+
-+	ret = __check_dmacmp_H(prxtx_queue, queue, type);
-+	if (ret != BSP_OK)
-+		return -EFAULT;
-+
-+	ret = __checkspace_H(prxtx_queue, queue, type, &cnt);
-+	if (ret != BSP_OK)
-+		return -EFAULT;
-+
-+	if (CHECK_DMA_RXQ_FAULT(prxtx_queue, type, cnt)) {
-+		udelay(50);
-+		prxtx_queue->dmal_cnt--;
-+
-+		return -EFAULT;
-+	}
-+
-+	*pcnt = cnt;
-+
-+	return BSP_OK;
-+}
-+
-+s32 __dma_rxtx_H(struct bspveth_rxtx_q *prxtx_queue, u32 queue, u32 type)
-+{
-+	int ret = BSP_OK;
-+	u32 cnt = 0;
-+	u32 shm_init;
-+	struct bspveth_shmq_hd *pshmq_head = NULL;
-+
-+	if (!prxtx_queue || !prxtx_queue->pshmqhd_v)
-+		return BSP_ERR_NULL_POINTER;
-+
-+	pshmq_head = prxtx_queue->pshmqhd_v;
-+	shm_init = pshmq_head->init;
-+	if (shm_init != BSPVETH_SHMQUEUE_INITOK) {
-+		INC_STATIS_RXTX(queue, shmqueue_noinit, 1, type);
-+		return -EFAULT;
-+	}
-+
-+	if (CHECK_DMA_QUEUE_EMPTY(type, prxtx_queue))
-+		return BSP_OK;
-+
-+	ret = check_dma_queue_fault(prxtx_queue, queue, type, &cnt);
-+	if (ret != BSP_OK)
-+		return -EFAULT;
-+
-+	ret = __start_dmalist_H(prxtx_queue, cnt, type);
-+	if (ret != BSP_OK)
-+		return -EFAULT;
-+
-+	if (cnt <= 16) {
-+		ret = __check_dmacmp_H(prxtx_queue, queue, type);
-+		if (ret != BSP_OK)
-+			return -EFAULT;
-+	}
-+
-+	return BSP_OK;
-+}
-+
-+int veth_dma_task_H(u32 type)
-+{
-+	int i;
-+	struct bspveth_rxtx_q *prxtx_queue = NULL;
-+
-+	for (i = 0; i < MAX_QUEUE_NUM; i++) {
-+		if (type == BSPVETH_RX) {
-+			g_bspveth_dev.run_dma_rx_task++;
-+			prxtx_queue = g_bspveth_dev.prx_queue[i];
-+		} else {
-+			g_bspveth_dev.run_dma_tx_task++;
-+			prxtx_queue = g_bspveth_dev.ptx_queue[i];
-+		}
-+
-+		if (prxtx_queue) {
-+			struct bspveth_shmq_hd *pshmq_head =
-+				prxtx_queue->pshmqhd_v;
-+			(void)__dma_rxtx_H(prxtx_queue, i, type);
-+			if ((type == BSPVETH_RX &&
-+			     pshmq_head->head != pshmq_head->tail) ||
-+				(type == BSPVETH_TX &&
-+				prxtx_queue->head != prxtx_queue->tail))
-+				return BSP_ERR_AGAIN;
-+		}
-+	}
-+
-+	return BSP_OK;
-+}
-+
-+#ifdef __UT_TEST
-+
-+s32 __atu_config_H(struct pci_dev *pdev, unsigned int region,
-+		   unsigned int hostaddr_h, unsigned int hostaddr_l,
-+		   unsigned int bmcaddr_h, unsigned int bmcaddr_l,
-+		   unsigned int len)
-+{
-+	(void)pci_write_config_dword(pdev, 0x900,
-+					 0x80000000 + (region & 0x00000007));
-+	(void)pci_write_config_dword(pdev, 0x90c, hostaddr_l);
-+	(void)pci_write_config_dword(pdev, 0x910, hostaddr_h);
-+	(void)pci_write_config_dword(pdev, 0x914, hostaddr_l + len - 1);
-+	(void)pci_write_config_dword(pdev, 0x918, bmcaddr_l);
-+	(void)pci_write_config_dword(pdev, 0x91c, bmcaddr_h);
-+	/*  atu ctrl1 reg	*/
-+	(void)pci_write_config_dword(pdev, 0x904, 0x00000000);
-+	/*  atu ctrl2 reg	*/
-+	(void)pci_write_config_dword(pdev, 0x908, 0x80000000);
-+
-+	return 0;
-+}
-+
-+void bspveth_atu_config_H(void)
-+{
-+	__atu_config_H(g_bspveth_dev.ppcidev,
-+		       REGION_HOST,
-+		       (sizeof(unsigned long) == SIZE_OF_UNSIGNED_LONG) ?
-+		       ((u64)(g_bspveth_dev.phostrtc_p) >> ADDR_H_SHIFT) : 0,
-+		       ((u64)(g_bspveth_dev.phostrtc_p) & 0xffffffff),
-+		       0, HOSTRTC_REG_BASE, HOSTRTC_REG_SIZE);
-+
-+	__atu_config_H(g_bspveth_dev.ppcidev,
-+		       REGION_BMC,
-+		       (sizeof(unsigned long) == SIZE_OF_UNSIGNED_LONG) ?
-+		       ((u64)(g_bspveth_dev.pshmpool_p) >> ADDR_H_SHIFT) : 0,
-+		       ((u64)(g_bspveth_dev.pshmpool_p) & 0xffffffff),
-+		       0, VETH_SHAREPOOL_BASE_INBMC, VETH_SHAREPOOL_SIZE);
-+}
-+
-+void bspveth_pcie_free_H(void)
-+{
-+	struct pci_dev *pdev = g_bspveth_dev.ppcidev;
-+
-+	if (pdev)
-+		pci_disable_device(pdev);
-+	else
-+		VETH_LOG(DLOG_ERROR, "bspveth_dev.ppcidev  IS NULL\n");
-+
-+	VETH_LOG(DLOG_DEBUG, "bspveth_pcie_exit_H ok\n");
-+}
-+
-+#endif
-+
-+void bspveth_host_exit_H(void)
++int kbox_register_hook(void)
 +{
 +	int ret = 0;
 +
-+	ret = bma_intf_unregister_type((void **)&g_bspveth_dev.bma_priv);
++	ret = atomic_notifier_chain_register(&panic_notifier_list, &g_panic_nb);
++	if (ret)
++		KBOX_MSG("atomic_notifier_chain_register g_panic_nb failed!\n");
++
++	ret = register_die_notifier(&g_die_nb);
++	if (ret)
++		KBOX_MSG("register_die_notifier g_die_nb failed!\n");
++
++	return ret;
++}
++
++void kbox_unregister_hook(void)
++{
++	int ret = 0;
++
++	ret =
++	    atomic_notifier_chain_unregister(&panic_notifier_list, &g_panic_nb);
 +	if (ret < 0) {
-+		VETH_LOG(DLOG_ERROR, "bma_intf_unregister_type failed\n");
-+
-+		return;
++		KBOX_MSG
++		    ("atomic_notifier_chain_unregister g_panic_nb failed!\n");
 +	}
 +
-+	VETH_LOG(DLOG_DEBUG, "bspveth host exit H OK\n");
++	ret = unregister_die_notifier(&g_die_nb);
++	if (ret < 0)
++		KBOX_MSG("unregister_die_notifier g_die_nb failed!\n");
++}
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.h b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.h
+new file mode 100644
+index 000000000000..00b3deb510b7
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.h
+@@ -0,0 +1,33 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _KBOX_PANIC_HOOK_H_
++#define _KBOX_PANIC_HOOK_H_
++
++struct kbox_die_args {
++	struct pt_regs *regs;
++	const char *str;
++	long err;
++	int trapnr;
++	int signr;
++};
++
++int register_die_notifier(struct notifier_block *nb);
++int unregister_die_notifier(struct notifier_block *nb);
++
++int kbox_register_hook(void);
++void kbox_unregister_hook(void);
++
++#endif
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_include.h b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_include.h
+new file mode 100644
+index 000000000000..ffadf3727734
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_include.h
+@@ -0,0 +1,40 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _KBOX_INCLUDE_H_
++#define _KBOX_INCLUDE_H_
++
++#include <linux/kernel.h>
++#include <linux/version.h>
++#include <linux/netdevice.h>
++
++#ifdef DRV_VERSION
++#define KBOX_VERSION MICRO_TO_STR(DRV_VERSION)
++#else
++#define KBOX_VERSION "0.3.4"
++#endif
++
++#define UNUSED(x) (x = x)
++#define KBOX_FALSE (-1)
++#define KBOX_TRUE 0
++
++#ifdef KBOX_DEBUG
++#define KBOX_MSG(fmt, args...) \
++	netdev_notice(0, "kbox: %s(), %d, " fmt, __func__, __LINE__, ## args)
++#else
++#define KBOX_MSG(fmt, args...)
++#endif
++
++#endif
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.c b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.c
+new file mode 100644
+index 000000000000..374ce49d570e
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.c
+@@ -0,0 +1,168 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/module.h>
++#include <linux/processor.h>	/* for rdmsr and MSR_IA32_MCG_STATUS */
++#include <linux/fs.h>		/* everything... */
++#include <linux/file.h>		/* for fput */
++#include <linux/proc_fs.h>
++#include <linux/uaccess.h>		/* copy_*_user */
++#include <linux/version.h>
++#include "kbox_include.h"
++#include "kbox_panic.h"
++#include "kbox_main.h"
++#include "kbox_printk.h"
++#include "kbox_ram_image.h"
++#include "kbox_ram_op.h"
++#include "kbox_dump.h"
++#include "kbox_hook.h"
++#include "kbox_ram_drive.h"
++
++#ifdef CONFIG_X86
++#include <asm/msr.h>
++#include "kbox_mce.h"
++#endif
++
++#define KBOX_LOADED_FILE ("/proc/kbox")
++
++#define KBOX_ROOT_ENTRY_NAME ("kbox")
++
++static int kbox_is_loaded(void)
++{
++	struct file *fp = NULL;
++	mm_segment_t old_fs;
++
++	old_fs = get_fs();		/* save old flag */
++	set_fs(KERNEL_DS);	/* mark data from kernel space */
++
++	fp = filp_open(KBOX_LOADED_FILE, O_RDONLY, 0);
++
++	if (IS_ERR(fp)) {
++		set_fs(old_fs);
++		return KBOX_FALSE;
++	}
++
++	(void)filp_close(fp, NULL);
++
++	set_fs(old_fs);		/* restore old flag */
++
++	return KBOX_TRUE;
 +}
 +
-+s32 bspveth_host_init_H(void)
++static int kbox_printk_proc_init(void)
 +{
-+	int ret = 0;
-+	struct bma_priv_data_s *bma_priv = NULL;
++	struct proc_dir_entry *kbox_entry = NULL;
 +
-+	ret = bma_intf_register_type(TYPE_VETH, 0, INTR_ENABLE,
-+				     (void **)&bma_priv);
-+	if (ret) {
-+		ret = -1;
-+		goto failed;
++	if (kbox_is_loaded() != KBOX_TRUE) {
++		kbox_entry = proc_mkdir(KBOX_ROOT_ENTRY_NAME, NULL);
++		if (!kbox_entry) {
++			KBOX_MSG("can not create %s entry\n",
++				 KBOX_ROOT_ENTRY_NAME);
++			return -ENOMEM;
++		}
 +	}
 +
-+	if (!bma_priv) {
-+		VETH_LOG(DLOG_ERROR, "bma_priv is NULL\n");
-+		return -1;
-+	}
-+
-+	VETH_LOG(DLOG_DEBUG,
-+		 "bma_intf_register_type pdev = %p, veth_swap_addr = %p, ",
-+		 bma_priv->specific.veth.pdev,
-+		 bma_priv->specific.veth.veth_swap_addr);
-+
-+	VETH_LOG(DLOG_DEBUG,
-+		 "veth_swap_len = 0x%lx, veth_swap_phy_addr = 0x%lx\n",
-+		 bma_priv->specific.veth.veth_swap_len,
-+		 bma_priv->specific.veth.veth_swap_phy_addr);
-+
-+	g_bspveth_dev.bma_priv = bma_priv;
-+	g_bspveth_dev.ppcidev = bma_priv->specific.veth.pdev;
-+
-+	/*bspveth_dev.phostrtc_p = (u8 *)bar1_base;*/
-+	/*bspveth_dev.phostrtc_v = (u8 *)bar1_remap;*/
-+	g_bspveth_dev.pshmpool_p =
-+			(u8 *)bma_priv->specific.veth.veth_swap_phy_addr;
-+	g_bspveth_dev.pshmpool_v =
-+			(u8 *)bma_priv->specific.veth.veth_swap_addr;
-+	g_bspveth_dev.shmpoolsize = bma_priv->specific.veth.veth_swap_len;
-+
-+	VETH_LOG(DLOG_DEBUG, "bspveth host init H OK\n");
-+
-+	return BSP_OK;
-+
-+failed:
-+	return ret;
++	return KBOX_TRUE;
 +}
 +
-+static int __init veth_init(void)
++int __init kbox_init(void)
 +{
-+	int ret = BSP_OK;
-+	int buf_len = 0;
++	int ret = KBOX_TRUE;
++	int kbox_proc_exist = 0;
 +
-+	if (!bma_intf_check_edma_supported())
++	if (!kbox_get_base_phy_addr())
 +		return -ENXIO;
 +
-+	memset(&g_bspveth_dev, 0, sizeof(g_bspveth_dev));
-+
-+	buf_len = snprintf(g_bspveth_dev.name, NET_NAME_LEN,
-+			   "%s", BSPVETH_DEV_NAME);
-+	if (buf_len < 0 || ((u32)buf_len >= (NET_NAME_LEN))) {
-+		VETH_LOG(DLOG_ERROR, "BSP_SNPRINTF lRet =0x%x\n", buf_len);
-+		return BSP_ERR_INVALID_STR;
++	ret = kbox_super_block_init();
++	if (ret) {
++		KBOX_MSG("kbox_super_block_init failed!\n");
++		return ret;
 +	}
 +
-+	ret = bspveth_host_init_H();
-+	if (ret != BSP_OK) {
-+		ret = -1;
-+		goto failed1;
++	if (kbox_is_loaded() == KBOX_TRUE)
++		kbox_proc_exist = 1;
++
++	ret = kbox_printk_init(kbox_proc_exist);
++	if (ret)
++		KBOX_MSG("kbox_printk_init failed!\n");
++
++	ret = kbox_panic_init();
++	if (ret) {
++		KBOX_MSG("kbox_panic_init failed!\n");
++		goto fail1;
 +	}
 +
-+	ret = veth_netdev_init();
-+	if (ret != BSP_OK) {
-+		ret = -1;
-+		goto failed2;
++	ret = kbox_register_hook();
++	if (ret) {
++		KBOX_MSG("kbox_register_hook failed!\n");
++		goto fail2;
 +	}
 +
-+	GET_SYS_SECONDS(g_bspveth_dev.init_time);
++#ifdef CONFIG_X86
++	(void)kbox_mce_init();
++#endif
++	ret = kbox_read_super_block();
++	if (ret) {
++		KBOX_MSG("update super block failed!\n");
++		goto fail3;
++	}
 +
-+	return BSP_OK;
++	if (kbox_printk_proc_init() != 0) {
++		KBOX_MSG("kbox_printk_proc_init failed!\n");
++		goto fail4;
++	}
 +
-+failed2:
-+	bspveth_host_exit_H();
++	ret = kbox_drive_init();
++	if (ret) {
++		KBOX_MSG("kbox_drive_init failed!\n");
++		goto fail5;
++	}
 +
-+failed1:
++	return KBOX_TRUE;
++
++fail5:
++fail4:
++fail3:
++#ifdef CONFIG_X86
++	kbox_mce_exit();
++#endif
++	kbox_unregister_hook();
++fail2:
++	kbox_panic_exit();
++fail1:
++	kbox_printk_exit();
 +
 +	return ret;
 +}
 +
-+static void __exit veth_exit(void)
++void __exit kbox_cleanup(void)
 +{
-+	veth_netdev_exit();
-+
-+	bspveth_host_exit_H();
++	kbox_drive_cleanup();
++#ifdef CONFIG_X86
++	kbox_mce_exit();
++#endif
++	kbox_unregister_hook();
++	kbox_panic_exit();
++	kbox_printk_exit();
 +}
 +
 +MODULE_AUTHOR("HUAWEI TECHNOLOGIES CO., LTD.");
-+MODULE_DESCRIPTION("HUAWEI VETH DRIVER");
++MODULE_DESCRIPTION("HUAWEI KBOX DRIVER");
 +MODULE_LICENSE("GPL");
-+MODULE_VERSION(VETH_VERSION);
-+
-+module_init(veth_init);
-+module_exit(veth_exit);
-diff --git a/drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.h b/drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.h
++MODULE_VERSION(KBOX_VERSION);
++#ifndef _lint
++module_init(kbox_init);
++module_exit(kbox_cleanup);
++#endif
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.h b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.h
 new file mode 100644
-index 000000000000..9a4d699e6421
+index 000000000000..2ae02b736529
 --- /dev/null
-+++ b/drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.h
-@@ -0,0 +1,440 @@
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.h
+@@ -0,0 +1,23 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/*Huawei iBMA driver.
-+ *Copyright (c) 2017, Huawei Technologies Co., Ltd.
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
 + *
-+ *This program is free software; you can redistribute it and/or
-+ *modify it under the terms of the GNU General Public License
-+ *as published by the Free Software Foundation; either version 2
-+ *of the License, or (at your option) any later version.
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
 + *
-+ *This program is distributed in the hope that it will be useful,
-+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *GNU General Public License for more details.
-+ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
 + */
 +
-+#ifndef _VETH_HB_H_
-+#define _VETH_HB_H_
-+
-+#ifdef __cplusplus
-+extern "C" {
-+#endif
-+
-+#include <linux/interrupt.h>
-+
-+#define DEP_BMA
++#ifndef _KBOX_MAIN_H_
++#define _KBOX_MAIN_H_
 +
 +#include "../edma_drv/bma_include.h"
-+#include "../include/bma_ker_intf.h"
++int kbox_init(void);
++void kbox_cleanup(void);
 +
-+#ifdef DRV_VERSION
-+#define VETH_VERSION	MICRO_TO_STR(DRV_VERSION)
-+#else
-+#define VETH_VERSION	"0.3.4"
 +#endif
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.c b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.c
+new file mode 100644
+index 000000000000..e9bd931b826e
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.c
+@@ -0,0 +1,264 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
 +
-+#define MODULE_NAME	"veth"
-+#define BSP_VETH_T	u64
++#include <linux/version.h>
++#include <linux/types.h>
++#include <linux/atomic.h>
++#include <linux/smp.h>
++#include <linux/notifier.h>
++#include <asm/mce.h>
++#include <asm/msr.h>
 +
-+#define BSP_OK				(0)
-+#define BSP_ERR				(0xFFFFFFFF)
-+#define BSP_NETDEV_TX_BUSY		(1)
-+#define BSP_ERR_INIT_ERR		(BSP_NETDEV_TX_BUSY)
-+#define BSP_ETH_ERR_BASE		(0x0FFFF000)
-+#define BSP_ERR_OUT_OF_MEM		(BSP_ETH_ERR_BASE + 1)
-+#define BSP_ERR_NULL_POINTER		(BSP_ETH_ERR_BASE + 2)
-+#define BSP_ERR_INVALID_STR		(BSP_ETH_ERR_BASE + 3)
-+#define BSP_ERR_INVALID_PARAM		(BSP_ETH_ERR_BASE + 4)
-+#define BSP_ERR_INVALID_DATA		(BSP_ETH_ERR_BASE + 5)
-+#define BSP_ERR_OUT_OF_RANGE		(BSP_ETH_ERR_BASE + 6)
-+#define BSP_ERR_INVALID_CARD		(BSP_ETH_ERR_BASE + 7)
-+#define BSP_ERR_INVALID_GRP		(BSP_ETH_ERR_BASE + 8)
-+#define BSP_ERR_INVALID_ETH		(BSP_ETH_ERR_BASE + 9)
-+#define BSP_ERR_SEND_ERR		(BSP_ETH_ERR_BASE + 10)
-+#define BSP_ERR_DMA_ERR			(BSP_ETH_ERR_BASE + 11)
-+#define BSP_ERR_RECV_ERR		(BSP_ETH_ERR_BASE + 12)
-+#define BSP_ERR_SKB_ERR			(BSP_ETH_ERR_BASE + 13)
-+#define BSP_ERR_DMA_ADDR_ERR		(BSP_ETH_ERR_BASE + 14)
-+#define BSP_ERR_IOREMAP_ERR		(BSP_ETH_ERR_BASE + 15)
-+#define BSP_ERR_LEN_ERR			(BSP_ETH_ERR_BASE + 16)
-+#define BSP_ERR_STAT_ERR		(BSP_ETH_ERR_BASE + 17)
-+#define BSP_ERR_AGAIN			(BSP_ETH_ERR_BASE + 18)
-+#define BSP_ERR_NOT_TO_HANDLE		(BSP_ETH_ERR_BASE + 19)
++#include "kbox_include.h"
++#include "kbox_mce.h"
++#include "kbox_dump.h"
++#include "kbox_printk.h"
++#include "kbox_panic.h"
 +
-+#define VETH_H2B_IRQ_NO			(113)
-+#define SYSCTL_REG_BASE			(0x20000000)
-+#define SYSCTL_REG_SIZE			(0x1000)
-+#define PCIE1_REG_BASE			(0x29000000)
-+#define PCIE1_REG_SIZE			(0x1000)
-+#define VETH_SHAREPOOL_BASE_INBMC	(0x84820000)
-+#define VETH_SHAREPOOL_SIZE		(0xdf000)
-+#define VETH_SHAREPOOL_OFFSET		(0x10000)
-+#define MAX_SHAREQUEUE_SIZE		(0x20000)
-+
-+#define BSPVETH_SHMBDBASE_OFFSET	(0x80)
-+#define SHMDMAL_OFFSET			(0x10000)
-+#define MAX_SHMDMAL_SIZE		(BSPVETH_DMABURST_MAX * 32)
-+
-+#define BSPVETH_DMABURST_MAX		64
-+#define BSPVETH_SKBTIMER_INTERVAL	(1)
-+#define BSPVETH_DMATIMER_INTERVAL	(1)
-+#define BSPVETH_CTLTIMER_INTERVAL	(10)
-+#define BSPVETH_HDCMD_CHKTIMER_INTERVAL	(10)
-+#define BSP_DMA_64BIT_MASK		(0xffffffffffffffffULL)
-+#define BSP_DMA_32BIT_MASK		(0x00000000ffffffffULL)
-+#define HOSTRTC_REG_BASE		(0x2f000000)
-+#define HOSTRTC_REG_SIZE		(0x10000)
-+#define REG_SYSCTL_HOSTINT_CLEAR	(0x44)
-+#define SHIFT_SYSCTL_HOSTINT_CLEAR	(22)
-+#define REG_SYSCTL_HOSTINT		(0xf4)
-+#define SHIFT_SYSCTL_HOSTINT		(26)
-+
-+#define NET_TYPE_LEN			(16)
-+
-+#define MAX_QUEUE_NUM			(1)
-+#define MAX_QUEUE_BDNUM			(128)
-+#define BSPVETH_MAX_QUE_DEEP		(MAX_QUEUE_BDNUM)
-+#define BSPVETH_POINT_MASK		(MAX_QUEUE_BDNUM - 1)
-+#define BSPVETH_WORK_LIMIT		(64)
-+#define BSPVETH_CHECK_DMA_STATUS_TIMES	(120)
-+
-+#define REG_PCIE1_DMAREAD_ENABLE	(0xa18)
-+#define SHIFT_PCIE1_DMAREAD_ENABLE	(0)
-+#define REG_PCIE1_DMAWRITE_ENABLE	(0x9c4)
-+#define SHIFT_PCIE1_DMAWRITE_ENABLE	(0)
-+#define REG_PCIE1_DMAREAD_STATUS	(0xa10)
-+#define SHIFT_PCIE1_DMAREAD_STATUS	(0)
-+#define REG_PCIE1_DMAREADINT_CLEAR	(0xa1c)
-+#define SHIFT_PCIE1_DMAREADINT_CLEAR	(0)
-+#define REG_PCIE1_DMAWRITE_STATUS	(0x9bc)
-+#define SHIFT_PCIE1_DMAWRITE_STATUS	(0)
-+#define REG_PCIE1_DMAWRITEINT_CLEAR	(0x9c8)
-+#define SHIFT_PCIE1_DMAWRITEINT_CLEAR	(0)
-+
-+#define BSPVETH_DMA_OK			(1)
-+#define BSPVETH_DMA_BUSY		(0)
-+#define BSPVETH_RX			(2)
-+#define BSPVETH_TX			(3)
-+#define HOSTRTC_INT_OFFSET		(0x10)
-+#define BSPVETH_DEV_NAME		(MODULE_NAME)
-+#define NET_NAME_LEN			(64)
-+
-+#ifdef PCI_VENDOR_ID_HUAWEI
-+#undef PCI_VENDOR_ID_HUAWEI
-+#endif
-+#define PCI_VENDOR_ID_HUAWEI		(0x19e5)
-+
-+#define PCI_DEVICE_ID_KBOX		(0x1710)
-+#define BSPVETH_MTU_MAX			(1500)
-+#define BSPVETH_MTU_MIN			(64)
-+#define BSPVETH_SKB_SIZE		(1536)
-+#define BSPVETH_NET_TIMEOUT		(5 * HZ)
-+#define BSPVETH_QUEUE_TIMEOUT_10MS	(100)
-+#define BSPVETH_SHMQUEUE_INITOK		(0x12)
-+#define BSPVETH_LBK_TYPE		(0x800)
-+
-+#ifndef VETH_BMC
-+#define BSPVETH_CACHELINE_SIZE		(64)
-+#else
-+#define BSPVETH_CACHELINE_SIZE		(32)
-+#endif
-+#define BSPVETH_HBCMD_WCMP		(0x44)
-+#define BSPVETH_HBCMD_CMP		(0x55)
-+#define BSPVETH_HBCMD_OK		(0x66)
-+#define BSPVETH_HEART_WACK		(0x99)
-+#define BSPVETH_HEART_ACK		(0xaa)
-+
-+#define BSPVETH_HBCMD_TIMEOUT		(1000)
-+
-+#define SIZE_OF_UNSIGNED_LONG 8
-+#define ADDR_H_SHIFT 32
-+#define REGION_HOST 1
-+#define REGION_BMC 2
-+
-+enum veth_hb_cmd {
-+	VETH_HBCMD_UNKNOWN = 0x0,
-+	VETH_HBCMD_SETIP,
-+
-+	VETH_HBCMD_MAX,
++enum context {
++	KBOX_IN_KERNEL = 1, KBOX_IN_USER = 2
 +};
 +
-+#define USE_TASKLET
-+
-+#define BSPVETH_ETHTOOL_BASE		0x89F0
-+#define BSPVETH_ETHTOOL_TESTINT		(BSPVETH_ETHTOOL_BASE + 1)
-+#define BSPVETH_ETHTOOL_TESTSHAREMEM	(BSPVETH_ETHTOOL_BASE + 2)
-+#define BSPVETH_ETHTOOL_DUMPSHAREMEM	(BSPVETH_ETHTOOL_BASE + 3)
-+#define BSPVETH_ETHTOOL_TESTDMA		(BSPVETH_ETHTOOL_BASE + 4)
-+#define BSPVETH_ETHTOOL_RWPCIEREG	(BSPVETH_ETHTOOL_BASE + 5)
-+#define BSPVETH_ETHTOOL_TESTLBK		(BSPVETH_ETHTOOL_BASE + 6)
-+#define BSPVETH_ETHTOOL_INITSTATIS	(BSPVETH_ETHTOOL_BASE + 7)
-+#define BSPVETH_HBCMD			(BSPVETH_ETHTOOL_BASE + 8)
-+
-+struct bspveth_test {
-+	u32 intdirect;	/*0--H2B,1--B2H*/
-+	u32 rwshmcheck;	/*0--w,1--r and check*/
-+	u32 dshmbase;
-+	u32 dshmlen;
-+	u32 testdma;	/*0--disable,1---enable*/
-+	u32 pcierw;	/*0--w,1---r*/
-+	u32 reg;
-+	u32 data;
-+	u32 testlbk;	/*0--disable,1---enable*/
++enum ser {
++	KBOX_SER_REQUIRED = 1, KBOX_NO_SER = 2
 +};
 +
-+struct bspveth_hdcmd {
-+	u32 cmd;
-+	u32 stat;
-+	u32 heart;
-+	u32 err;
-+	u32 sequence;
-+	u32 len;
-+	u8 data[256];
++enum severity_level {
++	KBOX_MCE_NO_SEVERITY,
++	KBOX_MCE_KEEP_SEVERITY,
++	KBOX_MCE_SOME_SEVERITY,
++	KBOX_MCE_AO_SEVERITY,
++	KBOX_MCE_UC_SEVERITY,
++	KBOX_MCE_AR_SEVERITY,
++	KBOX_MCE_PANIC_SEVERITY,
 +};
 +
-+struct bspveth_rxtx_statis {
-+	u64 pkt;
-+	u64 pktbyte;
-+	u64 refill;
-+	u64 freetx;
-+	u64 dmapkt;
-+	u64 dmapktbyte;
++static struct severity {
++	u64 kbox_mask;
++	u64 kbox_result;
++	unsigned char kbox_sev;
++	unsigned char kbox_mcgmask;
++	unsigned char kbox_mcgres;
++	unsigned char kbox_ser;
++	unsigned char kbox_context;
++	unsigned char kbox_covered;
++	char *kbox_msg;
++} kbox_severities[] = {
++#define KBOX_KERNEL .kbox_context = KBOX_IN_KERNEL
++#define KBOX_USER .kbox_context = KBOX_IN_USER
++#define KBOX_SER .kbox_ser      = KBOX_SER_REQUIRED
++#define KBOX_NOSER .kbox_ser    = KBOX_NO_SER
++#define KBOX_SEV(s) .kbox_sev   = KBOX_MCE_ ## s ## _SEVERITY
++#define KBOX_BITCLR(x, s, m, r...) \
++	{ .kbox_mask = x, .kbox_result = 0, KBOX_SEV(s), .kbox_msg = m, ## r }
++#define KBOX_BITSET(x, s, m, r...) \
++	{ .kbox_mask = x, .kbox_result = x, KBOX_SEV(s), .kbox_msg = m, ## r }
++#define KBOX_MCGMASK(x, res, s, m, r...) \
++	{ .kbox_mcgmask = x, .kbox_mcgres = res, KBOX_SEV(s),   \
++	  .kbox_msg = m, ## r }
++#define KBOX_MASK(x, y, s, m, r...) \
++	{ .kbox_mask = x, .kbox_result = y, KBOX_SEV(s), .kbox_msg = m, ## r }
++#define KBOX_MCI_UC_S (MCI_STATUS_UC | MCI_STATUS_S)
++#define KBOX_MCI_UC_SAR (MCI_STATUS_UC | MCI_STATUS_S | MCI_STATUS_AR)
++#define KBOX_MCACOD 0xffff
 +
-+	u32 dropped_pkt;
-+	u32 netifrx_err;
-+	u32 null_point;
-+	u32 retry_err;
-+	u32 dma_mapping_err;
-+	u32 allocskb_err;
-+	u32 q_full;
-+	u32 q_emp;
-+	u32 shm_full;
-+	u32 shm_emp;
-+	u32 dma_busy;
-+	u32 need_fill;
-+	u32 need_free;
-+	u32 dmacmp_err;
-+	u32 type_err;
-+	u32 shmqueue_noinit;
-+	u32 shmretry_err;
-+	u32 dma_earlyint;
-+	u32 clr_dma_earlyint;
-+	u32 clr_dma_int;
-+	u32 dmarx_shmaddr_unalign;
-+	u32 dmarx_hostaddr_unalign;
-+	u32 dmatx_shmaddr_unalign;
-+	u32 dmatx_hostaddr_unalign;
-+	u32 dma_need_offset;
-+	u32 lastdmadir_err;
-+	u32 dma_failed;
-+	u32 dma_burst;
-+	u32 lbk_cnt;
-+	u32 lbk_txerr;
++KBOX_BITCLR(MCI_STATUS_VAL, NO, "Invalid"),
++KBOX_BITCLR(MCI_STATUS_EN, NO, "Not enabled"),
++KBOX_BITSET(MCI_STATUS_PCC, PANIC, "Processor context corrupt"),
++
++KBOX_MCGMASK(MCG_STATUS_MCIP, 0, PANIC, "MCIP not set in MCA handler"),
++
++KBOX_MCGMASK(MCG_STATUS_RIPV | MCG_STATUS_EIPV, 0, PANIC,
++	     "Neither restart nor error IP"),
++KBOX_MCGMASK(MCG_STATUS_RIPV, 0, PANIC, "In kernel and no restart IP",
++	     KBOX_KERNEL),
++KBOX_BITCLR(MCI_STATUS_UC, KEEP, "Corrected error", KBOX_NOSER),
++KBOX_MASK(MCI_STATUS_OVER | MCI_STATUS_UC | MCI_STATUS_EN, MCI_STATUS_UC, SOME,
++	  "Spurious not enabled", KBOX_SER),
++
++KBOX_MASK(KBOX_MCI_UC_SAR, MCI_STATUS_UC, KEEP,
++	  "Uncorrected no action required", KBOX_SER),
++KBOX_MASK(MCI_STATUS_OVER | KBOX_MCI_UC_SAR, MCI_STATUS_UC | MCI_STATUS_AR,
++	  PANIC, "Illegal combination (UCNA with AR=1)", KBOX_SER),
++KBOX_MASK(MCI_STATUS_S, 0, KEEP, "Non signalled machine check", KBOX_SER),
++
++KBOX_MASK(MCI_STATUS_OVER | KBOX_MCI_UC_SAR, MCI_STATUS_OVER | KBOX_MCI_UC_SAR,
++	  PANIC, "Action required with lost events", KBOX_SER),
++KBOX_MASK(MCI_STATUS_OVER | KBOX_MCI_UC_SAR | KBOX_MCACOD, KBOX_MCI_UC_SAR,
++	  PANIC, "Action required; unknown MCACOD", KBOX_SER),
++
++KBOX_MASK(KBOX_MCI_UC_SAR | MCI_STATUS_OVER | 0xfff0, KBOX_MCI_UC_S | 0xc0,
++	  AO, "Action optional: memory scrubbing error", KBOX_SER),
++KBOX_MASK(KBOX_MCI_UC_SAR | MCI_STATUS_OVER | KBOX_MCACOD,
++	  KBOX_MCI_UC_S | 0x17a, AO,
++	"Action optional: last level cache writeback error", KBOX_SER),
++
++KBOX_MASK(MCI_STATUS_OVER | KBOX_MCI_UC_SAR, KBOX_MCI_UC_S, SOME,
++	  "Action optional unknown MCACOD", KBOX_SER),
++KBOX_MASK(MCI_STATUS_OVER | KBOX_MCI_UC_SAR, KBOX_MCI_UC_S | MCI_STATUS_OVER,
++	  SOME, "Action optional with lost events", KBOX_SER),
++KBOX_BITSET(MCI_STATUS_UC | MCI_STATUS_OVER, PANIC, "Overflowed uncorrected"),
++KBOX_BITSET(MCI_STATUS_UC, UC, "Uncorrected"),
++KBOX_BITSET(0, SOME, "No match")
 +};
 +
-+struct bspveth_bd_info {
-+	struct sk_buff *pdma_v;
-+	u32 len;
-+	unsigned long time_stamp;
-+};
++static unsigned int g_kbox_nr_mce_banks;
++static unsigned int g_kbox_mce_ser;
++static atomic_t g_mce_dump_state = ATOMIC_INIT(0);
 +
-+struct bspveth_dma_shmbd {
-+	u32 dma_p;
-+	u32 len;
-+	u32 off;
-+};
++static int kbox_mce_severity(u64 mcgstatus, u64 status)
++{
++	struct severity *s;
 +
-+struct bspveth_shmq_hd {
-+	u32 count;
-+	u32 size;	/*count x sizeof(dmaBD)*/
-+	u32 next_to_fill;
-+	u32 next_to_free;
-+	u32 head;
-+	u32 tail;
-+	u16 init;	/*  1--ok,0--nok*/
-+};
++	for (s = kbox_severities;; s++) {
++		if ((status & s->kbox_mask) != s->kbox_result)
++			continue;
 +
-+struct bspveth_dma_bd {
-+	u64 dma_p;
-+	u32 len;
-+	u32 off;
-+};
++		if ((mcgstatus & s->kbox_mcgmask) != s->kbox_mcgres)
++			continue;
 +
-+struct bspveth_dmal {
-+	u32 chl;
-+	u32 len;
-+	u32 slow;
-+	u32 shi;
-+	u32 dlow;
-+	u32 dhi;
-+};
++		if (s->kbox_ser == KBOX_SER_REQUIRED && !g_kbox_mce_ser)
++			continue;
 +
-+struct bspveth_rxtx_q {
-+#ifndef VETH_BMC
-+	struct bspveth_dma_bd *pbdbase_v;
-+	u8 *pbdbase_p;
-+#endif
++		if (s->kbox_ser == KBOX_NO_SER && g_kbox_mce_ser)
++			continue;
 +
-+	struct bspveth_bd_info *pbdinfobase_v;
-+	struct bspveth_shmq_hd *pshmqhd_v;
-+	u8 *pshmqhd_p;
++		break;
++	}
 +
-+	struct bspveth_dma_shmbd *pshmbdbase_v;
-+	u8 *pshmbdbase_p;
-+
-+	struct bspveth_dmal *pdmalbase_v;
-+	u8 *pdmalbase_p;
-+
-+	u32 dmal_cnt;
-+	u32 dmal_byte;
-+
-+	u32 count;
-+	u32 size;
-+	u32 rx_buf_len;
-+
-+	u32 next_to_fill;
-+	u32 next_to_free;
-+	u32 head;
-+	u32 tail;
-+	u16 start_dma;
-+	u16 dmacmperr;
-+
-+	u16 dma_overtime;
-+
-+	u32 work_limit;
-+	struct bspveth_rxtx_statis s;
-+};
-+
-+struct bspveth_device {
-+	struct bspveth_rxtx_q *ptx_queue[MAX_QUEUE_NUM];
-+	struct bspveth_rxtx_q *prx_queue[MAX_QUEUE_NUM];
-+	struct net_device *pnetdev;
-+	char name[NET_NAME_LEN];
-+
-+	struct pci_dev *ppcidev;
-+	u8 *phostrtc_p;
-+	u8 *phostrtc_v;
-+
-+	u8 *psysctl_v;
-+	u8 *ppcie1_v;
-+
-+	u8 *pshmpool_p;
-+	u8 *pshmpool_v;
-+	u32 shmpoolsize;
-+
-+	u32 recv_int;
-+	u32 tobmc_int;
-+	u32 tohost_int;
-+	u32 run_dma_tx_task;
-+	u32 run_dma_rx_task;
-+	u32 run_skb_rx_task;
-+	u32 run_skb_fr_task;
-+	u32 shutdown_cnt;
-+	__kernel_time_t init_time;
-+
-+	/* spinlock for register */
-+	spinlock_t reg_lock;
-+#ifndef USE_TASKLET
-+	struct timer_list skbtrtimer;
-+	struct timer_list dmatimer;
-+#else
-+	struct tasklet_struct skb_task;
-+	struct tasklet_struct dma_task;
-+#endif
-+
-+	struct net_device_stats stats;
-+	struct work_struct shutdown_task;
-+#ifdef DEP_BMA
-+	struct bma_priv_data_s *bma_priv;
-+#else
-+	void *edma_priv;
-+#endif
-+};
-+
-+struct tag_pcie_comm_priv {
-+	char net_type[NET_TYPE_LEN];
-+	struct net_device_stats stats;
-+	int status;
-+	int irq_enable;
-+	int pcie_comm_rx_flag;
-+	spinlock_t lock; /* spinlock for priv data */
-+};
-+
-+#define QUEUE_MASK(p)		((p) & (BSPVETH_POINT_MASK))
-+
-+#define CHECK_ADDR_ALIGN(addr, statis)\
-+do {                         \
-+	if ((addr) & 0x3) \
-+		statis;\
-+} while (0)
-+
-+#define PROC_P_STATIS(name, statis)\
-+	PROC_DPRINTK("[%10s]:\t0x%llx", #name, statis)
-+
-+#define  INC_STATIS_RXTX(queue, name, count, type) \
-+do {                 \
-+	if (type == BSPVETH_RX)\
-+		g_bspveth_dev.prx_queue[queue]->s.name += count;\
-+	else\
-+		g_bspveth_dev.ptx_queue[queue]->s.name += count;\
-+} while (0)
-+
-+#define PROC_DPRINTK(fmt, args...) (len += sprintf(buf + len, fmt, ##args))
-+
-+#define JUDGE_TX_QUEUE_SPACE(head, tail, len) \
-+	(((BSPVETH_MAX_QUE_DEEP + (tail) - (head) - 1) \
-+	    & BSPVETH_POINT_MASK) >= (len))
-+
-+#define JUDGE_RX_QUEUE_SPACE(head, tail, len) \
-+	(((BSPVETH_MAX_QUE_DEEP + (tail) - (head)) \
-+	    & BSPVETH_POINT_MASK) > (len))
-+
-+#ifndef VETH_BMC
-+#define BSPVETH_UNMAP_DMA(data, len) \
-+	dma_unmap_single(&g_bspveth_dev.ppcidev->dev, \
-+			 data, len, DMA_FROM_DEVICE)
-+#else
-+#define BSPVETH_UNMAP_DMA(data, len) \
-+	dma_unmap_single(NULL, data, len, DMA_FROM_DEVICE)
-+#endif
-+
-+int veth_tx(struct sk_buff *pstr_skb, struct net_device *pstr_dev);
-+int veth_dma_task_H(u32 type);
-+s32 veth_skbtimer_close(void);
-+void veth_skbtimer_init(void);
-+s32 veth_dmatimer_close_H(void);
-+void veth_dmatimer_init_H(void);
-+int veth_skb_tr_task(void);
-+
-+s32 __dma_rxtx_H(struct bspveth_rxtx_q *prxtx_queue, u32 queue, u32 type);
-+s32 veth_recv_pkt(struct bspveth_rxtx_q *prx_queue, int queue);
-+s32 veth_free_txskb(struct bspveth_rxtx_q *ptx_queue, int queue);
-+
-+enum {
-+	QUEUE_TX_STATS,
-+	QUEUE_RX_STATS,
-+	VETH_STATS,
-+	SHMQ_TX_STATS,
-+	SHMQ_RX_STATS,
-+	NET_STATS,
-+};
-+
-+struct veth_stats {
-+	char stat_string[ETH_GSTRING_LEN];
-+	int type;
-+	int sizeof_stat;
-+	int stat_offset;
-+};
-+
-+#define VETH_STAT_SIZE(m)	sizeof(((struct bspveth_device *)0)->m)
-+#define VETH_STAT_OFFSET(m)	offsetof(struct bspveth_device, m)
-+#define QUEUE_TXRX_STAT_SIZE(m)	sizeof(((struct bspveth_rxtx_q *)0)->m)
-+#define QUEUE_TXRX_STAT_OFFSET(m)	offsetof(struct bspveth_rxtx_q, m)
-+#define SHMQ_TXRX_STAT_SIZE(m)	sizeof(((struct bspveth_shmq_hd *)0)->m)
-+#define SHMQ_TXRX_STAT_OFFSET(m)	offsetof(struct bspveth_shmq_hd, m)
-+
-+#ifdef __cplusplus
++	return s->kbox_sev;
 +}
++
++static u64 kbox_mce_rdmsrl(u32 ulmsr)
++{
++	u64 ullv = 0;
++
++	if (rdmsrl_safe(ulmsr, &ullv)) {
++		(void)kbox_dump_painc_info("mce: Unable to read msr %d!\n",
++					   ulmsr);
++		ullv = 0;
++	}
++
++	return ullv;
++}
++
++static int kbox_intel_machine_check(void)
++{
++	unsigned int idx = 0;
++	u64 mcgstatus = 0;
++	int worst = 0;
++
++	mcgstatus = kbox_mce_rdmsrl(MSR_IA32_MCG_STATUS);
++
++	(void)
++	    kbox_dump_painc_info
++	    ("CPU %d: Machine Check Exception MCG STATUS: 0x%016llx\n",
++	     smp_processor_id(), mcgstatus);
++
++	if (!(mcgstatus & MCG_STATUS_RIPV))
++		(void)kbox_dump_painc_info("Unable to continue\n");
++
++	for (idx = 0; idx < g_kbox_nr_mce_banks; idx++) {
++		u64 status = 0;
++		u64 misc = 0;
++		u64 addr = 0;
++		int lseverity = 0;
++
++		status = kbox_mce_rdmsrl(MSR_IA32_MCx_STATUS(idx));
++
++		(void)kbox_dump_painc_info("Bank %d STATUS: 0x%016llx\n", idx,
++					   status);
++
++		if (0 == (status & MCI_STATUS_VAL))
++			continue;
++
++		lseverity = kbox_mce_severity(mcgstatus, status);
++		if (lseverity == KBOX_MCE_KEEP_SEVERITY ||
++		    lseverity == KBOX_MCE_NO_SEVERITY)
++			continue;
++
++		(void)kbox_dump_painc_info("severity = %d\n", lseverity);
++
++		if (status & MCI_STATUS_MISCV) {
++			misc = kbox_mce_rdmsrl(MSR_IA32_MCx_MISC(idx));
++			(void)kbox_dump_painc_info("misc = 0x%016llx\n", misc);
++		}
++
++		if (status & MCI_STATUS_ADDRV) {
++			addr = kbox_mce_rdmsrl(MSR_IA32_MCx_ADDR(idx));
++			(void)kbox_dump_painc_info("addr = 0x%016llx\n", addr);
++		}
++
++		(void)kbox_dump_painc_info("\n");
++
++		if (lseverity > worst)
++			worst = lseverity;
++	}
++
++	if (worst >= KBOX_MCE_UC_SEVERITY)
++		return KBOX_FALSE;
++
++	(void)kbox_dump_painc_info("Attempting to continue.\n");
++
++	return KBOX_TRUE;
++}
++
++int kbox_handle_mce_dump(const char *msg)
++{
++	int mce_recoverable = KBOX_FALSE;
++
++	atomic_read(&g_mce_dump_state);
++
++	mce_recoverable = kbox_intel_machine_check();
++	if (mce_recoverable != KBOX_TRUE) {
++		static atomic_t mce_entry_tmp;
++		int flag = atomic_add_return(1, &mce_entry_tmp);
++
++		if (flag != 1)
++			return KBOX_FALSE;
++	}
++
++	atomic_set(&g_mce_dump_state, DUMPSTATE_MCE_RESET);
++
++	if (msg) {
++		(void)
++		    kbox_dump_painc_info
++		    ("-------[ System may reset by %s! ]-------\n\n", msg);
++	}
++
++	return KBOX_TRUE;
++}
++
++int kbox_mce_init(void)
++{
++	u64 cap = 0;
++
++	cap = kbox_mce_rdmsrl(MSR_IA32_MCG_CAP);
++	g_kbox_nr_mce_banks = cap & MCG_BANKCNT_MASK;
++
++	if (cap & MCG_SER_P)
++		g_kbox_mce_ser = 1;
++
++	KBOX_MSG("get nr_mce_banks:%d, g_kbox_mce_ser = %d, cap = 0x%016llx\n",
++		 g_kbox_nr_mce_banks, g_kbox_mce_ser, cap);
++
++	return KBOX_TRUE;
++}
++
++void kbox_mce_exit(void)
++{
++	g_kbox_nr_mce_banks = 0;
++	g_kbox_mce_ser = 0;
++}
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.h b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.h
+new file mode 100644
+index 000000000000..00d3b787c140
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.h
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _KBOX_MCE_H_
++#define _KBOX_MCE_H_
++
++int kbox_handle_mce_dump(const char *msg);
++int kbox_mce_init(void);
++void kbox_mce_exit(void);
++
 +#endif
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.c b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.c
+new file mode 100644
+index 000000000000..0c17cd2bae49
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.c
+@@ -0,0 +1,187 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <asm/types.h>
++#include <linux/spinlock.h>
++#include <linux/slab.h>
++#include <linux/err.h>
++#include "kbox_include.h"
++#include "kbox_panic.h"
++#include "kbox_ram_op.h"
++
++#ifdef CONFIG_X86
++#include <asm/msr.h>
++#endif
++
++#define PANIC_TMP_BUF_SIZE 256
++
++static int g_panic_init_ok = KBOX_FALSE;
++
++static char *g_panic_info_buf_tmp;
++static char *g_panic_info_buf;
++
++static unsigned int g_panic_info_start;
++
++static unsigned int g_panic_info_end;
++
++static unsigned int g_panic_info_len;
++
++static DEFINE_SPINLOCK(g_panic_buf_lock);
++
++static void kbox_emit_syslog_char(const char c)
++{
++	if (unlikely(!g_panic_info_buf))
++		return;
++
++	*(g_panic_info_buf + (g_panic_info_end % SLOT_LENGTH)) = c;
++	g_panic_info_end++;
++
++	if (g_panic_info_end > SLOT_LENGTH)
++		g_panic_info_start++;
++
++	if (g_panic_info_len < SLOT_LENGTH)
++		g_panic_info_len++;
++}
++
++static int kbox_duplicate_syslog_info(const char *syslog_buf,
++				      unsigned int buf_len)
++{
++	unsigned int idx = 0;
++	unsigned long flags = 0;
++
++	if (!syslog_buf)
++		return 0;
++
++	spin_lock_irqsave(&g_panic_buf_lock, flags);
++
++	for (idx = 0; idx < buf_len; idx++)
++		kbox_emit_syslog_char(*syslog_buf++);
++
++	spin_unlock_irqrestore(&g_panic_buf_lock, flags);
++
++	return buf_len;
++}
++
++int kbox_dump_painc_info(const char *fmt, ...)
++{
++	va_list args;
++	int num = 0;
++	char tmp_buf[PANIC_TMP_BUF_SIZE] = { };
++
++	va_start(args, fmt);
++
++	num = vsnprintf(tmp_buf, sizeof(tmp_buf) - 1, fmt, args);
++	if (num >= 0)
++		(void)kbox_duplicate_syslog_info(tmp_buf, num);
++
++	va_end(args);
++
++	return num;
++}
++
++void kbox_output_syslog_info(void)
++{
++	unsigned int start_tmp = 0;
++	unsigned int end_tmp = 0;
++	unsigned int len_tmp = 0;
++	unsigned long flags = 0;
++
++	if (unlikely
++	    (!g_panic_info_buf || !g_panic_info_buf_tmp))
++		return;
++
++	spin_lock_irqsave(&g_panic_buf_lock, flags);
++	if (g_panic_info_len == 0) {
++		spin_unlock_irqrestore(&g_panic_buf_lock, flags);
++		return;
++	}
++
++	start_tmp = (g_panic_info_start % SLOT_LENGTH);
++	end_tmp = ((g_panic_info_end - 1) % SLOT_LENGTH);
++	len_tmp = g_panic_info_len;
++
++	if (start_tmp > end_tmp) {
++		memcpy(g_panic_info_buf_tmp,
++		       (g_panic_info_buf + start_tmp),
++			len_tmp - start_tmp);
++		memcpy((g_panic_info_buf_tmp + len_tmp - start_tmp),
++		       g_panic_info_buf,
++			end_tmp + 1);
++	} else {
++		memcpy(g_panic_info_buf_tmp,
++		       (char *)(g_panic_info_buf + start_tmp),
++			len_tmp);
++	}
++
++	spin_unlock_irqrestore(&g_panic_buf_lock, flags);
++
++	(void)kbox_write_panic_info(g_panic_info_buf_tmp, len_tmp);
++}
++
++int kbox_panic_init(void)
++{
++	int ret = KBOX_TRUE;
++
++	g_panic_info_buf = kmalloc(SLOT_LENGTH, GFP_KERNEL);
++	if (IS_ERR(g_panic_info_buf) || !g_panic_info_buf) {
++		KBOX_MSG("kmalloc g_panic_info_buf fail!\n");
++		ret = -ENOMEM;
++		goto fail;
++	}
++
++	memset(g_panic_info_buf, 0, SLOT_LENGTH);
++
++	g_panic_info_buf_tmp = kmalloc(SLOT_LENGTH, GFP_KERNEL);
++	if (IS_ERR(g_panic_info_buf_tmp) || !g_panic_info_buf_tmp) {
++		KBOX_MSG("kmalloc g_panic_info_buf_tmp fail!\n");
++		ret = -ENOMEM;
++		goto fail;
++	}
++
++	memset(g_panic_info_buf_tmp, 0, SLOT_LENGTH);
++
++	g_panic_init_ok = KBOX_TRUE;
++
++	return ret;
++fail:
++
++	kfree(g_panic_info_buf);
++	g_panic_info_buf = NULL;
++
++	kfree(g_panic_info_buf_tmp);
++	g_panic_info_buf_tmp = NULL;
++
++	return ret;
++}
++
++void kbox_panic_exit(void)
++{
++	if (g_panic_init_ok != KBOX_TRUE)
++		return;
++
++	kfree(g_panic_info_buf);
++	g_panic_info_buf = NULL;
++
++	kfree(g_panic_info_buf_tmp);
++	g_panic_info_buf_tmp = NULL;
++}
++
++int kbox_handle_panic_dump(const char *msg)
++{
++	if (msg)
++		(void)kbox_dump_painc_info("panic string: %s\n", msg);
++
++	return KBOX_TRUE;
++}
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.h b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.h
+new file mode 100644
+index 000000000000..5715b66c0659
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.h
+@@ -0,0 +1,25 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _KBOX_PANIC_H_
++#define _KBOX_PANIC_H_
++
++int kbox_handle_panic_dump(const char *msg);
++void kbox_output_syslog_info(void);
++int kbox_dump_painc_info(const char *fmt, ...);
++int kbox_panic_init(void);
++void kbox_panic_exit(void);
++
++#endif
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.c b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.c
+new file mode 100644
+index 000000000000..3b04ba206108
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.c
+@@ -0,0 +1,363 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/spinlock.h>
++#include <linux/console.h>		/* struct console */
++#include <linux/slab.h>
++#include <linux/err.h>
++#include "kbox_include.h"
++#include "kbox_main.h"
++#include "kbox_printk.h"
++#include "kbox_ram_image.h"
++#include "kbox_ram_op.h"
++
++#define TMP_BUF_SIZE 256
++
++static int g_printk_init_ok = KBOX_FALSE;
++static char *g_printk_info_buf;
++static char *g_printk_info_buf_tmp;
++static struct printk_ctrl_block_tmp_s g_printk_ctrl_block_tmp = { };
++
++static DEFINE_SPINLOCK(g_printk_buf_lock);
++
++static void kbox_printk_info_write(struct console *console,
++				   const char *printk_buf,
++				   unsigned int buf_len);
++
++static struct console g_printk_console = {
++	.name = "k_prtk",
++	.flags = CON_ENABLED | CON_PRINTBUFFER,
++	.write = kbox_printk_info_write,
++};
++
++static int kbox_printk_format_is_order(struct printk_info_ctrl_block_s *
++				       printk_ctrl_blk_first,
++				       struct printk_info_ctrl_block_s *
++				       printk_ctrl_blk_second)
++{
++	if (!printk_ctrl_blk_first || !printk_ctrl_blk_second)
++		return KBOX_FALSE;
++
++	if (!memcmp(printk_ctrl_blk_first->flag, PRINTK_CURR_FLAG,
++		    PRINTK_FLAG_LEN) &&
++	    !memcmp(printk_ctrl_blk_second->flag, PRINTK_LAST_FLAG,
++		       PRINTK_FLAG_LEN)) {
++		return KBOX_TRUE;
++	}
++
++	return KBOX_FALSE;
++}
++
++static void kbox_printk_format(struct printk_info_ctrl_block_s *printk_ctrl_blk,
++			       const unsigned int len, const char *flag)
++{
++	if (!printk_ctrl_blk || !flag)
++		return;
++
++	memset(printk_ctrl_blk, 0, len);
++	memcpy(printk_ctrl_blk->flag, flag, PRINTK_FLAG_LEN);
++}
++
++static void kbox_printk_init_info_first
++				(struct image_super_block_s *kbox_super_block)
++{
++	KBOX_MSG("\n");
++	if (kbox_printk_format_is_order(kbox_super_block->printk_ctrl_blk,
++					kbox_super_block->printk_ctrl_blk +
++					1) == KBOX_TRUE) {
++		memcpy(kbox_super_block->printk_ctrl_blk[0].flag,
++		       PRINTK_LAST_FLAG, PRINTK_FLAG_LEN);
++		memcpy(kbox_super_block->printk_ctrl_blk[1].flag,
++		       PRINTK_CURR_FLAG, PRINTK_FLAG_LEN);
++		kbox_super_block->printk_ctrl_blk[1].len = 0;
++		g_printk_ctrl_block_tmp.printk_region = 1;
++		g_printk_ctrl_block_tmp.section = KBOX_SECTION_PRINTK2;
++		(void)kbox_clear_region(KBOX_SECTION_PRINTK2);
++	} else if (kbox_printk_format_is_order
++			(kbox_super_block->printk_ctrl_blk + 1,
++			kbox_super_block->printk_ctrl_blk) == KBOX_TRUE) {
++		memcpy(kbox_super_block->printk_ctrl_blk[1].flag,
++		       PRINTK_LAST_FLAG,
++			PRINTK_FLAG_LEN);
++		memcpy(kbox_super_block->printk_ctrl_blk[0].flag,
++		       PRINTK_CURR_FLAG,
++			PRINTK_FLAG_LEN);
++
++		kbox_super_block->printk_ctrl_blk[0].len = 0;
++		g_printk_ctrl_block_tmp.printk_region = 0;
++		g_printk_ctrl_block_tmp.section = KBOX_SECTION_PRINTK1;
++		(void)kbox_clear_region(KBOX_SECTION_PRINTK1);
++	} else {
++		kbox_printk_format(kbox_super_block->printk_ctrl_blk,
++				   sizeof(struct printk_info_ctrl_block_s),
++				   PRINTK_CURR_FLAG);
++		kbox_printk_format(kbox_super_block->printk_ctrl_blk + 1,
++				   sizeof(struct printk_info_ctrl_block_s),
++				   PRINTK_LAST_FLAG);
++		g_printk_ctrl_block_tmp.printk_region = 0;
++		g_printk_ctrl_block_tmp.section = KBOX_SECTION_PRINTK1;
++		(void)kbox_clear_region(KBOX_SECTION_PRINTK1);
++		(void)kbox_clear_region(KBOX_SECTION_PRINTK2);
++	}
++
++	g_printk_ctrl_block_tmp.start = 0;
++	g_printk_ctrl_block_tmp.end = 0;
++	g_printk_ctrl_block_tmp.valid_len = 0;
++}
++
++static void kbox_printk_init_info_not_first
++				(struct image_super_block_s *kbox_super_block)
++{
++	KBOX_MSG("\n");
++	if (KBOX_TRUE ==
++	    kbox_printk_format_is_order(kbox_super_block->printk_ctrl_blk,
++					kbox_super_block->printk_ctrl_blk +
++					1)) {
++		g_printk_ctrl_block_tmp.printk_region = 0;
++		g_printk_ctrl_block_tmp.section = KBOX_SECTION_PRINTK1;
++
++	} else if (KBOX_TRUE ==
++		   kbox_printk_format_is_order
++		   (kbox_super_block->printk_ctrl_blk + 1,
++		   kbox_super_block->printk_ctrl_blk)) {
++		g_printk_ctrl_block_tmp.printk_region = 1;
++		g_printk_ctrl_block_tmp.section = KBOX_SECTION_PRINTK2;
++
++	} else {
++		kbox_printk_format(kbox_super_block->printk_ctrl_blk,
++				   sizeof(struct printk_info_ctrl_block_s),
++				   PRINTK_CURR_FLAG);
++		kbox_printk_format(kbox_super_block->printk_ctrl_blk + 1,
++				   sizeof(struct printk_info_ctrl_block_s),
++				   PRINTK_LAST_FLAG);
++		g_printk_ctrl_block_tmp.printk_region = 0;
++		g_printk_ctrl_block_tmp.section = KBOX_SECTION_PRINTK1;
++		(void)kbox_clear_region(KBOX_SECTION_PRINTK1);
++		(void)kbox_clear_region(KBOX_SECTION_PRINTK2);
++	}
++
++	g_printk_ctrl_block_tmp.start = 0;
++}
++
++static int kbox_printk_init_info(int kbox_proc_exist)
++{
++	struct image_super_block_s kbox_super_block = { };
++	unsigned int read_len = 0;
++	unsigned int write_len = 0;
++
++	read_len =
++	    kbox_read_from_ram(SECTION_KERNEL_OFFSET,
++			       (unsigned int)sizeof(struct image_super_block_s),
++			       (char *)&kbox_super_block, KBOX_SECTION_KERNEL);
++	if (read_len != sizeof(struct image_super_block_s)) {
++		KBOX_MSG("fail to get superblock data!\n");
++		return KBOX_FALSE;
++	}
++
++	if (kbox_proc_exist) {
++		kbox_printk_init_info_not_first(&kbox_super_block);
++		if (KBOX_TRUE !=
++		    kbox_read_printk_info(g_printk_info_buf,
++					  &g_printk_ctrl_block_tmp)) {
++			g_printk_ctrl_block_tmp.end = 0;
++			g_printk_ctrl_block_tmp.valid_len = 0;
++		}
++	} else {
++		kbox_printk_init_info_first(&kbox_super_block);
++	}
++
++	kbox_super_block.checksum = 0;
++	kbox_super_block.checksum =
++	    ~((unsigned char)
++	      kbox_checksum((char *)&kbox_super_block,
++			    (unsigned int)sizeof(kbox_super_block))) + 1;
++	write_len =
++	    kbox_write_to_ram(SECTION_KERNEL_OFFSET,
++			      (unsigned int)sizeof(struct image_super_block_s),
++			      (char *)&kbox_super_block, KBOX_SECTION_KERNEL);
++	if (write_len <= 0) {
++		KBOX_MSG("fail to write superblock data!\n");
++		return KBOX_FALSE;
++	}
++
++	return KBOX_TRUE;
++}
++
++void kbox_output_printk_info(void)
++{
++	unsigned int start_tmp = 0;
++	unsigned int end_tmp = 0;
++	unsigned int len_tmp = 0;
++	unsigned long flags = 0;
++
++	if (unlikely(!g_printk_info_buf || !g_printk_info_buf_tmp))
++		return;
++
++	if (g_printk_init_ok != KBOX_TRUE)
++		return;
++
++	spin_lock_irqsave(&g_printk_buf_lock, flags);
++	if (g_printk_ctrl_block_tmp.valid_len == 0) {
++		spin_unlock_irqrestore(&g_printk_buf_lock, flags);
++		return;
++	}
++
++	start_tmp = (g_printk_ctrl_block_tmp.start % SECTION_PRINTK_LEN);
++	end_tmp = ((g_printk_ctrl_block_tmp.end - 1) % SECTION_PRINTK_LEN);
++	len_tmp = g_printk_ctrl_block_tmp.valid_len;
++
++	if (start_tmp > end_tmp) {
++		memcpy(g_printk_info_buf_tmp,
++		       g_printk_info_buf + start_tmp,
++			len_tmp - start_tmp);
++		memcpy(g_printk_info_buf_tmp + len_tmp - start_tmp,
++		       g_printk_info_buf,
++			end_tmp + 1);
++	} else {
++		memcpy(g_printk_info_buf_tmp,
++		       g_printk_info_buf + start_tmp,
++			len_tmp);
++	}
++
++	spin_unlock_irqrestore(&g_printk_buf_lock, flags);
++
++	(void)kbox_write_printk_info(g_printk_info_buf_tmp,
++				     &g_printk_ctrl_block_tmp);
++}
++
++static void kbox_emit_printk_char(const char c)
++{
++	if (unlikely(!g_printk_info_buf))
++		return;
++
++	*(g_printk_info_buf +
++	  (g_printk_ctrl_block_tmp.end % SECTION_PRINTK_LEN)) = c;
++	g_printk_ctrl_block_tmp.end++;
++
++	if (g_printk_ctrl_block_tmp.end > SECTION_PRINTK_LEN)
++		g_printk_ctrl_block_tmp.start++;
++
++	if (g_printk_ctrl_block_tmp.end < SECTION_PRINTK_LEN)
++		g_printk_ctrl_block_tmp.valid_len++;
++}
++
++static int kbox_duplicate_printk_info(const char *printk_buf,
++				      unsigned int buf_len)
++{
++	unsigned int idx = 0;
++	unsigned long flags = 0;
++
++	spin_lock_irqsave(&g_printk_buf_lock, flags);
++	for (idx = 0; idx < buf_len; idx++)
++		kbox_emit_printk_char(*printk_buf++);
++
++	spin_unlock_irqrestore(&g_printk_buf_lock, flags);
++
++	return buf_len;
++}
++
++int kbox_dump_printk_info(const char *fmt, ...)
++{
++	va_list args;
++	int num = 0;
++	char tmp_buf[TMP_BUF_SIZE] = { };
++
++	if (g_printk_init_ok != KBOX_TRUE)
++		return 0;
++
++	va_start(args, fmt);
++	num = vsnprintf(tmp_buf, sizeof(tmp_buf) - 1, fmt, args);
++	if (num >= 0)
++		(void)kbox_duplicate_printk_info(tmp_buf, num);
++
++	va_end(args);
++
++	return num;
++}
++
++static void kbox_printk_info_write(struct console *pconsole,
++				   const char *printk_buf, unsigned int buf_len)
++{
++	UNUSED(pconsole);
++
++	if (unlikely(!printk_buf))
++		return;
++
++	(void)kbox_duplicate_printk_info(printk_buf, buf_len);
++}
++
++int kbox_printk_init(int kbox_proc_exist)
++{
++	int ret = KBOX_TRUE;
++
++	g_printk_info_buf = kmalloc(SECTION_PRINTK_LEN,
++				    GFP_KERNEL);
++	if (IS_ERR(g_printk_info_buf) || !g_printk_info_buf) {
++		KBOX_MSG("kmalloc g_printk_info_buf fail!\n");
++		ret = -ENOMEM;
++		goto fail;
++	}
++
++	memset(g_printk_info_buf, 0, SECTION_PRINTK_LEN);
++
++	g_printk_info_buf_tmp = kmalloc(SECTION_PRINTK_LEN,
++					GFP_KERNEL);
++	if (IS_ERR(g_printk_info_buf_tmp) || !g_printk_info_buf_tmp) {
++		KBOX_MSG("kmalloc g_printk_info_buf_tmp fail!\n");
++		ret = -ENOMEM;
++		goto fail;
++	}
++
++	memset(g_printk_info_buf_tmp, 0, SECTION_PRINTK_LEN);
++
++	ret = kbox_printk_init_info(kbox_proc_exist);
++	if (ret != KBOX_TRUE) {
++		KBOX_MSG("kbox_printk_init_info failed!\n");
++		goto fail;
++	}
++
++	register_console(&g_printk_console);
++
++	g_printk_init_ok = KBOX_TRUE;
++
++	return ret;
++fail:
++
++	kfree(g_printk_info_buf);
++	g_printk_info_buf = NULL;
++
++	kfree(g_printk_info_buf_tmp);
++	g_printk_info_buf_tmp = NULL;
++
++	return ret;
++}
++
++void kbox_printk_exit(void)
++{
++	int ret = 0;
++
++	if (g_printk_init_ok != KBOX_TRUE)
++		return;
++
++	kfree(g_printk_info_buf);
++	g_printk_info_buf = NULL;
++
++	kfree(g_printk_info_buf_tmp);
++	g_printk_info_buf_tmp = NULL;
++
++	ret = unregister_console(&g_printk_console);
++	if (ret)
++		KBOX_MSG("unregister_console failed!\n");
++}
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.h b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.h
+new file mode 100644
+index 000000000000..cece825626a8
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.h
+@@ -0,0 +1,33 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _KBOX_PRINTK_H_
++#define _KBOX_PRINTK_H_
++#include "kbox_ram_image.h"
++
++struct printk_ctrl_block_tmp_s {
++	int printk_region;
++	enum kbox_section_e section;
++	unsigned int start;
++	unsigned int end;
++	unsigned int valid_len;/* valid length of printk section */
++};
++
++int  kbox_printk_init(int kbox_proc_exist);
++void kbox_output_printk_info(void);
++int  kbox_dump_printk_info(const char *fmt, ...);
++void kbox_printk_exit(void);
++
++#endif
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive.c b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive.c
+new file mode 100644
+index 000000000000..829e2a498843
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive.c
+@@ -0,0 +1,188 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/fs.h>		/* everything... */
++#include <linux/module.h>
++#include <linux/miscdevice.h>
++#include <asm/ioctls.h>
++#include <linux/slab.h>
++#include "kbox_include.h"
++#include "kbox_ram_drive.h"
++#include "kbox_main.h"
++#include "kbox_ram_image.h"
++#include "kbox_ram_op.h"
++
++#define KBOX_DEVICE_NAME "kbox"
++#define KBOX_DEVICE_MINOR 255
++
++static struct kbox_dev_s *g_kbox_dev;
++static ssize_t kbox_read(struct file *filp, char __user *data, size_t count,
++			 loff_t *ppos);
++static ssize_t kbox_write(struct file *filp, const char __user *data,
++			  size_t count, loff_t *ppos);
++
++static long kbox_ioctl(struct file *filp, unsigned int cmd, unsigned long arg);
++static int kbox_mmap(struct file *filp, struct vm_area_struct *vma);
++static int kbox_open(struct inode *inode, struct file *filp);
++static int kbox_release(struct inode *inode, struct file *filp);
++
++const struct file_operations kbox_fops = {
++	.owner = THIS_MODULE,
++	.read = kbox_read,
++	.write = kbox_write,
++	.unlocked_ioctl = kbox_ioctl,
++	.mmap = kbox_mmap,
++	.open = kbox_open,
++	.release = kbox_release,
++};
++
++static struct miscdevice kbox_device = {
++	KBOX_DEVICE_MINOR,
++	KBOX_DEVICE_NAME,
++	&kbox_fops,
++};
++
++static ssize_t kbox_read(struct file *filp, char __user *data, size_t count,
++			 loff_t *ppos)
++{
++	int read_len = 0;
++
++	if (!filp || !data || !ppos) {
++		KBOX_MSG("input NULL point!\n");
++		return -EFAULT;
++	}
++
++	read_len = kbox_read_op((long long)(*ppos),
++				count,
++				data,
++				KBOX_SECTION_USER);
++	if (read_len < 0)
++		return -EFAULT;
++
++	*ppos += read_len;
++
++	return read_len;
++}
++
++static ssize_t kbox_write(struct file *filp, const char __user *data,
++			  size_t count, loff_t *ppos)
++{
++	int write_len = 0;
++
++	if (!filp || !data || !ppos) {
++		KBOX_MSG("input NULL point!\n");
++		return -EFAULT;
++	}
++
++	write_len = kbox_write_op((long long)(*ppos),
++				  count, data, KBOX_SECTION_USER);
++	if (write_len < 0)
++		return -EFAULT;
++
++	*ppos += write_len;
++
++	return write_len;
++}
++
++static long kbox_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
++{
++	UNUSED(filp);
++
++	if (kbox_ioctl_detail(cmd, arg) < 0)
++		return -ENOTTY;
++
++	return 0;
++}
++
++static int kbox_mmap(struct file *filp, struct vm_area_struct *vma)
++{
++	if (!filp || !vma) {
++		KBOX_MSG("input NULL point!\n");
++		return -EFAULT;
++	}
++
++	if (kbox_mmap_ram(filp, vma, KBOX_SECTION_USER) < 0)
++		return -EFAULT;
++
++	return 0;
++}
++
++static int kbox_open(struct inode *pinode, struct file *filp)
++{
++	UNUSED(pinode);
++
++	if ((g_kbox_dev) && (!atomic_dec_and_test(&g_kbox_dev->au_count))) {
++		atomic_inc(&g_kbox_dev->au_count);
++		KBOX_MSG("EBUSY\n");
++		return -EBUSY;
++	}
++
++	filp->private_data = (void *)g_kbox_dev;
++
++	return 0;
++}
++
++int kbox_release(struct inode *pinode, struct file *filp)
++{
++	struct kbox_dev_s *kbox_dev = (struct kbox_dev_s *)filp->private_data;
++
++	UNUSED(pinode);
++
++	KBOX_MSG("\n");
++
++	if (kbox_dev)
++		atomic_inc(&kbox_dev->au_count);
++
++	return 0;
++}
++
++int kbox_drive_init(void)
++{
++	int ret = 0;
++
++	KBOX_MSG("\n");
++
++	g_kbox_dev =
++	    kmalloc(sizeof(struct kbox_dev_s), GFP_KERNEL);
++	if (!g_kbox_dev)
++		return -ENOMEM;
++
++	ret = misc_register(&kbox_device);
++	if (ret)
++		goto fail;
++
++	atomic_set(&g_kbox_dev->au_count, 1);
++
++	KBOX_MSG("ok!\n");
++
++	return ret;
++
++fail:
++	kfree(g_kbox_dev);
++	g_kbox_dev = NULL;
++
++	return ret;
++}
++
++void kbox_drive_cleanup(void)
++{
++	if (!g_kbox_dev)
++		return;
++
++	misc_deregister(&kbox_device);
++
++	kfree(g_kbox_dev);
++	g_kbox_dev = NULL;
++}
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive.h b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive.h
+new file mode 100644
+index 000000000000..52707c4b82c5
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive.h
+@@ -0,0 +1,31 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _KBOX_RAM_DRIVE_H_
++#define _KBOX_RAM_DRIVE_H_
++
++#include <linux/types.h>
++#include <linux/atomic.h>
++
++struct kbox_dev_s {
++	atomic_t au_count;
++
++	struct kbox_pci_dev_s *kbox_pci_dev;
++};
++
++int kbox_drive_init(void);
++void kbox_drive_cleanup(void);
++
++#endif
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image.c b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image.c
+new file mode 100644
+index 000000000000..f57083261983
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image.c
+@@ -0,0 +1,135 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include "kbox_include.h"
++#include "kbox_main.h"
++#include "kbox_ram_image.h"
++
++void __iomem *kbox_get_section_addr(enum kbox_section_e  kbox_section)
++{
++	void __iomem *kbox_addr = kbox_get_base_addr();
++	unsigned long kbox_len = kbox_get_io_len();
++
++	if (!kbox_addr || kbox_len == 0) {
++		KBOX_MSG("get kbox_addr or kbox_len failed!\n");
++		return NULL;
++	}
++
++	switch (kbox_section) {
++	case KBOX_SECTION_KERNEL:
++		return kbox_addr;
++
++	case KBOX_SECTION_PANIC:
++		return kbox_addr + SECTION_KERNEL_LEN;
++
++	case KBOX_SECTION_THREAD:
++		return kbox_addr + SECTION_KERNEL_LEN + SECTION_PANIC_LEN;
++
++	case KBOX_SECTION_PRINTK1:
++		return kbox_addr + (kbox_len - (2 * SECTION_PRINTK_LEN) -
++				    SECTION_USER_LEN);
++
++	case KBOX_SECTION_PRINTK2:
++		return kbox_addr + (kbox_len - SECTION_PRINTK_LEN -
++				    SECTION_USER_LEN);
++
++	case KBOX_SECTION_USER:
++		return kbox_addr + (kbox_len - SECTION_USER_LEN);
++
++	case KBOX_SECTION_ALL:
++		return kbox_addr;
++
++	default:
++		KBOX_MSG("input kbox_section error!\n");
++		return NULL;
++	}
++}
++
++unsigned long kbox_get_section_len(enum kbox_section_e  kbox_section)
++{
++	unsigned long kbox_len = kbox_get_io_len();
++
++	if (kbox_len == 0) {
++		KBOX_MSG("get kbox_len failed!\n");
++		return 0;
++	}
++
++	switch (kbox_section) {
++	case KBOX_SECTION_KERNEL:
++		return SECTION_KERNEL_LEN;
++
++	case KBOX_SECTION_PANIC:
++		return SECTION_PANIC_LEN;
++
++	case KBOX_SECTION_THREAD:
++		return (kbox_len - (2 * SECTION_PRINTK_LEN) -
++			SECTION_USER_LEN - SECTION_KERNEL_LEN -
++			SECTION_PANIC_LEN);
++
++	case KBOX_SECTION_PRINTK1:
++	case KBOX_SECTION_PRINTK2:
++		return SECTION_PRINTK_LEN;
++
++	case KBOX_SECTION_USER:
++		return SECTION_USER_LEN;
++
++	case KBOX_SECTION_ALL:
++		return kbox_len;
++
++	default:
++		KBOX_MSG("input kbox_section error!\n");
++		return 0;
++	}
++}
++
++unsigned long kbox_get_section_phy_addr(enum kbox_section_e  kbox_section)
++{
++	unsigned long kbox_phy_addr = kbox_get_base_phy_addr();
++	unsigned long kbox_len = kbox_get_io_len();
++
++	if (kbox_phy_addr == 0 || kbox_len == 0) {
++		KBOX_MSG("get kbox_phy_addr or kbox_len failed!\n");
++		return 0;
++	}
++
++	switch (kbox_section) {
++	case KBOX_SECTION_KERNEL:
++		return kbox_phy_addr;
++
++	case KBOX_SECTION_PANIC:
++		return kbox_phy_addr + SECTION_KERNEL_LEN;
++
++	case KBOX_SECTION_THREAD:
++		return kbox_phy_addr + SECTION_KERNEL_LEN + SECTION_PANIC_LEN;
++
++	case KBOX_SECTION_PRINTK1:
++		return kbox_phy_addr + (kbox_len - (2 * SECTION_PRINTK_LEN) -
++					SECTION_USER_LEN);
++
++	case KBOX_SECTION_PRINTK2:
++		return kbox_phy_addr + (kbox_len - SECTION_PRINTK_LEN -
++					SECTION_USER_LEN);
++
++	case KBOX_SECTION_USER:
++		return kbox_phy_addr + (kbox_len - SECTION_USER_LEN);
++
++	case KBOX_SECTION_ALL:
++		return kbox_phy_addr;
++
++	default:
++		KBOX_MSG("input kbox_section error!\n");
++		return 0;
++	}
++}
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image.h b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image.h
+new file mode 100644
+index 000000000000..d1b01bd9ea11
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image.h
+@@ -0,0 +1,84 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _KBOX_RAM_IMAGE_H_
++#define _KBOX_RAM_IMAGE_H_
++
++enum kbox_section_e {
++	KBOX_SECTION_KERNEL = 1,
++	KBOX_SECTION_PANIC = 2,
++	KBOX_SECTION_THREAD = 3,
++	KBOX_SECTION_PRINTK1 = 4,
++	KBOX_SECTION_PRINTK2 = 5,
++	KBOX_SECTION_USER = 6,
++	KBOX_SECTION_ALL = 7
++};
++
++#define KBOX_BIG_ENDIAN (0x2B)
++#define KBOX_LITTLE_ENDIAN (0xB2)
++#define IMAGE_VER (0x0001)
++#define IMAGE_MAGIC (0xB202C086)
++#define VALID_IMAGE(x) (IMAGE_MAGIC == (x)->magic_flag)
++#define SLOT_NUM (8)
++#define SLOT_LENGTH (16 * 1024)
++#define MAX_RECORD_NO (0xFF)
++#define MAX_USE_NUMS (0xFF)
++
++#define PRINTK_NUM (2)
++#define PRINTK_CURR_FLAG ("curr")
++#define PRINTK_LAST_FLAG ("last")
++#define PRINTK_FLAG_LEN (4)
++
++struct panic_ctrl_block_s {
++	unsigned char use_nums;
++	unsigned char number;
++	unsigned short len;
++	unsigned int time;
++};
++
++struct thread_info_ctrl_block_s {
++	unsigned int thread_info_len;
++};
++
++struct printk_info_ctrl_block_s {
++	unsigned char flag[PRINTK_FLAG_LEN];
++	unsigned int len;
++};
++
++struct image_super_block_s {
++	unsigned char byte_order;
++	unsigned char checksum;
++	unsigned short version;
++	unsigned int magic_flag;
++	unsigned int panic_nums;
++	struct panic_ctrl_block_s panic_ctrl_blk[SLOT_NUM];
++	struct printk_info_ctrl_block_s printk_ctrl_blk[PRINTK_NUM];
++	struct thread_info_ctrl_block_s thread_ctrl_blk;
++};
++
++#define SECTION_KERNEL_LEN (sizeof(struct image_super_block_s))
++#define SECTION_PANIC_LEN (8 * SLOT_LENGTH)
++#define SECTION_PRINTK_LEN (512 * 1024)
++#define SECTION_USER_LEN (2 * 1024 * 1024)
++
++#define SECTION_KERNEL_OFFSET (0)
++#define SECTION_PANIC_OFFSET SECTION_KERNEL_LEN
++#define SECTION_THREAD_OFFSET (SECTION_KERNEL_LEN + SECTION_PANIC_LEN)
++
++void __iomem *kbox_get_section_addr(enum kbox_section_e  kbox_section);
++unsigned long kbox_get_section_len(enum kbox_section_e  kbox_section);
++unsigned long kbox_get_section_phy_addr(enum kbox_section_e  kbox_section);
++
++#endif
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.c b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.c
+new file mode 100644
+index 000000000000..49690bab1cef
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.c
+@@ -0,0 +1,986 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/version.h>
++#include <linux/semaphore.h>
++#include <linux/slab.h>
++#include <linux/capability.h>
++#include <linux/uaccess.h>		/* copy_*_user */
++#include <linux/delay.h>		/* udelay */
++#include <linux/mm.h>
++#include "kbox_include.h"
++#include "kbox_main.h"
++#include "kbox_ram_image.h"
++#include "kbox_ram_op.h"
++
++#ifndef VM_RESERVED
++#define VM_RESERVED 0x00080000
++#endif
++
++static DEFINE_SPINLOCK(g_kbox_super_block_lock);
++static DEFINE_SEMAPHORE(user_sem);
++
++union char_int_transfer_u {
++	int data_int;
++	char data_char[KBOX_RW_UNIT];
++};
++
++static struct image_super_block_s g_kbox_super_block = { };
++
++void kbox_write_to_pci(void __iomem *dest, const void *src, int len,
++		       unsigned long offset)
++{
++	union char_int_transfer_u transfer = { };
++	int idx = 0;
++	int j = 0;
++	int four_byte_len = 0;
++	int left_len = 0;
++	char *src_temp = (char *)src;
++	char *dest_temp = (char *)dest;
++	int first_write_num = 0;
++
++	if ((offset % KBOX_RW_UNIT) != 0) {
++		transfer.data_int =
++		    *(int *)(dest_temp + offset - (offset % KBOX_RW_UNIT));
++
++		rmb();/* memory barriers. */
++		first_write_num =
++		    ((len + (offset % KBOX_RW_UNIT)) >
++		     KBOX_RW_UNIT) ? (KBOX_RW_UNIT -
++				      (offset % KBOX_RW_UNIT)) : len;
++		for (idx = (int)(offset % KBOX_RW_UNIT);
++		     idx < (int)(first_write_num + (offset % KBOX_RW_UNIT));
++		     idx++) {
++			if (!src_temp)
++				return;
++
++			transfer.data_char[idx] = *src_temp;
++			src_temp++;
++		}
++		*(int *)(dest_temp + offset - (offset % KBOX_RW_UNIT)) =
++		    transfer.data_int;
++		wmb();/* memory barriers. */
++		len -= first_write_num;
++		offset += first_write_num;
++	}
++
++	four_byte_len = (len / KBOX_RW_UNIT);
++	left_len = (len % KBOX_RW_UNIT);
++	for (idx = 0; idx < four_byte_len; idx++) {
++		for (j = 0; j < KBOX_RW_UNIT; j++) {
++			if (!src_temp)
++				return;
++
++			transfer.data_char[j] = *src_temp;
++			src_temp++;
++		}
++		*(int *)(dest_temp + offset) = transfer.data_int;
++		wmb();/* memory barriers. */
++		offset += KBOX_RW_UNIT;
++	}
++
++	if (left_len != 0) {
++		transfer.data_int = *(int *)(dest_temp + offset);
++		rmb();/* memory barriers. */
++		for (idx = 0; idx < left_len; idx++) {
++			if (!src_temp)
++				return;
++
++			transfer.data_char[idx] = *src_temp;
++			src_temp++;
++		}
++		*(int *)(dest_temp + offset) = transfer.data_int;
++		wmb();/* memory barriers. */
++	}
++
++	udelay(1);
++}
++
++void kbox_read_from_pci(void *dest, void __iomem *src, int len,
++			unsigned long offset)
++{
++	union char_int_transfer_u transfer = { };
++	int idx = 0;
++	int j = 0;
++	int four_byte_len = 0;
++	int left_len = 0;
++	char *dest_temp = (char *)dest;
++	char *src_temp = (char *)src;
++	int first_read_num = 0;
++
++	if ((offset % KBOX_RW_UNIT) != 0) {
++		transfer.data_int =
++		    *(int *)(src_temp + offset - (offset % KBOX_RW_UNIT));
++		first_read_num =
++		    ((len + (offset % KBOX_RW_UNIT)) >
++		     KBOX_RW_UNIT) ? (KBOX_RW_UNIT -
++				      (offset % KBOX_RW_UNIT)) : len;
++		rmb();/* memory barriers. */
++		for (idx = (int)(offset % KBOX_RW_UNIT);
++		     idx < (int)(first_read_num + (offset % KBOX_RW_UNIT));
++		     idx++) {
++			if (!dest_temp)
++				return;
++
++			*dest_temp = transfer.data_char[idx];
++			dest_temp++;
++		}
++		len -= first_read_num;
++		offset += first_read_num;
++	}
++
++	four_byte_len = (len / KBOX_RW_UNIT);
++	left_len = (len % KBOX_RW_UNIT);
++	for (idx = 0; idx < four_byte_len; idx++) {
++		transfer.data_int = *(int *)(src_temp + offset);
++		rmb();/* memory barriers. */
++		for (j = 0; j < KBOX_RW_UNIT; j++) {
++			if (!dest_temp)
++				return;
++
++			*dest_temp = transfer.data_char[j];
++			dest_temp++;
++		}
++		offset += KBOX_RW_UNIT;
++	}
++
++	if (left_len != 0) {
++		transfer.data_int = *(int *)(src_temp + offset);
++		rmb();/* memory barriers. */
++		for (idx = 0; idx < left_len; idx++) {
++			if (!dest_temp)
++				return;
++
++			*dest_temp = transfer.data_char[idx];
++			dest_temp++;
++		}
++	}
++}
++
++void kbox_memset_pci(void __iomem *dest, const char set_byte, int len,
++		     unsigned long offset)
++{
++	union char_int_transfer_u transfer = { };
++	int idx = 0;
++	int four_byte_len = 0;
++	int left_len = 0;
++	char *dest_temp = (char *)dest;
++	int first_memset_num = 0;
++
++	if ((offset % KBOX_RW_UNIT) != 0) {
++		transfer.data_int =
++		    *(int *)(dest_temp + offset - (offset % KBOX_RW_UNIT));
++		rmb();/* memory barriers. */
++		first_memset_num =
++		    ((len + (offset % KBOX_RW_UNIT)) >
++		     KBOX_RW_UNIT) ? (KBOX_RW_UNIT -
++				      (offset % KBOX_RW_UNIT)) : len;
++		for (idx = (int)(offset % KBOX_RW_UNIT);
++		     idx < (int)(first_memset_num + (offset % KBOX_RW_UNIT));
++		     idx++) {
++			transfer.data_char[idx] = set_byte;
++		}
++		*(int *)(dest_temp + offset - (offset % KBOX_RW_UNIT)) =
++		    transfer.data_int;
++		wmb();/* memory barriers. */
++		len -= first_memset_num;
++		offset += first_memset_num;
++	}
++
++	four_byte_len = (len / KBOX_RW_UNIT);
++	left_len = (len % KBOX_RW_UNIT);
++	for (idx = 0; idx < KBOX_RW_UNIT; idx++)
++		transfer.data_char[idx] = set_byte;
++
++	for (idx = 0; idx < four_byte_len; idx++) {
++		*(int *)(dest_temp + offset) = transfer.data_int;
++		wmb();/* memory barriers. */
++		offset += KBOX_RW_UNIT;
++	}
++
++	if (left_len != 0) {
++		transfer.data_int = *(int *)(dest_temp + offset);
++		rmb();/* memory barriers. */
++		for (idx = 0; idx < left_len; idx++)
++			transfer.data_char[idx] = set_byte;
++
++		*(int *)(dest_temp + offset) = transfer.data_int;
++		wmb();/* memory barriers. */
++	}
++
++	udelay(1);
++}
++
++int kbox_read_from_ram(unsigned long offset, unsigned int count, char *data,
++		       enum kbox_section_e  section)
++{
++	unsigned int read_len_total = count;
++	unsigned long offset_temp = offset;
++	void __iomem *kbox_section_addr = kbox_get_section_addr(section);
++	unsigned long kbox_section_len = kbox_get_section_len(section);
++	unsigned int read_len_real = 0;
++
++	if (!data) {
++		KBOX_MSG("input NULL point!\n");
++		return -EFAULT;
++	}
++
++	if (!kbox_section_addr || kbox_section_len == 0) {
++		KBOX_MSG("get kbox_section_addr or kbox_section_len failed!\n");
++		return -EFAULT;
++	}
++
++	if (offset >= kbox_section_len) {
++		KBOX_MSG("input offset is error!\n");
++		return -EFAULT;
++	}
++
++	if ((offset + count) > kbox_section_len)
++		read_len_total = (unsigned int)(kbox_section_len - offset);
++
++	while (1) {
++		unsigned int read_bytes = 0;
++
++		if (read_len_real >= count)
++			break;
++
++		read_bytes =
++		    (read_len_total >
++		     TEMP_BUF_SIZE) ? TEMP_BUF_SIZE : read_len_total;
++
++		kbox_read_from_pci(data, kbox_section_addr, read_bytes,
++				   offset_temp);
++
++		read_len_total -= read_bytes;
++		read_len_real += read_bytes;
++		data += read_bytes;
++		offset_temp += read_bytes;
++	}
++
++	return (int)read_len_real;
++}
++
++int kbox_write_to_ram(unsigned long offset, unsigned int count,
++		      const char *data, enum kbox_section_e  section)
++{
++	unsigned int write_len_total = count;
++	unsigned long offset_temp = offset;
++	void __iomem *kbox_section_addr = kbox_get_section_addr(section);
++	unsigned long kbox_section_len = kbox_get_section_len(section);
++	unsigned int write_len_real = 0;
++
++	if (!data) {
++		KBOX_MSG("input NULL point!\n");
++		return -EFAULT;
++	}
++
++	if (!kbox_section_addr || kbox_section_len == 0) {
++		KBOX_MSG("get kbox_section_addr or kbox_section_len failed!\n");
++		return -EFAULT;
++	}
++
++	if (offset >= kbox_section_len) {
++		KBOX_MSG("input offset is error!\n");
++		return -EFAULT;
++	}
++
++	if ((offset + count) > kbox_section_len)
++		write_len_total = (unsigned int)(kbox_section_len - offset);
++
++	KBOX_MSG("struct image_super_block_s = %x\n", count);
++	while (1) {
++		unsigned int write_bytes = 0;
++
++		if (write_len_real >= count) {
++			KBOX_MSG("write_len_real = %x\n", write_len_real);
++			break;
++		}
++		KBOX_MSG("write_len_total = %x\n", write_len_total);
++
++		write_bytes =
++		    (write_len_total >
++		     TEMP_BUF_SIZE) ? TEMP_BUF_SIZE : write_len_total;
++		KBOX_MSG("write_bytes = %x\n", write_bytes);
++
++		kbox_write_to_pci(kbox_section_addr, data, write_bytes,
++				  offset_temp);
++
++		write_len_total -= write_bytes;
++		write_len_real += write_bytes;
++		data += write_bytes;
++		offset_temp += write_bytes;
++	}
++
++	return (int)write_len_real;
++}
++
++int kbox_memset_ram(unsigned long offset, unsigned int count,
++		    const char set_byte, enum kbox_section_e  section)
++{
++	unsigned int memset_len = count;
++	void __iomem *kbox_section_addr = kbox_get_section_addr(section);
++	unsigned long kbox_section_len = kbox_get_section_len(section);
++
++	if (!kbox_section_addr || kbox_section_len == 0) {
++		KBOX_MSG("get kbox_section_addr or kbox_section_len failed!\n");
++		return -EFAULT;
++	}
++
++	if (offset >= kbox_section_len) {
++		KBOX_MSG("input offset is error!\n");
++		return -EFAULT;
++	}
++
++	if ((offset + count) > kbox_section_len)
++		memset_len = (unsigned int)(kbox_section_len - offset);
++
++	kbox_memset_pci(kbox_section_addr, set_byte, memset_len, offset);
++
++	return KBOX_TRUE;
++}
++
++int kbox_read_op(long long offset, unsigned int count, char __user *data,
++		 enum kbox_section_e  section)
++{
++	unsigned int read_bytes = 0;
++	unsigned int read_len = 0;
++	unsigned int left_len = count;
++	char *user_buf = data;
++	char *temp_buf_char = NULL;
++	unsigned long offset_tmp = offset;
++
++	if (!data) {
++		KBOX_MSG("input NULL point!\n");
++		return -EFAULT;
++	}
++
++	if (down_interruptible(&user_sem) != 0)
++		return KBOX_FALSE;
++
++	temp_buf_char = kmalloc(TEMP_BUF_DATA_SIZE, GFP_KERNEL);
++	if (!temp_buf_char) {
++		KBOX_MSG("kmalloc temp_buf_char fail!\n");
++		up(&user_sem);
++		return -ENOMEM;
++	}
++
++	memset((void *)temp_buf_char, 0, TEMP_BUF_DATA_SIZE);
++
++	while (1) {
++		if (read_len >= count)
++			break;
++
++		read_bytes =
++		    (left_len >
++		     TEMP_BUF_DATA_SIZE) ? TEMP_BUF_DATA_SIZE : left_len;
++
++		if (kbox_read_from_ram
++		    (offset_tmp, read_bytes, temp_buf_char, section) < 0) {
++			KBOX_MSG("kbox_read_from_ram fail!\n");
++			break;
++		}
++
++		if (copy_to_user(user_buf, temp_buf_char, read_bytes)) {
++			KBOX_MSG("copy_to_user fail!\n");
++			break;
++		}
++
++		left_len -= read_bytes;
++		read_len += read_bytes;
++		user_buf += read_bytes;
++
++		offset_tmp += read_bytes;
++		memset((void *)temp_buf_char, 0, TEMP_BUF_DATA_SIZE);
++
++		msleep(20);
++	}
++
++	kfree(temp_buf_char);
++
++	up(&user_sem);
++
++	return (int)read_len;
++}
++
++int kbox_write_op(long long offset, unsigned int count,
++		  const char __user *data, enum kbox_section_e  section)
++{
++	unsigned int write_len = 0;
++	unsigned int left_len = count;
++	const char *user_buf = data;
++	char *temp_buf_char = NULL;
++	unsigned long offset_tmp = offset;
++
++	if (!data) {
++		KBOX_MSG("input NULL point!\n");
++		return -EFAULT;
++	}
++
++	if (down_interruptible(&user_sem) != 0)
++		return KBOX_FALSE;
++
++	temp_buf_char = kmalloc(TEMP_BUF_DATA_SIZE, GFP_KERNEL);
++	if (!temp_buf_char || IS_ERR(temp_buf_char)) {
++		KBOX_MSG("kmalloc temp_buf_char fail!\n");
++		up(&user_sem);
++		return -ENOMEM;
++	}
++
++	memset((void *)temp_buf_char, 0, TEMP_BUF_DATA_SIZE);
++
++	while (1) {
++		unsigned int write_bytes = 0;
++
++		if (write_len >= count)
++			break;
++
++		write_bytes =
++		    (left_len >
++		     TEMP_BUF_DATA_SIZE) ? TEMP_BUF_DATA_SIZE : left_len;
++
++		if (copy_from_user(temp_buf_char, user_buf, write_bytes)) {
++			KBOX_MSG("copy_from_user fail!\n");
++			break;
++		}
++
++		if (kbox_write_to_ram
++		    (offset_tmp, write_bytes, temp_buf_char, section) < 0) {
++			KBOX_MSG("kbox_write_to_ram fail!\n");
++			break;
++		}
++
++		left_len -= write_bytes;
++		write_len += write_bytes;
++		user_buf += write_bytes;
++
++		offset_tmp += write_bytes;
++		memset((void *)temp_buf_char, 0, TEMP_BUF_DATA_SIZE);
++
++		msleep(20);
++	}
++
++	kfree(temp_buf_char);
++
++	up(&user_sem);
++
++	return (int)write_len;
++}
++
++char kbox_checksum(const char *input_buf, unsigned int len)
++{
++	unsigned int idx = 0;
++	char checksum = 0;
++
++	for (idx = 0; idx < len; idx++)
++		checksum += input_buf[idx];
++
++	return checksum;
++}
++
++static int kbox_update_super_block(void)
++{
++	int write_len = 0;
++
++	g_kbox_super_block.checksum = 0;
++	g_kbox_super_block.checksum =
++	    ~((unsigned char)
++	      kbox_checksum((char *)&g_kbox_super_block,
++			    (unsigned int)sizeof(g_kbox_super_block))) + 1;
++	write_len =
++	    kbox_write_to_ram(SECTION_KERNEL_OFFSET,
++			      (unsigned int)sizeof(struct image_super_block_s),
++			      (char *)&g_kbox_super_block, KBOX_SECTION_KERNEL);
++	if (write_len <= 0) {
++		KBOX_MSG("fail to write superblock data!\n");
++		return KBOX_FALSE;
++	}
++
++	return KBOX_TRUE;
++}
++
++int kbox_read_super_block(void)
++{
++	int read_len = 0;
++
++	read_len =
++	    kbox_read_from_ram(SECTION_KERNEL_OFFSET,
++			       (unsigned int)sizeof(struct image_super_block_s),
++			       (char *)&g_kbox_super_block,
++			       KBOX_SECTION_KERNEL);
++	if (read_len != sizeof(struct image_super_block_s)) {
++		KBOX_MSG("fail to get superblock data!\n");
++		return KBOX_FALSE;
++	}
++
++	return KBOX_TRUE;
++}
++
++static unsigned char kbox_get_byte_order(void)
++{
++	unsigned short data_short = 0xB22B;
++	unsigned char *data_char = (unsigned char *)&data_short;
++
++	return (unsigned char)((*data_char == 0xB2) ? KBOX_BIG_ENDIAN :
++			       KBOX_LITTLE_ENDIAN);
++}
++
++int kbox_super_block_init(void)
++{
++	int ret = 0;
++
++	ret = kbox_read_super_block();
++	if (ret != KBOX_TRUE) {
++		KBOX_MSG("kbox_read_super_block fail!\n");
++		return ret;
++	}
++
++	if (!VALID_IMAGE(&g_kbox_super_block) ||
++	    kbox_checksum((char *)&g_kbox_super_block,
++			  (unsigned int)sizeof(g_kbox_super_block)) != 0) {
++		if (!VALID_IMAGE(&g_kbox_super_block)) {
++			memset((void *)&g_kbox_super_block, 0x00,
++			       sizeof(struct image_super_block_s));
++		}
++
++		g_kbox_super_block.byte_order = kbox_get_byte_order();
++		g_kbox_super_block.version = IMAGE_VER;
++		g_kbox_super_block.magic_flag = IMAGE_MAGIC;
++	}
++
++	g_kbox_super_block.thread_ctrl_blk.thread_info_len = 0;
++
++	if (kbox_update_super_block() != KBOX_TRUE) {
++		KBOX_MSG("kbox_update_super_block failed!\n");
++		return KBOX_FALSE;
++	}
++
++	return KBOX_TRUE;
++}
++
++static unsigned char kbox_get_write_slot_num(void)
++{
++	struct panic_ctrl_block_s *panic_ctrl_block = NULL;
++	unsigned int idx = 0;
++	unsigned char slot_num = 0;
++	unsigned char min_use_nums = 0;
++
++	panic_ctrl_block = g_kbox_super_block.panic_ctrl_blk;
++	min_use_nums = panic_ctrl_block->use_nums;
++
++	for (idx = 1; idx < SLOT_NUM; idx++) {
++		panic_ctrl_block++;
++		if (panic_ctrl_block->use_nums < min_use_nums) {
++			min_use_nums = panic_ctrl_block->use_nums;
++			slot_num = (unsigned char)idx;
++		}
++	}
++
++	if (min_use_nums == MAX_USE_NUMS) {
++		panic_ctrl_block = g_kbox_super_block.panic_ctrl_blk;
++		for (idx = 0; idx < SLOT_NUM; idx++) {
++			panic_ctrl_block->use_nums = 1;
++			panic_ctrl_block++;
++		}
++	}
++
++	return slot_num;
++}
++
++static unsigned char kbox_get_new_record_number(void)
++{
++	struct panic_ctrl_block_s *panic_ctrl_block = NULL;
++	unsigned int idx = 0;
++	unsigned char max_number = 0;
++
++	panic_ctrl_block = g_kbox_super_block.panic_ctrl_blk;
++	for (idx = 0; idx < SLOT_NUM; idx++) {
++		if (panic_ctrl_block->number >= max_number)
++			max_number = panic_ctrl_block->number;
++
++		panic_ctrl_block++;
++	}
++
++	return (unsigned char)((max_number + 1) % MAX_RECORD_NO);
++}
++
++int kbox_write_panic_info(const char *input_data, unsigned int data_len)
++{
++	int write_len = 0;
++	unsigned int offset = 0;
++	struct panic_ctrl_block_s *panic_ctrl_block = NULL;
++	unsigned long time = get_seconds();
++	unsigned char slot_num = 0;
++	unsigned long flags = 0;
++
++	if (!input_data || data_len == 0) {
++		KBOX_MSG("input parameter error!\n");
++		return KBOX_FALSE;
++	}
++
++	if (data_len > SLOT_LENGTH)
++		data_len = SLOT_LENGTH;
++
++	spin_lock_irqsave(&g_kbox_super_block_lock, flags);
++
++	slot_num = kbox_get_write_slot_num();
++
++	panic_ctrl_block = &g_kbox_super_block.panic_ctrl_blk[slot_num];
++	panic_ctrl_block->use_nums++;
++
++	panic_ctrl_block->number = kbox_get_new_record_number();
++	panic_ctrl_block->len = 0;
++	panic_ctrl_block->time = (unsigned int)time;
++
++	g_kbox_super_block.panic_nums++;
++
++	spin_unlock_irqrestore(&g_kbox_super_block_lock, flags);
++
++	offset = slot_num * SLOT_LENGTH;
++	write_len =
++	    kbox_write_to_ram(offset, data_len, input_data, KBOX_SECTION_PANIC);
++	if (write_len <= 0) {
++		KBOX_MSG("fail to save panic information!\n");
++		return KBOX_FALSE;
++	}
++
++	spin_lock_irqsave(&g_kbox_super_block_lock, flags);
++
++	panic_ctrl_block->len += (unsigned short)write_len;
++
++	if (kbox_update_super_block() != KBOX_TRUE) {
++		KBOX_MSG("kbox_update_super_block failed!\n");
++		spin_unlock_irqrestore(&g_kbox_super_block_lock, flags);
++		return KBOX_FALSE;
++	}
++
++	spin_unlock_irqrestore(&g_kbox_super_block_lock, flags);
++
++	return KBOX_TRUE;
++}
++
++int kbox_write_thread_info(const char *input_data, unsigned int data_len)
++{
++	int write_len = 0;
++	unsigned int offset = 0;
++	unsigned long flags = 0;
++	unsigned int date_len_tmp = data_len;
++
++	if (!input_data || date_len_tmp == 0) {
++		KBOX_MSG("input parameter error!\n");
++		return KBOX_FALSE;
++	}
++
++	spin_lock_irqsave(&g_kbox_super_block_lock, flags);
++
++	offset = g_kbox_super_block.thread_ctrl_blk.thread_info_len;
++	write_len =
++	    kbox_write_to_ram(offset, date_len_tmp, input_data,
++			      KBOX_SECTION_THREAD);
++	if (write_len <= 0) {
++		KBOX_MSG("fail to save thread information!\n");
++		spin_unlock_irqrestore(&g_kbox_super_block_lock, flags);
++		return KBOX_FALSE;
++	}
++
++	g_kbox_super_block.thread_ctrl_blk.thread_info_len += write_len;
++
++	if (kbox_update_super_block() != KBOX_TRUE) {
++		KBOX_MSG("kbox_update_super_block failed!\n");
++		spin_unlock_irqrestore(&g_kbox_super_block_lock, flags);
++		return KBOX_FALSE;
++	}
++
++	spin_unlock_irqrestore(&g_kbox_super_block_lock, flags);
++
++	return KBOX_TRUE;
++}
++
++int kbox_read_printk_info(char *input_data,
++			  struct printk_ctrl_block_tmp_s *printk_ctrl_block_tmp)
++{
++	int read_len = 0;
++	int printk_region = printk_ctrl_block_tmp->printk_region;
++	unsigned int len = 0;
++
++	if (!input_data) {
++		KBOX_MSG("input parameter error!\n");
++		return KBOX_FALSE;
++	}
++
++	len = g_kbox_super_block.printk_ctrl_blk[printk_region].len;
++	if (len <= 0) {
++		printk_ctrl_block_tmp->end = 0;
++		printk_ctrl_block_tmp->valid_len = 0;
++		return KBOX_TRUE;
++	}
++
++	read_len =
++	    kbox_read_from_ram(0, len, input_data,
++			       printk_ctrl_block_tmp->section);
++	if (read_len < 0) {
++		KBOX_MSG("fail to read printk information!(1)\n");
++		return KBOX_FALSE;
++	}
++
++	printk_ctrl_block_tmp->end = len;
++	printk_ctrl_block_tmp->valid_len = len;
++
++	return KBOX_TRUE;
++}
++
++int kbox_write_printk_info(const char *input_data,
++			   struct printk_ctrl_block_tmp_s *
++			   printk_ctrl_block_tmp)
++{
++	int write_len = 0;
++	int printk_region = printk_ctrl_block_tmp->printk_region;
++	unsigned long flags = 0;
++	unsigned int len = 0;
++
++	if (!input_data) {
++		KBOX_MSG("input parameter error!\n");
++		return KBOX_FALSE;
++	}
++
++	len = printk_ctrl_block_tmp->valid_len;
++	write_len =
++	    kbox_write_to_ram(0, len, input_data,
++			      printk_ctrl_block_tmp->section);
++	if (write_len <= 0) {
++		KBOX_MSG("fail to save printk information!(1)\n");
++		return KBOX_FALSE;
++	}
++
++	spin_lock_irqsave(&g_kbox_super_block_lock, flags);
++
++	g_kbox_super_block.printk_ctrl_blk[printk_region].len = len;
++
++	if (kbox_update_super_block() != KBOX_TRUE) {
++		KBOX_MSG("kbox_update_super_block failed!\n");
++		spin_unlock_irqrestore(&g_kbox_super_block_lock, flags);
++		return KBOX_FALSE;
++	}
++
++	spin_unlock_irqrestore(&g_kbox_super_block_lock, flags);
++
++	return KBOX_TRUE;
++}
++
++static int kbox_read_region(unsigned long arg)
++{
++	unsigned int read_len = 0;
++	struct kbox_region_arg_s region_arg = { };
++
++	if (copy_from_user
++	    ((void *)&region_arg, (void __user *)arg,
++	     sizeof(struct kbox_region_arg_s))) {
++		KBOX_MSG("fail to copy_from_user!\n");
++		return KBOX_FALSE;
++	}
++
++	read_len = kbox_read_op((long long)region_arg.offset, region_arg.count,
++				(char __user *)region_arg.data,
++				KBOX_SECTION_ALL);
++	if (read_len <= 0) {
++		KBOX_MSG("fail to get kbox data!\n");
++		return KBOX_FALSE;
++	}
++
++	if (copy_to_user
++	    ((void __user *)arg, (void *)&region_arg,
++	     sizeof(struct kbox_region_arg_s))) {
++		KBOX_MSG("fail to copy_to_user!\n");
++		return KBOX_FALSE;
++	}
++
++	return KBOX_TRUE;
++}
++
++static int kbox_writer_region(unsigned long arg)
++{
++	unsigned int write_len = 0;
++	struct kbox_region_arg_s region_arg = { };
++
++	if (copy_from_user
++	    ((void *)&region_arg, (void __user *)arg,
++	     sizeof(struct kbox_region_arg_s))) {
++		KBOX_MSG("fail to copy_from_user!\n");
++		return KBOX_FALSE;
++	}
++
++	write_len = kbox_write_op((long long)region_arg.offset,
++				  region_arg.count,
++				  (char __user *)region_arg.data,
++				  KBOX_SECTION_ALL);
++	if (write_len <= 0) {
++		KBOX_MSG("fail to write kbox data!\n");
++		return KBOX_FALSE;
++	}
++
++	if (copy_to_user
++	    ((void __user *)arg, (void *)&region_arg,
++	     sizeof(struct kbox_region_arg_s))) {
++		KBOX_MSG("fail to copy_to_user!\n");
++		return KBOX_FALSE;
++	}
++
++	return KBOX_TRUE;
++}
++
++int kbox_clear_region(enum kbox_section_e  section)
++{
++	int ret = KBOX_TRUE;
++	unsigned long kbox_section_len = kbox_get_section_len(section);
++
++	if (kbox_section_len == 0) {
++		KBOX_MSG("get kbox_section_len failed!\n");
++		return -EFAULT;
++	}
++
++	ret = kbox_memset_ram(0, (unsigned int)kbox_section_len, 0, section);
++	if (ret != KBOX_TRUE) {
++		KBOX_MSG("kbox_memset_ram failed!\n");
++		return -EFAULT;
++	}
++
++	return KBOX_TRUE;
++}
++
++static int kbox_get_image_len(unsigned long arg)
++{
++	unsigned long __user *ptr = (unsigned long __user *)arg;
++	unsigned long kbox_len = 0;
++
++	kbox_len = kbox_get_section_len(KBOX_SECTION_ALL);
++	if (kbox_len == 0) {
++		KBOX_MSG("kbox_get_section_len section all fail!\n");
++		return -EFAULT;
++	}
++
++	return put_user(kbox_len, ptr);
++}
++
++static int kbox_get_user_region_len(unsigned long arg)
++{
++	unsigned long __user *ptr = (unsigned long __user *)arg;
++	unsigned long kbox_user_region_len = 0;
++
++	kbox_user_region_len = kbox_get_section_len(KBOX_SECTION_USER);
++	if (kbox_user_region_len == 0) {
++		KBOX_MSG("kbox_get_section_len section user fail!\n");
++		return -EFAULT;
++	}
++
++	return put_user(kbox_user_region_len, ptr);
++}
++
++static int kbox_ioctl_verify_cmd(unsigned int cmd, unsigned long arg)
++{
++	if (arg == 0 || (_IOC_TYPE(cmd) != KBOX_IOC_MAGIC))
++		return KBOX_FALSE;
++
++	if (_IOC_NR(cmd) > KBOX_IOC_MAXNR)
++		return KBOX_FALSE;
++
++	if (!capable(CAP_SYS_ADMIN)) {
++		KBOX_MSG("permit error\n");
++		return KBOX_FALSE;
++	}
++
++	return KBOX_TRUE;
++}
++
++int kbox_ioctl_detail(unsigned int cmd, unsigned long arg)
++{
++	if (kbox_ioctl_verify_cmd(cmd, arg) != KBOX_TRUE)
++		return -EFAULT;
++
++	switch (cmd) {
++	case GET_KBOX_TOTAL_LEN:
++		return kbox_get_image_len(arg);
++
++	case GET_KBOX_REGION_USER_LEN:
++		return kbox_get_user_region_len(arg);
++
++	case KBOX_REGION_READ:
++		return kbox_read_region(arg);
++
++	case KBOX_REGION_WRITE:
++		return kbox_writer_region(arg);
++
++	case CLEAR_KBOX_REGION_ALL:
++		return kbox_clear_region(KBOX_SECTION_ALL);
++
++	case CLEAR_KBOX_REGION_USER:
++		return kbox_clear_region(KBOX_SECTION_USER);
++
++	default:
++		return -ENOTTY;
++	}
++}
++
++int kbox_mmap_ram(struct file *pfile, struct vm_area_struct *vma,
++		  enum kbox_section_e  section)
++{
++	unsigned long kbox_section_phy_addr =
++	    kbox_get_section_phy_addr(section);
++	unsigned long kbox_section_len = kbox_get_section_len(section);
++	unsigned long offset = 0;
++	unsigned long length = 0;
++	unsigned long vm_size = 0;
++	int ret = 0;
++
++	UNUSED(pfile);
++
++	if (kbox_section_phy_addr == 0 || kbox_section_len == 0) {
++		KBOX_MSG
++		    ("get kbox_section_phy_addr or kbox_section_len failed!\n");
++		return -EFAULT;
++	}
++
++	offset = vma->vm_pgoff << PAGE_SHIFT;
++	vm_size = vma->vm_end - vma->vm_start;
++
++	if (offset >= kbox_section_len) {
++		KBOX_MSG("vma offset is invalid!\n");
++		return -ESPIPE;
++	}
++
++	if (vma->vm_flags & VM_LOCKED) {
++		KBOX_MSG("vma is locked!\n");
++		return -EPERM;
++	}
++
++	length = kbox_section_len - offset;
++	if (vm_size > length) {
++		KBOX_MSG("vm_size is invalid!\n");
++		return -ENOSPC;
++	}
++
++	vma->vm_flags |= VM_RESERVED;
++	vma->vm_flags |= VM_IO;
++
++	ret = remap_pfn_range(vma,
++			      vma->vm_start,
++			      (unsigned long)(kbox_section_phy_addr >>
++					      PAGE_SHIFT), vm_size,
++			      vma->vm_page_prot);
++	if (ret) {
++		KBOX_MSG("remap_pfn_range failed! ret = %d\n", ret);
++		return -EAGAIN;
++	}
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.h b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.h
+new file mode 100644
+index 000000000000..4a92c87de139
+--- /dev/null
++++ b/drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.h
+@@ -0,0 +1,77 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Huawei iBMA driver.
++ * Copyright (c) 2017, Huawei Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _KBOX_RAM_OP_H_
++#define _KBOX_RAM_OP_H_
++
++#include <asm/ioctls.h>
++#include <linux/fs.h>
++#include "kbox_printk.h"
++
++#define KBOX_IOC_MAGIC (0xB2)
++
++#define GET_KBOX_TOTAL_LEN _IOR(KBOX_IOC_MAGIC, 0, unsigned long)
++
++#define GET_KBOX_REGION_USER_LEN  _IOR(KBOX_IOC_MAGIC, 1, unsigned long)
++
++#define CLEAR_KBOX_REGION_ALL _IO(KBOX_IOC_MAGIC, 2)
++
++#define CLEAR_KBOX_REGION_USER _IO(KBOX_IOC_MAGIC, 3)
++
++#define KBOX_REGION_READ _IOR(KBOX_IOC_MAGIC, 4, struct kbox_region_arg_s)
++
++#define KBOX_REGION_WRITE _IOW(KBOX_IOC_MAGIC, 5, struct kbox_region_arg_s)
++
++#define KBOX_IOC_MAXNR 6
++
++#define TEMP_BUF_SIZE (32 * 1024)
++#define TEMP_BUF_DATA_SIZE (128 * 1024)
++#define KBOX_RW_UNIT 4
++
++struct kbox_region_arg_s {
++	unsigned long offset;
++	unsigned int count;
++	char *data;
++};
++
++enum kbox_section_e;
++
++int kbox_read_op(long long offset, unsigned int count, char __user *data,
++		 enum kbox_section_e section);
++int kbox_write_op(long long offset, unsigned int count,
++		  const char __user *data, enum kbox_section_e section);
++int kbox_read_super_block(void);
++int kbox_super_block_init(void);
++int kbox_write_panic_info(const char *input_data, unsigned int data_len);
++int kbox_write_thread_info(const char *input_data, unsigned int data_len);
++int kbox_write_printk_info(const char *input_data,
++			   struct printk_ctrl_block_tmp_s
++			   *printk_ctrl_block_tmp);
++int kbox_read_printk_info(char *input_data,
++			  struct printk_ctrl_block_tmp_s
++			  *printk_ctrl_block_tmp);
++int kbox_ioctl_detail(unsigned int cmd, unsigned long arg);
++int kbox_mmap_ram(struct file *file, struct vm_area_struct *vma,
++		  enum kbox_section_e section);
++char kbox_checksum(const char *input_buf, unsigned int len);
++int kbox_write_to_ram(unsigned long offset, unsigned int count,
++		      const char *data, enum kbox_section_e section);
++int kbox_read_from_ram(unsigned long offset, unsigned int count, char *data,
++		       enum kbox_section_e section);
++int kbox_clear_region(enum kbox_section_e section);
++int kbox_memset_ram(unsigned long offset, unsigned int count,
++		    const char set_byte, enum kbox_section_e section);
++
 +#endif
 -- 
 2.26.2.windows.1
