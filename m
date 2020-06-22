@@ -2,75 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40086203775
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:07:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E02D9203781
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728414AbgFVNH2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Jun 2020 09:07:28 -0400
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:51805 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727995AbgFVNHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 09:07:11 -0400
-X-Originating-IP: 90.76.143.236
+        id S1728110AbgFVNJM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Jun 2020 09:09:12 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:51871 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727940AbgFVNJJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 09:09:09 -0400
 Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
         (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 463C54000B;
-        Mon, 22 Jun 2020 13:07:05 +0000 (UTC)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 2DAA324001A;
+        Mon, 22 Jun 2020 13:09:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20200620151001.GL304147@lunn.ch>
-References: <20200619122300.2510533-1-antoine.tenart@bootlin.com> <20200619122300.2510533-6-antoine.tenart@bootlin.com> <20200620151001.GL304147@lunn.ch>
-Subject: Re: [PATCH net-next v3 5/8] net: phy: mscc: 1588 block initialization
-To:     Andrew Lunn <andrew@lunn.ch>
+In-Reply-To: <20200620150045.GA2054@localhost>
+References: <20200619122300.2510533-1-antoine.tenart@bootlin.com> <20200619122300.2510533-7-antoine.tenart@bootlin.com> <20200620150045.GA2054@localhost>
+Subject: Re: [PATCH net-next v3 6/8] net: phy: mscc: timestamping and PHC support
+To:     Richard Cochran <richardcochran@gmail.com>
 From:   Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        richardcochran@gmail.com, alexandre.belloni@bootlin.com,
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, alexandre.belloni@bootlin.com,
         UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
         allan.nielsen@microchip.com, foss@0leil.net
-Message-ID: <159283122502.1456598.2577905456018345790@kwain>
-Date:   Mon, 22 Jun 2020 15:07:05 +0200
+Message-ID: <159283134527.1456598.6263985916427354928@kwain>
+Date:   Mon, 22 Jun 2020 15:09:05 +0200
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hello Richard,
 
-Quoting Andrew Lunn (2020-06-20 17:10:01)
-> On Fri, Jun 19, 2020 at 02:22:57PM +0200, Antoine Tenart wrote:
-> > From: Quentin Schulz <quentin.schulz@bootlin.com>
-> > 
-> > This patch adds the first parts of the 1588 support in the MSCC PHY,
-> > with registers definition and the 1588 block initialization.
-> > 
-> > Those PHYs are distributed in hardware packages containing multiple
-> > times the PHY. The VSC8584 for example is composed of 4 PHYs. With
-> > hardware packages, parts of the logic is usually common and one of the
-> > PHY has to be used for some parts of the initialization. Following this
-> > logic, the 1588 blocks of those PHYs are shared between two PHYs and
-> > accessing the registers has to be done using the "base" PHY of the
-> > group. This is handled thanks to helpers in the PTP code (and locks).
-> > We also need the MDIO bus lock while performing a single read or write
-> > to the 1588 registers as the read/write are composed of multiple MDIO
-> > transactions (and we don't want other threads updating the page).
+Quoting Richard Cochran (2020-06-20 17:00:45)
+> On Fri, Jun 19, 2020 at 02:22:58PM +0200, Antoine Tenart wrote:
 > 
-> Locking sounds complex. I assume LOCKDEP was your friend in getting
-> this correct and deadlock free.
+> > +static void vsc85xx_dequeue_skb(struct vsc85xx_ptp *ptp)
+> > +{
+> > +     struct skb_shared_hwtstamps shhwtstamps;
+> > +     struct vsc85xx_ts_fifo fifo;
+> > +     struct sk_buff *skb;
+> > +     u8 skb_sig[16], *p;
+> > +     int i, len;
+> > +     u32 reg;
+> > +
+> > +     memset(&fifo, 0, sizeof(fifo));
+> > +     p = (u8 *)&fifo;
+> > +
+> > +     reg = vsc85xx_ts_read_csr(ptp->phydev, PROCESSOR,
+> > +                               MSCC_PHY_PTP_EGR_TS_FIFO(0));
+> > +     if (reg & PTP_EGR_TS_FIFO_EMPTY)
+> > +             return;
+> > +
+> > +     *p++ = reg & 0xff;
+> > +     *p++ = (reg >> 8) & 0xff;
+> > +
+> > +     /* Read the current FIFO item. Reading FIFO6 pops the next one. */
+> > +     for (i = 1; i < 7; i++) {
+> > +             reg = vsc85xx_ts_read_csr(ptp->phydev, PROCESSOR,
+> > +                                       MSCC_PHY_PTP_EGR_TS_FIFO(i));
+> > +             *p++ = reg & 0xff;
+> > +             *p++ = (reg >> 8) & 0xff;
+> > +             *p++ = (reg >> 16) & 0xff;
+> > +             *p++ = (reg >> 24) & 0xff;
+> > +     }
+> > +
+> > +     len = skb_queue_len(&ptp->tx_queue);
+> > +     if (len < 1)
+> > +             return;
+> > +
+> > +     while (len--) {
+> > +             skb = __skb_dequeue(&ptp->tx_queue);
+> > +             if (!skb)
+> > +                     return;
+> > +
+> > +             /* Can't get the signature of the packet, won't ever
+> > +              * be able to have one so let's dequeue the packet.
+> > +              */
+> > +             if (get_sig(skb, skb_sig) < 0)
+> > +                     continue;
+> 
+> This leaks the skb.
 
-I agree, locking is not straight forward. But it's actually not that
-complex:
-
-- The MDIO bus lock is used for all TS/PHC register access.
-- There is one lock for PHC operations and one for timestamping
-  operations. The two are never used in the same function. We could use
-  the same lock; introducing more waiting.
-- There is one shared lock for GPIO operations. It is only used in
-  PHC functions, in two places.
-
-And I realized I can remove the locks from vsc8584_ptp_init, as PHC/TS
-helpers are not registered until the PHY is initialized.
+That's right, thanks for pointing this out! I'll fix it.
 
 Thanks,
 Antoine
