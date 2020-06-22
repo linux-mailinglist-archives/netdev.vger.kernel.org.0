@@ -2,140 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F7362037D6
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:22:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A97A2037DB
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:23:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728920AbgFVNWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 09:22:15 -0400
-Received: from mail-eopbgr140075.outbound.protection.outlook.com ([40.107.14.75]:36935
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728164AbgFVNWO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 09:22:14 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OHQAyEXo5uBc32apLxUtG87cIEY6csY4seMHSsXzco8MZiHEkS4jMWGYR8R9OvLy8vS8nnn8IONjIulElYgOjfea6Q9CK8She/3wfxhMFHbUipir9MqNJbQUsk0jOsDyoiro/xT++Qey9CdXdvzTI5tr/sNsvPoZES90MzGAm52WGhtvPiATIKhts1Xn6z3MkNwIlLhJyLDnUXfTJcuY8EfTGQEfE0lH+lg4vJuU/pTS5kO/HJioQZycQPuH825hGNQKB2NJIJCKhCJipYtFU41jix2pILBWdBb3j2x4TwOkjngom5Z90S6MhU6Ge7Tl/8O0xxgeWJow5g3IeO/qAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j2xGnW3fj7RI8BcdoBY5lQRxvH3WzUvYPM2b3eGs+nU=;
- b=njGYCqSao7w75vVUKAs44k3er5zNqDBZ5EjT6z/ItWjMvpTgvYOd1R9c8vnSIJwsOtTZ/nr+heA0Y/EkikUM+262xbzqJgefPiLwhKun0M/N0a0muN3RW+iKGwqqOr2ET3syXleYDcUDcDOa9KHbbyHFPK5W0akwRD6nhuc6BT2KOOy2h+Hk71tpEaTfUNYT0oDAFCm89u4xtrKyi5PU8SXbh9MA9QTVSnq3uvTHpNPce7y8+nwpJlP1UL/VBZlYXBoU4x3s5BUJjxHQM4YSMArRBMdanCUR+DCnmeLbf+E55w3EEaHoVZx33SGXN7Ei+3DmhKVPrhDOeVX2HLnoTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j2xGnW3fj7RI8BcdoBY5lQRxvH3WzUvYPM2b3eGs+nU=;
- b=hkVzuY2ap+nIWoB09DN+4Ms5hJGr7ofIefa6X6rIrlAbFs0FypwlDoK7RB6SMBvfEt8iiDpe2kj88htxMerzjGZlyJ8TtZwixVJA8CytXp8QDPcIrlyWQ9IozETahbRWzCD597ydLceDX2grDlAltxSuzX7+aCcjM+pO8VAksz8=
-Authentication-Results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none
- header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB6177.eurprd04.prod.outlook.com (2603:10a6:208:13f::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.21; Mon, 22 Jun
- 2020 13:22:10 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::7dda:a30:6b25:4d45]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::7dda:a30:6b25:4d45%7]) with mapi id 15.20.3109.027; Mon, 22 Jun 2020
- 13:22:10 +0000
-Date:   Mon, 22 Jun 2020 18:52:00 +0530
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Jeremy Linton <jeremy.linton@arm.com>, Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev@vger.kernel.org, linux.cj@gmail.com
-Subject: Re: [PATCH v1 1/3] net: phy: Allow mdio buses to auto-probe c45
- devices
-Message-ID: <20200622132200.GB5822@lsv03152.swis.in-blr01.nxp.com>
-References: <20200617171536.12014-1-calvin.johnson@oss.nxp.com>
- <20200617171536.12014-2-calvin.johnson@oss.nxp.com>
- <20200617174451.GT1551@shell.armlinux.org.uk>
- <20200617185120.GB240559@lunn.ch>
- <20200617185703.GW1551@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617185703.GW1551@shell.armlinux.org.uk>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: SG2PR01CA0162.apcprd01.prod.exchangelabs.com
- (2603:1096:4:28::18) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+        id S1728187AbgFVNXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 09:23:51 -0400
+Received: from mout.gmx.net ([212.227.15.18]:44843 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727963AbgFVNXu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 09:23:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1592832224;
+        bh=fKFu92GpIwoqDxRKku5sm7ElRAgZBtmm/0QAdLah3oQ=;
+        h=X-UI-Sender-Class:Reply-To:Subject:To:Cc:References:From:Date:
+         In-Reply-To;
+        b=I6mScZPdZO68MMib4DQeXJbHNf5zGQBv/RjUE8IECDLiSvIMJX5/00cl+7APHANFp
+         k0YOLcXCFMf42bflK1k9foYr/Ck21QVZHW495dIstvW8/V4lQKhAYPOb7Tib6QxtUf
+         8h7jM4r8PwbqI1DbogD4moZd+n1goEdbZo7ArOJU=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.84.205] ([149.224.28.87]) by mail.gmx.com (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MEm2D-1jd99H2DXP-00GJ3E; Mon, 22
+ Jun 2020 15:23:44 +0200
+Reply-To: vtol@gmx.net
+Subject: Re: secondary CPU port facing switch does not come up/online
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Marek Behun <marek.behun@nic.cz>
+References: <d47ad9bb-280b-1c9c-a245-0aebd689ccf5@gmx.net>
+ <8f29251c-d572-f37f-3678-85b68889fd61@gmail.com>
+ <eb0b71bb-4df3-ff3e-2424-a0d92b26741a@gmx.net>
+ <20200622143155.2d57d7f7@nic.cz>
+ <50a02fb5-cb6c-5f37-150f-8ecfccdd473b@gmx.net>
+ <20200622150644.232e159b@nic.cz>
+From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Message-ID: <7bab9e25-a0e2-6c51-be01-5bf718afb018@gmx.net>
+Date:   Mon, 22 Jun 2020 13:23:00 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR01CA0162.apcprd01.prod.exchangelabs.com (2603:1096:4:28::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22 via Frontend Transport; Mon, 22 Jun 2020 13:22:06 +0000
-X-Originating-IP: [14.142.151.118]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 6116cdab-6aec-4708-73c9-08d816af43fb
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6177:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB6177069AAE4D25B001920E0AD2970@AM0PR04MB6177.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 0442E569BC
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9Q3JwwZ0bKB2c53kymxe+/NhiB0z5TXaj8RX8qRVZrV7zmrD6kZuWGsUiLN4jjiZXf1QsqUo5+I+zttf5dhk5ApaN/o6g3zbNvHz1VQaArCrifThi+fwfKSfiWwEI5H0OICigxGHmGca6PVryBHSHjmsmyIRh/4HosqkIT8LUhdxIW0q7B7iap6FdnyJJfhOuyh02c9oQguHK2rqpG2AUM3hlanISWWkqVWNQFJ0kKKxL0kaUTW9ubr4MG8YnLFJ4LAbm5SDFxghuFxhUOZvUuq/3xNjLYkU0R7X38b963f7z5VQzvn4aYp2Xd/i1nB5dLp80Mzfi7UUJfng0ALy9RrHY2Hlx+nHsGb17YRowszGLaPLB66GQHCnrCA1KAFv
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(136003)(346002)(396003)(376002)(8936002)(956004)(52116002)(7696005)(8676002)(33656002)(44832011)(9686003)(86362001)(55016002)(55236004)(316002)(26005)(6506007)(54906003)(4326008)(16526019)(186003)(478600001)(5660300002)(1076003)(1006002)(66476007)(66946007)(6666004)(2906002)(83380400001)(66556008)(6916009)(110426005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: /gOLdtO5f32lyI/ehjMoIbtLZhMz81Pa3SQE8+nnjor2ICL4YfBZq9Mnj08AgRacW62KGuyBckROvAWRxDvgqdfoJJxCkGmrRIMwoiZhG5zxYELTh4q+P2npfHYZZ63rk9ZZY6O/615YavtG0TjkH5n2L5n0Y3o6Atj/+bSQ/luHk/fiXxOAGWT5YmFFr1eH9s7leY2vqMNH56H9Z+DD2CpH0umhv6Ot+E7Mt7rhcfiH464PCZ5A95SjHI+iD8vFe0ClCLr9Q0H35Jba65yj+phqpkNbqPKyZHaEnbih0R2QQIg1mjHoZcAF9wvrslblhQr+11rHjiC+jqgtbRvysfxoP1pa98qximSEHs6NyUaQN2LCN0RyG/Qn28DZezuSZKnGnvYAOf9qvn6wZQ2bdNzwYXMd2l4HdgqpTLLj2FlrXNHteA05+r9OTC4lNayLYB3XdUmR4GyR5Vz1FHRxsdSCAp1vWWRRclSzbG9Usk3NfswN5zAXJmybufaV7sdO
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6116cdab-6aec-4708-73c9-08d816af43fb
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2020 13:22:09.7840
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: N1C6lfn6AQIWPYMNj3w6r+LqvHSXqHwZGn6Eb5C5ZuPOyJm2pp/M9r5Wr1oLAItzu38wp2L++MLZoIBNDwa4OA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6177
+In-Reply-To: <20200622150644.232e159b@nic.cz>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="HY4RgTTZh0razvPs7VVETXjwEAUfzjEz5"
+X-Provags-ID: V03:K1:1hDAyIiItUIWfK+uH8YcHOeTmYbiid+2R3JP+5GKd9UMahr29h2
+ Uk1r4RtYHPM0lGSk2UG6rDuviF/wA3OenPJ9zrLpa0F8hEkalggvVy2ZePyTaUG1m7gBz1O
+ NplRbZaD0yDo+T9lUHlXuEINWOzRTGbUbTzgJlBd0CsaEIoIZN76T+p58Yw79x0vSf716MK
+ Ui8immIFKJTwQTHYvScXQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:R4Z2ueHsgAk=:7Cm6SDmMGP9OSY3Wl0M6J4
+ 3y0raZ1cXsIzrHdWEWV7cndaMPslfKhwmjOT8CWkWLM4owiZ22mu/o+m2/2PWaiarNDcT1fnb
+ pE7fk8Hn6zpb9cMnvMMulc2d0iJ9s17DaOR9Xj7G3FivXbPJe1yK6rvGYlGCOlnklIEfn/HFn
+ Ujk+N/HWm4hUgLgR4grGJ8K/z4XRUzuYpvshMLn5ZvCNPZsQjLeNkhobKGIPFDTY9EjPhPEA2
+ xWN7zCyi0Sh+rEiX/zCZF3M/KLA838foJZkX9xVIbjI56G//0H0FNb1wG60flRuqEqGpqFFT6
+ mCj0Jcj/wNPf+Rrsknp0srIkSO0tkbassKx8vlwnOg/2A6oa7RjL3URpp7QSmNy/tR5y+KX75
+ 2zgKyadiL0Xw2iwkVCk/VRL1OcpyzeagGbQyLr4RgzvRD3mbx7+y3gWfOsQDxkUyRm0Xmcww0
+ 6mAHtK2OmmL8x9SHT+5Pyedcai+dmih9ZAVHNmK97AuFIpyTOD1bzqQR/iq1KkuEOCjkdGoHf
+ c3KrkaKtHpFTni8FXAfxOwxkl6cd5CcCPBCuUqm/Mu8yOXT+UfSSH04YCt1Cf5TBucZeyueXP
+ VhtX9S2PyvO9tTe0sQTMfCK7latgJdPpUjI5NWeypOK2v4rjjsYHSunfvEJcLq3TsY+6qivGW
+ dPGtfvIhfS9oMFB+4pUYhANNjQaLjJ3D5hteZLBvSoe/KhoLZEWUSFVquJISGKRiVgWWVPaMd
+ h/0MF/5lfgQ+28RH+LAPLM1bzW4scaEOFlQjFA8mbI8AM5F0DfALYmNwWpfQI7yq2xsu+CM2q
+ ARF4PYDNU3Z+TqteFlgBF6x9Eq6wG5jp8fKW2nlHFwNn44jNN5TpEqX0J1dG2guZHChYgNl9j
+ CT0eTlfz7qJPu7vkIrjMYC0C5ILZ2bSMe5NWzdrNQjN50igYiaBjXlGeoNtYqQJRY49tWytMU
+ VxkDfRCl0wYypWqpay1OLrOYmYEz7oaw5SbxIGgB7K05aA6LI9VvcCMyONFTKsLKaEhQswDQi
+ kPFzsZIaPnv71juZwIRnjZ/khr4xIztqFv1vT3iWYne3xgXfYF0LOIoIb8P7rzPUp5kErq7R8
+ I55OLL/wmcoEEw9XF2ZwIPAuJ7z0pE0/pxsSMIJKE+q/3MBUPjTkc6SOV4Pp97Ww4kppGb9TY
+ 7V/aQWMkQx8G1zMNTho5F9NosefFb3zKPpQt9bIxg4wiReHfjdWGjF54jaW8kxfLDr5eU=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 17, 2020 at 07:57:03PM +0100, Russell King - ARM Linux admin wrote:
-> On Wed, Jun 17, 2020 at 08:51:20PM +0200, Andrew Lunn wrote:
-> > > > +	/* bus capabilities, used for probing */
-> > > > +	enum {
-> > > > +		MDIOBUS_C22 = 0,
-> > > > +		MDIOBUS_C45,
-> > > > +		MDIOBUS_C22_C45,
-> > > > +	} probe_capabilities;
-> > > 
-> > > I think it would be better to reserve "0" to mean that no capabilities
-> > > have been declared.  We hae the situation where we have mii_bus that
-> > > exist which do support C45, but as they stand, probe_capabilities will
-> > > be zero, and with your definitions above, that means MDIOBUS_C22.
-> > > 
-> > > It seems this could lock in some potential issues later down the line
-> > > if we want to use this elsewhere.
-> > 
-> > Hi Russell
-> > 
-> > Actually, this patch already causes issues, i think.
-> > 
-> > drivers/net/ethernet/marvell/mvmdio.c contains two MDIO bus master
-> > drivers. "marvell,orion-mdio" is C22 only. "marvell,xmdio" is C45
-> > only. Because the capabilites is not initialized, it will default to
-> > 0, aka MDIOBUS_C22, for the C45 only bus master, and i expect bad
-> > things will happen.
-> > 
-> > We need the value of 0 to cause existing behaviour. Or all MDIO bus
-> > drivers need reviewing, and the correct capabilities set.
-> 
-> Yes, that's basically what I was trying to say, thanks for putting it
-> more clearly.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--HY4RgTTZh0razvPs7VVETXjwEAUfzjEz5
+Content-Type: multipart/mixed; boundary="STMYv9Q8YIAUhgfji54NYE9iejspqQ2Vb";
+ protected-headers="v1"
+From: =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Reply-To: vtol@gmx.net
+To: netdev@vger.kernel.org
+Cc: Florian Fainelli <f.fainelli@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+ Vivien Didelot <vivien.didelot@gmail.com>, Marek Behun <marek.behun@nic.cz>
+Message-ID: <7bab9e25-a0e2-6c51-be01-5bf718afb018@gmx.net>
+Subject: Re: secondary CPU port facing switch does not come up/online
+References: <d47ad9bb-280b-1c9c-a245-0aebd689ccf5@gmx.net>
+ <8f29251c-d572-f37f-3678-85b68889fd61@gmail.com>
+ <eb0b71bb-4df3-ff3e-2424-a0d92b26741a@gmx.net>
+ <20200622143155.2d57d7f7@nic.cz>
+ <50a02fb5-cb6c-5f37-150f-8ecfccdd473b@gmx.net>
+ <20200622150644.232e159b@nic.cz>
+In-Reply-To: <20200622150644.232e159b@nic.cz>
 
-Prior to this patch, below code which is for C22 was executed in this path.
-	phydev = get_phy_device(bus, addr, false);
-Doesn't this mean that MDIOBUS_C22 = 0, doesn't break anything?
+--STMYv9Q8YIAUhgfji54NYE9iejspqQ2Vb
+Content-Type: multipart/mixed;
+ boundary="------------99317C1773716D2454D428AF"
+Content-Language: en-GB
 
-I think for DT cases, there wasn't autoprobing for PHYs and this path wasn't
-taken.
+This is a multi-part message in MIME format.
+--------------99317C1773716D2454D428AF
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-Regards
-Calvin
+
+On 22/06/2020 13:06, Marek Behun wrote:
+> On Mon, 22 Jun 2020 12:58:00 +0000
+> =D1=BD=D2=89=E1=B6=AC=E1=B8=B3=E2=84=A0 <vtol@gmx.net> wrote:
+>
+>> Thank you for the input and pointer to patches.
+>>
+>> The problem is that it would require TOS deployed on the device, which=
+
+>> is not the case and the repo being twice removed from the kernel sourc=
+e
+>> -> OpenWrt -> TOS, patches are neither available in mainline or OpenWr=
+t
+>> whilst the Marvell SoC chipset is not unique to the CZ.NIC manufacture=
+d
+>> devices but leveraged by other vendors as well.
+>>
+>> It seems a bit strange to be nudged to the deployment of a particular
+>> repo, unless self-compiling kernel with those patch sets, instead of t=
+he
+>> same functionality being provided straight from mainline. Are those
+>> patch sets being introduced to mainline?
+> Hi,
+>
+> I sent a RFC patch series last year adding multiCPU DSA to upstream
+> kernel, but the problem is a rather complicated.
+
+Tracked those on the ML but did not understand why they fizzled into=20
+nothing, least it did not look like that patches been outright rejected. =
+
+But that is perhaps where "complicated" comes in...
+
+> I plan to try again,
+> but do not know when.
+
+If time is an issue I suppose it would not just do if I picked up those=20
+patches and submit those on your behalf to mainline since it likely=20
+would require follow up on a code discussion which is beyond realm.
+
+>
+> As for OpenWRT - yes, we will try to add full support for Omnia into
+> upstream OpenWRT sometime soon. We were waiting for some other
+> patches to be accepted in upstream kernel.
+>
+> Marek
+
+Will have to wait then and see how that goes. Though it would certainly=20
+benefit all device owners with such chip design if mainline would cater=20
+for it instead of the various downstream having to patch their end.
+
+
+--------------99317C1773716D2454D428AF
+Content-Type: application/pgp-keys;
+ name="OpenPGP_0xF4F735931F05C5CE.asc"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="OpenPGP_0xF4F735931F05C5CE.asc"
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xsFNBFnciLoBEADBsoGGx8dPCw216OeILh7+4A851grJgGjBpjv2bjGGxJlCpnevyCHf+D3SM=
+fsz
+ASwV23B1TXsp3YM4X2JVnRr9RAqr8+U8pUDb6c58U1Il182/vlk6utD8q1221o3XDp3RXhEqC=
+FR1
+K+0BlnFnE2//CPnEs94BJ94cksaxy14QpY4VL9w9u1O02KkSXA2f0j/R6sxnHGk6SAWTn7OE7=
+l57
+rJsiklq6AYuEQ2j/5rEa9rMe6yfryXsiuY++bUbAhlhnsWSalA56yl1FbfCW/lXNay9yrjYwi=
+/44
+nEMmuj79kXmMMMX87PpoaoQUGFI0PbkOhO2TkVXqSBY8lolTtMHeGm3XSRUo3LVEFWf2K4zWX=
+AKo
+K4rFg8zKEGzYZy2dlHbY777h6nqLjJ84tSQH7eimouPjuaklwK0ilmyBvpcWRnUpGuZbLv89s=
+p5S
+ThqZ+eYaur4p3mXOXift+vPM9sN9ycXg3SUBcq+Kz+Vo32dAd5jJhiNzW+FqaKMQMNfAsu/9s=
+WgP
+lwVBYywcW+oqN+T+94Vb4qJ8VjooVfSFSGZ+VEkxW9nDXh9TTQb6b0eDysgGiJ2ZaZbrzSQUE=
+fUl
+nAhvFLlfcxWI02EA9Dnj3vPuNPt6/mSV3d83tt8mE9gWMxYkY/aWyGWohczkMlj9vY+G+2k9+=
+AG1
+4BpNiGK7svsr9QARAQABzQx2dG9sQGdteC5uZXTCwZQEEwEIAD4WIQR6bKTYsnyC9Y8mc5H09=
+zWT
+HwXFzgUCWdyIugIbAwUJBhEmdgULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRD09zWTHwXFz=
+o0Y
+EACzVvOGrxWq7Igv7s1ikPhrzYLjGqfETgejkfpJ4Sm6A2siidOSvFZYB8UOso2+JSxq1SRIg=
+MvV
+MK/3tObL7yX0lcslg7PDoJ2ZLWIBqWmrtLWHPEubYYkZnPBtEsio/z4lt04Qmz/Ydx2zjR2cS=
+3+0
+k+Jb9qXxHAGynWiaUV4iQ/sIKjBki6okgM3cJTBRr3Y2mvQuf1WoekolqavHp+8yD9ESnGAGw=
+25K
+2Ya4BVQmzvSoK32xLbqIBe+sFfKtc8sjjk7ZR3rliM7+BTqvEYOMlMX9JKTKD9yIh8cYnonkq=
+EP+
+6OqrZFmk7qWVq33PGvl/JLLIA6lNDhDalWhlM5026Ti4g1dtnf6C2vvpPAQZuqKc3DboKkkPi=
++tl
+hyfmnLltUnHVAeu6h1lQjESNuNY0jpKDukchL+9jRBjWg4Tf6PbG5m0z/wMsF6rqJ7MF9V9hT=
+pbX
+hMH1LgA1HMibszs9kNufhZzIp1/ZYtgQp1L4+BDRDtWv1n32C7SBrTVNdhmCqOFGv047g9QIL=
+WlK
+JYUrCby70Lk74xGJeHpPvftXeoR157adv8T1h3o5dc5sLI/FnGJAa6HRRt5PetLc/pTC7qwT2=
+bTS
+tZtpF6KGLHcxR64BAu4uCUbgnl89Q3etEmHU3akDQIhJiM3rG5XjDuq3j6Kb0GPmWElTXWqX+=
+l7V
+Nc7BTQRZ3Ii6ARAA5XGN+cUiahtr/8q4pj7lB5FHlOUmLYRf+rN25Fg0Pr3lxx840wKLHYNxD=
+7Cj
+2XTmsxJseMPy9SbAKgA9uyBe5AaPQA8J2sP6tM0DuIssfuc+uGMgIXb3SnZvLL1ER849HtDGV=
+Jzn
+Oq7Aja5MACNCjWfY4xOA8ReAKK6MaDTO3xKoNSiLrFpA9nvMvMFDPK67pAdM/yeE844mzk4s9=
+UCT
+7fRUkf60YdoxUC6/kHz+6HInerqZQHEBxGkHVq3lkzo5InC0FrWDwmjG+Ol6PlwsWKn3uhMQI=
+6vm
+RlOetr00qRLFTQoGcVmOfZRgk2AoAiBanf9CWYWlRTGS0cgO7UsaLbuhAi24eR+cZccqFQ05V=
+aNN
+hCXZwHJa03riIJoz7LN9RCjd91e5uMs0qjKiMypgRD3K+xjf62VIAEn2d/BM+BwNirwwppqYl=
+d6h
+n4+igv5+ZHcotL7QBZF6+I0pcl4UVjAIJXV/ekW5g/OX0YwyesCh6xG/MukvISrmHadnY5UC8=
+lPA
+8rgNYahAx4jOMsmOdDcBz4gaEBJnssGCfSFvf6BEt2KjLGao7N0Z0s4dyHDosR6lJZEI3XLeq=
+Rgu
+6ZAGaK50V073hQ4GIFeclRA3uNcMUR6jEYw+PFh4KMD1NXuAJy9LI6r1+PBZfgk2F4GFh2rWK=
+Tnf
+kylyGhPqboLrxkUAEQEAAcLBfAQYAQgAJhYhBHpspNiyfIL1jyZzkfT3NZMfBcXOBQJZ3Ii6A=
+hsM
+BQkGESZ2AAoJEPT3NZMfBcXOgdkP/02/0ONJGu6i0lFnIJJ9gPZ4MkJqAqMwY8oUorXtNmmJg=
+YLE
+0CPugmcfSw+ozzPqbNbuPWYLf9UUv1sMI8HyCI4Me7WgUf7FDPU1+Os77W+5Si7o9u/Nuvh8T=
+jn2
+3O6Y+axTzzqdcB4MugkZMlENHdULfizL82SEONng9vK2Q5S76b6Hh0VjNUTv1ZMUjEXrPvFk2=
+Coq
+b+J3Myin3ptT+FKOjOn4UG4ItM88q5IfqPxawWNpbfrXbArmyOT5R9bSldgPejdAEglLSwoBY=
+7gW
+duf1vb28ik9iF1lFK19PYwy0gOQGgWzQTaEgTzREG3PUASeYrvR0O9zs+8jgxDwY9qWt5onsv=
+sLm
+rEkyuOXJYTxuITQ9z7Jgc8Qn0Hum+SvGPyL9n0ONL95X3bWjS8igkSOBopniayWq2Nd2s2fNW=
+mZP
+Nx7da6dJM1wbaeff7QNz8T8H/n62fifjcxWc5et0PH35/fM6u98EdzyUTiaGG+zxbX8AmwSGo=
+h4o
+9yxqayBp5yZ4ovW+tUlXWD6s0MZRdbCixLB18tQlC8VJdPtc2mHPCoC6aQ+XZwypG0j3K2JQp=
+xbH
+0M7nJopBOJZPDWR6TmwgtYjWbYjP23CxaIIgpw+wbWXIFQ9QFJUZlnR3XOBjmxWEHyq/jGqP6=
+68A
+6g49RhefId/b4RJ51vwUuFPvDlmm
+=3DEVfn
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------99317C1773716D2454D428AF--
+
+--STMYv9Q8YIAUhgfji54NYE9iejspqQ2Vb--
+
+--HY4RgTTZh0razvPs7VVETXjwEAUfzjEz5
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEEemyk2LJ8gvWPJnOR9Pc1kx8Fxc4FAl7wsN4FAwAAAAAACgkQ9Pc1kx8Fxc7P
+nBAAqJinKlXcv0uK09DiEQxkjM8lNwb0IZTWaggaqiU8wyw6SYmFCs9EqbimaFbyOTMiEGBxc0SD
+b0HmEgJgwcNU2Eau2VkBtSLCMZXno6Yiu6IUc8e1YycA693tYGAgC5vAOcvKe3xwnDID/y1pSH5I
+aiSJfmCYdXAwRX3elRXRQwHDrKj50qwLeyM1iYEBnu15T1WJY11DXJXQelC0o6/xc5SV6f8GdhzT
+fsXBG750zOSdUsaUp1olFlInpwCaXHcoI589k21pZTtejaCgsHepUpwxti4nU01p1MRvE6L+M2zU
+A2zvcc2iQ9ImZnbfxe/NChspK6FXXkRm+wW5/Bf0UR1imZs2zfQTWDPuMTZNhzOAmswQ8ceFEVcb
+3tiQ4DWK/VsURAZF2fNROlTO2Ey26BVPirP825Mhu/PrgmXf1/k3VqDtTlLpxw9CYDz6f8q/B0r3
+wLHr91aDBA6Wr/oEQD2LIFYr9KXr+kefnqa2ETtsfLHP8iDQS0GV3/NXbOVvIvWngkyIAlKTAX7H
+6NRczxVNeZkNd0japeuLXQRFoyd5OGEWnmKE6PUATP/3hlneVEehw4JFKPpww1OJe/c6lrA4Wvct
+p6YKOl0vXzK+rUcxquUekYWPqU0BZI76F21p5KfB7s4o0s6Z3lBtNyFpELm17pqAWFaMVbuPzRhT
+Vuc=
+=S+QQ
+-----END PGP SIGNATURE-----
+
+--HY4RgTTZh0razvPs7VVETXjwEAUfzjEz5--
