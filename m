@@ -2,170 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 688B52037FD
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:28:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C97B9203802
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:29:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728365AbgFVN2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 09:28:43 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:22035 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728164AbgFVN2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 09:28:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592832521;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4y6mNPOOEym8w04Pf3sX/tKuWabKGUMvxiFNGB2kiqw=;
-        b=gk9X5sCKC33//7q+1xmfaIrqzxZQWUi0UDAdDZR+juGzPRxUuLcjB1kL9fNtGa0Yhx4yCS
-        mrcCnUNOjqx6IqemNc8zCVX8XHE0MfjqR9Q9UE/jRQlly5aVp7U9iYgZVgNvOoOx4k226t
-        noyUqslxcDghMQ2b09eeeunEizYPPkw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-470-b0XG_I6mOqGd4uEHQChe-g-1; Mon, 22 Jun 2020 09:28:37 -0400
-X-MC-Unique: b0XG_I6mOqGd4uEHQChe-g-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8D3931015DB1;
-        Mon, 22 Jun 2020 13:28:36 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.36])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2BFDF2C724;
-        Mon, 22 Jun 2020 13:28:29 +0000 (UTC)
-Date:   Mon, 22 Jun 2020 15:28:28 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Denis Kirjanov <kda@linux-powerpc.org>
-Cc:     netdev@vger.kernel.org, jgross@suse.com, wei.liu@kernel.org,
-        paul@xen.org, ilias.apalodimas@linaro.org, brouer@redhat.com
-Subject: Re: [PATCH net-next v10 2/3] xen networking: add basic XDP support
- for xen-netfront
-Message-ID: <20200622152828.368748ba@carbon>
-In-Reply-To: <CAOJe8K28RQuiAKADY2pgad8qAzVXYxYcZnb8m0AJGSZTnAfJqA@mail.gmail.com>
-References: <1592817672-2053-1-git-send-email-kda@linux-powerpc.org>
-        <1592817672-2053-3-git-send-email-kda@linux-powerpc.org>
-        <20200622115804.3c63aba9@carbon>
-        <CAOJe8K28RQuiAKADY2pgad8qAzVXYxYcZnb8m0AJGSZTnAfJqA@mail.gmail.com>
+        id S1728933AbgFVN3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 09:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728154AbgFVN3h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 09:29:37 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9F9C061573;
+        Mon, 22 Jun 2020 06:29:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=nHCM22JQl59z7ZLfO6rmd8v+bKCkX31XgxEADbUAxBA=; b=CnAOe8/T/ji69oH9Lh89dfyNT
+        r3NVBL5BYf9Z/mWtqcj+TRf/AbPDsi7ayJpvdYUVxM/lvsgPL3fc1ROn1+oE/m78C8PBFFKWoIKc9
+        5PUYePvNjb6TeMDFlyFLQpfbmbPnwdoIZr16TGN4aQBHSnm7CDyOJtCAli7FQUVyMWaDgPYs8FKVA
+        nCGd2K9JR5Sk7SDWtZKdWNN+kU0nnYrVZ5zWOEX8wcRfFDZ8uiG9kB/x34FkO8nssamRde/gBYXtB
+        Nm5JQ9qIN8aTtYQKbE+ew6OEyjvu6FvJexuCSZdgZqqzR1AoKXX9XFSnoYUlah8KVn33yAu0PYX08
+        YlGLAxqTQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58966)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jnMVn-0000Gz-28; Mon, 22 Jun 2020 14:29:23 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jnMVm-00005c-49; Mon, 22 Jun 2020 14:29:22 +0100
+Date:   Mon, 22 Jun 2020 14:29:22 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Fabien Parent <fparent@baylibre.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH 14/15] net: phy: add PHY regulator support
+Message-ID: <20200622132921.GI1551@shell.armlinux.org.uk>
+References: <20200622093744.13685-1-brgl@bgdev.pl>
+ <20200622093744.13685-15-brgl@bgdev.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200622093744.13685-15-brgl@bgdev.pl>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Jun 2020 15:45:46 +0300
-Denis Kirjanov <kda@linux-powerpc.org> wrote:
-
-> On 6/22/20, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> >
-> > On Mon, 22 Jun 2020 12:21:11 +0300 Denis Kirjanov <kda@linux-powerpc.org>
-> > wrote:
-> >  
-> >> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-> >> index 482c6c8..1b9f49e 100644
-> >> --- a/drivers/net/xen-netfront.c
-> >> +++ b/drivers/net/xen-netfront.c  
-> > [...]  
-> >> @@ -560,6 +572,65 @@ static u16 xennet_select_queue(struct net_device
-> >> *dev, struct sk_buff *skb,
-> >>  	return queue_idx;
-> >>  }
-> >>
-> >> +static int xennet_xdp_xmit_one(struct net_device *dev, struct xdp_frame
-> >> *xdpf)
-> >> +{
-> >> +	struct netfront_info *np = netdev_priv(dev);
-> >> +	struct netfront_stats *tx_stats = this_cpu_ptr(np->tx_stats);
-> >> +	unsigned int num_queues = dev->real_num_tx_queues;
-> >> +	struct netfront_queue *queue = NULL;
-> >> +	struct xen_netif_tx_request *tx;
-> >> +	unsigned long flags;
-> >> +	int notify;
-> >> +
-> >> +	queue = &np->queues[smp_processor_id() % num_queues];
-> >> +
-> >> +	spin_lock_irqsave(&queue->tx_lock, flags);  
-> >
-> > Why are you taking a lock per packet (xdp_frame)?  
-> Hi Jesper,
+On Mon, Jun 22, 2020 at 11:37:43AM +0200, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
-> We have to protect shared ring indices.
-
-Sure, I understand we need to protect the rings.
-
-What I'm asking is why are doing this per-packet, and not once for the
-entire bulk of packets?
-
-(notice how xennet_xdp_xmit gets a bulk of packets)
-
-> >  
-> >> +
-> >> +	tx = xennet_make_first_txreq(queue, NULL,
-> >> +				     virt_to_page(xdpf->data),
-> >> +				     offset_in_page(xdpf->data),
-> >> +				     xdpf->len);
-> >> +
-> >> +	RING_PUSH_REQUESTS_AND_CHECK_NOTIFY(&queue->tx, notify);
-> >> +	if (notify)
-> >> +		notify_remote_via_irq(queue->tx_irq);
-> >> +
-> >> +	u64_stats_update_begin(&tx_stats->syncp);
-> >> +	tx_stats->bytes += xdpf->len;
-> >> +	tx_stats->packets++;
-> >> +	u64_stats_update_end(&tx_stats->syncp);
-> >> +
-> >> +	xennet_tx_buf_gc(queue);
-> >> +
-> >> +	spin_unlock_irqrestore(&queue->tx_lock, flags);  
-> >
-> > Is the irqsave/irqrestore variant really needed here?  
+> The MDIO sub-system now supports PHY regulators. Let's reuse the code
+> to extend this support over to the PHY device.
 > 
-> netpoll also invokes the tx completion handler.
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> ---
+>  drivers/net/phy/phy_device.c | 49 ++++++++++++++++++++++++++++--------
+>  include/linux/phy.h          | 10 ++++++++
+>  2 files changed, 48 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 58923826838b..d755adb748a5 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -827,7 +827,12 @@ int phy_device_register(struct phy_device *phydev)
+>  
+>  	err = mdiobus_register_device(&phydev->mdio);
+>  	if (err)
+> -		return err;
+> +		goto err_out;
+> +
+> +	/* Enable the PHY regulator */
+> +	err = phy_device_power_on(phydev);
+> +	if (err)
+> +		goto err_unregister_mdio;
+>  
+>  	/* Deassert the reset signal */
+>  	phy_device_reset(phydev, 0);
+> @@ -846,22 +851,25 @@ int phy_device_register(struct phy_device *phydev)
+>  	err = phy_scan_fixups(phydev);
+>  	if (err) {
+>  		phydev_err(phydev, "failed to initialize\n");
+> -		goto out;
+> +		goto err_reset;
+>  	}
+>  
+>  	err = device_add(&phydev->mdio.dev);
+>  	if (err) {
+>  		phydev_err(phydev, "failed to add\n");
+> -		goto out;
+> +		goto err_reset;
+>  	}
+>  
+>  	return 0;
+>  
+> - out:
+> +err_reset:
+>  	/* Assert the reset signal */
+>  	phy_device_reset(phydev, 1);
+> -
+> +	/* Disable the PHY regulator */
+> +	phy_device_power_off(phydev);
+> +err_unregister_mdio:
+>  	mdiobus_unregister_device(&phydev->mdio);
+> +err_out:
+>  	return err;
+>  }
+>  EXPORT_SYMBOL(phy_device_register);
+> @@ -883,6 +891,8 @@ void phy_device_remove(struct phy_device *phydev)
+>  
+>  	/* Assert the reset signal */
+>  	phy_device_reset(phydev, 1);
+> +	/* Disable the PHY regulator */
+> +	phy_device_power_off(phydev);
+>  
+>  	mdiobus_unregister_device(&phydev->mdio);
+>  }
+> @@ -1064,6 +1074,11 @@ int phy_init_hw(struct phy_device *phydev)
+>  {
+>  	int ret = 0;
+>  
+> +	/* Enable the PHY regulator */
+> +	ret = phy_device_power_on(phydev);
+> +	if (ret)
+> +		return ret;
+> +
+>  	/* Deassert the reset signal */
+>  	phy_device_reset(phydev, 0);
+>  
+> @@ -1644,6 +1659,8 @@ void phy_detach(struct phy_device *phydev)
+>  
+>  	/* Assert the reset signal */
+>  	phy_device_reset(phydev, 1);
+> +	/* Disable the PHY regulator */
+> +	phy_device_power_off(phydev);
 
-I forgot about netpoll.
+This is likely to cause issues for some PHY drivers.  Note that we have
+some PHY drivers which register a temperature sensor in the probe
+function, which means they can be accessed independently of the lifetime
+of the PHY bound to the network driver (which may only be while the
+network device is "up".)  We certainly do not want hwmon failing just
+because the network device is down.
 
-The netpoll code cannot call this code path xennet_xdp_xmit /
-xennet_xdp_xmit_one, right?
-
-Are the per-CPU ring queue's shared with normal network stack, that can
-be called from netpoll code path?
-
-  queue = &np->queues[smp_processor_id() % num_queues];
-
-
-> >  
-> >> +	return 0;
-> >> +}
-> >> +
-> >> +static int xennet_xdp_xmit(struct net_device *dev, int n,
-> >> +			   struct xdp_frame **frames, u32 flags)
-> >> +{
-> >> +	int drops = 0;
-> >> +	int i, err;
-> >> +
-> >> +	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-> >> +		return -EINVAL;
-> >> +
-> >> +	for (i = 0; i < n; i++) {
-> >> +		struct xdp_frame *xdpf = frames[i];
-> >> +
-> >> +		if (!xdpf)
-> >> +			continue;
-> >> +		err = xennet_xdp_xmit_one(dev, xdpf);
-> >> +		if (err) {
-> >> +			xdp_return_frame_rx_napi(xdpf);
-> >> +			drops++;
-> >> +		}
-> >> +	}
-> >> +
-> >> +	return n - drops;
-> >> +}  
+That's kind of worked around for the reset stuff, because there are two
+layers to that: the mdio device layer reset support which knows nothing
+of the PHY binding state to the network driver, and the phylib reset
+support, but it is not nice.
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
