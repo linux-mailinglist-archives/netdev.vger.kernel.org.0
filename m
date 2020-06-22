@@ -2,189 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 936C1203C87
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 18:26:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01913203C8F
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 18:29:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729777AbgFVQ0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 12:26:20 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:43473 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729621AbgFVQ0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 12:26:18 -0400
-Received: by mail-io1-f71.google.com with SMTP id c17so12862400ioi.10
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 09:26:16 -0700 (PDT)
+        id S1729521AbgFVQ3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 12:29:40 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47686 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729461AbgFVQ3j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 12:29:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592843377;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FzLtoFQh/vN8wW8Srx1684Gpm2Q4p3etHyJcn3zpZ2o=;
+        b=b1icpGRDlat9MMUtdOfCI9KIwjMdefSQjpiMrVDsFJ7Sf1+Uk3SuD4xq44z9xc7BhcPcTe
+        r8ZFD2EsNuUf00jUJ5c+9Yc8QSxIk7olHIUul4E4MDUaCFRWeUBjQCmQEDl6olSx5GMYif
+        X6CzhxL1dfZ7XTc2rCzJl1v16sVYAG0=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-271-wGcBOPwNMcW-wQnTIMWRVg-1; Mon, 22 Jun 2020 12:29:32 -0400
+X-MC-Unique: wGcBOPwNMcW-wQnTIMWRVg-1
+Received: by mail-wr1-f72.google.com with SMTP id i10so7225272wrn.21
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 09:29:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=cyZIF2H3aZtPptScOAlkeBePbmCsuB1UBF8HW0TTVUY=;
-        b=rTiw0R4dYWjNpRaZv8pYG+8F09Rr+w5qHgo/HBpqmQc/vGCx5nupQaAVcbw335fg1J
-         gjp2CkBmYDS3AT7rfVZEtJQA/Hk1FniOehBavH6b4G0yvfHAcT7o42hzoBEqSPR2Oo1u
-         zB1aypY93Dw6XJEmjRJGxbR0aS+g75WDAsmzOf2FSndjPriBSoR2GXcAE2pFn/ly7NI6
-         VxjuS+dzYnjAKDVjXQwrbJDxLJRKPRXVNIvobPetM+Ru/k/j53D9Xeg5911NMAqgIEpR
-         uoDuMaK1OTOc9OvB/nFshyQyM7FfdIlob3EVRtrW/dn5oLaArT7YFwPhqZVG4oJGKPpz
-         Zm4Q==
-X-Gm-Message-State: AOAM5331mQ7cl3pps1YTK6AcpL8Z+jZ007RZq7dmisDmzBoLnnA1z6h7
-        m7Yd9TsJPJWJBhblKsLjl0Frur1iY03I9oI3JsuBuAj53SAK
-X-Google-Smtp-Source: ABdhPJzITwe4jo35y6Eyr/qfMjz1XRwKjxWX3nuFeeThepVTl89xSbaXQ+KuyGv8PjGf47gJ3ptDg3s++/wMo40l9Kyu3ZDIudV6
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FzLtoFQh/vN8wW8Srx1684Gpm2Q4p3etHyJcn3zpZ2o=;
+        b=W+O7gaJZBN9GzQ/xpznOktWv9IEDpjC/Gd2n7YSS6tjLeRrnwFW4Oaxw7oH6wJPT3x
+         DR/dh4ZIRgAe9ijxRLPqx0QVZw24hBdiKTj+trUCAF2f6ufLJIjnWt1dnJ9q3w2OrKze
+         C2xVyRAXVZixHHox137CZTpK/N+gLcpTaiwoJeP35YNWqvpfjYxXo+oF2alnS3Yl/M8Y
+         IN+Safadz3yeoX7MFv8qSma/zbwap9GFipabcEBVLqTdRwyTskOGP6FtE4vQjuJWD0DT
+         NjeKUlZBSMCUoRAOmBd9sfV3gmipvN9uLll6KZI7ivYK0OBPXpIPLdt4pYqJxXtv4ZLv
+         tPew==
+X-Gm-Message-State: AOAM531hvNB71ZLq6lfkouyxrR+TB73h1/ZUCbfyMYHucshN9sooGKyS
+        BuQ4dzflycV4pi5gKoQQudrpAPISynp2otayIu5ub3TGQuc6bTQ8eAsam21GEISS8+7utQvkjQX
+        aCOZ5CitvoHMoBXNI
+X-Received: by 2002:a5d:470a:: with SMTP id y10mr7567521wrq.405.1592843371378;
+        Mon, 22 Jun 2020 09:29:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzTk56uu9uLED/XFyQTjpJIlBSf9Yjq+4mD8Dsvqij6CkK9q6rGvTmvotw6Je15SfiT50Mhig==
+X-Received: by 2002:a5d:470a:: with SMTP id y10mr7567504wrq.405.1592843371111;
+        Mon, 22 Jun 2020 09:29:31 -0700 (PDT)
+Received: from redhat.com (bzq-79-178-18-124.red.bezeqint.net. [79.178.18.124])
+        by smtp.gmail.com with ESMTPSA id x205sm98811wmx.21.2020.06.22.09.29.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Jun 2020 09:29:30 -0700 (PDT)
+Date:   Mon, 22 Jun 2020 12:29:28 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eugenio Perez Martin <eperezma@redhat.com>
+Cc:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>
+Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
+Message-ID: <20200622122546-mutt-send-email-mst@kernel.org>
+References: <20200611113404.17810-1-mst@redhat.com>
+ <20200611113404.17810-3-mst@redhat.com>
+ <20200611152257.GA1798@char.us.oracle.com>
+ <CAJaqyWdwXMX0JGhmz6soH2ZLNdaH6HEdpBM8ozZzX9WUu8jGoQ@mail.gmail.com>
+ <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com>
+ <20200622114622-mutt-send-email-mst@kernel.org>
+ <CAJaqyWfrf94Gc-DMaXO+f=xC8eD3DVCD9i+x1dOm5W2vUwOcGQ@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:1496:: with SMTP id 144mr12910815iou.6.1592843175940;
- Mon, 22 Jun 2020 09:26:15 -0700 (PDT)
-Date:   Mon, 22 Jun 2020 09:26:15 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000af56a105a8aeb369@google.com>
-Subject: KMSAN: uninit-value in hash_net6_add
-From:   syzbot <syzbot+5d32b2edaf5048e61de0@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        glider@google.com, jeremy@azazel.net, kadlec@netfilter.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJaqyWfrf94Gc-DMaXO+f=xC8eD3DVCD9i+x1dOm5W2vUwOcGQ@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Jun 22, 2020 at 06:11:21PM +0200, Eugenio Perez Martin wrote:
+> On Mon, Jun 22, 2020 at 5:55 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Fri, Jun 19, 2020 at 08:07:57PM +0200, Eugenio Perez Martin wrote:
+> > > On Mon, Jun 15, 2020 at 2:28 PM Eugenio Perez Martin
+> > > <eperezma@redhat.com> wrote:
+> > > >
+> > > > On Thu, Jun 11, 2020 at 5:22 PM Konrad Rzeszutek Wilk
+> > > > <konrad.wilk@oracle.com> wrote:
+> > > > >
+> > > > > On Thu, Jun 11, 2020 at 07:34:19AM -0400, Michael S. Tsirkin wrote:
+> > > > > > As testing shows no performance change, switch to that now.
+> > > > >
+> > > > > What kind of testing? 100GiB? Low latency?
+> > > > >
+> > > >
+> > > > Hi Konrad.
+> > > >
+> > > > I tested this version of the patch:
+> > > > https://lkml.org/lkml/2019/10/13/42
+> > > >
+> > > > It was tested for throughput with DPDK's testpmd (as described in
+> > > > http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html)
+> > > > and kernel pktgen. No latency tests were performed by me. Maybe it is
+> > > > interesting to perform a latency test or just a different set of tests
+> > > > over a recent version.
+> > > >
+> > > > Thanks!
+> > >
+> > > I have repeated the tests with v9, and results are a little bit different:
+> > > * If I test opening it with testpmd, I see no change between versions
+> >
+> >
+> > OK that is testpmd on guest, right? And vhost-net on the host?
+> >
+> 
+> Hi Michael.
+> 
+> No, sorry, as described in
+> http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html.
+> But I could add to test it in the guest too.
+> 
+> These kinds of raw packets "bursts" do not show performance
+> differences, but I could test deeper if you think it would be worth
+> it.
 
-syzbot found the following crash on:
+Oh ok, so this is without guest, with virtio-user.
+It might be worth checking dpdk within guest too just
+as another data point.
 
-HEAD commit:    f0d5ec90 kmsan: apply __no_sanitize_memory to dotraplinkag..
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=172113cd100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=86e4f8af239686c6
-dashboard link: https://syzkaller.appspot.com/bug?extid=5d32b2edaf5048e61de0
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+5d32b2edaf5048e61de0@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in __read_once_size include/linux/compiler.h:206 [inline]
-BUG: KMSAN: uninit-value in hash_net6_add+0x14f9/0x40c0 net/netfilter/ipset/ip_set_hash_gen.h:892
-CPU: 0 PID: 828 Comm: syz-executor.2 Not tainted 5.7.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1c9/0x220 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- __read_once_size include/linux/compiler.h:206 [inline]
- hash_net6_add+0x14f9/0x40c0 net/netfilter/ipset/ip_set_hash_gen.h:892
- hash_net6_uadt+0xab6/0xd80 net/netfilter/ipset/ip_set_hash_net.c:343
- call_ad+0x2dc/0xbc0 net/netfilter/ipset/ip_set_core.c:1732
- ip_set_ad+0xad2/0x1110 net/netfilter/ipset/ip_set_core.c:1820
- ip_set_uadd+0xf6/0x110 net/netfilter/ipset/ip_set_core.c:1845
- nfnetlink_rcv_msg+0xb86/0xcf0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2469
- nfnetlink_rcv+0x3b5/0x3ab0 net/netfilter/nfnetlink.c:563
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2362
- ___sys_sendmsg net/socket.c:2416 [inline]
- __sys_sendmsg+0x623/0x750 net/socket.c:2449
- __do_sys_sendmsg net/socket.c:2458 [inline]
- __se_sys_sendmsg+0x97/0xb0 net/socket.c:2456
- __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2456
- do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45ca59
-Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f55d9193c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004fe420 RCX: 000000000045ca59
-RDX: 0000000000000000 RSI: 00000000200002c0 RDI: 0000000000000003
-RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000946 R14: 00000000004cc0e0 R15: 00007f55d91946d4
-
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
- kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
- __msan_chain_origin+0x50/0x90 mm/kmsan/kmsan_instr.c:165
- ip6_netmask include/linux/netfilter/ipset/pfxlen.h:49 [inline]
- hash_net6_uadt+0x9a8/0xd80 net/netfilter/ipset/ip_set_hash_net.c:334
- call_ad+0x2dc/0xbc0 net/netfilter/ipset/ip_set_core.c:1732
- ip_set_ad+0xad2/0x1110 net/netfilter/ipset/ip_set_core.c:1820
- ip_set_uadd+0xf6/0x110 net/netfilter/ipset/ip_set_core.c:1845
- nfnetlink_rcv_msg+0xb86/0xcf0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2469
- nfnetlink_rcv+0x3b5/0x3ab0 net/netfilter/nfnetlink.c:563
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2362
- ___sys_sendmsg net/socket.c:2416 [inline]
- __sys_sendmsg+0x623/0x750 net/socket.c:2449
- __do_sys_sendmsg net/socket.c:2458 [inline]
- __se_sys_sendmsg+0x97/0xb0 net/socket.c:2456
- __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2456
- do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
- kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
- kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
- kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
- __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
- ip_set_get_ipaddr6+0x26a/0x300 net/netfilter/ipset/ip_set_core.c:325
- hash_net6_uadt+0x4a6/0xd80 net/netfilter/ipset/ip_set_hash_net.c:320
- call_ad+0x2dc/0xbc0 net/netfilter/ipset/ip_set_core.c:1732
- ip_set_ad+0xad2/0x1110 net/netfilter/ipset/ip_set_core.c:1820
- ip_set_uadd+0xf6/0x110 net/netfilter/ipset/ip_set_core.c:1845
- nfnetlink_rcv_msg+0xb86/0xcf0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x451/0x650 net/netlink/af_netlink.c:2469
- nfnetlink_rcv+0x3b5/0x3ab0 net/netfilter/nfnetlink.c:563
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0xf9e/0x1100 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x1246/0x14d0 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2362
- ___sys_sendmsg net/socket.c:2416 [inline]
- __sys_sendmsg+0x623/0x750 net/socket.c:2449
- __do_sys_sendmsg net/socket.c:2458 [inline]
- __se_sys_sendmsg+0x97/0xb0 net/socket.c:2456
- __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2456
- do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
- kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
- kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
- slab_alloc_node mm/slub.c:2802 [inline]
- __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4436
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1083 [inline]
- netlink_alloc_large_skb net/netlink/af_netlink.c:1175 [inline]
- netlink_sendmsg+0x7d3/0x14d0 net/netlink/af_netlink.c:1893
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x12b6/0x1350 net/socket.c:2362
- ___sys_sendmsg net/socket.c:2416 [inline]
- __sys_sendmsg+0x623/0x750 net/socket.c:2449
- __do_sys_sendmsg net/socket.c:2458 [inline]
- __se_sys_sendmsg+0x97/0xb0 net/socket.c:2456
- __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2456
- do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
+> > > * If I forward packets between two vhost-net interfaces in the guest
+> > > using a linux bridge in the host:
+> >
+> > And here I guess you mean virtio-net in the guest kernel?
+> 
+> Yes, sorry: Two virtio-net interfaces connected with a linux bridge in
+> the host. More precisely:
+> * Adding one of the interfaces to another namespace, assigning it an
+> IP, and starting netserver there.
+> * Assign another IP in the range manually to the other virtual net
+> interface, and start the desired test there.
+> 
+> If you think it would be better to perform then differently please let me know.
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Not sure why you bother with namespaces since you said you are
+using L2 bridging. I guess it's unimportant.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> >
+> > >   - netperf UDP_STREAM shows a performance increase of 1.8, almost
+> > > doubling performance. This gets lower as frame size increase.
+> > >   - rests of the test goes noticeably worse: UDP_RR goes from ~6347
+> > > transactions/sec to 5830
+> >
+> > OK so it seems plausible that we still have a bug where an interrupt
+> > is delayed. That is the main difference between pmd and virtio.
+> > Let's try disabling event index, and see what happens - that's
+> > the trickiest part of interrupts.
+> >
+> 
+> Got it, will get back with the results.
+> 
+> Thank you very much!
+> 
+> >
+> >
+> > >   - TCP_STREAM goes from ~10.7 gbps to ~7Gbps
+> > >   - TCP_RR from 6223.64 transactions/sec to 5739.44
+> >
+
