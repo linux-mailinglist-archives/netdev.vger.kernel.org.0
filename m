@@ -2,93 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83406203423
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:59:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4831020342E
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 12:01:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726965AbgFVJ7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 05:59:49 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:54939 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726710AbgFVJ7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 05:59:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592819988;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4BHHXAqs++6g+gSDQIVmyyKNCLq9QfvogN5UxkxuxLw=;
-        b=X7mYypGXclhPIecSchez54haUKHEknjBDzcLJWMsOsRRrIqM+ZqpPeRKvwSn3/tI7B80qw
-        vnT7d8oJhYzWMKJZZZXBQylXSkjv1gSFelRQdzvNK9Vb4PkYn0EpbOI0yFJIXtxKv2Swg4
-        yQ50XNVc0GIf6B1MAm9JEoDFFsrZV/Q=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-130-Nygrqms9NTiaHOXIZlTUZg-1; Mon, 22 Jun 2020 05:59:46 -0400
-X-MC-Unique: Nygrqms9NTiaHOXIZlTUZg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0A008846375;
-        Mon, 22 Jun 2020 09:59:45 +0000 (UTC)
-Received: from localhost (ovpn-115-184.ams2.redhat.com [10.36.115.184])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B26E5D9D5;
-        Mon, 22 Jun 2020 09:59:39 +0000 (UTC)
-Date:   Mon, 22 Jun 2020 10:59:38 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
-Cc:     mst@redhat.com, kvm list <kvm@vger.kernel.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [RFC v9 10/11] vhost/vsock: switch to the buf API
-Message-ID: <20200622095938.GB6675@stefanha-x1.localdomain>
-References: <20200619182302.850-1-eperezma@redhat.com>
- <20200619182302.850-11-eperezma@redhat.com>
+        id S1727047AbgFVKBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 06:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726896AbgFVKBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 06:01:07 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BF0C061795
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 03:01:06 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id g10so14253948wmh.4
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 03:01:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0a5wnHY7CslRA6Iynsfhb3yG1izm8FY/pWdetFoi42c=;
+        b=rxCKkG6SfwCZOTa1iL5Lojz3NDEQwyb2IxWpdYBFS7nvwaSmH3nUs6LKzmpIqO9fmz
+         T0E4/NHNhWS1FxOj6Knq7vaDIfED18iz4zDTKFADfGdZ87o9VBNoHn9xKkFZ5ABiLuMo
+         spikJGn8iabnLkYyJ4CKFueyLxhkCPXnn+tT0IIM62ri0cxtQBzPXWPE2OKAi+/WB4Hb
+         Zm7iXcDn1Km9OIDru3YUscj0Ip3rFJhgBzUhsF68MWUFQB29eaTMLMdCy2o5sHrQdX4O
+         +4gvt10n83RfLFmg67wO7WMqC6KCkbs7hPXvMxFl4ifmIlhRhWH6of7y0Q6ilwx8joXN
+         aa9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0a5wnHY7CslRA6Iynsfhb3yG1izm8FY/pWdetFoi42c=;
+        b=N5o2qcIqN25Ezh4r6zbFA7VTCZ5lV0mGgiCR+L4Kr5VRVXFUXwiWpJ0YLw7rVXmxhG
+         JkMlErFgpCZ16PPPdDnknjdWZPbAr1U5J0bAsq0LFa9xkh8IAI/RN10ssKPCBS0/IxEV
+         mhIZ5PwW1yCVnPxSBjw4vZ1rdfG0sXeE/2i7yPdtA7F2sJQR9S6/1JmASUj05tIjtLch
+         dCDWSezoiFG2B+EZhTDG1+EdWiXwv1gU0M8VYp5YbluGV8VyIw+PXwCHFqdB2AYsY1s5
+         7TYEt+FDY0Ftq4J2r2ZownOmPrU99m8WFXVxKCh2mz2pwAgIw4nNtcvE7mKa6aQdwWig
+         +KRQ==
+X-Gm-Message-State: AOAM530h+cwhWx6Wuu+AQK2JoZHS5np13SBLcfmsJ16JCgWMaP2jSDXp
+        wsl9a+J7YMsEFh/2TKqjigzjqQ==
+X-Google-Smtp-Source: ABdhPJwltFZXM/3VYa9tIy2MbCHj//CBC2paauuUY5AwGyYeKiWa1AZvShK5hzeRuXlvCn791GVruA==
+X-Received: by 2002:a1c:c1:: with SMTP id 184mr17443220wma.74.1592820065387;
+        Mon, 22 Jun 2020 03:01:05 -0700 (PDT)
+Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
+        by smtp.gmail.com with ESMTPSA id x205sm16822187wmx.21.2020.06.22.03.01.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Jun 2020 03:01:04 -0700 (PDT)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        Fabien Parent <fparent@baylibre.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH 00/11] net: improve devres helpers
+Date:   Mon, 22 Jun 2020 12:00:45 +0200
+Message-Id: <20200622100056.10151-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.26.1
 MIME-Version: 1.0
-In-Reply-To: <20200619182302.850-11-eperezma@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="UHN/qo2QbUvPLonB"
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---UHN/qo2QbUvPLonB
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-On Fri, Jun 19, 2020 at 08:23:01PM +0200, Eugenio P=E9rez wrote:
-> From: "Michael S. Tsirkin" <mst@redhat.com>
->=20
-> A straight-forward conversion.
->=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> Signed-off-by: Eugenio P=E9rez <eperezma@redhat.com>
-> ---
->  drivers/vhost/vsock.c | 30 ++++++++++++++++++------------
->  1 file changed, 18 insertions(+), 12 deletions(-)
+When I first submitted the series adding devm_register_netdev() I was
+told during review that it should check if the underlying struct net_device
+is managed too before proceeding. I initially accepted this as the right
+approach but in the back of my head something seemed wrong about this.
+I started looking around and noticed how devm_mdiobus_register()
+is implemented.
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+It turned out that struct mii_bus contains information about whether it's
+managed or not and the release callback of devm_mdiobus_alloc() is responsible
+for calling mdiobus_unregister(). This seems wrong to me as managed structures
+shouldn't care about who manages them. It's devres' code task to correctly undo
+whatever it registers/allocates.
 
---UHN/qo2QbUvPLonB
-Content-Type: application/pgp-signature; name="signature.asc"
+With this series I propose to make the release callbacks of mdiobus devm
+helpers only release the resources they actually allocate themselves as it the
+standard in devm routines. I also propose to not check whether the structures
+passed to devm_mdiobus_register() and devm_register_netdev() are already
+managed as they could have been allocated over devres as part of bigger
+memory chunk. I see this as an unnecessary limitation.
 
------BEGIN PGP SIGNATURE-----
+First two patches aim at removing the only use of devm_mdiobus_free(). It
+modifies the ixgbe driver. I only compile tested it as I don't have the
+relevant hw.
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl7wgQoACgkQnKSrs4Gr
-c8gaawf8CE0r7lmdy1n0zKbFGNwbeFg1iFtb/arJ8/pKg6QjAIlXaL2eYU04kVXV
-rOn/oN0avr1ji2MKbCL0eKOV2/FpmKhN0RmT/4mvVMfB7MrT/ooruRUoUBV5FsxE
-B0ET9VJG6JuUg0xbp2UP/x3QRYSLYwwTXKkc5WDJCflAAlbOJPjHjuK6Mpubgb4y
-vx26gYD2lK36TulNmBjkYiiQx72PE2LyA7Ss6Fe4E/DRCzeVNoDr5XQURcYIXjZw
-8x2qTEZ95YrJA/cxr36Po9hlycV4P8QHF/sj6Rq1vlTJgFHSFupE1Z21GCuz3kDV
-oqun+r8WanK92bkZqA2GYM5TCvZXZg==
-=+yyR
------END PGP SIGNATURE-----
+Next two patches relax devm_register_netdev() - we stop checking whether
+struct net_device was registered using devm_etherdev_alloc().
 
---UHN/qo2QbUvPLonB--
+We then document the mdio devres helper that's missing in devres.rst list
+and un-inline the current implementation of devm_mdiobus_register().
+
+Patch 8 re-implements the devres helpers for mdio conforming to common
+devres patterns.
+
+Patches 9 and 10 provide devm_of_mdiobus_register() and the last patch
+adds its first user.
+
+Bartosz Golaszewski (11):
+  net: ethernet: ixgbe: check the return value of ixgbe_mii_bus_init()
+  net: ethernet: ixgbe: don't call devm_mdiobus_free()
+  net: devres: relax devm_register_netdev()
+  net: devres: rename the release callback of devm_register_netdev()
+  Documentation: devres: add missing mdio helper
+  phy: un-inline devm_mdiobus_register()
+  phy: mdio: add kerneldoc for __devm_mdiobus_register()
+  net: phy: don't abuse devres in devm_mdiobus_register()
+  of: mdio: remove the 'extern' keyword from function declarations
+  of: mdio: provide devm_of_mdiobus_register()
+  net: ethernet: mtk-star-emac: use devm_of_mdiobus_register()
+
+ .../driver-api/driver-model/devres.rst        |  3 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  6 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c  | 14 +---
+ drivers/net/ethernet/mediatek/mtk_star_emac.c | 13 +--
+ drivers/net/ethernet/realtek/r8169_main.c     |  2 +-
+ drivers/net/phy/Makefile                      |  2 +-
+ drivers/net/phy/mdio_bus.c                    | 73 ----------------
+ drivers/net/phy/mdio_devres.c                 | 83 +++++++++++++++++++
+ drivers/of/of_mdio.c                          | 43 ++++++++++
+ include/linux/of_mdio.h                       | 40 ++++-----
+ include/linux/phy.h                           | 21 +----
+ net/devres.c                                  | 23 +----
+ 12 files changed, 167 insertions(+), 156 deletions(-)
+ create mode 100644 drivers/net/phy/mdio_devres.c
+
+-- 
+2.26.1
 
