@@ -2,152 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B65A42039BA
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 16:40:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 909BF2039E7
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 16:49:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729147AbgFVOj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 10:39:58 -0400
-Received: from mail-eopbgr130082.outbound.protection.outlook.com ([40.107.13.82]:61695
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728293AbgFVOj5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 10:39:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NtbgFHYlXsR5VYu1z/9q5tePuZd5gq1tZ0iCiRzlpQab6oeb8LuZTUPQWacQXUhkfQwJb57UnSjTYsx6wVbSKey5lhV6cFBQnNjF2BZbNUx5zuviC/SBnYs70vRrO5V0I3NQdkYx8PBiy4uP0wDKQ5eIf8QCRl8I2lEzkmLBul03sv+Y8Pig9jgdx0kOQDSeXDy1BTcln4AVYoCrrzpPXCnXBmzJcM6VU99KRzpxKJjeauaJZVahSrfiD0Zb3SAuoITJtwAZcxDEylp9P+ZQnehQLV4RnYTX/gIeMZX7M17v/WqYoaWqWgiiVVt5rNcJW2mSpntQe/PQIzAkWAUOPg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nOTQVPXwol0zHMvVRQAoD5aRK9P8+99oA6rYC5GuLjA=;
- b=UyAi2RaT/ueGQZ0ulHYDAyLeDX53hTgcA6MOuJ97b7XPHGQWwpw5NuFllxbjn5IgC13Exox5F7qyGG0ItX2ANja7uIDfAbROZOEEiAjcEITPzWqRLhktA20K/fWGI3cfCa0m7qrVehjHXOpFIvq1NIL9wYjzOaivlV0AcbCmEIeqrjHq14+HmcGmkl1Ub748pWpgqwsxlzNl+f6eJFX52w31FsMzkNkfUwS2fuSXuCrsjXd7KvOlpPTQodd6IAQshML68sWFn4RtgpnJU2eQjynJcAUMMjmPmN7DAZJVcd1LSIA2wG+DpN1Ru+xHsC+2pkulHPvDC4JydtlIwLnkKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nOTQVPXwol0zHMvVRQAoD5aRK9P8+99oA6rYC5GuLjA=;
- b=ahjrcgB1Q9CfvAPLgGmLpcrl7dNlL/kM/fnJQO4+d73SEkuKGuunhYntgEBqV4SM8Pq8N388/G69fenIs3VrnDJhndYYW+phVfN37SAdMtGPsq64dAZ5grEPNo2wZfntjHbjQQlzkLdeWaD3ehkgxblZbsug494Ixw8lKDIECI8=
-Received: from AM0PR04MB5443.eurprd04.prod.outlook.com (2603:10a6:208:119::33)
- by AM0PR04MB6148.eurprd04.prod.outlook.com (2603:10a6:208:13e::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.21; Mon, 22 Jun
- 2020 14:39:54 +0000
-Received: from AM0PR04MB5443.eurprd04.prod.outlook.com
- ([fe80::f0b7:8439:3b5a:61bd]) by AM0PR04MB5443.eurprd04.prod.outlook.com
- ([fe80::f0b7:8439:3b5a:61bd%7]) with mapi id 15.20.3109.027; Mon, 22 Jun 2020
- 14:39:54 +0000
-From:   Florinel Iordache <florinel.iordache@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Florinel Iordache <florinel.iordache@nxp.com>
-Subject: RE: [EXT] Re: [PATCH net-next v3 4/7] net: phy: add backplane kr
- driver support
-Thread-Topic: [EXT] Re: [PATCH net-next v3 4/7] net: phy: add backplane kr
- driver support
-Thread-Index: AQHWSJoOSv10qY8hR027u6Fzd8TnaKjksHoAgAAAoSA=
-Date:   Mon, 22 Jun 2020 14:39:54 +0000
-Message-ID: <AM0PR04MB5443DAF865284ADE78423C64FB970@AM0PR04MB5443.eurprd04.prod.outlook.com>
-References: <1592832924-31733-1-git-send-email-florinel.iordache@nxp.com>
- <1592832924-31733-5-git-send-email-florinel.iordache@nxp.com>
- <20200622142430.GP279339@lunn.ch>
-In-Reply-To: <20200622142430.GP279339@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [86.126.7.45]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 41b08e4c-6f24-4e9a-98fe-08d816ba20e0
-x-ms-traffictypediagnostic: AM0PR04MB6148:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR04MB61483BA6C05C9798EE8AE544FB970@AM0PR04MB6148.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0442E569BC
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: br6dpLhfTX3pCuz8bnyTjSnMzgwhh3qfejuPYLExIQpqFySPIakAK9Zn+MAf6iVkTzKm4Hoq42VjogvnS7Ggjn/8OVh18T2GN+zB+CykSenMW2KZ0jL4NUdyhYLLGQVcAzYTbF+Av/o5/bLSOsmBmiR/UjMf1REsunP4STGg9buOJ/KrN0+yVnE/u9mbAefSJmwTuVYrd2dLPCUzjGRAmnncY23wVsLAg+ZOaBkBlTh49AuwymhqWBlBBy7lvvrwM84e6vIKJrpZLO+k/MXBut+pXkPvKpU7s7QbyIlcGhWwaDVYf2kBan9Qf/oQwceSRfNQ2LlleTccgtUBagS42A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(346002)(376002)(39860400002)(136003)(71200400001)(86362001)(8936002)(8676002)(186003)(54906003)(52536014)(76116006)(5660300002)(4326008)(66476007)(66556008)(64756008)(66946007)(66446008)(55016002)(33656002)(9686003)(44832011)(478600001)(6506007)(2906002)(53546011)(316002)(26005)(83380400001)(6916009)(7696005)(7416002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: kfxViY0Hk/te4CPsx86SG1+3xSTU/FTN7IYBc5/1W9nVVbv39OpopDIBApUKENNebNrELnhV5m0+pzuBtZeCoAtbFYjGmyBNi+kvDju6FC+OM4Xu6LYG3M18qkmOwM+VMAeWuQVN6xR2evcqYYaBSq9kjiIx0VQ5w+4dadMkrmESwVnKFRaJcnrQkzE3SFwyap8fyxqdgVge5CdOTSJNq2H+zro98q3Bujeh/nou2wJsdu+K7zFoFQjiYYQYd8HR95KcepQ4h7zN8RXfCnVjzn/3f28t3fOo8trNJoLidL39UWe5lezSftMaSvoarDyjj+fhGKipFGDKysaOfl6CRCb7wnj1qCWzm6wQBtxpkyXOkrg5Fsb4CFkCOBmZEJDJrfs5BkYyFcQ8oRPYGe7UfxTjOCIZOITIbvuOIGnPN3J/+71+k3oOLfsroOHf9hqHi7vqGRVrENs2C8YoNqedIfmbQHTrY7C91g7t7U+glgI=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729331AbgFVOtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 10:49:11 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:47808 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729146AbgFVOtI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 10:49:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592837347;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=naZjlXqAUuz9QFqq0p2KUyyeqf2h2ajScjOSS4MNLek=;
+        b=cKDecmSqrH2L8eLlcuAfey66vg0RM6Y4ppst5TXIAv1xl2m4W62Sv+mmjHa9MBtNiDqQdg
+        uI6UauVOhCIyfzqSK+a+0bKUVJM6RFa8bwli686DNPdwbJr1k4x0g9GfyZ7ox9fL4Y6sY9
+        9wU76T5VNYmIyTB5pQCl/+Ips0o2/DU=
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
+ [209.85.167.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-491-IPFy0g6rMNipDDYpEJGinA-1; Mon, 22 Jun 2020 10:49:05 -0400
+X-MC-Unique: IPFy0g6rMNipDDYpEJGinA-1
+Received: by mail-oi1-f198.google.com with SMTP id w26so8153286oic.4
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 07:49:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=naZjlXqAUuz9QFqq0p2KUyyeqf2h2ajScjOSS4MNLek=;
+        b=ILAQYb+7sQVIUoER3baobEuHGBhYNjP32icUtvc7rfNcR8hs1QmiZerNH/jt0ZVSUc
+         wKFshblZELcwS+jWDOmW6o/SZnd11gEh7yccAX8uJSEiVamd/ABm0NJVXY4Eu1RY/Kw+
+         Ji/UwBBMLktIuJ6pz3NUJHAOd9LPSVAWB4OpVDfbhdwq8uIGILMsYgdDqdzLuwUJru2K
+         45VzWT+LvQS8UUlCSnZ1BGbwHrfKEGfZHU5NDus/Gr8VkdsKq3rCVow3eZ/VEpZWIncr
+         nc8NONB1f8xlS2fR7zCBMVhs/cvnWszCUdpmE3XbXwHGuLTcb9aq2lXYVENkHsYDe4Oh
+         O1OA==
+X-Gm-Message-State: AOAM532ckO5rENLJ/Zyp9PxDLkup6wYr5Yd4iKG9bZBCsJKXWlEDBex5
+        c+uuf+UYtUL7n3uquf92+bGpiqeNdbFiW4/Ko4TXJgGdNtXf5Lo5pRur5EDnn3QOeayjY60Blp7
+        NOEiT3fji92eh64xhdqpjf1J9AmsLcpyi
+X-Received: by 2002:a9d:39b6:: with SMTP id y51mr12985159otb.175.1592837344595;
+        Mon, 22 Jun 2020 07:49:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw6oTCLYY5ewTtAXQxagLn65iRqRaS/ifJ30YW9dcHRfGmRzdPnCFDN3sUXNC+/uj6SNSIpnbpPZl7QUh97fIk=
+X-Received: by 2002:a9d:39b6:: with SMTP id y51mr12985144otb.175.1592837344375;
+ Mon, 22 Jun 2020 07:49:04 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 41b08e4c-6f24-4e9a-98fe-08d816ba20e0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jun 2020 14:39:54.2524
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cytMhCl7TVhCUoy1/fYWT7NRF3OPO9+p8Cb5uBX1yLfSs4g+ellYjPtsvyrouScjzvg7laIH+6G5Wd+bEyAd5TP+47LS6Mwc26TcErWloXs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6148
+References: <20200618090556.pepjdbnba2gqzcbe@butterfly.localdomain>
+ <20200618111859.GC698688@lore-desk.lan> <20200619150132.2zrc3ojqhtbn432u@butterfly.localdomain>
+ <20200621205412.GB271428@localhost.localdomain>
+In-Reply-To: <20200621205412.GB271428@localhost.localdomain>
+From:   Oleksandr Natalenko <oleksandr@redhat.com>
+Date:   Mon, 22 Jun 2020 16:48:53 +0200
+Message-ID: <CAHcwAbR4govGK3RPyfKWRgFRhFanWtpJLrB_PEjcoiBDJ3_Adg@mail.gmail.com>
+Subject: Re: mt7612 suspend/resume issue
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch>
-> Sent: Monday, June 22, 2020 5:25 PM
-> To: Florinel Iordache <florinel.iordache@nxp.com>
-> Cc: davem@davemloft.net; netdev@vger.kernel.org; f.fainelli@gmail.com;
-> hkallweit1@gmail.com; linux@armlinux.org.uk; devicetree@vger.kernel.org;
-> linux-doc@vger.kernel.org; robh+dt@kernel.org; mark.rutland@arm.com;
-> kuba@kernel.org; corbet@lwn.net; shawnguo@kernel.org; Leo Li
-> <leoyang.li@nxp.com>; Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>;
-> Ioana Ciornei <ioana.ciornei@nxp.com>; linux-kernel@vger.kernel.org
-> Subject: [EXT] Re: [PATCH net-next v3 4/7] net: phy: add backplane kr dri=
-ver
-> support
->=20
-> Caution: EXT Email
->=20
-> On Mon, Jun 22, 2020 at 04:35:21PM +0300, Florinel Iordache wrote:
-> > Add support for backplane kr generic driver including link training
-> > (ieee802.3ap/ba) and fixed equalization algorithm
->=20
-> Hi Florinel
->=20
-> This is still a PHY device. I don't remember any discussions which resolv=
-ed the
-> issues of if at the end of the backplane there is another PHY.
->=20
-> It makes little sense to repost this code until we have this problem disc=
-ussed and
-> a way forward decided on. It fits into the discussion Russell and Ioana a=
-re having
-> about representing PCS drivers. Please contribute to that.
->=20
->         Andrew
+Hello, Lorenzo.
 
-Hi Andrew,
+On Sun, Jun 21, 2020 at 10:54 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > > +static int __maybe_unused
+> > > +mt76x2e_suspend(struct pci_dev *pdev, pm_message_t state)
+> > > +{
+> > > +   struct mt76_dev *mdev = pci_get_drvdata(pdev);
+> > > +   struct mt76x02_dev *dev = container_of(mdev, struct mt76x02_dev, mt76);
+> > > +   int i, err;
+>
+> can you please double-check what is the PCI state requested during suspend?
 
-Yes, you are right: we decided to send only support for DPAA1 using current=
- approach as a PHY device
-(as mentioned in cover-letter), until PCS representation will be fully clar=
-ified.
-The entire DPAA2 support was removed for now, together with phylink changes=
-.
-DPAA1 maintainer (Madalin Bucur) agrees with current representation as a PH=
-Y device for DPAA1.
-So we would like to have some discussions around this approach for DPAA1 on=
-ly, as it seems suitable for us.
+Do you mean ACPI S3 (this is the state the system enters)?  If not,
+what should I check and where?
 
-Regards,
-Florinel.
+Thanks.
+
+-- 
+  Best regards,
+    Oleksandr Natalenko (post-factum)
+    Principal Software Maintenance Engineer
+
