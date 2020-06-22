@@ -2,116 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6D2C20362A
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 13:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 551A3203636
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 13:52:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728083AbgFVLuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 07:50:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53842 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727952AbgFVLuM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 07:50:12 -0400
-Received: from localhost (unknown [151.48.138.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 78892206D7;
-        Mon, 22 Jun 2020 11:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592826612;
-        bh=ZH+00OZclsORf8w1jSz2YeR4TOIxjgPqi0ljLU4FRO0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d/1Ql+jckicAzmjC1XjxQcn4wp7jMqZWN4lBWxYQLmNhDbU7LFi107FITy1YmFvoM
-         Xh6L7ZB/dSnsqYx2QEnECa/H3R47hSWvVQ3mH1s5/+numE/qfqSUeb5tgsMSwuoED6
-         Bws7Q345ozIHu3YJR58x6j4by/mp1+14GWuinw/I=
-Date:   Mon, 22 Jun 2020 13:50:07 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net, toke@redhat.com,
-        lorenzo.bianconi@redhat.com, dsahern@kernel.org
-Subject: Re: [PATCH v2 bpf-next 3/8] cpumap: formalize map value as a named
- struct
-Message-ID: <20200622115007.GB14425@localhost.localdomain>
-References: <cover.1592606391.git.lorenzo@kernel.org>
- <804b20c4f6fdda24f81e946c5c67c37c55d9f590.1592606391.git.lorenzo@kernel.org>
- <20200622113313.6f56244d@carbon>
+        id S1728068AbgFVLwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 07:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727113AbgFVLwq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 07:52:46 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A299C061794;
+        Mon, 22 Jun 2020 04:52:46 -0700 (PDT)
+Received: from p5b06d650.dip0.t-ipconnect.de ([91.6.214.80] helo=kurt)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
+        (Exim 4.80)
+        (envelope-from <kurt@linutronix.de>)
+        id 1jnL0E-0007v8-Hk; Mon, 22 Jun 2020 13:52:42 +0200
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [RFC PATCH 3/9] net: dsa: hellcreek: Add PTP clock support
+In-Reply-To: <20200619134001.GC304147@lunn.ch>
+References: <20200618064029.32168-1-kurt@linutronix.de> <20200618064029.32168-4-kurt@linutronix.de> <20200618172304.GG240559@lunn.ch> <878sgjqx4r.fsf@kurt> <20200619134001.GC304147@lunn.ch>
+Date:   Mon, 22 Jun 2020 13:52:36 +0200
+Message-ID: <87lfkftj0b.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="JP+T4n/bALQSJXh8"
-Content-Disposition: inline
-In-Reply-To: <20200622113313.6f56244d@carbon>
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---JP+T4n/bALQSJXh8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--=-=-=
+Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 
-> On Sat, 20 Jun 2020 00:57:19 +0200
-> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->=20
-> > As it has been already done for devmap, introduce 'struct bpf_cpumap_va=
-l'
-> > to formalize the expected values that can be passed in for a CPUMAP.
-> > Update cpumap code to use the struct.
-> >=20
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  include/uapi/linux/bpf.h       |  9 +++++++++
-> >  kernel/bpf/cpumap.c            | 25 +++++++++++++------------
-> >  tools/include/uapi/linux/bpf.h |  9 +++++++++
-> >  3 files changed, 31 insertions(+), 12 deletions(-)
-> >=20
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 19684813faae..a45d61bc886e 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -3774,6 +3774,15 @@ struct bpf_devmap_val {
-> >  	} bpf_prog;
-> >  };
-> > =20
-> > +/* CPUMAP map-value layout
-> > + *
-> > + * The struct data-layout of map-value is a configuration interface.
-> > + * New members can only be added to the end of this structure.
-> > + */
-> > +struct bpf_cpumap_val {
-> > +	__u32 qsize;	/* queue size */
-> > +};
-> > +
->=20
-> Nitpicking the comment: /* queue size */
-> It doesn't provide much information to the end-user.
->=20
-> What about changing it to: /* queue size to remote target CPU */
+On Fri Jun 19 2020, Andrew Lunn wrote:
+> On Fri, Jun 19, 2020 at 10:26:44AM +0200, Kurt Kanzenbach wrote:
+>> Hi Andrew,
+>>=20
+>> On Thu Jun 18 2020, Andrew Lunn wrote:
+>> >> +static u64 __hellcreek_ptp_clock_read(struct hellcreek *hellcreek)
+>> >> +{
+>> >> +	u16 nsl, nsh, secl, secm, sech;
+>> >> +
+>> >> +	/* Take a snapshot */
+>> >> +	hellcreek_ptp_write(hellcreek, PR_COMMAND_C_SS, PR_COMMAND_C);
+>> >> +
+>> >> +	/* The time of the day is saved as 96 bits. However, due to hardware
+>> >> +	 * limitations the seconds are not or only partly kept in the PTP
+>> >> +	 * core. That's why only the nanoseconds are used and the seconds a=
+re
+>> >> +	 * tracked in software. Anyway due to internal locking all five
+>> >> +	 * registers should be read.
+>> >> +	 */
+>> >> +	sech =3D hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
+>> >> +	secm =3D hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
+>> >> +	secl =3D hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
+>> >> +	nsh  =3D hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
+>> >> +	nsl  =3D hellcreek_ptp_read(hellcreek, PR_SS_SYNC_DATA_C);
+>> >> +
+>> >> +	return (u64)nsl | ((u64)nsh << 16);
+>> >
+>> > Hi Kurt
+>> >
+>> > What are the hardware limitations? There seems to be 48 bits for
+>> > seconds? That allows for 8925104 years?
+>>=20
+>> In theory, yes. Due to hardware hardware considerations only a few or
+>> none of these bits are used for the seconds. The rest is zero. Meaning
+>> that the wraparound is not 8925104 years, but at e.g. 8 seconds when
+>> using 3 bits for the seconds.
+>
+> Please add this to the comment.
 
-Yes, I agree. I will fix it in v3.
+I will, no problem.
 
-Regards,
-Lorenzo
+>
+>> >> +static u64 __hellcreek_ptp_gettime(struct hellcreek *hellcreek)
+>> >> +{
+>> >> +	u64 ns;
+>> >> +
+>> >> +	ns =3D __hellcreek_ptp_clock_read(hellcreek);
+>> >> +	if (ns < hellcreek->last_ts)
+>> >> +		hellcreek->seconds++;
+>> >> +	hellcreek->last_ts =3D ns;
+>> >> +	ns +=3D hellcreek->seconds * NSEC_PER_SEC;
+>> >
+>> > So the assumption is, this gets called at least once per second. And
+>> > if that does not happen, there is no recovery. The second is lost.
+>>=20
+>> Yes, exactly. If a single overflow is missed, then the time is wrong.
+>>=20
+>> >
+>> > I'm just wondering if there is something more robust using what the
+>> > hardware does provide, even if the hardware is not perfect.
+>>=20
+>> I don't think there's a more robust way to do this. The overflow period
+>> is a second which should be enough time to catch the overflow even if
+>> the system is loaded. We did long running tests for days and the
+>> mechanism worked fine. We could also consider to move the delayed work
+>> to a dedicated thread which could be run with real time (SCHED_FIFO)
+>> priority. But, I didn't see the need for it.
+>
+> If the hardware does give you 3 working bits for the seconds, you
+> could make use of that for a consistency check. If nothing else, you
+> could do a
+>
+> dev_err(dev, 'PTP time is FUBAR');
 
-> ?
->=20
-> --=20
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->=20
+OK. I'll add a check for that.
 
---JP+T4n/bALQSJXh8
+Thanks,
+Kurt
+
+--=-=-=
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXvCa7AAKCRA6cBh0uS2t
-rCd1AP9onNtkqFasFYqxr5CQgKqke1VhKA84xUnqcvPlTizm2gD/Z8Lb0quCYSKl
-UoRNWBvoXHrAYZXaeczMsEgwLdKhNgo=
-=tMRP
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl7wm4QACgkQeSpbgcuY
+8KZtdA//WegWsTtiIgimHSJcxAbCNjZZb/DQ3rwXCgmDnlbo2YyLAkZy1vihHPmQ
+ap3m7rKufXNZnbRK5t0YPk8kf1X1cH2blkWRCpVkpQbvvvjfqmP9b6oK+3xY2fJx
+iFZc3qpQMgVgQZGh+XcsUZXm0RbmFpCKGt1Ly8BJW7+2zK6ZU0a0Qha49VppXcMH
+lPQl9sPp7NwIYCoMnTq5kfxKFS7tcyc0KEOrgdxbXLW+Zz9XkMryZ6sPXkIp2UaM
+2ZZ19ha9Dolnk4/TPoMew++D/r/c3PzViYz6NwjT/CKM4PmCaCLBLVvP+np+fLAx
+q72sMAPSRtVf9cbCFRycF3PPT5VBpdbnfy5zETBJATVLTVpcsNFM26K3nEUN8obQ
+2Ns4t1coTgUlWMS6hcRmm5Tq9aE5ExsZQcRUkQaA712xMqVafV5rJ0nv/VvgCO4k
+y5iHan7AFYrvAXm30xFdD3Wy8UThT1zCPWeFSEqQ+kzJ7cOFoeErQsdZcpv24bdh
+PIUvv/a8F7U78OTOtHEpAV3Di9uAdL4dEJ4cn0H1VEOAClDJJsJbrbuwYANkMudT
+WNEkmk03rhgTJuaq9jXm1hugkr/0HasCEMDD3fv/Ru1L0jUnXiR8mkFrudrA4D/e
+OqmNC9FB1z92ah5diUOtkhDaORs22nb0CS2R21g/fLsC8Tu6JAY=
+=hnDA
 -----END PGP SIGNATURE-----
-
---JP+T4n/bALQSJXh8--
+--=-=-=--
