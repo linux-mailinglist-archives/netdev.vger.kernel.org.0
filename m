@@ -2,37 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75083203F5F
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 20:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68365203F61
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 20:44:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730030AbgFVSnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 14:43:17 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:58018 "EHLO mail.bugwerft.de"
+        id S1730110AbgFVSox (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 14:44:53 -0400
+Received: from mail.bugwerft.de ([46.23.86.59]:58032 "EHLO mail.bugwerft.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729605AbgFVSnR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 14:43:17 -0400
+        id S1729605AbgFVSox (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 14:44:53 -0400
 Received: from [192.168.178.106] (p57bc9787.dip0.t-ipconnect.de [87.188.151.135])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 95D3E42B84D;
-        Mon, 22 Jun 2020 18:43:15 +0000 (UTC)
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: don't force settings on CPU port
+        by mail.bugwerft.de (Postfix) with ESMTPSA id 8AA8042B84D;
+        Mon, 22 Jun 2020 18:44:51 +0000 (UTC)
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: Allow MAC configuration for ports
+ with internal PHY
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-References: <20200327195156.1728163-1-daniel@zonque.org>
- <20200327200153.GR3819@lunn.ch>
- <d101df30-5a9e-eac1-94b0-f171dbcd5b88@zonque.org>
- <20200327211821.GT3819@lunn.ch>
- <1bff1da3-8c9d-55c6-3408-3ae1c3943041@zonque.org>
- <20200327235220.GV3819@lunn.ch>
- <64462bcf-6c0c-af4f-19f4-d203daeabec3@zonque.org>
- <20200330134010.GA23477@lunn.ch>
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, linux@armlinux.org.uk
+References: <20200622183443.3355240-1-daniel@zonque.org>
+ <20200622184115.GE405672@lunn.ch>
 From:   Daniel Mack <daniel@zonque.org>
-Message-ID: <9f0bb7db-f80c-759a-ada8-952f4f05aeba@zonque.org>
-Date:   Mon, 22 Jun 2020 20:43:15 +0200
+Message-ID: <b8a67f7d-9854-9854-3f53-983dd4eb8fda@zonque.org>
+Date:   Mon, 22 Jun 2020 20:44:51 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200330134010.GA23477@lunn.ch>
+In-Reply-To: <20200622184115.GE405672@lunn.ch>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -41,57 +36,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-Picking up this ancient thread, sorry for the delay.
-
-On 3/30/20 3:40 PM, Andrew Lunn wrote:
-> On Mon, Mar 30, 2020 at 11:29:27AM +0200, Daniel Mack wrote:
->> On 3/28/20 12:52 AM, Andrew Lunn wrote:
->>> Did you turn off auto-neg on the external PHY and use fixed 100Full?
->>> Ethtool on the SoC interface should show you if the switch PHY is
->>> advertising anything. I'm guessing it is not, and hence you need to
->>> turn off auto neg on the external PHY.
->>>
->>> Another option would be something like
->>>
->>>                                         port@6 {
->>>                                                 reg = <6>;
->>>                                                 label = "cpu";
->>>                                                 ethernet = <&fec1>;
->>>
->>>                                                 phy-handle = <phy6>;
->>>                                         };
->>>                                 };
->>>
->>>                                 mdio {
->>>                                         #address-cells = <1>;
->>>                                         #size-cells = <0>;
->>>                                         phy6: ethernet-phy@6 {
->>>                                                 reg = <6>;
->>>                                                 interrupt-parent = <&switch0>;
->>>                                                 interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
->>>                                         };
->>>                                 };
->>>
->>> By explicitly saying there is a PHY for the CPU node, phylink might
->>> drive it.
+On 6/22/20 8:41 PM, Andrew Lunn wrote:
+> On Mon, Jun 22, 2020 at 08:34:43PM +0200, Daniel Mack wrote:
+>> Ports with internal PHYs that are not in 'fixed-link' mode are currently
+>> only set up once at startup with a static config. Attempts to change the
+>> link speed or duplex settings are currently prevented by an early bail
+>> in mv88e6xxx_mac_config(). As the default config forces the speed to
+>> 1000M, setups with reduced link speed on such ports are unsupported.
 > 
-> You want to debug this. Although what you have is unusual, yours is
-> not the only board. It is something we want to work. And ideally,
-> there should be something controlling the PHY.
+> Hi Daniel
+> 
+> How are you trying to change the speed?
 
-I spent some more time on this today, and the reason for why this fails
-is simple. The PHY on port 4 is internal, and mv88e6xxx_mac_config()
-hence decides to not touch the config of this port, unless it's a
-fixed-linked config. And the latter is not an option the port has a
-phy-handle.
-
-This means that non-fixed ports with internal PHYs are only programmed
-once at probe time, and userspace can't modify the settings later on.
-
-I've sent a patch to relax that check, but tbh I'm not sure whether I
-miss a relevant piece of detail about the current code.
+With ethtool for instance. But all userspace tools are bailing out early
+on this port for the reason I described.
 
 
 Thanks,
