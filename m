@@ -2,125 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74D002034D5
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 12:30:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ADA32034FC
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 12:41:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727822AbgFVKax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 06:30:53 -0400
-Received: from mail-bn8nam12on2057.outbound.protection.outlook.com ([40.107.237.57]:43947
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726905AbgFVKax (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 06:30:53 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TQVGVL51SZG1/YDQIi1GS85xb7xyOhc1ULuGR1NuuMzmudpwGQOuygQmfeHytqthNQKNe+a11cYY3Y/YKJUtp/nO1+rLNEtPG1rukHsJEPErOAQSr251gBuGz5T6c+nBt63SA3S1bZ4OY58XgWSgpch/hhmqrvLuhLu6HwonE0B9s1lDUcqS4cvbirRW9gXQfZ15mIK9MnhJM2vltKw/e53m6T4ePHU7iJzeq0pfIh4nudIiW5Io4yiLqMuN6HLUHjVSR2Xb4h0YY9uoZ/cqJvcQzrfP5FI656mcbu9gofQ0eY2vzuj91bHYiUnizIHzFyJcp7pBIOpvnyQJTOGSdQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TAARXCDWVw/k6mgBlRNGXmLSZOUoss4oi3ce53G+E4w=;
- b=GTaKXKfOTQ7z8ojcLdGhVJ4IVeIGpsjXsLA442MzMF1uCPpBnOsNjZfNoabajlATWleynT3CGxRAyw2QzUsPwH9niuQ+iNNsaVdmJEGvc3gScSmvihnB8b30DI+pKsqIpJO3wk/lW6m8AzEJISwJaRV+nloK/DlR5snEcY/PfU4EbQNkI76mg5jnatYwJtoLEhq/QEUIMRWvwi0uq9XNALgBXMZs9hsrtNqaQ3D8mgVBDR6DsLroaJbnlR4uAky7+jR8ghYPZCxfu4TbfM+7C+j+lYVbDZ37X8UkJMwDNBXuePrU6Mbx7GgGN4raXCxsBoCB5JSTJq6PU8mhlZgLnQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synaptics.com; dmarc=pass action=none
- header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+        id S1727097AbgFVKlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 06:41:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726710AbgFVKlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 06:41:31 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98ADDC061794;
+        Mon, 22 Jun 2020 03:41:31 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id m21so13200592eds.13;
+        Mon, 22 Jun 2020 03:41:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TAARXCDWVw/k6mgBlRNGXmLSZOUoss4oi3ce53G+E4w=;
- b=ahWmozKKd0cnNaAmJWOB/3nRaNtuYTSiGCizEjNnSZrIWEpx21QPCfq1m/iHFJVFzkMpAqh6QXV1CTiGdLHwkQ4yxPmKz1fTTwIOmaSXFGk6gFp8Nbm2ciIhoa2f18Nh5eRVaEpU47EpU3k8PM82xy95dV568bMGuYbdiOHJWGA=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=synaptics.com;
-Received: from BYAPR03MB3573.namprd03.prod.outlook.com (2603:10b6:a02:ae::15)
- by BYAPR03MB4134.namprd03.prod.outlook.com (2603:10b6:a03:18::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.23; Mon, 22 Jun
- 2020 10:30:49 +0000
-Received: from BYAPR03MB3573.namprd03.prod.outlook.com
- ([fe80::d1ae:8ea7:ea:8998]) by BYAPR03MB3573.namprd03.prod.outlook.com
- ([fe80::d1ae:8ea7:ea:8998%7]) with mapi id 15.20.3109.027; Mon, 22 Jun 2020
- 10:30:49 +0000
-Date:   Mon, 22 Jun 2020 18:29:53 +0800
-From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] net: phy: call phy_disable_interrupts() in
- phy_init_hw()
-Message-ID: <20200622182953.4d642e15@xhacker.debian>
-In-Reply-To: <20200622182857.3130b555@xhacker.debian>
-References: <20200622182857.3130b555@xhacker.debian>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TYBP286CA0043.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:404:10a::31) To BYAPR03MB3573.namprd03.prod.outlook.com
- (2603:10b6:a02:ae::15)
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=at/r+Ih6r6041Lo7roIJWIdBavgd7AgczNOOvJzY2AM=;
+        b=sMPRDl6qJ1RjUnRYOYB5CF7jALpIeH6ZmV9um3WLYR3zJK/AdG86RmmrwD3Uzfxu1r
+         37tA5TjO9up/mT9zylXXLOl5p0IYNLX8DPLctLZUJ8Q0hhzcPxrOl0ZlYYC0g+4mlcsK
+         ylboPAe/qPiLdxwSS2DydET4TyeflQ8agZ36xUUywGu9PGhGxlKxkhm5fvTAacbbmdA+
+         qW3GFT/+eKCTOv9De8k8YsASGec4KqWStZYGarw7YZ63lM20h7V7lRVOVwu6+LPPGSWg
+         BCBgB6Ddedw+CqOuO0o9DdflD0R4m8BMaH9lP4w+whSSz/KwXB8bpc3p3gfENBkhOQtN
+         SdZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=at/r+Ih6r6041Lo7roIJWIdBavgd7AgczNOOvJzY2AM=;
+        b=WhG4JFCI9V71wa2ORgR6Y+3MVMOyTAscsPzBoANjYL3JWuTs71O5gzWvIoWTj76oZZ
+         D5ZjyEXYfQnZaHMMVA7nNh5kiz3kMQhfMNXVZlpfRx6EDY936NYr+CRwuWl85mKKp8pr
+         Ixq7ziRJb5OMG1jUIB2N/B5VezTf8Sadf7ihIeFVUJ+kcRyj4SmAl9BXyoJwBFXjNKqV
+         fjkeKOTliv/00lPRZgP/EyREyrNRiFrel/gsMntSLJIhb6vxtNRyfgT65P1F+nSAy2+j
+         rlWYZXtJnjjTn265epX50ZupqiJyzFxzGpTrH0hPSbFbvCJTzORz9bFS0ekRGJD0dpGy
+         r9uQ==
+X-Gm-Message-State: AOAM531OrQ8rAZVVDEYya52RQ8/YFAeKaRjhdzD0omuqxnwg9PkQnGGS
+        m6g8y2Z/dSIgeKcIjrctf/Z97bsX
+X-Google-Smtp-Source: ABdhPJxopCQl67U/hFUEMcMtku7eR8/uoDIn6bz30QSfq5oEeEoKY75jCezPewbKzZyzNeAsQDjBjQ==
+X-Received: by 2002:a50:fb01:: with SMTP id d1mr16207046edq.94.1592822490228;
+        Mon, 22 Jun 2020 03:41:30 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.56.128])
+        by smtp.gmail.com with ESMTPSA id t3sm11367507ejr.119.2020.06.22.03.41.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Jun 2020 03:41:29 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     stable@vger.kernel.org, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org
+Cc:     madalin.bucur@oss.nxp.com, joakim.tjernlund@infinera.com,
+        fido_max@inbox.ru, linux-kernel@vger.kernel.org
+Subject: [PATCH stable-4.19.y] Revert "dpaa_eth: fix usage as DSA master, try 3"
+Date:   Mon, 22 Jun 2020 13:40:41 +0300
+Message-Id: <20200622104041.436940-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from xhacker.debian (124.74.246.114) by TYBP286CA0043.JPNP286.PROD.OUTLOOK.COM (2603:1096:404:10a::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22 via Frontend Transport; Mon, 22 Jun 2020 10:30:47 +0000
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-X-Originating-IP: [124.74.246.114]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a580005b-b185-4e41-5eb9-08d8169754a4
-X-MS-TrafficTypeDiagnostic: BYAPR03MB4134:
-X-Microsoft-Antispam-PRVS: <BYAPR03MB4134472D792F711429561217ED970@BYAPR03MB4134.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 0442E569BC
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ny7L9cxdlSvvPgRJrUU/51nN6JNeRlI9HPQwQnAxtLZJ8owffKiQzcUBbETMUjVjJ0cPWTqXjEgDvI+cd1Z7inuzDqn2nlCIPu1ePBUiUViQKDWfw88BeY1JEKumrbDnvOn7vWLNfR7UmCNIN9AJNGbXd4E12gBEQT9YMFp3ROWCkkxmCp+wNg9zdadCuOT6qKvKmTzXo6v6Mv0V807xsxhqSoNvbQZ/1mPioNK+/EIMA/YE17zGy3dHbP4eYSwFij/uELXe+QgFsACMvofK2lCldJRr75vRBAvGFFS4gvH2iuCGWx7Qsz0CWLtKwr69
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR03MB3573.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(136003)(346002)(39860400002)(366004)(396003)(83380400001)(7696005)(66946007)(16526019)(186003)(52116002)(26005)(8676002)(956004)(8936002)(6506007)(4326008)(6666004)(86362001)(9686003)(1076003)(5660300002)(55016002)(110136005)(66556008)(66476007)(478600001)(316002)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Sp7I8JNIjMLAHsy0+7dQL5fg1B9yMeLOZ2O9UjcHSzrGNSujgMJcEM7mk/IQMi8aCqWuDxefp5lLdcrtDeY0LABrNWxDp9d8WbM1vxZy0QPfDeJXYQOc08c5EYOuPVzT5EPzS07bF+fS7YpLMuzzRfeB62e0Wrd54ugYW1KwnCq5gyd8XjJBgCWyuI7ZAfLmVmfRY7iWdM84lTdEblJ9QAbiYT+YSFHTKMd9Cs3DAgxYs4tVLZOUpoE+6B4ZbmCWfoRIZumtkcwdYMXA5A5OYSkkrzQdEWaPOoKkhT1VSUFvXj/OjJKjmfm0FIcCJbfe0lBqe+GNLcaTnqZB2xTOTFZvCFsjvHcKC4tWt4XmGXGNXrZf20nTXmZorQiR0OZEo+INSI8ZAXR6WmqO1umfXZchthTRbhYq9TOKamcxhVrxtNkXXdBHkv+3EqoYkhfmnX+cJIji8ZI+ZfjCjC2bqjI0sTzGhAiNuj8DccI7L2LvVYk/sqBwSnmglzj2hBup
-X-OriginatorOrg: synaptics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a580005b-b185-4e41-5eb9-08d8169754a4
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2020 10:30:49.1874
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uu1+8LYMuYccyNlbxT6L/QU+HL9rZj+2WIXueLS2WcHHjhVIro8rScFBAj/KjSgSqvxMhqmUGmcTP/lk3prbIQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR03MB4134
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Call phy_disable_interrupts() in phy_init_hw() to "have a defined init
-state as we don't know in which state the PHY is if the PHY driver is
-loaded. We shouldn't assume that it's the chip power-on defaults, BIOS
-or boot loader could have changed this. Or in case of dual-boot
-systems the other OS could leave the PHY in whatever state." as Pointed
-out by Heiner.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+This reverts commit b145710b69388aa4034d32b4a937f18f66b5538e.
+
+The patch is not wrong, but the Fixes: tag is. It should have been:
+
+	Fixes: 060ad66f9795 ("dpaa_eth: change DMA device")
+
+which means that it's fixing a commit which was introduced in:
+
+git describe --tags 060ad66f97954
+v5.4-rc3-783-g060ad66f9795
+
+which then means it should have not been backported to linux-4.19.y,
+where things _were_ working and now they're not.
+
+Reported-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/phy/phy_device.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 04946de74fa0..f17d397ba689 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1090,10 +1090,13 @@ int phy_init_hw(struct phy_device *phydev)
- 	if (ret < 0)
- 		return ret;
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index 6683409fbd4a..4b21ae27a9fd 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -2796,7 +2796,7 @@ static int dpaa_eth_probe(struct platform_device *pdev)
+ 	}
  
--	if (phydev->drv->config_init)
-+	if (phydev->drv->config_init) {
- 		ret = phydev->drv->config_init(phydev);
-+		if (ret < 0)
-+			return ret;
-+	}
+ 	/* Do this here, so we can be verbose early */
+-	SET_NETDEV_DEV(net_dev, dev->parent);
++	SET_NETDEV_DEV(net_dev, dev);
+ 	dev_set_drvdata(dev, net_dev);
  
--	return ret;
-+	return phy_disable_interrupts(phydev);
- }
- EXPORT_SYMBOL(phy_init_hw);
- 
+ 	priv = netdev_priv(net_dev);
 -- 
-2.27.0
+2.25.1
 
