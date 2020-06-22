@@ -2,89 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5BCC204438
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 01:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77859204446
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 01:07:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731382AbgFVXEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 19:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
+        id S1731423AbgFVXHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 19:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730785AbgFVXEF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 19:04:05 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90470C061573
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 16:04:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=aRUdXlae828RD1Vwzx7C8ugwcxm/EpwywdfaZwpuYmw=; b=H8EbDKXUJ16D9eHNWdlXqgdOe
-        oi2dgQydaEMVYS5XHh171ZHnM5/Wv3lAfJdhSA0xBi6bgXmWoD7Yv2gBZbQ1uNTmLKxZKK3mns+bi
-        cA0psHfgnTqG7D83spJNhk0ZkfRpmS6wcWmnzlEjax+T5CSgKdqbItUniMJWxiOWDp3DVngOv4oKN
-        LNz1OBFG86Zmm+Gmfs30z60pjYwpmNXhpyap/mHTm8Ix+N2KUyxHnt3uz+qMa7Y0Fx53p3/u4P2j7
-        x4QLWVUUuw1etfy59d+Q98ux3+BLL/spqIqya3MSvJEF4E6R/UtxscBCUWQmP+RqIRbAua2RY4t16
-        G+fMVgkpA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58990)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jnVTv-0000zv-Fi; Tue, 23 Jun 2020 00:04:03 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jnVTu-0000S6-DY; Tue, 23 Jun 2020 00:04:02 +0100
-Date:   Tue, 23 Jun 2020 00:04:02 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, michael@walle.cc, andrew@lunn.ch,
-        f.fainelli@gmail.com, olteanv@gmail.com
-Subject: Re: [PATCH net-next v3 4/9] net: phy: add Lynx PCS module
-Message-ID: <20200622230402.GP1551@shell.armlinux.org.uk>
-References: <20200621225451.12435-1-ioana.ciornei@nxp.com>
- <20200621225451.12435-5-ioana.ciornei@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200621225451.12435-5-ioana.ciornei@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        with ESMTP id S1726977AbgFVXHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 19:07:14 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44563C061573;
+        Mon, 22 Jun 2020 16:07:14 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B1BDA1296E6DB;
+        Mon, 22 Jun 2020 16:07:13 -0700 (PDT)
+Date:   Mon, 22 Jun 2020 16:07:12 -0700 (PDT)
+Message-Id: <20200622.160712.2300967026610181117.davem@davemloft.net>
+To:     horatiu.vultur@microchip.com
+Cc:     nikolay@cumulusnetworks.com, UNGLinuxDriver@microchip.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [Resend PATCH net] bridge: uapi: mrp: Fix MRP_PORT_ROLE
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200620131403.2680293-1-horatiu.vultur@microchip.com>
+References: <20200620131403.2680293-1-horatiu.vultur@microchip.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 22 Jun 2020 16:07:13 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I just spotted something else...
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
+Date: Sat, 20 Jun 2020 15:14:03 +0200
 
-On Mon, Jun 22, 2020 at 01:54:46AM +0300, Ioana Ciornei wrote:
-> +static void lynx_pcs_get_state_2500basex(struct mdio_device *pcs,
-> +					 struct phylink_link_state *state)
-> +{
-> +	struct mii_bus *bus = pcs->bus;
-> +	int addr = pcs->addr;
-> +	int bmsr, lpa;
-> +
-> +	bmsr = mdiobus_read(bus, addr, MII_BMSR);
-> +	lpa = mdiobus_read(bus, addr, MII_LPA);
-> +	if (bmsr < 0 || lpa < 0) {
-> +		state->link = false;
-> +		return;
-> +	}
-> +
-> +	state->link = !!(bmsr & BMSR_LSTATUS);
-> +	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
-> +	if (!state->link)
-> +		return;
-> +
-> +	state->speed = SPEED_2500;
+> Currently the MRP_PORT_ROLE_NONE has the value 0x2 but this is in conflict
+> with the IEC 62439-2 standard. The standard defines the following port
+> roles: primary (0x0), secondary(0x1), interconnect(0x2).
+> Therefore remove the port role none.
+> 
+> Fixes: 4714d13791f831 ("bridge: uapi: mrp: Add mrp attributes.")
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-You seem to have missed setting state->duplex here - it defaults to
-DUPLEX_UNKNOWN, and will remain as such, which is probably not what
-you want.
+The code accepts arbitrary 32-bit values for the role in a configuration
+but only PRIMARY and SECONDARY seem to be valid.
 
-> +	state->pause |= MLO_PAUSE_TX | MLO_PAUSE_RX;
-> +}
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+There is no validation that the value used makes sense.
+
+In the future if we handle type interconnect, and we add checks, it will
+break any existing applications.  Because they can validly pass any
+non-zero valid and the code treats that as SECONDARY currently.
+
+So you really can't just remove NONE, you have to add validation code
+too so we don't run into problem in the future.
+
+Thanks.
