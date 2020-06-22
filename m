@@ -2,59 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E30203C06
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 18:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38B4D203C1C
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 18:04:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729900AbgFVQDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 12:03:06 -0400
-Received: from sonic316-20.consmr.mail.ne1.yahoo.com ([66.163.187.146]:34180
-        "EHLO sonic316-20.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729416AbgFVQDE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 12:03:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1592841783; bh=cK2qy9Lv5SAgMg9nAvfVmkJPj46H3ss3vOVyjpHm6Nk=; h=Date:From:Reply-To:Subject:References:From:Subject; b=X1Zodn3b1d9bxZcBH0N9TgTf9YfBl3U2QJzYHSaJPYdzJwBbzEavzeL/gJXV2ycW0mqXZtEKQD9ReLy0JXFFGzFBIgEFSXxeBuNMESSKehALEPZoMvP43c18oXlhhUGy+8EIFYFZBcwMNk9l3rjKkeVlqwgUiVLTYatAUcgh4L+Ov2hRRj2awLxfU5ZPULR8xHOhLmQ12yUfh9RKfdWstk6pO3OzliGwvEbpAQEx5O9Az+eGkQepdQ6GCdt/JuD+vnaBtQnB/OISpLBtQrTLwWUSzS82NpYCX7pPa+ZbKSQREq5w2C9YkPAoLSBeN/Qt4XIx1O+CncwIi/NTZPyjvw==
-X-YMail-OSG: _c_7JnwVM1kEr3wslaQSx_gAmmXMn1NGF02UTuGBvqvJTQQWyHTqqe2USf7isSG
- WRqSWohyBUPtILYiRTympUKz8Z76pDkEp59sEVj8TtnI.x5gvMB0skDXbbrEtGxtXtYV6xvwCrwI
- YB7dx3DsAP.sM6MP88wGfoQ.0ac71Gps89EUczCJTMuGZqFhEsxeAaeuwc_mWe9pRpRen7CSng0B
- T8fHFVmskeJ.D3a_XIjBspRugieOMC9A8u8n.xT.v7zbgqM2ia3017_ZhQ6oVsmXMzr9xFnn1VO8
- F6OlSgV7yhmluew3VcYEq2kGvh1p7Fv1WuiqDen31btbd2ZUjA5EGxMy0WhnrCpJQ2o1tU7VFvTX
- 9QVWcrGa3v1Cdw5zYj1o9ScMz9d7goOj8kAoOqjsg0aQfpw3vcFjSWeWUYPykLjHovKbVc_j6S3e
- kEzOJlEAHgBGIz1yzpySfkPvr2yAhHppqbfwV9Hug4lbzXboH7PH7dIQvdLKYhhN7BOtDD4VQ7gL
- aYwxCJf120KJubZmP0_yb8oDk3mZNUSLV5gjyPnVdB.PVI3RfW4lpnSyTxGKa.lfWvqQim9YulbH
- W4x5yi_tJSyKERGRnRgBCrABqaQO4pjJ9PVrV1TS1X4decUo6tlrvuOpYTMGFDZTnVfnC1JbAnnk
- Ir89IiBIXvKVrvJVvfZGacnoOyrUVE8pe5AQcUB75mUz3b5Hg3t72mlNaANSUkeTf9Cw_Q3JUwMd
- BKaYdx7sFUAZksCjcD.FC5mMvrmvWbId8nDdRB1F3v7HuqBFJqVYwTIWb3aBUh4LYYj1VXWMT3GA
- CQNc9zhgXq.mlXabmw40TqO7AT9Yr2NMEpNVoOWi9k5fGubauUDQPTLidJUrrMgJ39yWA2vR8jQs
- j_Vx9m7NaXwIyJlLOc5w9kumCVABPmE0l8VhLoK1D5uj20DzLrPKIHjlpk8kF6LLRBLsdcw4cxh9
- rBvpUMAAPaGL79ZKczFo.i5ckWTTgOUV_W9tuIedYlf5AIXQowcwIoFrd.A4fQahQBfE.Jfgd5O9
- 5Ow9jUz6nLcYkPnU4epYoiJPC3Fa16zRnguVUFFnZxwhvtfXEMDz0nO.bwNkr3ahFlr9WK0WyBm3
- DW7W25UpVPQrAWKXf.ppP9tXUNvljF_XYsGsonNXFPkoq1ONmDDbgkZtW699c6M1Gf3rFW6UEQ7v
- ngaXr7yg.fYY7bOtHfp8yFgsFVTH3mG5zc_GvJsSdg3DswMqzytFZ6SrzxI8g5U9cm8fQ9tyo0vF
- ZuMeDZpYHlS4lANx9OScMLEjH.YiMHTiegAj7.kUyf7KdhNS1WxnjaEuoUjn3Nc8pAoiTNEY.Uw-
- -
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Mon, 22 Jun 2020 16:03:03 +0000
-Date:   Mon, 22 Jun 2020 16:03:01 +0000 (UTC)
-From:   Karim Zakari <kariim1960z@gmail.com>
-Reply-To: kzakari04@gmail.com
-Message-ID: <180200008.1872024.1592841781795@mail.yahoo.com>
-Subject: URGENT REPLY.
+        id S1729908AbgFVQEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 12:04:31 -0400
+Received: from m12-14.163.com ([220.181.12.14]:41004 "EHLO m12-14.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729298AbgFVQE2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 12:04:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=GQowN
+        qmoyj4kwdiKWWbLTZBxwMI8tC95BLG31CQkfsw=; b=j4bSP3K8au6Z9uvpu+lZA
+        7zGQjwZ8UGJZgJQVCfCcjhDZVg18x+b8kF4iDyXVFaxF2zcAhQA83ikxxBi5woEc
+        ytP3u7V1cqixEPc8uNYfgMJvmqsdRF3PAS2QHs8aeffY4zIVYJ7JmxCe17dI4RSm
+        7ScXnSs4Gogjsn+MXyNp+k=
+Received: from SZA191027643-PM.china.huawei.com (unknown [120.235.53.225])
+        by smtp10 (Coremail) with SMTP id DsCowABnbelA1vBeGrmZHw--.17892S2;
+        Tue, 23 Jun 2020 00:03:15 +0800 (CST)
+From:   yunaixin03610@163.com
+To:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, wuguanping@huawei.com,
+        wangqindong@huawei.com
+Cc:     yunaixin <yunaixin03610@163.com>
+Subject: [PATCH 0/5] Adding Huawei BMA drivers
+Date:   Tue, 23 Jun 2020 00:03:06 +0800
+Message-Id: <20200622160311.1533-1-yunaixin03610@163.com>
+X-Mailer: git-send-email 2.26.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <180200008.1872024.1592841781795.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16138 YMailNodin Mozilla/5.0 (Windows NT 6.1; ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: quoted-printable
+X-CM-TRANSID: DsCowABnbelA1vBeGrmZHw--.17892S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxtw4DtFWUKrW3tr15Aw1UZFb_yoWxtFWxpa
+        yjya4UurWxKFy7Xw1vy3W8KFn8J3WDtry5u393Z3WrX3s2yry5JryDWF15uF1fWa97Gr4I
+        vF1Y9F1fWFZ8X3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziX4S7UUUUU=
+X-Originating-IP: [120.235.53.225]
+X-CM-SenderInfo: 51xqtxx0lqijqwrqqiywtou0bp/xtbBZwNL5letzVI0DQAAsV
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: yunaixin <yunaixin03610@163.com>
+
+This patch set contains 5 communication drivers for Huawei BMA software.=0D
+The BMA software is a system management software. It supports the status=0D
+monitoring, performance monitoring, and event monitoring of various=0D
+components, including server CPUs, memory, hard disks, NICs, IB cards,=0D
+PCIe cards, RAID controller cards, and optical modules.=0D
+=0D
+These 5 drivers are used to send/receive message through PCIe channel in=0D
+different ways by BMA software.
+
+yunaixin (5):
+  Huawei BMA: Adding Huawei BMA driver: host_edma_drv
+  Huawei BMA: Adding Huawei BMA driver: host_cdev_drv
+  Huawei BMA: Adding Huawei BMA driver: host_veth_drv
+  Huawei BMA: Adding Huawei BMA driver: cdev_veth_drv
+  Huawei BMA: Adding Huawei BMA driver: host_kbox_drv
+
+ drivers/net/ethernet/huawei/Kconfig           |    1 +
+ drivers/net/ethernet/huawei/Makefile          |    1 +
+ drivers/net/ethernet/huawei/bma/Kconfig       |    5 +
+ drivers/net/ethernet/huawei/bma/Makefile      |    9 +
+ .../net/ethernet/huawei/bma/cdev_drv/Kconfig  |   11 +
+ .../net/ethernet/huawei/bma/cdev_drv/Makefile |    2 +
+ .../ethernet/huawei/bma/cdev_drv/bma_cdev.c   |  369 +++
+ .../ethernet/huawei/bma/cdev_veth_drv/Kconfig |   11 +
+ .../huawei/bma/cdev_veth_drv/Makefile         |    2 +
+ .../bma/cdev_veth_drv/virtual_cdev_eth_net.c  | 1839 ++++++++++++
+ .../bma/cdev_veth_drv/virtual_cdev_eth_net.h  |  300 ++
+ .../net/ethernet/huawei/bma/edma_drv/Kconfig  |   11 +
+ .../net/ethernet/huawei/bma/edma_drv/Makefile |    2 +
+ .../huawei/bma/edma_drv/bma_devintf.c         |  597 ++++
+ .../huawei/bma/edma_drv/bma_devintf.h         |   40 +
+ .../huawei/bma/edma_drv/bma_include.h         |  116 +
+ .../ethernet/huawei/bma/edma_drv/bma_pci.c    |  533 ++++
+ .../ethernet/huawei/bma/edma_drv/bma_pci.h    |   94 +
+ .../ethernet/huawei/bma/edma_drv/edma_host.c  | 1462 ++++++++++
+ .../ethernet/huawei/bma/edma_drv/edma_host.h  |  351 +++
+ .../huawei/bma/include/bma_ker_intf.h         |   94 +
+ .../net/ethernet/huawei/bma/kbox_drv/Kconfig  |   11 +
+ .../net/ethernet/huawei/bma/kbox_drv/Makefile |    2 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_dump.c  |  121 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_dump.h  |   33 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_hook.c  |  101 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_hook.h  |   33 +
+ .../huawei/bma/kbox_drv/kbox_include.h        |   40 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_main.c  |  168 ++
+ .../ethernet/huawei/bma/kbox_drv/kbox_main.h  |   23 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_mce.c   |  264 ++
+ .../ethernet/huawei/bma/kbox_drv/kbox_mce.h   |   23 +
+ .../ethernet/huawei/bma/kbox_drv/kbox_panic.c |  187 ++
+ .../ethernet/huawei/bma/kbox_drv/kbox_panic.h |   25 +
+ .../huawei/bma/kbox_drv/kbox_printk.c         |  363 +++
+ .../huawei/bma/kbox_drv/kbox_printk.h         |   33 +
+ .../huawei/bma/kbox_drv/kbox_ram_drive.c      |  188 ++
+ .../huawei/bma/kbox_drv/kbox_ram_drive.h      |   31 +
+ .../huawei/bma/kbox_drv/kbox_ram_image.c      |  135 +
+ .../huawei/bma/kbox_drv/kbox_ram_image.h      |   84 +
+ .../huawei/bma/kbox_drv/kbox_ram_op.c         |  986 +++++++
+ .../huawei/bma/kbox_drv/kbox_ram_op.h         |   77 +
+ .../net/ethernet/huawei/bma/veth_drv/Kconfig  |   11 +
+ .../net/ethernet/huawei/bma/veth_drv/Makefile |    2 +
+ .../ethernet/huawei/bma/veth_drv/veth_hb.c    | 2502 +++++++++++++++++
+ .../ethernet/huawei/bma/veth_drv/veth_hb.h    |  440 +++
+ 46 files changed, 11733 insertions(+)
+ create mode 100644 drivers/net/ethernet/huawei/bma/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_drv/bma_cdev.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_veth_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_veth_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_veth_drv/virtual_c=
+dev_eth_net.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/cdev_veth_drv/virtual_c=
+dev_eth_net.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/bma_devintf.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/bma_devintf.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/bma_include.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/bma_pci.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/bma_pci.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/edma_host.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/edma_drv/edma_host.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/include/bma_ker_intf.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_dump.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_hook.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_include.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_main.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_mce.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_panic.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_printk.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive=
+.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_drive=
+.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image=
+.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_image=
+.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/kbox_drv/kbox_ram_op.h
+ create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/Kconfig
+ create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/Makefile
+ create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.c
+ create mode 100644 drivers/net/ethernet/huawei/bma/veth_drv/veth_hb.h
+
+--=20
+2.26.2.windows.1
 
 
-Good-Day Friend,
-
- Hope you are doing great Today. I have a proposed business deal worthy (US$16.5 Million Dollars) that will benefit both parties. This is legitimate' legal and your personality will not be compromised.
-
-Waiting for your response for more details, As you are willing to execute this business opportunity with me.
-
-Sincerely Yours,
-Mr. Karim Zakari.
