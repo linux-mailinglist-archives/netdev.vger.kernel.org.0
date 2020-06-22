@@ -2,87 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A57F2034AD
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 12:19:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C93D62034B8
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 12:22:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727038AbgFVKTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 06:19:01 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:35660 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726853AbgFVKTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 06:19:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592821139;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hhx2/dKVX3sYoJHRc0UNtjJeMWtsunceOpFQydeky9g=;
-        b=g/mgi4fvYjI6CEJCq/65btmwKrJXsL3hQF9Zpi/aRu8N71SHE2ozPitmB2/fkc4MFpJxTN
-        WvIMofzwPqpWLfj1yVuw9H6X+HR6su0IvWE+PgMvT52C6eLRUZrpSKCTgGimfi2VsSe/LK
-        PFVZSKcAeExSV+O8dzIlxJYKVBD4Hqk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-221-yxXM4gCnN6qrPx4XoFPRTA-1; Mon, 22 Jun 2020 06:18:55 -0400
-X-MC-Unique: yxXM4gCnN6qrPx4XoFPRTA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D1C4718A8221;
-        Mon, 22 Jun 2020 10:18:54 +0000 (UTC)
-Received: from ovpn-113-146.ams2.redhat.com (ovpn-113-146.ams2.redhat.com [10.36.113.146])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 982167166E;
-        Mon, 22 Jun 2020 10:18:53 +0000 (UTC)
-Message-ID: <07e0f81138421beee347c362dce61f78dd8bf00c.camel@redhat.com>
-Subject: Re: sock diag uAPI and MPTCP
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     eric.dumazet@gmail.com, netdev@vger.kernel.org, mptcp@lists.01.org
-Date:   Mon, 22 Jun 2020 12:18:52 +0200
-In-Reply-To: <20200620.174408.1728600398443363480.davem@davemloft.net>
-References: <c5b53444ca4c79b887629c93d954dadbc4a777da.camel@redhat.com>
-         <20200620.174408.1728600398443363480.davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+        id S1727843AbgFVKWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 06:22:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726841AbgFVKWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 06:22:16 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056A5C061794
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 03:22:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=bQd8xGnt8iqB/qzdBhOhoZ7o0+bQ8edq7iYGj6Irf9w=; b=B06ntcoyOAAxOEQ7VIkr2Cio6
+        2D2IMw734KxLSrUKEEfq6ggabbadndQQ4MhOBl/clKDk7qjKNhNdoLdfll0C+qjR8LCgDgp2am85N
+        DMa+DVPtRn71g+sAO+MwYxCbebLUlmG1LGoONOoiQqGtxBlmB/fBh7cV4gXSoLr3EWdq9YW5HltC0
+        Txpaj5Tyk4ZomCpOiqMKQwpC39GvdERVrHyJxMAjnO0Npx0dD9ganmodLK1xg8PA16I+SNt1HwL4x
+        vjJTORL/Z88JO2mHULEdiEEwO6N9bmAbiLfWsNXAcM4By25zASFeItNCWpoeb2TFatvCC1KciIA8a
+        1C0p51atQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58948)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jnJaf-0008UJ-Ui; Mon, 22 Jun 2020 11:22:13 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jnJaf-0008Q2-I8; Mon, 22 Jun 2020 11:22:13 +0100
+Date:   Mon, 22 Jun 2020 11:22:13 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, michael@walle.cc, andrew@lunn.ch,
+        f.fainelli@gmail.com, olteanv@gmail.com
+Subject: Re: [PATCH net-next v3 5/9] net: dsa: add support for phylink_pcs_ops
+Message-ID: <20200622102213.GD1551@shell.armlinux.org.uk>
+References: <20200621225451.12435-1-ioana.ciornei@nxp.com>
+ <20200621225451.12435-6-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200621225451.12435-6-ioana.ciornei@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-06-20 at 17:44 -0700, David Miller wrote:
-> From: Paolo Abeni <pabeni@redhat.com>
-> Date: Fri, 19 Jun 2020 12:54:40 +0200
+On Mon, Jun 22, 2020 at 01:54:47AM +0300, Ioana Ciornei wrote:
+> In order to support split PCS using PHYLINK properly, we need to add a
+> phylink_pcs_ops structure.
 > 
-> > IPPROTO_MPTCP value (0x106) can't be represented using the current sock
-> > diag uAPI, as the 'sdiag_protocol' field is 8 bits wide.
-> > 
-> > To implement diag support for MPTCP socket, we will likely need a
-> > 'inet_diag_req_v3' with a wider 'sdiag_protocol'
-> > field. inet_diag_handler_cmd() could detect the version of
-> > the inet_diag_req_v* provided by user-space checking nlmsg_len() and
-> > convert _v2 reqs to _v3.
-> > 
-> > This change will be a bit invasive, as all in kernel diag users will
-> > then operate only on 'inet_diag_req_v3' (many functions' signature
-> > change required), but the code-related changes will be encapsulated
-> > by inet_diag_handler_cmd().
+> Note that a DSA driver that wants to use these needs to implement all 4
+> of them: the DSA core checks the presence of these 4 function pointers
+> in dsa_switch_ops and only then does it add a PCS to PHYLINK. This is
+> done in order to preserve compatibility with drivers that have not yet
+> been converted, or don't need, a split PCS setup.
 > 
-> Another way to extend the size of a field is to add an attribute which
-> supercedes the header structure field when present.
-> 
-> We did this when we needed to make the fib rule table ID number larger,
-> see FRA_TABLE.
-> 
-> You'd only need to specify this when using protocol values larger than
-> 8 bits in size.
+> Also, when pcs_get_state() and pcs_an_restart() are present, their mac
+> counterparts (mac_pcs_get_state(), mac_an_restart()) will no longer get
+> called, as can be seen in phylink.c.
 
-Thank you very much for the directions! This looks like a better, more
-encapsulated solution. I'll try to give it a shot.
+I don't like this at all, it means we've got all this useless layering,
+and that layering will force similar layering veneers into other parts
+of the kernel (such as the DPAA2 MAC driver, when we eventually come to
+re-use pcs-lynx there.)
 
-Thanks!
+I don't think we need that - I think we can get to a position where
+pcs-lynx is called requesting that it bind to phylink as the PCS, and
+it calls phylink_add_pcs() directly, which means we do not end up with
+veneers in DSA nor in the DPAA2 MAC driver - they just need to call
+the pcs-lynx initialisation function with the phylink instance for it
+to attach to.
 
-Paolo
+Yes, that requires phylink_add_pcs() to change slightly, and for there
+to be a PCS private pointer, as I have previously stated.  At the
+moment, changing that is really easy - the phylink PCS backend has no
+in-tree users at the moment.  So there is no reason not to get this
+correct right now.
 
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
