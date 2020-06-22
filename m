@@ -2,94 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 909BF2039E7
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 16:49:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE6EA203A03
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 16:53:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729331AbgFVOtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 10:49:11 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:47808 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729146AbgFVOtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 10:49:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592837347;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=naZjlXqAUuz9QFqq0p2KUyyeqf2h2ajScjOSS4MNLek=;
-        b=cKDecmSqrH2L8eLlcuAfey66vg0RM6Y4ppst5TXIAv1xl2m4W62Sv+mmjHa9MBtNiDqQdg
-        uI6UauVOhCIyfzqSK+a+0bKUVJM6RFa8bwli686DNPdwbJr1k4x0g9GfyZ7ox9fL4Y6sY9
-        9wU76T5VNYmIyTB5pQCl/+Ips0o2/DU=
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
- [209.85.167.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-491-IPFy0g6rMNipDDYpEJGinA-1; Mon, 22 Jun 2020 10:49:05 -0400
-X-MC-Unique: IPFy0g6rMNipDDYpEJGinA-1
-Received: by mail-oi1-f198.google.com with SMTP id w26so8153286oic.4
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 07:49:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=naZjlXqAUuz9QFqq0p2KUyyeqf2h2ajScjOSS4MNLek=;
-        b=ILAQYb+7sQVIUoER3baobEuHGBhYNjP32icUtvc7rfNcR8hs1QmiZerNH/jt0ZVSUc
-         wKFshblZELcwS+jWDOmW6o/SZnd11gEh7yccAX8uJSEiVamd/ABm0NJVXY4Eu1RY/Kw+
-         Ji/UwBBMLktIuJ6pz3NUJHAOd9LPSVAWB4OpVDfbhdwq8uIGILMsYgdDqdzLuwUJru2K
-         45VzWT+LvQS8UUlCSnZ1BGbwHrfKEGfZHU5NDus/Gr8VkdsKq3rCVow3eZ/VEpZWIncr
-         nc8NONB1f8xlS2fR7zCBMVhs/cvnWszCUdpmE3XbXwHGuLTcb9aq2lXYVENkHsYDe4Oh
-         O1OA==
-X-Gm-Message-State: AOAM532ckO5rENLJ/Zyp9PxDLkup6wYr5Yd4iKG9bZBCsJKXWlEDBex5
-        c+uuf+UYtUL7n3uquf92+bGpiqeNdbFiW4/Ko4TXJgGdNtXf5Lo5pRur5EDnn3QOeayjY60Blp7
-        NOEiT3fji92eh64xhdqpjf1J9AmsLcpyi
-X-Received: by 2002:a9d:39b6:: with SMTP id y51mr12985159otb.175.1592837344595;
-        Mon, 22 Jun 2020 07:49:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw6oTCLYY5ewTtAXQxagLn65iRqRaS/ifJ30YW9dcHRfGmRzdPnCFDN3sUXNC+/uj6SNSIpnbpPZl7QUh97fIk=
-X-Received: by 2002:a9d:39b6:: with SMTP id y51mr12985144otb.175.1592837344375;
- Mon, 22 Jun 2020 07:49:04 -0700 (PDT)
+        id S1729076AbgFVOxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 10:53:19 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:28068 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728956AbgFVOxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 10:53:19 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05MEZHHj003841;
+        Mon, 22 Jun 2020 07:53:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=jjM2MG3jpi1Al8kziTPdNDxXKoQIgOORwmRPJYNToL4=;
+ b=fkx/VglPwxsTLfP9DkaPnu9U+gqDYIsoM4sx6sFeQ/PQJk6A0euovnQ75LXljkBoHx7A
+ ehovGlYnSFQ+gaeTXVwovzXY75uU1e4F8aoynU58YSjHxqOdy+hMz2yCxEtONn8924bQ
+ NCfKlrkUk3bLe/Y1INZufGcLgN0su/LGBPa2I/VgZWE9U7ft2GfhtpKLQauIGYYyJQFw
+ uiAanXfgvcnMgyOh5Ta4N5M7lsnMUnS66in5xRvvTY0dFE535YmJOvjEgcXOhc5dnk1y
+ KlEU7E6EilhNm5AWDaT3H44oz9SS+/0iJtTKz+We0We6VJtV6FUlnodYFE0XvawVoz8t 9g== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 31shynrhq5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 22 Jun 2020 07:53:15 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 22 Jun
+ 2020 07:53:13 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 22 Jun 2020 07:53:13 -0700
+Received: from NN-LT0019.marvell.com (unknown [10.193.39.5])
+        by maili.marvell.com (Postfix) with ESMTP id 1A9D03F703F;
+        Mon, 22 Jun 2020 07:53:11 -0700 (PDT)
+From:   Igor Russkikh <irusskikh@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH net-next 0/6] net: atlantic: additional A2 features
+Date:   Mon, 22 Jun 2020 17:53:03 +0300
+Message-ID: <20200622145309.455-1-irusskikh@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20200618090556.pepjdbnba2gqzcbe@butterfly.localdomain>
- <20200618111859.GC698688@lore-desk.lan> <20200619150132.2zrc3ojqhtbn432u@butterfly.localdomain>
- <20200621205412.GB271428@localhost.localdomain>
-In-Reply-To: <20200621205412.GB271428@localhost.localdomain>
-From:   Oleksandr Natalenko <oleksandr@redhat.com>
-Date:   Mon, 22 Jun 2020 16:48:53 +0200
-Message-ID: <CAHcwAbR4govGK3RPyfKWRgFRhFanWtpJLrB_PEjcoiBDJ3_Adg@mail.gmail.com>
-Subject: Re: mt7612 suspend/resume issue
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-22_08:2020-06-22,2020-06-22 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, Lorenzo.
+This patchset adds more features to A2:
+ * half duplex rates;
+ * EEE;
+ * flow control;
+ * link partner capabilities reporting;
+ * phy loopback.
 
-On Sun, Jun 21, 2020 at 10:54 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> > > +static int __maybe_unused
-> > > +mt76x2e_suspend(struct pci_dev *pdev, pm_message_t state)
-> > > +{
-> > > +   struct mt76_dev *mdev = pci_get_drvdata(pdev);
-> > > +   struct mt76x02_dev *dev = container_of(mdev, struct mt76x02_dev, mt76);
-> > > +   int i, err;
->
-> can you please double-check what is the PCI state requested during suspend?
+Feature-wise A2 is almost on-par with A1 save for WoL and filtering, which
+will be submitted as separate follow-up patchset(s).
 
-Do you mean ACPI S3 (this is the state the system enters)?  If not,
-what should I check and where?
+Dmitry Bogdanov (2):
+  net: atlantic: A2: report link partner capabilities
+  net: atlantic: A2: phy loopback support
 
-Thanks.
+Igor Russkikh (2):
+  net: atlantic: A2: half duplex support
+  net: atlantic: A2: flow control support
+
+Nikita Danilov (2):
+  net: atlantic: remove baseX usage
+  net: atlantic: A2: EEE support
+
+ .../ethernet/aquantia/atlantic/aq_common.h    |  18 +-
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   |  19 +-
+ .../net/ethernet/aquantia/atlantic/aq_hw.h    |  10 +-
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   | 109 +++++++++--
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |   4 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.h      |   3 +
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.c   |   1 +
+ .../atlantic/hw_atl/hw_atl_utils_fw2x.c       |   1 +
+ .../aquantia/atlantic/hw_atl2/hw_atl2.c       |   9 +-
+ .../atlantic/hw_atl2/hw_atl2_utils_fw.c       | 174 ++++++++++++++++++
+ 10 files changed, 313 insertions(+), 35 deletions(-)
 
 -- 
-  Best regards,
-    Oleksandr Natalenko (post-factum)
-    Principal Software Maintenance Engineer
+2.25.1
 
