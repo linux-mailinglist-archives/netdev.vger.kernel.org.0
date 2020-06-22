@@ -2,128 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 949A2203504
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 12:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4F4F20352A
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 12:56:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbgFVKpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 06:45:00 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:51028 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727082AbgFVKo7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 06:44:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592822698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bd6LBfF9XDzhgzHssZPSe+Lg08kndjqNduL115ZBJfw=;
-        b=XFlsqSpPxKZlzuZgZErDpwdZ2hAAQSr3jclfChLSOG1IyzoYl6sPlsTOEh50NgcAnzoG7w
-        Wq2zRioRKUYLczQztWA/HvbXXFj6rvZ4MGaV2Il8H9f0ti/2MHNBmme22tQzL0pXcnLLDp
-        XsaRhdj9RBcw+YVIifvgIjmkaiLtBBo=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-447-CHNRd72rP4yE-b_raS26yg-1; Mon, 22 Jun 2020 06:44:54 -0400
-X-MC-Unique: CHNRd72rP4yE-b_raS26yg-1
-Received: by mail-qt1-f198.google.com with SMTP id k23so12967485qtb.2
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 03:44:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bd6LBfF9XDzhgzHssZPSe+Lg08kndjqNduL115ZBJfw=;
-        b=L9KoERKPY65H0WFJJ4K+UzvVlZhqZlmGZ3FFU59QQqxvmAG1cL3sbY0RknYWvrmWUp
-         cSujn3yJ05IbmNT+rLoPtEEJ3ZGHEgOaOwPW+rYp99jw72TdvqU/mx7q8mQeyph8JJ2G
-         03hroRN0r5rx0kV0N45Y2VYUXHVLcxMmCtjGm80S+31+nO/WY3m5TK/IJKkWQ+KX4gYp
-         KFMH3wDgPoWrMzgMAx9IKQUxlHW7CBDXa0Ipg2ZdKYdmZoEjalDzvLIeICXDiDT934mn
-         4NgLDc5e9fyO1N8n9bP7PDSDTWj2SlwFuva35EIOnzf0nlHMDLk7FY9euoOHbQQF7ZNF
-         pLYA==
-X-Gm-Message-State: AOAM533sCHIGkhzAQafXhp9KWHejXbzvQBHxdPAYw87Ye/BEVU78FsRc
-        5b8RFL9gC46KTVVZFDqRQuN8pESX8QKSgbwh2bKKpdm/wSgK9M7fu0OlmNJWF6RmeBCcvKae1bV
-        JSZ/4q7ybo3dpKCRUrLqBnErzcbLwSxWl
-X-Received: by 2002:a37:65cc:: with SMTP id z195mr3486057qkb.89.1592822694167;
-        Mon, 22 Jun 2020 03:44:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyvnEcVAiDygOEo8OJvdbTYJXbYK5OuvbLC8XhYldjJDXeH7okBCt6wSTRbluvWc7hxWfBdRNbg+6gCp7JsIUc=
-X-Received: by 2002:a37:65cc:: with SMTP id z195mr3486036qkb.89.1592822693924;
- Mon, 22 Jun 2020 03:44:53 -0700 (PDT)
+        id S1727843AbgFVKzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 06:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727880AbgFVKzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 06:55:50 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B23BC061798
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 03:55:50 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1jnK76-0004Sv-Id; Mon, 22 Jun 2020 12:55:44 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:789c:8c3:eaa5:9d1b] (unknown [IPv6:2a03:f580:87bc:d400:789c:8c3:eaa5:9d1b])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 2126E51ED32;
+        Mon, 22 Jun 2020 10:55:43 +0000 (UTC)
+Subject: Re: [PATCH 0/6] Add Microchip MCP25XXFD CAN driver
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        wg@grandegger.com, kernel@martin.sperl.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200610074442.10808-1-manivannan.sadhasivam@linaro.org>
+ <fbbca009-3c53-6aa9-94ed-7e9e337c31a4@pengutronix.de>
+ <20200617165902.GB14228@x1.vandijck-laurijssen.be>
+ <2e80e2ed-d63d-5cc6-e1c6-e0c9e75c218e@pengutronix.de>
+ <20200618123055.GA17496@x1.vandijck-laurijssen.be>
+ <c8267280-e7a9-8171-d714-fa392ccb5537@pengutronix.de>
+ <20200622102559.GA3077@x1.vandijck-laurijssen.be>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
+ iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
+ Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
+ Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
+ tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
+ yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
+ BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
+ mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
+ 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
+ Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
+ 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
+Message-ID: <c5fc46c1-abaf-cf67-abb6-0077bafdff3a@pengutronix.de>
+Date:   Mon, 22 Jun 2020 12:55:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200611113404.17810-1-mst@redhat.com> <20200611113404.17810-3-mst@redhat.com>
- <20200611152257.GA1798@char.us.oracle.com> <CAJaqyWdwXMX0JGhmz6soH2ZLNdaH6HEdpBM8ozZzX9WUu8jGoQ@mail.gmail.com>
- <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com> <b6347dad-89e8-61f6-6394-65c301f91dd7@redhat.com>
-In-Reply-To: <b6347dad-89e8-61f6-6394-65c301f91dd7@redhat.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Mon, 22 Jun 2020 12:44:17 +0200
-Message-ID: <CAJaqyWdo1J-EoGUj3e2jM6USo0SEOM3xydoaYMhta0Y_YPyS_g@mail.gmail.com>
-Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200622102559.GA3077@x1.vandijck-laurijssen.be>
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 22, 2020 at 11:07 AM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2020/6/20 =E4=B8=8A=E5=8D=882:07, Eugenio Perez Martin wrote:
-> > On Mon, Jun 15, 2020 at 2:28 PM Eugenio Perez Martin
-> > <eperezma@redhat.com> wrote:
-> >> On Thu, Jun 11, 2020 at 5:22 PM Konrad Rzeszutek Wilk
-> >> <konrad.wilk@oracle.com> wrote:
-> >>> On Thu, Jun 11, 2020 at 07:34:19AM -0400, Michael S. Tsirkin wrote:
-> >>>> As testing shows no performance change, switch to that now.
-> >>> What kind of testing? 100GiB? Low latency?
-> >>>
-> >> Hi Konrad.
-> >>
-> >> I tested this version of the patch:
-> >> https://lkml.org/lkml/2019/10/13/42
-> >>
-> >> It was tested for throughput with DPDK's testpmd (as described in
-> >> http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html)
-> >> and kernel pktgen. No latency tests were performed by me. Maybe it is
-> >> interesting to perform a latency test or just a different set of tests
-> >> over a recent version.
-> >>
-> >> Thanks!
-> > I have repeated the tests with v9, and results are a little bit differe=
-nt:
-> > * If I test opening it with testpmd, I see no change between versions
-> > * If I forward packets between two vhost-net interfaces in the guest
-> > using a linux bridge in the host:
-> >    - netperf UDP_STREAM shows a performance increase of 1.8, almost
-> > doubling performance. This gets lower as frame size increase.
-> >    - rests of the test goes noticeably worse: UDP_RR goes from ~6347
-> > transactions/sec to 5830
-> >    - TCP_STREAM goes from ~10.7 gbps to ~7Gbps
->
->
-> Which direction did you mean here? Guest TX or RX?
+On 6/22/20 12:25 PM, Kurt Van Dijck wrote:
+> I got my board up with a 5.7, despite device-tree problems completely
+> unrelated to CAN.
 
-Hi Jason.
+\o/
 
-For both I created a linux bridge in the host, attach two guest
-interfaces with vhost-net, and make the netperf run on them.
+> It seems to work well with a fully-loaded CAN bus (cangen -g0 ...).
+> So that is a real improvement.
 
->
->
-> >    - TCP_RR from 6223.64 transactions/sec to 5739.44
->
->
-> Perf diff might help. I think we can start from the RR result which
-> should be easier. Maybe you can test it for each patch then you may see
-> which patch is the source of the regression.
->
+Can I add your Tested-by?
 
-Ok, I will look for differences.
+> I will need to add the listen-only mode soon.
 
-Thanks!
+Patches are always welcome!
 
-> Thanks
->
+regards,
+Marc
 
+-- 
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
