@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E5C7203C0A
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 18:03:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B971203C10
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 18:03:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729885AbgFVQDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 12:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
+        id S1729621AbgFVQDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 12:03:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729577AbgFVQDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 12:03:03 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31658C061573
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 09:03:03 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id t74so9959505lff.2
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 09:03:03 -0700 (PDT)
+        with ESMTP id S1729883AbgFVQDF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 12:03:05 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AFBC061573
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 09:03:05 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id u25so9977795lfm.1
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 09:03:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=n0x8JMyuQeWpT4jjHGqeBWL1VYHUNE3enc3T3KdEcmg=;
-        b=vsz3cKLgjxDj6grniVMEROqGAK4H6uuP3XSrIDjMg7iLDFoKnzH6H6i9YruhHe/Hw2
-         2LACgk0RKZS++vBMte6jLZrzA0qYWeLL3FZ9ycb3YWJtILegGIHw/SEX10Fv8ZwEoESa
-         QiiuW2GPycTBQ03MAsW7RMf+9kOpNUe0/vvCc=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=HdIvYx+tqNu7jSLu3BPp4H3DI+qK/NhTufCEIwjYSL0=;
+        b=WEpePu8IePtYAMhO+wmxma3RHSXd+WCdHpWUpHLC0k2nwUpsC9qWY595DtIcvwHwVQ
+         MASOLqJMqhZsKMT7rJLieof1veM9DIVCovycaG0ukxrCIEaewYRxX+Ql1Wwf0WYLJEGv
+         UTvlqS5rOjlN8neqEquP3kg6s3xRforEYxiVg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=n0x8JMyuQeWpT4jjHGqeBWL1VYHUNE3enc3T3KdEcmg=;
-        b=Ew0eLGjUA8+vFcBvJ9Wv2RSdgaF8NNCvgFQQOq50lCukGO6NZdF9Hd1RsOsg4vksNK
-         2fAUM8V11hHxC3RsF04vV8aozxnnoo1M2rmSXfdKcohak82V67VQTRx0yw0O+MqKxuAh
-         irZKzvqOXCJ7dchZ0MPxNjGIgfyeUAj8aYp8y6lz85vx8IHapi1uRv16PtjroDRTeKgU
-         6e+vc/5ldg4VwWWlZv0ehEpl1HEdlCrsPPLyIPxilBTs1xgVzMvjxrMXtwFiFm1oKQXT
-         nRG1JrUYzOuwQUL9potEkrV8Q/PwDf1jTg9BIUtTRvqSyLN8NV1SJWax0Ox8e3Qv89Eq
-         aMlg==
-X-Gm-Message-State: AOAM532AR+mMCJCLed4jkx9z6GuZ/FjWTM09J9Rd8FMhverKQSPvdwcF
-        YJz5Hl5/7suoTKeZ7JuuVWKmIw==
-X-Google-Smtp-Source: ABdhPJwqspDF9rxVsAEIDWnONZikjWTjSiB7JQfI8uG/UdNDW8HPu9NwbZDETPaa6UQamECJBCwzog==
-X-Received: by 2002:a05:6512:3049:: with SMTP id b9mr10124293lfb.44.1592841781607;
-        Mon, 22 Jun 2020 09:03:01 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=HdIvYx+tqNu7jSLu3BPp4H3DI+qK/NhTufCEIwjYSL0=;
+        b=n/XZGU1eSUwf65mqwpD1Sy5knaKdC3iNTvz0TtSWS5bCt9mQZXSpiwPj3x4fg9WAtP
+         jm4VCNgLUcztJ205Wd2IgnQMGJYCDOSD4Y1qudV/hTN8XjIGFdOYbZLUioz/tpQsJ/XU
+         V8IzmeaDQPNdzmgVu1E0v16xIgD1WuZfWV1no41rtXWFtglIpDOMAlJOYPCrwOQZt8UT
+         nEme6pfRORlxNl19fTR+KtE7n1F/VEIo1wjNrGG348ATDNPq0WgpCkSjxmH337k7cEBv
+         jqF/KmESDUvQBFmGna9kYQ1lEpPOsUUaDg19Y68PqYql5ldMdbvKdfWoPqgSOdUIDQSY
+         iv3A==
+X-Gm-Message-State: AOAM533PZz/rjtNHseXWaahX5FvSgJxx3NIsp8Sgb6lOOERXy+Dd5DpU
+        DhQ5dNnXvQ8NStfWrfqFoa5cog==
+X-Google-Smtp-Source: ABdhPJxEL3eGf2Cf84ZqN9aFIy1XV25Ayy9SFXzFFbdHMkltEwjumbpcUtz6XoFKWWm1cSuhsxPEnQ==
+X-Received: by 2002:ac2:44b7:: with SMTP id c23mr10138487lfm.169.1592841783556;
+        Mon, 22 Jun 2020 09:03:03 -0700 (PDT)
 Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id t13sm2789827ljg.78.2020.06.22.09.03.00
+        by smtp.gmail.com with ESMTPSA id x16sm274131lfc.76.2020.06.22.09.03.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jun 2020 09:03:00 -0700 (PDT)
+        Mon, 22 Jun 2020 09:03:02 -0700 (PDT)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        Stanislav Fomichev <sdf@google.com>
-Subject: [PATCH bpf-next 0/3] bpf, netns: Prepare for multi-prog attachment
-Date:   Mon, 22 Jun 2020 18:02:57 +0200
-Message-Id: <20200622160300.636567-1-jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com
+Subject: [PATCH bpf-next 1/3] flow_dissector: Pull BPF program assignment up to bpf-netns
+Date:   Mon, 22 Jun 2020 18:02:58 +0200
+Message-Id: <20200622160300.636567-2-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20200622160300.636567-1-jakub@cloudflare.com>
+References: <20200622160300.636567-1-jakub@cloudflare.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,41 +60,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set prepares ground for link-based multi-prog attachment for
-future netns attach types, with BPF_SK_LOOKUP attach type in mind [0].
+Prepare for using bpf_prog_array to store attached programs by moving out
+code that updates the attached program out of flow dissector.
 
-Two changes are needed in order to attach and run a series of BPF programs:
+Managing bpf_prog_array is more involved than updating a single bpf_prog
+pointer. This will let us do it all from one place, bpf/net_namespace.c, in
+the subsequent patch.
 
-  1) an bpf_prog_array of programs to run (patch #2), and
-  2) a list of attached links to keep track of attachments (patch #3).
+No functional change intended.
 
-I've been using these patches with the next iteration of BPF socket lookup
-hook patches, and saw that they are self-contained and can be split out to
-ease the review burden.
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+ include/net/flow_dissector.h |  3 ++-
+ kernel/bpf/net_namespace.c   | 20 ++++++++++++++++++--
+ net/core/flow_dissector.c    | 13 ++-----------
+ 3 files changed, 22 insertions(+), 14 deletions(-)
 
-Nothing changes for BPF flow_dissector. That is at most one prog can be
-attached.
-
-Thanks,
--jkbs
-
-[0] https://lore.kernel.org/bpf/20200511185218.1422406-1-jakub@cloudflare.com/
-
-Cc: Stanislav Fomichev <sdf@google.com>
-
-Jakub Sitnicki (3):
-  flow_dissector: Pull BPF program assignment up to bpf-netns
-  bpf, netns: Keep attached programs in bpf_prog_array
-  bpf, netns: Keep a list of attached bpf_link's
-
- include/linux/bpf.h          |   3 +
- include/net/flow_dissector.h |   3 +-
- include/net/netns/bpf.h      |   7 +-
- kernel/bpf/core.c            |  19 +++-
- kernel/bpf/net_namespace.c   | 189 +++++++++++++++++++++++++----------
- net/core/flow_dissector.c    |  34 +++----
- 6 files changed, 172 insertions(+), 83 deletions(-)
-
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index a7eba43fe4e4..4b6e36288ddd 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -372,7 +372,8 @@ flow_dissector_init_keys(struct flow_dissector_key_control *key_control,
+ }
+ 
+ #ifdef CONFIG_BPF_SYSCALL
+-int flow_dissector_bpf_prog_attach(struct net *net, struct bpf_prog *prog);
++int flow_dissector_bpf_prog_attach_check(struct net *net,
++					 struct bpf_prog *prog);
+ #endif /* CONFIG_BPF_SYSCALL */
+ 
+ #endif
+diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
+index 78cf061f8179..b951dab2687f 100644
+--- a/kernel/bpf/net_namespace.c
++++ b/kernel/bpf/net_namespace.c
+@@ -189,6 +189,7 @@ int netns_bpf_prog_query(const union bpf_attr *attr,
+ int netns_bpf_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+ {
+ 	enum netns_bpf_attach_type type;
++	struct bpf_prog *attached;
+ 	struct net *net;
+ 	int ret;
+ 
+@@ -207,12 +208,26 @@ int netns_bpf_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+ 
+ 	switch (type) {
+ 	case NETNS_BPF_FLOW_DISSECTOR:
+-		ret = flow_dissector_bpf_prog_attach(net, prog);
++		ret = flow_dissector_bpf_prog_attach_check(net, prog);
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+ 	}
++	if (ret)
++		goto out_unlock;
++
++	attached = rcu_dereference_protected(net->bpf.progs[type],
++					     lockdep_is_held(&netns_bpf_mutex));
++	if (attached == prog) {
++		/* The same program cannot be attached twice */
++		ret = -EINVAL;
++		goto out_unlock;
++	}
++	rcu_assign_pointer(net->bpf.progs[type], prog);
++	if (attached)
++		bpf_prog_put(attached);
++
+ out_unlock:
+ 	mutex_unlock(&netns_bpf_mutex);
+ 
+@@ -277,7 +292,7 @@ static int netns_bpf_link_attach(struct net *net, struct bpf_link *link,
+ 
+ 	switch (type) {
+ 	case NETNS_BPF_FLOW_DISSECTOR:
+-		err = flow_dissector_bpf_prog_attach(net, link->prog);
++		err = flow_dissector_bpf_prog_attach_check(net, link->prog);
+ 		break;
+ 	default:
+ 		err = -EINVAL;
+@@ -286,6 +301,7 @@ static int netns_bpf_link_attach(struct net *net, struct bpf_link *link,
+ 	if (err)
+ 		goto out_unlock;
+ 
++	rcu_assign_pointer(net->bpf.progs[type], link->prog);
+ 	net->bpf.links[type] = link;
+ 
+ out_unlock:
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index d02df0b6d0d9..b57fb1359395 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -70,10 +70,10 @@ void skb_flow_dissector_init(struct flow_dissector *flow_dissector,
+ EXPORT_SYMBOL(skb_flow_dissector_init);
+ 
+ #ifdef CONFIG_BPF_SYSCALL
+-int flow_dissector_bpf_prog_attach(struct net *net, struct bpf_prog *prog)
++int flow_dissector_bpf_prog_attach_check(struct net *net,
++					 struct bpf_prog *prog)
+ {
+ 	enum netns_bpf_attach_type type = NETNS_BPF_FLOW_DISSECTOR;
+-	struct bpf_prog *attached;
+ 
+ 	if (net == &init_net) {
+ 		/* BPF flow dissector in the root namespace overrides
+@@ -97,15 +97,6 @@ int flow_dissector_bpf_prog_attach(struct net *net, struct bpf_prog *prog)
+ 			return -EEXIST;
+ 	}
+ 
+-	attached = rcu_dereference_protected(net->bpf.progs[type],
+-					     lockdep_is_held(&netns_bpf_mutex));
+-	if (attached == prog)
+-		/* The same program cannot be attached twice */
+-		return -EINVAL;
+-
+-	rcu_assign_pointer(net->bpf.progs[type], prog);
+-	if (attached)
+-		bpf_prog_put(attached);
+ 	return 0;
+ }
+ #endif /* CONFIG_BPF_SYSCALL */
 -- 
 2.25.4
 
