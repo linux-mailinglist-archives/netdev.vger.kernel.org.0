@@ -2,118 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F8882039AA
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 16:37:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B65A42039BA
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 16:40:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729338AbgFVOgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 10:36:55 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:55320 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729318AbgFVOgy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 10:36:54 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1592836613; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=JSt09Fbrzf0H+Eep97NqWj/jsb72fCfRDnOyEo7TatI=; b=Bhur4cKR9SuKUJhxxCrLmQrZrIPCzvXjugxfV40SXdPJ8VNd7I/d+dyTm7wRyiy32Qbt0e5/
- 7q1Ed+yrOl88S8lVEaUr5+2a2TRaG/at6DSY7sUkyNJ/NcAJs/BPhuOHeN7v/str+gGmn7mU
- Qi6OVKcG0tt7plTFB8iNAoxMWa4=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 5ef0c1ffa3d8a4474323a509 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 22 Jun 2020 14:36:47
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 85EF2C433CB; Mon, 22 Jun 2020 14:36:46 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7E361C433CA;
-        Mon, 22 Jun 2020 14:36:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7E361C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Roman Mamedov <rm@romanrm.net>
-Cc:     Qiujun Huang <hqjagain@gmail.com>, ath9k-devel@qca.qualcomm.com,
-        davem@davemloft.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        anenbupt@gmail.com, syzkaller-bugs@googlegroups.com
-Subject: Re: [BISECTED REGRESSION] ath9k: Fix general protection fault in ath9k_hif_usb_rx_cb
-References: <20200404041838.10426-1-hqjagain@gmail.com>
-        <20200404041838.10426-6-hqjagain@gmail.com>
-        <20200621020428.6417d6fb@natsu>
-Date:   Mon, 22 Jun 2020 17:36:41 +0300
-In-Reply-To: <20200621020428.6417d6fb@natsu> (Roman Mamedov's message of "Sun,
-        21 Jun 2020 02:04:28 +0500")
-Message-ID: <87lfkff9qe.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1729147AbgFVOj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 10:39:58 -0400
+Received: from mail-eopbgr130082.outbound.protection.outlook.com ([40.107.13.82]:61695
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728293AbgFVOj5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 10:39:57 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NtbgFHYlXsR5VYu1z/9q5tePuZd5gq1tZ0iCiRzlpQab6oeb8LuZTUPQWacQXUhkfQwJb57UnSjTYsx6wVbSKey5lhV6cFBQnNjF2BZbNUx5zuviC/SBnYs70vRrO5V0I3NQdkYx8PBiy4uP0wDKQ5eIf8QCRl8I2lEzkmLBul03sv+Y8Pig9jgdx0kOQDSeXDy1BTcln4AVYoCrrzpPXCnXBmzJcM6VU99KRzpxKJjeauaJZVahSrfiD0Zb3SAuoITJtwAZcxDEylp9P+ZQnehQLV4RnYTX/gIeMZX7M17v/WqYoaWqWgiiVVt5rNcJW2mSpntQe/PQIzAkWAUOPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nOTQVPXwol0zHMvVRQAoD5aRK9P8+99oA6rYC5GuLjA=;
+ b=UyAi2RaT/ueGQZ0ulHYDAyLeDX53hTgcA6MOuJ97b7XPHGQWwpw5NuFllxbjn5IgC13Exox5F7qyGG0ItX2ANja7uIDfAbROZOEEiAjcEITPzWqRLhktA20K/fWGI3cfCa0m7qrVehjHXOpFIvq1NIL9wYjzOaivlV0AcbCmEIeqrjHq14+HmcGmkl1Ub748pWpgqwsxlzNl+f6eJFX52w31FsMzkNkfUwS2fuSXuCrsjXd7KvOlpPTQodd6IAQshML68sWFn4RtgpnJU2eQjynJcAUMMjmPmN7DAZJVcd1LSIA2wG+DpN1Ru+xHsC+2pkulHPvDC4JydtlIwLnkKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nOTQVPXwol0zHMvVRQAoD5aRK9P8+99oA6rYC5GuLjA=;
+ b=ahjrcgB1Q9CfvAPLgGmLpcrl7dNlL/kM/fnJQO4+d73SEkuKGuunhYntgEBqV4SM8Pq8N388/G69fenIs3VrnDJhndYYW+phVfN37SAdMtGPsq64dAZ5grEPNo2wZfntjHbjQQlzkLdeWaD3ehkgxblZbsug494Ixw8lKDIECI8=
+Received: from AM0PR04MB5443.eurprd04.prod.outlook.com (2603:10a6:208:119::33)
+ by AM0PR04MB6148.eurprd04.prod.outlook.com (2603:10a6:208:13e::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.21; Mon, 22 Jun
+ 2020 14:39:54 +0000
+Received: from AM0PR04MB5443.eurprd04.prod.outlook.com
+ ([fe80::f0b7:8439:3b5a:61bd]) by AM0PR04MB5443.eurprd04.prod.outlook.com
+ ([fe80::f0b7:8439:3b5a:61bd%7]) with mapi id 15.20.3109.027; Mon, 22 Jun 2020
+ 14:39:54 +0000
+From:   Florinel Iordache <florinel.iordache@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Florinel Iordache <florinel.iordache@nxp.com>
+Subject: RE: [EXT] Re: [PATCH net-next v3 4/7] net: phy: add backplane kr
+ driver support
+Thread-Topic: [EXT] Re: [PATCH net-next v3 4/7] net: phy: add backplane kr
+ driver support
+Thread-Index: AQHWSJoOSv10qY8hR027u6Fzd8TnaKjksHoAgAAAoSA=
+Date:   Mon, 22 Jun 2020 14:39:54 +0000
+Message-ID: <AM0PR04MB5443DAF865284ADE78423C64FB970@AM0PR04MB5443.eurprd04.prod.outlook.com>
+References: <1592832924-31733-1-git-send-email-florinel.iordache@nxp.com>
+ <1592832924-31733-5-git-send-email-florinel.iordache@nxp.com>
+ <20200622142430.GP279339@lunn.ch>
+In-Reply-To: <20200622142430.GP279339@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [86.126.7.45]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 41b08e4c-6f24-4e9a-98fe-08d816ba20e0
+x-ms-traffictypediagnostic: AM0PR04MB6148:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB61483BA6C05C9798EE8AE544FB970@AM0PR04MB6148.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0442E569BC
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: br6dpLhfTX3pCuz8bnyTjSnMzgwhh3qfejuPYLExIQpqFySPIakAK9Zn+MAf6iVkTzKm4Hoq42VjogvnS7Ggjn/8OVh18T2GN+zB+CykSenMW2KZ0jL4NUdyhYLLGQVcAzYTbF+Av/o5/bLSOsmBmiR/UjMf1REsunP4STGg9buOJ/KrN0+yVnE/u9mbAefSJmwTuVYrd2dLPCUzjGRAmnncY23wVsLAg+ZOaBkBlTh49AuwymhqWBlBBy7lvvrwM84e6vIKJrpZLO+k/MXBut+pXkPvKpU7s7QbyIlcGhWwaDVYf2kBan9Qf/oQwceSRfNQ2LlleTccgtUBagS42A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(346002)(376002)(39860400002)(136003)(71200400001)(86362001)(8936002)(8676002)(186003)(54906003)(52536014)(76116006)(5660300002)(4326008)(66476007)(66556008)(64756008)(66946007)(66446008)(55016002)(33656002)(9686003)(44832011)(478600001)(6506007)(2906002)(53546011)(316002)(26005)(83380400001)(6916009)(7696005)(7416002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: kfxViY0Hk/te4CPsx86SG1+3xSTU/FTN7IYBc5/1W9nVVbv39OpopDIBApUKENNebNrELnhV5m0+pzuBtZeCoAtbFYjGmyBNi+kvDju6FC+OM4Xu6LYG3M18qkmOwM+VMAeWuQVN6xR2evcqYYaBSq9kjiIx0VQ5w+4dadMkrmESwVnKFRaJcnrQkzE3SFwyap8fyxqdgVge5CdOTSJNq2H+zro98q3Bujeh/nou2wJsdu+K7zFoFQjiYYQYd8HR95KcepQ4h7zN8RXfCnVjzn/3f28t3fOo8trNJoLidL39UWe5lezSftMaSvoarDyjj+fhGKipFGDKysaOfl6CRCb7wnj1qCWzm6wQBtxpkyXOkrg5Fsb4CFkCOBmZEJDJrfs5BkYyFcQ8oRPYGe7UfxTjOCIZOITIbvuOIGnPN3J/+71+k3oOLfsroOHf9hqHi7vqGRVrENs2C8YoNqedIfmbQHTrY7C91g7t7U+glgI=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 41b08e4c-6f24-4e9a-98fe-08d816ba20e0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jun 2020 14:39:54.2524
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cytMhCl7TVhCUoy1/fYWT7NRF3OPO9+p8Cb5uBX1yLfSs4g+ellYjPtsvyrouScjzvg7laIH+6G5Wd+bEyAd5TP+47LS6Mwc26TcErWloXs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6148
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Roman Mamedov <rm@romanrm.net> writes:
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Monday, June 22, 2020 5:25 PM
+> To: Florinel Iordache <florinel.iordache@nxp.com>
+> Cc: davem@davemloft.net; netdev@vger.kernel.org; f.fainelli@gmail.com;
+> hkallweit1@gmail.com; linux@armlinux.org.uk; devicetree@vger.kernel.org;
+> linux-doc@vger.kernel.org; robh+dt@kernel.org; mark.rutland@arm.com;
+> kuba@kernel.org; corbet@lwn.net; shawnguo@kernel.org; Leo Li
+> <leoyang.li@nxp.com>; Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>;
+> Ioana Ciornei <ioana.ciornei@nxp.com>; linux-kernel@vger.kernel.org
+> Subject: [EXT] Re: [PATCH net-next v3 4/7] net: phy: add backplane kr dri=
+ver
+> support
+>=20
+> Caution: EXT Email
+>=20
+> On Mon, Jun 22, 2020 at 04:35:21PM +0300, Florinel Iordache wrote:
+> > Add support for backplane kr generic driver including link training
+> > (ieee802.3ap/ba) and fixed equalization algorithm
+>=20
+> Hi Florinel
+>=20
+> This is still a PHY device. I don't remember any discussions which resolv=
+ed the
+> issues of if at the end of the backplane there is another PHY.
+>=20
+> It makes little sense to repost this code until we have this problem disc=
+ussed and
+> a way forward decided on. It fits into the discussion Russell and Ioana a=
+re having
+> about representing PCS drivers. Please contribute to that.
+>=20
+>         Andrew
 
-> On Sat,  4 Apr 2020 12:18:38 +0800
-> Qiujun Huang <hqjagain@gmail.com> wrote:
->
->> In ath9k_hif_usb_rx_cb interface number is assumed to be 0.
->> usb_ifnum_to_if(urb->dev, 0)
->> But it isn't always true.
->> 
->> The case reported by syzbot:
->> https://lore.kernel.org/linux-usb/000000000000666c9c05a1c05d12@google.com
->> usb 2-1: new high-speed USB device number 2 using dummy_hcd
->> usb 2-1: config 1 has an invalid interface number: 2 but max is 0
->> usb 2-1: config 1 has no interface number 0
->> usb 2-1: New USB device found, idVendor=0cf3, idProduct=9271, bcdDevice=
->> 1.08
->> usb 2-1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
->> general protection fault, probably for non-canonical address
->> 0xdffffc0000000015: 0000 [#1] SMP KASAN
->> KASAN: null-ptr-deref in range [0x00000000000000a8-0x00000000000000af]
->> CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.6.0-rc5-syzkaller #0
->> 
->> Call Trace
->> __usb_hcd_giveback_urb+0x29a/0x550 drivers/usb/core/hcd.c:1650
->> usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1716
->> dummy_timer+0x1258/0x32ae drivers/usb/gadget/udc/dummy_hcd.c:1966
->> call_timer_fn+0x195/0x6f0 kernel/time/timer.c:1404
->> expire_timers kernel/time/timer.c:1449 [inline]
->> __run_timers kernel/time/timer.c:1773 [inline]
->> __run_timers kernel/time/timer.c:1740 [inline]
->> run_timer_softirq+0x5f9/0x1500 kernel/time/timer.c:1786
->> __do_softirq+0x21e/0x950 kernel/softirq.c:292
->> invoke_softirq kernel/softirq.c:373 [inline]
->> irq_exit+0x178/0x1a0 kernel/softirq.c:413
->> exiting_irq arch/x86/include/asm/apic.h:546 [inline]
->> smp_apic_timer_interrupt+0x141/0x540 arch/x86/kernel/apic/apic.c:1146
->> apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
->> 
->> Reported-and-tested-by: syzbot+40d5d2e8a4680952f042@syzkaller.appspotmail.com
->> Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
->
-> This causes complete breakage of ath9k operation across all the stable kernel
-> series it got backported to, and I guess the mainline as well. Please see:
-> https://bugzilla.kernel.org/show_bug.cgi?id=208251
-> https://bugzilla.redhat.com/show_bug.cgi?id=1848631
+Hi Andrew,
 
-So there's no fix for this? I was under impression that someone fixed
-this, but maybe I'm mixing with something else.
+Yes, you are right: we decided to send only support for DPAA1 using current=
+ approach as a PHY device
+(as mentioned in cover-letter), until PCS representation will be fully clar=
+ified.
+The entire DPAA2 support was removed for now, together with phylink changes=
+.
+DPAA1 maintainer (Madalin Bucur) agrees with current representation as a PH=
+Y device for DPAA1.
+So we would like to have some discussions around this approach for DPAA1 on=
+ly, as it seems suitable for us.
 
-If this is not fixed can someone please submit a patch to revert the
-offending commit (or commits) so that we get ath9k working again?
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Regards,
+Florinel.
