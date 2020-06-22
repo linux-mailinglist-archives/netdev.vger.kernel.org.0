@@ -2,64 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77859204446
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 01:07:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44617204432
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 01:02:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731423AbgFVXHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 19:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726977AbgFVXHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 19:07:14 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44563C061573;
-        Mon, 22 Jun 2020 16:07:14 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B1BDA1296E6DB;
-        Mon, 22 Jun 2020 16:07:13 -0700 (PDT)
-Date:   Mon, 22 Jun 2020 16:07:12 -0700 (PDT)
-Message-Id: <20200622.160712.2300967026610181117.davem@davemloft.net>
-To:     horatiu.vultur@microchip.com
-Cc:     nikolay@cumulusnetworks.com, UNGLinuxDriver@microchip.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [Resend PATCH net] bridge: uapi: mrp: Fix MRP_PORT_ROLE
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200620131403.2680293-1-horatiu.vultur@microchip.com>
-References: <20200620131403.2680293-1-horatiu.vultur@microchip.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 22 Jun 2020 16:07:13 -0700 (PDT)
+        id S1731398AbgFVXCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 19:02:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43148 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731268AbgFVXCN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 19:02:13 -0400
+Received: from embeddedor (unknown [189.207.59.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C730720738;
+        Mon, 22 Jun 2020 23:02:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592866932;
+        bh=6/yCpyjWjtd5QDSuX8I0LLUq4Bd1x+0uiGkmMMhUS0A=;
+        h=Date:From:To:Cc:Subject:From;
+        b=dw14yVKDOtzqB8fZZ4UnYecQOb8+XUo3yiNw6ZP4jeGZSEZAUftgZfmGvIRbGQUN4
+         bDnsUxgzkhrEC0oCczHV/H2jrRHIrtqi2GanhqG0myZQnLatWFsusiz5QIR8agR57B
+         8KvzrCM3bOy9TJDABAoVE4H7f3akJ72VywG+iwyg=
+Date:   Mon, 22 Jun 2020 18:07:41 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] net: ipv6: Use struct_size() helper and kcalloc()
+Message-ID: <20200622230741.GA28911@embeddedor>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
-Date: Sat, 20 Jun 2020 15:14:03 +0200
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes. Also, remove unnecessary
+function ipv6_rpl_srh_alloc_size() and replace kzalloc() with kcalloc(),
+which has a 2-factor argument form for multiplication.
 
-> Currently the MRP_PORT_ROLE_NONE has the value 0x2 but this is in conflict
-> with the IEC 62439-2 standard. The standard defines the following port
-> roles: primary (0x0), secondary(0x1), interconnect(0x2).
-> Therefore remove the port role none.
-> 
-> Fixes: 4714d13791f831 ("bridge: uapi: mrp: Add mrp attributes.")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+This code was detected with the help of Coccinelle and, audited and
+fixed manually.
 
-The code accepts arbitrary 32-bit values for the role in a configuration
-but only PRIMARY and SECONDARY seem to be valid.
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ include/net/rpl.h       | 6 ------
+ net/ipv6/exthdrs.c      | 2 +-
+ net/ipv6/rpl_iptunnel.c | 3 +--
+ 3 files changed, 2 insertions(+), 9 deletions(-)
 
-There is no validation that the value used makes sense.
+diff --git a/include/net/rpl.h b/include/net/rpl.h
+index dceff60e8baf..308ef0a05cae 100644
+--- a/include/net/rpl.h
++++ b/include/net/rpl.h
+@@ -26,12 +26,6 @@ static inline void rpl_exit(void) {}
+ /* Worst decompression memory usage ipv6 address (16) + pad 7 */
+ #define IPV6_RPL_SRH_WORST_SWAP_SIZE (sizeof(struct in6_addr) + 7)
+ 
+-static inline size_t ipv6_rpl_srh_alloc_size(unsigned char n)
+-{
+-	return sizeof(struct ipv6_rpl_sr_hdr) +
+-		((n + 1) * sizeof(struct in6_addr));
+-}
+-
+ size_t ipv6_rpl_srh_size(unsigned char n, unsigned char cmpri,
+ 			 unsigned char cmpre);
+ 
+diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+index 5a8bbcdcaf2b..e9b366994475 100644
+--- a/net/ipv6/exthdrs.c
++++ b/net/ipv6/exthdrs.c
+@@ -580,7 +580,7 @@ static int ipv6_rpl_srh_rcv(struct sk_buff *skb)
+ 	hdr->segments_left--;
+ 	i = n - hdr->segments_left;
+ 
+-	buf = kzalloc(ipv6_rpl_srh_alloc_size(n + 1) * 2, GFP_ATOMIC);
++	buf = kcalloc(struct_size(hdr, segments.addr, n + 2), 2, GFP_ATOMIC);
+ 	if (unlikely(!buf)) {
+ 		kfree_skb(skb);
+ 		return -1;
+diff --git a/net/ipv6/rpl_iptunnel.c b/net/ipv6/rpl_iptunnel.c
+index c3ececd7cfc1..5fdf3ebb953f 100644
+--- a/net/ipv6/rpl_iptunnel.c
++++ b/net/ipv6/rpl_iptunnel.c
+@@ -136,8 +136,7 @@ static int rpl_do_srh_inline(struct sk_buff *skb, const struct rpl_lwt *rlwt,
+ 
+ 	oldhdr = ipv6_hdr(skb);
+ 
+-	buf = kzalloc(ipv6_rpl_srh_alloc_size(srh->segments_left - 1) * 2,
+-		      GFP_ATOMIC);
++	buf = kcalloc(struct_size(srh, segments.addr, srh->segments_left), 2, GFP_ATOMIC);
+ 	if (!buf)
+ 		return -ENOMEM;
+ 
+-- 
+2.27.0
 
-In the future if we handle type interconnect, and we add checks, it will
-break any existing applications.  Because they can validly pass any
-non-zero valid and the code treats that as SECONDARY currently.
-
-So you really can't just remove NONE, you have to add validation code
-too so we don't run into problem in the future.
-
-Thanks.
