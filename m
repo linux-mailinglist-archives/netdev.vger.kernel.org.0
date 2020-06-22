@@ -2,92 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23C322031F8
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 10:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9DDA203252
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 10:46:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726900AbgFVIVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 04:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56550 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726515AbgFVIVR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 04:21:17 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49921C061794
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 01:21:17 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id f18so2247972wml.3
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 01:21:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iZo9Ovfo6C5AeVU/Qj6BDJUEHA/6vbU+Xe+teK0wySk=;
-        b=lkVGFeo+LuWmT+IE3wDbp5wtzzpzE19Ise1MEm/ijnV9/PTbnT/n6IrAU0bu8qjx1w
-         lt9PD99aaAAsMtcOs8ovM+jMGtFgRR5oT25Bvj2itiF4uPp3gmSzPzx0UxQj5W/cer9C
-         37+RGwGbiSE53Kj9/pWpit1Eri0wCddOlVIo7qZ+VEZ57HlFE+VTz6aLyMnIhBvN+wSI
-         +HwE/eqMQCa+plHKCb4j+3kM0IQ3t1EFcKuP9BayIgQXxKgwOU38nysnBginIHPfTcF1
-         PztwV9MpNYRE1lo2fTgFZLBBvpFNLcsXzI8DDtxBs459AaDl66JhVsT+HiNoN9yiLJKW
-         tveA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iZo9Ovfo6C5AeVU/Qj6BDJUEHA/6vbU+Xe+teK0wySk=;
-        b=ZDTWLtKqKEuX0sIO811U8QlfuNnZf2IkvEWXTbtTMs95Q1gxO1GNSnZ/dJBMv+8NOQ
-         CAFkajoYeO+2t6oEtJYQq90lVTGAz66nNpnjqtN1Ap0tk01zirujEhKHFublda90DZgn
-         7AumWS2BKana+0dsDP/LNTHBL5BIm7CjFJwQuolklfPuemOnXarNTuuCD5lFIHpUV85j
-         M8DGmBd5y97pdZWLWPbxex6SuFcL8lxXVl6iRbfvkqj2iN7afPCuHYrFGbI+vEtH0M8R
-         D/C+cm4Bq3iW2tA5jdjuLeV/vYbz0w+4Tt41w4KrSmGULXDOR+II9R314cFMKbrO0RFT
-         WvVw==
-X-Gm-Message-State: AOAM530BPqeSxMswKDYMaYn6pjONzeSsm6Tx0/SkRQPexcSAYL7DyhuI
-        JPiwpUPJ9zwT6FlFyK9TAqXco4NiqKqgKjZf99Y=
-X-Google-Smtp-Source: ABdhPJwhBhEwwhOlTSMvwD3FeDkdycz/q42fytEi5teFkRHQARKdAYNFtTRx2VFGqHXEL0OXlkxZYgyLNmRjrPDlN5c=
-X-Received: by 2002:a1c:cc03:: with SMTP id h3mr17050016wmb.87.1592814076103;
- Mon, 22 Jun 2020 01:21:16 -0700 (PDT)
+        id S1725976AbgFVIqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 04:46:04 -0400
+Received: from esa6.hc3370-68.iphmx.com ([216.71.155.175]:36212 "EHLO
+        esa6.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbgFVIqE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 04:46:04 -0400
+X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Mon, 22 Jun 2020 04:46:03 EDT
+Authentication-Results: esa6.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
+IronPort-SDR: 4TpWVnbtiqhHqTm8UcF3OpAb2ZHi7hzxMchVDlx84oPPC2OsOAjK2SGuA51o1ODupl2ywABbKs
+ sTGTZwEKCHOWRk3j67f09FvjcIBqouRt4xz0ohd5suQxkDHg1yk+MHmJxOxAluIGqpnqFIF2OH
+ 04YAJ30lc/a5kSPPrGakF2TBnKOjBMH1fUOJ6TzqIMxiVO3Q14HqKHl9cdBd1jOqInig3Z6IN1
+ SRgzwpiMw315v8aBPVr76xaemjJo64jKEZKyF3QQUDhxS0lx2+OvdOzT0m389dE4n5hBxoFbH/
+ 0mM=
+X-SBRS: 2.7
+X-MesageID: 20942116
+X-Ironport-Server: esa6.hc3370-68.iphmx.com
+X-Remote-IP: 162.221.158.21
+X-Policy: $RELAYED
+X-IronPort-AV: E=Sophos;i="5.75,266,1589256000"; 
+   d="scan'208";a="20942116"
+Date:   Mon, 22 Jun 2020 10:38:46 +0200
+From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
+To:     Anchal Agarwal <anchalag@amazon.com>
+CC:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
+Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and
+ hibernation]
+Message-ID: <20200622083846.GF735@Air-de-Roger>
+References: <7FD7505E-79AA-43F6-8D5F-7A2567F333AB@amazon.com>
+ <20200604070548.GH1195@Air-de-Roger>
+ <20200616214925.GA21684@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200617083528.GW735@Air-de-Roger>
+ <20200619234312.GA24846@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
-References: <cover.1592328814.git.lucien.xin@gmail.com> <84bcb772ea1b68f3b150106b9db1825b65742cef.1592328814.git.lucien.xin@gmail.com>
- <5a63a0c47cc71476786873cbd32db8db3c0f7d1e.1592328814.git.lucien.xin@gmail.com>
- <ed6925fb49c11273efb78fcd47e75e0dc302addd.1592328814.git.lucien.xin@gmail.com>
- <20200617091957.1ba687e1@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200617091957.1ba687e1@kicinski-fedora-PC1C0HJN>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Mon, 22 Jun 2020 16:30:07 +0800
-Message-ID: <CADvbK_fP2ezY3e-+DGBqxhKaMQn3E-kNgAGDZc5qaGPKx_yjjQ@mail.gmail.com>
-Subject: Re: [PATCH ipsec-next 03/10] tunnel6: add tunnel6_input_afinfo for
- ipip and ipv6 tunnels
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200619234312.GA24846@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+X-ClientProxiedBy: AMSPEX02CAS01.citrite.net (10.69.22.112) To
+ AMSPEX02CL02.citrite.net (10.69.22.126)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 12:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 17 Jun 2020 01:36:28 +0800 Xin Long wrote:
-> > This patch is to register a callback function tunnel6_rcv_cb with
-> > is_ipip set in a xfrm_input_afinfo object for tunnel6 and tunnel46.
+On Fri, Jun 19, 2020 at 11:43:12PM +0000, Anchal Agarwal wrote:
+> On Wed, Jun 17, 2020 at 10:35:28AM +0200, Roger Pau Monné wrote:
+> > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > 
+> > 
+> > 
+> > On Tue, Jun 16, 2020 at 09:49:25PM +0000, Anchal Agarwal wrote:
+> > > On Thu, Jun 04, 2020 at 09:05:48AM +0200, Roger Pau Monné wrote:
+> > > > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > > > On Wed, Jun 03, 2020 at 11:33:52PM +0000, Agarwal, Anchal wrote:
+> > > > >  CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > > > >     > +             xenbus_dev_error(dev, err, "Freezing timed out;"
+> > > > >     > +                              "the device may become inconsistent state");
+> > > > >
+> > > > >     Leaving the device in this state is quite bad, as it's in a closed
+> > > > >     state and with the queues frozen. You should make an attempt to
+> > > > >     restore things to a working state.
+> > > > >
+> > > > > You mean if backend closed after timeout? Is there a way to know that? I understand it's not good to
+> > > > > leave it in this state however, I am still trying to find if there is a good way to know if backend is still connected after timeout.
+> > > > > Hence the message " the device may become inconsistent state".  I didn't see a timeout not even once on my end so that's why
+> > > > > I may be looking for an alternate perspective here. may be need to thaw everything back intentionally is one thing I could think of.
+> > > >
+> > > > You can manually force this state, and then check that it will behave
+> > > > correctly. I would expect that on a failure to disconnect from the
+> > > > backend you should switch the frontend to the 'Init' state in order to
+> > > > try to reconnect to the backend when possible.
+> > > >
+> > > From what I understand forcing manually is, failing the freeze without
+> > > disconnect and try to revive the connection by unfreezing the
+> > > queues->reconnecting to backend [which never got diconnected]. May be even
+> > > tearing down things manually because I am not sure what state will frontend
+> > > see if backend fails to to disconnect at any point in time. I assumed connected.
+> > > Then again if its "CONNECTED" I may not need to tear down everything and start
+> > > from Initialising state because that may not work.
+> > >
+> > > So I am not so sure about backend's state so much, lets say if  xen_blkif_disconnect fail,
+> > > I don't see it getting handled in the backend then what will be backend's state?
+> > > Will it still switch xenbus state to 'Closed'? If not what will frontend see,
+> > > if it tries to read backend's state through xenbus_read_driver_state ?
+> > >
+> > > So the flow be like:
+> > > Front end marks XenbusStateClosing
+> > > Backend marks its state as XenbusStateClosing
+> > >     Frontend marks XenbusStateClosed
+> > >     Backend disconnects calls xen_blkif_disconnect
+> > >        Backend fails to disconnect, the above function returns EBUSY
+> > >        What will be state of backend here?
+> > 
+> > Backend should stay in state 'Closing' then, until it can finish
+> > tearing down.
+> > 
+> It disconnects the ring after switching to connected state too. 
+> > >        Frontend did not tear down the rings if backend does not switches the
+> > >        state to 'Closed' in case of failure.
+> > >
+> > > If backend stays in CONNECTED state, then even if we mark it Initialised in frontend, backend
+> > 
+> > Backend will stay in state 'Closing' I think.
+> > 
+> > > won't be calling connect(). {From reading code in frontend_changed}
+> > > IMU, Initialising will fail since backend dev->state != XenbusStateClosed plus
+> > > we did not tear down anything so calling talk_to_blkback may not be needed
+> > >
+> > > Does that sound correct?
+> > 
+> > I think switching to the initial state in order to try to attempt a
+> > reconnection would be our best bet here.
 > >
-> > It will be called by xfrm_rcv_cb() from xfrm_input() when family
-> > is AF_INET6 and proto is IPPROTO_IPIP or IPPROTO_IPV6.
-> >
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
->
-> net/ipv6/tunnel6.c:163:14: warning: incorrect type in assignment (different address spaces)
-> net/ipv6/tunnel6.c:163:14:    expected struct xfrm6_tunnel *head
-> net/ipv6/tunnel6.c:163:14:    got struct xfrm6_tunnel [noderef] <asn:4> *
-> net/ipv6/tunnel6.c:165:9: error: incompatible types in comparison expression (different address spaces):
-> net/ipv6/tunnel6.c:165:9:    struct xfrm6_tunnel [noderef] <asn:4> *
-> net/ipv6/tunnel6.c:165:9:    struct xfrm6_tunnel *
-will change to:
+> It does not seems to work correctly, I get hung tasks all over and all the
+> requests to filesystem gets stuck. Backend does shows the state as connected
+> after xenbus_dev_suspend fails but I think there may be something missing.
+> I don't seem to get IO interrupts thereafter i.e hitting the function blkif_interrupts.
+> I think just marking it initialised may not be the only thing.
+> Here is a short description of what I am trying to do:
+> So, on timeout:
+>     Switch XenBusState to "Initialized"
+>     unquiesce/unfreeze the queues and return
+>     mark info->connected = BLKIF_STATE_CONNECTED
 
- static int tunnel6_rcv_cb(struct sk_buff *skb, u8 proto, int err)
- {
--       struct xfrm6_tunnel *head, *handler;
-+       struct xfrm6_tunnel __rcu *head;
-+       struct xfrm6_tunnel *handler;
-        int ret;
+If xenbus state is Initialized isn't it wrong to set info->connected
+== CONNECTED?
+
+You should tear down all the internal state (like a proper close)?
+
+>     return EBUSY
+> 
+> I even allowed blkfront_connect to switch state to "CONNECTED" rather me doing
+> it explicitly as mentioned above without re-allocating/re-registering the device
+> just to make sure bklfront_info object has all the right values.
+> Do you see anythign missing here?
+
+I'm afraid you will have to do a little bit of debugging here to
+figure out what's going on. You can add printk's to several places to
+see which path is taken, and why blkfront ends in such state.
+
+Thanks, Roger.
