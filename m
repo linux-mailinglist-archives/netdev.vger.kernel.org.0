@@ -2,227 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF960203D87
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 19:10:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 248D8203D7B
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 19:09:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730050AbgFVRKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 13:10:44 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:52280 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730028AbgFVRKk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 13:10:40 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05MH0pFS186495;
-        Mon, 22 Jun 2020 13:10:36 -0400
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 31tyrxafp5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Jun 2020 13:10:36 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05MGjaCJ004076;
-        Mon, 22 Jun 2020 17:10:35 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma01dal.us.ibm.com with ESMTP id 31sa38nggc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Jun 2020 17:10:35 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05MHAXMV52036034
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 22 Jun 2020 17:10:33 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D2FA36A054;
-        Mon, 22 Jun 2020 17:10:33 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4F9B16A04F;
-        Mon, 22 Jun 2020 17:10:32 +0000 (GMT)
-Received: from oc8377887825.ibm.com (unknown [9.160.23.249])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon, 22 Jun 2020 17:10:32 +0000 (GMT)
-From:   David Wilder <dwilder@us.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     netfilter-devel@vger.kernel.org, fw@strlen.de, wilder@us.ibm.com,
-        mkubecek@suse.com
-Subject: [PATCH v1 4/4] netfilter: Add a .pre_exit hook in all ip6table_foo.c.
-Date:   Mon, 22 Jun 2020 10:10:14 -0700
-Message-Id: <20200622171014.975-5-dwilder@us.ibm.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200622171014.975-1-dwilder@us.ibm.com>
-References: <20200622171014.975-1-dwilder@us.ibm.com>
+        id S1729918AbgFVRJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 13:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729881AbgFVRJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 13:09:50 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCA7C061573
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 10:09:49 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id h5so17483852wrc.7
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 10:09:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HOSV/U3JaxH9mKz5Yfxaejb5ofaS4BhJZP3QgqrmjGg=;
+        b=njdmDISZbpqmQKpamHXngWM+Xn1Ejd4bVLMwrUbF/wTMEDfZEtYXBDsYoNojXUIsZZ
+         tGS4qc80IqfsLOT2gI9AuNUkFZZbkhu1Qw2AFBxVknZgJIXN6jvTTKoKbfglyltvbK7I
+         wnimXlvJ26J+QLoaBPNrSSPtKm4k0iHwjbmaO5a7Frk1+c0upKt1teyAmhfbc7PaxGys
+         1/DQZXvcDOGKuNuUzi98Aov9dvzW30jpFOY4cwWZtjKMP1Otm8bFlurteglY8bgb7JJ4
+         BBF78BptyBK5xJFfXhopZewJWJIGL9FuNYzGeJGIrQ3DKXIjhR620EWkc5WGe+bZxX2J
+         1Gow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HOSV/U3JaxH9mKz5Yfxaejb5ofaS4BhJZP3QgqrmjGg=;
+        b=hGXSS/9nTOM8J+AHgMRepbjuZRu6PAG2HuoKsJRAB9pIJeDXpi8ITI/Mjtvx62DY06
+         5JjjFfTt7Jkefvq11DZV5AoKcP6StZH+Ndcyrbie44z24hd4In+7EjyvRYNJK5Su8anM
+         Cwj8kKJIdCnbZJtiNFdjqsDPISw59MJq/Rrg0xu7D0JY61QcPzfXbNRMIn9RlofuLKpK
+         6kvegcPODUr++BX7GjG0vAg7MmvM49QfdUD5DZLBk977RblqZ4t2OWoDw0z7BNwFK/CQ
+         yem9yq9rJ24P6p2erufinREMArOkgB7yLju5oG03h0lpMONvlEuBqsNnrlk4o7NEZI5I
+         7VMA==
+X-Gm-Message-State: AOAM530e59CL868yFWdAH3f+lOt306cCR9iXo2pWCoDOEtqJGLI6BPg/
+        IarM6mZiYQG2SOdeZ2BbUbkGZBg1AvzhOt0kpak=
+X-Google-Smtp-Source: ABdhPJzHiLM7op9ycY1S+ofrZGnXfeKDrz7ucgA6unnNanOb/Ymb3q1fZEy3+vEtkmySG97VsKFdmP+8GwdWr72kV3o=
+X-Received: by 2002:adf:f34e:: with SMTP id e14mr20047584wrp.299.1592845788330;
+ Mon, 22 Jun 2020 10:09:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-22_09:2020-06-22,2020-06-22 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 phishscore=0 spamscore=0 mlxscore=0 impostorscore=0
- cotscore=-2147483648 suspectscore=1 mlxlogscore=865 clxscore=1015
- priorityscore=1501 bulkscore=0 malwarescore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006220118
+References: <cover.1592328814.git.lucien.xin@gmail.com> <5a63a0c47cc71476786873cbd32db8db3c0f7d1e.1592328814.git.lucien.xin@gmail.com>
+ <20200622131650.GD2557669@bistromath.localdomain>
+In-Reply-To: <20200622131650.GD2557669@bistromath.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 23 Jun 2020 01:18:39 +0800
+Message-ID: <CADvbK_ekuzyKkAYg1uMhYRQv-FWgHZwftCpdqdCc6gtvxDyajw@mail.gmail.com>
+Subject: Re: [PATCH ipsec-next 02/10] tunnel4: add cb_handler to struct xfrm_tunnel
+To:     Sabrina Dubroca <sd@queasysnail.net>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using new helpers ip6t_unregister_table_pre_exit() and
-ip6t_unregister_table_exit().
+On Mon, Jun 22, 2020 at 9:16 PM Sabrina Dubroca <sd@queasysnail.net> wrote:
+>
+> 2020-06-17, 01:36:27 +0800, Xin Long wrote:
+> > @@ -231,6 +255,7 @@ static int __init tunnel4_init(void)
+> >               goto err;
+> >       }
+> >  #endif
+> > +     xfrm_input_register_afinfo(&tunnel4_input_afinfo);
+>
+> This can fail. Shouldn't you handle that error?
+Yeah, I copied it from xfrm4_protocol_init().
+Now I see why it didn't in xfrm4_protocol_init().
 
-Signed-off-by: David Wilder <dwilder@us.ibm.com>
----
- net/ipv6/netfilter/ip6table_filter.c   | 10 +++++++++-
- net/ipv6/netfilter/ip6table_mangle.c   | 10 +++++++++-
- net/ipv6/netfilter/ip6table_nat.c      | 10 ++++++++--
- net/ipv6/netfilter/ip6table_raw.c      | 10 +++++++++-
- net/ipv6/netfilter/ip6table_security.c | 10 +++++++++-
- 5 files changed, 44 insertions(+), 6 deletions(-)
+Thanks.
 
-diff --git a/net/ipv6/netfilter/ip6table_filter.c b/net/ipv6/netfilter/ip6table_filter.c
-index 32667f5..88337b5 100644
---- a/net/ipv6/netfilter/ip6table_filter.c
-+++ b/net/ipv6/netfilter/ip6table_filter.c
-@@ -73,16 +73,24 @@ static int __net_init ip6table_filter_net_init(struct net *net)
- 	return 0;
- }
- 
-+static void __net_exit ip6table_filter_net_pre_exit(struct net *net)
-+{
-+	if (net->ipv6.ip6table_filter)
-+		ip6t_unregister_table_pre_exit(net, net->ipv6.ip6table_filter,
-+					       filter_ops);
-+}
-+
- static void __net_exit ip6table_filter_net_exit(struct net *net)
- {
- 	if (!net->ipv6.ip6table_filter)
- 		return;
--	ip6t_unregister_table(net, net->ipv6.ip6table_filter, filter_ops);
-+	ip6t_unregister_table_exit(net, net->ipv6.ip6table_filter);
- 	net->ipv6.ip6table_filter = NULL;
- }
- 
- static struct pernet_operations ip6table_filter_net_ops = {
- 	.init = ip6table_filter_net_init,
-+	.pre_exit = ip6table_filter_net_pre_exit,
- 	.exit = ip6table_filter_net_exit,
- };
- 
-diff --git a/net/ipv6/netfilter/ip6table_mangle.c b/net/ipv6/netfilter/ip6table_mangle.c
-index 070afb9..1a27486 100644
---- a/net/ipv6/netfilter/ip6table_mangle.c
-+++ b/net/ipv6/netfilter/ip6table_mangle.c
-@@ -93,16 +93,24 @@ static int __net_init ip6table_mangle_table_init(struct net *net)
- 	return ret;
- }
- 
-+static void __net_exit ip6table_mangle_net_pre_exit(struct net *net)
-+{
-+	if (net->ipv6.ip6table_mangle)
-+		ip6t_unregister_table_pre_exit(net, net->ipv6.ip6table_mangle,
-+					       mangle_ops);
-+}
-+
- static void __net_exit ip6table_mangle_net_exit(struct net *net)
- {
- 	if (!net->ipv6.ip6table_mangle)
- 		return;
- 
--	ip6t_unregister_table(net, net->ipv6.ip6table_mangle, mangle_ops);
-+	ip6t_unregister_table_exit(net, net->ipv6.ip6table_mangle);
- 	net->ipv6.ip6table_mangle = NULL;
- }
- 
- static struct pernet_operations ip6table_mangle_net_ops = {
-+	.pre_exit = ip6table_mangle_net_pre_exit,
- 	.exit = ip6table_mangle_net_exit,
- };
- 
-diff --git a/net/ipv6/netfilter/ip6table_nat.c b/net/ipv6/netfilter/ip6table_nat.c
-index 0f48759..0a23265 100644
---- a/net/ipv6/netfilter/ip6table_nat.c
-+++ b/net/ipv6/netfilter/ip6table_nat.c
-@@ -114,16 +114,22 @@ static int __net_init ip6table_nat_table_init(struct net *net)
- 	return ret;
- }
- 
-+static void __net_exit ip6table_nat_net_pre_exit(struct net *net)
-+{
-+	if (net->ipv6.ip6table_nat)
-+		ip6t_nat_unregister_lookups(net);
-+}
-+
- static void __net_exit ip6table_nat_net_exit(struct net *net)
- {
- 	if (!net->ipv6.ip6table_nat)
- 		return;
--	ip6t_nat_unregister_lookups(net);
--	ip6t_unregister_table(net, net->ipv6.ip6table_nat, NULL);
-+	ip6t_unregister_table_exit(net, net->ipv6.ip6table_nat);
- 	net->ipv6.ip6table_nat = NULL;
- }
- 
- static struct pernet_operations ip6table_nat_net_ops = {
-+	.pre_exit = ip6table_nat_net_pre_exit,
- 	.exit	= ip6table_nat_net_exit,
- };
- 
-diff --git a/net/ipv6/netfilter/ip6table_raw.c b/net/ipv6/netfilter/ip6table_raw.c
-index a22100b..8f9e742 100644
---- a/net/ipv6/netfilter/ip6table_raw.c
-+++ b/net/ipv6/netfilter/ip6table_raw.c
-@@ -66,15 +66,23 @@ static int __net_init ip6table_raw_table_init(struct net *net)
- 	return ret;
- }
- 
-+static void __net_exit ip6table_raw_net_pre_exit(struct net *net)
-+{
-+	if (net->ipv6.ip6table_raw)
-+		ip6t_unregister_table_pre_exit(net, net->ipv6.ip6table_raw,
-+					       rawtable_ops);
-+}
-+
- static void __net_exit ip6table_raw_net_exit(struct net *net)
- {
- 	if (!net->ipv6.ip6table_raw)
- 		return;
--	ip6t_unregister_table(net, net->ipv6.ip6table_raw, rawtable_ops);
-+	ip6t_unregister_table_exit(net, net->ipv6.ip6table_raw);
- 	net->ipv6.ip6table_raw = NULL;
- }
- 
- static struct pernet_operations ip6table_raw_net_ops = {
-+	.pre_exit = ip6table_raw_net_pre_exit,
- 	.exit = ip6table_raw_net_exit,
- };
- 
-diff --git a/net/ipv6/netfilter/ip6table_security.c b/net/ipv6/netfilter/ip6table_security.c
-index a74335f..5e8c48f 100644
---- a/net/ipv6/netfilter/ip6table_security.c
-+++ b/net/ipv6/netfilter/ip6table_security.c
-@@ -61,15 +61,23 @@ static int __net_init ip6table_security_table_init(struct net *net)
- 	return ret;
- }
- 
-+static void __net_exit ip6table_security_net_pre_exit(struct net *net)
-+{
-+	if (net->ipv6.ip6table_security)
-+		ip6t_unregister_table_pre_exit(net, net->ipv6.ip6table_security,
-+					       sectbl_ops);
-+}
-+
- static void __net_exit ip6table_security_net_exit(struct net *net)
- {
- 	if (!net->ipv6.ip6table_security)
- 		return;
--	ip6t_unregister_table(net, net->ipv6.ip6table_security, sectbl_ops);
-+	ip6t_unregister_table_exit(net, net->ipv6.ip6table_security);
- 	net->ipv6.ip6table_security = NULL;
- }
- 
- static struct pernet_operations ip6table_security_net_ops = {
-+	.pre_exit = ip6table_security_net_pre_exit,
- 	.exit = ip6table_security_net_exit,
- };
- 
--- 
-1.8.3.1
-
+>
+> >       return 0;
+> >
+> >  err:
+>
+> --
+> Sabrina
+>
