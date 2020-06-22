@@ -2,142 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1AFA20332A
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:19:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD5FA203331
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:21:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726941AbgFVJTV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Jun 2020 05:19:21 -0400
-Received: from gloria.sntech.de ([185.11.138.130]:48852 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725907AbgFVJTV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 05:19:21 -0400
-Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1jnIbd-0004j2-S3; Mon, 22 Jun 2020 11:19:09 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net
-Cc:     kuba@kernel.org, robh+dt@kernel.org, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH v5 3/3] net: phy: mscc: handle the clkout control on some phy variants
-Date:   Mon, 22 Jun 2020 11:19:08 +0200
-Message-ID: <12647360.rPbPzDV4QW@diego>
-In-Reply-To: <20200618164015.GF1551@shell.armlinux.org.uk>
-References: <20200618121139.1703762-1-heiko@sntech.de> <1723854.ZAnHLLU950@diego> <20200618164015.GF1551@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1726557AbgFVJVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 05:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726391AbgFVJVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 05:21:35 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DE3C061794
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 02:21:34 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id i3so18463695ljg.3
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 02:21:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=R9FLDfsyypApvleCpjp113KOQ+iZgPcYjwUlmrkJIMM=;
+        b=ziifFybMVKl4ymdH0KTFoYqBWUVvKAjL2fNW8QyllqPIhQOOuadKDQoLlw6OzGfsjx
+         MRRmpKNCdGIAxU8UZJ2FLtHuHu2w3SNVqaSGDQhEl5G4Z64+UK7FzxshK8dBLIu9SY4M
+         pkJjJ7xyYlUo6XX1L75FhEkb+3GyyPlMYO/J9r0lkddwhRw27nGd9ce9u0go9sfdsq94
+         6J8u6cdBA/YLiVEbsSzWbxULJFWSpPxS/BVvhHNYAyiRGckIt/2Xz2uumx6NXfS/hoZV
+         2nd+7y4pTc0XQ9HqI20SxMWxvKxNnNedi9fGalfNatwfHTaMG7dDjwVm7/L/lloF+mTs
+         fPTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=R9FLDfsyypApvleCpjp113KOQ+iZgPcYjwUlmrkJIMM=;
+        b=UDe/9cy2frAC6PnKhacCkCz08Gx6wgGZ89viNRrBw3S0TWcLM28zlOCcNOb6GC7QD0
+         BB4ln9EWZIQTaKofFDZnJ6frtqjo/gAgpo+AC5e4+hF2FnDlzG2NYBm8q7xUslcQXDcS
+         r0AGZ8ytpZisAtx2Lj0XXJS8cu1QBiVC5wOLxcoYD1fkAGPJ3IEcErKIPYYbfwC4uMnr
+         z5QA2SKZAPnp46SBMbZmVnGQ2OmkNowkV0UnAYrQ3bwnN4PaY0J8IHYimND+jdNJ8G5t
+         uZVYpf55ktKvg0RlRjkan+uJWh6NuRUlO0sYUak9K9GtZJBlpcrCwPc56IFzZENaYT6G
+         MDfA==
+X-Gm-Message-State: AOAM531J4weYso8xXrDlRkBmzzwzvgfHq+IdkFOKoUplH2msjOa1lOoO
+        LoHhNtld/ILqANkwFKU25jWUNotL6UwuCQ==
+X-Google-Smtp-Source: ABdhPJz4PTpfzEdxbi+bc06khRqr+P5gjJQxl/bW4aNu383doZ+WYSaQeDQOFSnp984moSyrz6EX4A==
+X-Received: by 2002:a2e:581a:: with SMTP id m26mr8223979ljb.0.1592817693160;
+        Mon, 22 Jun 2020 02:21:33 -0700 (PDT)
+Received: from centos7-pv-guest.localdomain ([5.35.13.201])
+        by smtp.gmail.com with ESMTPSA id w17sm3048028ljj.108.2020.06.22.02.21.32
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 22 Jun 2020 02:21:32 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+To:     netdev@vger.kernel.org
+Cc:     brouer@redhat.com, jgross@suse.com, wei.liu@kernel.org,
+        paul@xen.org, ilias.apalodimas@linaro.org
+Subject: [PATCH net-next v10 0/3] xen networking: add XDP support to xen-netfront
+Date:   Mon, 22 Jun 2020 12:21:09 +0300
+Message-Id: <1592817672-2053-1-git-send-email-kda@linux-powerpc.org>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Donnerstag, 18. Juni 2020, 18:40:15 CEST schrieb Russell King - ARM Linux admin:
-> On Thu, Jun 18, 2020 at 06:01:29PM +0200, Heiko Stübner wrote:
-> > Am Donnerstag, 18. Juni 2020, 17:47:48 CEST schrieb Russell King - ARM Linux admin:
-> > > On Thu, Jun 18, 2020 at 05:41:54PM +0200, Heiko Stübner wrote:
-> > > > Though I'm not sure how this fits in the whole bringup of ethernet phys.
-> > > > Like the phy is dependent on the underlying ethernet controller to
-> > > > actually turn it on.
-> > > > 
-> > > > I guess we should check the phy-state and if it's not accessible, just
-> > > > keep the values and if it's in a suitable state do the configuration.
-> > > > 
-> > > > Calling a vsc8531_config_clkout() from both the vsc8531_config_init()
-> > > > as well as the clk_(un-)prepare  and clk_set_rate functions and being
-> > > > protected by a check against phy_is_started() ?
-> > > 
-> > > It sounds like it doesn't actually fit the clk API paradym then.  I
-> > > see that Rob suggested it, and from the DT point of view, it makes
-> > > complete sense, but then if the hardware can't actually be used in
-> > > the way the clk API expects it to be used, then there's a semantic
-> > > problem.
-> > > 
-> > > What is this clock used for?
-> > 
-> > It provides a source for the mac-clk for the actual transfers, here to
-> > provide the 125MHz clock needed for the RGMII interface .
-> > 
-> > So right now the old rk3368-lion devicetree just declares a stub
-> > fixed-clock and instructs the soc's clock controller to use it [0] .
-> > And in the cover-letter here, I show the update variant with using
-> > the clock defined here.
-> > 
-> > 
-> > I've added the idea from my previous mail like shown below [1].
-> > which would take into account the phy-state.
-> > 
-> > But I guess I'll wait for more input before spamming people with v6.
-> 
-> Let's get a handle on exactly what this is.
-> 
-> The RGMII bus has two clocks: RXC and TXC, which are clocked at one
-> of 125MHz, 25MHz or 2.5MHz depending on the RGMII data rate.  Some
-> PHYs replace TXC with GTX clock, which always runs at 125MHz.  These
-> clocks are not what you're referring to.
-> 
-> You are referring to another commonly provided clock between the MAC
-> and the PHY, something which is not unique to your PHY.
-> 
-> We seem to be heading down a path where different PHYs end up doing
-> different things in DT for what is basically the same hardware setup,
-> which really isn't good. :(
-> 
-> We have at803x using:
-> 
-> qca,clk-out-frequency
-> qca,clk-out-strength
-> qca,keep-pll-enabled
-> 
-> which are used to control the CLK_25M output pin on the device, which
-> may be used to provide a reference clock for the MAC side, selecting
-> between 25M, 50M, 62.5M and 125MHz.  This was introduced in November
-> 2019, so not that long ago.
+The first patch adds a new extra type to enable proper synchronization
+between an RX request/response pair.
+The second patch implements BFP interface for xen-netfront.
+The third patch enables extra space for XDP processing.
 
-Because it was not that old, was the reason I followed that example in
-my v1 :-) 
+v10:
+- add a new xen_netif_extra_info type to enable proper synchronization
+ between an RX request/response pair.
+- order local variable declarations
 
-And Andrew then suggested to at least try to use a common property
-for the target frequency that other phys could migrate to.
+v9:
+- assign an xdp program before switching to Reconfiguring
+- minor cleanups
+- address checkpatch issues
 
+v8:
+- add PAGE_POOL config dependency
+- keep the state of XDP processing in netfront_xdp_enabled
+- fixed allocator type in xdp_rxq_info_reg_mem_model()
+- minor cleanups in xen-netback
 
-> Broadcom PHYs configure their 125MHz clock through the PHY device
-> flags passed from the MAC at attach/connect time.
-> 
-> There's the dp83867 and dp83869 configuration (I'm not sure I can
-> make sense of it from reading the code) using ti,clk-output-sel -
-> but it looks like it's the same kind of thing.  Introduced February
-> 2018 into one driver, and November 2019 in the other.
-> 
-> It seems the Micrel PHYs produce a 125MHz clock irrespective of any
-> configuration (maybe configured by firmware, or hardware strapping?)
-> 
-> So it seems we have four ways of doing the same thing today, and now
-> the suggestion is to implement a fifth different way.  I think there
-> needs to be some consolidation here, maybe choosing one approach and
-> sticking with it.
-> 
-> Hence, I disagree with Rob - we don't need a fifth approach, we need
-> to choose one approach and decide that's our policy for this and
-> apply it evenly across the board, rather than making up something
-> different each time a new PHY comes along.
+v7:
+- use page_pool_dev_alloc_pages() on page allocation
+- remove the leftover break statement from netback_changed
 
-@Dave, @Andrew: what's you opinion here?
+v6:
+- added the missing SOB line
+- fixed subject
 
-As Russell above (and Florian in the binding patch) pointed out,
-integrating this into the clock-framework may prove difficult not only
-for consistency but also for dependency reasons.
+v5:
+- split netfront/netback changes
+- added a sync point between backend/frontend on switching to XDP
+- added pagepool API
 
-Personally I'm fine with either solution, I just want to achieve a working
-ethernet on my board :-D .
+v4:
+- added verbose patch descriprion
+- don't expose the XDP headroom offset to the domU guest
+- add a modparam to netback to toggle XDP offset
+- don't process jumbo frames for now
 
+v3:
+- added XDP_TX support (tested with xdping echoserver)
+- added XDP_REDIRECT support (tested with modified xdp_redirect_kern)
+- moved xdp negotiation to xen-netback
 
-Thanks
-Heiko
+v2:
+- avoid data copying while passing to XDP
+- tell xen-netback that we need the headroom space
 
+Denis Kirjanov (3):
+  xen: netif.h: add a new extra type for XDP
+  xen networking: add basic XDP support for xen-netfront
+  xen networking: add XDP offset adjustment to xen-netback
+
+ drivers/net/Kconfig                 |   1 +
+ drivers/net/xen-netback/common.h    |   4 +
+ drivers/net/xen-netback/interface.c |   2 +
+ drivers/net/xen-netback/netback.c   |   7 +
+ drivers/net/xen-netback/rx.c        |  15 +-
+ drivers/net/xen-netback/xenbus.c    |  32 ++++
+ drivers/net/xen-netfront.c          | 332 ++++++++++++++++++++++++++++++++++--
+ include/xen/interface/io/netif.h    |  18 +-
+ 8 files changed, 399 insertions(+), 12 deletions(-)
+
+-- 
+1.8.3.1
 
