@@ -2,97 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F34C7203652
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 14:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46A8B203653
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 14:03:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728060AbgFVMC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 08:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726889AbgFVMC2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 08:02:28 -0400
-Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0032C061794;
-        Mon, 22 Jun 2020 05:02:28 -0700 (PDT)
-Received: from p5b06d650.dip0.t-ipconnect.de ([91.6.214.80] helo=kurt)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <kurt@linutronix.de>)
-        id 1jnL9e-00083K-0P; Mon, 22 Jun 2020 14:02:26 +0200
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S1728085AbgFVMC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 08:02:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60180 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726889AbgFVMC5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 08:02:57 -0400
+Received: from localhost (unknown [151.48.138.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D5B6B206EB;
+        Mon, 22 Jun 2020 12:02:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592827377;
+        bh=Q6laQQgpZ5iRN3HAU54xvYzJN3NhQZ5O/4xbdo6r7lM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XHMCd9uxh0ntGtwFKpw3aWmr3qz+l6ZHGxQ62VNgLUD5j0CPq0XBcAWz3Hw30ualy
+         dD229th1uM5GH/7mMZVASl9x7tSN8ZJs0GM16txftF+MtkfhCrAHLdUpxoZn/yyrmu
+         mk0J2AzNjGH4HOZXvNd/emM2V2RjvCOYy5SxE99I=
+Date:   Mon, 22 Jun 2020 14:02:52 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Pravin Shelar <pravin.ovn@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [RFC PATCH 9/9] dt-bindings: net: dsa: Add documentation for Hellcreek switches
-In-Reply-To: <20200619135657.GF304147@lunn.ch>
-References: <20200618064029.32168-1-kurt@linutronix.de> <20200618064029.32168-10-kurt@linutronix.de> <20200618134704.GQ249144@lunn.ch> <87zh8zphlc.fsf@kurt> <20200619135657.GF304147@lunn.ch>
-Date:   Mon, 22 Jun 2020 14:02:19 +0200
-Message-ID: <87imfjtik4.fsf@kurt>
+        Numan Siddique <nusiddiq@redhat.com>,
+        Greg Rose <gvrose8192@gmail.com>, lorenzo.bianconi@redhat.com,
+        ovs dev <dev@openvswitch.org>
+Subject: Re: [PATCH net] openvswitch: take into account de-fragmentation in
+ execute_check_pkt_len
+Message-ID: <20200622120252.GC14425@localhost.localdomain>
+References: <74266291a0aba929919f71ff3dbd1c36392bb4c4.1592567032.git.lorenzo@kernel.org>
+ <CAOrHB_B2GO51hRy_kj3kdJKrFURFbKubhGvanLKCRHDc9DKeyg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="Bu8it7iiRSEf40bY"
+Content-Disposition: inline
+In-Reply-To: <CAOrHB_B2GO51hRy_kj3kdJKrFURFbKubhGvanLKCRHDc9DKeyg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+
+--Bu8it7iiRSEf40bY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri Jun 19 2020, Andrew Lunn wrote:
->> > The switch is 100/100Mbps right? The MAC is only Fast ethernet. Do you
->> > need some properties in the port@0 node to tell the switch to only use
->> > 100Mbps? I would expect it to default to 1G. Not looked at the code
->> > yet...
->>=20
->> No, that is not needed. That is a hardware configuration and AFAIK
->> cannot be changed at run time.
->
-> I was wondering about that in general. I did not spot any code in the
-> driver dealing with results from the PHY auto-neg. So you are saying
-> the CPU is fixed speed, by strapping? But what about the other ports?
-> Does the MAC need to know the PHY has negotiated 10Half, not 1G? Would
-> that not make a difference to your TSN?
+> On Fri, Jun 19, 2020 at 4:48 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
+te:
+> >
+> > ovs connection tracking module performs de-fragmentation on incoming
+> > fragmented traffic. Take info account if traffic has been de-fragmented
+> > in execute_check_pkt_len action otherwise we will perform the wrong
+> > nested action considering the original packet size. This issue typically
+> > occurs if ovs-vswitchd adds a rule in the pipeline that requires connec=
+tion
+> > tracking (e.g. OVN stateful ACLs) before execute_check_pkt_len action.
+> >
+> > Fixes: 4d5ec89fc8d14 ("net: openvswitch: Add a new action check_pkt_len=
+")
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  net/openvswitch/actions.c | 6 ++++--
+> >  1 file changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+> > index fc0efd8833c8..9f4dd64e53bb 100644
+> > --- a/net/openvswitch/actions.c
+> > +++ b/net/openvswitch/actions.c
+> > @@ -1169,9 +1169,10 @@ static int execute_check_pkt_len(struct datapath=
+ *dp, struct sk_buff *skb,
+> >                                  struct sw_flow_key *key,
+> >                                  const struct nlattr *attr, bool last)
+> >  {
+> > +       struct ovs_skb_cb *ovs_cb =3D OVS_CB(skb);
+> >         const struct nlattr *actions, *cpl_arg;
+> >         const struct check_pkt_len_arg *arg;
+> > -       int rem =3D nla_len(attr);
+> > +       int len, rem =3D nla_len(attr);
+> >         bool clone_flow_key;
+> >
+> >         /* The first netlink attribute in 'attr' is always
+> > @@ -1180,7 +1181,8 @@ static int execute_check_pkt_len(struct datapath =
+*dp, struct sk_buff *skb,
+> >         cpl_arg =3D nla_data(attr);
+> >         arg =3D nla_data(cpl_arg);
+> >
+> > -       if (skb->len <=3D arg->pkt_len) {
+> > +       len =3D ovs_cb->mru ? ovs_cb->mru : skb->len;
+> > +       if (len <=3D arg->pkt_len) {
+>=20
+> We could also check for the segmented packet and use  segment length
+> for this check.
 
-Indeed, that does make a difference. I've checked with the vendor. The
-current version of the switch IP does not support configuring the speed
-etc. at run time. It is hard wired to 100 Mbit/s or 1000 Mbit/s for
-now. Later versions of the chip might support setting the speed etc. via
-configuration registers. As a result the PHYs at the front ports should
-be programmed to only advertise 100 Mbit/s or 1G depending on the
-hardware setup.
+Hi Pravin,
 
-Thanks,
-Kurt
+thx for review.
+By 'segmented packet' and 'segment length', do you mean 'fragment' and
+'fragment length'?
+If so I guess we can't retrieve the original fragment length if we exec
+OVS_ACTION_ATTR_CT before OVS_ACTION_ATTR_CHECK_PKT_LEN (e.g if we have a
+stateful ACL in the ingress pipeline) since handle_fragments() will reconst=
+ruct
+the whole IP datagram and it will store frag_max_size in OVS_CB(skb)->mru.
+Am I missing something?
 
---=-=-=
+Regards,
+Lorenzo
+
+
+--Bu8it7iiRSEf40bY
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl7wncsACgkQeSpbgcuY
-8KYXyA/8DLXlHC/IIVPn9Frz2Es51NLmJmUYxmNRdlFFtHNlVZ7OxyewgvGG4XBa
-Y3+UMl9byjXzkHkgYAEBp98PKDtAf+wM2DYj/OP2CS9IvxKL6X1Sfductwxq3yg7
-MFOUvHo/eeGd88vFvDddX6/z9NeV2TaXTBmnwLLxsXa06QjTedhM5bJTBRZcqZi/
-aHzDXwXgr81HSF3rj2QwlcgjVtUF7NKeSq42AnnuQyw2sfyNEObN0x/85+/FlaWx
-C7kNUIX/gB8mRjEBDwWb4Ic7K+X2Fry16yMvaSLzDO9oKXeefRt1fAaIL5/e+/MZ
-HYifNcPEHczfd3SxWQf7qNdm3ulvHTVkbFbAqrENtaqEH7nw6YGgpAjSpAKFynM8
-DPp8W9wE+No5Bvm4zxarR/eERItRjruRXwot/tx0D7/Of1QVpPqf1Rt3CfTKphDC
-ZHvkeZoJAnm6wo6Ig5v7Bq44oTRFTbXjkXgl681BNLk4xJnU0Akvam3nVMDzapH+
-rOGyFlcsNk6QE08W2maQjOKmjEclWzXxNpuEc80CgKzseYJOmuvT1Nbt6B7SymZY
-hdlKz2A9h2rZgMxIlKVGH5QNEE0iLc1wr5N4XQYcZKftveJc6hbx+KIg1HvPcfH5
-nWKuH/lHl98iBpzVow48vMcA0++wcy+TCVBM3blbL8ACiMa792Y=
-=CdRP
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXvCd6gAKCRA6cBh0uS2t
+rFnmAP4jOVAkyRbyLpUZ3ylfZYP6CPTO0noYiSFoffmpgO07EQD+MM+Y0QqB16ex
+TNkV4lo3ByEaVZ6nXqmFc7xFFxEFBQ8=
+=r9RW
 -----END PGP SIGNATURE-----
---=-=-=--
+
+--Bu8it7iiRSEf40bY--
