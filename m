@@ -2,97 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E02D9203781
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB5B920378F
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728110AbgFVNJM convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Jun 2020 09:09:12 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:51871 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727940AbgFVNJJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 09:09:09 -0400
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 2DAA324001A;
-        Mon, 22 Jun 2020 13:09:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1728601AbgFVNM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 09:12:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51772 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728089AbgFVNM1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 09:12:27 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jnMF0-001f7A-MR; Mon, 22 Jun 2020 15:12:02 +0200
+Date:   Mon, 22 Jun 2020 15:12:02 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Fabien Parent <fparent@baylibre.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH 01/15] net: phy: arrange headers in mdio_bus.c
+ alphabetically
+Message-ID: <20200622131202.GF338481@lunn.ch>
+References: <20200622093744.13685-1-brgl@bgdev.pl>
+ <20200622093744.13685-2-brgl@bgdev.pl>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20200620150045.GA2054@localhost>
-References: <20200619122300.2510533-1-antoine.tenart@bootlin.com> <20200619122300.2510533-7-antoine.tenart@bootlin.com> <20200620150045.GA2054@localhost>
-Subject: Re: [PATCH net-next v3 6/8] net: phy: mscc: timestamping and PHC support
-To:     Richard Cochran <richardcochran@gmail.com>
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        allan.nielsen@microchip.com, foss@0leil.net
-Message-ID: <159283134527.1456598.6263985916427354928@kwain>
-Date:   Mon, 22 Jun 2020 15:09:05 +0200
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200622093744.13685-2-brgl@bgdev.pl>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Richard,
-
-Quoting Richard Cochran (2020-06-20 17:00:45)
-> On Fri, Jun 19, 2020 at 02:22:58PM +0200, Antoine Tenart wrote:
+On Mon, Jun 22, 2020 at 11:37:30AM +0200, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
-> > +static void vsc85xx_dequeue_skb(struct vsc85xx_ptp *ptp)
-> > +{
-> > +     struct skb_shared_hwtstamps shhwtstamps;
-> > +     struct vsc85xx_ts_fifo fifo;
-> > +     struct sk_buff *skb;
-> > +     u8 skb_sig[16], *p;
-> > +     int i, len;
-> > +     u32 reg;
-> > +
-> > +     memset(&fifo, 0, sizeof(fifo));
-> > +     p = (u8 *)&fifo;
-> > +
-> > +     reg = vsc85xx_ts_read_csr(ptp->phydev, PROCESSOR,
-> > +                               MSCC_PHY_PTP_EGR_TS_FIFO(0));
-> > +     if (reg & PTP_EGR_TS_FIFO_EMPTY)
-> > +             return;
-> > +
-> > +     *p++ = reg & 0xff;
-> > +     *p++ = (reg >> 8) & 0xff;
-> > +
-> > +     /* Read the current FIFO item. Reading FIFO6 pops the next one. */
-> > +     for (i = 1; i < 7; i++) {
-> > +             reg = vsc85xx_ts_read_csr(ptp->phydev, PROCESSOR,
-> > +                                       MSCC_PHY_PTP_EGR_TS_FIFO(i));
-> > +             *p++ = reg & 0xff;
-> > +             *p++ = (reg >> 8) & 0xff;
-> > +             *p++ = (reg >> 16) & 0xff;
-> > +             *p++ = (reg >> 24) & 0xff;
-> > +     }
-> > +
-> > +     len = skb_queue_len(&ptp->tx_queue);
-> > +     if (len < 1)
-> > +             return;
-> > +
-> > +     while (len--) {
-> > +             skb = __skb_dequeue(&ptp->tx_queue);
-> > +             if (!skb)
-> > +                     return;
-> > +
-> > +             /* Can't get the signature of the packet, won't ever
-> > +              * be able to have one so let's dequeue the packet.
-> > +              */
-> > +             if (get_sig(skb, skb_sig) < 0)
-> > +                     continue;
+> Keeping the headers in alphabetical order is better for readability and
+> allows to easily see if given header is already included.
 > 
-> This leaks the skb.
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-That's right, thanks for pointing this out! I'll fix it.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Thanks,
-Antoine
-
--- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+    Andrew
