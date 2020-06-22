@@ -2,99 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C1FB20386E
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:49:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5B58203871
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728911AbgFVNtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 09:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728070AbgFVNtM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 09:49:12 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821C0C061573
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 06:49:12 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id b6so16740435wrs.11
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 06:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dCUfgqhsIBfYRt1nCaxuonUF0k6Z8yysP7m75v42F9I=;
-        b=VaYyJ8tm1crnVTxJP23VCAFdl2rB6SLudeUXPjxoHI6OCOXcdwaJCDWLSJZHArO6Ax
-         YNyWivT8g+L+MFUlLfzrN6gcs24J/m17a4ZoGkGHdtKXS1DtFhW/ikN/bFztag5/c3WN
-         6nRiyBnsFEQ77mCXT2s/8hmCZTJt3jSisPIhd8XrMdl0LxM4L+D5QymvIgFvG9vE+MLu
-         9ueOkhXah0OCjAGt0TEYPVcOftbKuoxeiTwSWL7e/pHUsvCIEtEfeDcAaK6RWZO0BD4d
-         QJP0jtBxuResydMDDBvaLLd5ZTU4ZvYZjdTlR450bDP+BZcIfsx5HvbMUTrKXyehveiQ
-         da0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=dCUfgqhsIBfYRt1nCaxuonUF0k6Z8yysP7m75v42F9I=;
-        b=LTWIbJ9Qfn06TyLoiDxBDkAGFcnCFzMiqxH8EWQKiQa5gc5XYVQ8Wg6wjbIgNyebdn
-         q3yHvRQdaadpimIOp/JuY3Bhdm2zEBpnc6YU09m2dDtyUz5gN1dBZPIVAfntiO5IuPL3
-         mXllmb0QkRosvSiz+/Tn5GPKYFF1OpvFbJK24XuG0o/pp0u++dtV9GjJO38gpv4+Wk3z
-         iIbwYUD50N/UE79+LLCK/vqPIs99gW8GKLA/9XUWHseNf6qz/9p+OC+2wRqNhB7DJHfK
-         oGbxZqrquE6PpeAUz3lEkU2+CcK7btTPetb6kVC6CgKJqPrwrPtiTA61uUSyu4ih1n+u
-         TZGg==
-X-Gm-Message-State: AOAM531yKdBFYte5qMleWGVprfRIJ+bQvS1keNatFYFmdgyEaJ++qVsF
-        3RfcXTAMxxNOSeZi9assLwlIDm5lYys=
-X-Google-Smtp-Source: ABdhPJwNjyHjFiMU6rlx4eRpL2JpBqXKH89iKpDiSmRIM0ExxLSZ/YSdmnlu4185ts8mgKxYkcJPDA==
-X-Received: by 2002:a5d:4710:: with SMTP id y16mr19720805wrq.189.1592833750138;
-        Mon, 22 Jun 2020 06:49:10 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:f963:90c2:d1cc:bba3? ([2a01:e0a:410:bb00:f963:90c2:d1cc:bba3])
-        by smtp.gmail.com with ESMTPSA id c6sm17638595wma.15.2020.06.22.06.49.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Jun 2020 06:49:09 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next] rtnetlink: add keepalived rtm_protocol
-To:     Alexandre Cassen <acassen@gmail.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com,
-        nikolay@cumulusnetworks.com, idosch@mellanox.com,
-        dsahern@gmail.com, vladbu@mellanox.com
-References: <20200621153454.3325-1-acassen@gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <a3e81bc7-1915-bbe7-5b56-367617ecfc2e@6wind.com>
-Date:   Mon, 22 Jun 2020 15:49:08 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728956AbgFVNtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 09:49:51 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52230 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728070AbgFVNtu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 09:49:50 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jnMpW-001fbC-Km; Mon, 22 Jun 2020 15:49:46 +0200
+Date:   Mon, 22 Jun 2020 15:49:46 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [RFC PATCH 9/9] dt-bindings: net: dsa: Add documentation for
+ Hellcreek switches
+Message-ID: <20200622134946.GM338481@lunn.ch>
+References: <20200618064029.32168-1-kurt@linutronix.de>
+ <20200618064029.32168-10-kurt@linutronix.de>
+ <20200618134704.GQ249144@lunn.ch>
+ <87zh8zphlc.fsf@kurt>
+ <20200619135657.GF304147@lunn.ch>
+ <87imfjtik4.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <20200621153454.3325-1-acassen@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87imfjtik4.fsf@kurt>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 21/06/2020 à 17:34, Alexandre Cassen a écrit :
-[snip]
-> +#define RTPROT_GATED		8	/* Apparently, GateD */
-> +#define RTPROT_RA		9	/* RDISC/ND router advertisements */
-> +#define RTPROT_MRT		10	/* Merit MRT */
-> +#define RTPROT_ZEBRA		11	/* Zebra */
-> +#define RTPROT_BIRD		12	/* BIRD */
-> +#define RTPROT_DNROUTED		13	/* DECnet routing daemon */
-> +#define RTPROT_XORP		14	/* XORP */
-> +#define RTPROT_NTK		15	/* Netsukuku */
-> +#define RTPROT_DHCP		16      /* DHCP client */
-nit: if you reident everything, you can fix spaces vs tabs between the number
-and the comment. Starting from '16', it's spaces, it was one tab before.
-
-> +#define RTPROT_MROUTED		17      /* Multicast daemon */
-> +#define RTPROT_KEEPALIVED	18      /* Keepalived daemon */
-> +#define RTPROT_BABEL		42      /* Babel daemon */
-> +#define RTPROT_BGP		186     /* BGP Routes */
-> +#define RTPROT_ISIS		187     /* ISIS Routes */
-> +#define RTPROT_OSPF		188     /* OSPF Routes */
-> +#define RTPROT_RIP		189     /* RIP Routes */
-> +#define RTPROT_EIGRP		192     /* EIGRP Routes */
->  
->  /* rtm_scope
->  
+On Mon, Jun 22, 2020 at 02:02:19PM +0200, Kurt Kanzenbach wrote:
+> On Fri Jun 19 2020, Andrew Lunn wrote:
+> >> > The switch is 100/100Mbps right? The MAC is only Fast ethernet. Do you
+> >> > need some properties in the port@0 node to tell the switch to only use
+> >> > 100Mbps? I would expect it to default to 1G. Not looked at the code
+> >> > yet...
+> >> 
+> >> No, that is not needed. That is a hardware configuration and AFAIK
+> >> cannot be changed at run time.
+> >
+> > I was wondering about that in general. I did not spot any code in the
+> > driver dealing with results from the PHY auto-neg. So you are saying
+> > the CPU is fixed speed, by strapping? But what about the other ports?
+> > Does the MAC need to know the PHY has negotiated 10Half, not 1G? Would
+> > that not make a difference to your TSN?
 > 
+> Indeed, that does make a difference. I've checked with the vendor. The
+> current version of the switch IP does not support configuring the speed
+> etc. at run time. It is hard wired to 100 Mbit/s or 1000 Mbit/s for
+> now. Later versions of the chip might support setting the speed etc. via
+> configuration registers. As a result the PHYs at the front ports should
+> be programmed to only advertise 100 Mbit/s or 1G depending on the
+> hardware setup.
+
+Hi Kurt
+
+Are there registers which allow you to determine the strapping? There
+are phylib/phylink calls you can make to set the advertisement in the
+PHY. It would be good to do this in the DSA driver.
+
+     Andrew
