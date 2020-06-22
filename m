@@ -2,93 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6FE9203628
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 13:50:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6D2C20362A
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 13:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbgFVLuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 07:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727048AbgFVLuC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 07:50:02 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DFBC061794
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 04:50:02 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id k11so17685014ejr.9
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 04:50:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fH4rNdOd/0DtPCmm7DTynSkeo7LxPbR8dmKw5LybOyU=;
-        b=VAmdyUsdN2ivud7I3BUybzNsHUoWtcliplXD1llq7mJ8rXj6Yo00x/zDCgoW7dvJeV
-         bhrmghsAG/kmbv4PKQNP/hIEvYBKYjzOlcxtFTHzuS3ulJEruyYSfW1tK/X6fno65QdL
-         qnfg0dy/L76P/M9ECK0zlhiG8aheuE+2YUtCMJTyr3n5plQwKFuw3oWCZYwcnuuqxsgL
-         7q32ZjqiNBAVsBojvHKsSkHZ7gAs6Pqa8lhXxbjphHS0h//reFYJvRb03tU6hsUe8HqA
-         YVrWpKm4Kms6Vt9bS6CbNfD9kNhp4T1vii7iuR0sP9gbCfcvSwHb0lSkH/j2kbiQK3Dk
-         uhQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fH4rNdOd/0DtPCmm7DTynSkeo7LxPbR8dmKw5LybOyU=;
-        b=L6+fsmsvzPut2qKYHW9Ep3kEyHObH/WGSgjMbSqouAkgQb0zYNYSXQ4q9h/WiNEowf
-         7GlMTy+KHk+UHeohDLsn12ZnQMBqzng9xHob8vmgIXNp/h/hRFkwsyPq1RvmlQsQAiAp
-         bSx0+9QkT3EQWTJ5zZDqzUJve3XuqAXEzbl8+hRoZmPRPSx1Uegvb5fTvzkmqqAkkYSk
-         wFPdPLv83G+tKTaNT19GquLhW2GOWroURlArzQ4+JBNH9ZUHSJfek9IjN8v2SWuaAa/S
-         qc04FUjj/c4dKJoWwsk25PwcGqwN/5Q+fgShWreFefNJmkwhaUlRn3HilWQ9ekiH/kjy
-         zlnw==
-X-Gm-Message-State: AOAM532E0oaWjb7LZ0UWpqAz8CrWKEBuYtBVAmMS4ACZE7/fN5OJ9Eo5
-        JTBarwjuRyvwupOReIIGBbMZMA==
-X-Google-Smtp-Source: ABdhPJwefaK1G+I1piFrT60Nt4bNSd1j4DovkLJsQ35G8yRg+d4lYAxcsGgWRNP18Z9VzsqIeGXryg==
-X-Received: by 2002:a17:906:3c10:: with SMTP id h16mr9735413ejg.87.1592826601230;
-        Mon, 22 Jun 2020 04:50:01 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([81.246.10.41])
-        by smtp.gmail.com with ESMTPSA id s2sm12389468edu.39.2020.06.22.04.50.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Jun 2020 04:50:00 -0700 (PDT)
-Subject: Re: [PATCH net v2] mptcp: drop sndr_key in mptcp_syn_options
-To:     Geliang Tang <geliangtang@gmail.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
-        linux-kernel@vger.kernel.org
-References: <60f8315d6ae7b62d175c573f75cee50f14ce988b.1592826171.git.geliangtang@gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <1c0f6f37-ede8-b341-f274-2b65b17dc141@tessares.net>
-Date:   Mon, 22 Jun 2020 13:50:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1728083AbgFVLuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 07:50:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53842 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727952AbgFVLuM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 07:50:12 -0400
+Received: from localhost (unknown [151.48.138.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 78892206D7;
+        Mon, 22 Jun 2020 11:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592826612;
+        bh=ZH+00OZclsORf8w1jSz2YeR4TOIxjgPqi0ljLU4FRO0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=d/1Ql+jckicAzmjC1XjxQcn4wp7jMqZWN4lBWxYQLmNhDbU7LFi107FITy1YmFvoM
+         Xh6L7ZB/dSnsqYx2QEnECa/H3R47hSWvVQ3mH1s5/+numE/qfqSUeb5tgsMSwuoED6
+         Bws7Q345ozIHu3YJR58x6j4by/mp1+14GWuinw/I=
+Date:   Mon, 22 Jun 2020 13:50:07 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, toke@redhat.com,
+        lorenzo.bianconi@redhat.com, dsahern@kernel.org
+Subject: Re: [PATCH v2 bpf-next 3/8] cpumap: formalize map value as a named
+ struct
+Message-ID: <20200622115007.GB14425@localhost.localdomain>
+References: <cover.1592606391.git.lorenzo@kernel.org>
+ <804b20c4f6fdda24f81e946c5c67c37c55d9f590.1592606391.git.lorenzo@kernel.org>
+ <20200622113313.6f56244d@carbon>
 MIME-Version: 1.0
-In-Reply-To: <60f8315d6ae7b62d175c573f75cee50f14ce988b.1592826171.git.geliangtang@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="JP+T4n/bALQSJXh8"
+Content-Disposition: inline
+In-Reply-To: <20200622113313.6f56244d@carbon>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geliang,
 
-On 22/06/2020 13:45, Geliang Tang wrote:
-> In RFC 8684, we don't need to send sndr_key in SYN package anymore, so drop
+--JP+T4n/bALQSJXh8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Please next time try to have max 72 chars per line in your commit message ;)
+> On Sat, 20 Jun 2020 00:57:19 +0200
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>=20
+> > As it has been already done for devmap, introduce 'struct bpf_cpumap_va=
+l'
+> > to formalize the expected values that can be passed in for a CPUMAP.
+> > Update cpumap code to use the struct.
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  include/uapi/linux/bpf.h       |  9 +++++++++
+> >  kernel/bpf/cpumap.c            | 25 +++++++++++++------------
+> >  tools/include/uapi/linux/bpf.h |  9 +++++++++
+> >  3 files changed, 31 insertions(+), 12 deletions(-)
+> >=20
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 19684813faae..a45d61bc886e 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -3774,6 +3774,15 @@ struct bpf_devmap_val {
+> >  	} bpf_prog;
+> >  };
+> > =20
+> > +/* CPUMAP map-value layout
+> > + *
+> > + * The struct data-layout of map-value is a configuration interface.
+> > + * New members can only be added to the end of this structure.
+> > + */
+> > +struct bpf_cpumap_val {
+> > +	__u32 qsize;	/* queue size */
+> > +};
+> > +
+>=20
+> Nitpicking the comment: /* queue size */
+> It doesn't provide much information to the end-user.
+>=20
+> What about changing it to: /* queue size to remote target CPU */
 
-> it.
-> 
-> Fixes: cc7972ea1932 ("mptcp: parse and emit MP_CAPABLE option according to v1 spec")
-> Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+Yes, I agree. I will fix it in v3.
 
-Thank you for this v2. It looks good to me!
+Regards,
+Lorenzo
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> ?
+>=20
+> --=20
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
 
-Cheers,
-Matt
---
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+--JP+T4n/bALQSJXh8
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXvCa7AAKCRA6cBh0uS2t
+rCd1AP9onNtkqFasFYqxr5CQgKqke1VhKA84xUnqcvPlTizm2gD/Z8Lb0quCYSKl
+UoRNWBvoXHrAYZXaeczMsEgwLdKhNgo=
+=tMRP
+-----END PGP SIGNATURE-----
+
+--JP+T4n/bALQSJXh8--
