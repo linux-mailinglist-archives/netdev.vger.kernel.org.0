@@ -2,146 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62C2E203576
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 13:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCF8520356D
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 13:14:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728417AbgFVLP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 07:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728249AbgFVLPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 07:15:45 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591C4C061794;
-        Mon, 22 Jun 2020 04:15:45 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id t6so192709pgq.1;
-        Mon, 22 Jun 2020 04:15:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2XaRcZP1I/yNj4dxWvPGShRfEGGKyDmu4yyyk3d3G+8=;
-        b=BrEn9vJ/G0xuOSNq7YWcdvYWIBmWN99jCzPi+NRx8HZIpSyxsmDNyuHnzqgMauDnp4
-         WhQu7fweqY8jTzjEw/SvaKZ1DUCmIDQn6+J6ocZIJ/j10d54OcpEh9r7inP+1bOL4iaZ
-         FYjo6jt9rcMrnNJuZ5uKJq7xvHZFPULk+OTVmUf6+Yh3c2TbWpxdGTqWWP1K3EHERnJ3
-         JJHyoUcCOP1lbMNY84UvaXktl98iwUsxucgb8YqzZnZauCocFRhpIKMK67w/W4spdHF0
-         TXGz9paFEheUeacRfenMhTiouFCtw1dB0ohMahx3QqwEMhc/2HRCcec6m6qPPHKCvK3U
-         o0kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2XaRcZP1I/yNj4dxWvPGShRfEGGKyDmu4yyyk3d3G+8=;
-        b=LX1M/sGc8mbr/oXiQ6IphOqLlEHfyHy2BE1SyV7CsqIJWqFsLt/+LyKwJhgWWsrPLm
-         QMzR+pmgRrsImMLcEYf0RpU3KjMl3c1mpMl0ul+vguWSwUXDbRZXdU3J0oQmPj6vXEcI
-         2UtlDwVtKBarRzdUBU5A9iWKza8wjfI0NxZB86V+LBkjeSU0J0YR9GGD9QB4Ig2hoo37
-         pXmirSdh0L31VagTFanoOKRuyeVCUXrG9zMHaSZUaazKb40ecCcbtV3rQS1ze4BDGXP/
-         Edy72IzNmbdbnROg3Q80PzkrBGNm596AYGFwuZEy5gm9z4KB1IOUlp9fqv8P5VtYG0C7
-         1wEQ==
-X-Gm-Message-State: AOAM5306olzura0YzNzcCsj3Z25jDqaHo+8MX1Nznh8XqQiSTOgiAhxh
-        pLpR5ydHXQpgSEbTajxbLXk=
-X-Google-Smtp-Source: ABdhPJzQr0DmsdnK/ME7ERsccmB6MxIt/i1mUG6fqIK9c7qaVUgBOqunsOMVOtd/xn/Zed9PgC0UIg==
-X-Received: by 2002:a63:ff51:: with SMTP id s17mr10896461pgk.300.1592824544924;
-        Mon, 22 Jun 2020 04:15:44 -0700 (PDT)
-Received: from varodek.iballbatonwifi.com ([103.105.153.57])
-        by smtp.gmail.com with ESMTPSA id n189sm13950150pfn.108.2020.06.22.04.15.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jun 2020 04:15:44 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Don Fry <pcnet32@frontier.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [PATCH v2 3/3] amd-xgbe: Convert to generic power management
-Date:   Mon, 22 Jun 2020 16:44:00 +0530
-Message-Id: <20200622111400.55956-4-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200622111400.55956-1-vaibhavgupta40@gmail.com>
-References: <20200622111400.55956-1-vaibhavgupta40@gmail.com>
+        id S1727799AbgFVLOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 07:14:33 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:14392 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728037AbgFVLO2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 07:14:28 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05MB87Or013048;
+        Mon, 22 Jun 2020 04:14:24 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0818; bh=b3PntQKBqtZ3GatNaLsuAv2mZADAUCw5SRw2SUSm3BE=;
+ b=veA55006wCV4Fg9Gm+A6kYWt6xtrdxdVia9qf57wN12BldisGJ1i6wiAC1mWi3YUYSjd
+ DpoGveng2A1djV0wR6lSBvfaceVg96P5Vd/XhRzhs9eKmgKZ2jyeWpwb4D330kngN9Pg
+ DBphqFTkqJ7PaEex1IogLT+d6gugLCMF8f2lRl/n0NcHaqdTeVViHc19FHcRRm9X4nYj
+ XhkIXUoeBlxeslXZz3R1XtuZIaL2/mAIqHxCzRh5PAOgT+Lx6sDZb06QO7s0pqjtOecN
+ 0eiSYbEGQvIG1utEFWc/9DGBZIsvvJoJkVMrLhnY/o1TYf3xHLgHai8I+it4OUTLx6mF KQ== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 31shynqp9c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 22 Jun 2020 04:14:24 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 22 Jun
+ 2020 04:14:22 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 22 Jun
+ 2020 04:14:21 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 22 Jun 2020 04:14:21 -0700
+Received: from NN-LT0049.marvell.com (unknown [10.193.39.36])
+        by maili.marvell.com (Postfix) with ESMTP id 2E0A93F703F;
+        Mon, 22 Jun 2020 04:14:16 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Igor Russkikh <irusskikh@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Yuval Mintz <yuval.mintz@marvell.com>,
+        Denis Bolotin <denis.bolotin@marvell.com>,
+        "Ram Amrani" <ram.amrani@marvell.com>,
+        Tomer Tayar <tomer.tayar@marvell.com>,
+        Alexander Lobakin <alobakin@marvell.com>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net 0/9] net: qed/qede: various stability fixes
+Date:   Mon, 22 Jun 2020 14:14:04 +0300
+Message-ID: <20200622111413.7006-1-alobakin@marvell.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-22_04:2020-06-22,2020-06-22 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use dev_pm_ops structure to call generic suspend() and resume() callbacks.
+This set addresses several near-critical issues that were observed
+and reproduced on different test and production configurations.
 
-Drivers should avoid saving device register and/or change power states
-using PCI helper functions. With the generic approach, all these are handled
-by PCI core.
+Alexander Lobakin (9):
+  net: qed: fix left elements count calculation
+  net: qed: fix async event callbacks unregistering
+  net: qede: stop adding events on an already destroyed workqueue
+  net: qed: fix NVMe login fails over VFs
+  net: qed: fix excessive QM ILT lines consumption
+  net: qede: fix PTP initialization on recovery
+  net: qede: fix use-after-free on recovery and AER handling
+  net: qed: reset ILT block sizes before recomputing to fix crashes
+  net: qed: fix "maybe uninitialized" warning
 
-Compile-tested only.
+ drivers/net/ethernet/qlogic/qed/qed_cxt.c    | 21 ++++++++++++-
+ drivers/net/ethernet/qlogic/qed/qed_dev.c    | 11 +++++--
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c  |  2 --
+ drivers/net/ethernet/qlogic/qed/qed_roce.c   |  1 -
+ drivers/net/ethernet/qlogic/qed/qed_vf.c     | 23 +++++++++++----
+ drivers/net/ethernet/qlogic/qede/qede_main.c |  3 +-
+ drivers/net/ethernet/qlogic/qede/qede_ptp.c  | 31 ++++++++------------
+ drivers/net/ethernet/qlogic/qede/qede_ptp.h  |  2 +-
+ drivers/net/ethernet/qlogic/qede/qede_rdma.c |  3 +-
+ include/linux/qed/qed_chain.h                | 26 +++++++++-------
+ 10 files changed, 80 insertions(+), 43 deletions(-)
 
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- drivers/net/ethernet/amd/xgbe/xgbe-pci.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-index 7b86240ecd5f..90cb55eb5466 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-@@ -421,10 +421,9 @@ static void xgbe_pci_remove(struct pci_dev *pdev)
- 	xgbe_free_pdata(pdata);
- }
- 
--#ifdef CONFIG_PM
--static int xgbe_pci_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused xgbe_pci_suspend(struct device *dev)
- {
--	struct xgbe_prv_data *pdata = pci_get_drvdata(pdev);
-+	struct xgbe_prv_data *pdata = dev_get_drvdata(dev);
- 	struct net_device *netdev = pdata->netdev;
- 	int ret = 0;
- 
-@@ -438,9 +437,9 @@ static int xgbe_pci_suspend(struct pci_dev *pdev, pm_message_t state)
- 	return ret;
- }
- 
--static int xgbe_pci_resume(struct pci_dev *pdev)
-+static int __maybe_unused xgbe_pci_resume(struct device *dev)
- {
--	struct xgbe_prv_data *pdata = pci_get_drvdata(pdev);
-+	struct xgbe_prv_data *pdata = dev_get_drvdata(dev);
- 	struct net_device *netdev = pdata->netdev;
- 	int ret = 0;
- 
-@@ -460,7 +459,6 @@ static int xgbe_pci_resume(struct pci_dev *pdev)
- 
- 	return ret;
- }
--#endif /* CONFIG_PM */
- 
- static const struct xgbe_version_data xgbe_v2a = {
- 	.init_function_ptrs_phy_impl	= xgbe_init_function_ptrs_phy_v2,
-@@ -502,15 +500,16 @@ static const struct pci_device_id xgbe_pci_table[] = {
- };
- MODULE_DEVICE_TABLE(pci, xgbe_pci_table);
- 
-+static SIMPLE_DEV_PM_OPS(xgbe_pci_pm_ops, xgbe_pci_suspend, xgbe_pci_resume);
-+
- static struct pci_driver xgbe_driver = {
- 	.name = XGBE_DRV_NAME,
- 	.id_table = xgbe_pci_table,
- 	.probe = xgbe_pci_probe,
- 	.remove = xgbe_pci_remove,
--#ifdef CONFIG_PM
--	.suspend = xgbe_pci_suspend,
--	.resume = xgbe_pci_resume,
--#endif
-+	.driver = {
-+		.pm = &xgbe_pci_pm_ops,
-+	}
- };
- 
- int xgbe_pci_init(void)
 -- 
-2.27.0
+2.21.0
 
