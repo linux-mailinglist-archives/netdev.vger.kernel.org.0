@@ -2,115 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13AA7203862
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:44:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C1FB20386E
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 15:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728756AbgFVNoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 09:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50106 "EHLO
+        id S1728911AbgFVNtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 09:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728212AbgFVNoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 09:44:34 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57E8C061573
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 06:44:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=RXtvIt8w3V9HASatgVKFMWgk8qNz3nALcQt2SJQ6H3g=; b=nH/DN+3/KJkdpvel5inpX65QC
-        7gaG4OhS0hxXFf4ntBSDfDm2ecTaSR0e14vpSxDcipJaf4vgButMKo8JmyZBQK2lK/0g+SL+b8sFs
-        qWZodS7V4bvBdSo6b/YJ5Trz/VElCXxOgCAABpX9AhhyS2k0LAyz1QZDer46Kegh9uFQz1rRQvrNH
-        Za3TZLr1z/u6XJyqiGGMM5bZRo2vAgL0zdYgSj3OQ5T6dXZRfps6NkYtfM3+7h+Gr+yLeuO9cx/Vd
-        gAZKCtONrTL/A7Fyew9EdRuf/mQpCen6zwOu5kDzPz4tFJyHy48dmMRVq6xrrYBkzPf8LUZLHazRs
-        qF5UxewVA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58970)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jnMkQ-0000Jn-AL; Mon, 22 Jun 2020 14:44:30 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jnMkP-00006k-CQ; Mon, 22 Jun 2020 14:44:29 +0100
-Date:   Mon, 22 Jun 2020 14:44:29 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Jeremy Linton <jeremy.linton@arm.com>, Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev@vger.kernel.org, linux.cj@gmail.com
-Subject: Re: [PATCH v1 1/3] net: phy: Allow mdio buses to auto-probe c45
- devices
-Message-ID: <20200622134429.GK1551@shell.armlinux.org.uk>
-References: <20200617171536.12014-1-calvin.johnson@oss.nxp.com>
- <20200617171536.12014-2-calvin.johnson@oss.nxp.com>
- <20200617174451.GT1551@shell.armlinux.org.uk>
- <20200617185120.GB240559@lunn.ch>
- <20200617185703.GW1551@shell.armlinux.org.uk>
- <20200622132200.GB5822@lsv03152.swis.in-blr01.nxp.com>
+        with ESMTP id S1728070AbgFVNtM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 09:49:12 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821C0C061573
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 06:49:12 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id b6so16740435wrs.11
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 06:49:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dCUfgqhsIBfYRt1nCaxuonUF0k6Z8yysP7m75v42F9I=;
+        b=VaYyJ8tm1crnVTxJP23VCAFdl2rB6SLudeUXPjxoHI6OCOXcdwaJCDWLSJZHArO6Ax
+         YNyWivT8g+L+MFUlLfzrN6gcs24J/m17a4ZoGkGHdtKXS1DtFhW/ikN/bFztag5/c3WN
+         6nRiyBnsFEQ77mCXT2s/8hmCZTJt3jSisPIhd8XrMdl0LxM4L+D5QymvIgFvG9vE+MLu
+         9ueOkhXah0OCjAGt0TEYPVcOftbKuoxeiTwSWL7e/pHUsvCIEtEfeDcAaK6RWZO0BD4d
+         QJP0jtBxuResydMDDBvaLLd5ZTU4ZvYZjdTlR450bDP+BZcIfsx5HvbMUTrKXyehveiQ
+         da0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=dCUfgqhsIBfYRt1nCaxuonUF0k6Z8yysP7m75v42F9I=;
+        b=LTWIbJ9Qfn06TyLoiDxBDkAGFcnCFzMiqxH8EWQKiQa5gc5XYVQ8Wg6wjbIgNyebdn
+         q3yHvRQdaadpimIOp/JuY3Bhdm2zEBpnc6YU09m2dDtyUz5gN1dBZPIVAfntiO5IuPL3
+         mXllmb0QkRosvSiz+/Tn5GPKYFF1OpvFbJK24XuG0o/pp0u++dtV9GjJO38gpv4+Wk3z
+         iIbwYUD50N/UE79+LLCK/vqPIs99gW8GKLA/9XUWHseNf6qz/9p+OC+2wRqNhB7DJHfK
+         oGbxZqrquE6PpeAUz3lEkU2+CcK7btTPetb6kVC6CgKJqPrwrPtiTA61uUSyu4ih1n+u
+         TZGg==
+X-Gm-Message-State: AOAM531yKdBFYte5qMleWGVprfRIJ+bQvS1keNatFYFmdgyEaJ++qVsF
+        3RfcXTAMxxNOSeZi9assLwlIDm5lYys=
+X-Google-Smtp-Source: ABdhPJwNjyHjFiMU6rlx4eRpL2JpBqXKH89iKpDiSmRIM0ExxLSZ/YSdmnlu4185ts8mgKxYkcJPDA==
+X-Received: by 2002:a5d:4710:: with SMTP id y16mr19720805wrq.189.1592833750138;
+        Mon, 22 Jun 2020 06:49:10 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:f963:90c2:d1cc:bba3? ([2a01:e0a:410:bb00:f963:90c2:d1cc:bba3])
+        by smtp.gmail.com with ESMTPSA id c6sm17638595wma.15.2020.06.22.06.49.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Jun 2020 06:49:09 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next] rtnetlink: add keepalived rtm_protocol
+To:     Alexandre Cassen <acassen@gmail.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com,
+        nikolay@cumulusnetworks.com, idosch@mellanox.com,
+        dsahern@gmail.com, vladbu@mellanox.com
+References: <20200621153454.3325-1-acassen@gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <a3e81bc7-1915-bbe7-5b56-367617ecfc2e@6wind.com>
+Date:   Mon, 22 Jun 2020 15:49:08 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200622132200.GB5822@lsv03152.swis.in-blr01.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200621153454.3325-1-acassen@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 22, 2020 at 06:52:00PM +0530, Calvin Johnson wrote:
-> On Wed, Jun 17, 2020 at 07:57:03PM +0100, Russell King - ARM Linux admin wrote:
-> > On Wed, Jun 17, 2020 at 08:51:20PM +0200, Andrew Lunn wrote:
-> > > > > +	/* bus capabilities, used for probing */
-> > > > > +	enum {
-> > > > > +		MDIOBUS_C22 = 0,
-> > > > > +		MDIOBUS_C45,
-> > > > > +		MDIOBUS_C22_C45,
-> > > > > +	} probe_capabilities;
-> > > > 
-> > > > I think it would be better to reserve "0" to mean that no capabilities
-> > > > have been declared.  We hae the situation where we have mii_bus that
-> > > > exist which do support C45, but as they stand, probe_capabilities will
-> > > > be zero, and with your definitions above, that means MDIOBUS_C22.
-> > > > 
-> > > > It seems this could lock in some potential issues later down the line
-> > > > if we want to use this elsewhere.
-> > > 
-> > > Hi Russell
-> > > 
-> > > Actually, this patch already causes issues, i think.
-> > > 
-> > > drivers/net/ethernet/marvell/mvmdio.c contains two MDIO bus master
-> > > drivers. "marvell,orion-mdio" is C22 only. "marvell,xmdio" is C45
-> > > only. Because the capabilites is not initialized, it will default to
-> > > 0, aka MDIOBUS_C22, for the C45 only bus master, and i expect bad
-> > > things will happen.
-> > > 
-> > > We need the value of 0 to cause existing behaviour. Or all MDIO bus
-> > > drivers need reviewing, and the correct capabilities set.
-> > 
-> > Yes, that's basically what I was trying to say, thanks for putting it
-> > more clearly.
+Le 21/06/2020 à 17:34, Alexandre Cassen a écrit :
+[snip]
+> +#define RTPROT_GATED		8	/* Apparently, GateD */
+> +#define RTPROT_RA		9	/* RDISC/ND router advertisements */
+> +#define RTPROT_MRT		10	/* Merit MRT */
+> +#define RTPROT_ZEBRA		11	/* Zebra */
+> +#define RTPROT_BIRD		12	/* BIRD */
+> +#define RTPROT_DNROUTED		13	/* DECnet routing daemon */
+> +#define RTPROT_XORP		14	/* XORP */
+> +#define RTPROT_NTK		15	/* Netsukuku */
+> +#define RTPROT_DHCP		16      /* DHCP client */
+nit: if you reident everything, you can fix spaces vs tabs between the number
+and the comment. Starting from '16', it's spaces, it was one tab before.
+
+> +#define RTPROT_MROUTED		17      /* Multicast daemon */
+> +#define RTPROT_KEEPALIVED	18      /* Keepalived daemon */
+> +#define RTPROT_BABEL		42      /* Babel daemon */
+> +#define RTPROT_BGP		186     /* BGP Routes */
+> +#define RTPROT_ISIS		187     /* ISIS Routes */
+> +#define RTPROT_OSPF		188     /* OSPF Routes */
+> +#define RTPROT_RIP		189     /* RIP Routes */
+> +#define RTPROT_EIGRP		192     /* EIGRP Routes */
+>  
+>  /* rtm_scope
+>  
 > 
-> Prior to this patch, below code which is for C22 was executed in this path.
-> 	phydev = get_phy_device(bus, addr, false);
-> Doesn't this mean that MDIOBUS_C22 = 0, doesn't break anything?
-
-Please re-read Andrew's email that you quoted above, and consider this
-point: If bus->probe_capabilities == MDIOBUS_C22 for the Marvell XMDIO
-device, as it _will_ be the case, because bus->probe_capabilities has
-not been set, is this a sane situation?
-
-Are you willing to do a full audit of all MDIO drivers and set their
-bus->probe_capabilities correctly in every case in order to use
-MDIOBUS_C22 = 0 ?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
