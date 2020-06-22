@@ -2,80 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 958A320440E
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 00:49:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D618D204418
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 00:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731275AbgFVWts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 18:49:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34278 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730943AbgFVWtr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 18:49:47 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4719B2073E;
-        Mon, 22 Jun 2020 22:49:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592866187;
-        bh=2V6HAjG7opCc+ZDYvmLhiL4vCmwHjAGV4dXL2KgDUgU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pxkH1O/E5nimem1BAuyNZBPi7mq7aD5aqD4q3UynCIiX/IxGBdHGVz0HjWSEK72XO
-         kwL+VVhb7zOH+Qj+fSgW/LJWeo7ZWtY/+tClGqJ8CG3lvnnheEOHUHc4vtBikwCwBW
-         Oa1T8C9mi3Yc12/7OoPuIjNMjbf7DFepGPEdZl9o=
-Date:   Mon, 22 Jun 2020 15:49:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        Fabien Parent <fparent@baylibre.com>,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH 03/11] net: devres: relax devm_register_netdev()
-Message-ID: <20200622154943.02782b5a@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200622100056.10151-4-brgl@bgdev.pl>
-References: <20200622100056.10151-1-brgl@bgdev.pl>
-        <20200622100056.10151-4-brgl@bgdev.pl>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1731217AbgFVWyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 18:54:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730934AbgFVWyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 18:54:52 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92AA6C061573;
+        Mon, 22 Jun 2020 15:54:52 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A9FA41296CF90;
+        Mon, 22 Jun 2020 15:54:51 -0700 (PDT)
+Date:   Mon, 22 Jun 2020 15:54:50 -0700 (PDT)
+Message-Id: <20200622.155450.499971025775558599.davem@davemloft.net>
+To:     noodles@earth.li
+Cc:     linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
+        olteanv@gmail.com, vivien.didelot@gmail.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v5 0/3] net: dsa: qca8k: Improve SGMII
+ interface handling
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <cover.1592648711.git.noodles@earth.li>
+References: <cover.1591816172.git.noodles@earth.li>
+        <cover.1592648711.git.noodles@earth.li>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 22 Jun 2020 15:54:52 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Jun 2020 12:00:48 +0200 Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> 
-> This devres helper registers a release callback that only unregisters
-> the net_device. It works perfectly fine with netdev structs that are
-> not managed on their own. There's no reason to check this - drop the
-> warning.
-> 
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+From: Jonathan McDowell <noodles@earth.li>
+Date: Sat, 20 Jun 2020 11:30:03 +0100
 
-I think the reasoning for this suggestion was to catch possible UAF
-errors. The netdev doesn't necessarily has to be from devm_alloc_* 
-but it has to be part of devm-ed memory or memory which is freed 
-after driver's remove callback.
+> This 3 patch series migrates the qca8k switch driver over to PHYLINK,
+> and then adds the SGMII clean-ups (i.e. the missing initialisation) on
+> top of that as a second patch. The final patch is a simple spelling fix
+> in a comment.
+> 
+> As before, tested with a device where the CPU connection is RGMII (i.e.
+> the common current use case) + one where the CPU connection is SGMII. I
+> don't have any devices where the SGMII interface is brought out to
+> something other than the CPU.
+ ...
 
-Are there cases in practice where you've seen the netdev not being
-devm allocated?
+Series applied, thanks.
