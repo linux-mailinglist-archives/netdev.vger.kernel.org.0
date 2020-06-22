@@ -2,76 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B0552032C5
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:03:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 723A22032D6
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 11:06:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726666AbgFVJDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 05:03:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40632 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725907AbgFVJDv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 05:03:51 -0400
-Received: from kernel.org (unknown [104.132.0.74])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3708D20716;
-        Mon, 22 Jun 2020 09:03:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592816630;
-        bh=uHzWPbIY/41z+WQ/nEUcOLsdKXZ7Qrprx0s9J3nM1WI=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=Xh/zfNmL3ERN7ZAuWqJeou0LUUvk4MxvRvqg/wo1SCR+kIFKaY9IoS91eJwSGmLxN
-         41gDTQtH3HmNO1ivPmHrDiY28L/xmHDYW6B2Zu88FibzNrSxqjvk4opMhmkVX7J1zb
-         BUvEkLF+J6WNitfbDSFytorOw4J66B/N2vbM1fp8=
-Content-Type: text/plain; charset="utf-8"
+        id S1726622AbgFVJGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 05:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726201AbgFVJGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 05:06:33 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1904C061794;
+        Mon, 22 Jun 2020 02:06:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=1PN9BmIl02yr2MOImBWBYlt3OCU+CLnoaLRpCoCXZj8=; b=UqDZYDsTJeNXbR3ME1QqH6NeA
+        53qISaaeFxTI8mIMGGkg9sBPCGO1JZycpvXKhFEETpHf5vN52b8UYF+UBU4bKGSHMYcXEQuRB51Jn
+        G5wsJQWALUvV40dApWdI/LkhgKQhTFY5ajp5EVvqhUsLBYmTjmTAppb9LumowRp+9HH4KpIxLnxVZ
+        DgEpqiIBxyWpjuOOJHBzzj0L6GygopE2y/mH/QwRv4HfDGbUbNZVIqxZ5e57Fv5mmXhgB8JQjbNvd
+        DutJP9cu+QutYI3deHGWctM1O/JzfciYeb5Af6kR5i7d5f1i68T1b3X4Jkhgf5eVZtQNwUPwTpKsi
+        DK5RJrUfw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58942)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jnIPM-0008Ow-3A; Mon, 22 Jun 2020 10:06:28 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jnIPJ-0008Mq-S5; Mon, 22 Jun 2020 10:06:25 +0100
+Date:   Mon, 22 Jun 2020 10:06:25 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     coreteam@netfilter.org, netfilter-devel@vger.kernel.org,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH] netfiler: ipset: fix unaligned atomic access
+Message-ID: <20200622090625.GA1551@shell.armlinux.org.uk>
+References: <E1jj7gl-0008Bq-BQ@rmk-PC.armlinux.org.uk>
+ <20200622082633.GA4512@salvia>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20200620033007.1444705-10-keescook@chromium.org>
-References: <20200620033007.1444705-1-keescook@chromium.org> <20200620033007.1444705-10-keescook@chromium.org>
-Subject: Re: [PATCH v2 09/16] clk: spear: Remove uninitialized_var() usage
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-mm@kvack.org,
-        clang-built-linux@googlegroups.com
-To:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
-Date:   Mon, 22 Jun 2020 02:03:49 -0700
-Message-ID: <159281662960.62212.15318119299039755482@swboyd.mtv.corp.google.com>
-User-Agent: alot/0.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200622082633.GA4512@salvia>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Kees Cook (2020-06-19 20:30:00)
-> Using uninitialized_var() is dangerous as it papers over real bugs[1]
-> (or can in the future), and suppresses unrelated compiler warnings (e.g.
-> "unused variable"). If the compiler thinks it is uninitialized, either
-> simply initialize the variable or make compiler changes. As a precursor
-> to removing[2] this[3] macro[4], initialize "i" to zero. The compiler
-> warning was not a false positive, since clk_pll_set_rate()'s call to
-> clk_pll_round_rate_index() will always fail (since "prate" is NULL), so
-> "i" was never being initialized.
->=20
-> [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.co=
-m/
-> [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=3D1TGqCR5vQkCzWJ0QxK6Cern=
-OU6eedsudAixw@mail.gmail.com/
-> [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz=
-9knmPuXhOeg@mail.gmail.com/
-> [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=3DyVJu65TpLg=
-N_ybYNv0VEOKA@mail.gmail.com/
->=20
-> Fixes: 7d4998f71b29 ("clk: SPEAr: Vco-pll: Fix compilation warning")
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
+On Mon, Jun 22, 2020 at 10:26:33AM +0200, Pablo Neira Ayuso wrote:
+> On Wed, Jun 10, 2020 at 09:51:11PM +0100, Russell King wrote:
+> > When using ip_set with counters and comment, traffic causes the kernel
+> > to panic on 32-bit ARM:
+> > 
+> > Alignment trap: not handling instruction e1b82f9f at [<bf01b0dc>]
+> > Unhandled fault: alignment exception (0x221) at 0xea08133c
+> > PC is at ip_set_match_extensions+0xe0/0x224 [ip_set]
+> > 
+> > The problem occurs when we try to update the 64-bit counters - the
+> > faulting address above is not 64-bit aligned.  The problem occurs
+> > due to the way elements are allocated, for example:
+> > 
+> > 	set->dsize = ip_set_elem_len(set, tb, 0, 0);
+> > 	map = ip_set_alloc(sizeof(*map) + elements * set->dsize);
+> > 
+> > If the element has a requirement for a member to be 64-bit aligned,
+> > and set->dsize is not a multiple of 8, but is a multiple of four,
+> > then every odd numbered elements will be misaligned - and hitting
+> > an atomic64_add() on that element will cause the kernel to panic.
+> > 
+> > ip_set_elem_len() must return a size that is rounded to the maximum
+> > alignment of any extension field stored in the element.  This change
+> > ensures that is the case.
+> 
+> Applied, thanks.
 
-Acked-by: Stephen Boyd <sboyd@kernel.org>
+Thanks!
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
