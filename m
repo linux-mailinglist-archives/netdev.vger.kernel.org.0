@@ -2,58 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB6C920405E
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 21:29:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6679D20408B
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 21:35:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728622AbgFVT3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 15:29:33 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54096 "EHLO vps0.lunn.ch"
+        id S1728281AbgFVTff (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 15:35:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43600 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728578AbgFVT3b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 15:29:31 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jnS8F-001iLy-ND; Mon, 22 Jun 2020 21:29:27 +0200
-Date:   Mon, 22 Jun 2020 21:29:27 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel Mack <daniel@zonque.org>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: Allow MAC configuration for ports
- with internal PHY
-Message-ID: <20200622192927.GH405672@lunn.ch>
-References: <20200622183443.3355240-1-daniel@zonque.org>
- <20200622184115.GE405672@lunn.ch>
- <b8a67f7d-9854-9854-3f53-983dd4eb8fda@zonque.org>
- <20200622185837.GN1551@shell.armlinux.org.uk>
- <bb89fbef-bde7-2a7f-9089-bbe86323dd63@zonque.org>
+        id S1728143AbgFVTff (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 15:35:35 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EB12A206E2;
+        Mon, 22 Jun 2020 19:35:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592854535;
+        bh=QfRYrK8z5849Hl/Iv9wWsynxoV1oaehOiifKZ4mfpNY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JfokhTk1gxTrybajXHO0w4B3ciBNWwU36SoEDCyE/+X6vK5Et00KAkjVxKNN0XkgA
+         W8G1f60AQ7oE2E7AwqAtU5bKVib0D7X1scKH4ZmxBAWYF9E55FYjVEoj7/qyFR74V7
+         bGedwatZMKBKP00o8oIw6WbbODkDwYbay9WLC3tw=
+Date:   Mon, 22 Jun 2020 12:35:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Gaurav Singh <gaurav1086@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+        linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH] [net] dcb_doit: remove redundant skb check
+Message-ID: <20200622123533.4fd450b6@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200621165657.9814-1-gaurav1086@gmail.com>
+References: <20200621165657.9814-1-gaurav1086@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bb89fbef-bde7-2a7f-9089-bbe86323dd63@zonque.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> To recap, my setup features a Cadence GEM that is connected to a 88E1510
-> PHY which is then connected to port 4 of the switch (which has an
-> internal PHY) through a transformer-less link. I know this is not
-> optimal as the speed is limited to 100M by that, but that was the only
-> way as all other ports where used up.
+On Sun, 21 Jun 2020 12:56:28 -0400 Gaurav Singh wrote:
+> Remove the redundant null check for skb.
+> 
+> Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
 
-This is the important bit you failed to mention. Given the number of
-patches on netdev, you should assume anything older than three days
-has been forgotten.
+Thanks for the patch, it looks correct, but could you describe your
+proof / reasoning based on which this change is correct?
 
-Back to Back PHYs for the CPU port has never really been supported.
-It does however work if the PHYs are 1G and there are a few boards out
-there like this, with their owns having crossed fingers this never
-breaks. Because it is not really supported.
+Please post non-bug fixes like this with a [net-next] rather than [net]
+tag (https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html).
 
-I guess you need to work out why PPU is not working for you. I would
-not be too surprised if it is because it is the CPU port, it is not
-supposed to have a PHY, so it is not enabled.
+> diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
+> index d2a4553bcf39..84dde5a2066e 100644
+> --- a/net/dcb/dcbnl.c
+> +++ b/net/dcb/dcbnl.c
+> @@ -1736,7 +1736,7 @@ static int dcb_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  	struct net_device *netdev;
+>  	struct dcbmsg *dcb = nlmsg_data(nlh);
+>  	struct nlattr *tb[DCB_ATTR_MAX + 1];
+> -	u32 portid = skb ? NETLINK_CB(skb).portid : 0;
+> +	u32 portid = NETLINK_CB(skb).portid;
+>  	int ret = -EINVAL;
+>  	struct sk_buff *reply_skb;
+>  	struct nlmsghdr *reply_nlh = NULL;
 
-	 Andrew
