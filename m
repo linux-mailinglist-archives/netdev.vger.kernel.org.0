@@ -2,95 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98F5E2035EF
-	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 13:41:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4D942035FA
+	for <lists+netdev@lfdr.de>; Mon, 22 Jun 2020 13:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727988AbgFVLl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 07:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
+        id S1727883AbgFVLoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 07:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727048AbgFVLlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 07:41:25 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F342FC061794
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 04:41:24 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1jnKpD-0000b2-PO; Mon, 22 Jun 2020 13:41:19 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:789c:8c3:eaa5:9d1b] (unknown [IPv6:2a03:f580:87bc:d400:789c:8c3:eaa5:9d1b])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 5F9EE51ED8D;
-        Mon, 22 Jun 2020 11:41:18 +0000 (UTC)
-Subject: Re: [PATCH 0/6] Add Microchip MCP25XXFD CAN driver
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     wg@grandegger.com, kernel@martin.sperl.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200610074442.10808-1-manivannan.sadhasivam@linaro.org>
- <fbbca009-3c53-6aa9-94ed-7e9e337c31a4@pengutronix.de>
- <20200618120615.GA3949@mani>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
- iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
- Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
- Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
- tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
- yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
- BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
- mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
- 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
- Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
- 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
-Message-ID: <e485d113-9bfb-b999-4318-8b6b4883143f@pengutronix.de>
-Date:   Mon, 22 Jun 2020 13:41:16 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        with ESMTP id S1727806AbgFVLoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 07:44:04 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2059BC061794;
+        Mon, 22 Jun 2020 04:44:04 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id q22so5181821pgk.2;
+        Mon, 22 Jun 2020 04:44:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZPn01r6wkXnMIHGh/thIPTlSxs28rdWp4NIXuzwx0oQ=;
+        b=FTA7ISWLI4A9wg3ouOgx4YNdJh6le0da9LW3IxYp8AUgvV84ghq39qDPNlErkkjgkS
+         6n7yR++UXq0RhCO0bGYxDcWQroLp4MJjinLXikt6ktxSaHE/xdx5pw/9+UsYUCPzzmFX
+         T6OMMHt1MG63b9lVgOhZOhTtk32Q5L9/wy1Exz6sY/Qyatk2ZF19UdaVS/buFpsSwc7k
+         aXe2ikHii5w35iVohD4NaSMTeNPAlrs8BVKDEu9exIIN8KCozhA/23oWq/xoD8NMLQ84
+         3IeJMkoPknDdeGaM0E04h/LLzw9sYnbt7+O7iONBdNFqdMti8nPM0+NtuJlulUrRX1sM
+         vGuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZPn01r6wkXnMIHGh/thIPTlSxs28rdWp4NIXuzwx0oQ=;
+        b=amQfkCQm789lwhXUWBjEHLwWxmdl72oNUTVCi9RXgbdhgCiojzOtUjwCeKHKk78D33
+         fERu5M9Vy/OILP+4rb11sSq4RvqY5W8mqDdnU/FK7c1P8D7CbbwtvKEy23EEN48BV/QT
+         NPTRPXzwsz/Boh26WapaJN3yhzyhgqkbDLxpGgI2tBEtTghmNjq09ni+/bNXgaSNYuNe
+         u7K1xpTPUuPp21txK4j9toi3HMxk5zwMUfLFpNsuCDmdEa6kKxitw1wcyd4q2cDzVB90
+         rSBS8nQsSdKVhvN2VyaskmeaQLVUmVw/nuN1w2MFEE3way3WjVTxNo9iN1Z8C4x1qEIv
+         yJpw==
+X-Gm-Message-State: AOAM5328MWziSqhcijB+ZiMf3vDGQieYlgS/q4nzREtNmTV/l0nVYtLx
+        uzY0RQGUlinU1Aj3igaHIWg=
+X-Google-Smtp-Source: ABdhPJyMdkCLlkB48Di9E70YagohvSIbysJTGd9ixEwryDW489vir8n7x1GTRBGyvbi/fqwswBpNbQ==
+X-Received: by 2002:a62:ee08:: with SMTP id e8mr18838245pfi.93.1592826243593;
+        Mon, 22 Jun 2020 04:44:03 -0700 (PDT)
+Received: from varodek.localdomain ([2401:4900:b8b:123e:d7ae:5602:b3d:9c0])
+        by smtp.gmail.com with ESMTPSA id j17sm14081032pjy.22.2020.06.22.04.43.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Jun 2020 04:44:02 -0700 (PDT)
+From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vaibhav Gupta <vaibhav.varodek@gmail.com>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        skhan@linuxfoundation.org, netdev@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/5] ethernet: dec: tulip: use generic power management
+Date:   Mon, 22 Jun 2020 17:12:23 +0530
+Message-Id: <20200622114228.60027-1-vaibhavgupta40@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20200618120615.GA3949@mani>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/18/20 2:06 PM, Manivannan Sadhasivam wrote:
->> https://github.com/marckleinebudde/linux/commits/v5.6-rpi/mcp25xxfd-20200607-41
->>
-> 
-> Tested this version on my board with MCP2518FD and it works fine. I'm okay with
-> moving forward with your version and would like to contribute. Please let me
-> know how we can move forward.
+Linux Kernel Mentee: Remove Legacy Power Management.
 
-Can I add your Tested-by?
+The purpose of this patch series is to remove legacy power management
+callbacks and invocation of PCI helper functions, from tulip ethernet drivers.
 
-Marc
+With legacy PM, drivers themselves are responsible for handling the device's
+power states. And they do this with the help of PCI helper functions like
+pci_enable/disable_device(), pci_set/restore_state(), pci_set_powr_state(), etc.
+which is not recommended.
+
+In generic PM, all the required tasks are handled by PCI core and drivers need
+to perform device-specific operations only.
+
+All patches are compile-tested only.
+
+Vaibhav Gupta (5):
+  tulip: dmfe: use generic power management
+  tulip: windbond-840: use generic power management
+  tulip: de2104x: use generic power management
+  tulip: tulip_core: use generic power management
+  tulip: uli526x: use generic power management
+
+ drivers/net/ethernet/dec/tulip/de2104x.c     | 25 +++-------
+ drivers/net/ethernet/dec/tulip/dmfe.c        | 49 ++++---------------
+ drivers/net/ethernet/dec/tulip/tulip_core.c  | 51 +++++---------------
+ drivers/net/ethernet/dec/tulip/uli526x.c     | 48 +++---------------
+ drivers/net/ethernet/dec/tulip/winbond-840.c | 26 +++-------
+ 5 files changed, 45 insertions(+), 154 deletions(-)
 
 -- 
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+2.27.0
+
