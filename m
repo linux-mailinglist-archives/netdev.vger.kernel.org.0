@@ -2,129 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 944E52061F2
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B1A9206226
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:08:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404122AbgFWUwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 16:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403908AbgFWUwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 16:52:36 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10B2C061573;
-        Tue, 23 Jun 2020 13:52:35 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id 80so8351645qko.7;
-        Tue, 23 Jun 2020 13:52:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6jp0ubT0ytXPNlZ+kvpMhbKPSShNoZWoDASuHeV3U4w=;
-        b=HeVDeJEedkTT34Y6u0qDxY68f7PJE43gZ9KGfchNkNzJDbI0BlurtccYR2wakUH1sq
-         XiOoEPVZCcY//cTh/UXLaQlNGBUs5vxjgXMZNLx1IHQhrT9ZSE071hGoy4AkwGIkvbhv
-         5wWcJlNROMPvCve+XQYU6erv1qM54m7f8ojQKs4COxRhfh/LWAok8M3ysxwNqWAhq9z5
-         0bSf4iMsuaVunMTxUrXMYjWdtMFciUrmTahRgyttOpf+WhH6xtzXSkVeR7pl3XtCVngn
-         o29rDmIJfXqGTw6iOb2tw1G2k/NjyG3KAKA0TYXW41Qhkq9GId4YyhKcCAtSzAyoQool
-         R4pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6jp0ubT0ytXPNlZ+kvpMhbKPSShNoZWoDASuHeV3U4w=;
-        b=LhcZbjtlAjSlfWGMbiJP26NjdQAl+FoU71XZPD5DKsWCd9l2cbtPQ2ouB4rCn02YGf
-         pWKKsCdk/81HCx5s7qhyaadUEv6gE2k+HjJ3ZVQ/5En75yqmBxfPP1YqlofdKhywMHw1
-         6pVe0JmEHLYJ1NO743ESsko5QgQ1cWBk1V3eF7Z1A9KWSirqgBNgGIjZpH1W+IqQjM2b
-         ZWzp6CQDK/zhsRrnhQeO1ySLTbPRwZnKhqWwVfqqkdguTAXCKQ4v4h2l3jGiCZmq69wV
-         3FHpR/4rJiBRkWCgeM7VydMmd2npkgcyn7Dcnj9fU/bfwOJ7aRwJaeVgyMJj8YH/Koxf
-         KPig==
-X-Gm-Message-State: AOAM532pBGnL0DPOFt7IJORWLCv6pZhuPmyDzbnCL06UtyEM6uMOgZRU
-        m0l4VRn+ZJn+CS+rnZVW56MQBiMG6yHyLNZ9F2w=
-X-Google-Smtp-Source: ABdhPJyI+9nIuV13mzQT+cdNrzFc6mevg13NB61n79/IEPnHwoiN5Vj16C3X3vAbnosJ/LeVulJEkprhQ4zPSlJNuoA=
-X-Received: by 2002:a37:d0b:: with SMTP id 11mr23572611qkn.449.1592945554997;
- Tue, 23 Jun 2020 13:52:34 -0700 (PDT)
+        id S2404094AbgFWU4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 16:56:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:49306 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390647AbgFWU4J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 16:56:09 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 52FF5AC46;
+        Tue, 23 Jun 2020 20:56:07 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 59FD6602E3; Tue, 23 Jun 2020 22:56:07 +0200 (CEST)
+Date:   Tue, 23 Jun 2020 22:56:07 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        michael.chan@broadcom.com, kuba@kernel.org, jiri@mellanox.com,
+        jiri@resnulli.us
+Subject: Re: [RFC net-next] devlink: Add reset subcommand.
+Message-ID: <20200623205607.zgbkgczf64neea7h@lion.mk-sys.cz>
+References: <1592911969-10611-1-git-send-email-vasundhara-v.volam@broadcom.com>
 MIME-Version: 1.0
-References: <20200623032224.4020118-1-andriin@fb.com> <20200623032224.4020118-2-andriin@fb.com>
- <7ed6ada5-2539-3090-0db7-0f65b67e4699@iogearbox.net>
-In-Reply-To: <7ed6ada5-2539-3090-0db7-0f65b67e4699@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 23 Jun 2020 13:52:24 -0700
-Message-ID: <CAEf4BzbsRyt5Y4-oMaKTUNu_ijnRD09+WW3iA+bfGLZcLpd77w@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 2/3] selftests/bpf: add variable-length data
- concatenation pattern test
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1592911969-10611-1-git-send-email-vasundhara-v.volam@broadcom.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 1:39 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Hey Andrii,
->
-> On 6/23/20 5:22 AM, Andrii Nakryiko wrote:
-> > Add selftest that validates variable-length data reading and concatentation
-> > with one big shared data array. This is a common pattern in production use for
-> > monitoring and tracing applications, that potentially can read a lot of data,
-> > but overall read much less. Such pattern allows to determine precisely what
-> > amount of data needs to be sent over perfbuf/ringbuf and maximize efficiency.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->
-> Currently getting the below errors on these tests. My last clang/llvm git build
-> is on 4676cf444ea2 ("[Clang] Skip adding begin source location for PragmaLoopHint'd
-> loop when[...]"):
->
+On Tue, Jun 23, 2020 at 05:02:49PM +0530, Vasundhara Volam wrote:
+> Advanced NICs support live reset of some of the hardware
+> components, that resets the device immediately with all the
+> host drivers loaded.
+> 
+> Add devlink reset subcommand to support live and deferred modes
+> of reset. It allows to reset the hardware components of the
+> entire device and supports the following fields:
+> 
+> component:
+> ----------
+> 1. MGMT : Management processor.
+> 2. IRA : Interrupt requester.
+> 3. DMA : DMA engine.
+> 4. FILTER : Filtering/flow direction.
+> 5. OFFLOAD : Protocol offload.
+> 6. MAC : Media access controller.
+> 7. PHY : Transceiver/PHY.
+> 8. RAM : RAM shared between multiple components.
+> 9. ROCE : RoCE management processor.
+> 10. AP : Application processor.
+> 11. All : All possible components.
+> 
+> Drivers are allowed to reset only a subset of requested components.
+> 
+> width:
+> ------
+> 1. single - Single function.
+> 2. multi  - Multiple functions.
+> 
+> mode:
+> -----
+> 1. deferred - Reset will happen after unloading all the host drivers
+>               on the device. This is be default reset type, if user
+>               does not specify the type.
+> 2. live - Reset will happen immediately with all host drivers loaded
+>           in real time. If the live reset is not supported, driver
+>           will return the error.
+> 
+> This patch is a proposal in continuation to discussion to the
+> following thread:
+> 
+> "[PATCH v3 net-next 0/6] bnxt_en: Add 'enable_live_dev_reset' and 'allow_live_dev_reset' generic devlink params."
+> 
+> and here is the URL to the patch series:
+> 
+> https://patchwork.ozlabs.org/project/netdev/list/?series=180426&state=*
+> 
+> If the proposal looks good, I will re-send the whole patchset
+> including devlink changes and driver usage.
+> 
+> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+> Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 
-Yeah, you need 02553b91da5d ("bpf: bpf_probe_read_kernel_str() has to
-return amount of data read on success") from bpf tree.
+IIUC this is an extension (or rather replacement) of the ETHTOOL_RESET
+ethtool subcommand. If this is the case, it would be probably better to
+implement the driver backend only once and let ethtool_reset() use the
+devlink handlers (future versions of ethtool utility could then use
+devlink interface directly).
 
-I'm eagerly awaiting bpf being merged into bpf-next :)
+For this purpose, I would suggest to switch the flags for AP and ROCE in
+enum devlink_reset_component:
 
-> # ./test_progs -t varlen
-> test_varlen:PASS:skel_open 0 nsec
-> test_varlen:PASS:skel_attach 0 nsec
-> test_varlen:FAIL:check got 0 != exp 8
-> test_varlen:FAIL:check got 0 != exp 7
-> test_varlen:FAIL:check got 0 != exp 15
-> test_varlen:FAIL:content_check doesn't match!test_varlen:FAIL:check got 0 != exp 8
-> test_varlen:FAIL:check got 0 != exp 7
-> test_varlen:FAIL:check got 0 != exp 15
-> test_varlen:FAIL:content_check doesn't match!test_varlen:FAIL:check got 0 != exp 8
-> test_varlen:FAIL:check got 0 != exp 7
-> test_varlen:FAIL:check got 0 != exp 15
-> test_varlen:FAIL:content_check doesn't match!test_varlen:FAIL:check got 0 != exp 8
-> test_varlen:FAIL:check got 0 != exp 7
-> test_varlen:FAIL:check got 0 != exp 15
-> test_varlen:FAIL:content_check doesn't match!
-> #87 varlen:FAIL
-> Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
->
-> # ./test_progs-no_alu32 -t varlen
-> Switching to flavor 'no_alu32' subdirectory...
-> test_varlen:PASS:skel_open 0 nsec
-> test_varlen:PASS:skel_attach 0 nsec
-> test_varlen:FAIL:check got 0 != exp 8
-> test_varlen:FAIL:check got 0 != exp 7
-> test_varlen:FAIL:check got 0 != exp 15
-> test_varlen:FAIL:content_check doesn't match!test_varlen:FAIL:check got 0 != exp 8
-> test_varlen:FAIL:check got 0 != exp 7
-> test_varlen:FAIL:check got 0 != exp 15
-> test_varlen:FAIL:content_check doesn't match!test_varlen:FAIL:check got 0 != exp 8
-> test_varlen:FAIL:check got 0 != exp 7
-> test_varlen:FAIL:check got 0 != exp 15
-> test_varlen:FAIL:content_check doesn't match!test_varlen:FAIL:check got 0 != exp 8
-> test_varlen:FAIL:check got 0 != exp 7
-> test_varlen:FAIL:check got 0 != exp 15
-> test_varlen:FAIL:content_check doesn't match!
-> #87 varlen:FAIL
-> Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
->
-> Thanks,
-> Daniel
+> +enum devlink_reset_component {
+> +	DEVLINK_RESET_COMP_MGMT		= (1 << 0),
+> +	DEVLINK_RESET_COMP_IRQ		= (1 << 1),
+> +	DEVLINK_RESET_COMP_DMA		= (1 << 2),
+> +	DEVLINK_RESET_COMP_FILTER	= (1 << 3),
+> +	DEVLINK_RESET_COMP_OFFLOAD	= (1 << 4),
+> +	DEVLINK_RESET_COMP_MAC		= (1 << 5),
+> +	DEVLINK_RESET_COMP_PHY		= (1 << 6),
+> +	DEVLINK_RESET_COMP_RAM		= (1 << 7),
+> +	DEVLINK_RESET_COMP_ROCE		= (1 << 8),
+> +	DEVLINK_RESET_COMP_AP		= (1 << 9),
+> +	DEVLINK_RESET_COMP_ALL		= 0xffffffff,
+> +};
+
+to make the flags match corresponding ETH_RESET_* flags.
+
+Michal
