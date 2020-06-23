@@ -2,96 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01A64204BD7
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 10:02:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A6D204BFF
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 10:13:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731603AbgFWICY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 04:02:24 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:43000 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731158AbgFWICX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 04:02:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1592899342; x=1624435342;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0ogUMEimjCKkrZVTOaTS0pbyYgrTcwl/8QxbW1JRQZo=;
-  b=s72LzhP5Xsvag/48itoOU6FY1eJEIOaUgS07NRmNvYT5kEp2C7SF8jSf
-   puZqBsr9IEz+v40oJvWlkhhSNRPtLZjxfVUYVPTfhETK9Z+1/Ze5LOqLh
-   qPKUoHVfaJxj8NKpG0rRcxyMGACQWZheYgoe2IqBXNzcQ8oN/6zrpJsxD
-   fHW+8Icp26T1RawhlXChbEmjzJipR2JAa2VmTHsV88Zek4lTxrNZoO8TU
-   ybliO8XJNebycwY4hGkvnuDcRUgpMYAclDt5Jc3np58ou2mGDCrInkeEE
-   7nVTXsjTBCcr/oP+07UFqHJ36SzUjPqLbsMo4NM8WfJz6WS7ccyuPe/Wn
-   Q==;
-IronPort-SDR: J6ZvwGuNaoSpKwnAaAeypTuXdyhRSVceuVIKH3RwYh4QvdmJKHXJ4aGW2lIpkllfCBG+EVA8Pt
- MTFoy6rg2fjQ8W/plsDPPdAIq0cpH+KcuBOSqG3s1XC0DpeTLFPt6Q6t9WzJTQ78I/LjLD8gGb
- 45Bs37LWResoGb9gue8JkjT+jMpzEA8fQG6VO00SuLgw8sIYf0SE3DutOirS0ie+RdISpZmDxF
- UcPZC+ensF3o14pj0qxf9JcYn54yRi1SUaUwO2Qu+jQfJppfqKXMZGWDOmRXly33imKYIWmark
- hFs=
-X-IronPort-AV: E=Sophos;i="5.75,270,1589266800"; 
-   d="scan'208";a="79430541"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jun 2020 01:02:22 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 23 Jun 2020 01:02:10 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 23 Jun 2020 01:02:21 -0700
-Date:   Tue, 23 Jun 2020 10:02:17 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     David Miller <davem@davemloft.net>
-CC:     <nikolay@cumulusnetworks.com>, <UNGLinuxDriver@microchip.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [Resend PATCH net] bridge: uapi: mrp: Fix MRP_PORT_ROLE
-Message-ID: <20200623080217.bjsml4jmrvrq6eev@soft-dev3.localdomain>
-References: <20200620131403.2680293-1-horatiu.vultur@microchip.com>
- <20200622.160712.2300967026610181117.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200622.160712.2300967026610181117.davem@davemloft.net>
+        id S1731603AbgFWINT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 04:13:19 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:33466 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731158AbgFWINT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 04:13:19 -0400
+Received: from bogon.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxj2uVufFeEK1IAA--.8S2;
+        Tue, 23 Jun 2020 16:13:10 +0800 (CST)
+From:   Kaige Li <likaige@loongson.cn>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Christian Benvenuti <benve@cisco.com>,
+        Govindarajulu Varadarajan <_govind@gmx.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>
+Subject: [PATCH RESEND] net/cisco: Fix a sleep-in-atomic-context bug in enic_init_affinity_hint()
+Date:   Tue, 23 Jun 2020 16:13:09 +0800
+Message-Id: <1592899989-22049-1-git-send-email-likaige@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9Dxj2uVufFeEK1IAA--.8S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Ww4DurW5Aw47Wr1UAFykuFg_yoW8GF1xpa
+        y8t3y8Zws5Jw1DZa1kK3Z7G3y5ua43u34qkF47A39YqrZ5XFWkJr9rtF43Zr1jqrWUGF1a
+        q3W2yr47WFn8Aa7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r43
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JV
+        WxJwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
+        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUj3CztUUUU
+        U==
+X-CM-SenderInfo: 5olntxtjh6z05rqj20fqof0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 06/22/2020 16:07, David Miller wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> From: Horatiu Vultur <horatiu.vultur@microchip.com>
-> Date: Sat, 20 Jun 2020 15:14:03 +0200
-> 
-> > Currently the MRP_PORT_ROLE_NONE has the value 0x2 but this is in conflict
-> > with the IEC 62439-2 standard. The standard defines the following port
-> > roles: primary (0x0), secondary(0x1), interconnect(0x2).
-> > Therefore remove the port role none.
-> >
-> > Fixes: 4714d13791f831 ("bridge: uapi: mrp: Add mrp attributes.")
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> 
-> The code accepts arbitrary 32-bit values for the role in a configuration
-> but only PRIMARY and SECONDARY seem to be valid.
-> 
-> There is no validation that the value used makes sense.
-> 
-> In the future if we handle type interconnect, and we add checks, it will
-> break any existing applications.  Because they can validly pass any
-> non-zero valid and the code treats that as SECONDARY currently.
-> 
-> So you really can't just remove NONE, you have to add validation code
-> too so we don't run into problem in the future.
+The kernel module may sleep with holding a spinlock.
 
-Thanks for the explanation. I will add some code that checks
-specifically for primary(0x0) and secondary(0x1) values and for any
-other value to return -EINVAL.
-Then in the future when we handle the type interconnect(0x2), we will
-just extend this code to check for this value.
+The function call paths (from bottom to top) are:
 
-> 
-> Thanks.
+[FUNC] zalloc_cpumask_var(GFP_KERNEL)
+drivers/net/ethernet/cisco/enic/enic_main.c, 125: zalloc_cpumask_var in enic_init_affinity_hint
+drivers/net/ethernet/cisco/enic/enic_main.c, 1918: enic_init_affinity_hint in enic_open
+drivers/net/ethernet/cisco/enic/enic_main.c, 2348: enic_open in enic_reset
+drivers/net/ethernet/cisco/enic/enic_main.c, 2341: spin_lock in enic_reset
 
+To fix this bug, GFP_KERNEL is replaced with GFP_ATOMIC.
+
+Signed-off-by: Kaige Li <likaige@loongson.cn>
+---
+
++cc netdev@vger.kernel.org
+
+ drivers/net/ethernet/cisco/enic/enic_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethernet/cisco/enic/enic_main.c
+index cd5fe4f..ee62065 100644
+--- a/drivers/net/ethernet/cisco/enic/enic_main.c
++++ b/drivers/net/ethernet/cisco/enic/enic_main.c
+@@ -122,7 +122,7 @@ static void enic_init_affinity_hint(struct enic *enic)
+ 		     !cpumask_empty(enic->msix[i].affinity_mask)))
+ 			continue;
+ 		if (zalloc_cpumask_var(&enic->msix[i].affinity_mask,
+-				       GFP_KERNEL))
++				       GFP_ATOMIC))
+ 			cpumask_set_cpu(cpumask_local_spread(i, numa_node),
+ 					enic->msix[i].affinity_mask);
+ 	}
 -- 
-/Horatiu
+2.1.0
+
