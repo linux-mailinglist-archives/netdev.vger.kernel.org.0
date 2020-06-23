@@ -2,69 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE3D02065C9
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:51:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 300EA2065CE
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:51:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389736AbgFWVdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 17:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391365AbgFWVdO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 17:33:14 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827C9C061573;
-        Tue, 23 Jun 2020 14:33:14 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C76DA129425B6;
-        Tue, 23 Jun 2020 14:33:13 -0700 (PDT)
-Date:   Tue, 23 Jun 2020 14:33:11 -0700 (PDT)
-Message-Id: <20200623.143311.995885759487352025.davem@davemloft.net>
-To:     likaige@loongson.cn
-Cc:     benve@cisco.com, _govind@gmx.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lixuefeng@loongson.cn,
-        yangtiezhu@loongson.cn
-Subject: Re: [PATCH RESEND] net/cisco: Fix a sleep-in-atomic-context bug in
- enic_init_affinity_hint()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1592899989-22049-1-git-send-email-likaige@loongson.cn>
-References: <1592899989-22049-1-git-send-email-likaige@loongson.cn>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S2388896AbgFWVdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 17:33:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53784 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390399AbgFWVd3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 17:33:29 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9A02A20707;
+        Tue, 23 Jun 2020 21:33:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592948008;
+        bh=9NLg7n4Vm8YuhO5SLAOq3ATmcJRnYMPf7/udDDBSDBI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oDugkRISYUgLWN+1xRK+0FTsRkEAV0LvwNxhHM9AYpGCR+lJfNksI8qQxuWyhM7XC
+         GiLIYevffhXhHLX3TaI9BSUOCrIbxh/URf2ZjsCJJbWukrjjLz5YUj6qcBIp3G1Wka
+         LpYyVxsA1X+hBPa6DTVv9XoEi+uZMZU4OX6i3gPs=
+Date:   Tue, 23 Jun 2020 14:33:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     Roi Dayan <roid@mellanox.com>, Maor Dickman <maord@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vlad Buslov <vladbu@mellanox.com>
+Subject: Re: [net-next 07/10] net/mlx5e: Move TC-specific function
+ definitions into MLX5_CLS_ACT
+Message-ID: <20200623143327.473a1d88@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <3e259566a57c6ce50843c1fadd80530e3307bc62.camel@mellanox.com>
+References: <20200623195229.26411-1-saeedm@mellanox.com>
+        <20200623195229.26411-8-saeedm@mellanox.com>
+        <20200623140357.6412f74f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3e259566a57c6ce50843c1fadd80530e3307bc62.camel@mellanox.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 23 Jun 2020 14:33:14 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kaige Li <likaige@loongson.cn>
-Date: Tue, 23 Jun 2020 16:13:09 +0800
-
-> The kernel module may sleep with holding a spinlock.
+On Tue, 23 Jun 2020 21:26:02 +0000 Saeed Mahameed wrote:
+> On Tue, 2020-06-23 at 14:03 -0700, Jakub Kicinski wrote:
+> > On Tue, 23 Jun 2020 12:52:26 -0700 Saeed Mahameed wrote:  
+> > > From: Vlad Buslov <vladbu@mellanox.com>
+> > > 
+> > > en_tc.h header file declares several TC-specific functions in
+> > > CONFIG_MLX5_ESWITCH block even though those functions are only
+> > > compiled
+> > > when CONFIG_MLX5_CLS_ACT is set, which is a recent change. Move
+> > > them to
+> > > proper block.
+> > > 
+> > > Fixes: d956873f908c ("net/mlx5e: Introduce kconfig var for TC
+> > > support")  
+> > 
+> > and here... do those break build or something?  
 > 
-> The function call paths (from bottom to top) are:
-> 
-> [FUNC] zalloc_cpumask_var(GFP_KERNEL)
-> drivers/net/ethernet/cisco/enic/enic_main.c, 125: zalloc_cpumask_var in enic_init_affinity_hint
-> drivers/net/ethernet/cisco/enic/enic_main.c, 1918: enic_init_affinity_hint in enic_open
-> drivers/net/ethernet/cisco/enic/enic_main.c, 2348: enic_open in enic_reset
-> drivers/net/ethernet/cisco/enic/enic_main.c, 2341: spin_lock in enic_reset
-> 
-> To fix this bug, GFP_KERNEL is replaced with GFP_ATOMIC.
-> 
-> Signed-off-by: Kaige Li <likaige@loongson.cn>
+> No, just redundant exposure and leftovers.
+> Do you want me to remove the Fixes Tags ?
+> Personally I don't mind fixes tags for something this basic,
+> but your call.. 
 
-Just grepping around for GFP_KERNEL usage in atomic contexts I guess
-is fine.
-
-But you really have to look at the bigger picture.
-
-Calling a NIC driver open function from a context holding a spinlock
-is very much the real problem, so many operations have to sleep and
-in face that ->ndo_open() method is defined as being allowed to sleep
-and that's why the core networking never invokes it with spinlocks
-held.
+If you don't mind - please remove them, IMHO frivolous use of Fixes
+tags removes half of their value.
