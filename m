@@ -2,92 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A74205844
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 19:07:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8964205855
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 19:13:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733149AbgFWRHr convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 23 Jun 2020 13:07:47 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47548 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732940AbgFWRHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 13:07:47 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05NGoKxU012000
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 10:07:46 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31uk2ugyu7-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 10:07:46 -0700
-Received: from intmgw003.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 23 Jun 2020 10:07:44 -0700
-Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
-        id 1C8A73D84E272; Tue, 23 Jun 2020 10:07:39 -0700 (PDT)
-Smtp-Origin-Hostprefix: devvm
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
-To:     <linux-kernel@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: vll1c12
-Subject: [PATCH] linux/log2.h: enclose macro arg in parens
-Date:   Tue, 23 Jun 2020 10:07:39 -0700
-Message-ID: <20200623170739.3151706-1-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.24.1
+        id S1733126AbgFWRN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 13:13:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51686 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732408AbgFWRNZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 13:13:25 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4ACC061573;
+        Tue, 23 Jun 2020 10:13:25 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id s18so24612631ioe.2;
+        Tue, 23 Jun 2020 10:13:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=gav8ijUBF61wP1+X8OQ02YRSM92QldsTlZ+CycghqWQ=;
+        b=cdzV+ETP07I33HudSyeKrDtsRTaXJVyKI6vcuiVFuqW6RbsOyMreTaswG5KebPHMO0
+         vyyhfzNfTH4k/xeIqEkZKWpIOtTLJ8XX+KUq4H0G8l6B9kMh3tUiTpGYaeCuCjtNNHCz
+         Csqk9sdFVrALNuRa9trFy8cNUMHSfOceduV4w2k7adIFgmh8o2rqxes1Ixc+yzgXnMLd
+         KtslowaXpmf5KdRKd96ZSUqoYcFH+YT59KplCA6rdIu1U/z5VkZNNJ58N0A4WLFmF6Lq
+         Tey7yiCB6HjFKKvSF8SlMw2X9N6cwzAGBrykZDepGtDDzfdzGvn+EbDncRqXKOiaMvHy
+         f/rA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=gav8ijUBF61wP1+X8OQ02YRSM92QldsTlZ+CycghqWQ=;
+        b=PGhRxok5sBr/haXEu5ZjAAnTnbp6x2TuDL2C1cZ7PygT66kOH6/IiNoXDv9mZVSnG7
+         9cAFyGlILZz1W1mSIre2IBvfXb5VrFi4Z0sgs+srmMngb812CGeQFHS8S1VG5qhJFHY5
+         zc6rDoQFeqmIln3Rf0gpTnCe0Ab5dhmakhfxI9gnAVXrBRM0IXaDx8RHmVCVFsQM8kPN
+         463lhqwkh00iITulfHbmMvBUczP8CAXJy3VlOs4hEB659/TVpaDnoEh2jrBSSgHC4VLk
+         RJayKbadVYLR5ZgxL8nQpt7pCb0P8hoJj8Uez7uHaCintE1V9rOfOm0OucuvybxOkNCO
+         cqGQ==
+X-Gm-Message-State: AOAM532j7ix0ihDXCteb0p1pEyLWySaXE81tZaCpOjVqympcf32+XLuF
+        kQT9aM6cIx0BsiQJgD/ZG6M=
+X-Google-Smtp-Source: ABdhPJysdFzYXvC1j93G3qEsquf7FXPHR9CcklrrqqoU1stw2CZaEvMVlbtS1FupazdvvJ6WmJLCpA==
+X-Received: by 2002:a6b:f40a:: with SMTP id i10mr26246091iog.155.1592932404992;
+        Tue, 23 Jun 2020 10:13:24 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id u15sm4107579iog.18.2020.06.23.10.13.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 23 Jun 2020 10:13:24 -0700 (PDT)
+Subject: [bpf PATCH] bpf: do not allow btf_ctx_access with __int128 types
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     jolsa@kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        john.fastabend@gmail.com
+Date:   Tue, 23 Jun 2020 10:13:12 -0700
+Message-ID: <159293239241.32225.12338844121877017327.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-23_11:2020-06-23,2020-06-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=774
- bulkscore=0 priorityscore=1501 spamscore=0 malwarescore=0 suspectscore=1
- adultscore=0 clxscore=1034 phishscore=0 impostorscore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006120000 definitions=main-2006230122
-X-FB-Internal: deliver
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan Lemon <bsd@fb.com>
+To ensure btf_ctx_access() is safe the verifier checks that the BTF
+arg type is an int, enum, or pointer. When the function does the
+BTF arg lookup it uses the calculation 'arg = off / 8'  using the
+fact that registers are 8B. This requires that the first arg is
+in the first reg, the second in the second, and so on. However,
+for __int128 the arg will consume two registers by default LLVM
+implementation. So this will cause the arg layout assumed by the
+'arg = off / 8' calculation to be incorrect.
 
-roundup_pow_of_two uses its arg without enclosing it in parens.
+Because __int128 is uncommon this patch applies the easiest fix and
+will force int types to be sizeof(u64) or smaller so that they will
+fit in a single register.
 
-A call of the form:
-
-   roundup_pow_of_two(boolval ? PAGE_SIZE : frag_size)
-
-resulted in an compile warning:
-
-warning: ?: using integer constants in boolean context [-Wint-in-bool-context]
-              PAGE_SIZE :
-../include/linux/log2.h:176:4: note: in definition of macro ‘roundup_pow_of_two’
-   (n == 1) ? 1 :  \
-    ^
-And the resulting code used '1' as the result of the operation.
-
-Fixes: 312a0c170945 ("[PATCH] LOG2: Alter roundup_pow_of_two() so that it can use a ilog2() on a constant")
-
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Fixes: 9e15db66136a1 ("bpf: Implement accurate raw_tp context access via BTF")
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- include/linux/log2.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/btf.h |    5 +++++
+ kernel/bpf/btf.c    |    4 ++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/log2.h b/include/linux/log2.h
-index 83a4a3ca3e8a..c619ec6eff4a 100644
---- a/include/linux/log2.h
-+++ b/include/linux/log2.h
-@@ -173,7 +173,7 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
- #define roundup_pow_of_two(n)			\
- (						\
- 	__builtin_constant_p(n) ? (		\
--		(n == 1) ? 1 :			\
-+		((n) == 1) ? 1 :		\
- 		(1UL << (ilog2((n) - 1) + 1))	\
- 				   ) :		\
- 	__roundup_pow_of_two(n)			\
--- 
-2.24.1
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 5c1ea99..35642f6 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -82,6 +82,11 @@ static inline bool btf_type_is_int(const struct btf_type *t)
+ 	return BTF_INFO_KIND(t->info) == BTF_KIND_INT;
+ }
+ 
++static inline bool btf_type_is_small_int(const struct btf_type *t)
++{
++	return btf_type_is_int(t) && (t->size <= sizeof(u64));
++}
++
+ static inline bool btf_type_is_enum(const struct btf_type *t)
+ {
+ 	return BTF_INFO_KIND(t->info) == BTF_KIND_ENUM;
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 58c9af1..9a1a98d 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3746,7 +3746,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 				return false;
+ 
+ 			t = btf_type_skip_modifiers(btf, t->type, NULL);
+-			if (!btf_type_is_int(t)) {
++			if (!btf_type_is_small_int(t)) {
+ 				bpf_log(log,
+ 					"ret type %s not allowed for fmod_ret\n",
+ 					btf_kind_str[BTF_INFO_KIND(t->info)]);
+@@ -3768,7 +3768,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 	/* skip modifiers */
+ 	while (btf_type_is_modifier(t))
+ 		t = btf_type_by_id(btf, t->type);
+-	if (btf_type_is_int(t) || btf_type_is_enum(t))
++	if (btf_type_is_small_int(t) || btf_type_is_enum(t))
+ 		/* accessing a scalar */
+ 		return true;
+ 	if (!btf_type_is_ptr(t)) {
 
