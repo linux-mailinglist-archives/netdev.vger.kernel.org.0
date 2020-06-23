@@ -2,119 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9F4E2066F4
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 00:11:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3052F2066F7
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 00:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388815AbgFWWLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 18:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
+        id S2389491AbgFWWL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 18:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387840AbgFWWLM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 18:11:12 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51599C061573;
-        Tue, 23 Jun 2020 15:11:12 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id d27so149875qtg.4;
-        Tue, 23 Jun 2020 15:11:12 -0700 (PDT)
+        with ESMTP id S2389401AbgFWWL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 18:11:27 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616ACC061573;
+        Tue, 23 Jun 2020 15:11:27 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id b5so51982pfp.9;
+        Tue, 23 Jun 2020 15:11:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=yz11ciyHBUyfQdsgqu8iMb/6aua6PZ+Q9S5NKvvlTbE=;
-        b=O87y6dWV1bPYh1LE87O3QzQm66UbzFCYARgqz4cN6sph6Vg91tcBeNs+4gYKKSSYYR
-         H/NrDtgVRafpykjTWfnNK1y8ZaeqdAvXeHl2v3dUPUWHv6HX0JAOWKZHOk9xvYdeU7cb
-         ieuOr7x/flNBFqW3hGpbDphUPM1RQMHQ67kYxUSNhghEVqGyR6WMphmfa3GclfRDBVFe
-         fwIqnuzlK0XWoLBWHd9i4G1PP94+HljznwWJvdVyzZA25rrZjzZULUvQRbZFhR4U6pz8
-         BCY9PhjP7eNzFSosL+Y0m03Qzq+Sy1+OGAfn4jneoU7HtkONsI0wJPw7lqC4mRrayrkY
-         Vd7g==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+5IJDnZQqQFZHwLYeKtmGuz/RCrxf3/d/nSinCwk21A=;
+        b=tzM3PFMNQV5udEKabZBfaEPo+aYu3Sy/GLJ8H4Um7gwwHB+dJpFW/cCjHsI6kvGiVm
+         1W99pTK6HwukbvqBmrLwtx5E6QeE6V6mO9dM14cEAQYYpMRxIk1kcR9DE5Yk8iSlpVl1
+         mKeuRntLzsP8QetozfBqTrLM+MhPo8EOdJn2gxpQXkRXClhSDyddRPoPKqzAxYFoOP1A
+         4sxnPnCtxzQHNeH4dQrRSJ+tUv0DajsZvs6hkKOxblqYfgsjRpsgMsNS6RKthGH9dje3
+         NxFNOPUln+3tseLt+54tF1EdYkvDBC6mXxL6ilxhxlhQvWErHM60IAHIe/J8iVua5JgF
+         rfmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=yz11ciyHBUyfQdsgqu8iMb/6aua6PZ+Q9S5NKvvlTbE=;
-        b=cRIZ9HR33yxPGNziGhhaAynFX4/jdh7BvM+KpF1zqQFl46yGFtV2nLTT4apk5r/k1D
-         AD8srfWcsDar46rfxpRB+nUQIbhCDG+gKy6r78jTsN9pXNnfNS2yqAZ6dsXDOuk2AfVZ
-         gOCAmYnI0SbXD+Gjxx7y2L/8NXg3MpH/uLbhm4IL3Of+bCzCO/qa3WWRNM6aXXMQ8xFp
-         XP7xkZwT891rAbkgUeBj/PRIcSXDVXnev2R7vUE3nYxRKlJAOk991+hLHjrqSqSQzVCk
-         45VK7ORXF3Myl8xYyDdfC0fzZPTB467pw/aMRWrIsSG1NZ366nzo/HiPkvXe/AWaEJLb
-         Igng==
-X-Gm-Message-State: AOAM531GUwybVYWrQrx1NSbigULJTmlNN7yVRFF+FtUygmr+e3Sw7BUZ
-        ikkiIvps9P3Iw402ia2Zbo8=
-X-Google-Smtp-Source: ABdhPJzXR2d0Y1jwkxVKARZz1HePUifurRj2yiAIpH9ks1hX2QFgQTL8nJ3mmI6wKmlJ08KCbN6FUg==
-X-Received: by 2002:aed:33c5:: with SMTP id v63mr23901443qtd.104.1592950271349;
-        Tue, 23 Jun 2020 15:11:11 -0700 (PDT)
-Received: from buszk-y710.fios-router.home (pool-108-54-206-188.nycmny.fios.verizon.net. [108.54.206.188])
-        by smtp.googlemail.com with ESMTPSA id b53sm1866464qtc.65.2020.06.23.15.11.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Jun 2020 15:11:10 -0700 (PDT)
-From:   Zekun Shen <bruceshenzk@gmail.com>
-Cc:     security@kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ath10k: fix OOB: __ath10k_htt_rx_ring_fill_n
-Date:   Tue, 23 Jun 2020 18:11:05 -0400
-Message-Id: <20200623221105.3486-1-bruceshenzk@gmail.com>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+5IJDnZQqQFZHwLYeKtmGuz/RCrxf3/d/nSinCwk21A=;
+        b=ATJZjKX88+ll7tEs3d+AKLy9BswIfCunFnSe95ccqdNj36EBe6g5T34PK10Xla7g3X
+         BlBxwV98/xhwl6EGSExZ/HwbaxJp5JtMzr6adrZSF/Q8q25I6ROb2dkTMyqG8sk3rz7y
+         Z/NjLNQJyDK4+9iLrg7IrlwpXgqeyhSC+GM9+dK7qA8RQsz9DTn2NKUnV7OyNfdrN5E9
+         xQ9bTR8rryeWTHMxdvwjknwyjHU1fWKviLW5OZ/18M0n9hYrbFP1pvzgUHV++jn6m6oK
+         4zCOXhO7FE0iP8E2To3/uYM3VmTjYpBGpvi6b2vL/NpyDAhUNHSfHryFutxsFJlivkre
+         bpdA==
+X-Gm-Message-State: AOAM533cpxw0/KjtBMtakuz9HZrF6grYCRG8d1Bs6VOwNpVU33rO0UfA
+        BxWPfG/N6b+FtGWSRzHmEEkpjC+2
+X-Google-Smtp-Source: ABdhPJy7nDiSafQO9ZtRLhlx7queFvQOYR+rGWFAizm3mQYfnWGqLvoDt4JbzcT5uKsramrCIe9VjQ==
+X-Received: by 2002:a65:6714:: with SMTP id u20mr12997718pgf.121.1592950286704;
+        Tue, 23 Jun 2020 15:11:26 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id u23sm8646276pgn.26.2020.06.23.15.11.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Jun 2020 15:11:25 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v3 09/15] bpf: add bpf_skc_to_udp6_sock() helper
+To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
+        Martin KaFai Lau <kafai@fb.com>
+References: <20200623003626.3072825-1-yhs@fb.com>
+ <20200623003636.3074473-1-yhs@fb.com>
+ <d0a594f6-bd83-bb48-01ce-bb960fdf8eb3@gmail.com>
+ <a721817d-7382-f3d1-9cd0-7e6564b70f8b@fb.com>
+ <37d6021e-1f93-259e-e90a-5cda7fddcb21@gmail.com>
+ <3e24b214-fc7e-d585-9c8d-98edd6202e70@fb.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <ca899dce-4eac-382d-538b-4cab1f5c249d@gmail.com>
+Date:   Tue, 23 Jun 2020 15:11:24 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
+MIME-Version: 1.0
+In-Reply-To: <3e24b214-fc7e-d585-9c8d-98edd6202e70@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The idx in __ath10k_htt_rx_ring_fill_n function lives in
-consistent dma region writable by the device. Malfunctional
-or malicious device could manipulate such idx to have a OOB
-write. Either by
-    htt->rx_ring.netbufs_ring[idx] = skb;
-or by
-    ath10k_htt_set_paddrs_ring(htt, paddr, idx);
 
-The idx can also be negative as it's signed, giving a large
-memory space to write to.
 
-It's possibly exploitable by corruptting a legit pointer with
-a skb pointer. And then fill skb with payload as rougue object.
+On 6/23/20 10:03 AM, Yonghong Song wrote:
+> 
+> 
+> On 6/23/20 9:27 AM, Eric Dumazet wrote:
+>>
+>>
+>> On 6/22/20 7:22 PM, Yonghong Song wrote:
+>>>
+>>>
+>>> On 6/22/20 6:47 PM, Eric Dumazet wrote:
+>> &
+>>>>
+>>>> Why is the sk_fullsock(sk) needed ?
+>>>
+>>> The parameter 'sk' could be a sock_common. That is why the
+>>> helper name bpf_skc_to_udp6_sock implies. The sock_common cannot
+>>> access sk_protocol, hence we requires sk_fullsock(sk) here.
+>>> Did I miss anything?
+>>
+>> OK, if arbitrary sockets can land here, you need also to check sk_type
+> 
+> The current check is:
+>         if (sk_fullsock(sk) && sk->sk_protocol == IPPROTO_UDP &&
+>             sk->sk_family == AF_INET6)
+>                 return (unsigned long)sk;
+> it checks to ensure it is full socket, it is a ipv6 socket and then check protocol.
+> 
+> Are you suggesting to add the following check?
+>   sk->sk_type == SOCK_DGRAM
+> 
+> Not a networking expert. Maybe you can explain when we could have
+> protocol is IPPROTO_UDP and sk_type not SOCK_DGRAM?
 
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
----
-Part of the log here. Sometimes it appears as UAF when writing 
-to a freed memory by chance.
 
- [   15.594376] BUG: unable to handle page fault for address: ffff887f5c1804f0
- [   15.595483] #PF: supervisor write access in kernel mode
- [   15.596250] #PF: error_code(0x0002) - not-present page
- [   15.597013] PGD 0 P4D 0
- [   15.597395] Oops: 0002 [#1] SMP KASAN PTI
- [   15.597967] CPU: 0 PID: 82 Comm: kworker/u2:2 Not tainted 5.6.0 #69
- [   15.598843] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), 
- BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
- [   15.600438] Workqueue: ath10k_wq ath10k_core_register_work [ath10k_core]
- [   15.601389] RIP: 0010:__ath10k_htt_rx_ring_fill_n 
- (linux/drivers/net/wireless/ath/ath10k/htt_rx.c:173) ath10k_core
+RAW sockets for instance.
 
- drivers/net/wireless/ath/ath10k/htt_rx.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Look at :
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
-index d787cbead..4e411b33a 100644
---- a/drivers/net/wireless/ath/ath10k/htt_rx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
-@@ -142,6 +142,14 @@ static int __ath10k_htt_rx_ring_fill_n(struct ath10k_htt *htt, int num)
- 	BUILD_BUG_ON(HTT_RX_RING_FILL_LEVEL >= HTT_RX_RING_SIZE / 2);
- 
- 	idx = __le32_to_cpu(*htt->rx_ring.alloc_idx.vaddr);
-+
-+	if (idx < 0 || idx >= htt->rx_ring.size) {
-+		ath10k_err(htt->ar, "idx OOB, firmware malfunctioning?\n");
-+		idx &= htt->rx_ring.size_mask;
-+		ret = -ENOMEM;
-+		goto fail;
-+	}
-+
- 	while (num > 0) {
- 		skb = dev_alloc_skb(HTT_RX_BUF_SIZE + HTT_RX_DESC_ALIGN);
- 		if (!skb) {
--- 
-2.17.1
+commit 940ba14986657a50c15f694efca1beba31fa568f
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Tue Jan 21 23:17:14 2020 -0800
 
+    gtp: make sure only SOCK_DGRAM UDP sockets are accepted
+    
+    A malicious user could use RAW sockets and fool
+    GTP using them as standard SOCK_DGRAM UDP sockets.
