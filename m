@@ -2,149 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 123AA2054EF
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 16:38:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC32E205508
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 16:42:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732898AbgFWOh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 10:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732846AbgFWOh5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 10:37:57 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A809C061796
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 07:37:57 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id f18so3478276wml.3
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 07:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ceG/rp64xRAj8gur9y870c/+SKauz/Pvvf3Ek5gAYHE=;
-        b=S/38hRP9jJeEO0648j5i0HwQUkmAn8MPLasoGaNt8LdCbQqEVydbz8k0QMIB7TcSxT
-         mB8W7q1gDfv+vrDORU79pdT175xGSNJNn9FeFSOeCambF0o+fNWV7YZc6bTiG/1Z6IfR
-         QyqfeR3sUuTOxKqqFW+5Mj6QQ1oGWLVdX8LKSRdVg1scMMyLuhkobEB7qpI1w1w/qH7z
-         jwaDjR41jrisZougD+3Uuakf/CAy6jS5bQHpWHTAieha1OiW3LJqSFRQr/vLShLUiHPk
-         yPP9bihWulsfYdzcIcoqxokyu81EfkMggDs54t64ujxNzfIYZShzXVRQcjXTRd7mV3TJ
-         lmtg==
+        id S1732827AbgFWOmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 10:42:16 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:32045 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732738AbgFWOmQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 10:42:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592923334;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mPOfZFaF+bdCbm0ydM+kQRFRBQ8scE3A9xTZmb9+eHU=;
+        b=jF4fFcmOWUeZzkHgzSRFZkOPwSpowDvuXwJPRVza+2NJA6QEYK14NPuc5zrfz6w6P6b4SJ
+        BzoB/sRcTXoEA/E3E4qjhJruQOvEcdc3m/kEOhQoVBvWG4CP0QqEoHT1LWDvjrAqVXJFz0
+        B9PzmueCEHiEbWYh8+YrRn4a3K5BSyA=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-6-l-ooj98CMdCGqT0rwualpA-1; Tue, 23 Jun 2020 10:42:12 -0400
+X-MC-Unique: l-ooj98CMdCGqT0rwualpA-1
+Received: by mail-wr1-f70.google.com with SMTP id e11so6455944wrs.2
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 07:42:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ceG/rp64xRAj8gur9y870c/+SKauz/Pvvf3Ek5gAYHE=;
-        b=VH1yGPOfpKcX6wfTchHbpXHlVIfFmdAojyHMrExFR/XpGfXxgqGw78RCRUx/3kKlbi
-         JIFFSx2G+hJwVZlEkHfAwFEFfkzMauOqF5OGWTgTnRnOlY2yjam19ENcBT51Q3zeYqxv
-         BG1Yiyd4/Mq9ug/w9oBDn12wCnIRwfrDFo/T1o5ApuT7th11ts2Um9SZciBo/8arVidQ
-         ju4FXFjaVendPDSwoSD33qUAmulvdDh1QFt8C2KmgOFYUDVzDZgvOzEVr0gCzzfSn/HL
-         H+aJM1Bh4AudIDXaTgZJI0k6IbWvYhH0rObXb5VeACdsnuyMky6q7hiCvZC2NV+DgMvw
-         pNaA==
-X-Gm-Message-State: AOAM530VElIhsb+vcaGJOgrt5ddKQCm7tAHidDQjX7yaCVLNmmgMJ8x5
-        tLmlOkR69/YrHpVM4gBwjLJfsQ==
-X-Google-Smtp-Source: ABdhPJzFhA2lwUjrw8Uh+XlYz4CBl1VsesMxrJl8KjSj+B5PacC6wuAYbyLBKbmaRzqOKAPJJSOTSQ==
-X-Received: by 2002:a1c:9943:: with SMTP id b64mr24802648wme.102.1592923075430;
-        Tue, 23 Jun 2020 07:37:55 -0700 (PDT)
-Received: from [192.168.0.41] (lns-bzn-59-82-252-131-168.adsl.proxad.net. [82.252.131.168])
-        by smtp.googlemail.com with ESMTPSA id h14sm6949375wrt.36.2020.06.23.07.37.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Jun 2020 07:37:54 -0700 (PDT)
-Subject: Re: [PATCH v4 00/11] Stop monitoring disabled devices
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        kernel@collabora.com
-References: <Message-ID: <4493c0e4-51aa-3907-810c-74949ff27ca4@samsung.com>
- <20200528192051.28034-1-andrzej.p@collabora.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <9cbffad6-69e4-0b33-4640-fde7c4f6a6e7@linaro.org>
-Date:   Tue, 23 Jun 2020 16:37:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=mPOfZFaF+bdCbm0ydM+kQRFRBQ8scE3A9xTZmb9+eHU=;
+        b=eBgTQY8z6Trgz/U6ocjvJWPjz98qZ0mgcImRqpR1FWd9bDR9NBWIVvP5Tar294DJia
+         SCwyDQeaQN9LFKOxsgwwIZRaWdSnGOeHXCjZRH6kwH6lVNR5hlvqWyDDphJIXTfjuH4A
+         79QagysvlaxCEskpVPvxfpKUkzCjt8YU//wybj67Ws6/2H405ENtckRSbE2sRygWxsoO
+         q9LAhabaKDmCGRHVbXyPBY5gg2hSQDYtj5hwnRbJuelIBV3seqRsDbf4sYsITQT5ZVQU
+         aTKsFZlfqcnx14eAGounEKLZkf63T9+o7+e+ENQkXlkCNhtuxbk7Ht7Ibe1TpwRssEaj
+         Gf9Q==
+X-Gm-Message-State: AOAM5336Z+jqibTmus5Hc1uRJd4TGGkPNuKu2zPs8/PAjmlbMU2SqpHq
+        bQ7H2CkPBSXO7JsVnWnWuzcVLFao0/Vqbh4O7TMvAkdo5EupqIX6dPFrGh1W/yxeCSF9PJAttTK
+        5cKQ6WmZL6bp85zXd
+X-Received: by 2002:adf:e285:: with SMTP id v5mr25169181wri.129.1592923330751;
+        Tue, 23 Jun 2020 07:42:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwmHWDOuDtiB37Ir1bpYYZm3cgpiWQYz+hwCXOOThQnShQNMF77cdnf/6yuMEyCU5MTi1D9bA==
+X-Received: by 2002:adf:e285:: with SMTP id v5mr25169152wri.129.1592923330463;
+        Tue, 23 Jun 2020 07:42:10 -0700 (PDT)
+Received: from redhat.com (bzq-79-182-31-92.red.bezeqint.net. [79.182.31.92])
+        by smtp.gmail.com with ESMTPSA id n14sm521539wro.81.2020.06.23.07.42.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2020 07:42:09 -0700 (PDT)
+Date:   Tue, 23 Jun 2020 10:42:06 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
+Cc:     kvm list <kvm@vger.kernel.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Subject: Re: [RFC v9 02/11] vhost: use batched get_vq_desc version
+Message-ID: <20200623103746-mutt-send-email-mst@kernel.org>
+References: <20200619182302.850-1-eperezma@redhat.com>
+ <20200619182302.850-3-eperezma@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200528192051.28034-1-andrzej.p@collabora.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200619182302.850-3-eperezma@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Hi Andrzej,
-
-
-On 28/05/2020 21:20, Andrzej Pietrasiewicz wrote:
-> There is already a reviewed v3 (not to be confused with RFC v3), which can
-> be considered for merging:
+On Fri, Jun 19, 2020 at 08:22:53PM +0200, Eugenio Pérez wrote:
+> From: "Michael S. Tsirkin" <mst@redhat.com>
 > 
-> https://lore.kernel.org/linux-pm/20200423165705.13585-2-andrzej.p@collabora.com/
+> As testing shows no performance change, switch to that now.
 > 
-> Let me cite Bartlomiej Zolnierkiewicz:
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+> Link: https://lore.kernel.org/r/20200401183118.8334-3-eperezma@redhat.com
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+> ---
+>  drivers/vhost/test.c  |   2 +-
+>  drivers/vhost/vhost.c | 314 ++++++++----------------------------------
+>  drivers/vhost/vhost.h |   7 +-
+>  3 files changed, 61 insertions(+), 262 deletions(-)
 > 
-> "I couldn't find the problems with the patch itself (no new issues
-> being introduced, all changes seem to be improvements over the current
-> situation).
-> 
-> Also the patch is not small but it also not that big and it mostly
-> removes the code:
-> 
-> 17 files changed, 105 insertions(+), 244 deletions(-)"
+> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+> index a09dedc79f68..650e69261557 100644
+> --- a/drivers/vhost/test.c
+> +++ b/drivers/vhost/test.c
+> @@ -119,7 +119,7 @@ static int vhost_test_open(struct inode *inode, struct file *f)
+>  	dev = &n->dev;
+>  	vqs[VHOST_TEST_VQ] = &n->vqs[VHOST_TEST_VQ];
+>  	n->vqs[VHOST_TEST_VQ].handle_kick = handle_vq_kick;
+> -	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV,
+> +	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV + 64,
+>  		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT, true, NULL);
+>  
+>  	f->private_data = n;
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 2d784681b0fa..13021d6986eb 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -304,6 +304,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+>  {
+>  	vq->num = 1;
+>  	vq->ndescs = 0;
+> +	vq->first_desc = 0;
+>  	vq->desc = NULL;
+>  	vq->avail = NULL;
+>  	vq->used = NULL;
+> @@ -372,6 +373,11 @@ static int vhost_worker(void *data)
+>  	return 0;
+>  }
+>  
+> +static int vhost_vq_num_batch_descs(struct vhost_virtqueue *vq)
+> +{
+> +	return vq->max_descs - UIO_MAXIOV;
+> +}
+> +
+>  static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
+>  {
+>  	kfree(vq->descs);
 
 
-Thanks for this nice cleanup. Given the series was tested, reviewed and
-acked, I would like to merge it as soon as possible.
+Batching is enabled if max_descs > UIO_MAXIOV.
 
-Can you send the V5 with the EXPORT_SYMBOL_GPL fixed ? So the series can
-enter the integration loop.
+So this uses batching for test.
 
-Thanks
+But net is unchanged, so it is still not using the batched version.
+Is that right?
 
- -- Daniel
+I think a better subject would be "vhost/test: use batched get_vq_desc version".
 
+And that explains which testing it refers to: the one executed by vhost test.
 
+I think there was a separate patch to enable that for net separately,
+but it got lost - or did I miss it?
 
 -- 
-<http://www.linaro.org/> Linaro.org â”‚ Open source software for ARM SoCs
+MST
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
