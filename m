@@ -2,143 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A47BE205AAF
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 20:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57770205ADF
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 20:34:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387575AbgFWS3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 14:29:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35252 "EHLO
+        id S1733254AbgFWSdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 14:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733193AbgFWS3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 14:29:50 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40032C061798
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 11:29:49 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id m2so1933504pjv.2
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 11:29:49 -0700 (PDT)
+        with ESMTP id S1733174AbgFWSdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 14:33:47 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08EDC061573;
+        Tue, 23 Jun 2020 11:33:46 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id cv17so10115670qvb.13;
+        Tue, 23 Jun 2020 11:33:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JXkDSAr5/uPdypFT+vPhb9QM0XECCw1QogkIjza9trI=;
-        b=VRPOqKgXBbe1omCau4oEOar/p3bhX1hnmkDK5oo6kzWoboZd6SthW3HQ/fnF48E5Ad
-         TFy6wVC1Zt0tVzcHOtTOw47hdeOauaMgmaZ6zltDMfNdLob+S/bzF8RmsABX4aqnrS72
-         FqSw42FCWi78K/1FW37NBnAtRs40JSIujuQZ/C35kNhgObkKHAK+mu644bPs+DnywUvm
-         fYYXdKXmrR/Epl78LsQPaZhh4kpgqCqvEbEKQBq3LNEoOjFO3Gb/VXUTw5HcjdoODVkn
-         jAQBGKwdodjJ4m51Dq2h17KJmJpx4MvyUs2jS+Pi8XwYstLDwRvgem5B+kNI/TaA60cZ
-         bdTA==
+        bh=QCcgoWpqsPBIRGWIpIPXz560VFo4wTsrkocxos1a58M=;
+        b=l9OA6O1coHeRAOluEwFNfdZqF+YQs441fSxNEpkuWFaZa2peWeekfb+Ex2QDO4hPCH
+         B05HGXwQaaFq3eYG6xbEHXOLpESM6t0Fc3U/o50LatiC9kh0xBfYoZZeTcJwmZgQiv3v
+         4VYgWmg5e5FiM+8CiS6u9svdaMj/LwsEtoF27joWHP0a0N56uCHNJ78ZudXBXtcAqXKt
+         CW63XrUUmvb8SOffxRHZs6ukeOxvKVVD1zqeUfoviQeuNgdDDVRqYFj0BbwKSvB9Ox1J
+         F+vCt87GT4boOFlx5YFe+3Jb0wgqsqC3/Rl+KEKRTu7NRIfaeciNEVzZdR7pfQmpGbMv
+         DVqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JXkDSAr5/uPdypFT+vPhb9QM0XECCw1QogkIjza9trI=;
-        b=UNpOCSfArZDBXHzwzoBGg80dYFs2GPKmbFvH3wRZthji1ro25tCLmirLbMNUbD4tt6
-         M1z+BC5R8UOkCVxM9qUP2y18bx1f/PzJ1kHctsBCJfT0e9de/GfnrXKNAGY41QsfaJ76
-         aCFVivEZbsgtZGZMRbBrjMch861fPE4sX0mU9Xg26UF4SvA1hudV2t3lK+mmG+cWZ4zp
-         aM9udwqedsD2s9I8fvgIxdvH4k3K4Yo624o2iJhcbSrRsg5htAQqxNBu59GYvYHuxoyp
-         CGE4w+UYHkRt1sXJGLIHo/r8JPHwAKYhTKdPqXZn87+Ay+EI8+cZM7weNvE9ozWRRd2o
-         QQMw==
-X-Gm-Message-State: AOAM531otGrJmk0ROLL85E9uRyEgnJ0pOVEsJRS68imWLTkOHZLAcuKe
-        jVx0sWHztpvjFcTuqhvAxBPxbHLfCEDYQpyD34Tm5A==
-X-Google-Smtp-Source: ABdhPJwFYRuJg9EUbjSytVc+yfQjuDOMjwE4SVCIBy3rni20OvAXlm0XdI+2Z8txK6JARtyDXhDgAzhgcWbhIpdXKAY=
-X-Received: by 2002:a17:902:fe8b:: with SMTP id x11mr24842368plm.179.1592936988375;
- Tue, 23 Jun 2020 11:29:48 -0700 (PDT)
+        bh=QCcgoWpqsPBIRGWIpIPXz560VFo4wTsrkocxos1a58M=;
+        b=X04M2tpvfwLc5v3QgOjVRGovJt3joLcvTixhYV8vQEhjUoUmCSexGMtNpuR355EZDf
+         oImL953aKqkxZNQHvxUoFNYtqKD4U8AYru/PfouUrSoiTFWR5e4fAcfLVFB2wd6BNp9U
+         vybX/fgQHBuGlZg7CukpfVBCibvOZgSLah7w6D06rK4+hWDpcAvzfnpihCzo/EhgHz6K
+         2qVuxuBNFrq0cswF1qIPZfcoIPwT81jyUo2lt95C5u7eOBQARpHeuBcHRcmdVJc/jfCw
+         eUo/vsKkXf5pggkJ+z48r7XxnDKsiNfXX8v/isgk3djRGDK96BAdOreHtHUD7g2UO5Iz
+         FvRQ==
+X-Gm-Message-State: AOAM53254p39f3n4U66pPWfiXbFLTu4ndjonz6lwNLGxUMaaRnRQapHC
+        zb/ex+SDJnkUDPkPrNC/lsHxAOxZMv7Ii+FCB3c=
+X-Google-Smtp-Source: ABdhPJwHJSkVMEZZfrs1A9V4SFyNTNjbEcAYxoCqkKfZJubvMzx11W9wdAo6fwC3JYxHSCY0aqt965G+XIQSW8wYuEM=
+X-Received: by 2002:a0c:9ae2:: with SMTP id k34mr26930339qvf.247.1592937226066;
+ Tue, 23 Jun 2020 11:33:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200620033007.1444705-1-keescook@chromium.org>
- <20200620033007.1444705-5-keescook@chromium.org> <CAKwvOdmsXuqx-3Rt_KNFq4psAeFjG2-7qQaqkJ7dDqqmscUFNw@mail.gmail.com>
- <202006221403.EEAD37E94B@keescook>
-In-Reply-To: <202006221403.EEAD37E94B@keescook>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 23 Jun 2020 11:29:38 -0700
-Message-ID: <CAKwvOdmr0dmC7UtL9Qcgm9Ue_Q2mhKzYiHcXpaB=LpMKpYeYqA@mail.gmail.com>
-Subject: Re: [PATCH v2 04/16] b43: Remove uninitialized_var() usage
-To:     Kees Cook <keescook@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org,
-        Network Development <netdev@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
+References: <159293239241.32225.12338844121877017327.stgit@john-Precision-5820-Tower>
+In-Reply-To: <159293239241.32225.12338844121877017327.stgit@john-Precision-5820-Tower>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 23 Jun 2020 11:33:35 -0700
+Message-ID: <CAEf4BzYZBoffuYUfssw+wBgz2SQx9E=AAP0VvOQDMc3Y3y1zLA@mail.gmail.com>
+Subject: Re: [bpf PATCH] bpf: do not allow btf_ctx_access with __int128 types
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 22, 2020 at 2:04 PM Kees Cook <keescook@chromium.org> wrote:
+On Tue, Jun 23, 2020 at 10:14 AM John Fastabend
+<john.fastabend@gmail.com> wrote:
 >
-> On Mon, Jun 22, 2020 at 10:04:18AM -0700, Nick Desaulniers wrote:
-> > On Fri, Jun 19, 2020 at 8:30 PM Kees Cook <keescook@chromium.org> wrote:
-> > >
-> > > Using uninitialized_var() is dangerous as it papers over real bugs[1]
-> > > (or can in the future), and suppresses unrelated compiler warnings (e.g.
-> > > "unused variable"). If the compiler thinks it is uninitialized, either
-> > > simply initialize the variable or make compiler changes. As a precursor
-> > > to removing[2] this[3] macro[4], just initialize this variable to NULL.
-> > > No later NULL deref is possible due to the early returns outside of the
-> > > (phy->rev >= 7 && phy->rev < 19) case, which explicitly tests for NULL.
-> > >
-> > > [1] https://lore.kernel.org/lkml/20200603174714.192027-1-glider@google.com/
-> > > [2] https://lore.kernel.org/lkml/CA+55aFw+Vbj0i=1TGqCR5vQkCzWJ0QxK6CernOU6eedsudAixw@mail.gmail.com/
-> > > [3] https://lore.kernel.org/lkml/CA+55aFwgbgqhbp1fkxvRKEpzyR5J8n1vKT1VZdz9knmPuXhOeg@mail.gmail.com/
-> > > [4] https://lore.kernel.org/lkml/CA+55aFz2500WfbKXAx8s67wrm9=yVJu65TpLgN_ybYNv0VEOKA@mail.gmail.com/
-> > >
-> > > Fixes: 58619b14d106 ("b43: move under broadcom vendor directory")
-> > > Signed-off-by: Kees Cook <keescook@chromium.org>
-> >
-> > I see three total uses of uninitialized_var() in this file, do we want
-> > to eliminate all of them?
+> To ensure btf_ctx_access() is safe the verifier checks that the BTF
+> arg type is an int, enum, or pointer. When the function does the
+> BTF arg lookup it uses the calculation 'arg = off / 8'  using the
+> fact that registers are 8B. This requires that the first arg is
+> in the first reg, the second in the second, and so on. However,
+> for __int128 the arg will consume two registers by default LLVM
+> implementation. So this will cause the arg layout assumed by the
+> 'arg = off / 8' calculation to be incorrect.
 >
-> This is the only one that needed an explicit initialization -- all the
-> others are handled in the treewide patch. I *could* split it out here,
-> but I found it easier to keep the "no op" changes together in the
-> treewide patch.
-
-Ah, got it.
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
+> Because __int128 is uncommon this patch applies the easiest fix and
+> will force int types to be sizeof(u64) or smaller so that they will
+> fit in a single register.
 >
-> -Kees
+> Fixes: 9e15db66136a1 ("bpf: Implement accurate raw_tp context access via BTF")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+
+"small int" for u64 looks funny, but naming is hard :)
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  include/linux/btf.h |    5 +++++
+>  kernel/bpf/btf.c    |    4 ++--
+>  2 files changed, 7 insertions(+), 2 deletions(-)
 >
-> >
-> > > ---
-> > >  drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-> > > index c33b4235839d..46db91846007 100644
-> > > --- a/drivers/net/wireless/broadcom/b43/phy_n.c
-> > > +++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-> > > @@ -4222,7 +4222,7 @@ static void b43_nphy_tx_gain_table_upload(struct b43_wldev *dev)
-> > >         u32 rfpwr_offset;
-> > >         u8 pga_gain, pad_gain;
-> > >         int i;
-> > > -       const s16 *uninitialized_var(rf_pwr_offset_table);
-> > > +       const s16 *rf_pwr_offset_table = NULL;
-> > >
-> > >         table = b43_nphy_get_tx_gain_table(dev);
-> > >         if (!table)
-> > > --
-> >
-> > --
-> > Thanks,
-> > ~Nick Desaulniers
+> diff --git a/include/linux/btf.h b/include/linux/btf.h
+> index 5c1ea99..35642f6 100644
+> --- a/include/linux/btf.h
+> +++ b/include/linux/btf.h
+> @@ -82,6 +82,11 @@ static inline bool btf_type_is_int(const struct btf_type *t)
+>         return BTF_INFO_KIND(t->info) == BTF_KIND_INT;
+>  }
 >
-> --
-> Kees Cook
+> +static inline bool btf_type_is_small_int(const struct btf_type *t)
+> +{
+> +       return btf_type_is_int(t) && (t->size <= sizeof(u64));
 
+nit: unnecessary (), () are usually used to disambiguate | and &  vs
+|| and &&; this is not the case, though.
 
-
--- 
-Thanks,
-~Nick Desaulniers
+> +}
+> +
+>  static inline bool btf_type_is_enum(const struct btf_type *t)
+>  {
+>         return BTF_INFO_KIND(t->info) == BTF_KIND_ENUM;
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 58c9af1..9a1a98d 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -3746,7 +3746,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+>                                 return false;
+>
+>                         t = btf_type_skip_modifiers(btf, t->type, NULL);
+> -                       if (!btf_type_is_int(t)) {
+> +                       if (!btf_type_is_small_int(t)) {
+>                                 bpf_log(log,
+>                                         "ret type %s not allowed for fmod_ret\n",
+>                                         btf_kind_str[BTF_INFO_KIND(t->info)]);
+> @@ -3768,7 +3768,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+>         /* skip modifiers */
+>         while (btf_type_is_modifier(t))
+>                 t = btf_type_by_id(btf, t->type);
+> -       if (btf_type_is_int(t) || btf_type_is_enum(t))
+> +       if (btf_type_is_small_int(t) || btf_type_is_enum(t))
+>                 /* accessing a scalar */
+>                 return true;
+>         if (!btf_type_is_ptr(t)) {
+>
