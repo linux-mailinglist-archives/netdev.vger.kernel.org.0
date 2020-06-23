@@ -2,95 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22787204B79
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 09:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1F1F204BBC
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 09:55:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731705AbgFWHoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 03:44:24 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:57467 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731158AbgFWHoV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 03:44:21 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1592898261; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=CjpaCCnx1y01srgBqMleGMp4v872X4zSWhjF8eJ6Aa0=;
- b=n1eVb1yLqDm6Cez7/lakdvw2aGK4cU0U2nY/e5I7kJz+1b3XTq989JH74ZdprysfQtu8Mtsf
- Iag9JiijfVSVNHIwh37aRktBHNDm+WRjtarGzKPi71b54O1e0qRqji3+BaBjNQXCtwmGn21E
- 7HmTYVJT9q5hYeVx9hTYRuBI1X4=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
- 5ef1b2c98fe116ddd9c3fab5 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 23 Jun 2020 07:44:09
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 65E75C433CA; Tue, 23 Jun 2020 07:44:08 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 21B84C433C8;
-        Tue, 23 Jun 2020 07:44:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 21B84C433C8
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1731534AbgFWHzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 03:55:12 -0400
+Received: from mail.bugwerft.de ([46.23.86.59]:35564 "EHLO mail.bugwerft.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731346AbgFWHzM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 03:55:12 -0400
+Received: from [192.168.178.106] (p57bc9f02.dip0.t-ipconnect.de [87.188.159.2])
+        by mail.bugwerft.de (Postfix) with ESMTPSA id A32F242BB05;
+        Tue, 23 Jun 2020 07:55:10 +0000 (UTC)
+Subject: Re: [PATCH v2] dsa: Allow forwarding of redirected IGMP traffic
+To:     netdev@vger.kernel.org
+Cc:     jcobham@questertangent.com, andrew@lunn.ch
+References: <20200620193925.3166913-1-daniel@zonque.org>
+From:   Daniel Mack <daniel@zonque.org>
+Message-ID: <649fde96-c017-9a6c-1e08-a602e317c60e@zonque.org>
+Date:   Tue, 23 Jun 2020 09:55:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
+In-Reply-To: <20200620193925.3166913-1-daniel@zonque.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] net: ath10k: fix memcpy size from untrusted input
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200616132544.17478-1-bruceshenzk@gmail.com>
-References: <20200616132544.17478-1-bruceshenzk@gmail.com>
-To:     Zekun Shen <bruceshenzk@gmail.com>
-Cc:     unlisted-recipients:; (no To-header on input)
-        Zekun Shen <bruceshenzk@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)Zekun Shen <bruceshenzk@gmail.com>
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200623074408.65E75C433CA@smtp.codeaurora.org>
-Date:   Tue, 23 Jun 2020 07:44:08 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zekun Shen <bruceshenzk@gmail.com> wrote:
+Andrew,
 
-> A compromized ath10k peripheral is able to control the size argument
-> of memcpy in ath10k_pci_hif_exchange_bmi_msg.
+This version should address the comments you had on my initial
+submission. Does this one look better now?
+
+
+Thanks,
+Daniel
+
+On 6/20/20 9:39 PM, Daniel Mack wrote:
+> The driver for Marvell switches puts all ports in IGMP snooping mode
+> which results in all IGMP/MLD frames that ingress on the ports to be
+> forwarded to the CPU only.
 > 
-> The min result from previous line is not used as the size argument
-> for memcpy. Instead, xfer.resp_len comes from untrusted stream dma
-> input. The value comes from "nbytes" in ath10k_pci_bmi_recv_data,
-> which is set inside _ath10k_ce_completed_recv_next_nolock with the line
+> The bridge code in the kernel can then interpret these frames and act
+> upon them, for instance by updating the mdb in the switch to reflect
+> multicast memberships of stations connected to the ports. However,
+> the IGMP/MLD frames must then also be forwarded to other ports of the
+> bridge so external IGMP queriers can track membership reports, and
+> external multicast clients can receive query reports from foreign IGMP
+> queriers.
 > 
-> nbytes = __le16_to_cpu(sdesc.nbytes);
+> Currently, this is impossible as the EDSA tagger sets offload_fwd_mark
+> on the skb when it unwraps the tagged frames, and that will make the
+> switchdev layer prevent the skb from egressing on any other port of
+> the same switch.
 > 
-> sdesc is a stream dma region which device can write to.
+> To fix that, look at the To_CPU code in the DSA header and make
+> forwarding of the frame possible for trapped IGMP packets.
 > 
-> Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-
-Patch applied to ath-next branch of ath.git, thanks.
-
-aed95297250f ath10k: pci: fix memcpy size of bmi response
-
--- 
-https://patchwork.kernel.org/patch/11607461/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> Introduce some #defines for the frame types to make the code a bit more
+> comprehensive.
+> 
+> This was tested on a Marvell 88E6352 variant.
+> 
+> Signed-off-by: Daniel Mack <daniel@zonque.org>
+> ---
+> v2:
+>   * Limit IGMP handling to TO_CPU frames
+>   * Use #defines for the TO_CPU codes and the frame types
+> 
+>  net/dsa/tag_edsa.c | 37 ++++++++++++++++++++++++++++++++++---
+>  1 file changed, 34 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/dsa/tag_edsa.c b/net/dsa/tag_edsa.c
+> index e8eaa804ccb9e..d6200ff982007 100644
+> --- a/net/dsa/tag_edsa.c
+> +++ b/net/dsa/tag_edsa.c
+> @@ -13,6 +13,16 @@
+>  #define DSA_HLEN	4
+>  #define EDSA_HLEN	8
+>  
+> +#define FRAME_TYPE_TO_CPU	0x00
+> +#define FRAME_TYPE_FORWARD	0x03
+> +
+> +#define TO_CPU_CODE_MGMT_TRAP		0x00
+> +#define TO_CPU_CODE_FRAME2REG		0x01
+> +#define TO_CPU_CODE_IGMP_MLD_TRAP	0x02
+> +#define TO_CPU_CODE_POLICY_TRAP		0x03
+> +#define TO_CPU_CODE_ARP_MIRROR		0x04
+> +#define TO_CPU_CODE_POLICY_MIRROR	0x05
+> +
+>  static struct sk_buff *edsa_xmit(struct sk_buff *skb, struct net_device *dev)
+>  {
+>  	struct dsa_port *dp = dsa_slave_to_port(dev);
+> @@ -77,6 +87,8 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
+>  				struct packet_type *pt)
+>  {
+>  	u8 *edsa_header;
+> +	int frame_type;
+> +	int code;
+>  	int source_device;
+>  	int source_port;
+>  
+> @@ -91,8 +103,29 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
+>  	/*
+>  	 * Check that frame type is either TO_CPU or FORWARD.
+>  	 */
+> -	if ((edsa_header[0] & 0xc0) != 0x00 && (edsa_header[0] & 0xc0) != 0xc0)
+> +	frame_type = edsa_header[0] >> 6;
+> +
+> +	switch (frame_type) {
+> +	case FRAME_TYPE_TO_CPU:
+> +		code = (edsa_header[1] & 0x6) | ((edsa_header[2] >> 4) & 1);
+> +
+> +		/*
+> +		 * Mark the frame to never egress on any port of the same switch
+> +		 * unless it's a trapped IGMP/MLD packet, in which case the
+> +		 * bridge might want to forward it.
+> +		 */
+> +		if (code != TO_CPU_CODE_IGMP_MLD_TRAP)
+> +			skb->offload_fwd_mark = 1;
+> +
+> +		break;
+> +
+> +	case FRAME_TYPE_FORWARD:
+> +		skb->offload_fwd_mark = 1;
+> +		break;
+> +
+> +	default:
+>  		return NULL;
+> +	}
+>  
+>  	/*
+>  	 * Determine source device and port.
+> @@ -156,8 +189,6 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
+>  			2 * ETH_ALEN);
+>  	}
+>  
+> -	skb->offload_fwd_mark = 1;
+> -
+>  	return skb;
+>  }
+>  
+> 
 
