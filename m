@@ -2,86 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABA3D204976
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 08:03:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD33620497C
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 08:05:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730571AbgFWGDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 02:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60606 "EHLO
+        id S1730406AbgFWGFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 02:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730362AbgFWGDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 02:03:01 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96391C061573;
-        Mon, 22 Jun 2020 23:03:00 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id z2so12498299qts.5;
-        Mon, 22 Jun 2020 23:03:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WjxM9sg38cEaNOwA1lwrcYCBuLoMTzlRPxPZDKD8IhA=;
-        b=oN5Z1+CrEv9B3MX7RP9AZssrvlObTqawZ/NNXCD8cZRCnBW3WzqEhhVqFRXujnwkMG
-         +no7EIo6sFTIxRZDo8SJj6L1nU6rjzLFp+0z7QZd42EqxNE+p9HgJ6tgt+zEzLCQP3Tg
-         4GUFxtqNYyd+ZkUWeY40LSMZq/0zW0IaUGQqjOUdLT88HNPTD8QuSI4LvP+WLg16jUVI
-         tJ9O4FRIAV4NjTQhSe8raqwj9wfc8XoXq01kqyO++zC5BjtnHbRtF2/4Lsdo53OEGNYn
-         Fu3T73deeF3tG2NP+vAVBoiCPQeGXFQJgNPdHa4Pyf/VgBSmiIVFMrytOkSb1Sm50EEX
-         Xnug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WjxM9sg38cEaNOwA1lwrcYCBuLoMTzlRPxPZDKD8IhA=;
-        b=XI2N7oBZu4GK8wU+o87D/cCYiZaLBhJgU/M3/Dd0oNeqLy76a3nDUO9QmS2C3DDQ5I
-         /je+I4pTp1B8uAGg9YchY83KqjRLVNiJ2hIy6p+LVu9GE1Gg6fKtUnQUGjsetrxpieCn
-         G+9nGFSAMX1doEO5H0qeXTUe5Ax5Fiv+jqmpOuOtBJDBhRNVoa+t0SIuO3SaCg/BbI3R
-         AhYSKavPvKkj6kQotIZNNgEDHMOX0P+brVDl0ednhs3Q1RY0qow24Pm2UlOnflkD8ZPi
-         mhfceTjABeOeHUFZ4qkbxvRU9uGyL4bxogJAyqN6IuwLE0GTOlFjMB0lbyiPif7+s+jS
-         s/HA==
-X-Gm-Message-State: AOAM532c6MrKzAXooYgczuh3FtDpE0hyA8u3ZJ1yjKPzcWY8QxXWrfQs
-        ochtZugEqrlbP3U7B13sSHw0nuXNalFtrywxGzQ=
-X-Google-Smtp-Source: ABdhPJxR+7SbwOohoazZHosm+/zIqUBaCi5dvAtoeJ8f0K3FBFsGlwHIKEXqxGD5Z0Ifs5zg866RVpLOr/ywKSv1bME=
-X-Received: by 2002:ac8:2dc3:: with SMTP id q3mr19714217qta.141.1592892179884;
- Mon, 22 Jun 2020 23:02:59 -0700 (PDT)
+        with ESMTP id S1728800AbgFWGFQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 02:05:16 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A41C061573;
+        Mon, 22 Jun 2020 23:05:15 -0700 (PDT)
+Received: from p5b06d650.dip0.t-ipconnect.de ([91.6.214.80] helo=kurt)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
+        (Exim 4.80)
+        (envelope-from <kurt@linutronix.de>)
+        id 1jnc3T-0001rS-Sh; Tue, 23 Jun 2020 08:05:12 +0200
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list\:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: Re: [RFC PATCH 6/9] net: dsa: hellcreek: Add debugging mechanisms
+In-Reply-To: <CA+h21hokLntfn7sDW-6boJ+=_q2CGUM6aXLg68O7moMyLH=41w@mail.gmail.com>
+References: <20200618064029.32168-1-kurt@linutronix.de> <20200618064029.32168-7-kurt@linutronix.de> <20200618173458.GH240559@lunn.ch> <875zbnqwo2.fsf@kurt> <20200619134218.GD304147@lunn.ch> <87d05rth5v.fsf@kurt> <CA+h21hokLntfn7sDW-6boJ+=_q2CGUM6aXLg68O7moMyLH=41w@mail.gmail.com>
+Date:   Tue, 23 Jun 2020 08:04:52 +0200
+Message-ID: <87k0zynwqj.fsf@kurt>
 MIME-Version: 1.0
-References: <20200622160300.636567-1-jakub@cloudflare.com> <20200622160300.636567-2-jakub@cloudflare.com>
-In-Reply-To: <20200622160300.636567-2-jakub@cloudflare.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 22 Jun 2020 23:02:49 -0700
-Message-ID: <CAEf4BzZ0_01j4g-APS9HQ-jqKf3=qTerYWCkRmYscWWo2R0xwg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] flow_dissector: Pull BPF program assignment
- up to bpf-netns
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team@cloudflare.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 22, 2020 at 9:03 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->
-> Prepare for using bpf_prog_array to store attached programs by moving out
-> code that updates the attached program out of flow dissector.
->
-> Managing bpf_prog_array is more involved than updating a single bpf_prog
-> pointer. This will let us do it all from one place, bpf/net_namespace.c, in
-> the subsequent patch.
->
-> No functional change intended.
->
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
+--=-=-=
+Content-Type: text/plain
 
-LGTM.
+Hi Vladimir,
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+On Mon Jun 22 2020, Vladimir Oltean wrote:
+> Hi Kurt,
+>
+> On Mon, 22 Jun 2020 at 15:34, Kurt Kanzenbach <kurt@linutronix.de> wrote:
+>>
+>>  * Re-prioritization of packets based on the ether type (not mac address)
+>
+> This can be done by offloading a tc skbedit priority action, and a
+> "protocol" key (even though I don't understand why you need to mention
+> "not mac address".
 
->  include/net/flow_dissector.h |  3 ++-
->  kernel/bpf/net_namespace.c   | 20 ++++++++++++++++++--
->  net/core/flow_dissector.c    | 13 ++-----------
->  3 files changed, 22 insertions(+), 14 deletions(-)
+Thanks. That seems like it can be used. I did mention the mac address,
+because the switch has two ways of doing a re-prioritization either by
+fdb entries via mac addresses or by the high level inspection (HLI)
+based on the ether type.
+
+>
+>>  * Packet logging (-> retrieval of packet time stamps) based on port, traffic class and direction
+>
+> What does this mean? tcpdump can give you this, for traffic destined
+> to the CPU. Do you want to mirror/sample traffic to the CPU for debug?
 >
 
-[...]
+The switch can capture timestamps (nanoseconds) when packets have been
+transmitted or received on all ports. The timestamps are stored in a
+FIFO and can be retrieved later. As you said tcpdump only works for
+packets at the CPU port. This feature is useful for debugging latency
+issues for specific traffic flows.
+
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl7xm4QACgkQeSpbgcuY
+8KYtqg//YMqDjYW5NqDvv07mkc2Z4riBVwSakOje7N6ELkYUvtOP2BxXaehF6+Wp
+Qa29hYs/uD7+rhDPY88lFuX/jP3baF5r3axEOzQNBq95saMNRAZqjhgrufCU7EIK
+HUakdPLLbvlBAM6hGJ8mMkGYhpWOoJkejN0VBHmTwbE58b5YiLVAmpD+zTzvPhs2
+R0v9BlF1lQRW2HHsx4YWakk8/k9e0CNYscR8zHuR1htQQiiJwmta4zzHPNRH/TXi
+ECSCP4vh6iCZVsg7fA2tBc07iBKJHNLx5WIlrFrmwsBOKUuKkNsSgybpkIUXFn0T
+QKjbIN1Kk71WHYN+fRgCGVKOSeQGsvMAVydU+JPC4q/nrlBFktsAXuv6f0shwQOE
+5Cf+qY6o+cZ0So489711Qna1+wPyCV8bwXT6JLs+YB4P+FNJe6FH0YaQAa4IMbvk
+Gz1olAx9hUhK6+WaIejXbnknKIUd6qA0Qz+4XwxQmebU55etg4yGWlMk4IeFI2m1
+ejlcNHZHf6Kqf0l/6W9BwQHjR7TAqDgL6gqNyGdKDPbbpcxUfHrVDEvcUlnxkIvW
+KOoOykcsSmNX5V8VWHqgyA/oeMSBn7kINXOryZkirXfH4doAIVpisQSAP8AdDDVc
+KYwVC6iqM7XPnchNTvLBGjOTkIpoF0M529Feuxlp/R1YDFIDJYs=
+=GYlY
+-----END PGP SIGNATURE-----
+--=-=-=--
