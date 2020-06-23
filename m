@@ -2,266 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D85D9204959
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 07:53:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B758D20495D
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 07:55:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730263AbgFWFxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 01:53:41 -0400
-Received: from mga04.intel.com ([192.55.52.120]:33147 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728800AbgFWFxl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 01:53:41 -0400
-IronPort-SDR: d+iAqFzo6CG6sYro68NhVpfaS9aDc9WE1QN3gUR71HAbgj6yPeOvNGVQohIkmdEDDQH1MPcCu2
- o020UJhWUteg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9660"; a="141472235"
-X-IronPort-AV: E=Sophos;i="5.75,270,1589266800"; 
-   d="gz'50?scan'50,208,50";a="141472235"
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2020 22:53:38 -0700
-IronPort-SDR: Q+bEnV3FobRCU4DXB6KNjs18OjcgXlfH8Z9kchmQZUXydVFy3zw567B4z7o6QOPh3eydiG1FDS
- ycBH/Dibvc5A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,270,1589266800"; 
-   d="gz'50?scan'50,208,50";a="278999930"
-Received: from lkp-server01.sh.intel.com (HELO f484c95e4fd1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 22 Jun 2020 22:53:36 -0700
-Received: from kbuild by f484c95e4fd1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1jnbsF-0000d7-IZ; Tue, 23 Jun 2020 05:53:35 +0000
-Date:   Tue, 23 Jun 2020 13:53:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next v3 05/15] bpf: add bpf_skc_to_tcp6_sock() helper
-Message-ID: <202006231330.Ars5mTB2%lkp@intel.com>
-References: <20200623003631.3073864-1-yhs@fb.com>
+        id S1730372AbgFWFzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 01:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728800AbgFWFzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 01:55:47 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FEBC061573;
+        Mon, 22 Jun 2020 22:55:45 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id f18so17841901qkh.1;
+        Mon, 22 Jun 2020 22:55:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Chr9DxTgyC1O01lU8vGmKQECBfgvN4hwBinx6d+lMdU=;
+        b=Q/oGQUVV/TVr3D3b3rBY2cKjjh2x2VYuYMsi6gTuzeZ2zAfK7Xvkw3kdSjUzKblqcF
+         ouk/pnl+H7pKVXkusvUN4val9yVuBq7VGPp9+wE4c4/oS/Xs95vqkFN6Uzd8KGnENHSo
+         jvbbibNCzA0EZegw8wlgbAlMGoRaxfJTBzbpDUcHPXgS5oo6x0iIT+vyofaHXhOow7kR
+         jmkmDAZ94nOVFj6nvgxsekmHyCdl9ls+gKz9OdN1OEpcXL5A37x4xf/OzJzjS3zPRzO0
+         LMVAQBI5Ovbr0jNSodYHdyLPRUM5HOE2xFjc+2AHAOijtZNYiAUj+slpjAmdLVcXaexP
+         nbvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Chr9DxTgyC1O01lU8vGmKQECBfgvN4hwBinx6d+lMdU=;
+        b=sgqDgEP5NXHFtZOOOwFXHvKJoBvZnq/QyhogcPWJMNdLgD/Mgv5aZxSa5Z0WHe/l+h
+         nHrVsvXqZQcP0Ahr0A/dyiF5OwF4oiBB2+ptf654yRpxNpRm3eJjAUbn0LvBonwKZrUc
+         9i9ygAvyVrzU6aoR/KNq1tp7CY6wFJc4WJsB38YOdV7sTX0AWX8GwbHMDqLOwb/fWvvm
+         TuSGjVbsLHq9IcqfaMbs+iZo+yahbqfHcwGYFvEMJ5JCHjKaeTjgvmpep2FDkeyi28B2
+         I3IF2NByOWxFCYSYPCo6+2SQEF5zK85tlDxNidz3IZOeVSJehRQIYofLtqgxqiMAKaCq
+         R9ww==
+X-Gm-Message-State: AOAM533w3jqGB4rLLiOOSFSrgHu4V2INnVQ6yoN2MZFkayv747GbDhAg
+        nSSTCoBsQJ8ARPg4TSXmqlmK55JElLfmOCAx8eExuhzH
+X-Google-Smtp-Source: ABdhPJxVqWlUAfGdEORsLr2PmbdYNz0H34jF8xEmoK7/FhUoH76MEf8K/xHx3fJQOxjOhaqrWX/1Q5RdMYjP3AvjlyQ=
+X-Received: by 2002:a37:a89:: with SMTP id 131mr18626718qkk.92.1592891744951;
+ Mon, 22 Jun 2020 22:55:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="6TrnltStXW4iwmi0"
-Content-Disposition: inline
-In-Reply-To: <20200623003631.3073864-1-yhs@fb.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <cover.1592606391.git.lorenzo@kernel.org> <ebad39bb3d961a65733c33ed530b9d1ade916afa.1592606391.git.lorenzo@kernel.org>
+In-Reply-To: <ebad39bb3d961a65733c33ed530b9d1ade916afa.1592606391.git.lorenzo@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 22 Jun 2020 22:55:34 -0700
+Message-ID: <CAEf4BzbroU6o8yp=ca0JQqSS6WEZ9VQRcufq+T0vkCOoQsjB2w@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 8/8] selftest: add tests for XDP programs in
+ CPUMAP entries
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        lorenzo.bianconi@redhat.com, David Ahern <dsahern@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 19, 2020 at 9:55 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> Similar to what have been done for DEVMAP, introduce tests to verify
+> ability to add a XDP program to an entry in a CPUMAP.
+> Verify CPUMAP programs can not be attached to devices as a normal
+> XDP program, and only programs with BPF_XDP_CPUMAP attach type can
+> be loaded in a CPUMAP.
+>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  .../bpf/prog_tests/xdp_cpumap_attach.c        | 70 +++++++++++++++++++
+>  .../bpf/progs/test_xdp_with_cpumap_helpers.c  | 38 ++++++++++
+>  2 files changed, 108 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+> new file mode 100644
+> index 000000000000..2baa41689f40
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+> @@ -0,0 +1,70 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <uapi/linux/bpf.h>
+> +#include <linux/if_link.h>
+> +#include <test_progs.h>
+> +
+> +#include "test_xdp_with_cpumap_helpers.skel.h"
+> +
+> +#define IFINDEX_LO     1
+> +
+> +void test_xdp_with_cpumap_helpers(void)
+> +{
+> +       struct test_xdp_with_cpumap_helpers *skel;
+> +       struct bpf_prog_info info = {};
+> +       struct bpf_cpumap_val val = {
+> +               .qsize = 192,
+> +       };
+> +       __u32 duration = 0, idx = 0;
+> +       __u32 len = sizeof(info);
+> +       int err, prog_fd, map_fd;
+> +
+> +       skel = test_xdp_with_cpumap_helpers__open_and_load();
+> +       if (CHECK_FAIL(!skel)) {
+> +               perror("test_xdp_with_cpumap_helpers__open_and_load");
+> +               return;
+> +       }
+> +
+> +       /* can not attach program with cpumaps that allow programs
+> +        * as xdp generic
+> +        */
+> +       prog_fd = bpf_program__fd(skel->progs.xdp_redir_prog);
+> +       err = bpf_set_link_xdp_fd(IFINDEX_LO, prog_fd, XDP_FLAGS_SKB_MODE);
+> +       CHECK(err == 0, "Generic attach of program with 8-byte CPUMAP",
+> +             "should have failed\n");
+> +
+> +       prog_fd = bpf_program__fd(skel->progs.xdp_dummy_cm);
+> +       map_fd = bpf_map__fd(skel->maps.cpu_map);
+> +       err = bpf_obj_get_info_by_fd(prog_fd, &info, &len);
+> +       if (CHECK_FAIL(err))
+> +               goto out_close;
+> +
+> +       val.bpf_prog.fd = prog_fd;
+> +       err = bpf_map_update_elem(map_fd, &idx, &val, 0);
+> +       CHECK(err, "Add program to cpumap entry", "err %d errno %d\n",
+> +             err, errno);
+> +
+> +       err = bpf_map_lookup_elem(map_fd, &idx, &val);
+> +       CHECK(err, "Read cpumap entry", "err %d errno %d\n", err, errno);
+> +       CHECK(info.id != val.bpf_prog.id, "Expected program id in cpumap entry",
+> +             "expected %u read %u\n", info.id, val.bpf_prog.id);
+> +
+> +       /* can not attach BPF_XDP_CPUMAP program to a device */
+> +       err = bpf_set_link_xdp_fd(IFINDEX_LO, prog_fd, XDP_FLAGS_SKB_MODE);
+> +       CHECK(err == 0, "Attach of BPF_XDP_CPUMAP program",
+> +             "should have failed\n");
+> +
+> +       val.qsize = 192;
+> +       val.bpf_prog.fd = bpf_program__fd(skel->progs.xdp_dummy_prog);
+> +       err = bpf_map_update_elem(map_fd, &idx, &val, 0);
+> +       CHECK(err == 0, "Add non-BPF_XDP_CPUMAP program to cpumap entry",
+> +             "should have failed\n");
+> +
+> +out_close:
+> +       test_xdp_with_cpumap_helpers__destroy(skel);
+> +}
+> +
+> +void test_xdp_cpumap_attach(void)
+> +{
+> +       if (test__start_subtest("CPUMAP with programs in entries"))
 
---6TrnltStXW4iwmi0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+These subtest names are supposed to be short and follow test names
+(i.e., being more or less valid C identifiers). It makes it easier to
+select or blacklist them (with -t and -b params). So something like
+cpumap_with_progs or similar would be better in that regard and would
+make it easier for me to maintain a blacklist of tests/subtests for
+Travis CI, for instance.
 
-Hi Yonghong,
+I think there is similarly verbose DEVMAP subtest name, I'd love it to
+be "simplified" as well... But can't get my hands on everything,
+unfortunately.
 
-I love your patch! Yet something to improve:
+> +               test_xdp_with_cpumap_helpers();
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c b/tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
+> new file mode 100644
+> index 000000000000..acbbc62efa55
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
+> @@ -0,0 +1,38 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_CPUMAP);
+> +       __uint(key_size, sizeof(__u32));
+> +       __uint(value_size, sizeof(struct bpf_cpumap_val));
+> +       __uint(max_entries, 4);
+> +} cpu_map SEC(".maps");
+> +
+> +SEC("xdp_redir")
+> +int xdp_redir_prog(struct xdp_md *ctx)
+> +{
+> +       return bpf_redirect_map(&cpu_map, 1, 0);
+> +}
+> +
+> +SEC("xdp_dummy")
+> +int xdp_dummy_prog(struct xdp_md *ctx)
+> +{
+> +       return XDP_PASS;
+> +}
+> +
+> +SEC("xdp_cpumap")
+> +int xdp_dummy_cm(struct xdp_md *ctx)
+> +{
+> +       char fmt[] = "devmap redirect: dev %u len %u\n";
+> +       void *data_end = (void *)(long)ctx->data_end;
+> +       void *data = (void *)(long)ctx->data;
+> +       unsigned int len = data_end - data;
+> +
+> +       bpf_trace_printk(fmt, sizeof(fmt), ctx->ingress_ifindex, len);
 
-[auto build test ERROR on bpf-next/master]
+Is there any reason to use bpf_trace_printk as opposed to saving
+ctx->ingress_ifindex into a global variable? bpf_trace_printk isn't
+really testing anything, just pollutes trace_pipe.
 
-url:    https://github.com/0day-ci/linux/commits/Yonghong-Song/implement-bpf-iterator-for-tcp-and-udp-sockets/20200623-090149
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: arc-defconfig (attached as .config)
-compiler: arc-elf-gcc (GCC) 9.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # save the attached .config to linux build tree
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=arc 
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arc-elf-ld: net/core/filter.o: in function `init_btf_sock_ids':
-   filter.c:(.text+0xaf22): undefined reference to `btf_find_by_name_kind'
->> arc-elf-ld: filter.c:(.text+0xaf22): undefined reference to `btf_find_by_name_kind'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
---6TrnltStXW4iwmi0
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
-
-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
-
---6TrnltStXW4iwmi0--
+> +
+> +       return XDP_PASS;
+> +}
+> +
+> +char _license[] SEC("license") = "GPL";
+> --
+> 2.26.2
+>
