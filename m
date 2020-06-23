@@ -2,88 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E86DB2066B0
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:57:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D76372066B2
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:57:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387590AbgFWV4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 17:56:30 -0400
-Received: from mx2.suse.de ([195.135.220.15]:43560 "EHLO mx2.suse.de"
+        id S2387982AbgFWV4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 17:56:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35832 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387455AbgFWV4a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 17:56:30 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 31303ADA3;
-        Tue, 23 Jun 2020 21:56:28 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id F073C602E3; Tue, 23 Jun 2020 23:56:27 +0200 (CEST)
-Date:   Tue, 23 Jun 2020 23:56:27 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Oliver Herms <oliver.peter.herms@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org
-Subject: Re: [PATCH] IPv6: Fix CPU contention on FIB6 GC
-Message-ID: <20200623215627.dczzidomidhur4ra@lion.mk-sys.cz>
-References: <20200622205355.GA869719@tws>
- <20200622214449.gyfn33ickesj2j2t@lion.mk-sys.cz>
- <3588d0fc-5c6b-b62a-f137-24abcf660d5f@gmail.com>
+        id S2387455AbgFWV4p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 17:56:45 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F2C792078E;
+        Tue, 23 Jun 2020 21:56:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592949405;
+        bh=iDdA48vspDLWJxCVZ0YB/g7BHH6fOiCWKMtXosvEw5g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tPWbHZp/vnKbHPd2qr7EcqsZtjp9rPQ+GQfEfaEX5M0B2HFvsdtHxTXSTF+vLwQ/W
+         7/G21VeNvwrzHThDlfJxehIqtZWr0qX0m78i8hxOx+KSp2BbRqlB8f2NYA/lIixQiS
+         xUmZYw6ACLaFK1G9B8HTe7e81HlD3NpBj1PAmoBE=
+Date:   Tue, 23 Jun 2020 14:56:43 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luo bin <luobin9@huawei.com>
+Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
+Subject: Re: [PATCH net-next v2 2/5] hinic: add support to set and get irq
+ coalesce
+Message-ID: <20200623145643.0df35c48@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200623142409.19081-3-luobin9@huawei.com>
+References: <20200623142409.19081-1-luobin9@huawei.com>
+        <20200623142409.19081-3-luobin9@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3588d0fc-5c6b-b62a-f137-24abcf660d5f@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 12:46:34AM +0200, Oliver Herms wrote:
-> On 22.06.20 23:44, Michal Kubecek wrote:
-> > On Mon, Jun 22, 2020 at 10:53:55PM +0200, Oliver Herms wrote:
-> >> When fib6_run_gc is called with parameter force=true the spinlock in
-> >> /net/ipv6/ip6_fib.c:2310 can lock all CPUs in softirq when
-> >> net.ipv6.route.max_size is exceeded (seen this multiple times).
-> >> One sotirq/CPU get's the lock. All others spin to get it. It takes
-> >> substantial time until all are done. Effectively it's a DOS vector.
-> >>
-> >> As the splinlock is only enforcing that there is at most one GC running
-> >> at a time, it should IMHO be safe to use force=false here resulting
-> >> in spin_trylock_bh instead of spin_lock_bh, thus avoiding the lock
-> >> contention.
-> >>
-> >> Finding a locked spinlock means some GC is going on already so it is
-> >> save to just skip another execution of the GC.
-> >>
-> >> Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
-> > 
-> > I wonder if it wouldn't suffice to revert commit 14956643550f ("ipv6:
-> > slight optimization in ip6_dst_gc") as the reasoning in its commit
-> > message seems wrong: we do not always skip fib6_run_gc() when
-> > entries <= rt_max_size, we do so only if the time since last garbage
-> > collector run is shorter than rt_min_interval.
-> > 
-> > Then you would prevent the "thundering herd" effect when only gc_thresh
-> > is exceeded but not max_size, as commit 2ac3ac8f86f2 ("ipv6: prevent
-> > fib6_run_gc() contention") intended, but would still preserve enforced
-> > garbage collect when max_size is exceeded.
-> > 
-> > Michal
-> > 
+On Tue, 23 Jun 2020 22:24:06 +0800 Luo bin wrote:
+> add support to set TX/RX irq coalesce params with ethtool -C and
+> get these params with ethtool -c.
 > 
-> Hi Michal,
-> 
-> I did some testing with packets causing 17k IPv6 route cache entries per 
-> second. With "entries > rt_max_size" all CPUs of the system get stuck 
-> waiting for the spinlock. With "false" CPU load stays at <<10% on every single
-> CPU core (tested on an Atom C2750). This makes sense as "entries > rt_max_size"
-> would not prevent multiple CPUs from trying to get the lock.
-> 
-> So reverting 14956643550f is not enough.
+> Signed-off-by: Luo bin <luobin9@huawei.com>
 
-The problem I see with this kind of test is that you simulate a scenario
-where you are routinely using more entries than the cache is sized for.
-In other words, if this happened in a real life setup, the actual
-problem would be too low settings for gc_thresh and max_size. Also, your
-patch would minimize the difference between gc_thresh (where we want to
-get) and max_size (hard limit) by making the hard limit "softer".
-
-Michal
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
