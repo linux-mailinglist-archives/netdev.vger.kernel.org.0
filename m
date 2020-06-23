@@ -2,93 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E5BE2045A8
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 02:36:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 373AF2045AB
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 02:36:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732073AbgFWAfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 20:35:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59722 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731804AbgFWAfN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 20:35:13 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AB2A420738;
-        Tue, 23 Jun 2020 00:35:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592872513;
-        bh=R77uYdiArYgWzfb+aKZUD9TQZSdSaQU6/pKeXtLZjQA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UxFqokM7yO9c9ycA4bFxM/TGdtVNXiiXjWWAMBs/4HI1u5Vh2lD5GkPm70RzTDwbT
-         A4/UoKhASnqQwMpxdtHV/+UujF6O1X6NOo7bkUaPCQedII99BLcUSFZi9GCVAq/OBZ
-         IU+fmDPVqLjjIFaj/AZjRymLoEF93WXdKLIb+NZ0=
-Date:   Mon, 22 Jun 2020 17:35:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, Qian Cai <cai@lca.pw>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next 9/9] i40e: silence an UBSAN false positive
-Message-ID: <20200622173510.04ee7bf3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200622221817.2287549-10-jeffrey.t.kirsher@intel.com>
-References: <20200622221817.2287549-1-jeffrey.t.kirsher@intel.com>
-        <20200622221817.2287549-10-jeffrey.t.kirsher@intel.com>
+        id S1731625AbgFWAgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 20:36:31 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24398 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731487AbgFWAgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 20:36:31 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05N0YCXJ026920
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 17:36:30 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=9tkT5IZd256zAt286gxF0Go74BEIw2yWSn/HUxO5LY0=;
+ b=l7CNQ82OyX9k7AhSDyJ7DJoffayNAgUCrSyQzUMxvxzpy2OCVENI6m93symR1lZCH9rr
+ C4jsHLUq7xqh5/EHBsw8NrfcgMIbnY0XX9TrAXyj3WoEIy3e4WIjbU5ouRFeNuOCYao+
+ g2xUHgU3RDwHAOD3Rvm7SurrEynVOuzcmLI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 31t2e8rdt1-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 17:36:30 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 22 Jun 2020 17:36:29 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id 525223705002; Mon, 22 Jun 2020 17:36:26 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next v3 01/15] net: bpf: add bpf_seq_afinfo in tcp_iter_state
+Date:   Mon, 22 Jun 2020 17:36:26 -0700
+Message-ID: <20200623003626.3072885-1-yhs@fb.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200623003626.3072825-1-yhs@fb.com>
+References: <20200623003626.3072825-1-yhs@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-22_16:2020-06-22,2020-06-22 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
+ impostorscore=0 mlxscore=0 priorityscore=1501 malwarescore=0 clxscore=1015
+ suspectscore=8 bulkscore=0 cotscore=-2147483648 lowpriorityscore=0
+ mlxlogscore=805 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006230000
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Jun 2020 15:18:17 -0700 Jeff Kirsher wrote:
-> From: Qian Cai <cai@lca.pw>
-> 
-> virtchnl_rss_lut.lut is used for the RSS lookup table, but in
-> i40e_vc_config_rss_lut(), it is indexed by subscript results in a false
-> positive.
+A new field bpf_seq_afinfo is added to tcp_iter_state
+to provide bpf tcp iterator afinfo. There are two
+reasons on why we did this.
 
-This is commit message is not great either. The point is that we have a
-pad[1] after the lut[1], and supposedly indexing second element of
-lut[] is expected? Not sure why accessing pad is okay...
+First, the current way to get afinfo from PDE_DATA
+does not work for bpf iterator as its seq_file
+inode does not conform to /proc/net/{tcp,tcp6}
+inode structures. More specifically, anonymous
+bpf iterator will use an anonymous inode which
+is shared in the system and we cannot change inode
+private data structure at all.
 
->  UBSAN: array-index-out-of-bounds in drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:2983:15
->  index 1 is out of range for type 'u8 [1]'
->  CPU: 34 PID: 871 Comm: kworker/34:2 Not tainted 5.7.0-next-20200605+ #5
->  Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385 Gen10, BIOS A40 03/09/2018
->  Workqueue: i40e i40e_service_task [i40e]
->  Call Trace:
->   dump_stack+0xa7/0xea
->   ubsan_epilogue+0x9/0x45
->   __ubsan_handle_out_of_bounds+0x6f/0x80
->   i40e_vc_process_vf_msg+0x457c/0x4660 [i40e]
->   i40e_service_task+0x96c/0x1ab0 [i40e]
->   process_one_work+0x57d/0xbd0
->   worker_thread+0x63/0x5b0
->   kthread+0x20c/0x230
->   ret_from_fork+0x22/0x30
-> 
-> Fixes: d510497b8397 ("i40e: add input validation for virtchnl handlers")
-> Signed-off-by: Qian Cai <cai@lca.pw>
-> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-> index 62132df0527e..5070b3a4b026 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-> @@ -3018,6 +3018,7 @@ static int i40e_vc_config_rss_lut(struct i40e_vf *vf, u8 *msg)
->  	struct i40e_vsi *vsi = NULL;
->  	i40e_status aq_ret = 0;
->  	u16 i;
-> +	u8 *lut = vrl->lut;
+Second, bpf iterator for tcp/tcp6 wants to
+traverse all tcp and tcp6 sockets in one pass
+and bpf program can control whether they want
+to skip one sk_family or not. Having a different
+afinfo with family AF_UNSPEC make it easier
+to understand in the code.
 
-reverse xmas tree
+This patch does not change /proc/net/{tcp,tcp6} behavior
+as the bpf_seq_afinfo will be NULL for these two proc files.
 
->  	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states) ||
->  	    !i40e_vc_isvalid_vsi_id(vf, vrl->vsi_id) ||
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ include/net/tcp.h   |  1 +
+ net/ipv4/tcp_ipv4.c | 30 ++++++++++++++++++++++++------
+ 2 files changed, 25 insertions(+), 6 deletions(-)
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 4de9485f73d9..eab1c7d0facb 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1935,6 +1935,7 @@ struct tcp_iter_state {
+ 	struct seq_net_private	p;
+ 	enum tcp_seq_states	state;
+ 	struct sock		*syn_wait_sk;
++	struct tcp_seq_afinfo	*bpf_seq_afinfo;
+ 	int			bucket, offset, sbucket, num;
+ 	loff_t			last_pos;
+ };
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index ad6435ba6d72..9cb65ee4ec63 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2211,13 +2211,18 @@ EXPORT_SYMBOL(tcp_v4_destroy_sock);
+  */
+ static void *listening_get_next(struct seq_file *seq, void *cur)
+ {
+-	struct tcp_seq_afinfo *afinfo =3D PDE_DATA(file_inode(seq->file));
++	struct tcp_seq_afinfo *afinfo;
+ 	struct tcp_iter_state *st =3D seq->private;
+ 	struct net *net =3D seq_file_net(seq);
+ 	struct inet_listen_hashbucket *ilb;
+ 	struct hlist_nulls_node *node;
+ 	struct sock *sk =3D cur;
+=20
++	if (st->bpf_seq_afinfo)
++		afinfo =3D st->bpf_seq_afinfo;
++	else
++		afinfo =3D PDE_DATA(file_inode(seq->file));
++
+ 	if (!sk) {
+ get_head:
+ 		ilb =3D &tcp_hashinfo.listening_hash[st->bucket];
+@@ -2235,7 +2240,8 @@ static void *listening_get_next(struct seq_file *se=
+q, void *cur)
+ 	sk_nulls_for_each_from(sk, node) {
+ 		if (!net_eq(sock_net(sk), net))
+ 			continue;
+-		if (sk->sk_family =3D=3D afinfo->family)
++		if (afinfo->family =3D=3D AF_UNSPEC ||
++		    sk->sk_family =3D=3D afinfo->family)
+ 			return sk;
+ 	}
+ 	spin_unlock(&ilb->lock);
+@@ -2272,11 +2278,16 @@ static inline bool empty_bucket(const struct tcp_=
+iter_state *st)
+  */
+ static void *established_get_first(struct seq_file *seq)
+ {
+-	struct tcp_seq_afinfo *afinfo =3D PDE_DATA(file_inode(seq->file));
++	struct tcp_seq_afinfo *afinfo;
+ 	struct tcp_iter_state *st =3D seq->private;
+ 	struct net *net =3D seq_file_net(seq);
+ 	void *rc =3D NULL;
+=20
++	if (st->bpf_seq_afinfo)
++		afinfo =3D st->bpf_seq_afinfo;
++	else
++		afinfo =3D PDE_DATA(file_inode(seq->file));
++
+ 	st->offset =3D 0;
+ 	for (; st->bucket <=3D tcp_hashinfo.ehash_mask; ++st->bucket) {
+ 		struct sock *sk;
+@@ -2289,7 +2300,8 @@ static void *established_get_first(struct seq_file =
+*seq)
+=20
+ 		spin_lock_bh(lock);
+ 		sk_nulls_for_each(sk, node, &tcp_hashinfo.ehash[st->bucket].chain) {
+-			if (sk->sk_family !=3D afinfo->family ||
++			if ((afinfo->family !=3D AF_UNSPEC &&
++			     sk->sk_family !=3D afinfo->family) ||
+ 			    !net_eq(sock_net(sk), net)) {
+ 				continue;
+ 			}
+@@ -2304,19 +2316,25 @@ static void *established_get_first(struct seq_fil=
+e *seq)
+=20
+ static void *established_get_next(struct seq_file *seq, void *cur)
+ {
+-	struct tcp_seq_afinfo *afinfo =3D PDE_DATA(file_inode(seq->file));
++	struct tcp_seq_afinfo *afinfo;
+ 	struct sock *sk =3D cur;
+ 	struct hlist_nulls_node *node;
+ 	struct tcp_iter_state *st =3D seq->private;
+ 	struct net *net =3D seq_file_net(seq);
+=20
++	if (st->bpf_seq_afinfo)
++		afinfo =3D st->bpf_seq_afinfo;
++	else
++		afinfo =3D PDE_DATA(file_inode(seq->file));
++
+ 	++st->num;
+ 	++st->offset;
+=20
+ 	sk =3D sk_nulls_next(sk);
+=20
+ 	sk_nulls_for_each_from(sk, node) {
+-		if (sk->sk_family =3D=3D afinfo->family &&
++		if ((afinfo->family =3D=3D AF_UNSPEC ||
++		     sk->sk_family =3D=3D afinfo->family) &&
+ 		    net_eq(sock_net(sk), net))
+ 			return sk;
+ 	}
+--=20
+2.24.1
 
