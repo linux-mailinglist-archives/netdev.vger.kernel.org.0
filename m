@@ -2,98 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C5E1204D90
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 11:09:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60DAF204D83
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 11:08:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732244AbgFWJIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 05:08:45 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:49195 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731860AbgFWJIn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 05:08:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1592903323; x=1624439323;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Vab59iB18cUXfZdY2UKkw5U/rizieclL7eIH6pZwzYE=;
-  b=hAg3TKcxMgMtv6DFI+R0/Cpr52TsR2tJcnKylFGme43BmX16OMNRNoYa
-   bDuYT/NQyg8BslBtfPipgjyIeqh0tZlnadXM3nMVYThNPf/ihcA8QQVbX
-   7/QAPA7RsDXZHHblujxAGysdeiWERtc74E3qdozhkHrG+lbxCsDN0cZi9
-   BdTVvWnNHYzmi3EMHsZIFaGsLYh0iS0PL2yjAR4XnExagnKKx2hNG6osC
-   3mp5igljac3FvjoQow5rA/SrcuBbJDae/41DwrSYuVf//Zjhf2nRUttuS
-   tikSc7TsosxF5/Mg46kajiWzppWBckBEjx8teDabzeg9E4D9VvlPVqp1e
-   w==;
-IronPort-SDR: At4OI2cnKjuQjIQHDaHNMhMYRBKgl5PtZezd8g1/i78LKxmOMm5XU3JW9P1KkqZdpvtsqjANK+
- IRy5ZsEhUkMeRf+NNSaeV2iZUoETw1Yj7fsCfpFwxfY20st4c4K6KkQKbfBWeSEyec4QOxhQzO
- NI9JkgLQCWogzuxwfeAGHsQiIhFkyvzkFTY1+wn9iMTfpQ2MsDRBzMBggM9k4R8CAtd18M/H4S
- oTpeNYe/wgcAIQAopoDKhsn10yVXPsnZhB+ab42jP3eJFnSHUVAT4HNGGXxkc+SYTS7POjdg/l
- A7A=
-X-IronPort-AV: E=Sophos;i="5.75,270,1589266800"; 
-   d="scan'208";a="79436711"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jun 2020 02:08:42 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 23 Jun 2020 02:08:31 -0700
-Received: from soft-dev3.localdomain (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Tue, 23 Jun 2020 02:08:40 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net v2 2/2] bridge: mrp: Validate when setting the port role
-Date:   Tue, 23 Jun 2020 11:05:41 +0200
-Message-ID: <20200623090541.2964760-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200623090541.2964760-1-horatiu.vultur@microchip.com>
-References: <20200623090541.2964760-1-horatiu.vultur@microchip.com>
+        id S1732198AbgFWJH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 05:07:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60816 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732109AbgFWJH2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 05:07:28 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C941EC061573;
+        Tue, 23 Jun 2020 02:07:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=ldF/aN/WggG+cvw07PS2qf0wY+Ysa/Xufqs3vIX/7fs=; b=CfNyO82vWkKTd5/tOSOB91ztt
+        gG2fiGzCuEWqnH3MABNjqRySpjdWdWACCUb0Swu7px6H/OceAZGBHBeAvpE520Qg6VezpvNCC6QyW
+        mMpdTLkn+H9snD1Xd2nXA88ixm/UIQY/q6/eLd3RselqnScIMFgB6/XSH0dFbH9Z+1UZZNsHBhPHA
+        8BOdfsY0Bq8vFoDHrkP01zbTs5qD0mF0B6j9MxLFXwiCHIWEcz13NcRYA52eHFcJEmX9kD8h1iqpT
+        1UoWct/v8vAsi7L7dEKMnJZDk7Rk8/JHPrWbRXHrfpNXA+APnehvlZ8Sfaj9icJpxB+f7LxFX7CiI
+        M3f376coQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59008)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jnetn-0001XI-Dr; Tue, 23 Jun 2020 10:07:23 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jneti-0000tY-Fs; Tue, 23 Jun 2020 10:07:18 +0100
+Date:   Tue, 23 Jun 2020 10:07:18 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 05/15] net: pylink.h: add kernel-doc descriptions for
+ new fields at phylink_config
+Message-ID: <20200623090718.GR1551@shell.armlinux.org.uk>
+References: <cover.1592895969.git.mchehab+huawei@kernel.org>
+ <34970f447ff86415a6cef10a785fbef81c2819a7.1592895969.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <34970f447ff86415a6cef10a785fbef81c2819a7.1592895969.git.mchehab+huawei@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds specific checks for primary(0x0) and secondary(0x1) when
-setting the port role. For any other value the function
-'br_mrp_set_port_role' will return -EINVAL.
+On Tue, Jun 23, 2020 at 09:09:01AM +0200, Mauro Carvalho Chehab wrote:
+> Some fields were moved from struct phylink into phylink_config.
+> Update the kernel-doc markups for the config struct accordingly
+> 
+> Fixes: 5c05c1dbb177 ("net: phylink, dsa: eliminate phylink_fixed_state_cb()")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-Fixes: 20f6a05ef63594 ("bridge: mrp: Rework the MRP netlink interface")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- net/bridge/br_mrp.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-index 24986ec7d38cc..779e1eb754430 100644
---- a/net/bridge/br_mrp.c
-+++ b/net/bridge/br_mrp.c
-@@ -411,10 +411,16 @@ int br_mrp_set_port_role(struct net_bridge_port *p,
- 	if (!mrp)
- 		return -EINVAL;
- 
--	if (role == BR_MRP_PORT_ROLE_PRIMARY)
-+	switch (role) {
-+	case BR_MRP_PORT_ROLE_PRIMARY:
- 		rcu_assign_pointer(mrp->p_port, p);
--	else
-+		break;
-+	case BR_MRP_PORT_ROLE_SECONDARY:
- 		rcu_assign_pointer(mrp->s_port, p);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
- 
- 	br_mrp_port_switchdev_set_role(p, role);
- 
+Thanks.
+
+> ---
+>  include/linux/phylink.h | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+> index cc5b452a184e..02ff1419d4be 100644
+> --- a/include/linux/phylink.h
+> +++ b/include/linux/phylink.h
+> @@ -62,6 +62,10 @@ enum phylink_op_type {
+>   * @dev: a pointer to a struct device associated with the MAC
+>   * @type: operation type of PHYLINK instance
+>   * @pcs_poll: MAC PCS cannot provide link change interrupt
+> + * @poll_fixed_state: if true, starts link_poll,
+> + *		      if MAC link is at %MLO_AN_FIXED mode.
+> + * @get_fixed_state: callback to execute to determine the fixed link state,
+> + *		     if MAC link is at %MLO_AN_FIXED mode.
+>   */
+>  struct phylink_config {
+>  	struct device *dev;
+> -- 
+> 2.26.2
+> 
+> 
+
 -- 
-2.26.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
