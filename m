@@ -2,91 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7088120548C
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 16:27:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 194ED2054D2
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 16:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732787AbgFWO1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 10:27:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48880 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732737AbgFWO1b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 10:27:31 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4700C2073E;
-        Tue, 23 Jun 2020 14:27:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592922450;
-        bh=cKE8GGN8F2Bic02isSz2R/jPclxbyJspW4PZYEsBCFM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=T+Ua5k9tSnuu7lGXD+jjcvLChOdZYLQ4nKF+FuM9DtVmykfdaT33m29d+WI8DtjKV
-         2jjKB1eyjYfz7kt8jubTownqHwowXyi3LgODuPneoklTw/iiHZELWPO07fPYs74cBw
-         QKO6ORlfWeOo1rKAHW7QAWxry8mHQI4CQMn7OwBg=
-Date:   Tue, 23 Jun 2020 17:27:27 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lijun Ou <oulijun@huawei.com>, linux-rdma@vger.kernel.org,
-        Maor Gottlieb <maorg@mellanox.com>, netdev@vger.kernel.org,
-        Potnuri Bharat Teja <bharat@chelsio.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Weihang Li <liweihang@huawei.com>,
-        "Wei Hu(Xavier)" <huwei87@hisilicon.com>
-Subject: Re: [PATCH rdma-next v3 00/11] RAW format dumps through RDMAtool
-Message-ID: <20200623142727.GB184720@unreal>
-References: <20200623113043.1228482-1-leon@kernel.org>
- <20200623141957.GG2874652@mellanox.com>
+        id S1732798AbgFWOfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 10:35:08 -0400
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:20753 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732738AbgFWOfH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 10:35:07 -0400
+X-Originating-IP: 90.76.143.236
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 9B539240015;
+        Tue, 23 Jun 2020 14:35:02 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, richardcochran@gmail.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, allan.nielsen@microchip.com,
+        foss@0leil.net, antoine.tenart@bootlin.com
+Subject: [PATCH net-next v4 0/8] net: phy: mscc: PHC and timestamping support
+Date:   Tue, 23 Jun 2020 16:30:06 +0200
+Message-Id: <20200623143014.47864-1-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200623141957.GG2874652@mellanox.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 11:19:57AM -0300, Jason Gunthorpe wrote:
-> On Tue, Jun 23, 2020 at 02:30:32PM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@mellanox.com>
-> >
-> > Changelog:
-> > v3:
-> >  * Rewrote query interface in patch "RDMA: Add support to dump resource
-> >    tracker in RAW format"
-> > v2:
-> > https://lore.kernel.org/linux-rdma/20200616104006.2425549-1-leon@kernel.org
-> >  * Converted to specific nldev ops for RAW.
-> >  * Rebased on top of v5.8-rc1.
-> > v1:
-> > https://lore.kernel.org/linux-rdma/20200527135408.480878-1-leon@kernel.org
-> >  * Maor dropped controversial change to dummy interface.
-> > v0:
-> > https://lore.kernel.org/linux-rdma/20200513095034.208385-1-leon@kernel.org
-> >
-> >
-> > Hi,
-> >
-> > The following series adds support to get the RDMA resource data in RAW
-> > format. The main motivation for doing this is to enable vendors to return
-> > the entire QP/CQ/MR data without a need from the vendor to set each
-> > field separately.
-> >
-> > Thanks
-> >
-> >
-> > Maor Gottlieb (11):
-> >   net/mlx5: Export resource dump interface
-> >   net/mlx5: Add support in query QP, CQ and MKEY segments
->
-> It looks OK can you apply these too the shared branch?
+Hello,
 
-Thanks, applied.
+This series aims at adding support for PHC and timestamping operations
+in the MSCC PHY driver, for the VSC858x and VSC8575. Those PHYs are
+capable of timestamping in 1-step and 2-step for both L2 and L4 traffic.
 
-608ca553c9a2 net/mlx5: Add support in query QP, CQ and MKEY segments
-d63cc24933c7 net/mlx5: Export resource dump interface
+As of this series, only IPv4 support was implemented when using L4 mode.
+This is because of an hardware limitation which prevents us for
+supporting both IPv4 and IPv6 at the same time. Implementing support for
+IPv6 should be quite easy (I do have the modifications needed for the
+hardware configuration) but I did not see a way to retrieve this
+information in hwtstamp(). What would you suggest?
 
->
-> Thanks,
-> Jason
+Those PHYs are distributed in hardware packages containing multiple
+times the PHY. The VSC8584 for example is composed of 4 PHYs. With
+hardware packages, parts of the logic is usually common and one of the
+PHY has to be used for some parts of the initialization. Following this
+logic, the 1588 blocks of those PHYs are shared between two PHYs and
+accessing the registers has to be done using the "base" PHY of the
+group. This is handled thanks to helpers in the PTP code (and locks).
+We also need the MDIO bus lock while performing a single read or write
+to the 1588 registers as the read/write are composed of multiple MDIO
+transactions (and we don't want other threads updating the page).
+
+To get and set the PHC time, a GPIO has to be used and changes are only
+retrieved or committed when on a rising edge. The same GPIO is shared by
+all PHYs, so the granularity of the lock protecting it has to be
+different from the ones protecting the 1588 registers (the VSC8584 PHY
+has 2 1588 blocks, and a single load/save pin).
+
+Patch 1 extends the recently added helpers to share information between
+PHYs of the same hardware package; to allow having part of the probe to
+be shared (in addition to the already supported init part). This will be
+used when adding support for PHC/TS to initialize locks.
+
+Patches 2 and 3 are mostly cosmetic.
+
+Patch 4 takes into account the 1588 block in the MACsec initialization,
+to allow having both the MACsec and 1588 blocks initialized on a running
+system.
+
+Patches 5 and 6 add support for PHC and timestamping operations in the
+MSCC driver. An initialization of the 1588 block (plus all the registers
+definition; and helpers) is added first; and then comes a patch to
+implement the PHC and timestamping API.
+
+Patches 7 and 8 add the required hardware description for device trees,
+to be able to use the load/save GPIO pin on the PCB120 board.
+
+To use this on a PCB120 board, two other series are needed and have
+already been sent upstream (one is merged). There are no dependency
+between all those series.
+
+Thanks!
+Antoine
+
+Since v3:
+  - Fixed a SKB leak.
+  - Removed ts_lock from the init, as TS and PHC operations aren't
+    registered at this time.
+  - Refectored the ts_base_addr/phy intialization.
+  - Cleaned up the ingr/egr latencies definitons.
+  - Fixed a comment about locking and the shared GPIO.
+  - A few cosmetic fixes.
+
+Since v2:
+  - Removed explicit inlines from .c files.
+  - Fixed three warnings.
+
+Since v1:
+  - Removed checks in rxtstamp/txtstamp as skb cannot be NULL here.
+  - Reworked get_ptp_header_rx/get_ptp_header.
+  - Reworked the locking logic between the PHC and timestamping
+    operations.
+  - Fixed a compilation issue on x86 reported by Jakub.
+
+Antoine Tenart (5):
+  net: phy: add support for a common probe between shared PHYs
+  net: phy: mscc: fix copyright and author information in MACsec
+  net: phy: mscc: take into account the 1588 block in MACsec init
+  net: phy: mscc: timestamping and PHC support
+  dt-bindings: net: phy: vsc8531: document the load/save GPIO
+
+Quentin Schulz (3):
+  net: phy: mscc: remove the TR CLK disable magic value
+  net: phy: mscc: 1588 block initialization
+  MIPS: dts: ocelot: describe the load/save GPIO
+
+ .../bindings/net/mscc-phy-vsc8531.txt         |    3 +
+ arch/mips/boot/dts/mscc/ocelot_pcb120.dts     |   12 +-
+ drivers/net/phy/mscc/Makefile                 |    4 +
+ drivers/net/phy/mscc/mscc.h                   |   63 +
+ drivers/net/phy/mscc/mscc_fc_buffer.h         |    2 +-
+ drivers/net/phy/mscc/mscc_mac.h               |    2 +-
+ drivers/net/phy/mscc/mscc_macsec.c            |   10 +-
+ drivers/net/phy/mscc/mscc_macsec.h            |    2 +-
+ drivers/net/phy/mscc/mscc_main.c              |   61 +-
+ drivers/net/phy/mscc/mscc_ptp.c               | 1592 +++++++++++++++++
+ drivers/net/phy/mscc/mscc_ptp.h               |  477 +++++
+ include/linux/phy.h                           |   18 +-
+ 12 files changed, 2225 insertions(+), 21 deletions(-)
+ create mode 100644 drivers/net/phy/mscc/mscc_ptp.c
+ create mode 100644 drivers/net/phy/mscc/mscc_ptp.h
+
+-- 
+2.26.2
+
