@@ -2,148 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C5782066AF
+	by mail.lfdr.de (Postfix) with ESMTP id E86DB2066B0
 	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388166AbgFWVyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 17:54:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35418 "EHLO mail.kernel.org"
+        id S2387590AbgFWV4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 17:56:30 -0400
+Received: from mx2.suse.de ([195.135.220.15]:43560 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387455AbgFWVyY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 17:54:24 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5B2082078E;
-        Tue, 23 Jun 2020 21:54:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592949263;
-        bh=O8oBcAwfn2aG1ULvAIdurZfw8k3bhkeQxnxNjhNs12I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ETvPMl5BukcLTeE69RRPuGOSWDHBqkWg2MgcKpZdNrlXiMillVfk/07c8abn/pFy5
-         9FodqvARx7IPxoXANdokwR0LUfGuyqzJ4B2Yf+eG5igR6+ND8B8+idpvqUN1p7/XoP
-         Z/JXXNC2RbcWSYCELvC/Fv41Xgjcn6HSbjJxkRE0=
-Date:   Tue, 23 Jun 2020 14:54:21 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luo bin <luobin9@huawei.com>
-Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
-Subject: Re: [PATCH net-next v2 1/5] hinic: add support to set and get pause
- params
-Message-ID: <20200623145421.163d22fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200623142409.19081-2-luobin9@huawei.com>
-References: <20200623142409.19081-1-luobin9@huawei.com>
-        <20200623142409.19081-2-luobin9@huawei.com>
+        id S2387455AbgFWV4a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 17:56:30 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 31303ADA3;
+        Tue, 23 Jun 2020 21:56:28 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id F073C602E3; Tue, 23 Jun 2020 23:56:27 +0200 (CEST)
+Date:   Tue, 23 Jun 2020 23:56:27 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Oliver Herms <oliver.peter.herms@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org
+Subject: Re: [PATCH] IPv6: Fix CPU contention on FIB6 GC
+Message-ID: <20200623215627.dczzidomidhur4ra@lion.mk-sys.cz>
+References: <20200622205355.GA869719@tws>
+ <20200622214449.gyfn33ickesj2j2t@lion.mk-sys.cz>
+ <3588d0fc-5c6b-b62a-f137-24abcf660d5f@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3588d0fc-5c6b-b62a-f137-24abcf660d5f@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Jun 2020 22:24:05 +0800 Luo bin wrote:
-> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-> index e9e6f4c9309a..e69edb01fd9b 100644
-> --- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-> +++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-> @@ -467,6 +467,7 @@ int hinic_open(struct net_device *netdev)
->  	if (ret)
->  		netif_warn(nic_dev, drv, netdev,
->  			   "Failed to revert port state\n");
-> +
+On Tue, Jun 23, 2020 at 12:46:34AM +0200, Oliver Herms wrote:
+> On 22.06.20 23:44, Michal Kubecek wrote:
+> > On Mon, Jun 22, 2020 at 10:53:55PM +0200, Oliver Herms wrote:
+> >> When fib6_run_gc is called with parameter force=true the spinlock in
+> >> /net/ipv6/ip6_fib.c:2310 can lock all CPUs in softirq when
+> >> net.ipv6.route.max_size is exceeded (seen this multiple times).
+> >> One sotirq/CPU get's the lock. All others spin to get it. It takes
+> >> substantial time until all are done. Effectively it's a DOS vector.
+> >>
+> >> As the splinlock is only enforcing that there is at most one GC running
+> >> at a time, it should IMHO be safe to use force=false here resulting
+> >> in spin_trylock_bh instead of spin_lock_bh, thus avoiding the lock
+> >> contention.
+> >>
+> >> Finding a locked spinlock means some GC is going on already so it is
+> >> save to just skip another execution of the GC.
+> >>
+> >> Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
+> > 
+> > I wonder if it wouldn't suffice to revert commit 14956643550f ("ipv6:
+> > slight optimization in ip6_dst_gc") as the reasoning in its commit
+> > message seems wrong: we do not always skip fib6_run_gc() when
+> > entries <= rt_max_size, we do so only if the time since last garbage
+> > collector run is shorter than rt_min_interval.
+> > 
+> > Then you would prevent the "thundering herd" effect when only gc_thresh
+> > is exceeded but not max_size, as commit 2ac3ac8f86f2 ("ipv6: prevent
+> > fib6_run_gc() contention") intended, but would still preserve enforced
+> > garbage collect when max_size is exceeded.
+> > 
+> > Michal
+> > 
+> 
+> Hi Michal,
+> 
+> I did some testing with packets causing 17k IPv6 route cache entries per 
+> second. With "entries > rt_max_size" all CPUs of the system get stuck 
+> waiting for the spinlock. With "false" CPU load stays at <<10% on every single
+> CPU core (tested on an Atom C2750). This makes sense as "entries > rt_max_size"
+> would not prevent multiple CPUs from trying to get the lock.
+> 
+> So reverting 14956643550f is not enough.
 
-Unrelated chunk, please drop.
+The problem I see with this kind of test is that you simulate a scenario
+where you are routinely using more entries than the cache is sized for.
+In other words, if this happened in a real life setup, the actual
+problem would be too low settings for gc_thresh and max_size. Also, your
+patch would minimize the difference between gc_thresh (where we want to
+get) and max_size (hard limit) by making the hard limit "softer".
 
->  err_port_state:
->  	free_rxqs(nic_dev);
->  	if (nic_dev->flags & HINIC_RSS_ENABLE) {
-> @@ -887,6 +888,26 @@ static void netdev_features_init(struct net_device *netdev)
->  	netdev->features = netdev->hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
->  }
->  
-> +static void hinic_refresh_nic_cfg(struct hinic_dev *nic_dev)
-> +{
-> +	struct hinic_nic_cfg *nic_cfg = &nic_dev->hwdev->func_to_io.nic_cfg;
-> +	struct hinic_pause_config pause_info = {0};
-> +	struct hinic_port_cap port_cap = {0};
-> +
-> +	if (hinic_port_get_cap(nic_dev, &port_cap))
-> +		return;
-> +
-> +	mutex_lock(&nic_cfg->cfg_mutex);
-> +	if (nic_cfg->pause_set || !port_cap.autoneg_state) {
-> +		nic_cfg->auto_neg = port_cap.autoneg_state;
-> +		pause_info.auto_neg = nic_cfg->auto_neg;
-> +		pause_info.rx_pause = nic_cfg->rx_pause;
-> +		pause_info.tx_pause = nic_cfg->tx_pause;
-> +		hinic_set_hw_pause_info(nic_dev->hwdev, &pause_info);
-> +	}
-> +	mutex_unlock(&nic_cfg->cfg_mutex);
-> +}
-> +
->  /**
->   * link_status_event_handler - link event handler
->   * @handle: nic device for the handler
-> @@ -918,6 +939,9 @@ static void link_status_event_handler(void *handle, void *buf_in, u16 in_size,
->  
->  		up(&nic_dev->mgmt_lock);
->  
-> +		if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
-> +			hinic_refresh_nic_cfg(nic_dev);
-> +
->  		netif_info(nic_dev, drv, nic_dev->netdev, "HINIC_Link is UP\n");
->  	} else {
->  		down(&nic_dev->mgmt_lock);
-> @@ -950,26 +974,38 @@ static int set_features(struct hinic_dev *nic_dev,
->  	u32 csum_en = HINIC_RX_CSUM_OFFLOAD_EN;
->  	int err = 0;
->  
-> -	if (changed & NETIF_F_TSO)
-> +	if (changed & NETIF_F_TSO) {
->  		err = hinic_port_set_tso(nic_dev, (features & NETIF_F_TSO) ?
->  					 HINIC_TSO_ENABLE : HINIC_TSO_DISABLE);
-> +		if (err)
-> +			return err;
-> +	}
->  
-> -	if (changed & NETIF_F_RXCSUM)
-> +	if (changed & NETIF_F_RXCSUM) {
->  		err = hinic_set_rx_csum_offload(nic_dev, csum_en);
-> +		if (err)
-> +			return err;
-> +	}
->  
->  	if (changed & NETIF_F_LRO) {
->  		err = hinic_set_rx_lro_state(nic_dev,
->  					     !!(features & NETIF_F_LRO),
->  					     HINIC_LRO_RX_TIMER_DEFAULT,
->  					     HINIC_LRO_MAX_WQE_NUM_DEFAULT);
-> +		if (err)
-> +			return err;
->  	}
->  
-> -	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
-> +	if (changed & NETIF_F_HW_VLAN_CTAG_RX) {
->  		err = hinic_set_rx_vlan_offload(nic_dev,
->  						!!(features &
->  						   NETIF_F_HW_VLAN_CTAG_RX));
-> +		if (err)
-> +			return err;
-> +	}
-
-I missed this on v1, but this looks broken, multiple features may be
-changed at the same time. If user requests RXCSUM and LRO to be changed
-and LRO change fails the RXCSUM will be left in a different state than
-dev->features indicates.
-  
-> -	return err;
-> +	/* enable pause and disable pfc by default */
-> +	return hinic_dcb_set_pfc(nic_dev->hwdev, 0, 0);
-
-Why do you disable PFC every time features are changed?
-
-> +int hinic_dcb_set_pfc(struct hinic_hwdev *hwdev, u8 pfc_en, u8 pfc_bitmap)
-
-This is only ever called with 0, 0 as parameters.
+Michal
