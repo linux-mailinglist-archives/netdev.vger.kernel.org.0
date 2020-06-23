@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 351FC2062E6
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:10:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36E86206230
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:09:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391528AbgFWUeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 16:34:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56170 "EHLO mail.kernel.org"
+        id S2393078AbgFWU47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 16:56:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39934 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391514AbgFWUeR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 16:34:17 -0400
+        id S2392484AbgFWUnK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 16:43:10 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C17342080C;
-        Tue, 23 Jun 2020 20:34:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D44822070E;
+        Tue, 23 Jun 2020 20:43:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592944457;
-        bh=3hHV1jtb2Ql+/V2fdM36+lpmCrBcLd9rMcBpsTVI68M=;
+        s=default; t=1592944990;
+        bh=I6VnDk4BoSmtkRXVnFLIIrNS4DEqu4Z8iF3KWD9auXg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ehypAUd9ej4vnTFf/YbmcD/j4Pb1X7fp8VgIqOAIZ12Kx+6wfzsBJc+OscAEK4F2N
-         8xgitsW4Ski5DNW2Q8LhakdOxb1kfsM87vXDJLCxtU7d7dRmHQZ5hRCgmEjnp0TIxl
-         bk9FTvPDD9dzcLERQKeA+TD619KU6TXutya/dAkA=
+        b=x1jk6kyFp/sfIVqV0wBAE4q3QQ5H6ZuAM85kofodYzJZWLcpUdqdXcV6lqbLJ8dKH
+         rM8YUKDrKRXzC7oRrt7nxafUv2TsXQONfxil0oh7mcGo8Az78InSKuCTwCle8N/BYf
+         zJwM0nStPb3ATdTP45ZHa5/coN7pOnKx3+2OW89Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -32,12 +32,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Peter Zijlstra <peterz@infradead.org>, netdev@vger.kernel.org,
         Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 313/314] sched/rt, net: Use CONFIG_PREEMPTION.patch
-Date:   Tue, 23 Jun 2020 21:58:28 +0200
-Message-Id: <20200623195353.932589002@linuxfoundation.org>
+Subject: [PATCH 4.19 204/206] sched/rt, net: Use CONFIG_PREEMPTION.patch
+Date:   Tue, 23 Jun 2020 21:58:52 +0200
+Message-Id: <20200623195327.077871462@linuxfoundation.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200623195338.770401005@linuxfoundation.org>
-References: <20200623195338.770401005@linuxfoundation.org>
+In-Reply-To: <20200623195316.864547658@linuxfoundation.org>
+References: <20200623195316.864547658@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -72,10 +72,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 8552874e5aac1..b127f022d8bd9 100644
+index 50498a75c04bf..8db77e09387b8 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -819,7 +819,7 @@ EXPORT_SYMBOL(dev_get_by_napi_id);
+@@ -902,7 +902,7 @@ EXPORT_SYMBOL(dev_get_by_napi_id);
   *
   *	The use of raw_seqcount_begin() and cond_resched() before
   *	retrying is required as we want to give the writers a chance
