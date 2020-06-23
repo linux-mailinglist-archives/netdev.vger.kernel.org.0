@@ -2,135 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31CE1204C53
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 10:27:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF72204C77
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 10:34:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731861AbgFWI1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 04:27:01 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:41629 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731764AbgFWI1A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 04:27:00 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1592900819; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=KibLpiIJZ8OoU7QBd/y8BObyo7ExEw9uGFHlSuJvhVM=;
- b=UsrS0srN+vGT6qLlPPb5q5fsGzD/dHUkD/C4/e+k+brXT9Nn25qfRizTGgiG+Ip56aBCBJzs
- t7cYWSN52AuN/FGhBO6QPudKZz7ZHeLqJD2DqXzPCICra7Jqx/Amkg+fylECQ+wVRVJ8P1Q1
- em5u8lfpSiwakByd2nhmsIkXh+A=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
- 5ef1bccd86de6ccd446543fe (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 23 Jun 2020 08:26:53
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 01CF5C433C6; Tue, 23 Jun 2020 08:26:52 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 03841C433C6;
-        Tue, 23 Jun 2020 08:26:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 03841C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] iwlwifi: fix crash in iwl_dbg_tlv_alloc_trigger
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200612073800.27742-1-jslaby@suse.cz>
-References: <20200612073800.27742-1-jslaby@suse.cz>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     johannes.berg@intel.com, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>,
-        =?utf-8?q?Die?= =?utf-8?q?ter_N=C3=BCtzel?= 
-        <Dieter@nuetzel-hh.de>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200623082653.01CF5C433C6@smtp.codeaurora.org>
-Date:   Tue, 23 Jun 2020 08:26:52 +0000 (UTC)
+        id S1731844AbgFWId7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 04:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731831AbgFWId4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 04:33:56 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3486BC061573
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 01:33:56 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id q15so501370wmj.2
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 01:33:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=ToWZL43tF3Urwd8i/BsV3EgAZBwn0D0GlsbC/FJOSx4=;
+        b=hMRWmGO6CyTzHaktpZSU+2lW5rtPHeGqo6kzDzm431YaI184J0kBXNJ5tRUCe3xqC1
+         DkIp/bag+Lm4BppOIGZVDF5Or9+qaWsuZ7knZVRQaq8FZPZCRzc65DvYiZpkiVMVr+Se
+         OanKJOFo6iDuWm73mX5qQ606YdkPOCOfcOSLMxGcWgjUOSI1LWAZfjP+hcOAKLcAbnc0
+         paCq6K3atN+Tn12VNoliU/MzhTLS0C5VmxDsqqR4W20TvlDx/qEQV3iNShWDYENOSCy+
+         liyI+4pyete4N9e6OitLtpveC8a2ZcCen+/iksdU8Oe6lC1SzDYxfZBerdHmHKNhvOLF
+         CBCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ToWZL43tF3Urwd8i/BsV3EgAZBwn0D0GlsbC/FJOSx4=;
+        b=pbIbkkq3SlCF2hgdBfLdQgZD3/gz6l2zANo0avq1CJc1HQxHdBJM7npG5Upwmbwenk
+         yrCaSTJHuDNrVJpdaFCYTjlFTgOLKXQP4zBfV/14DjjmX+aypbf25K+kWmZU+D2moaWQ
+         N1uzeix7N+KmMxrS3lm5bO37Emp7Wq8imgJwQupZ1YVidDTANNZcTXzY7PixDPHJZ0xe
+         LTNxQ5ALM5rhTbR0XyIPOSLQEApNXtJa3Mb39G8sTeQbZYKAIK/BraiRdeLIlm1uKMkz
+         maWh5l8AEbl6XC/uG1G6XZsqArNS3vNuxc+D84CFHK6oTvnjyasCxV15HZs972v7P/8d
+         jscw==
+X-Gm-Message-State: AOAM530QMVoT5bgTNPiwHF86OJxUmoL5xKX7oafk2nBf0dNz6/brEN+x
+        6eoLfyg6xKkOc5PzJO0sbZxs7o5TrFl2Kw==
+X-Google-Smtp-Source: ABdhPJxtTcGwzwywlKu1Pl0G6wN1MPZp3vRmdUzYdgrNYBTaa83Z/BZYnUfz+8czE18UvVBR3mrJ2Q==
+X-Received: by 2002:a1c:a1c3:: with SMTP id k186mr6819994wme.15.1592901234286;
+        Tue, 23 Jun 2020 01:33:54 -0700 (PDT)
+Received: from localhost.localdomain (82-64-167-122.subs.proxad.net. [82.64.167.122])
+        by smtp.gmail.com with ESMTPSA id p17sm2618499wma.47.2020.06.23.01.33.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2020 01:33:53 -0700 (PDT)
+From:   Alexandre Cassen <acassen@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com,
+        nikolay@cumulusnetworks.com, idosch@mellanox.com,
+        vladbu@mellanox.com
+Subject: [PATCH net-next,v2] rtnetlink: add keepalived rtm_protocol
+Date:   Tue, 23 Jun 2020 10:33:45 +0200
+Message-Id: <20200623083345.30842-1-acassen@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri Slaby <jslaby@suse.cz> wrote:
+Keepalived can set global static ip routes or virtual ip routes dynamically
+following VRRP protocol states. Using a dedicated rtm_protocol will help
+keeping track of it.
 
-> The tlv passed to iwl_dbg_tlv_alloc_trigger comes from a loaded firmware
-> file. The memory can be marked as read-only as firmware could be
-> shared. In anyway, writing to this memory is not expected. So,
-> iwl_dbg_tlv_alloc_trigger can crash now:
-> 
->   BUG: unable to handle page fault for address: ffffae2c01bfa794
->   PF: supervisor write access in kernel mode
->   PF: error_code(0x0003) - permissions violation
->   PGD 107d51067 P4D 107d51067 PUD 107d52067 PMD 659ad2067 PTE 8000000662298161
->   CPU: 2 PID: 161 Comm: kworker/2:1 Not tainted 5.7.0-3.gad96a07-default #1 openSUSE Tumbleweed (unreleased)
->   RIP: 0010:iwl_dbg_tlv_alloc_trigger+0x25/0x60 [iwlwifi]
->   Code: eb f2 0f 1f 00 66 66 66 66 90 83 7e 04 33 48 89 f8 44 8b 46 10 48 89 f7 76 40 41 8d 50 ff 83 fa 19 77 23 8b 56 20 85 d2 75 07 <c7> 46 20 ff ff ff ff 4b 8d 14 40 48 c1 e2 04 48 8d b4 10 00 05 00
->   RSP: 0018:ffffae2c00417ce8 EFLAGS: 00010246
->   RAX: ffff8f0522334018 RBX: ffff8f0522334018 RCX: ffffffffc0fc26c0
->   RDX: 0000000000000000 RSI: ffffae2c01bfa774 RDI: ffffae2c01bfa774
->   RBP: 0000000000000000 R08: 0000000000000004 R09: 0000000000000001
->   R10: 0000000000000034 R11: ffffae2c01bfa77c R12: ffff8f0522334230
->   R13: 0000000001000009 R14: ffff8f0523fdbc00 R15: ffff8f051f395800
->   FS:  0000000000000000(0000) GS:ffff8f0527c80000(0000) knlGS:0000000000000000
->   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->   CR2: ffffae2c01bfa794 CR3: 0000000389eba000 CR4: 00000000000006e0
->   Call Trace:
->    iwl_dbg_tlv_alloc+0x79/0x120 [iwlwifi]
->    iwl_parse_tlv_firmware.isra.0+0x57d/0x1550 [iwlwifi]
->    iwl_req_fw_callback+0x3f8/0x6a0 [iwlwifi]
->    request_firmware_work_func+0x47/0x90
->    process_one_work+0x1e3/0x3b0
->    worker_thread+0x46/0x340
->    kthread+0x115/0x140
->    ret_from_fork+0x1f/0x40
-> 
-> As can be seen, write bit is not set in the PTE. Read of
-> trig->occurrences succeeds in iwl_dbg_tlv_alloc_trigger, but
-> trig->occurrences = cpu_to_le32(-1); fails there, obviously.
-> 
-> This is likely because we (at SUSE) use compressed firmware and that is
-> marked as RO after decompression (see fw_map_paged_buf).
-> 
-> Fix it by creating a temporary buffer in case we need to change the
-> memory.
-> 
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Reported-by: Dieter Nützel <Dieter@nuetzel-hh.de>
-> Tested-by: Dieter Nützel <Dieter@nuetzel-hh.de>
-> Cc: Johannes Berg <johannes.berg@intel.com>
-> Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-> Cc: Luca Coelho <luciano.coelho@intel.com>
-> Cc: Intel Linux Wireless <linuxwifi@intel.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
+Changes in v2:
+ - fix tab/space indenting
 
-Patch applied to wireless-drivers.git, thanks.
+Signed-off-by: Alexandre Cassen <acassen@gmail.com>
+---
+ include/uapi/linux/rtnetlink.h | 45 +++++++++++++++++-----------------
+ 1 file changed, 23 insertions(+), 22 deletions(-)
 
-ea0cca61d628 iwlwifi: fix crash in iwl_dbg_tlv_alloc_trigger
-
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index 073e71ef6bdd..879e64950a0a 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -257,12 +257,12 @@ enum {
+ 
+ /* rtm_protocol */
+ 
+-#define RTPROT_UNSPEC	0
+-#define RTPROT_REDIRECT	1	/* Route installed by ICMP redirects;
+-				   not used by current IPv4 */
+-#define RTPROT_KERNEL	2	/* Route installed by kernel		*/
+-#define RTPROT_BOOT	3	/* Route installed during boot		*/
+-#define RTPROT_STATIC	4	/* Route installed by administrator	*/
++#define RTPROT_UNSPEC		0
++#define RTPROT_REDIRECT		1	/* Route installed by ICMP redirects;
++					   not used by current IPv4 */
++#define RTPROT_KERNEL		2	/* Route installed by kernel		*/
++#define RTPROT_BOOT		3	/* Route installed during boot		*/
++#define RTPROT_STATIC		4	/* Route installed by administrator	*/
+ 
+ /* Values of protocol >= RTPROT_STATIC are not interpreted by kernel;
+    they are just passed from user and back as is.
+@@ -271,22 +271,23 @@ enum {
+    avoid conflicts.
+  */
+ 
+-#define RTPROT_GATED	8	/* Apparently, GateD */
+-#define RTPROT_RA	9	/* RDISC/ND router advertisements */
+-#define RTPROT_MRT	10	/* Merit MRT */
+-#define RTPROT_ZEBRA	11	/* Zebra */
+-#define RTPROT_BIRD	12	/* BIRD */
+-#define RTPROT_DNROUTED	13	/* DECnet routing daemon */
+-#define RTPROT_XORP	14	/* XORP */
+-#define RTPROT_NTK	15	/* Netsukuku */
+-#define RTPROT_DHCP	16      /* DHCP client */
+-#define RTPROT_MROUTED	17      /* Multicast daemon */
+-#define RTPROT_BABEL	42      /* Babel daemon */
+-#define RTPROT_BGP	186     /* BGP Routes */
+-#define RTPROT_ISIS	187     /* ISIS Routes */
+-#define RTPROT_OSPF	188     /* OSPF Routes */
+-#define RTPROT_RIP	189     /* RIP Routes */
+-#define RTPROT_EIGRP	192     /* EIGRP Routes */
++#define RTPROT_GATED		8	/* Apparently, GateD */
++#define RTPROT_RA		9	/* RDISC/ND router advertisements */
++#define RTPROT_MRT		10	/* Merit MRT */
++#define RTPROT_ZEBRA		11	/* Zebra */
++#define RTPROT_BIRD		12	/* BIRD */
++#define RTPROT_DNROUTED		13	/* DECnet routing daemon */
++#define RTPROT_XORP		14	/* XORP */
++#define RTPROT_NTK		15	/* Netsukuku */
++#define RTPROT_DHCP		16	/* DHCP client */
++#define RTPROT_MROUTED		17	/* Multicast daemon */
++#define RTPROT_KEEPALIVED	18	/* Keepalived daemon */
++#define RTPROT_BABEL		42	/* Babel daemon */
++#define RTPROT_BGP		186	/* BGP Routes */
++#define RTPROT_ISIS		187	/* ISIS Routes */
++#define RTPROT_OSPF		188	/* OSPF Routes */
++#define RTPROT_RIP		189	/* RIP Routes */
++#define RTPROT_EIGRP		192	/* EIGRP Routes */
+ 
+ /* rtm_scope
+ 
 -- 
-https://patchwork.kernel.org/patch/11601365/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.17.1
 
