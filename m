@@ -2,97 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 129F72047D7
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 05:13:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 021992047E3
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 05:22:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731547AbgFWDNs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Jun 2020 23:13:48 -0400
-Received: from mga06.intel.com ([134.134.136.31]:47359 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731338AbgFWDNs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 23:13:48 -0400
-IronPort-SDR: sU8alZ+SkEcYeGeGWInD4dGmF11ZKVESxHNjo/FoBO5/nDERxaQbbKJu1AUarDoeE2sYBSN9RU
- yJH7PgBL3MxA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9660"; a="205442908"
-X-IronPort-AV: E=Sophos;i="5.75,269,1589266800"; 
-   d="scan'208";a="205442908"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2020 20:13:47 -0700
-IronPort-SDR: qbDiRhxWlLlZCNi8//HdPR9j7tWPEwtPrQctDlUmdNR981jK9CjtU0exphJauv00pHx6tlpFEz
- 2TMG+rSa+QnA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,269,1589266800"; 
-   d="scan'208";a="319030114"
-Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Jun 2020 20:13:46 -0700
-Received: from orsmsx157.amr.corp.intel.com (10.22.240.23) by
- ORSMSX108.amr.corp.intel.com (10.22.240.6) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 22 Jun 2020 20:13:36 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.199]) by
- ORSMSX157.amr.corp.intel.com ([169.254.9.81]) with mapi id 14.03.0439.000;
- Mon, 22 Jun 2020 20:13:35 -0700
-From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "Kwapulinski, Piotr" <piotr.kwapulinski@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>
-Subject: RE: [net-next 4/9] i40e: detect and log info about pre-recovery mode
-Thread-Topic: [net-next 4/9] i40e: detect and log info about pre-recovery
- mode
-Thread-Index: AQHWSOMMtMCKLyPfsUWCUoUdRG4SWKjlxOQA///BcQA=
-Date:   Tue, 23 Jun 2020 03:13:35 +0000
-Message-ID: <61CC2BC414934749BD9F5BF3D5D94044987324EF@ORSMSX112.amr.corp.intel.com>
-References: <20200622221817.2287549-1-jeffrey.t.kirsher@intel.com>
-        <20200622221817.2287549-5-jeffrey.t.kirsher@intel.com>
- <20200622165552.13ebc666@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200622165552.13ebc666@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.138]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S1731627AbgFWDWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 23:22:17 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:44560 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731122AbgFWDWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 23:22:15 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1592882535; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=3HYTrvrUNR1mh57SvwgZsB4E0REHnl3MkUCvY+NvhH4=; b=m8+1PMwTFtHG9nE/UN+Vl8Yr1ICfgKtXpe0EvbOJnw7NTJtUVneIkLtOiGEd7catIfqVDmiz
+ ifUFPzeDkNvjRzqHRJlzlCL105QYMK3jkR2w0r2pgNx+BBcJoyb9hbVZbg7BW9VkHzKUbqic
+ oQFLgpyCAIbbgpKfN/s00ErapRY=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n14.prod.us-east-1.postgun.com with SMTP id
+ 5ef175650206ad41d1acd0f4 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 23 Jun 2020 03:22:13
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 974C5C433C8; Tue, 23 Jun 2020 03:22:12 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from cjhuang-station.qca.qualcomm.com (unknown [180.166.53.21])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: cjhuang)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 15B4BC433C6;
+        Tue, 23 Jun 2020 03:22:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 15B4BC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=cjhuang@codeaurora.org
+From:   Carl Huang <cjhuang@codeaurora.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ath11k@lists.infradead.org
+Subject: [PATCH] net: qrtr: free flow in __qrtr_node_release
+Date:   Tue, 23 Jun 2020 11:22:03 +0800
+Message-Id: <1592882523-12870-1-git-send-email-cjhuang@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Monday, June 22, 2020 16:56
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> Cc: davem@davemloft.net; Kwapulinski, Piotr <piotr.kwapulinski@intel.com>;
-> netdev@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
-> Loktionov, Aleksandr <aleksandr.loktionov@intel.com>; Bowers, AndrewX
-> <andrewx.bowers@intel.com>
-> Subject: Re: [net-next 4/9] i40e: detect and log info about pre-recovery mode
-> 
-> On Mon, 22 Jun 2020 15:18:12 -0700 Jeff Kirsher wrote:
-> > +static inline bool i40e_check_fw_empr(struct i40e_pf *pf) {
-> 
-> > +}
-> 
-> > +static inline i40e_status i40e_handle_resets(struct i40e_pf *pf) {
-> > +	const i40e_status pfr = i40e_pf_loop_reset(pf);
-> 
-> > +
-> > +	return is_empr ? I40E_ERR_RESET_FAILED : pfr; }
-> 
-> There is no need to use the inline keyword in C sources. Compiler will inline
-> small static functions, anyway.
-> 
-> Same thing in patch 8.
-[Kirsher, Jeffrey T] 
+The flow is allocated in qrtr_tx_wait, but not freed when qrtr node
+is released. (*slot) becomes NULL after radix_tree_iter_delete is
+called in __qrtr_node_release. The fix is to save (*slot) to a
+vairable and then free it.
 
-In patch 8, the functions are not so small and simple.  Are you sure the compiler would inline them if we did not explicitly 'inline' them?  I want to make sure before making that change.
+This memory leak is catched when kmemleak is enabled in kernel,
+the report looks like below:
+
+unreferenced object 0xffffa0de69e08420 (size 32):
+  comm "kworker/u16:3", pid 176, jiffies 4294918275 (age 82858.876s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 28 84 e0 69 de a0 ff ff  ........(..i....
+    28 84 e0 69 de a0 ff ff 03 00 00 00 00 00 00 00  (..i............
+  backtrace:
+    [<00000000e252af0a>] qrtr_node_enqueue+0x38e/0x400 [qrtr]
+    [<000000009cea437f>] qrtr_sendmsg+0x1e0/0x2a0 [qrtr]
+    [<000000008bddbba4>] sock_sendmsg+0x5b/0x60
+    [<0000000003beb43a>] qmi_send_message.isra.3+0xbe/0x110 [qmi_helpers]
+    [<000000009c9ae7de>] qmi_send_request+0x1c/0x20 [qmi_helpers]
+
+Signed-off-by: Carl Huang <cjhuang@codeaurora.org>
+---
+ net/qrtr/qrtr.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index 2d8d613..1855857 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -168,6 +168,7 @@ static void __qrtr_node_release(struct kref *kref)
+ 	struct radix_tree_iter iter;
+ 	unsigned long flags;
+ 	void __rcu **slot;
++	struct qrtr_tx_flow *flow;
+ 
+ 	spin_lock_irqsave(&qrtr_nodes_lock, flags);
+ 	if (node->nid != QRTR_EP_NID_AUTO)
+@@ -181,8 +182,9 @@ static void __qrtr_node_release(struct kref *kref)
+ 
+ 	/* Free tx flow counters */
+ 	radix_tree_for_each_slot(slot, &node->qrtr_tx_flow, &iter, 0) {
++		flow = *slot;
+ 		radix_tree_iter_delete(&node->qrtr_tx_flow, &iter, slot);
+-		kfree(*slot);
++		kfree(flow);
+ 	}
+ 	kfree(node);
+ }
+-- 
+2.7.4
+
