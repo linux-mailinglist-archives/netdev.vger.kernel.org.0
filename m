@@ -2,150 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1F1F204BBC
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 09:55:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01A64204BD7
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 10:02:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731534AbgFWHzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 03:55:12 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:35564 "EHLO mail.bugwerft.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731346AbgFWHzM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 03:55:12 -0400
-Received: from [192.168.178.106] (p57bc9f02.dip0.t-ipconnect.de [87.188.159.2])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id A32F242BB05;
-        Tue, 23 Jun 2020 07:55:10 +0000 (UTC)
-Subject: Re: [PATCH v2] dsa: Allow forwarding of redirected IGMP traffic
-To:     netdev@vger.kernel.org
-Cc:     jcobham@questertangent.com, andrew@lunn.ch
-References: <20200620193925.3166913-1-daniel@zonque.org>
-From:   Daniel Mack <daniel@zonque.org>
-Message-ID: <649fde96-c017-9a6c-1e08-a602e317c60e@zonque.org>
-Date:   Tue, 23 Jun 2020 09:55:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1731603AbgFWICY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 04:02:24 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:43000 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731158AbgFWICX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 04:02:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1592899342; x=1624435342;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0ogUMEimjCKkrZVTOaTS0pbyYgrTcwl/8QxbW1JRQZo=;
+  b=s72LzhP5Xsvag/48itoOU6FY1eJEIOaUgS07NRmNvYT5kEp2C7SF8jSf
+   puZqBsr9IEz+v40oJvWlkhhSNRPtLZjxfVUYVPTfhETK9Z+1/Ze5LOqLh
+   qPKUoHVfaJxj8NKpG0rRcxyMGACQWZheYgoe2IqBXNzcQ8oN/6zrpJsxD
+   fHW+8Icp26T1RawhlXChbEmjzJipR2JAa2VmTHsV88Zek4lTxrNZoO8TU
+   ybliO8XJNebycwY4hGkvnuDcRUgpMYAclDt5Jc3np58ou2mGDCrInkeEE
+   7nVTXsjTBCcr/oP+07UFqHJ36SzUjPqLbsMo4NM8WfJz6WS7ccyuPe/Wn
+   Q==;
+IronPort-SDR: J6ZvwGuNaoSpKwnAaAeypTuXdyhRSVceuVIKH3RwYh4QvdmJKHXJ4aGW2lIpkllfCBG+EVA8Pt
+ MTFoy6rg2fjQ8W/plsDPPdAIq0cpH+KcuBOSqG3s1XC0DpeTLFPt6Q6t9WzJTQ78I/LjLD8gGb
+ 45Bs37LWResoGb9gue8JkjT+jMpzEA8fQG6VO00SuLgw8sIYf0SE3DutOirS0ie+RdISpZmDxF
+ UcPZC+ensF3o14pj0qxf9JcYn54yRi1SUaUwO2Qu+jQfJppfqKXMZGWDOmRXly33imKYIWmark
+ hFs=
+X-IronPort-AV: E=Sophos;i="5.75,270,1589266800"; 
+   d="scan'208";a="79430541"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jun 2020 01:02:22 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 23 Jun 2020 01:02:10 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Tue, 23 Jun 2020 01:02:21 -0700
+Date:   Tue, 23 Jun 2020 10:02:17 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     David Miller <davem@davemloft.net>
+CC:     <nikolay@cumulusnetworks.com>, <UNGLinuxDriver@microchip.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [Resend PATCH net] bridge: uapi: mrp: Fix MRP_PORT_ROLE
+Message-ID: <20200623080217.bjsml4jmrvrq6eev@soft-dev3.localdomain>
+References: <20200620131403.2680293-1-horatiu.vultur@microchip.com>
+ <20200622.160712.2300967026610181117.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <20200620193925.3166913-1-daniel@zonque.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20200622.160712.2300967026610181117.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew,
+The 06/22/2020 16:07, David Miller wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> From: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Date: Sat, 20 Jun 2020 15:14:03 +0200
+> 
+> > Currently the MRP_PORT_ROLE_NONE has the value 0x2 but this is in conflict
+> > with the IEC 62439-2 standard. The standard defines the following port
+> > roles: primary (0x0), secondary(0x1), interconnect(0x2).
+> > Therefore remove the port role none.
+> >
+> > Fixes: 4714d13791f831 ("bridge: uapi: mrp: Add mrp attributes.")
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> 
+> The code accepts arbitrary 32-bit values for the role in a configuration
+> but only PRIMARY and SECONDARY seem to be valid.
+> 
+> There is no validation that the value used makes sense.
+> 
+> In the future if we handle type interconnect, and we add checks, it will
+> break any existing applications.  Because they can validly pass any
+> non-zero valid and the code treats that as SECONDARY currently.
+> 
+> So you really can't just remove NONE, you have to add validation code
+> too so we don't run into problem in the future.
 
-This version should address the comments you had on my initial
-submission. Does this one look better now?
+Thanks for the explanation. I will add some code that checks
+specifically for primary(0x0) and secondary(0x1) values and for any
+other value to return -EINVAL.
+Then in the future when we handle the type interconnect(0x2), we will
+just extend this code to check for this value.
 
+> 
+> Thanks.
 
-Thanks,
-Daniel
-
-On 6/20/20 9:39 PM, Daniel Mack wrote:
-> The driver for Marvell switches puts all ports in IGMP snooping mode
-> which results in all IGMP/MLD frames that ingress on the ports to be
-> forwarded to the CPU only.
-> 
-> The bridge code in the kernel can then interpret these frames and act
-> upon them, for instance by updating the mdb in the switch to reflect
-> multicast memberships of stations connected to the ports. However,
-> the IGMP/MLD frames must then also be forwarded to other ports of the
-> bridge so external IGMP queriers can track membership reports, and
-> external multicast clients can receive query reports from foreign IGMP
-> queriers.
-> 
-> Currently, this is impossible as the EDSA tagger sets offload_fwd_mark
-> on the skb when it unwraps the tagged frames, and that will make the
-> switchdev layer prevent the skb from egressing on any other port of
-> the same switch.
-> 
-> To fix that, look at the To_CPU code in the DSA header and make
-> forwarding of the frame possible for trapped IGMP packets.
-> 
-> Introduce some #defines for the frame types to make the code a bit more
-> comprehensive.
-> 
-> This was tested on a Marvell 88E6352 variant.
-> 
-> Signed-off-by: Daniel Mack <daniel@zonque.org>
-> ---
-> v2:
->   * Limit IGMP handling to TO_CPU frames
->   * Use #defines for the TO_CPU codes and the frame types
-> 
->  net/dsa/tag_edsa.c | 37 ++++++++++++++++++++++++++++++++++---
->  1 file changed, 34 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/dsa/tag_edsa.c b/net/dsa/tag_edsa.c
-> index e8eaa804ccb9e..d6200ff982007 100644
-> --- a/net/dsa/tag_edsa.c
-> +++ b/net/dsa/tag_edsa.c
-> @@ -13,6 +13,16 @@
->  #define DSA_HLEN	4
->  #define EDSA_HLEN	8
->  
-> +#define FRAME_TYPE_TO_CPU	0x00
-> +#define FRAME_TYPE_FORWARD	0x03
-> +
-> +#define TO_CPU_CODE_MGMT_TRAP		0x00
-> +#define TO_CPU_CODE_FRAME2REG		0x01
-> +#define TO_CPU_CODE_IGMP_MLD_TRAP	0x02
-> +#define TO_CPU_CODE_POLICY_TRAP		0x03
-> +#define TO_CPU_CODE_ARP_MIRROR		0x04
-> +#define TO_CPU_CODE_POLICY_MIRROR	0x05
-> +
->  static struct sk_buff *edsa_xmit(struct sk_buff *skb, struct net_device *dev)
->  {
->  	struct dsa_port *dp = dsa_slave_to_port(dev);
-> @@ -77,6 +87,8 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
->  				struct packet_type *pt)
->  {
->  	u8 *edsa_header;
-> +	int frame_type;
-> +	int code;
->  	int source_device;
->  	int source_port;
->  
-> @@ -91,8 +103,29 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
->  	/*
->  	 * Check that frame type is either TO_CPU or FORWARD.
->  	 */
-> -	if ((edsa_header[0] & 0xc0) != 0x00 && (edsa_header[0] & 0xc0) != 0xc0)
-> +	frame_type = edsa_header[0] >> 6;
-> +
-> +	switch (frame_type) {
-> +	case FRAME_TYPE_TO_CPU:
-> +		code = (edsa_header[1] & 0x6) | ((edsa_header[2] >> 4) & 1);
-> +
-> +		/*
-> +		 * Mark the frame to never egress on any port of the same switch
-> +		 * unless it's a trapped IGMP/MLD packet, in which case the
-> +		 * bridge might want to forward it.
-> +		 */
-> +		if (code != TO_CPU_CODE_IGMP_MLD_TRAP)
-> +			skb->offload_fwd_mark = 1;
-> +
-> +		break;
-> +
-> +	case FRAME_TYPE_FORWARD:
-> +		skb->offload_fwd_mark = 1;
-> +		break;
-> +
-> +	default:
->  		return NULL;
-> +	}
->  
->  	/*
->  	 * Determine source device and port.
-> @@ -156,8 +189,6 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
->  			2 * ETH_ALEN);
->  	}
->  
-> -	skb->offload_fwd_mark = 1;
-> -
->  	return skb;
->  }
->  
-> 
-
+-- 
+/Horatiu
