@@ -2,168 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C46B3205617
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 17:37:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5347920562C
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 17:39:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733046AbgFWPgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 11:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36750 "EHLO
+        id S1733109AbgFWPjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 11:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733009AbgFWPgt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 11:36:49 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F54C061573
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 08:36:49 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jnkyd-0001RE-Rv; Tue, 23 Jun 2020 17:36:47 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1jnkyd-000675-7i; Tue, 23 Jun 2020 17:36:47 +0200
-Date:   Tue, 23 Jun 2020 17:36:47 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel@pengutronix.de
-Subject: Re: [PATCH 1/2] net: ethernet: mvneta: Fix Serdes configuration for
- SoCs without comphy
-Message-ID: <20200623153647.GF11869@pengutronix.de>
-References: <20200616083140.8498-1-s.hauer@pengutronix.de>
- <20200622235340.GQ1551@shell.armlinux.org.uk>
+        with ESMTP id S1732977AbgFWPjz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 11:39:55 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E12C061573
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 08:39:54 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id 22so2550347wmg.1
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 08:39:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D9ozNhUdhTvoDo2UDE/WIR6fJuBHsCc1YFhc4yTa3xM=;
+        b=XQTkjdNVdRu3QtuwwbKoABMuENO7Mkfjn9WBzUQ+/tHgp0ZmZHFYwUMV06NW0nxmEr
+         qrM8NVtviiHVX1LnjtHB/OV9zlLZFyNoWwXiq3i/OdltX01HAFxViMkjU5i9gn5OvZUB
+         XfugnODZxO7YTCK75d4Yn93Gg+0KueyyGPkrmWNbVrixKcGzCyd3P7i+8ml6CDC+IjaN
+         /S8ocZwgEfSiM437sJLK818CcaU3CX7EVtC/zZFtoBoBXXl/LSEJTXYINT5xFThqp8Ws
+         QiQ51/dfvZyZ4v0rwJ/YPUlOyN6/NwXlBzriwNc9ozq+WRI9qjTDQi9GGkpfddUJr9oh
+         lOrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D9ozNhUdhTvoDo2UDE/WIR6fJuBHsCc1YFhc4yTa3xM=;
+        b=oD01ozh/A0x+fekXQC0jHqPEbcdf6UUK+K1vjz5fzKwvgLHFUcV9BNIFfOMjaBFM+7
+         f7K/3ez3P7cBI9w0xHePJGkbnTa1IF3suFUO4YN51L2cbraXnbUM3wFGmsLzt4UUzYmv
+         o/zD9NwsWq2MuMwv3oTuKieCZObhFJAa4dXADPwy7kb5z9qoyyYThWgyXwy+Ada9BZD5
+         oE0rZhpcQrUK/p5Dpoi3guoOvQcsutH7lUJSu+m9YZwySKOQ+6uHgwKGSfRPuREOf6no
+         S9qSPeSvsnt7tTLF+Ly/qQnFG21tJNkkEXRuktKDxh/J9VBeoWIsUktq5Vkc9UY+6Dvj
+         azBA==
+X-Gm-Message-State: AOAM530QAt0tMYhJirnNnTyj8L84mdLHw9YCPGzPsp49C2i9tIo8x4MK
+        bnjHBhdG0kYqY5SoSkPexZpdkw==
+X-Google-Smtp-Source: ABdhPJwTVRx1uQKeadWlbGeCtkA0hLxkH0Fs1zv2RSql0K4biwZQMI07KsIi2jmGYOqR7AwV2+BEWg==
+X-Received: by 2002:a05:600c:204d:: with SMTP id p13mr24474689wmg.88.1592926793024;
+        Tue, 23 Jun 2020 08:39:53 -0700 (PDT)
+Received: from localhost.localdomain ([194.53.184.63])
+        by smtp.gmail.com with ESMTPSA id l17sm4310662wmi.16.2020.06.23.08.39.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2020 08:39:52 -0700 (PDT)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf] bpf: fix formatting in documentation for BPF helpers
+Date:   Tue, 23 Jun 2020 16:39:35 +0100
+Message-Id: <20200623153935.6215-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200622235340.GQ1551@shell.armlinux.org.uk>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 17:36:02 up 124 days, 23:06, 121 users,  load average: 0.22, 0.26,
- 0.27
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 12:53:40AM +0100, Russell King - ARM Linux admin wrote:
-> On Tue, Jun 16, 2020 at 10:31:39AM +0200, Sascha Hauer wrote:
-> > The MVNETA_SERDES_CFG register is only available on older SoCs like the
-> > Armada XP. On newer SoCs like the Armada 38x the fields are moved to
-> > comphy. This patch moves the writes to this register next to the comphy
-> > initialization, so that depending on the SoC either comphy or
-> > MVNETA_SERDES_CFG is configured.
-> > With this we no longer write to the MVNETA_SERDES_CFG on SoCs where it
-> > doesn't exist.
-> > 
-> > Suggested-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> > ---
-> >  drivers/net/ethernet/marvell/mvneta.c | 80 +++++++++++++++------------
-> >  1 file changed, 44 insertions(+), 36 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> > index 51889770958d8..9933eb4577d43 100644
-> > --- a/drivers/net/ethernet/marvell/mvneta.c
-> > +++ b/drivers/net/ethernet/marvell/mvneta.c
-> > @@ -106,6 +106,7 @@
-> >  #define      MVNETA_TX_IN_PRGRS                  BIT(1)
-> >  #define      MVNETA_TX_FIFO_EMPTY                BIT(8)
-> >  #define MVNETA_RX_MIN_FRAME_SIZE                 0x247c
-> > +/* Only exists on Armada XP and Armada 370 */
-> >  #define MVNETA_SERDES_CFG			 0x24A0
-> >  #define      MVNETA_SGMII_SERDES_PROTO		 0x0cc7
-> >  #define      MVNETA_QSGMII_SERDES_PROTO		 0x0667
-> > @@ -3514,26 +3515,55 @@ static int mvneta_setup_txqs(struct mvneta_port *pp)
-> >  	return 0;
-> >  }
-> >  
-> > -static int mvneta_comphy_init(struct mvneta_port *pp)
-> > +static int mvneta_comphy_init(struct mvneta_port *pp, phy_interface_t interface)
-> >  {
-> >  	int ret;
-> >  
-> > -	if (!pp->comphy)
-> > -		return 0;
-> > -
-> > -	ret = phy_set_mode_ext(pp->comphy, PHY_MODE_ETHERNET,
-> > -			       pp->phy_interface);
-> > +	ret = phy_set_mode_ext(pp->comphy, PHY_MODE_ETHERNET, interface);
-> >  	if (ret)
-> >  		return ret;
-> >  
-> >  	return phy_power_on(pp->comphy);
-> >  }
-> >  
-> > +static int mvneta_config_interface(struct mvneta_port *pp,
-> > +				   phy_interface_t interface)
-> > +{
-> > +	int ret = 0;
-> > +
-> > +	if (pp->comphy) {
-> > +		if (interface == PHY_INTERFACE_MODE_SGMII ||
-> > +		    interface == PHY_INTERFACE_MODE_1000BASEX ||
-> > +		    interface == PHY_INTERFACE_MODE_2500BASEX) {
-> > +			ret = mvneta_comphy_init(pp, interface);
-> > +		}
-> > +	} else {
-> > +		switch (interface) {
-> > +		case PHY_INTERFACE_MODE_QSGMII:
-> > +			mvreg_write(pp, MVNETA_SERDES_CFG,
-> > +				    MVNETA_QSGMII_SERDES_PROTO);
-> > +			break;
-> > +
-> > +		case PHY_INTERFACE_MODE_SGMII:
-> > +		case PHY_INTERFACE_MODE_1000BASEX:
-> > +			mvreg_write(pp, MVNETA_SERDES_CFG,
-> > +				    MVNETA_SGMII_SERDES_PROTO);
-> > +			break;
-> > +		default:
-> > +			return -EINVAL;
-> 
-> I've just noticed that you made changes to the patch I sent, such as
-> adding this default case that errors out, and by doing so, you have
-> caused a regression by causing a WARN_ON() splat.
-> 
-> It was not accidental that my patch had "break;" here instead of an
-> error return, and I left the interface mode checking in
-> mvneta_port_power_up() that you also removed.
-> 
-> mvneta supports RGMII, and since RGMII doesn't use the serdes, there
-> is no need to write to MVNETA_SGMII_SERDES_PROTO, and so we want to
-> ignore those, not return -EINVAL.
-> 
-> Since the interface type was already validated both by phylink when
-> the interface is brought up, and also by the driver at probe time
-> through mvneta_port_power_up(), which performs early validation of
-> the mode given in DT this was not a problem... there is no need to
-> consider anything but the RGMII case in the "default" case here.
-> 
-> So, please fix this... at minimum fixing this switch() statement not
-> to error out in the RGMII cases.  However, I think actually following
-> what was in my patch (which was there for good reason) rather than
-> randomly changing it would have been better.
-> 
-> This will have made the kernel on the SolidRun Clearfog platform
-> trigger the WARN_ON()s for the dedicated gigabit port, which uses
-> RGMII, and doesn't have a comphy specified in DT... and having
-> waited for the compile to finish and the resulting kernel to boot...
+When producing the bpf-helpers.7 man page from the documentation from
+the BPF user space header file, rst2man complains:
 
-I'll send a fixup shortly
+    <stdin>:2636: (ERROR/3) Unexpected indentation.
+    <stdin>:2640: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
 
-Sascha
+Let's fix formatting for the relevant chunk (item list in
+bpf_ringbuf_query()'s description), and for a couple other functions.
 
+Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+---
+ include/uapi/linux/bpf.h | 41 ++++++++++++++++++++--------------------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
+
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 974a71342aea..8bd33050b7bb 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3171,13 +3171,12 @@ union bpf_attr {
+  * int bpf_ringbuf_output(void *ringbuf, void *data, u64 size, u64 flags)
+  * 	Description
+  * 		Copy *size* bytes from *data* into a ring buffer *ringbuf*.
+- * 		If BPF_RB_NO_WAKEUP is specified in *flags*, no notification of
+- * 		new data availability is sent.
+- * 		IF BPF_RB_FORCE_WAKEUP is specified in *flags*, notification of
+- * 		new data availability is sent unconditionally.
++ * 		If **BPF_RB_NO_WAKEUP** is specified in *flags*, no notification
++ * 		of new data availability is sent.
++ * 		If **BPF_RB_FORCE_WAKEUP** is specified in *flags*, notification
++ * 		of new data availability is sent unconditionally.
+  * 	Return
+- * 		0, on success;
+- * 		< 0, on error.
++ * 		0 on success, or a negative error in case of failure.
+  *
+  * void *bpf_ringbuf_reserve(void *ringbuf, u64 size, u64 flags)
+  * 	Description
+@@ -3189,20 +3188,20 @@ union bpf_attr {
+  * void bpf_ringbuf_submit(void *data, u64 flags)
+  * 	Description
+  * 		Submit reserved ring buffer sample, pointed to by *data*.
+- * 		If BPF_RB_NO_WAKEUP is specified in *flags*, no notification of
+- * 		new data availability is sent.
+- * 		IF BPF_RB_FORCE_WAKEUP is specified in *flags*, notification of
+- * 		new data availability is sent unconditionally.
++ * 		If **BPF_RB_NO_WAKEUP** is specified in *flags*, no notification
++ * 		of new data availability is sent.
++ * 		If **BPF_RB_FORCE_WAKEUP** is specified in *flags*, notification
++ * 		of new data availability is sent unconditionally.
+  * 	Return
+  * 		Nothing. Always succeeds.
+  *
+  * void bpf_ringbuf_discard(void *data, u64 flags)
+  * 	Description
+  * 		Discard reserved ring buffer sample, pointed to by *data*.
+- * 		If BPF_RB_NO_WAKEUP is specified in *flags*, no notification of
+- * 		new data availability is sent.
+- * 		IF BPF_RB_FORCE_WAKEUP is specified in *flags*, notification of
+- * 		new data availability is sent unconditionally.
++ * 		If **BPF_RB_NO_WAKEUP** is specified in *flags*, no notification
++ * 		of new data availability is sent.
++ * 		If **BPF_RB_FORCE_WAKEUP** is specified in *flags*, notification
++ * 		of new data availability is sent unconditionally.
+  * 	Return
+  * 		Nothing. Always succeeds.
+  *
+@@ -3210,16 +3209,18 @@ union bpf_attr {
+  *	Description
+  *		Query various characteristics of provided ring buffer. What
+  *		exactly is queries is determined by *flags*:
+- *		  - BPF_RB_AVAIL_DATA - amount of data not yet consumed;
+- *		  - BPF_RB_RING_SIZE - the size of ring buffer;
+- *		  - BPF_RB_CONS_POS - consumer position (can wrap around);
+- *		  - BPF_RB_PROD_POS - producer(s) position (can wrap around);
+- *		Data returned is just a momentary snapshots of actual values
++ *
++ *		* **BPF_RB_AVAIL_DATA**: Amount of data not yet consumed.
++ *		* **BPF_RB_RING_SIZE**: The size of ring buffer.
++ *		* **BPF_RB_CONS_POS**: Consumer position (can wrap around).
++ *		* **BPF_RB_PROD_POS**: Producer(s) position (can wrap around).
++ *
++ *		Data returned is just a momentary snapshot of actual values
+  *		and could be inaccurate, so this facility should be used to
+  *		power heuristics and for reporting, not to make 100% correct
+  *		calculation.
+  *	Return
+- *		Requested value, or 0, if flags are not recognized.
++ *		Requested value, or 0, if *flags* are not recognized.
+  *
+  * int bpf_csum_level(struct sk_buff *skb, u64 level)
+  * 	Description
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.20.1
+
