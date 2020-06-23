@@ -2,126 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE0F2057F9
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 18:56:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5C2D205804
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 18:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733012AbgFWQ4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 12:56:21 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:52261 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732510AbgFWQ4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 12:56:19 -0400
-Received: by mail-io1-f71.google.com with SMTP id p8so15511272ios.19
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 09:56:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=JshClNTAlS3z2QGUcLPz9c4kM4qXO8CMuBvsuSHGHcM=;
-        b=IsHHdsYuhLxM8JOnqwEQEc+HTqGG8cBQtWZHWRnUYaUVmM26+xRUBslGkTUBxS2YIh
-         gWC/hZeZe3RgqJuyZhz7lF11JSz/BdIg9jPmEe72TnpqPQJ8xxkfKQ9ogazFnTUjBqmd
-         sguNS7TKoGTe5uKql5RK0T/7x5I8fW7q7U6VQhRGZghQlKX/JzAQE4+emiN0OjtrhYIi
-         6lZKIg71epzL+dqDWfIz9P7K+Yqs9ITSWJw+blzQSqJNsKo1GqDxQtGQUnZYPzwLX7Xc
-         pEsoYJIMjSkYnecSDbbCj3Hsa7LWoLAeBp3msrsQyGmNqsShgzsxXJMmLeul7Qr2Z2WG
-         8wVg==
-X-Gm-Message-State: AOAM53229cjzReNjRZjVdBKom9esFHldoXTiGYKG5nxAVu72JczoqncN
-        BxiapP0U66ekr+BpF3pG2I0oumV9PKvetrTSr7RGp+atR/eg
-X-Google-Smtp-Source: ABdhPJzr23dc+NwpOLI07qgaM1Kky9DbwM87Tvp7h3jgisjlayHd4sQ5bE0KEGmtw1rDUaTS5g8r8gKb9YGLCb6Hets7766dYliI
+        id S1732928AbgFWQ5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 12:57:15 -0400
+Received: from mail-eopbgr00085.outbound.protection.outlook.com ([40.107.0.85]:53890
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732292AbgFWQ5P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 12:57:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hakgffZJY4+x08mR1OfSu6oW02F+JAfnTEla2A7fB9Nz03o7kXGPZs0eE2noC93tALc2kE9cUlNp4c8CXetoZ8jBNYHgm9BDp0tq/QRXSC5BSMrCo4+bWlZVHycgmtGmrcvuIoXeCsSAdH+uLZpxSVdJNV0vAinQZ/UBYGUTNilQjpoKZS9dy1YdwFu+XIiBaeKno5eWG1puT8TkNiN4nVYWbmG4QjLan/PlOyvRWZ3CU6DOFNZt0oqpXLN5wEjgNmu2rh5YHKhWGxFsyoYhgKRepHjBCnIThF5XYxWWwfkEY2rLCSqNekPbTK1bQsLtGPQWTQ1KwR6xmSD3FyuSgw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pz++yekS0cTzj0OUi6Bjo+9r9h2hLcPjKZ8PRRq/Cv8=;
+ b=VY1hwNi/sFxFWvza7xdJRbqZtgd/WiELnpkmqM8KtdKkDiuznr5glEV+xmd5IbZAtPC4s3r9t++RHe47ZeuQcb+bkHOyxqbOW+5C/k62U0bb6mYzemgrH7yqs4ZQ3/vnOVaSUIagAXYnQbrdzeJtcuM6JXPjhanpQ7X2gNbNLGmW+DcXPS0Ftjt/WBdgG7gc6d8pPKdMpeXrh1g93DoquHO/P30lQjIVN/Pr82eAqxmBg1est3h+h+FWhow3dwFqZapyC3oBqJDpQBkns8H3uxO7RILte81M64mbUDljOaXdnEDTv5bkFnqY5HZe2hPcQm3vW9qaJJhgzgLKzryT6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pz++yekS0cTzj0OUi6Bjo+9r9h2hLcPjKZ8PRRq/Cv8=;
+ b=cbhyDGaKeOf9GXeppqwwcyItQpvXHGHWLLMkmz647XAK8OldDTyiWDIKfQaR8qzv2iQa3E1NNLX0ZDXL/ouaHQj1E3mSQiIuPn+TCg0/xzvKf2MV2VoVwD3xdngVGiXWNj7/gLT2OYaiCIcqqpKdThDuwljknYXT2dYC2cWoRPs=
+Authentication-Results: lists.osuosl.org; dkim=none (message not signed)
+ header.d=none;lists.osuosl.org; dmarc=none action=none
+ header.from=mellanox.com;
+Received: from AM6PR05MB4933.eurprd05.prod.outlook.com (2603:10a6:20b:a::20)
+ by AM6PR05MB4358.eurprd05.prod.outlook.com (2603:10a6:209:3f::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.24; Tue, 23 Jun
+ 2020 16:57:11 +0000
+Received: from AM6PR05MB4933.eurprd05.prod.outlook.com
+ ([fe80::d85c:64e7:699:b5ff]) by AM6PR05MB4933.eurprd05.prod.outlook.com
+ ([fe80::d85c:64e7:699:b5ff%6]) with mapi id 15.20.3109.027; Tue, 23 Jun 2020
+ 16:57:11 +0000
+Subject: Re: FW: [PATCH net-next v3 4/4] bonding: support hardware encryption
+ offload to slaves
+To:     Raed Salem <raeds@mellanox.com>, Jarod Wilson <jarod@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+References: <20200619143155.20726-1-jarod@redhat.com>
+ <20200619143155.20726-5-jarod@redhat.com>
+ <AM0PR05MB5250242D3F80160817117F60C4940@AM0PR05MB5250.eurprd05.prod.outlook.com>
+From:   Huy Nguyen <huyn@mellanox.com>
+Message-ID: <b6c69a4b-3db7-b840-085d-883b6775865f@mellanox.com>
+Date:   Tue, 23 Jun 2020 11:57:03 -0500
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
+In-Reply-To: <AM0PR05MB5250242D3F80160817117F60C4940@AM0PR05MB5250.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-ClientProxiedBy: DM6PR14CA0037.namprd14.prod.outlook.com
+ (2603:10b6:5:18f::14) To AM6PR05MB4933.eurprd05.prod.outlook.com
+ (2603:10a6:20b:a::20)
 MIME-Version: 1.0
-X-Received: by 2002:a92:aa92:: with SMTP id p18mr5067484ill.199.1592931379091;
- Tue, 23 Jun 2020 09:56:19 -0700 (PDT)
-Date:   Tue, 23 Jun 2020 09:56:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000009e7b05a8c33d11@google.com>
-Subject: KASAN: vmalloc-out-of-bounds Read in tipc_nl_node_dump_monitor_peer
-From:   syzbot <syzbot+80cad1e3cb4c41cde6ff@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.44] (72.179.1.249) by DM6PR14CA0037.namprd14.prod.outlook.com (2603:10b6:5:18f::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22 via Frontend Transport; Tue, 23 Jun 2020 16:57:09 +0000
+X-Originating-IP: [72.179.1.249]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: ddce06c3-67fa-41aa-a446-08d8179678c9
+X-MS-TrafficTypeDiagnostic: AM6PR05MB4358:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR05MB435813CBDF814E5EA8C25BE1AF940@AM6PR05MB4358.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1728;
+X-Forefront-PRVS: 04433051BF
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pnCVtuIDeeJ6mYGnXud+YubVsW0csFAuvBO0B6GaFHfp+aOH8/X/WDnclGik9WikfMtgV7lFfGrvdQQvhADaND3iYPG1gEO6INSzQm36lnKFq9bx3CtEMYcFUVK++1oa+wZRHAeaMc83ggOikJh6aQlrjNyykTp7jYfs0v2fDzrF7uCfV9Sw674033AZhv2qOSkvtiljtrWDRFqG63g2RmxbYFaR5x4ADsP0Y0574J1Kh3BQiEllVWsFY+8yz/DALocNGVbLNBuVv6vMLgRAf4lyn76CZg5Oe1F5FiJjMxGhHV8jqdnVsSf9dnlNzmVM4dkVLcM3hpxwZYmYShuXUH6APNe/6puy6OcprzpgELBUx82a+2vZjQLbkQQMUw1Bs3MOdgTRBemdHv9PX0O1aw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB4933.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(396003)(366004)(136003)(39850400004)(346002)(66476007)(66556008)(66946007)(5660300002)(478600001)(558084003)(6666004)(6486002)(186003)(26005)(52116002)(86362001)(16576012)(110136005)(36756003)(316002)(16526019)(7416002)(31686004)(2616005)(31696002)(8936002)(8676002)(956004)(2906002)(921003)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: R2neVrm0JitOHtMzu97D0gArrCjfeaVrdoXgmCmhcSl3uKSiAfN+R3gtvkHS32+C9fC+njKYzAmqQ4WJopHwxlwEYzkb+YmLi4usaX9VeFJ+1baUmsvAYx/P/rYtIlgUYjUnue9sxgvdWJVqcwCwpXz3ZYlojnyu3b2hC5MYCC936DIygX/BvM8h3sE86jdTLpBX3LoGfuwNXSc5XCfc/+Sncqrq/HxT+NWJn9VG9+QJqdN2QeYKFhT+AG5u0TFBvQtyG9BPjT6tNiQ8+fCxQA891uxgimKbtWls4ch6z+/w+02AJ/+yXbUgP2D0T71NyFnDsup4vqHIkSRF+lnEUjq8n9DKBYfLkvWZNX4FHiLKL/vPsnTak8KWUdaYPOtbheEhqIKkSfIuukW0SlbeCTrr86D4l1wCYInRv0rKGsC5ngygwB03Uqkf8wGzn9VPK54AGk4c75AK7Qtn30xATVMhwy1AC81jTlcC03d3wK4=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ddce06c3-67fa-41aa-a446-08d8179678c9
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2020 16:57:11.3898
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zWvSwhX1vHgQuMU0mKZzn38RgQnw/GlHrAjXsTadix7t0cStm2KhWMb2QxWBAztfporUhE8qu8JFByaCoEYoAg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB4358
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> +#ifdef CONFIG_XFRM_OFFLOAD
+> +	struct xfrm_state *xs;
+We must support more than one SA right?
 
-syzbot found the following crash on:
-
-HEAD commit:    4e15507f libbpf: Forward-declare bpf_stats_type for system..
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=1227a0ad100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dcc6334acae363d4
-dashboard link: https://syzkaller.appspot.com/bug?extid=80cad1e3cb4c41cde6ff
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=155fef15100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=127acae9100000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+80cad1e3cb4c41cde6ff@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in nla_len include/net/netlink.h:1135 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in nla_parse_nested_deprecated include/net/netlink.h:1218 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in tipc_nl_node_dump_monitor_peer+0x4da/0x590 net/tipc/node.c:2788
-Read of size 2 at addr ffffc90004959024 by task syz-executor857/7189
-
-CPU: 1 PID: 7189 Comm: syz-executor857 Not tainted 5.8.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0x5/0x436 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
- nla_len include/net/netlink.h:1135 [inline]
- nla_parse_nested_deprecated include/net/netlink.h:1218 [inline]
- tipc_nl_node_dump_monitor_peer+0x4da/0x590 net/tipc/node.c:2788
- genl_lock_dumpit+0x7f/0xb0 net/netlink/genetlink.c:575
- netlink_dump+0x4cd/0xf60 net/netlink/af_netlink.c:2245
- __netlink_dump_start+0x643/0x900 net/netlink/af_netlink.c:2353
- genl_family_rcv_msg_dumpit+0x2ac/0x310 net/netlink/genetlink.c:638
- genl_family_rcv_msg net/netlink/genetlink.c:733 [inline]
- genl_rcv_msg+0x797/0x9e0 net/netlink/genetlink.c:753
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:764
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x446859
-Code: Bad RIP value.
-RSP: 002b:00007f102ce25d98 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000006dbc28 RCX: 0000000000446859
-RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
-RBP: 00000000006dbc20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dbc2c
-R13: 4002001060fc2413 R14: 0d94638c64805ad2 R15: 0f05002d0000022e
-
-
-Memory state around the buggy address:
- ffffc90004958f00: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
- ffffc90004958f80: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
->ffffc90004959000: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
-                               ^
- ffffc90004959080: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
- ffffc90004959100: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
