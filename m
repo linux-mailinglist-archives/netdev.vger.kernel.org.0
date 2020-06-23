@@ -2,62 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 129BB204A0D
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 08:41:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BF4A204A21
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 08:46:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731064AbgFWGlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 02:41:12 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:2529 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730540AbgFWGlM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 02:41:12 -0400
-Received: from DGGEMM405-HUB.china.huawei.com (unknown [172.30.72.56])
-        by Forcepoint Email with ESMTP id 42CEB7D1A30EFF123014;
-        Tue, 23 Jun 2020 14:41:11 +0800 (CST)
-Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
- DGGEMM405-HUB.china.huawei.com (10.3.20.213) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Tue, 23 Jun 2020 14:41:10 +0800
-Received: from [10.174.61.242] (10.174.61.242) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Tue, 23 Jun 2020 14:41:10 +0800
-Subject: Re: [PATCH net-next v1 2/5] hinic: add support to set and get irq
- coalesce
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
-References: <20200620094258.13181-1-luobin9@huawei.com>
- <20200620094258.13181-3-luobin9@huawei.com>
- <20200622150843.5c0a94ff@kicinski-fedora-PC1C0HJN>
-From:   "luobin (L)" <luobin9@huawei.com>
-Message-ID: <28520c1c-80b6-e955-7c7c-207fb1599683@huawei.com>
-Date:   Tue, 23 Jun 2020 14:41:10 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1730684AbgFWGqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 02:46:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39038 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730489AbgFWGqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 02:46:08 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D069C061573;
+        Mon, 22 Jun 2020 23:46:08 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id l17so17848094qki.9;
+        Mon, 22 Jun 2020 23:46:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z37O1JhZblGRR9XyeVvzQt8v1tfzmZa9sqvhTNuDXR0=;
+        b=a4dXtCMUKhjvq82EQaksXpU9Olew8u4YngTHDwdGwu2Bf8dUHli+wBECGT0PObT5xg
+         xBb+CW4Oykt2C6fCl+LDq15KWMqg7NuchoPFD/simFayiK+L8LNRKn+6//mT1sPSL5D2
+         r8g3+LMmPqsVFEx0gAghFPq74uSh35+y5SOA+cWioJpHLPtkUhjEQOynQgP4R+vtRDh7
+         yGkIO3t36kD/F3xQaQAWK6vqerh4M07RyxOYSWXQErwSmRHg0XHGPyUWpJz0TpA4WptE
+         cN4MWPLPZACP96accfU/kcouzbp3+xgO0c1PxRNH2Wp7gvH8/NEGnXRd74RyXNakjR0q
+         776A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z37O1JhZblGRR9XyeVvzQt8v1tfzmZa9sqvhTNuDXR0=;
+        b=Ul3NhH6IJXM392SRxvUOpdWtntwTQ4+5FOLxFPOA4MRHaDdb4r33CCpcHw5Z+YfoT9
+         oyvvZUgn5lzMA999ZrRS41vAqjptuLFEFVXjQgdaMbr9uEieO1EiWkLeJYbaqEt0Jzr8
+         f/0db2s077oBiRaO9sOcvRnjPeZ5CEoUJHtRygFtH+etUBNhUXx6RLcOX4mCBYMljmE1
+         CafQupzmDycz4CFCJLc35n8E1te4VKKYPPxzvde3PyfmlXdkT+EkNI0HUED7LI0ALqpk
+         v6LMe4VXCAK/KQWZ0uuM2aicSRiMJ/8oUu4O1/BmNbSNR3gBi8JYc73Zp5YMVd7LEdOU
+         7kpw==
+X-Gm-Message-State: AOAM531+D9NWrO4tXtFWPq+HF0A8fAUrcM8thsjcNReQsAgeDbEAjCdJ
+        fhn48hNGFlVXq3Pie0O7aSKILhmkRUFWDJbBstk=
+X-Google-Smtp-Source: ABdhPJz0F6jCPxfp8XsJiy3z3Sw3QXB2x2H0kZHBbkyaZF3Ze5Yf6PeKkacGoWpGoigXM2H+9N8u+NJej+BhDipo2LM=
+X-Received: by 2002:a05:620a:b84:: with SMTP id k4mr19217297qkh.39.1592894767726;
+ Mon, 22 Jun 2020 23:46:07 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200622150843.5c0a94ff@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.61.242]
-X-ClientProxiedBy: dggeme709-chm.china.huawei.com (10.1.199.105) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+References: <20200623003626.3072825-1-yhs@fb.com> <20200623003638.3074707-1-yhs@fb.com>
+In-Reply-To: <20200623003638.3074707-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 22 Jun 2020 23:45:56 -0700
+Message-ID: <CAEf4BzYaEb+2uhQ4MaLAttibTE8HCAbRqFaQjSs-yyx8kxROuA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 11/15] tools/bpf: refactor some net macros to
+ libbpf bpf_tracing_net.h
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/6/23 6:08, Jakub Kicinski wrote:
->> +	if (coal->tx_max_coalesced_frames > COALESCE_MAX_PENDING_LIMIT) {
->> +		netif_err(nic_dev, drv, netdev,
->> +			  "Tx_max_coalesced_frames out of range[%d-%d]\n", 0,
->> +			  COALESCE_MAX_PENDING_LIMIT);
->> +		return -EOPNOTSUPP;
->> +	}
->> +
->> +	return 0;
->> +}
-> I think ERANGE is a more appropriate error code in these?
-Will fix. Thanks for your review.
+On Mon, Jun 22, 2020 at 5:38 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> Refactor bpf_iter_ipv6_route.c and bpf_iter_netlink.c
+> so net macros, originally from various include/linux header
+> files, are moved to a new libbpf installable header file
+> bpf_tracing_net.h. The goal is to improve reuse so
+> networking tracing programs do not need to
+> copy these macros every time they use them.
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+>  tools/lib/bpf/Makefile                           |  1 +
+>  tools/lib/bpf/bpf_tracing_net.h                  | 16 ++++++++++++++++
+>  .../selftests/bpf/progs/bpf_iter_ipv6_route.c    |  7 +------
+>  .../selftests/bpf/progs/bpf_iter_netlink.c       |  4 +---
+>  4 files changed, 19 insertions(+), 9 deletions(-)
+>  create mode 100644 tools/lib/bpf/bpf_tracing_net.h
+>
+> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+> index bf8ed134cb8a..3d766c80eb78 100644
+> --- a/tools/lib/bpf/Makefile
+> +++ b/tools/lib/bpf/Makefile
+> @@ -257,6 +257,7 @@ install_headers: $(BPF_HELPER_DEFS)
+>                 $(call do_install,bpf_helpers.h,$(prefix)/include/bpf,644); \
+>                 $(call do_install,$(BPF_HELPER_DEFS),$(prefix)/include/bpf,644); \
+>                 $(call do_install,bpf_tracing.h,$(prefix)/include/bpf,644); \
+> +               $(call do_install,bpf_tracing_net.h,$(prefix)/include/bpf,644); \
+>                 $(call do_install,bpf_endian.h,$(prefix)/include/bpf,644); \
+>                 $(call do_install,bpf_core_read.h,$(prefix)/include/bpf,644);
+>
+> diff --git a/tools/lib/bpf/bpf_tracing_net.h b/tools/lib/bpf/bpf_tracing_net.h
+> new file mode 100644
+> index 000000000000..1f38a1098727
+> --- /dev/null
+> +++ b/tools/lib/bpf/bpf_tracing_net.h
+> @@ -0,0 +1,16 @@
+> +/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+> +#ifndef __BPF_TRACING_NET_H__
+> +#define __BPF_TRACING_NET_H__
+> +
+> +#define IFNAMSIZ               16
+> +
+> +#define RTF_GATEWAY            0x0002
+> +
+> +#define fib_nh_dev             nh_common.nhc_dev
+> +#define fib_nh_gw_family       nh_common.nhc_gw_family
+> +#define fib_nh_gw6             nh_common.nhc_gw.ipv6
+> +
+> +#define sk_rmem_alloc          sk_backlog.rmem_alloc
+> +#define sk_refcnt              __sk_common.skc_refcnt
+
+Question to networking guys. How probable it is for these and similar
+definitions to ever be changed?
+
+I'm a bit hesitant to make any stability guarantees (which is implied
+by libbpf-provided headers). I don't want us to get into the game of
+trying to maintain this across multiple kernel versions, if they are
+going to be changed.
+
+Let's for now keep bpf_tracing_net.h under selftests/bpf? It's still
+good to have these definitions, because we can point people to it.
+
+> +
+> +#endif
+
+[...]
