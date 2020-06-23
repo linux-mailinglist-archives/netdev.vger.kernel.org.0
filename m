@@ -2,50 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63127206784
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 00:48:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08E5B206776
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 00:47:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388690AbgFWWsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 18:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46726 "EHLO
+        id S2388498AbgFWWrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 18:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387887AbgFWWrU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 18:47:20 -0400
-Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92ADC061796
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 15:31:18 -0700 (PDT)
-Received: by mail-qk1-x749.google.com with SMTP id x22so198197qkj.6
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 15:31:18 -0700 (PDT)
+        with ESMTP id S2388348AbgFWWr2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 18:47:28 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1A7C061797
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 15:31:21 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id n10so314846qvp.17
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 15:31:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=8F4CsTKJlAQVv/TG6E6zFj8kQpyGDJqcusQTMDUgvC8=;
-        b=vv3rGJKV13GqbdV6AP5G82f0Ru/KpJlKqkxJtRJXEE84faUBbfVHRzf75CiamLvgjm
-         uix6Kf3r3BSJ/ZoAiRUem3qddy0B7P4f3rZrAhQYCpP0lHVAFmf5inhAdN6g5Kb6h92M
-         Dk4P7gSaQfn5hN6s7BdxthkrAyn0gGKijWm5r6qnUNtDhmpDg/05e6dJqp8kPJOUP1Ek
-         0DILB924yZPyt7dwhT3jta+cieeLk8vaDxdnFCD6Sgb67kRB/7/vYGrSwwCc5ApsDp3S
-         yTca00Gnc8SD+XIp+ljJplLwDrwB7VZfj+jLSYKLa3bcUK8LAEgPBHhRjjYA7AYKWQCZ
-         K4qg==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=JXjmqcPdDbbV+2JN9dMNcfWrSWf2OWX382UapR2lx2U=;
+        b=lVwaGH/YWXrPZVddAFrjOQOxP2Z9jDvUQJmpCgtwM+8V59LJNBeKxBwp6dvo1la7/L
+         4JwjskKv+3cAhEX+jHeQH4wstPmjq3cLud9LmLZjGBBt+HxSzyPQepC4PjagwNuhLFrW
+         EpbWPuxxQsTo00phgu7Jv+qD7WKLoOPy3yuoHATComeFvnOay0yJ+5wUQZ3oklCT4k7T
+         6qzV+gr9KVe3pYQvTqG80FD760GT38cnjnpFx0CsQ4VmQ7jw8jl6bseIrJlD8tDokAUs
+         lL15qymJz05t3rdU/M51rIngtpYz9tX78aP4jEPdx2YaNP3n6/1g3ixQgQiJRZeLRpqc
+         UAMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=8F4CsTKJlAQVv/TG6E6zFj8kQpyGDJqcusQTMDUgvC8=;
-        b=iyMP4fXDxz/RnzQeXU8qQo+MuDrrWetQD9t2LdNq++ZOhXmh+yP2A3XJ5GIw2s3oYe
-         AM+69WHb1RCSdYlmyFwXrGmqtse00AIcObgjfHqUrpHNtF6rI0W655Evf56sWMR0jogO
-         BhyVRcUtq6oVlDc17/0PK/dfYWxT/bm49KzxaT2GTw5qCzbqy+UCKE9SjHdYYdfgdxeU
-         5062Nr+BIjP1FRBMXtZEgGD1ZUkYR83o5KXeupPjyWO2fRUHRj3qlwWIRTMCRFtmhk13
-         4JUcBk7YYGrJtameHpRLtVHtUpmShg52BfKkAcIZVgsM9BHyP5XeYWfqeDbwSB3XUvZ5
-         kwSg==
-X-Gm-Message-State: AOAM530TUbsTclykVzO/aP/6GZMie1wUmwAKyPvr5nJ7u3tS3YT3cHdF
-        1HTuBP9EDNE34Q3OAbS4rPAvW4uMCJi5Ug==
-X-Google-Smtp-Source: ABdhPJzr//N1EVMvTJJ1kOnbJ3KoMLNE7J+K73O89jSehc+ynxhjClVg4WRo+SL1gsAGIA/Yv0f1lUC3H1GQCg==
-X-Received: by 2002:a0c:c602:: with SMTP id v2mr18055518qvi.220.1592951478134;
- Tue, 23 Jun 2020 15:31:18 -0700 (PDT)
-Date:   Tue, 23 Jun 2020 15:31:10 -0700
-Message-Id: <20200623223115.152832-1-edumazet@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=JXjmqcPdDbbV+2JN9dMNcfWrSWf2OWX382UapR2lx2U=;
+        b=MTMXyfA07NUWfNyGBPoksiR5C5V5b0GFFyJUC+7QY1XcIIhGkVS16i7fe+49oUiiWi
+         E54/IeCRbUpPA6e0sXYXGzYEHlLvKVAiTE6USGfv4DLAIOoIhX49fOrgMC+9UjFcqLaS
+         eVGyUB5egrimxiR0S8gmAbl6vxsYJ/IZdFzMH6JWlYq2Opm6rA9qF8iN7yhMLAEt5jWr
+         fB4keNa5FpqbUViKrEGaJxXFxJyGNW8qC1SeiNqCtgNtB/Ea41xZZvi1Iz7L5eY7ym0T
+         oa0NkFwASMyIw5iJODjzC4J82xqLutwcdWjqTjLImBRT8b/BI/o564+1rkM6JEoKk+j2
+         8vXg==
+X-Gm-Message-State: AOAM533+hz1kJQRO4x6dhklo7xdZnbyrYtRz9jhI5olmxHYXRXebtR3/
+        HurMeg1UtoCOQY2waHkjP90b7NtcGxoX5A==
+X-Google-Smtp-Source: ABdhPJz/Gd/x4kXr+3tInfYIjfXoV7hzpJW7QdDJg4NG6dzW1puVxog2ihrj8XLK9WHsmvcNjtq3owty/7oufw==
+X-Received: by 2002:a0c:fe01:: with SMTP id x1mr17359qvr.246.1592951480559;
+ Tue, 23 Jun 2020 15:31:20 -0700 (PDT)
+Date:   Tue, 23 Jun 2020 15:31:11 -0700
+In-Reply-To: <20200623223115.152832-1-edumazet@google.com>
+Message-Id: <20200623223115.152832-2-edumazet@google.com>
 Mime-Version: 1.0
+References: <20200623223115.152832-1-edumazet@google.com>
 X-Mailer: git-send-email 2.27.0.111.gc72c7da667-goog
-Subject: [PATCH net-next 0/5] net: adress some sparse warnings
+Subject: [PATCH net-next 1/5] tcp: add declarations to avoid warnings
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -57,24 +61,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds missing declarations and move others to
-address W=1 C=1 warnings in tcp and udp.
+Remove these errors:
 
-Eric Dumazet (5):
-  tcp: add declarations to avoid warnings
-  tcp: move ipv6_specific declaration to remove a warning
-  tcp: move ipv4_specific to tcp include file
-  net: move tcp gro declarations to net/tcp.h
-  udp: move gro declarations to net/udp.h
+net/ipv6/tcp_ipv6.c:1550:29: warning: symbol 'tcp_v6_rcv' was not declared. Should it be static?
+net/ipv6/tcp_ipv6.c:1770:30: warning: symbol 'tcp_v6_early_demux' was not declared. Should it be static?
 
- include/net/tcp.h       | 10 ++++++++++
- include/net/transp_v6.h |  3 ---
- include/net/udp.h       |  7 +++++++
- net/ipv4/af_inet.c      |  6 ------
- net/ipv6/ip6_offload.c  |  8 ++------
- net/mptcp/protocol.h    |  5 -----
- 6 files changed, 19 insertions(+), 20 deletions(-)
+net/ipv6/tcp_ipv6.c:1550:29: warning: no previous prototype for 'tcp_v6_rcv' [-Wmissing-prototypes]
+ 1550 | INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+      |                             ^~~~~~~~~~
+net/ipv6/tcp_ipv6.c:1770:30: warning: no previous prototype for 'tcp_v6_early_demux' [-Wmissing-prototypes]
+ 1770 | INDIRECT_CALLABLE_SCOPE void tcp_v6_early_demux(struct sk_buff *skb)
+      |                              ^~~~~~~~~~~~~~~~~~
 
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ include/net/tcp.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index cd9cc348dbf9c62efa30d909f23a0ed1b39e4492..a8c36fa886a48bb3a242d0360a581b2aba49756b 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -934,6 +934,8 @@ static inline int tcp_v6_sdif(const struct sk_buff *skb)
+ }
+ 
+ INDIRECT_CALLABLE_DECLARE(void tcp_v6_send_check(struct sock *sk, struct sk_buff *skb));
++INDIRECT_CALLABLE_DECLARE(int tcp_v6_rcv(struct sk_buff *skb));
++INDIRECT_CALLABLE_DECLARE(void tcp_v6_early_demux(struct sk_buff *skb));
+ 
+ #endif
+ 
 -- 
 2.27.0.111.gc72c7da667-goog
 
