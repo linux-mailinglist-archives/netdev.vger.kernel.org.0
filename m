@@ -2,177 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AB002045BA
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 02:37:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EB272045F0
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 02:41:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732099AbgFWAgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 20:36:50 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:40438 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732085AbgFWAgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 20:36:47 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05N0YCZt026930
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 17:36:47 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=v+dz7xhSejOqZYYwUNCwwDJeqy0RdXIDw+UhnWkRI2I=;
- b=MgYXZBTaWtkav7NmMf7H8t3bWVrkIMRH73yUGWRonTE/fiBBCa9QY46MyOAkeNdhuZRq
- O1EkvfOgx+/zj0536WywfFe/R3bJ5KWY1YA+bRuABclyI0YmfuuUQXei2AkWzD5zEzkb
- HtCqeFk5f44Q/ziGSKm+PnDMvSqyngiEGgs= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31t2e8rdu6-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 17:36:47 -0700
-Received: from intmgw004.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 22 Jun 2020 17:36:45 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id CFE573705002; Mon, 22 Jun 2020 17:36:43 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Yonghong Song <yhs@fb.com>
-Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next v3 15/15] bpf/selftests: add tcp/udp iterator programs to selftests
-Date:   Mon, 22 Jun 2020 17:36:43 -0700
-Message-ID: <20200623003643.3075182-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200623003626.3072825-1-yhs@fb.com>
-References: <20200623003626.3072825-1-yhs@fb.com>
+        id S1731833AbgFWAlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 20:41:35 -0400
+Received: from mga07.intel.com ([134.134.136.100]:18339 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731442AbgFWAlf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 20:41:35 -0400
+IronPort-SDR: xwfuj47NqaDZEUvlLfjwWXjqVTNjAunpngkKnZsH4135hEl7PAYmNFRq6ee1DGxFLFW0DoqaM3
+ RAISIhVDvBQQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9660"; a="209104318"
+X-IronPort-AV: E=Sophos;i="5.75,268,1589266800"; 
+   d="scan'208";a="209104318"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2020 17:41:33 -0700
+IronPort-SDR: NG93zXij8Uc37gqKsJ/8Pe0INf9kaAauA3kqq1BZkYhY3twj9LTk3aWGFaeuTif5qEJds/7os1
+ IUOUdjfJtHrw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,268,1589266800"; 
+   d="scan'208";a="283003181"
+Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
+  by orsmga007.jf.intel.com with ESMTP; 22 Jun 2020 17:41:33 -0700
+Received: from orsmsx152.amr.corp.intel.com (10.22.226.39) by
+ ORSMSX102.amr.corp.intel.com (10.22.225.129) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 22 Jun 2020 17:41:33 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.199]) by
+ ORSMSX152.amr.corp.intel.com ([169.254.8.114]) with mapi id 14.03.0439.000;
+ Mon, 22 Jun 2020 17:41:33 -0700
+From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "Kwapulinski, Piotr" <piotr.kwapulinski@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>,
+        "Bowers, AndrewX" <andrewx.bowers@intel.com>
+Subject: RE: [net-next 4/9] i40e: detect and log info about pre-recovery mode
+Thread-Topic: [net-next 4/9] i40e: detect and log info about pre-recovery
+ mode
+Thread-Index: AQHWSOMMtMCKLyPfsUWCUoUdRG4SWKjlxOQA//+QaMCAAHj9gP//jUaA
+Date:   Tue, 23 Jun 2020 00:41:32 +0000
+Message-ID: <61CC2BC414934749BD9F5BF3D5D9404498732013@ORSMSX112.amr.corp.intel.com>
+References: <20200622221817.2287549-1-jeffrey.t.kirsher@intel.com>
+        <20200622221817.2287549-5-jeffrey.t.kirsher@intel.com>
+        <20200622165552.13ebc666@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <61CC2BC414934749BD9F5BF3D5D9404498731F8F@ORSMSX112.amr.corp.intel.com>
+ <20200622172929.0a7c29d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200622172929.0a7c29d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.138]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-22_16:2020-06-22,2020-06-22 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
- impostorscore=0 mlxscore=0 priorityscore=1501 malwarescore=0 clxscore=1015
- suspectscore=8 bulkscore=0 cotscore=-2147483648 lowpriorityscore=0
- mlxlogscore=999 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006230000
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added tcp{4,6} and udp{4,6} bpf programs into test_progs
-selftest so that they at least can load successfully.
-  $ ./test_progs -n 3
-  ...
-  #3/7 tcp4:OK
-  #3/8 tcp6:OK
-  #3/9 udp4:OK
-  #3/10 udp6:OK
-  ...
-  #3 bpf_iter:OK
-  Summary: 1/16 PASSED, 0 SKIPPED, 0 FAILED
-
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- .../selftests/bpf/prog_tests/bpf_iter.c       | 68 +++++++++++++++++++
- 1 file changed, 68 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/te=
-sting/selftests/bpf/prog_tests/bpf_iter.c
-index 87c29dde1cf9..1e2e0fced6e8 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-@@ -6,6 +6,10 @@
- #include "bpf_iter_bpf_map.skel.h"
- #include "bpf_iter_task.skel.h"
- #include "bpf_iter_task_file.skel.h"
-+#include "bpf_iter_tcp4.skel.h"
-+#include "bpf_iter_tcp6.skel.h"
-+#include "bpf_iter_udp4.skel.h"
-+#include "bpf_iter_udp6.skel.h"
- #include "bpf_iter_test_kern1.skel.h"
- #include "bpf_iter_test_kern2.skel.h"
- #include "bpf_iter_test_kern3.skel.h"
-@@ -120,6 +124,62 @@ static void test_task_file(void)
- 	bpf_iter_task_file__destroy(skel);
- }
-=20
-+static void test_tcp4(void)
-+{
-+	struct bpf_iter_tcp4 *skel;
-+
-+	skel =3D bpf_iter_tcp4__open_and_load();
-+	if (CHECK(!skel, "bpf_iter_tcp4__open_and_load",
-+		  "skeleton open_and_load failed\n"))
-+		return;
-+
-+	do_dummy_read(skel->progs.dump_tcp4);
-+
-+	bpf_iter_tcp4__destroy(skel);
-+}
-+
-+static void test_tcp6(void)
-+{
-+	struct bpf_iter_tcp6 *skel;
-+
-+	skel =3D bpf_iter_tcp6__open_and_load();
-+	if (CHECK(!skel, "bpf_iter_tcp6__open_and_load",
-+		  "skeleton open_and_load failed\n"))
-+		return;
-+
-+	do_dummy_read(skel->progs.dump_tcp6);
-+
-+	bpf_iter_tcp6__destroy(skel);
-+}
-+
-+static void test_udp4(void)
-+{
-+	struct bpf_iter_udp4 *skel;
-+
-+	skel =3D bpf_iter_udp4__open_and_load();
-+	if (CHECK(!skel, "bpf_iter_udp4__open_and_load",
-+		  "skeleton open_and_load failed\n"))
-+		return;
-+
-+	do_dummy_read(skel->progs.dump_udp4);
-+
-+	bpf_iter_udp4__destroy(skel);
-+}
-+
-+static void test_udp6(void)
-+{
-+	struct bpf_iter_udp6 *skel;
-+
-+	skel =3D bpf_iter_udp6__open_and_load();
-+	if (CHECK(!skel, "bpf_iter_udp6__open_and_load",
-+		  "skeleton open_and_load failed\n"))
-+		return;
-+
-+	do_dummy_read(skel->progs.dump_udp6);
-+
-+	bpf_iter_udp6__destroy(skel);
-+}
-+
- /* The expected string is less than 16 bytes */
- static int do_read_with_fd(int iter_fd, const char *expected,
- 			   bool read_one_char)
-@@ -394,6 +454,14 @@ void test_bpf_iter(void)
- 		test_task();
- 	if (test__start_subtest("task_file"))
- 		test_task_file();
-+	if (test__start_subtest("tcp4"))
-+		test_tcp4();
-+	if (test__start_subtest("tcp6"))
-+		test_tcp6();
-+	if (test__start_subtest("udp4"))
-+		test_udp4();
-+	if (test__start_subtest("udp6"))
-+		test_udp6();
- 	if (test__start_subtest("anon"))
- 		test_anon_iter(false);
- 	if (test__start_subtest("anon-read-one-char"))
---=20
-2.24.1
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYWt1YiBLaWNpbnNraSA8a3Vi
+YUBrZXJuZWwub3JnPg0KPiBTZW50OiBNb25kYXksIEp1bmUgMjIsIDIwMjAgMTc6MjkNCj4gVG86
+IEtpcnNoZXIsIEplZmZyZXkgVCA8amVmZnJleS50LmtpcnNoZXJAaW50ZWwuY29tPg0KPiBDYzog
+ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsgS3dhcHVsaW5za2ksIFBpb3RyIDxwaW90ci5rd2FwdWxpbnNr
+aUBpbnRlbC5jb20+Ow0KPiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBuaG9ybWFuQHJlZGhhdC5j
+b207IHNhc3NtYW5uQHJlZGhhdC5jb207DQo+IExva3Rpb25vdiwgQWxla3NhbmRyIDxhbGVrc2Fu
+ZHIubG9rdGlvbm92QGludGVsLmNvbT47IEJvd2VycywgQW5kcmV3WA0KPiA8YW5kcmV3eC5ib3dl
+cnNAaW50ZWwuY29tPg0KPiBTdWJqZWN0OiBSZTogW25ldC1uZXh0IDQvOV0gaTQwZTogZGV0ZWN0
+IGFuZCBsb2cgaW5mbyBhYm91dCBwcmUtcmVjb3ZlcnkgbW9kZQ0KPiANCj4gT24gVHVlLCAyMyBK
+dW4gMjAyMCAwMDoxODowOCArMDAwMCBLaXJzaGVyLCBKZWZmcmV5IFQgd3JvdGU6DQo+ID4gPiBU
+aGVyZSBpcyBubyBuZWVkIHRvIHVzZSB0aGUgaW5saW5lIGtleXdvcmQgaW4gQyBzb3VyY2VzLiBD
+b21waWxlcg0KPiA+ID4gd2lsbCBpbmxpbmUgc21hbGwgc3RhdGljIGZ1bmN0aW9ucywgYW55d2F5
+Lg0KPiA+ID4NCj4gPiA+IFNhbWUgdGhpbmcgaW4gcGF0Y2ggOC4NCj4gPg0KPiA+IEkgYW0gcHJl
+cHBpbmcgYSB2MiwgYXJlIHRoZXNlIHRoZSBvbmx5IGlzc3Vlcz8gIFdhbnQgdG8gbWFrZSBzdXJl
+DQo+ID4gYmVmb3JlIHNlbmQgb3V0IGEgdjIgYW5kIHRoYW5rIHlvdSBKYWt1YiENCj4gDQo+IFNp
+bmNlIHlvdSBhc2tlZCA6KQ0KDQpZb3VyIHJpZ2h0LCBJIGRpZC4gIEkgYW0gYSBnbHV0ZW4gZm9y
+IGNyaXRpY2lzbS4g8J+Yig0KDQo+IC0gSSBjb3VsZG4ndCByZWFsbHkgZ3Jhc3Agd2hhdCB0aGUg
+OHRoIHBhdGNoIGRvZXMuDQo+IFF1aXRlIGEgYml0IG9mIGNvZGUgZ2V0cyBtb3ZlZCBhcm91bmQg
+aW4gYSB3YXkgdGhhdCBkb2Vzbid0IGNsZWFybHkgYWRkcmVzcw0KPiBhbnkgbG9ja2luZyBpc3N1
+ZXMuIFBlcmhhcHMgdGhlIGNvbW1pdCBtZXNzYWdlIGNvdWxkIGJlIGltcHJvdmVkIChvciBldmVu
+DQo+IHBhdGNoIHNwbGl0IGludG8gdHdvIC0gbW92ZSBjb2RlLCBjaGFuZ2UgY29kZSk/DQoNCk9r
+LCBJIHdpbGwgd29yayB3aXRoIEFsZWsgdG8gaW1wcm92ZSBwYXRjaCA4Lg0K
