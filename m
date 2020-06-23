@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3B2205B92
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 21:15:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 125FD205B97
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 21:16:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387529AbgFWTOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 15:14:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42208 "EHLO
+        id S2387444AbgFWTQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 15:16:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733257AbgFWTOz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 15:14:55 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB29C061573;
-        Tue, 23 Jun 2020 12:14:54 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id b15so2435047edy.7;
-        Tue, 23 Jun 2020 12:14:54 -0700 (PDT)
+        with ESMTP id S1733255AbgFWTQW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 15:16:22 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32151C061573;
+        Tue, 23 Jun 2020 12:16:22 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id y10so8361760eje.1;
+        Tue, 23 Jun 2020 12:16:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EiQFBNz48uXtNqjBEt8M9gZWuWmgSf33o4QdtgMKMq0=;
-        b=A57Vk2PGm/E+JJTBbM5USbl+adG6u3ZcRDuPw18KhGy75/ccHsP4CGCiKwxNzm8Uo1
-         K8R8ChHFTnr/1R0Z7mCLfmRITjT2k0+BQX0K/dUTRWyOoXjGLpaPvjy0n3iza8kZeTnE
-         eaEb4MGPNASPf4w25tipAH2T2+JDv+/n03MUEsH6mmXToUT8onns6XhxiqnAL+hmVFHQ
-         TCZX/0tbWIxq+K4bhh0270LnL8i2/wttYNpNdiokPYBCR0uqO21sLcAVJkDiy1p/oTPv
-         3gHUhfKK8KZBekm5AtEtF366prA62ONCPKQeBjBOgmOLPiC3o3vztmL5QIM99ApFvRWk
-         JiFg==
+        bh=UzQp1hQlOzqdNi1YndpqVxliVZx+D0AKaaRUoCK8nr8=;
+        b=o63sFuueEHk/547QE0wCBXP5jjFSTls7r/TONSuWAL7wxROIgVccIDHl8Dg3Sqsnuc
+         Arge0FYFOaRJcUbwY3Gl6cYVSJTPmwSln65Vx1yusrlqVgDTc/GPBjz4SlH80nI84Pjq
+         4DMO4un1gp0GZJvPHYmXtKh7QbgOOex3AOt3/2nnnrhNNelHiOPhJ5EBp7p2NZGGGY1W
+         fRZLeTEVaX07cNFd7rVbHlOWpXK4QeZfWIZKA7z0cVGEkruQCW//esmHsO1lH4VwSQyJ
+         rJLuSZqjU/yn3IvSsgInqWwE6Pa2f8o8lWnaEW3Ua0Skj3HwtdKu/GCJyYZd4DsVjzlw
+         1Iwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=EiQFBNz48uXtNqjBEt8M9gZWuWmgSf33o4QdtgMKMq0=;
-        b=lrLDRZUGOGM5/+1bfjUix5G5rlPgc4n2vIJs4JZEVmj+g6SrROT4gJEnG9Mxhjwz7W
-         fVIY9FmD12sq4GxurkguGJV7sTHoIvWqKEZnhfBU5dGSV0q2c2PR/lGt8YYQ/Og9H1Yh
-         cieGyP6ySVlpBON7OWyGQybF2gg5VO7wGpIDGhS6/mUGQ5gQfBLnAmSp2PV8Uqs2Op0K
-         XhdJD61eyEqRzJG1m/LlJAgpAbro8qCjm0z9+xsM+TnKu8n6ICsKgX9OvuhFVb2aV3/2
-         TpP7v+cOFS7hsVuK4uFu1KsQqqPYVOOYoZp4r0kr4jmuxnDNQn1Q6LqI4nLfERsW6+7h
-         dApw==
-X-Gm-Message-State: AOAM531N/GvFKwYwYNsZSYqQKz6rV80z9RanARSEI3gzFHtBOVRU+Fyz
-        JhkpiPgzLtTQKw+eb/aApMQ=
-X-Google-Smtp-Source: ABdhPJyXmL3dkFjXuonGFphO0n/F99uq29MIJcNi6jR8Zz1PV38oEsaPtArFWK5uad10FcQv0JbkRw==
-X-Received: by 2002:a50:b0c3:: with SMTP id j61mr23775895edd.349.1592939693386;
-        Tue, 23 Jun 2020 12:14:53 -0700 (PDT)
+        bh=UzQp1hQlOzqdNi1YndpqVxliVZx+D0AKaaRUoCK8nr8=;
+        b=CxGH3VRNzfXFWMSgz6yhf2KJEGUthWSFU9fXz+AbbQnfKITZV+R36XwObPFGWLU5km
+         8N7FcbZJjLkR7E0RaGllHav4x6diBBo4EsAlOPqUkHJ6f00PkGah65ugrJk3z1Edau3u
+         NuRvGVcB1r70aHBI7TPzdd6e2RM13BAbFJ8cbq4c6K/NRAi8D1aSzqjDd0Ujgw7iB84l
+         83aU6yBxLe7lenueRR5wiqqOgDAY11ve50MSF+S+/9N+a8/ZIwUnBlh2y/a/sGBOstY9
+         OH0KPhlBnoqynonBZq/lPqOLCBTWHmAK7B+THGtL9K4DA10Cy2r1GEePxznHFWPQuv6A
+         H7xw==
+X-Gm-Message-State: AOAM531DM7bMHwaHXS2/D94DyeAS/IoOkzEbGdK1RQA5nQTzoiJ/sxvS
+        0kh8QLzzf3rJOFE6ErpeMuc=
+X-Google-Smtp-Source: ABdhPJxOw4MaCAt9fkW9CBZlxVk9ro0+kaT5EauAAfdESjmO1rtUKnRrup90FzgFnQzU6ATJdFl+TA==
+X-Received: by 2002:a17:906:19c7:: with SMTP id h7mr21240539ejd.403.1592939780864;
+        Tue, 23 Jun 2020 12:16:20 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id bz14sm13964207ejc.100.2020.06.23.12.14.45
+        by smtp.googlemail.com with ESMTPSA id l3sm3923118edr.14.2020.06.23.12.16.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Jun 2020 12:14:52 -0700 (PDT)
-Subject: Re: [PATCH 05/15] net: phy: reset the PHY even if probe() is not
- implemented
+        Tue, 23 Jun 2020 12:16:20 -0700 (PDT)
+Subject: Re: [PATCH 06/15] net: phy: mdio: reset MDIO devices even if probe()
+ is not implemented
 To:     Bartosz Golaszewski <brgl@bgdev.pl>, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
@@ -83,7 +83,7 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         Andrew Perepech <andrew.perepech@mediatek.com>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
 References: <20200622093744.13685-1-brgl@bgdev.pl>
- <20200622093744.13685-6-brgl@bgdev.pl>
+ <20200622093744.13685-7-brgl@bgdev.pl>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -139,12 +139,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <1da91144-076d-bf1e-f12a-2b4fe242febc@gmail.com>
-Date:   Tue, 23 Jun 2020 12:14:44 -0700
+Message-ID: <1af383ab-43eb-0557-0fd8-1f0fee3436b5@gmail.com>
+Date:   Tue, 23 Jun 2020 12:16:10 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200622093744.13685-6-brgl@bgdev.pl>
+In-Reply-To: <20200622093744.13685-7-brgl@bgdev.pl>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -156,19 +156,14 @@ X-Mailing-List: netdev@vger.kernel.org
 On 6/22/20 2:37 AM, Bartosz Golaszewski wrote:
 > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
-> Currently we only call phy_device_reset() if the PHY driver implements
-> the probe() callback. This is not mandatory and many drivers (e.g.
-> realtek) don't need probe() for most devices but still can have reset
-> GPIOs defined. There's no reason to depend on the presence of probe()
-> here so pull the reset code out of the if clause.
+> Similarily to PHY drivers - there's no reason to require probe() to be
+> implemented in order to call mdio_device_reset(). MDIO devices can have
+> resets defined without needing to do anything in probe().
 > 
 > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-OK, but now let's imagine that a PHY device has two or more reset lines,
-one of them is going to be managed by the core PHY library and the rest
-is going to be under the responsibility of the PHY driver, that does not
-sound intuitive or convenient at all. This is a hypothetical case, but
-it could conceivable happen, so how about adding a flag to the driver
-that says "let me manage it a all"?
+Same comment as patch #5, I would prefer that we seek a solution that
+allows MDIO drivers to manage multiple reset lines (would that exist) on
+their own instead of this one size fits all approach. Thank you.
 -- 
 Florian
