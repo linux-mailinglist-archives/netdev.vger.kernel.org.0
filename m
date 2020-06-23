@@ -2,86 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79CFA206522
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:32:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE3D02065C9
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:51:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393633AbgFWVb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 17:31:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52370 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388685AbgFWVbU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 17:31:20 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A53922078A;
-        Tue, 23 Jun 2020 21:31:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592947879;
-        bh=B7onChlE/boz2zJORl0fpzdFl/rHlDuBUXINddHNGDw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WIwYoec4Q1HVmrtTmgxtXPOFLgN+koBAXyeQyrY9QipX8iqEElWIH6cYnjtHLgMhJ
-         BIOGyPKc5fEic+iDhmsNLANVE6wV15Km2v8GDcSciwUsLPH45+GXWzYyi3JMf3i7rt
-         utCUgF2reVeF8CtaQcHCzlPUvjM4RFrUkxEUANnU=
-Date:   Tue, 23 Jun 2020 14:31:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Aya Levin <ayal@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: [net-next 10/10] net/mlx5e: Add support for PCI relaxed
- ordering
-Message-ID: <20200623143118.51373eb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200623195229.26411-11-saeedm@mellanox.com>
-References: <20200623195229.26411-1-saeedm@mellanox.com>
-        <20200623195229.26411-11-saeedm@mellanox.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S2389736AbgFWVdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 17:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35236 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391365AbgFWVdO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 17:33:14 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827C9C061573;
+        Tue, 23 Jun 2020 14:33:14 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C76DA129425B6;
+        Tue, 23 Jun 2020 14:33:13 -0700 (PDT)
+Date:   Tue, 23 Jun 2020 14:33:11 -0700 (PDT)
+Message-Id: <20200623.143311.995885759487352025.davem@davemloft.net>
+To:     likaige@loongson.cn
+Cc:     benve@cisco.com, _govind@gmx.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lixuefeng@loongson.cn,
+        yangtiezhu@loongson.cn
+Subject: Re: [PATCH RESEND] net/cisco: Fix a sleep-in-atomic-context bug in
+ enic_init_affinity_hint()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1592899989-22049-1-git-send-email-likaige@loongson.cn>
+References: <1592899989-22049-1-git-send-email-likaige@loongson.cn>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 23 Jun 2020 14:33:14 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Jun 2020 12:52:29 -0700 Saeed Mahameed wrote:
-> From: Aya Levin <ayal@mellanox.com>
-> 
-> The concept of Relaxed Ordering in the PCI Express environment allows
-> switches in the path between the Requester and Completer to reorder some
-> transactions just received before others that were previously enqueued.
-> 
-> In ETH driver, there is no question of write integrity since each memory
-> segment is written only once per cycle. In addition, the driver doesn't
-> access the memory shared with the hardware until the corresponding CQE
-> arrives indicating all PCI transactions are done.
+From: Kaige Li <likaige@loongson.cn>
+Date: Tue, 23 Jun 2020 16:13:09 +0800
 
-Assuming the device sets the RO bits appropriately, right? Otherwise
-CQE write could theoretically surpass the data write, no?
-
-> With relaxed ordering set, traffic on the remote-numa is at the same
-> level as when on the local numa.
-
-Same level of? Achievable bandwidth?
-
-> Running TCP single stream over ConnectX-4 LX, ARM CPU on remote-numa
-> has 300% improvement in the bandwidth.
-> With relaxed ordering turned off: BW:10 [GB/s]
-> With relaxed ordering turned on:  BW:40 [GB/s]
+> The kernel module may sleep with holding a spinlock.
 > 
-> The driver turns relaxed ordering off by default. It exposes 2 boolean
-> private-flags in ethtool: pci_ro_read and pci_ro_write for user
-> control.
+> The function call paths (from bottom to top) are:
 > 
-> $ ethtool --show-priv-flags eth2
-> Private flags for eth2:
-> ...
-> pci_ro_read        : off
-> pci_ro_write       : off
+> [FUNC] zalloc_cpumask_var(GFP_KERNEL)
+> drivers/net/ethernet/cisco/enic/enic_main.c, 125: zalloc_cpumask_var in enic_init_affinity_hint
+> drivers/net/ethernet/cisco/enic/enic_main.c, 1918: enic_init_affinity_hint in enic_open
+> drivers/net/ethernet/cisco/enic/enic_main.c, 2348: enic_open in enic_reset
+> drivers/net/ethernet/cisco/enic/enic_main.c, 2341: spin_lock in enic_reset
 > 
-> $ ethtool --set-priv-flags eth2 pci_ro_write on
-> $ ethtool --set-priv-flags eth2 pci_ro_read on
+> To fix this bug, GFP_KERNEL is replaced with GFP_ATOMIC.
+> 
+> Signed-off-by: Kaige Li <likaige@loongson.cn>
 
-I think Michal will rightly complain that this does not belong in
-private flags any more. As (/if?) ARM deployments take a foothold 
-in DC this will become a common setting for most NICs.
+Just grepping around for GFP_KERNEL usage in atomic contexts I guess
+is fine.
+
+But you really have to look at the bigger picture.
+
+Calling a NIC driver open function from a context holding a spinlock
+is very much the real problem, so many operations have to sleep and
+in face that ->ndo_open() method is defined as being allowed to sleep
+and that's why the core networking never invokes it with spinlocks
+held.
