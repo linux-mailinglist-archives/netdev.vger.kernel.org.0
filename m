@@ -2,159 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B73820556E
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 17:04:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77C922055AE
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 17:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732986AbgFWPEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 11:04:13 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:49850 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732862AbgFWPEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 11:04:12 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05NEsVpe026266;
-        Tue, 23 Jun 2020 08:04:00 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=igANHcKPYAXOsEkVIIT94l+9ZPy2Qt342HUA9jHglK0=;
- b=AV6Md3TfzIr4izGtsCgpO8O5l9jOIoxSqW1W15gzfy/tdWCMegzXqDRmyNJlMkdc0aVq
- O/udMPxDfHLA3HJ3sw7iOdj9f2XmTcysV0igMpH7R0i5LKmqY6rX7snlRxhbcewW1iVt
- tSR/s+lq9M+X4BkHhCu7rxzyShHrQoRj1aI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31uk208awm-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 23 Jun 2020 08:03:59 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 23 Jun 2020 08:03:58 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cSJteSTcDpwweJDTZRipDqn0SxUZVPy7p31ojuCnqwp2ftCXX/qodt/NoJsSyDc4Ce8uOFiyUXV0rbK5ba5lz/X+KhsYYK1lBMremtz7wrgCX6h6aiYZavDa4vf+Ca5B7QbEMvWk1vY3X4+9tXtIAbBB15VhyO/6U/tUwIMkJOJpKOB1/trvm4q53qVWbjrPGI9DJUXvOAjfz94A3nisn961VlWpFQbrD+tnqXFF6fTCaQ0Mh1zZghlWpxIDsu4Q3FNbVrRB4R1F0oZnZqbuZZgBwNX8mqArbNaS7EcCfKZnn6/mJjhdJQHVzzKhkqgXqvBl7EyBzg4NxWE4uduMAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=igANHcKPYAXOsEkVIIT94l+9ZPy2Qt342HUA9jHglK0=;
- b=UVNV8oLRD7vXOUGW0STr+5V/VPdVLaetfhXC61nh9ZhI751HruJC+ezJMAtv3+zcEyPlkdautIzhJwIx3GaIqbRVH1pDsA8uY4+plxShPZIDvRGrb6ihc3rOhADnqwmxZEYsnZfb/8HDk4cEwntKw/wXdzo6IHNTbTgdp0HIODghGcmrkXD+dCrDTGghII25yJsiilFpAnlHLCoyGq6GRwuVE7zV9HnMgZ5vkUi428vzzB9OUTKEwV3xDUywpqO0pBpqESyBLYSSXth8Iwc27i/DRZThkXb7XPR99AxU/N57MwnBPrSKKYDaNGC+/RVow9OXWw391mHwRTDgt8y8uw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=igANHcKPYAXOsEkVIIT94l+9ZPy2Qt342HUA9jHglK0=;
- b=fwG97mbNLKugk3dCeMlF74ShDc1iAv/phaOxcgoNCdoEoanuXGWNzpbwkYM0nomC8/VlF7Dvpi7pJZtp8Sm1/I6ufZhusSABZlf1E5b7j5aNUj4VMEipFCmvk8pE/covBKsiMEfH5fatEUFuHWraCrFBdDBXAwUvdQ40+Hx4qj4=
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2584.namprd15.prod.outlook.com (2603:10b6:a03:150::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Tue, 23 Jun
- 2020 15:03:54 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.3109.027; Tue, 23 Jun 2020
- 15:03:54 +0000
-Subject: Re: [PATCH bpf-next v3 14/15] tools/bpf: add udp4/udp6 bpf iterator
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        id S1732986AbgFWPTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 11:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732951AbgFWPTU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 11:19:20 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F65DC061573;
+        Tue, 23 Jun 2020 08:19:19 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id 9so23911738ljc.8;
+        Tue, 23 Jun 2020 08:19:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Zg5KrHOcQrVCDVOVV1dxi5MJGq6i4wHlqMrQXmXPUSo=;
+        b=P2uaReEK5NwiTTG5uk8gT05JIjoCpzK+Y6gQCqAo02RmYaqV8iLo8DJ+Mn8KeIiwt4
+         mshaieTmNk+Hu+LdwbqqHbFQeTOZkva/WMCfi2YLs3YnD9mOd+3TnwtMcogD5YTPDhE2
+         pfIRgZjMTI8qAvq58aTxg8cKbYgrwzbZnGUADP+AuZ68TiOuGkbobefhe14AW2JrO2So
+         SX8dF9tG0JUXhi9JTFUqklXmd6FMpVUbndJqLE6nF3xvg2K7omKhXzT3I3xrk/JWOfNw
+         o/ioyMpcJwAlEE+qjFb1QAVtsaCmxFfl7YCZhjm7MmT6+n9yEAV6g/dtNnFfiUfhsodP
+         0qhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Zg5KrHOcQrVCDVOVV1dxi5MJGq6i4wHlqMrQXmXPUSo=;
+        b=maSsbEsSLUoj569jI/dAZqcYt74USNP9eBdqc1Muzru6SOuQMLeSXT4gOa7hfmECOT
+         ls7ktNYHc/tzcA1YoSuk1FPQlIYrwdGZIvNPaETsghrhWUKCRS7/q/DGH/c2PQV2A7kH
+         fShWFNgXsfasM6byB9SrvsQe8B5jb5Ftp1nqwV+iQHNDv6JJFOR7ezPrSvjbUdkptjzp
+         ZFV0HUskQAboJwwDv+Zt65ja2uRdxdGUNFmJzpmke3oxLma+8htDaeC80RYigZO64OBe
+         8xLe8Tvq2DMQDtqEU9nJhuJttXRuBYNSAVkEi01PG1V0QS3O44RRdZdZXw7Cp/KpnI6X
+         xyWg==
+X-Gm-Message-State: AOAM533RXMgEutGnkKoSbE7q2PielzCMPtpI1BJ6yYrdOL2/BxP5tSyw
+        +Bi5iT6J/rmBJ1AQm7rjGZVWQ4x+qOy+t/PQWYw=
+X-Google-Smtp-Source: ABdhPJzLAZtdQh5aznejLbauphcFF8+SS5/1cEVf1PaB+zfU5KEleGAsRuo5NLJx+k3GkTZco8Sg8YU+JkPD0/pStnc=
+X-Received: by 2002:a2e:2f07:: with SMTP id v7mr10860497ljv.51.1592925557988;
+ Tue, 23 Jun 2020 08:19:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200623070802.2310018-1-songliubraving@fb.com> <20200623070802.2310018-2-songliubraving@fb.com>
+In-Reply-To: <20200623070802.2310018-2-songliubraving@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 23 Jun 2020 08:19:06 -0700
+Message-ID: <CAADnVQJxinR1fY69hf_rLShdbi947DjGXAH+55eZQDTtm4VBRg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf: introduce helper bpf_get_task_stack_trace()
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <kernel-team@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>
-References: <20200623003626.3072825-1-yhs@fb.com>
- <20200623003642.3075027-1-yhs@fb.com>
- <CAEf4BzZB+dBR8be3FYjHNqn+artvu_Ca21uLuZeVrhDvL6FDQA@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <ecd218f2-71b2-3109-9616-2ce0b1aa9a0d@fb.com>
-Date:   Tue, 23 Jun 2020 08:03:52 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.9.0
-In-Reply-To: <CAEf4BzZB+dBR8be3FYjHNqn+artvu_Ca21uLuZeVrhDvL6FDQA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR02CA0066.namprd02.prod.outlook.com
- (2603:10b6:a03:54::43) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21d6::1377] (2620:10d:c090:400::5:7789) by BYAPR02CA0066.namprd02.prod.outlook.com (2603:10b6:a03:54::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22 via Frontend Transport; Tue, 23 Jun 2020 15:03:53 +0000
-X-Originating-IP: [2620:10d:c090:400::5:7789]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fbfd5d81-acb1-4d85-326c-08d81786a529
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2584:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB258421926FE44A4652A79DB7D3940@BYAPR15MB2584.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
-X-Forefront-PRVS: 04433051BF
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KnT4aJr0MoRXf/yNUfCzbej0yP+5NFmIgYQJ9YlHjdU/dFALT5z4qruVqmWe2N81FBGeswJLOYkEtdzjzQdrrXhWFWoflTrWfE0PSLkDPMwJnSdQp1BO3CtI1Dgi6Wf3Fvqorq1uj9u4UemotIcH1T3PiVa1HpMlLUE+i8dpiSBPPeAP/440ZWmfSsU0gK7WDs4MATzVHsEO24hY1tMsSFTEWnU3fkM5D5MyG5FgyP6xNEyD3rC6NiaSiilzRe6PsJIGKssrjvpZvfWvrl9nNGIohHqodLd+jIlpZwbPG7mm877A53C/PcmPfKjehYKUEsEf4eUWLtqOQUvHTtXKqYQNMQ3zrxQgf4d3vO1+7qbH1sfFrf13yPAPmMxdz2l9
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39860400002)(396003)(136003)(376002)(346002)(366004)(86362001)(2616005)(5660300002)(66946007)(66476007)(66556008)(316002)(31696002)(6486002)(6916009)(4326008)(31686004)(478600001)(54906003)(8676002)(16526019)(2906002)(186003)(53546011)(8936002)(36756003)(52116002)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: lCcvbuD0Jz2AKCTzodkkEsdMBvPxD+H5fZO+UoIAIYxwz7v3HZKwut+2zwh5JDO2LBCae0WlZh/0LwP9KmVV/SpLyJgkOTGeJbxfllnzMS1OnTXAFX69HBP51HTapQjrBHVnrjaj4XPw/ckhBlX/8lfcrAtedD6f7N8ZtfR9fJ9TsI9iS2SHLhx94QvEN2Z8hOB3MDP5qAuLBynT8OoKih3fxXV+IOwDSb1Ld1Il9zEm7FM4+2CjHIcCfIOvBbqhf9yiGIAKsqMO65epiZlw1HnzXOtod0ShXLKSN5b49vFH4H4pvTiHHwW85ocaEyfJlrGpsk8thkJQKHtpOeJTpGS54wENisd8g/kUbaaORVf0EWvVb2lYPLrwYDNh+XxTtFaQlNOxE2R9Zzou2PhQ3i+F02fvrtyIzT0e62KwU0kVXMl+apxR9/OyGeaXsIhuLm+oy4IRDYSZNNayF10VNAk+DpNmHoKGsjZTG5foRmP6S/aK9ipzeRZqYE1j1CqKH7/l8sTbL+cIAkR99tEvEA==
-X-MS-Exchange-CrossTenant-Network-Message-Id: fbfd5d81-acb1-4d85-326c-08d81786a529
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2020 15:03:53.8571
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AnBovNHIWOwbQ9WRICK5OOOIN7ygXaegcRW/m7ghbCxBp+skYbVNmf9KcK2NFMLS
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2584
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-23_07:2020-06-23,2020-06-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- malwarescore=0 mlxscore=0 adultscore=0 mlxlogscore=813 spamscore=0
- impostorscore=0 clxscore=1015 priorityscore=1501 suspectscore=0
- bulkscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006120000 definitions=main-2006230117
-X-FB-Internal: deliver
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jun 23, 2020 at 12:08 AM Song Liu <songliubraving@fb.com> wrote:
+>
+> This helper can be used with bpf_iter__task to dump all /proc/*/stack to
+> a seq_file.
+>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>  include/uapi/linux/bpf.h       | 10 +++++++++-
+>  kernel/trace/bpf_trace.c       | 21 +++++++++++++++++++++
+>  scripts/bpf_helpers_doc.py     |  2 ++
+>  tools/include/uapi/linux/bpf.h | 10 +++++++++-
+>  4 files changed, 41 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 19684813faaed..a30416b822fe3 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3252,6 +3252,13 @@ union bpf_attr {
+>   *             case of **BPF_CSUM_LEVEL_QUERY**, the current skb->csum_level
+>   *             is returned or the error code -EACCES in case the skb is not
+>   *             subject to CHECKSUM_UNNECESSARY.
+> + *
+> + * int bpf_get_task_stack_trace(struct task_struct *task, void *entries, u32 size)
+> + *     Description
+> + *             Save a task stack trace into array *entries*. This is a wrapper
+> + *             over stack_trace_save_tsk().
+> + *     Return
+> + *             Number of trace entries stored.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3389,7 +3396,8 @@ union bpf_attr {
+>         FN(ringbuf_submit),             \
+>         FN(ringbuf_discard),            \
+>         FN(ringbuf_query),              \
+> -       FN(csum_level),
+> +       FN(csum_level),                 \
+> +       FN(get_task_stack_trace),
+>
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index e729c9e587a07..2c13bcb5c2bce 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -1488,6 +1488,23 @@ static const struct bpf_func_proto bpf_get_stack_proto_raw_tp = {
+>         .arg4_type      = ARG_ANYTHING,
+>  };
+>
+> +BPF_CALL_3(bpf_get_task_stack_trace, struct task_struct *, task,
+> +          void *, entries, u32, size)
+> +{
+> +       return stack_trace_save_tsk(task, (unsigned long *)entries, size, 0);
+> +}
+> +
+> +static int bpf_get_task_stack_trace_btf_ids[5];
+> +static const struct bpf_func_proto bpf_get_task_stack_trace_proto = {
+> +       .func           = bpf_get_task_stack_trace,
+> +       .gpl_only       = true,
 
+why?
 
-On 6/22/20 11:57 PM, Andrii Nakryiko wrote:
-> On Mon, Jun 22, 2020 at 5:38 PM Yonghong Song <yhs@fb.com> wrote:
->>
->> On my VM, I got identical results between /proc/net/udp[6] and
->> the udp{4,6} bpf iterator.
->>
->> For udp6:
->>    $ cat /sys/fs/bpf/p1
->>      sl  local_address                         remote_address                        st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops
->>     1405: 000080FE00000000FF7CC4D0D9EFE4FE:0222 00000000000000000000000000000000:0000 07 00000000:00000000 00:00000000 00000000   193        0 19183 2 0000000029eab111 0
->>    $ cat /proc/net/udp6
->>      sl  local_address                         remote_address                        st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops
->>     1405: 000080FE00000000FF7CC4D0D9EFE4FE:0222 00000000000000000000000000000000:0000 07 00000000:00000000 00:00000000 00000000   193        0 19183 2 0000000029eab111 0
->>
->> For udp4:
->>    $ cat /sys/fs/bpf/p4
->>      sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops
->>     2007: 00000000:1F90 00000000:0000 07 00000000:00000000 00:00000000 00000000     0        0 72540 2 000000004ede477a 0
->>    $ cat /proc/net/udp
->>      sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops
->>     2007: 00000000:1F90 00000000:0000 07 00000000:00000000 00:00000000 00000000     0        0 72540 2 000000004ede477a 0
->> ---
-> 
-> patch subject prefix is misleading: tools/bpf -> selftests/bpf?
+> +       .ret_type       = RET_INTEGER,
+> +       .arg1_type      = ARG_PTR_TO_BTF_ID,
+> +       .arg2_type      = ARG_PTR_TO_MEM,
+> +       .arg3_type      = ARG_CONST_SIZE_OR_ZERO,
 
-Sure I can do this.
+OR_ZERO ? why?
 
-> 
-> Otherwise:
-> 
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> 
->>   tools/testing/selftests/bpf/progs/bpf_iter.h  | 16 ++++
->>   .../selftests/bpf/progs/bpf_iter_udp4.c       | 71 +++++++++++++++++
->>   .../selftests/bpf/progs/bpf_iter_udp6.c       | 79 +++++++++++++++++++
->>   3 files changed, 166 insertions(+)
->>   create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_udp4.c
->>   create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_udp6.c
->>
-> 
-> [...]
-> 
+> +       .btf_id         = bpf_get_task_stack_trace_btf_ids,
+> +};
+> +
+>  static const struct bpf_func_proto *
+>  raw_tp_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  {
+> @@ -1521,6 +1538,10 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>                 return prog->expected_attach_type == BPF_TRACE_ITER ?
+>                        &bpf_seq_write_proto :
+>                        NULL;
+> +       case BPF_FUNC_get_task_stack_trace:
+> +               return prog->expected_attach_type == BPF_TRACE_ITER ?
+> +                       &bpf_get_task_stack_trace_proto :
+
+why limit to iter only?
+
+> + *
+> + * int bpf_get_task_stack_trace(struct task_struct *task, void *entries, u32 size)
+> + *     Description
+> + *             Save a task stack trace into array *entries*. This is a wrapper
+> + *             over stack_trace_save_tsk().
+
+size is not documented and looks wrong.
+the verifier checks it in bytes, but it's consumed as number of u32s.
