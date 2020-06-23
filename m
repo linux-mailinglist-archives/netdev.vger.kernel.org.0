@@ -2,54 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 436EA2047C7
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 05:05:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 129F72047D7
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 05:13:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732114AbgFWDFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 23:05:16 -0400
-Received: from out20-49.mail.aliyun.com ([115.124.20.49]:46115 "EHLO
-        out20-49.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731690AbgFWDFQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 23:05:16 -0400
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1963569|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0456264-0.000926188-0.953447;FP=18262275217699229393|4|2|5|0|-1|-1|-1;HT=e01l07447;MF=aiden.leong@aibsd.com;NM=1;PH=DS;RN=4;RT=4;SR=0;TI=SMTPD_---.HqyYtR0_1592881512;
-Received: from ubuntu(mailfrom:aiden.leong@aibsd.com fp:SMTPD_---.HqyYtR0_1592881512)
-          by smtp.aliyun-inc.com(10.147.42.198);
-          Tue, 23 Jun 2020 11:05:13 +0800
-From:   Aiden Leong <aiden.leong@aibsd.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v2] GUE: Fix a typo
-Date:   Mon, 22 Jun 2020 20:04:58 -0700
-Message-Id: <20200623030459.13508-1-aiden.leong@aibsd.com>
-X-Mailer: git-send-email 2.25.1
+        id S1731547AbgFWDNs convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Jun 2020 23:13:48 -0400
+Received: from mga06.intel.com ([134.134.136.31]:47359 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731338AbgFWDNs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Jun 2020 23:13:48 -0400
+IronPort-SDR: sU8alZ+SkEcYeGeGWInD4dGmF11ZKVESxHNjo/FoBO5/nDERxaQbbKJu1AUarDoeE2sYBSN9RU
+ yJH7PgBL3MxA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9660"; a="205442908"
+X-IronPort-AV: E=Sophos;i="5.75,269,1589266800"; 
+   d="scan'208";a="205442908"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2020 20:13:47 -0700
+IronPort-SDR: qbDiRhxWlLlZCNi8//HdPR9j7tWPEwtPrQctDlUmdNR981jK9CjtU0exphJauv00pHx6tlpFEz
+ 2TMG+rSa+QnA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,269,1589266800"; 
+   d="scan'208";a="319030114"
+Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
+  by FMSMGA003.fm.intel.com with ESMTP; 22 Jun 2020 20:13:46 -0700
+Received: from orsmsx157.amr.corp.intel.com (10.22.240.23) by
+ ORSMSX108.amr.corp.intel.com (10.22.240.6) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 22 Jun 2020 20:13:36 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.199]) by
+ ORSMSX157.amr.corp.intel.com ([169.254.9.81]) with mapi id 14.03.0439.000;
+ Mon, 22 Jun 2020 20:13:35 -0700
+From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "Kwapulinski, Piotr" <piotr.kwapulinski@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>,
+        "Bowers, AndrewX" <andrewx.bowers@intel.com>
+Subject: RE: [net-next 4/9] i40e: detect and log info about pre-recovery mode
+Thread-Topic: [net-next 4/9] i40e: detect and log info about pre-recovery
+ mode
+Thread-Index: AQHWSOMMtMCKLyPfsUWCUoUdRG4SWKjlxOQA///BcQA=
+Date:   Tue, 23 Jun 2020 03:13:35 +0000
+Message-ID: <61CC2BC414934749BD9F5BF3D5D94044987324EF@ORSMSX112.amr.corp.intel.com>
+References: <20200622221817.2287549-1-jeffrey.t.kirsher@intel.com>
+        <20200622221817.2287549-5-jeffrey.t.kirsher@intel.com>
+ <20200622165552.13ebc666@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200622165552.13ebc666@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.138]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a typo in gue.h
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Monday, June 22, 2020 16:56
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Cc: davem@davemloft.net; Kwapulinski, Piotr <piotr.kwapulinski@intel.com>;
+> netdev@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
+> Loktionov, Aleksandr <aleksandr.loktionov@intel.com>; Bowers, AndrewX
+> <andrewx.bowers@intel.com>
+> Subject: Re: [net-next 4/9] i40e: detect and log info about pre-recovery mode
+> 
+> On Mon, 22 Jun 2020 15:18:12 -0700 Jeff Kirsher wrote:
+> > +static inline bool i40e_check_fw_empr(struct i40e_pf *pf) {
+> 
+> > +}
+> 
+> > +static inline i40e_status i40e_handle_resets(struct i40e_pf *pf) {
+> > +	const i40e_status pfr = i40e_pf_loop_reset(pf);
+> 
+> > +
+> > +	return is_empr ? I40E_ERR_RESET_FAILED : pfr; }
+> 
+> There is no need to use the inline keyword in C sources. Compiler will inline
+> small static functions, anyway.
+> 
+> Same thing in patch 8.
+[Kirsher, Jeffrey T] 
 
-Signed-off-by: Aiden Leong <aiden.leong@aibsd.com>
----
- include/net/gue.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/net/gue.h b/include/net/gue.h
-index 3a6595bfa641..e42402f180b7 100644
---- a/include/net/gue.h
-+++ b/include/net/gue.h
-@@ -21,7 +21,7 @@
-  * |                                                               |
-  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  *
-- * C bit indicates contol message when set, data message when unset.
-+ * C bit indicates control message when set, data message when unset.
-  * For a control message, proto/ctype is interpreted as a type of
-  * control message. For data messages, proto/ctype is the IP protocol
-  * of the next header.
--- 
-2.25.1
-
+In patch 8, the functions are not so small and simple.  Are you sure the compiler would inline them if we did not explicitly 'inline' them?  I want to make sure before making that change.
