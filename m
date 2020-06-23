@@ -2,63 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B560720454E
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 02:29:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2277204564
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 02:31:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731452AbgFWA3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 20:29:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54556 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731222AbgFWA3b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Jun 2020 20:29:31 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F2BAA20706;
-        Tue, 23 Jun 2020 00:29:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592872171;
-        bh=VZo9GdkKeMB8BOpvXmOaBiHaEYYXHNQsLT1Dm5in3BE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pzq1o1+QFv2fVZ3J2PT72Ju5jKgdF6n+vvwsDrOad3Y889ZdaZEupswO90nbnyuaj
-         +soqaPBfCwLDh9lGc0OJsf8B4On6IFTMJeWPZfVO1kv4dzj4vsPZwN+GBzbKIJItHb
-         AX68pIiUGWEJcXfOXe1D9ZrMjfgBLUydvPIo90aA=
-Date:   Mon, 22 Jun 2020 17:29:29 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "Kwapulinski, Piotr" <piotr.kwapulinski@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>
-Subject: Re: [net-next 4/9] i40e: detect and log info about pre-recovery
- mode
-Message-ID: <20200622172929.0a7c29d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <61CC2BC414934749BD9F5BF3D5D9404498731F8F@ORSMSX112.amr.corp.intel.com>
-References: <20200622221817.2287549-1-jeffrey.t.kirsher@intel.com>
-        <20200622221817.2287549-5-jeffrey.t.kirsher@intel.com>
-        <20200622165552.13ebc666@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <61CC2BC414934749BD9F5BF3D5D9404498731F8F@ORSMSX112.amr.corp.intel.com>
+        id S1731895AbgFWAb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 20:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37932 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731754AbgFWAbY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 20:31:24 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DE3C061573;
+        Mon, 22 Jun 2020 17:31:23 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id g12so8345947pll.10;
+        Mon, 22 Jun 2020 17:31:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fVew+g13SgHpevB7NYz5oIWPb+gVvjb6LhTgV6ElRAI=;
+        b=DoNtra67tk5DOU2BlpqpJR6vR9ir2YE9mvacp9/vQuslbOCepuZgBoisibBM5qzkSj
+         hsk5D8HOv0Mp90t2QW1GKEao7IJAbxx7w/clR+QglxZTWkNSt/S6lar4r9LxtRD7Mz2B
+         JvKnozhLIDBZm6NTcpKKvcE1Mqq5xo8L2+Fhmet18LKbMeWJPduJDqOBDKa7MbnW1wUv
+         UAUZW2bjuuLkAzwXiCnLxlNjxNuA6TfJvWB7ETqyeRSSZRYDofUcIJXT4PGN8lAyzvUt
+         7MDyePJZ/MY4//da+o5l5opjBWdBYuRGR/o1Sp6ujmLy1WHZg5rvKmGGRSdOR5tVMSt4
+         RETA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fVew+g13SgHpevB7NYz5oIWPb+gVvjb6LhTgV6ElRAI=;
+        b=p+jy86W4e572MUi9DBN5c5XTljgjjYw4x8cZDgvSco8uhJ+W7SooPnw44BX2vrrqhH
+         INl9ks3LT5bStDs0f4kio8IW0NPP5Hr48O3JZeeZklrRp08iIEjGa+4OrnguaBP2sxgR
+         1hUNms0QV3XV84/nVGd8NHQiltA40MuTCG/abaJV20H7OOLlEjkfYprRyWydALo32H08
+         tiQ8nOofP2Od+021Nd6I5BthjAwYHpDt5iXaqdBa4MJedA/c4WL4h/JqzZV/6Kx6EDBr
+         sZ218R1qWObz3qf/PSXeNHACGm2cOiY1TUGonCyI+GSEVUcBwO4SNicxKUknPQLCBysH
+         AR6g==
+X-Gm-Message-State: AOAM533YTyWD6JNafImBhzaWxHUtrpJQ6v3EmVdzZ/ttxBOEAmozAId9
+        KYvDqBesuI/BbfE/1yaI8lk=
+X-Google-Smtp-Source: ABdhPJzl/3fJJ+vvNS8ahGFjVdZOuaZYmbjO4U1wZSB4BeVTIQ4fBfBOTPFSVt/I9HWty8+i2K15wA==
+X-Received: by 2002:a17:902:7881:: with SMTP id q1mr4482279pll.159.1592872282626;
+        Mon, 22 Jun 2020 17:31:22 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:739c])
+        by smtp.gmail.com with ESMTPSA id m10sm584860pjs.27.2020.06.22.17.31.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Jun 2020 17:31:21 -0700 (PDT)
+Date:   Mon, 22 Jun 2020 17:31:19 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com,
+        andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH v2 bpf-next 3/3] selftests/bpf: add variable-length data
+ concat pattern less than test
+Message-ID: <20200623003119.onlwey7ko5z6heyq@ast-mbp.dhcp.thefacebook.com>
+References: <20200623000905.3076979-1-andriin@fb.com>
+ <20200623000905.3076979-3-andriin@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200623000905.3076979-3-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Jun 2020 00:18:08 +0000 Kirsher, Jeffrey T wrote:
-> > There is no need to use the inline keyword in C sources. Compiler will inline
-> > small static functions, anyway.
-> > 
-> > Same thing in patch 8.  
+On Mon, Jun 22, 2020 at 05:09:04PM -0700, Andrii Nakryiko wrote:
+> Extend original variable-length tests with a case to catch a common
+> existing pattern of testing for < 0 for errors. Note because
+> verifier also tracks upper bounds and we know it can not be greater
+> than MAX_LEN here we can skip upper bound check.
 > 
-> I am prepping a v2, are these the only issues?  Want to make sure
-> before send out a v2 and thank you Jakub!
+> In ALU64 enabled compilation converting from long->int return types
+> in probe helpers results in extra instruction pattern, <<= 32, s >>= 32.
+> The trade-off is the non-ALU64 case works. If you really care about
+> every extra insn (XDP case?) then you probably should be using original
+> int type.
+> 
+> In addition adding a sext insn to bpf might help the verifier in the
+> general case to avoid these types of tricks.
+> 
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 
-Since you asked :) - I couldn't really grasp what the 8th patch does.
-Quite a bit of code gets moved around in a way that doesn't clearly
-address any locking issues. Perhaps the commit message could be
-improved (or even patch split into two - move code, change code)?
+Please keep John's 'Author:' on the patch.
+git commit --author= --amend
+or keep 'From:' when you applied to your local git.
+Also add your SOB after John's.
+Even if you didn't change the patch at all.
+Same thing if you've reworked the patch.
