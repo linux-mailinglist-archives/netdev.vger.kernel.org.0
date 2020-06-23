@@ -2,198 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 078CF2049DF
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 08:27:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CE842049F8
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 08:33:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730708AbgFWG1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 02:27:13 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:46983 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730419AbgFWG1M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 02:27:12 -0400
-Received: by mail-il1-f197.google.com with SMTP id t69so13799153ilk.13
-        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 23:27:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=gZ4kRg/lsKbtR4x7IDRCO8QC7n8viAfM9eVMzkEuu4M=;
-        b=YvJUd9lx25aBx76rilC05oj1VGxdKxirgTVZMSKwfwy2aj8hSXWoFoLiklYBbESNNs
-         yFBQXt62SlAEmOX0CWA77av2AyAUK01miyvwZcsfhNazSMUssaKYdtpMkHU4btAzf6dg
-         lK3phrzAkOrhfRxwizItJ9S5saaHLP4A7JfyULF90OH5VUB2mPUVSJkYWq90CkSEKABA
-         1AEx2tgF6EFVUVHWD9jYeaYIWITjiRuvVOa7jAIdaoiRIaCEYcxPO7kyvNzfjuIQShKO
-         XP4LEDfv21O9dnz5Gv/X2g+d1WHj7vX4bLUKcpcNVHvNljUEi2HCdsI1JJ7zHRS/dlh8
-         hotw==
-X-Gm-Message-State: AOAM530OUvVoRz3ddlddIFMHLofRZPyiPrhmN9oCllkel9hbSL8FHPEv
-        Gh8I7o4++WaNaFX41h1H8uP/O4ib3LuDZgnN7KELPdX0bNdN
-X-Google-Smtp-Source: ABdhPJygsyK2Vg7E/T4BB9XKQGhiLjySMxeGIWjnVsQ3Y7mdHOw/zPYzo7vHaRR9JfmtztW9YO4105Fq0nDfS+tKwBuZ72HPfz4C
+        id S1730949AbgFWGc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 02:32:57 -0400
+Received: from mail-eopbgr10074.outbound.protection.outlook.com ([40.107.1.74]:17585
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730635AbgFWGc4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 02:32:56 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iEgxzS9GQ+CcNJ0iH4gYWyNIdlBdmoHiqBbh21ledmkQLTG4Hm7lpZvJeIQ5ZRNuMR2aXy+WrpkvICeyxMWA1FfAH4z4p4EqvlYOyS9zHJi72qacRde0Ikdi6BwSoWZH5+pIKRg7tNab72Q4tk6Xgup5JH9K9/1PzQmqMBBTi+fVgjCK7yZD9IY/uOosogIyNoUc11m/TCWjmpAYpFu0loRPJk3IAVAXjgLK8sVD9H5aSdurLwf9ocyeOvqAi4wJ2RqEHiIYdF4hnNdM1CwQ9AjFByqBPvA+0GuPZircNoFxz5551L+k+HoQvQxD8J5BIlPEm9ZzKT2qhuVDAJYfag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EaeDAoMV7F+rZLYpouIhZ3PIcYsLDXxL/vglhN6tsJM=;
+ b=She3LaKMo8lABwnF3AQ3X3h9Bk5YJdRl8lvBh/FFqIYgSIAGXDfNAldK8wfWUnhj+ubCDucqgHdEY40xL79k7FxMrvUbp1ZkGQKNahHfOmQG6td0NGH+9HEG5pUX2lcQmrGp1SskZnj0fygCh9GfY9DMGCRoLFuA31PuW7qsraHGBLSLYAEre4LDRXgTqPUCtjeTXduEO2EPEkXqHSPqXPPp3Md9WD5Gf48Jc3WMNQHGNDfFOkupvDEGID5eZv706cRHKaVAWoIdZ7jiSDoHiLnJxznT9xkPcSE7lGpygZ/8b4Uxx2APfQVdqwG5eMwDTaIazC/z1pe1LQs8HnVWWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EaeDAoMV7F+rZLYpouIhZ3PIcYsLDXxL/vglhN6tsJM=;
+ b=SJQo6jzB4204iLCq0AwElcP15+X3B+sbGtMA/gbhOLsozWjHfjWe5cZv58vSKEQ2q1oc1DqRQhzECI5Q0q5h7OjtDLkKINEW/Vod/QeIHlF3jDJnTKyT8vRbzrHx4kkFgY4uqI6ONlHk3SXqBSua4OvOHNxA88Bj855Y8pWS22s=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
+ by VE1PR04MB6621.eurprd04.prod.outlook.com (2603:10a6:803:124::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.23; Tue, 23 Jun
+ 2020 06:32:47 +0000
+Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
+ ([fe80::c1ea:5943:40e8:58f1]) by VE1PR04MB6496.eurprd04.prod.outlook.com
+ ([fe80::c1ea:5943:40e8:58f1%3]) with mapi id 15.20.3109.027; Tue, 23 Jun 2020
+ 06:32:47 +0000
+From:   Po Liu <po.liu@nxp.com>
+To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, idosch@idosch.org
+Cc:     jiri@resnulli.us, vinicius.gomes@intel.com, vlad@buslov.dev,
+        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
+        alexandru.marginean@nxp.com, michael.chan@broadcom.com,
+        vishal@chelsio.com, saeedm@mellanox.com, leon@kernel.org,
+        jiri@mellanox.com, idosch@mellanox.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        kuba@kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        simon.horman@netronome.com, pablo@netfilter.org,
+        moshe@mellanox.com, m-karicheri2@ti.com,
+        andre.guedes@linux.intel.com, stephen@networkplumber.org,
+        Po Liu <Po.Liu@nxp.com>
+Subject: [v1,net-next 1/4] net: qos: add tc police offloading action with max frame size limit
+Date:   Tue, 23 Jun 2020 14:34:09 +0800
+Message-Id: <20200623063412.19180-1-po.liu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200306125608.11717-7-Po.Liu@nxp.com>
+References: <20200306125608.11717-7-Po.Liu@nxp.com>
+Content-Type: text/plain
+X-ClientProxiedBy: SGAP274CA0003.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::15)
+ To VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
 MIME-Version: 1.0
-X-Received: by 2002:a5d:958e:: with SMTP id a14mr23593863ioo.157.1592893631204;
- Mon, 22 Jun 2020 23:27:11 -0700 (PDT)
-Date:   Mon, 22 Jun 2020 23:27:11 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000d958105a8ba73bf@google.com>
-Subject: possible deadlock in rds_wake_sk_sleep (3)
-From:   syzbot <syzbot+4670352c72e1f1994dc3@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        rds-devel@oss.oracle.com, santosh.shilimkar@oracle.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from tsn.ap.freescale.net (119.31.174.73) by SGAP274CA0003.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22 via Frontend Transport; Tue, 23 Jun 2020 06:32:39 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [119.31.174.73]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 144b57fb-cae6-4d43-b8b8-08d8173f3e70
+X-MS-TrafficTypeDiagnostic: VE1PR04MB6621:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6621CD80DFBC359D74D7A5EB92940@VE1PR04MB6621.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Forefront-PRVS: 04433051BF
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9c/pku/HwBFZKduT7iiXaDGQQ+KfkiH+iRKcEumw6XvzEkjZfkLvCleH/NJvrBTkgDYMqJ9qz+/PybnlWJaORGurEmSgkmsDXbohmdb5d5yCe+/BYFuBEGXk1Y6T7ChJk9uxnQ2djUlZpC7yHaFZ9LH/hOw6TsV/f9XXdv9Qsbe56WBdOvBtaRkk1JVyoL8Fe24zgho8GR7VjtTq+ogiRsIjLqTMWv4G+XjXnw5GC8Nejs76ZkIXIF/NkvFt5tvd/g3Je+oDzEWApmDiGygtk7MiOjvE7ShQT8MmJ4irYDjmEJ/WdaNOCaCh6rsA/tQN
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(376002)(366004)(396003)(136003)(346002)(26005)(16526019)(52116002)(66556008)(66476007)(66946007)(186003)(6506007)(83380400001)(4326008)(478600001)(36756003)(2906002)(86362001)(6666004)(44832011)(1076003)(7416002)(5660300002)(8936002)(6512007)(2616005)(6486002)(316002)(956004)(8676002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: j1/5ErTf3GEHkRI2qqVpXBrcpf+rGglpm7zuHHvk6/obr+13S2BB7e7Li+tLqpqzz4kPc9XGudfC3WSELbz6CaVcJq/yq7zwdh2vpzNswrNEvRNq9qit1V505z85kzl4JdI+zpaVqGLBbJ2ePOAkx8UA2dKdPczrI6vds1U3CvTZ63KztFL80JFzV6DM/6L0NxDLYctA/CnkEUIYoKO+s8UN4QQx1aLKyXx3+Uw3Ehik/eYupvPajCtLRci+6dkL0kKBCiJ2eyNDCYt1Nz2bvULRTo5HeCz3jpxtEqRZXk7XOikRp5Gj3lsMkT8JuyHMZEUV9iedZKqv1zk49Hp2qQd13UMTl3a2gmm61R6vWUqSWtwO9sLXY4ofAbF7aZ90iCOL/g3NOMQUqgTrwn7DA5h8egdFHZX6d3iSaaZ9oxPOQn3NHLqLl1uB38YEngygeTSDvKRKgijO+LOcHcxRatJVpTJNaFK7mzGo+9Vx3U8=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 144b57fb-cae6-4d43-b8b8-08d8173f3e70
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2020 06:32:47.7844
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ni9th+IsA6PZgytrdv60IeYnarKmfjg4E2cMid+aU3BWOz4S5Hzhh4BUvNgDbFK2
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6621
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Po Liu <Po.Liu@nxp.com>
 
-syzbot found the following crash on:
+Current police offloading support the 'burst'' and 'rate_bytes_ps'. Some
+hardware own the capability to limit the frame size. If the frame size
+larger than the setting, the frame would be dropped. For the police
+action itself already accept the 'mtu' parameter in tc command. But not
+extend to tc flower offloading. So extend 'mtu' to tc flower offloading.
 
-HEAD commit:    cb8e59cc Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=155e8915100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a16ddbc78955e3a9
-dashboard link: https://syzkaller.appspot.com/bug?extid=4670352c72e1f1994dc3
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+4670352c72e1f1994dc3@syzkaller.appspotmail.com
-
-======================================================
-WARNING: possible circular locking dependency detected
-5.7.0-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-executor.0/13525 is trying to acquire lock:
-ffff88808bdab658 (&rs->rs_recv_lock){..--}-{2:2}, at: rds_wake_sk_sleep+0x1f/0xe0 net/rds/af_rds.c:109
-
-but task is already holding lock:
-ffff888050ad2900 (&rm->m_rs_lock){..-.}-{2:2}, at: rds_send_remove_from_sock+0x35a/0xa00 net/rds/send.c:628
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (&rm->m_rs_lock){..-.}-{2:2}:
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x8c/0xbf kernel/locking/spinlock.c:159
-       rds_message_purge net/rds/message.c:138 [inline]
-       rds_message_put net/rds/message.c:180 [inline]
-       rds_message_put+0x1d5/0xd90 net/rds/message.c:173
-       rds_inc_put+0x13a/0x1a0 net/rds/recv.c:82
-       rds_clear_recv_queue+0x14a/0x350 net/rds/recv.c:770
-       rds_release+0x102/0x3f0 net/rds/af_rds.c:73
-       __sock_release+0xcd/0x280 net/socket.c:605
-       sock_close+0x18/0x20 net/socket.c:1278
-       __fput+0x33e/0x880 fs/file_table.c:281
-       task_work_run+0xf4/0x1b0 kernel/task_work.c:123
-       tracehook_notify_resume include/linux/tracehook.h:188 [inline]
-       exit_to_usermode_loop+0x2fa/0x360 arch/x86/entry/common.c:165
-       prepare_exit_to_usermode arch/x86/entry/common.c:196 [inline]
-       syscall_return_slowpath arch/x86/entry/common.c:279 [inline]
-       do_syscall_64+0x6b1/0x7d0 arch/x86/entry/common.c:305
-       entry_SYSCALL_64_after_hwframe+0x49/0xb3
-
--> #0 (&rs->rs_recv_lock){..--}-{2:2}:
-       check_prev_add kernel/locking/lockdep.c:2496 [inline]
-       check_prevs_add kernel/locking/lockdep.c:2601 [inline]
-       validate_chain kernel/locking/lockdep.c:3218 [inline]
-       __lock_acquire+0x2a9c/0x4a70 kernel/locking/lockdep.c:4380
-       lock_acquire+0x1f2/0x8f0 kernel/locking/lockdep.c:4959
-       __raw_read_lock_irqsave include/linux/rwlock_api_smp.h:159 [inline]
-       _raw_read_lock_irqsave+0x93/0xd0 kernel/locking/spinlock.c:231
-       rds_wake_sk_sleep+0x1f/0xe0 net/rds/af_rds.c:109
-       rds_send_remove_from_sock+0xc1/0xa00 net/rds/send.c:634
-       rds_send_path_drop_acked+0x303/0x3d0 net/rds/send.c:710
-       rds_tcp_write_space+0x1a7/0x658 net/rds/tcp_send.c:198
-       tcp_new_space net/ipv4/tcp_input.c:5226 [inline]
-       tcp_check_space+0x178/0x730 net/ipv4/tcp_input.c:5237
-       tcp_data_snd_check net/ipv4/tcp_input.c:5247 [inline]
-       tcp_rcv_established+0x17dc/0x1d90 net/ipv4/tcp_input.c:5654
-       tcp_v4_do_rcv+0x605/0x8b0 net/ipv4/tcp_ipv4.c:1629
-       sk_backlog_rcv include/net/sock.h:996 [inline]
-       __release_sock+0x134/0x3a0 net/core/sock.c:2548
-       release_sock+0x54/0x1b0 net/core/sock.c:3064
-       rds_send_xmit+0x1487/0x2510 net/rds/send.c:422
-       rds_sendmsg+0x273d/0x3100 net/rds/send.c:1381
-       sock_sendmsg_nosec net/socket.c:652 [inline]
-       sock_sendmsg+0xcf/0x120 net/socket.c:672
-       ____sys_sendmsg+0x6e6/0x810 net/socket.c:2352
-       ___sys_sendmsg+0x100/0x170 net/socket.c:2406
-       __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
-       do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
-       entry_SYSCALL_64_after_hwframe+0x49/0xb3
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&rm->m_rs_lock);
-                               lock(&rs->rs_recv_lock);
-                               lock(&rm->m_rs_lock);
-  lock(&rs->rs_recv_lock);
-
- *** DEADLOCK ***
-
-3 locks held by syz-executor.0/13525:
- #0: ffff888064497020 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1576 [inline]
- #0: ffff888064497020 (k-sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_sock_set_cork+0x16/0x90 net/ipv4/tcp.c:2829
- #1: ffff8880644972c8 (k-clock-AF_INET){++.-}-{2:2}, at: rds_tcp_write_space+0x25/0x658 net/rds/tcp_send.c:184
- #2: ffff888050ad2900 (&rm->m_rs_lock){..-.}-{2:2}, at: rds_send_remove_from_sock+0x35a/0xa00 net/rds/send.c:628
-
-stack backtrace:
-CPU: 1 PID: 13525 Comm: syz-executor.0 Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_noncircular+0x32e/0x3e0 kernel/locking/lockdep.c:1827
- check_prev_add kernel/locking/lockdep.c:2496 [inline]
- check_prevs_add kernel/locking/lockdep.c:2601 [inline]
- validate_chain kernel/locking/lockdep.c:3218 [inline]
- __lock_acquire+0x2a9c/0x4a70 kernel/locking/lockdep.c:4380
- lock_acquire+0x1f2/0x8f0 kernel/locking/lockdep.c:4959
- __raw_read_lock_irqsave include/linux/rwlock_api_smp.h:159 [inline]
- _raw_read_lock_irqsave+0x93/0xd0 kernel/locking/spinlock.c:231
- rds_wake_sk_sleep+0x1f/0xe0 net/rds/af_rds.c:109
- rds_send_remove_from_sock+0xc1/0xa00 net/rds/send.c:634
- rds_send_path_drop_acked+0x303/0x3d0 net/rds/send.c:710
- rds_tcp_write_space+0x1a7/0x658 net/rds/tcp_send.c:198
- tcp_new_space net/ipv4/tcp_input.c:5226 [inline]
- tcp_check_space+0x178/0x730 net/ipv4/tcp_input.c:5237
- tcp_data_snd_check net/ipv4/tcp_input.c:5247 [inline]
- tcp_rcv_established+0x17dc/0x1d90 net/ipv4/tcp_input.c:5654
- tcp_v4_do_rcv+0x605/0x8b0 net/ipv4/tcp_ipv4.c:1629
- sk_backlog_rcv include/net/sock.h:996 [inline]
- __release_sock+0x134/0x3a0 net/core/sock.c:2548
- release_sock+0x54/0x1b0 net/core/sock.c:3064
- rds_send_xmit+0x1487/0x2510 net/rds/send.c:422
- rds_sendmsg+0x273d/0x3100 net/rds/send.c:1381
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e6/0x810 net/socket.c:2352
- ___sys_sendmsg+0x100/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x45ca59
-Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f6d9be39c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000005019e0 RCX: 000000000045ca59
-RDX: 0000000000000040 RSI: 0000000020000240 RDI: 0000000000000004
-RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000a1d R14: 00000000004cd008 R15: 00007f6d9be3a6d4
-
-
+Signed-off-by: Po Liu <Po.Liu@nxp.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+continue the thread 20200306125608.11717-7-Po.Liu@nxp.com for the police
+action offloading.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+ include/net/flow_offload.h     |  1 +
+ include/net/tc_act/tc_police.h | 10 ++++++++++
+ net/sched/cls_api.c            |  1 +
+ 3 files changed, 12 insertions(+)
+
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 00c15f14c434..c2ef19c6b27d 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -234,6 +234,7 @@ struct flow_action_entry {
+ 		struct {				/* FLOW_ACTION_POLICE */
+ 			s64			burst;
+ 			u64			rate_bytes_ps;
++			u32			mtu;
+ 		} police;
+ 		struct {				/* FLOW_ACTION_CT */
+ 			int action;
+diff --git a/include/net/tc_act/tc_police.h b/include/net/tc_act/tc_police.h
+index f098ad4424be..cd973b10ae8c 100644
+--- a/include/net/tc_act/tc_police.h
++++ b/include/net/tc_act/tc_police.h
+@@ -69,4 +69,14 @@ static inline s64 tcf_police_tcfp_burst(const struct tc_action *act)
+ 	return params->tcfp_burst;
+ }
+ 
++static inline u32 tcf_police_tcfp_mtu(const struct tc_action *act)
++{
++	struct tcf_police *police = to_police(act);
++	struct tcf_police_params *params;
++
++	params = rcu_dereference_protected(police->params,
++					   lockdep_is_held(&police->tcf_lock));
++	return params->tcfp_mtu;
++}
++
+ #endif /* __NET_TC_POLICE_H */
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index a00a203b2ef5..6aba7d5ba1ec 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3658,6 +3658,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 			entry->police.burst = tcf_police_tcfp_burst(act);
+ 			entry->police.rate_bytes_ps =
+ 				tcf_police_rate_bytes_ps(act);
++			entry->police.mtu = tcf_police_tcfp_mtu(act);
+ 		} else if (is_tcf_ct(act)) {
+ 			entry->id = FLOW_ACTION_CT;
+ 			entry->ct.action = tcf_ct_action(act);
+-- 
+2.17.1
+
