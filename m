@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E4752068B1
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 01:53:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D00532068B0
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 01:53:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387927AbgFWXx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 19:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57000 "EHLO
+        id S2387939AbgFWXx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 19:53:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387520AbgFWXxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 19:53:21 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD92DC061573
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 16:53:20 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id s10so410997pgm.0
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 16:53:20 -0700 (PDT)
+        with ESMTP id S2387850AbgFWXxY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 19:53:24 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32A53C061755
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 16:53:22 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id h185so215542pfg.2
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 16:53:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oVqHSGOhKG+9IlvOmWEwYbNMnXG+ER7Ea8ZB6SrIrIE=;
-        b=InWBSjVQuIh3Eivof/DucaViKu8S8abTxZWq5RHTqDqtDp4Oj+trbYiA8fXwnHir9p
-         ymeGfeY14IMYpjref5Jc1qv2UcIiXyeGO6FODiVlP8kkNDp/nretd98Hal40xQYQ6OOc
-         drkzu6qiUW8NMhYMe+yozkJGNdH3B7m/EXil4Dwp05tGWM2r2WcMzzDi6xRqhIrFL5es
-         CP8R52ANnys0aNBmjTQQJv7QrLOQXCDPk6o9thS0YLCzexoLzWm9RwpxVllI/yhpXBCD
-         OGLfTAyUMafvhDAYAhdu270PmNfYqsVEA6oIFYW1giDC+Br/+Y3tyRGGRBz3es2iUdSp
-         uXqw==
+        bh=3mEJDzaWQ4l091KLnMAOuiONSZwy+jNM1y+BZ46c1vg=;
+        b=NSsimIa0Zdja+mljoI1xzE1d06iK3b2dekprE/MFh6FlMx8bOuC/9ybnjUf434S54Q
+         QqKO6WbW8Bp2nm0SnqiZO9LFnsyMDoc7sOy14BxJ52AFC2z4T6GboVHu70Vnyaszva6s
+         0YkwFxVRB5Mw0b6qpjoWNcmPJ3fhRyECuLuOmvfhbE0yUUDU3hkrLjTIzj5auXb3xPhe
+         eiVvpQsUl1DuPNmX1ptIxzigeOL4vEmdjcyM57+eU1w563tWziyodmi4JopNXZKI6qOj
+         Nr99JeYFmDMhp9o5tU/L+yjjlZ4ohSMJLbY0UOSJ0jJBNEQihpa7ux4cspO0aX/ne8a6
+         90yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oVqHSGOhKG+9IlvOmWEwYbNMnXG+ER7Ea8ZB6SrIrIE=;
-        b=a8GNp9fRMX5LvqaOr+zNo+tCvSo2IukdgP3iGKGxJVAD7kTrgUQHkYrw2hDzp9VMOx
-         CCB66wkqql+drcJC1VSG2KPJyKWUu2UwZ7QNlcwph6fWL7ngjkpRo5Ad9jcj11N5X/cr
-         2YQjqJ68L+Vkcxmh1CdJPbjl410rtqo8qQEMSIpeOQjb1VwBGrKitpGPKXFURWL7X7ac
-         yvawqEYodnfsB+kAIS0TsYTDetj/viQNxN8BEDXbF1mTdtr9noqsGSLIeo76j2a4HpEn
-         s9FIobjOaj7qPsjeAB7jzE2YTGnsIL6e9greDeoRpKUEFLTif13d0E+8SgXcYAC1Axhd
-         G23w==
-X-Gm-Message-State: AOAM532jcsT9TilnkWefNpK79CPbK323sgPVoEm2DJTvfw15UjRvqdDC
-        FIF9No5n8RdIG9JoTtuiEWcwAPRXdBs=
-X-Google-Smtp-Source: ABdhPJyxnHU2IXFKCxWunoEtBdXSOBAOVobCi0m7DJCeYSyLk1c7wCgt0saOOXDHbIryPs6vYOSf4g==
-X-Received: by 2002:aa7:9d01:: with SMTP id k1mr27862814pfp.6.1592956399938;
-        Tue, 23 Jun 2020 16:53:19 -0700 (PDT)
+        bh=3mEJDzaWQ4l091KLnMAOuiONSZwy+jNM1y+BZ46c1vg=;
+        b=aXah5vUweVW0BRkMwUMp/xu74PU7DWfFMfQbVW6MPeohsJRU6HJdLEehyYgxm2JqQl
+         CsbCtb86S42NNptgSkA/7Ppu1PafXKdLfhx5zU/MoLntVuDZvMh5Zll/Vs0h9PwSAo4j
+         36vIF8r2yKGmLfu9ks44qw6pSfVF+bq33bcDvTd3gcwiSL6eAUCr3muMlO2OcoJTrhuO
+         ofFh1AFpwnQez+62RdkI2KHcsyLqG8kNz2nH6x6syoTX/NnCMB5YQZf61KTet+PJhbv0
+         QCVGXGQOK/JWdBU4KgCkK5GD+f0asufHBR1d12n4Y5R90HI0BLrbojnsEbsyUshk26Am
+         WcwQ==
+X-Gm-Message-State: AOAM530OTo4grKWIjjojtzzL4RusttRq5S5ZiyinJfbeEtoSQcput0dD
+        m6/bKaTc9sA5k9n5/uT/uUuV2x/XSMc=
+X-Google-Smtp-Source: ABdhPJwhVi82SRSi7QwaLXB22/8Ff6VhhBkuTxQtpBnxecd/2OdUJU8ZGrdoZM+U80D8dvoXssTj+Q==
+X-Received: by 2002:aa7:9599:: with SMTP id z25mr28556123pfj.176.1592956401284;
+        Tue, 23 Jun 2020 16:53:21 -0700 (PDT)
 Received: from hermes.corp.microsoft.com (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 23sm18096521pfy.199.2020.06.23.16.53.18
+        by smtp.gmail.com with ESMTPSA id 23sm18096521pfy.199.2020.06.23.16.53.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Jun 2020 16:53:19 -0700 (PDT)
+        Tue, 23 Jun 2020 16:53:20 -0700 (PDT)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2 3/5] testsuite: replace Enslave with Insert
-Date:   Tue, 23 Jun 2020 16:53:05 -0700
-Message-Id: <20200623235307.9216-4-stephen@networkplumber.org>
+Subject: [PATCH iproute2 4/5] ip: replace slave_kind
+Date:   Tue, 23 Jun 2020 16:53:06 -0700
+Message-Id: <20200623235307.9216-5-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200623235307.9216-1-stephen@networkplumber.org>
 References: <20200623235307.9216-1-stephen@networkplumber.org>
@@ -63,48 +63,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the term insert instead of enslave because it is
-more descriptive and less offensive.
+Instead of slave_kind, rename variable to sub_kind
+to describe the kind of sub-device that is being looked for
+when filtering messages.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- testsuite/tests/bridge/vlan/show.t       | 4 ++--
- testsuite/tests/bridge/vlan/tunnelshow.t | 2 +-
+ ip/ip_common.h | 2 +-
+ ip/ipaddress.c | 4 ++--
  2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/testsuite/tests/bridge/vlan/show.t b/testsuite/tests/bridge/vlan/show.t
-index 3def202226a4..1f0ac9a9870b 100755
---- a/testsuite/tests/bridge/vlan/show.t
-+++ b/testsuite/tests/bridge/vlan/show.t
-@@ -12,13 +12,13 @@ ts_ip "$0" "Add $BR_DEV bridge interface" link add $BR_DEV type bridge
+diff --git a/ip/ip_common.h b/ip/ip_common.h
+index d604f7554405..7d0c9f57745a 100644
+--- a/ip/ip_common.h
++++ b/ip/ip_common.h
+@@ -23,7 +23,7 @@ struct link_filter {
+ 	int group;
+ 	int master;
+ 	char *kind;
+-	char *slave_kind;
++	char *sub_kind;
+ 	int target_nsid;
+ };
  
- ts_ip "$0" "Add $VX0_DEV vxlan interface" \
- 	link add $VX0_DEV type vxlan dstport 4789 external
--ts_ip "$0" "Enslave $VX0_DEV under $BR_DEV" \
-+ts_ip "$0" "Insert $VX0_DEV under $BR_DEV" \
- 	link set dev $VX0_DEV master $BR_DEV
- ts_bridge "$0" "Delete default vlan from $VX0_DEV" \
- 	vlan del dev $VX0_DEV vid 1
- ts_ip "$0" "Add $VX1_DEV vxlan interface" \
- 	link add $VX1_DEV type vxlan dstport 4790 external
--ts_ip "$0" "Enslave $VX1_DEV under $BR_DEV" \
-+ts_ip "$0" "Insert $VX1_DEV under $BR_DEV" \
- 	link set dev $VX1_DEV master $BR_DEV
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index f97eaff3dbbf..4cbff38c9834 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -924,7 +924,7 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
+ 	if (filter.kind && match_link_kind(tb, filter.kind, 0))
+ 		return -1;
  
- # Test that bridge ports without vlans do not appear in the output
-diff --git a/testsuite/tests/bridge/vlan/tunnelshow.t b/testsuite/tests/bridge/vlan/tunnelshow.t
-index 3e9c12a21a9c..2cec8d03b47a 100755
---- a/testsuite/tests/bridge/vlan/tunnelshow.t
-+++ b/testsuite/tests/bridge/vlan/tunnelshow.t
-@@ -11,7 +11,7 @@ ts_ip "$0" "Add $BR_DEV bridge interface" link add $BR_DEV type bridge
+-	if (filter.slave_kind && match_link_kind(tb, filter.slave_kind, 1))
++	if (filter.sub_kind && match_link_kind(tb, filter.sub_kind, 1))
+ 		return -1;
  
- ts_ip "$0" "Add $VX_DEV vxlan interface" \
- 	link add $VX_DEV type vxlan dstport 4789 external
--ts_ip "$0" "Enslave $VX_DEV under $BR_DEV" \
-+ts_ip "$0" "Insert $VX_DEV under $BR_DEV" \
- 	link set dev $VX_DEV master $BR_DEV
- ts_ip "$0" "Set vlan_tunnel on $VX_DEV" \
- 	link set dev $VX_DEV type bridge_slave vlan_tunnel on
+ 	if (n->nlmsg_type == RTM_DELLINK)
+@@ -2012,7 +2012,7 @@ static int ipaddr_list_flush_or_save(int argc, char **argv, int action)
+ 			soff = strlen(*argv) - strlen("_slave");
+ 			if (!strcmp(*argv + soff, "_slave")) {
+ 				(*argv)[soff] = '\0';
+-				filter.slave_kind = *argv;
++				filter.sub_kind = *argv;
+ 			} else {
+ 				filter.kind = *argv;
+ 			}
 -- 
 2.26.2
 
