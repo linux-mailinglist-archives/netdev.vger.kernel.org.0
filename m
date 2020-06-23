@@ -2,113 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF45220498C
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 08:09:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D9BC2049D1
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 08:23:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730361AbgFWGJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 02:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33348 "EHLO
+        id S1730669AbgFWGXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 02:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728800AbgFWGJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 02:09:26 -0400
-Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F97C061573;
-        Mon, 22 Jun 2020 23:09:26 -0700 (PDT)
-Received: from p5b06d650.dip0.t-ipconnect.de ([91.6.214.80] helo=kurt)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <kurt@linutronix.de>)
-        id 1jnc7Y-0001vL-Gb; Tue, 23 Jun 2020 08:09:24 +0200
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [RFC PATCH 9/9] dt-bindings: net: dsa: Add documentation for Hellcreek switches
-In-Reply-To: <20200622134946.GM338481@lunn.ch>
-References: <20200618064029.32168-1-kurt@linutronix.de> <20200618064029.32168-10-kurt@linutronix.de> <20200618134704.GQ249144@lunn.ch> <87zh8zphlc.fsf@kurt> <20200619135657.GF304147@lunn.ch> <87imfjtik4.fsf@kurt> <20200622134946.GM338481@lunn.ch>
-Date:   Tue, 23 Jun 2020 08:09:18 +0200
-Message-ID: <87eeq6nwj5.fsf@kurt>
+        with ESMTP id S1730395AbgFWGXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 02:23:41 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FE3C061573;
+        Mon, 22 Jun 2020 23:23:41 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id g13so4216205qtv.8;
+        Mon, 22 Jun 2020 23:23:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=olzpN9gUdjpLZ+I1YPrEhXflXcShM1HKbIaLXKany2c=;
+        b=hZ5vHn9Qe+irkXPEycJ4i211GWfYgIRTgU/+fD4LNL6RSMiKiTmREbDgzsp5ToBihK
+         VOmm+CVhteijJx6g1CGeSwt4NhzE3XYXPJ4bUdBjUxucYOQpb2ULiII7DbLVrcaOQooL
+         GvCHCVa5dN+33aUbF3fwhC4NwnzE7T7RSxSskLxiCvvN2QkNS+GuDIj20yiT/JHOucK+
+         s8/qyigF011/20DkWMI8dBn+Dhz5tmBf4iF5Lmql4Q7bBqxHxP1bzE4g7P/BaJBF8FDc
+         lOlqPX85D25Sidgh94FMx/00Q9VCZpm5Q3VYJ3Yd198fH589dnoTYmAmpAYW81Ogws3O
+         G63Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=olzpN9gUdjpLZ+I1YPrEhXflXcShM1HKbIaLXKany2c=;
+        b=nCy/Bc2YR2qUTjoXEwFCLcJ+C+W9hHvTf1wHYUwejxVaXTVFyNzEa6/jlGFB7cGPID
+         Gf5MPvWCS5WIovZNNVx36+m9l3BmVzxgFpBCuYdByoD90F6sgXgbzxg7BNqi1IpnAHA3
+         6fsD65hjcmpdz7EFCQPnfYSEHMuXLZmDsTBaD3CKrWnroffS3EE2jkbxzppz3zqTv8rz
+         ZLy2BHLOlsP9dlO7UXNyKgtwLld/6b+CFstd8nyb40DaLVwcAZoTYmxx1XfM6IFkl5Lb
+         UtEvYjKppf8RtSiuy0DwI6hrzyXnigZHFg+14lOLBEO28IyN826Qs8JJg74vGmqFsdm6
+         td1A==
+X-Gm-Message-State: AOAM5325Vt5dfGqvGs6LTIuuV4u5ET+AR7dH3jqpLYdafzrAhDex2smI
+        AVmmkwzx2lgWVssT0WZX3uzJgF3VjS02KyxBghGlwA==
+X-Google-Smtp-Source: ABdhPJwXFopE4UQRIULHIqzQsjZ35VZnEDjhoZJbUKgIte/BZsSoWC/GjC09mK73lm/jXqyJD+j29o0eXZ0JKBrSDaM=
+X-Received: by 2002:ac8:2bba:: with SMTP id m55mr19811610qtm.171.1592893420920;
+ Mon, 22 Jun 2020 23:23:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+References: <20200622160300.636567-1-jakub@cloudflare.com> <20200622160300.636567-3-jakub@cloudflare.com>
+In-Reply-To: <20200622160300.636567-3-jakub@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 22 Jun 2020 23:23:30 -0700
+Message-ID: <CAEf4BzYY8NcmprF-V3SxBgiF0mqNpK-qrymt=wvz6iCON=geiw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/3] bpf, netns: Keep attached programs in bpf_prog_array
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team@cloudflare.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-On Mon Jun 22 2020, Andrew Lunn wrote:
-> On Mon, Jun 22, 2020 at 02:02:19PM +0200, Kurt Kanzenbach wrote:
->> On Fri Jun 19 2020, Andrew Lunn wrote:
->> >> > The switch is 100/100Mbps right? The MAC is only Fast ethernet. Do =
-you
->> >> > need some properties in the port@0 node to tell the switch to only =
-use
->> >> > 100Mbps? I would expect it to default to 1G. Not looked at the code
->> >> > yet...
->> >>=20
->> >> No, that is not needed. That is a hardware configuration and AFAIK
->> >> cannot be changed at run time.
->> >
->> > I was wondering about that in general. I did not spot any code in the
->> > driver dealing with results from the PHY auto-neg. So you are saying
->> > the CPU is fixed speed, by strapping? But what about the other ports?
->> > Does the MAC need to know the PHY has negotiated 10Half, not 1G? Would
->> > that not make a difference to your TSN?
->>=20
->> Indeed, that does make a difference. I've checked with the vendor. The
->> current version of the switch IP does not support configuring the speed
->> etc. at run time. It is hard wired to 100 Mbit/s or 1000 Mbit/s for
->> now. Later versions of the chip might support setting the speed etc. via
->> configuration registers. As a result the PHYs at the front ports should
->> be programmed to only advertise 100 Mbit/s or 1G depending on the
->> hardware setup.
+On Mon, Jun 22, 2020 at 9:04 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
 >
-> Hi Kurt
+> Prepare for having multi-prog attachments for new netns attach types by
+> storing programs to run in a bpf_prog_array, which is well suited for
+> iterating over programs and running them in sequence.
 >
-> Are there registers which allow you to determine the strapping?
+> Because bpf_prog_array is dynamically resized, after this change a
+> potentially blocking memory allocation in bpf(PROG_QUERY) callback can
+> happen, in order to collect program IDs before copying the values to
+> user-space supplied buffer. This forces us to adapt how we protect access
+> to the attached program in the callback. As bpf_prog_array_copy_to_user()
+> helper can sleep, we switch from an RCU read lock to holding a mutex that
+> serializes updaters.
+>
+> To handle bpf(PROG_ATTACH) scenario when we are replacing an already
+> attached program, we introduce a new bpf_prog_array helper called
+> bpf_prog_array_replace_item that will exchange the old program with a new
+> one. bpf-cgroup does away with such helper by computing an index into the
+> array based on program position in an external list of attached
+> programs/links. Such approach seems fragile, however, when dummy progs can
+> be left in the array after a memory allocation failure on link release.
 
-No, there are not.
+bpf-cgroup can have the same BPF program present multiple times in the
+effective prog array due to inheritance. It also has strict
+guarantee/requirement about relative order of programs in parent
+cgroup vs child cgroups. For such cases, replacing a BPF program based
+on its pointer is not going to work correctly.
 
-> There are phylib/phylink calls you can make to set the advertisement
-> in the PHY. It would be good to do this in the DSA driver.
+We do need to make sure that cgroup detachment never fails by falling
+back to replacing BPF prog with dummy prog, though. If you are
+interested in a challenge, you are very welcome to do that! :)
 
-I will. All the chips currently available are configured to 100
-Mbit/s. So, we can assume that for now.
+>
+> No functional changes intended.
+>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
 
-Thanks,
-Kurt
+LGTM.
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
------BEGIN PGP SIGNATURE-----
+>  include/linux/bpf.h        |   3 +
+>  include/net/netns/bpf.h    |   5 +-
+>  kernel/bpf/core.c          |  19 +++--
+>  kernel/bpf/net_namespace.c | 137 +++++++++++++++++++++++++++----------
+>  net/core/flow_dissector.c  |  21 +++---
+>  5 files changed, 131 insertions(+), 54 deletions(-)
+>
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl7xnI4ACgkQeSpbgcuY
-8Kb4pBAA1R28pEnW5QEp7GfP1muC1V/LFkl2hJFIAHCp1xoXv3Jks3A15E9fXDu/
-RTl/CQxEkJFdsxzLfcPlgFKV7RLqZRIEGabTw5CynFtDiKQ7q+dp3HrU239Sykhf
-gJ1psGDeA0cyGVw7OBBrXUFMrdOg6fI5/3VpVpXj7v8/X4Qb2qYibi+pxRoAFSKQ
-ljpMFQ2CL17lE1GMebTM8Gd7l8QZsBZU2kFojBVOeNfaIAJB+LxDjw5lSwAm2NvT
-ET6Tqo0MlmpLQx2SQYrjrbQlgg20x40W0lXgqH0+TJEBRKm3iRoRB1AbwaV7+zcA
-0Fd8iTMRFKTd/IZG5GjT4M2BWx6NCddMdTuTkqzakeOydwrg2U+P7gF/IM54nSf9
-geC19badzb1ar4bD/lsTBsunFutCl7ZeJHgwu7XXq5SgyRbu1tY7iKssdkfgbqqa
-q7u4rJY+t9g5F7dtzcZ5zpIkEm1ItTtESp8hz/HQJla14dV4EA+CM3FlU9AYBVQ1
-JcVfyETZVQYtdDBrzOvtEbpHuobCe1sPwIrZX5sWlO/HFtQFiCXQqXHgvnKMSjK3
-vpmICiQMMBVR41qdGrUryBxO3qIXcv09/ElktGdpV6axN4Rpe9ENCE3YmNg1ENlN
-dZSaaugE0MFFU0n6ueYoo8AJdZCTh9PpSPD6A342tjPdo9jhwfU=
-=2nM2
------END PGP SIGNATURE-----
---=-=-=--
+[...]
+
+> +
+> +void bpf_prog_array_delete_safe(struct bpf_prog_array *array,
+> +                               struct bpf_prog *old_prog)
+> +{
+> +       bpf_prog_array_replace_item(array, old_prog, &dummy_bpf_prog.prog);
+
+nit: (void) cast to show we don't care about return code?
+
+[...]
