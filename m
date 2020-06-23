@@ -2,112 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2769B2048EB
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 07:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 163EB2048ED
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 07:02:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730149AbgFWFBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 01:01:03 -0400
-Received: from smtp49.i.mail.ru ([94.100.177.109]:41410 "EHLO smtp49.i.mail.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728767AbgFWFBB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 01:01:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
-        h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=MeYp+2el/TzuQHOo2MP0RExRYbUZyYueCGKgO5ukylg=;
-        b=d37IXh53Bb4g9V14wLjCFxxXSaofzBUfhfj8o0MOMfIPQ+n+NP3PmgTKXzQG6WP6CeBmYnJP46YCICuaSrGY3pXu/+kUAtVVWa5JPuRC6jdF3DtRBQIzVB7neNwxR9/C9D+iGzcKHUKGE0eaISP0snnV+ntTqN7N3LbC3GjiL0c=;
-Received: by smtp49.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1jnb3K-0007eW-Ge; Tue, 23 Jun 2020 08:00:58 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-To:     netdev@vger.kernel.org
-Cc:     Maxim Kochetkov <fido_max@inbox.ru>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v3 3/3] net: phy: marvell: Add Marvell 88E1548P support
-Date:   Tue, 23 Jun 2020 08:00:44 +0300
-Message-Id: <20200623050044.12303-4-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200623050044.12303-1-fido_max@inbox.ru>
-References: <20200623050044.12303-1-fido_max@inbox.ru>
+        id S1730230AbgFWFCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 01:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728622AbgFWFCt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 01:02:49 -0400
+Received: from mail-vk1-xa43.google.com (mail-vk1-xa43.google.com [IPv6:2607:f8b0:4864:20::a43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3949AC061573
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 22:02:48 -0700 (PDT)
+Received: by mail-vk1-xa43.google.com with SMTP id d64so1821977vke.4
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 22:02:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RQt+AGRJghmCR4VSGJk0DwGPgHtH5mpNDvt/7Fx7waw=;
+        b=SMNlMhHZ1M88j+h7fjI9ajjdSOJpQAe9DvUKGtNkLM8oGNJeSKdh8rdQeneo1dyGBp
+         QUxD7BU8yBispBN2EToR5/ZjkbBNzRizcF0npE/2imp7R4vDLLbIt9ChiCDsxmQwifnl
+         ThYpeyLF9iWBmaxsS0roF65DLSZBGijAnSvQSgl/f8wOTmxVS3gFUI4UJ6njk7rB4B6+
+         mfnMePg3ky70qkuQLvGO+FrUDsiYYOQFxm/GUdVq5NW475NpfueKy8231a7BiiA7uua0
+         LcLm2+dgMXbCZFiJj2qMwzdKp2kjXLi9tDkFrk63dfaVqEWKBiDGmCwdWuiZD/cyr3qU
+         qjnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RQt+AGRJghmCR4VSGJk0DwGPgHtH5mpNDvt/7Fx7waw=;
+        b=VFSiKUk46yte1qOk7Epv7T94HFXFI+aOehlWqo3qc2zWC9bmx/tgdKEbcyV2+r1Svi
+         jl/KmbYz9+pc8ol2L2SHVi7UpUkM5tnTc5XeIymvJOfYmPua7rfRq12PUl95ZWquDpKr
+         F3BXpMzXR2s1BgJytyjtrYEqi7oj6Iak/MEgBCaHBu7HtkLlNdbNngSGeSmT5Kwl9MEg
+         hkk0npfGgK7oDpv0nWO+hy/3EAM/CcIULQViOlrM5EGk2EqZsb5HjYF2WodVdHViqql7
+         hvSdgMKfgFiYDuBZZuFqZN62B34uI55Hi6QMiRBOK634mng+duKybvtOlQ3PsNWKnxDO
+         N/cA==
+X-Gm-Message-State: AOAM532oMWR94Y42ZC0zf0kVJXB8nCTqLmieYoWebC6/cuXIz1ba6HIU
+        1811fYWhpI4T/k7lxRfU+iGu4Z3lqMELWhb2HzM=
+X-Google-Smtp-Source: ABdhPJxIl1UC64/exoJGtYvcVBbrzZVwR/ArfZ6ocjQY5EgD+XP52rdmr2i31u49pfZxDrFK4AxNQymOeAlcHFM9E9A=
+X-Received: by 2002:a1f:3ac6:: with SMTP id h189mr18049467vka.16.1592888566578;
+ Mon, 22 Jun 2020 22:02:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Authentication-Results: smtp49.i.mail.ru; auth=pass smtp.auth=fido_max@inbox.ru smtp.mailfrom=fido_max@inbox.ru
-X-7564579A: 646B95376F6C166E
-X-77F55803: 4F1203BC0FB41BD9AAC5A87EC32CE31E7E618D9A39B32F604F18773C824D9F38182A05F538085040BCE52D35B043A6304C0B904DF3F320829C0CA590BBF71A32E68C821B50727110
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE71840AE9AFD3F5D61C2099A533E45F2D0395957E7521B51C2CFCAF695D4D8E9FCEA1F7E6F0F101C6778DA827A17800CE7D3BEF3C661CDD2E7EA1F7E6F0F101C674E70A05D1297E1BBC6CDE5D1141D2B1CF581106DE51F22949ECCFA4CB9A5419E34BD0B01C8E833FA9FA2833FD35BB23D9E625A9149C048EE33AC447995A7AD18BDFBBEFFF4125B51D2E47CDBA5A96583BD4B6F7A4D31EC0BB23A54CFFDBC96A8389733CBF5DBD5E9D5E8D9A59859A8B61638054B7D09EC08CC7F00164DA146DA6F5DAA56C3B73B23E7DDDDC251EA7DABD81D268191BDAD3DC09775C1D3CA48CFC89C18C5046ADC62BA3038C0950A5D36C8A9BA7A39EFB7669EC76388C36FFEC7BA3038C0950A5D36D5E8D9A59859A8B6E629FEBEEC38437D76E601842F6C81A1F004C90652538430FAAB00FBE355B82D93EC92FD9297F6718AA50765F7900637149D0840703ADBE5A7F4EDE966BC389F395957E7521B51C24C7702A67D5C33162DBA43225CD8A89F83C798A30B85E16B262FEC7FBD7D1F5BB5C8C57E37DE458B4C7702A67D5C3316FA3894348FB808DB48C21F01D89DB561574AF45C6390F7469DAA53EE0834AAEE
-X-C8649E89: 49CF6053C7B4EB01B154DAE81122F9EAE5FBA06E211E65D6469E749CBDEF4A6331FF3FAE5A240CA5
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj1gHwMoBzqge1zYK6InGBkA==
-X-Mailru-Sender: C88E38A2D15C6BD1F5DE00CD289934120ECCDB11EABAE5B529A2CF7F5F102C4E4F43A3E4BAD3CFC3EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
+References: <1592832083-23249-1-git-send-email-magnus.karlsson@intel.com>
+ <1592832083-23249-2-git-send-email-magnus.karlsson@intel.com> <57effc14-afed-51c8-9926-686d1cdea803@intel.com>
+In-Reply-To: <57effc14-afed-51c8-9926-686d1cdea803@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 23 Jun 2020 07:02:35 +0200
+Message-ID: <CAJ8uoz1jNy==6qw8Yjx5C8wwHORE8RkcXmhuih0xcwnhpb=Fqg@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH net-next 1/2] i40e: optimize AF_XDP Tx
+ completion path
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        jeffrey.t.kirsher@intel.com,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for this new phy ID.
+On Tue, Jun 23, 2020 at 3:00 AM Samudrala, Sridhar
+<sridhar.samudrala@intel.com> wrote:
+>
+>
+>
+> On 6/22/2020 6:21 AM, Magnus Karlsson wrote:
+> > Improve the performance of the AF_XDP zero-copy Tx completion
+> > path. When there are no XDP buffers being sent using XDP_TX or
+> > XDP_REDIRECT, we do not have go through the SW ring to clean up any
+> > entries since the AF_XDP path does not use these. In these cases, just
+> > fast forward the next-to-use counter and skip going through the SW
+> > ring. The limit on the maximum number of entries to complete is also
+> > removed since the algorithm is now O(1). To simplify the code path, the
+> > maximum number of entries to complete for the XDP path is therefore
+> > also increased from 256 to 512 (the default number of Tx HW
+> > descriptors). This should be fine since the completion in the XDP path
+> > is faster than in the SKB path that has 256 as the maximum number.
+> >
+> > This patch provides around 4% throughput improvement for the l2fwd
+> > application in xdpsock on my machine.
+> >
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > ---
+> >   drivers/net/ethernet/intel/i40e/i40e_txrx.c |  1 +
+> >   drivers/net/ethernet/intel/i40e/i40e_txrx.h |  1 +
+> >   drivers/net/ethernet/intel/i40e/i40e_xsk.c  | 34 ++++++++++++++++-------------
+> >   3 files changed, 21 insertions(+), 15 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> > index f9555c8..0ce9d1e 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> > @@ -3538,6 +3538,7 @@ static int i40e_xmit_xdp_ring(struct xdp_frame *xdpf,
+> >        */
+> >       smp_wmb();
+> >
+> > +     xdp_ring->xdp_tx_active++;
+> >       i++;
+> >       if (i == xdp_ring->count)
+> >               i = 0;
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.h b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+> > index 5c25597..c16fcd9 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+> > @@ -371,6 +371,7 @@ struct i40e_ring {
+> >       /* used in interrupt processing */
+> >       u16 next_to_use;
+> >       u16 next_to_clean;
+> > +     u16 xdp_tx_active;
+> >
+> >       u8 atr_sample_rate;
+> >       u8 atr_count;
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > index 7276580..c8cd6a6 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > @@ -378,6 +378,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+> >    **/
+> >   static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >   {
+> > +     unsigned int sent_frames = 0, total_bytes = 0;
+> >       struct i40e_tx_desc *tx_desc = NULL;
+> >       struct i40e_tx_buffer *tx_bi;
+> >       bool work_done = true;
+> > @@ -408,6 +409,9 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >                                  | I40E_TX_DESC_CMD_EOP,
+> >                                  0, desc.len, 0);
+> >
+> > +             sent_frames++;
+> > +             total_bytes += tx_bi->bytecount;
+> > +
+> >               xdp_ring->next_to_use++;
+> >               if (xdp_ring->next_to_use == xdp_ring->count)
+> >                       xdp_ring->next_to_use = 0;
+> > @@ -420,6 +424,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+> >               i40e_xdp_ring_update_tail(xdp_ring);
+> >
+> >               xsk_umem_consume_tx_done(xdp_ring->xsk_umem);
+> > +             i40e_update_tx_stats(xdp_ring, sent_frames, total_bytes);
+> >       }
+> >
+> >       return !!budget && work_done;
+> > @@ -434,6 +439,7 @@ static void i40e_clean_xdp_tx_buffer(struct i40e_ring *tx_ring,
+> >                                    struct i40e_tx_buffer *tx_bi)
+> >   {
+> >       xdp_return_frame(tx_bi->xdpf);
+> > +     tx_ring->xdp_tx_active--;
+> >       dma_unmap_single(tx_ring->dev,
+> >                        dma_unmap_addr(tx_bi, dma),
+> >                        dma_unmap_len(tx_bi, len), DMA_TO_DEVICE);
+> > @@ -450,24 +456,23 @@ static void i40e_clean_xdp_tx_buffer(struct i40e_ring *tx_ring,
+> >   bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
+> >                          struct i40e_ring *tx_ring, int napi_budget)
+>
+> napi_budget is not used. so the 3rd arg can be removed
 
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/phy/marvell.c   | 23 +++++++++++++++++++++++
- include/linux/marvell_phy.h |  1 +
- 2 files changed, 24 insertions(+)
+Thanks Sridhar. You are correct on all accounts in this mail. Will fix
+and send a v2.
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 0842deb33085..bb86ac0bd092 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -2965,6 +2965,28 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_tunable = m88e1540_get_tunable,
- 		.set_tunable = m88e1540_set_tunable,
- 	},
-+	{
-+		.phy_id = MARVELL_PHY_ID_88E1548P,
-+		.phy_id_mask = MARVELL_PHY_ID_MASK,
-+		.name = "Marvell 88E1548P",
-+		.probe = m88e1510_probe,
-+		.features = PHY_GBIT_FIBRE_FEATURES,
-+		.config_init = marvell_config_init,
-+		.config_aneg = m88e1510_config_aneg,
-+		.read_status = marvell_read_status,
-+		.ack_interrupt = marvell_ack_interrupt,
-+		.config_intr = marvell_config_intr,
-+		.did_interrupt = m88e1121_did_interrupt,
-+		.resume = genphy_resume,
-+		.suspend = genphy_suspend,
-+		.read_page = marvell_read_page,
-+		.write_page = marvell_write_page,
-+		.get_sset_count = marvell_get_sset_count,
-+		.get_strings = marvell_get_strings,
-+		.get_stats = marvell_get_stats,
-+		.get_tunable = m88e1540_get_tunable,
-+		.set_tunable = m88e1540_set_tunable,
-+	},
- };
- 
- module_phy_driver(marvell_drivers);
-@@ -2986,6 +3008,7 @@ static struct mdio_device_id __maybe_unused marvell_tbl[] = {
- 	{ MARVELL_PHY_ID_88E3016, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E6390, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E1340S, MARVELL_PHY_ID_MASK },
-+	{ MARVELL_PHY_ID_88E1548P, MARVELL_PHY_ID_MASK },
- 	{ }
- };
- 
-diff --git a/include/linux/marvell_phy.h b/include/linux/marvell_phy.h
-index c4390e9cbf15..ff7b7607c8cf 100644
---- a/include/linux/marvell_phy.h
-+++ b/include/linux/marvell_phy.h
-@@ -20,6 +20,7 @@
- #define MARVELL_PHY_ID_88E1510		0x01410dd0
- #define MARVELL_PHY_ID_88E1540		0x01410eb0
- #define MARVELL_PHY_ID_88E1545		0x01410ea0
-+#define MARVELL_PHY_ID_88E1548P		0x01410ec0
- #define MARVELL_PHY_ID_88E3016		0x01410e60
- #define MARVELL_PHY_ID_88X3310		0x002b09a0
- #define MARVELL_PHY_ID_88E2110		0x002b09b0
--- 
-2.25.1
+/Magnus
 
+> >   {
+> > -     unsigned int ntc, total_bytes = 0, budget = vsi->work_limit;
+> > -     u32 i, completed_frames, frames_ready, xsk_frames = 0;
+> > +     unsigned int ntc, budget = vsi->work_limit;
+> >       struct xdp_umem *umem = tx_ring->xsk_umem;
+> > +     u32 i, completed_frames, xsk_frames = 0;
+> >       u32 head_idx = i40e_get_head(tx_ring);
+> >       bool work_done = true, xmit_done;
+>
+> work_done is no longer required
+>
+> >       struct i40e_tx_buffer *tx_bi;
+> >
+> >       if (head_idx < tx_ring->next_to_clean)
+> >               head_idx += tx_ring->count;
+> > -     frames_ready = head_idx - tx_ring->next_to_clean;
+> > +     completed_frames = head_idx - tx_ring->next_to_clean;
+> >
+> > -     if (frames_ready == 0) {
+> > +     if (completed_frames == 0)
+> >               goto out_xmit;
+> > -     } else if (frames_ready > budget) {
+> > -             completed_frames = budget;
+> > -             work_done = false;
+> > -     } else {
+> > -             completed_frames = frames_ready;
+> > +
+> > +     if (likely(!tx_ring->xdp_tx_active)) {
+> > +             xsk_frames = completed_frames;
+> > +             goto skip;
+> >       }
+> >
+> >       ntc = tx_ring->next_to_clean;
+> > @@ -475,18 +480,18 @@ bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
+> >       for (i = 0; i < completed_frames; i++) {
+> >               tx_bi = &tx_ring->tx_bi[ntc];
+> >
+> > -             if (tx_bi->xdpf)
+> > +             if (tx_bi->xdpf) {
+> >                       i40e_clean_xdp_tx_buffer(tx_ring, tx_bi);
+> > -             else
+> > +                     tx_bi->xdpf = NULL;
+> > +             } else {
+> >                       xsk_frames++;
+> > -
+> > -             tx_bi->xdpf = NULL;
+> > -             total_bytes += tx_bi->bytecount;
+> > +             }
+> >
+> >               if (++ntc >= tx_ring->count)
+> >                       ntc = 0;
+> >       }
+> >
+> > +skip:
+> >       tx_ring->next_to_clean += completed_frames;
+> >       if (unlikely(tx_ring->next_to_clean >= tx_ring->count))
+> >               tx_ring->next_to_clean -= tx_ring->count;
+> > @@ -495,7 +500,6 @@ bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
+> >               xsk_umem_complete_tx(umem, xsk_frames);
+> >
+> >       i40e_arm_wb(tx_ring, vsi, budget);
+>
+> I guess budget here should be replaced with completed_frames
+>
+> > -     i40e_update_tx_stats(tx_ring, completed_frames, total_bytes);
+> >
+> >   out_xmit:
+> >       if (xsk_umem_uses_need_wakeup(tx_ring->xsk_umem))
+>
+>
+> >
+> _______________________________________________
+> Intel-wired-lan mailing list
+> Intel-wired-lan@osuosl.org
+> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
