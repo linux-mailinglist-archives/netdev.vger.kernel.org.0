@@ -2,72 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A32162057C0
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 18:47:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 085892057C7
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 18:48:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733309AbgFWQqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 12:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47596 "EHLO
+        id S1733073AbgFWQr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 12:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732662AbgFWQqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 12:46:54 -0400
+        with ESMTP id S2387466AbgFWQr1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 12:47:27 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95752C061573
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 09:46:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79283C061573
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 09:47:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=UxFC/RC9fnjTIIetkCCEu+q7HeolRvswHPQutvoIRsw=; b=V/WGd+ZusxzXQKr2e3BQ/dKrR
-        /YZwqIiZwXcN0IXY4D4DNjtdEIdTuoBTHW05ZyBTlDX50wLQwOYps49gaae12soYgSSziCQSw9ekR
-        WidU+wD3p3IO5hHHuSzCgZbLPa4fzBB97OIwj8rD60io0axCprsypSI6N4ahub+dtIDug8UD8ROPD
-        3HQbuqUUgJK8X6NNSyyfGsZDZ9qWH+OHxst2mkocfcnnpmgstqlFI1SHqmcmD6ebZSRQYI0aAdx/R
-        WqD3mR6WRjLjdAkpsFklS+wwxo32hPF6Bhj2xCpx4njIdNNWruxyd8KoxFVkVpF34z8FJP5eET9xR
-        S72hWeWBA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59020)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=rc/YhpSCAawT6UVhYGtslDt32TIA48wAS+E4igSKad4=; b=gdJfivNCExGTJwyFx7mT0w7IF2
+        TS0P0CcTLoiVyPbJ9RSYOOlTVFPEYGKtB+ysPynL7dJz8V2xL9K6LUK4ySBH1sEQXbtaEOTIZGijQ
+        suh0rX81I6c4OWoXg8WroJfF5lhGwWcs2lWbXGSte2QsCVUMzSWh+vJ4HXZZtu7yG7AR1PkAJFi4q
+        2EFZ7AdttO3fJtzBpcnhoqzLbKI7odBZtF2pJ4noBQwhqGvPczoBiDhh1gwCHy5nOV+KuZg03A4qO
+        V+S94/d3wYiUyQCx11TetgbKENNnCsEi3H+sZOKgP1Oez8npninEwD5HxPnORRXhS9p7EqWcWR52N
+        b2aPH/Gw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:52976 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jnm4L-0001yj-8s; Tue, 23 Jun 2020 17:46:45 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jnm4I-00019X-L8; Tue, 23 Jun 2020 17:46:42 +0100
-Date:   Tue, 23 Jun 2020 17:46:42 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jnm4y-0001zD-7m; Tue, 23 Jun 2020 17:47:24 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jnm4x-0005hV-U6; Tue, 23 Jun 2020 17:47:23 +0100
+In-Reply-To: <20200623164642.GV1551@shell.armlinux.org.uk>
+References: <20200623164642.GV1551@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net 0/2] Two phylink pause fixes
-Message-ID: <20200623164642.GV1551@shell.armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net 1/2] net: phylink: fix ethtool -A with attached PHYs
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1jnm4x-0005hV-U6@rmk-PC.armlinux.org.uk>
+Date:   Tue, 23 Jun 2020 17:47:23 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While testing, I discovered two issues with ethtool -A with phylink.
-First, if there is a PHY bound to the network device, we hit a
-deadlock when phylib tries to notify us of the link changing as a
-result of triggering a renegotiation.
+Fix a phylink's ethtool set_pauseparam support deadlock caused by phylib
+interacting with phylink: we must not hold the state lock while calling
+phylib functions that may call into phylink_phy_change().
 
-Second, when we are manually forcing the pause settings, and there
-is no renegotiation triggered, we do not update the MAC via the new
-mac_link_up approach.
+Fixes: f904f15ea9b5 ("net: phylink: allow ethtool -A to change flow control advertisement")
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phylink.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-These two patches solve both problems, and will need to be backported
-to v5.7; they do not apply cleanly there due to the introduction of
-PCS in the v5.8 merge window.
-
- drivers/net/phy/phylink.c | 45 ++++++++++++++++++++++++++++++++-------------
- 1 file changed, 32 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 0ab65fb75258..453f9a399bb1 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1502,18 +1502,20 @@ int phylink_ethtool_set_pauseparam(struct phylink *pl,
+ 	linkmode_set_pause(config->advertising, pause->tx_pause,
+ 			   pause->rx_pause);
+ 
+-	/* If we have a PHY, phylib will call our link state function if the
+-	 * mode has changed, which will trigger a resolve and update the MAC
+-	 * configuration.
++	if (!pl->phydev && !test_bit(PHYLINK_DISABLE_STOPPED,
++				     &pl->phylink_disable_state))
++		phylink_pcs_config(pl, true, &pl->link_config);
++
++	mutex_unlock(&pl->state_mutex);
++
++	/* If we have a PHY, a change of the pause frame advertisement will
++	 * cause phylib to renegotiate (if AN is enabled) which will in turn
++	 * call our phylink_phy_change() and trigger a resolve.  Note that
++	 * we can't hold our state mutex while calling phy_set_asym_pause().
+ 	 */
+-	if (pl->phydev) {
++	if (pl->phydev)
+ 		phy_set_asym_pause(pl->phydev, pause->rx_pause,
+ 				   pause->tx_pause);
+-	} else if (!test_bit(PHYLINK_DISABLE_STOPPED,
+-			     &pl->phylink_disable_state)) {
+-		phylink_pcs_config(pl, true, &pl->link_config);
+-	}
+-	mutex_unlock(&pl->state_mutex);
+ 
+ 	return 0;
+ }
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.20.1
+
