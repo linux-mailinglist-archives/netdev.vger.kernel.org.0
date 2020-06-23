@@ -2,120 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C5482061E1
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CDD92061C9
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:08:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392480AbgFWUvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 16:51:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404066AbgFWUrn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 16:47:43 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6ED9C061755
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 13:47:43 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id g18so6943wrm.2
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 13:47:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PsVnZiU164smHUvfeaLehL8S/X1w62QMfoibHkfcTw8=;
-        b=Djy+o3H71e3jVrH1oxVs/TKg65SF8T1ef5c1OnJdOmNtq1nGUFiJfPUyk6RBFwagNy
-         q6mO8rf8A2KSQu5/Nd0Cdu0/nslWy9hcaIFGfRO8u9dJz1rTVZIgXjbvVYumTIyv2b/Y
-         H6bdubYoXoYX97JdYF2kdf9/2eDkUgHJ5zOJc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PsVnZiU164smHUvfeaLehL8S/X1w62QMfoibHkfcTw8=;
-        b=I6m8pSwWbgTqOjYMORSlUjVjRQf22P3YkCMNOk/2B5pnlWUrvNRaPqpzwwUVBnyoiI
-         voyb+DRhJW0WEBNQzdTIdz66kBe5exyCv9AzX5SMGXU3z4O3dk2DMGjypXtNachX1CTE
-         DCz34Aazg3NUClCULZsXrw/fjFKlWOErx3DbYkpnWjtaI3DE5e8RcWhDGg4CerdAJNjg
-         YcbDbRsoKdGQcbPWid2EjR2jLWpIwrFuiz6roChWUWXluL804tgAXV/hjmhRBlAoQ9Nd
-         vuWQLgvraTsq0UEEPHnO+hwaz9mn21AR5HSTvyzYTfNI8c8FxKTI2cEAulUpRp09/YlZ
-         Svig==
-X-Gm-Message-State: AOAM530hBsIcN9FfQ057MdRzvM7a6oyVSR/In+zw19XoMHVLzdHVaxHy
-        /vcjwGeD/ml/FlwRgpWbFVdqZOrY8X7lWA==
-X-Google-Smtp-Source: ABdhPJw6gRorTuL7N34Xr6y8T1Wtr2ZATURck/BUB/8ILF8R5bw8TtxeRWJshC+xHcpRsERcSFzdfQ==
-X-Received: by 2002:a5d:6651:: with SMTP id f17mr13908746wrw.29.1592945262228;
-        Tue, 23 Jun 2020 13:47:42 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id j6sm5686924wmb.3.2020.06.23.13.47.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Jun 2020 13:47:41 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     roopa@cumulusnetworks.com, anuradhak@cumulusnetworks.com,
-        davem@davemloft.net, bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next 4/4] net: bridge: add a flag to avoid refreshing fdb when changing/adding
-Date:   Tue, 23 Jun 2020 23:47:18 +0300
-Message-Id: <20200623204718.1057508-5-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20200623204718.1057508-1-nikolay@cumulusnetworks.com>
-References: <20200623204718.1057508-1-nikolay@cumulusnetworks.com>
+        id S2393149AbgFWUu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 16:50:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49752 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404143AbgFWUuK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 16:50:10 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EDDE72145D;
+        Tue, 23 Jun 2020 20:50:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592945409;
+        bh=n3Dwo2ucZ0JQxiocnRaLLDeGlCzh4hohybtbn2oJiMA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Crr6UFiwqsiN4Km8Ra7FSY/aeoxMjRRnq7id5zOD+eMKMaql6akRAtOOt5QX2UTAv
+         KdJMIh1VoOE4k+cS0H+bS2UZciGUE/7BM4xad87ywPxneYmMrAW0XBJXmYrh/HHWY4
+         tJSsYSktkna61XWn8xc2SL/wcKg62kgVvG7PT4uA=
+Date:   Tue, 23 Jun 2020 13:50:07 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kaige Li <likaige@loongson.cn>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Christian Benvenuti <benve@cisco.com>,
+        Govindarajulu Varadarajan <_govind@gmx.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>
+Subject: Re: [PATCH RESEND] net/cisco: Fix a sleep-in-atomic-context bug in
+ enic_init_affinity_hint()
+Message-ID: <20200623135007.3105d067@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1592899989-22049-1-git-send-email-likaige@loongson.cn>
+References: <1592899989-22049-1-git-send-email-likaige@loongson.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we modify or create a new fdb entry sometimes we want to avoid
-refreshing its activity in order to track it properly. One example is
-when a mac is received from EVPN multi-homing peer by FRR, which doesn't
-want to change local activity accounting. It makes it static and sets a
-flag to track its activity.
+On Tue, 23 Jun 2020 16:13:09 +0800 Kaige Li wrote:
+> The kernel module may sleep with holding a spinlock.
+> 
+> The function call paths (from bottom to top) are:
+> 
+> [FUNC] zalloc_cpumask_var(GFP_KERNEL)
+> drivers/net/ethernet/cisco/enic/enic_main.c, 125: zalloc_cpumask_var in enic_init_affinity_hint
+> drivers/net/ethernet/cisco/enic/enic_main.c, 1918: enic_init_affinity_hint in enic_open
+> drivers/net/ethernet/cisco/enic/enic_main.c, 2348: enic_open in enic_reset
+> drivers/net/ethernet/cisco/enic/enic_main.c, 2341: spin_lock in enic_reset
+> 
+> To fix this bug, GFP_KERNEL is replaced with GFP_ATOMIC.
+> 
+> Signed-off-by: Kaige Li <likaige@loongson.cn>
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- include/uapi/linux/neighbour.h | 1 +
- net/bridge/br_fdb.c            | 5 ++++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
-index 21e569297355..dc8b72201f6c 100644
---- a/include/uapi/linux/neighbour.h
-+++ b/include/uapi/linux/neighbour.h
-@@ -191,6 +191,7 @@ enum {
- enum {
- 	NFEA_UNSPEC,
- 	NFEA_ACTIVITY_NOTIFY,
-+	NFEA_DONT_REFRESH,
- 	__NFEA_MAX
- };
- #define NFEA_MAX (__NFEA_MAX - 1)
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 642deb57c064..9db504baa094 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -860,6 +860,7 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
- 			 struct nlattr *nfea_tb[])
- {
- 	bool is_sticky = !!(ndm->ndm_flags & NTF_STICKY);
-+	bool refresh = !nfea_tb[NFEA_DONT_REFRESH];
- 	struct net_bridge_fdb_entry *fdb;
- 	u16 state = ndm->ndm_state;
- 	bool modified = false;
-@@ -937,7 +938,8 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
- 
- 	fdb->used = jiffies;
- 	if (modified) {
--		fdb->updated = jiffies;
-+		if (refresh)
-+			fdb->updated = jiffies;
- 		fdb_notify(br, fdb, RTM_NEWNEIGH, true);
- 	}
- 
-@@ -977,6 +979,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
- 
- static const struct nla_policy br_nda_fdb_pol[NFEA_MAX + 1] = {
- 	[NFEA_ACTIVITY_NOTIFY]	= { .type = NLA_U8 },
-+	[NFEA_DONT_REFRESH]	= { .type = NLA_FLAG },
- };
- 
- /* Add new permanent fdb entry with RTM_NEWNEIGH */
--- 
-2.25.4
-
+I don't think this is sufficient. Calling open with a spin lock held
+seems like a very bad idea. At a quick look the driver also calls
+request_irq() from open - request_irq() can sleep.
