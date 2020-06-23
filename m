@@ -2,87 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 391A520478F
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 04:53:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 436EA2047C7
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 05:05:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732030AbgFWCvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 22:51:49 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:27950 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731991AbgFWCvq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 22:51:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592880704;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wItOOFxGoX9Yxy2T8076N6nMJmnVQApKKEzZUpOJV/A=;
-        b=g50VRCngZWLMIwYaxoUw1cF0OQuExnuv3lL6lSuUUSSy0E8oFxCTUQGZkH9e6YB/1xb4Gf
-        OqxpHJmMA5DW0bR9ch03KsZagwI6I24YDRT1nFJaWlAgGknWQ5IZM4gswF6P31SIXq6vL/
-        RWtsE1j3VpeQQC2uv1UtsDKSknWDhGk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-451-IKRKNpSxMJyEL-9nTh0cCA-1; Mon, 22 Jun 2020 22:51:42 -0400
-X-MC-Unique: IKRKNpSxMJyEL-9nTh0cCA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2315EBFC1;
-        Tue, 23 Jun 2020 02:51:41 +0000 (UTC)
-Received: from [10.72.12.144] (ovpn-12-144.pek2.redhat.com [10.72.12.144])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D2B9819D71;
-        Tue, 23 Jun 2020 02:51:35 +0000 (UTC)
-Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        eperezma@redhat.com
-References: <20200611113404.17810-1-mst@redhat.com>
- <20200611113404.17810-3-mst@redhat.com>
- <0332b0cf-cf00-9216-042c-e870efa33626@redhat.com>
- <20200622115946-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c56cc86d-a420-79ca-8420-e99db91980fa@redhat.com>
-Date:   Tue, 23 Jun 2020 10:51:34 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1732114AbgFWDFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 23:05:16 -0400
+Received: from out20-49.mail.aliyun.com ([115.124.20.49]:46115 "EHLO
+        out20-49.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731690AbgFWDFQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 23:05:16 -0400
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1963569|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0456264-0.000926188-0.953447;FP=18262275217699229393|4|2|5|0|-1|-1|-1;HT=e01l07447;MF=aiden.leong@aibsd.com;NM=1;PH=DS;RN=4;RT=4;SR=0;TI=SMTPD_---.HqyYtR0_1592881512;
+Received: from ubuntu(mailfrom:aiden.leong@aibsd.com fp:SMTPD_---.HqyYtR0_1592881512)
+          by smtp.aliyun-inc.com(10.147.42.198);
+          Tue, 23 Jun 2020 11:05:13 +0800
+From:   Aiden Leong <aiden.leong@aibsd.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v2] GUE: Fix a typo
+Date:   Mon, 22 Jun 2020 20:04:58 -0700
+Message-Id: <20200623030459.13508-1-aiden.leong@aibsd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200622115946-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix a typo in gue.h
 
-On 2020/6/23 上午12:00, Michael S. Tsirkin wrote:
-> On Wed, Jun 17, 2020 at 11:19:26AM +0800, Jason Wang wrote:
->> On 2020/6/11 下午7:34, Michael S. Tsirkin wrote:
->>>    static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
->>>    {
->>>    	kfree(vq->descs);
->>> @@ -394,6 +400,9 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
->>>    	for (i = 0; i < dev->nvqs; ++i) {
->>>    		vq = dev->vqs[i];
->>>    		vq->max_descs = dev->iov_limit;
->>> +		if (vhost_vq_num_batch_descs(vq) < 0) {
->>> +			return -EINVAL;
->>> +		}
->> This check breaks vdpa which set iov_limit to zero. Consider iov_limit is
->> meaningless to vDPA, I wonder we can skip the test when device doesn't use
->> worker.
->>
->> Thanks
-> It doesn't need iovecs at all, right?
->
-> -- MST
+Signed-off-by: Aiden Leong <aiden.leong@aibsd.com>
+---
+ include/net/gue.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-Yes, so we may choose to bypass the iovecs as well.
-
-Thanks
+diff --git a/include/net/gue.h b/include/net/gue.h
+index 3a6595bfa641..e42402f180b7 100644
+--- a/include/net/gue.h
++++ b/include/net/gue.h
+@@ -21,7 +21,7 @@
+  * |                                                               |
+  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  *
+- * C bit indicates contol message when set, data message when unset.
++ * C bit indicates control message when set, data message when unset.
+  * For a control message, proto/ctype is interpreted as a type of
+  * control message. For data messages, proto/ctype is the IP protocol
+  * of the next header.
+-- 
+2.25.1
 
