@@ -2,134 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFC58204FE8
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 13:01:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B343205077
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 13:17:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732454AbgFWLBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 07:01:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45832 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732245AbgFWLBO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 07:01:14 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 56C0020738;
-        Tue, 23 Jun 2020 11:01:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592910074;
-        bh=YdxgoHVtdRoAhScrjYZNg31Btg0H9bfILML8a7AB+3U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sIQirhh7uPFPak+WV5eB8pB2r3N2TVGNcoFSS/oo8tTZrKxmcuEi2qbeyZgNEgxJo
-         7dpQFN2ZDqiJvnGauYhwNPSeLOyUFULWaGWj0Lm0oAMK7XX2Th51x2P2W/dKgbEYg2
-         7jvfAVuTxm75owkiQ19pTmg66ue48i/+KG0zofsY=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Michael Guralnik <michaelgur@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
-Subject: [PATCH mlx5-next 1/2] net/mlx5: Enable QP number request when creating IPoIB underlay QP
-Date:   Tue, 23 Jun 2020 14:01:04 +0300
-Message-Id: <20200623110105.1225750-2-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200623110105.1225750-1-leon@kernel.org>
-References: <20200623110105.1225750-1-leon@kernel.org>
+        id S1732523AbgFWLQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 07:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732520AbgFWLQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 07:16:53 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA81C0617BC
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 04:16:51 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id v3so12612583wrc.1
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 04:16:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=D7l/Y2nU4ivOXB3kYNarWKNDy1SUWuawPt7q4q/Bhv4=;
+        b=E6E/hlNpiM6PnoAOVZ+7voPc9wpxPmWA12rEiYoj/bAUsYe0AJbyTzI9pZwPUUDdPP
+         2sshPYcb9oIsA99JTikTl0u76qfHNPIW2jIbz6C+DLselDK71HuKa++SqaGTSZ4p4+te
+         gTQ9UTEVmk4+r2eFXVbrvBf8ptXVBuknudxlYS3vrFAv18ZetPr28ECYav3lG+E2L5JM
+         St9yzES6OGBMLQpZbQAQLmSOp9Akg+wflxGB71dvTLo/TJoexQV6LE+g+JoBlfC2QAg7
+         b+ja973yyVQOwbfrTF90BaaIQGUXchEhek4sdIUmlBpL8Ak1D79EOMoTbcuGCplWvTHT
+         W4hA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=D7l/Y2nU4ivOXB3kYNarWKNDy1SUWuawPt7q4q/Bhv4=;
+        b=PPx0B9EbyblvpLp3Sicmbnn3qtCrHl22sannegqaFZgzK/1a5wE7uDF9wmZFeRXbHH
+         9WzQoFl9uhmsw6Y496tmcReqkkZAgx+X0cB4j9ibM4fHR7eDDK+LQvJ+4TfOeYQ6WIf8
+         TKfmZAhiXMPoGMpmdAVwGpU8WesRbS8WhnT38c/STEbpDj783zoBjW+k/QyVJSHAb3VP
+         Yvb7OgZDLkoGGLz6HGbS9Ix0ha/mQn3NaFX5yrUFH1NqCnDgpQqEKAxFbJAZA+IDG/MR
+         NoAbP9PaNpb/nYfRAJ9qYABT5KM7nxWldFGCIKxTbtsQeY8tKIYEqnVbekaTT0z2rQsg
+         jlhA==
+X-Gm-Message-State: AOAM532k0EI8tvygEhDLUzPCUafRXhaIF58GUKzWsf7nsmyz94eRJ0i1
+        Twpx2OTyX+eN4LlmO9oNSYaXaC1toLBzGr2Xcmg=
+X-Google-Smtp-Source: ABdhPJzZ1QWBbLEVEJDiR8ozgNL3BKht/bHhiiCQZFbEUfR5i8VLBKqhwlX7a4NXmF6FqxDOEk5UW9nntOQTLpvDlps=
+X-Received: by 2002:a5d:62d1:: with SMTP id o17mr24071305wrv.162.1592911009833;
+ Tue, 23 Jun 2020 04:16:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a1c:f002:0:0:0:0:0 with HTTP; Tue, 23 Jun 2020 04:16:49
+ -0700 (PDT)
+Reply-To: sarahkoffi389@yahoo.co.jp
+From:   Sarah Koffi <paulwiliam782@gmail.com>
+Date:   Tue, 23 Jun 2020 12:16:49 +0100
+Message-ID: <CAHqcnY16ZzcoYpU31SEco0sXeb2W5Dq2VVpzQr8ZENW9eKiFTA@mail.gmail.com>
+Subject: Greetings From Mrs. Sarah Koffi
+To:     sarahkoffi389@yahoo.co.jp
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Guralnik <michaelgur@mellanox.com>
+Greetings From Mrs. Sarah Koffi
 
-If in the process of creating the underlay QP for an IPoIB interface
-the user has set the address and specifically the 1st-3rd bytes
-representing the QP number, use the requested QP number when creating
-the underlay QP.
+I'm contacting you based on your good profiles I read and for a good
+reasons, I am in search of a property to buy in your country as I
+intended to come over to your
+country for investment, Though I have not meet with you before but I
+believe that one has to risk confiding in someone to succeed sometimes
+in life.
 
-For a user to be able to request a QP number on QP creation, the MKEY_BY_NAME
-NVCONFIG should be set. As mkey_by_name and qp_by_name are coupled in FW.
-This requires driver to query the mkey_by_name max cap during initialization
-and set the current cap if it was enabled in FW.
+My name is Mrs. Sarah Koffi. My late husband deals on Crude Oil with
+Federal Government of Sudan and he has a personal Oil firm in Bentiu
+Oil zone town and Upper
+Nile city. What I have experience physically, I don't wish to
+experience it again in my life due to the recent civil Ethnic war
+cause by our President Mr. Salva Kiir
+and the rebel leader Mr Riek Machar, I have been Under United Nation
+refuge camp in chad to save my life and that of my little daughter.
 
-Signed-off-by: Michael Guralnik <michaelgur@mellanox.com>
-Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c | 7 +++++++
- drivers/net/ethernet/mellanox/mlx5/core/main.c        | 3 +++
- include/linux/mlx5/mlx5_ifc.h                         | 9 +++++++--
- 3 files changed, 17 insertions(+), 2 deletions(-)
+Though, I do not know how you will feel to my proposal, but the truth
+is that I sneaked into Chad our neighboring country where I am living
+now as a refugee.
+I escaped with my little daughter when the rebels bust into our house
+and killed my husband as one of the big oil dealers in the country,
+ever since then, I have being on the run.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-index 690b822c6152..d1266d8fed97 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-@@ -226,13 +226,20 @@ void mlx5i_uninit_underlay_qp(struct mlx5e_priv *priv)
- 
- int mlx5i_create_underlay_qp(struct mlx5e_priv *priv)
- {
-+	unsigned char *dev_addr = priv->netdev->dev_addr;
- 	u32 out[MLX5_ST_SZ_DW(create_qp_out)] = {};
- 	u32 in[MLX5_ST_SZ_DW(create_qp_in)] = {};
- 	struct mlx5i_priv *ipriv = priv->ppriv;
- 	void *addr_path;
-+	int qpn = 0;
- 	int ret = 0;
- 	void *qpc;
- 
-+	if (MLX5_CAP_GEN(priv->mdev, mkey_by_name)) {
-+		qpn = (dev_addr[1] << 16) + (dev_addr[2] << 8) + dev_addr[3];
-+		MLX5_SET(create_qp_in, in, input_qpn, qpn);
-+	}
-+
- 	qpc = MLX5_ADDR_OF(create_qp_in, in, qpc);
- 	MLX5_SET(qpc, qpc, st, MLX5_QP_ST_UD);
- 	MLX5_SET(qpc, qpc, pm_state, MLX5_QP_PM_MIGRATED);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 8b658908f044..623785fe74b2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -557,6 +557,9 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
- 	if (MLX5_CAP_GEN_MAX(dev, release_all_pages))
- 		MLX5_SET(cmd_hca_cap, set_hca_cap, release_all_pages, 1);
- 
-+	if (MLX5_CAP_GEN_MAX(dev, mkey_by_name))
-+		MLX5_SET(cmd_hca_cap, set_hca_cap, mkey_by_name, 1);
-+
- 	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE);
- }
- 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index ca1887dd0423..7a00110f2f01 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1392,7 +1392,10 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         bf[0x1];
- 	u8         driver_version[0x1];
- 	u8         pad_tx_eth_packet[0x1];
--	u8         reserved_at_263[0x8];
-+	u8         reserved_at_263[0x3];
-+	u8         mkey_by_name[0x1];
-+	u8         reserved_at_267[0x4];
-+
- 	u8         log_bf_reg_size[0x5];
- 
- 	u8         reserved_at_270[0x8];
-@@ -7714,8 +7717,10 @@ struct mlx5_ifc_create_qp_in_bits {
- 	u8         reserved_at_20[0x10];
- 	u8         op_mod[0x10];
- 
--	u8         reserved_at_40[0x40];
-+	u8         reserved_at_40[0x8];
-+	u8         input_qpn[0x18];
- 
-+	u8         reserved_at_60[0x20];
- 	u8         opt_param_mask[0x20];
- 
- 	u8         ece[0x20];
--- 
-2.26.2
+I left my country and move to Chad our neighboring country with the
+little ceasefire we had, due to the face to face peace meeting accord
+coordinated by the US Secretary of State, Mr John Kerry and United
+Nations in Ethiopia (Addis Ababa) between our President Mr Salva Kiir
+and the rebel leader Mr Riek Machar to stop this war.
 
+I want to solicit for your partnership with trust to invest the $8
+million dollars deposited by my late husband in Bank because my life
+is no longer safe in our country, since the rebels are looking for the
+families of all the oil business men in the country to kill, saying
+that they are they one that is milking the country dry.
+
+I will offer you 20% of the total fund for your help while I will
+partner with you for the investment in your country.
+If I get your reply.
+
+I will wait to hear from you so as to give you details.With love from
+
+ i need you to contact me here sarahkoffi389@yahoo.co.jp
+
+Mrs. Sarah Koffi
