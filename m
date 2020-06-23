@@ -2,217 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E452C204603
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 02:43:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEAC220461D
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 02:47:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732123AbgFWAnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 20:43:31 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:26378 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731823AbgFWAna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 20:43:30 -0400
+        id S1732300AbgFWArJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 20:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732211AbgFWArI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 20:47:08 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993DFC061573
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 17:47:08 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id x22so9265022pfn.3
+        for <netdev@vger.kernel.org>; Mon, 22 Jun 2020 17:47:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1592873008; x=1624409008;
-  h=date:from:to:cc:message-id:references:mime-version:
-   content-transfer-encoding:in-reply-to:subject;
-  bh=xyL/GE+//VNND4ClwSzcCDyd8/X/TGjOdivfmtA0Muo=;
-  b=eMq6CwHT251huSo55WuSH88TAReX242/qhPg09clG7sOT6W3/WfaHJhZ
-   OtMJwwyUtUMGZly5/Ixxj97spyiteLL/iEl/lGPHGe1hfWJS0vXPAbbsZ
-   V3ascibqgFTdGjFZVWq1QXTJ4neUfbcq9AAMptLSE1oTgYebl6t2jsFwt
-   4=;
-IronPort-SDR: ptAdrfFwuUgauX+U5uC5bBETq8cuc67rFZsuJj1H/pREvnxOuOIJ9yvB1TRAzAWBXdw2Q6TQ8N
- fIajCpJtaqLg==
-X-IronPort-AV: E=Sophos;i="5.75,268,1589241600"; 
-   d="scan'208";a="53039173"
-Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and hibernation]
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-c6afef2e.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 23 Jun 2020 00:43:24 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2c-c6afef2e.us-west-2.amazon.com (Postfix) with ESMTPS id 9574BA2519;
-        Tue, 23 Jun 2020 00:43:23 +0000 (UTC)
-Received: from EX13D05UWC003.ant.amazon.com (10.43.162.226) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 23 Jun 2020 00:43:14 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13D05UWC003.ant.amazon.com (10.43.162.226) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 23 Jun 2020 00:43:14 +0000
-Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Tue, 23 Jun 2020 00:43:14 +0000
-Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 1816D40359; Tue, 23 Jun 2020 00:43:14 +0000 (UTC)
-Date:   Tue, 23 Jun 2020 00:43:14 +0000
-From:   Anchal Agarwal <anchalag@amazon.com>
-To:     Roger Pau =?iso-8859-1?Q?Monn=E9?= <roger.pau@citrix.com>
-CC:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "Kamata, Munehisa" <kamatam@amazon.com>,
-        "sstabellini@kernel.org" <sstabellini@kernel.org>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "pavel@ucw.cz" <pavel@ucw.cz>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Valentin, Eduardo" <eduval@amazon.com>,
-        "Singh, Balbir" <sblbir@amazon.com>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
-Message-ID: <20200623004314.GA28586@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-References: <7FD7505E-79AA-43F6-8D5F-7A2567F333AB@amazon.com>
- <20200604070548.GH1195@Air-de-Roger>
- <20200616214925.GA21684@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200617083528.GW735@Air-de-Roger>
- <20200619234312.GA24846@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
- <20200622083846.GF735@Air-de-Roger>
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=RwYZlGlVYIFuB//WFjEFQ4/CjI8KSx51e9eOMZkT0Z0=;
+        b=gPQkzE8rW637IzZWuOXaYCtrtsA+Fg1hIPlX5Xu+99Wyjk+nWYjUUu3moY6xrMQDpB
+         j7uolAGKXosmpDFOTy/1wvHKZUWDV8RiLkQ2HiwMWt2vJ2nWM/WGqfz6UesnHXqfLoT+
+         ijvEaXuw/hr0ma1+UHnr65xV/7dp+LxjeX/ztwyFjg+0TFR8McPF0eNbDvaf6bqJkgzM
+         zwt3RzvFGphkBb+IHGBM50aRPU+8Lf1G1G0lwwpDKdL1/uBofoIBgMOYIF6d66NsJti2
+         Z69UKQK0rUjVZ/2TY982ISp8YRBOaBrwhj3QM/Zd+65uWZzTR1WmX4QxUCZ8RDXfag+X
+         KTZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=RwYZlGlVYIFuB//WFjEFQ4/CjI8KSx51e9eOMZkT0Z0=;
+        b=A5a4dLUnQPfC2UD0mvLQ+M7A146su1LpoA9xf4ifHYHHZjCpCOfIBXFEnZWozNYS5f
+         r6cpKbIyjWy8E7X73OvazDGUFGobEMmSbkdRRSa/lub3EYUszushTJDetGOtXlZWnyCc
+         2ptH+QQmof78kFEX9K8TpJdzrSfDiIETpKbdR0Rlye+2OIhKvU+aFAGcAQeV3HiFMy5J
+         +DcDkAzXc8HUvNLzBNcPJnne2Nieh5HW2+u/w+UPflU0ha6dqHezwQmsymSBI1qvl+Os
+         Lc7Ca4IZZ2u+nv6WfnNtVuSHh7/AsCtoXIOHTqpYO4Ic5LAjRYCQErvHxGHKHlrgNIW/
+         5VIA==
+X-Gm-Message-State: AOAM531vE04w2S1V8mBcTofvfWS+kzkm4nKlBodmRmIK5ROGvJ3ryD80
+        /tyabaHbOwFbZcrGJHFyh1ahGA==
+X-Google-Smtp-Source: ABdhPJzXRkmyu7N0qihxWEAK4JzyIC5XtQEg4ztbuLhJil2fUIkNMGFjDGu8IOe+I8mChtdOEb1QNA==
+X-Received: by 2002:a63:8949:: with SMTP id v70mr14912441pgd.256.1592873228155;
+        Mon, 22 Jun 2020 17:47:08 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id c9sm15149979pfp.100.2020.06.22.17.47.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Jun 2020 17:47:07 -0700 (PDT)
+Subject: Re: [net-next 2/9] i40e: remove unused defines
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Andrew Bowers <andrewx.bowers@intel.com>
+References: <20200622221817.2287549-1-jeffrey.t.kirsher@intel.com>
+ <20200622221817.2287549-3-jeffrey.t.kirsher@intel.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <0beccbf6-7a29-0545-604a-8e61a86b40a6@pensando.io>
+Date:   Mon, 22 Jun 2020 17:47:06 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
+In-Reply-To: <20200622221817.2287549-3-jeffrey.t.kirsher@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200622083846.GF735@Air-de-Roger>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 22, 2020 at 10:38:46AM +0200, Roger Pau Monné wrote:
-> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> 
-> 
-> 
-> On Fri, Jun 19, 2020 at 11:43:12PM +0000, Anchal Agarwal wrote:
-> > On Wed, Jun 17, 2020 at 10:35:28AM +0200, Roger Pau Monné wrote:
-> > > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> > >
-> > >
-> > >
-> > > On Tue, Jun 16, 2020 at 09:49:25PM +0000, Anchal Agarwal wrote:
-> > > > On Thu, Jun 04, 2020 at 09:05:48AM +0200, Roger Pau Monné wrote:
-> > > > > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> > > > > On Wed, Jun 03, 2020 at 11:33:52PM +0000, Agarwal, Anchal wrote:
-> > > > > >  CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> > > > > >     > +             xenbus_dev_error(dev, err, "Freezing timed out;"
-> > > > > >     > +                              "the device may become inconsistent state");
-> > > > > >
-> > > > > >     Leaving the device in this state is quite bad, as it's in a closed
-> > > > > >     state and with the queues frozen. You should make an attempt to
-> > > > > >     restore things to a working state.
-> > > > > >
-> > > > > > You mean if backend closed after timeout? Is there a way to know that? I understand it's not good to
-> > > > > > leave it in this state however, I am still trying to find if there is a good way to know if backend is still connected after timeout.
-> > > > > > Hence the message " the device may become inconsistent state".  I didn't see a timeout not even once on my end so that's why
-> > > > > > I may be looking for an alternate perspective here. may be need to thaw everything back intentionally is one thing I could think of.
-> > > > >
-> > > > > You can manually force this state, and then check that it will behave
-> > > > > correctly. I would expect that on a failure to disconnect from the
-> > > > > backend you should switch the frontend to the 'Init' state in order to
-> > > > > try to reconnect to the backend when possible.
-> > > > >
-> > > > From what I understand forcing manually is, failing the freeze without
-> > > > disconnect and try to revive the connection by unfreezing the
-> > > > queues->reconnecting to backend [which never got diconnected]. May be even
-> > > > tearing down things manually because I am not sure what state will frontend
-> > > > see if backend fails to to disconnect at any point in time. I assumed connected.
-> > > > Then again if its "CONNECTED" I may not need to tear down everything and start
-> > > > from Initialising state because that may not work.
-> > > >
-> > > > So I am not so sure about backend's state so much, lets say if  xen_blkif_disconnect fail,
-> > > > I don't see it getting handled in the backend then what will be backend's state?
-> > > > Will it still switch xenbus state to 'Closed'? If not what will frontend see,
-> > > > if it tries to read backend's state through xenbus_read_driver_state ?
-> > > >
-> > > > So the flow be like:
-> > > > Front end marks XenbusStateClosing
-> > > > Backend marks its state as XenbusStateClosing
-> > > >     Frontend marks XenbusStateClosed
-> > > >     Backend disconnects calls xen_blkif_disconnect
-> > > >        Backend fails to disconnect, the above function returns EBUSY
-> > > >        What will be state of backend here?
-> > >
-> > > Backend should stay in state 'Closing' then, until it can finish
-> > > tearing down.
-> > >
-> > It disconnects the ring after switching to connected state too.
-> > > >        Frontend did not tear down the rings if backend does not switches the
-> > > >        state to 'Closed' in case of failure.
-> > > >
-> > > > If backend stays in CONNECTED state, then even if we mark it Initialised in frontend, backend
-> > >
-> > > Backend will stay in state 'Closing' I think.
-> > >
-> > > > won't be calling connect(). {From reading code in frontend_changed}
-> > > > IMU, Initialising will fail since backend dev->state != XenbusStateClosed plus
-> > > > we did not tear down anything so calling talk_to_blkback may not be needed
-> > > >
-> > > > Does that sound correct?
-> > >
-> > > I think switching to the initial state in order to try to attempt a
-> > > reconnection would be our best bet here.
-> > >
-> > It does not seems to work correctly, I get hung tasks all over and all the
-> > requests to filesystem gets stuck. Backend does shows the state as connected
-> > after xenbus_dev_suspend fails but I think there may be something missing.
-> > I don't seem to get IO interrupts thereafter i.e hitting the function blkif_interrupts.
-> > I think just marking it initialised may not be the only thing.
-> > Here is a short description of what I am trying to do:
-> > So, on timeout:
-> >     Switch XenBusState to "Initialized"
-> >     unquiesce/unfreeze the queues and return
-> >     mark info->connected = BLKIF_STATE_CONNECTED
-> 
-> If xenbus state is Initialized isn't it wrong to set info->connected
-> == CONNECTED?
+On 6/22/20 3:18 PM, Jeff Kirsher wrote:
+> From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 >
-Yes, you are right earlier I was marking it explicitly but that was not right,
-the connect path for blkfront will do that.
-> You should tear down all the internal state (like a proper close)?
-> 
-Isn't that similar to disconnecting in the first place that failed during
-freeze? Do you mean re-try to close but this time re-connect after close
-basically do everything you would at "restore"?
-
-Also, I experimented with that and it works intermittently. I want to take a
-step back on this issue and ask few questions here:
-1. Is fixing this recovery a blocker for me sending in a V2 version?
-
-2. In our 2-3 years of supporting this feature at large scale we haven't seen this issue
-where backend fails to disconnect. What we are trying to do here is create a
-hypothetical situation where we leave backend in Closing state and try and see how it
-recovers. The reason why I think it "may not" occur and the timeout of 5HZ is
-sufficient is because we haven't come across even a single use-case where it
-caused hibernation to fail.
-The reason why I think "it may" occur is if we are running a really memory
-intensive workload and ring is busy and is unable to complete all the requests
-in the given timeout. This is very unlikely though.
-
-3) Also, I do not think this may be straight forward to fix and expect
-hibernation to work flawlessly in subsequent invocations. I am open to 
-all suggestions.
-
-Thanks,
-Anchal
-> >     return EBUSY
-> >
-> > I even allowed blkfront_connect to switch state to "CONNECTED" rather me doing
-> > it explicitly as mentioned above without re-allocating/re-registering the device
-> > just to make sure bklfront_info object has all the right values.
-> > Do you see anythign missing here?
-> 
-> I'm afraid you will have to do a little bit of debugging here to
-> figure out what's going on. You can add printk's to several places to
-> see which path is taken, and why blkfront ends in such state.
+> Remove all the unused defines as they are just dead weight.
 >
-> Thanks, Roger.
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> ---
+>   drivers/net/ethernet/intel/i40e/i40e.h        |   20 -
+>   .../net/ethernet/intel/i40e/i40e_adminq_cmd.h |  482 +-
+>   drivers/net/ethernet/intel/i40e/i40e_common.c |    4 -
+>   drivers/net/ethernet/intel/i40e/i40e_dcb.h    |    5 -
+>   .../net/ethernet/intel/i40e/i40e_debugfs.c    |    1 -
+>   drivers/net/ethernet/intel/i40e/i40e_devids.h |    3 -
+>   drivers/net/ethernet/intel/i40e/i40e_hmc.h    |    1 -
+>   drivers/net/ethernet/intel/i40e/i40e_main.c   |    3 -
+>   drivers/net/ethernet/intel/i40e/i40e_osdep.h  |    1 -
+>   .../net/ethernet/intel/i40e/i40e_register.h   | 4656 -----------------
+>   drivers/net/ethernet/intel/i40e/i40e_txrx.h   |   25 -
+>   drivers/net/ethernet/intel/i40e/i40e_type.h   |   81 -
+>   .../ethernet/intel/i40e/i40e_virtchnl_pf.h    |    1 -
+>   include/linux/net/intel/i40e_client.h         |    5 -
+>   14 files changed, 1 insertion(+), 5287 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
+> index 5ff0828a6f50..e8a42415531a 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e.h
+> +++ b/drivers/net/ethernet/intel/i40e/i40e.h
+> @@ -60,17 +60,14 @@
+>   		(((pf)->hw_features & I40E_HW_RSS_AQ_CAPABLE) ? 4 : 1)
+>   #define I40E_DEFAULT_QUEUES_PER_VF	4
+>   #define I40E_MAX_VF_QUEUES		16
+> -#define I40E_DEFAULT_QUEUES_PER_TC	1 /* should be a power of 2 */
+>   #define i40e_pf_get_max_q_per_tc(pf) \
+>   		(((pf)->hw_features & I40E_HW_128_QP_RSS_CAPABLE) ? 128 : 64)
+> -#define I40E_FDIR_RING			0
+>   #define I40E_FDIR_RING_COUNT		32
+>   #define I40E_MAX_AQ_BUF_SIZE		4096
+>   #define I40E_AQ_LEN			256
+>   #define I40E_AQ_WORK_LIMIT		66 /* max number of VFs + a little */
+>   #define I40E_MAX_USER_PRIORITY		8
+>   #define I40E_DEFAULT_TRAFFIC_CLASS	BIT(0)
+> -#define I40E_DEFAULT_MSG_ENABLE		4
+>   #define I40E_QUEUE_WAIT_RETRY_LIMIT	10
+>   #define I40E_INT_NAME_STR_LEN		(IFNAMSIZ + 16)
+>   
+> @@ -93,8 +90,6 @@
+>   #define I40E_OEM_RELEASE_MASK		0x0000ffff
+>   
+>   /* The values in here are decimal coded as hex as is the case in the NVM map*/
+> -#define I40E_CURRENT_NVM_VERSION_HI	0x2
+> -#define I40E_CURRENT_NVM_VERSION_LO	0x40
+
+The related comments should get removed as well, as they'll only cause 
+future confusion if left lying around.Â  There are a few more instances 
+of this in the patch that you'll want to hunt down.
+
+I think there are a bunch of AQ field and bit defines and other similar 
+that are useful to have around, if nothing else but to help document the 
+values.Â  I'd prefer to see most of them left in place, but that's more 
+my opinion that a demand of any kind.
+
+But all that crap in i40e_register.h - yeah, that makes some sense to go 
+away.
+
+sln
+
