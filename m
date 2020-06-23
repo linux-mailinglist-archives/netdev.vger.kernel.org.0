@@ -2,94 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B64B7205A01
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 19:56:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B289E205A51
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 20:11:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733182AbgFWR40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 13:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
+        id S1733125AbgFWSLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 14:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733095AbgFWR4Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 13:56:25 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB386C061573
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 10:56:25 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id l9so5488061ilq.12
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 10:56:25 -0700 (PDT)
+        with ESMTP id S1728916AbgFWSLC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 14:11:02 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C175EC061573;
+        Tue, 23 Jun 2020 11:11:02 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id m9so3655207qvx.5;
+        Tue, 23 Jun 2020 11:11:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=nRWHlVlHkqzcCUDBSwEh9bYa8CSv1evht5Bg/jRe1W8=;
-        b=VRxTSHnttrPxaaN/NwFhu6w3yFNZOPLixH9Z/ZUapBWB9VYQFYr2OGgUVgC6VRc6XZ
-         zY9ax7vofipVZ0funD2rGfp6/XXqQ5UwcGmtBnkGFnF11NleYEyDNe9f2uXe0vVwQj0V
-         MO159Dxy+0DVG1N4id/T9ixw/uz2wxTzJVcpTINpWDDvNO3Csb3jqn3TgY+kUaS0+2pl
-         F0lIGa6HSAQm+0eARx5ixeLASCjiB+OPjUPJncKKP+Wxqrdkn0OvSfw9jq+4VTWYQunV
-         5qg2lFdWldAyF+I6XHWCYWcY3JTO8jTuUZG1T6OqHjCexfbLGt53kUZruJL3E5q6zSTi
-         MHSg==
+        bh=O2wmligUR27w8LA2Qy6DCUHjNf5DcVfeHO3NE5QalRg=;
+        b=q2DgWoiwA41+vZSqa9q4lYg5lefCQ5pBj1OKVRc3QFMO/VEwf0CSp6LChqXn9vhcK5
+         5knsHVqhxmw14JrJ4L6DNgnbkMaUakObvz1c5gsBy+hm/C28HegM26QkN+CVtFiaaCdO
+         WfV+smqfxYAR3RSpVd5Bw1d14VP1EIWlTE4+ETE7iYgBGafhD8q1hjC0TdfsXVcd2o0o
+         VY/nwipQdYLD5xwOxVIz2D8kXL3tg7zjXqqyrBKKRCIH03XX9pxLdUc5dlAgaLIbjYvx
+         UlKYZYCVu/hrVKydNCR8h221s7Ufo5J1sWUVpszrxR9wRk7Mte8ctiBZk52SHV/0ErFc
+         GNVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nRWHlVlHkqzcCUDBSwEh9bYa8CSv1evht5Bg/jRe1W8=;
-        b=JvnceqvMABUWd/esWGn2oQAmEpaSj6ZUc+UyPFXJf/YC20F3yngE6P6LGxdB207mg6
-         PVaq55MT0YlvyoFhPcVQAROhbTKFlfzV4W859T7lIb6v/Fjc8TbWDzXsMjjm+C6fN6nZ
-         36BXl/3FjZbReu6BBA7IOFN54GtgtsWw9VVbQbGNjpoLSDfk+UAbK7Wf0BCO9l8QrcfU
-         h/ld2EP8biX143IVkMwvkRFILFBQjTmZ0GaWzmqk7G22DPr+eYWelG8yOOoN87mBRJAd
-         WE1+n3dYlw1XMb2EBGfh2gYQ47aLNiE8WRyE2tuR5/3MZG1eWZY2xhxRQDLPtKwglbQf
-         hMPA==
-X-Gm-Message-State: AOAM532gRbsnm7WRx53Hr7HSbj0SSZNSYltjMW3wklaNu/TPU7Y5XEWf
-        OslVayOXVraFQWTOX8syYG39nNxdUcwmaerL7jE=
-X-Google-Smtp-Source: ABdhPJy3WpQjyqWltQkDs0SytFYtZVGXSPxEJ7BO+hb2K9rijLCWEX6w1bwtB41wM9K+KCgV8q7Wk18H39qaHmiXzJs=
-X-Received: by 2002:a92:bb0b:: with SMTP id w11mr16392823ili.238.1592934985120;
- Tue, 23 Jun 2020 10:56:25 -0700 (PDT)
+        bh=O2wmligUR27w8LA2Qy6DCUHjNf5DcVfeHO3NE5QalRg=;
+        b=c6PNB9LU6pV6FWoH8uBB6t064y+BMYjIO7Q58IKxKMtv0UyFie6d6xBRPcJqQ8D0e2
+         s6orS1UBArEkBfJ/WQFhA36jz7dp8tC2fnYEjx2h/Dj5HLwLZ26pN/b7eTh4ry55xiC6
+         vi+YGtTTtAW03ZgTYcpRWDp2EsqMITOpZUc6Pbhc3SCpG3KUnddbLo5Xqxzq3lxBy/DY
+         e14CeHLJ2Lfob4sAWY7Zv63eX3xM6DuNVcQuBhA2q8SWst6WbTm5K2za5zZzkJq3dB9i
+         /ej07xhbSw+V/nTNhcm5pQ0unc/g4i3YJHSyziDHgiRBtxHuB/46+MqIu5+GFvhEHW3s
+         Mcuw==
+X-Gm-Message-State: AOAM530gsVMb+/pf713MY9D0gINN8lqNO+dynTjVJpUY4Lpg9UZI7Ypo
+        ZaRQw7l4ohon7rLF8yS1J71YCkbz47IMohVL9I0=
+X-Google-Smtp-Source: ABdhPJynTBryGmWIyZKFCAIgnndqiVQ1+rbKyR4fBn2vqHUS+frkjBcCW/jfBu9w4E5HddgMdZxD3PjfbLgNdF91Euk=
+X-Received: by 2002:a05:6214:8f4:: with SMTP id dr20mr15019911qvb.228.1592935861871;
+ Tue, 23 Jun 2020 11:11:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200622203910.GE301338@carbon.dhcp.thefacebook.com> <bbcf2abd-53d8-966c-32a0-feccfdd0d7fe@windriver.com>
-In-Reply-To: <bbcf2abd-53d8-966c-32a0-feccfdd0d7fe@windriver.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 23 Jun 2020 10:56:13 -0700
-Message-ID: <CAM_iQpWf9s_FA6GDjpandwhmnjDbd48xSiNmA8JSP1Tt1Ap9Xw@mail.gmail.com>
-Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
-To:     "Zhang,Qiang" <qiang.zhang@windriver.com>
-Cc:     Roman Gushchin <guro@fb.com>, Cong Wang <xiyou.wangcong@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Li Zefan <lizefan@huawei.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        =?UTF-8?Q?Dani=C3=ABl_Sonck?= <dsonck92@gmail.com>,
-        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Tejun Heo <tj@kernel.org>
+References: <20200623124726.5039-1-cneirabustos@gmail.com>
+In-Reply-To: <20200623124726.5039-1-cneirabustos@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 23 Jun 2020 11:10:51 -0700
+Message-ID: <CAEf4BzYSKXE2aYkbE2XKa9z1Wc8Zv9-bkTmh=8unOM+Za-6uMw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] fold test_current_pid_tgid_new_ns into into test_progs
+To:     Carlos Neira <cneirabustos@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 1:45 AM Zhang,Qiang <qiang.zhang@windriver.com> wrote:
+On Tue, Jun 23, 2020 at 5:48 AM Carlos Neira <cneirabustos@gmail.com> wrote:
 >
-> There are some message in kernelv5.4, I don't know if it will help.
+> folds tests from test_current_pid_tgid_new_ns into test_progs.
 >
-> demsg:
+> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> ---
+>  tools/testing/selftests/bpf/Makefile          |   3 +-
+>  .../bpf/prog_tests/ns_current_pid_tgid.c      | 112 +++++++++++-
+>  .../bpf/test_current_pid_tgid_new_ns.c        | 159 ------------------
+>  3 files changed, 112 insertions(+), 162 deletions(-)
+>  delete mode 100644 tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
 >
-> cgroup: cgroup: disabling cgroup2 socket matching due to net_prio or
-> net_cls activation
-...
-> -----------[ cut here ]-----------
-> percpu ref (cgroup_bpf_release_fn) <= 0 (-12) after switching to atomic
-> WARNING: CPU: 1 PID: 0 at lib/percpu-refcount.c:161
-> percpu_ref_switch_to_atomic_rcu+0x12a/0x140
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 22aaec74ea0a..7b2ea7adccb0 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -36,8 +36,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+>         test_sock test_btf test_sockmap get_cgroup_id_user test_socket_cookie \
+>         test_cgroup_storage \
+>         test_netcnt test_tcpnotify_user test_sock_fields test_sysctl \
+> -       test_progs-no_alu32 \
+> -       test_current_pid_tgid_new_ns
+> +       test_progs-no_alu32
 
-Yes, this proves we have the refcnt bug which my patch tries to fix.
-The negative refcnt is exactly a consequence of the bug, as without
-my patch we just put the refcnt without holding it first.
+Please update .gitignore as well.
 
-If you can reproduce it, please test my patch:
-https://patchwork.ozlabs.org/project/netdev/patch/20200616180352.18602-1-xiyou.wangcong@gmail.com/
+>
+>  # Also test bpf-gcc, if present
+>  ifneq ($(BPF_GCC),)
 
-But, so far I still don't have a good explanation to the NULL
-pointer deref. I think that one is an older bug, and we need to check
-for NULL even after we fix the refcnt bug, but I do not know how it is
-just exposed recently with Zefan's patch. I am still trying to find an
-explanation.
+[...]
 
-Thanks!
+> +
+> +       snprintf(nspath, sizeof(nspath) - 1, "/proc/%d/ns/pid", ppid);
+> +       pidns_fd = open(nspath, O_RDONLY);
+> +
+> +       if (CHECK(unshare(CLONE_NEWPID),
+> +               "unshare CLONE_NEWPID",
+> +               "error: %s\n", strerror(errno)))
+> +               return;
+> +
+> +       pid = vfork();
+
+is vfork necessary()? Maybe just stick to fork(), as in original implementation?
+
+> +       if (CHECK(pid < 0, "ns_current_pid_tgid_new_ns", "vfork error: %s\n",
+> +           strerror(errno))) {
+> +               return;
+> +       }
+> +       if (pid > 0) {
+> +       printf("waiting pid is %u\n", pid);
+
+indentation off?
+
+> +               usleep(5);
+> +               wait(NULL);
+
+waitpid() for specific child would be more reliable, no?
+
+> +               return;
+> +       } else {
+
+what if fork failed?
+
+> +               const char *probe_name = "raw_tracepoint/sys_enter";
+> +               const char *file = "test_ns_current_pid_tgid.o";
+> +               int err, key = 0, duration = 0;
+> +               struct bpf_link *link = NULL;
+> +               struct bpf_program *prog;
+> +               struct bpf_map *bss_map;
+> +               struct bpf_object *obj;
+> +               struct bss bss;
+> +               struct stat st;
+> +               __u64 id;
+> +
+
+[...]
+
+> +               err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &key, &bss);
+> +               if (CHECK(err, "set_bss", "failed to get bss : %d\n", err))
+> +                       goto cleanup;
+> +
+> +               if (CHECK(id != bss.pid_tgid, "Compare user pid/tgid vs bpf pid/tgid",
+> +                       "User pid/tgid %llu BPF pid/tgid %llu\n", id, bss.pid_tgid))
+> +                       goto cleanup;
+
+
+Good half of all this code could be removed if you used BPF skeleton,
+see other tests utilizing *.skel.h for inspiration.
+
+> +cleanup:
+> +               setns(pidns_fd, CLONE_NEWPID);
+> +               bpf_link__destroy(link);
+> +               bpf_object__close(obj);
+> +       }
+> +}
+> +
+> +void test_ns_current_pid_tgid(void)
+> +{
+> +       if (test__start_subtest("ns_current_pid_tgid_global_ns"))
+> +               test_ns_current_pid_tgid_global_ns();
+> +       if (test__start_subtest("ns_current_pid_tgid_new_ns"))
+> +               test_ns_current_pid_tgid_new_ns();
+> +}
+
+[...]
