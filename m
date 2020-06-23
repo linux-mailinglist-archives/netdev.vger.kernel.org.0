@@ -2,266 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9553020576C
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 18:42:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01F6F2057B3
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 18:46:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732801AbgFWQmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 12:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46944 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732174AbgFWQmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 12:42:42 -0400
-Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83B1C061755
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 09:42:42 -0700 (PDT)
-Received: by mail-qk1-x749.google.com with SMTP id w27so2114941qkw.2
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 09:42:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=EYMTqcYPNSd1+dm5Nyu6dJjrXx/FGaIaL0ZjwplPIjQ=;
-        b=DyxplA2Cgjtr45kDeFCptHg1Qf0Sg76CvzdvQ6KAbg5YBNa4V11HEgZDqgW0Ppv6Yb
-         zzU1cxMT/3p2Dn3R3zPMWpYBDF3zzPRyQOz7f78kzeuUwnZrdD7yYXfw1WRjWVhBcPD6
-         s+L5Pk/e+tj/QBXqqMlM2LUGnrliz0WDjlUOhJeVtfMkVgy+t4j6u7KpoipSxQzOAqKM
-         SCdnP40EoROcurdIVdqQHArMDKvuQJ/D27gVglHgMmJISWlSPsAI1U3dJm0yT5Fd5h+t
-         3tp51cA8P4EGnlOpsf6ZY0niMuWVbmNLjHoEI39Bol5lvK8nD4TKblIHTW081ifgMWcm
-         2jvg==
+        id S1733252AbgFWQq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 12:46:28 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:35671 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1733231AbgFWQqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 12:46:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592930775;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xtESeAIlwwuuldGj0MjFCKFwVmKIYZPcQoRS/U4Z2AU=;
+        b=P0SssR4dQ6DX12Wo9TpPDS4mlr4SmZgyRmkA5L1oIFH1jolgx9657VZFiTnWBl9R1nkV/t
+        S1ez5lnj9ENG3wgSG3X60po2G2XNpiwg2Lixf7bT7Rdq60oPEFOozuEXzieZ7zrwnhHmNS
+        2dOpxXExxG5AHeLin20AhkkjDBsXZVg=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-60-jN6vWV2dOfaWm4Lz8pHHyg-1; Tue, 23 Jun 2020 12:46:14 -0400
+X-MC-Unique: jN6vWV2dOfaWm4Lz8pHHyg-1
+Received: by mail-qv1-f69.google.com with SMTP id s15so15302767qvo.6
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 09:46:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=EYMTqcYPNSd1+dm5Nyu6dJjrXx/FGaIaL0ZjwplPIjQ=;
-        b=Vrvfj3AHY+nsW3YBkiszQ7wH/E1VSRLTJDxwmsrDvcCt6rVq7X7wGqRW0kIQ+Sl9iy
-         wWP5cfSJzm+J/wMSMGNS0iznRnUC651/WGAg0hJl+hTblM/xK5qeBbUVyyHEV2eRLhL2
-         eKnfIWSoX9jrRbEyHHs0l2dMH9s7i2pWVVDcv8VPEWdbIe/PKBFz3Z0tkiftXLYg/Ngr
-         mkvK3pmbPSP9rz5Opd39q7UNfBoKNwzs1/eaH0pQe+ri4Rs/B0Vpsz6jCYD7FSQ319KG
-         od2hPNolpkZNNNvtRDGQd/4uoj20PbCgE3qyDNtdPcaDEL/Jvl/EDv5Q4y4Hk75HujxZ
-         0tIQ==
-X-Gm-Message-State: AOAM533k+q+aqhSvYrdmPFXzQPubUZGkf8QW4rRR3XeaSyC/TWN3/SpK
-        O3JuW9JgyAw+IF+CPJCdWVdfg/zFCEFB
-X-Google-Smtp-Source: ABdhPJwI0rz7XctpWpoJomIHLMbmlSHtKgRHge1DQRZjTH9SqlsVyP/eofzBm03RD4CgVx0ozYRERDM6Kl/W
-X-Received: by 2002:ad4:56ac:: with SMTP id bd12mr27566713qvb.139.1592930561924;
- Tue, 23 Jun 2020 09:42:41 -0700 (PDT)
-Date:   Tue, 23 Jun 2020 09:42:32 -0700
-In-Reply-To: <20200623164232.175846-1-brianvv@google.com>
-Message-Id: <20200623164232.175846-2-brianvv@google.com>
-Mime-Version: 1.0
-References: <20200623164232.175846-1-brianvv@google.com>
-X-Mailer: git-send-email 2.27.0.111.gc72c7da667-goog
-Subject: [PATCH v2 net-next 2/2] ipv6: fib6: avoid indirect calls from fib6_rule_lookup
-From:   Brian Vazquez <brianvv@google.com>
-To:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Brian Vazquez <brianvv@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Luigi Rizzo <lrizzo@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=xtESeAIlwwuuldGj0MjFCKFwVmKIYZPcQoRS/U4Z2AU=;
+        b=ULOmk7hKcuBw/S5mBEVqkCdZIWGQEuxeF3L0xSKzYbfXvOBn382Uj5YU0TEx6IqvUh
+         8Y5YjuM62RfPTLZZx2RBkmePH1wVIbNQnpv63Gjl8g/ZDqi5sbtol/m7vxkjYuVQUXAI
+         IAO9pNPjLk8otZxvwRE6ypRy3ggPmlrRxF2uKJdXji2vX9T3UZU0XdcXS5V0p/umKEzP
+         Tl0Xr4DJyOSibyBx8Y8ULNBE7vZ3cyr3Ddm9a4ZkzXBK3uNceCOW1gqfjO8XUNZ1c6xi
+         pU32cfDEI5LTyyAF1uChHhRcnhAZEXozOG5/3RnUmkNykYxo6cFaFtc5b89n3Im/jsFo
+         H7Dw==
+X-Gm-Message-State: AOAM533/uitmphZd6afu+z13Mfxm7yXr89XQABo6qf4CZywQKfBa32Zo
+        W6KrHA+nQNXzD7+Lp+FXUP3tSRpNkpKgbYtvrn3DmUmpAfz5MMHK4U4yXEpZS0AQO2nw72gMQeY
+        H6upf4hQTxNX1QhVUkKCh/hEag7D8zSp9
+X-Received: by 2002:a05:620a:348:: with SMTP id t8mr20976640qkm.203.1592930772838;
+        Tue, 23 Jun 2020 09:46:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzz/YK3q1LyztX9Y0BARpa7qb402eLsAUxVHw0c9TOmsYRIZiRnSKgf8Mmu2w5ZzLLOzR1QEUReYrD+dUL31gU=
+X-Received: by 2002:a05:620a:348:: with SMTP id t8mr20976616qkm.203.1592930772589;
+ Tue, 23 Jun 2020 09:46:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200619182302.850-1-eperezma@redhat.com> <20200619182302.850-3-eperezma@redhat.com>
+ <20200623103746-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20200623103746-mutt-send-email-mst@kernel.org>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Tue, 23 Jun 2020 18:45:36 +0200
+Message-ID: <CAJaqyWefmaENcnr+qaY3ezE2LoPp3+S_rLby_h1dRn2-N_nWfQ@mail.gmail.com>
+Subject: Re: [RFC v9 02/11] vhost: use batched get_vq_desc version
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     kvm list <kvm@vger.kernel.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It was reported that a considerable amount of cycles were spent on the
-expensive indirect calls on fib6_rule_lookup. This patch introduces an
-inline helper called pol_route_func that uses the indirect_call_wrappers
-to avoid the indirect calls.
+On Tue, Jun 23, 2020 at 4:42 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Fri, Jun 19, 2020 at 08:22:53PM +0200, Eugenio P=C3=83=C2=A9rez wrote:
+> > From: "Michael S. Tsirkin" <mst@redhat.com>
+> >
+> > As testing shows no performance change, switch to that now.
+> >
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > Signed-off-by: Eugenio P=C3=83=C2=A9rez <eperezma@redhat.com>
+> > Link: https://lore.kernel.org/r/20200401183118.8334-3-eperezma@redhat.c=
+om
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > Signed-off-by: Eugenio P=C3=83=C2=A9rez <eperezma@redhat.com>
+> > ---
+> >  drivers/vhost/test.c  |   2 +-
+> >  drivers/vhost/vhost.c | 314 ++++++++----------------------------------
+> >  drivers/vhost/vhost.h |   7 +-
+> >  3 files changed, 61 insertions(+), 262 deletions(-)
+> >
+> > diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+> > index a09dedc79f68..650e69261557 100644
+> > --- a/drivers/vhost/test.c
+> > +++ b/drivers/vhost/test.c
+> > @@ -119,7 +119,7 @@ static int vhost_test_open(struct inode *inode, str=
+uct file *f)
+> >       dev =3D &n->dev;
+> >       vqs[VHOST_TEST_VQ] =3D &n->vqs[VHOST_TEST_VQ];
+> >       n->vqs[VHOST_TEST_VQ].handle_kick =3D handle_vq_kick;
+> > -     vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV,
+> > +     vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV + 64,
+> >                      VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT, true, NU=
+LL);
+> >
+> >       f->private_data =3D n;
+> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > index 2d784681b0fa..13021d6986eb 100644
+> > --- a/drivers/vhost/vhost.c
+> > +++ b/drivers/vhost/vhost.c
+> > @@ -304,6 +304,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+> >  {
+> >       vq->num =3D 1;
+> >       vq->ndescs =3D 0;
+> > +     vq->first_desc =3D 0;
+> >       vq->desc =3D NULL;
+> >       vq->avail =3D NULL;
+> >       vq->used =3D NULL;
+> > @@ -372,6 +373,11 @@ static int vhost_worker(void *data)
+> >       return 0;
+> >  }
+> >
+> > +static int vhost_vq_num_batch_descs(struct vhost_virtqueue *vq)
+> > +{
+> > +     return vq->max_descs - UIO_MAXIOV;
+> > +}
+> > +
+> >  static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
+> >  {
+> >       kfree(vq->descs);
+>
+>
+> Batching is enabled if max_descs > UIO_MAXIOV.
+>
+> So this uses batching for test.
+>
+> But net is unchanged, so it is still not using the batched version.
+> Is that right?
+>
 
-This patch saves around 50ns per call.
+vhost_net already called vhost_dev_init with +VHOST_NET_BATCH (64):
+vhost_dev_init(dev, vqs, VHOST_NET_VQ_MAX,
+               UIO_MAXIOV + VHOST_NET_BATCH,
+...
 
-Performance was measured on the receiver by checking the amount of
-syncookies that server was able to generate under a synflood load.
+So it should be using batching in the same terms as vhost/test.
+However I will double check it.
 
-Traffic was generated using trafgen[1] which was pushing around 1Mpps on
-a single queue. Receiver was using only one rx queue which help to
-create a bottle neck and make the experiment rx-bounded.
+> I think a better subject would be "vhost/test: use batched get_vq_desc ve=
+rsion".
+>
+> And that explains which testing it refers to: the one executed by vhost t=
+est.
+>
+> I think there was a separate patch to enable that for net separately,
+> but it got lost - or did I miss it?
+>
 
-These are the syncookies generated over 10s from the different runs:
+Kind of. In V5 there were two separate commits: One adding the batch
+version and another one making them the default.
 
-Whithout the patch:
-TcpExtSyncookiesSent            3553749            0.0
-TcpExtSyncookiesSent            3550895            0.0
-TcpExtSyncookiesSent            3553845            0.0
-TcpExtSyncookiesSent            3541050            0.0
-TcpExtSyncookiesSent            3539921            0.0
-TcpExtSyncookiesSent            3557659            0.0
-TcpExtSyncookiesSent            3526812            0.0
-TcpExtSyncookiesSent            3536121            0.0
-TcpExtSyncookiesSent            3529963            0.0
-TcpExtSyncookiesSent            3536319            0.0
+Both of them were squashed in V6 but the result got the wrong commit
+message. I will fix this in the next revisions.
 
-With the patch:
-TcpExtSyncookiesSent            3611786            0.0
-TcpExtSyncookiesSent            3596682            0.0
-TcpExtSyncookiesSent            3606878            0.0
-TcpExtSyncookiesSent            3599564            0.0
-TcpExtSyncookiesSent            3601304            0.0
-TcpExtSyncookiesSent            3609249            0.0
-TcpExtSyncookiesSent            3617437            0.0
-TcpExtSyncookiesSent            3608765            0.0
-TcpExtSyncookiesSent            3620205            0.0
-TcpExtSyncookiesSent            3601895            0.0
+But I don't find any specific commit to enable explicitly in net.
 
-Without the patch the average is 354263 pkt/s or 2822 ns/pkt and with
-the patch the average is 360738 pkt/s or 2772 ns/pkt which gives an
-estimate of 50 ns per packet.
+Thanks!
 
-[1] http://netsniff-ng.org/
 
-Changelog since v1:
- - Change ordering in the ICW (Paolo Abeni)
 
-Cc: Luigi Rizzo <lrizzo@google.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Reported-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Brian Vazquez <brianvv@google.com>
----
- include/net/ip6_fib.h | 36 ++++++++++++++++++++++++++++++++++++
- net/ipv6/fib6_rules.c |  9 ++++++---
- net/ipv6/ip6_fib.c    |  3 ++-
- net/ipv6/route.c      |  8 ++++----
- 4 files changed, 48 insertions(+), 8 deletions(-)
 
-diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
-index 3f615a29766e..cc8356fd927f 100644
---- a/include/net/ip6_fib.h
-+++ b/include/net/ip6_fib.h
-@@ -19,6 +19,7 @@
- #include <net/netlink.h>
- #include <net/inetpeer.h>
- #include <net/fib_notifier.h>
-+#include <linux/indirect_call_wrapper.h>
- 
- #ifdef CONFIG_IPV6_MULTIPLE_TABLES
- #define FIB6_TABLE_HASHSZ 256
-@@ -552,6 +553,41 @@ struct bpf_iter__ipv6_route {
- };
- #endif
- 
-+INDIRECT_CALLABLE_DECLARE(struct rt6_info *ip6_pol_route_output(struct net *net,
-+					     struct fib6_table *table,
-+					     struct flowi6 *fl6,
-+					     const struct sk_buff *skb,
-+					     int flags));
-+INDIRECT_CALLABLE_DECLARE(struct rt6_info *ip6_pol_route_input(struct net *net,
-+					     struct fib6_table *table,
-+					     struct flowi6 *fl6,
-+					     const struct sk_buff *skb,
-+					     int flags));
-+INDIRECT_CALLABLE_DECLARE(struct rt6_info *__ip6_route_redirect(struct net *net,
-+					     struct fib6_table *table,
-+					     struct flowi6 *fl6,
-+					     const struct sk_buff *skb,
-+					     int flags));
-+INDIRECT_CALLABLE_DECLARE(struct rt6_info *ip6_pol_route_lookup(struct net *net,
-+					     struct fib6_table *table,
-+					     struct flowi6 *fl6,
-+					     const struct sk_buff *skb,
-+					     int flags));
-+static inline struct rt6_info *pol_lookup_func(pol_lookup_t lookup,
-+						struct net *net,
-+						struct fib6_table *table,
-+						struct flowi6 *fl6,
-+						const struct sk_buff *skb,
-+						int flags)
-+{
-+	return INDIRECT_CALL_4(lookup,
-+			       ip6_pol_route_output,
-+			       ip6_pol_route_input,
-+			       ip6_pol_route_lookup,
-+			       __ip6_route_redirect,
-+			       net, table, fl6, skb, flags);
-+}
-+
- #ifdef CONFIG_IPV6_MULTIPLE_TABLES
- static inline bool fib6_has_custom_rules(const struct net *net)
- {
-diff --git a/net/ipv6/fib6_rules.c b/net/ipv6/fib6_rules.c
-index fafe556d21e0..6053ef851555 100644
---- a/net/ipv6/fib6_rules.c
-+++ b/net/ipv6/fib6_rules.c
-@@ -111,11 +111,13 @@ struct dst_entry *fib6_rule_lookup(struct net *net, struct flowi6 *fl6,
- 	} else {
- 		struct rt6_info *rt;
- 
--		rt = lookup(net, net->ipv6.fib6_local_tbl, fl6, skb, flags);
-+		rt = pol_lookup_func(lookup,
-+			     net, net->ipv6.fib6_local_tbl, fl6, skb, flags);
- 		if (rt != net->ipv6.ip6_null_entry && rt->dst.error != -EAGAIN)
- 			return &rt->dst;
- 		ip6_rt_put_flags(rt, flags);
--		rt = lookup(net, net->ipv6.fib6_main_tbl, fl6, skb, flags);
-+		rt = pol_lookup_func(lookup,
-+			     net, net->ipv6.fib6_main_tbl, fl6, skb, flags);
- 		if (rt->dst.error != -EAGAIN)
- 			return &rt->dst;
- 		ip6_rt_put_flags(rt, flags);
-@@ -226,7 +228,8 @@ static int __fib6_rule_action(struct fib_rule *rule, struct flowi *flp,
- 		goto out;
- 	}
- 
--	rt = lookup(net, table, flp6, arg->lookup_data, flags);
-+	rt = pol_lookup_func(lookup,
-+			     net, table, flp6, arg->lookup_data, flags);
- 	if (rt != net->ipv6.ip6_null_entry) {
- 		err = fib6_rule_saddr(net, rule, flags, flp6,
- 				      ip6_dst_idev(&rt->dst)->dev);
-diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-index 49ee89bbcba0..25a90f3f705c 100644
---- a/net/ipv6/ip6_fib.c
-+++ b/net/ipv6/ip6_fib.c
-@@ -314,7 +314,8 @@ struct dst_entry *fib6_rule_lookup(struct net *net, struct flowi6 *fl6,
- {
- 	struct rt6_info *rt;
- 
--	rt = lookup(net, net->ipv6.fib6_main_tbl, fl6, skb, flags);
-+	rt = pol_lookup_func(lookup,
-+			net, net->ipv6.fib6_main_tbl, fl6, skb, flags);
- 	if (rt->dst.error == -EAGAIN) {
- 		ip6_rt_put_flags(rt, flags);
- 		rt = net->ipv6.ip6_null_entry;
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 82cbb46a2a4f..5852039ca9cf 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -1207,7 +1207,7 @@ static struct rt6_info *ip6_create_rt_rcu(const struct fib6_result *res)
- 	return nrt;
- }
- 
--static struct rt6_info *ip6_pol_route_lookup(struct net *net,
-+INDIRECT_CALLABLE_SCOPE struct rt6_info *ip6_pol_route_lookup(struct net *net,
- 					     struct fib6_table *table,
- 					     struct flowi6 *fl6,
- 					     const struct sk_buff *skb,
-@@ -2274,7 +2274,7 @@ struct rt6_info *ip6_pol_route(struct net *net, struct fib6_table *table,
- }
- EXPORT_SYMBOL_GPL(ip6_pol_route);
- 
--static struct rt6_info *ip6_pol_route_input(struct net *net,
-+INDIRECT_CALLABLE_SCOPE struct rt6_info *ip6_pol_route_input(struct net *net,
- 					    struct fib6_table *table,
- 					    struct flowi6 *fl6,
- 					    const struct sk_buff *skb,
-@@ -2465,7 +2465,7 @@ void ip6_route_input(struct sk_buff *skb)
- 						      &fl6, skb, flags));
- }
- 
--static struct rt6_info *ip6_pol_route_output(struct net *net,
-+INDIRECT_CALLABLE_SCOPE struct rt6_info *ip6_pol_route_output(struct net *net,
- 					     struct fib6_table *table,
- 					     struct flowi6 *fl6,
- 					     const struct sk_buff *skb,
-@@ -2912,7 +2912,7 @@ struct ip6rd_flowi {
- 	struct in6_addr gateway;
- };
- 
--static struct rt6_info *__ip6_route_redirect(struct net *net,
-+INDIRECT_CALLABLE_SCOPE struct rt6_info *__ip6_route_redirect(struct net *net,
- 					     struct fib6_table *table,
- 					     struct flowi6 *fl6,
- 					     const struct sk_buff *skb,
--- 
-2.27.0.111.gc72c7da667-goog
+> --
+> MST
+>
 
