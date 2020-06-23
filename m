@@ -2,84 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3765205874
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 19:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CD6C2058C3
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 19:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732973AbgFWRYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 13:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732565AbgFWRYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 13:24:22 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474CCC061573
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 10:24:21 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id h185so10406095pfg.2
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 10:24:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4MF/jSggblUQtpRz+SrD+6Y1SBuzeSInekmXLwzhUfc=;
-        b=QY8e15EV/lOqQjzm7sBhD7h9hPARrmqF6kIRLnqjlcsJ0X0+huM9cJPb1ItVii/BM0
-         Fr9BWCb3QB/IgdfP6Exrk0QENGBnYSYwrbT6YsJO/m6XSe6hbNeXl0J9yE/iruQyqxtD
-         8Szmou6RsTHdbiUJp1LK5IVKkcaEp1eQ4g4lSYz+j8tK1vm8GP9i/+qXDG0EL6zzEI55
-         mlCdwo2VTr7DKaRyE6d3EQTIHPa01qVCJAZV0OjlNCqGnA7j3tkBx480I2Vpba6VCJlX
-         7LT/QK+hIWiOCn/eAidD8aHiqJPCHLpisfI+6uiSMRbTZGVy55l7mAkZvHuy7kzNI4NV
-         XouA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4MF/jSggblUQtpRz+SrD+6Y1SBuzeSInekmXLwzhUfc=;
-        b=Bfc/R0OyvHuHwFSOl3tKebXqVdmLGgBU4CASqHcWEp1rrPcu1vWjIp3p8NJ0UhsTf3
-         ALbtoa3FoDEjEFVhHrFvLEQosycst8PbEd8sxGr0t5AILfCu1EPWXrOI4hHo0jKBEW3j
-         oiUflyo4JsuMLLBDxZ2igd3pq7oHb269ohQR5esIaXyWJ7FWw8+Z9T6dqN39ECvWz6yc
-         LVLYpRgK3AGHxg7w8iNTaxDYXann4lSKYJ+chYijdBy8ZLCLjH/4lt0wMZQ3oT7qLLzT
-         HpPJOxddtwgPKgD/ktrBK1a+zA0O7dP7oTx1r4VCbzzW5RDg1oBReQlMvV1NsKferXtN
-         cZBA==
-X-Gm-Message-State: AOAM531ZNgr8HKYpY4XSGaQ5ySnGP4uRBZYi5sMUN34JM4OOMOipExas
-        z9SuXsOxRDhQYMTpoa2Zo9FHjryii4c=
-X-Google-Smtp-Source: ABdhPJx5YBQkY7Smpf/jFf0VTa5RQXg0bpGV8eQlyNr8isqqBzx8E965LYlaJNvn7XK3wxv038ErcQ==
-X-Received: by 2002:aa7:9818:: with SMTP id e24mr26819011pfl.30.1592933060234;
-        Tue, 23 Jun 2020 10:24:20 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id k2sm14379805pgm.11.2020.06.23.10.24.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Jun 2020 10:24:19 -0700 (PDT)
-Date:   Tue, 23 Jun 2020 10:24:11 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     Xose Vazquez Perez <xose.vazquez@gmail.com>
-Subject: [ANNOUNCE] bridge-utils 1.7
-Message-ID: <20200623102411.4bd23197@hermes.lan>
+        id S1733223AbgFWRfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 13:35:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60180 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1733205AbgFWRfe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 13:35:34 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0AFD720781;
+        Tue, 23 Jun 2020 17:35:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1592933733;
+        bh=vdb3TveFjyvQks47AHenerdqgenOBvw1z+LsNwim0kQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XLNkOuHbMVdK5S79oDNOl+JlhqPAB58SCoLvZuPGy6ypObM002S9nreR/lAuMZS62
+         um3M+p0nFH8vHKlC+deWdg1MM/sN3/IbA8P9XSgn/JSKjrBjUCgbOrZ8BtfbL0U6Vp
+         YUg6dtggA/4iM+gDnTLC7KAImq+AVbqpm/RO6VuA=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.7 08/28] ibmvnic: Harden device login requests
+Date:   Tue, 23 Jun 2020 13:35:03 -0400
+Message-Id: <20200623173523.1355411-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200623173523.1355411-1-sashal@kernel.org>
+References: <20200623173523.1355411-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It has been over 4 years since last bridge-utils release.
-The code is deprecated/dead/frozen at this point but worth putting
-out release to get rid of enslave references.
+From: Thomas Falcon <tlfalcon@linux.ibm.com>
 
-Current git repo is at:
-    git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/bridge-utils.git
+[ Upstream commit dff515a3e71dc8ab3b9dcc2e23a9b5fca88b3c18 ]
 
+The VNIC driver's "login" command sequence is the final step
+in the driver's initialization process with device firmware,
+confirming the available device queue resources to be utilized
+by the driver. Under high system load, firmware may not respond
+to the request in a timely manner or may abort the request. In
+such cases, the driver should reattempt the login command
+sequence. In case of a device error, the number of retries
+is bounded.
 
-Also, it is opportunity to make it clear in README that no further
-changes are expected.
+Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
-Aleksander Morgado (1):
-      libbridge: add missing sys/time.h include in header
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 197dc5b2c0905..c265917487e84 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -842,12 +842,13 @@ static int ibmvnic_login(struct net_device *netdev)
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+ 	unsigned long timeout = msecs_to_jiffies(30000);
+ 	int retry_count = 0;
++	int retries = 10;
+ 	bool retry;
+ 	int rc;
+ 
+ 	do {
+ 		retry = false;
+-		if (retry_count > IBMVNIC_MAX_QUEUES) {
++		if (retry_count > retries) {
+ 			netdev_warn(netdev, "Login attempts exceeded\n");
+ 			return -1;
+ 		}
+@@ -862,11 +863,23 @@ static int ibmvnic_login(struct net_device *netdev)
+ 
+ 		if (!wait_for_completion_timeout(&adapter->init_done,
+ 						 timeout)) {
+-			netdev_warn(netdev, "Login timed out\n");
+-			return -1;
++			netdev_warn(netdev, "Login timed out, retrying...\n");
++			retry = true;
++			adapter->init_done_rc = 0;
++			retry_count++;
++			continue;
+ 		}
+ 
+-		if (adapter->init_done_rc == PARTIALSUCCESS) {
++		if (adapter->init_done_rc == ABORTED) {
++			netdev_warn(netdev, "Login aborted, retrying...\n");
++			retry = true;
++			adapter->init_done_rc = 0;
++			retry_count++;
++			/* FW or device may be busy, so
++			 * wait a bit before retrying login
++			 */
++			msleep(500);
++		} else if (adapter->init_done_rc == PARTIALSUCCESS) {
+ 			retry_count++;
+ 			release_sub_crqs(adapter, 1);
+ 
+-- 
+2.25.1
 
-David Michael (1):
-      libbridge: Include the configured CFLAGS when compiling
-
-Stephen Hemminger (4):
-      brctl: fix signed/unsigned comparison warnings
-      Remove out of date TODO
-      Replace references to enslave
-      README: mark bridge-utils as deprecated
