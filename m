@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D7972067D2
+	by mail.lfdr.de (Postfix) with ESMTP id 8A5652067D3
 	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 01:02:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388244AbgFWXB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 19:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49054 "EHLO
+        id S2388294AbgFWXCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 19:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388185AbgFWXB6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 19:01:58 -0400
+        with ESMTP id S2388185AbgFWXCA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 19:02:00 -0400
 Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B0FC061573
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 16:01:58 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id w7so53048edt.1
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 16:01:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382A8C061573
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 16:02:00 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id cy7so42671edb.5
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 16:02:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0SmOR+oMRjSFZ3fgb9UmqPxABn3hoz6kTNhtlRoukMk=;
-        b=RABcm4TAEWfT0irzHefq59/g2rW+/VPX+KalVvlelJIeHGhBcbTfpDt8y1Q/gX7ERr
-         JmylfV5NZEBFsWox+c1t+p8blzq/J3u4tbrpkN1+Md9aOI/2zc2nGEp5M8C8Slsh/tiH
-         5Yt7AurAli9D9diJ3oKp5eA2Fg5sET0wU41vQ=
+        bh=2sqXVTvo6Nrfx3CgxvFalUAC0NEinoekNFgnjtbM1C8=;
+        b=AeeLKsGTq6yg/hWGAnv2oQrxlzZg4afVAsSuC2gJebInBXAqc8B+0iOzEmCLjabIJf
+         c3WIz4eapd6W4rJfbtB9LRKFFfch4wIHs2nBcEY2UxiCo3MlBLrBc6Ji1sPq5DwtvDdB
+         SsNhZZHKZ2zFyPuShgHxlMchHqHkuTFL8D+kY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=0SmOR+oMRjSFZ3fgb9UmqPxABn3hoz6kTNhtlRoukMk=;
-        b=T3vNBiCPD0ZPG1DsLBZelgyoh40p0X9rPaSKW4hEDMRF9k3pYnRqsVnY6b3DRTxbSP
-         nS4uQe+df0IJ1fVaXOAfSVzI3jEzo+1VZewzyNZA1nPtejKMhr1GP67iuw7b6rasfast
-         IbTFb0QATBhSjTU8Bp2K6jKTde36drrnTnwPJTTlEZ8aFRH+l9X+xDA+uTq0sxDK02QT
-         y9mO4vS+7B5FZ93++RtIY1lfMKaoX+NYlKVvRy0LTKAt9r70w4wmhpYCAU2YP+y46BVd
-         CXPzLBxZBUYw8HFvs0SuLIpgQrJnUKbycUheq6GPsHUZyC17cBh+CcnQ7ouv3+IK4HCX
-         uO8Q==
-X-Gm-Message-State: AOAM530z64yPTT0qdYsfWQrVvJSMERyP/cEUCciag49xA9t64bsaHq+m
-        52dYONWfezHlbyI7ADDCpFbHVA==
-X-Google-Smtp-Source: ABdhPJwJNNGhyGi4MHT7vb4XA6g8ciNN5rSjHHdm1yUIaHvjyeYjOHqMvTSr4KAbb/yJToC80p0nhA==
-X-Received: by 2002:aa7:cd6c:: with SMTP id ca12mr24445223edb.36.1592953316862;
-        Tue, 23 Jun 2020 16:01:56 -0700 (PDT)
+        bh=2sqXVTvo6Nrfx3CgxvFalUAC0NEinoekNFgnjtbM1C8=;
+        b=LHlxVadsEDaFDlI/i4Vo7VKoLxSjbgcEIAaCTqh6KS5wa8Yz6L/IaoR7aopDZ9uOhH
+         ilsAhR85qw9JWjVmRwOI/xdooGdCvuuI8GUPbAwdvQLZ7FktVZ91UDJ6uZdzEJkAhXiL
+         SYU48y4K4bbxOk+7LNP77rzhRgtiquDJbE5A+rQX4jIPLNGRetMgXQcvaTZOZSwubfr3
+         qWOzK8mMmKVFxadaQBNREyzbbs4OkyEst8kPWyOnbX+yS1lS6KvnwcWt3CezH4ar0CCV
+         SmqlEqEZ46Th8CGObOxr2GTVHy3pQvxVMdBil/XOeCAyWr/9gnWnNHFy3C+ejVK04mGd
+         4eYw==
+X-Gm-Message-State: AOAM5307MjGchqR65f6WOU3Zkj5/Az44Y4OZChGvIizzcCvkKBaoyVZ0
+        9zh5YlZ4cWfzLJ5ciAgEHU1nvQ==
+X-Google-Smtp-Source: ABdhPJzyCjO4Qdgui3q1kucMPkqunuLBGz93e6L76zngolX/u0NG99Ucx28KkuiiwfExCIJKdi95Ew==
+X-Received: by 2002:a05:6402:1761:: with SMTP id da1mr23683039edb.68.1592953318840;
+        Tue, 23 Jun 2020 16:01:58 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id cw19sm8205865ejb.39.2020.06.23.16.01.55
+        by smtp.gmail.com with ESMTPSA id cw19sm8205865ejb.39.2020.06.23.16.01.57
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 Jun 2020 16:01:56 -0700 (PDT)
+        Tue, 23 Jun 2020 16:01:58 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 2/4] bnxt_en: Do not enable legacy TX push on older firmware.
-Date:   Tue, 23 Jun 2020 19:01:36 -0400
-Message-Id: <1592953298-20858-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 3/4] bnxt_en: Fix statistics counters issue during ifdown with older firmware.
+Date:   Tue, 23 Jun 2020 19:01:37 -0400
+Message-Id: <1592953298-20858-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1592953298-20858-1-git-send-email-michael.chan@broadcom.com>
 References: <1592953298-20858-1-git-send-email-michael.chan@broadcom.com>
@@ -57,44 +57,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Older firmware may not support legacy TX push properly and may not
-be disabling it.  So we check certain firmware versions that may
-have this problem and disable legacy TX push unconditionally.
+On older firmware, the hardware statistics are not cleared when the
+driver frees the hardware stats contexts during ifdown.  The driver
+expects these stats to be cleared and saves a copy before freeing
+the stats contexts.  During the next ifup, the driver will likely
+allocate the same hardware stats contexts and this will cause a big
+increase in the counters as the old counters are added back to the
+saved counters.
 
-Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+We fix it by making an additional firmware call to clear the counters
+before freeing the hw stats contexts when the firmware is the older
+20.x firmware.
+
+Fixes: b8875ca356f1 ("bnxt_en: Save ring statistics before reset.")
+Reported-by: Jakub Kicinski <kicinski@fb.com>
+Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 ++-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 0ad8d49..f8c50b1 100644
+index f8c50b1..6dc7cc4 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -6976,7 +6976,8 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
- 		bp->fw_cap |= BNXT_FW_CAP_ERR_RECOVER_RELOAD;
+@@ -6292,6 +6292,7 @@ int bnxt_hwrm_set_coal(struct bnxt *bp)
  
- 	bp->tx_push_thresh = 0;
--	if (flags & FUNC_QCAPS_RESP_FLAGS_PUSH_MODE_SUPPORTED)
-+	if ((flags & FUNC_QCAPS_RESP_FLAGS_PUSH_MODE_SUPPORTED) &&
-+	    BNXT_FW_MAJ(bp) > 217)
- 		bp->tx_push_thresh = BNXT_TX_PUSH_THRESH;
+ static void bnxt_hwrm_stat_ctx_free(struct bnxt *bp)
+ {
++	struct hwrm_stat_ctx_clr_stats_input req0 = {0};
+ 	struct hwrm_stat_ctx_free_input req = {0};
+ 	int i;
  
- 	hw_resc->max_rsscos_ctxs = le16_to_cpu(resp->max_rsscos_ctx);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 858440e..78e2fd6 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1749,6 +1749,7 @@ struct bnxt {
- 	u64			fw_ver_code;
- #define BNXT_FW_VER_CODE(maj, min, bld, rsv)			\
- 	((u64)(maj) << 48 | (u64)(min) << 32 | (u64)(bld) << 16 | (rsv))
-+#define BNXT_FW_MAJ(bp)		((bp)->fw_ver_code >> 48)
+@@ -6301,6 +6302,7 @@ static void bnxt_hwrm_stat_ctx_free(struct bnxt *bp)
+ 	if (BNXT_CHIP_TYPE_NITRO_A0(bp))
+ 		return;
  
- 	__be16			vxlan_port;
- 	u8			vxlan_port_cnt;
++	bnxt_hwrm_cmd_hdr_init(bp, &req0, HWRM_STAT_CTX_CLR_STATS, -1, -1);
+ 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_STAT_CTX_FREE, -1, -1);
+ 
+ 	mutex_lock(&bp->hwrm_cmd_lock);
+@@ -6310,7 +6312,11 @@ static void bnxt_hwrm_stat_ctx_free(struct bnxt *bp)
+ 
+ 		if (cpr->hw_stats_ctx_id != INVALID_STATS_CTX_ID) {
+ 			req.stat_ctx_id = cpu_to_le32(cpr->hw_stats_ctx_id);
+-
++			if (BNXT_FW_MAJ(bp) <= 20) {
++				req0.stat_ctx_id = req.stat_ctx_id;
++				_hwrm_send_message(bp, &req0, sizeof(req0),
++						   HWRM_CMD_TIMEOUT);
++			}
+ 			_hwrm_send_message(bp, &req, sizeof(req),
+ 					   HWRM_CMD_TIMEOUT);
+ 
 -- 
 1.8.3.1
 
