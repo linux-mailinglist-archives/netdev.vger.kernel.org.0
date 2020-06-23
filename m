@@ -2,386 +2,622 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46AB12050D8
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 13:36:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59BF0205136
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 13:49:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732517AbgFWLfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 07:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732501AbgFWLfV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 07:35:21 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6930FC061573
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 04:35:20 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id g18so11100981wrm.2
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 04:35:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=so/eR9c8n/fC+sow3/DJAceBbVn03guIfZvf2Xc25l4=;
-        b=Zdxa40+fm79tuktMzZLUj3oa4v35qq62K5NYA8PLO91VVV7PBe2kLoDj4PAWMh0IQF
-         nPCquXBcHAhV4RhHcGUyk03sDFjU2PGB6aF1ohF2Ko8BBdLpvxGKFitqa8ohA/yE+z/b
-         RuQMZSTk150YrGMJGQLh+WWc85V0Zn9/yNCas=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=so/eR9c8n/fC+sow3/DJAceBbVn03guIfZvf2Xc25l4=;
-        b=plFwLGAgzmdpW9I3vQ757jCYmpKXD3rqxxsx0A2n++0F/t7xoMxPzABGZEAj1hp0rO
-         /U5K2I6kOQn9CtCH5PZ1hMuYTgwk6bPf/41JaY/zLef7NEMkXYZFwMCpbI6iExfIKQRC
-         G67r4Bfwq2shjfucnYCY7RJEGX2sOA+YbAxBanShu0N8KxRfF/8iuJXC0HWjFK47qMCR
-         vacgHB8tB6G6IFyMDuSQPmAwKmtA0vb8jA4P4NoZus8d7ojPktGkbzvsKF5SiYp9K+ra
-         rDhuM65yDtdklg2b9TVhrnsU68kQRDNLEfV1ENrRigOasWnN/DHUNl/n5tE1FHIjdPya
-         zxYA==
-X-Gm-Message-State: AOAM531l8xRdf6TFJM4kpm8V/tlEojtUtwCP7nNpBtSI1M0JAmvqv5s8
-        WqM+6iT6s/hyBtOjChxyloh0rg==
-X-Google-Smtp-Source: ABdhPJxUzTJSSQTvf9GbrbYbFw3QEgIBfeW89owiv5iDAixhXCrw1pheHxCmE8pZLyGwFBcweEKK0g==
-X-Received: by 2002:adf:8b18:: with SMTP id n24mr25990780wra.372.1592912118841;
-        Tue, 23 Jun 2020 04:35:18 -0700 (PDT)
-Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id r3sm2237604wrg.70.2020.06.23.04.35.15
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 Jun 2020 04:35:18 -0700 (PDT)
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com, kuba@kernel.org,
-        jiri@mellanox.com, jiri@resnulli.us,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [RFC net-next] devlink: Add reset subcommand.
-Date:   Tue, 23 Jun 2020 17:02:49 +0530
-Message-Id: <1592911969-10611-1-git-send-email-vasundhara-v.volam@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1732476AbgFWLtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 07:49:36 -0400
+Received: from mail-eopbgr70072.outbound.protection.outlook.com ([40.107.7.72]:21252
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732464AbgFWLtg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 07:49:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mY3OaUtNG42nAak1LoCXIWiwF372kfqfg0umLyTiqx98f9EzLAFqEiwaRXBby08DO1EDbH3m9zzzQF7GqYh4xUSprwASNuxZoaK5Y10xmM5RNn6vw2GpUuqRHjxY8M5RUVY9piZK5tUmkhHN7NNXL/F9bj0PFORc5csEujxxVdzCtyvWCYViYEHfqCIOxSO3Ic2dKQv8bg3Acih4oVDUYBXtwHDfvpZray04MOOToxGr2xM3CRFCQmrVXFakGyONcDrTtV4pKpxxUaD9PNHQ2C3SEMdjcmJpTWWva4rL84jCoKpeKyZGSynU1bkzl1pBIz28nehvSIqGPsrsoe/JWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YAEwwy2Nh8k0m0W7u+nqOW9IDlKXxzEeZRT5AQeYkfQ=;
+ b=B9/tIltq1kiwFoPjnxzyegDnAIBDetMWCyGHB4SnrNC/1OuwKcTc2WxP5tYWDSSUciZOW8qNOkJ9/h1YkPJApCC5ilbKW2eRTtRypE/2l5oC6RbCFDhzCtnz3jBhswxY/1Fm2IzAGOO9SlgDw7aqUUv0SWmloHw4jU+w4YV6NeQmCpGzkG0641N6oCaOUrv780lrVwdmTsKAkKPcDFD6oVCKbjdHIVSkfH4d2yEdZy88fC0mU8EH+VE/uIuqrnLxwsqY04WyhreRyOIKAoRQzRxhWkrrw4+LVayMCE+XNFhFJaKs5d3CfhjCXAQkUym9HTE457uiv2/J9plULF963g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YAEwwy2Nh8k0m0W7u+nqOW9IDlKXxzEeZRT5AQeYkfQ=;
+ b=JHPPNazucEp3o5B7+fY0O8zpqTmti5Udx513EmQ6YvwY1wL7lEDRTlge+Pdw9HYlEn412fj/xPme5grWGoQYBRCTzc3W5VhK2j2f7RhiimgTymASyjVtYQSFDg7Veo+Ga5mfAnT5fJai5a6ybVvi02uiJe5F0/knyPOuEKuemYc=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR0402MB2815.eurprd04.prod.outlook.com
+ (2603:10a6:800:ae::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Tue, 23 Jun
+ 2020 11:49:28 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::e5d7:ec32:1cfe:71f0]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::e5d7:ec32:1cfe:71f0%7]) with mapi id 15.20.3109.027; Tue, 23 Jun 2020
+ 11:49:28 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>
+Subject: RE: [PATCH net-next v3 4/9] net: phy: add Lynx PCS module
+Thread-Topic: [PATCH net-next v3 4/9] net: phy: add Lynx PCS module
+Thread-Index: AQHWSB8i6O1VV8JY/EKrA1u100I5/KjkauQAgAGhaOA=
+Date:   Tue, 23 Jun 2020 11:49:28 +0000
+Message-ID: <VI1PR0402MB387117BC6F2B53E521F6D7EBE0940@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+References: <20200621225451.12435-1-ioana.ciornei@nxp.com>
+ <20200621225451.12435-5-ioana.ciornei@nxp.com>
+ <20200622101200.GC1551@shell.armlinux.org.uk>
+In-Reply-To: <20200622101200.GC1551@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.56.128]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 3c5b0690-6b71-45ec-1a8f-08d8176b7c18
+x-ms-traffictypediagnostic: VI1PR0402MB2815:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB2815C51E6C223F75ACAECF1EE0940@VI1PR0402MB2815.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2582;
+x-forefront-prvs: 04433051BF
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: g7oyO5Deos2UtFIbh1lEI9OjrKlI6bt0TyaNhsXyEIeV9MVSUp8+yKUR5+TtDM3vzLtR42un6LLiPFUfmx3xsIrrIbGZK8oMhuzXFsotsIceN57smMadTFRuueGwQJxM4Wz7QFldiTeZtoe/jid+t/v2ON90CaArwwak7vuhU25d3j2FCyyVhcHzhOuf95Ju6ykc4A+9XgPKLP4GZKDMhs2B5NIoUeL+bb5ToVIhObZy1gPSkc/pTb1KxDPQFdgZ3+SVJIUhXuRPXw+qgWvbFQ5YVcVnIOd+7kpx8ho6V5Ml2W4/bnoKXYrKZnqGMQNO
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(5660300002)(8936002)(54906003)(2906002)(64756008)(66476007)(66946007)(30864003)(4326008)(83380400001)(66556008)(55016002)(9686003)(8676002)(186003)(33656002)(498600001)(86362001)(44832011)(76116006)(7696005)(52536014)(6916009)(6506007)(71200400001)(26005)(66446008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: dH6pPRGfBR4VJGJguH1TbLzRrJCY7wsX1ZfuhFm0E2xGJUEANrLe5ADgmCiP0f245UmzKHIpSnEcrrcjNwt21A7tXw5aG/zGayhNnlafLUX9YjalzC/fmR9B3SMEtB2WIQMei9+TQhcP7bNB83AsBmDLJWMmHs9l/L7BdSvLchzWckT2VC9EXqjwmvMIx7lGFR1BajLjDH0iCNEMK+rqKeYszUOvSYoEeQJYxUSy9Eqz66XIXGMjIskrNigF8+nxy+lr+6fv3wW5UBaQ5x6FOXfaMC73syGN7bKnkzgrIrbKEAzG8bOEOoQsQVW+D0fYpsISB0v95pOYty3SAv3Aw3vXw6x4FC0A44mN8MHAdDlh3D5zpu+z5ySa4fB5tupybSUzSCjOil1kBkNJ72+/nmWsa3/BUx9BlrWkY78+7deQCdJfaoGjrTLeW67LNkyCrJFFQ/YB9Kvl+9Newbq/+92MYzca7xbT3VUjO1krmMc=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c5b0690-6b71-45ec-1a8f-08d8176b7c18
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jun 2020 11:49:28.2499
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 22BH6z4EzGmGy7Ba5oce9J1gTFmsqDt7fSugTGgefDj1UOUAtszB+HAhER1/dDWX12dHmOfQfxZXq2+BOftzgQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2815
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Advanced NICs support live reset of some of the hardware
-components, that resets the device immediately with all the
-host drivers loaded.
 
-Add devlink reset subcommand to support live and deferred modes
-of reset. It allows to reset the hardware components of the
-entire device and supports the following fields:
+> Subject: Re: [PATCH net-next v3 4/9] net: phy: add Lynx PCS module
+>=20
+> On Mon, Jun 22, 2020 at 01:54:46AM +0300, Ioana Ciornei wrote:
+> > Add a Lynx PCS module which exposes the necessary operations to drive
+> > the PCS using PHYLINK.
+> >
+> > The majority of the code is extracted from the Felix DSA driver, which
+> > will be also modified in a later patch, and exposed as a separate
+> > module for code reusability purposes.
+> >
+> > At the moment, USXGMII (only with in-band AN and speeds up to 2500),
+> > SGMII, QSGMII and 2500Base-X (only w/o in-band AN) are supported by
+> > the Lynx PCS module since these were also supported by Felix.
+> >
+> > The module can only be enabled by the drivers in need and not user
+> > selectable.
+> >
+> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > ---
+> > Changes in v2:
+> >  * got rid of the mdio_lynx_pcs structure and directly exported the
+> > functions without the need of an indirection
+> >  * solved the broken allmodconfig build test by making the module
+> > tristate instead of bool
+> >
+> > Changes in v3:
+> >  * renamed the file to pcs-lynx.c
+> >
+> >
+> >  MAINTAINERS                |   7 +
+> >  drivers/net/phy/Kconfig    |   6 +
+> >  drivers/net/phy/Makefile   |   1 +
+> >  drivers/net/phy/pcs-lynx.c | 337
+> +++++++++++++++++++++++++++++++++++++
+> >  include/linux/pcs-lynx.h   |  25 +++
+> >  5 files changed, 376 insertions(+)
+> >  create mode 100644 drivers/net/phy/pcs-lynx.c  create mode 100644
+> > include/linux/pcs-lynx.h
+> >
 
-component:
-----------
-1. MGMT : Management processor.
-2. IRA : Interrupt requester.
-3. DMA : DMA engine.
-4. FILTER : Filtering/flow direction.
-5. OFFLOAD : Protocol offload.
-6. MAC : Media access controller.
-7. PHY : Transceiver/PHY.
-8. RAM : RAM shared between multiple components.
-9. ROCE : RoCE management processor.
-10. AP : Application processor.
-11. All : All possible components.
+(...)
 
-Drivers are allowed to reset only a subset of requested components.
+> > diff --git a/drivers/net/phy/pcs-lynx.c b/drivers/net/phy/pcs-lynx.c
+> > new file mode 100644 index 000000000000..23bdd9db4340
+> > --- /dev/null
+> > +++ b/drivers/net/phy/pcs-lynx.c
+> > @@ -0,0 +1,337 @@
+> > +// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+> > +/* Copyright 2020 NXP
+> > + * Lynx PCS MDIO helpers
+> > + */
+> > +
+> > +#include <linux/mdio.h>
+> > +#include <linux/phylink.h>
+> > +#include <linux/pcs-lynx.h>
+> > +
+> > +#define SGMII_CLOCK_PERIOD_NS		8 /* PCS is clocked at 125 MHz
+> */
+> > +#define SGMII_LINK_TIMER_VAL(ns)	((u32)((ns) /
+> SGMII_CLOCK_PERIOD_NS))
+> > +
+> > +#define SGMII_AN_LINK_TIMER_NS		1600000 /* defined by SGMII
+> spec */
+> > +
+> > +#define SGMII_LINK_TIMER_LO		0x12
+> > +#define SGMII_LINK_TIMER_HI		0x13
+> > +#define SGMII_IF_MODE			0x14
+> > +#define SGMII_IF_MODE_SGMII_EN		BIT(0)
+> > +#define SGMII_IF_MODE_USE_SGMII_AN	BIT(1)
+> > +#define SGMII_IF_MODE_SPEED(x)		(((x) << 2) & GENMASK(3, 2))
+> > +#define SGMII_IF_MODE_SPEED_MSK		GENMASK(3, 2)
+> > +#define SGMII_IF_MODE_DUPLEX		BIT(4)
+>=20
+> Given that this is in the .c file, and this code will be re-used in other=
+ places where
+> there is support for more than Cisco SGMII, can we lose the SGMII_ prefix
+> please?  Maybe use names such as those I have in "dpaa2-mac: add 1000BASE=
+-
+> X/SGMII PCS support" ?
 
-width:
-------
-1. single - Single function.
-2. multi  - Multiple functions.
+Yep, I can do that.=20
 
-mode:
------
-1. deferred - Reset will happen after unloading all the host drivers
-              on the device. This is be default reset type, if user
-              does not specify the type.
-2. live - Reset will happen immediately with all host drivers loaded
-          in real time. If the live reset is not supported, driver
-          will return the error.
+>=20
+> (I hate the way a single lane gigabit serdes link that supports 1000base-=
+x gets
+> incorrectly called "SGMII".)
+>=20
+> > +
+> > +#define USXGMII_ADVERTISE_LSTATUS(x)	(((x) << 15) & BIT(15))
+> > +#define USXGMII_ADVERTISE_FDX		BIT(12)
+> > +#define USXGMII_ADVERTISE_SPEED(x)	(((x) << 9) & GENMASK(11, 9))
+> > +
+> > +#define USXGMII_LPA_LSTATUS(lpa)	((lpa) >> 15)
+> > +#define USXGMII_LPA_DUPLEX(lpa)		(((lpa) & GENMASK(12, 12)) >>
+> 12)
+> > +#define USXGMII_LPA_SPEED(lpa)		(((lpa) & GENMASK(11, 9)) >> 9)
+> > +
+> > +enum usxgmii_speed {
+> > +	USXGMII_SPEED_10	=3D 0,
+> > +	USXGMII_SPEED_100	=3D 1,
+> > +	USXGMII_SPEED_1000	=3D 2,
+> > +	USXGMII_SPEED_2500	=3D 4,
+> > +};
+>=20
+> These are not specific to the Lynx PCS, but are the standard layout of th=
+e
+> USXGMII word.  These ought to be in a header file similar to what we do w=
+ith
+> the SGMII definitions in include/uapi/linux/mii.h.
+> I think as these are Clause 45, they possibly belong in include/uapi/linu=
+x/mdio.h
+> ?  In any case, one of my comments below suggests that some of the uses o=
+f
+> these definitions should be moved into phylink's helpers.
+>
 
-This patch is a proposal in continuation to discussion to the
-following thread:
+Ok, since these are described in the USXGMII standard I can move them to th=
+e generic header (mdio.h).
+I will comment below about their usage in phylink's helpers.
+=20
+> > +
+> > +enum sgmii_speed {
+> > +	SGMII_SPEED_10		=3D 0,
+> > +	SGMII_SPEED_100		=3D 1,
+> > +	SGMII_SPEED_1000	=3D 2,
+> > +	SGMII_SPEED_2500	=3D 2,
+> > +};
+> > +
+> > +static void lynx_pcs_an_restart_usxgmii(struct mdio_device *pcs) {
+> > +	mdiobus_c45_write(pcs->bus, pcs->addr,
+> > +			  MDIO_MMD_VEND2, MII_BMCR,
+> > +			  BMCR_RESET | BMCR_ANENABLE |
+> BMCR_ANRESTART); }
+>=20
+> Phylink will not call *_an_restart() for USXGMII, so this code is unreach=
+able.
+>=20
+> > +
+> > +void lynx_pcs_an_restart(struct mdio_device *pcs, phy_interface_t
+> > +ifmode) {
+> > +	switch (ifmode) {
+> > +	case PHY_INTERFACE_MODE_SGMII:
+> > +	case PHY_INTERFACE_MODE_QSGMII:
+> > +		phylink_mii_c22_pcs_an_restart(pcs);
+>=20
+> Phylink will not call *_an_restart() for SGMII, so this code is unreachab=
+le.
+>=20
 
-"[PATCH v3 net-next 0/6] bnxt_en: Add 'enable_live_dev_reset' and 'allow_live_dev_reset' generic devlink params."
+Good point. I'll remove this and the above one.
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_USXGMII:
+> > +		lynx_pcs_an_restart_usxgmii(pcs);
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_2500BASEX:
+> > +		break;
+> > +	default:
+> > +		dev_err(&pcs->dev, "Invalid PCS interface type %s\n",
+> > +			phy_modes(ifmode));
+> > +		break;
+> > +	}
+> > +}
+> > +EXPORT_SYMBOL(lynx_pcs_an_restart);
+> > +
+> > +static void lynx_pcs_get_state_usxgmii(struct mdio_device *pcs,
+> > +				       struct phylink_link_state *state) {
+> > +	struct mii_bus *bus =3D pcs->bus;
+> > +	int addr =3D pcs->addr;
+> > +	int status, lpa;
+> > +
+> > +	status =3D mdiobus_c45_read(bus, addr, MDIO_MMD_VEND2,
+> MII_BMSR);
+> > +	if (status < 0)
+> > +		return;
+> > +
+> > +	state->link =3D !!(status & MDIO_STAT1_LSTATUS);
+> > +	state->an_complete =3D !!(status & MDIO_AN_STAT1_COMPLETE);
+> > +	if (!state->link || !state->an_complete)
+> > +		return;
+> > +
+> > +	lpa =3D mdiobus_c45_read(bus, addr, MDIO_MMD_VEND2, MII_LPA);
+> > +	if (lpa < 0)
+> > +		return;
+> > +
+> > +	switch (USXGMII_LPA_SPEED(lpa)) {
+> > +	case USXGMII_SPEED_10:
+> > +		state->speed =3D SPEED_10;
+> > +		break;
+> > +	case USXGMII_SPEED_100:
+> > +		state->speed =3D SPEED_100;
+> > +		break;
+> > +	case USXGMII_SPEED_1000:
+> > +		state->speed =3D SPEED_1000;
+> > +		break;
+> > +	case USXGMII_SPEED_2500:
+> > +		state->speed =3D SPEED_2500;
+> > +		break;
+> > +	default:
+> > +		break;
+> > +	}
+> > +
+> > +	if (USXGMII_LPA_DUPLEX(lpa))
+> > +		state->duplex =3D DUPLEX_FULL;
+> > +	else
+> > +		state->duplex =3D DUPLEX_HALF;
+>=20
+> This should be added to phylink_mii_c45_pcs_get_state().  There is nothin=
+g that
+> is Lynx PCS specific here.
 
-and here is the URL to the patch series:
+The USXGMII standard only describes the auto-negotiation word, not the MMD
+where this can be found (MMD_VEND2 in this case).
+I would not add a generic phylink herper that reads the MMD and also decode=
+s it.
+Maybe a helper that just decodes the USXGMII word read from the
+Lynx module - phylink_decode_usxgmii_word(state, lpa) ?
 
-https://patchwork.ozlabs.org/project/netdev/list/?series=180426&state=*
+>=20
+> > +}
+> > +
+> > +static void lynx_pcs_get_state_2500basex(struct mdio_device *pcs,
+> > +					 struct phylink_link_state *state) {
+> > +	struct mii_bus *bus =3D pcs->bus;
+> > +	int addr =3D pcs->addr;
+> > +	int bmsr, lpa;
+> > +
+> > +	bmsr =3D mdiobus_read(bus, addr, MII_BMSR);
+> > +	lpa =3D mdiobus_read(bus, addr, MII_LPA);
+> > +	if (bmsr < 0 || lpa < 0) {
+> > +		state->link =3D false;
+> > +		return;
+> > +	}
+> > +
+> > +	state->link =3D !!(bmsr & BMSR_LSTATUS);
+> > +	state->an_complete =3D !!(bmsr & BMSR_ANEGCOMPLETE);
+> > +	if (!state->link)
+> > +		return;
+> > +
+> > +	state->speed =3D SPEED_2500;
+> > +	state->pause |=3D MLO_PAUSE_TX | MLO_PAUSE_RX;
+>=20
+> How do you know the other side is using pause frames, or is capable of de=
+aling
+> with them?
 
-If the proposal looks good, I will re-send the whole patchset
-including devlink changes and driver usage.
+Isn't this done by also looking into the PHY's pause frame bits and enablin=
+g pause
+frames in the MAC only when both the PCS and the PHY have flow enabled?
 
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
----
- Documentation/networking/devlink/devlink-reset.rst | 56 ++++++++++++++
- include/net/devlink.h                              |  2 +
- include/uapi/linux/devlink.h                       | 56 ++++++++++++++
- net/core/devlink.c                                 | 85 ++++++++++++++++++++++
- 4 files changed, 199 insertions(+)
- create mode 100644 Documentation/networking/devlink/devlink-reset.rst
+>=20
+> In any case, phylink_mii_c22_pcs_get_state() should be expanded to deal w=
+ith
+> the non-inband cases, where we are only interested in the link state.  It=
+ isn't
+> passed the link AN mode, which may be an issue that needs resolving in so=
+me
+> way.
+>
 
-diff --git a/Documentation/networking/devlink/devlink-reset.rst b/Documentation/networking/devlink/devlink-reset.rst
-new file mode 100644
-index 0000000..0525e24
---- /dev/null
-+++ b/Documentation/networking/devlink/devlink-reset.rst
-@@ -0,0 +1,56 @@
-+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+.. _devlink_reset:
-+
-+=============
-+Devlink reset
-+=============
-+
-+The ``devlink-reset`` API allows reset the hardware components of the device.
-+After the reset, it loads the pending updated firmware image.
-+Example use::
-+
-+  $ devlink dev reset pci/0000:05:00.0 components mode
-+
-+Note that user can mention multiple components.
-+
-+================
-+Reset components
-+================
-+
-+List of available components::
-+
-+``DEVLINK_RESET_COMP_MGMT`` - Management processor.
-+``DEVLINK_RESET_COMP_IRQ`` - Interrupt requester.
-+``DEVLINK_RESET_COMP_DMA`` - DMA engine.
-+``DEVLINK_RESET_COMP_FILTER`` - Filtering/flow direction.
-+``DEVLINK_RESET_COMP_OFFLOAD`` - Protocol offload.
-+``DEVLINK_RESET_COMP_MAC`` - Media access controller.
-+``DEVLINK_RESET_COMP_PHY`` - Transceiver/PHY.
-+``DEVLINK_RESET_COMP_RAM`` - RAM shared between multiple components.
-+``DEVLINK_RESET_COMP_ROCE`` - RoCE management processor.
-+``DEVLINK_RESET_COMP_AP``   - Application processor.
-+``DEVLINK_RESET_COMP_ALL``  - All components.
-+
-+===========
-+Reset width
-+===========
-+
-+List of available widths::
-+
-+``DEVLINK_RESET_WIDTH_SINGLE`` - Single dedicated function.
-+``DEVLINK_RESET_WIDTH_MULTI``  - Multiple functions.
-+
-+Note that if user specifies DEVLINK_RESET_WIDTH_SINGLE in a multi-host environment,
-+driver returns error if it does not support resetting a single function.
-+
-+===========
-+Reset modes
-+===========
-+
-+List of available reset modes::
-+
-+``DEVLINK_RESET_MODE_DEFERRED``  - Reset happens after all host drivers are
-+                                   unloaded on the device.
-+``DEVLINK_RESET_MODE_LIVE``      - Reset happens immediately, with all loaded
-+                                   host drivers in real time.
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 428f55f..a71c8f5 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1129,6 +1129,8 @@ struct devlink_ops {
- 	int (*port_function_hw_addr_set)(struct devlink *devlink, struct devlink_port *port,
- 					 const u8 *hw_addr, int hw_addr_len,
- 					 struct netlink_ext_ack *extack);
-+	int (*reset)(struct devlink *devlink, u32 *components, u8 width, u8 mode,
-+		     struct netlink_ext_ack *extack);
- };
- 
- static inline void *devlink_priv(struct devlink *devlink)
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 87c83a8..c9d9654 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -122,6 +122,9 @@ enum devlink_command {
- 	DEVLINK_CMD_TRAP_POLICER_NEW,
- 	DEVLINK_CMD_TRAP_POLICER_DEL,
- 
-+	DEVLINK_CMD_RESET,
-+	DEVLINK_CMD_RESET_STATUS,	/* notification only */
-+
- 	/* add new commands above here */
- 	__DEVLINK_CMD_MAX,
- 	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
-@@ -265,6 +268,54 @@ enum devlink_trap_type {
- 	DEVLINK_TRAP_TYPE_CONTROL,
- };
- 
-+/**
-+ * enum devlink_reset_component - Reset components.
-+ * @DEVLINK_RESET_COMP_MGMT: Management processor.
-+ * @DEVLINK_RESET_COMP_IRQ: Interrupt requester.
-+ * @DEVLINK_RESET_COMP_DMA: DMA engine.
-+ * @DEVLINK_RESET_COMP_FILTER: Filtering/flow direction.
-+ * @DEVLINK_RESET_COMP_OFFLOAD: Protocol offload.
-+ * @DEVLINK_RESET_COMP_MAC: Media access controller.
-+ * @DEVLINK_RESET_COMP_PHY: Transceiver/PHY.
-+ * @DEVLINK_RESET_COMP_RAM: RAM shared between multiple components.
-+ * @DEVLINK_RESET_COMP_ROCE: RoCE management processor.
-+ * @DEVLINK_RESET_COMP_AP: Application processor.
-+ * @DEVLINK_RESET_COMP_ALL: All components.
-+ */
-+enum devlink_reset_component {
-+	DEVLINK_RESET_COMP_MGMT		= (1 << 0),
-+	DEVLINK_RESET_COMP_IRQ		= (1 << 1),
-+	DEVLINK_RESET_COMP_DMA		= (1 << 2),
-+	DEVLINK_RESET_COMP_FILTER	= (1 << 3),
-+	DEVLINK_RESET_COMP_OFFLOAD	= (1 << 4),
-+	DEVLINK_RESET_COMP_MAC		= (1 << 5),
-+	DEVLINK_RESET_COMP_PHY		= (1 << 6),
-+	DEVLINK_RESET_COMP_RAM		= (1 << 7),
-+	DEVLINK_RESET_COMP_ROCE		= (1 << 8),
-+	DEVLINK_RESET_COMP_AP		= (1 << 9),
-+	DEVLINK_RESET_COMP_ALL		= 0xffffffff,
-+};
-+
-+/**
-+ * enum devlink_reset_width - Number of functions to be reset.
-+ * @DEVLINK_RESET_WIDTH_SINGLE: Single dedicated function will be reset.
-+ * @DEVLINK_RESET_WIDTH_MULTI: Multiple functions will be reset in a SLED.
-+ */
-+enum devlink_reset_width {
-+	DEVLINK_RESET_WIDTH_SINGLE	= 0,
-+	DEVLINK_RESET_WIDTH_MULTI	= 1,
-+};
-+
-+/**
-+ * enum devlink_reset_mode - Modes of reset.
-+ * @DEVLINK_RESET_MODE_DEFERRED: Reset will happen after host drivers are unloaded.
-+ * @DEVLINK_RESET_MODE_LIVE: All host drivers also will be reset without reloading manually.
-+ */
-+enum devlink_reset_mode {
-+	DEVLINK_RESET_MODE_DEFERRED	= 0,
-+	DEVLINK_RESET_MODE_LIVE		= 1,
-+};
-+
- enum {
- 	/* Trap can report input port as metadata */
- 	DEVLINK_ATTR_TRAP_METADATA_TYPE_IN_PORT,
-@@ -455,6 +506,11 @@ enum devlink_attr {
- 
- 	DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER,	/* string */
- 
-+	DEVLINK_ATTR_RESET_COMPONENTS,		/* u32 */
-+	DEVLINK_ATTR_RESET_WIDTH,		/* u8 */
-+	DEVLINK_ATTR_RESET_MODE,		/* u8 */
-+	DEVLINK_ATTR_RESET_STATUS_MSG,		/* string */
-+
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 455998a..1567467 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6797,6 +6797,82 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
- 	return devlink_trap_policer_set(devlink, policer_item, info);
- }
- 
-+static int devlink_nl_reset_fill(struct sk_buff *msg, struct devlink *devlink,
-+				 const char *status_msg, u32 components)
-+{
-+	void *hdr;
-+
-+	hdr = genlmsg_put(msg, 0, 0, &devlink_nl_family, 0, DEVLINK_CMD_RESET_STATUS);
-+	if (!hdr)
-+		return -EMSGSIZE;
-+
-+	if (devlink_nl_put_handle(msg, devlink))
-+		goto nla_put_failure;
-+
-+	if (status_msg && nla_put_string(msg, DEVLINK_ATTR_RESET_STATUS_MSG, status_msg))
-+		goto nla_put_failure;
-+
-+	if (nla_put_u32(msg, DEVLINK_ATTR_RESET_COMPONENTS, components))
-+		goto nla_put_failure;
-+
-+	genlmsg_end(msg, hdr);
-+	return 0;
-+
-+nla_put_failure:
-+	genlmsg_cancel(msg, hdr);
-+	return -EMSGSIZE;
-+}
-+
-+static void __devlink_reset_notify(struct devlink *devlink, const char *status_msg, u32 components)
-+{
-+	struct sk_buff *msg;
-+	int err;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return;
-+
-+	err = devlink_nl_reset_fill(msg, devlink, status_msg, components);
-+	if (err)
-+		goto out;
-+
-+	genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink), msg, 0,
-+				DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
-+	return;
-+
-+out:
-+	nlmsg_free(msg);
-+}
-+
-+static int devlink_nl_cmd_reset(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct devlink *devlink = info->user_ptr[0];
-+	u32 components, req_comps;
-+	struct nlattr *nla_type;
-+	u8 width, mode;
-+	int err;
-+
-+	if (!devlink->ops->reset)
-+		return -EOPNOTSUPP;
-+
-+	if (!info->attrs[DEVLINK_ATTR_RESET_COMPONENTS])
-+		return -EINVAL;
-+	components = nla_get_u32(info->attrs[DEVLINK_ATTR_RESET_COMPONENTS]);
-+
-+	nla_type = info->attrs[DEVLINK_ATTR_RESET_WIDTH];
-+	width = nla_type ? nla_get_u8(nla_type) : DEVLINK_RESET_WIDTH_SINGLE;
-+
-+	nla_type = info->attrs[DEVLINK_ATTR_RESET_MODE];
-+	mode = nla_type ? nla_get_u8(nla_type) : DEVLINK_RESET_MODE_DEFERRED;
-+
-+	req_comps = components;
-+	__devlink_reset_notify(devlink, "Reset request", components);
-+	err = devlink->ops->reset(devlink, &components, width, mode, info->extack);
-+	__devlink_reset_notify(devlink, "Components reset", req_comps & ~components);
-+
-+	return err;
-+}
-+
- static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_UNSPEC] = { .strict_start_type =
- 		DEVLINK_ATTR_TRAP_POLICER_ID },
-@@ -6842,6 +6918,9 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
- 	[DEVLINK_ATTR_TRAP_POLICER_RATE] = { .type = NLA_U64 },
- 	[DEVLINK_ATTR_TRAP_POLICER_BURST] = { .type = NLA_U64 },
- 	[DEVLINK_ATTR_PORT_FUNCTION] = { .type = NLA_NESTED },
-+	[DEVLINK_ATTR_RESET_COMPONENTS] = { .type = NLA_U32 },
-+	[DEVLINK_ATTR_RESET_WIDTH] = { .type = NLA_U8 },
-+	[DEVLINK_ATTR_RESET_MODE] = { .type = NLA_U8 },
- };
- 
- static const struct genl_ops devlink_nl_ops[] = {
-@@ -7190,6 +7269,12 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
- 		.flags = GENL_ADMIN_PERM,
- 		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
- 	},
-+	{
-+		.cmd = DEVLINK_CMD_RESET,
-+		.doit = devlink_nl_cmd_reset,
-+		.flags = GENL_ADMIN_PERM,
-+		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
-+	},
- };
- 
- static struct genl_family devlink_nl_family __ro_after_init = {
--- 
-1.8.3.1
+Agreed, but I wouldn't just add all of this into this patch set.. it alread=
+y is getting out of hand.
+
+=20
+> > +}
+> > +
+> > +void lynx_pcs_get_state(struct mdio_device *pcs, phy_interface_t ifmod=
+e,
+> > +			struct phylink_link_state *state)
+> > +{
+> > +	switch (ifmode) {
+> > +	case PHY_INTERFACE_MODE_SGMII:
+> > +	case PHY_INTERFACE_MODE_QSGMII:
+> > +		phylink_mii_c22_pcs_get_state(pcs, state);
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_2500BASEX:
+> > +		lynx_pcs_get_state_2500basex(pcs, state);
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_USXGMII:
+> > +		lynx_pcs_get_state_usxgmii(pcs, state);
+> > +		break;
+> > +	default:
+> > +		break;
+> > +	}
+> > +
+> > +	dev_dbg(&pcs->dev,
+> > +		"mode=3D%s/%s/%s link=3D%u an_enabled=3D%u
+> an_complete=3D%u\n",
+> > +		phy_modes(ifmode),
+> > +		phy_speed_to_str(state->speed),
+> > +		phy_duplex_to_str(state->duplex),
+> > +		state->link, state->an_enabled, state->an_complete); }
+> > +EXPORT_SYMBOL(lynx_pcs_get_state);
+> > +
+> > +static int lynx_pcs_config_sgmii(struct mdio_device *pcs, unsigned int=
+ mode,
+> > +				 const unsigned long *advertising) {
+> > +	struct mii_bus *bus =3D pcs->bus;
+> > +	int addr =3D pcs->addr;
+> > +	u16 if_mode;
+> > +	int err;
+> > +
+> > +	/* SGMII spec requires tx_config_Reg[15:0] to be exactly 0x4001
+> > +	 * for the MAC PCS in order to acknowledge the AN.
+> > +	 */
+> > +	mdiobus_write(bus, addr, MII_ADVERTISE,
+> > +		      ADVERTISE_SGMII | ADVERTISE_LPACK);
+>=20
+> This will be overwritten by phylink_mii_c22_pcs_config() below.
+>=20
+
+Yep, will remove. I've gone through the documentation and the register
+should be initialized to 0x0001 when in SGMII mode
+(as done by phylink_mii_c22_pcs_config()).
+
+> > +
+> > +	if_mode =3D SGMII_IF_MODE_SGMII_EN;
+> > +	if (mode =3D=3D MLO_AN_INBAND) {
+> > +		u32 link_timer;
+> > +
+> > +		if_mode |=3D SGMII_IF_MODE_USE_SGMII_AN;
+> > +
+> > +		/* Adjust link timer for SGMII */
+> > +		link_timer =3D
+> SGMII_LINK_TIMER_VAL(SGMII_AN_LINK_TIMER_NS);
+> > +		mdiobus_write(bus, addr, SGMII_LINK_TIMER_LO, link_timer &
+> 0xffff);
+> > +		mdiobus_write(bus, addr, SGMII_LINK_TIMER_HI, link_timer >>
+> 16);
+> > +	}
+> > +	mdiobus_modify(bus, addr, SGMII_IF_MODE,
+> > +		       SGMII_IF_MODE_SGMII_EN |
+> SGMII_IF_MODE_USE_SGMII_AN,
+> > +		       if_mode);
+> > +
+> > +	err =3D phylink_mii_c22_pcs_config(pcs, mode,
+> PHY_INTERFACE_MODE_SGMII,
+> > +					 advertising);
+> > +	return err;
+> > +}
+> > +
+> > +static int lynx_pcs_config_usxgmii(struct mdio_device *pcs, unsigned i=
+nt
+> mode,
+> > +				   const unsigned long *advertising) {
+> > +	struct mii_bus *bus =3D pcs->bus;
+> > +	int addr =3D pcs->addr;
+> > +
+> > +	/* Configure device ability for the USXGMII Replicator */
+> > +	mdiobus_c45_write(bus, addr, MDIO_MMD_VEND2, MII_ADVERTISE,
+> > +			  USXGMII_ADVERTISE_SPEED(USXGMII_SPEED_2500) |
+> > +			  USXGMII_ADVERTISE_LSTATUS(1) |
+> > +			  ADVERTISE_SGMII |
+> > +			  ADVERTISE_LPACK |
+> > +			  USXGMII_ADVERTISE_FDX);
+> > +	return 0;
+> > +}
+> > +
+> > +int lynx_pcs_config(struct mdio_device *pcs, unsigned int mode,
+> > +		    phy_interface_t ifmode,
+> > +		    const unsigned long *advertising) {
+> > +	switch (ifmode) {
+> > +	case PHY_INTERFACE_MODE_SGMII:
+> > +	case PHY_INTERFACE_MODE_QSGMII:
+> > +		lynx_pcs_config_sgmii(pcs, mode, advertising);
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_2500BASEX:
+> > +		/* 2500Base-X only works without in-band AN,
+> > +		 * thus nothing to do here
+> > +		 */
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_USXGMII:
+> > +		lynx_pcs_config_usxgmii(pcs, mode, advertising);
+> > +		break;
+> > +	default:
+> > +		return -EOPNOTSUPP;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL(lynx_pcs_config);
+> > +
+> > +static void lynx_pcs_link_up_sgmii(struct mdio_device *pcs, unsigned i=
+nt
+> mode,
+> > +				   int speed, int duplex)
+> > +{
+> > +	struct mii_bus *bus =3D pcs->bus;
+> > +	u16 if_mode =3D 0, sgmii_speed;
+> > +	int addr =3D pcs->addr;
+> > +
+> > +	/* The PCS needs to be configured manually only
+> > +	 * when not operating on in-band mode
+> > +	 */
+> > +	if (mode =3D=3D MLO_AN_INBAND)
+> > +		return;
+> > +
+> > +	if (duplex =3D=3D DUPLEX_HALF)
+> > +		if_mode |=3D SGMII_IF_MODE_DUPLEX;
+> > +
+> > +	switch (speed) {
+> > +	case SPEED_1000:
+> > +		sgmii_speed =3D SGMII_SPEED_1000;
+> > +		break;
+> > +	case SPEED_100:
+> > +		sgmii_speed =3D SGMII_SPEED_100;
+> > +		break;
+> > +	case SPEED_10:
+> > +		sgmii_speed =3D SGMII_SPEED_10;
+> > +		break;
+> > +	case SPEED_UNKNOWN:
+> > +		/* Silently don't do anything */
+> > +		return;
+> > +	default:
+> > +		dev_err(&pcs->dev, "Invalid PCS speed %d\n", speed);
+> > +		return;
+> > +	}
+> > +	if_mode |=3D SGMII_IF_MODE_SPEED(sgmii_speed);
+> > +
+> > +	mdiobus_modify(bus, addr, SGMII_IF_MODE,
+> > +		       SGMII_IF_MODE_DUPLEX | SGMII_IF_MODE_SPEED_MSK,
+> > +		       if_mode);
+> > +}
+> > +
+> > +/* 2500Base-X is SerDes protocol 7 on Felix and 6 on ENETC. It is a
+> > +SerDes lane
+> > + * clocked at 3.125 GHz which encodes symbols with 8b/10b and does
+> > +not have
+> > + * auto-negotiation of any link parameters. Electrically it is
+> > +compatible with
+> > + * a single lane of XAUI.
+> > + * The hardware reference manual wants to call this mode SGMII, but
+> > +it isn't
+> > + * really, since the fundamental features of SGMII:
+> > + * - Downgrading the link speed by duplicating symbols
+> > + * - Auto-negotiation
+> > + * are not there.
+> > + * The speed is configured at 1000 in the IF_MODE because the clock
+> > +frequency
+> > + * is actually given by a PLL configured in the Reset Configuration Wo=
+rd
+> (RCW).
+> > + * Since there is no difference between fixed speed SGMII w/o AN and
+> > +802.3z w/o
+> > + * AN, we call this PHY interface type 2500Base-X. In case a PHY
+> > +negotiates a
+> > + * lower link speed on line side, the system-side interface remains
+> > +fixed at
+> > + * 2500 Mbps and we do rate adaptation through pause frames.
+> > + */
+> > +static void lynx_pcs_link_up_2500basex(struct mdio_device *pcs,
+> > +				       unsigned int mode,
+> > +				       int speed, int duplex)
+> > +{
+> > +	struct mii_bus *bus =3D pcs->bus;
+> > +	int addr =3D pcs->addr;
+> > +
+> > +	if (mode =3D=3D MLO_AN_INBAND) {
+> > +		dev_err(&pcs->dev, "AN not supported for 2500BaseX\n");
+> > +		return;
+> > +	}
+> > +
+> > +	mdiobus_write(bus, addr, SGMII_IF_MODE,
+> > +		      SGMII_IF_MODE_SGMII_EN |
+> > +		      SGMII_IF_MODE_SPEED(SGMII_SPEED_2500));
+> > +}
+> > +
+> > +void lynx_pcs_link_up(struct mdio_device *pcs, unsigned int mode,
+> > +		      phy_interface_t interface,
+> > +		      int speed, int duplex)
+> > +{
+> > +	switch (interface) {
+> > +	case PHY_INTERFACE_MODE_SGMII:
+> > +	case PHY_INTERFACE_MODE_QSGMII:
+> > +		lynx_pcs_link_up_sgmii(pcs, mode, speed, duplex);
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_2500BASEX:
+> > +		lynx_pcs_link_up_2500basex(pcs, mode, speed, duplex);
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_USXGMII:
+> > +		/* At the moment, only in-band AN is supported for USXGMII
+> > +		 * so nothing to do in link_up
+> > +		 */
+> > +		break;
+> > +	default:
+> > +		break;
+> > +	}
+> > +}
+> > +EXPORT_SYMBOL(lynx_pcs_link_up);
+> > +
+> > +MODULE_LICENSE("Dual BSD/GPL");
+> > diff --git a/include/linux/pcs-lynx.h b/include/linux/pcs-lynx.h new
+> > file mode 100644 index 000000000000..336fccb8c55f
+> > --- /dev/null
+> > +++ b/include/linux/pcs-lynx.h
+> > @@ -0,0 +1,25 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
+> > +/* Copyright 2020 NXP
+> > + * Lynx PCS helpers
+> > + */
+> > +
+> > +#ifndef __LINUX_PCS_LYNX_H
+> > +#define __LINUX_PCS_LYNX_H
+> > +
+> > +#include <linux/phy.h>
+> > +#include <linux/mdio.h>
+> > +
+> > +void lynx_pcs_an_restart(struct mdio_device *pcs, phy_interface_t
+> > +ifmode);
+> > +
+> > +void lynx_pcs_get_state(struct mdio_device *pcs, phy_interface_t ifmod=
+e,
+> > +			struct phylink_link_state *state);
+> > +
+> > +int lynx_pcs_config(struct mdio_device *pcs, unsigned int mode,
+> > +		    phy_interface_t ifmode,
+> > +		    const unsigned long *advertising);
+> > +
+> > +void lynx_pcs_link_up(struct mdio_device *pcs, unsigned int mode,
+> > +		      phy_interface_t interface,
+> > +		      int speed, int duplex);
+> > +
+> > +#endif /* __LINUX_PCS_LYNX_H */
+> > --
+> > 2.25.1
+> >
+> >
+>=20
 
