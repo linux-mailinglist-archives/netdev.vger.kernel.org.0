@@ -2,223 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F3232046D9
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 03:47:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8B4A20472F
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 04:18:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730738AbgFWBrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Jun 2020 21:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49728 "EHLO
+        id S1730983AbgFWCSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Jun 2020 22:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731434AbgFWBrm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 21:47:42 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E739C061573;
-        Mon, 22 Jun 2020 18:47:42 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id q22so6273926pgk.2;
-        Mon, 22 Jun 2020 18:47:42 -0700 (PDT)
+        with ESMTP id S1728447AbgFWCSi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Jun 2020 22:18:38 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149F8C061573;
+        Mon, 22 Jun 2020 19:18:38 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id m81so21932887ioa.1;
+        Mon, 22 Jun 2020 19:18:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=r8vKZWM7pkSC5dnGJuCLDlbQLTE5rqdxtAgj9W0sk5M=;
-        b=OS3fRFYFxlYOVyRNo69lxzyXm8lLC4THdKonNwXjNg7l7VMDGFU8IELDlSJ19iIXtd
-         143jV9vgQMv6UUUwVq09piexrMPS+USw91k/XBrUIyYaGydkJMNaas7BjBgQJpbgU/Kb
-         ORTIZWXRtEXR11b0UO7dhREgCgciy9qHzo0m2eQAjWIOu7B3iMS4oavyPIgeQ1FmcAt5
-         E3nuvwRGkSNSTzh8Y1QRr0r6xl1ULXz+LXjhP7tE8mQywRBGIWGVW3va1lMVAFWBftAv
-         MGFIeOX6kbB1MhCiTpk0uJeyMfSP2ihv+q5C5Tsd9JOIAssRJvuOfZH7hjkIyz/BLmHg
-         vytA==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=mG0wlCSoepw+ip9MmpFcrXSkYo7RaSEIeBvF0uxMtXI=;
+        b=WDHXZGPbutDZt7otrg+mz7gUXNIUkhtZmVgZzBuGYvFTCxWaarakYKyxBzo1mE3PZC
+         qAwCDvphdtPUYIzBQ2v3ueMx4CVxmjvItNOMj7n5Ky1+a47EFrjWQ/Hj/BBFPA8PFRnx
+         uoNNiBWuQtd6fCyG+XoJ6FWj9tCsMkFg/HTZ5nHl5gKeoghpA6Ac5qjHmGNPOEvyWlOA
+         mrJTZ/bHcqxGv6XctgepuBiz3PsjhoajnfeMRvTJIe0AdjLGZ8E8IHW4SlRXiXXUCwvY
+         pzrptW1JKjHNBnQnHFjQUlyI0ZDeSAdNBOAp3J9kpqfrV8DhCkQc13PcvOHBeGUOLRGL
+         bLxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=r8vKZWM7pkSC5dnGJuCLDlbQLTE5rqdxtAgj9W0sk5M=;
-        b=MuDFxZ5YMOMhj4Nkc8plSUEt1DcRd2bDvbSE2ctHdpXmB4/x8yFgIsdXGnj3RA+XX6
-         Tf/1/RpS5VPTzFS2PUOy/dM82HyTs6B2s0FaQKyEq2YWjJqjk4Ro275JTqnom1Jj8S+i
-         AqFDzMtk1VbB7z+0D639dq1tCYp52WDJmPNNoIvxsRCMlhCCiRLcu3wBKDunHvnWnxLV
-         +Sx29CqN6pctWcEwyky9jxkRYDwUe+P3wEjNp7Fqqr8AdIgn+3hzJFweYhk+QbLgmz0/
-         DAekaf8O7GhQyvwp0IYANhcOKDaIHbuTUNB2dGwefWoENgkNT/2cQ0foNsZu5p/aTAiu
-         cNKA==
-X-Gm-Message-State: AOAM532WweupVTflrGzDjRCiCE5wiekCnTmSna10/RYFCnjzU7xSeYVM
-        CWAuyUoOGR2Az7MBPduGpVP9a5yC
-X-Google-Smtp-Source: ABdhPJyf8CjyCVTYVJKRbt5aVgBntqpT80ZgQ8ApCaedg3u3fxMAtc1mhMI5CfRjR8MrlNkcZBkk3w==
-X-Received: by 2002:a63:205d:: with SMTP id r29mr15425860pgm.367.1592876861524;
-        Mon, 22 Jun 2020 18:47:41 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id a7sm692871pjd.2.2020.06.22.18.47.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Jun 2020 18:47:40 -0700 (PDT)
-Subject: Re: [PATCH bpf-next v3 09/15] bpf: add bpf_skc_to_udp6_sock() helper
-To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
-        Martin KaFai Lau <kafai@fb.com>
-References: <20200623003626.3072825-1-yhs@fb.com>
- <20200623003636.3074473-1-yhs@fb.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d0a594f6-bd83-bb48-01ce-bb960fdf8eb3@gmail.com>
-Date:   Mon, 22 Jun 2020 18:47:39 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
-MIME-Version: 1.0
-In-Reply-To: <20200623003636.3074473-1-yhs@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=mG0wlCSoepw+ip9MmpFcrXSkYo7RaSEIeBvF0uxMtXI=;
+        b=JRQB1xAWUgwah5HcU+LMIxcRHN8Cy25FlDDGjdxd0c7+YfRXYlaJSck9tOKcTFzfjc
+         5cSY2ASC0BGeHd4OzkBGjupO2239TSK57s+7qaAGjqTn8VXMrJBg0JXaoOQZsNV+xnop
+         Awh44hHZeRYn5OS+fKgXIv1qsP45manNDGvp18j9EGECeQOi/LrfaC/lQFQYNh8RSfKY
+         lCZL+vgauL58Z4E1JJXrZNibHWmj4z8/3QYObzWO2vHPzX7F0JkUDyKZnsC9OMofmWEb
+         ioepAAxdznsqABfI8zAQ9/1GBceWmn62hBYumX2K2G4ryepa8VkdvAbUpklgggNzsyzF
+         pJXQ==
+X-Gm-Message-State: AOAM531PxNf3+Wspo29NL8jgfiPtT4EiDJUvAmsrJ0mbNAoWne3+/1gm
+        g0foTcglqNP8EDhzngnXJh6679hCraE=
+X-Google-Smtp-Source: ABdhPJys5YHQ9Jz6RYf3nKiOCRN6ODxxjd0H/fMql4NsHSg0eFtVVKoGsjFvrvMtR/RtHng7xKqkAQ==
+X-Received: by 2002:a6b:8ed4:: with SMTP id q203mr6724393iod.193.1592878717259;
+        Mon, 22 Jun 2020 19:18:37 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id c85sm9062625ilg.41.2020.06.22.19.18.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Jun 2020 19:18:36 -0700 (PDT)
+Date:   Mon, 22 Jun 2020 19:18:28 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Andrii Nakryiko <andriin@fb.com>
+Message-ID: <5ef16674b315b_295f2ac8b51605b45d@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200623000905.3076979-1-andriin@fb.com>
+References: <20200623000905.3076979-1-andriin@fb.com>
+Subject: RE: [PATCH v2 bpf-next 1/3] bpf: switch most helper return values
+ from 32-bit int to 64-bit long
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Andrii Nakryiko wrote:
+> Switch most of BPF helper definitions from returning int to long. These
+> definitions are coming from comments in BPF UAPI header and are used to
+> generate bpf_helper_defs.h (under libbpf) to be later included and used from
+> BPF programs.
 
+[...]
 
-On 6/22/20 5:36 PM, Yonghong Song wrote:
-> The helper is used in tracing programs to cast a socket
-> pointer to a udp6_sock pointer.
-> The return value could be NULL if the casting is illegal.
+> There could be two variations with slightly different code generated: when len
+> is 64-bit integer and when it is 32-bit integer. Both variations were analysed.
+> BPF assembly instructions between two successive invocations of
+> bpf_probe_read_kernel_str() were used to check code regressions. Results are
+> below, followed by short analysis. Left side is using helpers with int return
+> type, the right one is after the switch to long.
 > 
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
->  include/linux/bpf.h            |  1 +
->  include/uapi/linux/bpf.h       |  9 ++++++++-
->  kernel/trace/bpf_trace.c       |  2 ++
->  net/core/filter.c              | 22 ++++++++++++++++++++++
->  scripts/bpf_helpers_doc.py     |  2 ++
->  tools/include/uapi/linux/bpf.h |  9 ++++++++-
->  6 files changed, 43 insertions(+), 2 deletions(-)
+> ALU32 + INT                                ALU32 + LONG
+> ===========                                ============
 > 
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index cc3f89827b89..3f5c6bb5e3a7 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1649,6 +1649,7 @@ extern const struct bpf_func_proto bpf_skc_to_tcp6_sock_proto;
->  extern const struct bpf_func_proto bpf_skc_to_tcp_sock_proto;
->  extern const struct bpf_func_proto bpf_skc_to_tcp_timewait_sock_proto;
->  extern const struct bpf_func_proto bpf_skc_to_tcp_request_sock_proto;
-> +extern const struct bpf_func_proto bpf_skc_to_udp6_sock_proto;
->  
->  const struct bpf_func_proto *bpf_tracing_func_proto(
->  	enum bpf_func_id func_id, const struct bpf_prog *prog);
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index e256417d94c2..3f4b12c5c563 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3276,6 +3276,12 @@ union bpf_attr {
->   *		Dynamically cast a *sk* pointer to a *tcp_request_sock* pointer.
->   *	Return
->   *		*sk* if casting is valid, or NULL otherwise.
-> + *
-> + * struct udp6_sock *bpf_skc_to_udp6_sock(void *sk)
-> + * 	Description
-> + *		Dynamically cast a *sk* pointer to a *udp6_sock* pointer.
-> + *	Return
-> + *		*sk* if casting is valid, or NULL otherwise.
->   */
->  #define __BPF_FUNC_MAPPER(FN)		\
->  	FN(unspec),			\
-> @@ -3417,7 +3423,8 @@ union bpf_attr {
->  	FN(skc_to_tcp6_sock),		\
->  	FN(skc_to_tcp_sock),		\
->  	FN(skc_to_tcp_timewait_sock),	\
-> -	FN(skc_to_tcp_request_sock),
-> +	FN(skc_to_tcp_request_sock),	\
-> +	FN(skc_to_udp6_sock),
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index de5fbe66e1ca..d10ab16c4a2f 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -1523,6 +1523,8 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  		return &bpf_skc_to_tcp_timewait_sock_proto;
->  	case BPF_FUNC_skc_to_tcp_request_sock:
->  		return &bpf_skc_to_tcp_request_sock_proto;
-> +	case BPF_FUNC_skc_to_udp6_sock:
-> +		return &bpf_skc_to_udp6_sock_proto;
->  #endif
->  	case BPF_FUNC_seq_printf:
->  		return prog->expected_attach_type == BPF_TRACE_ITER ?
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 140fc0fdf3e1..9a98f3616273 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -9325,3 +9325,25 @@ const struct bpf_func_proto bpf_skc_to_tcp_request_sock_proto = {
->  	.check_btf_id		= check_arg_btf_id,
->  	.ret_btf_id		= &btf_sock_ids[BTF_SOCK_TYPE_TCP_REQ],
->  };
-> +
-> +BPF_CALL_1(bpf_skc_to_udp6_sock, struct sock *, sk)
-> +{
-> +	/* udp6_sock type is not generated in dwarf and hence btf,
-> +	 * trigger an explicit type generation here.
-> +	 */
-> +	BTF_TYPE_EMIT(struct udp6_sock);
-> +	if (sk_fullsock(sk) && sk->sk_protocol == IPPROTO_UDP &&
+> 64-BIT (13 insns):                         64-BIT (10 insns):
+> ------------------------------------       ------------------------------------
+>   17:   call 115                             17:   call 115
+>   18:   if w0 > 256 goto +9 <LBB0_4>         18:   if r0 > 256 goto +6 <LBB0_4>
+>   19:   w1 = w0                              19:   r1 = 0 ll
+>   20:   r1 <<= 32                            21:   *(u64 *)(r1 + 0) = r0
+>   21:   r1 s>>= 32                           22:   r6 = 0 ll
 
-Why is the sk_fullsock(sk) needed ?
+If you roll a v3 for Alexei's comment might be worth mentioning that
+above <<=,s>> is a result of the >256 test if you do this as a more
+standard <0 test the 'w1 = w0' assignment should be enough.
 
-> +	    sk->sk_family == AF_INET6)
-> +		return (unsigned long)sk;
-> +
-> +	return (unsigned long)NULL;
-> +}
-> +
-> +const struct bpf_func_proto bpf_skc_to_udp6_sock_proto = {
-> +	.func			= bpf_skc_to_udp6_sock,
-> +	.gpl_only		= false,
-> +	.ret_type		= RET_PTR_TO_BTF_ID_OR_NULL,
-> +	.arg1_type		= ARG_PTR_TO_BTF_ID,
-> +	.check_btf_id		= check_arg_btf_id,
-> +	.ret_btf_id		= &btf_sock_ids[BTF_SOCK_TYPE_UDP6],
-> +};
-> diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
-> index d886657c6aaa..6bab40ff442e 100755
-> --- a/scripts/bpf_helpers_doc.py
-> +++ b/scripts/bpf_helpers_doc.py
-> @@ -425,6 +425,7 @@ class PrinterHelpers(Printer):
->              'struct tcp_sock',
->              'struct tcp_timewait_sock',
->              'struct tcp_request_sock',
-> +            'struct udp6_sock',
->  
->              'struct __sk_buff',
->              'struct sk_msg_md',
-> @@ -466,6 +467,7 @@ class PrinterHelpers(Printer):
->              'struct tcp_sock',
->              'struct tcp_timewait_sock',
->              'struct tcp_request_sock',
-> +            'struct udp6_sock',
->      }
->      mapped_types = {
->              'u8': '__u8',
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index e256417d94c2..3f4b12c5c563 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -3276,6 +3276,12 @@ union bpf_attr {
->   *		Dynamically cast a *sk* pointer to a *tcp_request_sock* pointer.
->   *	Return
->   *		*sk* if casting is valid, or NULL otherwise.
-> + *
-> + * struct udp6_sock *bpf_skc_to_udp6_sock(void *sk)
-> + * 	Description
-> + *		Dynamically cast a *sk* pointer to a *udp6_sock* pointer.
-> + *	Return
-> + *		*sk* if casting is valid, or NULL otherwise.
->   */
->  #define __BPF_FUNC_MAPPER(FN)		\
->  	FN(unspec),			\
-> @@ -3417,7 +3423,8 @@ union bpf_attr {
->  	FN(skc_to_tcp6_sock),		\
->  	FN(skc_to_tcp_sock),		\
->  	FN(skc_to_tcp_timewait_sock),	\
-> -	FN(skc_to_tcp_request_sock),
-> +	FN(skc_to_tcp_request_sock),	\
-> +	FN(skc_to_udp6_sock),
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> 
+>   22:   r2 = 0 ll                            24:   r6 += r0
+>   24:   *(u64 *)(r2 + 0) = r1              00000000000000c8 <LBB0_4>:
+>   25:   r6 = 0 ll                            25:   r1 = r6
+>   27:   r6 += r1                             26:   w2 = 256
+> 00000000000000e0 <LBB0_4>:                   27:   r3 = 0 ll
+>   28:   r1 = r6                              29:   call 115
+>   29:   w2 = 256
+>   30:   r3 = 0 ll
+>   32:   call 115
+>
+
+Thanks,
+John
