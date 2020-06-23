@@ -2,96 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D43DA205307
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 15:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07F3B205368
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 15:28:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732669AbgFWNEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 09:04:38 -0400
-Received: from mga11.intel.com ([192.55.52.93]:33061 "EHLO mga11.intel.com"
+        id S1732639AbgFWN2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 09:28:21 -0400
+Received: from mga01.intel.com ([192.55.52.88]:24585 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732542AbgFWNEi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 09:04:38 -0400
-IronPort-SDR: MDRAvRWKMS6vlwDSiKdvSf0lpQak9+nm3VCj7hoUIbpy4Oy4JUfIzTf0O2NDzvjOx40O+7oN4k
- aE+7DLLXSlOQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9660"; a="142306005"
+        id S1729629AbgFWN2U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 09:28:20 -0400
+IronPort-SDR: lXYp6fuMq5jGwRDB8Oc4hLslSDSI6LBoTdw0xEZVv4ahAtNtA3TxmALUbZrQ9aqyAL2D2BnpiT
+ h1k0xqUoswSg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9660"; a="162147828"
 X-IronPort-AV: E=Sophos;i="5.75,271,1589266800"; 
-   d="scan'208";a="142306005"
+   d="scan'208";a="162147828"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2020 06:04:38 -0700
-IronPort-SDR: V0+2YvvU3iYnI514XKlaIFVV/LmrfUZnepH7R6bSkbVPoKGzVI8dG50ZlULGG9WWtN7zqcvaH4
- JBCyQwuzuDCw==
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2020 06:28:20 -0700
+IronPort-SDR: TNUsf9dQ234h/I6ICUwRrZVGDr9sRpVtLBrJM4gzrnIAa0XsHW9dw/lbXfznUbag0yvnw/NZKW
+ KwcikF/JjfNw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,271,1589266800"; 
-   d="scan'208";a="264783873"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga008.fm.intel.com with ESMTP; 23 Jun 2020 06:04:33 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jnibK-00FMnm-Sx; Tue, 23 Jun 2020 16:04:34 +0300
-Date:   Tue, 23 Jun 2020 16:04:34 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com, andriin@fb.com,
-        arnaldo.melo@gmail.com, kafai@fb.com, songliubraving@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        linux@rasmusvillemoes.dk, joe@perches.com, pmladek@suse.com,
-        rostedt@goodmis.org, sergey.senozhatsky@gmail.com, corbet@lwn.net,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v3 bpf-next 7/8] bpf: add support for %pT format
- specifier for bpf_trace_printk() helper
-Message-ID: <20200623130434.GX2428291@smile.fi.intel.com>
-References: <1592914031-31049-1-git-send-email-alan.maguire@oracle.com>
- <1592914031-31049-8-git-send-email-alan.maguire@oracle.com>
+   d="scan'208";a="263336522"
+Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.8])
+  by fmsmga007.fm.intel.com with ESMTP; 23 Jun 2020 06:28:19 -0700
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH net-next v2 1/3] i40e: add xdp ring statistics to vsi stats
+Date:   Tue, 23 Jun 2020 13:06:55 +0000
+Message-Id: <20200623130657.5668-1-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1592914031-31049-8-git-send-email-alan.maguire@oracle.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 01:07:10PM +0100, Alan Maguire wrote:
-> Allow %pT[cNx0] format specifier for BTF-based display of data associated
-> with pointer.  The unsafe data modifier 'u' - where the source data
-> is traversed without copying it to a safe buffer via probe_kernel_read() -
-> is not supported.
+Prior to this, only rx and tx ring statistics were accounted for.
 
-I think I already saw this data structure definition...
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-> +/*
-> + * struct __btf_ptr is used for %pT (typed pointer) display; the
-> + * additional type string/BTF id are used to render the pointer
-> + * data as the appropriate type.
-> + */
-> +struct __btf_ptr {
-> +	void *ptr;
-> +	const char *type;
-> +	__u32 id;
-> +};
-
-So, this is 2nd...
-
-
-> +/*
-> + * struct __btf_ptr is used for %pT (typed pointer) display; the
-> + * additional type string/BTF id are used to render the pointer
-> + * data as the appropriate type.
-> + */
-> +struct __btf_ptr {
-> +	void *ptr;
-> +	const char *type;
-> +	__u32 id;
-> +};
-
-,..and this is 3rd copy. Why?
-
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 5d807c8004f8..13aef0e51c24 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -811,6 +811,25 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
+ 		rx_p += packets;
+ 		rx_buf += p->rx_stats.alloc_buff_failed;
+ 		rx_page += p->rx_stats.alloc_page_failed;
++
++		if (i40e_enabled_xdp_vsi(vsi)) {
++			/* locate xdp ring */
++			p = READ_ONCE(vsi->xdp_rings[q]);
++			if (!p)
++				continue;
++
++			do {
++				start = u64_stats_fetch_begin_irq(&p->syncp);
++				packets = p->stats.packets;
++				bytes = p->stats.bytes;
++			} while (u64_stats_fetch_retry_irq(&p->syncp, start));
++			tx_b += bytes;
++			tx_p += packets;
++			tx_restart += p->tx_stats.restart_queue;
++			tx_busy += p->tx_stats.tx_busy;
++			tx_linearize += p->tx_stats.tx_linearize;
++			tx_force_wb += p->tx_stats.tx_force_wb;
++		}
+ 	}
+ 	rcu_read_unlock();
+ 	vsi->tx_restart = tx_restart;
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
