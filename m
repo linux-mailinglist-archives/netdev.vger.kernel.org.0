@@ -2,116 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B1A9206226
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:08:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85B1020625C
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 23:09:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404094AbgFWU4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 16:56:16 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49306 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390647AbgFWU4J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 16:56:09 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 52FF5AC46;
-        Tue, 23 Jun 2020 20:56:07 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 59FD6602E3; Tue, 23 Jun 2020 22:56:07 +0200 (CEST)
-Date:   Tue, 23 Jun 2020 22:56:07 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        michael.chan@broadcom.com, kuba@kernel.org, jiri@mellanox.com,
-        jiri@resnulli.us
-Subject: Re: [RFC net-next] devlink: Add reset subcommand.
-Message-ID: <20200623205607.zgbkgczf64neea7h@lion.mk-sys.cz>
-References: <1592911969-10611-1-git-send-email-vasundhara-v.volam@broadcom.com>
+        id S2393125AbgFWU7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 16:59:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391418AbgFWU7l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 16:59:41 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F80C061755
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 13:59:41 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id y11so90493ljm.9
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 13:59:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=TT2FZxgpjI3VkckydSkMTZ86IbhbF6gKg3r0vREiuvk=;
+        b=m+WSj3btBtZQ/D6lseNcykWUPiFeFygNNYhSssoKxz+FopYF+OQrtacfrQKI7odjvK
+         GvvCY2sAIPaL2PqhZBWLCdHEcWN0UxRSMRQ9GLAgKuNMgqflcjNgQNe4dXmz6LP2HOmG
+         v0S/jglF4lP8Pp5PTd4K/PmrhQxhWF8yhGJy4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=TT2FZxgpjI3VkckydSkMTZ86IbhbF6gKg3r0vREiuvk=;
+        b=U0m7jaTAznVuzgALkHRvy8z457YOCiDyvYOWD83X1Ou81lfRUoo+giZwvrbrhlJY/m
+         Ldu+a7OgRhY0VzPm6NEZGl2EcTzXFds2RLK1NOdRYgv/VQUE8qJXo1OOWDBBlp/N02xA
+         OzOKnJIA+q0uq74o9Gh/458nrjdpzsDzSVGBIb6FC4XiRl5e7Q4FZx9ywORI0x/hNSMk
+         qK5I8t/e4EpOQ/KU//DeLQUnzd/H/1C9jValm/Mgk5E7TF1/l7Vv4BGC8ZU0cSan00+U
+         lhJllWAbVuCkZLP+J6VXzdf37rIBlLw/Aa7Sq6lkyn86RNINIpXjpaB0Bq4GSonYmv3W
+         3rHg==
+X-Gm-Message-State: AOAM5307+/r15D/FKTldZyR2Gb/bC5s/DgsXYyo2L7MPx3lbWgxZEEt4
+        6iu4rc3oswmss5qBh1k/Y4jeHosSX/+G0g==
+X-Google-Smtp-Source: ABdhPJzVM7jBvlMi/1dIDGHjpIwo7Vb0q67nlm85VQ9OwQDLnc5UYl+TRxakJLLS1YEM9e+jS1BCZg==
+X-Received: by 2002:a05:651c:544:: with SMTP id q4mr12640870ljp.310.1592945979425;
+        Tue, 23 Jun 2020 13:59:39 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id r15sm3518864ljm.31.2020.06.23.13.59.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2020 13:59:38 -0700 (PDT)
+References: <20200623103459.697774-1-jakub@cloudflare.com> <20200623103459.697774-3-jakub@cloudflare.com> <20200623193352.4mdmfg4mfmgfeku4@kafai-mbp.dhcp.thefacebook.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next v2 2/3] bpf, netns: Keep attached programs in bpf_prog_array
+In-reply-to: <20200623193352.4mdmfg4mfmgfeku4@kafai-mbp.dhcp.thefacebook.com>
+Date:   Tue, 23 Jun 2020 22:59:37 +0200
+Message-ID: <87sgelmrba.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1592911969-10611-1-git-send-email-vasundhara-v.volam@broadcom.com>
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 05:02:49PM +0530, Vasundhara Volam wrote:
-> Advanced NICs support live reset of some of the hardware
-> components, that resets the device immediately with all the
-> host drivers loaded.
-> 
-> Add devlink reset subcommand to support live and deferred modes
-> of reset. It allows to reset the hardware components of the
-> entire device and supports the following fields:
-> 
-> component:
-> ----------
-> 1. MGMT : Management processor.
-> 2. IRA : Interrupt requester.
-> 3. DMA : DMA engine.
-> 4. FILTER : Filtering/flow direction.
-> 5. OFFLOAD : Protocol offload.
-> 6. MAC : Media access controller.
-> 7. PHY : Transceiver/PHY.
-> 8. RAM : RAM shared between multiple components.
-> 9. ROCE : RoCE management processor.
-> 10. AP : Application processor.
-> 11. All : All possible components.
-> 
-> Drivers are allowed to reset only a subset of requested components.
-> 
-> width:
-> ------
-> 1. single - Single function.
-> 2. multi  - Multiple functions.
-> 
-> mode:
-> -----
-> 1. deferred - Reset will happen after unloading all the host drivers
->               on the device. This is be default reset type, if user
->               does not specify the type.
-> 2. live - Reset will happen immediately with all host drivers loaded
->           in real time. If the live reset is not supported, driver
->           will return the error.
-> 
-> This patch is a proposal in continuation to discussion to the
-> following thread:
-> 
-> "[PATCH v3 net-next 0/6] bnxt_en: Add 'enable_live_dev_reset' and 'allow_live_dev_reset' generic devlink params."
-> 
-> and here is the URL to the patch series:
-> 
-> https://patchwork.ozlabs.org/project/netdev/list/?series=180426&state=*
-> 
-> If the proposal looks good, I will re-send the whole patchset
-> including devlink changes and driver usage.
-> 
-> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+On Tue, Jun 23, 2020 at 09:33 PM CEST, Martin KaFai Lau wrote:
+> On Tue, Jun 23, 2020 at 12:34:58PM +0200, Jakub Sitnicki wrote:
+>
+> [ ... ]
+>
+>> @@ -93,8 +108,16 @@ static int bpf_netns_link_update_prog(struct bpf_link *link,
+>>  		goto out_unlock;
+>>  	}
+>>
+>> +	run_array = rcu_dereference_protected(net->bpf.run_array[type],
+>> +					      lockdep_is_held(&netns_bpf_mutex));
+>> +	if (run_array)
+>> +		ret = bpf_prog_array_replace_item(run_array, link->prog, new_prog);
+>> +	else
+> When will this happen?
 
-IIUC this is an extension (or rather replacement) of the ETHTOOL_RESET
-ethtool subcommand. If this is the case, it would be probably better to
-implement the driver backend only once and let ethtool_reset() use the
-devlink handlers (future versions of ethtool utility could then use
-devlink interface directly).
+This will never happen, unless there is a bug. As long as there is a
+link attached, run_array should never be detached (null). Because it can
+be handled gracefully, we fail the bpf(LINK_UPDATE) syscall.
 
-For this purpose, I would suggest to switch the flags for AP and ROCE in
-enum devlink_reset_component:
+Your question makes me think that perhaps it should trigger a warning,
+with WARN_ON_ONCE, to signal clearly to the reader that this is an
+unexpected state.
 
-> +enum devlink_reset_component {
-> +	DEVLINK_RESET_COMP_MGMT		= (1 << 0),
-> +	DEVLINK_RESET_COMP_IRQ		= (1 << 1),
-> +	DEVLINK_RESET_COMP_DMA		= (1 << 2),
-> +	DEVLINK_RESET_COMP_FILTER	= (1 << 3),
-> +	DEVLINK_RESET_COMP_OFFLOAD	= (1 << 4),
-> +	DEVLINK_RESET_COMP_MAC		= (1 << 5),
-> +	DEVLINK_RESET_COMP_PHY		= (1 << 6),
-> +	DEVLINK_RESET_COMP_RAM		= (1 << 7),
-> +	DEVLINK_RESET_COMP_ROCE		= (1 << 8),
-> +	DEVLINK_RESET_COMP_AP		= (1 << 9),
-> +	DEVLINK_RESET_COMP_ALL		= 0xffffffff,
-> +};
+WDYT?
 
-to make the flags match corresponding ETH_RESET_* flags.
-
-Michal
+>
+>> +		ret = -ENOENT;
+>> +	if (ret)
+>> +		goto out_unlock;
+>> +
+>>  	old_prog = xchg(&link->prog, new_prog);
+>> -	rcu_assign_pointer(net->bpf.progs[type], new_prog);
+>>  	bpf_prog_put(old_prog);
+>>
+>>  out_unlock:
+>> @@ -142,14 +165,38 @@ static const struct bpf_link_ops bpf_netns_link_ops = {
+>>  	.show_fdinfo = bpf_netns_link_show_fdinfo,
+>>  };
