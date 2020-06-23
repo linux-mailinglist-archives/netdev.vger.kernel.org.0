@@ -2,168 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 125FD205B97
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 21:16:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A76C0205BD0
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 21:34:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387444AbgFWTQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 15:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733255AbgFWTQW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 15:16:22 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32151C061573;
-        Tue, 23 Jun 2020 12:16:22 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id y10so8361760eje.1;
-        Tue, 23 Jun 2020 12:16:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UzQp1hQlOzqdNi1YndpqVxliVZx+D0AKaaRUoCK8nr8=;
-        b=o63sFuueEHk/547QE0wCBXP5jjFSTls7r/TONSuWAL7wxROIgVccIDHl8Dg3Sqsnuc
-         Arge0FYFOaRJcUbwY3Gl6cYVSJTPmwSln65Vx1yusrlqVgDTc/GPBjz4SlH80nI84Pjq
-         4DMO4un1gp0GZJvPHYmXtKh7QbgOOex3AOt3/2nnnrhNNelHiOPhJ5EBp7p2NZGGGY1W
-         fRZLeTEVaX07cNFd7rVbHlOWpXK4QeZfWIZKA7z0cVGEkruQCW//esmHsO1lH4VwSQyJ
-         rJLuSZqjU/yn3IvSsgInqWwE6Pa2f8o8lWnaEW3Ua0Skj3HwtdKu/GCJyYZd4DsVjzlw
-         1Iwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=UzQp1hQlOzqdNi1YndpqVxliVZx+D0AKaaRUoCK8nr8=;
-        b=CxGH3VRNzfXFWMSgz6yhf2KJEGUthWSFU9fXz+AbbQnfKITZV+R36XwObPFGWLU5km
-         8N7FcbZJjLkR7E0RaGllHav4x6diBBo4EsAlOPqUkHJ6f00PkGah65ugrJk3z1Edau3u
-         NuRvGVcB1r70aHBI7TPzdd6e2RM13BAbFJ8cbq4c6K/NRAi8D1aSzqjDd0Ujgw7iB84l
-         83aU6yBxLe7lenueRR5wiqqOgDAY11ve50MSF+S+/9N+a8/ZIwUnBlh2y/a/sGBOstY9
-         OH0KPhlBnoqynonBZq/lPqOLCBTWHmAK7B+THGtL9K4DA10Cy2r1GEePxznHFWPQuv6A
-         H7xw==
-X-Gm-Message-State: AOAM531DM7bMHwaHXS2/D94DyeAS/IoOkzEbGdK1RQA5nQTzoiJ/sxvS
-        0kh8QLzzf3rJOFE6ErpeMuc=
-X-Google-Smtp-Source: ABdhPJxOw4MaCAt9fkW9CBZlxVk9ro0+kaT5EauAAfdESjmO1rtUKnRrup90FzgFnQzU6ATJdFl+TA==
-X-Received: by 2002:a17:906:19c7:: with SMTP id h7mr21240539ejd.403.1592939780864;
-        Tue, 23 Jun 2020 12:16:20 -0700 (PDT)
-Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id l3sm3923118edr.14.2020.06.23.12.16.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Jun 2020 12:16:20 -0700 (PDT)
-Subject: Re: [PATCH 06/15] net: phy: mdio: reset MDIO devices even if probe()
- is not implemented
-To:     Bartosz Golaszewski <brgl@bgdev.pl>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Fabien Parent <fparent@baylibre.com>,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-References: <20200622093744.13685-1-brgl@bgdev.pl>
- <20200622093744.13685-7-brgl@bgdev.pl>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <1af383ab-43eb-0557-0fd8-1f0fee3436b5@gmail.com>
-Date:   Tue, 23 Jun 2020 12:16:10 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1733305AbgFWTeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 15:34:04 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45104 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1733220AbgFWTeD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 15:34:03 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 05NJUXwZ032350;
+        Tue, 23 Jun 2020 12:34:01 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=B4aq+wbb/u1qjD4EYqlP9lqIWKDpfQkClb5KLMxM2oQ=;
+ b=dM9R6dCz3nzRelMNyqGSNnWeScTi7iAc8Nau5e+D1WEqXt9YSj96poc5+y73N11ilhNd
+ 9refiziV7GqSefsc8uggSxijy2h4yCLCSJksiseRqNhvoG6SjkPyh5Gf0up4aAB0rCdh
+ CtIjoX8UznWZ6+I/yJoUQAiWekEf5t2mFWs= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 31uk1y9qsq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 23 Jun 2020 12:34:01 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 23 Jun 2020 12:33:59 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C8+MvDMN/PYmcKXlgmy8+N1tO4woYCVsbxbah8GU4Yv/MLkH0tj4GLLA3Js+OvQu1VS3aGcXGdpa0XVj3XkoTzjjtxZHDv07XCYnISGU1pz+u9aHGIHxGUHMtw+OVdtTMTnrujZFHoCw+OONWUtpv0OwYvqKPlmXlaD1NbWge/Z9Z+5+Y08R/MCl7cV+Q3u/N07Z/mlC7sbpE/yhpO3TzCJZxraIXRHxZKfufaZ2yoaB32HwOmcMJ5lRfAnKK8IHfJNsdDI4HK8e0yu26W+eYFVkfqwdlrbybeXh2KePm/GXxP1utQPfhT1xczxJLTFD0LKUt745KO1lqY1iAN/xUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B4aq+wbb/u1qjD4EYqlP9lqIWKDpfQkClb5KLMxM2oQ=;
+ b=og3dZ9b2L+qhCA19hFXJfbdBgYUbuRZmM8SeUfLZYTzzXW38pqtmxgrxtxhzLL5/hAK2r9jpewOIngbE/VVmIr0c2d/cRKs7UgMCzbTr0DoXK3maTdSAJ05GXZ7jXaD9aTGQqq+mcKtGTO58s/LaKp1lA2xUblSo7gSB40geq7sOWAgQ3ps1GO32aYCnlftoFZh0Dmc595garMep//0odZS3VaYdSMns5u/nBwjHYfE8C5LE54ro54sDrpbERmpoxWFk296BZMAK+sCBFwCjDJCD5zEcgeah1HDVjeJqaYpNWzLnOw46G+3SL4ytktBDin7M1FV0j6lSqHp6Fx07rg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B4aq+wbb/u1qjD4EYqlP9lqIWKDpfQkClb5KLMxM2oQ=;
+ b=cMSinV4H91QzGvSQOTHbCCd1OPurtjIWq2hSSHKxAuI6QwhoWT8/Dnv+Ewa1apYtYDeVM3OuD1q2FSijaCeUtEuUt80dgL+2gvSDPG3ZTdwUMtMPkztyNLiuvyThOhT7GarnCkDo/HySmJs5xz+mYriT/p4TeoD78JAbe4Wn65M=
+Authentication-Results: cloudflare.com; dkim=none (message not signed)
+ header.d=none;cloudflare.com; dmarc=none action=none header.from=fb.com;
+Received: from DM6PR15MB3580.namprd15.prod.outlook.com (2603:10b6:5:1f9::10)
+ by DM6PR15MB3738.namprd15.prod.outlook.com (2603:10b6:5:1fb::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.21; Tue, 23 Jun
+ 2020 19:33:58 +0000
+Received: from DM6PR15MB3580.namprd15.prod.outlook.com
+ ([fe80::88ab:3896:e702:55e4]) by DM6PR15MB3580.namprd15.prod.outlook.com
+ ([fe80::88ab:3896:e702:55e4%6]) with mapi id 15.20.3109.025; Tue, 23 Jun 2020
+ 19:33:58 +0000
+Date:   Tue, 23 Jun 2020 12:33:52 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <kernel-team@cloudflare.com>, Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next v2 2/3] bpf, netns: Keep attached programs in
+ bpf_prog_array
+Message-ID: <20200623193352.4mdmfg4mfmgfeku4@kafai-mbp.dhcp.thefacebook.com>
+References: <20200623103459.697774-1-jakub@cloudflare.com>
+ <20200623103459.697774-3-jakub@cloudflare.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200623103459.697774-3-jakub@cloudflare.com>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: BYAPR06CA0035.namprd06.prod.outlook.com
+ (2603:10b6:a03:d4::48) To DM6PR15MB3580.namprd15.prod.outlook.com
+ (2603:10b6:5:1f9::10)
 MIME-Version: 1.0
-In-Reply-To: <20200622093744.13685-7-brgl@bgdev.pl>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:a860) by BYAPR06CA0035.namprd06.prod.outlook.com (2603:10b6:a03:d4::48) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22 via Frontend Transport; Tue, 23 Jun 2020 19:33:58 +0000
+X-Originating-IP: [2620:10d:c090:400::5:a860]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6163c518-c5c9-49db-64f5-08d817ac5ff4
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3738:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR15MB37386C12A0955AD7F84DADE2D5940@DM6PR15MB3738.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
+X-Forefront-PRVS: 04433051BF
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BmHNWA/bqkmSDwPZlA9/JWGYSlEP92dWStyYu91hzyThtVHUG6xGucDqXytyycde3rTrXuuy7apPyYMg/1fpevnu3A86yQmuUN6a+wyCvNDuvTKVNkEBf3UXsfIT5PIv6iY8zjVtOwP5gkD8E3osmCgqvQLmu8stbQ9bJwljETCv/sLuKSED2QsvSw3EjjaWk53LUbxv+kcah8Y/9C2DI8KVV9gEKgd0GIWf55qWdPdNXXoQ/3YCoHjKcdnHkG193zHl0TVP8eOIi76zYBiODlcvkuEiTv09NbZzN5fZzfBWVKcCRsEbcMT/82GT6d//g7diz5b02YUYTxMxfBeRRQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR15MB3580.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(396003)(39850400004)(346002)(376002)(136003)(66946007)(4744005)(5660300002)(478600001)(4326008)(6916009)(8936002)(86362001)(66556008)(66476007)(8676002)(6666004)(6506007)(83380400001)(7696005)(52116002)(2906002)(186003)(1076003)(316002)(16526019)(55016002)(9686003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 6dOrvQdL/LLE4ogNTCcLl9szg6GEw93KzHsZuYrd4+tZoEgxgajZDXzsG9lRGFiB2F95ofbWnLJCO7kjApL0EHxK63YJdDyBGu9EJ+M4jj3nWxUMDVQeOjQtrQan/BYQIbPBiQtGWnq8HtvohE5hVJVGCsHQ3nQb0I74s00kt/sG8+wNS3J/vv8hde6zi7eRkKbdbGEcqu4Ej+8cb9pL9LHOZ4VEdJnisjliiy+Fi8o2ircetDeIK3ltjhb5dJ/UDt+mtGsegRx7Cf5mTH9P96mGX1di1MTZ9GIyqtEbyb/w1IpXn2onLMuNSaD4DmNq1Yggyb1sJ9yjDy/ph8nm07p/fwxphhQh2s7G+sEVNhzd3fXQQ8aRbIh45Cr3zgqhQrrgqjPA3yOJP5PswoZyXU8Xq+xQsNlxi8gpvO8uZlnSh043W1DIfoV/6Z6LZM4g6NgegH+/er98U20HT5F3NCKXfe6hQpB1lMTaC9bXU3gh8qNAMPd6sE8JGzWNKa7WUM9P//Z+srQCLV4V+4ZBhA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6163c518-c5c9-49db-64f5-08d817ac5ff4
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2020 19:33:58.7499
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EpZw0YacIOgJPfKTWzVY/Yx/5IBM99krajopLK0JjfxwAbMl3f/m5KIU9GkSfaQr
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3738
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-23_12:2020-06-23,2020-06-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 spamscore=0
+ mlxlogscore=670 clxscore=1015 malwarescore=0 phishscore=0 adultscore=0
+ suspectscore=0 mlxscore=0 priorityscore=1501 impostorscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006120000 definitions=main-2006230134
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/22/20 2:37 AM, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> 
-> Similarily to PHY drivers - there's no reason to require probe() to be
-> implemented in order to call mdio_device_reset(). MDIO devices can have
-> resets defined without needing to do anything in probe().
-> 
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+On Tue, Jun 23, 2020 at 12:34:58PM +0200, Jakub Sitnicki wrote:
 
-Same comment as patch #5, I would prefer that we seek a solution that
-allows MDIO drivers to manage multiple reset lines (would that exist) on
-their own instead of this one size fits all approach. Thank you.
--- 
-Florian
+[ ... ]
+
+> @@ -93,8 +108,16 @@ static int bpf_netns_link_update_prog(struct bpf_link *link,
+>  		goto out_unlock;
+>  	}
+>  
+> +	run_array = rcu_dereference_protected(net->bpf.run_array[type],
+> +					      lockdep_is_held(&netns_bpf_mutex));
+> +	if (run_array)
+> +		ret = bpf_prog_array_replace_item(run_array, link->prog, new_prog);
+> +	else
+When will this happen?
+
+> +		ret = -ENOENT;
+> +	if (ret)
+> +		goto out_unlock;
+> +
+>  	old_prog = xchg(&link->prog, new_prog);
+> -	rcu_assign_pointer(net->bpf.progs[type], new_prog);
+>  	bpf_prog_put(old_prog);
+>  
+>  out_unlock:
+> @@ -142,14 +165,38 @@ static const struct bpf_link_ops bpf_netns_link_ops = {
+>  	.show_fdinfo = bpf_netns_link_show_fdinfo,
+>  };
