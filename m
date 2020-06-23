@@ -2,198 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0537B2053D3
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 15:49:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D934F2053E1
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 15:53:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732814AbgFWNtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 09:49:17 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:37678 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732752AbgFWNtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 09:49:14 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05NDn8Fp096943;
-        Tue, 23 Jun 2020 08:49:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1592920148;
-        bh=eStPcoULgEZG94PVJtakxpfbyK9RyeLhnZbJP2L7ZFo=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=gtUhEl8jQsk9m0v38Uc1Bs59B1DAiR8SlMkC86gIUL6AyxpkS7I2Z829VrG/flXJO
-         gcI59fZqlXaQ0mUMYUN/OpcP9lgPP1lzQY8c0QO75n8G6GmXTv/spR6JwTZmO+eo3k
-         oJYQ09fx8G99MsIooKVUExDZx7sQ43OMlPyJBLgw=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 05NDn8j8004288
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 23 Jun 2020 08:49:08 -0500
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 23
- Jun 2020 08:49:08 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 23 Jun 2020 08:49:08 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05NDn8Ip094471;
-        Tue, 23 Jun 2020 08:49:08 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v10 5/5] net: phy: DP83822: Add setting the fixed internal delay
-Date:   Tue, 23 Jun 2020 08:48:36 -0500
-Message-ID: <20200623134836.21981-6-dmurphy@ti.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200623134836.21981-1-dmurphy@ti.com>
-References: <20200623134836.21981-1-dmurphy@ti.com>
+        id S1732734AbgFWNxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 09:53:18 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:36266 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732633AbgFWNxR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 09:53:17 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05NDjJYi024426;
+        Tue, 23 Jun 2020 06:53:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0818; bh=grHYZIv6ZfuCT5ybHGHnt/3uylmwaf5P3hRiYBlmvp0=;
+ b=D4/paavitxf6ys9gcfMiVJlWqrYUdgwOsypiBXol8DU8RopzuE5o6qJkCIq+c2+K7dvr
+ pKh6n/mRPS1VnprfTKQiVUYHBfv3OMP2TjCnkBLuYJHQFP+goexzUCa27lsWQcpSBwh9
+ CGRs45sdMVo6t8RT1iLKHvTxa10v12NG0m8ychBdfg5aYjPQ4RHU4bBeytj+C+TX63+Q
+ S91F0M1Ki9l0LYlJkfwt7A8vKQbHDSmDLUb/G9SoxOfJV5eKJYUanx1OdmJdu+I+p1uN
+ BcOHp+/nwcXScNAKUWAGK2kxoLxz8LAA/LPpRn3alNDsm0L03WsKSYi2oS3+SC0kvv0E WQ== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 31ujw9r0w5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 23 Jun 2020 06:53:15 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 23 Jun
+ 2020 06:53:14 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 23 Jun
+ 2020 06:53:14 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 23 Jun 2020 06:53:14 -0700
+Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.39.36])
+        by maili.marvell.com (Postfix) with ESMTP id 750D23F703F;
+        Tue, 23 Jun 2020 06:53:10 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Igor Russkikh <irusskikh@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        "Denis Bolotin" <denis.bolotin@marvell.com>,
+        Tomer Tayar <tomer.tayar@marvell.com>,
+        Alexander Lobakin <alobakin@marvell.com>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 net 0/9] net: qed/qede: various stability fixes
+Date:   Tue, 23 Jun 2020 16:51:28 +0300
+Message-ID: <20200623135136.3185-1-alobakin@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-23_06:2020-06-23,2020-06-23 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DP83822 can be configured to use the RGMII interface. There are
-independent fixed 3.5ns clock shift (aka internal delay) for the TX and RX
-paths. This allow either one to be set if the MII interface is RGMII and
-the value is set in the firmware node.
+This set addresses several near-critical issues that were observed
+and reproduced on different test and production configurations.
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83822.c | 79 ++++++++++++++++++++++++++++++++++-----
- 1 file changed, 69 insertions(+), 10 deletions(-)
+v2:
+ - don't split the "Fixes:" tag across several lines in patch 9;
+ - no functional changes.
 
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index 1dd19d0cb269..37643c468e19 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -26,7 +26,9 @@
- #define MII_DP83822_PHYSCR	0x11
- #define MII_DP83822_MISR1	0x12
- #define MII_DP83822_MISR2	0x13
-+#define MII_DP83822_RCSR	0x17
- #define MII_DP83822_RESET_CTRL	0x1f
-+#define MII_DP83822_GENCFG	0x465
- 
- #define DP83822_HW_RESET	BIT(15)
- #define DP83822_SW_RESET	BIT(14)
-@@ -77,6 +79,10 @@
- #define DP83822_WOL_INDICATION_SEL BIT(8)
- #define DP83822_WOL_CLR_INDICATION BIT(11)
- 
-+/* RSCR bits */
-+#define DP83822_RX_CLK_SHIFT	BIT(12)
-+#define DP83822_TX_CLK_SHIFT	BIT(11)
-+
- static int dp83822_ack_interrupt(struct phy_device *phydev)
- {
- 	int err;
-@@ -255,7 +261,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
- 	return phy_write(phydev, MII_DP83822_PHYSCR, physcr_status);
- }
- 
--static int dp83822_config_init(struct phy_device *phydev)
-+static int dp8382x_disable_wol(struct phy_device *phydev)
- {
- 	int value = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
- 		    DP83822_WOL_SECURE_ON;
-@@ -264,6 +270,46 @@ static int dp83822_config_init(struct phy_device *phydev)
- 				  MII_DP83822_WOL_CFG, value);
- }
- 
-+static int dp83822_config_init(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	int rgmii_delay;
-+	s32 rx_int_delay;
-+	s32 tx_int_delay;
-+	int err = 0;
-+
-+	if (phy_interface_is_rgmii(phydev)) {
-+		rx_int_delay = phy_get_internal_delay(phydev, dev, NULL, 0,
-+						      true);
-+
-+		if (rx_int_delay <= 0)
-+			rgmii_delay = 0;
-+		else
-+			rgmii_delay = DP83822_RX_CLK_SHIFT;
-+
-+		tx_int_delay = phy_get_internal_delay(phydev, dev, NULL, 0,
-+						      false);
-+		if (tx_int_delay <= 0)
-+			rgmii_delay &= ~DP83822_TX_CLK_SHIFT;
-+		else
-+			rgmii_delay |= DP83822_TX_CLK_SHIFT;
-+
-+		if (rgmii_delay) {
-+			err = phy_set_bits_mmd(phydev, DP83822_DEVADDR,
-+					       MII_DP83822_RCSR, rgmii_delay);
-+			if (err)
-+				return err;
-+		}
-+	}
-+
-+	return dp8382x_disable_wol(phydev);
-+}
-+
-+static int dp8382x_config_init(struct phy_device *phydev)
-+{
-+	return dp8382x_disable_wol(phydev);
-+}
-+
- static int dp83822_phy_reset(struct phy_device *phydev)
- {
- 	int err;
-@@ -272,9 +318,7 @@ static int dp83822_phy_reset(struct phy_device *phydev)
- 	if (err < 0)
- 		return err;
- 
--	dp83822_config_init(phydev);
--
--	return 0;
-+	return phydev->drv->config_init(phydev);
- }
- 
- static int dp83822_suspend(struct phy_device *phydev)
-@@ -318,14 +362,29 @@ static int dp83822_resume(struct phy_device *phydev)
- 		.resume = dp83822_resume,			\
- 	}
- 
-+#define DP8382X_PHY_DRIVER(_id, _name)				\
-+	{							\
-+		PHY_ID_MATCH_MODEL(_id),			\
-+		.name		= (_name),			\
-+		/* PHY_BASIC_FEATURES */			\
-+		.soft_reset	= dp83822_phy_reset,		\
-+		.config_init	= dp8382x_config_init,		\
-+		.get_wol = dp83822_get_wol,			\
-+		.set_wol = dp83822_set_wol,			\
-+		.ack_interrupt = dp83822_ack_interrupt,		\
-+		.config_intr = dp83822_config_intr,		\
-+		.suspend = dp83822_suspend,			\
-+		.resume = dp83822_resume,			\
-+	}
-+
- static struct phy_driver dp83822_driver[] = {
- 	DP83822_PHY_DRIVER(DP83822_PHY_ID, "TI DP83822"),
--	DP83822_PHY_DRIVER(DP83825I_PHY_ID, "TI DP83825I"),
--	DP83822_PHY_DRIVER(DP83826C_PHY_ID, "TI DP83826C"),
--	DP83822_PHY_DRIVER(DP83826NC_PHY_ID, "TI DP83826NC"),
--	DP83822_PHY_DRIVER(DP83825S_PHY_ID, "TI DP83825S"),
--	DP83822_PHY_DRIVER(DP83825CM_PHY_ID, "TI DP83825M"),
--	DP83822_PHY_DRIVER(DP83825CS_PHY_ID, "TI DP83825CS"),
-+	DP8382X_PHY_DRIVER(DP83825I_PHY_ID, "TI DP83825I"),
-+	DP8382X_PHY_DRIVER(DP83826C_PHY_ID, "TI DP83826C"),
-+	DP8382X_PHY_DRIVER(DP83826NC_PHY_ID, "TI DP83826NC"),
-+	DP8382X_PHY_DRIVER(DP83825S_PHY_ID, "TI DP83825S"),
-+	DP8382X_PHY_DRIVER(DP83825CM_PHY_ID, "TI DP83825M"),
-+	DP8382X_PHY_DRIVER(DP83825CS_PHY_ID, "TI DP83825CS"),
- };
- module_phy_driver(dp83822_driver);
- 
+Alexander Lobakin (9):
+  net: qed: fix left elements count calculation
+  net: qed: fix async event callbacks unregistering
+  net: qede: stop adding events on an already destroyed workqueue
+  net: qed: fix NVMe login fails over VFs
+  net: qed: fix excessive QM ILT lines consumption
+  net: qede: fix PTP initialization on recovery
+  net: qede: fix use-after-free on recovery and AER handling
+  net: qed: reset ILT block sizes before recomputing to fix crashes
+  net: qed: fix "maybe uninitialized" warning
+
+ drivers/net/ethernet/qlogic/qed/qed_cxt.c    | 21 ++++++++++++-
+ drivers/net/ethernet/qlogic/qed/qed_dev.c    | 11 +++++--
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c  |  2 --
+ drivers/net/ethernet/qlogic/qed/qed_roce.c   |  1 -
+ drivers/net/ethernet/qlogic/qed/qed_vf.c     | 23 +++++++++++----
+ drivers/net/ethernet/qlogic/qede/qede_main.c |  3 +-
+ drivers/net/ethernet/qlogic/qede/qede_ptp.c  | 31 ++++++++------------
+ drivers/net/ethernet/qlogic/qede/qede_ptp.h  |  2 +-
+ drivers/net/ethernet/qlogic/qede/qede_rdma.c |  3 +-
+ include/linux/qed/qed_chain.h                | 26 +++++++++-------
+ 10 files changed, 80 insertions(+), 43 deletions(-)
+
 -- 
-2.26.2
+2.25.1
 
