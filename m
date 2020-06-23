@@ -2,111 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA0520523F
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 14:17:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBCF3205241
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 14:18:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732590AbgFWMRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 08:17:48 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:33782 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732396AbgFWMRs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 08:17:48 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05NCFFxI028535;
-        Tue, 23 Jun 2020 05:17:43 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0818;
- bh=w46+JEbvwbBqOW98veqVwXnnBMl+yKzcoiOAE6Vbm/g=;
- b=htCkGGHgnrHHae6V635l0aWbZHM9JnCGRDnxpTVLywsM3nj75uD6qOruGXmFTwvCua+I
- J8/HJHTonor04u63nxzWHRN3PECKpMUHg2K4NGpgAjXEoBOlUwS1FBM6yxQZm8Tvt1oM
- P1YR+JpU6vySJcC70sdbvVyhq4ICvWiLAl3B9IdZTpQOuacWa9VlSF+gDI2Ubw4ROqh9
- TKgixdQv+29Vp2MyhZk4QDwfNFj/6B7kGfFAUNkH8LdLeG7l5EZaByO9g7MLkzd6vdvO
- RIv5+izDtMUuxzienmORRhjmMKk2bUCrPeg5MhajRy/ZXepq4ZPxdgGanzmHrrxSG8ZZ XA== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0b-0016f401.pphosted.com with ESMTP id 31shynw6ed-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 23 Jun 2020 05:17:43 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 23 Jun
- 2020 05:17:41 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 23 Jun 2020 05:17:41 -0700
-Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.39.36])
-        by maili.marvell.com (Postfix) with ESMTP id A32173F7040;
-        Tue, 23 Jun 2020 05:17:37 -0700 (PDT)
-From:   Alexander Lobakin <alobakin@marvell.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Alexander Lobakin <alobakin@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Yuval Mintz <yuval.mintz@marvell.com>,
-        Denis Bolotin <denis.bolotin@marvell.com>,
-        "Ram Amrani" <ram.amrani@marvell.com>,
-        Tomer Tayar <tomer.tayar@marvell.com>,
-        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net 9/9] net: qed: fix "maybe uninitialized" warning
-Date:   Tue, 23 Jun 2020 15:16:53 +0300
-Message-ID: <20200623121652.2511-1-alobakin@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200622144437.770e09e0@kicinski-fedora-PC1C0HJN>
-References: 
+        id S1732621AbgFWMRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 08:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34174 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732613AbgFWMRw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 08:17:52 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C82FC061573
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 05:17:52 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id i3so5642311qtq.13
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 05:17:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rnJX8R4/u0bul7jK+J0G603qpNM/gE9eTBblQOsKzWY=;
+        b=I1Gjq66+zBAiX58YdWGXeVVqtkndN9vNMW3N/NugBnOkOFotrNHfQAvhHSSgF8aNr4
+         uvRJ+7V4SPcgZd6i+fY+Sr4rLWpA/TPwYf7zzUAmJHaGuZOhBsbjU2MkY8t9AhvzGTJ3
+         V2DJwWjYWL814+jeqAAqkG9HqBIAg4NXguiVswxQprtG6pdV4DubpiXaAYuEyTFgZ+vw
+         lm2OPmXw8dwvZ0BVwZ/75brpcb4NhczvJyaPbxwFR/ro2wt7mX7AmEW3nShYi3giToiH
+         Y7TXQ2uBDq9+rWkZyNeSzvG+iOUQswSnehzycdXUKJ2k9ltq6qQVhYKAK6DHDDMJIz6h
+         akSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rnJX8R4/u0bul7jK+J0G603qpNM/gE9eTBblQOsKzWY=;
+        b=AnYSNa3KvOhwWurPy2WI2gxDTA/mZCx3ycwVGYxSvPiMxxOURgFrSrVRer51FD4Ywr
+         LvtCa6GoQ+aa7KKuJ7nl+x7frvCtgrN0mSapuWRExAZ3jdup+kj4LKhVJQ+DOsb4U7cp
+         OGHhlb4CMnzvUrSuVcF7FPcl3gBS+Rrfaoix0LyZZKGPzTAN2NZahWtFMZ9HB2I13jVq
+         h24K+2758E+XWV5J8mRO6w2M6W+m37xT2rw9YFi6m9vlm2rERkKDDTOyzuntRTa7NfSM
+         sZz6aimlK190bYgEgWd71OSt3HtXjHj4LKOuYL7B+LviPsq6f4UleXMLLziMZtmjdsKp
+         npAw==
+X-Gm-Message-State: AOAM531LK8aNjL+arHZt9K+993fI1pyLu8bBjSVXZACvu33+4mitKNZR
+        1FbjNLOiAqBieAHeoefQDktzig==
+X-Google-Smtp-Source: ABdhPJw/o04cwm75ceLorlpG3HUxbpqG1Y1BDalbZRqu2xwFfhg/LL70R/ci3xqMynyzdv/RM08grw==
+X-Received: by 2002:ac8:3129:: with SMTP id g38mr13445444qtb.92.1592914671416;
+        Tue, 23 Jun 2020 05:17:51 -0700 (PDT)
+Received: from [192.168.1.117] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.googlemail.com with ESMTPSA id l3sm398979qtn.69.2020.06.23.05.17.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Jun 2020 05:17:50 -0700 (PDT)
+Subject: Re: [v1,net-next 3/4] net: qos: police action add index for tc flower
+ offloading
+To:     Po Liu <po.liu@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "idosch@idosch.org" <idosch@idosch.org>
+Cc:     "jiri@resnulli.us" <jiri@resnulli.us>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "vlad@buslov.dev" <vlad@buslov.dev>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        "moshe@mellanox.com" <moshe@mellanox.com>,
+        "m-karicheri2@ti.com" <m-karicheri2@ti.com>,
+        "andre.guedes@linux.intel.com" <andre.guedes@linux.intel.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        Edward Cree <ecree@solarflare.com>
+References: <VE1PR04MB64965F4F28439370BC53539A92940@VE1PR04MB6496.eurprd04.prod.outlook.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <a8afb955-b3c3-eabb-7f48-319220e85240@mojatatu.com>
+Date:   Tue, 23 Jun 2020 08:17:48 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-23_06:2020-06-23,2020-06-23 signatures=0
+In-Reply-To: <VE1PR04MB64965F4F28439370BC53539A92940@VE1PR04MB6496.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Mon, 22 Jun 2020 14:44:37 -0700
+On 2020-06-23 7:55 a.m., Po Liu wrote:
 
-> On Mon, 22 Jun 2020 14:14:13 +0300 Alexander Lobakin wrote:
-> > Variable 'abs_ppfid' in qed_dev.c:qed_llh_add_mac_filter() always gets
-> > printed, but is initialized only under 'ref_cnt == 1' condition. This
-> > results in:
-> > 
-> > In file included from ./include/linux/kernel.h:15:0,
-> >                  from ./include/asm-generic/bug.h:19,
-> >                  from ./arch/x86/include/asm/bug.h:86,
-> >                  from ./include/linux/bug.h:5,
-> >                  from ./include/linux/io.h:11,
-> >                  from drivers/net/ethernet/qlogic/qed/qed_dev.c:35:
-> > drivers/net/ethernet/qlogic/qed/qed_dev.c: In function 'qed_llh_add_mac_filter':
-> > ./include/linux/printk.h:358:2: warning: 'abs_ppfid' may be used uninitialized
-> > in this function [-Wmaybe-uninitialized]
-> >   printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-> >   ^~~~~~
-> > drivers/net/ethernet/qlogic/qed/qed_dev.c:983:17: note: 'abs_ppfid' was declared
-> > here
-> >   u8 filter_idx, abs_ppfid;
-> >                  ^~~~~~~~~
-> > 
-> > ...under W=1+.
-> > 
-> > Fix this by initializing it with zero.
-> > 
-> > Fixes: 79284adeb99e ("qed: Add llh ppfid interface and 100g support for
-> > offload protocols")
-> > Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
-> > Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-> > Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+
+[..]
+>> My question: Is this any different from how stats are structured?
 > 
-> Please don't wrap Fixes tags:
+> I don't know I fully catch the question. Are you trying to get how many frames for each filter chain passing one index policing action?
+> If one index police action bind to multiple tc filter(they should have differnt chain index ). All those filter should get same index police action stats value since they are sharing the same hardware entry. But I don't think this is the problem.
+>
 
-Aww, second time in a row I fail on this. Sorry, will send v2
-soon.
+This is a good thing. What is nice is i can use the same index for
+s/w and h/w (and no need for a translation/remapping).
 
-> Fixes tag: Fixes: 79284adeb99e ("qed: Add llh ppfid interface and 100g support for
-> Has these problem(s):
-> 	- Subject has leading but no trailing parentheses
-> 	- Subject has leading but no trailing quotes
+> With index provide to device driver(map the s/w action index to a h/w table index ), user could list the police actions list by command:
+> # tc actions show action police
+> Shows the police action table by index.
 
-Al
+This is also nice.
+
+My question: Why cant you apply the same semantics for the counters?
+Does your hardware have an indexed counter/stats table? If yes
+then you should be able to do similar thing for counters
+as you do for policer (i.e use an index and share counters across
+actions). So when i say:
+tc action drop index 5
+and
+tc action ok index 5
+infact they use the same counter.
+
+
+cheers,
+jamal
+
