@@ -2,179 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED48F20570C
-	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 18:18:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1519520572D
+	for <lists+netdev@lfdr.de>; Tue, 23 Jun 2020 18:27:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733080AbgFWQSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 12:18:36 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:40608 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1733067AbgFWQSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 12:18:30 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 05NG8JpA010630
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 09:18:29 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=GvZxXTAJ14WkX/SiXlPuXYHlUeACjSRc+0ivmicJW7c=;
- b=KwcVSCau5n8uy/NXHGdrlQ0R+JCjE934Ry6u3Y7Lrm1aY/gDRX6EPk6l3cWU0KbkxkkX
- CrpU56WFU2p41i0fW8meTJDfdZRATavLdXjFhZtts/9fcaPBUiefyz7mU2Vfi/UTHgQK
- iyENde3vA+C1je6JZmixAMj/mO3/8dZ0yK0= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 31uk100qnu-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 09:18:29 -0700
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 23 Jun 2020 09:18:13 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 0FEB93701557; Tue, 23 Jun 2020 09:18:08 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Yonghong Song <yhs@fb.com>
-Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next v4 15/15] selftests/bpf: add tcp/udp iterator programs to selftests
-Date:   Tue, 23 Jun 2020 09:18:08 -0700
-Message-ID: <20200623161808.2502077-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200623161749.2500196-1-yhs@fb.com>
-References: <20200623161749.2500196-1-yhs@fb.com>
+        id S1732406AbgFWQ1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 12:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732155AbgFWQ1T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 12:27:19 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5786C061755
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 09:27:17 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id x9so6133095ila.3
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 09:27:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=2HfYUl27ws6rzUdD3KtQEV+gfmF8af8Ah+cfE/GhpU0=;
+        b=rNfsLC2jhNPskzrBCvMUiHmMQhtgQHZRNee+zxTRxsUSJ9sABsKMttIhODtAJEKc5Y
+         ScZo4QlGKQZWPhsJ/n02X2L/URyh8JSsNhSmkT+OCYBiRLamvRZ7wCorHduH4pbUKmPC
+         XgZGwZJ+VAIxJCX9rAlvnABk2Sv/XTe4g/vAiINxGvKjqaJ+msVJ4gQzyECvqGdXct7I
+         GzYmJjf7Q0KbSU7qxIYlDOO+KRq/iZqe2yOmCpyN5uKCkmyTEUqY2Ler9C7PSVWe8JNP
+         mEX2+5Ff4/qzcIN96B5xb5NyyEHc8oiHh8tuiDCAQQMVHvM04XX+j8WGQLMHSGs3O7HS
+         2ldQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2HfYUl27ws6rzUdD3KtQEV+gfmF8af8Ah+cfE/GhpU0=;
+        b=ToI7WbC1tnzDCFIiP+CHDWWG1wynnzzBm7dACWWoEopW8xRpoRpSlZfuwpVh/VtE1F
+         EzBWLE6ut2VNo0Vf3SM9hW7VVT0Vr94X23khVPrZgwKyHbjFGZZJJV5s/d7giXNfKap6
+         /CdxjqyZaqLcygaI5fuJJmHnYBjdI09x4UBoFSA6Oz83fU0bYJ1rmEr2lszO4xyyHU6p
+         oodcJ5uQLrRmwS6kG/qfooRPQmvHAyZAMyMIz6RXL+6VQVy5X6Y5D++gozy1AvSRi9q0
+         1BhuDJfkNtOT8b+Ju9wAQiKqtn1d/UNI9UmP7yh6QTZ0uHD+G+79nNZaYQUEZLvO1ivH
+         33Bg==
+X-Gm-Message-State: AOAM530iFDjHOywgRiJvjl84+HHEp28wHEzSMV9y/xLjsPASPqZf/55n
+        Bv5i0eAGIskSF7DOcykZ3ZK+bNtxJ6/y53lHO+PUjQ==
+X-Google-Smtp-Source: ABdhPJxuRp1kY0Pjp+MMdWj5T/28lVrk2yLNcq6IbmjVHcQQMX5N/hsJ+Bg1RgVxEBhjOZebPX9QJrWrcsZrxc0i0U4=
+X-Received: by 2002:a92:c509:: with SMTP id r9mr22887128ilg.189.1592929637036;
+ Tue, 23 Jun 2020 09:27:17 -0700 (PDT)
 MIME-Version: 1.0
+References: <20200622093744.13685-1-brgl@bgdev.pl> <20200622093744.13685-15-brgl@bgdev.pl>
+ <20200622132921.GI1551@shell.armlinux.org.uk> <CAMRc=Me1r3Mzfg3-gTsGk4rEtvB=P9ESkn9q=c7z0Q=YQDsw2A@mail.gmail.com>
+ <20200623094252.GS1551@shell.armlinux.org.uk> <CAMpxmJVP9db-4-AA4e1JkEfrajvJ4s0T6zo5+oFzpJHRBcuSsg@mail.gmail.com>
+ <20200623095646.GT1551@shell.armlinux.org.uk>
+In-Reply-To: <20200623095646.GT1551@shell.armlinux.org.uk>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 23 Jun 2020 18:27:06 +0200
+Message-ID: <CAMRc=MeKE12sXZycyGA7vmjNai0JfDhRX+XDTp3r3YtrmLQj3A@mail.gmail.com>
+Subject: Re: [PATCH 14/15] net: phy: add PHY regulator support
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-23_10:2020-06-23,2020-06-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
- impostorscore=0 lowpriorityscore=0 spamscore=0 adultscore=0 malwarescore=0
- mlxscore=0 phishscore=0 priorityscore=1501 mlxlogscore=999 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006120000 definitions=main-2006230120
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added tcp{4,6} and udp{4,6} bpf programs into test_progs
-selftest so that they at least can load successfully.
-  $ ./test_progs -n 3
-  ...
-  #3/7 tcp4:OK
-  #3/8 tcp6:OK
-  #3/9 udp4:OK
-  #3/10 udp6:OK
-  ...
-  #3 bpf_iter:OK
-  Summary: 1/16 PASSED, 0 SKIPPED, 0 FAILED
+wt., 23 cze 2020 o 11:56 Russell King - ARM Linux admin
+<linux@armlinux.org.uk> napisa=C5=82(a):
+>
+> On Tue, Jun 23, 2020 at 11:46:15AM +0200, Bartosz Golaszewski wrote:
+> > wt., 23 cze 2020 o 11:43 Russell King - ARM Linux admin
+> > <linux@armlinux.org.uk> napisa=C5=82(a):
+> > >
+> > > On Tue, Jun 23, 2020 at 11:41:11AM +0200, Bartosz Golaszewski wrote:
+> > > > pon., 22 cze 2020 o 15:29 Russell King - ARM Linux admin
+> > > > <linux@armlinux.org.uk> napisa=C5=82(a):
+> > > > >
+> > > >
+> > > > [snip!]
+> > > >
+> > > > >
+> > > > > This is likely to cause issues for some PHY drivers.  Note that w=
+e have
+> > > > > some PHY drivers which register a temperature sensor in the probe
+> > > > > function, which means they can be accessed independently of the l=
+ifetime
+> > > > > of the PHY bound to the network driver (which may only be while t=
+he
+> > > > > network device is "up".)  We certainly do not want hwmon failing =
+just
+> > > > > because the network device is down.
+> > > > >
+> > > > > That's kind of worked around for the reset stuff, because there a=
+re two
+> > > > > layers to that: the mdio device layer reset support which knows n=
+othing
+> > > > > of the PHY binding state to the network driver, and the phylib re=
+set
+> > > > > support, but it is not nice.
+> > > > >
+> > > >
+> > > > Regulators are reference counted so if the hwmon driver enables it
+> > > > using mdio_device_power_on() it will stay on even after the PHY dri=
+ver
+> > > > calls phy_device_power_off(), right? Am I missing something?
+> > >
+> > > If that is true, you will need to audit the PHY drivers to add that.
+> > >
+> >
+> > This change doesn't have any effect on devices which don't have a
+> > regulator assigned in DT though. The one I'm adding in the last patch
+> > is the first to use this.
+>
+> It's quality of implementation.
+>
+> Should we wait for someone else to make use of the new regulator
+> support that has been added with a PHY that uses hwmon, and they
+> don't realise that it breaks hwmon on it, and several kernel versions
+> go by without it being noticed.  It will only be a noticable issue
+> when the associated network device is down, and that network device
+> driver detaches from the PHY, so _is_ likely not to be noticed.
+>
+> Or should we do a small amount of work now to properly implement
+> regulator support, which includes a trivial grep for "hwmon" amongst
+> the PHY drivers, and add the necessary call to avoid the regulator
+> being shut off.
+>
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- .../selftests/bpf/prog_tests/bpf_iter.c       | 68 +++++++++++++++++++
- 1 file changed, 68 insertions(+)
+I'm not sure what the correct approach is here. Provide some helper
+that, when called, would increase the regulator's reference count even
+more to keep it enabled from the moment hwmon is registered to when
+the driver is detached?
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/te=
-sting/selftests/bpf/prog_tests/bpf_iter.c
-index 87c29dde1cf9..1e2e0fced6e8 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-@@ -6,6 +6,10 @@
- #include "bpf_iter_bpf_map.skel.h"
- #include "bpf_iter_task.skel.h"
- #include "bpf_iter_task_file.skel.h"
-+#include "bpf_iter_tcp4.skel.h"
-+#include "bpf_iter_tcp6.skel.h"
-+#include "bpf_iter_udp4.skel.h"
-+#include "bpf_iter_udp6.skel.h"
- #include "bpf_iter_test_kern1.skel.h"
- #include "bpf_iter_test_kern2.skel.h"
- #include "bpf_iter_test_kern3.skel.h"
-@@ -120,6 +124,62 @@ static void test_task_file(void)
- 	bpf_iter_task_file__destroy(skel);
- }
-=20
-+static void test_tcp4(void)
-+{
-+	struct bpf_iter_tcp4 *skel;
-+
-+	skel =3D bpf_iter_tcp4__open_and_load();
-+	if (CHECK(!skel, "bpf_iter_tcp4__open_and_load",
-+		  "skeleton open_and_load failed\n"))
-+		return;
-+
-+	do_dummy_read(skel->progs.dump_tcp4);
-+
-+	bpf_iter_tcp4__destroy(skel);
-+}
-+
-+static void test_tcp6(void)
-+{
-+	struct bpf_iter_tcp6 *skel;
-+
-+	skel =3D bpf_iter_tcp6__open_and_load();
-+	if (CHECK(!skel, "bpf_iter_tcp6__open_and_load",
-+		  "skeleton open_and_load failed\n"))
-+		return;
-+
-+	do_dummy_read(skel->progs.dump_tcp6);
-+
-+	bpf_iter_tcp6__destroy(skel);
-+}
-+
-+static void test_udp4(void)
-+{
-+	struct bpf_iter_udp4 *skel;
-+
-+	skel =3D bpf_iter_udp4__open_and_load();
-+	if (CHECK(!skel, "bpf_iter_udp4__open_and_load",
-+		  "skeleton open_and_load failed\n"))
-+		return;
-+
-+	do_dummy_read(skel->progs.dump_udp4);
-+
-+	bpf_iter_udp4__destroy(skel);
-+}
-+
-+static void test_udp6(void)
-+{
-+	struct bpf_iter_udp6 *skel;
-+
-+	skel =3D bpf_iter_udp6__open_and_load();
-+	if (CHECK(!skel, "bpf_iter_udp6__open_and_load",
-+		  "skeleton open_and_load failed\n"))
-+		return;
-+
-+	do_dummy_read(skel->progs.dump_udp6);
-+
-+	bpf_iter_udp6__destroy(skel);
-+}
-+
- /* The expected string is less than 16 bytes */
- static int do_read_with_fd(int iter_fd, const char *expected,
- 			   bool read_one_char)
-@@ -394,6 +454,14 @@ void test_bpf_iter(void)
- 		test_task();
- 	if (test__start_subtest("task_file"))
- 		test_task_file();
-+	if (test__start_subtest("tcp4"))
-+		test_tcp4();
-+	if (test__start_subtest("tcp6"))
-+		test_tcp6();
-+	if (test__start_subtest("udp4"))
-+		test_udp4();
-+	if (test__start_subtest("udp6"))
-+		test_udp6();
- 	if (test__start_subtest("anon"))
- 		test_anon_iter(false);
- 	if (test__start_subtest("anon-read-one-char"))
---=20
-2.24.1
-
+Bart
