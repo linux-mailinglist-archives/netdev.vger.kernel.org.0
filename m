@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 090C9207310
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 14:16:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF680207312
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 14:16:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390349AbgFXMQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 08:16:20 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:38782 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388296AbgFXMQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 08:16:19 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05OCGCSd066061;
-        Wed, 24 Jun 2020 07:16:12 -0500
+        id S2390519AbgFXMQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 08:16:26 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:43924 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388296AbgFXMQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 08:16:24 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05OCGHJp100308;
+        Wed, 24 Jun 2020 07:16:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1593000972;
-        bh=4i/GtgXzaE4o8MhETtpPJ0dJbtJx23GHh6y7ROguMRQ=;
-        h=From:To:CC:Subject:Date;
-        b=CWrjYWYX/N1SyHgIiR1pmw62HelnV9IN414lBxYHxfT3qeDsjnJm7Y01UHAZ8yX//
-         LmGPU1Z2ur0xMqTHicN2noYcmP1BQpNvg0IY6TGw4wPZf/xHNl6pCh+IzT/PhP/teW
-         BzPWj9MJ2gR5sWDmYcNhVk1+qZaueOLV39gqurdQ=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 05OCGCov068786
+        s=ti-com-17Q1; t=1593000977;
+        bh=NjHRGQyuPawgk7rsFcYQJon3wpp+3lTd1hxMTCsjXxs=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=wZgsYrDcKEZoSfSUBSRF419WH3vJmF0UI9QZga2YeKfYOL2GQ+yaiP7mqGE5nJzXF
+         6hPdj2abt244nq2GjcZ3Y3ob+CljFCT7zsUCA4uSJQGCSA2IKPaFLgtXh8lNNekwvg
+         DS2hi68ywqKKV+1tbo4BLRxPQecDXEjHNjp9xFWE=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 05OCGHXY069349
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 24 Jun 2020 07:16:12 -0500
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 24 Jun 2020 07:16:17 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 24
- Jun 2020 07:16:12 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ Jun 2020 07:16:17 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 24 Jun 2020 07:16:12 -0500
+ Frontend Transport; Wed, 24 Jun 2020 07:16:17 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05OCGC3o070089;
-        Wed, 24 Jun 2020 07:16:12 -0500
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05OCGHqW056663;
+        Wed, 24 Jun 2020 07:16:17 -0500
 From:   Dan Murphy <dmurphy@ti.com>
 To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
         <davem@davemloft.net>, <robh@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v11 0/5] RGMII Internal delay common property
-Date:   Wed, 24 Jun 2020 07:16:00 -0500
-Message-ID: <20200624121605.18259-1-dmurphy@ti.com>
+Subject: [PATCH net-next v11 1/5] dt-bindings: net: Add tx and rx internal delays
+Date:   Wed, 24 Jun 2020 07:16:01 -0500
+Message-ID: <20200624121605.18259-2-dmurphy@ti.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200624121605.18259-1-dmurphy@ti.com>
+References: <20200624121605.18259-1-dmurphy@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -54,39 +56,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+tx-internal-delays and rx-internal-delays are a common setting for RGMII
+capable devices.
 
-The RGMII internal delay is a common setting found in most RGMII capable PHY
-devices.  It was found that many vendor specific device tree properties exist
-to do the same function. This creates a common property to be used for PHY's
-that have internal delays for the Rx and Tx paths.
+These properties are used when the phy-mode or phy-controller is set to
+rgmii-id, rgmii-rxid or rgmii-txid.  These modes indicate to the
+controller that the PHY will add the internal delay for the connection.
 
-If the internal delay is tunable then the caller needs to pass the internal
-delay array and the return will be the index in the array that was found in
-the firmware node.
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+---
+ .../devicetree/bindings/net/ethernet-phy.yaml        | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-If the internal delay is fixed then the caller only needs to indicate which
-delay to return.  There is no need for a fixed delay to add device properties
-since the value is not configurable. Per the ethernet-controller.yaml the
-interface type indicates that the PHY should provide the delay.
-
-This series contains examples of both a configurable delay and a fixed delay.
-
-Dan Murphy (5):
-  dt-bindings: net: Add tx and rx internal delays
-  net: phy: Add a helper to return the index for of the internal delay
-  dt-bindings: net: Add RGMII internal delay for DP83869
-  net: dp83869: Add RGMII internal delay configuration
-  net: phy: DP83822: Add setting the fixed internal delay
-
- .../devicetree/bindings/net/ethernet-phy.yaml | 12 +++
- .../devicetree/bindings/net/ti,dp83869.yaml   | 16 ++-
- drivers/net/phy/dp83822.c                     | 79 +++++++++++++--
- drivers/net/phy/dp83869.c                     | 53 +++++++++-
- drivers/net/phy/phy_device.c                  | 99 +++++++++++++++++++
- include/linux/phy.h                           |  4 +
- 6 files changed, 249 insertions(+), 14 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+index 9b1f1147ca36..a9e547ac7905 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+@@ -162,6 +162,18 @@ properties:
+     description:
+       Specifies a reference to a node representing a SFP cage.
+ 
++  rx-internal-delay-ps:
++    description: |
++      RGMII Receive PHY Clock Delay defined in pico seconds.  This is used for
++      PHY's that have configurable RX internal delays.  If this property is
++      present then the PHY applies the RX delay.
++
++  tx-internal-delay-ps:
++    description: |
++      RGMII Transmit PHY Clock Delay defined in pico seconds.  This is used for
++      PHY's that have configurable TX internal delays. If this property is
++      present then the PHY applies the TX delay.
++
+ required:
+   - reg
+ 
 -- 
 2.26.2
 
