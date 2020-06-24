@@ -2,103 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E2A0207753
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 17:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3AE6207779
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 17:34:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404323AbgFXPYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 11:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404017AbgFXPYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 11:24:19 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EACC061573;
-        Wed, 24 Jun 2020 08:24:19 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id mb16so2866465ejb.4;
-        Wed, 24 Jun 2020 08:24:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D5fcBmctUqkWRaCAlEquaCo151xfdRO5uLvWNbrg/T4=;
-        b=lneLGurgH4ESLltEQrI6RKR+MKIH5cMowieW6nb3PawBpUTe8dVgXXy8oMVUK4D+zC
-         61WQaa5yJ1WzosFIDyQOD1CeZNhfkijfHCaT6mJAdif+JAeN342vfOojjhY8ewmYPOzq
-         I4kosKQDArhuQ2/XphencidtJupidiJX+nZ5H6E7oaqCqRewZQ3U+4o3EzmxXdA3Rr7j
-         4qmsbilXgqZ0HMl8Ur1ZL0mPzVIuxqRV1viDITxeKOkGQl11bsqz6AevPORWx6Bp15Vr
-         TjnOlBl9Mn2pzwKcOnHs6/3+0411yKC2rOwo5wP78mP9XfNzXPI6N131Rmc32t+nTZth
-         gmeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D5fcBmctUqkWRaCAlEquaCo151xfdRO5uLvWNbrg/T4=;
-        b=pX5G4sSYWmn+mPK4+7RfzNCfl/J284ocKLVLy3MDgiNGoV6rgdGlVMnShRPDz2vDEQ
-         Pfi6o2VuqiTuGBiYuC1b+bogHdmPOpmA9MvYlw7vLOR3qXkMFdwayPLwoOjfuzR9TM4e
-         OSPY6DSyXV5PELv6LuKV6JS7gWwamVXQeL2rZzf0XYRqFQHpubZbpCNeld5rLRpK46ss
-         HC+iSZaEQaYwZFsZRDDW/mY55lNDRp2GAbwp1bb5dqC+V0s4z2GRhMcQSPtKBEtgQJe9
-         kqsrXB03ZXT8Jd5m/QRfBtw1H9Q1S8CZfbco0GvGP+KRrbjcn/dZAW8iqXh8WKGeO7qj
-         niXw==
-X-Gm-Message-State: AOAM530SiHeud6uFxSRQ+YDj7se6d+W/LUM/h3K+m33jSE5jPosw/fGD
-        5fu1rSi/0ZEKSRmHvIv/4Y9HuGC/GC98PjZvs4YQxw==
-X-Google-Smtp-Source: ABdhPJxXGFYEUDzodXY4S+pGgiGRko+o5hHsygS3MwblQ/K5dQVLFwuQYt/iX5NoNFt1e3/nk2D1FtPqKZ2S2whWJAI=
-X-Received: by 2002:a17:906:5949:: with SMTP id g9mr7426231ejr.305.1593012258194;
- Wed, 24 Jun 2020 08:24:18 -0700 (PDT)
+        id S2404434AbgFXPeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 11:34:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60412 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404208AbgFXPeU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 11:34:20 -0400
+Received: from lore-desk-wlan.redhat.com (unknown [151.48.138.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DF8512077D;
+        Wed, 24 Jun 2020 15:34:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593012859;
+        bh=bGLxbaVHmjlVJc1HjqKlll9zRDuezU/jAgVCbbVar2I=;
+        h=From:To:Cc:Subject:Date:From;
+        b=A7MaZKb18seQgWA8dlmgQ25XgXVtkPlh1zyilK1IXupxYXIa6fkFLaZ11K5XXViQC
+         BwdC/np1PWu0/vThH3vQyrVsIeUCdKA+JMVgEZNMtFpLD5SO3HU5d5plgrfvuK+VhO
+         wQ368fwthsiPnRb8pklJG0Ji5ci13vIeZjg2eayA=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, brouer@redhat.com,
+        daniel@iogearbox.net, toke@redhat.com, lorenzo.bianconi@redhat.com,
+        dsahern@kernel.org, andrii.nakryiko@gmail.com
+Subject: [PATCH v4 bpf-next 0/9] introduce support for XDP programs in CPUMAP
+Date:   Wed, 24 Jun 2020 17:33:49 +0200
+Message-Id: <cover.1593012598.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20200623090541.2964760-1-horatiu.vultur@microchip.com>
- <20200623.143821.491798381160245817.davem@davemloft.net> <20200624113156.hsutqewk4xntmkld@soft-dev3.localdomain>
-In-Reply-To: <20200624113156.hsutqewk4xntmkld@soft-dev3.localdomain>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 24 Jun 2020 18:24:07 +0300
-Message-ID: <CA+h21hogZsJZUksYY66_=-qkdG3kDA+byfX0tV=C-80M6mfYMA@mail.gmail.com>
-Subject: Re: [PATCH net v2 0/2] bridge: mrp: Update MRP_PORT_ROLE
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        bridge@lists.linux-foundation.org, netdev <netdev@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Horatiu,
+Similar to what David Ahern proposed in [1] for DEVMAPs, introduce the
+capability to attach and run a XDP program to CPUMAP entries.
+The idea behind this feature is to add the possibility to define on which CPU
+run the eBPF program if the underlying hw does not support RSS.
+I respin patch 1/6 from a previous series sent by David [2].
+The functionality has been tested on Marvell Espressobin, i40e and mlx5.
+Detailed tests results can be found here:
+https://github.com/xdp-project/xdp-project/blob/master/areas/cpumap/cpumap04-map-xdp-prog.org
 
-On Wed, 24 Jun 2020 at 14:34, Horatiu Vultur
-<horatiu.vultur@microchip.com> wrote:
->
-> The 06/23/2020 14:38, David Miller wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> >
-> > From: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > Date: Tue, 23 Jun 2020 11:05:39 +0200
-> >
-> > > This patch series does the following:
-> > > - fixes the enum br_mrp_port_role_type. It removes the port role none(0x2)
-> > >   because this is in conflict with the standard. The standard defines the
-> > >   interconnect port role as value 0x2.
-> > > - adds checks regarding current defined port roles: primary(0x0) and
-> > >   secondary(0x1).
-> > >
-> > > v2:
-> > >  - add the validation code when setting the port role.
-> >
-> > Series applied, thank you.
->
-> Thanks. Will these patches be applied also on net-next?
-> Because if I start now to add support for the interconnect port, these
-> patches are needed on net-next. Or do I need to add these patches to the
-> patch series for the interconnect port?
-> What is the correct way of doing this?
->
-> --
-> /Horatiu
+Changes since v3:
+- fix typo in commit message
+- fix access to ctx->ingress_ifindex in cpumap bpf selftest
 
-The "net" tree is merged weekly (or so) by David into "net-next". So,
-your patches should be available at the beginning of the next week.
+Changes since v2:
+- improved comments
+- fix return value in xdp_convert_buff_to_frame
+- added patch 1/9: "cpumap: use non-locked version __ptr_ring_consume_batched"
+- do not run kmem_cache_alloc_bulk if all frames have been consumed by the XDP
+  program attached to the CPUMAP entry
+- removed bpf_trace_printk in kselftest
 
-Cheers,
--Vladimir
+Changes since v1:
+- added performance test results
+- added kselftest support
+- fixed memory accounting with page_pool
+- extended xdp_redirect_cpu_user.c to load an external program to perform
+  redirect
+- reported ifindex to attached eBPF program
+- moved bpf_cpumap_val definition to include/uapi/linux/bpf.h
+
+[1] https://patchwork.ozlabs.org/project/netdev/cover/20200529220716.75383-1-dsahern@kernel.org/
+[2] https://patchwork.ozlabs.org/project/netdev/patch/20200513014607.40418-2-dsahern@kernel.org/
+
+David Ahern (1):
+  net: Refactor xdp_convert_buff_to_frame
+
+Jesper Dangaard Brouer (1):
+  cpumap: use non-locked version __ptr_ring_consume_batched
+
+Lorenzo Bianconi (7):
+  samples/bpf: xdp_redirect_cpu_user: do not update bpf maps in option
+    loop
+  cpumap: formalize map value as a named struct
+  bpf: cpumap: add the possibility to attach an eBPF program to cpumap
+  bpf: cpumap: implement XDP_REDIRECT for eBPF programs attached to map
+    entries
+  libbpf: add SEC name for xdp programs attached to CPUMAP
+  samples/bpf: xdp_redirect_cpu: load a eBPF program on cpumap
+  selftest: add tests for XDP programs in CPUMAP entries
+
+ include/linux/bpf.h                           |   6 +
+ include/net/xdp.h                             |  41 ++--
+ include/trace/events/xdp.h                    |  16 +-
+ include/uapi/linux/bpf.h                      |  14 ++
+ kernel/bpf/cpumap.c                           | 160 +++++++++++---
+ net/core/dev.c                                |   8 +
+ samples/bpf/xdp_redirect_cpu_kern.c           |  25 ++-
+ samples/bpf/xdp_redirect_cpu_user.c           | 208 ++++++++++++++++--
+ tools/include/uapi/linux/bpf.h                |  14 ++
+ tools/lib/bpf/libbpf.c                        |   2 +
+ .../bpf/prog_tests/xdp_cpumap_attach.c        |  70 ++++++
+ .../bpf/progs/test_xdp_with_cpumap_helpers.c  |  36 +++
+ 12 files changed, 528 insertions(+), 72 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
+
+-- 
+2.26.2
+
