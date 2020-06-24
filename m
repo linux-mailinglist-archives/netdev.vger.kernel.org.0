@@ -2,189 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C817B206EAE
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 10:09:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3EF3206EAF
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 10:09:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390342AbgFXIIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 04:08:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387732AbgFXIIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 04:08:36 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D709BC061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 01:08:35 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1jo0SQ-00069M-DK; Wed, 24 Jun 2020 10:08:34 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     steffen.klassert@secunet.com
-Cc:     <netdev@vger.kernel.org>, Florian Westphal <fw@strlen.de>
-Subject: [PATCH ipsec-next v2 6/6] xfrm: replay: remove last replay indirection
-Date:   Wed, 24 Jun 2020 10:08:04 +0200
-Message-Id: <20200624080804.7480-7-fw@strlen.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200624080804.7480-1-fw@strlen.de>
-References: <20200624080804.7480-1-fw@strlen.de>
+        id S2390348AbgFXIJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 04:09:20 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:54509 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387732AbgFXIJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 04:09:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592986158;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X+VOaBnXFAoVjainQQQLxY/W61VZcJH4bMHVNHhNhEc=;
+        b=MXnT8Gh+tS+08SMq0o8mOAgUnUe6RrjEQNxKNGzPqLVTeD1LxHXLiv0Q1W7iorgsCyTj08
+        7o4B0HHe0BgBIARXU/ARTwAIFGsrIQ8qiNt6tmcK15dFJT5MWZJ6RNuHWnLAuvdGziAxKp
+        Nr5rY8Cmt2RZ9ziMjw3xIkBQBzEH9sE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-68-7ch9CEn0OyKnJBAN6QPK1Q-1; Wed, 24 Jun 2020 04:09:15 -0400
+X-MC-Unique: 7ch9CEn0OyKnJBAN6QPK1Q-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3356C464;
+        Wed, 24 Jun 2020 08:09:14 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.36])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6C9441DC;
+        Wed, 24 Jun 2020 08:09:00 +0000 (UTC)
+Date:   Wed, 24 Jun 2020 10:08:58 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, toke@redhat.com,
+        lorenzo.bianconi@redhat.com, dsahern@kernel.org,
+        andrii.nakryiko@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH v3 bpf-next 4/9] cpumap: formalize map value as a named
+ struct
+Message-ID: <20200624100858.69f8f749@carbon>
+In-Reply-To: <c1eadbcdef365c5d52e01f4a442390bb20950618.1592947694.git.lorenzo@kernel.org>
+References: <cover.1592947694.git.lorenzo@kernel.org>
+        <c1eadbcdef365c5d52e01f4a442390bb20950618.1592947694.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This replaces the overflow indirection with the new xfrm_replay_overflow
-helper.  After this, the 'repl' pointer in xfrm_state is no longer
-needed and can be removed as well.
+On Tue, 23 Jun 2020 23:39:29 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-xfrm_replay_overflow() is added in two incarnations, one is used
-when the kernel is configured with xfrm offload enabled, the other
-when its disabled.
+> As it has been already done for devmap, introduce 'struct bpf_cpumap_val'
+> to formalize the expected values that can be passed in for a CPUMAP.
+> Update cpumap code to use the struct.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- include/net/xfrm.h     |  8 +------
- net/xfrm/xfrm_output.c |  2 +-
- net/xfrm/xfrm_replay.c | 51 +++++++++++++++++++++---------------------
- 3 files changed, 28 insertions(+), 33 deletions(-)
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 008b564cb126..c0f3e8a3fdd0 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -219,9 +219,6 @@ struct xfrm_state {
- 	struct xfrm_replay_state preplay;
- 	struct xfrm_replay_state_esn *preplay_esn;
- 
--	/* The functions for replay detection. */
--	const struct xfrm_replay *repl;
--
- 	/* replay detection mode */
- 	enum xfrm_replay_mode    repl_mode;
- 	/* internal flag that only holds state for delayed aevent at the
-@@ -303,10 +300,6 @@ struct km_event {
- 	struct net *net;
- };
- 
--struct xfrm_replay {
--	int	(*overflow)(struct xfrm_state *x, struct sk_buff *skb);
--};
--
- struct xfrm_if_cb {
- 	struct xfrm_if	*(*decode_session)(struct sk_buff *skb,
- 					   unsigned short family);
-@@ -1715,6 +1708,7 @@ static inline int xfrm_policy_id2dir(u32 index)
- void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq);
- int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
- void xfrm_replay_notify(struct xfrm_state *x, int event);
-+int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb);
- int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
- 
- static inline int xfrm_aevent_is_on(struct net *net)
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index e4c23f69f69f..8893a37690ad 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -448,7 +448,7 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
- 			goto error;
- 		}
- 
--		err = x->repl->overflow(x, skb);
-+		err = xfrm_replay_overflow(x, skb);
- 		if (err) {
- 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATESEQERROR);
- 			goto error;
-diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
-index 8c97fcaf17cf..7630d002107b 100644
---- a/net/xfrm/xfrm_replay.c
-+++ b/net/xfrm/xfrm_replay.c
-@@ -97,7 +97,7 @@ void xfrm_replay_notify(struct xfrm_state *x, int event)
- 		x->xflags &= ~XFRM_TIME_DEFER;
- }
- 
--static int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
-+static int __xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
- {
- 	int err = 0;
- 	struct net *net = xs_net(x);
-@@ -601,7 +601,7 @@ static int xfrm_replay_overflow_offload(struct xfrm_state *x, struct sk_buff *sk
- 	__u32 oseq = x->replay.oseq;
- 
- 	if (!xo)
--		return xfrm_replay_overflow(x, skb);
-+		return __xfrm_replay_overflow(x, skb);
- 
- 	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
- 		if (!skb_is_gso(skb)) {
-@@ -719,29 +719,33 @@ static int xfrm_replay_overflow_offload_esn(struct xfrm_state *x, struct sk_buff
- 	return err;
- }
- 
--static const struct xfrm_replay xfrm_replay_legacy = {
--	.overflow	= xfrm_replay_overflow_offload,
--};
--
--static const struct xfrm_replay xfrm_replay_bmp = {
--	.overflow	= xfrm_replay_overflow_offload_bmp,
--};
-+int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	switch (x->repl_mode) {
-+	case XFRM_REPLAY_MODE_LEGACY:
-+		break;
-+	case XFRM_REPLAY_MODE_BMP:
-+		return xfrm_replay_overflow_offload_bmp(x, skb);
-+	case XFRM_REPLAY_MODE_ESN:
-+		return xfrm_replay_overflow_offload_esn(x, skb);
-+	}
- 
--static const struct xfrm_replay xfrm_replay_esn = {
--	.overflow	= xfrm_replay_overflow_offload_esn,
--};
-+	return xfrm_replay_overflow_offload(x, skb);
-+}
- #else
--static const struct xfrm_replay xfrm_replay_legacy = {
--	.overflow	= xfrm_replay_overflow,
--};
--
--static const struct xfrm_replay xfrm_replay_bmp = {
--	.overflow	= xfrm_replay_overflow_bmp,
--};
-+int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	switch (x->repl_mode) {
-+	case XFRM_REPLAY_MODE_LEGACY:
-+		break;
-+	case XFRM_REPLAY_MODE_BMP:
-+		return xfrm_replay_overflow_bmp(x, skb);
-+	case XFRM_REPLAY_MODE_ESN:
-+		return xfrm_replay_overflow_esn(x, skb);
-+	}
- 
--static const struct xfrm_replay xfrm_replay_esn = {
--	.overflow	= xfrm_replay_overflow_esn,
--};
-+	return __xfrm_replay_overflow(x, skb);
-+}
- #endif
- 
- int xfrm_init_replay(struct xfrm_state *x)
-@@ -756,14 +760,11 @@ int xfrm_init_replay(struct xfrm_state *x)
- 		if (x->props.flags & XFRM_STATE_ESN) {
- 			if (replay_esn->replay_window == 0)
- 				return -EINVAL;
--			x->repl = &xfrm_replay_esn;
- 			x->repl_mode = XFRM_REPLAY_MODE_ESN;
- 		} else {
--			x->repl = &xfrm_replay_bmp;
- 			x->repl_mode = XFRM_REPLAY_MODE_BMP;
- 		}
- 	} else {
--		x->repl = &xfrm_replay_legacy;
- 		x->repl_mode = XFRM_REPLAY_MODE_LEGACY;
- 	}
- 
 -- 
-2.26.2
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
