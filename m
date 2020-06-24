@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A454B207A21
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 19:20:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42296207A22
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 19:20:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405493AbgFXRTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 13:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48908 "EHLO
+        id S2405497AbgFXRTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 13:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405486AbgFXRTn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 13:19:43 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDE02C061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:42 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id h22so1421788pjf.1
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:42 -0700 (PDT)
+        with ESMTP id S2405491AbgFXRTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 13:19:46 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FF1C061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:45 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id z63so1455019pfb.1
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2OQX8d52ytdpe1I2jFepdSnY7MQ3IgjSgV7EDnS0Lvk=;
-        b=gmhtc1+MV80WWG0qj3axJDEtLOorRgPozciZiqL3nxVjJaIMql+Ed5k4JxwLkez+jX
-         /r8IZk7SIhmCggN+pk0x7s0nt0nzjW83K9nzKuq+M0DNR2exUew/QAc3P/AmuBR/RuVZ
-         5/1cueb+Iv1vrdi2dQUYRVRVWHeWupsC/2+G3jVCuJ85yT2iQsltRD3/+5HQceix75bx
-         Cl85qB7jmQbjBppmOHynl90RGjmiPYbSq7dcZk2opNRP/lv3FfVWHgMXqqdWVwUQnJ6F
-         hMdwbo2k+EtjfhUQaKaMNHCgPfO/PvBxnqkZYPAOC60Kp6HV9wCcm0hEb0U3tqUKPHLE
-         AtyA==
+        bh=kHpXfg6D3vEApiJp8FQJ17UW76ojekkZfCE2qlXVgXY=;
+        b=Br8IBGH2Xmb73N/0o9TRZOormUqUmQirAesW+uM30rLSADM+9b0Gwt8ZnXWUBHSUsG
+         D19XU8quYUF+2lp1lyCCBwOvpGBpv54j+KDdoJsmq8xBQ4uqlE5Feoby9nGL8aJTg0gP
+         lJmLMvOOKLzHV7Q4Q0v1gyFX5fGmtJL+tL97zTyjs/rNgZeT510fQGCPOZpTOO6zHVcl
+         SbUcPIsvZk/rAlLaCdwYQVbVlnFOMVHlpnAm//cZXzVTRFLYvyhvHu8C432zERcqCUca
+         yhSy0TuY48gG6iVPggS2R3jrAFDdnZj1CWkErdhMZeQS3rxYNUUMXKe2KOXQukv+2WQC
+         w92w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2OQX8d52ytdpe1I2jFepdSnY7MQ3IgjSgV7EDnS0Lvk=;
-        b=NEbWIThuyvgqSqpEeqxLv0OxedYYIASq71lAhJcxeOCrOlg9AaoMWoMjbu61y4ETYo
-         wB0WST2jR5Jidudu6dKsnTnINpOJfL2tkNDeYvlZUnZubLj6jejeJKVGarKdssrZ8iFz
-         lEeEktCdFPUouUWib1wYuvA8t74tzLHdY5f1X3YwUR/e2AEBFjijDcdWoaW9tUtx0FCV
-         IzAaPUSX68MEaE7DwN/B40c/iPeoIwRthqma7YP8i/SgB0wDqnLJ2pP7r43/JEPulQN8
-         ciQnIJXjxIYQkwhu9ZwIUv96PqmI+JQWiirlLL7KhbkX4sRmU0tSAqye3XQYcQ4E2A87
-         ikZg==
-X-Gm-Message-State: AOAM530oUawO+eeHwdYg6O3pWoLNmrjcio4h6LIulxYXUbzFOOx74wN6
-        5kmpKkF5KZlJnAKcCiENpc7fWzerwtg=
-X-Google-Smtp-Source: ABdhPJxBY+EJ+1WlNxRYRcW9/DQ3X+LXUb6EKTotiex2pfRuujuWNtWYlvu87p0OHHBbXwPm70hnbQ==
-X-Received: by 2002:a17:902:ab98:: with SMTP id f24mr30802753plr.154.1593019181924;
-        Wed, 24 Jun 2020 10:19:41 -0700 (PDT)
+        bh=kHpXfg6D3vEApiJp8FQJ17UW76ojekkZfCE2qlXVgXY=;
+        b=gbbnQFqqKq4L+WKaszIiks4Fb4h/DHP3cgShATnVNimibYRmobMxkV1xKayI7N8fkr
+         xQNo31yqaLEwxxxatNsQdu75jVBegvA2TILrdgTuVC2Rbly2WqViFeLDesmR23cop/+P
+         FKBgjGQZRCX1PhGXMsjlxRGUlsebww1XnZJtBVHzh9La4eFlE2UDa87e63LF/ibkyKKI
+         MMIBPQFlTkxTfAPtnbJSOugyG6PxVsog0TllDlZXuE9NUdRFEyk4l0MFFbQWUsiTaRUY
+         NW7JBxyOQwT7GulrlsNqE+z9I7AOgCvJdT5PjrU3A/afaxc4nYS4MMFr+B/uvKDzDbXb
+         QASw==
+X-Gm-Message-State: AOAM533OHip1sLxyDS1MA9QSpn451xDodBwOTywRyYaAB62Y8XZ6JMQn
+        Whym1HRX35Z3bnwpk2ss8tJpH6J0vv4=
+X-Google-Smtp-Source: ABdhPJwYTaoHrrPEGizGjp15Mv9FGUcMrnWdlabyII631oaj14Xznqo2Dcto8bf6c7ccd6dX4UDwiw==
+X-Received: by 2002:a63:564e:: with SMTP id g14mr6655093pgm.326.1593019184487;
+        Wed, 24 Jun 2020 10:19:44 -0700 (PDT)
 Received: from localhost.localdomain (c-73-202-182-113.hsd1.ca.comcast.net. [73.202.182.113])
-        by smtp.gmail.com with ESMTPSA id w18sm17490241pgj.31.2020.06.24.10.19.40
+        by smtp.gmail.com with ESMTPSA id w18sm17490241pgj.31.2020.06.24.10.19.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jun 2020 10:19:41 -0700 (PDT)
+        Wed, 24 Jun 2020 10:19:43 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 To:     netdev@vger.kernel.org
 Cc:     Tom Herbert <tom@herbertland.com>
-Subject: [RFC PATCH 09/11] ptq: Hook up transmit side of Per Queue Threads
-Date:   Wed, 24 Jun 2020 10:17:48 -0700
-Message-Id: <20200624171749.11927-10-tom@herbertland.com>
+Subject: [RFC PATCH 10/11] ptq: Hook up receive side of Per Queue Threads
+Date:   Wed, 24 Jun 2020 10:17:49 -0700
+Message-Id: <20200624171749.11927-11-tom@herbertland.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200624171749.11927-1-tom@herbertland.com>
 References: <20200624171749.11927-1-tom@herbertland.com>
@@ -63,193 +63,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support to select device queue for transmit based on the per thread
-transmit queue.
+Add code to set the queue in an rflow as opposed to just setting the
+CPU in an rps_dev_flow entry. set_rps_qid is the analogue for
+set_rps_cpu but for setting queues. In get_rps_cpu, a check is
+performed that identifier in the sock_flow_table refers to a queue;
+when it does call set_rps_qid after converting the global qid in the
+sock_flow_table to a device qid.
 
-Patch includes:
-	- Add a global queue (gqid) mapping to sock
-	- Function to convert gqid in a sock to a device queue (dqid) by
-	  calling sk_tx_gqid_to_dqid_get
-	- Function sock_record_tx_queue to record a queue in a socket
-	  taken from ptq_threads in struct task
-	- Call sock_record_tx_queue from af_inet send, listen, and accept
-	  functions to populate the socket's gqid for steerig
-	- In netdev_pick_tx try to take the queue index from the socket
-	  using sk_tx_gqid_to_dqid_get
+In rps_record_sock_flow check is there is a per task receive queue
+for current (i.e. current->ptq_queues.rxq_id != NO_QUEUE). If there
+is a queue then set in sock_flow_table instead of setting the running
+CPU. Subsequently, the receive queue for the flow can be programmed
+by aRFS logic (ndo_rx_flow_steer).
 ---
- include/net/sock.h | 63 ++++++++++++++++++++++++++++++++++++++++++++++
- net/core/dev.c     |  9 ++++---
- net/ipv4/af_inet.c |  6 +++++
- 3 files changed, 75 insertions(+), 3 deletions(-)
+ include/linux/netdevice.h | 28 ++++++++++++++++++++++++----
+ net/core/dev.c            | 36 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 60 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index acb76cfaae1b..5ec9d02e7ad0 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -140,6 +140,7 @@ typedef __u64 __bitwise __addrpair;
-  *	@skc_node: main hash linkage for various protocol lookup tables
-  *	@skc_nulls_node: main hash linkage for TCP/UDP/UDP-Lite protocol
-  *	@skc_tx_queue_mapping: tx queue number for this connection
-+ *	@skc_tx_gqid_mapping: global tx queue number for sending
-  *	@skc_rx_queue_mapping: rx queue number for this connection
-  *	@skc_flags: place holder for sk_flags
-  *		%SO_LINGER (l_onoff), %SO_BROADCAST, %SO_KEEPALIVE,
-@@ -225,6 +226,9 @@ struct sock_common {
- 		struct hlist_nulls_node skc_nulls_node;
- 	};
- 	unsigned short		skc_tx_queue_mapping;
-+#ifdef CONFIG_RPS
-+	unsigned short		skc_tx_gqid_mapping;
-+#endif
- #ifdef CONFIG_XPS
- 	unsigned short		skc_rx_queue_mapping;
- #endif
-@@ -353,6 +357,9 @@ struct sock {
- #define sk_nulls_node		__sk_common.skc_nulls_node
- #define sk_refcnt		__sk_common.skc_refcnt
- #define sk_tx_queue_mapping	__sk_common.skc_tx_queue_mapping
-+#ifdef CONFIG_RPS
-+#define sk_tx_gqid_mapping	__sk_common.skc_tx_gqid_mapping
-+#endif
- #ifdef CONFIG_XPS
- #define sk_rx_queue_mapping	__sk_common.skc_rx_queue_mapping
- #endif
-@@ -1792,6 +1799,34 @@ static inline int sk_receive_skb(struct sock *sk, struct sk_buff *skb,
- 	return __sk_receive_skb(sk, skb, nested, 1, true);
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index ca163925211a..3b39be470720 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -731,12 +731,25 @@ static inline void rps_dev_flow_set_cpu(struct rps_dev_flow *dev_flow, u16 cpu)
+ 	if (WARN_ON(cpu > RPS_MAX_CPU))
+ 		return;
+ 
+-	/* Set the rflow target to the CPU atomically */
++	/* Set the device flow target to the CPU atomically */
+ 	cpu_qid.use_qid = 0;
+ 	cpu_qid.cpu = cpu;
+ 	dev_flow->cpu_qid = cpu_qid;
  }
  
-+static inline int sk_tx_gqid_get(const struct sock *sk)
++static inline void rps_dev_flow_set_qid(struct rps_dev_flow *dev_flow, u16 qid)
 +{
-+#ifdef CONFIG_RPS
-+	if (sk && sk->sk_tx_gqid_mapping != NO_QUEUE)
-+		return sk->sk_tx_gqid_mapping;
-+#endif
++	struct rps_cpu_qid cpu_qid;
 +
-+	return -1;
-+}
-+
-+static inline void sk_tx_gqid_set(struct sock *sk, int gqid)
-+{
-+#ifdef CONFIG_RPS
-+	/* sk_tx_queue_mapping accept only up to RPS_MAX_QID (0x7ffe) */
-+	if (WARN_ON_ONCE((unsigned int)gqid > RPS_MAX_QID &&
-+			 gqid != NO_QUEUE))
++	if (WARN_ON(qid > RPS_MAX_QID))
 +		return;
-+	sk->sk_tx_gqid_mapping = gqid;
-+#endif
++
++	/* Set the device flow target to the CPU atomically */
++	cpu_qid.use_qid = 1;
++	cpu_qid.qid = qid;
++	dev_flow->cpu_qid = cpu_qid;
 +}
 +
-+static inline void sk_tx_gqid_clear(struct sock *sk)
-+{
-+#ifdef CONFIG_RPS
-+	sk->sk_tx_gqid_mapping = NO_QUEUE;
-+#endif
-+}
-+
- static inline void sk_tx_queue_set(struct sock *sk, int tx_queue)
+ /*
+  * The rps_dev_flow_table structure contains a table of flow mappings.
+  */
+@@ -797,11 +810,18 @@ static inline void rps_record_sock_flow(struct rps_sock_flow_table *table,
+ 					u32 hash)
  {
- 	/* sk_tx_queue_mapping accept only upto a 16-bit value */
-@@ -1803,6 +1838,9 @@ static inline void sk_tx_queue_set(struct sock *sk, int tx_queue)
- static inline void sk_tx_queue_clear(struct sock *sk)
- {
- 	sk->sk_tx_queue_mapping = NO_QUEUE;
-+
-+	/* Clear tx_gqid at same points */
-+	sk_tx_gqid_clear(sk);
- }
+ 	if (table && hash) {
+-		u32 val = hash & table->cpu_masks.hash_mask;
+ 		unsigned int index = hash & table->mask;
++		u32 val;
  
- static inline int sk_tx_queue_get(const struct sock *sk)
-@@ -1813,6 +1851,31 @@ static inline int sk_tx_queue_get(const struct sock *sk)
- 	return -1;
- }
- 
-+static inline int sk_tx_gqid_to_dqid_get(const struct net_device *dev,
-+					 const struct sock *sk)
-+{
-+	int ret = -1;
-+#ifdef CONFIG_RPS
-+	int gqid;
-+	u16 dqid;
-+
-+	gqid = sk_tx_gqid_get(sk);
-+	if (gqid >= 0) {
-+		dqid = netdev_tx_gqid_to_dqid(dev, gqid);
-+		if (dqid != NO_QUEUE)
-+			ret = dqid;
-+	}
-+#endif
-+	return ret;
-+}
-+
-+static inline void sock_record_tx_queue(struct sock *sk)
-+{
+-		/* We only give a hint, preemption can change CPU under us */
+-		val |= raw_smp_processor_id();
 +#ifdef CONFIG_PER_THREAD_QUEUES
-+	sk_tx_gqid_set(sk, current->ptq_queues.txq_id);
++		if (current->ptq_queues.rxq_id != NO_QUEUE)
++			val = RPS_SOCK_FLOW_USE_QID |
++			      (hash & table->queue_masks.hash_mask) |
++			      current->ptq_queues.rxq_id;
++		else
 +#endif
-+}
-+
- static inline void sk_rx_queue_set(struct sock *sk, const struct sk_buff *skb)
- {
- #ifdef CONFIG_XPS
++			val = (hash & table->cpu_masks.hash_mask) |
++			      raw_smp_processor_id();
+ 
+ 		if (table->ents[index] != val)
+ 			table->ents[index] = val;
 diff --git a/net/core/dev.c b/net/core/dev.c
-index f64bf6608775..f4478c9b1c9c 100644
+index f4478c9b1c9c..1cad776e8847 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3982,10 +3982,13 @@ u16 netdev_pick_tx(struct net_device *dev, struct sk_buff *skb,
+@@ -4308,6 +4308,25 @@ set_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 	return rflow;
+ }
  
- 	if (queue_index < 0 || skb->ooo_okay ||
- 	    queue_index >= dev->real_num_tx_queues) {
--		int new_index = get_xps_queue(dev, sb_dev, skb);
-+		int new_index = sk_tx_gqid_to_dqid_get(dev, sk);
- 
--		if (new_index < 0)
--			new_index = skb_tx_hash(dev, sb_dev, skb);
-+		if (new_index < 0) {
-+			new_index = get_xps_queue(dev, sb_dev, skb);
-+			if (new_index < 0)
-+				new_index = skb_tx_hash(dev, sb_dev, skb);
-+		}
- 
- 		if (queue_index != new_index && sk &&
- 		    sk_fullsock(sk) &&
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 02aa5cb3a4fd..9b36aa3d1622 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -201,6 +201,8 @@ int inet_listen(struct socket *sock, int backlog)
- 
- 	lock_sock(sk);
- 
-+	sock_record_tx_queue(sk);
++static struct rps_dev_flow *
++set_rps_qid(struct net_device *dev, struct sk_buff *skb,
++	    struct rps_dev_flow *rflow, u16 qid)
++{
++	if (qid > RPS_MAX_QID) {
++		rps_dev_flow_clear(rflow);
++		return rflow;
++	}
 +
- 	err = -EINVAL;
- 	if (sock->state != SS_UNCONNECTED || sock->type != SOCK_STREAM)
- 		goto out;
-@@ -630,6 +632,8 @@ int __inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
- 		}
- 	}
- 
-+	sock_record_tx_queue(sk);
++#ifdef CONFIG_RFS_ACCEL
++	/* Should we steer this flow to a different hardware queue? */
++	if (skb_rx_queue_recorded(skb) && (dev->features & NETIF_F_NTUPLE) &&
++	    qid != skb_get_rx_queue(skb) && qid < dev->real_num_rx_queues)
++		set_arfs_queue(dev, skb, rflow, qid);
++#endif
++	rps_dev_flow_set_qid(rflow, qid);
++	return rflow;
++}
 +
- 	switch (sock->state) {
- 	default:
- 		err = -EINVAL;
-@@ -742,6 +746,7 @@ int inet_accept(struct socket *sock, struct socket *newsock, int flags,
- 	lock_sock(sk2);
+ /*
+  * get_rps_cpu is called from netif_receive_skb and returns the target
+  * CPU from the RPS map of the receiving queue for a given skb.
+@@ -4356,6 +4375,10 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
  
- 	sock_rps_record_flow(sk2);
-+	sock_record_tx_queue(sk2);
- 	WARN_ON(!((1 << sk2->sk_state) &
- 		  (TCPF_ESTABLISHED | TCPF_SYN_RECV |
- 		  TCPF_CLOSE_WAIT | TCPF_CLOSE)));
-@@ -794,6 +799,7 @@ EXPORT_SYMBOL(inet_getname);
- int inet_send_prepare(struct sock *sk)
- {
- 	sock_rps_record_flow(sk);
-+	sock_record_tx_queue(sk);
+ 		/* First check into global flow table if there is a match */
+ 		ident = sock_flow_table->ents[hash & sock_flow_table->mask];
++
++		if (ident == RPS_SOCK_FLOW_NO_IDENT)
++			goto try_rps;
++
+ 		comparator = ((ident & RPS_SOCK_FLOW_USE_QID) ?
+ 				sock_flow_table->queue_masks.hash_mask :
+ 				sock_flow_table->cpu_masks.hash_mask);
+@@ -4372,8 +4395,21 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 		 * CPU. Proceed accordingly.
+ 		 */
+ 		if (ident & RPS_SOCK_FLOW_USE_QID) {
++			u16 dqid, gqid;
++
+ 			/* A queue identifier is in the sock_flow_table entry */
  
- 	/* We may need to bind the socket. */
- 	if (!inet_sk(sk)->inet_num && !sk->sk_prot->no_autobind &&
++			gqid = ident & sock_flow_table->queue_masks.mask;
++			dqid = netdev_rx_gqid_to_dqid(dev, gqid);
++
++			/* rflow has desired receive qid. Just set the qid in
++			 * HW and return to use current CPU. Note that we
++			 * don't consider OOO in this case.
++			 */
++			rflow = set_rps_qid(dev, skb, rflow, dqid);
++
++			*rflowp = rflow;
++
+ 			/* Don't use aRFS to set CPU in this case, skip to
+ 			 * trying RPS
+ 			 */
 -- 
 2.25.1
 
