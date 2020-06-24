@@ -2,210 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADD2120692C
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 02:53:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27387206930
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 02:55:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388207AbgFXAxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 20:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38072 "EHLO
+        id S2388159AbgFXAzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 20:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729700AbgFXAxm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 20:53:42 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D110FC061573;
-        Tue, 23 Jun 2020 17:53:41 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id l6so351682qkc.6;
-        Tue, 23 Jun 2020 17:53:41 -0700 (PDT)
+        with ESMTP id S2387757AbgFXAy7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 20:54:59 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EB5C061755;
+        Tue, 23 Jun 2020 17:54:59 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id d21so352928lfb.6;
+        Tue, 23 Jun 2020 17:54:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ymHm30ThJM9+li2gmthHOsqDagx7sxI4jvkVj/K8ePc=;
-        b=dS7Hc/5aI8bMQTD0bwlip3iJRkphZWhCc7eKbxLymSvVdRhOp8yNhw6aeo9j5fCamd
-         ELjc268nyut2Pq9tpwZQnXIaZ6ydwQCvhMgX6yIaqvzct3nePMZwI3HoLT8eSOwybJAy
-         1A1r2t7p5EJ98EdVupMcO36LZC3gWifzvojLpdCG3iWSOTnereDglVhq3MbkFcijBvcK
-         +PJmx7ntl9dAH6k/sVUZoRpFAlmpnKDu7YjUrSRU4WkankERDO4+KCnUTQpGijaTyYJv
-         TGtUgwCc7u90XuX5OAs9BltHsDmLmRH0ncG9ATrBSC7DH8tjNPLfmJWZhpUGaGfvYlU+
-         kXLA==
+         :cc:content-transfer-encoding;
+        bh=SELmzgReg+iVHTahgJ6371+YxkQAf2+VAlTqmhfhQZo=;
+        b=cjm1L/wqIptfZr5x8pU2JkKdOAtu7JqBjyEKy4fB44k9+UJuDN2Eq1lL7CkW8p5L85
+         5vGpTmpgCkeeswMlvxMrNmFE57s/nxkGn948SblHhhnDX5O0TGMyuPpRWcEl/p0u5pNr
+         usUcghxjxuQeNK87WSgwTIz55tpj8qYEwqxK8CqDN8SiwHQ9nMdP5m/C3CPyzTwm8wty
+         dw3FZFwdtf85AbQTzTKfIFfMnxeXGo/Wr+fudv5aIK60EaWz7/+l6uXdX5OmHHR/GU5d
+         9jzRaO2hatTE/vVE3Wbqh0kbuhO8/JY5jg1r7pN3xO/RazbA5GcpcbqPApqTVyBu/FIn
+         z/XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ymHm30ThJM9+li2gmthHOsqDagx7sxI4jvkVj/K8ePc=;
-        b=TcCPzEFNQK9Q5M9WTmpIv+bms3ZJLKLeuYbd0UNh+v/ETrUs5dfNagUmS2MLz/7K/I
-         1kuY3GNdIkqhu1vtvCJ9BGP7+9zjRwE6CZ00VNrvQ2Pr4+KntwpQiF780PZREL6Bt8pX
-         71T//k4bMuNyRHiysIsmXyFDJcYoVZtoWk6wOxut7wUDKrNH1BOOajl0XN2/TFkXrc7D
-         mC9X8cziCLDISuhMRwcMhWg4f+/IOU0CuhxFABno40sHMgdujhqIVVS6/scsHco+rf3/
-         dlOax6EW/J08oUjnGOuqh+OURMT6/76yv/ZGX7a136BTUsloE3RCnMlvKYh4oSknETPZ
-         ugCw==
-X-Gm-Message-State: AOAM533+c+qrfWO30AdWzHqQFn3IaXr9lGxKdOE+4EM2Qh29nFQBbDt2
-        Ug7EbFsWxZUP3jzoA3uv7YQUvTlJften2dgq/tA=
-X-Google-Smtp-Source: ABdhPJzX25sDXemnw8Lt0C16ukxRj69LsNFmY1UIYkf+uqliNFyKcLBxEH28CXHfk3X7LtH4nF3gljWekyiO3eKv5lw=
-X-Received: by 2002:a05:620a:2409:: with SMTP id d9mr17056507qkn.36.1592960020879;
- Tue, 23 Jun 2020 17:53:40 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=SELmzgReg+iVHTahgJ6371+YxkQAf2+VAlTqmhfhQZo=;
+        b=F0xu9pmJ45BuPE42a/Z2djk/wNvsQNGmBnNm0BrDh1WZ34MNW+CfTci4hNF4wlYaxf
+         S50r18EhlCzDEyoKHeiXY8PCq8ytstBrl6rzNN8hIRo+mnjiSsTLYjExFQNOjfFn4CQg
+         jpYOXIFLorH2JOvgUmNrEJN3QISYn4zNbSP38oYqwJoTzvAfWXx4Ea40NblP3ag5IamD
+         LfOXNzp2XUm/PdB3eyiiN82bKjErCCUq/JlxPEBSVu1G318+JvjaWlCNpPlGu6mc5piJ
+         AlNLb9kMJ8hG4xJ9nackWbJZ5/KomVOR1gR/BOJtFTydKCkpUXDYvlVTFHbslTFa6gpI
+         wvUw==
+X-Gm-Message-State: AOAM5314LjFYDamuxR12+97bPsEvLlZPA9zLQGB2aIs+YcMBM8QpYfe4
+        jSekVG9My8/bUnfenyw8bWFOV9dp4qsNc4Q02FevWg==
+X-Google-Smtp-Source: ABdhPJzCSvOsbrXcmQd/TYWAgOjemkPC4Im/Bu/7EQrDLmukBVCfqTq30O8ThuYksFmuP216BQ761tc/uSzHOR5Cjmk=
+X-Received: by 2002:a19:4143:: with SMTP id o64mr13922941lfa.157.1592960097892;
+ Tue, 23 Jun 2020 17:54:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200623032224.4020118-1-andriin@fb.com> <20200623032224.4020118-2-andriin@fb.com>
- <7ed6ada5-2539-3090-0db7-0f65b67e4699@iogearbox.net> <CAEf4BzbsRyt5Y4-oMaKTUNu_ijnRD09+WW3iA+bfGLZcLpd77w@mail.gmail.com>
- <ee6df475-b7d4-b8ed-dc91-560e42d2e7fc@iogearbox.net> <20200623232503.yzm4g24rwx7khudf@ast-mbp.dhcp.thefacebook.com>
- <f1ec2d3b-4897-1a40-e373-51bed4fd3b87@fb.com>
-In-Reply-To: <f1ec2d3b-4897-1a40-e373-51bed4fd3b87@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 23 Jun 2020 17:53:29 -0700
-Message-ID: <CAEf4BzZTWyii7k6MjdygJP+VfAHnnr8jbxjG1Ge96ioKq5ZEeQ@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 2/3] selftests/bpf: add variable-length data
- concatenation pattern test
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+References: <CAADnVQ+BqPeVqbgojN+nhYTE0nDcGF2-TfaeqyfPLOF-+DLn5Q@mail.gmail.com>
+ <20200620212616.93894-1-zenczykowski@gmail.com> <CALAqxLVeg=EE06Eh5yMBoXtb2KTHLKKnBLXwGu-yGV4aGgoVMA@mail.gmail.com>
+In-Reply-To: <CALAqxLVeg=EE06Eh5yMBoXtb2KTHLKKnBLXwGu-yGV4aGgoVMA@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 23 Jun 2020 17:54:46 -0700
+Message-ID: <CAADnVQJOpsQhT0oY5GZikf00MT1=pR3vpCZkn+Z4hp2_duUFSQ@mail.gmail.com>
+Subject: Re: [PATCH bpf v2] restore behaviour of CAP_SYS_ADMIN allowing the
+ loading of networking bpf programs
+To:     John Stultz <john.stultz@linaro.org>
+Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 5:25 PM Yonghong Song <yhs@fb.com> wrote:
+On Mon, Jun 22, 2020 at 12:44 PM John Stultz <john.stultz@linaro.org> wrote=
+:
 >
+> On Sat, Jun 20, 2020 at 2:26 PM Maciej =C5=BBenczykowski
+> <zenczykowski@gmail.com> wrote:
+> >
+> > From: Maciej =C5=BBenczykowski <maze@google.com>
+> >
+> > This is a fix for a regression introduced in 5.8-rc1 by:
+> >   commit 2c78ee898d8f10ae6fb2fa23a3fbaec96b1b7366
+> >   'bpf: Implement CAP_BPF'
+> >
+> > Before the above commit it was possible to load network bpf programs
+> > with just the CAP_SYS_ADMIN privilege.
+> >
+> > The Android bpfloader happens to run in such a configuration (it has
+> > SYS_ADMIN but not NET_ADMIN) and creates maps and loads bpf programs
+> > for later use by Android's netd (which has NET_ADMIN but not SYS_ADMIN)=
+.
+> >
+> > Cc: Alexei Starovoitov <ast@kernel.org>
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Reported-by: John Stultz <john.stultz@linaro.org>
+> > Fixes: 2c78ee898d8f ("bpf: Implement CAP_BPF")
+> > Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
 >
+> Thanks so much for helping narrow this regression down and submitting thi=
+s fix!
+> It's much appreciated!
 >
-> On 6/23/20 4:25 PM, Alexei Starovoitov wrote:
-> > On Tue, Jun 23, 2020 at 11:15:58PM +0200, Daniel Borkmann wrote:
-> >> On 6/23/20 10:52 PM, Andrii Nakryiko wrote:
-> >>> On Tue, Jun 23, 2020 at 1:39 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >>>> On 6/23/20 5:22 AM, Andrii Nakryiko wrote:
-> >>>>> Add selftest that validates variable-length data reading and concatentation
-> >>>>> with one big shared data array. This is a common pattern in production use for
-> >>>>> monitoring and tracing applications, that potentially can read a lot of data,
-> >>>>> but overall read much less. Such pattern allows to determine precisely what
-> >>>>> amount of data needs to be sent over perfbuf/ringbuf and maximize efficiency.
-> >>>>>
-> >>>>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> >>>>
-> >>>> Currently getting the below errors on these tests. My last clang/llvm git build
-> >>>> is on 4676cf444ea2 ("[Clang] Skip adding begin source location for PragmaLoopHint'd
-> >>>> loop when[...]"):
-> >>>
-> >>> Yeah, you need 02553b91da5d ("bpf: bpf_probe_read_kernel_str() has to
-> >>> return amount of data read on success") from bpf tree.
-> >>
-> >> Fair point, it's in net- but not yet in net-next tree, so bpf-next sync needs
-> >> to wait.
-> >>
-> >>> I'm eagerly awaiting bpf being merged into bpf-next :)
-> >>
-> >> I'll cherry-pick 02553b91da5d locally for testing and if it passes I'll push
-> >> these out.
-> >
-> > I've merged the bpf_probe_read_kernel_str() fix into bpf-next and 3 extra commits
-> > prior to that one so that sha of the bpf_probe_read_kernel_str() fix (02553b91da5de)
-> > is exactly the same in bpf/net/linus/bpf-next. I think that shouldn't cause
-> > issue during bpf-next pull into net-next and later merge with Linus's tree.
-> > Crossing fingers, since we're doing this experiment for the first time.
-> >
-> > Daniel pushed these 3 commits as well.
-> > Now varlen and kernel_reloc tests are good, but we have a different issue :(
-> > ./test_progs-no_alu32 -t get_stack_raw_tp
-> > is now failing, but for a different reason.
-> >
-> > 52: (85) call bpf_get_stack#67
-> > 53: (bf) r8 = r0
-> > 54: (bf) r1 = r8
-> > 55: (67) r1 <<= 32
-> > 56: (c7) r1 s>>= 32
-> > ; if (usize < 0)
-> > 57: (c5) if r1 s< 0x0 goto pc+26
-> >   R0=inv(id=0,smax_value=800) R1_w=inv(id=0,umax_value=800,var_off=(0x0; 0x3ff)) R6=ctx(id=0,off=0,imm=0) R7=map_value(id=0,off=0,ks=4,vs=1600,imm=0) R8_w=inv(id=0,smax_value=800) R9=inv800 R10=fp0 fp-8=mmmm????
-> > ; ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > 58: (1f) r9 -= r8
-> > ; ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > 59: (bf) r2 = r7
-> > 60: (0f) r2 += r1
-> > regs=1 stack=0 before 52: (85) call bpf_get_stack#67
-> > ; ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > 61: (bf) r1 = r6
-> > 62: (bf) r3 = r9
-> > 63: (b7) r4 = 0
-> > 64: (85) call bpf_get_stack#67
-> >   R0=inv(id=0,smax_value=800) R1_w=ctx(id=0,off=0,imm=0) R2_w=map_value(id=0,off=0,ks=4,vs=1600,umax_value=800,var_off=(0x0; 0x3ff),s32_max_value=1023,u32_max_value=1023) R3_w=inv(id=0,umax_value=9223372036854776608) R4_w=inv0 R6=ctx(id=0?
-> > R3 unbounded memory access, use 'var &= const' or 'if (var < const)'
-> >
-> > In the C code it was this:
-> >          usize = bpf_get_stack(ctx, raw_data, max_len, BPF_F_USER_STACK);
-> >          if (usize < 0)
-> >                  return 0;
-> >
-> >          ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> >          if (ksize < 0)
-> >                  return 0;
-> >
-> > We used to have problem with pointer arith in R2.
-> > Now it's a problem with two integers in R3.
-> > 'if (usize < 0)' is comparing R1 and makes it [0,800], but R8 stays [-inf,800].
-> > Both registers represent the same 'usize' variable.
-> > Then R9 -= R8 is doing 800 - [-inf, 800]
-> > so the result of "max_len - usize" looks unbounded to the verifier while
-> > it's obvious in C code that "max_len - usize" should be [0, 800].
-> >
-> > The following diff 'fixes' the issue for no_alu32:
-> > diff --git a/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c b/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c
-> > index 29817a703984..93058136d608 100644
-> > --- a/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c
-> > +++ b/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c
-> > @@ -2,6 +2,7 @@
-> >
-> >   #include <linux/bpf.h>
-> >   #include <bpf/bpf_helpers.h>
-> > +#define var_barrier(a) asm volatile ("" : "=r"(a) : "0"(a))
-> >
-> >   /* Permit pretty deep stack traces */
-> >   #define MAX_STACK_RAWTP 100
-> > @@ -84,10 +85,12 @@ int bpf_prog1(void *ctx)
-> >                  return 0;
-> >
-> >          usize = bpf_get_stack(ctx, raw_data, max_len, BPF_F_USER_STACK);
-> > +       var_barrier(usize);
-> >          if (usize < 0)
-> >                  return 0;
-> >
-> >          ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > +       var_barrier(ksize);
-> >          if (ksize < 0)
-> >                  return 0;
-> >
-> > But it breaks alu32 case.
-> >
-> > I'm using llvm 11 fwiw.
-> >
-> > Long term Yonghong is working on llvm support to emit this kind
-> > of workarounds automatically.
-> > I'm still thinking what to do next. Ideas?
->
+> Tested-by: John Stultz <john.stultz@linaro.org>
 
-Funny enough, Alexei's fix didn't fix even no_alu32 case for me. Also
-have one of the latest clang 11...
-
-> The following source change will make both alu32 and non-alu32 happy:
->
->   SEC("raw_tracepoint/sys_enter")
->   int bpf_prog1(void *ctx)
->   {
-> -       int max_len, max_buildid_len, usize, ksize, total_size;
-> +       int max_len, max_buildid_len, total_size;
-> +       long usize, ksize;
-
-This does fix it, both alu32 and no-alu32 pass.
-
->          struct stack_trace_t *data;
->          void *raw_data;
->          __u32 key = 0;
->
-> I have not checked the reason why it works. Mostly this confirms to
-> the function signature so compiler generates more friendly code.
-
-Yes, it's due to the compiler not doing all the casting/bit shifting.
-Just straightforward use of a single register consistently across
-conditional jump and offset calculations.
+Applied to bpf tree. Thanks
