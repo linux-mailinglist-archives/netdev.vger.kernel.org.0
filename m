@@ -2,89 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58674206911
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 02:33:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA59620691D
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 02:41:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388087AbgFXAdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 20:33:51 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:9424 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388073AbgFXAdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 20:33:50 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05O0VKwA018537
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 17:33:50 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=v6psWLDY9Ln/UQDHd6WDKh552YToN18sLkGqs7YwucY=;
- b=FFZC2zYLOjY9+Wvp459OF5WtkHSvSB9wvNY5bcAYetmr8gTvGY6Q6o8Lw23iPXxviRMO
- gc/ymzU6AImEoUB1R884mq8gjuOx+DPuswjEx6Y4euhNd6Hd2yjGZBaiQijghexfV92I
- yd8kxVwDHsi4r+q4V7+r6YUwUvDQ6BmLweg= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31uuqqg5hk-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 17:33:50 -0700
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 23 Jun 2020 17:33:47 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 6D2E42EC3DE6; Tue, 23 Jun 2020 17:33:41 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] libbpf: add debug message for each created program
-Date:   Tue, 23 Jun 2020 17:33:39 -0700
-Message-ID: <20200624003340.802375-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S2387787AbgFXAlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 20:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387586AbgFXAlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 20:41:07 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EFEC061573;
+        Tue, 23 Jun 2020 17:41:06 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id n23so597576ljh.7;
+        Tue, 23 Jun 2020 17:41:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WlrfwFPk6kvFxjY4l0Nm18TGePH36uTIEOuxFjNyvwU=;
+        b=E2E3v5f2E7yDGarvxE8ZoG+cXYxukTdBJXvEpokctGv0l1x6A+t0uqgAsoY9PE7V+r
+         NuUif+4KJi91Zhry65mDajAwPMlzUXpmNVg8WDZf9HKJ/070mmbL1NHpvwdQXqIQkBb4
+         pbt7fTd7Csvvg0GZ50u0LjrCMjJpbyQmAKnEkFHof4l8eNaUBnDa+/Njkoxl0WM8e4qx
+         G5CiQC4obO16EQyBgrCOKXlyomBYvCCLXHZSdI5aCPkLk2rpQWDt/dKRlsUtKrvNw4ap
+         zsHND87c1I3XF4lyZ6Mma8uAhccyNp+qcnvP3bRh4J84wPoJwMGC9s0vk9Gr+POJHhub
+         mixQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WlrfwFPk6kvFxjY4l0Nm18TGePH36uTIEOuxFjNyvwU=;
+        b=GmQ9H6UNz/QJxUtxhyYN3K+vMHLDSGpPy77hqMlUX/n4IsEi1+inx0nvP8ZPiBF90M
+         xRaKySqf3WUDCH7kNKUnBa+W43fOd7lOpV+oLuWmw/9AM3kNicfvtqjlGfFKcMRDyFf0
+         YmRh4RagWGtWTVbNPkEjM7S5dH5DY3bhDQ7Q/poqV6uvQrsrBKtR2B02gHL8rIo//cJF
+         5M49yCakk0IkT5jkU/TB+YOYv3gxZIjqmy+4pORSaPFdJ1E6Q1E2I76f0PkEPqadux7V
+         dDoO1cgVQkHUlZMIqsOVwFTDW2Y90WIaSWEN4mCqT+GrLP352iqMzv8VDQuLNiaxq3Bh
+         K98w==
+X-Gm-Message-State: AOAM532XoaLjHxb9fYWy7GwFzxVM73oBSIQEnBMmj1B8I4Jt4d8o4X2R
+        6uF1ePm3lPcogzErEskNi2Uzf6YzKpicidkeFA0=
+X-Google-Smtp-Source: ABdhPJyQW/T0hFJ3e8muY+8mbZKC9XTXZ+tXfelwgvcCtqS7E1Yvy61uQcMhm24VC1mWHLdQcFZRidGaP6wK95GWtv8=
+X-Received: by 2002:a2e:b1d4:: with SMTP id e20mr11928288lja.290.1592959265279;
+ Tue, 23 Jun 2020 17:41:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-23_17:2020-06-23,2020-06-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- lowpriorityscore=0 bulkscore=0 impostorscore=0 priorityscore=1501
- mlxscore=0 adultscore=0 malwarescore=0 spamscore=0 clxscore=1015
- cotscore=-2147483648 mlxlogscore=764 suspectscore=8 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006240000
-X-FB-Internal: deliver
+References: <20200619230423.691274-1-andriin@fb.com> <ff1e49a8-57bb-a323-f477-018f9a6f0597@fb.com>
+In-Reply-To: <ff1e49a8-57bb-a323-f477-018f9a6f0597@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 23 Jun 2020 17:40:53 -0700
+Message-ID: <CAADnVQ+_HD3sfXPoT9bQ3ZdyBW1ibUGrt1KrFo4_7pgppTK-Wg@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: fix CO-RE relocs against .text section
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar message for map creation is extremely useful, so add similar for =
-BPF
-programs.
+On Sat, Jun 20, 2020 at 12:06 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 6/19/20 4:04 PM, Andrii Nakryiko wrote:
+> > bpf_object__find_program_by_title(), used by CO-RE relocation code, doesn't
+> > return .text "BPF program", if it is a function storage for sub-programs.
+> > Because of that, any CO-RE relocation in helper non-inlined functions will
+> > fail. Fix this by searching for .text-corresponding BPF program manually.
+> >
+> > Adjust one of bpf_iter selftest to exhibit this pattern.
+> >
+> > Reported-by: Yonghong Song <yhs@fb.com>
+> > Fixes: ddc7c3042614 ("libbpf: implement BPF CO-RE offset relocation algorithm")
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> Acked-by: Yonghong Song <yhs@fb.com>
+>
+> But the fix here only fixed the issue for interpreter mode.
+> For jit only mode, we still have issues. The following patch can fix
+> the jit mode issue,
+>
+> =============
+>
+>  From 4d66814513ec45b86a30a1231b8a000d4bfc6f1a Mon Sep 17 00:00:00 2001
+> From: Yonghong Song <yhs@fb.com>
+> Date: Fri, 19 Jun 2020 23:26:13 -0700
+> Subject: [PATCH bpf] bpf: set the number of exception entries properly for
+>   subprograms
+>
+> Currently, if a bpf program has more than one subprograms, each
+> program will be jitted separately. For tracing problem, the
+> prog->aux->num_exentries is not setup properly. For example,
+> with bpf_iter_netlink.c modified to force one function not inlined,
+> and with proper libbpf fix, with CONFIG_BPF_JIT_ALWAYS_ON,
+> we will have error like below:
+>    $ ./test_progs -n 3/3
+>    ...
+>    libbpf: failed to load program 'iter/netlink'
+>    libbpf: failed to load object 'bpf_iter_netlink'
+>    libbpf: failed to load BPF skeleton 'bpf_iter_netlink': -4007
+>    test_netlink:FAIL:bpf_iter_netlink__open_and_load skeleton
+> open_and_load failed
+>    #3/3 netlink:FAIL
+> The dmesg shows the following errors:
+>    ex gen bug
+> which is triggered by the following code in arch/x86/net/bpf_jit_comp.c:
+>    if (excnt >= bpf_prog->aux->num_exentries) {
+>      pr_err("ex gen bug\n");
+>      return -EFAULT;
+>    }
+>
+> If the program has more than one subprograms, num_exentries is actually
+> 0 since it is not setup.
+>
+> This patch fixed the issue by setuping proper num_exentries for
+> each subprogram before calling jit function.
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/libbpf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 18461deb1b19..f24a90c86c58 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -5379,8 +5379,9 @@ load_program(struct bpf_program *prog, struct bpf_i=
-nsn *insns, int insns_cnt,
- 	}
-=20
- 	ret =3D bpf_load_program_xattr(&load_attr, log_buf, log_buf_size);
--
- 	if (ret >=3D 0) {
-+		pr_debug("prog '%s' ('%s'): created successfully, fd=3D%d\n",
-+			 prog->name, prog->section_name, ret);
- 		if (log_buf && load_attr.log_level)
- 			pr_debug("verifier log:\n%s", log_buf);
- 		*pfd =3D ret;
---=20
-2.24.1
-
+Thanks for fixing. Applied both to bpf tree.
+Yonghong, next time please submit the patch properly.
+It was very awkward to copy-paste it manually from the thread.
+I've edited the commit log a bit.
