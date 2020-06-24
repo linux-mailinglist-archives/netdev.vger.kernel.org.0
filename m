@@ -2,97 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E93420787E
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6580A2078F0
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:20:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404757AbgFXQNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 12:13:25 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:36854 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404235AbgFXQNW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:13:22 -0400
-Received: by mail-pg1-f196.google.com with SMTP id p3so1644502pgh.3;
-        Wed, 24 Jun 2020 09:13:22 -0700 (PDT)
+        id S2404724AbgFXQUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 12:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404629AbgFXQUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:20:50 -0400
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C71C061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:20:49 -0700 (PDT)
+Received: by mail-vs1-xe41.google.com with SMTP id e6so439722vsm.3
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:20:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2J8wdA9rSZwk7I7Nvm7xFchDeFvnhiQIdFih6fJOYco=;
+        b=a+zA65renqNqC3Zshj4T4Y0b1NJK7A1eJePBJRT9NsRb3sexIjMy+sJJniJCefHjZs
+         y7jhCa7TzWhzUlOlmpQNLloJmNkfUZ1A9hmy8pE1FVwQCeNWKPDGPhySyx4GsCijXfFj
+         eSY4dqlkmUm3Da7ex4AHXifCzqfxd1A6KhCnipEydXE8hoQ3/faYiagWI4K9PFQU6LAW
+         2ogajJ+EBpbQGgwdBNHw1YEL4DA/6M2BxqQBvwNtsvWzNN0NgnbYxzUkQc+cNrcIsYsp
+         gR1QIXJgBwZfzGA+kPxBWQ7rzSaicytIEMLJH758yl39ZrK3TGw1itaCCYDSM+t/6q5S
+         qGBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=K5HA5pFN0d7RWrFcMOeZ4eZsZOCwgkaKOKIyoGUunJA=;
-        b=bdoNe4HE152P67bqB4iz1TVFpSLKd5OLRNA8ZPD4Nx764LgDhIOQkoCOwpgshVPUlC
-         xmAg1IjdbKAPc58tpiZ8kPqndDxtcQp+nCYHryf0E8MEDiKgH67xMVcz0VOB2dfV7Sm6
-         SSZylCQCalt5a0mIATsr/DE7qglta/VKXnlUTkoqBpLAaMN00mnqQvEluSEBNwbz+CJ3
-         1fOqyTjFmJ7xWRUx0ARAvF9C/YqItCR2X3K96qaqvoIBmg7cw8LJauxlCcvMMIC+vcXl
-         GueZuSNQT2PqCZ+Vnlfd+9GaY6WO0xQeVlIrUK+jiz34ZIOzPCztqXShzjbigNDuaHva
-         EhKg==
-X-Gm-Message-State: AOAM531BWTz6jecWjjEW9ugvC/+O+rhqZas0ZaHsC7I6Ld8MngXestOd
-        7YAHw2WExEfmE7ca6pnvb0M=
-X-Google-Smtp-Source: ABdhPJxE1ygpkPiPc7c+3/yQpwGQm5PBcnPHrRJMZIslGuNTvYjGLTfGT0VAXd0ojktX0RNgdf5uBw==
-X-Received: by 2002:a63:7f5a:: with SMTP id p26mr15162576pgn.117.1593015201848;
-        Wed, 24 Jun 2020 09:13:21 -0700 (PDT)
-Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id 23sm20626008pfy.199.2020.06.24.09.13.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jun 2020 09:13:20 -0700 (PDT)
-Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id B918940430; Wed, 24 Jun 2020 16:13:19 +0000 (UTC)
-Date:   Wed, 24 Jun 2020 16:13:19 +0000
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Christian Borntraeger <borntraeger@de.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Martin Doucha <mdoucha@suse.cz>, hch@infradead.org
-Cc:     ast@kernel.org, axboe@kernel.dk, bfields@fieldses.org,
-        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
-        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
-        davem@davemloft.net, dhowells@redhat.com,
-        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
-        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
-        keyrings@vger.kernel.org, kuba@kernel.org,
-        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
-        philipp.reisner@linbit.com, ravenexp@gmail.com,
-        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
-        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
-        netdev@vger.kernel.org, markward@linux.ibm.com,
-        linux-s390 <linux-s390@vger.kernel.org>
-Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
- seems to break linux bridge on s390x (bisected)
-Message-ID: <20200624161319.GM13911@42.do-not-panic.com>
-References: <20200610154923.27510-5-mcgrof@kernel.org>
- <20200623141157.5409-1-borntraeger@de.ibm.com>
- <b7d658b9-606a-feb1-61f9-b58e3420d711@de.ibm.com>
- <3118dc0d-a3af-9337-c897-2380062a8644@de.ibm.com>
- <20200624120546.GC4332@42.do-not-panic.com>
- <20200624131725.GL13911@42.do-not-panic.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2J8wdA9rSZwk7I7Nvm7xFchDeFvnhiQIdFih6fJOYco=;
+        b=YX1uwBHN8S5Acqbce3dpiYJXuFYP32qNmNYel+QB4tZIy3pdIP37fHEs1rNm85uV+s
+         Pq0pWPgi5B8pHKscbC+0LPH7m7oAUpK621G7EbuwNTeBdmh07k7brgJtEjQG7UJFt2PD
+         Xm3dgN28uaAIsLrnQ7VBtqVKZNagDb23fJr2pQMlNz8Sk5kC2zvnELETUnBUTiV0el0a
+         hQjJ8Q4D1PW9XTiVN48GAtDWAh5+jTrfhuwR4pCQOJOi2ctaDN7iahwwkCdl3XRGCCDm
+         hEBd9XjJO2GAZO7g3ICSxDBkeFmUt6DJ942vGaJtH+9yA4lBSPRzGWnM8j7xpm1g5YB9
+         2H3Q==
+X-Gm-Message-State: AOAM531sxBHCbA8mTpnUSDDWb3oSs6kDBEL9UOoIS6sRZegi5mUbiL0L
+        edDT0jieFa1gPrGCMdlsX5iRuvDHDae/PTrF3hjH40/91kc=
+X-Google-Smtp-Source: ABdhPJz4l2P+klInnOUHtaf4HOkxnbXm/jfB2PTECdqs7VX9/wWD7cN6Eu4vu2hcCHBK2jR7TVA7wll0mnbSyXPG9bo=
+X-Received: by 2002:a67:ea98:: with SMTP id f24mr23242612vso.159.1593015648294;
+ Wed, 24 Jun 2020 09:20:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200624131725.GL13911@42.do-not-panic.com>
+References: <20200624095748.8246-1-denis.kirjanov@suse.com>
+ <CADVnQym6aoueiB-auSxgp5tp0rjjte+MaxRPWd3t44F5VueKdA@mail.gmail.com> <CANn89iK_75H5jwGLaXUfRnLOgrFdP25xAYmyoD3SW6iFGEL96Q@mail.gmail.com>
+In-Reply-To: <CANn89iK_75H5jwGLaXUfRnLOgrFdP25xAYmyoD3SW6iFGEL96Q@mail.gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 24 Jun 2020 12:20:30 -0400
+Message-ID: <CADVnQyk28YkTtWbpOBuxKqDx7c6qtx0RDdca-c-N5_iCu6jFEA@mail.gmail.com>
+Subject: Re: [PATCH v2] tcp: don't ignore ECN CWR on pure ACK
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Denis Kirjanov <kda@linux-powerpc.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        "Scheffenegger, Richard" <Richard.Scheffenegger@netapp.com>,
+        Bob Briscoe <ietf@bobbriscoe.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 24, 2020 at 01:17:25PM +0000, Luis Chamberlain wrote:
-> I found however an LTP bug indicating the need to test for
-> s390 wait macros [0] in light of a recent bug in glibc for s390.
-> I am asking for references to that issue given I cannot find
-> any mention of this on glibc yet.
-> 
-> [0] https://github.com/linux-test-project/ltp/issues/605
+On Wed, Jun 24, 2020 at 11:47 AM Eric Dumazet <edumazet@google.com> wrote:
+> Do we really want to trigger an ACK if we received a packet with no payload ?
+>
+> I would think that the following is also needed :
+>
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 12fda8f27b08bdf5c9f3bad422734f6b1965cef9..023dc90569c89d7d17d72f73641598a03a03b0a9
+> 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -261,7 +261,8 @@ static void tcp_ecn_accept_cwr(struct sock *sk,
+> const struct sk_buff *skb)
+>                  * cwnd may be very low (even just 1 packet), so we should ACK
+>                  * immediately.
+>                  */
+> -               inet_csk(sk)->icsk_ack.pending |= ICSK_ACK_NOW;
+> +               if (TCP_SKB_CB(skb)->seq != TCP_SKB_CB(skb)->end_seq)
+> +                       inet_csk(sk)->icsk_ack.pending |= ICSK_ACK_NOW;
+>         }
+>  }
 
-I looked into this and the bug associated was:
+Good point, Eric. Denis, would you mind respinning with Eric's addition?
 
-https://sourceware.org/bugzilla/show_bug.cgi?id=19613
-
-The commit in question was upstream glibc commit
-b49ab5f4503f36dcbf43f821f817da66b2931fe6 ("Remove union wait [BZ
-#19613]"), and while I don't see anything s390 mentioned there,
-the issue there was due to the caller of the wait using a long
-instead of an int for the return value.
-
-In other words, that'd not the droid we are looking for.
-
-So the issue is something else.
-
-  Luis
+thanks,
+neal
