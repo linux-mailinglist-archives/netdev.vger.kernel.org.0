@@ -2,171 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E61A207F3F
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 00:20:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7CAA207F41
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 00:20:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388521AbgFXWUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 18:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
+        id S2389045AbgFXWUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 18:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728798AbgFXWUa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 18:20:30 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A50C061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 15:20:28 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id m16so1762387ybf.4
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 15:20:28 -0700 (PDT)
+        with ESMTP id S2388706AbgFXWUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 18:20:53 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D7FC061573;
+        Wed, 24 Jun 2020 15:20:52 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id y2so3971182ioy.3;
+        Wed, 24 Jun 2020 15:20:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=G0qZ3dxpUitxlhzTm3VthsEgQ1njwpXgNZJ2OSKK5TU=;
-        b=VIObG0eKwsL9KtUUkbtVkplm8WgvYIHJNBHEpHMaWAWc60MSCLxU0nhRk5pvDXFJJv
-         XmG9mHiS2RzBBCHg57J081HZ3seVFhdf31aGMCdM5h6v4wM7CX4cT4tW0+HeoxHaWYL7
-         ivxMlPyaTHi+KRlT++6F58Zq1oCcJjY4EcmlX7xtnRMw/4uOaEoQjOrlH0qkgEWXn+/F
-         D8ZUdAqxg+TaSsEV1KqumKiXYPyUO0DdLM0IZTrqRPcuaB80BqPYQXrMATDicKio51Eg
-         8Hf5HtiWDbMhVDswZc5HUfVpsmSOmpkGosWw53U7/c74LGQI5yxevP/0NAU3F3N0nI51
-         0uuw==
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=mWdP3fCXWF1/IaU6NZlDeLwG9jVrK9kOQYwG+cvhPUo=;
+        b=BDRIjC8pFHtuYyAqnbKIJZRyHy5m/hHVcQ/Wds6ZFpyKajQaAmeUXLaYeB2pC4hqmP
+         gAItWlza3BUK5KvTgrS7c1qduKDu+et0GdrE2GAs5MLQTQpeORDUSFiKbsCgoDPhRL+K
+         PK7VgK9njIGrdtJyDJJam78yVxI+9dMlyQ/NPJhv2z35PjVGyMacLW+SFkYI+0UYVJQ+
+         CjdGVfC5PcdVhACH0Z8mIuUFLNSdc0qK5qpVJ4aQI1ZL3HRy2Fc7TlDyJXQ3YbUMhXAJ
+         4Q8mFkCJiZlp5n5gdpWlx00bMQjgy12ghZa1URKNnBQWVi45Hsrv74Dp7VKAzCwI9Nyb
+         SWhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=G0qZ3dxpUitxlhzTm3VthsEgQ1njwpXgNZJ2OSKK5TU=;
-        b=teRzR5SCAAxegphC5bQtG1rP3fbm42pyo0NqAq9jGnZce1TqwUS3GaSoQrfsRqvWoh
-         B6LFb6JIXVj40EoMXASNr7l/GS+UEmcU7+hO024ahKN0OkTJfU5pFZQYpcPG6iehCL7B
-         fmqnUW+8OmRQbSX7okbvVjgkX/55rN4n9V4sducXuPZGinhEWGDxKyGXG2NMyOc/OXla
-         ebI8HZgfdqwzQ0uMZbl3qXg8H8dsIdqfXFPWr9Zf9+B6tvg1/ZJIFG0ffc5nXmCaIWSk
-         g7Wazd8LtVONH3SoZuoE6fVCQ8DrolD1XJhbNip2oMW9UwJSrtd/lsPZ9oMNJM59n7Ck
-         fEUg==
-X-Gm-Message-State: AOAM533szKFNs8NZeOdoraw58SqbYx/RNVHXOS/XO4rLM6kXMaWE+mid
-        b0JnNBTqUrKGENuO7+CD6nLBzUvVleQOTi5O694=
-X-Google-Smtp-Source: ABdhPJzw9zj94xmE17/EGmBT0eLB2Fd+aJfbIdHBH4yNVgsd96LO8qyVVTCLXzujCZ2sd8wEbgx4Jad86s2wvKzdshg=
-X-Received: by 2002:a25:bd8e:: with SMTP id f14mr48956449ybh.165.1593037227844;
- Wed, 24 Jun 2020 15:20:27 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=mWdP3fCXWF1/IaU6NZlDeLwG9jVrK9kOQYwG+cvhPUo=;
+        b=PW9srSFuSNCLH6qEdFZi08SHkeDIZ1ek9QAYv8b7u5Ljd6OxtrbKRf1rb/e0Xj7Psd
+         buDKzPQI5zA7sMIbwAOHf4c9ceLuHYIk9yDtr6pPZ5yg7JI7NueYByY187LY5AI30DHE
+         MoBN7J1jM7zlDJhf8ajcbJWJBaAGnK1mQPBJWI1WZw0Uwvptbcr8UT8Fnfo5vVd4aGMf
+         Huwy9mUYgjst5qKtgz90+PfDsKtFe+SGo5Kwwd8BuUZ/7ZsP2Ufuk5jACkFm7oscYZ7J
+         QUAwUihvPtI1bWtkfQZsH63EWM7Fq+g2th4m8SvDa9IzdASQWpHnN9tjVOSk36bNDBZ/
+         HiYA==
+X-Gm-Message-State: AOAM5331TWllMO+II89JW+a27/KEJOOcdVvBwiNXIzuZEVX/b/9uD4F/
+        8gIOCz+bgxmOfgupe3m4qLg=
+X-Google-Smtp-Source: ABdhPJyzhXu5BWub1oyh0ph3FXUrUndZiEU3Fl9//+cm8at1jhWROINpUUDvumi7ku1O6MjrWVxXag==
+X-Received: by 2002:a5e:dc46:: with SMTP id s6mr18667897iop.189.1593037251780;
+        Wed, 24 Jun 2020 15:20:51 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id a20sm8701973ila.5.2020.06.24.15.20.45
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 24 Jun 2020 15:20:51 -0700 (PDT)
+Subject: [bpf PATCH] bpf: Do not allow btf_ctx_access with __int128 types
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     jolsa@kernel.org, andrii.nakryiko@gmail.com, ast@kernel.org,
+        daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        john.fastabend@gmail.com
+Date:   Wed, 24 Jun 2020 15:20:39 -0700
+Message-ID: <159303723962.11287.13309537171132420717.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-References: <E1jo2Iw-0005N1-3b@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1jo2Iw-0005N1-3b@rmk-PC.armlinux.org.uk>
-From:   =?UTF-8?Q?Daniel_Gonz=C3=A1lez_Cabanelas?= <dgcbueu@gmail.com>
-Date:   Thu, 25 Jun 2020 00:20:16 +0200
-Message-ID: <CABwr4_sNP-aPNv5GrUyipYpVztzp0jFOzmaq23LrGKtqpZMANw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: phylink: add phylink_speed_(up|down) interface
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell.
-I've tested my WoL patch reworked with the phylink_speed_(up|down)
-functions on a LS421DE device and it works quite fine.
+To ensure btf_ctx_access() is safe the verifier checks that the BTF
+arg type is an int, enum, or pointer. When the function does the
+BTF arg lookup it uses the calculation 'arg = off / 8'  using the
+fact that registers are 8B. This requires that the first arg is
+in the first reg, the second in the second, and so on. However,
+for __int128 the arg will consume two registers by default LLVM
+implementation. So this will cause the arg layout assumed by the
+'arg = off / 8' calculation to be incorrect.
 
-I'll sent another patch when this one got merged.
+Because __int128 is uncommon this patch applies the easiest fix and
+will force int types to be sizeof(u64) or smaller so that they will
+fit in a single register.
 
-Thank you.
-Daniel
+v2: remove unneeded parens per Andrii's feedback
 
-El mi=C3=A9., 24 jun. 2020 a las 12:06, Russell King
-(<rmk+kernel@armlinux.org.uk>) escribi=C3=B3:
->
-> Add an interface for the phy_speed_(up|down) functions when a driver
-> makes use of phylink. These pass the call through to phylib when we
-> have a normal PHY attached (i.o.w., not a PHY on a SFP module.)
->
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> ---
-> This is to support the work by Daniel Gonz=C3=A1lez Cabanelas for mvneta =
-WoL,
-> but at the present time, this has no users (hence no patch 2). I hope
-> mvneta WoL support can be revived soon with the aid of this patch.
-> (Resent with Daniel's name fixed.)
->
->  drivers/net/phy/phylink.c | 48 +++++++++++++++++++++++++++++++++++++++
->  include/linux/phylink.h   |  2 ++
->  2 files changed, 50 insertions(+)
->
-> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> index 7ce787c227b3..7cda1646bbf7 100644
-> --- a/drivers/net/phy/phylink.c
-> +++ b/drivers/net/phy/phylink.c
-> @@ -1826,6 +1826,54 @@ int phylink_mii_ioctl(struct phylink *pl, struct i=
-freq *ifr, int cmd)
->  }
->  EXPORT_SYMBOL_GPL(phylink_mii_ioctl);
->
-> +/**
-> + * phylink_speed_down() - set the non-SFP PHY to lowest speed supported =
-by both
-> + *   link partners
-> + * @pl: a pointer to a &struct phylink returned from phylink_create()
-> + * @sync: perform action synchronously
-> + *
-> + * If we have a PHY that is not part of a SFP module, then set the speed
-> + * as described in the phy_speed_down() function. Please see this functi=
-on
-> + * for a description of the @sync parameter.
-> + *
-> + * Returns zero if there is no PHY, otherwise as per phy_speed_down().
-> + */
-> +int phylink_speed_down(struct phylink *pl, bool sync)
-> +{
-> +       int ret =3D 0;
-> +
-> +       ASSERT_RTNL();
-> +
-> +       if (!pl->sfp_bus && pl->phydev)
-> +               ret =3D phy_speed_down(pl->phydev, sync);
-> +
-> +       return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(phylink_speed_down);
-> +
-> +/**
-> + * phylink_speed_up() - restore the advertised speeds prior to the call =
-to
-> + *   phylink_speed_down()
-> + * @pl: a pointer to a &struct phylink returned from phylink_create()
-> + *
-> + * If we have a PHY that is not part of a SFP module, then restore the
-> + * PHY speeds as per phy_speed_up().
-> + *
-> + * Returns zero if there is no PHY, otherwise as per phy_speed_up().
-> + */
-> +int phylink_speed_up(struct phylink *pl)
-> +{
-> +       int ret =3D 0;
-> +
-> +       ASSERT_RTNL();
-> +
-> +       if (!pl->sfp_bus && pl->phydev)
-> +               ret =3D phy_speed_up(pl->phydev);
-> +
-> +       return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(phylink_speed_up);
-> +
->  static void phylink_sfp_attach(void *upstream, struct sfp_bus *bus)
->  {
->         struct phylink *pl =3D upstream;
-> diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-> index cc5b452a184e..b32b8b45421b 100644
-> --- a/include/linux/phylink.h
-> +++ b/include/linux/phylink.h
-> @@ -392,6 +392,8 @@ int phylink_init_eee(struct phylink *, bool);
->  int phylink_ethtool_get_eee(struct phylink *, struct ethtool_eee *);
->  int phylink_ethtool_set_eee(struct phylink *, struct ethtool_eee *);
->  int phylink_mii_ioctl(struct phylink *, struct ifreq *, int);
-> +int phylink_speed_down(struct phylink *pl, bool sync);
-> +int phylink_speed_up(struct phylink *pl);
->
->  #define phylink_zero(bm) \
->         bitmap_zero(bm, __ETHTOOL_LINK_MODE_MASK_NBITS)
-> --
-> 2.20.1
->
+Fixes: 9e15db66136a1 ("bpf: Implement accurate raw_tp context access via BTF")
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+---
+ include/linux/btf.h |    5 +++++
+ kernel/bpf/btf.c    |    4 ++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 5c1ea99..8b81fbb 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -82,6 +82,11 @@ static inline bool btf_type_is_int(const struct btf_type *t)
+ 	return BTF_INFO_KIND(t->info) == BTF_KIND_INT;
+ }
+ 
++static inline bool btf_type_is_small_int(const struct btf_type *t)
++{
++	return btf_type_is_int(t) && t->size <= sizeof(u64);
++}
++
+ static inline bool btf_type_is_enum(const struct btf_type *t)
+ {
+ 	return BTF_INFO_KIND(t->info) == BTF_KIND_ENUM;
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 58c9af1..9a1a98d 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3746,7 +3746,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 				return false;
+ 
+ 			t = btf_type_skip_modifiers(btf, t->type, NULL);
+-			if (!btf_type_is_int(t)) {
++			if (!btf_type_is_small_int(t)) {
+ 				bpf_log(log,
+ 					"ret type %s not allowed for fmod_ret\n",
+ 					btf_kind_str[BTF_INFO_KIND(t->info)]);
+@@ -3768,7 +3768,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 	/* skip modifiers */
+ 	while (btf_type_is_modifier(t))
+ 		t = btf_type_by_id(btf, t->type);
+-	if (btf_type_is_int(t) || btf_type_is_enum(t))
++	if (btf_type_is_small_int(t) || btf_type_is_enum(t))
+ 		/* accessing a scalar */
+ 		return true;
+ 	if (!btf_type_is_ptr(t)) {
+
