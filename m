@@ -2,82 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44333207C2F
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 21:31:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D04DA207C4D
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 21:40:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391283AbgFXTa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 15:30:58 -0400
-Received: from mga06.intel.com ([134.134.136.31]:53443 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391239AbgFXTa6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jun 2020 15:30:58 -0400
-IronPort-SDR: 2PEVwDbMjjT0Ha25qPDp7bNNTkt1RVm9UFuhT//UkH+v0hxij9YK/q79Ju+/BctJ/9ZYV4bPcf
- JIkXgam+h1oQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9662"; a="206132527"
-X-IronPort-AV: E=Sophos;i="5.75,276,1589266800"; 
-   d="scan'208";a="206132527"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2020 12:30:57 -0700
-IronPort-SDR: hKXL9dTRuty1dvpXZ/gPP0sioal8A+I3+xQbIWWGuuBDkHOW754HEhS5XCua/xC/UxZ37JtF7h
- m5HuA2bCrhJg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,276,1589266800"; 
-   d="scan'208";a="311751951"
-Received: from arch-p28.jf.intel.com ([10.166.187.31])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Jun 2020 12:30:56 -0700
-From:   Sridhar Samudrala <sridhar.samudrala@intel.com>
-To:     linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, davem@davemloft.net
-Subject: [PATCH v2] fs/epoll: Enable non-blocking busypoll when epoll timeout is 0
-Date:   Wed, 24 Jun 2020 12:30:56 -0700
-Message-Id: <1593027056-43779-1-git-send-email-sridhar.samudrala@intel.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S2391354AbgFXTkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 15:40:07 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:58971 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391239AbgFXTkG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 15:40:06 -0400
+Received: from marcel-macpro.fritz.box (p5b3d2638.dip0.t-ipconnect.de [91.61.38.56])
+        by mail.holtmann.org (Postfix) with ESMTPSA id C34A3CECDB;
+        Wed, 24 Jun 2020 21:49:56 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH] Bluetooth: Don't restart scanning if paused
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200624113351.1.Ic6b1fca2b1b3fe989db21ceae76bab80bd87d387@changeid>
+Date:   Wed, 24 Jun 2020 21:40:03 +0200
+Cc:     BlueZ <linux-bluetooth@vger.kernel.org>,
+        Alain Michaud <alainm@chromium.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Transfer-Encoding: 7bit
+Message-Id: <EAEF89F3-8F6B-49AE-95B4-E6A961C6474D@holtmann.org>
+References: <20200624113351.1.Ic6b1fca2b1b3fe989db21ceae76bab80bd87d387@changeid>
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch triggers non-blocking busy poll when busy_poll is enabled,
-epoll is called with a timeout of 0 and is associated with a napi_id.
-This enables an app thread to go through napi poll routine once by
-calling epoll with a 0 timeout.
+Hi Abhishek,
 
-poll/select with a 0 timeout behave in a similar manner.
+> When restarting LE scanning, check if it's currently paused before
+> enabling passive scanning.
+> 
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> ---
+> When running suspend stress tests on Chromebooks, we discovered
+> instances where the Chromebook didn't enter the deepest idle states
+> (i.e. S0ix). After some debugging, we found that passive scanning was
+> being enabled AFTER the suspend notifier had run (and disabled all
+> scanning).
+> 
+> For this fix, I simply looked at all the places where we call
+> HCI_OP_LE_SET_SCAN_ENABLE and added a guard clause for suspend. With
+> this fix, we were able to get through 100+ iterations of the suspend
+> stress test without any problems entering S0ix.
+> 
+> 
+> net/bluetooth/hci_request.c | 10 ++++++++++
+> 1 file changed, 10 insertions(+)
 
-Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+patch has been applied to bluetooth-next tree.
 
-v2:
-Added net_busy_loop_on() check (Eric)
+Regards
 
----
- fs/eventpoll.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-index 12eebcdea9c8..c33cc98d3848 100644
---- a/fs/eventpoll.c
-+++ b/fs/eventpoll.c
-@@ -1847,6 +1847,19 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
- 		eavail = ep_events_available(ep);
- 		write_unlock_irq(&ep->lock);
- 
-+		/*
-+		 * Trigger non-blocking busy poll if timeout is 0 and there are
-+		 * no events available. Passing timed_out(1) to ep_busy_loop
-+		 * will make sure that busy polling is triggered only once.
-+		 */
-+		if (!eavail && net_busy_loop_on()) {
-+			ep_busy_loop(ep, timed_out);
-+			write_lock_irq(&ep->lock);
-+			eavail = ep_events_available(ep);
-+			write_unlock_irq(&ep->lock);
-+		}
-+
- 		goto send_events;
- 	}
- 
--- 
-2.25.4
+Marcel
 
