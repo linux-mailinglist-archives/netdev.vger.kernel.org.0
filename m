@@ -2,176 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D05CD207BEA
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 21:01:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D5F207C02
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 21:07:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404520AbgFXTBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 15:01:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55118 "EHLO mail.kernel.org"
+        id S2404900AbgFXTHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 15:07:52 -0400
+Received: from mga14.intel.com ([192.55.52.115]:21430 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404055AbgFXTBf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jun 2020 15:01:35 -0400
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E04682084D;
-        Wed, 24 Jun 2020 19:01:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593025295;
-        bh=VazlkY1OYWfgAyK3hGCaPhS2KlqVl7X9iMka55vdxYk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=bdU3yQ56Te081zokRTBJaWnNfBDxA2HRQ7cDOy1X/uqhswWAV33x36D0b+XGMv3gk
-         zHeGBuMh5ZJpPrK3njJOpSB6x8c2nsRnjKqGgi9/3mO9IQ2LA5V+5oEPkBilab3zRV
-         J2po4NbZyQuPdoUI8A6k5aMXhrhs9uAD5LG4L1x8=
-Received: by mail-ot1-f42.google.com with SMTP id d4so2967180otk.2;
-        Wed, 24 Jun 2020 12:01:34 -0700 (PDT)
-X-Gm-Message-State: AOAM532LyRKxN1yY0/Azv8DnsIlX3m/CUgMF1PrEmYAMzz/cjE7OmgHA
-        5GHLd84gVkL3Kholh1xpOhONOQ7u9bXvDSDJIkU=
-X-Google-Smtp-Source: ABdhPJytPjDcWa0KOHnXhKGMIfh9Cll5z7/IKKeN16fko2CmG/qSZpVNTBykudQIxS6TjtLs//PGjtJzaXa3atetpfs=
-X-Received: by 2002:a9d:4a8f:: with SMTP id i15mr1112953otf.77.1593025294222;
- Wed, 24 Jun 2020 12:01:34 -0700 (PDT)
+        id S2404520AbgFXTHw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 15:07:52 -0400
+IronPort-SDR: tWN3fy2AgTZQ0vqzf5084YAF5AWFIhcxXKTk60gZ1pZBJkfSJU6PajbbXH7QqqIqVOtaoUGuj0
+ 2qASp9mAqSrg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9662"; a="143707071"
+X-IronPort-AV: E=Sophos;i="5.75,276,1589266800"; 
+   d="scan'208";a="143707071"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2020 12:07:36 -0700
+IronPort-SDR: rpDJfOw9C+8upJLedo5ntu7ntsfLHg6zrqUtcCM4WMfA1pElWKLrbsiXNaFfUYSMAVbt7tW7oL
+ mbltiFiXJ3TQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,276,1589266800"; 
+   d="scan'208";a="265152737"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.184.213]) ([10.209.184.213])
+  by fmsmga008.fm.intel.com with ESMTP; 24 Jun 2020 12:07:35 -0700
+Subject: Re: [PATCH net-next 04/10] Documentation: networking:
+ ethtool-netlink: Add link extended state
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        petrm@mellanox.com, amitc@mellanox.com, mlxsw@mellanox.com,
+        mkubecek@suse.cz, andrew@lunn.ch, f.fainelli@gmail.com,
+        linux@rempel-privat.de, Ido Schimmel <idosch@mellanox.com>
+References: <20200624081923.89483-1-idosch@idosch.org>
+ <20200624081923.89483-5-idosch@idosch.org>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <b8aca89b-02f1-047c-a582-dacebfb8e480@intel.com>
+Date:   Wed, 24 Jun 2020 12:07:35 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200624133427.1630650-1-ardb@kernel.org> <20200624163229.GC200774@gmail.com>
-In-Reply-To: <20200624163229.GC200774@gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 24 Jun 2020 21:01:23 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXFtDyRRufiCCdKH_NAs4g=jAenO9Zxq0jBhy=Dp0QCuSw@mail.gmail.com>
-Message-ID: <CAMj1kXFtDyRRufiCCdKH_NAs4g=jAenO9Zxq0jBhy=Dp0QCuSw@mail.gmail.com>
-Subject: Re: [PATCH] net: phy: mscc: avoid skcipher API for single block AES encryption
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "# 3.4.x" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200624081923.89483-5-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Jun 2020 at 18:32, Eric Biggers <ebiggers@kernel.org> wrote:
->
-> On Wed, Jun 24, 2020 at 03:34:27PM +0200, Ard Biesheuvel wrote:
-> > The skcipher API dynamically instantiates the transformation object on
-> > request that implements the requested algorithm optimally on the given
-> > platform. This notion of optimality only matters for cases like bulk
-> > network or disk encryption, where performance can be a bottleneck, or
-> > in cases where the algorithm itself is not known at compile time.
-> >
-> > In the mscc macsec case, we are dealing with AES encryption of a single
-> > block, and so neither concern applies, and we are better off using the
-> > AES library interface, which is lightweight and safe for this kind of
-> > use.
-> >
-> > Note that the scatterlist API does not permit references to buffers that
-> > are located on the stack, so the existing code is incorrect in any case,
-> > but avoiding the skcipher and scatterlist APIs altogether is the most
-> > straight-forward approach to fixing this.
-> >
-> > Cc: Antoine Tenart <antoine.tenart@bootlin.com>
-> > Cc: Andrew Lunn <andrew@lunn.ch>
-> > Cc: Florian Fainelli <f.fainelli@gmail.com>
-> > Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: <stable@vger.kernel.org>
-> > Fixes: 28c5107aa904e ("net: phy: mscc: macsec support")
-> > Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> > ---
-> >  drivers/net/phy/Kconfig            |  3 +-
-> >  drivers/net/phy/mscc/mscc_macsec.c | 40 +++++---------------
-> >  2 files changed, 10 insertions(+), 33 deletions(-)
-> >
-> > diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-> > index f25702386d83..e9c05848ec52 100644
-> > --- a/drivers/net/phy/Kconfig
-> > +++ b/drivers/net/phy/Kconfig
-> > @@ -480,8 +480,7 @@ config MICROCHIP_T1_PHY
-> >  config MICROSEMI_PHY
-> >       tristate "Microsemi PHYs"
-> >       depends on MACSEC || MACSEC=n
-> > -     select CRYPTO_AES
-> > -     select CRYPTO_ECB
-> > +     select CRYPTO_LIB_AES
-> >       help
-> >         Currently supports VSC8514, VSC8530, VSC8531, VSC8540 and VSC8541 PHYs
->
-> Shouldn't it be 'select CRYPTO_LIB_AES if MACSEC', since
-> mscc_macsec.c is only compiled if MACSEC?
->
 
-Good point, I'll change that.
 
-> >
-> > diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
-> > index b4d3dc4068e2..d53ca884b5c9 100644
-> > --- a/drivers/net/phy/mscc/mscc_macsec.c
-> > +++ b/drivers/net/phy/mscc/mscc_macsec.c
-> > @@ -10,7 +10,7 @@
-> >  #include <linux/phy.h>
-> >  #include <dt-bindings/net/mscc-phy-vsc8531.h>
-> >
-> > -#include <crypto/skcipher.h>
-> > +#include <crypto/aes.h>
-> >
-> >  #include <net/macsec.h>
-> >
-> > @@ -500,39 +500,17 @@ static u32 vsc8584_macsec_flow_context_id(struct macsec_flow *flow)
-> >  static int vsc8584_macsec_derive_key(const u8 key[MACSEC_KEYID_LEN],
-> >                                    u16 key_len, u8 hkey[16])
-> >  {
-> > -     struct crypto_skcipher *tfm = crypto_alloc_skcipher("ecb(aes)", 0, 0);
-> > -     struct skcipher_request *req = NULL;
-> > -     struct scatterlist src, dst;
-> > -     DECLARE_CRYPTO_WAIT(wait);
-> > -     u32 input[4] = {0};
-> > +     const u8 input[AES_BLOCK_SIZE] = {0};
-> > +     struct crypto_aes_ctx ctx;
-> >       int ret;
-> >
-> > -     if (IS_ERR(tfm))
-> > -             return PTR_ERR(tfm);
-> > -
-> > -     req = skcipher_request_alloc(tfm, GFP_KERNEL);
-> > -     if (!req) {
-> > -             ret = -ENOMEM;
-> > -             goto out;
-> > -     }
-> > -
-> > -     skcipher_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG |
-> > -                                   CRYPTO_TFM_REQ_MAY_SLEEP, crypto_req_done,
-> > -                                   &wait);
-> > -     ret = crypto_skcipher_setkey(tfm, key, key_len);
-> > -     if (ret < 0)
-> > -             goto out;
-> > -
-> > -     sg_init_one(&src, input, 16);
-> > -     sg_init_one(&dst, hkey, 16);
-> > -     skcipher_request_set_crypt(req, &src, &dst, 16, NULL);
-> > -
-> > -     ret = crypto_wait_req(crypto_skcipher_encrypt(req), &wait);
-> > +     ret = aes_expandkey(&ctx, key, key_len);
-> > +     if (ret)
-> > +             return ret;
-> >
-> > -out:
-> > -     skcipher_request_free(req);
-> > -     crypto_free_skcipher(tfm);
-> > -     return ret;
-> > +     aes_encrypt(&ctx, hkey, input);
-> > +     memzero_explicit(&ctx, sizeof(ctx));
-> > +     return 0;
-> >  }
-> >
->
-> Otherwise this looks good.  You can add:
->
->         Reviewed-by: Eric Biggers <ebiggers@google.com>
->
+On 6/24/2020 1:19 AM, Ido Schimmel wrote:
+> From: Amit Cohen <amitc@mellanox.com>
+> 
+> Add link extended state attributes.
+> 
+> Signed-off-by: Amit Cohen <amitc@mellanox.com>
+> Reviewed-by: Petr Machata <petrm@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 
-Thanks
+I really like this concept.
+
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+
+> ---
+>  Documentation/networking/ethtool-netlink.rst | 110 ++++++++++++++++++-
+>  1 file changed, 106 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+> index 82470c36c27a..a7cc53f905f5 100644
+> --- a/Documentation/networking/ethtool-netlink.rst
+> +++ b/Documentation/networking/ethtool-netlink.rst
+> @@ -443,10 +443,11 @@ supports.
+>  LINKSTATE_GET
+>  =============
+>  
+> -Requests link state information. At the moment, only link up/down flag (as
+> -provided by ``ETHTOOL_GLINK`` ioctl command) is provided but some future
+> -extensions are planned (e.g. link down reason). This request does not have any
+> -attributes.
+> +Requests link state information. Link up/down flag (as provided by
+> +``ETHTOOL_GLINK`` ioctl command) is provided. Optionally, extended state might
+> +be provided as well. In general, extended state describes reasons for why a port
+> +is down, or why it operates in some non-obvious mode. This request does not have
+> +any attributes.
+>  
+
+Ok, so basically in addition to the standard ETHTOOL_GLINK data, we also
+add additional optional extended attributes over the netlink interface.
+Neat.
+
+>  Request contents:
+>  
+> @@ -461,16 +462,117 @@ Kernel response contents:
+>    ``ETHTOOL_A_LINKSTATE_LINK``          bool    link state (up/down)
+>    ``ETHTOOL_A_LINKSTATE_SQI``           u32     Current Signal Quality Index
+>    ``ETHTOOL_A_LINKSTATE_SQI_MAX``       u32     Max support SQI value
+> +  ``ETHTOOL_A_LINKSTATE_EXT_STATE``     u8      link extended state
+> +  ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE``  u8      link extended substate
+>    ====================================  ======  ============================
+
+Ok so we have categories (state) and each category can have sub-states
+indicating the specific failure. Good.
+
+>  
+>  For most NIC drivers, the value of ``ETHTOOL_A_LINKSTATE_LINK`` returns
+>  carrier flag provided by ``netif_carrier_ok()`` but there are drivers which
+>  define their own handler.
+>  
+> +``ETHTOOL_A_LINKSTATE_EXT_STATE`` and ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE`` are
+> +optional values. ethtool core can provide either both
+> +``ETHTOOL_A_LINKSTATE_EXT_STATE`` and ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE``,
+> +or only ``ETHTOOL_A_LINKSTATE_EXT_STATE``, or none of them.
+> +
+>  ``LINKSTATE_GET`` allows dump requests (kernel returns reply messages for all
+>  devices supporting the request).
+>  
+
+Good to clarify that it is allowed to specify only the main state, if a
+substate isn't known.
+
+>  
+> +Link extended states:
+> +
+> +  ============================    =============================================
+> +  ``Autoneg``                     States relating to the autonegotiation or
+> +                                  issues therein
+> +
+> +  ``Link training failure``       Failure during link training
+> +
+> +  ``Link logical mismatch``       Logical mismatch in physical coding sublayer
+> +                                  or forward error correction sublayer
+> +
+> +  ``Bad signal integrity``        Signal integrity issues
+> +
+> +  ``No cable``                    No cable connected
+> +
+> +  ``Cable issue``                 Failure is related to cable,
+> +                                  e.g., unsupported cable
+> +
+> +  ``EEPROM issue``                Failure is related to EEPROM, e.g., failure
+> +                                  during reading or parsing the data
+> +
+> +  ``Calibration failure``         Failure during calibration algorithm
+> +
+> +  ``Power budget exceeded``       The hardware is not able to provide the
+> +                                  power required from cable or module
+> +
+> +  ``Overheat``                    The module is overheated
+> +  ============================    =============================================
+
+A nice variety of states. I think it could be argued that "no cable" is
+a sub-state of "cable issues" but personally I like that it's separate.
+
+I can't think of any other states offhand, but we have a u8, so we have
+plenty of space to add more states if/when we think of them in the future.
+
+> +
+> +Link extended substates:
+> +
+> +  Autoneg substates:
+> +
+> +  ==============================================    =============================================
+> +  ``No partner detected``                           Peer side is down
+> +
+> +  ``Ack not received``                              Ack not received from peer side
+> +
+> +  ``Next page exchange failed``                     Next page exchange failed
+> +
+> +  ``No partner detected during force mode``         Peer side is down during force mode or there
+> +                                                    is no agreement of speed
+> +
+
+This feels like it could be two separate states. It seems weird to
+combine "peer side is down during force" with "no agreement of speed".
+Am I missing something here?
+
+> +  ``FEC mismatch during override``                  Forward error correction modes in both sides
+> +                                                    are mismatched
+> +
+> +  ``No HCD``                                        No Highest Common Denominator
+> +  ==============================================    =============================================
+> +
+> +  Link training substates:
+> +
+> +  ==============================================    =============================================
+> +  ``KR frame lock not acquired``                    Frames were not recognized, the lock failed
+> +
+> +  ``KR link inhibit timeout``                       The lock did not occur before timeout
+> +
+> +  ``KR Link partner did not set receiver ready``    Peer side did not send ready signal after
+> +                                                    training process
+> +
+> +  ``Remote side is not ready yet``                  Remote side is not ready yet
+> +
+> +  ==============================================    =============================================
+> +
+> +  Link logical mismatch substates:
+> +
+> +  ==============================================    =============================================
+> +  ``PCS did not acquire block lock``                Physical coding sublayer was not locked in
+> +                                                    first phase - block lock
+> +
+> +  ``PCS did not acquire AM lock``                   Physical coding sublayer was not locked in
+> +                                                    second phase - alignment markers lock
+> +
+> +  ``PCS did not get align_status``                  Physical coding sublayer did not get align
+> +                                                    status
+> +
+> +  ``FC FEC is not locked``                          FC forward error correction is not locked
+> +
+> +  ``RS FEC is not locked``                          RS forward error correction is not locked
+> +  ==============================================    =============================================
+> +
+> +  Bad signal integrity substates:
+> +
+> +  ==============================================    =============================================
+> +  ``Large number of physical errors``               Large number of physical errors
+> +
+> +  ``Unsupported rate``                              The system attempted to operate the cable at
+> +                                                    a rate that is not formally supported, which
+> +                                                    led to signal integrity issues
+> +
+> +  ``Unsupported cable``                             Unsupported cable
+> +
+> +  ``Cable test failure``                            Cable test failure
+> +  ==============================================    =============================================
+> +
+
+Not every state has substates. Makes sense, since some of the main
+states are pretty straight forward.
+
+This feels very promising, and enables providing some useful information
+to users about why something isn't working as expected. I think it's a
+significant improvement to the status quo, given that a device can
+report this data.
+
+Thanks,
+Jake
+
+>  DEBUG_GET
+>  =========
+>  
+> 
