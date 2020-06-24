@@ -2,93 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E029D207938
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:32:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC08C20793A
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:32:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405172AbgFXQc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 12:32:26 -0400
-Received: from mga14.intel.com ([192.55.52.115]:4058 "EHLO mga14.intel.com"
+        id S2405176AbgFXQcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 12:32:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48976 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405107AbgFXQcY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jun 2020 12:32:24 -0400
-IronPort-SDR: rZl7Xy7j8kFlLW4NGVVvAzZvnjKDzVHzumQiPKAxDvDMRJU9ktWZKNzqoIFOSXM82tL+d159A5
- Z9lO2KFf3gpw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9662"; a="143635359"
-X-IronPort-AV: E=Sophos;i="5.75,276,1589266800"; 
-   d="scan'208";a="143635359"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2020 09:32:22 -0700
-IronPort-SDR: s00+NRtZ0NPWmDjhtzqHJY8HqtYbM1o4ulSR0bl9+Q8Ul1Jt+woSwlAfZIqqLOzN0wf3E15ALa
- p2rK/8fbGvEg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,276,1589266800"; 
-   d="scan'208";a="263681386"
-Received: from vsave-mobl.amr.corp.intel.com (HELO [10.251.3.18]) ([10.251.3.18])
-  by fmsmga007.fm.intel.com with ESMTP; 24 Jun 2020 09:32:22 -0700
-Subject: Re: [PATCH] fs/epoll: Enable non-blocking busypoll with epoll timeout
- of 0
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-To:     viro@zeniv.linux.org.uk, linux-fsdevel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        "davem@davemloft.net" <davem@davemloft.net>, eric.dumazet@gmail.com
-References: <1592590409-35439-1-git-send-email-sridhar.samudrala@intel.com>
-Message-ID: <de6bf72d-d4fd-9a62-c082-c82179d1f4fe@intel.com>
-Date:   Wed, 24 Jun 2020 09:32:22 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S2405107AbgFXQcc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 12:32:32 -0400
+Received: from gmail.com (unknown [104.132.1.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0DDB720823;
+        Wed, 24 Jun 2020 16:32:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593016351;
+        bh=Ro7G1U7TOVgJZkQbdYj7qT/YIUpW3qmtXmWck7YMLlk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dyMrr/UWjoaNhcsGodp+2ZF+J61QogEukhG9vIQLhNHRiCwzlLTWDS6htZkbdTIdd
+         Vryc5++8qFRBZLwcMUW2yZSb4EWAgsMirXWVhfZYFf8II9WvoSWlSltxGam3otV8cG
+         Uy4agy2U/6wUQQ4JxjTD7631SUbDZ25yaih68HCQ=
+Date:   Wed, 24 Jun 2020 09:32:29 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH] net: phy: mscc: avoid skcipher API for single block AES
+ encryption
+Message-ID: <20200624163229.GC200774@gmail.com>
+References: <20200624133427.1630650-1-ardb@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1592590409-35439-1-git-send-email-sridhar.samudrala@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200624133427.1630650-1-ardb@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding Dave, Eric for review and see if we can get this in via net-next
-as this is mainly useful for networking workloads doing busypoll.
-
-Thanks
-Sridhar
-
-On 6/19/2020 11:13 AM, Sridhar Samudrala wrote:
-> This patch triggers non-blocking busy poll when busy_poll is enabled and
-> epoll is called with a timeout of 0 and is associated with a napi_id.
-> This enables an app thread to go through napi poll routine once by calling
-> epoll with a 0 timeout.
+On Wed, Jun 24, 2020 at 03:34:27PM +0200, Ard Biesheuvel wrote:
+> The skcipher API dynamically instantiates the transformation object on
+> request that implements the requested algorithm optimally on the given
+> platform. This notion of optimality only matters for cases like bulk
+> network or disk encryption, where performance can be a bottleneck, or
+> in cases where the algorithm itself is not known at compile time.
 > 
-> poll/select with a 0 timeout behave in a similar manner.
+> In the mscc macsec case, we are dealing with AES encryption of a single
+> block, and so neither concern applies, and we are better off using the
+> AES library interface, which is lightweight and safe for this kind of
+> use.
 > 
-> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+> Note that the scatterlist API does not permit references to buffers that
+> are located on the stack, so the existing code is incorrect in any case,
+> but avoiding the skcipher and scatterlist APIs altogether is the most
+> straight-forward approach to fixing this.
+> 
+> Cc: Antoine Tenart <antoine.tenart@bootlin.com>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: <stable@vger.kernel.org>
+> Fixes: 28c5107aa904e ("net: phy: mscc: macsec support")
+> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
 > ---
->   fs/eventpoll.c | 13 +++++++++++++
->   1 file changed, 13 insertions(+)
+>  drivers/net/phy/Kconfig            |  3 +-
+>  drivers/net/phy/mscc/mscc_macsec.c | 40 +++++---------------
+>  2 files changed, 10 insertions(+), 33 deletions(-)
 > 
-> diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-> index 12eebcdea9c8..5f55078d6381 100644
-> --- a/fs/eventpoll.c
-> +++ b/fs/eventpoll.c
-> @@ -1847,6 +1847,19 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
->   		eavail = ep_events_available(ep);
->   		write_unlock_irq(&ep->lock);
->   
-> +		/*
-> +		 * Trigger non-blocking busy poll if timeout is 0 and there are
-> +		 * no events available. Passing timed_out(1) to ep_busy_loop
-> +		 * will make sure that busy polling is triggered only once and
-> +		 * only if sysctl.net.core.busy_poll is set to non-zero value.
-> +		 */
-> +		if (!eavail) {
-> +			ep_busy_loop(ep, timed_out);
-> +			write_lock_irq(&ep->lock);
-> +			eavail = ep_events_available(ep);
-> +			write_unlock_irq(&ep->lock);
-> +		}
-> +
->   		goto send_events;
->   	}
->   
-> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index f25702386d83..e9c05848ec52 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -480,8 +480,7 @@ config MICROCHIP_T1_PHY
+>  config MICROSEMI_PHY
+>  	tristate "Microsemi PHYs"
+>  	depends on MACSEC || MACSEC=n
+> -	select CRYPTO_AES
+> -	select CRYPTO_ECB
+> +	select CRYPTO_LIB_AES
+>  	help
+>  	  Currently supports VSC8514, VSC8530, VSC8531, VSC8540 and VSC8541 PHYs
+
+Shouldn't it be 'select CRYPTO_LIB_AES if MACSEC', since
+mscc_macsec.c is only compiled if MACSEC?
+
+>  
+> diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
+> index b4d3dc4068e2..d53ca884b5c9 100644
+> --- a/drivers/net/phy/mscc/mscc_macsec.c
+> +++ b/drivers/net/phy/mscc/mscc_macsec.c
+> @@ -10,7 +10,7 @@
+>  #include <linux/phy.h>
+>  #include <dt-bindings/net/mscc-phy-vsc8531.h>
+>  
+> -#include <crypto/skcipher.h>
+> +#include <crypto/aes.h>
+>  
+>  #include <net/macsec.h>
+>  
+> @@ -500,39 +500,17 @@ static u32 vsc8584_macsec_flow_context_id(struct macsec_flow *flow)
+>  static int vsc8584_macsec_derive_key(const u8 key[MACSEC_KEYID_LEN],
+>  				     u16 key_len, u8 hkey[16])
+>  {
+> -	struct crypto_skcipher *tfm = crypto_alloc_skcipher("ecb(aes)", 0, 0);
+> -	struct skcipher_request *req = NULL;
+> -	struct scatterlist src, dst;
+> -	DECLARE_CRYPTO_WAIT(wait);
+> -	u32 input[4] = {0};
+> +	const u8 input[AES_BLOCK_SIZE] = {0};
+> +	struct crypto_aes_ctx ctx;
+>  	int ret;
+>  
+> -	if (IS_ERR(tfm))
+> -		return PTR_ERR(tfm);
+> -
+> -	req = skcipher_request_alloc(tfm, GFP_KERNEL);
+> -	if (!req) {
+> -		ret = -ENOMEM;
+> -		goto out;
+> -	}
+> -
+> -	skcipher_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG |
+> -				      CRYPTO_TFM_REQ_MAY_SLEEP, crypto_req_done,
+> -				      &wait);
+> -	ret = crypto_skcipher_setkey(tfm, key, key_len);
+> -	if (ret < 0)
+> -		goto out;
+> -
+> -	sg_init_one(&src, input, 16);
+> -	sg_init_one(&dst, hkey, 16);
+> -	skcipher_request_set_crypt(req, &src, &dst, 16, NULL);
+> -
+> -	ret = crypto_wait_req(crypto_skcipher_encrypt(req), &wait);
+> +	ret = aes_expandkey(&ctx, key, key_len);
+> +	if (ret)
+> +		return ret;
+>  
+> -out:
+> -	skcipher_request_free(req);
+> -	crypto_free_skcipher(tfm);
+> -	return ret;
+> +	aes_encrypt(&ctx, hkey, input);
+> +	memzero_explicit(&ctx, sizeof(ctx));
+> +	return 0;
+>  }
+>  
+
+Otherwise this looks good.  You can add:
+
+	Reviewed-by: Eric Biggers <ebiggers@google.com>
+
+- Eric
