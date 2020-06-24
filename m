@@ -2,125 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A990207441
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 15:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 747502074AB
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 15:35:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389653AbgFXNR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 09:17:29 -0400
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:39242 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728685AbgFXNR2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 09:17:28 -0400
-Received: by mail-pj1-f65.google.com with SMTP id b92so1146276pjc.4;
-        Wed, 24 Jun 2020 06:17:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AmTxCuZjvcdiVEVhuLvvhfsJ8oNVmZ/lVyIOEYHWB0Y=;
-        b=Xc7/HPDfLjwO3vfOloH87tfQI4+HU7eSv2eJgbWB2VPf9JWtdmpEd2QXBmiJCy05dd
-         SUFETLgRt/OctOt5l3jgTWrwYVWkWAU8Q+QsiKAPRb9F+7ugQOxyeILRtceXsv0VmKP4
-         VtYCRJdJqRojiwFMXqFVJ/tpocUN8g7Cr8MFuOwUM10AFQE5i3sUtlTGmGPmOFBBzN+i
-         kB/jdQyJ0/WGTJuU62xF2LdZua+UNsDRQ7ku0j9EVHleHCUDO9GPVyjGTeCRbebME5Ie
-         9FeEDrpG+AADn8a8F+j4z4deipzeJi01RNzahjOH3jN2QhXTV+pnzrMRK6k8L7o6NVgw
-         D//w==
-X-Gm-Message-State: AOAM532vVbPp5eIKC7CxT0QEgrf89GpuBF1Bt8bpM9ELPFqnKUFeiaEr
-        wgVIjEamAzQeW5xiUzyrNUA=
-X-Google-Smtp-Source: ABdhPJz52oTL2B/3PLmnDoI2vugPQaT+ieV89E/RBDP6y5SvM7SHzDqNhk7CAkBkvaU94q6GXPDJhQ==
-X-Received: by 2002:a17:90a:2622:: with SMTP id l31mr29954851pje.18.1593004647767;
-        Wed, 24 Jun 2020 06:17:27 -0700 (PDT)
-Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id b71sm10617893pfb.125.2020.06.24.06.17.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jun 2020 06:17:26 -0700 (PDT)
-Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id 46E1340430; Wed, 24 Jun 2020 13:17:25 +0000 (UTC)
-Date:   Wed, 24 Jun 2020 13:17:25 +0000
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Christian Borntraeger <borntraeger@de.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Martin Doucha <mdoucha@suse.cz>
-Cc:     ast@kernel.org, axboe@kernel.dk, bfields@fieldses.org,
-        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
-        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
-        davem@davemloft.net, dhowells@redhat.com,
-        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
-        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
-        keyrings@vger.kernel.org, kuba@kernel.org,
-        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
-        philipp.reisner@linbit.com, ravenexp@gmail.com,
-        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
-        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
-        netdev@vger.kernel.org, markward@linux.ibm.com,
-        linux-s390 <linux-s390@vger.kernel.org>
-Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
- seems to break linux bridge on s390x (bisected)
-Message-ID: <20200624131725.GL13911@42.do-not-panic.com>
-References: <20200610154923.27510-5-mcgrof@kernel.org>
- <20200623141157.5409-1-borntraeger@de.ibm.com>
- <b7d658b9-606a-feb1-61f9-b58e3420d711@de.ibm.com>
- <3118dc0d-a3af-9337-c897-2380062a8644@de.ibm.com>
- <20200624120546.GC4332@42.do-not-panic.com>
+        id S2403949AbgFXNfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 09:35:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33036 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2403938AbgFXNfM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 09:35:12 -0400
+Received: from localhost.localdomain (lfbn-nic-1-188-42.w2-15.abo.wanadoo.fr [2.15.37.42])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1EAFC2082F;
+        Wed, 24 Jun 2020 13:35:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593005712;
+        bh=C1+Hush5x2WU4IKindFR36LEkar7bO9bO8bBOgcH1vU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HLYSyNRhUquytgnnTGoK8k5LX8raZIEp7YoOD5A8qSkadZvLMjReQKtWYuK7QoN/4
+         BN6av8xQ8RcN2TkSYNeBfgm+jzTtn/ZXZNd7FznOo5jmNogvPkA0/auOrSVgY5rI9e
+         KSeGKNeke/+XLbuIQ1Id0Sl0zTbrAAMdu2lsBjrE=
+From:   Ard Biesheuvel <ardb@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     linux-crypto@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, stable@vger.kernel.org
+Subject: [PATCH] net: phy: mscc: avoid skcipher API for single block AES encryption
+Date:   Wed, 24 Jun 2020 15:34:27 +0200
+Message-Id: <20200624133427.1630650-1-ardb@kernel.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200624120546.GC4332@42.do-not-panic.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin, your eyeballs would be appreciated for a bit on this.
+The skcipher API dynamically instantiates the transformation object on
+request that implements the requested algorithm optimally on the given
+platform. This notion of optimality only matters for cases like bulk
+network or disk encryption, where performance can be a bottleneck, or
+in cases where the algorithm itself is not known at compile time.
 
-On Wed, Jun 24, 2020 at 12:05:46PM +0000, Luis Chamberlain wrote:
-> On Wed, Jun 24, 2020 at 01:11:54PM +0200, Christian Borntraeger wrote:
-> > 
-> > 
-> > On 23.06.20 16:23, Christian Borntraeger wrote:
-> > > 
-> > > 
-> > > On 23.06.20 16:11, Christian Borntraeger wrote:
-> > >> Jens Markwardt reported a regression in the linux-next runs.  with "umh: fix
-> > >> processed error when UMH_WAIT_PROC is used" (from linux-next) a linux bridge
-> > >> with an KVM guests no longer activates :
-> > >>
-> > >> without patch
-> > >> # ip addr show dev virbr1
-> > >> 6: virbr1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
-> > >>     link/ether 52:54:00:1e:3f:c0 brd ff:ff:ff:ff:ff:ff
-> > >>     inet 192.168.254.254/24 brd 192.168.254.255 scope global virbr1
-> > >>        valid_lft forever preferred_lft forever
-> > >>
-> > >> with this patch the bridge stays DOWN with NO-CARRIER
-> > >>
-> > >> # ip addr show dev virbr1
-> > >> 6: virbr1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default qlen 1000
-> > >>     link/ether 52:54:00:1e:3f:c0 brd ff:ff:ff:ff:ff:ff
-> > >>     inet 192.168.254.254/24 brd 192.168.254.255 scope global virbr1
-> > >>        valid_lft forever preferred_lft forever
-> > >>
-> > >> This was bisected in linux-next. Reverting from linux-next also fixes the issue.
-> > >>
-> > >> Any idea?
-> > > 
-> > > FWIW, s390 is big endian. Maybe some of the shifts inn the __KW* macros are wrong.
-> > 
-> > Does anyone have an idea why "umh: fix processed error when UMH_WAIT_PROC is used" breaks the
-> > linux-bridge on s390?
-> 
-> glibc for instance defines __WEXITSTATUS in only one location: bits/waitstatus.h
-> and it does not special case it per architecture, so at this point I'd
-> have to say we have to look somewhere else for why this is happening.
+In the mscc macsec case, we are dealing with AES encryption of a single
+block, and so neither concern applies, and we are better off using the
+AES library interface, which is lightweight and safe for this kind of
+use.
 
-I found however an LTP bug indicating the need to test for
-s390 wait macros [0] in light of a recent bug in glibc for s390.
-I am asking for references to that issue given I cannot find
-any mention of this on glibc yet.
+Note that the scatterlist API does not permit references to buffers that
+are located on the stack, so the existing code is incorrect in any case,
+but avoiding the skcipher and scatterlist APIs altogether is the most
+straight-forward approach to fixing this.
 
-I'm in hopes Martin might be aware of that mentioned s390 glic bug.
+Cc: Antoine Tenart <antoine.tenart@bootlin.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: <stable@vger.kernel.org>
+Fixes: 28c5107aa904e ("net: phy: mscc: macsec support")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+---
+ drivers/net/phy/Kconfig            |  3 +-
+ drivers/net/phy/mscc/mscc_macsec.c | 40 +++++---------------
+ 2 files changed, 10 insertions(+), 33 deletions(-)
 
-[0] https://github.com/linux-test-project/ltp/issues/605
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index f25702386d83..e9c05848ec52 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -480,8 +480,7 @@ config MICROCHIP_T1_PHY
+ config MICROSEMI_PHY
+ 	tristate "Microsemi PHYs"
+ 	depends on MACSEC || MACSEC=n
+-	select CRYPTO_AES
+-	select CRYPTO_ECB
++	select CRYPTO_LIB_AES
+ 	help
+ 	  Currently supports VSC8514, VSC8530, VSC8531, VSC8540 and VSC8541 PHYs
+ 
+diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
+index b4d3dc4068e2..d53ca884b5c9 100644
+--- a/drivers/net/phy/mscc/mscc_macsec.c
++++ b/drivers/net/phy/mscc/mscc_macsec.c
+@@ -10,7 +10,7 @@
+ #include <linux/phy.h>
+ #include <dt-bindings/net/mscc-phy-vsc8531.h>
+ 
+-#include <crypto/skcipher.h>
++#include <crypto/aes.h>
+ 
+ #include <net/macsec.h>
+ 
+@@ -500,39 +500,17 @@ static u32 vsc8584_macsec_flow_context_id(struct macsec_flow *flow)
+ static int vsc8584_macsec_derive_key(const u8 key[MACSEC_KEYID_LEN],
+ 				     u16 key_len, u8 hkey[16])
+ {
+-	struct crypto_skcipher *tfm = crypto_alloc_skcipher("ecb(aes)", 0, 0);
+-	struct skcipher_request *req = NULL;
+-	struct scatterlist src, dst;
+-	DECLARE_CRYPTO_WAIT(wait);
+-	u32 input[4] = {0};
++	const u8 input[AES_BLOCK_SIZE] = {0};
++	struct crypto_aes_ctx ctx;
+ 	int ret;
+ 
+-	if (IS_ERR(tfm))
+-		return PTR_ERR(tfm);
+-
+-	req = skcipher_request_alloc(tfm, GFP_KERNEL);
+-	if (!req) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
+-
+-	skcipher_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG |
+-				      CRYPTO_TFM_REQ_MAY_SLEEP, crypto_req_done,
+-				      &wait);
+-	ret = crypto_skcipher_setkey(tfm, key, key_len);
+-	if (ret < 0)
+-		goto out;
+-
+-	sg_init_one(&src, input, 16);
+-	sg_init_one(&dst, hkey, 16);
+-	skcipher_request_set_crypt(req, &src, &dst, 16, NULL);
+-
+-	ret = crypto_wait_req(crypto_skcipher_encrypt(req), &wait);
++	ret = aes_expandkey(&ctx, key, key_len);
++	if (ret)
++		return ret;
+ 
+-out:
+-	skcipher_request_free(req);
+-	crypto_free_skcipher(tfm);
+-	return ret;
++	aes_encrypt(&ctx, hkey, input);
++	memzero_explicit(&ctx, sizeof(ctx));
++	return 0;
+ }
+ 
+ static int vsc8584_macsec_transformation(struct phy_device *phydev,
+-- 
+2.27.0
 
-  Luis
