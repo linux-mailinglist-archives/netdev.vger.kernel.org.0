@@ -2,135 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32E8F20707B
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 11:55:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87E17207086
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 11:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390071AbgFXJzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 05:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36458 "EHLO
+        id S2388100AbgFXJ6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 05:58:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389015AbgFXJzF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 05:55:05 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA03C061573;
-        Wed, 24 Jun 2020 02:55:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=88KQOG6XVKFLe8l1a2buG0sRs1RMztmoAEts+TmmAY8=; b=VUwwGOA34gLYHkj8Ep97sKRx5
-        66CPiBQM5QJ8C85ptkaCtf5AwRJrasE+JPHnJCdWNYki/y0yaPL1PGKnWUqKg96vdEREKf/Iyz25h
-        X4Z77rgwDNYt9GXPd/aDtDLHiPnj11bmPVNZz6Qn7uVtKwEOhlGNRBeUlMnvnkqL2SqaBtLIvKJvw
-        2Mvo0ZwdUYP+wCLlSXR8HQPWafjgmeLEO39NCoSM1gEXwtYOkFzEf7jDYXFaEFegTUFDJv42CUzuT
-        D6XD/VBNTBOtT1C2vEAfZ1BXdaPm5Bm7TuMvCVxOI9h0RLfaBGYixNRA0/oSRCqBYBHKeCTiWD1ZE
-        tIobfFXwg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59054)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jo27T-0002q1-1V; Wed, 24 Jun 2020 10:55:03 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jo27S-0001qe-QR; Wed, 24 Jun 2020 10:55:02 +0100
-Date:   Wed, 24 Jun 2020 10:55:02 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     netdev@vger.kernel.org, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 2/2] net: ethernet: mvneta: Add back interface mode
- validation
-Message-ID: <20200624095502.GZ1551@shell.armlinux.org.uk>
-References: <20200624070045.8878-1-s.hauer@pengutronix.de>
- <20200624070045.8878-2-s.hauer@pengutronix.de>
+        with ESMTP id S2387647AbgFXJ6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 05:58:10 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A1AC061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 02:58:10 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id m26so937131lfo.13
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 02:58:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2HfquG4v+qdKSSfgNiWDolP2UK6Uw4jh+8+xqXuTJq0=;
+        b=RG1xv8ecbx1fHPythOvgyVi/IGbrmQ3lWgYz7eORIXYnGsNP6rC5LDO5K+/BD2bpfp
+         M7/tmgoe6/YEghXY6pnR8n1I1/7cUg/atsUKYpJzZW3PjBi047DZH8smqKCzmFTdjLKM
+         Yea/KjrmR0mRJFrjfUfKjlbn8fd7D+MKKgIL6cAOXOvgRGwqlEuOfRF0d9AA3HDMHnzW
+         BqoIJx5Ct9490bnAomhsR6gTcmeKRcVB5Tkyt+ebT4Zd24+HOtDx/YN9M3uIwi5j5PbC
+         i2W0oWL4LXso1zBDsasHU5WX6j1MNuxkcOuHq7zcFZ7f9NfW5BnII9VBVOteSceaWCWD
+         xaIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2HfquG4v+qdKSSfgNiWDolP2UK6Uw4jh+8+xqXuTJq0=;
+        b=oCLzV9jZf6aqQhlzv3ljPYGOVXvlpAb4VOwdJoDM1ZHvGfu7tlU6e2Rw8YxD/8E4Eb
+         +MmNVrM2FtFqG/xLWTif5XzvOKKBIdpmE/zaVH7Pm2hHvnh7PAsTmTzS2/jULC7LIyo1
+         Yz7sSTBndv4CywabH6ZNikkRp6ymxiK8lt6guozoqvvJ2OhFYuDH2Ly/j8hhPf9cLuh6
+         kHsFtty6vGXMr87RJ3w9tWBIij3uQTuxW5iBaIXMcJ7gvFrZ9X6sJlaC7rUiyly2Qewa
+         kXaPnLYoSa1+WZwrNttaL4PR0xuoCvvdiC9iofV/PDIFYrp+GSEKNF/WCTP6qjGm+y3B
+         EAcw==
+X-Gm-Message-State: AOAM530VuNUl944g6CXlRw3NJ0sdTNAHDwP/CyHoMEE/0kAoz9PjWixS
+        fcG14mhJwcffU3iny3unqPiA3YzPxQmSZQ==
+X-Google-Smtp-Source: ABdhPJzFC8l5SFf/d4YLByv8jUZhG9fcNc/BO7CJKpe3lqp9RiJvvXr5rXhHPvA0mg22V6n98DWCzg==
+X-Received: by 2002:a05:6512:10d3:: with SMTP id k19mr15437094lfg.78.1592992688510;
+        Wed, 24 Jun 2020 02:58:08 -0700 (PDT)
+Received: from localhost.localdomain ([5.35.13.201])
+        by smtp.gmail.com with ESMTPSA id q11sm4989934lfe.34.2020.06.24.02.58.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Jun 2020 02:58:07 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+X-Google-Original-From: Denis Kirjanov <denis.kirjanov@suse.com>
+To:     netdev@vger.kernel.org
+Cc:     ncardwell@google.com, edumazet@google.com, ycheng@google.com,
+        Richard.Scheffenegger@netapp.com, ietf@bobbriscoe.net
+Subject: [PATCH v2] tcp: don't ignore ECN CWR on pure ACK
+Date:   Wed, 24 Jun 2020 12:57:48 +0300
+Message-Id: <20200624095748.8246-1-denis.kirjanov@suse.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200624070045.8878-2-s.hauer@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 24, 2020 at 09:00:45AM +0200, Sascha Hauer wrote:
-> When writing the serdes configuration register was moved to
-> mvneta_config_interface() the whole code block was removed from
-> mvneta_port_power_up() in the assumption that its only purpose was to
-> write the serdes configuration register. As mentioned by Russell King
-> its purpose was also to check for valid interface modes early so that
-> later in the driver we do not have to care for unexpected interface
-> modes.
-> Add back the test to let the driver bail out early on unhandled
-> interface modes.
-> 
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+there is a problem with the CWR flag set in an incoming ACK segment
+and it leads to the situation when the ECE flag is latched forever
 
-Fixes: b4748553f53f ("net: ethernet: mvneta: Fix Serdes configuration for SoCs without comphy")
-Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
+the following packetdrill script shows what happens:
 
-Thanks.
+// Stack receives incoming segments with CE set
++0.1 <[ect0]  . 11001:12001(1000) ack 1001 win 65535
++0.0 <[ce]    . 12001:13001(1000) ack 1001 win 65535
++0.0 <[ect0] P. 13001:14001(1000) ack 1001 win 65535
 
-> ---
->  drivers/net/ethernet/marvell/mvneta.c | 22 +++++++++++++++++++---
->  1 file changed, 19 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> index c4552f868157c..c639e3a293024 100644
-> --- a/drivers/net/ethernet/marvell/mvneta.c
-> +++ b/drivers/net/ethernet/marvell/mvneta.c
-> @@ -5009,10 +5009,18 @@ static void mvneta_conf_mbus_windows(struct mvneta_port *pp,
->  }
->  
->  /* Power up the port */
-> -static void mvneta_port_power_up(struct mvneta_port *pp, int phy_mode)
-> +static int mvneta_port_power_up(struct mvneta_port *pp, int phy_mode)
->  {
->  	/* MAC Cause register should be cleared */
->  	mvreg_write(pp, MVNETA_UNIT_INTR_CAUSE, 0);
-> +
-> +	if (phy_mode != PHY_INTERFACE_MODE_QSGMII &&
-> +	    phy_mode != PHY_INTERFACE_MODE_SGMII &&
-> +	    !phy_interface_mode_is_8023z(phy_mode) &&
-> +	    !phy_interface_mode_is_rgmii(phy_mode))
-> +		return -EINVAL;
-> +
-> +	return 0;
->  }
->  
->  /* Device initialization routine */
-> @@ -5198,7 +5206,11 @@ static int mvneta_probe(struct platform_device *pdev)
->  	if (err < 0)
->  		goto err_netdev;
->  
-> -	mvneta_port_power_up(pp, phy_mode);
-> +	err = mvneta_port_power_up(pp, pp->phy_interface);
-> +	if (err < 0) {
-> +		dev_err(&pdev->dev, "can't power up port\n");
-> +		return err;
-> +	}
->  
->  	/* Armada3700 network controller does not support per-cpu
->  	 * operation, so only single NAPI should be initialized.
-> @@ -5352,7 +5364,11 @@ static int mvneta_resume(struct device *device)
->  		}
->  	}
->  	mvneta_defaults_set(pp);
-> -	mvneta_port_power_up(pp, pp->phy_interface);
-> +	err = mvneta_port_power_up(pp, pp->phy_interface);
-> +	if (err < 0) {
-> +		dev_err(device, "can't power up port\n");
-> +		return err;
-> +	}
->  
->  	netif_device_attach(dev);
->  
-> -- 
-> 2.27.0
+// Stack repsonds with ECN ECHO
++0.0 >[noecn]  . 1001:1001(0) ack 12001
++0.0 >[noecn] E. 1001:1001(0) ack 13001
++0.0 >[noecn] E. 1001:1001(0) ack 14001
 
+// Write a packet
++0.1 write(3, ..., 1000) = 1000
++0.0 >[ect0] PE. 1001:2001(1000) ack 14001
+
+// Pure ACK received
++0.01 <[noecn] W. 14001:14001(0) ack 2001 win 65535
+
+// Since CWR was sent, this packet should NOT have ECE set
+
++0.1 write(3, ..., 1000) = 1000
++0.0 >[ect0]  P. 2001:3001(1000) ack 14001
+// but Linux will still keep ECE latched here, with packetdrill
+// flagging a missing ECE flag, expecting
+// >[ect0] PE. 2001:3001(1000) ack 14001
+// in the script
+
+In the situation above we will continue to send ECN ECHO packets
+and trigger the peer to reduce the congestion window. To avoid that
+we can check CWR on pure ACKs received.
+
+v2:
+- Adjusted the comment
+- move CWR check before checking for unacknowledged packets
+
+Signed-off-by: Denis Kirjanov <denis.kirjanov@suse.com>
+---
+ net/ipv4/tcp_input.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 12fda8f27b08..f1936c0cb684 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3665,6 +3665,15 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+ 		tcp_in_ack_event(sk, ack_ev_flags);
+ 	}
+ 
++	/* This is a deviation from RFC3168 since it states that:
++	 * "When the TCP data sender is ready to set the CWR bit after reducing
++	 * the congestion window, it SHOULD set the CWR bit only on the first
++	 * new data packet that it transmits."
++	 * We accept CWR on pure ACKs to be more robust
++	 * with widely-deployed TCP implementations that do this.
++	 */
++	tcp_ecn_accept_cwr(sk, skb);
++
+ 	/* We passed data and got it acked, remove any soft error
+ 	 * log. Something worked...
+ 	 */
+@@ -4800,8 +4809,6 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
+ 	skb_dst_drop(skb);
+ 	__skb_pull(skb, tcp_hdr(skb)->doff * 4);
+ 
+-	tcp_ecn_accept_cwr(sk, skb);
+-
+ 	tp->rx_opt.dsack = 0;
+ 
+ 	/*  Queue data for delivery to the user.
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.27.0
+
