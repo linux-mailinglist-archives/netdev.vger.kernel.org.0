@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A521207F21
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 00:07:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3D1D207F22
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 00:08:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390096AbgFXWG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 18:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37000 "EHLO
+        id S2389817AbgFXWIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 18:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389817AbgFXWG5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 18:06:57 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89CAC061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 15:06:56 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id rk21so3997690ejb.2
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 15:06:56 -0700 (PDT)
+        with ESMTP id S2387718AbgFXWIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 18:08:39 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB6AC061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 15:08:39 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id w16so3991115ejj.5
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 15:08:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/TDwCjhAT2zlJd6IfVNEb8iTHRCbENoigYp7meb+EVE=;
-        b=KXr2VDg0cPtnmBte6GkFtzfRrTtNEV2pfNNBV2OBUaxluxioLeu2c5ht1YaMwKwO2c
-         CnwfscLoyNDYHrD661nm1sJQZW4A45m1SEM0Opx43jIsVe1eT7Icp/cqN6tdng5ulh2l
-         VKbYchqWEu6KldCDwj73dbKfPp7z140dZOr9kdohsa6+OqI8tRMihem+Ocx0kjD4VmZV
-         fspoKr/44h/5Sptu9YrPKPWhyCX3PoVUJIS2/bqbI411h9N2DB6XxCsR2yRwysooQZA0
-         xSvinn+3RDanyL4NbfJ2HF1RIHaFbVFRtFgQvOKla6NO6i2cQqxIvdzFffl+60lJXwhF
-         urVA==
+        bh=QqbRYpruVtELAfyBW0afEWcw5o3rs1ALoOPqxNNxnJM=;
+        b=RawwpNG/oOtMmYpurn6UTZjX0kK98LADAHqTGxXVs1NmPTb0xwp/tIWU/zsGf3eoJn
+         YbYj8kXOJxQXBUNmYatxTQchkiv43Jz1Gr5JJXLaHEjCqpQkWypAPeQU5swve4JI9Tk+
+         exHblGJMTxMw5PSFFltiJm6Y8Bv7ojc9jF6NzMioitOtzUsPI/NRuy0xsnjHEekcKbfP
+         hdvN6K4FbVkZNzR6XiTLAlZwkN3xTLK4wHlfFWi9UXzIeSGL3MzfbAkHt0C3Sbo07hoW
+         gkqMmwHP0EpbCbdCiFM3VWkig4hrEh+k61yn7dPyxYtrmhYU1FFtLUbrY3kB5buzyKL/
+         pz6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=/TDwCjhAT2zlJd6IfVNEb8iTHRCbENoigYp7meb+EVE=;
-        b=ftlVpLTlGUWkQIARRQSn8Iitj9P/9FK8+blwfIcNo0QebGPTEOaL/gEhFAqfkWQpAu
-         CnjnISTqFLGbYZB7OIw2u9IAn+4DkqyS2yze+ZT7VOrjF6iEMKAw8Hpkogu05kc/hPPd
-         s01MNJxEYKOquvVaH5qLWGwjHikftwkN23ywfjmI23DNjKcLdFgiTVF0kYwKLJhu0pIc
-         M43gQoyllSSOiSndAWvnt9n5aydgnMpbCGG1x2n8WobtInnaVrotPIDxgY01Lh89lU10
-         WoWCpdUF9tmcAGGN2JzVqEjUAqvcXhtOQudX4ren2mXsbcWI4RdF/z05Br2lIpDQn+8T
-         XTmA==
-X-Gm-Message-State: AOAM533jPBvduVDd8S3p3wcWV08ZJz9Clm0/avAcg1hUv/CTHPtmcgzw
-        yBiT7KNY251t+mkMQb/1hbU=
-X-Google-Smtp-Source: ABdhPJxhn6y2teKD+9sqf6dDHgA9+SUWcoBbEulKKmNZs7Hs3bfGsJfvNmHmORQrWFzHpQ1K8qe/Vw==
-X-Received: by 2002:a17:906:f2c4:: with SMTP id gz4mr12322471ejb.484.1593036415543;
-        Wed, 24 Jun 2020 15:06:55 -0700 (PDT)
+        bh=QqbRYpruVtELAfyBW0afEWcw5o3rs1ALoOPqxNNxnJM=;
+        b=C31ZezLYu31B4bTKxZ2UOGeST+gvLQUYvcy9xD6bh2nABB0ODMC4RCmxpXyZoEshr9
+         OGCf3GGWAnID43KIlaI/Ao0oNc9IhbBryPbgtKs5yYZCoUyHtBEDREkYqm5neL2gWxxe
+         YAAusGK8kxzpMe8faa3dlIbO16wE4v+wgGe43JN5/HcBVowJnmy0YfCs6m8u2xDk6DNh
+         RNfxs3I6v+eTUaJUIkS4MiRi0zXEFDE6k+dKC98E2fUMgeoO9/Xo2umqMdapvvU+4bB5
+         +jf7C+2kqSWcqll1VKwBxaVOr/37C+Inngcas0TxioHlGuP7r/LN/cQZJKRNyrLpvfsc
+         tlqg==
+X-Gm-Message-State: AOAM5330wP5cNGL/pOiVSmR84uVL3MIx1JNi4p6u/WNAb/4AfsyVpUBO
+        MaZRdw+jclD+oivGAverb2w=
+X-Google-Smtp-Source: ABdhPJyYCeRYHF1YyW0TdBnA7DCWBhzuS/9FxWZeaA9UUXQNM1koqC0GHlNh6M/0buGvcYzOwuXcyA==
+X-Received: by 2002:a17:906:2e06:: with SMTP id n6mr9072467eji.34.1593036518118;
+        Wed, 24 Jun 2020 15:08:38 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id lo20sm10093349ejb.62.2020.06.24.15.06.53
+        by smtp.googlemail.com with ESMTPSA id w18sm5876488edv.11.2020.06.24.15.08.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Jun 2020 15:06:54 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: phylink: only restart AN if the link mode
- is using in-band AN
+        Wed, 24 Jun 2020 15:08:37 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: dsa/ar9331: convert to mac_link_up()
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-References: <E1jo3bQ-0006QS-Nx@rmk-PC.armlinux.org.uk>
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+References: <E1jo2X6-0005yf-55@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -111,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <08be7935-5c32-f33c-9966-3a31899f85b2@gmail.com>
-Date:   Wed, 24 Jun 2020 15:06:52 -0700
+Message-ID: <f3ef38dc-d71e-4bd7-b9b4-df755ffd034b@gmail.com>
+Date:   Wed, 24 Jun 2020 15:08:34 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <E1jo3bQ-0006QS-Nx@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1jo2X6-0005yf-55@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -125,10 +126,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/24/20 4:30 AM, Russell King wrote:
-> If we are not using in-band autonegotiation, there is no point passing
-> the request to restart autonegotiation on to the driver.
+On 6/24/20 3:21 AM, Russell King wrote:
+> Convert the ar9331 DSA driver to use the finalised link parameters in
+> mac_link_up() rather than the parameters in mac_config().
 > 
+> Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
