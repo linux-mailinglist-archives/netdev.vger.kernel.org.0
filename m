@@ -2,51 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62141206A0F
+	by mail.lfdr.de (Postfix) with ESMTP id D82C0206A10
 	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 04:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388341AbgFXCVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 22:21:35 -0400
+        id S2388356AbgFXCVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 22:21:39 -0400
 Received: from mail-eopbgr60051.outbound.protection.outlook.com ([40.107.6.51]:63460
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388095AbgFXCVe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 22:21:34 -0400
+        id S2388207AbgFXCVg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 22:21:36 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ekf6uUkJ/R4IJNGi/QTkv71Gm8IfXEpWyKP5QDov/EBMCeSjE6BcNJixAWbsR2mi1bgYBIx4Z27TpFaMb7zIr7lubZwZ8sujpGXwXX4PcUFluuFNcGps8W3aS+pJDNOIXOP2JvMORtnULnfX2iAXecWQ82hTC+7je5p1Ikg8n9nQH6vAhJG9Fy6yaqNos9J5nm3L48vFr5eYqHXHUQNELXa6kFZdODm3yJsusDRHcQC2B1mgAnnUmdtcTlcCc80c6jnvMoTnHolDA4TuZCzAt714F8skyI5izLSf682QQgSjsHuN1xzOyNThqMcnUXsvQdGen6jQ1NX/MogmvmUZcA==
+ b=hCU9XtibhOriLVQqz/5yWWA7a2g4Vb/6SE8qk2qPEJMSM6XDPm7nqaIVaV/yLHJyzJ4ASzf2/MxFQKVNATV5kAISbm7grSnS3GG7gpTcLEj3RNGkcpwDQeycIPcG/0z/gYI0fJ6pEA6TxrPFZh4kERaNuau33E7N48y6eVgkL9rdUr2s5gwDYwmbL0eRBJITM3r3WsiIM+WB8nqY05VXXCHZh5pK2roLY8Z51zvg68E+fHrtcJpI3BRW8KK0LHahN5iTLFNNJwgNV4pugPpO3lO8yufX/uXGQ954Q1sUtRu2WddX765mkOjKx+l9Yzn0bD8XM3bSLrOpnA71lBuScw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z1ulmEsLk87aPuwLqOA4+/0tBo0bloH/+X64+wQ9dqk=;
- b=Wz5FqsBaByGyIjXbUaEh5v6mhqGqM21TM+53bkLomfONLwnnWJArFR9XOUYICD7SesZw5BywrmXX263O5zf8hrUxsQI3yixWbCTqQLlvw6l2tA1ljaBy4ms93ASYgLDJMcWGjHM2gEKPbQDmGlMDkcTIfBIIh/2VgtlY4UCw+N9VkEckk7Rq9jO+gVUgSj18E29Umt5FwG3xb29N9r1G8XtZlThsWuFDsXkZrc9qz074uO4MvwnccQQ7w9sGfqixmLVBpWLO6uPABmp/j0XgadFjupNg8qutLrmaynlx6c/443Jx/Mc9KW2SXOmvu9ic6fraDDae1q7ETm7NHdnmWA==
+ bh=5YoEKPAc2KN2ibUm8brhI4F3SaBGZVeebPwrbzzWzuU=;
+ b=QwTxWMrVPMC8btZ6aE664pIQaR6m+FrLgJUeIpFi58T+f5iwkcnyRn/dZ8yoLNY39ryckcA/+CofpBcQ5bzbnkI5So3m7tNz/aH0XVx+WwhJr+w+LsnyAfh5NIKSuEsjd5NfuAs11UOVofKDsTRmHlwqReLT0UP0EDNFwoSGCOA7FumPrzuCIZoLaVNSjiVrqCshajUx0HPlMrGmSxvGPys4MvLCsOGu/hEYN7KcA4W9SSiUyuhxBe1y8d5mYtkAj2iPsR29GpEvAXfA6pO1ZJX9oJaQFKcsf0eD5ooRVc0RGr1wuLOleoGurR+lM/TENMe8EXcD5+cb4Ko5fvxb8Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z1ulmEsLk87aPuwLqOA4+/0tBo0bloH/+X64+wQ9dqk=;
- b=MmM6xMFtouFYpU89WIQ2okvgMu1ZnoOVcfs6PaBOPGKc3aJQII4XowtzIIuUNEs++XBJNEOOiWy+Kk/w4gGN4N6B11+m+tCtMbsLX2dPCeBOdUWh178o7HzWrz0KZdNzKybeJR5PZZsWZq9vB2jlLlQn1a21B204P+G8j10NBSE=
+ bh=5YoEKPAc2KN2ibUm8brhI4F3SaBGZVeebPwrbzzWzuU=;
+ b=hYwIN3QG2X8k1AQJQRaNfcIwJ056nAQC6lkxEecEnI6rMavAp/kEaSfljax+sCbQYSQuJRMAuccXsVwhSykGj/xR3a5HCQZHUSocgGjbd/ZX4cLS0h2IMQlkF6guzV1zyEOTjw2lZYO8mURzzjlP7+g9IfqHxuU2az5d+NnZgCM=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB7022.eurprd05.prod.outlook.com (2603:10a6:800:184::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Wed, 24 Jun
- 2020 02:21:21 +0000
+ 2020 02:21:23 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3131.020; Wed, 24 Jun 2020
- 02:21:21 +0000
+ 02:21:23 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Vlad Buslov <vladbu@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Maor Dickman <maord@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next V2 07/10] net/mlx5e: Move TC-specific function definitions into MLX5_CLS_ACT
-Date:   Tue, 23 Jun 2020 19:18:22 -0700
-Message-Id: <20200624021825.53707-8-saeedm@mellanox.com>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+Subject: [net-next V2 08/10] net/mlx5e: vxlan: Use RCU for vxlan table lookup
+Date:   Tue, 23 Jun 2020 19:18:23 -0700
+Message-Id: <20200624021825.53707-9-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200624021825.53707-1-saeedm@mellanox.com>
 References: <20200624021825.53707-1-saeedm@mellanox.com>
@@ -57,99 +55,185 @@ X-ClientProxiedBy: BYAPR07CA0077.namprd07.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR07CA0077.namprd07.prod.outlook.com (2603:10b6:a03:12b::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20 via Frontend Transport; Wed, 24 Jun 2020 02:21:19 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR07CA0077.namprd07.prod.outlook.com (2603:10b6:a03:12b::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20 via Frontend Transport; Wed, 24 Jun 2020 02:21:22 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 9c495c9f-7d42-43d5-abc1-08d817e54925
+X-MS-Office365-Filtering-Correlation-Id: dcf074f1-6779-4061-012b-08d817e54a31
 X-MS-TrafficTypeDiagnostic: VI1PR05MB7022:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB7022E9208E38F0D8A60FD9ABBE950@VI1PR05MB7022.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:257;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB70225E23370F5537D549E474BE950@VI1PR05MB7022.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-Forefront-PRVS: 0444EB1997
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /1nqucVSfEgxoEx2mCM1PiAF0VuIzTAnZ7IuXEthupyz2B9A0CpoyumOJhdaZ5BNBkAsU1r+CmOMqdBkhGj4T0AleCRENihgPSVTfu5jClMu9gitsFjQg3l0fBokg9elbDb2Y5h0tPPhKdnCv0dA5CnXuurrWeRydsMScJZm9v28wgY6sTM+9DWNlGPz9UwZjze2JlQ/vP7QfKAdnV8QF187jd/n2GGpyL2/H/ccAT+2Zf8cyZifHAlEWSr7sLfOim2vkFo73qB0bioiR64q2yWNnt197c+qI00/4mxotPm4aIiTRMq4/6oVTDFHvGsgFnXHH0QMGo7bdi2E5NvZy0NyxHx1vjemFpbSCdN0F/sj5tMYxxbgC+yXdzNrZlJ3
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(366004)(396003)(346002)(376002)(8936002)(316002)(478600001)(107886003)(2906002)(2616005)(16526019)(956004)(6666004)(186003)(1076003)(26005)(4326008)(8676002)(5660300002)(6486002)(66556008)(66476007)(83380400001)(6512007)(66946007)(52116002)(6506007)(86362001)(36756003)(54906003)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: YUQY0rYz9eT9ebKJ6eVRB4fVoxQ/uf+GwslKqdrelhfkz0ewJ+PEgLqHJ20sZlaiKR7ykkqPCryvYbl60i0C0L1ht4l2pWE5cT9dqu9LrckKZgEgSwkXfDHUXu1ESEORy7TeBaWE4B1JI2b5A0yd49++1oIxrS+wZ+6dKmllup+dnpmfu1Zw4rC/kxOyrJnewo2esIkX0F6BJI1rj3Vta59zpQgBK/TvUv2B/ro8SjyaT7sOYFKzmS4xtA59QQhU8W0kMZDnjbRJ274/foOcnw5S/gkeHC5Ls+9cX6SawM/yTDAmHfnj9QpEXZ+SxSMIJ5ztsJWclVdQD/N6Ax4sNwd8hW/YuXnM125JylpZ9FxyWg7D/jZAcfOc9sEWgMCHl6/HZ0vPmLBvp4HXWzP5Wb12iTOMz7O4PKrqyATUXHcYwtFRV0y1HtZdOe5tGp3AKLW8shFE5gPxjAzcOtGjQXsExaV9Ago+ChOqHr/HkbA=
+X-Microsoft-Antispam-Message-Info: 90Pbk8pgLUTfBox2MZebJenZA2h2dYKaSAhSlrHjCQlIDj7WVeg8bRjSY2Vpq9VPHYIduP1CsfqiPw9ZAv8CagJaDM6va+20gKz7HukOIvjSLQv+VCDdeyxtI9QYvGTKv+3TQC6xJ0flQ9LjFacxXsAPXtOPATKMyuSgp58AM6wc2xJnoEfhQZfQhQpcz34XVO+W+monrM2csTarR5bOSSz2+Efnc0SblqbcADs5rjCpMlkRWggS/UnkGVkW0GGBXXugWAOSdbBTEPau1f1vRGbypU+JD0ezHnjS2HxPgbLNb5EDDRDA3n07RZdIysmuqDHW2qJiP+9deEyIvitqmILU9z2hwi5VODvfrg2PjR+EhLHGpKt0mpLZFaIszrds
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(366004)(396003)(346002)(376002)(8936002)(316002)(478600001)(107886003)(2906002)(2616005)(16526019)(956004)(186003)(1076003)(26005)(4326008)(8676002)(5660300002)(6486002)(66556008)(66476007)(83380400001)(6512007)(66946007)(52116002)(6506007)(86362001)(36756003)(54906003)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: ePXIH4cpla87vG41JsSCqMzCnjKqYsEF4lJjqrGgLum4FNLfbHmDLumbCxzpNQAAM2jtyE7VlIec7DiGI6vs40ZhA+C985BSArHv61q/pkwniXxYmZ7nY5YKpQFLWdsIAr3IjcOiPojhqaX8+Ketg699jZF1zRHEdxyk4j9pThn2y2NQ9+wTccucmBi6ZjliAsr93Lz3jDbVNTCRot4NHaA+2d4xQrhwtYVv6tI37q7CRbgLPfEquvQgFtOKTeyhKbCmCrXuvhPicVEaAtqf5KnylKxODMm6O9GH3gxDfCH5xm4wNciyt0p8DLR6tHIDB/QgO+TAD9nWypaLLvqC9C9GSxL3uF6b2x2ClwFpREIUVhl08VkxUJpYCfeq5gmliOkzvyEeKBGoD/vMFuTQVip+y1djTBFzexs6mjqXXsO/bxyNOrnAIDVycdGsq/A9T+3XDfqf9HaJYxHRxHxTNRWw6USHx6rJGwuv32gVoFw=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c495c9f-7d42-43d5-abc1-08d817e54925
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2020 02:21:21.7119
+X-MS-Exchange-CrossTenant-Network-Message-Id: dcf074f1-6779-4061-012b-08d817e54a31
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2020 02:21:23.4309
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /qypaGW4AWd04qxtKI9qXttsMsS9uzwaIOQhyWq+TV9uOrYf4RGCLVsO8xTUYMsGxiCR7VsfqRa8FHwn/Tzssg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: /2ZuIH/f/iVeABb/EJheJ945OvzxFWzUO0lgSn1Ku20/IisLqViMeMwso/Wxw2jgAfwb78xKy8h730RCi8setw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB7022
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@mellanox.com>
+Remove the spinlock protecting the vxlan table and use RCU instead.
+This will improve performance as it will eliminate contention on data
+path cores.
 
-en_tc.h header file declares several TC-specific functions in
-CONFIG_MLX5_ESWITCH block even though those functions are only compiled
-when CONFIG_MLX5_CLS_ACT is set, which is a recent change. Move them to
-proper block.
-
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Maor Dickman <maord@mellanox.com>
+Fixes: b3f63c3d5e2c ("net/mlx5e: Add netdev support for VXLAN tunneling")
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.h | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ .../ethernet/mellanox/mlx5/core/lib/vxlan.c   | 65 ++++++++-----------
+ 1 file changed, 27 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 5c330b0cae213..1561eaa89ffd2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -40,6 +40,14 @@
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
+index 82c766a951656..85cbc42955859 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
+@@ -40,7 +40,6 @@
  
- #ifdef CONFIG_MLX5_ESWITCH
+ struct mlx5_vxlan {
+ 	struct mlx5_core_dev		*mdev;
+-	spinlock_t			lock; /* protect vxlan table */
+ 	/* max_num_ports is usuallly 4, 16 buckets is more than enough */
+ 	DECLARE_HASHTABLE(htable, 4);
+ 	int				num_ports;
+@@ -78,45 +77,46 @@ static int mlx5_vxlan_core_del_port_cmd(struct mlx5_core_dev *mdev, u16 port)
+ 	return mlx5_cmd_exec_in(mdev, delete_vxlan_udp_dport, in);
+ }
  
-+int mlx5e_tc_num_filters(struct mlx5e_priv *priv, unsigned long flags);
+-static struct mlx5_vxlan_port*
+-mlx5_vxlan_lookup_port_locked(struct mlx5_vxlan *vxlan, u16 port)
++struct mlx5_vxlan_port *mlx5_vxlan_lookup_port(struct mlx5_vxlan *vxlan, u16 port)
+ {
+-	struct mlx5_vxlan_port *vxlanp;
++	struct mlx5_vxlan_port *retptr = NULL, *vxlanp;
+ 
+-	hash_for_each_possible(vxlan->htable, vxlanp, hlist, port) {
+-		if (vxlanp->udp_port == port)
+-			return vxlanp;
+-	}
++	if (!mlx5_vxlan_allowed(vxlan))
++		return NULL;
+ 
+-	return NULL;
++	rcu_read_lock();
++	hash_for_each_possible_rcu(vxlan->htable, vxlanp, hlist, port)
++		if (vxlanp->udp_port == port) {
++			retptr = vxlanp;
++			break;
++		}
++	rcu_read_unlock();
 +
-+struct mlx5e_tc_update_priv {
-+	struct net_device *tun_dev;
-+};
-+
-+#if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
-+
- struct tunnel_match_key {
- 	struct flow_dissector_key_control enc_control;
- 	struct flow_dissector_key_keyid enc_key_id;
-@@ -114,8 +122,6 @@ void mlx5e_put_encap_flow_list(struct mlx5e_priv *priv, struct list_head *flow_l
- struct mlx5e_neigh_hash_entry;
- void mlx5e_tc_update_neigh_used_value(struct mlx5e_neigh_hash_entry *nhe);
++	return retptr;
+ }
  
--int mlx5e_tc_num_filters(struct mlx5e_priv *priv, unsigned long flags);
+-struct mlx5_vxlan_port *mlx5_vxlan_lookup_port(struct mlx5_vxlan *vxlan, u16 port)
++static struct mlx5_vxlan_port *vxlan_lookup_port(struct mlx5_vxlan *vxlan, u16 port)
+ {
+ 	struct mlx5_vxlan_port *vxlanp;
+ 
+-	if (!mlx5_vxlan_allowed(vxlan))
+-		return NULL;
 -
- void mlx5e_tc_reoffload_flows_work(struct work_struct *work);
- 
- enum mlx5e_tc_attr_to_reg {
-@@ -142,10 +148,6 @@ extern struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[];
- bool mlx5e_is_valid_eswitch_fwd_dev(struct mlx5e_priv *priv,
- 				    struct net_device *out_dev);
- 
--struct mlx5e_tc_update_priv {
--	struct net_device *tun_dev;
--};
+-	spin_lock_bh(&vxlan->lock);
+-	vxlanp = mlx5_vxlan_lookup_port_locked(vxlan, port);
+-	spin_unlock_bh(&vxlan->lock);
 -
- struct mlx5e_tc_mod_hdr_acts {
- 	int num_actions;
- 	int max_actions;
-@@ -174,8 +176,6 @@ void mlx5e_tc_set_ethertype(struct mlx5_core_dev *mdev,
- 			    struct flow_match_basic *match, bool outer,
- 			    void *headers_c, void *headers_v);
+-	return vxlanp;
++	hash_for_each_possible(vxlan->htable, vxlanp, hlist, port)
++		if (vxlanp->udp_port == port)
++			return vxlanp;
++	return NULL;
+ }
  
--#if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
+ int mlx5_vxlan_add_port(struct mlx5_vxlan *vxlan, u16 port)
+ {
+ 	struct mlx5_vxlan_port *vxlanp;
+-	int ret = -ENOSPC;
++	int ret = 0;
+ 
+-	vxlanp = mlx5_vxlan_lookup_port(vxlan, port);
++	mutex_lock(&vxlan->sync_lock);
++	vxlanp = vxlan_lookup_port(vxlan, port);
+ 	if (vxlanp) {
+ 		refcount_inc(&vxlanp->refcount);
+-		return 0;
++		goto unlock;
+ 	}
+ 
+-	mutex_lock(&vxlan->sync_lock);
+ 	if (vxlan->num_ports >= mlx5_vxlan_max_udp_ports(vxlan->mdev)) {
+ 		mlx5_core_info(vxlan->mdev,
+ 			       "UDP port (%d) not offloaded, max number of UDP ports (%d) are already offloaded\n",
+@@ -138,9 +138,7 @@ int mlx5_vxlan_add_port(struct mlx5_vxlan *vxlan, u16 port)
+ 	vxlanp->udp_port = port;
+ 	refcount_set(&vxlanp->refcount, 1);
+ 
+-	spin_lock_bh(&vxlan->lock);
+-	hash_add(vxlan->htable, &vxlanp->hlist, port);
+-	spin_unlock_bh(&vxlan->lock);
++	hash_add_rcu(vxlan->htable, &vxlanp->hlist, port);
+ 
+ 	vxlan->num_ports++;
+ 	mutex_unlock(&vxlan->sync_lock);
+@@ -157,34 +155,26 @@ int mlx5_vxlan_add_port(struct mlx5_vxlan *vxlan, u16 port)
+ int mlx5_vxlan_del_port(struct mlx5_vxlan *vxlan, u16 port)
+ {
+ 	struct mlx5_vxlan_port *vxlanp;
+-	bool remove = false;
+ 	int ret = 0;
+ 
+ 	mutex_lock(&vxlan->sync_lock);
+ 
+-	spin_lock_bh(&vxlan->lock);
+-	vxlanp = mlx5_vxlan_lookup_port_locked(vxlan, port);
++	vxlanp = vxlan_lookup_port(vxlan, port);
+ 	if (!vxlanp) {
+ 		ret = -ENOENT;
+ 		goto out_unlock;
+ 	}
+ 
+ 	if (refcount_dec_and_test(&vxlanp->refcount)) {
+-		hash_del(&vxlanp->hlist);
+-		remove = true;
+-	}
 -
- int mlx5e_tc_nic_init(struct mlx5e_priv *priv);
- void mlx5e_tc_nic_cleanup(struct mlx5e_priv *priv);
+-out_unlock:
+-	spin_unlock_bh(&vxlan->lock);
+-
+-	if (remove) {
++		hash_del_rcu(&vxlanp->hlist);
++		synchronize_rcu();
+ 		mlx5_vxlan_core_del_port_cmd(vxlan->mdev, port);
+ 		kfree(vxlanp);
+ 		vxlan->num_ports--;
+ 	}
  
++out_unlock:
+ 	mutex_unlock(&vxlan->sync_lock);
+-
+ 	return ret;
+ }
+ 
+@@ -201,7 +191,6 @@ struct mlx5_vxlan *mlx5_vxlan_create(struct mlx5_core_dev *mdev)
+ 
+ 	vxlan->mdev = mdev;
+ 	mutex_init(&vxlan->sync_lock);
+-	spin_lock_init(&vxlan->lock);
+ 	hash_init(vxlan->htable);
+ 
+ 	/* Hardware adds 4789 (IANA_VXLAN_UDP_PORT) by default */
 -- 
 2.26.2
 
