@@ -2,118 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFFBF20795E
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:42:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04ED820795F
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:42:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391218AbgFXQmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 12:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43100 "EHLO
+        id S2391238AbgFXQm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 12:42:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404068AbgFXQmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:42:10 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BECDC061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:42:09 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id e8so1927356qtq.22
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:42:09 -0700 (PDT)
+        with ESMTP id S2391226AbgFXQm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:42:26 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB917C061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:42:26 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id k6so1256104pll.9
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:42:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=oWcef13FMKTYdZ36D7f94zx5u7+RmoEi6q070EuSMhg=;
-        b=cK1mUbH6e1+ghkhOQtxAZAb2OSeF0KHKai9pr4OsPFFbcyvm/c4t3EW25JTg+CfpIO
-         6Bs8zbgFB6l6gLUN4k2bpwisXijf43DpryCq0uIEVenuXliwiti7SXBdDdMa3pVKQA1I
-         vK0XUGx0BKw7nERQxwJ50W3RTZGC+JR09IT4elBlF1n/kErxPN2WY5eMF113pdIdDgat
-         n/qwcouxoOONcFlW2kmdmC+Lt0iH8H84t+/tr/NgPrAoBTlOVadlmjfJZs1+5wpZpmJm
-         n5d16hhU4QRsg/b7t7Dm2T1BZTJDZ51ANHQj77dFgs0lWl3rmkBK+ezID3fEPTYpF0fd
-         A80A==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6pxaXQppJ1NtFfT4bm1fjAmNyPG9fa55KVp8t6t9aUw=;
+        b=NMg3/Xl8xJ+buVhg5JEdxHiY1mTS0iJhQLCOVZrjLXMVwto1jAhphFG3Kt4c2sx/d/
+         zaIs368VIQsKNRy9Jj0o1N96BaDaPdMIaevqZ/co7YtmLEKmp7kqPqyVEXW9RE+feb9u
+         TdafrEm8zspnkOCcBKElG15HolW1aHtU55MItPmlYYfibmUZEozcs9qNSWFacxAnF7NW
+         X6/SfSp0scxr9wIo8x8TONSs9ug9dOZ86btg9Id8zqQuG2Xc3ZGx66SlX8gm0HCldTfN
+         VT/mA4/z9OA8c6+Vys5ojtBh9rWvbqO+qH9HT+3qH1qdPq02n4T5u7/5dLKBSCZ1EC0h
+         61Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=oWcef13FMKTYdZ36D7f94zx5u7+RmoEi6q070EuSMhg=;
-        b=CqOrYYcnN61nd5rqzul0RQ95THohlhf/6JHfJPiA4mtkKFU7eSP/g27bWynLa6PYo6
-         QrOgtIKYLpz5UXx95FqTzv6/aNuCcHn/8n/ldZOKoWmVv2AAQYljg8i+V8NH4/lu+53u
-         QAk3k1zrhS2nZITMovQeLiGfzXOf9YxvJseIxpJ6uiZq6yZEv+MPnGK1IrwCwVbUjie3
-         I9mtJhiOzZVOfgXXUccWvANXRqc+vOGneBCoWdijj2U1PWLvEyhi8QRDGHwJIrslOgL1
-         Xyp1/uJ90bMptNtvcUHMZgrokusYtzzXrtA1byXRryVAZ8f+CvOxu3TUbW3//Xfpu9tr
-         4I5Q==
-X-Gm-Message-State: AOAM5315Ad9XDY2ru4mz87ScTQ/XsdWrChUOz2vLQCIh46G7Y6L7gA6p
-        aDNTpqimHAvzpy3EVEvOtr1lVVTFQALOQZ4=
-X-Google-Smtp-Source: ABdhPJzNhbhVaAKYThzFMWsFUbFNAbMuR8ZWvRNq56GFRTT3tQelgKoT0+2x1up67PfPQ5eX0o6jvDWnosaNs0U=
-X-Received: by 2002:ad4:4526:: with SMTP id l6mr7844913qvu.16.1593016928637;
- Wed, 24 Jun 2020 09:42:08 -0700 (PDT)
-Date:   Wed, 24 Jun 2020 12:42:03 -0400
-In-Reply-To: <20200624164203.183122-1-ncardwell@google.com>
-Message-Id: <20200624164203.183122-3-ncardwell@google.com>
-Mime-Version: 1.0
-References: <20200624164203.183122-1-ncardwell@google.com>
-X-Mailer: git-send-email 2.27.0.111.gc72c7da667-goog
-Subject: [PATCH net 2/2] bpf: tcp: bpf_cubic: fix spurious HYSTART_DELAY exit
- upon drop in min RTT
-From:   Neal Cardwell <ncardwell@google.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Neal Cardwell <ncardwell@google.com>,
-        Mirja Kuehlewind <mirja.kuehlewind@ericsson.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6pxaXQppJ1NtFfT4bm1fjAmNyPG9fa55KVp8t6t9aUw=;
+        b=Q0PZrRft4fEWbL1IDXmYD69DDz13Bi0ounuQo59FvbPTye5mgwA9n8FZHzeq3kFXqG
+         dXp/Z+7GbXsAd2O4O0uSnKJ430G/LrKgjFAH068xcgl76SUccE8+y+TgJiUo89JPT6Z4
+         1Fw46UzZumxY2UoJP+jV4fjMSbLKC2QMvh0cISkJ7yTrADMi8GEV460CVCZzXW5VK483
+         dxiHlaQOi1uwxb+KG8fkWHWUcp/BsZLbkkrvYJmLhnMXHy+pZN8u/iM3yYw5Jcwili3M
+         lg8XuT8DdvIyXoO+YtDJKM60wupHTSUE5SItv4ni4RYkTs4aayzecr5y25TA3Ghxurzb
+         UUnQ==
+X-Gm-Message-State: AOAM532+O5hP17HVXHWraW6s1660KYxASAoapleqU2aP0owdZM/nnJFS
+        L4qeWMFSSyi6sQQujX5J5Ew=
+X-Google-Smtp-Source: ABdhPJzH9KzpJRoEkEdWN/eaB4iVmgK3tBS4C6JHAGB+cybdaefmMtw7TiR3frxJnvFTyfsoA+DRDQ==
+X-Received: by 2002:a17:90b:3746:: with SMTP id ne6mr30030336pjb.166.1593016946025;
+        Wed, 24 Jun 2020 09:42:26 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id y12sm3026153pfo.182.2020.06.24.09.42.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Jun 2020 09:42:24 -0700 (PDT)
+Subject: Re: [PATCH] IPv6: Fix CPU contention on FIB6 GC
+To:     Oliver Herms <oliver.peter.herms@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org
+References: <20200622205355.GA869719@tws>
+ <32da6a56-0217-acda-c12c-49f7c74275ef@gmail.com>
+ <3230b95a-1ce0-b569-3d00-f7063ae9f1d9@gmail.com>
+ <20200623220650.kymq7vbqiogvnsj3@lion.mk-sys.cz>
+ <5be2063d-2433-54af-194d-fd4628974f29@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <04671504-5ee4-7cfa-7b28-9e7f15c9f607@gmail.com>
+Date:   Wed, 24 Jun 2020 09:42:23 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.1
+MIME-Version: 1.0
+In-Reply-To: <5be2063d-2433-54af-194d-fd4628974f29@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Apply the fix from:
- "tcp_cubic: fix spurious HYSTART_DELAY exit upon drop in min RTT"
-to the BPF implementation of TCP CUBIC congestion control.
 
-Repeating the commit description here for completeness:
 
-Mirja Kuehlewind reported a bug in Linux TCP CUBIC Hystart, where
-Hystart HYSTART_DELAY mechanism can exit Slow Start spuriously on an
-ACK when the minimum rtt of a connection goes down. From inspection it
-is clear from the existing code that this could happen in an example
-like the following:
+On 6/24/20 3:34 AM, Oliver Herms wrote:
+> On 24.06.20 00:06, Michal Kubecek wrote:
+>> On Tue, Jun 23, 2020 at 01:30:29AM +0200, Oliver Herms wrote:
+>>>
+>>> I'm encountering the issues due to cache entries that are created by 
+>>> tnl_update_pmtu. However, I'm going to address that issue in another thread
+>>> and patch.
+>>>
+>>> As entries in the cache can be caused on many ways this should be fixed on the GC
+>>> level.
+>>
+>> Actually, not so many as starting with (IIRC) 4.2, IPv6 routing cache is
+>> only used for exceptions (like PMTU), not for regular lookup results.
+>>
+> 
+> Hi Michal,
+> 
+> Right. That is the intention. But reality is, that when sending IPv6 with an 
+> MPLS encap route into a SIT/FOU tunnel, a cache entry is being created for every single
+> destination on the tunnel. Now that IS a bug by itself and I'll shortly submit a 
+> patch that should fix that issue.
 
-o The first 8 RTT samples in a round trip are 150ms, resulting in a
-  curr_rtt of 150ms and a delay_min of 150ms.
+Thanks !
 
-o The 9th RTT sample is 100ms. The curr_rtt does not change after the
-  first 8 samples, so curr_rtt remains 150ms. But delay_min can be
-  lowered at any time, so delay_min falls to 100ms. The code executes
-  the HYSTART_DELAY comparison between curr_rtt of 150ms and delay_min
-  of 100ms, and the curr_rtt is declared far enough above delay_min to
-  force a (spurious) exit of Slow start.
+> 
+> However, when a tunnel uses PMTU, and a tunnel source received an ICMP packet too big
+> for the tunnel destination, that triggers creation of IPv6 route cache entries
+> (and for IPv4 entries in the corresponding data structure) for every destination for which
+> packets are sent through the tunnel.
+> 
+> Both these attributes,
+> 1. the presence or absence of, maybe spoofed, ICMP packet too big messages for the tunnel
+> 2. the number of flows through a tunnel (attackers could just create more flows)
+> are not fully under control by an operator.
+> 
+> Thus the assumption that if only max_size would be big enough, it would solve the problem, 
+> it not correct.
 
-The fix here is simple: allow every RTT sample in a round trip to
-lower the curr_rtt.
+Our intention is to get rid of the IPv6 garbage collection, so we need to make sure
+we do not rely on it ;)
 
-Fixes: 6de4a9c430b5 ("bpf: tcp: Add bpf_cubic example")
-Reported-by: Mirja Kuehlewind <mirja.kuehlewind@ericsson.com>
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
----
- tools/testing/selftests/bpf/progs/bpf_cubic.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> Regarding your argument making the limit "softer":
+> There is only 2 functions that use/lock fib6_gc_lock:
+> 1. fib6_net_init
+> 2. fib6_run_gc 
+> 
+> fib6_net_init is only called when the network namespace is initialized.
+> 
+> fib6_run_gc clears all entries that are subject to garbage collection.
+> There is no gain in doing that N times (with N = amount of CPUs) and spinlocking all CPUs. 
+> Cleaning once is enough. A GC run is so short, that by the time the GC run is finished, 
+> there's most probably no new entry in the cache that is ready to be removed.
+> And even if there is. The next call to ip6_dst_gc will happen when a new entry
+> is added to the cache. Thus I can't see how my patch makes time limit softer.
+> 
 
-diff --git a/tools/testing/selftests/bpf/progs/bpf_cubic.c b/tools/testing/selftests/bpf/progs/bpf_cubic.c
-index 7897c8f4d363..ef574087f1e1 100644
---- a/tools/testing/selftests/bpf/progs/bpf_cubic.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_cubic.c
-@@ -480,10 +480,9 @@ static __always_inline void hystart_update(struct sock *sk, __u32 delay)
- 
- 	if (hystart_detect & HYSTART_DELAY) {
- 		/* obtain the minimum delay of more than sampling packets */
-+		if (ca->curr_rtt > delay)
-+			ca->curr_rtt = delay;
- 		if (ca->sample_cnt < HYSTART_MIN_SAMPLES) {
--			if (ca->curr_rtt > delay)
--				ca->curr_rtt = delay;
--
- 			ca->sample_cnt++;
- 		} else {
- 			if (ca->curr_rtt > ca->delay_min +
--- 
-2.27.0.111.gc72c7da667-goog
+This are really minor implementation details, we need to find the root cause.
 
