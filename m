@@ -2,89 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6580A2078F0
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:20:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B2C52078F4
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404724AbgFXQUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 12:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        id S2404535AbgFXQVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 12:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404629AbgFXQUu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:20:50 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C71C061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:20:49 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id e6so439722vsm.3
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:20:49 -0700 (PDT)
+        with ESMTP id S2404400AbgFXQVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:21:35 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F37CC061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:21:35 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id q5so2875145wru.6
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:21:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2J8wdA9rSZwk7I7Nvm7xFchDeFvnhiQIdFih6fJOYco=;
-        b=a+zA65renqNqC3Zshj4T4Y0b1NJK7A1eJePBJRT9NsRb3sexIjMy+sJJniJCefHjZs
-         y7jhCa7TzWhzUlOlmpQNLloJmNkfUZ1A9hmy8pE1FVwQCeNWKPDGPhySyx4GsCijXfFj
-         eSY4dqlkmUm3Da7ex4AHXifCzqfxd1A6KhCnipEydXE8hoQ3/faYiagWI4K9PFQU6LAW
-         2ogajJ+EBpbQGgwdBNHw1YEL4DA/6M2BxqQBvwNtsvWzNN0NgnbYxzUkQc+cNrcIsYsp
-         gR1QIXJgBwZfzGA+kPxBWQ7rzSaicytIEMLJH758yl39ZrK3TGw1itaCCYDSM+t/6q5S
-         qGBA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Fvj72AwyNRijbUmM6vK9FeQy4FWH7FwLcIjZ8sxmU+Q=;
+        b=KO48xqk0ky9oTXdWuMGD/7R4v07ZS/1rfIz3HdlFkfVqIybuD5SbuOmyYxZ/dzjoaA
+         6PgP5SdHQ+bajFd3q8YoPSJA6ElSZfLEDC5b89ZxbDdii/SYOhpErgqn5UAb88hO0GeW
+         3KiE2rpGVwGJc+4LHUfJZhObg6EQZcpHc3QCsgQ9roBKCeOLCau/fdP+s96Ldb+4C22P
+         2cif9N58dBhHwdXMCOMXsIifljmp4PrSouGnYAp40zDS6+7R9o/ggqH5DOXrGvnPY76w
+         cc34GQnisNU4YsJVd9ptqjS8ZP46i20iwKct8PNiq98qJcIdbmQzFDMOw3mRfzJixlTe
+         x3qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2J8wdA9rSZwk7I7Nvm7xFchDeFvnhiQIdFih6fJOYco=;
-        b=YX1uwBHN8S5Acqbce3dpiYJXuFYP32qNmNYel+QB4tZIy3pdIP37fHEs1rNm85uV+s
-         Pq0pWPgi5B8pHKscbC+0LPH7m7oAUpK621G7EbuwNTeBdmh07k7brgJtEjQG7UJFt2PD
-         Xm3dgN28uaAIsLrnQ7VBtqVKZNagDb23fJr2pQMlNz8Sk5kC2zvnELETUnBUTiV0el0a
-         hQjJ8Q4D1PW9XTiVN48GAtDWAh5+jTrfhuwR4pCQOJOi2ctaDN7iahwwkCdl3XRGCCDm
-         hEBd9XjJO2GAZO7g3ICSxDBkeFmUt6DJ942vGaJtH+9yA4lBSPRzGWnM8j7xpm1g5YB9
-         2H3Q==
-X-Gm-Message-State: AOAM531sxBHCbA8mTpnUSDDWb3oSs6kDBEL9UOoIS6sRZegi5mUbiL0L
-        edDT0jieFa1gPrGCMdlsX5iRuvDHDae/PTrF3hjH40/91kc=
-X-Google-Smtp-Source: ABdhPJz4l2P+klInnOUHtaf4HOkxnbXm/jfB2PTECdqs7VX9/wWD7cN6Eu4vu2hcCHBK2jR7TVA7wll0mnbSyXPG9bo=
-X-Received: by 2002:a67:ea98:: with SMTP id f24mr23242612vso.159.1593015648294;
- Wed, 24 Jun 2020 09:20:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200624095748.8246-1-denis.kirjanov@suse.com>
- <CADVnQym6aoueiB-auSxgp5tp0rjjte+MaxRPWd3t44F5VueKdA@mail.gmail.com> <CANn89iK_75H5jwGLaXUfRnLOgrFdP25xAYmyoD3SW6iFGEL96Q@mail.gmail.com>
-In-Reply-To: <CANn89iK_75H5jwGLaXUfRnLOgrFdP25xAYmyoD3SW6iFGEL96Q@mail.gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Wed, 24 Jun 2020 12:20:30 -0400
-Message-ID: <CADVnQyk28YkTtWbpOBuxKqDx7c6qtx0RDdca-c-N5_iCu6jFEA@mail.gmail.com>
-Subject: Re: [PATCH v2] tcp: don't ignore ECN CWR on pure ACK
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Denis Kirjanov <kda@linux-powerpc.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        "Scheffenegger, Richard" <Richard.Scheffenegger@netapp.com>,
-        Bob Briscoe <ietf@bobbriscoe.net>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Fvj72AwyNRijbUmM6vK9FeQy4FWH7FwLcIjZ8sxmU+Q=;
+        b=AliiXTbFK71zeKcoZV+6+kAZBiuH3Ay/ng9g+rTlGm8wjfQqVbWfOjxjjl9Pl9GmXK
+         sMLU6z97L1wO0DP9JY/9B6nQCkA9RqWZLnwkevGXIi8cx0X9EUhNx/bGxVaMbxrSbaHF
+         pr1PiK0106lBW2wQC3QrRDakJVM6Jt7DTefCW1pNCg8sLuWazxqxeVNgaFd7nNgHY8ln
+         Bd7v4wfvWWgbbthPTDDNy0XT/wut7pApvJM2kGghr10Q4/9/gGfseKgpG6hLLrOpGFmW
+         2p/4lFFRmcqBsK3iKNe3Q6mx6T76v5RZ4BELgz/xi8GmTwHIU1fH0Icf8Xj1n/ZscoX9
+         pNaw==
+X-Gm-Message-State: AOAM5329yqljOqPb3rXmi2lPYeEJd2DcYD/ipc1R8F0Vxy2CGYsTCSe3
+        9g+c/w8tHxPpRz0bhaKwaXthoJE4+RLRqQ==
+X-Google-Smtp-Source: ABdhPJw0LSjGzqztmBngCKCPdzk1VpteXxdZ9Gx7bU9Uuree692grjA7kB5l+BpsLx30N1UQIND3lw==
+X-Received: by 2002:adf:916a:: with SMTP id j97mr12426515wrj.231.1593015693391;
+        Wed, 24 Jun 2020 09:21:33 -0700 (PDT)
+Received: from localhost.localdomain (82-64-167-122.subs.proxad.net. [82.64.167.122])
+        by smtp.gmail.com with ESMTPSA id u186sm9037328wmu.10.2020.06.24.09.21.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Jun 2020 09:21:32 -0700 (PDT)
+From:   Alexandre Cassen <acassen@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com,
+        quentin@armitage.org.uk
+Subject: [PATCH iproute2-next] add support to keepalived rtm_protocol
+Date:   Wed, 24 Jun 2020 18:21:25 +0200
+Message-Id: <20200624162125.1017-1-acassen@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 24, 2020 at 11:47 AM Eric Dumazet <edumazet@google.com> wrote:
-> Do we really want to trigger an ACK if we received a packet with no payload ?
->
-> I would think that the following is also needed :
->
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index 12fda8f27b08bdf5c9f3bad422734f6b1965cef9..023dc90569c89d7d17d72f73641598a03a03b0a9
-> 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -261,7 +261,8 @@ static void tcp_ecn_accept_cwr(struct sock *sk,
-> const struct sk_buff *skb)
->                  * cwnd may be very low (even just 1 packet), so we should ACK
->                  * immediately.
->                  */
-> -               inet_csk(sk)->icsk_ack.pending |= ICSK_ACK_NOW;
-> +               if (TCP_SKB_CB(skb)->seq != TCP_SKB_CB(skb)->end_seq)
-> +                       inet_csk(sk)->icsk_ack.pending |= ICSK_ACK_NOW;
->         }
->  }
+Following inclusion in net-next, extend rtnl_rtprot_tab and rt_protos
+to support Keepalived.
 
-Good point, Eric. Denis, would you mind respinning with Eric's addition?
+Signed-off-by: Alexandre Cassen <acassen@gmail.com>
+---
+ etc/iproute2/rt_protos |  3 ++-
+ lib/rt_names.c         | 43 +++++++++++++++++++++---------------------
+ 2 files changed, 24 insertions(+), 22 deletions(-)
 
-thanks,
-neal
+diff --git a/etc/iproute2/rt_protos b/etc/iproute2/rt_protos
+index b3a0ec8f..7cafddc1 100644
+--- a/etc/iproute2/rt_protos
++++ b/etc/iproute2/rt_protos
+@@ -14,7 +14,8 @@
+ 13	dnrouted
+ 14	xorp
+ 15	ntk
+-16      dhcp
++16	dhcp
++18	keepalived
+ 42	babel
+ 186	bgp
+ 187	isis
+diff --git a/lib/rt_names.c b/lib/rt_names.c
+index 41cccfb8..c40d2e77 100644
+--- a/lib/rt_names.c
++++ b/lib/rt_names.c
+@@ -120,27 +120,28 @@ static void rtnl_tab_initialize(const char *file, char **tab, int size)
+ }
+ 
+ static char *rtnl_rtprot_tab[256] = {
+-	[RTPROT_UNSPEC]   = "unspec",
+-	[RTPROT_REDIRECT] = "redirect",
+-	[RTPROT_KERNEL]	  = "kernel",
+-	[RTPROT_BOOT]	  = "boot",
+-	[RTPROT_STATIC]	  = "static",
+-
+-	[RTPROT_GATED]	  = "gated",
+-	[RTPROT_RA]	  = "ra",
+-	[RTPROT_MRT]	  = "mrt",
+-	[RTPROT_ZEBRA]	  = "zebra",
+-	[RTPROT_BIRD]	  = "bird",
+-	[RTPROT_BABEL]	  = "babel",
+-	[RTPROT_DNROUTED] = "dnrouted",
+-	[RTPROT_XORP]	  = "xorp",
+-	[RTPROT_NTK]	  = "ntk",
+-	[RTPROT_DHCP]	  = "dhcp",
+-	[RTPROT_BGP]	  = "bgp",
+-	[RTPROT_ISIS]	  = "isis",
+-	[RTPROT_OSPF]	  = "ospf",
+-	[RTPROT_RIP]	  = "rip",
+-	[RTPROT_EIGRP]	  = "eigrp",
++	[RTPROT_UNSPEC]	    = "unspec",
++	[RTPROT_REDIRECT]   = "redirect",
++	[RTPROT_KERNEL]	    = "kernel",
++	[RTPROT_BOOT]	    = "boot",
++	[RTPROT_STATIC]	    = "static",
++
++	[RTPROT_GATED]	    = "gated",
++	[RTPROT_RA]	    = "ra",
++	[RTPROT_MRT]	    = "mrt",
++	[RTPROT_ZEBRA]	    = "zebra",
++	[RTPROT_BIRD]	    = "bird",
++	[RTPROT_BABEL]	    = "babel",
++	[RTPROT_DNROUTED]   = "dnrouted",
++	[RTPROT_XORP]	    = "xorp",
++	[RTPROT_NTK]	    = "ntk",
++	[RTPROT_DHCP]	    = "dhcp",
++	[RTPROT_KEEPALIVED] = "keepalived",
++	[RTPROT_BGP]	    = "bgp",
++	[RTPROT_ISIS]	    = "isis",
++	[RTPROT_OSPF]	    = "ospf",
++	[RTPROT_RIP]	    = "rip",
++	[RTPROT_EIGRP]	    = "eigrp",
+ };
+ 
+ 
+-- 
+2.17.1
+
