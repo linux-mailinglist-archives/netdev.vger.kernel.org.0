@@ -2,110 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C7A6207B78
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 20:25:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18BF7207B7B
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 20:26:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406022AbgFXSZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 14:25:46 -0400
-Received: from mga03.intel.com ([134.134.136.65]:15565 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404995AbgFXSZp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jun 2020 14:25:45 -0400
-IronPort-SDR: sY2SPFWsU1li9D4ATw/azyxV2w5JifVffWDtnpuu1Blcy2MSon9pCyHwpiCg0ygpd3c8XV4nm+
- H4acv69iWWfA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9662"; a="144641491"
-X-IronPort-AV: E=Sophos;i="5.75,276,1589266800"; 
-   d="scan'208";a="144641491"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2020 11:25:44 -0700
-IronPort-SDR: ZdQU+LWo0gmEc/YdHfeoQNY51E2a2WsnrpF9wq/yygbpB09Amb6Xfi0RWmKGvY9SbvfUykxJnm
- Py4ABF8q0JYQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,276,1589266800"; 
-   d="scan'208";a="263709517"
-Received: from vsave-mobl.amr.corp.intel.com (HELO [10.251.3.18]) ([10.251.3.18])
-  by fmsmga007.fm.intel.com with ESMTP; 24 Jun 2020 11:25:44 -0700
-Subject: Re: [PATCH] fs/epoll: Enable non-blocking busypoll with epoll timeout
- of 0
-To:     Eric Dumazet <eric.dumazet@gmail.com>, viro@zeniv.linux.org.uk,
-        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-        "davem@davemloft.net" <davem@davemloft.net>
-References: <1592590409-35439-1-git-send-email-sridhar.samudrala@intel.com>
- <de6bf72d-d4fd-9a62-c082-c82179d1f4fe@intel.com>
- <28225710-0e85-f937-396d-24ce839efe09@gmail.com>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <d609306c-1c85-1dd7-e15b-378500895f59@intel.com>
-Date:   Wed, 24 Jun 2020 11:25:43 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S2405969AbgFXS0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 14:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59220 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404995AbgFXS0N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 14:26:13 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4807CC061573;
+        Wed, 24 Jun 2020 11:26:13 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id x18so3684328lji.1;
+        Wed, 24 Jun 2020 11:26:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=idAtOp9fWCJgFeJGNzuhbj33T8Adl8XrGT3VmzCp3bk=;
+        b=reH6YmLWcmvImMNdyMoceJVPv11juxJCCms8kM3/+TwH9p5Faby5iTTQZqAE8uiN2Q
+         5uXZUESCyOBiW9OZVv075cZGIO3qMvFXUXGnHJZt7db62fd1LpQJiEoNvvnJfJrnt/S6
+         FhbRE4Hr/V/BqNJXPsuBFlmNexYTfgjpVDQ9qPcm5McHVB/FGjC9SokiucPfxeVGSBXp
+         7l2Z6fnqt9+Z/4VI/peTQD4vOUcjXKanznWpyv2Ur0MOZvwoofPwpbdm5rqF+56l1dNe
+         mLSIYhzDR/6gtQtHK+tXdHR+4WJ3LY2hC/KF6Rh4KacqKe9OBxCdzBW1lOSH47vFMndY
+         xghQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=idAtOp9fWCJgFeJGNzuhbj33T8Adl8XrGT3VmzCp3bk=;
+        b=rjEBqE829G2kIEgDTqY7tHMnsl1Kz4xG0nBKuz1VxuhS9ghSEk+hgsxZXFDx2gIPJv
+         MesuxQgwlcjtGs6UCPsr8VUltBlF/hsLlSJoG6BcjVr8Q2CQtclaHVAHl51MDxvpu2W6
+         Y/Hs5DJlapG5R9dkJIf1AqDRu8f2jhxPrfEBNrW/+beqIzra7oCO6N656P/QH7PJIC+d
+         EbC8JmvnFa0OPOKIbUAJNIAZ1hnda9GxRQ7hMleUPfzwO41bBP1JcgPG1RNFQmRVpsiM
+         +yYemBcppmdqe7/6TBmSryruxJVg1i92/ukX0l1L3X3Zj/oxVSPHXuPELaLKHJ32Im0c
+         9pZQ==
+X-Gm-Message-State: AOAM531YmSeTeLVC943/K6uTkVqsnOfcYz5S7rQWGQQWrEt8zR/ddSUD
+        a6sVVQtdHGij2Pc0bRiB2MwpQw0G5rnbVmCljnMJ6g==
+X-Google-Smtp-Source: ABdhPJw7eX3TAfjZ7+RbGtG1YvH4dNDp44NUMxYXnGps6SD9mcDNUa4FY337gHgl95gSc12eGm/DPEpIUXi61IfFoSc=
+X-Received: by 2002:a2e:9187:: with SMTP id f7mr14978125ljg.450.1593023171719;
+ Wed, 24 Jun 2020 11:26:11 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <28225710-0e85-f937-396d-24ce839efe09@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200620153052.9439-1-zeil@yandex-team.ru> <20200620153052.9439-3-zeil@yandex-team.ru>
+In-Reply-To: <20200620153052.9439-3-zeil@yandex-team.ru>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 24 Jun 2020 11:26:00 -0700
+Message-ID: <CAADnVQJ96t=ALtXSRPG4JncxctVVRjBnhvdCH6q2ju4hVOzjFQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 3/3] bpf: add SO_KEEPALIVE and related options
+ to bpf_setsockopt
+To:     Dmitry Yakunin <zeil@yandex-team.ru>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Lawrence Brakmo <brakmo@fb.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jun 20, 2020 at 8:31 AM Dmitry Yakunin <zeil@yandex-team.ru> wrote:
+>
+> This patch adds support of SO_KEEPALIVE flag and TCP related options
+> to bpf_setsockopt() routine. This is helpful if we want to enable or tune
+> TCP keepalive for applications which don't do it in the userspace code.
+>
+> v3:
+>   - update kernel-doc in uapi (Nikita Vetoshkin <nekto0n@yandex-team.ru>)
+>
+> v4:
+>   - update kernel-doc in tools too (Alexei Starovoitov)
+>   - add test to selftests (Alexei Starovoitov)
+>
+> Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 
-
-On 6/24/2020 9:49 AM, Eric Dumazet wrote:
-> 
-> 
-> On 6/24/20 9:32 AM, Samudrala, Sridhar wrote:
->> Adding Dave, Eric for review and see if we can get this in via net-next
->> as this is mainly useful for networking workloads doing busypoll.
->>
->> Thanks
->> Sridhar
->>
->> On 6/19/2020 11:13 AM, Sridhar Samudrala wrote:
->>> This patch triggers non-blocking busy poll when busy_poll is enabled and
->>> epoll is called with a timeout of 0 and is associated with a napi_id.
->>> This enables an app thread to go through napi poll routine once by calling
->>> epoll with a 0 timeout.
->>>
->>> poll/select with a 0 timeout behave in a similar manner.
->>>
->>> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
->>> ---
->>>    fs/eventpoll.c | 13 +++++++++++++
->>>    1 file changed, 13 insertions(+)
->>>
->>> diff --git a/fs/eventpoll.c b/fs/eventpoll.c
->>> index 12eebcdea9c8..5f55078d6381 100644
->>> --- a/fs/eventpoll.c
->>> +++ b/fs/eventpoll.c
->>> @@ -1847,6 +1847,19 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
->>>            eavail = ep_events_available(ep);
->>>            write_unlock_irq(&ep->lock);
->>>    +        /*
->>> +         * Trigger non-blocking busy poll if timeout is 0 and there are
->>> +         * no events available. Passing timed_out(1) to ep_busy_loop
->>> +         * will make sure that busy polling is triggered only once and
->>> +         * only if sysctl.net.core.busy_poll is set to non-zero value.
->>> +         */
->>> +        if (!eavail) {
-> 
-> Maybe avoid all this stuff for the typical case of busy poll being not used ?
-> 
->              if (!evail && net_busy_loop_on)) {
-
-Sure. will submit a v2 with this change.
-
-
-> 
->>> +            ep_busy_loop(ep, timed_out);
-> 
-> 
->>> +            write_lock_irq(&ep->lock);
->>> +            eavail = ep_events_available(ep);
->>> +            write_unlock_irq(&ep->lock);
->>> +        }
->>> +
->>>            goto send_events;
->>>        }
->>>   
+Applied. Thanks
