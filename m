@@ -2,116 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECBB1207B9D
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 20:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64DB2207BA4
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 20:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406148AbgFXSe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 14:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60498 "EHLO
+        id S2405996AbgFXShM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 14:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406087AbgFXSeZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 14:34:25 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A52C0613ED
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 11:34:25 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id f2so1380105plr.8
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 11:34:25 -0700 (PDT)
+        with ESMTP id S2405914AbgFXShM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 14:37:12 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A83AC0613ED
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 11:37:12 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id b25so85301ljp.6
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 11:37:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Q0SFa2U1n/gw/Ov9iaCh0A1BsBXlbDSR7iGMtKgrzh4=;
-        b=M3ywDaEt0dPEA9Zei6WnBet8lO2g/RxcJupW42tD+Z1GN89NYkAYWwE6kIpHPpB0rJ
-         qipLOy0qWQtG00GCJnzFKZbMB+Xv9r3oZKL4ZEHNE01UTf/rThsqs1IcKn+PXnSXydf/
-         vmxiMyxlqV4w21Dy8aual9+OdpoY+1TEwWh6c=
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=TCdFezLAxuIFeRMQ9JhebSRAgIYY7N1hbNSIjffmr90=;
+        b=cv8dIKhanHVtGIezLLmtlB9m7uyfYAAD7TKMppjLafXATdQ7GnhVTXxO162ZqitZFI
+         x8EAzHhAnJ0F6VGQhukXvGxqFeRNzcxaCvyNLej60y2/ebtcRUU3umQpgm7pjhnzF3+d
+         u6kclpquSYcnxqd5llUOrChNEG8Aa6DvViQSA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Q0SFa2U1n/gw/Ov9iaCh0A1BsBXlbDSR7iGMtKgrzh4=;
-        b=DMd1ThBRTZfJWS364sB7esdnD44l9Hxz/xDyn4GE8vwsSQTxbRpRV4L/Do5qTdg34z
-         EOv0kv7gnXmdx8VZy1pDsbNeR11wxCWEkVJAoziJ8jU3oLavwUOzEL+tTw4djlc10bu6
-         +3H20NjoewGbMc0e2C5hdnwd3zheiLnbSWoCilq2Li9iWDRdS2j/VcZ1ysJPLMSIjDZS
-         TpdEWWdXtxxEunaxxvqkXsJe80qGs9nY0eVaWDNBw3kQEDHwz3xwM2lxv3Yu1vVxoKYb
-         +sWRWylShT15fL7v3CG9/UYp606iEoAH1N1GKCPF6DmP2Lq5EHf6zfPuzjDvH3evXI/L
-         RJ3A==
-X-Gm-Message-State: AOAM532DGFGwZvC7Iwnw4XkVKIyNKhUPwQGPs8yga6axf7iPL2m75Kq3
-        OX5VambCtlDIF8WODBwRWgJAeA==
-X-Google-Smtp-Source: ABdhPJw46RbXduZ9/vIbsjF3HOOykc1RJam9QQxJpRAMnqFUFinIl8ll04+dNKIrzY5607VmlQPE0g==
-X-Received: by 2002:a17:90a:294f:: with SMTP id x15mr28400108pjf.97.1593023664707;
-        Wed, 24 Jun 2020 11:34:24 -0700 (PDT)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
-        by smtp.gmail.com with ESMTPSA id e15sm11983263pgt.17.2020.06.24.11.34.23
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=TCdFezLAxuIFeRMQ9JhebSRAgIYY7N1hbNSIjffmr90=;
+        b=is28LTGn0N1YdJIDAqv4Xn04Sg5jIFt6fVfhUwR1BXTjIltPkdqkDJQ9wjIIPyM0Vp
+         O3uPwdyM7xIOItD8L1zPOGug7Iz2RzsA7pKW0QW5wvcq71TtAPF8K4yUNR79+n91QuuD
+         Lxmf5JXfyVgGzugLvz6Q/HFqECE2QvQmy+O79CGqTZ1ldEBEstG8EI8L4nPkH92/2cq+
+         X+NkDvRsMdPnWeDdDSJoUfmImzcK+B76rhdASVEyj/mh+diK1aXBOxVXE0Q1JGea9KB0
+         6/QWcGl+X0snnZsof1PmsvS5DnP/m9YOdkjASRrcqre/PPS/5kMtZJbPHXbC5djtn0i/
+         ABPA==
+X-Gm-Message-State: AOAM532zDwrPDi29GwakBPWy3/zMNCZgMcRCM/Tao/EC2xFwR2WTsW4e
+        fol3sZbOzGGm9fjnWqcQGWX6aAOHYuGbDQ==
+X-Google-Smtp-Source: ABdhPJyc6BwO9sf2g1d19br23n3gpn66w55pQ73gwmjLaoyyLymofT6D3KZIhCZiKRlBobtphc7taA==
+X-Received: by 2002:a2e:871a:: with SMTP id m26mr5700467lji.418.1593023830365;
+        Wed, 24 Jun 2020 11:37:10 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id r23sm4329188ljh.86.2020.06.24.11.37.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jun 2020 11:34:24 -0700 (PDT)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org,
-        alainm@chromium.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] Bluetooth: Don't restart scanning if paused
-Date:   Wed, 24 Jun 2020 11:34:19 -0700
-Message-Id: <20200624113351.1.Ic6b1fca2b1b3fe989db21ceae76bab80bd87d387@changeid>
-X-Mailer: git-send-email 2.27.0.111.gc72c7da667-goog
+        Wed, 24 Jun 2020 11:37:09 -0700 (PDT)
+References: <20200623103459.697774-1-jakub@cloudflare.com> <20200623103459.697774-3-jakub@cloudflare.com> <87o8p8mlfx.fsf@cloudflare.com> <CAEf4BzYZLTYmLcaSrrXptD8fOX3O9TdT2yQcbbGZiaqt6s3k4g@mail.gmail.com> <87lfkcmiw0.fsf@cloudflare.com> <CAEf4BzZYjPL+TmqFfuEFgzm+qUh_T2zHsRZjq-BE+LMu+25=ZQ@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team@cloudflare.com, Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next v2 2/3] bpf, netns: Keep attached programs in bpf_prog_array
+In-reply-to: <CAEf4BzZYjPL+TmqFfuEFgzm+qUh_T2zHsRZjq-BE+LMu+25=ZQ@mail.gmail.com>
+Date:   Wed, 24 Jun 2020 20:37:04 +0200
+Message-ID: <87k0zwmhtb.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When restarting LE scanning, check if it's currently paused before
-enabling passive scanning.
+On Wed, Jun 24, 2020 at 08:24 PM CEST, Andrii Nakryiko wrote:
+> On Wed, Jun 24, 2020 at 11:16 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> On Wed, Jun 24, 2020 at 07:47 PM CEST, Andrii Nakryiko wrote:
+>> > On Wed, Jun 24, 2020 at 10:19 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>> >>
+>> >> On Tue, Jun 23, 2020 at 12:34 PM CEST, Jakub Sitnicki wrote:
+>> >> > Prepare for having multi-prog attachments for new netns attach types by
+>> >> > storing programs to run in a bpf_prog_array, which is well suited for
+>> >> > iterating over programs and running them in sequence.
+>> >> >
+>> >> > Because bpf_prog_array is dynamically resized, after this change a
+>> >> > potentially blocking memory allocation in bpf(PROG_QUERY) callback can
+>> >> > happen, in order to collect program IDs before copying the values to
+>> >> > user-space supplied buffer. This forces us to adapt how we protect access
+>> >> > to the attached program in the callback. As bpf_prog_array_copy_to_user()
+>> >> > helper can sleep, we switch from an RCU read lock to holding a mutex that
+>> >> > serializes updaters.
+>> >> >
+>> >> > To handle bpf(PROG_ATTACH) scenario when we are replacing an already
+>> >> > attached program, we introduce a new bpf_prog_array helper called
+>> >> > bpf_prog_array_replace_item that will exchange the old program with a new
+>> >> > one. bpf-cgroup does away with such helper by computing an index into the
+>> >> > array from a program position in an external list of attached
+>> >> > programs/links. Such approach fails when a dummy prog is left in the array
+>> >> > after a memory allocation failure on link release, but is necessary in
+>> >> > bpf-cgroup case because the same BPF program can be present in the array
+>> >> > multiple times due to inheritance, and attachment cannot be reliably
+>> >> > identified by bpf_prog pointer comparison.
+>> >> >
+>> >> > No functional changes intended.
+>> >> >
+>> >> > Acked-by: Andrii Nakryiko <andriin@fb.com>
+>> >> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> >> > ---
+>> >> >  include/linux/bpf.h        |   3 +
+>> >> >  include/net/netns/bpf.h    |   5 +-
+>> >> >  kernel/bpf/core.c          |  20 ++++--
+>> >> >  kernel/bpf/net_namespace.c | 137 +++++++++++++++++++++++++++----------
+>> >> >  net/core/flow_dissector.c  |  21 +++---
+>> >> >  5 files changed, 132 insertions(+), 54 deletions(-)
+>> >> >
+>> >>
+>> >> [...]
+>> >>
+>> >> > diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
+>> >> > index b951dab2687f..593523a22168 100644
+>> >> > --- a/kernel/bpf/net_namespace.c
+>> >> > +++ b/kernel/bpf/net_namespace.c
+>> >>
+>> >> [...]
+>> >>
+>> >> > @@ -93,8 +108,16 @@ static int bpf_netns_link_update_prog(struct bpf_link *link,
+>> >> >               goto out_unlock;
+>> >> >       }
+>> >> >
+>> >> > +     run_array = rcu_dereference_protected(net->bpf.run_array[type],
+>> >> > +                                           lockdep_is_held(&netns_bpf_mutex));
+>> >> > +     if (run_array)
+>> >> > +             ret = bpf_prog_array_replace_item(run_array, link->prog, new_prog);
+>> >>
+>> >> Thinking about this some more, link update should fail with -EINVAL if
+>> >> new_prog already exists in run_array. Same as PROG_ATTACH fails with
+>> >> -EINVAL when trying to attach the same prog for the second time.
+>> >>
+>> >> Otherwise, LINK_UPDATE can lead to having same BPF prog present multiple
+>> >> times in the prog_array, once attaching more than one prog gets enabled.
+>> >>
+>> >> Then we would we end up with the same challenge as bpf-cgroup, that is
+>> >> how to find the program index into the prog_array in presence of
+>> >> dummy_prog's.
+>> >
+>> > If you attach 5 different links having the same bpf_prog, it should be
+>> > allowed and all five bpf_progs should be attached and called 5 times.
+>> > They are independent links, that's the main thing. What specific BPF
+>> > program is attached by the link (or later updated to) shouldn't be of
+>> > any concern here (relative to other attached links/programs).
+>> >
+>> > Attaching the same *link* twice shouldn't be allowed, though.
+>>
+>> Thanks for clarifying. I need to change the approach then:
+>>
+>>  1) find the prog index into prog_array by iterating the list of links,
+>>  2) adjust the index for any dummy progs in prog_array below the index.
+>>
+>> That might work for bpf-cgroup too.
+>>
+>
+> I thought that's what bpf-cgroup already does... Except right now
+> there could be no dummy progs, but if we do non-failing detachment,
+> there might be. Then hierarchies can get out of sync and we need to
+> handle that nicely. It's not super straightforward, that's why I said
+> that it's a nice challenge to consider :)
 
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
-When running suspend stress tests on Chromebooks, we discovered
-instances where the Chromebook didn't enter the deepest idle states
-(i.e. S0ix). After some debugging, we found that passive scanning was
-being enabled AFTER the suspend notifier had run (and disabled all
-scanning).
+Now I get it... bpf-cgroup doesn't use bpf_prog_array_delete_safe(). I
+was confusing it with what I saw in bpf_trace all along.
 
-For this fix, I simply looked at all the places where we call
-HCI_OP_LE_SET_SCAN_ENABLE and added a guard clause for suspend. With
-this fix, we were able to get through 100+ iterations of the suspend
-stress test without any problems entering S0ix.
+> But here we don't have hierarchy, it's a happy place to be in :)
 
+It feels like there are some war stories to tell about bpf-cgroup.
 
- net/bluetooth/hci_request.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+>> The only other alternative I can think of it to copy the prog array to
+>> filter out dummy_progs, before replacing the prog on link update.
+>
+> Probably over-complication. I'd filter dummy progs only on new link
+> attachment or detachment. Update can be kept very simple.
 
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 86ae4b953a011e..116207009dde01 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -819,6 +819,11 @@ static void hci_req_start_scan(struct hci_request *req, u8 type, u16 interval,
- {
- 	struct hci_dev *hdev = req->hdev;
- 
-+	if (hdev->scanning_paused) {
-+		bt_dev_dbg(hdev, "Scanning is paused for suspend");
-+		return;
-+	}
-+
- 	/* Use ext scanning if set ext scan param and ext scan enable is
- 	 * supported
- 	 */
-@@ -2657,6 +2662,11 @@ static int le_scan_restart(struct hci_request *req, unsigned long opt)
- 	if (!hci_dev_test_flag(hdev, HCI_LE_SCAN))
- 		return 0;
- 
-+	if (hdev->scanning_paused) {
-+		bt_dev_dbg(hdev, "Scanning is paused for suspend");
-+		return 0;
-+	}
-+
- 	hci_req_add_le_scan_disable(req);
- 
- 	if (use_ext_scan(hdev)) {
--- 
-2.27.0.111.gc72c7da667-goog
+OK, I know what I need to do.
 
+[...]
