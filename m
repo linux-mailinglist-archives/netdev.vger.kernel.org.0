@@ -2,219 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 477D7207122
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 12:29:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3494620712B
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 12:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390245AbgFXK3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 06:29:16 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:10084 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387962AbgFXK3P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 06:29:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1592994555; x=1624530555;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yGrRZklnrruPHgecJrYbeXz0jFDG57EUhI3217bZdwA=;
-  b=eB/MS0cMZP+i1dGdN6vCO5NFel8/OR2g0CefRYfG+TcppBK5PVsLDjpy
-   twCiuWbIfhsZtLL5NS26rgZkJzcmod3DckdSOGkuywRlIIu9cMcBoH/k/
-   Nl39SdL+0n9YYWIJYmwxxuiEoakurT3J/zb04FRIV/S33huDOC18OrOwL
-   L4qHvEhCT1l1vtid9VEMciOhkqMPVG09DJbuSN0M9c8pxYL6ey7NZ/m75
-   lVj3Hoth9roCNjFLw4it8O+Kh2Bpv8NHkm0VNfL5Mo4s0giP3gvYdLVFW
-   GeDZS7bz7FXrIuZXT7ANYfBcGgc5kbH+30Wz7HjuXZNukcYrR8jTwtbf6
-   g==;
-IronPort-SDR: QF9yjQ2ujdsb0ncOlgvHmhhBMwQCkscrjqW4/bB7HhH9IWJAHZ9sLcLx8hjpz7chdqyyVce84K
- 8QCpW6f1rhQe7Ua9b9rvEkJGY6OveEOaw4EK29MptqltC4LdJmkitYIGTPyufnvfdvilrkihP0
- uUe6e+dyPs2meOxXX1kpd+060HQDYagIHS/YCLJXLIecZrNIvZcyXJchFK9jiKjQ0ZbvvfiNON
- RJX38CuEmnNE9vCKJoxZZihA148rU2x9j5yhsnObODlR5DWTxz7zkumjzOXCcYqIxc+LJjcCvh
- 61Q=
-X-IronPort-AV: E=Sophos;i="5.75,275,1589266800"; 
-   d="scan'208";a="79575176"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jun 2020 03:29:14 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 24 Jun 2020 03:29:02 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 24 Jun 2020 03:29:01 -0700
-Date:   Wed, 24 Jun 2020 12:29:09 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-CC:     <roopa@cumulusnetworks.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH net-next] bridge: mrp: Extend MRP netlink interface with
- IFLA_BRIDGE_MRP_CLEAR
-Message-ID: <20200624102909.dumxk24at65yjyai@soft-dev3.localdomain>
-References: <20200624080537.3154332-1-horatiu.vultur@microchip.com>
- <84c1e063-f49b-ee5a-c5ed-ab6ba5346991@cumulusnetworks.com>
+        id S2388719AbgFXKbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 06:31:02 -0400
+Received: from correo.us.es ([193.147.175.20]:55778 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387962AbgFXKbC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 06:31:02 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 9518FD2DA0B
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 12:31:00 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 83B6EDA840
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 12:31:00 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 77D02DA78D; Wed, 24 Jun 2020 12:31:00 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 45880DA78C;
+        Wed, 24 Jun 2020 12:30:58 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 24 Jun 2020 12:30:58 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 2324642EF42C;
+        Wed, 24 Jun 2020 12:30:58 +0200 (CEST)
+Date:   Wed, 24 Jun 2020 12:30:57 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        Majd Dibbiny <majd@mellanox.com>,
+        Maor Dickman <maord@mellanox.com>
+Subject: Re: Crash in indirect block infra after unloading driver module
+Message-ID: <20200624103057.GA30577@salvia>
+References: <vbfbll8yd96.fsf@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <84c1e063-f49b-ee5a-c5ed-ab6ba5346991@cumulusnetworks.com>
+In-Reply-To: <vbfbll8yd96.fsf@mellanox.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 06/24/2020 11:19, Nikolay Aleksandrov wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On Wed, Jun 24, 2020 at 01:22:29PM +0300, Vlad Buslov wrote:
+> Hi Pablo,
 > 
-> On 24/06/2020 11:05, Horatiu Vultur wrote:
-> > In case the userspace daemon dies, then when is restarted it doesn't
-> > know if there are any MRP instances in the kernel. Therefore extend the
-> > netlink interface to allow the daemon to clear all MRP instances when is
-> > started.
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  include/uapi/linux/if_bridge.h |  8 ++++++++
-> >  net/bridge/br_mrp.c            | 15 +++++++++++++++
-> >  net/bridge/br_mrp_netlink.c    | 26 ++++++++++++++++++++++++++
-> >  net/bridge/br_private_mrp.h    |  1 +
-> >  4 files changed, 50 insertions(+)
-> >
-> > diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-> > index caa6914a3e53a..2ae7d0c0d46b8 100644
-> > --- a/include/uapi/linux/if_bridge.h
-> > +++ b/include/uapi/linux/if_bridge.h
-> > @@ -166,6 +166,7 @@ enum {
-> >       IFLA_BRIDGE_MRP_RING_STATE,
-> >       IFLA_BRIDGE_MRP_RING_ROLE,
-> >       IFLA_BRIDGE_MRP_START_TEST,
-> > +     IFLA_BRIDGE_MRP_CLEAR,
-> >       __IFLA_BRIDGE_MRP_MAX,
-> >  };
-> >
-> > @@ -228,6 +229,13 @@ enum {
-> >
-> >  #define IFLA_BRIDGE_MRP_START_TEST_MAX (__IFLA_BRIDGE_MRP_START_TEST_MAX - 1)
-> >
-> > +enum {
-> > +     IFLA_BRIDGE_MRP_CLEAR_UNSPEC,
-> > +     __IFLA_BRIDGE_MRP_CLEAR_MAX,
-> > +};
+> I've encountered a new issue with indirect offloads infrastructure. The
+> issue is that on driver offload its indirect callbacks are not removed
+> from blocks and any following offloads operations on block that has such
+> callback in its offloads cb list causes call to unmapped address.
 > 
-> Out of curiousity - do you plan to have any clean attributes?
-> In case you don't this can simply be a flag that clears the MRP instances instead
-> of a nested attribute.
+> Steps to reproduce:
+> 
+> echo 1 >/sys/class/net/ens1f0/device/sriov_numvfs
+> echo 0000:81:00.2 > /sys/bus/pci/drivers/mlx5_core/unbind
+> devlink dev eswitch set pci/0000:81:00.0 mode switchdev
+> 
+> ip link add vxlan1 type vxlan dstport 4789 external
+> ip addr add 192.168.1.1 dev ens1f0
+> link set up dev ens1f0
+> ip link set up dev ens1f0
+> tc qdisc add dev vxlan1 ingress
+> tc filter add dev vxlan1 protocol ip ingress flower enc_src_ip 192.168.1.2 enc_dst_ip 192.168.1.1 enc_key_id 42 enc_dst_port 4789 action tunnel_key unset action mirred egress redirect dev ens1f0_0
+> tc -s filter show dev vxlan1 ingress
+> 
+> rmmod mlx5_ib
+> rmmod mlx5_core
+> tc -s filter show dev vxlan1 ingress
 
-Currently I don't plan to add any clean attributes. But I have used the
-nested attribute just in case in the future something will be needed.
+On module removal, the representors are gone and the ->cleanup
+callback should be exercised, this callback removes the flow_block and
+removes the rules in the driver.
 
-> 
-> > +
-> > +#define IFLA_BRIDGE_MRP_CLEAR_MAX (__IFLA_BRIDGE_MRP_CLEAR_MAX - 1)
-> > +
-> >  struct br_mrp_instance {
-> >       __u32 ring_id;
-> >       __u32 p_ifindex;
-> > diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-> > index 24986ec7d38cc..02d102edaaaad 100644
-> > --- a/net/bridge/br_mrp.c
-> > +++ b/net/bridge/br_mrp.c
-> > @@ -372,6 +372,21 @@ int br_mrp_del(struct net_bridge *br, struct br_mrp_instance *instance)
-> >       return 0;
-> >  }
-> >
-> > +/* Deletes all MRP instances on the bridge
-> > + * note: called under rtnl_lock
-> > + */
-> > +int br_mrp_clear(struct net_bridge *br)
-> > +{
-> > +     struct br_mrp *mrp;
-> > +
-> > +     list_for_each_entry_rcu(mrp, &br->mrp_list, list,
-> > +                             lockdep_rtnl_is_held()) {
-> > +             br_mrp_del_impl(br, mrp);
-> 
-> I don't think you're in RCU-protected region here, as the lockdep above confirms, which
-> means br_mrp_del_impl() can free mrp and you can access freed memory while walking the list
-> (trying to access of the next element).
-> 
-> You should be using list_for_each_entry_safe() to delete elements while walking the list.
+Can you check if the ->cleanup callback is exercised?
 
-Good catch! I will update in the next version.
+> Resulting dmesg:
 > 
-> Cheers,
->  Nik
+> [  153.747853] BUG: unable to handle page fault for address: ffffffffc114cee0
+> [  153.747975] #PF: supervisor instruction fetch in kernel mode
+> [  153.748071] #PF: error_code(0x0010) - not-present page
+> [  153.748189] PGD 5b6c12067 P4D 5b6c12067 PUD 5b6c14067 PMD 35b76b067 PTE 0
+> [  153.748328] Oops: 0010 [#1] SMP KASAN PTI
+> [  153.748403] CPU: 1 PID: 1909 Comm: tc Not tainted 5.8.0-rc1+ #1170
+> [  153.748507] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+> [  153.748638] RIP: 0010:0xffffffffc114cee0
+> [  153.748709] Code: Bad RIP value.
+> [  153.748767] RSP: 0018:ffff88834895ef00 EFLAGS: 00010246
+> [  153.748858] RAX: 0000000000000000 RBX: ffff888330a30078 RCX: ffffffffb2da70ba
+> [  153.748975] RDX: ffff888333635d80 RSI: ffff88834895efa0 RDI: 0000000000000002
+> [  153.752948] RBP: 0000000000000002 R08: 0000000000000001 R09: ffffed106614600c
+> [  153.759173] R10: ffff888330a3005f R11: ffffed106614600b R12: ffff88834895efa0
+> [  153.765419] R13: 0000000000000000 R14: ffffffffc114cee0 R15: ffff8883470efe00
+> [  153.771689] FS:  00007f6f6ac12480(0000) GS:ffff888362e40000(0000) knlGS:0000000000000000
+> [  153.777983] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  153.784187] CR2: ffffffffc114ceb6 CR3: 000000035eb9e005 CR4: 00000000001606e0
+> [  153.790567] Call Trace:
+> [  153.796844]  ? tc_setup_cb_call+0xd8/0x170
+> [  153.803164]  ? fl_hw_update_stats+0x117/0x280 [cls_flower]
+> [  153.809516]  ? 0xffffffffc1328000
+> [  153.815766]  ? _find_next_bit.constprop.0+0x3e/0xf0
+> [  153.822079]  ? __nla_reserve+0x4c/0x60
+[...]
 > 
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >  /* Set port state, port state can be forwarding, blocked or disabled
-> >   * note: already called with rtnl_lock
-> >   */
-> > diff --git a/net/bridge/br_mrp_netlink.c b/net/bridge/br_mrp_netlink.c
-> > index 34b3a8776991f..5e743538464f6 100644
-> > --- a/net/bridge/br_mrp_netlink.c
-> > +++ b/net/bridge/br_mrp_netlink.c
-> > @@ -14,6 +14,7 @@ static const struct nla_policy br_mrp_policy[IFLA_BRIDGE_MRP_MAX + 1] = {
-> >       [IFLA_BRIDGE_MRP_RING_STATE]    = { .type = NLA_NESTED },
-> >       [IFLA_BRIDGE_MRP_RING_ROLE]     = { .type = NLA_NESTED },
-> >       [IFLA_BRIDGE_MRP_START_TEST]    = { .type = NLA_NESTED },
-> > +     [IFLA_BRIDGE_MRP_CLEAR]         = { .type = NLA_NESTED },
-> >  };
-> >
-> >  static const struct nla_policy
-> > @@ -235,6 +236,25 @@ static int br_mrp_start_test_parse(struct net_bridge *br, struct nlattr *attr,
-> >       return br_mrp_start_test(br, &test);
-> >  }
-> >
-> > +static const struct nla_policy
-> > +br_mrp_clear_policy[IFLA_BRIDGE_MRP_CLEAR_MAX + 1] = {
-> > +     [IFLA_BRIDGE_MRP_CLEAR_UNSPEC]          = { .type = NLA_REJECT },
-> > +};
-> > +
-> > +static int br_mrp_clear_parse(struct net_bridge *br, struct nlattr *attr,
-> > +                           struct netlink_ext_ack *extack)
-> > +{
-> > +     struct nlattr *tb[IFLA_BRIDGE_MRP_START_TEST_MAX + 1];
-> > +     int err;
-> > +
-> > +     err = nla_parse_nested(tb, IFLA_BRIDGE_MRP_CLEAR_MAX, attr,
-> > +                            br_mrp_clear_policy, extack);
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     return br_mrp_clear(br);
-> > +}
-> > +
-> >  int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
-> >                struct nlattr *attr, int cmd, struct netlink_ext_ack *extack)
-> >  {
-> > @@ -301,6 +321,12 @@ int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
-> >                       return err;
-> >       }
-> >
-> > +     if (tb[IFLA_BRIDGE_MRP_CLEAR]) {
-> > +             err = br_mrp_clear_parse(br, tb[IFLA_BRIDGE_MRP_CLEAR], extack);
-> > +             if (err)
-> > +                     return err;
-> > +     }
-> > +
-> >       return 0;
-> >  }
-> >
-> > diff --git a/net/bridge/br_private_mrp.h b/net/bridge/br_private_mrp.h
-> > index 33b255e38ffec..25c3b8596c25b 100644
-> > --- a/net/bridge/br_private_mrp.h
-> > +++ b/net/bridge/br_private_mrp.h
-> > @@ -36,6 +36,7 @@ struct br_mrp {
-> >  /* br_mrp.c */
-> >  int br_mrp_add(struct net_bridge *br, struct br_mrp_instance *instance);
-> >  int br_mrp_del(struct net_bridge *br, struct br_mrp_instance *instance);
-> > +int br_mrp_clear(struct net_bridge *br);
-> >  int br_mrp_set_port_state(struct net_bridge_port *p,
-> >                         enum br_mrp_port_state_type state);
-> >  int br_mrp_set_port_role(struct net_bridge_port *p,
-> >
-> 
+> I can come up with something to fix mlx5 but it looks like all other
+> drivers that support indirect devices are also susceptible to similar
+> issue.
 
--- 
-/Horatiu
+How does the fix you have in mind look like?
+
+Thanks.
