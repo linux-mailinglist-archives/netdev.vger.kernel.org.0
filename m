@@ -2,91 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDA2020697D
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 03:26:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2744F2069E4
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 03:57:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388470AbgFXB0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 21:26:02 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57472 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388464AbgFXB0B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Jun 2020 21:26:01 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jnuAn-001x3O-7t; Wed, 24 Jun 2020 03:25:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
+        id S2388351AbgFXB44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 21:56:56 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:51132 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388035AbgFXB44 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Jun 2020 21:56:56 -0400
+Received: from [10.130.0.66] (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxb2ngsvJe9gdJAA--.10046S3;
+        Wed, 24 Jun 2020 09:56:49 +0800 (CST)
+Subject: Re: [PATCH RESEND] net/cisco: Fix a sleep-in-atomic-context bug in
+ enic_init_affinity_hint()
 To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net] net: ethtool: Handle missing cable test TDR parameters
-Date:   Wed, 24 Jun 2020 03:25:45 +0200
-Message-Id: <20200624012545.465287-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.27.0
+References: <1592899989-22049-1-git-send-email-likaige@loongson.cn>
+ <20200623.143311.995885759487352025.davem@davemloft.net>
+ <20200623.152626.2206118203643133195.davem@davemloft.net>
+Cc:     benve@cisco.com, _govind@gmx.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lixuefeng@loongson.cn,
+        yangtiezhu@loongson.cn
+From:   Kaige Li <likaige@loongson.cn>
+Message-ID: <7533075e-0e8e-2fde-c8fa-72e2ea222176@loongson.cn>
+Date:   Wed, 24 Jun 2020 09:56:47 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
+ Thunderbird/45.4.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200623.152626.2206118203643133195.davem@davemloft.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: AQAAf9Dxb2ngsvJe9gdJAA--.10046S3
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYf7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
+        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
+        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8I
+        cVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4
+        A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8Jw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7
+        Mxk0xIA0c2IEe2xFo4CEbIxvr21lc2xSY4AK67AK6w4l42xK82IYc2Ij64vIr41l4I8I3I
+        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
+        GVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
+        0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0
+        rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr
+        0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VU1ItC7UUUUU==
+X-CM-SenderInfo: 5olntxtjh6z05rqj20fqof0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A last minute change put the TDR cable test parameters into a nest.
-The validation is not sufficient, resulting in an oops if the nest is
-missing. Set default values first, then update them if the nest is
-provided.
 
-Fixes: f2bc8ad31a7f ("net: ethtool: Allow PHY cable test TDR data to configured")
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- net/ethtool/cabletest.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+On 06/24/2020 06:26 AM, David Miller wrote:
+> From: David Miller <davem@davemloft.net>
+> Date: Tue, 23 Jun 2020 14:33:11 -0700 (PDT)
+>
+>> Calling a NIC driver open function from a context holding a spinlock
+>> is very much the real problem, so many operations have to sleep and
+>> in face that ->ndo_open() method is defined as being allowed to sleep
+>> and that's why the core networking never invokes it with spinlocks
+>                                                        ^^^^
+>
+> I mean "without" of course. :-)
+>
+>> held.
 
-diff --git a/net/ethtool/cabletest.c b/net/ethtool/cabletest.c
-index 7b7a0456c15c..7194956aa09e 100644
---- a/net/ethtool/cabletest.c
-+++ b/net/ethtool/cabletest.c
-@@ -234,6 +234,14 @@ static int ethnl_act_cable_test_tdr_cfg(const struct nlattr *nest,
- 	struct nlattr *tb[ETHTOOL_A_CABLE_TEST_TDR_CFG_MAX + 1];
- 	int ret;
- 
-+	cfg->first = 100;
-+	cfg->step = 100;
-+	cfg->last = MAX_CABLE_LENGTH_CM;
-+	cfg->pair = PHY_PAIR_ALL;
-+
-+	if (!nest)
-+		return 0;
-+
- 	ret = nla_parse_nested(tb, ETHTOOL_A_CABLE_TEST_TDR_CFG_MAX, nest,
- 			       cable_test_tdr_act_cfg_policy, info->extack);
- 	if (ret < 0)
-@@ -242,17 +250,12 @@ static int ethnl_act_cable_test_tdr_cfg(const struct nlattr *nest,
- 	if (tb[ETHTOOL_A_CABLE_TEST_TDR_CFG_FIRST])
- 		cfg->first = nla_get_u32(
- 			tb[ETHTOOL_A_CABLE_TEST_TDR_CFG_FIRST]);
--	else
--		cfg->first = 100;
-+
- 	if (tb[ETHTOOL_A_CABLE_TEST_TDR_CFG_LAST])
- 		cfg->last = nla_get_u32(tb[ETHTOOL_A_CABLE_TEST_TDR_CFG_LAST]);
--	else
--		cfg->last = MAX_CABLE_LENGTH_CM;
- 
- 	if (tb[ETHTOOL_A_CABLE_TEST_TDR_CFG_STEP])
- 		cfg->step = nla_get_u32(tb[ETHTOOL_A_CABLE_TEST_TDR_CFG_STEP]);
--	else
--		cfg->step = 100;
- 
- 	if (tb[ETHTOOL_A_CABLE_TEST_TDR_CFG_PAIR]) {
- 		cfg->pair = nla_get_u8(tb[ETHTOOL_A_CABLE_TEST_TDR_CFG_PAIR]);
-@@ -263,8 +266,6 @@ static int ethnl_act_cable_test_tdr_cfg(const struct nlattr *nest,
- 				"invalid pair parameter");
- 			return -EINVAL;
- 		}
--	} else {
--		cfg->pair = PHY_PAIR_ALL;
- 	}
- 
- 	if (cfg->first > MAX_CABLE_LENGTH_CM) {
--- 
-2.27.0.rc2
+Did you mean that open function should be out of spinlock? If so, I will
+send V2 patch.
+
+Thank you.
 
