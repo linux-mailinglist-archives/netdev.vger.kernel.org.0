@@ -2,311 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6CE2070AA
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 12:04:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89F612070B1
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 12:04:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390186AbgFXKEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 06:04:06 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:50906 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388197AbgFXKED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 06:04:03 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20200624100400euoutp02efbe212c7625fa3ef224ba67113842b0~bcrru94J01739917399euoutp02R;
-        Wed, 24 Jun 2020 10:04:00 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20200624100400euoutp02efbe212c7625fa3ef224ba67113842b0~bcrru94J01739917399euoutp02R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1592993040;
-        bh=x28XJaNHZxQVxcL4Wn22oniw71HYXJqZZv5azmGoJ4A=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=teC/SM1Y+qD1vNYF0muvXLdnRHpdAK9DAUV/GVK0ia3IDPlq8mj79sSZxadQOcd64
-         TJCSvbVNDdZhRHNoyD11b2j78+cUhlWFaQ+bJyyrjqhQ04+QsVueVzauVDvTfc1C9/
-         Iq/qKww6ncHNUckrUqWNskFFxYEsIpbF9ZQzen3M=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20200624100400eucas1p2e63a6f9bc7d6205da7a1d0b7ccde6a65~bcrrm9sH22810428104eucas1p2-;
-        Wed, 24 Jun 2020 10:04:00 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 60.3B.06318.01523FE5; Wed, 24
-        Jun 2020 11:04:00 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20200624100359eucas1p11fce999e6ec162a0c4c6d75105da9bb5~bcrrG497K0287202872eucas1p10;
-        Wed, 24 Jun 2020 10:03:59 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20200624100359eusmtrp173bf6b58c385e61c243d2417fa07f42e~bcrrFiSjw0807908079eusmtrp1k;
-        Wed, 24 Jun 2020 10:03:59 +0000 (GMT)
-X-AuditID: cbfec7f5-38bff700000018ae-75-5ef32510fa9b
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 77.16.06314.F0523FE5; Wed, 24
-        Jun 2020 11:03:59 +0100 (BST)
-Received: from [106.120.51.71] (unknown [106.120.51.71]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20200624100357eusmtip232055ede9ee675a927c2cd423f11fa3a~bcrpYFrUl3158931589eusmtip2W;
-        Wed, 24 Jun 2020 10:03:57 +0000 (GMT)
-Subject: Re: [PATCH v4 11/11] thermal: Rename set_mode() to change_mode()
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>, kernel@collabora.com
-From:   Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Message-ID: <8b6b90f6-aedc-57fe-8c39-908611b84374@samsung.com>
-Date:   Wed, 24 Jun 2020 12:03:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-        Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20200528192051.28034-12-andrzej.p@collabora.com>
+        id S2390155AbgFXKEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 06:04:44 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:62916 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387927AbgFXKEn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 06:04:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1592993082; x=1624529082;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=qwqEFXbrmHekFHguEieaYIuaOOosvVisGubBAYronjA=;
+  b=uEO57MSkNm56Sq8cYdPVNnj2+AQ/4oBftAWVY9Dlw9bcCKBOZU9BcNY9
+   R7dXplQYmFxp4MT8GrBxXOMGyaBmUw23JA0eIV7VfqsPV3lhxZhDIQYOF
+   e5tD0Ig9kBzcFvY962OWFW7dahdQYkUP7g1/Hoem5SFQLOSmY3qfl8eb0
+   oUwI1ETovOupRFqpFVe2BcCB3rUEsWgHkYf9qruuVFcTd45beDtLDBv9f
+   79BlBinKW/6qn71GKWUSaNA2pnM0JO6eNrI5NOORVfVb7Mwnje69lt99f
+   PCzIQWiR86n8Z1j8Pz/xz4Qex4uPrbHHCqwTmUpcQNpy4FQX1OmuyjmYZ
+   w==;
+IronPort-SDR: fHicvwKamsf4NwsLBRKq3kVwLZpLhBI0Ix4vUw1ogq+PiY4dc7dxxwM4zyEMOizSxcn+XhcKio
+ AF4sjTYSTNC5OmqOlCUPMBce1CYJYzSEsEZ052Aby9gqYA68g3Iq6TkXIZCDaeUH/sro042+o4
+ eo65zAu5wab8ZnC99Mhhudt+4asrwc6H//LqFNPYJIMFJdFX4/tNSyBu2PBXtFDggiymTVlHDT
+ nlF+rotQY8f66gIVcSzDZLZmySKHnY8r4GEU9j/vOTy9DGxkPvCB2emoubl8INjXkcKTpvfIPD
+ HgQ=
+X-IronPort-AV: E=Sophos;i="5.75,274,1589266800"; 
+   d="scan'208";a="84886991"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jun 2020 03:04:37 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 24 Jun 2020 03:04:24 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3 via Frontend
+ Transport; Wed, 24 Jun 2020 03:04:24 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FfPU0LfL79kRJtFMBlPeDqNuV9NSoKaEYaBowsPcMvgJTAKup3nbEYvpS+sjGJT9I/+JSeM8ccOW6TgZUrp7MGcQql55iszdqEuMsDAJdRdwfCSeoaD2I1v82OJ+AemO8US1tfv/a7XtRrtudajfrmTxxKZlTg0Ttjz1ziIwrxoNQ2HfziIUfq7rS5SMVAJM1KSjLUrtMkoVPD6rBCosiXPNLprQiFR7Cq1lMLm2eYCCxedUcR1xsaAMqDc09iu2zGeosTmN0ksohQLxtT+/vWgvdq1xX65sgfwGeIQH2UOjWZzzkkYWYFesNXSPPao4byI5CXcoH+6hHI2791hL6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qwqEFXbrmHekFHguEieaYIuaOOosvVisGubBAYronjA=;
+ b=Fo3PzVwlEopTBBcrVeLwko26OciES+YtffeNPnCvZc/SchqTcP21IWpAkPWcU26qksRpeI2w8/c3gz97qCeehA8rx+jNMgJXrfvmok2SJrvhxB+WKHdNX/upaWW3qpUES9tNv+OdvfspcvZg+r1DH6qpmDDxtudl2o4S+wOoJs5USpIqrsqoF/drOwjUE2wG53Y5699tFsZvy6QF4H/up9RoY6Hfcp/LGFt9jwfUwiS2YJ76U6LYteNMICEUrpbNhyWaINGxA0bAjaJBpi5wv9WrSjr94X50JrmUStRPo3FmsKmDiPWouyB61dIS0NFy3OBAm6AFvZQ0vpnxo8JscA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qwqEFXbrmHekFHguEieaYIuaOOosvVisGubBAYronjA=;
+ b=uPaFNtwopdMddW6m/WkU9VecuYBVf2RFynqUtxfNFv0xyEcjfnZAgsG0o7iCLYYsIs6pPRexJcZjJhcVm9XPE5QsJYqnCaUxUlNXhlhdFEjjmSvNpT+yi9YcoLnFnUE1d1GTofrKLy9rqyaqEPI94u8BDyxkyJBRIsGnfc/LQkQ=
+Received: from DM6PR11MB3420.namprd11.prod.outlook.com (2603:10b6:5:69::31) by
+ DM6PR11MB3194.namprd11.prod.outlook.com (2603:10b6:5:5c::25) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3109.23; Wed, 24 Jun 2020 10:04:33 +0000
+Received: from DM6PR11MB3420.namprd11.prod.outlook.com
+ ([fe80::e8fd:29e5:1fa6:c01d]) by DM6PR11MB3420.namprd11.prod.outlook.com
+ ([fe80::e8fd:29e5:1fa6:c01d%5]) with mapi id 15.20.3131.021; Wed, 24 Jun 2020
+ 10:04:33 +0000
+From:   <Claudiu.Beznea@microchip.com>
+To:     <Nicolas.Ferre@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <antoine.tenart@bootlin.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: macb: free resources on failure path of
+ at91ether_open()
+Thread-Topic: [PATCH] net: macb: free resources on failure path of
+ at91ether_open()
+Thread-Index: AQHWSg7bzEWuDjV5TkW1zrOGFEBGlA==
+Date:   Wed, 24 Jun 2020 10:04:33 +0000
+Message-ID: <0a94cfe6-baf2-2bc1-0108-16b62e9ba70f@microchip.com>
+References: <1592983614-31485-1-git-send-email-claudiu.beznea@microchip.com>
+In-Reply-To: <1592983614-31485-1-git-send-email-claudiu.beznea@microchip.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA01Ta0yTZxjd+13bzuJncfaN7JI0gQQjoOm2PHGLwbnEb8kuLkuWZXFsHX4D
-        M6jaAs7tB5ippR2XonPF2mlRRi8ujrVIQVnj6CZuHVVEKy5Ui8DWMmqQThfIhNF+mPHvnPOc
-        53Le5JWQCjO7WrJDWyHotJoyFSOjOi/OXM7jspNF6xo9MnBdmqPgn9AMAW2jtyg41DxPwvf7
-        Rgg4nnwKbJf3U2BqWQcHOiM0jFx/Aw4mmymYv/PXAruwGW7uO0+ALVYFd5xWFryhOhrcR7op
-        OOlqYaB7JMGAw9+IwDMapsE06yIhWf8TgrPxuwRMRxcWTTqHWTB6mxAEztoJCBj8NFy0r4K+
-        rxposEwdQ3DlyjY43RMj4bfgVRrGRhoYeOjzUBDrUELwfAX8cGCABK/nCAlhe5ICR/QcW7iW
-        P/7tZ/x4l43mBxvqCb4r0or4DtdNgndOF/Dd1gjLe51r+FM9cYL3uI0MPxzuYfi7odCC3lrN
-        35scY/k/LAGCN08lmK34XdmL24WyHVWCrmDjB7LScb8B7brw/CcPbkdQDbq01oSkEsw9iwPG
-        ftqEZBIF50T4hN3MiuRvhKPuFkokSYTbBgKMCUnSLUFLjqg7EI4N+EiRJBC+b7EQqbmZ3Cv4
-        +pfXyBReyanxTGciPZbkTHKc+NPPpgoMtwE3GdwoheXcRuwaupXGFJeNZz8/mh70BPcOno4G
-        aNGzAv9ydIxKYemCf2qyP+0nOSX+fewEIeJnsC9hS1+EuQdSfCNsY8WkL+O4t44UcSae6OtY
-        1J/EwcN1lNhwBuGHtbHFbh/CjsNzjOh6AQ+HZtMPQHK5+LtzBaK8Cbv9baT4Lhl4KLFCPCID
-        H+q0LMpyXHtQIbpzcHtbO/NoranbRZqRyrokmnVJHOuSONb/99oR5UZKoVJfXiLo1VphT75e
-        U66v1JbkF+8s96CFfxKc67vfhfz/ftiLOAlSLZO3R+8VKWhNlX5veS/CElK1Uv5Sf7BIId+u
-        2fupoNv5vq6yTND3oiwJpVLK1Sfj7ym4Ek2F8LEg7BJ0j6qERLq6Bh1TWiN5o69mNTVv0sSW
-        523z8jPF3xRG5t+ce22wd5mMsLQ2Lt+fZZwqLH46/hbFC/kTrRtszlUZQ1HyRgZrXp99e/Dx
-        4Pjmhpxq9bXHTk1s+ahGt6fa8XNt7pYvwi01b+9OnJFL6yt2v46MpbnV40lfpu25nquGX7WG
-        +dPqH+Vf61SUvlSzfg2p02v+A1Y3U3YjBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUxTZxiG856vFmbnWQV5Q9jmDlEy4woHRB6Iss9kx18aTeYyKtrACThp
-        S3oKmy5mkKmMRhjdxtDaYGEiLTNjtIowPuZAxa3YCROiTr60KERKWps4a5yshS3h3/Xc73Xn
-        yZs8clJpY+Ll+3RG0aDTFHFMNOV+PjD+xsq1wdyUU7McOK4+p+BvT4iAM/fGKfj6+AIJbeVT
-        BNQHXwbrH4cpMDWkwJH2MRqmRrbB0eBxChbuPgxPF9+FW+VdBFhnSuGu3SIDl+cYDS21nRQ0
-        OhoY6JzyMdDc+xUC571RGkxPHSQEqy4hOD87T8CjyfCiOfsdGVS6zAj6z9sI6K/opeGKbTUM
-        fFdNQ53/JILr19XwQ/cMCYPuYRq8U9UM/HPBScHMuThwdxmh58gQCS5nLQmjtiAFzZM/y97a
-        INSf/UyY7rDSwp/VVYTQMXYaCecctwjB/ihZ6LSMyQSXfb3wffcsIThbKhnhzmg3I8x7POH8
-        9OdCYM4rE+7X9RNCjd/HbMcfqTYb9CVGcU2hXjJu4XJ4SFXxmaBK3Zip4tMydmelpnPJ2Zvz
-        xaJ9paIhOXuvqnC6twIVX9z06eOJMVSGrm4wIbkcsxuxu26dCUXJlWwTwk/61EtxAh5oLY3E
-        mF2Fn42aGBOKDisPEZ5rqmQiD6vYrXjk2xtkhGPYNBxq98kiEslWK3DX/bOypcZRAlvt5UTE
-        YtgsbK5oQRFWsNnYcXN8kSl2LX76xYlFJ5b9EPd3WP5zXsK/nfBSEY4K+/65a4s5ySbhZ/XD
-        5BLH4dveU8QSv4ov+KxkDVJaltUtyyqWZRXLsooNUS0oRiyRtAVaiVdJGq1UoitQ5em1ThS+
-        zvYrIVcHGm7b2YdYOeJWKH6aDOQqaU2pdEDbh7Cc5GIU71xz5yoV+ZoDB0WDfo+hpEiU+lB6
-        +HNmMj42Tx++dZ1xD5/OZ0Amn5GWkbYJuDjFl+yvaiVboDGK+0WxWDT83yPkUfFl6GTTGr8l
-        +pPWB4GD6ssTk4+PzTde8vx+KIk7PH3TH5uQ0pb0Sk40k39opc9L0VXfNCX63xysUbdGvXh5
-        d1XOil0J0ztf32JL/PEMl/dxrXnI/MLWhbId2RNSqCfwZCRpiC/2F5g+cO1vCL3d7H7vr9f2
-        Zr2f2Ng+2FNc9oD9RRcMrJ7gKKlQw68nDZLmX5ggZXazAwAA
-X-CMS-MailID: 20200624100359eucas1p11fce999e6ec162a0c4c6d75105da9bb5
-X-Msg-Generator: CA
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+authentication-results: microchip.com; dkim=none (message not signed)
+ header.d=none;microchip.com; dmarc=none action=none
+ header.from=microchip.com;
+x-originating-ip: [82.137.16.31]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a480657b-ac36-4b3e-ca68-08d81825fe4e
+x-ms-traffictypediagnostic: DM6PR11MB3194:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB3194544359E98F644161835A87950@DM6PR11MB3194.namprd11.prod.outlook.com>
+x-bypassexternaltag: True
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-forefront-prvs: 0444EB1997
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fjIwqZixXV5ZSLMetC1YXhEtu9TTvw/XinpqafijXNyin9nl2x2XTDX+btYPn/7x7EV2k91GFchCPdMTJM0wr2dFSH7Czph4suxWd9kucnwjnhc9m0IpL4a2DhuIulbMDPiHlSdKL6+KrhiJM154PP70DQIR09sb9LWypOKmpuS7DO1XkWNxwKJItGEEfyavYQQZm9o825+AQDfD3mVX66PMlGTw8g3acj6vxRri9TZzp0duGhHhUchnuQZg6QYZYR6MWTsyaM8n0tFzztDhoqs6iiQpRhYcI7Qq2SKfMuoxATI9xkj6v11EHJ6WjghN+1G19nS5onDB+TUx/8oSaMnpo6Qz9nTpEPO/155DSJPh8qUu0qxf+fevJyB75H0y
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3420.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(396003)(346002)(366004)(376002)(39860400002)(2616005)(86362001)(6486002)(8936002)(4326008)(76116006)(66556008)(83380400001)(31696002)(66446008)(66946007)(66476007)(64756008)(91956017)(186003)(31686004)(26005)(2906002)(6512007)(5660300002)(316002)(36756003)(478600001)(53546011)(6506007)(54906003)(71200400001)(8676002)(110136005)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: Sj7WVcOvIyu3w+YI1B0gmzr+WX8mEghRZEete3OnWaqjDCKhjAs2w5Cf7FOMn3XjndZiJQQ2AvOLyn9YD/EbQgRYl+HvzwC5NzYPMLuAaSH7wQ/B7K2WuvnkiYgbIA+UP1N4PzEh88iRGy20T6hZOLrhgZHhW5w0vgcJzGl9NoW/8nsdWMm4Z6y/SkmmqMIOKnm+YeQmDC5xhWG0jmI7qMf7Aqx/U10rczThqXl+guzQSm/dGja1eKQaiE7d6MsMzPMd01Hl1Ey6RaCGdGdem2iBxcxoJXAe8sXGmTheoI+J9/rM/Y4B3aFk+u6HzSDkkiK59bS+f8Dz5XYIcIT41c78F77UvorZ4I+lUNGyRCEuGNk+LhUR3tTo8DwGwJhVUHOG0cxVkmdzNKyWWchfYJPcKoAd02alkXryaIfSp8nefUlVkNAMplSkcGB5/VP9CMFLQS8b6UbopZe8xiF4y/H0N3QPYqoecX7O9h6y/aQ=
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20200528192221eucas1p27b0efc3d6f2804c48ca5158bdb4130d6
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200528192221eucas1p27b0efc3d6f2804c48ca5158bdb4130d6
-References: <Message-ID: <4493c0e4-51aa-3907-810c-74949ff27ca4@samsung.com>
-        <20200528192051.28034-1-andrzej.p@collabora.com>
-        <CGME20200528192221eucas1p27b0efc3d6f2804c48ca5158bdb4130d6@eucas1p2.samsung.com>
-        <20200528192051.28034-12-andrzej.p@collabora.com>
+Content-ID: <C2017729336D114FA3DCE5944E47AD13@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: a480657b-ac36-4b3e-ca68-08d81825fe4e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2020 10:04:33.1278
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: exypkijp3BCC24B65Zf9WHOzifmXSYI6iacDRIHwHk50xbBmBpf5LsVtPRIUNCCJ22wuOymlHMSbbLBvE/zjNVcClOL4X9xKFQUtNZKyByQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3194
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 5/28/20 9:20 PM, Andrzej Pietrasiewicz wrote:
-> set_mode() is only called when tzd's mode is about to change. Actual
-> setting is performed in thermal_core, in thermal_zone_device_set_mode().
-> The meaning of set_mode() callback is actually to notify the driver about
-> the mode being changed and giving the driver a chance to oppose such
-> change.
-> 
-> To better reflect the purpose of the method rename it to change_mode()
-> 
-> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-
-Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-
-Best regards,
---
-Bartlomiej Zolnierkiewicz
-Samsung R&D Institute Poland
-Samsung Electronics
-
-> ---
->  drivers/platform/x86/acerhdf.c                          | 6 +++---
->  drivers/thermal/imx_thermal.c                           | 8 ++++----
->  drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 6 +++---
->  drivers/thermal/intel/intel_quark_dts_thermal.c         | 6 +++---
->  drivers/thermal/thermal_core.c                          | 4 ++--
->  include/linux/thermal.h                                 | 2 +-
->  6 files changed, 16 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
-> index d33a70af0869..63b562e06d5c 100644
-> --- a/drivers/platform/x86/acerhdf.c
-> +++ b/drivers/platform/x86/acerhdf.c
-> @@ -413,8 +413,8 @@ static inline void acerhdf_enable_kernelmode(void)
->   *          the temperature and the fan.
->   * disabled: the BIOS takes control of the fan.
->   */
-> -static int acerhdf_set_mode(struct thermal_zone_device *thermal,
-> -			    enum thermal_device_mode mode)
-> +static int acerhdf_change_mode(struct thermal_zone_device *thermal,
-> +			       enum thermal_device_mode mode)
->  {
->  	if (mode == THERMAL_DEVICE_DISABLED && kernelmode)
->  		acerhdf_revert_to_bios_mode();
-> @@ -473,7 +473,7 @@ static struct thermal_zone_device_ops acerhdf_dev_ops = {
->  	.bind = acerhdf_bind,
->  	.unbind = acerhdf_unbind,
->  	.get_temp = acerhdf_get_ec_temp,
-> -	.set_mode = acerhdf_set_mode,
-> +	.change_mode = acerhdf_change_mode,
->  	.get_trip_type = acerhdf_get_trip_type,
->  	.get_trip_hyst = acerhdf_get_trip_hyst,
->  	.get_trip_temp = acerhdf_get_trip_temp,
-> diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
-> index a02398118d88..9700ae39feb7 100644
-> --- a/drivers/thermal/imx_thermal.c
-> +++ b/drivers/thermal/imx_thermal.c
-> @@ -330,8 +330,8 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
->  	return 0;
->  }
->  
-> -static int imx_set_mode(struct thermal_zone_device *tz,
-> -			enum thermal_device_mode mode)
-> +static int imx_change_mode(struct thermal_zone_device *tz,
-> +			   enum thermal_device_mode mode)
->  {
->  	struct imx_thermal_data *data = tz->devdata;
->  	struct regmap *map = data->tempmon;
-> @@ -447,7 +447,7 @@ static struct thermal_zone_device_ops imx_tz_ops = {
->  	.bind = imx_bind,
->  	.unbind = imx_unbind,
->  	.get_temp = imx_get_temp,
-> -	.set_mode = imx_set_mode,
-> +	.change_mode = imx_change_mode,
->  	.get_trip_type = imx_get_trip_type,
->  	.get_trip_temp = imx_get_trip_temp,
->  	.get_crit_temp = imx_get_crit_temp,
-> @@ -860,7 +860,7 @@ static int __maybe_unused imx_thermal_suspend(struct device *dev)
->  	 * Need to disable thermal sensor, otherwise, when thermal core
->  	 * try to get temperature before thermal sensor resume, a wrong
->  	 * temperature will be read as the thermal sensor is powered
-> -	 * down. This is done in set_mode() operation called from
-> +	 * down. This is done in change_mode() operation called from
->  	 * thermal_zone_device_disable()
->  	 */
->  	ret = thermal_zone_device_disable(data->tz);
-> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> index 9af862ab9f65..58870d215471 100644
-> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> @@ -377,8 +377,8 @@ static int int3400_thermal_get_temp(struct thermal_zone_device *thermal,
->  	return 0;
->  }
->  
-> -static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
-> -				enum thermal_device_mode mode)
-> +static int int3400_thermal_change_mode(struct thermal_zone_device *thermal,
-> +				       enum thermal_device_mode mode)
->  {
->  	struct int3400_thermal_priv *priv = thermal->devdata;
->  	int result = 0;
-> @@ -399,7 +399,7 @@ static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
->  
->  static struct thermal_zone_device_ops int3400_thermal_ops = {
->  	.get_temp = int3400_thermal_get_temp,
-> -	.set_mode = int3400_thermal_set_mode,
-> +	.change_mode = int3400_thermal_change_mode,
->  };
->  
->  static struct thermal_zone_params int3400_thermal_params = {
-> diff --git a/drivers/thermal/intel/intel_quark_dts_thermal.c b/drivers/thermal/intel/intel_quark_dts_thermal.c
-> index e29c3e330b17..3eafc6b0e6c3 100644
-> --- a/drivers/thermal/intel/intel_quark_dts_thermal.c
-> +++ b/drivers/thermal/intel/intel_quark_dts_thermal.c
-> @@ -298,8 +298,8 @@ static int sys_get_curr_temp(struct thermal_zone_device *tzd,
->  	return 0;
->  }
->  
-> -static int sys_set_mode(struct thermal_zone_device *tzd,
-> -				enum thermal_device_mode mode)
-> +static int sys_change_mode(struct thermal_zone_device *tzd,
-> +			   enum thermal_device_mode mode)
->  {
->  	int ret;
->  
-> @@ -319,7 +319,7 @@ static struct thermal_zone_device_ops tzone_ops = {
->  	.get_trip_type = sys_get_trip_type,
->  	.set_trip_temp = sys_set_trip_temp,
->  	.get_crit_temp = sys_get_crit_temp,
-> -	.set_mode = sys_set_mode,
-> +	.change_mode = sys_change_mode,
->  };
->  
->  static void free_soc_dts(struct soc_sensor_entry *aux_entry)
-> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-> index e9c0b990e4a9..c00edae7839e 100644
-> --- a/drivers/thermal/thermal_core.c
-> +++ b/drivers/thermal/thermal_core.c
-> @@ -482,8 +482,8 @@ int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
->  		return ret;
->  	}
->  
-> -	if (tz->ops->set_mode)
-> -		ret = tz->ops->set_mode(tz, mode);
-> +	if (tz->ops->change_mode)
-> +		ret = tz->ops->change_mode(tz, mode);
->  
->  	if (!ret)
->  		tz->mode = mode;
-> diff --git a/include/linux/thermal.h b/include/linux/thermal.h
-> index df013c39ba9b..b9efaa780d88 100644
-> --- a/include/linux/thermal.h
-> +++ b/include/linux/thermal.h
-> @@ -76,7 +76,7 @@ struct thermal_zone_device_ops {
->  		       struct thermal_cooling_device *);
->  	int (*get_temp) (struct thermal_zone_device *, int *);
->  	int (*set_trips) (struct thermal_zone_device *, int, int);
-> -	int (*set_mode) (struct thermal_zone_device *,
-> +	int (*change_mode) (struct thermal_zone_device *,
->  		enum thermal_device_mode);
->  	int (*get_trip_type) (struct thermal_zone_device *, int,
->  		enum thermal_trip_type *);
-> 
+UGxlYXNlIGlnbm9yZSB0aGlzIG9uZSENCkknbGwgc2VuZCBhIHYyLg0KDQpPbiAyNC4wNi4yMDIw
+IDEwOjI2LCBDbGF1ZGl1IEJlem5lYSB3cm90ZToNCj4gRE1BIGJ1ZmZlcnMgd2VyZSBub3QgZnJl
+ZWQgb24gZmFpbHVyZSBwYXRoIG9mIGF0OTFldGhlcl9vcGVuKCkuDQo+IEFsb25nIHdpdGggY2hh
+bmdlcyBmb3IgZnJlZWluZyB0aGUgRE1BIGJ1ZmZlcnMgdGhlIGVuYWJsZS9kaXNhYmxlDQo+IGlu
+dGVycnVwdCBpbnN0cnVjdGlvbnMgd2VyZSBtb3ZlZCB0byBhdDkxZXRoZXJfc3RhcnQoKS9hdDkx
+ZXRoZXJfc3RvcCgpDQo+IGZ1bmN0aW9ucyBhbmQgdGhlIG9wZXJhdGlvbnMgb24gYXQ5MWV0aGVy
+X3N0b3AoKSB3ZXJlIGRvbmUgaW4NCj4gdGhlaXIgcmV2ZXJzZSBvcmRlciAoY29tcGFyZWQgd2l0
+aCBob3cgaXMgZG9uZSBpbiBhdDkxZXRoZXJfc3RhcnQoKSk6DQo+IGJlZm9yZSB0aGlzIHBhdGNo
+IHRoZSBvcGVyYXRpb24gb3JkZXIgb24gaW50ZXJmYWNlIG9wZW4gcGF0aA0KPiB3YXMgYXMgZm9s
+bG93czoNCj4gMS8gYWxsb2MgRE1BIGJ1ZmZlcnMNCj4gMi8gZW5hYmxlIHR4LCByeA0KPiAzLyBl
+bmFibGUgaW50ZXJydXB0cw0KPiBhbmQgdGhlIG9yZGVyIG9uIGludGVyZmFjZSBjbG9zZSBwYXRo
+IHdhcyBhcyBmb2xsb3dzOg0KPiAxLyBkaXNhYmxlIHR4LCByeA0KPiAyLyBkaXNhYmxlIGludGVy
+cnVwdHMNCj4gMy8gZnJlZSBkbWEgYnVmZmVycy4NCj4gDQo+IEZpeGVzOiA3ODk3YjA3MWFjM2Ig
+KCJuZXQ6IG1hY2I6IGNvbnZlcnQgdG8gcGh5bGluayIpDQo+IFNpZ25lZC1vZmYtYnk6IENsYXVk
+aXUgQmV6bmVhIDxjbGF1ZGl1LmJlem5lYUBtaWNyb2NoaXAuY29tPg0KPiAtLS0NCj4gIGRyaXZl
+cnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYl9tYWluLmMgfCAxMTYgKysrKysrKysrKysrKysr
+KysrKy0tLS0tLS0tLS0tLQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDczIGluc2VydGlvbnMoKyksIDQz
+IGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2Nh
+ZGVuY2UvbWFjYl9tYWluLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9jYWRlbmNlL21hY2JfbWFp
+bi5jDQo+IGluZGV4IDU3MDUzNTlhMzYxMi4uNTI1ODJlOGVkOTBlIDEwMDY0NA0KPiAtLS0gYS9k
+cml2ZXJzL25ldC9ldGhlcm5ldC9jYWRlbmNlL21hY2JfbWFpbi5jDQo+ICsrKyBiL2RyaXZlcnMv
+bmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYl9tYWluLmMNCj4gQEAgLTM3NjIsMTUgKzM3NjIsOSBA
+QCBzdGF0aWMgaW50IG1hY2JfaW5pdChzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiAg
+DQo+ICBzdGF0aWMgc3RydWN0IHNpZml2ZV9mdTU0MF9tYWNiX21nbXQgKm1nbXQ7DQo+ICANCj4g
+LS8qIEluaXRpYWxpemUgYW5kIHN0YXJ0IHRoZSBSZWNlaXZlciBhbmQgVHJhbnNtaXQgc3Vic3lz
+dGVtcyAqLw0KPiAtc3RhdGljIGludCBhdDkxZXRoZXJfc3RhcnQoc3RydWN0IG5ldF9kZXZpY2Ug
+KmRldikNCj4gK3N0YXRpYyBpbnQgYXQ5MWV0aGVyX2FsbG9jX2NvaGVyZW50KHN0cnVjdCBtYWNi
+ICpscCkNCj4gIHsNCj4gLQlzdHJ1Y3QgbWFjYiAqbHAgPSBuZXRkZXZfcHJpdihkZXYpOw0KPiAg
+CXN0cnVjdCBtYWNiX3F1ZXVlICpxID0gJmxwLT5xdWV1ZXNbMF07DQo+IC0Jc3RydWN0IG1hY2Jf
+ZG1hX2Rlc2MgKmRlc2M7DQo+IC0JZG1hX2FkZHJfdCBhZGRyOw0KPiAtCXUzMiBjdGw7DQo+IC0J
+aW50IGk7DQo+ICANCj4gIAlxLT5yeF9yaW5nID0gZG1hX2FsbG9jX2NvaGVyZW50KCZscC0+cGRl
+di0+ZGV2LA0KPiAgCQkJCQkgKEFUOTFFVEhFUl9NQVhfUlhfREVTQ1IgKg0KPiBAQCAtMzc5Miw2
+ICszNzg2LDQzIEBAIHN0YXRpYyBpbnQgYXQ5MWV0aGVyX3N0YXJ0KHN0cnVjdCBuZXRfZGV2aWNl
+ICpkZXYpDQo+ICAJCXJldHVybiAtRU5PTUVNOw0KPiAgCX0NCj4gIA0KPiArCXJldHVybiAwOw0K
+PiArfQ0KPiArDQo+ICtzdGF0aWMgdm9pZCBhdDkxZXRoZXJfZnJlZV9jb2hlcmVudChzdHJ1Y3Qg
+bWFjYiAqbHApDQo+ICt7DQo+ICsJc3RydWN0IG1hY2JfcXVldWUgKnEgPSAmbHAtPnF1ZXVlc1sw
+XTsNCj4gKw0KPiArCWlmIChxLT5yeF9yaW5nKSB7DQo+ICsJCWRtYV9mcmVlX2NvaGVyZW50KCZs
+cC0+cGRldi0+ZGV2LA0KPiArCQkJCSAgQVQ5MUVUSEVSX01BWF9SWF9ERVNDUiAqDQo+ICsJCQkJ
+ICBtYWNiX2RtYV9kZXNjX2dldF9zaXplKGxwKSwNCj4gKwkJCQkgIHEtPnJ4X3JpbmcsIHEtPnJ4
+X3JpbmdfZG1hKTsNCj4gKwkJcS0+cnhfcmluZyA9IE5VTEw7DQo+ICsJfQ0KPiArDQo+ICsJaWYg
+KHEtPnJ4X2J1ZmZlcnMpIHsNCj4gKwkJZG1hX2ZyZWVfY29oZXJlbnQoJmxwLT5wZGV2LT5kZXYs
+DQo+ICsJCQkJICBBVDkxRVRIRVJfTUFYX1JYX0RFU0NSICoNCj4gKwkJCQkgIEFUOTFFVEhFUl9N
+QVhfUkJVRkZfU1osDQo+ICsJCQkJICBxLT5yeF9idWZmZXJzLCBxLT5yeF9idWZmZXJzX2RtYSk7
+DQo+ICsJCXEtPnJ4X2J1ZmZlcnMgPSBOVUxMOw0KPiArCX0NCj4gK30NCj4gKw0KPiArLyogSW5p
+dGlhbGl6ZSBhbmQgc3RhcnQgdGhlIFJlY2VpdmVyIGFuZCBUcmFuc21pdCBzdWJzeXN0ZW1zICov
+DQo+ICtzdGF0aWMgaW50IGF0OTFldGhlcl9zdGFydChzdHJ1Y3QgbWFjYiAqbHApDQo+ICt7DQo+
+ICsJc3RydWN0IG1hY2JfcXVldWUgKnEgPSAmbHAtPnF1ZXVlc1swXTsNCj4gKwlzdHJ1Y3QgbWFj
+Yl9kbWFfZGVzYyAqZGVzYzsNCj4gKwlkbWFfYWRkcl90IGFkZHI7DQo+ICsJdTMyIGN0bDsNCj4g
+KwlpbnQgaSwgcmV0Ow0KPiArDQo+ICsJcmV0ID0gYXQ5MWV0aGVyX2FsbG9jX2NvaGVyZW50KGxw
+KTsNCj4gKwlpZiAocmV0KQ0KPiArCQlyZXR1cm4gcmV0Ow0KPiArDQo+ICAJYWRkciA9IHEtPnJ4
+X2J1ZmZlcnNfZG1hOw0KPiAgCWZvciAoaSA9IDA7IGkgPCBBVDkxRVRIRVJfTUFYX1JYX0RFU0NS
+OyBpKyspIHsNCj4gIAkJZGVzYyA9IG1hY2JfcnhfZGVzYyhxLCBpKTsNCj4gQEAgLTM4MTMsOSAr
+Mzg0NCwzOSBAQCBzdGF0aWMgaW50IGF0OTFldGhlcl9zdGFydChzdHJ1Y3QgbmV0X2RldmljZSAq
+ZGV2KQ0KPiAgCWN0bCA9IG1hY2JfcmVhZGwobHAsIE5DUik7DQo+ICAJbWFjYl93cml0ZWwobHAs
+IE5DUiwgY3RsIHwgTUFDQl9CSVQoUkUpIHwgTUFDQl9CSVQoVEUpKTsNCj4gIA0KPiArCS8qIEVu
+YWJsZSBNQUMgaW50ZXJydXB0cyAqLw0KPiArCW1hY2Jfd3JpdGVsKGxwLCBJRVIsIE1BQ0JfQklU
+KFJDT01QKQl8DQo+ICsJCQkgICAgIE1BQ0JfQklUKFJYVUJSKQl8DQo+ICsJCQkgICAgIE1BQ0Jf
+QklUKElTUl9UVU5EKQl8DQo+ICsJCQkgICAgIE1BQ0JfQklUKElTUl9STEUpCXwNCj4gKwkJCSAg
+ICAgTUFDQl9CSVQoVENPTVApCXwNCj4gKwkJCSAgICAgTUFDQl9CSVQoSVNSX1JPVlIpCXwNCj4g
+KwkJCSAgICAgTUFDQl9CSVQoSFJFU1ApKTsNCj4gKw0KPiAgCXJldHVybiAwOw0KPiAgfQ0KPiAg
+DQo+ICtzdGF0aWMgdm9pZCBhdDkxZXRoZXJfc3RvcChzdHJ1Y3QgbWFjYiAqbHApDQo+ICt7DQo+
+ICsJdTMyIGN0bDsNCj4gKw0KPiArCS8qIERpc2FibGUgTUFDIGludGVycnVwdHMgKi8NCj4gKwlt
+YWNiX3dyaXRlbChscCwgSURSLCBNQUNCX0JJVChSQ09NUCkJfA0KPiArCQkJICAgICBNQUNCX0JJ
+VChSWFVCUikJfA0KPiArCQkJICAgICBNQUNCX0JJVChJU1JfVFVORCkJfA0KPiArCQkJICAgICBN
+QUNCX0JJVChJU1JfUkxFKQl8DQo+ICsJCQkgICAgIE1BQ0JfQklUKFRDT01QKQl8DQo+ICsJCQkg
+ICAgIE1BQ0JfQklUKElTUl9ST1ZSKSB8DQo+ICsJCQkgICAgIE1BQ0JfQklUKEhSRVNQKSk7DQo+
+ICsNCj4gKwkvKiBEaXNhYmxlIFJlY2VpdmVyIGFuZCBUcmFuc21pdHRlciAqLw0KPiArCWN0bCA9
+IG1hY2JfcmVhZGwobHAsIE5DUik7DQo+ICsJbWFjYl93cml0ZWwobHAsIE5DUiwgY3RsICYgfihN
+QUNCX0JJVChURSkgfCBNQUNCX0JJVChSRSkpKTsNCj4gKw0KPiArCS8qIEZyZWUgcmVzb3VyY2Vz
+LiAqLw0KPiArCWF0OTFldGhlcl9mcmVlX2NvaGVyZW50KGxwKTsNCj4gK30NCj4gKw0KPiAgLyog
+T3BlbiB0aGUgZXRoZXJuZXQgaW50ZXJmYWNlICovDQo+ICBzdGF0aWMgaW50IGF0OTFldGhlcl9v
+cGVuKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpDQo+ICB7DQo+IEBAIC0zODM1LDI3ICszODk2LDIw
+IEBAIHN0YXRpYyBpbnQgYXQ5MWV0aGVyX29wZW4oc3RydWN0IG5ldF9kZXZpY2UgKmRldikNCj4g
+IA0KPiAgCW1hY2Jfc2V0X2h3YWRkcihscCk7DQo+ICANCj4gLQlyZXQgPSBhdDkxZXRoZXJfc3Rh
+cnQoZGV2KTsNCj4gKwlyZXQgPSBhdDkxZXRoZXJfc3RhcnQobHApOw0KPiAgCWlmIChyZXQpDQo+
+ICAJCWdvdG8gcG1fZXhpdDsNCj4gIA0KPiAtCS8qIEVuYWJsZSBNQUMgaW50ZXJydXB0cyAqLw0K
+PiAtCW1hY2Jfd3JpdGVsKGxwLCBJRVIsIE1BQ0JfQklUKFJDT01QKQl8DQo+IC0JCQkgICAgIE1B
+Q0JfQklUKFJYVUJSKQl8DQo+IC0JCQkgICAgIE1BQ0JfQklUKElTUl9UVU5EKQl8DQo+IC0JCQkg
+ICAgIE1BQ0JfQklUKElTUl9STEUpCXwNCj4gLQkJCSAgICAgTUFDQl9CSVQoVENPTVApCXwNCj4g
+LQkJCSAgICAgTUFDQl9CSVQoSVNSX1JPVlIpCXwNCj4gLQkJCSAgICAgTUFDQl9CSVQoSFJFU1Ap
+KTsNCj4gLQ0KPiAgCXJldCA9IG1hY2JfcGh5bGlua19jb25uZWN0KGxwKTsNCj4gIAlpZiAocmV0
+KQ0KPiAtCQlnb3RvIHBtX2V4aXQ7DQo+ICsJCWdvdG8gc3RvcDsNCj4gIA0KPiAgCW5ldGlmX3N0
+YXJ0X3F1ZXVlKGRldik7DQo+ICANCj4gIAlyZXR1cm4gMDsNCj4gIA0KPiArc3RvcDoNCj4gKwlh
+dDkxZXRoZXJfc3RvcChscCk7DQo+ICBwbV9leGl0Og0KPiAgCXBtX3J1bnRpbWVfcHV0X3N5bmMo
+JmxwLT5wZGV2LT5kZXYpOw0KPiAgCXJldHVybiByZXQ7DQo+IEBAIC0zODY1LDM3ICszOTE5LDEz
+IEBAIHN0YXRpYyBpbnQgYXQ5MWV0aGVyX29wZW4oc3RydWN0IG5ldF9kZXZpY2UgKmRldikNCj4g
+IHN0YXRpYyBpbnQgYXQ5MWV0aGVyX2Nsb3NlKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpDQo+ICB7
+DQo+ICAJc3RydWN0IG1hY2IgKmxwID0gbmV0ZGV2X3ByaXYoZGV2KTsNCj4gLQlzdHJ1Y3QgbWFj
+Yl9xdWV1ZSAqcSA9ICZscC0+cXVldWVzWzBdOw0KPiAtCXUzMiBjdGw7DQo+IC0NCj4gLQkvKiBE
+aXNhYmxlIFJlY2VpdmVyIGFuZCBUcmFuc21pdHRlciAqLw0KPiAtCWN0bCA9IG1hY2JfcmVhZGwo
+bHAsIE5DUik7DQo+IC0JbWFjYl93cml0ZWwobHAsIE5DUiwgY3RsICYgfihNQUNCX0JJVChURSkg
+fCBNQUNCX0JJVChSRSkpKTsNCj4gLQ0KPiAtCS8qIERpc2FibGUgTUFDIGludGVycnVwdHMgKi8N
+Cj4gLQltYWNiX3dyaXRlbChscCwgSURSLCBNQUNCX0JJVChSQ09NUCkJfA0KPiAtCQkJICAgICBN
+QUNCX0JJVChSWFVCUikJfA0KPiAtCQkJICAgICBNQUNCX0JJVChJU1JfVFVORCkJfA0KPiAtCQkJ
+ICAgICBNQUNCX0JJVChJU1JfUkxFKQl8DQo+IC0JCQkgICAgIE1BQ0JfQklUKFRDT01QKQl8DQo+
+IC0JCQkgICAgIE1BQ0JfQklUKElTUl9ST1ZSKSB8DQo+IC0JCQkgICAgIE1BQ0JfQklUKEhSRVNQ
+KSk7DQo+ICANCj4gIAluZXRpZl9zdG9wX3F1ZXVlKGRldik7DQo+ICANCj4gIAlwaHlsaW5rX3N0
+b3AobHAtPnBoeWxpbmspOw0KPiAgCXBoeWxpbmtfZGlzY29ubmVjdF9waHkobHAtPnBoeWxpbmsp
+Ow0KPiAgDQo+IC0JZG1hX2ZyZWVfY29oZXJlbnQoJmxwLT5wZGV2LT5kZXYsDQo+IC0JCQkgIEFU
+OTFFVEhFUl9NQVhfUlhfREVTQ1IgKg0KPiAtCQkJICBtYWNiX2RtYV9kZXNjX2dldF9zaXplKGxw
+KSwNCj4gLQkJCSAgcS0+cnhfcmluZywgcS0+cnhfcmluZ19kbWEpOw0KPiAtCXEtPnJ4X3Jpbmcg
+PSBOVUxMOw0KPiAtDQo+IC0JZG1hX2ZyZWVfY29oZXJlbnQoJmxwLT5wZGV2LT5kZXYsDQo+IC0J
+CQkgIEFUOTFFVEhFUl9NQVhfUlhfREVTQ1IgKiBBVDkxRVRIRVJfTUFYX1JCVUZGX1NaLA0KPiAt
+CQkJICBxLT5yeF9idWZmZXJzLCBxLT5yeF9idWZmZXJzX2RtYSk7DQo+IC0JcS0+cnhfYnVmZmVy
+cyA9IE5VTEw7DQo+ICsJYXQ5MWV0aGVyX3N0b3AobHApOw0KPiAgDQo+ICAJcmV0dXJuIHBtX3J1
+bnRpbWVfcHV0KCZscC0+cGRldi0+ZGV2KTsNCj4gIH0NCj4g
