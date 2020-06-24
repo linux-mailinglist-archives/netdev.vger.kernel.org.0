@@ -2,121 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DAFF206C43
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 08:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7014D206CB6
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 08:39:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389067AbgFXGRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 02:17:19 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:40342 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388810AbgFXGRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 02:17:18 -0400
-Received: by mail-io1-f70.google.com with SMTP id f25so697914ioh.7
-        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 23:17:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=5CAUOdrn145t33RyDsvFuRNtproPZrRG5wbaIt1noKk=;
-        b=i2TVeaKwfR1qTxlNMkoLxDcOUCTEZr2Cv9sElnmcQJcYxdhIi8acCg3QFt9H5pLzcU
-         yJh40nd9FSROCNhgIu6V3l8F8IeJJ9wLa1mogn7s6e1T+RqRI9oMtKdV2NMOJMzD6Esx
-         CXotNle9+Xn6z77f12d+eaX6M+01ClNpV+Rj8mnQP4wHmQO+8l+vFX9W8h3C6Dy1cf5L
-         CVe9Zg6POTb7NHUk7U2ai7aezPfjJBD3J8xdzC938+h9h45zs95ldYqZO+ZKtDiPg5AZ
-         RzGJkxXVP4pLNT0p93I39s5nDhRP+LK1V29pZGgAppVE51tqks/bOuJa5kFxRxWJ9UHQ
-         LtMg==
-X-Gm-Message-State: AOAM532P8kD886/7S2ZBzOHds9otuSZXy8ituO40qUQcNiy1Z6ZzScCc
-        Liu1EwchewX5DxlEI04eaeq4fvP0Jacw1bU6LVyJ8AgMtxRh
-X-Google-Smtp-Source: ABdhPJyELxw2qLKuuPok9m57oshaB2ZfSKHTA8VbOzvPFtYhWR3PH5aIWU1WALFsdrHxgeH3qH9ye4Gc1bt+Us2ddP1+eZIjKJN4
+        id S2389238AbgFXGjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 02:39:48 -0400
+Received: from alln-iport-8.cisco.com ([173.37.142.95]:57191 "EHLO
+        alln-iport-8.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388582AbgFXGjp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 02:39:45 -0400
+X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Wed, 24 Jun 2020 02:39:44 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=3099; q=dns/txt; s=iport;
+  t=1592980784; x=1594190384;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=xWBM2vE0FQ2vKsvc8Dn1Hs9MkPPPcSR+9RFtU+CbtJc=;
+  b=gvDF0HmEWwLABUjtzRRzIhetnG+aserKPYtjVv+pMpnC6p9rLCouJr1i
+   2dXcPpui5otjzdov5xakJAC3jh8NvqOm92gGO8XI/TktRd9SCV6TuYyYQ
+   crg4CNI/vEpdoBPeif4nlbshjwNHmewBz2n6YaWikxgBW7Cgt+ZEI3CQ8
+   8=;
+IronPort-PHdr: =?us-ascii?q?9a23=3ApNe+BhbJYDDg5HaBXBQqjAn/LSx94ef9IxIV55?=
+ =?us-ascii?q?w7irlHbqWk+dH4MVfC4el21QaZD4Hc7PRLkO3Q9avmCiQM4peE5XYFdpEEFx?=
+ =?us-ascii?q?oIkt4fkAFoBsmZQVb6I/jnY21ffoxCWVZp8mv9PR1TH8DzNFnVpXu99jkUXB?=
+ =?us-ascii?q?75ZkJ5I+3vEdvUiMK6n+m555zUZVBOgzywKbN/JRm7t0PfrM4T1IBjMa02jB?=
+ =?us-ascii?q?DOpyhF?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0AOAACD8vJe/4gNJK1mGQEBAQEBAQE?=
+ =?us-ascii?q?BAQEBAQEBAQEBARIBAQEBAQEBAQEBAQFAgTgCAQEBAQELAYFRUQeBRy8sh2o?=
+ =?us-ascii?q?DjUmUWYN+gS4UgRADVQsBAQEMAQEtAgQBAYRHAoITAiQ2Bw4CAwEBCwEBBQE?=
+ =?us-ascii?q?BAQIBBgRthVsMhXIBAQEBAxIVEwYBATcBCwQCAQgRAwEBAQEeEDIdCAIEAQ0?=
+ =?us-ascii?q?FCBqFUAMuAawuAoE5iGF0gQEzgwEBAQWFLBiCDgmBOAGCZoV5hAMaggCBVIJ?=
+ =?us-ascii?q?NPoIaggobg0WCLZFzonUKglqZTp8BLZEKnksCBAIEBQIOAQEFgVoIKoFWcBW?=
+ =?us-ascii?q?DJFAXAg2OHgwXFIM6ilZ0NwIGCAEBAwl8kCMBAQ?=
+X-IronPort-AV: E=Sophos;i="5.75,274,1589241600"; 
+   d="scan'208";a="516651427"
+Received: from alln-core-3.cisco.com ([173.36.13.136])
+  by alln-iport-8.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 24 Jun 2020 06:32:38 +0000
+Received: from XCH-RCD-004.cisco.com (xch-rcd-004.cisco.com [173.37.102.14])
+        by alln-core-3.cisco.com (8.15.2/8.15.2) with ESMTPS id 05O6WboN017692
+        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=FAIL);
+        Wed, 24 Jun 2020 06:32:38 GMT
+Received: from xhs-aln-001.cisco.com (173.37.135.118) by XCH-RCD-004.cisco.com
+ (173.37.102.14) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 24 Jun
+ 2020 01:32:37 -0500
+Received: from xhs-rcd-003.cisco.com (173.37.227.248) by xhs-aln-001.cisco.com
+ (173.37.135.118) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 24 Jun
+ 2020 01:32:37 -0500
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (72.163.14.9) by
+ xhs-rcd-003.cisco.com (173.37.227.248) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Wed, 24 Jun 2020 01:32:37 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kxZc6bA4dPCiI5zIWy+Tlvp1FvdsWsdqcafvVSWqg8LdVs5cWGp18Ae6DMci6ovTPVG1xci+x1dSBtBZ0QuQ8+xQjrokegYa3y9l/PNRPAV2TpentCfPcy7FrQgsaHUrsg05lwJfN3SijyV8ILOmCKvp7olrOeE4mrAAuMlk41H1lhiNpURS6o4sp5XAKP/jlg7apNakKVcSVh5+XkW3PZL2WXEAWSQAB0M576NF+9iAFipNLr5dlQKTrSrjixnMpJ70SWaA5ZtCNYRlz3CUh94Gj7uafruYJgluLeEhzOKtzKJFoF/huGLUX9rSoDZhuA4aju0zK5lPPcKkAuGViQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LDA+9sQ4BK8U4WckdkGjBO/ZqdXDlyKgw0jrFrd4Lwg=;
+ b=LwBzmgnbRo/FLc9JwByg8bhvEfX6gSwMcsDntQeGH1tN/wam7SADFc5QA9W5/J8pFFlsxZRr55/kbIWMICt03t6lvLykX0aHBmgR39/DVCuQJjsRjU0cXLSOu0EDWj93xCKdly/h2+OrieeMvciZEGfZTztq6+TtMLP3soOGu0q5hBEm8oKc5IC6QTZWxD88DYGKggR8gZohmrdEH18y5vTydNGtyNzN2qUHuMO+usM3kjv4pEiojXUUIoglsSpvp2ACJUFbVQXED9x2exyPu0stqI8QDmZD+j4FXX9ag1oqu+uuXlBO2K9y/di4XDzH4KfAdaWxdDm8eFzcKEqAzQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=cisco.com; dmarc=pass action=none header.from=cisco.com;
+ dkim=pass header.d=cisco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cisco.onmicrosoft.com;
+ s=selector2-cisco-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LDA+9sQ4BK8U4WckdkGjBO/ZqdXDlyKgw0jrFrd4Lwg=;
+ b=VK49Mx372So98/s+xzy98h51G7C3L3S0JBcjQj4WtFOC2toD3OMriaD6rB+CtLCljy1uwugsKAR17/rM6UIOCrnCS9Vvo28F2VRdQFCVwCGcm880O5nGyKbWdqPN8LsCfhay+qtkMrpM4aPw13w0l1+LaUSu0xgBt86HX9pUcCY=
+Received: from BYAPR11MB3799.namprd11.prod.outlook.com (2603:10b6:a03:fb::19)
+ by BY5PR11MB3958.namprd11.prod.outlook.com (2603:10b6:a03:18e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20; Wed, 24 Jun
+ 2020 06:32:36 +0000
+Received: from BYAPR11MB3799.namprd11.prod.outlook.com
+ ([fe80::60fb:1a14:be44:9b0b]) by BYAPR11MB3799.namprd11.prod.outlook.com
+ ([fe80::60fb:1a14:be44:9b0b%3]) with mapi id 15.20.3131.020; Wed, 24 Jun 2020
+ 06:32:36 +0000
+From:   "Christian Benvenuti (benve)" <benve@cisco.com>
+To:     Kaige Li <likaige@loongson.cn>, David Miller <davem@davemloft.net>
+CC:     "_govind@gmx.com" <_govind@gmx.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "lixuefeng@loongson.cn" <lixuefeng@loongson.cn>,
+        "yangtiezhu@loongson.cn" <yangtiezhu@loongson.cn>
+Subject: RE: [PATCH RESEND] net/cisco: Fix a sleep-in-atomic-context bug in
+ enic_init_affinity_hint()
+Thread-Topic: [PATCH RESEND] net/cisco: Fix a sleep-in-atomic-context bug in
+ enic_init_affinity_hint()
+Thread-Index: AQHWSTYrQiYT8rgg0Ee7vd1HHqJOFKjmuV2AgAAO4ACAADrGgIAAGDMAgAAE/ACAAAGysA==
+Date:   Wed, 24 Jun 2020 06:32:36 +0000
+Message-ID: <BYAPR11MB37994715A3DD8259DF16A34DBA950@BYAPR11MB3799.namprd11.prod.outlook.com>
+References: <20200623.143311.995885759487352025.davem@davemloft.net>
+ <20200623.152626.2206118203643133195.davem@davemloft.net>
+ <7533075e-0e8e-2fde-c8fa-72e2ea222176@loongson.cn>
+ <20200623.202324.442008830004872069.davem@davemloft.net>
+ <70519029-1cfa-5fce-52f3-cfb13bf00f7d@loongson.cn>
+In-Reply-To: <70519029-1cfa-5fce-52f3-cfb13bf00f7d@loongson.cn>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: loongson.cn; dkim=none (message not signed)
+ header.d=none;loongson.cn; dmarc=none action=none header.from=cisco.com;
+x-originating-ip: [2001:420:c0c8:1005::9b8]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ff8657fa-9cb7-484a-1c55-08d818086268
+x-ms-traffictypediagnostic: BY5PR11MB3958:
+x-microsoft-antispam-prvs: <BY5PR11MB3958D362DA0162F234CD21C7BA950@BY5PR11MB3958.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0444EB1997
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 6Dy+GbLyCN08mnIKSkAAl45Ik0e2FMbaRkKx3xQcLQrWhOrKN1Mu2DUWNv7V0Z3sx/i9CBvv22++owmV8bFkNxeX+PQwC3+Z1OKkR6y2yXhLBi2v9xqKMLkCdmI+8qh5t+iKlD4pIzh4haDB8cMD7ccSCH1+wCsZkBHkqW0UiqTYPMJf+wtNp7UegZo3VvzoSUg40Yw2IZ1HYeB+af48EDqHgyLCwXnZBOUm8SzIcjMY8kiyGLileSYsdEHd7wIZtpWkMajxgWpGvI1YPe+L7CfrgG7jIEiMyeMAo4DHuqvO6mxd3Oz5wSbKx0NxBnpehEx0UEj32ANVJxKNb2oYLKYoxsO9FQ8EpeptBTju28ZfPQMkMMr+R65BJuvHrOic
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3799.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(346002)(366004)(376002)(396003)(66476007)(186003)(66556008)(7696005)(478600001)(9686003)(5660300002)(6506007)(8676002)(8936002)(53546011)(52536014)(86362001)(110136005)(76116006)(4326008)(66446008)(64756008)(2906002)(66946007)(83380400001)(33656002)(316002)(55016002)(71200400001)(54906003)(518174003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: TbjTiLoz2aFtflubhdELcp6w4O8P9xUJMHn4Za06vdZRtg7MLlnEsOxIr/Y2ByP8jYdHSx/PECGV+P24QaXiIom3Vc6RJ3f7i1nmZiuSYgBwB7P7d+pW5Px2Az6zNE5J2SeC30WSHLlH4BiRmPhMf5vvveTRjFPBXUgcI8BTP0OHPadU7NVqXmzbaXX9JST+3AZpzb4aFhXG0xpGJNMazfZOR3Ujjg4gCqanxEvXH564FrcnHBoozvoepQDFd+4HMU9PE79GiW2Ni+o36qIkmU2BPpcXdEEUuJRBEGA6vS//XxB65LraXfK6x0GZD0gH7O/cdG8QwT9xBjupDtJzzjAIYJxW4F9i/0wcy82038AHelg5yy+TNBBPqM7WPFQItJ47VJtLvwrzWgejS/K2qWeYQOwsa9lVaSuPiZFM0ibDfdc0GWsjXO9QLcUtU7ZkDj1cllD7TvgcNoYJItH68Qt4BpSDgKMh6YDOZLSvXN4j9l7uXctjexCrdLhBEFhVN48YDujZFBA642GBFaih9g==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a02:cf3b:: with SMTP id s27mr16670340jar.72.1592979436970;
- Tue, 23 Jun 2020 23:17:16 -0700 (PDT)
-Date:   Tue, 23 Jun 2020 23:17:16 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000079a77705a8ce6da7@google.com>
-Subject: general protection fault in qrtr_endpoint_post
-From:   syzbot <syzbot+03e343dbccf82a5242a2@syzkaller.appspotmail.com>
-To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3799.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff8657fa-9cb7-484a-1c55-08d818086268
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2020 06:32:36.1111
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5ae1af62-9505-4097-a69a-c1553ef7840e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /v1vytIOfs7EZ7cBAO9yiiye6yG5unzxSiOIGdLwT/ZCarFTFQQTziwD4otf817c
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB3958
+X-OriginatorOrg: cisco.com
+X-Outbound-SMTP-Client: 173.37.102.14, xch-rcd-004.cisco.com
+X-Outbound-Node: alln-core-3.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> -----Original Message-----
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org>
+> On Behalf Of Kaige Li
+> Sent: Tuesday, June 23, 2020 8:41 PM
+> To: David Miller <davem@davemloft.net>
+> Cc: Christian Benvenuti (benve) <benve@cisco.com>; _govind@gmx.com;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+> lixuefeng@loongson.cn; yangtiezhu@loongson.cn
+> Subject: Re: [PATCH RESEND] net/cisco: Fix a sleep-in-atomic-context bug =
+in
+> enic_init_affinity_hint()
+>=20
+>=20
+> On 06/24/2020 11:23 AM, David Miller wrote:
+> > From: Kaige Li <likaige@loongson.cn>
+> > Date: Wed, 24 Jun 2020 09:56:47 +0800
+> >
+> >> On 06/24/2020 06:26 AM, David Miller wrote:
+> >>> From: David Miller <davem@davemloft.net>
+> >>> Date: Tue, 23 Jun 2020 14:33:11 -0700 (PDT)
+> >>>
+> >>>> Calling a NIC driver open function from a context holding a
+> >>>> spinlock is very much the real problem, so many operations have to
+> >>>> sleep and in face that ->ndo_open() method is defined as being
+> >>>> allowed to sleep and that's why the core networking never invokes
+> >>>> it with spinlocks
+> >>>                                                         ^^^^
+> >>>
+> >>> I mean "without" of course. :-)
+> >>>
+> >>>> held.
+> >> Did you mean that open function should be out of spinlock? If so, I
+> >> will send V2 patch.
+> > Yes, but only if that is safe.
+> >
+> > You have to analyze the locking done by this driver and fix it properly=
+.
+> > I anticipate it is not just a matter of changing where the spinlock
+> > is held, you will have to rearchitect things a bit.
+>=20
+> Okay, I will careful analyze this question, and make a suitable patch in =
+V2.
+>=20
+> Thank you.
 
-syzbot found the following crash on:
+Hi David, Kaige,
+I assume you are referring to the enic_api_lock spin_lock used in
 
-HEAD commit:    7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12c27f79100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d195fe572fb15312
-dashboard link: https://syzkaller.appspot.com/bug?extid=03e343dbccf82a5242a2
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1715f03d100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17dc0db6100000
+  enic_reset()
+  which is used to hard-reset the interface when the driver receives an err=
+or interrupt
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+03e343dbccf82a5242a2@syzkaller.appspotmail.com
+and
 
-general protection fault, probably for non-canonical address 0xdffffc0000000002: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
-CPU: 0 PID: 6780 Comm: syz-executor827 Not tainted 5.7.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:qrtr_endpoint_post+0x92/0xfa0 net/qrtr/qrtr.c:440
-Code: 44 89 e6 e8 80 27 4e fe 48 85 c0 48 89 c5 0f 84 57 0e 00 00 e8 4f 7a 9e f9 48 89 da 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 04 02 48 89 da 83 e2 07 38 d0 7f 08 84 c0 0f 85 f7 0c 00 00
-RSP: 0018:ffffc900016a7c48 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000010 RCX: ffffffff86237e4b
-RDX: 0000000000000002 RSI: ffffffff87d55471 RDI: ffff888090444150
-RBP: ffff888090444140 R08: ffff8880954ca340 R09: ffffed1011e43c5d
-R10: ffff88808f21e2e3 R11: ffffed1011e43c5c R12: 0000000000000000
-R13: ffff88809a089100 R14: ffffc900016a7eb0 R15: 0000000000000000
-FS:  0000000000a65880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000000 CR3: 0000000099699000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- qrtr_tun_write_iter+0xf5/0x180 net/qrtr/tun.c:92
- call_write_iter include/linux/fs.h:1917 [inline]
- new_sync_write+0x426/0x650 fs/read_write.c:484
- __vfs_write+0xc9/0x100 fs/read_write.c:497
- vfs_write+0x268/0x5d0 fs/read_write.c:559
- ksys_write+0x12d/0x250 fs/read_write.c:612
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x4401b9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff99653dd8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004401b9
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a40
-R13: 0000000000401ad0 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 5199d7949b247ba3 ]---
-RIP: 0010:qrtr_endpoint_post+0x92/0xfa0 net/qrtr/qrtr.c:440
-Code: 44 89 e6 e8 80 27 4e fe 48 85 c0 48 89 c5 0f 84 57 0e 00 00 e8 4f 7a 9e f9 48 89 da 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 04 02 48 89 da 83 e2 07 38 d0 7f 08 84 c0 0f 85 f7 0c 00 00
-RSP: 0018:ffffc900016a7c48 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000010 RCX: ffffffff86237e4b
-RDX: 0000000000000002 RSI: ffffffff87d55471 RDI: ffff888090444150
-RBP: ffff888090444140 R08: ffff8880954ca340 R09: ffffed1011e43c5d
-R10: ffff88808f21e2e3 R11: ffffed1011e43c5c R12: 0000000000000000
-R13: ffff88809a089100 R14: ffffc900016a7eb0 R15: 0000000000000000
-FS:  0000000000a65880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000000 CR3: 0000000099699000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  enic_tx_hang_reset()
+  which is used to soft-reset the interface when the stack detects the TX t=
+imeout.
 
+Both reset functions above are called in the context of a workqueue.
+However, the same spin_lock (enic_api_lock) is taken by the enic_api_devcmd=
+_proxy_by_index() api that is exported by the enic driver and that the usni=
+c_verbs driver uses to send commands to the firmware.
+This spin_lock was likely added to guarantee that no firmware command is se=
+nt by usnic_verbs to an enic interface that is undergoing a reset.
+Unfortunately changing that spin_lock to a mutex will likely not work on th=
+e usnic_verbs side, and removing the spin_lock will require a rearchitect o=
+f the code as mentioned by David.
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Kaige, V2 is of course more than welcome and we can test it too.
+We/Cisco will also look into it, hopefully a small code reorg will be suffi=
+cient.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+David, from your previous emails on this 3D I assume
+- we can leave request_irq() in ndo_open (ie, no need to move it to pci/pro=
+be), which is done by a number of other drivers too.
+- no need to change GFP_KERNEL to GFP_ATOMIC as it was suggested in the ori=
+ginal patch.
+
+Thanks!
+/Chris
+
