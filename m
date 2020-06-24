@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B953A207050
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 11:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A74820705D
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 11:49:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389913AbgFXJrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 05:47:41 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:60743 "EHLO
+        id S2390071AbgFXJt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 05:49:26 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:33170 "EHLO
         mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388034AbgFXJrh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 05:47:37 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20200624094733euoutp01cbdaf7612cee4c64fe035288cfab067a~bcdUk8y7M2488924889euoutp016;
-        Wed, 24 Jun 2020 09:47:33 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20200624094733euoutp01cbdaf7612cee4c64fe035288cfab067a~bcdUk8y7M2488924889euoutp016
+        with ESMTP id S2389848AbgFXJtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 05:49:24 -0400
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20200624094923euoutp019517b3ebaf7c2cefc4e94e6450efd512~bce6nnOGl2557825578euoutp01d;
+        Wed, 24 Jun 2020 09:49:23 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20200624094923euoutp019517b3ebaf7c2cefc4e94e6450efd512~bce6nnOGl2557825578euoutp01d
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1592992053;
-        bh=SCi7OgOkP1sEZIkvzZyavbs2OS6rUbE9bLl+zIWp8zQ=;
+        s=mail20170921; t=1592992163;
+        bh=Hu4Qdif3UbMEKdxlBS9vbnOGmQWb8dRrpdrfFL2pmaQ=;
         h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=hN76ke70ir6av/A7W+IvJ9L60oRsO0lEWutX1TW+qAmKvHsqT5t7lU0EaJFDH7HO+
-         pnVWn2HGZnfMyPkZfv8PySezfPyrIAbwoIFDLP6OCw/uIG9KBxz1AtC9c+fdgSBqiu
-         T+qdTSuWq6ScLJzitDca5R40ai/MMELz9q66U/ag=
+        b=HCv9cG0sZk3QpjU7BIPvsW4VhnEV/o3hbHYvKwjX90H9utnLc+GTgmOCAQZ4dRPKs
+         GlmecvxWR8Ok65hqkwvX3686BXXTcz5wMNqvaVSrKFRyU7/+qwviNAQEIDNne/d9n1
+         Kj9/ViPz6CcgP+1WBSkDqrS8hzMtOgEEHtgiKY+o=
 Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20200624094733eucas1p1c5962950749e550eb169bd85107203f6~bcdUb9RRB2174121741eucas1p1D;
-        Wed, 24 Jun 2020 09:47:33 +0000 (GMT)
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20200624094922eucas1p23cb64e3529eacfecf6c95072f6f4fb9d~bce6ZrHPq2662826628eucas1p2F;
+        Wed, 24 Jun 2020 09:49:22 +0000 (GMT)
 Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id F6.58.06318.53123FE5; Wed, 24
-        Jun 2020 10:47:33 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20200624094732eucas1p29a041fd7d8ca2009faba1fd1703481fc~bcdT80Aaq1752517525eucas1p28;
-        Wed, 24 Jun 2020 09:47:32 +0000 (GMT)
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 30.A8.06318.2A123FE5; Wed, 24
+        Jun 2020 10:49:22 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20200624094922eucas1p126f9a79810d912cf6f561c5f52153b43~bce55G-2n1796317963eucas1p1n;
+        Wed, 24 Jun 2020 09:49:22 +0000 (GMT)
 Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20200624094732eusmtrp2ca3c5519f58e523daffa186985e0a66a~bcdT7eQX42287322873eusmtrp2k;
-        Wed, 24 Jun 2020 09:47:32 +0000 (GMT)
-X-AuditID: cbfec7f5-38bff700000018ae-b3-5ef3213591ac
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20200624094922eusmtrp14c2ce8276db0a40816209b5b494300ba~bce53sfaG3055130551eusmtrp1C;
+        Wed, 24 Jun 2020 09:49:22 +0000 (GMT)
+X-AuditID: cbfec7f5-38bff700000018ae-0c-5ef321a2f7ed
 Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 5A.42.06017.43123FE5; Wed, 24
-        Jun 2020 10:47:32 +0100 (BST)
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id FB.92.06017.2A123FE5; Wed, 24
+        Jun 2020 10:49:22 +0100 (BST)
 Received: from [106.120.51.71] (unknown [106.120.51.71]) by
         eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20200624094731eusmtip1883883a79820cbf734b3ff66899240c5~bcdSUoG121237212372eusmtip19;
-        Wed, 24 Jun 2020 09:47:31 +0000 (GMT)
-Subject: Re: [PATCH v4 05/11] thermal: remove get_mode() operation of
- drivers
+        20200624094920eusmtip1a75817b4fcfe10a797e8912ad5285b16~bce4N31Sj1488214882eusmtip1R;
+        Wed, 24 Jun 2020 09:49:20 +0000 (GMT)
+Subject: Re: [PATCH v4 06/11] thermal: Add mode helpers
 To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
 Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
         netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
@@ -89,60 +88,60 @@ Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
         Gayatri Kammela <gayatri.kammela@intel.com>,
         Thomas Gleixner <tglx@linutronix.de>, kernel@collabora.com
 From:   Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Message-ID: <e63bdfa3-6a5a-d639-8c89-77d58a5893b9@samsung.com>
-Date:   Wed, 24 Jun 2020 11:47:30 +0200
+Message-ID: <c7a02885-cdb0-2951-0dd3-67684edfe980@samsung.com>
+Date:   Wed, 24 Jun 2020 11:49:20 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
         Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200528192051.28034-6-andrzej.p@collabora.com>
+In-Reply-To: <20200528192051.28034-7-andrzej.p@collabora.com>
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA01Tf1CTdRy+7/trL7uGL9Pa9zQ119kPJWZh1+eKOEvvfPOP7C9Pu6JWvqEX
-        Q24voFaXaMiPXfwyCZgLGe5gG56t8XOISwGhbjYJk8sYHujKEQ5kIw1KaOyFi/+e5/k+n8/z
-        ef74sqSyVLaS3Z+eKejTtWlqRk619Ex7n3txXThlU6COBdsPsxQ88E4TUHf7JgUnKudI+O7o
-        CAHV4dVguppLgcG8CY63DNEwcn0n5IUrKZi7NRZhF7fCjaPnCTAFsuGW1SiDRu+XNNjLXRTU
-        2swMuEaCDNS7SxA4bw/QYJixkRAu6kbQPDpOQGg4EnTX6pNBYWMZgq7mGgK68t009NQ8Br1f
-        F9NQce8Ugr6+d6ChI0DCFU8/Df6RYgYetjopCDSpwHM+Ey4c/5mERmc5CQM1YQrqh9tlW+L5
-        6rOf8r+3mWj+WnERwbcNWRDfZLtB8NaQhncZh2R8o3UDf6ZjlOCd9kKG9w10MPy41xvRLUf4
-        ybt+Gf9HRRfBl94LMm/ht+VJe4W0/dmCXpP8vnyfxWyUZQzqDh1rN5M5qHWPAcWwmNuM5065
-        SQOSs0rOivCVtjxCIlMI/1JWJ5NIGOH7fVXU4si1nNCCqx7hm7mWhfkgwtXGQWLetZzbibun
-        bNGJFVwinm4JRleRnEGBg3fcsvkHhnsZl+Xb0TxWcMm4qKo/iiluPW5w5EcXPcrtxqHhLlry
-        xOEfq/zRpTHcq7jEWhbFJKfCv/lPExJei1uDJlI69X4M/r70CQlvw2dzPQv6cvxnb5NMwo/j
-        OdfpaB3MnUP4YUGAlEgrwvVfzTKS6xXs885EMBtJeBZ/266R5NdwYOwYmpcxF4t/DcZJN8Ti
-        Ey0VpCQrcEGeUnI/hR11DmYx1uCykaVIbVzSzLikjXFJG+P/uTWIsiOVkCXqUgUxMV04mCBq
-        dWJWemrChwd0ThT5J57Z3r/akPvfDzoRxyL1IwrH8GSKktZmi4d1nQizpHqF4vWfPClKxV7t
-        4U8E/YH39FlpgtiJVrGUWqVIrB19V8mlajOFjwUhQ9AvvhJszMoclHxhj9WRFHIvu/5Z4YR9
-        5o7vpZO7JpIL+BdqrzpOmmLjDm2/uFFcZdrWT/x9jh4zlVxe/WD755uXdRjHdyRcyrr8T0b8
-        eLNli2rim2eaU85Y1u8YEJSa7kGvptr/UeyR8hL5xjee9uSgBt+aHjHpUnzlVv1ajwWtO9jy
-        pNn0xeSaN6fUlLhP+/wGUi9q/wPGpU0BIwQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SfUwTdxjH97u7XotZ563W8RvZMu3cpqiF8mIfDJLFLfHiYjTzH90cWOVS
-        jC01vUKmZhksIvOUak2ccLIOFGcpZmJb3hGVOphWGcNJwgYLBdSqlFWabHZRWEu3hP8+z/N8
-        P3nyJI+MVJylk2R7Ci2cuVBnUNELKN9M78jqjKXh3NTDXclQ/9MMBX/3RQj4fvwPCk5WzpJw
-        udRPgD38JlT/fIgCoTYVyppHJOC/txkOhyspmB17Eq2ufQBDpR0EVAeKYcwhSsHdd0wCzlNt
-        FJytr6WhzR+k4ULXcQSu8UEJCP/UkxCuuIGg6dEUAdOj0UWTjmEpHHHbEHibagjwlndJoKfm
-        Nej9xiqB06EzCPr7d0BDZ4CE274BCUz4rTS8aHFREPAkgq/DAlfKfiHB7TpFwmBNmIILo+3S
-        91ex9osH2fut1RL2rrWCYFtH6hDrqR8iWMd0CtsmjkhZtyOZPdf5iGBdziM0OzzYSbNTfX3R
-        ft2X7NPJCSn74LSXYE+EgvQW/Ik622wqsnBLCky8ZZ3qUw2kqTVZoE7LyFJr0rWfrU3LVKXk
-        ZOdzhj3FnDklZ6e6oK5WlO773fj5V+21ZAlq2S6gBBlmMvDdkmlCQAtkCuY8wp2e2Wghiw7e
-        wL2XiuOZRfj5oEDHM08Q7oicpGKDRcwmHLD7yBgrmXQcaQ5KYyGSscpxx4OL0rhRRuDeH36d
-        M2hmLbaVO1GM5UwOrqgamGOKeQc3NJYTMV7MbMPeVvG/zKv4ZtXEnJvArMPHHbY5Jpn38HP7
-        ABnnRPzbxHdEnN/CLcFq8gRSiPN0cZ4izlPEeUoNopxIyRXxRr2RT1PzOiNfVKhX7zYZXSj6
-        n809EU8rEqa2diNGhlQvyxtHn+YqJLpifr+xG2EZqVLK19/x5Srk+br9BzizKc9cZOD4bpQZ
-        Pc5GJi3ebYp+e6ElT5Op0UKWRpuuTV8DqkT518z1HQpGr7NwezluH2f+3yNkCUklaOBZqfX8
-        UeF1vC3Uvjzf9i7mN05m31u5ZOGtqknN1aEDhsph90PnuRXCtY/XjF1W27S+0CsLQ49v3jp6
-        JxiZSd0ivtBvHd/1Z+DbdqFp+dIzek9jg/I+nZD69hfLPvRuWm8oO9iTVyEoG57Rf5UWbOw6
-        xNz+6MZD7Lf3vxT+8bHu2AYVxRfoNMmkmdf9C1CE4GG1AwAA
-X-CMS-MailID: 20200624094732eucas1p29a041fd7d8ca2009faba1fd1703481fc
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Ta0xTZxjH955bC1vJocD6eiFmnS6DbKJj2Z4MR9Ttw8m+bPu0ZVNcN07Q
+        DKppgc3NZXQRxYKIoKKVSWVqLxLAFiggQwNLq3QUkMC8FFMubq3jILa7YUZZ2wMZ3/7v8//9
+        83+eD6+UlB+TrJbuURfyGrUqX8nEU+3Oec/LDc+FcjZVf58GlhthCv72zBNwaeo+BdWnF0m4
+        opsg4FwoFeoGD1KgP78JStvHaZgYfRcOhU5TsDj5e+R1/S24o7tKQJ2/GCbNBgnYPRU0WE92
+        UtBgOc9A54TAgKnnGALb1BgN+icWEkJHf0LQFpglIOiLFM2YvRI4Yj+OoK/NSEDf4R4anMZn
+        wXWqkobaubMIhoZ2wOVuPwk/u2/RMD1RycCCw0aBv1UB7quF8GPpMAl220kSxowhCky+LsnW
+        l7hzjV9zDzrqaG6k8ijBdYxfQFyr5Q7BmYMZXKdhXMLZzencD90BgrNZjzCcd6yb4WY9nsj8
+        wrfc45lpCfdrbR/BVc0JzHv4o/gtuXz+nmJek5H9Sfzua8I1ep9j7ZdzDidZggIKPYqTYvZV
+        3D9yhtCjeKmcNSP8qE1PRQ05+wfCwwPbRSOEcFnwOrOcuN3w3RJkQvhi6WYREhB21RglUSOJ
+        fR17B5tRVCezmXi+XZBEIZLVy7DwW08MYtg38PHD1hgkY7NxeXlTTFPsBlx1pSKmU9gPcdDX
+        R4tMIr55ZjrWHMe+iR03KmMMySrw3el6QtTrsEOoI6NlmP0rDt9raV5a+21cMTJJizoJP3S1
+        SkS9FrtrKigx0ITwQpl/Ke1A2FQTXkpnYa/nSURLIxVpuLkrQxxvw/f9I1R0jNkEfFtIFJdI
+        wNXttaQ4luGyQ3KRfgG3XGphlmv1nRayCikNK04zrDjHsOIcw/+9RkRZkYIv0hbk8dpMNf/F
+        Rq2qQFukztv42d4CG4p8E3fY9WcH6vn3017ESpHyGVmL73GOnFYVa/cX9CIsJZXJsu0D7hy5
+        LFe1/ytes3eXpiif1/aiNVJKqZBlNgR2ytk8VSH/Oc/v4zXLLiGNW12CTk0ZG9M44SnunecT
+        xoitTwctHa6uVTtm/nGpFuzUrRPeAafOevnAL+n9WeuTTb6c11IWDjRuuBg4UUuG5x/Vb3n/
+        m4zyej8Z+kCjS0hdTFo1kHtPoZtVv7gmMWtn6q7Rrv6SpKYhuZykDw6nkNkfr3uIBl+5ue2B
+        864iPFpast6gpLS7VZvTSY1W9R+SnOtPIgQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUxbZRTHee5bL2izuwL2kaDOqlmyzAuFYQ97IURNvPplJrqEKDIbdgPL
+        KF1uX+LU6CCyubJVWLK3jjGozNEOxRVGywpM26XM1XUvZjgWutANB4SVAP2AzDEsrSZ8+51z
+        /r+cnOSwpMLOZLE7q42iVK2tUjFpVPDpYPh1+8uxstzbV1PBceUpBfOhBQJ+eHCPgsPHl0g4
+        XxMhoDn2AjRd/4YCS2su1PWEaYjc3gr7YscpWLo/Fa9+eQuGa7wENE2Y4X67TQZdoYM0OI/0
+        UmB3tDLQG4kycHbgOwSuB0M0WB47SIgduozgwuQ0AXOj8UWP2kdkcKCrEYH/QgsB/v0DNARa
+        noPBo1Yajs2cRHDjRimc65sg4ffgLRrGIlYGFt0uCia6lRD0GqG/7iYJXa4jJAy1xCg4O3pR
+        VrxeaO74QvjL00QLf1gPEYIn3IaEbscwIbTP5Qi9trBM6GpfJ3zfN0kILucBRhgZ6mOE6VAo
+        3m/7Wph9NCYTHh7zE0LDTJR5H3/Eb5b0JqO4plJvMG5RfayGPF5dCHzehkJena/5ZGNegSqn
+        aPMOsWqnWZRyij7lKy9FL9G73dmfzbgD5F40qbSgVBZzG/Adey1lQWmsgjuD8Iy/hrEgNj7I
+        xoOd5mQmHT8ZsjDJzBTCrjP/EMuDdE6DR653omXO4PLxQk9UthwiOascex92yJJGHYEX568m
+        DIbbiBv3OxOGnCvC9fU/JZjiXsMN5w8mOJMrwX6P7b/MavzbiTFqmVO5Ldh9xZrok9xa/KT5
+        FplkJb47dppI8kvYHW0iG5DCtkK3rVBsKxTbCqUFUU6UIZoMugqdIY83aHUGU3UFX67XuVD8
+        P3sCC90eZJn+wIc4Fqmelf88OlumoLVmwx6dD2GWVGXI37wWLFPId2j3fC5K+u2SqUo0+FBB
+        /LhGMiuzXB//9mrjdnWBWgOFak2+Jv8NUCnl33K/liq4Cq1R3CWKu0Xpf49gU7P2Iurx1jnz
+        +Km0Dmf92lV/B9xfeSdKo762xWGPlLLmw9WnHZsqwp0m0fZj8cBsoPBu9NUTrcqleyVvL52y
+        /1kbKX/XmC6xmyZz1aHy7G13qF187VRJpvAKk7LqvUruxcOOnmAsUhBdf+3c4DvbnukvPjqe
+        fjFl/qbJN97/PH/Z6t33pYoyVGrV60jJoP0XiTnSerUDAAA=
+X-CMS-MailID: 20200624094922eucas1p126f9a79810d912cf6f561c5f52153b43
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20200528192201eucas1p2ce18c3d5db59b142751b26e24a146e0b
+X-RootMTR: 20200528192210eucas1p10ac60083d5c2eb6f21b9bcab651b01e5
 X-EPHeader: CA
 CMS-TYPE: 201P
-X-CMS-RootMailID: 20200528192201eucas1p2ce18c3d5db59b142751b26e24a146e0b
+X-CMS-RootMailID: 20200528192210eucas1p10ac60083d5c2eb6f21b9bcab651b01e5
 References: <Message-ID: <4493c0e4-51aa-3907-810c-74949ff27ca4@samsung.com>
         <20200528192051.28034-1-andrzej.p@collabora.com>
-        <CGME20200528192201eucas1p2ce18c3d5db59b142751b26e24a146e0b@eucas1p2.samsung.com>
-        <20200528192051.28034-6-andrzej.p@collabora.com>
+        <CGME20200528192210eucas1p10ac60083d5c2eb6f21b9bcab651b01e5@eucas1p1.samsung.com>
+        <20200528192051.28034-7-andrzej.p@collabora.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -150,19 +149,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 5/28/20 9:20 PM, Andrzej Pietrasiewicz wrote:
-> get_mode() is now redundant, as the state is stored in struct
-> thermal_zone_device.
-> 
-> Consequently the "mode" attribute in sysfs can always be visible, because
-> it is always possible to get the mode from struct tzd.
+> Prepare for making the drivers not access tzd's private members.
 > 
 > Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-
-The side-effect of splitting the v3 is that some devices will be
-marked in sysfs as disabled (however they are in reality enabled)
-after applying this patch (it gets fixed by patch #08).
-
-I think that we can live with that so:
 
 Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 
@@ -173,359 +162,103 @@ Samsung R&D Institute Poland
 Samsung Electronics
 
 > ---
->  drivers/acpi/thermal.c                        |  9 ------
->  .../ethernet/mellanox/mlxsw/core_thermal.c    | 19 ------------
->  drivers/platform/x86/acerhdf.c                | 12 --------
->  drivers/thermal/da9062-thermal.c              |  8 -----
->  drivers/thermal/imx_thermal.c                 |  9 ------
->  .../intel/int340x_thermal/int3400_thermal.c   |  9 ------
->  .../thermal/intel/intel_quark_dts_thermal.c   |  8 -----
->  drivers/thermal/thermal_core.c                |  7 +----
->  drivers/thermal/thermal_of.c                  |  9 ------
->  drivers/thermal/thermal_sysfs.c               | 30 ++-----------------
->  include/linux/thermal.h                       |  2 --
->  11 files changed, 3 insertions(+), 119 deletions(-)
+>  drivers/thermal/thermal_core.c | 53 ++++++++++++++++++++++++++++++++++
+>  include/linux/thermal.h        | 13 +++++++++
+>  2 files changed, 66 insertions(+)
 > 
-> diff --git a/drivers/acpi/thermal.c b/drivers/acpi/thermal.c
-> index 4ba273f49d87..592be97c4456 100644
-> --- a/drivers/acpi/thermal.c
-> +++ b/drivers/acpi/thermal.c
-> @@ -525,14 +525,6 @@ static int thermal_get_temp(struct thermal_zone_device *thermal, int *temp)
->  	return 0;
->  }
->  
-> -static int thermal_get_mode(struct thermal_zone_device *thermal,
-> -				enum thermal_device_mode *mode)
-> -{
-> -	*mode = thermal->mode;
-> -
-> -	return 0;
-> -}
-> -
->  static int thermal_set_mode(struct thermal_zone_device *thermal,
->  				enum thermal_device_mode mode)
->  {
-> @@ -847,7 +839,6 @@ static struct thermal_zone_device_ops acpi_thermal_zone_ops = {
->  	.bind = acpi_thermal_bind_cooling_device,
->  	.unbind	= acpi_thermal_unbind_cooling_device,
->  	.get_temp = thermal_get_temp,
-> -	.get_mode = thermal_get_mode,
->  	.set_mode = thermal_set_mode,
->  	.get_trip_type = thermal_get_trip_type,
->  	.get_trip_temp = thermal_get_trip_temp,
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> index aa082e8a0b13..6e26678ac312 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> @@ -275,14 +275,6 @@ static int mlxsw_thermal_unbind(struct thermal_zone_device *tzdev,
->  	return 0;
->  }
->  
-> -static int mlxsw_thermal_get_mode(struct thermal_zone_device *tzdev,
-> -				  enum thermal_device_mode *mode)
-> -{
-> -	*mode = tzdev->mode;
-> -
-> -	return 0;
-> -}
-> -
->  static int mlxsw_thermal_set_mode(struct thermal_zone_device *tzdev,
->  				  enum thermal_device_mode mode)
->  {
-> @@ -403,7 +395,6 @@ static int mlxsw_thermal_trend_get(struct thermal_zone_device *tzdev,
->  static struct thermal_zone_device_ops mlxsw_thermal_ops = {
->  	.bind = mlxsw_thermal_bind,
->  	.unbind = mlxsw_thermal_unbind,
-> -	.get_mode = mlxsw_thermal_get_mode,
->  	.set_mode = mlxsw_thermal_set_mode,
->  	.get_temp = mlxsw_thermal_get_temp,
->  	.get_trip_type	= mlxsw_thermal_get_trip_type,
-> @@ -462,14 +453,6 @@ static int mlxsw_thermal_module_unbind(struct thermal_zone_device *tzdev,
->  	return err;
->  }
->  
-> -static int mlxsw_thermal_module_mode_get(struct thermal_zone_device *tzdev,
-> -					 enum thermal_device_mode *mode)
-> -{
-> -	*mode = tzdev->mode;
-> -
-> -	return 0;
-> -}
-> -
->  static int mlxsw_thermal_module_mode_set(struct thermal_zone_device *tzdev,
->  					 enum thermal_device_mode mode)
->  {
-> @@ -591,7 +574,6 @@ mlxsw_thermal_module_trip_hyst_set(struct thermal_zone_device *tzdev, int trip,
->  static struct thermal_zone_device_ops mlxsw_thermal_module_ops = {
->  	.bind		= mlxsw_thermal_module_bind,
->  	.unbind		= mlxsw_thermal_module_unbind,
-> -	.get_mode	= mlxsw_thermal_module_mode_get,
->  	.set_mode	= mlxsw_thermal_module_mode_set,
->  	.get_temp	= mlxsw_thermal_module_temp_get,
->  	.get_trip_type	= mlxsw_thermal_module_trip_type_get,
-> @@ -630,7 +612,6 @@ static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
->  static struct thermal_zone_device_ops mlxsw_thermal_gearbox_ops = {
->  	.bind		= mlxsw_thermal_module_bind,
->  	.unbind		= mlxsw_thermal_module_unbind,
-> -	.get_mode	= mlxsw_thermal_module_mode_get,
->  	.set_mode	= mlxsw_thermal_module_mode_set,
->  	.get_temp	= mlxsw_thermal_gearbox_temp_get,
->  	.get_trip_type	= mlxsw_thermal_module_trip_type_get,
-> diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
-> index 97b288485837..32c5fe16b7f7 100644
-> --- a/drivers/platform/x86/acerhdf.c
-> +++ b/drivers/platform/x86/acerhdf.c
-> @@ -413,17 +413,6 @@ static inline void acerhdf_enable_kernelmode(void)
->  	pr_notice("kernel mode fan control ON\n");
->  }
->  
-> -static int acerhdf_get_mode(struct thermal_zone_device *thermal,
-> -			    enum thermal_device_mode *mode)
-> -{
-> -	if (verbose)
-> -		pr_notice("kernel mode fan control %d\n", kernelmode);
-> -
-> -	*mode = thermal->mode;
-> -
-> -	return 0;
-> -}
-> -
->  /*
->   * set operation mode;
->   * enabled: the thermal layer of the kernel takes care about
-> @@ -490,7 +479,6 @@ static struct thermal_zone_device_ops acerhdf_dev_ops = {
->  	.bind = acerhdf_bind,
->  	.unbind = acerhdf_unbind,
->  	.get_temp = acerhdf_get_ec_temp,
-> -	.get_mode = acerhdf_get_mode,
->  	.set_mode = acerhdf_set_mode,
->  	.get_trip_type = acerhdf_get_trip_type,
->  	.get_trip_hyst = acerhdf_get_trip_hyst,
-> diff --git a/drivers/thermal/da9062-thermal.c b/drivers/thermal/da9062-thermal.c
-> index a14c7981c7c7..a7ac8afb063e 100644
-> --- a/drivers/thermal/da9062-thermal.c
-> +++ b/drivers/thermal/da9062-thermal.c
-> @@ -120,13 +120,6 @@ static irqreturn_t da9062_thermal_irq_handler(int irq, void *data)
->  	return IRQ_HANDLED;
->  }
->  
-> -static int da9062_thermal_get_mode(struct thermal_zone_device *z,
-> -				   enum thermal_device_mode *mode)
-> -{
-> -	*mode = z->mode;
-> -	return 0;
-> -}
-> -
->  static int da9062_thermal_get_trip_type(struct thermal_zone_device *z,
->  					int trip,
->  					enum thermal_trip_type *type)
-> @@ -179,7 +172,6 @@ static int da9062_thermal_get_temp(struct thermal_zone_device *z,
->  
->  static struct thermal_zone_device_ops da9062_thermal_ops = {
->  	.get_temp	= da9062_thermal_get_temp,
-> -	.get_mode	= da9062_thermal_get_mode,
->  	.get_trip_type	= da9062_thermal_get_trip_type,
->  	.get_trip_temp	= da9062_thermal_get_trip_temp,
->  };
-> diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
-> index 9a1114d721b6..2c7ee5da608a 100644
-> --- a/drivers/thermal/imx_thermal.c
-> +++ b/drivers/thermal/imx_thermal.c
-> @@ -330,14 +330,6 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
->  	return 0;
->  }
->  
-> -static int imx_get_mode(struct thermal_zone_device *tz,
-> -			enum thermal_device_mode *mode)
-> -{
-> -	*mode = tz->mode;
-> -
-> -	return 0;
-> -}
-> -
->  static int imx_set_mode(struct thermal_zone_device *tz,
->  			enum thermal_device_mode mode)
->  {
-> @@ -464,7 +456,6 @@ static struct thermal_zone_device_ops imx_tz_ops = {
->  	.bind = imx_bind,
->  	.unbind = imx_unbind,
->  	.get_temp = imx_get_temp,
-> -	.get_mode = imx_get_mode,
->  	.set_mode = imx_set_mode,
->  	.get_trip_type = imx_get_trip_type,
->  	.get_trip_temp = imx_get_trip_temp,
-> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> index f65b2fc09198..9a622aaf29dd 100644
-> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> @@ -377,14 +377,6 @@ static int int3400_thermal_get_temp(struct thermal_zone_device *thermal,
->  	return 0;
->  }
->  
-> -static int int3400_thermal_get_mode(struct thermal_zone_device *thermal,
-> -				enum thermal_device_mode *mode)
-> -{
-> -	*mode = thermal->mode;
-> -
-> -	return 0;
-> -}
-> -
->  static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
->  				enum thermal_device_mode mode)
->  {
-> @@ -412,7 +404,6 @@ static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
->  
->  static struct thermal_zone_device_ops int3400_thermal_ops = {
->  	.get_temp = int3400_thermal_get_temp,
-> -	.get_mode = int3400_thermal_get_mode,
->  	.set_mode = int3400_thermal_set_mode,
->  };
->  
-> diff --git a/drivers/thermal/intel/intel_quark_dts_thermal.c b/drivers/thermal/intel/intel_quark_dts_thermal.c
-> index d77cb3df5ade..c4879b4bfbf1 100644
-> --- a/drivers/thermal/intel/intel_quark_dts_thermal.c
-> +++ b/drivers/thermal/intel/intel_quark_dts_thermal.c
-> @@ -308,13 +308,6 @@ static int sys_get_curr_temp(struct thermal_zone_device *tzd,
->  	return 0;
->  }
->  
-> -static int sys_get_mode(struct thermal_zone_device *tzd,
-> -				enum thermal_device_mode *mode)
-> -{
-> -	*mode = tzd->mode;
-> -	return 0;
-> -}
-> -
->  static int sys_set_mode(struct thermal_zone_device *tzd,
->  				enum thermal_device_mode mode)
->  {
-> @@ -336,7 +329,6 @@ static struct thermal_zone_device_ops tzone_ops = {
->  	.get_trip_type = sys_get_trip_type,
->  	.set_trip_temp = sys_set_trip_temp,
->  	.get_crit_temp = sys_get_crit_temp,
-> -	.get_mode = sys_get_mode,
->  	.set_mode = sys_set_mode,
->  };
->  
 > diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-> index b71196eaf90e..14d3b1b94c4f 100644
+> index 14d3b1b94c4f..f2a5c5ee3455 100644
 > --- a/drivers/thermal/thermal_core.c
 > +++ b/drivers/thermal/thermal_core.c
-> @@ -1456,7 +1456,6 @@ static int thermal_pm_notify(struct notifier_block *nb,
->  			     unsigned long mode, void *_unused)
->  {
->  	struct thermal_zone_device *tz;
-> -	enum thermal_device_mode tz_mode;
->  
->  	switch (mode) {
->  	case PM_HIBERNATION_PREPARE:
-> @@ -1469,11 +1468,7 @@ static int thermal_pm_notify(struct notifier_block *nb,
->  	case PM_POST_SUSPEND:
->  		atomic_set(&in_suspend, 0);
->  		list_for_each_entry(tz, &thermal_tz_list, node) {
-> -			tz_mode = THERMAL_DEVICE_ENABLED;
-> -			if (tz->ops->get_mode)
-> -				tz->ops->get_mode(tz, &tz_mode);
-> -
-> -			if (tz_mode == THERMAL_DEVICE_DISABLED)
-> +			if (tz->mode == THERMAL_DEVICE_DISABLED)
->  				continue;
->  
->  			thermal_zone_device_init(tz);
-> diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
-> index c495b1e48ef2..ba65d48a48cb 100644
-> --- a/drivers/thermal/thermal_of.c
-> +++ b/drivers/thermal/thermal_of.c
-> @@ -267,14 +267,6 @@ static int of_thermal_unbind(struct thermal_zone_device *thermal,
->  	return 0;
+> @@ -459,6 +459,59 @@ static void thermal_zone_device_reset(struct thermal_zone_device *tz)
+>  	thermal_zone_device_init(tz);
 >  }
 >  
-> -static int of_thermal_get_mode(struct thermal_zone_device *tz,
-> -			       enum thermal_device_mode *mode)
-> -{
-> -	*mode = tz->mode;
-> -
-> -	return 0;
-> -}
-> -
->  static int of_thermal_set_mode(struct thermal_zone_device *tz,
->  			       enum thermal_device_mode mode)
+> +int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
+> +				 enum thermal_device_mode mode)
+> +{
+> +	int ret = 0;
+> +
+> +	mutex_lock(&tz->lock);
+> +
+> +	/* do nothing if mode isn't changing */
+> +	if (mode == tz->mode) {
+> +		mutex_unlock(&tz->lock);
+> +
+> +		return ret;
+> +	}
+> +
+> +	if (tz->ops->set_mode)
+> +		ret = tz->ops->set_mode(tz, mode);
+> +
+> +	if (!ret)
+> +		tz->mode = mode;
+> +
+> +	mutex_unlock(&tz->lock);
+> +
+> +	thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
+> +
+> +	return ret;
+> +}
+> +
+> +int thermal_zone_device_enable(struct thermal_zone_device *tz)
+> +{
+> +	return thermal_zone_device_set_mode(tz, THERMAL_DEVICE_ENABLED);
+> +}
+> +EXPORT_SYMBOL(thermal_zone_device_enable);
+> +
+> +int thermal_zone_device_disable(struct thermal_zone_device *tz)
+> +{
+> +	return thermal_zone_device_set_mode(tz, THERMAL_DEVICE_DISABLED);
+> +}
+> +EXPORT_SYMBOL(thermal_zone_device_disable);
+> +
+> +int thermal_zone_device_is_enabled(struct thermal_zone_device *tz)
+> +{
+> +	enum thermal_device_mode mode;
+> +
+> +	mutex_lock(&tz->lock);
+> +
+> +	mode = tz->mode;
+> +
+> +	mutex_unlock(&tz->lock);
+> +
+> +	return mode == THERMAL_DEVICE_ENABLED;
+> +}
+> +EXPORT_SYMBOL(thermal_zone_device_is_enabled);
+> +
+>  void thermal_zone_device_update(struct thermal_zone_device *tz,
+>  				enum thermal_notify_event event)
 >  {
-> @@ -389,7 +381,6 @@ static int of_thermal_get_crit_temp(struct thermal_zone_device *tz,
->  }
->  
->  static struct thermal_zone_device_ops of_thermal_ops = {
-> -	.get_mode = of_thermal_get_mode,
->  	.set_mode = of_thermal_set_mode,
->  
->  	.get_trip_type = of_thermal_get_trip_type,
-> diff --git a/drivers/thermal/thermal_sysfs.c b/drivers/thermal/thermal_sysfs.c
-> index aa99edb4dff7..096370977068 100644
-> --- a/drivers/thermal/thermal_sysfs.c
-> +++ b/drivers/thermal/thermal_sysfs.c
-> @@ -49,18 +49,9 @@ static ssize_t
->  mode_show(struct device *dev, struct device_attribute *attr, char *buf)
->  {
->  	struct thermal_zone_device *tz = to_thermal_zone(dev);
-> -	enum thermal_device_mode mode;
-> -	int result;
-> -
-> -	if (!tz->ops->get_mode)
-> -		return -EPERM;
->  
-> -	result = tz->ops->get_mode(tz, &mode);
-> -	if (result)
-> -		return result;
-> -
-> -	return sprintf(buf, "%s\n", mode == THERMAL_DEVICE_ENABLED ? "enabled"
-> -		       : "disabled");
-> +	return sprintf(buf, "%s\n", tz->mode == THERMAL_DEVICE_ENABLED ?
-> +		       "enabled" : "disabled");
->  }
->  
->  static ssize_t
-> @@ -428,30 +419,13 @@ static struct attribute_group thermal_zone_attribute_group = {
->  	.attrs = thermal_zone_dev_attrs,
->  };
->  
-> -/* We expose mode only if .get_mode is present */
->  static struct attribute *thermal_zone_mode_attrs[] = {
->  	&dev_attr_mode.attr,
->  	NULL,
->  };
->  
-> -static umode_t thermal_zone_mode_is_visible(struct kobject *kobj,
-> -					    struct attribute *attr,
-> -					    int attrno)
-> -{
-> -	struct device *dev = container_of(kobj, struct device, kobj);
-> -	struct thermal_zone_device *tz;
-> -
-> -	tz = container_of(dev, struct thermal_zone_device, device);
-> -
-> -	if (tz->ops->get_mode)
-> -		return attr->mode;
-> -
-> -	return 0;
-> -}
-> -
->  static struct attribute_group thermal_zone_mode_attribute_group = {
->  	.attrs = thermal_zone_mode_attrs,
-> -	.is_visible = thermal_zone_mode_is_visible,
->  };
->  
->  /* We expose passive only if passive trips are present */
 > diff --git a/include/linux/thermal.h b/include/linux/thermal.h
-> index 5f91d7f04512..a808f6fa2777 100644
+> index a808f6fa2777..df013c39ba9b 100644
 > --- a/include/linux/thermal.h
 > +++ b/include/linux/thermal.h
-> @@ -76,8 +76,6 @@ struct thermal_zone_device_ops {
->  		       struct thermal_cooling_device *);
->  	int (*get_temp) (struct thermal_zone_device *, int *);
->  	int (*set_trips) (struct thermal_zone_device *, int, int);
-> -	int (*get_mode) (struct thermal_zone_device *,
-> -			 enum thermal_device_mode *);
->  	int (*set_mode) (struct thermal_zone_device *,
->  		enum thermal_device_mode);
->  	int (*get_trip_type) (struct thermal_zone_device *, int,
+> @@ -416,6 +416,9 @@ int thermal_zone_get_offset(struct thermal_zone_device *tz);
+>  
+>  void thermal_cdev_update(struct thermal_cooling_device *);
+>  void thermal_notify_framework(struct thermal_zone_device *, int);
+> +int thermal_zone_device_enable(struct thermal_zone_device *tz);
+> +int thermal_zone_device_disable(struct thermal_zone_device *tz);
+> +int thermal_zone_device_is_enabled(struct thermal_zone_device *tz);
+>  #else
+>  static inline struct thermal_zone_device *thermal_zone_device_register(
+>  	const char *type, int trips, int mask, void *devdata,
+> @@ -463,6 +466,16 @@ static inline void thermal_cdev_update(struct thermal_cooling_device *cdev)
+>  static inline void thermal_notify_framework(struct thermal_zone_device *tz,
+>  	int trip)
+>  { }
+> +
+> +static inline int thermal_zone_device_enable(struct thermal_zone_device *tz)
+> +{ return -ENODEV; }
+> +
+> +static inline int thermal_zone_device_disable(struct thermal_zone_device *tz)
+> +{ return -ENODEV; }
+> +
+> +static inline int
+> +thermal_zone_device_is_enabled(struct thermal_zone_device *tz)
+> +{ return -ENODEV; }
+>  #endif /* CONFIG_THERMAL */
+>  
+>  #endif /* __THERMAL_H__ */
 > 
