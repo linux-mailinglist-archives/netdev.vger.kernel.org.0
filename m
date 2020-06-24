@@ -2,79 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF58A207212
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 13:30:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EDE720721F
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 13:32:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388933AbgFXLaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 07:30:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388470AbgFXLaI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 07:30:08 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA03C061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 04:30:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=NDZumQiqnLKjZ712qSyDrwvHV78Y7KUegrBWIGUb7hE=; b=evv0PB41u0G1i9SUUi5GAy8wRH
-        DvbffJuUHvth64T9x6wVBu/SoTIKfpcXfUNz4clkVzhV/in1EbLpSWznRyW4pJRZrtdYGJJdqLkLA
-        WybEOxjNYtqKyjWgDs8HJNewBMJV+oewdtAoEe+k32kv3rgwHvVQgn3gfa+Me5zJ0PqqOgqkiWhjk
-        BuLfI3SBmYQpcQgbNzk60yurNbnom9zPuP0HsTJFIIS5FeWHdtRTXeDbRut8NHVBfSna8NHt66rG2
-        Ajrxo54Ee1rnaF/wd6Ed4bvLOhXnw+MRI4hlgcJBWHVUXVZklPOudYC9hW+Xzf+BZvWrqIjQ4Q2NJ
-        AspIDcSg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:58170 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jo3bQ-0002wT-V1; Wed, 24 Jun 2020 12:30:04 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jo3bQ-0006QS-Nx; Wed, 24 Jun 2020 12:30:04 +0100
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: phylink: only restart AN if the link mode is
- using in-band AN
+        id S2390645AbgFXLb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 07:31:59 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:1806 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388470AbgFXLb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 07:31:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1592998319; x=1624534319;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ytChrvYAloZwmq/t2qRRQKdJIdRvD5ZigkU1TGR2Ylk=;
+  b=bVa580UVe4P1eOQ12ADT9omVfi6UrO5iWvaOKpAx4IbEmphNp2rK5l3H
+   BvlZJQHFqgHk4OxoNmgqDh9LMvAzlfmBDstqyp8fq+y4KJfOXe/x9/pow
+   JzLGrUgStCHwOoLYb6Pj7N84rSRNDieSOTNPCsVRQdFn/fJpqVJ+1wFry
+   K7kRXgNxvkjNBstCUoX1QcR8Gvo2UhPDkpf1hlHe4I0EPI19ZY7br/k0n
+   NuilMum9892bk2HrHL94dnfh2+G7Dk+MVC2ebE7BKWOsN/QW8gSw4+Dk7
+   +4YlcIPOYYJGI+7nOvwCEhZhbrhJXPGhvmUcKUldw7KVr3orl8BYnNMpr
+   A==;
+IronPort-SDR: Otnu5zaWQnGtJeKyFJ4oY4LrHRbzk1keJeICfFcy3n7QvBPhI2tkHpler6TjeFRsQFjTIuLjPC
+ rkecIdjwTgPbC8cAWgWHGOXs6mw/g5SasaeFeB0YK4KvfLFJUHEGihqloZ65K7PL/lZxfIr4Fm
+ 7bxyS1Tz1FAqbTSy9xla2EBe36cvR913P/g+auO53KwNyUsPmLK5fp5p9+7cLZTUyEh/rmkz0t
+ pMhLUnLKC5RO9XsCiX/Gj6QjIjxUs4bdhOr9VTfq1BFJjJmRbYk6fflBU2r6/d4GLH6Kz7J1Bn
+ sgM=
+X-IronPort-AV: E=Sophos;i="5.75,275,1589266800"; 
+   d="scan'208";a="80727156"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jun 2020 04:31:59 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 24 Jun 2020 04:31:57 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Wed, 24 Jun 2020 04:31:57 -0700
+Date:   Wed, 24 Jun 2020 13:31:56 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     David Miller <davem@davemloft.net>
+CC:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net v2 0/2] bridge: mrp: Update MRP_PORT_ROLE
+Message-ID: <20200624113156.hsutqewk4xntmkld@soft-dev3.localdomain>
+References: <20200623090541.2964760-1-horatiu.vultur@microchip.com>
+ <20200623.143821.491798381160245817.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jo3bQ-0006QS-Nx@rmk-PC.armlinux.org.uk>
-Date:   Wed, 24 Jun 2020 12:30:04 +0100
+Content-Disposition: inline
+In-Reply-To: <20200623.143821.491798381160245817.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we are not using in-band autonegotiation, there is no point passing
-the request to restart autonegotiation on to the driver.
+The 06/23/2020 14:38, David Miller wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> From: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Date: Tue, 23 Jun 2020 11:05:39 +0200
+> 
+> > This patch series does the following:
+> > - fixes the enum br_mrp_port_role_type. It removes the port role none(0x2)
+> >   because this is in conflict with the standard. The standard defines the
+> >   interconnect port role as value 0x2.
+> > - adds checks regarding current defined port roles: primary(0x0) and
+> >   secondary(0x1).
+> >
+> > v2:
+> >  - add the validation code when setting the port role.
+> 
+> Series applied, thank you.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/phylink.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Thanks. Will these patches be applied also on net-next?
+Because if I start now to add support for the interconnect port, these
+patches are needed on net-next. Or do I need to add these patches to the
+patch series for the interconnect port?
+What is the correct way of doing this?
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 7cda1646bbf7..494af91535ba 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -429,7 +429,8 @@ static void phylink_mac_config_up(struct phylink *pl,
- static void phylink_mac_pcs_an_restart(struct phylink *pl)
- {
- 	if (pl->link_config.an_enabled &&
--	    phy_interface_mode_is_8023z(pl->link_config.interface)) {
-+	    phy_interface_mode_is_8023z(pl->link_config.interface) &&
-+	    phylink_autoneg_inband(pl->cur_link_an_mode)) {
- 		if (pl->pcs_ops)
- 			pl->pcs_ops->pcs_an_restart(pl->config);
- 		else
 -- 
-2.20.1
-
+/Horatiu
