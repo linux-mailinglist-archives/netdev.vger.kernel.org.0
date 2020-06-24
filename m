@@ -2,170 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33CC5206DD7
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 09:34:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 420B8206E75
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 09:59:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389792AbgFXHes (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 03:34:48 -0400
-Received: from mail-eopbgr50060.outbound.protection.outlook.com ([40.107.5.60]:49216
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        id S2390169AbgFXH7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 03:59:45 -0400
+Received: from mail-co1nam11on2041.outbound.protection.outlook.com ([40.107.220.41]:15424
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388375AbgFXHer (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jun 2020 03:34:47 -0400
+        id S1730725AbgFXH7o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 03:59:44 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CPwElkBkHBQ6X1dY3UY8m0jWHO3g28+C0B46Pu4A9MwaoZQx/LfC73+J6bHAzCrhpqp8efB8Cox+G9HN7E8Y7JWlxuIglNMr+c0KBA5/Ll++9ZQ1VNv+SSSvEOaadlsn1b0lewUtNToFnHWqf5Xc40sGGF3gXjk6Pwoha1WcIlIBB8GioyO4GpS4MWZEThNkbQKiGWJWfCN2gdc3McdGwZSNRqHLLWCZHWuwewmOLD2h51XoICSQe0K1+6bZKhaW2wgWXxKcaFc0/iTOk91slM1ssdoNYGD7fordZZXiN753DB7G7TJu33/iwHFGCqKVWo+ipN9kYBs91cTndBOsKA==
+ b=DcXtviuu0p4kWagMUKQdbhNo57hzXAaP2Qu9FsFcZnbvH3EFYDFIlpIiNfromoKFb7R4w3VwxTpdJhhjR5o3IKuyBqqF/ZGBzoWDChnJVH4ozZkH+Fz0CGwDd28YFPXQHVRxxIfoB5+xJxZ806GnoIEgNiZqXoQozXTPbrLXzl7g86ft43tD6gNxRhhwnVs806S45YueCkBtHNP3xbSkdM1OtgDsoqdQ4o+QxT95Ph1ywUlVUYgkTdCVKX856inTcrGQef1PKzgMpWXkLw/6uM81oIt0KjTKmhfaeOSk6qWF5J8KS8jEUWduoj2DRjWW9bfqoMy16Sicm+CD3y4Nqw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p04CvwjJWbs75QxLnYL0TrgnMy1qEC7wXBNEinDKDns=;
- b=fjgrAe5cBFSttwXV5cP6FlIocHYhMOJVr/7vOt9UxrZoFTSKopivrWiktGH0xVrZgHhpezPQK2NPYml3I9OBleGeqr7kwbvycTxjCQE7r5zey8A/iVaTlZTJG+eqIf+ZMolCAebicKG0U/fmFW8JcWRN/lsfksvq8+DG7iPboAEjSg7bGomZg6VKzhTXzufPvZKCfiG1+rVd6HPrP3Wy51dFY+Za0FA8U69TTeO60zmcKh0ZOllsjz7o1VzaC2bN1CsBUXEcv8llBAc/aAL9AHW3IE/JXTNOyGIwOqTrCY0G9OuVKFWorexsmT1Ipt/XYM68GmeLnInAwPO2AU4shA==
+ bh=tGlJtn7z7N+QqE6Jj/osPqWiDFjODbFTV7v4VUQsmBE=;
+ b=Pno9nZctmc7MxMARSGin8eODdW07xUe4If4IwO2JUs7ADnKnkG3OaDyyJdIeCSka16Q1XrHr5X8mHBoLV/5H/z1EFCgiDuhPtttEXHgS+B0msawwi98pywfL4E0bCmUDvlce4VEQsXCq/K9ScP123HSKpI7GglppBxUzkWFuveWV7FTr9x5dDh/EhAnlzyM1diTKkS9o1jPJ/P1XyBtBqVwOoIIsOglq9FzfbFdII5G5LDk3ojWkYE/fd2PNfmY5cpXPACXPbfUJvEaqvdFFZhNjqfZ6ynr+n1PMsw18VVffSlLvUq6ZtsHLY2HmfWDdPDlevqk0Ocbt74Gih3Mf7Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p04CvwjJWbs75QxLnYL0TrgnMy1qEC7wXBNEinDKDns=;
- b=PfJMiLhLdynS28ShZmnnRkxWA5swge+TLHfRcOvqVm5RW9vag6U1ZjeFOgBC7ofPdrWZo8td7vdxsxokpnZ0QL800niZfgewU5Rr2JRxehwaYPRBhzeXlZWJJIIGhV+V1M9uraAm6qmWW27ou9hpMX/AWq8s7VENzf7gOGbe0P8=
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-Received: from DBBPR05MB6299.eurprd05.prod.outlook.com (2603:10a6:10:d1::21)
- by DBBPR05MB6474.eurprd05.prod.outlook.com (2603:10a6:10:c8::12) with
+ bh=tGlJtn7z7N+QqE6Jj/osPqWiDFjODbFTV7v4VUQsmBE=;
+ b=NtYAzUCQb5o4hNepPUQyFl7YgPv4ICrL/5FDWHwjQLmzbiD3TmlGcNkFeiClwIHRvY29JeYiTyy8lvFYMf6ULnOKT/uViM0AI+Qdk5MBLc7sd6M4MWdDEYBRJ3a9PHMlsxRxbq0biFr7Z/VKKnk1CazaXmiE++HS0tGOn6O/q9g=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=synaptics.com;
+Received: from BYAPR03MB3573.namprd03.prod.outlook.com (2603:10b6:a02:ae::15)
+ by BY5PR03MB5361.namprd03.prod.outlook.com (2603:10b6:a03:21a::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.23; Wed, 24 Jun
- 2020 07:34:43 +0000
-Received: from DBBPR05MB6299.eurprd05.prod.outlook.com
- ([fe80::a406:4c1a:8fd0:d148]) by DBBPR05MB6299.eurprd05.prod.outlook.com
- ([fe80::a406:4c1a:8fd0:d148%4]) with mapi id 15.20.3109.027; Wed, 24 Jun 2020
- 07:34:43 +0000
-Subject: Re: [net-next 10/10] net/mlx5e: Add support for PCI relaxed ordering
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>
-Cc:     "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-References: <20200623195229.26411-1-saeedm@mellanox.com>
- <20200623195229.26411-11-saeedm@mellanox.com>
- <20200623143118.51373eb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <dda5c2b729bbaf025592aa84e2bdb84d0cda7570.camel@mellanox.com>
-From:   Aya Levin <ayal@mellanox.com>
-Message-ID: <082c6bfe-5146-c213-9220-65177717c342@mellanox.com>
-Date:   Wed, 24 Jun 2020 10:34:40 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-In-Reply-To: <dda5c2b729bbaf025592aa84e2bdb84d0cda7570.camel@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20; Wed, 24 Jun
+ 2020 07:59:42 +0000
+Received: from BYAPR03MB3573.namprd03.prod.outlook.com
+ ([fe80::d1ae:8ea7:ea:8998]) by BYAPR03MB3573.namprd03.prod.outlook.com
+ ([fe80::d1ae:8ea7:ea:8998%7]) with mapi id 15.20.3109.027; Wed, 24 Jun 2020
+ 07:59:42 +0000
+Date:   Wed, 24 Jun 2020 15:57:57 +0800
+From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/2] net: phy: call phy_disable_interrupts() in
+ phy_init_hw()
+Message-ID: <20200624155757.6b2e82cb@xhacker.debian>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0016.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::26) To DBBPR05MB6299.eurprd05.prod.outlook.com
- (2603:10a6:10:d1::21)
+X-ClientProxiedBy: TY1PR01CA0190.jpnprd01.prod.outlook.com (2603:1096:403::20)
+ To BYAPR03MB3573.namprd03.prod.outlook.com (2603:10b6:a02:ae::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.13] (77.138.160.220) by FR2P281CA0016.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:a::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20 via Frontend Transport; Wed, 24 Jun 2020 07:34:42 +0000
-X-Originating-IP: [77.138.160.220]
+Received: from xhacker.debian (124.74.246.114) by TY1PR01CA0190.jpnprd01.prod.outlook.com (2603:1096:403::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21 via Frontend Transport; Wed, 24 Jun 2020 07:59:39 +0000
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+X-Originating-IP: [124.74.246.114]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 7b87b648-0253-4ffe-00a8-08d818110fef
-X-MS-TrafficTypeDiagnostic: DBBPR05MB6474:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBBPR05MB6474DFBF6234A42D89984DD7B0950@DBBPR05MB6474.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1850;
+X-MS-Office365-Filtering-Correlation-Id: d37ca31b-3eba-49c4-c237-08d818148d2d
+X-MS-TrafficTypeDiagnostic: BY5PR03MB5361:
+X-Microsoft-Antispam-PRVS: <BY5PR03MB5361EBBEB730E06A116E35D8ED950@BY5PR03MB5361.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-Forefront-PRVS: 0444EB1997
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WF/+62EMzBiBFEZ0JwHJHKnAOogWbEWUrKBGfF+msKdQWl3kwBT7f/6Q4LaI3YvkdhkOOVtkAEpncwYXx5uYZc+N578XRNnzXpbInwk2LyMxeL1YUf7dNkGdd8D9H1ZPmdeX6BUFPoMkyosYjgWc/37YvrCArLzv27vuEn5T/6cAs2j9sjxemXIUJ/pFgcgB8tGjeXm+hXy0hGiGCCRlkQBefJznVV7T39TY4qVNyJCJvDHXRE+T3nxq+dpzQc+jywF/f8eJEp5H7UbKfigaSKS2r+GYfhQ8AvrI61t/hiHXHHkttx9gpDr6Vkrk8/jWl1LNI81v+rY85+b1KsEUwfcKJeJwJsrwbZiX6ygqOd4TVOeC8s8ri2og2wzD3/pX
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBBPR05MB6299.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39850400004)(396003)(366004)(346002)(136003)(376002)(16576012)(316002)(83380400001)(54906003)(110136005)(2616005)(478600001)(6486002)(956004)(53546011)(66946007)(8936002)(186003)(16526019)(66556008)(5660300002)(8676002)(86362001)(107886003)(26005)(66476007)(31696002)(4326008)(36756003)(52116002)(2906002)(31686004)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: kExuHdvWpyzdVJudzO0cunhqmKoRTLTV3/3+b5xftyYXNbuIFU2Wc4JQRES34uSXEjb58ARGtIosLvgx3lZ+zOZfktGMmNY4I/EZIEmODBd9bpEfA9ZSVErZegNVlwMX63u49RQ/9UF5gdqNe/JqAKfwlRveBoXzHOQ7GG8h+LPYws0+tZvrJpv9ORtLCB0h4+GujUv6sfV76JSEctg9XI4p3QcLC57lNvZhA3O/cfk43BwEtMi3mW8xJTq8zOh4xrfUYVfvj34xgwmqxTuks30CzBpdB/AUIGGG9PpTYWqQ8CgvfVHZHfOPG7SWQHis3h4oTI/EFz/gKciwEQy9kAxmSebziO9zF8jE475kcVzig1uP3YB0r8SjtohOZqTCvWnHlFU0Jk1i1YCLe5/Wp5OILhHDLZyKK2Bur4VHWfXPBA87E61AvJFjO4l6FJKSnUwJWi928gdP8UFuuECLnGlxynse2AxJpbBdge33ZjGowxC+C2/x/iZzwt7HpgBU
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b87b648-0253-4ffe-00a8-08d818110fef
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2020 07:34:43.5076
+X-Microsoft-Antispam-Message-Info: I0Bozvb+YhH4dpuINDqv71m3EA+gbYQ+A7hP1CKLjOzS9hgfzUNwdeVTwL0oIqdo5ARN/iayG8Lmx4U3P5Z1N7CDh1545gb2wzXzsugxJXmwYkR4ccWrV2h9KnOdgOjhhWM7aSzX2a221+HP4jbxID95+QwrtktRCw2gdfXAsV5TCwEj/NVNmtBVxzYHHi+y6Kbl2qSFVkQ2zTzZby5cbX97k17Gr5hHgKFGeP6triGJvuG4MidJUbPeZ2PMZ1FES+BFsiVvewhWMez5izLQPFMejFudd7UGY8dV+oy/QUulhpdtAXgttTUsUHcXutnEaSwws44rEU1kVa8k976dXA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR03MB3573.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(366004)(396003)(39860400002)(346002)(136003)(6506007)(52116002)(26005)(186003)(16526019)(7696005)(8676002)(66556008)(66476007)(110136005)(6666004)(8936002)(66946007)(9686003)(55016002)(1076003)(316002)(4326008)(478600001)(956004)(2906002)(83380400001)(5660300002)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: U7DdQ1bornl+IjZ5Do+zaOKMpTeNwOZFNmPn/kHWQFMxUt+/+qKwZw2bC1Wsv8KzxQkoWnLnHabu5TO9QTlNS5sxbsExcMQC7jRJBUi6JPWvtQ3FSVZ9sUOU6P5sYy9r5+3zlgbWthS0WxZx/1xqxyCWB5Z9IgQvVE6hqP1mFA7hk/3Kmi5FtNtObshnsnb7sDEfpMYr+6GawISJ3dZJZXhTEGb4/WfO/jqfR0/FXVc3H2CiwO3mOuMxXOd3p+GW9gJS/px4thUSYUQwZiT5+Okh8atqHs9sfE4wgjlrqJqb3ZK2zX2Vo5bxQZFLEkQEoc+7dBurEVrGubE0UpJfbyB5SuQSEYQUuFwR0oLUIaTLHlaV8TDrXvbVh6zlmzKTRyDIrCaEV3u1T6YNRygVcBUqePn18X89Djkbyl3pcFyZN68wFjW/vwvkzQWycjZJNUbFUY5YyqIFBsyN3+peoj5ToJ7y6FRj4xEMZ9E+QxVp9A4oW8LlG52pZlMVXB2T
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d37ca31b-3eba-49c4-c237-08d818148d2d
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR03MB3573.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2020 07:59:42.3452
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZEmPtPgpAbdBmaHVDgIC1JfndNrbGbHwGWIXeexWsZB0gE9mkS0ukSlpPkjL3Wp0FJRxyT/UqtBlwJE3AsSpBg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6474
+X-MS-Exchange-CrossTenant-UserPrincipalName: VTkv4ZoGQ2Q0vdlf8cSMnZopyUgmlMS7H7byhTdmII21XzkviMpGqfMKM65iHkrMYxkYTgN3lovZiW+T/ipfsA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR03MB5361
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+We face an issue with rtl8211f, a pin is shared between INTB and PMEB,
+and the PHY Register Accessible Interrupt is enabled by default, so
+the INTB/PMEB pin is always active in polling mode case.
 
+As Heiner pointed out "I was thinking about calling
+phy_disable_interrupts() in phy_init_hw(), to have a defined init
+state as we don't know in which state the PHY is if the PHY driver is
+loaded. We shouldn't assume that it's the chip power-on defaults, BIOS
+or boot loader could have changed this. Or in case of dual-boot
+systems the other OS could leave the PHY in whatever state."
 
-On 6/24/2020 9:56 AM, Saeed Mahameed wrote:
-> On Tue, 2020-06-23 at 14:31 -0700, Jakub Kicinski wrote:
->> On Tue, 23 Jun 2020 12:52:29 -0700 Saeed Mahameed wrote:
->>> From: Aya Levin <ayal@mellanox.com>
->>>
->>> The concept of Relaxed Ordering in the PCI Express environment
->>> allows
->>> switches in the path between the Requester and Completer to reorder
->>> some
->>> transactions just received before others that were previously
->>> enqueued.
->>>
->>> In ETH driver, there is no question of write integrity since each
->>> memory
->>> segment is written only once per cycle. In addition, the driver
->>> doesn't
->>> access the memory shared with the hardware until the corresponding
->>> CQE
->>> arrives indicating all PCI transactions are done.
->>
-> 
-> Hi Jakub, sorry i missed your comments on this patch.
-> 
->> Assuming the device sets the RO bits appropriately, right? Otherwise
->> CQE write could theoretically surpass the data write, no?
->>
-> 
-> Yes HW guarantees correctness of correlated queues and transactions.
-> 
->>> With relaxed ordering set, traffic on the remote-numa is at the
->>> same
->>> level as when on the local numa.
->>
->> Same level of? Achievable bandwidth?
->>
-> 
-> Yes, Bandwidth, according the below explanation, i see that the message
-> needs improvements.
-> 
->>> Running TCP single stream over ConnectX-4 LX, ARM CPU on remote-
->>> numa
->>> has 300% improvement in the bandwidth.
->>> With relaxed ordering turned off: BW:10 [GB/s]
->>> With relaxed ordering turned on:  BW:40 [GB/s]
->>>
->>> The driver turns relaxed ordering off by default. It exposes 2
->>> boolean
->>> private-flags in ethtool: pci_ro_read and pci_ro_write for user
->>> control.
->>>
->>> $ ethtool --show-priv-flags eth2
->>> Private flags for eth2:
->>> ...
->>> pci_ro_read        : off
->>> pci_ro_write       : off
->>>
->>> $ ethtool --set-priv-flags eth2 pci_ro_write on
->>> $ ethtool --set-priv-flags eth2 pci_ro_read on
->>
->> I think Michal will rightly complain that this does not belong in
->> private flags any more. As (/if?) ARM deployments take a foothold
->> in DC this will become a common setting for most NICs.
-> 
-> Initially we used pcie_relaxed_ordering_enabled() to
->   programmatically enable this on/off on boot but this seems to
-> introduce some degradation on some Intel CPUs since the Intel Faulty
-> CPUs list is not up to date. Aya is discussing this with Bjorn.
-Adding Bjorn Helgaas
-> 
-> So until we figure this out, will keep this off by default.
-> 
-> for the private flags we want to keep them for performance analysis as
-> we do with all other mlx5 special performance features and flags.
-> 
+patch1 makes phy_disable_interrupts() non-static so that it could be used
+in phy_init_hw() to have a defined init state.
+
+patch2 calls phy_disable_interrupts() in phy_init_hw() to have a
+defined init state.
+
+Since v3:
+  - call phy_disable_interrupts() have interrupts disabled first then
+    config_init, thank Florian
+
+Since v2:
+  - Don't export phy_disable_interrupts() but just make it non-static
+
+Since v1:
+  - EXPORT the correct symbol
+
+Jisheng Zhang (2):
+  net: phy: make phy_disable_interrupts() non-static
+  net: phy: call phy_disable_interrupts() in phy_init_hw()
+
+ drivers/net/phy/phy.c        | 2 +-
+ drivers/net/phy/phy_device.c | 4 ++++
+ include/linux/phy.h          | 1 +
+ 3 files changed, 6 insertions(+), 1 deletion(-)
+
+-- 
+2.27.0
+
