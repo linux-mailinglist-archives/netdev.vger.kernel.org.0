@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3AE6207779
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 17:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88A9D20777B
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 17:34:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404434AbgFXPeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 11:34:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60412 "EHLO mail.kernel.org"
+        id S2404508AbgFXPe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 11:34:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60462 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404208AbgFXPeU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jun 2020 11:34:20 -0400
+        id S2404323AbgFXPe2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 11:34:28 -0400
 Received: from lore-desk-wlan.redhat.com (unknown [151.48.138.186])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DF8512077D;
-        Wed, 24 Jun 2020 15:34:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EB68E206FA;
+        Wed, 24 Jun 2020 15:34:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593012859;
-        bh=bGLxbaVHmjlVJc1HjqKlll9zRDuezU/jAgVCbbVar2I=;
-        h=From:To:Cc:Subject:Date:From;
-        b=A7MaZKb18seQgWA8dlmgQ25XgXVtkPlh1zyilK1IXupxYXIa6fkFLaZ11K5XXViQC
-         BwdC/np1PWu0/vThH3vQyrVsIeUCdKA+JMVgEZNMtFpLD5SO3HU5d5plgrfvuK+VhO
-         wQ368fwthsiPnRb8pklJG0Ji5ci13vIeZjg2eayA=
+        s=default; t=1593012868;
+        bh=1pJytwJejZQnTfJpmOAYaRgg4T3M4iz5/khnbm9cSqk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YCMy2tLT0yO/uBTDu5EF0+Oz5xWZ4+K0BndtlYUCdrOpTE4+4YKFJGdFJLbfqX2xP
+         sqGCxQAZXo6/jwhY6yn40nhVweJwUWiB7uez08nTBH7xb2sB3PEiu2/SV/bnYuSjEu
+         wVc4AtT/i99+I79qyFoeT+W4ZCjYqNBBfvJzz8Ao=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, brouer@redhat.com,
         daniel@iogearbox.net, toke@redhat.com, lorenzo.bianconi@redhat.com,
         dsahern@kernel.org, andrii.nakryiko@gmail.com
-Subject: [PATCH v4 bpf-next 0/9] introduce support for XDP programs in CPUMAP
-Date:   Wed, 24 Jun 2020 17:33:49 +0200
-Message-Id: <cover.1593012598.git.lorenzo@kernel.org>
+Subject: [PATCH v4 bpf-next 1/9] cpumap: use non-locked version __ptr_ring_consume_batched
+Date:   Wed, 24 Jun 2020 17:33:50 +0200
+Message-Id: <91807e9d58de5d48521631548ec4586f0090399b.1593012598.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <cover.1593012598.git.lorenzo@kernel.org>
+References: <cover.1593012598.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -39,72 +41,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to what David Ahern proposed in [1] for DEVMAPs, introduce the
-capability to attach and run a XDP program to CPUMAP entries.
-The idea behind this feature is to add the possibility to define on which CPU
-run the eBPF program if the underlying hw does not support RSS.
-I respin patch 1/6 from a previous series sent by David [2].
-The functionality has been tested on Marvell Espressobin, i40e and mlx5.
-Detailed tests results can be found here:
-https://github.com/xdp-project/xdp-project/blob/master/areas/cpumap/cpumap04-map-xdp-prog.org
+From: Jesper Dangaard Brouer <brouer@redhat.com>
 
-Changes since v3:
-- fix typo in commit message
-- fix access to ctx->ingress_ifindex in cpumap bpf selftest
+Commit 77361825bb01 ("bpf: cpumap use ptr_ring_consume_batched") changed
+away from using single frame ptr_ring dequeue (__ptr_ring_consume) to
+consume a batched, but it uses a locked version, which as the comment
+explain isn't needed.
 
-Changes since v2:
-- improved comments
-- fix return value in xdp_convert_buff_to_frame
-- added patch 1/9: "cpumap: use non-locked version __ptr_ring_consume_batched"
-- do not run kmem_cache_alloc_bulk if all frames have been consumed by the XDP
-  program attached to the CPUMAP entry
-- removed bpf_trace_printk in kselftest
+Change to use the non-locked version __ptr_ring_consume_batched.
 
-Changes since v1:
-- added performance test results
-- added kselftest support
-- fixed memory accounting with page_pool
-- extended xdp_redirect_cpu_user.c to load an external program to perform
-  redirect
-- reported ifindex to attached eBPF program
-- moved bpf_cpumap_val definition to include/uapi/linux/bpf.h
+Fixes: 77361825bb01 ("bpf: cpumap use ptr_ring_consume_batched")
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ kernel/bpf/cpumap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[1] https://patchwork.ozlabs.org/project/netdev/cover/20200529220716.75383-1-dsahern@kernel.org/
-[2] https://patchwork.ozlabs.org/project/netdev/patch/20200513014607.40418-2-dsahern@kernel.org/
-
-David Ahern (1):
-  net: Refactor xdp_convert_buff_to_frame
-
-Jesper Dangaard Brouer (1):
-  cpumap: use non-locked version __ptr_ring_consume_batched
-
-Lorenzo Bianconi (7):
-  samples/bpf: xdp_redirect_cpu_user: do not update bpf maps in option
-    loop
-  cpumap: formalize map value as a named struct
-  bpf: cpumap: add the possibility to attach an eBPF program to cpumap
-  bpf: cpumap: implement XDP_REDIRECT for eBPF programs attached to map
-    entries
-  libbpf: add SEC name for xdp programs attached to CPUMAP
-  samples/bpf: xdp_redirect_cpu: load a eBPF program on cpumap
-  selftest: add tests for XDP programs in CPUMAP entries
-
- include/linux/bpf.h                           |   6 +
- include/net/xdp.h                             |  41 ++--
- include/trace/events/xdp.h                    |  16 +-
- include/uapi/linux/bpf.h                      |  14 ++
- kernel/bpf/cpumap.c                           | 160 +++++++++++---
- net/core/dev.c                                |   8 +
- samples/bpf/xdp_redirect_cpu_kern.c           |  25 ++-
- samples/bpf/xdp_redirect_cpu_user.c           | 208 ++++++++++++++++--
- tools/include/uapi/linux/bpf.h                |  14 ++
- tools/lib/bpf/libbpf.c                        |   2 +
- .../bpf/prog_tests/xdp_cpumap_attach.c        |  70 ++++++
- .../bpf/progs/test_xdp_with_cpumap_helpers.c  |  36 +++
- 12 files changed, 528 insertions(+), 72 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_cpumap_attach.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c
-
+diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+index bd8658055c16..323c91c4fab0 100644
+--- a/kernel/bpf/cpumap.c
++++ b/kernel/bpf/cpumap.c
+@@ -259,7 +259,7 @@ static int cpu_map_kthread_run(void *data)
+ 		 * kthread CPU pinned. Lockless access to ptr_ring
+ 		 * consume side valid as no-resize allowed of queue.
+ 		 */
+-		n = ptr_ring_consume_batched(rcpu->queue, frames, CPUMAP_BATCH);
++		n = __ptr_ring_consume_batched(rcpu->queue, frames, CPUMAP_BATCH);
+ 
+ 		for (i = 0; i < n; i++) {
+ 			void *f = frames[i];
 -- 
 2.26.2
 
