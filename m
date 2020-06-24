@@ -2,70 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04ED820795F
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:42:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3462207961
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391238AbgFXQm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 12:42:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
+        id S2404897AbgFXQnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 12:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391226AbgFXQm0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:42:26 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB917C061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:42:26 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id k6so1256104pll.9
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:42:26 -0700 (PDT)
+        with ESMTP id S2404017AbgFXQnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:43:51 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CACC061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:43:51 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id s14so1264121plq.6
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:43:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6pxaXQppJ1NtFfT4bm1fjAmNyPG9fa55KVp8t6t9aUw=;
-        b=NMg3/Xl8xJ+buVhg5JEdxHiY1mTS0iJhQLCOVZrjLXMVwto1jAhphFG3Kt4c2sx/d/
-         zaIs368VIQsKNRy9Jj0o1N96BaDaPdMIaevqZ/co7YtmLEKmp7kqPqyVEXW9RE+feb9u
-         TdafrEm8zspnkOCcBKElG15HolW1aHtU55MItPmlYYfibmUZEozcs9qNSWFacxAnF7NW
-         X6/SfSp0scxr9wIo8x8TONSs9ug9dOZ86btg9Id8zqQuG2Xc3ZGx66SlX8gm0HCldTfN
-         VT/mA4/z9OA8c6+Vys5ojtBh9rWvbqO+qH9HT+3qH1qdPq02n4T5u7/5dLKBSCZ1EC0h
-         61Yg==
+        bh=y1IhjNNb7fUJICRcToQnRGGcbyhtcEjuvXR0xQ38qg4=;
+        b=ac2Az0DLPAkpFswzjp7LZ7zUcIX2e2iBToBTfZWs0tkxKJF35/J1k0mngafYfRTdw9
+         Oyft2HaRQ8BUbjk4Vg+HV35luW/De994gRu8Y6HwhhMqsgJX6hZbXXuX4j0RjfjHpKNX
+         mGlVxGwIzGa0ULtFl67R0nCK1nOp9zNtotqQMAzMndNQMk50twZ1yyhPmpo5YOHpvF/a
+         fyV4D6RNaTrNdNU23tKsfJyeYIi+iRQw/QmXRIC58z30OD5ad9vaTNATaPo/hK/8r7Tl
+         TZB7UmSi8PtBeoDJW0SErliCXH7RjR8k3P9oES65NkwLVzO9vUMM6WWwKjCPRnQbsSZQ
+         R7jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=6pxaXQppJ1NtFfT4bm1fjAmNyPG9fa55KVp8t6t9aUw=;
-        b=Q0PZrRft4fEWbL1IDXmYD69DDz13Bi0ounuQo59FvbPTye5mgwA9n8FZHzeq3kFXqG
-         dXp/Z+7GbXsAd2O4O0uSnKJ430G/LrKgjFAH068xcgl76SUccE8+y+TgJiUo89JPT6Z4
-         1Fw46UzZumxY2UoJP+jV4fjMSbLKC2QMvh0cISkJ7yTrADMi8GEV460CVCZzXW5VK483
-         dxiHlaQOi1uwxb+KG8fkWHWUcp/BsZLbkkrvYJmLhnMXHy+pZN8u/iM3yYw5Jcwili3M
-         lg8XuT8DdvIyXoO+YtDJKM60wupHTSUE5SItv4ni4RYkTs4aayzecr5y25TA3Ghxurzb
-         UUnQ==
-X-Gm-Message-State: AOAM532+O5hP17HVXHWraW6s1660KYxASAoapleqU2aP0owdZM/nnJFS
-        L4qeWMFSSyi6sQQujX5J5Ew=
-X-Google-Smtp-Source: ABdhPJzH9KzpJRoEkEdWN/eaB4iVmgK3tBS4C6JHAGB+cybdaefmMtw7TiR3frxJnvFTyfsoA+DRDQ==
-X-Received: by 2002:a17:90b:3746:: with SMTP id ne6mr30030336pjb.166.1593016946025;
-        Wed, 24 Jun 2020 09:42:26 -0700 (PDT)
+        bh=y1IhjNNb7fUJICRcToQnRGGcbyhtcEjuvXR0xQ38qg4=;
+        b=kfDrpWuE7HLOFY4+w0g4ISFvliBnTBhtCnzKG/8LpNTB3tXk0sdPIABJorD7aMIVC3
+         wBnXaCyRLo2ag7n6ZV3OjF+TonnEQJzIi2Fct4T5zYdBTtUQjL7kplTRCSEkGrPX6fDF
+         SfZI70xj8UJuOFyBDrDh9DNcPHQymmk10hyhh0Nyb5zmJLXLfYnpIvmR7OFKJahoQRuZ
+         Cwc2Ode7Y3qCYB7z0qx5Oi0KqJstTZ59ogoOEjlo5uRw6wPjLW8qBDBKeX1oAq5BWObr
+         nOAndM/vsLqscuo1sD0q0rOPtEcP22sGekF94E4weOuaoYUF747Bd4Gcw+EiffjVczeb
+         MkaA==
+X-Gm-Message-State: AOAM530JoqILlDqDnHyPeqX0gzTyA7Su3owReuoIppn4KHnqzJM4uz0A
+        9pxynKh5GHYT2Q+l6KvytZE=
+X-Google-Smtp-Source: ABdhPJw6Rp2Rr8giG60f5D/VOexaHx/5Mr3HU5ewSvOLEGalKRgfHZ7zecDC1GdTZjZ69dZgbJd73Q==
+X-Received: by 2002:a17:902:8508:: with SMTP id bj8mr27411069plb.231.1593017031062;
+        Wed, 24 Jun 2020 09:43:51 -0700 (PDT)
 Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id y12sm3026153pfo.182.2020.06.24.09.42.24
+        by smtp.gmail.com with ESMTPSA id c2sm16928108pgk.77.2020.06.24.09.43.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Jun 2020 09:42:24 -0700 (PDT)
-Subject: Re: [PATCH] IPv6: Fix CPU contention on FIB6 GC
-To:     Oliver Herms <oliver.peter.herms@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        Wed, 24 Jun 2020 09:43:50 -0700 (PDT)
+Subject: Re: [PATCH] IPv4: Tunnel: Fix effective path mtu calculation
+To:     Oliver Herms <oliver.peter.herms@gmail.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
         kuba@kernel.org
-References: <20200622205355.GA869719@tws>
- <32da6a56-0217-acda-c12c-49f7c74275ef@gmail.com>
- <3230b95a-1ce0-b569-3d00-f7063ae9f1d9@gmail.com>
- <20200623220650.kymq7vbqiogvnsj3@lion.mk-sys.cz>
- <5be2063d-2433-54af-194d-fd4628974f29@gmail.com>
+References: <20200624114852.GA153778@tws>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <04671504-5ee4-7cfa-7b28-9e7f15c9f607@gmail.com>
-Date:   Wed, 24 Jun 2020 09:42:23 -0700
+Message-ID: <a3d6baa0-7f72-adf3-0082-df42a05858b1@gmail.com>
+Date:   Wed, 24 Jun 2020 09:43:49 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.1
 MIME-Version: 1.0
-In-Reply-To: <5be2063d-2433-54af-194d-fd4628974f29@gmail.com>
+In-Reply-To: <20200624114852.GA153778@tws>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -76,62 +70,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 6/24/20 3:34 AM, Oliver Herms wrote:
-> On 24.06.20 00:06, Michal Kubecek wrote:
->> On Tue, Jun 23, 2020 at 01:30:29AM +0200, Oliver Herms wrote:
->>>
->>> I'm encountering the issues due to cache entries that are created by 
->>> tnl_update_pmtu. However, I'm going to address that issue in another thread
->>> and patch.
->>>
->>> As entries in the cache can be caused on many ways this should be fixed on the GC
->>> level.
->>
->> Actually, not so many as starting with (IIRC) 4.2, IPv6 routing cache is
->> only used for exceptions (like PMTU), not for regular lookup results.
->>
+On 6/24/20 4:48 AM, Oliver Herms wrote:
+> The calculation of the effective tunnel mtu, that is used to create
+> mtu exceptions if necessary, is currently not done correctly. This
+> leads to unnecessary entries in the IPv6 route cache for any packet
+> to be sent through the tunnel.
 > 
-> Hi Michal,
+> The root cause is, that "dev->hard_header_len" is subtracted from the
+> tunnel destinations path mtu. Thus subtracting too much, if
+> dev->hard_header_len is filled in. This is that case for SIT tunnels
+> where hard_header_len is the underlyings dev's hard_header_len (e.g. 14
+> for ethernet) + 20 bytes IP header (see net/ipv6/sit.c:1091).
 > 
-> Right. That is the intention. But reality is, that when sending IPv6 with an 
-> MPLS encap route into a SIT/FOU tunnel, a cache entry is being created for every single
-> destination on the tunnel. Now that IS a bug by itself and I'll shortly submit a 
-> patch that should fix that issue.
-
-Thanks !
-
+> However, the MTU of the path is exclusive of the ethernet header
+> and the 20 bytes for the IP header are being subtracted separately
+> already. Thus hard_header_len is removed from this calculation.
 > 
-> However, when a tunnel uses PMTU, and a tunnel source received an ICMP packet too big
-> for the tunnel destination, that triggers creation of IPv6 route cache entries
-> (and for IPv4 entries in the corresponding data structure) for every destination for which
-> packets are sent through the tunnel.
+> For IPIP and GRE tunnels this doesn't change anything as hard_header_len
+> is zero in those cases anyways.
 > 
-> Both these attributes,
-> 1. the presence or absence of, maybe spoofed, ICMP packet too big messages for the tunnel
-> 2. the number of flows through a tunnel (attackers could just create more flows)
-> are not fully under control by an operator.
+> Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
+> ---
+>  net/ipv4/ip_tunnel.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> Thus the assumption that if only max_size would be big enough, it would solve the problem, 
-> it not correct.
-
-Our intention is to get rid of the IPv6 garbage collection, so we need to make sure
-we do not rely on it ;)
-
-> 
-> Regarding your argument making the limit "softer":
-> There is only 2 functions that use/lock fib6_gc_lock:
-> 1. fib6_net_init
-> 2. fib6_run_gc 
-> 
-> fib6_net_init is only called when the network namespace is initialized.
-> 
-> fib6_run_gc clears all entries that are subject to garbage collection.
-> There is no gain in doing that N times (with N = amount of CPUs) and spinlocking all CPUs. 
-> Cleaning once is enough. A GC run is so short, that by the time the GC run is finished, 
-> there's most probably no new entry in the cache that is ready to be removed.
-> And even if there is. The next call to ip6_dst_gc will happen when a new entry
-> is added to the cache. Thus I can't see how my patch makes time limit softer.
+> diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+> index f4f1d11eab50..871d28bd29fa 100644
+> --- a/net/ipv4/ip_tunnel.c
+> +++ b/net/ipv4/ip_tunnel.c
+> @@ -495,8 +495,7 @@ static int tnl_update_pmtu(struct net_device *dev, struct sk_buff *skb,
+>  	pkt_size = skb->len - tunnel_hlen - dev->hard_header_len;
+>  
+>  	if (df)
+> -		mtu = dst_mtu(&rt->dst) - dev->hard_header_len
+> -					- sizeof(struct iphdr) - tunnel_hlen;
+> +		mtu = dst_mtu(&rt->dst) - sizeof(struct iphdr) - tunnel_hlen;
+>  	else
+>  		mtu = skb_valid_dst(skb) ? dst_mtu(skb_dst(skb)) : dev->mtu;
+>  
 > 
 
-This are really minor implementation details, we need to find the root cause.
 
+Can you add a Fixes: tag, to help stable teams work ?
+
+Thanks.
