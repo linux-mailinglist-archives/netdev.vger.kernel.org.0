@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5680206EAC
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 10:09:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CEC2206EAD
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 10:09:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390330AbgFXII3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 04:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48274 "EHLO
+        id S2390336AbgFXIId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 04:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387732AbgFXII1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 04:08:27 -0400
+        with ESMTP id S2387732AbgFXIIb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 04:08:31 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C39C061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 01:08:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835FDC061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 01:08:31 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1jo0SI-00068x-0n; Wed, 24 Jun 2020 10:08:26 +0200
+        id 1jo0SM-00069B-5l; Wed, 24 Jun 2020 10:08:30 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     steffen.klassert@secunet.com
 Cc:     <netdev@vger.kernel.org>, Florian Westphal <fw@strlen.de>
-Subject: [PATCH ipsec-next v2 4/6] xfrm: replay: remove recheck indirection
-Date:   Wed, 24 Jun 2020 10:08:02 +0200
-Message-Id: <20200624080804.7480-5-fw@strlen.de>
+Subject: [PATCH ipsec-next v2 5/6] xfrm: replay: avoid replay indirection
+Date:   Wed, 24 Jun 2020 10:08:03 +0200
+Message-Id: <20200624080804.7480-6-fw@strlen.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200624080804.7480-1-fw@strlen.de>
 References: <20200624080804.7480-1-fw@strlen.de>
@@ -33,113 +33,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds new xfrm_replay_recheck() helper and calls it from
-xfrm input path instead of the indirection.
+Add and use xfrm_replay_check helper instead of indirection.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
  include/net/xfrm.h     |  4 +---
  net/xfrm/xfrm_input.c  |  2 +-
- net/xfrm/xfrm_replay.c | 22 ++++++++++++++++------
- 3 files changed, 18 insertions(+), 10 deletions(-)
+ net/xfrm/xfrm_replay.c | 27 ++++++++++++++++++---------
+ 3 files changed, 20 insertions(+), 13 deletions(-)
 
 diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 78bbfd370e34..7c0b69e00128 100644
+index 7c0b69e00128..008b564cb126 100644
 --- a/include/net/xfrm.h
 +++ b/include/net/xfrm.h
-@@ -307,9 +307,6 @@ struct xfrm_replay {
- 	int	(*check)(struct xfrm_state *x,
- 			 struct sk_buff *skb,
- 			 __be32 net_seq);
--	int	(*recheck)(struct xfrm_state *x,
--			   struct sk_buff *skb,
--			   __be32 net_seq);
+@@ -304,9 +304,6 @@ struct km_event {
+ };
+ 
+ struct xfrm_replay {
+-	int	(*check)(struct xfrm_state *x,
+-			 struct sk_buff *skb,
+-			 __be32 net_seq);
  	int	(*overflow)(struct xfrm_state *x, struct sk_buff *skb);
  };
  
-@@ -1720,6 +1717,7 @@ static inline int xfrm_policy_id2dir(u32 index)
+@@ -1716,6 +1713,7 @@ static inline int xfrm_policy_id2dir(u32 index)
+ 
  #ifdef CONFIG_XFRM
  void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq);
++int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
  void xfrm_replay_notify(struct xfrm_state *x, int event);
-+int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
+ int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
  
- static inline int xfrm_aevent_is_on(struct net *net)
- {
 diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index b4b559b35cf1..005d8e9c5df4 100644
+index 005d8e9c5df4..694adc6e9286 100644
 --- a/net/xfrm/xfrm_input.c
 +++ b/net/xfrm/xfrm_input.c
-@@ -658,7 +658,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 		/* only the first xfrm gets the encap type */
- 		encap_type = 0;
+@@ -610,7 +610,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 			goto drop_unlock;
+ 		}
  
--		if (async && x->repl->recheck(x, skb, seq)) {
-+		if (async && xfrm_replay_recheck(x, skb, seq)) {
+-		if (x->repl->check(x, skb, seq)) {
++		if (xfrm_replay_check(x, skb, seq)) {
  			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATESEQERROR);
  			goto drop_unlock;
  		}
 diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
-index 460f438bd138..60608b51b2d9 100644
+index 60608b51b2d9..8c97fcaf17cf 100644
 --- a/net/xfrm/xfrm_replay.c
 +++ b/net/xfrm/xfrm_replay.c
-@@ -503,6 +503,22 @@ static int xfrm_replay_recheck_esn(struct xfrm_state *x,
- 	return xfrm_replay_check_esn(x, skb, net_seq);
+@@ -119,8 +119,8 @@ static int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+ 	return err;
  }
  
-+int xfrm_replay_recheck(struct xfrm_state *x,
-+			struct sk_buff *skb, __be32 net_seq)
+-static int xfrm_replay_check(struct xfrm_state *x,
+-		      struct sk_buff *skb, __be32 net_seq)
++static int xfrm_replay_check_legacy(struct xfrm_state *x,
++				    struct sk_buff *skb, __be32 net_seq)
+ {
+ 	u32 diff;
+ 	u32 seq = ntohl(net_seq);
+@@ -491,6 +491,21 @@ static int xfrm_replay_check_esn(struct xfrm_state *x,
+ 	return -EINVAL;
+ }
+ 
++int xfrm_replay_check(struct xfrm_state *x,
++		      struct sk_buff *skb, __be32 net_seq)
 +{
 +	switch (x->repl_mode) {
 +	case XFRM_REPLAY_MODE_LEGACY:
 +		break;
 +	case XFRM_REPLAY_MODE_BMP:
-+		/* no special recheck treatment */
 +		return xfrm_replay_check_bmp(x, skb, net_seq);
 +	case XFRM_REPLAY_MODE_ESN:
-+		return xfrm_replay_recheck_esn(x, skb, net_seq);
++		return xfrm_replay_check_esn(x, skb, net_seq);
 +	}
 +
-+	return xfrm_replay_check(x, skb, net_seq);
++	return xfrm_replay_check_legacy(x, skb, net_seq);
 +}
 +
- static void xfrm_replay_advance_esn(struct xfrm_state *x, __be32 net_seq)
+ static int xfrm_replay_recheck_esn(struct xfrm_state *x,
+ 				   struct sk_buff *skb, __be32 net_seq)
  {
- 	unsigned int bitnr, nr, i;
-@@ -690,37 +706,31 @@ static int xfrm_replay_overflow_offload_esn(struct xfrm_state *x, struct sk_buff
+@@ -516,7 +531,7 @@ int xfrm_replay_recheck(struct xfrm_state *x,
+ 		return xfrm_replay_recheck_esn(x, skb, net_seq);
+ 	}
+ 
+-	return xfrm_replay_check(x, skb, net_seq);
++	return xfrm_replay_check_legacy(x, skb, net_seq);
+ }
+ 
+ static void xfrm_replay_advance_esn(struct xfrm_state *x, __be32 net_seq)
+@@ -705,32 +720,26 @@ static int xfrm_replay_overflow_offload_esn(struct xfrm_state *x, struct sk_buff
+ }
  
  static const struct xfrm_replay xfrm_replay_legacy = {
- 	.check		= xfrm_replay_check,
--	.recheck	= xfrm_replay_check,
+-	.check		= xfrm_replay_check,
  	.overflow	= xfrm_replay_overflow_offload,
  };
  
  static const struct xfrm_replay xfrm_replay_bmp = {
- 	.check		= xfrm_replay_check_bmp,
--	.recheck	= xfrm_replay_check_bmp,
+-	.check		= xfrm_replay_check_bmp,
  	.overflow	= xfrm_replay_overflow_offload_bmp,
  };
  
  static const struct xfrm_replay xfrm_replay_esn = {
- 	.check		= xfrm_replay_check_esn,
--	.recheck	= xfrm_replay_recheck_esn,
+-	.check		= xfrm_replay_check_esn,
  	.overflow	= xfrm_replay_overflow_offload_esn,
  };
  #else
  static const struct xfrm_replay xfrm_replay_legacy = {
- 	.check		= xfrm_replay_check,
--	.recheck	= xfrm_replay_check,
+-	.check		= xfrm_replay_check,
  	.overflow	= xfrm_replay_overflow,
  };
  
  static const struct xfrm_replay xfrm_replay_bmp = {
- 	.check		= xfrm_replay_check_bmp,
--	.recheck	= xfrm_replay_check_bmp,
+-	.check		= xfrm_replay_check_bmp,
  	.overflow	= xfrm_replay_overflow_bmp,
  };
  
  static const struct xfrm_replay xfrm_replay_esn = {
- 	.check		= xfrm_replay_check_esn,
--	.recheck	= xfrm_replay_recheck_esn,
+-	.check		= xfrm_replay_check_esn,
  	.overflow	= xfrm_replay_overflow_esn,
  };
  #endif
