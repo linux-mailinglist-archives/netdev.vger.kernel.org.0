@@ -2,93 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8AB0207E0C
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 23:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AABF207E12
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 23:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389299AbgFXVCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 17:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388763AbgFXVCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 17:02:40 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66D6C061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 14:02:40 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id d10so1622239pls.5
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 14:02:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=k1xn8QBzwKYXTOcuZ83n7JM+2qG9Cvc7uFDnGgIr3p4=;
-        b=aqGAsvWXmNL3ZlvD/tcQSiYyJLHq4Or8yBId+44ceqnrSWmrYT9VQlcqtNfsBsUn0Z
-         1ES7RFHavoZzLpFBZCzKpFQwwMlvnIN8NnoFlLWLhjjfpAlcBfvDmA4y9vF//weepQ/b
-         LDyBxqRJHav1ZyMzJJ0Wf8tVlSRS+RA+J6JoY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=k1xn8QBzwKYXTOcuZ83n7JM+2qG9Cvc7uFDnGgIr3p4=;
-        b=o4DRNFwPhZZVLoRjbxfWkM2ferA+UHe5fl/PIja6OMfLku7j/UKdcSYqe2R6BgfXwv
-         1ihGdzvoYX+xjmjXUzlIiLMUFog3dLj1OHA8nq8bYw8IMRvX9FOTO5AMC23tk4mCvX51
-         FeLCHsbQu9LIkRnyB4/Vp8EithjiuKiWTerB9kZ5kJLwS5xq9is+yEch1+Vzx4FfJaAv
-         dCiC7SJcxdeVZw9Aa+GCJmw0+csBA2b0m81yuc55qyA99Utt6cc438X0mMviEtr2XfJR
-         H242pqxuyPmRiEQqSoXjromH0aT0hnH/GMzTDquCVCliLP+DAmb2m6lH0bflG9N7g2U2
-         igSQ==
-X-Gm-Message-State: AOAM532jChWKCG8ODCUvoMxhJgPWZPmzVRiDoMFXcbvcVzsyM2/87eWx
-        nWUh7uHxvvxqFkvnGMIRB/WXiw==
-X-Google-Smtp-Source: ABdhPJxqXhmkQ+kAL7W2hl8hImkHwBv4Lh2lIAftjQDjfTWG0wS67XAvVMhiz3cBlUB5MHYmDuocXQ==
-X-Received: by 2002:a17:90a:fe83:: with SMTP id co3mr29345971pjb.204.1593032560370;
-        Wed, 24 Jun 2020 14:02:40 -0700 (PDT)
-Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
-        by smtp.googlemail.com with ESMTPSA id j2sm3107778pjy.1.2020.06.24.14.02.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Jun 2020 14:02:39 -0700 (PDT)
-From:   Roopa Prabhu <roopa@cumulusnetworks.com>
-X-Google-Original-From: Roopa Prabhu
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
-        julien@cumulusnetworks.com
-Subject: [PATCH net] vxlan: fix last fdb index during dump of fdb with nhid 
-Date:   Wed, 24 Jun 2020 14:02:36 -0700
-Message-Id: <1593032556-40360-1-git-send-email-roopa@cumulusnetworks.com>
-X-Mailer: git-send-email 2.1.4
+        id S2388763AbgFXVGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 17:06:12 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:55127 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387853AbgFXVGK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 17:06:10 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id b68c71cc;
+        Wed, 24 Jun 2020 20:47:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=date:from:to
+        :cc:subject:message-id:references:mime-version:content-type
+        :in-reply-to; s=mail; bh=XO6Q6GrJbI1v85reC8HtPS6cVqo=; b=QvbmWrG
+        e2VM3MG/tsvnOvOZc/bFhccLnV5iS+24BMhVYdHI1JLK97eP/dPNkq+XIb3bUpFx
+        SgF5jzedxu6g3DRB+D03hJN4M+3SkDJiXRaqx89QXGeUvaWyZQrVdyRi7HNYT20n
+        nHgxGDNobQsBKa8lFh8tgp2ZB4GkZ0J64H7dnefE3RccBX758gS0aY9KB63JT5du
+        aH2+ljjmDBN6MLBaIzdyTv8EwZb/ive6Yvkszyx0HoMR+88S35Wex4NKuDypru1B
+        T+Rr57Z5gkuDCtoLZXuX9wF9a2g4LfuGQLCa1objJqp7MNTfUFG0RrQUjIRpAXS7
+        PzCRjUG6hRscXOA==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d236ac31 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Wed, 24 Jun 2020 20:47:05 +0000 (UTC)
+Date:   Wed, 24 Jun 2020 15:06:06 -0600
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Alexander Lobakin <alobakin@dlink.ru>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Edward Cree <ecree@solarflare.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net-next] net: core: use listified Rx for GRO_NORMAL
+ in napi_gro_receive()
+Message-ID: <20200624210606.GA1362687@zx2c4.com>
+References: <20191014080033.12407-1-alobakin@dlink.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20191014080033.12407-1-alobakin@dlink.ru>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roopa Prabhu <roopa@cumulusnetworks.com>
+Hi Alexander,
 
-This patch fixes last saved fdb index in fdb dump handler when
-handling fdb's with nhid.
+This patch introduced a behavior change around GRO_DROP:
 
-Fixes: 1274e1cc4226 ("vxlan: ecmp support for mac fdb entries")
-Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
----
- drivers/net/vxlan.c | 4 ++++
- 1 file changed, 4 insertions(+)
+napi_skb_finish used to sometimes return GRO_DROP:
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index e8085ab..89d85dc 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -1380,6 +1380,8 @@ static int vxlan_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 			struct vxlan_rdst *rd;
- 
- 			if (rcu_access_pointer(f->nh)) {
-+				if (*idx < cb->args[2])
-+					goto skip_nh;
- 				err = vxlan_fdb_info(skb, vxlan, f,
- 						     NETLINK_CB(cb->skb).portid,
- 						     cb->nlh->nlmsg_seq,
-@@ -1387,6 +1389,8 @@ static int vxlan_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 						     NLM_F_MULTI, NULL);
- 				if (err < 0)
- 					goto out;
-+skip_nh:
-+				*idx += 1;
- 				continue;
- 			}
- 
--- 
-2.1.4
+> -static gro_result_t napi_skb_finish(gro_result_t ret, struct sk_buff *skb)
+> +static gro_result_t napi_skb_finish(struct napi_struct *napi,
+> +				    struct sk_buff *skb,
+> +				    gro_result_t ret)
+>  {
+>  	switch (ret) {
+>  	case GRO_NORMAL:
+> -		if (netif_receive_skb_internal(skb))
+> -			ret = GRO_DROP;
+> +		gro_normal_one(napi, skb);
+>
 
+But under your change, gro_normal_one and the various calls that makes
+never propagates its return value, and so GRO_DROP is never returned to
+the caller, even if something drops it.
+
+Was this intentional? Or should I start looking into how to restore it?
+
+Thanks,
+Jason
