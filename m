@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B878D207785
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 17:34:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA57A207787
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 17:34:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404571AbgFXPew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 11:34:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60636 "EHLO mail.kernel.org"
+        id S2404581AbgFXPe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 11:34:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60680 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404107AbgFXPew (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jun 2020 11:34:52 -0400
+        id S2404107AbgFXPe4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 11:34:56 -0400
 Received: from lore-desk-wlan.redhat.com (unknown [151.48.138.186])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D206820706;
-        Wed, 24 Jun 2020 15:34:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AA6BD2077D;
+        Wed, 24 Jun 2020 15:34:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593012891;
-        bh=ex47bEmysnq8pMG5dfS2cosWo9+Nm3r8lkMcR1C7H+8=;
+        s=default; t=1593012895;
+        bh=opS5eRfWkZxbEhJg9X6T95jpkuS1Z4Ygb8njO6/vd6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qh8bTdJ3PuUEO0v4WM+UEk5mfeTnK5BnVcpYgg0cSIXRbJmCqfz1i0KCn+Tirzoac
-         uxpfhcnK5WWe3KZl6JQSSZDYp6+H78cYINGLR2w0wqreBunEcbPipeO4xo6gQ0tPtk
-         UQRF/PY0F/tRQTPt7ZgmsCpreNzyk+6LlNaXapDw=
+        b=UY43QSWjPjgeZinl3XIdzuaK7fu4/gFXrvOK5l0uQ7AWZeQzBrG98fFLZ0FM2hgzF
+         3iPmZpaGMlCnM0+mMYDN7IT31eEm22AZbsYw/U1FQGrSfwNQyKS6sVZ1u10LdHJK2J
+         oYPMykDwLa+Ui5V565ClRa6gLPJuHWMnXY5HVBGY=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, brouer@redhat.com,
         daniel@iogearbox.net, toke@redhat.com, lorenzo.bianconi@redhat.com,
         dsahern@kernel.org, andrii.nakryiko@gmail.com
-Subject: [PATCH v4 bpf-next 6/9] bpf: cpumap: implement XDP_REDIRECT for eBPF programs attached to map entries
-Date:   Wed, 24 Jun 2020 17:33:55 +0200
-Message-Id: <ef1a456ba3b76a61b7dc6302974f248a21d906dd.1593012598.git.lorenzo@kernel.org>
+Subject: [PATCH v4 bpf-next 7/9] libbpf: add SEC name for xdp programs attached to CPUMAP
+Date:   Wed, 24 Jun 2020 17:33:56 +0200
+Message-Id: <5a1ce6302ffcd54b87213e840e3e8d5b92285171.1593012598.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1593012598.git.lorenzo@kernel.org>
 References: <cover.1593012598.git.lorenzo@kernel.org>
@@ -41,123 +41,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce XDP_REDIRECT support for eBPF programs attached to cpumap
-entries.
-This patch has been tested on Marvell ESPRESSObin using a modified
-version of xdp_redirect_cpu sample in order to attach a XDP program
-to CPUMAP entries to perform a redirect on the mvneta interface.
-In particular the following scenario has been tested:
-
-rq (cpu0) --> mvneta - XDP_REDIRECT (cpu0) --> CPUMAP - XDP_REDIRECT (cpu1) --> mvneta
-
-$./xdp_redirect_cpu -p xdp_cpu_map0 -d eth0 -c 1 -e xdp_redirect \
-	-f xdp_redirect_kern.o -m tx_port -r eth0
-
-tx: 285.2 Kpps rx: 285.2 Kpps
-
-Attaching a simple XDP program on eth0 to perform XDP_TX gives
-comparable results:
-
-tx: 288.4 Kpps rx: 288.4 Kpps
+As for DEVMAP, support SEC("xdp_cpumap/") as a short cut for loading
+the program with type BPF_PROG_TYPE_XDP and expected attach type
+BPF_XDP_CPUMAP.
 
 Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Co-developed-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- include/net/xdp.h          |  1 +
- include/trace/events/xdp.h |  6 ++++--
- kernel/bpf/cpumap.c        | 17 +++++++++++++++--
- 3 files changed, 20 insertions(+), 4 deletions(-)
+ tools/lib/bpf/libbpf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 83b9e0142b52..5be0d4d65b94 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -99,6 +99,7 @@ struct xdp_frame {
- };
- 
- struct xdp_cpumap_stats {
-+	unsigned int redirect;
- 	unsigned int pass;
- 	unsigned int drop;
- };
-diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
-index e2c99f5bee39..cd24e8a59529 100644
---- a/include/trace/events/xdp.h
-+++ b/include/trace/events/xdp.h
-@@ -190,6 +190,7 @@ TRACE_EVENT(xdp_cpumap_kthread,
- 		__field(int, sched)
- 		__field(unsigned int, xdp_pass)
- 		__field(unsigned int, xdp_drop)
-+		__field(unsigned int, xdp_redirect)
- 	),
- 
- 	TP_fast_assign(
-@@ -201,18 +202,19 @@ TRACE_EVENT(xdp_cpumap_kthread,
- 		__entry->sched	= sched;
- 		__entry->xdp_pass	= xdp_stats->pass;
- 		__entry->xdp_drop	= xdp_stats->drop;
-+		__entry->xdp_redirect	= xdp_stats->redirect;
- 	),
- 
- 	TP_printk("kthread"
- 		  " cpu=%d map_id=%d action=%s"
- 		  " processed=%u drops=%u"
- 		  " sched=%d"
--		  " xdp_pass=%u xdp_drop=%u",
-+		  " xdp_pass=%u xdp_drop=%u xdp_redirect=%u",
- 		  __entry->cpu, __entry->map_id,
- 		  __print_symbolic(__entry->act, __XDP_ACT_SYM_TAB),
- 		  __entry->processed, __entry->drops,
- 		  __entry->sched,
--		  __entry->xdp_pass, __entry->xdp_drop)
-+		  __entry->xdp_pass, __entry->xdp_drop, __entry->xdp_redirect)
- );
- 
- TRACE_EVENT(xdp_cpumap_enqueue,
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 4e4cd240f07b..c0b2f265ccb2 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -240,7 +240,7 @@ static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_map_entry *rcpu,
- 	xdp_set_return_frame_no_direct();
- 	xdp.rxq = &rxq;
- 
--	rcu_read_lock();
-+	rcu_read_lock_bh();
- 
- 	prog = READ_ONCE(rcpu->prog);
- 	for (i = 0; i < n; i++) {
-@@ -266,6 +266,16 @@ static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_map_entry *rcpu,
- 				stats->pass++;
- 			}
- 			break;
-+		case XDP_REDIRECT:
-+			err = xdp_do_redirect(xdpf->dev_rx, &xdp,
-+					      prog);
-+			if (unlikely(err)) {
-+				xdp_return_frame(xdpf);
-+				stats->drop++;
-+			} else {
-+				stats->redirect++;
-+			}
-+			break;
- 		default:
- 			bpf_warn_invalid_xdp_action(act);
- 			/* fallthrough */
-@@ -276,7 +286,10 @@ static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_map_entry *rcpu,
- 		}
- 	}
- 
--	rcu_read_unlock();
-+	if (stats->redirect)
-+		xdp_do_flush_map();
-+
-+	rcu_read_unlock_bh(); /* resched point, may call do_softirq() */
- 	xdp_clear_return_frame_no_direct();
- 
- 	return nframes;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 18461deb1b19..16fa3b84ac38 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -6866,6 +6866,8 @@ static const struct bpf_sec_def section_defs[] = {
+ 		.attach_fn = attach_iter),
+ 	BPF_EAPROG_SEC("xdp_devmap",		BPF_PROG_TYPE_XDP,
+ 						BPF_XDP_DEVMAP),
++	BPF_EAPROG_SEC("xdp_cpumap/",		BPF_PROG_TYPE_XDP,
++						BPF_XDP_CPUMAP),
+ 	BPF_PROG_SEC("xdp",			BPF_PROG_TYPE_XDP),
+ 	BPF_PROG_SEC("perf_event",		BPF_PROG_TYPE_PERF_EVENT),
+ 	BPF_PROG_SEC("lwt_in",			BPF_PROG_TYPE_LWT_IN),
 -- 
 2.26.2
 
