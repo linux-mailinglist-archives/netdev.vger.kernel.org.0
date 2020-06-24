@@ -2,103 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27387206930
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 02:55:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CA1C20693B
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 02:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388159AbgFXAzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Jun 2020 20:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
+        id S2388337AbgFXA4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Jun 2020 20:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387757AbgFXAy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 20:54:59 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EB5C061755;
-        Tue, 23 Jun 2020 17:54:59 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id d21so352928lfb.6;
-        Tue, 23 Jun 2020 17:54:59 -0700 (PDT)
+        with ESMTP id S1729700AbgFXA4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Jun 2020 20:56:12 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A29C061573;
+        Tue, 23 Jun 2020 17:56:12 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id f18so380622qkh.1;
+        Tue, 23 Jun 2020 17:56:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=SELmzgReg+iVHTahgJ6371+YxkQAf2+VAlTqmhfhQZo=;
-        b=cjm1L/wqIptfZr5x8pU2JkKdOAtu7JqBjyEKy4fB44k9+UJuDN2Eq1lL7CkW8p5L85
-         5vGpTmpgCkeeswMlvxMrNmFE57s/nxkGn948SblHhhnDX5O0TGMyuPpRWcEl/p0u5pNr
-         usUcghxjxuQeNK87WSgwTIz55tpj8qYEwqxK8CqDN8SiwHQ9nMdP5m/C3CPyzTwm8wty
-         dw3FZFwdtf85AbQTzTKfIFfMnxeXGo/Wr+fudv5aIK60EaWz7/+l6uXdX5OmHHR/GU5d
-         9jzRaO2hatTE/vVE3Wbqh0kbuhO8/JY5jg1r7pN3xO/RazbA5GcpcbqPApqTVyBu/FIn
-         z/XA==
+        h=from:to:subject:date:message-id;
+        bh=B5VfZpM+X8knN3/rl+qFLVkBLatYrIcGjOd49U7irJo=;
+        b=FB7Wp9k2DtXFJmIaWB3oECTv0wgsvU24hTRkD4h0tPWO/EJgiINucfpnNW9ronDECQ
+         /mB9Oagm3HakllppJyaBINmmTIdGBEV54UhW+vGVaXKeGiegR0uXTEOFiiDdCGXcasyL
+         vI6WD398RSOslpNrFEHeWr8LPjdkUuoYptEt3BSiH5B0ZS4OFWXZUoDzpLir4yE84jhK
+         Bn2MBzmxWmnA6ZIzCScOtRSzArNGUTdFu2BZ4IZKkwqB2QZOgqa425DXdFrljROvcXit
+         mq7V4WgmPozFZSBuQ6shyRvgEzJ71PDSCbQhiYEeO9bc4WPIHbcwbPkOu5sfwcoby4GI
+         DySg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SELmzgReg+iVHTahgJ6371+YxkQAf2+VAlTqmhfhQZo=;
-        b=F0xu9pmJ45BuPE42a/Z2djk/wNvsQNGmBnNm0BrDh1WZ34MNW+CfTci4hNF4wlYaxf
-         S50r18EhlCzDEyoKHeiXY8PCq8ytstBrl6rzNN8hIRo+mnjiSsTLYjExFQNOjfFn4CQg
-         jpYOXIFLorH2JOvgUmNrEJN3QISYn4zNbSP38oYqwJoTzvAfWXx4Ea40NblP3ag5IamD
-         LfOXNzp2XUm/PdB3eyiiN82bKjErCCUq/JlxPEBSVu1G318+JvjaWlCNpPlGu6mc5piJ
-         AlNLb9kMJ8hG4xJ9nackWbJZ5/KomVOR1gR/BOJtFTydKCkpUXDYvlVTFHbslTFa6gpI
-         wvUw==
-X-Gm-Message-State: AOAM5314LjFYDamuxR12+97bPsEvLlZPA9zLQGB2aIs+YcMBM8QpYfe4
-        jSekVG9My8/bUnfenyw8bWFOV9dp4qsNc4Q02FevWg==
-X-Google-Smtp-Source: ABdhPJzCSvOsbrXcmQd/TYWAgOjemkPC4Im/Bu/7EQrDLmukBVCfqTq30O8ThuYksFmuP216BQ761tc/uSzHOR5Cjmk=
-X-Received: by 2002:a19:4143:: with SMTP id o64mr13922941lfa.157.1592960097892;
- Tue, 23 Jun 2020 17:54:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAADnVQ+BqPeVqbgojN+nhYTE0nDcGF2-TfaeqyfPLOF-+DLn5Q@mail.gmail.com>
- <20200620212616.93894-1-zenczykowski@gmail.com> <CALAqxLVeg=EE06Eh5yMBoXtb2KTHLKKnBLXwGu-yGV4aGgoVMA@mail.gmail.com>
-In-Reply-To: <CALAqxLVeg=EE06Eh5yMBoXtb2KTHLKKnBLXwGu-yGV4aGgoVMA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 23 Jun 2020 17:54:46 -0700
-Message-ID: <CAADnVQJOpsQhT0oY5GZikf00MT1=pR3vpCZkn+Z4hp2_duUFSQ@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] restore behaviour of CAP_SYS_ADMIN allowing the
- loading of networking bpf programs
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=B5VfZpM+X8knN3/rl+qFLVkBLatYrIcGjOd49U7irJo=;
+        b=NpD7JMC/6vLH/eoYtR7OXJk+Xb5CctuV2T1ETrGY12qVgz+FWjNrnolj+1IZ3oY6+F
+         Q+ASAy/E8qAGfRrXjME8RyICr4EVotlRMHpm2ptr3HgdC5ugkyW6RhFenChL5pwQCAbA
+         Qm4XcKfuORKaoCcfyVdZ5Zcu9WIml6sydUZlYePTEBS0cebLrGlyw5qSvGyIGkVI0Saj
+         2EbcHQjoqpKhCuXaTuKCdke+3nDx1hE1gSNU+R2MFchx/Uoz3ErbTAuKf8yfFz3jUduz
+         cBfOl8dg6VQrBQC7YbXWS+NBTXtkl+lw5O76045qIQLQC0nS64M52xIW9CoRpGwNm8a8
+         ZQiw==
+X-Gm-Message-State: AOAM532EZKDS6e8i0iifcEJzmlZln1n8zqHJBZ7EC0URsnL8RXbwvmYu
+        ew4nfKgzC5MCPWf3NmsujN7QyBud8F3erA==
+X-Google-Smtp-Source: ABdhPJznmQh0zjKtoWJeyATq6kU0U7s3P+5svTFZ+MIG/nWMp+29V+NExqsIW9laipwnG8iSiP7Gvw==
+X-Received: by 2002:a05:620a:635:: with SMTP id 21mr22919093qkv.491.1592960171903;
+        Tue, 23 Jun 2020 17:56:11 -0700 (PDT)
+Received: from linux.home ([2604:2000:1344:41d:596e:7d49:a74:946e])
+        by smtp.googlemail.com with ESMTPSA id u20sm1096681qtj.39.2020.06.23.17.56.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2020 17:56:11 -0700 (PDT)
+From:   Gaurav Singh <gaurav1086@gmail.com>
+To:     gaurav1086@gmail.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] [net/ethernet] do_reset: remove dev null check
+Date:   Tue, 23 Jun 2020 20:55:45 -0400
+Message-Id: <20200624005600.2221-1-gaurav1086@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 22, 2020 at 12:44 PM John Stultz <john.stultz@linaro.org> wrote=
-:
->
-> On Sat, Jun 20, 2020 at 2:26 PM Maciej =C5=BBenczykowski
-> <zenczykowski@gmail.com> wrote:
-> >
-> > From: Maciej =C5=BBenczykowski <maze@google.com>
-> >
-> > This is a fix for a regression introduced in 5.8-rc1 by:
-> >   commit 2c78ee898d8f10ae6fb2fa23a3fbaec96b1b7366
-> >   'bpf: Implement CAP_BPF'
-> >
-> > Before the above commit it was possible to load network bpf programs
-> > with just the CAP_SYS_ADMIN privilege.
-> >
-> > The Android bpfloader happens to run in such a configuration (it has
-> > SYS_ADMIN but not NET_ADMIN) and creates maps and loads bpf programs
-> > for later use by Android's netd (which has NET_ADMIN but not SYS_ADMIN)=
-.
-> >
-> > Cc: Alexei Starovoitov <ast@kernel.org>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Reported-by: John Stultz <john.stultz@linaro.org>
-> > Fixes: 2c78ee898d8f ("bpf: Implement CAP_BPF")
-> > Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
->
-> Thanks so much for helping narrow this regression down and submitting thi=
-s fix!
-> It's much appreciated!
->
-> Tested-by: John Stultz <john.stultz@linaro.org>
+dev cannot be NULL here since its already being accessed
+before. Remove the redundant null check.
 
-Applied to bpf tree. Thanks
+Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
+---
+ drivers/net/ethernet/xircom/xirc2ps_cs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/xircom/xirc2ps_cs.c b/drivers/net/ethernet/xircom/xirc2ps_cs.c
+index 480ab7251515..3e3883ad88b0 100644
+--- a/drivers/net/ethernet/xircom/xirc2ps_cs.c
++++ b/drivers/net/ethernet/xircom/xirc2ps_cs.c
+@@ -1473,7 +1473,7 @@ do_reset(struct net_device *dev, int full)
+     unsigned int ioaddr = dev->base_addr;
+     unsigned value;
+ 
+-    pr_debug("%s: do_reset(%p,%d)\n", dev? dev->name:"eth?", dev, full);
++    pr_debug("%s: do_reset(%p,%d)\n", dev->name, dev, full);
+ 
+     hardreset(dev);
+     PutByte(XIRCREG_CR, SoftReset); /* set */
+-- 
+2.17.1
+
