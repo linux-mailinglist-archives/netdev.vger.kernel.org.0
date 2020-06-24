@@ -2,158 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B284207945
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:35:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A980D207948
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405011AbgFXQfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 12:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41986 "EHLO
+        id S2405043AbgFXQfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 12:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404952AbgFXQfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:35:07 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E450C0613ED;
-        Wed, 24 Jun 2020 09:35:07 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id cv17so1308601qvb.13;
-        Wed, 24 Jun 2020 09:35:07 -0700 (PDT)
+        with ESMTP id S2404625AbgFXQfu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:35:50 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C7AC0613ED
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:35:49 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id v8so2759148iox.2
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 09:35:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lDn4TidR4qxH9VOW6mcMSR+f5fQgbVg5so95pf6069k=;
-        b=ROLM4SJ34XlWaQFKwc2CQNOVLZ9kDhK4rDyw0xNWABvN1TnHekqFvl3v5ir+gkn9wR
-         6cLJFhXOHa99yGaU4sgHyita3rksUWY2I191ABsjox/JYBED886lsdJioA64S9UJ7Dzr
-         PJArX6io3EcKf1ZWVlZXa+N+1BOivU4opRo91pPJA6hmrDqT7Ng6mfFXOAcyaWRkjECD
-         M3PUo8+WRo0h77UeyV3fFwXoCE03OslOqmnvM+6IIheNBaJCdVsHKJfp2AaD1EmaSLAQ
-         YMV1B41BpZIq8Ts2VXOicqoVN0eRwa04GNG7QCfekZXZCpiM3nm+mzJ2DTdzqupvbrfI
-         spxQ==
+        bh=Sp0WLMHGJPSAAMQoilN1mZe9srYQKmzrBKtnNiwXpVs=;
+        b=Gs5a8ysDongBqjpVPsiQWEdpD5YRNoaq5AdJr4nWs/zYkTf9M+ghwGa2A+vl53WV6M
+         JRhhJVQhyuX8Tjd445UrEkqaFeRBOHvtFUzLBeMPO0HX9mrLGqK4lDzsj6o3kvYnXAtP
+         U9yDgHUDz7mk9brV9quovHVYMfYdpE1wplg8iEBwg4dESo1GeYGKG147fTWViUWPXVaS
+         FR6tX7MIy3c334Uz8RjbHxPZg9QBgw0WiGsyG1tVXNjq2ij/nw+U3r3cmvFLDwDYK1qw
+         EoXeQw+M9J5xE1EYWjQsHsb+8MY6uK1Y0nyljUOAVmAheLR3MwqkhUPIAU1EoVLOMvau
+         PLIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lDn4TidR4qxH9VOW6mcMSR+f5fQgbVg5so95pf6069k=;
-        b=jwfqVQLxSs/h8A+opaxsolkQ4uVtMj55d5IKidcMosAx2jA3M1cqVlPdC+OfKACkXv
-         8Scg+t5II8Sy91uZCFVekWpvAf1n47pA2NYKdmwR0cSnGWYE1H6FGIYKYQfYoRKdctLs
-         T32c41mNBn+o0drBJuDhjygosOQzg0bqjB3ij9uuGnwqP/oOJ3Q7I4gCDmCPKie1oPqv
-         1i0oIR/FnQi5koNDy2YjpBuyvWIBYiXAmLBmFxB7NzxaWn5GgS6X1oRbVRn7rVjXWct4
-         RIr2vHkyjOxONYJ1N7yYArnyiHGKZx6hRmEl2mk4za5PZWnf7WaxFMIKnJ71XJMc13hR
-         SVNQ==
-X-Gm-Message-State: AOAM530Hslkb/mv0qqxaAiXQ76YMejel9YsmCsL3CAua7mY5DPUwS0pY
-        paM90Fn3KJgiFdi2qXFsWTT6rBDbwTiR9qQtVyU=
-X-Google-Smtp-Source: ABdhPJxv2vbKd0+529OflCA51otsX32YPHc+nJbcHmJ11PjU1wnIU1L1Qn0WKAvZp3PJ6QGyRoKMrGJGBJHyspgIA4E=
-X-Received: by 2002:a05:6214:8f4:: with SMTP id dr20mr19252356qvb.228.1593016506056;
- Wed, 24 Jun 2020 09:35:06 -0700 (PDT)
+        bh=Sp0WLMHGJPSAAMQoilN1mZe9srYQKmzrBKtnNiwXpVs=;
+        b=TQ4/EO7t2L5uMaxScxaCO44gKPs/vVTlfksKtOxySrvDeH1nGP0w5ZG/nB6HA9j8dj
+         eQRd2JUtUzfbPpohvG3qNx4YQYIddqVADx3YFDw0Dt0jMphYSpCAm1XSfqrbQ+ttSP6c
+         Ir8k91UZqjumpi3WIWergHRC7iOJw50wGT7qgCY+fswhpooJE3M6sDMaZljzcrBuH3+u
+         pMscYxZCk57s4nGrX6zlabzA9POg9gNLgMSFEDVE7huT3vAJ1kIlBoScuR6ENscmi+vU
+         nxaTkwmG9bWUwJ7EGNefc8TkMqPHJDiYlkZFA+VxWDGjVNi32O5s9KFkQp772nDydHKb
+         G2pQ==
+X-Gm-Message-State: AOAM531k1TmkqANy5z7ygvpWhkZ35lEwn0s+DNAwvzi6wffRimmViRXn
+        4GR26FmvvRMLPcOpma67qNpOJsbHP9DPvip1lkU9XQ==
+X-Google-Smtp-Source: ABdhPJxqogL8HjW0xO8Djm9BN68/4TRrqeL4aSvgA3Rvp4v39IWyLfFQicLhQQMp3WEw0MNQuACTa3lGvzsxsAPhLOs=
+X-Received: by 2002:a6b:b252:: with SMTP id b79mr32690628iof.31.1593016548397;
+ Wed, 24 Jun 2020 09:35:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200624003340.802375-1-andriin@fb.com> <CAADnVQJ_4WhyK3UvtzodMrg+a-xQR7bFiCCi5nz_qq=AGX_FbQ@mail.gmail.com>
- <CAEf4BzYKV=A+Sd1ByA2=7CG7WJedB0CRAU7RGN6jO8B9ykpHiA@mail.gmail.com> <20200624145235.73mysssbdew7eody@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200624145235.73mysssbdew7eody@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 24 Jun 2020 09:34:52 -0700
-Message-ID: <CAEf4Bzay9fErW5wooMBkmrHPK9T=e8O82cJc5NNq+wmugTznjQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: add debug message for each created program
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+References: <20200622093744.13685-1-brgl@bgdev.pl> <20200622093744.13685-10-brgl@bgdev.pl>
+ <20200622133940.GL338481@lunn.ch> <20200622135106.GK4560@sirena.org.uk>
+ <dca54c57-a3bd-1147-63b2-4631194963f0@gmail.com> <20200624094302.GA5472@sirena.org.uk>
+ <CAMRc=McBxJdujCyjQF3NA=bCWHF1dx8xJ1Nc2snmqukvJ_VyoQ@mail.gmail.com> <f806586d-a6d7-99af-bba4-d1e7d28be192@gmail.com>
+In-Reply-To: <f806586d-a6d7-99af-bba4-d1e7d28be192@gmail.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Wed, 24 Jun 2020 18:35:37 +0200
+Message-ID: <CAMRc=MfQFgrJC3nvuJgZobixa6MLeMw-tdg_3e1yNDityU5XSw@mail.gmail.com>
+Subject: Re: [PATCH 09/15] net: phy: delay PHY driver probe until PHY registration
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 24, 2020 at 7:52 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Wed, Jun 24, 2020 at 6:06 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
 >
-> On Tue, Jun 23, 2020 at 11:59:40PM -0700, Andrii Nakryiko wrote:
-> > On Tue, Jun 23, 2020 at 11:47 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Tue, Jun 23, 2020 at 5:34 PM Andrii Nakryiko <andriin@fb.com> wrote:
-> > > >
-> > > > Similar message for map creation is extremely useful, so add similar for BPF
-> > > > programs.
-> > >
-> > > 'extremely useful' is quite subjective.
-> > > If we land this patch then everyone will be allowed to add pr_debug()
-> > > everywhere in libbpf with the same reasoning: "it's extremely useful pr_debug".
+
+[snip!]
+
 > >
-> > We print this for maps, making it clear which maps and with which FD
-> > were created. Having this for programs is just as useful. It doesn't
-> > overwhelm output (and it's debug one either way). "everyone will be
-> > allowed to add pr_debug()" is a big stretch, you can't just sneak in
-> > or force random pr_debug, we do review patches and if something
-> > doesn't make sense we can and we do reject it, regardless of claimed
-> > usefulness by the patch author.
-> >
-> > So far, libbpf debug logs were extremely helpful (subjective, of
-> > course, but what isn't?) to debug "remotely" various issues that BPF
-> > users had. They don't feel overwhelmingly verbose and don't have a lot
-> > of unnecessary info. Adding a few lines (how many BPF programs are
-> > there per each BPF object?) for listing BPF programs is totally ok.
+> > This has evolved into several new concepts being proposed vs my
+> > use-case which is relatively simple. The former will probably take
+> > several months of development, reviews and discussions and it will
+> > block supporting the phy supply on pumpkin boards upstream. I would
+> > prefer not to redo what other MAC drivers do (phy-supply property on
+> > the MAC node, controlling it from the MAC driver itself) if we've
+> > already established it's wrong.
 >
-> None of the above were mentioned in the commit log.
-> And no examples were given where this extra line would actually help.
-
-I used it just 2 days ago trying to understand why bpftool doesn't
-show its own bpf_iter program, but shows maps. I discovered with
-surprise that we actually don't log FDs of loaded programs.
-
+> You are not new to Linux development, so none of this should come as a
+> surprise to you. Your proposed solution has clearly short comings and is
+> a hack, especially around the PHY_ID_NONE business to get a phy_device
+> only then to have the real PHY device ID. You should also now that "I
+> need it now because my product deliverable depends on it" has never been
+> received as a valid argument to coerce people into accepting a solution
+> for which there are at review time known deficiencies to the proposed
+> approach.
 >
-> I think libbpf pr_debug is extremely verbose instead of extremely useful.
-> Just typical output:
-> ./test_progs -vv -t lsm
-> libbpf: loading object 'lsm' from buffer
-> libbpf: section(1) .strtab, size 306, link 0, flags 0, type=3
-> libbpf: skip section(1) .strtab
-> libbpf: section(2) .text, size 0, link 0, flags 6, type=1
-> libbpf: skip section(2) .text
-> libbpf: section(3) lsm/file_mprotect, size 192, link 0, flags 6, type=1
-> libbpf: found program lsm/file_mprotect
-> libbpf: section(4) .rellsm/file_mprotect, size 32, link 25, flags 0, type=9
-> libbpf: section(5) lsm/bprm_committed_creds, size 104, link 0, flags 6, type=1
-> libbpf: found program lsm/bprm_committed_creds
-> libbpf: section(6) .rellsm/bprm_committed_creds, size 32, link 25, flags 0, type=9
->
-> How's above useful for anyone?
-> libbpf says that there are '.strtab' and '.text' sections in the elf file.
-> That's wet water. Any elf file has that.
-> Then it says it's skipping '.text' ?
-> That reads surprising. Why library would skip the code?
-> And so on and so forth.
 
-I can pick a few more not-so-useful (usually) pr_debug-level log lines
-as well, I don't think it disproves that debug logs are useful.
+Don't get me wrong, I understand that full well. On the other hand a
+couple years ago I put a significant amount of work into the concept
+of early platform device drivers for linux clocksource, clock and
+interrupt drivers. Every reviewer had his own preferred approach and
+after something like three completely different submissions and
+several conversations at conferences I simply gave up due to all the
+bikeshedding. It just wasn't moving forward and frankly: I expect any
+changes to the core driver model to follow a similar path of most
+resistance.
 
-> That output is useful to only few core libbpf developers.
+I will give it a shot but at some point getting the job done is better
+than not getting it done just because the solution isn't perfect. IMO
+this approach is still slightly more correct than controlling the
+PHY's supply from the MAC driver.
 
-Yes, and I don't expect typical BPF developers to have them turned on
-by default. They are *DEBUG*-level output, after all, users shouldn't
-care about them, only INFO and WARN/ERR ones, I'd hope. But it's #1
-thing that I ask users to provide when they come with any questions
-about BPF or libbpf.
-
-So yeah, as a core libbpf developer and a person helping people with
-various (often non-libbpf-specific) BPF problems both online and
-within my company, I stand by my claim that libbpf debug logs are
-extremely useful and helped debug and understand numerous issues.
-
-Just yesterday (or two days ago, maybe), having those CO-RE relocation
-logs, which I fought to keep when I added CO-RE relocs initially,
-immediately shown that a person doesn't have bpf_iter compiled in its
-running kernel, despite the claims otherwise.
-
->
-> I don't mind more thought through debug prints, but
-> saying that existing pr_debugs are 'extremely useful' is a stretch.
-
-Some lines are extremely useful, yes, some less so. But then again,
-depending on the situation. Not all parts of the log are relevant 100%
-of the time, but sometimes even these ELF parsing logs are important.
-How many people add and debug libbpf functionality that deals with
-interpreting ELF sections/relocations/etc to be able to claim about
-their usefulness anyway?
-
-Regardless, we've spent way too much time on this, I don't care about
-this particular pr_debug() enough to argue further.
+Bartosz
