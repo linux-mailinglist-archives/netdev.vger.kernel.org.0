@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42296207A22
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 19:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96604207A25
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 19:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405497AbgFXRTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 13:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
+        id S2405509AbgFXRT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 13:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405491AbgFXRTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 13:19:46 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FF1C061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:45 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id z63so1455019pfb.1
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:45 -0700 (PDT)
+        with ESMTP id S2405495AbgFXRTu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 13:19:50 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA9DC061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:50 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id d6so1418490pjs.3
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kHpXfg6D3vEApiJp8FQJ17UW76ojekkZfCE2qlXVgXY=;
-        b=Br8IBGH2Xmb73N/0o9TRZOormUqUmQirAesW+uM30rLSADM+9b0Gwt8ZnXWUBHSUsG
-         D19XU8quYUF+2lp1lyCCBwOvpGBpv54j+KDdoJsmq8xBQ4uqlE5Feoby9nGL8aJTg0gP
-         lJmLMvOOKLzHV7Q4Q0v1gyFX5fGmtJL+tL97zTyjs/rNgZeT510fQGCPOZpTOO6zHVcl
-         SbUcPIsvZk/rAlLaCdwYQVbVlnFOMVHlpnAm//cZXzVTRFLYvyhvHu8C432zERcqCUca
-         yhSy0TuY48gG6iVPggS2R3jrAFDdnZj1CWkErdhMZeQS3rxYNUUMXKe2KOXQukv+2WQC
-         w92w==
+        bh=/5gyd7jvxJZUbppQ1X68CyB7v126AL9t5W3BAs6GaxY=;
+        b=rXqb529DtF/YuUK9qskzQ0Qn9nEqOj9aPV4jKAlmSCPFN4GJ/uj59yCEZozKARpjfE
+         nNUoDwXVxVHgDt/FIOElIljTF0+y1N65dqW77/ovJxpmi7TWKrruSiwFLWM1jRz6Xeui
+         Lb1RH8kQA6AnJv1wIl7a9EIlA+xbW+bqahxD0r+rsTGNz66xTq18ezF21OnyA9DFRwx0
+         LYkylQcoTGzO5CifL3N2JelaNsRZZwBJ9YdwhsIiS49W6vDscEXdUylaz/f7r8C5Nbxc
+         /obDWChyL5dfcP5HoZXpp1mQfQ3c14F86ci2cGJbf2QPmnqaByDb7IZ2muJMK1nW4T3S
+         7llw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kHpXfg6D3vEApiJp8FQJ17UW76ojekkZfCE2qlXVgXY=;
-        b=gbbnQFqqKq4L+WKaszIiks4Fb4h/DHP3cgShATnVNimibYRmobMxkV1xKayI7N8fkr
-         xQNo31yqaLEwxxxatNsQdu75jVBegvA2TILrdgTuVC2Rbly2WqViFeLDesmR23cop/+P
-         FKBgjGQZRCX1PhGXMsjlxRGUlsebww1XnZJtBVHzh9La4eFlE2UDa87e63LF/ibkyKKI
-         MMIBPQFlTkxTfAPtnbJSOugyG6PxVsog0TllDlZXuE9NUdRFEyk4l0MFFbQWUsiTaRUY
-         NW7JBxyOQwT7GulrlsNqE+z9I7AOgCvJdT5PjrU3A/afaxc4nYS4MMFr+B/uvKDzDbXb
-         QASw==
-X-Gm-Message-State: AOAM533OHip1sLxyDS1MA9QSpn451xDodBwOTywRyYaAB62Y8XZ6JMQn
-        Whym1HRX35Z3bnwpk2ss8tJpH6J0vv4=
-X-Google-Smtp-Source: ABdhPJwYTaoHrrPEGizGjp15Mv9FGUcMrnWdlabyII631oaj14Xznqo2Dcto8bf6c7ccd6dX4UDwiw==
-X-Received: by 2002:a63:564e:: with SMTP id g14mr6655093pgm.326.1593019184487;
-        Wed, 24 Jun 2020 10:19:44 -0700 (PDT)
+        bh=/5gyd7jvxJZUbppQ1X68CyB7v126AL9t5W3BAs6GaxY=;
+        b=iZUsU9t2qO7wxGqaZC/XwqAhtTxM/oSuhrqSzVK6c7nk03DLCxyqOantI9mjz1fbgc
+         d14B/Dt0ZEt30cq2benfq3U7U6+4Ys7s0EWEidwgE8X7UX5h7UoWYo1DoBmWGz2brQ7K
+         H7rnfJPB7KdlCPbIQRS1HGYs+98L7pRWKJSV5buGOrCwUAUxbQtqZtY7KI4hBsSUOpSk
+         6F5y3bU3eAYrMBKbp9hpXx8A32tuw1OWVf94x4odew5WxziUDtFi/LtSd0Waoi8LHvVJ
+         wSMzZFlY4hxndNU+Vfg4A0HTn6zR1Ym5/ZYn0lt9QdudeWF8mClxe5ualwjYwRZd203d
+         84sQ==
+X-Gm-Message-State: AOAM533tKr2qvMj6T5Ex/OztSLUX0o8V2DkSqgeEb8EDx+MoY7I29VrA
+        JnI9npvAVY2QuojnhR1tkisQQVu3gkM=
+X-Google-Smtp-Source: ABdhPJxotMCEQ5yjrW2HzJVe+MPR0y1VlLmWWiKbJ3JIngBOzab8MSbGiPmBv56CNRG699mczYg9eA==
+X-Received: by 2002:a17:902:8b86:: with SMTP id ay6mr28572322plb.329.1593019188745;
+        Wed, 24 Jun 2020 10:19:48 -0700 (PDT)
 Received: from localhost.localdomain (c-73-202-182-113.hsd1.ca.comcast.net. [73.202.182.113])
-        by smtp.gmail.com with ESMTPSA id w18sm17490241pgj.31.2020.06.24.10.19.42
+        by smtp.gmail.com with ESMTPSA id w18sm17490241pgj.31.2020.06.24.10.19.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jun 2020 10:19:43 -0700 (PDT)
+        Wed, 24 Jun 2020 10:19:47 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 To:     netdev@vger.kernel.org
 Cc:     Tom Herbert <tom@herbertland.com>
-Subject: [RFC PATCH 10/11] ptq: Hook up receive side of Per Queue Threads
-Date:   Wed, 24 Jun 2020 10:17:49 -0700
-Message-Id: <20200624171749.11927-11-tom@herbertland.com>
+Subject: [RFC PATCH 11/11] doc: Documentation for Per Thread Queues
+Date:   Wed, 24 Jun 2020 10:17:50 -0700
+Message-Id: <20200624171749.11927-12-tom@herbertland.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200624171749.11927-1-tom@herbertland.com>
 References: <20200624171749.11927-1-tom@herbertland.com>
@@ -63,139 +63,224 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add code to set the queue in an rflow as opposed to just setting the
-CPU in an rps_dev_flow entry. set_rps_qid is the analogue for
-set_rps_cpu but for setting queues. In get_rps_cpu, a check is
-performed that identifier in the sock_flow_table refers to a queue;
-when it does call set_rps_qid after converting the global qid in the
-sock_flow_table to a device qid.
-
-In rps_record_sock_flow check is there is a per task receive queue
-for current (i.e. current->ptq_queues.rxq_id != NO_QUEUE). If there
-is a queue then set in sock_flow_table instead of setting the running
-CPU. Subsequently, the receive queue for the flow can be programmed
-by aRFS logic (ndo_rx_flow_steer).
+Add a section on Per Thread Queues to scaling.rst.
 ---
- include/linux/netdevice.h | 28 ++++++++++++++++++++++++----
- net/core/dev.c            | 36 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 60 insertions(+), 4 deletions(-)
+ Documentation/networking/scaling.rst | 195 ++++++++++++++++++++++++++-
+ 1 file changed, 194 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ca163925211a..3b39be470720 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -731,12 +731,25 @@ static inline void rps_dev_flow_set_cpu(struct rps_dev_flow *dev_flow, u16 cpu)
- 	if (WARN_ON(cpu > RPS_MAX_CPU))
- 		return;
+diff --git a/Documentation/networking/scaling.rst b/Documentation/networking/scaling.rst
+index 8f0347b9fb3d..42f1dc639ab7 100644
+--- a/Documentation/networking/scaling.rst
++++ b/Documentation/networking/scaling.rst
+@@ -250,7 +250,7 @@ RFS: Receive Flow Steering
+ While RPS steers packets solely based on hash, and thus generally
+ provides good load distribution, it does not take into account
+ application locality. This is accomplished by Receive Flow Steering
+-(RFS). The goal of RFS is to increase datacache hitrate by steering
++(RFS). The goal of RFS is to increase datacache hit rate by steering
+ kernel processing of packets to the CPU where the application thread
+ consuming the packet is running. RFS relies on the same RPS mechanisms
+ to enqueue packets onto the backlog of another CPU and to wake up that
+@@ -508,6 +508,199 @@ a max-rate attribute is supported, by setting a Mbps value to::
+ A value of zero means disabled, and this is the default.
  
--	/* Set the rflow target to the CPU atomically */
-+	/* Set the device flow target to the CPU atomically */
- 	cpu_qid.use_qid = 0;
- 	cpu_qid.cpu = cpu;
- 	dev_flow->cpu_qid = cpu_qid;
- }
  
-+static inline void rps_dev_flow_set_qid(struct rps_dev_flow *dev_flow, u16 qid)
-+{
-+	struct rps_cpu_qid cpu_qid;
++PTQ: Per Thread Queues
++======================
 +
-+	if (WARN_ON(qid > RPS_MAX_QID))
-+		return;
++Per Thread Queues allows application threads to be assigned dedicated
++hardware network queues for both transmit and receive. This facility
++provides a high degree of traffic isolation between applications and
++can also help facilitate high performance due to fine grained packet
++steering.
 +
-+	/* Set the device flow target to the CPU atomically */
-+	cpu_qid.use_qid = 1;
-+	cpu_qid.qid = qid;
-+	dev_flow->cpu_qid = cpu_qid;
-+}
++PTQ has three major design components:
++	- A method to assign transmit and receive queues to threads
++	- A means to associate packets with threads and then to steer
++	  those packets to the queues assigned to the threads
++	- Mechanisms to process the per thread hardware queues
 +
- /*
-  * The rps_dev_flow_table structure contains a table of flow mappings.
-  */
-@@ -797,11 +810,18 @@ static inline void rps_record_sock_flow(struct rps_sock_flow_table *table,
- 					u32 hash)
- {
- 	if (table && hash) {
--		u32 val = hash & table->cpu_masks.hash_mask;
- 		unsigned int index = hash & table->mask;
-+		u32 val;
- 
--		/* We only give a hint, preemption can change CPU under us */
--		val |= raw_smp_processor_id();
-+#ifdef CONFIG_PER_THREAD_QUEUES
-+		if (current->ptq_queues.rxq_id != NO_QUEUE)
-+			val = RPS_SOCK_FLOW_USE_QID |
-+			      (hash & table->queue_masks.hash_mask) |
-+			      current->ptq_queues.rxq_id;
-+		else
-+#endif
-+			val = (hash & table->cpu_masks.hash_mask) |
-+			      raw_smp_processor_id();
- 
- 		if (table->ents[index] != val)
- 			table->ents[index] = val;
-diff --git a/net/core/dev.c b/net/core/dev.c
-index f4478c9b1c9c..1cad776e8847 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4308,6 +4308,25 @@ set_rps_cpu(struct net_device *dev, struct sk_buff *skb,
- 	return rflow;
- }
- 
-+static struct rps_dev_flow *
-+set_rps_qid(struct net_device *dev, struct sk_buff *skb,
-+	    struct rps_dev_flow *rflow, u16 qid)
-+{
-+	if (qid > RPS_MAX_QID) {
-+		rps_dev_flow_clear(rflow);
-+		return rflow;
-+	}
++Global network queues
++~~~~~~~~~~~~~~~~~~~~~
 +
-+#ifdef CONFIG_RFS_ACCEL
-+	/* Should we steer this flow to a different hardware queue? */
-+	if (skb_rx_queue_recorded(skb) && (dev->features & NETIF_F_NTUPLE) &&
-+	    qid != skb_get_rx_queue(skb) && qid < dev->real_num_rx_queues)
-+		set_arfs_queue(dev, skb, rflow, qid);
-+#endif
-+	rps_dev_flow_set_qid(rflow, qid);
-+	return rflow;
-+}
++Global network queues are an abstraction of hardware networking
++queues that can be used in generic non-device specific configuration.
++Global queues may mapped to real device queues. The mapping is
++performed on a per device queue basis. A device sysfs parameter
++"global_queue_mapping" in queues/{tx,rx}-<num> indicates the mapping
++of a device queue to a global queue. Each device maintains a table
++that maps global queues to device queues for the device. Note that
++for a single device, the global to device queue mapping is 1 to 1,
++however each device may map a global queue to a different device
++queue.
 +
- /*
-  * get_rps_cpu is called from netif_receive_skb and returns the target
-  * CPU from the RPS map of the receiving queue for a given skb.
-@@ -4356,6 +4375,10 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
- 
- 		/* First check into global flow table if there is a match */
- 		ident = sock_flow_table->ents[hash & sock_flow_table->mask];
++net_queues cgroup controller
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 +
-+		if (ident == RPS_SOCK_FLOW_NO_IDENT)
-+			goto try_rps;
++For assigning queues to the threads, a cgroup controller named
++"net_queues" is used. A cgroup can be configured with pools of transmit
++and receive global queues from which individual threads are assigned
++queues. The contents of the net_queues controller are described below in
++the configuration section.
 +
- 		comparator = ((ident & RPS_SOCK_FLOW_USE_QID) ?
- 				sock_flow_table->queue_masks.hash_mask :
- 				sock_flow_table->cpu_masks.hash_mask);
-@@ -4372,8 +4395,21 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
- 		 * CPU. Proceed accordingly.
- 		 */
- 		if (ident & RPS_SOCK_FLOW_USE_QID) {
-+			u16 dqid, gqid;
++Handling PTQ in the transmit path
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 +
- 			/* A queue identifier is in the sock_flow_table entry */
- 
-+			gqid = ident & sock_flow_table->queue_masks.mask;
-+			dqid = netdev_rx_gqid_to_dqid(dev, gqid);
++When a socket operation is performed that may result in sending packets
++(i.e. listen, accept, sendmsg, sendpage), the task structure for the
++current thread is consulted to see if there is an assigned transmit
++queue for the thread. If there is a queue assignment, the queue index is
++set in a field of the sock structure for the corresponding socket.
++Subsequently, when transmit queue selection is performed, the sock
++structure associated with packet being sent is consulted. If a transmit
++global queue is set in the sock then that index is mapped to a device
++queue for the output networking device. If a valid device queue is
++discovered then that queue is used, else if a device queue is not found
++then queue selection proceeds to XPS.
 +
-+			/* rflow has desired receive qid. Just set the qid in
-+			 * HW and return to use current CPU. Note that we
-+			 * don't consider OOO in this case.
-+			 */
-+			rflow = set_rps_qid(dev, skb, rflow, dqid);
++Handling PTQ in the receive path
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 +
-+			*rflowp = rflow;
++The receive path uses the infrastructure of RFS which is extended
++to steer based on the assigned received global queue for a thread in
++addition to steering based on the CPU. The rps_sock_flow_table is
++modified to contain either the desired CPU for flows or the desired
++receive global queue. A queue is updated at the same time that the
++desired CPU would updated during calls to recvmsg and sendmsg (see RFS
++description above). The process is to consult the running task structure
++to see if a receive queue is assigned to the task. If a queue is assigned
++to the task then the corresponding queue index is set in the
++rps_sock_flow_table; if no queue is assigned then the current CPU is
++set as the desired per canonical RFS.
 +
- 			/* Don't use aRFS to set CPU in this case, skip to
- 			 * trying RPS
- 			 */
++When packets are received, the rps_sock_flow table is consulted to check
++if they were received on the proper queue. If the rps_sock_flow_table
++entry for a corresponding flow of a received packet contains a global
++queue index, then the index is mapped to a device queue on the received
++device. If the mapped device queue is equal to the receive queue then
++packets are being steered properly. If there is a mismatch then the
++local flow to queue mapping in the device is changed and
++ndo_rx_flow_steer is invoked to set the receive queue for the flow in
++the device as described in the aRFS section.
++
++Processing queues in Per Queue Threads
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++When Per Queue Threads is used, the queue "follows" the thread. So when
++a thread is rescheduled from one queue to another we expect that the
++processing of the device queues that map to the thread are processed on
++the CPU where the thread is currently running. This is a bit tricky
++especially with respect to the canonical device interrupt driven model.
++There are at least three possible approaches:
++	- Arrange for interrupts to follow threads as they are
++	  rescheduled, or alternatively pin threads to CPUs and
++	  statically configure the interrupt mappings for the queues for
++	  each thread
++	- Use busy polling
++	- Use "sleeping busy-poll" with completion queues. The basic
++	  idea is to have one CPU busy poll a device completion queue
++	  that reports device queues with received or completed transmit
++	  packets. When a queue is ready, the thread associated with the
++	  queue (derived by reverse mapping the queue back to its
++	  assigned thread) is scheduled. When the thread runs it polls
++	  its queues to process any packets.
++
++Future work may further elaborate on solutions in this area.
++
++Reducing flow state in devices
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++PTQ (and aRFS as well) potentially create per flow state in a device.
++This is costly in at least two ways: 1) State requires device memory
++which is almost always much less than host memory can and thus the
++number of flows that can be instantiated in a device are less than that
++in the host. 2) State requires instantiation and synchronization
++messages, i.e. ndo_rx_flow_steer causes a message over PCIe bus; if
++there is a highly turnover rate of connections this messaging becomes
++a bottleneck.
++
++Mitigations to reduce the amount of flow state in the device should be
++considered.
++
++In PTQ (and aRFS) the device flow state is a considered cache. A flow
++entry is only set in the device on a cache miss which occurs when the
++receive queue for a packet doesn't match the desired receive queue. So
++conceptually, if a packets for a flow are always received on the desired
++queue from the beginning of the flow then a flow state might never need
++to be instantiated in the device. This motivates a strategy to try to
++use stateless steering mechanisms before resorting to stateful ones.
++
++As an example of applying this strategy, consider an application that
++creates four threads where each threads creates a TCP listener socket
++for some port that is shared amongst the threads via SO_REUSEPORT.
++Four global queues can be assigned to the application (via a cgroup
++for the application), and a filter rule can be set up in each device
++that matches the listener port and any bound destination address. The
++filter maps to a set of four device queues that map to the four global
++queues for the application. When a packet is received that matches the
++filter, one of the four queues is chosen via a hash over the packet's
++four tuple. So in this manner, packets for the application are
++distributed amongst the four threads. As long as processing for sockets
++doesn't move between threads and the number of listener threads is
++constant then packets are always received on the desired queue and no
++flow state needs to be instantiated. In practice, we want to allow
++elasticity in applications to create and destroy threads on demand, so
++additional techniques, such as consistent hashing, are probably needed.
++
++Per Thread Queues Configuration
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++Per Thread Queues is only available if the kernel is compiled with
++CONFIG_PER_THREAD_QUEUES. For PTQ in the receive path, aRFS needs to be
++supported and configured (see aRFS section above).
++
++The net_queues cgroup controller is in:
++	/sys/fs/cgroup/<cgrp>/net_queues
++
++The net_queues controller contains the following attributes:
++	- tx-queues, rx-queues
++		Specifies the transmit queue pool and receive queue pool
++		respectively as a range of global queue indices. The
++		format of these entries is "<base>:<extent>" where
++		<base> is the first queue index in the pool, and
++		<extent> is the number of queues in the range of pool.
++		If <extent> is zero the queue pool is empty.
++	- tx-assign,rx-assign
++		Boolean attributes ("0" or "1") that indicate unique
++		queue assignment from the respective transmit or receive
++		queue pool. When the "assign" attribute is enabled, a
++		thread is assigned a queue that is not already assigned
++		to another thread.
++	- symmetric
++		A boolean attribute ("0" or "1") that indicates the
++		receive and transmit queue assignment for a thread
++		should be the same. That is the assigned transmit queue
++		index is equal to the assigned receive queue index.
++	- task-queues
++		A read-only attribute that lists the threads of the
++		cgroup and their assigned queues.
++
++The mapping of global queues to device queues is in:
++
++  /sys/class/net/<dev>/queues/tx-<n>/global_queue_mapping
++	-and -
++  /sys/class/net/<dev>/queues/rx-<n>/global_queue_mapping
++
++A value of "none" indicates no mapping, an integer value (up to
++a maximum of 32,766) indicates a global queue.
++
++Suggested Configuration
++~~~~~~~~~~~~~~~~~~~~~~
++
++Unlike aRFS, PTQ requires per application application configuration. To
++most effectively use PTQ some understanding of the threading model of
++the application is warranted. The section above describes one possible
++configuration strategy for a canonical application using SO_REUSEPORT.
++
++
+ Further Information
+ ===================
+ RPS and RFS were introduced in kernel 2.6.35. XPS was incorporated into
 -- 
 2.25.1
 
