@@ -2,169 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C52212077DC
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 17:47:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D940620780A
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 17:56:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404486AbgFXPrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 11:47:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404312AbgFXPrS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 11:47:18 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E84C061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 08:47:18 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id r18so1257508ybl.5
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 08:47:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jjXRx8PCtFQo2aMIioS6QMYlCZHl2Qx2e56WVj9uL2E=;
-        b=cXs3sDO71et7NUSnfJzWdeg534BA80nbeYuUBEB+tjjra6jCHFvSUsRTqXCdO8oIkR
-         AA0SOuoQmvO/MSxQ7S9lVl+kpeao03ez3AX3WHY6vK6MATasRex52D4f+nNWLz1LMl4q
-         PVgYXCZRzLxV7+IJN4fHklLn5OJVCAODmQNefy6sSxv06p6IqGhmxMPow1Xv6qedo4qu
-         Lpo9PaXJ7ouFDkgRjsGLR1IKsX+oFabx4+tw7v/nY3qn6LtDvohrduASH9dS9Ee1/H7g
-         zVF2gbXuyijtEcwvpBrLVi8JRV4JO1wZG+mJ9I6Cka+ZOhvcPCSZmhZHUeG5RHZ5tE8p
-         KO7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jjXRx8PCtFQo2aMIioS6QMYlCZHl2Qx2e56WVj9uL2E=;
-        b=cdQ3w6NkqNDxNkDJ95D9LNScb89iSy122qULRegtGvkzJQT2qGf+WmoYfIUJ4ETKk1
-         Tvu0IF4a8ObFGR4XKz3AyN7jZKVd9nM80diJCvFxYIByfgT5mUxCVigt2y3yj/5VipmX
-         gbHrx2SO4l/DZ3EaaEWhTMNORk2x3hB9a9a35TNtklFYylhjOEZgCoaFIbsEGLet+k0Y
-         PmnPRFbpNGVKfG7cqFm78tFT296qvrWJvxkohtYVtq0jsezRXH/yEyYpJNL0jtNNmlEj
-         9ZHsNUluHIDUcSD5BtUZnf4+QMxmsje2qxfBdknyzcMji5YoOvU4375cf7jYD4jU/1+V
-         L0cA==
-X-Gm-Message-State: AOAM530Tx14++LPzyxqjoUPTWNl3IymKicJvz3/CdWWeimOuGh/hEldg
-        z9OdyEmdrf4kqbW/+iPCYY1wF73jVmrmPHNXF7oyQjHyEJg=
-X-Google-Smtp-Source: ABdhPJyIcuHF4lLV6rFklCl+NJxkBGOiRzbo4H+68h20t/Gx99+uhvMYQMnRAbHNasF7AMWY0E0MhFfSRbjxt4GTwnM=
-X-Received: by 2002:a05:6902:1005:: with SMTP id w5mr49599061ybt.173.1593013637043;
- Wed, 24 Jun 2020 08:47:17 -0700 (PDT)
+        id S2404622AbgFXP4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 11:56:32 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:14926 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2404351AbgFXP4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 11:56:31 -0400
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05OFZ2o5114504;
+        Wed, 24 Jun 2020 11:54:58 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31uwyypwr3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Jun 2020 11:54:57 -0400
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 05OFZBeS115032;
+        Wed, 24 Jun 2020 11:54:57 -0400
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31uwyypwpj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Jun 2020 11:54:56 -0400
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05OFpKNX014534;
+        Wed, 24 Jun 2020 15:54:54 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma06ams.nl.ibm.com with ESMTP id 31uusjgsgv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Jun 2020 15:54:54 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05OFsp9P61079756
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 24 Jun 2020 15:54:51 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9DB7111C069;
+        Wed, 24 Jun 2020 15:54:51 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D6AB811C05C;
+        Wed, 24 Jun 2020 15:54:49 +0000 (GMT)
+Received: from oc7455500831.ibm.com (unknown [9.145.22.164])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 24 Jun 2020 15:54:49 +0000 (GMT)
+Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
+ seems to break linux bridge on s390x (bisected)
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     mcgrof@kernel.org, ast@kernel.org, axboe@kernel.dk,
+        bfields@fieldses.org, bridge@lists.linux-foundation.org,
+        chainsaw@gentoo.org, christian.brauner@ubuntu.com,
+        chuck.lever@oracle.com, davem@davemloft.net, dhowells@redhat.com,
+        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
+        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
+        keyrings@vger.kernel.org, kuba@kernel.org,
+        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
+        philipp.reisner@linbit.com, ravenexp@gmail.com,
+        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
+        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
+        netdev@vger.kernel.org, markward@linux.ibm.com,
+        linux-s390 <linux-s390@vger.kernel.org>
+References: <20200610154923.27510-5-mcgrof@kernel.org>
+ <20200623141157.5409-1-borntraeger@de.ibm.com>
+ <b7d658b9-606a-feb1-61f9-b58e3420d711@de.ibm.com>
+ <3118dc0d-a3af-9337-c897-2380062a8644@de.ibm.com>
+ <20200624144311.GA5839@infradead.org>
+From:   Christian Borntraeger <borntraeger@de.ibm.com>
+Autocrypt: addr=borntraeger@de.ibm.com; prefer-encrypt=mutual; keydata=
+ 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
+ nS4h0HDFPrrp1C2EMVYIQrMokWvlFZbCpsdYbBI=
+Message-ID: <9e767819-9bbe-2181-521e-4d8ca28ca4f7@de.ibm.com>
+Date:   Wed, 24 Jun 2020 17:54:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200624095748.8246-1-denis.kirjanov@suse.com> <CADVnQym6aoueiB-auSxgp5tp0rjjte+MaxRPWd3t44F5VueKdA@mail.gmail.com>
-In-Reply-To: <CADVnQym6aoueiB-auSxgp5tp0rjjte+MaxRPWd3t44F5VueKdA@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 24 Jun 2020 08:47:05 -0700
-Message-ID: <CANn89iK_75H5jwGLaXUfRnLOgrFdP25xAYmyoD3SW6iFGEL96Q@mail.gmail.com>
-Subject: Re: [PATCH v2] tcp: don't ignore ECN CWR on pure ACK
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Denis Kirjanov <kda@linux-powerpc.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        "Scheffenegger, Richard" <Richard.Scheffenegger@netapp.com>,
-        Bob Briscoe <ietf@bobbriscoe.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200624144311.GA5839@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-24_08:2020-06-24,2020-06-24 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
+ clxscore=1015 bulkscore=0 priorityscore=1501 cotscore=-2147483648
+ mlxscore=0 lowpriorityscore=0 suspectscore=0 adultscore=0 mlxlogscore=766
+ phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006240108
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 24, 2020 at 6:43 AM Neal Cardwell <ncardwell@google.com> wrote:
->
-> On Wed, Jun 24, 2020 at 5:58 AM Denis Kirjanov <kda@linux-powerpc.org> wrote:
-> >
-> > there is a problem with the CWR flag set in an incoming ACK segment
-> > and it leads to the situation when the ECE flag is latched forever
-> >
-> > the following packetdrill script shows what happens:
-> >
-> > // Stack receives incoming segments with CE set
-> > +0.1 <[ect0]  . 11001:12001(1000) ack 1001 win 65535
-> > +0.0 <[ce]    . 12001:13001(1000) ack 1001 win 65535
-> > +0.0 <[ect0] P. 13001:14001(1000) ack 1001 win 65535
-> >
-> > // Stack repsonds with ECN ECHO
-> > +0.0 >[noecn]  . 1001:1001(0) ack 12001
-> > +0.0 >[noecn] E. 1001:1001(0) ack 13001
-> > +0.0 >[noecn] E. 1001:1001(0) ack 14001
-> >
-> > // Write a packet
-> > +0.1 write(3, ..., 1000) = 1000
-> > +0.0 >[ect0] PE. 1001:2001(1000) ack 14001
-> >
-> > // Pure ACK received
-> > +0.01 <[noecn] W. 14001:14001(0) ack 2001 win 65535
-> >
-> > // Since CWR was sent, this packet should NOT have ECE set
-> >
-> > +0.1 write(3, ..., 1000) = 1000
-> > +0.0 >[ect0]  P. 2001:3001(1000) ack 14001
-> > // but Linux will still keep ECE latched here, with packetdrill
-> > // flagging a missing ECE flag, expecting
-> > // >[ect0] PE. 2001:3001(1000) ack 14001
-> > // in the script
-> >
-> > In the situation above we will continue to send ECN ECHO packets
-> > and trigger the peer to reduce the congestion window. To avoid that
-> > we can check CWR on pure ACKs received.
-> >
-> > v2:
-> > - Adjusted the comment
-> > - move CWR check before checking for unacknowledged packets
-> >
-> > Signed-off-by: Denis Kirjanov <denis.kirjanov@suse.com>
-> > ---
-> >  net/ipv4/tcp_input.c | 11 +++++++++--
-> >  1 file changed, 9 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > index 12fda8f27b08..f1936c0cb684 100644
-> > --- a/net/ipv4/tcp_input.c
-> > +++ b/net/ipv4/tcp_input.c
-> > @@ -3665,6 +3665,15 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
-> >                 tcp_in_ack_event(sk, ack_ev_flags);
-> >         }
-> >
-> > +       /* This is a deviation from RFC3168 since it states that:
-> > +        * "When the TCP data sender is ready to set the CWR bit after reducing
-> > +        * the congestion window, it SHOULD set the CWR bit only on the first
-> > +        * new data packet that it transmits."
-> > +        * We accept CWR on pure ACKs to be more robust
-> > +        * with widely-deployed TCP implementations that do this.
-> > +        */
-> > +       tcp_ecn_accept_cwr(sk, skb);
-> > +
-> >         /* We passed data and got it acked, remove any soft error
-> >          * log. Something worked...
-> >          */
-> > @@ -4800,8 +4809,6 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
-> >         skb_dst_drop(skb);
-> >         __skb_pull(skb, tcp_hdr(skb)->doff * 4);
-> >
-> > -       tcp_ecn_accept_cwr(sk, skb);
-> > -
-> >         tp->rx_opt.dsack = 0;
-> >
-> >         /*  Queue data for delivery to the user.
-> > --
->
-> Thanks for the patch!
->
-> Acked-by: Neal Cardwell <ncardwell@google.com>
->
 
-Hmm... It would be nice maybe to fix the offenders, because many linux
-devices won't get this work around before years.
 
-Do we really want to trigger an ACK if we received a packet with no payload ?
+On 24.06.20 16:43, Christoph Hellwig wrote:
+> On Wed, Jun 24, 2020 at 01:11:54PM +0200, Christian Borntraeger wrote:
+>> Does anyone have an idea why "umh: fix processed error when UMH_WAIT_PROC is used" breaks the
+>> linux-bridge on s390?
+> 
+> Are we even sure this is s390 specific and doesn't happen on other
+> architectures with the same bridge setup?
 
-I would think that the following is also needed :
-
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 12fda8f27b08bdf5c9f3bad422734f6b1965cef9..023dc90569c89d7d17d72f73641598a03a03b0a9
-100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -261,7 +261,8 @@ static void tcp_ecn_accept_cwr(struct sock *sk,
-const struct sk_buff *skb)
-                 * cwnd may be very low (even just 1 packet), so we should ACK
-                 * immediately.
-                 */
--               inet_csk(sk)->icsk_ack.pending |= ICSK_ACK_NOW;
-+               if (TCP_SKB_CB(skb)->seq != TCP_SKB_CB(skb)->end_seq)
-+                       inet_csk(sk)->icsk_ack.pending |= ICSK_ACK_NOW;
-        }
- }
+Fair point. AFAIK nobody has tested this yet on x86.
