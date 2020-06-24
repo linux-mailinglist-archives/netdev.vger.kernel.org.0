@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 479A7207A18
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 19:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1BD1207A1A
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 19:19:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405449AbgFXRTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 13:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48806 "EHLO
+        id S2405455AbgFXRTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 13:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405414AbgFXRTK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 13:19:10 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6168CC061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:10 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id s14so1301563plq.6
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:10 -0700 (PDT)
+        with ESMTP id S2405451AbgFXRTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 13:19:19 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF85AC061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:18 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id w2so915671pgg.10
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 10:19:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ao8I7yh9lQNodY4ZHsI/D/j9Zk0SkiV9Y+kygLt5pz0=;
-        b=jwJYVbLwAc2j2v6U9ufu3rZMyHPCHikwfg1Ayf2zDmsjeei6zrCzP3SVeGQ7F7l7P4
-         /cQ5aEQW7OUk5F4xgEtvnIBj4urjSKiYBcm8kpHn1SsLl5PU/GptXF7p6RhWD8wkmMbh
-         32DwSwFAfXWUFExvint9+eiaYqkYPrFGBaAXi1YKz7LAepoMsiBJAoXeUzApQf7sSkVD
-         Z1eITOO2J4wjuJ3MT9Vs49oWg7h+dozGmvsuTK4WhES2a7viDwm9b8LlcK/07sMsFyeg
-         MeIs8XLaHpJt0EW7Kas/peCrwOQtSSOetEfsHfxfgISGkzpTjoigL38IBVSGsoMrIN37
-         5e8Q==
+        bh=70hby/uDfnlNOV84ZWyp8KNhkZ8UU7RwIhRI9s67NEc=;
+        b=PdmPaahHcaUcSThGgBro358sZNBvviSfpxQiyxyA8ko76/Bzs5iTnuHUD+913/p8jg
+         D2a8bC+r0tPewLCBMzWLNvMog38jKIsvyhgbBlB53uzSaJfgOYhCnfRuN9c9Zd0EXoyv
+         ke97xb6NfZwZCoY4LfJdyZL5rKi6hshYiwhZ5QSbOETi/YtZ0PQ+z65/qk0yL/YIUCPi
+         Fdx9jpZXlsS0Tv+sDeLHqyFFHxEc8KSCxxAlgs3YkQMuW9GXdQs295a1VJV4IbTc8OwK
+         mKoCiSjls72lA5NvXOsxubXBEVvGBud36rbw2XWvItM9zNoDqAPgfA7GpJv3GZ2C5CTP
+         U+Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ao8I7yh9lQNodY4ZHsI/D/j9Zk0SkiV9Y+kygLt5pz0=;
-        b=lZ5qXYGeuhN+bqqYZP7sVqJ+K6P5sl7UwoN9cQcCg+5jihS7Ki46OIEPkcnrQTVOGk
-         QCQcxRMSQSiUf0He5N1/7tqocg904gh9Yl2r7R6Mt8BoevK+EWshvS9eND8Z5jO4GBYa
-         ssytfStavXY3U9UWOEz7oNn81YzZhnj7FP5/LFUWyzHcHX/PqmhKrqUB/aHpeabdjpw8
-         DWuDTs8wK3yyx0ofbcXkkP1ttsgI78WzzjCZLwkwo+F9JHiXQkzF2C+WXZa7FB2EDYZH
-         OAtIkLG3DSHTn7hJdhEdyURonWogsMC6xDCry1K4GVxKuWantYOKTEhpl4m5ZutoTjwG
-         2ZYg==
-X-Gm-Message-State: AOAM530P6Rm9cV8JRFG0h226LkiGXmmy7QU9lpnA+jiEjhZa7l+VxWoN
-        BfPdPDMAbfX4kyWuyCrpRRjoiCUCDZQ=
-X-Google-Smtp-Source: ABdhPJz8qrGbV8gFtWHmHCOQ3E04Fi7GMkMCqh+40COTZcq3zm8sbsqm+poBlAVEjY8liQyx5fCpsQ==
-X-Received: by 2002:a17:90b:23d2:: with SMTP id md18mr29528038pjb.179.1593019149481;
-        Wed, 24 Jun 2020 10:19:09 -0700 (PDT)
+        bh=70hby/uDfnlNOV84ZWyp8KNhkZ8UU7RwIhRI9s67NEc=;
+        b=UvGBNPligWpkOLUgeO6diykQFU9kwAGn4KcpUkwzEp8GiQikk8VJPH3YWhmfrg+y2S
+         8elyf6tROQsDibrv2r/v8tv35hdQcklCZfkHSoWyRYneoIQMTdP+TlvzmKbDns4IMmkz
+         67E2UWndEv+DEezpsjSUqzmHeKp6hUfK7Iwv2Ho1IFe6xPDeu9H5U0Dnga7ACr2eccaj
+         OxbnU6TC4HUg1lxmlHHpu4cTaNUlKjg2uDsY9rNjAZDSSAoyYaflm/uLmH7OjOuEwHTY
+         JpeT0Eb0zvIb1bg5cwDW6Wxp0F8XDxK4x5DbBuwjdWU+CwEepecX4p63ju9KALyKjR5E
+         corw==
+X-Gm-Message-State: AOAM533NrtolOPjjMftYPR58mYvsTmK9/KsFtkQG25ZQwUYX0nk1dvjF
+        1CyJ1Crk4IlJKvrkS0IE1ReRgti9cE8=
+X-Google-Smtp-Source: ABdhPJzoKpvimB8ijVg2M/UozoW3bWV5HuW9QTZNuuj67H0GJk1ky50V/+WzjqK3YqVMknOaKYFB1g==
+X-Received: by 2002:a65:6496:: with SMTP id e22mr23292609pgv.63.1593019158077;
+        Wed, 24 Jun 2020 10:19:18 -0700 (PDT)
 Received: from localhost.localdomain (c-73-202-182-113.hsd1.ca.comcast.net. [73.202.182.113])
-        by smtp.gmail.com with ESMTPSA id w18sm17490241pgj.31.2020.06.24.10.19.08
+        by smtp.gmail.com with ESMTPSA id w18sm17490241pgj.31.2020.06.24.10.19.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jun 2020 10:19:08 -0700 (PDT)
+        Wed, 24 Jun 2020 10:19:17 -0700 (PDT)
 From:   Tom Herbert <tom@herbertland.com>
 To:     netdev@vger.kernel.org
 Cc:     Tom Herbert <tom@herbertland.com>
-Subject: [RFC PATCH 02/11] net: Create netqueue.h and define NO_QUEUE
-Date:   Wed, 24 Jun 2020 10:17:41 -0700
-Message-Id: <20200624171749.11927-3-tom@herbertland.com>
+Subject: [RFC PATCH 03/11] arfs: Create set_arfs_queue
+Date:   Wed, 24 Jun 2020 10:17:42 -0700
+Message-Id: <20200624171749.11927-4-tom@herbertland.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200624171749.11927-1-tom@herbertland.com>
 References: <20200624171749.11927-1-tom@herbertland.com>
@@ -63,136 +63,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create linux/netqueue.h to hold generic network queue definitions.
-
-Define NO_QUEUE to replace NO_QUEUE_MAPPING in net/sock.h. NO_QUEUE
-can generally be used to indicate that a 16 bit queue index does not
-refer to a queue.
-
-Also, define net_queue_pair which will be used as a generic way to store a
-transmit/receive pair of network queues.
+Abstract out the code for steering a flow to an aRFS queue (via
+ndo_rx_flow_steer) into its own function. This allows the function to
+be called in other use cases.
 ---
- include/linux/netdevice.h |  1 +
- include/linux/netqueue.h  | 25 +++++++++++++++++++++++++
- include/net/sock.h        | 12 +++++-------
- net/core/filter.c         |  4 ++--
- 4 files changed, 33 insertions(+), 9 deletions(-)
- create mode 100644 include/linux/netqueue.h
+ net/core/dev.c | 67 +++++++++++++++++++++++++++++---------------------
+ 1 file changed, 39 insertions(+), 28 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 6fc613ed8eae..bf5f2a85da97 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -32,6 +32,7 @@
- #include <linux/percpu.h>
- #include <linux/rculist.h>
- #include <linux/workqueue.h>
-+#include <linux/netqueue.h>
- #include <linux/dynamic_queue_limits.h>
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6bc2388141f6..9f7a3e78e23a 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4250,42 +4250,53 @@ EXPORT_SYMBOL(rps_needed);
+ struct static_key_false rfs_needed __read_mostly;
+ EXPORT_SYMBOL(rfs_needed);
  
- #include <linux/ethtool.h>
-diff --git a/include/linux/netqueue.h b/include/linux/netqueue.h
-new file mode 100644
-index 000000000000..5a4d39821ada
---- /dev/null
-+++ b/include/linux/netqueue.h
-@@ -0,0 +1,25 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * Network queue identifier definitions
-+ *
-+ * Copyright (c) 2020 Tom Herbert <tom@herbertland.com>
-+ */
-+
-+#ifndef _LINUX_NETQUEUE_H
-+#define _LINUX_NETQUEUE_H
-+
-+/* Indicates no network queue is present in 16 bit queue number */
-+#define NO_QUEUE	USHRT_MAX
-+
-+struct net_queue_pair {
-+	unsigned short txq_id;
-+	unsigned short rxq_id;
-+};
-+
-+static inline void init_net_queue_pair(struct net_queue_pair *qpair)
++#ifdef CONFIG_RFS_ACCEL
++static void set_arfs_queue(struct net_device *dev, struct sk_buff *skb,
++			   struct rps_dev_flow *rflow, u16 rxq_index)
 +{
-+	qpair->rxq_id = NO_QUEUE;
-+	qpair->txq_id = NO_QUEUE;
-+}
++	struct rps_dev_flow_table *flow_table;
++	struct netdev_rx_queue *rxqueue;
++	struct rps_dev_flow *old_rflow;
++	u32 flow_id;
++	int rc;
 +
-+#endif /* _LINUX_NETQUEUE_H */
-diff --git a/include/net/sock.h b/include/net/sock.h
-index c53cc42b5ab9..acb76cfaae1b 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1800,16 +1800,14 @@ static inline void sk_tx_queue_set(struct sock *sk, int tx_queue)
- 	sk->sk_tx_queue_mapping = tx_queue;
- }
++	rxqueue = dev->_rx + rxq_index;
++
++	flow_table = rcu_dereference(rxqueue->rps_flow_table);
++	if (!flow_table)
++		return;
++
++	flow_id = skb_get_hash(skb) & flow_table->mask;
++	rc = dev->netdev_ops->ndo_rx_flow_steer(dev, skb,
++						rxq_index, flow_id);
++	if (rc < 0)
++		return;
++
++	old_rflow = rflow;
++	rflow = &flow_table->flows[flow_id];
++	rflow->filter = rc;
++	if (old_rflow->filter == rflow->filter)
++		old_rflow->filter = RPS_NO_FILTER;
++}
++#endif
++
+ static struct rps_dev_flow *
+ set_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 	    struct rps_dev_flow *rflow, u16 next_cpu)
+ {
+ 	if (next_cpu < nr_cpu_ids) {
+ #ifdef CONFIG_RFS_ACCEL
+-		struct netdev_rx_queue *rxqueue;
+-		struct rps_dev_flow_table *flow_table;
+-		struct rps_dev_flow *old_rflow;
+-		u32 flow_id;
+-		u16 rxq_index;
+-		int rc;
  
--#define NO_QUEUE_MAPPING	USHRT_MAX
+ 		/* Should we steer this flow to a different hardware queue? */
+-		if (!skb_rx_queue_recorded(skb) || !dev->rx_cpu_rmap ||
+-		    !(dev->features & NETIF_F_NTUPLE))
+-			goto out;
+-		rxq_index = cpu_rmap_lookup_index(dev->rx_cpu_rmap, next_cpu);
+-		if (rxq_index == skb_get_rx_queue(skb))
+-			goto out;
 -
- static inline void sk_tx_queue_clear(struct sock *sk)
- {
--	sk->sk_tx_queue_mapping = NO_QUEUE_MAPPING;
-+	sk->sk_tx_queue_mapping = NO_QUEUE;
- }
- 
- static inline int sk_tx_queue_get(const struct sock *sk)
- {
--	if (sk && sk->sk_tx_queue_mapping != NO_QUEUE_MAPPING)
-+	if (sk && sk->sk_tx_queue_mapping != NO_QUEUE)
- 		return sk->sk_tx_queue_mapping;
- 
- 	return -1;
-@@ -1821,7 +1819,7 @@ static inline void sk_rx_queue_set(struct sock *sk, const struct sk_buff *skb)
- 	if (skb_rx_queue_recorded(skb)) {
- 		u16 rx_queue = skb_get_rx_queue(skb);
- 
--		if (WARN_ON_ONCE(rx_queue == NO_QUEUE_MAPPING))
-+		if (WARN_ON_ONCE(rx_queue == NO_QUEUE))
- 			return;
- 
- 		sk->sk_rx_queue_mapping = rx_queue;
-@@ -1832,14 +1830,14 @@ static inline void sk_rx_queue_set(struct sock *sk, const struct sk_buff *skb)
- static inline void sk_rx_queue_clear(struct sock *sk)
- {
- #ifdef CONFIG_XPS
--	sk->sk_rx_queue_mapping = NO_QUEUE_MAPPING;
-+	sk->sk_rx_queue_mapping = NO_QUEUE;
+-		rxqueue = dev->_rx + rxq_index;
+-		flow_table = rcu_dereference(rxqueue->rps_flow_table);
+-		if (!flow_table)
+-			goto out;
+-		flow_id = skb_get_hash(skb) & flow_table->mask;
+-		rc = dev->netdev_ops->ndo_rx_flow_steer(dev, skb,
+-							rxq_index, flow_id);
+-		if (rc < 0)
+-			goto out;
+-		old_rflow = rflow;
+-		rflow = &flow_table->flows[flow_id];
+-		rflow->filter = rc;
+-		if (old_rflow->filter == rflow->filter)
+-			old_rflow->filter = RPS_NO_FILTER;
+-	out:
++		if (skb_rx_queue_recorded(skb) && dev->rx_cpu_rmap &&
++		    (dev->features & NETIF_F_NTUPLE)) {
++			u16 rxq_index;
++
++			rxq_index = cpu_rmap_lookup_index(dev->rx_cpu_rmap,
++							  next_cpu);
++			if (rxq_index != skb_get_rx_queue(skb))
++				set_arfs_queue(dev, skb, rflow, rxq_index);
++		}
  #endif
- }
- 
- #ifdef CONFIG_XPS
- static inline int sk_rx_queue_get(const struct sock *sk)
- {
--	if (sk && sk->sk_rx_queue_mapping != NO_QUEUE_MAPPING)
-+	if (sk && sk->sk_rx_queue_mapping != NO_QUEUE)
- 		return sk->sk_rx_queue_mapping;
- 
- 	return -1;
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 73395384afe2..d696aaabe3af 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7544,7 +7544,7 @@ static u32 bpf_convert_ctx_access(enum bpf_access_type type,
- 
- 	case offsetof(struct __sk_buff, queue_mapping):
- 		if (type == BPF_WRITE) {
--			*insn++ = BPF_JMP_IMM(BPF_JGE, si->src_reg, NO_QUEUE_MAPPING, 1);
-+			*insn++ = BPF_JMP_IMM(BPF_JGE, si->src_reg, NO_QUEUE, 1);
- 			*insn++ = BPF_STX_MEM(BPF_H, si->dst_reg, si->src_reg,
- 					      bpf_target_off(struct sk_buff,
- 							     queue_mapping,
-@@ -7981,7 +7981,7 @@ u32 bpf_sock_convert_ctx_access(enum bpf_access_type type,
- 				       sizeof_field(struct sock,
- 						    sk_rx_queue_mapping),
- 				       target_size));
--		*insn++ = BPF_JMP_IMM(BPF_JNE, si->dst_reg, NO_QUEUE_MAPPING,
-+		*insn++ = BPF_JMP_IMM(BPF_JNE, si->dst_reg, NO_QUEUE,
- 				      1);
- 		*insn++ = BPF_MOV64_IMM(si->dst_reg, -1);
- #else
+ 		rflow->last_qtail =
+ 			per_cpu(softnet_data, next_cpu).input_queue_head;
 -- 
 2.25.1
 
