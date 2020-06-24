@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12825207B12
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 19:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0907207B4E
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 20:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405941AbgFXR7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 13:59:11 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:10308 "EHLO
+        id S2406001AbgFXSPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 14:15:53 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:1048 "EHLO
         mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2405788AbgFXR7J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 13:59:09 -0400
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05OHYUYL037358;
-        Wed, 24 Jun 2020 13:58:45 -0400
+        by vger.kernel.org with ESMTP id S2405077AbgFXSPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 14:15:52 -0400
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05OI5XtV044878;
+        Wed, 24 Jun 2020 14:10:03 -0400
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 31uwysahmx-1
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31uwyyu0s5-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Jun 2020 13:58:45 -0400
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 05OHZ2RA039769;
-        Wed, 24 Jun 2020 13:58:45 -0400
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 31uwysahk9-1
+        Wed, 24 Jun 2020 14:10:03 -0400
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 05OI5oAH046490;
+        Wed, 24 Jun 2020 14:10:02 -0400
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 31uwyyu0qa-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Jun 2020 13:58:44 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05OHibFb031155;
-        Wed, 24 Jun 2020 17:58:41 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04ams.nl.ibm.com with ESMTP id 31uus70wu3-1
+        Wed, 24 Jun 2020 14:10:02 -0400
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05OI63q5017237;
+        Wed, 24 Jun 2020 18:09:59 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma01fra.de.ibm.com with ESMTP id 31uururhaa-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Jun 2020 17:58:41 +0000
+        Wed, 24 Jun 2020 18:09:59 +0000
 Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05OHwd2W27590710
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05OI9vZp6291886
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 24 Jun 2020 17:58:39 GMT
+        Wed, 24 Jun 2020 18:09:57 GMT
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 79AC4A4055;
-        Wed, 24 Jun 2020 17:58:39 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 1FB6AA4040;
+        Wed, 24 Jun 2020 18:09:57 +0000 (GMT)
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 11C24A4053;
-        Wed, 24 Jun 2020 17:58:38 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id CDEE4A404D;
+        Wed, 24 Jun 2020 18:09:55 +0000 (GMT)
 Received: from oc7455500831.ibm.com (unknown [9.145.22.164])
         by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 24 Jun 2020 17:58:37 +0000 (GMT)
-From:   Christian Borntraeger <borntraeger@de.ibm.com>
+        Wed, 24 Jun 2020 18:09:55 +0000 (GMT)
 Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
  seems to break linux bridge on s390x (bisected)
+From:   Christian Borntraeger <borntraeger@de.ibm.com>
 To:     Luis Chamberlain <mcgrof@kernel.org>
 Cc:     Christoph Hellwig <hch@infradead.org>, ast@kernel.org,
         axboe@kernel.dk, bfields@fieldses.org,
@@ -72,6 +72,7 @@ References: <20200610154923.27510-5-mcgrof@kernel.org>
  <20200624144311.GA5839@infradead.org>
  <9e767819-9bbe-2181-521e-4d8ca28ca4f7@de.ibm.com>
  <20200624160953.GH4332@42.do-not-panic.com>
+ <ea41e2a9-61f7-aec1-79e5-7b08b6dd5119@de.ibm.com>
 Autocrypt: addr=borntraeger@de.ibm.com; prefer-encrypt=mutual; keydata=
  xsFNBE6cPPgBEAC2VpALY0UJjGmgAmavkL/iAdqul2/F9ONz42K6NrwmT+SI9CylKHIX+fdf
  J34pLNJDmDVEdeb+brtpwC9JEZOLVE0nb+SR83CsAINJYKG3V1b3Kfs0hydseYKsBYqJTN2j
@@ -115,24 +116,23 @@ Autocrypt: addr=borntraeger@de.ibm.com; prefer-encrypt=mutual; keydata=
  jaqYefx7yQ7FJXXETd2uVURiDeNEFhVZWb5CiBJM5c6qQMhmkS4VyT7/+raaEGgkEKEgHOWf
  ZDP8BHfXtszHqI3Fo1F4IKFo/AP8GOFFxMRgbvlAs8z/+rEEaQYjxYJqj08raw6P4LFBqozr
  nS4h0HDFPrrp1C2EMVYIQrMokWvlFZbCpsdYbBI=
-Message-ID: <ea41e2a9-61f7-aec1-79e5-7b08b6dd5119@de.ibm.com>
-Date:   Wed, 24 Jun 2020 19:58:37 +0200
+Message-ID: <4e27098e-ac8d-98f0-3a9a-ea25242e24ec@de.ibm.com>
+Date:   Wed, 24 Jun 2020 20:09:55 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200624160953.GH4332@42.do-not-panic.com>
+In-Reply-To: <ea41e2a9-61f7-aec1-79e5-7b08b6dd5119@de.ibm.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-24_11:2020-06-24,2020-06-24 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- cotscore=-2147483648 mlxscore=0 phishscore=0 clxscore=1015
- lowpriorityscore=0 adultscore=0 impostorscore=0 bulkscore=0
- mlxlogscore=748 priorityscore=1501 malwarescore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006240117
+ definitions=2020-06-24_14:2020-06-24,2020-06-24 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
+ clxscore=1015 bulkscore=0 priorityscore=1501 cotscore=-2147483648
+ mlxscore=0 lowpriorityscore=0 suspectscore=0 adultscore=0 mlxlogscore=999
+ phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006240121
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -140,79 +140,98 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 24.06.20 18:09, Luis Chamberlain wrote:
-> On Wed, Jun 24, 2020 at 05:54:46PM +0200, Christian Borntraeger wrote:
->>
->>
->> On 24.06.20 16:43, Christoph Hellwig wrote:
->>> On Wed, Jun 24, 2020 at 01:11:54PM +0200, Christian Borntraeger wrote:
->>>> Does anyone have an idea why "umh: fix processed error when UMH_WAIT_PROC is used" breaks the
->>>> linux-bridge on s390?
+On 24.06.20 19:58, Christian Borntraeger wrote:
+> 
+> 
+> On 24.06.20 18:09, Luis Chamberlain wrote:
+>> On Wed, Jun 24, 2020 at 05:54:46PM +0200, Christian Borntraeger wrote:
 >>>
->>> Are we even sure this is s390 specific and doesn't happen on other
->>> architectures with the same bridge setup?
+>>>
+>>> On 24.06.20 16:43, Christoph Hellwig wrote:
+>>>> On Wed, Jun 24, 2020 at 01:11:54PM +0200, Christian Borntraeger wrote:
+>>>>> Does anyone have an idea why "umh: fix processed error when UMH_WAIT_PROC is used" breaks the
+>>>>> linux-bridge on s390?
+>>>>
+>>>> Are we even sure this is s390 specific and doesn't happen on other
+>>>> architectures with the same bridge setup?
+>>>
+>>> Fair point. AFAIK nobody has tested this yet on x86.
 >>
->> Fair point. AFAIK nobody has tested this yet on x86.
+>> Regardless, can you enable dynamic debug prints, to see if the kernel
+>> reveals anything on the bridge code which may be relevant:
+>>
+>> echo "file net/bridge/* +p" > /sys/kernel/debug/dynamic_debug/control
+>>
+>>   Luis
 > 
-> Regardless, can you enable dynamic debug prints, to see if the kernel
-> reveals anything on the bridge code which may be relevant:
+> When I start a guest the following happens with the patch:
 > 
-> echo "file net/bridge/* +p" > /sys/kernel/debug/dynamic_debug/control
+> [   47.420237] virbr0: port 2(vnet0) entered blocking state
+> [   47.420242] virbr0: port 2(vnet0) entered disabled state
+> [   47.420315] device vnet0 entered promiscuous mode
+> [   47.420365] virbr0: port 2(vnet0) event 16
+> [   47.420366] virbr0: br_fill_info event 16 port vnet0 master virbr0
+> [   47.420373] virbr0: toggle option: 12 state: 0 -> 0
+> [   47.420536] virbr0: port 2(vnet0) entered blocking state
+> [   47.420538] virbr0: port 2(vnet0) event 16
+> [   47.420539] virbr0: br_fill_info event 16 port vnet0 master virbr0
 > 
->   Luis
+> and the nothing happens.
+> 
+> 
+> without the patch
+> [   33.805410] virbr0: hello timer expired
+> [   35.805413] virbr0: hello timer expired
+> [   36.184349] virbr0: port 2(vnet0) entered blocking state
+> [   36.184353] virbr0: port 2(vnet0) entered disabled state
+> [   36.184427] device vnet0 entered promiscuous mode
+> [   36.184479] virbr0: port 2(vnet0) event 16
+> [   36.184480] virbr0: br_fill_info event 16 port vnet0 master virbr0
+> [   36.184487] virbr0: toggle option: 12 state: 0 -> 0
+> [   36.184636] virbr0: port 2(vnet0) entered blocking state
+> [   36.184638] virbr0: port 2(vnet0) entered listening state
+> [   36.184639] virbr0: port 2(vnet0) event 16
+> [   36.184640] virbr0: br_fill_info event 16 port vnet0 master virbr0
+> [   36.184645] virbr0: port 2(vnet0) event 16
+> [   36.184646] virbr0: br_fill_info event 16 port vnet0 master virbr0
+> [   37.805478] virbr0: hello timer expired
+> [   38.205413] virbr0: port 2(vnet0) forward delay timer
+> [   38.205414] virbr0: port 2(vnet0) entered learning state
+> [   38.205427] virbr0: port 2(vnet0) event 16
+> [   38.205430] virbr0: br_fill_info event 16 port vnet0 master virbr0
+> [   38.765414] virbr0: port 2(vnet0) hold timer expired
+> [   39.805415] virbr0: hello timer expired
+> [   40.285410] virbr0: port 2(vnet0) forward delay timer
+> [   40.285411] virbr0: port 2(vnet0) entered forwarding state
+> [   40.285418] virbr0: topology change detected, propagating
+> [   40.285420] virbr0: decreasing ageing time to 400
+> [   40.285427] virbr0: port 2(vnet0) event 16
+> [   40.285432] virbr0: br_fill_info event 16 port vnet0 master virbr0
+> [   40.765408] virbr0: port 2(vnet0) hold timer expired
+> [   41.805415] virbr0: hello timer expired
+> [   42.765426] virbr0: port 2(vnet0) hold timer expired
+> [   43.805425] virbr0: hello timer expired
+> [   44.765426] virbr0: port 2(vnet0) hold timer expired
+> [   45.805418] virbr0: hello timer expired
+> 
+> and continuing....
 
-When I start a guest the following happens with the patch:
+Just reverting the umh.c parts like this makes the problem go away.
 
-[   47.420237] virbr0: port 2(vnet0) entered blocking state
-[   47.420242] virbr0: port 2(vnet0) entered disabled state
-[   47.420315] device vnet0 entered promiscuous mode
-[   47.420365] virbr0: port 2(vnet0) event 16
-[   47.420366] virbr0: br_fill_info event 16 port vnet0 master virbr0
-[   47.420373] virbr0: toggle option: 12 state: 0 -> 0
-[   47.420536] virbr0: port 2(vnet0) entered blocking state
-[   47.420538] virbr0: port 2(vnet0) event 16
-[   47.420539] virbr0: br_fill_info event 16 port vnet0 master virbr0
-
-and the nothing happens.
-
-
-without the patch
-[   33.805410] virbr0: hello timer expired
-[   35.805413] virbr0: hello timer expired
-[   36.184349] virbr0: port 2(vnet0) entered blocking state
-[   36.184353] virbr0: port 2(vnet0) entered disabled state
-[   36.184427] device vnet0 entered promiscuous mode
-[   36.184479] virbr0: port 2(vnet0) event 16
-[   36.184480] virbr0: br_fill_info event 16 port vnet0 master virbr0
-[   36.184487] virbr0: toggle option: 12 state: 0 -> 0
-[   36.184636] virbr0: port 2(vnet0) entered blocking state
-[   36.184638] virbr0: port 2(vnet0) entered listening state
-[   36.184639] virbr0: port 2(vnet0) event 16
-[   36.184640] virbr0: br_fill_info event 16 port vnet0 master virbr0
-[   36.184645] virbr0: port 2(vnet0) event 16
-[   36.184646] virbr0: br_fill_info event 16 port vnet0 master virbr0
-[   37.805478] virbr0: hello timer expired
-[   38.205413] virbr0: port 2(vnet0) forward delay timer
-[   38.205414] virbr0: port 2(vnet0) entered learning state
-[   38.205427] virbr0: port 2(vnet0) event 16
-[   38.205430] virbr0: br_fill_info event 16 port vnet0 master virbr0
-[   38.765414] virbr0: port 2(vnet0) hold timer expired
-[   39.805415] virbr0: hello timer expired
-[   40.285410] virbr0: port 2(vnet0) forward delay timer
-[   40.285411] virbr0: port 2(vnet0) entered forwarding state
-[   40.285418] virbr0: topology change detected, propagating
-[   40.285420] virbr0: decreasing ageing time to 400
-[   40.285427] virbr0: port 2(vnet0) event 16
-[   40.285432] virbr0: br_fill_info event 16 port vnet0 master virbr0
-[   40.765408] virbr0: port 2(vnet0) hold timer expired
-[   41.805415] virbr0: hello timer expired
-[   42.765426] virbr0: port 2(vnet0) hold timer expired
-[   43.805425] virbr0: hello timer expired
-[   44.765426] virbr0: port 2(vnet0) hold timer expired
-[   45.805418] virbr0: hello timer expired
-
-and continuing....
-
-
+diff --git a/kernel/umh.c b/kernel/umh.c
+index f81e8698e36e..79f139a7ca03 100644
+--- a/kernel/umh.c
++++ b/kernel/umh.c
+@@ -154,8 +154,8 @@ static void call_usermodehelper_exec_sync(struct subprocess_info *sub_info)
+                 * the real error code is already in sub_info->retval or
+                 * sub_info->retval is 0 anyway, so don't mess with it then.
+                 */
+-               if (KWIFEXITED(ret))
+-                       sub_info->retval = KWEXITSTATUS(ret);
++               if (ret)
++                       sub_info->retval = ret;
+        }
+ 
+        /* Restore default kernel sig handler */
 
 
