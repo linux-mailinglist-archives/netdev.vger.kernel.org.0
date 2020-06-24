@@ -2,151 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31DA2207CD2
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 22:21:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F18207CF2
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 22:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406318AbgFXUVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 16:21:36 -0400
-Received: from mga11.intel.com ([192.55.52.93]:17213 "EHLO mga11.intel.com"
+        id S1728798AbgFXUbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 16:31:20 -0400
+Received: from mx2.suse.de ([195.135.220.15]:60330 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406285AbgFXUVg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jun 2020 16:21:36 -0400
-IronPort-SDR: 9WyqO3iZN8hNkjrPF+//qiXHN1prd56vjtXpJcRSWg6ZeyBOeRHCTOBe317BJZbZbY+Zo3eZ5v
- 2WRllU0uK9/w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9662"; a="142846028"
-X-IronPort-AV: E=Sophos;i="5.75,276,1589266800"; 
-   d="scan'208";a="142846028"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2020 13:21:35 -0700
-IronPort-SDR: nyi3VoYg7dCSdb0H3gIhvLtz5ubgcooE5N1bJPGvs3LMknHH0CFpQA+LKhWXKMV8igJ1THSJDU
- gyXOGgzbsuyg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,276,1589266800"; 
-   d="scan'208";a="265168790"
-Received: from samudral-mobl.amr.corp.intel.com (HELO [10.251.3.18]) ([10.251.3.18])
-  by fmsmga008.fm.intel.com with ESMTP; 24 Jun 2020 13:21:35 -0700
-Subject: Re: ADQ - comparison to aRFS, clarifications on NAPI ID, binding with
- busy-polling
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>
-Cc:     Alexander Duyck <alexander.h.duyck@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Tom Herbert <tom@herbertland.com>, netdev@vger.kernel.org
-References: <e13faf29-5db3-91a2-4a95-c2cd8c2d15fe@mellanox.com>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <807a300e-47aa-dba3-7d6d-e14422a0d869@intel.com>
-Date:   Wed, 24 Jun 2020 13:21:31 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1727981AbgFXUbT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 16:31:19 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 4F0ADACED;
+        Wed, 24 Jun 2020 20:31:17 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 26A3A60346; Wed, 24 Jun 2020 22:31:17 +0200 (CEST)
+Date:   Wed, 24 Jun 2020 22:31:17 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
+        kuba@kernel.org, jiri@mellanox.com, petrm@mellanox.com,
+        amitc@mellanox.com, mlxsw@mellanox.com, jacob.e.keller@intel.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, linux@rempel-privat.de,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 04/10] Documentation: networking:
+ ethtool-netlink: Add link extended state
+Message-ID: <20200624203117.m5wnove437p775mb@lion.mk-sys.cz>
+References: <20200624081923.89483-1-idosch@idosch.org>
+ <20200624081923.89483-5-idosch@idosch.org>
 MIME-Version: 1.0
-In-Reply-To: <e13faf29-5db3-91a2-4a95-c2cd8c2d15fe@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200624081923.89483-5-idosch@idosch.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 6/17/2020 6:15 AM, Maxim Mikityanskiy wrote:
-> Hi,
+On Wed, Jun 24, 2020 at 11:19:17AM +0300, Ido Schimmel wrote:
+> From: Amit Cohen <amitc@mellanox.com>
 > 
-> I discovered Intel ADQ feature [1] that allows to boost performance by 
-> picking dedicated queues for application traffic. We did some research, 
-> and I got some level of understanding how it works, but I have some 
-> questions, and I hope you could answer them.
+> Add link extended state attributes.
 > 
-> 1. SO_INCOMING_NAPI_ID usage. In my understanding, every connection has 
-> a key (sk_napi_id) that is unique to the NAPI where this connection is 
-> handled, and the application uses that key to choose a handler thread 
-> from the thread pool. If we have a one-to-one relationship between 
-> application threads and NAPI IDs of connections, each application thread 
-> will handle only traffic from a single NAPI. Is my understanding correct?
-
-Yes. It is correct and recommended with the current implementation.
-
+> Signed-off-by: Amit Cohen <amitc@mellanox.com>
+> Reviewed-by: Petr Machata <petrm@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> ---
+>  Documentation/networking/ethtool-netlink.rst | 110 ++++++++++++++++++-
+>  1 file changed, 106 insertions(+), 4 deletions(-)
 > 
-> 1.1. I wonder how the application thread gets scheduled on the same core 
-> that NAPI runs at. It currently only works with busy_poll, so when the 
-> application initiates busy polling (calls epoll), does the Linux 
-> scheduler move the thread to the right CPU? Do we have to have a strict 
-> one-to-one relationship between threads and NAPIs, or can one thread 
-> handle multiple NAPIs? When the data arrives, does the scheduler run the 
-> application thread on the same CPU that NAPI ran on?
+> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+> index 82470c36c27a..a7cc53f905f5 100644
+> --- a/Documentation/networking/ethtool-netlink.rst
+> +++ b/Documentation/networking/ethtool-netlink.rst
+> @@ -443,10 +443,11 @@ supports.
+>  LINKSTATE_GET
+>  =============
+>  
+> -Requests link state information. At the moment, only link up/down flag (as
+> -provided by ``ETHTOOL_GLINK`` ioctl command) is provided but some future
+> -extensions are planned (e.g. link down reason). This request does not have any
+> -attributes.
+> +Requests link state information. Link up/down flag (as provided by
+> +``ETHTOOL_GLINK`` ioctl command) is provided. Optionally, extended state might
+> +be provided as well. In general, extended state describes reasons for why a port
+> +is down, or why it operates in some non-obvious mode. This request does not have
+> +any attributes.
+>  
+>  Request contents:
+>  
+> @@ -461,16 +462,117 @@ Kernel response contents:
+>    ``ETHTOOL_A_LINKSTATE_LINK``          bool    link state (up/down)
+>    ``ETHTOOL_A_LINKSTATE_SQI``           u32     Current Signal Quality Index
+>    ``ETHTOOL_A_LINKSTATE_SQI_MAX``       u32     Max support SQI value
+> +  ``ETHTOOL_A_LINKSTATE_EXT_STATE``     u8      link extended state
+> +  ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE``  u8      link extended substate
+>    ====================================  ======  ============================
+>  
+>  For most NIC drivers, the value of ``ETHTOOL_A_LINKSTATE_LINK`` returns
+>  carrier flag provided by ``netif_carrier_ok()`` but there are drivers which
+>  define their own handler.
+>  
+> +``ETHTOOL_A_LINKSTATE_EXT_STATE`` and ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE`` are
+> +optional values. ethtool core can provide either both
+> +``ETHTOOL_A_LINKSTATE_EXT_STATE`` and ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE``,
+> +or only ``ETHTOOL_A_LINKSTATE_EXT_STATE``, or none of them.
+> +
+>  ``LINKSTATE_GET`` allows dump requests (kernel returns reply messages for all
+>  devices supporting the request).
+>  
+>  
+> +Link extended states:
+> +
+> +  ============================    =============================================
+> +  ``Autoneg``                     States relating to the autonegotiation or
+> +                                  issues therein
+> +
+> +  ``Link training failure``       Failure during link training
+> +
+> +  ``Link logical mismatch``       Logical mismatch in physical coding sublayer
+> +                                  or forward error correction sublayer
+> +
+> +  ``Bad signal integrity``        Signal integrity issues
+> +
+> +  ``No cable``                    No cable connected
+> +
+> +  ``Cable issue``                 Failure is related to cable,
+> +                                  e.g., unsupported cable
+> +
+> +  ``EEPROM issue``                Failure is related to EEPROM, e.g., failure
+> +                                  during reading or parsing the data
+> +
+> +  ``Calibration failure``         Failure during calibration algorithm
+> +
+> +  ``Power budget exceeded``       The hardware is not able to provide the
+> +                                  power required from cable or module
+> +
+> +  ``Overheat``                    The module is overheated
+> +  ============================    =============================================
 
-The app thread can do busypoll from any core and there is no requirement
-that the scheduler needs to move the thread to a specific CPU.
+This file's primary purpose is to serve as kernel-userspace API
+documentation so the table should IMHO show the ETHTOOL_LINK_EXT_STATE_*
+constants. (And so should the substates tables below.)
 
-If the NAPI processing happens via interrupts, the scheduler could move
-the app thread to the same CPU that NAPI ran on.
-
-> 
-> 1.2. I see that SO_INCOMING_NAPI_ID is tightly coupled with busy_poll. 
-> It is enabled only if CONFIG_NET_RX_BUSY_POLL is set. Is there a real 
-> reason why it can't be used without busy_poll? In other words, if we 
-> modify the kernel to drop this requirement, will the kernel still 
-> schedule the application thread on the same CPU as NAPI when busy_poll 
-> is not used?
-
-It should be OK to remove this restriction, but requires enabling this 
-in skb_mark_napi_id() and sk_mark_napi_id() too.
-
-> 
-> 2. Can you compare ADQ to aRFS+XPS? aRFS provides a way to steer traffic 
-> to the application's CPU in an automatic fashion, and xps_rxqs can be 
-> used to transmit from the corresponding queues. This setup doesn't need 
-> manual configuration of TCs and is not limited to 4 applications. The 
-> difference of ADQ is that (in my understanding) it moves the application 
-> to the RX CPU, while aRFS steers the traffic to the RX queue handled my 
-> the application's CPU. Is there any advantage of ADQ over aRFS, that I 
-> failed to find?
-
-aRFS+XPS ties app thread to a cpu, whereas ADQ ties app thread to a napi 
-id which in turn ties to a queue(s)
-
-ADQ also provides 2 levels of filtering compared to aRFS+XPS. The first
-level of filtering selects a queue-set associated with the application
-and the second level filter or RSS will select a queue within that queue
-set associated with an app thread.
-
-The current interface to configure ADQ limits us to support upto 16
-application specific queue sets(TC_MAX_QUEUE)
-
-
-> 
-> 3. At [1], you mention that ADQ can be used to create separate RSS sets. 
->   Could you elaborate about the API used? Does the tc mqprio 
-> configuration also affect RSS? Can it be turned on/off?
-
-Yes. tc mqprio allows to create queue-sets per application and the
-driver configures RSS per queue-set.
-
-> 
-> 4. How is tc flower used in context of ADQ? Does the user need to 
-> reflect the configuration in both mqprio qdisc (for TX) and tc flower 
-> (for RX)? It looks like tc flower maps incoming traffic to TCs, but what 
-> is the mechanism of mapping TCs to RX queues?
-
-tc mqprio is used to map TCs to RX queues
-
-tc flower is used to configure the first level of filter to redirect
-packets to a queue set associated with an application.
-
-> 
-> I really hope you will be able to shed more light on this feature to 
-> increase my awareness on how to use it and to compare it with aRFS.
-
-Hope this helps and we will go over in more detail in our netdev session.
-
-> 
-> Thanks,
-> Max
-> 
-> [1]: 
-> https://netdevconf.info/0x14/session.html?talk-ADQ-for-system-level-network-io-performance-improvements 
-> 
+Michal
