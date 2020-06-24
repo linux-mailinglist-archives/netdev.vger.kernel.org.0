@@ -2,283 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 878CA206C22
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 08:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DAFF206C43
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 08:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389003AbgFXGEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 02:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388164AbgFXGEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 02:04:46 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657C6C061573;
-        Tue, 23 Jun 2020 23:04:46 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id w9so972939ilk.13;
-        Tue, 23 Jun 2020 23:04:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=OIank4+rnOmnlQ1RvShvgHCzW0goS35nSXJDirD6hHQ=;
-        b=FO40C8ZHL8hMfehCXjYu6qhTPBeA2C/t9F/MRa2y8OGET3CcX0ExDzGCDWu3E2Ze3M
-         ZhmoyBSXjznfZMentPlVfvUwV0se4KZis6Mr1+oC0NgZ8oLQuEVINndrQRUX/CUbzl37
-         VDOo1c5WshW1wJtQApT3lQBpNDqfH3k+WLWauQCCrququ31Iibz9EhroeKXPdvtQZ0Kh
-         AEhrMcAF0kMALmqzwpSSsG6LIVYcCVBS20KyPdCvGomiNGpEzqr7V3Oe1qBfs4CfHOvU
-         10FPT7cb98p1oCSxd5C4EQLEnJgMlb1Zg2vriqPTMrJ8S9ckbwrF+jIKCFfCSuU82Jg5
-         YLQw==
+        id S2389067AbgFXGRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 02:17:19 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:40342 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388810AbgFXGRS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 02:17:18 -0400
+Received: by mail-io1-f70.google.com with SMTP id f25so697914ioh.7
+        for <netdev@vger.kernel.org>; Tue, 23 Jun 2020 23:17:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=OIank4+rnOmnlQ1RvShvgHCzW0goS35nSXJDirD6hHQ=;
-        b=iGzQ9OpgLVROClwGqufVvCuNX7u+GLUiXMajSYAF3dn94VeTDw4ym3NzU4J0fMw8nn
-         nUx0+3LGUZSOKYSAU93xfDKocyGApvWU8v8644LG1j8u53zwd+9WVLrdcTOv1XsGDHlv
-         xZkaOoFRuL5vQ+rH/w+eWNTHgKLZxNcdXxl0EA6T0KQiRGpe4kOTSdM5jsbKM72WesYn
-         KAwL9+m93XPZ/m5hSfv6ftldVdPMjfZfPgynYbmIuBfVfL23DdiZomkKXhIh0DC3oX4V
-         ifo9W968ykM1U47ZRUksQh7Mdm37cSjse9ivMH31NR3HWkZGsSBohjpe8G9KKL8JkSNN
-         36Ag==
-X-Gm-Message-State: AOAM532J4uzSbotQJTw/BtCK3OfsLa0xmbQgCmvoF6cDKG0mertodGlq
-        OYSKsvnJA3UjYGfjN7SY0dSEvOI8ndg=
-X-Google-Smtp-Source: ABdhPJxrHa2QnVBXMhHWPz++MnU2+7SnI6XIpMmLVWhzwJ/UIBP0pyl08QSt7pebc9DcM06cAIhWaA==
-X-Received: by 2002:a92:4919:: with SMTP id w25mr2289289ila.198.1592978685516;
-        Tue, 23 Jun 2020 23:04:45 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id c20sm11190935iot.33.2020.06.23.23.04.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Jun 2020 23:04:44 -0700 (PDT)
-Date:   Tue, 23 Jun 2020 23:04:36 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Message-ID: <5ef2ecf4b7bd9_37452b132c4de5bcc@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAEf4BzZTWyii7k6MjdygJP+VfAHnnr8jbxjG1Ge96ioKq5ZEeQ@mail.gmail.com>
-References: <20200623032224.4020118-1-andriin@fb.com>
- <20200623032224.4020118-2-andriin@fb.com>
- <7ed6ada5-2539-3090-0db7-0f65b67e4699@iogearbox.net>
- <CAEf4BzbsRyt5Y4-oMaKTUNu_ijnRD09+WW3iA+bfGLZcLpd77w@mail.gmail.com>
- <ee6df475-b7d4-b8ed-dc91-560e42d2e7fc@iogearbox.net>
- <20200623232503.yzm4g24rwx7khudf@ast-mbp.dhcp.thefacebook.com>
- <f1ec2d3b-4897-1a40-e373-51bed4fd3b87@fb.com>
- <CAEf4BzZTWyii7k6MjdygJP+VfAHnnr8jbxjG1Ge96ioKq5ZEeQ@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 2/3] selftests/bpf: add variable-length data
- concatenation pattern test
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=5CAUOdrn145t33RyDsvFuRNtproPZrRG5wbaIt1noKk=;
+        b=i2TVeaKwfR1qTxlNMkoLxDcOUCTEZr2Cv9sElnmcQJcYxdhIi8acCg3QFt9H5pLzcU
+         yJh40nd9FSROCNhgIu6V3l8F8IeJJ9wLa1mogn7s6e1T+RqRI9oMtKdV2NMOJMzD6Esx
+         CXotNle9+Xn6z77f12d+eaX6M+01ClNpV+Rj8mnQP4wHmQO+8l+vFX9W8h3C6Dy1cf5L
+         CVe9Zg6POTb7NHUk7U2ai7aezPfjJBD3J8xdzC938+h9h45zs95ldYqZO+ZKtDiPg5AZ
+         RzGJkxXVP4pLNT0p93I39s5nDhRP+LK1V29pZGgAppVE51tqks/bOuJa5kFxRxWJ9UHQ
+         LtMg==
+X-Gm-Message-State: AOAM532P8kD886/7S2ZBzOHds9otuSZXy8ituO40qUQcNiy1Z6ZzScCc
+        Liu1EwchewX5DxlEI04eaeq4fvP0Jacw1bU6LVyJ8AgMtxRh
+X-Google-Smtp-Source: ABdhPJyELxw2qLKuuPok9m57oshaB2ZfSKHTA8VbOzvPFtYhWR3PH5aIWU1WALFsdrHxgeH3qH9ye4Gc1bt+Us2ddP1+eZIjKJN4
+MIME-Version: 1.0
+X-Received: by 2002:a02:cf3b:: with SMTP id s27mr16670340jar.72.1592979436970;
+ Tue, 23 Jun 2020 23:17:16 -0700 (PDT)
+Date:   Tue, 23 Jun 2020 23:17:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000079a77705a8ce6da7@google.com>
+Subject: general protection fault in qrtr_endpoint_post
+From:   syzbot <syzbot+03e343dbccf82a5242a2@syzkaller.appspotmail.com>
+To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko wrote:
-> On Tue, Jun 23, 2020 at 5:25 PM Yonghong Song <yhs@fb.com> wrote:
-> >
-> >
-> >
-> > On 6/23/20 4:25 PM, Alexei Starovoitov wrote:
-> > > On Tue, Jun 23, 2020 at 11:15:58PM +0200, Daniel Borkmann wrote:
-> > >> On 6/23/20 10:52 PM, Andrii Nakryiko wrote:
-> > >>> On Tue, Jun 23, 2020 at 1:39 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > >>>> On 6/23/20 5:22 AM, Andrii Nakryiko wrote:
-> > >>>>> Add selftest that validates variable-length data reading and concatentation
-> > >>>>> with one big shared data array. This is a common pattern in production use for
-> > >>>>> monitoring and tracing applications, that potentially can read a lot of data,
-> > >>>>> but overall read much less. Such pattern allows to determine precisely what
-> > >>>>> amount of data needs to be sent over perfbuf/ringbuf and maximize efficiency.
-> > >>>>>
-> > >>>>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > >>>>
-> > >>>> Currently getting the below errors on these tests. My last clang/llvm git build
-> > >>>> is on 4676cf444ea2 ("[Clang] Skip adding begin source location for PragmaLoopHint'd
-> > >>>> loop when[...]"):
-> > >>>
-> > >>> Yeah, you need 02553b91da5d ("bpf: bpf_probe_read_kernel_str() has to
-> > >>> return amount of data read on success") from bpf tree.
-> > >>
-> > >> Fair point, it's in net- but not yet in net-next tree, so bpf-next sync needs
-> > >> to wait.
-> > >>
-> > >>> I'm eagerly awaiting bpf being merged into bpf-next :)
-> > >>
-> > >> I'll cherry-pick 02553b91da5d locally for testing and if it passes I'll push
-> > >> these out.
-> > >
-> > > I've merged the bpf_probe_read_kernel_str() fix into bpf-next and 3 extra commits
-> > > prior to that one so that sha of the bpf_probe_read_kernel_str() fix (02553b91da5de)
-> > > is exactly the same in bpf/net/linus/bpf-next. I think that shouldn't cause
-> > > issue during bpf-next pull into net-next and later merge with Linus's tree.
-> > > Crossing fingers, since we're doing this experiment for the first time.
-> > >
-> > > Daniel pushed these 3 commits as well.
-> > > Now varlen and kernel_reloc tests are good, but we have a different issue :(
-> > > ./test_progs-no_alu32 -t get_stack_raw_tp
-> > > is now failing, but for a different reason.
-> > >
-> > > 52: (85) call bpf_get_stack#67
-> > > 53: (bf) r8 = r0
-> > > 54: (bf) r1 = r8
-> > > 55: (67) r1 <<= 32
-> > > 56: (c7) r1 s>>= 32
-> > > ; if (usize < 0)
-> > > 57: (c5) if r1 s< 0x0 goto pc+26
-> > >   R0=inv(id=0,smax_value=800) R1_w=inv(id=0,umax_value=800,var_off=(0x0; 0x3ff)) R6=ctx(id=0,off=0,imm=0) R7=map_value(id=0,off=0,ks=4,vs=1600,imm=0) R8_w=inv(id=0,smax_value=800) R9=inv800 R10=fp0 fp-8=mmmm????
-> > > ; ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > > 58: (1f) r9 -= r8
-> > > ; ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > > 59: (bf) r2 = r7
-> > > 60: (0f) r2 += r1
-> > > regs=1 stack=0 before 52: (85) call bpf_get_stack#67
-> > > ; ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > > 61: (bf) r1 = r6
-> > > 62: (bf) r3 = r9
-> > > 63: (b7) r4 = 0
-> > > 64: (85) call bpf_get_stack#67
-> > >   R0=inv(id=0,smax_value=800) R1_w=ctx(id=0,off=0,imm=0) R2_w=map_value(id=0,off=0,ks=4,vs=1600,umax_value=800,var_off=(0x0; 0x3ff),s32_max_value=1023,u32_max_value=1023) R3_w=inv(id=0,umax_value=9223372036854776608) R4_w=inv0 R6=ctx(id=0?
-> > > R3 unbounded memory access, use 'var &= const' or 'if (var < const)'
-> > >
-> > > In the C code it was this:
-> > >          usize = bpf_get_stack(ctx, raw_data, max_len, BPF_F_USER_STACK);
-> > >          if (usize < 0)
-> > >                  return 0;
-> > >
-> > >          ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > >          if (ksize < 0)
-> > >                  return 0;
-> > >
-> > > We used to have problem with pointer arith in R2.
-> > > Now it's a problem with two integers in R3.
-> > > 'if (usize < 0)' is comparing R1 and makes it [0,800], but R8 stays [-inf,800].
-> > > Both registers represent the same 'usize' variable.
-> > > Then R9 -= R8 is doing 800 - [-inf, 800]
-> > > so the result of "max_len - usize" looks unbounded to the verifier while
-> > > it's obvious in C code that "max_len - usize" should be [0, 800].
-> > >
-> > > The following diff 'fixes' the issue for no_alu32:
-> > > diff --git a/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c b/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c
-> > > index 29817a703984..93058136d608 100644
-> > > --- a/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c
-> > > +++ b/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c
-> > > @@ -2,6 +2,7 @@
-> > >
-> > >   #include <linux/bpf.h>
-> > >   #include <bpf/bpf_helpers.h>
-> > > +#define var_barrier(a) asm volatile ("" : "=r"(a) : "0"(a))
-> > >
-> > >   /* Permit pretty deep stack traces */
-> > >   #define MAX_STACK_RAWTP 100
-> > > @@ -84,10 +85,12 @@ int bpf_prog1(void *ctx)
-> > >                  return 0;
-> > >
-> > >          usize = bpf_get_stack(ctx, raw_data, max_len, BPF_F_USER_STACK);
-> > > +       var_barrier(usize);
-> > >          if (usize < 0)
-> > >                  return 0;
-> > >
-> > >          ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > > +       var_barrier(ksize);
-> > >          if (ksize < 0)
-> > >                  return 0;
-> > >
-> > > But it breaks alu32 case.
-> > >
-> > > I'm using llvm 11 fwiw.
-> > >
-> > > Long term Yonghong is working on llvm support to emit this kind
-> > > of workarounds automatically.
-> > > I'm still thinking what to do next. Ideas?
-> >
-> 
-> Funny enough, Alexei's fix didn't fix even no_alu32 case for me. Also
-> have one of the latest clang 11...
-> 
-> > The following source change will make both alu32 and non-alu32 happy:
-> >
-> >   SEC("raw_tracepoint/sys_enter")
-> >   int bpf_prog1(void *ctx)
-> >   {
-> > -       int max_len, max_buildid_len, usize, ksize, total_size;
-> > +       int max_len, max_buildid_len, total_size;
-> > +       long usize, ksize;
-> 
-> This does fix it, both alu32 and no-alu32 pass.
-> 
-> >          struct stack_trace_t *data;
-> >          void *raw_data;
-> >          __u32 key = 0;
-> >
-> > I have not checked the reason why it works. Mostly this confirms to
-> > the function signature so compiler generates more friendly code.
-> 
-> Yes, it's due to the compiler not doing all the casting/bit shifting.
-> Just straightforward use of a single register consistently across
-> conditional jump and offset calculations.
+Hello,
 
-Another option is to drop the int->long uapi conversion and write the
-varlen test using >=0 tests. The below diff works for me also using
-recent clang-11, but maybe doesn't resolve Andrii's original issue.
-My concern is if we break existing code in selftests is there a risk
-users will get breaking code as well? Seems like without a few
-additional clang improvements its going to be hard to get all
-combinations working by just fiddling with the types.
+syzbot found the following crash on:
 
-diff --git a/tools/testing/selftests/bpf/progs/test_varlen.c b/tools/testing/selftests/bpf/progs/test_varlen.c
-index 0969185..01c992c 100644
---- a/tools/testing/selftests/bpf/progs/test_varlen.c
-+++ b/tools/testing/selftests/bpf/progs/test_varlen.c
-@@ -31,20 +31,20 @@ int handler64(void *regs)
- {
- 	int pid = bpf_get_current_pid_tgid() >> 32;
- 	void *payload = payload1;
--	u64 len;
-+	int len;
- 
- 	/* ignore irrelevant invocations */
- 	if (test_pid != pid || !capture)
- 		return 0;
- 
- 	len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in1[0]);
--	if (len <= MAX_LEN) {
-+	if (len >= 0) {
- 		payload += len;
- 		payload1_len1 = len;
- 	}
- 
- 	len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in2[0]);
--	if (len <= MAX_LEN) {
-+	if (len >= 0) {
- 		payload += len;
- 		payload1_len2 = len;
- 	}
-@@ -59,20 +59,20 @@ int handler32(void *regs)
- {
- 	int pid = bpf_get_current_pid_tgid() >> 32;
- 	void *payload = payload2;
--	u32 len;
-+	int len;
- 
- 	/* ignore irrelevant invocations */
- 	if (test_pid != pid || !capture)
- 		return 0;
- 
- 	len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in1[0]);
--	if (len <= MAX_LEN) {
-+	if (len >= 0) {
- 		payload += len;
- 		payload2_len1 = len;
- 	}
- 
- 	len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in2[0]);
--	if (len <= MAX_LEN) {
-+	if (len >= 0) {
- 		payload += len;
- 		payload2_len2 = len;
- 	}
+HEAD commit:    7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12c27f79100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d195fe572fb15312
+dashboard link: https://syzkaller.appspot.com/bug?extid=03e343dbccf82a5242a2
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1715f03d100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17dc0db6100000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+03e343dbccf82a5242a2@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc0000000002: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
+CPU: 0 PID: 6780 Comm: syz-executor827 Not tainted 5.7.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:qrtr_endpoint_post+0x92/0xfa0 net/qrtr/qrtr.c:440
+Code: 44 89 e6 e8 80 27 4e fe 48 85 c0 48 89 c5 0f 84 57 0e 00 00 e8 4f 7a 9e f9 48 89 da 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 04 02 48 89 da 83 e2 07 38 d0 7f 08 84 c0 0f 85 f7 0c 00 00
+RSP: 0018:ffffc900016a7c48 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000010 RCX: ffffffff86237e4b
+RDX: 0000000000000002 RSI: ffffffff87d55471 RDI: ffff888090444150
+RBP: ffff888090444140 R08: ffff8880954ca340 R09: ffffed1011e43c5d
+R10: ffff88808f21e2e3 R11: ffffed1011e43c5c R12: 0000000000000000
+R13: ffff88809a089100 R14: ffffc900016a7eb0 R15: 0000000000000000
+FS:  0000000000a65880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000000 CR3: 0000000099699000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ qrtr_tun_write_iter+0xf5/0x180 net/qrtr/tun.c:92
+ call_write_iter include/linux/fs.h:1917 [inline]
+ new_sync_write+0x426/0x650 fs/read_write.c:484
+ __vfs_write+0xc9/0x100 fs/read_write.c:497
+ vfs_write+0x268/0x5d0 fs/read_write.c:559
+ ksys_write+0x12d/0x250 fs/read_write.c:612
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x4401b9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fff99653dd8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004401b9
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a40
+R13: 0000000000401ad0 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace 5199d7949b247ba3 ]---
+RIP: 0010:qrtr_endpoint_post+0x92/0xfa0 net/qrtr/qrtr.c:440
+Code: 44 89 e6 e8 80 27 4e fe 48 85 c0 48 89 c5 0f 84 57 0e 00 00 e8 4f 7a 9e f9 48 89 da 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 04 02 48 89 da 83 e2 07 38 d0 7f 08 84 c0 0f 85 f7 0c 00 00
+RSP: 0018:ffffc900016a7c48 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000010 RCX: ffffffff86237e4b
+RDX: 0000000000000002 RSI: ffffffff87d55471 RDI: ffff888090444150
+RBP: ffff888090444140 R08: ffff8880954ca340 R09: ffffed1011e43c5d
+R10: ffff88808f21e2e3 R11: ffffed1011e43c5c R12: 0000000000000000
+R13: ffff88809a089100 R14: ffffc900016a7eb0 R15: 0000000000000000
+FS:  0000000000a65880(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000000 CR3: 0000000099699000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
