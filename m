@@ -2,102 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0A4A2075B7
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 16:30:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66F9E2075F0
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 16:44:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391214AbgFXOaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 10:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
+        id S2391232AbgFXOoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 10:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389874AbgFXOaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 10:30:01 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519F5C061573;
-        Wed, 24 Jun 2020 07:30:01 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id 9so2789882ljv.5;
-        Wed, 24 Jun 2020 07:30:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=68guwqF87DhAmMD3DmT2p3DlsWU3rO2GWVrnapunJoE=;
-        b=qEiEsHhD1rwKKS8msFCQa3kszJ2dmI4/pPxAJaFX7sox/ROuSdEIXPRvgsNVC8F8YE
-         tPgBt/oPR0vsz2HNxeGBNbz6u4WYLi1lTyv6PC93FDjVRGhb+e7ZNjNFWJ5JYUQAoqYa
-         d5i4sdzJsclycBVugC7gv7uYF1ieUvlVi2GuwgRu7En91aGQKZqRsbC6YvcrAEh/uXzX
-         3SxBbWpgLxoyDaXR9IfguI/v2wl0Ei+yXi14uja0I7JKxyVJfgoJAsJpYMkW6BJgfbZW
-         4ius6W1lw22r8TxVNHj6rpb4yTHT4KY7zzPEohG18Cak0jEDk+d2WEJ1vb0HB5c5h+lE
-         BGZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=68guwqF87DhAmMD3DmT2p3DlsWU3rO2GWVrnapunJoE=;
-        b=CW+uQrs11rpolv5pLhOmuVoe+VR9tg0Z1l2kRlmOHzPNBy31K/wY+jzTw+RElmTjgL
-         sudL7M3n6aBRfIVbX45Ttwkq9sq1MSrrDi64PMHP/YCE62XkzhGLxAdn67TYpPOAc5HE
-         dESQe30pWJNacEyEAkYtgYRIdf+DZIRz/eMTCP+ggacVKIweYsq5XU8PNc0dmYZgl4iv
-         XthgxoEhOweGbmIvvNtaSu+hx6DWCdrpksypc9wMWWj8Hcoqt0AFousNI8hFxTJpk9rD
-         59vGdx/PsQExhamow/pGI3Wg5zU7YGl1TcNC6BcJMoMa+J43Qroq9yompyWCVyMunlHe
-         JONQ==
-X-Gm-Message-State: AOAM533/GeHAJ9L+dAIK0tiIt8hmGEMzvY9wMMuAP7S6BT62vtjXD5kj
-        ZchrYsPsoARt89wT7rxq3nQ1F3J5YtMfF2ZVmug=
-X-Google-Smtp-Source: ABdhPJyrH50KE+i5/GIq6NiqwwmBBO8txSNxiltfOXyko0X9HnuPJDcwJ0rql2dGefQP3lVl45ucLxpM67SwZ4/VJwM=
-X-Received: by 2002:a2e:b1d4:: with SMTP id e20mr13461758lja.290.1593008999841;
- Wed, 24 Jun 2020 07:29:59 -0700 (PDT)
+        with ESMTP id S2389836AbgFXOoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 10:44:12 -0400
+Received: from casper.infradead.org (unknown [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2292C061573;
+        Wed, 24 Jun 2020 07:44:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=MmxB8m2YTQX4GpqX+DS37OeRO131e4ndrA9Pl7MwAgc=; b=IOKw7hTcqP1QeelKxku2fGErUp
+        y+gPHThYulPLcw9ZipHA3WEiY0WwtrldwMIjz3I7xFlS4UrXh0IrgE+Nr+g3IVn/C5NubV4TtA66n
+        mLCdiZe84XJ5gE3144uUmasV1evosCnueCmLRk8e5igFHS/jiN+zd4BOILHYYRSu5tnwTTHYczGNM
+        1jNp5/TmBH3r+Cd233b/d63zVr4Nez7dPM6LjZYPehQuohr79GeKnvEyrBvDcVSHQMeCupwKnSb4b
+        k2SF0UgTWsWjSf1WxnC6wYcLs8KKkTGGpdaa+3jajs+y6awdDlv2/jH3uD+C53erVvC46axMeuEel
+        iaiP6SWQ==;
+Received: from hch by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jo6cJ-0001Xw-5j; Wed, 24 Jun 2020 14:43:11 +0000
+Date:   Wed, 24 Jun 2020 15:43:11 +0100
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Christian Borntraeger <borntraeger@de.ibm.com>
+Cc:     mcgrof@kernel.org, ast@kernel.org, axboe@kernel.dk,
+        bfields@fieldses.org, bridge@lists.linux-foundation.org,
+        chainsaw@gentoo.org, christian.brauner@ubuntu.com,
+        chuck.lever@oracle.com, davem@davemloft.net, dhowells@redhat.com,
+        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
+        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
+        keyrings@vger.kernel.org, kuba@kernel.org,
+        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
+        philipp.reisner@linbit.com, ravenexp@gmail.com,
+        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
+        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
+        netdev@vger.kernel.org, markward@linux.ibm.com,
+        linux-s390 <linux-s390@vger.kernel.org>
+Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
+ seems to break linux bridge on s390x (bisected)
+Message-ID: <20200624144311.GA5839@infradead.org>
+References: <20200610154923.27510-5-mcgrof@kernel.org>
+ <20200623141157.5409-1-borntraeger@de.ibm.com>
+ <b7d658b9-606a-feb1-61f9-b58e3420d711@de.ibm.com>
+ <3118dc0d-a3af-9337-c897-2380062a8644@de.ibm.com>
 MIME-Version: 1.0
-References: <cover.1592947694.git.lorenzo@kernel.org> <372755fa10bdbe9b5db4e207db6b0829e18513fe.1592947694.git.lorenzo@kernel.org>
- <CAEf4BzbiZLtr8Vhwef=Zjd_=OVqKBozyg76Djae7qw3rgd7q8g@mail.gmail.com> <20200624103609.69ccdff9@carbon>
-In-Reply-To: <20200624103609.69ccdff9@carbon>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 24 Jun 2020 07:29:48 -0700
-Message-ID: <CAADnVQ+tiHo1y12ae4EREtBiU=AKUW7upMV4Pfa8Yc7mrAsqEg@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 7/9] libbpf: add SEC name for xdp programs
- attached to CPUMAP
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        lorenzo.bianconi@redhat.com, David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3118dc0d-a3af-9337-c897-2380062a8644@de.ibm.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 24, 2020 at 1:36 AM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> On Tue, 23 Jun 2020 22:49:02 -0700
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
->
-> > On Tue, Jun 23, 2020 at 2:40 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> > >
-> > > As for DEVMAP, support SEC("xdp_cpumap*") as a short cut for loading
->                                 ^^^^^^^^^^^
->
-> Maybe update desc to include the "/" ?
+On Wed, Jun 24, 2020 at 01:11:54PM +0200, Christian Borntraeger wrote:
+> Does anyone have an idea why "umh: fix processed error when UMH_WAIT_PROC is used" breaks the
+> linux-bridge on s390?
 
-+1
-
->
-> > > the program with type BPF_PROG_TYPE_XDP and expected attach type
-> > > BPF_XDP_CPUMAP.
-> > >
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > ---
-> >
-> > Thanks!
-> >
-> > Acked-by: Andrii Nakryiko <andriin@fb.com>
->
-> I like this extra "/".
->
-> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
->
-> If we agree, I hope we can also adjust this for devmap in bpf-tree ?
-
-Yes. Please.
-It's not in an official release. There is time to adjust things.
+Are we even sure this is s390 specific and doesn't happen on other
+architectures with the same bridge setup?
