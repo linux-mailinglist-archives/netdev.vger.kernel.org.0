@@ -2,68 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D4902070E2
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 12:13:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98C98207110
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 12:22:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388551AbgFXKNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 06:13:08 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:56628 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388095AbgFXKNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 06:13:08 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jo2Os-0002ez-BZ; Wed, 24 Jun 2020 10:13:02 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
-        "David S . Miller" <davem@davemloft.net>,
+        id S2388753AbgFXKWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 06:22:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40524 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387843AbgFXKVe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 06:21:34 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226A5C061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 03:21:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=G5QhO2boACgBm3Ag9dvwXyV+uQb+OjSmNJpYd0emGKo=; b=cOndrAporIerD+5EbVyxl/38J7
+        Nbf4906zHq4c9SR09ZaMh9zjH31JPvBPMj/oHBxTgjUYhF0nv316olG7a7FE+ubZRVaeklgMm1VYf
+        01szyvuAsnqdQEOrEDp2d7QiQSSTsQcKbNk0BeJ/bpY0h1eLmzUNMLivHM7BvawiB3abo2+j3rrjI
+        QYB6vVALCI46StscukYd60AzwCcviCrkJ5izdKm2XKpWU54qyRlhCrJ0uNhhHU/LweE4nIgUfS1L/
+        gLJjILAba0oWPousFjhU/B05vRktBk+TUTPV5h4fIijlLuTkb5kGbw+qfRDxqkIoBge9qMoYj8d/9
+        up9erUuw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:57920 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jo2X6-0002sS-GB; Wed, 24 Jun 2020 11:21:32 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jo2X6-0005yf-55; Wed, 24 Jun 2020 11:21:32 +0100
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] qed: add missing error test for DBG_STATUS_NO_MATCHING_FRAMING_MODE
-Date:   Wed, 24 Jun 2020 11:13:02 +0100
-Message-Id: <20200624101302.8316-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.27.0
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: [PATCH net-next] net: dsa/ar9331: convert to mac_link_up()
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1jo2X6-0005yf-55@rmk-PC.armlinux.org.uk>
+Date:   Wed, 24 Jun 2020 11:21:32 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+Convert the ar9331 DSA driver to use the finalised link parameters in
+mac_link_up() rather than the parameters in mac_config().
 
-The error DBG_STATUS_NO_MATCHING_FRAMING_MODE was added to the enum
-enum dbg_status however there is a missing corresponding entry for
-this in the array s_status_str. This causes an out-of-bounds read when
-indexing into the last entry of s_status_str.  Fix this by adding in
-the missing entry.
-
-Addresses-Coverity: ("Out-of-bounds read").
-Fixes: 2d22bc8354b1 ("qed: FW 8.42.2.0 debug features")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/ethernet/qlogic/qed/qed_debug.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/qca/ar9331.c | 60 +++++++++++++++++++-----------------
+ 1 file changed, 31 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-index 57a0dab88431..81e8fbe4a05b 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-@@ -5568,7 +5568,8 @@ static const char * const s_status_str[] = {
+diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
+index 7c86056b9401..e24a99031b80 100644
+--- a/drivers/net/dsa/qca/ar9331.c
++++ b/drivers/net/dsa/qca/ar9331.c
+@@ -97,8 +97,7 @@
+ 	(AR9331_SW_PORT_STATUS_TXMAC | AR9331_SW_PORT_STATUS_RXMAC)
  
- 	/* DBG_STATUS_INVALID_FILTER_TRIGGER_DWORDS */
- 	"The filter/trigger constraint dword offsets are not enabled for recording",
+ #define AR9331_SW_PORT_STATUS_LINK_MASK \
+-	(AR9331_SW_PORT_STATUS_LINK_EN | AR9331_SW_PORT_STATUS_FLOW_LINK_EN | \
+-	 AR9331_SW_PORT_STATUS_DUPLEX_MODE | \
++	(AR9331_SW_PORT_STATUS_DUPLEX_MODE | \
+ 	 AR9331_SW_PORT_STATUS_RX_FLOW_EN | AR9331_SW_PORT_STATUS_TX_FLOW_EN | \
+ 	 AR9331_SW_PORT_STATUS_SPEED_M)
+ 
+@@ -410,33 +409,10 @@ static void ar9331_sw_phylink_mac_config(struct dsa_switch *ds, int port,
+ 	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+ 	struct regmap *regmap = priv->regmap;
+ 	int ret;
+-	u32 val;
 -
-+	/* DBG_STATUS_NO_MATCHING_FRAMING_MODE */
-+	"No matching framing mode",
+-	switch (state->speed) {
+-	case SPEED_1000:
+-		val = AR9331_SW_PORT_STATUS_SPEED_1000;
+-		break;
+-	case SPEED_100:
+-		val = AR9331_SW_PORT_STATUS_SPEED_100;
+-		break;
+-	case SPEED_10:
+-		val = AR9331_SW_PORT_STATUS_SPEED_10;
+-		break;
+-	default:
+-		return;
+-	}
+-
+-	if (state->duplex)
+-		val |= AR9331_SW_PORT_STATUS_DUPLEX_MODE;
+-
+-	if (state->pause & MLO_PAUSE_TX)
+-		val |= AR9331_SW_PORT_STATUS_TX_FLOW_EN;
+-
+-	if (state->pause & MLO_PAUSE_RX)
+-		val |= AR9331_SW_PORT_STATUS_RX_FLOW_EN;
  
- 	/* DBG_STATUS_VFC_READ_ERROR */
- 	"Error reading from VFC",
+ 	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_STATUS(port),
+-				 AR9331_SW_PORT_STATUS_LINK_MASK, val);
++				 AR9331_SW_PORT_STATUS_LINK_EN |
++				 AR9331_SW_PORT_STATUS_FLOW_LINK_EN, 0);
+ 	if (ret)
+ 		dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
+ }
+@@ -464,11 +440,37 @@ static void ar9331_sw_phylink_mac_link_up(struct dsa_switch *ds, int port,
+ {
+ 	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+ 	struct regmap *regmap = priv->regmap;
++	u32 val;
+ 	int ret;
+ 
++	val = AR9331_SW_PORT_STATUS_MAC_MASK;
++	switch (speed) {
++	case SPEED_1000:
++		val |= AR9331_SW_PORT_STATUS_SPEED_1000;
++		break;
++	case SPEED_100:
++		val |= AR9331_SW_PORT_STATUS_SPEED_100;
++		break;
++	case SPEED_10:
++		val |= AR9331_SW_PORT_STATUS_SPEED_10;
++		break;
++	default:
++		return;
++	}
++
++	if (duplex)
++		val |= AR9331_SW_PORT_STATUS_DUPLEX_MODE;
++
++	if (tx_pause)
++		val |= AR9331_SW_PORT_STATUS_TX_FLOW_EN;
++
++	if (rx_pause)
++		val |= AR9331_SW_PORT_STATUS_RX_FLOW_EN;
++
+ 	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_STATUS(port),
+-				 AR9331_SW_PORT_STATUS_MAC_MASK,
+-				 AR9331_SW_PORT_STATUS_MAC_MASK);
++				 AR9331_SW_PORT_STATUS_MAC_MASK |
++				 AR9331_SW_PORT_STATUS_LINK_MASK,
++				 val);
+ 	if (ret)
+ 		dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
+ }
 -- 
-2.27.0
+2.20.1
 
