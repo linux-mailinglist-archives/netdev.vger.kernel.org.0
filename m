@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F37207578
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 16:17:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CFCA20757D
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 16:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389909AbgFXOR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 10:17:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58536 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388693AbgFXOR1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jun 2020 10:17:27 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jo6DN-0022IO-QQ; Wed, 24 Jun 2020 16:17:25 +0200
-Date:   Wed, 24 Jun 2020 16:17:25 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel Mack <daniel@zonque.org>
-Cc:     netdev@vger.kernel.org, jcobham@questertangent.com
-Subject: Re: [PATCH v2] dsa: Allow forwarding of redirected IGMP traffic
-Message-ID: <20200624141725.GG442307@lunn.ch>
-References: <20200620193925.3166913-1-daniel@zonque.org>
+        id S2390162AbgFXOSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 10:18:31 -0400
+Received: from www62.your-server.de ([213.133.104.62]:37344 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388836AbgFXOSb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 10:18:31 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jo6EO-0004Ke-2W; Wed, 24 Jun 2020 16:18:28 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jo6EN-000Olk-RW; Wed, 24 Jun 2020 16:18:27 +0200
+Subject: Re: [PATCH bpf-next v2] tools: bpftool: fix variable shadowing in
+ emit_obj_refs_json()
+To:     Quentin Monnet <quentin@isovalent.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20200623213600.16643-1-quentin@isovalent.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <01cd9c60-c563-4c7c-ec8a-a9dfbcec3867@iogearbox.net>
+Date:   Wed, 24 Jun 2020 16:18:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200620193925.3166913-1-daniel@zonque.org>
+In-Reply-To: <20200623213600.16643-1-quentin@isovalent.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25853/Wed Jun 24 15:13:27 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 20, 2020 at 09:39:25PM +0200, Daniel Mack wrote:
-> The driver for Marvell switches puts all ports in IGMP snooping mode
-> which results in all IGMP/MLD frames that ingress on the ports to be
-> forwarded to the CPU only.
+On 6/23/20 11:36 PM, Quentin Monnet wrote:
+> Building bpftool yields the following complaint:
 > 
-> The bridge code in the kernel can then interpret these frames and act
-> upon them, for instance by updating the mdb in the switch to reflect
-> multicast memberships of stations connected to the ports. However,
-> the IGMP/MLD frames must then also be forwarded to other ports of the
-> bridge so external IGMP queriers can track membership reports, and
-> external multicast clients can receive query reports from foreign IGMP
-> queriers.
+>      pids.c: In function 'emit_obj_refs_json':
+>      pids.c:175:80: warning: declaration of 'json_wtr' shadows a global declaration [-Wshadow]
+>        175 | void emit_obj_refs_json(struct obj_refs_table *table, __u32 id, json_writer_t *json_wtr)
+>            |                                                                 ~~~~~~~~~~~~~~~^~~~~~~~
+>      In file included from pids.c:11:
+>      main.h:141:23: note: shadowed declaration is here
+>        141 | extern json_writer_t *json_wtr;
+>            |                       ^~~~~~~~
 > 
-> Currently, this is impossible as the EDSA tagger sets offload_fwd_mark
-> on the skb when it unwraps the tagged frames, and that will make the
-> switchdev layer prevent the skb from egressing on any other port of
-> the same switch.
+> Let's rename the variable.
 > 
-> To fix that, look at the To_CPU code in the DSA header and make
-> forwarding of the frame possible for trapped IGMP packets.
+> v2:
+> - Rename the variable instead of calling the global json_wtr directly.
 > 
-> Introduce some #defines for the frame types to make the code a bit more
-> comprehensive.
-> 
-> This was tested on a Marvell 88E6352 variant.
-> 
-> Signed-off-by: Daniel Mack <daniel@zonque.org>
+> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Tested-by: Andrew Lunn <andrew@lunn.ch>
-
-The testing was simple regression testing, not IGMP specific.
-
-    Andrew
+Applied, thanks!
