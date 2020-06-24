@@ -2,234 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 685422073F0
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 15:03:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A990207441
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 15:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403885AbgFXNDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 09:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403871AbgFXNDY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 09:03:24 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEEAC061573;
-        Wed, 24 Jun 2020 06:03:22 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id x11so1035606plo.7;
-        Wed, 24 Jun 2020 06:03:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=dCLZ+U35i3BBc0VsP7kxNNeVr+6A6X8zDlMWShLSK9E=;
-        b=rTWb9o8YePBh4H5yAqfXW3C5BIL3UHR4iN6hkZh/4G5THmcJCds04eai+kKM958hhz
-         8fHjfoOBbjFAH6wyTSgwSAlwtvsm2RpmmA652kCnUq/peM9QVearI32dDqR5y5Ov84in
-         mJ6MHQkpWlRjsMqTxNZu0tvoZUMVOnFjAdneQh9gHeZT1oHIJxKL7I1npq60SgKSh4Y0
-         a8H+lC9FhFDGkC4Eo/EO84SnnaNYBAuV9F1KC3OHQcrGGwfZ4LIxOqCybFpbMvO0jkdq
-         XgoURoeIYWdlQqZpeHa0KmmIoi88Dc+iCDshtFM0R3mSXa7msa01O3lFaneOy04kn9Ak
-         eYkA==
+        id S2389653AbgFXNR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 09:17:29 -0400
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:39242 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728685AbgFXNR2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 09:17:28 -0400
+Received: by mail-pj1-f65.google.com with SMTP id b92so1146276pjc.4;
+        Wed, 24 Jun 2020 06:17:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=dCLZ+U35i3BBc0VsP7kxNNeVr+6A6X8zDlMWShLSK9E=;
-        b=jYdSYiMsnqg6fINDgCLOcajLd+yr0ivHP9ofrSw5prDk/Lg6ZoPCENm2QyJgsN8W26
-         IM5zLz4MVkWtkzNr7UK9uy26Ww3AXDZK31687CJ7UMvaY7BJBIDAdReZJ/i/oPNP+yMb
-         d86SRX4qTrsL8rCXYIcOECm5ATrLF/cQ4LKaQ8Em2K49jpPDWM7xZkfRv0mtggA0mxO6
-         62tcOX5QpSdAyH9TLkNj5L6eod66EydXcwUoVOPdl2w7PsH6LjZmA9Xd14Alast8f93O
-         O4dWTLZJvQNgYBmZV+wT/oYM69oodf4mNM50QHLMLjAyKYeFo0+YCDFwj5U2SSws9Oa7
-         NmPg==
-X-Gm-Message-State: AOAM531ut4KhbNis/8ciX1dLwBPw46kHBHoYi/X5hK9u2HuiJPPfkEmE
-        ZyYzuBlQC12W9NI86JyJVzM=
-X-Google-Smtp-Source: ABdhPJx4jW8/BqvZOIgGKAChu23t5B6/N/w+C2WadNJwU+IsOEp+eBti1WcPI9NojccjEIJJS8Mv9A==
-X-Received: by 2002:a17:90a:ee95:: with SMTP id i21mr6423586pjz.77.1593003802252;
-        Wed, 24 Jun 2020 06:03:22 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id m3sm11718959pfk.171.2020.06.24.06.03.20
+         :mime-version:content-disposition:in-reply-to;
+        bh=AmTxCuZjvcdiVEVhuLvvhfsJ8oNVmZ/lVyIOEYHWB0Y=;
+        b=Xc7/HPDfLjwO3vfOloH87tfQI4+HU7eSv2eJgbWB2VPf9JWtdmpEd2QXBmiJCy05dd
+         SUFETLgRt/OctOt5l3jgTWrwYVWkWAU8Q+QsiKAPRb9F+7ugQOxyeILRtceXsv0VmKP4
+         VtYCRJdJqRojiwFMXqFVJ/tpocUN8g7Cr8MFuOwUM10AFQE5i3sUtlTGmGPmOFBBzN+i
+         kB/jdQyJ0/WGTJuU62xF2LdZua+UNsDRQ7ku0j9EVHleHCUDO9GPVyjGTeCRbebME5Ie
+         9FeEDrpG+AADn8a8F+j4z4deipzeJi01RNzahjOH3jN2QhXTV+pnzrMRK6k8L7o6NVgw
+         D//w==
+X-Gm-Message-State: AOAM532vVbPp5eIKC7CxT0QEgrf89GpuBF1Bt8bpM9ELPFqnKUFeiaEr
+        wgVIjEamAzQeW5xiUzyrNUA=
+X-Google-Smtp-Source: ABdhPJz52oTL2B/3PLmnDoI2vugPQaT+ieV89E/RBDP6y5SvM7SHzDqNhk7CAkBkvaU94q6GXPDJhQ==
+X-Received: by 2002:a17:90a:2622:: with SMTP id l31mr29954851pje.18.1593004647767;
+        Wed, 24 Jun 2020 06:17:27 -0700 (PDT)
+Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
+        by smtp.gmail.com with ESMTPSA id b71sm10617893pfb.125.2020.06.24.06.17.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jun 2020 06:03:21 -0700 (PDT)
-Date:   Wed, 24 Jun 2020 06:03:18 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [RFC PATCH 3/9] net: dsa: hellcreek: Add PTP clock support
-Message-ID: <20200624130318.GD7247@localhost>
-References: <20200618064029.32168-1-kurt@linutronix.de>
- <20200618064029.32168-4-kurt@linutronix.de>
+        Wed, 24 Jun 2020 06:17:26 -0700 (PDT)
+Received: by 42.do-not-panic.com (Postfix, from userid 1000)
+        id 46E1340430; Wed, 24 Jun 2020 13:17:25 +0000 (UTC)
+Date:   Wed, 24 Jun 2020 13:17:25 +0000
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Christian Borntraeger <borntraeger@de.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Martin Doucha <mdoucha@suse.cz>
+Cc:     ast@kernel.org, axboe@kernel.dk, bfields@fieldses.org,
+        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
+        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
+        davem@davemloft.net, dhowells@redhat.com,
+        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
+        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
+        keyrings@vger.kernel.org, kuba@kernel.org,
+        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
+        philipp.reisner@linbit.com, ravenexp@gmail.com,
+        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
+        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
+        netdev@vger.kernel.org, markward@linux.ibm.com,
+        linux-s390 <linux-s390@vger.kernel.org>
+Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
+ seems to break linux bridge on s390x (bisected)
+Message-ID: <20200624131725.GL13911@42.do-not-panic.com>
+References: <20200610154923.27510-5-mcgrof@kernel.org>
+ <20200623141157.5409-1-borntraeger@de.ibm.com>
+ <b7d658b9-606a-feb1-61f9-b58e3420d711@de.ibm.com>
+ <3118dc0d-a3af-9337-c897-2380062a8644@de.ibm.com>
+ <20200624120546.GC4332@42.do-not-panic.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200618064029.32168-4-kurt@linutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200624120546.GC4332@42.do-not-panic.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 18, 2020 at 08:40:23AM +0200, Kurt Kanzenbach wrote:
+Martin, your eyeballs would be appreciated for a bit on this.
 
-> diff --git a/drivers/net/dsa/hirschmann/hellcreek.h b/drivers/net/dsa/hirschmann/hellcreek.h
-> index a08a10cb5ab7..2d4422fd2567 100644
-> --- a/drivers/net/dsa/hirschmann/hellcreek.h
-> +++ b/drivers/net/dsa/hirschmann/hellcreek.h
-> @@ -234,10 +234,17 @@ struct hellcreek_fdb_entry {
->  struct hellcreek {
->  	struct device *dev;
->  	struct dsa_switch *ds;
-> +	struct ptp_clock *ptp_clock;
-> +	struct ptp_clock_info ptp_clock_info;
->  	struct hellcreek_port ports[4];
-> +	struct delayed_work overflow_work;
->  	spinlock_t reg_lock;	/* Switch IP register lock */
-> +	spinlock_t ptp_lock;	/* PTP IP register lock */
+On Wed, Jun 24, 2020 at 12:05:46PM +0000, Luis Chamberlain wrote:
+> On Wed, Jun 24, 2020 at 01:11:54PM +0200, Christian Borntraeger wrote:
+> > 
+> > 
+> > On 23.06.20 16:23, Christian Borntraeger wrote:
+> > > 
+> > > 
+> > > On 23.06.20 16:11, Christian Borntraeger wrote:
+> > >> Jens Markwardt reported a regression in the linux-next runs.  with "umh: fix
+> > >> processed error when UMH_WAIT_PROC is used" (from linux-next) a linux bridge
+> > >> with an KVM guests no longer activates :
+> > >>
+> > >> without patch
+> > >> # ip addr show dev virbr1
+> > >> 6: virbr1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+> > >>     link/ether 52:54:00:1e:3f:c0 brd ff:ff:ff:ff:ff:ff
+> > >>     inet 192.168.254.254/24 brd 192.168.254.255 scope global virbr1
+> > >>        valid_lft forever preferred_lft forever
+> > >>
+> > >> with this patch the bridge stays DOWN with NO-CARRIER
+> > >>
+> > >> # ip addr show dev virbr1
+> > >> 6: virbr1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default qlen 1000
+> > >>     link/ether 52:54:00:1e:3f:c0 brd ff:ff:ff:ff:ff:ff
+> > >>     inet 192.168.254.254/24 brd 192.168.254.255 scope global virbr1
+> > >>        valid_lft forever preferred_lft forever
+> > >>
+> > >> This was bisected in linux-next. Reverting from linux-next also fixes the issue.
+> > >>
+> > >> Any idea?
+> > > 
+> > > FWIW, s390 is big endian. Maybe some of the shifts inn the __KW* macros are wrong.
+> > 
+> > Does anyone have an idea why "umh: fix processed error when UMH_WAIT_PROC is used" breaks the
+> > linux-bridge on s390?
+> 
+> glibc for instance defines __WEXITSTATUS in only one location: bits/waitstatus.h
+> and it does not special case it per architecture, so at this point I'd
+> have to say we have to look somewhere else for why this is happening.
 
-Why use a spin lock and not a mutex?
+I found however an LTP bug indicating the need to test for
+s390 wait macros [0] in light of a recent bug in glibc for s390.
+I am asking for references to that issue given I cannot find
+any mention of this on glibc yet.
 
->  	void __iomem *base;
-> +	void __iomem *ptp_base;
->  	u8 *vidmbrcfg;		/* vidmbrcfg shadow */
-> +	u64 seconds;		/* PTP seconds */
-> +	u64 last_ts;		/* Used for overflow detection */
->  	size_t fdb_entries;
->  };
+I'm in hopes Martin might be aware of that mentioned s390 glic bug.
 
-> +static int hellcreek_ptp_gettime(struct ptp_clock_info *ptp,
-> +				 struct timespec64 *ts)
-> +{
-> +	struct hellcreek *hellcreek = ptp_to_hellcreek(ptp);
-> +	u64 ns;
-> +
-> +	spin_lock(&hellcreek->ptp_lock);
+[0] https://github.com/linux-test-project/ltp/issues/605
 
-Won't a mutex do here instead?
-
-> +	ns = __hellcreek_ptp_gettime(hellcreek);
-> +	spin_unlock(&hellcreek->ptp_lock);
-> +
-> +	*ts = ns_to_timespec64(ns);
-> +
-> +	return 0;
-> +}
-
-> +static int hellcreek_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
-> +{
-> +	struct hellcreek *hellcreek = ptp_to_hellcreek(ptp);
-> +	u16 negative = 0, counth, countl;
-> +	u32 count_val;
-> +
-> +	/* If the offset is larger than IP-Core slow offset resources. Don't
-> +	 * concider slow adjustment. Rather, add the offset directly to the
-
-consider
-
-> +	 * current time
-> +	 */
-> +	if (abs(delta) > MAX_SLOW_OFFSET_ADJ) {
-> +		struct timespec64 now, then = ns_to_timespec64(delta);
-> +
-> +		hellcreek_ptp_gettime(ptp, &now);
-> +		now = timespec64_add(now, then);
-> +		hellcreek_ptp_settime(ptp, &now);
-> +
-> +		return 0;
-> +	}
-> +
-> +	if (delta < 0) {
-> +		negative = 1;
-> +		delta = -delta;
-> +	}
-> +
-> +	/* 'count_val' does not exceed the maximum register size (2^30) */
-> +	count_val = div_s64(delta, MAX_NS_PER_STEP);
-> +
-> +	counth = (count_val & 0xffff0000) >> 16;
-> +	countl = count_val & 0xffff;
-> +
-> +	negative = (negative << 15) & 0x8000;
-> +
-> +	spin_lock(&hellcreek->ptp_lock);
-> +
-> +	/* Set offset write register */
-> +	hellcreek_ptp_write(hellcreek, negative, PR_CLOCK_OFFSET_C);
-> +	hellcreek_ptp_write(hellcreek, MAX_NS_PER_STEP, PR_CLOCK_OFFSET_C);
-> +	hellcreek_ptp_write(hellcreek, MIN_CLK_CYCLES_BETWEEN_STEPS,
-> +			    PR_CLOCK_OFFSET_C);
-> +	hellcreek_ptp_write(hellcreek, countl,  PR_CLOCK_OFFSET_C);
-> +	hellcreek_ptp_write(hellcreek, counth,  PR_CLOCK_OFFSET_C);
-> +
-> +	spin_unlock(&hellcreek->ptp_lock);
-> +
-> +	return 0;
-> +}
-
-> +int hellcreek_ptp_setup(struct hellcreek *hellcreek)
-> +{
-> +	u16 status;
-> +
-> +	/* Set up the overflow work */
-> +	INIT_DELAYED_WORK(&hellcreek->overflow_work,
-> +			  hellcreek_ptp_overflow_check);
-> +
-> +	/* Setup PTP clock */
-> +	hellcreek->ptp_clock_info.owner = THIS_MODULE;
-> +	snprintf(hellcreek->ptp_clock_info.name,
-> +		 sizeof(hellcreek->ptp_clock_info.name),
-> +		 dev_name(hellcreek->dev));
-> +
-> +	/* IP-Core can add up to 0.5 ns per 8 ns cycle, which means
-> +	 * accumulator_overflow_rate shall not exceed 62.5 MHz (which adjusts
-> +	 * the nominal frequency by 6.25%)
-> +	 */
-> +	hellcreek->ptp_clock_info.max_adj   = 62500000;
-> +	hellcreek->ptp_clock_info.n_alarm   = 0;
-> +	hellcreek->ptp_clock_info.n_pins    = 0;
-> +	hellcreek->ptp_clock_info.n_ext_ts  = 0;
-> +	hellcreek->ptp_clock_info.n_per_out = 0;
-> +	hellcreek->ptp_clock_info.pps	    = 0;
-> +	hellcreek->ptp_clock_info.adjfine   = hellcreek_ptp_adjfine;
-> +	hellcreek->ptp_clock_info.adjtime   = hellcreek_ptp_adjtime;
-> +	hellcreek->ptp_clock_info.gettime64 = hellcreek_ptp_gettime;
-> +	hellcreek->ptp_clock_info.settime64 = hellcreek_ptp_settime;
-> +	hellcreek->ptp_clock_info.enable    = hellcreek_ptp_enable;
-> +
-> +	hellcreek->ptp_clock = ptp_clock_register(&hellcreek->ptp_clock_info,
-> +						  hellcreek->dev);
-> +	if (IS_ERR(hellcreek->ptp_clock))
-> +		return PTR_ERR(hellcreek->ptp_clock);
-
-The ptp_clock_register() can also return NULL:
-
- * Returns a valid pointer on success or PTR_ERR on failure.  If PHC
- * support is missing at the configuration level, this function
- * returns NULL, and drivers are expected to gracefully handle that
- * case separately.
-
-> +
-> +	/* Enable the offset correction process, if no offset correction is
-> +	 * already taking place
-> +	 */
-> +	status = hellcreek_ptp_read(hellcreek, PR_CLOCK_STATUS_C);
-> +	if (!(status & PR_CLOCK_STATUS_C_OFS_ACT))
-> +		hellcreek_ptp_write(hellcreek,
-> +				    status | PR_CLOCK_STATUS_C_ENA_OFS,
-> +				    PR_CLOCK_STATUS_C);
-> +
-> +	/* Enable the drift correction process */
-> +	hellcreek_ptp_write(hellcreek, status | PR_CLOCK_STATUS_C_ENA_DRIFT,
-> +			    PR_CLOCK_STATUS_C);
-> +
-> +	schedule_delayed_work(&hellcreek->overflow_work,
-> +			      HELLCREEK_OVERFLOW_PERIOD);
-> +
-> +	return 0;
-> +}
-
-Thanks,
-Richard
+  Luis
