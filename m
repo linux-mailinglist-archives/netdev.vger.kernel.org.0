@@ -2,387 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98A3D206D0A
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 08:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AAD8206D1A
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 08:57:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389513AbgFXGvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 02:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36436 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389338AbgFXGvO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 02:51:14 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274EFC061573;
-        Tue, 23 Jun 2020 23:51:14 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id h23so923424qtr.0;
-        Tue, 23 Jun 2020 23:51:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZQE4YvQBARjgNn/6GwkSXJxgkp2xKpAqvWgX0PYG4OM=;
-        b=WSAo2cNcFy3k9EJh7FUe9wo7xbNJ2yArWE6QQHJYy8w0aYk1O/BDy9vEirQ5Vovi3B
-         94XTY+NchAw3kgL8uA9rrgA2Og5yFt8wLLHVShfne/RGUgZ3Xge6SVSyKI3oROEed65D
-         msfoVIenoGij4CV09r3PBmYE3YgkqbaHllEV0IUFmI17V7QVRoq0Y2g79gpyFb3BK3Y+
-         8QHm6+D/k/I0S9M7yuYpJqyA9l0hF18tbrLpQ7H2D8zPOmlAQm8a3KTLLmTnn5kreXGA
-         ibgNWg2xjGlusa250nZfe5BKitCuAvbEXUbmGG/lHoohxerJFtc/pxkc9V6f5OGQr9/D
-         Ez0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZQE4YvQBARjgNn/6GwkSXJxgkp2xKpAqvWgX0PYG4OM=;
-        b=J8+vVXrgLueokkol5HLPt7rvzbZfpl6ctAVLkgmilaQfN3jep6oq2HSZqeMDSv2VWM
-         I4sfnIfyb2zouINVV5wpqUoAQUI+P6aFNnBZzWS0irLLJ8v1sU5E8OxWFZKMxUzRbTkd
-         V4Z/3CwP0NEFIvHiJo9mg2vvYRrTo8uzimbGfQRbMIbs+B3q5y2iEWruqiRem0oQ7DXH
-         RB8KIacH5rUSmSEpg8LUpxFSPcZXiIw+4PgMTcCbQSHw59cR3J1MHxkuGzmgQu3YBWtY
-         l0UJXrCGFSAWhx9MIjwqwNyp9ZaNsQEgx7qlNhsx69hu5b1z8V66eL5Hdg/1+ZjDdvXz
-         7/kg==
-X-Gm-Message-State: AOAM5328e+rkNeAe2EVlT8ctD3kY5RIcncNjV8HKTlPWDAqn0aVuanad
-        PLCrwgI3NP4/2FoUQHxWptHofjJRIeIqMYYEIuA=
-X-Google-Smtp-Source: ABdhPJyXrqTs254Se3wAcsorqSXv+pgjDBhPqsXgNh+1Nlw2b8SqFTwxa0r+XkwHw7ZDgNTVd6K+IRLGVDPfT1NsFrk=
-X-Received: by 2002:ac8:64b:: with SMTP id e11mr2862494qth.117.1592981472961;
- Tue, 23 Jun 2020 23:51:12 -0700 (PDT)
+        id S2388381AbgFXG4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 02:56:53 -0400
+Received: from mail-eopbgr60042.outbound.protection.outlook.com ([40.107.6.42]:4359
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2387981AbgFXG4w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Jun 2020 02:56:52 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OlmuVL1kTI5yQdE/KaF+Z0c0sqBFq+pe4GR2SUi9TlHV4GmbZW4grtaa84O7HQgaDJkX4tBtRwcMZE4z9CLETq3STbES2qvr5Xb9WISsyBz11vWiG7k4f+kPcVlR+pgpAluV66CH0Qp6F3OI3Au1Xvcx/PI5Wynqi+EZ7s5vazMlcCkowBu47XmReOmyYGEaMV1XyoichZ9eIA3rK/ur/dz0iry24T0RA9keNIAL32a9n1VfquIqGv3B0yrCe65xOQzMuAXiFwOe5YDgv3SS56lZ1JR+kAkm4jevO3gzY32SHHiqZBU9CjZw2DP5wZmVTIhFABwu/QAkOsA+dGhdFQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=45o6T174vi9fRlYKvPoDLxQK/AnqCp1UzjMZj8u45e0=;
+ b=LDc54AeAA+7KwQV83uHqCK/E5kvtnVsZ6D7NKmhaBHm1awAemoTF/5lOGUAQ6HfqNQmEzTW7UW9dKmqHnugjzrHnTRz+PP5d/3zqM1fPxuEl0XhzwvrprjK8oyojjR167QimCCbZ03lalbbOZ9oKsnc/KVIjegQ0KvKrhWJ4+kViBmkYjG1mqXL1bCLO/cMcUwd1cXofLFRV/FdCHMXt6k2OYxVlpuzp38S06S/pHpBc00hI1FZgp+vPUnBEizX9H6seESLOga6AFv/ajLU0U1L/iER49j5iG/zzyxqZiyVZ7JGTS805w3ap035Ltp+5mS8ZTHWgLX1UMCV+8ZreyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=45o6T174vi9fRlYKvPoDLxQK/AnqCp1UzjMZj8u45e0=;
+ b=BHtCsh1eGtVJXVSAH0fj/x5D/OomZ4BGCsN75KnjkgbhrlXoZU2+UI+8aVHayuZMSodX/d/V9TUZI61VSKS2ZML06Mvzr2FTIll0Sn2xZizWm0p9T3oa4cO1FCanP7SpEO62Kc+C+V47/HJtVKaOvPgjfIauYy8czDb00/Ry9Bk=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB5774.eurprd05.prod.outlook.com (2603:10a6:803:d0::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.23; Wed, 24 Jun
+ 2020 06:56:48 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3131.020; Wed, 24 Jun 2020
+ 06:56:48 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "kuba@kernel.org" <kuba@kernel.org>
+CC:     "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        Aya Levin <ayal@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [net-next 10/10] net/mlx5e: Add support for PCI relaxed ordering
+Thread-Topic: [net-next 10/10] net/mlx5e: Add support for PCI relaxed ordering
+Thread-Index: AQHWSZftaIEAvWsK9UqUrJlFGGGeOajmuBIAgACd/gA=
+Date:   Wed, 24 Jun 2020 06:56:48 +0000
+Message-ID: <dda5c2b729bbaf025592aa84e2bdb84d0cda7570.camel@mellanox.com>
+References: <20200623195229.26411-1-saeedm@mellanox.com>
+         <20200623195229.26411-11-saeedm@mellanox.com>
+         <20200623143118.51373eb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200623143118.51373eb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=mellanox.com;
+x-originating-ip: [216.228.112.22]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: e6854713-00fc-4ca6-6227-08d8180bc41c
+x-ms-traffictypediagnostic: VI1PR05MB5774:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB5774CE0C40CD84BF9C42CD5EBE950@VI1PR05MB5774.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-forefront-prvs: 0444EB1997
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BYgyV+tc7pnzRyD0QKsn2M9hwJH+b/sAulZwiDTmRT6mCCwsjvqSzQVzCmmMqa2FCHlwzzGgqSZ2SYEz41wWoA7j3BMBJgEne7nji1k6Nw1DyR1o2IS/RU0FEGjCBXUnzK+18A0pE+5VgzHhR7O9f1Le1ek264Y8WsAOLJvhOCPxhBv1ku0uCZ1qHblnZ2unk6iagbgGf2ulStq8N5iAyCviKWLQNVwGckf1B4vtxP3SzWMGpbL0fHXK67KdWIUK3SdgQLSpjJibj0SLsqOLsCw1FQE2j2+Emnl1iO34dELOheEKJuQdGnwbvpZU3txwvCXiEUqVIglq9tKO4XTwaA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(396003)(366004)(136003)(346002)(376002)(26005)(2906002)(6512007)(4326008)(6506007)(186003)(107886003)(54906003)(316002)(478600001)(36756003)(8936002)(86362001)(6916009)(6486002)(2616005)(8676002)(5660300002)(66556008)(76116006)(91956017)(66476007)(66446008)(83380400001)(71200400001)(66946007)(64756008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: wq6GEmvYG9PMX2aDSDKkjC20JcWgwdbKlWIFIY6J0wtFOjldDvPyNiP95snxe7JzhIAz0XYiEXGsSSKlF/weZB1bpCaSTi+kfSjhDRcXs4xSfBOy0+Ukf5zfihEpjU+q+KiW07T1jrfRDhh4t+H6x72AbYiMNgzfi1aBmNxcGf4kaMJ1stERZPYSWRe4LFh2cF+nyuU5+6iWqfy341QN4JWSlDvgf/ftK4a/26yRGaXLH1OV6Mw6maz7wymIQJUl3zXvjp0jC2ysNHozDvNVja08qDxZqDNcNhkSVGaHA67x2rhq80rhH9pDLDBa0vVIDzbv9cs/2hWe9otifiC/Mj+MPmT9BuVuI5dOSL3vkPXH7Ybg4SrLefn4k8lGjW5H7qqLWUX1lMjOyxzJxDPh1vCXQp4txx+/VSziAFh6JS5yEYqRqGyxZXYZoexjLRkVUdbDXQBlf9VY4vz0zQq2CYfIwLMk+enwJEes1TU90FYWuMjilNaSLjxQZ5cMrugo
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <45B8950630328F49995302D651088760@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200623032224.4020118-1-andriin@fb.com> <20200623032224.4020118-2-andriin@fb.com>
- <7ed6ada5-2539-3090-0db7-0f65b67e4699@iogearbox.net> <CAEf4BzbsRyt5Y4-oMaKTUNu_ijnRD09+WW3iA+bfGLZcLpd77w@mail.gmail.com>
- <ee6df475-b7d4-b8ed-dc91-560e42d2e7fc@iogearbox.net> <20200623232503.yzm4g24rwx7khudf@ast-mbp.dhcp.thefacebook.com>
- <f1ec2d3b-4897-1a40-e373-51bed4fd3b87@fb.com> <CAEf4BzZTWyii7k6MjdygJP+VfAHnnr8jbxjG1Ge96ioKq5ZEeQ@mail.gmail.com>
- <5ef2ecf4b7bd9_37452b132c4de5bcc@john-XPS-13-9370.notmuch>
-In-Reply-To: <5ef2ecf4b7bd9_37452b132c4de5bcc@john-XPS-13-9370.notmuch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 23 Jun 2020 23:51:01 -0700
-Message-ID: <CAEf4BzZN+iH1zcH9VfYhe8CLS3LOrBW97e2e6SCsCTC=cThRqA@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 2/3] selftests/bpf: add variable-length data
- concatenation pattern test
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6854713-00fc-4ca6-6227-08d8180bc41c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2020 06:56:48.5457
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vpJt6HP9ixwMf7vUbJshQsCUC5mxPa4na9K7bpfRkCl5v/+fSYHknOZMOElITQTizdPoZkcfQtnq+rSaDMvJQg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5774
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 11:04 PM John Fastabend
-<john.fastabend@gmail.com> wrote:
->
-> Andrii Nakryiko wrote:
-> > On Tue, Jun 23, 2020 at 5:25 PM Yonghong Song <yhs@fb.com> wrote:
-> > >
-> > >
-> > >
-> > > On 6/23/20 4:25 PM, Alexei Starovoitov wrote:
-> > > > On Tue, Jun 23, 2020 at 11:15:58PM +0200, Daniel Borkmann wrote:
-> > > >> On 6/23/20 10:52 PM, Andrii Nakryiko wrote:
-> > > >>> On Tue, Jun 23, 2020 at 1:39 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > >>>> On 6/23/20 5:22 AM, Andrii Nakryiko wrote:
-> > > >>>>> Add selftest that validates variable-length data reading and concatentation
-> > > >>>>> with one big shared data array. This is a common pattern in production use for
-> > > >>>>> monitoring and tracing applications, that potentially can read a lot of data,
-> > > >>>>> but overall read much less. Such pattern allows to determine precisely what
-> > > >>>>> amount of data needs to be sent over perfbuf/ringbuf and maximize efficiency.
-> > > >>>>>
-> > > >>>>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > >>>>
-> > > >>>> Currently getting the below errors on these tests. My last clang/llvm git build
-> > > >>>> is on 4676cf444ea2 ("[Clang] Skip adding begin source location for PragmaLoopHint'd
-> > > >>>> loop when[...]"):
-> > > >>>
-> > > >>> Yeah, you need 02553b91da5d ("bpf: bpf_probe_read_kernel_str() has to
-> > > >>> return amount of data read on success") from bpf tree.
-> > > >>
-> > > >> Fair point, it's in net- but not yet in net-next tree, so bpf-next sync needs
-> > > >> to wait.
-> > > >>
-> > > >>> I'm eagerly awaiting bpf being merged into bpf-next :)
-> > > >>
-> > > >> I'll cherry-pick 02553b91da5d locally for testing and if it passes I'll push
-> > > >> these out.
-> > > >
-> > > > I've merged the bpf_probe_read_kernel_str() fix into bpf-next and 3 extra commits
-> > > > prior to that one so that sha of the bpf_probe_read_kernel_str() fix (02553b91da5de)
-> > > > is exactly the same in bpf/net/linus/bpf-next. I think that shouldn't cause
-> > > > issue during bpf-next pull into net-next and later merge with Linus's tree.
-> > > > Crossing fingers, since we're doing this experiment for the first time.
-> > > >
-> > > > Daniel pushed these 3 commits as well.
-> > > > Now varlen and kernel_reloc tests are good, but we have a different issue :(
-> > > > ./test_progs-no_alu32 -t get_stack_raw_tp
-> > > > is now failing, but for a different reason.
-> > > >
-> > > > 52: (85) call bpf_get_stack#67
-> > > > 53: (bf) r8 = r0
-> > > > 54: (bf) r1 = r8
-> > > > 55: (67) r1 <<= 32
-> > > > 56: (c7) r1 s>>= 32
-> > > > ; if (usize < 0)
-> > > > 57: (c5) if r1 s< 0x0 goto pc+26
-> > > >   R0=inv(id=0,smax_value=800) R1_w=inv(id=0,umax_value=800,var_off=(0x0; 0x3ff)) R6=ctx(id=0,off=0,imm=0) R7=map_value(id=0,off=0,ks=4,vs=1600,imm=0) R8_w=inv(id=0,smax_value=800) R9=inv800 R10=fp0 fp-8=mmmm????
-> > > > ; ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > > > 58: (1f) r9 -= r8
-> > > > ; ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > > > 59: (bf) r2 = r7
-> > > > 60: (0f) r2 += r1
-> > > > regs=1 stack=0 before 52: (85) call bpf_get_stack#67
-> > > > ; ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > > > 61: (bf) r1 = r6
-> > > > 62: (bf) r3 = r9
-> > > > 63: (b7) r4 = 0
-> > > > 64: (85) call bpf_get_stack#67
-> > > >   R0=inv(id=0,smax_value=800) R1_w=ctx(id=0,off=0,imm=0) R2_w=map_value(id=0,off=0,ks=4,vs=1600,umax_value=800,var_off=(0x0; 0x3ff),s32_max_value=1023,u32_max_value=1023) R3_w=inv(id=0,umax_value=9223372036854776608) R4_w=inv0 R6=ctx(id=0?
-> > > > R3 unbounded memory access, use 'var &= const' or 'if (var < const)'
-> > > >
-> > > > In the C code it was this:
-> > > >          usize = bpf_get_stack(ctx, raw_data, max_len, BPF_F_USER_STACK);
-> > > >          if (usize < 0)
-> > > >                  return 0;
-> > > >
-> > > >          ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > > >          if (ksize < 0)
-> > > >                  return 0;
-> > > >
-> > > > We used to have problem with pointer arith in R2.
-> > > > Now it's a problem with two integers in R3.
-> > > > 'if (usize < 0)' is comparing R1 and makes it [0,800], but R8 stays [-inf,800].
-> > > > Both registers represent the same 'usize' variable.
-> > > > Then R9 -= R8 is doing 800 - [-inf, 800]
-> > > > so the result of "max_len - usize" looks unbounded to the verifier while
-> > > > it's obvious in C code that "max_len - usize" should be [0, 800].
-> > > >
-> > > > The following diff 'fixes' the issue for no_alu32:
-> > > > diff --git a/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c b/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c
-> > > > index 29817a703984..93058136d608 100644
-> > > > --- a/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c
-> > > > +++ b/tools/testing/selftests/bpf/progs/test_get_stack_rawtp.c
-> > > > @@ -2,6 +2,7 @@
-> > > >
-> > > >   #include <linux/bpf.h>
-> > > >   #include <bpf/bpf_helpers.h>
-> > > > +#define var_barrier(a) asm volatile ("" : "=r"(a) : "0"(a))
-> > > >
-> > > >   /* Permit pretty deep stack traces */
-> > > >   #define MAX_STACK_RAWTP 100
-> > > > @@ -84,10 +85,12 @@ int bpf_prog1(void *ctx)
-> > > >                  return 0;
-> > > >
-> > > >          usize = bpf_get_stack(ctx, raw_data, max_len, BPF_F_USER_STACK);
-> > > > +       var_barrier(usize);
-> > > >          if (usize < 0)
-> > > >                  return 0;
-> > > >
-> > > >          ksize = bpf_get_stack(ctx, raw_data + usize, max_len - usize, 0);
-> > > > +       var_barrier(ksize);
-> > > >          if (ksize < 0)
-> > > >                  return 0;
-> > > >
-> > > > But it breaks alu32 case.
-> > > >
-> > > > I'm using llvm 11 fwiw.
-> > > >
-> > > > Long term Yonghong is working on llvm support to emit this kind
-> > > > of workarounds automatically.
-> > > > I'm still thinking what to do next. Ideas?
-> > >
-> >
-> > Funny enough, Alexei's fix didn't fix even no_alu32 case for me. Also
-> > have one of the latest clang 11...
-> >
-> > > The following source change will make both alu32 and non-alu32 happy:
-> > >
-> > >   SEC("raw_tracepoint/sys_enter")
-> > >   int bpf_prog1(void *ctx)
-> > >   {
-> > > -       int max_len, max_buildid_len, usize, ksize, total_size;
-> > > +       int max_len, max_buildid_len, total_size;
-> > > +       long usize, ksize;
-> >
-> > This does fix it, both alu32 and no-alu32 pass.
-> >
-> > >          struct stack_trace_t *data;
-> > >          void *raw_data;
-> > >          __u32 key = 0;
-> > >
-> > > I have not checked the reason why it works. Mostly this confirms to
-> > > the function signature so compiler generates more friendly code.
-> >
-> > Yes, it's due to the compiler not doing all the casting/bit shifting.
-> > Just straightforward use of a single register consistently across
-> > conditional jump and offset calculations.
->
-> Another option is to drop the int->long uapi conversion and write the
-> varlen test using >=0 tests. The below diff works for me also using
-> recent clang-11, but maybe doesn't resolve Andrii's original issue.
-> My concern is if we break existing code in selftests is there a risk
-> users will get breaking code as well? Seems like without a few
-> additional clang improvements its going to be hard to get all
-> combinations working by just fiddling with the types.
-
-I have bad news for you, John. Try running your variant of test_varlen
-on, say, 5.6 kernel (upstream version). Both alu32 and no-alu32
-version fail (that's with int helpers, of course):
-
-libbpf: load bpf program failed: Permission denied
-libbpf: -- BEGIN DUMP LOG ---
-libbpf:
-arg#0 type is not a struct
-Unrecognized arg#0 type PTR
-; int pid = bpf_get_current_pid_tgid() >> 32;
-0: (85) call bpf_get_current_pid_tgid#14
-; if (test_pid != pid || !capture)
-1: (18) r1 = 0xffffc90000132200
-3: (61) r1 = *(u32 *)(r1 +0)
- R0_w=inv(id=0) R1_w=map_value(id=0,off=512,ks=4,vs=1056,imm=0) R10=fp0
-; int pid = bpf_get_current_pid_tgid() >> 32;
-4: (77) r0 >>= 32
-; if (test_pid != pid || !capture)
-5: (5e) if w1 != w0 goto pc+37
- R0_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff))
-R1_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff)) R10=fp0
-6: (18) r1 = 0xffffc90000132204
-8: (71) r1 = *(u8 *)(r1 +0)
- R0_w=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff))
-R1_w=map_value(id=0,off=516,ks=4,vs=1056,imm=0) R10=fp0
-9: (16) if w1 == 0x0 goto pc+33
- R0=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff))
-R1=inv(id=0,umax_value=255,var_off=(0x0; 0xff)) R10=fp0
-; len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in1[0]);
-10: (18) r6 = 0xffffc90000129218
-12: (18) r1 = 0xffffc90000129218
-14: (b4) w2 = 256
-15: (18) r3 = 0xffffc90000132000
-17: (85) call bpf_probe_read_kernel_str#115
- R0=inv(id=0,umax_value=4294967295,var_off=(0x0; 0xffffffff))
-R1_w=map_value(id=0,off=536,ks=4,vs=1572,imm=0) R2_w=inv256
-R3_w=map_value(id=0,off=0,ks=4,vs=1056,imm=0)
-R6_w=map_value(id=0,off=536,ks=4,vs=1572,imm=0) R10=fp0
-last_idx 17 first_idx 9
-regs=4 stack=0 before 15: (18) r3 = 0xffffc90000132000
-regs=4 stack=0 before 14: (b4) w2 = 256
-; if (len >= 0) {
-18: (c6) if w0 s< 0x0 goto pc+7
- R0_w=inv(id=0) R6_w=map_value(id=0,off=536,ks=4,vs=1572,imm=0) R10=fp0
-; payload3_len1 = len;
-19: (18) r1 = 0xffffc9000012920c
-21: (63) *(u32 *)(r1 +0) = r0
- R0_w=inv(id=0) R1_w=map_value(id=0,off=524,ks=4,vs=1572,imm=0)
-R6_w=map_value(id=0,off=536,ks=4,vs=1572,imm=0) R10=fp0
-; len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in1[0]);
-22: (bc) w1 = w0
-; payload += len;
-23: (18) r6 = 0xffffc90000129218
-25: (0f) r6 += r1
-last_idx 25 first_idx 9
-regs=2 stack=0 before 23: (18) r6 = 0xffffc90000129218
-regs=2 stack=0 before 22: (bc) w1 = w0
-regs=1 stack=0 before 21: (63) *(u32 *)(r1 +0) = r0
-regs=1 stack=0 before 19: (18) r1 = 0xffffc9000012920c
-regs=1 stack=0 before 18: (c6) if w0 s< 0x0 goto pc+7
-regs=1 stack=0 before 17: (85) call bpf_probe_read_kernel_str#115
-; len = bpf_probe_read_kernel_str(payload, MAX_LEN, &buf_in2[0]);
-26: (bf) r1 = r6
-27: (b4) w2 = 256
-28: (18) r3 = 0xffffc90000132100
-30: (85) call bpf_probe_read_kernel_str#115
- R0=inv(id=0) R1_w=map_value(id=0,off=536,ks=4,vs=1572,umax_value=4294967295,var_off=(0x0;
-0xffffffff)) R2_w=inv256
-R3_w=map_value(id=0,off=256,ks=4,vs=1056,imm=0)
-R6=map_value(id=0,off=536,ks=4,vs=1572,umax_value=4294967295,var_off=(0x00
-R1 unbounded memory access, make sure to bounds check any array access
-into a map
-processed 23 insns (limit 1000000) max_states_per_insn 0 total_states
-2 peak_states 2 mark_read 1
-
-libbpf: -- END LOG --
-libbpf: failed to load program 'raw_tp/sys_exit'
-libbpf: failed to load object 'test_varlen'
-libbpf: failed to load BPF skeleton 'test_varlen': -4007
-test_varlen:FAIL:skel_open failed to open skeleton
-#88 varlen:FAIL
-Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
-
-
-Disassembly of section raw_tp/sys_exit:
-
-0000000000000000 <handler64_signed>:
-       0:       85 00 00 00 0e 00 00 00 call 14
-       1:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 = 0 ll
-       3:       61 11 00 00 00 00 00 00 r1 = *(u32 *)(r1 + 0)
-       4:       77 00 00 00 20 00 00 00 r0 >>= 32
-       5:       5e 01 25 00 00 00 00 00 if w1 != w0 goto +37 <LBB1_7>
-       6:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 = 0 ll
-       8:       71 11 00 00 00 00 00 00 r1 = *(u8 *)(r1 + 0)
-       9:       16 01 21 00 00 00 00 00 if w1 == 0 goto +33 <LBB1_7>
-      10:       18 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r6 = 0 ll
-      12:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 = 0 ll
-      14:       b4 02 00 00 00 01 00 00 w2 = 256
-      15:       18 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r3 = 0 ll
-      17:       85 00 00 00 73 00 00 00 call 115
-      18:       c6 00 07 00 00 00 00 00 if w0 s< 0 goto +7 <LBB1_4>
-      19:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 = 0 ll
-      21:       63 01 00 00 00 00 00 00 *(u32 *)(r1 + 0) = r0
-      22:       bc 01 00 00 00 00 00 00 w1 = w0
-      23:       18 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r6 = 0 ll
-      25:       0f 16 00 00 00 00 00 00 r6 += r1
-
-00000000000000d0 <LBB1_4>:
-      26:       bf 61 00 00 00 00 00 00 r1 = r6
-      27:       b4 02 00 00 00 01 00 00 w2 = 256
-      28:       18 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r3 = 0 ll
-      30:       85 00 00 00 73 00 00 00 call 115
-      31:       c6 00 05 00 00 00 00 00 if w0 s< 0 goto +5 <LBB1_6>
-      32:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 = 0 ll
-      34:       63 01 00 00 00 00 00 00 *(u32 *)(r1 + 0) = r0
-      35:       bc 01 00 00 00 00 00 00 w1 = w0
-      36:       0f 16 00 00 00 00 00 00 r6 += r1
-
-0000000000000128 <LBB1_6>:
-      37:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 = 0 ll
-      39:       1c 16 00 00 00 00 00 00 w6 -= w1
-      40:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 r1 = 0 ll
-      42:       63 61 00 00 00 00 00 00 *(u32 *)(r1 + 0) = r6
-
-0000000000000158 <LBB1_7>:
-      43:       b4 00 00 00 00 00 00 00 w0 = 0
-      44:       95 00 00 00 00 00 00 00 exit
-
-
-ALU32 code looks ok, but it's probably those verifier bugs that you've
-fixed just recently that make it impossible to use? Don't know. So one
-needs a quite recent kernel to make such code pattern work, while
-unsigned variant works fine in practice.
-
-Now, my variant also fails on 5.6 with default int helpers. If we have
-longs, though, it suddenly works! Both alu32 and no-alu32!
-
-And it makes sense, that's what I've been arguing all along. long
-represent reality, it causes more straightforward code generation, if
-you don't aritifically down-cast types. Even with downcasted types, in
-many cases it's ok. If there are regressions (which are probably
-impossible to avoid, unfortunately), at least in theory just casting
-bpf helper's return result to int should be equivalent:
-
-int len = (int)bpf_read_probe_str(...)
-
-But even better is to just fix types of your local variables to match
-native BPF size.
-
-> Seems like without a few
-> additional clang improvements its going to be hard to get all
-> combinations working by just fiddling with the types.
-
-I'd like to see the case yet in which synchronizing types didn't help, actually.
-
->
-> diff --git a/tools/testing/selftests/bpf/progs/test_varlen.c b/tools/testing/selftests/bpf/progs/test_varlen.c
-> index 0969185..01c992c 100644
-> --- a/tools/testing/selftests/bpf/progs/test_varlen.c
-> +++ b/tools/testing/selftests/bpf/progs/test_varlen.c
-> @@ -31,20 +31,20 @@ int handler64(void *regs)
-
-[...]
+T24gVHVlLCAyMDIwLTA2LTIzIGF0IDE0OjMxIC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
+Cj4gT24gVHVlLCAyMyBKdW4gMjAyMCAxMjo1MjoyOSAtMDcwMCBTYWVlZCBNYWhhbWVlZCB3cm90
+ZToNCj4gPiBGcm9tOiBBeWEgTGV2aW4gPGF5YWxAbWVsbGFub3guY29tPg0KPiA+IA0KPiA+IFRo
+ZSBjb25jZXB0IG9mIFJlbGF4ZWQgT3JkZXJpbmcgaW4gdGhlIFBDSSBFeHByZXNzIGVudmlyb25t
+ZW50DQo+ID4gYWxsb3dzDQo+ID4gc3dpdGNoZXMgaW4gdGhlIHBhdGggYmV0d2VlbiB0aGUgUmVx
+dWVzdGVyIGFuZCBDb21wbGV0ZXIgdG8gcmVvcmRlcg0KPiA+IHNvbWUNCj4gPiB0cmFuc2FjdGlv
+bnMganVzdCByZWNlaXZlZCBiZWZvcmUgb3RoZXJzIHRoYXQgd2VyZSBwcmV2aW91c2x5DQo+ID4g
+ZW5xdWV1ZWQuDQo+ID4gDQo+ID4gSW4gRVRIIGRyaXZlciwgdGhlcmUgaXMgbm8gcXVlc3Rpb24g
+b2Ygd3JpdGUgaW50ZWdyaXR5IHNpbmNlIGVhY2gNCj4gPiBtZW1vcnkNCj4gPiBzZWdtZW50IGlz
+IHdyaXR0ZW4gb25seSBvbmNlIHBlciBjeWNsZS4gSW4gYWRkaXRpb24sIHRoZSBkcml2ZXINCj4g
+PiBkb2Vzbid0DQo+ID4gYWNjZXNzIHRoZSBtZW1vcnkgc2hhcmVkIHdpdGggdGhlIGhhcmR3YXJl
+IHVudGlsIHRoZSBjb3JyZXNwb25kaW5nDQo+ID4gQ1FFDQo+ID4gYXJyaXZlcyBpbmRpY2F0aW5n
+IGFsbCBQQ0kgdHJhbnNhY3Rpb25zIGFyZSBkb25lLg0KPiANCg0KSGkgSmFrdWIsIHNvcnJ5IGkg
+bWlzc2VkIHlvdXIgY29tbWVudHMgb24gdGhpcyBwYXRjaC4NCg0KPiBBc3N1bWluZyB0aGUgZGV2
+aWNlIHNldHMgdGhlIFJPIGJpdHMgYXBwcm9wcmlhdGVseSwgcmlnaHQ/IE90aGVyd2lzZQ0KPiBD
+UUUgd3JpdGUgY291bGQgdGhlb3JldGljYWxseSBzdXJwYXNzIHRoZSBkYXRhIHdyaXRlLCBubz8N
+Cj4gDQoNClllcyBIVyBndWFyYW50ZWVzIGNvcnJlY3RuZXNzIG9mIGNvcnJlbGF0ZWQgcXVldWVz
+IGFuZCB0cmFuc2FjdGlvbnMuDQoNCj4gPiBXaXRoIHJlbGF4ZWQgb3JkZXJpbmcgc2V0LCB0cmFm
+ZmljIG9uIHRoZSByZW1vdGUtbnVtYSBpcyBhdCB0aGUNCj4gPiBzYW1lDQo+ID4gbGV2ZWwgYXMg
+d2hlbiBvbiB0aGUgbG9jYWwgbnVtYS4NCj4gDQo+IFNhbWUgbGV2ZWwgb2Y/IEFjaGlldmFibGUg
+YmFuZHdpZHRoPw0KPiANCg0KWWVzLCBCYW5kd2lkdGgsIGFjY29yZGluZyB0aGUgYmVsb3cgZXhw
+bGFuYXRpb24sIGkgc2VlIHRoYXQgdGhlIG1lc3NhZ2UNCm5lZWRzIGltcHJvdmVtZW50cy4NCg0K
+PiA+IFJ1bm5pbmcgVENQIHNpbmdsZSBzdHJlYW0gb3ZlciBDb25uZWN0WC00IExYLCBBUk0gQ1BV
+IG9uIHJlbW90ZS0NCj4gPiBudW1hDQo+ID4gaGFzIDMwMCUgaW1wcm92ZW1lbnQgaW4gdGhlIGJh
+bmR3aWR0aC4NCj4gPiBXaXRoIHJlbGF4ZWQgb3JkZXJpbmcgdHVybmVkIG9mZjogQlc6MTAgW0dC
+L3NdDQo+ID4gV2l0aCByZWxheGVkIG9yZGVyaW5nIHR1cm5lZCBvbjogIEJXOjQwIFtHQi9zXQ0K
+PiA+IA0KPiA+IFRoZSBkcml2ZXIgdHVybnMgcmVsYXhlZCBvcmRlcmluZyBvZmYgYnkgZGVmYXVs
+dC4gSXQgZXhwb3NlcyAyDQo+ID4gYm9vbGVhbg0KPiA+IHByaXZhdGUtZmxhZ3MgaW4gZXRodG9v
+bDogcGNpX3JvX3JlYWQgYW5kIHBjaV9yb193cml0ZSBmb3IgdXNlcg0KPiA+IGNvbnRyb2wuDQo+
+ID4gDQo+ID4gJCBldGh0b29sIC0tc2hvdy1wcml2LWZsYWdzIGV0aDINCj4gPiBQcml2YXRlIGZs
+YWdzIGZvciBldGgyOg0KPiA+IC4uLg0KPiA+IHBjaV9yb19yZWFkICAgICAgICA6IG9mZg0KPiA+
+IHBjaV9yb193cml0ZSAgICAgICA6IG9mZg0KPiA+IA0KPiA+ICQgZXRodG9vbCAtLXNldC1wcml2
+LWZsYWdzIGV0aDIgcGNpX3JvX3dyaXRlIG9uDQo+ID4gJCBldGh0b29sIC0tc2V0LXByaXYtZmxh
+Z3MgZXRoMiBwY2lfcm9fcmVhZCBvbg0KPiANCj4gSSB0aGluayBNaWNoYWwgd2lsbCByaWdodGx5
+IGNvbXBsYWluIHRoYXQgdGhpcyBkb2VzIG5vdCBiZWxvbmcgaW4NCj4gcHJpdmF0ZSBmbGFncyBh
+bnkgbW9yZS4gQXMgKC9pZj8pIEFSTSBkZXBsb3ltZW50cyB0YWtlIGEgZm9vdGhvbGQgDQo+IGlu
+IERDIHRoaXMgd2lsbCBiZWNvbWUgYSBjb21tb24gc2V0dGluZyBmb3IgbW9zdCBOSUNzLg0KDQpJ
+bml0aWFsbHkgd2UgdXNlZCBwY2llX3JlbGF4ZWRfb3JkZXJpbmdfZW5hYmxlZCgpIHRvDQogcHJv
+Z3JhbW1hdGljYWxseSBlbmFibGUgdGhpcyBvbi9vZmYgb24gYm9vdCBidXQgdGhpcyBzZWVtcyB0
+bw0KaW50cm9kdWNlIHNvbWUgZGVncmFkYXRpb24gb24gc29tZSBJbnRlbCBDUFVzIHNpbmNlIHRo
+ZSBJbnRlbCBGYXVsdHkNCkNQVXMgbGlzdCBpcyBub3QgdXAgdG8gZGF0ZS4gQXlhIGlzIGRpc2N1
+c3NpbmcgdGhpcyB3aXRoIEJqb3JuLg0KDQpTbyB1bnRpbCB3ZSBmaWd1cmUgdGhpcyBvdXQsIHdp
+bGwga2VlcCB0aGlzIG9mZiBieSBkZWZhdWx0Lg0KDQpmb3IgdGhlIHByaXZhdGUgZmxhZ3Mgd2Ug
+d2FudCB0byBrZWVwIHRoZW0gZm9yIHBlcmZvcm1hbmNlIGFuYWx5c2lzIGFzDQp3ZSBkbyB3aXRo
+IGFsbCBvdGhlciBtbHg1IHNwZWNpYWwgcGVyZm9ybWFuY2UgZmVhdHVyZXMgYW5kIGZsYWdzLg0K
+DQo=
