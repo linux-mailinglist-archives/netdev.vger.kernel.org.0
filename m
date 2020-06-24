@@ -2,193 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4BE207830
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:00:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9010C207866
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:06:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404631AbgFXQAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 12:00:17 -0400
-Received: from mail-bn8nam11on2080.outbound.protection.outlook.com ([40.107.236.80]:33591
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2404137AbgFXQAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Jun 2020 12:00:16 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e+29Ipmky+8IbA4KgbT5XC1Qk/YF9subaFzW47Z4GPnDZGDbaMwgrv2G1EnFduFOsW2pvdPlZDYr7G5ebTZJOclLHEr/L0pHDbJfRZDLtBBS4S6PleMdlCcXWuNGBDlxbKQFcUDY7oI6DbRElofaCSBj/H5lMZq6kJiP514sdxU2Gl2G8TT1dgtxouKICJRRQsZp57iBFzi3n061zPf8/lrfAE0Et3J0PtZLNwH80QsREoMrU2LcPuQFRoLFEj3buXm4RvFuRjkyROgNRjcdERn2MxqCCeMYFh1mEY5v7Qs8krIQx1Wi0x2HANQ4OCG+Mk2rbte4BubP3LBZYWJEkw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G4bM2kj/CYLMYwqSKXjoPZidhbiAdgTL+u5tI9/OMsA=;
- b=HEO9ZifGHeKpoW2RB3/C3/zZNmuJD8vCVwGxNN1QKGjzyVMf5Zs2ZOFkwJPtZYVCKMLvcZxalmlRsm8lVdp08a0dwCTb2wTkwuN7oITOtixImKqD8ARYP5bQbwXbj4+5W/X3Zdd0aUGoGzE3AAKGL5uGPlBQFWCIukBVsFKsM5InU2BStybd2IRI11lE3Lx+Q2g0eWaG/sAmq5nwaL5LlHkmqn5bufgd7zAkZOktB9oTUHjO4alpX8zOVXda74F5o+f8TR2snhEUxlqSMonrUC//4u78etzRAS9cbnzDERAvIGAqXokKQdfz7lZyITVozwnvSgAHVn0m3QJ3QUuPDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=netapp.com; dmarc=pass action=none header.from=netapp.com;
- dkim=pass header.d=netapp.com; arc=none
+        id S2404879AbgFXQGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 12:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37524 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404525AbgFXQGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:06:38 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89512C061573;
+        Wed, 24 Jun 2020 09:06:38 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id l2so1572705wmf.0;
+        Wed, 24 Jun 2020 09:06:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=netapp.onmicrosoft.com; s=selector1-netapp-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G4bM2kj/CYLMYwqSKXjoPZidhbiAdgTL+u5tI9/OMsA=;
- b=STbxCF5eUijwsrEUR66dOatM1Vy4vbzGPvvUNtGJTkL9lYG+n+bonPkKIx5PvULMjZUn1pohun4YxMEoHnde5akFl4F/EA+DJz1yl96oLd3JI/O/JdRVLR1ZqymjwK0jisqWwKZQ1DGMAy7A9ZpWp5eBUlRgim3da6/cS0oXpZ8=
-Received: from SN4PR0601MB3728.namprd06.prod.outlook.com
- (2603:10b6:803:51::24) by SN6PR06MB3838.namprd06.prod.outlook.com
- (2603:10b6:805:21::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Wed, 24 Jun
- 2020 16:00:13 +0000
-Received: from SN4PR0601MB3728.namprd06.prod.outlook.com
- ([fe80::1574:b602:fe3a:ff59]) by SN4PR0601MB3728.namprd06.prod.outlook.com
- ([fe80::1574:b602:fe3a:ff59%5]) with mapi id 15.20.3131.021; Wed, 24 Jun 2020
- 16:00:12 +0000
-From:   "Scheffenegger, Richard" <Richard.Scheffenegger@netapp.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        Neal Cardwell <ncardwell@google.com>
-CC:     Denis Kirjanov <kda@linux-powerpc.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Bob Briscoe <ietf@bobbriscoe.net>
-Subject: RE: [PATCH v2] tcp: don't ignore ECN CWR on pure ACK
-Thread-Topic: [PATCH v2] tcp: don't ignore ECN CWR on pure ACK
-Thread-Index: AQHWSg35fm3uW77cIUGtj8czBEjJ66jnxqQAgAAiq4CAAAESAA==
-Date:   Wed, 24 Jun 2020 16:00:12 +0000
-Message-ID: <SN4PR0601MB3728C60F00DB0781FF098F4286950@SN4PR0601MB3728.namprd06.prod.outlook.com>
-References: <20200624095748.8246-1-denis.kirjanov@suse.com>
- <CADVnQym6aoueiB-auSxgp5tp0rjjte+MaxRPWd3t44F5VueKdA@mail.gmail.com>
- <CANn89iK_75H5jwGLaXUfRnLOgrFdP25xAYmyoD3SW6iFGEL96Q@mail.gmail.com>
-In-Reply-To: <CANn89iK_75H5jwGLaXUfRnLOgrFdP25xAYmyoD3SW6iFGEL96Q@mail.gmail.com>
-Accept-Language: de-AT, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=none action=none header.from=netapp.com;
-x-originating-ip: [217.70.211.10]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7d4e05c0-e84f-40d2-50ca-08d81857adc9
-x-ms-traffictypediagnostic: SN6PR06MB3838:
-x-microsoft-antispam-prvs: <SN6PR06MB383850CAD98E6CFCC8D1E1F486950@SN6PR06MB3838.namprd06.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0444EB1997
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CjpdX6E0aQ2zzzpzOI1ZwUHR7ejsY5tKWj8ec6/ARKv2GfkdXGMJTQjGtAd1DopbN7JTdKNWnaBW09Fq15Ngl/QrAvdgQbusLOpEWRyou9rTs3pGSU2t/20+w2g3pHjoyLQBrOGM6/MIoDcIn5vropvPQWJRbcBHhYMWBqiZX30Rk5vud4/miWnMvRKICk26NDzSLyHTwKvo1SghulsjqCd6MI/EpcGQeYJBHtKhYoLXp6dwY/HqzHjaL03do3PY8GEp6ecbRatHap43riC1jQKN+V7xr6UyeXtMy6Pbi9LKzxnJeQdRHVBLLzcPz8LxITvjx/RLfXyoDZ+nQv9MeUpPUs+BhUIRAzumZtNIFOM9WEV1bo96A5muZc95wFTICR9N37vFK+w+oqKGHZwJ1A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN4PR0601MB3728.namprd06.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(39860400002)(366004)(136003)(346002)(53546011)(6506007)(186003)(478600001)(7696005)(26005)(316002)(8936002)(66476007)(2906002)(5660300002)(110136005)(966005)(66946007)(64756008)(66446008)(66556008)(54906003)(76116006)(9686003)(52536014)(71200400001)(33656002)(55016002)(4326008)(86362001)(83380400001)(8676002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: cem1LfKxmzO0TOXKWLauuaTyKghMJkft0sS4TcvqRhdeSfn6AsV/9vAWjW8swgjH43S9qh9wLlTGwpVR9MWky0F+VGq7Ofx1/6hOgJ+WZyehmyNBRiQcwPN6mBwSx2nWwvElbNlFfcNa/FQ1538wCwqhYiw4c3DMad6LzVpAlKPaGT6ewYxCe1LVk+9VIEia1bahoBIksA1R7O0xPTAKDjYpJaB1cT+VMVq5ieXV+VR9hS/EkWvcfJr1j545uASnTt6gp+ZPpTvp+rfb/ur3+FVC4yrzxwdBgx30JDhsEeG1wTU3HIqLVrs78tFCeqOu1EZJDY7qR9GOSQ+NSY1eTtiplWpdN1PMNublmOiqawe+joIMOE0V/iDYl8G+dMDGDzbP1cKUcLsDVUNKrMAFI+1OdzKm23Vxv8F7QzhGaDMQM6OJHIJCOSUaaQ4KwZHjKm1BL9L/qBJsVQvVR7PmOv6+SIFxdbsILUCFwe5UGe9BDbl1ybQrvZijkRBqk0xr
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=N5fl5/sMZxwAr7ptc9+M4Sr+AByefpkVY5hVcBVQQ/k=;
+        b=c2rzrcC1s/RvV0v6BauZL5SgifsfzraAm6dKbwwVmpzxQX4AEpCnmWIyRQjVyJ0BxY
+         VwAF1gysQzcY6viTFWKNd5ER+wald/A+oDJmThbanQzzZTMkP8Syhpwrt+cK1I8evkBw
+         vKEUtxcqdx/YAs6AfAz1YMl1W6EjqZaigjKox7N0hT1oe61tpTl1rIpLMJbIlywMUA6y
+         r9Iqdiq9bK+9J6sjSGr1PFWW6C7ipYzc5btYktjX9GjMxMJrTiHGA4nrljYift0Cb5wn
+         Lo9oppL/ubGVr1CRnyh4GbMhJctzp8q5jjRO/KLV5NGB/8uatOUPDVDfTmK6h+fUbnK4
+         JiJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=N5fl5/sMZxwAr7ptc9+M4Sr+AByefpkVY5hVcBVQQ/k=;
+        b=QXjwsmM9OpdYZkuQliRgF7KLfozW3Jj6Zznn6cATO31eYn/M3SCI6PUq4saLq52kXc
+         MZQADTovH++L0Mk2WBDMGKVq6arP4jeCcLsrv1iqyrtDLvVIGbgyd4QoEykj0jf+9Zm2
+         tkDQSHytAu0wBGiLtzsjdfnO6s458eCTidzhGOv6sca+C5kQWC1I5RR3v+sajF2cN4jY
+         gI2S+v3VrJsQueUNamae/pggfrI+/qGHbVtHH6odUJLEkZLxl3dDD4D/QcNBp2Qh0o/M
+         0V+8qWzyuTVXdf/w2H1uFq0iXfEK/zp5a2r/72sr1TwAxAZ20eNG6pz9X+bKqeLDOucV
+         O+/g==
+X-Gm-Message-State: AOAM530Hj3RVbEljJELo0oSAzpPDBhS/wFCsdfzuqIiwbxMrwRkIskyr
+        kPpXjjZ05yKWysVHQ19YXgo=
+X-Google-Smtp-Source: ABdhPJwWIG0y9eC4lbkgJBhmydeFIya8dS7IrcbvZPWjmmIvUtHTKwrtZj6sEnp2a6behlqd9ZQbOQ==
+X-Received: by 2002:a1c:a90d:: with SMTP id s13mr16491624wme.184.1593014797129;
+        Wed, 24 Jun 2020 09:06:37 -0700 (PDT)
+Received: from [10.230.189.192] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id f14sm10446689wro.90.2020.06.24.09.06.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Jun 2020 09:06:36 -0700 (PDT)
+Subject: Re: [PATCH 09/15] net: phy: delay PHY driver probe until PHY
+ registration
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+References: <20200622093744.13685-1-brgl@bgdev.pl>
+ <20200622093744.13685-10-brgl@bgdev.pl> <20200622133940.GL338481@lunn.ch>
+ <20200622135106.GK4560@sirena.org.uk>
+ <dca54c57-a3bd-1147-63b2-4631194963f0@gmail.com>
+ <20200624094302.GA5472@sirena.org.uk>
+ <CAMRc=McBxJdujCyjQF3NA=bCWHF1dx8xJ1Nc2snmqukvJ_VyoQ@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <f806586d-a6d7-99af-bba4-d1e7d28be192@gmail.com>
+Date:   Wed, 24 Jun 2020 09:06:28 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-X-OriginatorOrg: netapp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d4e05c0-e84f-40d2-50ca-08d81857adc9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2020 16:00:12.8569
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4b0911a0-929b-4715-944b-c03745165b3a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FQqT8OnxpedJgTbXcxTBRGLB0YOuFToKpNrM6tn6DFO5w7VqSxDffvLi6n83ji3TAh3Vzxmx15m7JMUynrNGuA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR06MB3838
+In-Reply-To: <CAMRc=McBxJdujCyjQF3NA=bCWHF1dx8xJ1Nc2snmqukvJ_VyoQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgRXJpYywNCg0KDQpBdCBsZWFzdCB0aGUgRnJlZUJTRCBzdGFjayBoYXMgZ290IHRoZSBmaXgg
-KGFuZCBpdCB3aWxsIGJlIGluIHRoZSB3aWRlbHkgdXNlZCBGQlNEIDExLjQgcmVsZWFzZSkuDQoN
-Ck1hY09TIGhhZCBmaXhlZCB0aGlzIGluZGVwZW5kZW50bHkgZm9yIGEgbG9uZyB0aW1lLCBidXQg
-aXQgd2FzIHJlYWxseSBhbGwgaW50cm9kdWNlZCBiYWNrIGluIDIwMDYgb3Igc28sIHdoZW4gdGhl
-IHZhcmlvdXMgKkJTRCB2YXJpYW50cyBnb3QgdGhlaXIgRUNOIHN1cHBvcnQgaW1wbGVtZW50ZWQg
-LSBsaXRlcmFsbHkgdGhlIHZlcnkgc2FtZSBjb2RlIGxpbmVzIHdlcmUgc2hhcmVkIGFtb25nIG1h
-bnkgdmFyaWFudHMgYmFjayB0aGVuLg0KDQpBbmQgSSBmdWxseSBhZ3JlZSwgdGhhdCBpdCB3aWxs
-IHRha2UgbWFueSB5ZWFycyBmb3IgdGhpcyBmaXggdG8gcGVyY29sYXRlIHRocm91Z2ggdGhlIHRo
-ZSBpbnN0YWxsIGJhc2UgLSBidXQgd2l0aCB0aGUgZml4LCBwZW9wbGUgd2hvIHdhbnQgdG8gc3Rh
-cnQgdXNpbmcgb2xkIDMxNjggdHlwZSBFQ04gY2FuIGF0IGxlYXN0IGxvb2sgd2hpY2ggcGF0Y2gg
-dGhleSBjYW4gbW9yZSBlYXNpbHkgZGVwbG95IC8gYmFja3BvcnQuIEJTRCBzdGFja3Mgb2Z0ZW4g
-cnVuIGluIGNsb3NlZCBzb3VyY2Ugc29mdHdhcmUsIHNvIHRob3VnaCBsdWNrLCB1bmxlc3MgdGhl
-IHZlbmRvciBvZiB0aGF0IGFwcGxpYW5jZSBnZXRzIHRoZSBmcmVlYnNkIHBhdGNoIChodHRwczov
-L3Jldmlld3MuZnJlZWJzZC5vcmcvRDIzMzY0LiBSZWxlbmcvMTEuNCBodHRwczovL3Jldmlld3Mu
-ZnJlZWJzZC5vcmcvclMzNjE1NjUpLg0KDQpTbyB0YWNrbGluZyB0aGlzIGZyb20gYm90aCBzaWRl
-IChlc3BlY2lhbGx5IGFzIHBhdGNoaW5nIExpbnV4IGlzIG9mdGVuIGVhc2llciB3aGVuIGRlcGxv
-eWVkKSBpcyBkZWZpbml0ZWx5IGhlbHBpbmcgZ2V0dGluZyB0aGF0IHByb2JsZW0gYWRkcmVzc2Vk
-IG1vcmUgcXVpY2tseS4NCg0KVGhhbmtzIQ0KDQoNClJpY2hhcmQgU2NoZWZmZW5lZ2dlcg0KQ29u
-c3VsdGluZyBTb2x1dGlvbiBBcmNoaXRlY3QNCk5BUyAmIE5ldHdvcmtpbmcNCg0KTmV0QXBwDQor
-NDMgMSAzNjc2IDgxMSAzMTU3IERpcmVjdCBQaG9uZQ0KKzQzwqA2NjQgODg2NiAxODU3IE1vYmls
-ZSBQaG9uZQ0KUmljaGFyZC5TY2hlZmZlbmVnZ2VyQG5ldGFwcC5jb20NCg0KaHR0cHM6Ly90cy5s
-YS9yaWNoYXJkNDk4OTINCg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogRXJp
-YyBEdW1hemV0IDxlZHVtYXpldEBnb29nbGUuY29tPiANClNlbnQ6IE1pdHR3b2NoLCAyNC4gSnVu
-aSAyMDIwIDE3OjQ3DQpUbzogTmVhbCBDYXJkd2VsbCA8bmNhcmR3ZWxsQGdvb2dsZS5jb20+DQpD
-YzogRGVuaXMgS2lyamFub3YgPGtkYUBsaW51eC1wb3dlcnBjLm9yZz47IE5ldGRldiA8bmV0ZGV2
-QHZnZXIua2VybmVsLm9yZz47IFl1Y2h1bmcgQ2hlbmcgPHljaGVuZ0Bnb29nbGUuY29tPjsgU2No
-ZWZmZW5lZ2dlciwgUmljaGFyZCA8UmljaGFyZC5TY2hlZmZlbmVnZ2VyQG5ldGFwcC5jb20+OyBC
-b2IgQnJpc2NvZSA8aWV0ZkBib2JicmlzY29lLm5ldD4NClN1YmplY3Q6IFJlOiBbUEFUQ0ggdjJd
-IHRjcDogZG9uJ3QgaWdub3JlIEVDTiBDV1Igb24gcHVyZSBBQ0sNCg0KTmV0QXBwIFNlY3VyaXR5
-IFdBUk5JTkc6IFRoaXMgaXMgYW4gZXh0ZXJuYWwgZW1haWwuIERvIG5vdCBjbGljayBsaW5rcyBv
-ciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UgcmVjb2duaXplIHRoZSBzZW5kZXIgYW5kIGtu
-b3cgdGhlIGNvbnRlbnQgaXMgc2FmZS4NCg0KDQoNCg0KT24gV2VkLCBKdW4gMjQsIDIwMjAgYXQg
-Njo0MyBBTSBOZWFsIENhcmR3ZWxsIDxuY2FyZHdlbGxAZ29vZ2xlLmNvbT4gd3JvdGU6DQo+DQo+
-IE9uIFdlZCwgSnVuIDI0LCAyMDIwIGF0IDU6NTggQU0gRGVuaXMgS2lyamFub3YgPGtkYUBsaW51
-eC1wb3dlcnBjLm9yZz4gd3JvdGU6DQo+ID4NCj4gPiB0aGVyZSBpcyBhIHByb2JsZW0gd2l0aCB0
-aGUgQ1dSIGZsYWcgc2V0IGluIGFuIGluY29taW5nIEFDSyBzZWdtZW50IA0KPiA+IGFuZCBpdCBs
-ZWFkcyB0byB0aGUgc2l0dWF0aW9uIHdoZW4gdGhlIEVDRSBmbGFnIGlzIGxhdGNoZWQgZm9yZXZl
-cg0KPiA+DQo+ID4gdGhlIGZvbGxvd2luZyBwYWNrZXRkcmlsbCBzY3JpcHQgc2hvd3Mgd2hhdCBo
-YXBwZW5zOg0KPiA+DQo+ID4gLy8gU3RhY2sgcmVjZWl2ZXMgaW5jb21pbmcgc2VnbWVudHMgd2l0
-aCBDRSBzZXQNCj4gPiArMC4xIDxbZWN0MF0gIC4gMTEwMDE6MTIwMDEoMTAwMCkgYWNrIDEwMDEg
-d2luIDY1NTM1DQo+ID4gKzAuMCA8W2NlXSAgICAuIDEyMDAxOjEzMDAxKDEwMDApIGFjayAxMDAx
-IHdpbiA2NTUzNQ0KPiA+ICswLjAgPFtlY3QwXSBQLiAxMzAwMToxNDAwMSgxMDAwKSBhY2sgMTAw
-MSB3aW4gNjU1MzUNCj4gPg0KPiA+IC8vIFN0YWNrIHJlcHNvbmRzIHdpdGggRUNOIEVDSE8NCj4g
-PiArMC4wID5bbm9lY25dICAuIDEwMDE6MTAwMSgwKSBhY2sgMTIwMDENCj4gPiArMC4wID5bbm9l
-Y25dIEUuIDEwMDE6MTAwMSgwKSBhY2sgMTMwMDENCj4gPiArMC4wID5bbm9lY25dIEUuIDEwMDE6
-MTAwMSgwKSBhY2sgMTQwMDENCj4gPg0KPiA+IC8vIFdyaXRlIGEgcGFja2V0DQo+ID4gKzAuMSB3
-cml0ZSgzLCAuLi4sIDEwMDApID0gMTAwMA0KPiA+ICswLjAgPltlY3QwXSBQRS4gMTAwMToyMDAx
-KDEwMDApIGFjayAxNDAwMQ0KPiA+DQo+ID4gLy8gUHVyZSBBQ0sgcmVjZWl2ZWQNCj4gPiArMC4w
-MSA8W25vZWNuXSBXLiAxNDAwMToxNDAwMSgwKSBhY2sgMjAwMSB3aW4gNjU1MzUNCj4gPg0KPiA+
-IC8vIFNpbmNlIENXUiB3YXMgc2VudCwgdGhpcyBwYWNrZXQgc2hvdWxkIE5PVCBoYXZlIEVDRSBz
-ZXQNCj4gPg0KPiA+ICswLjEgd3JpdGUoMywgLi4uLCAxMDAwKSA9IDEwMDANCj4gPiArMC4wID5b
-ZWN0MF0gIFAuIDIwMDE6MzAwMSgxMDAwKSBhY2sgMTQwMDENCj4gPiAvLyBidXQgTGludXggd2ls
-bCBzdGlsbCBrZWVwIEVDRSBsYXRjaGVkIGhlcmUsIHdpdGggcGFja2V0ZHJpbGwgLy8gDQo+ID4g
-ZmxhZ2dpbmcgYSBtaXNzaW5nIEVDRSBmbGFnLCBleHBlY3RpbmcgLy8gPltlY3QwXSBQRS4gDQo+
-ID4gMjAwMTozMDAxKDEwMDApIGFjayAxNDAwMSAvLyBpbiB0aGUgc2NyaXB0DQo+ID4NCj4gPiBJ
-biB0aGUgc2l0dWF0aW9uIGFib3ZlIHdlIHdpbGwgY29udGludWUgdG8gc2VuZCBFQ04gRUNITyBw
-YWNrZXRzIGFuZCANCj4gPiB0cmlnZ2VyIHRoZSBwZWVyIHRvIHJlZHVjZSB0aGUgY29uZ2VzdGlv
-biB3aW5kb3cuIFRvIGF2b2lkIHRoYXQgd2UgDQo+ID4gY2FuIGNoZWNrIENXUiBvbiBwdXJlIEFD
-S3MgcmVjZWl2ZWQuDQo+ID4NCj4gPiB2MjoNCj4gPiAtIEFkanVzdGVkIHRoZSBjb21tZW50DQo+
-ID4gLSBtb3ZlIENXUiBjaGVjayBiZWZvcmUgY2hlY2tpbmcgZm9yIHVuYWNrbm93bGVkZ2VkIHBh
-Y2tldHMNCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IERlbmlzIEtpcmphbm92IDxkZW5pcy5raXJq
-YW5vdkBzdXNlLmNvbT4NCj4gPiAtLS0NCj4gPiAgbmV0L2lwdjQvdGNwX2lucHV0LmMgfCAxMSAr
-KysrKysrKystLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgOSBpbnNlcnRpb25zKCspLCAyIGRlbGV0
-aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL25ldC9pcHY0L3RjcF9pbnB1dC5jIGIvbmV0
-L2lwdjQvdGNwX2lucHV0LmMgaW5kZXggDQo+ID4gMTJmZGE4ZjI3YjA4Li5mMTkzNmMwY2I2ODQg
-MTAwNjQ0DQo+ID4gLS0tIGEvbmV0L2lwdjQvdGNwX2lucHV0LmMNCj4gPiArKysgYi9uZXQvaXB2
-NC90Y3BfaW5wdXQuYw0KPiA+IEBAIC0zNjY1LDYgKzM2NjUsMTUgQEAgc3RhdGljIGludCB0Y3Bf
-YWNrKHN0cnVjdCBzb2NrICpzaywgY29uc3Qgc3RydWN0IHNrX2J1ZmYgKnNrYiwgaW50IGZsYWcp
-DQo+ID4gICAgICAgICAgICAgICAgIHRjcF9pbl9hY2tfZXZlbnQoc2ssIGFja19ldl9mbGFncyk7
-DQo+ID4gICAgICAgICB9DQo+ID4NCj4gPiArICAgICAgIC8qIFRoaXMgaXMgYSBkZXZpYXRpb24g
-ZnJvbSBSRkMzMTY4IHNpbmNlIGl0IHN0YXRlcyB0aGF0Og0KPiA+ICsgICAgICAgICogIldoZW4g
-dGhlIFRDUCBkYXRhIHNlbmRlciBpcyByZWFkeSB0byBzZXQgdGhlIENXUiBiaXQgYWZ0ZXIgcmVk
-dWNpbmcNCj4gPiArICAgICAgICAqIHRoZSBjb25nZXN0aW9uIHdpbmRvdywgaXQgU0hPVUxEIHNl
-dCB0aGUgQ1dSIGJpdCBvbmx5IG9uIHRoZSBmaXJzdA0KPiA+ICsgICAgICAgICogbmV3IGRhdGEg
-cGFja2V0IHRoYXQgaXQgdHJhbnNtaXRzLiINCj4gPiArICAgICAgICAqIFdlIGFjY2VwdCBDV1Ig
-b24gcHVyZSBBQ0tzIHRvIGJlIG1vcmUgcm9idXN0DQo+ID4gKyAgICAgICAgKiB3aXRoIHdpZGVs
-eS1kZXBsb3llZCBUQ1AgaW1wbGVtZW50YXRpb25zIHRoYXQgZG8gdGhpcy4NCj4gPiArICAgICAg
-ICAqLw0KPiA+ICsgICAgICAgdGNwX2Vjbl9hY2NlcHRfY3dyKHNrLCBza2IpOw0KPiA+ICsNCj4g
-PiAgICAgICAgIC8qIFdlIHBhc3NlZCBkYXRhIGFuZCBnb3QgaXQgYWNrZWQsIHJlbW92ZSBhbnkg
-c29mdCBlcnJvcg0KPiA+ICAgICAgICAgICogbG9nLiBTb21ldGhpbmcgd29ya2VkLi4uDQo+ID4g
-ICAgICAgICAgKi8NCj4gPiBAQCAtNDgwMCw4ICs0ODA5LDYgQEAgc3RhdGljIHZvaWQgdGNwX2Rh
-dGFfcXVldWUoc3RydWN0IHNvY2sgKnNrLCBzdHJ1Y3Qgc2tfYnVmZiAqc2tiKQ0KPiA+ICAgICAg
-ICAgc2tiX2RzdF9kcm9wKHNrYik7DQo+ID4gICAgICAgICBfX3NrYl9wdWxsKHNrYiwgdGNwX2hk
-cihza2IpLT5kb2ZmICogNCk7DQo+ID4NCj4gPiAtICAgICAgIHRjcF9lY25fYWNjZXB0X2N3cihz
-aywgc2tiKTsNCj4gPiAtDQo+ID4gICAgICAgICB0cC0+cnhfb3B0LmRzYWNrID0gMDsNCj4gPg0K
-PiA+ICAgICAgICAgLyogIFF1ZXVlIGRhdGEgZm9yIGRlbGl2ZXJ5IHRvIHRoZSB1c2VyLg0KPiA+
-IC0tDQo+DQo+IFRoYW5rcyBmb3IgdGhlIHBhdGNoIQ0KPg0KPiBBY2tlZC1ieTogTmVhbCBDYXJk
-d2VsbCA8bmNhcmR3ZWxsQGdvb2dsZS5jb20+DQo+DQoNCkhtbS4uLiBJdCB3b3VsZCBiZSBuaWNl
-IG1heWJlIHRvIGZpeCB0aGUgb2ZmZW5kZXJzLCBiZWNhdXNlIG1hbnkgbGludXggZGV2aWNlcyB3
-b24ndCBnZXQgdGhpcyB3b3JrIGFyb3VuZCBiZWZvcmUgeWVhcnMuDQoNCkRvIHdlIHJlYWxseSB3
-YW50IHRvIHRyaWdnZXIgYW4gQUNLIGlmIHdlIHJlY2VpdmVkIGEgcGFja2V0IHdpdGggbm8gcGF5
-bG9hZCA/DQoNCkkgd291bGQgdGhpbmsgdGhhdCB0aGUgZm9sbG93aW5nIGlzIGFsc28gbmVlZGVk
-IDoNCg0KZGlmZiAtLWdpdCBhL25ldC9pcHY0L3RjcF9pbnB1dC5jIGIvbmV0L2lwdjQvdGNwX2lu
-cHV0LmMgaW5kZXggMTJmZGE4ZjI3YjA4YmRmNWM5ZjNiYWQ0MjI3MzRmNmIxOTY1Y2VmOS4uMDIz
-ZGM5MDU2OWM4OWQ3ZDE3ZDcyZjczNjQxNTk4YTAzYTAzYjBhOQ0KMTAwNjQ0DQotLS0gYS9uZXQv
-aXB2NC90Y3BfaW5wdXQuYw0KKysrIGIvbmV0L2lwdjQvdGNwX2lucHV0LmMNCkBAIC0yNjEsNyAr
-MjYxLDggQEAgc3RhdGljIHZvaWQgdGNwX2Vjbl9hY2NlcHRfY3dyKHN0cnVjdCBzb2NrICpzaywg
-Y29uc3Qgc3RydWN0IHNrX2J1ZmYgKnNrYikNCiAgICAgICAgICAgICAgICAgKiBjd25kIG1heSBi
-ZSB2ZXJ5IGxvdyAoZXZlbiBqdXN0IDEgcGFja2V0KSwgc28gd2Ugc2hvdWxkIEFDSw0KICAgICAg
-ICAgICAgICAgICAqIGltbWVkaWF0ZWx5Lg0KICAgICAgICAgICAgICAgICAqLw0KLSAgICAgICAg
-ICAgICAgIGluZXRfY3NrKHNrKS0+aWNza19hY2sucGVuZGluZyB8PSBJQ1NLX0FDS19OT1c7DQor
-ICAgICAgICAgICAgICAgaWYgKFRDUF9TS0JfQ0Ioc2tiKS0+c2VxICE9IFRDUF9TS0JfQ0Ioc2ti
-KS0+ZW5kX3NlcSkNCisgICAgICAgICAgICAgICAgICAgICAgIGluZXRfY3NrKHNrKS0+aWNza19h
-Y2sucGVuZGluZyB8PSBJQ1NLX0FDS19OT1c7DQogICAgICAgIH0NCiB9DQo=
+
+
+On 6/24/2020 6:48 AM, Bartosz Golaszewski wrote:
+> śr., 24 cze 2020 o 11:43 Mark Brown <broonie@kernel.org> napisał(a):
+>>
+>> On Tue, Jun 23, 2020 at 12:49:15PM -0700, Florian Fainelli wrote:
+>>> On 6/22/20 6:51 AM, Mark Brown wrote:
+>>
+>>>> If the bus includes power management for the devices on the bus the
+>>>> controller is generally responsible for that rather than the devices,
+>>>> the devices access this via facilities provided by the bus if needed.
+>>>> If the device is enumerated by firmware prior to being physically
+>>>> enumerable then the bus will generally instantiate the device model
+>>>> device and then arrange to wait for the physical device to appear and
+>>>> get joined up with the device model device, typically in such situations
+>>>> the physical device might appear and disappear dynamically at runtime
+>>>> based on what the driver is doing anyway.
+>>
+>>> In premise there is nothing that prevents the MDIO bus from taking care
+>>> of the regulators, resets, prior to probing the PHY driver, what is
+>>> complicated here is that we do need to issue a read of the actual PHY to
+>>> know its 32-bit unique identifier and match it with an appropriate
+>>> driver. The way that we have worked around this with if you do not wish
+>>> such a hardware access to be made, is to provide an Ethernet PHY node
+>>> compatible string that encodes that 32-bit OUI directly. In premise the
+>>> same challenges exist with PCI devices/endpoints as well as USB, would
+>>> they have reset or regulator typically attached to them.
+>>
+>> That all sounds very normal and is covered by both cases I describe?
+>>
+>>>> We could use a pre-probe stage in the device model for hotpluggable
+>>>> buses in embedded contexts where you might need to bring things out of
+>>>> reset or power them up before they'll appear on the bus for enumeration
+>>>> but buses have mostly handled that at their level.
+>>
+>>> That sounds like a better solution, are there any subsystems currently
+>>> implementing that, or would this be a generic Linux device driver model
+>>> addition that needs to be done?
+>>
+>> Like I say I'm suggesting doing something at the device model level.
+> 
+> I didn't expect to open such a can of worms...
+> 
+> This has evolved into several new concepts being proposed vs my
+> use-case which is relatively simple. The former will probably take
+> several months of development, reviews and discussions and it will
+> block supporting the phy supply on pumpkin boards upstream. I would
+> prefer not to redo what other MAC drivers do (phy-supply property on
+> the MAC node, controlling it from the MAC driver itself) if we've
+> already established it's wrong.
+
+You are not new to Linux development, so none of this should come as a
+surprise to you. Your proposed solution has clearly short comings and is
+a hack, especially around the PHY_ID_NONE business to get a phy_device
+only then to have the real PHY device ID. You should also now that "I
+need it now because my product deliverable depends on it" has never been
+received as a valid argument to coerce people into accepting a solution
+for which there are at review time known deficiencies to the proposed
+approach.
+
+> 
+> Is there any compromise we could reach to add support for a basic,
+> common use-case of a single regulator supplying a PHY that needs
+> enabling before reading its ID short-term (just like we currently
+> support a single reset or reset-gpios property for PHYs) and
+> introducing a whole new concept to the device model for more advanced
+> (but currently mostly hypothetical) cases long-term?
+
+The pre-probe use case is absolutely not hypothetical, and I would need
+it for pcie-brcmstb.c at some point which is a PCIe root complex driver
+with multiple regulators that need to be turned on *prior* to
+enumerating the PCIe bus and creating pci_device instances. It is
+literally the same thing as what you are trying to do, just in a
+different subsystem, therefore I am happy to test and review your patches.
+-- 
+Florian
