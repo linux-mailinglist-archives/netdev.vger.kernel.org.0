@@ -2,124 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBFA820797F
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:49:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12D09207987
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 18:51:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404973AbgFXQtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 12:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44208 "EHLO
+        id S2405183AbgFXQuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 12:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404769AbgFXQtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:49:19 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0823C061573;
-        Wed, 24 Jun 2020 09:49:19 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id e9so1674260pgo.9;
-        Wed, 24 Jun 2020 09:49:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=gHRU/IrrHY0pBXio7TxFoCNp0H7VG1Kl3CaRgA0TrYo=;
-        b=dhJAQd7WFOLBTSj9wvXYa7qMk4O42nna4v+lzqRdheF+gw8QTlPNZL/W13ALRXi40k
-         K8bj1wXi2boUKsTHKnPdEOVi7mI4MyHRt7UrPFggQA/lySzrsC8hPcBRqI6uzxMEuthJ
-         i8L8N0n9k9vpTECiPgZchpfEutLppprroXLou6EGveYVnbsNo3nFaNQZA2KvvlW20V+n
-         S5nsKVQY9wx50u3xuAKxJI+Ot9eBJ7g8G/XTmTHlpRrJe4Z09i3w1s6UqmAMDV25DM8j
-         2iVd6PbhQeAPwqpbQp6zreWRRs9wXvxbNKktJ3Cyqf70+cf/brSHhSfkScA1iccqVR0B
-         KB3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gHRU/IrrHY0pBXio7TxFoCNp0H7VG1Kl3CaRgA0TrYo=;
-        b=gwiEtHxCqD0MbBPDIthfYN4PDlXggAPLe729ZerrrXvQ4y6khT7PUX8RxgGbEHbOCL
-         s55wZT37edleDxpUy9Q4h+1/yDVXFcLc5dZqmKacGY6M88tq9uMuiXa8JNTDmzUEwzHv
-         73aS2QNpEwGGFsEP918ahTg6RgUls/oc+AzkiAkB956ufis0xiqJwvaM4CEl+Gh6wyUy
-         JY5tl0ELnusWsnoDDwRd7iFdaDxR0qOyUMExQzGZf6X0/1U9gxTJfQ6yoIj2OROMzoJ3
-         1YelQO5Wfb1tPqcvkM5IXCnnJ5Q440BxvW1y3JVMbVVU/qzH8xTMeqtlgLFQmb+inNLq
-         /qsg==
-X-Gm-Message-State: AOAM533me2MBDAr86NwYlapaenXKzDVkSjzNXx2KupgBXpEEui6/3EuT
-        RDz0HD+EO1GwyXRDKxzXec0=
-X-Google-Smtp-Source: ABdhPJwgol1TteKFO9cz7C4Kl/Qs494BlgdsAFeVFVk4WKeiVJvHL0iU7ADzz8fdHrc/Yp4TdNaz5A==
-X-Received: by 2002:aa7:9504:: with SMTP id b4mr7863677pfp.109.1593017359200;
-        Wed, 24 Jun 2020 09:49:19 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id c139sm2096799pfb.189.2020.06.24.09.49.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Jun 2020 09:49:18 -0700 (PDT)
-Subject: Re: [PATCH] fs/epoll: Enable non-blocking busypoll with epoll timeout
- of 0
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        viro@zeniv.linux.org.uk, linux-fsdevel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        "davem@davemloft.net" <davem@davemloft.net>, eric.dumazet@gmail.com
-References: <1592590409-35439-1-git-send-email-sridhar.samudrala@intel.com>
- <de6bf72d-d4fd-9a62-c082-c82179d1f4fe@intel.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <28225710-0e85-f937-396d-24ce839efe09@gmail.com>
-Date:   Wed, 24 Jun 2020 09:49:17 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+        with ESMTP id S2404017AbgFXQux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 12:50:53 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0716C061573;
+        Wed, 24 Jun 2020 09:50:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=u1F8tzMKngdxJFt6gQRkq7xv28jRUmanHyUKEBsVcpo=; b=ZGlh5RxW4InxZ7Jr34mRSgpIP
+        BC2ZXdwKmi/rqOnIyw8h6eqsHXyNX5FojKj6InS5slHvG3YMArCT54vpxpu/7MGSLfuaGmwGzbjv+
+        z/F3ILATxpDuv6PPr5chSvFdCgfo4Pi+HjIZ9EfUnKQ4q5mLqCx8/LNBM3Tl8h28x2JUtDhFCi5hl
+        xP9NWxSApDu96csu/sWRtzkhfjU7KWm5HOnwDz4bM8JRzCxtv2hAmeo9GTJ1biToCaETwYv2b+9h9
+        Nb67L1V53qnsN8mxbjmrZqWHzVcqXEiI5d3te+Xn/oBrbQErI5XzcXyRpZ6S6nA1ckuLGZVIpMs+P
+        fapGRzjCg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59220)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jo8bQ-0003Ld-UJ; Wed, 24 Jun 2020 17:50:24 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jo8bI-00027P-9n; Wed, 24 Jun 2020 17:50:16 +0100
+Date:   Wed, 24 Jun 2020 17:50:16 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH 09/15] net: phy: delay PHY driver probe until PHY
+ registration
+Message-ID: <20200624165016.GA1551@shell.armlinux.org.uk>
+References: <20200622093744.13685-1-brgl@bgdev.pl>
+ <20200622093744.13685-10-brgl@bgdev.pl>
+ <20200622133940.GL338481@lunn.ch>
+ <20200622135106.GK4560@sirena.org.uk>
+ <dca54c57-a3bd-1147-63b2-4631194963f0@gmail.com>
+ <20200624094302.GA5472@sirena.org.uk>
+ <CAMRc=McBxJdujCyjQF3NA=bCWHF1dx8xJ1Nc2snmqukvJ_VyoQ@mail.gmail.com>
+ <f806586d-a6d7-99af-bba4-d1e7d28be192@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <de6bf72d-d4fd-9a62-c082-c82179d1f4fe@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f806586d-a6d7-99af-bba4-d1e7d28be192@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 6/24/20 9:32 AM, Samudrala, Sridhar wrote:
-> Adding Dave, Eric for review and see if we can get this in via net-next
-> as this is mainly useful for networking workloads doing busypoll.
+On Wed, Jun 24, 2020 at 09:06:28AM -0700, Florian Fainelli wrote:
+> On 6/24/2020 6:48 AM, Bartosz Golaszewski wrote:
+> > I didn't expect to open such a can of worms...
+> > 
+> > This has evolved into several new concepts being proposed vs my
+> > use-case which is relatively simple. The former will probably take
+> > several months of development, reviews and discussions and it will
+> > block supporting the phy supply on pumpkin boards upstream. I would
+> > prefer not to redo what other MAC drivers do (phy-supply property on
+> > the MAC node, controlling it from the MAC driver itself) if we've
+> > already established it's wrong.
 > 
-> Thanks
-> Sridhar
-> 
-> On 6/19/2020 11:13 AM, Sridhar Samudrala wrote:
->> This patch triggers non-blocking busy poll when busy_poll is enabled and
->> epoll is called with a timeout of 0 and is associated with a napi_id.
->> This enables an app thread to go through napi poll routine once by calling
->> epoll with a 0 timeout.
->>
->> poll/select with a 0 timeout behave in a similar manner.
->>
->> Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
->> ---
->>   fs/eventpoll.c | 13 +++++++++++++
->>   1 file changed, 13 insertions(+)
->>
->> diff --git a/fs/eventpoll.c b/fs/eventpoll.c
->> index 12eebcdea9c8..5f55078d6381 100644
->> --- a/fs/eventpoll.c
->> +++ b/fs/eventpoll.c
->> @@ -1847,6 +1847,19 @@ static int ep_poll(struct eventpoll *ep, struct epoll_event __user *events,
->>           eavail = ep_events_available(ep);
->>           write_unlock_irq(&ep->lock);
->>   +        /*
->> +         * Trigger non-blocking busy poll if timeout is 0 and there are
->> +         * no events available. Passing timed_out(1) to ep_busy_loop
->> +         * will make sure that busy polling is triggered only once and
->> +         * only if sysctl.net.core.busy_poll is set to non-zero value.
->> +         */
->> +        if (!eavail) {
+> You are not new to Linux development, so none of this should come as a
+> surprise to you. Your proposed solution has clearly short comings and is
+> a hack, especially around the PHY_ID_NONE business to get a phy_device
+> only then to have the real PHY device ID. You should also now that "I
+> need it now because my product deliverable depends on it" has never been
+> received as a valid argument to coerce people into accepting a solution
+> for which there are at review time known deficiencies to the proposed
+> approach.
 
-Maybe avoid all this stuff for the typical case of busy poll being not used ?
+It /is/ a generic issue.  The same problem exists for AMBA Primecell
+devices, and that code has an internal deferred device list that it
+manages.  See drivers/amba/bus.c, amba_deferred_retry_func(),
+amba_device_try_add(), and amba_device_add().
 
-            if (!evail && net_busy_loop_on)) {
+As we see more devices gain this property, it needs to be addressed
+in a generic way, rather than coming up with multiple bus specific
+implementations.
 
->> +            ep_busy_loop(ep, timed_out);
+Maybe struct bus_type needs a method to do the preparation to add
+a device (such as reading IDs etc), which is called by device_add().
+If that method returns -EPROBE_DEFER, the device gets added to a
+deferred list, which gets retried when drivers are successfully
+probed.  Possible maybe?
 
-
->> +            write_lock_irq(&ep->lock);
->> +            eavail = ep_events_available(ep);
->> +            write_unlock_irq(&ep->lock);
->> +        }
->> +
->>           goto send_events;
->>       }
->>  
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
