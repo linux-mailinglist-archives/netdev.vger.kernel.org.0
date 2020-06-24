@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75968207322
-	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 14:17:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1813B20731F
+	for <lists+netdev@lfdr.de>; Wed, 24 Jun 2020 14:17:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403909AbgFXMRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 08:17:00 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:46700 "EHLO
+        id S2403885AbgFXMQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 08:16:48 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:46718 "EHLO
         fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388296AbgFXMQj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 08:16:39 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05OCGXHn035823;
-        Wed, 24 Jun 2020 07:16:33 -0500
+        with ESMTP id S2403869AbgFXMQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 08:16:44 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05OCGcxq035842;
+        Wed, 24 Jun 2020 07:16:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1593000993;
-        bh=iLdvMCbgjuB3IvjEffc3VbBTcvc2wltvJLix5r4FFus=;
+        s=ti-com-17Q1; t=1593000998;
+        bh=eStPcoULgEZG94PVJtakxpfbyK9RyeLhnZbJP2L7ZFo=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=x0pLiyZ5s+7x8WEcXpib0Yo6FL/i3Q02d0Gebu0nejNEiSyf/8K8KsjPL/0gwVgOt
-         U42T/U0VruFuK4qZzcdv/jPwaXvSrp+eOfdqIDW20Ik3qKivOAbBDpuTO8c+Rdo6yt
-         DodgUCQYnH0SHXRK3Gnvbruwl4YroISC8SJXvDGM=
-Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05OCGXtl116765;
-        Wed, 24 Jun 2020 07:16:33 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+        b=wUeHrQ5RZyv7DylN54Xe7r5EPUtueGp51d5CSFvtkOw0R1iayFutcN3e0VbFi1weE
+         syyB3J4dohbKBOPh0G4NsDnqFfPd8LYC8osfcz0BdStgfxKz3q0M2o02RNSSLQyMI0
+         NtnOCJn0OA0KBGdcbCfnbV0aOXJVVFRecgXOHp8s=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 05OCGcLj069470
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 24 Jun 2020 07:16:38 -0500
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 24
- Jun 2020 07:16:33 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ Jun 2020 07:16:38 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 24 Jun 2020 07:16:33 -0500
+ Frontend Transport; Wed, 24 Jun 2020 07:16:38 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05OCGXO8040834;
-        Wed, 24 Jun 2020 07:16:33 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05OCGcDX016503;
+        Wed, 24 Jun 2020 07:16:38 -0500
 From:   Dan Murphy <dmurphy@ti.com>
 To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
         <davem@davemloft.net>, <robh@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v11 4/5] net: dp83869: Add RGMII internal delay configuration
-Date:   Wed, 24 Jun 2020 07:16:04 -0500
-Message-ID: <20200624121605.18259-5-dmurphy@ti.com>
+Subject: [PATCH net-next v11 5/5] net: phy: DP83822: Add setting the fixed internal delay
+Date:   Wed, 24 Jun 2020 07:16:05 -0500
+Message-ID: <20200624121605.18259-6-dmurphy@ti.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200624121605.18259-1-dmurphy@ti.com>
 References: <20200624121605.18259-1-dmurphy@ti.com>
@@ -55,116 +56,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add RGMII internal delay configuration for Rx and Tx.
+The DP83822 can be configured to use the RGMII interface. There are
+independent fixed 3.5ns clock shift (aka internal delay) for the TX and RX
+paths. This allow either one to be set if the MII interface is RGMII and
+the value is set in the firmware node.
 
 Signed-off-by: Dan Murphy <dmurphy@ti.com>
 ---
- drivers/net/phy/dp83869.c | 53 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 50 insertions(+), 3 deletions(-)
+ drivers/net/phy/dp83822.c | 79 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 69 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index 53ed3abc26c9..58103152c601 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -64,6 +64,10 @@
- #define DP83869_RGMII_TX_CLK_DELAY_EN		BIT(1)
- #define DP83869_RGMII_RX_CLK_DELAY_EN		BIT(0)
+diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+index 1dd19d0cb269..37643c468e19 100644
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -26,7 +26,9 @@
+ #define MII_DP83822_PHYSCR	0x11
+ #define MII_DP83822_MISR1	0x12
+ #define MII_DP83822_MISR2	0x13
++#define MII_DP83822_RCSR	0x17
+ #define MII_DP83822_RESET_CTRL	0x1f
++#define MII_DP83822_GENCFG	0x465
  
-+/* RGMIIDCTL */
-+#define DP83869_RGMII_CLK_DELAY_SHIFT		4
-+#define DP83869_CLK_DELAY_DEF			7
+ #define DP83822_HW_RESET	BIT(15)
+ #define DP83822_SW_RESET	BIT(14)
+@@ -77,6 +79,10 @@
+ #define DP83822_WOL_INDICATION_SEL BIT(8)
+ #define DP83822_WOL_CLR_INDICATION BIT(11)
+ 
++/* RSCR bits */
++#define DP83822_RX_CLK_SHIFT	BIT(12)
++#define DP83822_TX_CLK_SHIFT	BIT(11)
 +
- /* STRAP_STS1 bits */
- #define DP83869_STRAP_OP_MODE_MASK		GENMASK(2, 0)
- #define DP83869_STRAP_STS1_RESERVED		BIT(11)
-@@ -78,9 +82,6 @@
- #define DP83869_PHYCR_FIFO_DEPTH_MASK	GENMASK(15, 12)
- #define DP83869_PHYCR_RESERVED_MASK	BIT(11)
+ static int dp83822_ack_interrupt(struct phy_device *phydev)
+ {
+ 	int err;
+@@ -255,7 +261,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
+ 	return phy_write(phydev, MII_DP83822_PHYSCR, physcr_status);
+ }
  
--/* RGMIIDCTL bits */
--#define DP83869_RGMII_TX_CLK_DELAY_SHIFT	4
--
- /* IO_MUX_CFG bits */
- #define DP83869_IO_MUX_CFG_IO_IMPEDANCE_CTRL	0x1f
+-static int dp83822_config_init(struct phy_device *phydev)
++static int dp8382x_disable_wol(struct phy_device *phydev)
+ {
+ 	int value = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
+ 		    DP83822_WOL_SECURE_ON;
+@@ -264,6 +270,46 @@ static int dp83822_config_init(struct phy_device *phydev)
+ 				  MII_DP83822_WOL_CFG, value);
+ }
  
-@@ -108,6 +109,8 @@ enum {
- struct dp83869_private {
- 	int tx_fifo_depth;
- 	int rx_fifo_depth;
++static int dp83822_config_init(struct phy_device *phydev)
++{
++	struct device *dev = &phydev->mdio.dev;
++	int rgmii_delay;
 +	s32 rx_int_delay;
 +	s32 tx_int_delay;
- 	int io_impedance;
- 	int port_mirroring;
- 	bool rxctrl_strap_quirk;
-@@ -177,11 +180,16 @@ static int dp83869_set_strapped_mode(struct phy_device *phydev)
- }
- 
- #if IS_ENABLED(CONFIG_OF_MDIO)
-+static const int dp83869_internal_delay[] = {250, 500, 750, 1000, 1250, 1500,
-+					     1750, 2000, 2250, 2500, 2750, 3000,
-+					     3250, 3500, 3750, 4000};
++	int err = 0;
 +
- static int dp83869_of_init(struct phy_device *phydev)
- {
- 	struct dp83869_private *dp83869 = phydev->priv;
- 	struct device *dev = &phydev->mdio.dev;
- 	struct device_node *of_node = dev->of_node;
-+	int delay_size = ARRAY_SIZE(dp83869_internal_delay);
- 	int ret;
- 
- 	if (!of_node)
-@@ -235,6 +243,20 @@ static int dp83869_of_init(struct phy_device *phydev)
- 				 &dp83869->tx_fifo_depth))
- 		dp83869->tx_fifo_depth = DP83869_PHYCR_FIFO_DEPTH_4_B_NIB;
- 
-+	dp83869->rx_int_delay = phy_get_internal_delay(phydev, dev,
-+						       &dp83869_internal_delay[0],
-+						       delay_size, true);
-+	if (dp83869->rx_int_delay < 0)
-+		dp83869->rx_int_delay =
-+				dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
-+
-+	dp83869->tx_int_delay = phy_get_internal_delay(phydev, dev,
-+						       &dp83869_internal_delay[0],
-+						       delay_size, false);
-+	if (dp83869->tx_int_delay < 0)
-+		dp83869->tx_int_delay =
-+				dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
-+
- 	return ret;
- }
- #else
-@@ -397,6 +419,31 @@ static int dp83869_config_init(struct phy_device *phydev)
- 				     dp83869->clk_output_sel <<
- 				     DP83869_IO_MUX_CFG_CLK_O_SEL_SHIFT);
- 
 +	if (phy_interface_is_rgmii(phydev)) {
-+		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIIDCTL,
-+				    dp83869->rx_int_delay |
-+			dp83869->tx_int_delay << DP83869_RGMII_CLK_DELAY_SHIFT);
-+		if (ret)
-+			return ret;
++		rx_int_delay = phy_get_internal_delay(phydev, dev, NULL, 0,
++						      true);
 +
-+		val = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL);
-+		val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
-+			 DP83869_RGMII_RX_CLK_DELAY_EN);
++		if (rx_int_delay <= 0)
++			rgmii_delay = 0;
++		else
++			rgmii_delay = DP83822_RX_CLK_SHIFT;
 +
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
-+			val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
-+				DP83869_RGMII_RX_CLK_DELAY_EN);
++		tx_int_delay = phy_get_internal_delay(phydev, dev, NULL, 0,
++						      false);
++		if (tx_int_delay <= 0)
++			rgmii_delay &= ~DP83822_TX_CLK_SHIFT;
++		else
++			rgmii_delay |= DP83822_TX_CLK_SHIFT;
 +
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+			val |= DP83869_RGMII_TX_CLK_DELAY_EN;
-+
-+		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+			val |= DP83869_RGMII_RX_CLK_DELAY_EN;
-+
-+		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL,
-+				    val);
++		if (rgmii_delay) {
++			err = phy_set_bits_mmd(phydev, DP83822_DEVADDR,
++					       MII_DP83822_RCSR, rgmii_delay);
++			if (err)
++				return err;
++		}
 +	}
 +
- 	return ret;
++	return dp8382x_disable_wol(phydev);
++}
++
++static int dp8382x_config_init(struct phy_device *phydev)
++{
++	return dp8382x_disable_wol(phydev);
++}
++
+ static int dp83822_phy_reset(struct phy_device *phydev)
+ {
+ 	int err;
+@@ -272,9 +318,7 @@ static int dp83822_phy_reset(struct phy_device *phydev)
+ 	if (err < 0)
+ 		return err;
+ 
+-	dp83822_config_init(phydev);
+-
+-	return 0;
++	return phydev->drv->config_init(phydev);
  }
+ 
+ static int dp83822_suspend(struct phy_device *phydev)
+@@ -318,14 +362,29 @@ static int dp83822_resume(struct phy_device *phydev)
+ 		.resume = dp83822_resume,			\
+ 	}
+ 
++#define DP8382X_PHY_DRIVER(_id, _name)				\
++	{							\
++		PHY_ID_MATCH_MODEL(_id),			\
++		.name		= (_name),			\
++		/* PHY_BASIC_FEATURES */			\
++		.soft_reset	= dp83822_phy_reset,		\
++		.config_init	= dp8382x_config_init,		\
++		.get_wol = dp83822_get_wol,			\
++		.set_wol = dp83822_set_wol,			\
++		.ack_interrupt = dp83822_ack_interrupt,		\
++		.config_intr = dp83822_config_intr,		\
++		.suspend = dp83822_suspend,			\
++		.resume = dp83822_resume,			\
++	}
++
+ static struct phy_driver dp83822_driver[] = {
+ 	DP83822_PHY_DRIVER(DP83822_PHY_ID, "TI DP83822"),
+-	DP83822_PHY_DRIVER(DP83825I_PHY_ID, "TI DP83825I"),
+-	DP83822_PHY_DRIVER(DP83826C_PHY_ID, "TI DP83826C"),
+-	DP83822_PHY_DRIVER(DP83826NC_PHY_ID, "TI DP83826NC"),
+-	DP83822_PHY_DRIVER(DP83825S_PHY_ID, "TI DP83825S"),
+-	DP83822_PHY_DRIVER(DP83825CM_PHY_ID, "TI DP83825M"),
+-	DP83822_PHY_DRIVER(DP83825CS_PHY_ID, "TI DP83825CS"),
++	DP8382X_PHY_DRIVER(DP83825I_PHY_ID, "TI DP83825I"),
++	DP8382X_PHY_DRIVER(DP83826C_PHY_ID, "TI DP83826C"),
++	DP8382X_PHY_DRIVER(DP83826NC_PHY_ID, "TI DP83826NC"),
++	DP8382X_PHY_DRIVER(DP83825S_PHY_ID, "TI DP83825S"),
++	DP8382X_PHY_DRIVER(DP83825CM_PHY_ID, "TI DP83825M"),
++	DP8382X_PHY_DRIVER(DP83825CS_PHY_ID, "TI DP83825CS"),
+ };
+ module_phy_driver(dp83822_driver);
  
 -- 
 2.26.2
