@@ -2,462 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0606E20A444
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:47:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4DFD20A447
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:50:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406920AbgFYRr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 13:47:27 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:60134 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406916AbgFYRr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 13:47:26 -0400
-Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTP id 8A440200E2DE;
-        Thu, 25 Jun 2020 19:47:08 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 8A440200E2DE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1593107228;
-        bh=ql4xpNTcGc9OpYUc0c1+odjFVGZIS30CWY6VfaVGSgc=;
-        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
-        b=pGvPS9OUT+kuSdiPToDtVneDIdeiWepZTrvRKYK/cD2RCr8Ac5RlwOu8WtpW+VsU+
-         W5BQ4Lui2aZy0JnsPqg5vywYVUkngVxXAw22928myXTowfvTiGYsY8VEAP3wi1L8lG
-         2Bhg5Ior0Lo7CothPDWdEgdnH+1p2jEVL6rELJJkw8eSzihQamX/LC5EKHq4NwYijh
-         eDWxdQJNwzGeUDzaWlV4Tm9Ju+hv/N2SJ/iQ6BnaqRTuDbSV88G6zwSI27pvTPZlMy
-         rsHKlHZDkIdTsAVjRCZUipMtGIcEo9kfWJIQ5a36aqeP5cv/0Z1VlAsVgf6k5XgeDB
-         VJXYrEhtAkj5w==
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 80B94129EF6D;
-        Thu, 25 Jun 2020 19:47:08 +0200 (CEST)
-Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
-        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 5et8jomXqtRA; Thu, 25 Jun 2020 19:47:08 +0200 (CEST)
-Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 5C240129EF68;
-        Thu, 25 Jun 2020 19:47:08 +0200 (CEST)
-Date:   Thu, 25 Jun 2020 19:47:08 +0200 (CEST)
-From:   Justin Iurman <justin.iurman@uliege.be>
-Reply-To: Justin Iurman <justin.iurman@uliege.be>
-To:     Tom Herbert <tom@herbertland.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Message-ID: <517934373.36575257.1593107228168.JavaMail.zimbra@uliege.be>
-In-Reply-To: <CALx6S34K5+GabNAs9GtutpPNxR+fAdibDTFphT_LUOJ1mAzfOQ@mail.gmail.com>
-References: <20200624192310.16923-1-justin.iurman@uliege.be> <20200624192310.16923-2-justin.iurman@uliege.be> <CALx6S34K5+GabNAs9GtutpPNxR+fAdibDTFphT_LUOJ1mAzfOQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/5] ipv6: eh: Introduce removable TLVs
+        id S2406905AbgFYRuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 13:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49860 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405557AbgFYRuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 13:50:15 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F41C08C5C1
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 10:50:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=78474NxH9awXqUrwFYh6TlYw5worgaUrQcG5gfcW5RM=; b=r9RZIzxCy7nmSVPKGf46Dj6yp
+        fjqHMbDBbqNq+yE/81ON51uhBTMdcQrQruoUFNvmKWktlJTR7BUYcAYaQlQkIiak8PhgOQ89xRDui
+        yIIvJbLj8bSFUNPj5NwrWVAvCOWrdW6tZf1yloqI4iAEduegk4BuaA6T/2pegFy7TnzbZW9NLPkmd
+        8qGkfZlwdIynIRuOVqNBHPrijqb3BqTUxufbQ/8THTG6k9MAUcGO3ozBneDLRcY8FDQ9PaoOYMFJi
+        EhN8pF2OWZc7r3OMaPXDPyRB1uS3NdRwh/ZDCni58leKjt0d6ezEEae6NOGjSGomY00PUp1FXgiow
+        ZQKDRwKSQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59668)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1joW0r-0004ew-8F; Thu, 25 Jun 2020 18:50:13 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1joW0q-0003Bx-SC; Thu, 25 Jun 2020 18:50:12 +0100
+Date:   Thu, 25 Jun 2020 18:50:12 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Shmuel Hazan <sh@tkos.co.il>
+Subject: Re: [PATCH] net: phy: marvell10g: support XFI rate matching mode
+Message-ID: <20200625175012.GL1551@shell.armlinux.org.uk>
+References: <79ca4ba3129a92e20943516b4af0dca510e938b3.1593105561.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [109.129.49.166]
-X-Mailer: Zimbra 8.8.15_GA_3901 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3895)
-Thread-Topic: ipv6: eh: Introduce removable TLVs
-Thread-Index: dBaJauAIABZtquCLsEu+Xt7Kq2Dl+g==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <79ca4ba3129a92e20943516b4af0dca510e938b3.1593105561.git.baruch@tkos.co.il>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tom,
-
->> Add the possibility to remove one or more consecutive TLVs without
->> messing up the alignment of others. For now, only IOAM requires this
->> behavior.
->>
-> Hi Justin,
+On Thu, Jun 25, 2020 at 08:19:21PM +0300, Baruch Siach wrote:
+> When the hardware MACTYPE hardware configuration pins are set to "XFI
+> with Rate Matching" the PHY interface operate at fixed 10Gbps speed. The
+> MAC buffer packets in both directions to match various wire speeds.
 > 
-> Can you explain the motivation for this? Per RFC8200, extension
-> headers in flight are not to be added, removed, or modified outside of
-> the standard rules for processing modifiable HBH and DO TLVs., that
-> would include adding and removing TLVs in EH. One obvious problem this
+> Read the MAC Type field in the Port Control register, and set the MAC
+> interface speed accordingly.
 
-As you already know from our last meeting, IOAM may be configured on a node such that a specific IOAM namespace should be removed. Therefore, this patch provides support for the deletion of a TLV (or consecutive TLVs), without removing the entire EH (if it's empty, there will be padding). Note that there is a similar "problem" with the Incremental Trace where you'd need to expand the Hop-by-Hop (not included in this patchset). I agree that RFC 8200 is against modification of in-flight EHs, but there are several reasons that, I believe, mitigates this statement.
+Rate matching brings with it a whole host of issues, not just the
+interface type, but also the phydev->speed, which is commonly used
+to program the MAC.
 
-Let's keep in mind that IOAM purpose is "private" (= IOAM domain), ie not widely deployed on the Internet. We can distinguish two big scenarios: (i) in-transit traffic where it is encapsulated (IPv6-in-IPv6) and (ii) traffic inside the domain, ie from an IOAM node inside the domain to another one (no need for encapsulation). In both cases, we kind of own the traffic: (i) encapsulation, so we modify "our" header and (ii) we already own the traffic.
+Rate matching is also used with the unsupported 3310 PHY on the ZII
+devel rev C board, and there we need the PHY to also report a speed
+of 10G as well as the interface type correctly.  The whole thing
+gets quite yucky when you have a 10baseT link on a 3310 PHY with
+the host interface running with 10GBASE-R but the MAC programmed for
+10Mbps.
 
-And if someone is still angry about this, well, the good news is that such modification can be avoided most of the time. Indeed, operators are advised to remove an IOAM namespace only on egress nodes. This way, the destination (either the tunnel destination or the real destination, depending on the scenario) will receive EHs and take care of them without the need to remove anything. But, again, operators can do what they want and I'd tend to adhere to David's philosophy [1] and give them the possibility to choose what to do.
+The approach I hacked up was to split the current link_state into
+media_state and mac_state, and then do this:
 
-> creates is that it breaks AH if the TLVs are removed in HBH before AH
-> is processed (AH is processed after HBH).
++       /* If the PHY supports rate-matching, it will report slower speeds
++        * for these fixed-speed interface modes. Force the MAC side to
++        * full speed.
++        */
++       if (mac_state.interface == PHY_INTERFACE_MODE_XAUI ||
++           mac_state.interface == PHY_INTERFACE_MODE_RXAUI ||
++           mac_state.interface == PHY_INTERFACE_MODE_10GBASER) {
++               mac_state.speed = SPEED_10000;
++               mac_state.duplex = DUPLEX_FULL;
++       }
 
-Correct. But I don't think it should prevent us from having IOAM in the kernel. Again, operators could simply apply IOAM on a subset of the traffic that does not include AHs, for example.
+which is really a dirty hack.  I'd need to re-read the switch
+documentation and review what we're doing to check whether such a
+thing is really necessary, or whether merely using 10GBASE-R but
+programming the MAC to 10Mbps (e.g.) is actually acceptable.
 
-Justin
+What I'm basically saying is, there could be way more to this than
+just setting the interface mode.
 
-  [1] https://www.mail-archive.com/netdev@vger.kernel.org/msg136797.html
+We also /should/ be setting the 3310's interface mode according to
+how the PHY is configured - but that is slightly complicated by the
+various different modes presented by different variants of the PHY
+(the P variant vs the non-P variant.)  I seem to remember that
+disambiguating them requires looking at the revision bits in the
+PHY ID registers, and I've been debating whether we should not be
+using the standard mask when matching them.
 
-> Tom
->> By default, an 8-octet boundary is automatically assumed. This is the
->> price to pay (at most a useless 4-octet padding) to make sure everything
->> is still aligned after the removal.
->>
->> Proof: let's assume for instance the following alignments 2n, 4n and 8n
->> respectively for options X, Y and Z, inside a Hop-by-Hop extension
->> header.
->>
->> Example 1:
->>
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |  Next header  |  Hdr Ext Len  |       X       |       X       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       X       |       X       |    Padding    |    Padding    |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |                                                               |
->> ~                Option to be removed (8 octets)                ~
->> |                                                               |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Y       |       Y       |       Y       |       Y       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |    Padding    |    Padding    |    Padding    |    Padding    |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Z       |       Z       |       Z       |       Z       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Z       |       Z       |       Z       |       Z       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->>
->> Result 1: assuming a 4-octet boundary would work, as well as an 8-octet
->> boundary (same result in both cases).
->>
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |  Next header  |  Hdr Ext Len  |       X       |       X       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       X       |       X       |    Padding    |    Padding    |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Y       |       Y       |       Y       |       Y       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |    Padding    |    Padding    |    Padding    |    Padding    |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Z       |       Z       |       Z       |       Z       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Z       |       Z       |       Z       |       Z       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->>
->> Example 2:
->>
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |  Next header  |  Hdr Ext Len  |       X       |       X       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       X       |       X       |    Padding    |    Padding    |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |                Option to be removed (4 octets)                |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Y       |       Y       |       Y       |       Y       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Z       |       Z       |       Z       |       Z       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Z       |       Z       |       Z       |       Z       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->>
->> Result 2: assuming a 4-octet boundary WOULD NOT WORK. Indeed, option Z
->> would not be 8n-aligned and the Hop-by-Hop size would not be a multiple
->> of 8 anymore.
->>
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |  Next header  |  Hdr Ext Len  |       X       |       X       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       X       |       X       |    Padding    |    Padding    |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Y       |       Y       |       Y       |       Y       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Z       |       Z       |       Z       |       Z       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |       Z       |       Z       |       Z       |       Z       |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->>
->> Therefore, the largest (8-octet) boundary is assumed by default and for
->> all, which means that blocks are only moved in multiples of 8. This
->> assertion guarantees good alignment.
->>
->> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
->> ---
->>  net/ipv6/exthdrs.c | 134 ++++++++++++++++++++++++++++++++++++---------
->>  1 file changed, 108 insertions(+), 26 deletions(-)
->>
->> diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
->> index e9b366994475..f27ab3bf2e0c 100644
->> --- a/net/ipv6/exthdrs.c
->> +++ b/net/ipv6/exthdrs.c
->> @@ -52,17 +52,27 @@
->>
->>  #include <linux/uaccess.h>
->>
->> -/*
->> - *     Parsing tlv encoded headers.
->> +/* States for TLV parsing functions. */
->> +
->> +enum {
->> +       TLV_ACCEPT,
->> +       TLV_REJECT,
->> +       TLV_REMOVE,
->> +       __TLV_MAX
->> +};
->> +
->> +/* Parsing TLV encoded headers.
->>   *
->> - *     Parsing function "func" returns true, if parsing succeed
->> - *     and false, if it failed.
->> - *     It MUST NOT touch skb->h.
->> + * Parsing function "func" returns either:
->> + *  - TLV_ACCEPT if parsing succeeds
->> + *  - TLV_REJECT if parsing fails
->> + *  - TLV_REMOVE if TLV must be removed
->> + * It MUST NOT touch skb->h.
->>   */
->>
->>  struct tlvtype_proc {
->>         int     type;
->> -       bool    (*func)(struct sk_buff *skb, int offset);
->> +       int     (*func)(struct sk_buff *skb, int offset);
->>  };
->>
->>  /*********************
->> @@ -109,19 +119,67 @@ static bool ip6_tlvopt_unknown(struct sk_buff *skb, int
->> optoff,
->>         return false;
->>  }
->>
->> +/* Remove one or several consecutive TLVs and recompute offsets, lengths */
->> +
->> +static int remove_tlv(int start, int end, struct sk_buff *skb)
->> +{
->> +       int len = end - start;
->> +       int padlen = len % 8;
->> +       unsigned char *h;
->> +       int rlen, off;
->> +       u16 pl_len;
->> +
->> +       rlen = len - padlen;
->> +       if (rlen) {
->> +               skb_pull(skb, rlen);
->> +               memmove(skb_network_header(skb) + rlen, skb_network_header(skb),
->> +                       start);
->> +               skb_postpull_rcsum(skb, skb_network_header(skb), rlen);
->> +
->> +               skb_reset_network_header(skb);
->> +               skb_set_transport_header(skb, sizeof(struct ipv6hdr));
->> +
->> +               pl_len = be16_to_cpu(ipv6_hdr(skb)->payload_len) - rlen;
->> +               ipv6_hdr(skb)->payload_len = cpu_to_be16(pl_len);
->> +
->> +               skb_transport_header(skb)[1] -= rlen >> 3;
->> +               end -= rlen;
->> +       }
->> +
->> +       if (padlen) {
->> +               off = end - padlen;
->> +               h = skb_network_header(skb);
->> +
->> +               if (padlen == 1) {
->> +                       h[off] = IPV6_TLV_PAD1;
->> +               } else {
->> +                       padlen -= 2;
->> +
->> +                       h[off] = IPV6_TLV_PADN;
->> +                       h[off + 1] = padlen;
->> +                       memset(&h[off + 2], 0, padlen);
->> +               }
->> +       }
->> +
->> +       return end;
->> +}
->> +
->>  /* Parse tlv encoded option header (hop-by-hop or destination) */
->>
->>  static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
->>                           struct sk_buff *skb,
->> -                         int max_count)
->> +                         int max_count,
->> +                         bool removable)
->>  {
->>         int len = (skb_transport_header(skb)[1] + 1) << 3;
->> -       const unsigned char *nh = skb_network_header(skb);
->> +       unsigned char *nh = skb_network_header(skb);
->>         int off = skb_network_header_len(skb);
->>         const struct tlvtype_proc *curr;
->>         bool disallow_unknowns = false;
->> +       int off_remove = 0;
->>         int tlv_count = 0;
->>         int padlen = 0;
->> +       int ret;
->>
->>         if (unlikely(max_count < 0)) {
->>                 disallow_unknowns = true;
->> @@ -173,12 +231,14 @@ static bool ip6_parse_tlv(const struct tlvtype_proc
->> *procs,
->>                         if (tlv_count > max_count)
->>                                 goto bad;
->>
->> +                       ret = -1;
->>                         for (curr = procs; curr->type >= 0; curr++) {
->>                                 if (curr->type == nh[off]) {
->>                                         /* type specific length/alignment
->>                                            checks will be performed in the
->>                                            func(). */
->> -                                       if (curr->func(skb, off) == false)
->> +                                       ret = curr->func(skb, off);
->> +                                       if (ret == TLV_REJECT)
->>                                                 return false;
->>                                         break;
->>                                 }
->> @@ -187,6 +247,17 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
->>                             !ip6_tlvopt_unknown(skb, off, disallow_unknowns))
->>                                 return false;
->>
->> +                       if (removable) {
->> +                               if (ret == TLV_REMOVE) {
->> +                                       if (!off_remove)
->> +                                               off_remove = off - padlen;
->> +                               } else if (off_remove) {
->> +                                       off = remove_tlv(off_remove, off, skb);
->> +                                       nh = skb_network_header(skb);
->> +                                       off_remove = 0;
->> +                               }
->> +                       }
->> +
->>                         padlen = 0;
->>                         break;
->>                 }
->> @@ -194,8 +265,13 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
->>                 len -= optlen;
->>         }
->>
->> -       if (len == 0)
->> +       if (len == 0) {
->> +               /* Don't forget last TLV if it must be removed */
->> +               if (off_remove)
->> +                       remove_tlv(off_remove, off, skb);
->> +
->>                 return true;
->> +       }
->>  bad:
->>         kfree_skb(skb);
->>         return false;
->> @@ -206,7 +282,7 @@ static bool ip6_parse_tlv(const struct tlvtype_proc *procs,
->>   *****************************/
->>
->>  #if IS_ENABLED(CONFIG_IPV6_MIP6)
->> -static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
->> +static int ipv6_dest_hao(struct sk_buff *skb, int optoff)
->>  {
->>         struct ipv6_destopt_hao *hao;
->>         struct inet6_skb_parm *opt = IP6CB(skb);
->> @@ -257,11 +333,11 @@ static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
->>         if (skb->tstamp == 0)
->>                 __net_timestamp(skb);
->>
->> -       return true;
->> +       return TLV_ACCEPT;
->>
->>   discard:
->>         kfree_skb(skb);
->> -       return false;
->> +       return TLV_REJECT;
->>  }
->>  #endif
->>
->> @@ -306,7 +382,8 @@ static int ipv6_destopt_rcv(struct sk_buff *skb)
->>  #endif
->>
->>         if (ip6_parse_tlv(tlvprocdestopt_lst, skb,
->> -                         init_net.ipv6.sysctl.max_dst_opts_cnt)) {
->> +                         init_net.ipv6.sysctl.max_dst_opts_cnt,
->> +                         false)) {
->>                 skb->transport_header += extlen;
->>                 opt = IP6CB(skb);
->>  #if IS_ENABLED(CONFIG_IPV6_MIP6)
->> @@ -918,24 +995,24 @@ static inline struct net *ipv6_skb_net(struct sk_buff
->> *skb)
->>
->>  /* Router Alert as of RFC 2711 */
->>
->> -static bool ipv6_hop_ra(struct sk_buff *skb, int optoff)
->> +static int ipv6_hop_ra(struct sk_buff *skb, int optoff)
->>  {
->>         const unsigned char *nh = skb_network_header(skb);
->>
->>         if (nh[optoff + 1] == 2) {
->>                 IP6CB(skb)->flags |= IP6SKB_ROUTERALERT;
->>                 memcpy(&IP6CB(skb)->ra, nh + optoff + 2, sizeof(IP6CB(skb)->ra));
->> -               return true;
->> +               return TLV_ACCEPT;
->>         }
->>         net_dbg_ratelimited("ipv6_hop_ra: wrong RA length %d\n",
->>                             nh[optoff + 1]);
->>         kfree_skb(skb);
->> -       return false;
->> +       return TLV_REJECT;
->>  }
->>
->>  /* Jumbo payload */
->>
->> -static bool ipv6_hop_jumbo(struct sk_buff *skb, int optoff)
->> +static int ipv6_hop_jumbo(struct sk_buff *skb, int optoff)
->>  {
->>         const unsigned char *nh = skb_network_header(skb);
->>         struct inet6_dev *idev = __in6_dev_get_safely(skb->dev);
->> @@ -953,12 +1030,12 @@ static bool ipv6_hop_jumbo(struct sk_buff *skb, int
->> optoff)
->>         if (pkt_len <= IPV6_MAXPLEN) {
->>                 __IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
->>                 icmpv6_param_prob(skb, ICMPV6_HDR_FIELD, optoff+2);
->> -               return false;
->> +               return TLV_REJECT;
->>         }
->>         if (ipv6_hdr(skb)->payload_len) {
->>                 __IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
->>                 icmpv6_param_prob(skb, ICMPV6_HDR_FIELD, optoff);
->> -               return false;
->> +               return TLV_REJECT;
->>         }
->>
->>         if (pkt_len > skb->len - sizeof(struct ipv6hdr)) {
->> @@ -970,16 +1047,16 @@ static bool ipv6_hop_jumbo(struct sk_buff *skb, int
->> optoff)
->>                 goto drop;
->>
->>         IP6CB(skb)->flags |= IP6SKB_JUMBOGRAM;
->> -       return true;
->> +       return TLV_ACCEPT;
->>
->>  drop:
->>         kfree_skb(skb);
->> -       return false;
->> +       return TLV_REJECT;
->>  }
->>
->>  /* CALIPSO RFC 5570 */
->>
->> -static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff)
->> +static int ipv6_hop_calipso(struct sk_buff *skb, int optoff)
->>  {
->>         const unsigned char *nh = skb_network_header(skb);
->>
->> @@ -992,11 +1069,11 @@ static bool ipv6_hop_calipso(struct sk_buff *skb, int
->> optoff)
->>         if (!calipso_validate(skb, nh + optoff))
->>                 goto drop;
->>
->> -       return true;
->> +       return TLV_ACCEPT;
->>
->>  drop:
->>         kfree_skb(skb);
->> -       return false;
->> +       return TLV_REJECT;
->>  }
->>
->>  static const struct tlvtype_proc tlvprochopopt_lst[] = {
->> @@ -1041,7 +1118,12 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
->>
->>         opt->flags |= IP6SKB_HOPBYHOP;
->>         if (ip6_parse_tlv(tlvprochopopt_lst, skb,
->> -                         init_net.ipv6.sysctl.max_hbh_opts_cnt)) {
->> +                         init_net.ipv6.sysctl.max_hbh_opts_cnt,
->> +                         true)) {
->> +               /* we need to refresh the length in case
->> +                * at least one TLV was removed
->> +                */
->> +               extlen = (skb_transport_header(skb)[1] + 1) << 3;
->>                 skb->transport_header += extlen;
->>                 opt = IP6CB(skb);
->>                 opt->nhoff = sizeof(struct ipv6hdr);
->> --
->> 2.17.1
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
