@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB1C20A3E9
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:23:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11A5920A3EC
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406659AbgFYRXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 13:23:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48104 "EHLO mail.kernel.org"
+        id S2406743AbgFYRYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 13:24:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48212 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404378AbgFYRXr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jun 2020 13:23:47 -0400
+        id S2404342AbgFYRYK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Jun 2020 13:24:10 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 57D4720773;
-        Thu, 25 Jun 2020 17:23:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D735F20773;
+        Thu, 25 Jun 2020 17:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593105826;
-        bh=CA8sK1iaFslFSn8XGSDmoUdnBkprbim1itFO/LPNh/Y=;
+        s=default; t=1593105849;
+        bh=ERYgcYUp0xp8dcvgh/Kv/HPBnf41UK731QAjGSqQBp0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zvjAC9yYbAgnqLTGPS1P81nV2NWhnDq+aLq1948TpmmXlp9JIBddj6DSbePiKRdzP
-         iy5BNoaAgBHoUFOgS0kGB3GkvEaZumFrUl7SwWZmL4RR43hRLyeYmKCl2GZYUuz4u5
-         kVEtEG49aDmjyQnuUopYz7ozKlvFsewDUnfTZTho=
-Date:   Thu, 25 Jun 2020 19:23:42 +0200
+        b=geSBgMNE3dvqSAP8s354iMk3AMtHB96CoB3rnE+tJuj/99rX4k7k00Zm9A56vR/Rp
+         vl6XxHYznexewuyKGA0fuAiJoLKxaKfOiRGbxPZ8b5ypRnvCR0tkgpN3rJpnqiHjYd
+         ZPw7kaPi1XNk1TLqjAU1d7maABn+Qt4jkjTvphLA=
+Date:   Thu, 25 Jun 2020 19:24:05 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Coiby Xu <coiby.xu@gmail.com>
 Cc:     devel@driverdev.osuosl.org,
@@ -32,26 +32,26 @@ Cc:     devel@driverdev.osuosl.org,
         open list <linux-kernel@vger.kernel.org>,
         Manish Chopra <manishc@marvell.com>,
         "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/2] fix else after return or break
-Message-ID: <20200625172342.GA3965841@kroah.com>
+Subject: Re: [PATCH 1/2] fix trailing */ in block comment
+Message-ID: <20200625172405.GB3965841@kroah.com>
 References: <20200625153614.63912-1-coiby.xu@gmail.com>
- <20200625153614.63912-3-coiby.xu@gmail.com>
+ <20200625153614.63912-2-coiby.xu@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200625153614.63912-3-coiby.xu@gmail.com>
+In-Reply-To: <20200625153614.63912-2-coiby.xu@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 11:36:14PM +0800, Coiby Xu wrote:
+On Thu, Jun 25, 2020 at 11:36:13PM +0800, Coiby Xu wrote:
 > Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
 > ---
->  drivers/staging/qlge/qlge_dbg.c  | 23 ++++++++++-------------
->  drivers/staging/qlge/qlge_main.c |  8 ++++----
->  drivers/staging/qlge/qlge_mpi.c  |  4 ++--
->  3 files changed, 16 insertions(+), 19 deletions(-)
+>  drivers/staging/qlge/qlge_main.c |  3 ++-
+>  drivers/staging/qlge/qlge_mpi.c  | 10 ++++++----
+>  2 files changed, 8 insertions(+), 5 deletions(-)
+> 
 
 Hi,
 
