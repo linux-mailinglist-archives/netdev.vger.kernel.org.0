@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEB3520A8A9
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 01:13:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFBBD20A8AB
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 01:13:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407733AbgFYXNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 19:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43438 "EHLO
+        id S2407737AbgFYXNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 19:13:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407728AbgFYXNd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 19:13:33 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7733FC08C5C1;
-        Thu, 25 Jun 2020 16:13:33 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id z2so6954520ilq.0;
-        Thu, 25 Jun 2020 16:13:33 -0700 (PDT)
+        with ESMTP id S2406631AbgFYXNw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 19:13:52 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24BF4C08C5C1;
+        Thu, 25 Jun 2020 16:13:52 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id e64so2985922iof.12;
+        Thu, 25 Jun 2020 16:13:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=UV6Xho6hdH+B9DsLIh3uK5fB2updmvEdVyqUrHCfo9Q=;
-        b=aES8Zo+aiBUNbbE9oTVGkjEKaNaSHxTNp1xl+sYD/Drcgg+maPKs6U6pDq9tXPxZHv
-         Vn3XW22AxULjqpifkA4uKvM9Kz4lxkcEhBP0ut35INldOlmCSlGFEUT8IsLRUO8tB2dq
-         WleY7W9WtzMgnUA0gZ8B10ZCNPeD/kISRvuNoxecfj1BZGgO8bMkGncG5KeJKoteCQ9v
-         Dgkgd7Ax69SCAfD1IfJdBAb6VAy1wFHYnIUN0UW7ZK3lqngqUtos/43s3j6diOsNfS/p
-         jbbpV9fxYJqU/KluuxOPj8ok9yN0eUiOTcG/lQ2Uv9Yc6RGBcA8EP3Zcxkk06FKoD/QL
-         qg2Q==
+        bh=2dDp4wdTOXkTlMfK+S1sLZUdmr8B+CfJrwoh3NxWVt8=;
+        b=e/5wXZyNhEhlZ5rpDWJ2/3vVtIupUKHBD/sDdHvqFyE+Bt2HefyUme/ogAM/y9cXYC
+         +8xGgC44veimAb0dTz0SNFhk9Dr6GJzY087XRqtPvmqIOJcs+ecRnjUQQMFjvpDk6JgD
+         w7BLdP8rQoxlFSVSR5vIyZvpi3tMPlovb3cVQj3/+NqDMWaLI/OSQe2cuay7Az7XoSyw
+         LZ1ED3UaSiWAG8pd7LxwG1NET81umigHarqt0BdYkJXwurkZ6RtpKhxza2APssgoj18Y
+         asPGcJ1aPKRb/b4WLXz6tSQdWUMjgO46v+CBT31njbD+coCMkh9aMHgWs7CGybl4lEbo
+         S9LQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=UV6Xho6hdH+B9DsLIh3uK5fB2updmvEdVyqUrHCfo9Q=;
-        b=NhNQYqr4RUgYENXqudT5mHHVlIVMUT9LnmKG9B/Cg5lOArtYGLUJk5/nHO/Ajxoa5F
-         n0TnR+VTwmBX3C8fbLB8hrhkalNtozAC5LNrUHmHDLB31YuCwd95NRBk2fEX+H1GfWDH
-         sQVuBt7sZMDjkDN48Dyq31oU9aLkhyLUt0xoXq+I/Bc2lkhEjyzl+ooUMJ+km/fb6oPP
-         KPjXTEoabwvQkqcGp4y5+vTtWfaeBmX4dYtA1ywzJVa2fOyswNfC+q9iR7rEq4g0Y5I3
-         y0iXCSDDGHEP5jTcXL/eQBSQ4wsDVvwh9X/xpRFbJ+lpI00CJUIdgWviVLBgREa4UQRi
-         kR3g==
-X-Gm-Message-State: AOAM531RF1sT+mqOQ25U40fPkOS0TOLuSebmNoxeAWFdABJZXjSFn0b6
-        +pH+JVwxAPbIOIxCFTQIS8A=
-X-Google-Smtp-Source: ABdhPJy0VSd00WyY3jQ2MRNvi0OMbwFZMHLqscmP5pNpwmoWmSpLB9Z4uBc4a+Sp9BVSedsfjrauUg==
-X-Received: by 2002:a92:bb84:: with SMTP id x4mr317514ilk.177.1593126812831;
-        Thu, 25 Jun 2020 16:13:32 -0700 (PDT)
+        bh=2dDp4wdTOXkTlMfK+S1sLZUdmr8B+CfJrwoh3NxWVt8=;
+        b=bhME/MMILqjvL0zkive0yvH04EazZt6GuvvwVR4T7/qvy+71JTS8b7PRUQy0yDeQCU
+         n4VGn6K/IQv59g0G8a7UWNeZjRiJ7fK2ehepQ6Oo5Jmttz5oQqY297XqDW5Io0/xyR+Z
+         0xdzOC+TBkm1PZOcWX9UPgDatUixR4ctE4bRScyujgylaYQxgQ6frupmRIlvaPiWAg5O
+         TT83C4TauZmo0mLJyHyzbGpuB8vG1HxvLQMPJ2N6x4UQepOJiAcBRbCm6Kzc5ysb+ic8
+         sgAZed4copV6/Y1vEYAYEaryIMfc1YbXjUNaBiniDFabBf1ewTThVsi5TUzAg3acJyg/
+         Wq1Q==
+X-Gm-Message-State: AOAM533TC5Hz5oEysMTfZnpnHp0l3Z2p2M3M8J7/VFVvxSiqFjMqnY6u
+        8NUVC8cnqqqJsBig6RwnOBE=
+X-Google-Smtp-Source: ABdhPJyeAHc7ZaCtUtouKsmYR+vIfTgTh+QRzXwQoaMUp9ppuRgtnlOCho+dG7XIv7hvcdkuAczElA==
+X-Received: by 2002:a05:6602:2dd4:: with SMTP id l20mr502009iow.13.1593126831515;
+        Thu, 25 Jun 2020 16:13:51 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id y23sm14251528ior.38.2020.06.25.16.13.24
+        by smtp.gmail.com with ESMTPSA id e12sm13744538ili.68.2020.06.25.16.13.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jun 2020 16:13:32 -0700 (PDT)
-Subject: [bpf PATCH v2 2/3] bpf,
- sockmap: RCU dereferenced psock may be used outside RCU block
+        Thu, 25 Jun 2020 16:13:50 -0700 (PDT)
+Subject: [bpf PATCH v2 3/3] bpf,
+ sockmap: Add ingres skb tests that utilize merge skbs
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     kafai@fb.com, jakub@cloudflare.com, daniel@iogearbox.net,
         ast@kernel.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com
-Date:   Thu, 25 Jun 2020 16:13:18 -0700
-Message-ID: <159312679888.18340.15248924071966273998.stgit@john-XPS-13-9370>
+Date:   Thu, 25 Jun 2020 16:13:38 -0700
+Message-ID: <159312681884.18340.4922800172600252370.stgit@john-XPS-13-9370>
 In-Reply-To: <159312606846.18340.6821004346409614051.stgit@john-XPS-13-9370>
 References: <159312606846.18340.6821004346409614051.stgit@john-XPS-13-9370>
 User-Agent: StGit/0.17.1-dirty
@@ -67,81 +67,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If an ingress verdict program specifies message sizes greater than
-skb->len and there is an ENOMEM error due to memory pressure we
-may call the rcv_msg handler outside the strp_data_ready() caller
-context. This is because on an ENOMEM error the strparser will
-retry from a workqueue. The caller currently protects the use of
-psock by calling the strp_data_ready() inside a rcu_read_lock/unlock
-block.
+Add a test to check strparser merging skbs is working.
 
-But, in above workqueue error case the psock is accessed outside
-the read_lock/unlock block of the caller. So instead of using
-psock directly we must do a look up against the sk again to
-ensure the psock is available.
-
-There is an an ugly piece here where we must handle
-the case where we paused the strp and removed the psock. On
-psock removal we first pause the strparser and then remove
-the psock. If the strparser is paused while an skb is
-scheduled on the workqueue the skb will be dropped on the
-flow and kfree_skb() is called. If the workqueue manages
-to get called before we pause the strparser but runs the rcvmsg
-callback after the psock is removed we will hit the unlikely
-case where we run the sockmap rcvmsg handler but do not have
-a psock. For now we will follow strparser logic and drop the
-skb on the floor with skb_kfree(). This is ugly because the
-data is dropped. To date this has not caused problems in practice
-because either the application controlling the sockmap is
-coordinating with the datapath so that skbs are "flushed"
-before removal or we simply wait for the sock to be closed before
-removing it.
-
-This patch fixes the describe RCU bug and dropping the skb doesn't
-make things worse. Future patches will improve this by allowing
-the normal case where skbs are not merged to skip the strparser
-altogether. In practice many (most?) use cases have no need to
-merge skbs so its both a code complexity hit as seen above and
-a performance issue. For example, in the Cilium case we always
-set the strparser up to return sbks 1:1 without any merging and
-have avoided above issues.
-
-Fixes: e91de6afa81c1 ("bpf: Fix running sk_skb program types with ktls")
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/core/skmsg.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ .../selftests/bpf/progs/test_sockmap_kern.h        |    8 +++++++-
+ tools/testing/selftests/bpf/test_sockmap.c         |   18 ++++++++++++++++++
+ 2 files changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index c41ab6906b21..6a32a1fd34f8 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -781,11 +781,18 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
+diff --git a/tools/testing/selftests/bpf/progs/test_sockmap_kern.h b/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
+index 057036ca1111..3dca4c2e2418 100644
+--- a/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
++++ b/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
+@@ -79,7 +79,7 @@ struct {
  
- static void sk_psock_strp_read(struct strparser *strp, struct sk_buff *skb)
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_ARRAY);
+-	__uint(max_entries, 2);
++	__uint(max_entries, 3);
+ 	__type(key, int);
+ 	__type(value, int);
+ } sock_skb_opts SEC(".maps");
+@@ -94,6 +94,12 @@ struct {
+ SEC("sk_skb1")
+ int bpf_prog1(struct __sk_buff *skb)
  {
--	struct sk_psock *psock = sk_psock_from_strp(strp);
-+	struct sk_psock *psock;
- 	struct bpf_prog *prog;
- 	int ret = __SK_DROP;
-+	struct sock *sk;
- 
- 	rcu_read_lock();
-+	sk = strp->sk;
-+	psock = sk_psock(sk);
-+	if (unlikely(!psock)) {
-+		kfree_skb(skb);
-+		goto out;
++	int *f, two = 2;
++
++	f = bpf_map_lookup_elem(&sock_skb_opts, &two);
++	if (f && *f) {
++		return *f;
 +	}
- 	prog = READ_ONCE(psock->progs.skb_verdict);
- 	if (likely(prog)) {
- 		skb_orphan(skb);
-@@ -794,6 +801,7 @@ static void sk_psock_strp_read(struct strparser *strp, struct sk_buff *skb)
- 		ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
- 	}
- 	sk_psock_verdict_apply(psock, skb, ret);
-+out:
- 	rcu_read_unlock();
+ 	return skb->len;
  }
  
+diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
+index 37695fc8096a..78789b27e573 100644
+--- a/tools/testing/selftests/bpf/test_sockmap.c
++++ b/tools/testing/selftests/bpf/test_sockmap.c
+@@ -85,6 +85,7 @@ int txmsg_ktls_skb_drop;
+ int txmsg_ktls_skb_redir;
+ int ktls;
+ int peek_flag;
++int skb_use_parser;
+ 
+ static const struct option long_options[] = {
+ 	{"help",	no_argument,		NULL, 'h' },
+@@ -174,6 +175,7 @@ static void test_reset(void)
+ 	txmsg_apply = txmsg_cork = 0;
+ 	txmsg_ingress = txmsg_redir_skb = 0;
+ 	txmsg_ktls_skb = txmsg_ktls_skb_drop = txmsg_ktls_skb_redir = 0;
++	skb_use_parser = 0;
+ }
+ 
+ static int test_start_subtest(const struct _test *t, struct sockmap_options *o)
+@@ -1211,6 +1213,11 @@ static int run_options(struct sockmap_options *options, int cg_fd,  int test)
+ 		}
+ 	}
+ 
++	if (skb_use_parser) {
++		i = 2;
++		err = bpf_map_update_elem(map_fd[7], &i, &skb_use_parser, BPF_ANY);
++	}
++
+ 	if (txmsg_drop)
+ 		options->drop_expected = true;
+ 
+@@ -1650,6 +1657,16 @@ static void test_txmsg_cork(int cgrp, struct sockmap_options *opt)
+ 	test_send(opt, cgrp);
+ }
+ 
++static void test_txmsg_ingress_parser(int cgrp, struct sockmap_options *opt)
++{
++	txmsg_pass = 1;
++	skb_use_parser = 512;
++	opt->iov_length = 256;
++	opt->iov_count = 1;
++	opt->rate = 2;
++	test_exec(cgrp, opt);
++}
++
+ char *map_names[] = {
+ 	"sock_map",
+ 	"sock_map_txmsg",
+@@ -1748,6 +1765,7 @@ struct _test test[] = {
+ 	{"txmsg test pull-data", test_txmsg_pull},
+ 	{"txmsg test pop-data", test_txmsg_pop},
+ 	{"txmsg test push/pop data", test_txmsg_push_pop},
++	{"txmsg text ingress parser", test_txmsg_ingress_parser},
+ };
+ 
+ static int check_whitelist(struct _test *t, struct sockmap_options *opt)
 
