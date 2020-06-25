@@ -2,134 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3DA320A0C8
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 16:26:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E00E520A0D0
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 16:27:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405357AbgFYOZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 10:25:57 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:56452 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2405189AbgFYOZ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 10:25:57 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D12202005A;
-        Thu, 25 Jun 2020 14:25:55 +0000 (UTC)
-Received: from us4-mdac16-14.at1.mdlocal (unknown [10.110.49.196])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id CE7B6800A7;
-        Thu, 25 Jun 2020 14:25:55 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.107])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 596CA100076;
-        Thu, 25 Jun 2020 14:25:55 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S2405394AbgFYO1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 10:27:11 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:22809 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2405189AbgFYO1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 10:27:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593095229;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aJMWF6nEMVTEkBQ3KGHol472KSqMk2el0vXzn497+4o=;
+        b=Kjnp+GORB8OHGWDaNEgVS7SGxjLEuTfzVKYqlhh3rv8Kh/ojRrgxYjc4aV16A3xupgJu3r
+        lDrqHYfd3sNMoUmAiD5Dn8KHILdsixaTA90jpDGBml7cf4Ufphhv2xsctq1EGpubdB2Y8W
+        WlFYSTZRa/Ybf3Y8avhQKOuvC1/uFQQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-190-M6DDAliuMYOJ3TP-qodGsw-1; Thu, 25 Jun 2020 10:27:05 -0400
+X-MC-Unique: M6DDAliuMYOJ3TP-qodGsw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D8C24280079;
-        Thu, 25 Jun 2020 14:25:54 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 25 Jun
- 2020 15:25:47 +0100
-Subject: Re: [PATCH v2 net-next] net: core: use listified Rx for GRO_NORMAL in
- napi_gro_receive()
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Alexander Lobakin <alobakin@dlink.ru>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20191014080033.12407-1-alobakin@dlink.ru>
- <20200624210606.GA1362687@zx2c4.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <948c5844-b8e4-81d3-b5eb-b13b1d3cda38@solarflare.com>
-Date:   Thu, 25 Jun 2020 15:25:38 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97C73464;
+        Thu, 25 Jun 2020 14:27:03 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.46])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 294215D9CA;
+        Thu, 25 Jun 2020 14:27:00 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id E91ED30000B66;
+        Thu, 25 Jun 2020 16:26:58 +0200 (CEST)
+Subject: [PATCH bpf] libbpf: adjust SEC short cut for expected attach type
+ BPF_XDP_DEVMAP
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org, andriin@fb.com
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        David Ahern <dsahern@gmail.com>
+Date:   Thu, 25 Jun 2020 16:26:58 +0200
+Message-ID: <159309521882.821855.6873145686353617509.stgit@firesoul>
+In-Reply-To: <CAADnVQ+tiHo1y12ae4EREtBiU=AKUW7upMV4Pfa8Yc7mrAsqEg@mail.gmail.com>
+References: <CAADnVQ+tiHo1y12ae4EREtBiU=AKUW7upMV4Pfa8Yc7mrAsqEg@mail.gmail.com>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-In-Reply-To: <20200624210606.GA1362687@zx2c4.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25502.003
-X-TM-AS-Result: No-8.467000-8.000000-10
-X-TMASE-MatchedRID: 6lay9u8oTUP4ECMHJTM/ufZvT2zYoYOwC/ExpXrHizz5+tteD5RzhSM5
-        wlSREDM/WmsJv3fWRTB/t5tveyBGENQ2aCZEo62uW1M77Gh1ugYCn5QffvZFlZm3TxN83Lo4xhj
-        hqpdN+tOgsFZCbdeTipGMbxV80b6VapfXOeR2mRBfYa9W9OjitUqAhuLHn5fEHdFjikZMLIdj8X
-        zdqXhnXgwF8/THlfq/yhwb4lo9EEbRcG2uoPA4K1D5LQ3Tl9H74OCVFpLw5QdjEZl+QzZVx462G
-        g+W5SqYvTmxe72H2fw0bxihdDeK0UhOq1If1JZJolVO7uyOCDWXGEdoE+kH/xlLPW+8b7SaLxCe
-        axJSK3nhSunPCuGncBjGorU1NmcepjulPTq1lMjQeUylZ/mLlx5FmvZzFEQu4y4k0rGe+U1+Dha
-        0AlenCaA8+iTsk6pAX7bicKxRIU23sNbcHjySQd0H8LFZNFG7CKFCmhdu5cWiItBUvtSBTuEj2l
-        W5ghb68OX2rXTBoSTUKzkd80eTXBWEjKJBN/KG2Y3fBwwcQFREa0tj12CQNy7wfafhNZfoX+VGu
-        9Js0FqigEHy7J4S6ylkreA5r24aYnCi5itk3iprD5+Qup1qU56oP1a0mRIj
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--8.467000-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25502.003
-X-MDID: 1593095155-7j6FC8I8iKWF
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/06/2020 22:06, Jason A. Donenfeld wrote:
-> Hi Alexander,
->
-> This patch introduced a behavior change around GRO_DROP:
->
-> napi_skb_finish used to sometimes return GRO_DROP:
->
->> -static gro_result_t napi_skb_finish(gro_result_t ret, struct sk_buff *skb)
->> +static gro_result_t napi_skb_finish(struct napi_struct *napi,
->> +				    struct sk_buff *skb,
->> +				    gro_result_t ret)
->>  {
->>  	switch (ret) {
->>  	case GRO_NORMAL:
->> -		if (netif_receive_skb_internal(skb))
->> -			ret = GRO_DROP;
->> +		gro_normal_one(napi, skb);
->>
-> But under your change, gro_normal_one and the various calls that makes
-> never propagates its return value, and so GRO_DROP is never returned to
-> the caller, even if something drops it.
-This followed the pattern set by napi_frags_finish(), and is
- intentional: gro_normal_one() usually defers processing of
- the skb to the end of the napi poll, so by the time we know
- that the network stack has dropped it, the caller has long
- since returned.
-In fact the RX will be handled by netif_receive_skb_list_internal(),
- which can't return NET_RX_SUCCESS vs. NET_RX_DROP, because it's
- handling many skbs which might not all have the same verdict.
+Adjust the SEC("xdp_devmap/") prog type prefix to contain a
+slash "/" for expected attach type BPF_XDP_DEVMAP.  This is consistent
+with other prog types like tracing.
 
-When originally doing this work I felt this was OK because
- almost no-one was sensitive to the return value — almost the
- only callers that were were in our own sfc driver, and then
- only for making bogus decisions about interrupt moderation.
-Alexander just followed my lead, so don't blame him ;-)
+Fixes: 2778797037a6 ("libbpf: Add SEC name for xdp programs attached to device map")
+Suggested-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ tools/lib/bpf/libbpf.c                             |    2 +-
+ .../bpf/progs/test_xdp_with_devmap_helpers.c       |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-> For some context, I'm consequently mulling over this change in my code,
-> since checking for GRO_DROP now constitutes dead code:
-Incidentally, it's only dead because dev_gro_receive() can't
- return GRO_DROP either.  If it could, napi_skb_finish()
- would pass that on.  And napi_gro_frags() (which AIUI is the
- better API for some performance reasons that I can't remember)
- can still return GRO_DROP too.
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index f17151d866e6..11e4725b8b1c 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -6659,7 +6659,7 @@ static const struct bpf_sec_def section_defs[] = {
+ 		.expected_attach_type = BPF_TRACE_ITER,
+ 		.is_attach_btf = true,
+ 		.attach_fn = attach_iter),
+-	BPF_EAPROG_SEC("xdp_devmap",		BPF_PROG_TYPE_XDP,
++	BPF_EAPROG_SEC("xdp_devmap/",		BPF_PROG_TYPE_XDP,
+ 						BPF_XDP_DEVMAP),
+ 	BPF_PROG_SEC("xdp",			BPF_PROG_TYPE_XDP),
+ 	BPF_PROG_SEC("perf_event",		BPF_PROG_TYPE_PERF_EVENT),
+diff --git a/tools/testing/selftests/bpf/progs/test_xdp_with_devmap_helpers.c b/tools/testing/selftests/bpf/progs/test_xdp_with_devmap_helpers.c
+index 330811260123..0ac086497722 100644
+--- a/tools/testing/selftests/bpf/progs/test_xdp_with_devmap_helpers.c
++++ b/tools/testing/selftests/bpf/progs/test_xdp_with_devmap_helpers.c
+@@ -27,7 +27,7 @@ int xdp_dummy_prog(struct xdp_md *ctx)
+ /* valid program on DEVMAP entry via SEC name;
+  * has access to egress and ingress ifindex
+  */
+-SEC("xdp_devmap")
++SEC("xdp_devmap/map_prog")
+ int xdp_dummy_dm(struct xdp_md *ctx)
+ {
+ 	char fmt[] = "devmap redirect: dev %u -> dev %u len %u\n";
 
-However, I think that incrementing your rx_dropped stat when
- the network stack chose to drop the packet is the wrong
- thing to do anyway (IMHO rx_dropped is for "there was a
- packet on the wire but either the hardware or the driver was
- unable to receive it"), so I'd say go ahead and remove the
- check.
 
-HTH
--ed
