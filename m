@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDBA3209898
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 04:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D21820989D
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 04:50:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389518AbgFYCqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Jun 2020 22:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
+        id S2389514AbgFYCt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Jun 2020 22:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388930AbgFYCqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 22:46:12 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50566C061573;
-        Wed, 24 Jun 2020 19:46:11 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id v19so3513166qtq.10;
-        Wed, 24 Jun 2020 19:46:11 -0700 (PDT)
+        with ESMTP id S2389357AbgFYCt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Jun 2020 22:49:57 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35ABC061573;
+        Wed, 24 Jun 2020 19:49:55 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id c30so153740qka.10;
+        Wed, 24 Jun 2020 19:49:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:subject:date:message-id;
-        bh=cQpEhmFPDYIC8mHow/3VbX8CkkK2TboHR1C2syFtHGs=;
-        b=TabtkjAEw+mPYUxy5YE0yd0B08a/Xj8LtVTOmbSl43x5K6ULaRgZhfqywSDGqW88OP
-         CJ38ulDxKmymVU5sJmlKwF+kFe4+yBhvgjXckaB2XMBOiRG8M4TpqZYYhZDvwRDerWBh
-         Viu0tWB3KmNolM7S8tE90tz6IhkaGfc6ZLb8r3DVSXJ8z5FSdGy9aF4wOwzJK3jIeUcF
-         GsOBwujmN/BJMmNFFEQZ0lx3VbHONvGjn+Ezl6cfNPRvi6DKMYPKLf1uFXXXiP8vyz2t
-         qW5ku2qFeLXIEnCcKDfuat2eBRJX0o2gVIslvZ+0yh0exrT99s81w3SGfQw6c9qpOffI
-         54OA==
+        bh=5lXjeiOsBG8uhpS7ADjeldJYydP2WlIiNtg79CXwmCw=;
+        b=qX/ZX608fv7NpAvxxHzMOLRstQFILAXA3k/9MGX52siF/ZeawE2D1ZvM8e4I7qYTl9
+         skx6mJ2pWPpRAXAucnpTWkcTEav0gMaXYK/h1ro1UXLv1F7GHw7diX/LPMlEno6y5NOM
+         W1BKa8cW43b1HXkxWC01Pcdt2d1icUI5qCOpWUOD3yj51PFX2tTjy7Sz7iIGCIH9/PhH
+         FTsfF14KjjPWrp2xm5zd+w21ax3vzIpelIQghr71b3Lwmf23xZ8hTyehaP4z4/xw7Ezl
+         4S4nk+z7w/Egea/zL94vnRM5dJfcGk+iwoxQhUVmucOta1jBcyWcLblc+QOo1/+ra5WJ
+         Oh7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=cQpEhmFPDYIC8mHow/3VbX8CkkK2TboHR1C2syFtHGs=;
-        b=FaWxbWQADronh6XXrZeyXwzVUBOrbDCNlQo1nY50+s5gU9IJ+EaKR+yc7DAM+AG2VW
-         e7gjvB0D/5jfJ+0SMW0Q+jiFx42MJuxOpfR7Q+JyMIz9fJegqYL8HfR9v6xKM7d8Yitc
-         DDE7cKyC2xsk6h7HkIrX8HhP6mD9F7U7W20BvxQlOGy4M3MPIf7TvmJbXstjl7K6pyYS
-         8ymrIGYGVyvG2fLmr8Ic46l4znI9SET412dSAJrnwUpSDMzZcI3vD2YGID161UMAGgeZ
-         pDy3ep/iZ99ybkqnLFQ0T6k3pd7nu8Ci6Nh2nIel9wYsmEtbXVJNt7e/WtQ08a928Zpu
-         1c/w==
-X-Gm-Message-State: AOAM532xaoYHw+YcaStAHTwdP0xxDhpKjZ1yvEzWYqly8MvLdl43+k4f
-        Z36etvaYc+TaZcHm9amfxTg=
-X-Google-Smtp-Source: ABdhPJxNn0AzNExJhT2K7CybQTpfKoFtIFgRBK0papWcKvhCdZCuN1h5oKAMtj5Hi/qx6fh5r7M9Qg==
-X-Received: by 2002:ac8:1013:: with SMTP id z19mr29840585qti.130.1593053170544;
-        Wed, 24 Jun 2020 19:46:10 -0700 (PDT)
+        bh=5lXjeiOsBG8uhpS7ADjeldJYydP2WlIiNtg79CXwmCw=;
+        b=CsQ2YRTbjuTnDAmDTaLbITM4slu4DA7eRvrPeODrwKoP5qNNJZdBFMYN+vWcQsbV4E
+         t09sZW1Z9yDZgTQK4hCZd+4bnxY0EXSXpKhm+y/px3Xk8G1Odx+fvJl0kJYXrUP/KwH5
+         r4RnfDiPxEP8NDyXe0Ho+tT7rEutFxmF/OhjXA3pY/Po8T+vR2xw0xHbSzAnqjwyVK4y
+         mlN7mgxfL2/xLj1SLEsLcSq9HZgmmQWqdPSrBH25Mre/M/MMRu2V0wY8eamBwdlwFdC0
+         Or43GtF9aplgmAuPOtOvRyUmNmv6BGYHNUoi1FLmbIfzdGqiaT+QArDous/gJ+4RKXB7
+         +eaA==
+X-Gm-Message-State: AOAM532OSshGZKwWxUG1xCvxE0i1nsjNKQ/2Z6bbQmWXYi5aWyCAUJB/
+        wy/Gh2hhG3RNBPZr4seVClc=
+X-Google-Smtp-Source: ABdhPJz9Kir3cc0loPW9ZyiKJcJAxyg/+Y2eCStO0p4ztcdGUzkkew0qG4pZb4iIqxqtlqUQBJQWNg==
+X-Received: by 2002:ae9:f40b:: with SMTP id y11mr28509038qkl.107.1593053394833;
+        Wed, 24 Jun 2020 19:49:54 -0700 (PDT)
 Received: from linux.home ([2604:2000:1344:41d:b4f5:b2c7:27bb:8a39])
-        by smtp.googlemail.com with ESMTPSA id y54sm5240187qtj.28.2020.06.24.19.46.09
+        by smtp.googlemail.com with ESMTPSA id v69sm4744823qkb.96.2020.06.24.19.49.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jun 2020 19:46:10 -0700 (PDT)
+        Wed, 24 Jun 2020 19:49:54 -0700 (PDT)
 From:   Gaurav Singh <gaurav1086@gmail.com>
 To:     gaurav1086@gmail.com, Pablo Neira Ayuso <pablo@netfilter.org>,
         Jozsef Kadlecsik <kadlec@netfilter.org>,
@@ -57,38 +57,38 @@ To:     gaurav1086@gmail.com, Pablo Neira Ayuso <pablo@netfilter.org>,
         coreteam@netfilter.org (open list:NETFILTER),
         netdev@vger.kernel.org (open list:NETWORKING [IPv4/IPv6]),
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] [net/ipv6] Remove redundant null check in hbh_mt6
-Date:   Wed, 24 Jun 2020 22:46:04 -0400
-Message-Id: <20200625024605.2881-1-gaurav1086@gmail.com>
+Subject: [PATCH] [net/ipv6] Remove redundant null check in rt_mt6
+Date:   Wed, 24 Jun 2020 22:49:48 -0400
+Message-Id: <20200625024949.3963-1-gaurav1086@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-oh cannot be NULL since its already checked above after
+rh cannot be NULL here since its already checked above
 assignment and is being dereferenced before. Remove the
 redundant null check.
 
 Signed-off-by: Gaurav Singh <gaurav1086@gmail.com>
 ---
- net/ipv6/netfilter/ip6t_hbh.c | 3 +--
+ net/ipv6/netfilter/ip6t_rt.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/ipv6/netfilter/ip6t_hbh.c b/net/ipv6/netfilter/ip6t_hbh.c
-index 467b2a86031b..e7a3fb9355ee 100644
---- a/net/ipv6/netfilter/ip6t_hbh.c
-+++ b/net/ipv6/netfilter/ip6t_hbh.c
-@@ -86,8 +86,7 @@ hbh_mt6(const struct sk_buff *skb, struct xt_action_param *par)
- 		  ((optinfo->hdrlen == hdrlen) ^
- 		   !!(optinfo->invflags & IP6T_OPTS_INV_LEN))));
+diff --git a/net/ipv6/netfilter/ip6t_rt.c b/net/ipv6/netfilter/ip6t_rt.c
+index f633dc84ca3f..733c83d38b30 100644
+--- a/net/ipv6/netfilter/ip6t_rt.c
++++ b/net/ipv6/netfilter/ip6t_rt.c
+@@ -89,8 +89,7 @@ static bool rt_mt6(const struct sk_buff *skb, struct xt_action_param *par)
+ 		 !((rtinfo->flags & IP6T_RT_RES) &&
+ 		   (((const struct rt0_hdr *)rh)->reserved)));
  
--	ret = (oh != NULL) &&
--	      (!(optinfo->flags & IP6T_OPTS_LEN) ||
-+	ret = (!(optinfo->flags & IP6T_OPTS_LEN) ||
- 	       ((optinfo->hdrlen == hdrlen) ^
- 		!!(optinfo->invflags & IP6T_OPTS_INV_LEN)));
- 
+-	ret = (rh != NULL) &&
+-	      (segsleft_match(rtinfo->segsleft[0], rtinfo->segsleft[1],
++	ret = (segsleft_match(rtinfo->segsleft[0], rtinfo->segsleft[1],
+ 			      rh->segments_left,
+ 			      !!(rtinfo->invflags & IP6T_RT_INV_SGS))) &&
+ 	      (!(rtinfo->flags & IP6T_RT_LEN) ||
 -- 
 2.17.1
 
