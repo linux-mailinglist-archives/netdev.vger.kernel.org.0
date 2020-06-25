@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1E2F20A667
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 22:12:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1971F20A669
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 22:12:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390554AbgFYUMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 16:12:14 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:43057 "EHLO
+        id S2390785AbgFYUMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 16:12:19 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39040 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2389344AbgFYUMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 16:12:14 -0400
+        with ESMTP id S2389344AbgFYUMQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 16:12:16 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593115931;
+        s=mimecast20190719; t=1593115934;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=mN7Y1KGa2J2xgeNCzqBVm8zM5KlsQKQcbLdGW8o5Jko=;
-        b=gqfyMhluIwMjrl5gqA/BGK7ylQEm+9a3Z18Nq9hZjtvYM+iAR8lpt8eg4loiGA0kyP/bcQ
-        /KvoLgOQfq6YMSQOb3Gb3w+CsrAe2KiZvG4JxoHeeJJYPNFqPQKp7YdR/G9GoQClKoNXuw
-        0Gy9kgets5GtFT7dp5r05OY1v2NUZwA=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-136-Xa6OYOq3OCe6XK-l0-U-5Q-1; Thu, 25 Jun 2020 16:12:10 -0400
-X-MC-Unique: Xa6OYOq3OCe6XK-l0-U-5Q-1
-Received: by mail-ed1-f72.google.com with SMTP id h5so5970161edl.7
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 13:12:10 -0700 (PDT)
+        bh=AceQv1Pht73uByJy0LhtnWLO52xwnez23HLgovVp0cg=;
+        b=b1qPcKCnqSGWxVJroYLXVXCk4Jqyr0c1kx8ncKFSEDVzroJtb1bq5yB3bdNIE/wOGg0DmI
+        HQE5jWaamBJDCkBV1gifoqT1T7QpX0o4eRF4hjYC1Y/fh1q4lqUWdp+SF6yWOD5mfpgueq
+        qE97qqnZz9ObEZQmx6F3rh3L/HVfFLY=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-143-7npVg3tYMCSjd18B7uIAYg-1; Thu, 25 Jun 2020 16:12:11 -0400
+X-MC-Unique: 7npVg3tYMCSjd18B7uIAYg-1
+Received: by mail-qk1-f200.google.com with SMTP id 204so4941764qki.20
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 13:12:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=mN7Y1KGa2J2xgeNCzqBVm8zM5KlsQKQcbLdGW8o5Jko=;
-        b=jnT9psfukrnrN+lQavusbY5oR2Lp+jtJkS4gmPFXWo9BT70Bem6FFv+b/qJr4HjS1Y
-         EEOry5BTuU0N2VIg45FKtq+Htkd2loTloQs3Gd2QTJU3mN1LX5hQyiW8AbbT8Ch5nOen
-         n6e5Z3h+Ai6NtM5zDOKkYlrS1MTlvdIGdIlszmwvuzyrCvWldlGIwfmecSe68jNBkvtf
-         oamnb34FLWEv6/vxpj5GuR6juXBiAJ7l4ttYjsxVMmpkb9roBXg6buPNCL1WuMIkIDAC
-         YKDt1SQgrJO5iROb0RgOReyc2EUWqu1pb28oFUikTD6h3zGQ2+YIt4KK4VSqjJNaaVea
-         DZHg==
-X-Gm-Message-State: AOAM531gEY6N/LjiHasAFWL7M6/LfJ03bvzk5Z5/SpwPIR4bVUzh4Kml
-        7hP/8p29ZNm2chmdm6x16KgTfFcHkaXsrmlNpG7bGss6Bc6XDdh9U8eiBCWmJNpDI5LUhY7f3ss
-        51zKd94Y+PFfTKRSt
-X-Received: by 2002:aa7:c407:: with SMTP id j7mr14112610edq.96.1593115928929;
-        Thu, 25 Jun 2020 13:12:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyp7QvmjJwBiH/dfiy9QdMEtZMuD1OjwUyOp8+bCFpFIw2UNiSUMdidP3us9YRTOpD6oHnF9Q==
-X-Received: by 2002:aa7:c407:: with SMTP id j7mr14112592edq.96.1593115928709;
-        Thu, 25 Jun 2020 13:12:08 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id f1sm18891018edn.66.2020.06.25.13.12.07
+        bh=AceQv1Pht73uByJy0LhtnWLO52xwnez23HLgovVp0cg=;
+        b=D6qCVmMJqmVODaS+usKQM0CrTyGg+efIAg2Z2idayTAnHCf5xdNYPkqzv+J0UhnCfO
+         3ExUYPwsbqufZl2d90mZ2QbXqdZ2iyGaTr7LIVqjsB8aYmFd9htKfaN6xERsFLwQ4MGH
+         Y2GHxaBOcO2C+n1CkAYAJ1U764khmOJBtmrnvdf6WmzWf+yMm5glffanjQV/KxiEqGBW
+         uwI6a/IqeLlc/KG2g5n6ZgscGYBudKAlVfEnVFrVd0DTHm9XDXWNZCvm5iT2IPWIMple
+         X7N1v+Mizk83MHnMLRNR2td5aNst27UpyAUeyd74ZK0+pUUnJPUVuXwlipDYnuW7aK32
+         kdaA==
+X-Gm-Message-State: AOAM533oXtbnhejrwUo98IjqLbQM3F/1/sNjSnKG7LBOF8m0wrWPS9cP
+        EP/xghDS5sPs2MElw4qzvrWEbZ6T3lwqrK4wq/ZW75kYZT/TYf+JhFrouBORO0uaAf8sn2FMvOe
+        1O06tP4lWTz36otA8
+X-Received: by 2002:a37:5b81:: with SMTP id p123mr23554531qkb.150.1593115930885;
+        Thu, 25 Jun 2020 13:12:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxPSz4rD1cTkLTiDYIIsSKKfe4VQ60Qil8ZXRoEPj1gtJkYL675rJPfUDZFJRUNU3/jkr84Dg==
+X-Received: by 2002:a37:5b81:: with SMTP id p123mr23554510qkb.150.1593115930658;
+        Thu, 25 Jun 2020 13:12:10 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id v12sm7126493qtj.32.2020.06.25.13.12.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jun 2020 13:12:07 -0700 (PDT)
+        Thu, 25 Jun 2020 13:12:09 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 38F591814FA; Thu, 25 Jun 2020 22:12:07 +0200 (CEST)
-Subject: [PATCH net 1/3] sch_cake: don't try to reallocate or unshare skb
- unconditionally
+        id 50D7C1814FC; Thu, 25 Jun 2020 22:12:08 +0200 (CEST)
+Subject: [PATCH net 2/3] sch_cake: don't call diffserv parsing code when it is
+ not needed
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, cake@lists.bufferbloat.net
-Date:   Thu, 25 Jun 2020 22:12:07 +0200
-Message-ID: <159311592714.207748.900920527922661905.stgit@toke.dk>
+Date:   Thu, 25 Jun 2020 22:12:08 +0200
+Message-ID: <159311592823.207748.268914285724823456.stgit@toke.dk>
 In-Reply-To: <159311592607.207748.5904268231642411759.stgit@toke.dk>
 References: <159311592607.207748.5904268231642411759.stgit@toke.dk>
 User-Agent: StGit/0.23
@@ -70,93 +70,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilya Ponetayev <i.ponetaev@ndmsystems.com>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-cake_handle_diffserv() tries to linearize mac and network header parts of
-skb and to make it writable unconditionally. In some cases it leads to full
-skb reallocation, which reduces throughput and increases CPU load. Some
-measurements of IPv4 forward + NAPT on MIPS router with 580 MHz single-core
-CPU was conducted. It appears that on kernel 4.9 skb_try_make_writable()
-reallocates skb, if skb was allocated in ethernet driver via so-called
-'build skb' method from page cache (it was discovered by strange increase
-of kmalloc-2048 slab at first).
-
-Obtain DSCP value via read-only skb_header_pointer() call, and leave
-linearization only for DSCP bleaching or ECN CE setting. And, as an
-additional optimisation, skip diffserv parsing entirely if it is not needed
-by the current configuration.
+As a further optimisation of the diffserv parsing codepath, we can skip it
+entirely if CAKE is configured to neither use diffserv-based
+classification, nor to zero out the diffserv bits.
 
 Fixes: c87b4ecdbe8d ("sch_cake: Make sure we can write the IP header before changing DSCP bits")
-Signed-off-by: Ilya Ponetayev <i.ponetaev@ndmsystems.com>
-[ fix a few style issues, reflow commit message ]
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- net/sched/sch_cake.c |   41 ++++++++++++++++++++++++++++++-----------
- 1 file changed, 30 insertions(+), 11 deletions(-)
+ net/sched/sch_cake.c |   13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
-index 60f8ae578819..cae006bef565 100644
+index cae006bef565..094d6e652deb 100644
 --- a/net/sched/sch_cake.c
 +++ b/net/sched/sch_cake.c
-@@ -1553,30 +1553,49 @@ static unsigned int cake_drop(struct Qdisc *sch, struct sk_buff **to_free)
+@@ -1551,7 +1551,7 @@ static unsigned int cake_drop(struct Qdisc *sch, struct sk_buff **to_free)
+ 	return idx + (tin << 16);
+ }
  
- static u8 cake_handle_diffserv(struct sk_buff *skb, u16 wash)
+-static u8 cake_handle_diffserv(struct sk_buff *skb, u16 wash)
++static u8 cake_handle_diffserv(struct sk_buff *skb, bool wash)
  {
--	int wlen = skb_network_offset(skb);
-+	const int offset = skb_network_offset(skb);
-+	u16 *buf, buf_;
+ 	const int offset = skb_network_offset(skb);
+ 	u16 *buf, buf_;
+@@ -1612,14 +1612,17 @@ static struct cake_tin_data *cake_select_tin(struct Qdisc *sch,
+ {
+ 	struct cake_sched_data *q = qdisc_priv(sch);
+ 	u32 tin, mark;
++	bool wash;
  	u8 dscp;
  
- 	switch (tc_skb_protocol(skb)) {
- 	case htons(ETH_P_IP):
--		wlen += sizeof(struct iphdr);
--		if (!pskb_may_pull(skb, wlen) ||
--		    skb_try_make_writable(skb, wlen))
-+		buf = skb_header_pointer(skb, offset, sizeof(buf_), &buf_);
-+		if (unlikely(!buf))
- 			return 0;
+ 	/* Tin selection: Default to diffserv-based selection, allow overriding
+-	 * using firewall marks or skb->priority.
++	 * using firewall marks or skb->priority. Call DSCP parsing early if
++	 * wash is enabled, otherwise defer to below to skip unneeded parsing.
+ 	 */
+-	dscp = cake_handle_diffserv(skb,
+-				    q->rate_flags & CAKE_FLAG_WASH);
+ 	mark = (skb->mark & q->fwmark_mask) >> q->fwmark_shft;
++	wash = !!(q->rate_flags & CAKE_FLAG_WASH);
++	if (wash)
++		dscp = cake_handle_diffserv(skb, wash);
  
--		dscp = ipv4_get_dsfield(ip_hdr(skb)) >> 2;
--		if (wash && dscp)
-+		/* ToS is in the second byte of iphdr */
-+		dscp = ipv4_get_dsfield((struct iphdr *)buf) >> 2;
-+
-+		if (wash && dscp) {
-+			const int wlen = offset + sizeof(struct iphdr);
-+
-+			if (!pskb_may_pull(skb, wlen) ||
-+			    skb_try_make_writable(skb, wlen))
-+				return 0;
-+
- 			ipv4_change_dsfield(ip_hdr(skb), INET_ECN_MASK, 0);
-+		}
-+
- 		return dscp;
+ 	if (q->tin_mode == CAKE_DIFFSERV_BESTEFFORT)
+ 		tin = 0;
+@@ -1633,6 +1636,8 @@ static struct cake_tin_data *cake_select_tin(struct Qdisc *sch,
+ 		tin = q->tin_order[TC_H_MIN(skb->priority) - 1];
  
- 	case htons(ETH_P_IPV6):
--		wlen += sizeof(struct ipv6hdr);
--		if (!pskb_may_pull(skb, wlen) ||
--		    skb_try_make_writable(skb, wlen))
-+		buf = skb_header_pointer(skb, offset, sizeof(buf_), &buf_);
-+		if (unlikely(!buf))
- 			return 0;
+ 	else {
++		if (!wash)
++			dscp = cake_handle_diffserv(skb, wash);
+ 		tin = q->tin_index[dscp];
  
--		dscp = ipv6_get_dsfield(ipv6_hdr(skb)) >> 2;
--		if (wash && dscp)
-+		/* Traffic class is in the first and second bytes of ipv6hdr */
-+		dscp = ipv6_get_dsfield((struct ipv6hdr *)buf) >> 2;
-+
-+		if (wash && dscp) {
-+			const int wlen = offset + sizeof(struct ipv6hdr);
-+
-+			if (!pskb_may_pull(skb, wlen) ||
-+			    skb_try_make_writable(skb, wlen))
-+				return 0;
-+
- 			ipv6_change_dsfield(ipv6_hdr(skb), INET_ECN_MASK, 0);
-+		}
-+
- 		return dscp;
- 
- 	case htons(ETH_P_ARP):
+ 		if (unlikely(tin >= q->tin_cnt))
 
