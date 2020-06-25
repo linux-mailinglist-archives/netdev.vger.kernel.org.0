@@ -2,113 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBE27209DD7
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 13:54:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54437209DEA
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 13:55:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404539AbgFYLyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 07:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404530AbgFYLyH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 07:54:07 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07AF6C061573
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 04:54:07 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id 17so5628232wmo.1
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 04:54:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=A+8DNTwPTrqWV9XPKAnnx4MrDkAfz5yRU2Rp9COzdPI=;
-        b=dxn3mon9w6eseYb+gRQ3Op7xYvzJMstrGkYMYGq9ssAiklqMjA6dIPlJzlAO8kTMOM
-         7OfABoG7fcZguaTgR5jVnroL+UaRBunY42V9Ei8PFjS4N/R+i6yHPFXwU8Hl12ncM8EK
-         TTIPMp9qQbZdqGqZhNpMUMPDgDgTWWOWo9MKQ=
+        id S2404641AbgFYLzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 07:55:13 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:38827 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2404621AbgFYLzM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 07:55:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593086111;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=FrhYzHLW7BVQFkvK7yiMz5rnJnbaI4pxVM6OhAm1FIw=;
+        b=bBF/5aUn09rERubYnv0kx2jRm4sCPYqSH6AsszuQ0VoZUI5eINgbo1blNVIyeIG1BILjno
+        lWXrF99WE0gVduWXeLei9DFD23zOtDqeKQHrWT9ysQ2Wo29ZYuDL1qeVldlIaE8Wajqkp1
+        razKo7Rc3pcS3nmqEVbS/n4HPchfb8o=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-365-ecymRw8oN9iYIShmXldmFg-1; Thu, 25 Jun 2020 07:55:09 -0400
+X-MC-Unique: ecymRw8oN9iYIShmXldmFg-1
+Received: by mail-wm1-f72.google.com with SMTP id b13so4652171wme.9
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 04:55:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=A+8DNTwPTrqWV9XPKAnnx4MrDkAfz5yRU2Rp9COzdPI=;
-        b=BHdrI+uaLM44DoJ3lX3rVPK74Ek3WgrstMu5jZ4enVRHJiS/Rzhcs5J6/hF4JTlbN6
-         ivWCGW2fGxlemA/HjneORHMfDpJjFUDTaSQ3O0RuiYxKrik/tD7KZnRHqalxmjE+62c4
-         PCe5FFv4XKAEZeDu1bDx+f/TyM9UIqXfIpvcN/fO+1zexS+G7I05wGKBI1hfWe/QtDp9
-         EF281a52CQHRXubgJ4KSIEXN8fpwl+7XGNK4NTEQe26wabgENtAoTD5/slhuBL3xusmW
-         SPgv9yPnX8XjtGo4t39Z1Wsz7CYS/fDZLxUzLT9qDwsZNKSUL37372OQRoBH4jb2NZDD
-         Mzyw==
-X-Gm-Message-State: AOAM533ZIvV+BR9yJhGt4/7x+J0fyruTemxwCVN+fNZz//P6iTifcDs/
-        tcqkeiTiMXJhg7hc7g6sNC/XLA==
-X-Google-Smtp-Source: ABdhPJwn+XSqv+8QmTLeaF/shei+HCIPInxytmOVyfHe2owPXKtIpbIHfDTy9bkg0qZARd/9cnuOYg==
-X-Received: by 2002:a1c:7f81:: with SMTP id a123mr2952428wmd.107.1593086045745;
-        Thu, 25 Jun 2020 04:54:05 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id b17sm22128105wrp.32.2020.06.25.04.54.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Jun 2020 04:54:03 -0700 (PDT)
-Subject: Re: [PATCH] net: bridge: enfore alignment for ethernet address
-To:     Thomas Martitz <t.martitz@avm.de>, netdev@vger.kernel.org
-Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        stable@vger.kernel.org
-References: <20200625065407.1196147-1-t.martitz@avm.de>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <b25f8e1c-2a45-b522-52d0-7628586b2ef8@cumulusnetworks.com>
-Date:   Thu, 25 Jun 2020 14:54:02 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=FrhYzHLW7BVQFkvK7yiMz5rnJnbaI4pxVM6OhAm1FIw=;
+        b=aH6y8dAo8BnRO+f0iU577ak5jdPkRIe/J9hYPyQbOOyoi1581CfQpNZ3S69ndNUQrO
+         QtSwx0C9Jy5HaH+eDxavXb9IUvMH0HEM/uDnMb7vWOa9JymiwLe/7ZxWQzxBUbROT3EE
+         rXTdIG0W+8iUaXbryRzmn5cVg2KMWmc7Xt3YK5EGvbyCI/fA/YD3fT6CrZIgCW4C+JHy
+         lOmFSLsvddNh83tS1sifgtlD+nZOsw240QDKQyup5E0cvEWQNsJERZjPAy2UUnO+lrgj
+         ES/IsuvWyA559JFTeKKUA1+uB11FbcOoLW3Van1BeJlR3HwvDsDI0M2GLtwuz12XYhHp
+         SsCA==
+X-Gm-Message-State: AOAM531LBuAHEda5gBgOkM/XQdoIJOEnYahiq8XlYV8iSO/8auus0FKY
+        RIj8QqeWSWvRSGc8VWNFvZkpyzaDoW4zED7rvhuSA+vxSs/G1/ChCVfbvvI0mL4lh43KUPBOczw
+        9+uj9on1Sf9PgH8uO
+X-Received: by 2002:a1c:a512:: with SMTP id o18mr2957477wme.101.1593086107906;
+        Thu, 25 Jun 2020 04:55:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzghTwCojJWr3fMyWpX7kfDT3VpN5vDKr5bfXVlyuC67AIo1/1PaZuCytx1yQTaYI+YKNmIyA==
+X-Received: by 2002:a1c:a512:: with SMTP id o18mr2957454wme.101.1593086107643;
+        Thu, 25 Jun 2020 04:55:07 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id u65sm12700916wmg.5.2020.06.25.04.55.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Jun 2020 04:55:06 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id DADD71814F9; Thu, 25 Jun 2020 13:55:02 +0200 (CEST)
+Subject: [PATCH net-next 0/5] sched: A series of fixes and optimisations for
+ sch_cake
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, cake@lists.bufferbloat.net
+Date:   Thu, 25 Jun 2020 13:55:02 +0200
+Message-ID: <159308610282.190211.9431406149182757758.stgit@toke.dk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-In-Reply-To: <20200625065407.1196147-1-t.martitz@avm.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/06/2020 09:54, Thomas Martitz wrote:
-> The eth_addr member is passed to ether_addr functions that require
-> 2-byte alignment, therefore the member must be properly aligned
-> to avoid unaligned accesses.
-> 
-> The problem is in place since the initial merge of multicast to unicast:
-> commit 6db6f0eae6052b70885562e1733896647ec1d807 bridge: multicast to unicast
-> 
-> Fixes: 6db6f0eae605 ("bridge: multicast to unicast")
-> Cc: Roopa Prabhu <roopa@cumulusnetworks.com>
-> Cc: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Felix Fietkau <nbd@nbd.name>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Thomas Martitz <t.martitz@avm.de>
-> ---
->  net/bridge/br_private.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> index 7501be4eeba0..22cb2f1993ef 100644
-> --- a/net/bridge/br_private.h
-> +++ b/net/bridge/br_private.h
-> @@ -217,8 +217,8 @@ struct net_bridge_port_group {
->  	struct rcu_head			rcu;
->  	struct timer_list		timer;
->  	struct br_ip			addr;
-> +	unsigned char			eth_addr[ETH_ALEN]; /* 2-byte aligned */
->  	unsigned char			flags;
-> -	unsigned char			eth_addr[ETH_ALEN];
->  };
->  
->  struct net_bridge_mdb_entry {
-> 
+Hi Dave
 
-Hi Thomas,
-To document it and guarantee that future struct changes won't break it I think
-it'd be a good idea to add __aligned(2) for that member instead of the comment.
+This series contains a number of fixes and optimisations for sch_cake that we've
+accumulated in the out-of-tree version. See the individual patch descriptions
+for more details.
 
-Other than that the patch looks good.
+The first three patches in the series are candidates for inclusion into stable.
 
-Thanks,
- Nik
+-Toke
+
+---
+
+Ilya Ponetayev (2):
+      sch_cake: fix IP protocol handling in the presence of VLAN tags
+      sch_cake: don't try to reallocate or unshare skb unconditionally
+
+Kevin Darbyshire-Bryant (1):
+      sch_cake: add RFC 8622 LE PHB support to CAKE diffserv handling
+
+Toke Høiland-Jørgensen (2):
+      sch_cake: don't call diffserv parsing code when it is not needed
+      sch_cake: fix a few style nits
+
+
+ net/sched/sch_cake.c | 66 ++++++++++++++++++++++++++++++--------------
+ 1 file changed, 45 insertions(+), 21 deletions(-)
 
