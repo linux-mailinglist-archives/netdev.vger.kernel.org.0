@@ -2,56 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C73420A8D3
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 01:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A9AA20A91A
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 01:32:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407816AbgFYX0p convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Jun 2020 19:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
+        id S1725834AbgFYXb4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Jun 2020 19:31:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390973AbgFYX0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 19:26:42 -0400
+        with ESMTP id S1725554AbgFYXbz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 19:31:55 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A778C08C5C1;
-        Thu, 25 Jun 2020 16:26:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5A8C08C5C1
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 16:31:55 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 39736154CEC44;
-        Thu, 25 Jun 2020 16:26:42 -0700 (PDT)
-Date:   Thu, 25 Jun 2020 16:26:41 -0700 (PDT)
-Message-Id: <20200625.162641.1460713778895823529.davem@davemloft.net>
-To:     rao.shoaib@oracle.com
-Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        leon@kernel.org, ka-cheong.poon@oracle.com,
-        haakon.bugge@oracle.com, somasundaram.krishnasamy@oracle.com
-Subject: Re: [PATCH v2] rds: transport module should be auto loaded when
- transport is set
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0BD5E154FE830;
+        Thu, 25 Jun 2020 16:31:55 -0700 (PDT)
+Date:   Thu, 25 Jun 2020 16:31:54 -0700 (PDT)
+Message-Id: <20200625.163154.920576324128273596.davem@davemloft.net>
+To:     toke@redhat.com
+Cc:     ldir@darbyshire-bryant.me.uk, netdev@vger.kernel.org,
+        cake@lists.bufferbloat.net
+Subject: Re: [PATCH RESEND net-next] sch_cake: add RFC 8622 LE PHB support
+ to CAKE diffserv handling
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200625204600.24174-1-rao.shoaib@oracle.com>
-References: <20200625204600.24174-1-rao.shoaib@oracle.com>
+In-Reply-To: <20200625201800.208689-1-toke@redhat.com>
+References: <20200625201800.208689-1-toke@redhat.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 25 Jun 2020 16:26:42 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 25 Jun 2020 16:31:55 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: rao.shoaib@oracle.com
-Date: Thu, 25 Jun 2020 13:46:00 -0700
+From: Toke Høiland-Jørgensen <toke@redhat.com>
+Date: Thu, 25 Jun 2020 22:18:00 +0200
 
-> From: Rao Shoaib <rao.shoaib@oracle.com>
+> From: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
 > 
-> This enhancement auto loads transport module when the transport
-> is set via SO_RDS_TRANSPORT socket option.
+> Change tin mapping on diffserv3, 4 & 8 for LE PHB support, in essence
+> making LE a member of the Bulk tin.
 > 
-> Reviewed-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
-> Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
-> Signed-off-by: Rao Shoaib <rao.shoaib@oracle.com>
-> Signed-off-by: Somasundaram Krishnasamy <somasundaram.krishnasamy@oracle.com>
+> Bulk has the least priority and minimum of 1/16th total bandwidth in the
+> face of higher priority traffic.
+> 
+> NB: Diffserv 3 & 4 swap tin 0 & 1 priorities from the default order as
+> found in diffserv8, in case anyone is wondering why it looks a bit odd.
+> 
+> Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+> [ reword commit message slightly ]
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 
-Applied, thanks.
+Applied, thanks!
