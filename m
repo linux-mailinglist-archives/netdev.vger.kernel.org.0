@@ -2,113 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E18F9209EF3
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 14:56:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB999209FAE
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 15:22:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404764AbgFYM4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 08:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
+        id S2405001AbgFYNWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 09:22:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404740AbgFYM4h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 08:56:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4B6C0613ED
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 05:56:37 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1joRQg-0003qa-Qe; Thu, 25 Jun 2020 14:56:34 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:91ce:cb25:a5b8:f43f] (unknown [IPv6:2a03:f580:87bc:d400:91ce:cb25:a5b8:f43f])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id AFC8252195C;
-        Thu, 25 Jun 2020 12:56:33 +0000 (UTC)
-Subject: Re: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
-To:     Michael Walle <michael@walle.cc>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     linux-can@vger.kernel.org, dl-linux-imx <linux-imx@nxp.com>,
-        netdev@vger.kernel.org
-References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
- <20200416093126.15242-2-qiangqing.zhang@nxp.com>
- <DB8PR04MB6795F7E28A9964A121A06140E6D80@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <d5579883c7e9ab3489ec08a73c407982@walle.cc>
- <39b5d77bda519c4d836f44a554890bae@walle.cc>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
- iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
- Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
- Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
- tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
- yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
- BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
- mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
- 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
- Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
- 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXz
-Message-ID: <e38cf40b-ead3-81de-0be7-18cca5ca1a0c@pengutronix.de>
-Date:   Thu, 25 Jun 2020 14:56:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        with ESMTP id S2404805AbgFYNW3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 09:22:29 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFC8C08C5C1;
+        Thu, 25 Jun 2020 06:22:29 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id u185so984416pfu.1;
+        Thu, 25 Jun 2020 06:22:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Mqx674vRJl6DMWpucWWZjOOsJT1naIS1olIEvSAr8p4=;
+        b=tdbpncarE6FmGslXExVp/+CjmFJv4djGCEHuaeweAovTDlt9QcOgvfZKMvyvDjST7+
+         TwBhvjJRFSyJFLgOhZXEOyYmDHYyxGqWT4D/a7C3aW2923kC6i3GAG1atgB+0hsh311u
+         lIGMH4ZhzSTJr7frg/0Cq2ALYnOgkniLPvfDTFg1ZVj3K7vLpOKbywGCYXF26kegOfLn
+         y4qcyIb3EIqaLE4ovEChgNSuNCyUBwHYdb8RBPyow0VnNTDpIU7Noo7ynSPwGgKwrDb1
+         NMbvUAee43WkMSPQMupQtMRQf7FbeYpELqTVOX43DKY+gKFo8p8jChBND9dr3DNFMvsA
+         1FNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Mqx674vRJl6DMWpucWWZjOOsJT1naIS1olIEvSAr8p4=;
+        b=coIgcZZye5i0duCE1xilWRoVJS0Kz7wPzoZ9oyRywO4VWl5Cd4r733oErK4qfn1k5E
+         Dctzl6rfxJk4rsvzlnCrjd1K4KR1MT9J9JggWvxUGUEGtCC5Mo8lbEySHlYtERFiLx1U
+         u1PJglcC6lQF6YZvRvJw/SZQUTqFVk0Tq+4jIqGduPX8g1iqES92R32xOubPT7p5gHl7
+         JUOL9wBV+Dp8uRibS9Lm8MhB7ZI55UxPOLzVzZsbn2uvalYqzn97Vbcml3kOekfEGiuF
+         tllX+qxWFqzbzfAhrPo6VpObZPEKJe+xAXK4JsRZCYrKFBK9X0R3HAc9GhljAsVKP0dq
+         vudg==
+X-Gm-Message-State: AOAM532u8UQr+HGtbnUyWdt0lZdIUmSTVPuUOVVf+bLy9kx94JRbbNS1
+        dG970FzzTU2Ms+lWzDKnpiTpVtEA
+X-Google-Smtp-Source: ABdhPJySB6ZtQ7LGWzqOeMOvggerZvrNttDdyUhEPXWL4c5ap6NVFSXsIW0i3yG/I0nwC7/pc5KKOQ==
+X-Received: by 2002:a63:a558:: with SMTP id r24mr26952582pgu.70.1593091349296;
+        Thu, 25 Jun 2020 06:22:29 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id j17sm20332958pgk.66.2020.06.25.06.22.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Jun 2020 06:22:28 -0700 (PDT)
+Date:   Thu, 25 Jun 2020 06:22:26 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        allan.nielsen@microchip.com, foss@0leil.net
+Subject: Re: [PATCH net-next v4 6/8] net: phy: mscc: timestamping and PHC
+ support
+Message-ID: <20200625132226.GC2548@localhost>
+References: <20200623143014.47864-1-antoine.tenart@bootlin.com>
+ <20200623143014.47864-7-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
-In-Reply-To: <39b5d77bda519c4d836f44a554890bae@walle.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200623143014.47864-7-antoine.tenart@bootlin.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/25/20 2:37 PM, Michael Walle wrote:
-> Am 2020-06-02 12:15, schrieb Michael Walle:
->> Hi Marc,
->>
->> Am 2020-04-16 11:41, schrieb Joakim Zhang:
->>> Hi Marc,
->>>
->>> How about FlexCAN FD patch set, it is pending for a long time. Many
->>> work would base on it, we are happy to see it in upstream mainline
->>> ASAP.
->>>
->>> Michael Walle also gives out the test-by tag:
->>> 	Tested-by: Michael Walle <michael@walle.cc>
->>
->> There seems to be no activity for months here. Any reason for that? Is
->> there anything we can do to speed things up?
-> 
-> ping.. There are no replies or anything. Sorry but this is really
-> annoying and frustrating.
-> 
-> Marc, is there anything wrong with the flexcan patches?
+On Tue, Jun 23, 2020 at 04:30:12PM +0200, Antoine Tenart wrote:
+> @@ -978,9 +1483,32 @@ static int __vsc8584_init_ptp(struct phy_device *phydev)
+>  
+>  	vsc85xx_ts_eth_cmp1_sig(phydev);
+>  
+> +	vsc8531->mii_ts.rxtstamp = vsc85xx_rxtstamp;
+> +	vsc8531->mii_ts.txtstamp = vsc85xx_txtstamp;
+> +	vsc8531->mii_ts.hwtstamp = vsc85xx_hwtstamp;
+> +	vsc8531->mii_ts.ts_info  = vsc85xx_ts_info;
+> +	phydev->mii_ts = &vsc8531->mii_ts;
+> +
+> +	memcpy(&vsc8531->ptp->caps, &vsc85xx_clk_caps, sizeof(vsc85xx_clk_caps));
+> +
+> +	vsc8531->ptp->ptp_clock = ptp_clock_register(&vsc8531->ptp->caps,
+> +						     &phydev->mdio.dev);
+> +	if (IS_ERR(vsc8531->ptp->ptp_clock))
+> +		return PTR_ERR(vsc8531->ptp->ptp_clock);
 
-I've cleaned up the patches a bit, can you test this branch:
+The ptp_clock_register() method can also return NULL:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/log/?h=flexcan
+ * Returns a valid pointer on success or PTR_ERR on failure.  If PHC
+ * support is missing at the configuration level, this function
+ * returns NULL, and drivers are expected to gracefully handle that
+ * case separately.
 
-Marc
-
--- 
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Thanks,
+Richard
