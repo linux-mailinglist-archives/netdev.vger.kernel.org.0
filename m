@@ -2,98 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BEB9209F00
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 14:58:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D978C209E8F
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 14:37:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404791AbgFYM6i convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Jun 2020 08:58:38 -0400
-Received: from smtprelay08.ispgateway.de ([134.119.228.98]:28265 "EHLO
-        smtprelay08.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404650AbgFYM6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 08:58:38 -0400
-X-Greylist: delayed 2034 seconds by postgrey-1.27 at vger.kernel.org; Thu, 25 Jun 2020 08:58:36 EDT
-Received: from [89.1.81.74] (helo=ipc1.ka-ro)
-        by smtprelay08.ispgateway.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <LW@KARO-electronics.de>)
-        id 1joQvk-0003Qs-9b; Thu, 25 Jun 2020 14:24:36 +0200
-Date:   Thu, 25 Jun 2020 14:24:35 +0200
-From:   Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     Sriram Dash <sriram.dash@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH BUGFIX] can: m_can: make m_can driver work with sleep state
- pinconfig
-Message-ID: <20200625142435.50371e2f@ipc1.ka-ro>
-Organization: Ka-Ro electronics GmbH
+        id S2404686AbgFYMhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 08:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57556 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404285AbgFYMhr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 08:37:47 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1D0C061573;
+        Thu, 25 Jun 2020 05:37:47 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 7634E22F99;
+        Thu, 25 Jun 2020 14:37:43 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1593088663;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kko6KPRJbrrxd/OzuO+4kiTUvVjfUZwSZ/cLISnq5wo=;
+        b=igFGtRzt+YksWixMjHX1+e8P0eA9n7wLET+6ciylTzLs3QGHj5aRji1JuSOwVs6PvKmZZD
+        dEmE22dfVtJnA6swBgnijO9RgDvaj2jz5oCIIQpGnq/yreoGsxDBLQ9yL3oypYVDDIAl5M
+        yfJQ3pH2ZlTgDxirtpZlZnHCb5xZZhw=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Df-Sender: bHdAa2Fyby1lbGVjdHJvbmljcy5kb21haW5mYWN0b3J5LWt1bmRlLmRl
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 25 Jun 2020 14:37:43 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>, mkl@pengutronix.de
+Cc:     linux-can@vger.kernel.org, dl-linux-imx <linux-imx@nxp.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
+In-Reply-To: <d5579883c7e9ab3489ec08a73c407982@walle.cc>
+References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
+ <20200416093126.15242-2-qiangqing.zhang@nxp.com>
+ <DB8PR04MB6795F7E28A9964A121A06140E6D80@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <d5579883c7e9ab3489ec08a73c407982@walle.cc>
+User-Agent: Roundcube Webmail/1.4.5
+Message-ID: <39b5d77bda519c4d836f44a554890bae@walle.cc>
+X-Sender: michael@walle.cc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Am 2020-06-02 12:15, schrieb Michael Walle:
+> Hi Marc,
+> 
+> Am 2020-04-16 11:41, schrieb Joakim Zhang:
+>> Hi Marc,
+>> 
+>> How about FlexCAN FD patch set, it is pending for a long time. Many
+>> work would base on it, we are happy to see it in upstream mainline
+>> ASAP.
+>> 
+>> Michael Walle also gives out the test-by tag:
+>> 	Tested-by: Michael Walle <michael@walle.cc>
+> 
+> There seems to be no activity for months here. Any reason for that? Is
+> there anything we can do to speed things up?
 
-When trying to use the m_can driver on an stm32mp15 based system, I
-found that I could not send or receive any data.
-Analyzing the pinctrl registers revealed, that the pins were
-configured for sleep state even when the can interfaces were in use.
+ping.. There are no replies or anything. Sorry but this is really
+annoying and frustrating.
 
-Looking at the m_can_platform.c driver I found that:
+Marc, is there anything wrong with the flexcan patches?
 
-commit f524f829b75a ("can: m_can: Create a m_can platform framework")
-
-introduced a call to m_can_class_suspend() in the m_can_runtime_suspend()
-function which wasn't there in the original code and which causes the
-pins used by the controller to be configured for sleep state.
-
-commit 0704c5743694 ("can: m_can_platform: remove unnecessary m_can_class_resume() call")
-already removed a bogus call to m_can_class_resume() from the
-m_can_runtime_resume() function, but failed to remove the matching
-call to m_can_class_suspend() from the m_can_runtime_suspend() function.
-
-Removing the bogus call to m_can_class_suspend() in the
-m_can_runtime_suspend() function fixes this.
-
-Fixes: f524f829b75a ("can: m_can: Create a m_can platform framework")
-Fixes: 0704c5743694 ("can: m_can_platform: remove unnecessary m_can_class_resume() call")
-Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
----
- drivers/net/can/m_can/m_can_platform.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index 38ea5e600fb8..e6d0cb9ee02f 100644
---- a/drivers/net/can/m_can/m_can_platform.c
-+++ b/drivers/net/can/m_can/m_can_platform.c
-@@ -144,8 +144,6 @@ static int __maybe_unused m_can_runtime_suspend(struct device *dev)
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct m_can_classdev *mcan_class = netdev_priv(ndev);
- 
--	m_can_class_suspend(dev);
--
- 	clk_disable_unprepare(mcan_class->cclk);
- 	clk_disable_unprepare(mcan_class->hclk);
- 
--- 
-2.11.0
-
-
-
--- 
-___________________________________________________________
-
-Ka-Ro electronics GmbH | Pascalstraße 22 | D - 52076 Aachen
-Phone: +49 2408 1402-0 | Fax: +49 2408 1402-10
-Geschäftsführer: Matthias Kaussen
-Handelsregistereintrag: Amtsgericht Aachen, HRB 4996
-
-www.karo-electronics.de | info@karo-electronics.de
-___________________________________________________________
+-michael
