@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2C6A20A1D3
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 17:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2768B20A1D5
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 17:24:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405819AbgFYPX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 11:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
+        id S2405826AbgFYPYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 11:24:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405394AbgFYPX4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 11:23:56 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F78C08C5C1
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 08:23:56 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id m21so4507596eds.13
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 08:23:56 -0700 (PDT)
+        with ESMTP id S2405394AbgFYPYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 11:24:05 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1082C08C5C1
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 08:24:04 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id i14so6344330ejr.9
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 08:24:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Ne2fGgNBRhlxGm756ypk1EShFRK2zh9jHD0nEGHpNdk=;
-        b=mzBBq9oDWgfgfIOkXu5TvmItGU3ru7WVjikPazMKhNWJx2z3nW9yjBxPeO8hsCIPyR
-         b3VP5Hm/TKFiyQsVJSfMXVXb2BbtPTPqYFr4NlwdWkhjMZg4PnByskv6+tdCqQuKsDwT
-         BtQE4MrepWdwbUkIrVqWTyOSLA3Jaj4foTrtGScuPL6FMM0aBxIR/tE5NvXLfsqFog2I
-         xqMi8H6OyK9XDbBZ7ITpCFMG43LJz0n2b8IXJCiJZSxT8NTDotgF65mm2EnN71QL6eaD
-         jMwp9IFCcnh77zeugq39UOsS0dYuyyRz0Qm0hA4dihbg3gc6S8n5QK4ksbdRHm4rSzzU
-         +JCg==
+        bh=uy4cc04lGctIV8y5qbKXSbMwhHgLQfNZ4JjK7jOuGek=;
+        b=GM+1O3e865DRz13ba7+2uyNzGrxTJgyEtYzBiYxpxJFhSIOkagax3009NesAaZsOG0
+         e59yr34hVWuLLyvtIZTDFB6ZaHEVhPwwzoXPhx01tHja5YS9O7klC7xfKJKcNWaEVBNX
+         us6O+rWUnWwNkxH40nyGIJke8zhZHy1049hdjq39VTY8LPYSoJbtKyYrRCbnEJTUKBw6
+         xZ7GHoeAcfimC/QUp+ycV4AYcUkhfb2Y45OcX8nS/TkBLeXsHUa3+qeyeR5utLN6hcxO
+         YqZu53J8SnznnA7Wlf1dO9wDy+XLRty16bcHeM/OvgGwonzrsDt0mlh0fePCyE4vv18j
+         TGjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Ne2fGgNBRhlxGm756ypk1EShFRK2zh9jHD0nEGHpNdk=;
-        b=L3nbzlOiORJfzkfDQu2XHZLC4gKIeddNwZGb/cIEOn//yUdsh3HmNF9UBu6BTfxk+T
-         sWwenBo4ONAmGEijeLd0dD32rkLxkWYPsQxACa94+wTK4R05ljdORgak7cZz9+6pd2yw
-         b21KeYDbLPp5RTvJ2E8Cb9qJi6GggkwZk6/mPD7S0sDwgS/ZtveQWVrxqHnrBa5G8LHH
-         4ESJkKmDH+Xft3J/rjslkfu9ilkxMKH73dpQpFug8rcsVOOvQfOaLSS1qNbof7H3HgPG
-         rcEszqZmr+YPFCtpqr0oMNaBwdA3w7iff9S/5aWNtFirtj7XKc3sN3IiXgmh8ErAZgf7
-         yC/w==
-X-Gm-Message-State: AOAM5324F/J8rotOW5WiSKTfvb0icKehj1oPD017dzhPrj9efQgYBhrF
-        +SfBQOnmY4us8QlviIBoVTY=
-X-Google-Smtp-Source: ABdhPJzfDAbh9mylWFY+UG1PJEScLIuqfhfWPXCp9d9QdpEp/qFypYcxICgQ2l3bYRtdsJCoXAVrIg==
-X-Received: by 2002:a50:c219:: with SMTP id n25mr32943067edf.306.1593098634721;
-        Thu, 25 Jun 2020 08:23:54 -0700 (PDT)
+        bh=uy4cc04lGctIV8y5qbKXSbMwhHgLQfNZ4JjK7jOuGek=;
+        b=ov0CKN8j9CY2yBc9FlsnnehqoZVqSc+E5FYuutuk9eNa4YgALpjfL+j91DZ8GTR8Qf
+         IzBFVyVleUJiMilMj7MFiLmnJ3VoTt/oHWGdI3Lae/b3713YSmnVGvMx9V1b3CUYjXr7
+         M9/aUrdIweq/RE3LmTPslSwVIwXUn2uVwF+indniQgcA0okN8pDDrObudjFDsphODuEM
+         BcGuwcBOiyqZByYpXityyUSqaCe7HKvw41FrJe8Dl8ofT2IZfhV9C/hz8KVw+OWd15eC
+         RnccIjjtcO85uX1QekGyGzDSTXakLS6oU8DDwnfVJOfK+45/C7XwZjKX1yED4IJAX4H1
+         LeLA==
+X-Gm-Message-State: AOAM533iy71AWc2khy+VMnpeDXAh1SDliGSghAlMryTofCXVWFuKNjU5
+        zPZWdgU//NQJ3nVnD797nbk=
+X-Google-Smtp-Source: ABdhPJy3WgrXToSB6MNkzeEi9iBxec4iNQRFPwKbPqqFrPGPIad/7a16m3egoZRHxAR3O9du2oeVaw==
+X-Received: by 2002:a17:906:1ed2:: with SMTP id m18mr28958227ejj.529.1593098643565;
+        Thu, 25 Jun 2020 08:24:03 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.56.128])
-        by smtp.gmail.com with ESMTPSA id o17sm9102898ejb.105.2020.06.25.08.23.50
+        by smtp.gmail.com with ESMTPSA id o17sm9102898ejb.105.2020.06.25.08.23.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jun 2020 08:23:52 -0700 (PDT)
+        Thu, 25 Jun 2020 08:24:00 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
         ioana.ciornei@nxp.com, linux@armlinux.org.uk
-Subject: [PATCH net-next 4/7] net: dsa: felix: set proper pause frame timers based on link speed
-Date:   Thu, 25 Jun 2020 18:23:28 +0300
-Message-Id: <20200625152331.3784018-5-olteanv@gmail.com>
+Subject: [PATCH net-next 5/7] net: dsa: felix: delete .phylink_mac_an_restart code
+Date:   Thu, 25 Jun 2020 18:23:29 +0300
+Message-Id: <20200625152331.3784018-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200625152331.3784018-1-olteanv@gmail.com>
 References: <20200625152331.3784018-1-olteanv@gmail.com>
@@ -67,61 +67,125 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-state->speed holds a value of 10, 100, 1000 or 2500, but
-SYS_MAC_FC_CFG_FC_LINK_SPEED expects a value in the range 0, 1, 2 or 3.
+In hardware, the AN_RESTART field for these SerDes protocols (SGMII,
+USXGMII) clears the resolved configuration from the PCS's
+auto-negotiation state machine.
 
-So set the correct speed encoding into this register.
+But PHYLINK has a different interpretation of "AN restart". It assumes
+that this Linux system is capable of re-triggering an auto-negotiation
+sequence, something which is only possible with 1000Base-X and
+2500Base-X, where the auto-negotiation is symmetrical. In SGMII and
+USXGMII, there's an AN master and an AN slave, and it isn't so much of
+"auto-negotiation" as it is "PHY passing the resolved link state on to
+the MAC".
+
+So, in PHYLINK's interpretation of "AN restart", it doesn't make sense
+to do anything for SGMII and USXGMII. In fact, PHYLINK won't even call
+us for any other SerDes protocol than 1000Base-X and 2500Base-X. But we
+are not supporting those. So just remove this code.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix.c | 27 +++++++++++++++++++++++----
- 1 file changed, 23 insertions(+), 4 deletions(-)
+ drivers/net/dsa/ocelot/felix.c         | 10 -------
+ drivers/net/dsa/ocelot/felix.h         |  1 -
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 37 --------------------------
+ 3 files changed, 48 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index d229cb5d5f9e..da337c63e7ca 100644
+index da337c63e7ca..4ec05090121c 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -250,10 +250,25 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
- 			   DEV_CLOCK_CFG_LINK_SPEED(OCELOT_SPEED_1000),
- 			   DEV_CLOCK_CFG);
+@@ -296,15 +296,6 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+ 						  state->speed);
+ }
  
--	/* Flow control. Link speed is only used here to evaluate the time
--	 * specification in incoming pause frames.
--	 */
--	mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(state->speed);
-+	switch (state->speed) {
-+	case SPEED_10:
-+		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(3);
-+		break;
-+	case SPEED_100:
-+		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(2);
-+		break;
-+	case SPEED_1000:
-+	case SPEED_2500:
-+		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(1);
-+		break;
-+	case SPEED_UNKNOWN:
-+		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(0);
-+		break;
-+	default:
-+		dev_err(ocelot->dev, "Unsupported speed on port %d: %d\n",
-+			port, state->speed);
-+		return;
-+	}
+-static void felix_phylink_mac_an_restart(struct dsa_switch *ds, int port)
+-{
+-	struct ocelot *ocelot = ds->priv;
+-	struct felix *felix = ocelot_to_felix(ocelot);
+-
+-	if (felix->info->pcs_an_restart)
+-		felix->info->pcs_an_restart(ocelot, port);
+-}
+-
+ static void felix_phylink_mac_link_down(struct dsa_switch *ds, int port,
+ 					unsigned int link_an_mode,
+ 					phy_interface_t interface)
+@@ -812,7 +803,6 @@ static const struct dsa_switch_ops felix_switch_ops = {
+ 	.phylink_validate	= felix_phylink_validate,
+ 	.phylink_mac_link_state	= felix_phylink_mac_pcs_get_state,
+ 	.phylink_mac_config	= felix_phylink_mac_config,
+-	.phylink_mac_an_restart	= felix_phylink_mac_an_restart,
+ 	.phylink_mac_link_down	= felix_phylink_mac_link_down,
+ 	.phylink_mac_link_up	= felix_phylink_mac_link_up,
+ 	.port_enable		= felix_port_enable,
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index a891736ca006..4a4cebcf04a7 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -31,7 +31,6 @@ struct felix_info {
+ 	void	(*pcs_init)(struct ocelot *ocelot, int port,
+ 			    unsigned int link_an_mode,
+ 			    const struct phylink_link_state *state);
+-	void	(*pcs_an_restart)(struct ocelot *ocelot, int port);
+ 	void	(*pcs_link_state)(struct ocelot *ocelot, int port,
+ 				  struct phylink_link_state *state);
+ 	int	(*prevalidate_phy_mode)(struct ocelot *ocelot, int port,
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index c1220b488f9c..7d2673dab7d3 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -728,42 +728,6 @@ static int vsc9959_reset(struct ocelot *ocelot)
+ 	return 0;
+ }
  
- 	/* handle Rx pause in all cases, with 2500base-X this is used for rate
- 	 * adaptation.
-@@ -265,6 +280,10 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
- 			      SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
- 			      SYS_MAC_FC_CFG_FC_LATENCY_CFG(0x7) |
- 			      SYS_MAC_FC_CFG_ZERO_PAUSE_ENA;
-+
-+	/* Flow control. Link speed is only used here to evaluate the time
-+	 * specification in incoming pause frames.
-+	 */
- 	ocelot_write_rix(ocelot, mac_fc_cfg, SYS_MAC_FC_CFG, port);
- 
- 	ocelot_write_rix(ocelot, 0, ANA_POL_FLOWC, port);
+-static void vsc9959_pcs_an_restart_sgmii(struct phy_device *pcs)
+-{
+-	phy_set_bits(pcs, MII_BMCR, BMCR_ANRESTART);
+-}
+-
+-static void vsc9959_pcs_an_restart_usxgmii(struct phy_device *pcs)
+-{
+-	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_BMCR,
+-		      USXGMII_BMCR_RESET |
+-		      USXGMII_BMCR_AN_EN |
+-		      USXGMII_BMCR_RST_AN);
+-}
+-
+-static void vsc9959_pcs_an_restart(struct ocelot *ocelot, int port)
+-{
+-	struct felix *felix = ocelot_to_felix(ocelot);
+-	struct phy_device *pcs = felix->pcs[port];
+-
+-	if (!pcs)
+-		return;
+-
+-	switch (pcs->interface) {
+-	case PHY_INTERFACE_MODE_SGMII:
+-	case PHY_INTERFACE_MODE_QSGMII:
+-		vsc9959_pcs_an_restart_sgmii(pcs);
+-		break;
+-	case PHY_INTERFACE_MODE_USXGMII:
+-		vsc9959_pcs_an_restart_usxgmii(pcs);
+-		break;
+-	default:
+-		dev_err(ocelot->dev, "Invalid PCS interface type %s\n",
+-			phy_modes(pcs->interface));
+-		break;
+-	}
+-}
+-
+ /* We enable SGMII AN only when the PHY has managed = "in-band-status" in the
+  * device tree. If we are in MLO_AN_PHY mode, we program directly state->speed
+  * into the PCS, which is retrieved out-of-band over MDIO. This also has the
+@@ -1412,7 +1376,6 @@ struct felix_info felix_info_vsc9959 = {
+ 	.mdio_bus_alloc		= vsc9959_mdio_bus_alloc,
+ 	.mdio_bus_free		= vsc9959_mdio_bus_free,
+ 	.pcs_init		= vsc9959_pcs_init,
+-	.pcs_an_restart		= vsc9959_pcs_an_restart,
+ 	.pcs_link_state		= vsc9959_pcs_link_state,
+ 	.prevalidate_phy_mode	= vsc9959_prevalidate_phy_mode,
+ 	.port_setup_tc          = vsc9959_port_setup_tc,
 -- 
 2.25.1
 
