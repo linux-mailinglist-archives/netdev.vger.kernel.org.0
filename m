@@ -2,182 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2054F20A44B
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:53:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CB6620A454
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406953AbgFYRxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 13:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405562AbgFYRxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 13:53:44 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1EDDC08C5C1
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 10:53:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=l1d4k+qidihXGw3BuOAQEZXl3baPIxHcq6E/8njfyIc=; b=JXnUiNef+bq/piCj7t4r6mEvl
-        AZLUv+VYvk7HjKiZebcKDW8xJZOaCs42Q6pnKVbV5kEded5a4gPNPVnIeOvzloRQVRej6TrHp6Y/U
-        MrV33WPChaBe/6UNu2GDma+oq5fL/zmHoBs4j5lT+9CzqHFBPCQdlTlIrZWVBIwQclbmfF7+kqiGm
-        PewOG1FUMkJeRoujCie6apjrkZQ/sBvvL3kmpe7bdl0UosmBF9gyRv1aoYZ9ILfC289k8wO8EwStK
-        fyPIuS3nRddSkhJ4I0y1zB2xTQtCF0e71N0O+504TA8C1wft/Mlr1j4PMYUIu5r6X249gD5O76bvK
-        IjxCuSpzA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59670)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1joW4B-0004f9-Ak; Thu, 25 Jun 2020 18:53:39 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1joW48-0003C7-H8; Thu, 25 Jun 2020 18:53:36 +0100
-Date:   Thu, 25 Jun 2020 18:53:36 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: [PATCH net-next 4/7] net: dsa: felix: set proper pause frame
- timers based on link speed
-Message-ID: <20200625175336.GM1551@shell.armlinux.org.uk>
-References: <20200625152331.3784018-1-olteanv@gmail.com>
- <20200625152331.3784018-5-olteanv@gmail.com>
- <20200625163715.GH1551@shell.armlinux.org.uk>
- <CA+h21hqVF-QkyuhPY9AjOmebYBKhLH7ACo4cdWa8q2Y_7jRHbg@mail.gmail.com>
- <20200625165818.GK1551@shell.armlinux.org.uk>
- <CA+h21hp_9R_DiYRQU4q7vGi5N+QGX6CzMZT03yQzmiFn5VSrZA@mail.gmail.com>
+        id S2406981AbgFYR45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 13:56:57 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:60440 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405512AbgFYR45 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 13:56:57 -0400
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTP id 832D1200E2DC;
+        Thu, 25 Jun 2020 19:56:42 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 832D1200E2DC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1593107802;
+        bh=tP6vfPud6JkTtCNw0WCLhQqgKT74NJjbmp3KAZ8vlOg=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=FvOYqJ4NLHYhbXpFyRViwvc4FHqL59+nQcJVklHhD6xWQIhGNNtbQulTzyPug3Och
+         QnGImJ4PFDoA9b1cfj7Wyew3Z6xSQhGTtFjMNPv2o8ebTEmq9F8sH6kS42XNU5D8bd
+         7eBIhoMUSzGLXzqQYls3r6cPz1dKnugds4KpuWPZQPaOxQ2TN226EdLLhdW88Lp9aF
+         iIVdBN+wdAxbcFUUPEFx6ITMP6CGKpt1lSpg0ROM0xXhLq1DHO5WznsypYeTvVFJ3Q
+         Mafz6iiSN2QVtNtBsldarpvOcQg6E6PrUt7rlbAdXcQJFCcOL7rP+mRo5DgMClCefJ
+         Z8eny7QiWx2LA==
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 79B58129EB1E;
+        Thu, 25 Jun 2020 19:56:42 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id dNPMmfrAuuiu; Thu, 25 Jun 2020 19:56:42 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 61909129E7CC;
+        Thu, 25 Jun 2020 19:56:42 +0200 (CEST)
+Date:   Thu, 25 Jun 2020 19:56:42 +0200 (CEST)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Message-ID: <1597014330.36579162.1593107802322.JavaMail.zimbra@uliege.be>
+In-Reply-To: <CALx6S374PQ7GGA_ey6wCwc55hUzOx+2kWT=96TzyF0=g=8T=WA@mail.gmail.com>
+References: <20200624192310.16923-1-justin.iurman@uliege.be> <20200624192310.16923-3-justin.iurman@uliege.be> <CALx6S374PQ7GGA_ey6wCwc55hUzOx+2kWT=96TzyF0=g=8T=WA@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/5] ipv6: IOAM tunnel decapsulation
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hp_9R_DiYRQU4q7vGi5N+QGX6CzMZT03yQzmiFn5VSrZA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [109.129.49.166]
+X-Mailer: Zimbra 8.8.15_GA_3901 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3895)
+Thread-Topic: ipv6: IOAM tunnel decapsulation
+Thread-Index: f2aFup7KwYMSMhI24VJ0j2/2xdVdSA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 08:06:08PM +0300, Vladimir Oltean wrote:
-> On Thu, 25 Jun 2020 at 19:58, Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> >
-> > On Thu, Jun 25, 2020 at 07:48:23PM +0300, Vladimir Oltean wrote:
-> > > On Thu, 25 Jun 2020 at 19:37, Russell King - ARM Linux admin
-> > > <linux@armlinux.org.uk> wrote:
-> > > >
-> > > > On Thu, Jun 25, 2020 at 06:23:28PM +0300, Vladimir Oltean wrote:
-> > > > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > > >
-> > > > > state->speed holds a value of 10, 100, 1000 or 2500, but
-> > > > > SYS_MAC_FC_CFG_FC_LINK_SPEED expects a value in the range 0, 1, 2 or 3.
-> > > > >
-> > > > > So set the correct speed encoding into this register.
-> > > > >
-> > > > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > > > ---
-> > > > >  drivers/net/dsa/ocelot/felix.c | 27 +++++++++++++++++++++++----
-> > > > >  1 file changed, 23 insertions(+), 4 deletions(-)
-> > > > >
-> > > > > diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-> > > > > index d229cb5d5f9e..da337c63e7ca 100644
-> > > > > --- a/drivers/net/dsa/ocelot/felix.c
-> > > > > +++ b/drivers/net/dsa/ocelot/felix.c
-> > > > > @@ -250,10 +250,25 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
-> > > > >                          DEV_CLOCK_CFG_LINK_SPEED(OCELOT_SPEED_1000),
-> > > > >                          DEV_CLOCK_CFG);
-> > > > >
-> > > > > -     /* Flow control. Link speed is only used here to evaluate the time
-> > > > > -      * specification in incoming pause frames.
-> > > > > -      */
-> > > > > -     mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(state->speed);
-> > > > > +     switch (state->speed) {
-> > > > > +     case SPEED_10:
-> > > > > +             mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(3);
-> > > > > +             break;
-> > > > > +     case SPEED_100:
-> > > > > +             mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(2);
-> > > > > +             break;
-> > > > > +     case SPEED_1000:
-> > > > > +     case SPEED_2500:
-> > > > > +             mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(1);
-> > > > > +             break;
-> > > > > +     case SPEED_UNKNOWN:
-> > > > > +             mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(0);
-> > > > > +             break;
-> > > > > +     default:
-> > > > > +             dev_err(ocelot->dev, "Unsupported speed on port %d: %d\n",
-> > > > > +                     port, state->speed);
-> > > > > +             return;
-> > > > > +     }
-> > > > >
-> > > > >       /* handle Rx pause in all cases, with 2500base-X this is used for rate
-> > > > >        * adaptation.
-> > > > > @@ -265,6 +280,10 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
-> > > > >                             SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
-> > > > >                             SYS_MAC_FC_CFG_FC_LATENCY_CFG(0x7) |
-> > > > >                             SYS_MAC_FC_CFG_ZERO_PAUSE_ENA;
-> > > > > +
-> > > > > +     /* Flow control. Link speed is only used here to evaluate the time
-> > > > > +      * specification in incoming pause frames.
-> > > > > +      */
-> > > > >       ocelot_write_rix(ocelot, mac_fc_cfg, SYS_MAC_FC_CFG, port);
-> > > >
-> > > > I'm not that happy with the persistence of felix using the legacy
-> > > > method; I can bring a horse to water but can't make it drink comes
-> > > > to mind.  I'm at the point where I don't care _if_ my phylink changes
-> > > > break code that I've asked people to convert and they haven't yet,
-> > > > and I'm planning to send the series that /may/ cause breakage in
-> > > > that regard pretty soon, so the lynx PCS changes can move forward.
-> > > >
-> > > > I even tried to move felix forward by sending a patch for it, and I
-> > > > just gave up with that approach based on your comment.
-> > > >
-> > > > Shrug.
-> > > >
-> > > > --
-> > > > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> > > > FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
-> > >
-> > > The callbacks clearly work the way they are, given the current
-> > > structure of phylink, as proven by the users of this driver. Code that
-> > > isn't there yet simply isn't there yet.
-> > >
-> > > What you consider "useless churn" and what I consider "useless churn"
-> > > are pretty different things.
-> > > To me, patch 7/7 is the useless churn, that's why it's at the end.
-> > > Patches 1-6 are structured in a way that is compatible with
-> > > backporting to a stable 5.4 tree. Patch 7, not so much.
-> > >
-> > > The fact that you have such an attitude and you make the effort to
-> > > actually send an email complaining about me using state->speed in
-> > > .mac_config(), when literally 3 patches later I'm moving this
-> > > configuration where you want it to be, is pretty annoying.
-> >
-> > I have asked you to update felix _prior_ to my patch update, because
-> > I forsee the possibility for there to be breakage from pushing the
-> > PCS support further forward.  In other words, I see there to be a
-> > dependency between moving forward with PCS support and drivers that
-> > still use the legacy method.
-> >
-> > You don't see that, so you constantly bitch and moan.
-> >
+>> Implement the IOAM egress behavior.
+>>
+>> According to RFC 8200:
+>> "Extension headers (except for the Hop-by-Hop Options header) are not
+>>  processed, inserted, or deleted by any node along a packet's delivery
+>>  path, until the packet reaches the node (or each of the set of nodes,
+>>  in the case of multicast) identified in the Destination Address field
+>>  of the IPv6 header."
+>>
+>> Therefore, an ingress node (an IOAM domain border) must encapsulate an
+>> incoming IPv6 packet with another similar IPv6 header that will contain
+>> IOAM data while it traverses the domain. When leaving, the egress node,
+>> another IOAM domain border which is also the tunnel destination, must
+>> decapsulate the packet.
 > 
-> And that's what this patch series is, no?
-> Some cleanup needed to be done, and it needed to be done _before_ the
-> mac_link_up() conversion. And for things to go quicker, the cleanup
-> and the conversion are part of the same series.
+> This is just IP in IP encapsulation that happens to be terminated at
+> an egress node of the IOAM domain. The fact that it's IOAM isn't
+> germaine, this IP in IP is done in a variety of ways. We should be
+> using the normal protocol handler for NEXTHDR_IPV6  instead of special
+> case code.
 
-Right, which is what I find when I eventually get to patch 7, the patch
-that you called above "useless churn."  I'm not going to review patch 7
-tonight because of this fiasco.  To pissed off to do a decent job, so
-you're just going to have to wait.
+Agree. The reason for this special case code is that I was not aware of a more elegant solution.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Justin
+
+>> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
+>> ---
+>>  include/linux/ipv6.h |  1 +
+>>  net/ipv6/ip6_input.c | 22 ++++++++++++++++++++++
+>>  2 files changed, 23 insertions(+)
+>>
+>> diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+>> index 2cb445a8fc9e..5312a718bc7a 100644
+>> --- a/include/linux/ipv6.h
+>> +++ b/include/linux/ipv6.h
+>> @@ -138,6 +138,7 @@ struct inet6_skb_parm {
+>>  #define IP6SKB_HOPBYHOP        32
+>>  #define IP6SKB_L3SLAVE         64
+>>  #define IP6SKB_JUMBOGRAM      128
+>> +#define IP6SKB_IOAM           256
+>>  };
+>>
+>>  #if defined(CONFIG_NET_L3_MASTER_DEV)
+>> diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+>> index e96304d8a4a7..8cf75cc5e806 100644
+>> --- a/net/ipv6/ip6_input.c
+>> +++ b/net/ipv6/ip6_input.c
+>> @@ -361,9 +361,11 @@ INDIRECT_CALLABLE_DECLARE(int tcp_v6_rcv(struct sk_buff
+>> *));
+>>  void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
+>>                               bool have_final)
+>>  {
+>> +       struct inet6_skb_parm *opt = IP6CB(skb);
+>>         const struct inet6_protocol *ipprot;
+>>         struct inet6_dev *idev;
+>>         unsigned int nhoff;
+>> +       u8 hop_limit;
+>>         bool raw;
+>>
+>>         /*
+>> @@ -450,6 +452,25 @@ void ip6_protocol_deliver_rcu(struct net *net, struct
+>> sk_buff *skb, int nexthdr,
+>>         } else {
+>>                 if (!raw) {
+>>                         if (xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
+>> +                               /* IOAM Tunnel Decapsulation
+>> +                                * Packet is going to re-enter the stack
+>> +                                */
+>> +                               if (nexthdr == NEXTHDR_IPV6 &&
+>> +                                   (opt->flags & IP6SKB_IOAM)) {
+>> +                                       hop_limit = ipv6_hdr(skb)->hop_limit;
+>> +
+>> +                                       skb_reset_network_header(skb);
+>> +                                       skb_reset_transport_header(skb);
+>> +                                       skb->encapsulation = 0;
+>> +
+>> +                                       ipv6_hdr(skb)->hop_limit = hop_limit;
+>> +                                       __skb_tunnel_rx(skb, skb->dev,
+>> +                                                       dev_net(skb->dev));
+>> +
+>> +                                       netif_rx(skb);
+>> +                                       goto out;
+>> +                               }
+>> +
+>>                                 __IP6_INC_STATS(net, idev,
+>>                                                 IPSTATS_MIB_INUNKNOWNPROTOS);
+>>                                 icmpv6_send(skb, ICMPV6_PARAMPROB,
+>> @@ -461,6 +482,7 @@ void ip6_protocol_deliver_rcu(struct net *net, struct
+>> sk_buff *skb, int nexthdr,
+>>                         consume_skb(skb);
+>>                 }
+>>         }
+>> +out:
+>>         return;
+>>
+>>  discard:
+>> --
+>> 2.17.1
