@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 292BC209A6B
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 09:19:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D090A209A7A
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 09:29:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390196AbgFYHTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 03:19:17 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:54437 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726149AbgFYHTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 03:19:16 -0400
-Received: by mail-io1-f69.google.com with SMTP id t23so3381783iog.21
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 00:19:15 -0700 (PDT)
+        id S2390298AbgFYH3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 03:29:16 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:36935 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390126AbgFYH3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 03:29:15 -0400
+Received: by mail-il1-f199.google.com with SMTP id x23so588575ilk.4
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 00:29:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=tBweWrlp9QBdM+tZJ8oYCBFdvpoaRXNosMtfX1KU8uk=;
-        b=noSTC+MlePpjSTyc30+bIFAPSK06iae/LTx1CEdYOktct71Vmrk5vlR1wmezOse98G
-         rbAdOxhSe7Do30JUqcDeq4ISz/ebEAbBajJkZxivSi/YW9xqIIQo2zeC7W1MmH1dRJQs
-         FcbcBGdQ4eOgLAOEyCkYEfh/8a7c2i7qdjzc/wlWrZk663+cKP15Q3WmNC8yRS1shN/2
-         1CVaIFNJQVpFPe0pHK2kZ2vVMVBi6OoMDgqwL+k9xo13DHe9uidrRlvCOoA2yyjtgPK9
-         dh1H7C/ZLAtuI9aDcHOrbbPKR2jcTdtrdv/6bNabY3vueT2AqCxf2bc9eHs2WITmJjdo
-         r3oA==
-X-Gm-Message-State: AOAM531BX7Fz31VNlpdcvkPCvw8JvzvSOvRjAahAs8xX5/sqWeThGh1B
-        1p1WZ/mmsuHGoBN+cKbno70ZfvECQrXnCOBZDP2PXn8JKdVN
-X-Google-Smtp-Source: ABdhPJwzCFOYiSBWVs8Rm1FraN7MIhBCXwPciVJCXKG9L24PaYiDFoux9SeA1zjfdHygR4LG93HTBpk60+aM3SvzJ0wg1BeD7CmA
+        bh=eSUsWxA/cZb+cZ8s0wASgZp18eK0usgT9h/9kGr+TFU=;
+        b=VQY7lWEq7FmKgUaPybtGV3F6eFocz890+5ur8pQoJjqAk3vbbMNqW2Qe4egEn4TlxJ
+         ZZe6a4GddfBpZFeV3Fga0tKH3WYf+4HPHuUoxZGhfpMG/qfmPSZIYRKDztfRdhgDRGF8
+         ivauyfTGRaK2Yry3oBOrEtoPzWLArwbYBRy3zhtpNrLrgpS9f7xaVzSHXIr50l9tSs9X
+         PHlyO13ti82PZXx0a+yHKYBuCMN4UrAv83tUYHV585NIoR4nGv5Xy6oSZP18gNPDnI+1
+         6voxqhVWFxmaWm9DoXJWvO+s0dkUIMiRTrtZ58xEMJVwxqAE1I/njm/yAUZlQbu6ydTG
+         VU6w==
+X-Gm-Message-State: AOAM532ZXLaHZYtWsnRND7sB5oray/AKVaxRbRArYC3Nw4DddoQsLWTv
+        OGMOShFDPNnQJpgoBVw3vBzZwkzo9QJXL86hjf8CiUDcZc89
+X-Google-Smtp-Source: ABdhPJzi5iGfcoQoGxMWTgbEAgIXViv/KeBmTdqngU3rg5bsh1IJierQMl3IaLsK2V6j6+mKPaFliuur3jilA0FEpWjCFAJxBk/S
 MIME-Version: 1.0
-X-Received: by 2002:a6b:1496:: with SMTP id 144mr28476498iou.6.1593069554767;
- Thu, 25 Jun 2020 00:19:14 -0700 (PDT)
-Date:   Thu, 25 Jun 2020 00:19:14 -0700
+X-Received: by 2002:a92:5895:: with SMTP id z21mr6589340ilf.81.1593070154797;
+ Thu, 25 Jun 2020 00:29:14 -0700 (PDT)
+Date:   Thu, 25 Jun 2020 00:29:14 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ea237605a8e368a9@google.com>
-Subject: WARNING in idr_alloc
-From:   syzbot <syzbot+f31428628ef672716ea8@syzkaller.appspotmail.com>
+Message-ID: <000000000000add83505a8e38c4c@google.com>
+Subject: WARNING: suspicious RCU usage in ctrl_cmd_new_lookup
+From:   syzbot <syzbot+3025b9294f8cb0ede850@syzkaller.appspotmail.com>
 To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
         linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
         netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
@@ -50,59 +50,48 @@ syzbot found the following crash on:
 
 HEAD commit:    7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15ddb429100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=14a3bcf9100000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=d195fe572fb15312
-dashboard link: https://syzkaller.appspot.com/bug?extid=f31428628ef672716ea8
+dashboard link: https://syzkaller.appspot.com/bug?extid=3025b9294f8cb0ede850
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15252c4b100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10159291100000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11802cf9100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144acc03100000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+f31428628ef672716ea8@syzkaller.appspotmail.com
+Reported-by: syzbot+3025b9294f8cb0ede850@syzkaller.appspotmail.com
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 6830 at lib/idr.c:84 idr_alloc+0x11c/0x130 lib/idr.c:84
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 6830 Comm: syz-executor583 Not tainted 5.7.0-syzkaller #0
+=============================
+WARNING: suspicious RCU usage
+5.7.0-syzkaller #0 Not tainted
+-----------------------------
+include/linux/radix-tree.h:176 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+2 locks held by kworker/u4:0/7:
+ #0: ffff88821b0bd138 ((wq_completion)qrtr_ns_handler){+.+.}-{0:0}, at: __write_once_size include/linux/compiler.h:279 [inline]
+ #0: ffff88821b0bd138 ((wq_completion)qrtr_ns_handler){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff88821b0bd138 ((wq_completion)qrtr_ns_handler){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:855 [inline]
+ #0: ffff88821b0bd138 ((wq_completion)qrtr_ns_handler){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:40 [inline]
+ #0: ffff88821b0bd138 ((wq_completion)qrtr_ns_handler){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:615 [inline]
+ #0: ffff88821b0bd138 ((wq_completion)qrtr_ns_handler){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:642 [inline]
+ #0: ffff88821b0bd138 ((wq_completion)qrtr_ns_handler){+.+.}-{0:0}, at: process_one_work+0x844/0x16a0 kernel/workqueue.c:2239
+ #1: ffffc90000cdfdc0 ((work_completion)(&qrtr_ns.work)){+.+.}-{0:0}, at: process_one_work+0x878/0x16a0 kernel/workqueue.c:2243
+
+stack backtrace:
+CPU: 1 PID: 7 Comm: kworker/u4:0 Not tainted 5.7.0-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: qrtr_ns_handler qrtr_ns_worker
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
  dump_stack+0x188/0x20d lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:221
- __warn.cold+0x2f/0x35 kernel/panic.c:582
- report_bug+0x27b/0x2f0 lib/bug.c:195
- fixup_bug arch/x86/kernel/traps.c:105 [inline]
- fixup_bug arch/x86/kernel/traps.c:100 [inline]
- do_error_trap+0x12b/0x220 arch/x86/kernel/traps.c:197
- do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:216
- invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:idr_alloc+0x11c/0x130 lib/idr.c:84
-Code: 00 00 00 44 89 e0 48 8b 4c 24 58 65 48 33 0c 25 28 00 00 00 75 1e 48 83 c4 60 5b 5d 41 5c 41 5d 41 5e 41 5f c3 e8 b4 6d c4 fd <0f> 0b 41 bc ea ff ff ff eb b7 e8 f5 6c 95 fd 0f 1f 44 00 00 41 57
-RSP: 0018:ffffc90001077c68 EFLAGS: 00010293
-RAX: ffff88809f48a580 RBX: 00000000ffff0301 RCX: ffffffff83af606b
-RDX: 0000000000000000 RSI: ffffffff83af610c RDI: 0000000000000005
-RBP: 1ffff9200020ef8d R08: ffff88809f48a580 R09: fffffbfff1516d79
-R10: ffffffff8a8b6bc7 R11: fffffbfff1516d78 R12: 00000000ffff0300
-R13: ffffffff8a837ae0 R14: ffff8880a1f7d640 R15: 0000000000000a20
- qrtr_port_assign net/qrtr/qrtr.c:703 [inline]
- __qrtr_bind.isra.0+0x12e/0x5c0 net/qrtr/qrtr.c:756
- qrtr_bind+0x1c1/0x24a net/qrtr/qrtr.c:805
- __sys_bind+0x20e/0x250 net/socket.c:1657
- __do_sys_bind net/socket.c:1668 [inline]
- __se_sys_bind net/socket.c:1666 [inline]
- __x64_sys_bind+0x6f/0xb0 net/socket.c:1666
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x4401a9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffee5bbb0e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004401a9
-RDX: 000000000000000c RSI: 0000000020000040 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a30
-R13: 0000000000401ac0 R14: 0000000000000000 R15: 0000000000000000
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+ radix_tree_deref_slot include/linux/radix-tree.h:176 [inline]
+ radix_tree_deref_slot include/linux/radix-tree.h:174 [inline]
+ ctrl_cmd_new_lookup+0x6eb/0x7e0 net/qrtr/ns.c:558
+ qrtr_ns_worker+0x5a1/0x153a net/qrtr/ns.c:674
+ process_one_work+0x965/0x16a0 kernel/workqueue.c:2268
 
 
 ---
