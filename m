@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54CFB20A822
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 00:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5BB120A825
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 00:14:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407519AbgFYWOL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Jun 2020 18:14:11 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:38558 "EHLO
+        id S2407524AbgFYWOS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Jun 2020 18:14:18 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:55721 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2407510AbgFYWOK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 18:14:10 -0400
+        with ESMTP id S2407512AbgFYWOR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 18:14:17 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-356-THOrCUthPSS8F3Y0UWXv8Q-1; Thu, 25 Jun 2020 18:14:05 -0400
-X-MC-Unique: THOrCUthPSS8F3Y0UWXv8Q-1
+ us-mta-365-7DgA0WMJP3S9MUTLgc6D0w-1; Thu, 25 Jun 2020 18:14:08 -0400
+X-MC-Unique: 7DgA0WMJP3S9MUTLgc6D0w-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4286380400A;
-        Thu, 25 Jun 2020 22:14:03 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C195C107ACF8;
+        Thu, 25 Jun 2020 22:14:06 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.192.78])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2118379303;
-        Thu, 25 Jun 2020 22:13:59 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D6FC79303;
+        Thu, 25 Jun 2020 22:14:03 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Wenbo Zhang <ethercflow@gmail.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
         David Miller <davem@redhat.com>,
         John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Andrii Nakryiko <andriin@fb.com>,
         Brendan Gregg <bgregg@netflix.com>,
         Florent Revest <revest@chromium.org>,
         Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH v4 bpf-next 13/14] selftests/bpf: Add test for d_path helper
-Date:   Fri, 26 Jun 2020 00:13:03 +0200
-Message-Id: <20200625221304.2817194-14-jolsa@kernel.org>
+Subject: [PATCH v4 bpf-next 14/14] selftests/bpf: Add test for resolve_btfids
+Date:   Fri, 26 Jun 2020 00:13:04 +0200
+Message-Id: <20200625221304.2817194-15-jolsa@kernel.org>
 In-Reply-To: <20200625221304.2817194-1-jolsa@kernel.org>
 References: <20200625221304.2817194-1-jolsa@kernel.org>
 MIME-Version: 1.0
@@ -52,230 +53,263 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding test for d_path helper which is pretty much
-copied from Wenbo Zhang's test for bpf_get_fd_path,
-which never made it in.
+Adding test to resolve_btfids tool, that:
+  - creates binary with BTF IDs list and set
+  - process the binary with resolve_btfids tool
+  - verifies that correct BTF ID values are in place
 
-I've failed so far to compile the test with <linux/fs.h>
-kernel header, so for now adding 'struct file' with f_path
-member that has same offset as kernel's file object.
-
-Original-patch-by: Wenbo Zhang <ethercflow@gmail.com>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- .../testing/selftests/bpf/prog_tests/d_path.c | 145 ++++++++++++++++++
- .../testing/selftests/bpf/progs/test_d_path.c |  50 ++++++
- 2 files changed, 195 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/d_path.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_d_path.c
+ tools/testing/selftests/bpf/Makefile          |  20 +-
+ .../selftests/bpf/test_resolve_btfids.c       | 201 ++++++++++++++++++
+ 2 files changed, 220 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/test_resolve_btfids.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 22aaec74ea0a..547322a5feff 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -37,7 +37,8 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+ 	test_cgroup_storage \
+ 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl \
+ 	test_progs-no_alu32 \
+-	test_current_pid_tgid_new_ns
++	test_current_pid_tgid_new_ns \
++	test_resolve_btfids
+ 
+ # Also test bpf-gcc, if present
+ ifneq ($(BPF_GCC),)
+@@ -427,6 +428,23 @@ $(OUTPUT)/bench: $(OUTPUT)/bench.o $(OUTPUT)/testing_helpers.o \
+ 	$(call msg,BINARY,,$@)
+ 	$(CC) $(LDFLAGS) -o $@ $(filter %.a %.o,$^) $(LDLIBS)
+ 
++# test_resolve_btfids
++#
++$(SCRATCH_DIR)/resolve_btfids: $(BPFOBJ) FORCE
++	$(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/resolve_btfids	\
++		    OUTPUT=$(SCRATCH_DIR)/ BPFOBJ=$(BPFOBJ)
++
++$(OUTPUT)/test_resolve_btfids.o: test_resolve_btfids.c
++	$(call msg,CC,,$@)
++	$(CC) $(CFLAGS) -I$(TOOLSINCDIR) -D"BUILD_STR(s)=#s" -DVMLINUX_BTF="BUILD_STR($(VMLINUX_BTF))" -c -o $@ $<
++
++.PHONY: FORCE
++
++$(OUTPUT)/test_resolve_btfids: $(OUTPUT)/test_resolve_btfids.o $(SCRATCH_DIR)/resolve_btfids
++	$(call msg,BINARY,,$@)
++	$(CC) -o $@ $< $(BPFOBJ) -lelf -lz && \
++	$(SCRATCH_DIR)/resolve_btfids --btf $(VMLINUX_BTF) $@
++
+ EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(SCRATCH_DIR)			\
+ 	prog_tests/tests.h map_tests/tests.h verifier/tests.h		\
+ 	feature								\
+diff --git a/tools/testing/selftests/bpf/test_resolve_btfids.c b/tools/testing/selftests/bpf/test_resolve_btfids.c
 new file mode 100644
-index 000000000000..c0ea45d43634
+index 000000000000..48aeda2ed881
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
-@@ -0,0 +1,145 @@
++++ b/tools/testing/selftests/bpf/test_resolve_btfids.c
+@@ -0,0 +1,201 @@
 +// SPDX-License-Identifier: GPL-2.0
-+#define _GNU_SOURCE
-+#include <test_progs.h>
++#include <string.h>
++#include <stdio.h>
 +#include <sys/stat.h>
-+#include <linux/sched.h>
-+#include <sys/syscall.h>
++#include <stdio.h>
++#include <sys/stat.h>
++#include <fcntl.h>
++#include <unistd.h>
++#include <linux/err.h>
++#include <stdlib.h>
++#include <bpf/btf.h>
++#include <bpf/libbpf.h>
++#include <linux/btf.h>
++#include <linux/kernel.h>
++#include <linux/btf_ids.h>
 +
-+#define MAX_PATH_LEN		128
-+#define MAX_FILES		7
-+#define MAX_EVENT_NUM		16
++#define __CHECK(condition, format...) ({				\
++	int __ret = !!(condition);					\
++	if (__ret) {							\
++		fprintf(stderr, "%s:%d:FAIL ", __func__, __LINE__);	\
++		fprintf(stderr, format);				\
++	}								\
++	__ret;								\
++})
 +
-+#include "test_d_path.skel.h"
++#define CHECK(condition, format...)					\
++	do {								\
++		if (__CHECK(condition, format))				\
++			return -1;					\
++	} while (0)
 +
-+static struct {
-+	__u32 cnt;
-+	char paths[MAX_EVENT_NUM][MAX_PATH_LEN];
-+} src;
-+
-+static int set_pathname(int fd, pid_t pid)
++static struct btf *btf__parse_raw(const char *file)
 +{
-+	char buf[MAX_PATH_LEN];
++	struct btf *btf;
++	struct stat st;
++	__u8 *buf;
++	FILE *f;
 +
-+	snprintf(buf, MAX_PATH_LEN, "/proc/%d/fd/%d", pid, fd);
-+	return readlink(buf, src.paths[src.cnt++], MAX_PATH_LEN);
++	if (stat(file, &st))
++		return NULL;
++
++	f = fopen(file, "rb");
++	if (!f)
++		return NULL;
++
++	buf = malloc(st.st_size);
++	if (!buf) {
++		btf = ERR_PTR(-ENOMEM);
++		goto exit_close;
++	}
++
++	if ((size_t) st.st_size != fread(buf, 1, st.st_size, f)) {
++		btf = ERR_PTR(-EINVAL);
++		goto exit_free;
++	}
++
++	btf = btf__new(buf, st.st_size);
++
++exit_free:
++	free(buf);
++exit_close:
++	fclose(f);
++	return btf;
 +}
 +
-+static int trigger_fstat_events(pid_t pid)
++static bool is_btf_raw(const char *file)
 +{
-+	int sockfd = -1, procfd = -1, devfd = -1;
-+	int localfd = -1, indicatorfd = -1;
-+	int pipefd[2] = { -1, -1 };
-+	struct stat fileStat;
-+	int ret = -1;
++	__u16 magic = 0;
++	int fd, nb_read;
 +
-+	/* unmountable pseudo-filesystems */
-+	if (CHECK_FAIL(pipe(pipefd) < 0))
-+		return ret;
-+	/* unmountable pseudo-filesystems */
-+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-+	if (CHECK_FAIL(sockfd < 0))
-+		goto out_close;
-+	/* mountable pseudo-filesystems */
-+	procfd = open("/proc/self/comm", O_RDONLY);
-+	if (CHECK_FAIL(procfd < 0))
-+		goto out_close;
-+	devfd = open("/dev/urandom", O_RDONLY);
-+	if (CHECK_FAIL(devfd < 0))
-+		goto out_close;
-+	localfd = open("/tmp/d_path_loadgen.txt", O_CREAT | O_RDONLY);
-+	if (CHECK_FAIL(localfd < 0))
-+		goto out_close;
-+	/* bpf_d_path will return path with (deleted) */
-+	remove("/tmp/d_path_loadgen.txt");
-+	indicatorfd = open("/tmp/", O_PATH);
-+	if (CHECK_FAIL(indicatorfd < 0))
-+		goto out_close;
++	fd = open(file, O_RDONLY);
++	if (fd < 0)
++		return false;
 +
-+	ret = set_pathname(pipefd[0], pid);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(pipefd[1], pid);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(sockfd, pid);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(procfd, pid);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(devfd, pid);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(localfd, pid);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+	ret = set_pathname(indicatorfd, pid);
-+	if (CHECK_FAIL(ret < 0))
-+		goto out_close;
-+
-+	/* triggers vfs_getattr */
-+	fstat(pipefd[0], &fileStat);
-+	fstat(pipefd[1], &fileStat);
-+	fstat(sockfd, &fileStat);
-+	fstat(procfd, &fileStat);
-+	fstat(devfd, &fileStat);
-+	fstat(localfd, &fileStat);
-+	fstat(indicatorfd, &fileStat);
-+
-+out_close:
-+	/* triggers filp_close */
-+	close(pipefd[0]);
-+	close(pipefd[1]);
-+	close(sockfd);
-+	close(procfd);
-+	close(devfd);
-+	close(localfd);
-+	close(indicatorfd);
-+	return ret;
++	nb_read = read(fd, &magic, sizeof(magic));
++	close(fd);
++	return nb_read == sizeof(magic) && magic == BTF_MAGIC;
 +}
 +
-+void test_d_path(void)
++static struct btf *btf_open(const char *path)
 +{
-+	struct test_d_path__bss *bss;
-+	struct test_d_path *skel;
-+	__u32 duration = 0;
++	if (is_btf_raw(path))
++		return btf__parse_raw(path);
++	else
++		return btf__parse_elf(path, NULL);
++}
++
++BTF_ID_LIST(test_list)
++BTF_ID(typedef, pid_t)
++BTF_ID(struct,  sk_buff)
++BTF_ID(union,   thread_union)
++BTF_ID(func,    memcpy)
++
++BTF_SET_START(test_set)
++BTF_ID(typedef, pid_t)
++BTF_ID(struct,  sk_buff)
++BTF_ID(union,   thread_union)
++BTF_ID(func,    memcpy)
++BTF_SET_END(test_set)
++
++struct symbol {
++	const char	*name;
++	int		 type;
++	int		 id;
++};
++
++struct symbol test_symbols[] = {
++	{ "pid_t",        BTF_KIND_TYPEDEF, -1 },
++	{ "sk_buff",      BTF_KIND_STRUCT,  -1 },
++	{ "thread_union", BTF_KIND_UNION,   -1 },
++	{ "memcpy",       BTF_KIND_FUNC,    -1 },
++};
++
++static int
++__resolve_symbol(struct btf *btf, int type_id)
++{
++	const struct btf_type *type;
++	const char *str;
++	unsigned int i;
++
++	type = btf__type_by_id(btf, type_id);
++	CHECK(!type, "Failed to get type for ID %d\n", type_id);
++
++	for (i = 0; i < ARRAY_SIZE(test_symbols); i++) {
++		if (test_symbols[i].id != -1)
++			continue;
++
++		if (BTF_INFO_KIND(type->info) != test_symbols[i].type)
++			continue;
++
++		str = btf__name_by_offset(btf, type->name_off);
++		if (!str) {
++			fprintf(stderr, "failed to get name for BTF ID %d\n",
++				type_id);
++			continue;
++		}
++
++		if (!strcmp(str, test_symbols[i].name))
++			test_symbols[i].id = type_id;
++	}
++
++	return 0;
++}
++
++static int resolve_symbols(void)
++{
++	const char *path = VMLINUX_BTF;
++	struct btf *btf;
++	int type_id;
++	__u32 nr;
 +	int err;
 +
-+	skel = test_d_path__open_and_load();
-+	if (CHECK(!skel, "test_d_path_load", "d_path skeleton failed\n"))
-+		goto cleanup;
++	btf = btf_open(path);
++	CHECK(libbpf_get_error(btf), "Failed to load BTF from %s\n", path);
 +
-+	err = test_d_path__attach(skel);
-+	if (CHECK(err, "modify_return", "attach failed: %d\n", err))
-+		goto cleanup;
++	nr = btf__get_nr_types(btf);
 +
-+	bss = skel->bss;
-+	bss->my_pid = getpid();
++	for (type_id = 0; type_id < nr; type_id++) {
++		err = __resolve_symbol(btf, type_id);
++		if (__CHECK(err, "Failed to resolve symbols\n"))
++			break;
++	}
 +
-+	err = trigger_fstat_events(bss->my_pid);
-+	if (CHECK_FAIL(err < 0))
-+		goto cleanup;
++	btf__free(btf);
++	return 0;
++}
 +
-+	for (int i = 0; i < MAX_FILES; i++) {
-+		if (i < 3) {
-+			CHECK((bss->paths_stat[i][0] == 0), "d_path",
-+			      "failed to filter fs [%d]: %s vs %s\n",
-+			      i, src.paths[i], bss->paths_stat[i]);
-+			CHECK((bss->paths_close[i][0] == 0), "d_path",
-+			      "failed to filter fs [%d]: %s vs %s\n",
-+			      i, src.paths[i], bss->paths_close[i]);
-+		} else {
-+			CHECK(strncmp(src.paths[i], bss->paths_stat[i], MAX_PATH_LEN),
-+			      "d_path",
-+			      "failed to get stat path[%d]: %s vs %s\n",
-+			      i, src.paths[i], bss->paths_stat[i]);
-+			CHECK(strncmp(src.paths[i], bss->paths_close[i], MAX_PATH_LEN),
-+			      "d_path",
-+			      "failed to get close path[%d]: %s vs %s\n",
-+			      i, src.paths[i], bss->paths_close[i]);
++int main(int argc, char **argv)
++{
++	unsigned int i, j;
++
++	CHECK(resolve_symbols(), "symbol resolve failed\n");
++
++	/* Check BTF_SET_START(test_set) IDs */
++	for (i = 0; i < test_set.cnt; i++) {
++		bool found = false;
++
++		for (j = 0; j < test_set.cnt; j++) {
++			if (test_symbols[j].id != test_set.ids[i])
++				continue;
++			found = true;
++			break;
++		}
++
++		CHECK(!found, "ID %d not found in test_symbols\n",
++		      test_set.ids[i]);
++
++		if (i > 0) {
++			CHECK(test_set.ids[i - 1] > test_set.ids[i],
++			      "test_set is not sorted\n");
 +		}
 +	}
 +
-+cleanup:
-+	test_d_path__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_d_path.c b/tools/testing/selftests/bpf/progs/test_d_path.c
-new file mode 100644
-index 000000000000..6096aef2bafc
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_d_path.c
-@@ -0,0 +1,50 @@
-+// SPDX-License-Identifier: GPL-2.0
++	/* Check BTF_ID_LIST(test_list) IDs */
++	for (i = 0; i < ARRAY_SIZE(test_symbols); i++) {
++		CHECK(test_list[i] != test_symbols[i].id,
++		      "wrong ID for %s\n", test_symbols[i].name);
++	}
 +
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+#define MAX_PATH_LEN		128
-+#define MAX_EVENT_NUM		16
-+
-+pid_t my_pid;
-+__u32 cnt_stat;
-+__u32 cnt_close;
-+char paths_stat[MAX_EVENT_NUM][MAX_PATH_LEN];
-+char paths_close[MAX_EVENT_NUM][MAX_PATH_LEN];
-+
-+SEC("fentry/vfs_getattr")
-+int BPF_PROG(prog_stat, struct path *path, struct kstat *stat,
-+	     __u32 request_mask, unsigned int query_flags)
-+{
-+	pid_t pid = bpf_get_current_pid_tgid() >> 32;
-+
-+	if (pid != my_pid)
-+		return 0;
-+
-+	if (cnt_stat >= MAX_EVENT_NUM)
-+		return 0;
-+
-+	bpf_d_path(path, paths_stat[cnt_stat], MAX_PATH_LEN);
-+	cnt_stat++;
 +	return 0;
 +}
-+
-+SEC("fentry/filp_close")
-+int BPF_PROG(prog_close, struct file *file, void *id)
-+{
-+	pid_t pid = bpf_get_current_pid_tgid() >> 32;
-+
-+	if (pid != my_pid)
-+		return 0;
-+
-+	if (cnt_close >= MAX_EVENT_NUM)
-+		return 0;
-+
-+	bpf_d_path((struct path *) &file->f_path,
-+		   paths_close[cnt_close], MAX_PATH_LEN);
-+	cnt_close++;
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
 -- 
 2.25.4
 
