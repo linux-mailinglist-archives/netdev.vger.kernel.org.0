@@ -2,171 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1ADF209FDA
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 15:27:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5FDA20A00E
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 15:35:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405065AbgFYN1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 09:27:24 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:54898 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2404872AbgFYN1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 09:27:22 -0400
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05PD1ooY136475;
-        Thu, 25 Jun 2020 09:26:51 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 31vtt34nfs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Jun 2020 09:26:51 -0400
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 05PD24dI137417;
-        Thu, 25 Jun 2020 09:26:49 -0400
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 31vtt34neu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Jun 2020 09:26:49 -0400
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 05PDPW1k011970;
-        Thu, 25 Jun 2020 13:26:47 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma02fra.de.ibm.com with ESMTP id 31uusk0vwk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Jun 2020 13:26:47 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 05PDPPVE56295860
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 25 Jun 2020 13:25:26 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D9D12A405F;
-        Thu, 25 Jun 2020 13:26:44 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 888DDA4065;
-        Thu, 25 Jun 2020 13:26:43 +0000 (GMT)
-Received: from oc7455500831.ibm.com (unknown [9.145.23.225])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 25 Jun 2020 13:26:43 +0000 (GMT)
-Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
- seems to break linux bridge on s390x (bisected)
-From:   Christian Borntraeger <borntraeger@de.ibm.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Christoph Hellwig <hch@infradead.org>, ast@kernel.org,
-        axboe@kernel.dk, bfields@fieldses.org,
-        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
-        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
-        davem@davemloft.net, dhowells@redhat.com,
-        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
-        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
-        keyrings@vger.kernel.org, kuba@kernel.org,
-        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
-        philipp.reisner@linbit.com, ravenexp@gmail.com,
-        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
-        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
-        netdev@vger.kernel.org, markward@linux.ibm.com,
-        linux-s390 <linux-s390@vger.kernel.org>
-References: <20200610154923.27510-5-mcgrof@kernel.org>
- <20200623141157.5409-1-borntraeger@de.ibm.com>
- <b7d658b9-606a-feb1-61f9-b58e3420d711@de.ibm.com>
- <3118dc0d-a3af-9337-c897-2380062a8644@de.ibm.com>
- <20200624144311.GA5839@infradead.org>
- <9e767819-9bbe-2181-521e-4d8ca28ca4f7@de.ibm.com>
- <20200624160953.GH4332@42.do-not-panic.com>
- <ea41e2a9-61f7-aec1-79e5-7b08b6dd5119@de.ibm.com>
- <4e27098e-ac8d-98f0-3a9a-ea25242e24ec@de.ibm.com>
- <4d8fbcea-a892-3453-091f-d57c03f9aa90@de.ibm.com>
- <1263e370-7cee-24d8-b98c-117bf7c90a83@de.ibm.com>
-Autocrypt: addr=borntraeger@de.ibm.com; prefer-encrypt=mutual; keydata=
- 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
- nS4h0HDFPrrp1C2EMVYIQrMokWvlFZbCpsdYbBI=
-Message-ID: <fd88506a-bde9-0e63-3473-6b15ed8dbaa2@de.ibm.com>
-Date:   Thu, 25 Jun 2020 15:26:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <1263e370-7cee-24d8-b98c-117bf7c90a83@de.ibm.com>
+        id S2405159AbgFYNe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 09:34:59 -0400
+Received: from mail-eopbgr10073.outbound.protection.outlook.com ([40.107.1.73]:34880
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2404883AbgFYNe6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Jun 2020 09:34:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lUINO6NPzZsA7wGpdjbIlQsHh2V1Mb8nPrWVG83OsUglkjRb9TX1CJIvq4QghYaBXakPb3eeK4zIBCYWjym7airVUl9Rr8tJWVvrTj2t16P5rM3ZVSNtMcFlLPkOrurzNFRZZcTAf5Z2srlqqVR3yiRLwZvUSnorh081WU10LnJWYj3zvP966m0IvpvWwF681PMriT05211h1geySaMHAFM3wtOdjrKLBe/EGwENow4oWfdLiO5Pj3qCEQAt2o0uKw0LYbwgNR10Lj3zZbOR0Ay1ENKBKHjM2Lvdvm9aNI6ZqrWbCdfcjSF9X5Ybh+5mG7kUEomcpyW6h9rEFyydwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RNHIAUyno/3zpoCoGPCo80X7RaXYMExd06F7VispgAU=;
+ b=eqkVXBsAdXxSWREbVC5Bugp3fw6xWuRiyI0u9gkFxzHc3AwHHu59v2BSK9ZDBVnaK+NB84X74xZFZCEgI533F47+r+cEeEO55FPCtYXPvvWS8Xe3iCkYGZkWZtyfoJi31u4MOJoVZQcYGGHotFZq5v8UFC5GCZpj2huioA8OjY7vM+JwVh3r/E/C0n74dvzA1UIqpGApx8H3P9qIhFt+fH2xuA11TEb2+BTA6rJeC5f0irZZDBJVuGBADF105MVxVI8UI6nASK362yf8Ch0rbYDLfpW5U3H+qwvDME+IIg0Q91NzOmv8UX3VsGHA90nSoAzdlu8SXt418F4iDIls+Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RNHIAUyno/3zpoCoGPCo80X7RaXYMExd06F7VispgAU=;
+ b=Z5j1nRqiCOTAPm5Ywya3Yp8myyGHK31Uy1qGOCCYmWyP9sDmCXWKcS0h4mKJA+A3t4gd98yUW9aeMR5t6JahDcIxExF2+8Wk/+EWcr37S7dI2hcl/EPOVdAhiopNgmUdcokIT70XcpfzjgbYYGNk49HQ6PB6LHxdilS0UlfZX+I=
+Authentication-Results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
+ (2603:10a6:208:1b::25) by AM4PR0501MB2179.eurprd05.prod.outlook.com
+ (2603:10a6:200:52::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Thu, 25 Jun
+ 2020 13:34:52 +0000
+Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
+ ([fe80::2534:ddc7:1744:fea9]) by AM0PR0502MB3826.eurprd05.prod.outlook.com
+ ([fe80::2534:ddc7:1744:fea9%7]) with mapi id 15.20.3131.023; Thu, 25 Jun 2020
+ 13:34:52 +0000
+Subject: Re: [PATCH net-next 04/10] Documentation: networking:
+ ethtool-netlink: Add link extended state
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        petrm@mellanox.com, mlxsw@mellanox.com, mkubecek@suse.cz,
+        andrew@lunn.ch, f.fainelli@gmail.com, linux@rempel-privat.de,
+        Ido Schimmel <idosch@mellanox.com>
+References: <20200624081923.89483-1-idosch@idosch.org>
+ <20200624081923.89483-5-idosch@idosch.org>
+ <b8aca89b-02f1-047c-a582-dacebfb8e480@intel.com>
+From:   Amit Cohen <amitc@mellanox.com>
+Message-ID: <9718cf64-544a-9efb-409d-ada7c2d927f1@mellanox.com>
+Date:   Thu, 25 Jun 2020 16:34:48 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
+In-Reply-To: <b8aca89b-02f1-047c-a582-dacebfb8e480@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-25_08:2020-06-25,2020-06-25 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- adultscore=0 phishscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999
- lowpriorityscore=0 impostorscore=0 spamscore=0 cotscore=-2147483648
- clxscore=1015 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006250080
+X-ClientProxiedBy: AM0PR04CA0016.eurprd04.prod.outlook.com
+ (2603:10a6:208:122::29) To AM0PR0502MB3826.eurprd05.prod.outlook.com
+ (2603:10a6:208:1b::25)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.3] (77.125.76.133) by AM0PR04CA0016.eurprd04.prod.outlook.com (2603:10a6:208:122::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21 via Frontend Transport; Thu, 25 Jun 2020 13:34:50 +0000
+X-Originating-IP: [77.125.76.133]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 31d49449-0189-4a3c-19de-08d8190c8a1e
+X-MS-TrafficTypeDiagnostic: AM4PR0501MB2179:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM4PR0501MB21797E08A2FA3CEE7828F18CD7920@AM4PR0501MB2179.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 0445A82F82
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ska90qG+24V3dQfsaN3SLIVbB4vEGYda6dcfR5QXKamD5sAUwZgYQuaAjqsKBLHjPYShJLyNKETOmj+i+bZOx873GWdPFlgbBJuUJofdEYZFuCNJ8OHCCqUO2xBYCdKsXYYaipY3NGSaAQ+3r+8pZ0l6kQpXK4PK+qcXcvDTU/bHhxWxFRBR+Jo4nt6DNvl2se3UKXiI2Bs6IxJg+IDRyjLpsyxyxYm/mcge6ToFL/1VD8Rjomftrip2cNMywyaU49HLy7az2P0OrvzMO9i4BOSyuUooVqfZoCNmbFWsSittzykWUX/7zWlT9AHkONxM02rk8ZWvUNGfRaMMVe19eMcJw65MDA6bBKcw6Br0sMEJwR9Rq3/ToVXv0fiShsF8
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0502MB3826.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(346002)(376002)(366004)(39860400002)(26005)(53546011)(5660300002)(8936002)(86362001)(8676002)(66556008)(186003)(2906002)(16526019)(66946007)(36756003)(66476007)(16576012)(956004)(2616005)(31696002)(4326008)(478600001)(316002)(31686004)(6916009)(6486002)(83380400001)(107886003)(52116002)(54906003)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: vYElHfuTE1V6X449p8S2Df/DwYPHXNF82LKT5xy6Sow0FpcA/HnFU0yX/lwMLt+MfAZ1ltWNOfPeblBf4RMwCOhDdauDZBPWZcZ3+YQIe5MoeW0vMlfDNyHSMxetqF7WD9/B4LEczXgOxaORPKFfsN/Uf5g0epXLtqIS9vrCENXCqRV0QHATdP7OHDpQz/jElyJdVnRZJLt+DDsAMeDqRII/PrXKHkyK/RV0hwwRZCNeO4gKzUGuXp4ld4IpmZy8L87/i/XAX+5JEa2gV2cCM2Jvori+VFRhGq2mByIYBQoDzTqdmaSMxLLMU59y1FA6SEhYGpyHs+F6MqXkbIA9D/ay3XjNJ62pSx+Wp3JnfcRdVE6dhWECUhssVo2Wa3qinDajFavK3gMdtdcReeKsgRM3uKBitu/ZKUcHOeacM8z7wkQRu6Q/FSS8xrwWLzKrlRvd/aIeKegCxhvfVcV+0nBfTWglIkXUD55cNJJyH7w=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31d49449-0189-4a3c-19de-08d8190c8a1e
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2020 13:34:52.2144
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BrsU7UEpBsPLcXBgZvd8AUxU0DncU9WUcUAC21vX+jAPAAIVCBIoL6cMMh0C2uT5D179SkUaXn6UTe0Reo68mA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2179
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 24.06.20 20:37, Christian Borntraeger wrote:
+On 24-Jun-20 22:07, Jacob Keller wrote:
 > 
 > 
-> On 24.06.20 20:32, Christian Borntraeger wrote:
-> [...]> 
->> So the translations look correct. But your change is actually a sematic change
->> if(ret) will only trigger if there is an error
->> if (KWIFEXITED(ret)) will always trigger when the process ends. So we will always overwrite -ECHILD
->> and we did not do it before. 
+> On 6/24/2020 1:19 AM, Ido Schimmel wrote:
+>> From: Amit Cohen <amitc@mellanox.com>
 >>
+>> Add link extended state attributes.
+>>
+>> Signed-off-by: Amit Cohen <amitc@mellanox.com>
+>> Reviewed-by: Petr Machata <petrm@mellanox.com>
+>> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+>> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 > 
-> So the right fix is
+> I really like this concept.
 > 
-> diff --git a/kernel/umh.c b/kernel/umh.c
-> index f81e8698e36e..a3a3196e84d1 100644
-> --- a/kernel/umh.c
-> +++ b/kernel/umh.c
-> @@ -154,7 +154,7 @@ static void call_usermodehelper_exec_sync(struct subprocess_info *sub_info)
->                  * the real error code is already in sub_info->retval or
->                  * sub_info->retval is 0 anyway, so don't mess with it then.
->                  */
-> -               if (KWIFEXITED(ret))
-> +               if (KWEXITSTATUS(ret))
->                         sub_info->retval = KWEXITSTATUS(ret);
->         }
+> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+> 
+>> ---
+>>  Documentation/networking/ethtool-netlink.rst | 110 ++++++++++++++++++-
+>>  1 file changed, 106 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+>> index 82470c36c27a..a7cc53f905f5 100644
+>> --- a/Documentation/networking/ethtool-netlink.rst
+>> +++ b/Documentation/networking/ethtool-netlink.rst
+>> @@ -443,10 +443,11 @@ supports.
+>>  LINKSTATE_GET
+>>  =============
+>>  
+>> -Requests link state information. At the moment, only link up/down flag (as
+>> -provided by ``ETHTOOL_GLINK`` ioctl command) is provided but some future
+>> -extensions are planned (e.g. link down reason). This request does not have any
+>> -attributes.
+>> +Requests link state information. Link up/down flag (as provided by
+>> +``ETHTOOL_GLINK`` ioctl command) is provided. Optionally, extended state might
+>> +be provided as well. In general, extended state describes reasons for why a port
+>> +is down, or why it operates in some non-obvious mode. This request does not have
+>> +any attributes.
+>>  
+> 
+> Ok, so basically in addition to the standard ETHTOOL_GLINK data, we also
+> add additional optional extended attributes over the netlink interface.
+> Neat.
+> 
+>>  Request contents:
+>>  
+>> @@ -461,16 +462,117 @@ Kernel response contents:
+>>    ``ETHTOOL_A_LINKSTATE_LINK``          bool    link state (up/down)
+>>    ``ETHTOOL_A_LINKSTATE_SQI``           u32     Current Signal Quality Index
+>>    ``ETHTOOL_A_LINKSTATE_SQI_MAX``       u32     Max support SQI value
+>> +  ``ETHTOOL_A_LINKSTATE_EXT_STATE``     u8      link extended state
+>> +  ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE``  u8      link extended substate
+>>    ====================================  ======  ============================
+> 
+> Ok so we have categories (state) and each category can have sub-states
+> indicating the specific failure. Good.
+> 
+>>  
+>>  For most NIC drivers, the value of ``ETHTOOL_A_LINKSTATE_LINK`` returns
+>>  carrier flag provided by ``netif_carrier_ok()`` but there are drivers which
+>>  define their own handler.
+>>  
+>> +``ETHTOOL_A_LINKSTATE_EXT_STATE`` and ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE`` are
+>> +optional values. ethtool core can provide either both
+>> +``ETHTOOL_A_LINKSTATE_EXT_STATE`` and ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE``,
+>> +or only ``ETHTOOL_A_LINKSTATE_EXT_STATE``, or none of them.
+>> +
+>>  ``LINKSTATE_GET`` allows dump requests (kernel returns reply messages for all
+>>  devices supporting the request).
+>>  
+> 
+> Good to clarify that it is allowed to specify only the main state, if a
+> substate isn't known.
+> 
 
-Ping. Shall I send this as a proper patch or are we merging this fixup in Andrews patch queue?
+I described above all the options:
+"ethtool core can provide either (1) both ``ETHTOOL_A_LINKSTATE_EXT_STATE``
+and ``ETHTOOL_A_LINKSTATE_EXT_SUBSTATE``, or (2) only ``ETHTOOL_A_LINKSTATE_EXT_STATE``,
+or (3) none of them"
+
+I think that #2 is what you want, no?
+
+>>  
+>> +Link extended states:
+>> +
+>> +  ============================    =============================================
+>> +  ``Autoneg``                     States relating to the autonegotiation or
+>> +                                  issues therein
+>> +
+>> +  ``Link training failure``       Failure during link training
+>> +
+>> +  ``Link logical mismatch``       Logical mismatch in physical coding sublayer
+>> +                                  or forward error correction sublayer
+>> +
+>> +  ``Bad signal integrity``        Signal integrity issues
+>> +
+>> +  ``No cable``                    No cable connected
+>> +
+>> +  ``Cable issue``                 Failure is related to cable,
+>> +                                  e.g., unsupported cable
+>> +
+>> +  ``EEPROM issue``                Failure is related to EEPROM, e.g., failure
+>> +                                  during reading or parsing the data
+>> +
+>> +  ``Calibration failure``         Failure during calibration algorithm
+>> +
+>> +  ``Power budget exceeded``       The hardware is not able to provide the
+>> +                                  power required from cable or module
+>> +
+>> +  ``Overheat``                    The module is overheated
+>> +  ============================    =============================================
+> 
+> A nice variety of states. I think it could be argued that "no cable" is
+> a sub-state of "cable issues" but personally I like that it's separate.
+> 
+> I can't think of any other states offhand, but we have a u8, so we have
+> plenty of space to add more states if/when we think of them in the future.
+> 
+>> +
+>> +Link extended substates:
+>> +
+>> +  Autoneg substates:
+>> +
+>> +  ==============================================    =============================================
+>> +  ``No partner detected``                           Peer side is down
+>> +
+>> +  ``Ack not received``                              Ack not received from peer side
+>> +
+>> +  ``Next page exchange failed``                     Next page exchange failed
+>> +
+>> +  ``No partner detected during force mode``         Peer side is down during force mode or there
+>> +                                                    is no agreement of speed
+>> +
+> 
+> This feels like it could be two separate states. It seems weird to
+> combine "peer side is down during force" with "no agreement of speed".
+> Am I missing something here?
+> 
+
+From high-level API point of view it makes sense, but we get this reason from our FW for both cases.
+When link is configured to force mode, it doesn't know his partner's state, so partner is down and partner has different speed are same.
+
+>> +  ``FEC mismatch during override``                  Forward error correction modes in both sides
+>> +                                                    are mismatched
+>> +
+>> +  ``No HCD``                                        No Highest Common Denominator
+>> +  ==============================================    =============================================
+>> +
+>> +  Link training substates:
+>> +
+>> +  ==============================================    =============================================
+>> +  ``KR frame lock not acquired``                    Frames were not recognized, the lock failed
+>> +
+>> +  ``KR link inhibit timeout``                       The lock did not occur before timeout
+>> +
+>> +  ``KR Link partner did not set receiver ready``    Peer side did not send ready signal after
+>> +                                                    training process
+>> +
+>> +  ``Remote side is not ready yet``                  Remote side is not ready yet
+>> +
+>> +  ==============================================    =============================================
+>> +
+>> +  Link logical mismatch substates:
+>> +
+>> +  ==============================================    =============================================
+>> +  ``PCS did not acquire block lock``                Physical coding sublayer was not locked in
+>> +                                                    first phase - block lock
+>> +
+>> +  ``PCS did not acquire AM lock``                   Physical coding sublayer was not locked in
+>> +                                                    second phase - alignment markers lock
+>> +
+>> +  ``PCS did not get align_status``                  Physical coding sublayer did not get align
+>> +                                                    status
+>> +
+>> +  ``FC FEC is not locked``                          FC forward error correction is not locked
+>> +
+>> +  ``RS FEC is not locked``                          RS forward error correction is not locked
+>> +  ==============================================    =============================================
+>> +
+>> +  Bad signal integrity substates:
+>> +
+>> +  ==============================================    =============================================
+>> +  ``Large number of physical errors``               Large number of physical errors
+>> +
+>> +  ``Unsupported rate``                              The system attempted to operate the cable at
+>> +                                                    a rate that is not formally supported, which
+>> +                                                    led to signal integrity issues
+>> +
+>> +  ``Unsupported cable``                             Unsupported cable
+>> +
+>> +  ``Cable test failure``                            Cable test failure
+>> +  ==============================================    =============================================
+>> +
+> 
+> Not every state has substates. Makes sense, since some of the main
+> states are pretty straight forward.
+> 
+> This feels very promising, and enables providing some useful information
+> to users about why something isn't working as expected. I think it's a
+> significant improvement to the status quo, given that a device can
+> report this data.
+> 
+> Thanks,
+> Jake
+> 
+
+Thanks for the comments.
+
+>>  DEBUG_GET
+>>  =========
+>>  
+>>
+
