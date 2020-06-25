@@ -2,131 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3682E20A3B5
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:07:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 227AE20A3BB
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:09:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406659AbgFYRHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 13:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404317AbgFYRHb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 13:07:31 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E462FC08C5C1;
-        Thu, 25 Jun 2020 10:07:31 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id l9so5988239ilq.12;
-        Thu, 25 Jun 2020 10:07:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=qgELrA3eg3b5dwFTkdkMEjy5n5s0NpbmSDKiMI+7ls4=;
-        b=eCDObnmg74R2cb6t3wtFCGoOuAelt28F6Oa+94E+PS/RbZxduidWEGNX2xWY7C17SM
-         Xlxf0L6mDRY5Oe2hbgvZD7MabP6/UthkeOOJcx10etKWEm1Tk3Z8shQEGjqzye/+eqq4
-         88vht5DM4EyNzQIxOrnTMUH1vhgk6z1O2+/CUHs0oPTL/g2ZJIbnXdduRt/vi7aCn8L8
-         XdkX9q4e+38dIVyFivrQmOJBQ/yEmhUjliLy25fvDC7Kmu15y/arhqjLMvPfqzEwYevz
-         4pf1Hx0qQfIz2A6xZFNes3zZcGePq5kmNVGC2Nitcnqs+EIotw4VrSEa3/JMWtNwJZzF
-         FHXA==
+        id S2406671AbgFYRJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 13:09:28 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:37465 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2404317AbgFYRJZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 13:09:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593104964;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5CfCap0F3wZuekOuBaQ6nE/M+wEkk6ovUVrJUS5pGSM=;
+        b=ipf6+WdyDvGjXi0vDOqnHkp767cXCwHV0q/KjLSAIO2ra3sRFBx55YscUpmYV1G1CQCV0O
+        ljfCwPcxkQcWeCgl8BRWdN5r/MBBh9gxngP6aDjLuC9BJCkJLpgW8cXPFO18v0E1xW5TT7
+        PYlDYWVrPgufc8d69pdTPtf3FIwS6rA=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-296-pcEEcc63PVGrS9MHXyJr-Q-1; Thu, 25 Jun 2020 13:09:22 -0400
+X-MC-Unique: pcEEcc63PVGrS9MHXyJr-Q-1
+Received: by mail-ej1-f71.google.com with SMTP id op28so3853054ejb.15
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 10:09:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=qgELrA3eg3b5dwFTkdkMEjy5n5s0NpbmSDKiMI+7ls4=;
-        b=Z4WeTH7pfR785VWXdRc/RBPgYp/f+6PCapr5wmCB2fCcRX0RwJoM2w4TBQ8ecbph2j
-         6msnoHrRQWxZUL4+O6TvXYHfMZHm5pXETurej2iNwkTQ0VwguITt/ngR8ai7ejcLdqxD
-         1kTCC/W8HdDW3Epbk5PcmASsOVo/wYCQmMdIZpZzcNegiNnwKJTDcH7yaknDVQSkXTm0
-         wij0OaAoWh9I9skJHvEVVNJM8zr+F8z6tvn1guzmj6VnaXi6j4k9AA+QBBgWGkHEGmwi
-         ZB2jMaQoJLvkxWARVAW74fJ1mnygm65ltAxR+RWDH3XpscqJ4hx5u19IfAMV6/WIGcE2
-         nMCw==
-X-Gm-Message-State: AOAM532AngdXXBJk9Z4h4oOcpaqionSAGOukIUnDlJvxDWDLlGtkHfHT
-        bj3/OMM71PRNbV2dgJNR3UU=
-X-Google-Smtp-Source: ABdhPJzeZV0bOTeIEAgd2oaa08zMqEPPYeeu42sXFLfbIq0S46TEgox7i4DGtWYVNQN+bK8rVABttw==
-X-Received: by 2002:a92:8552:: with SMTP id f79mr8423781ilh.225.1593104851325;
-        Thu, 25 Jun 2020 10:07:31 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id l20sm13089081ilk.70.2020.06.25.10.07.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jun 2020 10:07:30 -0700 (PDT)
-Date:   Thu, 25 Jun 2020 10:07:22 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     jakub@cloudflare.com, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Message-ID: <5ef4d9ca149ed_486f2aacfa4de5b44e@john-XPS-13-9370.notmuch>
-In-Reply-To: <5ef4d4ffa74d3_12d32af9eaf485bc9e@john-XPS-13-9370.notmuch>
-References: <159303296342.360.5487181450879978407.stgit@john-XPS-13-9370>
- <20200625062202.jyt5dzcdbanwkah2@kafai-mbp.dhcp.thefacebook.com>
- <5ef4d4ffa74d3_12d32af9eaf485bc9e@john-XPS-13-9370.notmuch>
-Subject: Re: [bpf PATCH] bpf, sockmap: RCU splat with TLS redirect and
- strparser
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5CfCap0F3wZuekOuBaQ6nE/M+wEkk6ovUVrJUS5pGSM=;
+        b=SepTx+PdZ24C0IiLyoEXAIu+3oThoVpvipnl6266za2kLjMZnffNFq/isP5NkpH9lE
+         Dx/8Hv8WmCOijp+zmVD/NcNvcb28e+D55Gymh4o4XVfzA9bYBKWVn90S8XuhLTb2X8c3
+         w74nIC/Ch8M076N3W3fns1MZf3fJ1E+oFKYSPFRMnUVvJQpH8rM4GdzVxnPOAkujqvgA
+         XKe2N18qBniSD9QgJynSR3VaP15mAo4jaCHeI565EH5rhyXNKUnuX9IYtyHPEGENlAgD
+         EC5tAEoND0Ur/dluJyPw4tJSjWH05g/5HQ7y5unGq5anE5HdiQ1QbHATrQ01mI606uz0
+         daOg==
+X-Gm-Message-State: AOAM532KZmYk3TdDzEL+nHP0bs7+GQHXbg9VWIUcogbyCV9agJ9eNYun
+        iSju22o7BoRJMoUZgt5zhTr1vNW1Giiw+N9FtFrcyIyT+p0nXdKRC8okXti+WsYE+yOj0Mn9Aei
+        s3dSuPSELTTwc3SGi
+X-Received: by 2002:a50:9f6a:: with SMTP id b97mr7418218edf.322.1593104961203;
+        Thu, 25 Jun 2020 10:09:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwZTjd/YE7d5FmBNF9ZnN/QkhB3RzdoBfx/jxbtUHsAmF7gle9idP0YebzTqxtW7V6HeE10/w==
+X-Received: by 2002:a50:9f6a:: with SMTP id b97mr7418199edf.322.1593104961004;
+        Thu, 25 Jun 2020 10:09:21 -0700 (PDT)
+Received: from x1.localdomain ([2a0e:5700:4:11:334c:7e36:8d57:40cb])
+        by smtp.gmail.com with ESMTPSA id e20sm17061524ejh.22.2020.06.25.10.09.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Jun 2020 10:09:20 -0700 (PDT)
+Subject: Re: [PATCH] brcmfmac: Transform compatible string for FW loading
+To:     matthias.bgg@kernel.org, arend.vanspriel@broadcom.com,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     franky.lin@broadcom.com, hante.meuleman@broadcom.com,
+        chi-hsien.lin@cypress.com, wright.feng@cypress.com,
+        mbrugger@suse.com, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200625160725.31581-1-matthias.bgg@kernel.org>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <389d35d9-fb94-b5fd-7b87-9511dacad0b2@redhat.com>
+Date:   Thu, 25 Jun 2020 19:09:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
+MIME-Version: 1.0
+In-Reply-To: <20200625160725.31581-1-matthias.bgg@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Fastabend wrote:
-> Martin KaFai Lau wrote:
-> > On Wed, Jun 24, 2020 at 02:09:23PM -0700, John Fastabend wrote:
-> > > Redirect on non-TLS sockmap side has RCU lock held from sockmap code
-> > > path but when called from TLS this is no longer true. The RCU section
-> > > is needed because we use rcu dereference to fetch the psock of the
-> > > socket we are redirecting to.
-> > sk_psock_verdict_apply() is also called by sk_psock_strp_read() after
-> > rcu_read_unlock().  This issue should not be limited to tls?
-> 
-> The base case is covered because the non-TLS case is wrapped in
-> rcu_read_lock/unlock here,
-> 
->  static void sk_psock_strp_data_ready(struct sock *sk)
->  {
-> 	struct sk_psock *psock;
-> 
-> 	rcu_read_lock();
-> 	psock = sk_psock(sk);
-> 	if (likely(psock)) {
-> 		if (tls_sw_has_ctx_rx(sk)) {
-> 			psock->parser.saved_data_ready(sk);
-> 		} else {
-> 			write_lock_bh(&sk->sk_callback_lock);
-> 			strp_data_ready(&psock->parser.strp);
-> 			write_unlock_bh(&sk->sk_callback_lock);
-> 		}
-> 	}
-> 	rcu_read_unlock();
->  }
-> 
-> There is a case that has existed for awhile where if a skb_clone()
-> fails or alloc_skb_for_msg() fails when building a merged skb. We
-> could call back into sk_psock_strp_read() from a workqueue in
-> strparser that would not be covered by above sk_psock_strp_data_ready().
-> This would hit the sk_psock_verdict_apply() you caught above.
-> 
-> We don't actually see this from selftests because in selftests we
-> always return skb->len indicating a msg is a single skb. In our
-> use cases this is all we've ever used to date so we've not actually
-> hit the case you call out. Another case that might hit this, based
-> on code review, is some of the zero copy TX cases.
-> 
-> To fix the above case I think its best to submit another patch
-> because the Fixes tag will be different. Sound OK? I could push
-> them as a two patch series if that is easier to understand.
+Hi,
 
-Sorry not enough coffee this morning the fix here is enough for
-both cases I'll update the commit message.
-
+On 6/25/20 6:07 PM, matthias.bgg@kernel.org wrote:
+> From: Matthias Brugger <mbrugger@suse.com>
 > 
-> Also I should have a patch shortly to allow users to skip setting
-> up a parse_msg hook for the strparser. This helps because the
-> vast majority of use cases I've seen just use skb->len as the
-> message deliminator. It also bypasses above concern.
+> The driver relies on the compatible string from DT to determine which
+> FW configuration file it should load. The DTS spec allows for '/' as
+> part of the compatible string. We change this to '-' so that we will
+> still be able to load the config file, even when the compatible has a
+> '/'. This fixes explicitly the firmware loading for
+> "solidrun,cubox-i/q".
 > 
-> Thanks,
-> John
+> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+> ---
+>   .../wireless/broadcom/brcm80211/brcmfmac/of.c  | 18 +++++++++++++++---
+>   1 file changed, 15 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+> index b886b56a5e5a..8a41b7f9cad3 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+> @@ -17,7 +17,6 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+>   {
+>   	struct brcmfmac_sdio_pd *sdio = &settings->bus.sdio;
+>   	struct device_node *root, *np = dev->of_node;
+> -	struct property *prop;
+>   	int irq;
+>   	u32 irqf;
+>   	u32 val;
+> @@ -25,8 +24,21 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+>   	/* Set board-type to the first string of the machine compatible prop */
+>   	root = of_find_node_by_path("/");
+>   	if (root) {
+> -		prop = of_find_property(root, "compatible", NULL);
+> -		settings->board_type = of_prop_next_string(prop, NULL);
+> +		int i;
+> +		char *board_type;
+> +		const char *tmp;
+> +
+> +		of_property_read_string_index(root, "compatible", 0, &tmp);
+> +
+> +		/* get rid of '/' in the compatible string to be able to find the FW */
+> +		board_type = devm_kzalloc(dev, strlen(tmp), GFP_KERNEL);
 
+strlen() needs to be strlen() + 1 here to make place for the terminating zero.
+
+> +		strncpy(board_type, tmp, strlen(tmp));
+
+Please do not us strncpy, it is THE worst strcpy function
+in existence, it does not guarantee 0 termination, so
+it sucks, it sucks a lot do not use, thanks.
+
+Instead use strlcpy or snprintf(..., "%s", ...)
+
+> +		for (i = 0; i < strlen(board_type); i++) {
+
+(The strlen here relies on there being a 0 behind the memory you
+allocated because of the missing + 1)
+
+> +			if (board_type[i] == '/')
+> +				board_type[i] = '-';
+> +		}
+> +		settings->board_type = board_type;
+> +
+>   		of_node_put(root);
+>   	}
+>   
+> 
+
+Otherwise this looks good to me.
+
+Regards,
+
+Hans
 
