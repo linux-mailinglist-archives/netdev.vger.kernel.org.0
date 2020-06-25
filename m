@@ -2,108 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3FF9209BC5
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 11:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92865209BC7
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 11:16:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390835AbgFYJQT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 05:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390828AbgFYJQQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 05:16:16 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16ADFC061796
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 02:16:15 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id a12so5255745ion.13
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 02:16:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XiSuE1sOXIBipbRmQaXWKIM5hIBA/1GaMgH8/QBx+Fg=;
-        b=iB+W7XizU/ZyE68RYq0Wy4WGwaVug8o35XV3WoVujzhd4fj/jviokDCLfKsAQNC/CD
-         MyjHMfGahHsCmh+oNfL4i4fg/Hb/6rvxRKd7w2PvYmqMcysZPcQJBmTMsBPhx+WOoEsx
-         sYURxtLFEFzEW28VjADaxTZh/LDWcFA4+Q7lAQjdn+vsj3IgSUam5KQTIduedT/ZowyW
-         BerGQgVSZmKKMJoRZikaa7enYMqpZrY1zQ9+Qw8deZc/FMtg+PJ/JBKKtQRGBgloKC7o
-         MRB8xVCpEPuusL9dD5xscCw3iNFGIq00p9DefAs9DqKlrMYOfvBO4YsPKk+Q8tJ/ZxEN
-         w2CQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XiSuE1sOXIBipbRmQaXWKIM5hIBA/1GaMgH8/QBx+Fg=;
-        b=K1ozJZjpPOC1jRNblFiNVgThuH8JkMcaUwkIMBBpaM4ihACq+iFJ7klgOVauK3CaTi
-         2pfKAQt5azhPOhSN2IxttTXG5S1Jowj+cKTMnt/IPBOny+iRCwzQfP0JyBd4meMB5D1W
-         bGnzsgh9//n7UgHFH1JaRskORo69QfS7xXqOz08XbhOmn/4um9+w4STZvEaz5RXqOKxL
-         3AVoB2QKyP9uZy3OGWgD0X5MP8q0lwg5kdS1JF/Ntn8R3uEihvqNFtN1W+RRn4QqvP4X
-         RSAESefkcnEUf2PywK817cH+0/H7wPPTORcv4M+f9wxXzttFp2+7GU52dP67t3pKMXTC
-         9HLQ==
-X-Gm-Message-State: AOAM53289GHh4/AHoFHsmGxpy3BmtOhFQ20i2I9IxQvGKgKUkS5OONbc
-        i1XRXganYvqW3rlOhQ+0AbiF/c2AX/I/b3P5zEnECQ==
-X-Google-Smtp-Source: ABdhPJxfpwzz3MthY2lWlmiAjEp1yFspUytO7/QblbPNv/YGcRZeoCZxvPdkVQWmmMe0TIcWMFI5nbF4CoLcMrctrC0=
-X-Received: by 2002:a02:ac8e:: with SMTP id x14mr71189jan.57.1593076573834;
- Thu, 25 Jun 2020 02:16:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200622100056.10151-1-brgl@bgdev.pl> <20200622100056.10151-7-brgl@bgdev.pl>
- <39e761f3-6607-d209-61df-535330f50db3@gmail.com>
-In-Reply-To: <39e761f3-6607-d209-61df-535330f50db3@gmail.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Thu, 25 Jun 2020 11:16:02 +0200
-Message-ID: <CAMRc=MfE9JjNiZr9_nL37Zbgz_OpKXW1sbdWvbTeq2_orOBKAw@mail.gmail.com>
-Subject: Re: [PATCH 06/11] phy: un-inline devm_mdiobus_register()
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-doc <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+        id S2403809AbgFYJQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 05:16:54 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:56212 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2390071AbgFYJQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 05:16:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593076613;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=FUa1AyI2kqDlot6NBKg+0cki17bCgQVg4ilWJpXDvsg=;
+        b=RJ6HNXDBMfsQB6ETTXySKQtH2h59dgonK/TcBerBB0ghFJhGjqQ4USk46RBsReMG5uXIU3
+        7BAOg+LnYWNiEtIqD8l5cpBGEuJyhMglvpG/H0ND84LOEMiRAMUi8c3hpR5eAA46HgM7LV
+        sAChtDf3O7hXjiQoAM/NiBl/D8i0wJM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-472-Hk4ugfd9NEKCIHuRW5BQQw-1; Thu, 25 Jun 2020 05:16:50 -0400
+X-MC-Unique: Hk4ugfd9NEKCIHuRW5BQQw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CBB35800C60;
+        Thu, 25 Jun 2020 09:16:49 +0000 (UTC)
+Received: from ovpn-115-125.ams2.redhat.com (ovpn-115-125.ams2.redhat.com [10.36.115.125])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0B89F60F8A;
+        Thu, 25 Jun 2020 09:16:48 +0000 (UTC)
+Message-ID: <74156b9ad8529a3228658165396fd5adb2ccd972.camel@redhat.com>
+Subject: Request for net merge into net-next
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+Date:   Thu, 25 Jun 2020 11:16:47 +0200
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 1:55 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> On 6/22/20 3:00 AM, Bartosz Golaszewski wrote:
-> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> >
-> > Functions should only be static inline if they're very short. This
-> > devres helper is already over 10 lines and it will grow soon as we'll
-> > be improving upon its approach. Pull it into mdio_devres.c.
-> >
-> > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > ---
-> >  drivers/net/phy/Makefile      |  2 +-
-> >  drivers/net/phy/mdio_devres.c | 18 ++++++++++++++++++
-> >  include/linux/phy.h           | 15 ++-------------
-> >  3 files changed, 21 insertions(+), 14 deletions(-)
-> >  create mode 100644 drivers/net/phy/mdio_devres.c
->
-> This would likely require an update to the MAINTAINERS file for this new
-> file to be picked up by the correct entry.
+Hi,
 
-It's already included in drivers/net/phy/ in the ETHERNET PHY LIBRARY entry.
+We have a few net-next MPTCP changes depending on:
 
-Bartosz
+commit 9e365ff576b7c1623bbc5ef31ec652c533e2f65e
+mptcp: drop MP_JOIN request sock on syn cookies
+    
+commit 8fd4de1275580a1befa1456d1070eaf6489fb48f
+mptcp: cache msk on MP_JOIN init_req
+
+Could you please merge net into net-next so that we can post without
+causing later conflicts?
+
+Thank you!
+
+Paolo
+
+
+
