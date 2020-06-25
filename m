@@ -2,71 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78BE420A0E1
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 16:31:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8422C20A17E
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 17:01:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405385AbgFYObW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 10:31:22 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:53592 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2404890AbgFYObW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 10:31:22 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 6022D201AF;
-        Thu, 25 Jun 2020 14:31:19 +0000 (UTC)
-Received: from us4-mdac16-9.at1.mdlocal (unknown [10.110.49.191])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 55E40800B2;
-        Thu, 25 Jun 2020 14:31:19 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.104])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id BBD9940072;
-        Thu, 25 Jun 2020 14:31:18 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 7A2FCB80083;
-        Thu, 25 Jun 2020 14:31:18 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 25 Jun
- 2020 15:31:14 +0100
-Subject: Re: [PATCH net 0/4] napi_gro_receive caller return value cleanups
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>
-References: <20200624220606.1390542-1-Jason@zx2c4.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <920ef69e-6479-2378-2e47-d0fffc2dc02b@solarflare.com>
-Date:   Thu, 25 Jun 2020 15:31:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S2405776AbgFYPBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 11:01:44 -0400
+Received: from www62.your-server.de ([213.133.104.62]:33038 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405502AbgFYPBn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 11:01:43 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1joTNl-0004JI-4m; Thu, 25 Jun 2020 17:01:41 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1joTNk-000FIn-St; Thu, 25 Jun 2020 17:01:40 +0200
+Subject: Re: [bpf PATCH] bpf: Do not allow btf_ctx_access with __int128 types
+To:     John Fastabend <john.fastabend@gmail.com>, jolsa@kernel.org,
+        andrii.nakryiko@gmail.com, ast@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <159303723962.11287.13309537171132420717.stgit@john-Precision-5820-Tower>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <d53db444-8473-a48c-179f-4baf13a97674@iogearbox.net>
+Date:   Thu, 25 Jun 2020 17:01:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200624220606.1390542-1-Jason@zx2c4.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25502.003
-X-TM-AS-Result: No-0.292800-8.000000-10
-X-TMASE-MatchedRID: u1zqiMeMcrrA46G+uSzVzfZvT2zYoYOwC/ExpXrHizxTbQ95zRbWVmUx
-        0rFnw+Vpz/KaAXa1nO/lUb21iTHhT1T3aqamtljingIgpj8eDcCcIZLVZAQa0Gsr5yNKIeaXUEh
-        Wy9W70AEnRE+fI6etkj8RKt+EnfRxVzQn+kX0xvYGx2McLsfC3VglaSNBu8pKmntKT/QZrppYcq
-        TGA0A88Q/QLt7G/oc63pgQ4q/O6wuOSonfQdQNip6oP1a0mRIj
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--0.292800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25502.003
-X-MDID: 1593095479-zdY8vaq9CA6k
+In-Reply-To: <159303723962.11287.13309537171132420717.stgit@john-Precision-5820-Tower>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25854/Thu Jun 25 15:16:08 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/06/2020 23:06, Jason A. Donenfeld wrote:
-> So, this series simply gets rid of the return value checking for the
-> four useless places where that check never evaluates to anything
-> meaningful.
-I don't know much about the details of these drivers, but asfar as
- the general concept of the series is concerned,
-Acked-by: Edward Cree <ecree@solarflare.com>
- as per my reply on the thread you linked.
+On 6/25/20 12:20 AM, John Fastabend wrote:
+> To ensure btf_ctx_access() is safe the verifier checks that the BTF
+> arg type is an int, enum, or pointer. When the function does the
+> BTF arg lookup it uses the calculation 'arg = off / 8'  using the
+> fact that registers are 8B. This requires that the first arg is
+> in the first reg, the second in the second, and so on. However,
+> for __int128 the arg will consume two registers by default LLVM
+> implementation. So this will cause the arg layout assumed by the
+> 'arg = off / 8' calculation to be incorrect.
+> 
+> Because __int128 is uncommon this patch applies the easiest fix and
+> will force int types to be sizeof(u64) or smaller so that they will
+> fit in a single register.
+> 
+> v2: remove unneeded parens per Andrii's feedback
+> 
+> Fixes: 9e15db66136a1 ("bpf: Implement accurate raw_tp context access via BTF")
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+
+Applied, thanks!
