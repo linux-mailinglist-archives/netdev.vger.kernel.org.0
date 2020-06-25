@@ -2,111 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9F0020A3E2
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:19:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DB1C20A3E9
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:23:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404559AbgFYRTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 13:19:34 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:56296 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404378AbgFYRTe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jun 2020 13:19:34 -0400
-Received: from tarshish.tkos.co.il (unknown [10.0.8.3])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S2406659AbgFYRXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 13:23:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48104 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404378AbgFYRXr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Jun 2020 13:23:47 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 22DEC4409BF;
-        Thu, 25 Jun 2020 20:19:30 +0300 (IDT)
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Shmuel Hazan <sh@tkos.co.il>, Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH] net: phy: marvell10g: support XFI rate matching mode
-Date:   Thu, 25 Jun 2020 20:19:21 +0300
-Message-Id: <79ca4ba3129a92e20943516b4af0dca510e938b3.1593105561.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.27.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 57D4720773;
+        Thu, 25 Jun 2020 17:23:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593105826;
+        bh=CA8sK1iaFslFSn8XGSDmoUdnBkprbim1itFO/LPNh/Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zvjAC9yYbAgnqLTGPS1P81nV2NWhnDq+aLq1948TpmmXlp9JIBddj6DSbePiKRdzP
+         iy5BNoaAgBHoUFOgS0kGB3GkvEaZumFrUl7SwWZmL4RR43hRLyeYmKCl2GZYUuz4u5
+         kVEtEG49aDmjyQnuUopYz7ozKlvFsewDUnfTZTho=
+Date:   Thu, 25 Jun 2020 19:23:42 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Coiby Xu <coiby.xu@gmail.com>
+Cc:     devel@driverdev.osuosl.org,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Manish Chopra <manishc@marvell.com>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 2/2] fix else after return or break
+Message-ID: <20200625172342.GA3965841@kroah.com>
+References: <20200625153614.63912-1-coiby.xu@gmail.com>
+ <20200625153614.63912-3-coiby.xu@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200625153614.63912-3-coiby.xu@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the hardware MACTYPE hardware configuration pins are set to "XFI
-with Rate Matching" the PHY interface operate at fixed 10Gbps speed. The
-MAC buffer packets in both directions to match various wire speeds.
+On Thu, Jun 25, 2020 at 11:36:14PM +0800, Coiby Xu wrote:
+> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+> ---
+>  drivers/staging/qlge/qlge_dbg.c  | 23 ++++++++++-------------
+>  drivers/staging/qlge/qlge_main.c |  8 ++++----
+>  drivers/staging/qlge/qlge_mpi.c  |  4 ++--
+>  3 files changed, 16 insertions(+), 19 deletions(-)
 
-Read the MAC Type field in the Port Control register, and set the MAC
-interface speed accordingly.
+Hi,
 
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
- drivers/net/phy/marvell10g.c | 29 ++++++++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index d4c2e62b2439..0f157c338c55 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -80,6 +80,8 @@ enum {
- 	MV_V2_PORT_CTRL		= 0xf001,
- 	MV_V2_PORT_CTRL_SWRST	= BIT(15),
- 	MV_V2_PORT_CTRL_PWRDOWN = BIT(11),
-+	MV_V2_PORT_MAC_TYPE_MASK = 0x7,
-+	MV_V2_PORT_MAC_TYPE_RATE_MATCH = 0x6,
- 	/* Temperature control/read registers (88X3310 only) */
- 	MV_V2_TEMP_CTRL		= 0xf08a,
- 	MV_V2_TEMP_CTRL_MASK	= 0xc000,
-@@ -579,8 +581,24 @@ static int mv3310_aneg_done(struct phy_device *phydev)
- 	return genphy_c45_aneg_done(phydev);
- }
- 
--static void mv3310_update_interface(struct phy_device *phydev)
-+static int mv3310_update_interface(struct phy_device *phydev)
- {
-+	int val;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
-+	if (val < 0)
-+		return val;
-+
-+	/* In "XFI with Rate Matching" mode the PHY interface is fixed at
-+	 * 10Gb. The PHY adapts the rate to actual wire speed with help of
-+	 * internal 16KB buffer.
-+	 */
-+	if ((val & MV_V2_PORT_MAC_TYPE_MASK) ==
-+			MV_V2_PORT_MAC_TYPE_RATE_MATCH) {
-+		phydev->interface = PHY_INTERFACE_MODE_10GBASER;
-+		return 0;
-+	}
-+
- 	if ((phydev->interface == PHY_INTERFACE_MODE_SGMII ||
- 	     phydev->interface == PHY_INTERFACE_MODE_2500BASEX ||
- 	     phydev->interface == PHY_INTERFACE_MODE_10GBASER) &&
-@@ -607,6 +625,8 @@ static void mv3310_update_interface(struct phy_device *phydev)
- 			break;
- 		}
- 	}
-+
-+	return 0;
- }
- 
- /* 10GBASE-ER,LR,LRM,SR do not support autonegotiation. */
-@@ -719,8 +739,11 @@ static int mv3310_read_status(struct phy_device *phydev)
- 	if (err < 0)
- 		return err;
- 
--	if (phydev->link)
--		mv3310_update_interface(phydev);
-+	if (phydev->link) {
-+		err = mv3310_update_interface(phydev);
-+		if (err < 0)
-+			return err;
-+	}
- 
- 	return 0;
- }
--- 
-2.27.0
+You are receiving this message because of the following common error(s)
+as indicated below:
 
+- You did not specify a description of why the patch is needed, or
+  possibly, any description at all, in the email body.  Please read the
+  section entitled "The canonical patch format" in the kernel file,
+  Documentation/SubmittingPatches for what is needed in order to
+  properly describe the change.
+
+- You did not write a descriptive Subject: for the patch, allowing Greg,
+  and everyone else, to know what this patch is all about.  Please read
+  the section entitled "The canonical patch format" in the kernel file,
+  Documentation/SubmittingPatches for what a proper Subject: line should
+  look like.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
