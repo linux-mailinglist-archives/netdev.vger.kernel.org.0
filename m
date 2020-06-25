@@ -2,60 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A1A120A731
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 23:05:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E959F20A747
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 23:13:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405588AbgFYVFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 17:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405347AbgFYVFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 17:05:34 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A01C08C5C1
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 14:05:33 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4649814BFC07F;
-        Thu, 25 Jun 2020 14:05:32 -0700 (PDT)
-Date:   Thu, 25 Jun 2020 14:05:28 -0700 (PDT)
-Message-Id: <20200625.140528.1757449684577209415.davem@davemloft.net>
-To:     saeedm@mellanox.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [pull request][net-next V4 0/8] mlx5 updates 2020-06-23
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200625201329.45679-1-saeedm@mellanox.com>
-References: <20200625201329.45679-1-saeedm@mellanox.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 25 Jun 2020 14:05:32 -0700 (PDT)
+        id S2405743AbgFYVNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 17:13:15 -0400
+Received: from ausw2a.mx.sorah.jp ([52.40.41.145]:38724 "EHLO mx.sorah.jp"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2404016AbgFYVNO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Jun 2020 17:13:14 -0400
+X-Greylist: delayed 342 seconds by postgrey-1.27 at vger.kernel.org; Thu, 25 Jun 2020 17:13:14 EDT
+Received: from localhost.localdomain (home.igw.nkmiusercontent.com [192.50.220.178])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mx.sorah.jp (Postfix) with ESMTPSA id 62B0244C65;
+        Thu, 25 Jun 2020 21:07:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=sorah.jp;
+        s=nkmi1707srhjp; t=1593119251;
+        bh=t48guIHwTRE/Cb0XHoF569vP+EV9GLGaMhQyQTYjLn4=;
+        h=From:To:Cc:Subject:Date;
+        b=iUpM6JfWF665eQmlzfL3n4CIc12HQrcUjb9VEVe+YvVYOJXQARHMT6H8Q07+jVOc1
+         fXf1xG31jctUNuRd6mSijk/d2x/WVIUjeCGTS6VNknu7WpJCH+kWd1H8AHK/PPEif3
+         UKLrNaSff5njaS/ipgMEzKvGDm8yqln3mm+3JSXGjAKLai1k27KBWBi4GkHXpBWxQ5
+         HkSezIXAjQEK2Jv4E79BhteG2aM/9PqYB+yQGfDrwmYGMmmo1B97jDfsGjGYmJXIfL
+         Wwx01vX/FgavxJIfxCXo2eQPoM2f1vm4u/DtE/3XquqbNMazQ+vsXk0E4RepFSSl7C
+         kHTSbR4e1QkXg==
+From:   Sorah Fukumori <her@sorah.jp>
+To:     netdev@vger.kernel.org
+Cc:     Sorah Fukumori <her@sorah.jp>
+Subject: [PATCH iproute2] ip fou: respect preferred_family for IPv6
+Date:   Fri, 26 Jun 2020 06:07:12 +0900
+Message-Id: <20200625210712.1863300-1-her@sorah.jp>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@mellanox.com>
-Date: Thu, 25 Jun 2020 13:13:21 -0700
+ip(8) accepts -family ipv6 (-6) option at the toplevel. It is
+straightforward to support the existing option for modifying listener
+on IPv6 addresses.
 
-> This series adds misc cleanup and updates to mlx5 driver.
-> 
-> v1->v2:
->  - Removed unnecessary Fixes Tags 
-> 
-> v2->v3:
->  - Drop "macro undefine" patch, it has no value
-> 
-> v3->v4:
->  - Drop the Relaxed ordering patch.
-> 
-> For more information please see tag log below.
-> 
-> Please pull and let me know if there is any problem.
- ...
->   git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-06-23
+Maintain the backward compatibility by leaving ip fou -6 flag
+implemented, while it's removed from the usage message.
 
-Pulled, thanks everyone.
+Signed-off-by: Sorah Fukumori <her@sorah.jp>
+---
+ ip/ipfou.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/ip/ipfou.c b/ip/ipfou.c
+index ea126b08..9c697770 100644
+--- a/ip/ipfou.c
++++ b/ip/ipfou.c
+@@ -27,10 +27,10 @@
+ static void usage(void)
+ {
+ 	fprintf(stderr,
+-		"Usage: ip fou add port PORT { ipproto PROTO  | gue } [ -6 ]\n"
++		"Usage: ip fou add port PORT { ipproto PROTO  | gue }\n"
+ 		"		   [ local IFADDR ] [ peer IFADDR ]\n"
+ 		"		   [ peer_port PORT ] [ dev IFNAME ]\n"
+-		"       ip fou del port PORT [ -6 ] [ local IFADDR ]\n"
++		"       ip fou del port PORT [ local IFADDR ]\n"
+ 		"		   [ peer IFADDR ] [ peer_port PORT ]\n"
+ 		"		   [ dev IFNAME ]\n"
+ 		"       ip fou show\n"
+@@ -55,13 +55,17 @@ static int fou_parse_opt(int argc, char **argv, struct nlmsghdr *n,
+ {
+ 	const char *local = NULL, *peer = NULL;
+ 	__u16 port, peer_port = 0;
+-	__u8 family = AF_INET;
++	__u8 family = preferred_family;
+ 	bool gue_set = false;
+ 	int ipproto_set = 0;
+ 	__u8 ipproto, type;
+ 	int port_set = 0;
+ 	int index = 0;
+ 
++	if (preferred_family == AF_UNSPEC) {
++		family = AF_INET;
++	}
++
+ 	while (argc > 0) {
+ 		if (!matches(*argv, "port")) {
+ 			NEXT_ARG();
+-- 
+2.26.2
+
