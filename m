@@ -2,96 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B61E20A0A4
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 16:13:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE6720A0A8
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 16:14:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405343AbgFYON2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 10:13:28 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:59130 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405286AbgFYON0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 10:13:26 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05PED89d080994;
-        Thu, 25 Jun 2020 09:13:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1593094389;
-        bh=c6PIE6h1Ufcsj4xy/cCCsvdAlZ7BD5W5ZeCScWioTrw=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=tQiZiMozPUWwnxGVHJ/sGU1dx9qJ6xHUp906daw8ywtnshytoODlNyDnDplGDsuki
-         zIm4SK60ONHWazNWRRgbwJ/XrVUcc69FlzzdCRLT0297+GzkvC2+H5WI9YmPdVWg+b
-         hnxJFnjGcEC7GWsVq6EG5S3zB6AnE72CI+PhkW6Q=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 05PED3Nn073800
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 25 Jun 2020 09:13:08 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 25
- Jun 2020 09:13:04 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 25 Jun 2020 09:13:04 -0500
-Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05PED3Te095056;
-        Thu, 25 Jun 2020 09:13:03 -0500
-Subject: Re: [PATCH BUGFIX] can: m_can: make m_can driver work with sleep
- state pinconfig
-To:     =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW@KARO-electronics.de>
-CC:     Sriram Dash <sriram.dash@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200625142435.50371e2f@ipc1.ka-ro>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <9416850b-73c3-9b1c-6dd0-c49665ab3ec1@ti.com>
-Date:   Thu, 25 Jun 2020 09:13:03 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S2405359AbgFYOOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 10:14:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405286AbgFYOOC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 10:14:02 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1110C08C5C1
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 07:14:01 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id t25so2124497lji.12
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 07:14:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ldn6FBnq77DB/yy/XXlMExQzH2a0FQzjuDXigv4+ejk=;
+        b=d+d5TAasDL3beWsWjtWjkBkMWstxF9TJO5DH5OlLAaQ9c9ShjBooa0622Q8PfpH2kC
+         F5iCdXwutjHic5+M8O6rk8DxWnqVuoiBFi7+cRHPJGL8SgCDR7/zwvB3Ft0ODaGXN6Mw
+         mNHbA6pgB0CSm2AU3MoHohtNLIqU/oad+FxNM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ldn6FBnq77DB/yy/XXlMExQzH2a0FQzjuDXigv4+ejk=;
+        b=KYCVYOPxaS4mYidK5O89e926hSTQCsFpLxnnyc0uq3Owaq15DRoRVoMhpo9xorZ5fM
+         Obsthup8r32uegpbcco7/ZUJvLIRDfPdF7V4SV75ZZ8zVphV/eGrMe9TwMSUqjFUrd/J
+         a9mv+bqB+qiQNsZebJOJU/Q2OQagSxKof64aO+TOY/xaOIrsxWlXA1Uvl8i3f2eRHOeF
+         R+m6h9tizJtHJ+Ii73lNyRDRcePRjbNelCE33IyEZGn3tdPRmF4D5VbKx1g+ucF26aXn
+         fPD1ZOVtUOfWzgvyarL2VR8irfanJ1uZOu3IdBOu+xGbplh20COFQ/ZGld9USjtxZFiC
+         YeJg==
+X-Gm-Message-State: AOAM5303zlfjJgX+St1+2BV37V8n6CV/v+/WbTzjkEwcKQQ36pOtcOQm
+        gYeev435CL/fRRJVmmiurN9qAg==
+X-Google-Smtp-Source: ABdhPJwwFS1QNZO155U1/cGCWMoyVuUuoyBNOXZB1e4mVW1gwol8Rd4yERtyfBw6vj+9q5SbvvEONQ==
+X-Received: by 2002:a2e:9cd4:: with SMTP id g20mr16570156ljj.371.1593094440144;
+        Thu, 25 Jun 2020 07:14:00 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id z2sm5609698ljh.72.2020.06.25.07.13.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Jun 2020 07:13:59 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Stanislav Fomichev <sdf@google.com>
+Subject: [PATCH bpf-next v3 0/4] bpf, netns: Prepare for multi-prog attachment
+Date:   Thu, 25 Jun 2020 16:13:53 +0200
+Message-Id: <20200625141357.910330-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-In-Reply-To: <20200625142435.50371e2f@ipc1.ka-ro>
-Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lothar
+This patch set prepares ground for link-based multi-prog attachment for
+future netns attach types, with BPF_SK_LOOKUP attach type in mind [0].
 
-On 6/25/20 7:24 AM, Lothar Waßmann wrote:
-> Hi,
->
-> When trying to use the m_can driver on an stm32mp15 based system, I
-> found that I could not send or receive any data.
-> Analyzing the pinctrl registers revealed, that the pins were
-> configured for sleep state even when the can interfaces were in use.
->
-> Looking at the m_can_platform.c driver I found that:
->
-> commit f524f829b75a ("can: m_can: Create a m_can platform framework")
->
-> introduced a call to m_can_class_suspend() in the m_can_runtime_suspend()
-> function which wasn't there in the original code and which causes the
-> pins used by the controller to be configured for sleep state.
->
-> commit 0704c5743694 ("can: m_can_platform: remove unnecessary m_can_class_resume() call")
-> already removed a bogus call to m_can_class_resume() from the
-> m_can_runtime_resume() function, but failed to remove the matching
-> call to m_can_class_suspend() from the m_can_runtime_suspend() function.
->
-> Removing the bogus call to m_can_class_suspend() in the
-> m_can_runtime_suspend() function fixes this.
+Two changes are needed in order to attach and run a series of BPF programs:
 
-Thank you for the patch Richard G has already submitted a similar patch
+  1) an bpf_prog_array of programs to run (patch #2), and
+  2) a list of attached links to keep track of attachments (patch #3).
 
-https://lore.kernel.org/patchwork/patch/1253401/
+Nothing changes for BPF flow_dissector. Just as before only one program can
+be attached to netns.
 
-Dan
 
+In v3 I've simplified patch #2 that introduces bpf_prog_array to take
+advantage of the fact that it will hold at most one program for now.
+
+In particular, I'm no longer using bpf_prog_array_copy. It turned out to be
+less suitable for link operations than I thought as it fails to append the
+same BPF program.
+
+bpf_prog_array_replace_item is also gone, because we know we always want to
+replace the first element in prog_array.
+
+Naturally the code that handles bpf_prog_array will need change once
+more when there is a program type that allows multi-prog attachment. But I
+feel it will be better to do it gradually and present it together with
+tests that actually exercise multi-prog code paths.
+
+Thanks,
+-jkbs
+
+[0] https://lore.kernel.org/bpf/20200511185218.1422406-1-jakub@cloudflare.com/
+
+Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Stanislav Fomichev <sdf@google.com>
+
+v2 -> v3:
+- Don't check if run_array is null in link update callback. (Martin)
+- Allow updating the link with the same BPF program. (Andrii)
+- Add patch #4 with a test for the above case.
+- Kill bpf_prog_array_replace_item. Access the run_array directly.
+- Switch from bpf_prog_array_copy() to bpf_prog_array_alloc(1, ...).
+- Replace rcu_deref_protected & RCU_INIT_POINTER with rcu_replace_pointer.
+- Drop Andrii's Ack from patch #2. Code changed.
+
+v1 -> v2:
+
+- Show with a (void) cast that bpf_prog_array_replace_item() return value
+  is ignored on purpose. (Andrii)
+- Explain why bpf-cgroup cannot replace programs in bpf_prog_array based
+  on bpf_prog pointer comparison in patch #2 description. (Andrii)
+
+Jakub Sitnicki (4):
+  flow_dissector: Pull BPF program assignment up to bpf-netns
+  bpf, netns: Keep attached programs in bpf_prog_array
+  bpf, netns: Keep a list of attached bpf_link's
+  selftests/bpf: Test updating flow_dissector link with same program
+
+ include/net/flow_dissector.h                  |   3 +-
+ include/net/netns/bpf.h                       |   7 +-
+ kernel/bpf/net_namespace.c                    | 162 ++++++++++++------
+ net/core/flow_dissector.c                     |  32 ++--
+ .../bpf/prog_tests/flow_dissector_reattach.c  |  32 +++-
+ 5 files changed, 160 insertions(+), 76 deletions(-)
+
+-- 
+2.25.4
 
