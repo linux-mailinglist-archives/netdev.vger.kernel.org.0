@@ -2,152 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7645F20A6FD
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 22:46:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D99AD20A713
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 22:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405056AbgFYUqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 16:46:17 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:47120 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404043AbgFYUqO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 16:46:14 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05PKfx8j042744;
-        Thu, 25 Jun 2020 20:46:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=corp-2020-01-29;
- bh=+XkLfccnSzqprq+IQB5YlUb4Ac+r8oDSMdVtrNIQ3hQ=;
- b=FlHmXiWed3t68th3dcw1mlKWGRDsV/4DrE41dib+PupVgvVk0aMY5ghMEw4ymPXqzx2/
- BflLBg0te87yxs2eBwvsknt3C0NLvZSHXib6FleAYdc+rSIm8x7sFDQyN78qjheuTE/j
- 6yBr5hvYE1HWIqW057nOUJjPEMgy5BNoDqcvEBPpqFlGf9ajpAM9ylaHw3iwLGEPTZYQ
- wrnjiw8H1wacOIyGtlBHvsJMfBpCeC3CIFjVSdGC3dwDQjzOLMge9fB11SUFiJL9wQNn
- 8JuP/9junoKMilzUrNWtdKdzkdGazCTIrlpM8DylUJJDPOpqeV6kd10RZ3hHR3WzQl85 aQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 31uusu2s8k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 25 Jun 2020 20:46:09 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05PKiGAY063303;
-        Thu, 25 Jun 2020 20:46:08 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 31uur9k1wu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 25 Jun 2020 20:46:08 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 05PKk7wS014167;
-        Thu, 25 Jun 2020 20:46:07 GMT
-Received: from oracle.com (/10.159.159.99)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 25 Jun 2020 20:46:06 +0000
-From:   rao.shoaib@oracle.com
-To:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Rao Shoaib <rao.shoaib@oracle.com>, davem@davemloft.net,
-        leon@kernel.org, ka-cheong.poon@oracle.com,
-        haakon.bugge@oracle.com, somasundaram.krishnasamy@oracle.com
-Subject: [PATCH v2] rds: transport module should be auto loaded when transport is set
-Date:   Thu, 25 Jun 2020 13:46:00 -0700
-Message-Id: <20200625204600.24174-1-rao.shoaib@oracle.com>
-X-Mailer: git-send-email 2.17.1
+        id S2405184AbgFYUum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 16:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49618 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404004AbgFYUum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 16:50:42 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC34C08C5C1;
+        Thu, 25 Jun 2020 13:50:41 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id j10so5811385qtq.11;
+        Thu, 25 Jun 2020 13:50:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L5sBsv2VLcxQkwy3Z1G10hTQJuI20Eze6ofD5v+LMz0=;
+        b=NTeS+7SEXEzhROIyC6OlKtFIZnj+QZ7WMHOitMgPteCYnaaTTJjtsRInZ1w0e5AaeW
+         iw+EZt1JaDufB9H6Ds8rsQA6DYcRnH9q5XdcRAIDb/nZNyuspC5mfwU3EMUOlLOdruSV
+         I0tkLAVeWUtNF9MFFKwBR5kuGK5n8t66dYnNnBCzagH0qu6HTtzOdscH7NDL5ZVn5K7E
+         M1S6DMo+JbkIjjqQ5LdJLgmjwhkUZqYJLYSCVznS3JrLRNN+u7+9eI5S688e8csKFXOE
+         7g+u7dCe/URHQ0qIUNIAzraQjjPVaR8Q11dPfollIVD47ECX27pHt1OCW3ZQHWGVHGHo
+         28vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L5sBsv2VLcxQkwy3Z1G10hTQJuI20Eze6ofD5v+LMz0=;
+        b=VeDAIzqC6Svcw+I8Z+3Jj69igsfmOH6H0khtqj1M7WHBvch9X8RG4R9M69aidmwcau
+         QFy5W5ZaykNZkCgp+wsyWKlYXWUiInZh37VvsDIoSYVeYz9m8I6tCsj43jlJmf41vxSt
+         htE5ZIHAC2+5RQiqswOzW1eIc10OubqfBAymw8nqP0VXSH5Z5u6ElvpLPyoyjuyMbmMW
+         lyPJbknCNK4crCj5+CjsfM9nt09TdVmLJgVZ2gKsYAYg/LqjT1lwDdBDXKIq/Vdx0LDB
+         kZmoYfOKSkmk9TlvmnvMUMSuu9UWy8ybAweesKxnOSXphSQDZAO/Qhij66ixCVDOO+lS
+         tErA==
+X-Gm-Message-State: AOAM5334hXWbvgBgUhCtQHte0cMGuRaBAsk4GfrFG8EvNC+7qZV37lFz
+        HbNg+g4cMmFPIGHnk20PEFS9MAD0UE+sELgUcck=
+X-Google-Smtp-Source: ABdhPJyr0FC5yZDOdt0VdVhuE7WqEP2MW+KZr6pWoIdQpLNUyP1ue9S6ng8xPuRXf/Fe2zU5CYzOwroH2/wO8MMcH2o=
+X-Received: by 2002:ac8:2bba:: with SMTP id m55mr33744407qtm.171.1593118240960;
+ Thu, 25 Jun 2020 13:50:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9663 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 malwarescore=0
- suspectscore=0 mlxlogscore=999 adultscore=0 phishscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006250121
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9663 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 bulkscore=0
- cotscore=-2147483648 malwarescore=0 mlxscore=0 clxscore=1015
- lowpriorityscore=0 mlxlogscore=999 phishscore=0 priorityscore=1501
- spamscore=0 impostorscore=0 adultscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006250121
+References: <20200625141357.910330-1-jakub@cloudflare.com> <20200625141357.910330-3-jakub@cloudflare.com>
+In-Reply-To: <20200625141357.910330-3-jakub@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 25 Jun 2020 13:50:29 -0700
+Message-ID: <CAEf4Bzar93mCMm5vgMiYu6_m2N=icv2Wgmy2ohuKoQr810Kk1w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 2/4] bpf, netns: Keep attached programs in bpf_prog_array
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rao Shoaib <rao.shoaib@oracle.com>
+On Thu, Jun 25, 2020 at 7:17 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> Prepare for having multi-prog attachments for new netns attach types by
+> storing programs to run in a bpf_prog_array, which is well suited for
+> iterating over programs and running them in sequence.
+>
+> After this change bpf(PROG_QUERY) may block to allocate memory in
+> bpf_prog_array_copy_to_user() for collected program IDs. This forces a
+> change in how we protect access to the attached program in the query
+> callback. Because bpf_prog_array_copy_to_user() can sleep, we switch from
+> an RCU read lock to holding a mutex that serializes updaters.
+>
+> Because we allow only one BPF flow_dissector program to be attached to
+> netns at all times, the bpf_prog_array pointed by net->bpf.run_array is
+> always either detached (null) or one element long.
+>
+> No functional changes intended.
+>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
 
-This enhancement auto loads transport module when the transport
-is set via SO_RDS_TRANSPORT socket option.
+I wonder if instead of NULL prog_array, it's better to just use a
+dummy empty (but allocated) array. Might help eliminate some of the
+IFs, maybe even in the hot path.
 
-Reviewed-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
-Reviewed-by: Håkon Bugge <haakon.bugge@oracle.com>
-Signed-off-by: Rao Shoaib <rao.shoaib@oracle.com>
-Signed-off-by: Somasundaram Krishnasamy <somasundaram.krishnasamy@oracle.com>
----
- include/uapi/linux/rds.h |  4 +++-
- net/rds/transport.c      | 26 +++++++++++++++++---------
- 2 files changed, 20 insertions(+), 10 deletions(-)
 
-diff --git a/include/uapi/linux/rds.h b/include/uapi/linux/rds.h
-index cba368e55863..c21edb966c19 100644
---- a/include/uapi/linux/rds.h
-+++ b/include/uapi/linux/rds.h
-@@ -64,10 +64,12 @@
- 
- /* supported values for SO_RDS_TRANSPORT */
- #define	RDS_TRANS_IB	0
--#define	RDS_TRANS_IWARP	1
-+#define	RDS_TRANS_GAP	1
- #define	RDS_TRANS_TCP	2
- #define RDS_TRANS_COUNT	3
- #define	RDS_TRANS_NONE	(~0)
-+/* don't use RDS_TRANS_IWARP - it is deprecated */
-+#define RDS_TRANS_IWARP RDS_TRANS_GAP
- 
- /* IOCTLS commands for SOL_RDS */
- #define SIOCRDSSETTOS		(SIOCPROTOPRIVATE)
-diff --git a/net/rds/transport.c b/net/rds/transport.c
-index 46f709a4b577..f8001ec80867 100644
---- a/net/rds/transport.c
-+++ b/net/rds/transport.c
-@@ -38,6 +38,12 @@
- #include "rds.h"
- #include "loop.h"
- 
-+static char * const rds_trans_modules[] = {
-+	[RDS_TRANS_IB] = "rds_rdma",
-+	[RDS_TRANS_GAP] = NULL,
-+	[RDS_TRANS_TCP] = "rds_tcp",
-+};
-+
- static struct rds_transport *transports[RDS_TRANS_COUNT];
- static DECLARE_RWSEM(rds_trans_sem);
- 
-@@ -110,18 +116,20 @@ struct rds_transport *rds_trans_get(int t_type)
- {
- 	struct rds_transport *ret = NULL;
- 	struct rds_transport *trans;
--	unsigned int i;
- 
- 	down_read(&rds_trans_sem);
--	for (i = 0; i < RDS_TRANS_COUNT; i++) {
--		trans = transports[i];
--
--		if (trans && trans->t_type == t_type &&
--		    (!trans->t_owner || try_module_get(trans->t_owner))) {
--			ret = trans;
--			break;
--		}
-+	trans = transports[t_type];
-+	if (!trans) {
-+		up_read(&rds_trans_sem);
-+		if (rds_trans_modules[t_type])
-+			request_module(rds_trans_modules[t_type]);
-+		down_read(&rds_trans_sem);
-+		trans = transports[t_type];
- 	}
-+	if (trans && trans->t_type == t_type &&
-+	    (!trans->t_owner || try_module_get(trans->t_owner)))
-+		ret = trans;
-+
- 	up_read(&rds_trans_sem);
- 
- 	return ret;
--- 
-2.16.6
+>  include/net/netns/bpf.h    |   5 +-
+>  kernel/bpf/net_namespace.c | 120 +++++++++++++++++++++++++------------
+>  net/core/flow_dissector.c  |  19 +++---
+>  3 files changed, 96 insertions(+), 48 deletions(-)
+>
 
+[...]
+
+
+>
+> +/* Must be called with netns_bpf_mutex held. */
+> +static int __netns_bpf_prog_query(const union bpf_attr *attr,
+> +                                 union bpf_attr __user *uattr,
+> +                                 struct net *net,
+> +                                 enum netns_bpf_attach_type type)
+> +{
+> +       __u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
+> +       struct bpf_prog_array *run_array;
+> +       u32 prog_cnt = 0, flags = 0;
+> +
+> +       run_array = rcu_dereference_protected(net->bpf.run_array[type],
+> +                                             lockdep_is_held(&netns_bpf_mutex));
+> +       if (run_array)
+> +               prog_cnt = bpf_prog_array_length(run_array);
+> +
+> +       if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
+> +               return -EFAULT;
+> +       if (copy_to_user(&uattr->query.prog_cnt, &prog_cnt, sizeof(prog_cnt)))
+> +               return -EFAULT;
+> +       if (!attr->query.prog_cnt || !prog_ids || !prog_cnt)
+> +               return 0;
+> +
+> +       return bpf_prog_array_copy_to_user(run_array, prog_ids,
+> +                                          attr->query.prog_cnt);
+
+It doesn't seem like bpf_prog_array_copy_to_user can handle NULL run_array
+
+> +}
+> +
+>  int netns_bpf_prog_query(const union bpf_attr *attr,
+>                          union bpf_attr __user *uattr)
+>  {
+> -       __u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
+> -       u32 prog_id, prog_cnt = 0, flags = 0;
+>         enum netns_bpf_attach_type type;
+> -       struct bpf_prog *attached;
+>         struct net *net;
+> +       int ret;
+>
+>         if (attr->query.query_flags)
+>                 return -EINVAL;
+
+[...]
