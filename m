@@ -2,106 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4DFD20A447
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2054F20A44B
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 19:53:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406905AbgFYRuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 13:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49860 "EHLO
+        id S2406953AbgFYRxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 13:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405557AbgFYRuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 13:50:15 -0400
+        with ESMTP id S2405562AbgFYRxo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 13:53:44 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F41C08C5C1
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 10:50:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1EDDC08C5C1
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 10:53:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=78474NxH9awXqUrwFYh6TlYw5worgaUrQcG5gfcW5RM=; b=r9RZIzxCy7nmSVPKGf46Dj6yp
-        fjqHMbDBbqNq+yE/81ON51uhBTMdcQrQruoUFNvmKWktlJTR7BUYcAYaQlQkIiak8PhgOQ89xRDui
-        yIIvJbLj8bSFUNPj5NwrWVAvCOWrdW6tZf1yloqI4iAEduegk4BuaA6T/2pegFy7TnzbZW9NLPkmd
-        8qGkfZlwdIynIRuOVqNBHPrijqb3BqTUxufbQ/8THTG6k9MAUcGO3ozBneDLRcY8FDQ9PaoOYMFJi
-        EhN8pF2OWZc7r3OMaPXDPyRB1uS3NdRwh/ZDCni58leKjt0d6ezEEae6NOGjSGomY00PUp1FXgiow
-        ZQKDRwKSQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59668)
+         bh=l1d4k+qidihXGw3BuOAQEZXl3baPIxHcq6E/8njfyIc=; b=JXnUiNef+bq/piCj7t4r6mEvl
+        AZLUv+VYvk7HjKiZebcKDW8xJZOaCs42Q6pnKVbV5kEded5a4gPNPVnIeOvzloRQVRej6TrHp6Y/U
+        MrV33WPChaBe/6UNu2GDma+oq5fL/zmHoBs4j5lT+9CzqHFBPCQdlTlIrZWVBIwQclbmfF7+kqiGm
+        PewOG1FUMkJeRoujCie6apjrkZQ/sBvvL3kmpe7bdl0UosmBF9gyRv1aoYZ9ILfC289k8wO8EwStK
+        fyPIuS3nRddSkhJ4I0y1zB2xTQtCF0e71N0O+504TA8C1wft/Mlr1j4PMYUIu5r6X249gD5O76bvK
+        IjxCuSpzA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59670)
         by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1joW0r-0004ew-8F; Thu, 25 Jun 2020 18:50:13 +0100
+        id 1joW4B-0004f9-Ak; Thu, 25 Jun 2020 18:53:39 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1joW0q-0003Bx-SC; Thu, 25 Jun 2020 18:50:12 +0100
-Date:   Thu, 25 Jun 2020 18:50:12 +0100
+        id 1joW48-0003C7-H8; Thu, 25 Jun 2020 18:53:36 +0100
+Date:   Thu, 25 Jun 2020 18:53:36 +0100
 From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Shmuel Hazan <sh@tkos.co.il>
-Subject: Re: [PATCH] net: phy: marvell10g: support XFI rate matching mode
-Message-ID: <20200625175012.GL1551@shell.armlinux.org.uk>
-References: <79ca4ba3129a92e20943516b4af0dca510e938b3.1593105561.git.baruch@tkos.co.il>
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH net-next 4/7] net: dsa: felix: set proper pause frame
+ timers based on link speed
+Message-ID: <20200625175336.GM1551@shell.armlinux.org.uk>
+References: <20200625152331.3784018-1-olteanv@gmail.com>
+ <20200625152331.3784018-5-olteanv@gmail.com>
+ <20200625163715.GH1551@shell.armlinux.org.uk>
+ <CA+h21hqVF-QkyuhPY9AjOmebYBKhLH7ACo4cdWa8q2Y_7jRHbg@mail.gmail.com>
+ <20200625165818.GK1551@shell.armlinux.org.uk>
+ <CA+h21hp_9R_DiYRQU4q7vGi5N+QGX6CzMZT03yQzmiFn5VSrZA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <79ca4ba3129a92e20943516b4af0dca510e938b3.1593105561.git.baruch@tkos.co.il>
+In-Reply-To: <CA+h21hp_9R_DiYRQU4q7vGi5N+QGX6CzMZT03yQzmiFn5VSrZA@mail.gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 08:19:21PM +0300, Baruch Siach wrote:
-> When the hardware MACTYPE hardware configuration pins are set to "XFI
-> with Rate Matching" the PHY interface operate at fixed 10Gbps speed. The
-> MAC buffer packets in both directions to match various wire speeds.
+On Thu, Jun 25, 2020 at 08:06:08PM +0300, Vladimir Oltean wrote:
+> On Thu, 25 Jun 2020 at 19:58, Russell King - ARM Linux admin
+> <linux@armlinux.org.uk> wrote:
+> >
+> > On Thu, Jun 25, 2020 at 07:48:23PM +0300, Vladimir Oltean wrote:
+> > > On Thu, 25 Jun 2020 at 19:37, Russell King - ARM Linux admin
+> > > <linux@armlinux.org.uk> wrote:
+> > > >
+> > > > On Thu, Jun 25, 2020 at 06:23:28PM +0300, Vladimir Oltean wrote:
+> > > > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > > >
+> > > > > state->speed holds a value of 10, 100, 1000 or 2500, but
+> > > > > SYS_MAC_FC_CFG_FC_LINK_SPEED expects a value in the range 0, 1, 2 or 3.
+> > > > >
+> > > > > So set the correct speed encoding into this register.
+> > > > >
+> > > > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > > > ---
+> > > > >  drivers/net/dsa/ocelot/felix.c | 27 +++++++++++++++++++++++----
+> > > > >  1 file changed, 23 insertions(+), 4 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+> > > > > index d229cb5d5f9e..da337c63e7ca 100644
+> > > > > --- a/drivers/net/dsa/ocelot/felix.c
+> > > > > +++ b/drivers/net/dsa/ocelot/felix.c
+> > > > > @@ -250,10 +250,25 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+> > > > >                          DEV_CLOCK_CFG_LINK_SPEED(OCELOT_SPEED_1000),
+> > > > >                          DEV_CLOCK_CFG);
+> > > > >
+> > > > > -     /* Flow control. Link speed is only used here to evaluate the time
+> > > > > -      * specification in incoming pause frames.
+> > > > > -      */
+> > > > > -     mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(state->speed);
+> > > > > +     switch (state->speed) {
+> > > > > +     case SPEED_10:
+> > > > > +             mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(3);
+> > > > > +             break;
+> > > > > +     case SPEED_100:
+> > > > > +             mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(2);
+> > > > > +             break;
+> > > > > +     case SPEED_1000:
+> > > > > +     case SPEED_2500:
+> > > > > +             mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(1);
+> > > > > +             break;
+> > > > > +     case SPEED_UNKNOWN:
+> > > > > +             mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(0);
+> > > > > +             break;
+> > > > > +     default:
+> > > > > +             dev_err(ocelot->dev, "Unsupported speed on port %d: %d\n",
+> > > > > +                     port, state->speed);
+> > > > > +             return;
+> > > > > +     }
+> > > > >
+> > > > >       /* handle Rx pause in all cases, with 2500base-X this is used for rate
+> > > > >        * adaptation.
+> > > > > @@ -265,6 +280,10 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+> > > > >                             SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
+> > > > >                             SYS_MAC_FC_CFG_FC_LATENCY_CFG(0x7) |
+> > > > >                             SYS_MAC_FC_CFG_ZERO_PAUSE_ENA;
+> > > > > +
+> > > > > +     /* Flow control. Link speed is only used here to evaluate the time
+> > > > > +      * specification in incoming pause frames.
+> > > > > +      */
+> > > > >       ocelot_write_rix(ocelot, mac_fc_cfg, SYS_MAC_FC_CFG, port);
+> > > >
+> > > > I'm not that happy with the persistence of felix using the legacy
+> > > > method; I can bring a horse to water but can't make it drink comes
+> > > > to mind.  I'm at the point where I don't care _if_ my phylink changes
+> > > > break code that I've asked people to convert and they haven't yet,
+> > > > and I'm planning to send the series that /may/ cause breakage in
+> > > > that regard pretty soon, so the lynx PCS changes can move forward.
+> > > >
+> > > > I even tried to move felix forward by sending a patch for it, and I
+> > > > just gave up with that approach based on your comment.
+> > > >
+> > > > Shrug.
+> > > >
+> > > > --
+> > > > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> > > > FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> > >
+> > > The callbacks clearly work the way they are, given the current
+> > > structure of phylink, as proven by the users of this driver. Code that
+> > > isn't there yet simply isn't there yet.
+> > >
+> > > What you consider "useless churn" and what I consider "useless churn"
+> > > are pretty different things.
+> > > To me, patch 7/7 is the useless churn, that's why it's at the end.
+> > > Patches 1-6 are structured in a way that is compatible with
+> > > backporting to a stable 5.4 tree. Patch 7, not so much.
+> > >
+> > > The fact that you have such an attitude and you make the effort to
+> > > actually send an email complaining about me using state->speed in
+> > > .mac_config(), when literally 3 patches later I'm moving this
+> > > configuration where you want it to be, is pretty annoying.
+> >
+> > I have asked you to update felix _prior_ to my patch update, because
+> > I forsee the possibility for there to be breakage from pushing the
+> > PCS support further forward.  In other words, I see there to be a
+> > dependency between moving forward with PCS support and drivers that
+> > still use the legacy method.
+> >
+> > You don't see that, so you constantly bitch and moan.
+> >
 > 
-> Read the MAC Type field in the Port Control register, and set the MAC
-> interface speed accordingly.
+> And that's what this patch series is, no?
+> Some cleanup needed to be done, and it needed to be done _before_ the
+> mac_link_up() conversion. And for things to go quicker, the cleanup
+> and the conversion are part of the same series.
 
-Rate matching brings with it a whole host of issues, not just the
-interface type, but also the phydev->speed, which is commonly used
-to program the MAC.
-
-Rate matching is also used with the unsupported 3310 PHY on the ZII
-devel rev C board, and there we need the PHY to also report a speed
-of 10G as well as the interface type correctly.  The whole thing
-gets quite yucky when you have a 10baseT link on a 3310 PHY with
-the host interface running with 10GBASE-R but the MAC programmed for
-10Mbps.
-
-The approach I hacked up was to split the current link_state into
-media_state and mac_state, and then do this:
-
-+       /* If the PHY supports rate-matching, it will report slower speeds
-+        * for these fixed-speed interface modes. Force the MAC side to
-+        * full speed.
-+        */
-+       if (mac_state.interface == PHY_INTERFACE_MODE_XAUI ||
-+           mac_state.interface == PHY_INTERFACE_MODE_RXAUI ||
-+           mac_state.interface == PHY_INTERFACE_MODE_10GBASER) {
-+               mac_state.speed = SPEED_10000;
-+               mac_state.duplex = DUPLEX_FULL;
-+       }
-
-which is really a dirty hack.  I'd need to re-read the switch
-documentation and review what we're doing to check whether such a
-thing is really necessary, or whether merely using 10GBASE-R but
-programming the MAC to 10Mbps (e.g.) is actually acceptable.
-
-What I'm basically saying is, there could be way more to this than
-just setting the interface mode.
-
-We also /should/ be setting the 3310's interface mode according to
-how the PHY is configured - but that is slightly complicated by the
-various different modes presented by different variants of the PHY
-(the P variant vs the non-P variant.)  I seem to remember that
-disambiguating them requires looking at the revision bits in the
-PHY ID registers, and I've been debating whether we should not be
-using the standard mask when matching them.
+Right, which is what I find when I eventually get to patch 7, the patch
+that you called above "useless churn."  I'm not going to review patch 7
+tonight because of this fiasco.  To pissed off to do a decent job, so
+you're just going to have to wait.
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
