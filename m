@@ -2,269 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2EE920A4EF
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 20:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57FB720A516
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 20:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406255AbgFYS04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 14:26:56 -0400
-Received: from correo.us.es ([193.147.175.20]:33510 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406216AbgFYS0t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jun 2020 14:26:49 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id F3CD8FC607
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 20:26:47 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E309DDA844
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 20:26:47 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id D8975DA722; Thu, 25 Jun 2020 20:26:47 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-106.7 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        LOTS_OF_MONEY,SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled
-        version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 949F0DA78E;
-        Thu, 25 Jun 2020 20:26:45 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 25 Jun 2020 20:26:45 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 631AE42EE38F;
-        Thu, 25 Jun 2020 20:26:45 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH 7/7] selftests: netfilter: add test case for conntrack helper assignment
-Date:   Thu, 25 Jun 2020 20:26:35 +0200
-Message-Id: <20200625182635.1958-8-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200625182635.1958-1-pablo@netfilter.org>
-References: <20200625182635.1958-1-pablo@netfilter.org>
+        id S2405208AbgFYSh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 14:37:29 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:16778 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728406AbgFYSh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 14:37:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1593110246; x=1624646246;
+  h=date:from:to:cc:message-id:references:mime-version:
+   content-transfer-encoding:in-reply-to:subject;
+  bh=qlB2s4Wgnet0CN8ARSsKtfvhK92eox5FVS24rLtb+rU=;
+  b=mv8WKD75KZXT2Wv6dMBRRMLqOZY6gIdejE/1xsodfAjR7J66l6IisIGZ
+   M9QYvjnLzLOi6uEWdopkyWVItVKiWoy0j1jYI85aaoreErVowFwB85Fzj
+   eE5LD6IuLHA02E6zjN3VH8OwvZGwGzESY5WChBz0KbuznJsA3d/xnoOQN
+   o=;
+IronPort-SDR: SCR/aF+rX11ye4y2opWfGY1ClwptB+a+zTCNmAF+d6fCjJf+qsOh77GBJkosreSA4gZmk3KUZB
+ UVvuNlnLGzMQ==
+X-IronPort-AV: E=Sophos;i="5.75,280,1589241600"; 
+   d="scan'208";a="39889028"
+Subject: Re: [PATCH 06/12] xen-blkfront: add callbacks for PM suspend and hibernation]
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1a-7d76a15f.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 25 Jun 2020 18:37:25 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1a-7d76a15f.us-east-1.amazon.com (Postfix) with ESMTPS id E128AA275E;
+        Thu, 25 Jun 2020 18:37:16 +0000 (UTC)
+Received: from EX13D05UWB001.ant.amazon.com (10.43.161.181) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 25 Jun 2020 18:36:59 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
+ EX13D05UWB001.ant.amazon.com (10.43.161.181) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 25 Jun 2020 18:36:59 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Thu, 25 Jun 2020 18:36:59 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id 66FC940359; Thu, 25 Jun 2020 18:36:59 +0000 (UTC)
+Date:   Thu, 25 Jun 2020 18:36:59 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     Roger Pau =?iso-8859-1?Q?Monn=E9?= <roger.pau@citrix.com>
+CC:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "hpa@zytor.com" <hpa@zytor.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "Kamata, Munehisa" <kamatam@amazon.com>,
+        "sstabellini@kernel.org" <sstabellini@kernel.org>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "Valentin, Eduardo" <eduval@amazon.com>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>
+Message-ID: <20200625183659.GA26586@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <7FD7505E-79AA-43F6-8D5F-7A2567F333AB@amazon.com>
+ <20200604070548.GH1195@Air-de-Roger>
+ <20200616214925.GA21684@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200617083528.GW735@Air-de-Roger>
+ <20200619234312.GA24846@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200622083846.GF735@Air-de-Roger>
+ <20200623004314.GA28586@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200623081903.GP735@Air-de-Roger>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200623081903.GP735@Air-de-Roger>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On Tue, Jun 23, 2020 at 10:19:03AM +0200, Roger Pau Monné wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> 
+> 
+> 
+> On Tue, Jun 23, 2020 at 12:43:14AM +0000, Anchal Agarwal wrote:
+> > On Mon, Jun 22, 2020 at 10:38:46AM +0200, Roger Pau Monné wrote:
+> > > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > >
+> > >
+> > >
+> > > On Fri, Jun 19, 2020 at 11:43:12PM +0000, Anchal Agarwal wrote:
+> > > > On Wed, Jun 17, 2020 at 10:35:28AM +0200, Roger Pau Monné wrote:
+> > > > > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > > > >
+> > > > >
+> > > > >
+> > > > > On Tue, Jun 16, 2020 at 09:49:25PM +0000, Anchal Agarwal wrote:
+> > > > > > On Thu, Jun 04, 2020 at 09:05:48AM +0200, Roger Pau Monné wrote:
+> > > > > > > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > > > > > > On Wed, Jun 03, 2020 at 11:33:52PM +0000, Agarwal, Anchal wrote:
+> > > > > > > >  CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+> > > > > > > >     > +             xenbus_dev_error(dev, err, "Freezing timed out;"
+> > > > > > > >     > +                              "the device may become inconsistent state");
+> > > > > > > >
+> > > > > > > >     Leaving the device in this state is quite bad, as it's in a closed
+> > > > > > > >     state and with the queues frozen. You should make an attempt to
+> > > > > > > >     restore things to a working state.
+> > > > > > > >
+> > > > > > > > You mean if backend closed after timeout? Is there a way to know that? I understand it's not good to
+> > > > > > > > leave it in this state however, I am still trying to find if there is a good way to know if backend is still connected after timeout.
+> > > > > > > > Hence the message " the device may become inconsistent state".  I didn't see a timeout not even once on my end so that's why
+> > > > > > > > I may be looking for an alternate perspective here. may be need to thaw everything back intentionally is one thing I could think of.
+> > > > > > >
+> > > > > > > You can manually force this state, and then check that it will behave
+> > > > > > > correctly. I would expect that on a failure to disconnect from the
+> > > > > > > backend you should switch the frontend to the 'Init' state in order to
+> > > > > > > try to reconnect to the backend when possible.
+> > > > > > >
+> > > > > > From what I understand forcing manually is, failing the freeze without
+> > > > > > disconnect and try to revive the connection by unfreezing the
+> > > > > > queues->reconnecting to backend [which never got diconnected]. May be even
+> > > > > > tearing down things manually because I am not sure what state will frontend
+> > > > > > see if backend fails to to disconnect at any point in time. I assumed connected.
+> > > > > > Then again if its "CONNECTED" I may not need to tear down everything and start
+> > > > > > from Initialising state because that may not work.
+> > > > > >
+> > > > > > So I am not so sure about backend's state so much, lets say if  xen_blkif_disconnect fail,
+> > > > > > I don't see it getting handled in the backend then what will be backend's state?
+> > > > > > Will it still switch xenbus state to 'Closed'? If not what will frontend see,
+> > > > > > if it tries to read backend's state through xenbus_read_driver_state ?
+> > > > > >
+> > > > > > So the flow be like:
+> > > > > > Front end marks XenbusStateClosing
+> > > > > > Backend marks its state as XenbusStateClosing
+> > > > > >     Frontend marks XenbusStateClosed
+> > > > > >     Backend disconnects calls xen_blkif_disconnect
+> > > > > >        Backend fails to disconnect, the above function returns EBUSY
+> > > > > >        What will be state of backend here?
+> > > > >
+> > > > > Backend should stay in state 'Closing' then, until it can finish
+> > > > > tearing down.
+> > > > >
+> > > > It disconnects the ring after switching to connected state too.
+> > > > > >        Frontend did not tear down the rings if backend does not switches the
+> > > > > >        state to 'Closed' in case of failure.
+> > > > > >
+> > > > > > If backend stays in CONNECTED state, then even if we mark it Initialised in frontend, backend
+> > > > >
+> > > > > Backend will stay in state 'Closing' I think.
+> > > > >
+> > > > > > won't be calling connect(). {From reading code in frontend_changed}
+> > > > > > IMU, Initialising will fail since backend dev->state != XenbusStateClosed plus
+> > > > > > we did not tear down anything so calling talk_to_blkback may not be needed
+> > > > > >
+> > > > > > Does that sound correct?
+> > > > >
+> > > > > I think switching to the initial state in order to try to attempt a
+> > > > > reconnection would be our best bet here.
+> > > > >
+> > > > It does not seems to work correctly, I get hung tasks all over and all the
+> > > > requests to filesystem gets stuck. Backend does shows the state as connected
+> > > > after xenbus_dev_suspend fails but I think there may be something missing.
+> > > > I don't seem to get IO interrupts thereafter i.e hitting the function blkif_interrupts.
+> > > > I think just marking it initialised may not be the only thing.
+> > > > Here is a short description of what I am trying to do:
+> > > > So, on timeout:
+> > > >     Switch XenBusState to "Initialized"
+> > > >     unquiesce/unfreeze the queues and return
+> > > >     mark info->connected = BLKIF_STATE_CONNECTED
+> > >
+> > > If xenbus state is Initialized isn't it wrong to set info->connected
+> > > == CONNECTED?
+> > >
+> > Yes, you are right earlier I was marking it explicitly but that was not right,
+> > the connect path for blkfront will do that.
+> > > You should tear down all the internal state (like a proper close)?
+> > >
+> > Isn't that similar to disconnecting in the first place that failed during
+> > freeze? Do you mean re-try to close but this time re-connect after close
+> > basically do everything you would at "restore"?
+> 
+> Last time I checked blkfront supported reconnections (ie: disconnect
+> from a backend and connect again). I was assuming we could apply the
+> same here on timeout, and just follow the same path where the frontend
+> waits indefinitely for the backend to close and then attempts to
+> reconnect.
+> 
+> > Also, I experimented with that and it works intermittently. I want to take a
+> > step back on this issue and ask few questions here:
+> > 1. Is fixing this recovery a blocker for me sending in a V2 version?
+> 
+> At the end of day it's your feature. I would certainly prefer for it
+> to work as good as possible, this being a recovery in case of failure
+> just make sure it does something sane (ie: crash/close the frontend)
+> and add a TODO note.
+> 
+> > 2. In our 2-3 years of supporting this feature at large scale we haven't seen this issue
+> > where backend fails to disconnect. What we are trying to do here is create a
+> > hypothetical situation where we leave backend in Closing state and try and see how it
+> > recovers. The reason why I think it "may not" occur and the timeout of 5HZ is
+> > sufficient is because we haven't come across even a single use-case where it
+> > caused hibernation to fail.
+> > The reason why I think "it may" occur is if we are running a really memory
+> > intensive workload and ring is busy and is unable to complete all the requests
+> > in the given timeout. This is very unlikely though.
+> 
+> As said above I would generally prefer for code to handle possible
+> failures the best way, and hence I think here it would be nice to
+> fallback to the normal disconnect path and just wait for the backend
+> to close.
+>
+Do you mind throwing some light in here, what that path may be, if its
+straight forward to fix I would like to debug it a bit more. May be I am
+missing some of the context here.
 
-check that 'nft ... ct helper set <foo>' works:
- 1. configure ftp helper via nft and assign it to
-    connections on port 2121
- 2. check with 'conntrack -L' that the next connection
-    has the ftp helper attached to it.
+I was of the view we may just want to mark frontend closed which should do 
+the job of freeing resources and then following the same flow as
+blkfront_restore. That does not seems to work correctly 100% of the time.
 
-Also add a test for auto-assign (old behaviour).
+> You likely have this very well tuned to your own environment and
+> workloads, since this will now be upstream others might have more
+> contended systems where it could start to fail.
+> 
+I agree, however, this is also from the testing I did with 100 of runs 
+outside of EC2 running few tests of my own. 
+> > 3) Also, I do not think this may be straight forward to fix and expect
+> > hibernation to work flawlessly in subsequent invocations. I am open to
+> > all suggestions.
+> 
+> Right, adding a TODO would seem appropriate then.
+>
+Just to double check, I will send in a V2 with this marked as TO-DO?
+> Roger.
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- tools/testing/selftests/netfilter/Makefile    |   2 +-
- .../netfilter/nft_conntrack_helper.sh         | 175 ++++++++++++++++++
- 2 files changed, 176 insertions(+), 1 deletion(-)
- create mode 100755 tools/testing/selftests/netfilter/nft_conntrack_helper.sh
-
-diff --git a/tools/testing/selftests/netfilter/Makefile b/tools/testing/selftests/netfilter/Makefile
-index 9c0f758310fe..a179f0dca8ce 100644
---- a/tools/testing/selftests/netfilter/Makefile
-+++ b/tools/testing/selftests/netfilter/Makefile
-@@ -3,7 +3,7 @@
- 
- TEST_PROGS := nft_trans_stress.sh nft_nat.sh bridge_brouter.sh \
- 	conntrack_icmp_related.sh nft_flowtable.sh ipvs.sh \
--	nft_concat_range.sh \
-+	nft_concat_range.sh nft_conntrack_helper.sh \
- 	nft_queue.sh
- 
- LDLIBS = -lmnl
-diff --git a/tools/testing/selftests/netfilter/nft_conntrack_helper.sh b/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
-new file mode 100755
-index 000000000000..edf0a48da6bf
---- /dev/null
-+++ b/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
-@@ -0,0 +1,175 @@
-+#!/bin/bash
-+#
-+# This tests connection tracking helper assignment:
-+# 1. can attach ftp helper to a connection from nft ruleset.
-+# 2. auto-assign still works.
-+#
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+ret=0
-+
-+sfx=$(mktemp -u "XXXXXXXX")
-+ns1="ns1-$sfx"
-+ns2="ns2-$sfx"
-+testipv6=1
-+
-+cleanup()
-+{
-+	ip netns del ${ns1}
-+	ip netns del ${ns2}
-+}
-+
-+nft --version > /dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not run test without nft tool"
-+	exit $ksft_skip
-+fi
-+
-+ip -Version > /dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not run test without ip tool"
-+	exit $ksft_skip
-+fi
-+
-+conntrack -V > /dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not run test without conntrack tool"
-+	exit $ksft_skip
-+fi
-+
-+which nc >/dev/null 2>&1
-+if [ $? -ne 0 ];then
-+	echo "SKIP: Could not run test without netcat tool"
-+	exit $ksft_skip
-+fi
-+
-+trap cleanup EXIT
-+
-+ip netns add ${ns1}
-+ip netns add ${ns2}
-+
-+ip link add veth0 netns ${ns1} type veth peer name veth0 netns ${ns2} > /dev/null 2>&1
-+if [ $? -ne 0 ];then
-+    echo "SKIP: No virtual ethernet pair device support in kernel"
-+    exit $ksft_skip
-+fi
-+
-+ip -net ${ns1} link set lo up
-+ip -net ${ns1} link set veth0 up
-+
-+ip -net ${ns2} link set lo up
-+ip -net ${ns2} link set veth0 up
-+
-+ip -net ${ns1} addr add 10.0.1.1/24 dev veth0
-+ip -net ${ns1} addr add dead:1::1/64 dev veth0
-+
-+ip -net ${ns2} addr add 10.0.1.2/24 dev veth0
-+ip -net ${ns2} addr add dead:1::2/64 dev veth0
-+
-+load_ruleset_family() {
-+	local family=$1
-+	local ns=$2
-+
-+ip netns exec ${ns} nft -f - <<EOF
-+table $family raw {
-+	ct helper ftp {
-+             type "ftp" protocol tcp
-+        }
-+	chain pre {
-+		type filter hook prerouting priority 0; policy accept;
-+		tcp dport 2121 ct helper set "ftp"
-+	}
-+	chain output {
-+		type filter hook output priority 0; policy accept;
-+		tcp dport 2121 ct helper set "ftp"
-+	}
-+}
-+EOF
-+	return $?
-+}
-+
-+check_for_helper()
-+{
-+	local netns=$1
-+	local message=$2
-+	local port=$3
-+
-+	ip netns exec ${netns} conntrack -L -p tcp --dport $port 2> /dev/null |grep -q 'helper=ftp'
-+	if [ $? -ne 0 ] ; then
-+		echo "FAIL: ${netns} did not show attached helper $message" 1>&2
-+		ret=1
-+	fi
-+
-+	echo "PASS: ${netns} connection on port $port has ftp helper attached" 1>&2
-+	return 0
-+}
-+
-+test_helper()
-+{
-+	local port=$1
-+	local msg=$2
-+
-+	sleep 3 | ip netns exec ${ns2} nc -w 2 -l -p $port > /dev/null &
-+
-+	sleep 1
-+	sleep 1 | ip netns exec ${ns1} nc -w 2 10.0.1.2 $port > /dev/null &
-+
-+	check_for_helper "$ns1" "ip $msg" $port
-+	check_for_helper "$ns2" "ip $msg" $port
-+
-+	wait
-+
-+	if [ $testipv6 -eq 0 ] ;then
-+		return 0
-+	fi
-+
-+	ip netns exec ${ns1} conntrack -F 2> /dev/null
-+	ip netns exec ${ns2} conntrack -F 2> /dev/null
-+
-+	sleep 3 | ip netns exec ${ns2} nc -w 2 -6 -l -p $port > /dev/null &
-+
-+	sleep 1
-+	sleep 1 | ip netns exec ${ns1} nc -w 2 -6 dead:1::2 $port > /dev/null &
-+
-+	check_for_helper "$ns1" "ipv6 $msg" $port
-+	check_for_helper "$ns2" "ipv6 $msg" $port
-+
-+	wait
-+}
-+
-+load_ruleset_family ip ${ns1}
-+if [ $? -ne 0 ];then
-+	echo "FAIL: ${ns1} cannot load ip ruleset" 1>&2
-+	exit 1
-+fi
-+
-+load_ruleset_family ip6 ${ns1}
-+if [ $? -ne 0 ];then
-+	echo "SKIP: ${ns1} cannot load ip6 ruleset" 1>&2
-+	testipv6=0
-+fi
-+
-+load_ruleset_family inet ${ns2}
-+if [ $? -ne 0 ];then
-+	echo "SKIP: ${ns1} cannot load inet ruleset" 1>&2
-+	load_ruleset_family ip ${ns2}
-+	if [ $? -ne 0 ];then
-+		echo "FAIL: ${ns2} cannot load ip ruleset" 1>&2
-+		exit 1
-+	fi
-+
-+	if [ $testipv6 -eq 1 ] ;then
-+		load_ruleset_family ip6 ${ns2}
-+		if [ $? -ne 0 ];then
-+			echo "FAIL: ${ns2} cannot load ip6 ruleset" 1>&2
-+			exit 1
-+		fi
-+	fi
-+fi
-+
-+test_helper 2121 "set via ruleset"
-+ip netns exec ${ns1} sysctl -q 'net.netfilter.nf_conntrack_helper=1'
-+ip netns exec ${ns2} sysctl -q 'net.netfilter.nf_conntrack_helper=1'
-+test_helper 21 "auto-assign"
-+
-+exit $ret
--- 
-2.20.1
-
+Thanks,
+Anchal
