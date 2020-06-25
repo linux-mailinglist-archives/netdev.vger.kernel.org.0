@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15BA9209980
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 07:32:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E781209981
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 07:33:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727912AbgFYFcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 01:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48714 "EHLO
+        id S2389330AbgFYFdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 01:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726548AbgFYFcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 01:32:12 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94927C061573
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 22:32:11 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id g67so1901728pgc.8
-        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 22:32:11 -0700 (PDT)
+        with ESMTP id S2389269AbgFYFdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 01:33:02 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DEFC061573
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 22:33:02 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id ne5so2497269pjb.5
+        for <netdev@vger.kernel.org>; Wed, 24 Jun 2020 22:33:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XEX/vfFKM8Tz0AjFI4UGRCdPt+6ym7uNc96jC0XvWic=;
-        b=1OwQxTofspk5kdYvArDVDTMy/TjPpReAieWI7Sk5PXTDqE02YJY0/2bxxru59FMM3B
-         PBG+1hBbaLAMAyXZgYgnWn3p9xeinEz5zvBckgBNyYl7uxugLCD0GyVo7XipwVwgMyRn
-         JK2/29ZovUhoxhiOd1f3FaQoE99orVlcHPHuS9r6nWVUT86Zq2o8ImZzb4INFdJ4R6wp
-         zufrXY3WW08H+zdAFx2AIhkBGkDpTyTFEQZBoXzGeajsF7Rk3UzngprRedL/PSq36KiH
-         dvCUMjrHyR6Ia5AFi2T8RaoH28/ybvzisYEqZj6502b8Eu0AB2ZE4/Q6eY2SgmoDtPTQ
-         LIzQ==
+        bh=WaaM3CapQRCm9l8U5fCupaPv5QwTL30GYhYrJayXvKg=;
+        b=KVh5xkOtKgSlxXwSffynXsu2rSDI7kAEXITvtIUv9ulX6CkuJOsm90PhzMV/H8ZD8d
+         2cg8bm2vd4KcpWsxcvAd8+ALJKQGIfDAGmmv1HDTVlcJeQiGhVYwQJxHwqPT8gUgi+WP
+         E6xm80h7uK4oJ1uyHiyDPjINvEM8iSzz0QZrG8EaT6hIJCvaNWukyniyrYnw4jhY6Mj+
+         EOeinCuk8+fxOuEm3AKccfhZBMBpZhq/mhb6Zou4Gq59gc/XV1dUZpun3gu4KO2cKpRj
+         HQIYoRhFeNg/9jjjKqluwH+xOqBw83n5gkfWbGYT5m2Ns38XO7dbsYGvRNUWLBHDiY5w
+         HlyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XEX/vfFKM8Tz0AjFI4UGRCdPt+6ym7uNc96jC0XvWic=;
-        b=hnrTv+hBGyLYdUsJuaAJnKl+Whx3iWOOh/S9gZPZ9eyZvF8eBbhVpwBciAvyNRqF1q
-         GghqH2p28XvqSIshhYUxu3XKTFchwDPM8QF8O9WvSWyzOAVSgRnAU/2iWrGKreGy0Sj2
-         J6guIqyQAz+XKz4d/beX5BTf6EGj0kt9HzAo2DHsH2D9rjBOdnvVf9S0Idpv0W4zPwwJ
-         mOHtCk3GTCNC0yXriJ8pKf6TeV5Tneud0+cjQY7xN/7G/VsqbvRoJvh8Pa3Mq+OAOKKf
-         PfWOI44t89rCcz2QVo1kg+aZ2fbfTUpBXUM0PxUSoOADD5TTVD9bIJcdFZZPVVxXoIEI
-         i0OQ==
-X-Gm-Message-State: AOAM532mK5i+8RBJUzHCWCpnUEsUBcykp6ncT219qTp/02pEe8iTpHbs
-        uyv08D1FBW7cnX/k1h8tPMdxFQ==
-X-Google-Smtp-Source: ABdhPJzxGZpFZh8WvtcGAIXOv17oWFxCXgh31lkw6+76aFTdw+qOyI/0140eyI2c/JV7WqSQYN77Pw==
-X-Received: by 2002:a63:c64c:: with SMTP id x12mr24934478pgg.362.1593063130846;
-        Wed, 24 Jun 2020 22:32:10 -0700 (PDT)
+        bh=WaaM3CapQRCm9l8U5fCupaPv5QwTL30GYhYrJayXvKg=;
+        b=Uu9mM9y6aK4JfAmb4MzWDvaQU4I2GurzsERxkYB/c6kZUg6AH3t5IYSJVak6CuAnVJ
+         0y1QBLnArsWtcZ4gVutIOS80oD3H5qyLiXPE3tv8ywm8XowiwqHWg1BR38ezgWQyneSn
+         Y+4MH+RT7ifolbk+zxrzZ0mKr9o7oRHUg1f5Et+s6rLRp3W5pFwjUM0iQoA9opXwiJoh
+         RO+UZTvCvviYsrYCI+ORRUsLdS+amXhdqu7sQbctsFua+q4154gj/Vnckt/NBFzlkAgI
+         R2CX+nLiEj7IJN7ALaDQX+AmTscinDYHF5bRkOxJm8VHgzGPLsCSxpkgo8hjwM3CNnRw
+         Tmwg==
+X-Gm-Message-State: AOAM532hXHbsOfAHD+9CioVRCL6k5K26s7182sESl1qwT4YSoQ5ZFVXP
+        Htw3ntHXSoBRqHkYLSIXXlyB4g==
+X-Google-Smtp-Source: ABdhPJyTet2oNhtO+zRBfE7nBdQNLQagjqtuJMp42oQ1TeTg1SkOv4PnqMmRMPvEZtN4xzd0IiRsmQ==
+X-Received: by 2002:a17:90a:ea18:: with SMTP id w24mr1478110pjy.158.1593063181930;
+        Wed, 24 Jun 2020 22:33:01 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id y136sm21948680pfg.55.2020.06.24.22.32.10
+        by smtp.gmail.com with ESMTPSA id y3sm21886749pff.37.2020.06.24.22.33.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jun 2020 22:32:10 -0700 (PDT)
-Date:   Wed, 24 Jun 2020 22:32:02 -0700
+        Wed, 24 Jun 2020 22:33:01 -0700 (PDT)
+Date:   Wed, 24 Jun 2020 22:32:58 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev <netdev@vger.kernel.org>,
         Chris Healy <cphealy@gmail.com>
-Subject: Re: [ethtool v2 3/6] json_writer: Import the iproute2 helper code
- for JSON output
-Message-ID: <20200624223202.6ddc891f@hermes.lan>
-In-Reply-To: <20200625001244.503790-4-andrew@lunn.ch>
+Subject: Re: [ethtool v2 4/6] Add --json command line argument parsing
+Message-ID: <20200624223258.140f6cad@hermes.lan>
+In-Reply-To: <20200625001244.503790-5-andrew@lunn.ch>
 References: <20200625001244.503790-1-andrew@lunn.ch>
-        <20200625001244.503790-4-andrew@lunn.ch>
+        <20200625001244.503790-5-andrew@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -66,21 +65,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Jun 2020 02:12:41 +0200
+On Thu, 25 Jun 2020 02:12:42 +0200
 Andrew Lunn <andrew@lunn.ch> wrote:
 
-> In general, Linux network tools use JSON for machine readable output.
-> See for example -json for iproute2 and devlink. In order to support
-> JSON output from ethtool, import the iproute2 helper code.
-> 
-> Maybe some time in the future it would make sense to either have a
-> shared library, or to merge ethtool into the iproute2 source
-> distribution?
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> diff --git a/internal.h b/internal.h
+> index edb07bd..7135140 100644
+> --- a/internal.h
+> +++ b/internal.h
+> @@ -23,6 +23,8 @@
+>  #include <sys/ioctl.h>
+>  #include <net/if.h>
+>  
+> +#include "json_writer.h"
+> +
+>  #define maybe_unused __attribute__((__unused__))
+>  
+>  /* internal for netlink interface */
+> @@ -221,6 +223,8 @@ struct cmd_context {
+>  	int argc;		/* number of arguments to the sub-command */
+>  	char **argp;		/* arguments to the sub-command */
+>  	unsigned long debug;	/* debugging mask */
+> +	bool json;		/* Output JSON, if supported */
+> +	json_writer_t *jw;      /* JSON writer instance */
 
-LGTM
-
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
-
-A shared library is hard to version and gets to be a chore.
+You can avoid the boolean by just checking for NULL jw variable.
