@@ -2,115 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDCFE209A43
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 09:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF95C209A4C
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 09:09:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390123AbgFYHHv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Jun 2020 03:07:51 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:55238 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2389406AbgFYHHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 03:07:50 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-307-D24BkyzOOzCvQI9FAp2mtQ-1; Thu, 25 Jun 2020 03:07:46 -0400
-X-MC-Unique: D24BkyzOOzCvQI9FAp2mtQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EB418107ACF6;
-        Thu, 25 Jun 2020 07:07:44 +0000 (UTC)
-Received: from bistromath.localdomain (ovpn-113-132.ams2.redhat.com [10.36.113.132])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C402391D99;
-        Thu, 25 Jun 2020 07:07:43 +0000 (UTC)
-Date:   Thu, 25 Jun 2020 09:07:41 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     steffen.klassert@secunet.com, netdev@vger.kernel.org
-Subject: Re: [PATCH ipsec-next v2 2/6] xfrm: replay: get rid of duplicated
- notification code
-Message-ID: <20200625070741.GA2939559@bistromath.localdomain>
-References: <20200624080804.7480-1-fw@strlen.de>
- <20200624080804.7480-3-fw@strlen.de>
+        id S2390224AbgFYHJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 03:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35356 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390095AbgFYHJE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 03:09:04 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A83C061573;
+        Thu, 25 Jun 2020 00:09:04 -0700 (PDT)
+Received: from [5.158.153.52] (helo=kurt)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
+        (Exim 4.80)
+        (envelope-from <kurt@linutronix.de>)
+        id 1joM0J-0000oM-Gs; Thu, 25 Jun 2020 09:08:59 +0200
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [RFC PATCH 3/9] net: dsa: hellcreek: Add PTP clock support
+In-Reply-To: <20200624130318.GD7247@localhost>
+References: <20200618064029.32168-1-kurt@linutronix.de> <20200618064029.32168-4-kurt@linutronix.de> <20200624130318.GD7247@localhost>
+Date:   Thu, 25 Jun 2020 09:08:48 +0200
+Message-ID: <87366jaagv.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <20200624080804.7480-3-fw@strlen.de>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-Disposition: inline
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+--=-=-=
+Content-Type: text/plain
 
-2020-06-24, 10:08:00 +0200, Florian Westphal wrote:
-> After previous patch, we can consolidate some code:
-> 
-> xfrm_replay_notify, xfrm_replay_notify_bmp and _esn all contain the
-> same code at the end.
-> 
-> Remove it from xfrm_replay_notify_bmp/esn and reuse the one
-> in xfrm_replay_notify.
-> 
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> ---
->  net/xfrm/xfrm_replay.c | 22 ++++------------------
->  1 file changed, 4 insertions(+), 18 deletions(-)
-> 
-> diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
-> index e42a7afb8ee5..fac2f3af4c1a 100644
-> --- a/net/xfrm/xfrm_replay.c
-> +++ b/net/xfrm/xfrm_replay.c
-> @@ -56,10 +56,10 @@ void xfrm_replay_notify(struct xfrm_state *x, int event)
->  		break;
->  	case XFRM_REPLAY_MODE_BMP:
->  		xfrm_replay_notify_bmp(x, event);
-> -		return;
-> +		goto notify;
->  	case XFRM_REPLAY_MODE_ESN:
->  		xfrm_replay_notify_esn(x, event);
-> -		return;
-> +		goto notify;
+Hi Richard,
 
-These two functions have some early returns that skip the
-notification, but now the notification will be sent in all cases:
+On Wed Jun 24 2020, Richard Cochran wrote:
+> On Thu, Jun 18, 2020 at 08:40:23AM +0200, Kurt Kanzenbach wrote:
+>
+>> diff --git a/drivers/net/dsa/hirschmann/hellcreek.h b/drivers/net/dsa/hirschmann/hellcreek.h
+>> index a08a10cb5ab7..2d4422fd2567 100644
+>> --- a/drivers/net/dsa/hirschmann/hellcreek.h
+>> +++ b/drivers/net/dsa/hirschmann/hellcreek.h
+>> @@ -234,10 +234,17 @@ struct hellcreek_fdb_entry {
+>>  struct hellcreek {
+>>  	struct device *dev;
+>>  	struct dsa_switch *ds;
+>> +	struct ptp_clock *ptp_clock;
+>> +	struct ptp_clock_info ptp_clock_info;
+>>  	struct hellcreek_port ports[4];
+>> +	struct delayed_work overflow_work;
+>>  	spinlock_t reg_lock;	/* Switch IP register lock */
+>> +	spinlock_t ptp_lock;	/* PTP IP register lock */
+>
+> Why use a spin lock and not a mutex?
 
-	static void xfrm_replay_notify_bmp(struct xfrm_state *x, int event)
-	{
-		<snip>
+No particular reason. Mutex will also work.
 
-		switch (event) {
-		case XFRM_REPLAY_UPDATE:
-			if (...) {
-				if (x->xflags & XFRM_TIME_DEFER)
-					event = XFRM_REPLAY_TIMEOUT;
-				else
-					return;
-			}
+>> +	hellcreek->ptp_clock = ptp_clock_register(&hellcreek->ptp_clock_info,
+>> +						  hellcreek->dev);
+>> +	if (IS_ERR(hellcreek->ptp_clock))
+>> +		return PTR_ERR(hellcreek->ptp_clock);
+>
+> The ptp_clock_register() can also return NULL:
+>
+>  * Returns a valid pointer on success or PTR_ERR on failure.  If PHC
+>  * support is missing at the configuration level, this function
+>  * returns NULL, and drivers are expected to gracefully handle that
+>  * case separately.
+>
 
-			break;
+I see, thanks. I guess we could add the missing NULL checks to remove()
+and get_ts_info() to handle that case gracefully.
 
+Thanks,
+Kurt
 
-And this also changes the value that ends up in c.data.aevent. That
-change will be lost after this patch.
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
->  	}
->  
->  	switch (event) {
-> @@ -86,6 +86,8 @@ void xfrm_replay_notify(struct xfrm_state *x, int event)
->  	}
->  
->  	memcpy(&x->preplay, &x->replay, sizeof(struct xfrm_replay_state));
-> +
-> +notify:
->  	c.event = XFRM_MSG_NEWAE;
->  	c.data.aevent = event;
->  	km_state_notify(x, &c);
+-----BEGIN PGP SIGNATURE-----
 
--- 
-Sabrina
-
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl70TYAACgkQeSpbgcuY
+8KY8QhAAjm9p+MAzSXrkMYjS0UShvS1MZcx+iZtM3AP6cnb0FlYEwTqoe837Xvfj
+Bff52RCasF/pnplb6q8z3vfHiz8QKqm7OF1hXG5u8ztwkwY47Y1GJdbcqc2Zv1Ix
+Np3j8CWHxbPad87OAxiffYsKF4Z30nG/dkQtu6HduG5skvJiD5U0aNz/NR8SYX2S
+tA6y3d8eM6NV6y0v1JqHbdgckQR9ZxvmlZ3EW2rGN/q7DetqQp5bd8Aftf0JEdzX
+ox1o8BJ06L+/7o5E7k8HyCdkqTY/hEazXTiyl5mAJ69QcDbDTOcrqkrO5mgS8n7J
+lkK7KERBQCJ3LmaGbfPk8YzJWMwUHYlaNAH4sPjnUCYubXcIS8X+IA2netgAFJp4
+kb7kTM4w6yLf0rBf3VRFZAvX/Q+n7eeO8sCUqtC59ZF/gMphUETSmuElveVoF8VS
+Xll3GrRCSVKzol9UvPhRUz4kQ9orzVxCw7mgfKGpm49Dpz0RBm+LJD7I7eX6eRjE
+kdj3dt/qDNwekCR7svx2mMQpwcX9CEEElnWvMGoDPICnKzx0YQvwl0r4ifMzEUc7
+ruoSHscce3p5jhJaC6mvgRYBQ46WqW1tb3zAZtLpGuEXv6rBhYz/wrnbNVcvOtHy
+8OvzJJmVVPenzHLdMUroSnQEhidZcnBohASxYG/HjbbAgQx5XdU=
+=4UQV
+-----END PGP SIGNATURE-----
+--=-=-=--
