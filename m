@@ -2,129 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A033F20A321
-	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 18:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6413420A343
+	for <lists+netdev@lfdr.de>; Thu, 25 Jun 2020 18:45:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404485AbgFYQhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 12:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404328AbgFYQhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 12:37:17 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3934C08C5C1
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 09:37:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=TRYuVhK6KK4qclL0pxREuEzFZorpyCq2t+Snq8dcxvw=; b=Qz4amfFQUYhUrmpV/wcyevBUD
-        xFe1DSfKmML7+LwjRmx/zbJv4cZGP7TjCFQVJDO5Cb9gMtD2yL2ilZQxyiO8Tg2jvld5pBKBklx4R
-        SnRL37HnTgqC+V1jyN/683muTJrKMwhCqKOrSwaBKB8LVGYResBKiL/gG/fRmiCCGTMrJLtEkE5GK
-        RNzgIv+fRNp7wrgUc74FFMBnfn10383Aok+sP2zG3fbRVJ8bY7eiLxI9XvqA/d6MUFzPpdDkvli7r
-        gP8FWjCU9MO3TM/X2FVc9ni8snNwzcaCuoTjz93op2WfZ9ZxPDSyfwlFuEIwNxN/HhH2as/1SM6/L
-        xG4TvapQA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59636)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1joUsG-0004bi-4C; Thu, 25 Jun 2020 17:37:16 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1joUsF-00038N-JO; Thu, 25 Jun 2020 17:37:15 +0100
-Date:   Thu, 25 Jun 2020 17:37:15 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
-        ioana.ciornei@nxp.com
-Subject: Re: [PATCH net-next 4/7] net: dsa: felix: set proper pause frame
- timers based on link speed
-Message-ID: <20200625163715.GH1551@shell.armlinux.org.uk>
-References: <20200625152331.3784018-1-olteanv@gmail.com>
- <20200625152331.3784018-5-olteanv@gmail.com>
+        id S2406465AbgFYQpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 12:45:11 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:55632 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404697AbgFYQpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 12:45:10 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1joUzp-00048R-IT; Thu, 25 Jun 2020 16:45:05 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH][V2] qed: add missing error test for DBG_STATUS_NO_MATCHING_FRAMING_MODE
+Date:   Thu, 25 Jun 2020 17:45:05 +0100
+Message-Id: <20200625164505.115425-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200625152331.3784018-5-olteanv@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 06:23:28PM +0300, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> state->speed holds a value of 10, 100, 1000 or 2500, but
-> SYS_MAC_FC_CFG_FC_LINK_SPEED expects a value in the range 0, 1, 2 or 3.
-> 
-> So set the correct speed encoding into this register.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/dsa/ocelot/felix.c | 27 +++++++++++++++++++++++----
->  1 file changed, 23 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-> index d229cb5d5f9e..da337c63e7ca 100644
-> --- a/drivers/net/dsa/ocelot/felix.c
-> +++ b/drivers/net/dsa/ocelot/felix.c
-> @@ -250,10 +250,25 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
->  			   DEV_CLOCK_CFG_LINK_SPEED(OCELOT_SPEED_1000),
->  			   DEV_CLOCK_CFG);
->  
-> -	/* Flow control. Link speed is only used here to evaluate the time
-> -	 * specification in incoming pause frames.
-> -	 */
-> -	mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(state->speed);
-> +	switch (state->speed) {
-> +	case SPEED_10:
-> +		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(3);
-> +		break;
-> +	case SPEED_100:
-> +		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(2);
-> +		break;
-> +	case SPEED_1000:
-> +	case SPEED_2500:
-> +		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(1);
-> +		break;
-> +	case SPEED_UNKNOWN:
-> +		mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(0);
-> +		break;
-> +	default:
-> +		dev_err(ocelot->dev, "Unsupported speed on port %d: %d\n",
-> +			port, state->speed);
-> +		return;
-> +	}
->  
->  	/* handle Rx pause in all cases, with 2500base-X this is used for rate
->  	 * adaptation.
-> @@ -265,6 +280,10 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
->  			      SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
->  			      SYS_MAC_FC_CFG_FC_LATENCY_CFG(0x7) |
->  			      SYS_MAC_FC_CFG_ZERO_PAUSE_ENA;
-> +
-> +	/* Flow control. Link speed is only used here to evaluate the time
-> +	 * specification in incoming pause frames.
-> +	 */
->  	ocelot_write_rix(ocelot, mac_fc_cfg, SYS_MAC_FC_CFG, port);
+From: Colin Ian King <colin.king@canonical.com>
 
-I'm not that happy with the persistence of felix using the legacy
-method; I can bring a horse to water but can't make it drink comes
-to mind.  I'm at the point where I don't care _if_ my phylink changes
-break code that I've asked people to convert and they haven't yet,
-and I'm planning to send the series that /may/ cause breakage in
-that regard pretty soon, so the lynx PCS changes can move forward.
+The error DBG_STATUS_NO_MATCHING_FRAMING_MODE was added to the enum
+enum dbg_status however there is a missing corresponding entry for
+this in the array s_status_str. This causes an out-of-bounds read when
+indexing into the last entry of s_status_str.  Fix this by adding in
+the missing entry.
 
-I even tried to move felix forward by sending a patch for it, and I
-just gave up with that approach based on your comment.
+Addresses-Coverity: ("Out-of-bounds read").
+Fixes: 2d22bc8354b1 ("qed: FW 8.42.2.0 debug features")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
 
-Shrug.
+V2: use the error message as suggested by Igor Russkikh
 
+---
+ drivers/net/ethernet/qlogic/qed/qed_debug.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+index 57a0dab88431..d9dfaf214f6b 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+@@ -5569,6 +5569,8 @@ static const char * const s_status_str[] = {
+ 	/* DBG_STATUS_INVALID_FILTER_TRIGGER_DWORDS */
+ 	"The filter/trigger constraint dword offsets are not enabled for recording",
+ 
++	/* DBG_STATUS_NO_MATCHING_FRAMING_MODE */
++	"No matching framing mode found for the enabled blocks/Storms - use less dwords for blocks data",
+ 
+ 	/* DBG_STATUS_VFC_READ_ERROR */
+ 	"Error reading from VFC",
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.27.0
+
