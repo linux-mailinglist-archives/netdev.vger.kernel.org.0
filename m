@@ -2,159 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45BCA20B25B
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 15:20:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63B1320B27C
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 15:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727838AbgFZNUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 09:20:38 -0400
-Received: from mail-eopbgr60044.outbound.protection.outlook.com ([40.107.6.44]:29990
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725864AbgFZNUh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 09:20:37 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YDCqsWi/hEwp1bIfJxSlnsTvfGOVA2pp5ludXQaLcTZn+MCXLeqz/F46LhRDv+uS9Iy8OfDmipip+knj8zm4g6Rk/FV2/iwXlxDm1PWfdLObdq7iddQn8bHZsV9WKSmO65DIBfmUkhGojrmoJzz7lzpQbTph7wxgQYvsAQpJAlvXFwEvCmOZqEk3QCTIlBjBf/K46KUDsw5fniibkcAoDlOYY2CF9RLlAP9DjABxIUlkW3+PZ6bT219e6v2TNb/VpOBdFbUiczXg0WE0p3YJVPjXfxIoiDnWeTz4Nw1ZlspOmEgZrz7KIv/5M5b3Adzqdz6PFxpiyxtOyAl0pPnegw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oHaGNEO4syWh0taveMlfV/m5pS5TdsJzqD3mdfLeu9g=;
- b=Bk5Y/9fdLTZhVQm2hgsTugkkbF27xiUVOOH4UUMvoeC6OV8sF+foZl0pyAeDIvs43IvI7Q+a95CJwnxJpX76W/O2u0D6BlsTK4lcIA3v3hq+GDyK6K2Djl2s2EAowzRjJjj5TKSQDKg8bAsRxOqTqbCfdGgcRedDDD4ao7pkw5CrmEBzFZH6F+hMyBdEpE7JmAL0TZwqTXb4cNwHkYB2HqtJUbtNO91v2G1Bet1HXyhJn2OBg1h81FRi/O6Rs4Et+meV9HXzzDjxQQhfrBwbRiwxs9slrmfDiEMt3d8mbcRqEN9+ujj6kZmibq7kKu9V2CT6OpdLIhqa3P92D+tVYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oHaGNEO4syWh0taveMlfV/m5pS5TdsJzqD3mdfLeu9g=;
- b=NeBpQ9WpTOn7S1NO4g6DYkwLVvgXi6PZmmC/jui9p6HmgoudKC415ZqWcSPM47nP8PLu4eO1tXglGpUj7T2xjstrVRTElW6aHzoA31DF5I1/218LBXHLKqhHC5gPpOVAnKUrk9mGD3EyLk7AhVicTgcKNSC2IKl8qQuDl1uibpU=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB5732.eurprd04.prod.outlook.com (2603:10a6:208:125::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Fri, 26 Jun
- 2020 13:20:34 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::7dda:a30:6b25:4d45]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::7dda:a30:6b25:4d45%7]) with mapi id 15.20.3131.024; Fri, 26 Jun 2020
- 13:20:34 +0000
-Date:   Fri, 26 Jun 2020 18:50:24 +0530
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        linux-acpi@vger.kernel.org, linux.cj@gmail.com,
-        netdev@vger.kernel.org,
-        "Rajesh V. Bikkina" <rajesh.bikkina@nxp.com>
-Subject: Re: [net-next PATCH v1] net: dpaa2-mac: Add ACPI support for DPAA2
- MAC driver
-Message-ID: <20200626132024.GA15707@lsv03152.swis.in-blr01.nxp.com>
-References: <20200625043538.25464-1-calvin.johnson@oss.nxp.com>
- <20200625194211.GA535869@lunn.ch>
-Content-Type: text/plain; charset=us-ascii
-Content-Description:  =?ISO-8859-1?Q?=20=1B=15?=
-Content-Disposition: inline
-In-Reply-To: <20200625194211.GA535869@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: SG2PR03CA0096.apcprd03.prod.outlook.com
- (2603:1096:4:7c::24) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+        id S1728338AbgFZN2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 09:28:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725925AbgFZN2M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 09:28:12 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C73C03E979
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 06:28:12 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id m8so256893qvk.7
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 06:28:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0EXd1vhnNtrSwXMMNlWHuNp7c+1ntiJGP1iRQU299gU=;
+        b=Mvvrj24jfH5QmISu+fVAnHEZ4UZfa5swKApGEbK0SvSLKciMZg8UOQIPPF5lg9BXB+
+         UNg37aMUhRFv/V+RNUYfpGodsz/5CCRzlIddf5u88FlP/OhxPyuQHjfaxhXXrpkAYqZR
+         RPvfxFgOj6PO/MmHalHuO+iF9GbWGT7JTaSZZRRiJAy5xpcC6tN3qj8XhCRSF9YqLPWc
+         P8FBEE5kfbOmLSGPRDNlNC/mEp4qZYcKx/Mv0jCziLbhPQoZgzba6zmt26TTY7OIGzef
+         w9rfIdPwEyk7fseZrlgSeMsahvsn8NaaRjK2antdsxLY01ZS+nS3xH4oSMnO8tV18ILE
+         XGyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0EXd1vhnNtrSwXMMNlWHuNp7c+1ntiJGP1iRQU299gU=;
+        b=WIt1qiKpA+s+2b/p++HAy3MnDY0N6311EnZlc5w3Cp3hf/0Y4NhK5bfVMRCPZuiQay
+         iz2ecID5QRBoFE6bbN8hOYAoKA/N9E7D90jNMzmxUNrUPLm53vgXVpj2y6FTG57m+7A7
+         kqcvIzPVkZ1rtMU1+27ANSIgMHw1DPractAxbRNceNuyv4PMtl0fKqUs4LkP5TBqWBA9
+         x4ljNwh6JInXGUH6SCppx6qykaMtl0imHvJWE4Kd2zL/UQD1pnDmLVGe+vYOkS5Ff6Zr
+         cgzs/rXZ8FN+zcw9EBob5uo8MM+hkgFHXxalkJEdZBfo7XztMi4OyXiBj0siFCRJnLTf
+         9+UQ==
+X-Gm-Message-State: AOAM5319FtYSr4b9YvviKYI2PioLc6PT/+qS2MQa0G8tbspQWElYCrVm
+        LrpwqdryrsVJHiIe7KOA98KBRw==
+X-Google-Smtp-Source: ABdhPJwwOoQhWPWx/VE3yv1GabHdfJhr3DZnb0oYKrL1gpTpCsPwqMSuLOa3IL7sbsM4AbM53+K/LQ==
+X-Received: by 2002:a0c:8583:: with SMTP id o3mr446203qva.108.1593178091324;
+        Fri, 26 Jun 2020 06:28:11 -0700 (PDT)
+Received: from [192.168.1.117] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.googlemail.com with ESMTPSA id r76sm7850870qka.30.2020.06.26.06.28.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Jun 2020 06:28:10 -0700 (PDT)
+Subject: Re: [v1,net-next 3/4] net: qos: police action add index for tc flower
+ offloading
+To:     Po Liu <po.liu@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "idosch@idosch.org" <idosch@idosch.org>
+Cc:     "jiri@resnulli.us" <jiri@resnulli.us>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "vlad@buslov.dev" <vlad@buslov.dev>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        "moshe@mellanox.com" <moshe@mellanox.com>,
+        "m-karicheri2@ti.com" <m-karicheri2@ti.com>,
+        "andre.guedes@linux.intel.com" <andre.guedes@linux.intel.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        Edward Cree <ecree@solarflare.com>
+References: <VE1PR04MB6496E5275AD00A8A65095DD192920@VE1PR04MB6496.eurprd04.prod.outlook.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <05d6df9a-4e84-0e8d-0c4c-7f04cb18bb6a@mojatatu.com>
+Date:   Fri, 26 Jun 2020 09:28:08 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR03CA0096.apcprd03.prod.outlook.com (2603:1096:4:7c::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.10 via Frontend Transport; Fri, 26 Jun 2020 13:20:31 +0000
-X-Originating-IP: [14.142.151.118]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: dbd0d97a-47a6-4c65-338c-08d819d3b53d
-X-MS-TrafficTypeDiagnostic: AM0PR04MB5732:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB57327BC35082AA5766066B0BD2930@AM0PR04MB5732.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 0446F0FCE1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +i4aW61+gBE7wEieWqqPxMLfio3d5DdlVek8srwgsMUCDhtoU+tTpOjKY/d/17D9gcPrBdNxPyQLo1QGZ6kRMJXszELeatWoe6HmASPhPHrqx01CsYmq7A0V80p9v8rTNC+FJNA1AOjWTHgFsamKETBsmB/Bq32D+0cSLzD+RtXjx0inQkBnMyKgeZe72ApLYV0svi+fGSYny1VjH+7qVszRwp2V+zOtyo13KLELNWwwNnVFdhVFDzvaMoerdCaXpEIFZMBTb0J4y4k/oMwiD+eHfj3Jn4sU1PC+40DdW0DwHLctBKE95U+a7b4k59NQYXGD92srahoDdSWlQ2glqVwjic0xV7zuHk14pjI5hgdc5QObeRXdgXsFVodTXMBv
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(136003)(366004)(396003)(376002)(39860400002)(33656002)(956004)(66556008)(8936002)(478600001)(66476007)(6916009)(54906003)(4326008)(83380400001)(6506007)(52116002)(316002)(44832011)(7696005)(186003)(9686003)(2906002)(16526019)(1076003)(26005)(55016002)(5660300002)(6666004)(66946007)(55236004)(1006002)(86362001)(8676002)(110426005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: E6xGydgUcm0DlPdRhBUjazu9JbXey0rJ02fCYgK7gmRXglhWmT9bzA8uBAESfh/a8vJlREPgkZ6RhfHQPFpe5NTr6DW0OBXnoQAomq4McLHsyZHbtQoODZt+emjsJtsUSf0H6OlvPbGaBNMSBovkaFcP/iwnBFJQ8+9iDm/3i9I7XNxhRrlVxfJaPqCNInB8cJBMFQDGruG66zsL2Y08A0GSmIgd0d7WeI4l2dfi9qQeyorjggUI+6Jd2cHp2xml9PSsTws0knsxC/TYA5AAXKLIi2ic81kMFqwQLPBb+r5dtvfU7wp0NiurNVsEBx9zAwHtqlb2kVNOI/B1eyjMiK6jjfGYplq4nTwdpGxlloNjAaunJ2DOOrB0i+NqwMv62CfC3KVifUQOdIf9C6CZbXTEEq0QSg+STwWjpabCVR9QM6yy561feNo+zgI9f4fA5QLeZ0p4kwukxxji/Hc9enr7X00HNKuqvR6/WU0WNbY=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dbd0d97a-47a6-4c65-338c-08d819d3b53d
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2020 13:20:34.5204
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: z9arnkuCox1xscc3H6nsBUjg75gziap90U/ci5cz7oFF0hEjweA+fVzjBnyWaYJhdG6FAaqo304SRESiU98LXQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5732
+In-Reply-To: <VE1PR04MB6496E5275AD00A8A65095DD192920@VE1PR04MB6496.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 09:42:11PM +0200, Andrew Lunn wrote:
-> On Thu, Jun 25, 2020 at 10:05:38AM +0530, Calvin Johnson wrote:
+On 2020-06-24 8:34 p.m., Po Liu wrote:
 > 
-> > +static struct phy_device *dpaa2_find_phy_device(struct fwnode_handle *fwnode)
-> > +{
-> > +	struct fwnode_reference_args args;
-> > +	struct platform_device *pdev;
-> > +	struct mii_bus *mdio;
-> > +	struct device *dev;
-> > +	acpi_status status;
-> > +	int addr;
-> > +	int err;
-> > +
-> > +	status = acpi_node_get_property_reference(fwnode, "mdio-handle",
-> > +						  0, &args);
-> > +
-> > +	if (ACPI_FAILURE(status) || !is_acpi_device_node(args.fwnode))
-> > +		return NULL;
-> > +
-> > +	dev = bus_find_device_by_fwnode(&platform_bus_type, args.fwnode);
-> > +	if (IS_ERR_OR_NULL(dev))
-> > +		return NULL;
-> > +	pdev =  to_platform_device(dev);
-> > +	mdio = platform_get_drvdata(pdev);
-> > +
-> > +	err = fwnode_property_read_u32(fwnode, "phy-channel", &addr);
-> > +	if (err < 0 || addr < 0 || addr >= PHY_MAX_ADDR)
-> > +		return NULL;
-> > +
-> > +	return mdiobus_get_phy(mdio, addr);
-> > +}
 > 
-> Hi Calvin
+>> -----Original Message-----
+
+>> That is the point i was trying to get to. Basically:
+>> You have a counter table which is referenced by "index"
+>> You also have a meter/policer table which is referenced by "index".
 > 
-> I think this needs putting somewhere global, since you are effectively
-> defines how all ACPI MACs will find their PHY. This becomes the
-> defacto standard until the ACPI standards committee comes along and
-> tells you, you are doing it wrong, it should be like....
+> They should be one same group and same meaning.
 > 
-> Does Linux have a location to document all its defacto standard ACPI
-> stuff? It would be good to document this somewhere.
 
-Hi Andrew
+Didnt follow. You mean the index is the same for both the
+stat and policer?
 
-As you know, making this code generic would bring us back to waiting for
-ACPI team's approval which is very difficult to get as the ACPI doesn't
-have any opinion on MDIO bus.
+>>
+>> For policers, they maintain their own stats. So when i say:
+>> tc ... flower ... action police ... index 5 The index referred to is in the
+>> policer table
+>>
+> 
+> Sure. Means police with No. 5 entry.
+> 
+>> But for other actions, example when i say:
+>> tc ... flower ... action drop index 10
+> 
+> Still the question, does gact action drop could bind with index? It doesn't meanful.
+> 
 
-Like other ACPI ethernet drivers, can't we keep it local to this driver to
-avoid the above issue?
+Depends on your hardware. From this discussion i am
+trying to understand where the constraint is for your case.
+Whether it is your h/w or the TSN spec.
+For a sample counting which is flexible see here:
+https://p4.org/p4-spec/docs/PSA.html#sec-counters
 
-I can add more documentation to this function itself.
-If we plan to make this approach generic, then it may have to be put in:
-Documentation/firmware-guide/acpi/
+That concept is not specific to P4 but rather to
+newer flow-based hardware.
 
-Please advice.
+More context:
+The assumption these days is we can have a _lot_ of flows with a lot
+of actions.
+Then you want to be able to collect the stats separately, possibly one
+counter entry for each action of interest.
+Why is this important?f For analytics uses cases,
+when you are retrieving the stats you want to reduce the amount of
+data being retrieved. Typically these stats are polled every X seconds.
+For starters, you dont dump filters (which in your case seems to be
+the only way to get the stats).
+In current tc, you dump the actions. But that could be improved so
+you can just dump the stats. The mapping of stats index to actions
+is known to the entity doing the dump.
 
-Thanks
-Calvin
+Does that make sense?
+
+>> The index is in the counter/stats table.
+>> It is not exactly "10" in hardware, the driver magically hides it from the
+>> user - so it could be hw counter index 1234
+> 
+> Not exactly. Current flower offloading stats means get the chain index for that flow filter. The other actions should bind to that chain index.
+ >
+
+So if i read correctly: You have an index per filter pointing to the
+counter table.
+Is this something _you_ decided to do in software or is it how the
+hardware works? (note i referred to this as "legacy ACL" approach
+earlier. It worked like that in old hardware because the main use
+case was to have one action on a match (drop/accept kind).
+
+>Like IEEE802.1Qci, what I am doing is bind gate action to filter chain(mandatory). And also police action as optional.
+
+I cant seem to find this spec online. Is it freely available?
+Also, if i understand you correctly you are saying according to this
+spec you can only have the following type of policy:
+tc .. filter match-spec-here .. \
+action gate gate-action-attributes \
+action police ...
+
+That "action gate" MUST always be present
+but "action police" is optional?
+
+> There is stream counter table which summary the counters pass gate action entry and police action entry for that chain index(there is a bit different if two chain sharing same action list).
+> One chain counter which tc show stats get counter source:
+> struct psfp_streamfilter_counters {
+>          u64 matching_frames_count;
+>          u64 passing_frames_count;
+>          u64 not_passing_frames_count;
+>          u64 passing_sdu_count;
+>          u64 not_passing_sdu_count;
+>          u64 red_frames_count;
+> };
+>
+
+Assuming psfp is something defined in IEEE802.1Qci and the spec will
+describe these?
+Is the filter  "index" pointing to one of those in some counter table?
+
+
+> When pass to the user space, summarize as:
+>          stats.pkts = counters.matching_frames_count +  counters.not_passing_sdu_count - filter->stats.pkts;
+ >
+>          stats.drops = counters.not_passing_frames_count + counters.not_passing_sdu_count +   counters.red_frames_count - filter->stats.drops;
+>
+
+Thanks for the explanation.
+What is filter->stats?
+The rest of those counters seem related to the gate action.
+How do you account for policing actions?
+
+cheers,
+jamal
+
