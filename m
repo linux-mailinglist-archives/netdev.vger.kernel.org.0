@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAA5020AC57
+	by mail.lfdr.de (Postfix) with ESMTP id 380AE20AC56
 	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 08:29:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728382AbgFZG25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 02:28:57 -0400
+        id S1728376AbgFZG2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 02:28:55 -0400
 Received: from mga09.intel.com ([134.134.136.24]:28951 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728365AbgFZG2x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 02:28:53 -0400
-IronPort-SDR: maSvU+PYegVYiUoyz4VOsh/4yr2fs/vt+hBYNPZilqck0y3Xj0mqiZFYPZMrDXTsmrQxQ6yqCF
- SI3lKl4oJfmA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9663"; a="146712646"
+        id S1726488AbgFZG2w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 02:28:52 -0400
+IronPort-SDR: 9meWEvSQnCMptjcngQ5fHrexECLsuAf99rmsN/T/mlLP1iR4S8roXL1QLaY+O+T2vdqf+2qv6G
+ 7/N1F99OOTjg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9663"; a="146712645"
 X-IronPort-AV: E=Sophos;i="5.75,282,1589266800"; 
-   d="scan'208";a="146712646"
+   d="scan'208";a="146712645"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2020 23:28:52 -0700
-IronPort-SDR: r1cZ7XfV9ydJVgWpJqJ0uI2556VzXiYlpsPJJvAS0pnF4GZDJYEy86AA7bu4fcPJJRdBjmOX7t
- F2kMhbeszOqw==
+IronPort-SDR: kD9vyjrhJx730ouIoFh+dmyobDgVbItBgmHh53pzB8LNf6o3xdfN4/7w1IoTp2G5THRrkIIx7D
+ WJ4xo7Ryx7IQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,282,1589266800"; 
-   d="scan'208";a="280062462"
+   d="scan'208";a="280062463"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga006.jf.intel.com with ESMTP; 25 Jun 2020 23:28:51 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Piotr Kwapulinski <piotr.kwapulinski@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+Cc:     Todd Fujinaka <todd.fujinaka@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v3 4/8] i40e: detect and log info about pre-recovery mode
-Date:   Thu, 25 Jun 2020 23:28:46 -0700
-Message-Id: <20200626062850.1649538-5-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v3 5/8] i40e: Add a check to see if MFS is set
+Date:   Thu, 25 Jun 2020 23:28:47 -0700
+Message-Id: <20200626062850.1649538-6-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200626062850.1649538-1-jeffrey.t.kirsher@intel.com>
 References: <20200626062850.1649538-1-jeffrey.t.kirsher@intel.com>
@@ -47,141 +46,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Piotr Kwapulinski <piotr.kwapulinski@intel.com>
+From: Todd Fujinaka <todd.fujinaka@intel.com>
 
-Detect and log information about pre-recovery mode when firmware
-transitions to a recovery mode.
-When a firmware transitions to a recovery mode it stores a number
-of unexpected EMP resets in one of its registers. The number of EMP
-resets ranging from 0x21 to 0x2A indicates that FW transitions
-to recovery mode. Use these values to emit log entry about transition
-process. Previously the pre-recovery mode may not have been detected
-and there was no log entry when NIC was in pre-recovery mode.
+A customer was chain-booting to provision his systems and one of the
+steps was setting MFS. MFS isn't cleared by normal warm reboots
+(clearing requires a GLOBR) and there was no indication of why Jumbo
+Frame receives were failing.
 
-Reviewed-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-Signed-off-by: Piotr Kwapulinski <piotr.kwapulinski@intel.com>
+Add a warning if MFS is set to anything lower than the default.
+
+Signed-off-by: Todd Fujinaka <todd.fujinaka@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c   | 72 +++++++++++++------
- .../net/ethernet/intel/i40e/i40e_register.h   |  2 +
- 2 files changed, 52 insertions(+), 22 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 3978b66dcffd..841e49e1e091 100644
+index 841e49e1e091..12d7191c936a 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -14557,28 +14557,17 @@ void i40e_set_fec_in_flags(u8 fec_cfg, u32 *flags)
-  **/
- static bool i40e_check_recovery_mode(struct i40e_pf *pf)
- {
--	u32 val = rd32(&pf->hw, I40E_GL_FWSTS) & I40E_GL_FWSTS_FWS1B_MASK;
--	bool is_recovery_mode = false;
--
--	if (pf->hw.mac.type == I40E_MAC_XL710)
--		is_recovery_mode =
--		val == I40E_XL710_GL_FWSTS_FWS1B_REC_MOD_CORER_MASK ||
--		val == I40E_XL710_GL_FWSTS_FWS1B_REC_MOD_GLOBR_MASK ||
--		val == I40E_XL710_GL_FWSTS_FWS1B_REC_MOD_TRANSITION_MASK ||
--		val == I40E_XL710_GL_FWSTS_FWS1B_REC_MOD_NVM_MASK;
--	if (pf->hw.mac.type == I40E_MAC_X722)
--		is_recovery_mode =
--		val == I40E_X722_GL_FWSTS_FWS1B_REC_MOD_CORER_MASK ||
--		val == I40E_X722_GL_FWSTS_FWS1B_REC_MOD_GLOBR_MASK;
--	if (is_recovery_mode) {
--		dev_notice(&pf->pdev->dev, "Firmware recovery mode detected. Limiting functionality.\n");
--		dev_notice(&pf->pdev->dev, "Refer to the Intel(R) Ethernet Adapters and Devices User Guide for details on firmware recovery mode.\n");
-+	u32 val = rd32(&pf->hw, I40E_GL_FWSTS);
+@@ -15290,6 +15290,14 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			i40e_stat_str(&pf->hw, err),
+ 			i40e_aq_str(&pf->hw, pf->hw.aq.asq_last_status));
+ 
++	/* make sure the MFS hasn't been set lower than the default */
++#define MAX_FRAME_SIZE_DEFAULT 0x2600
++	val = (rd32(&pf->hw, I40E_PRTGL_SAH) &
++	       I40E_PRTGL_SAH_MFS_MASK) >> I40E_PRTGL_SAH_MFS_SHIFT;
++	if (val < MAX_FRAME_SIZE_DEFAULT)
++		dev_warn(&pdev->dev, "MFS for port %x has been set below the default: %x\n",
++			 i, val);
 +
-+	if (val & I40E_GL_FWSTS_FWS1B_MASK) {
-+		dev_crit(&pf->pdev->dev, "Firmware recovery mode detected. Limiting functionality.\n");
-+		dev_crit(&pf->pdev->dev, "Refer to the Intel(R) Ethernet Adapters and Devices User Guide for details on firmware recovery mode.\n");
- 		set_bit(__I40E_RECOVERY_MODE, pf->state);
- 
- 		return true;
- 	}
--	if (test_and_clear_bit(__I40E_RECOVERY_MODE, pf->state))
--		dev_info(&pf->pdev->dev, "Reinitializing in normal mode with full functionality.\n");
-+	if (test_bit(__I40E_RECOVERY_MODE, pf->state))
-+		dev_info(&pf->pdev->dev, "Please do Power-On Reset to initialize adapter in normal mode with full functionality.\n");
- 
- 	return false;
- }
-@@ -14626,6 +14615,47 @@ static i40e_status i40e_pf_loop_reset(struct i40e_pf *pf)
- 	return ret;
- }
- 
-+/**
-+ * i40e_check_fw_empr - check if FW issued unexpected EMP Reset
-+ * @pf: board private structure
-+ *
-+ * Check FW registers to determine if FW issued unexpected EMP Reset.
-+ * Every time when unexpected EMP Reset occurs the FW increments
-+ * a counter of unexpected EMP Resets. When the counter reaches 10
-+ * the FW should enter the Recovery mode
-+ *
-+ * Returns true if FW issued unexpected EMP Reset
-+ **/
-+static bool i40e_check_fw_empr(struct i40e_pf *pf)
-+{
-+	const u32 fw_sts = rd32(&pf->hw, I40E_GL_FWSTS) &
-+			   I40E_GL_FWSTS_FWS1B_MASK;
-+	return (fw_sts > I40E_GL_FWSTS_FWS1B_EMPR_0) &&
-+	       (fw_sts <= I40E_GL_FWSTS_FWS1B_EMPR_10);
-+}
-+
-+/**
-+ * i40e_handle_resets - handle EMP resets and PF resets
-+ * @pf: board private structure
-+ *
-+ * Handle both EMP resets and PF resets and conclude whether there are
-+ * any issues regarding these resets. If there are any issues then
-+ * generate log entry.
-+ *
-+ * Return 0 if NIC is healthy or negative value when there are issues
-+ * with resets
-+ **/
-+static i40e_status i40e_handle_resets(struct i40e_pf *pf)
-+{
-+	const i40e_status pfr = i40e_pf_loop_reset(pf);
-+	const bool is_empr = i40e_check_fw_empr(pf);
-+
-+	if (is_empr || pfr != I40E_SUCCESS)
-+		dev_crit(&pf->pdev->dev, "Entering recovery mode due to repeated FW resets. This may take several minutes. Refer to the Intel(R) Ethernet Adapters and Devices User Guide.\n");
-+
-+	return is_empr ? I40E_ERR_RESET_FAILED : pfr;
-+}
-+
- /**
-  * i40e_init_recovery_mode - initialize subsystems needed in recovery mode
-  * @pf: board private structure
-@@ -14862,11 +14892,9 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto err_pf_reset;
- 	}
- 
--	err = i40e_pf_loop_reset(pf);
--	if (err) {
--		dev_info(&pdev->dev, "Initial pf_reset failed: %d\n", err);
-+	err = i40e_handle_resets(pf);
-+	if (err)
- 		goto err_pf_reset;
--	}
- 
- 	i40e_check_recovery_mode(pf);
- 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_register.h b/drivers/net/ethernet/intel/i40e/i40e_register.h
-index 7cd3a08a1891..564df22f3f46 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_register.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_register.h
-@@ -43,6 +43,8 @@
- #define I40E_GL_FWSTS 0x00083048 /* Reset: POR */
- #define I40E_GL_FWSTS_FWS1B_SHIFT 16
- #define I40E_GL_FWSTS_FWS1B_MASK I40E_MASK(0xFF, I40E_GL_FWSTS_FWS1B_SHIFT)
-+#define I40E_GL_FWSTS_FWS1B_EMPR_0 I40E_MASK(0x20, I40E_GL_FWSTS_FWS1B_SHIFT)
-+#define I40E_GL_FWSTS_FWS1B_EMPR_10 I40E_MASK(0x2A, I40E_GL_FWSTS_FWS1B_SHIFT)
- #define I40E_XL710_GL_FWSTS_FWS1B_REC_MOD_CORER_MASK I40E_MASK(0x30, I40E_GL_FWSTS_FWS1B_SHIFT)
- #define I40E_XL710_GL_FWSTS_FWS1B_REC_MOD_GLOBR_MASK I40E_MASK(0x31, I40E_GL_FWSTS_FWS1B_SHIFT)
- #define I40E_XL710_GL_FWSTS_FWS1B_REC_MOD_TRANSITION_MASK I40E_MASK(0x32, I40E_GL_FWSTS_FWS1B_SHIFT)
+ 	/* Add a filter to drop all Flow control frames from any VSI from being
+ 	 * transmitted. By doing so we stop a malicious VF from sending out
+ 	 * PAUSE or PFC frames and potentially controlling traffic for other
 -- 
 2.26.2
 
