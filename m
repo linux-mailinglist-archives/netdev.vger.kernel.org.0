@@ -2,230 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6177420BCE5
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 00:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46ED920BCE2
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 00:46:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726096AbgFZWqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 18:46:31 -0400
-Received: from mail-eopbgr50045.outbound.protection.outlook.com ([40.107.5.45]:16979
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725836AbgFZWqa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 18:46:30 -0400
+        id S1725959AbgFZWqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 18:46:01 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:24322 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725836AbgFZWqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 18:46:01 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 05QMjMTK014708;
+        Fri, 26 Jun 2020 15:45:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=H+bnfQBBWFjSY2Vx7UTjeinaNzpXdPhUkj7ltmAyu3M=;
+ b=C78rmZxt1nAZMZnrA/zAnsoAV5U0R+vgzNDdXufnD5TRjH4jaXUKL1ocx64g5z4BTs4S
+ REWqiQDXlF2N90Kdann5BEqVbAjULfvYdBvJipUNMQCZEeLy60vKuJAh4kG06LHAeoOY
+ 5jJn2I5y6O6P95LdgkQnoy/pzOpWyfbg+Ok= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 31ux0nysen-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 26 Jun 2020 15:45:45 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 26 Jun 2020 15:45:43 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VJF4ig9YLYwayqOiffhC523dhYVgSA5XbM7t6o/boFPwE0OhgydNet28K74VaeFLhG4Z1WyS35C1uz0vHafIvkZ235MIqhFEB6rUxIyGwCHvy4DIcMT6vYMvWOzojr1b7Z4fX4lFAfLoSTpx/IPPjFSHh3ZxsQmg+CmQ9vV+GXQUnJSVgrK95NZqUWAoxmuzke7ACWXSFnZq0ptmu/R85Hmo906kJHLzm5QfFDHS6vZd1Wi6QlMU01RFNIhbVvOJ/iCOLLUQebzriv/P1nsQeRwvgNXg39EkG3aq2D2ejwQ5gEBG0//ays25/gaLC5AUrTXw60TeWKiQfkHFL76EvQ==
+ b=dnqsIiLIX9eEeeWfTO5R2z2aAtyfgctw09VjMqTaXgU1+mur0WpTcLg1AMpRdLkQkPGDXgpr+EKckZRd2Du1v5MS7vXThm9EQ+DNPJI2FIzcSsxQ/W+4wtnGMC9swlaTyczT83KLhdOe+eFxyNvhHkJkjBhwh/whXLydMRlgiLRFA4iccYP5alhzRsxKmbN/8ZRWtzi1f6dx1VDzWF30pcS342hBhw89VFB7cq920aWPds0gxxw8y1idGWfukEOTF3GE05gd6eVcBsmd3tZFt70LU72g7x8UMQdxLTyej5NTSmXE5Qxq1exQa1BgZCOyNkjyOvQX9IcF38vbuP1sgg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ndyWQNZcVFEwJnhZBLwApPvfSG8J7sth2i0NHwevsKk=;
- b=kgLvBj5DoV3GN3LjZsxjRdE51ASPEoD/MPUcmZOgunfjkZfIShsYMF4b84aAqhNvWka3BKGLsqs4nwaZxIWptpGsc2g1n3ka2Va6oZGS5SJbU0JsH1YloKMT/VYXCeP9xHeWeOSHCrySomFRRXuk08gsRckoqJUhvRH36xr8faS5ThmdbZAvoOgT/RX2mhktpjcG4mgwmY2Tc81ZR6xBwJ924rRPfC8GKrcIUXJtbTsnwbooDbFDVCBS8GhdTW3pctzj8KBCiaZ3xOENBT+r/WXy0k638QPY98JiUSqVRLc2urkk4VcdzaDYsiWjKSa9fjKaeaMJ+L5tfl4PF8QnHg==
+ bh=H+bnfQBBWFjSY2Vx7UTjeinaNzpXdPhUkj7ltmAyu3M=;
+ b=RvvaF+JgyXiX3mJ6ARSd2NAueI5HXnbC1mpBAcbbYtyQbfnXsqfZhxycc5dgzuqJIkVDpIaE5PRHdJ18qqz8F2F03cbLoV8G2kud9MTzLjx/9C6nINYjQjtPjLbBOb+/UH3xwQ761DBa29l2N8BlSyinqZQTAs+ufylU2lffddn2+a+r44le+d5j076sCcNmQxap1YHIcOoy4KHO+EN77gutabM6gl0jPjalPbAmSyLohid6JFvfwXPrJEJekeZOx0NtzAeHEth3xKCaz2D7y2BelQwau3hL2vK8qHMfMiPtHK80dIjoFuAVWfDvh5kd/LFU8O1Qa932zUFTjVBAcw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ndyWQNZcVFEwJnhZBLwApPvfSG8J7sth2i0NHwevsKk=;
- b=rbsx4jafhP0iWdV1ifoBochDvQubiJ5giO58nhwnuSgk1XcM0jlI2ieXUwFPxAswR+S9JRWAoqMDOiy3qejFO0TwkWz0J7vRfTz9LojSm5vAiaFn7uG34m+6MEE7RIvnS4Jcq4AUOhpud8T4GIGNtLl5DmufiiQhaTrVrdMXpkA=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR05MB4745.eurprd05.prod.outlook.com (2603:10a6:7:9a::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3131.25; Fri, 26 Jun 2020 22:46:22 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::78f6:fb7a:ea76:c2d6%7]) with mapi id 15.20.3131.024; Fri, 26 Jun 2020
- 22:46:22 +0000
-From:   Petr Machata <petrm@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>, jiri@mellanox.com,
-        idosch@mellanox.com, Petr Machata <petrm@mellanox.com>
-Subject: [PATCH iproute2-next v1 4/4] tc: q_red: Add support for qevents "mark" and "early_drop"
-Date:   Sat, 27 Jun 2020 01:45:33 +0300
-Message-Id: <caa9c99f9293bcb61a6ee639d21aaf62b71367bb.1593211071.git.petrm@mellanox.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <ea058286aa9a3dd430d261e61111cf5f91c857bc.1593211071.git.petrm@mellanox.com>
-References: <ea058286aa9a3dd430d261e61111cf5f91c857bc.1593211071.git.petrm@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR05CA0139.eurprd05.prod.outlook.com
- (2603:10a6:207:3::17) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+ bh=H+bnfQBBWFjSY2Vx7UTjeinaNzpXdPhUkj7ltmAyu3M=;
+ b=Xocw/294mFdWor41zxoDXANNqgb167y1A5br5gDuz6qbB+4FQTRf6obCNNyYzykRubaYNqY2oaFIcranTiW6cztA4md6nOUAjE7RrU0tXnlIH/K5rMBGHDPEkg0RqLYKyWr2uJyfbWTOG/7K8irxSOA11zrSbB1584LCtI62pkY=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB3366.namprd15.prod.outlook.com (2603:10b6:a03:10d::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20; Fri, 26 Jun
+ 2020 22:45:39 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::543:b185:ef4a:7e8]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::543:b185:ef4a:7e8%5]) with mapi id 15.20.3109.027; Fri, 26 Jun 2020
+ 22:45:39 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Kernel Team" <Kernel-team@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        "KP Singh" <kpsingh@chromium.org>
+Subject: Re: [PATCH v2 bpf-next 2/4] bpf: introduce helper bpf_get_task_stak()
+Thread-Topic: [PATCH v2 bpf-next 2/4] bpf: introduce helper
+ bpf_get_task_stak()
+Thread-Index: AQHWS06r1sTuO7iWZUmEIP/wOjIJvqjrVxKAgAApV4A=
+Date:   Fri, 26 Jun 2020 22:45:39 +0000
+Message-ID: <C3B6DD3E-1B69-4D0C-8A55-4EB81C21C619@fb.com>
+References: <20200626001332.1554603-1-songliubraving@fb.com>
+ <20200626001332.1554603-3-songliubraving@fb.com>
+ <CAEf4BzZ6-s-vqp+bLiCAVgS2kmp09a1WdaSvaL_jJySx7s7inA@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ6-s-vqp+bLiCAVgS2kmp09a1WdaSvaL_jJySx7s7inA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.80.23.2.2)
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+x-originating-ip: [2620:10d:c090:400::5:1a00]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3f890e48-7a57-48f8-ab79-08d81a22a68b
+x-ms-traffictypediagnostic: BYAPR15MB3366:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB33667AEDA5D6B0A5D937BC8BB3930@BYAPR15MB3366.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0446F0FCE1
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: S0+SKyxgDYq29OPT8cxR7iMbyS681TmJWk8zqZbGLOli5GxZzpEZtJCks+yzdDpu2ZLo/XQTu4IClTf0Ug8SfNypdvfXHkh+TI0cQXGVn1BhqxsOvWZIcXTuTdU/WMdCPC3XrVHDRXmVHYXbh65ZdpOVVn18BvfJuEifVKKnMeOg0fGH0wd6HL6Kavg2sjwIciQY45B4/e2bDgidK0mhMXpv7pOO5wMSQOvbApHPFB+cV6HCfrfkWJOjKUoqObZSJ3VgbQ+Oj3eRkG1JvNGq1gFiojduzB3PiDpaVMuMiJHeaSQiJ1g8lPjKXK2+8pgoPvO5eSV0AE5sSQc+4vYGNA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(346002)(136003)(39860400002)(376002)(396003)(6512007)(54906003)(6506007)(316002)(478600001)(36756003)(2906002)(53546011)(86362001)(4326008)(2616005)(33656002)(83380400001)(186003)(71200400001)(66476007)(66446008)(66946007)(66556008)(8936002)(6486002)(6916009)(8676002)(5660300002)(76116006)(64756008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: MGoqaKip1zptm5y6IImPtHkh9HR+cIH6uCn2iNl6/R/g9dp4AuKuwrCUccs2nGCYyKrCyH1ttXX0J/s3zUrfid3lnmRFrtNkvaFcCW9M2bOdONn7+4uyvBpxcIzdhC4Zx8qLQkSEeirf9dWqVCTruBVZX3SICxCyPJ0Vne8nCO0U+zEmUnUL9K11oslbBNysNs6xdIVy0JEbpCxVQiGYFs7GWvm2gibd8f+doGqm3KhNrx6DqSWStz7Qp+UAzoIUDW0f0BJf5+zBj1lM2fhiNEEGNYAWXk4ZaSIf9KRQiJZRuZtGfWv2mB24XJ7XJR2GFDW54NMl30ME0VXo1JJUjK3miR9Y0Hpl88IkqHO1i5QXpJX5MmpqN3ZcxG4zkJSrwdt/FXWG2y2cN/VYYCmdGfZpT7UNGavC4tvdJbApugYqSzbfr+pBBNFrxTWGsFMzOnRdL15xB/qbcBv++ZPSomkDqvCfcRMocJzd8aSkJxtPZ1CiaCPN5EGLE8iLFsrd8baocC/trqRGfNRPoOuBcQ==
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <DDD403D82D86084CACDB808E9059641A@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by AM3PR05CA0139.eurprd05.prod.outlook.com (2603:10a6:207:3::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21 via Frontend Transport; Fri, 26 Jun 2020 22:46:21 +0000
-X-Mailer: git-send-email 2.20.1
-X-Originating-IP: [37.142.13.130]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 2b9d1a2e-60d2-446b-03f0-08d81a22bfe1
-X-MS-TrafficTypeDiagnostic: HE1PR05MB4745:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB474575EEF923C3874CF2409BDB930@HE1PR05MB4745.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:210;
-X-Forefront-PRVS: 0446F0FCE1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3nnBGjJ6YWPPQlvHXZ4wPW0VW5t04bGElQqiP8fVf4Phs9b5e6zU52uPFScSd4qiTk3OBZZnG0kPTqGwBxOLoabwsy4lpgfAMV0CIZAewdgVzUVLvbNs/fUcVS7GrXneE9tEHyIaps7OmAvOXHhcJRycc7aDiggYbKurVvi1qyWwGslxc83DMqoSm8lHwFhAa6AFnf6poDIjvM1OjwbF11nXeDChulRzk2xdvflSlmmUhKnfouxEDjq0e1z8A92gm0wB9KHC/bNZ05scimwAF5nlD2JIZKs/1cYY/danloQXtpM+lWmrSAQO8iY6a42W
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(376002)(346002)(39860400002)(366004)(86362001)(26005)(54906003)(4326008)(36756003)(66476007)(66556008)(316002)(186003)(16526019)(6666004)(478600001)(5660300002)(52116002)(6486002)(66946007)(6512007)(6506007)(107886003)(2906002)(2616005)(8676002)(956004)(6916009)(8936002)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: erAhVOElOHHcIoZaEezbHfusVCZDVW84NwfBENaYr1yK2IHMkf+2r7MiDydjutjNylk5NOP8eQsy1A8hmQ/q8vJVXfSbgeIQj5baLSG+DIWj8AKUqGg0InZR66QqE0bW4rSRLhIfaHpjemcgQZm5v/pcVpB4aLSEysO87i/PX5TPEdRYtesy0jTvNQVXs43FWBUkT/Th/ayiN8LPxX/4qXKpxQT7x0y2SGFM8EQA3whw8g0A0OBht+zcmI3yULh41u9gB4Gaq0F4u9QVfUveYgur8OgzOuRvhJPUoUP+h2U2E4ZseNahe78DIyfB1/sDM8smKWBrMrsewY5d5AHT2RQcwgtqUZV8hGfVPui6Cp89KUO3Ldp6+7x+EaupqkFkXXigfUj67ahXQNWEmLzTF6zTCPBT/7HGcjPmXDhNJlqfulAhX6YjKHsTCtZnhSHAK/0QYBvSMdgIKEisX+ROdkNLwK1W4x5t7Y6Be/8n5Uo=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b9d1a2e-60d2-446b-03f0-08d81a22bfe1
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR05MB4746.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2020 22:46:22.5928
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f890e48-7a57-48f8-ab79-08d81a22a68b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jun 2020 22:45:39.7047
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: j/dUPjSkCmjQ/ZtAhly5tdZ0PtA0d4y25haUvZUAOcekDwfQqLDgk2prAUI7XJP5JJPFxdJfNDgaww4bRASrNQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB4745
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nm0O3qPoHcbn88kx0dexvNdPw0Z0utEcKHgdwzreUnup3DaXGQcmlfiSt3Ac75q5hkWZK1FB34w1rEjA54gkyw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3366
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-26_12:2020-06-26,2020-06-26 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 cotscore=-2147483648 spamscore=0 suspectscore=0
+ adultscore=0 impostorscore=0 mlxlogscore=854 priorityscore=1501
+ clxscore=1015 malwarescore=0 phishscore=0 bulkscore=0 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006260160
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "early_drop" qevent matches packets that have been early-dropped. The
-"mark" qevent matches packets that have been ECN-marked.
 
-Signed-off-by: Petr Machata <petrm@mellanox.com>
----
- man/man8/tc-red.8 | 18 +++++++++++++++++-
- tc/q_red.c        | 30 +++++++++++++++++++++++++++---
- 2 files changed, 44 insertions(+), 4 deletions(-)
 
-diff --git a/man/man8/tc-red.8 b/man/man8/tc-red.8
-index b5aaa986..662e4d8b 100644
---- a/man/man8/tc-red.8
-+++ b/man/man8/tc-red.8
-@@ -17,7 +17,11 @@ packets
- rate
- .B ] [ probability
- chance
--.B ] [ adaptive ]
-+.B ] [ adaptive ] [ qevent early_drop block
-+index
-+.B ] [ qevent mark block
-+index
-+.B ]
- 
- .SH DESCRIPTION
- Random Early Detection is a classless qdisc which manages its queue size
-@@ -134,6 +138,18 @@ Goal of Adaptive RED is to make 'probability' dynamic value between 1% and 50% t
- .B (max - min) / 2
- .fi
- 
-+.SH QEVENTS
-+See tc (8) for some general notes about qevents. The RED qdisc supports the
-+following qevents:
-+
-+.TP
-+early_drop
-+The associated block is executed when packets are early-dropped. This includes
-+non-ECT packets in ECN mode.
-+.TP
-+mark
-+The associated block is executed when packets are marked in ECN mode.
-+
- .SH EXAMPLE
- 
- .P
-diff --git a/tc/q_red.c b/tc/q_red.c
-index 53181c82..97856f03 100644
---- a/tc/q_red.c
-+++ b/tc/q_red.c
-@@ -22,6 +22,7 @@
- 
- #include "utils.h"
- #include "tc_util.h"
-+#include "tc_qevent.h"
- 
- #include "tc_red.h"
- 
-@@ -30,11 +31,20 @@ static void explain(void)
- 	fprintf(stderr,
- 		"Usage: ... red	limit BYTES [min BYTES] [max BYTES] avpkt BYTES [burst PACKETS]\n"
- 		"		[adaptive] [probability PROBABILITY] [bandwidth KBPS]\n"
--		"		[ecn] [harddrop] [nodrop]\n");
-+		"		[ecn] [harddrop] [nodrop]\n"
-+		"		[qevent early_drop block IDX] [qevent mark block IDX]\n");
- }
- 
- #define RED_SUPPORTED_FLAGS (TC_RED_HISTORIC_FLAGS | TC_RED_NODROP)
- 
-+static struct qevent_plain qe_early_drop = {};
-+static struct qevent_plain qe_mark = {};
-+static struct qevent_util qevents[] = {
-+	QEVENT("early_drop", plain, &qe_early_drop, TCA_RED_EARLY_DROP_BLOCK),
-+	QEVENT("mark", plain, &qe_mark, TCA_RED_MARK_BLOCK),
-+	{},
-+};
-+
- static int red_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 			 struct nlmsghdr *n, const char *dev)
- {
-@@ -51,6 +61,8 @@ static int red_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 	__u32 max_P;
- 	struct rtattr *tail;
- 
-+	qevents_init(qevents);
-+
- 	while (argc > 0) {
- 		if (strcmp(*argv, "limit") == 0) {
- 			NEXT_ARG();
-@@ -109,6 +121,11 @@ static int red_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 			flags_bf.value |= TC_RED_ADAPTATIVE;
- 		} else if (strcmp(*argv, "adaptive") == 0) {
- 			flags_bf.value |= TC_RED_ADAPTATIVE;
-+		} else if (matches(*argv, "qevent") == 0) {
-+			NEXT_ARG();
-+			if (qevent_parse(qevents, &argc, &argv))
-+				return -1;
-+			continue;
- 		} else if (strcmp(*argv, "help") == 0) {
- 			explain();
- 			return -1;
-@@ -162,6 +179,8 @@ static int red_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 	max_P = probability * pow(2, 32);
- 	addattr_l(n, 1024, TCA_RED_MAX_P, &max_P, sizeof(max_P));
- 	addattr_l(n, 1024, TCA_RED_FLAGS, &flags_bf, sizeof(flags_bf));
-+	if (qevents_dump(qevents, n))
-+		return -1;
- 	addattr_nest_end(n, tail);
- 	return 0;
- }
-@@ -203,12 +222,12 @@ static int red_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	print_uint(PRINT_JSON, "min", NULL, qopt->qth_min);
- 	print_string(PRINT_FP, NULL, "min %s ", sprint_size(qopt->qth_min, b2));
- 	print_uint(PRINT_JSON, "max", NULL, qopt->qth_max);
--	print_string(PRINT_FP, NULL, "max %s ", sprint_size(qopt->qth_max, b3));
-+	print_string(PRINT_FP, NULL, "max %s", sprint_size(qopt->qth_max, b3));
- 
- 	tc_red_print_flags(qopt->flags);
- 
- 	if (show_details) {
--		print_uint(PRINT_ANY, "ewma", "ewma %u ", qopt->Wlog);
-+		print_uint(PRINT_ANY, "ewma", " ewma %u ", qopt->Wlog);
- 		if (max_P)
- 			print_float(PRINT_ANY, "probability",
- 				    "probability %lg ", max_P / pow(2, 32));
-@@ -217,6 +236,11 @@ static int red_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 		print_uint(PRINT_ANY, "Scell_log", "Scell_log %u",
- 			   qopt->Scell_log);
- 	}
-+
-+	qevents_init(qevents);
-+	if (qevents_read(qevents, tb))
-+		return -1;
-+	qevents_print(qevents, f);
- 	return 0;
- }
- 
--- 
-2.20.1
+> On Jun 26, 2020, at 1:17 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> =
+wrote:
+>=20
+> On Thu, Jun 25, 2020 at 5:14 PM Song Liu <songliubraving@fb.com> wrote:
+>>=20
+>> Introduce helper bpf_get_task_stack(), which dumps stack trace of given
+>> task. This is different to bpf_get_stack(), which gets stack track of
+>> current task. One potential use case of bpf_get_task_stack() is to call
+>> it from bpf_iter__task and dump all /proc/<pid>/stack to a seq_file.
+>>=20
+>> bpf_get_task_stack() uses stack_trace_save_tsk() instead of
+>> get_perf_callchain() for kernel stack. The benefit of this choice is tha=
+t
+>> stack_trace_save_tsk() doesn't require changes in arch/. The downside of
+>> using stack_trace_save_tsk() is that stack_trace_save_tsk() dumps the
+>> stack trace to unsigned long array. For 32-bit systems, we need to
+>> translate it to u64 array.
+>>=20
+>> Signed-off-by: Song Liu <songliubraving@fb.com>
+>> ---
+>=20
+> Looks great, I just think that there are cases where user doesn't
+> necessarily has valid task_struct pointer, just pid, so would be nice
+> to not artificially restrict such cases by having extra helper.
+>=20
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+Thanks!
+
+>=20
+>> include/linux/bpf.h            |  1 +
+>> include/uapi/linux/bpf.h       | 35 ++++++++++++++-
+>> kernel/bpf/stackmap.c          | 79 ++++++++++++++++++++++++++++++++--
+>> kernel/trace/bpf_trace.c       |  2 +
+>> scripts/bpf_helpers_doc.py     |  2 +
+>> tools/include/uapi/linux/bpf.h | 35 ++++++++++++++-
+>> 6 files changed, 149 insertions(+), 5 deletions(-)
+>>=20
+>=20
+> [...]
+>=20
+>> +       /* stack_trace_save_tsk() works on unsigned long array, while
+>> +        * perf_callchain_entry uses u64 array. For 32-bit systems, it i=
+s
+>> +        * necessary to fix this mismatch.
+>> +        */
+>> +       if (__BITS_PER_LONG !=3D 64) {
+>> +               unsigned long *from =3D (unsigned long *) entry->ip;
+>> +               u64 *to =3D entry->ip;
+>> +               int i;
+>> +
+>> +               /* copy data from the end to avoid using extra buffer */
+>> +               for (i =3D entry->nr - 1; i >=3D (int)init_nr; i--)
+>> +                       to[i] =3D (u64)(from[i]);
+>=20
+> doing this forward would be just fine as well, no? First iteration
+> will cast and overwrite low 32-bits, all the subsequent iterations
+> won't even overlap.
+
+I think first iteration will write zeros to higher 32 bits, no?
+
+>=20
+>> +       }
+>> +
+>> +exit_put:
+>> +       put_callchain_entry(rctx);
+>> +
+>> +       return entry;
+>> +}
+>> +
+>=20
+> [...]
+>=20
+>> +BPF_CALL_4(bpf_get_task_stack, struct task_struct *, task, void *, buf,
+>> +          u32, size, u64, flags)
+>> +{
+>> +       struct pt_regs *regs =3D task_pt_regs(task);
+>> +
+>> +       return __bpf_get_stack(regs, task, buf, size, flags);
+>> +}
+>=20
+>=20
+> So this takes advantage of BTF and having a direct task_struct
+> pointer. But for kprobes/tracepoint I think it would also be extremely
+> helpful to be able to request stack trace by PID. How about one more
+> helper which will wrap this one with get/put task by PID, e.g.,
+> bpf_get_pid_stack(int pid, void *buf, u32 size, u64 flags)? Would that
+> be a problem?
+
+That should work. Let me add that in a follow up patch.=20
 
