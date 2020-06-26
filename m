@@ -2,53 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11B0E20AA30
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 03:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 554B420AA53
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 04:07:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727887AbgFZBkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 21:40:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41628 "EHLO mail.kernel.org"
+        id S1728000AbgFZCHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 22:07:40 -0400
+Received: from mga03.intel.com ([134.134.136.65]:45084 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727876AbgFZBkN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jun 2020 21:40:13 -0400
-Subject: Re: [GIT] Networking
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593135613;
-        bh=beYuIkBrEoofipnvOmAietw6vi3LuAOh/sMwvuTHaI0=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=Jiek5QFEn1Oek+uE+b19aY1+/zx1FSSlqQsAEpxYGVErmF5z3FOOv4cSZlUzDcT0L
-         InyqVsUC6G8hDB0NH/htZkBdv+J2BMc5X9lnQ+vTcLCqQ6/hn+ShuNtGZk2XFXUDXi
-         dAz/RAjjSS5GQYFZvZdpQac+NHN1GwMN0AtZNIGc=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20200625.164348.1339174087524887583.davem@davemloft.net>
-References: <20200625.164348.1339174087524887583.davem@davemloft.net>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20200625.164348.1339174087524887583.davem@davemloft.net>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
- refs/heads/master
-X-PR-Tracked-Commit-Id: 4c342f778fe234e0c2a2601d87fec8ba42f0d2c6
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 4a21185cda0fbb860580eeeb4f1a70a9cda332a4
-Message-Id: <159313561341.23337.16523414484163945062.pr-tracker-bot@kernel.org>
-Date:   Fri, 26 Jun 2020 01:40:13 +0000
-To:     David Miller <davem@davemloft.net>
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        id S1725961AbgFZCHj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Jun 2020 22:07:39 -0400
+IronPort-SDR: KetKsg7R5QYFQI+Ip01ZLCizHBhZs7A9jg7js/mEUlkVn01Tps9JBu8Rb7aTpH87lX80hG+0C4
+ 7CeV07Rdg0Tg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9663"; a="145209884"
+X-IronPort-AV: E=Sophos;i="5.75,281,1589266800"; 
+   d="scan'208";a="145209884"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2020 19:07:39 -0700
+IronPort-SDR: SRqnQtdzzVd6uARH9Gqugs5ECtg4+DvUmj3M+4kukqU+441G/M1SNYognTgCXyLexu9jK0tdWY
+ mOoQvUM6vFCA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,281,1589266800"; 
+   d="scan'208";a="280011860"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by orsmga006.jf.intel.com with ESMTP; 25 Jun 2020 19:07:39 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next v3 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2020-06-25
+Date:   Thu, 25 Jun 2020 19:07:22 -0700
+Message-Id: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu, 25 Jun 2020 16:43:48 -0700 (PDT):
+This series introduces both the Intel Ethernet Common Module and the Intel
+Data Plane Function.  The patches also incorporate extended features and
+functionality added in the virtchnl.h file.
+ 
+The format of the series flow is to add the data set, then introduce
+function stubs and finally introduce pieces in large cohesive subjects or
+functionality.  This is to allow for more in depth understanding and
+review of the bigger picture as the series is reviewed.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net refs/heads/master
+Currently this is common layer (iecm) is initially only being used by only
+the idpf driver (PF driver for SmartNIC).  However, the plan is to
+eventually switch our iavf driver along with future drivers to use this
+common module.  The hope is to better enable code sharing going forward as
+well as support other developers writing drivers for our hardware
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/4a21185cda0fbb860580eeeb4f1a70a9cda332a4
+v2: Addresses comments from the original series.  This inncludes removing
+    the iecm_ctlq_err in iecm_ctlq_api.h, the private flags and duplicated
+    checks, and cleaning up the clamps in iecm_ethtool.c.  We also added
+    the supported_coalesce_params flags in iecm_ethtool.c.  Finally, we
+    got the headers cleaned up and addressed mismatching types from calls
+    to cpu_to_le to match the types (this fixes C=2 W=1 errors that were
+    reported).
+v3: fixed missed compile warning/error with C=2 W=1
 
-Thank you!
+The following are changes since commit 6d29302652587001038c8f5ac0e0c7fa6592bbbc:
+  Merge tag 'mlx5-updates-2020-06-23' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Alan Brady (1):
+  idpf: Introduce idpf driver
+
+Alice Michael (14):
+  virtchnl: Extend AVF ops
+  iecm: Add framework set of header files
+  iecm: Add TX/RX header files
+  iecm: Common module introduction and function stubs
+  iecm: Add basic netdevice functionality
+  iecm: Implement mailbox functionality
+  iecm: Implement virtchnl commands
+  iecm: Implement vector allocation
+  iecm: Init and allocate vport
+  iecm: Deinit vport
+  iecm: Add splitq TX/RX
+  iecm: Add singleq TX/RX
+  iecm: Add ethtool
+  iecm: Add iecm to the kernel build system
+
+ .../networking/device_drivers/intel/idpf.rst  |   47 +
+ .../networking/device_drivers/intel/iecm.rst  |   93 +
+ MAINTAINERS                                   |    3 +
+ drivers/net/ethernet/intel/Kconfig            |   15 +
+ drivers/net/ethernet/intel/Makefile           |    2 +
+ drivers/net/ethernet/intel/idpf/Makefile      |   12 +
+ drivers/net/ethernet/intel/idpf/idpf_dev.h    |   17 +
+ drivers/net/ethernet/intel/idpf/idpf_devids.h |   10 +
+ drivers/net/ethernet/intel/idpf/idpf_main.c   |  136 +
+ drivers/net/ethernet/intel/idpf/idpf_reg.c    |  152 +
+ drivers/net/ethernet/intel/iecm/Makefile      |   19 +
+ .../net/ethernet/intel/iecm/iecm_controlq.c   |  669 +++
+ .../ethernet/intel/iecm/iecm_controlq_setup.c |  177 +
+ .../net/ethernet/intel/iecm/iecm_ethtool.c    | 1064 +++++
+ drivers/net/ethernet/intel/iecm/iecm_lib.c    | 1093 +++++
+ drivers/net/ethernet/intel/iecm/iecm_main.c   |   50 +
+ drivers/net/ethernet/intel/iecm/iecm_osdep.c  |   28 +
+ .../ethernet/intel/iecm/iecm_singleq_txrx.c   |  892 ++++
+ drivers/net/ethernet/intel/iecm/iecm_txrx.c   | 3961 +++++++++++++++++
+ .../net/ethernet/intel/iecm/iecm_virtchnl.c   | 2262 ++++++++++
+ include/linux/avf/virtchnl.h                  |  600 +++
+ include/linux/net/intel/iecm.h                |  433 ++
+ include/linux/net/intel/iecm_alloc.h          |   29 +
+ include/linux/net/intel/iecm_controlq.h       |   95 +
+ include/linux/net/intel/iecm_controlq_api.h   |  188 +
+ include/linux/net/intel/iecm_lan_pf_regs.h    |  120 +
+ include/linux/net/intel/iecm_lan_txrx.h       |  636 +++
+ include/linux/net/intel/iecm_osdep.h          |   24 +
+ include/linux/net/intel/iecm_txrx.h           |  581 +++
+ include/linux/net/intel/iecm_type.h           |   47 +
+ 30 files changed, 13455 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/intel/idpf.rst
+ create mode 100644 Documentation/networking/device_drivers/intel/iecm.rst
+ create mode 100644 drivers/net/ethernet/intel/idpf/Makefile
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_dev.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_devids.h
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_main.c
+ create mode 100644 drivers/net/ethernet/intel/idpf/idpf_reg.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/Makefile
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_controlq.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_controlq_setup.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_ethtool.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_lib.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_main.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_osdep.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_singleq_txrx.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_txrx.c
+ create mode 100644 drivers/net/ethernet/intel/iecm/iecm_virtchnl.c
+ create mode 100644 include/linux/net/intel/iecm.h
+ create mode 100644 include/linux/net/intel/iecm_alloc.h
+ create mode 100644 include/linux/net/intel/iecm_controlq.h
+ create mode 100644 include/linux/net/intel/iecm_controlq_api.h
+ create mode 100644 include/linux/net/intel/iecm_lan_pf_regs.h
+ create mode 100644 include/linux/net/intel/iecm_lan_txrx.h
+ create mode 100644 include/linux/net/intel/iecm_osdep.h
+ create mode 100644 include/linux/net/intel/iecm_txrx.h
+ create mode 100644 include/linux/net/intel/iecm_type.h
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+2.26.2
+
