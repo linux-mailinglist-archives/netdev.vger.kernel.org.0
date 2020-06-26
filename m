@@ -2,89 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDCA520BD43
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 01:52:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0421C20BD4B
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 01:57:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726479AbgFZXwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 19:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45696 "EHLO
+        id S1726330AbgFZX5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 19:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726330AbgFZXwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 19:52:36 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAC0C03E979
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 16:52:36 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id k18so10420460qke.4
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 16:52:36 -0700 (PDT)
+        with ESMTP id S1725955AbgFZX5f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 19:57:35 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14842C03E979;
+        Fri, 26 Jun 2020 16:57:35 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id s14so4860393plq.6;
+        Fri, 26 Jun 2020 16:57:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kAA8ABCzwjipcqq8eM4x/9IKsZ3JzkSLkDu0d2A7seM=;
-        b=atoEPKv0ZD7lgPzK0HKGk3ChdTczB/1U8jJ1FL7VjlLurFsNZnE3le7Ht9lSGM2Iwm
-         3spOQy4iM3JXj3mcswIhuEu7cJztBrd/nfJ0IBjAzqi2YxZEeGMgAXIIwebQnCH1Eue+
-         rzKbmDNXsN0mhJUjGxqdB6DVMp58/deO9zTrVzqL7unznPI80yRaf45lKgoeSTjcCiAY
-         hFdsE7rnzxY+h0ZMtx1fmPNO2sYDJlXReT95xSi7pkjpfbZP6r1y3/KWqkhCYev0PubX
-         Q4C+vnzZOPE9LQmhAenVR6UoaQgumu3VnccqUHRTgEcJTjoZVc6Y1VNat2eUk+oWHArP
-         Qw6Q==
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rsEV3VWlPvkhUXAUMqPfLhxZXBvMiVayXQJsZCVog6Q=;
+        b=qaJFgFOqAcU29/5kD0f06Npxd2Dlxs2CofOxWIM1ri/KxJeD3CMMJ59rQmHzFucJ8B
+         nh+vDWWb+BZtfjTYdIbBpJMUOu030FU6Y+BhUOavRYl3MX0jA7NtmJIIxBGfckqOL/pZ
+         kGNCyhm8AjNr+poSF74dgm1gYnHVvWwFl6PRIPz/nC9ezwCvaDSGHLApTFGq4E3djAey
+         yUqEr0GP9DqRyggZnLAydyoons0pEOwnqNWJ18syoG1G3wnz8VxgY5IZ6Vtn3vNhFbSW
+         Uv2UMMCUu0B/IhXD3Ex/l0STcGim+cHLqzPyHuLLt/r3fWRgJ4wjhZFK77Xhna4/Ftor
+         QMVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kAA8ABCzwjipcqq8eM4x/9IKsZ3JzkSLkDu0d2A7seM=;
-        b=tBhuRc46mKG+hAxbkTN4bLBPoIqMxxq2wS7O6ooIZV0pBEPVJKEzesnsPAV3hszVZU
-         GDc111Am1W9m75jgyxm1U+ljoUr2CY08YIMdhRX9ElU6ObsZA0wSOUS+m3WHB8bvm3ZI
-         7w+aDAivkHezjcR4rlkX0ji8ulUTydjHVDDjjhruhGvjPLk8ZhYloPzUrufpnOhosX/3
-         v2gMbaa5pzpwPehuxh0V5zyHsS23WoX1s959lQjDZZg8LGkh5/WYjvS4SwZWZGY0rGdp
-         RyK3iU3k4BXGYsIycJyeGwb2dDHDYKIqleqr6VJI0QiuUHrlP9UwRawdZvHVglHgpeEA
-         A1UQ==
-X-Gm-Message-State: AOAM530jG3yL7YYPz6Bvq/GcYXS9C0ALPPvx0Fz9rHrtI9rUOF/9Im9R
-        PlwfmMNQUumfMdPsGDxPrgcD8/NABz11E5vV8oEbQw==
-X-Google-Smtp-Source: ABdhPJx21jIeSfIWsfpASN600xu4ofZ8Uf4WmEKHzEysehzmxGp3lEMXwwozacZ7zIdCGuTj9CugQAcGtbs6YxPIyBE=
-X-Received: by 2002:a37:8a02:: with SMTP id m2mr5025080qkd.17.1593215555254;
- Fri, 26 Jun 2020 16:52:35 -0700 (PDT)
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rsEV3VWlPvkhUXAUMqPfLhxZXBvMiVayXQJsZCVog6Q=;
+        b=X1p8S+hgHTmk6FTKnopDzLegYSjIRabpXS1qzKFnrINTs0c3DYoEw99iR8rg0ox1jJ
+         itEWrypZufcN4JLa8+GR/H5eWL0G8KD9Clpd9a3bc8MWJ8ce3L04bOHJ+B12mdBUn2ye
+         nFrnwUGL6MlfwUo3zVvoEtoSGbtNfescsyuWF8F393U1EeIUw+8kykMwOfVGLllkqt+d
+         QrubsaCW+j2/qCGvq090BtNB8xR96KcY/ZOS1WYx3uHvJsKJCpFpMwQe0HxdtnPSZejB
+         VopmY+4wE+vpo22LqB5lIAak0NVcRdH3mItvlV/xxTLD1idbC+cmo0hqpwSOU4IvlJF5
+         HaYg==
+X-Gm-Message-State: AOAM532o7Jp7rhXEKl23hfUyy1VVuHxYajoye6m59tKk2YN1ZHZezjfl
+        eVmIDk3h/jnj//6NEVC85Yg=
+X-Google-Smtp-Source: ABdhPJzVai7R7S/T4iw8i1jkT9aJDWWEaEIMVs2EARAOFCaoDxYnib5o0dCMspzPd8YqYik5vgix9g==
+X-Received: by 2002:a17:90b:50d:: with SMTP id r13mr5872471pjz.94.1593215854419;
+        Fri, 26 Jun 2020 16:57:34 -0700 (PDT)
+Received: from localhost ([2001:e42:102:1532:160:16:113:140])
+        by smtp.gmail.com with ESMTPSA id t5sm5081758pgl.38.2020.06.26.16.57.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jun 2020 16:57:33 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
+Date:   Sat, 27 Jun 2020 07:57:25 +0800
+To:     Joe Perches <joe@perches.com>
+Cc:     devel@driverdev.osuosl.org, Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] staging: qlge: fix else after return or break
+Message-ID: <20200626235725.2rcpisito2253jhm@Rk>
+References: <20200625215755.70329-1-coiby.xu@gmail.com>
+ <20200625215755.70329-3-coiby.xu@gmail.com>
+ <049f51497b84e55e61aca989025b64493287cbab.camel@perches.com>
 MIME-Version: 1.0
-References: <20200626165231.672001-1-sdf@google.com> <20200626165231.672001-3-sdf@google.com>
- <862111f0-b71a-0b7a-1f52-4f2fed28b8ff@iogearbox.net>
-In-Reply-To: <862111f0-b71a-0b7a-1f52-4f2fed28b8ff@iogearbox.net>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 26 Jun 2020 16:52:24 -0700
-Message-ID: <CAKH8qBvmdV=4xh0qBReB4DTmyzjrUJQY2R8-naaAyvfPJ5iBTw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 3/4] bpftool: support BPF_CGROUP_INET_SOCK_RELEASE
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <049f51497b84e55e61aca989025b64493287cbab.camel@perches.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 4:08 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Thu, Jun 25, 2020 at 03:13:14PM -0700, Joe Perches wrote:
+>On Fri, 2020-06-26 at 05:57 +0800, Coiby Xu wrote:
+>> Remove unnecessary elses after return or break.
 >
-> On 6/26/20 6:52 PM, Stanislav Fomichev wrote:
-> > Support attaching to sock_release from the bpftool.
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >   tools/bpf/bpftool/main.h | 1 +
-> >   1 file changed, 1 insertion(+)
-> >
-> > diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-> > index 5cdf0bc049bd..0a281d3cceb8 100644
-> > --- a/tools/bpf/bpftool/main.h
-> > +++ b/tools/bpf/bpftool/main.h
-> > @@ -92,6 +92,7 @@ static const char * const attach_type_name[__MAX_BPF_ATTACH_TYPE] = {
-> >       [BPF_CGROUP_INET_INGRESS] = "ingress",
-> >       [BPF_CGROUP_INET_EGRESS] = "egress",
-> >       [BPF_CGROUP_INET_SOCK_CREATE] = "sock_create",
-> > +     [BPF_CGROUP_INET_SOCK_RELEASE] = "sock_release",
-> >       [BPF_CGROUP_SOCK_OPS] = "sock_ops",
-> >       [BPF_CGROUP_DEVICE] = "device",
-> >       [BPF_CGROUP_INET4_BIND] = "bind4",
+>unrelated trivia:
 >
-> This one is not on latest bpf-next, needs rebase due to 16d37ee3d2b1 ("tools, bpftool: Define
-> attach_type_name array only once").
-Sure, will follow up with a v3 to address Andrii's suggestions + will
-rebase on top of the latest bpf-next!
+>> diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
+>[]
+>> @@ -1391,12 +1391,11 @@ static void ql_dump_cam_entries(struct ql_adapter *qdev)
+>>  			pr_err("%s: Failed read of mac index register\n",
+>>  			       __func__);
+>>  			return;
+>> -		} else {
+>> -			if (value[0])
+>> -				pr_err("%s: CAM index %d CAM Lookup Lower = 0x%.08x:%.08x, Output = 0x%.08x\n",
+>> -				       qdev->ndev->name, i, value[1], value[0],
+>> -				       value[2]);
+>
+>looks like all of these could use netdev_err
+>
+>				netdev_err(qdev, "etc...",
+>					   i, value[1], value[0], value[2]);
+>
+>etc...
+
+Should we also replace all pr_errs with netdev_err in
+ql_dump_* functions? I'm not sure how we will use ql_dump_*. For example,
+ql_dump_regs is not referred by any kernel source, so I guess it's for
+the sole purpose of debugging the driver by the developer. But one
+pr_err in ql_dump_routing_entries which is called by dl_dump_regs doesn't
+prints out the device name whereas the other does,
+
+> void ql_dump_routing_entries(struct ql_adapter *qdev)
+> {
+> 	int i;
+> 	u32 value;
+>
+> 	i = ql_sem_spinlock(qdev, SEM_RT_IDX_MASK);
+> 	if (i)
+> 		return;
+> 	for (i = 0; i < 16; i++) {
+> 		value = 0;
+> 		if (ql_get_routing_reg(qdev, i, &value)) {
+> 			pr_err("%s: Failed read of routing index register\n",
+> 			       __func__);
+> 			break;
+> 		}
+> 		if (value)
+> 			pr_err("%s: Routing Mask %d = 0x%.08x\n",
+> 			       qdev->ndev->name, i, value);
+> 	}
+
+--
+Best regards,
+Coiby
