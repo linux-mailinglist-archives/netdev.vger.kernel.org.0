@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED3F320B7AC
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:56:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5224620B7B1
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:56:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbgFZR4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 13:56:03 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:56362 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726469AbgFZR4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:56:02 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05QHsYat010044
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:56:02 -0700
+        id S1727840AbgFZR4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 13:56:19 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:1394 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726616AbgFZR4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:56:18 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05QHsuDF019455
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:56:17 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=x9+g55k1QE3JMJ1MSBZfXQgh+V/wM36C3TVhv6OzQtM=;
- b=GAnaiBGmYGqCbBMZLH2EKsDLkqlxbQoP0UBACJ8qHzZsRgKAJNMJiIrtYZznjVIc2B9P
- tCFWyP+GWJljAME3CIZlWWVjJ22iWcxc+Wq0MdxmzUES/8dAUqKSrX9cNizUfx2tP0y2
- b9eRBGk0nzK1qnSWFEYxEln66wzFTkNlnNE= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 31vdptjfra-1
+ bh=UHFQQFqYSY8aevwSYLHh6Hobk6A4dxuODVh5qoz6O0I=;
+ b=KZ8kGK6tZ2/Y2glbND15vFuJBXyR6zlf7Rs3Hq7BRSRTZVPPpECLI65lbAsaACOyuZM3
+ uxcFi/BheiBqUc66daSqCV35+KPjbo+vbY+QkAyozwVAhVYaTkMPT8ycND/yQw1q9lbo
+ +EXuGnq1n+jY3NfxE8gqaM/Zi2wdaQMjTSY= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 31ux1exn4y-14
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:56:02 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:56:17 -0700
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 26 Jun 2020 10:56:01 -0700
+ 15.1.1979.3; Fri, 26 Jun 2020 10:56:09 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 842D32942E38; Fri, 26 Jun 2020 10:55:58 -0700 (PDT)
+        id CA5942942E38; Fri, 26 Jun 2020 10:56:04 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Martin KaFai Lau <kafai@fb.com>
 Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
@@ -42,9 +42,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Neal Cardwell <ncardwell@google.com>, <netdev@vger.kernel.org>,
         Yuchung Cheng <ycheng@google.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 09/10] tcp: bpf: Add TCP_BPF_DELACK_MAX and TCP_BPF_RTO_MIN to bpf_setsockopt
-Date:   Fri, 26 Jun 2020 10:55:58 -0700
-Message-ID: <20200626175558.1462731-1-kafai@fb.com>
+Subject: [PATCH bpf-next 10/10] bpf: selftest: Add test for TCP_BPF_DELACK_MAX and TCP_BPF_RTO_MIN
+Date:   Fri, 26 Jun 2020 10:56:04 -0700
+Message-ID: <20200626175604.1462935-1-kafai@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200626175501.1459961-1-kafai@fb.com>
 References: <20200626175501.1459961-1-kafai@fb.com>
@@ -55,9 +55,9 @@ Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
  definitions=2020-06-26_10:2020-06-26,2020-06-26 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- mlxlogscore=999 cotscore=-2147483648 mlxscore=0 phishscore=0 bulkscore=0
- malwarescore=0 spamscore=0 adultscore=0 priorityscore=1501 suspectscore=13
- clxscore=1015 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ clxscore=1015 cotscore=-2147483648 spamscore=0 mlxlogscore=739 bulkscore=0
+ adultscore=0 phishscore=0 priorityscore=1501 malwarescore=0 mlxscore=0
+ suspectscore=13 impostorscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-2004280000 definitions=main-2006260126
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -65,153 +65,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change is mostly from an internal patch and adapts it from sysctl
-config to the bpf_setsockopt setup.
-
-The bpf_prog can set the max delay ack by using
-bpf_setsockopt(TCP_BPF_DELACK_MAX).  This max delay ack can be communicat=
-ed
-to its peer through bpf header option.  The receiving peer can then use
-this max delay ack and set a potentially lower rto by using
-bpf_setsockopt(TCP_BPF_RTO_MIN).  A latter patch will use it
-like this in a test as an example.
+This patch tests a bpf prog that parses/writes a max_delack_ms bpf header
+option and also bpf_setsockopt its TCP_BPF_DELACK_MAX/TCP_BPF_RTO_MIN
+accordingly.
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- include/net/inet_connection_sock.h |  2 ++
- include/net/tcp.h                  |  2 +-
- include/uapi/linux/bpf.h           |  2 ++
- net/core/filter.c                  | 15 +++++++++++++++
- net/ipv4/tcp.c                     |  4 ++++
- net/ipv4/tcp_output.c              |  2 ++
- tools/include/uapi/linux/bpf.h     |  2 ++
- 7 files changed, 28 insertions(+), 1 deletion(-)
+ .../bpf/prog_tests/tcp_hdr_options.c          |  6 ++--
+ .../bpf/progs/test_tcp_hdr_options.c          | 34 +++++++++++++++++++
+ 2 files changed, 38 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connec=
-tion_sock.h
-index e5b388f5fa20..43d45864e5f0 100644
---- a/include/net/inet_connection_sock.h
-+++ b/include/net/inet_connection_sock.h
-@@ -93,6 +93,8 @@ struct inet_connection_sock {
-  	struct timer_list	  icsk_retransmit_timer;
-  	struct timer_list	  icsk_delack_timer;
- 	__u32			  icsk_rto;
-+	__u32                     icsk_rto_min;
-+	__u32                     icsk_delack_max;
- 	__u32			  icsk_pmtu_cookie;
- 	const struct tcp_congestion_ops *icsk_ca_ops;
- 	const struct inet_connection_sock_af_ops *icsk_af_ops;
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index e93ef2d324f3..8a682d678971 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -703,7 +703,7 @@ static inline void tcp_fast_path_check(struct sock *s=
-k)
- static inline u32 tcp_rto_min(struct sock *sk)
- {
- 	const struct dst_entry *dst =3D __sk_dst_get(sk);
--	u32 rto_min =3D TCP_RTO_MIN;
-+	u32 rto_min =3D inet_csk(sk)->icsk_rto_min;
+diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c b/t=
+ools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
+index f8daf36783f3..5a58f60d2889 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
++++ b/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
+@@ -447,11 +447,13 @@ static void simple_estab(void)
+ 	struct bpf_link *link;
+ 	struct sk_fds sk_fds;
 =20
- 	if (dst && dst_metric_locked(dst, RTAX_RTO_MIN))
- 		rto_min =3D dst_metric_rtt(dst, RTAX_RTO_MIN);
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 479b83d05811..2ccc81548eef 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -4299,6 +4299,8 @@ enum {
- 	 *	    is not saved by TCP_SAVE_SYN.
- 	 */
- 	TCP_BPF_SYN_HDR_OPT	=3D 1003,
-+	TCP_BPF_DELACK_MAX	=3D 1004, /* Max delay ack in usecs */
-+	TCP_BPF_RTO_MIN		=3D 1005, /* Min delay ack in usecs */
- };
+-	exp_passive_estab_in.flags =3D OPTION_F_MAGIC;
++	exp_passive_estab_in.flags =3D OPTION_F_MAGIC | OPTION_F_MAX_DELACK_MS;
+ 	exp_passive_estab_in.magic =3D 0xfa;
++	exp_passive_estab_in.max_delack_ms =3D 11;
 =20
- struct bpf_perf_event_value {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 5784f1bede2f..4b80934e6876 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4431,6 +4431,7 @@ static int _bpf_setsockopt(struct sock *sk, int lev=
-el, int optname,
- 		} else {
- 			struct inet_connection_sock *icsk =3D inet_csk(sk);
- 			struct tcp_sock *tp =3D tcp_sk(sk);
-+			unsigned long timeout;
+-	exp_active_estab_in.flags =3D OPTION_F_MAGIC;
++	exp_active_estab_in.flags =3D OPTION_F_MAGIC | OPTION_F_MAX_DELACK_MS;
+ 	exp_active_estab_in.magic =3D 0xce;
++	exp_active_estab_in.max_delack_ms =3D 22;
 =20
- 			if (optlen !=3D sizeof(int))
- 				return -EINVAL;
-@@ -4452,6 +4453,20 @@ static int _bpf_setsockopt(struct sock *sk, int le=
-vel, int optname,
- 					tp->snd_ssthresh =3D val;
- 				}
- 				break;
-+			case TCP_BPF_DELACK_MAX:
-+				timeout =3D usecs_to_jiffies(val);
-+				if (timeout > TCP_DELACK_MAX ||
-+				    timeout < TCP_TIMEOUT_MIN)
-+					return -EINVAL;
-+				inet_csk(sk)->icsk_delack_max =3D timeout;
-+				break;
-+			case TCP_BPF_RTO_MIN:
-+				timeout =3D usecs_to_jiffies(val);
-+				if (timeout > TCP_RTO_MIN ||
-+				    timeout < TCP_TIMEOUT_MIN)
-+					return -EINVAL;
-+				inet_csk(sk)->icsk_rto_min =3D timeout;
-+				break;
- 			case TCP_SAVE_SYN:
- 				if (val < 0 || val > 1)
- 					ret =3D -EINVAL;
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 60093a211f4d..02be3e2a2fdb 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -418,6 +418,8 @@ void tcp_init_sock(struct sock *sk)
- 	INIT_LIST_HEAD(&tp->tsorted_sent_queue);
+ 	prepare_out();
 =20
- 	icsk->icsk_rto =3D TCP_TIMEOUT_INIT;
-+	icsk->icsk_rto_min =3D TCP_RTO_MIN;
-+	icsk->icsk_delack_max =3D TCP_DELACK_MAX;
- 	tp->mdev_us =3D jiffies_to_usecs(TCP_TIMEOUT_INIT);
- 	minmax_reset(&tp->rtt_min, tcp_jiffies32, ~0U);
+diff --git a/tools/testing/selftests/bpf/progs/test_tcp_hdr_options.c b/t=
+ools/testing/selftests/bpf/progs/test_tcp_hdr_options.c
+index 631181bfb4cc..eb3b3c2a21f9 100644
+--- a/tools/testing/selftests/bpf/progs/test_tcp_hdr_options.c
++++ b/tools/testing/selftests/bpf/progs/test_tcp_hdr_options.c
+@@ -465,6 +465,24 @@ static __always_inline int handle_write_hdr_opt(stru=
+ct bpf_sock_ops *skops)
+ 	return write_nodata_opt(skops);
+ }
 =20
-@@ -2685,6 +2687,8 @@ int tcp_disconnect(struct sock *sk, int flags)
- 	icsk->icsk_backoff =3D 0;
- 	icsk->icsk_probes_out =3D 0;
- 	icsk->icsk_rto =3D TCP_TIMEOUT_INIT;
-+	icsk->icsk_rto_min =3D TCP_RTO_MIN;
-+	icsk->icsk_delack_max =3D TCP_DELACK_MAX;
- 	tp->snd_ssthresh =3D TCP_INFINITE_SSTHRESH;
- 	tp->snd_cwnd =3D TCP_INIT_CWND;
- 	tp->snd_cwnd_cnt =3D 0;
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index a78a29980e1f..db872a2a01c6 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3899,6 +3899,8 @@ void tcp_send_delayed_ack(struct sock *sk)
- 		ato =3D min(ato, max_ato);
- 	}
-=20
-+	ato =3D min_t(u32, ato, inet_csk(sk)->icsk_delack_max);
++static __always_inline int set_delack_max(struct bpf_sock_ops *skops,
++					  __u8 max_delack_ms)
++{
++	__u32 max_delack_us =3D max_delack_ms * 1000;
 +
- 	/* Stay within the limit we were given */
- 	timeout =3D jiffies + ato;
++	return bpf_setsockopt(skops, SOL_TCP, TCP_BPF_DELACK_MAX,
++			      &max_delack_us, sizeof(max_delack_us));
++}
++
++static __always_inline int set_rto_min(struct bpf_sock_ops *skops,
++				       __u8 peer_max_delack_ms)
++{
++	__u32 min_rto_us =3D peer_max_delack_ms * 1000;
++
++	return bpf_setsockopt(skops, SOL_TCP, TCP_BPF_RTO_MIN, &min_rto_us,
++			      sizeof(min_rto_us));
++}
++
+ static __always_inline int handle_active_estab(struct bpf_sock_ops *skop=
+s)
+ {
+ 	__u8 bpf_hdr_opt_off =3D skops->skb_bpf_hdr_opt_off;
+@@ -505,6 +523,14 @@ static __always_inline int handle_active_estab(struc=
+t bpf_sock_ops *skops)
+ 		/* No options will be written from now */
+ 		clear_hdr_cb_flags(skops);
 =20
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bp=
-f.h
-index 479b83d05811..2ccc81548eef 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -4299,6 +4299,8 @@ enum {
- 	 *	    is not saved by TCP_SAVE_SYN.
- 	 */
- 	TCP_BPF_SYN_HDR_OPT	=3D 1003,
-+	TCP_BPF_DELACK_MAX	=3D 1004, /* Max delay ack in usecs */
-+	TCP_BPF_RTO_MIN		=3D 1005, /* Min delay ack in usecs */
- };
++	if (active_syn_out.max_delack_ms &&
++	    set_delack_max(skops, active_syn_out.max_delack_ms))
++		RET_CG_ERR(skops);
++
++	if (active_estab_in.max_delack_ms &&
++	    set_rto_min(skops, active_estab_in.max_delack_ms))
++		RET_CG_ERR(skops);
++
+ 	return CG_OK;
+ }
 =20
- struct bpf_perf_event_value {
+@@ -590,6 +616,14 @@ static __always_inline int handle_passive_estab(stru=
+ct bpf_sock_ops *skops)
+ 		/* No options will be written from now */
+ 		clear_hdr_cb_flags(skops);
+=20
++	if (passive_synack_out.max_delack_ms &&
++	    set_delack_max(skops, passive_synack_out.max_delack_ms))
++		RET_CG_ERR(skops);
++
++	if (passive_estab_in.max_delack_ms &&
++	    set_rto_min(skops, passive_estab_in.max_delack_ms))
++		RET_CG_ERR(skops);
++
+ 	return CG_OK;
+ }
+=20
 --=20
 2.24.1
 
