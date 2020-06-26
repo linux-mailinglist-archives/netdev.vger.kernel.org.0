@@ -2,120 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D750E20AB1B
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 06:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C42D20ABA6
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 07:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726431AbgFZEKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 00:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60906 "EHLO
+        id S1726499AbgFZFAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 01:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726013AbgFZEKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 00:10:30 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46121C08C5C1;
-        Thu, 25 Jun 2020 21:10:30 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id m2so7391218otr.12;
-        Thu, 25 Jun 2020 21:10:30 -0700 (PDT)
+        with ESMTP id S1725306AbgFZFAf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 01:00:35 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E96C08C5C1;
+        Thu, 25 Jun 2020 22:00:35 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id c139so7721977qkg.12;
+        Thu, 25 Jun 2020 22:00:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yiGoscDyaEFK2a4Hhbr5oo8EKClzH7wIyqZRrKV4JjQ=;
-        b=NAUUdhfOaao8gFQRyvS+BVKpdzkwnAWjQO0msoPeaH+N59nmgmh8+cRU4X+85nL257
-         CdVAmIszSqOjEL1DcPfXzbSap0JSIJUTRT3W85HflgSZyzpA1rWzibtEdEzWhyvFGIjA
-         v/VspvwX0KXKEQZisE7l4xiRZywdeWyq5msgMw12SzM140IBoZnFvhgeG+CjO89OViPs
-         lNZdP+9mf454BPIDt5kqllT/Z9VKGwGMdqXaWsRLfFxOaYulAjMEFNPJnPlFRtNpcm7d
-         /TVzm8hhnSjVnyxl449qwNnw5Xqg/V2m0WJrS0s9jUNNpU02xr3mvV5RqfvlCH5GmRKu
-         xWcg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZVo5w/ZKX78dj3eulXXhuEpFvG8FT3AZePc5ir676VM=;
+        b=a8fhX7PosmYTxVaj0Ju89ay9QciM6cW5OE1/9ImtD6BZoZxxGsBRStdIn6F1FkXOcK
+         8VnUs2G3P2RI/+d3FmC4EJ3ff9dJtjQf1P3t0BW1jT7mnKQJ0tXOvbKtG2QrN8TssJj4
+         ofKfxKEJbjjCS5jZehb+AqHTkqWfnP5usSELUdHIy5iLpjsl5g+V1Yaqs2k6s6wiI1wB
+         dggzLIG+n2uJTFKBzVShc6icj9C8Pf1QwfP7ByETEg9yTeL9b/D6UXRBJtS3mz3m/+7E
+         rXXZt80XX1srDFySmxAFZrbGtAVF8PF7Nw0Lf4VbcURHeuLIi+Hr5nU/efrybpIaRMXu
+         utbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=yiGoscDyaEFK2a4Hhbr5oo8EKClzH7wIyqZRrKV4JjQ=;
-        b=cXH/BEZXaTRkUEaUXOFw8o2BERgoCejES3mTXJcPMb+JDYKRH0pzi2o+1NkjNKEmU4
-         mx4jXhhlqB4j4YUbCiIOJDMagp/1ZIGe5jLmh/iHgRl19BV4ZXXD7dhw+ZtZXWI47zE3
-         KCdyXCzyX7tMyoidXCZp0p1GuF32wQcgiLkqym55X3SC5ZwivTUNZDbFjLzwqzTJo3nJ
-         /Oyhs4KFj+6xNeYnGGvphCXEpATwxfE9AObjNCOxXNOiFJJm+ZGN8lkE62Zk4m0Awvm8
-         EddkMff063BA1jAKQjm4ShK7qMX152/0z0qlIwAwudJDpxk+xDlqrAeN/zJEOK2wc6Ha
-         euyQ==
-X-Gm-Message-State: AOAM531gKskPkfDDMqUFHYCRY8uRWk8in7nU2+uC91Yp+h3DBWJf0KuS
-        UUwKRlk/dT12oMZu1qg1RA3+gwoY
-X-Google-Smtp-Source: ABdhPJwE6OUco0cxeHwheCoA0H5zavZw/pkR82GqKYyvVUchqjjcZtx+m7BL89xHLARawT4LRnksGg==
-X-Received: by 2002:a4a:a8cc:: with SMTP id r12mr785952oom.86.1593144629354;
-        Thu, 25 Jun 2020 21:10:29 -0700 (PDT)
-Received: from localhost.localdomain ([2604:1380:4111:8b00::3])
-        by smtp.gmail.com with ESMTPSA id h22sm4165908oos.48.2020.06.25.21.10.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jun 2020 21:10:28 -0700 (PDT)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jarod Wilson <jarod@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH net-next] bonding: Remove extraneous parentheses in bond_setup
-Date:   Thu, 25 Jun 2020 21:10:02 -0700
-Message-Id: <20200626041001.1194928-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        bh=ZVo5w/ZKX78dj3eulXXhuEpFvG8FT3AZePc5ir676VM=;
+        b=iiTQIluChB7YbIvcvTezw7QlgRd1So02jUDYGJW7yCqW0tGN5fvGcrLJYircbWZPeo
+         liodcH05/Rmnd1cI8iMOlQLwxb3Xiq6tA5VLiQ41hnfW5YJuRyltCe/qWu40GIiYeqnK
+         EtSGgO2Ry/jcq3wTuJecWS5gh6aqUVZchMXcX91I8ghKGsThu+Ff3cMvwbJGBIKuMWTW
+         D+m9P1y/wrVhfBTzFC6bpNydFbeOJezmDcTxsjK6tbAvjxRQYHsfb5bX8+s9qBXJdmkG
+         Ujb1V9boaKN9rae0f5dkvulriJOhu9EKC/ABaCxLx7fv/1CoLGUqjQQYNW+NOpjqNMYJ
+         BJzg==
+X-Gm-Message-State: AOAM530eUQhd3ZNbPP5RastNdyBsWGvaJ2EqXubV62EKCgAQHiPvwnqf
+        mLowT6ThNe0/RxvKIkyUSXkFFlE1
+X-Google-Smtp-Source: ABdhPJxAQHcCPSfIPekWCKhMnVzAtA7pXypis8Q7OfpcnQCbZP7x5fqnf0vzgmXk9JCiY5oaEBtzSg==
+X-Received: by 2002:a05:620a:1223:: with SMTP id v3mr999636qkj.468.1593147634295;
+        Thu, 25 Jun 2020 22:00:34 -0700 (PDT)
+Received: from ?IPv6:2600:6c55:4b80:150f:edd7:a07c:7610:ce94? ([2600:6c55:4b80:150f:edd7:a07c:7610:ce94])
+        by smtp.googlemail.com with ESMTPSA id c189sm7990902qkb.8.2020.06.25.22.00.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Jun 2020 22:00:33 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v1 1/4] rdma: update uapi headers
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Maor Gottlieb <maorg@mellanox.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+References: <20200624104012.1450880-1-leon@kernel.org>
+ <20200624104012.1450880-2-leon@kernel.org> <20200625081554.GB1446285@unreal>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <3de842b7-37cb-b487-6e79-2685c24aba5a@gmail.com>
+Date:   Thu, 25 Jun 2020 22:00:31 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.9.0
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200625081554.GB1446285@unreal>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns:
+On 6/25/20 1:15 AM, Leon Romanovsky wrote:
+> On Wed, Jun 24, 2020 at 01:40:09PM +0300, Leon Romanovsky wrote:
+>> From: Maor Gottlieb <maorg@mellanox.com>
+>>
+>> Update rdma_netlink.h file upto kernel commit ba1f4991cc55
+>> ("RDMA: Add support to dump resource tracker in RAW format")
+> 
+> David,
+> 
+> The SHA was changed because of the rebase on top of our testing branch.
+> 65959522f806 RDMA: Add support to dump resource tracker in RAW format
+> 
+> Do you want me to resend the series?
+> 
 
-drivers/net/bonding/bond_main.c:4657:23: warning: equality comparison
-with extraneous parentheses [-Wparentheses-equality]
-        if ((BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP))
-             ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
-
-drivers/net/bonding/bond_main.c:4681:23: warning: equality comparison
-with extraneous parentheses [-Wparentheses-equality]
-        if ((BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP))
-             ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
-
-This warning occurs when a comparision has two sets of parentheses,
-which is usually the convention for doing an assignment within an
-if statement. Since equality comparisons do not need a second set of
-parentheses, remove them to fix the warning.
-
-Fixes: 18cb261afd7b ("bonding: support hardware encryption offload to slaves")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1066
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- drivers/net/bonding/bond_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 4ef99efc37f6..b3479584cc16 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4654,7 +4654,7 @@ void bond_setup(struct net_device *bond_dev)
- 
- #ifdef CONFIG_XFRM_OFFLOAD
- 	/* set up xfrm device ops (only supported in active-backup right now) */
--	if ((BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP))
-+	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
- 		bond_dev->xfrmdev_ops = &bond_xfrmdev_ops;
- 	bond->xs = NULL;
- #endif /* CONFIG_XFRM_OFFLOAD */
-@@ -4678,7 +4678,7 @@ void bond_setup(struct net_device *bond_dev)
- 
- 	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
- #ifdef CONFIG_XFRM_OFFLOAD
--	if ((BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP))
-+	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
- 		bond_dev->hw_features |= BOND_XFRM_FEATURES;
- #endif /* CONFIG_XFRM_OFFLOAD */
- 	bond_dev->features |= bond_dev->hw_features;
-
-base-commit: 7bed14551659875e1cd23a7c0266394a29a773b3
--- 
-2.27.0
-
+no need just for that; I can fix before applying.
