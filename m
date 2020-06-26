@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6DE320B69C
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:09:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D18020B698
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:09:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728239AbgFZRJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 13:09:17 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:53322 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727859AbgFZRJQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:09:16 -0400
-Received: by mail-il1-f197.google.com with SMTP id r4so6878164ilq.20
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:09:15 -0700 (PDT)
+        id S1728326AbgFZRJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 13:09:30 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:51434 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728216AbgFZRJR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:09:17 -0400
+Received: by mail-io1-f70.google.com with SMTP id x22so6704418ion.18
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:09:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=tltGYsgQUKf9DV4wiRpq3i9PnnU4cL2cQ+SYqK6BGYs=;
-        b=UJCEEne94bIzyL30rtNaMm7hYRKYpgGvi1TmMvmWx2Qk7/ZeTtBEaWa9E9EsAy6bFc
-         cNYBWKXa/L4LMTSP9ipc8Ku7PcpNj8odyFj+5X5+WbO4qijw1dDINSayCAtGqcQsZC3K
-         SAoi3+4LysrSmsaZZtZxd9plJa9sySksduNnrlO7i4qtvImpSAKT6zRlQ+ecSWn003Q1
-         zlgxfXX8PVgrMPSwExh43s7gE6qBRr7FsB3wl+vDlIobovcZKfwIyZXUpODZI0kUOIWQ
-         LIDgwAmO/K7CMbyYRFYCG343lIYqTGyMOndQGt6ucpithGyHxgwKFqG4rQ3RjgjzX4ef
-         6HyA==
-X-Gm-Message-State: AOAM531p9JY7RIVyE5NU0kuMabxEfCKe5obmpOXMS38bvE37GT/P9VS2
-        J6rohmpVbFmBRLBfPJ9IbEO4+YyT+zpHbmjid4iYTfS+QJju
-X-Google-Smtp-Source: ABdhPJz0Z0RwMYxsFUYGJEv8frP3yRdS7U08CQ2tZ8K2sswACm1qgpk1fjMvXmD5gQt/iKgC/FMc8AYzH/m+iG3Chdv3On4J/ioX
+        bh=PBbQ7cEucEY6CoFv1tPjVkpwYW+FAyD/Jgb/7La4UR0=;
+        b=MWlSQk7i3mkm/MoAYPWE3TLVPzKwCxSwH4tX4/5e5xA5jpi7ld1WHhd8NjwpTiaOWN
+         K5Fnmn2q7sbz1Ri0lX6RMSFXzgrf3aUJvehjNmMAnUX276/PHzHbOr5zUW41bXtQEs5u
+         GEvqROaNQLGBAkBOAroB7hWvWeYvWeqW6h2fW4vBsuMvKIE/3HwOWMQSibB82ioqs6mo
+         lFkUhADRemviNEvs5NZZO1Ox5MBq1o8iG4hdC2QkYcSzuIOEF5lz2vMZxLTfmsBqB3hR
+         8PwfhYHmEh1IpkMWaWXzWACxTjcss9+nwLeBNonOsrm0tLrmelZzFd//oA7lbN7pInNl
+         sFgg==
+X-Gm-Message-State: AOAM532IriXFJFALp5l3bBBcNDlUcr7gQGrVlT3C6vlc7IjCeMWCfgyn
+        +BTOSwldpbiOk8Z2pKCOH9mHC3Bes/89arNJZl6lkVORQXaZ
+X-Google-Smtp-Source: ABdhPJwo34ysGkyv29CtoQpNVf4erXuROmB97DMaZVck/VNCBt76LB/yd69y+ehgAjxiWf1lFIoTWgGPqW8RUdwKsMMkoOKTe6Tt
 MIME-Version: 1.0
-X-Received: by 2002:a6b:ba8b:: with SMTP id k133mr4468020iof.204.1593191355078;
+X-Received: by 2002:a05:6602:2f0f:: with SMTP id q15mr4553270iow.23.1593191355911;
  Fri, 26 Jun 2020 10:09:15 -0700 (PDT)
 Date:   Fri, 26 Jun 2020 10:09:15 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c760af05a8ffc49a@google.com>
-Subject: KASAN: vmalloc-out-of-bounds Read in tipc_nl_publ_dump
-From:   syzbot <syzbot+24902249a963936dfe80@syzkaller.appspotmail.com>
+Message-ID: <000000000000d411cf05a8ffc4a6@google.com>
+Subject: WARNING: suspicious RCU usage in tipc_l2_send_msg
+From:   syzbot <syzbot+47bbc6b678d317cccbe0@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         syzkaller-bugs@googlegroups.com,
@@ -51,69 +51,50 @@ syzbot found the following crash on:
 
 HEAD commit:    b835a71e usbnet: smsc95xx: Fix use-after-free after removal
 git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=14aa2576100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1095a51d100000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=dcc6334acae363d4
-dashboard link: https://syzkaller.appspot.com/bug?extid=24902249a963936dfe80
+dashboard link: https://syzkaller.appspot.com/bug?extid=47bbc6b678d317cccbe0
 compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=126ff61d100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=148dc3a5100000
+
+Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+24902249a963936dfe80@syzkaller.appspotmail.com
+Reported-by: syzbot+47bbc6b678d317cccbe0@syzkaller.appspotmail.com
 
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in nla_len include/net/netlink.h:1135 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in nla_parse_nested_deprecated include/net/netlink.h:1218 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in tipc_nl_publ_dump+0xae0/0xce0 net/tipc/socket.c:3766
-Read of size 2 at addr ffffc90004de5014 by task syz-executor205/6873
+=============================
+WARNING: suspicious RCU usage
+5.8.0-rc1-syzkaller #0 Not tainted
+-----------------------------
+net/tipc/bearer.c:466 suspicious rcu_dereference_check() usage!
 
-CPU: 1 PID: 6873 Comm: syz-executor205 Not tainted 5.8.0-rc1-syzkaller #0
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+2 locks held by kworker/0:16/19143:
+ #0: ffff8880a6901d38 ((wq_completion)cryptd){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8880a6901d38 ((wq_completion)cryptd){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8880a6901d38 ((wq_completion)cryptd){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8880a6901d38 ((wq_completion)cryptd){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
+ #0: ffff8880a6901d38 ((wq_completion)cryptd){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ #0: ffff8880a6901d38 ((wq_completion)cryptd){+.+.}-{0:0}, at: process_one_work+0x82b/0x1670 kernel/workqueue.c:2240
+ #1: ffffc90006f9fda8 ((work_completion)(&cpu_queue->work)){+.+.}-{0:0}, at: process_one_work+0x85f/0x1670 kernel/workqueue.c:2244
+
+stack backtrace:
+CPU: 0 PID: 19143 Comm: kworker/0:16 Not tainted 5.8.0-rc1-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: cryptd cryptd_queue_worker
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
  dump_stack+0x18f/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0x5/0x436 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
- nla_len include/net/netlink.h:1135 [inline]
- nla_parse_nested_deprecated include/net/netlink.h:1218 [inline]
- tipc_nl_publ_dump+0xae0/0xce0 net/tipc/socket.c:3766
- genl_lock_dumpit+0x7f/0xb0 net/netlink/genetlink.c:575
- netlink_dump+0x4cd/0xf60 net/netlink/af_netlink.c:2245
- __netlink_dump_start+0x643/0x900 net/netlink/af_netlink.c:2353
- genl_family_rcv_msg_dumpit+0x2ac/0x310 net/netlink/genetlink.c:638
- genl_family_rcv_msg net/netlink/genetlink.c:733 [inline]
- genl_rcv_msg+0x797/0x9e0 net/netlink/genetlink.c:753
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:764
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x441319
-Code: Bad RIP value.
-RSP: 002b:00007ffcbfda8448 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441319
-RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
-RBP: 000000000000ee24 R08: 00000000004002c8 R09: 00000000004002c8
-R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000402090
-R13: 0000000000402120 R14: 0000000000000000 R15: 0000000000000000
-
-
-Memory state around the buggy address:
- ffffc90004de4f00: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
- ffffc90004de4f80: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
->ffffc90004de5000: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
-                         ^
- ffffc90004de5080: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
- ffffc90004de5100: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
-==================================================================
+ tipc_l2_send_msg+0x354/0x420 net/tipc/bearer.c:466
+ tipc_aead_encrypt_done+0x204/0x3a0 net/tipc/crypto.c:761
+ cryptd_aead_crypt+0xe8/0x1d0 crypto/cryptd.c:739
+ cryptd_queue_worker+0x118/0x1b0 crypto/cryptd.c:181
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:291
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
 
 
 ---
@@ -123,5 +104,3 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this bug report. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
