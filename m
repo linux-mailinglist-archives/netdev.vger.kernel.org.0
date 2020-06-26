@@ -2,167 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96E6C20BCF0
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 00:51:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5817A20BCF4
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 00:56:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725958AbgFZWvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 18:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36330 "EHLO
+        id S1725994AbgFZW41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 18:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbgFZWvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 18:51:20 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821F7C03E979;
-        Fri, 26 Jun 2020 15:51:20 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id h23so8769276qtr.0;
-        Fri, 26 Jun 2020 15:51:20 -0700 (PDT)
+        with ESMTP id S1725931AbgFZW40 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 18:56:26 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB7FC03E979
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 15:56:26 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id t11so404873pfq.11
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 15:56:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8HWO0SS+0P6uz8QKcTGg5GM74omnlEcycJKWzTuQqgw=;
-        b=JIF9V2neAo3LDYaCCpQHM7tlzFYnCVM6vrrwKOwdygR9cYlw9fFpc1I+ByHQ7ggp1h
-         wOxdl5nacpcSjF9pEmq7bohWDFU6y4iO2mY7OVe0vmmdXzht2Mc82LD8/g+5YwqJtVxi
-         +xQ5TzaQDkEzOLHLjD/eISW23FIoftXnaueWUrJJ5g8pO36wlOjoc8jAJR3ToOVDlWra
-         OBGfbY7vxOZAhaGoPnPkTki3lsaw8JPkFxqLEuKsOys93f0KupsXHS4KFFIKVfM5knYX
-         GCia7wp7cLOAa71CK+GTY2RjEXJgQ4tutKVD4H5DRxhCMGMOF3Jr9ViS9dFXHTDtwho0
-         BYwg==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=dWzP7QZWR34K3jLlm/uWd00nMGQxiM2Ep7f7sCjL+B0=;
+        b=lWzgp+Tsl9BvR1kkQbtgQcgtaxzj8ngi2esODZ2y1NMivoIoxeVFduoDnWfigItGD/
+         rQ63H0+SJufe6d8wPGQP+JgwTho1ey7xbYw6Hhy84PNggWanNScsWvKUTwevEHb+k9RR
+         Cp4en7zjwyGrpRPzGhjTv7iGw5+8u8q/XH6zOze+zTRvx4WvLBFIbxw4QsNYYCyLofL2
+         Ja2AN0f62+s2uXLtregv2x/lrDgW36bc33jUojZtvqI4j1Yrrx2kwZ1S8oXdARzJWgTI
+         +zWWmL93c8V+x5HptgpGhUmKjtAZpzCHzR0loVpOFtO9z3JuNHSV6llS0kjseycEb+t+
+         xQnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8HWO0SS+0P6uz8QKcTGg5GM74omnlEcycJKWzTuQqgw=;
-        b=dR1L4InE+E7pqYtVAIF53O4gON3PUqS7ON6DIeJ0wIzCGIFnp64VmnJbtacEowOMez
-         yy+ShEv9LpZNeoHQr3aicnRI4kzs3zJYJsJrJ55mAz+MDqeQAMTUxWJgoT8r7qSTzj3G
-         NCfXcOGkNDTWJzFt2FzgUBeruu2LihntoV4w7EdRa8rKualllm+12C0j2DWcGfX8lw1Z
-         62xaNCDBAFSO4q2XLqVmEhZ8ja4zJytGytpAHo8ItUEpeh/tmQnT+q8PsTWa+Blg0F0Z
-         uUxzj5qrxWkJrCL8OrZua21o8D+WoiN7CyijHbG6UXHAwbUu5zipXWUf7/8jdwHsHaT2
-         Qfig==
-X-Gm-Message-State: AOAM530KGxC1dQ8Hskk/zgTlOUY+DH/+jxG9/85jWUDd/4VXl1Gh0SVx
-        HG1GwZrqKVp2JYOO2Dr1+01ySWCSxtdY9svMeGA=
-X-Google-Smtp-Source: ABdhPJzC8dhF/xlo983MA3Zz0/1x7CyKxQWxuD3XyPOv8m23hLlCFcNZQTPGDbdHzFhjd2XIXe4k1f4jPnLztokYdeM=
-X-Received: by 2002:ac8:1991:: with SMTP id u17mr5021097qtj.93.1593211879622;
- Fri, 26 Jun 2020 15:51:19 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=dWzP7QZWR34K3jLlm/uWd00nMGQxiM2Ep7f7sCjL+B0=;
+        b=dtoZlsrv7uq0OQDmMvEVqoeMNcR4yPKd0jFgJxvVj4yYtF18Mg1yGZly4dMTR1VovW
+         xkCpYDUpuO2KTg5gP28oKrCjEkzWPFE6we3qxoxhdioulM3ukKAn2XPhBx3X/wnOpfnA
+         8DvayQrd0UoPDL5pDeqWx4lEL/k2vqwAsSmGwgTvzb1rsSQ00rccybp55KlX9lwFHzYv
+         Ui33SElUkqI2Hf5iqIb66ml9icE2eZKOTONNlKB13JlgVxpobqi2O9QcAWvsbI2XOCKq
+         wfXp+hScIbR9jIOXlkva2BcQoe0Cyh5ua3u6rSqKDtrI5SIzGjfxjJutQjusElSZYtqh
+         e7PA==
+X-Gm-Message-State: AOAM533wlYqf3dUphb9/NV3uNjrqBJX06z1fN0e667hqOd6hDSxr3nvn
+        0LryyDDXbCYQCmUA++Q+Ic2vRA==
+X-Google-Smtp-Source: ABdhPJzWy1Z2s1209izgXE8LIvWZdwQJr0DGUJPU42sBL0xH6mnrxwhFEOd/VoRp3JJyfox9KvG8Ug==
+X-Received: by 2002:a63:d0e:: with SMTP id c14mr927222pgl.206.1593212186090;
+        Fri, 26 Jun 2020 15:56:26 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id g21sm26355943pfh.134.2020.06.26.15.56.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jun 2020 15:56:25 -0700 (PDT)
+Date:   Fri, 26 Jun 2020 15:56:17 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, jiri@mellanox.com,
+        idosch@mellanox.com
+Subject: Re: [PATCH net-next v1 0/5] TC: Introduce qevents
+Message-ID: <20200626155617.7f6a4c4c@hermes.lan>
+In-Reply-To: <cover.1593209494.git.petrm@mellanox.com>
+References: <cover.1593209494.git.petrm@mellanox.com>
 MIME-Version: 1.0
-References: <20200626001332.1554603-1-songliubraving@fb.com>
- <20200626001332.1554603-3-songliubraving@fb.com> <CAEf4BzZ6-s-vqp+bLiCAVgS2kmp09a1WdaSvaL_jJySx7s7inA@mail.gmail.com>
- <C3B6DD3E-1B69-4D0C-8A55-4EB81C21C619@fb.com>
-In-Reply-To: <C3B6DD3E-1B69-4D0C-8A55-4EB81C21C619@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 26 Jun 2020 15:51:08 -0700
-Message-ID: <CAEf4BzaC1Dqn3PXBJmczPRaUmjKc7pcg6_mjyKymBek-sDKv7Q@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/4] bpf: introduce helper bpf_get_task_stak()
-To:     Song Liu <songliubraving@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Peter Ziljstra <peterz@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 3:45 PM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On Jun 26, 2020, at 1:17 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Thu, Jun 25, 2020 at 5:14 PM Song Liu <songliubraving@fb.com> wrote:
-> >>
-> >> Introduce helper bpf_get_task_stack(), which dumps stack trace of given
-> >> task. This is different to bpf_get_stack(), which gets stack track of
-> >> current task. One potential use case of bpf_get_task_stack() is to call
-> >> it from bpf_iter__task and dump all /proc/<pid>/stack to a seq_file.
-> >>
-> >> bpf_get_task_stack() uses stack_trace_save_tsk() instead of
-> >> get_perf_callchain() for kernel stack. The benefit of this choice is that
-> >> stack_trace_save_tsk() doesn't require changes in arch/. The downside of
-> >> using stack_trace_save_tsk() is that stack_trace_save_tsk() dumps the
-> >> stack trace to unsigned long array. For 32-bit systems, we need to
-> >> translate it to u64 array.
-> >>
-> >> Signed-off-by: Song Liu <songliubraving@fb.com>
-> >> ---
-> >
-> > Looks great, I just think that there are cases where user doesn't
-> > necessarily has valid task_struct pointer, just pid, so would be nice
-> > to not artificially restrict such cases by having extra helper.
-> >
-> > Acked-by: Andrii Nakryiko <andriin@fb.com>
->
-> Thanks!
->
-> >
-> >> include/linux/bpf.h            |  1 +
-> >> include/uapi/linux/bpf.h       | 35 ++++++++++++++-
-> >> kernel/bpf/stackmap.c          | 79 ++++++++++++++++++++++++++++++++--
-> >> kernel/trace/bpf_trace.c       |  2 +
-> >> scripts/bpf_helpers_doc.py     |  2 +
-> >> tools/include/uapi/linux/bpf.h | 35 ++++++++++++++-
-> >> 6 files changed, 149 insertions(+), 5 deletions(-)
-> >>
-> >
-> > [...]
-> >
-> >> +       /* stack_trace_save_tsk() works on unsigned long array, while
-> >> +        * perf_callchain_entry uses u64 array. For 32-bit systems, it is
-> >> +        * necessary to fix this mismatch.
-> >> +        */
-> >> +       if (__BITS_PER_LONG != 64) {
-> >> +               unsigned long *from = (unsigned long *) entry->ip;
-> >> +               u64 *to = entry->ip;
-> >> +               int i;
-> >> +
-> >> +               /* copy data from the end to avoid using extra buffer */
-> >> +               for (i = entry->nr - 1; i >= (int)init_nr; i--)
-> >> +                       to[i] = (u64)(from[i]);
-> >
-> > doing this forward would be just fine as well, no? First iteration
-> > will cast and overwrite low 32-bits, all the subsequent iterations
-> > won't even overlap.
->
-> I think first iteration will write zeros to higher 32 bits, no?
+On Sat, 27 Jun 2020 01:45:24 +0300
+Petr Machata <petrm@mellanox.com> wrote:
 
-Oh, wait, I completely misread what this is doing. It up-converts from
-32-bit to 64-bit, sorry. Yeah, ignore me on this :)
+> The Spectrum hardware allows execution of one of several actions as a
+> result of queue management decisions: tail-dropping, early-dropping,
+> marking a packet, or passing a configured latency threshold or buffer
+> size. Such packets can be mirrored, trapped, or sampled.
+> 
+> Modeling the action to be taken as simply a TC action is very attractive,
+> but it is not obvious where to put these actions. At least with ECN marking
+> one could imagine a tree of qdiscs and classifiers that effectively
+> accomplishes this task, albeit in an impractically complex manner. But
+> there is just no way to match on dropped-ness of a packet, let alone
+> dropped-ness due to a particular reason.
 
-But then I have another question. How do you know that entry->ip has
-enough space to keep the same number of 2x bigger entries?
-
->
-> >
-> >> +       }
-> >> +
-> >> +exit_put:
-> >> +       put_callchain_entry(rctx);
-> >> +
-> >> +       return entry;
-> >> +}
-> >> +
-> >
-> > [...]
-> >
-> >> +BPF_CALL_4(bpf_get_task_stack, struct task_struct *, task, void *, buf,
-> >> +          u32, size, u64, flags)
-> >> +{
-> >> +       struct pt_regs *regs = task_pt_regs(task);
-> >> +
-> >> +       return __bpf_get_stack(regs, task, buf, size, flags);
-> >> +}
-> >
-> >
-> > So this takes advantage of BTF and having a direct task_struct
-> > pointer. But for kprobes/tracepoint I think it would also be extremely
-> > helpful to be able to request stack trace by PID. How about one more
-> > helper which will wrap this one with get/put task by PID, e.g.,
-> > bpf_get_pid_stack(int pid, void *buf, u32 size, u64 flags)? Would that
-> > be a problem?
->
-> That should work. Let me add that in a follow up patch.
->
+Would a BPF based hook be more flexible and reuse more existing
+infrastructure? 
