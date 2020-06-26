@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3778820B8F1
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 21:02:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B67120B8FC
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 21:05:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725828AbgFZTCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 15:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
+        id S1725952AbgFZTFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 15:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725768AbgFZTCN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 15:02:13 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B9CC03E979;
-        Fri, 26 Jun 2020 12:02:13 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id k6so9358361ili.6;
-        Fri, 26 Jun 2020 12:02:13 -0700 (PDT)
+        with ESMTP id S1725275AbgFZTFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 15:05:17 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474C5C03E979;
+        Fri, 26 Jun 2020 12:05:17 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id h4so10932336ior.5;
+        Fri, 26 Jun 2020 12:05:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mGk6C5Atlo5FcxK9t1otfwnuMrfYpSOaAdGJmvhnHHI=;
-        b=bPIwTqNfbLsVQz0VJ8B3D1an9TgDcP20Eth1JjfsSrwk3WE1jrG+++XKqfQalTWpCF
-         UqUXIsyNARk4uDCw8x4qjXB+1Qy1gkMsXEhfiFDbNFfnVS1z72i1ZCizNYxBDhFxbXw9
-         Ax3L49mreQBCk48XwWbPLTn6+y22NncF9y7WJEcK9ts5GcVRBES5TxuVFQxFJIk+HjpM
-         qvs8fuSNAc+iS9YaW5RKUDRLmv8FrQtLNwRZ2ZorRQlb6oO0kKfDvtAIFIsCOnHm8F1B
-         ExCTbQ0Ch6o3A37bvfGGQq/xmIm5FNpT5XIvAqalbcDNcYfdHXeL9FiYfgISKfmCwwAK
-         APKg==
+        bh=liMltOM0SM3D6vl3HMgptm6OHlaJ5OZbEc9z9zCU6s8=;
+        b=afLbQh7mGvHfjLQ1zpg9eY/B+M/3Og37b/DXOBVRfhlL2i2IMZ/2OKknw6moyXQmue
+         PYw+s5Utc/Uxz0ojI2WxBbMyNIMBwSMOOW0JiwlKAgBRW7eJORKDeA55ABzPDuhuwZkt
+         mHHWTkegig7EO+y9yMcXDLc2eJWE8JDZYsEVWpc3Ln5tdQzN4ZbeouxFiLqEUU1vwZ8K
+         zvVpHH+Q8RXwQXxs4hJiUuoIBBYx3tlo9DtFrwC76gMkwuwSokMrhIxwgNxpbHUHQ5h4
+         kb1O/7EG/cha03X1dM+6IhBXI9brfX7xuchmJ5c56AVuSmmz1FPbHXRXwK5ylugUBuzP
+         yO2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=mGk6C5Atlo5FcxK9t1otfwnuMrfYpSOaAdGJmvhnHHI=;
-        b=eRJ0bUxQKOEEyH8B/2MV4AHleoY5f2auWNGssU+KDCQTrvv4T6gCJ5OgzNwySFwjpw
-         i/Tce5e0xcQXMBpy6iTMli3bl4kIAWrkFXrNOWqCnHV4GoesM6yYV/UThA3s08eDRUFA
-         jniFr/JGhskaqTbAQqZqJKm2iqSruI30Wu6eVLOb/K4dwzb4Cfps6iFodABTx7fRqbg+
-         +Cc/2C5YEN5y7eTAjtLk/1a1BfCo5WfVstekyg1fPdSoxsKZi+k/gIeFTtG2ZxgQonAv
-         ZeQ83heQ5EtUtgrLxhWGxdf0Qav127Lx7+Hhxp6G7jhbu00aLMrFzKN3KCoPObWr9inA
-         Bbfg==
-X-Gm-Message-State: AOAM5332+DzA0n+0TgPkzg4oQ2WALTOTGM97POVatet3di9gYQh9NCr2
-        lD8XrLlbe99ET2qKM3719syJZFQI
-X-Google-Smtp-Source: ABdhPJzlbEjII1B3rbvbYiQPc5EL2ngoDbInR9wIX5waUDLr137LNIYzmQXGvz/xI1RqYZXnMrb5+A==
-X-Received: by 2002:a92:9f5c:: with SMTP id u89mr4497642ili.262.1593198132074;
-        Fri, 26 Jun 2020 12:02:12 -0700 (PDT)
+        bh=liMltOM0SM3D6vl3HMgptm6OHlaJ5OZbEc9z9zCU6s8=;
+        b=tIMuMq1dzcRwOlXaSCMeAVGLluHsaIa/5EXjcud5eZAZTCRScfY/qlUH8nLSAunoyt
+         OhL/cPNxWw0wpNE16LShe7MR+urkHtotAMo49m6qelfEM/Z60wPScAu9lM+gKitcdXIF
+         Aa6bo+sbQgeTdyg3LhRgGEJzMuxFxduAKKljTjWAvR7zbOgYGRkeIPZJYOgX7v/p9cjj
+         Rf35tOs+KT1lz5FvPppY5Gu6KMLIO5Tplx1crpUia3Fj5V5x6EIQ4y+07f8kMasp2OZe
+         3/9wuya2w88PV5BhSYIR8GhdM+sd3u6kQ0T29exdZLKygoe4TwIu8WJtQzbK6O2rjI5V
+         MnIQ==
+X-Gm-Message-State: AOAM533Cxy3+9Lw3Qfi24ugVpgUxjLeqtCGkiR0n/AoHUgpDUnLwqp0n
+        GOYi8fxdG2J/CQyaIx87LKBfWt3E
+X-Google-Smtp-Source: ABdhPJyw1AUnf5mM3AmYeEE8DUABbkwxMno1ViJ5f4iHtxw5v/sPSYpz0yjx2iNQP22uFQlZRKe9Kw==
+X-Received: by 2002:a5d:8f04:: with SMTP id f4mr4919337iof.33.1593198316353;
+        Fri, 26 Jun 2020 12:05:16 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y23sm15799739ior.38.2020.06.26.12.02.07
+        by smtp.googlemail.com with ESMTPSA id k3sm11502176iot.42.2020.06.26.12.05.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Jun 2020 12:02:11 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 4/7] net: phy: add backplane kr driver support
-To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florinel Iordache <florinel.iordache@nxp.com>
+        Fri, 26 Jun 2020 12:05:15 -0700 (PDT)
+Subject: Re: [EXT] Re: [PATCH net-next v3 4/7] net: phy: add backplane kr
+ driver support
+To:     Florinel Iordache <florinel.iordache@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>
 Cc:     "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
@@ -64,12 +64,13 @@ Cc:     "davem@davemloft.net" <davem@davemloft.net>,
         "corbet@lwn.net" <corbet@lwn.net>,
         "shawnguo@kernel.org" <shawnguo@kernel.org>,
         Leo Li <leoyang.li@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 References: <1592832924-31733-1-git-send-email-florinel.iordache@nxp.com>
  <1592832924-31733-5-git-send-email-florinel.iordache@nxp.com>
  <20200622142430.GP279339@lunn.ch>
- <AM6PR04MB397677E90EFBD9749D01B061EC970@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <AM0PR04MB5443DAF865284ADE78423C64FB970@AM0PR04MB5443.eurprd04.prod.outlook.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -125,21 +126,21 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <7b12d7f1-9e36-e3ee-7a51-d8d8628e2e6f@gmail.com>
-Date:   Fri, 26 Jun 2020 12:02:05 -0700
+Message-ID: <83ff6b40-157e-3f1c-7370-29a0681dfad2@gmail.com>
+Date:   Fri, 26 Jun 2020 12:05:11 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <AM6PR04MB397677E90EFBD9749D01B061EC970@AM6PR04MB3976.eurprd04.prod.outlook.com>
+In-Reply-To: <AM0PR04MB5443DAF865284ADE78423C64FB970@AM0PR04MB5443.eurprd04.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/22/20 8:08 AM, Madalin Bucur (OSS) wrote:
+On 6/22/20 7:39 AM, Florinel Iordache wrote:
 >> -----Original Message-----
 >> From: Andrew Lunn <andrew@lunn.ch>
 >> Sent: Monday, June 22, 2020 5:25 PM
@@ -150,8 +151,10 @@ On 6/22/20 8:08 AM, Madalin Bucur (OSS) wrote:
 >> kuba@kernel.org; corbet@lwn.net; shawnguo@kernel.org; Leo Li
 >> <leoyang.li@nxp.com>; Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>;
 >> Ioana Ciornei <ioana.ciornei@nxp.com>; linux-kernel@vger.kernel.org
->> Subject: Re: [PATCH net-next v3 4/7] net: phy: add backplane kr driver
+>> Subject: [EXT] Re: [PATCH net-next v3 4/7] net: phy: add backplane kr driver
 >> support
+>>
+>> Caution: EXT Email
 >>
 >> On Mon, Jun 22, 2020 at 04:35:21PM +0300, Florinel Iordache wrote:
 >>> Add support for backplane kr generic driver including link training
@@ -159,46 +162,30 @@ On 6/22/20 8:08 AM, Madalin Bucur (OSS) wrote:
 >>
 >> Hi Florinel
 >>
->> This is still a PHY device. I don't remember any discussions which
->> resolved the issues of if at the end of the backplane there is another
->> PHY.
+>> This is still a PHY device. I don't remember any discussions which resolved the
+>> issues of if at the end of the backplane there is another PHY.
 >>
->> It makes little sense to repost this code until we have this problem
->> discussed and a way forward decided on. It fits into the discussion
->> Russell and Ioana are having about representing PCS drivers. Please
->> contribute to that.
+>> It makes little sense to repost this code until we have this problem discussed and
+>> a way forward decided on. It fits into the discussion Russell and Ioana are having
+>> about representing PCS drivers. Please contribute to that.
 >>
->> 	Andrew
+>>         Andrew
 > 
-> Hi Andrew, the reasons behind this selection:
+> Hi Andrew,
 > 
-> - the PCS that is controlled by the backplane driver belongs to the PHY
-> layer so the representation as a PHY device is legitimate
+> Yes, you are right: we decided to send only support for DPAA1 using current approach as a PHY device
+> (as mentioned in cover-letter), until PCS representation will be fully clarified.
+> The entire DPAA2 support was removed for now, together with phylink changes.
+> DPAA1 maintainer (Madalin Bucur) agrees with current representation as a PHY device for DPAA1.
+> So we would like to have some discussions around this approach for DPAA1 only, as it seems suitable for us.
 
-That argument makes sense.
+The question is really whether it is suitable for others beyond NXP, the
+drivers are certainly organized in such a way that there is little NXP
+specifics in them so the intent is clearly there.
 
-> - the PHY driver provides the state machine that is required, not using
-> this representation backplane would need to add a separate, duplicate
-> state machine
-
-Which is entirely permissible according to the PHY library
-documentation, not that we have seen many people do it though, even less
-so when the PHY driver is providing the state machine.
-
-> - the limitation, that only one PHY layer entity can be managed by the
-> PHYLib, is a known limitation that always existed, is not introduced by
-> the backplane support; the unsupported scenario with a backplane connection
-> to a PHY entity that needs to be managed relates to that limitation and
-> a solution for it should not be added through the backplane support
-> - afaik, Russell and Ioana are discussing the PCS representation in the
-> context of PHYLink, this submission is using PHYLib. If we are to discuss
-> about the PCS representation, it's the problem of the simplistic "one device
-> in the PHY layer" issue that needs to be addressed to have a proper PCS
-> representation at all times.
-
-So would not it make sense for the PCS representation to be settled and
-then add the backplane driver implementation such that there is no
-double work happening for Florinel and for reviewers and the PCS
-implementation als factors in the backplane use case and requirements?
+We will probably not know, either because vendors have decided to hide
+all of this stuff under firmware, or they do not use Linux or they just
+are not following what is going on upstream and have no desire to
+participate.
 -- 
 Florian
