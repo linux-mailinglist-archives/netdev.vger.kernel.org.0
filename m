@@ -2,116 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 166BE20AC2B
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 08:14:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D0DF20AC5B
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 08:29:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728277AbgFZGOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 02:14:35 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26432 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725306AbgFZGOe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 02:14:34 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05Q6C21U028481;
-        Thu, 25 Jun 2020 23:14:21 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=3rOHS/Zb+NYr+VeFc7nF1GiAVnXWDonNbJvWrwsG+Sk=;
- b=ro9yHhoGskgGIejg3Bsk5Wb8wWPE6QqXo7eihwyRECSNOt5p1i3hMq63o6KJlwPl5IAV
- j9I2cXGM165VJ8y3Qhr93wW6jpUMa8M3tY4rMtt6Z2iB5z3Shaj7+eXG6js0dx5jF8uC
- JsHAyHxweXfm4uIoRXxRaGy+wrCtkGvkqIQ= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 31ux0qbwv1-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 25 Jun 2020 23:14:21 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 25 Jun 2020 23:14:17 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GoYH9YGxbIN502b1L4Vr6QU/F3JXnxP4I3FIWCYy25bVM/ufubB4N4knK9g3kXNoJA5O8AC0MmczpNO5dBD7AlUKCYIRouxAiC3jZtBfVBJTiHmHwVae9hujPMkfO9i4wt6c5F/WCnaZWPGeXdn0QzqkonyZHlAdCEuLjBokiGe3076DZrMw36hdyiUW+g4oSshBKYDMAL2FWgIehV+3BLCgtpywYxsvWbhPhKSNpHKpIRUgJCu5tURCEQG7ZtaTdKXFHn0y1ohetdw293Lsobhe3hRlclytOYxt0cSheukwgH++qUvuzjcCWgiM4c7jKWhE2WsLBSP/VLmLvgdptQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3rOHS/Zb+NYr+VeFc7nF1GiAVnXWDonNbJvWrwsG+Sk=;
- b=mYBpR0A8bADvV9fbhY4mNlczIryVx25a2BcsUjxJtP06OKLQ8Kj+DMXDlcw5Ykkj1IpbOiIIzi1cD8iXuD+93mh2dBmwh0KwPBS6IH7r8SCXan4o1mZmMVUBwIR6TEoMCKDk0B36GVZQf/UQnk2UaNA2Vc6tWdIUSXzK3gjubI5XyCiz4YciEzjYRJjsIatwagZcRsUIfjjzN/fTo4gxUG8vM5lcwhsJHLD/NkZFWG/gab1BOwr20bl4ZEhknJftpJVomg8TUw+2Ge/6sdUDAnyB42eubaihN5yoK3gf1rJmSl4STb0NS54v67E8gI4eG/xaCIKSKsJ1qq/uH97zBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3rOHS/Zb+NYr+VeFc7nF1GiAVnXWDonNbJvWrwsG+Sk=;
- b=iVZF/ywjnEBC1pMSh3QcDmimub4nZdtx5BvYQaL9TOifUNQE0WNL3nGqOuded1e6n2ADVagca5TQ0gPZgY7JAwUWQLZ9Zfo5sbHqkWIo7SCAQ0r7/9yDakexX1x2sHLL52N3OwveZDc35esUT2MayzSPUW8ZmR2UjDKU5xPUT80=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from DM6PR15MB3580.namprd15.prod.outlook.com (2603:10b6:5:1f9::10)
- by DM6PR15MB3273.namprd15.prod.outlook.com (2603:10b6:5:164::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Fri, 26 Jun
- 2020 06:14:17 +0000
-Received: from DM6PR15MB3580.namprd15.prod.outlook.com
- ([fe80::c8f5:16eb:3f57:b3dc]) by DM6PR15MB3580.namprd15.prod.outlook.com
- ([fe80::c8f5:16eb:3f57:b3dc%5]) with mapi id 15.20.3131.021; Fri, 26 Jun 2020
- 06:14:17 +0000
-Date:   Thu, 25 Jun 2020 23:14:14 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-CC:     <jakub@cloudflare.com>, <daniel@iogearbox.net>, <ast@kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-Subject: Re: [bpf PATCH v2 3/3] bpf, sockmap: Add ingres skb tests that
- utilize merge skbs
-Message-ID: <20200626061414.xisj55tsh6hqxhjt@kafai-mbp.dhcp.thefacebook.com>
-References: <159312606846.18340.6821004346409614051.stgit@john-XPS-13-9370>
- <159312681884.18340.4922800172600252370.stgit@john-XPS-13-9370>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <159312681884.18340.4922800172600252370.stgit@john-XPS-13-9370>
-User-Agent: NeoMutt/20180716
-X-ClientProxiedBy: BY3PR10CA0004.namprd10.prod.outlook.com
- (2603:10b6:a03:255::9) To DM6PR15MB3580.namprd15.prod.outlook.com
- (2603:10b6:5:1f9::10)
+        id S1728351AbgFZG2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 02:28:52 -0400
+Received: from mga14.intel.com ([192.55.52.115]:19556 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726488AbgFZG2w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 02:28:52 -0400
+IronPort-SDR: Yu0vyHwAj3qstdlqDzkgjJKDrRSkdb+lkFswIrXf2XcByh2fP+3wOATd40eP/tDDNBd0FGdDQw
+ QCiU0FC5X+qw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9663"; a="144301909"
+X-IronPort-AV: E=Sophos;i="5.75,282,1589266800"; 
+   d="scan'208";a="144301909"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2020 23:28:51 -0700
+IronPort-SDR: 8+n+wBsDU2kJLgJjqZiMlwda67dnjXBF1oyMNqrH/4eRSWZ847CQnOp0BtQByWppXfn3ez1tDR
+ 15P/hsEygVYA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,282,1589266800"; 
+   d="scan'208";a="280062448"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by orsmga006.jf.intel.com with ESMTP; 25 Jun 2020 23:28:51 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next v3 0/8][pull request] 40GbE Intel Wired LAN Driver Updates 2020-06-25
+Date:   Thu, 25 Jun 2020 23:28:42 -0700
+Message-Id: <20200626062850.1649538-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:7d5a) by BY3PR10CA0004.namprd10.prod.outlook.com (2603:10b6:a03:255::9) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20 via Frontend Transport; Fri, 26 Jun 2020 06:14:16 +0000
-X-Originating-IP: [2620:10d:c090:400::5:7d5a]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f219f711-9477-4d7e-fcad-08d8199827e2
-X-MS-TrafficTypeDiagnostic: DM6PR15MB3273:
-X-Microsoft-Antispam-PRVS: <DM6PR15MB327394061603955719D2255FD5930@DM6PR15MB3273.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
-X-Forefront-PRVS: 0446F0FCE1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 764eNrgviD/P3/1eXSRfyLvq9ciHnpcvcNyQdwk0vhlE0SVfau3srAp6tb/BSWIJ4o3xyyFmpE+cCP9i+Pro/mM+stmawHzl9OKXfYihT6wONlVr9XDLARWPLJftrfDv1RScKNcNhievLjARgN83/PFXKMjxlPizqbCseiZ6nE5FzAFFzegHHGBBxfB4mzksxsKXOFXlaibg/0CMI7amfEKMAr2EUlbspk4GYPxyMFHLq9uxWrOecY6T68c+SfVX9PhUDKBkcfeLnxfwo6WErcoCtdqUMEK8W1UuKtanszwz7vyrJRsU4a0OyjPsv/CN+j8H/OanPoe9UaRi28EGkA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR15MB3580.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(366004)(136003)(39860400002)(396003)(8676002)(478600001)(66946007)(5660300002)(66476007)(2906002)(66556008)(55016002)(9686003)(4326008)(1076003)(6916009)(7696005)(558084003)(316002)(86362001)(186003)(16526019)(6506007)(8936002)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: GormQQXtfODnJSqUvDyrvPx3Or+dLtwDVTfIFw3DrIj0PABJjbdlV0jr6S6Z0vRqwtinpM5TK5yhWIDVONhTns+flO9orSdHaBoy9ube2sE+FSK1LZqaeXhPGwESmfM+FTPkiX0SwWcxAGk4nVAa6EcJ2ByIoDCgOOdLbUnRTt7mojZ3vbVHMpjv9YmlCHfOzVgjI8g+r2VjI1m6T2YSmFgqDLbtRSHNZbjp6MOKVMAIBiLQtbihdkyYGK0MVfu9l/KbJ65DgkYt4+w9ynQ/ksiLqpZ0DdGMe3GubaV6T1adaoYQM81RnWVDf98OTgelm6NDri66yndpbxgix/dLskHaoBJaloKZ+85TEPxb/CUR1BFbOZW6zNXSVOlHrkvps2FmWrl6Edwcsa0pf/AnkFL+06aVDmM9Edk7hzVr7vDkAsHUOPk41xc3gVgkQFJKuUVytcYbiwj8NwQP8WnSCWkXVsPqGDhkNsev4deZtFD8aiFwJ+rDggUay3MXiyNBwZs+lJ+DLqHMdV4YPweTwg==
-X-MS-Exchange-CrossTenant-Network-Message-Id: f219f711-9477-4d7e-fcad-08d8199827e2
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR15MB3580.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2020 06:14:16.9065
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CeWZK4WPl2ZNqOcGULHOmTPTFrDRiF0lhKXIoAP5vkYqd/UgIHq3rGB7VosUBqzU
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3273
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-26_01:2020-06-26,2020-06-26 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- lowpriorityscore=0 mlxscore=0 adultscore=0 malwarescore=0 impostorscore=0
- priorityscore=1501 suspectscore=0 phishscore=0 clxscore=1015
- cotscore=-2147483648 mlxlogscore=613 spamscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006260045
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 04:13:38PM -0700, John Fastabend wrote:
-> Add a test to check strparser merging skbs is working.
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+This series contains updates to i40e driver and removes the individual
+driver versions from all of the Intel wired LAN drivers.
+
+Shiraz moves the client header so that it can easily be shared between
+the i40e LAN driver and i40iw RDMA driver.
+
+Jesse cleans up the unused defines, since they are just dead weight.
+
+Alek reduces the unreasonably long wait time for a PF reset after reboot
+by using jiffies to limit the maximum wait time for the PF reset to
+succeed.  Added additional logging to let the user know when the driver
+transitions into recovery mode.  Adds new device support for our 5 Gbps
+NICs.
+
+Todd adds a check to see if MFS is set after warm reboot and notifies
+the user when MFS is set to anything lower than the default value.
+
+Arkadiusz fixes a possible race condition, where were holding a
+spin-lock while in atomic context.
+
+v2: removed code comments that were no longer applicable in patch 2 of
+    the series.  Also removed 'inline' from patch 4 and patch 8 of the
+    series.  Also re-arranged code to be able to remove the forward
+    function declarations.  Dropped patch 9 of the series, while the
+    author works on cleaning up the commit message.
+v3: Updated patch 8 description to answer Jakub's questions
+
+The following are changes since commit 6d29302652587001038c8f5ac0e0c7fa6592bbbc:
+  Merge tag 'mlx5-updates-2020-06-23' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 40GbE
+
+Aleksandr Loktionov (2):
+  i40e: Add support for 5Gbps cards
+  i40e: Remove scheduling while atomic possibility
+
+Jeff Kirsher (1):
+  net/intel: remove driver versions from Intel drivers
+
+Jesse Brandeburg (1):
+  i40e: remove unused defines
+
+Piotr Kwapulinski (2):
+  i40e: make PF wait reset loop reliable
+  i40e: detect and log info about pre-recovery mode
+
+Shiraz Saleem (1):
+  i40e: Move client header location
+
+Todd Fujinaka (1):
+  i40e: Add a check to see if MFS is set
+
+ drivers/infiniband/hw/i40iw/Makefile          |    1 -
+ drivers/infiniband/hw/i40iw/i40iw.h           |    2 +-
+ drivers/net/ethernet/intel/e100.c             |    6 +-
+ drivers/net/ethernet/intel/e1000/e1000.h      |    1 -
+ .../net/ethernet/intel/e1000/e1000_ethtool.c  |    2 -
+ drivers/net/ethernet/intel/e1000/e1000_main.c |    5 +-
+ drivers/net/ethernet/intel/e1000e/e1000.h     |    1 -
+ drivers/net/ethernet/intel/e1000e/ethtool.c   |    2 -
+ drivers/net/ethernet/intel/e1000e/netdev.c    |    8 +-
+ drivers/net/ethernet/intel/fm10k/fm10k.h      |    1 -
+ .../net/ethernet/intel/fm10k/fm10k_ethtool.c  |    2 -
+ drivers/net/ethernet/intel/fm10k/fm10k_main.c |    5 +-
+ drivers/net/ethernet/intel/i40e/i40e.h        |   27 +-
+ .../net/ethernet/intel/i40e/i40e_adminq_cmd.h |  497 +-
+ drivers/net/ethernet/intel/i40e/i40e_client.c |    2 +-
+ drivers/net/ethernet/intel/i40e/i40e_common.c |    7 +-
+ drivers/net/ethernet/intel/i40e/i40e_dcb.h    |    5 -
+ .../net/ethernet/intel/i40e/i40e_debugfs.c    |    1 -
+ drivers/net/ethernet/intel/i40e/i40e_devids.h |    7 +-
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    |    2 -
+ drivers/net/ethernet/intel/i40e/i40e_hmc.h    |    1 -
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  132 +-
+ drivers/net/ethernet/intel/i40e/i40e_osdep.h  |    1 -
+ .../net/ethernet/intel/i40e/i40e_register.h   | 4658 +----------------
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h   |   25 -
+ drivers/net/ethernet/intel/i40e/i40e_type.h   |   82 -
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    |  234 +-
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.h    |    1 -
+ drivers/net/ethernet/intel/iavf/iavf.h        |    1 -
+ .../net/ethernet/intel/iavf/iavf_ethtool.c    |    1 -
+ drivers/net/ethernet/intel/iavf/iavf_main.c   |   14 +-
+ drivers/net/ethernet/intel/iavf/iavf_type.h   |    8 -
+ drivers/net/ethernet/intel/ice/ice.h          |    1 -
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |    1 -
+ drivers/net/ethernet/intel/ice/ice_main.c     |   22 +-
+ drivers/net/ethernet/intel/igb/igb.h          |    1 -
+ drivers/net/ethernet/intel/igb/igb_ethtool.c  |    1 -
+ drivers/net/ethernet/intel/igb/igb_main.c     |   11 +-
+ drivers/net/ethernet/intel/igbvf/ethtool.c    |    2 -
+ drivers/net/ethernet/intel/igbvf/igbvf.h      |    1 -
+ drivers/net/ethernet/intel/igbvf/netdev.c     |    5 +-
+ drivers/net/ethernet/intel/igc/igc.h          |    1 -
+ drivers/net/ethernet/intel/igc/igc_ethtool.c  |    1 -
+ drivers/net/ethernet/intel/igc/igc_main.c     |    7 +-
+ drivers/net/ethernet/intel/ixgb/ixgb.h        |    1 -
+ .../net/ethernet/intel/ixgb/ixgb_ethtool.c    |    2 -
+ drivers/net/ethernet/intel/ixgb/ixgb_main.c   |    6 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h      |    1 -
+ .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |    2 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c |    3 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   10 +-
+ drivers/net/ethernet/intel/ixgbevf/ethtool.c  |    2 -
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf.h  |    1 -
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |    7 +-
+ .../linux/net/intel}/i40e_client.h            |    9 -
+ 55 files changed, 246 insertions(+), 5594 deletions(-)
+ rename {drivers/net/ethernet/intel/i40e => include/linux/net/intel}/i40e_client.h (93%)
+
+-- 
+2.26.2
+
