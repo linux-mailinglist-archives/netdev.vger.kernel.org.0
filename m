@@ -2,76 +2,324 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A7320B947
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 21:22:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 713A720B94D
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 21:27:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725807AbgFZTWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 15:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725768AbgFZTWw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 15:22:52 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7A8C03E979
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 12:22:51 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B29C7120F19CB;
-        Fri, 26 Jun 2020 12:22:50 -0700 (PDT)
-Date:   Fri, 26 Jun 2020 12:22:49 -0700 (PDT)
-Message-Id: <20200626.122249.2231192220693532473.davem@davemloft.net>
-To:     jeffrey.t.kirsher@intel.com
-Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com
-Subject: Re: [net-next v3 0/8][pull request] 40GbE Intel Wired LAN Driver
- Updates 2020-06-25
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200626062850.1649538-1-jeffrey.t.kirsher@intel.com>
-References: <20200626062850.1649538-1-jeffrey.t.kirsher@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1725806AbgFZT1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 15:27:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37362 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725768AbgFZT1p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 15:27:45 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DDFE42070A;
+        Fri, 26 Jun 2020 19:27:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593199664;
+        bh=aXwiwz9qR1bOBtRd47Y5QWYlqu62vu8mjsV1GMx0LvE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=xU+isBSBKo47cyDCy0GmgVcYg14YLA3UKFSsK9z2OU3nXa6ZyzmM4ynpSNeTZpg/H
+         lbeUCUfNl32v9sd47W3MKCRYFqhqwVHVGSl7YBHGRpONFlbl4WAZVRMOM5u4lyoag4
+         jab05mEwShD4IwXVoQiZBZYh6oAEcDXaiwtB41lU=
+Date:   Fri, 26 Jun 2020 12:27:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, Alice Michael <alice.michael@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Alan Brady <alan.brady@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        Joshua Hay <joshua.a.hay@intel.com>,
+        Madhu Chittim <madhu.chittim@intel.com>,
+        Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
+        Donald Skidmore <donald.c.skidmore@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>
+Subject: Re: [net-next v3 13/15] iecm: Add ethtool
+Message-ID: <20200626122742.20b47bb8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200626020737.775377-14-jeffrey.t.kirsher@intel.com>
+References: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
+        <20200626020737.775377-14-jeffrey.t.kirsher@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 26 Jun 2020 12:22:50 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Date: Thu, 25 Jun 2020 23:28:42 -0700
+On Thu, 25 Jun 2020 19:07:35 -0700 Jeff Kirsher wrote:
+> From: Alice Michael <alice.michael@intel.com>
+> 
+> Implement ethtool interface for the common module.
+> 
+> Signed-off-by: Alice Michael <alice.michael@intel.com>
+> Signed-off-by: Alan Brady <alan.brady@intel.com>
+> Signed-off-by: Phani Burra <phani.r.burra@intel.com>
+> Signed-off-by: Joshua Hay <joshua.a.hay@intel.com>
+> Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
+> Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
+> Reviewed-by: Donald Skidmore <donald.c.skidmore@intel.com>
+> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 
-> This series contains updates to i40e driver and removes the individual
-> driver versions from all of the Intel wired LAN drivers.
-> 
-> Shiraz moves the client header so that it can easily be shared between
-> the i40e LAN driver and i40iw RDMA driver.
-> 
-> Jesse cleans up the unused defines, since they are just dead weight.
-> 
-> Alek reduces the unreasonably long wait time for a PF reset after reboot
-> by using jiffies to limit the maximum wait time for the PF reset to
-> succeed.  Added additional logging to let the user know when the driver
-> transitions into recovery mode.  Adds new device support for our 5 Gbps
-> NICs.
-> 
-> Todd adds a check to see if MFS is set after warm reboot and notifies
-> the user when MFS is set to anything lower than the default value.
-> 
-> Arkadiusz fixes a possible race condition, where were holding a
-> spin-lock while in atomic context.
-> 
-> v2: removed code comments that were no longer applicable in patch 2 of
->     the series.  Also removed 'inline' from patch 4 and patch 8 of the
->     series.  Also re-arranged code to be able to remove the forward
->     function declarations.  Dropped patch 9 of the series, while the
->     author works on cleaning up the commit message.
-> v3: Updated patch 8 description to answer Jakub's questions
-> 
-> The following are changes since commit 6d29302652587001038c8f5ac0e0c7fa6592bbbc:
->   Merge tag 'mlx5-updates-2020-06-23' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
-> and are available in the git repository at:
->   git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 40GbE
 
-Pulled, thanks Jeff.
+> +/* Helper macro to define an iecm_stat structure with proper size and type.
+> + * Use this when defining constant statistics arrays. Note that @_type expects
+> + * only a type name and is used multiple times.
+> + */
+> +#define IECM_STAT(_type, _name, _stat) { \
+> +	.stat_string = _name, \
+> +	.sizeof_stat = sizeof_field(_type, _stat), \
+> +	.stat_offset = offsetof(_type, _stat) \
+> +}
+> +
+> +/* Helper macro for defining some statistics related to queues */
+> +#define IECM_QUEUE_STAT(_name, _stat) \
+> +	IECM_STAT(struct iecm_queue, _name, _stat)
+> +
+> +/* Stats associated with a Tx queue */
+> +static const struct iecm_stats iecm_gstrings_tx_queue_stats[] = {
+> +	IECM_QUEUE_STAT("%s-%u.packets", q_stats.tx.packets),
+> +	IECM_QUEUE_STAT("%s-%u.bytes", q_stats.tx.bytes),
+> +};
+> +
+> +/* Stats associated with an Rx queue */
+> +static const struct iecm_stats iecm_gstrings_rx_queue_stats[] = {
+> +	IECM_QUEUE_STAT("%s-%u.packets", q_stats.rx.packets),
+> +	IECM_QUEUE_STAT("%s-%u.bytes", q_stats.rx.bytes),
+> +	IECM_QUEUE_STAT("%s-%u.generic_csum", q_stats.rx.generic_csum),
+> +	IECM_QUEUE_STAT("%s-%u.basic_csum", q_stats.rx.basic_csum),
+
+What's basic and generic? perhaps given them the Linux names?
+
+> +	IECM_QUEUE_STAT("%s-%u.csum_err", q_stats.rx.csum_err),
+> +	IECM_QUEUE_STAT("%s-%u.hsplit_buf_overflow", q_stats.rx.hsplit_hbo),
+> +};
+
+> +/**
+> + * __iecm_set_q_coalesce - set ITR values for specific queue
+> + * @ec: ethtool structure from user to update ITR settings
+> + * @q: queue for which ITR values has to be set
+> + *
+> + * Returns 0 on success, negative otherwise.
+> + */
+> +static int
+> +__iecm_set_q_coalesce(struct ethtool_coalesce *ec, struct iecm_queue *q)
+> +{
+> +	const char *q_type_str = (q->q_type == VIRTCHNL_QUEUE_TYPE_RX)
+> +				  ? "Rx" : "Tx";
+> +	u32 use_adaptive_coalesce, coalesce_usecs;
+> +	struct iecm_vport *vport;
+> +	u16 itr_setting;
+> +
+> +	itr_setting = IECM_ITR_SETTING(q->itr.target_itr);
+> +	vport = q->vport;
+> +	if (q->q_type == VIRTCHNL_QUEUE_TYPE_RX) {
+> +		use_adaptive_coalesce = ec->use_adaptive_rx_coalesce;
+> +		coalesce_usecs = ec->rx_coalesce_usecs;
+> +	} else {
+> +		use_adaptive_coalesce = ec->use_adaptive_tx_coalesce;
+> +		coalesce_usecs = ec->tx_coalesce_usecs;
+> +	}
+> +
+> +	if (itr_setting != coalesce_usecs && use_adaptive_coalesce) {
+> +		netdev_info(vport->netdev, "%s ITR cannot be changed if adaptive-%s is enabled\n",
+> +			    q_type_str, q_type_str);
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (coalesce_usecs > IECM_ITR_MAX) {
+> +		netdev_info(vport->netdev,
+> +			    "Invalid value, %d-usecs range is 0-%d\n",
+> +			    coalesce_usecs, IECM_ITR_MAX);
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* hardware only supports an ITR granularity of 2us */
+> +	if (coalesce_usecs % 2 != 0) {
+> +		netdev_info(vport->netdev,
+> +			    "Invalid value, %d-usecs must be even\n",
+> +			    coalesce_usecs);
+> +		return -EINVAL;
+> +	}
+
+Most drivers just round things up or down, but up to you.
+
+> +	q->itr.target_itr = coalesce_usecs;
+> +	if (use_adaptive_coalesce)
+> +		q->itr.target_itr |= IECM_ITR_DYNAMIC;
+> +	/* Update of static/dynamic ITR will be taken care when interrupt is
+> +	 * fired
+> +	 */
+> +	return 0;
+> +}
+> +
+> +/**
+> + * iecm_set_q_coalesce - set ITR values for specific queue
+> + * @vport: vport associated to the queue that need updating
+> + * @ec: coalesce settings to program the device with
+> + * @q_num: update ITR/INTRL (coalesce) settings for this queue number/index
+> + * @is_rxq: is queue type Rx
+> + *
+> + * Return 0 on success, and negative on failure
+> + */
+> +static int
+> +iecm_set_q_coalesce(struct iecm_vport *vport, struct ethtool_coalesce *ec,
+> +		    int q_num, bool is_rxq)
+> +{
+> +	if (is_rxq) {
+> +		struct iecm_queue *rxq = iecm_find_rxq(vport, q_num);
+> +
+> +		if (rxq && __iecm_set_q_coalesce(ec, rxq))
+> +			return -EINVAL;
+> +	} else {
+> +		struct iecm_queue *txq = iecm_find_txq(vport, q_num);
+> +
+> +		if (txq && __iecm_set_q_coalesce(ec, txq))
+> +			return -EINVAL;
+> +	}
+
+What's the point? Callers always call this function with tx, then rx.
+Just set both.
+
+> +	return 0;
+> +}
+> +
+> +/**
+> + * iecm_set_coalesce - set ITR values as requested by user
+> + * @netdev: pointer to the netdev associated with this query
+> + * @ec: coalesce settings to program the device with
+> + *
+> + * Return 0 on success, and negative on failure
+> + */
+> +static int
+> +iecm_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *ec)
+> +{
+> +	struct iecm_vport *vport = iecm_netdev_to_vport(netdev);
+> +	int i, err = 0;
+> +
+> +	if (vport->adapter->state != __IECM_UP)
+> +		return 0;
+> +
+> +	for (i = 0; i < vport->num_txq; i++) {
+> +		err = iecm_set_q_coalesce(vport, ec, i, false);
+> +		if (err)
+> +			goto set_coalesce_err;
+> +	}
+> +
+> +	for (i = 0; i < vport->num_rxq; i++) {
+> +		err = iecm_set_q_coalesce(vport, ec, i, true);
+> +		if (err)
+> +			goto set_coalesce_err;
+> +	}
+> +set_coalesce_err:
+
+label is unnecessary, just return
+
+> +	return err;
+> +}
+> +
+> +/**
+> + * iecm_set_per_q_coalesce - set ITR values as requested by user
+> + * @netdev: pointer to the netdev associated with this query
+> + * @q_num: queue for which the ITR values has to be set
+> + * @ec: coalesce settings to program the device with
+> + *
+> + * Return 0 on success, and negative on failure
+> + */
+> +static int
+> +iecm_set_per_q_coalesce(struct net_device *netdev, u32 q_num,
+> +			struct ethtool_coalesce *ec)
+> +{
+> +	struct iecm_vport *vport = iecm_netdev_to_vport(netdev);
+> +	int err;
+> +
+> +	if (vport->adapter->state != __IECM_UP)
+> +		return 0;
+> +
+> +	err = iecm_set_q_coalesce(vport, ec, q_num, false);
+> +	if (!err)
+> +		err = iecm_set_q_coalesce(vport, ec, q_num, true);
+> +
+> +	return err;
+> +}
+
+> +/**
+> + * iecm_get_link_ksettings - Get Link Speed and Duplex settings
+> + * @netdev: network interface device structure
+> + * @cmd: ethtool command
+> + *
+> + * Reports speed/duplex settings.
+> + **/
+> +static int iecm_get_link_ksettings(struct net_device *netdev,
+> +				   struct ethtool_link_ksettings *cmd)
+> +{
+> +	struct iecm_netdev_priv *np = netdev_priv(netdev);
+> +	struct iecm_adapter *adapter = np->vport->adapter;
+> +
+> +	ethtool_link_ksettings_zero_link_mode(cmd, supported);
+> +	cmd->base.autoneg = AUTONEG_DISABLE;
+> +	cmd->base.port = PORT_NONE;
+> +	/* Set speed and duplex */
+> +	switch (adapter->link_speed) {
+> +	case VIRTCHNL_LINK_SPEED_40GB:
+> +		cmd->base.speed = SPEED_40000;
+> +		break;
+> +	case VIRTCHNL_LINK_SPEED_25GB:
+> +#ifdef SPEED_25000
+> +		cmd->base.speed = SPEED_25000;
+> +#else
+> +		netdev_info(netdev,
+> +			    "Speed is 25G, display not supported by this version of ethtool.\n");
+> +#endif
+
+Maybe drop the Intel review tags from this.
+
+Clearly nobody looked at this patch :/
+
+> +		break;
+> +	case VIRTCHNL_LINK_SPEED_20GB:
+> +		cmd->base.speed = SPEED_20000;
+> +		break;
+> +	case VIRTCHNL_LINK_SPEED_10GB:
+> +		cmd->base.speed = SPEED_10000;
+> +		break;
+> +	case VIRTCHNL_LINK_SPEED_1GB:
+> +		cmd->base.speed = SPEED_1000;
+> +		break;
+> +	case VIRTCHNL_LINK_SPEED_100MB:
+> +		cmd->base.speed = SPEED_100;
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +	cmd->base.duplex = DUPLEX_FULL;
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * iecm_get_drvinfo - Get driver info
+> + * @netdev: network interface device structure
+> + * @drvinfo: ethtool driver info structure
+> + *
+> + * Returns information about the driver and device for display to the user.
+> + */
+> +static void iecm_get_drvinfo(struct net_device *netdev,
+> +			     struct ethtool_drvinfo *drvinfo)
+> +{
+> +	struct iecm_adapter *adapter = iecm_netdev_to_adapter(netdev);
+> +
+> +	strlcpy(drvinfo->driver, iecm_drv_name, 32);
+> +	strlcpy(drvinfo->fw_version, "N/A", 4);
+
+Then don't report it. 
+
+The other two pieces of information are filled in by the core if the
+callback is not set, so you can skip implementing this altogether.
+
+> +	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev), 32);
+> +}
