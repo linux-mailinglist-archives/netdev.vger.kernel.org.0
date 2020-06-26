@@ -2,167 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9860720BC3F
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 00:13:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF6A720BC41
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 00:14:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725861AbgFZWNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 18:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
+        id S1725917AbgFZWOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 18:14:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725803AbgFZWNw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 18:13:52 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B98C03E979;
-        Fri, 26 Jun 2020 15:13:52 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id b4so10215619qkn.11;
-        Fri, 26 Jun 2020 15:13:52 -0700 (PDT)
+        with ESMTP id S1725803AbgFZWOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 18:14:20 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46984C03E979
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 15:14:20 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id q198so10258851qka.2
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 15:14:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=DFFDjNNXEfjCWIRy9/fBc5oNNA3yVMHmIODUCwXA8NA=;
-        b=b/2ZlOrfQLgTNlE/XSG0YqSv/rhPBHTR/T++5VP25mygu27YN7S/y2ZJC1jpD6gAYa
-         gBI4lLmERUU4g4unuP8zHsgRWDftp/KiHVnLBdGPlBUXBQP956GM2nRG1jKY6qz4mEVl
-         EGoHUAZNB+M0IywcRn4EIwUMP5oPjO4psWGPGa5xEm8dAuWlXrh8MTVGGntDNBL07yxL
-         0wKWp0vuZ4f0tcHwwanvTomeVB4N1AL49e4Piw9Mj+5CEv9ogYG63TlFg+ycqy1VH5R2
-         zQplpBBT2Rg2LGSfkLb0CxKW6rmsiyRXhpCZGhwiIbYSdSOk0AAc9TMyp0tkeI+Rzxhf
-         7rfg==
+        bh=59782O3sdjlqa4dnbV2WOzGQVwvvDwaWIMDHrDGgO+A=;
+        b=YJGSNO1gIiujSymDqdeFe0lNYco0ItMHAUiNtoGqQrCn890nc1WMS39k5FQUN0lpov
+         AIqp00BoopbN7UV+xr/Q5k3iZBF1hOP3dTyTP25/UtvjkIiPVFLVQ/wISkRLKjEtbEra
+         DsdApA8/yNrXWWQS5qicRFiFpj8bWeWN6K7FxZzd4j9GjbqFY0+R/fOYOEUfrBZpG0+o
+         n6zXPWph9hyQBNPuDYWyP223DfurG8/opvRIDp1gopMs7IZVBOGQa0JlkUtPAsU8HEBO
+         GZEgXPBEcQuKarAELSd4R3v6GIJHgdfTJurJYTAgVZiVlH9dG2valjDSAEiwZrqtbghR
+         hh6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DFFDjNNXEfjCWIRy9/fBc5oNNA3yVMHmIODUCwXA8NA=;
-        b=Bqh65+FOJhbs4+ZsVZGk6UzKGbN5Rgu09PiRFtcdoeEoA/bUM3IiNd/Lk75e8JKWMt
-         6rF9z7wQXK6bl3ilbxubM1XQ2/8yCy6g3wyjlgXkYvIJxp1W6EV9L/CKLiYvVOoVGmJq
-         eG/ygvNNOYWUEacE6NKWFudIjnBIHOQlGuLkAH1Igc3efiHdTzmuECNU5cb3sGQWIt3D
-         rpYLRLTqQIZR2xqCqf/5TTwx2ugekwWkVHEY2zPLMUBhg5W193PtwhJYIc6k/eFJFl0a
-         r8cFwnPhrx3sifOy66fcr4/waRWEkSMWZIM61xjCQWPEmrSHKVXk3uWI+gnTdb6V5YeL
-         ERfA==
-X-Gm-Message-State: AOAM5320D8sNu8MEIQwQLrMHjrEDKf+krhgus8U2M2FDtLLQ/R6JQyol
-        B/L3Bk4ACgqvsxIPUAt0gmZZST0M8/r8w7JxVOA=
-X-Google-Smtp-Source: ABdhPJzDBfJN4g5bLZW/TxdRek21XEd8/ob9dpigYZ3pZ50064nenlx+h7aOS+yCHXv6B42ZB7JmBA9UntirSkhV5jE=
-X-Received: by 2002:a05:620a:12d2:: with SMTP id e18mr5062397qkl.437.1593209631410;
- Fri, 26 Jun 2020 15:13:51 -0700 (PDT)
+        bh=59782O3sdjlqa4dnbV2WOzGQVwvvDwaWIMDHrDGgO+A=;
+        b=Z/QNWtRN+wPq0TrJJ9+iRRzPhj9J90DdPcLHLQsnuM6rDPgJdHQGCtPSJF0S8eJvDE
+         ZvMVLSPe+9rjp8OqWEUusvNLqme82AViDpD62+zmBHYsY+m9jvWTBle40zNr99njzhB6
+         9E9ORTq4Wo/lHs8u/HJDodl1lqTIo+W14EDonSn0h/M5C0BV0eZdBUrRfb/N6SIWkAXr
+         GWI+Uw3gk2B6meBtJ+Yc1RV4A86uPoKkfMyRi20sRFq0bqgycNRtIb4A5VDCBCp4aUAR
+         DcFSXYVfmmNUffPGwqJiMRXMotXyt05nTbQt0BZuSQdCkT8uBQA22V5buAxx1kMziPvG
+         9bYQ==
+X-Gm-Message-State: AOAM533j1kB5WaXFcKg91CpkbCLMEIfuFdB/g2ipqAwRruWHfTTo/EXq
+        Yz0/A79s+1Rbt34uywR709SuTjNyx0UBaJkaVsw=
+X-Google-Smtp-Source: ABdhPJyZnj4FoLB116lJK93IO6+q7+mSk4OI7BSWotCRbH3oEfY0n60/SuHaiUdkFjygCAMiJURnSPOKndNV5hLf02w=
+X-Received: by 2002:a37:4d85:: with SMTP id a127mr4864957qkb.338.1593209659471;
+ Fri, 26 Jun 2020 15:14:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200625141357.910330-1-jakub@cloudflare.com> <20200625141357.910330-3-jakub@cloudflare.com>
- <CAEf4Bzar93mCMm5vgMiYu6_m2N=icv2Wgmy2ohuKoQr810Kk1w@mail.gmail.com> <87imfema7n.fsf@cloudflare.com>
-In-Reply-To: <87imfema7n.fsf@cloudflare.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 26 Jun 2020 15:13:40 -0700
-Message-ID: <CAEf4BzbW+xVRmxhmm35CbArzXTTaXJ_ByK2UKB3XCnvwhNE7xg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/4] bpf, netns: Keep attached programs in bpf_prog_array
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
+References: <20200626144724.224372-1-idosch@idosch.org> <20200626144724.224372-2-idosch@idosch.org>
+ <20200626151926.GE535869@lunn.ch> <CAL_jBfT93picGGoCNWQDY21pWmo3jffanhBzqVwm1kVbyEb4ow@mail.gmail.com>
+ <20200626190716.GG535869@lunn.ch>
+In-Reply-To: <20200626190716.GG535869@lunn.ch>
+From:   Adrian Pop <popadrian1996@gmail.com>
+Date:   Fri, 26 Jun 2020 23:13:42 +0100
+Message-ID: <CAL_jBfQMQbMAFeHji2_Y_Y_gC20S_0QL33wjPgPBaKeVRLg1SQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] mlxsw: core: Add ethtool support for QSFP-DD transceivers
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        vadimp@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 2:45 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+> You are saying pages 00h, 01h and 02h are mandatory for QSPF-DD.  Page
+> 03h is optional, but when present, it seems to contain what is page
+> 02h above. Since the QSPF KAPI has it, QSPF-DD KAPI should also have
+> it. So i would suggest that pages 10h and 11h come after that.
 >
-> On Thu, Jun 25, 2020 at 10:50 PM CEST, Andrii Nakryiko wrote:
-> > On Thu, Jun 25, 2020 at 7:17 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
-> >>
-> >> Prepare for having multi-prog attachments for new netns attach types by
-> >> storing programs to run in a bpf_prog_array, which is well suited for
-> >> iterating over programs and running them in sequence.
-> >>
-> >> After this change bpf(PROG_QUERY) may block to allocate memory in
-> >> bpf_prog_array_copy_to_user() for collected program IDs. This forces a
-> >> change in how we protect access to the attached program in the query
-> >> callback. Because bpf_prog_array_copy_to_user() can sleep, we switch from
-> >> an RCU read lock to holding a mutex that serializes updaters.
-> >>
-> >> Because we allow only one BPF flow_dissector program to be attached to
-> >> netns at all times, the bpf_prog_array pointed by net->bpf.run_array is
-> >> always either detached (null) or one element long.
-> >>
-> >> No functional changes intended.
-> >>
-> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> >> ---
-> >
-> > I wonder if instead of NULL prog_array, it's better to just use a
-> > dummy empty (but allocated) array. Might help eliminate some of the
-> > IFs, maybe even in the hot path.
+> If a driver wants to pass a subset, it can, but it must always trim
+> from the right, it cannot remove pages from the middle.
 >
-> That was my initial approach, which I abandoned seeing that it leads to
-> replacing NULL prog_array checks in flow_dissector with
-> bpf_prog_array_is_empty() checks to determine which netns has a BPF
-> program attached. So no IFs gone there.
->
-> While on the hot path, where we run the program, we probably would still
-> be left with an IF checking for empty prog_array to avoid building the
-> context if no progs will RUN.
->
-> The checks I'm referring to are on attach path, in
-> flow_dissector_bpf_prog_attach_check(), and hot-path,
-> __skb_flow_dissect().
->
+>      Andrew
 
-Fair enough.
+I agree with this. Basically there are two big cases:
+- passive copper transceivers with flat memory => just 00h will be
+present (both lower and higher => 256 bytes)
+- optical transceivers with paged memory => 00h, 01h, 02h, 10h, 11h => 768 bytes
+Having page 03h after 02h (so 896 bytes in total) seems like a good
+idea and the updates I'll have to do to my old patch are minor
+(updating the offset value of page 10h and 11h). When I tested my
+patch, I did it with both passive copper transceivers and optical
+transceivers and there weren't any issues.
 
-> >
-> >
-> >>  include/net/netns/bpf.h    |   5 +-
-> >>  kernel/bpf/net_namespace.c | 120 +++++++++++++++++++++++++------------
-> >>  net/core/flow_dissector.c  |  19 +++---
-> >>  3 files changed, 96 insertions(+), 48 deletions(-)
-> >>
-> >
-> > [...]
-> >
-> >
-> >>
-> >> +/* Must be called with netns_bpf_mutex held. */
-> >> +static int __netns_bpf_prog_query(const union bpf_attr *attr,
-> >> +                                 union bpf_attr __user *uattr,
-> >> +                                 struct net *net,
-> >> +                                 enum netns_bpf_attach_type type)
-> >> +{
-> >> +       __u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
-> >> +       struct bpf_prog_array *run_array;
-> >> +       u32 prog_cnt = 0, flags = 0;
-> >> +
-> >> +       run_array = rcu_dereference_protected(net->bpf.run_array[type],
-> >> +                                             lockdep_is_held(&netns_bpf_mutex));
-> >> +       if (run_array)
-> >> +               prog_cnt = bpf_prog_array_length(run_array);
-> >> +
-> >> +       if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
-> >> +               return -EFAULT;
-> >> +       if (copy_to_user(&uattr->query.prog_cnt, &prog_cnt, sizeof(prog_cnt)))
-> >> +               return -EFAULT;
-> >> +       if (!attr->query.prog_cnt || !prog_ids || !prog_cnt)
-> >> +               return 0;
-> >> +
-> >> +       return bpf_prog_array_copy_to_user(run_array, prog_ids,
-> >> +                                          attr->query.prog_cnt);
-> >
-> > It doesn't seem like bpf_prog_array_copy_to_user can handle NULL run_array
->
-> Correct. And we never invoke it when run_array is NULL because then
-> prog_cnt == 0.
+In this patch, Ido added a comment in the code stating "Upper pages
+10h and 11h are currently not supported by the driver.". This won't
+actually be a problem! In CMIS Rev. 4, Table 8-12 Byte 85 (55h), we
+learn that if the value of that byte is 01h or 02h, we have a SMF or
+MMF interface (both optical). In the qsfp_dd_show_sig_optical_pwr
+function (in my patch) there is this bit:
 
-Oh, that !prog_cnt above, right.. it's easy to miss.
++ __u8 module_type = id[QSFP_DD_MODULE_TYPE_OFFSET];
+[...]
++ /**
++ * The thresholds and the high/low alarms/warnings are available
++ * only if an optical interface (MMF/SMF) is present (if this is
++ * the case, it means that 5 pages are available).
++ */
++ if (module_type != QSFP_DD_MT_MMF &&
++    module_type != QSFP_DD_MT_SMF &&
++    eeprom_len != QSFP_DD_EEPROM_5PAG)
++ return;
 
->
-> >
-> >> +}
-> >> +
-> >>  int netns_bpf_prog_query(const union bpf_attr *attr,
-> >>                          union bpf_attr __user *uattr)
-> >>  {
-> >> -       __u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
-> >> -       u32 prog_id, prog_cnt = 0, flags = 0;
-> >>         enum netns_bpf_attach_type type;
-> >> -       struct bpf_prog *attached;
-> >>         struct net *net;
-> >> +       int ret;
-> >>
-> >>         if (attr->query.query_flags)
-> >>                 return -EINVAL;
-> >
-> > [...]
+But Ido sets the eeprom_len to be ETH_MODULE_SFF_8472_LEN which is
+512, while QSFP_DD_EEPROM_5PAG is defined as 80h * 6 = 768. So there
+won't be any issues of accessing non-existent values, since I return
+from the function that deals with the pages 10h and 11h early. When
+the driver will support them too everything will just work so your
+idea of a driver being able to pass only a subset of pages (being
+allowed to trim only from the right) holds.
+
+Adrian
