@@ -2,152 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D76520B6BC
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:19:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E51A20B6D8
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:23:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727831AbgFZRTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 13:19:30 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:41443 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbgFZRTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:19:19 -0400
-Received: by mail-il1-f198.google.com with SMTP id k6so6876287ilg.8
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:19:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=/kUK10ieELCUi5nx8WSCdTJbL7ZCzD7ZpVCtC/bhIJ0=;
-        b=c3etcLDUiIfle6O69RddetX0wdJcM9GyFrIrrEcZji6Q5xLa9rOAby7WOO4FyC/wTG
-         T1u1LKJma0gixmh6eK3fsONpZ+DTiWeXY6ewb6MLMI9AU7frtZ9V5qOVm4qTS88C5YtZ
-         5oHpg6vSn2HZppFiLIXwicuAhsnLhjH3UWQJ6ipw3WJhJdaoXIw7W/ZtUx532Aqk42zG
-         gvauRfVah3LMXoXTP6jGmMSgF9at5j2JdhN7oDHP0r5A0Ze6sJiELgNOPC3DFlScmsbu
-         EeTaffXZIWWiOc/wbcp7PhaddPqbKSasZAsZlqqBZQwRywZdxRs9OSEUULwdC/l0fvaC
-         R1XA==
-X-Gm-Message-State: AOAM5338BOIjZmnSbR4XLf15AwZq3Z7oQm17pBmOEyT0vJ4kh9e27pXC
-        /awYYvChfpsjlZCN3pfuil4S40IG0kUws76WLcHhhaD/bHBS
-X-Google-Smtp-Source: ABdhPJx3Z2RgDpnNjyz+jrFVunjC87B5X8/RuJd9TmZjzYqyDn/8qFBU12ccoeZ9iQhD/5cwbp0Xzsc5vyQzg6m6riOo4oq79tdS
+        id S1726617AbgFZRXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 13:23:35 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:42511 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbgFZRXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:23:35 -0400
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTP id 3907B200BE49;
+        Fri, 26 Jun 2020 19:23:21 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 3907B200BE49
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1593192201;
+        bh=Va7iAIp1xA9kpdT0725iMd4BkKknTky8Aqt0+BaTvLk=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=CTMciWYP2nm3DM8vgFdaSy87+VqfyvN31pAu/pbzz9hELTw87cIItuPaYTZBE2bUi
+         JpyHqzvGnNYKXBzMBHEXFcN+EiaKYtHHtu576jx7Adf7zZGle88xPt4EYIZy1mN8+I
+         Cyg4hxYxcAmMzTqphuIPxqpcGevjj0vibPOr4vf57hoawmf96Vygbx6jcC7olOZbS0
+         AsYZMyxwnP7L+BbEF7pJX7aPMTfMS8IMFcguvUHPcNvB1HrLgwkzFC/MTT51pF8vVs
+         RE9AbYTbCXgzUejKcO6yo/pUjxp/7d4VzYdBEXe7Ls12LzIVipjxTCe9bPRQkQ0Kwb
+         SsC+xfkSt+rmA==
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 2BEFC129EBC9;
+        Fri, 26 Jun 2020 19:23:21 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id Nx6Z8Ch-h_In; Fri, 26 Jun 2020 19:23:21 +0200 (CEST)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 10AB4129EBC8;
+        Fri, 26 Jun 2020 19:23:21 +0200 (CEST)
+Date:   Fri, 26 Jun 2020 19:23:21 +0200 (CEST)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     dan carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org,
+        netdev@vger.kernel.org, lkp@intel.com, kbuild-all@lists.01.org,
+        davem@davemloft.net
+Message-ID: <1079923894.37655623.1593192201005.JavaMail.zimbra@uliege.be>
+In-Reply-To: <20200626090125.7ae41142@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200625105237.GC2549@kadam> <20200626085435.6627-1-justin.iurman@uliege.be> <20200626090125.7ae41142@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Subject: Re: [PATCH net-next] Fix unchecked dereference
 MIME-Version: 1.0
-X-Received: by 2002:a92:9f5c:: with SMTP id u89mr4072216ili.262.1593191958242;
- Fri, 26 Jun 2020 10:19:18 -0700 (PDT)
-Date:   Fri, 26 Jun 2020 10:19:18 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000baea3505a8ffe8bc@google.com>
-Subject: possible deadlock in team_device_event
-From:   syzbot <syzbot+e12b58247a69da14ecd2@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jiri@resnulli.us, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [109.129.49.166]
+X-Mailer: Zimbra 8.8.15_GA_3901 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3895)
+Thread-Topic: Fix unchecked dereference
+Thread-Index: a45vs74gCn2RNhDfhMr2f0SJat7eWA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Jakub,
 
-syzbot found the following crash on:
+It is an inline modification of the patch 4 of this series. The modification in itself cannot be a problem. Maybe I did send it the wrong way?
 
-HEAD commit:    7a64135f libbpf: Adjust SEC short cut for expected attach ..
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=16ed6439100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dcc6334acae363d4
-dashboard link: https://syzkaller.appspot.com/bug?extid=e12b58247a69da14ecd2
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+Justin
 
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+e12b58247a69da14ecd2@syzkaller.appspotmail.com
-
-============================================
-WARNING: possible recursive locking detected
-5.8.0-rc1-syzkaller #0 Not tainted
---------------------------------------------
-syz-executor.1/17372 is trying to acquire lock:
-ffff888096a2ac38 (team->team_lock_key#4){+.+.}-{3:3}, at: team_port_change_check drivers/net/team/team.c:2969 [inline]
-ffff888096a2ac38 (team->team_lock_key#4){+.+.}-{3:3}, at: team_device_event+0x372/0xab6 drivers/net/team/team.c:2995
-
-but task is already holding lock:
-ffff888096a2ac38 (team->team_lock_key#4){+.+.}-{3:3}, at: team_add_slave+0x9f/0x1960 drivers/net/team/team.c:1966
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(team->team_lock_key#4);
-  lock(team->team_lock_key#4);
-
- *** DEADLOCK ***
-
- May be due to missing lock nesting notation
-
-2 locks held by syz-executor.1/17372:
- #0: ffffffff8a7afda8 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
- #0: ffffffff8a7afda8 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3f9/0xad0 net/core/rtnetlink.c:5457
- #1: ffff888096a2ac38 (team->team_lock_key#4){+.+.}-{3:3}, at: team_add_slave+0x9f/0x1960 drivers/net/team/team.c:1966
-
-stack backtrace:
-CPU: 1 PID: 17372 Comm: syz-executor.1 Not tainted 5.8.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- print_deadlock_bug kernel/locking/lockdep.c:2391 [inline]
- check_deadlock kernel/locking/lockdep.c:2432 [inline]
- validate_chain kernel/locking/lockdep.c:3202 [inline]
- __lock_acquire.cold+0x178/0x3f8 kernel/locking/lockdep.c:4380
- lock_acquire+0x1f1/0xad0 kernel/locking/lockdep.c:4959
- __mutex_lock_common kernel/locking/mutex.c:956 [inline]
- __mutex_lock+0x134/0x10d0 kernel/locking/mutex.c:1103
- team_port_change_check drivers/net/team/team.c:2969 [inline]
- team_device_event+0x372/0xab6 drivers/net/team/team.c:2995
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2027
- call_netdevice_notifiers_extack net/core/dev.c:2039 [inline]
- call_netdevice_notifiers net/core/dev.c:2053 [inline]
- dev_close_many+0x30b/0x650 net/core/dev.c:1628
- vlan_device_event+0x8ef/0x2010 net/8021q/vlan.c:450
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2027
- call_netdevice_notifiers_extack net/core/dev.c:2039 [inline]
- call_netdevice_notifiers net/core/dev.c:2053 [inline]
- dev_close_many+0x30b/0x650 net/core/dev.c:1628
- dev_close net/core/dev.c:1650 [inline]
- dev_close+0x173/0x220 net/core/dev.c:1644
- team_port_add drivers/net/team/team.c:1305 [inline]
- team_add_slave+0xf45/0x1960 drivers/net/team/team.c:1967
- do_set_master+0x1c8/0x220 net/core/rtnetlink.c:2476
- do_setlink+0x903/0x35c0 net/core/rtnetlink.c:2611
- __rtnl_newlink+0xc21/0x1730 net/core/rtnetlink.c:3272
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3397
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5460
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45cb19
-Code: Bad RIP value.
-RSP: 002b:00007fb1de059c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000502400 RCX: 000000000045cb19
-RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 0000000000000003
-RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000a38 R14: 00000000004cd1fc R15: 00007fb1de05a6d4
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>> If rhashtable_remove_fast returns an error, a rollback is applied. In
+>> that case, an unchecked dereference has been fixed.
+>> 
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+>> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
+> 
+> My bot says this doesn't apply to net-next, could you double-check?
