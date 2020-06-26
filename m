@@ -2,191 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 573C720B30A
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 16:01:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9806E20B312
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 16:03:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728751AbgFZOBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 10:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38946 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725864AbgFZOBR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 10:01:17 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07605C03E979
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 07:01:17 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id i3so7462648qtq.13
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 07:01:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HO4p58ORst5W8qA42RbOpW92Il/GHyxKM6KGm+qxVWI=;
-        b=1g1UdR6TTj7czu47PsNRELfN0CcOfzv2X+Q2JjOTZ+3yNF60ICYESX7PO6tr6YbeFR
-         mkYHpgQh9rATEs1qfJFaTLuqdm12hSVDbqEzJ+rw4QvzOmHnTvELVA4Z6t07JwBxSWpL
-         8y43xtyb6KGyM2QfZpmUS5P91tXTV7lgVt4zJ2rukVHgKeut0wHSfzQgDLHJQPikwK0/
-         MZ7lU8KR9vD74XjCcNbFSB5yNro0Jwjx+XJ+mp2F0RJ8XeyBn7m3P/AyGtSXxh0Ew44p
-         89EKT4tjXaQL7Dwi1KqJFLeFAFQqJp0uuAOAepl8DnBtDOiiJOzEv72llVAeZnSfOXB6
-         kISA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HO4p58ORst5W8qA42RbOpW92Il/GHyxKM6KGm+qxVWI=;
-        b=Cvcy9evb827Nf35BwbRBmR/T+AyjjCYH5H0NvLRGVkYBcqm0LeZIdk5K/swIMubDNS
-         mNBsmVI5lgmiIgSoDwyYG3v8nv38TBVz4qbhKzePid4ZL+vQaOH36/RVJ15jf8hpHhX3
-         1Zh0VODflSF4efTUGzPdiEIUn9ZNI9PasCJeaCwJtISN/yPxHRntmDdDmsjF5oMsaDzO
-         VMaYoohOEZc5jAwnU9mv9Yo8DdsqJXjbHLQ0kzO60EMmDF1J1DXb7MX3+mFW4qWCFIE2
-         mdNfZOrGryqLUK49t3W2XwBihUdDwf04iQBLhiKhozgW2sV5YDY9lwSbowLRaOMaC7al
-         AqpQ==
-X-Gm-Message-State: AOAM530yCTmu+c5YiMGjpxAi17ZKHPqtR1n9rSqtkoZDMmYKmH3WT2xu
-        9HWdFGCq2rUcdQACctWklvQgbA==
-X-Google-Smtp-Source: ABdhPJxp7jaKNW24pIjwOE8fK+lnF3StntdFGKpsgjHQwQEZh/fUp5BPURYaQzv0OmPsQxQG95qqaw==
-X-Received: by 2002:ac8:32cf:: with SMTP id a15mr2978542qtb.241.1593180075841;
-        Fri, 26 Jun 2020 07:01:15 -0700 (PDT)
-Received: from [192.168.1.117] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
-        by smtp.googlemail.com with ESMTPSA id u205sm8111628qka.81.2020.06.26.07.01.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Jun 2020 07:01:14 -0700 (PDT)
-Subject: Re: [Cake] [PATCH net-next 1/5] sch_cake: fix IP protocol handling in
- the presence of VLAN tags
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        David Miller <davem@davemloft.net>
-Cc:     cake@lists.bufferbloat.net, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@resnulli.us>,
-        Simon Horman <simon.horman@netronome.com>
-References: <159308610282.190211.9431406149182757758.stgit@toke.dk>
- <159308610390.190211.17831843954243284203.stgit@toke.dk>
- <20200625.122945.321093402617646704.davem@davemloft.net>
- <87k0zuj50u.fsf@toke.dk>
- <240fc14da96a6212a98dd9ef43b4777a9f28f250.camel@redhat.com>
- <87h7uyhtuz.fsf@toke.dk>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <f5a648fc-7255-846e-6ecd-d21eeeb56b5d@mojatatu.com>
-Date:   Fri, 26 Jun 2020 10:01:13 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1728977AbgFZODC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 10:03:02 -0400
+Received: from mail-am6eur05on2069.outbound.protection.outlook.com ([40.107.22.69]:9313
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725864AbgFZODB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 10:03:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A2kh5ogZV0VicsLYzB4wzyASLtRqKU++ptFXaKHVjx2sBmgyIVPF7G2W6bL1/Gv2ObxWAde5oIMxqFJ1ecCPNDKxlIiiNu3fAKaHWwl00pQsXbvbCx54ZUJuptWBwL1wYeYh/uYz+JCKyJuOpOZ53GBLMh64u9q0LGtxSti6XmDjq/+mQu9w9ZFmKyLDntxq6wMgzUJtnc4cgUdkf2FwUiM+xt/83lY8lS2ih+RU/0mMhzrLFwJh0x8fpWAXxrS6Xk711Q+D2RWoiG5zM2TuJ5LkRsiZhVe+ieLeTBsyip1k/nOSXNv4gYg8rAPHgqgKzNe08pkDKFq0qmEU4j8GGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3Dqfp5rb93+3dhlSBd4r2CdLi3R/cw9ZSTEubOcNK+Q=;
+ b=bAp6Kvv58O/XH/319pCzfQxNXUFnx++E6HPimyss+InupDYQYa32kQggmARLI9RRls6ZaEgWtyyl1WgbraH575Bm6MxigaxK22WtGfQ0JBleTkoquXYEoQm4BZQO0GjozOtQ7RlX+DaZV5H+9niY44XbHZ2oq6TkXK4/bfM18CEL3kaQWFXQd9YCC6Dk+sWNfqTZGmvwghxtlWrwyQx2Vq2nsGhyo15ZVmrEd+q6g0oZ0F+MEhp4A8R+ukzlb9WMpAeis7WmNC8x87KvGk+DrK4Ia1HmEAAoERvMS7QhvNliVRqy6SJh4lUdhkZCuSA+VrkPF8Yc8IXkTN/c6fO/yw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3Dqfp5rb93+3dhlSBd4r2CdLi3R/cw9ZSTEubOcNK+Q=;
+ b=c6EN+VOP500p++1kr+rbSxJJvzL4yAn350AIKyJMSyfxLJ1+r8WnFos6UwaGzJB8tOJAn0DO3+KTsiJ4wAo0/BSEX2PxGVzuTKbdKTqGQZ6sDZzR7Tcf8tFtY6Ubvvc3k+w83B1f1/6ACi7mwludVfmk/elLsPCmCvYaPI8m4Vg=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB4929.eurprd04.prod.outlook.com (2603:10a6:208:c8::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Fri, 26 Jun
+ 2020 14:02:56 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::7dda:a30:6b25:4d45]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::7dda:a30:6b25:4d45%7]) with mapi id 15.20.3131.024; Fri, 26 Jun 2020
+ 14:02:56 +0000
+Date:   Fri, 26 Jun 2020 19:32:47 +0530
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        linux-acpi@vger.kernel.org, linux.cj@gmail.com,
+        netdev@vger.kernel.org,
+        "Rajesh V. Bikkina" <rajesh.bikkina@nxp.com>
+Subject: Re: [net-next PATCH v1] net: dpaa2-mac: Add ACPI support for DPAA2
+ MAC driver
+Message-ID: <20200626140247.GA17041@lsv03152.swis.in-blr01.nxp.com>
+References: <20200625043538.25464-1-calvin.johnson@oss.nxp.com>
+ <20200625194211.GA535869@lunn.ch>
+ <20200626132024.GA15707@lsv03152.swis.in-blr01.nxp.com>
+ <20200626133942.GD504133@lunn.ch>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200626133942.GD504133@lunn.ch>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: SG2PR01CA0108.apcprd01.prod.exchangelabs.com
+ (2603:1096:3:15::34) To AM0PR04MB5636.eurprd04.prod.outlook.com
+ (2603:10a6:208:130::22)
 MIME-Version: 1.0
-In-Reply-To: <87h7uyhtuz.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR01CA0108.apcprd01.prod.exchangelabs.com (2603:1096:3:15::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21 via Frontend Transport; Fri, 26 Jun 2020 14:02:53 +0000
+X-Originating-IP: [14.142.151.118]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 8d70d5d3-7936-4f3e-149a-08d819d9a07f
+X-MS-TrafficTypeDiagnostic: AM0PR04MB4929:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB492983B6EB307A74434638A2D2930@AM0PR04MB4929.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0446F0FCE1
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gNp9f6xTjchg0xyxyZvjeGuaJDLXwBiYrzpONCC2pboUW+LYKPyVVlFtB9uh1fJezdn3QLbl++3/8GV9gSLYtccDqwxWhjhDjnTgkb4FfQXxVw8LwYuiKK8BdLJX8w/u+IP5cZuGCfSqZx5/E8e61AeUgi7Iupgm48pFjDfLVNY/6MClYkHEWTzQmMWniyy4zSHsSXw9E00DOFxgot/o/zJRjj3TecXOXeIGsizl2KOVkXbdLBpx0j3gVJ34GyRF/DpA1mN7KcHhB1LrdB0NHBeg4ug4jmJGc8vbaP1fBjVpIlBrXV5+7E9clmh9feuimmr1YG+JDJuLNiqV7ZVJnKBF9KO4xeXUWX2nr2EdGKR7PUMsdQrwznEclgWuemNk
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(366004)(346002)(39860400002)(396003)(376002)(6916009)(54906003)(66556008)(33656002)(6666004)(66476007)(55016002)(5660300002)(2906002)(44832011)(9686003)(956004)(1076003)(86362001)(4326008)(1006002)(66946007)(8676002)(16526019)(26005)(186003)(6506007)(52116002)(55236004)(8936002)(7696005)(316002)(478600001)(110426005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: OG34vpBoRfETnj82gV2mF6bmDqfbekIc3UXfov6dGVRTByjGBrlJrJTmt8gt/tSYyTGw7QSiAKQMPlAtzpbXa7byN5aWQJdsOs7jmAtvhGNz7HIjXK8ft56upSFBWMW7Gp0cho7K9FAYvWxNs1VAif0THmrfSPAxY/ygnvjbCMa5JGQWg45L8BZ+lpH0b8AHT4+Qfc9T0Vho4soM8epK2mPmKDsvz4K20F6fV1xr1O9bEZ3Kyf8HKzO4OJt0Fi5a1GHnsRQz3EWIYzAse7kxVaAe+wQ+A78UoThqQpUk2OmvW/FR3Ps+PiQuu8DKzPalVyOMxrdj7RsViNEyfad2Gk8Mw1Dq6qscb8CvpwbKYkX57kt+jW3qqkB3PZ2u4/Q/LRQCR7Yx40sTjUgDlj7wowv4HaklH6HRicNjiydhgsGQDaqBT/H4VdQgIe2IchFFFHr4cdpnmqZkY+aF0dYCusJNGH776SIXd/hUZiVwvv892aESrtF0hU4iPnGwXiuI
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8d70d5d3-7936-4f3e-149a-08d819d9a07f
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2020 14:02:56.7563
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OQGnj0bX5VUqIZRQc24SA4GSyY8/LHxnhxDSwycLitsztEmws1BFQEBXgjavnlHkTLKV5qRiritMHxjHP8oYvg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4929
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-06-26 8:52 a.m., Toke Høiland-Jørgensen wrote:
-> Davide Caratti <dcaratti@redhat.com> writes:
-> 
->> hello,
->>
->> my 2 cents:
->>
->> On Thu, 2020-06-25 at 21:53 +0200, Toke Høiland-Jørgensen wrote:
->>> I think it depends a little on the use case; some callers actually care
->>> about the VLAN tags themselves and handle that specially (e.g.,
->>> act_csum).
->>
->> I remember taht something similar was discussed about 1 year ago [1].
-> 
-> Ah, thank you for the pointer!
-> 
->>> Whereas others (e.g., sch_dsmark) probably will have the same
->>> issue.
->>
->> I'd say that the issue "propagates" to all qdiscs that mangle the ECN-CE
->> bit (i.e., calling INET_ECN_set_ce() [2]), most notably all the RED
->> variants and "codel/fq_codel".
-> 
-> Yeah, I think we should fix INET_ECN_set_ce() instead of re-implementing
-> it in CAKE. See below, though.
-> 
->>>   I guess I can trying going through them all and figuring out if
->>> there's a more generic solution.
->>
->> For sch_cake, I think that the qdisc shouldn't look at the IP header when
->> it schedules packets having a VLAN tag.
->>
->> Probably, when tc_skb_protocol() returns ETH_P_8021Q or ETH_P_8021AD, we
->> should look at the VLAN priority (PCP) bits (and that's something that
->> cake doesn't do currently - but I have a small patch in my stash that
->> implements this: please let me know if you are interested in seeing it :)
->> ).
->>
->> Then, to ensure that the IP precedence is respected, even with different
->> VLAN tags, users should explicitly configure TC filters that "map" the
->> DSCP value to a PCP value. This would ensure that configured priority is
->> respected by the scheduler, and would also be flexible enough to allow
->> different "mappings".
-> 
-> I think you have this the wrong way around :)
-> 
-> I.e., classifying based on VLAN priority is even more esoteric than
-> using diffserv markings, so that should not be the default. Making it
-> the default would also make the behaviour change for the same traffic if
-> there's a VLAN tag present, which is bound to confuse people. I suppose
-> it could be an option, but not really sure that's needed, since as you
-> say you could just implement it with your own TC filters...
-> 
->> Sure, my proposal does not cover the problem of mangling the CE bit
->> inside VLAN-tagged packets, i.e. if we should understand if qdiscs
->> should allow it or not.
-> 
-> Hmm, yeah, that's the rub, isn't it? I think this is related to this
-> commit, which first introduced tc_skb_protocol():
-> 
-> d8b9605d2697 ("net: sched: fix skb->protocol use in case of accelerated vlan path")
-> 
+Hi Andrew
 
-I didnt quiet follow the discussion - but the patch you are referencing
-was to fix an earlier commit which had broken things (we didnt
-have the "fixes" tag back then).
+On Fri, Jun 26, 2020 at 03:39:42PM +0200, Andrew Lunn wrote:
+> > Hi Andrew
+> > 
+> > As you know, making this code generic would bring us back to waiting for
+> > ACPI team's approval which is very difficult to get as the ACPI doesn't
+> > have any opinion on MDIO bus.
+> > 
+> > Like other ACPI ethernet drivers, can't we keep it local to this driver to
+> > avoid the above issue?
+> 
+> Hi Calvin
+> 
+> That does not scale. Every driver doing its own thing. Each having its
+> own bugs, maintenance overheads, documentation problems, no meta
+> validation of the ACPI tables because every table is different,
+> etc. Where is the Advanced in that? It sounds more like Primitive,
+> Chaotic, Antiquated?
+> 
+> Plus having it generic means there is one place which needs
+> modifications when the ACPI standards committee does decide how this
+> should be done.
 
-> That commit at least made the behaviour consistent across
-> accelerated/non-accelerated VLANs. However, the patch description
-> asserts that 'tc code .. expects vlan protocol type [in skb->protocol]'.
-> Looking at the various callers, I'm not actually sure that's true, in
-> the sense that most of the callers don't handle VLAN ethertypes at all,
-> but expects to find an IP header. This is the case for at least:
-> 
-> - act_ctinfo
-> - act_skbedit
-> - cls_flow
-> - em_ipset
-> - em_ipt
-> - sch_cake
-> - sch_dsmark
-> 
-> In fact the only caller that explicitly handles a VLAN ethertype seems
-> to be act_csum; and that handles it in a way that also just skips the
-> VLAN headers, albeit by skb_pull()'ing the header.
-> 
+I'm very much aligned with your thoughts. Making this generic is the right
+approach according to me. Is it sufficient, if we get net subsystem approval?
 
-The earlier change broke a few things unfortunately. There was a more
-recent discussion with Simon Horman that i cant find now on breakage
-with some classifiers in presence of double vlans.
-+cc Simon maybe he can find the discussion.
-
-> cls_api, em_meta and sch_teql don't explicitly handle it; but returning
-> the VLAN ethertypes to those does seem to make sense, since they just
-> pass the value somewhere else.
 > 
-> So my suggestion would be to add a new helper that skips the VLAN tags
-> and finds the L3 ethertype (i.e., basically cake_skb_proto() as
-> introduced in this patch), then switch all the callers listed above, as
-> well as the INET_ECN_set_ce() over to using that. Maybe something like
-> 'skb_l3_protocol()' which could go into skbuff.h itself, so the ECN code
-> can also find it?
+> > If we plan to make this approach generic, then it may have to be put in:
+> > Documentation/firmware-guide/acpi/
 > 
-> Any objections to this? It's not actually clear to me how the discussion
-> you quoted above landed; but this will at least make things consistent
-> across all the different actions/etc.
+> So looking in this directory, we have defacto standards,
+> e.g. linux/Documentation/firmware-guide/acpi/dsd/leds.rst.
 > 
+> So lets add another defacto standard, how you find a PHY.
+Sure will add.
 
-I didnt follow the original discussion - will try to read in order
-to form an opinion.
-
-cheers,
-jamal
+Thanks
+Calvin
