@@ -2,130 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC28520B7CB
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 20:03:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E25CE20B7FB
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 20:18:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725931AbgFZSDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 14:03:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbgFZSDP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 14:03:15 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BBECC03E979
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 11:03:14 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id u5so4961222pfn.7
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 11:03:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MIUMjSaMlS6zBGL91VS5XCO0Rvi6aDq5b10UCJka4lQ=;
-        b=Ma2BehIm22spTdzAH1O9txmR5b2SNIrg4s0Z2PiKd9b/zAzJaJ2CgrUTFzHqcdHi3O
-         dWLF7Cux0WFPfyG79wuKXyA/Ko5IgTdUE1qOoXpOFuwiTKZkbhzFcg0/ranRVuyZTItI
-         a7lArD27JCULvRFKmmIMOxd1xzJHyax9Ier+KPf3FJOEAwm4P8XhP1kotKDPsHAeHSzY
-         4Mi1mVIxtz4Dq6/8qK6EgHw+GwuiOk3N57Xa204l47YhD7l++wKLawVm06uv1gjzvSph
-         SR5y23kIoo6vWYCpFaNGcf+azl9CK6DV/XRwmpn9jOzSw2asBXJNCwPHV9cWbRtuxwUZ
-         5cgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MIUMjSaMlS6zBGL91VS5XCO0Rvi6aDq5b10UCJka4lQ=;
-        b=pAbimBDOlRmlN7hLsn3fmjk+eeNW0eUgHNymnOybTTbXQ9U80ZE8Fqfi65NJH6jUQX
-         JvFZi/ZJaoIYrTV1E6mRdJt3FgiNkAAvvWEX/aTfWLSf8NZzTdckqv/qS1Xrprjv3CRF
-         /et6EPDmVS1tFqhKGk6aOkL9wNfUp0oxAev8uUVwwhkGOWJrCM3fsx2indiU0EMqK0SW
-         sTJKhgYEbaleGbec4Kjanit8nCLgani52gFT+5cn7hUTUH0c1L1x5PckHyTiJbWPr3rF
-         KjLmF0VyQrMkynt/i+aPFv+Y8N0PBsPvpSZENHAujHc0VJ22OOuf6tPsfL15z9LhAxUO
-         g/iw==
-X-Gm-Message-State: AOAM531EgmkLj3FKKZsdp8frlAxh8k2BPNN8x8PWXh+STw93qQzglurp
-        zHs78UlkHkzgHKg/LYkr4vg5g3BUskttwhBtQwq3tg==
-X-Google-Smtp-Source: ABdhPJz2D1+qK2ONgSPgAU70k5U8V1bJ1bUlhVaJNVCZCAKFfjaYNxdnhxmtCJ5RdM1jYN4Y7jIzsTZv8kaUVjQcF0Q=
-X-Received: by 2002:a63:a119:: with SMTP id b25mr3701064pgf.10.1593194593326;
- Fri, 26 Jun 2020 11:03:13 -0700 (PDT)
+        id S1726279AbgFZSRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 14:17:25 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:53208 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725780AbgFZSRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 14:17:22 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05QIHBPD006447;
+        Fri, 26 Jun 2020 13:17:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1593195431;
+        bh=lT8XdTWCW5WowpSaiKVh9sxbAgiTlm+/tGMLH5F0svM=;
+        h=From:To:CC:Subject:Date;
+        b=SsA05MuHZ3KKsgm4/W0yYPEIfODLtCv303VbLm/usb6/29hwW15xJ40/RpBkRHVsK
+         8x/9R8l6+Agbc6+KNZDCodnUlsfH2UFCkMeL4F33woz1zAtWKjtIG/lsUY41iytG+3
+         vp0B2gr6/qeh+C1lQgebvcPD9zyLr+7Eu3q7APP8=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05QIHBXN004067;
+        Fri, 26 Jun 2020 13:17:11 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 26
+ Jun 2020 13:17:10 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 26 Jun 2020 13:17:10 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05QIH9xa111521;
+        Fri, 26 Jun 2020 13:17:10 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next 0/6] net: ethernet: ti: am65-cpsw: update and enable sr2.0 soc
+Date:   Fri, 26 Jun 2020 21:17:03 +0300
+Message-ID: <20200626181709.22635-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20200626041001.1194928-1-natechancellor@gmail.com>
-In-Reply-To: <20200626041001.1194928-1-natechancellor@gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 26 Jun 2020 11:03:02 -0700
-Message-ID: <CAKwvOdmOriZwmiq8XoKqLq0RR4fRnFoDVgS+X_n_5x1cK4G=RQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] bonding: Remove extraneous parentheses in bond_setup
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jarod Wilson <jarod@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 9:10 PM Nathan Chancellor
-<natechancellor@gmail.com> wrote:
->
-> Clang warns:
->
-> drivers/net/bonding/bond_main.c:4657:23: warning: equality comparison
-> with extraneous parentheses [-Wparentheses-equality]
->         if ((BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP))
->              ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
->
-> drivers/net/bonding/bond_main.c:4681:23: warning: equality comparison
-> with extraneous parentheses [-Wparentheses-equality]
->         if ((BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP))
->              ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
->
-> This warning occurs when a comparision has two sets of parentheses,
-> which is usually the convention for doing an assignment within an
-> if statement. Since equality comparisons do not need a second set of
-> parentheses, remove them to fix the warning.
->
-> Fixes: 18cb261afd7b ("bonding: support hardware encryption offload to slaves")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1066
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+Hi
 
-Thanks for the patch.  I recently saw this in a report from KernelCI
-this morning.  Adding a tag to reward the robot.
+This series contains set of improvements for TI AM654x/J721E CPSW2G driver and
+adds support for TI AM654x SR2.0 SoC.
 
-Reported-by: kernelci.org bot <bot@kernelci.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Patch 1: adds vlans restoration after "if down/up"
+Patches 2-5: improvments
+Patch 6: adds support for TI AM654x SR2.0 SoC which allows to disable errata i2027 W/A.
+By default, errata i2027 W/A (TX csum offload disabled) is enabled on AM654x SoC
+for backward compatibility, unless SR2.0 SoC is identified using SOC BUS framework.
 
-> ---
->  drivers/net/bonding/bond_main.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index 4ef99efc37f6..b3479584cc16 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -4654,7 +4654,7 @@ void bond_setup(struct net_device *bond_dev)
->
->  #ifdef CONFIG_XFRM_OFFLOAD
->         /* set up xfrm device ops (only supported in active-backup right now) */
-> -       if ((BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP))
-> +       if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
->                 bond_dev->xfrmdev_ops = &bond_xfrmdev_ops;
->         bond->xs = NULL;
->  #endif /* CONFIG_XFRM_OFFLOAD */
-> @@ -4678,7 +4678,7 @@ void bond_setup(struct net_device *bond_dev)
->
->         bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
->  #ifdef CONFIG_XFRM_OFFLOAD
-> -       if ((BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP))
-> +       if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
->                 bond_dev->hw_features |= BOND_XFRM_FEATURES;
->  #endif /* CONFIG_XFRM_OFFLOAD */
->         bond_dev->features |= bond_dev->hw_features;
->
-> base-commit: 7bed14551659875e1cd23a7c0266394a29a773b3
-> --
+Grygorii Strashko (6):
+  net: ethernet: ti: am65-cpsw-nuss: restore vlan configuration while
+    down/up
+  net: ethernet: ti: am65-cpsw: move to pf_p0_rx_ptype_rrobin init in
+    probe
+  net: ethernet: ti: am65-cpsw-nuss: fix ports mac sl initialization
+  net: ethernet: ti: am65-cpsw-ethtool: skip hw cfg when change
+    p0-rx-ptype-rrobin
+  net: ethernet: ti: am65-cpsw-ethtool: configured critical setting only
+    when no running netdevs
+  net: ethernet: ti: am65-cpsw-nuss: enable am65x sr2.0 support
+
+ drivers/net/ethernet/ti/am65-cpsw-ethtool.c |  6 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c    | 77 +++++++++++++++++----
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h    |  2 +-
+ 3 files changed, 69 insertions(+), 16 deletions(-)
 
 -- 
-Thanks,
-~Nick Desaulniers
+2.17.1
+
