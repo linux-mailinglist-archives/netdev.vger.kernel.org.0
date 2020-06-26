@@ -2,107 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0D1220B0E1
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:50:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29E0420B10F
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728866AbgFZLuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 07:50:44 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:39127 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725884AbgFZLuo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:50:44 -0400
-Received: by mail-pl1-f194.google.com with SMTP id s14so4191378plq.6;
-        Fri, 26 Jun 2020 04:50:43 -0700 (PDT)
+        id S1728842AbgFZL7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 07:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726256AbgFZL7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:59:03 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CFBEC08C5DB
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 04:59:03 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id q15so8583481wmj.2
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 04:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:reply-to:to:cc:references:in-reply-to:subject:date:message-id
+         :mime-version:content-transfer-encoding:content-language
+         :thread-index;
+        bh=KvsKJC/vloh4VNWfMJ8X1QtYq3tmXOvtciceCUw2AoY=;
+        b=XCTI5H64NbPDnjw9D6q+QTOy5yQvSpjrjPZ2WLKvXCRBjJbae31qoh2e+jcEpI/eBx
+         2vzdLekTZXmrnwvMzFResKxWo98wOLFY+CQcb8jxZ8Ea5SdXk1lSNuQItVLwPMhGCo6+
+         Q4QNKLWHUnm3yD1OTdvaSGntVsntp8+gkC8+5tNodbFgRi5HOTjjQcDx+qqvFECtYbpu
+         I0KL/7xYkkR6TpGMny+2KhWsUP6ib/e/zLqogodHrELIbSpPPQUI90BwocTTNCBgqoWt
+         wAt//jLxfVzzOLLpG76MB6SeXL7HfJEECusiqqWIzryc7mbOus2SPT5SqPlAgvbSgMbK
+         iiXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=m6IlfQ2e8V9TPNspezYLF8SplDOhvC9AL7TcXaCoLTk=;
-        b=OQZxqT3mZBVUFtAHYWFqkOtO3QCJKc7upfuQZW2bxqPD+cPkiLUJxE7P/dxwjx6VbR
-         YDDJHHAQrLVNHloqBHOIGMh0OKaYBLB+BaYYKPgjKC4hbDtXMiM3oJRLGs4mXNrGKpsl
-         f0p4yVh487Mn24jw2PO51M3Ifws+/eLdrS2dgUAvdP86+KOA5rp87DNMrKyC7bDKjeRd
-         P8Y3ChhutOUXuuWWrVXiiYKDFDVEFscrIM05e82dWfGYSp6k2lebN/kzm7bkZLmCBVFu
-         6ygkwEhpaKcCOX6vpII5PAHGhisivsqUY/WbgZ62z36yQR2pnbiE+EpgJwvcDui8+Pr+
-         d8zA==
-X-Gm-Message-State: AOAM5315s1Zh7GAvbf/+hiwuXqDytkwvwwFaFjegKn2kJN5GvDP7b/l0
-        iufu1Ya9FWmZdN6hVmcaGpw=
-X-Google-Smtp-Source: ABdhPJw+vfjYwkjyjOXkCMgArijGLXv7vSz+rOJhbL995GWA76AlNmn2PvrbvK5DZHp9UnPtP91fyw==
-X-Received: by 2002:a17:902:7896:: with SMTP id q22mr2327903pll.237.1593172243027;
-        Fri, 26 Jun 2020 04:50:43 -0700 (PDT)
-Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id m136sm11584572pfd.218.2020.06.26.04.50.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Jun 2020 04:50:41 -0700 (PDT)
-Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id BD85E40B24; Fri, 26 Jun 2020 11:50:40 +0000 (UTC)
-Date:   Fri, 26 Jun 2020 11:50:40 +0000
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Christian Borntraeger <borntraeger@de.ibm.com>, ast@kernel.org,
-        axboe@kernel.dk, bfields@fieldses.org,
-        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
-        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
-        davem@davemloft.net, dhowells@redhat.com,
-        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
-        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
-        keyrings@vger.kernel.org, kuba@kernel.org,
-        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
-        philipp.reisner@linbit.com, ravenexp@gmail.com,
-        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
-        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
-        netdev@vger.kernel.org, markward@linux.ibm.com,
-        linux-s390 <linux-s390@vger.kernel.org>
-Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
- seems to break linux bridge on s390x (bisected)
-Message-ID: <20200626115040.GN13911@42.do-not-panic.com>
-References: <9e767819-9bbe-2181-521e-4d8ca28ca4f7@de.ibm.com>
- <20200624160953.GH4332@42.do-not-panic.com>
- <ea41e2a9-61f7-aec1-79e5-7b08b6dd5119@de.ibm.com>
- <4e27098e-ac8d-98f0-3a9a-ea25242e24ec@de.ibm.com>
- <4d8fbcea-a892-3453-091f-d57c03f9aa90@de.ibm.com>
- <1263e370-7cee-24d8-b98c-117bf7c90a83@de.ibm.com>
- <20200626025410.GJ4332@42.do-not-panic.com>
- <feb6a8c4-2b94-3f95-6637-679e089a71ca@de.ibm.com>
- <20200626090001.GA30103@infradead.org>
- <20200626114008.GK4332@42.do-not-panic.com>
+        h=x-gm-message-state:from:reply-to:to:cc:references:in-reply-to
+         :subject:date:message-id:mime-version:content-transfer-encoding
+         :content-language:thread-index;
+        bh=KvsKJC/vloh4VNWfMJ8X1QtYq3tmXOvtciceCUw2AoY=;
+        b=WHN7jFseJBSIkd+mP8ksyFPDbS1YPp8ER0bsbJ9TQeVnV6mpz9lIguSFIkWdIyGxsl
+         GXkMsEZ/58b9VaqTUaLvzcMsxuM2TsWBITbEMfsBTrjbG4vx8Q5TjEg4jwGgv9z7SJcY
+         RHIWZCtvSbOnjG0ThNLt+/xl++sfUG1S/gB2Rvt/SD1ohAySOW3iOa/l55VFbSSVP4GY
+         FBZvIdD/qzjgYMRzGg5lr/RClmjPN4SYuX3KeP/FJgLjQy8Bfc3WKNRcIZZykGI1GUXI
+         b1XyXts3Jk/M+EVvDBIXFv33UQbbcbtSfZlWD94Uj0JyqmSpl42hN8vc0WpZSZvPOYZJ
+         k6rw==
+X-Gm-Message-State: AOAM5321WTNHAvzN53u87EAhbpqq31xcuuIGSQlFIs8s6MAfzFYbLSmt
+        IXB3mUpuP4Pdc4RTNCbg0EoTnnOxxac=
+X-Google-Smtp-Source: ABdhPJybXZkEsXVuKS6pCjuH+kVi1agvtiuNigI3mx5eQutaCMhwFRZADTBNxvnuI2JGixXjycxVeg==
+X-Received: by 2002:a05:600c:21ca:: with SMTP id x10mr3062859wmj.63.1593172741790;
+        Fri, 26 Jun 2020 04:59:01 -0700 (PDT)
+Received: from CBGR90WXYV0 (54-240-197-236.amazon.com. [54.240.197.236])
+        by smtp.gmail.com with ESMTPSA id c70sm16564937wme.32.2020.06.26.04.59.00
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 26 Jun 2020 04:59:01 -0700 (PDT)
+From:   Paul Durrant <xadimgnik@gmail.com>
+X-Google-Original-From: "Paul Durrant" <paul@xen.org>
+Reply-To: <paul@xen.org>
+To:     "'Denis Kirjanov'" <kda@linux-powerpc.org>,
+        <netdev@vger.kernel.org>
+Cc:     <brouer@redhat.com>, <jgross@suse.com>, <wei.liu@kernel.org>,
+        <ilias.apalodimas@linaro.org>
+References: <1593171639-8136-1-git-send-email-kda@linux-powerpc.org> <1593171639-8136-4-git-send-email-kda@linux-powerpc.org>
+In-Reply-To: <1593171639-8136-4-git-send-email-kda@linux-powerpc.org>
+Subject: RE: [PATCH net-next v13 3/3] xen networking: add XDP offset adjustment to xen-netback
+Date:   Fri, 26 Jun 2020 12:59:00 +0100
+Message-ID: <000a01d64bb1$2e5e87d0$8b1b9770$@xen.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200626114008.GK4332@42.do-not-panic.com>
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: en-gb
+Thread-Index: AQIjuAAWeG8hneC4kzFuZ864U5ZIXwIRRClmqD9oIxA=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 11:40:08AM +0000, Luis Chamberlain wrote:
-> Andrew, can you please revert these two for now:
+> -----Original Message-----
+> From: Denis Kirjanov <kda@linux-powerpc.org>
+> Sent: 26 June 2020 12:41
+> To: netdev@vger.kernel.org
+> Cc: brouer@redhat.com; jgross@suse.com; wei.liu@kernel.org; paul@xen.org; ilias.apalodimas@linaro.org
+> Subject: [PATCH net-next v13 3/3] xen networking: add XDP offset adjustment to xen-netback
 > 
-> selftests: simplify kmod failure value
-> umh: fix processed error when UMH_WAIT_PROC is used
+> the patch basically adds the offset adjustment and netfront
+> state reading to make XDP work on netfront side.
 > 
-> Later, we'll add Christoph's simplier kernel wait, and make the change
-> directly there to catpure the right error. That still won't fix this reported
-> issue, but it will be cleaner and will go tested by Christian Borntraeger
-> before.
+> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
 
-However, note that the only consideration to make here against this
-approach of the fix later going in with the simpler kernel wait is
-if this actually is fixing a real issue, and if we'd want this going to
-stable.
+Reviewed-by: Paul Durrant <paul@xen.org>
 
-We should for sure revert though, so Andrew please do proceed to revert
-or drop those two patches alone for now.
+> ---
+>  drivers/net/xen-netback/common.h    |  4 ++++
+>  drivers/net/xen-netback/interface.c |  2 ++
+>  drivers/net/xen-netback/netback.c   |  7 +++++++
+>  drivers/net/xen-netback/rx.c        | 15 ++++++++++++++-
+>  drivers/net/xen-netback/xenbus.c    | 34 ++++++++++++++++++++++++++++++++++
+>  5 files changed, 61 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/xen-netback/common.h b/drivers/net/xen-netback/common.h
+> index 05847eb..ae477f7 100644
+> --- a/drivers/net/xen-netback/common.h
+> +++ b/drivers/net/xen-netback/common.h
+> @@ -281,6 +281,9 @@ struct xenvif {
+>  	u8 ipv6_csum:1;
+>  	u8 multicast_control:1;
+> 
+> +	/* headroom requested by xen-netfront */
+> +	u16 xdp_headroom;
+> +
+>  	/* Is this interface disabled? True when backend discovers
+>  	 * frontend is rogue.
+>  	 */
+> @@ -395,6 +398,7 @@ static inline pending_ring_idx_t nr_pending_reqs(struct xenvif_queue *queue)
+>  irqreturn_t xenvif_interrupt(int irq, void *dev_id);
+> 
+>  extern bool separate_tx_rx_irq;
+> +extern bool provides_xdp_headroom;
+> 
+>  extern unsigned int rx_drain_timeout_msecs;
+>  extern unsigned int rx_stall_timeout_msecs;
+> diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
+> index 0c8a02a..8af49728 100644
+> --- a/drivers/net/xen-netback/interface.c
+> +++ b/drivers/net/xen-netback/interface.c
+> @@ -483,6 +483,8 @@ struct xenvif *xenvif_alloc(struct device *parent, domid_t domid,
+>  	vif->queues = NULL;
+>  	vif->num_queues = 0;
+> 
+> +	vif->xdp_headroom = 0;
+> +
+>  	spin_lock_init(&vif->lock);
+>  	INIT_LIST_HEAD(&vif->fe_mcast_addr);
+> 
+> diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
+> index 315dfc6..6dfca72 100644
+> --- a/drivers/net/xen-netback/netback.c
+> +++ b/drivers/net/xen-netback/netback.c
+> @@ -96,6 +96,13 @@
+>  module_param_named(hash_cache_size, xenvif_hash_cache_size, uint, 0644);
+>  MODULE_PARM_DESC(hash_cache_size, "Number of flows in the hash cache");
+> 
+> +/* The module parameter tells that we have to put data
+> + * for xen-netfront with the XDP_PACKET_HEADROOM offset
+> + * needed for XDP processing
+> + */
+> +bool provides_xdp_headroom = true;
+> +module_param(provides_xdp_headroom, bool, 0644);
+> +
+>  static void xenvif_idx_release(struct xenvif_queue *queue, u16 pending_idx,
+>  			       u8 status);
+> 
+> diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
+> index ef58870..ac034f6 100644
+> --- a/drivers/net/xen-netback/rx.c
+> +++ b/drivers/net/xen-netback/rx.c
+> @@ -258,6 +258,19 @@ static void xenvif_rx_next_skb(struct xenvif_queue *queue,
+>  		pkt->extra_count++;
+>  	}
+> 
+> +	if (queue->vif->xdp_headroom) {
+> +		struct xen_netif_extra_info *extra;
+> +
+> +		extra = &pkt->extras[XEN_NETIF_EXTRA_TYPE_XDP - 1];
+> +
+> +		memset(extra, 0, sizeof(struct xen_netif_extra_info));
+> +		extra->u.xdp.headroom = queue->vif->xdp_headroom;
+> +		extra->type = XEN_NETIF_EXTRA_TYPE_XDP;
+> +		extra->flags = 0;
+> +
+> +		pkt->extra_count++;
+> +	}
+> +
+>  	if (skb->sw_hash) {
+>  		struct xen_netif_extra_info *extra;
+> 
+> @@ -356,7 +369,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue *queue,
+>  				struct xen_netif_rx_request *req,
+>  				struct xen_netif_rx_response *rsp)
+>  {
+> -	unsigned int offset = 0;
+> +	unsigned int offset = queue->vif->xdp_headroom;
+>  	unsigned int flags;
+> 
+>  	do {
+> diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+> index 286054b..7e62a6e 100644
+> --- a/drivers/net/xen-netback/xenbus.c
+> +++ b/drivers/net/xen-netback/xenbus.c
+> @@ -393,6 +393,24 @@ static void set_backend_state(struct backend_info *be,
+>  	}
+>  }
+> 
+> +static void read_xenbus_frontend_xdp(struct backend_info *be,
+> +				      struct xenbus_device *dev)
+> +{
+> +	struct xenvif *vif = be->vif;
+> +	u16 headroom;
+> +	int err;
+> +
+> +	err = xenbus_scanf(XBT_NIL, dev->otherend,
+> +			   "xdp-headroom", "%hu", &headroom);
+> +	if (err != 1) {
+> +		vif->xdp_headroom = 0;
+> +		return;
+> +	}
+> +	if (headroom > XEN_NETIF_MAX_XDP_HEADROOM)
+> +		headroom = XEN_NETIF_MAX_XDP_HEADROOM;
+> +	vif->xdp_headroom = headroom;
+> +}
+> +
+>  /**
+>   * Callback received when the frontend's state changes.
+>   */
+> @@ -417,6 +435,11 @@ static void frontend_changed(struct xenbus_device *dev,
+>  		set_backend_state(be, XenbusStateConnected);
+>  		break;
+> 
+> +	case XenbusStateReconfiguring:
+> +		read_xenbus_frontend_xdp(be, dev);
+> +		xenbus_switch_state(dev, XenbusStateReconfigured);
+> +		break;
+> +
+>  	case XenbusStateClosing:
+>  		set_backend_state(be, XenbusStateClosing);
+>  		break;
+> @@ -947,6 +970,8 @@ static int read_xenbus_vif_flags(struct backend_info *be)
+>  	vif->ipv6_csum = !!xenbus_read_unsigned(dev->otherend,
+>  						"feature-ipv6-csum-offload", 0);
+> 
+> +	read_xenbus_frontend_xdp(be, dev);
+> +
+>  	return 0;
+>  }
+> 
+> @@ -1036,6 +1061,15 @@ static int netback_probe(struct xenbus_device *dev,
+>  			goto abort_transaction;
+>  		}
+> 
+> +		/* we can adjust a headroom for netfront XDP processing */
+> +		err = xenbus_printf(xbt, dev->nodename,
+> +				    "feature-xdp-headroom", "%d",
+> +				    provides_xdp_headroom);
+> +		if (err) {
+> +			message = "writing feature-xdp-headroom";
+> +			goto abort_transaction;
+> +		}
+> +
+>  		/* We don't support rx-flip path (except old guests who
+>  		 * don't grok this feature flag).
+>  		 */
+> --
+> 1.8.3.1
 
-It was unclear to me if this should go to stable given I was not sure
-how severe that NFS case mentioned on the commit log was, and no one on
-the NFS side has replied about that yet, however there may be other
-areas where code inspection of callsites was not sufficient to find the
-real critical areas.
 
-I'm now very curious what this issue that Christian with bridge on s390
-found will be.
-
-  Luis
