@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE0DE20B11B
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 14:05:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8C9E20B119
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 14:05:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728062AbgFZMFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 08:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
+        id S1728924AbgFZMFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 08:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726256AbgFZMFh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 08:05:37 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C57C08C5DB;
+        with ESMTP id S1728080AbgFZMFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 08:05:38 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D364BC08C5DB;
         Fri, 26 Jun 2020 05:05:37 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id e15so6725971edr.2;
+Received: by mail-ej1-x644.google.com with SMTP id y10so9138753eje.1;
         Fri, 26 Jun 2020 05:05:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=7AUVic1Y5MTcZ9Y09JPQEhG9Xb1GhH74cCEqiNFQyeo=;
-        b=sCTvLyzvfG61CEw6PS/+ZDFbAEA1jjY1z5t0Vb2HtBM4NTvCaCYHVj6TVox/BI84G2
-         Tk5OFYEV1b9aRmbI2qoiRX1RgaAHnSl7pOhTFtX5KfmmK5uvBZmINMwyrEde/rJhSZ6Q
-         sCX7n4toc9R3wNiUCMLdIxyRwgm0ZIIP4JuvW7JtLtQESVxnueatAWgyM/9IDTiiGmKq
-         lKIBrVZGEnTvQ4rXV4dKI/lG8hD/lkTjEY/RiaKEw1ECPXceaSkjnoLMXaQy/wye7ANa
-         prX0MAN0W32DheJNlQ9wEy8H2GblFBSD9QGNPCEBl0zIDz+SDUb5eLBLx+xOD1PLVcdF
-         DrJw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=nR2VtgwF7F9W5HFmQx6MyGh5iwe4EvSvTxPQrcM2OfA=;
+        b=QfLAPtlSom2vjh/UgG3x+Z9xdz8P8W5cPtskt7nvEXO6gtIvbXVuLLkzagDi4PjsFa
+         StIMhc182BACUjaLImZVGhSOkurSTQ98vBP7h4q1W5nlAhyYkIridmDDZG/pkyVc1prf
+         7bpm0EvCuk5ZiZy2j5yJDpNkjsieQ0oUyghQz+PNNopk9kkt1kzUej63Fr8zHmvhuuMt
+         tef0eCnPojyQd7q18LDo8A6+yDLWnXOkxq6nbKBzXn6NRpq3bJOhWd86hRB7zqbZIvBx
+         M/UsF0HLUAGp29/fZNb4BwXADD/Vv1I9QyZ6gzFApQUoYhKs3zHZHS9T+KV4ZUg9rEef
+         IK9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=7AUVic1Y5MTcZ9Y09JPQEhG9Xb1GhH74cCEqiNFQyeo=;
-        b=FxaPeocPBT743g6vI51yrOowVxwboU6p7H8/w4TAfOxBZdttuWRMdesaQkETeff+5V
-         RUrGVzm0q62fzr+rMWiTontp0HvyTzu7zzSUDUyRvmuvauGDNEJhwKi1VYwBZEE+uKmn
-         SRnaHN1Vj0AjGS1MhkuDZpUdpR0fI8HcVq3TNKy5kWWh/P0yuYS1MH6zU0KtW4iHbC/B
-         Ojzv93gOJ/aBpQP2wYPoMLNxaQ2KpNrIyBvwfolUJGqZONDzwNgpFT1nDHmTJXU7baTi
-         zKvVrhE55DAo+fySz77rh/OWNl3GFiw6s/5Q+UY8l1wYRmolgfcepEZgj9M2Z4qRl94B
-         o99w==
-X-Gm-Message-State: AOAM531HcofQNFObZAp7F54p7uIeO17b12mAwXsu+7vg8gFnLdGo7JQX
-        2J+o8Xdez+gctRuHZpNM65I=
-X-Google-Smtp-Source: ABdhPJxA60jOtfzOkAemDvxspe50YaRE1GzXfaeagKO2wJzWFn6BjlrOjGLEWZ46HXXmW+OQKbef1Q==
-X-Received: by 2002:a50:ee87:: with SMTP id f7mr3045824edr.355.1593173135719;
-        Fri, 26 Jun 2020 05:05:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=nR2VtgwF7F9W5HFmQx6MyGh5iwe4EvSvTxPQrcM2OfA=;
+        b=uUjexY9dbXHdcOW7o8yekC/zWPvBv0Nm5jFnoloCcnpiXikviYr8fgmCQYB9c8miBZ
+         lPUunSOScdzlIms44CXQsvbib7aGzL/URLEVi74yPe7N49jA/fbnCxh/AHlRO2qBxSuE
+         Dt0UcPT5+JWHXhylq7K1Ab8NRxK5gJIE0vYsAsNV+/YuZESQdRtVEx7BV166gfYjeK9Q
+         b3BNz2FUXVQz33RYVYlBgCk6nJn61RLmpjfNnK6LXYKzeVcOsc1lmIzkjjd2LGEq1D8c
+         vk/DKzyGNTZcoXrmtGosn/Mq+8fkL7S7h7ZYGQcGDSd7Pw06llE+mHdls7vp6whVbvmA
+         T3nQ==
+X-Gm-Message-State: AOAM533mRTIVADveeDzlJgVPyYDQFq2X+floIwfmiFcx3VmJhqzA2Y3r
+        eYEY7AmewNx+bIxte6B6XWc=
+X-Google-Smtp-Source: ABdhPJwZ8M1BQ2yH0DeD+1br27YkhVt9aUJrcA1oAtfzVrHHpr0ijzgJNJUutvTNYuggWpiGff/Gbg==
+X-Received: by 2002:a17:906:7247:: with SMTP id n7mr2244351ejk.105.1593173136604;
+        Fri, 26 Jun 2020 05:05:36 -0700 (PDT)
 Received: from debian.home (ip51ccf9cd.speed.planet.nl. [81.204.249.205])
-        by smtp.gmail.com with ESMTPSA id l27sm5024153ejk.25.2020.06.26.05.05.34
+        by smtp.gmail.com with ESMTPSA id l27sm5024153ejk.25.2020.06.26.05.05.35
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jun 2020 05:05:35 -0700 (PDT)
+        Fri, 26 Jun 2020 05:05:36 -0700 (PDT)
 From:   Johan Jonker <jbx6244@gmail.com>
 To:     peppe.cavallaro@st.com
 Cc:     alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net,
@@ -52,47 +53,39 @@ Cc:     alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net,
         linux-rockchip@lists.infradead.org, netdev@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] net: stmmac: change Kconfig menu entry to STMMAC/DWMAC
-Date:   Fri, 26 Jun 2020 14:05:26 +0200
-Message-Id: <20200626120527.10562-1-jbx6244@gmail.com>
+Subject: [PATCH 2/2] net: stmmac: add Rockchip as supported platform in STMMAC_PLATFORM help text
+Date:   Fri, 26 Jun 2020 14:05:27 +0200
+Message-Id: <20200626120527.10562-2-jbx6244@gmail.com>
 X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20200626120527.10562-1-jbx6244@gmail.com>
+References: <20200626120527.10562-1-jbx6244@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a Rockchip user wants to enable support for
-the ethernet controller one has to search for
-something with STMicroelectronics.
-Change the Kconfig menu entry to STMMAC/DWMAC,
-so that it better reflects the options it enables.
+The Kconfig menu has an option for DWMAC_ROCKCHIP.
+Then add Rockchip also as supported platform in the help text
+of STMMAC_PLATFORM.
 
 Signed-off-by: Johan Jonker <jbx6244@gmail.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 36bd2e18f..8f7625cc8 100644
+index 8f7625cc8..8309e05b4 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
 +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config STMMAC_ETH
--	tristate "STMicroelectronics Multi-Gigabit Ethernet driver"
-+	tristate "STMMAC/DWMAC Multi-Gigabit Ethernet driver"
- 	depends on HAS_IOMEM && HAS_DMA
- 	select MII
- 	select MDIO_XPCS
-@@ -26,7 +26,7 @@ config STMMAC_SELFTESTS
- 	  results to the netdev Mailing List.
+@@ -33,7 +33,7 @@ config STMMAC_PLATFORM
+ 	---help---
+ 	  This selects the platform specific bus support for the stmmac driver.
+ 	  This is the driver used on several SoCs:
+-	  STi, Allwinner, Amlogic Meson, Altera SOCFPGA.
++	  STi, Allwinner, Amlogic Meson, Altera SOCFPGA, Rockchip.
  
- config STMMAC_PLATFORM
--	tristate "STMMAC Platform bus support"
-+	tristate "STMMAC/DWMAC Platform bus support"
- 	depends on STMMAC_ETH
- 	select MFD_SYSCON
- 	default y
+ 	  If you have a controller with this interface, say Y or M here.
+ 
 -- 
 2.11.0
 
