@@ -2,91 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE9DF20AA14
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 03:06:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9038120AA2E
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 03:38:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726971AbgFZBGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 21:06:08 -0400
-Received: from mga05.intel.com ([192.55.52.43]:16108 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726252AbgFZBGH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Jun 2020 21:06:07 -0400
-IronPort-SDR: 0Q0q3AHZ6qQoFR8dX8iIc4le0fORJy5OYbglYfgAwPgVT9s53L1A+QfHHxl4kKmASs8hXEZ6W3
- OYH0unDkrRJA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9663"; a="229884387"
-X-IronPort-AV: E=Sophos;i="5.75,281,1589266800"; 
-   d="scan'208";a="229884387"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2020 18:06:05 -0700
-IronPort-SDR: eMKqNd7ps268Mv92AG3KCTkH6vtUFOk49SDyQWHAbB/uppL/oaiRtt2HIbyLiDwH/3dsDLMDpN
- 4EJi8PbqEPSA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,281,1589266800"; 
-   d="scan'208";a="311272783"
-Received: from lkp-server01.sh.intel.com (HELO 538b5e3c8319) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 25 Jun 2020 18:06:04 -0700
-Received: from kbuild by 538b5e3c8319 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1jocoe-0001vU-9x; Fri, 26 Jun 2020 01:06:04 +0000
-Date:   Fri, 26 Jun 2020 09:05:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     kbuild-all@lists.01.org,
-        Quentin Schulz <quentin.schulz@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: phy: mscc: fix ptr_ret.cocci warnings
-Message-ID: <20200626010518.GA6037@890dc296aae1>
-References: <202006260959.QkSmCdSE%lkp@intel.com>
-MIME-Version: 1.0
+        id S1727788AbgFZBis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 21:38:48 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:19518 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727781AbgFZBir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 21:38:47 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 05Q1cj1R030204;
+        Thu, 25 Jun 2020 18:38:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=Vybb1l2L69sNjn+C+62QxDNNI6j2Cb2pvdI2hAYMIz8=;
+ b=RmOIC61aIDwIaMchJ/Y5a1vFfZxUxfC0r75CrTABFo2BiMXegwyH1QHAym5nEFKcKWLA
+ Yf7VU9ElTZEFp/Sv0u5HJFr7pmLvPnJNzDlxA9NaP7MYrZsr/o0LmR5UJexo9bYlTnqt
+ fRkCMDO6vKdnFvyRcUbPJvF17cHKEYkF/7A= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 31ux1gk5ar-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 25 Jun 2020 18:38:45 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 25 Jun 2020 18:38:19 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ChtWpBdaim7qQj6rSmzGYsF3m9MJy+iSr+Smx3gwHqxFhVaHQ+0C/v9RKsAaXgkV0dePYkBRvPQnUtX2AUBuHbQJWlxRW2nVIOfuu7uVJvdr9e8t4iML364xmcnnMWZj1hjlEsxQdU/1A+55FWp99ymtvYIOQyw4G0lwH5fRBQol/pEcjrVpg6sxXjOC8gJ/S1KldTCRxFm6rP8FbyeGFpDpaRvGh5LbJb67HYPz+6RyYfG8JfR7L9dW4ur/pQtBHOwYYFf3rVU0I6layD4oy6OotSZFG0FQCtIgyiqHtqgGSA+cmQ3wIXnRctdw6cUgOEcgRP9KrclVEgyMwGLKfw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vybb1l2L69sNjn+C+62QxDNNI6j2Cb2pvdI2hAYMIz8=;
+ b=hZOVJ5PN/+vj25OgXBfCqvkorYJiHxFWoN9u03dXLmMB3hlbNwN4E8fUqYqnBYEizOfDf+r7IGTfxZ6ND2SbRz1LLwxzUCCwTqyIA5t5uhoR1G8PX2gc5+qdwRq58VbTdR5urEzuQAV9cI/ue1jgwjDhZSUeujkEGkC5ZgQgmVvT4ec8W1lV1bd7iiIwvxwD8SzrEomKJcN4ND5/xof9oQvfbfibOo1M3Kr4r/3aVwlCGVM9Gckwe4LP9ohy/h78hqV8iNzgFGP48Vb/aOycMZJjkns+QgYLFVeRfEwkRYdpzeA4SPPa993xDYYNIJx4t7ppEiI5UzhKz63E9aX7Sg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vybb1l2L69sNjn+C+62QxDNNI6j2Cb2pvdI2hAYMIz8=;
+ b=VRx4mMCrh1mNJvgrM0/j8/9brF6Meb4yMyBc9bjHJUfe/wO/gqO9nZA0tgYppguJ2ew0MHLYEKG1fwg+5LchAc3R60OJqaeatcuMO6jjIMrTfCRpBZPUInvDJcSF+am+L8X5nT98PuQEas/eiTlXA08KbFQRMrmVI9uvNJunoKc=
+Authentication-Results: cloudflare.com; dkim=none (message not signed)
+ header.d=none;cloudflare.com; dmarc=none action=none header.from=fb.com;
+Received: from DM6PR15MB3580.namprd15.prod.outlook.com (2603:10b6:5:1f9::10)
+ by DM5PR15MB1321.namprd15.prod.outlook.com (2603:10b6:3:b7::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.23; Fri, 26 Jun
+ 2020 01:38:04 +0000
+Received: from DM6PR15MB3580.namprd15.prod.outlook.com
+ ([fe80::c8f5:16eb:3f57:b3dc]) by DM6PR15MB3580.namprd15.prod.outlook.com
+ ([fe80::c8f5:16eb:3f57:b3dc%5]) with mapi id 15.20.3131.021; Fri, 26 Jun 2020
+ 01:38:04 +0000
+Date:   Thu, 25 Jun 2020 18:38:01 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <kernel-team@cloudflare.com>, Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next v3 1/4] flow_dissector: Pull BPF program
+ assignment up to bpf-netns
+Message-ID: <20200626013801.2246uk4zh35ihbos@kafai-mbp.dhcp.thefacebook.com>
+References: <20200625141357.910330-1-jakub@cloudflare.com>
+ <20200625141357.910330-2-jakub@cloudflare.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202006260959.QkSmCdSE%lkp@intel.com>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200625141357.910330-2-jakub@cloudflare.com>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: BYAPR05CA0079.namprd05.prod.outlook.com
+ (2603:10b6:a03:e0::20) To DM6PR15MB3580.namprd15.prod.outlook.com
+ (2603:10b6:5:1f9::10)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:62ad) by BYAPR05CA0079.namprd05.prod.outlook.com (2603:10b6:a03:e0::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.10 via Frontend Transport; Fri, 26 Jun 2020 01:38:03 +0000
+X-Originating-IP: [2620:10d:c090:400::5:62ad]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f9ba6c36-37a8-4f44-93d3-08d8197191b8
+X-MS-TrafficTypeDiagnostic: DM5PR15MB1321:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM5PR15MB1321EBF3ECB445724A0B8E45D5930@DM5PR15MB1321.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Forefront-PRVS: 0446F0FCE1
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pvEXmhRk9JEquFXCbGaSu8Uy6ASQqQkiPNDe4F1G1Cnpl7Dv4HMFxPIN63RBrBzS6NtcRtR4doXJvDA0mfTLmvORjRSl21wivMF7g5IMz/zdxLF2OEJnuO9ELoAATGjUFkhhX1Ot6AWMgg3UmIPT7WD+6gAYEhkWOT6C5Ge31tFFGS8XvI9TqUHkjYYzMYsVQdLkqI+OEJQqZiiiFrdPkGwzAS+9JOahC4/Js4h6eqrzszOSlCchnjgOoOmB+dQzCJtE6F0Lhdqo6VHRaQbcillDfgwFgCgcrdBN/UlMI5iZRqoR1oY2AIoQH7YIoDMndFaS2PRKDOPtVH8u4s9C5Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR15MB3580.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(346002)(376002)(136003)(366004)(39860400002)(316002)(6506007)(66476007)(66556008)(52116002)(66946007)(6916009)(16526019)(186003)(7696005)(8676002)(9686003)(4744005)(86362001)(4326008)(2906002)(83380400001)(1076003)(55016002)(8936002)(478600001)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: LcnpHaK5xlNVkzLed8heMMNLJTlVj6bQaHxrVFjiUbCXQryxNnexPAKx76mN5D9FHDx9AEjs8bY9zEx/iFvp2YcEbxRL4ktAy5W2aiLpLLP+TGeV0gNONU51s6ghRf8Mhg5dR1c7bX+9issU+BxRkYxfkbK6ky4KggJUzQyln62k8MlPS4VT3avmVIxIyBAkn00u/jY74ax7N/JZlthOEWU9M/OVSdQD+MZpHnesfK+px9CAp+95HVgRxGYI33jxeBNPlAD9TO/qoggONMDcGd5K1CkVOkfRXeHaooXcjmS6ihMc7ZPEeYmMPiSFOXraaEFax4j+3rZQeftyhlaKu89pWniDfo/10UBcgwxDmNpOsP/cbWjq3FjSPk1KRispszsiQrRjwhQbw+jo3Ag4Os5oc7WQ1miAhZI5W4ue684UwCXRclTJg5zrvwVdQHLjp8rS1Jo83RJ86izxfA2+TIMSxgTnfqr/Y4Zr0Oj8ORaWJdRaEuQl5eArag1Ea9quiLgUYDgeaC2bOBq33ynF2A==
+X-MS-Exchange-CrossTenant-Network-Message-Id: f9ba6c36-37a8-4f44-93d3-08d8197191b8
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR15MB3580.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2020 01:38:04.5623
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1P1+AoyxDao8Pl4Z6f1X4VixlwB047brJZw7ZazTKYOoAZqGr++x4Gu4qJjJzyhN
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1321
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-25_20:2020-06-25,2020-06-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ adultscore=0 mlxlogscore=830 clxscore=1015 priorityscore=1501
+ lowpriorityscore=0 cotscore=-2147483648 phishscore=0 spamscore=0
+ mlxscore=0 bulkscore=0 impostorscore=0 suspectscore=0 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006260009
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
-
-drivers/net/phy/mscc/mscc_ptp.c:1496:1-3: WARNING: PTR_ERR_OR_ZERO can be used
-
-
- Use PTR_ERR_OR_ZERO rather than if(IS_ERR(...)) + PTR_ERR
-
-Generated by: scripts/coccinelle/api/ptr_ret.cocci
-
-Fixes: 7d272e63e097 ("net: phy: mscc: timestamping and PHC support")
-CC: Antoine Tenart <antoine.tenart@bootlin.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-head:   3f9437c6234d95d96967f1b438a4fb71b6be254d
-commit: 7d272e63e0979d38a6256108adbe462d621c26c5 [3775/3988] net: phy: mscc: timestamping and PHC support
-
- mscc_ptp.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
---- a/drivers/net/phy/mscc/mscc_ptp.c
-+++ b/drivers/net/phy/mscc/mscc_ptp.c
-@@ -1493,10 +1493,7 @@ static int __vsc8584_init_ptp(struct phy
- 
- 	vsc8531->ptp->ptp_clock = ptp_clock_register(&vsc8531->ptp->caps,
- 						     &phydev->mdio.dev);
--	if (IS_ERR(vsc8531->ptp->ptp_clock))
--		return PTR_ERR(vsc8531->ptp->ptp_clock);
--
--	return 0;
-+	return PTR_ERR_OR_ZERO(vsc8531->ptp->ptp_clock);
- }
- 
- void vsc8584_config_ts_intr(struct phy_device *phydev)
+On Thu, Jun 25, 2020 at 04:13:54PM +0200, Jakub Sitnicki wrote:
+> Prepare for using bpf_prog_array to store attached programs by moving out
+> code that updates the attached program out of flow dissector.
+> 
+> Managing bpf_prog_array is more involved than updating a single bpf_prog
+> pointer. This will let us do it all from one place, bpf/net_namespace.c, in
+> the subsequent patch.
+> 
+> No functional change intended.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
