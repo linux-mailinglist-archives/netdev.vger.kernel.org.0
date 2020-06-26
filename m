@@ -2,205 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DCB620B1AF
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 14:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA08A20B1BF
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 14:52:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726712AbgFZMsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 08:48:11 -0400
-Received: from mail-vi1eur05on2089.outbound.protection.outlook.com ([40.107.21.89]:30311
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725283AbgFZMsL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 08:48:11 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Mu6H3yrsQ7ykPbozC6MwuKxoI7eP7g/2yrBZIOubDMPo733eEQ49kH0C/63vKKEgD3BSTcjZlIdhfVfh6aAHsIfA6suV9iB7GlPkpFRz4KH6zFxhTKRFba6fHxQooDRJVtDcSp9sM90BZ55mS4CO/xX4tSnLnD+LMs6ANmQrDn2FB5xMVOxRweMjMxAHLfkYoknHcaluSdoIWQjRydT7NmwtKBHBy6gWe0bOkEPpXntIZchV0zh9wMSUsGI5ReZYj/W9JK0JPTPFrqlDG+x5ymCREl00Q131LbpEHFTEMMBb5lk0NwZRxZygThhG4MuuwJzQvQKoBry+H3dUJ4+gnA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EtahB4/i/2QDRB0RJRc/ftj1VL1p73wLLPQ4x/Dl8pY=;
- b=WkPAaUohXFOBgU2Onh3tD+JobNrZq/wPxJSwZJyrjTdeMmnBbvA3F56XKvj9Q4OlnlO0bRuHEZBmwtbk0AvP2gyRhuspXqV2VART0qN3LwY6rgdkc6hahu63Y1ZjWk6JqJmJjtNEYq2xn0Ton2ix5kUMWblmxtflG8y71Ql5t06qdaPeENS6yyfYzOOti38lbU6U/dyDI4nH04R73IdP+jGipBZimKwFnedKwJIdLW50YYVog9W4bB6f+ngvEiVdma3dz3sZP+jJI8iTZTYmHkHMUlEYug5yqOyV7J7RX6VQsBGITLjrWXmByUaJ1Hj/cZpS4SZH++a+HfgJ0YTajw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EtahB4/i/2QDRB0RJRc/ftj1VL1p73wLLPQ4x/Dl8pY=;
- b=IQHJDDaAL6xV3cMeUDgp5LQWSEIeQm7jpL8Drg7XnYKA9A9/mVEpbF2ZZd+VX0NBG7COYeons5SVmbM+pSDARqyvC0YSAqOdy+VMxihgN0lIWt4FKHteSUZp3he130pUk15bAQIPcqVmyf0PPoJ7EzncfX3dQsQ/R0Lbf2Z3j0c=
-Received: from AM6PR05MB5974.eurprd05.prod.outlook.com (2603:10a6:20b:a7::12)
- by AM6PR05MB4101.eurprd05.prod.outlook.com (2603:10a6:209:41::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.23; Fri, 26 Jun
- 2020 12:48:06 +0000
-Received: from AM6PR05MB5974.eurprd05.prod.outlook.com
- ([fe80::55:e9a6:86b0:8ba2]) by AM6PR05MB5974.eurprd05.prod.outlook.com
- ([fe80::55:e9a6:86b0:8ba2%7]) with mapi id 15.20.3131.020; Fri, 26 Jun 2020
- 12:48:06 +0000
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-CC:     Amritha Nambiar <amritha.nambiar@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Tom Herbert <tom@herbertland.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: ADQ - comparison to aRFS, clarifications on NAPI ID, binding with
- busy-polling
-Thread-Topic: ADQ - comparison to aRFS, clarifications on NAPI ID, binding
- with busy-polling
-Thread-Index: AQHWRKldRhSDBhOrZkiFq9LGLYnl3qjoQMWAgALYJYA=
-Date:   Fri, 26 Jun 2020 12:48:06 +0000
-Message-ID: <AM6PR05MB5974D512D3205C247B07D0C7D1930@AM6PR05MB5974.eurprd05.prod.outlook.com>
-References: <e13faf29-5db3-91a2-4a95-c2cd8c2d15fe@mellanox.com>
- <807a300e-47aa-dba3-7d6d-e14422a0d869@intel.com>
-In-Reply-To: <807a300e-47aa-dba3-7d6d-e14422a0d869@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-imapappendstamp: AM6PR05MB5974.eurprd05.prod.outlook.com
- (15.20.3131.020)
-user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=mellanox.com;
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [159.224.90.213]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 2b4f1c6e-0008-49f3-62e2-08d819cf2c38
-x-ms-traffictypediagnostic: AM6PR05MB4101:
-x-microsoft-antispam-prvs: <AM6PR05MB4101D01328739D61DA28278CD1930@AM6PR05MB4101.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0446F0FCE1
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jZj987FFUV+IYU9UR8eAj88C+x9a/fqfVJcWnXZ5RFqtwDByOwSHWUSI3OYMeXp8AEfIPwIcVwg0mBQNAd+21Cb92gBFvvoL66WXWpfqr5oxPEYeglY13YMR5wzl9UvY194DOMrhrVu7BWHX1w0IHd5fpSouibQQNAPEsrow7P/7HjxlXXLU0l1JDyrrsFEtMClnuNWdj7QyUBGbCwuaQV4zw1MCyLc8t/j6u3GxIchOXXZtP6+HbFJnG+M7Nkqmu/kxwFra8hD41mC7wUDmisZXZ89b+iBAbnaT9/yBE2KZJlKBbivuuVgt9JqQP7/UBmNTIF3LngxmFuPduSGvRSK+0Xp9YvLuB7sSuHDu4lWfmTspqEKz/YGzX73ZC8Wnb/GVaGu9YXAFWsohC/KjUUbPWUFmNV1WoG6t7mHCcENIcHPz/rMVa/ExfEuzObdyo+wwMmSXUlxnoDfhwZI0TMPLna+mxXmLMjX2kD4vKmPrwET7kvI2DoQIW19HkdlC
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB5974.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(396003)(346002)(376002)(136003)(53546011)(6506007)(26005)(54906003)(316002)(71200400001)(478600001)(186003)(55236004)(4326008)(2906002)(966005)(7696005)(83380400001)(55016002)(5660300002)(8936002)(64756008)(86362001)(52536014)(33656002)(9686003)(6916009)(8676002)(76116006)(66476007)(66446008)(66556008)(66946007)(65966003)(43740500002)(6606295002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: dM03uxAeZLlsxREhQQQb+qP0e7a0kMc5IZjpQcLHib3tB7YOwllMuOO8oJ94gJc8jqvlPoOMtfIhWKZU3lzTqmTINvXWrSnbn65TBC1gR9176ZaZf07/zSgLfiZ0SlKsvj9K8P8N4Erh3baROf+iEjK46x7E3ajyPsz87ujy1dwAOtRqL9I43Rggzj39ypvgZYrDKrHEsSRqNv+dhDSoEDpGxzsaKE2qTW1e7OfIP7bkEdu1ZDgqxAQU2J0S07r6aE+rKZCSg/C3halm2p1KqSRxPHf6aRQtXfYWPj4p2A3j/Pz7bSLIj1EP9NyfjvsWW9OcCeg7kV6Htqb2Iwz6mXM++/SrVxnOiRcuVgYWnbatSKtzO7mov3rCHS4R9ilQ2q0UUpMJThkrk6ODeTW/VLswHJJqtzjiKgrSEQ70JVTdkQJd5vFzpAMsoQOjRJOmElWH8BVMMPNAHRN7SKfWR1IsyPt8TR7ZGjXhD/igoHO5g34RneyytwAcViWjL52P
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <00C2D4B1BEBE914D9D81AE1D673B614B@Mellanox365.onmicrosoft.com>
-Content-Transfer-Encoding: base64
+        id S1726013AbgFZMwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 08:52:43 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:60722 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725853AbgFZMwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 08:52:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593175960;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/iHDgfiY8TDh3EPNTgzupA4JBUtTDmY+m7kSnSwNTKo=;
+        b=XP5O3TUQRcXq8uAz8w6OctmhtBKy4ao+jMc5ju7JqhNcqZS6Q+YMkoWGekTv3k9q7ak7MD
+        +5TRJXhL2mmm46fZwfSi2CS9AkKqRc3+SZMdlVtDsFKQPfP8ekyKlQl/NLMe9zYDcocqv7
+        PS1za3A+1S8WPT+ouhT98jQEjx7Lhtc=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-366-Bq4NGyqJOKGROgvZoNfyrw-1; Fri, 26 Jun 2020 08:52:38 -0400
+X-MC-Unique: Bq4NGyqJOKGROgvZoNfyrw-1
+Received: by mail-ed1-f72.google.com with SMTP id m12so6229714edv.3
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 05:52:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=/iHDgfiY8TDh3EPNTgzupA4JBUtTDmY+m7kSnSwNTKo=;
+        b=JCkH2eSAkUqdNSbsCpPTmuow3DjCem1wpy+N/l+d+3oD2G74Gcfm5hrdJO9dzgduc6
+         KMZ3QITIiKm1lrZtX1v5r5Wrh7m1CBlfd+dPb5Xz+/2PhMclM7iZVJ6NGn+uE7KUZdkY
+         r9JLGX04tZJIpfD1GtQRREeY1Ps8IFJbrZmdf5kYGtlZR0igtG1PW4BMKGgHrADVr0DK
+         XKTmhlPgjfOqJW1NMfFkDmU3cJqwIf9F4siIoZCqrWxhtejLBlIqgpUcJUsOnLlfuVm6
+         n4Mumyh3YbKFhXM80OHUOZrNnkiRxP/FYxdRx2SM90sk5C59zHGQCZjQuhZcQpgGsG/E
+         XItA==
+X-Gm-Message-State: AOAM530Apqy0kKM20+UgV3GhoW9kH4BRZf3XVIgtdctNarWhYv0aIHL6
+        L2lK9RsI8mftwr4aTEHFyKqnQPRgz8A2fTwDpgPaKWvhuveEmQNZuV0YlGteZ3Fh2IQJYcLY05v
+        qO5tlADM3a7SgbWU8
+X-Received: by 2002:a17:906:6a4f:: with SMTP id n15mr2350260ejs.378.1593175957584;
+        Fri, 26 Jun 2020 05:52:37 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz3UPQSYD18e7LtAU1xQDYajPQGgJdas4L4X0+hY7qoM0GoqUwJwTAhxcLFtToqZitlTRnD7w==
+X-Received: by 2002:a17:906:6a4f:: with SMTP id n15mr2350245ejs.378.1593175957307;
+        Fri, 26 Jun 2020 05:52:37 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id o17sm10814176ejb.105.2020.06.26.05.52.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jun 2020 05:52:36 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 116EC1808CF; Fri, 26 Jun 2020 14:52:36 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Davide Caratti <dcaratti@redhat.com>,
+        David Miller <davem@davemloft.net>
+Cc:     cake@lists.bufferbloat.net, netdev@vger.kernel.org,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: Re: [Cake] [PATCH net-next 1/5] sch_cake: fix IP protocol handling in the presence of VLAN tags
+In-Reply-To: <240fc14da96a6212a98dd9ef43b4777a9f28f250.camel@redhat.com>
+References: <159308610282.190211.9431406149182757758.stgit@toke.dk> <159308610390.190211.17831843954243284203.stgit@toke.dk> <20200625.122945.321093402617646704.davem@davemloft.net> <87k0zuj50u.fsf@toke.dk> <240fc14da96a6212a98dd9ef43b4777a9f28f250.camel@redhat.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 26 Jun 2020 14:52:36 +0200
+Message-ID: <87h7uyhtuz.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR05MB5974.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b4f1c6e-0008-49f3-62e2-08d819cf2c38
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jun 2020 12:48:06.2403
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EqzNOTOnSEc3dDBhbRF3Q/1KhCjBPBsaTEiPpb9FDLGBPgPOrMXJ8TMG/fsF1pjehjO9YV+8ZEbiAv5HiPsu4A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB4101
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhhbmtzIGEgbG90IGZvciB5b3VyIHJlcGx5ISBJdCB3YXMgcmVhbGx5IGhlbHBmdWwuIEkgaGF2
-ZSBhIGZldyANCmNvbW1lbnRzLCBwbGVhc2Ugc2VlIGJlbG93Lg0KDQpPbiAyMDIwLTA2LTI0IDIz
-OjIxLCBTYW11ZHJhbGEsIFNyaWRoYXIgd3JvdGU6DQo+IA0KPiANCj4gT24gNi8xNy8yMDIwIDY6
-MTUgQU0sIE1heGltIE1pa2l0eWFuc2tpeSB3cm90ZToNCj4+IEhpLA0KPj4NCj4+IEkgZGlzY292
-ZXJlZCBJbnRlbCBBRFEgZmVhdHVyZSBbMV0gdGhhdCBhbGxvd3MgdG8gYm9vc3QgcGVyZm9ybWFu
-Y2UgYnkgDQo+PiBwaWNraW5nIGRlZGljYXRlZCBxdWV1ZXMgZm9yIGFwcGxpY2F0aW9uIHRyYWZm
-aWMuIFdlIGRpZCBzb21lIA0KPj4gcmVzZWFyY2gsIGFuZCBJIGdvdCBzb21lIGxldmVsIG9mIHVu
-ZGVyc3RhbmRpbmcgaG93IGl0IHdvcmtzLCBidXQgSSANCj4+IGhhdmUgc29tZSBxdWVzdGlvbnMs
-IGFuZCBJIGhvcGUgeW91IGNvdWxkIGFuc3dlciB0aGVtLg0KPj4NCj4+IDEuIFNPX0lOQ09NSU5H
-X05BUElfSUQgdXNhZ2UuIEluIG15IHVuZGVyc3RhbmRpbmcsIGV2ZXJ5IGNvbm5lY3Rpb24gDQo+
-PiBoYXMgYSBrZXkgKHNrX25hcGlfaWQpIHRoYXQgaXMgdW5pcXVlIHRvIHRoZSBOQVBJIHdoZXJl
-IHRoaXMgDQo+PiBjb25uZWN0aW9uIGlzIGhhbmRsZWQsIGFuZCB0aGUgYXBwbGljYXRpb24gdXNl
-cyB0aGF0IGtleSB0byBjaG9vc2UgYSANCj4+IGhhbmRsZXIgdGhyZWFkIGZyb20gdGhlIHRocmVh
-ZCBwb29sLiBJZiB3ZSBoYXZlIGEgb25lLXRvLW9uZSANCj4+IHJlbGF0aW9uc2hpcCBiZXR3ZWVu
-IGFwcGxpY2F0aW9uIHRocmVhZHMgYW5kIE5BUEkgSURzIG9mIGNvbm5lY3Rpb25zLCANCj4+IGVh
-Y2ggYXBwbGljYXRpb24gdGhyZWFkIHdpbGwgaGFuZGxlIG9ubHkgdHJhZmZpYyBmcm9tIGEgc2lu
-Z2xlIE5BUEkuIA0KPj4gSXMgbXkgdW5kZXJzdGFuZGluZyBjb3JyZWN0Pw0KPiANCj4gWWVzLiBJ
-dCBpcyBjb3JyZWN0IGFuZCByZWNvbW1lbmRlZCB3aXRoIHRoZSBjdXJyZW50IGltcGxlbWVudGF0
-aW9uLg0KPiANCj4+DQo+PiAxLjEuIEkgd29uZGVyIGhvdyB0aGUgYXBwbGljYXRpb24gdGhyZWFk
-IGdldHMgc2NoZWR1bGVkIG9uIHRoZSBzYW1lIA0KPj4gY29yZSB0aGF0IE5BUEkgcnVucyBhdC4g
-SXQgY3VycmVudGx5IG9ubHkgd29ya3Mgd2l0aCBidXN5X3BvbGwsIHNvIA0KPj4gd2hlbiB0aGUg
-YXBwbGljYXRpb24gaW5pdGlhdGVzIGJ1c3kgcG9sbGluZyAoY2FsbHMgZXBvbGwpLCBkb2VzIHRo
-ZSANCj4+IExpbnV4IHNjaGVkdWxlciBtb3ZlIHRoZSB0aHJlYWQgdG8gdGhlIHJpZ2h0IENQVT8g
-RG8gd2UgaGF2ZSB0byBoYXZlIGEgDQo+PiBzdHJpY3Qgb25lLXRvLW9uZSByZWxhdGlvbnNoaXAg
-YmV0d2VlbiB0aHJlYWRzIGFuZCBOQVBJcywgb3IgY2FuIG9uZSANCj4+IHRocmVhZCBoYW5kbGUg
-bXVsdGlwbGUgTkFQSXM/IFdoZW4gdGhlIGRhdGEgYXJyaXZlcywgZG9lcyB0aGUgDQo+PiBzY2hl
-ZHVsZXIgcnVuIHRoZSBhcHBsaWNhdGlvbiB0aHJlYWQgb24gdGhlIHNhbWUgQ1BVIHRoYXQgTkFQ
-SSByYW4gb24/DQo+IA0KPiBUaGUgYXBwIHRocmVhZCBjYW4gZG8gYnVzeXBvbGwgZnJvbSBhbnkg
-Y29yZSBhbmQgdGhlcmUgaXMgbm8gcmVxdWlyZW1lbnQNCj4gdGhhdCB0aGUgc2NoZWR1bGVyIG5l
-ZWRzIHRvIG1vdmUgdGhlIHRocmVhZCB0byBhIHNwZWNpZmljIENQVS4NCj4gDQo+IElmIHRoZSBO
-QVBJIHByb2Nlc3NpbmcgaGFwcGVucyB2aWEgaW50ZXJydXB0cywgdGhlIHNjaGVkdWxlciBjb3Vs
-ZCBtb3ZlDQo+IHRoZSBhcHAgdGhyZWFkIHRvIHRoZSBzYW1lIENQVSB0aGF0IE5BUEkgcmFuIG9u
-Lg0KPiANCj4+DQo+PiAxLjIuIEkgc2VlIHRoYXQgU09fSU5DT01JTkdfTkFQSV9JRCBpcyB0aWdo
-dGx5IGNvdXBsZWQgd2l0aCBidXN5X3BvbGwuIA0KPj4gSXQgaXMgZW5hYmxlZCBvbmx5IGlmIENP
-TkZJR19ORVRfUlhfQlVTWV9QT0xMIGlzIHNldC4gSXMgdGhlcmUgYSByZWFsIA0KPj4gcmVhc29u
-IHdoeSBpdCBjYW4ndCBiZSB1c2VkIHdpdGhvdXQgYnVzeV9wb2xsPyBJbiBvdGhlciB3b3Jkcywg
-aWYgd2UgDQo+PiBtb2RpZnkgdGhlIGtlcm5lbCB0byBkcm9wIHRoaXMgcmVxdWlyZW1lbnQsIHdp
-bGwgdGhlIGtlcm5lbCBzdGlsbCANCj4+IHNjaGVkdWxlIHRoZSBhcHBsaWNhdGlvbiB0aHJlYWQg
-b24gdGhlIHNhbWUgQ1BVIGFzIE5BUEkgd2hlbiBidXN5X3BvbGwgDQo+PiBpcyBub3QgdXNlZD8N
-Cj4gDQo+IEl0IHNob3VsZCBiZSBPSyB0byByZW1vdmUgdGhpcyByZXN0cmljdGlvbiwgYnV0IHJl
-cXVpcmVzIGVuYWJsaW5nIHRoaXMgDQo+IGluIHNrYl9tYXJrX25hcGlfaWQoKSBhbmQgc2tfbWFy
-a19uYXBpX2lkKCkgdG9vLg0KPiANCj4+DQo+PiAyLiBDYW4geW91IGNvbXBhcmUgQURRIHRvIGFS
-RlMrWFBTPyBhUkZTIHByb3ZpZGVzIGEgd2F5IHRvIHN0ZWVyIA0KPj4gdHJhZmZpYyB0byB0aGUg
-YXBwbGljYXRpb24ncyBDUFUgaW4gYW4gYXV0b21hdGljIGZhc2hpb24sIGFuZCB4cHNfcnhxcyAN
-Cj4+IGNhbiBiZSB1c2VkIHRvIHRyYW5zbWl0IGZyb20gdGhlIGNvcnJlc3BvbmRpbmcgcXVldWVz
-LiBUaGlzIHNldHVwIA0KPj4gZG9lc24ndCBuZWVkIG1hbnVhbCBjb25maWd1cmF0aW9uIG9mIFRD
-cyBhbmQgaXMgbm90IGxpbWl0ZWQgdG8gNCANCj4+IGFwcGxpY2F0aW9ucy4gVGhlIGRpZmZlcmVu
-Y2Ugb2YgQURRIGlzIHRoYXQgKGluIG15IHVuZGVyc3RhbmRpbmcpIGl0IA0KPj4gbW92ZXMgdGhl
-IGFwcGxpY2F0aW9uIHRvIHRoZSBSWCBDUFUsIHdoaWxlIGFSRlMgc3RlZXJzIHRoZSB0cmFmZmlj
-IHRvIA0KPj4gdGhlIFJYIHF1ZXVlIGhhbmRsZWQgbXkgdGhlIGFwcGxpY2F0aW9uJ3MgQ1BVLiBJ
-cyB0aGVyZSBhbnkgYWR2YW50YWdlIA0KPj4gb2YgQURRIG92ZXIgYVJGUywgdGhhdCBJIGZhaWxl
-ZCB0byBmaW5kPw0KPiANCj4gYVJGUytYUFMgdGllcyBhcHAgdGhyZWFkIHRvIGEgY3B1LA0KDQpX
-ZWxsLCBub3QgZXhhY3RseS4gVG8gcGluIHRoZSBhcHAgdGhyZWFkIHRvIGEgQ1BVLCBvbmUgdXNl
-cyANCnRhc2tzZXQvc2NoZWRfc2V0YWZmaW5pdHksIHdoaWxlIGFSRlMrWFBTIHBpY2sgYSBxdWV1
-ZSB0aGF0IGNvcnJlc3BvbmRzIA0KdG8gdGhhdCBDUFUuDQoNCj4gd2hlcmVhcyBBRFEgdGllcyBh
-cHAgdGhyZWFkIHRvIGEgbmFwaSANCj4gaWQgd2hpY2ggaW4gdHVybiB0aWVzIHRvIGEgcXVldWUo
-cykNCg0KU28sIGJhc2ljYWxseSwgYm90aCB0ZWNobm9sb2dpZXMgcmVzdWx0IGluIG1ha2luZyBO
-QVBJIGFuZCB0aGUgYXBwIHJ1biANCm9uIHRoZSBzYW1lIENQVS4gVGhlIGRpZmZlcmVuY2UgdGhh
-dCBJIHNlZSBpcyB0aGF0IEFEUSBmb3JjZXMgTkFQSSANCnByb2Nlc3NpbmcgKGluIGJ1c3kgcG9s
-bGluZykgb24gdGhlIGFwcCdzIENQVSwgd2hpbGUgYVJGUyBzdGVlcnMgdGhlIA0KdHJhZmZpYyB0
-byBhIHF1ZXVlLCB3aG9zZSBOQVBJIHJ1bnMgb24gdGhlIGFwcCdzIENQVS4gVGhlIGVmZmVjdCBp
-cyB0aGUgDQpzYW1lLCBidXQgQURRIHJlcXVpcmVzIGJ1c3kgcG9sbGluZy4gSXMgbXkgdW5kZXJz
-dGFuZGluZyBjb3JyZWN0Pw0KDQo+IEFEUSBhbHNvIHByb3ZpZGVzIDIgbGV2ZWxzIG9mIGZpbHRl
-cmluZyBjb21wYXJlZCB0byBhUkZTK1hQUy4gVGhlIGZpcnN0DQo+IGxldmVsIG9mIGZpbHRlcmlu
-ZyBzZWxlY3RzIGEgcXVldWUtc2V0IGFzc29jaWF0ZWQgd2l0aCB0aGUgYXBwbGljYXRpb24NCj4g
-YW5kIHRoZSBzZWNvbmQgbGV2ZWwgZmlsdGVyIG9yIFJTUyB3aWxsIHNlbGVjdCBhIHF1ZXVlIHdp
-dGhpbiB0aGF0IHF1ZXVlDQo+IHNldCBhc3NvY2lhdGVkIHdpdGggYW4gYXBwIHRocmVhZC4NCg0K
-VGhpcyBkaWZmZXJlbmNlIGxvb2tzIGltcG9ydGFudC4gU28sIEFEUSByZXNlcnZlcyBhIGRlZGlj
-YXRlZCBzZXQgb2YgDQpxdWV1ZXMgc29sZWx5IGZvciB0aGUgYXBwbGljYXRpb24gdXNlLg0KDQo+
-IFRoZSBjdXJyZW50IGludGVyZmFjZSB0byBjb25maWd1cmUgQURRIGxpbWl0cyB1cyB0byBzdXBw
-b3J0IHVwdG8gMTYNCj4gYXBwbGljYXRpb24gc3BlY2lmaWMgcXVldWUgc2V0cyhUQ19NQVhfUVVF
-VUUpDQoNCiBGcm9tIHRoZSBjb21taXQgbWVzc2FnZToNCg0KaHR0cHM6Ly9wYXRjaHdvcmsub3ps
-YWJzLm9yZy9wcm9qZWN0L25ldGRldi9wYXRjaC8yMDE4MDIxNDE3NDUzOS4xMTM5Mi01LWplZmZy
-ZXkudC5raXJzaGVyQGludGVsLmNvbS8NCg0KSSBnb3QgdGhhdCBpNDBlIHN1cHBvcnRzIHVwIHRv
-IDQgZ3JvdXBzLiBIYXMgdGhpcyBsaW1pdGF0aW9uIGJlZW4gDQpsaWZ0ZWQsIG9yIGFyZSB5b3Ug
-c2F5aW5nIHRoYXQgMTYgaXMgdGhlIGxpbWl0YXRpb24gb2YgbXFwcmlvLCB3aGlsZSB0aGUgDQpk
-cml2ZXIgbWF5IHN1cHBvcnQgZmV3ZXI/IE9yIGlzIGl0IGRpZmZlcmVudCBmb3IgZGlmZmVyZW50
-IEludGVsIGRyaXZlcnM/DQoNCj4gDQo+IA0KPj4NCj4+IDMuIEF0IFsxXSwgeW91IG1lbnRpb24g
-dGhhdCBBRFEgY2FuIGJlIHVzZWQgdG8gY3JlYXRlIHNlcGFyYXRlIFJTUyANCj4+IHNldHMuIMKg
-wqBDb3VsZCB5b3UgZWxhYm9yYXRlIGFib3V0IHRoZSBBUEkgdXNlZD8gRG9lcyB0aGUgdGMgbXFw
-cmlvIA0KPj4gY29uZmlndXJhdGlvbiBhbHNvIGFmZmVjdCBSU1M/IENhbiBpdCBiZSB0dXJuZWQg
-b24vb2ZmPw0KPiANCj4gWWVzLiB0YyBtcXByaW8gYWxsb3dzIHRvIGNyZWF0ZSBxdWV1ZS1zZXRz
-IHBlciBhcHBsaWNhdGlvbiBhbmQgdGhlDQo+IGRyaXZlciBjb25maWd1cmVzIFJTUyBwZXIgcXVl
-dWUtc2V0Lg0KPiANCj4+DQo+PiA0LiBIb3cgaXMgdGMgZmxvd2VyIHVzZWQgaW4gY29udGV4dCBv
-ZiBBRFE/IERvZXMgdGhlIHVzZXIgbmVlZCB0byANCj4+IHJlZmxlY3QgdGhlIGNvbmZpZ3VyYXRp
-b24gaW4gYm90aCBtcXByaW8gcWRpc2MgKGZvciBUWCkgYW5kIHRjIGZsb3dlciANCj4+IChmb3Ig
-UlgpPyBJdCBsb29rcyBsaWtlIHRjIGZsb3dlciBtYXBzIGluY29taW5nIHRyYWZmaWMgdG8gVENz
-LCBidXQgDQo+PiB3aGF0IGlzIHRoZSBtZWNoYW5pc20gb2YgbWFwcGluZyBUQ3MgdG8gUlggcXVl
-dWVzPw0KPiANCj4gdGMgbXFwcmlvIGlzIHVzZWQgdG8gbWFwIFRDcyB0byBSWCBxdWV1ZXMNCg0K
-T0ssIEkgZ290IGhvdyB0aGUgY29uZmlndXJhdGlvbiB3b3JrcyBub3csIHRoYW5rcyEgVGhvdWdo
-IEknbSBub3Qgc3VyZSANCm1xcHJpbyBpcyB0aGUgYmVzdCBBUEkgdG8gY29uZmlndXJlIHRoZSBS
-WCBzaWRlLiBJIHRob3VnaHQgaXQncyBzdXBwb3NlZCANCnRvIGNvbmZpZ3VyZSB0aGUgVFggcXVl
-dWVzLiBMb29rcyBtb3JlIGxpa2UgYSBoYWNrIHRvIG1lLg0KDQpFdGh0b29sIFJTUyBjb250ZXh0
-IEFQSSAobG9vayBmb3IgImNvbnRleHQiIGluIG1hbiBldGh0b29sKSBzZWVtcyBtb3JlIA0KYXBw
-cm9wcmlhdGUgZm9yIHRoZSBSWCBzaWRlIGZvciB0aGlzIHB1cnBvc2UuDQoNClRoYW5rcywNCk1h
-eA0KDQo+IHRjIGZsb3dlciBpcyB1c2VkIHRvIGNvbmZpZ3VyZSB0aGUgZmlyc3QgbGV2ZWwgb2Yg
-ZmlsdGVyIHRvIHJlZGlyZWN0DQo+IHBhY2tldHMgdG8gYSBxdWV1ZSBzZXQgYXNzb2NpYXRlZCB3
-aXRoIGFuIGFwcGxpY2F0aW9uLg0KPiANCj4+DQo+PiBJIHJlYWxseSBob3BlIHlvdSB3aWxsIGJl
-IGFibGUgdG8gc2hlZCBtb3JlIGxpZ2h0IG9uIHRoaXMgZmVhdHVyZSB0byANCj4+IGluY3JlYXNl
-IG15IGF3YXJlbmVzcyBvbiBob3cgdG8gdXNlIGl0IGFuZCB0byBjb21wYXJlIGl0IHdpdGggYVJG
-Uy4NCj4gDQo+IEhvcGUgdGhpcyBoZWxwcyBhbmQgd2Ugd2lsbCBnbyBvdmVyIGluIG1vcmUgZGV0
-YWlsIGluIG91ciBuZXRkZXYgc2Vzc2lvbi4NCj4gDQo+Pg0KPj4gVGhhbmtzLA0KPj4gTWF4DQo+
-Pg0KPj4gWzFdOiANCj4+IGh0dHBzOi8vbmV0ZGV2Y29uZi5pbmZvLzB4MTQvc2Vzc2lvbi5odG1s
-P3RhbGstQURRLWZvci1zeXN0ZW0tbGV2ZWwtbmV0d29yay1pby1wZXJmb3JtYW5jZS1pbXByb3Zl
-bWVudHMgDQo+Pg0KDQo=
+Davide Caratti <dcaratti@redhat.com> writes:
+
+> hello,
+>
+> my 2 cents:
+>
+> On Thu, 2020-06-25 at 21:53 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> I think it depends a little on the use case; some callers actually care
+>> about the VLAN tags themselves and handle that specially (e.g.,
+>> act_csum).
+>
+> I remember taht something similar was discussed about 1 year ago [1].
+
+Ah, thank you for the pointer!
+
+>> Whereas others (e.g., sch_dsmark) probably will have the same
+>> issue.
+>
+> I'd say that the issue "propagates" to all qdiscs that mangle the ECN-CE
+> bit (i.e., calling INET_ECN_set_ce() [2]), most notably all the RED
+> variants and "codel/fq_codel".
+
+Yeah, I think we should fix INET_ECN_set_ce() instead of re-implementing
+it in CAKE. See below, though.
+
+>>  I guess I can trying going through them all and figuring out if
+>> there's a more generic solution.
+>
+> For sch_cake, I think that the qdisc shouldn't look at the IP header when
+> it schedules packets having a VLAN tag.
+>
+> Probably, when tc_skb_protocol() returns ETH_P_8021Q or ETH_P_8021AD, we
+> should look at the VLAN priority (PCP) bits (and that's something that
+> cake doesn't do currently - but I have a small patch in my stash that
+> implements this: please let me know if you are interested in seeing it :)
+> ).
+>
+> Then, to ensure that the IP precedence is respected, even with different
+> VLAN tags, users should explicitly configure TC filters that "map" the
+> DSCP value to a PCP value. This would ensure that configured priority is
+> respected by the scheduler, and would also be flexible enough to allow
+> different "mappings".
+
+I think you have this the wrong way around :)
+
+I.e., classifying based on VLAN priority is even more esoteric than
+using diffserv markings, so that should not be the default. Making it
+the default would also make the behaviour change for the same traffic if
+there's a VLAN tag present, which is bound to confuse people. I suppose
+it could be an option, but not really sure that's needed, since as you
+say you could just implement it with your own TC filters...
+
+> Sure, my proposal does not cover the problem of mangling the CE bit
+> inside VLAN-tagged packets, i.e. if we should understand if qdiscs
+> should allow it or not.
+
+Hmm, yeah, that's the rub, isn't it? I think this is related to this
+commit, which first introduced tc_skb_protocol():
+
+d8b9605d2697 ("net: sched: fix skb->protocol use in case of accelerated vla=
+n path")
+
+That commit at least made the behaviour consistent across
+accelerated/non-accelerated VLANs. However, the patch description
+asserts that 'tc code .. expects vlan protocol type [in skb->protocol]'.
+Looking at the various callers, I'm not actually sure that's true, in
+the sense that most of the callers don't handle VLAN ethertypes at all,
+but expects to find an IP header. This is the case for at least:
+
+- act_ctinfo
+- act_skbedit
+- cls_flow
+- em_ipset
+- em_ipt
+- sch_cake
+- sch_dsmark
+
+In fact the only caller that explicitly handles a VLAN ethertype seems
+to be act_csum; and that handles it in a way that also just skips the
+VLAN headers, albeit by skb_pull()'ing the header.
+
+cls_api, em_meta and sch_teql don't explicitly handle it; but returning
+the VLAN ethertypes to those does seem to make sense, since they just
+pass the value somewhere else.
+
+So my suggestion would be to add a new helper that skips the VLAN tags
+and finds the L3 ethertype (i.e., basically cake_skb_proto() as
+introduced in this patch), then switch all the callers listed above, as
+well as the INET_ECN_set_ce() over to using that. Maybe something like
+'skb_l3_protocol()' which could go into skbuff.h itself, so the ECN code
+can also find it?
+
+Any objections to this? It's not actually clear to me how the discussion
+you quoted above landed; but this will at least make things consistent
+across all the different actions/etc.
+
+Adding in Jiri and Jamal as well since they were involved in the patch I
+quoted above.
+
+-Toke
+
