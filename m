@@ -2,188 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C79B920A9BE
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 02:14:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C09620A9E6
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 02:49:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726296AbgFZAN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Jun 2020 20:13:59 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:5994 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725983AbgFZANy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 20:13:54 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 05Q08iv3007909
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 17:13:52 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=r+we4rEQGEjTppL2F3NCUCIjsxEkkAqKC42zuTBexxU=;
- b=Nz8/QSqR5FwXfi+6cgwizBoqKg37ICgj6keks0i0qmI6lbdI/nI39C++KJi22vdFA/ik
- Yb3y+N2vnxoBCVr9Zc/7p98Ltu9rt+smRsmBA95q4BFu1Ozg/BHduF/ZdRH8TMZLuatc
- qQfqdUhR3XM4/5587WMnTR4ka69luqCCCpw= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 31ux1gjwfn-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 17:13:52 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 25 Jun 2020 17:13:51 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id E77D262E4FA9; Thu, 25 Jun 2020 17:13:49 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Song Liu <songliubraving@fb.com>
-Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <peterz@infradead.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <kernel-team@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@chromium.org>, Song Liu <songliubraving@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 4/4] selftests/bpf: add bpf_iter test with bpf_get_task_stack()
-Date:   Thu, 25 Jun 2020 17:13:32 -0700
-Message-ID: <20200626001332.1554603-5-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200626001332.1554603-1-songliubraving@fb.com>
-References: <20200626001332.1554603-1-songliubraving@fb.com>
+        id S1726553AbgFZAs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Jun 2020 20:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58144 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725834AbgFZAs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Jun 2020 20:48:56 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32447C08C5C1
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 17:48:56 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id cy7so5647220edb.5
+        for <netdev@vger.kernel.org>; Thu, 25 Jun 2020 17:48:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HvfaIlqGMo4LzixLcxPQErGaf+kB+CwopPGbquM8cWU=;
+        b=KfPK2LqRfHk02KdcVZBu287AuylKbexQq8titByzMiehfr3Nbi8BlxTaOr0K3kV/Cd
+         jTygaGJatxcEcgEcAo0/46Z89GM1jC9O07aKL4sIEURWc1q57sGyLCPARyfhLW9QCcq9
+         YAB6P5j4iVZWNJDaEIUgv/hqb2z2o+/g0n3CJosA+KceNHHL40h5tpGG1kXSdDMpffmH
+         7hKfxgCbHbTO1x8XohW/7ciZYznSIgaPOeS5saj1NOBQJmhpCBLVh96lH//Yy34V7PD4
+         OgxlPrSjxSvKTU82wYjcJ+ol+0bPfXtZUcVlRjW5B8AQXjYfG4RK2jPUzNXynD1Vcvap
+         5jQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HvfaIlqGMo4LzixLcxPQErGaf+kB+CwopPGbquM8cWU=;
+        b=NMiqzFpziHrqW2DkRF16VajoV7TQYdIhy1evBx7W4Mmw0pw631CVX7+UUjN3W0ROxm
+         iH6wlQBRi+/yiQcD8jkHirYboaQGyyNvNlunIMAas5zHp9u6L0V+wMMBCYJzW1nPrglq
+         JvZsX5qM+YkH3SDB4mkWNrTh19udV6nRq7pEh726MZcPvMefD49rZFYATlsSNnELrkEm
+         LbaEO1FTyL7ucuvWlP/Ou2DKJopabIt+dEgbXnD41wOp0TZT9Y3Ipk8qTHsmHxVZj/i6
+         ixoL2uZApVW8V2VHdLhdsFpUfPVebhnJymqyfVvrCuxeGAuSPf8H+M2yUWp8QdBGaYwu
+         Q5xg==
+X-Gm-Message-State: AOAM532oyJJet0RyM+2wVMS2zlZUxuJAOijYXQahvPEHUzSm9ckFJz9v
+        RDXwnbIepy+bhwV8r0ZR57kyI1A8pB42aa4CsxSmFg==
+X-Google-Smtp-Source: ABdhPJwIoQJ84VKFOOsc2ZNyMlQ8RrawbUZ7qtIH8Z1TLUQF0X2pSVWE6EoCMz9HV/KXTCb7GVwBiNzuUSBbT4bydio=
+X-Received: by 2002:a05:6402:144a:: with SMTP id d10mr875217edx.35.1593132534519;
+ Thu, 25 Jun 2020 17:48:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-25_19:2020-06-25,2020-06-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- adultscore=0 mlxlogscore=999 clxscore=1015 priorityscore=1501
- lowpriorityscore=0 cotscore=-2147483648 phishscore=0 spamscore=0
- mlxscore=0 bulkscore=0 impostorscore=0 suspectscore=8 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006250142
-X-FB-Internal: deliver
+References: <20200624192310.16923-1-justin.iurman@uliege.be>
+ <20200624192310.16923-3-justin.iurman@uliege.be> <CALx6S374PQ7GGA_ey6wCwc55hUzOx+2kWT=96TzyF0=g=8T=WA@mail.gmail.com>
+ <1597014330.36579162.1593107802322.JavaMail.zimbra@uliege.be>
+In-Reply-To: <1597014330.36579162.1593107802322.JavaMail.zimbra@uliege.be>
+From:   Tom Herbert <tom@herbertland.com>
+Date:   Thu, 25 Jun 2020 17:48:43 -0700
+Message-ID: <CALx6S37wpA5Mc7jdUk8_sR_fJTc-zRpvY8VkDV=NoWdvDhKfpg@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/5] ipv6: IOAM tunnel decapsulation
+To:     Justin Iurman <justin.iurman@uliege.be>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The new test is similar to other bpf_iter tests.
+On Thu, Jun 25, 2020 at 10:56 AM Justin Iurman <justin.iurman@uliege.be> wrote:
+>
+> >> Implement the IOAM egress behavior.
+> >>
+> >> According to RFC 8200:
+> >> "Extension headers (except for the Hop-by-Hop Options header) are not
+> >>  processed, inserted, or deleted by any node along a packet's delivery
+> >>  path, until the packet reaches the node (or each of the set of nodes,
+> >>  in the case of multicast) identified in the Destination Address field
+> >>  of the IPv6 header."
+> >>
+> >> Therefore, an ingress node (an IOAM domain border) must encapsulate an
+> >> incoming IPv6 packet with another similar IPv6 header that will contain
+> >> IOAM data while it traverses the domain. When leaving, the egress node,
+> >> another IOAM domain border which is also the tunnel destination, must
+> >> decapsulate the packet.
+> >
+> > This is just IP in IP encapsulation that happens to be terminated at
+> > an egress node of the IOAM domain. The fact that it's IOAM isn't
+> > germaine, this IP in IP is done in a variety of ways. We should be
+> > using the normal protocol handler for NEXTHDR_IPV6  instead of special
+> > case code.
+>
+> Agree. The reason for this special case code is that I was not aware of a more elegant solution.
+>
+The current implementation might not be what you're looking for since
+ip6ip6 wants a tunnel configured. What we really want is more like
+anonymous decapsulation, that is just decap the ip6ip6 packet and
+resubmit the packet into the stack (this is what you patch is doing).
+The idea has been kicked around before, especially in the use case
+where we're tunneling across a domain and there could be hundreds of
+such tunnels to some device. I think it's generally okay to do this,
+although someone might raise security concerns since it sort of
+obfuscates the "real packet". Probably makes sense to have a sysctl to
+enable this and probably could default to on. Of course, if we do this
+the next question is should we also implement anonymous decapsulation
+for 44,64,46 tunnels.
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../selftests/bpf/prog_tests/bpf_iter.c       | 17 ++++++
- .../selftests/bpf/progs/bpf_iter_task_stack.c | 60 +++++++++++++++++++
- 2 files changed, 77 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_stack=
-.c
+Tom
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/te=
-sting/selftests/bpf/prog_tests/bpf_iter.c
-index 87c29dde1cf96..baa83328f810d 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-@@ -5,6 +5,7 @@
- #include "bpf_iter_netlink.skel.h"
- #include "bpf_iter_bpf_map.skel.h"
- #include "bpf_iter_task.skel.h"
-+#include "bpf_iter_task_stack.skel.h"
- #include "bpf_iter_task_file.skel.h"
- #include "bpf_iter_test_kern1.skel.h"
- #include "bpf_iter_test_kern2.skel.h"
-@@ -106,6 +107,20 @@ static void test_task(void)
- 	bpf_iter_task__destroy(skel);
- }
-=20
-+static void test_task_stack(void)
-+{
-+	struct bpf_iter_task_stack *skel;
-+
-+	skel =3D bpf_iter_task_stack__open_and_load();
-+	if (CHECK(!skel, "bpf_iter_task_stack__open_and_load",
-+		  "skeleton open_and_load failed\n"))
-+		return;
-+
-+	do_dummy_read(skel->progs.dump_task_stack);
-+
-+	bpf_iter_task_stack__destroy(skel);
-+}
-+
- static void test_task_file(void)
- {
- 	struct bpf_iter_task_file *skel;
-@@ -392,6 +407,8 @@ void test_bpf_iter(void)
- 		test_bpf_map();
- 	if (test__start_subtest("task"))
- 		test_task();
-+	if (test__start_subtest("task_stack"))
-+		test_task_stack();
- 	if (test__start_subtest("task_file"))
- 		test_task_file();
- 	if (test__start_subtest("anon"))
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_task_stack.c b/to=
-ols/testing/selftests/bpf/progs/bpf_iter_task_stack.c
-new file mode 100644
-index 0000000000000..83aca5b1a7965
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter_task_stack.c
-@@ -0,0 +1,60 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+/* "undefine" structs in vmlinux.h, because we "override" them below */
-+#define bpf_iter_meta bpf_iter_meta___not_used
-+#define bpf_iter__task bpf_iter__task___not_used
-+#include "vmlinux.h"
-+#undef bpf_iter_meta
-+#undef bpf_iter__task
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+/* bpf_get_task_stack needs a stackmap to work */
-+struct {
-+	__uint(type, BPF_MAP_TYPE_STACK_TRACE);
-+	__uint(max_entries, 16384);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u64) * 20);
-+} stackmap SEC(".maps");
-+
-+struct bpf_iter_meta {
-+	struct seq_file *seq;
-+	__u64 session_id;
-+	__u64 seq_num;
-+} __attribute__((preserve_access_index));
-+
-+struct bpf_iter__task {
-+	struct bpf_iter_meta *meta;
-+	struct task_struct *task;
-+} __attribute__((preserve_access_index));
-+
-+#define MAX_STACK_TRACE_DEPTH   64
-+unsigned long entries[MAX_STACK_TRACE_DEPTH];
-+
-+SEC("iter/task")
-+int dump_task_stack(struct bpf_iter__task *ctx)
-+{
-+	struct seq_file *seq =3D ctx->meta->seq;
-+	struct task_struct *task =3D ctx->task;
-+	int i, retlen;
-+
-+	if (task =3D=3D (void *)0)
-+		return 0;
-+
-+	retlen =3D bpf_get_task_stack(task, entries,
-+				    MAX_STACK_TRACE_DEPTH * sizeof(unsigned long), 0);
-+	if (retlen < 0)
-+		return 0;
-+
-+	BPF_SEQ_PRINTF(seq, "pid: %8u num_entries: %8u\n", task->pid,
-+		       retlen / sizeof(unsigned long));
-+	for (i =3D 0; i < MAX_STACK_TRACE_DEPTH / sizeof(unsigned long); i++) {
-+		if (retlen > i * sizeof(unsigned long))
-+			BPF_SEQ_PRINTF(seq, "[<0>] %pB\n", (void *)entries[i]);
-+	}
-+	BPF_SEQ_PRINTF(seq, "\n");
-+
-+	return 0;
-+}
---=20
-2.24.1
-
+> Justin
+>
+> >> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
+> >> ---
+> >>  include/linux/ipv6.h |  1 +
+> >>  net/ipv6/ip6_input.c | 22 ++++++++++++++++++++++
+> >>  2 files changed, 23 insertions(+)
+> >>
+> >> diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+> >> index 2cb445a8fc9e..5312a718bc7a 100644
+> >> --- a/include/linux/ipv6.h
+> >> +++ b/include/linux/ipv6.h
+> >> @@ -138,6 +138,7 @@ struct inet6_skb_parm {
+> >>  #define IP6SKB_HOPBYHOP        32
+> >>  #define IP6SKB_L3SLAVE         64
+> >>  #define IP6SKB_JUMBOGRAM      128
+> >> +#define IP6SKB_IOAM           256
+> >>  };
+> >>
+> >>  #if defined(CONFIG_NET_L3_MASTER_DEV)
+> >> diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+> >> index e96304d8a4a7..8cf75cc5e806 100644
+> >> --- a/net/ipv6/ip6_input.c
+> >> +++ b/net/ipv6/ip6_input.c
+> >> @@ -361,9 +361,11 @@ INDIRECT_CALLABLE_DECLARE(int tcp_v6_rcv(struct sk_buff
+> >> *));
+> >>  void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
+> >>                               bool have_final)
+> >>  {
+> >> +       struct inet6_skb_parm *opt = IP6CB(skb);
+> >>         const struct inet6_protocol *ipprot;
+> >>         struct inet6_dev *idev;
+> >>         unsigned int nhoff;
+> >> +       u8 hop_limit;
+> >>         bool raw;
+> >>
+> >>         /*
+> >> @@ -450,6 +452,25 @@ void ip6_protocol_deliver_rcu(struct net *net, struct
+> >> sk_buff *skb, int nexthdr,
+> >>         } else {
+> >>                 if (!raw) {
+> >>                         if (xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
+> >> +                               /* IOAM Tunnel Decapsulation
+> >> +                                * Packet is going to re-enter the stack
+> >> +                                */
+> >> +                               if (nexthdr == NEXTHDR_IPV6 &&
+> >> +                                   (opt->flags & IP6SKB_IOAM)) {
+> >> +                                       hop_limit = ipv6_hdr(skb)->hop_limit;
+> >> +
+> >> +                                       skb_reset_network_header(skb);
+> >> +                                       skb_reset_transport_header(skb);
+> >> +                                       skb->encapsulation = 0;
+> >> +
+> >> +                                       ipv6_hdr(skb)->hop_limit = hop_limit;
+> >> +                                       __skb_tunnel_rx(skb, skb->dev,
+> >> +                                                       dev_net(skb->dev));
+> >> +
+> >> +                                       netif_rx(skb);
+> >> +                                       goto out;
+> >> +                               }
+> >> +
+> >>                                 __IP6_INC_STATS(net, idev,
+> >>                                                 IPSTATS_MIB_INUNKNOWNPROTOS);
+> >>                                 icmpv6_send(skb, ICMPV6_PARAMPROB,
+> >> @@ -461,6 +482,7 @@ void ip6_protocol_deliver_rcu(struct net *net, struct
+> >> sk_buff *skb, int nexthdr,
+> >>                         consume_skb(skb);
+> >>                 }
+> >>         }
+> >> +out:
+> >>         return;
+> >>
+> >>  discard:
+> >> --
+> >> 2.17.1
