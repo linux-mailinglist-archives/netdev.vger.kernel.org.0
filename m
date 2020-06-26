@@ -2,254 +2,829 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F350620B075
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:29:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32B6120B07A
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:29:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728574AbgFZL3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 07:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728558AbgFZL3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:29:10 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201F1C08C5C1
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 04:29:10 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id o2so9053329wmh.2
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 04:29:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:reply-to:to:cc:references:in-reply-to:subject:date:message-id
-         :mime-version:content-transfer-encoding:content-language
-         :thread-index;
-        bh=Sh1TY5f7VkdHb/epA0QmHxZ9o+LQOqnnqVolI3HlCb4=;
-        b=ZO+b3ODyCsQ4uBMCjYFaaSB87NYZwV9/C2GCD9Ybg20RMszy570DcTeoylSjl3M+PK
-         /VuWyqimj9gen0X+JCQgTFlYQ84PIssiv2c/OYisxfm544d3U2FpPSrpUUymRLFADKEg
-         dmcC+rU6QfpDBIdJEkK67Qz7w9M8YDb6RQ04kuhB0g74B5ueyyRfAT8Q9LPHIkQZuuYO
-         zxXznmejV/GL3hkGTwSh03Oz0W3VwTSgCR+9EJIbYq164JwnFmFTj6qP3C8lmZn6WGdL
-         5uccpD7uYtIF4x4HHlkBXNBbVNq6P+egMsBgMMexoEebZHR11NchwNbK7sRkSdArcCKz
-         ypmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:reply-to:to:cc:references:in-reply-to
-         :subject:date:message-id:mime-version:content-transfer-encoding
-         :content-language:thread-index;
-        bh=Sh1TY5f7VkdHb/epA0QmHxZ9o+LQOqnnqVolI3HlCb4=;
-        b=ORpJgoI9Hf3astLhsTY9k91nq1pujQ0C63Hly9B2rb/AVueZrKih3r6fklelbBJ7LA
-         bN/VzQVxqRthjlLwSFRowT4+bs9s0//Q8HIzeQR+cppd0Fcs0WtzBuvvsx8emIvfMgww
-         Kxh4/5eVj6IaefuWiBWAO4MZNDyTD9EI8stAOYPAIqqd9CRefgqy7Bw2AX7VoRgsBL8J
-         DycJ/Ldxv2eDmlghT2f0RhtulVFaPwDDyJrq3zDxZQMCnFuprN+kgUXpuM/tZp1s7Ptx
-         TvsKuQuKFbvFoSVea21nxDodCQlLXhiahCpiFwITHVA4JRj7zibW1qJkxa6WivNMEQkY
-         TDRw==
-X-Gm-Message-State: AOAM531sIbL1RCWfcruvCweRGuh2Zg63vPXnWJu2E4FPuBK6wTO4sRw0
-        y7QBWSnZOfifOU7+BPM39WU=
-X-Google-Smtp-Source: ABdhPJzKneOZIQsbZ22G0vDlMqyaZkKLUwC0Sx3jDkuiDXV99CKVyKQDOZ9iZAqHmeoqZJXCa++RqQ==
-X-Received: by 2002:a1c:9cd0:: with SMTP id f199mr2847028wme.94.1593170948868;
-        Fri, 26 Jun 2020 04:29:08 -0700 (PDT)
-Received: from CBGR90WXYV0 (54-240-197-236.amazon.com. [54.240.197.236])
-        by smtp.gmail.com with ESMTPSA id r10sm19362708wrm.17.2020.06.26.04.29.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Jun 2020 04:29:08 -0700 (PDT)
-From:   Paul Durrant <xadimgnik@gmail.com>
-X-Google-Original-From: "Paul Durrant" <paul@xen.org>
-Reply-To: <paul@xen.org>
-To:     "'Denis Kirjanov'" <kda@linux-powerpc.org>,
-        <netdev@vger.kernel.org>
-Cc:     <brouer@redhat.com>, <jgross@suse.com>, <wei.liu@kernel.org>,
-        <ilias.apalodimas@linaro.org>
-References: <1593170826-1600-1-git-send-email-kda@linux-powerpc.org> <1593170826-1600-4-git-send-email-kda@linux-powerpc.org>
-In-Reply-To: <1593170826-1600-4-git-send-email-kda@linux-powerpc.org>
-Subject: RE: [PATCH net-next v12 3/3] xen networking: add XDP offset adjustment to xen-netback
-Date:   Fri, 26 Jun 2020 12:29:07 +0100
-Message-ID: <000801d64bad$01b45830$051d0890$@xen.org>
+        id S1728565AbgFZL3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 07:29:52 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:57452 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728467AbgFZL3v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:29:51 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4793B20076;
+        Fri, 26 Jun 2020 11:29:49 +0000 (UTC)
+Received: from us4-mdac16-50.at1.mdlocal (unknown [10.110.50.133])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 462D38009B;
+        Fri, 26 Jun 2020 11:29:49 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.102])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 96A664006E;
+        Fri, 26 Jun 2020 11:29:48 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 595676C0073;
+        Fri, 26 Jun 2020 11:29:48 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 26 Jun
+ 2020 12:29:42 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 06/15] sfc: split up nic.h
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+References: <1a1716f9-f909-4093-8107-3c2435d834c5@solarflare.com>
+Message-ID: <cb9e50f2-b147-7230-253b-2a976ccf2a7a@solarflare.com>
+Date:   Fri, 26 Jun 2020 12:29:39 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+In-Reply-To: <1a1716f9-f909-4093-8107-3c2435d834c5@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: en-gb
-Thread-Index: AQFtBvJntFcnGl4dTnLrH7EiRU2MRwG66dCAqa90sdA=
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25504.003
+X-TM-AS-Result: No-5.730200-8.000000-10
+X-TMASE-MatchedRID: VbDXM5/NWNJyOVk+FPzL1znWPqHIgPkVFugFBW/IrRpTorRIuadptLBZ
+        szSz1qeig7JIeR0pHqZTvVffeIwvQwUcfW/oedmqnFVnNmvv47vLvfc3C6SWwgdkFovAReUoaUX
+        s6FguVy02dnVybJBziYKxaaSRk3XGuIonElFF+KGLCYYg4B+SYUqAhuLHn5fEvG/ZjO2Z8dRwDt
+        YJWjotBZcDK8vJ3S53WWzqBh0gvID+7R666Nv/MSfphWrcxCwjeF6MevMVZUADAA5uRHailnjm0
+        APnwZU2y88WsMrwAs8UUZUcIrQXSSY3KbvVmCqgh2VzUlo4HVMEa8g1x8eqFxHFkFAjR1tn02wd
+        rrHq5dk6PfE3y61UJ/Upwle3EbpfCO9K4IAyv4ttawJSSsDgSXyzRzLq38pIqVMUMZkw+EK/Nu6
+        cJYw0FkxiHcoOrVcouEEbrtBsW0+t+oG+w5GDbkjdMvjHG2ZbxYt6Ilbxn6m+fWK8N2kAh+vt+N
+        YpsLRFByCs+a1lmJio2G4UH+Vcr/7Q+vCvN8cxyBWvqfKUOe5xWv4UB7dQNclGlivVky4t+3Lgf
+        IsOH3OKyF/OCH7LeBue0GemvyOBHMxD66p2PMISEYfcJF0pRctEPnVvPlFkiiKPXbEds+42m2uV
+        GloE8RII42Fbw8rEbt91DetHN6bRlxaUc/KTYYlSWYvdSPSYlNc2tyboPcJZmv1nL0uD0clQVvH
+        1JO6TxnYsahtjnFN5yQbZp1Axru+TiHQ4exl35p1ddw6V4RuN+W0gaFoavaU5HSRtIMsRMuTwba
+        qEJZNjH2GrNrri8shkX1ICvi+PJHTgf0XC7IueAiCmPx4NwLTrdaH1ZWqC1kTfEkyaZdz6C0ePs
+        7A07b4iOwQQ4jNiMxffta9++V0OF8KM2zmlcy5OGDhPp5eIG/Z/Bbtk474=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.730200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25504.003
+X-MDID: 1593170989-33Kj4lcqwtfO
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Denis Kirjanov <kda@linux-powerpc.org>
-> Sent: 26 June 2020 12:27
-> To: netdev@vger.kernel.org
-> Cc: brouer@redhat.com; jgross@suse.com; wei.liu@kernel.org; paul@xen.org; ilias.apalodimas@linaro.org
-> Subject: [PATCH net-next v12 3/3] xen networking: add XDP offset adjustment to xen-netback
-> 
-> the patch basically adds the offset adjustment and netfront
-> state reading to make XDP work on netfront side.
-> 
-> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
-> ---
->  drivers/net/xen-netback/common.h    |  4 ++++
->  drivers/net/xen-netback/interface.c |  2 ++
->  drivers/net/xen-netback/netback.c   |  7 +++++++
->  drivers/net/xen-netback/rx.c        | 15 ++++++++++++++-
->  drivers/net/xen-netback/xenbus.c    | 34 ++++++++++++++++++++++++++++++++++
->  5 files changed, 61 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/xen-netback/common.h b/drivers/net/xen-netback/common.h
-> index 05847eb..ae477f7 100644
-> --- a/drivers/net/xen-netback/common.h
-> +++ b/drivers/net/xen-netback/common.h
-> @@ -281,6 +281,9 @@ struct xenvif {
->  	u8 ipv6_csum:1;
->  	u8 multicast_control:1;
-> 
-> +	/* headroom requested by xen-netfront */
-> +	u16 xdp_headroom;
-> +
->  	/* Is this interface disabled? True when backend discovers
->  	 * frontend is rogue.
->  	 */
-> @@ -395,6 +398,7 @@ static inline pending_ring_idx_t nr_pending_reqs(struct xenvif_queue *queue)
->  irqreturn_t xenvif_interrupt(int irq, void *dev_id);
-> 
->  extern bool separate_tx_rx_irq;
-> +extern bool provides_xdp_headroom;
-> 
->  extern unsigned int rx_drain_timeout_msecs;
->  extern unsigned int rx_stall_timeout_msecs;
-> diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
-> index 0c8a02a..fc16edd 100644
-> --- a/drivers/net/xen-netback/interface.c
-> +++ b/drivers/net/xen-netback/interface.c
-> @@ -483,6 +483,8 @@ struct xenvif *xenvif_alloc(struct device *parent, domid_t domid,
->  	vif->queues = NULL;
->  	vif->num_queues = 0;
-> 
-> +	vif->netfront_xdp_headroom = 0;
-> +
+The new nic_common.h contains the inlines for NIC-type function dispatch,
+ declarations for NIC-generic functions in nic.c, and other similar NIC-
+ generic functionality.  Retained in nic.h are NIC-specific declarations
+ such as the siena and ef10 nic_data structs and various farch functions.
 
-Erm... surely this won't compile now?
+The EF100 driver will thus include nic_common.h but not nic.h.
 
-  Paul
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/ef10.c       |   6 +-
+ drivers/net/ethernet/sfc/nic.h        | 296 +-------------------------
+ drivers/net/ethernet/sfc/nic_common.h | 273 ++++++++++++++++++++++++
+ drivers/net/ethernet/sfc/ptp.c        |   3 +-
+ drivers/net/ethernet/sfc/ptp.h        |  45 ++++
+ 5 files changed, 322 insertions(+), 301 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/nic_common.h
+ create mode 100644 drivers/net/ethernet/sfc/ptp.h
 
->  	spin_lock_init(&vif->lock);
->  	INIT_LIST_HEAD(&vif->fe_mcast_addr);
-> 
-> diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
-> index 315dfc6..6dfca72 100644
-> --- a/drivers/net/xen-netback/netback.c
-> +++ b/drivers/net/xen-netback/netback.c
-> @@ -96,6 +96,13 @@
->  module_param_named(hash_cache_size, xenvif_hash_cache_size, uint, 0644);
->  MODULE_PARM_DESC(hash_cache_size, "Number of flows in the hash cache");
-> 
-> +/* The module parameter tells that we have to put data
-> + * for xen-netfront with the XDP_PACKET_HEADROOM offset
-> + * needed for XDP processing
-> + */
-> +bool provides_xdp_headroom = true;
-> +module_param(provides_xdp_headroom, bool, 0644);
-> +
->  static void xenvif_idx_release(struct xenvif_queue *queue, u16 pending_idx,
->  			       u8 status);
-> 
-> diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
-> index ef58870..c5e9e14 100644
-> --- a/drivers/net/xen-netback/rx.c
-> +++ b/drivers/net/xen-netback/rx.c
-> @@ -258,6 +258,19 @@ static void xenvif_rx_next_skb(struct xenvif_queue *queue,
->  		pkt->extra_count++;
->  	}
-> 
-> +	if (queue->vif->netfront_xdp_headroom) {
-> +		struct xen_netif_extra_info *extra;
-> +
-> +		extra = &pkt->extras[XEN_NETIF_EXTRA_TYPE_XDP - 1];
-> +
-> +		memset(extra, 0, sizeof(struct xen_netif_extra_info));
-> +		extra->u.xdp.headroom = queue->vif->netfront_xdp_headroom;
-> +		extra->type = XEN_NETIF_EXTRA_TYPE_XDP;
-> +		extra->flags = 0;
-> +
-> +		pkt->extra_count++;
-> +	}
-> +
->  	if (skb->sw_hash) {
->  		struct xen_netif_extra_info *extra;
-> 
-> @@ -356,7 +369,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue *queue,
->  				struct xen_netif_rx_request *req,
->  				struct xen_netif_rx_response *rsp)
->  {
-> -	unsigned int offset = 0;
-> +	unsigned int offset = queue->vif->netfront_xdp_headroom;
->  	unsigned int flags;
-> 
->  	do {
-> diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-> index 286054b..f321068 100644
-> --- a/drivers/net/xen-netback/xenbus.c
-> +++ b/drivers/net/xen-netback/xenbus.c
-> @@ -393,6 +393,24 @@ static void set_backend_state(struct backend_info *be,
->  	}
->  }
-> 
-> +static void read_xenbus_frontend_xdp(struct backend_info *be,
-> +				      struct xenbus_device *dev)
-> +{
-> +	struct xenvif *vif = be->vif;
-> +	u16 headroom;
-> +	int err;
-> +
-> +	err = xenbus_scanf(XBT_NIL, dev->otherend,
-> +			   "xdp-headroom", "%hu", &headroom);
-> +	if (err != 1) {
-> +		vif->netfront_xdp_headroom = 0;
-> +		return;
-> +	}
-> +	if (headroom > XEN_NETIF_MAX_XDP_HEADROOM)
-> +		headroom = XEN_NETIF_MAX_XDP_HEADROOM;
-> +	vif->netfront_xdp_headroom = headroom;
-> +}
-> +
->  /**
->   * Callback received when the frontend's state changes.
->   */
-> @@ -417,6 +435,11 @@ static void frontend_changed(struct xenbus_device *dev,
->  		set_backend_state(be, XenbusStateConnected);
->  		break;
-> 
-> +	case XenbusStateReconfiguring:
-> +		read_xenbus_frontend_xdp(be, dev);
-> +		xenbus_switch_state(dev, XenbusStateReconfigured);
-> +		break;
-> +
->  	case XenbusStateClosing:
->  		set_backend_state(be, XenbusStateClosing);
->  		break;
-> @@ -947,6 +970,8 @@ static int read_xenbus_vif_flags(struct backend_info *be)
->  	vif->ipv6_csum = !!xenbus_read_unsigned(dev->otherend,
->  						"feature-ipv6-csum-offload", 0);
-> 
-> +	read_xenbus_frontend_xdp(be, dev);
-> +
->  	return 0;
->  }
-> 
-> @@ -1036,6 +1061,15 @@ static int netback_probe(struct xenbus_device *dev,
->  			goto abort_transaction;
->  		}
-> 
-> +		/* we can adjust a headroom for netfront XDP processing */
-> +		err = xenbus_printf(xbt, dev->nodename,
-> +				    "feature-xdp-headroom", "%d",
-> +				    provides_xdp_headroom);
-> +		if (err) {
-> +			message = "writing feature-xdp-headroom";
-> +			goto abort_transaction;
-> +		}
-> +
->  		/* We don't support rx-flip path (except old guests who
->  		 * don't grok this feature flag).
->  		 */
-> --
-> 1.8.3.1
-
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 49af06ba7a8e..3bdb8606512a 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -1433,8 +1433,6 @@ static int efx_ef10_reset(struct efx_nic *efx, enum reset_type reset_type)
+ 	{ NULL, 64, 8 * MC_CMD_MAC_ ## mcdi_name }
+ #define EF10_OTHER_STAT(ext_name)				\
+ 	[EF10_STAT_ ## ext_name] = { #ext_name, 0, 0 }
+-#define GENERIC_SW_STAT(ext_name)				\
+-	[GENERIC_STAT_ ## ext_name] = { #ext_name, 0, 0 }
+ 
+ static const struct efx_hw_stat_desc efx_ef10_stat_desc[EF10_STAT_COUNT] = {
+ 	EF10_DMA_STAT(port_tx_bytes, TX_BYTES),
+@@ -1478,8 +1476,8 @@ static const struct efx_hw_stat_desc efx_ef10_stat_desc[EF10_STAT_COUNT] = {
+ 	EF10_DMA_STAT(port_rx_align_error, RX_ALIGN_ERROR_PKTS),
+ 	EF10_DMA_STAT(port_rx_length_error, RX_LENGTH_ERROR_PKTS),
+ 	EF10_DMA_STAT(port_rx_nodesc_drops, RX_NODESC_DROPS),
+-	GENERIC_SW_STAT(rx_nodesc_trunc),
+-	GENERIC_SW_STAT(rx_noskb_drops),
++	EFX_GENERIC_SW_STAT(rx_nodesc_trunc),
++	EFX_GENERIC_SW_STAT(rx_noskb_drops),
+ 	EF10_DMA_STAT(port_rx_pm_trunc_bb_overflow, PM_TRUNC_BB_OVERFLOW),
+ 	EF10_DMA_STAT(port_rx_pm_discard_bb_overflow, PM_DISCARD_BB_OVERFLOW),
+ 	EF10_DMA_STAT(port_rx_pm_trunc_vfifo_full, PM_TRUNC_VFIFO_FULL),
+diff --git a/drivers/net/ethernet/sfc/nic.h b/drivers/net/ethernet/sfc/nic.h
+index 792907aeeb75..135c43146c13 100644
+--- a/drivers/net/ethernet/sfc/nic.h
++++ b/drivers/net/ethernet/sfc/nic.h
+@@ -8,133 +8,11 @@
+ #ifndef EFX_NIC_H
+ #define EFX_NIC_H
+ 
+-#include <linux/net_tstamp.h>
+-#include "net_driver.h"
++#include "nic_common.h"
+ #include "efx.h"
+-#include "efx_common.h"
+-#include "mcdi.h"
+-
+-enum {
+-	/* Revisions 0-2 were Falcon A0, A1 and B0 respectively.
+-	 * They are not supported by this driver but these revision numbers
+-	 * form part of the ethtool API for register dumping.
+-	 */
+-	EFX_REV_SIENA_A0 = 3,
+-	EFX_REV_HUNT_A0 = 4,
+-};
+-
+-static inline int efx_nic_rev(struct efx_nic *efx)
+-{
+-	return efx->type->revision;
+-}
+ 
+ u32 efx_farch_fpga_ver(struct efx_nic *efx);
+ 
+-/* Read the current event from the event queue */
+-static inline efx_qword_t *efx_event(struct efx_channel *channel,
+-				     unsigned int index)
+-{
+-	return ((efx_qword_t *) (channel->eventq.buf.addr)) +
+-		(index & channel->eventq_mask);
+-}
+-
+-/* See if an event is present
+- *
+- * We check both the high and low dword of the event for all ones.  We
+- * wrote all ones when we cleared the event, and no valid event can
+- * have all ones in either its high or low dwords.  This approach is
+- * robust against reordering.
+- *
+- * Note that using a single 64-bit comparison is incorrect; even
+- * though the CPU read will be atomic, the DMA write may not be.
+- */
+-static inline int efx_event_present(efx_qword_t *event)
+-{
+-	return !(EFX_DWORD_IS_ALL_ONES(event->dword[0]) |
+-		  EFX_DWORD_IS_ALL_ONES(event->dword[1]));
+-}
+-
+-/* Returns a pointer to the specified transmit descriptor in the TX
+- * descriptor queue belonging to the specified channel.
+- */
+-static inline efx_qword_t *
+-efx_tx_desc(struct efx_tx_queue *tx_queue, unsigned int index)
+-{
+-	return ((efx_qword_t *) (tx_queue->txd.buf.addr)) + index;
+-}
+-
+-/* Get partner of a TX queue, seen as part of the same net core queue */
+-static struct efx_tx_queue *efx_tx_queue_partner(struct efx_tx_queue *tx_queue)
+-{
+-	if (tx_queue->queue & EFX_TXQ_TYPE_OFFLOAD)
+-		return tx_queue - EFX_TXQ_TYPE_OFFLOAD;
+-	else
+-		return tx_queue + EFX_TXQ_TYPE_OFFLOAD;
+-}
+-
+-/* Report whether this TX queue would be empty for the given write_count.
+- * May return false negative.
+- */
+-static inline bool __efx_nic_tx_is_empty(struct efx_tx_queue *tx_queue,
+-					 unsigned int write_count)
+-{
+-	unsigned int empty_read_count = READ_ONCE(tx_queue->empty_read_count);
+-
+-	if (empty_read_count == 0)
+-		return false;
+-
+-	return ((empty_read_count ^ write_count) & ~EFX_EMPTY_COUNT_VALID) == 0;
+-}
+-
+-/* Report whether the NIC considers this TX queue empty, using
+- * packet_write_count (the write count recorded for the last completable
+- * doorbell push).  May return false negative.  EF10 only, which is OK
+- * because only EF10 supports PIO.
+- */
+-static inline bool efx_nic_tx_is_empty(struct efx_tx_queue *tx_queue)
+-{
+-	EFX_WARN_ON_ONCE_PARANOID(!tx_queue->efx->type->option_descriptors);
+-	return __efx_nic_tx_is_empty(tx_queue, tx_queue->packet_write_count);
+-}
+-
+-/* Decide whether we can use TX PIO, ie. write packet data directly into
+- * a buffer on the device.  This can reduce latency at the expense of
+- * throughput, so we only do this if both hardware and software TX rings
+- * are empty.  This also ensures that only one packet at a time can be
+- * using the PIO buffer.
+- */
+-static inline bool efx_nic_may_tx_pio(struct efx_tx_queue *tx_queue)
+-{
+-	struct efx_tx_queue *partner = efx_tx_queue_partner(tx_queue);
+-
+-	return tx_queue->piobuf && efx_nic_tx_is_empty(tx_queue) &&
+-	       efx_nic_tx_is_empty(partner);
+-}
+-
+-/* Decide whether to push a TX descriptor to the NIC vs merely writing
+- * the doorbell.  This can reduce latency when we are adding a single
+- * descriptor to an empty queue, but is otherwise pointless.  Further,
+- * Falcon and Siena have hardware bugs (SF bug 33851) that may be
+- * triggered if we don't check this.
+- * We use the write_count used for the last doorbell push, to get the
+- * NIC's view of the tx queue.
+- */
+-static inline bool efx_nic_may_push_tx_desc(struct efx_tx_queue *tx_queue,
+-					    unsigned int write_count)
+-{
+-	bool was_empty = __efx_nic_tx_is_empty(tx_queue, write_count);
+-
+-	tx_queue->empty_read_count = 0;
+-	return was_empty && tx_queue->write_count - write_count == 1;
+-}
+-
+-/* Returns a pointer to the specified descriptor in the RX descriptor queue */
+-static inline efx_qword_t *
+-efx_rx_desc(struct efx_rx_queue *rx_queue, unsigned int index)
+-{
+-	return ((efx_qword_t *) (rx_queue->rxd.buf.addr)) + index;
+-}
+-
+ enum {
+ 	PHY_TYPE_NONE = 0,
+ 	PHY_TYPE_TXC43128 = 1,
+@@ -147,18 +25,6 @@ enum {
+ 	PHY_TYPE_SFT9001B = 10,
+ };
+ 
+-/* Alignment of PCIe DMA boundaries (4KB) */
+-#define EFX_PAGE_SIZE	4096
+-/* Size and alignment of buffer table entries (same) */
+-#define EFX_BUF_SIZE	EFX_PAGE_SIZE
+-
+-/* NIC-generic software stats */
+-enum {
+-	GENERIC_STAT_rx_noskb_drops,
+-	GENERIC_STAT_rx_nodesc_trunc,
+-	GENERIC_STAT_COUNT
+-};
+-
+ enum {
+ 	SIENA_STAT_tx_bytes = GENERIC_STAT_COUNT,
+ 	SIENA_STAT_tx_good_bytes,
+@@ -434,123 +300,15 @@ struct efx_ef10_nic_data {
+ int efx_init_sriov(void);
+ void efx_fini_sriov(void);
+ 
+-struct ethtool_ts_info;
+-int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel);
+-void efx_ptp_defer_probe_with_channel(struct efx_nic *efx);
+-struct efx_channel *efx_ptp_channel(struct efx_nic *efx);
+-void efx_ptp_remove(struct efx_nic *efx);
+-int efx_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr);
+-int efx_ptp_get_ts_config(struct efx_nic *efx, struct ifreq *ifr);
+-void efx_ptp_get_ts_info(struct efx_nic *efx, struct ethtool_ts_info *ts_info);
+-bool efx_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
+-int efx_ptp_get_mode(struct efx_nic *efx);
+-int efx_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
+-			unsigned int new_mode);
+-int efx_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
+-void efx_ptp_event(struct efx_nic *efx, efx_qword_t *ev);
+-size_t efx_ptp_describe_stats(struct efx_nic *efx, u8 *strings);
+-size_t efx_ptp_update_stats(struct efx_nic *efx, u64 *stats);
+-void efx_time_sync_event(struct efx_channel *channel, efx_qword_t *ev);
+-void __efx_rx_skb_attach_timestamp(struct efx_channel *channel,
+-				   struct sk_buff *skb);
+-static inline void efx_rx_skb_attach_timestamp(struct efx_channel *channel,
+-					       struct sk_buff *skb)
+-{
+-	if (channel->sync_events_state == SYNC_EVENTS_VALID)
+-		__efx_rx_skb_attach_timestamp(channel, skb);
+-}
+-void efx_ptp_start_datapath(struct efx_nic *efx);
+-void efx_ptp_stop_datapath(struct efx_nic *efx);
+-bool efx_ptp_use_mac_tx_timestamps(struct efx_nic *efx);
+-ktime_t efx_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue);
+-
+-extern const struct efx_nic_type falcon_a1_nic_type;
+-extern const struct efx_nic_type falcon_b0_nic_type;
+ extern const struct efx_nic_type siena_a0_nic_type;
+ extern const struct efx_nic_type efx_hunt_a0_nic_type;
+ extern const struct efx_nic_type efx_hunt_a0_vf_nic_type;
+ 
+-/**************************************************************************
+- *
+- * Externs
+- *
+- **************************************************************************
+- */
+-
+ int falcon_probe_board(struct efx_nic *efx, u16 revision_info);
+ 
+-/* TX data path */
+-static inline int efx_nic_probe_tx(struct efx_tx_queue *tx_queue)
+-{
+-	return tx_queue->efx->type->tx_probe(tx_queue);
+-}
+-static inline void efx_nic_init_tx(struct efx_tx_queue *tx_queue)
+-{
+-	tx_queue->efx->type->tx_init(tx_queue);
+-}
+-static inline void efx_nic_remove_tx(struct efx_tx_queue *tx_queue)
+-{
+-	tx_queue->efx->type->tx_remove(tx_queue);
+-}
+-static inline void efx_nic_push_buffers(struct efx_tx_queue *tx_queue)
+-{
+-	tx_queue->efx->type->tx_write(tx_queue);
+-}
+-
+ int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+ 			bool *data_mapped);
+ 
+-/* RX data path */
+-static inline int efx_nic_probe_rx(struct efx_rx_queue *rx_queue)
+-{
+-	return rx_queue->efx->type->rx_probe(rx_queue);
+-}
+-static inline void efx_nic_init_rx(struct efx_rx_queue *rx_queue)
+-{
+-	rx_queue->efx->type->rx_init(rx_queue);
+-}
+-static inline void efx_nic_remove_rx(struct efx_rx_queue *rx_queue)
+-{
+-	rx_queue->efx->type->rx_remove(rx_queue);
+-}
+-static inline void efx_nic_notify_rx_desc(struct efx_rx_queue *rx_queue)
+-{
+-	rx_queue->efx->type->rx_write(rx_queue);
+-}
+-static inline void efx_nic_generate_fill_event(struct efx_rx_queue *rx_queue)
+-{
+-	rx_queue->efx->type->rx_defer_refill(rx_queue);
+-}
+-
+-/* Event data path */
+-static inline int efx_nic_probe_eventq(struct efx_channel *channel)
+-{
+-	return channel->efx->type->ev_probe(channel);
+-}
+-static inline int efx_nic_init_eventq(struct efx_channel *channel)
+-{
+-	return channel->efx->type->ev_init(channel);
+-}
+-static inline void efx_nic_fini_eventq(struct efx_channel *channel)
+-{
+-	channel->efx->type->ev_fini(channel);
+-}
+-static inline void efx_nic_remove_eventq(struct efx_channel *channel)
+-{
+-	channel->efx->type->ev_remove(channel);
+-}
+-static inline int
+-efx_nic_process_eventq(struct efx_channel *channel, int quota)
+-{
+-	return channel->efx->type->ev_process(channel, quota);
+-}
+-static inline void efx_nic_eventq_read_ack(struct efx_channel *channel)
+-{
+-	channel->efx->type->ev_read_ack(channel);
+-}
+-
+-void efx_nic_event_test_start(struct efx_channel *channel);
+-
+ /* Falcon/Siena queue operations */
+ int efx_farch_tx_probe(struct efx_tx_queue *tx_queue);
+ void efx_farch_tx_init(struct efx_tx_queue *tx_queue);
+@@ -600,31 +358,6 @@ bool efx_farch_filter_rfs_expire_one(struct efx_nic *efx, u32 flow_id,
+ #endif
+ void efx_farch_filter_sync_rx_mode(struct efx_nic *efx);
+ 
+-bool efx_nic_event_present(struct efx_channel *channel);
+-
+-/* Some statistics are computed as A - B where A and B each increase
+- * linearly with some hardware counter(s) and the counters are read
+- * asynchronously.  If the counters contributing to B are always read
+- * after those contributing to A, the computed value may be lower than
+- * the true value by some variable amount, and may decrease between
+- * subsequent computations.
+- *
+- * We should never allow statistics to decrease or to exceed the true
+- * value.  Since the computed value will never be greater than the
+- * true value, we can achieve this by only storing the computed value
+- * when it increases.
+- */
+-static inline void efx_update_diff_stat(u64 *stat, u64 diff)
+-{
+-	if ((s64)(diff - *stat) > 0)
+-		*stat = diff;
+-}
+-
+-/* Interrupts */
+-int efx_nic_init_interrupt(struct efx_nic *efx);
+-int efx_nic_irq_test_start(struct efx_nic *efx);
+-void efx_nic_fini_interrupt(struct efx_nic *efx);
+-
+ /* Falcon/Siena interrupts */
+ void efx_farch_irq_enable_master(struct efx_nic *efx);
+ int efx_farch_irq_test_generate(struct efx_nic *efx);
+@@ -633,17 +366,7 @@ irqreturn_t efx_farch_msi_interrupt(int irq, void *dev_id);
+ irqreturn_t efx_farch_legacy_interrupt(int irq, void *dev_id);
+ irqreturn_t efx_farch_fatal_interrupt(struct efx_nic *efx);
+ 
+-static inline int efx_nic_event_test_irq_cpu(struct efx_channel *channel)
+-{
+-	return READ_ONCE(channel->event_test_cpu);
+-}
+-static inline int efx_nic_irq_test_irq_cpu(struct efx_nic *efx)
+-{
+-	return READ_ONCE(efx->last_irq_cpu);
+-}
+-
+ /* Global Resources */
+-int efx_nic_flush_queues(struct efx_nic *efx);
+ void siena_prepare_flush(struct efx_nic *efx);
+ int efx_farch_fini_dmaq(struct efx_nic *efx);
+ void efx_farch_finish_flr(struct efx_nic *efx);
+@@ -657,10 +380,6 @@ void efx_ef10_handle_drain_event(struct efx_nic *efx);
+ void efx_farch_rx_push_indir_table(struct efx_nic *efx);
+ void efx_farch_rx_pull_indir_table(struct efx_nic *efx);
+ 
+-int efx_nic_alloc_buffer(struct efx_nic *efx, struct efx_buffer *buffer,
+-			 unsigned int len, gfp_t gfp_flags);
+-void efx_nic_free_buffer(struct efx_nic *efx, struct efx_buffer *buffer);
+-
+ /* Tests */
+ struct efx_farch_register_test {
+ 	unsigned address;
+@@ -671,19 +390,6 @@ int efx_farch_test_registers(struct efx_nic *efx,
+ 			     const struct efx_farch_register_test *regs,
+ 			     size_t n_regs);
+ 
+-size_t efx_nic_get_regs_len(struct efx_nic *efx);
+-void efx_nic_get_regs(struct efx_nic *efx, void *buf);
+-
+-size_t efx_nic_describe_stats(const struct efx_hw_stat_desc *desc, size_t count,
+-			      const unsigned long *mask, u8 *names);
+-int efx_nic_copy_stats(struct efx_nic *efx, __le64 *dest);
+-void efx_nic_update_stats(const struct efx_hw_stat_desc *desc, size_t count,
+-			  const unsigned long *mask, u64 *stats,
+-			  const void *dma_buf, bool accumulate);
+-void efx_nic_fix_nodesc_drop_stat(struct efx_nic *efx, u64 *stat);
+-
+-#define EFX_MAX_FLUSH_TIME 5000
+-
+ void efx_farch_generate_event(struct efx_nic *efx, unsigned int evq,
+ 			      efx_qword_t *event);
+ 
+diff --git a/drivers/net/ethernet/sfc/nic_common.h b/drivers/net/ethernet/sfc/nic_common.h
+new file mode 100644
+index 000000000000..e90ce85359cb
+--- /dev/null
++++ b/drivers/net/ethernet/sfc/nic_common.h
+@@ -0,0 +1,273 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/****************************************************************************
++ * Driver for Solarflare network controllers and boards
++ * Copyright 2005-2006 Fen Systems Ltd.
++ * Copyright 2006-2013 Solarflare Communications Inc.
++ * Copyright 2019-2020 Xilinx Inc.
++ */
++
++#ifndef EFX_NIC_COMMON_H
++#define EFX_NIC_COMMON_H
++
++#include "net_driver.h"
++#include "efx_common.h"
++#include "mcdi.h"
++#include "ptp.h"
++
++enum {
++	/* Revisions 0-2 were Falcon A0, A1 and B0 respectively.
++	 * They are not supported by this driver but these revision numbers
++	 * form part of the ethtool API for register dumping.
++	 */
++	EFX_REV_SIENA_A0 = 3,
++	EFX_REV_HUNT_A0 = 4,
++};
++
++static inline int efx_nic_rev(struct efx_nic *efx)
++{
++	return efx->type->revision;
++}
++
++/* Read the current event from the event queue */
++static inline efx_qword_t *efx_event(struct efx_channel *channel,
++				     unsigned int index)
++{
++	return ((efx_qword_t *) (channel->eventq.buf.addr)) +
++		(index & channel->eventq_mask);
++}
++
++/* See if an event is present
++ *
++ * We check both the high and low dword of the event for all ones.  We
++ * wrote all ones when we cleared the event, and no valid event can
++ * have all ones in either its high or low dwords.  This approach is
++ * robust against reordering.
++ *
++ * Note that using a single 64-bit comparison is incorrect; even
++ * though the CPU read will be atomic, the DMA write may not be.
++ */
++static inline int efx_event_present(efx_qword_t *event)
++{
++	return !(EFX_DWORD_IS_ALL_ONES(event->dword[0]) |
++		  EFX_DWORD_IS_ALL_ONES(event->dword[1]));
++}
++
++/* Returns a pointer to the specified transmit descriptor in the TX
++ * descriptor queue belonging to the specified channel.
++ */
++static inline efx_qword_t *
++efx_tx_desc(struct efx_tx_queue *tx_queue, unsigned int index)
++{
++	return ((efx_qword_t *) (tx_queue->txd.buf.addr)) + index;
++}
++
++/* Report whether this TX queue would be empty for the given write_count.
++ * May return false negative.
++ */
++static inline bool __efx_nic_tx_is_empty(struct efx_tx_queue *tx_queue,
++					 unsigned int write_count)
++{
++	unsigned int empty_read_count = READ_ONCE(tx_queue->empty_read_count);
++
++	if (empty_read_count == 0)
++		return false;
++
++	return ((empty_read_count ^ write_count) & ~EFX_EMPTY_COUNT_VALID) == 0;
++}
++
++/* Report whether the NIC considers this TX queue empty, using
++ * packet_write_count (the write count recorded for the last completable
++ * doorbell push).  May return false negative.  EF10 only, which is OK
++ * because only EF10 supports PIO.
++ */
++static inline bool efx_nic_tx_is_empty(struct efx_tx_queue *tx_queue)
++{
++	EFX_WARN_ON_ONCE_PARANOID(!tx_queue->efx->type->option_descriptors);
++	return __efx_nic_tx_is_empty(tx_queue, tx_queue->packet_write_count);
++}
++
++/* Get partner of a TX queue, seen as part of the same net core queue */
++/* XXX is this a thing on EF100? */
++static inline struct efx_tx_queue *efx_tx_queue_partner(struct efx_tx_queue *tx_queue)
++{
++	if (tx_queue->queue & EFX_TXQ_TYPE_OFFLOAD)
++		return tx_queue - EFX_TXQ_TYPE_OFFLOAD;
++	else
++		return tx_queue + EFX_TXQ_TYPE_OFFLOAD;
++}
++
++/* Decide whether we can use TX PIO, ie. write packet data directly into
++ * a buffer on the device.  This can reduce latency at the expense of
++ * throughput, so we only do this if both hardware and software TX rings
++ * are empty.  This also ensures that only one packet at a time can be
++ * using the PIO buffer.
++ */
++static inline bool efx_nic_may_tx_pio(struct efx_tx_queue *tx_queue)
++{
++	struct efx_tx_queue *partner = efx_tx_queue_partner(tx_queue);
++
++	return tx_queue->piobuf && efx_nic_tx_is_empty(tx_queue) &&
++	       efx_nic_tx_is_empty(partner);
++}
++
++/* Decide whether to push a TX descriptor to the NIC vs merely writing
++ * the doorbell.  This can reduce latency when we are adding a single
++ * descriptor to an empty queue, but is otherwise pointless.  Further,
++ * Falcon and Siena have hardware bugs (SF bug 33851) that may be
++ * triggered if we don't check this.
++ * We use the write_count used for the last doorbell push, to get the
++ * NIC's view of the tx queue.
++ */
++static inline bool efx_nic_may_push_tx_desc(struct efx_tx_queue *tx_queue,
++					    unsigned int write_count)
++{
++	bool was_empty = __efx_nic_tx_is_empty(tx_queue, write_count);
++
++	tx_queue->empty_read_count = 0;
++	return was_empty && tx_queue->write_count - write_count == 1;
++}
++
++/* Returns a pointer to the specified descriptor in the RX descriptor queue */
++static inline efx_qword_t *
++efx_rx_desc(struct efx_rx_queue *rx_queue, unsigned int index)
++{
++	return ((efx_qword_t *) (rx_queue->rxd.buf.addr)) + index;
++}
++
++/* Alignment of PCIe DMA boundaries (4KB) */
++#define EFX_PAGE_SIZE	4096
++/* Size and alignment of buffer table entries (same) */
++#define EFX_BUF_SIZE	EFX_PAGE_SIZE
++
++/* NIC-generic software stats */
++enum {
++	GENERIC_STAT_rx_noskb_drops,
++	GENERIC_STAT_rx_nodesc_trunc,
++	GENERIC_STAT_COUNT
++};
++
++#define EFX_GENERIC_SW_STAT(ext_name)				\
++	[GENERIC_STAT_ ## ext_name] = { #ext_name, 0, 0 }
++
++/* TX data path */
++static inline int efx_nic_probe_tx(struct efx_tx_queue *tx_queue)
++{
++	return tx_queue->efx->type->tx_probe(tx_queue);
++}
++static inline void efx_nic_init_tx(struct efx_tx_queue *tx_queue)
++{
++	tx_queue->efx->type->tx_init(tx_queue);
++}
++static inline void efx_nic_remove_tx(struct efx_tx_queue *tx_queue)
++{
++	tx_queue->efx->type->tx_remove(tx_queue);
++}
++static inline void efx_nic_push_buffers(struct efx_tx_queue *tx_queue)
++{
++	tx_queue->efx->type->tx_write(tx_queue);
++}
++
++/* RX data path */
++static inline int efx_nic_probe_rx(struct efx_rx_queue *rx_queue)
++{
++	return rx_queue->efx->type->rx_probe(rx_queue);
++}
++static inline void efx_nic_init_rx(struct efx_rx_queue *rx_queue)
++{
++	rx_queue->efx->type->rx_init(rx_queue);
++}
++static inline void efx_nic_remove_rx(struct efx_rx_queue *rx_queue)
++{
++	rx_queue->efx->type->rx_remove(rx_queue);
++}
++static inline void efx_nic_notify_rx_desc(struct efx_rx_queue *rx_queue)
++{
++	rx_queue->efx->type->rx_write(rx_queue);
++}
++static inline void efx_nic_generate_fill_event(struct efx_rx_queue *rx_queue)
++{
++	rx_queue->efx->type->rx_defer_refill(rx_queue);
++}
++
++/* Event data path */
++static inline int efx_nic_probe_eventq(struct efx_channel *channel)
++{
++	return channel->efx->type->ev_probe(channel);
++}
++static inline int efx_nic_init_eventq(struct efx_channel *channel)
++{
++	return channel->efx->type->ev_init(channel);
++}
++static inline void efx_nic_fini_eventq(struct efx_channel *channel)
++{
++	channel->efx->type->ev_fini(channel);
++}
++static inline void efx_nic_remove_eventq(struct efx_channel *channel)
++{
++	channel->efx->type->ev_remove(channel);
++}
++static inline int
++efx_nic_process_eventq(struct efx_channel *channel, int quota)
++{
++	return channel->efx->type->ev_process(channel, quota);
++}
++static inline void efx_nic_eventq_read_ack(struct efx_channel *channel)
++{
++	channel->efx->type->ev_read_ack(channel);
++}
++
++void efx_nic_event_test_start(struct efx_channel *channel);
++
++bool efx_nic_event_present(struct efx_channel *channel);
++
++/* Some statistics are computed as A - B where A and B each increase
++ * linearly with some hardware counter(s) and the counters are read
++ * asynchronously.  If the counters contributing to B are always read
++ * after those contributing to A, the computed value may be lower than
++ * the true value by some variable amount, and may decrease between
++ * subsequent computations.
++ *
++ * We should never allow statistics to decrease or to exceed the true
++ * value.  Since the computed value will never be greater than the
++ * true value, we can achieve this by only storing the computed value
++ * when it increases.
++ */
++static inline void efx_update_diff_stat(u64 *stat, u64 diff)
++{
++	if ((s64)(diff - *stat) > 0)
++		*stat = diff;
++}
++
++/* Interrupts */
++int efx_nic_init_interrupt(struct efx_nic *efx);
++int efx_nic_irq_test_start(struct efx_nic *efx);
++void efx_nic_fini_interrupt(struct efx_nic *efx);
++
++static inline int efx_nic_event_test_irq_cpu(struct efx_channel *channel)
++{
++	return READ_ONCE(channel->event_test_cpu);
++}
++static inline int efx_nic_irq_test_irq_cpu(struct efx_nic *efx)
++{
++	return READ_ONCE(efx->last_irq_cpu);
++}
++
++/* Global Resources */
++int efx_nic_alloc_buffer(struct efx_nic *efx, struct efx_buffer *buffer,
++			 unsigned int len, gfp_t gfp_flags);
++void efx_nic_free_buffer(struct efx_nic *efx, struct efx_buffer *buffer);
++
++size_t efx_nic_get_regs_len(struct efx_nic *efx);
++void efx_nic_get_regs(struct efx_nic *efx, void *buf);
++
++size_t efx_nic_describe_stats(const struct efx_hw_stat_desc *desc, size_t count,
++			      const unsigned long *mask, u8 *names);
++int efx_nic_copy_stats(struct efx_nic *efx, __le64 *dest);
++void efx_nic_update_stats(const struct efx_hw_stat_desc *desc, size_t count,
++			  const unsigned long *mask, u64 *stats,
++			  const void *dma_buf, bool accumulate);
++void efx_nic_fix_nodesc_drop_stat(struct efx_nic *efx, u64 *stat);
++
++#define EFX_MAX_FLUSH_TIME 5000
++
++#endif /* EFX_NIC_COMMON_H */
+diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
+index 15c08cae6ae6..393b7cbac8b2 100644
+--- a/drivers/net/ethernet/sfc/ptp.c
++++ b/drivers/net/ethernet/sfc/ptp.c
+@@ -35,7 +35,6 @@
+ #include <linux/time.h>
+ #include <linux/ktime.h>
+ #include <linux/module.h>
+-#include <linux/net_tstamp.h>
+ #include <linux/pps_kernel.h>
+ #include <linux/ptp_clock_kernel.h>
+ #include "net_driver.h"
+@@ -44,7 +43,7 @@
+ #include "mcdi_pcol.h"
+ #include "io.h"
+ #include "farch_regs.h"
+-#include "nic.h"
++#include "nic.h" /* indirectly includes ptp.h */
+ 
+ /* Maximum number of events expected to make up a PTP event */
+ #define	MAX_EVENT_FRAGS			3
+diff --git a/drivers/net/ethernet/sfc/ptp.h b/drivers/net/ethernet/sfc/ptp.h
+new file mode 100644
+index 000000000000..9855e8c9e544
+--- /dev/null
++++ b/drivers/net/ethernet/sfc/ptp.h
+@@ -0,0 +1,45 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/****************************************************************************
++ * Driver for Solarflare network controllers and boards
++ * Copyright 2005-2006 Fen Systems Ltd.
++ * Copyright 2006-2013 Solarflare Communications Inc.
++ * Copyright 2019-2020 Xilinx Inc.
++ */
++
++#ifndef EFX_PTP_H
++#define EFX_PTP_H
++
++#include <linux/net_tstamp.h>
++#include "net_driver.h"
++
++struct ethtool_ts_info;
++int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel);
++void efx_ptp_defer_probe_with_channel(struct efx_nic *efx);
++struct efx_channel *efx_ptp_channel(struct efx_nic *efx);
++void efx_ptp_remove(struct efx_nic *efx);
++int efx_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr);
++int efx_ptp_get_ts_config(struct efx_nic *efx, struct ifreq *ifr);
++void efx_ptp_get_ts_info(struct efx_nic *efx, struct ethtool_ts_info *ts_info);
++bool efx_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
++int efx_ptp_get_mode(struct efx_nic *efx);
++int efx_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
++			unsigned int new_mode);
++int efx_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
++void efx_ptp_event(struct efx_nic *efx, efx_qword_t *ev);
++size_t efx_ptp_describe_stats(struct efx_nic *efx, u8 *strings);
++size_t efx_ptp_update_stats(struct efx_nic *efx, u64 *stats);
++void efx_time_sync_event(struct efx_channel *channel, efx_qword_t *ev);
++void __efx_rx_skb_attach_timestamp(struct efx_channel *channel,
++				   struct sk_buff *skb);
++static inline void efx_rx_skb_attach_timestamp(struct efx_channel *channel,
++					       struct sk_buff *skb)
++{
++	if (channel->sync_events_state == SYNC_EVENTS_VALID)
++		__efx_rx_skb_attach_timestamp(channel, skb);
++}
++void efx_ptp_start_datapath(struct efx_nic *efx);
++void efx_ptp_stop_datapath(struct efx_nic *efx);
++bool efx_ptp_use_mac_tx_timestamps(struct efx_nic *efx);
++ktime_t efx_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue);
++
++#endif /* EFX_PTP_H */
 
