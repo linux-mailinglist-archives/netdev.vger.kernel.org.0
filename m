@@ -2,248 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFEDB20B073
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:29:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 945DB20B076
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728563AbgFZL27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 07:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728558AbgFZL26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:28:58 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E4FC08C5C1
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 04:28:58 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id w16so9021587ejj.5
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 04:28:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=CP2lXpX1jeN16cNfchT7V53vKPKcB5ET1erYzrv/Vuc=;
-        b=17f5u8jX2f+waJSMdObg6WTJqlMmW4Cv0SP+aHDKLN3e8RCe139sQTZ1U5ML2xN7TF
-         E0KN6pzv8dlZ48nkXIcH2KsSAgnI3eq9LiTOetYjDMSmWgOveLq7J/NfOy8zUvWugYMR
-         jCw5lidCzDcOGj7WZkqHO4a3GpaY4VXhF0Ss7E89CpKK0uB0A6vW9tFj0kDkMeEFdUcf
-         goKAOL9bh/8gDPXTRn0ifgYe7JDexrb6Hvm1YNp/o+mNxZZJb2PJ1RkmOm6w705RGbne
-         1yWsoDAgL102hySTIvTD5QWHOUIh/8HfPGjs9LF2xzVLsnVrlZr22xrweYZLznres37G
-         Hhsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=CP2lXpX1jeN16cNfchT7V53vKPKcB5ET1erYzrv/Vuc=;
-        b=HpitsKTzpDMs5p3BQkI2sBJeGE18+svegvWV9g0ySN3gMLa9z7zD5PVtMHoYEWcjNp
-         eBeZID4bfBsXmvM/1fF3d+rSPHAx8I33a7lFHGccZSDl1U/wFawrRFl+iLwVdXEjoqST
-         yxemB7m4Ro5iaNneaaWeP6D89fw3kFfc91RGwxkecW6FCxOD7x3yNkQSDX/XFIucoufR
-         0jhyC5IKrRxglzMA65JGub6DXvIb/oNXbMJY/VwlmEC1tdmyfQvJi3wSJxY4eJTobjhW
-         Vb/zcwOeqGF1xK95VINe/PwapYOxQ5s9/EptjAhDUyODwkaS+hSSn/CuoaZchRz3Zt+9
-         jukA==
-X-Gm-Message-State: AOAM530tIPdpW2+3DPTaF2rdM/R7LBj3GSvkUj7RmIjnzKPY3mJjYlvQ
-        5t8hb8cS6YEjd1nVCOH3l8i70U+EOdNJ96GWmAJ5D7Ske64=
-X-Google-Smtp-Source: ABdhPJwppMukAwfIhROULio5K/QCJsZDu8ldnH2WIW3RumQkbQHiWLneenFFWpafbm+b7vcJJEWZiCCN0nFWessA6OY=
-X-Received: by 2002:a17:906:6dcd:: with SMTP id j13mr1991881ejt.131.1593170936830;
- Fri, 26 Jun 2020 04:28:56 -0700 (PDT)
+        id S1728507AbgFZL3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 07:29:20 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:58846 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728452AbgFZL3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:29:19 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 553E12006B;
+        Fri, 26 Jun 2020 11:29:18 +0000 (UTC)
+Received: from us4-mdac16-31.at1.mdlocal (unknown [10.110.49.215])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 546C78009B;
+        Fri, 26 Jun 2020 11:29:18 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.6])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EE83B4006E;
+        Fri, 26 Jun 2020 11:29:17 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A4991B00064;
+        Fri, 26 Jun 2020 11:29:17 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 26 Jun
+ 2020 12:29:12 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 05/15] sfc: refactor EF10 stats handling
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+References: <1a1716f9-f909-4093-8107-3c2435d834c5@solarflare.com>
+Message-ID: <e6c9678d-832b-20eb-7d03-8182b3267063@solarflare.com>
+Date:   Fri, 26 Jun 2020 12:29:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Received: by 2002:a50:3a1b:0:0:0:0:0 with HTTP; Fri, 26 Jun 2020 04:28:56
- -0700 (PDT)
-X-Originating-IP: [5.35.13.201]
-In-Reply-To: <1593170826-1600-4-git-send-email-kda@linux-powerpc.org>
-References: <1593170826-1600-1-git-send-email-kda@linux-powerpc.org> <1593170826-1600-4-git-send-email-kda@linux-powerpc.org>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Fri, 26 Jun 2020 14:28:56 +0300
-Message-ID: <CAOJe8K0W1oC=2kcJOBFnOxFsGo2gBv6Jb0YQJCtPg5gfrOzonQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v12 3/3] xen networking: add XDP offset
- adjustment to xen-netback
-To:     netdev@vger.kernel.org
-Cc:     brouer@redhat.com, jgross@suse.com, wei.liu@kernel.org,
-        paul@xen.org, ilias.apalodimas@linaro.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1a1716f9-f909-4093-8107-3c2435d834c5@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25504.003
+X-TM-AS-Result: No-8.926000-8.000000-10
+X-TMASE-MatchedRID: D/K/Ifq0XHl7FnefKG6iB0mSRRbSc9s3eouvej40T4gd0WOKRkwsh1ym
+        Rv3NQjsEfGzuoVn0Vs6PQi9XuOWoOHI/MxNRI7UkuLt50vtxBA6i8D/o42y/Spl8NETW6pKCPoT
+        L90NA+T1Pncvnf9/rJx238RECSCTtobTqT1yfWBXJ1E/nrJFED7vGYJkNeu61DpCUEeEFm7AIPR
+        GbB3FI+n9b0LEnkdp7igMIcFldjOufrFd6kw/dZ11B4wg+9pfFyeUl7aCTy8h8vx8dQICa67qjm
+        k4TdfSmV0zUTplUZzAoJgC3bbCpe6xVQR/P211REQY87H8wnfn3/H7adAffkmfihW8hWemQXvbV
+        /VnUv0pWRNhSC2S3jqgVR1CBhbRvUMt2/UV4TDksisyWO3dp2zeWNSSXCb9unj4yoxsIYn8wV12
+        /6ktut/SAdN258YvZf/57oqXw88VFAWNg0/djuub/yj/J/YQcOtlHh2+ppE9D9iPiuXvzgZvwqh
+        XQP9LeP4ugMXj9aZeG9lz1CZorVE1+zyfzlN7ygxsfzkNRlfLdB/CxWTRRu25FeHtsUoHuxNVEV
+        tcIUVlprR159Phk5l4MUXjug5Q2s3VT2We1sM4fwV6sBPR0lg==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--8.926000-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25504.003
+X-MDID: 1593170958-3mqtWs8MepZJ
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/26/20, Denis Kirjanov <kda@linux-powerpc.org> wrote:
-> the patch basically adds the offset adjustment and netfront
-> state reading to make XDP work on netfront side.
->
-> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+Separate the generation-count handling from the format conversion, to
+ make it easier to re-use both for EF100.
 
-Ooops, please ignore it. That was to quick :/
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/ef10.c | 68 ++++++++++++++++-----------------
+ drivers/net/ethernet/sfc/nic.c  | 46 ++++++++++++++++++++++
+ drivers/net/ethernet/sfc/nic.h  |  3 ++
+ 3 files changed, 83 insertions(+), 34 deletions(-)
 
-> ---
->  drivers/net/xen-netback/common.h    |  4 ++++
->  drivers/net/xen-netback/interface.c |  2 ++
->  drivers/net/xen-netback/netback.c   |  7 +++++++
->  drivers/net/xen-netback/rx.c        | 15 ++++++++++++++-
->  drivers/net/xen-netback/xenbus.c    | 34
-> ++++++++++++++++++++++++++++++++++
->  5 files changed, 61 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/xen-netback/common.h
-> b/drivers/net/xen-netback/common.h
-> index 05847eb..ae477f7 100644
-> --- a/drivers/net/xen-netback/common.h
-> +++ b/drivers/net/xen-netback/common.h
-> @@ -281,6 +281,9 @@ struct xenvif {
->  	u8 ipv6_csum:1;
->  	u8 multicast_control:1;
->
-> +	/* headroom requested by xen-netfront */
-> +	u16 xdp_headroom;
-> +
->  	/* Is this interface disabled? True when backend discovers
->  	 * frontend is rogue.
->  	 */
-> @@ -395,6 +398,7 @@ static inline pending_ring_idx_t nr_pending_reqs(struct
-> xenvif_queue *queue)
->  irqreturn_t xenvif_interrupt(int irq, void *dev_id);
->
->  extern bool separate_tx_rx_irq;
-> +extern bool provides_xdp_headroom;
->
->  extern unsigned int rx_drain_timeout_msecs;
->  extern unsigned int rx_stall_timeout_msecs;
-> diff --git a/drivers/net/xen-netback/interface.c
-> b/drivers/net/xen-netback/interface.c
-> index 0c8a02a..fc16edd 100644
-> --- a/drivers/net/xen-netback/interface.c
-> +++ b/drivers/net/xen-netback/interface.c
-> @@ -483,6 +483,8 @@ struct xenvif *xenvif_alloc(struct device *parent,
-> domid_t domid,
->  	vif->queues = NULL;
->  	vif->num_queues = 0;
->
-> +	vif->netfront_xdp_headroom = 0;
-> +
->  	spin_lock_init(&vif->lock);
->  	INIT_LIST_HEAD(&vif->fe_mcast_addr);
->
-> diff --git a/drivers/net/xen-netback/netback.c
-> b/drivers/net/xen-netback/netback.c
-> index 315dfc6..6dfca72 100644
-> --- a/drivers/net/xen-netback/netback.c
-> +++ b/drivers/net/xen-netback/netback.c
-> @@ -96,6 +96,13 @@
->  module_param_named(hash_cache_size, xenvif_hash_cache_size, uint, 0644);
->  MODULE_PARM_DESC(hash_cache_size, "Number of flows in the hash cache");
->
-> +/* The module parameter tells that we have to put data
-> + * for xen-netfront with the XDP_PACKET_HEADROOM offset
-> + * needed for XDP processing
-> + */
-> +bool provides_xdp_headroom = true;
-> +module_param(provides_xdp_headroom, bool, 0644);
-> +
->  static void xenvif_idx_release(struct xenvif_queue *queue, u16
-> pending_idx,
->  			       u8 status);
->
-> diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
-> index ef58870..c5e9e14 100644
-> --- a/drivers/net/xen-netback/rx.c
-> +++ b/drivers/net/xen-netback/rx.c
-> @@ -258,6 +258,19 @@ static void xenvif_rx_next_skb(struct xenvif_queue
-> *queue,
->  		pkt->extra_count++;
->  	}
->
-> +	if (queue->vif->netfront_xdp_headroom) {
-> +		struct xen_netif_extra_info *extra;
-> +
-> +		extra = &pkt->extras[XEN_NETIF_EXTRA_TYPE_XDP - 1];
-> +
-> +		memset(extra, 0, sizeof(struct xen_netif_extra_info));
-> +		extra->u.xdp.headroom = queue->vif->netfront_xdp_headroom;
-> +		extra->type = XEN_NETIF_EXTRA_TYPE_XDP;
-> +		extra->flags = 0;
-> +
-> +		pkt->extra_count++;
-> +	}
-> +
->  	if (skb->sw_hash) {
->  		struct xen_netif_extra_info *extra;
->
-> @@ -356,7 +369,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue
-> *queue,
->  				struct xen_netif_rx_request *req,
->  				struct xen_netif_rx_response *rsp)
->  {
-> -	unsigned int offset = 0;
-> +	unsigned int offset = queue->vif->netfront_xdp_headroom;
->  	unsigned int flags;
->
->  	do {
-> diff --git a/drivers/net/xen-netback/xenbus.c
-> b/drivers/net/xen-netback/xenbus.c
-> index 286054b..f321068 100644
-> --- a/drivers/net/xen-netback/xenbus.c
-> +++ b/drivers/net/xen-netback/xenbus.c
-> @@ -393,6 +393,24 @@ static void set_backend_state(struct backend_info *be,
->  	}
->  }
->
-> +static void read_xenbus_frontend_xdp(struct backend_info *be,
-> +				      struct xenbus_device *dev)
-> +{
-> +	struct xenvif *vif = be->vif;
-> +	u16 headroom;
-> +	int err;
-> +
-> +	err = xenbus_scanf(XBT_NIL, dev->otherend,
-> +			   "xdp-headroom", "%hu", &headroom);
-> +	if (err != 1) {
-> +		vif->netfront_xdp_headroom = 0;
-> +		return;
-> +	}
-> +	if (headroom > XEN_NETIF_MAX_XDP_HEADROOM)
-> +		headroom = XEN_NETIF_MAX_XDP_HEADROOM;
-> +	vif->netfront_xdp_headroom = headroom;
-> +}
-> +
->  /**
->   * Callback received when the frontend's state changes.
->   */
-> @@ -417,6 +435,11 @@ static void frontend_changed(struct xenbus_device
-> *dev,
->  		set_backend_state(be, XenbusStateConnected);
->  		break;
->
-> +	case XenbusStateReconfiguring:
-> +		read_xenbus_frontend_xdp(be, dev);
-> +		xenbus_switch_state(dev, XenbusStateReconfigured);
-> +		break;
-> +
->  	case XenbusStateClosing:
->  		set_backend_state(be, XenbusStateClosing);
->  		break;
-> @@ -947,6 +970,8 @@ static int read_xenbus_vif_flags(struct backend_info
-> *be)
->  	vif->ipv6_csum = !!xenbus_read_unsigned(dev->otherend,
->  						"feature-ipv6-csum-offload", 0);
->
-> +	read_xenbus_frontend_xdp(be, dev);
-> +
->  	return 0;
->  }
->
-> @@ -1036,6 +1061,15 @@ static int netback_probe(struct xenbus_device *dev,
->  			goto abort_transaction;
->  		}
->
-> +		/* we can adjust a headroom for netfront XDP processing */
-> +		err = xenbus_printf(xbt, dev->nodename,
-> +				    "feature-xdp-headroom", "%d",
-> +				    provides_xdp_headroom);
-> +		if (err) {
-> +			message = "writing feature-xdp-headroom";
-> +			goto abort_transaction;
-> +		}
-> +
->  		/* We don't support rx-flip path (except old guests who
->  		 * don't grok this feature flag).
->  		 */
-> --
-> 1.8.3.1
->
->
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index c99fedb315fe..49af06ba7a8e 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -1279,6 +1279,14 @@ static int efx_ef10_dimension_resources(struct efx_nic *efx)
+ 	return 0;
+ }
+ 
++static void efx_ef10_fini_nic(struct efx_nic *efx)
++{
++	struct efx_ef10_nic_data *nic_data = efx->nic_data;
++
++	kfree(nic_data->mc_stats);
++	nic_data->mc_stats = NULL;
++}
++
+ static int efx_ef10_init_nic(struct efx_nic *efx)
+ {
+ 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+@@ -1300,6 +1308,11 @@ static int efx_ef10_init_nic(struct efx_nic *efx)
+ 		efx->must_realloc_vis = false;
+ 	}
+ 
++	nic_data->mc_stats = kmalloc(efx->num_mac_stats * sizeof(__le64),
++				     GFP_KERNEL);
++	if (!nic_data->mc_stats)
++		return -ENOMEM;
++
+ 	if (nic_data->must_restore_piobufs && nic_data->n_piobufs) {
+ 		rc = efx_ef10_alloc_piobufs(efx, nic_data->n_piobufs);
+ 		if (rc == 0) {
+@@ -1775,55 +1788,42 @@ static size_t efx_ef10_update_stats_common(struct efx_nic *efx, u64 *full_stats,
+ 	return stats_count;
+ }
+ 
+-static int efx_ef10_try_update_nic_stats_pf(struct efx_nic *efx)
++static size_t efx_ef10_update_stats_pf(struct efx_nic *efx, u64 *full_stats,
++				       struct rtnl_link_stats64 *core_stats)
+ {
+ 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+ 	DECLARE_BITMAP(mask, EF10_STAT_COUNT);
+-	__le64 generation_start, generation_end;
+ 	u64 *stats = nic_data->stats;
+-	__le64 *dma_stats;
+ 
+ 	efx_ef10_get_stat_mask(efx, mask);
+ 
+-	dma_stats = efx->stats_buffer.addr;
+-
+-	generation_end = dma_stats[efx->num_mac_stats - 1];
+-	if (generation_end == EFX_MC_STATS_GENERATION_INVALID)
+-		return 0;
+-	rmb();
+-	efx_nic_update_stats(efx_ef10_stat_desc, EF10_STAT_COUNT, mask,
+-			     stats, efx->stats_buffer.addr, false);
+-	rmb();
+-	generation_start = dma_stats[MC_CMD_MAC_GENERATION_START];
+-	if (generation_end != generation_start)
+-		return -EAGAIN;
++	efx_nic_copy_stats(efx, nic_data->mc_stats);
++	efx_nic_update_stats(efx_ef10_stat_desc, EF10_STAT_COUNT,
++			     mask, stats, nic_data->mc_stats, false);
+ 
+ 	/* Update derived statistics */
+ 	efx_nic_fix_nodesc_drop_stat(efx,
+ 				     &stats[EF10_STAT_port_rx_nodesc_drops]);
++	/* MC Firmware reads RX_BYTES and RX_GOOD_BYTES from the MAC.
++	 * It then calculates RX_BAD_BYTES and DMAs it to us with RX_BYTES.
++	 * We report these as port_rx_ stats. We are not given RX_GOOD_BYTES.
++	 * Here we calculate port_rx_good_bytes.
++	 */
+ 	stats[EF10_STAT_port_rx_good_bytes] =
+ 		stats[EF10_STAT_port_rx_bytes] -
+ 		stats[EF10_STAT_port_rx_bytes_minus_good_bytes];
++
++	/* The asynchronous reads used to calculate RX_BAD_BYTES in
++	 * MC Firmware are done such that we should not see an increase in
++	 * RX_BAD_BYTES when a good packet has arrived. Unfortunately this
++	 * does mean that the stat can decrease at times. Here we do not
++	 * update the stat unless it has increased or has gone to zero
++	 * (In the case of the NIC rebooting).
++	 * Please see Bug 33781 for a discussion of why things work this way.
++	 */
+ 	efx_update_diff_stat(&stats[EF10_STAT_port_rx_bad_bytes],
+ 			     stats[EF10_STAT_port_rx_bytes_minus_good_bytes]);
+ 	efx_update_sw_stats(efx, stats);
+-	return 0;
+-}
+-
+-
+-static size_t efx_ef10_update_stats_pf(struct efx_nic *efx, u64 *full_stats,
+-				       struct rtnl_link_stats64 *core_stats)
+-{
+-	int retry;
+-
+-	/* If we're unlucky enough to read statistics during the DMA, wait
+-	 * up to 10ms for it to finish (typically takes <500us)
+-	 */
+-	for (retry = 0; retry < 100; ++retry) {
+-		if (efx_ef10_try_update_nic_stats_pf(efx) == 0)
+-			break;
+-		udelay(100);
+-	}
+ 
+ 	return efx_ef10_update_stats_common(efx, full_stats, core_stats);
+ }
+@@ -4033,7 +4033,7 @@ const struct efx_nic_type efx_hunt_a0_vf_nic_type = {
+ 	.remove = efx_ef10_remove,
+ 	.dimension_resources = efx_ef10_dimension_resources,
+ 	.init = efx_ef10_init_nic,
+-	.fini = efx_port_dummy_op_void,
++	.fini = efx_ef10_fini_nic,
+ 	.map_reset_reason = efx_ef10_map_reset_reason,
+ 	.map_reset_flags = efx_ef10_map_reset_flags,
+ 	.reset = efx_ef10_reset,
+@@ -4142,7 +4142,7 @@ const struct efx_nic_type efx_hunt_a0_nic_type = {
+ 	.remove = efx_ef10_remove,
+ 	.dimension_resources = efx_ef10_dimension_resources,
+ 	.init = efx_ef10_init_nic,
+-	.fini = efx_port_dummy_op_void,
++	.fini = efx_ef10_fini_nic,
+ 	.map_reset_reason = efx_ef10_map_reset_reason,
+ 	.map_reset_flags = efx_ef10_map_reset_flags,
+ 	.reset = efx_ef10_reset,
+diff --git a/drivers/net/ethernet/sfc/nic.c b/drivers/net/ethernet/sfc/nic.c
+index b0baa70fbba7..9f5d6932ed71 100644
+--- a/drivers/net/ethernet/sfc/nic.c
++++ b/drivers/net/ethernet/sfc/nic.c
+@@ -20,6 +20,8 @@
+ #include "farch_regs.h"
+ #include "io.h"
+ #include "workarounds.h"
++#include "mcdi_port_common.h"
++#include "mcdi_pcol.h"
+ 
+ /**************************************************************************
+  *
+@@ -470,6 +472,50 @@ size_t efx_nic_describe_stats(const struct efx_hw_stat_desc *desc, size_t count,
+ 	return visible;
+ }
+ 
++/**
++ * efx_nic_copy_stats - Copy stats from the DMA buffer in to an
++ *	intermediate buffer. This is used to get a consistent
++ *	set of stats while the DMA buffer can be written at any time
++ *	by the NIC.
++ * @efx: The associated NIC.
++ * @dest: Destination buffer. Must be the same size as the DMA buffer.
++ */
++int efx_nic_copy_stats(struct efx_nic *efx, __le64 *dest)
++{
++	int retry;
++	__le64 generation_start, generation_end;
++	__le64 *dma_stats = efx->stats_buffer.addr;
++	int rc = 0;
++
++	if (!dest)
++		return 0;
++
++	if (!dma_stats)
++		goto return_zeroes;
++
++	/* If we're unlucky enough to read statistics during the DMA, wait
++	 * up to 10ms for it to finish (typically takes <500us)
++	 */
++	for (retry = 0; retry < 100; ++retry) {
++		generation_end = dma_stats[efx->num_mac_stats - 1];
++		if (generation_end == EFX_MC_STATS_GENERATION_INVALID)
++			goto return_zeroes;
++		rmb();
++		memcpy(dest, dma_stats, efx->num_mac_stats * sizeof(__le64));
++		rmb();
++		generation_start = dma_stats[MC_CMD_MAC_GENERATION_START];
++		if (generation_end == generation_start)
++			return 0; /* return good data */
++		udelay(100);
++	}
++
++	rc = -EIO;
++
++return_zeroes:
++	memset(dest, 0, efx->num_mac_stats * sizeof(u64));
++	return rc;
++}
++
+ /**
+  * efx_nic_update_stats - Convert statistics DMA buffer to array of u64
+  * @desc: Array of &struct efx_hw_stat_desc describing the DMA buffer
+diff --git a/drivers/net/ethernet/sfc/nic.h b/drivers/net/ethernet/sfc/nic.h
+index 8f73c5d996eb..792907aeeb75 100644
+--- a/drivers/net/ethernet/sfc/nic.h
++++ b/drivers/net/ethernet/sfc/nic.h
+@@ -368,6 +368,7 @@ enum {
+  * @piobuf_size: size of a single PIO buffer
+  * @must_restore_piobufs: Flag: PIO buffers have yet to be restored after MC
+  *	reboot
++ * @mc_stats: Scratch buffer for converting statistics to the kernel's format
+  * @stats: Hardware statistics
+  * @workaround_35388: Flag: firmware supports workaround for bug 35388
+  * @workaround_26807: Flag: firmware supports workaround for bug 26807
+@@ -404,6 +405,7 @@ struct efx_ef10_nic_data {
+ 	unsigned int piobuf_handle[EF10_TX_PIOBUF_COUNT];
+ 	u16 piobuf_size;
+ 	bool must_restore_piobufs;
++	__le64 *mc_stats;
+ 	u64 stats[EF10_STAT_COUNT];
+ 	bool workaround_35388;
+ 	bool workaround_26807;
+@@ -674,6 +676,7 @@ void efx_nic_get_regs(struct efx_nic *efx, void *buf);
+ 
+ size_t efx_nic_describe_stats(const struct efx_hw_stat_desc *desc, size_t count,
+ 			      const unsigned long *mask, u8 *names);
++int efx_nic_copy_stats(struct efx_nic *efx, __le64 *dest);
+ void efx_nic_update_stats(const struct efx_hw_stat_desc *desc, size_t count,
+ 			  const unsigned long *mask, u64 *stats,
+ 			  const void *dma_buf, bool accumulate);
+
