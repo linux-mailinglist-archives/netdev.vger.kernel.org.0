@@ -2,188 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9566920B7F0
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 20:17:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70C1520B828
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 20:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726473AbgFZSRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 14:17:39 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:48620 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726416AbgFZSRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 14:17:34 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 05QIHLZ1002436;
-        Fri, 26 Jun 2020 13:17:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1593195441;
-        bh=BNg+DQH/3TSrqnuqngB8EXZIV8fz3RCqpdutiE3KweQ=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=igXLvPGbyjxH+HFjg2vIA5Gby6uJ8R/ukJ4qN28rnhHe4QQNNPEVKscRbnLXLOrAa
-         GX2hlYKwGhINjUajwP3/VEemWYQVRRUHRGz7n8e/WbpJvowoxSECg14RVoFLZo73At
-         rIqsxgOD2O2Mosipsy5tfFsz2/tRGlSoPubpEj/c=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05QIHLhW004381;
-        Fri, 26 Jun 2020 13:17:21 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 26
- Jun 2020 13:17:21 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 26 Jun 2020 13:17:21 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 05QIHKcE081657;
-        Fri, 26 Jun 2020 13:17:21 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next 6/6] net: ethernet: ti: am65-cpsw-nuss: enable am65x sr2.0 support
-Date:   Fri, 26 Jun 2020 21:17:09 +0300
-Message-ID: <20200626181709.22635-7-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200626181709.22635-1-grygorii.strashko@ti.com>
-References: <20200626181709.22635-1-grygorii.strashko@ti.com>
+        id S1726453AbgFZSYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 14:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51386 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725275AbgFZSYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 14:24:31 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E89C03E979
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 11:24:31 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id d12so4575270ply.1
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 11:24:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lNKYtQQz75XCkUzBHeQ9a6h7UWDHNcE1U551+U4a8Tg=;
+        b=t9Xdv5Buga6pxM97gkpAUfjxjSiVSw74ytT+1xSfWS8oDmBFQpsQXOayyFKKoLAs41
+         vcxfaK6WpHpjEfFkLc1Rj3KOwc4qHcV1iTeRnZIDsa4slSz+taqp1VCNlVYtdGGoiEBc
+         a9fLu6bfVTil+J2RsNAnFV4/xGLOI42+7+nBof7jTHapkYoqWI9wawoXedeD87YQsTCd
+         k1teNb6tldyWtckGUGhMOzpt9S1HTf81uyc2MtdwD2BBsYGxCvRP9x8PfWUAU0GjR/D9
+         XBUXLctL6Dwg2b2rS1PHKKPec+FrxKraSkywEwRmQD8Ix8BNRspIRH1cOLQpCd03I5Lh
+         9g3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lNKYtQQz75XCkUzBHeQ9a6h7UWDHNcE1U551+U4a8Tg=;
+        b=bzC1t2cokTJGJl4uHkFRBxvLno7kbOkuLopRu7gsQccEfwR4D6Tlc0xXXAOj/xHR1E
+         MaNOSL/1i7TLiXtDOyGuW2nhcubFvnpsSc5sU2KHoeCoXhE2+3B9y0xsDaytVNFrsPG3
+         4iGiNgBhnhOjDoUIXHiedXGvNqwPQD20cikbLmlkMrwGittMWz3M+DbV2CQkijDnhO1Q
+         ElRbVK6Tzrd6cNmpOPxfRmR9KViC8o2KNteV3Wq6WpUPWcWnnEF27POU4ayk0inHuAcj
+         4bLy/GWOyISEHv88sCHvn2YXoCqv0W2j2W3oa1Rf9rdxz6tv9Q+tp1n6a02Sd+Sqqf9A
+         uxtQ==
+X-Gm-Message-State: AOAM531h6I0r8d5aSKnNs6VKghbIRbf/9eD6o5WoWgM5YLeRXSDLlvJj
+        QL/CepC1Ql843YCKKnuZ483+2CRWZps=
+X-Google-Smtp-Source: ABdhPJwzT1ExatIwamGj8JlzsraYIYMbgjhDKc99T5BESPUyHf0XL58AbUiZQA4mn6WDdH6W86Fy3Q==
+X-Received: by 2002:a17:902:b496:: with SMTP id y22mr3679053plr.224.1593195870543;
+        Fri, 26 Jun 2020 11:24:30 -0700 (PDT)
+Received: from MacBookAir.linux-6brj.site ([2601:642:4780:87f0:b554:afd3:52c0:2f89])
+        by smtp.gmail.com with ESMTPSA id t19sm3912016pgg.19.2020.06.26.11.24.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jun 2020 11:24:30 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>
+Subject: [Patch net] net: get rid of lockdep_set_class_and_subclass()
+Date:   Fri, 26 Jun 2020 11:24:22 -0700
+Message-Id: <20200626182422.9647-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The AM65x SR2.0 MCU CPSW has fixed errata i2027 "CPSW: CPSW Does Not
-Support CPPI Receive Checksum (Host to Ethernet) Offload Feature". This
-errata also fixed for J271E SoC.
+lockdep_set_class_and_subclass() is meant to reduce
+the _nested() annotations by assigning a default subclass.
+For addr_list_lock, we have to compute the subclass at
+run-time as the netdevice topology changes after creation.
 
-Use SOC bus data for K3 SoC identification and apply i2027 errata w/a only
-for the AM65x SR1.0 SoC.
+So, we should just get rid of these
+lockdep_set_class_and_subclass() and stick with our _nested()
+annotations.
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Fixes: 845e0ebb4408 ("net: change addr_list_lock back to static key")
+Suggested-by: Taehee Yoo <ap420073@gmail.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 47 ++++++++++++++++++++----
- drivers/net/ethernet/ti/am65-cpsw-nuss.h |  2 +-
- 2 files changed, 41 insertions(+), 8 deletions(-)
+ drivers/net/macsec.c  | 5 ++---
+ drivers/net/macvlan.c | 5 ++---
+ net/8021q/vlan_dev.c  | 9 ++++-----
+ 3 files changed, 8 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 7a921a480f29..9fdcd90e8323 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -23,6 +23,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
- #include <linux/mfd/syscon.h>
-+#include <linux/sys_soc.h>
- #include <linux/dma/ti-cppi5.h>
- #include <linux/dma/k3-udma-glue.h>
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index e56547bfdac9..9159846b8b93 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -4052,9 +4052,8 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
+ 		return err;
  
-@@ -148,10 +149,11 @@ static void am65_cpsw_nuss_get_ver(struct am65_cpsw_common *common)
- 	common->nuss_ver = readl(common->ss_base);
- 	common->cpsw_ver = readl(common->cpsw_base);
- 	dev_info(common->dev,
--		 "initializing am65 cpsw nuss version 0x%08X, cpsw version 0x%08X Ports: %u\n",
-+		 "initializing am65 cpsw nuss version 0x%08X, cpsw version 0x%08X Ports: %u quirks:%08x\n",
- 		common->nuss_ver,
- 		common->cpsw_ver,
--		common->port_num + 1);
-+		common->port_num + 1,
-+		common->pdata.quirks);
- }
+ 	netdev_lockdep_set_classes(dev);
+-	lockdep_set_class_and_subclass(&dev->addr_list_lock,
+-				       &macsec_netdev_addr_lock_key,
+-				       dev->lower_level);
++	lockdep_set_class(&dev->addr_list_lock,
++			  &macsec_netdev_addr_lock_key);
  
- void am65_cpsw_nuss_adjust_link(struct net_device *ndev)
-@@ -1877,7 +1879,7 @@ static int am65_cpsw_nuss_init_ndev_2g(struct am65_cpsw_common *common)
- 	port->ndev->ethtool_ops = &am65_cpsw_ethtool_ops_slave;
- 
- 	/* Disable TX checksum offload by default due to HW bug */
--	if (common->pdata->quirks & AM65_CPSW_QUIRK_I2027_NO_TX_CSUM)
-+	if (common->pdata.quirks & AM65_CPSW_QUIRK_I2027_NO_TX_CSUM)
- 		port->ndev->features &= ~NETIF_F_HW_CSUM;
- 
- 	ndev_priv->stats = netdev_alloc_pcpu_stats(struct am65_cpsw_ndev_stats);
-@@ -1981,21 +1983,50 @@ static void am65_cpsw_nuss_cleanup_ndev(struct am65_cpsw_common *common)
- 	}
- }
- 
-+struct am65_cpsw_soc_pdata {
-+	u32	quirks_dis;
-+};
-+
-+static const struct am65_cpsw_soc_pdata am65x_soc_sr2_0 = {
-+	.quirks_dis = AM65_CPSW_QUIRK_I2027_NO_TX_CSUM,
-+};
-+
-+static const struct soc_device_attribute am65_cpsw_socinfo[] = {
-+	{ .family = "AM65X",
-+	  .revision = "SR2.0",
-+	  .data = &am65x_soc_sr2_0
-+	},
-+	{/* sentinel */}
-+};
-+
- static const struct am65_cpsw_pdata am65x_sr1_0 = {
- 	.quirks = AM65_CPSW_QUIRK_I2027_NO_TX_CSUM,
- };
- 
--static const struct am65_cpsw_pdata j721e_sr1_0 = {
-+static const struct am65_cpsw_pdata j721e_pdata = {
- 	.quirks = 0,
- };
- 
- static const struct of_device_id am65_cpsw_nuss_of_mtable[] = {
--	{ .compatible = "ti,am654-cpsw-nuss", .data = &am65x_sr1_0 },
--	{ .compatible = "ti,j721e-cpsw-nuss", .data = &j721e_sr1_0 },
-+	{ .compatible = "ti,am654-cpsw-nuss", .data = &am65x_sr1_0},
-+	{ .compatible = "ti,j721e-cpsw-nuss", .data = &j721e_pdata},
- 	{ /* sentinel */ },
- };
- MODULE_DEVICE_TABLE(of, am65_cpsw_nuss_of_mtable);
- 
-+static void am65_cpsw_nuss_apply_socinfo(struct am65_cpsw_common *common)
-+{
-+	const struct soc_device_attribute *soc;
-+
-+	soc = soc_device_match(am65_cpsw_socinfo);
-+	if (soc && soc->data) {
-+		const struct am65_cpsw_soc_pdata *socdata = soc->data;
-+
-+		/* disable quirks */
-+		common->pdata.quirks &= ~socdata->quirks_dis;
-+	}
-+}
-+
- static int am65_cpsw_nuss_probe(struct platform_device *pdev)
+ 	err = netdev_upper_dev_link(real_dev, dev, extack);
+ 	if (err < 0)
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 6a6cc9f75307..4942f6112e51 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -880,9 +880,8 @@ static struct lock_class_key macvlan_netdev_addr_lock_key;
+ static void macvlan_set_lockdep_class(struct net_device *dev)
  {
- 	struct cpsw_ale_params ale_params = { 0 };
-@@ -2014,7 +2045,9 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
- 	of_id = of_match_device(am65_cpsw_nuss_of_mtable, dev);
- 	if (!of_id)
- 		return -EINVAL;
--	common->pdata = of_id->data;
-+	common->pdata = *(const struct am65_cpsw_pdata *)of_id->data;
-+
-+	am65_cpsw_nuss_apply_socinfo(common);
+ 	netdev_lockdep_set_classes(dev);
+-	lockdep_set_class_and_subclass(&dev->addr_list_lock,
+-				       &macvlan_netdev_addr_lock_key,
+-				       dev->lower_level);
++	lockdep_set_class(&dev->addr_list_lock,
++			  &macvlan_netdev_addr_lock_key);
+ }
  
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "cpsw_nuss");
- 	common->ss_base = devm_ioremap_resource(&pdev->dev, res);
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-index 9faf4fb1409b..94f666ea0e53 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-@@ -82,7 +82,7 @@ struct am65_cpsw_pdata {
- struct am65_cpsw_common {
- 	struct device		*dev;
- 	struct device		*mdio_dev;
--	const struct am65_cpsw_pdata *pdata;
-+	struct am65_cpsw_pdata	pdata;
+ static int macvlan_init(struct net_device *dev)
+diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+index c8d6a07e23c5..3dd7c972677b 100644
+--- a/net/8021q/vlan_dev.c
++++ b/net/8021q/vlan_dev.c
+@@ -503,11 +503,10 @@ static void vlan_dev_set_lockdep_one(struct net_device *dev,
+ 	lockdep_set_class(&txq->_xmit_lock, &vlan_netdev_xmit_lock_key);
+ }
  
- 	void __iomem		*ss_base;
- 	void __iomem		*cpsw_base;
+-static void vlan_dev_set_lockdep_class(struct net_device *dev, int subclass)
++static void vlan_dev_set_lockdep_class(struct net_device *dev)
+ {
+-	lockdep_set_class_and_subclass(&dev->addr_list_lock,
+-				       &vlan_netdev_addr_lock_key,
+-				       subclass);
++	lockdep_set_class(&dev->addr_list_lock,
++			  &vlan_netdev_addr_lock_key);
+ 	netdev_for_each_tx_queue(dev, vlan_dev_set_lockdep_one, NULL);
+ }
+ 
+@@ -601,7 +600,7 @@ static int vlan_dev_init(struct net_device *dev)
+ 
+ 	SET_NETDEV_DEVTYPE(dev, &vlan_type);
+ 
+-	vlan_dev_set_lockdep_class(dev, dev->lower_level);
++	vlan_dev_set_lockdep_class(dev);
+ 
+ 	vlan->vlan_pcpu_stats = netdev_alloc_pcpu_stats(struct vlan_pcpu_stats);
+ 	if (!vlan->vlan_pcpu_stats)
 -- 
-2.17.1
+2.27.0
 
