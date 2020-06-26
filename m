@@ -2,160 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA0620AF30
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 11:45:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58DD920AF81
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 12:19:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726855AbgFZJpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 05:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726836AbgFZJpw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 05:45:52 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3DCC08C5DB
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 02:45:51 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id h22so2490741lji.9
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 02:45:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=5XWtFWgwZnD66tBDM/3i+lmk/MTgyC/Rg07cXurUlV8=;
-        b=mJW7dH1liKL64hBpVLiWMMacAp5RmxEToSnRzbALmrc8CTk7EhcIDsLbXtzD7HKjoG
-         tFgSic4SueaSPjTyvSSc921loJilw6ile5F8SqNObI6Wqtk8pfyYZOKfQXD9ZmuZI6P6
-         yowUcEJcL85BNQ60LXU8ymxE9NMnD6ySR9qGA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=5XWtFWgwZnD66tBDM/3i+lmk/MTgyC/Rg07cXurUlV8=;
-        b=cBfry+wpihRLOiFxSui7FZkjbPsox7UWYPRGmGxo3eP4p1mKDKfp10M+GBfS9hQpU6
-         AtkIsxVu0xk1BVwtREuHhEdAZwV5mSQ/FX5X5/YHvvpQcqS5DbmnAyz8YZjbZsFS3pR2
-         gh2r7+o7lTTUHWZn7niuM2GDMb+tuUWz7rF3vYBdZ9S9hrVRZciQi6e4mNl3ZO8ko+0U
-         knI5FMTd6zLQpmRgxbvWO8eYDxEX1T5Z6B5F0Jqf1bNlnUrNgE5gQW0bNoQzTTgFKoO2
-         6h6oS/BtYUG5satJYQt00C49119blKZJVOfpiHt5MX8G9fDh1efQoyOorYPEaTLfyHOy
-         n4jg==
-X-Gm-Message-State: AOAM532TIus591CIvnMdwKvByF/jjrU930paRuv7CF4C2wqkZDt/5+0s
-        +NWmHsKQWTmsq97l2W4kdElfPg==
-X-Google-Smtp-Source: ABdhPJyQhsH57f44jLnzS4ztkkIc8i1c/lOljaceK1e1Z14DG2IMs8pEpfRegX8FeRB7md053E3jLg==
-X-Received: by 2002:a2e:991:: with SMTP id 139mr1004349ljj.314.1593164750141;
-        Fri, 26 Jun 2020 02:45:50 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id n8sm6292176lji.126.2020.06.26.02.45.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Jun 2020 02:45:49 -0700 (PDT)
-References: <20200625141357.910330-1-jakub@cloudflare.com> <20200625141357.910330-3-jakub@cloudflare.com> <CAEf4Bzar93mCMm5vgMiYu6_m2N=icv2Wgmy2ohuKoQr810Kk1w@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Subject: Re: [PATCH bpf-next v3 2/4] bpf, netns: Keep attached programs in bpf_prog_array
-In-reply-to: <CAEf4Bzar93mCMm5vgMiYu6_m2N=icv2Wgmy2ohuKoQr810Kk1w@mail.gmail.com>
-Date:   Fri, 26 Jun 2020 11:45:48 +0200
-Message-ID: <87imfema7n.fsf@cloudflare.com>
+        id S1726973AbgFZKS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 06:18:59 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:6829 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726524AbgFZKS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 06:18:59 -0400
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 05QAIqxm027804;
+        Fri, 26 Jun 2020 03:18:53 -0700
+Date:   Fri, 26 Jun 2020 15:36:15 +0530
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com,
+        vishal@chelsio.com, dt@chelsio.com
+Subject: Re: [PATCH net-next 0/3] cxgb4: add mirror action support for
+ TC-MATCHALL
+Message-ID: <20200626100614.GA23240@chelsio.com>
+References: <cover.1593085107.git.rahul.lakkireddy@chelsio.com>
+ <20200625155510.01e3c1c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200625155510.01e3c1c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 10:50 PM CEST, Andrii Nakryiko wrote:
-> On Thu, Jun 25, 2020 at 7:17 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->>
->> Prepare for having multi-prog attachments for new netns attach types by
->> storing programs to run in a bpf_prog_array, which is well suited for
->> iterating over programs and running them in sequence.
->>
->> After this change bpf(PROG_QUERY) may block to allocate memory in
->> bpf_prog_array_copy_to_user() for collected program IDs. This forces a
->> change in how we protect access to the attached program in the query
->> callback. Because bpf_prog_array_copy_to_user() can sleep, we switch from
->> an RCU read lock to holding a mutex that serializes updaters.
->>
->> Because we allow only one BPF flow_dissector program to be attached to
->> netns at all times, the bpf_prog_array pointed by net->bpf.run_array is
->> always either detached (null) or one element long.
->>
->> No functional changes intended.
->>
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
->
-> I wonder if instead of NULL prog_array, it's better to just use a
-> dummy empty (but allocated) array. Might help eliminate some of the
-> IFs, maybe even in the hot path.
+On Thursday, June 06/25/20, 2020 at 15:55:10 -0700, Jakub Kicinski wrote:
+> On Thu, 25 Jun 2020 17:28:40 +0530 Rahul Lakkireddy wrote:
+> > This series of patches add support to mirror all ingress traffic
+> > for TC-MATCHALL ingress offload.
+> > 
+> > Patch 1 adds support to dynamically create a mirror Virtual Interface
+> > (VI) that accepts all mirror ingress traffic when mirror action is
+> > set in TC-MATCHALL offload.
+> > 
+> > Patch 2 adds support to allocate mirror Rxqs and setup RSS for the
+> > mirror VI.
+> > 
+> > Patch 3 adds support to replicate all the main VI configuration to
+> > mirror VI. This includes replicating MTU, promiscuous mode,
+> > all-multicast mode, and enabled netdev Rx feature offloads.
+> 
+> Could you say more about this mirror VI? Is this an internal object
+> within the NIC or something visible to the user?
+> 
 
-That was my initial approach, which I abandoned seeing that it leads to
-replacing NULL prog_array checks in flow_dissector with
-bpf_prog_array_is_empty() checks to determine which netns has a BPF
-program attached. So no IFs gone there.
+The Virtual Interface (VI) is an internal object managed by firmware
+and Multi Port Switch (MPS) module in hardware. Each VI can be
+programmed with a unique MAC address in the MPS TCAM. So, 1 physical
+port can have multiple VIs, each with their own MAC address. It's
+also possible for VIs to share the same MAC address, which would
+result in MPS setting the replication mode for that entry in the
+TCAM. In this case, the incoming packet would get replicated and
+sent to all the VIs sharing the MAC address. When MPS is able to
+classify the destination MAC in the incoming packet with an entry
+in the MPS TCAM, it forwards the packet to the corresponding VI(s).
 
-While on the hot path, where we run the program, we probably would still
-be left with an IF checking for empty prog_array to avoid building the
-context if no progs will RUN.
+In case of Mirror VI, we program the same MAC as the existing main
+VI. This will result in MPS setting the replication mode for that
+existing entry in the MPS TCAM. So, the MPS would replicate the
+incoming packet and send it to both the main VI and mirror VI.
+Note that for the main VI, we also programmed the flow Lookup Engine
+(LE) module to switch the packet back out on one of the underlying
+ports. So, when this rule hits in the LE, the main VI's packet would
+get switched back out in hardware to one of the underlying ports and
+will not reach driver. The mirror VI's packet will not hit any rule
+in the LE and will be received by the driver and will be sent up to
+Linux networking stack.
 
-The checks I'm referring to are on attach path, in
-flow_dissector_bpf_prog_attach_check(), and hot-path,
-__skb_flow_dissect().
 
->
->
->>  include/net/netns/bpf.h    |   5 +-
->>  kernel/bpf/net_namespace.c | 120 +++++++++++++++++++++++++------------
->>  net/core/flow_dissector.c  |  19 +++---
->>  3 files changed, 96 insertions(+), 48 deletions(-)
->>
->
-> [...]
->
->
->>
->> +/* Must be called with netns_bpf_mutex held. */
->> +static int __netns_bpf_prog_query(const union bpf_attr *attr,
->> +                                 union bpf_attr __user *uattr,
->> +                                 struct net *net,
->> +                                 enum netns_bpf_attach_type type)
->> +{
->> +       __u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
->> +       struct bpf_prog_array *run_array;
->> +       u32 prog_cnt = 0, flags = 0;
->> +
->> +       run_array = rcu_dereference_protected(net->bpf.run_array[type],
->> +                                             lockdep_is_held(&netns_bpf_mutex));
->> +       if (run_array)
->> +               prog_cnt = bpf_prog_array_length(run_array);
->> +
->> +       if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
->> +               return -EFAULT;
->> +       if (copy_to_user(&uattr->query.prog_cnt, &prog_cnt, sizeof(prog_cnt)))
->> +               return -EFAULT;
->> +       if (!attr->query.prog_cnt || !prog_ids || !prog_cnt)
->> +               return 0;
->> +
->> +       return bpf_prog_array_copy_to_user(run_array, prog_ids,
->> +                                          attr->query.prog_cnt);
->
-> It doesn't seem like bpf_prog_array_copy_to_user can handle NULL run_array
+> Also looking at the implementation of redirect:
+> 
+> 		case FLOW_ACTION_REDIRECT: {
+> 			struct net_device *out = act->dev;
+> 			struct port_info *pi = netdev_priv(out);
+> 
+> 			fs->action = FILTER_SWITCH;
+> 			fs->eport = pi->port_id;
+> 			}
+> 
+> How do you know the output interface is controlled by your driver, and
+> therefore it's sage to cast netdev_priv() to port_info?
 
-Correct. And we never invoke it when run_array is NULL because then
-prog_cnt == 0.
+We're validating it earlier in cxgb4_validate_flow_actions().
+Here's the code snippet. We're saving the netdevice pointer returned
+by alloc_etherdev_mq() during PCI probe in cxgb4_main.c::init_one()
+and using it to compare the netdevice given by redirect action. If
+the redirect action's netdevice doesn't match any of our underlying
+ports, then we fail offloading this rule.
 
->
->> +}
->> +
->>  int netns_bpf_prog_query(const union bpf_attr *attr,
->>                          union bpf_attr __user *uattr)
->>  {
->> -       __u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
->> -       u32 prog_id, prog_cnt = 0, flags = 0;
->>         enum netns_bpf_attach_type type;
->> -       struct bpf_prog *attached;
->>         struct net *net;
->> +       int ret;
->>
->>         if (attr->query.query_flags)
->>                 return -EINVAL;
->
-> [...]
+		case FLOW_ACTION_REDIRECT: {
+			struct adapter *adap = netdev2adap(dev);
+			struct net_device *n_dev, *target_dev;
+			unsigned int i;
+			bool found = false;
+
+			target_dev = act->dev;
+			for_each_port(adap, i) {
+				n_dev = adap->port[i];
+				if (target_dev == n_dev) {
+					found = true;
+					break;
+				}
+			}
+
+			/* If interface doesn't belong to our hw, then
+			 * the provided output port is not valid
+			 */
+			if (!found) {
+				netdev_err(dev, "%s: Out port invalid\n",
+					   __func__);
+				return -EINVAL;
+			}
+			act_redir = true;
+			}
+			break;
+
+
+Thanks,
+Rahul
