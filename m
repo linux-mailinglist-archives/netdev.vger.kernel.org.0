@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 024FD20B951
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 21:30:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAC1620B984
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 21:58:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725821AbgFZTaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 15:30:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37622 "EHLO mail.kernel.org"
+        id S1725816AbgFZT6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 15:58:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42490 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725768AbgFZT37 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 15:29:59 -0400
+        id S1725275AbgFZT6J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 15:58:09 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 98D262070A;
-        Fri, 26 Jun 2020 19:29:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 97541206BE;
+        Fri, 26 Jun 2020 19:58:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593199799;
-        bh=XSmORE+6UQYENxjYXGGDo83673HH9RWlSL2+UDsC4EE=;
+        s=default; t=1593201489;
+        bh=GC2lLesfdJnBgKU0FxJqMOrdz4kBj/wjLgwMjrW1dEc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UbX39J5SoDNO1IjUKFY9KB7ZfPlfGNEnFIb/ApwaAmC6KDvgnVtymFci5r+PgNu2i
-         enxblJ6zc5+4NFBlVNhrv+m3jiRUMTwoIGWffJex3nIA+aK/rP14M++QOPEyP3ewVA
-         6HbDUrrKlGCca+WnJOsE7t7dEvbNxSKiolKqLH+w=
-Date:   Fri, 26 Jun 2020 12:29:57 -0700
+        b=HlXcGdaRrnm8G2XVsAWRx678lmEYLuuevvv3fDI2PtGeLSWiBicK/MkuA4xjRUzhq
+         on3Ssq00/pZXQK8Zd2l1H+O1QUxTStM+yEAOgzVzaRsK73sw9KAmmr+q8Hvp3nxgb8
+         C3jxu1zms7OwKRHH7bZv8d2d4l/B72gGI494OBXk=
+Date:   Fri, 26 Jun 2020 12:58:06 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Cc:     davem@davemloft.net, Alice Michael <alice.michael@intel.com>,
@@ -36,11 +36,11 @@ Cc:     davem@davemloft.net, Alice Michael <alice.michael@intel.com>,
         Donald Skidmore <donald.c.skidmore@intel.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Sridhar Samudrala <sridhar.samudrala@intel.com>
-Subject: Re: [net-next v3 13/15] iecm: Add ethtool
-Message-ID: <20200626122957.127d21e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200626020737.775377-14-jeffrey.t.kirsher@intel.com>
+Subject: Re: [net-next v3 11/15] iecm: Add splitq TX/RX
+Message-ID: <20200626125806.0b1831a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200626020737.775377-12-jeffrey.t.kirsher@intel.com>
 References: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
-        <20200626020737.775377-14-jeffrey.t.kirsher@intel.com>
+        <20200626020737.775377-12-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -49,66 +49,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Jun 2020 19:07:35 -0700 Jeff Kirsher wrote:
-> @@ -794,7 +824,57 @@ static void iecm_vc_event_task(struct work_struct *work)
->  int iecm_initiate_soft_reset(struct iecm_vport *vport,
->  			     enum iecm_flags reset_cause)
+On Thu, 25 Jun 2020 19:07:33 -0700 Jeff Kirsher wrote:
+> @@ -1315,7 +1489,18 @@ iecm_tx_splitq_clean(struct iecm_queue *tx_q, u16 end, int napi_budget,
+>   */
+>  static inline void iecm_tx_hw_tstamp(struct sk_buff *skb, u8 *desc_ts)
+
+Pretty sure you don't need the inline here. It's static function with
+one caller.
+
 >  {
 > -	/* stub */
-> +	struct iecm_adapter *adapter = vport->adapter;
-> +	enum iecm_state current_state;
-> +	enum iecm_status status;
-> +	int err = 0;
+> +	struct skb_shared_hwtstamps hwtstamps;
+> +	u64 tstamp;
 > +
-> +	/* Make sure we do not end up in initiating multiple resets */
-> +	mutex_lock(&adapter->reset_lock);
+> +	/* Only report timestamp to stack if requested */
+> +	if (!likely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
+> +		return;
 > +
-> +	current_state = vport->adapter->state;
-> +	switch (reset_cause) {
-> +	case __IECM_SR_Q_CHANGE:
-> +		/* If we're changing number of queues requested, we need to
-> +		 * send a 'delete' message before freeing the queue resources.
-> +		 * We'll send an 'add' message in adjust_qs which doesn't
-> +		 * require the queue resources to be reallocated yet.
-> +		 */
-> +		if (current_state <= __IECM_DOWN) {
-> +			iecm_send_delete_queues_msg(vport);
-> +		} else {
-> +			set_bit(__IECM_DEL_QUEUES, adapter->flags);
-> +			iecm_vport_stop(vport);
-> +		}
-> +		iecm_deinit_rss(vport);
-> +		status = adapter->dev_ops.vc_ops.adjust_qs(vport);
-> +		if (status) {
-> +			err = -EFAULT;
-> +			goto reset_failure;
-> +		}
-> +		iecm_intr_rel(adapter);
-> +		iecm_vport_calc_num_q_vec(vport);
-> +		iecm_intr_req(adapter);
-> +		break;
-> +	case __IECM_SR_Q_DESC_CHANGE:
-> +		iecm_vport_stop(vport);
-> +		iecm_vport_calc_num_q_desc(vport);
-> +		break;
-> +	case __IECM_SR_Q_SCH_CHANGE:
-> +	case __IECM_SR_MTU_CHANGE:
-> +		iecm_vport_stop(vport);
-> +		break;
-> +	default:
-> +		dev_err(&adapter->pdev->dev, "Unhandled soft reset cause\n");
-> +		err = -EINVAL;
-> +		goto reset_failure;
-> +	}
+> +	tstamp = (desc_ts[0] | (desc_ts[1] << 8) | (desc_ts[2] & 0x3F) << 16);
+> +	hwtstamps.hwtstamp =
+> +		ns_to_ktime(tstamp << IECM_TW_TIME_STAMP_GRAN_512_DIV_S);
 > +
-> +	if (current_state == __IECM_UP)
-> +		err = iecm_vport_open(vport);
-> +reset_failure:
-> +	mutex_unlock(&adapter->reset_lock);
-> +	return err;
+> +	skb_tstamp_tx(skb, &hwtstamps);
 >  }
 
-The close then open mode of operation will not cut it in 21st century.
-
-You can't free all the resources and then fail to open if system is
-tight on memory.
+Why is there time stamp reading support if you have no ts_info
+configuration on ethtool side at all and no PHC support?
