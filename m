@@ -2,164 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5224620B7B1
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:56:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 458CE20B7BC
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:57:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727840AbgFZR4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 13:56:19 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:1394 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726616AbgFZR4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:56:18 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05QHsuDF019455
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:56:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=UHFQQFqYSY8aevwSYLHh6Hobk6A4dxuODVh5qoz6O0I=;
- b=KZ8kGK6tZ2/Y2glbND15vFuJBXyR6zlf7Rs3Hq7BRSRTZVPPpECLI65lbAsaACOyuZM3
- uxcFi/BheiBqUc66daSqCV35+KPjbo+vbY+QkAyozwVAhVYaTkMPT8ycND/yQw1q9lbo
- +EXuGnq1n+jY3NfxE8gqaM/Zi2wdaQMjTSY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31ux1exn4y-14
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:56:17 -0700
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+        id S1726441AbgFZR5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 13:57:49 -0400
+Received: from mga12.intel.com ([192.55.52.136]:24928 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725833AbgFZR5s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 13:57:48 -0400
+IronPort-SDR: Oefu6pMk884BixtCZHkIS34dwtbEaqkc6rEn85FaORjPuzdfTVQcqsZiK+VPs7SvxGNrfeVK3K
+ 3kI7e94oazsQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9664"; a="125071334"
+X-IronPort-AV: E=Sophos;i="5.75,284,1589266800"; 
+   d="scan'208";a="125071334"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2020 10:57:47 -0700
+IronPort-SDR: 8j57Nv7/6jDkCtPtSOl7mS5Gqy5el6R1VE/0gwbM0pC4lz/RnI0/CyFf0LCW9lBpkVzmar+rP6
+ zb7DL8zeZICg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,284,1589266800"; 
+   d="scan'208";a="320068022"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by FMSMGA003.fm.intel.com with ESMTP; 26 Jun 2020 10:57:47 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 26 Jun 2020 10:57:46 -0700
+Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 26 Jun 2020 10:56:09 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id CA5942942E38; Fri, 26 Jun 2020 10:56:04 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>, <kernel-team@fb.com>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Neal Cardwell <ncardwell@google.com>, <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 10/10] bpf: selftest: Add test for TCP_BPF_DELACK_MAX and TCP_BPF_RTO_MIN
-Date:   Fri, 26 Jun 2020 10:56:04 -0700
-Message-ID: <20200626175604.1462935-1-kafai@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200626175501.1459961-1-kafai@fb.com>
-References: <20200626175501.1459961-1-kafai@fb.com>
-MIME-Version: 1.0
+ 15.1.1713.5; Fri, 26 Jun 2020 10:57:46 -0700
+Received: from ORSEDG002.ED.cps.intel.com (10.7.248.5) by
+ orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 26 Jun 2020 10:57:46 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.170)
+ by edgegateway.intel.com (134.134.137.101) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 26 Jun 2020 10:57:46 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ck3A/fga3321klhn6q5Gsbk/s6JC8Gau0vfhETspSIOnFZ+LvX/8VpMSmotlnC1zkeIYTdvbhi0mAWhkOirVzBDLeqRhr8ZIQlmyEU7L4KelEzceULeb+FOgsZcZMRNIsPWB73zDt3HIjTs5ZPNA6DrfzcYtee9Hli0Rosp+fljD/JEvH1hKsW3FPTnysrz/P9msU4rhURJHLrEAa83rcZjTBL0s3g71jZW1AIaqD1mU/jGOvQ+HCWEt3xZeTgWcCvkBqipnu6OK1+oX3gpg5Z6rFHzFXXdbq2ldJ5nrHAb5D60uariF0NA193RXkHzYDksuw6xJue524JmyyU0hSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ksqqryGAUWmbG7NklovvlaAAucbgTTPVeY9KODlegIQ=;
+ b=kjN1jzTgf5hZJ/OE6/ONqefggo25DHG1azngLZBUXv+HDiXbFsinkrJb1+6z0b4PmJKYM+zA9mTL4JxKM4kgcyEpW9D6SPjkT5Mznwxc8ID1WhyLvQ0a5FGNndf5fVji3xa7VHkBwXZMteU8WcDBe2BvCnKV2U8bpxajb3uP0UX8DB7tRIPiejTNhep7AqpV6tNxCenLv/DalDSTUOOtKyEHBSlamkWEKtDpeyiJ/rKAGeJW87vr9B+gkzTYGsu3U1fk1Pz0zMGkQ3+Zr7r5dgoVtnQT71+u6t5xIWRsPvVbrqpSwUViynw+urs6EB0k+xFk+lAStOT9duLcSGkMww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ksqqryGAUWmbG7NklovvlaAAucbgTTPVeY9KODlegIQ=;
+ b=lL3CuZx7HOdZjDt0jCMjpB3rf2IP2RQSP9saYI8PFbQOQWf0TFtkN4XQAUNvu3wVsSQFjWOeKAnp0rzsYXwPIeH7fHnf0zpPSqHooRhq4QV4Ym8tdJUVKq8C4j3CAsvhuxj8wW2zcGxckKQNPX0yQ2/oPHrRcjYH2pE2jkNNkjs=
+Received: from MW3PR11MB4522.namprd11.prod.outlook.com (2603:10b6:303:2d::8)
+ by MWHPR11MB1870.namprd11.prod.outlook.com (2603:10b6:300:10f::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Fri, 26 Jun
+ 2020 17:57:41 +0000
+Received: from MW3PR11MB4522.namprd11.prod.outlook.com
+ ([fe80::4021:b214:94b3:3c50]) by MW3PR11MB4522.namprd11.prod.outlook.com
+ ([fe80::4021:b214:94b3:3c50%6]) with mapi id 15.20.3131.023; Fri, 26 Jun 2020
+ 17:57:41 +0000
+From:   "Brady, Alan" <alan.brady@intel.com>
+To:     Joe Perches <joe@perches.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "Michael, Alice" <alice.michael@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Burra, Phani R" <phani.r.burra@intel.com>,
+        "Hay, Joshua A" <joshua.a.hay@intel.com>,
+        "Chittim, Madhu" <madhu.chittim@intel.com>,
+        "Linga, Pavan Kumar" <pavan.kumar.linga@intel.com>,
+        "Skidmore, Donald C" <donald.c.skidmore@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Subject: RE: [net-next v3 13/15] iecm: Add ethtool
+Thread-Topic: [net-next v3 13/15] iecm: Add ethtool
+Thread-Index: AQHWS16ZZzIbMh9UG0WTZD4rdYDCP6jqPT2AgADxfYA=
+Date:   Fri, 26 Jun 2020 17:57:40 +0000
+Message-ID: <MW3PR11MB45220BE4350A3279E009AB178F930@MW3PR11MB4522.namprd11.prod.outlook.com>
+References: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
+         <20200626020737.775377-14-jeffrey.t.kirsher@intel.com>
+ <2b2a00cc0198328f1a0f3c9ccb6004a611a60011.camel@perches.com>
+In-Reply-To: <2b2a00cc0198328f1a0f3c9ccb6004a611a60011.camel@perches.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+authentication-results: perches.com; dkim=none (message not signed)
+ header.d=none;perches.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [174.127.217.60]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: de520ad1-67cb-4715-6e29-08d819fa6ba4
+x-ms-traffictypediagnostic: MWHPR11MB1870:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR11MB187074E7B889C51BFB72AC898F930@MWHPR11MB1870.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:635;
+x-forefront-prvs: 0446F0FCE1
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: B3ZSdNA5ZnGkg+DM4paNu89nVVgVwEULBEEoSA4oR1f+ygZ4DGwmI5NNcjDWRCK7P7oL3hYmMwNlzBHI849cxfNKW38Ma5WU1CGlMeUGAgK96oxi1oZfFj/No/RRb6qrNgitqyot6mWxDf9oWBhoZL8Wb/FumZPXrNMRAkb92LNP2f0NNIstKGnbfCWwB0+Ys+PfkrYje45Oij8gYnK9ysCWQhDLocdb80FpJLRKSNaJk+TtkhAUGRbxWBrIJ4p8p3JbApnk9WRm9s9YJ3vl2QS0v2k+M8F8zpuPlI6YGbPpn16xqyamJ+wXgB4/li4k
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4522.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(136003)(39860400002)(346002)(366004)(66556008)(316002)(52536014)(5660300002)(8676002)(9686003)(66476007)(8936002)(55016002)(86362001)(76116006)(64756008)(107886003)(33656002)(54906003)(66446008)(26005)(66946007)(83380400001)(4326008)(186003)(478600001)(110136005)(2906002)(7696005)(6506007)(53546011)(71200400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: cG/u9evFLsiSF+VeIwhjda5TpdAjm12xUnYUfnc4C1pSbxCg2KX4Ea8FbJlifHPsBbGaiTcs53sO5q+LuryRgBfF2fPXvDNgSrIEBj6O/en20L2Ct2E60RvRsaMrReNtgijbjXmFTGsY1g6W+JOiVAHCwX6gLcGpBt8ougBdN/ALvPxBeGBjV2vyex7J4UtDcAeO8ls2PngCWWr/3oeBvkUXIO/cD3p7maHP87Gwwmx2bQi5AOzk3+TE0UXQ+H0uhcBgAZnmB56QNYbXbh8J9Eu+7JwdTUT4hbZqx6bQpuEaJehUKi62o+cv+RUESNFbA4sENYDc6kL8Ec9tSsaWrKF2bvyPrcau9Sr/JXeVYPMc30LjhmXTBUHDT0WOnpCfWpvriXtX/7gJK61B7CWC1DC5DokAJZ6gmfty3puUOqy+pd5rLMZu1JeUmws7CAvcDGXGrJRjwpGdd0ljU9KYOpjikMTc7fm/vP+RcpmAFGClyT7Gjf+mYoIs7+oIh7AJ
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-26_10:2020-06-26,2020-06-26 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- clxscore=1015 cotscore=-2147483648 spamscore=0 mlxlogscore=739 bulkscore=0
- adultscore=0 phishscore=0 priorityscore=1501 malwarescore=0 mlxscore=0
- suspectscore=13 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006260126
-X-FB-Internal: deliver
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4522.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: de520ad1-67cb-4715-6e29-08d819fa6ba4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jun 2020 17:57:40.9460
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lFiKoTh4JHwexQoGcIvfMxlYuSdBEcPKFWgjSk/+n7m5AYLkKNdC6OWE2hXO8yqVcTcVN8CV8lsopX0wvDTZRw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1870
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch tests a bpf prog that parses/writes a max_delack_ms bpf header
-option and also bpf_setsockopt its TCP_BPF_DELACK_MAX/TCP_BPF_RTO_MIN
-accordingly.
+> -----Original Message-----
+> From: Joe Perches <joe@perches.com>
+> Sent: Thursday, June 25, 2020 8:29 PM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net
+> Cc: Michael, Alice <alice.michael@intel.com>; netdev@vger.kernel.org;
+> nhorman@redhat.com; sassmann@redhat.com; Brady, Alan
+> <alan.brady@intel.com>; Burra, Phani R <phani.r.burra@intel.com>; Hay,
+> Joshua A <joshua.a.hay@intel.com>; Chittim, Madhu
+> <madhu.chittim@intel.com>; Linga, Pavan Kumar
+> <pavan.kumar.linga@intel.com>; Skidmore, Donald C
+> <donald.c.skidmore@intel.com>; Brandeburg, Jesse
+> <jesse.brandeburg@intel.com>; Samudrala, Sridhar
+> <sridhar.samudrala@intel.com>
+> Subject: Re: [net-next v3 13/15] iecm: Add ethtool
+>=20
+> On Thu, 2020-06-25 at 19:07 -0700, Jeff Kirsher wrote:
+> > From: Alice Michael <alice.michael@intel.com>
+> >
+> > Implement ethtool interface for the common module.
+> []
+> > diff --git a/drivers/net/ethernet/intel/iecm/iecm_ethtool.c
+> > b/drivers/net/ethernet/intel/iecm/iecm_ethtool.c
+> []
+> > +/* Stats associated with a Tx queue */ static const struct iecm_stats
+> > +iecm_gstrings_tx_queue_stats[] =3D {
+> > +	IECM_QUEUE_STAT("%s-%u.packets", q_stats.tx.packets),
+> > +	IECM_QUEUE_STAT("%s-%u.bytes", q_stats.tx.bytes), };
+> > +
+> > +static const struct iecm_stats iecm_gstrings_rx_queue_stats[] =3D {
+> > +	IECM_QUEUE_STAT("%s-%u.packets", q_stats.rx.packets),
+> > +	IECM_QUEUE_STAT("%s-%u.bytes", q_stats.rx.bytes),
+> > +	IECM_QUEUE_STAT("%s-%u.generic_csum", q_stats.rx.generic_csum),
+> > +	IECM_QUEUE_STAT("%s-%u.basic_csum", q_stats.rx.basic_csum),
+> > +	IECM_QUEUE_STAT("%s-%u.csum_err", q_stats.rx.csum_err),
+> > +	IECM_QUEUE_STAT("%s-%u.hsplit_buf_overflow",
+> q_stats.rx.hsplit_hbo),
+> > +};
+> > +
+> > +#define IECM_TX_QUEUE_STATS_LEN
+> 	ARRAY_SIZE(iecm_gstrings_tx_queue_stats)
+> > +#define IECM_RX_QUEUE_STATS_LEN
+> 	ARRAY_SIZE(iecm_gstrings_rx_queue_stats)
+> > +
+> > +/**
+> > + * __iecm_add_stat_strings - copy stat strings into ethtool buffer
+> > + * @p: ethtool supplied buffer
+> > + * @stats: stat definitions array
+> > + * @size: size of the stats array
+> > + *
+> > + * Format and copy the strings described by stats into the buffer
+> > +pointed at
+> > + * by p.
+> > + */
+> > +static void __iecm_add_stat_strings(u8 **p, const struct iecm_stats st=
+ats[],
+> > +				    const unsigned int size, ...) {
+> > +	unsigned int i;
+> > +
+> > +	for (i =3D 0; i < size; i++) {
+> > +		va_list args;
+> > +
+> > +		va_start(args, size);
+> > +		vsnprintf((char *)*p, ETH_GSTRING_LEN,
+> > +			  stats[i].stat_string, args);
+> > +		*p +=3D ETH_GSTRING_LEN;
+> > +		va_end(args);
+> > +	}
+> > +}
+>=20
+> Slightly dangerous to have a possible mismatch between the varargs and th=
+e
+> actual constant format spec.
+>=20
+> Perhaps safer to use something like:
+>=20
+> static const struct iecm_stats iecm_gstrings_tx_queue_stats[] =3D {
+> 	IECM_QUEUE_STAT("packets", q_stats.tx.packets),
+> 	IECM_QUEUE_STAT("bytes", q_stats.tx.bytes), };
+>=20
+> Perhaps use const char * and unsigned int instead of varargs so this form=
+ats the
+> output without va_start/end
+>=20
+> 	snprintf(*p, ETH_GSTRING_LEN, "%s-%u.%s", type, index,
+> stats[i].stat_string);
+>=20
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- .../bpf/prog_tests/tcp_hdr_options.c          |  6 ++--
- .../bpf/progs/test_tcp_hdr_options.c          | 34 +++++++++++++++++++
- 2 files changed, 38 insertions(+), 2 deletions(-)
+Agreed this could be better.  Will rework without varargs.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c b/t=
-ools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
-index f8daf36783f3..5a58f60d2889 100644
---- a/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
-@@ -447,11 +447,13 @@ static void simple_estab(void)
- 	struct bpf_link *link;
- 	struct sk_fds sk_fds;
-=20
--	exp_passive_estab_in.flags =3D OPTION_F_MAGIC;
-+	exp_passive_estab_in.flags =3D OPTION_F_MAGIC | OPTION_F_MAX_DELACK_MS;
- 	exp_passive_estab_in.magic =3D 0xfa;
-+	exp_passive_estab_in.max_delack_ms =3D 11;
-=20
--	exp_active_estab_in.flags =3D OPTION_F_MAGIC;
-+	exp_active_estab_in.flags =3D OPTION_F_MAGIC | OPTION_F_MAX_DELACK_MS;
- 	exp_active_estab_in.magic =3D 0xce;
-+	exp_active_estab_in.max_delack_ms =3D 22;
-=20
- 	prepare_out();
-=20
-diff --git a/tools/testing/selftests/bpf/progs/test_tcp_hdr_options.c b/t=
-ools/testing/selftests/bpf/progs/test_tcp_hdr_options.c
-index 631181bfb4cc..eb3b3c2a21f9 100644
---- a/tools/testing/selftests/bpf/progs/test_tcp_hdr_options.c
-+++ b/tools/testing/selftests/bpf/progs/test_tcp_hdr_options.c
-@@ -465,6 +465,24 @@ static __always_inline int handle_write_hdr_opt(stru=
-ct bpf_sock_ops *skops)
- 	return write_nodata_opt(skops);
- }
-=20
-+static __always_inline int set_delack_max(struct bpf_sock_ops *skops,
-+					  __u8 max_delack_ms)
-+{
-+	__u32 max_delack_us =3D max_delack_ms * 1000;
-+
-+	return bpf_setsockopt(skops, SOL_TCP, TCP_BPF_DELACK_MAX,
-+			      &max_delack_us, sizeof(max_delack_us));
-+}
-+
-+static __always_inline int set_rto_min(struct bpf_sock_ops *skops,
-+				       __u8 peer_max_delack_ms)
-+{
-+	__u32 min_rto_us =3D peer_max_delack_ms * 1000;
-+
-+	return bpf_setsockopt(skops, SOL_TCP, TCP_BPF_RTO_MIN, &min_rto_us,
-+			      sizeof(min_rto_us));
-+}
-+
- static __always_inline int handle_active_estab(struct bpf_sock_ops *skop=
-s)
- {
- 	__u8 bpf_hdr_opt_off =3D skops->skb_bpf_hdr_opt_off;
-@@ -505,6 +523,14 @@ static __always_inline int handle_active_estab(struc=
-t bpf_sock_ops *skops)
- 		/* No options will be written from now */
- 		clear_hdr_cb_flags(skops);
-=20
-+	if (active_syn_out.max_delack_ms &&
-+	    set_delack_max(skops, active_syn_out.max_delack_ms))
-+		RET_CG_ERR(skops);
-+
-+	if (active_estab_in.max_delack_ms &&
-+	    set_rto_min(skops, active_estab_in.max_delack_ms))
-+		RET_CG_ERR(skops);
-+
- 	return CG_OK;
- }
-=20
-@@ -590,6 +616,14 @@ static __always_inline int handle_passive_estab(stru=
-ct bpf_sock_ops *skops)
- 		/* No options will be written from now */
- 		clear_hdr_cb_flags(skops);
-=20
-+	if (passive_synack_out.max_delack_ms &&
-+	    set_delack_max(skops, passive_synack_out.max_delack_ms))
-+		RET_CG_ERR(skops);
-+
-+	if (passive_estab_in.max_delack_ms &&
-+	    set_rto_min(skops, passive_estab_in.max_delack_ms))
-+		RET_CG_ERR(skops);
-+
- 	return CG_OK;
- }
-=20
---=20
-2.24.1
-
+Alan
