@@ -2,141 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B24D520B6FC
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:28:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6175C20B706
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:30:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbgFZR2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 13:28:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42456 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727082AbgFZR2B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 13:28:01 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726381AbgFZRab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 13:30:31 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:50752 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725939AbgFZRab (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:30:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593192629;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gmFmf0H/Irw5Sz4GDyPRjjsRYdb95/WG2lP9xSQ4Y50=;
+        b=MryIuqhv1frpXCK6ZtsCaTT8A7tkV7BrMSF0njKpg/sq749MB0+NDcG1SmKC/Tl49UM7B9
+        rRb+DSRQspIdBinRun68/C4b4ztrnhWwQUPS+Uq3i6rWxZ3tUYqeDAs9XVxeoZVshRi7pr
+        WkBYx6eMRUmm1UFneuUxazjfoeErHiA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-37-CEObrnwFNqSrY-z77xsU2g-1; Fri, 26 Jun 2020 13:30:27 -0400
+X-MC-Unique: CEObrnwFNqSrY-z77xsU2g-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B67CA21473;
-        Fri, 26 Jun 2020 17:28:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593192480;
-        bh=hACNMea3X+89Scprjr38jVVQNB+Ocq3AspyCHKFB/X0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P/fbmeBOhq9tmO2wUNmY8EynokNGjGu4/LpPK42BNnrvZOZPDcNMEWCsXhYzM6Ing
-         f5x1YyNVvRnfqjUKTxIE8IV6ItvX4ub6aOXUBlh6yu6mROg05iF555fnEjv3CmJJKB
-         H7sF687h8rsLpdQyVeSLDjG5uGFaUZyoI/+0nsCg=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        macro@linux-mips.org
-Subject: [PATCH net-next 8/8] docs: networking: move FDDI drivers to the hw driver section
-Date:   Fri, 26 Jun 2020 10:27:31 -0700
-Message-Id: <20200626172731.280133-9-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200626172731.280133-1-kuba@kernel.org>
-References: <20200626172731.280133-1-kuba@kernel.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 78659193F562;
+        Fri, 26 Jun 2020 17:30:26 +0000 (UTC)
+Received: from linux.fritz.box.com (ovpn-114-92.ams2.redhat.com [10.36.114.92])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 144555C240;
+        Fri, 26 Jun 2020 17:30:24 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net-next v2 0/4] mptcp: refactor token container
+Date:   Fri, 26 Jun 2020 19:29:58 +0200
+Message-Id: <cover.1593192442.git.pabeni@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move docs for defza and skfp under device_drivers/fddi.
+Currently the msk sockets are stored in a single radix tree, protected by a
+global spin_lock. This series moves to an hash table, allocated at boot time,
+with per bucker spin_lock - alike inet_hashtables, but using a different key:
+the token itself.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
---
-CC: macro@linux-mips.org
----
- .../{ => device_drivers/fddi}/defza.rst       |  0
- .../networking/device_drivers/fddi/index.rst  | 19 +++++++++++++++++++
- .../{ => device_drivers/fddi}/skfp.rst        |  0
- .../networking/device_drivers/index.rst       |  1 +
- Documentation/networking/index.rst            |  2 --
- drivers/net/fddi/Kconfig                      |  4 ++--
- 6 files changed, 22 insertions(+), 4 deletions(-)
- rename Documentation/networking/{ => device_drivers/fddi}/defza.rst (100%)
- create mode 100644 Documentation/networking/device_drivers/fddi/index.rst
- rename Documentation/networking/{ => device_drivers/fddi}/skfp.rst (100%)
+The above improves scalability, as write operations will have a far later chance
+to compete for lock acquisition, allows lockless lookup, and will allow
+easier msk traversing - e.g. for diag interface implementation's sake.
 
-diff --git a/Documentation/networking/defza.rst b/Documentation/networking/device_drivers/fddi/defza.rst
-similarity index 100%
-rename from Documentation/networking/defza.rst
-rename to Documentation/networking/device_drivers/fddi/defza.rst
-diff --git a/Documentation/networking/device_drivers/fddi/index.rst b/Documentation/networking/device_drivers/fddi/index.rst
-new file mode 100644
-index 000000000000..0b75294e6c8b
---- /dev/null
-+++ b/Documentation/networking/device_drivers/fddi/index.rst
-@@ -0,0 +1,19 @@
-+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+Fiber Distributed Data Interface (FDDI) Device Drivers
-+======================================================
-+
-+Contents:
-+
-+.. toctree::
-+   :maxdepth: 2
-+
-+   defza
-+   skfp
-+
-+.. only::  subproject and html
-+
-+   Indices
-+   =======
-+
-+   * :ref:`genindex`
-diff --git a/Documentation/networking/skfp.rst b/Documentation/networking/device_drivers/fddi/skfp.rst
-similarity index 100%
-rename from Documentation/networking/skfp.rst
-rename to Documentation/networking/device_drivers/fddi/skfp.rst
-diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
-index d6a73e4592e0..a3113ffd7a16 100644
---- a/Documentation/networking/device_drivers/index.rst
-+++ b/Documentation/networking/device_drivers/index.rst
-@@ -13,6 +13,7 @@ Hardware Device Drivers
-    cable/index
-    cellular/index
-    ethernet/index
-+   fddi/index
-    hamradio/index
-    wan/index
-    wifi/index
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index f48f1d19caff..c29496fff81c 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -47,7 +47,6 @@ Linux Networking Documentation
-    dccp
-    dctcp
-    decnet
--   defza
-    dns_resolver
-    driver
-    eql
-@@ -94,7 +93,6 @@ Linux Networking Documentation
-    sctp
-    secid
-    seg6-sysctl
--   skfp
-    strparser
-    switchdev
-    tc-actions-env-rules
-diff --git a/drivers/net/fddi/Kconfig b/drivers/net/fddi/Kconfig
-index 60cc7524520c..f722079dfb6a 100644
---- a/drivers/net/fddi/Kconfig
-+++ b/drivers/net/fddi/Kconfig
-@@ -77,8 +77,8 @@ config SKFP
- 	  - Netelligent 100 FDDI SAS UTP
- 	  - Netelligent 100 FDDI SAS Fibre MIC
- 
--	  Read <file:Documentation/networking/skfp.rst> for information about
--	  the driver.
-+	  Read <file:Documentation/networking/device_drivers/fddi/skfp.rst>
-+	  for information about the driver.
- 
- 	  Questions concerning this driver can be addressed to:
- 	  <linux@syskonnect.de>
+This also introduces trivial, related, kunit tests and move the existing in
+kernel's one to kunit.
+
+v1 -> v2:
+ - fixed a few extra and sparse warns
+
+Paolo Abeni (4):
+  mptcp: add __init annotation on setup functions
+  mptcp: refactor token container
+  mptcp: move crypto test to KUNIT
+  mptcp: introduce token KUNIT self-tests
+
+ net/mptcp/Kconfig       |  20 ++-
+ net/mptcp/Makefile      |   4 +
+ net/mptcp/crypto.c      |  63 +--------
+ net/mptcp/crypto_test.c |  72 +++++++++++
+ net/mptcp/pm.c          |   2 +-
+ net/mptcp/pm_netlink.c  |   2 +-
+ net/mptcp/protocol.c    |  49 ++++---
+ net/mptcp/protocol.h    |  24 ++--
+ net/mptcp/subflow.c     |  21 ++-
+ net/mptcp/token.c       | 280 ++++++++++++++++++++++++++++------------
+ net/mptcp/token_test.c  | 140 ++++++++++++++++++++
+ 11 files changed, 487 insertions(+), 190 deletions(-)
+ create mode 100644 net/mptcp/crypto_test.c
+ create mode 100644 net/mptcp/token_test.c
+
 -- 
 2.26.2
 
