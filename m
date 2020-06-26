@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1F120BBD7
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 23:49:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 789B420BBE4
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 23:52:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725909AbgFZVtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 17:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
+        id S1725975AbgFZVwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 17:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725803AbgFZVtP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 17:49:15 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C06C03E979;
-        Fri, 26 Jun 2020 14:49:15 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id z2so8635952qts.5;
-        Fri, 26 Jun 2020 14:49:14 -0700 (PDT)
+        with ESMTP id S1725959AbgFZVwH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 17:52:07 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A0FC03E979;
+        Fri, 26 Jun 2020 14:52:06 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id g11so5179438qvs.2;
+        Fri, 26 Jun 2020 14:52:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=doYsV1+x60dYGMlAnBhGiUwMPJnQ0kL/rbcqGWWy8TA=;
-        b=Yy+o+p39/mLiiUdy3Ilg8FLDdDR2le9XHbSChUd6zi8C/CRwL+3mX1/2WO7g8i4QK4
-         CKPI3tjHJ8wb/rTo5UZ2oUcOA5IVHX4eIMskmZm9naYD9mogDUuBu4cULa0BmShcFp/+
-         Nw6cGcCSuq/a8Wa6KZV/1ffCaxZus4R+E3ihST/VqUmB4JESEuh7dsZ97J4s/iP9znWK
-         jnXh7aTd3Du0fbaQeJqdCbRhlH9yER3RfnKnsvt8tzhJ6w+Sz95HexSeAUoMhSJaorPq
-         xC+raRNgVpDB1u8hdrIDiD24+DeTB9myXSygGP2BfBV4XWLoVgtI0vsRqiGliqKU6kpY
-         Twpw==
+        bh=CYaBsecgNFBlic8HfAR0C1bLpXq6GkqdCX5Apw2muLI=;
+        b=YtAWULVR6OJOdk2O51dzsCNOnrpG46L379wXaGHSgG6YF8RtLQx7l3fw4tmbaubgCD
+         RDPMe9tvvzcYRqy2y1Tvi3MKu8Ernzx/zcwHYIcnUTKARNliemDjYIKk4I3MrWimlVt2
+         3gDosgh1toy6xXJqOFXeHalT4YOgff4fnecMLTe61BKre/+7AKSwLbx2dwFSnwzE8/c6
+         rWHo0h0UitvHjAg5/1aCr3BzjvIgidbzvsDFbyTyRjqcUSzEcihyiOIHtPg5AFlyoe8h
+         l1NjhdGD7uiAGpk2o9Egj9nPy3DKScA+rxSV1ZorOU9tJ+zpSsVUMMfPRI4nOzsP3u8x
+         c+2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=doYsV1+x60dYGMlAnBhGiUwMPJnQ0kL/rbcqGWWy8TA=;
-        b=p4NtcdTnCTPW7y+3vxb1HzbzQVnK8B891vkwDmLaPsBQWoBYBVES5WE+0HbeWCpq+1
-         sP3TJBRJF5uZZs+jzHTsuJ9Owy+OqhQRSZhgMLLQBydImKNDMgzKnT/Aaou2Gxs8auyO
-         5mkzUnFJghKUuT8JeXSbjGUK7XAuJz7uCcEJCS7NMX/SLjtRBt3v4Q4IqZ3qQv7iI05s
-         sQsag+YRUqsQ8krp6QU60ezpQE3WxM3y1vgJ5I/bnPHhuaIr5NHTuJghhkHyZZpNkvqo
-         XPaRsbL2fjRUr2GZNL7eomHvtkDElM6TDxrmBwEjAVhXb0yNccESsHILvJA9xp+st7Gd
-         aoQg==
-X-Gm-Message-State: AOAM533c5JM0YyeFd2ZqsJqDpF1IDJ99MwVMRHxcVB+3T1eF+X5lFibt
-        oof6M+r70Q/9EGtdybjr01hjuK/v/ymyrw5scwA=
-X-Google-Smtp-Source: ABdhPJyX97RxIc4dlMDJs6ydJN32Wjb3BlNXaqZy7xEbluESSWGQo+9lwhzQpASqFo7Q8qYvaCkdTchlm6CMUdBJa4U=
-X-Received: by 2002:ac8:19c4:: with SMTP id s4mr693329qtk.117.1593208154265;
- Fri, 26 Jun 2020 14:49:14 -0700 (PDT)
+        bh=CYaBsecgNFBlic8HfAR0C1bLpXq6GkqdCX5Apw2muLI=;
+        b=PvKQoIeqzj6WiOj2tBpXDaz4IAL3ncapwQQWaoTN6qWr1uOETjLrDoj1WplwWYFTWi
+         0gzbKk6ILMSUgMhrYqumRw6hWOEkOJYXXzuzc4z6jCSu6NOljGJu2imJjwLV8JCprB4Y
+         BQww5Ie0f/6aXXYMU1AeY1zPjcNx/iQCW+uIiiklZcgKZGrngeExllbH814uRnbx2H4c
+         rAt5b4En7AatxryR3Icg3huQzL1ilSG0UmUpbdXqjRirNPX6722WNBLZO823fZjusG0F
+         u8A+JpeAVW3bjPnoBfhXUYt9+34PedBZDxrTSYHUeq/tyhoWbrZk+SjI/7K4R36eEtUY
+         ZXmA==
+X-Gm-Message-State: AOAM530oelb1uZquqO0mdDnCp7D73J5J4Y5A93mW2S1lNLiahm6+v8RU
+        59JpICPqgGIjKbDhJT7MFNGkJV6d8lUQDrOz4ZQ=
+X-Google-Smtp-Source: ABdhPJzj4/qqjzftXNQF1a6Jos7LSvT2leQfLConK5AyQOHoF2dlyflSwZDmU99JfM0QxSsQTeJ52PKEikWkj/MxmRk=
+X-Received: by 2002:a0c:f388:: with SMTP id i8mr5195065qvk.224.1593208326044;
+ Fri, 26 Jun 2020 14:52:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200625221304.2817194-1-jolsa@kernel.org> <20200625221304.2817194-9-jolsa@kernel.org>
-In-Reply-To: <20200625221304.2817194-9-jolsa@kernel.org>
+References: <20200625221304.2817194-1-jolsa@kernel.org> <20200625221304.2817194-12-jolsa@kernel.org>
+In-Reply-To: <20200625221304.2817194-12-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 26 Jun 2020 14:49:03 -0700
-Message-ID: <CAEf4BzZC-reS4oQ-SWLBEYwu9KGV8RsaBDtAQiiUNh+EveHV6w@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 08/14] bpf: Add BTF_SET_START/END macros
+Date:   Fri, 26 Jun 2020 14:51:55 -0700
+Message-ID: <CAEf4BzZi1KOY21SE__H2q8YjT4972QLYPhMX7tDeUPgnM8NFMw@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 11/14] tools headers: Adopt verbatim copy of
+ btf_ids.h from kernel sources
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -72,42 +73,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, Jun 25, 2020 at 4:48 PM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Adding support to define sorted set of BTF ID values.
+> It will be needed by bpf selftest for resolve_btfids tool.
 >
-> Following defines sorted set of BTF ID values:
+> Also adding __PASTE macro as btf_ids.h dependency, which is
+> defined in:
 >
->   BTF_SET_START(btf_whitelist_d_path)
->   BTF_ID(func, vfs_truncate)
->   BTF_ID(func, vfs_fallocate)
->   BTF_ID(func, dentry_open)
->   BTF_ID(func, vfs_getattr)
->   BTF_ID(func, filp_close)
->   BTF_SET_END(btf_whitelist_d_path)
+>   include/linux/compiler_types.h
 >
-> It defines following 'struct btf_id_set' variable to access
-> values and count:
->
->   struct btf_id_set btf_whitelist_d_path;
->
-> Adding 'allowed' callback to struct bpf_func_proto, to allow
-> verifier the check on allowed callers.
->
-> Adding btf_id_set_contains, which will be used by allowed
-> callbacks to verify the caller's BTF ID value is within
-> allowed set.
+> but because tools/include do not have this header, I'm putting
+> the macro into linux/compiler.h header.
 >
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
 
-This looks nice!
+I don't like `#define GUARD 1`, but besides that:
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
->  include/linux/bpf.h     |  4 ++++
->  include/linux/btf_ids.h | 39 +++++++++++++++++++++++++++++++++++++++
->  kernel/bpf/btf.c        | 14 ++++++++++++++
->  kernel/bpf/verifier.c   |  5 +++++
->  4 files changed, 62 insertions(+)
+>  tools/include/linux/btf_ids.h  | 108 +++++++++++++++++++++++++++++++++
+>  tools/include/linux/compiler.h |   4 ++
+>  2 files changed, 112 insertions(+)
+>  create mode 100644 tools/include/linux/btf_ids.h
 >
 
 [...]
