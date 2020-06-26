@@ -2,83 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9093020AD95
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 09:54:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C15220ADA3
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 09:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728880AbgFZHyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 03:54:43 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:24018 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728635AbgFZHyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 03:54:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593158082;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Of86hWoKfykJ98r7Ce/eFA7ToVfIKZIjXFa/mRKy90k=;
-        b=SuOlQbJZMs6Kr3P+a4K2JO9gJ5QLgSBMN9PZUDX+VWn7bdSmtvUOfptrP/6c1g7QgvO8bF
-        IMZrxpzuKfW44BDTqQwjBdfLnwfiNLjJEiDW1m+OHV8uVOfwl6w4VJksric08QgWoKKn+m
-        K/SpbRVBMCCwko4FtzS61fg3BznOYJA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-168-ikly6Z4jN5S_ds1ejVUbDA-1; Fri, 26 Jun 2020 03:54:39 -0400
-X-MC-Unique: ikly6Z4jN5S_ds1ejVUbDA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1728995AbgFZH7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 03:59:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34196 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728947AbgFZH7M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 03:59:12 -0400
+Received: from localhost (unknown [151.48.138.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9A7071005512;
-        Fri, 26 Jun 2020 07:54:38 +0000 (UTC)
-Received: from ovpn-114-92.ams2.redhat.com (ovpn-114-92.ams2.redhat.com [10.36.114.92])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CC1C31002395;
-        Fri, 26 Jun 2020 07:54:37 +0000 (UTC)
-Message-ID: <5a02a0196dd07f57d9449e1723e20a40910f79d5.camel@redhat.com>
-Subject: Re: Request for net merge into net-next
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Date:   Fri, 26 Jun 2020 09:54:36 +0200
-In-Reply-To: <20200625.194008.791920953816892666.davem@davemloft.net>
-References: <74156b9ad8529a3228658165396fd5adb2ccd972.camel@redhat.com>
-         <20200625.122137.190059934175313682.davem@davemloft.net>
-         <20200625.194008.791920953816892666.davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+        by mail.kernel.org (Postfix) with ESMTPSA id 75F2820768;
+        Fri, 26 Jun 2020 07:59:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593158351;
+        bh=TgRD4P4RFbz/zY6B2X9PvySeBPPBmsZKpTlotxkspNY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=le7LvK+U8QDSrALvJfyl4pwUfhJKocfeK4hX5RODIWRPSou7Ofldq3LkC/GmnDmSg
+         Ni7SWog+KotUTPCiFqsUI2sOXK9q/A0nhaF+B1Eq25kCsGSe9qYK5MXs803tjBOw1d
+         2DaLtdNVsZQTliqaMsTtLDf23PDJWKHaNNDo3oeU=
+Date:   Fri, 26 Jun 2020 09:59:06 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, brouer@redhat.com, toke@redhat.com,
+        lorenzo.bianconi@redhat.com, dsahern@kernel.org,
+        andrii.nakryiko@gmail.com
+Subject: Re: [PATCH v4 bpf-next 6/9] bpf: cpumap: implement XDP_REDIRECT for
+ eBPF programs attached to map entries
+Message-ID: <20200626075906.GA2206@localhost.localdomain>
+References: <cover.1593012598.git.lorenzo@kernel.org>
+ <ef1a456ba3b76a61b7dc6302974f248a21d906dd.1593012598.git.lorenzo@kernel.org>
+ <01248413-7675-d35e-323e-7d2e69128b45@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="fUYQa+Pmc3FrFX/N"
+Content-Disposition: inline
+In-Reply-To: <01248413-7675-d35e-323e-7d2e69128b45@iogearbox.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-06-25 at 19:40 -0700, David Miller wrote:
-> From: David Miller <davem@davemloft.net>
-> Date: Thu, 25 Jun 2020 12:21:37 -0700 (PDT)
-> 
-> > From: Paolo Abeni <pabeni@redhat.com>
-> > Date: Thu, 25 Jun 2020 11:16:47 +0200
-> > 
-> >> We have a few net-next MPTCP changes depending on:
-> >> 
-> >> commit 9e365ff576b7c1623bbc5ef31ec652c533e2f65e
-> >> mptcp: drop MP_JOIN request sock on syn cookies
-> >>     
-> >> commit 8fd4de1275580a1befa1456d1070eaf6489fb48f
-> >> mptcp: cache msk on MP_JOIN init_req
-> >> 
-> >> Could you please merge net into net-next so that we can post without
-> >> causing later conflicts?
-> > 
-> > I'm going to send a pull request for 'net' to Linus and once he takes that
-> > I'll sync everything.
-> 
-> This is now done.
-> 
-Thank you!
 
-I will spam the ML with patches soon ;)
+--fUYQa+Pmc3FrFX/N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-/P
+> On 6/24/20 5:33 PM, Lorenzo Bianconi wrote:
 
+[...]
+
+> > +	if (stats->redirect)
+> > +		xdp_do_flush_map();
+> > +
+> > +	rcu_read_unlock_bh(); /* resched point, may call do_softirq() */
+> >   	xdp_clear_return_frame_no_direct();
+>=20
+> Hm, this looks incorrect. Why do you call the xdp_clear_return_frame_no_d=
+irect() /after/
+> the possibility where there is a rescheduling point for softirq?
+
+Hi Daniel,
+
+yes, right. Thx for spotting this, I will fix in v5.
+
+Regards,
+Lorenzo
+
+>=20
+> >   	return nframes;
+> >=20
+>=20
+
+--fUYQa+Pmc3FrFX/N
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXvWqxwAKCRA6cBh0uS2t
+rKegAQD+YLojj4YDzE52McPy74ZSmTh3ux16LEeLDu5BWfADlQD8C/rJJmCszT6S
+SJ/WWNPVIVmQpfYZp4uT4e+gzycDuQg=
+=Wh3y
+-----END PGP SIGNATURE-----
+
+--fUYQa+Pmc3FrFX/N--
