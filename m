@@ -2,86 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14BD320BA0A
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 22:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0232B20BA14
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 22:14:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725998AbgFZUM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 16:12:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47232 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725781AbgFZUM4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 16:12:56 -0400
-Received: from localhost (mobile-166-170-222-206.mycingular.net [166.170.222.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6F61E2070A;
-        Fri, 26 Jun 2020 20:12:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593202375;
-        bh=yrG0fTvVHX8EMlp3x7nP44yHBASZyoALarBxI94N914=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=zqJbk/zKLUUXWUje3EeBeJ+aVPVSkonvqRPuuqewT05ysvGSdepv6HT07LoFWA1bp
-         nZ50bn/a3j39x7LvMjVPwBT133n/VwB0JIK0r5/kgbOD9eA1XFNBPWruff1fkLTPFX
-         d01W279bcoV7wB1ujojiyVZ9b9gA4QNKyJll1stY=
-Date:   Fri, 26 Jun 2020 15:12:54 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Aya Levin <ayal@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>, linux-pci@vger.kernel.org,
-        Alexander Duyck <alexander.h.duyck@linux.intel.com>
-Subject: Re: [net-next 10/10] net/mlx5e: Add support for PCI relaxed ordering
-Message-ID: <20200626201254.GA2932090@bjorn-Precision-5520>
+        id S1725890AbgFZUOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 16:14:31 -0400
+Received: from mout.kundenserver.de ([212.227.126.187]:54259 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725833AbgFZUOb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 16:14:31 -0400
+Received: from kiste.fritz.box ([88.130.61.76]) by mrelayeu.kundenserver.de
+ (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MderZ-1jG81J2sNd-00Zfqw; Fri, 26 Jun 2020 22:14:24 +0200
+From:   Hans Wippel <ndev@hwipl.net>
+To:     "Jason A . Donenfeld" <Jason@zx2c4.com>, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org
+Cc:     Hans Wippel <ndev@hwipl.net>
+Subject: wireguard: problem sending via libpcap's packet socket
+Date:   Fri, 26 Jun 2020 22:13:30 +0200
+Message-Id: <20200626201330.325840-1-ndev@hwipl.net>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200624102258.4410008d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:+NUI8ZsHCdMlmrdMoTpnkm9Tp59Rc99XH431g1+zqt8bqv5z3Ni
+ W1SZxzx5cgjFuXwJkzWs6EeBDFceGPOeS9cjeFdDRs50KlhzU6Iv4ZytRQpDjlpDrAJXeJQ
+ hwC0ijHvlVckmOQUWpfJPVR+Li1cWmoiBsSgwEGTQhCtdijN8ZCxGNW3tm/d2yng0YFloP5
+ 9oX5SLDMkqByuvefrBzFQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:e9WWx370YBw=:XYj8nRBR3JKiCvaFs7cGde
+ GfiklhIQ0Q/wyIweKwYueth2AJ3gJfej9UhS52x5eo+BbqPr98ufQ29xzApGQ0DEXFWLvMqag
+ jhzTZgtNWXCTvypXnp+F7+jrqXq5RHdINx7lxIBiEVQU89EmtvWFi5UPZlRYnkwCcrHcwSyq+
+ cAw4gP3GBpC7KCbNWd7jPHwyJMBOOF4eMPFIBnpgybv0reUBOqkqtDtKyUiESOlouVuBvhUV6
+ Gzg271QGIjDEfD25iJhucB/KZCZABbeplimvnliD9N379I/KauhDmbAXoNlIrUQTHd5a5OCG/
+ +iMmvCpTAX8nA+fzdU/+niMDGJ9xEbLSwjjXYzc1IBRMR0QbXHYK/tN0im1LtHHe587wnRgOY
+ v56H/UwM+PTTwcVT4Oo9vls5SNZ+SQPXtGEBCk85GLDjtLq1KXduGz34XKrAAy17+2KakmF6E
+ tJjIOhZizKoMuvYxWAYiL37aStXhWpZSqZFw7lQnyhW/XVQoiwuqpiZrax3S9DCJ1JCEIyoH1
+ zVTeUFtnbBehty1KkNO4GovlDFNoOO8QgHZGcRKp5XBEAvB6ONN+IEXPdLQpo7qAAdlsJeL0r
+ vOHWmRoe/mhXcVcNAQKqLBTaA2Y9COVuen2H60vNZiTaKAP8A9hiXLwlSybyQe2CBlytkX+df
+ wxgekzPCuCipTzx2XAqH4nueUtecw5IMjRPP0SCX06ShhWwOUV5IIlEu8AbLBdg59qHfsyLwD
+ m9D8lcBLfLBLRWIvhuHwX1oH6VbH8MDxjkz7khI4poOox6VwavQt7cLke9VnleSCrqmnhZBbe
+ 9INIWFN8MIWV6VQXSdVxDdk8T4cSN2hEXKkYri9XTiwjzQuo8DedZ6DmsE2pYrCmc4Coknl
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 24, 2020 at 10:22:58AM -0700, Jakub Kicinski wrote:
-> On Wed, 24 Jun 2020 10:34:40 +0300 Aya Levin wrote:
-> > >> I think Michal will rightly complain that this does not belong in
-> > >> private flags any more. As (/if?) ARM deployments take a foothold
-> > >> in DC this will become a common setting for most NICs.  
-> > > 
-> > > Initially we used pcie_relaxed_ordering_enabled() to
-> > >   programmatically enable this on/off on boot but this seems to
-> > > introduce some degradation on some Intel CPUs since the Intel Faulty
-> > > CPUs list is not up to date. Aya is discussing this with Bjorn.  
-> > Adding Bjorn Helgaas
-> 
-> I see. Simply using pcie_relaxed_ordering_enabled() and blacklisting
-> bad CPUs seems far nicer from operational perspective. Perhaps Bjorn
-> will chime in. Pushing the validation out to the user is not a great
-> solution IMHO.
+Hi,
 
-I'm totally lost, but maybe it doesn't matter because it looks like
-David has pulled this series already.
+while toying around with sending packets with libpcap, I noticed that it
+did not work with a wireguard interface in contrast to my regular
+ethernet interface.
 
-There probably *should* be a PCI core interface to enable RO, but
-there isn't one today.
+It seems like libpcap does not set a protocol on the packet socket and
+the following checks
 
-pcie_relaxed_ordering_enabled() doesn't *enable* anything.  All it
-does is tell you whether RO is already enabled.
+  "skb->protocol == real_protocol",
+  "skb->protocol == htons(ETH_P_IP)" and
+  "skb->protocol == htons(ETH_P_IPV6)"
 
-This patch ([net-next 10/10] net/mlx5e: Add support for PCI relaxed
-ordering) apparently adds a knob to control RO, but I can't connect
-the dots.  It doesn't touch PCI_EXP_DEVCTL_RELAX_EN, and that symbol
-doesn't occur anywhere in drivers/net except tg3, myri10ge, and niu.
+in the functions
 
-And this whole series doesn't contain PCI_EXP_DEVCTL_RELAX_EN or
-pcie_relaxed_ordering_enabled().
+  wg_check_packet_protocol(),
+  wg_xmit() and
+  wg_allowedips_lookup_dst()
 
-I do have a couple emails from Aya, but they didn't include a patch
-and I haven't quite figured out what the question was.
+fail because skb->protocol is 0.
 
-> > > So until we figure this out, will keep this off by default.
-> > > 
-> > > for the private flags we want to keep them for performance analysis as
-> > > we do with all other mlx5 special performance features and flags.
+Is this intended behaviour? Should these checks be changed in the kernel
+or should this rather be reported to libpcap? Just in case, you can find
+changes that made it work for me below (probably not the best solution).
+
+Again, if this is not the right place to ask, just let me know and I am
+sorry for the noise.
+  Hans
+
+Signed-off-by: Hans Wippel <ndev@hwipl.net>
+---
+ drivers/net/wireguard/allowedips.c | 5 +++--
+ drivers/net/wireguard/device.c     | 4 ++--
+ drivers/net/wireguard/queueing.h   | 3 ++-
+ 3 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/wireguard/allowedips.c b/drivers/net/wireguard/allowedips.c
+index 3725e9cd85f4..08e16907fde5 100644
+--- a/drivers/net/wireguard/allowedips.c
++++ b/drivers/net/wireguard/allowedips.c
+@@ -5,6 +5,7 @@
+ 
+ #include "allowedips.h"
+ #include "peer.h"
++#include "queueing.h"
+ 
+ static void swap_endian(u8 *dst, const u8 *src, u8 bits)
+ {
+@@ -356,9 +357,9 @@ int wg_allowedips_read_node(struct allowedips_node *node, u8 ip[16], u8 *cidr)
+ struct wg_peer *wg_allowedips_lookup_dst(struct allowedips *table,
+ 					 struct sk_buff *skb)
+ {
+-	if (skb->protocol == htons(ETH_P_IP))
++	if (wg_examine_packet_protocol(skb) == htons(ETH_P_IP))
+ 		return lookup(table->root4, 32, &ip_hdr(skb)->daddr);
+-	else if (skb->protocol == htons(ETH_P_IPV6))
++	else if (wg_examine_packet_protocol(skb) == htons(ETH_P_IPV6))
+ 		return lookup(table->root6, 128, &ipv6_hdr(skb)->daddr);
+ 	return NULL;
+ }
+diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
+index a8f151b1b5fa..baed429b2ed1 100644
+--- a/drivers/net/wireguard/device.c
++++ b/drivers/net/wireguard/device.c
+@@ -132,10 +132,10 @@ static netdev_tx_t wg_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	peer = wg_allowedips_lookup_dst(&wg->peer_allowedips, skb);
+ 	if (unlikely(!peer)) {
+ 		ret = -ENOKEY;
+-		if (skb->protocol == htons(ETH_P_IP))
++		if (wg_examine_packet_protocol(skb) == htons(ETH_P_IP))
+ 			net_dbg_ratelimited("%s: No peer has allowed IPs matching %pI4\n",
+ 					    dev->name, &ip_hdr(skb)->daddr);
+-		else if (skb->protocol == htons(ETH_P_IPV6))
++		else if (wg_examine_packet_protocol(skb) == htons(ETH_P_IPV6))
+ 			net_dbg_ratelimited("%s: No peer has allowed IPs matching %pI6\n",
+ 					    dev->name, &ipv6_hdr(skb)->daddr);
+ 		goto err;
+diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
+index c58df439dbbe..36badcf8a11d 100644
+--- a/drivers/net/wireguard/queueing.h
++++ b/drivers/net/wireguard/queueing.h
+@@ -84,7 +84,8 @@ static inline __be16 wg_examine_packet_protocol(struct sk_buff *skb)
+ static inline bool wg_check_packet_protocol(struct sk_buff *skb)
+ {
+ 	__be16 real_protocol = wg_examine_packet_protocol(skb);
+-	return real_protocol && skb->protocol == real_protocol;
++	return real_protocol == htons(ETH_P_IP) ||
++		real_protocol == htons(ETH_P_IPV6);
+ }
+ 
+ static inline void wg_reset_packet(struct sk_buff *skb, bool encapsulating)
+-- 
+2.27.0
+
