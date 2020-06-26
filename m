@@ -2,366 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55AC820BAD2
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 22:59:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C53120BAE3
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 23:02:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725983AbgFZU7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 16:59:07 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:41529 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725793AbgFZU7H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 16:59:07 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id bf32d0bd
-        for <netdev@vger.kernel.org>;
-        Fri, 26 Jun 2020 20:39:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=iVwofrz8GTa+m/DH8yOcXubeVyw=; b=vUo96H
-        tJUuHppZsfU4m4DONRkD17X/U1pzh6qLErw/+STQdE6vFszVJ0dQwxY6cE0DSw/3
-        6wYkjF0EVFA/LNU9NRGnylzspSKTv11fz7gg9LwO/JTqZVE6lCOrMc2lLcT3++Hh
-        jE1f8mzjK93hSiDKSPJa4aBscz04IBBmxpEGf3Vd8Ye6+ApLUg1uXyLKVYJ9/UyX
-        AdoeVjQwzwVAdh8YudNOWCBvONmMoNj6EJMOiVF0GIfHY/zU0mV1JF3TZK7xQ0dC
-        H6csQkkVbjGi5BC+y2ulh5xopQ41ez3H1Wig5CjoDoRyNm05znIsvDgtX4BmqSpr
-        tlPz2bpfJWjKPdAA==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2d2f86b4 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Fri, 26 Jun 2020 20:39:43 +0000 (UTC)
-Received: by mail-il1-f178.google.com with SMTP id r12so2419298ilh.4
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 13:59:02 -0700 (PDT)
-X-Gm-Message-State: AOAM531zRts9IM9ZbHOwVTeD1+D37q8gAV3v4e+pWchlMjad7wV+2WeR
-        h7Sewk1tdwhhSJW5/qSLfGz3f9dgDl3CthKI+ec=
-X-Google-Smtp-Source: ABdhPJyRope9kyexTx2LTyQ5rXuOV6VRh2y9mcAVbK05A2baQZsoAZITIehi30fueBXH/7xpXZHR/9PsabtIrDDMNkk=
-X-Received: by 2002:a92:d24a:: with SMTP id v10mr5133597ilg.224.1593205141311;
- Fri, 26 Jun 2020 13:59:01 -0700 (PDT)
+        id S1726093AbgFZVC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 17:02:56 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:45253 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725833AbgFZVC4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 17:02:56 -0400
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 05QL2o7G031271;
+        Fri, 26 Jun 2020 14:02:51 -0700
+Date:   Sat, 27 Jun 2020 02:20:12 +0530
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com,
+        vishal@chelsio.com, dt@chelsio.com
+Subject: Re: [PATCH net-next 0/3] cxgb4: add mirror action support for
+ TC-MATCHALL
+Message-ID: <20200626205011.GA24127@chelsio.com>
+References: <cover.1593085107.git.rahul.lakkireddy@chelsio.com>
+ <20200625155510.01e3c1c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200626100614.GA23240@chelsio.com>
+ <20200626095549.1dc4da9b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20200623095945.1402468-1-Jason@zx2c4.com> <20200623095945.1402468-3-Jason@zx2c4.com>
-In-Reply-To: <20200623095945.1402468-3-Jason@zx2c4.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 26 Jun 2020 14:58:50 -0600
-X-Gmail-Original-Message-ID: <CAHmME9qo6u1rmzgP0HEf2mVj+o4eWpjR+9j709NVhJuMAsb4uQ@mail.gmail.com>
-Message-ID: <CAHmME9qo6u1rmzgP0HEf2mVj+o4eWpjR+9j709NVhJuMAsb4uQ@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] wireguard: device: avoid circular netns references
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200626095549.1dc4da9b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Dmitry,
+On Friday, June 06/26/20, 2020 at 09:55:49 -0700, Jakub Kicinski wrote:
+> On Fri, 26 Jun 2020 15:36:15 +0530 Rahul Lakkireddy wrote:
+> > On Thursday, June 06/25/20, 2020 at 15:55:10 -0700, Jakub Kicinski wrote:
+> > > On Thu, 25 Jun 2020 17:28:40 +0530 Rahul Lakkireddy wrote:  
+> > > > This series of patches add support to mirror all ingress traffic
+> > > > for TC-MATCHALL ingress offload.
+> > > > 
+> > > > Patch 1 adds support to dynamically create a mirror Virtual Interface
+> > > > (VI) that accepts all mirror ingress traffic when mirror action is
+> > > > set in TC-MATCHALL offload.
+> > > > 
+> > > > Patch 2 adds support to allocate mirror Rxqs and setup RSS for the
+> > > > mirror VI.
+> > > > 
+> > > > Patch 3 adds support to replicate all the main VI configuration to
+> > > > mirror VI. This includes replicating MTU, promiscuous mode,
+> > > > all-multicast mode, and enabled netdev Rx feature offloads.  
+> > > 
+> > > Could you say more about this mirror VI? Is this an internal object
+> > > within the NIC or something visible to the user?
+> > >   
+> > 
+> > The Virtual Interface (VI) is an internal object managed by firmware
+> > and Multi Port Switch (MPS) module in hardware. Each VI can be
+> > programmed with a unique MAC address in the MPS TCAM. So, 1 physical
+> > port can have multiple VIs, each with their own MAC address. It's
+> > also possible for VIs to share the same MAC address, which would
+> > result in MPS setting the replication mode for that entry in the
+> > TCAM. In this case, the incoming packet would get replicated and
+> > sent to all the VIs sharing the MAC address. When MPS is able to
+> > classify the destination MAC in the incoming packet with an entry
+> > in the MPS TCAM, it forwards the packet to the corresponding VI(s).
+> > 
+> > In case of Mirror VI, we program the same MAC as the existing main
+> > VI. This will result in MPS setting the replication mode for that
+> > existing entry in the MPS TCAM. So, the MPS would replicate the
+> > incoming packet and send it to both the main VI and mirror VI.
+> 
+> So far sounds good.
+> 
+> > Note that for the main VI, we also programmed the flow Lookup Engine
+> > (LE) module to switch the packet back out on one of the underlying
+> > ports. So, when this rule hits in the LE, the main VI's packet would
+> > get switched back out in hardware to one of the underlying ports and
+> > will not reach driver. The mirror VI's packet will not hit any rule
+> > in the LE and will be received by the driver and will be sent up to
+> > Linux networking stack.
+> 
+> This I'm not sure I'm following. Are you saying that if there is another
+> (flower, not matchall) rule programmed it will be ignored as far 
+> as the matchall filter is concerned? I assume you ensure the matchall
+> rule is at higher prio in that case?
+> 
 
-The below patch is now in net.git and in Linus' tree. It adds a
-network namespace deletion notifier, which does some things that
-impact the logic of the interface and involves a little bit of object
-lifetime management. You'll see at the very bottom I added a test case
-to rule out the most pathological behavior. But naturally I'm
-wondering about the potential of subtle bugs beyond my gasp. It looks
-like syzkaller doesn't have any coverage of wg_netns_pre_exit -- it's
-all red. Do you suspect that's because the code is new enough that it
-just hasn't found it yet? Or should I start looking at teaching
-syzkaller a bit about interface netns changes?
+The order is still maintained. If there's a higher priority
+flower rule, then that rule will be considered first before
+considering the matchall rule.
 
-Jason
+For example, let's say we have 2 rules like below:
 
-On Tue, Jun 23, 2020 at 4:00 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> Before, we took a reference to the creating netns if the new netns was
-> different. This caused issues with circular references, with two
-> wireguard interfaces swapping namespaces. The solution is to rather not
-> take any extra references at all, but instead simply invalidate the
-> creating netns pointer when that netns is deleted.
->
-> In order to prevent this from happening again, this commit improves the
-> rough object leak tracking by allowing it to account for created and
-> destroyed interfaces, aside from just peers and keys. That then makes it
-> possible to check for the object leak when having two interfaces take a
-> reference to each others' namespaces.
->
-> Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  drivers/net/wireguard/device.c             | 58 ++++++++++------------
->  drivers/net/wireguard/device.h             |  3 +-
->  drivers/net/wireguard/netlink.c            | 14 ++++--
->  drivers/net/wireguard/socket.c             | 25 +++++++---
->  tools/testing/selftests/wireguard/netns.sh | 13 ++++-
->  5 files changed, 67 insertions(+), 46 deletions(-)
->
-> diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-> index 3ac3f8570ca1..a8f151b1b5fa 100644
-> --- a/drivers/net/wireguard/device.c
-> +++ b/drivers/net/wireguard/device.c
-> @@ -45,17 +45,18 @@ static int wg_open(struct net_device *dev)
->         if (dev_v6)
->                 dev_v6->cnf.addr_gen_mode = IN6_ADDR_GEN_MODE_NONE;
->
-> +       mutex_lock(&wg->device_update_lock);
->         ret = wg_socket_init(wg, wg->incoming_port);
->         if (ret < 0)
-> -               return ret;
-> -       mutex_lock(&wg->device_update_lock);
-> +               goto out;
->         list_for_each_entry(peer, &wg->peer_list, peer_list) {
->                 wg_packet_send_staged_packets(peer);
->                 if (peer->persistent_keepalive_interval)
->                         wg_packet_send_keepalive(peer);
->         }
-> +out:
->         mutex_unlock(&wg->device_update_lock);
-> -       return 0;
-> +       return ret;
->  }
->
->  #ifdef CONFIG_PM_SLEEP
-> @@ -225,6 +226,7 @@ static void wg_destruct(struct net_device *dev)
->         list_del(&wg->device_list);
->         rtnl_unlock();
->         mutex_lock(&wg->device_update_lock);
-> +       rcu_assign_pointer(wg->creating_net, NULL);
->         wg->incoming_port = 0;
->         wg_socket_reinit(wg, NULL, NULL);
->         /* The final references are cleared in the below calls to destroy_workqueue. */
-> @@ -240,13 +242,11 @@ static void wg_destruct(struct net_device *dev)
->         skb_queue_purge(&wg->incoming_handshakes);
->         free_percpu(dev->tstats);
->         free_percpu(wg->incoming_handshakes_worker);
-> -       if (wg->have_creating_net_ref)
-> -               put_net(wg->creating_net);
->         kvfree(wg->index_hashtable);
->         kvfree(wg->peer_hashtable);
->         mutex_unlock(&wg->device_update_lock);
->
-> -       pr_debug("%s: Interface deleted\n", dev->name);
-> +       pr_debug("%s: Interface destroyed\n", dev->name);
->         free_netdev(dev);
->  }
->
-> @@ -292,7 +292,7 @@ static int wg_newlink(struct net *src_net, struct net_device *dev,
->         struct wg_device *wg = netdev_priv(dev);
->         int ret = -ENOMEM;
->
-> -       wg->creating_net = src_net;
-> +       rcu_assign_pointer(wg->creating_net, src_net);
->         init_rwsem(&wg->static_identity.lock);
->         mutex_init(&wg->socket_update_lock);
->         mutex_init(&wg->device_update_lock);
-> @@ -393,30 +393,26 @@ static struct rtnl_link_ops link_ops __read_mostly = {
->         .newlink                = wg_newlink,
->  };
->
-> -static int wg_netdevice_notification(struct notifier_block *nb,
-> -                                    unsigned long action, void *data)
-> +static void wg_netns_pre_exit(struct net *net)
->  {
-> -       struct net_device *dev = ((struct netdev_notifier_info *)data)->dev;
-> -       struct wg_device *wg = netdev_priv(dev);
-> -
-> -       ASSERT_RTNL();
-> -
-> -       if (action != NETDEV_REGISTER || dev->netdev_ops != &netdev_ops)
-> -               return 0;
-> +       struct wg_device *wg;
->
-> -       if (dev_net(dev) == wg->creating_net && wg->have_creating_net_ref) {
-> -               put_net(wg->creating_net);
-> -               wg->have_creating_net_ref = false;
-> -       } else if (dev_net(dev) != wg->creating_net &&
-> -                  !wg->have_creating_net_ref) {
-> -               wg->have_creating_net_ref = true;
-> -               get_net(wg->creating_net);
-> +       rtnl_lock();
-> +       list_for_each_entry(wg, &device_list, device_list) {
-> +               if (rcu_access_pointer(wg->creating_net) == net) {
-> +                       pr_debug("%s: Creating namespace exiting\n", wg->dev->name);
-> +                       netif_carrier_off(wg->dev);
-> +                       mutex_lock(&wg->device_update_lock);
-> +                       rcu_assign_pointer(wg->creating_net, NULL);
-> +                       wg_socket_reinit(wg, NULL, NULL);
-> +                       mutex_unlock(&wg->device_update_lock);
-> +               }
->         }
-> -       return 0;
-> +       rtnl_unlock();
->  }
->
-> -static struct notifier_block netdevice_notifier = {
-> -       .notifier_call = wg_netdevice_notification
-> +static struct pernet_operations pernet_ops = {
-> +       .pre_exit = wg_netns_pre_exit
->  };
->
->  int __init wg_device_init(void)
-> @@ -429,18 +425,18 @@ int __init wg_device_init(void)
->                 return ret;
->  #endif
->
-> -       ret = register_netdevice_notifier(&netdevice_notifier);
-> +       ret = register_pernet_device(&pernet_ops);
->         if (ret)
->                 goto error_pm;
->
->         ret = rtnl_link_register(&link_ops);
->         if (ret)
-> -               goto error_netdevice;
-> +               goto error_pernet;
->
->         return 0;
->
-> -error_netdevice:
-> -       unregister_netdevice_notifier(&netdevice_notifier);
-> +error_pernet:
-> +       unregister_pernet_device(&pernet_ops);
->  error_pm:
->  #ifdef CONFIG_PM_SLEEP
->         unregister_pm_notifier(&pm_notifier);
-> @@ -451,7 +447,7 @@ int __init wg_device_init(void)
->  void wg_device_uninit(void)
->  {
->         rtnl_link_unregister(&link_ops);
-> -       unregister_netdevice_notifier(&netdevice_notifier);
-> +       unregister_pernet_device(&pernet_ops);
->  #ifdef CONFIG_PM_SLEEP
->         unregister_pm_notifier(&pm_notifier);
->  #endif
-> diff --git a/drivers/net/wireguard/device.h b/drivers/net/wireguard/device.h
-> index b15a8be9d816..4d0144e16947 100644
-> --- a/drivers/net/wireguard/device.h
-> +++ b/drivers/net/wireguard/device.h
-> @@ -40,7 +40,7 @@ struct wg_device {
->         struct net_device *dev;
->         struct crypt_queue encrypt_queue, decrypt_queue;
->         struct sock __rcu *sock4, *sock6;
-> -       struct net *creating_net;
-> +       struct net __rcu *creating_net;
->         struct noise_static_identity static_identity;
->         struct workqueue_struct *handshake_receive_wq, *handshake_send_wq;
->         struct workqueue_struct *packet_crypt_wq;
-> @@ -56,7 +56,6 @@ struct wg_device {
->         unsigned int num_peers, device_update_gen;
->         u32 fwmark;
->         u16 incoming_port;
-> -       bool have_creating_net_ref;
->  };
->
->  int wg_device_init(void);
-> diff --git a/drivers/net/wireguard/netlink.c b/drivers/net/wireguard/netlink.c
-> index 802099c8828a..20a4f3c0a0a1 100644
-> --- a/drivers/net/wireguard/netlink.c
-> +++ b/drivers/net/wireguard/netlink.c
-> @@ -511,11 +511,15 @@ static int wg_set_device(struct sk_buff *skb, struct genl_info *info)
->         if (flags & ~__WGDEVICE_F_ALL)
->                 goto out;
->
-> -       ret = -EPERM;
-> -       if ((info->attrs[WGDEVICE_A_LISTEN_PORT] ||
-> -            info->attrs[WGDEVICE_A_FWMARK]) &&
-> -           !ns_capable(wg->creating_net->user_ns, CAP_NET_ADMIN))
-> -               goto out;
-> +       if (info->attrs[WGDEVICE_A_LISTEN_PORT] || info->attrs[WGDEVICE_A_FWMARK]) {
-> +               struct net *net;
-> +               rcu_read_lock();
-> +               net = rcu_dereference(wg->creating_net);
-> +               ret = !net || !ns_capable(net->user_ns, CAP_NET_ADMIN) ? -EPERM : 0;
-> +               rcu_read_unlock();
-> +               if (ret)
-> +                       goto out;
-> +       }
->
->         ++wg->device_update_gen;
->
-> diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
-> index f9018027fc13..c33e2c81635f 100644
-> --- a/drivers/net/wireguard/socket.c
-> +++ b/drivers/net/wireguard/socket.c
-> @@ -347,6 +347,7 @@ static void set_sock_opts(struct socket *sock)
->
->  int wg_socket_init(struct wg_device *wg, u16 port)
->  {
-> +       struct net *net;
->         int ret;
->         struct udp_tunnel_sock_cfg cfg = {
->                 .sk_user_data = wg,
-> @@ -371,37 +372,47 @@ int wg_socket_init(struct wg_device *wg, u16 port)
->         };
->  #endif
->
-> +       rcu_read_lock();
-> +       net = rcu_dereference(wg->creating_net);
-> +       net = net ? maybe_get_net(net) : NULL;
-> +       rcu_read_unlock();
-> +       if (unlikely(!net))
-> +               return -ENONET;
-> +
->  #if IS_ENABLED(CONFIG_IPV6)
->  retry:
->  #endif
->
-> -       ret = udp_sock_create(wg->creating_net, &port4, &new4);
-> +       ret = udp_sock_create(net, &port4, &new4);
->         if (ret < 0) {
->                 pr_err("%s: Could not create IPv4 socket\n", wg->dev->name);
-> -               return ret;
-> +               goto out;
->         }
->         set_sock_opts(new4);
-> -       setup_udp_tunnel_sock(wg->creating_net, new4, &cfg);
-> +       setup_udp_tunnel_sock(net, new4, &cfg);
->
->  #if IS_ENABLED(CONFIG_IPV6)
->         if (ipv6_mod_enabled()) {
->                 port6.local_udp_port = inet_sk(new4->sk)->inet_sport;
-> -               ret = udp_sock_create(wg->creating_net, &port6, &new6);
-> +               ret = udp_sock_create(net, &port6, &new6);
->                 if (ret < 0) {
->                         udp_tunnel_sock_release(new4);
->                         if (ret == -EADDRINUSE && !port && retries++ < 100)
->                                 goto retry;
->                         pr_err("%s: Could not create IPv6 socket\n",
->                                wg->dev->name);
-> -                       return ret;
-> +                       goto out;
->                 }
->                 set_sock_opts(new6);
-> -               setup_udp_tunnel_sock(wg->creating_net, new6, &cfg);
-> +               setup_udp_tunnel_sock(net, new6, &cfg);
->         }
->  #endif
->
->         wg_socket_reinit(wg, new4->sk, new6 ? new6->sk : NULL);
-> -       return 0;
-> +       ret = 0;
-> +out:
-> +       put_net(net);
-> +       return ret;
->  }
->
->  void wg_socket_reinit(struct wg_device *wg, struct sock *new4,
-> diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
-> index 17a1f53ceba0..d77f4829f1e0 100755
-> --- a/tools/testing/selftests/wireguard/netns.sh
-> +++ b/tools/testing/selftests/wireguard/netns.sh
-> @@ -587,9 +587,20 @@ ip0 link set wg0 up
->  kill $ncat_pid
->  ip0 link del wg0
->
-> +# Ensure there aren't circular reference loops
-> +ip1 link add wg1 type wireguard
-> +ip2 link add wg2 type wireguard
-> +ip1 link set wg1 netns $netns2
-> +ip2 link set wg2 netns $netns1
-> +pp ip netns delete $netns1
-> +pp ip netns delete $netns2
-> +pp ip netns add $netns1
-> +pp ip netns add $netns2
-> +
-> +sleep 2 # Wait for cleanup and grace periods
->  declare -A objects
->  while read -t 0.1 -r line 2>/dev/null || [[ $? -ne 142 ]]; do
-> -       [[ $line =~ .*(wg[0-9]+:\ [A-Z][a-z]+\ [0-9]+)\ .*(created|destroyed).* ]] || continue
-> +       [[ $line =~ .*(wg[0-9]+:\ [A-Z][a-z]+\ ?[0-9]*)\ .*(created|destroyed).* ]] || continue
->         objects["${BASH_REMATCH[1]}"]+="${BASH_REMATCH[2]}"
->  done < /dev/kmsg
->  alldeleted=1
-> --
-> 2.27.0
+# tc filter add dev enp2s0f4 ingress protocol ip pref 1 \
+	flower skip_sw src_ip 10.1.3.3 action drop
+
+# tc filter add dev enp2s0f4 ingress pref 100 \
+	matchall skip_sw action mirred egress mirror dev enp2s0f4d1
+
+
+If we're receiving a packet with src_ip 10.1.3.3, then rule prio 1
+will hit first and the lower prio 100 matchall rule will never hit
+for that packet. For all other packets, the matchall rule prio 100
+will always hit.
+
+I had tried to explain that some special care must be taken to make
+sure that the redirect action of the mirror rule must only be performed
+for the main VI's packet, so that it gets switched out to enp2s0f4d1 and
+_must not_ reach the driver. The same redirect action must not be
+performed for the mirror VI's replicated packet and the packet _must_
+reach the driver. We're ensuring this by explicitly programming the
+main VI's index for the filter entry in hardware. This way the hardware
+will redirect out only the main VI's packet to enp2s0f4d1. It will not
+perform redirect on the replicated packet coming from mirror VI.
+If no VI index is programmed, then hardware will redirect out
+both the main and mirror VI packets to enp2s0f4d1 and none of
+the replicated packets will reach the driver, which is unexpected.
+
+I hope I'm making sense... :)
+
+> > > Also looking at the implementation of redirect:
+> > > 
+> > > 		case FLOW_ACTION_REDIRECT: {
+> > > 			struct net_device *out = act->dev;
+> > > 			struct port_info *pi = netdev_priv(out);
+> > > 
+> > > 			fs->action = FILTER_SWITCH;
+> > > 			fs->eport = pi->port_id;
+> > > 			}
+> > > 
+> > > How do you know the output interface is controlled by your driver, and
+> > > therefore it's sage to cast netdev_priv() to port_info?  
+> > 
+> > We're validating it earlier in cxgb4_validate_flow_actions().
+> > Here's the code snippet. We're saving the netdevice pointer returned
+> > by alloc_etherdev_mq() during PCI probe in cxgb4_main.c::init_one()
+> > and using it to compare the netdevice given by redirect action. If
+> > the redirect action's netdevice doesn't match any of our underlying
+> > ports, then we fail offloading this rule.
+> > 
+> > 		case FLOW_ACTION_REDIRECT: {
+> > 			struct adapter *adap = netdev2adap(dev);
+> > 			struct net_device *n_dev, *target_dev;
+> > 			unsigned int i;
+> > 			bool found = false;
+> > 
+> > 			target_dev = act->dev;
+> > 			for_each_port(adap, i) {
+> > 				n_dev = adap->port[i];
+> > 				if (target_dev == n_dev) {
+> > 					found = true;
+> > 					break;
+> > 				}
+> > 			}
+> > 
+> > 			/* If interface doesn't belong to our hw, then
+> > 			 * the provided output port is not valid
+> > 			 */
+> > 			if (!found) {
+> > 				netdev_err(dev, "%s: Out port invalid\n",
+> > 					   __func__);
+> > 				return -EINVAL;
+> > 			}
+> > 			act_redir = true;
+> > 			}
+> > 			break;
+> 
+> Thanks, FWIW this is what netdev_port_same_parent_id() is for.
+
+Looks like I need to add ndo_get_port_parent_id() support in the
+driver for this to work. I'll look into adding this support in
+follow up patches.
+
+Thanks,
+Rahul
