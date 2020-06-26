@@ -2,144 +2,326 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEADF20B085
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:31:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CFFD20B086
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:31:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728627AbgFZLai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 07:30:38 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:36370 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728467AbgFZLah (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 07:30:37 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 1A0FE20569;
-        Fri, 26 Jun 2020 13:30:35 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Zl5wSdZ6nArH; Fri, 26 Jun 2020 13:30:34 +0200 (CEST)
-Received: from mail-essen-02.secunet.de (mail-essen-02.secunet.de [10.53.40.205])
+        id S1728512AbgFZLas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 07:30:48 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:32826 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725945AbgFZLas (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:30:48 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 0EE0C200A8;
+        Fri, 26 Jun 2020 11:30:47 +0000 (UTC)
+Received: from us4-mdac16-60.at1.mdlocal (unknown [10.110.50.153])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 0D0C8800A4;
+        Fri, 26 Jun 2020 11:30:47 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.30])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8EF9540070;
+        Fri, 26 Jun 2020 11:30:46 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 8DABA20270;
-        Fri, 26 Jun 2020 13:30:34 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Fri, 26 Jun 2020 13:30:34 +0200
-Received: from [172.18.16.185] (172.18.16.185) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Fri, 26 Jun
- 2020 13:30:33 +0200
-To:     <netdev@vger.kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>
-From:   Torsten Hilbrich <torsten.hilbrich@secunet.com>
-Autocrypt: addr=torsten.hilbrich@secunet.com; prefer-encrypt=mutual; keydata=
- xsBNBFs5uIIBCAD4qbEieyT7sBmcro1VrCE1sSnV29a9ub8c0Xj0yw0Cz2N7LalBn4a+YeJN
- OMfL1MQvEiTxZNIzb1I0bRYcfhkhjN4+vAoPJ3q1OpSY+WUgphUbzseUk/Bq3gwvfa6/U+Hm
- o2lvEfN2dewBGptQ+DrWz+SPM1TQiwShKjowY/avaVgrABBGen3LgB0XZXEH8Q720kjP7htK
- tCGRt1T+qNIj3tZDZfPkqEVb8lTRcyn1hI3/FbDTysletRrCmkHSVbnxNzO6lw2G1H61wQhw
- YVbIVNohY61ieSJFhNLL6/UTGHtUE2IAicnsUAUKR8GiI1+3cTf233O5HaWYeOjBmTCLABEB
- AAHNL1RvcnN0ZW4gSGlsYnJpY2ggPHRvcnN0ZW4uaGlsYnJpY2hAc2VjdW5ldC5jb20+wsB3
- BBMBCAAhBQJbObiCAhsDBQsJCAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEJ7rXZh78/h8+tIH
- +QFYRQH4qh3WagcmjbG/zCe2RmZZePO8bmut2fAxY04aqJZGYUBxb5lfaWaHkstqM5sFD8Jo
- k1j5E7f1cnfwB21azdUO8fzYL889kdVOzatdT/uTjR7OjR59gpJMd4lx7fwFuZUg8z6rfWJ3
- ImjxxBgaJRL6pqaZ9lOst82O0qJKEFBR+HDUVvgh4n8TTOfKNv/dGPQhaed+2or98asdYRWo
- S/zc4ltTh4SxZjLd98pDxjlUyOJoMJeWdlMmLgWV3h1qjy4DxgQzvgATEaKjOuwtkCOcwHn7
- Unf0F2V9p4O7NFOuoVyqTBRX+5xKgzSM7VP1RlTT4FA9/7wkhhG+FELOwE0EWzm4ggEIAL9F
- IIPQYMx5x+zMjm8lDsmh12zoqCtMfn9QWrERd2gDS3GsORbe/i6DhYvzsulH8vsviPle4ocU
- +PaTwadfnEqm0FS7xCONYookDGfAiPS4cHWX7WrTNBP7mK3Gl1KaAOJJsMbCVAA9q4d8WL+A
- e+XrfOAetZq5gxLxDMYySNI1pIMJVrGECiboLa/LPPh2yw4jieAedW96CPuZs7rUY/5uIVt0
- Dn4/aSzV+Ixr52Z2McvNmH/VxDt59Z6jBztZIJBXpX3BC/UyH7rJOJTaqEF+EVWEpOmSoZ6u
- i1DWyqOBKnQrbUa0fpNd3aaOl2KnlgTH9upm70XZGpeJik/pQGcAEQEAAcLAXwQYAQgACQUC
- Wzm4ggIbDAAKCRCe612Ye/P4fEzqB/9gcM/bODO8o9YR86BLp0S8bF73lwIJyDHg5brjqAnz
- CtCdb4I+evI4iyU9zuN1x4V+Te5ej+mUu5CbIte8gQbo4cc9sbe/AEDoOh0lGoXKZiwtHqoh
- RZ4jOFrZJsEjOSUCLE8E8VR1afPf0SkFXLXWZfZDU28K80JWeV1BCtxutZ39bz6ybMbcCvMS
- UfwCTY0IJOiDga1K4H2HzHAqlvfzCurqe616S4S1ax+erg3KTEXylxmzcFjJU8AUZURy/lQt
- VElzs4Km1p3v6GUciCAb+Uhd12sQG2mL05jmEems9uRe3Wfke/RKp8A+Yq+p6E0A0ZOP+Okm
- LXB2q+ckPvZG
-Subject: Number IPv6 routing entries are growing without limit when processing
- routing advertisements
-Message-ID: <7aebcea5-bf28-e31c-39b1-f3de45b8df41@secunet.com>
-Date:   Fri, 26 Jun 2020 13:30:32 +0200
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 428EF140058;
+        Fri, 26 Jun 2020 11:30:46 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 26 Jun
+ 2020 12:30:41 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 09/15] sfc: commonise other ethtool bits
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+References: <1a1716f9-f909-4093-8107-3c2435d834c5@solarflare.com>
+Message-ID: <d23f6256-4961-8e11-a481-fe491f8aa586@solarflare.com>
+Date:   Fri, 26 Jun 2020 12:30:38 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+ Thunderbird/68.2.2
 MIME-Version: 1.0
+In-Reply-To: <1a1716f9-f909-4093-8107-3c2435d834c5@solarflare.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25504.003
+X-TM-AS-Result: No-2.706000-8.000000-10
+X-TMASE-MatchedRID: fuBbsyL8JiaiUxusi3FJ7aiUivh0j2Pv6VTG9cZxEjJwGpdgNQ0JrHIo
+        zGa69omdrdoLblq9S5ra/g/NGTW3Mnab6P5ygEs+NVRz+HwqL4KikZBjlts/cmww+4tkH8hH4nq
+        pTUaab810p/zdXT5B89Qd9rLjD5L4qBkiu618z01yAOhmFi1q9gqiBO2qhCIGdLv/+WrG6tOcXp
+        v2z7jW5TNom9IXV8Jm56/YecsCTdHCpGfpWZNAsv9XRIMLUOjQD+jls0cSwJOrj76PS+omiCJ1Y
+        T6M2y/pq6zKW70eycORk6XtYogiau9c69BWUTGwC24oEZ6SpSmb4wHqRpnaDnRCcFDRICKLECCj
+        uJQTz5c8mab1SpvDK4tZHmvFqVxfhZyTLVRCk4mBottJSfe7kwO0aZpSlQ4xTQHu68rL/pzcX1L
+        lthoqdO19DVI++epMmpVdReMayPPYX68FmWzgr7JqpzuBzRvlw2tMTSg0x74=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.706000-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25504.003
+X-MDID: 1593171047-AvocL7jy68kf
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please CC me on replies
+A few more ethtool handlers which EF100 will share.
 
-Hello,
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/ethtool.c        | 93 -----------------------
+ drivers/net/ethernet/sfc/ethtool_common.c | 93 +++++++++++++++++++++++
+ drivers/net/ethernet/sfc/ethtool_common.h |  8 ++
+ 3 files changed, 101 insertions(+), 93 deletions(-)
 
-a colleague of mine detected that a kernel since version 4.17 does not limit the number of IPv6 routing entries when processing routing advertisements.
+diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
+index 5e0051b94ae7..48a96ed6b7d0 100644
+--- a/drivers/net/ethernet/sfc/ethtool.c
++++ b/drivers/net/ethernet/sfc/ethtool.c
+@@ -68,54 +68,6 @@ static void efx_ethtool_get_regs(struct net_device *net_dev,
+ 	efx_nic_get_regs(efx, buf);
+ }
+ 
+-static void efx_ethtool_self_test(struct net_device *net_dev,
+-				  struct ethtool_test *test, u64 *data)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-	struct efx_self_tests *efx_tests;
+-	bool already_up;
+-	int rc = -ENOMEM;
+-
+-	efx_tests = kzalloc(sizeof(*efx_tests), GFP_KERNEL);
+-	if (!efx_tests)
+-		goto fail;
+-
+-	if (efx->state != STATE_READY) {
+-		rc = -EBUSY;
+-		goto out;
+-	}
+-
+-	netif_info(efx, drv, efx->net_dev, "starting %sline testing\n",
+-		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
+-
+-	/* We need rx buffers and interrupts. */
+-	already_up = (efx->net_dev->flags & IFF_UP);
+-	if (!already_up) {
+-		rc = dev_open(efx->net_dev, NULL);
+-		if (rc) {
+-			netif_err(efx, drv, efx->net_dev,
+-				  "failed opening device.\n");
+-			goto out;
+-		}
+-	}
+-
+-	rc = efx_selftest(efx, efx_tests, test->flags);
+-
+-	if (!already_up)
+-		dev_close(efx->net_dev);
+-
+-	netif_info(efx, drv, efx->net_dev, "%s %sline self-tests\n",
+-		   rc == 0 ? "passed" : "failed",
+-		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
+-
+-out:
+-	efx_ethtool_fill_self_tests(efx, efx_tests, NULL, data);
+-	kfree(efx_tests);
+-fail:
+-	if (rc)
+-		test->flags |= ETH_TEST_FL_FAILED;
+-}
+-
+ /*
+  * Each channel has a single IRQ and moderation timer, started by any
+  * completion (or other event).  Unless the module parameter
+@@ -255,18 +207,6 @@ static int efx_ethtool_set_wol(struct net_device *net_dev,
+ 	return efx->type->set_wol(efx, wol->wolopts);
+ }
+ 
+-static int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-	int rc;
+-
+-	rc = efx->type->map_reset_flags(flags);
+-	if (rc < 0)
+-		return rc;
+-
+-	return efx_reset(efx, rc);
+-}
+-
+ static int efx_ethtool_get_ts_info(struct net_device *net_dev,
+ 				   struct ethtool_ts_info *ts_info)
+ {
+@@ -281,39 +221,6 @@ static int efx_ethtool_get_ts_info(struct net_device *net_dev,
+ 	return 0;
+ }
+ 
+-static int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
+-					 struct ethtool_eeprom *ee,
+-					 u8 *data)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-	int ret;
+-
+-	if (!efx->phy_op || !efx->phy_op->get_module_eeprom)
+-		return -EOPNOTSUPP;
+-
+-	mutex_lock(&efx->mac_lock);
+-	ret = efx->phy_op->get_module_eeprom(efx, ee, data);
+-	mutex_unlock(&efx->mac_lock);
+-
+-	return ret;
+-}
+-
+-static int efx_ethtool_get_module_info(struct net_device *net_dev,
+-				       struct ethtool_modinfo *modinfo)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-	int ret;
+-
+-	if (!efx->phy_op || !efx->phy_op->get_module_info)
+-		return -EOPNOTSUPP;
+-
+-	mutex_lock(&efx->mac_lock);
+-	ret = efx->phy_op->get_module_info(efx, modinfo);
+-	mutex_unlock(&efx->mac_lock);
+-
+-	return ret;
+-}
+-
+ const struct ethtool_ops efx_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+ 				     ETHTOOL_COALESCE_USECS_IRQ |
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
+index d7d8795eb1d3..c96595e50234 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.c
++++ b/drivers/net/ethernet/sfc/ethtool_common.c
+@@ -125,6 +125,54 @@ void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable)
+ 	efx->msg_enable = msg_enable;
+ }
+ 
++void efx_ethtool_self_test(struct net_device *net_dev,
++			   struct ethtool_test *test, u64 *data)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++	struct efx_self_tests *efx_tests;
++	bool already_up;
++	int rc = -ENOMEM;
++
++	efx_tests = kzalloc(sizeof(*efx_tests), GFP_KERNEL);
++	if (!efx_tests)
++		goto fail;
++
++	if (efx->state != STATE_READY) {
++		rc = -EBUSY;
++		goto out;
++	}
++
++	netif_info(efx, drv, efx->net_dev, "starting %sline testing\n",
++		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
++
++	/* We need rx buffers and interrupts. */
++	already_up = (efx->net_dev->flags & IFF_UP);
++	if (!already_up) {
++		rc = dev_open(efx->net_dev, NULL);
++		if (rc) {
++			netif_err(efx, drv, efx->net_dev,
++				  "failed opening device.\n");
++			goto out;
++		}
++	}
++
++	rc = efx_selftest(efx, efx_tests, test->flags);
++
++	if (!already_up)
++		dev_close(efx->net_dev);
++
++	netif_info(efx, drv, efx->net_dev, "%s %sline self-tests\n",
++		   rc == 0 ? "passed" : "failed",
++		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
++
++out:
++	efx_ethtool_fill_self_tests(efx, efx_tests, NULL, data);
++	kfree(efx_tests);
++fail:
++	if (rc)
++		test->flags |= ETH_TEST_FL_FAILED;
++}
++
+ /* Restart autonegotiation */
+ int efx_ethtool_nway_reset(struct net_device *net_dev)
+ {
+@@ -1273,3 +1321,48 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+ 	mutex_unlock(&efx->rss_lock);
+ 	return rc;
+ }
++
++int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++	int rc;
++
++	rc = efx->type->map_reset_flags(flags);
++	if (rc < 0)
++		return rc;
++
++	return efx_reset(efx, rc);
++}
++
++int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
++				  struct ethtool_eeprom *ee,
++				  u8 *data)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++	int ret;
++
++	if (!efx->phy_op || !efx->phy_op->get_module_eeprom)
++		return -EOPNOTSUPP;
++
++	mutex_lock(&efx->mac_lock);
++	ret = efx->phy_op->get_module_eeprom(efx, ee, data);
++	mutex_unlock(&efx->mac_lock);
++
++	return ret;
++}
++
++int efx_ethtool_get_module_info(struct net_device *net_dev,
++				struct ethtool_modinfo *modinfo)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++	int ret;
++
++	if (!efx->phy_op || !efx->phy_op->get_module_info)
++		return -EOPNOTSUPP;
++
++	mutex_lock(&efx->mac_lock);
++	ret = efx->phy_op->get_module_info(efx, modinfo);
++	mutex_unlock(&efx->mac_lock);
++
++	return ret;
++}
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.h b/drivers/net/ethernet/sfc/ethtool_common.h
+index 024a78ce0905..7bfbbd08a1ef 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.h
++++ b/drivers/net/ethernet/sfc/ethtool_common.h
+@@ -15,6 +15,8 @@ void efx_ethtool_get_drvinfo(struct net_device *net_dev,
+ 			     struct ethtool_drvinfo *info);
+ u32 efx_ethtool_get_msglevel(struct net_device *net_dev);
+ void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable);
++void efx_ethtool_self_test(struct net_device *net_dev,
++			   struct ethtool_test *test, u64 *data);
+ int efx_ethtool_nway_reset(struct net_device *net_dev);
+ void efx_ethtool_get_pauseparam(struct net_device *net_dev,
+ 				struct ethtool_pauseparam *pause);
+@@ -53,4 +55,10 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+ 				 const u32 *indir, const u8 *key,
+ 				 const u8 hfunc, u32 *rss_context,
+ 				 bool delete);
++int efx_ethtool_reset(struct net_device *net_dev, u32 *flags);
++int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
++				  struct ethtool_eeprom *ee,
++				  u8 *data);
++int efx_ethtool_get_module_info(struct net_device *net_dev,
++				struct ethtool_modinfo *modinfo);
+ #endif
 
-I checked it now with a kernel based on v5.4.42 and could confirm this behavior. The configuration setting are as the following:
-
-- net.ipv6.route.max_size: default setting 4096
-- net.ipv6.route.gc_thres: default setting 1024
-- net.ipv6.conf.eth0.accept_ra: 2
-- net.ipv6.conf.eth0.accept_redirect: 1
-- net.ipv6.conf.eth0.disable_ipv6: 0
-
-The test is running the tool atk6-flood_router26 (from debian package thc-ipv6) from another machine connected via LAN on eth0. This tool when sent about 16000 routing advertisement per second in my test setup. The lifetime of the resulting routing entries seems to be about 130,000s. The default routes added have a lifetime of 65,535s.
-
-The test shows the following:
-
-- for every routing advertisement a new default route entry is added by ndisc_router_discovery
-- the limit set by net.ipv6.route.max_size is not honored, even after a single second I have these 16000 routing entries
-- after a view minutes of testing I can easily have millions of routing entries
-- the free memory is reduced with a speed of about 1.2 MByte/s
-
-I assume that the code changes regarding dst entries and fib6 entries which has been completed with commits:
-
-commit 8d1c802b2815edc97af8a58c5045ebaf3848621a
-Author: David Ahern <dsahern@gmail.com>
-Date:   Tue Apr 17 17:33:26 2018 -0700
-
-    net/ipv6: Flip FIB entries to fib6_info
-    
-    Convert all code paths referencing a FIB entry from
-    rt6_info to fib6_info.
-    
-    Signed-off-by: David Ahern <dsahern@gmail.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-
-commit 93531c6743157d7e8c5792f8ed1a57641149d62c
-Author: David Ahern <dsahern@gmail.com>
-Date:   Tue Apr 17 17:33:25 2018 -0700
-
-    net/ipv6: separate handling of FIB entries from dst based routes
-    
-    Last step before flipping the data type for FIB entries:
-    - use fib6_info_alloc to create FIB entries in ip6_route_info_create
-      and addrconf_dst_alloc
-    - use fib6_info_release in place of dst_release, ip6_rt_put and
-      rt6_release
-    - remove the dst_hold before calling __ip6_ins_rt or ip6_del_rt
-    - when purging routes, drop per-cpu routes
-    - replace inc and dec of rt6i_ref with fib6_info_hold and fib6_info_release
-    - use rt->from since it points to the FIB entry
-    - drop references to exception bucket, fib6_metrics and per-cpu from
-      dst entries (those are relevant for fib entries only)
-    
-    Signed-off-by: David Ahern <dsahern@gmail.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-
-might have changed the behavior here. Before these commits the max_size has been checked by ip6_dst_gc. It seems that this code path is gone now.
-
-I already checked the gc support for fib6. It seems that this is regularly run (about every 30 seconds by default) and removes entries which lifetime has expired.  This is not sufficient for such an Denial of Service attack.
-
-Any ideas on the problem?
-
-Thanks,
-
-	Torsten
