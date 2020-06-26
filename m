@@ -2,247 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B43020AC0C
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 08:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDFA820AC26
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 08:11:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728186AbgFZGAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 02:00:23 -0400
-Received: from mail-db8eur05on2067.outbound.protection.outlook.com ([40.107.20.67]:6064
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725801AbgFZGAW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 02:00:22 -0400
+        id S1727957AbgFZGLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 02:11:04 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:3072 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725306AbgFZGLD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 02:11:03 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05Q6APcu024294;
+        Thu, 25 Jun 2020 23:10:49 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=Np4jU9bELGf7d9Hz82wcnD6feVxJNWFwDFN6cWxt3zE=;
+ b=PQXvh55De620ZPiXTQzc7R98ocNbRafMaN9yQCyCCWAWwvk+c05/BgnU/ObhvhMxRBYg
+ wIGBkj7jYf6OyeeURqremkaDRhpeHNglthcvdAyVFMqCqp4Am7drKbyq/aGe2L0pFWOb
+ /eRXqB7Y5eWRh1NWfVuVGP4RcP3ejDDEEg4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 31w3w2hka6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 25 Jun 2020 23:10:48 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 25 Jun 2020 23:10:47 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=be2+XuDutyAqI2Vj5iQZ6RpTC4a6ikDmPvN0tlosurnR7VUORvDuHmaq02G2ZDAlHPgEusP7Tt3dvRKO9iAqx5qzKYDd2HiRHbhGFgMUSypipqk08WeoV7HGyOX+vmdRrKiYrx6BcSUf5oWWyDv96307hZIfgN7wH9Bi7ukSZyypCndzvwra/Yzu1GxpfvwI8MLl1iOotlb9d2+EEZVhmyjFmx/a4dS9qkyx8eY6g6DrOzNrkUneNV/s7Ui6gECnyK5LZ6pvC4dZYD6e0f5dU/4Td4I32tsOIf1AmpXhRj3wtOrH9Dr0ULzleKPS2gGktbrM+Tv25sOEbv5V+qjB1A==
+ b=ceJEIPJXwKP9w/c9dK+mmu72sLF8gWNraxnCcrFVLzUlxcO3EPXa1i5v8UwcbDCII+zOyYhWDbqnuGMGDHgA1kj6fM3yzknwzkulDqmzGdZ/9etpg3A1IpA9zDctbOYcsNJOdelpSwRWi/3vsBexrH/bkAIawXHvSD+g9smiPeu0txrzlT1rdvR0b3iHh5jv0g9MJCNpi/k0lumsuN8wwJteerqGe5Vu+M2tgJy6mnFTSNCTQOTR+hP7wX3foW9E29Yxw4mzWcJhp0khhG+ZVwjiWeyjuIk3gNhjV/OaUyAV7/pvocD7UWrsSf/vTD1l+VXD8/AQFeG5rdDeEDUrAg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0RaNN5JAWbvHb30cD2GU1sepgqIQz2DW61sOJ+JbeVc=;
- b=d61ZR9VUJBtQDbHHhPYCPCv/VkMDPXxXMyx5K97WWDZkV/l5R2bXwGSyQRYLQFLQC/pBZTNR0KWa66eLE3rmQpFRJtAZQxRgOptWKIkFadOqel1MvKAeBu0ZD7iZZaykMVTwGBi6scVQJ5ri21CKHiJmr2qMsFyPJj8H2LBkW2Tl1/Ww2bqXaYhNBF3sdkwGl7N0jgMiluiklXR0GmcNgXmDYVh9cB08pfiFw4JfvTpDKgnvoi2fP0fTT1Vzs5EQYCVFOsXpZwqEhJlzrm8TCkEBljOo9HPpY4JSjPCh871+fy8ytiOJYxAF8Qvww+G33tjQwCV4OKmwcuZH0ERlVw==
+ bh=Np4jU9bELGf7d9Hz82wcnD6feVxJNWFwDFN6cWxt3zE=;
+ b=ewsmMM6ni4EtHXPb6/0v0/g31uGeL0xHbnA5WtHcUUAPtIPtF1jbfn/AMiQPpfLp5GF69g7bIrYe0Wb0th/3I+aG4mI8em+TIL/p4REKg0E7yZwHlNo8lne1e4PPKa557XkAqT6ZK7Kh/ShtJ+wAQ8hntZQF5Nlaglf5/CffI0SAtXYfHvcoo05gSKmWGYL1eo13EUxtW5fDbEq3dMKo3WoMGWceCdRzKq0uqej03W3WI09IgYI7EGgnLxAEGjfpyGFwDprqbFW2pP7yjYivN2WEQcNHIwLOtwgY8g5K+z6eWDquPBiAQivEaQ60G06WzPN6Qv8xKgCsqwUfokg/7g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0RaNN5JAWbvHb30cD2GU1sepgqIQz2DW61sOJ+JbeVc=;
- b=Yt5OeDngM1l1FvtKIoOLu0USBYdLET0CEZbRM9LpVqw1wXE5ckHHt8LzK38rjD9XDDGSUUxL3UNxFjP3dR3u79mqugU2AxHq+9Fr60Qma4PwG+on65b6VvvioOgq0NBYJ5hgiMEUU6qnxAc+OZ7QlyTAfmoCxZ3MXELe99LLjT0=
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR0501MB2445.eurprd05.prod.outlook.com (2603:10a6:800:6a::15) with
+ bh=Np4jU9bELGf7d9Hz82wcnD6feVxJNWFwDFN6cWxt3zE=;
+ b=ZxZ3Umea1G/YXhakv+iA6vRBmOiPaGAXu4yXzoC4fz1Bov4+ywYCYV+GjRh/ePczCKsS2NnkA3hI8eC1rOyf7HUhdtCfi8X1U0PcalhYl8uwjiYeB1eTGXWetK4YT4y8nkMUM6FwyJ6HUYn/d1y54uUL8i9ex/ILGIG1se5Zn+s=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from DM6PR15MB3580.namprd15.prod.outlook.com (2603:10b6:5:1f9::10)
+ by DM6PR15MB3273.namprd15.prod.outlook.com (2603:10b6:5:164::30) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.24; Fri, 26 Jun
- 2020 06:00:14 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3131.020; Fri, 26 Jun 2020
- 06:00:14 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH mlx5-next 3/3] net/mlx5: kTLS, Improve TLS params layout structures
-Date:   Thu, 25 Jun 2020 22:59:43 -0700
-Message-Id: <20200626055943.99943-3-saeedm@mellanox.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200626055943.99943-1-saeedm@mellanox.com>
-References: <20200626055943.99943-1-saeedm@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BY5PR04CA0025.namprd04.prod.outlook.com
- (2603:10b6:a03:1d0::35) To VI1PR05MB5102.eurprd05.prod.outlook.com
- (2603:10a6:803:5e::23)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Fri, 26 Jun
+ 2020 06:10:46 +0000
+Received: from DM6PR15MB3580.namprd15.prod.outlook.com
+ ([fe80::c8f5:16eb:3f57:b3dc]) by DM6PR15MB3580.namprd15.prod.outlook.com
+ ([fe80::c8f5:16eb:3f57:b3dc%5]) with mapi id 15.20.3131.021; Fri, 26 Jun 2020
+ 06:10:46 +0000
+Date:   Thu, 25 Jun 2020 23:10:44 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+CC:     <jakub@cloudflare.com>, <daniel@iogearbox.net>, <ast@kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+Subject: Re: [bpf PATCH v2 1/3] bpf, sockmap: RCU splat with redirect and
+ strparser error or TLS
+Message-ID: <20200626061044.7lhxxcsuphkkknc2@kafai-mbp.dhcp.thefacebook.com>
+References: <159312606846.18340.6821004346409614051.stgit@john-XPS-13-9370>
+ <159312677907.18340.11064813152758406626.stgit@john-XPS-13-9370>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <159312677907.18340.11064813152758406626.stgit@john-XPS-13-9370>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: BY5PR17CA0036.namprd17.prod.outlook.com
+ (2603:10b6:a03:1b8::49) To DM6PR15MB3580.namprd15.prod.outlook.com
+ (2603:10b6:5:1f9::10)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR04CA0025.namprd04.prod.outlook.com (2603:10b6:a03:1d0::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21 via Frontend Transport; Fri, 26 Jun 2020 06:00:12 +0000
-X-Mailer: git-send-email 2.26.2
-X-Originating-IP: [73.15.39.150]
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:7d5a) by BY5PR17CA0036.namprd17.prod.outlook.com (2603:10b6:a03:1b8::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.24 via Frontend Transport; Fri, 26 Jun 2020 06:10:45 +0000
+X-Originating-IP: [2620:10d:c090:400::5:7d5a]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 173d08de-1d1d-4608-87bf-08d8199631ba
-X-MS-TrafficTypeDiagnostic: VI1PR0501MB2445:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0501MB2445ACF4065F1CE4436F3857BE930@VI1PR0501MB2445.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Office365-Filtering-Correlation-Id: 451c1572-4eca-46b0-c380-08d81997aa7c
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3273:
+X-Microsoft-Antispam-PRVS: <DM6PR15MB327331814930FAA9C8A62F04D5930@DM6PR15MB3273.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-Forefront-PRVS: 0446F0FCE1
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5sEDA58VQU6kyZYIGVOVsLEv9doqnSvJEaokpYmTZAKf2ssQA8eCHNrGDoXdsYaj5LFsTZYTtSvi3t2tTbpaKO3wnaTDH5E28lrL7xCTC3F7BnvOrmAkEsNxnRLHZP6sAslBP90EEFCVJcHVw5ZXyaJPTE1IyEdEWr1qa+2xV7/n5p8M7pbABE/pvx+ZzIPY2tCqBdG01L0LsirN95rRjxKI3j6djX0RkilY0fMEspLwjgpC4wkkRmrvf2ZwKvhEwGxb0Gp4UryjX4BcA/+yvcNmZhcX1u1FXi3av2R9m9JjccNPXdsrdEEFtISHUw4AM3SWjvWx2WjC8lKrpmNHJNL/Qdq2jGDipYW11nkOYU2eOLnhx6jlQ6tyKm46wEg3kC9o2AcaBA627Poimg1izSFqc4fwVDUbIPCT6DAUnQc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(39860400002)(396003)(346002)(136003)(4326008)(8676002)(8936002)(52116002)(6486002)(186003)(1076003)(36756003)(107886003)(26005)(2906002)(83380400001)(66556008)(86362001)(6666004)(6512007)(110136005)(66476007)(5660300002)(16526019)(316002)(6506007)(6636002)(450100002)(66946007)(2616005)(478600001)(956004)(54420400002)(309714004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Ado1iwaMeQFNBdHRPMv21lL2LG2yEtu5acYVcab0KhBOBZG4Pb7veMDgF4QCK3J+xvFW98H5fct4bf8sMKe1GmQE+otA++2vpYx4fj8a8MV6VQ+hVgYA832F8/W81J0+PCzfxEVnjRdckNw4eiLYnwoEsJfKQB8jgpkBXGqvdM9c/R1JnCAFN8DmaoYZdutml+Fg8WULD1UJt++aRccQdsnwyXWsEVDJTHIHyIHqlM9/4jn7sxgDAccau6r+pM9imu8htHFCp1CzcVwfb15uP6kV5UxzKdwar8e/46hQQSp4Y8qbyYoMsFvFcGGsHwcVEm2SFfv9vSkvCESGUzC9rzGAwM8W5ENUcT9tlPqtn2w6O34qRMBAa2JVWUDY4RH/lP92/S9x1amO4rDgJUIELc/ZHfP8F8Ot52bgaEUof+NOJMSy0X4Ns59FDIWJ8LYKgCiZQKwsf5UFOsbKSOVv51Ax+hQs7a/RaO6HrnZZuLE=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 173d08de-1d1d-4608-87bf-08d8199631ba
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: uJZiZ8/mrNnGQHeNqQXPLrVwUbFS/0Mr9CtK6E7dvoaQwdl1FHY+veoUctiErNwvILsyaPXWXa+2eB/jOFY9MtIiHX7iZJTpW/Wr1dFdoUujNEPckUeIotcfpagn7VqAo+K5rvNA0OQrRmr3mFwyYlg6HDDVbH7nseSH5Yuosffrs6VAc9JBp8UfjvGEhLuExCdxKYN5MQeRmD1iAJW0UbnOgJbd+99Kv9V//Km2CtdYYE+vcHaIMf0l9NQetAl301WHCrETjcRAMGDsqmXAGpdVQkRcvdViCou/VqD3tPLTI4cYCcZEfQMGdnoMX9YKK1qqneZ+uNM3Qg278vLr+g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR15MB3580.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(366004)(136003)(39860400002)(396003)(83380400001)(8676002)(478600001)(66946007)(5660300002)(66476007)(2906002)(66556008)(55016002)(9686003)(4326008)(1076003)(6916009)(7696005)(316002)(86362001)(186003)(16526019)(6506007)(8936002)(52116002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: WfyY8ol+TRrFwsHGYzOKNYZEa1CyKpA96+MOt5JQN0UKXwmzh5MxxmCNQnKqM2OX62OJ7igfmdIJfC22SmbURIdj5TQHToYTbGqvmRF8ob7RWWXx62Z968P+3zbl2v1W/uJYcmALkwijjzMD0Kg8V8vauts4tjDy+IY+IVEYa/4IRu/HJyvi0sg6bT9xbrAuTYl8RejLyourHS8ptL1PSKFyv/T4kWErq+uqV4BHIfphqvM6Px2kCuVizMlSIUlfk+aNMKmMnKQefb7SpI1wEPNcX6qposrHmXEwIDH7DBQjSLx9sH1lG0aDVrD3bq0W8LopxxzFltgnnsXSDLobZobG5eC3PE/HbRtFZoiNvC+31xJv261DCqA/ETLm+Gp89ijPQSCld/YnEaYbIWBYwJ6K1N93CqQHUh8GnbEENbNNhxc+YHPshvVpEFEsuDGBCQKIlLcRjPH3piTAFItvmckIIZC07sRqbObI2PoqL1WAqvULm9KKnHO6Jw/anlhYEZBm74s6Zd0nugTmAomL4g==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 451c1572-4eca-46b0-c380-08d81997aa7c
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR15MB3580.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2020 06:00:14.4810
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2020 06:10:46.6622
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YD55sPBqKO/kRz3Ncc0Q5XTLnjrJd5g0hWm7wo4sQOJes8LdMDn0SeAGsCYybJW2zo6CxVHpCzvsTtVOUWr9jQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2445
+X-MS-Exchange-CrossTenant-UserPrincipalName: ofPxDjAWhJCq6ULzCel0bj5vpAMZbuS4lm8xHBaIMCBfO7Dd0OaUP32DDskaxrCs
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3273
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-26_01:2020-06-26,2020-06-26 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ priorityscore=1501 spamscore=0 bulkscore=0 adultscore=0 impostorscore=0
+ lowpriorityscore=0 malwarescore=0 phishscore=0 clxscore=1015
+ suspectscore=0 mlxlogscore=999 cotscore=-2147483648 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006260045
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@mellanox.com>
-
-Add explicit WQE segment structures for the TLS static and progress
-params.
-According to the HW spec, TISN is not part of the progress params context,
-take it out of it.
-Rename the control segment tisn field as it could hold either a TIS or
-a TIR number.
-
-Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  2 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls.h    |  2 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 14 +++++++++-----
- .../mellanox/mlx5/core/en_accel/tls_rxtx.c         |  2 +-
- include/linux/mlx5/device.h                        |  9 +++++++++
- include/linux/mlx5/mlx5_ifc.h                      |  5 +----
- include/linux/mlx5/qp.h                            |  2 +-
- 7 files changed, 23 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-index bfd3e1161bc6..31cac239563d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-@@ -182,7 +182,7 @@ mlx5e_notify_hw(struct mlx5_wq_cyc *wq, u16 pc, void __iomem *uar_map,
- 
- static inline bool mlx5e_transport_inline_tx_wqe(struct mlx5_wqe_ctrl_seg *cseg)
- {
--	return cseg && !!cseg->tisn;
-+	return cseg && !!cseg->tis_tir_num;
- }
- 
- static inline u8
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
-index c6180892cfcb..806ed185dd4c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
-@@ -19,7 +19,7 @@
- 
- #define MLX5E_KTLS_PROGRESS_WQE_SZ \
- 	(offsetof(struct mlx5e_tx_wqe, tls_progress_params_ctx) + \
--	 MLX5_ST_SZ_BYTES(tls_progress_params))
-+	 sizeof(struct mlx5_wqe_tls_progress_params_seg))
- #define MLX5E_KTLS_PROGRESS_WQEBBS \
- 	(DIV_ROUND_UP(MLX5E_KTLS_PROGRESS_WQE_SZ, MLX5_SEND_WQE_BB))
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-index 3cd78d9503c1..ad7300f19815 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-@@ -64,7 +64,7 @@ build_static_params(struct mlx5e_umr_wqe *wqe, u16 pc, u32 sqn,
- 	cseg->qpn_ds           = cpu_to_be32((sqn << MLX5_WQE_CTRL_QPN_SHIFT) |
- 					     STATIC_PARAMS_DS_CNT);
- 	cseg->fm_ce_se         = fence ? MLX5_FENCE_MODE_INITIATOR_SMALL : 0;
--	cseg->tisn             = cpu_to_be32(priv_tx->tisn << 8);
-+	cseg->tis_tir_num      = cpu_to_be32(priv_tx->tisn << 8);
- 
- 	ucseg->flags = MLX5_UMR_INLINE;
- 	ucseg->bsf_octowords = cpu_to_be16(MLX5_ST_SZ_BYTES(tls_static_params) / 16);
-@@ -75,10 +75,14 @@ build_static_params(struct mlx5e_umr_wqe *wqe, u16 pc, u32 sqn,
- static void
- fill_progress_params_ctx(void *ctx, struct mlx5e_ktls_offload_context_tx *priv_tx)
- {
--	MLX5_SET(tls_progress_params, ctx, tisn, priv_tx->tisn);
--	MLX5_SET(tls_progress_params, ctx, record_tracker_state,
-+	struct mlx5_wqe_tls_progress_params_seg *params;
-+
-+	params = ctx;
-+
-+	params->tis_tir_num = cpu_to_be32(priv_tx->tisn);
-+	MLX5_SET(tls_progress_params, params->ctx, record_tracker_state,
- 		 MLX5E_TLS_PROGRESS_PARAMS_RECORD_TRACKER_STATE_START);
--	MLX5_SET(tls_progress_params, ctx, auth_state,
-+	MLX5_SET(tls_progress_params, params->ctx, auth_state,
- 		 MLX5E_TLS_PROGRESS_PARAMS_AUTH_STATE_NO_OFFLOAD);
- }
- 
-@@ -284,7 +288,7 @@ tx_post_resync_dump(struct mlx5e_txqsq *sq, skb_frag_t *frag, u32 tisn, bool fir
- 
- 	cseg->opmod_idx_opcode = cpu_to_be32((sq->pc << 8)  | MLX5_OPCODE_DUMP);
- 	cseg->qpn_ds           = cpu_to_be32((sq->sqn << 8) | ds_cnt);
--	cseg->tisn             = cpu_to_be32(tisn << 8);
-+	cseg->tis_tir_num      = cpu_to_be32(tisn << 8);
- 	cseg->fm_ce_se         = first ? MLX5_FENCE_MODE_INITIATOR_SMALL : 0;
- 
- 	fsz = skb_frag_size(frag);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
-index 05454a843b28..72d26fbc8d5b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
-@@ -305,7 +305,7 @@ bool mlx5e_tls_handle_tx_skb(struct net_device *netdev, struct mlx5e_txqsq *sq,
- void mlx5e_tls_handle_tx_wqe(struct mlx5e_txqsq *sq, struct mlx5_wqe_ctrl_seg *cseg,
- 			     struct mlx5e_accel_tx_tls_state *state)
- {
--	cseg->tisn = cpu_to_be32(state->tls_tisn << 8);
-+	cseg->tis_tir_num = cpu_to_be32(state->tls_tisn << 8);
- }
- 
- static int tls_update_resync_sn(struct net_device *netdev,
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 1bc27aca648b..57db125e5802 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -458,6 +458,15 @@ enum {
- 	MLX5_OPC_MOD_TLS_TIR_PROGRESS_PARAMS = 0x2,
- };
- 
-+struct mlx5_wqe_tls_static_params_seg {
-+	u8     ctx[MLX5_ST_SZ_BYTES(tls_static_params)];
-+};
-+
-+struct mlx5_wqe_tls_progress_params_seg {
-+	__be32 tis_tir_num;
-+	u8     ctx[MLX5_ST_SZ_BYTES(tls_progress_params)];
-+};
-+
- enum {
- 	MLX5_SET_PORT_RESET_QKEY	= 0,
- 	MLX5_SET_PORT_GUID0		= 16,
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 116bd9bb347f..a227518c70cf 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -10638,16 +10638,13 @@ struct mlx5_ifc_tls_static_params_bits {
- };
- 
- struct mlx5_ifc_tls_progress_params_bits {
--	u8         reserved_at_0[0x8];
--	u8         tisn[0x18];
--
- 	u8         next_record_tcp_sn[0x20];
- 
- 	u8         hw_resync_tcp_sn[0x20];
- 
- 	u8         record_tracker_state[0x2];
- 	u8         auth_state[0x2];
--	u8         reserved_at_64[0x4];
-+	u8         reserved_at_44[0x4];
- 	u8         hw_offset_record_number[0x18];
- };
- 
-diff --git a/include/linux/mlx5/qp.h b/include/linux/mlx5/qp.h
-index b8992b861ae6..36492a1342cf 100644
---- a/include/linux/mlx5/qp.h
-+++ b/include/linux/mlx5/qp.h
-@@ -209,7 +209,7 @@ struct mlx5_wqe_ctrl_seg {
- 		__be32		general_id;
- 		__be32		imm;
- 		__be32		umr_mkey;
--		__be32		tisn;
-+		__be32		tis_tir_num;
- 	};
- };
- 
--- 
-2.26.2
-
+On Thu, Jun 25, 2020 at 04:12:59PM -0700, John Fastabend wrote:
+> There are two paths to generate the below RCU splat the first and
+> most obvious is the result of the BPF verdict program issuing a
+> redirect on a TLS socket (This is the splat shown below). Unlike
+> the non-TLS case the caller of the *strp_read() hooks does not
+> wrap the call in a rcu_read_lock/unlock. Then if the BPF program
+> issues a redirect action we hit the RCU splat.
+> 
+> However, in the non-TLS socket case the splat appears to be
+> relatively rare, because the skmsg caller into the strp_data_ready()
+> is wrapped in a rcu_read_lock/unlock. Shown here,
+> 
+>  static void sk_psock_strp_data_ready(struct sock *sk)
+>  {
+> 	struct sk_psock *psock;
+> 
+> 	rcu_read_lock();
+> 	psock = sk_psock(sk);
+> 	if (likely(psock)) {
+> 		if (tls_sw_has_ctx_rx(sk)) {
+> 			psock->parser.saved_data_ready(sk);
+> 		} else {
+> 			write_lock_bh(&sk->sk_callback_lock);
+> 			strp_data_ready(&psock->parser.strp);
+> 			write_unlock_bh(&sk->sk_callback_lock);
+> 		}
+> 	}
+> 	rcu_read_unlock();
+>  }
+> 
+> If the above was the only way to run the verdict program we
+> would be safe. But, there is a case where the strparser may throw an
+> ENOMEM error while parsing the skb. This is a result of a failed
+> skb_clone, or alloc_skb_for_msg while building a new merged skb when
+> the msg length needed spans multiple skbs. This will in turn put the
+> skb on the strp_wrk workqueue in the strparser code. The skb will
+> later be dequeued and verdict programs run, but now from a
+> different context without the rcu_read_lock()/unlock() critical
+> section in sk_psock_strp_data_ready() shown above. In practice
+> I have not seen this yet, because as far as I know most users of the
+> verdict programs are also only working on single skbs. In this case no
+> merge happens which could trigger the above ENOMEM errors. In addition
+> the system would need to be under memory pressure. For example, we
+> can't hit the above case in selftests because we missed having tests
+> to merge skbs. (Added in later patch)
+> 
+> To fix the below splat extend the rcu_read_lock/unnlock block to
+> include the call to sk_psock_tls_verdict_apply(). This will fix both
+> TLS redirect case and non-TLS redirect+error case. Also remove
+> psock from the sk_psock_tls_verdict_apply() function signature its
+> not used there.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
