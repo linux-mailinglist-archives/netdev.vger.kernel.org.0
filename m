@@ -2,157 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46D1520BBF6
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 23:55:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73F5B20BBF7
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 23:56:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725980AbgFZVzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 17:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56018 "EHLO
+        id S1725977AbgFZV4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 17:56:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbgFZVzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 17:55:46 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9952AC03E979;
-        Fri, 26 Jun 2020 14:55:46 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id e11so10228210qkm.3;
-        Fri, 26 Jun 2020 14:55:46 -0700 (PDT)
+        with ESMTP id S1725852AbgFZV4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 17:56:12 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137F4C03E979
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 14:56:12 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id 67so1122274pfg.5
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 14:56:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o1EHNnZCUnXFxkUA/oLBF3fOGOdmCt42NiXP+2hmzMc=;
-        b=qQHcC4ZBJ3zZSfu/9SLFDvUPeQpMk00iHBTURli5JnGOvhrzQod/U0aMQXL8l2WLG/
-         UdAZVxNGnDBusFtWZubNNh86F5UBYmLkt6XupCSaVXg6HK7NXrTscQvRQ5Uo1P0J5yAc
-         jDsMCE4n98h5RkPe52YuSXnbOLhi1vfJk1FD6HxIwHvIhpmabOVA34bvPLXHsYU32zMb
-         rWYiHX8Rql0A/sJ4johS406y7QAh5Ex1CIQ/B5fvVQS2vPf8m/dbgDUDfrpb19nb7T1c
-         GnSo9XY1/x7CLqJKddYFVZ9MX1wjRJEeL2WdJkk7kdyBhPteyT3ACn53hodPXgMynDD8
-         FriA==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=HUhhFwfkhGkqkjX8NGzTXm9ABVvSJ1ODsrNUh5Xx3k0=;
+        b=uj4B+vBKQ+l6LW+AQjPO4BMIbq+JwLQiGax7I23FffY/qnKMEIT8JOPMPAPTfv9SxH
+         y+Nj9CZyfgCiidRJGcMaZK2i+9m5woX38VcEj9rx/oQeaUx5/b2mrFxHyJ6JsB/J7BF/
+         rk7KBJG02SyAPoxiUD3GAZqBt2WIBtg0t2xf4gezIx1otWH27OCQr1yqjySR3QXhfCf7
+         YclfolV7fAnfXUqchA5m5Az1eTu3F1E+nVONpCFIUoa78qkVGuDYVgjy2G/ZkWOMD553
+         rsQ7MiYflTajgxjp9A4dvNWEeBkLnwsKXU04Y3hHoIxavkaZGH3oTTE2vZ8pTa7SceEK
+         OX8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o1EHNnZCUnXFxkUA/oLBF3fOGOdmCt42NiXP+2hmzMc=;
-        b=iCBZ+nqRdArFD1vivu+MuE2nW4WHoYNbpzIjHtUdbOCF8TYTbz4jmoTGrsX4yenFTj
-         OyjE7y9T6q3BPhpRG2u9FqcnUTtNoOiqbVXQAjh513zACyNa937Pnqsf6AStskt04xUJ
-         P6L0w8+oOwc027yv8/PuDqryK+m04q9RNfd4Kq0w8j1ZX2MGwgUOr58cWe6QPalbOltb
-         edEOfJn2OGwjdfN7AtasDZ5Zi23XhNuPw7ZwGZb32x6+bxjWDlY9xIkQo4RtEKcT40ql
-         KrrRTdVLmmUbJv8qBRI6CnAywuE3qutVm3uQEAoYWZ/zijSu3EbrCrf+0qP9Anv4cu3K
-         E84Q==
-X-Gm-Message-State: AOAM532FEAJjcCPTGqFBgnNR1Wi8k7vkZulox7uzJbLn5gm+JjEeGCdU
-        BklvgN1Zmlst6DuXdlj6zaGQrVGndARckik3rpI=
-X-Google-Smtp-Source: ABdhPJwkA9ekJJ9M8nqEHrMlYL2BD3BJZ1mDRCivll8aPnTAeCKrvH2tOpIbus7du/BAuyYE2COpbUReYKxns3Hn8Uw=
-X-Received: by 2002:a37:7683:: with SMTP id r125mr2667132qkc.39.1593208545856;
- Fri, 26 Jun 2020 14:55:45 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=HUhhFwfkhGkqkjX8NGzTXm9ABVvSJ1ODsrNUh5Xx3k0=;
+        b=bVoEJB423OP925heOeylAhzjHl0+8+OhZxKaXsx6e3UIqtfqkCCfi55DSop1qYWkTN
+         LrF0CEcXpWG3iFIRhTqm4dSveyb3wkP+WmcpICttgbYiolGDW3HzykYxLOpSupYC8zaG
+         AZUVgQTIoXAKBIDjOxpTP2D7ySsZ9ZS8uCUfzN6RUDRZqOcVdkhcZsP/2XSnGq7ITRLj
+         CqI79Zt8Lmdygbfaj9qPHHt1iMHVbNs0Cop4beQ+VzVekyTjqlJxKVD5YuVrkqNazYOt
+         MTEJSXf7JOZQkrVNzN2C82TahiU7cMuHAKsvYnUwDfmXXuVC7jRWwGiN1J2OdUKzarjo
+         7ETA==
+X-Gm-Message-State: AOAM533W1korOJ7Fgh5ILQCjTD7wRLn0iFwe7NpmePyrt5rJCHuv0ANd
+        PlVBmKStdLv953NMP9g2sLyxyw==
+X-Google-Smtp-Source: ABdhPJwmw/etw7KAVVAxjoBO9/Me3YabqZf5sAKurrkpoQOTlEzGPdBMougtIPpCE2sR0nvlRXDWnQ==
+X-Received: by 2002:a63:fa4d:: with SMTP id g13mr754725pgk.26.1593208571579;
+        Fri, 26 Jun 2020 14:56:11 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id w203sm16890417pfc.128.2020.06.26.14.56.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Jun 2020 14:56:10 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/8] docs: networking: reorganize driver
+ documentation again
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, klassert@kernel.org, akiyano@amazon.com,
+        irusskikh@marvell.com, ioana.ciornei@nxp.com, kys@microsoft.com,
+        saeedm@mellanox.com, jdmason@kudzu.us,
+        GR-Linux-NIC-Dev@marvell.com, stuyoder@gmail.com,
+        jeffrey.t.kirsher@intel.com, sgoutham@marvell.com,
+        luobin9@huawei.com, csully@google.com, kou.ishizaki@toshiba.co.jp,
+        peppe.cavallaro@st.com, chessman@tux.org
+References: <20200626172731.280133-1-kuba@kernel.org>
+ <20200626172731.280133-2-kuba@kernel.org>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <225cb411-ba2b-9e79-f4c6-774f18ae5b2f@pensando.io>
+Date:   Fri, 26 Jun 2020 14:56:09 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200625221304.2817194-1-jolsa@kernel.org> <20200625221304.2817194-14-jolsa@kernel.org>
-In-Reply-To: <20200625221304.2817194-14-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 26 Jun 2020 14:55:34 -0700
-Message-ID: <CAEf4BzYpYXN6nZc1CT3ZHUoeYfALK_SY2cLUZ7G72ka5GL_33Q@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 13/14] selftests/bpf: Add test for d_path helper
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200626172731.280133-2-kuba@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 4:49 PM Jiri Olsa <jolsa@kernel.org> wrote:
+On 6/26/20 10:27 AM, Jakub Kicinski wrote:
+> Organize driver documentation by device type. Most documents
+> have fairly verbose yet uninformative names, so let users
+> first select a well defined device type, and then search for
+> a particular driver.
 >
-> Adding test for d_path helper which is pretty much
-> copied from Wenbo Zhang's test for bpf_get_fd_path,
-> which never made it in.
+> While at it rename the section from Vendor drivers to
+> Hardware drivers. This seems more accurate, besides people
+> sometimes refer to out-of-tree drivers as vendor drivers.
 >
-> I've failed so far to compile the test with <linux/fs.h>
-> kernel header, so for now adding 'struct file' with f_path
-> member that has same offset as kernel's file object.
->
-> Original-patch-by: Wenbo Zhang <ethercflow@gmail.com>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  .../testing/selftests/bpf/prog_tests/d_path.c | 145 ++++++++++++++++++
->  .../testing/selftests/bpf/progs/test_d_path.c |  50 ++++++
->  2 files changed, 195 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/d_path.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_d_path.c
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 >
 
-[...]
+Acked-by: Shannon Nelson <snelson@pensando.io>
 
-> diff --git a/tools/testing/selftests/bpf/progs/test_d_path.c b/tools/testing/selftests/bpf/progs/test_d_path.c
-> new file mode 100644
-> index 000000000000..6096aef2bafc
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_d_path.c
-> @@ -0,0 +1,50 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include "vmlinux.h"
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_tracing.h>
-> +
-> +#define MAX_PATH_LEN           128
-> +#define MAX_EVENT_NUM          16
-> +
-> +pid_t my_pid;
-> +__u32 cnt_stat;
-> +__u32 cnt_close;
-> +char paths_stat[MAX_EVENT_NUM][MAX_PATH_LEN];
-> +char paths_close[MAX_EVENT_NUM][MAX_PATH_LEN];
-> +
-> +SEC("fentry/vfs_getattr")
-> +int BPF_PROG(prog_stat, struct path *path, struct kstat *stat,
-> +            __u32 request_mask, unsigned int query_flags)
-> +{
-> +       pid_t pid = bpf_get_current_pid_tgid() >> 32;
-> +
-> +       if (pid != my_pid)
-> +               return 0;
-> +
-> +       if (cnt_stat >= MAX_EVENT_NUM)
-> +               return 0;
-> +
-> +       bpf_d_path(path, paths_stat[cnt_stat], MAX_PATH_LEN);
-> +       cnt_stat++;
-> +       return 0;
-> +}
-> +
-> +SEC("fentry/filp_close")
-> +int BPF_PROG(prog_close, struct file *file, void *id)
-> +{
-> +       pid_t pid = bpf_get_current_pid_tgid() >> 32;
-> +
-> +       if (pid != my_pid)
-> +               return 0;
-> +
-> +       if (cnt_close >= MAX_EVENT_NUM)
-> +               return 0;
-> +
-> +       bpf_d_path((struct path *) &file->f_path,
-> +                  paths_close[cnt_close], MAX_PATH_LEN);
+for the Pensando/ionic changes.
+Thanks, Jakub.
 
-Can you please capture the return result of bpf_d_path() (here and
-above) and validate that it's correct? That will help avoid future
-breakages if anyone changes this.
-
-> +       cnt_close++;
-> +       return 0;
-> +}
-> +
-> +char _license[] SEC("license") = "GPL";
-> --
-> 2.25.4
->
