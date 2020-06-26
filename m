@@ -2,101 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F71A20B090
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA18320B091
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:32:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728684AbgFZLcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 07:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725864AbgFZLcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:32:19 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0314C08C5C1
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 04:32:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=1tXoJHKyXc3I2vl/OwJhd/EUmw8jK/5qS95V+mKLFxg=; b=sMFZcqT+U2DUeW5ayh5dDKfHn
-        dye95/GHk1VEBgGa11xt/Q2ueJyYn5EuL8sg07cDntgS8Smew5Rsw/LK/iFkd5M1mGQUhoCWOCYrT
-        RwWjvodh2AQIGy9ZP2qUPxJZHShdVGK4zyfJLUyIDg8dPklzFtDmjAcl3NqpEOGw7HnzRg+7YetUP
-        ZhdSdXLZRzpVaFdy36FwP3nwHW0+9HLGfECz60OrWaICn93OK9vgmesHqSP/jlxnR4+AhOi2U6evP
-        Sp3xGZs5uJROJcQ5yi4TpjxvGbM7iuR6B9SDRTmYbkhyYLPM2UUlLgbjeaPWpc0PABBWKfJ/Rva9D
-        M8nWnh/Sg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60002)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jomaf-0005FK-8s; Fri, 26 Jun 2020 12:32:17 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jomae-000421-MF; Fri, 26 Jun 2020 12:32:16 +0100
-Date:   Fri, 26 Jun 2020 12:32:16 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: [PATCH net-next 5/7] net: dsa: felix: delete
- .phylink_mac_an_restart code
-Message-ID: <20200626113216.GP1551@shell.armlinux.org.uk>
-References: <20200625152331.3784018-1-olteanv@gmail.com>
- <20200625152331.3784018-6-olteanv@gmail.com>
- <20200625165349.GI1551@shell.armlinux.org.uk>
- <CA+h21hqn0P6mVJd1o=P1qwmVw-E56-FbY0gkfq9KurkRuJ5_hQ@mail.gmail.com>
- <20200626110828.GO1551@shell.armlinux.org.uk>
- <CA+h21hoDVQfeVZJaSJ1BymVcATgJq5zoHo2_K7JnG2V22RKe5A@mail.gmail.com>
+        id S1728697AbgFZLcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 07:32:43 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:43444 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728688AbgFZLcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:32:42 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id BDF4320062;
+        Fri, 26 Jun 2020 11:32:41 +0000 (UTC)
+Received: from us4-mdac16-7.at1.mdlocal (unknown [10.110.49.174])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id BBF4D800A3;
+        Fri, 26 Jun 2020 11:32:41 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.32])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 65DBA100070;
+        Fri, 26 Jun 2020 11:32:41 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2D44C280075;
+        Fri, 26 Jun 2020 11:32:41 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 26 Jun
+ 2020 12:32:36 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 15/15] sfc: extend common GRO interface to support
+ CHECKSUM_COMPLETE
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+References: <1a1716f9-f909-4093-8107-3c2435d834c5@solarflare.com>
+Message-ID: <5da4c9e6-9e7e-8001-ad71-2ab775268aab@solarflare.com>
+Date:   Fri, 26 Jun 2020 12:32:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hoDVQfeVZJaSJ1BymVcATgJq5zoHo2_K7JnG2V22RKe5A@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1a1716f9-f909-4093-8107-3c2435d834c5@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25504.003
+X-TM-AS-Result: No-6.994900-8.000000-10
+X-TMASE-MatchedRID: 4RYRT8I4pwkp6sCplNKGM0jBb8q+S/OCGIMg4+U4kbXg91xayX4L8wFK
+        sDvaUiE9K4QmH9zcA5EaNleJxx1YlAUcfW/oedmqnFVnNmvv47tLXPA26IG0hN9RlPzeVuQQ0HT
+        LLuKQyhg67b/kwWwP0e+/tLvk1Pm5CWJZymXNAFdIkDvKxvWt/n6NJZ3HRhRTjFFYmmGGytxNqd
+        2Y/0f53uLzNWBegCW2RYvisGWbbS+No+PRbWqfRLI7zVffJqTze0g/mWveFMSobMJzccnrXoslf
+        +CuQmdtD2p0OuxwxJ3L2fQYZX/JpH7cGd19dSFd
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--6.994900-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25504.003
+X-MDID: 1593171161-nFePJA_8pziP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 02:19:42PM +0300, Vladimir Oltean wrote:
-> On Fri, 26 Jun 2020 at 14:08, Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> >
-> 
-> [snip]
-> 
-> >
-> > So, I ask again, what practical use and benefit does restarting the
-> > configuration exchange on a SGMII or USXGMII link have?  Give me a real
-> > life use case where there's a problem with a link that this can solve.
-> >
-> 
-> You are pushing the discussion in an area that to me is pretty
-> insignificant, and where I did _not_ want to go. I said:
-> 
-> > This is
-> > probably OK, I can't come up with a situation where it might be useful for the
-> > MAC PCS to clear its cache of link state and ask for a new tx_config_reg. So
-> > remove this code.
-> 
-> I was going to remove this code in the first place, it's just that you
-> didn't like the justification in the initial commit message. Fine. So
-> I asked you if this new commit message is OK. You said:
-> 
-> > This is going over the top
-> 
-> So let's cut this short: we agree about everything now, hardware
-> behavior and software behavior. Could you edit my commit message in a
-> way that you agree with, and paste it here so that I could include it
-> in v2?
+EF100 will use CHECKSUM_COMPLETE, but will also make use of
+ efx_rx_packet_gro(), thus needs to be able to pass the checksum value
+ into that function.
+Drivers for older NICs pass in a csum of 0 to get the old semantics (use
+ the RX flags for CHECKSUM_UNNECESSARY marking).
 
-No.  Too busy.
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/rx.c        |  2 +-
+ drivers/net/ethernet/sfc/rx_common.c | 11 ++++++++---
+ drivers/net/ethernet/sfc/rx_common.h |  2 +-
+ 3 files changed, 10 insertions(+), 5 deletions(-)
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
+index a201a30b5d29..c73b933a9101 100644
+--- a/drivers/net/ethernet/sfc/rx.c
++++ b/drivers/net/ethernet/sfc/rx.c
+@@ -411,7 +411,7 @@ void __efx_rx_packet(struct efx_channel *channel)
+ 		rx_buf->flags &= ~EFX_RX_PKT_CSUMMED;
+ 
+ 	if ((rx_buf->flags & EFX_RX_PKT_TCP) && !channel->type->receive_skb)
+-		efx_rx_packet_gro(channel, rx_buf, channel->rx_pkt_n_frags, eh);
++		efx_rx_packet_gro(channel, rx_buf, channel->rx_pkt_n_frags, eh, 0);
+ 	else
+ 		efx_rx_deliver(channel, eh, rx_buf, channel->rx_pkt_n_frags);
+ out:
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+index 9927e9ecbbb4..fb77c7bbe4af 100644
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -510,7 +510,7 @@ void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic)
+  */
+ void
+ efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
+-		  unsigned int n_frags, u8 *eh)
++		  unsigned int n_frags, u8 *eh, __wsum csum)
+ {
+ 	struct napi_struct *napi = &channel->napi_str;
+ 	struct efx_nic *efx = channel->efx;
+@@ -528,8 +528,13 @@ efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
+ 	if (efx->net_dev->features & NETIF_F_RXHASH)
+ 		skb_set_hash(skb, efx_rx_buf_hash(efx, eh),
+ 			     PKT_HASH_TYPE_L3);
+-	skb->ip_summed = ((rx_buf->flags & EFX_RX_PKT_CSUMMED) ?
+-			  CHECKSUM_UNNECESSARY : CHECKSUM_NONE);
++	if (csum) {
++		skb->csum = csum;
++		skb->ip_summed = CHECKSUM_COMPLETE;
++	} else {
++		skb->ip_summed = ((rx_buf->flags & EFX_RX_PKT_CSUMMED) ?
++				  CHECKSUM_UNNECESSARY : CHECKSUM_NONE);
++	}
+ 	skb->csum_level = !!(rx_buf->flags & EFX_RX_PKT_CSUM_LEVEL);
+ 
+ 	for (;;) {
+diff --git a/drivers/net/ethernet/sfc/rx_common.h b/drivers/net/ethernet/sfc/rx_common.h
+index 3508dd316570..1672d74f30e2 100644
+--- a/drivers/net/ethernet/sfc/rx_common.h
++++ b/drivers/net/ethernet/sfc/rx_common.h
+@@ -67,7 +67,7 @@ void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic);
+ 
+ void
+ efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
+-		  unsigned int n_frags, u8 *eh);
++		  unsigned int n_frags, u8 *eh, __wsum csum);
+ 
+ struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx);
+ struct efx_rss_context *efx_find_rss_context_entry(struct efx_nic *efx, u32 id);
