@@ -2,37 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F72820B8E0
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 20:59:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12F8420B8E4
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 21:00:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725854AbgFZS67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 14:58:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47850 "EHLO mail.kernel.org"
+        id S1725832AbgFZTAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 15:00:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725283AbgFZS67 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 14:58:59 -0400
+        id S1725768AbgFZTAL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 15:00:11 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 884512053B;
-        Fri, 26 Jun 2020 18:58:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3F4382053B;
+        Fri, 26 Jun 2020 19:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593197938;
-        bh=y9VJxGXkCkgdn9hB023P9vduEo7KgI1GLcMOItbxN3U=;
+        s=default; t=1593198010;
+        bh=6vHSP1w6dFjwBOQAK5qD/4paXrcZVPDo1KYzjxCrMeY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AB8e8/Gew/GEKyHpYQcFS4Plsq0zTbTMIkPkyEY1eruutGpySDP7SFyoPaYpvlS8c
-         /e/VP6rWTN9XOwo+gKAvTTLXp7YqreA65sLD+o9iPq43DngogHJeq108fa5zshJBG0
-         yta8zrqGuh5mtEkCJHH1Ki6PC58Ja6OPD1XLAgsw=
-Date:   Fri, 26 Jun 2020 11:58:56 -0700
+        b=ZPuuwk/sVR93b3PWXoMsF3HpnJSn8YzrI3SP2xiJKY+5NIq4b3jWdoxM79Jgod1A0
+         KSyEi1jJWmIRxGZx4dKYKu6WzwLTYd+fAj4ppVrIFw4/71KX8Ea0PwAjetmwEfuepC
+         zhsYtncCDF1YIcjBGv3HWuenauyultbk2XkXtbTI=
+Date:   Fri, 26 Jun 2020 12:00:08 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com
-Subject: Re: [net-next v3 00/15][pull request] 100GbE Intel Wired LAN Driver
- Updates 2020-06-25
-Message-ID: <20200626115856.6288b63e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, Alice Michael <alice.michael@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Alan Brady <alan.brady@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        Joshua Hay <joshua.a.hay@intel.com>,
+        Madhu Chittim <madhu.chittim@intel.com>,
+        Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
+        Donald Skidmore <donald.c.skidmore@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>
+Subject: Re: [net-next v3 09/15] iecm: Init and allocate vport
+Message-ID: <20200626120008.43fe087f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200626020737.775377-10-jeffrey.t.kirsher@intel.com>
 References: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
+        <20200626020737.775377-10-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,22 +49,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Jun 2020 19:07:22 -0700 Jeff Kirsher wrote:
-> This series introduces both the Intel Ethernet Common Module and the Intel
-> Data Plane Function.  The patches also incorporate extended features and
-> functionality added in the virtchnl.h file.
->  
-> The format of the series flow is to add the data set, then introduce
-> function stubs and finally introduce pieces in large cohesive subjects or
-> functionality.  This is to allow for more in depth understanding and
-> review of the bigger picture as the series is reviewed.
-> 
-> Currently this is common layer (iecm) is initially only being used by only
-> the idpf driver (PF driver for SmartNIC).  However, the plan is to
-> eventually switch our iavf driver along with future drivers to use this
-> common module.  The hope is to better enable code sharing going forward as
-> well as support other developers writing drivers for our hardware
+On Thu, 25 Jun 2020 19:07:31 -0700 Jeff Kirsher wrote:
+> @@ -532,7 +540,12 @@ static void iecm_service_task(struct work_struct *work)
+>   */
+>  static void iecm_up_complete(struct iecm_vport *vport)
+>  {
+> -	/* stub */
+> +	netif_set_real_num_rx_queues(vport->netdev, vport->num_txq);
+> +	netif_set_real_num_tx_queues(vport->netdev, vport->num_rxq);
 
-Honestly you can as well squash most of these patches together.
+These can fail.
 
-The way they are split actually makes the reviewing harder not easier.
+> +	netif_carrier_on(vport->netdev);
+> +	netif_tx_start_all_queues(vport->netdev);
+> +
+> +	vport->adapter->state = __IECM_UP;
+>  }
