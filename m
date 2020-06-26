@@ -2,186 +2,1449 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF8920B7BD
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:58:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F324920B7FF
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 20:19:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbgFZR61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 13:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47374 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725833AbgFZR60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:58:26 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C27AC03E979
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:58:26 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id l9so9210599ilq.12
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:58:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CMr8ilHTKgkGkDPe1jYwHRZR6CaGsfJB3GgdJu2TdUw=;
-        b=XKfYW37S2lTmI/EQ7OcPEHvjLMEmSUT6L9qzjanRXlbDfwOhXCdaOByIJ8kNfHKHQ3
-         TKgmvRLogB0wlDS8Kc5GCkyzCqgrnZyINA56UwlZFzrHWcU/BL9CPReBDRlqAh8442T1
-         hlekhG1Y7xmnh4xk6H+gpF/eA6RO/iHKh05/7MmJeDqAFJLwc0M5T0IHDvsORczFD6da
-         EHuMY+iSHiRF+yDHov5JMfXoKwEfxi1jrxBUcfCpDl0v7hl/QvtKq1R1Z9m1GFXEBCJj
-         x4xWkpxsMWJOnDdF434AgmMlkOrFz8cyw2q3SN8FNf08RYZRQk0O7IO9iDeQSP9Gi9JA
-         IV1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CMr8ilHTKgkGkDPe1jYwHRZR6CaGsfJB3GgdJu2TdUw=;
-        b=FlYMv4D0TKL0pajER0J8dTq4PIZ2tiGt8tgycuM22iZKIjOYVHvXxybhDJVW+yLPRG
-         C0mPtFTBBnnmJRzuuD/H5gRiBhxy5PqyYD902PNAMECGY2GBITJpDPDmC/Bki9YPHh5K
-         h9bwMXz5cOQjHEWqFkItQmvsQ+QfaYS5t0p1eZNqoFJnuVE5Gj6JrmS/eFpLvqovzzNR
-         1HOksGUk1kVxxp96THJpMDaHb792v1LA78z6DdSs0gVocqOlqpnytpU1z19zBQME3aiR
-         uL/yNDVc0098oFOBUJqJwyX8URWW6HRnfp89FtRyQqimVt2Dr977HEqRcseMdm548Ish
-         tUJw==
-X-Gm-Message-State: AOAM531h/VhyfOEnhPHB2vbnXFkfeUNTqm9oneBPSUI0wko7TdJfx+mL
-        IeoaH2kOAzCyxX9fwvVrXg+QUDKq3rkpHFZ2hfU=
-X-Google-Smtp-Source: ABdhPJwoYxdZx8pmc+A++MpDRkOzMxDmjU7STTJVAVJDuYWHdfPxLjKkVxdZF7sPnWdU7z5Y2dK9DpyI27VtcCIA2Co=
-X-Received: by 2002:a92:b655:: with SMTP id s82mr1347139ili.268.1593194305547;
- Fri, 26 Jun 2020 10:58:25 -0700 (PDT)
+        id S1726011AbgFZSSX convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 26 Jun 2020 14:18:23 -0400
+Received: from mga12.intel.com ([192.55.52.136]:23529 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725913AbgFZSSW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 14:18:22 -0400
+IronPort-SDR: EMJ/MVIEEwkRKdF6MDDj83AKCmGsUC4FkKf3KcsvQ3WFLdd+MmylbRfu+PG9ZXkKraPPbu4F53
+ RkS+1v9z254Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9664"; a="125064978"
+X-IronPort-AV: E=Sophos;i="5.75,284,1589266800"; 
+   d="scan'208";a="125064978"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2020 10:40:19 -0700
+IronPort-SDR: KRaM5xwCx7mEqwBaVU5JiPba69BDxySoj8VeWLSh3Wbvht7T8OwCU4XH/f5U1OE8SHyVr6xEnB
+ ElhCuTqGLw6w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,284,1589266800"; 
+   d="scan'208";a="453433361"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by orsmga005.jf.intel.com with ESMTP; 26 Jun 2020 10:40:19 -0700
+Received: from orsmsx125.amr.corp.intel.com (10.22.240.125) by
+ ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 26 Jun 2020 10:40:18 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.199]) by
+ ORSMSX125.amr.corp.intel.com ([169.254.3.152]) with mapi id 14.03.0439.000;
+ Fri, 26 Jun 2020 10:40:18 -0700
+From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "klassert@kernel.org" <klassert@kernel.org>,
+        "akiyano@amazon.com" <akiyano@amazon.com>,
+        "irusskikh@marvell.com" <irusskikh@marvell.com>,
+        "ioana.ciornei@nxp.com" <ioana.ciornei@nxp.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "jdmason@kudzu.us" <jdmason@kudzu.us>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "GR-Linux-NIC-Dev@marvell.com" <GR-Linux-NIC-Dev@marvell.com>,
+        "stuyoder@gmail.com" <stuyoder@gmail.com>,
+        "sgoutham@marvell.com" <sgoutham@marvell.com>,
+        "luobin9@huawei.com" <luobin9@huawei.com>,
+        "csully@google.com" <csully@google.com>,
+        "kou.ishizaki@toshiba.co.jp" <kou.ishizaki@toshiba.co.jp>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "chessman@tux.org" <chessman@tux.org>
+Subject: RE: [PATCH net-next 1/8] docs: networking: reorganize driver
+ documentation again
+Thread-Topic: [PATCH net-next 1/8] docs: networking: reorganize driver
+ documentation again
+Thread-Index: AQHWS98kQO4l/oQ3i0SUtkSDVQm3aqjrKYVw
+Date:   Fri, 26 Jun 2020 17:40:17 +0000
+Message-ID: <61CC2BC414934749BD9F5BF3D5D9404498739E61@ORSMSX112.amr.corp.intel.com>
+References: <20200626172731.280133-1-kuba@kernel.org>
+ <20200626172731.280133-2-kuba@kernel.org>
+In-Reply-To: <20200626172731.280133-2-kuba@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.138]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20200616180352.18602-1-xiyou.wangcong@gmail.com>
- <141629e1-55b5-34b1-b2ab-bab6b68f0671@huawei.com> <CAM_iQpUFFHPnMxS2sAHZqMUs80tTn0+C_jCcne4Ddx2b9omCxg@mail.gmail.com>
- <20200618193611.GE24694@carbon.DHCP.thefacebook.com> <CAM_iQpWuNnHqNHKz5FMgAXoqQ5qGDEtNbBKDXpmpeNSadCZ-1w@mail.gmail.com>
- <4f17229e-1843-5bfc-ea2f-67ebaa9056da@huawei.com> <CAM_iQpVKqFi00ohqPARxaDw2UN1m6CtjqsmBAP-pcK0GT2p_fQ@mail.gmail.com>
- <459be87d-0272-9ea9-839a-823b01e354b6@huawei.com> <35480172-c77e-fb67-7559-04576f375ea6@huawei.com>
- <CAM_iQpXpZd6ZaQyQifWOHSnqgAgdu1qP+fF_Na7rQ_H1vQ6eig@mail.gmail.com>
- <20200623222137.GA358561@carbon.lan> <b3a5298d-3c4e-ba51-7045-9643c3986054@neo-zeon.de>
-In-Reply-To: <b3a5298d-3c4e-ba51-7045-9643c3986054@neo-zeon.de>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 26 Jun 2020 10:58:14 -0700
-Message-ID: <CAM_iQpU1ji2x9Pgb6Xs7Kqoh3mmFRN3R9GKf5QoVUv82mZb8hg@mail.gmail.com>
-Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
-To:     Cameron Berkenpas <cam@neo-zeon.de>
-Cc:     Roman Gushchin <guro@fb.com>, Zefan Li <lizefan@huawei.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
-        =?UTF-8?Q?Dani=C3=ABl_Sonck?= <dsonck92@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Tejun Heo <tj@kernel.org>
-Content-Type: multipart/mixed; boundary="000000000000a4186105a9007402"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a4186105a9007402
-Content-Type: text/plain; charset="UTF-8"
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Friday, June 26, 2020 10:27
+> To: davem@davemloft.net
+> Cc: netdev@vger.kernel.org; Jakub Kicinski <kuba@kernel.org>;
+> klassert@kernel.org; akiyano@amazon.com; irusskikh@marvell.com;
+> ioana.ciornei@nxp.com; kys@microsoft.com; saeedm@mellanox.com;
+> jdmason@kudzu.us; snelson@pensando.io; GR-Linux-NIC-Dev@marvell.com;
+> stuyoder@gmail.com; Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>;
+> sgoutham@marvell.com; luobin9@huawei.com; csully@google.com;
+> kou.ishizaki@toshiba.co.jp; peppe.cavallaro@st.com; chessman@tux.org
+> Subject: [PATCH net-next 1/8] docs: networking: reorganize driver
+> documentation again
+> 
+> Organize driver documentation by device type. Most documents
+> have fairly verbose yet uninformative names, so let users
+> first select a well defined device type, and then search for
+> a particular driver.
+> 
+> While at it rename the section from Vendor drivers to
+> Hardware drivers. This seems more accurate, besides people
+> sometimes refer to out-of-tree drivers as vendor drivers.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-On Thu, Jun 25, 2020 at 10:23 PM Cameron Berkenpas <cam@neo-zeon.de> wrote:
->
-> Hello,
->
-> Somewhere along the way I got the impression that it generally takes
-> those affected hours before their systems lock up. I'm (generally) able
-> to reproduce this issue much faster than that. Regardless, I can help test.
->
-> Are there any patches that need testing or is this all still pending
-> discussion around the  best way to resolve the issue?
+Acked-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 
-Yes. I come up with a (hopefully) much better patch in the attachment.
-Can you help to test it? You need to unapply the previous patch before
-applying this one.
+For the Intel documentational changes. 
 
-(Just in case of any confusion: I still believe we should check NULL on
-top of this refcnt fix. But it should be a separate patch.)
+> --
+> CC: klassert@kernel.org
+> CC: akiyano@amazon.com
+> CC: irusskikh@marvell.com
+> CC: ioana.ciornei@nxp.com
+> CC: kys@microsoft.com
+> CC: saeedm@mellanox.com
+> CC: jdmason@kudzu.us
+> CC: snelson@pensando.io
+> CC: GR-Linux-NIC-Dev@marvell.com
+> CC: stuyoder@gmail.com
+> CC: jeffrey.t.kirsher@intel.com
+> CC: sgoutham@marvell.com
+> CC: luobin9@huawei.com
+> CC: csully@google.com
+> CC: kou.ishizaki@toshiba.co.jp
+> CC: peppe.cavallaro@st.com
+> CC: chessman@tux.org
+> ---
+>  .../devicetree/bindings/misc/fsl,qoriq-mc.txt |  2 +-
+>  .../networking/device_drivers/cable/index.rst | 18 ++++++
+>  .../device_drivers/{ => cable}/sb1000.rst     |  0
+>  .../device_drivers/cellular/index.rst         | 18 ++++++
+>  .../{ => cellular}/qualcomm/rmnet.rst         |  0
+>  .../{ => ethernet}/3com/3c509.rst             |  0
+>  .../{ => ethernet}/3com/vortex.rst            |  2 -
+>  .../{ => ethernet}/amazon/ena.rst             |  0
+>  .../{ => ethernet}/aquantia/atlantic.rst      |  0
+>  .../{ => ethernet}/chelsio/cxgb.rst           |  0
+>  .../{ => ethernet}/cirrus/cs89x0.rst          |  0
+>  .../{ => ethernet}/davicom/dm9000.rst         |  0
+>  .../{ => ethernet}/dec/de4x5.rst              |  0
+>  .../{ => ethernet}/dec/dmfe.rst               |  0
+>  .../{ => ethernet}/dlink/dl2k.rst             |  0
+>  .../{ => ethernet}/freescale/dpaa.rst         |  0
+>  .../freescale/dpaa2/dpio-driver.rst           |  6 +-
+>  .../freescale/dpaa2/ethernet-driver.rst       |  3 +-
+>  .../{ => ethernet}/freescale/dpaa2/index.rst  |  0
+>  .../freescale/dpaa2/mac-phy-support.rst       |  0
+>  .../freescale/dpaa2/overview.rst              |  0
+>  .../{ => ethernet}/freescale/gianfar.rst      |  0
+>  .../{ => ethernet}/google/gve.rst             |  0
+>  .../device_drivers/ethernet/index.rst         | 58 +++++++++++++++++++
+>  .../{ => ethernet}/intel/e100.rst             |  0
+>  .../{ => ethernet}/intel/e1000.rst            |  0
+>  .../{ => ethernet}/intel/e1000e.rst           |  0
+>  .../{ => ethernet}/intel/fm10k.rst            |  0
+>  .../{ => ethernet}/intel/i40e.rst             |  0
+>  .../{ => ethernet}/intel/iavf.rst             |  0
+>  .../{ => ethernet}/intel/ice.rst              |  0
+>  .../{ => ethernet}/intel/igb.rst              |  0
+>  .../{ => ethernet}/intel/igbvf.rst            |  0
+>  .../{ => ethernet}/intel/ixgb.rst             |  0
+>  .../{ => ethernet}/intel/ixgbe.rst            |  0
+>  .../{ => ethernet}/intel/ixgbevf.rst          |  0
+>  .../{ => ethernet}/marvell/octeontx2.rst      |  0
+>  .../{ => ethernet}/mellanox/mlx5.rst          |  0
+>  .../{ => ethernet}/microsoft/netvsc.rst       |  0
+>  .../{ => ethernet}/neterion/s2io.rst          |  0
+>  .../{ => ethernet}/neterion/vxge.rst          |  0
+>  .../{ => ethernet}/netronome/nfp.rst          |  0
+>  .../{ => ethernet}/pensando/ionic.rst         |  0
+>  .../{ => ethernet}/smsc/smc9.rst              |  0
+>  .../{ => ethernet}/stmicro/stmmac.rst         |  0
+>  .../device_drivers/{ => ethernet}/ti/cpsw.rst |  0
+>  .../{ => ethernet}/ti/cpsw_switchdev.rst      |  0
+>  .../device_drivers/{ => ethernet}/ti/tlan.rst |  0
+>  .../{ => ethernet}/toshiba/spider_net.rst     |  0
+>  .../networking/device_drivers/index.rst       | 51 ++--------------
+>  .../networking/device_drivers/wifi/index.rst  | 19 ++++++
+>  .../{ => wifi}/intel/ipw2100.rst              |  0
+>  .../{ => wifi}/intel/ipw2200.rst              |  0
+>  MAINTAINERS                                   | 55 +++++++-----------
+>  drivers/net/Kconfig                           |  2 +-
+>  drivers/net/ethernet/3com/3c59x.c             |  4 +-
+>  drivers/net/ethernet/3com/Kconfig             |  4 +-
+>  drivers/net/ethernet/chelsio/Kconfig          |  2 +-
+>  drivers/net/ethernet/cirrus/Kconfig           |  2 +-
+>  drivers/net/ethernet/dec/tulip/Kconfig        |  4 +-
+>  drivers/net/ethernet/dlink/dl2k.c             | 10 +---
+>  drivers/net/ethernet/intel/Kconfig            | 24 ++++----
+>  drivers/net/ethernet/neterion/Kconfig         |  4 +-
+>  drivers/net/ethernet/pensando/Kconfig         |  2 +-
+>  drivers/net/ethernet/smsc/Kconfig             |  4 +-
+>  drivers/net/ethernet/ti/Kconfig               |  2 +-
+>  drivers/net/ethernet/ti/tlan.c                |  2 +-
+>  drivers/net/wireless/intel/ipw2x00/Kconfig    |  4 +-
+>  drivers/net/wireless/intel/ipw2x00/ipw2100.c  |  2 +-
+>  69 files changed, 180 insertions(+), 124 deletions(-)
+>  create mode 100644 Documentation/networking/device_drivers/cable/index.rst
+>  rename Documentation/networking/device_drivers/{ => cable}/sb1000.rst
+> (100%)
+>  create mode 100644
+> Documentation/networking/device_drivers/cellular/index.rst
+>  rename Documentation/networking/device_drivers/{ =>
+> cellular}/qualcomm/rmnet.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/3com/3c509.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/3com/vortex.rst (99%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/amazon/ena.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/aquantia/atlantic.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/chelsio/cxgb.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/cirrus/cs89x0.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/davicom/dm9000.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/dec/de4x5.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/dec/dmfe.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/dlink/dl2k.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/freescale/dpaa.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/freescale/dpaa2/dpio-driver.rst (97%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/freescale/dpaa2/ethernet-driver.rst (98%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/freescale/dpaa2/index.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/freescale/dpaa2/mac-phy-support.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/freescale/dpaa2/overview.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/freescale/gianfar.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/google/gve.rst (100%)
+>  create mode 100644
+> Documentation/networking/device_drivers/ethernet/index.rst
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/intel/e100.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/intel/e1000.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/intel/e1000e.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/intel/fm10k.rst (100%)
+>  rename Documentation/networking/device_drivers/{ => ethernet}/intel/i40e.rst
+> (100%)
+>  rename Documentation/networking/device_drivers/{ => ethernet}/intel/iavf.rst
+> (100%)
+>  rename Documentation/networking/device_drivers/{ => ethernet}/intel/ice.rst
+> (100%)
+>  rename Documentation/networking/device_drivers/{ => ethernet}/intel/igb.rst
+> (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/intel/igbvf.rst (100%)
+>  rename Documentation/networking/device_drivers/{ => ethernet}/intel/ixgb.rst
+> (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/intel/ixgbe.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/intel/ixgbevf.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/marvell/octeontx2.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/mellanox/mlx5.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/microsoft/netvsc.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/neterion/s2io.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/neterion/vxge.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/netronome/nfp.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/pensando/ionic.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/smsc/smc9.rst (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/stmicro/stmmac.rst (100%)
+>  rename Documentation/networking/device_drivers/{ => ethernet}/ti/cpsw.rst
+> (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/ti/cpsw_switchdev.rst (100%)
+>  rename Documentation/networking/device_drivers/{ => ethernet}/ti/tlan.rst
+> (100%)
+>  rename Documentation/networking/device_drivers/{ =>
+> ethernet}/toshiba/spider_net.rst (100%)
+>  create mode 100644 Documentation/networking/device_drivers/wifi/index.rst
+>  rename Documentation/networking/device_drivers/{ => wifi}/intel/ipw2100.rst
+> (100%)
+>  rename Documentation/networking/device_drivers/{ => wifi}/intel/ipw2200.rst
+> (100%)
+> 
+> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> index 9134e9bcca56..b12f9be1251f 100644
+> --- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> @@ -10,7 +10,7 @@ such as network interfaces, crypto accelerator instances,
+> L2 switches,
+>  etc.
+> 
+>  For an overview of the DPAA2 architecture and fsl-mc bus see:
+> -Documentation/networking/device_drivers/freescale/dpaa2/overview.rst
+> +Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.
+> rst
+> 
+>  As described in the above overview, all DPAA2 objects in a DPRC share the
+>  same hardware "isolation context" and a 10-bit value called an ICID
+> diff --git a/Documentation/networking/device_drivers/cable/index.rst
+> b/Documentation/networking/device_drivers/cable/index.rst
+> new file mode 100644
+> index 000000000000..cce3c4392972
+> --- /dev/null
+> +++ b/Documentation/networking/device_drivers/cable/index.rst
+> @@ -0,0 +1,18 @@
+> +.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +
+> +Cable Modem Device Drivers
+> +==========================
+> +
+> +Contents:
+> +
+> +.. toctree::
+> +   :maxdepth: 2
+> +
+> +   sb1000
+> +
+> +.. only::  subproject and html
+> +
+> +   Indices
+> +   =======
+> +
+> +   * :ref:`genindex`
+> diff --git a/Documentation/networking/device_drivers/sb1000.rst
+> b/Documentation/networking/device_drivers/cable/sb1000.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/sb1000.rst
+> rename to Documentation/networking/device_drivers/cable/sb1000.rst
+> diff --git a/Documentation/networking/device_drivers/cellular/index.rst
+> b/Documentation/networking/device_drivers/cellular/index.rst
+> new file mode 100644
+> index 000000000000..fc1812d3fc70
+> --- /dev/null
+> +++ b/Documentation/networking/device_drivers/cellular/index.rst
+> @@ -0,0 +1,18 @@
+> +.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +
+> +Cellular Modem Device Drivers
+> +=============================
+> +
+> +Contents:
+> +
+> +.. toctree::
+> +   :maxdepth: 2
+> +
+> +   qualcomm/rmnet
+> +
+> +.. only::  subproject and html
+> +
+> +   Indices
+> +   =======
+> +
+> +   * :ref:`genindex`
+> diff --git a/Documentation/networking/device_drivers/qualcomm/rmnet.rst
+> b/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/qualcomm/rmnet.rst
+> rename to
+> Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
+> diff --git a/Documentation/networking/device_drivers/3com/3c509.rst
+> b/Documentation/networking/device_drivers/ethernet/3com/3c509.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/3com/3c509.rst
+> rename to Documentation/networking/device_drivers/ethernet/3com/3c509.rst
+> diff --git a/Documentation/networking/device_drivers/3com/vortex.rst
+> b/Documentation/networking/device_drivers/ethernet/3com/vortex.rst
+> similarity index 99%
+> rename from Documentation/networking/device_drivers/3com/vortex.rst
+> rename to Documentation/networking/device_drivers/ethernet/3com/vortex.rst
+> index 800add5be338..eab10fc6da5c 100644
+> --- a/Documentation/networking/device_drivers/3com/vortex.rst
+> +++ b/Documentation/networking/device_drivers/ethernet/3com/vortex.rst
+> @@ -4,8 +4,6 @@
+>  3Com Vortex device driver
+>  =========================
+> 
+> -Documentation/networking/device_drivers/3com/vortex.rst
+> -
+>  Andrew Morton
+> 
+>  30 April 2000
+> diff --git a/Documentation/networking/device_drivers/amazon/ena.rst
+> b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/amazon/ena.rst
+> rename to Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+> diff --git a/Documentation/networking/device_drivers/aquantia/atlantic.rst
+> b/Documentation/networking/device_drivers/ethernet/aquantia/atlantic.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/aquantia/atlantic.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/aquantia/atlantic.rst
+> diff --git a/Documentation/networking/device_drivers/chelsio/cxgb.rst
+> b/Documentation/networking/device_drivers/ethernet/chelsio/cxgb.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/chelsio/cxgb.rst
+> rename to Documentation/networking/device_drivers/ethernet/chelsio/cxgb.rst
+> diff --git a/Documentation/networking/device_drivers/cirrus/cs89x0.rst
+> b/Documentation/networking/device_drivers/ethernet/cirrus/cs89x0.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/cirrus/cs89x0.rst
+> rename to Documentation/networking/device_drivers/ethernet/cirrus/cs89x0.rst
+> diff --git a/Documentation/networking/device_drivers/davicom/dm9000.rst
+> b/Documentation/networking/device_drivers/ethernet/davicom/dm9000.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/davicom/dm9000.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/davicom/dm9000.rst
+> diff --git a/Documentation/networking/device_drivers/dec/de4x5.rst
+> b/Documentation/networking/device_drivers/ethernet/dec/de4x5.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/dec/de4x5.rst
+> rename to Documentation/networking/device_drivers/ethernet/dec/de4x5.rst
+> diff --git a/Documentation/networking/device_drivers/dec/dmfe.rst
+> b/Documentation/networking/device_drivers/ethernet/dec/dmfe.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/dec/dmfe.rst
+> rename to Documentation/networking/device_drivers/ethernet/dec/dmfe.rst
+> diff --git a/Documentation/networking/device_drivers/dlink/dl2k.rst
+> b/Documentation/networking/device_drivers/ethernet/dlink/dl2k.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/dlink/dl2k.rst
+> rename to Documentation/networking/device_drivers/ethernet/dlink/dl2k.rst
+> diff --git a/Documentation/networking/device_drivers/freescale/dpaa.rst
+> b/Documentation/networking/device_drivers/ethernet/freescale/dpaa.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/freescale/dpaa.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/freescale/dpaa.rst
+> diff --git a/Documentation/networking/device_drivers/freescale/dpaa2/dpio-
+> driver.rst
+> b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/dpio-
+> driver.rst
+> similarity index 97%
+> rename from Documentation/networking/device_drivers/freescale/dpaa2/dpio-
+> driver.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/freescale/dpaa2/dpio-
+> driver.rst
+> index 17dbee1ac53e..c50fd46631e0 100644
+> --- a/Documentation/networking/device_drivers/freescale/dpaa2/dpio-driver.rst
+> +++
+> b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/dpio-
+> driver.rst
+> @@ -19,8 +19,10 @@ pool management for network interfaces.
+>  This document provides an overview the Linux DPIO driver, its
+>  subcomponents, and its APIs.
+> 
+> -See Documentation/networking/device_drivers/freescale/dpaa2/overview.rst
+> for
+> -a general overview of DPAA2 and the general DPAA2 driver architecture in
+> Linux.
+> +See
+> +Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.
+> rst
+> +for a general overview of DPAA2 and the general DPAA2 driver architecture
+> +in Linux.
+> 
+>  Driver Overview
+>  ---------------
+> diff --git a/Documentation/networking/device_drivers/freescale/dpaa2/ethernet-
+> driver.rst
+> b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/ethernet-
+> driver.rst
+> similarity index 98%
+> rename from
+> Documentation/networking/device_drivers/freescale/dpaa2/ethernet-driver.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/freescale/dpaa2/ethernet-
+> driver.rst
+> index cb4c9a0c5a17..682f3986c15b 100644
+> --- a/Documentation/networking/device_drivers/freescale/dpaa2/ethernet-
+> driver.rst
+> +++
+> b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/ethernet-
+> driver.rst
+> @@ -33,7 +33,8 @@ hardware resources, like queues, do not have a
+> corresponding MC object and
+>  are treated as internal resources of other objects.
+> 
+>  For a more detailed description of the DPAA2 architecture and its object
+> -abstractions see
+> *Documentation/networking/device_drivers/freescale/dpaa2/overview.rst*.
+> +abstractions see
+> +*Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overvie
+> w.rst*.
+> 
+>  Each Linux net device is built on top of a Datapath Network Interface (DPNI)
+>  object and uses Buffer Pools (DPBPs), I/O Portals (DPIOs) and Concentrators
+> diff --git a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
+> b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/index.rst
+> similarity index 100%
+> rename from
+> Documentation/networking/device_drivers/freescale/dpaa2/index.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/freescale/dpaa2/index.rst
+> diff --git a/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-
+> support.rst
+> b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/mac-phy-
+> support.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/freescale/dpaa2/mac-
+> phy-support.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/freescale/dpaa2/mac-phy-
+> support.rst
+> diff --git
+> a/Documentation/networking/device_drivers/freescale/dpaa2/overview.rst
+> b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview
+> .rst
+> similarity index 100%
+> rename from
+> Documentation/networking/device_drivers/freescale/dpaa2/overview.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rs
+> t
+> diff --git a/Documentation/networking/device_drivers/freescale/gianfar.rst
+> b/Documentation/networking/device_drivers/ethernet/freescale/gianfar.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/freescale/gianfar.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/freescale/gianfar.rst
+> diff --git a/Documentation/networking/device_drivers/google/gve.rst
+> b/Documentation/networking/device_drivers/ethernet/google/gve.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/google/gve.rst
+> rename to Documentation/networking/device_drivers/ethernet/google/gve.rst
+> diff --git a/Documentation/networking/device_drivers/ethernet/index.rst
+> b/Documentation/networking/device_drivers/ethernet/index.rst
+> new file mode 100644
+> index 000000000000..fd3873024da8
+> --- /dev/null
+> +++ b/Documentation/networking/device_drivers/ethernet/index.rst
+> @@ -0,0 +1,58 @@
+> +.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +
+> +Ethernet Device Drivers
+> +=======================
+> +
+> +Device drivers for Ethernet and Ethernet-based virtual function devices.
+> +
+> +Contents:
+> +
+> +.. toctree::
+> +   :maxdepth: 2
+> +
+> +   3com/3c509
+> +   3com/vortex
+> +   amazon/ena
+> +   aquantia/atlantic
+> +   chelsio/cxgb
+> +   cirrus/cs89x0
+> +   dlink/dl2k
+> +   davicom/dm9000
+> +   dec/de4x5
+> +   dec/dmfe
+> +   freescale/dpaa
+> +   freescale/dpaa2/index
+> +   freescale/gianfar
+> +   google/gve
+> +   intel/e100
+> +   intel/e1000
+> +   intel/e1000e
+> +   intel/fm10k
+> +   intel/igb
+> +   intel/igbvf
+> +   intel/ixgb
+> +   intel/ixgbe
+> +   intel/ixgbevf
+> +   intel/i40e
+> +   intel/iavf
+> +   intel/ice
+> +   marvell/octeontx2
+> +   mellanox/mlx5
+> +   microsoft/netvsc
+> +   neterion/s2io
+> +   neterion/vxge
+> +   netronome/nfp
+> +   pensando/ionic
+> +   smsc/smc9
+> +   stmicro/stmmac
+> +   ti/cpsw
+> +   ti/cpsw_switchdev
+> +   ti/tlan
+> +   toshiba/spider_net
+> +
+> +.. only::  subproject and html
+> +
+> +   Indices
+> +   =======
+> +
+> +   * :ref:`genindex`
+> diff --git a/Documentation/networking/device_drivers/intel/e100.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/e100.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/e100.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/e100.rst
+> diff --git a/Documentation/networking/device_drivers/intel/e1000.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/e1000.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/e1000.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/e1000.rst
+> diff --git a/Documentation/networking/device_drivers/intel/e1000e.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/e1000e.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/e1000e.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/e1000e.rst
+> diff --git a/Documentation/networking/device_drivers/intel/fm10k.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/fm10k.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/fm10k.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/fm10k.rst
+> diff --git a/Documentation/networking/device_drivers/intel/i40e.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/i40e.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/i40e.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/i40e.rst
+> diff --git a/Documentation/networking/device_drivers/intel/iavf.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/iavf.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/iavf.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/iavf.rst
+> diff --git a/Documentation/networking/device_drivers/intel/ice.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/ice.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/ice.rst
+> diff --git a/Documentation/networking/device_drivers/intel/igb.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/igb.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/igb.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/igb.rst
+> diff --git a/Documentation/networking/device_drivers/intel/igbvf.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/igbvf.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/igbvf.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/igbvf.rst
+> diff --git a/Documentation/networking/device_drivers/intel/ixgb.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/ixgb.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/ixgb.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/ixgb.rst
+> diff --git a/Documentation/networking/device_drivers/intel/ixgbe.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/ixgbe.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/ixgbe.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/ixgbe.rst
+> diff --git a/Documentation/networking/device_drivers/intel/ixgbevf.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/ixgbevf.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/ixgbevf.rst
+> rename to Documentation/networking/device_drivers/ethernet/intel/ixgbevf.rst
+> diff --git a/Documentation/networking/device_drivers/marvell/octeontx2.rst
+> b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/marvell/octeontx2.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+> diff --git a/Documentation/networking/device_drivers/mellanox/mlx5.rst
+> b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/mellanox/mlx5.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
+> diff --git a/Documentation/networking/device_drivers/microsoft/netvsc.rst
+> b/Documentation/networking/device_drivers/ethernet/microsoft/netvsc.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/microsoft/netvsc.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/microsoft/netvsc.rst
+> diff --git a/Documentation/networking/device_drivers/neterion/s2io.rst
+> b/Documentation/networking/device_drivers/ethernet/neterion/s2io.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/neterion/s2io.rst
+> rename to Documentation/networking/device_drivers/ethernet/neterion/s2io.rst
+> diff --git a/Documentation/networking/device_drivers/neterion/vxge.rst
+> b/Documentation/networking/device_drivers/ethernet/neterion/vxge.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/neterion/vxge.rst
+> rename to Documentation/networking/device_drivers/ethernet/neterion/vxge.rst
+> diff --git a/Documentation/networking/device_drivers/netronome/nfp.rst
+> b/Documentation/networking/device_drivers/ethernet/netronome/nfp.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/netronome/nfp.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/netronome/nfp.rst
+> diff --git a/Documentation/networking/device_drivers/pensando/ionic.rst
+> b/Documentation/networking/device_drivers/ethernet/pensando/ionic.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/pensando/ionic.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/pensando/ionic.rst
+> diff --git a/Documentation/networking/device_drivers/smsc/smc9.rst
+> b/Documentation/networking/device_drivers/ethernet/smsc/smc9.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/smsc/smc9.rst
+> rename to Documentation/networking/device_drivers/ethernet/smsc/smc9.rst
+> diff --git a/Documentation/networking/device_drivers/stmicro/stmmac.rst
+> b/Documentation/networking/device_drivers/ethernet/stmicro/stmmac.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/stmicro/stmmac.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/stmicro/stmmac.rst
+> diff --git a/Documentation/networking/device_drivers/ti/cpsw.rst
+> b/Documentation/networking/device_drivers/ethernet/ti/cpsw.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/ti/cpsw.rst
+> rename to Documentation/networking/device_drivers/ethernet/ti/cpsw.rst
+> diff --git a/Documentation/networking/device_drivers/ti/cpsw_switchdev.rst
+> b/Documentation/networking/device_drivers/ethernet/ti/cpsw_switchdev.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/ti/cpsw_switchdev.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/ti/cpsw_switchdev.rst
+> diff --git a/Documentation/networking/device_drivers/ti/tlan.rst
+> b/Documentation/networking/device_drivers/ethernet/ti/tlan.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/ti/tlan.rst
+> rename to Documentation/networking/device_drivers/ethernet/ti/tlan.rst
+> diff --git a/Documentation/networking/device_drivers/toshiba/spider_net.rst
+> b/Documentation/networking/device_drivers/ethernet/toshiba/spider_net.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/toshiba/spider_net.rst
+> rename to
+> Documentation/networking/device_drivers/ethernet/toshiba/spider_net.rst
+> diff --git a/Documentation/networking/device_drivers/index.rst
+> b/Documentation/networking/device_drivers/index.rst
+> index e18dad11bc72..2d4817fc6a29 100644
+> --- a/Documentation/networking/device_drivers/index.rst
+> +++ b/Documentation/networking/device_drivers/index.rst
+> @@ -1,56 +1,17 @@
+>  .. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> 
+> -Vendor Device Drivers
+> -=====================
+> +Hardware Device Drivers
+> +=======================
+> 
+>  Contents:
+> 
+>  .. toctree::
+>     :maxdepth: 2
+> 
+> -   freescale/dpaa2/index
+> -   intel/e100
+> -   intel/e1000
+> -   intel/e1000e
+> -   intel/fm10k
+> -   intel/igb
+> -   intel/igbvf
+> -   intel/ixgb
+> -   intel/ixgbe
+> -   intel/ixgbevf
+> -   intel/i40e
+> -   intel/iavf
+> -   intel/ice
+> -   google/gve
+> -   marvell/octeontx2
+> -   mellanox/mlx5
+> -   netronome/nfp
+> -   pensando/ionic
+> -   stmicro/stmmac
+> -   3com/3c509
+> -   3com/vortex
+> -   amazon/ena
+> -   aquantia/atlantic
+> -   chelsio/cxgb
+> -   cirrus/cs89x0
+> -   davicom/dm9000
+> -   dec/de4x5
+> -   dec/dmfe
+> -   dlink/dl2k
+> -   freescale/dpaa
+> -   freescale/gianfar
+> -   intel/ipw2100
+> -   intel/ipw2200
+> -   microsoft/netvsc
+> -   neterion/s2io
+> -   neterion/vxge
+> -   qualcomm/rmnet
+> -   sb1000
+> -   smsc/smc9
+> -   ti/cpsw_switchdev
+> -   ti/cpsw
+> -   ti/tlan
+> -   toshiba/spider_net
+> +   cable/index
+> +   cellular/index
+> +   ethernet/index
+> +   wifi/index
+> 
+>  .. only::  subproject and html
+> 
+> diff --git a/Documentation/networking/device_drivers/wifi/index.rst
+> b/Documentation/networking/device_drivers/wifi/index.rst
+> new file mode 100644
+> index 000000000000..fb394f5de4a9
+> --- /dev/null
+> +++ b/Documentation/networking/device_drivers/wifi/index.rst
+> @@ -0,0 +1,19 @@
+> +.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +
+> +Wi-Fi Device Drivers
+> +====================
+> +
+> +Contents:
+> +
+> +.. toctree::
+> +   :maxdepth: 2
+> +
+> +   intel/ipw2100
+> +   intel/ipw2200
+> +
+> +.. only::  subproject and html
+> +
+> +   Indices
+> +   =======
+> +
+> +   * :ref:`genindex`
+> diff --git a/Documentation/networking/device_drivers/intel/ipw2100.rst
+> b/Documentation/networking/device_drivers/wifi/intel/ipw2100.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/ipw2100.rst
+> rename to Documentation/networking/device_drivers/wifi/intel/ipw2100.rst
+> diff --git a/Documentation/networking/device_drivers/intel/ipw2200.rst
+> b/Documentation/networking/device_drivers/wifi/intel/ipw2200.rst
+> similarity index 100%
+> rename from Documentation/networking/device_drivers/intel/ipw2200.rst
+> rename to Documentation/networking/device_drivers/wifi/intel/ipw2200.rst
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 63c4cc4a04d6..43e7c9a94a48 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -147,7 +147,7 @@ Maintainers List
+>  M:	Steffen Klassert <klassert@kernel.org>
+>  L:	netdev@vger.kernel.org
+>  S:	Odd Fixes
+> -F:	Documentation/networking/device_drivers/3com/vortex.rst
+> +F:	Documentation/networking/device_drivers/ethernet/3com/vortex.rst
+>  F:	drivers/net/ethernet/3com/3c59x.c
+> 
+>  3CR990 NETWORK DRIVER
+> @@ -816,7 +816,7 @@ R:	Saeed Bishara <saeedb@amazon.com>
+>  R:	Zorik Machulsky <zorik@amazon.com>
+>  L:	netdev@vger.kernel.org
+>  S:	Supported
+> -F:	Documentation/networking/device_drivers/amazon/ena.rst
+> +F:	Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+>  F:	drivers/net/ethernet/amazon/
+> 
+>  AMAZON RDMA EFA DRIVER
+> @@ -1295,7 +1295,7 @@ L:	netdev@vger.kernel.org
+>  S:	Supported
+>  W:	https://www.marvell.com/
+>  Q:	http://patchwork.ozlabs.org/project/netdev/list/
+> -F:	Documentation/networking/device_drivers/aquantia/atlantic.rst
+> +F:	Documentation/networking/device_drivers/ethernet/aquantia/atlantic.rst
+>  F:	drivers/net/ethernet/aquantia/atlantic/
+> 
+>  AQUANTIA ETHERNET DRIVER PTP SUBSYSTEM
+> @@ -4753,7 +4753,7 @@ F:	net/ax25/sysctl_net_ax25.c
+>  DAVICOM FAST ETHERNET (DMFE) NETWORK DRIVER
+>  L:	netdev@vger.kernel.org
+>  S:	Orphan
+> -F:	Documentation/networking/device_drivers/dec/dmfe.rst
+> +F:	Documentation/networking/device_drivers/ethernet/dec/dmfe.rst
+>  F:	drivers/net/ethernet/dec/tulip/dmfe.c
+> 
+>  DC390/AM53C974 SCSI driver
+> @@ -5241,8 +5241,8 @@ M:	Ioana Ciornei <ioana.ciornei@nxp.com>
+>  M:	Ioana Radulescu <ruxandra.radulescu@nxp.com>
+>  L:	netdev@vger.kernel.org
+>  S:	Maintained
+> -F:	Documentation/networking/device_drivers/freescale/dpaa2/ethernet-
+> driver.rst
+> -F:	Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-
+> support.rst
+> +F:
+> 	Documentation/networking/device_drivers/ethernet/freescale/dpaa2/ethe
+> rnet-driver.rst
+> +F:
+> 	Documentation/networking/device_drivers/ethernet/freescale/dpaa2/mac
+> -phy-support.rst
+>  F:	drivers/net/ethernet/freescale/dpaa2/Kconfig
+>  F:	drivers/net/ethernet/freescale/dpaa2/Makefile
+>  F:	drivers/net/ethernet/freescale/dpaa2/dpaa2-eth*
+> @@ -7302,7 +7302,7 @@ R:	Sagi Shahar <sagis@google.com>
+>  R:	Jon Olson <jonolson@google.com>
+>  L:	netdev@vger.kernel.org
+>  S:	Supported
+> -F:	Documentation/networking/device_drivers/google/gve.rst
+> +F:	Documentation/networking/device_drivers/ethernet/google/gve.rst
+>  F:	drivers/net/ethernet/google
+> 
+>  GPD POCKET FAN DRIVER
+> @@ -7965,7 +7965,7 @@ S:	Supported
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git
+>  F:	Documentation/ABI/stable/sysfs-bus-vmbus
+>  F:	Documentation/ABI/testing/debugfs-hyperv
+> -F:	Documentation/networking/device_drivers/microsoft/netvsc.rst
+> +F:	Documentation/networking/device_drivers/ethernet/microsoft/netvsc.rst
+>  F:	arch/x86/hyperv
+>  F:	arch/x86/include/asm/hyperv-tlfs.h
+>  F:	arch/x86/include/asm/mshyperv.h
+> @@ -8647,18 +8647,7 @@ W:	http://e1000.sourceforge.net/
+>  Q:	http://patchwork.ozlabs.org/project/intel-wired-lan/list/
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/net-queue.git
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue.git
+> -F:	Documentation/networking/device_drivers/intel/e100.rst
+> -F:	Documentation/networking/device_drivers/intel/e1000.rst
+> -F:	Documentation/networking/device_drivers/intel/e1000e.rst
+> -F:	Documentation/networking/device_drivers/intel/fm10k.rst
+> -F:	Documentation/networking/device_drivers/intel/i40e.rst
+> -F:	Documentation/networking/device_drivers/intel/iavf.rst
+> -F:	Documentation/networking/device_drivers/intel/ice.rst
+> -F:	Documentation/networking/device_drivers/intel/igb.rst
+> -F:	Documentation/networking/device_drivers/intel/igbvf.rst
+> -F:	Documentation/networking/device_drivers/intel/ixgb.rst
+> -F:	Documentation/networking/device_drivers/intel/ixgbe.rst
+> -F:	Documentation/networking/device_drivers/intel/ixgbevf.rst
+> +F:	Documentation/networking/device_drivers/ethernet/intel/
+>  F:	drivers/net/ethernet/intel/
+>  F:	drivers/net/ethernet/intel/*/
+>  F:	include/linux/avf/virtchnl.h
+> @@ -8848,8 +8837,8 @@ INTEL PRO/WIRELESS 2100, 2200BG, 2915ABG
+> NETWORK CONNECTION SUPPORT
+>  M:	Stanislav Yakovlev <stas.yakovlev@gmail.com>
+>  L:	linux-wireless@vger.kernel.org
+>  S:	Maintained
+> -F:	Documentation/networking/device_drivers/intel/ipw2100.rst
+> -F:	Documentation/networking/device_drivers/intel/ipw2200.rst
+> +F:	Documentation/networking/device_drivers/wifi/intel/ipw2100.rst
+> +F:	Documentation/networking/device_drivers/wifi/intel/ipw2200.rst
+>  F:	drivers/net/wireless/intel/ipw2x00/
+> 
+>  INTEL PSTATE DRIVER
+> @@ -10362,7 +10351,7 @@ M:	Geetha sowjanya <gakula@marvell.com>
+>  M:	Jerin Jacob <jerinj@marvell.com>
+>  L:	netdev@vger.kernel.org
+>  S:	Supported
+> -F:	Documentation/networking/device_drivers/marvell/octeontx2.rst
+> +F:	Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+>  F:	drivers/net/ethernet/marvell/octeontx2/af/
+> 
+>  MARVELL SOC MMC/SD/SDIO CONTROLLER DRIVER
+> @@ -11031,7 +11020,7 @@ L:	linux-rdma@vger.kernel.org
+>  S:	Supported
+>  W:	http://www.mellanox.com
+>  Q:	http://patchwork.ozlabs.org/project/netdev/list/
+> -F:	Documentation/networking/device_drivers/mellanox/
+> +F:	Documentation/networking/device_drivers/ethernet/mellanox/
+>  F:	drivers/net/ethernet/mellanox/mlx5/core/
+>  F:	include/linux/mlx5/
+> 
+> @@ -11806,8 +11795,8 @@ NETERION 10GbE DRIVERS (s2io/vxge)
+>  M:	Jon Mason <jdmason@kudzu.us>
+>  L:	netdev@vger.kernel.org
+>  S:	Supported
+> -F:	Documentation/networking/device_drivers/neterion/s2io.rst
+> -F:	Documentation/networking/device_drivers/neterion/vxge.rst
+> +F:	Documentation/networking/device_drivers/ethernet/neterion/s2io.rst
+> +F:	Documentation/networking/device_drivers/ethernet/neterion/vxge.rst
+>  F:	drivers/net/ethernet/neterion/
+> 
+>  NETFILTER
+> @@ -13370,7 +13359,7 @@ M:	Shannon Nelson <snelson@pensando.io>
+>  M:	Pensando Drivers <drivers@pensando.io>
+>  L:	netdev@vger.kernel.org
+>  S:	Supported
+> -F:	Documentation/networking/device_drivers/pensando/ionic.rst
+> +F:	Documentation/networking/device_drivers/ethernet/pensando/ionic.rst
+>  F:	drivers/net/ethernet/pensando/
+> 
+>  PER-CPU MEMORY ALLOCATOR
+> @@ -14053,7 +14042,7 @@ QLOGIC QLA3XXX NETWORK DRIVER
+>  M:	GR-Linux-NIC-Dev@marvell.com
+>  L:	netdev@vger.kernel.org
+>  S:	Supported
+> -F:	Documentation/networking/device_drivers/qlogic/LICENSE.qla3xxx
+> +F:
+> 	Documentation/networking/device_drivers/ethernet/qlogic/LICENSE.qla3x
+> xx
+>  F:	drivers/net/ethernet/qlogic/qla3xxx.*
+> 
+>  QLOGIC QLA4XXX iSCSI DRIVER
+> @@ -14104,7 +14093,7 @@ M:	Laurentiu Tudor
+> <laurentiu.tudor@nxp.com>
+>  L:	linux-kernel@vger.kernel.org
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> -F:	Documentation/networking/device_drivers/freescale/dpaa2/overview.rst
+> +F:
+> 	Documentation/networking/device_drivers/ethernet/freescale/dpaa2/over
+> view.rst
+>  F:	drivers/bus/fsl-mc/
+> 
+>  QT1010 MEDIA DRIVER
+> @@ -14225,7 +14214,7 @@ M:	Subash Abhinov Kasiviswanathan
+> <subashab@codeaurora.org>
+>  M:	Sean Tranchetti <stranche@codeaurora.org>
+>  L:	netdev@vger.kernel.org
+>  S:	Maintained
+> -F:	Documentation/networking/device_drivers/qualcomm/rmnet.rst
+> +F:	Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
+>  F:	drivers/net/ethernet/qualcomm/rmnet/
+>  F:	include/linux/if_rmnet.h
+> 
+> @@ -16106,7 +16095,7 @@ SPIDERNET NETWORK DRIVER for CELL
+>  M:	Ishizaki Kou <kou.ishizaki@toshiba.co.jp>
+>  L:	netdev@vger.kernel.org
+>  S:	Supported
+> -F:	Documentation/networking/device_drivers/toshiba/spider_net.rst
+> +F:
+> 	Documentation/networking/device_drivers/ethernet/toshiba/spider_net.rs
+> t
+>  F:	drivers/net/ethernet/toshiba/spider_net*
+> 
+>  SPMI SUBSYSTEM
+> @@ -16333,7 +16322,7 @@ M:	Jose Abreu <joabreu@synopsys.com>
+>  L:	netdev@vger.kernel.org
+>  S:	Supported
+>  W:	http://www.stlinux.com
+> -F:	Documentation/networking/device_drivers/stmicro/
+> +F:	Documentation/networking/device_drivers/ethernet/stmicro/
+>  F:	drivers/net/ethernet/stmicro/stmmac/
+> 
+>  SUN3/3X
+> @@ -17221,7 +17210,7 @@ M:	Samuel Chessman <chessman@tux.org>
+>  L:	tlan-devel@lists.sourceforge.net (subscribers-only)
+>  S:	Maintained
+>  W:	http://sourceforge.net/projects/tlan/
+> -F:	Documentation/networking/device_drivers/ti/tlan.rst
+> +F:	Documentation/networking/device_drivers/ethernet/ti/tlan.rst
+>  F:	drivers/net/ethernet/ti/tlan.*
+> 
+>  TM6000 VIDEO4LINUX DRIVER
+> diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+> index 9a49c4c2316b..7dcb465824be 100644
+> --- a/drivers/net/Kconfig
+> +++ b/drivers/net/Kconfig
+> @@ -460,7 +460,7 @@ config NET_SB1000
+> 
+>  	  At present this driver only compiles as a module, so say M here if
+>  	  you have this card. The module will be called sb1000. Then read
+> -	  <file:Documentation/networking/device_drivers/sb1000.rst> for
+> +	  <file:Documentation/networking/device_drivers/cable/sb1000.rst> for
+>  	  information on how to use this module, as it needs special ppp
+>  	  scripts for establishing a connection. Further documentation
+>  	  and the necessary scripts can be found at:
+> diff --git a/drivers/net/ethernet/3com/3c59x.c
+> b/drivers/net/ethernet/3com/3c59x.c
+> index 5984b7033999..741c67e546d4 100644
+> --- a/drivers/net/ethernet/3com/3c59x.c
+> +++ b/drivers/net/ethernet/3com/3c59x.c
+> @@ -1149,7 +1149,7 @@ static int vortex_probe1(struct device *gendev, void
+> __iomem *ioaddr, int irq,
+> 
+>  	print_info = (vortex_debug > 1);
+>  	if (print_info)
+> -		pr_info("See
+> Documentation/networking/device_drivers/3com/vortex.rst\n");
+> +		pr_info("See
+> Documentation/networking/device_drivers/ethernet/3com/vortex.rst\n");
+> 
+>  	pr_info("%s: 3Com %s %s at %p.\n",
+>  	       print_name,
+> @@ -1954,7 +1954,7 @@ vortex_error(struct net_device *dev, int status)
+>  				   dev->name, tx_status);
+>  			if (tx_status == 0x82) {
+>  				pr_err("Probably a duplex mismatch.  See "
+> -
+> 	"Documentation/networking/device_drivers/3com/vortex.rst\n");
+> +
+> 	"Documentation/networking/device_drivers/ethernet/3com/vortex.rst\n")
+> ;
+>  			}
+>  			dump_tx_ring(dev);
+>  		}
+> diff --git a/drivers/net/ethernet/3com/Kconfig
+> b/drivers/net/ethernet/3com/Kconfig
+> index 074b0974769c..a52a3740f0c9 100644
+> --- a/drivers/net/ethernet/3com/Kconfig
+> +++ b/drivers/net/ethernet/3com/Kconfig
+> @@ -76,8 +76,8 @@ config VORTEX
+>  	  "Hurricane" (3c555/3cSOHO)                           PCI
+> 
+>  	  If you have such a card, say Y here.  More specific information is in
+> -	  <file:Documentation/networking/device_drivers/3com/vortex.rst> and
+> -	  in the comments at the beginning of
+> +
+> <file:Documentation/networking/device_drivers/ethernet/3com/vortex.rst>
+> +	  and in the comments at the beginning of
+>  	  <file:drivers/net/ethernet/3com/3c59x.c>.
+> 
+>  	  To compile this support as a module, choose M here.
+> diff --git a/drivers/net/ethernet/chelsio/Kconfig
+> b/drivers/net/ethernet/chelsio/Kconfig
+> index b7f43254598f..f6f3ef9a93cf 100644
+> --- a/drivers/net/ethernet/chelsio/Kconfig
+> +++ b/drivers/net/ethernet/chelsio/Kconfig
+> @@ -26,7 +26,7 @@ config CHELSIO_T1
+>  	  This driver supports Chelsio gigabit and 10-gigabit
+>  	  Ethernet cards. More information about adapter features and
+>  	  performance tuning is in
+> -	  <file:Documentation/networking/device_drivers/chelsio/cxgb.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/chelsio/cxgb.rst>.
+> 
+>  	  For general information about Chelsio and our products, visit
+>  	  our website at <http://www.chelsio.com>.
+> diff --git a/drivers/net/ethernet/cirrus/Kconfig
+> b/drivers/net/ethernet/cirrus/Kconfig
+> index 7cf4526596f3..d8af9e64dd1e 100644
+> --- a/drivers/net/ethernet/cirrus/Kconfig
+> +++ b/drivers/net/ethernet/cirrus/Kconfig
+> @@ -24,7 +24,7 @@ config CS89x0
+>  	help
+>  	  Support for CS89x0 chipset based Ethernet cards. If you have a
+>  	  network (Ethernet) card of this type, say Y and read the file
+> -	  <file:Documentation/networking/device_drivers/cirrus/cs89x0.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/cirrus/cs89x0.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called cs89x0.
+> diff --git a/drivers/net/ethernet/dec/tulip/Kconfig
+> b/drivers/net/ethernet/dec/tulip/Kconfig
+> index 8afc5942179a..79dc336ce709 100644
+> --- a/drivers/net/ethernet/dec/tulip/Kconfig
+> +++ b/drivers/net/ethernet/dec/tulip/Kconfig
+> @@ -114,7 +114,7 @@ config DE4X5
+>  	  These include the DE425, DE434, DE435, DE450 and DE500 models.  If
+>  	  you have a network card of this type, say Y.  More specific
+>  	  information is contained in
+> -	  <file:Documentation/networking/device_drivers/dec/de4x5.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/dec/de4x5.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module will
+>  	  be called de4x5.
+> @@ -138,7 +138,7 @@ config DM9102
+>  	  This driver is for DM9102(A)/DM9132/DM9801 compatible PCI cards
+> from
+>  	  Davicom (<http://www.davicom.com.tw/>).  If you have such a
+> network
+>  	  (Ethernet) card, say Y.  Some information is contained in the file
+> -	  <file:Documentation/networking/device_drivers/dec/dmfe.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/dec/dmfe.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module will
+>  	  be called dmfe.
+> diff --git a/drivers/net/ethernet/dlink/dl2k.c b/drivers/net/ethernet/dlink/dl2k.c
+> index 5143722c4419..be6d8a9ada27 100644
+> --- a/drivers/net/ethernet/dlink/dl2k.c
+> +++ b/drivers/net/ethernet/dlink/dl2k.c
+> @@ -1863,13 +1863,5 @@ static struct pci_driver rio_driver = {
+>  };
+> 
+>  module_pci_driver(rio_driver);
+> -/*
+> -
+> -Compile command:
+> -
+> -gcc -D__KERNEL__ -DMODULE -I/usr/src/linux/include -Wall -Wstrict-prototypes
+> -O2 -c dl2k.c
+> -
+> -Read Documentation/networking/device_drivers/dlink/dl2k.rst for details.
+> -
+> -*/
+> 
+> +/* Read Documentation/networking/device_drivers/ethernet/dlink/dl2k.rst. */
+> diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
+> index 48a8f9aa1dd0..3cd13fd55011 100644
+> --- a/drivers/net/ethernet/intel/Kconfig
+> +++ b/drivers/net/ethernet/intel/Kconfig
+> @@ -34,7 +34,7 @@ config E100
+>  	  to identify the adapter.
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/e100.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/intel/e100.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called e100.
+> @@ -50,7 +50,7 @@ config E1000
+>  	  <http://support.intel.com>
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/e1000.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/intel/e1000.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called e1000.
+> @@ -70,7 +70,7 @@ config E1000E
+>  	  <http://support.intel.com>
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/e1000e.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/intel/e1000e.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called e1000e.
+> @@ -98,7 +98,7 @@ config IGB
+>  	  <http://support.intel.com>
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/igb.rst>.
+> +	  <file:Documentation/networking/device_drivers/ethernet/intel/igb.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called igb.
+> @@ -134,7 +134,7 @@ config IGBVF
+>  	  <http://support.intel.com>
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/igbvf.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/intel/igbvf.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called igbvf.
+> @@ -151,7 +151,7 @@ config IXGB
+>  	  <http://support.intel.com>
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/ixgb.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/intel/ixgb.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called ixgb.
+> @@ -170,7 +170,7 @@ config IXGBE
+>  	  <http://support.intel.com>
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/ixgbe.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/intel/ixgbe.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called ixgbe.
+> @@ -222,7 +222,7 @@ config IXGBEVF
+>  	  <http://support.intel.com>
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/ixgbevf.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/intel/ixgbevf.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called ixgbevf.  MSI-X interrupt support is required
+> @@ -249,7 +249,7 @@ config I40E
+>  	  <http://support.intel.com>
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/i40e.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/intel/i40e.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called i40e.
+> @@ -284,7 +284,7 @@ config I40EVF
+>  	  This driver was formerly named i40evf.
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/iavf.rst>.
+> +	  <file:Documentation/networking/device_drivers/ethernet/intel/iavf.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called iavf.  MSI-X interrupt support is required
+> @@ -303,7 +303,7 @@ config ICE
+>  	  <http://support.intel.com>
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/ice.rst>.
+> +	  <file:Documentation/networking/device_drivers/ethernet/intel/ice.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called ice.
+> @@ -321,7 +321,7 @@ config FM10K
+>  	  <http://support.intel.com>
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/intel/fm10k.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/intel/fm10k.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called fm10k.  MSI-X interrupt support is required
+> diff --git a/drivers/net/ethernet/neterion/Kconfig
+> b/drivers/net/ethernet/neterion/Kconfig
+> index 5484f18f272e..0c0d127906dd 100644
+> --- a/drivers/net/ethernet/neterion/Kconfig
+> +++ b/drivers/net/ethernet/neterion/Kconfig
+> @@ -27,7 +27,7 @@ config S2IO
+>  	  on its age.
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/neterion/s2io.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/neterion/s2io.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called s2io.
+> @@ -42,7 +42,7 @@ config VXGE
+>  	  labeled as either one, depending on its age.
+> 
+>  	  More specific information on configuring the driver is in
+> -	  <file:Documentation/networking/device_drivers/neterion/vxge.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/neterion/vxge.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called vxge.
+> diff --git a/drivers/net/ethernet/pensando/Kconfig
+> b/drivers/net/ethernet/pensando/Kconfig
+> index d25b88f53de4..76f8cc502bf9 100644
+> --- a/drivers/net/ethernet/pensando/Kconfig
+> +++ b/drivers/net/ethernet/pensando/Kconfig
+> @@ -25,7 +25,7 @@ config IONIC
+>  	  This enables the support for the Pensando family of Ethernet
+>  	  adapters.  More specific information on this driver can be
+>  	  found in
+> -	  <file:Documentation/networking/device_drivers/pensando/ionic.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/pensando/ionic.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called ionic.
+> diff --git a/drivers/net/ethernet/smsc/Kconfig
+> b/drivers/net/ethernet/smsc/Kconfig
+> index 6293b1e6c772..b77e427e6729 100644
+> --- a/drivers/net/ethernet/smsc/Kconfig
+> +++ b/drivers/net/ethernet/smsc/Kconfig
+> @@ -28,7 +28,7 @@ config SMC9194
+>  	  option if you have a DELL laptop with the docking station, or
+>  	  another SMC9192/9194 based chipset.  Say Y if you want it compiled
+>  	  into the kernel, and read the file
+> -	  <file:Documentation/networking/device_drivers/smsc/smc9.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/smsc/smc9.rst>.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+>  	  will be called smc9194.
+> @@ -44,7 +44,7 @@ config SMC91X
+>  	  This is a driver for SMC's 91x series of Ethernet chipsets,
+>  	  including the SMC91C94 and the SMC91C111. Say Y if you want it
+>  	  compiled into the kernel, and read the file
+> -	  <file:Documentation/networking/device_drivers/smsc/smc9.rst>.
+> +
+> <file:Documentation/networking/device_drivers/ethernet/smsc/smc9.rst>.
+> 
+>  	  This driver is also available as a module ( = code which can be
+>  	  inserted in and removed from the running kernel whenever you want).
+> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+> index 50f55364d4fb..abfc4c435d59 100644
+> --- a/drivers/net/ethernet/ti/Kconfig
+> +++ b/drivers/net/ethernet/ti/Kconfig
+> @@ -156,7 +156,7 @@ config TLAN
+> 
+>  	  Devices currently supported by this driver are Compaq Netelligent,
+>  	  Compaq NetFlex and Olicom cards.  Please read the file
+> -	  <file:Documentation/networking/device_drivers/ti/tlan.rst>
+> +	  <file:Documentation/networking/device_drivers/ethernet/ti/tlan.rst>
+>  	  for more details.
+> 
+>  	  To compile this driver as a module, choose M here. The module
+> diff --git a/drivers/net/ethernet/ti/tlan.c b/drivers/net/ethernet/ti/tlan.c
+> index 857709828058..583cd2ef7662 100644
+> --- a/drivers/net/ethernet/ti/tlan.c
+> +++ b/drivers/net/ethernet/ti/tlan.c
+> @@ -70,7 +70,7 @@ MODULE_DESCRIPTION("Driver for TI ThunderLAN based
+> ethernet PCI adapters");
+>  MODULE_LICENSE("GPL");
+> 
+>  /* Turn on debugging.
+> - * See Documentation/networking/device_drivers/ti/tlan.rst for details
+> + * See Documentation/networking/device_drivers/ethernet/ti/tlan.rst for details
+>   */
+>  static  int		debug;
+>  module_param(debug, int, 0);
+> diff --git a/drivers/net/wireless/intel/ipw2x00/Kconfig
+> b/drivers/net/wireless/intel/ipw2x00/Kconfig
+> index d00386915a9d..18436592a3a6 100644
+> --- a/drivers/net/wireless/intel/ipw2x00/Kconfig
+> +++ b/drivers/net/wireless/intel/ipw2x00/Kconfig
+> @@ -16,7 +16,7 @@ config IPW2100
+>  	  A driver for the Intel PRO/Wireless 2100 Network
+>  	  Connection 802.11b wireless network adapter.
+> 
+> -	  See <file:Documentation/networking/device_drivers/intel/ipw2100.rst>
+> +	  See
+> <file:Documentation/networking/device_drivers/wifi/intel/ipw2100.rst>
+>  	  for information on the capabilities currently enabled in this driver
+>  	  and for tips for debugging issues and problems.
+> 
+> @@ -78,7 +78,7 @@ config IPW2200
+>  	  A driver for the Intel PRO/Wireless 2200BG and 2915ABG Network
+>  	  Connection adapters.
+> 
+> -	  See <file:Documentation/networking/device_drivers/intel/ipw2200.rst>
+> +	  See
+> <file:Documentation/networking/device_drivers/wifi/intel/ipw2200.rst>
+>  	  for information on the capabilities currently enabled in this
+>  	  driver and for tips for debugging issues and problems.
+> 
+> diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+> b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+> index 624fe721e2b5..753dada5a243 100644
+> --- a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+> +++ b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+> @@ -8352,7 +8352,7 @@ static int ipw2100_mod_firmware_load(struct
+> ipw2100_fw *fw)
+>  	if (IPW2100_FW_MAJOR(h->version) !=
+> IPW2100_FW_MAJOR_VERSION) {
+>  		printk(KERN_WARNING DRV_NAME ": Firmware image not
+> compatible "
+>  		       "(detected version id of %u). "
+> -		       "See
+> Documentation/networking/device_drivers/intel/ipw2100.rst\n",
+> +		       "See
+> Documentation/networking/device_drivers/wifi/intel/ipw2100.rst\n",
+>  		       h->version);
+>  		return 1;
+>  	}
+> --
+> 2.26.2
 
-Thank you!
-
---000000000000a4186105a9007402
-Content-Type: text/x-patch; charset="UTF-8"; name="cgroup-bpf-ref.patch"
-Content-Disposition: attachment; filename="cgroup-bpf-ref.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_kbwipyi70>
-X-Attachment-Id: f_kbwipyi70
-
-Y29tbWl0IDI1OTE1MDYwNGMwYjc3YzcxN2ZkYWFiMDU3ZGE1NzIyZTJkZmQ5MjIKQXV0aG9yOiBD
-b25nIFdhbmcgPHhpeW91Lndhbmdjb25nQGdtYWlsLmNvbT4KRGF0ZTogICBTYXQgSnVuIDEzIDEy
-OjM0OjQwIDIwMjAgLTA3MDAKCiAgICBjZ3JvdXA6IGZpeCBjZ3JvdXBfc2tfYWxsb2MoKSBmb3Ig
-c2tfY2xvbmVfbG9jaygpCiAgICAKICAgIFdoZW4gd2UgY2xvbmUgYSBzb2NrZXQgaW4gc2tfY2xv
-bmVfbG9jaygpLCBpdHMgc2tfY2dycF9kYXRhIGlzCiAgICBjb3BpZWQsIHNvIHRoZSBjZ3JvdXAg
-cmVmY250IG11c3QgYmUgdGFrZW4gdG9vLiBBbmQsIHVubGlrZSB0aGUKICAgIHNrX2FsbG9jKCkg
-cGF0aCwgc29ja191cGRhdGVfbmV0cHJpb2lkeCgpIGlzIG5vdCBjYWxsZWQgaGVyZS4KICAgIFRo
-ZXJlZm9yZSwgaXQgaXMgc2FmZSBhbmQgbmVjZXNzYXJ5IHRvIGdyYWIgdGhlIGNncm91cCByZWZj
-bnQKICAgIGV2ZW4gd2hlbiBjZ3JvdXBfc2tfYWxsb2MgaXMgZGlzYWJsZWQuCiAgICAKICAgIHNr
-X2Nsb25lX2xvY2soKSBpcyBpbiBCSCBjb250ZXh0IGFueXdheSwgdGhlIGluX2ludGVycnVwdCgp
-CiAgICB3b3VsZCB0ZXJtaW5hdGUgdGhpcyBmdW5jdGlvbiBpZiBjYWxsZWQgdGhlcmUuIEFuZCBm
-b3Igc2tfYWxsb2MoKQogICAgc2tjZC0+dmFsIGlzIGFsd2F5cyB6ZXJvLiBTbyBpdCdzIHNhZmUg
-dG8gZmFjdG9yIG91dCB0aGUgY29kZQogICAgdG8gbWFrZSBpdCBtb3JlIHJlYWRhYmxlLgogICAg
-CiAgICBGaXhlczogNGJmYzBiYjJjNjBlICgiYnBmOiBkZWNvdXBsZSB0aGUgbGlmZXRpbWUgb2Yg
-Y2dyb3VwX2JwZiBmcm9tIGNncm91cCBpdHNlbGYiKQogICAgUmVwb3J0ZWQtYnk6IENhbWVyb24g
-QmVya2VucGFzIDxjYW1AbmVvLXplb24uZGU+CiAgICBSZXBvcnRlZC1ieTogUGV0ZXIgR2VpcyA8
-cGd3aXBlb3V0QGdtYWlsLmNvbT4KICAgIFJlcG9ydGVkLWJ5OiBMdSBGZW5ncWkgPGx1ZnEuZm5z
-dEBjbi5mdWppdHN1LmNvbT4KICAgIFJlcG9ydGVkLWJ5OiBEYW5pw6tsIFNvbmNrIDxkc29uY2s5
-MkBnbWFpbC5jb20+CiAgICBUZXN0ZWQtYnk6IENhbWVyb24gQmVya2VucGFzIDxjYW1AbmVvLXpl
-b24uZGU+CiAgICBDYzogRGFuaWVsIEJvcmttYW5uIDxkYW5pZWxAaW9nZWFyYm94Lm5ldD4KICAg
-IENjOiBaZWZhbiBMaSA8bGl6ZWZhbkBodWF3ZWkuY29tPgogICAgQ2M6IFRlanVuIEhlbyA8dGpA
-a2VybmVsLm9yZz4KICAgIFNpZ25lZC1vZmYtYnk6IENvbmcgV2FuZyA8eGl5b3Uud2FuZ2NvbmdA
-Z21haWwuY29tPgoKZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvY2dyb3VwLWRlZnMuaCBiL2lu
-Y2x1ZGUvbGludXgvY2dyb3VwLWRlZnMuaAppbmRleCA1MjY2MTE1NWY4NWYuLjRmMWNkMGVkYzU3
-ZCAxMDA2NDQKLS0tIGEvaW5jbHVkZS9saW51eC9jZ3JvdXAtZGVmcy5oCisrKyBiL2luY2x1ZGUv
-bGludXgvY2dyb3VwLWRlZnMuaApAQCAtNzkwLDcgKzc5MCw4IEBAIHN0cnVjdCBzb2NrX2Nncm91
-cF9kYXRhIHsKIAl1bmlvbiB7CiAjaWZkZWYgX19MSVRUTEVfRU5ESUFOCiAJCXN0cnVjdCB7Ci0J
-CQl1OAlpc19kYXRhOworCQkJdTgJaXNfZGF0YSA6IDE7CisJCQl1OAlub19yZWZjbnQgOiAxOwog
-CQkJdTgJcGFkZGluZzsKIAkJCXUxNglwcmlvaWR4OwogCQkJdTMyCWNsYXNzaWQ7CkBAIC04MDAs
-NyArODAxLDggQEAgc3RydWN0IHNvY2tfY2dyb3VwX2RhdGEgewogCQkJdTMyCWNsYXNzaWQ7CiAJ
-CQl1MTYJcHJpb2lkeDsKIAkJCXU4CXBhZGRpbmc7Ci0JCQl1OAlpc19kYXRhOworCQkJdTgJbm9f
-cmVmY250IDogMTsKKwkJCXU4CWlzX2RhdGEgOiAxOwogCQl9IF9fcGFja2VkOwogI2VuZGlmCiAJ
-CXU2NAkJdmFsOwpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9jZ3JvdXAuaCBiL2luY2x1ZGUv
-bGludXgvY2dyb3VwLmgKaW5kZXggNDU5OGU0ZGE2YjFiLi42MTg4MzhjNDgzMTMgMTAwNjQ0Ci0t
-LSBhL2luY2x1ZGUvbGludXgvY2dyb3VwLmgKKysrIGIvaW5jbHVkZS9saW51eC9jZ3JvdXAuaApA
-QCAtODIyLDYgKzgyMiw3IEBAIGV4dGVybiBzcGlubG9ja190IGNncm91cF9za191cGRhdGVfbG9j
-azsKIAogdm9pZCBjZ3JvdXBfc2tfYWxsb2NfZGlzYWJsZSh2b2lkKTsKIHZvaWQgY2dyb3VwX3Nr
-X2FsbG9jKHN0cnVjdCBzb2NrX2Nncm91cF9kYXRhICpza2NkKTsKK3ZvaWQgY2dyb3VwX3NrX2Ns
-b25lKHN0cnVjdCBzb2NrX2Nncm91cF9kYXRhICpza2NkKTsKIHZvaWQgY2dyb3VwX3NrX2ZyZWUo
-c3RydWN0IHNvY2tfY2dyb3VwX2RhdGEgKnNrY2QpOwogCiBzdGF0aWMgaW5saW5lIHN0cnVjdCBj
-Z3JvdXAgKnNvY2tfY2dyb3VwX3B0cihzdHJ1Y3Qgc29ja19jZ3JvdXBfZGF0YSAqc2tjZCkKQEAg
-LTgzNSw3ICs4MzYsNyBAQCBzdGF0aWMgaW5saW5lIHN0cnVjdCBjZ3JvdXAgKnNvY2tfY2dyb3Vw
-X3B0cihzdHJ1Y3Qgc29ja19jZ3JvdXBfZGF0YSAqc2tjZCkKIAkgKi8KIAl2ID0gUkVBRF9PTkNF
-KHNrY2QtPnZhbCk7CiAKLQlpZiAodiAmIDEpCisJaWYgKHYgJiAzKQogCQlyZXR1cm4gJmNncnBf
-ZGZsX3Jvb3QuY2dycDsKIAogCXJldHVybiAoc3RydWN0IGNncm91cCAqKSh1bnNpZ25lZCBsb25n
-KXYgPzogJmNncnBfZGZsX3Jvb3QuY2dycDsKQEAgLTg0Nyw2ICs4NDgsNyBAQCBzdGF0aWMgaW5s
-aW5lIHN0cnVjdCBjZ3JvdXAgKnNvY2tfY2dyb3VwX3B0cihzdHJ1Y3Qgc29ja19jZ3JvdXBfZGF0
-YSAqc2tjZCkKICNlbHNlCS8qIENPTkZJR19DR1JPVVBfREFUQSAqLwogCiBzdGF0aWMgaW5saW5l
-IHZvaWQgY2dyb3VwX3NrX2FsbG9jKHN0cnVjdCBzb2NrX2Nncm91cF9kYXRhICpza2NkKSB7fQor
-c3RhdGljIGlubGluZSB2b2lkIGNncm91cF9za19jbG9uZShzdHJ1Y3Qgc29ja19jZ3JvdXBfZGF0
-YSAqc2tjZCkge30KIHN0YXRpYyBpbmxpbmUgdm9pZCBjZ3JvdXBfc2tfZnJlZShzdHJ1Y3Qgc29j
-a19jZ3JvdXBfZGF0YSAqc2tjZCkge30KIAogI2VuZGlmCS8qIENPTkZJR19DR1JPVVBfREFUQSAq
-LwpkaWZmIC0tZ2l0IGEva2VybmVsL2Nncm91cC9jZ3JvdXAuYyBiL2tlcm5lbC9jZ3JvdXAvY2dy
-b3VwLmMKaW5kZXggMWVhMTgxYTU4NDY1Li5kZDI0Nzc0N2VjMTQgMTAwNjQ0Ci0tLSBhL2tlcm5l
-bC9jZ3JvdXAvY2dyb3VwLmMKKysrIGIva2VybmVsL2Nncm91cC9jZ3JvdXAuYwpAQCAtNjQzOSwx
-OCArNjQzOSw4IEBAIHZvaWQgY2dyb3VwX3NrX2FsbG9jX2Rpc2FibGUodm9pZCkKIAogdm9pZCBj
-Z3JvdXBfc2tfYWxsb2Moc3RydWN0IHNvY2tfY2dyb3VwX2RhdGEgKnNrY2QpCiB7Ci0JaWYgKGNn
-cm91cF9za19hbGxvY19kaXNhYmxlZCkKLQkJcmV0dXJuOwotCi0JLyogU29ja2V0IGNsb25lIHBh
-dGggKi8KLQlpZiAoc2tjZC0+dmFsKSB7Ci0JCS8qCi0JCSAqIFdlIG1pZ2h0IGJlIGNsb25pbmcg
-YSBzb2NrZXQgd2hpY2ggaXMgbGVmdCBpbiBhbiBlbXB0eQotCQkgKiBjZ3JvdXAgYW5kIHRoZSBj
-Z3JvdXAgbWlnaHQgaGF2ZSBhbHJlYWR5IGJlZW4gcm1kaXInZC4KLQkJICogRG9uJ3QgdXNlIGNn
-cm91cF9nZXRfbGl2ZSgpLgotCQkgKi8KLQkJY2dyb3VwX2dldChzb2NrX2Nncm91cF9wdHIoc2tj
-ZCkpOwotCQljZ3JvdXBfYnBmX2dldChzb2NrX2Nncm91cF9wdHIoc2tjZCkpOworCWlmIChjZ3Jv
-dXBfc2tfYWxsb2NfZGlzYWJsZWQpIHsKKwkJc2tjZC0+bm9fcmVmY250ID0gMTsKIAkJcmV0dXJu
-OwogCX0KIApAQCAtNjQ3NSwxMCArNjQ2NSwyNyBAQCB2b2lkIGNncm91cF9za19hbGxvYyhzdHJ1
-Y3Qgc29ja19jZ3JvdXBfZGF0YSAqc2tjZCkKIAlyY3VfcmVhZF91bmxvY2soKTsKIH0KIAordm9p
-ZCBjZ3JvdXBfc2tfY2xvbmUoc3RydWN0IHNvY2tfY2dyb3VwX2RhdGEgKnNrY2QpCit7CisJaWYg
-KHNrY2QtPnZhbCkgeworCQlpZiAoc2tjZC0+bm9fcmVmY250KQorCQkJcmV0dXJuOworCQkvKgor
-CQkgKiBXZSBtaWdodCBiZSBjbG9uaW5nIGEgc29ja2V0IHdoaWNoIGlzIGxlZnQgaW4gYW4gZW1w
-dHkKKwkJICogY2dyb3VwIGFuZCB0aGUgY2dyb3VwIG1pZ2h0IGhhdmUgYWxyZWFkeSBiZWVuIHJt
-ZGlyJ2QuCisJCSAqIERvbid0IHVzZSBjZ3JvdXBfZ2V0X2xpdmUoKS4KKwkJICovCisJCWNncm91
-cF9nZXQoc29ja19jZ3JvdXBfcHRyKHNrY2QpKTsKKwkJY2dyb3VwX2JwZl9nZXQoc29ja19jZ3Jv
-dXBfcHRyKHNrY2QpKTsKKwl9Cit9CisKIHZvaWQgY2dyb3VwX3NrX2ZyZWUoc3RydWN0IHNvY2tf
-Y2dyb3VwX2RhdGEgKnNrY2QpCiB7CiAJc3RydWN0IGNncm91cCAqY2dycCA9IHNvY2tfY2dyb3Vw
-X3B0cihza2NkKTsKIAorCWlmIChza2NkLT5ub19yZWZjbnQpCisJCXJldHVybjsKIAljZ3JvdXBf
-YnBmX3B1dChjZ3JwKTsKIAljZ3JvdXBfcHV0KGNncnApOwogfQpkaWZmIC0tZ2l0IGEvbmV0L2Nv
-cmUvc29jay5jIGIvbmV0L2NvcmUvc29jay5jCmluZGV4IGQ4MzJjNjUwMjg3Yy4uMmU1Yjc4NzBl
-NWQzIDEwMDY0NAotLS0gYS9uZXQvY29yZS9zb2NrLmMKKysrIGIvbmV0L2NvcmUvc29jay5jCkBA
-IC0xOTI2LDcgKzE5MjYsNyBAQCBzdHJ1Y3Qgc29jayAqc2tfY2xvbmVfbG9jayhjb25zdCBzdHJ1
-Y3Qgc29jayAqc2ssIGNvbnN0IGdmcF90IHByaW9yaXR5KQogCQkvKiBzay0+c2tfbWVtY2cgd2ls
-bCBiZSBwb3B1bGF0ZWQgYXQgYWNjZXB0KCkgdGltZSAqLwogCQluZXdzay0+c2tfbWVtY2cgPSBO
-VUxMOwogCi0JCWNncm91cF9za19hbGxvYygmbmV3c2stPnNrX2NncnBfZGF0YSk7CisJCWNncm91
-cF9za19jbG9uZSgmbmV3c2stPnNrX2NncnBfZGF0YSk7CiAKIAkJcmN1X3JlYWRfbG9jaygpOwog
-CQlmaWx0ZXIgPSByY3VfZGVyZWZlcmVuY2Uoc2stPnNrX2ZpbHRlcik7Cg==
---000000000000a4186105a9007402--
