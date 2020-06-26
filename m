@@ -2,72 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E51A20B6D8
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:23:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 368E820B6EE
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:27:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbgFZRXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 13:23:35 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:42511 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbgFZRXf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:23:35 -0400
-Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTP id 3907B200BE49;
-        Fri, 26 Jun 2020 19:23:21 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 3907B200BE49
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1593192201;
-        bh=Va7iAIp1xA9kpdT0725iMd4BkKknTky8Aqt0+BaTvLk=;
-        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
-        b=CTMciWYP2nm3DM8vgFdaSy87+VqfyvN31pAu/pbzz9hELTw87cIItuPaYTZBE2bUi
-         JpyHqzvGnNYKXBzMBHEXFcN+EiaKYtHHtu576jx7Adf7zZGle88xPt4EYIZy1mN8+I
-         Cyg4hxYxcAmMzTqphuIPxqpcGevjj0vibPOr4vf57hoawmf96Vygbx6jcC7olOZbS0
-         AsYZMyxwnP7L+BbEF7pJX7aPMTfMS8IMFcguvUHPcNvB1HrLgwkzFC/MTT51pF8vVs
-         RE9AbYTbCXgzUejKcO6yo/pUjxp/7d4VzYdBEXe7Ls12LzIVipjxTCe9bPRQkQ0Kwb
-         SsC+xfkSt+rmA==
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 2BEFC129EBC9;
-        Fri, 26 Jun 2020 19:23:21 +0200 (CEST)
-Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
-        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id Nx6Z8Ch-h_In; Fri, 26 Jun 2020 19:23:21 +0200 (CEST)
-Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 10AB4129EBC8;
-        Fri, 26 Jun 2020 19:23:21 +0200 (CEST)
-Date:   Fri, 26 Jun 2020 19:23:21 +0200 (CEST)
-From:   Justin Iurman <justin.iurman@uliege.be>
-Reply-To: Justin Iurman <justin.iurman@uliege.be>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     dan carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org,
-        netdev@vger.kernel.org, lkp@intel.com, kbuild-all@lists.01.org,
-        davem@davemloft.net
-Message-ID: <1079923894.37655623.1593192201005.JavaMail.zimbra@uliege.be>
-In-Reply-To: <20200626090125.7ae41142@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200625105237.GC2549@kadam> <20200626085435.6627-1-justin.iurman@uliege.be> <20200626090125.7ae41142@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: Re: [PATCH net-next] Fix unchecked dereference
+        id S1727017AbgFZR1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 13:27:10 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:41718 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725833AbgFZR1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:27:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593192428;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=y+EqkHhZOPIBxR+QDj7Zty6OskdxX+Ma6e695FyuAE8=;
+        b=ItsYI5tifxCeuLHYm+vWSHGywW85fDYZuSuw8rIEnSgENGHM9RJGWCoVb/4IWR2ceoQ++v
+        SYPqIpJz9NxFrih/9NBfg/S5mKXEYtajwDyIKUE5O2gmXWIwijT1rAAucghyjV5WC8j4/n
+        U1vHsEdUdNZXFn9w5fyD77VhiC1shMg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-399-u6GsI7G2P_mmF3WtqlU6cQ-1; Fri, 26 Jun 2020 13:27:06 -0400
+X-MC-Unique: u6GsI7G2P_mmF3WtqlU6cQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 310BD10059A2;
+        Fri, 26 Jun 2020 17:27:05 +0000 (UTC)
+Received: from carbon.redhat.com (ovpn-115-78.rdu2.redhat.com [10.10.115.78])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E52D51C8;
+        Fri, 26 Jun 2020 17:27:00 +0000 (UTC)
+From:   Alexander Aring <aahringo@redhat.com>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, teigland@redhat.com, ccaulfie@redhat.com,
+        cluster-devel@redhat.com, netdev@vger.kernel.org,
+        Alexander Aring <aahringo@redhat.com>
+Subject: [PATCHv2 dlm-next 0/3] fs: dlm: add support to set skb mark value
+Date:   Fri, 26 Jun 2020 13:26:47 -0400
+Message-Id: <20200626172650.115224-1-aahringo@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [109.129.49.166]
-X-Mailer: Zimbra 8.8.15_GA_3901 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3895)
-Thread-Topic: Fix unchecked dereference
-Thread-Index: a45vs74gCn2RNhDfhMr2f0SJat7eWA==
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Hi,
 
-It is an inline modification of the patch 4 of this series. The modification in itself cannot be a problem. Maybe I did send it the wrong way?
+this patch series adds support for setting the skb mark value as socket
+option. It's not possible yet to change this after the socket is
+created, although the mark value can be changed afterwards.
 
-Justin
+How to test it:
 
->> If rhashtable_remove_fast returns an error, a rollback is applied. In
->> that case, an unchecked dereference has been fixed.
->> 
->> Reported-by: kernel test robot <lkp@intel.com>
->> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
-> 
-> My bot says this doesn't apply to net-next, could you double-check?
+1. Setup mark values
+
+echo 0xcafe > /sys/kernel/config/dlm/cluster/mark
+echo 0xbeef > /sys/kernel/config/dlm/cluster/comms/2/mark
+
+Note: setting a mark value for local node has no effect.
+
+2. Add some skb mark classifier:
+
+tc qdisc add dev $DEV root handle 1: htb
+tc filter add dev $DEV parent 1: u32 match mark 0xcafe 0xffffffff action ok
+tc filter add dev $DEV parent 1: u32 match mark 0xbeef 0xffffffff action ok
+
+3. Mount e.g. gfs2
+
+4. dump stats:
+
+tc -s -d filter show dev $DEV
+
+5. Open e.g. wireshark and check the success rate of stats
+
+I have also patches for dlm user space to set these values via
+dlm controld.
+
+- Alex
+
+changes since v2:
+
+- rebase on current dlm/next branch
+- because rebase it's necessary now to add PATCH 1/3. Please netdev
+  maintainers, reply if it's okay to merge this one patch into dlm/next.
+  Due other patches in dlm/next it's as well not possible to merge
+  everything in net-next. Thanks.
+
+Alexander Aring (3):
+  net: sock: add sock_set_mark
+  fs: dlm: set skb mark for listen socket
+  fs: dlm: set skb mark per peer socket
+
+ fs/dlm/config.c    | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ fs/dlm/config.h    |  2 ++
+ fs/dlm/lowcomms.c  | 19 +++++++++++++++++++
+ include/net/sock.h |  1 +
+ net/core/sock.c    |  8 ++++++++
+ 5 files changed, 74 insertions(+)
+
+-- 
+2.26.2
+
