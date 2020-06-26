@@ -2,129 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58DD920AF81
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 12:19:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96DA420AF67
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 12:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgFZKS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 06:18:59 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:6829 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726524AbgFZKS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 06:18:59 -0400
-Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 05QAIqxm027804;
-        Fri, 26 Jun 2020 03:18:53 -0700
-Date:   Fri, 26 Jun 2020 15:36:15 +0530
-From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com,
-        vishal@chelsio.com, dt@chelsio.com
-Subject: Re: [PATCH net-next 0/3] cxgb4: add mirror action support for
- TC-MATCHALL
-Message-ID: <20200626100614.GA23240@chelsio.com>
-References: <cover.1593085107.git.rahul.lakkireddy@chelsio.com>
- <20200625155510.01e3c1c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726939AbgFZKGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 06:06:52 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:45381 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725283AbgFZKGw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 06:06:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593166010;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wgbgTYfJQqu3PeczY55F3LlScD7j+20EVBpY3jbcgkU=;
+        b=IfQs04qbzVLdP6oDLMM9pQIkMu04vfpK1Tfh5p9zrWpDiESnTojhf8O0og3qo+8/7X2S/c
+        q5lQOxugt3uTifZXIPL9uSoslbJFDKyontkx//yzHRhWfc/trhPVpNwtoKH19BWtPm18yl
+        LTZ8zHEGFrOoTGoJ9OOE5k46aC6yeVw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-299-4fd7yTYYNzutoc07BVtp1Q-1; Fri, 26 Jun 2020 06:06:48 -0400
+X-MC-Unique: 4fd7yTYYNzutoc07BVtp1Q-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 314DB18585A2;
+        Fri, 26 Jun 2020 10:06:46 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 541FC70915;
+        Fri, 26 Jun 2020 10:06:34 +0000 (UTC)
+Date:   Fri, 26 Jun 2020 12:06:32 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, toke@redhat.com,
+        lorenzo.bianconi@redhat.com, dsahern@kernel.org,
+        andrii.nakryiko@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH v4 bpf-next 6/9] bpf: cpumap: implement XDP_REDIRECT for
+ eBPF programs attached to map entries
+Message-ID: <20200626120632.6ef16b5c@carbon>
+In-Reply-To: <ef1a456ba3b76a61b7dc6302974f248a21d906dd.1593012598.git.lorenzo@kernel.org>
+References: <cover.1593012598.git.lorenzo@kernel.org>
+        <ef1a456ba3b76a61b7dc6302974f248a21d906dd.1593012598.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200625155510.01e3c1c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday, June 06/25/20, 2020 at 15:55:10 -0700, Jakub Kicinski wrote:
-> On Thu, 25 Jun 2020 17:28:40 +0530 Rahul Lakkireddy wrote:
-> > This series of patches add support to mirror all ingress traffic
-> > for TC-MATCHALL ingress offload.
-> > 
-> > Patch 1 adds support to dynamically create a mirror Virtual Interface
-> > (VI) that accepts all mirror ingress traffic when mirror action is
-> > set in TC-MATCHALL offload.
-> > 
-> > Patch 2 adds support to allocate mirror Rxqs and setup RSS for the
-> > mirror VI.
-> > 
-> > Patch 3 adds support to replicate all the main VI configuration to
-> > mirror VI. This includes replicating MTU, promiscuous mode,
-> > all-multicast mode, and enabled netdev Rx feature offloads.
-> 
-> Could you say more about this mirror VI? Is this an internal object
-> within the NIC or something visible to the user?
-> 
+On Wed, 24 Jun 2020 17:33:55 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-The Virtual Interface (VI) is an internal object managed by firmware
-and Multi Port Switch (MPS) module in hardware. Each VI can be
-programmed with a unique MAC address in the MPS TCAM. So, 1 physical
-port can have multiple VIs, each with their own MAC address. It's
-also possible for VIs to share the same MAC address, which would
-result in MPS setting the replication mode for that entry in the
-TCAM. In this case, the incoming packet would get replicated and
-sent to all the VIs sharing the MAC address. When MPS is able to
-classify the destination MAC in the incoming packet with an entry
-in the MPS TCAM, it forwards the packet to the corresponding VI(s).
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 83b9e0142b52..5be0d4d65b94 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -99,6 +99,7 @@ struct xdp_frame {
+>  };
+>  
+>  struct xdp_cpumap_stats {
+> +	unsigned int redirect;
+>  	unsigned int pass;
+>  	unsigned int drop;
+>  };
+> diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+> index e2c99f5bee39..cd24e8a59529 100644
+> --- a/include/trace/events/xdp.h
+> +++ b/include/trace/events/xdp.h
+> @@ -190,6 +190,7 @@ TRACE_EVENT(xdp_cpumap_kthread,
+>  		__field(int, sched)
+>  		__field(unsigned int, xdp_pass)
+>  		__field(unsigned int, xdp_drop)
+> +		__field(unsigned int, xdp_redirect)
+>  	),
+>  
+>  	TP_fast_assign(
+> @@ -201,18 +202,19 @@ TRACE_EVENT(xdp_cpumap_kthread,
+>  		__entry->sched	= sched;
+>  		__entry->xdp_pass	= xdp_stats->pass;
+>  		__entry->xdp_drop	= xdp_stats->drop;
+> +		__entry->xdp_redirect	= xdp_stats->redirect;
+>  	),
 
-In case of Mirror VI, we program the same MAC as the existing main
-VI. This will result in MPS setting the replication mode for that
-existing entry in the MPS TCAM. So, the MPS would replicate the
-incoming packet and send it to both the main VI and mirror VI.
-Note that for the main VI, we also programmed the flow Lookup Engine
-(LE) module to switch the packet back out on one of the underlying
-ports. So, when this rule hits in the LE, the main VI's packet would
-get switched back out in hardware to one of the underlying ports and
-will not reach driver. The mirror VI's packet will not hit any rule
-in the LE and will be received by the driver and will be sent up to
-Linux networking stack.
+Let me stress, that I think can do this in a followup patch (but before
+a release).
 
-
-> Also looking at the implementation of redirect:
-> 
-> 		case FLOW_ACTION_REDIRECT: {
-> 			struct net_device *out = act->dev;
-> 			struct port_info *pi = netdev_priv(out);
-> 
-> 			fs->action = FILTER_SWITCH;
-> 			fs->eport = pi->port_id;
-> 			}
-> 
-> How do you know the output interface is controlled by your driver, and
-> therefore it's sage to cast netdev_priv() to port_info?
-
-We're validating it earlier in cxgb4_validate_flow_actions().
-Here's the code snippet. We're saving the netdevice pointer returned
-by alloc_etherdev_mq() during PCI probe in cxgb4_main.c::init_one()
-and using it to compare the netdevice given by redirect action. If
-the redirect action's netdevice doesn't match any of our underlying
-ports, then we fail offloading this rule.
-
-		case FLOW_ACTION_REDIRECT: {
-			struct adapter *adap = netdev2adap(dev);
-			struct net_device *n_dev, *target_dev;
-			unsigned int i;
-			bool found = false;
-
-			target_dev = act->dev;
-			for_each_port(adap, i) {
-				n_dev = adap->port[i];
-				if (target_dev == n_dev) {
-					found = true;
-					break;
-				}
-			}
-
-			/* If interface doesn't belong to our hw, then
-			 * the provided output port is not valid
-			 */
-			if (!found) {
-				netdev_err(dev, "%s: Out port invalid\n",
-					   __func__);
-				return -EINVAL;
-			}
-			act_redir = true;
-			}
-			break;
+I'm considering that we should store/give a pointer to xdp_stats
+(struct xdp_cpumap_stats) and let the BPF tracing program do the
+"decoding"/struct access to get these values.  (We will go from storing
+12 bytes to 8 bytes (on 64-bit), so I don't expect much gain).
 
 
-Thanks,
-Rahul
+>  	TP_printk("kthread"
+>  		  " cpu=%d map_id=%d action=%s"
+>  		  " processed=%u drops=%u"
+>  		  " sched=%d"
+> -		  " xdp_pass=%u xdp_drop=%u",
+> +		  " xdp_pass=%u xdp_drop=%u xdp_redirect=%u",
+>  		  __entry->cpu, __entry->map_id,
+>  		  __print_symbolic(__entry->act, __XDP_ACT_SYM_TAB),
+>  		  __entry->processed, __entry->drops,
+>  		  __entry->sched,
+> -		  __entry->xdp_pass, __entry->xdp_drop)
+> +		  __entry->xdp_pass, __entry->xdp_drop, __entry->xdp_redirect)
+>  );
+>  
+
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
