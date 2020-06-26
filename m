@@ -2,258 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEB9220B70A
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:30:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53F8620B70F
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 19:31:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbgFZRao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 13:30:44 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:41374 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726551AbgFZRam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:30:42 -0400
+        id S1726891AbgFZRbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 13:31:37 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:43408 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726458AbgFZRbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 13:31:37 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593192640;
+        s=mimecast20190719; t=1593192696;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=GsZs4Egg61C0iUdvCR4G7lmhWh0v/0ldFtCFAx012jA=;
-        b=AHVxpF3GE/KILb8w6zMlKebwq2Syrwg7YKO1XiCLJfdB0EMR/dMZS7m+XNyHkzh0lsBCND
-        5QSB/ddEm/G2u9zJrc8WNnWbRRzRHXxIFbZr1K4CV+Z/MnuEQd7oKlpE3MOtFl+bWdChbJ
-        LWWTp7BsZPS2qDIZvqI8LxMpwetf3GA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-278-D7RKsgqaMw2M32L3jJUDuA-1; Fri, 26 Jun 2020 13:30:35 -0400
-X-MC-Unique: D7RKsgqaMw2M32L3jJUDuA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A8A948015F7;
-        Fri, 26 Jun 2020 17:30:33 +0000 (UTC)
-Received: from linux.fritz.box.com (ovpn-114-92.ams2.redhat.com [10.36.114.92])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E0055C240;
-        Fri, 26 Jun 2020 17:30:32 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net-next v2 4/4] mptcp: introduce token KUNIT self-tests
-Date:   Fri, 26 Jun 2020 19:30:02 +0200
-Message-Id: <592538b2c28ee849ff94d9cfc8f7f6dbc5adae5d.1593192442.git.pabeni@redhat.com>
-In-Reply-To: <cover.1593192442.git.pabeni@redhat.com>
-References: <cover.1593192442.git.pabeni@redhat.com>
+        bh=mtoAMY2XW89vhOBgxNqGdUMLTGPUvuzF40jBdbVwg24=;
+        b=LlC4UrrEN6mrXJasLzWYoM0EnKgRNMPtcmW6ZAVJYnI+s8Sc3FS5quL+Kzlr5x394wnlgL
+        aEnfagkO3plYqfQ3CDzbUdeuym8sckz+v+NjSp3QwDu3fWiov0sAUVOUu645eeWWVcKj+t
+        wiBby3Bezv4O8rbsHtirc9KF03ctC+Y=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-138-1nFvQHrMPzeiEYPZ-ZZzIA-1; Fri, 26 Jun 2020 13:31:33 -0400
+X-MC-Unique: 1nFvQHrMPzeiEYPZ-ZZzIA-1
+Received: by mail-il1-f200.google.com with SMTP id x23so4029183ilk.4
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 10:31:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mtoAMY2XW89vhOBgxNqGdUMLTGPUvuzF40jBdbVwg24=;
+        b=arEwUJEBUcdffBPR/q/ywg29K9UPV5U7qOmkPp4n8TE/xPzD5G/siTqXmTqWPkE9Gp
+         FrrXsFFyC4Q+5XESiogVIB/sr/OQ/lZyNQodRmPAfFg24RBT2/9HZ65mWvPbPyE+Ujjx
+         zPc2+RWBW+wvCrTZz58UTfYOkATv/fADME0JLkm2bbImDquAHenkrzYrHkxrIYhgFfJ7
+         fV98wR4n1L1wQvYtyk5KXTOUNTBfFCh/X5LSDNMB1ApMwD2Ae6a3AQAgbp12yX/tQ1w+
+         Wr2ApwD8CDaQshl1iKv+7f7nTzUZgENhRr6ZfDAK2F3cM6ozMuJdOfwdw0pZKT/f5j45
+         WN5g==
+X-Gm-Message-State: AOAM531HSjZZ2fbOyJp0F/pZRb6asPPjQBWOzN+ZqBpX7i3jfDsGkVFD
+        weJEZ3rXuj+EwtcpC486SBLtDNfAzy4HBJ+8ZZL61lqlb1WLEdINtREBrmUA43ppopD5SRyYHf2
+        2lcLvFXT+AVchEIj9345reJlzWf3dLbSE
+X-Received: by 2002:a92:2802:: with SMTP id l2mr4063549ilf.169.1593192692858;
+        Fri, 26 Jun 2020 10:31:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJztSdTGrLjmbOoGzDJ4Bdw7tV30WuF+J5ZrNtqwIfiytW0SqHTaYb1Vm7Rb4IY5lpWkdAScMS/3eQENhghGiPA=
+X-Received: by 2002:a92:2802:: with SMTP id l2mr4063540ilf.169.1593192692672;
+ Fri, 26 Jun 2020 10:31:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20200626172650.115224-1-aahringo@redhat.com> <20200626172650.115224-2-aahringo@redhat.com>
+In-Reply-To: <20200626172650.115224-2-aahringo@redhat.com>
+From:   Alexander Ahring Oder Aring <aahringo@redhat.com>
+Date:   Fri, 26 Jun 2020 13:31:21 -0400
+Message-ID: <CAK-6q+g+f7BD+C5PKWWc+1Ybd1ruTwNGa7RfogEgr4AWdKtvwA@mail.gmail.com>
+Subject: Re: [PATCHv2 dlm-next 1/3] net: sock: add sock_set_mark
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, David Teigland <teigland@redhat.com>,
+        Christine Caulfield <ccaulfie@redhat.com>,
+        cluster-devel@redhat.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unit tests for the internal MPTCP token APIs, using KUNIT
+Dear netdev maintainers,
 
-v1 -> v2:
- - use the correct RCU annotation when initializing icsk ulp
- - fix a few checkpatch issues
+These patches are based on dlm/next. Due other changes in dlm/next
+there could be a conflict when applying everything into net-next. Is
+it okay to get this patch merged into dlm/next? Or what is the
+preferred way to get these patches upstream?
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/Kconfig      |   2 +-
- net/mptcp/Makefile     |   3 +-
- net/mptcp/token.c      |   9 +++
- net/mptcp/token_test.c | 140 +++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 152 insertions(+), 2 deletions(-)
- create mode 100644 net/mptcp/token_test.c
+Thank you.
 
-diff --git a/net/mptcp/Kconfig b/net/mptcp/Kconfig
-index d7d5f9349366..af84fce70bb0 100644
---- a/net/mptcp/Kconfig
-+++ b/net/mptcp/Kconfig
-@@ -26,7 +26,7 @@ config MPTCP_KUNIT_TESTS
- 	depends on KUNIT
- 	default KUNIT_ALL_TESTS
- 	help
--	  Currently covers the MPTCP crypto helpers.
-+	  Currently covers the MPTCP crypto and token helpers.
- 	  Only useful for kernel devs running KUnit test harness and are not
- 	  for inclusion into a production build.
- 
-diff --git a/net/mptcp/Makefile b/net/mptcp/Makefile
-index f9039804207b..c53f9b845523 100644
---- a/net/mptcp/Makefile
-+++ b/net/mptcp/Makefile
-@@ -5,4 +5,5 @@ mptcp-y := protocol.o subflow.o options.o token.o crypto.o ctrl.o pm.o diag.o \
- 	   mib.o pm_netlink.o
- 
- mptcp_crypto_test-objs := crypto_test.o
--obj-$(CONFIG_MPTCP_KUNIT_TESTS) += mptcp_crypto_test.o
-\ No newline at end of file
-+mptcp_token_test-objs := token_test.o
-+obj-$(CONFIG_MPTCP_KUNIT_TESTS) += mptcp_crypto_test.o mptcp_token_test.o
-diff --git a/net/mptcp/token.c b/net/mptcp/token.c
-index 9c0771774815..66a4990bd897 100644
---- a/net/mptcp/token.c
-+++ b/net/mptcp/token.c
-@@ -307,3 +307,12 @@ void __init mptcp_token_init(void)
- 		spin_lock_init(&token_hash[i].lock);
- 	}
- }
-+
-+#if IS_MODULE(CONFIG_MPTCP_KUNIT_TESTS)
-+EXPORT_SYMBOL_GPL(mptcp_token_new_request);
-+EXPORT_SYMBOL_GPL(mptcp_token_new_connect);
-+EXPORT_SYMBOL_GPL(mptcp_token_accept);
-+EXPORT_SYMBOL_GPL(mptcp_token_get_sock);
-+EXPORT_SYMBOL_GPL(mptcp_token_destroy_request);
-+EXPORT_SYMBOL_GPL(mptcp_token_destroy);
-+#endif
-diff --git a/net/mptcp/token_test.c b/net/mptcp/token_test.c
-new file mode 100644
-index 000000000000..e1bd6f0a0676
---- /dev/null
-+++ b/net/mptcp/token_test.c
-@@ -0,0 +1,140 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <kunit/test.h>
-+
-+#include "protocol.h"
-+
-+static struct mptcp_subflow_request_sock *build_req_sock(struct kunit *test)
-+{
-+	struct mptcp_subflow_request_sock *req;
-+
-+	req = kunit_kzalloc(test, sizeof(struct mptcp_subflow_request_sock),
-+			    GFP_USER);
-+	KUNIT_EXPECT_NOT_ERR_OR_NULL(test, req);
-+	mptcp_token_init_request((struct request_sock *)req);
-+	return req;
-+}
-+
-+static void mptcp_token_test_req_basic(struct kunit *test)
-+{
-+	struct mptcp_subflow_request_sock *req = build_req_sock(test);
-+	struct mptcp_sock *null_msk = NULL;
-+
-+	KUNIT_ASSERT_EQ(test, 0,
-+			mptcp_token_new_request((struct request_sock *)req));
-+	KUNIT_EXPECT_NE(test, 0, (int)req->token);
-+	KUNIT_EXPECT_PTR_EQ(test, null_msk, mptcp_token_get_sock(req->token));
-+
-+	/* cleanup */
-+	mptcp_token_destroy_request((struct request_sock *)req);
-+}
-+
-+static struct inet_connection_sock *build_icsk(struct kunit *test)
-+{
-+	struct inet_connection_sock *icsk;
-+
-+	icsk = kunit_kzalloc(test, sizeof(struct inet_connection_sock),
-+			     GFP_USER);
-+	KUNIT_EXPECT_NOT_ERR_OR_NULL(test, icsk);
-+	return icsk;
-+}
-+
-+static struct mptcp_subflow_context *build_ctx(struct kunit *test)
-+{
-+	struct mptcp_subflow_context *ctx;
-+
-+	ctx = kunit_kzalloc(test, sizeof(struct mptcp_subflow_context),
-+			    GFP_USER);
-+	KUNIT_EXPECT_NOT_ERR_OR_NULL(test, ctx);
-+	return ctx;
-+}
-+
-+static struct mptcp_sock *build_msk(struct kunit *test)
-+{
-+	struct mptcp_sock *msk;
-+
-+	msk = kunit_kzalloc(test, sizeof(struct mptcp_sock), GFP_USER);
-+	KUNIT_EXPECT_NOT_ERR_OR_NULL(test, msk);
-+	refcount_set(&((struct sock *)msk)->sk_refcnt, 1);
-+	return msk;
-+}
-+
-+static void mptcp_token_test_msk_basic(struct kunit *test)
-+{
-+	struct inet_connection_sock *icsk = build_icsk(test);
-+	struct mptcp_subflow_context *ctx = build_ctx(test);
-+	struct mptcp_sock *msk = build_msk(test);
-+	struct mptcp_sock *null_msk = NULL;
-+	struct sock *sk;
-+
-+	rcu_assign_pointer(icsk->icsk_ulp_data, ctx);
-+	ctx->conn = (struct sock *)msk;
-+	sk = (struct sock *)msk;
-+
-+	KUNIT_ASSERT_EQ(test, 0,
-+			mptcp_token_new_connect((struct sock *)icsk));
-+	KUNIT_EXPECT_NE(test, 0, (int)ctx->token);
-+	KUNIT_EXPECT_EQ(test, ctx->token, msk->token);
-+	KUNIT_EXPECT_PTR_EQ(test, msk, mptcp_token_get_sock(ctx->token));
-+	KUNIT_EXPECT_EQ(test, 2, (int)refcount_read(&sk->sk_refcnt));
-+
-+	mptcp_token_destroy(msk);
-+	KUNIT_EXPECT_PTR_EQ(test, null_msk, mptcp_token_get_sock(ctx->token));
-+}
-+
-+static void mptcp_token_test_accept(struct kunit *test)
-+{
-+	struct mptcp_subflow_request_sock *req = build_req_sock(test);
-+	struct mptcp_sock *msk = build_msk(test);
-+
-+	KUNIT_ASSERT_EQ(test, 0,
-+			mptcp_token_new_request((struct request_sock *)req));
-+	msk->token = req->token;
-+	mptcp_token_accept(req, msk);
-+	KUNIT_EXPECT_PTR_EQ(test, msk, mptcp_token_get_sock(msk->token));
-+
-+	/* this is now a no-op */
-+	mptcp_token_destroy_request((struct request_sock *)req);
-+	KUNIT_EXPECT_PTR_EQ(test, msk, mptcp_token_get_sock(msk->token));
-+
-+	/* cleanup */
-+	mptcp_token_destroy(msk);
-+}
-+
-+static void mptcp_token_test_destroyed(struct kunit *test)
-+{
-+	struct mptcp_subflow_request_sock *req = build_req_sock(test);
-+	struct mptcp_sock *msk = build_msk(test);
-+	struct mptcp_sock *null_msk = NULL;
-+	struct sock *sk;
-+
-+	sk = (struct sock *)msk;
-+
-+	KUNIT_ASSERT_EQ(test, 0,
-+			mptcp_token_new_request((struct request_sock *)req));
-+	msk->token = req->token;
-+	mptcp_token_accept(req, msk);
-+
-+	/* simulate race on removal */
-+	refcount_set(&sk->sk_refcnt, 0);
-+	KUNIT_EXPECT_PTR_EQ(test, null_msk, mptcp_token_get_sock(msk->token));
-+
-+	/* cleanup */
-+	mptcp_token_destroy(msk);
-+}
-+
-+static struct kunit_case mptcp_token_test_cases[] = {
-+	KUNIT_CASE(mptcp_token_test_req_basic),
-+	KUNIT_CASE(mptcp_token_test_msk_basic),
-+	KUNIT_CASE(mptcp_token_test_accept),
-+	KUNIT_CASE(mptcp_token_test_destroyed),
-+	{}
-+};
-+
-+static struct kunit_suite mptcp_token_suite = {
-+	.name = "mptcp-token",
-+	.test_cases = mptcp_token_test_cases,
-+};
-+
-+kunit_test_suite(mptcp_token_suite);
-+
-+MODULE_LICENSE("GPL");
--- 
-2.26.2
+- Alex
 
