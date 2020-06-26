@@ -2,120 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 673C920BD11
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 01:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C74920BD14
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 01:12:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726140AbgFZXL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 19:11:58 -0400
-Received: from smtprelay0238.hostedemail.com ([216.40.44.238]:50542 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725883AbgFZXL6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 19:11:58 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 2C117180A7FCB;
-        Fri, 26 Jun 2020 23:11:57 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2551:2553:2559:2562:2828:2914:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3868:3872:3873:4321:4605:5007:6742:7576:7903:7904:9545:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12048:12050:12296:12297:12438:12663:12740:12760:12895:13095:13163:13229:13436:13439:13846:14181:14659:14721:21080:21433:21451:21627:21660:21990:30012:30029:30046:30054:30055:30063:30064:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: coach32_3c1533f26e59
-X-Filterd-Recvd-Size: 3891
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf05.hostedemail.com (Postfix) with ESMTPA;
-        Fri, 26 Jun 2020 23:11:54 +0000 (UTC)
-Message-ID: <484b69ec3d9269ec830453d7c3c3b2c60b15ab40.camel@perches.com>
-Subject: Re: [net-next v3 06/15] iecm: Implement mailbox functionality
-From:   Joe Perches <joe@perches.com>
-To:     "Brady, Alan" <alan.brady@intel.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     "Michael, Alice" <alice.michael@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Burra, Phani R" <phani.r.burra@intel.com>,
-        "Hay, Joshua A" <joshua.a.hay@intel.com>,
-        "Chittim, Madhu" <madhu.chittim@intel.com>,
-        "Linga, Pavan Kumar" <pavan.kumar.linga@intel.com>,
-        "Skidmore, Donald C" <donald.c.skidmore@intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Date:   Fri, 26 Jun 2020 16:11:53 -0700
-In-Reply-To: <MW3PR11MB4522E5B119C25872368CE7048F930@MW3PR11MB4522.namprd11.prod.outlook.com>
-References: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
-         <20200626020737.775377-7-jeffrey.t.kirsher@intel.com>
-         <b2305a5aaefdd64630a6b99c7b46397ccb029fd9.camel@perches.com>
-         <MW3PR11MB4522E5B119C25872368CE7048F930@MW3PR11MB4522.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.2-0ubuntu1 
+        id S1726401AbgFZXMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 19:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725883AbgFZXMJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 19:12:09 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA0AC03E979;
+        Fri, 26 Jun 2020 16:12:08 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id j10so8735916qtq.11;
+        Fri, 26 Jun 2020 16:12:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pTmR+y5xQvCfn7qLWQjIR68Juu6JdR5gHIQY84QdEd4=;
+        b=IuV68Sj0SKSJ8kJjMhRBv9rc+wRa/O+XtkXwVtnjm7MTGWGuJrVPQ+E/1xuhQFFzxt
+         Jst27nZ5ngYKEXFcNkh5sn4SzU1XaPQuvCbnIOAFFavbzQ4ZtH2L3Hypyu1nsdBnm3Fo
+         Xq4TrdiFvw1hMdh5eep5MK7hnVkfLopKDB8T1zgcTDgaOzNhJvImLfHDMLVNRUUMyH1u
+         ofMPXZrjNtIkZDcG7eTNxjr9TPWauKc8q1lUpsHfeAJIRG+lJ7MzKOF8PfAXx/CQy8tY
+         5oyXfEKd7mTGriQm2etbaS/uuJgmSnC1PC+moNrG/vDJDP+zC/pylnqEnKR9aEdeuykz
+         iBJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pTmR+y5xQvCfn7qLWQjIR68Juu6JdR5gHIQY84QdEd4=;
+        b=hjNuAkgxBuC6MU541v63JR4e/GkEbk9LarKwWIC3oCgJ6Nb6jpi/cL5PQEEItvYzXM
+         75YZYX8HtYVvN//r1SuGwREqQ7ItK8NQE/501Zw4Z+L6S0/cmUshg3+jBZxcrwqELMlX
+         47aRi7+T+rJ8HVN/q/UbPyjz1V/f3TikWerarKDbyV3zH3+CoOnFCZ26XGhL51dZdNBQ
+         IbGE907/X53HmXdve51QjTJIGSdowkG4RecnZAN9FSkWLqKfY2IpHVhclPVXWtxcQ2xk
+         wiX2BtmkUkokDwKuobHNlttFYQDv64f3z7RJux0ihSgr+z1usyx+3kg7XnEE58ypKSIv
+         sJ9Q==
+X-Gm-Message-State: AOAM530jfm9d3URqi25uXulcimCMlEVwAXDupD9RfQthc2V/VE7yKn7Y
+        TUY2vE2qSZrLUF5heeBc6tn8itwef76w/+ZqxxWUGBdu
+X-Google-Smtp-Source: ABdhPJxzIyclZTlu3aoGsOzhVwJsAXglRMI7FIJ4PJA2sz/uUtUXt8Zh+DhIqtUNNUK+mveDG+YVuDseREIBsP1ls1s=
+X-Received: by 2002:ac8:1991:: with SMTP id u17mr5099484qtj.93.1593213128220;
+ Fri, 26 Jun 2020 16:12:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20200626001332.1554603-1-songliubraving@fb.com>
+ <20200626001332.1554603-5-songliubraving@fb.com> <CAEf4Bzb6H3a48S3L4WZtPTMSLZpAe4C5_2aFwJAnNDVLVWDTQA@mail.gmail.com>
+ <6B6E4195-BC5C-4A13-80A6-9493469D6A2E@fb.com>
+In-Reply-To: <6B6E4195-BC5C-4A13-80A6-9493469D6A2E@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 26 Jun 2020 16:11:57 -0700
+Message-ID: <CAEf4Bzb543EVJF+nU0X+1JNMaTehgiwx_0V=80W-frBYku0odA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 4/4] selftests/bpf: add bpf_iter test with bpf_get_task_stack()
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-06-26 at 17:44 +0000, Brady, Alan wrote:
-> > -----Original Message-----
-> > From: Joe Perches <joe@perches.com>
-> > Sent: Thursday, June 25, 2020 7:58 PM
-> > To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net
-> > Cc: Michael, Alice <alice.michael@intel.com>; netdev@vger.kernel.org;
-> > nhorman@redhat.com; sassmann@redhat.com; Brady, Alan
-> > <alan.brady@intel.com>; Burra, Phani R <phani.r.burra@intel.com>; Hay,
-> > Joshua A <joshua.a.hay@intel.com>; Chittim, Madhu
-> > <madhu.chittim@intel.com>; Linga, Pavan Kumar
-> > <pavan.kumar.linga@intel.com>; Skidmore, Donald C
-> > <donald.c.skidmore@intel.com>; Brandeburg, Jesse
-> > <jesse.brandeburg@intel.com>; Samudrala, Sridhar
-> > <sridhar.samudrala@intel.com>
-> > Subject: Re: [net-next v3 06/15] iecm: Implement mailbox functionality
-> > 
-> > On Thu, 2020-06-25 at 19:07 -0700, Jeff Kirsher wrote:
-> > > From: Alice Michael <alice.michael@intel.com>
-> > > 
-> > > Implement mailbox setup, take down, and commands.
-> > []
-> > > diff --git a/drivers/net/ethernet/intel/iecm/iecm_controlq.c
-> > > b/drivers/net/ethernet/intel/iecm/iecm_controlq.c
-> > []
-> > > @@ -73,7 +142,74 @@ enum iecm_status iecm_ctlq_add(struct iecm_hw
-> > *hw,
-> > >  			       struct iecm_ctlq_create_info *qinfo,
-> > >  			       struct iecm_ctlq_info **cq)
-> > 
-> > Multiple functions using **cp and *cp can be error prone.
-> > 
-> 
-> We can see how this can be confusing.  Would it be acceptable/sufficient to change function parameter name to **cq_arr or **cq_list?
+On Fri, Jun 26, 2020 at 4:05 PM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Jun 26, 2020, at 1:21 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Thu, Jun 25, 2020 at 5:15 PM Song Liu <songliubraving@fb.com> wrote:
+> >>
+> >> The new test is similar to other bpf_iter tests.
+> >>
+> >> Signed-off-by: Song Liu <songliubraving@fb.com>
+> >> ---
+> >> .../selftests/bpf/prog_tests/bpf_iter.c       | 17 ++++++
+> >> .../selftests/bpf/progs/bpf_iter_task_stack.c | 60 +++++++++++++++++++
+> >> 2 files changed, 77 insertions(+)
+> >> create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_stack.c
+> >>
+> >> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+> >> index 87c29dde1cf96..baa83328f810d 100644
+> >> --- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+> >> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+> >> @@ -5,6 +5,7 @@
+> >> #include "bpf_iter_netlink.skel.h"
+> >> #include "bpf_iter_bpf_map.skel.h"
+> >> #include "bpf_iter_task.skel.h"
+> >> +#include "bpf_iter_task_stack.skel.h"
+> >> #include "bpf_iter_task_file.skel.h"
+> >> #include "bpf_iter_test_kern1.skel.h"
+> >> #include "bpf_iter_test_kern2.skel.h"
+> >> @@ -106,6 +107,20 @@ static void test_task(void)
+> >>        bpf_iter_task__destroy(skel);
+> >> }
+> >>
+> >> +static void test_task_stack(void)
+> >> +{
+> >> +       struct bpf_iter_task_stack *skel;
+> >> +
+> >> +       skel = bpf_iter_task_stack__open_and_load();
+> >> +       if (CHECK(!skel, "bpf_iter_task_stack__open_and_load",
+> >> +                 "skeleton open_and_load failed\n"))
+> >> +               return;
+> >> +
+> >> +       do_dummy_read(skel->progs.dump_task_stack);
+> >> +
+> >> +       bpf_iter_task_stack__destroy(skel);
+> >> +}
+> >> +
+> >> static void test_task_file(void)
+> >> {
+> >>        struct bpf_iter_task_file *skel;
+> >> @@ -392,6 +407,8 @@ void test_bpf_iter(void)
+> >>                test_bpf_map();
+> >>        if (test__start_subtest("task"))
+> >>                test_task();
+> >> +       if (test__start_subtest("task_stack"))
+> >> +               test_task_stack();
+> >>        if (test__start_subtest("task_file"))
+> >>                test_task_file();
+> >>        if (test__start_subtest("anon"))
+> >> diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_task_stack.c b/tools/testing/selftests/bpf/progs/bpf_iter_task_stack.c
+> >> new file mode 100644
+> >> index 0000000000000..83aca5b1a7965
+> >> --- /dev/null
+> >> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_task_stack.c
+> >> @@ -0,0 +1,60 @@
+> >> +// SPDX-License-Identifier: GPL-2.0
+> >> +/* Copyright (c) 2020 Facebook */
+> >> +/* "undefine" structs in vmlinux.h, because we "override" them below */
+> >> +#define bpf_iter_meta bpf_iter_meta___not_used
+> >> +#define bpf_iter__task bpf_iter__task___not_used
+> >> +#include "vmlinux.h"
+> >> +#undef bpf_iter_meta
+> >> +#undef bpf_iter__task
+> >> +#include <bpf/bpf_helpers.h>
+> >> +#include <bpf/bpf_tracing.h>
+> >> +
+> >> +char _license[] SEC("license") = "GPL";
+> >> +
+> >> +/* bpf_get_task_stack needs a stackmap to work */
+> >
+> > no it doesn't anymore :) please drop
+>
+> We still need stack_map_alloc() to call get_callchain_buffers() in this
+> case. Without an active stack map, get_callchain_buffers() may fail.
 
-Your code, your choice.
-	
-> > >  {
-> > > -	/* stub */
-> > > +	enum iecm_status status = 0;
-> > > +	bool is_rxq = false;
-> > > +
-> > > +	if (!qinfo->len || !qinfo->buf_size ||
-> > > +	    qinfo->len > IECM_CTLQ_MAX_RING_SIZE ||
-> > > +	    qinfo->buf_size > IECM_CTLQ_MAX_BUF_LEN)
-> > > +		return IECM_ERR_CFG;
-> > > +
-> > > +	*cq = kcalloc(1, sizeof(struct iecm_ctlq_info), GFP_KERNEL);
-> > > +	if (!(*cq))
-> > > +		return IECM_ERR_NO_MEMORY;
+Oh... um... is it possible to do it some other way? It's extremely
+confusing dependency. Does bpf_get_stack() also require stackmap?
 
-You might use a temporary here after the alloc
-
-	struct iecm_ctlq_info *cq;
-
-	[...]
-
-	*cq_arr = kcalloc(1, sizeof(struct iecm_ctlq_info), GFP_KERNEL);
-	if (!*cq_arr)
-		return IECM_ERR_NO_MEMORY;
-
-	cq = *cq_arr;
-
-so all uses of cq are consistent.
-
-
+>
+> Thanks,
+> Song
