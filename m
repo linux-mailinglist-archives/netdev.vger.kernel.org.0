@@ -2,254 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C927220AF75
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 12:14:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C9F120AF79
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 12:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbgFZKOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 06:14:11 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:23119 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726992AbgFZKOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 06:14:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593166442;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hJny7E23fS1s7un/bRpkyKDx/jsNOvH0yCowMaRTNv0=;
-        b=KrFJfX8d0PokrZXlW04wzOO3OXALbJzerBt5JdwSn5tTSlIv22lLfrZ3APfUAUGZIFV0KT
-        vISG21zB6iwqIWqAaU+Up1Zz8jlsyY/rCnxttRnRgeVQYaE1FSzAQLgRZwKZgUZ/kb8fpc
-        2E2xiVwhNEIiRqLOIksO3tPvwF4Ni6M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-492-x4KsYriVOaS_n_hTq9vkZQ-1; Fri, 26 Jun 2020 06:14:00 -0400
-X-MC-Unique: x4KsYriVOaS_n_hTq9vkZQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 28F44107ACCA;
-        Fri, 26 Jun 2020 10:13:59 +0000 (UTC)
-Received: from linux.fritz.box.com (ovpn-114-92.ams2.redhat.com [10.36.114.92])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 010A25D9C5;
-        Fri, 26 Jun 2020 10:13:57 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     mptcp@lists.01.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net-next 4/4] mptcp: introduce token KUNIT self-tests
-Date:   Fri, 26 Jun 2020 12:12:49 +0200
-Message-Id: <848d6611c87790a6e4028b856e7c3323a53f2679.1593159603.git.pabeni@redhat.com>
-In-Reply-To: <cover.1593159603.git.pabeni@redhat.com>
-References: <cover.1593159603.git.pabeni@redhat.com>
+        id S1727770AbgFZKP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 06:15:26 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42226 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726531AbgFZKP0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 06:15:26 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 2DDA2AED6;
+        Fri, 26 Jun 2020 10:15:24 +0000 (UTC)
+Date:   Fri, 26 Jun 2020 12:15:23 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Alan Maguire <alan.maguire@oracle.com>, rostedt@goodmis.org,
+        sergey.senozhatsky@gmail.com,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com, andriin@fb.com,
+        arnaldo.melo@gmail.com, kafai@fb.com, songliubraving@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        linux@rasmusvillemoes.dk, joe@perches.com,
+        andriy.shevchenko@linux.intel.com, corbet@lwn.net,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH v3 bpf-next 4/8] printk: add type-printing %pT format
+ specifier which uses BTF
+Message-ID: <20200626101523.GM8444@alley>
+References: <1592914031-31049-1-git-send-email-alan.maguire@oracle.com>
+ <1592914031-31049-5-git-send-email-alan.maguire@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1592914031-31049-5-git-send-email-alan.maguire@oracle.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unit tests for the internal MPTCP token APIs, using KUNIT
+On Tue 2020-06-23 13:07:07, Alan Maguire wrote:
+> printk supports multiple pointer object type specifiers (printing
+> netdev features etc).  Extend this support using BTF to cover
+> arbitrary types.  "%pT" specifies the typed format, and the pointer
+> argument is a "struct btf_ptr *" where struct btf_ptr is as follows:
+> 
+> struct btf_ptr {
+>         void *ptr;
+>         const char *type;
+>         u32 id;
+> };
+> 
+> Either the "type" string ("struct sk_buff") or the BTF "id" can be
+> used to identify the type to use in displaying the associated "ptr"
+> value.  A convenience function to create and point at the struct
+> is provided:
+> 
+>         printk(KERN_INFO "%pT", BTF_PTR_TYPE(skb, struct sk_buff));
+> 
+> When invoked, BTF information is used to traverse the sk_buff *
+> and display it.  Support is present for structs, unions, enums,
+> typedefs and core types (though in the latter case there's not
+> much value in using this feature of course).
+> 
+> Default output is indented, but compact output can be specified
+> via the 'c' option.  Type names/member values can be suppressed
+> using the 'N' option.  Zero values are not displayed by default
+> but can be using the '0' option.  Pointer values are obfuscated
+> unless the 'x' option is specified.  As an example:
+> 
+>   struct sk_buff *skb = alloc_skb(64, GFP_KERNEL);
+>   pr_info("%pT", BTF_PTR_TYPE(skb, struct sk_buff));
+> 
+> ...gives us:
+> 
+> (struct sk_buff){
+>  .transport_header = (__u16)65535,
+>  .mac_header = (__u16)65535,
+>  .end = (sk_buff_data_t)192,
+>  .head = (unsigned char *)0x000000006b71155a,
+>  .data = (unsigned char *)0x000000006b71155a,
+>  .truesize = (unsigned int)768,
+>  .users = (refcount_t){
+>   .refs = (atomic_t){
+>    .counter = (int)1,
+>   },
+>  },
+>  .extensions = (struct skb_ext *)0x00000000f486a130,
+> }
+> 
+> printk output is truncated at 1024 bytes.  For cases where overflow
+> is likely, the compact/no type names display modes may be used.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/Kconfig      |   2 +-
- net/mptcp/Makefile     |   3 +-
- net/mptcp/token.c      |   9 +++
- net/mptcp/token_test.c | 139 +++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 151 insertions(+), 2 deletions(-)
- create mode 100644 net/mptcp/token_test.c
+Hmm, this scares me:
 
-diff --git a/net/mptcp/Kconfig b/net/mptcp/Kconfig
-index d7d5f9349366..af84fce70bb0 100644
---- a/net/mptcp/Kconfig
-+++ b/net/mptcp/Kconfig
-@@ -26,7 +26,7 @@ config MPTCP_KUNIT_TESTS
- 	depends on KUNIT
- 	default KUNIT_ALL_TESTS
- 	help
--	  Currently covers the MPTCP crypto helpers.
-+	  Currently covers the MPTCP crypto and token helpers.
- 	  Only useful for kernel devs running KUnit test harness and are not
- 	  for inclusion into a production build.
- 
-diff --git a/net/mptcp/Makefile b/net/mptcp/Makefile
-index f9039804207b..c53f9b845523 100644
---- a/net/mptcp/Makefile
-+++ b/net/mptcp/Makefile
-@@ -5,4 +5,5 @@ mptcp-y := protocol.o subflow.o options.o token.o crypto.o ctrl.o pm.o diag.o \
- 	   mib.o pm_netlink.o
- 
- mptcp_crypto_test-objs := crypto_test.o
--obj-$(CONFIG_MPTCP_KUNIT_TESTS) += mptcp_crypto_test.o
-\ No newline at end of file
-+mptcp_token_test-objs := token_test.o
-+obj-$(CONFIG_MPTCP_KUNIT_TESTS) += mptcp_crypto_test.o mptcp_token_test.o
-diff --git a/net/mptcp/token.c b/net/mptcp/token.c
-index 9c0771774815..8acea188323c 100644
---- a/net/mptcp/token.c
-+++ b/net/mptcp/token.c
-@@ -307,3 +307,12 @@ void __init mptcp_token_init(void)
- 		spin_lock_init(&token_hash[i].lock);
- 	}
- }
-+
-+#if IS_MODULE(CONFIG_MPTCP_KUNIT_TESTS)
-+EXPORT_SYMBOL_GPL(mptcp_token_new_request);
-+EXPORT_SYMBOL_GPL(mptcp_token_new_connect);
-+EXPORT_SYMBOL_GPL(mptcp_token_accept);
-+EXPORT_SYMBOL_GPL(mptcp_token_get_sock);
-+EXPORT_SYMBOL_GPL(mptcp_token_destroy_request);
-+EXPORT_SYMBOL_GPL(mptcp_token_destroy);
-+#endif
-\ No newline at end of file
-diff --git a/net/mptcp/token_test.c b/net/mptcp/token_test.c
-new file mode 100644
-index 000000000000..c0f76b8b0ce0
---- /dev/null
-+++ b/net/mptcp/token_test.c
-@@ -0,0 +1,139 @@
-+#include <kunit/test.h>
-+
-+#include "protocol.h"
-+
-+static struct mptcp_subflow_request_sock *build_req_sock(struct kunit *test)
-+{
-+	struct mptcp_subflow_request_sock *req;
-+
-+	req = kunit_kzalloc(test, sizeof(struct mptcp_subflow_request_sock),
-+			    GFP_USER);
-+	KUNIT_EXPECT_NOT_ERR_OR_NULL(test, req);
-+	mptcp_token_init_request((struct request_sock *)req);
-+	return req;
-+}
-+
-+static void mptcp_token_test_req_basic(struct kunit *test)
-+{
-+	struct mptcp_subflow_request_sock *req = build_req_sock(test);
-+	struct mptcp_sock *null_msk = NULL;
-+
-+	KUNIT_ASSERT_EQ(test, 0,
-+			mptcp_token_new_request((struct request_sock *)req));
-+	KUNIT_EXPECT_NE(test, 0, (int)req->token);
-+	KUNIT_EXPECT_PTR_EQ(test, null_msk, mptcp_token_get_sock(req->token));
-+
-+	/* cleanup */
-+	mptcp_token_destroy_request((struct request_sock *)req);
-+}
-+
-+static struct inet_connection_sock *build_icsk(struct kunit *test)
-+{
-+	struct inet_connection_sock *icsk;
-+
-+	icsk = kunit_kzalloc(test, sizeof(struct inet_connection_sock),
-+			     GFP_USER);
-+	KUNIT_EXPECT_NOT_ERR_OR_NULL(test, icsk);
-+	return icsk;
-+}
-+
-+static struct mptcp_subflow_context *build_ctx(struct kunit *test)
-+{
-+	struct mptcp_subflow_context *ctx;
-+
-+	ctx = kunit_kzalloc(test, sizeof(struct mptcp_subflow_context),
-+			    GFP_USER);
-+	KUNIT_EXPECT_NOT_ERR_OR_NULL(test, ctx);
-+	return ctx;
-+}
-+
-+static struct mptcp_sock *build_msk(struct kunit *test)
-+{
-+	struct mptcp_sock *msk;
-+
-+	msk = kunit_kzalloc(test, sizeof(struct mptcp_sock), GFP_USER);
-+	KUNIT_EXPECT_NOT_ERR_OR_NULL(test, msk);
-+	refcount_set(&((struct sock *)msk)->sk_refcnt, 1);
-+	return msk;
-+}
-+
-+static void mptcp_token_test_msk_basic(struct kunit *test)
-+{
-+	struct inet_connection_sock *icsk = build_icsk(test);
-+	struct mptcp_subflow_context *ctx = build_ctx(test);
-+	struct mptcp_sock *msk = build_msk(test);
-+	struct mptcp_sock *null_msk = NULL;
-+	struct sock *sk;
-+
-+	icsk->icsk_ulp_data = ctx;
-+	ctx->conn = (struct sock*)msk;
-+	sk = (struct sock*)msk;
-+
-+	KUNIT_ASSERT_EQ(test, 0,
-+			mptcp_token_new_connect((struct sock *)icsk));
-+	KUNIT_EXPECT_NE(test, 0, (int)ctx->token);
-+	KUNIT_EXPECT_EQ(test, ctx->token, msk->token);
-+	KUNIT_EXPECT_PTR_EQ(test, msk, mptcp_token_get_sock(ctx->token));
-+	KUNIT_EXPECT_EQ(test, 2, (int)refcount_read(&sk->sk_refcnt));
-+
-+	mptcp_token_destroy(msk);
-+	KUNIT_EXPECT_PTR_EQ(test, null_msk, mptcp_token_get_sock(ctx->token));
-+}
-+
-+static void mptcp_token_test_accept(struct kunit *test)
-+{
-+	struct mptcp_subflow_request_sock *req = build_req_sock(test);
-+	struct mptcp_sock *msk = build_msk(test);
-+
-+	KUNIT_ASSERT_EQ(test, 0,
-+			mptcp_token_new_request((struct request_sock *)req));
-+	msk->token = req->token;
-+	mptcp_token_accept(req, msk);
-+	KUNIT_EXPECT_PTR_EQ(test, msk, mptcp_token_get_sock(msk->token));
-+
-+	/* this is now a no-op */
-+	mptcp_token_destroy_request((struct request_sock *)req);
-+	KUNIT_EXPECT_PTR_EQ(test, msk, mptcp_token_get_sock(msk->token));
-+
-+	/* cleanup */
-+	mptcp_token_destroy(msk);
-+}
-+
-+static void mptcp_token_test_destroyed(struct kunit *test)
-+{
-+	struct mptcp_subflow_request_sock *req = build_req_sock(test);
-+	struct mptcp_sock *msk = build_msk(test);
-+	struct mptcp_sock *null_msk = NULL;
-+	struct sock *sk;
-+
-+	sk = (struct sock*)msk;
-+
-+	KUNIT_ASSERT_EQ(test, 0,
-+			mptcp_token_new_request((struct request_sock *)req));
-+	msk->token = req->token;
-+	mptcp_token_accept(req, msk);
-+
-+	/* simulate race on removal */
-+	refcount_set(&sk->sk_refcnt, 0);
-+	KUNIT_EXPECT_PTR_EQ(test, null_msk, mptcp_token_get_sock(msk->token));
-+
-+	/* cleanup */
-+	mptcp_token_destroy(msk);
-+}
-+
-+static struct kunit_case mptcp_token_test_cases[] = {
-+	KUNIT_CASE(mptcp_token_test_req_basic),
-+	KUNIT_CASE(mptcp_token_test_msk_basic),
-+	KUNIT_CASE(mptcp_token_test_accept),
-+	KUNIT_CASE(mptcp_token_test_destroyed),
-+	{}
-+};
-+
-+static struct kunit_suite mptcp_token_suite = {
-+	.name = "mptcp-token",
-+	.test_cases = mptcp_token_test_cases,
-+};
-+
-+kunit_test_suite(mptcp_token_suite);
-+
-+MODULE_LICENSE("GPL");
-\ No newline at end of file
--- 
-2.26.2
+   1. The long message and many lines are going to stretch printk
+      design in another dimensions.
 
+   2. vsprintf() is important for debugging the system. It has to be
+      stable. But the btf code is too complex.
+
+I would strongly prefer to keep this outside vsprintf and printk.
+Please, invert the logic and convert it into using separate printk()
+call for each printed line.
+
+
+More details:
+
+Add 1: Long messages with many lines:
+
+  IMHO, all existing printk() users are far below this limit. And this is
+  even worse because there are many short lines. They would require
+  double space to add prefixes (loglevel, timestamp, caller id) when
+  printing to console.
+
+  You might argue that 1024bytes are enough for you. But for how long?
+
+  Now, we have huge troubles to make printk() lockless and thus more
+  reliable. There is no way to allocate any internal buffers
+  dynamically. People using kernel on small devices have problem
+  with large static buffers.
+
+  printk() is primary designed to print single line messages. There are
+  many use cases where many lines are needed and they are solved by
+  many separate printk() calls.
+
+
+Add 2: Complex code:
+
+  vsprintf() is currently called in printk() under logbuf_lock. It
+  might block printk() on the entire system.
+
+  Most existing %p<modifier> handlers are implemented by relatively
+  simple routines inside lib/vsprinf.c. The other external routines
+  look simple as well.
+
+  btf looks like a huge beast to me. For example, probe_kernel_read()
+  prevented boot recently, see the commit 2ac5a3bf7042a1c4abb
+  ("vsprintf: Do not break early boot with probing addresses").
+
+
+Best Regards,
+Petr
