@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CFFD20B086
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:31:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2839620B087
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:31:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728512AbgFZLas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 07:30:48 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:32826 "EHLO
+        id S1728634AbgFZLbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 07:31:06 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:39266 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725945AbgFZLas (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:30:48 -0400
+        by vger.kernel.org with ESMTP id S1725945AbgFZLbF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:31:05 -0400
 Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 0EE0C200A8;
-        Fri, 26 Jun 2020 11:30:47 +0000 (UTC)
-Received: from us4-mdac16-60.at1.mdlocal (unknown [10.110.50.153])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 0D0C8800A4;
-        Fri, 26 Jun 2020 11:30:47 +0000 (UTC)
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7DB1D2007A;
+        Fri, 26 Jun 2020 11:31:04 +0000 (UTC)
+Received: from us4-mdac16-37.at1.mdlocal (unknown [10.110.51.52])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7C9D7800A4;
+        Fri, 26 Jun 2020 11:31:04 +0000 (UTC)
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.30])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8EF9540070;
-        Fri, 26 Jun 2020 11:30:46 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.105])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 1FAEE40060;
+        Fri, 26 Jun 2020 11:31:04 +0000 (UTC)
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 428EF140058;
-        Fri, 26 Jun 2020 11:30:46 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id DB6C69C0059;
+        Fri, 26 Jun 2020 11:31:03 +0000 (UTC)
 Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
  (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 26 Jun
- 2020 12:30:41 +0100
+ 2020 12:30:58 +0100
 From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 09/15] sfc: commonise other ethtool bits
+Subject: [PATCH net-next 10/15] sfc: commonise FC advertising
 To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>
 References: <1a1716f9-f909-4093-8107-3c2435d834c5@solarflare.com>
-Message-ID: <d23f6256-4961-8e11-a481-fe491f8aa586@solarflare.com>
-Date:   Fri, 26 Jun 2020 12:30:38 +0100
+Message-ID: <ba74cb79-6545-2ae8-b2a2-cbec8f761c81@solarflare.com>
+Date:   Fri, 26 Jun 2020 12:30:54 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -47,281 +47,127 @@ X-Originating-IP: [10.17.20.203]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25504.003
-X-TM-AS-Result: No-2.706000-8.000000-10
-X-TMASE-MatchedRID: fuBbsyL8JiaiUxusi3FJ7aiUivh0j2Pv6VTG9cZxEjJwGpdgNQ0JrHIo
-        zGa69omdrdoLblq9S5ra/g/NGTW3Mnab6P5ygEs+NVRz+HwqL4KikZBjlts/cmww+4tkH8hH4nq
-        pTUaab810p/zdXT5B89Qd9rLjD5L4qBkiu618z01yAOhmFi1q9gqiBO2qhCIGdLv/+WrG6tOcXp
-        v2z7jW5TNom9IXV8Jm56/YecsCTdHCpGfpWZNAsv9XRIMLUOjQD+jls0cSwJOrj76PS+omiCJ1Y
-        T6M2y/pq6zKW70eycORk6XtYogiau9c69BWUTGwC24oEZ6SpSmb4wHqRpnaDnRCcFDRICKLECCj
-        uJQTz5c8mab1SpvDK4tZHmvFqVxfhZyTLVRCk4mBottJSfe7kwO0aZpSlQ4xTQHu68rL/pzcX1L
-        lthoqdO19DVI++epMmpVdReMayPPYX68FmWzgr7JqpzuBzRvlw2tMTSg0x74=
+X-TM-AS-Result: No-0.954600-8.000000-10
+X-TMASE-MatchedRID: oKlKY1QNFwah9oPbMj7PPPCoOvLLtsMhP6Tki+9nU38HZBaLwEXlKGlF
+        7OhYLlcthIhJxBzgKNa1w7fWeJeZa5fHSmcYT/h1uoibJpHRrFn3/H7adAffkleIuu+Gkot8kg3
+        cPb9+H4R9JkPUJMTfJk4RWc6tg0JKlQHiGh4j0EoWqJ/PBjhtWo6ESGgCXvgoVzlS2D8whfCjxY
+        yRBa/qJQPTK4qtAgwIPcCXjNqUmkUnRE+fI6etkr2PjCgusxjy/Dsr7oOrq5ijp9qM2Ot4Xta86
+        edqgJ0dgk3bIVLBoPHDcJllsoD3iSnY6MPYRUW6xclag+p13qntvECbBKmimTHCqV7rv9Y1QDMF
+        uK2P9FjtoWavEW7HRE3Z8jKJCdR0Rfwnj+uLV5w=
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.706000-8.000000
+X-TMASE-Result: 10--0.954600-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25504.003
-X-MDID: 1593171047-AvocL7jy68kf
+X-MDID: 1593171064-KLSec0v4layy
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A few more ethtool handlers which EF100 will share.
-
 Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- drivers/net/ethernet/sfc/ethtool.c        | 93 -----------------------
- drivers/net/ethernet/sfc/ethtool_common.c | 93 +++++++++++++++++++++++
- drivers/net/ethernet/sfc/ethtool_common.h |  8 ++
- 3 files changed, 101 insertions(+), 93 deletions(-)
+ drivers/net/ethernet/sfc/efx.c        | 24 ------------------------
+ drivers/net/ethernet/sfc/efx.h        |  3 ---
+ drivers/net/ethernet/sfc/efx_common.c | 24 ++++++++++++++++++++++++
+ drivers/net/ethernet/sfc/efx_common.h |  3 +++
+ 4 files changed, 27 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
-index 5e0051b94ae7..48a96ed6b7d0 100644
---- a/drivers/net/ethernet/sfc/ethtool.c
-+++ b/drivers/net/ethernet/sfc/ethtool.c
-@@ -68,54 +68,6 @@ static void efx_ethtool_get_regs(struct net_device *net_dev,
- 	efx_nic_get_regs(efx, buf);
- }
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index 256807c28ff7..474cfce5c042 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -133,30 +133,6 @@ static int efx_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **xdpfs,
+  *
+  **************************************************************************/
  
--static void efx_ethtool_self_test(struct net_device *net_dev,
--				  struct ethtool_test *test, u64 *data)
+-/* Equivalent to efx_link_set_advertising with all-zeroes, except does not
+- * force the Autoneg bit on.
+- */
+-void efx_link_clear_advertising(struct efx_nic *efx)
 -{
--	struct efx_nic *efx = netdev_priv(net_dev);
--	struct efx_self_tests *efx_tests;
--	bool already_up;
--	int rc = -ENOMEM;
+-	bitmap_zero(efx->link_advertising, __ETHTOOL_LINK_MODE_MASK_NBITS);
+-	efx->wanted_fc &= ~(EFX_FC_TX | EFX_FC_RX);
+-}
 -
--	efx_tests = kzalloc(sizeof(*efx_tests), GFP_KERNEL);
--	if (!efx_tests)
--		goto fail;
--
--	if (efx->state != STATE_READY) {
--		rc = -EBUSY;
--		goto out;
+-void efx_link_set_wanted_fc(struct efx_nic *efx, u8 wanted_fc)
+-{
+-	efx->wanted_fc = wanted_fc;
+-	if (efx->link_advertising[0]) {
+-		if (wanted_fc & EFX_FC_RX)
+-			efx->link_advertising[0] |= (ADVERTISED_Pause |
+-						     ADVERTISED_Asym_Pause);
+-		else
+-			efx->link_advertising[0] &= ~(ADVERTISED_Pause |
+-						      ADVERTISED_Asym_Pause);
+-		if (wanted_fc & EFX_FC_TX)
+-			efx->link_advertising[0] ^= ADVERTISED_Asym_Pause;
 -	}
--
--	netif_info(efx, drv, efx->net_dev, "starting %sline testing\n",
--		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
--
--	/* We need rx buffers and interrupts. */
--	already_up = (efx->net_dev->flags & IFF_UP);
--	if (!already_up) {
--		rc = dev_open(efx->net_dev, NULL);
--		if (rc) {
--			netif_err(efx, drv, efx->net_dev,
--				  "failed opening device.\n");
--			goto out;
--		}
--	}
--
--	rc = efx_selftest(efx, efx_tests, test->flags);
--
--	if (!already_up)
--		dev_close(efx->net_dev);
--
--	netif_info(efx, drv, efx->net_dev, "%s %sline self-tests\n",
--		   rc == 0 ? "passed" : "failed",
--		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
--
--out:
--	efx_ethtool_fill_self_tests(efx, efx_tests, NULL, data);
--	kfree(efx_tests);
--fail:
--	if (rc)
--		test->flags |= ETH_TEST_FL_FAILED;
 -}
 -
- /*
-  * Each channel has a single IRQ and moderation timer, started by any
-  * completion (or other event).  Unless the module parameter
-@@ -255,18 +207,6 @@ static int efx_ethtool_set_wol(struct net_device *net_dev,
- 	return efx->type->set_wol(efx, wol->wolopts);
+ static void efx_fini_port(struct efx_nic *efx);
+ 
+ static int efx_probe_port(struct efx_nic *efx)
+diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/efx.h
+index 66dcab140449..8aadec02407c 100644
+--- a/drivers/net/ethernet/sfc/efx.h
++++ b/drivers/net/ethernet/sfc/efx.h
+@@ -216,9 +216,6 @@ static inline void efx_schedule_channel_irq(struct efx_channel *channel)
+ 	efx_schedule_channel(channel);
  }
  
--static int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
--{
--	struct efx_nic *efx = netdev_priv(net_dev);
--	int rc;
+-void efx_link_clear_advertising(struct efx_nic *efx);
+-void efx_link_set_wanted_fc(struct efx_nic *efx, u8);
 -
--	rc = efx->type->map_reset_flags(flags);
--	if (rc < 0)
--		return rc;
--
--	return efx_reset(efx, rc);
--}
--
- static int efx_ethtool_get_ts_info(struct net_device *net_dev,
- 				   struct ethtool_ts_info *ts_info)
+ static inline void efx_device_detach_sync(struct efx_nic *efx)
  {
-@@ -281,39 +221,6 @@ static int efx_ethtool_get_ts_info(struct net_device *net_dev,
- 	return 0;
- }
+ 	struct net_device *dev = efx->net_dev;
+diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
+index 1799ff9a45d9..02459d90afb0 100644
+--- a/drivers/net/ethernet/sfc/efx_common.c
++++ b/drivers/net/ethernet/sfc/efx_common.c
+@@ -383,6 +383,30 @@ static void efx_stop_datapath(struct efx_nic *efx)
+  *
+  **************************************************************************/
  
--static int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
--					 struct ethtool_eeprom *ee,
--					 u8 *data)
--{
--	struct efx_nic *efx = netdev_priv(net_dev);
--	int ret;
--
--	if (!efx->phy_op || !efx->phy_op->get_module_eeprom)
--		return -EOPNOTSUPP;
--
--	mutex_lock(&efx->mac_lock);
--	ret = efx->phy_op->get_module_eeprom(efx, ee, data);
--	mutex_unlock(&efx->mac_lock);
--
--	return ret;
--}
--
--static int efx_ethtool_get_module_info(struct net_device *net_dev,
--				       struct ethtool_modinfo *modinfo)
--{
--	struct efx_nic *efx = netdev_priv(net_dev);
--	int ret;
--
--	if (!efx->phy_op || !efx->phy_op->get_module_info)
--		return -EOPNOTSUPP;
--
--	mutex_lock(&efx->mac_lock);
--	ret = efx->phy_op->get_module_info(efx, modinfo);
--	mutex_unlock(&efx->mac_lock);
--
--	return ret;
--}
--
- const struct ethtool_ops efx_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_USECS_IRQ |
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
-index d7d8795eb1d3..c96595e50234 100644
---- a/drivers/net/ethernet/sfc/ethtool_common.c
-+++ b/drivers/net/ethernet/sfc/ethtool_common.c
-@@ -125,6 +125,54 @@ void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable)
- 	efx->msg_enable = msg_enable;
- }
- 
-+void efx_ethtool_self_test(struct net_device *net_dev,
-+			   struct ethtool_test *test, u64 *data)
++/* Equivalent to efx_link_set_advertising with all-zeroes, except does not
++ * force the Autoneg bit on.
++ */
++void efx_link_clear_advertising(struct efx_nic *efx)
 +{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_self_tests *efx_tests;
-+	bool already_up;
-+	int rc = -ENOMEM;
-+
-+	efx_tests = kzalloc(sizeof(*efx_tests), GFP_KERNEL);
-+	if (!efx_tests)
-+		goto fail;
-+
-+	if (efx->state != STATE_READY) {
-+		rc = -EBUSY;
-+		goto out;
-+	}
-+
-+	netif_info(efx, drv, efx->net_dev, "starting %sline testing\n",
-+		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
-+
-+	/* We need rx buffers and interrupts. */
-+	already_up = (efx->net_dev->flags & IFF_UP);
-+	if (!already_up) {
-+		rc = dev_open(efx->net_dev, NULL);
-+		if (rc) {
-+			netif_err(efx, drv, efx->net_dev,
-+				  "failed opening device.\n");
-+			goto out;
-+		}
-+	}
-+
-+	rc = efx_selftest(efx, efx_tests, test->flags);
-+
-+	if (!already_up)
-+		dev_close(efx->net_dev);
-+
-+	netif_info(efx, drv, efx->net_dev, "%s %sline self-tests\n",
-+		   rc == 0 ? "passed" : "failed",
-+		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
-+
-+out:
-+	efx_ethtool_fill_self_tests(efx, efx_tests, NULL, data);
-+	kfree(efx_tests);
-+fail:
-+	if (rc)
-+		test->flags |= ETH_TEST_FL_FAILED;
++	bitmap_zero(efx->link_advertising, __ETHTOOL_LINK_MODE_MASK_NBITS);
++	efx->wanted_fc &= ~(EFX_FC_TX | EFX_FC_RX);
 +}
 +
- /* Restart autonegotiation */
- int efx_ethtool_nway_reset(struct net_device *net_dev)
++void efx_link_set_wanted_fc(struct efx_nic *efx, u8 wanted_fc)
++{
++	efx->wanted_fc = wanted_fc;
++	if (efx->link_advertising[0]) {
++		if (wanted_fc & EFX_FC_RX)
++			efx->link_advertising[0] |= (ADVERTISED_Pause |
++						     ADVERTISED_Asym_Pause);
++		else
++			efx->link_advertising[0] &= ~(ADVERTISED_Pause |
++						      ADVERTISED_Asym_Pause);
++		if (wanted_fc & EFX_FC_TX)
++			efx->link_advertising[0] ^= ADVERTISED_Asym_Pause;
++	}
++}
++
+ static void efx_start_port(struct efx_nic *efx)
  {
-@@ -1273,3 +1321,48 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
- 	mutex_unlock(&efx->rss_lock);
- 	return rc;
- }
+ 	netif_dbg(efx, ifup, efx->net_dev, "start port\n");
+diff --git a/drivers/net/ethernet/sfc/efx_common.h b/drivers/net/ethernet/sfc/efx_common.h
+index fa2fc681e7f9..c522a5be43d2 100644
+--- a/drivers/net/ethernet/sfc/efx_common.h
++++ b/drivers/net/ethernet/sfc/efx_common.h
+@@ -18,6 +18,9 @@ int efx_init_struct(struct efx_nic *efx, struct pci_dev *pci_dev,
+ 		    struct net_device *net_dev);
+ void efx_fini_struct(struct efx_nic *efx);
+ 
++void efx_link_clear_advertising(struct efx_nic *efx);
++void efx_link_set_wanted_fc(struct efx_nic *efx, u8);
 +
-+int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+	int rc;
-+
-+	rc = efx->type->map_reset_flags(flags);
-+	if (rc < 0)
-+		return rc;
-+
-+	return efx_reset(efx, rc);
-+}
-+
-+int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
-+				  struct ethtool_eeprom *ee,
-+				  u8 *data)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+	int ret;
-+
-+	if (!efx->phy_op || !efx->phy_op->get_module_eeprom)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&efx->mac_lock);
-+	ret = efx->phy_op->get_module_eeprom(efx, ee, data);
-+	mutex_unlock(&efx->mac_lock);
-+
-+	return ret;
-+}
-+
-+int efx_ethtool_get_module_info(struct net_device *net_dev,
-+				struct ethtool_modinfo *modinfo)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+	int ret;
-+
-+	if (!efx->phy_op || !efx->phy_op->get_module_info)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&efx->mac_lock);
-+	ret = efx->phy_op->get_module_info(efx, modinfo);
-+	mutex_unlock(&efx->mac_lock);
-+
-+	return ret;
-+}
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.h b/drivers/net/ethernet/sfc/ethtool_common.h
-index 024a78ce0905..7bfbbd08a1ef 100644
---- a/drivers/net/ethernet/sfc/ethtool_common.h
-+++ b/drivers/net/ethernet/sfc/ethtool_common.h
-@@ -15,6 +15,8 @@ void efx_ethtool_get_drvinfo(struct net_device *net_dev,
- 			     struct ethtool_drvinfo *info);
- u32 efx_ethtool_get_msglevel(struct net_device *net_dev);
- void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable);
-+void efx_ethtool_self_test(struct net_device *net_dev,
-+			   struct ethtool_test *test, u64 *data);
- int efx_ethtool_nway_reset(struct net_device *net_dev);
- void efx_ethtool_get_pauseparam(struct net_device *net_dev,
- 				struct ethtool_pauseparam *pause);
-@@ -53,4 +55,10 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
- 				 const u32 *indir, const u8 *key,
- 				 const u8 hfunc, u32 *rss_context,
- 				 bool delete);
-+int efx_ethtool_reset(struct net_device *net_dev, u32 *flags);
-+int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
-+				  struct ethtool_eeprom *ee,
-+				  u8 *data);
-+int efx_ethtool_get_module_info(struct net_device *net_dev,
-+				struct ethtool_modinfo *modinfo);
- #endif
+ void efx_start_all(struct efx_nic *efx);
+ void efx_stop_all(struct efx_nic *efx);
+ 
 
