@@ -2,117 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 704E820B062
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:26:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CFA220B069
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 13:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728450AbgFZL0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 07:26:14 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:47952 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728440AbgFZL0O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:26:14 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 6FCAC2005A;
-        Fri, 26 Jun 2020 11:26:13 +0000 (UTC)
-Received: from us4-mdac16-64.at1.mdlocal (unknown [10.110.50.158])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 6D6C6800A4;
-        Fri, 26 Jun 2020 11:26:13 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.7])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0D0DF40070;
-        Fri, 26 Jun 2020 11:26:13 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C6A284C0051;
-        Fri, 26 Jun 2020 11:26:12 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 26 Jun
- 2020 12:26:07 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 00/15] sfc: prerequisites for EF100 driver, part 1
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-Message-ID: <1a1716f9-f909-4093-8107-3c2435d834c5@solarflare.com>
-Date:   Fri, 26 Jun 2020 12:26:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25504.003
-X-TM-AS-Result: No-0.640600-8.000000-10
-X-TMASE-MatchedRID: 1TaJMlLTWxKfJebeMR+nc7mQWToO0X1/Ww/S0HB7eoMda1Vk3RqxOD3+
-        knT9EPAGiSkku02xGQknXlmC+rVSfEEckgEbMMejcI7vRACwF0KC7C2rJeUToXCHlyx4X5j243v
-        GoPn/75m4IMdLeG0TQQnRB/uQaN84qMoNkl6nr0QMOWxRtywg+uP6p+9mEWlC+Z4lF/CW5gbiyr
-        ZwH5WBj2zInwDQzcyxU71X33iML0MFHH1v6HnZquRtoi29GwN2JUTtJHiqjwNTorRIuadptEwSe
-        VQnSS/FGz/3jhmCvFaRk6XtYogiau9c69BWUTGwC24oEZ6SpSmb4wHqRpnaDv55z/8fb+Har0bT
-        tInoXidn8oQvkJlj866PoC3XKjLLMGajPw+ByZiIgOqqKXRJNe1vSeJPiKjnVp5cLqEWA9zJCc+
-        skyHwse19DVI++epMmpVdReMayPPYX68FmWzgr7JqpzuBzRvlw2tMTSg0x74=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--0.640600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25504.003
-X-MDID: 1593170773-Apn7JBYElTgF
+        id S1728491AbgFZL1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 07:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728381AbgFZL1e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 07:27:34 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6F3C08C5C1
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 04:27:33 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id q19so9955759lji.2
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 04:27:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=pUX3zvaBx27vOVWQV7CmOe6IWAKhMqNw8tlSpjLkTPA=;
+        b=cs4nyCicYkhVwuTdA9YLy44vpgHlrXblBadSdvfurWfxmZPM/ls1J57fwwRcWxqYYj
+         ERUKu4rCXfN6UYOemp2H1XUZJLKQOaT2hl3aASVngIyq9fBureB2csFcieGcXt5V0N1t
+         uTLeOtcpNTsAZhVe94y830wlRy/SDZ6eHMN79slQB6JRwKLcXLMEVMB7o0dLEkaAEdsr
+         7ufwK/hdfuzpAyn14wmYIde3cb/ddBgMJpKWg3YpWIDMbkw+bwAT+J9R0gP0Ikuwd7fh
+         9ItPqi2y14a6GT/NxxZqsxZxC3bLnIUci4JJMBB8sOpuwm+A8eHfNrj3R/+pPDx455s4
+         0Gqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=pUX3zvaBx27vOVWQV7CmOe6IWAKhMqNw8tlSpjLkTPA=;
+        b=N3KhxsEdSJuCDVS9afzNCZ3PmHGB2l5Ruz/DVoZeYLuYJwyTZwWN9cGKi75/bXbCNR
+         cp48iEpRqvalSnNZoeQ3NCRTD9EvhBgbn0455On5r+X7rx13zqTyjIjhu2+k+NmnGC9H
+         0GStQ4nyd1jyg2k5MZdv9ScRQ5bNHhU1ziKYwaQe1FkegahAOIlNCCXZXh9yBVf2cUz9
+         pQEsICo0aUrGjT/q2eCCbgglUIY1rWoOHD57IzA6N4MCJO3M2xKutdDswx/lU/iIQKrc
+         /GJLhV/BYFEYRQcPslMreG7TQ78HbTaDfAUFEFZd98IO5NncqiY0V9ieNRhfyBzqORhm
+         I1Dw==
+X-Gm-Message-State: AOAM531rxV5OFge0Aq/7EYxtiso/6hO0G/PHJ7P7jDmn+k/hwYhELiEo
+        sppvqDO8ecf4Qbu3p+ovhpvUNzatV9qXww==
+X-Google-Smtp-Source: ABdhPJwbhoSbJZsfIfvJ61UC7mriVImm9T7DUfDCCWM8W2iO9gVKVhOo0QxpSSDRYV99LfNtyU8DYQ==
+X-Received: by 2002:a2e:6f14:: with SMTP id k20mr108145ljc.224.1593170851514;
+        Fri, 26 Jun 2020 04:27:31 -0700 (PDT)
+Received: from centos7-pv-guest.localdomain ([5.35.13.201])
+        by smtp.gmail.com with ESMTPSA id j4sm4476893lfb.94.2020.06.26.04.27.30
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 26 Jun 2020 04:27:31 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+To:     netdev@vger.kernel.org
+Cc:     brouer@redhat.com, jgross@suse.com, wei.liu@kernel.org,
+        paul@xen.org, ilias.apalodimas@linaro.org
+Subject: [PATCH net-next v12 0/3] xen networking: add XDP support to xen-netfront  
+Date:   Fri, 26 Jun 2020 14:27:03 +0300
+Message-Id: <1593170826-1600-1-git-send-email-kda@linux-powerpc.org>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This continues the work started by Alex Maftei <amaftei@solarflare.com>
- in the series "sfc: code refactoring", "sfc: more code refactoring",
- "sfc: even more code refactoring" and "sfc: refactor mcdi filtering
- code", to prepare for a new driver which will share much of the code
- to support the new EF100 family of Solarflare/Xilinx NICs.
-After this series, there will be approximately two more of these
- 'prerequisites' series, followed by the sfc_ef100 driver itself.
+The first patch adds a new extra type to enable proper synchronization
+between an RX request/response pair.
+The second patch implements BFP interface for xen-netfront.
+The third patch enables extra space for XDP processing.
 
-Edward Cree (15):
-  sfc: update MCDI protocol headers
-  sfc: determine flag word automatically in efx_has_cap()
-  sfc: extend bitfield macros up to POPULATE_DWORD_13
-  sfc: don't try to create more channels than we can have VIs
-  sfc: refactor EF10 stats handling
-  sfc: split up nic.h
-  sfc: commonise ethtool link handling functions
-  sfc: commonise ethtool NFC and RXFH/RSS functions
-  sfc: commonise other ethtool bits
-  sfc: commonise FC advertising
-  sfc: track which BAR is mapped
-  sfc: commonise PCI error handlers
-  sfc: commonise drain event handling
-  sfc: commonise ARFS handling
-  sfc: extend common GRO interface to support CHECKSUM_COMPLETE
+v12:
+- xen-netback: rename netfront_xdp_headroom to xdp_headroom
 
- drivers/net/ethernet/sfc/bitfield.h       |   34 +-
- drivers/net/ethernet/sfc/ef10.c           |  100 +-
- drivers/net/ethernet/sfc/efx.c            |  119 +-
- drivers/net/ethernet/sfc/efx.h            |    8 -
- drivers/net/ethernet/sfc/efx_channels.c   |    7 +
- drivers/net/ethernet/sfc/efx_common.c     |  134 +-
- drivers/net/ethernet/sfc/efx_common.h     |    6 +-
- drivers/net/ethernet/sfc/ethtool.c        |  913 ---
- drivers/net/ethernet/sfc/ethtool_common.c |  911 +++
- drivers/net/ethernet/sfc/ethtool_common.h |   36 +-
- drivers/net/ethernet/sfc/mcdi.c           |   10 +-
- drivers/net/ethernet/sfc/mcdi.h           |    5 +-
- drivers/net/ethernet/sfc/mcdi_filters.c   |    8 +-
- drivers/net/ethernet/sfc/mcdi_pcol.h      | 6933 ++++++++++++++++++++-
- drivers/net/ethernet/sfc/net_driver.h     |    4 +
- drivers/net/ethernet/sfc/nic.c            |   46 +
- drivers/net/ethernet/sfc/nic.h            |  298 +-
- drivers/net/ethernet/sfc/nic_common.h     |  273 +
- drivers/net/ethernet/sfc/ptp.c            |    5 +-
- drivers/net/ethernet/sfc/ptp.h            |   45 +
- drivers/net/ethernet/sfc/rx.c             |  236 +-
- drivers/net/ethernet/sfc/rx_common.c      |  245 +-
- drivers/net/ethernet/sfc/rx_common.h      |    6 +-
- drivers/net/ethernet/sfc/siena.c          |    1 +
- 24 files changed, 8672 insertions(+), 1711 deletions(-)
- create mode 100644 drivers/net/ethernet/sfc/nic_common.h
- create mode 100644 drivers/net/ethernet/sfc/ptp.h
+v11:
+- add the new headroom constant to netif.h
+- xenbus_scanf check
+- lock a bulk of puckets in xennet_xdp_xmit()
+
+v10:
+- add a new xen_netif_extra_info type to enable proper synchronization
+ between an RX request/response pair.
+- order local variable declarations
+
+v9:
+- assign an xdp program before switching to Reconfiguring
+- minor cleanups
+- address checkpatch issues
+
+v8:
+- add PAGE_POOL config dependency
+- keep the state of XDP processing in netfront_xdp_enabled
+- fixed allocator type in xdp_rxq_info_reg_mem_model()
+- minor cleanups in xen-netback
+
+v7:
+- use page_pool_dev_alloc_pages() on page allocation
+- remove the leftover break statement from netback_changed
+
+v6:
+- added the missing SOB line
+- fixed subject
+
+v5:
+- split netfront/netback changes
+- added a sync point between backend/frontend on switching to XDP
+- added pagepool API
+
+v4:
+- added verbose patch descriprion
+- don't expose the XDP headroom offset to the domU guest
+- add a modparam to netback to toggle XDP offset
+- don't process jumbo frames for now
+
+v3:
+- added XDP_TX support (tested with xdping echoserver)
+- added XDP_REDIRECT support (tested with modified xdp_redirect_kern)
+- moved xdp negotiation to xen-netback
+
+v2:
+- avoid data copying while passing to XDP
+- tell xen-netback that we need the headroom space
+
+Denis Kirjanov (3):
+  xen: netif.h: add a new extra type for XDP
+  xen networking: add basic XDP support for xen-netfront
+  xen networking: add XDP offset adjustment to xen-netback
+
+ drivers/net/Kconfig                 |   1 +
+ drivers/net/xen-netback/common.h    |   4 +
+ drivers/net/xen-netback/interface.c |   2 +
+ drivers/net/xen-netback/netback.c   |   7 +
+ drivers/net/xen-netback/rx.c        |  15 +-
+ drivers/net/xen-netback/xenbus.c    |  34 ++++
+ drivers/net/xen-netfront.c          | 337 ++++++++++++++++++++++++++++++++++--
+ include/xen/interface/io/netif.h    |  20 ++-
+ 8 files changed, 408 insertions(+), 12 deletions(-)
+
+-- 
+1.8.3.1
 
