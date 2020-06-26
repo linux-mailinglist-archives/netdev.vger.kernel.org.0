@@ -2,68 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88ACA20BA70
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 22:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 684A020BA7B
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 22:45:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725828AbgFZUmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 16:42:09 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:46199 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725780AbgFZUmI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 16:42:08 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 29f4a66b
-        for <netdev@vger.kernel.org>;
-        Fri, 26 Jun 2020 20:22:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=wxnOOml3JHYM1DKXMM9+1x9WEFA=; b=iWpjf9
-        TknlxFriv78ZtJahRqfcLhwZY2QuNDCEwEImqUAh9j09ewOt5+dDNDTxUM6WajWa
-        vgLqyxX6hCOF6p7NWQp4+K/breUiUXDhmpPJkx0kpm2X99vc4GFfJbKMDxG+W/07
-        aHrnZHwEKdTrHaWf5ZBOfQYMs3DHffhH4NvUgBZgUmQ0xIyGXcijW5894I8gFMcV
-        EG2ti8g2e4w7+w7VYCqD7/XhPvLYYY8ad6TO0LpMZer3bHhCJaUsYXqZ3UxvIr8z
-        T1jScQKcYfW2lo7eDtIy9rhhqnLG8vI0e4nHUjvFqPtEh+jpPWOaAK8wDLxJGfYr
-        +SbbKmb20jD4BblA==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ee6cf1a7 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Fri, 26 Jun 2020 20:22:47 +0000 (UTC)
-Received: by mail-io1-f41.google.com with SMTP id c16so11202281ioi.9
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 13:42:06 -0700 (PDT)
-X-Gm-Message-State: AOAM531GXFZKlDZg8SkDOWxRDexiVCJgNxMMAztCPJ3y7Coaibe7U4dD
-        XEbbQDKCxm8rGYeQwEWvxxkNMkvvChEK+yK/Ypg=
-X-Google-Smtp-Source: ABdhPJzOQJm5CwSuzBLlIm7f2d/B2iDB26DRcTjAb550CK8zXdO5Pb4X6luBlSkuCvbDziy1bEFl1uuzreDeeCe4vU4=
-X-Received: by 2002:a5e:9703:: with SMTP id w3mr5259914ioj.29.1593204125504;
- Fri, 26 Jun 2020 13:42:05 -0700 (PDT)
+        id S1725946AbgFZUo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 16:44:58 -0400
+Received: from smtp3.emailarray.com ([65.39.216.17]:50376 "EHLO
+        smtp3.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725821AbgFZUo6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 16:44:58 -0400
+Received: (qmail 90924 invoked by uid 89); 26 Jun 2020 20:44:53 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
+  by smtp3.emailarray.com with SMTP; 26 Jun 2020 20:44:53 -0000
+Date:   Fri, 26 Jun 2020 13:44:48 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        hch@lst.de, davem@davemloft.net, konrad.wilk@oracle.com,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, maximmi@mellanox.com,
+        magnus.karlsson@intel.com
+Subject: Re: [PATCH net] xsk: remove cheap_dma optimization
+Message-ID: <20200626204448.bxvr35qaxkfj6chs@bsd-mbp>
+References: <20200626134358.90122-1-bjorn.topel@gmail.com>
 MIME-Version: 1.0
-References: <20200626201330.325840-1-ndev@hwipl.net>
-In-Reply-To: <20200626201330.325840-1-ndev@hwipl.net>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 26 Jun 2020 14:41:54 -0600
-X-Gmail-Original-Message-ID: <CAHmME9r7Q_+_3ePj4OzxZOkkrSdKA_THNjk6YjHxTQyNA2iaAw@mail.gmail.com>
-Message-ID: <CAHmME9r7Q_+_3ePj4OzxZOkkrSdKA_THNjk6YjHxTQyNA2iaAw@mail.gmail.com>
-Subject: Re: wireguard: problem sending via libpcap's packet socket
-To:     Hans Wippel <ndev@hwipl.net>
-Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200626134358.90122-1-bjorn.topel@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hans,
+On Fri, Jun 26, 2020 at 03:43:58PM +0200, Björn Töpel wrote:
+> From: Björn Töpel <bjorn.topel@intel.com>
+> 
+> When the AF_XDP buffer allocation API was introduced it had an
+> optimization, "cheap_dma". The idea was that when the umem was DMA
+> mapped, the pool also checked whether the mapping required a
+> synchronization (CPU to device, and vice versa). If not, it would be
+> marked as "cheap_dma" and the synchronization would be elided.
+> 
+> In [1] Christoph points out that the optimization above breaks the DMA
+> API abstraction, and should be removed. Further, Christoph points out
+> that optimizations like this should be done within the DMA mapping
+> core, and not elsewhere.
+> 
+> Unfortunately this has implications for the packet rate
+> performance. The AF_XDP rxdrop scenario shows a 9% decrease in packets
+> per second.
+> 
+> [1] https://lore.kernel.org/netdev/20200626074725.GA21790@lst.de/
+> 
+> Cc: Christoph Hellwig <hch@lst.de>
+> Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 
-On Fri, Jun 26, 2020 at 2:14 PM Hans Wippel <ndev@hwipl.net> wrote:
-> while toying around with sending packets with libpcap, I noticed that it
-> did not work with a wireguard interface in contrast to my regular
-> ethernet interface.
-
-Thanks for letting me know. I'll try to repro and will look if this is
-common behavior for all virtual drivers, or simply a bug in WireGuard
-that I need to address.
-
-If it is the latter, your patch below isn't quite correct; we'll
-probably address this instead by simply setting skb->protocol in xmit
-by peaking at the header, if skb->protocol is zero, and then keeping
-the rest of the logic the same elsewhere.
-
-Jason
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
