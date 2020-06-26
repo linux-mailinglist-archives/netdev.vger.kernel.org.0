@@ -2,109 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C276E20B830
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 20:25:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D862420B85F
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 20:34:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725867AbgFZSZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 14:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51542 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725768AbgFZSZb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 14:25:31 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE22C03E979
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 11:25:31 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id u8so5027584pje.4
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 11:25:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UHDLZSZFF/fReafmKpcwSmbU0UojBwx6AdtrA+a0AOU=;
-        b=W7UbYje/jDqQ6Uw2SQ8e25BNXHyuXR9ZEqULMg0UDPKotVFzTKmYHmiXD2GsbLakSg
-         FFIDXRI4OErUBUoX6EvWqb2qwGMu0K4G0qlzmfqrKa7ct7uNmBBNazQJf0J79dq73V1r
-         IzeNQtkLhifaGZLEi04AzJF89fj0p9phOlIyB/S6Hi0w0wempXalj0AQbvZD3/+vzmFv
-         afUsY5jlCBOeE5JINLPHm5d16a2Y2ubu6E4OJmFhoqIjtmV6gtl3ufmCkSLL4LZvynxX
-         ScWtpfahFuTHqiHnGwYXQUPsSFupBHEGGIz2M8y22mLw47wCLPM6qR/LkHjhHR6pW/ts
-         tTlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UHDLZSZFF/fReafmKpcwSmbU0UojBwx6AdtrA+a0AOU=;
-        b=m0kE4r9BQ+eCSmU/Y/2nvPfaCn2+2YDbyKMYTUM0BxUCxyyeTbo8ikQ3DFpsdmHd+4
-         hHrh2UAXs/m4H+xdP2k0mZV1qw8Icx9Zok+Bjg+Ng6BJANN/Pe487Ib+VGiMeCfmkoW4
-         hpzuWRuR67rNgJWbnR5iRUH5eSowXnvH0ZDAtet0vHdTXvo9xmH7/28jVjcgyDpHqh5G
-         Ond4hMVxZDYCDfjs/2Epe4afPUrzG26EuGtzpNhfePCkSZljROd3E2gHRz/kWTWmRBbG
-         ypb3/BkF9rhkrddXA89rBnUODCQBSv5tuIEChpqtm9XnB8iwjYIaheVpCc+iA5Aw741T
-         j+ZQ==
-X-Gm-Message-State: AOAM530zwZ7xbZEfJbRtlPZtLndDCtZCXAd2UmeNRwn18lf2kGK2K5Eb
-        I38Uf1X9/liQE5W96Yv8jP/ZHQ0n4bo=
-X-Google-Smtp-Source: ABdhPJzSukX2jr7tjyliXrr2fWhpr6VgdMGltl934p0cDjuAeEp+WxXC/UyjPx7Zypr+ou71f00lJA==
-X-Received: by 2002:a17:90a:a383:: with SMTP id x3mr5033480pjp.199.1593195930628;
-        Fri, 26 Jun 2020 11:25:30 -0700 (PDT)
-Received: from MacBookAir.linux-6brj.site ([2601:642:4780:87f0:b554:afd3:52c0:2f89])
-        by smtp.gmail.com with ESMTPSA id j126sm26448574pfg.95.2020.06.26.11.25.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Jun 2020 11:25:30 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Subject: [Patch net] net: explain the lockdep annotations for dev_uc_unsync()
-Date:   Fri, 26 Jun 2020 11:25:27 -0700
-Message-Id: <20200626182527.9842-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1725823AbgFZSet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 14:34:49 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:56356 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725803AbgFZSes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 14:34:48 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05QIIBOs146258;
+        Fri, 26 Jun 2020 18:34:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2020-01-29;
+ bh=siJdK4QK5aSRhtorv9v4f8AGZi4rxo+SzwUUzhRWE/8=;
+ b=WN7YYARpCZ3ICz4uKBgHtQsYJFm4KmEQ7npH4VhIj/7e5McBKtZ2WpQN5lUP7rQPqiw8
+ g1q3rDpOFwE50Gzoiak99e4qw9jK/h/wvpkemzeVSH4WdGrrSleNhPBo7lhJ8VC/0M9b
+ 1Bj+XE0qzrksEEZchIMxTzjGy/TlhVS9jD6geXicx70s8c6iHVXHqsr1WEWWwd1MIZ8s
+ sBBLY1xLD+eGz4aTybwuA8bHGlIwiPLQQa5xjfxRE7/F8YWNQ4UIIu9xO8nlJ2/ZTXEA
+ q/S2fUtjLzg4hzNaoJBE+V4FK3EAeIVDKmccEAvsHBvJ69xU/Oag00tWMVIwe4+HLcsN WQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 31wg3bj1m6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 26 Jun 2020 18:34:47 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05QIIMZ6022902;
+        Fri, 26 Jun 2020 18:34:46 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 31uurcyna5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 26 Jun 2020 18:34:46 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 05QIYjMD006946;
+        Fri, 26 Jun 2020 18:34:45 GMT
+Received: from oracle.com (/10.159.154.116)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 26 Jun 2020 18:34:45 +0000
+From:   rao.shoaib@oracle.com
+To:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Cc:     rao.shoaib@oracle.com, ka-cheong.poon@oracle.com,
+        david.edmondson@oracle.com
+Subject: [PATCH v1] rds: If one path needs re-connection, check all and re-connect
+Date:   Fri, 26 Jun 2020 11:34:38 -0700
+Message-Id: <20200626183438.20188-1-rao.shoaib@oracle.com>
+X-Mailer: git-send-email 2.17.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9664 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0 adultscore=0
+ malwarescore=0 mlxscore=0 mlxlogscore=999 phishscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006260129
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9664 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 phishscore=0
+ malwarescore=0 cotscore=-2147483648 adultscore=0 lowpriorityscore=0
+ impostorscore=0 clxscore=1015 mlxscore=0 mlxlogscore=999 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2006260129
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The lockdep annotations for dev_uc_unsync() and dev_mc_unsync()
-are not easy to understand, so add some comments to explain
-why they are correct.
+From: Rao Shoaib <rao.shoaib@oracle.com>
 
-Similar for the rest netif_addr_lock_bh() cases, they don't
-need nested version.
+In testing with mprds enabled, Oracle Cluster nodes after reboot were
+not able to communicate with others nodes and so failed to rejoin
+the cluster. Peers with lower IP address initiated connection but the
+node could not respond as it choose a different path and could not
+initiate a connection as it had a higher IP address.
 
-Cc: Taehee Yoo <ap420073@gmail.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+With this patch, when a node sends out a packet and the selected path
+is down, all other paths are also checked and any down paths are
+re-connected.
+
+Reviewed-by: Ka-cheong Poon <ka-cheong.poon@oracle.com>
+Reviewed-by: David Edmondson <david.edmondson@oracle.com>
+Signed-off-by: Somasundaram Krishnasamy <somasundaram.krishnasamy@oracle.com>
+Signed-off-by: Rao Shoaib <rao.shoaib@oracle.com>
 ---
- net/core/dev_addr_lists.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/rds/connection.c | 11 +++++++++++
+ net/rds/rds.h        |  7 +++++++
+ net/rds/send.c       |  3 ++-
+ 3 files changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/dev_addr_lists.c b/net/core/dev_addr_lists.c
-index 6393ba930097..54cd568e7c2f 100644
---- a/net/core/dev_addr_lists.c
-+++ b/net/core/dev_addr_lists.c
-@@ -690,6 +690,15 @@ void dev_uc_unsync(struct net_device *to, struct net_device *from)
- 	if (to->addr_len != from->addr_len)
- 		return;
+diff --git a/net/rds/connection.c b/net/rds/connection.c
+index ed7f2133acc2..f2fcab182095 100644
+--- a/net/rds/connection.c
++++ b/net/rds/connection.c
+@@ -905,6 +905,17 @@ void rds_conn_path_connect_if_down(struct rds_conn_path *cp)
+ }
+ EXPORT_SYMBOL_GPL(rds_conn_path_connect_if_down);
  
-+	/* netif_addr_lock_bh() uses lockdep subclass 0, this is okay for two
-+	 * reasons:
-+	 * 1) This is always called without any addr_list_lock, so as the
-+	 *    outermost one here, it must be 0.
-+	 * 2) This is called by some callers after unlinking the upper device,
-+	 *    so the dev->lower_level becomes 1 again.
-+	 * Therefore, the subclass for 'from' is 0, for 'to' is either 1 or
-+	 * larger.
-+	 */
- 	netif_addr_lock_bh(from);
- 	netif_addr_lock_nested(to);
- 	__hw_addr_unsync(&to->uc, &from->uc, to->addr_len);
-@@ -911,6 +920,7 @@ void dev_mc_unsync(struct net_device *to, struct net_device *from)
- 	if (to->addr_len != from->addr_len)
- 		return;
++/* Check connectivity of all paths
++ */
++void rds_check_all_paths(struct rds_connection *conn)
++{
++	int i = 0;
++
++	do {
++		rds_conn_path_connect_if_down(&conn->c_path[i]);
++	} while (++i < conn->c_npaths);
++}
++
+ void rds_conn_connect_if_down(struct rds_connection *conn)
+ {
+ 	WARN_ON(conn->c_trans->t_mp_capable);
+diff --git a/net/rds/rds.h b/net/rds/rds.h
+index 6019b0c004a9..106e862996b9 100644
+--- a/net/rds/rds.h
++++ b/net/rds/rds.h
+@@ -778,6 +778,7 @@ void rds_conn_drop(struct rds_connection *conn);
+ void rds_conn_path_drop(struct rds_conn_path *cpath, bool destroy);
+ void rds_conn_connect_if_down(struct rds_connection *conn);
+ void rds_conn_path_connect_if_down(struct rds_conn_path *cp);
++void rds_check_all_paths(struct rds_connection *conn);
+ void rds_for_each_conn_info(struct socket *sock, unsigned int len,
+ 			  struct rds_info_iterator *iter,
+ 			  struct rds_info_lengths *lens,
+@@ -822,6 +823,12 @@ rds_conn_path_up(struct rds_conn_path *cp)
+ 	return atomic_read(&cp->cp_state) == RDS_CONN_UP;
+ }
  
-+	/* See the above comments inside dev_uc_unsync(). */
- 	netif_addr_lock_bh(from);
- 	netif_addr_lock_nested(to);
- 	__hw_addr_unsync(&to->mc, &from->mc, to->addr_len);
++static inline int
++rds_conn_path_down(struct rds_conn_path *cp)
++{
++	return atomic_read(&cp->cp_state) == RDS_CONN_DOWN;
++}
++
+ static inline int
+ rds_conn_up(struct rds_connection *conn)
+ {
+diff --git a/net/rds/send.c b/net/rds/send.c
+index 68e2bdb08fd0..9a529a01cdc6 100644
+--- a/net/rds/send.c
++++ b/net/rds/send.c
+@@ -1340,7 +1340,8 @@ int rds_sendmsg(struct socket *sock, struct msghdr *msg, size_t payload_len)
+ 		goto out;
+ 	}
+ 
+-	rds_conn_path_connect_if_down(cpath);
++	if (rds_conn_path_down(cpath))
++		rds_check_all_paths(conn);
+ 
+ 	ret = rds_cong_wait(conn->c_fcong, dport, nonblock, rs);
+ 	if (ret) {
 -- 
-2.27.0
+2.16.6
 
