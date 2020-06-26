@@ -2,96 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9659820BC0F
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 00:01:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAA3E20BC17
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 00:02:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725833AbgFZWBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 18:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56850 "EHLO
+        id S1725913AbgFZWCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 18:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725803AbgFZWBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 18:01:08 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F755C03E979
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 15:01:08 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id u5so5202862pfn.7
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 15:01:08 -0700 (PDT)
+        with ESMTP id S1725803AbgFZWC2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 18:02:28 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFC8C03E979;
+        Fri, 26 Jun 2020 15:02:28 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id j10so8616071qtq.11;
+        Fri, 26 Jun 2020 15:02:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lxaxMyrU1zNhtGVJmQYInG+3Ux8u7KVzHER9Vu5WtSA=;
-        b=WUAB3OFcFWr/Qundtoha7tOL4LlKlslF33Jo3j3deKUSAi55fCHDTcY4WCe/VWNvQy
-         JEqnEKIed1wocgzJYiv9wTUWFQZHJVRyBlOosWqZwFHoHbtUo9O/jZ4KkgR9DcmvWw4e
-         xF+SrPlVMJuhoppXjCORikTmlr9ukjVsnviJAHcPrNJ75ATaGhrN+/mnZOkYm4uM+ejf
-         EdaQ5crcQLzW1HlwF/fcryce2cBRZXPwdwNW9rD36cOrjqd+dvcImCxbYW+qpCqycDrf
-         Y9nl/ZKLthltRgAnTmdgmRoZOpEKOI0kifRhZKJ5CVatgrFuFzEmAG1L/Wbbh94bLBvd
-         /YRQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8WIKkmkw+zJ2eirAiqoKIREjztn56T5W1fT71uuN8TE=;
+        b=Txofs5OWaYLB9cmfw2Ok2XpEXQGf2YraycZiLYYlQ+ZHAnxXy4QmbONusW/btRdRC2
+         ykTIQYg2/+1KmnQgDtUKtI8laPJ2gBOGRNHnBmNXYMBjAisBTJJgTa8AEU3Q+Lm4U0/s
+         lhOtlatI8x+ggwuChjqOgp+/9atMHxdc2NY7Jxh3wPENFep5ahuRluRxDUEyOuM5ose1
+         4wSL+7LyvjCbUiqvIq3moskvJ+crFxGgelkgEmF4ufTMobuMOFLu1z4WLB39wF94li2L
+         NHUiCE7HyyKdzI+V0ssVw/2/pXFmdGaaRRYn+85jaj0304Jatjpb7blEw7nYRPYexr3x
+         SBAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lxaxMyrU1zNhtGVJmQYInG+3Ux8u7KVzHER9Vu5WtSA=;
-        b=uJGPacdullv7zpSlCvmeW96u6q7I8sb7WF8yO/Pm/X+e8HbtgjkgULFeo/sAZQU+2r
-         9ukxnye4cmfYYa+Kcd00cr9ETF4Xg488bZmmYCMlQwQ/oHwt0Ultnb1X0KHYW8ugqx6l
-         zkCfQMzJUJiHUI6eacgpkC5tSSs0ogZUP6EDHyTmM00RTA8i7CCj+oQfz+q2U0fpieM+
-         zKjJopeldxeLwoc6aRpJzIZ9Xysm/PhhQ/C/7I5WuXKoapa0DeRXYiKRjSLUdfVGTmGx
-         Pb0ZG5uTbaRJrB0z1grGFwBwJVTLmunC0lYYHgK0ecNDApf7U074iE6BLmayW/2QVGMz
-         2crQ==
-X-Gm-Message-State: AOAM531YHHHbzRMFmh94AHzRqQyqtcLEce2d2SSrUnREPWEUAghG2COa
-        aWAxj3dnthwuGt1a756Pl0mj4w==
-X-Google-Smtp-Source: ABdhPJwJ1vnSzzWMtQio9AJ5Iz/GuTGwDRYr7ySqsk/wFoTr8/YS5IsiG75Sd0BN5mZKr74dyHA1Ug==
-X-Received: by 2002:a65:4507:: with SMTP id n7mr742674pgq.180.1593208867651;
-        Fri, 26 Jun 2020 15:01:07 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 140sm26547791pfz.154.2020.06.26.15.01.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Jun 2020 15:01:07 -0700 (PDT)
-Date:   Fri, 26 Jun 2020 15:00:59 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jonathan Morton <chromatix99@gmail.com>
-Cc:     Davide Caratti <dcaratti@redhat.com>, cake@lists.bufferbloat.net,
-        netdev@vger.kernel.org, David Miller <davem@davemloft.net>
-Subject: Re: [Cake] [PATCH net-next 1/5] sch_cake: fix IP protocol handling
- in the presence of VLAN tags
-Message-ID: <20200626150059.785647cb@hermes.lan>
-In-Reply-To: <78C16717-5EB2-49BF-A377-21A9B22662E1@gmail.com>
-References: <159308610282.190211.9431406149182757758.stgit@toke.dk>
-        <159308610390.190211.17831843954243284203.stgit@toke.dk>
-        <20200625.122945.321093402617646704.davem@davemloft.net>
-        <87k0zuj50u.fsf@toke.dk>
-        <240fc14da96a6212a98dd9ef43b4777a9f28f250.camel@redhat.com>
-        <78C16717-5EB2-49BF-A377-21A9B22662E1@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8WIKkmkw+zJ2eirAiqoKIREjztn56T5W1fT71uuN8TE=;
+        b=QjmiTkNyvLIwypJu2RwdQVNWil24CxgoTY9zNplD1WnjjvUidr4zPA6S43dGvpRFnu
+         RqbdV8VG/cPm0e3QGMujYuiF37wlYipmZIbNjgfKJ2FvALZg5BdAVtLfUQRUVpH06FYZ
+         /OhTWl/jtijg1wkPfEj0L7H8f0Kk8vWghKSliYCH67XN71iRyncDQW8CnozTd2CPxyw6
+         WxwjktOmNgi37IlnlNGP+FIP5+qBkzBSjaeWanYMfrRi6Mj3IkLZwWeWPmZt8KgnUjrE
+         iSIQBllwaVG6eP/n5FGty1gzNau5taGB1xdbNXcjMOFhFx+vWuFqO9vaUxdQWh6kTpId
+         ORzg==
+X-Gm-Message-State: AOAM5311rNrT4kmrSL1HGjuIaVXrbwTRYHeaBKVts9wPyZAuK/ssbbLi
+        D1z7ksnn8VS7UUmkEcPO+l8oBK5xLRbtqR2MGsg=
+X-Google-Smtp-Source: ABdhPJx6yw1UL6PXyiP69OS+m9EzYL17y6eIW2RYq+0ln3CCZdvxJ21a78JpMZ2s201gHVKH3AsxbDDpJPpAt+la4ec=
+X-Received: by 2002:ac8:2bba:: with SMTP id m55mr4970417qtm.171.1593208947777;
+ Fri, 26 Jun 2020 15:02:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200626000929.217930-1-sdf@google.com> <20200626000929.217930-2-sdf@google.com>
+In-Reply-To: <20200626000929.217930-2-sdf@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 26 Jun 2020 15:02:16 -0700
+Message-ID: <CAEf4Bza+j4KsuCs3pyRGNUvUTWmJ=qc4GRUYNkca3F6XFvrvAQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/4] libbpf: add support for BPF_CGROUP_INET_SOCK_RELEASE
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 26 Jun 2020 16:11:49 +0300
-Jonathan Morton <chromatix99@gmail.com> wrote:
+On Thu, Jun 25, 2020 at 5:13 PM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> Add auto-detection for the cgroup/sock_release programs.
+>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
 
-> Toke has already replied, but:
-> 
-> > Sure, my proposal does not cover the problem of mangling the CE bit inside
-> > VLAN-tagged packets, i.e. if we should understand if qdiscs should allow
-> > it or not.  
-> 
-> This is clearly wrong-headed by itself.
-> 
-> Everything I've heard about VLAN tags thus far indicates that they should be *transparent* to nodes which don't care about them; they determine where the packet goes within the LAN, but not how it behaves.  In particular this means that AQM should be able to apply congestion control signals to them in the normal way, by modifying the ECN field of the IP header encapsulated within.
-> 
-> The most I would entertain is to incorporate a VLAN tag into the hashes that Cake uses to distinguish hosts and/or flows.  This would account for the case where two hosts on different VLANs of the same physical network have the same IP address.
-> 
->  - Jonathan Morton
-> 
-> _______________________________________________
-> Cake mailing list
-> Cake@lists.bufferbloat.net
-> https://lists.bufferbloat.net/listinfo/cake
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-The implementation of VLAN's is awkward/flawed. The outer VLAN tag is transparent
-but the inner VLAN is visible. Similarly the outer VLAN tag doesn't count towards
-the MTU but inner one does.
+
+>  tools/include/uapi/linux/bpf.h | 1 +
+>  tools/lib/bpf/libbpf.c         | 2 ++
+>  2 files changed, 3 insertions(+)
+>
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index c65b374a5090..d7aea1d0167a 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -226,6 +226,7 @@ enum bpf_attach_type {
+>         BPF_CGROUP_INET4_GETSOCKNAME,
+>         BPF_CGROUP_INET6_GETSOCKNAME,
+>         BPF_XDP_DEVMAP,
+> +       BPF_CGROUP_INET_SOCK_RELEASE,
+>         __MAX_BPF_ATTACH_TYPE
+>  };
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 7f01be2b88b8..acbab6d0672d 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -6670,6 +6670,8 @@ static const struct bpf_sec_def section_defs[] = {
+>         BPF_APROG_SEC("cgroup_skb/egress",      BPF_PROG_TYPE_CGROUP_SKB,
+>                                                 BPF_CGROUP_INET_EGRESS),
+>         BPF_APROG_COMPAT("cgroup/skb",          BPF_PROG_TYPE_CGROUP_SKB),
+> +       BPF_EAPROG_SEC("cgroup/sock_release",   BPF_PROG_TYPE_CGROUP_SOCK,
+> +                                               BPF_CGROUP_INET_SOCK_RELEASE),
+>         BPF_APROG_SEC("cgroup/sock",            BPF_PROG_TYPE_CGROUP_SOCK,
+
+might want to add another alias to match _release: "cgroup/sock_create"?
+
+>                                                 BPF_CGROUP_INET_SOCK_CREATE),
+>         BPF_EAPROG_SEC("cgroup/post_bind4",     BPF_PROG_TYPE_CGROUP_SOCK,
+> --
+> 2.27.0.111.gc72c7da667-goog
+>
