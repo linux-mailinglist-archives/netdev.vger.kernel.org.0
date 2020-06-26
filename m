@@ -2,125 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC9520AE73
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 10:34:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0584120AE8E
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 10:53:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725864AbgFZIev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 04:34:51 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:48716 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgFZIev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 04:34:51 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05Q8S7xw134511;
-        Fri, 26 Jun 2020 08:34:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=fjqGH22vN8tmHJC5Ez+rpYalehtYxTKAP/PTFFOVU+A=;
- b=QPuSTCPUBeUywJ4cdRVBcX4j4qAoWBQytlLuZdN8MuV+SPw1Pi89PDGBSLyyDKjhyR2m
- L82kVyC4OqKWbbN2mH97QSXn6bVN/zrkmZboSY4/2cRKkHljjfKkWr3zq9bDGGAGlURz
- PBokYIZZsnNwwLnsg7DqOOob7KkSmJPknzjAbTLpJivOdT26/sxOL2o+dGxTVxrTdlIe
- M7sxDkAy8hM6c52o5QOeAoPToT1B7eCWVjSg3NxxPukODuVkVCecOGTpBSeieBUuernO
- 6ynvVrBtNdIAqal3L2QmAfCAdG1c138nJ28JSt7EL9fhrLWlclDFbbb9Y13wWVQoR4Cs GQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 31uusu4ufe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 26 Jun 2020 08:34:46 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 05Q8YKSl009278;
-        Fri, 26 Jun 2020 08:34:46 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 31uurbp4bd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 26 Jun 2020 08:34:46 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 05Q8YhU9017943;
-        Fri, 26 Jun 2020 08:34:43 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 26 Jun 2020 08:34:43 +0000
-Date:   Fri, 26 Jun 2020 11:34:36 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     devel@driverdev.osuosl.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Manish Chopra <manishc@marvell.com>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/2] staging: qlge: fix else after return or break
-Message-ID: <20200626083436.GG2549@kadam>
-References: <20200625215755.70329-1-coiby.xu@gmail.com>
- <20200625215755.70329-3-coiby.xu@gmail.com>
+        id S1725971AbgFZIxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 04:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725850AbgFZIxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 04:53:38 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF9CC08C5C1
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 01:53:37 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id i14so8591310ejr.9
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 01:53:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tCY8VdjaiYoUEdK/F26XF3lWxLThuVeIapW7FoQdSlw=;
+        b=QXEiVkQcd+vFIkBh5OBSuZ4BCT44T1FoUilPcod6SUXvUPsDo09gO43w73zYTiWK3o
+         QEGUS09WDSmGD3kCU4fnpVrCbHECvnhlHiFI93zO1M5RbGf9mQQbxyebO/A0FXLUpSbX
+         VYjGBXmrGz/gQ5v8krNbovezN4fE33W8UZ30ngLbY5CTaPf+hAHqy524SjMtYmI7pQSa
+         Nh3XDzJc5uBS4IfBcnEhag0Hy4vkfd6n8LYdLvXBssuRyoa1S0P4S/JlQrwBA/GvT5Er
+         CXPCsbOQZgCZ/+MSvlFNs4DFbeQroYbH6v7lrl+EkokBevnSruHfqn108zKu+7bc15x0
+         y+eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tCY8VdjaiYoUEdK/F26XF3lWxLThuVeIapW7FoQdSlw=;
+        b=S+3sZcHTlNTrBDG40FRBre1NsHtLFvlvBz9dgB5CfltOMxmdeRVqIltyALfc3XJzVv
+         REuQtIM5OOu3xRWp5aiN4MMYn2LyP0oKfLTwlA0EhJdoXXhm6jc33ltjtYN284BQQ9n7
+         nbx0VutNXe72QEv0+6CD2iGRRSIKILFKmWAejLUY2gSfC7uYaCWRcpgVeury+ML8wY05
+         Auv9B7H+222EF0cSygJHO3iH1vmFnMgfloT+bTJC0ncWVqiOADlXT4erunN9/hWqWmwK
+         Cs+Z4V3JvqcHLf3scoy0DZHuwMtN3vx1hSHDPxKKpC2Nolgx7zb1B0gTtqMf1sFQHQ+L
+         pfeQ==
+X-Gm-Message-State: AOAM5307mzAhr6BWDSUDjYIEIqAL/3WZGhDE47iQeZ1lBLvZMgOj/SS5
+        srm1FwfQfL7+RSTihi6P1kCGGE01uHUbJmYbpMU=
+X-Google-Smtp-Source: ABdhPJzu2OWIB36m7AhtzjCPI8h3OgPXh/aLvItfcn8kITENaDj1zlnx60FV/yHvnrwzMvh5xMywN/Dnp70856kpWL8=
+X-Received: by 2002:a17:906:6897:: with SMTP id n23mr1541560ejr.473.1593161615398;
+ Fri, 26 Jun 2020 01:53:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200625215755.70329-3-coiby.xu@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9663 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0 adultscore=0
- malwarescore=0 mlxscore=0 mlxlogscore=999 phishscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006260062
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9663 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 bulkscore=0
- cotscore=-2147483648 malwarescore=0 mlxscore=0 clxscore=1015
- lowpriorityscore=0 mlxlogscore=999 phishscore=0 priorityscore=1501
- spamscore=0 impostorscore=0 adultscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006260061
+References: <20200625152331.3784018-1-olteanv@gmail.com> <20200625152331.3784018-6-olteanv@gmail.com>
+ <20200625165349.GI1551@shell.armlinux.org.uk>
+In-Reply-To: <20200625165349.GI1551@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 26 Jun 2020 11:53:24 +0300
+Message-ID: <CA+h21hqn0P6mVJd1o=P1qwmVw-E56-FbY0gkfq9KurkRuJ5_hQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/7] net: dsa: felix: delete .phylink_mac_an_restart
+ code
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 05:57:55AM +0800, Coiby Xu wrote:
-> @@ -1404,11 +1403,10 @@ static void ql_dump_cam_entries(struct ql_adapter *qdev)
->  			pr_err("%s: Failed read of mac index register\n",
->  			       __func__);
->  			return;
-                        ^^^^^^
-> -		} else {
-> -			if (value[0])
-> -				pr_err("%s: MCAST index %d CAM Lookup Lower = 0x%.08x:%.08x\n",
-> -				       qdev->ndev->name, i, value[1], value[0]);
->  		}
-> +		if (value[0])
-> +			pr_err("%s: MCAST index %d CAM Lookup Lower = 0x%.08x:%.08x\n",
-> +			       qdev->ndev->name, i, value[1], value[0]);
->  	}
->  	ql_sem_unlock(qdev, SEM_MAC_ADDR_MASK);
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->  }
-> @@ -1427,11 +1425,10 @@ void ql_dump_routing_entries(struct ql_adapter *qdev)
->  			pr_err("%s: Failed read of routing index register\n",
->  			       __func__);
->  			return;
-                        ^^^^^^
+Hi Russell,
 
+On Thu, 25 Jun 2020 at 19:53, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> On Thu, Jun 25, 2020 at 06:23:29PM +0300, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > In hardware, the AN_RESTART field for these SerDes protocols (SGMII,
+> > USXGMII) clears the resolved configuration from the PCS's
+> > auto-negotiation state machine.
+> >
+> > But PHYLINK has a different interpretation of "AN restart". It assumes
+> > that this Linux system is capable of re-triggering an auto-negotiation
+> > sequence, something which is only possible with 1000Base-X and
+> > 2500Base-X, where the auto-negotiation is symmetrical. In SGMII and
+> > USXGMII, there's an AN master and an AN slave, and it isn't so much of
+> > "auto-negotiation" as it is "PHY passing the resolved link state on to
+> > the MAC".
+>
+> This is not "a different interpretation".
+>
+> The LX2160A documentation for this PHY says:
+>
+>   9             Restart Auto Negotiation
+>  Restart_Auto_N Self-clearing Read / Write command bit, set to '1' to
+>                 restart an auto negotiation sequence. Set to '0'
+>                 (Reset value) in normal operation mode. Note: Controls
+>                 the Clause 37 1000Base-X Auto-negotiation.
+>
+> It doesn't say anything about clearing anything for SGMII.
+>
+> Also, the Cisco SGMII specification does not indicate that it is
+> possible to restart the "autonegotiation" - the PHY is the controlling
+> end of the SGMII link.  There is no clause in the SGMII specification
+> that indicates that changing the MAC's tx_config word to the PHY will
+> have any effect on the PHY once the data path has been established.
+>
+> Finally, when a restart of negotiation is requested, and we have a PHY
+> attached in SGMII mode, we will talk to that PHY to cause a restart of
+> negotiation on the media side, which will implicitly cause the link
+> to drop and re-establish, causing the SGMII side to indicate link down
+> and subsequently re-establish according to the media side results.
+>
+> So, please, lay off your phylink bashing in your commit messages.
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
 
-> -		} else {
-> -			if (value)
-> -				pr_err("%s: Routing Mask %d = 0x%.08x\n",
-> -				       qdev->ndev->name, i, value);
->  		}
-> +		if (value)
-> +			pr_err("%s: Routing Mask %d = 0x%.08x\n",
-> +			       qdev->ndev->name, i, value);
->  	}
->  	ql_sem_unlock(qdev, SEM_RT_IDX_MASK);
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->  }
+Sorry, I was in a bit of a hurry when writing this commit message, so it is a
+bit imprecise as you point out. How about:
 
-This is not caused by your patch, but in these two functions we return
-without dropping the lock.  There may be other places as well, but these
-are the two I can see without leaving my email client.
+net: dsa: felix: delete .phylink_mac_an_restart code
 
-Do you think you could fix that before we forget?  Just change the
-return to a break to fix the bug.
+The Cisco SGMII and USXGMII standards specify control information exchange to
+be "achieved by using the Auto-Negotiation functionality defined in Clause 37
+of the IEEE Specification 802.3z".
 
-regards,
-dan carpenter
+The differences to clause 37 auto-negotiation are specified by the respective
+standards. In the case of SGMII, the differences are spelled out as being:
 
+- A reduction of the link timer value, from 10 ms to 1.6 ms.
+- A customization of the tx_config_reg[15:0], mostly to allow propagation of
+  speed information.
+
+A similar situation is going on for USXGMII as well: "USXGMII Auto-neg
+mechanism is based on Clause 37 (Figure 37-6) plus additional management
+control to select USXGMII mode".
+
+The point is, both Cisco standards make explicit reference that they require an
+auto-negotiation state machine implemented as per "Figure 37-6-Auto-Negotiation
+state diagram" from IEEE 802.3. In the SGMII spec, it is very clearly pointed
+out that both the MAC PCS (Figure 3 MAC Functional Block) and the PHY PCS
+(Figure 2 PHY Functional Block) contain an auto-negotiation block defined by
+"Auto-Negotiation Figure 37-6".
+
+Since both ends of the SGMII/USXGMII link implement the same state machine
+(just carry different tx_config_reg payloads, which they convey to their link
+partner via /C/ ordered sets), naturally the ability to restart
+auto-negotiation is symmetrical. The state machine in IEEE 802.3 Figure 37-6
+specifies the signal that triggers an auto-negotiation restart as being
+"mr_restart_an=TRUE".
+
+Furthermore, clause "37.2.5.1.9 State diagram variable to management register
+mapping", through its "Table 37-8-PCS state diagram variable to management
+register mapping", requires a PCS compliant to clause 37 to expose the
+mr_restart_an signal to management through MDIO register "0.9 Auto-Negotiation
+restart", aka BMCR_ANRESTART in Linux terms.
+
+The Felix PCS for SGMII and USXGMII is compliant to clause 37, so it exposes
+BMCR_ANRESTART to the operating system. When this bit is asserted, the
+following happens:
+
+1. STATUS[Auto_Negotiation_Complete] goes from 1->0.
+2. The PCS starts sending AN sequences instead of packets or IDLEs.
+3. The PCS waits to receive AN sequences from PHY and matches them.
+4. Once it has received  matching AN sequences and a PHY acknowledge,
+   STATUS[Auto_Negotiation_Complete] goes from 0->1.
+5. Normal packet transmission restarts.
+
+Otherwise stated, the MAC PCS has the ability to re-trigger a switch of the
+lane from data mode into configuration mode, then control information exchange
+takes place, then the lane is switched back into data mode. These 5 steps are
+collectively described as "restart AN state machine" by the PCS documentation.
+This is all as per IEEE 802.3 Clause 37 AN state machine, which SGMII and
+USXGMII do not touch at this fundamental level.
+
+Now, it is true that the Cisco SGMII and USXGMII specs mention that the control
+information exchange has a unidirectional meaning. That is, the PHY restarts
+the clause 37 auto-negotiation upon any change in MDI auto-negotiation
+parameters. PHYLINK takes this fact a bit further, and since the fact that the
+MAC PCS conveys no new information to the PHY PCS (beyond acknowledging the
+received config word), does not permit the MAC PCS to trigger a restart of the
+clause 37 auto-negotiation for any other SERDES protocols than 1000Base-X and
+2500Base-X. For those, the control information exchange _is_ bidirectional
+(local PCS specifies its duplex and flow control abilities). For any other
+SERDES protocols, the .phylink_mac_an_restart callback is dead code. This is
+probably OK, I can't come up with a situation where it might be useful for the
+MAC PCS to clear its cache of link state and ask for a new tx_config_reg. So
+remove this code.
+
+Thanks,
+-Vladimir
