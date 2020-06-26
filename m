@@ -2,95 +2,366 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B169320BACA
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 22:57:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55AC820BAD2
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 22:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726150AbgFZU5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 16:57:31 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:32989 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbgFZU5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 16:57:30 -0400
-Received: by mail-wr1-f65.google.com with SMTP id f18so2653267wrs.0;
-        Fri, 26 Jun 2020 13:57:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=UEtSMorzUsNwgUS6/uoC1DFelzsLLNjhA0ODxeYGQZk=;
-        b=OZchDIXGo6iu9X5b8iFXhS8rb4s9itnPmLav8LKS6K+d359xFI1TaN+uCZ8xoQ3fc5
-         Xrhullnd59DchWEDJBV2UUpS+Z/r6f4Dje7+caXHhr/XraN3SqIh6/8dzbDbkabaFqL7
-         v4YsyR+4baHNYxzNYo0SFnVcJfuYntG187KBFcswGXBpbD3vI41kJOFDcI2fhhsZFnjz
-         +gbnNdGpOkzNAtiPK8USyvXq3lVTFSNAuzWnHWRqjxoNz4FUXsLZnF21fLgItdn40nsm
-         MzAHRjgbDrUulmhTdseHZ7xKB9cl9bLS6ktN+sX55yZW7Vxm7iVdb/7Hp5sIDjAJueOH
-         mNHg==
-X-Gm-Message-State: AOAM531yYjrp5KxpQQ3scPn7KFIlaXqBvaOhErjOe3QSx0VG8PIu61vH
-        k8ISLaMvRIDTw1SJUtmeOK2sq8ZC
-X-Google-Smtp-Source: ABdhPJyfz6ZN9k8zLdtD9oplahZZwvRGhaQJGtrwjWd/bB5xcjemjyZZRToSI9LENcMOmSKLfSNPJw==
-X-Received: by 2002:a5d:42c8:: with SMTP id t8mr5326836wrr.23.1593205048041;
-        Fri, 26 Jun 2020 13:57:28 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id b184sm12903093wmc.20.2020.06.26.13.57.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Jun 2020 13:57:27 -0700 (PDT)
-Date:   Fri, 26 Jun 2020 20:57:26 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Andrea Parri <parri.andrea@gmail.com>
-Cc:     Wei Liu <wei.liu@kernel.org>, Andres Beltran <lkmlabelt@gmail.com>,
-        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mikelley@microsoft.com, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH 0/3] Drivers: hv: vmbus: vmbus_requestor data structure
-Message-ID: <20200626205726.nx54ztdtmo3fxbxm@liuwe-devbox-debian-v2>
-References: <20200625153723.8428-1-lkmlabelt@gmail.com>
- <20200626134227.ka4aghqjpktdupnu@liuwe-devbox-debian-v2>
- <20200626144817.GA1023610@andrea>
+        id S1725983AbgFZU7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 16:59:07 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:41529 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725793AbgFZU7H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 16:59:07 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id bf32d0bd
+        for <netdev@vger.kernel.org>;
+        Fri, 26 Jun 2020 20:39:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=iVwofrz8GTa+m/DH8yOcXubeVyw=; b=vUo96H
+        tJUuHppZsfU4m4DONRkD17X/U1pzh6qLErw/+STQdE6vFszVJ0dQwxY6cE0DSw/3
+        6wYkjF0EVFA/LNU9NRGnylzspSKTv11fz7gg9LwO/JTqZVE6lCOrMc2lLcT3++Hh
+        jE1f8mzjK93hSiDKSPJa4aBscz04IBBmxpEGf3Vd8Ye6+ApLUg1uXyLKVYJ9/UyX
+        AdoeVjQwzwVAdh8YudNOWCBvONmMoNj6EJMOiVF0GIfHY/zU0mV1JF3TZK7xQ0dC
+        H6csQkkVbjGi5BC+y2ulh5xopQ41ez3H1Wig5CjoDoRyNm05znIsvDgtX4BmqSpr
+        tlPz2bpfJWjKPdAA==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2d2f86b4 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Fri, 26 Jun 2020 20:39:43 +0000 (UTC)
+Received: by mail-il1-f178.google.com with SMTP id r12so2419298ilh.4
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 13:59:02 -0700 (PDT)
+X-Gm-Message-State: AOAM531zRts9IM9ZbHOwVTeD1+D37q8gAV3v4e+pWchlMjad7wV+2WeR
+        h7Sewk1tdwhhSJW5/qSLfGz3f9dgDl3CthKI+ec=
+X-Google-Smtp-Source: ABdhPJyRope9kyexTx2LTyQ5rXuOV6VRh2y9mcAVbK05A2baQZsoAZITIehi30fueBXH/7xpXZHR/9PsabtIrDDMNkk=
+X-Received: by 2002:a92:d24a:: with SMTP id v10mr5133597ilg.224.1593205141311;
+ Fri, 26 Jun 2020 13:59:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200626144817.GA1023610@andrea>
-User-Agent: NeoMutt/20180716
+References: <20200623095945.1402468-1-Jason@zx2c4.com> <20200623095945.1402468-3-Jason@zx2c4.com>
+In-Reply-To: <20200623095945.1402468-3-Jason@zx2c4.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 26 Jun 2020 14:58:50 -0600
+X-Gmail-Original-Message-ID: <CAHmME9qo6u1rmzgP0HEf2mVj+o4eWpjR+9j709NVhJuMAsb4uQ@mail.gmail.com>
+Message-ID: <CAHmME9qo6u1rmzgP0HEf2mVj+o4eWpjR+9j709NVhJuMAsb4uQ@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] wireguard: device: avoid circular netns references
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 04:48:17PM +0200, Andrea Parri wrote:
-> On Fri, Jun 26, 2020 at 01:42:27PM +0000, Wei Liu wrote:
-> > On Thu, Jun 25, 2020 at 11:37:20AM -0400, Andres Beltran wrote:
-> > > From: Andres Beltran (Microsoft) <lkmlabelt@gmail.com>
-> > > 
-> > > Currently, VMbus drivers use pointers into guest memory as request IDs
-> > > for interactions with Hyper-V. To be more robust in the face of errors
-> > > or malicious behavior from a compromised Hyper-V, avoid exposing
-> > > guest memory addresses to Hyper-V. Also avoid Hyper-V giving back a
-> > > bad request ID that is then treated as the address of a guest data
-> > > structure with no validation. Instead, encapsulate these memory
-> > > addresses and provide small integers as request IDs.
-> > > 
-> > > The first patch creates the definitions for the data structure, provides
-> > > helper methods to generate new IDs and retrieve data, and
-> > > allocates/frees the memory needed for vmbus_requestor.
-> > > 
-> > > The second and third patches make use of vmbus_requestor to send request
-> > > IDs to Hyper-V in storvsc and netvsc respectively.
-> > > 
-> > 
-> > Per my understanding, this new data structure is per-channel, so it
-> > won't introduce contention on the lock in multi-queue scenario. Have you
-> > done any testing to confirm there is no severe performance regression?
-> 
-> I did run some performance tests using our dev pipeline (storage and
-> network workloads).  I did not find regressions w.r.t. baseline.
+Hey Dmitry,
 
-Thanks, that's good to hear.
+The below patch is now in net.git and in Linus' tree. It adds a
+network namespace deletion notifier, which does some things that
+impact the logic of the interface and involves a little bit of object
+lifetime management. You'll see at the very bottom I added a test case
+to rule out the most pathological behavior. But naturally I'm
+wondering about the potential of subtle bugs beyond my gasp. It looks
+like syzkaller doesn't have any coverage of wg_netns_pre_exit -- it's
+all red. Do you suspect that's because the code is new enough that it
+just hasn't found it yet? Or should I start looking at teaching
+syzkaller a bit about interface netns changes?
 
-Wei.
+Jason
 
-> 
->   Andrea
+On Tue, Jun 23, 2020 at 4:00 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> Before, we took a reference to the creating netns if the new netns was
+> different. This caused issues with circular references, with two
+> wireguard interfaces swapping namespaces. The solution is to rather not
+> take any extra references at all, but instead simply invalidate the
+> creating netns pointer when that netns is deleted.
+>
+> In order to prevent this from happening again, this commit improves the
+> rough object leak tracking by allowing it to account for created and
+> destroyed interfaces, aside from just peers and keys. That then makes it
+> possible to check for the object leak when having two interfaces take a
+> reference to each others' namespaces.
+>
+> Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  drivers/net/wireguard/device.c             | 58 ++++++++++------------
+>  drivers/net/wireguard/device.h             |  3 +-
+>  drivers/net/wireguard/netlink.c            | 14 ++++--
+>  drivers/net/wireguard/socket.c             | 25 +++++++---
+>  tools/testing/selftests/wireguard/netns.sh | 13 ++++-
+>  5 files changed, 67 insertions(+), 46 deletions(-)
+>
+> diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
+> index 3ac3f8570ca1..a8f151b1b5fa 100644
+> --- a/drivers/net/wireguard/device.c
+> +++ b/drivers/net/wireguard/device.c
+> @@ -45,17 +45,18 @@ static int wg_open(struct net_device *dev)
+>         if (dev_v6)
+>                 dev_v6->cnf.addr_gen_mode = IN6_ADDR_GEN_MODE_NONE;
+>
+> +       mutex_lock(&wg->device_update_lock);
+>         ret = wg_socket_init(wg, wg->incoming_port);
+>         if (ret < 0)
+> -               return ret;
+> -       mutex_lock(&wg->device_update_lock);
+> +               goto out;
+>         list_for_each_entry(peer, &wg->peer_list, peer_list) {
+>                 wg_packet_send_staged_packets(peer);
+>                 if (peer->persistent_keepalive_interval)
+>                         wg_packet_send_keepalive(peer);
+>         }
+> +out:
+>         mutex_unlock(&wg->device_update_lock);
+> -       return 0;
+> +       return ret;
+>  }
+>
+>  #ifdef CONFIG_PM_SLEEP
+> @@ -225,6 +226,7 @@ static void wg_destruct(struct net_device *dev)
+>         list_del(&wg->device_list);
+>         rtnl_unlock();
+>         mutex_lock(&wg->device_update_lock);
+> +       rcu_assign_pointer(wg->creating_net, NULL);
+>         wg->incoming_port = 0;
+>         wg_socket_reinit(wg, NULL, NULL);
+>         /* The final references are cleared in the below calls to destroy_workqueue. */
+> @@ -240,13 +242,11 @@ static void wg_destruct(struct net_device *dev)
+>         skb_queue_purge(&wg->incoming_handshakes);
+>         free_percpu(dev->tstats);
+>         free_percpu(wg->incoming_handshakes_worker);
+> -       if (wg->have_creating_net_ref)
+> -               put_net(wg->creating_net);
+>         kvfree(wg->index_hashtable);
+>         kvfree(wg->peer_hashtable);
+>         mutex_unlock(&wg->device_update_lock);
+>
+> -       pr_debug("%s: Interface deleted\n", dev->name);
+> +       pr_debug("%s: Interface destroyed\n", dev->name);
+>         free_netdev(dev);
+>  }
+>
+> @@ -292,7 +292,7 @@ static int wg_newlink(struct net *src_net, struct net_device *dev,
+>         struct wg_device *wg = netdev_priv(dev);
+>         int ret = -ENOMEM;
+>
+> -       wg->creating_net = src_net;
+> +       rcu_assign_pointer(wg->creating_net, src_net);
+>         init_rwsem(&wg->static_identity.lock);
+>         mutex_init(&wg->socket_update_lock);
+>         mutex_init(&wg->device_update_lock);
+> @@ -393,30 +393,26 @@ static struct rtnl_link_ops link_ops __read_mostly = {
+>         .newlink                = wg_newlink,
+>  };
+>
+> -static int wg_netdevice_notification(struct notifier_block *nb,
+> -                                    unsigned long action, void *data)
+> +static void wg_netns_pre_exit(struct net *net)
+>  {
+> -       struct net_device *dev = ((struct netdev_notifier_info *)data)->dev;
+> -       struct wg_device *wg = netdev_priv(dev);
+> -
+> -       ASSERT_RTNL();
+> -
+> -       if (action != NETDEV_REGISTER || dev->netdev_ops != &netdev_ops)
+> -               return 0;
+> +       struct wg_device *wg;
+>
+> -       if (dev_net(dev) == wg->creating_net && wg->have_creating_net_ref) {
+> -               put_net(wg->creating_net);
+> -               wg->have_creating_net_ref = false;
+> -       } else if (dev_net(dev) != wg->creating_net &&
+> -                  !wg->have_creating_net_ref) {
+> -               wg->have_creating_net_ref = true;
+> -               get_net(wg->creating_net);
+> +       rtnl_lock();
+> +       list_for_each_entry(wg, &device_list, device_list) {
+> +               if (rcu_access_pointer(wg->creating_net) == net) {
+> +                       pr_debug("%s: Creating namespace exiting\n", wg->dev->name);
+> +                       netif_carrier_off(wg->dev);
+> +                       mutex_lock(&wg->device_update_lock);
+> +                       rcu_assign_pointer(wg->creating_net, NULL);
+> +                       wg_socket_reinit(wg, NULL, NULL);
+> +                       mutex_unlock(&wg->device_update_lock);
+> +               }
+>         }
+> -       return 0;
+> +       rtnl_unlock();
+>  }
+>
+> -static struct notifier_block netdevice_notifier = {
+> -       .notifier_call = wg_netdevice_notification
+> +static struct pernet_operations pernet_ops = {
+> +       .pre_exit = wg_netns_pre_exit
+>  };
+>
+>  int __init wg_device_init(void)
+> @@ -429,18 +425,18 @@ int __init wg_device_init(void)
+>                 return ret;
+>  #endif
+>
+> -       ret = register_netdevice_notifier(&netdevice_notifier);
+> +       ret = register_pernet_device(&pernet_ops);
+>         if (ret)
+>                 goto error_pm;
+>
+>         ret = rtnl_link_register(&link_ops);
+>         if (ret)
+> -               goto error_netdevice;
+> +               goto error_pernet;
+>
+>         return 0;
+>
+> -error_netdevice:
+> -       unregister_netdevice_notifier(&netdevice_notifier);
+> +error_pernet:
+> +       unregister_pernet_device(&pernet_ops);
+>  error_pm:
+>  #ifdef CONFIG_PM_SLEEP
+>         unregister_pm_notifier(&pm_notifier);
+> @@ -451,7 +447,7 @@ int __init wg_device_init(void)
+>  void wg_device_uninit(void)
+>  {
+>         rtnl_link_unregister(&link_ops);
+> -       unregister_netdevice_notifier(&netdevice_notifier);
+> +       unregister_pernet_device(&pernet_ops);
+>  #ifdef CONFIG_PM_SLEEP
+>         unregister_pm_notifier(&pm_notifier);
+>  #endif
+> diff --git a/drivers/net/wireguard/device.h b/drivers/net/wireguard/device.h
+> index b15a8be9d816..4d0144e16947 100644
+> --- a/drivers/net/wireguard/device.h
+> +++ b/drivers/net/wireguard/device.h
+> @@ -40,7 +40,7 @@ struct wg_device {
+>         struct net_device *dev;
+>         struct crypt_queue encrypt_queue, decrypt_queue;
+>         struct sock __rcu *sock4, *sock6;
+> -       struct net *creating_net;
+> +       struct net __rcu *creating_net;
+>         struct noise_static_identity static_identity;
+>         struct workqueue_struct *handshake_receive_wq, *handshake_send_wq;
+>         struct workqueue_struct *packet_crypt_wq;
+> @@ -56,7 +56,6 @@ struct wg_device {
+>         unsigned int num_peers, device_update_gen;
+>         u32 fwmark;
+>         u16 incoming_port;
+> -       bool have_creating_net_ref;
+>  };
+>
+>  int wg_device_init(void);
+> diff --git a/drivers/net/wireguard/netlink.c b/drivers/net/wireguard/netlink.c
+> index 802099c8828a..20a4f3c0a0a1 100644
+> --- a/drivers/net/wireguard/netlink.c
+> +++ b/drivers/net/wireguard/netlink.c
+> @@ -511,11 +511,15 @@ static int wg_set_device(struct sk_buff *skb, struct genl_info *info)
+>         if (flags & ~__WGDEVICE_F_ALL)
+>                 goto out;
+>
+> -       ret = -EPERM;
+> -       if ((info->attrs[WGDEVICE_A_LISTEN_PORT] ||
+> -            info->attrs[WGDEVICE_A_FWMARK]) &&
+> -           !ns_capable(wg->creating_net->user_ns, CAP_NET_ADMIN))
+> -               goto out;
+> +       if (info->attrs[WGDEVICE_A_LISTEN_PORT] || info->attrs[WGDEVICE_A_FWMARK]) {
+> +               struct net *net;
+> +               rcu_read_lock();
+> +               net = rcu_dereference(wg->creating_net);
+> +               ret = !net || !ns_capable(net->user_ns, CAP_NET_ADMIN) ? -EPERM : 0;
+> +               rcu_read_unlock();
+> +               if (ret)
+> +                       goto out;
+> +       }
+>
+>         ++wg->device_update_gen;
+>
+> diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
+> index f9018027fc13..c33e2c81635f 100644
+> --- a/drivers/net/wireguard/socket.c
+> +++ b/drivers/net/wireguard/socket.c
+> @@ -347,6 +347,7 @@ static void set_sock_opts(struct socket *sock)
+>
+>  int wg_socket_init(struct wg_device *wg, u16 port)
+>  {
+> +       struct net *net;
+>         int ret;
+>         struct udp_tunnel_sock_cfg cfg = {
+>                 .sk_user_data = wg,
+> @@ -371,37 +372,47 @@ int wg_socket_init(struct wg_device *wg, u16 port)
+>         };
+>  #endif
+>
+> +       rcu_read_lock();
+> +       net = rcu_dereference(wg->creating_net);
+> +       net = net ? maybe_get_net(net) : NULL;
+> +       rcu_read_unlock();
+> +       if (unlikely(!net))
+> +               return -ENONET;
+> +
+>  #if IS_ENABLED(CONFIG_IPV6)
+>  retry:
+>  #endif
+>
+> -       ret = udp_sock_create(wg->creating_net, &port4, &new4);
+> +       ret = udp_sock_create(net, &port4, &new4);
+>         if (ret < 0) {
+>                 pr_err("%s: Could not create IPv4 socket\n", wg->dev->name);
+> -               return ret;
+> +               goto out;
+>         }
+>         set_sock_opts(new4);
+> -       setup_udp_tunnel_sock(wg->creating_net, new4, &cfg);
+> +       setup_udp_tunnel_sock(net, new4, &cfg);
+>
+>  #if IS_ENABLED(CONFIG_IPV6)
+>         if (ipv6_mod_enabled()) {
+>                 port6.local_udp_port = inet_sk(new4->sk)->inet_sport;
+> -               ret = udp_sock_create(wg->creating_net, &port6, &new6);
+> +               ret = udp_sock_create(net, &port6, &new6);
+>                 if (ret < 0) {
+>                         udp_tunnel_sock_release(new4);
+>                         if (ret == -EADDRINUSE && !port && retries++ < 100)
+>                                 goto retry;
+>                         pr_err("%s: Could not create IPv6 socket\n",
+>                                wg->dev->name);
+> -                       return ret;
+> +                       goto out;
+>                 }
+>                 set_sock_opts(new6);
+> -               setup_udp_tunnel_sock(wg->creating_net, new6, &cfg);
+> +               setup_udp_tunnel_sock(net, new6, &cfg);
+>         }
+>  #endif
+>
+>         wg_socket_reinit(wg, new4->sk, new6 ? new6->sk : NULL);
+> -       return 0;
+> +       ret = 0;
+> +out:
+> +       put_net(net);
+> +       return ret;
+>  }
+>
+>  void wg_socket_reinit(struct wg_device *wg, struct sock *new4,
+> diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
+> index 17a1f53ceba0..d77f4829f1e0 100755
+> --- a/tools/testing/selftests/wireguard/netns.sh
+> +++ b/tools/testing/selftests/wireguard/netns.sh
+> @@ -587,9 +587,20 @@ ip0 link set wg0 up
+>  kill $ncat_pid
+>  ip0 link del wg0
+>
+> +# Ensure there aren't circular reference loops
+> +ip1 link add wg1 type wireguard
+> +ip2 link add wg2 type wireguard
+> +ip1 link set wg1 netns $netns2
+> +ip2 link set wg2 netns $netns1
+> +pp ip netns delete $netns1
+> +pp ip netns delete $netns2
+> +pp ip netns add $netns1
+> +pp ip netns add $netns2
+> +
+> +sleep 2 # Wait for cleanup and grace periods
+>  declare -A objects
+>  while read -t 0.1 -r line 2>/dev/null || [[ $? -ne 142 ]]; do
+> -       [[ $line =~ .*(wg[0-9]+:\ [A-Z][a-z]+\ [0-9]+)\ .*(created|destroyed).* ]] || continue
+> +       [[ $line =~ .*(wg[0-9]+:\ [A-Z][a-z]+\ ?[0-9]*)\ .*(created|destroyed).* ]] || continue
+>         objects["${BASH_REMATCH[1]}"]+="${BASH_REMATCH[2]}"
+>  done < /dev/kmsg
+>  alldeleted=1
+> --
+> 2.27.0
