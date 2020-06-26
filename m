@@ -2,101 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2DB920B459
-	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 17:19:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A5F20B488
+	for <lists+netdev@lfdr.de>; Fri, 26 Jun 2020 17:29:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729377AbgFZPT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 11:19:29 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34000 "EHLO vps0.lunn.ch"
+        id S1729523AbgFZP3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 11:29:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35518 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725821AbgFZPT2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Jun 2020 11:19:28 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1joq8U-002NjP-Jg; Fri, 26 Jun 2020 17:19:26 +0200
-Date:   Fri, 26 Jun 2020 17:19:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@mellanox.com, vadimp@mellanox.com, popadrian1996@gmail.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 1/2] mlxsw: core: Add ethtool support for
- QSFP-DD transceivers
-Message-ID: <20200626151926.GE535869@lunn.ch>
-References: <20200626144724.224372-1-idosch@idosch.org>
- <20200626144724.224372-2-idosch@idosch.org>
+        id S1725821AbgFZP3p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 11:29:45 -0400
+Received: from pali.im (pali.im [31.31.79.79])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BE7E7207E8;
+        Fri, 26 Jun 2020 15:29:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593185384;
+        bh=zXjG44VNS3z0g6/r9OQ45OaHncYIm/HWnlomXgb0td4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jwz6I1HZkH/aTM1g3LDJ+AHjiTXYI38VupkBjQwvQZqebkUAguYylrVaTlYZTiK5w
+         fsaLM+YWeysCXxgUZi73Rr4dPoXgHM5gWtJlUnwbuz7pcogd5/FNQcePXQmmTq00NI
+         d5I3wUED54W/zXIyxPK9d8kyBNRKhl+u1td3TPXg=
+Received: by pali.im (Postfix)
+        id 9A82C890; Fri, 26 Jun 2020 17:29:42 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] mwifiex: Use macro MWIFIEX_MAX_BSS_NUM for specifying limit of interfaces
+Date:   Fri, 26 Jun 2020 17:29:38 +0200
+Message-Id: <20200626152938.12737-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200626144724.224372-2-idosch@idosch.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +	case MLXSW_REG_MCIA_EEPROM_MODULE_INFO_ID_QSFP_DD:
-> +		/* Use SFF_8636 as base type. ethtool should recognize specific
-> +		 * type through the identifier value.
-> +		 */
-> +		modinfo->type       = ETH_MODULE_SFF_8636;
-> +		/* Verify if module EEPROM is a flat memory. In case of flat
-> +		 * memory only page 00h (0-255 bytes) can be read. Otherwise
-> +		 * upper pages 01h and 02h can also be read. Upper pages 10h
-> +		 * and 11h are currently not supported by the driver.
-> +		 */
-> +		if (module_info[MLXSW_REG_MCIA_EEPROM_MODULE_INFO_TYPE_ID] &
-> +		    MLXSW_REG_MCIA_EEPROM_CMIS_FLAT_MEMORY)
-> +			modinfo->eeprom_len = ETH_MODULE_SFF_8636_LEN;
-> +		else
-> +			modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN;
-> +		break;
+This macro is already used in mwifiex driver for specifying upper limit and
+is defined to value 3. So use it also in struct ieee80211_iface_limit.
 
-Although the upper pages 10h and 11h are not supported now, we
-probably think about how they would be supported, to make sure we are
-not going into a dead end.
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ drivers/net/wireless/marvell/mwifiex/cfg80211.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-From ethtool qsfp.c
+diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+index 4e4f59c17ded..867b5cf385a8 100644
+--- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
++++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+@@ -27,7 +27,8 @@ module_param(reg_alpha2, charp, 0);
+ 
+ static const struct ieee80211_iface_limit mwifiex_ap_sta_limits[] = {
+ 	{
+-		.max = 3, .types = BIT(NL80211_IFTYPE_STATION) |
++		.max = MWIFIEX_MAX_BSS_NUM,
++		.types = BIT(NL80211_IFTYPE_STATION) |
+ 				   BIT(NL80211_IFTYPE_P2P_GO) |
+ 				   BIT(NL80211_IFTYPE_P2P_CLIENT) |
+ 				   BIT(NL80211_IFTYPE_AP),
+-- 
+2.20.1
 
-/*
- *      Description:
- *      a) The register/memory layout is up to 5 128 byte pages defined by
- *              a "pages valid" register and switched via a "page select"
- *              register. Memory of 256 bytes can be memory mapped at a time
- *              according to SFF 8636.
- *      b) SFF 8636 based 640 bytes memory layout is presented for parser
- *
- *           SFF 8636 based QSFP Memory Map
- *
- *           2-Wire Serial Address: 1010000x
- *
- *           Lower Page 00h (128 bytes)
- *           ======================
- *           |                     |
- *           |Page Select Byte(127)|
- *           ======================
- *                    |
- *                    V
- *           ----------------------------------------
- *          |             |            |             |
- *          V             V            V             V
- *       ----------   ----------   ---------    ------------
- *      | Upper    | | Upper    | | Upper    | | Upper      |
- *      | Page 00h | | Page 01h | | Page 02h | | Page 03h   |
- *      |          | |(Optional)| |(Optional)| | (Optional) |
- *      |          | |          | |          | |            |
- *      |          | |          | |          | |            |
- *      |    ID    | |   AST    | |  User    | |  For       |
- *      |  Fields  | |  Table   | | EEPROM   | |  Cable     |
- *      |          | |          | | Data     | | Assemblies |
- *      |          | |          | |          | |            |
- *      |          | |          | |          | |            |
- *      -----------  -----------   ----------  --------------
- *
- *
- **/
-
-Is page 03h valid for a QSFP DD? Do we add pages 10h and 11h after
-page 03h, or instead of? How do we indicate to user space what pages
-of data have been passed to it?
-
-   Andrew
