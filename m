@@ -2,56 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A27520C064
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 10:59:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCB8520C085
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 11:51:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726411AbgF0I7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 04:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725831AbgF0I7f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 04:59:35 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185A6C03E979
-        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 01:59:35 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id dp10so5556449qvb.10
-        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 01:59:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x9iZKxS7FyBJ1XY32zDpQctN1CZA/+gMN23LeDuKGRM=;
-        b=d6LwQmbXdl1fUcPyOIWXlmGBjNs5kc1E4d0W49FKJZ8TJPHt56GYz2tWXAkuyZugBU
-         KWtyKuohMUYaL3hfCvVa7rebpkSdvi0c6plIikIuEWG+Th9sc6+DAaTfkSAqlUlOyYdq
-         E8sf4VFD+sRf4TqgquM2zp8DgNR3u1109LWFl9jBm6sRJm7YVmGdrddhQf84pFRWULN9
-         rFsILvPDJiYmWiitnF7eJBc09UTfutIAa9STPMZY4zBs7RXe1vavO5H8Vtl3442o+20c
-         YVhanIBCIprB0IvxnGd7LWTUVIA0drpQK4DCZbsJRxalgC3Q4GF9M9T3ovvlL8/HsaUL
-         aowg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x9iZKxS7FyBJ1XY32zDpQctN1CZA/+gMN23LeDuKGRM=;
-        b=eTPH+36oWIjol7b8LOG4tt8JpjYVSdQpo+XSWQw5FxQyfByFvzZeIvd/HOmyW1QH3r
-         jcX1tgNb3V9AWR5L5nd6SxkcAA8dYIj0xfrsWCB4aH9ovUTxR6SUe1kr8bdxTUd36OEz
-         7Qxs5D6ikpUJH1bOXlSaw7ssKhYmzRaGqa9b5NYHc1NkBV3QQ8c3G/HnpJSa8Pn39z/E
-         0fSqeIibmxRDmr2+Udxx5EuSKEamXeLtL2c7lI7DSmxOa+HCAJLwVuyap2u6wUhNG46x
-         O6NP3uOf+H34abqN+EXOqRmKPVhJdbKoWxCq2xJEiJHUWYaN2cVLUlAmplxtVZtBYZQO
-         I7dQ==
-X-Gm-Message-State: AOAM5322fwWNkdMEncT1tQdC9f9wGtFbbTBYmuMmTcBM/zAvg3SLtBmZ
-        c6d+ZyJhub2/1Gf/wv/n4u0mX4ZTfaqDXzCcixdnoQ==
-X-Google-Smtp-Source: ABdhPJzRqliH36QrvTVh8kUYdqv/kNkNata6PQ38TCJD8FyyvcnDXiOZfOogsU9rlpf9ao/kIsOjUZ8Gr1OUodcVYj0=
-X-Received: by 2002:a0c:a993:: with SMTP id a19mr7030487qvb.34.1593248373822;
- Sat, 27 Jun 2020 01:59:33 -0700 (PDT)
+        id S1726447AbgF0JvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 05:51:06 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:35045 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726177AbgF0JvG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Jun 2020 05:51:06 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 88344ce5
+        for <netdev@vger.kernel.org>;
+        Sat, 27 Jun 2020 09:31:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=iodm5UKAwuxsN5o9+q5XZMyNmO0=; b=xcwnIm
+        QP6vC4Zjqt9c6L2IxZdxZg9Z4hfT3ScxG7Qg0+Q/ZIMqZo9e0lj06v8YYUXJOAUQ
+        rhIf56vLcLDVxsw6djkdfBSmFEiJHSPpRGUm0GBwuubI7ZIUYdmuhN4Onm0ev7Nk
+        /t1Sz5Vzz3Bvf51F0A3h2MXnXB8Yd9v/mGXQ79L863kLGd0hOX9HogG0xOx4vuPs
+        dRfOetCar8HmSqnYUjXjfVuP3GN/NwCc1gyjmf7aawrJtvSuPgr0dN+PuUII5CJv
+        tdXHhzGh2/dfQ15CFlemBKgzG0OQBaqkWUEJPKXyYCX5X3syvbsxLpgRZftDArKx
+        ArDmC0as6XgRtlYA==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 57d8a46b (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Sat, 27 Jun 2020 09:31:41 +0000 (UTC)
+Received: by mail-il1-f177.google.com with SMTP id a11so2257999ilk.0
+        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 02:51:04 -0700 (PDT)
+X-Gm-Message-State: AOAM531IYUGfI3J8itACFjPjccOLCINBSoe0kbOu5sFzP8Fyti1+tW1i
+        woyv69vkZ8OfQuN3Aud3wBms8n6XpbFGclEsWPo=
+X-Google-Smtp-Source: ABdhPJxueSk+svbzmYoYDONtUkByzd2M7ARKTZlhnhj93OhChiMIBsQoWe7mIbTgJ7fEaN5pq4KFnRitFiseHlmwY3Y=
+X-Received: by 2002:a92:91c2:: with SMTP id e63mr6662683ill.64.1593251463502;
+ Sat, 27 Jun 2020 02:51:03 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200623095945.1402468-1-Jason@zx2c4.com> <20200623095945.1402468-3-Jason@zx2c4.com>
- <CAHmME9qo6u1rmzgP0HEf2mVj+o4eWpjR+9j709NVhJuMAsb4uQ@mail.gmail.com>
-In-Reply-To: <CAHmME9qo6u1rmzgP0HEf2mVj+o4eWpjR+9j709NVhJuMAsb4uQ@mail.gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Sat, 27 Jun 2020 10:59:22 +0200
-Message-ID: <CACT4Y+adKydDGcoz3xBb45g_J04kKtQpGRua3k_BvOF=mB4EdQ@mail.gmail.com>
+ <CAHmME9qo6u1rmzgP0HEf2mVj+o4eWpjR+9j709NVhJuMAsb4uQ@mail.gmail.com> <CACT4Y+adKydDGcoz3xBb45g_J04kKtQpGRua3k_BvOF=mB4EdQ@mail.gmail.com>
+In-Reply-To: <CACT4Y+adKydDGcoz3xBb45g_J04kKtQpGRua3k_BvOF=mB4EdQ@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Sat, 27 Jun 2020 03:50:52 -0600
+X-Gmail-Original-Message-ID: <CAHmME9rrpr97mXLoEgk9YvZCfEUeodhCGbbWV1t2+giDBasiKQ@mail.gmail.com>
+Message-ID: <CAHmME9rrpr97mXLoEgk9YvZCfEUeodhCGbbWV1t2+giDBasiKQ@mail.gmail.com>
 Subject: Re: [PATCH net 2/2] wireguard: device: avoid circular netns references
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Dmitry Vyukov <dvyukov@google.com>
 Cc:     Netdev <netdev@vger.kernel.org>,
         syzkaller <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
@@ -60,340 +51,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 10:59 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> Hey Dmitry,
->
-> The below patch is now in net.git and in Linus' tree. It adds a
-> network namespace deletion notifier, which does some things that
-> impact the logic of the interface and involves a little bit of object
-> lifetime management. You'll see at the very bottom I added a test case
-> to rule out the most pathological behavior. But naturally I'm
-> wondering about the potential of subtle bugs beyond my gasp. It looks
-> like syzkaller doesn't have any coverage of wg_netns_pre_exit -- it's
-> all red. Do you suspect that's because the code is new enough that it
-> just hasn't found it yet? Or should I start looking at teaching
-> syzkaller a bit about interface netns changes?
+Hi Dmitry,
 
-+syzkaller mailing list
+On Sat, Jun 27, 2020 at 2:59 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+> Hard to say. syzkaller frequently needs some time (days) to get
+> reasonable coverage of new code.
+> Is wg_netns_pre_exit executed synchronously in the context of a
+> syscall? If not, then it won't be shown as covered. If yes, then what
+> syscall is it?
 
-Hi Jason,
+Aw, shucks, you're right. I thought that this would be from the
+syscall path for deleting a network namespace via netns_put, but
+sticking a dump_stack() in there, it's clear that namespace cleanup
+actually happens in a worker:
 
-Hard to say. syzkaller frequently needs some time (days) to get
-reasonable coverage of new code.
-Is wg_netns_pre_exit executed synchronously in the context of a
-syscall? If not, then it won't be shown as covered. If yes, then what
-syscall is it?
-This is related to namespaces, right? syzkaller has some descriptions
-for namespaces:
-https://github.com/google/syzkaller/blob/master/sys/linux/namespaces.txt
-But I don't know if it's enough nor I checked if they actually work.
-We have this laundry list:
-https://github.com/google/syzkaller/issues/533
-and some interns working on adding more descriptions. If you can
-identify something that's not covered but can be covered, please add
-to that list. I think we can even prioritize it then b/c most items on
-that list don't have anybody actively interested.
+[    0.407072]  wg_netns_pre_exit+0xc/0x98
+[    0.408496]  cleanup_net+0x1bd/0x2f0
+[    0.409844]  process_one_work+0x17f/0x2d0
+[    0.411327]  worker_thread+0x4b/0x3b0
+[    0.412697]  ? rescuer_thread+0x360/0x360
+[    0.414169]  kthread+0x116/0x140
+[    0.415368]  ? __kthread_create_worker+0x110/0x110
+[    0.417125]  ret_from_fork+0x1f/0x30
 
+> This is related to namespaces, right? syzkaller has some descriptions
+> for namespaces:
+> https://github.com/google/syzkaller/blob/master/sys/linux/namespaces.txt
+> But I don't know if it's enough nor I checked if they actually work.
+> We have this laundry list:
+> https://github.com/google/syzkaller/issues/533
+> and some interns working on adding more descriptions. If you can
+> identify something that's not covered but can be covered, please add
+> to that list. I think we can even prioritize it then b/c most items on
+> that list don't have anybody actively interested.
 
-> On Tue, Jun 23, 2020 at 4:00 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> >
-> > Before, we took a reference to the creating netns if the new netns was
-> > different. This caused issues with circular references, with two
-> > wireguard interfaces swapping namespaces. The solution is to rather not
-> > take any extra references at all, but instead simply invalidate the
-> > creating netns pointer when that netns is deleted.
-> >
-> > In order to prevent this from happening again, this commit improves the
-> > rough object leak tracking by allowing it to account for created and
-> > destroyed interfaces, aside from just peers and keys. That then makes it
-> > possible to check for the object leak when having two interfaces take a
-> > reference to each others' namespaces.
-> >
-> > Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> > ---
-> >  drivers/net/wireguard/device.c             | 58 ++++++++++------------
-> >  drivers/net/wireguard/device.h             |  3 +-
-> >  drivers/net/wireguard/netlink.c            | 14 ++++--
-> >  drivers/net/wireguard/socket.c             | 25 +++++++---
-> >  tools/testing/selftests/wireguard/netns.sh | 13 ++++-
-> >  5 files changed, 67 insertions(+), 46 deletions(-)
-> >
-> > diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-> > index 3ac3f8570ca1..a8f151b1b5fa 100644
-> > --- a/drivers/net/wireguard/device.c
-> > +++ b/drivers/net/wireguard/device.c
-> > @@ -45,17 +45,18 @@ static int wg_open(struct net_device *dev)
-> >         if (dev_v6)
-> >                 dev_v6->cnf.addr_gen_mode = IN6_ADDR_GEN_MODE_NONE;
-> >
-> > +       mutex_lock(&wg->device_update_lock);
-> >         ret = wg_socket_init(wg, wg->incoming_port);
-> >         if (ret < 0)
-> > -               return ret;
-> > -       mutex_lock(&wg->device_update_lock);
-> > +               goto out;
-> >         list_for_each_entry(peer, &wg->peer_list, peer_list) {
-> >                 wg_packet_send_staged_packets(peer);
-> >                 if (peer->persistent_keepalive_interval)
-> >                         wg_packet_send_keepalive(peer);
-> >         }
-> > +out:
-> >         mutex_unlock(&wg->device_update_lock);
-> > -       return 0;
-> > +       return ret;
-> >  }
-> >
-> >  #ifdef CONFIG_PM_SLEEP
-> > @@ -225,6 +226,7 @@ static void wg_destruct(struct net_device *dev)
-> >         list_del(&wg->device_list);
-> >         rtnl_unlock();
-> >         mutex_lock(&wg->device_update_lock);
-> > +       rcu_assign_pointer(wg->creating_net, NULL);
-> >         wg->incoming_port = 0;
-> >         wg_socket_reinit(wg, NULL, NULL);
-> >         /* The final references are cleared in the below calls to destroy_workqueue. */
-> > @@ -240,13 +242,11 @@ static void wg_destruct(struct net_device *dev)
-> >         skb_queue_purge(&wg->incoming_handshakes);
-> >         free_percpu(dev->tstats);
-> >         free_percpu(wg->incoming_handshakes_worker);
-> > -       if (wg->have_creating_net_ref)
-> > -               put_net(wg->creating_net);
-> >         kvfree(wg->index_hashtable);
-> >         kvfree(wg->peer_hashtable);
-> >         mutex_unlock(&wg->device_update_lock);
-> >
-> > -       pr_debug("%s: Interface deleted\n", dev->name);
-> > +       pr_debug("%s: Interface destroyed\n", dev->name);
-> >         free_netdev(dev);
-> >  }
-> >
-> > @@ -292,7 +292,7 @@ static int wg_newlink(struct net *src_net, struct net_device *dev,
-> >         struct wg_device *wg = netdev_priv(dev);
-> >         int ret = -ENOMEM;
-> >
-> > -       wg->creating_net = src_net;
-> > +       rcu_assign_pointer(wg->creating_net, src_net);
-> >         init_rwsem(&wg->static_identity.lock);
-> >         mutex_init(&wg->socket_update_lock);
-> >         mutex_init(&wg->device_update_lock);
-> > @@ -393,30 +393,26 @@ static struct rtnl_link_ops link_ops __read_mostly = {
-> >         .newlink                = wg_newlink,
-> >  };
-> >
-> > -static int wg_netdevice_notification(struct notifier_block *nb,
-> > -                                    unsigned long action, void *data)
-> > +static void wg_netns_pre_exit(struct net *net)
-> >  {
-> > -       struct net_device *dev = ((struct netdev_notifier_info *)data)->dev;
-> > -       struct wg_device *wg = netdev_priv(dev);
-> > -
-> > -       ASSERT_RTNL();
-> > -
-> > -       if (action != NETDEV_REGISTER || dev->netdev_ops != &netdev_ops)
-> > -               return 0;
-> > +       struct wg_device *wg;
-> >
-> > -       if (dev_net(dev) == wg->creating_net && wg->have_creating_net_ref) {
-> > -               put_net(wg->creating_net);
-> > -               wg->have_creating_net_ref = false;
-> > -       } else if (dev_net(dev) != wg->creating_net &&
-> > -                  !wg->have_creating_net_ref) {
-> > -               wg->have_creating_net_ref = true;
-> > -               get_net(wg->creating_net);
-> > +       rtnl_lock();
-> > +       list_for_each_entry(wg, &device_list, device_list) {
-> > +               if (rcu_access_pointer(wg->creating_net) == net) {
-> > +                       pr_debug("%s: Creating namespace exiting\n", wg->dev->name);
-> > +                       netif_carrier_off(wg->dev);
-> > +                       mutex_lock(&wg->device_update_lock);
-> > +                       rcu_assign_pointer(wg->creating_net, NULL);
-> > +                       wg_socket_reinit(wg, NULL, NULL);
-> > +                       mutex_unlock(&wg->device_update_lock);
-> > +               }
-> >         }
-> > -       return 0;
-> > +       rtnl_unlock();
-> >  }
-> >
-> > -static struct notifier_block netdevice_notifier = {
-> > -       .notifier_call = wg_netdevice_notification
-> > +static struct pernet_operations pernet_ops = {
-> > +       .pre_exit = wg_netns_pre_exit
-> >  };
-> >
-> >  int __init wg_device_init(void)
-> > @@ -429,18 +425,18 @@ int __init wg_device_init(void)
-> >                 return ret;
-> >  #endif
-> >
-> > -       ret = register_netdevice_notifier(&netdevice_notifier);
-> > +       ret = register_pernet_device(&pernet_ops);
-> >         if (ret)
-> >                 goto error_pm;
-> >
-> >         ret = rtnl_link_register(&link_ops);
-> >         if (ret)
-> > -               goto error_netdevice;
-> > +               goto error_pernet;
-> >
-> >         return 0;
-> >
-> > -error_netdevice:
-> > -       unregister_netdevice_notifier(&netdevice_notifier);
-> > +error_pernet:
-> > +       unregister_pernet_device(&pernet_ops);
-> >  error_pm:
-> >  #ifdef CONFIG_PM_SLEEP
-> >         unregister_pm_notifier(&pm_notifier);
-> > @@ -451,7 +447,7 @@ int __init wg_device_init(void)
-> >  void wg_device_uninit(void)
-> >  {
-> >         rtnl_link_unregister(&link_ops);
-> > -       unregister_netdevice_notifier(&netdevice_notifier);
-> > +       unregister_pernet_device(&pernet_ops);
-> >  #ifdef CONFIG_PM_SLEEP
-> >         unregister_pm_notifier(&pm_notifier);
-> >  #endif
-> > diff --git a/drivers/net/wireguard/device.h b/drivers/net/wireguard/device.h
-> > index b15a8be9d816..4d0144e16947 100644
-> > --- a/drivers/net/wireguard/device.h
-> > +++ b/drivers/net/wireguard/device.h
-> > @@ -40,7 +40,7 @@ struct wg_device {
-> >         struct net_device *dev;
-> >         struct crypt_queue encrypt_queue, decrypt_queue;
-> >         struct sock __rcu *sock4, *sock6;
-> > -       struct net *creating_net;
-> > +       struct net __rcu *creating_net;
-> >         struct noise_static_identity static_identity;
-> >         struct workqueue_struct *handshake_receive_wq, *handshake_send_wq;
-> >         struct workqueue_struct *packet_crypt_wq;
-> > @@ -56,7 +56,6 @@ struct wg_device {
-> >         unsigned int num_peers, device_update_gen;
-> >         u32 fwmark;
-> >         u16 incoming_port;
-> > -       bool have_creating_net_ref;
-> >  };
-> >
-> >  int wg_device_init(void);
-> > diff --git a/drivers/net/wireguard/netlink.c b/drivers/net/wireguard/netlink.c
-> > index 802099c8828a..20a4f3c0a0a1 100644
-> > --- a/drivers/net/wireguard/netlink.c
-> > +++ b/drivers/net/wireguard/netlink.c
-> > @@ -511,11 +511,15 @@ static int wg_set_device(struct sk_buff *skb, struct genl_info *info)
-> >         if (flags & ~__WGDEVICE_F_ALL)
-> >                 goto out;
-> >
-> > -       ret = -EPERM;
-> > -       if ((info->attrs[WGDEVICE_A_LISTEN_PORT] ||
-> > -            info->attrs[WGDEVICE_A_FWMARK]) &&
-> > -           !ns_capable(wg->creating_net->user_ns, CAP_NET_ADMIN))
-> > -               goto out;
-> > +       if (info->attrs[WGDEVICE_A_LISTEN_PORT] || info->attrs[WGDEVICE_A_FWMARK]) {
-> > +               struct net *net;
-> > +               rcu_read_lock();
-> > +               net = rcu_dereference(wg->creating_net);
-> > +               ret = !net || !ns_capable(net->user_ns, CAP_NET_ADMIN) ? -EPERM : 0;
-> > +               rcu_read_unlock();
-> > +               if (ret)
-> > +                       goto out;
-> > +       }
-> >
-> >         ++wg->device_update_gen;
-> >
-> > diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
-> > index f9018027fc13..c33e2c81635f 100644
-> > --- a/drivers/net/wireguard/socket.c
-> > +++ b/drivers/net/wireguard/socket.c
-> > @@ -347,6 +347,7 @@ static void set_sock_opts(struct socket *sock)
-> >
-> >  int wg_socket_init(struct wg_device *wg, u16 port)
-> >  {
-> > +       struct net *net;
-> >         int ret;
-> >         struct udp_tunnel_sock_cfg cfg = {
-> >                 .sk_user_data = wg,
-> > @@ -371,37 +372,47 @@ int wg_socket_init(struct wg_device *wg, u16 port)
-> >         };
-> >  #endif
-> >
-> > +       rcu_read_lock();
-> > +       net = rcu_dereference(wg->creating_net);
-> > +       net = net ? maybe_get_net(net) : NULL;
-> > +       rcu_read_unlock();
-> > +       if (unlikely(!net))
-> > +               return -ENONET;
-> > +
-> >  #if IS_ENABLED(CONFIG_IPV6)
-> >  retry:
-> >  #endif
-> >
-> > -       ret = udp_sock_create(wg->creating_net, &port4, &new4);
-> > +       ret = udp_sock_create(net, &port4, &new4);
-> >         if (ret < 0) {
-> >                 pr_err("%s: Could not create IPv4 socket\n", wg->dev->name);
-> > -               return ret;
-> > +               goto out;
-> >         }
-> >         set_sock_opts(new4);
-> > -       setup_udp_tunnel_sock(wg->creating_net, new4, &cfg);
-> > +       setup_udp_tunnel_sock(net, new4, &cfg);
-> >
-> >  #if IS_ENABLED(CONFIG_IPV6)
-> >         if (ipv6_mod_enabled()) {
-> >                 port6.local_udp_port = inet_sk(new4->sk)->inet_sport;
-> > -               ret = udp_sock_create(wg->creating_net, &port6, &new6);
-> > +               ret = udp_sock_create(net, &port6, &new6);
-> >                 if (ret < 0) {
-> >                         udp_tunnel_sock_release(new4);
-> >                         if (ret == -EADDRINUSE && !port && retries++ < 100)
-> >                                 goto retry;
-> >                         pr_err("%s: Could not create IPv6 socket\n",
-> >                                wg->dev->name);
-> > -                       return ret;
-> > +                       goto out;
-> >                 }
-> >                 set_sock_opts(new6);
-> > -               setup_udp_tunnel_sock(wg->creating_net, new6, &cfg);
-> > +               setup_udp_tunnel_sock(net, new6, &cfg);
-> >         }
-> >  #endif
-> >
-> >         wg_socket_reinit(wg, new4->sk, new6 ? new6->sk : NULL);
-> > -       return 0;
-> > +       ret = 0;
-> > +out:
-> > +       put_net(net);
-> > +       return ret;
-> >  }
-> >
-> >  void wg_socket_reinit(struct wg_device *wg, struct sock *new4,
-> > diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
-> > index 17a1f53ceba0..d77f4829f1e0 100755
-> > --- a/tools/testing/selftests/wireguard/netns.sh
-> > +++ b/tools/testing/selftests/wireguard/netns.sh
-> > @@ -587,9 +587,20 @@ ip0 link set wg0 up
-> >  kill $ncat_pid
-> >  ip0 link del wg0
-> >
-> > +# Ensure there aren't circular reference loops
-> > +ip1 link add wg1 type wireguard
-> > +ip2 link add wg2 type wireguard
-> > +ip1 link set wg1 netns $netns2
-> > +ip2 link set wg2 netns $netns1
-> > +pp ip netns delete $netns1
-> > +pp ip netns delete $netns2
-> > +pp ip netns add $netns1
-> > +pp ip netns add $netns2
-> > +
-> > +sleep 2 # Wait for cleanup and grace periods
-> >  declare -A objects
-> >  while read -t 0.1 -r line 2>/dev/null || [[ $? -ne 142 ]]; do
-> > -       [[ $line =~ .*(wg[0-9]+:\ [A-Z][a-z]+\ [0-9]+)\ .*(created|destroyed).* ]] || continue
-> > +       [[ $line =~ .*(wg[0-9]+:\ [A-Z][a-z]+\ ?[0-9]*)\ .*(created|destroyed).* ]] || continue
-> >         objects["${BASH_REMATCH[1]}"]+="${BASH_REMATCH[2]}"
-> >  done < /dev/kmsg
-> >  alldeleted=1
-> > --
-> > 2.27.0
+Something to add to that list would be:
+
+- Create an interface of a given type (wg0->wireguard, for example)
+- Move it to a namespace
+- Delete a namespace
+- Delete an interface
+
+Some combination of those things might provoke issues. One would be
+what the original post of this email thread was about. Another would
+be that xfrmi OOPS from a few weeks ago, fixed with c95c5f58b35e
+("xfrm interface: fix oops when deleting a x-netns interface"), which
+has a reproducer in the commit message pretty similar to the one here.
+There's an even older one in xfrmi, fixed with c5d1030f2300 ("xfrm
+interface: fix list corruption for x-netns").
+
+In short, adding and deleting namespaces and moving interfaces around
+between them, amidst other syzkaller chaos, might turn up bugs,
+because in the past humans have found those sorts of bugs doing the
+same.
+
+Jason
