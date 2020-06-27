@@ -2,72 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DAAA20BEEA
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 07:58:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7A2320BEEF
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 08:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725922AbgF0F6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 01:58:35 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:59397 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725880AbgF0F6f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 27 Jun 2020 01:58:35 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id e3797eb5
-        for <netdev@vger.kernel.org>;
-        Sat, 27 Jun 2020 05:39:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=lSKJWVXiquJUkLW3FiyUsruDEc8=; b=SI2qzB
-        Fv/+EhVcImVvvNThQZrEO2SeeA+2RpT0fzjtXgFI7LgsqG2HjBxseccYCHWdnxes
-        GU1c1YBBxW8UeifVJL4ACDw3yPFvX4zXmYtSGKaCUOOZcRUXOr+3e/c+F2wSVefL
-        QQ6GI8E1o3whmeu2RXKYvtRNDbKutKYGSedYK/q/G5pmz3WpZB3r3jjFPELORQBS
-        RRGJ+jS0bP/1/X9TkYPfdkHnS6sBnXSZsxV+kxlsSj2WDNg7rLnOWj7pNlbVkmbd
-        /wKcEXfdnJ4xDxpwvuFtnI0fWvSEOhmB3JzXvUd8dyuCvU9Bepn4gb6QEWmBvwf+
-        7FX01VUMes5emyFQ==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c967702f (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Sat, 27 Jun 2020 05:39:12 +0000 (UTC)
-Received: by mail-il1-f175.google.com with SMTP id l9so10282260ilq.12
-        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 22:58:33 -0700 (PDT)
-X-Gm-Message-State: AOAM531f7rKx9bnpHFx6sEnxPGyTx3hRDxwumMa9MLeGC24RskmlH77V
-        grnyr0N1fwU+65vdROCxqTx9iOPNpn6cdY+CDDk=
-X-Google-Smtp-Source: ABdhPJz5RAymW776qmwtCYvV3KB1wNCci5/wvnu0+PUl9NP2duAtlCW+BTM8ZzBu38g+crotInXbn2a9L1SHcFR8mhk=
-X-Received: by 2002:a92:d24a:: with SMTP id v10mr6773457ilg.224.1593237512930;
- Fri, 26 Jun 2020 22:58:32 -0700 (PDT)
+        id S1726000AbgF0GIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 02:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725880AbgF0GII (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 02:08:08 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D042C03E97A
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 23:08:08 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id j4so5096136plk.3
+        for <netdev@vger.kernel.org>; Fri, 26 Jun 2020 23:08:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pesu-pes-edu.20150623.gappssmtp.com; s=20150623;
+        h=from:date:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=gtmGpW21SyNiDgvXMh+8DiMIETkQ9kJybZA1frDwgbo=;
+        b=pDNCTrB3ZFp49fu1m/cIDeOovHxi7U2+qFg3Y1RBH1bVnUf4jiE4QdPPtF5aT9cuDs
+         5Y855FtE7yLDZrDbsrqVZlk+PLkC1bkU1WxXdm1yj7u+D6efBtITTOdp1iJJIiTxG3FC
+         uRLHn/PNBZwwZG1fbYA1WBy0xHVWLDHfY4RbyczyvfMCmQVGahZ1OZ+ftk0ZSZd3KQre
+         LBsrRUdVl4ZXr9Uao4E2lHEBSwm7gqqlOI3yzD/Va2VLn7fNTkU5S+bEKWJMzL4iNZS8
+         /miqRlnZHNXhHe6/94aUYx5Kyq+jNsnGQaCMrblKS5Z3vnvdXnuhh0lFyhwD1qYEcvBF
+         KbvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=gtmGpW21SyNiDgvXMh+8DiMIETkQ9kJybZA1frDwgbo=;
+        b=bh3UAuXdV6YO3Ol9h6+PBSZyKseACiT9G1uut5CCfikrQbC9kA6jYRzzQuoR455zQm
+         JLy4NMEtjgCQbnJ8TFMZ0uIhr6qsEq6j7QY8yUcBnjCvWm9gSTPVSlboLZ0rsD3dIqah
+         wBmKJlzerlkJFT9LfWj1g8ISlBgKdkkd5YWCfxm6xXnfzroXUc22KqDli74qTYW1b392
+         VAJOuM/TupLfNk0m6psH+t2qkqldSwrmIBu8cmAeP0LL36AlgOf6MHC1uZ/RaUAXWyHB
+         RHbutvxB5MHoIWyjJ6KXPGd8FJa+h5P7wYud30dbn9tc7xl7GRbwuSEe8USWvqSakaoV
+         RcoA==
+X-Gm-Message-State: AOAM533C08somfVOD4eg8l1lKw0z0l/vBSAGN1tl0RGPlUIyaVZYwxw+
+        hcbm9Use7wEJq+e6HytQX2LKAA==
+X-Google-Smtp-Source: ABdhPJzOj7jeZpv1+qG45pcMxryGt8tD6hrSSPeZ1vjoz3D7oBfTKsDKIdE57PLoNbpgdqliPbyhJQ==
+X-Received: by 2002:a17:902:854c:: with SMTP id d12mr5535900plo.343.1593238087725;
+        Fri, 26 Jun 2020 23:08:07 -0700 (PDT)
+Received: from localhost ([2406:7400:73:59a9:908:f18a:1156:5c38])
+        by smtp.gmail.com with ESMTPSA id x17sm12623639pjr.29.2020.06.26.23.08.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jun 2020 23:08:06 -0700 (PDT)
+From:   B K Karthik <bkkarthik@pesu.pes.edu>
+X-Google-Original-From: B K Karthik <karthik.bk2000@live.com>
+Date:   Sat, 27 Jun 2020 02:07:58 -0400
+To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] qlge.h: Adding the missing blank line after declarations
+Message-ID: <20200627060758.aqcqs763rjoxn6cp@pesu-pes-edu>
 MIME-Version: 1.0
-References: <20200626201330.325840-1-ndev@hwipl.net> <CAHmME9r7Q_+_3ePj4OzxZOkkrSdKA_THNjk6YjHxTQyNA2iaAw@mail.gmail.com>
- <CAHmME9pX30q1oWY3hpjK4u-1ApQP7RCA07BmhtRQx=dR85MS9A@mail.gmail.com>
-In-Reply-To: <CAHmME9pX30q1oWY3hpjK4u-1ApQP7RCA07BmhtRQx=dR85MS9A@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 26 Jun 2020 23:58:21 -0600
-X-Gmail-Original-Message-ID: <CAHmME9oCHNSNAVTNtxO2Oz10iqj_D8JPmN8526FbQ8UoO0-iHw@mail.gmail.com>
-Message-ID: <CAHmME9oCHNSNAVTNtxO2Oz10iqj_D8JPmN8526FbQ8UoO0-iHw@mail.gmail.com>
-Subject: Re: wireguard: problem sending via libpcap's packet socket
-To:     Hans Wippel <ndev@hwipl.net>
-Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uc3xmhwmmyrchpyj"
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi again Hans,
 
-A few remarks: although gre implements header_ops, it looks like
-various parts of the networking stack change behavior based on it. I'm
-still analyzing that to understand the extent of the effects.
-Something like <https://git.zx2c4.com/wireguard-linux/commit/?id=40c24fd379edc1668087111506ed3d0928052fe0>
-would work, but I'm not thrilled by it. Further research is needed.
+--uc3xmhwmmyrchpyj
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-However, one thing I noticed is that other layer 3 tunnels don't seem
-to be a fan of libpcap. For example, try injecting a packet into an
-ipip interface. You'll hit exactly the same snag for skb->protocol==0.
-So, if I do go the route of the first option -- adding a header_ops --
-maybe I'll be inclined to make a shared l3_header_ops struct that can
-be shared between things, and fix up all of these at once.
+Signed-off-by: B K Karthik <karthik.bk2000@live.com>
+---
+ drivers/staging/qlge/qlge.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-Alternatively, it might turn out to be that, because this is broken
-for other layer 3 devices, it's meant to be broken here. But I hope
-that won't be the conclusion.
+diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+index fc8c5ca8935d..0b971a633001 100644
+--- a/drivers/staging/qlge/qlge.h
++++ b/drivers/staging/qlge/qlge.h
+@@ -2224,6 +2224,7 @@ static inline void ql_write_db_reg_relaxed(u32 val, v=
+oid __iomem *addr)
+ static inline u32 ql_read_sh_reg(__le32  *addr)
+ {
+ 	u32 reg;
++
+ 	reg =3D  le32_to_cpu(*addr);
+ 	rmb();
+ 	return reg;
+--=20
+2.20.1
 
-Jason
+
+--uc3xmhwmmyrchpyj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGzBAEBCgAdFiEEpIrzAt4LvWLJmKjp471Q5AHeZ2oFAl724j4ACgkQ471Q5AHe
+Z2qsiwv/ePdacbSqM7HjdTGbMfaQorE4XMc5+PfBqp9J4zHmenJXvSWW5dBhoS3r
+PikmkdGfXpx95NW4V9i6FKWvikrMv/4wSwhkA9IwzLX8UXm/hK+qUBd8axHf2lxI
+TQiqvIZYRi29CveRcxedUk1ABBARBCG4ULtleTJ6SSS8ISWUGRFek52FkKaoM0Pg
+eHQqZJvBo3bQjpZdq4337knL0Xt3la1ZZxfz8ku6Ihd3CcQ/qa3Sq+eVzPtr/qpG
+E90WoWBKMpjbyzjPpcZymW0nEHroIvryPRCUdGYomoHq+ep+VllFAxANTlOKpS+z
+UnylebC5mFe8YZsvleF4Sj5fR0VUp8q0NIqCfnEQdhdESn5hX5SfutLXE5hcWOhI
+l0AzFcaknLaTUXAHPfJ4vsQaGaCS2yKal07y2y55urwe7Vv9AnbZAjg2ZF4AzVRm
+gRJfNEToUoYSFP7MAhQu6zLvToI7m4Mu6XV0yfKPX5c39a/7p68WaBGNrzN+Ybaa
+yy7DoEiq
+=35Tf
+-----END PGP SIGNATURE-----
+
+--uc3xmhwmmyrchpyj--
