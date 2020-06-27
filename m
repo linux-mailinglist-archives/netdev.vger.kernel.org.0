@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A0C820C18D
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 15:22:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBA6F20C191
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 15:22:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726753AbgF0NWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 09:22:45 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:50051 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726410AbgF0NWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 09:22:42 -0400
+        id S1726847AbgF0NW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 09:22:56 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:41072 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726819AbgF0NWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 09:22:52 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593264159;
+        s=mimecast20190719; t=1593264171;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:in-reply-to:in-reply-to:in-reply-to:
          references:references:references;
-        bh=D/6L6twzheYSr88RdOaQC7di8PePUIyngyRcqG7vgpA=;
-        b=YrIVWqxhOcntQIbuOhdpB9DWV+VLdz1krD3YZfj4skokTlDTx5/VZQHczq+xYqikLvGiXt
-        wK3D05gFLABZFwhaUaVIUZgaEDQ7M9n0ZC14ofpFWDUt3CvHSixFrzVe3E/2uY8+Dbvxf/
-        kHiJ43Mcy3A4qkwYJGOm3NS7ZfaNvcg=
+        bh=Quiow2zvKmWErePkj6tgsO+t5+qVfVy/KDI+jkuHA2o=;
+        b=SA252TMw3zLTxwOkvaOEAuU5Vk8sA28EyIqXnN1LEMDxbv6cEBmiWDLagKcWBjhvqCs/Z8
+        9OpK7uQkg8szeyFkK7YbQHdU9a5KXvwoxYhqcfzAjG15Pg4hil1sDmAxaCx1kf8YJAd557
+        6EZEU5QG13He83d0O9TvF4cVph6FPLo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-144-u67sPryUM8-nmB7VjR08Jg-1; Sat, 27 Jun 2020 09:22:33 -0400
-X-MC-Unique: u67sPryUM8-nmB7VjR08Jg-1
+ us-mta-359-3LdOcm5CMjaDh3VGTtGERg-1; Sat, 27 Jun 2020 09:22:46 -0400
+X-MC-Unique: 3LdOcm5CMjaDh3VGTtGERg-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CEAC88031F8;
-        Sat, 27 Jun 2020 13:22:31 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D93C1107ACCA;
+        Sat, 27 Jun 2020 13:22:44 +0000 (UTC)
 Received: from madcap2.tricolour.ca (unknown [10.10.110.28])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E66548205F;
-        Sat, 27 Jun 2020 13:22:26 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3AC5C71662;
+        Sat, 27 Jun 2020 13:22:32 +0000 (UTC)
 From:   Richard Guy Briggs <rgb@redhat.com>
 To:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
         Linux-Audit Mailing List <linux-audit@redhat.com>,
@@ -42,9 +42,9 @@ Cc:     Paul Moore <paul@paul-moore.com>, sgrubb@redhat.com,
         eparis@parisplace.org, serge@hallyn.com, ebiederm@xmission.com,
         nhorman@tuxdriver.com, dwalsh@redhat.com, mpatel@redhat.com,
         Richard Guy Briggs <rgb@redhat.com>
-Subject: [PATCH ghak90 V9 06/13] audit: add contid support for signalling the audit daemon
-Date:   Sat, 27 Jun 2020 09:20:39 -0400
-Message-Id: <f01f38dbb3190191e5914874322342700aecb9e1.1593198710.git.rgb@redhat.com>
+Subject: [PATCH ghak90 V9 07/13] audit: add support for non-syscall auxiliary records
+Date:   Sat, 27 Jun 2020 09:20:40 -0400
+Message-Id: <21e6c4e1ac179c8dcf35803e603899ccfc69300a.1593198710.git.rgb@redhat.com>
 In-Reply-To: <cover.1593198710.git.rgb@redhat.com>
 References: <cover.1593198710.git.rgb@redhat.com>
 In-Reply-To: <cover.1593198710.git.rgb@redhat.com>
@@ -55,229 +55,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add audit container identifier support to the action of signalling the
-audit daemon.
-
-Since this would need to add an element to the audit_sig_info struct,
-a new record type AUDIT_SIGNAL_INFO2 was created with a new
-audit_sig_info2 struct.  Corresponding support is required in the
-userspace code to reflect the new record request and reply type.
-An older userspace won't break since it won't know to request this
-record type.
+Standalone audit records have the timestamp and serial number generated
+on the fly and as such are unique, making them standalone.  This new
+function audit_alloc_local() generates a local audit context that will
+be used only for a standalone record and its auxiliary record(s).  The
+context is discarded immediately after the local associated records are
+produced.
 
 Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+Acked-by: Serge Hallyn <serge@hallyn.com>
+Acked-by: Neil Horman <nhorman@tuxdriver.com>
+Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
 ---
- include/linux/audit.h       |  8 ++++
- include/uapi/linux/audit.h  |  1 +
- kernel/audit.c              | 95 ++++++++++++++++++++++++++++++++++++++++++++-
- security/selinux/nlmsgtab.c |  1 +
- 4 files changed, 104 insertions(+), 1 deletion(-)
+ include/linux/audit.h |  8 ++++++++
+ kernel/audit.h        |  1 +
+ kernel/auditsc.c      | 33 ++++++++++++++++++++++++++++-----
+ 3 files changed, 37 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/audit.h b/include/linux/audit.h
-index 5eeba0efffc2..89cf7c66abe6 100644
+index 89cf7c66abe6..15d0defc5193 100644
 --- a/include/linux/audit.h
 +++ b/include/linux/audit.h
-@@ -22,6 +22,13 @@ struct audit_sig_info {
- 	char		ctx[];
- };
+@@ -330,6 +330,8 @@ static inline int audit_signal_info(int sig, struct task_struct *t)
  
-+struct audit_sig_info2 {
-+	uid_t		uid;
-+	pid_t		pid;
-+	u32		cid_len;
-+	char		data[];
-+};
-+
- struct audit_buffer;
- struct audit_context;
- struct inode;
-@@ -105,6 +112,7 @@ struct audit_contobj {
- 	u64			id;
- 	struct task_struct	*owner;
- 	refcount_t		refcount;
-+	refcount_t		sigflag;
- 	struct rcu_head         rcu;
- };
- 
-diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
-index fd98460c983f..a56ad77069b9 100644
---- a/include/uapi/linux/audit.h
-+++ b/include/uapi/linux/audit.h
-@@ -72,6 +72,7 @@
- #define AUDIT_SET_FEATURE	1018	/* Turn an audit feature on or off */
- #define AUDIT_GET_FEATURE	1019	/* Get which features are enabled */
- #define AUDIT_CONTAINER_OP	1020	/* Define the container id and info */
-+#define AUDIT_SIGNAL_INFO2	1021	/* Get info auditd signal sender */
- 
- #define AUDIT_FIRST_USER_MSG	1100	/* Userspace messages mostly uninteresting to kernel */
- #define AUDIT_USER_AVC		1107	/* We filter this differently */
-diff --git a/kernel/audit.c b/kernel/audit.c
-index a09f8f661234..54dd2cb69402 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -126,6 +126,8 @@ struct auditd_connection {
- kuid_t		audit_sig_uid = INVALID_UID;
- pid_t		audit_sig_pid = -1;
- u32		audit_sig_sid = 0;
-+static struct audit_contobj *audit_sig_cid;
-+static struct task_struct *audit_sig_atsk;
- 
- /* Records can be lost in several ways:
-    0) [suppressed in audit_alloc]
-@@ -239,7 +241,33 @@ void _audit_contobj_put(struct audit_contobj *cont)
- {
- 	if (!cont)
- 		return;
--	if (refcount_dec_and_test(&cont->refcount)) {
-+	if (refcount_dec_and_test(&cont->refcount) && !refcount_read(&cont->sigflag)) {
-+		put_task_struct(cont->owner);
-+		list_del_rcu(&cont->list);
-+		kfree_rcu(cont, rcu);
-+	}
-+}
-+
-+/* rcu_read_lock must be held by caller unless new */
-+static struct audit_contobj *_audit_contobj_get_sig(struct task_struct *tsk)
+ /* These are defined in auditsc.c */
+ 				/* Public API */
++extern struct audit_context *audit_alloc_local(gfp_t gfpflags);
++extern void audit_free_context(struct audit_context *context);
+ extern void __audit_syscall_entry(int major, unsigned long a0, unsigned long a1,
+ 				  unsigned long a2, unsigned long a3);
+ extern void __audit_syscall_exit(int ret_success, long ret_value);
+@@ -592,6 +594,12 @@ static inline void audit_log_nfcfg(const char *name, u8 af,
+ extern int audit_n_rules;
+ extern int audit_signals;
+ #else /* CONFIG_AUDITSYSCALL */
++static inline struct audit_context *audit_alloc_local(gfp_t gfpflags)
 +{
-+	struct audit_contobj *cont;
-+
-+	if (!tsk->audit)
-+		return NULL;
-+	cont = tsk->audit->cont;
-+	if (cont)
-+		refcount_set(&cont->sigflag, 1);
-+	return cont;
++	return NULL;
 +}
-+
-+/* rcu_read_lock must be held by caller */
-+static void _audit_contobj_put_sig(struct audit_contobj *cont)
-+{
-+	if (!cont)
-+		return;
-+	refcount_set(&cont->sigflag, 0);
-+	if (!refcount_read(&cont->refcount)) {
- 		put_task_struct(cont->owner);
- 		list_del_rcu(&cont->list);
- 		kfree_rcu(cont, rcu);
-@@ -309,6 +337,13 @@ void audit_free(struct task_struct *tsk)
- 	info = tsk->audit;
- 	tsk->audit = NULL;
- 	kmem_cache_free(audit_task_cache, info);
-+	rcu_read_lock();
-+	if (audit_sig_atsk == tsk) {
-+		_audit_contobj_put_sig(audit_sig_cid);
-+		audit_sig_cid = NULL;
-+		audit_sig_atsk = NULL;
-+	}
-+	rcu_read_unlock();
++static inline void audit_free_context(struct audit_context *context)
++{ }
+ static inline void audit_syscall_entry(int major, unsigned long a0,
+ 				       unsigned long a1, unsigned long a2,
+ 				       unsigned long a3)
+diff --git a/kernel/audit.h b/kernel/audit.h
+index 0c9446f8d52c..a7f88d76163f 100644
+--- a/kernel/audit.h
++++ b/kernel/audit.h
+@@ -98,6 +98,7 @@ struct audit_proctitle {
+ struct audit_context {
+ 	int		    dummy;	/* must be the first element */
+ 	int		    in_syscall;	/* 1 if task is in a syscall */
++	bool		    local;	/* local context needed */
+ 	enum audit_state    state, current_state;
+ 	unsigned int	    serial;     /* serial number for record */
+ 	int		    major;      /* syscall number */
+diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+index 9e79645e5c0e..935eb3d2cde9 100644
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -908,11 +908,13 @@ static inline void audit_free_aux(struct audit_context *context)
+ 	}
  }
  
- /**
-@@ -1132,6 +1167,7 @@ static int audit_netlink_ok(struct sk_buff *skb, u16 msg_type)
- 	case AUDIT_ADD_RULE:
- 	case AUDIT_DEL_RULE:
- 	case AUDIT_SIGNAL_INFO:
-+	case AUDIT_SIGNAL_INFO2:
- 	case AUDIT_TTY_GET:
- 	case AUDIT_TTY_SET:
- 	case AUDIT_TRIM:
-@@ -1294,6 +1330,7 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
- 	struct audit_buffer	*ab;
- 	u16			msg_type = nlh->nlmsg_type;
- 	struct audit_sig_info   *sig_data;
-+	struct audit_sig_info2  *sig_data2;
- 	char			*ctx = NULL;
- 	u32			len;
+-static inline struct audit_context *audit_alloc_context(enum audit_state state)
++static inline struct audit_context *audit_alloc_context(enum audit_state state,
++							gfp_t gfpflags)
+ {
+ 	struct audit_context *context;
  
-@@ -1559,6 +1596,52 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
- 				 sig_data, sizeof(*sig_data) + len);
- 		kfree(sig_data);
- 		break;
-+	case AUDIT_SIGNAL_INFO2: {
-+		unsigned int contidstrlen = 0;
-+
-+		len = 0;
-+		if (audit_sig_sid) {
-+			err = security_secid_to_secctx(audit_sig_sid, &ctx,
-+						       &len);
-+			if (err)
-+				return err;
-+		}
-+		if (audit_sig_cid) {
-+			contidstr = kmalloc(21, GFP_KERNEL);
-+			if (!contidstr) {
-+				if (audit_sig_sid)
-+					security_release_secctx(ctx, len);
-+				return -ENOMEM;
-+			}
-+			contidstrlen = scnprintf(contidstr, 20, "%llu", audit_sig_cid->id);
-+		}
-+		sig_data2 = kmalloc(sizeof(*sig_data2) + contidstrlen + len, GFP_KERNEL);
-+		if (!sig_data2) {
-+			if (audit_sig_sid)
-+				security_release_secctx(ctx, len);
-+			kfree(contidstr);
-+			return -ENOMEM;
-+		}
-+		sig_data2->uid = from_kuid(&init_user_ns, audit_sig_uid);
-+		sig_data2->pid = audit_sig_pid;
-+		if (audit_sig_cid) {
-+			memcpy(sig_data2->data, contidstr, contidstrlen);
-+			sig_data2->cid_len = contidstrlen;
-+			kfree(contidstr);
-+		}
-+		if (audit_sig_sid) {
-+			memcpy(sig_data2->data + contidstrlen, ctx, len);
-+			security_release_secctx(ctx, len);
-+		}
-+		rcu_read_lock();
-+		_audit_contobj_put_sig(audit_sig_cid);
-+		rcu_read_unlock();
-+		audit_sig_cid = NULL;
-+		audit_send_reply(skb, seq, AUDIT_SIGNAL_INFO2, 0, 0,
-+				 sig_data2, sizeof(*sig_data2) + contidstrlen + len);
-+		kfree(sig_data2);
-+		break;
-+	}
- 	case AUDIT_TTY_GET: {
- 		struct audit_tty_status s;
- 		unsigned int t;
-@@ -2470,6 +2553,11 @@ int audit_signal_info(int sig, struct task_struct *t)
- 		else
- 			audit_sig_uid = uid;
- 		security_task_getsecid(current, &audit_sig_sid);
-+		rcu_read_lock();
-+		_audit_contobj_put_sig(audit_sig_cid);
-+		audit_sig_cid = _audit_contobj_get_sig(current);
-+		rcu_read_unlock();
-+		audit_sig_atsk = t;
+-	context = kzalloc(sizeof(*context), GFP_KERNEL);
++	/* We can be called in atomic context via audit_tg() */
++	context = kzalloc(sizeof(*context), gfpflags);
+ 	if (!context)
+ 		return NULL;
+ 	context->state = state;
+@@ -948,7 +950,8 @@ int audit_alloc_syscall(struct task_struct *tsk)
+ 		return 0;
  	}
  
- 	return audit_signal_info_syscall(t);
-@@ -2532,6 +2620,11 @@ int audit_set_contid(struct task_struct *task, u64 contid)
- 			if (cont->id == contid) {
- 				/* task injection to existing container */
- 				if (current == cont->owner) {
-+					if (!refcount_read(&cont->refcount)) {
-+						rc = -ESHUTDOWN;
-+						spin_unlock(&audit_contobj_list_lock);
-+						goto conterror;
-+					}
- 					_audit_contobj_hold(cont);
- 					newcont = cont;
- 				} else {
-diff --git a/security/selinux/nlmsgtab.c b/security/selinux/nlmsgtab.c
-index b69231918686..8303bb7a63d0 100644
---- a/security/selinux/nlmsgtab.c
-+++ b/security/selinux/nlmsgtab.c
-@@ -137,6 +137,7 @@ struct nlmsg_perm {
- 	{ AUDIT_DEL_RULE,	NETLINK_AUDIT_SOCKET__NLMSG_WRITE    },
- 	{ AUDIT_USER,		NETLINK_AUDIT_SOCKET__NLMSG_RELAY    },
- 	{ AUDIT_SIGNAL_INFO,	NETLINK_AUDIT_SOCKET__NLMSG_READ     },
-+	{ AUDIT_SIGNAL_INFO2,	NETLINK_AUDIT_SOCKET__NLMSG_READ     },
- 	{ AUDIT_TRIM,		NETLINK_AUDIT_SOCKET__NLMSG_WRITE    },
- 	{ AUDIT_MAKE_EQUIV,	NETLINK_AUDIT_SOCKET__NLMSG_WRITE    },
- 	{ AUDIT_TTY_GET,	NETLINK_AUDIT_SOCKET__NLMSG_READ     },
+-	if (!(context = audit_alloc_context(state))) {
++	context = audit_alloc_context(state, GFP_KERNEL);
++	if (!context) {
+ 		kfree(key);
+ 		audit_log_lost("out of memory in audit_alloc_syscall");
+ 		return -ENOMEM;
+@@ -960,8 +963,27 @@ int audit_alloc_syscall(struct task_struct *tsk)
+ 	return 0;
+ }
+ 
+-static inline void audit_free_context(struct audit_context *context)
++struct audit_context *audit_alloc_local(gfp_t gfpflags)
+ {
++	struct audit_context *context = NULL;
++
++	context = audit_alloc_context(AUDIT_RECORD_CONTEXT, gfpflags);
++	if (!context) {
++		audit_log_lost("out of memory in audit_alloc_local");
++		goto out;
++	}
++	context->serial = audit_serial();
++	ktime_get_coarse_real_ts64(&context->ctime);
++	context->local = true;
++out:
++	return context;
++}
++EXPORT_SYMBOL(audit_alloc_local);
++
++void audit_free_context(struct audit_context *context)
++{
++	if (!context)
++		return;
+ 	audit_free_module(context);
+ 	audit_free_names(context);
+ 	unroll_tree_refs(context, NULL, 0);
+@@ -972,6 +994,7 @@ static inline void audit_free_context(struct audit_context *context)
+ 	audit_proctitle_free(context);
+ 	kfree(context);
+ }
++EXPORT_SYMBOL(audit_free_context);
+ 
+ static int audit_log_pid_context(struct audit_context *context, pid_t pid,
+ 				 kuid_t auid, kuid_t uid, unsigned int sessionid,
+@@ -2204,7 +2227,7 @@ void __audit_inode_child(struct inode *parent,
+ int auditsc_get_stamp(struct audit_context *ctx,
+ 		       struct timespec64 *t, unsigned int *serial)
+ {
+-	if (!ctx->in_syscall)
++	if (!ctx->in_syscall && !ctx->local)
+ 		return 0;
+ 	if (!ctx->serial)
+ 		ctx->serial = audit_serial();
 -- 
 1.8.3.1
 
