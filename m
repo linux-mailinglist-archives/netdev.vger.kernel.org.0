@@ -2,61 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF89320BF1C
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 09:02:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DADF720BF35
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 09:04:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726055AbgF0HCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 03:02:39 -0400
-Received: from verein.lst.de ([213.95.11.211]:53802 "EHLO verein.lst.de"
+        id S1726067AbgF0HEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 03:04:10 -0400
+Received: from verein.lst.de ([213.95.11.211]:53810 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725926AbgF0HCj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 27 Jun 2020 03:02:39 -0400
+        id S1725885AbgF0HEK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Jun 2020 03:04:10 -0400
 Received: by verein.lst.de (Postfix, from userid 2407)
-        id 9E9AF68B02; Sat, 27 Jun 2020 09:02:36 +0200 (CEST)
-Date:   Sat, 27 Jun 2020 09:02:36 +0200
+        id 229C568B02; Sat, 27 Jun 2020 09:04:07 +0200 (CEST)
+Date:   Sat, 27 Jun 2020 09:04:06 +0200
 From:   Christoph Hellwig <hch@lst.de>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
+        netdev@vger.kernel.org,
         =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, iommu@lists.linux-foundation.org
-Subject: Re: the XSK buffer pool needs be to reverted
-Message-ID: <20200627070236.GA11854@lst.de>
-References: <20200626074725.GA21790@lst.de> <20200626205412.xfe4lywdbmh3kmri@bsd-mbp>
+        hch@lst.de, davem@davemloft.net, konrad.wilk@oracle.com,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, maximmi@mellanox.com,
+        magnus.karlsson@intel.com, jonathan.lemon@gmail.com
+Subject: Re: [PATCH net] xsk: remove cheap_dma optimization
+Message-ID: <20200627070406.GB11854@lst.de>
+References: <20200626134358.90122-1-bjorn.topel@gmail.com> <c60dfb5a-2bf3-20bd-74b3-6b5e215f73f8@iogearbox.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200626205412.xfe4lywdbmh3kmri@bsd-mbp>
+In-Reply-To: <c60dfb5a-2bf3-20bd-74b3-6b5e215f73f8@iogearbox.net>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 01:54:12PM -0700, Jonathan Lemon wrote:
-> On Fri, Jun 26, 2020 at 09:47:25AM +0200, Christoph Hellwig wrote:
-> >
-> > Note that this is somewhat urgent, as various of the APIs that the code
-> > is abusing are slated to go away for Linux 5.9, so this addition comes
-> > at a really bad time.
-> 
-> Could you elaborate on what is upcoming here?
+On Sat, Jun 27, 2020 at 01:00:19AM +0200, Daniel Borkmann wrote:
+> Given there is roughly a ~5 weeks window at max where this removal could
+> still be applied in the worst case, could we come up with a fix / proposal
+> first that moves this into the DMA mapping core? If there is something that
+> can be agreed upon by all parties, then we could avoid re-adding the 9%
+> slowdown. :/
 
-Moving all these calls out of line, and adding a bypass flag to avoid
-the indirect function call for IOMMUs in direct mapped mode.
+I'd rather turn it upside down - this abuse of the internals blocks work
+that has basically just missed the previous window and I'm not going
+to wait weeks to sort out the API misuse.  But we can add optimizations
+back later if we find a sane way.
 
-> Also, on a semi-related note, are there limitations on how many pages
-> can be left mapped by the iommu?  Some of the page pool work involves
-> leaving the pages mapped instead of constantly mapping/unmapping them.
-
-There are, but I think for all modern IOMMUs they are so big that they
-don't matter.  Maintaines of the individual IOMMU drivers might know
-more.
-
-> On a heavily loaded box with iommu enabled, it seems that quite often
-> there is contention on the iova_lock.  Are there known issues in this
-> area?
-
-I'll have to defer to the IOMMU maintainers, and for that you'll need
-to say what code you are using.  Current mainlaine doesn't even have
-an iova_lock anywhere.
+That being said I really can't see how this would make so much of a
+difference.  What architecture and what dma_ops are you using for
+those measurements?  What is the workload?
