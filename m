@@ -2,177 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6AD920C30E
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 18:26:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB80420C324
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 18:45:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726012AbgF0Q0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 12:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55858 "EHLO
+        id S1726057AbgF0QpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 12:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725900AbgF0Q0f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 12:26:35 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4067C061794
-        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 09:26:34 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id n2so219800edr.5
-        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 09:26:34 -0700 (PDT)
+        with ESMTP id S1725882AbgF0QpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 12:45:08 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D85C03E979
+        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 09:45:08 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id j19so3061933ybj.1
+        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 09:45:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jMFR2HbEYsyIRmp4I4lI0gXHiq1A0lFEb04l7REmO8o=;
-        b=jGKXQu7tLII7Xl8W/rutTbqW2+b37Bot9j0NLNHCgWrd14iQwkUfGscWJUZCn6h2qv
-         R66VPVZrobRQJUwnse72sm0o1jWhW16rvgwcfyKSfviuGoC5i3NLtKMzuny/b/m5klrf
-         4TUyu0jlEMnjnJSZMUJRzmOxtQgSGGfv85Z59GXUYLTJ1ejICmKUeEgyRq+sMUGufJGz
-         ibJRbR0dAEOHPRf3GP97G25H66hj1SY0bHsUsunSeO3svwaHuSvQfhmd3Iwz0f7R0kNU
-         WgXurhtMPzYtc0+JAfdGeViR6MYioSeBzUChbyyOe1ubGPi7B1EAyVImScAtvD8Tj8R1
-         xumw==
+        bh=pGYuTB7Gxg8gZ0ohgXDiu6lF7XBieoWtYmjZGWoanV8=;
+        b=UfJuM87I21pr1UoCheQzK/rruP7k3+nndL1n6lixzQIal7DcsIimFGAxwK8JvR0Szz
+         GWl/4wmUcdKkePz/78A0ZYaDfkq5i924wz9zWVzLzxtuhzO3tWUmFLMnvGI6njxhd+hu
+         G20WrAFTV29W8fJ3FMR4yuKKJKL/o2HHtUCJMn+1m39z33A+UJ3Zuy1OHe6vdOfwAhu9
+         q7ewA/R882mfUpNzrkNfyjU/YEHQUr8DQ/OhOOOccqK+p43q+QNKty7UWImJ67Hu8hsO
+         cYlzMs0voM6GRcHOCcjcAqAK6ZDiXf2bvt9QQHDX4ZUKHXqPuGeeh6Sv7mR51XEUibuv
+         BJHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jMFR2HbEYsyIRmp4I4lI0gXHiq1A0lFEb04l7REmO8o=;
-        b=B/KdWraTmlufC8VGZHyv/7hGCRuY0qIuyUaA9dQCvzIEb/h4vZHmCqct78+8kKxcW3
-         S8hOVFvchmCwaWqwuU7uZGHPrjelvhw55lb2dx7IVz8mVFZWMkzV90BGbXbh48RcYjBz
-         DoyPqD6McOyoNFqSvf3VOQT6EGiN1+MmASK2Nt5dx1PafNc9sQcRbxpWdiYLRaFYalih
-         XrrYnDlDNjo6HufRMpTmP90mjgry9P6B5yPmK5gBYXUlzFkG7l68855Rzb8A3V0vpxxS
-         DU9A9makiZX5A4PDWozbX+Dc9Z5d3wlKyOCyqU6sSGL6x4yQsGJFWJxlKgMy2VRRpr+W
-         YNCg==
-X-Gm-Message-State: AOAM532r9ineFyxbFVlpEA44LyuSx2Y/klC+53wI+1P7aecGMjlPsb3r
-        +CHVanzYLHpJMLVEkC1f7CoCuVPLndtK1HuSFjvByw==
-X-Google-Smtp-Source: ABdhPJz/3ukDQltSmEbXbltWTX/wkxtlg8EppZDtDF2+xEQ8YinNaYGniKHrzEgxiMFOKXZBL67UO/ETdLzDStiW6gY=
-X-Received: by 2002:a50:ee87:: with SMTP id f7mr9400400edr.355.1593275191059;
- Sat, 27 Jun 2020 09:26:31 -0700 (PDT)
+        bh=pGYuTB7Gxg8gZ0ohgXDiu6lF7XBieoWtYmjZGWoanV8=;
+        b=qqcdUz9tgyrkMjN9HsE9DrC3dxRKHCusF0LPTCIPWywLb5KjflNCDv3iyFOdazE+o+
+         7W+YWDeOQHy5R7K0p9G/lrexgC7uPB+26QJS8XU00kpt09rG8/ype5J8AjM6T2kSFaxP
+         5HSiWwb2S3ETtmNttdcusVBRiRUHtcPQMZdpbG87NJxhsNtCL9cz35TujiQB6NZnpNGI
+         vdbXKi1NmBabtizhdn4lufKoxGMggilLBDkXH9N7zXUaLA0eXWD2AHprVwyfT+8/jqwP
+         FQl9p/EBdFjqMuMPuXN4+DB1aoQSYEbEv0BQLi/5oCD0u3vP81YbbdrmVgg4ye2XHf++
+         rIzw==
+X-Gm-Message-State: AOAM5323JnAquh/fiCIGIqWKxhwAq/BIfVbk64x8iT6+bTtC7KtMnU8j
+        OO7iZlgFaNptBOsy2vDvUkIL/HHcJXoA1eoXSG015A==
+X-Google-Smtp-Source: ABdhPJzkiBEMN7bNzBI+g5X8Invc3/JttoE2M+cex6nZJDJQrcq0RpYgAMWSDuZsZNFDgh0gTFpQ5t118wbhWIwHJYs=
+X-Received: by 2002:a25:d28e:: with SMTP id j136mr14480748ybg.408.1593276307441;
+ Sat, 27 Jun 2020 09:45:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <e13faf29-5db3-91a2-4a95-c2cd8c2d15fe@mellanox.com> <807a300e-47aa-dba3-7d6d-e14422a0d869@intel.com>
-In-Reply-To: <807a300e-47aa-dba3-7d6d-e14422a0d869@intel.com>
-From:   Tom Herbert <tom@herbertland.com>
-Date:   Sat, 27 Jun 2020 09:26:20 -0700
-Message-ID: <CALx6S35NaCEBPXAsM-8-wrYYQhDB2EVxAN1RaGiJM9yNncaHaQ@mail.gmail.com>
-Subject: Re: ADQ - comparison to aRFS, clarifications on NAPI ID, binding with busy-polling
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Cc:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20200626175501.1459961-1-kafai@fb.com> <20200626175514.1460570-1-kafai@fb.com>
+In-Reply-To: <20200626175514.1460570-1-kafai@fb.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sat, 27 Jun 2020 09:44:55 -0700
+Message-ID: <CANn89i+=bpj6p85MMT+6RvTq9Da1LFMnde5j5d8qgU062SM_NQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 02/10] tcp: bpf: Parse BPF experimental header option
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team <kernel-team@fb.com>,
+        Lawrence Brakmo <brakmo@fb.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 24, 2020 at 1:21 PM Samudrala, Sridhar
-<sridhar.samudrala@intel.com> wrote:
+On Fri, Jun 26, 2020 at 10:55 AM Martin KaFai Lau <kafai@fb.com> wrote:
 >
+> This patch adds logic to parse experimental kind 254 with 16 bit magic
+> 0xeB9F.  The latter patch will allow bpf prog to write and parse data
+> under this experimental kind and magic.
 >
+> A one byte bpf_hdr_opt_off is added to tcp_skb_cb by using an existing
+> 4 byte hole.  It is only used in rx.  It stores the offset to the
+> bpf experimental option and will be made available to BPF prog
+> in a latter patch.  This offset is also stored in the saved_syn.
 >
-> On 6/17/2020 6:15 AM, Maxim Mikityanskiy wrote:
-> > Hi,
-> >
-> > I discovered Intel ADQ feature [1] that allows to boost performance by
-> > picking dedicated queues for application traffic. We did some research,
-> > and I got some level of understanding how it works, but I have some
-> > questions, and I hope you could answer them.
-> >
-> > 1. SO_INCOMING_NAPI_ID usage. In my understanding, every connection has
-> > a key (sk_napi_id) that is unique to the NAPI where this connection is
-> > handled, and the application uses that key to choose a handler thread
-> > from the thread pool. If we have a one-to-one relationship between
-> > application threads and NAPI IDs of connections, each application thread
-> > will handle only traffic from a single NAPI. Is my understanding correct?
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
+>  include/net/request_sock.h | 1 +
+>  include/net/tcp.h          | 3 +++
+>  net/ipv4/tcp_input.c       | 6 ++++++
+>  net/ipv4/tcp_ipv4.c        | 1 +
+>  net/ipv6/tcp_ipv6.c        | 1 +
+>  5 files changed, 12 insertions(+)
 >
-> Yes. It is correct and recommended with the current implementation.
+> diff --git a/include/net/request_sock.h b/include/net/request_sock.h
+> index d77237ec9fb4..55297286c066 100644
+> --- a/include/net/request_sock.h
+> +++ b/include/net/request_sock.h
+> @@ -43,6 +43,7 @@ int inet_rtx_syn_ack(const struct sock *parent, struct request_sock *req);
 >
-> >
-> > 1.1. I wonder how the application thread gets scheduled on the same core
-> > that NAPI runs at. It currently only works with busy_poll, so when the
-> > application initiates busy polling (calls epoll), does the Linux
-> > scheduler move the thread to the right CPU? Do we have to have a strict
-> > one-to-one relationship between threads and NAPIs, or can one thread
-> > handle multiple NAPIs? When the data arrives, does the scheduler run the
-> > application thread on the same CPU that NAPI ran on?
+>  struct saved_syn {
+>         u32 network_hdrlen;
+> +       u32 bpf_hdr_opt_off;
+>         u8 data[];
+>  };
 >
-> The app thread can do busypoll from any core and there is no requirement
-> that the scheduler needs to move the thread to a specific CPU.
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index eab1c7d0facb..07a9dfe35242 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -191,6 +191,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);
+>   */
+>  #define TCPOPT_FASTOPEN_MAGIC  0xF989
+>  #define TCPOPT_SMC_MAGIC       0xE2D4C3D9
+> +#define TCPOPT_BPF_MAGIC       0xEB9F
 >
-> If the NAPI processing happens via interrupts, the scheduler could move
-> the app thread to the same CPU that NAPI ran on.
+>  /*
+>   *     TCP option lengths
+> @@ -204,6 +205,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);
+>  #define TCPOLEN_FASTOPEN_BASE  2
+>  #define TCPOLEN_EXP_FASTOPEN_BASE  4
+>  #define TCPOLEN_EXP_SMC_BASE   6
+> +#define TCPOLEN_EXP_BPF_BASE   4
 >
-> >
-> > 1.2. I see that SO_INCOMING_NAPI_ID is tightly coupled with busy_poll.
-> > It is enabled only if CONFIG_NET_RX_BUSY_POLL is set. Is there a real
-> > reason why it can't be used without busy_poll? In other words, if we
-> > modify the kernel to drop this requirement, will the kernel still
-> > schedule the application thread on the same CPU as NAPI when busy_poll
-> > is not used?
+>  /* But this is what stacks really send out. */
+>  #define TCPOLEN_TSTAMP_ALIGNED         12
+> @@ -857,6 +859,7 @@ struct tcp_skb_cb {
+>                         has_rxtstamp:1, /* SKB has a RX timestamp       */
+>                         unused:5;
+>         __u32           ack_seq;        /* Sequence number ACK'd        */
+> +       __u8            bpf_hdr_opt_off;/* offset to bpf hdr option. rx only. */
+>         union {
+>                 struct {
+>                         /* There is space for up to 24 bytes */
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index eb0e32b2def9..640408a80b3d 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -3924,6 +3924,10 @@ void tcp_parse_options(const struct net *net,
+>                                         tcp_parse_fastopen_option(opsize -
+>                                                 TCPOLEN_EXP_FASTOPEN_BASE,
+>                                                 ptr + 2, th->syn, foc, true);
+> +                               else if (opsize >= TCPOLEN_EXP_BPF_BASE &&
+> +                                        get_unaligned_be16(ptr) ==
+> +                                        TCPOPT_BPF_MAGIC)
+> +                                       TCP_SKB_CB(skb)->bpf_hdr_opt_off = (ptr - 2) - (unsigned char *)th;
+>                                 else
+>                                         smc_parse_options(th, opt_rx, ptr,
+>                                                           opsize);
+> @@ -6562,6 +6566,8 @@ static void tcp_reqsk_record_syn(const struct sock *sk,
+>                 saved_syn = kmalloc(len + sizeof(*saved_syn), GFP_ATOMIC);
+>                 if (saved_syn) {
+>                         saved_syn->network_hdrlen = skb_network_header_len(skb);
+> +                       saved_syn->bpf_hdr_opt_off =
+> +                               TCP_SKB_CB(skb)->bpf_hdr_opt_off;
+>                         memcpy(saved_syn->data, skb_network_header(skb), len);
+>                         req->saved_syn = saved_syn;
+>                 }
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index ea0df9fd7618..a3535b7fe002 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -1864,6 +1864,7 @@ static void tcp_v4_fill_cb(struct sk_buff *skb, const struct iphdr *iph,
+>         TCP_SKB_CB(skb)->sacked  = 0;
+>         TCP_SKB_CB(skb)->has_rxtstamp =
+>                         skb->tstamp || skb_hwtstamps(skb)->hwtstamp;
+> +       TCP_SKB_CB(skb)->bpf_hdr_opt_off = 0;
+>  }
 >
-> It should be OK to remove this restriction, but requires enabling this
-> in skb_mark_napi_id() and sk_mark_napi_id() too.
+>  /*
+> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> index f67d45ff00b4..8356d0562279 100644
+> --- a/net/ipv6/tcp_ipv6.c
+> +++ b/net/ipv6/tcp_ipv6.c
+> @@ -1545,6 +1545,7 @@ static void tcp_v6_fill_cb(struct sk_buff *skb, const struct ipv6hdr *hdr,
+>         TCP_SKB_CB(skb)->sacked = 0;
+>         TCP_SKB_CB(skb)->has_rxtstamp =
+>                         skb->tstamp || skb_hwtstamps(skb)->hwtstamp;
+> +       TCP_SKB_CB(skb)->bpf_hdr_opt_off = 0;
+>  }
 >
-> >
-> > 2. Can you compare ADQ to aRFS+XPS? aRFS provides a way to steer traffic
-> > to the application's CPU in an automatic fashion, and xps_rxqs can be
-> > used to transmit from the corresponding queues. This setup doesn't need
-> > manual configuration of TCs and is not limited to 4 applications. The
-> > difference of ADQ is that (in my understanding) it moves the application
-> > to the RX CPU, while aRFS steers the traffic to the RX queue handled my
-> > the application's CPU. Is there any advantage of ADQ over aRFS, that I
-> > failed to find?
+>  INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+> --
+> 2.24.1
 >
-> aRFS+XPS ties app thread to a cpu, whereas ADQ ties app thread to a napi
-> id which in turn ties to a queue(s)
->
-> ADQ also provides 2 levels of filtering compared to aRFS+XPS. The first
-> level of filtering selects a queue-set associated with the application
-> and the second level filter or RSS will select a queue within that queue
-> set associated with an app thread.
->
-The association between queues and thread is implicit in ADQ and
-depends on some assumption particularly on symmetric queueing which
-doesn't always work (TX/RX devices are different, uni-directional
-traffic, peer using some encapsulation that the tc filter misses).
-Please look at Per Thread Queues (https://lwn.net/Articles/824414/)
-which aims to make this association of queues to threads explicit.
-
-> The current interface to configure ADQ limits us to support upto 16
-> application specific queue sets(TC_MAX_QUEUE)
->
->
-> >
-> > 3. At [1], you mention that ADQ can be used to create separate RSS sets.
-> >   Could you elaborate about the API used? Does the tc mqprio
-> > configuration also affect RSS? Can it be turned on/off?
->
-> Yes. tc mqprio allows to create queue-sets per application and the
-> driver configures RSS per queue-set.
->
-> >
-> > 4. How is tc flower used in context of ADQ? Does the user need to
-> > reflect the configuration in both mqprio qdisc (for TX) and tc flower
-> > (for RX)? It looks like tc flower maps incoming traffic to TCs, but what
-> > is the mechanism of mapping TCs to RX queues?
->
-> tc mqprio is used to map TCs to RX queues
->
-> tc flower is used to configure the first level of filter to redirect
-> packets to a queue set associated with an application.
->
-> >
-> > I really hope you will be able to shed more light on this feature to
-> > increase my awareness on how to use it and to compare it with aRFS.
->
-> Hope this helps and we will go over in more detail in our netdev session.
->
-Also, please add a document in Documentation/networking that describes
-the feature, configuration, and any limitations and relationship to
-other packet steering features.
-
-> >
-> > Thanks,
-> > Max
-> >
-> > [1]:
-> > https://netdevconf.info/0x14/session.html?talk-ADQ-for-system-level-network-io-performance-improvements
-> >
