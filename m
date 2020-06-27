@@ -2,93 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC19520C29C
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 17:02:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6AD920C30E
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 18:26:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726447AbgF0PBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 11:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42974 "EHLO
+        id S1726012AbgF0Q0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 12:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726094AbgF0PBv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 11:01:51 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A99C061794;
-        Sat, 27 Jun 2020 08:01:51 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id s14so5389445plq.6;
-        Sat, 27 Jun 2020 08:01:50 -0700 (PDT)
+        with ESMTP id S1725900AbgF0Q0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 12:26:35 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4067C061794
+        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 09:26:34 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id n2so219800edr.5
+        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 09:26:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9lher+rQxC0kRrcoezVIymaqZSTGLdetiTQ54P1L/Qc=;
-        b=nlMVQLA0jQBARLHqP/GFmOdd7QX7HfxH5YBnecu+434yb/XWokEqmSaKLQfaQcamSB
-         zuQBtk54DIYk9Ip2JCMSvjdpb8dFAZt1Kgmt9B6tsJ/TnQZoK0yUUxxpDKXNEmzK/bXd
-         aylGDdU46wZK0GF8aoHcYHX5SWRE6EVYjXVHlyzMhzWv143Wp7rd9HAJbCkpWilZ5KE3
-         RWhaCLT4OG/YmTTUWOCi58DWrHh47OvmF4CHMGvKNnc1fvfueTJLzSWqyaOmxv4YffWr
-         J502vMRa2YH5d1/k1hfhXmLvsSjKeZViHgKMMdHqceaDs6QzVpQwYelzu9rPW/nQlYTi
-         8zmg==
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jMFR2HbEYsyIRmp4I4lI0gXHiq1A0lFEb04l7REmO8o=;
+        b=jGKXQu7tLII7Xl8W/rutTbqW2+b37Bot9j0NLNHCgWrd14iQwkUfGscWJUZCn6h2qv
+         R66VPVZrobRQJUwnse72sm0o1jWhW16rvgwcfyKSfviuGoC5i3NLtKMzuny/b/m5klrf
+         4TUyu0jlEMnjnJSZMUJRzmOxtQgSGGfv85Z59GXUYLTJ1ejICmKUeEgyRq+sMUGufJGz
+         ibJRbR0dAEOHPRf3GP97G25H66hj1SY0bHsUsunSeO3svwaHuSvQfhmd3Iwz0f7R0kNU
+         WgXurhtMPzYtc0+JAfdGeViR6MYioSeBzUChbyyOe1ubGPi7B1EAyVImScAtvD8Tj8R1
+         xumw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9lher+rQxC0kRrcoezVIymaqZSTGLdetiTQ54P1L/Qc=;
-        b=CmJ8CV4+G7UJeh7qVdsjuWP42PuK+cflHW+RPCc+MGbABzC2P73DVhXYiHNCcR4NFQ
-         YnOmFLaOmEYLF5i18o6OjOwExAl9hVa2c1BR0HB6L2tm2GxwIEh3vEfXo6RRKOk2rj9w
-         9qsOScjedhhP88Ot20JMgLED4KpJdtVkiiOlGUrpzlAkWKjmv0L7HKrQZhjNKDdC2caq
-         0M1WW4yUQ3Ra3L9RofS2pAWNpxn/Idjr6tYvcWxIQk3xVdj/yeRIgqVAN6tuGNBTmhz9
-         8/Iz6YV79Bojvph8M4tsbc7zbn2Jfu9vXU208nu8cnIORcTCloJ0+nOPZlaVtVOipIVM
-         MHcA==
-X-Gm-Message-State: AOAM531PLusjRBbs0gLhxnMzDrFkp7ea6+ucSMfFGgBsLi5FkOQVva+6
-        b0yvKUsOlUAeu7QKVG1n47A=
-X-Google-Smtp-Source: ABdhPJw9oECpaLZ/lIFVcCCPrnE7fCPYaId7ioMgiD3ZzwIUDxtHteJpqVOUN8uK/vDAJKSZMUcfdQ==
-X-Received: by 2002:a17:902:b48f:: with SMTP id y15mr6823297plr.284.1593270110619;
-        Sat, 27 Jun 2020 08:01:50 -0700 (PDT)
-Received: from localhost ([2001:e42:102:1532:160:16:113:140])
-        by smtp.gmail.com with ESMTPSA id 66sm12902375pfd.93.2020.06.27.08.01.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Jun 2020 08:01:50 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Sat, 27 Jun 2020 23:01:42 +0800
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     devel@driverdev.osuosl.org,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
-        joe@perches.com, dan.carpenter@oracle.com
-Subject: Re: [PATCH 1/4] fix trailing */ in block comment
-Message-ID: <20200627150142.nukckb2ezyxiuemm@Rk>
-References: <20200627101447.167370-1-coiby.xu@gmail.com>
- <20200627101447.167370-2-coiby.xu@gmail.com>
- <20200627104708.GA1581263@kroah.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jMFR2HbEYsyIRmp4I4lI0gXHiq1A0lFEb04l7REmO8o=;
+        b=B/KdWraTmlufC8VGZHyv/7hGCRuY0qIuyUaA9dQCvzIEb/h4vZHmCqct78+8kKxcW3
+         S8hOVFvchmCwaWqwuU7uZGHPrjelvhw55lb2dx7IVz8mVFZWMkzV90BGbXbh48RcYjBz
+         DoyPqD6McOyoNFqSvf3VOQT6EGiN1+MmASK2Nt5dx1PafNc9sQcRbxpWdiYLRaFYalih
+         XrrYnDlDNjo6HufRMpTmP90mjgry9P6B5yPmK5gBYXUlzFkG7l68855Rzb8A3V0vpxxS
+         DU9A9makiZX5A4PDWozbX+Dc9Z5d3wlKyOCyqU6sSGL6x4yQsGJFWJxlKgMy2VRRpr+W
+         YNCg==
+X-Gm-Message-State: AOAM532r9ineFyxbFVlpEA44LyuSx2Y/klC+53wI+1P7aecGMjlPsb3r
+        +CHVanzYLHpJMLVEkC1f7CoCuVPLndtK1HuSFjvByw==
+X-Google-Smtp-Source: ABdhPJz/3ukDQltSmEbXbltWTX/wkxtlg8EppZDtDF2+xEQ8YinNaYGniKHrzEgxiMFOKXZBL67UO/ETdLzDStiW6gY=
+X-Received: by 2002:a50:ee87:: with SMTP id f7mr9400400edr.355.1593275191059;
+ Sat, 27 Jun 2020 09:26:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20200627104708.GA1581263@kroah.com>
+References: <e13faf29-5db3-91a2-4a95-c2cd8c2d15fe@mellanox.com> <807a300e-47aa-dba3-7d6d-e14422a0d869@intel.com>
+In-Reply-To: <807a300e-47aa-dba3-7d6d-e14422a0d869@intel.com>
+From:   Tom Herbert <tom@herbertland.com>
+Date:   Sat, 27 Jun 2020 09:26:20 -0700
+Message-ID: <CALx6S35NaCEBPXAsM-8-wrYYQhDB2EVxAN1RaGiJM9yNncaHaQ@mail.gmail.com>
+Subject: Re: ADQ - comparison to aRFS, clarifications on NAPI ID, binding with busy-polling
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Amritha Nambiar <amritha.nambiar@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 27, 2020 at 12:47:08PM +0200, Greg Kroah-Hartman wrote:
->On Sat, Jun 27, 2020 at 06:14:44PM +0800, Coiby Xu wrote:
->> Remove trailing "*/" in block comments.
->>
->> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+On Wed, Jun 24, 2020 at 1:21 PM Samudrala, Sridhar
+<sridhar.samudrala@intel.com> wrote:
 >
->The subject lines of all of your patches should match other patches for
->this driver.  It should look like "staging: qlge: ..."
 >
->Please fix up and resend a v2 of this series.
 >
->thanks,
+> On 6/17/2020 6:15 AM, Maxim Mikityanskiy wrote:
+> > Hi,
+> >
+> > I discovered Intel ADQ feature [1] that allows to boost performance by
+> > picking dedicated queues for application traffic. We did some research,
+> > and I got some level of understanding how it works, but I have some
+> > questions, and I hope you could answer them.
+> >
+> > 1. SO_INCOMING_NAPI_ID usage. In my understanding, every connection has
+> > a key (sk_napi_id) that is unique to the NAPI where this connection is
+> > handled, and the application uses that key to choose a handler thread
+> > from the thread pool. If we have a one-to-one relationship between
+> > application threads and NAPI IDs of connections, each application thread
+> > will handle only traffic from a single NAPI. Is my understanding correct?
 >
->greg k-h
+> Yes. It is correct and recommended with the current implementation.
+>
+> >
+> > 1.1. I wonder how the application thread gets scheduled on the same core
+> > that NAPI runs at. It currently only works with busy_poll, so when the
+> > application initiates busy polling (calls epoll), does the Linux
+> > scheduler move the thread to the right CPU? Do we have to have a strict
+> > one-to-one relationship between threads and NAPIs, or can one thread
+> > handle multiple NAPIs? When the data arrives, does the scheduler run the
+> > application thread on the same CPU that NAPI ran on?
+>
+> The app thread can do busypoll from any core and there is no requirement
+> that the scheduler needs to move the thread to a specific CPU.
+>
+> If the NAPI processing happens via interrupts, the scheduler could move
+> the app thread to the same CPU that NAPI ran on.
+>
+> >
+> > 1.2. I see that SO_INCOMING_NAPI_ID is tightly coupled with busy_poll.
+> > It is enabled only if CONFIG_NET_RX_BUSY_POLL is set. Is there a real
+> > reason why it can't be used without busy_poll? In other words, if we
+> > modify the kernel to drop this requirement, will the kernel still
+> > schedule the application thread on the same CPU as NAPI when busy_poll
+> > is not used?
+>
+> It should be OK to remove this restriction, but requires enabling this
+> in skb_mark_napi_id() and sk_mark_napi_id() too.
+>
+> >
+> > 2. Can you compare ADQ to aRFS+XPS? aRFS provides a way to steer traffic
+> > to the application's CPU in an automatic fashion, and xps_rxqs can be
+> > used to transmit from the corresponding queues. This setup doesn't need
+> > manual configuration of TCs and is not limited to 4 applications. The
+> > difference of ADQ is that (in my understanding) it moves the application
+> > to the RX CPU, while aRFS steers the traffic to the RX queue handled my
+> > the application's CPU. Is there any advantage of ADQ over aRFS, that I
+> > failed to find?
+>
+> aRFS+XPS ties app thread to a cpu, whereas ADQ ties app thread to a napi
+> id which in turn ties to a queue(s)
+>
+> ADQ also provides 2 levels of filtering compared to aRFS+XPS. The first
+> level of filtering selects a queue-set associated with the application
+> and the second level filter or RSS will select a queue within that queue
+> set associated with an app thread.
+>
+The association between queues and thread is implicit in ADQ and
+depends on some assumption particularly on symmetric queueing which
+doesn't always work (TX/RX devices are different, uni-directional
+traffic, peer using some encapsulation that the tc filter misses).
+Please look at Per Thread Queues (https://lwn.net/Articles/824414/)
+which aims to make this association of queues to threads explicit.
 
-Thank you for pointing out this issue!
+> The current interface to configure ADQ limits us to support upto 16
+> application specific queue sets(TC_MAX_QUEUE)
+>
+>
+> >
+> > 3. At [1], you mention that ADQ can be used to create separate RSS sets.
+> >   Could you elaborate about the API used? Does the tc mqprio
+> > configuration also affect RSS? Can it be turned on/off?
+>
+> Yes. tc mqprio allows to create queue-sets per application and the
+> driver configures RSS per queue-set.
+>
+> >
+> > 4. How is tc flower used in context of ADQ? Does the user need to
+> > reflect the configuration in both mqprio qdisc (for TX) and tc flower
+> > (for RX)? It looks like tc flower maps incoming traffic to TCs, but what
+> > is the mechanism of mapping TCs to RX queues?
+>
+> tc mqprio is used to map TCs to RX queues
+>
+> tc flower is used to configure the first level of filter to redirect
+> packets to a queue set associated with an application.
+>
+> >
+> > I really hope you will be able to shed more light on this feature to
+> > increase my awareness on how to use it and to compare it with aRFS.
+>
+> Hope this helps and we will go over in more detail in our netdev session.
+>
+Also, please add a document in Documentation/networking that describes
+the feature, configuration, and any limitations and relationship to
+other packet steering features.
 
---
-Best regards,
-Coiby
+> >
+> > Thanks,
+> > Max
+> >
+> > [1]:
+> > https://netdevconf.info/0x14/session.html?talk-ADQ-for-system-level-network-io-performance-improvements
+> >
