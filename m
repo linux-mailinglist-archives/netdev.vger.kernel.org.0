@@ -2,107 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB8520C085
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 11:51:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6F7E20C0B5
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 12:28:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726447AbgF0JvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 05:51:06 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:35045 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726177AbgF0JvG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 27 Jun 2020 05:51:06 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 88344ce5
-        for <netdev@vger.kernel.org>;
-        Sat, 27 Jun 2020 09:31:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=iodm5UKAwuxsN5o9+q5XZMyNmO0=; b=xcwnIm
-        QP6vC4Zjqt9c6L2IxZdxZg9Z4hfT3ScxG7Qg0+Q/ZIMqZo9e0lj06v8YYUXJOAUQ
-        rhIf56vLcLDVxsw6djkdfBSmFEiJHSPpRGUm0GBwuubI7ZIUYdmuhN4Onm0ev7Nk
-        /t1Sz5Vzz3Bvf51F0A3h2MXnXB8Yd9v/mGXQ79L863kLGd0hOX9HogG0xOx4vuPs
-        dRfOetCar8HmSqnYUjXjfVuP3GN/NwCc1gyjmf7aawrJtvSuPgr0dN+PuUII5CJv
-        tdXHhzGh2/dfQ15CFlemBKgzG0OQBaqkWUEJPKXyYCX5X3syvbsxLpgRZftDArKx
-        ArDmC0as6XgRtlYA==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 57d8a46b (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Sat, 27 Jun 2020 09:31:41 +0000 (UTC)
-Received: by mail-il1-f177.google.com with SMTP id a11so2257999ilk.0
-        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 02:51:04 -0700 (PDT)
-X-Gm-Message-State: AOAM531IYUGfI3J8itACFjPjccOLCINBSoe0kbOu5sFzP8Fyti1+tW1i
-        woyv69vkZ8OfQuN3Aud3wBms8n6XpbFGclEsWPo=
-X-Google-Smtp-Source: ABdhPJxueSk+svbzmYoYDONtUkByzd2M7ARKTZlhnhj93OhChiMIBsQoWe7mIbTgJ7fEaN5pq4KFnRitFiseHlmwY3Y=
-X-Received: by 2002:a92:91c2:: with SMTP id e63mr6662683ill.64.1593251463502;
- Sat, 27 Jun 2020 02:51:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200623095945.1402468-1-Jason@zx2c4.com> <20200623095945.1402468-3-Jason@zx2c4.com>
- <CAHmME9qo6u1rmzgP0HEf2mVj+o4eWpjR+9j709NVhJuMAsb4uQ@mail.gmail.com> <CACT4Y+adKydDGcoz3xBb45g_J04kKtQpGRua3k_BvOF=mB4EdQ@mail.gmail.com>
-In-Reply-To: <CACT4Y+adKydDGcoz3xBb45g_J04kKtQpGRua3k_BvOF=mB4EdQ@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Sat, 27 Jun 2020 03:50:52 -0600
-X-Gmail-Original-Message-ID: <CAHmME9rrpr97mXLoEgk9YvZCfEUeodhCGbbWV1t2+giDBasiKQ@mail.gmail.com>
-Message-ID: <CAHmME9rrpr97mXLoEgk9YvZCfEUeodhCGbbWV1t2+giDBasiKQ@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] wireguard: device: avoid circular netns references
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        syzkaller <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726415AbgF0K2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 06:28:17 -0400
+Received: from smtprelay04.ispgateway.de ([80.67.29.8]:39300 "EHLO
+        smtprelay04.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725994AbgF0K2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 06:28:17 -0400
+X-Greylist: delayed 1133 seconds by postgrey-1.27 at vger.kernel.org; Sat, 27 Jun 2020 06:28:16 EDT
+Received: from [88.130.61.231] (helo=kiste)
+        by smtprelay04.ispgateway.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <ndev@hwipl.net>)
+        id 1jp7lw-0002lF-C5; Sat, 27 Jun 2020 12:09:20 +0200
+Date:   Sat, 27 Jun 2020 12:09:20 +0200
+From:   Hans Wippel <ndev@hwipl.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: wireguard: problem sending via libpcap's packet socket
+Message-Id: <20200627120920.b4c6af54789b0c09747a92a9@hwipl.net>
+In-Reply-To: <CAHmME9oCHNSNAVTNtxO2Oz10iqj_D8JPmN8526FbQ8UoO0-iHw@mail.gmail.com>
+References: <20200626201330.325840-1-ndev@hwipl.net>
+        <CAHmME9r7Q_+_3ePj4OzxZOkkrSdKA_THNjk6YjHxTQyNA2iaAw@mail.gmail.com>
+        <CAHmME9pX30q1oWY3hpjK4u-1ApQP7RCA07BmhtRQx=dR85MS9A@mail.gmail.com>
+        <CAHmME9oCHNSNAVTNtxO2Oz10iqj_D8JPmN8526FbQ8UoO0-iHw@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-unknown-linux-gnu)
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="Multipart=_Sat__27_Jun_2020_12_09_20_+0200_RA2jFS43=+BYiVsa"
+X-Df-Sender: bmRldkBod2lwbC5uZXQ=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dmitry,
+This is a multi-part message in MIME format.
 
-On Sat, Jun 27, 2020 at 2:59 AM Dmitry Vyukov <dvyukov@google.com> wrote:
-> Hard to say. syzkaller frequently needs some time (days) to get
-> reasonable coverage of new code.
-> Is wg_netns_pre_exit executed synchronously in the context of a
-> syscall? If not, then it won't be shown as covered. If yes, then what
-> syscall is it?
+--Multipart=_Sat__27_Jun_2020_12_09_20_+0200_RA2jFS43=+BYiVsa
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Aw, shucks, you're right. I thought that this would be from the
-syscall path for deleting a network namespace via netns_put, but
-sticking a dump_stack() in there, it's clear that namespace cleanup
-actually happens in a worker:
+Hi Jason,
 
-[    0.407072]  wg_netns_pre_exit+0xc/0x98
-[    0.408496]  cleanup_net+0x1bd/0x2f0
-[    0.409844]  process_one_work+0x17f/0x2d0
-[    0.411327]  worker_thread+0x4b/0x3b0
-[    0.412697]  ? rescuer_thread+0x360/0x360
-[    0.414169]  kthread+0x116/0x140
-[    0.415368]  ? __kthread_create_worker+0x110/0x110
-[    0.417125]  ret_from_fork+0x1f/0x30
+thanks for quick replies and patches!
 
-> This is related to namespaces, right? syzkaller has some descriptions
-> for namespaces:
-> https://github.com/google/syzkaller/blob/master/sys/linux/namespaces.txt
-> But I don't know if it's enough nor I checked if they actually work.
-> We have this laundry list:
-> https://github.com/google/syzkaller/issues/533
-> and some interns working on adding more descriptions. If you can
-> identify something that's not covered but can be covered, please add
-> to that list. I think we can even prioritize it then b/c most items on
-> that list don't have anybody actively interested.
+For whatever it's worth, I have attached another simple test program to
+this mail. It opens AF_PACKET sockets without libpcap and (incorrectly)
+sets the protocol to 0. It works with my ethernet device. Looking at the
+code, it should also work with the patches you posted. Maybe it is
+useful for testing some (stupid) corner case.
 
-Something to add to that list would be:
+Hans
 
-- Create an interface of a given type (wg0->wireguard, for example)
-- Move it to a namespace
-- Delete a namespace
-- Delete an interface
+--Multipart=_Sat__27_Jun_2020_12_09_20_+0200_RA2jFS43=+BYiVsa
+Content-Type: application/octet-stream;
+ name="rawsock.go"
+Content-Disposition: attachment;
+ filename="rawsock.go"
+Content-Transfer-Encoding: base64
 
-Some combination of those things might provoke issues. One would be
-what the original post of this email thread was about. Another would
-be that xfrmi OOPS from a few weeks ago, fixed with c95c5f58b35e
-("xfrm interface: fix oops when deleting a x-netns interface"), which
-has a reproducer in the commit message pretty similar to the one here.
-There's an even older one in xfrmi, fixed with c5d1030f2300 ("xfrm
-interface: fix list corruption for x-netns").
+cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImVuY29kaW5nL2JpbmFyeSIKCSJsb2ciCgkibmV0IgoK
+CSJnaXRodWIuY29tL2dvb2dsZS9nb3BhY2tldCIKCSJnaXRodWIuY29tL2dvb2dsZS9nb3BhY2tl
+dC9sYXllcnMiCgkiZ29sYW5nLm9yZy94L3N5cy91bml4IgopCgovLyBSYXdTb2NrZXQgc3RvcmVz
+IGEgcmF3IHNvY2tldAp0eXBlIFJhd1NvY2tldCBzdHJ1Y3QgewoJZmQgICAgICBpbnQKCWRldk5h
+bWUgc3RyaW5nCglkZXYgICAgICpuZXQuSW50ZXJmYWNlCglhZGRyICAgICp1bml4LlNvY2thZGRy
+TGlua2xheWVyCn0KCi8vIENsb3NlIGNsb3NlcyB0aGUgcmF3IHNvY2tldApmdW5jIChyICpSYXdT
+b2NrZXQpIENsb3NlKCkgewoJdW5peC5DbG9zZShyLmZkKQp9CgovLyBTZW5kIHNlbmRzIGRhdGEg
+b3V0IG9mIHRoZSByYXcgc29ja2V0CmZ1bmMgKHIgKlJhd1NvY2tldCkgU2VuZChkYXRhIFtdYnl0
+ZSkgewoJZXJyIDo9IHVuaXguU2VuZHRvKHIuZmQsIGRhdGEsIDAsIHIuYWRkcikKCWlmIGVyciAh
+PSBuaWwgewoJCWxvZy5GYXRhbChlcnIpCgl9Cn0KCi8vIGh0b25zIGNvbnZlcnRzIGEgdWludDE2
+IHRvIG5ldHdvcmsgYnl0ZSBvcmRlciAoZXhwZWN0cyBsaXR0bGUgZW5kaWFuIHN5c3RlbSkKZnVu
+YyBodG9ucyh4IHVpbnQxNikgdWludDE2IHsKCWJ1ZiA6PSBtYWtlKFtdYnl0ZSwgMikKCWJpbmFy
+eS5MaXR0bGVFbmRpYW4uUHV0VWludDE2KGJ1ZiwgeCkKCXJldHVybiBiaW5hcnkuQmlnRW5kaWFu
+LlVpbnQxNihidWYpCn0KCi8vIE5ld1Jhd1NvY2tldCBjcmVhdGVzIGEgbmV3IHJhdyBzb2NrZXQg
+Zm9yIGRldmljZQpmdW5jIE5ld1Jhd1NvY2tldChkZXZpY2Ugc3RyaW5nKSAqUmF3U29ja2V0IHsK
+CS8vIGNyZWF0ZSByYXcgc29ja2V0CglmZCwgZXJyIDo9IHVuaXguU29ja2V0KHVuaXguQUZfUEFD
+S0VULCB1bml4LlNPQ0tfUkFXLAoJCTApCgkvLyAgICAgIGludChodG9ucyh1bml4LkVUSF9QX0FM
+TCkpKQoJaWYgZXJyICE9IG5pbCB7CgkJbG9nLkZhdGFsKGVycikKCX0KCgkvLyBnZXQgbG9vcGJh
+Y2sgaW50ZXJmYWNlCglkZXYsIGVyciA6PSBuZXQuSW50ZXJmYWNlQnlOYW1lKGRldmljZSkKCWlm
+IGVyciAhPSBuaWwgewoJCWxvZy5GYXRhbChlcnIpCgl9CgoJLy8gY3JlYXRlIHNvY2thZGRyCglh
+ZGRyIDo9ICZ1bml4LlNvY2thZGRyTGlua2xheWVyewoJCS8vIFByb3RvY29sOiBodG9ucyh1bml4
+LkVUSF9QX0lQKSwKCQlJZmluZGV4OiBkZXYuSW5kZXgsCgkJSGFsZW46ICAgNiwKCX0KCgkvLyBj
+cmVhdGUgcmF3IHNvY2tldCBhbmQgcmV0dXJuIGl0CglyZXR1cm4gJlJhd1NvY2tldHsKCQlmZDog
+ICAgICBmZCwKCQlkZXZOYW1lOiBkZXZpY2UsCgkJZGV2OiAgICAgZGV2LAoJCWFkZHI6ICAgIGFk
+ZHIsCgl9Cn0KCi8vIGNyZWF0ZUlQUGFja2V0IGNyZWF0ZXMgYW4gSVAgcGFja2V0CmZ1bmMgY3Jl
+YXRlSVBQYWNrZXQoZnJvbSwgdG8gbmV0LklQLCBmcm9tUG9ydCwgdG9Qb3J0IGxheWVycy5VRFBQ
+b3J0KSBbXWJ5dGUgewoJLy8gcHJlcGFyZSBjcmVhdGlvbiBvZiBwYWNrZXQKCW9wdHMgOj0gZ29w
+YWNrZXQuU2VyaWFsaXplT3B0aW9uc3sKCQlGaXhMZW5ndGhzOiAgICAgICB0cnVlLAoJCUNvbXB1
+dGVDaGVja3N1bXM6IHRydWUsCgl9CgoJLy8gY3JlYXRlIGlwIGhlYWRlcgoJaXAgOj0gbGF5ZXJz
+LklQdjR7CgkJVmVyc2lvbjogIDQsCgkJRmxhZ3M6ICAgIGxheWVycy5JUHY0RG9udEZyYWdtZW50
+LAoJCVRUTDogICAgICA2NCwKCQlQcm90b2NvbDogbGF5ZXJzLklQUHJvdG9jb2xVRFAsCgkJU3Jj
+SVA6ICAgIGZyb20sCgkJRHN0SVA6ICAgIHRvLAoJfQoKCS8vIGNyZWF0ZSB1ZHAgaGVhZGVyCgl1
+ZHAgOj0gbGF5ZXJzLlVEUHsKCQlTcmNQb3J0OiBmcm9tUG9ydCwKCQlEc3RQb3J0OiB0b1BvcnQs
+Cgl9Cgl1ZHAuU2V0TmV0d29ya0xheWVyRm9yQ2hlY2tzdW0oJmlwKQoKCS8vIGNyZWF0ZSBwYXls
+b2FkCglwYXlsb2FkIDo9IFtdYnl0ZXsxLCAyLCAzLCA0LCA1LCA2LCA3LCA4LCA5LCAxMCwgMTEs
+IDEyLCAxMywgMTQsIDE1fQoKCS8vIHNlcmlhbGl6ZSBwYWNrZXQgdG8gYnVmZmVyCgl2YXIgZXJy
+IGVycm9yCglidWYgOj0gZ29wYWNrZXQuTmV3U2VyaWFsaXplQnVmZmVyKCkKCXBsIDo9IGdvcGFj
+a2V0LlBheWxvYWQocGF5bG9hZCkKCWVyciA9IGdvcGFja2V0LlNlcmlhbGl6ZUxheWVycyhidWYs
+IG9wdHMsICZpcCwgJnVkcCwgcGwpCglpZiBlcnIgIT0gbmlsIHsKCQlsb2cuRmF0YWwoZXJyKQoJ
+fQoKCXJldHVybiBidWYuQnl0ZXMoKQp9CgovLyBjcmVhdGVFdGhlcm5ldFBhY2tldCBjcmVhdGVz
+IGFuIGV0aGVybmV0IHBhY2tldCB3aXRoIGFuIElQIHBhY2tldApmdW5jIGNyZWF0ZUV0aGVybmV0
+UGFja2V0KGZyb21NQUMsIHRvTUFDIHN0cmluZywgaXBQYWNrZXQgW11ieXRlKSBbXWJ5dGUgewoJ
+Ly8gcHJlcGFyZSBjcmVhdGlvbiBvZiBwYWNrZXQKCW9wdHMgOj0gZ29wYWNrZXQuU2VyaWFsaXpl
+T3B0aW9uc3sKCQlGaXhMZW5ndGhzOiAgICAgICB0cnVlLAoJCUNvbXB1dGVDaGVja3N1bXM6IHRy
+dWUsCgl9CgoJLy8gY3JlYXRlIGV0aGVybmV0IGhlYWRlcgoJc3JjTUFDLCBlcnIgOj0gbmV0LlBh
+cnNlTUFDKGZyb21NQUMpCglpZiBlcnIgIT0gbmlsIHsKCQlsb2cuRmF0YWwoZXJyKQoJfQoJZHN0
+TUFDLCBlcnIgOj0gbmV0LlBhcnNlTUFDKHRvTUFDKQoJaWYgZXJyICE9IG5pbCB7CgkJbG9nLkZh
+dGFsKGVycikKCX0KCWV0aCA6PSBsYXllcnMuRXRoZXJuZXR7CgkJU3JjTUFDOiAgICAgICBzcmNN
+QUMsCgkJRHN0TUFDOiAgICAgICBkc3RNQUMsCgkJRXRoZXJuZXRUeXBlOiBsYXllcnMuRXRoZXJu
+ZXRUeXBlSVB2NCwKCX0KCgkvLyBzZXJpYWxpemUgcGFja2V0IHRvIGJ1ZmZlcgoJYnVmIDo9IGdv
+cGFja2V0Lk5ld1NlcmlhbGl6ZUJ1ZmZlcigpCglwbCA6PSBnb3BhY2tldC5QYXlsb2FkKGlwUGFj
+a2V0KQoJZXJyID0gZ29wYWNrZXQuU2VyaWFsaXplTGF5ZXJzKGJ1Ziwgb3B0cywgJmV0aCwgcGwp
+CglpZiBlcnIgIT0gbmlsIHsKCQlsb2cuRmF0YWwoZXJyKQoJfQoKCXJldHVybiBidWYuQnl0ZXMo
+KQp9CgpmdW5jIG1haW4oKSB7CgkvLyBjcmVhdGUgd2lyZWd1YXJkIHNvY2tldAoJZGV2aWNlIDo9
+ICJ3ZzAiCglzb2NrIDo9IE5ld1Jhd1NvY2tldChkZXZpY2UpCgoJLy8gY3JlYXRlIHBhY2tldAoJ
+ZnJvbSA6PSBuZXQuSVB2NCgxOTIsIDE2OCwgMSwgMSkKCXRvIDo9IG5ldC5JUHY0KDE5MiwgMTY4
+LCAxLCAxKQoJZnJvbVBvcnQgOj0gbGF5ZXJzLlVEUFBvcnQoMTIzNCkKCXRvUG9ydCA6PSBsYXll
+cnMuVURQUG9ydCgxMjM0KQoJcGFja2V0IDo9IGNyZWF0ZUlQUGFja2V0KGZyb20sIHRvLCBmcm9t
+UG9ydCwgdG9Qb3J0KQoKCS8vIHNlbmQgcGFja2V0IGFuZCBjbG9zZSBzb2NrZXQKCXNvY2suU2Vu
+ZChwYWNrZXQpCglzb2NrLkNsb3NlKCkKCgkvLyBjcmVhdGUgZXRoZXJuZXQgc29ja2V0CglkZXZp
+Y2UgPSAiZXRoMCIKCXNvY2sgPSBOZXdSYXdTb2NrZXQoZGV2aWNlKQoKCS8vIGNyZWF0ZSBwYWNr
+ZXQKCWZyb20gPSBuZXQuSVB2NCgxOTIsIDE2OCwgMSwgMSkKCXRvID0gbmV0LklQdjQoMTkyLCAx
+NjgsIDEsIDEpCglmcm9tUG9ydCA9IGxheWVycy5VRFBQb3J0KDEyMzQpCgl0b1BvcnQgPSBsYXll
+cnMuVURQUG9ydCgxMjM0KQoJZnJvbU1BQyA6PSAiMDA6MDA6NWU6MDA6NTM6MDEiCgl0b01BQyA6
+PSAiZmY6ZmY6ZmY6ZmY6ZmY6ZmYiCglwYWNrZXQgPSBjcmVhdGVJUFBhY2tldChmcm9tLCB0bywg
+ZnJvbVBvcnQsIHRvUG9ydCkKCXBhY2tldCA9IGNyZWF0ZUV0aGVybmV0UGFja2V0KGZyb21NQUMs
+IHRvTUFDLCBwYWNrZXQpCgoJLy8gc2VuZCBwYWNrZXQgYW5kIGNsb3NlIHNvY2tldAoJc29jay5T
+ZW5kKHBhY2tldCkKCXNvY2suQ2xvc2UoKQp9Cg==
 
-In short, adding and deleting namespaces and moving interfaces around
-between them, amidst other syzkaller chaos, might turn up bugs,
-because in the past humans have found those sorts of bugs doing the
-same.
-
-Jason
+--Multipart=_Sat__27_Jun_2020_12_09_20_+0200_RA2jFS43=+BYiVsa--
