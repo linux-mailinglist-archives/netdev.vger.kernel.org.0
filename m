@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E2D920C1B1
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 15:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41C2920C1BE
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 15:24:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726948AbgF0NXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 09:23:51 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:53432 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726553AbgF0NXs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 09:23:48 -0400
+        id S1726439AbgF0NYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 09:24:24 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:33892 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726989AbgF0NYX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 09:24:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593264226;
+        s=mimecast20190719; t=1593264260;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:in-reply-to:in-reply-to:in-reply-to:
          references:references:references;
-        bh=xHQ23E0ubwuEGdr08pTjn1ZZAxTi7f5b6ScMm0bJY4c=;
-        b=M2dos+qSdkdfThdqEhDIKsZdSRpUlnleRLz5SSLKDmUuScAOxPdi2rNPySNeARJxGC++JK
-        f87tLOdac2N1CSd3wVCCz7mBf3JyzO1/VTTla2k7/UaFtdNA2jDWgl5RegxJyr4gyBbrSH
-        MI5gyle//eXIEsAQ8PIP1qEdX0c4uc4=
+        bh=Vbsz74jx639O45NZJ//E5urMuCAJMJoLkV3YW2Jxk5M=;
+        b=HoYprsEFrnEbRo0CyRgZDNa2qQy+fl/QYGGy2jDLKgaA1pO7fEXbmrBWlVtIW3BH+pwngt
+        dOe+poN1VSKXosOji+gz3Iar1eXRH4HFXu+x90Xq3Y+qkCcEBIMZSbf1dXFGaUmkh67DcG
+        Yu5DP5yWa9dNOZZIEh/h8wOZbdkdYHY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-18-UOKJWxGZPmy5N6uVApuoTQ-1; Sat, 27 Jun 2020 09:23:44 -0400
-X-MC-Unique: UOKJWxGZPmy5N6uVApuoTQ-1
+ us-mta-300-C3L9deshP0OUCzQ5IpSj0Q-1; Sat, 27 Jun 2020 09:23:55 -0400
+X-MC-Unique: C3L9deshP0OUCzQ5IpSj0Q-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DFCF2800C60;
-        Sat, 27 Jun 2020 13:23:42 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8D191A0BD7;
+        Sat, 27 Jun 2020 13:23:53 +0000 (UTC)
 Received: from madcap2.tricolour.ca (unknown [10.10.110.28])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0901871662;
-        Sat, 27 Jun 2020 13:23:29 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A07D8205F;
+        Sat, 27 Jun 2020 13:23:43 +0000 (UTC)
 From:   Richard Guy Briggs <rgb@redhat.com>
 To:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
         Linux-Audit Mailing List <linux-audit@redhat.com>,
@@ -42,9 +42,9 @@ Cc:     Paul Moore <paul@paul-moore.com>, sgrubb@redhat.com,
         eparis@parisplace.org, serge@hallyn.com, ebiederm@xmission.com,
         nhorman@tuxdriver.com, dwalsh@redhat.com, mpatel@redhat.com,
         Richard Guy Briggs <rgb@redhat.com>
-Subject: [PATCH ghak90 V9 12/13] audit: track container nesting
-Date:   Sat, 27 Jun 2020 09:20:45 -0400
-Message-Id: <1d793e2fc60650de4bbc9f4bde3c736c94efe9a1.1593198710.git.rgb@redhat.com>
+Subject: [PATCH ghak90 V9 13/13] audit: add capcontid to set contid outside init_user_ns
+Date:   Sat, 27 Jun 2020 09:20:46 -0400
+Message-Id: <b6cb5500cfd7e8686ac2a7758103688c2da7f4ce.1593198710.git.rgb@redhat.com>
 In-Reply-To: <cover.1593198710.git.rgb@redhat.com>
 References: <cover.1593198710.git.rgb@redhat.com>
 In-Reply-To: <cover.1593198710.git.rgb@redhat.com>
@@ -55,248 +55,244 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Track the parent container of a container to be able to filter and
-report nesting.
+Provide a mechanism similar to CAP_AUDIT_CONTROL to explicitly give a
+process in a non-init user namespace the capability to set audit
+container identifiers of individual children.
 
-Now that we have a way to track and check the parent container of a
-container, modify the contid field format to be able to report that
-nesting using a carrat ("^") modifier to indicate nesting.  The
-original field format was "contid=<contid>" for task-associated records
-and "contid=<contid>[,<contid>[...]]" for network-namespace-associated
-records.  The new field format is
-"contid=<contid>[,^<contid>[...]][,<contid>[...]]".
+Provide the /proc/$PID/audit_capcontid interface to capcontid.
+Valid values are: 1==enabled, 0==disabled
+
+Writing a "1" to this special file for the target process $PID will
+enable the target process to set audit container identifiers of its
+descendants.
+
+A process must already have CAP_AUDIT_CONTROL in the initial user
+namespace or have had audit_capcontid enabled by a previous use of this
+feature by its parent on this process in order to be able to enable it
+for another process.  The target process must be a descendant of the
+calling process.
+
+Report this action in new message type AUDIT_SET_CAPCONTID 1022 with
+fields opid= capcontid= old-capcontid=
 
 Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
 ---
- include/linux/audit.h |  1 +
- kernel/audit.c        | 60 ++++++++++++++++++++++++++++++++++++++++++---------
- kernel/audit.h        |  2 ++
- kernel/auditfilter.c  | 17 ++++++++++++++-
- kernel/auditsc.c      |  2 +-
- 5 files changed, 70 insertions(+), 12 deletions(-)
+ fs/proc/base.c             | 57 +++++++++++++++++++++++++++++++++++++++++++++-
+ include/linux/audit.h      | 14 ++++++++++++
+ include/uapi/linux/audit.h |  1 +
+ kernel/audit.c             | 38 ++++++++++++++++++++++++++++++-
+ 4 files changed, 108 insertions(+), 2 deletions(-)
 
+diff --git a/fs/proc/base.c b/fs/proc/base.c
+index 794474cd8f35..1083db2ce345 100644
+--- a/fs/proc/base.c
++++ b/fs/proc/base.c
+@@ -1329,7 +1329,7 @@ static ssize_t proc_contid_read(struct file *file, char __user *buf,
+ 	if (!task)
+ 		return -ESRCH;
+ 	/* if we don't have caps, reject */
+-	if (!capable(CAP_AUDIT_CONTROL))
++	if (!capable(CAP_AUDIT_CONTROL) && !audit_get_capcontid(current))
+ 		return -EPERM;
+ 	length = scnprintf(tmpbuf, TMPBUFLEN, "%llu", audit_get_contid(task));
+ 	put_task_struct(task);
+@@ -1370,6 +1370,59 @@ static ssize_t proc_contid_write(struct file *file, const char __user *buf,
+ 	.write		= proc_contid_write,
+ 	.llseek		= generic_file_llseek,
+ };
++
++static ssize_t proc_capcontid_read(struct file *file, char __user *buf,
++				  size_t count, loff_t *ppos)
++{
++	struct inode *inode = file_inode(file);
++	struct task_struct *task = get_proc_task(inode);
++	ssize_t length;
++	char tmpbuf[TMPBUFLEN];
++
++	if (!task)
++		return -ESRCH;
++	/* if we don't have caps, reject */
++	if (!capable(CAP_AUDIT_CONTROL) && !audit_get_capcontid(current))
++		return -EPERM;
++	length = scnprintf(tmpbuf, TMPBUFLEN, "%u", audit_get_capcontid(task));
++	put_task_struct(task);
++	return simple_read_from_buffer(buf, count, ppos, tmpbuf, length);
++}
++
++static ssize_t proc_capcontid_write(struct file *file, const char __user *buf,
++				   size_t count, loff_t *ppos)
++{
++	struct inode *inode = file_inode(file);
++	u32 capcontid;
++	int rv;
++	struct task_struct *task = get_proc_task(inode);
++
++	if (!task)
++		return -ESRCH;
++	if (*ppos != 0) {
++		/* No partial writes. */
++		put_task_struct(task);
++		return -EINVAL;
++	}
++
++	rv = kstrtou32_from_user(buf, count, 10, &capcontid);
++	if (rv < 0) {
++		put_task_struct(task);
++		return rv;
++	}
++
++	rv = audit_set_capcontid(task, capcontid);
++	put_task_struct(task);
++	if (rv < 0)
++		return rv;
++	return count;
++}
++
++static const struct file_operations proc_capcontid_operations = {
++	.read		= proc_capcontid_read,
++	.write		= proc_capcontid_write,
++	.llseek		= generic_file_llseek,
++};
+ #endif
+ 
+ #ifdef CONFIG_FAULT_INJECTION
+@@ -3273,6 +3326,7 @@ static int proc_stack_depth(struct seq_file *m, struct pid_namespace *ns,
+ 	REG("loginuid",   S_IWUSR|S_IRUGO, proc_loginuid_operations),
+ 	REG("sessionid",  S_IRUGO, proc_sessionid_operations),
+ 	REG("audit_containerid", S_IWUSR|S_IRUSR, proc_contid_operations),
++	REG("audit_capcontainerid", S_IWUSR|S_IRUSR, proc_capcontid_operations),
+ #endif
+ #ifdef CONFIG_FAULT_INJECTION
+ 	REG("make-it-fail", S_IRUGO|S_IWUSR, proc_fault_inject_operations),
+@@ -3613,6 +3667,7 @@ static int proc_tid_comm_permission(struct inode *inode, int mask)
+ 	REG("loginuid",  S_IWUSR|S_IRUGO, proc_loginuid_operations),
+ 	REG("sessionid",  S_IRUGO, proc_sessionid_operations),
+ 	REG("audit_containerid", S_IWUSR|S_IRUSR, proc_contid_operations),
++	REG("audit_capcontainerid", S_IWUSR|S_IRUSR, proc_capcontid_operations),
+ #endif
+ #ifdef CONFIG_FAULT_INJECTION
+ 	REG("make-it-fail", S_IRUGO|S_IWUSR, proc_fault_inject_operations),
 diff --git a/include/linux/audit.h b/include/linux/audit.h
-index 304fbb7c3c5b..025b52ae8422 100644
+index 025b52ae8422..2b3a2b6020ed 100644
 --- a/include/linux/audit.h
 +++ b/include/linux/audit.h
-@@ -115,6 +115,7 @@ struct audit_contobj {
- 	refcount_t		refcount;
- 	refcount_t		sigflag;
- 	struct rcu_head         rcu;
-+	struct audit_contobj	*parent;
- };
- 
- struct audit_task_info {
-diff --git a/kernel/audit.c b/kernel/audit.c
-index efa65ec01239..aaf74702e993 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -221,6 +221,7 @@ struct audit_reply {
- 
- void audit_netns_contid_add(struct net *net, struct audit_contobj *cont);
- void audit_netns_contid_del(struct net *net, struct audit_contobj *cont);
-+void audit_log_contid(struct audit_buffer *ab, struct audit_contobj *cont);
- 
- void __init audit_task_init(void)
- {
-@@ -277,6 +278,7 @@ static void _audit_contobj_put_sig(struct audit_contobj *cont)
- 	refcount_set(&cont->sigflag, 0);
- 	if (!refcount_read(&cont->refcount)) {
- 		put_task_struct(cont->owner);
-+		_audit_contobj_put(cont->parent);
- 		list_del_rcu(&cont->list);
- 		kfree_rcu(cont, rcu);
- 	}
-@@ -574,7 +576,7 @@ void audit_log_netns_contid_list(struct net *net, struct audit_context *context)
- 			audit_log_format(ab, "contid=");
- 		} else
- 			audit_log_format(ab, ",");
--		audit_log_format(ab, "%llu", cont->obj->id);
-+		audit_log_contid(ab, cont->obj);
- 	}
- 	audit_log_end(ab);
- out:
-@@ -1747,7 +1749,9 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
- 		kfree(sig_data);
- 		break;
- 	case AUDIT_SIGNAL_INFO2: {
-+		char *contidstr = NULL;
- 		unsigned int contidstrlen = 0;
-+		struct audit_contobj *cont = audit_sig_cid;
- 
- 		len = 0;
- 		if (audit_sig_sid) {
-@@ -1757,13 +1761,27 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
- 				return err;
- 		}
- 		if (audit_sig_cid) {
--			contidstr = kmalloc(21, GFP_KERNEL);
-+			contidstr = kmalloc(AUDIT_MESSAGE_TEXT_MAX, GFP_KERNEL);
- 			if (!contidstr) {
- 				if (audit_sig_sid)
- 					security_release_secctx(ctx, len);
- 				return -ENOMEM;
- 			}
--			contidstrlen = scnprintf(contidstr, 20, "%llu", audit_sig_cid->id);
-+			rcu_read_lock();
-+			while (cont) {
-+				if (cont->parent)
-+					contidstrlen += scnprintf(contidstr,
-+								  AUDIT_MESSAGE_TEXT_MAX -
-+								  contidstrlen,
-+								  "%llu,^", cont->id);
-+				else
-+					contidstrlen += scnprintf(contidstr,
-+								  AUDIT_MESSAGE_TEXT_MAX -
-+								  contidstrlen,
-+								  "%llu", cont->id);
-+				cont = cont->parent;
-+			}
-+			rcu_read_unlock();
- 		}
- 		sig_data2 = kmalloc(sizeof(*sig_data2) + contidstrlen + len, GFP_KERNEL);
- 		if (!sig_data2) {
-@@ -2444,6 +2462,23 @@ void audit_log_session_info(struct audit_buffer *ab)
- 	audit_log_format(ab, "auid=%u ses=%u", auid, sessionid);
+@@ -122,6 +122,7 @@ struct audit_task_info {
+ 	kuid_t			loginuid;
+ 	unsigned int		sessionid;
+ 	struct audit_contobj	*cont;
++	u32			capcontid;
+ #ifdef CONFIG_AUDITSYSCALL
+ 	struct audit_context	*ctx;
+ #endif
+@@ -230,6 +231,14 @@ static inline unsigned int audit_get_sessionid(struct task_struct *tsk)
+ 	return tsk->audit->sessionid;
  }
  
-+void audit_log_contid(struct audit_buffer *ab, struct audit_contobj *cont)
++static inline u32 audit_get_capcontid(struct task_struct *tsk)
 +{
-+	if (!cont) {
-+		audit_log_format(ab, "-1");
-+		return;
++	if (!tsk->audit)
++		return 0;
++	return tsk->audit->capcontid;
++}
++
++extern int audit_set_capcontid(struct task_struct *tsk, u32 enable);
+ extern int audit_set_contid(struct task_struct *tsk, u64 contid);
+ 
+ static inline u64 audit_get_contid(struct task_struct *tsk)
+@@ -311,6 +320,11 @@ static inline unsigned int audit_get_sessionid(struct task_struct *tsk)
+ 	return AUDIT_SID_UNSET;
+ }
+ 
++static inline u32 audit_get_capcontid(struct task_struct *tsk)
++{
++	return 0;
++}
++
+ static inline u64 audit_get_contid(struct task_struct *tsk)
+ {
+ 	return AUDIT_CID_UNSET;
+diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
+index 831c12bdd235..5e30f4c95dc2 100644
+--- a/include/uapi/linux/audit.h
++++ b/include/uapi/linux/audit.h
+@@ -73,6 +73,7 @@
+ #define AUDIT_GET_FEATURE	1019	/* Get which features are enabled */
+ #define AUDIT_CONTAINER_OP	1020	/* Define the container id and info */
+ #define AUDIT_SIGNAL_INFO2	1021	/* Get info auditd signal sender */
++#define AUDIT_SET_CAPCONTID	1022	/* Set cap_contid of a task */
+ 
+ #define AUDIT_FIRST_USER_MSG	1100	/* Userspace messages mostly uninteresting to kernel */
+ #define AUDIT_USER_AVC		1107	/* We filter this differently */
+diff --git a/kernel/audit.c b/kernel/audit.c
+index aaf74702e993..454473f2e193 100644
+--- a/kernel/audit.c
++++ b/kernel/audit.c
+@@ -307,6 +307,7 @@ int audit_alloc(struct task_struct *tsk)
+ 	rcu_read_lock();
+ 	info->cont = _audit_contobj_get(current);
+ 	rcu_read_unlock();
++	info->capcontid = 0;
+ 	tsk->audit = info;
+ 
+ 	ret = audit_alloc_syscall(tsk);
+@@ -322,6 +323,7 @@ struct audit_task_info init_struct_audit = {
+ 	.loginuid = INVALID_UID,
+ 	.sessionid = AUDIT_SID_UNSET,
+ 	.cont = NULL,
++	.capcontid = 0,
+ #ifdef CONFIG_AUDITSYSCALL
+ 	.ctx = NULL,
+ #endif
+@@ -2763,6 +2765,40 @@ static bool audit_contid_isnesting(struct task_struct *tsk)
+ 	return !isowner && ownerisparent;
+ }
+ 
++int audit_set_capcontid(struct task_struct *task, u32 enable)
++{
++	u32 oldcapcontid;
++	int rc = 0;
++	struct audit_buffer *ab;
++
++	if (!task->audit)
++		return -ENOPROTOOPT;
++	oldcapcontid = audit_get_capcontid(task);
++	/* if task is not descendant, block */
++	if (task == current || !task_is_descendant(current, task))
++		rc = -EXDEV;
++	else if (current_user_ns() == &init_user_ns) {
++		if (!capable(CAP_AUDIT_CONTROL) &&
++		    !audit_get_capcontid(current))
++			rc = -EPERM;
 +	}
-+	rcu_read_lock();
-+	while (cont) {
-+		if (cont->parent)
-+			audit_log_format(ab, "%llu,^", cont->id);
-+		else
-+			audit_log_format(ab, "%llu", cont->id);
-+		cont = cont->parent;
-+	}
-+	rcu_read_unlock();
++	if (!rc)
++		task->audit->capcontid = enable;
++
++	if (!audit_enabled)
++		return rc;
++
++	ab = audit_log_start(audit_context(), GFP_KERNEL, AUDIT_SET_CAPCONTID);
++	if (!ab)
++		return rc;
++
++	audit_log_format(ab,
++			 "opid=%d capcontid=%u old-capcontid=%u",
++			 task_tgid_nr(task), enable, oldcapcontid);
++	audit_log_end(ab);
++	return rc;
 +}
 +
  /*
-  * audit_log_container_id - report container info
-  * @context: task or local context for record
-@@ -2460,7 +2495,8 @@ void audit_log_container_id(struct audit_context *context,
- 	ab = audit_log_start(context, GFP_KERNEL, AUDIT_CONTAINER_ID);
- 	if (!ab)
- 		return;
--	audit_log_format(ab, "contid=%llu", contid);
-+	audit_log_format(ab, "contid=");
-+	audit_log_contid(ab, cont);
- 	audit_log_end(ab);
- }
- EXPORT_SYMBOL(audit_log_container_id);
-@@ -2810,6 +2846,7 @@ int audit_set_contid(struct task_struct *task, u64 contid)
- 				INIT_LIST_HEAD(&newcont->list);
- 				newcont->id = contid;
- 				newcont->owner = get_task_struct(current);
-+				newcont->parent = _audit_contobj_get(newcont->owner);
- 				refcount_set(&newcont->refcount, 1);
- 				list_add_rcu(&newcont->list,
- 					     &audit_contid_hash[h]);
-@@ -2828,6 +2865,7 @@ int audit_set_contid(struct task_struct *task, u64 contid)
- 		audit_netns_contid_add(net, newcont);
+  * audit_set_contid - set current task's audit contid
+  * @task: target task
+@@ -2795,7 +2831,7 @@ int audit_set_contid(struct task_struct *task, u64 contid)
+ 		goto unlock;
  	}
- conterror:
-+	rcu_read_unlock();
- 	task_unlock(task);
- 
- 	if (!audit_enabled)
-@@ -2837,12 +2875,13 @@ int audit_set_contid(struct task_struct *task, u64 contid)
- 	if (!ab)
- 		return rc;
- 
--	audit_log_format(ab,
--			 "op=set opid=%d contid=%llu old-contid=%llu",
--			 task_tgid_nr(task), contid, oldcont ? oldcont->id : -1);
-+	audit_log_format(ab, "op=set opid=%d contid=%llu old-contid=",
-+			 task_tgid_nr(task), contid);
-+	audit_log_contid(ab, oldcont);
-+	audit_log_end(ab);
-+	rcu_read_lock();
- 	_audit_contobj_put(oldcont);
- 	rcu_read_unlock();
--	audit_log_end(ab);
- 	return rc;
- }
- 
-@@ -2859,8 +2898,9 @@ void audit_log_container_drop(void)
- 	ab = audit_log_start(audit_context(), GFP_KERNEL, AUDIT_CONTAINER_OP);
- 	if (!ab)
- 		goto out;
--	audit_log_format(ab, "op=drop opid=%d contid=%llu old-contid=%llu",
--			 task_tgid_nr(current), cont->id, cont->id);
-+	audit_log_format(ab, "op=drop opid=%d contid=%llu old-contid=",
-+			 task_tgid_nr(current), AUDIT_CID_UNSET);
-+	audit_log_contid(ab, cont);
- 	audit_log_end(ab);
- out:
- 	rcu_read_unlock();
-diff --git a/kernel/audit.h b/kernel/audit.h
-index 34d8ec4bc6ef..7bea5b51124b 100644
---- a/kernel/audit.h
-+++ b/kernel/audit.h
-@@ -229,6 +229,8 @@ static inline int audit_hash_contid(u64 contid)
- extern int audit_match_class(int class, unsigned syscall);
- extern int audit_comparator(const u32 left, const u32 op, const u32 right);
- extern int audit_comparator64(const u64 left, const u32 op, const u64 right);
-+extern int audit_contid_comparator(const u64 left, const u32 op,
-+				   const u64 right);
- extern int audit_uid_comparator(kuid_t left, u32 op, kuid_t right);
- extern int audit_gid_comparator(kgid_t left, u32 op, kgid_t right);
- extern int parent_len(const char *path);
-diff --git a/kernel/auditfilter.c b/kernel/auditfilter.c
-index d812698efc1d..981c72a8b863 100644
---- a/kernel/auditfilter.c
-+++ b/kernel/auditfilter.c
-@@ -1302,6 +1302,21 @@ int audit_gid_comparator(kgid_t left, u32 op, kgid_t right)
+ 	/* if we don't have caps, reject */
+-	if (!capable(CAP_AUDIT_CONTROL)) {
++	if (!capable(CAP_AUDIT_CONTROL) && !audit_get_capcontid(current)) {
+ 		rc = -EPERM;
+ 		goto unlock;
  	}
- }
- 
-+int audit_contid_comparator(u64 left, u32 op, u64 right)
-+{
-+	struct audit_contobj *cont = NULL;
-+	int h;
-+	int result = 0;
-+
-+	h = audit_hash_contid(left);
-+	list_for_each_entry_rcu(cont, &audit_contid_hash[h], list) {
-+		result = audit_comparator64(cont->id, op, right);
-+		if (result)
-+			break;
-+	}
-+	return result;
-+}
-+
- /**
-  * parent_len - find the length of the parent portion of a pathname
-  * @path: pathname of which to determine length
-@@ -1393,7 +1408,7 @@ int audit_filter(int msgtype, unsigned int listtype)
- 							  f->op, f->val);
- 				break;
- 			case AUDIT_CONTID:
--				result = audit_comparator64(audit_get_contid(current),
-+				result = audit_contid_comparator(audit_get_contid(current),
- 							    f->op, f->val64);
- 				break;
- 			case AUDIT_MSGTYPE:
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index baa5709590b4..9198857ac721 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -641,7 +641,7 @@ static int audit_filter_rules(struct task_struct *tsk,
- 							  f->op, f->val);
- 			break;
- 		case AUDIT_CONTID:
--			result = audit_comparator64(audit_get_contid(tsk),
-+			result = audit_contid_comparator(audit_get_contid(tsk),
- 						    f->op, f->val64);
- 			break;
- 		case AUDIT_SUBJ_USER:
 -- 
 1.8.3.1
 
