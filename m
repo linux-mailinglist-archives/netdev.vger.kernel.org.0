@@ -2,158 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB6B520C3AF
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 21:21:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28CCE20C407
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 22:24:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726101AbgF0TQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 15:16:54 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:49563 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725932AbgF0TQx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 15:16:53 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 695425C00CC;
-        Sat, 27 Jun 2020 15:16:52 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sat, 27 Jun 2020 15:16:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=yXNiVh
-        qsQ/fzcWT9XSpHQ+6rXxbMmaqWnOdaBooLSOM=; b=o7pIrT+A8ZwJJCDqdyouqi
-        TvM8dnSfMBQEUdujjjJF83k5dlryiwAPMsOo1DqnbhWxwYirMGZOYefpK3OX/DVB
-        Y+/iIJgKQy7uzxzdQaXJ3aKebgbCjhfq4oDuqAtGLiu9Oov8wW8/sSjYkbxrwE4y
-        GKPGcGfdGejg6/Z978YbZ7V7cimDebP3tWldKYhzRDirWKWAk96Gz+dhLF0VNVZa
-        /AuUscSbh+/cOyWaGiM/VazP81vujGDlPDHhD4PTGd0hIguMXiHE73wIeMnkDIAR
-        EHqdApp5S67MNRl+Cr0XJnYkRr8HaEhnZjoWj3KIYPEm0JKh8kt8qLCTvNTFbtCg
-        ==
-X-ME-Sender: <xms:I5v3XlvUCf8fVntRQP5iqKpkcRiRMukey0Ooe8JC-j1q3FPwzlZxRg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudelfedgudeflecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecukfhppedutdelrdeiiedrudelrddufeefnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:I5v3XudI02FANst0Wa_dbMJ8lwS30814zCxVVywIGmOjs-zHXocpPQ>
-    <xmx:I5v3Xozsyfi8prTsidHO-kTj1NTlDC_u-9Wxl-FBcpnJex2eNZcjag>
-    <xmx:I5v3XsPrchbVJGAMA04TZ5cNUjLLaaF1aale8EHPloJcQt3i-xWiaA>
-    <xmx:JJv3XhZ2euVStM7H74qEfP6IeC--LIvSPshEVvTQG7h6By3Z3Pbn2Q>
-Received: from localhost (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4E47C328005D;
-        Sat, 27 Jun 2020 15:16:51 -0400 (EDT)
-Date:   Sat, 27 Jun 2020 22:16:48 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Adrian Pop <popadrian1996@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        vadimp@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 1/2] mlxsw: core: Add ethtool support for
- QSFP-DD transceivers
-Message-ID: <20200627191648.GA245256@shredder>
-References: <20200626144724.224372-1-idosch@idosch.org>
- <20200626144724.224372-2-idosch@idosch.org>
- <20200626151926.GE535869@lunn.ch>
- <CAL_jBfT93picGGoCNWQDY21pWmo3jffanhBzqVwm1kVbyEb4ow@mail.gmail.com>
- <20200626190716.GG535869@lunn.ch>
- <CAL_jBfQMQbMAFeHji2_Y_Y_gC20S_0QL33wjPgPBaKeVRLg1SQ@mail.gmail.com>
+        id S1726349AbgF0UYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 16:24:04 -0400
+Received: from sonic313-9.consmr.mail.ne1.yahoo.com ([66.163.185.32]:35890
+        "EHLO sonic313-9.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725900AbgF0UYE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 16:24:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1593289443; bh=DPYuw2gUpgtMJzJhlH/AVmRGu2wSKCY1C+f8nOCoxu0=; h=Date:From:Reply-To:Subject:References:From:Subject; b=i5BaG78Awnbc5Uw+TBmbIHQ8R/A/bmaJ6uuKNz1Q5yiTj913mkKI1hdCsicJBSNNBuEzLnyq3UZanU5KUosw9fFGgiDFhA+negIu5vPQwbLGRVioWjvjE/Tz7RhakdPw6v8uMwdnV/Lnqz5ETjiumWXXKVvvmQlBrB6oEv4fDj30Mkywho1TMKg82rW/Me4CklHlUSLJgZ4YHx9RpoAKmZvGXO89a898jaKcTfuRDBJHFZNNk+eTxpFOK5sySov96qWth/sL5DjsmXGBT3noQeGEZY+ffwI98/6cbysSR+762P+7l/oiTAKG//gWu3tGRccKELTlpn7E1YL9ay8+yg==
+X-YMail-OSG: K6Zn8JsVM1lXOwX.FCrEdjzysdOVeDukyVo4CE2OaR_ULFkZp.IVuF1xpieZo2I
+ ZF.r5N7eZPg_G2eF3BcGsEJjT9ZFwXK6EQ8YkBor4nX_3eSMqlwAEbbZknh1g5W7ZYlWMWLxxrKv
+ RovwaI8z.clEtOLZadiOYoCuWDd1ur8ydAERcdBsQMf9Ac7BWJFdKh3UGlcrFrj5bogkUSiPeusU
+ eYYmusjsQym6D3eb2v1xQ9uqI.kXKuWm3Z9NgobTmZOj6uoVuCt7KRaJN38VRkN.PW9qg4aOQxl3
+ jK0tmCqIxr0d4dy_koMRl9ALXO6heam1WPhFgDCNeiywh_97FrGCtew.I6CsK9LoIwnf7.aGH4o5
+ Z3IRSzXw8Q_UaFnv7N4Dr0ezPeCtIFn9fPuiyQP1Od_DnxOocJb4zW3Ppbx.I0NWCxI.kdxKLCpE
+ W_TaIT3IY8mjokg24wdJBNNIamkZ5FW1tzpxIiZkhHfTRPIzWvXJa44ADu.Xrxar_G65_wdQPlJ_
+ Uk3kJo4mG3.uVpNFCbEnc_SjpYQecs9I7QXb0Bb7yyrqXZCuLbCAK8wAeLHoxdRPyAR3.9DVtSl3
+ 7M2HcfEPEf6G5L361Nu0GIHDFE.vr03EBEtIsDXBdXoIgU8UFrD1hEh8XCq.eaGWY2pMkyBdsYoa
+ sphYg_izAdvag1WaD_u1PSznJvg0Ec4G8Y4X1RyI7AYbvypwFpOyFECjW3zAI7E62ageT39rQJT6
+ Iuf8dI9X4yM7f18nj3Ra77J.he8I9RNbkFiON98A7v.7TggTQW1zFoHvjF_FXQuZgxBVDfLTHQs8
+ 7uvKXnqT7dlqg1tOepBuDqqAhafha9UzqEzeo7Lge3wGpz_NzO2ZWRDfQoJ6cAf8FyU8rQd2pk4A
+ .b_Y9jeQN12ET7UncaQfbOMRqFqSE27A2hQwbtTeKauBnkuHtq932HlDor.zphkpuf89fYMClA7V
+ 7LTMnRgboUP3ciN4kSXWPAeYZj1GYLKZEyyNYBrET8wGyLCXcBp.wDos4znGkYCsuqDp_DJ_WMRe
+ Yuy_63FGTL2m9pPKFLPvkKBtarJHID7_0u8z5VQvdT06bYtG4RNV3TvpsZSME19u5d2LtSsK5FOk
+ 1RERQ2UVzz.7fT41kyOtifXI5.6ita7wFb4hYkLTIlpui7LUQDvygtDt7ykoqsOOwbcJo86baggT
+ BcJN0slYlLrYtRFuRL.R8SdBU4eI2Eo8qxFffOslzRXFxME0htmJZ.7LhNt5NR8j7IYuRjcwa2XS
+ FfdP1OpH5MJ_iQBZPKR6Uhj484VWIwaYmbnXAUeh.ijs4uqDIAcTsvZbE99z5wGyKzFu6bKB9Qid
+ YGw--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ne1.yahoo.com with HTTP; Sat, 27 Jun 2020 20:24:03 +0000
+Date:   Sat, 27 Jun 2020 20:23:58 +0000 (UTC)
+From:   "Mina A. Brunel" <mrsminaabrunel2334@gmail.com>
+Reply-To: mrsminaabrunel57044@gmail.com
+Message-ID: <1391510444.4676429.1593289438432@mail.yahoo.com>
+Subject: My Dear in the lord
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL_jBfQMQbMAFeHji2_Y_Y_gC20S_0QL33wjPgPBaKeVRLg1SQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+References: <1391510444.4676429.1593289438432.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16138 YMailNodin Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 11:13:42PM +0100, Adrian Pop wrote:
-> > You are saying pages 00h, 01h and 02h are mandatory for QSPF-DD.  Page
-> > 03h is optional, but when present, it seems to contain what is page
-> > 02h above. Since the QSPF KAPI has it, QSPF-DD KAPI should also have
-> > it. So i would suggest that pages 10h and 11h come after that.
-> >
-> > If a driver wants to pass a subset, it can, but it must always trim
-> > from the right, it cannot remove pages from the middle.
-> >
-> >      Andrew
-> 
-> I agree with this. Basically there are two big cases:
-> - passive copper transceivers with flat memory => just 00h will be
-> present (both lower and higher => 256 bytes)
-> - optical transceivers with paged memory => 00h, 01h, 02h, 10h, 11h => 768 bytes
-> Having page 03h after 02h (so 896 bytes in total) seems like a good
-> idea and the updates I'll have to do to my old patch are minor
-> (updating the offset value of page 10h and 11h). When I tested my
-> patch, I did it with both passive copper transceivers and optical
-> transceivers and there weren't any issues.
 
-Hi Adrian, Andrew,
 
-Not sure I understand... You want the kernel to always pass page 03h to
-user space (potentially zeroed)? Page 03h is not mandatory according to
-the standard and page 01h contains information if page 03h is present or
-not. So user space has the information it needs to determine if after
-page 02h we have page 03h or page 10h. Why always pass page 03h then?
+My Dear in the lord
 
-> 
-> In this patch, Ido added a comment in the code stating "Upper pages
-> 10h and 11h are currently not supported by the driver.". This won't
-> actually be a problem! In CMIS Rev. 4, Table 8-12 Byte 85 (55h), we
-> learn that if the value of that byte is 01h or 02h, we have a SMF or
-> MMF interface (both optical). In the qsfp_dd_show_sig_optical_pwr
-> function (in my patch) there is this bit:
-> 
-> + __u8 module_type = id[QSFP_DD_MODULE_TYPE_OFFSET];
-> [...]
-> + /**
-> + * The thresholds and the high/low alarms/warnings are available
-> + * only if an optical interface (MMF/SMF) is present (if this is
-> + * the case, it means that 5 pages are available).
-> + */
-> + if (module_type != QSFP_DD_MT_MMF &&
-> +    module_type != QSFP_DD_MT_SMF &&
-> +    eeprom_len != QSFP_DD_EEPROM_5PAG)
-> + return;
-> 
-> But Ido sets the eeprom_len to be ETH_MODULE_SFF_8472_LEN which is
-> 512, while QSFP_DD_EEPROM_5PAG is defined as 80h * 6 = 768. So there
-> won't be any issues of accessing non-existent values, since I return
-> from the function that deals with the pages 10h and 11h early. When
-> the driver will support them too everything will just work so your
-> idea of a driver being able to pass only a subset of pages (being
-> allowed to trim only from the right) holds.
 
-BTW, Adrian, this is the output I get with your patch on top of current
-ethtool:
+My name is Mrs. Mina A. Brunel I am a Norway Citizen who is living in Burki=
+na Faso, I am married to Mr. Brunel Patrice, a politicians who owns a small=
+ gold company in Burkina Faso; He died of Leprosy and Radesyge, in year Feb=
+ruary 2010, During his lifetime he deposited the sum of =E2=82=AC 8.5 Milli=
+on Euro) Eight million, Five hundred thousand Euros in a bank in Ouagadougo=
+u the capital city of of Burkina in West Africa. The money was from the sal=
+e of his company and death benefits payment and entitlements of my deceased=
+ husband by his company.
 
-$ ethtool -m swp1
-        Identifier                                : 0x18 (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))
-        Power class                               : 1
-        Max power                                 : 0.25W
-        Connector                                 : 0x23 (No separable connector)
-        Cable assembly length                     : 0.50km
-        Tx CDR bypass control                     : Yes
-        Rx CDR bypass control                     : No
-        Tx CDR                                    : No
-        Rx CDR                                    : No
-        Transmitter technology                    : 0x0a (Copper cable, unequalized)
-        Attenuation at 5GHz                       : 4db
-        Attenuation at 7GHz                       : 5db
-        Attenuation at 12.9GHz                    : 7db
-        Attenuation at 25.8GHz                    : 21db
-        Module temperature                        : 0.00 degrees C / 32.00 degrees F
-        Module voltage                            : 0.0000 V
-        Length (SMF)                              : 0.00km
-        Length (OM5)                              : 0m
-        Length (OM4)                              : 0m
-        Length (OM3 50/125um)                     : 0m
-        Length (OM2 50/125um)                     : 17m
-        Vendor name                               : Mellanox
-        Vendor OUI                                : 00:02:c9
-        Vendor PN                                 : MCP1660-W00AE30
-        Vendor rev                                : A2
-        Vendor SN                                 : MT2019VS04757
-        Date code                                 : 200507  _
-        Revision compliance                       : Rev. 3.0
+I am sending you this message with heavy tears in my eyes and great sorrow =
+in my heart, and also praying that it will reach you in good health because=
+ I am not in good health, I sleep every night without knowing if I may be a=
+live to see the next day. I am suffering from long time cancer and presentl=
+y I am partially suffering from Leprosy, which has become difficult for me =
+to move around. I was married to my late husband for more than 6 years with=
+out having a child and my doctor confided that I have less chance to live, =
+having to know when the cup of death will come, I decided to contact you to=
+ claim the fund since I don't have any relation I grew up from an orphanage=
+ home.
+
+I have decided to donate this money for the support of helping Motherless b=
+abies/Less privileged/Widows and churches also to build the house of God be=
+cause I am dying and diagnosed with cancer for about 3 years ago. I have de=
+cided to donate from what I have inherited from my late husband to you for =
+the good work of Almighty God; I will be going in for an operation surgery =
+soon.
+
+Now I want you to stand as my next of kin to claim the funds for charity pu=
+rposes. Because of this money remains unclaimed after my death, the bank ex=
+ecutives or the government will take the money as unclaimed fund and maybe =
+use it for selfishness and worthless ventures, I need a very honest person =
+who can claim this money and use it for Charity works, for orphanages, wido=
+ws and also build schools and churches for less privilege that will be name=
+d after my late husband and my name.
+
+I need your urgent answer to know if you will be able to execute this proje=
+ct, and I will give you more information on how the fund will be transferre=
+d to your bank account or online banking.
+
+Thanks
+Mrs. Mina A. Brunel
