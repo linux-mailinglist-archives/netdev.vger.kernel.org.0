@@ -2,157 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F35E20C39B
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 20:55:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB6B520C3AF
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 21:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726349AbgF0Szf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 14:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50342 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726067AbgF0Sze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 14:55:34 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A060C061794
-        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 11:55:34 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id c4so13201546iot.4
-        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 11:55:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/a6EXA5eshXsIGumFQq8UqppBfxlulH+ZWY6Hat+Xbw=;
-        b=B8hE2VE3k7JiLZj8Ds03MYpbgDWSys6Q7KYp1Ox0fn62LjxgvIGIvCkJ66mjOx0Qm1
-         RngBWbSLwzlpwY6xr9ueuft4HutI4HlMMSBLlyXkOersUUJZegiPZQNWAmH8JIUl96rk
-         OrNxYnSmYDBCwAsHcp1rybqDyD0J2seZ84N64uzlSA2MpflL2a0p+JEFMlXS+weM/IUk
-         N2Zb6EFQTksj59aKg1U6yVuVXfxSSxTyXYzK5ORNjIuNCjzbxaSs/Dubit71a+PGxd24
-         7C5i4DjhBdXgx+MIhtDbZAeTBfdppXPivgWA+n7AIPEEKgmU4GKZPg3lVjn8b9O0bKD8
-         G4uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/a6EXA5eshXsIGumFQq8UqppBfxlulH+ZWY6Hat+Xbw=;
-        b=TYTdpGgn4eqGpLNY+SgwDUMhuoaoyKQflrcFfpqlTbEFgCtvFBbRWBkbtVf80ceexM
-         Qeo/PEgqwdynnjhjYTT1l14Bmfs2dF1O/H8O5hSmyb9xRHKJjxi1av0OsF1BbyN6ZGMa
-         6X7Jm81PselXAcVphg5w72Ay3nANgw2FJ6yezJylGOKNcohr/Da0rAveLtQ3eX/IL+Yx
-         QieuUsr6dHyOAn+aLzDrkIcCaebRwDu4QqpTQHSBrLeD64m02DuT9HIUqfAiNmsKwS2W
-         v/ids9Ru5fLhsBWQlaUpFpy6+8J3nbBYgocY9fru/hB3Be9+6kdcEdquc3f9PggDeQY1
-         DUig==
-X-Gm-Message-State: AOAM533JRlNUX8nxn/ZXXH5oD7Xe2j1xrn4yE1Svgq09JrfYxIiPbYRS
-        kkS4k4TP6VXT+hdQLWKsoA/HAFN1ue2e/MgszEi5mxDvCcM=
-X-Google-Smtp-Source: ABdhPJxoD+AIeGjJzHp/HB1ve7x660poZBi7dCcR/ROkq1FuRQd8XDcpxpT1jQl+FQVbnqj5lF9bHfxYtgduyXXYoXE=
-X-Received: by 2002:a05:6602:2f0a:: with SMTP id q10mr9401173iow.134.1593284133130;
- Sat, 27 Jun 2020 11:55:33 -0700 (PDT)
+        id S1726101AbgF0TQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 15:16:54 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:49563 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725932AbgF0TQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 15:16:53 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 695425C00CC;
+        Sat, 27 Jun 2020 15:16:52 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sat, 27 Jun 2020 15:16:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=yXNiVh
+        qsQ/fzcWT9XSpHQ+6rXxbMmaqWnOdaBooLSOM=; b=o7pIrT+A8ZwJJCDqdyouqi
+        TvM8dnSfMBQEUdujjjJF83k5dlryiwAPMsOo1DqnbhWxwYirMGZOYefpK3OX/DVB
+        Y+/iIJgKQy7uzxzdQaXJ3aKebgbCjhfq4oDuqAtGLiu9Oov8wW8/sSjYkbxrwE4y
+        GKPGcGfdGejg6/Z978YbZ7V7cimDebP3tWldKYhzRDirWKWAk96Gz+dhLF0VNVZa
+        /AuUscSbh+/cOyWaGiM/VazP81vujGDlPDHhD4PTGd0hIguMXiHE73wIeMnkDIAR
+        EHqdApp5S67MNRl+Cr0XJnYkRr8HaEhnZjoWj3KIYPEm0JKh8kt8qLCTvNTFbtCg
+        ==
+X-ME-Sender: <xms:I5v3XlvUCf8fVntRQP5iqKpkcRiRMukey0Ooe8JC-j1q3FPwzlZxRg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudelfedgudeflecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecukfhppedutdelrdeiiedrudelrddufeefnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:I5v3XudI02FANst0Wa_dbMJ8lwS30814zCxVVywIGmOjs-zHXocpPQ>
+    <xmx:I5v3Xozsyfi8prTsidHO-kTj1NTlDC_u-9Wxl-FBcpnJex2eNZcjag>
+    <xmx:I5v3XsPrchbVJGAMA04TZ5cNUjLLaaF1aale8EHPloJcQt3i-xWiaA>
+    <xmx:JJv3XhZ2euVStM7H74qEfP6IeC--LIvSPshEVvTQG7h6By3Z3Pbn2Q>
+Received: from localhost (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4E47C328005D;
+        Sat, 27 Jun 2020 15:16:51 -0400 (EDT)
+Date:   Sat, 27 Jun 2020 22:16:48 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Adrian Pop <popadrian1996@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        vadimp@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 1/2] mlxsw: core: Add ethtool support for
+ QSFP-DD transceivers
+Message-ID: <20200627191648.GA245256@shredder>
+References: <20200626144724.224372-1-idosch@idosch.org>
+ <20200626144724.224372-2-idosch@idosch.org>
+ <20200626151926.GE535869@lunn.ch>
+ <CAL_jBfT93picGGoCNWQDY21pWmo3jffanhBzqVwm1kVbyEb4ow@mail.gmail.com>
+ <20200626190716.GG535869@lunn.ch>
+ <CAL_jBfQMQbMAFeHji2_Y_Y_gC20S_0QL33wjPgPBaKeVRLg1SQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <1593217863-2964-1-git-send-email-stranche@codeaurora.org>
-In-Reply-To: <1593217863-2964-1-git-send-email-stranche@codeaurora.org>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat, 27 Jun 2020 11:55:21 -0700
-Message-ID: <CAM_iQpXXdpdKvVY4G=y8=R4TsYE0ovac=OCNfiaMmD=Rgn2utQ@mail.gmail.com>
-Subject: Re: [PATCH net] genetlink: take netlink table lock when (un)registering
-To:     Sean Tranchetti <stranche@codeaurora.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Content-Type: multipart/mixed; boundary="000000000000c833db05a9155e58"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL_jBfQMQbMAFeHji2_Y_Y_gC20S_0QL33wjPgPBaKeVRLg1SQ@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000c833db05a9155e58
-Content-Type: text/plain; charset="UTF-8"
+On Fri, Jun 26, 2020 at 11:13:42PM +0100, Adrian Pop wrote:
+> > You are saying pages 00h, 01h and 02h are mandatory for QSPF-DD.  Page
+> > 03h is optional, but when present, it seems to contain what is page
+> > 02h above. Since the QSPF KAPI has it, QSPF-DD KAPI should also have
+> > it. So i would suggest that pages 10h and 11h come after that.
+> >
+> > If a driver wants to pass a subset, it can, but it must always trim
+> > from the right, it cannot remove pages from the middle.
+> >
+> >      Andrew
+> 
+> I agree with this. Basically there are two big cases:
+> - passive copper transceivers with flat memory => just 00h will be
+> present (both lower and higher => 256 bytes)
+> - optical transceivers with paged memory => 00h, 01h, 02h, 10h, 11h => 768 bytes
+> Having page 03h after 02h (so 896 bytes in total) seems like a good
+> idea and the updates I'll have to do to my old patch are minor
+> (updating the offset value of page 10h and 11h). When I tested my
+> patch, I did it with both passive copper transceivers and optical
+> transceivers and there weren't any issues.
 
-On Fri, Jun 26, 2020 at 5:32 PM Sean Tranchetti <stranche@codeaurora.org> wrote:
->
-> A potential deadlock can occur during registering or unregistering a new
-> generic netlink family between the main nl_table_lock and the cb_lock where
-> each thread wants the lock held by the other, as demonstrated below.
->
-> 1) Thread 1 is performing a netlink_bind() operation on a socket. As part
->    of this call, it will call netlink_lock_table(), incrementing the
->    nl_table_users count to 1.
-> 2) Thread 2 is registering (or unregistering) a genl_family via the
->    genl_(un)register_family() API. The cb_lock semaphore will be taken for
->    writing.
-> 3) Thread 1 will call genl_bind() as part of the bind operation to handle
->    subscribing to GENL multicast groups at the request of the user. It will
->    attempt to take the cb_lock semaphore for reading, but it will fail and
->    be scheduled away, waiting for Thread 2 to finish the write.
-> 4) Thread 2 will call netlink_table_grab() during the (un)registration
->    call. However, as Thread 1 has incremented nl_table_users, it will not
->    be able to proceed, and both threads will be stuck waiting for the
->    other.
->
-> To avoid this scenario, the locks should be acquired in the same order by
-> both threads. Since both the register and unregister functions need to take
-> the nl_table_lock in their processing, it makes sense to explicitly acquire
-> them before they lock the genl_mutex and the cb_lock. In unregistering, no
-> other change is needed aside from this locking change.
+Hi Adrian, Andrew,
 
-Like the kernel test robot reported, you can not call genl_lock_all while
-holding netlink_table_grab() which is effectively a write lock.
+Not sure I understand... You want the kernel to always pass page 03h to
+user space (potentially zeroed)? Page 03h is not mandatory according to
+the standard and page 01h contains information if page 03h is present or
+not. So user space has the information it needs to determine if after
+page 02h we have page 03h or page 10h. Why always pass page 03h then?
 
-To me, it seems genl_bind() can be just removed as there is no one
-in-tree uses family->mcast_bind(). Can you test the attached patch?
-It seems sufficient to fix this deadlock.
+> 
+> In this patch, Ido added a comment in the code stating "Upper pages
+> 10h and 11h are currently not supported by the driver.". This won't
+> actually be a problem! In CMIS Rev. 4, Table 8-12 Byte 85 (55h), we
+> learn that if the value of that byte is 01h or 02h, we have a SMF or
+> MMF interface (both optical). In the qsfp_dd_show_sig_optical_pwr
+> function (in my patch) there is this bit:
+> 
+> + __u8 module_type = id[QSFP_DD_MODULE_TYPE_OFFSET];
+> [...]
+> + /**
+> + * The thresholds and the high/low alarms/warnings are available
+> + * only if an optical interface (MMF/SMF) is present (if this is
+> + * the case, it means that 5 pages are available).
+> + */
+> + if (module_type != QSFP_DD_MT_MMF &&
+> +    module_type != QSFP_DD_MT_SMF &&
+> +    eeprom_len != QSFP_DD_EEPROM_5PAG)
+> + return;
+> 
+> But Ido sets the eeprom_len to be ETH_MODULE_SFF_8472_LEN which is
+> 512, while QSFP_DD_EEPROM_5PAG is defined as 80h * 6 = 768. So there
+> won't be any issues of accessing non-existent values, since I return
+> from the function that deals with the pages 10h and 11h early. When
+> the driver will support them too everything will just work so your
+> idea of a driver being able to pass only a subset of pages (being
+> allowed to trim only from the right) holds.
 
-Thanks.
+BTW, Adrian, this is the output I get with your patch on top of current
+ethtool:
 
---000000000000c833db05a9155e58
-Content-Type: text/x-patch; charset="US-ASCII"; name="genetlink-mcast-bind.diff"
-Content-Disposition: attachment; filename="genetlink-mcast-bind.diff"
-Content-Transfer-Encoding: base64
-Content-ID: <f_kby05kgm0>
-X-Attachment-Id: f_kby05kgm0
-
-ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbmV0L2dlbmV0bGluay5oIGIvaW5jbHVkZS9uZXQvZ2VuZXRs
-aW5rLmgKaW5kZXggYWQ3MWVkNGY1NWZmLi42ZTVmMWUxYWE4MjIgMTAwNjQ0Ci0tLSBhL2luY2x1
-ZGUvbmV0L2dlbmV0bGluay5oCisrKyBiL2luY2x1ZGUvbmV0L2dlbmV0bGluay5oCkBAIC0zNSwx
-MiArMzUsNiBAQCBzdHJ1Y3QgZ2VubF9pbmZvOwogICoJZG8gYWRkaXRpb25hbCwgY29tbW9uLCBm
-aWx0ZXJpbmcgYW5kIHJldHVybiBhbiBlcnJvcgogICogQHBvc3RfZG9pdDogY2FsbGVkIGFmdGVy
-IGFuIG9wZXJhdGlvbidzIGRvaXQgY2FsbGJhY2ssIGl0IG1heQogICoJdW5kbyBvcGVyYXRpb25z
-IGRvbmUgYnkgcHJlX2RvaXQsIGZvciBleGFtcGxlIHJlbGVhc2UgbG9ja3MKLSAqIEBtY2FzdF9i
-aW5kOiBhIHNvY2tldCBib3VuZCB0byB0aGUgZ2l2ZW4gbXVsdGljYXN0IGdyb3VwICh3aGljaAot
-ICoJaXMgZ2l2ZW4gYXMgdGhlIG9mZnNldCBpbnRvIHRoZSBncm91cHMgYXJyYXkpCi0gKiBAbWNh
-c3RfdW5iaW5kOiBhIHNvY2tldCB3YXMgdW5ib3VuZCBmcm9tIHRoZSBnaXZlbiBtdWx0aWNhc3Qg
-Z3JvdXAuCi0gKglOb3RlIHRoYXQgdW5iaW5kKCkgd2lsbCBub3QgYmUgY2FsbGVkIHN5bW1ldHJp
-Y2FsbHkgaWYgdGhlCi0gKglnZW5lcmljIG5ldGxpbmsgZmFtaWx5IGlzIHJlbW92ZWQgd2hpbGUg
-dGhlcmUgYXJlIHN0aWxsIG9wZW4KLSAqCXNvY2tldHMuCiAgKiBAbWNncnBzOiBtdWx0aWNhc3Qg
-Z3JvdXBzIHVzZWQgYnkgdGhpcyBmYW1pbHkKICAqIEBuX21jZ3JwczogbnVtYmVyIG9mIG11bHRp
-Y2FzdCBncm91cHMKICAqIEBtY2dycF9vZmZzZXQ6IHN0YXJ0aW5nIG51bWJlciBvZiBtdWx0aWNh
-c3QgZ3JvdXAgSURzIGluIHRoaXMgZmFtaWx5CkBAIC02Myw4ICs1Nyw2IEBAIHN0cnVjdCBnZW5s
-X2ZhbWlseSB7CiAJdm9pZAkJCSgqcG9zdF9kb2l0KShjb25zdCBzdHJ1Y3QgZ2VubF9vcHMgKm9w
-cywKIAkJCQkJICAgICBzdHJ1Y3Qgc2tfYnVmZiAqc2tiLAogCQkJCQkgICAgIHN0cnVjdCBnZW5s
-X2luZm8gKmluZm8pOwotCWludAkJCSgqbWNhc3RfYmluZCkoc3RydWN0IG5ldCAqbmV0LCBpbnQg
-Z3JvdXApOwotCXZvaWQJCQkoKm1jYXN0X3VuYmluZCkoc3RydWN0IG5ldCAqbmV0LCBpbnQgZ3Jv
-dXApOwogCWNvbnN0IHN0cnVjdCBnZW5sX29wcyAqCW9wczsKIAljb25zdCBzdHJ1Y3QgZ2VubF9t
-dWx0aWNhc3RfZ3JvdXAgKm1jZ3JwczsKIAl1bnNpZ25lZCBpbnQJCW5fb3BzOwpkaWZmIC0tZ2l0
-IGEvbmV0L25ldGxpbmsvZ2VuZXRsaW5rLmMgYi9uZXQvbmV0bGluay9nZW5ldGxpbmsuYwppbmRl
-eCBhOTE0YjkzNjVhNDYuLjkzOTVlZThhODY4ZCAxMDA2NDQKLS0tIGEvbmV0L25ldGxpbmsvZ2Vu
-ZXRsaW5rLmMKKysrIGIvbmV0L25ldGxpbmsvZ2VuZXRsaW5rLmMKQEAgLTExNDQsNjAgKzExNDQs
-MTEgQEAgc3RhdGljIHN0cnVjdCBnZW5sX2ZhbWlseSBnZW5sX2N0cmwgX19yb19hZnRlcl9pbml0
-ID0gewogCS5uZXRuc29rID0gdHJ1ZSwKIH07CiAKLXN0YXRpYyBpbnQgZ2VubF9iaW5kKHN0cnVj
-dCBuZXQgKm5ldCwgaW50IGdyb3VwKQotewotCXN0cnVjdCBnZW5sX2ZhbWlseSAqZjsKLQlpbnQg
-ZXJyID0gLUVOT0VOVDsKLQl1bnNpZ25lZCBpbnQgaWQ7Ci0KLQlkb3duX3JlYWQoJmNiX2xvY2sp
-OwotCi0JaWRyX2Zvcl9lYWNoX2VudHJ5KCZnZW5sX2ZhbV9pZHIsIGYsIGlkKSB7Ci0JCWlmIChn
-cm91cCA+PSBmLT5tY2dycF9vZmZzZXQgJiYKLQkJICAgIGdyb3VwIDwgZi0+bWNncnBfb2Zmc2V0
-ICsgZi0+bl9tY2dycHMpIHsKLQkJCWludCBmYW1fZ3JwID0gZ3JvdXAgLSBmLT5tY2dycF9vZmZz
-ZXQ7Ci0KLQkJCWlmICghZi0+bmV0bnNvayAmJiBuZXQgIT0gJmluaXRfbmV0KQotCQkJCWVyciA9
-IC1FTk9FTlQ7Ci0JCQllbHNlIGlmIChmLT5tY2FzdF9iaW5kKQotCQkJCWVyciA9IGYtPm1jYXN0
-X2JpbmQobmV0LCBmYW1fZ3JwKTsKLQkJCWVsc2UKLQkJCQllcnIgPSAwOwotCQkJYnJlYWs7Ci0J
-CX0KLQl9Ci0JdXBfcmVhZCgmY2JfbG9jayk7Ci0KLQlyZXR1cm4gZXJyOwotfQotCi1zdGF0aWMg
-dm9pZCBnZW5sX3VuYmluZChzdHJ1Y3QgbmV0ICpuZXQsIGludCBncm91cCkKLXsKLQlzdHJ1Y3Qg
-Z2VubF9mYW1pbHkgKmY7Ci0JdW5zaWduZWQgaW50IGlkOwotCi0JZG93bl9yZWFkKCZjYl9sb2Nr
-KTsKLQotCWlkcl9mb3JfZWFjaF9lbnRyeSgmZ2VubF9mYW1faWRyLCBmLCBpZCkgewotCQlpZiAo
-Z3JvdXAgPj0gZi0+bWNncnBfb2Zmc2V0ICYmCi0JCSAgICBncm91cCA8IGYtPm1jZ3JwX29mZnNl
-dCArIGYtPm5fbWNncnBzKSB7Ci0JCQlpbnQgZmFtX2dycCA9IGdyb3VwIC0gZi0+bWNncnBfb2Zm
-c2V0OwotCi0JCQlpZiAoZi0+bWNhc3RfdW5iaW5kKQotCQkJCWYtPm1jYXN0X3VuYmluZChuZXQs
-IGZhbV9ncnApOwotCQkJYnJlYWs7Ci0JCX0KLQl9Ci0JdXBfcmVhZCgmY2JfbG9jayk7Ci19Ci0K
-IHN0YXRpYyBpbnQgX19uZXRfaW5pdCBnZW5sX3Blcm5ldF9pbml0KHN0cnVjdCBuZXQgKm5ldCkK
-IHsKIAlzdHJ1Y3QgbmV0bGlua19rZXJuZWxfY2ZnIGNmZyA9IHsKIAkJLmlucHV0CQk9IGdlbmxf
-cmN2LAogCQkuZmxhZ3MJCT0gTkxfQ0ZHX0ZfTk9OUk9PVF9SRUNWLAotCQkuYmluZAkJPSBnZW5s
-X2JpbmQsCi0JCS51bmJpbmQJCT0gZ2VubF91bmJpbmQsCiAJfTsKIAogCS8qIHdlJ2xsIGJ1bXAg
-dGhlIGdyb3VwIG51bWJlciByaWdodCBhZnRlcndhcmRzICovCg==
---000000000000c833db05a9155e58--
+$ ethtool -m swp1
+        Identifier                                : 0x18 (QSFP-DD Double Density 8X Pluggable Transceiver (INF-8628))
+        Power class                               : 1
+        Max power                                 : 0.25W
+        Connector                                 : 0x23 (No separable connector)
+        Cable assembly length                     : 0.50km
+        Tx CDR bypass control                     : Yes
+        Rx CDR bypass control                     : No
+        Tx CDR                                    : No
+        Rx CDR                                    : No
+        Transmitter technology                    : 0x0a (Copper cable, unequalized)
+        Attenuation at 5GHz                       : 4db
+        Attenuation at 7GHz                       : 5db
+        Attenuation at 12.9GHz                    : 7db
+        Attenuation at 25.8GHz                    : 21db
+        Module temperature                        : 0.00 degrees C / 32.00 degrees F
+        Module voltage                            : 0.0000 V
+        Length (SMF)                              : 0.00km
+        Length (OM5)                              : 0m
+        Length (OM4)                              : 0m
+        Length (OM3 50/125um)                     : 0m
+        Length (OM2 50/125um)                     : 17m
+        Vendor name                               : Mellanox
+        Vendor OUI                                : 00:02:c9
+        Vendor PN                                 : MCP1660-W00AE30
+        Vendor rev                                : A2
+        Vendor SN                                 : MT2019VS04757
+        Date code                                 : 200507  _
+        Revision compliance                       : Rev. 3.0
