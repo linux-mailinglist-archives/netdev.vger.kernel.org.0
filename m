@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5147020C09D
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 12:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41F1920C09F
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 12:15:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726451AbgF0KPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 06:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55762 "EHLO
+        id S1726493AbgF0KPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 06:15:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726356AbgF0KPB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 06:15:01 -0400
+        with ESMTP id S1726356AbgF0KPF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 06:15:05 -0400
 Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631BAC03E979;
-        Sat, 27 Jun 2020 03:15:01 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id 207so5574233pfu.3;
-        Sat, 27 Jun 2020 03:15:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74EB8C03E979;
+        Sat, 27 Jun 2020 03:15:05 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id q17so5757778pfu.8;
+        Sat, 27 Jun 2020 03:15:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zvZtbrDBRF/tkY1XUgsUhw4qRWkNkbAOPkZ951cjMrY=;
-        b=lWBq5lH1N4RNQEpfj4eXQ3XAEunPzNYAXDbCI/Z/KigFjM8fvvqV3Qm+vX+BkkPExK
-         hU4P+VxxMziUIdO+NoiUCj8SqFfyncwHiayLHNKJlwI51ZLM2Tcw9A50g006FLTrgkOu
-         BDp90GoE2TC7lRPJkHHDoiPDN7w1udpQu5t15fmrmu7Z0ZiS81gdIkeuy2Wmob6+geNm
-         Zgk4Jr+pyqnhpUjx9J2/WDknrPyXfxtWVWzu0ZnJeeLAUdsUI17uE7E97HA3nOadOs9O
-         M3q++pGSOyT+jZhbZ/iI646vq8k6ThRjFFGqgU8oBKdXA4sQoTzOmsXzZuJ/h77or8cD
-         h+Eg==
+        bh=chesPouUZaMid4bYSr3ZV53BHmtt8IXHr4Z/luYFot0=;
+        b=hb2mf82EkK8Gc/tlZZRbnmdifD+vMNvAIhVu8LVGyv3Cq+t6nThGWSJFNwsoC0Ie5a
+         bjb87/eRFMNdyr2/K73aJ9hxc0y8BlVQ9E4zlIzQHhbauInFUGNmVn5N82lIgbIlH1iq
+         yMrNzBvtzRt+YadHXioJ2dDHajU/F+Aho83VlMRW/hYdijMqROSZlyAoOWwnAD1CEEp2
+         mjX7xVHGEyjHqdr9rgQdsZ0UB+x0G3jP+a/9f6duVEsmaNEberl2A4kPIE0Vaa1zy83P
+         c8mCkLr/kGbaTbke8q4+cHfcG6k4fW6AWKvryXTKaV+KBSgXNkRSWrDhb0KEknKWmQy4
+         7sDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zvZtbrDBRF/tkY1XUgsUhw4qRWkNkbAOPkZ951cjMrY=;
-        b=HncR8d8aYn95GeQKubftsfZTNcB0YwY0DhQitAW2h4YU3l9g/4tO5Ua/zPL7D3QSx1
-         9rb6UZ9Uuon81MpW/5tsYzASNQltmQIVPefKzlbc8Co0uLFoKx49etPRVmvbsrglhiYm
-         PUcmOfE4Sv+Ngv6HCA3G0V7mBP34rT4L7EA4IsXq4JtudF7QpwJzSaohviL3qpt0G63T
-         amyFwDEgTzV/UXhPMi18MlkK9MtUmkKDoQ9NnVUQjZpH2fYu2DBr91ldemXRZeUvjKU2
-         gVhKewsqI5H/W1+p9KESbDuHvBJvzcKSmQH/J4N3lu7qzlSrno1oH661hX2AUbTdI7rh
-         /HRg==
-X-Gm-Message-State: AOAM531DLR+4bXBV31cU7miJ9wWxayfPvEje+NmBNA7spvg+wkc9Dlan
-        J4nEBTgNtzUaeru3pOVOCkg=
-X-Google-Smtp-Source: ABdhPJxwFvGhZ5/vaZU76/wPRYf7RJ85weAZ+H1vcEX5LZNHMLFX8MVMfbdlW3uRtOwZ1QUWNyclhw==
-X-Received: by 2002:a62:fc4c:: with SMTP id e73mr1580773pfh.308.1593252900940;
-        Sat, 27 Jun 2020 03:15:00 -0700 (PDT)
+        bh=chesPouUZaMid4bYSr3ZV53BHmtt8IXHr4Z/luYFot0=;
+        b=Y5CLwLL5zvgKU3TjsA9fV6u0QaeKQp+3xROBuEnXhhxVoIAGqagsVghfTFCUgvhX9Z
+         +Tecmb1FR/TDogEbkJik3wWzCmRMT8XgqD2oFm7m0IYrmd/+Gaq6UQspIkweO6rMd59y
+         Fdh0zkzVcE99MlmNsNcVNQDMjjNZNkN5X30k54EO18jCL6KvJMHuihJwULzDiIteexr9
+         CuIKsynDfwrBmLmD9JFvTjQDetKbtaux5tuDTCQWTTTcnvRHw7nmA2NBPTOpUohkSWYD
+         mNmQuheebd8LQEtftF5YppMzzFlH+2piT96TMCxTMSDls6FlYicgANRVCzJAjdhTx06X
+         bsyQ==
+X-Gm-Message-State: AOAM532KFoEgTg2i+x3RAsGQwMF/lC1WIE072U/MD1IaeRn0wXBv+KN1
+        uXqhjeDvv2RVA1huMmmBcbw=
+X-Google-Smtp-Source: ABdhPJwf05pMgFxruixsthWrlLGcxM1bPflHihyI4UjTv/LS/QWnMvvGhW+GpTxzwnw9LR+tooU5Mw==
+X-Received: by 2002:a63:2257:: with SMTP id t23mr2629871pgm.245.1593252905035;
+        Sat, 27 Jun 2020 03:15:05 -0700 (PDT)
 Received: from localhost ([2001:e42:102:1532:160:16:113:140])
-        by smtp.gmail.com with ESMTPSA id f15sm9624849pfk.58.2020.06.27.03.14.59
+        by smtp.gmail.com with ESMTPSA id u124sm6047448pfc.161.2020.06.27.03.15.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Jun 2020 03:15:00 -0700 (PDT)
+        Sat, 27 Jun 2020 03:15:04 -0700 (PDT)
 From:   Coiby Xu <coiby.xu@gmail.com>
 To:     devel@driverdev.osuosl.org
 Cc:     joe@perches.com, dan.carpenter@oracle.com,
@@ -55,9 +55,9 @@ Cc:     joe@perches.com, dan.carpenter@oracle.com,
         DRIVER), Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org (open list:QLOGIC QLGE 10Gb ETHERNET DRIVER),
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 1/4] fix trailing */ in block comment
-Date:   Sat, 27 Jun 2020 18:14:44 +0800
-Message-Id: <20200627101447.167370-2-coiby.xu@gmail.com>
+Subject: [PATCH 2/4] fix else after return or break
+Date:   Sat, 27 Jun 2020 18:14:45 +0800
+Message-Id: <20200627101447.167370-3-coiby.xu@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200627101447.167370-1-coiby.xu@gmail.com>
 References: <20200627101447.167370-1-coiby.xu@gmail.com>
@@ -68,70 +68,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove trailing "*/" in block comments.
+Remove unnecessary elses after return or break.
 
 Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
 ---
- drivers/staging/qlge/qlge_main.c |  3 ++-
- drivers/staging/qlge/qlge_mpi.c  | 10 ++++++----
- 2 files changed, 8 insertions(+), 5 deletions(-)
+ drivers/staging/qlge/qlge_dbg.c  | 23 ++++++++++-------------
+ drivers/staging/qlge/qlge_main.c |  8 ++++----
+ drivers/staging/qlge/qlge_mpi.c  |  4 ++--
+ 3 files changed, 16 insertions(+), 19 deletions(-)
 
+diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
+index 058889687907..87433510a224 100644
+--- a/drivers/staging/qlge/qlge_dbg.c
++++ b/drivers/staging/qlge/qlge_dbg.c
+@@ -1391,12 +1391,11 @@ static void ql_dump_cam_entries(struct ql_adapter *qdev)
+ 			pr_err("%s: Failed read of mac index register\n",
+ 			       __func__);
+ 			return;
+-		} else {
+-			if (value[0])
+-				pr_err("%s: CAM index %d CAM Lookup Lower = 0x%.08x:%.08x, Output = 0x%.08x\n",
+-				       qdev->ndev->name, i, value[1], value[0],
+-				       value[2]);
+ 		}
++		if (value[0])
++			pr_err("%s: CAM index %d CAM Lookup Lower = 0x%.08x:%.08x, Output = 0x%.08x\n",
++			       qdev->ndev->name, i, value[1], value[0],
++			       value[2]);
+ 	}
+ 	for (i = 0; i < 32; i++) {
+ 		if (ql_get_mac_addr_reg
+@@ -1404,11 +1403,10 @@ static void ql_dump_cam_entries(struct ql_adapter *qdev)
+ 			pr_err("%s: Failed read of mac index register\n",
+ 			       __func__);
+ 			return;
+-		} else {
+-			if (value[0])
+-				pr_err("%s: MCAST index %d CAM Lookup Lower = 0x%.08x:%.08x\n",
+-				       qdev->ndev->name, i, value[1], value[0]);
+ 		}
++		if (value[0])
++			pr_err("%s: MCAST index %d CAM Lookup Lower = 0x%.08x:%.08x\n",
++			       qdev->ndev->name, i, value[1], value[0]);
+ 	}
+ 	ql_sem_unlock(qdev, SEM_MAC_ADDR_MASK);
+ }
+@@ -1427,11 +1425,10 @@ void ql_dump_routing_entries(struct ql_adapter *qdev)
+ 			pr_err("%s: Failed read of routing index register\n",
+ 			       __func__);
+ 			return;
+-		} else {
+-			if (value)
+-				pr_err("%s: Routing Mask %d = 0x%.08x\n",
+-				       qdev->ndev->name, i, value);
+ 		}
++		if (value)
++			pr_err("%s: Routing Mask %d = 0x%.08x\n",
++			       qdev->ndev->name, i, value);
+ 	}
+ 	ql_sem_unlock(qdev, SEM_RT_IDX_MASK);
+ }
 diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 1650de13842f..aaecf2b0f9a1 100644
+index aaecf2b0f9a1..0054c454506b 100644
 --- a/drivers/staging/qlge/qlge_main.c
 +++ b/drivers/staging/qlge/qlge_main.c
-@@ -3244,7 +3244,8 @@ static void ql_set_irq_mask(struct ql_adapter *qdev, struct intr_context *ctx)
- 		 */
- 		ctx->irq_mask = (1 << qdev->rx_ring[vect].cq_id);
- 		/* Add the TX ring(s) serviced by this vector
--		 * to the mask. */
-+		 * to the mask.
-+		 */
- 		for (j = 0; j < tx_rings_per_vector; j++) {
- 			ctx->irq_mask |=
- 			(1 << qdev->rx_ring[qdev->rss_ring_count +
+@@ -3778,10 +3778,10 @@ static int ql_wol(struct ql_adapter *qdev)
+ 				  "Failed to set magic packet on %s.\n",
+ 				  qdev->ndev->name);
+ 			return status;
+-		} else
+-			netif_info(qdev, drv, qdev->ndev,
+-				   "Enabled magic packet successfully on %s.\n",
+-				   qdev->ndev->name);
++		}
++		netif_info(qdev, drv, qdev->ndev,
++			   "Enabled magic packet successfully on %s.\n",
++			   qdev->ndev->name);
+ 
+ 		wol |= MB_WOL_MAGIC_PKT;
+ 	}
 diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mpi.c
-index 60c08d9cc034..3bb08d290525 100644
+index 3bb08d290525..fa178fc642a6 100644
 --- a/drivers/staging/qlge/qlge_mpi.c
 +++ b/drivers/staging/qlge/qlge_mpi.c
-@@ -389,7 +389,8 @@ static void ql_init_fw_done(struct ql_adapter *qdev, struct mbox_params *mbcp)
-  *  This can get called iteratively from the mpi_work thread
-  *  when events arrive via an interrupt.
-  *  It also gets called when a mailbox command is polling for
-- *  it's completion. */
-+ *  it's completion.
-+ */
- static int ql_mpi_handler(struct ql_adapter *qdev, struct mbox_params *mbcp)
- {
- 	int status;
-@@ -520,7 +521,7 @@ static int ql_mpi_handler(struct ql_adapter *qdev, struct mbox_params *mbcp)
- 	 * changed when a mailbox command is waiting
- 	 * for a response and an AEN arrives and
- 	 * is handled.
--	 * */
-+	 */
- 	mbcp->out_count = orig_count;
- 	return status;
- }
-@@ -555,7 +556,8 @@ static int ql_mailbox_command(struct ql_adapter *qdev, struct mbox_params *mbcp)
- 	 * here because some AEN might arrive while
- 	 * we're waiting for the mailbox command to
- 	 * complete. If more than 5 seconds expire we can
--	 * assume something is wrong. */
-+	 * assume something is wrong.
-+	 */
- 	count = jiffies + HZ * MAILBOX_TIMEOUT;
- 	do {
- 		/* Wait for the interrupt to come in. */
-@@ -1178,7 +1180,7 @@ void ql_mpi_idc_work(struct work_struct *work)
- 		/* Signal the resulting link up AEN
- 		 * that the frame routing and mac addr
- 		 * needs to be set.
--		 * */
-+		 */
- 		set_bit(QL_CAM_RT_SET, &qdev->flags);
- 		/* Do ACK if required */
- 		if (timeout) {
+@@ -276,8 +276,8 @@ static void ql_link_up(struct ql_adapter *qdev, struct mbox_params *mbcp)
+ 			netif_err(qdev, ifup, qdev->ndev,
+ 				  "Failed to init CAM/Routing tables.\n");
+ 			return;
+-		} else
+-			clear_bit(QL_CAM_RT_SET, &qdev->flags);
++		}
++		clear_bit(QL_CAM_RT_SET, &qdev->flags);
+ 	}
+ 
+ 	/* Queue up a worker to check the frame
 -- 
 2.27.0
 
