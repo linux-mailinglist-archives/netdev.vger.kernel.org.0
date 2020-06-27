@@ -2,149 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B57F20C432
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 22:57:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD0E20C43D
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 23:18:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725916AbgF0U5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 16:57:15 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:38208 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725792AbgF0U5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 16:57:14 -0400
-Received: by mail-io1-f71.google.com with SMTP id l13so8590394ioj.5
-        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 13:57:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=5xC+1jVF3EFdPXee+JUcI1eZasghwwzg/7CHmkD9K6E=;
-        b=CGl4ZfLB9Ed91zreg4ep2FgxLk/fXN9Q7wocl+roWNyC2A5p0kXVLkLDV86ylr1h2t
-         f6Cwai2qBMmiWEcHZ1BGv2+8LsFcbh7rylXYM3XQQ98x/BUm6PLLqM9Q68wrh4ZDlq4e
-         JP9e/O1L4SqS88ZL+qxT1M4QZgYGhTyEuEu0qQe3+IWE0av9v18WzZg6Z7wviDnOQOsw
-         SL1axkYF4Rci/f3PM/a+5s7TNih9OzApYO1qIZfVwUQfPxo99P1L1cQ2XZPXaTR9UUqB
-         avCFV7//6qKrVOTXuKaEMEyzofjxvi5MTtc2tIJ2/e3ocAMnEJVFTEeR9BVuFQC/nnJx
-         eCFQ==
-X-Gm-Message-State: AOAM530JUPhElSwQJRufTb+OVY8qs+bHYtejDsLruvuVJcapD1e1e8eo
-        ZO4Z/s7SC3JkztfQShgTQcQfDqC4dUcNuxkHNkvAXco2w005
-X-Google-Smtp-Source: ABdhPJwC0WUoq/eVSmcIFNMSwad5MG1Yo/9RIyJjJ5tZC2biApe7rg9EZWQ+jQafOFyLt3cLG1YdRUB0zamotKn4uS2CwmFf28w5
+        id S1725940AbgF0VSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 17:18:42 -0400
+Received: from mail-eopbgr60076.outbound.protection.outlook.com ([40.107.6.76]:16519
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725907AbgF0VSl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Jun 2020 17:18:41 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EahmzDWgZ6NjVPZeDkkVVj3dFKpnf8nWND5JJmgdL9ebkowS9cOeVbFy0Qc91TC/UIOYBXpAp6qWrzbdg7Sm9+gkL2/IjXxOWzLVJfkxMhJYvr9mnBkiXUzfevpd2Y3Dlfsv3W2EegMgmqDH+mA7f2H9B6F5ADQcPWe4uKuHQ97d8AeAnlduqQC+6gj/4FlbXJCA6lpjsdw3fLFCdBhY2ZLZIoiPR1SH+F6JP8nJxrYMtORGh0X1JqaXTqRKG9RJF1iJdxDm58KsEM04Au6jO8nTLK41OXQUsdCy9c+22+HHGg/b4aKGCKb0tYWO3H+mxXJmwuCbTwBbc7ZT/ETfMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vnYSZMp5Yso5RVbE+oCmx7sqjtVaD0aRaI401YEgF+s=;
+ b=W138yxhRA9ZL456SyYXOnswSNr5tOAeMgs2BrX6KWQsXQhtv7F70ywESlvzNYwhP6CsycKNvfgK6I43GVDFdgWMAA9lIyTim2O3+FTlyp5Vek+Kq1s+VlZesjP9e/0cQJ7RUJycC8h+zx6iadpvmVPTXd3L9E/EOHswpIn2ayL4V4tL9uCF35KQE/1avxZZ4GZgG4wM8nPRI4S3SL4eHKGC3oyXtmwKtQ0Roq3Xb4gLWvz5J2zsi38UP8+ZyI2327JiUVKizcVps3d7UiDyWypwwZ3GO/0n7PJBpe3VTWYDc0PeWDd3D4v+pUf8OKd0FCKgvaYYjl3SVoFU7AgkUSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vnYSZMp5Yso5RVbE+oCmx7sqjtVaD0aRaI401YEgF+s=;
+ b=Revm1bobAckl2ZUDNca7rz5wZOWyxDuKUZQrESReHrj/O36N2yn2G8dMZ2LzB5dD+I/dcFkc/4w+mm0hpjTYNN06lxKqzI1v7YlSjSPZMq+5RHDZCHYuzez7cDLQ4Vgs4xXCLuCrftmeA5VB0dAIgUTwdi5F3cGXq52kUmprzw4=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB5134.eurprd05.prod.outlook.com (2603:10a6:803:ad::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Sat, 27 Jun
+ 2020 21:18:35 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3131.026; Sat, 27 Jun 2020
+ 21:18:35 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 00/15] mlx5 tls rx offload 2020-06-26
+Date:   Sat, 27 Jun 2020 14:17:12 -0700
+Message-Id: <20200627211727.259569-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.26.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR03CA0017.namprd03.prod.outlook.com
+ (2603:10b6:a03:1e0::27) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
-X-Received: by 2002:a02:c906:: with SMTP id t6mr9964423jao.35.1593291433317;
- Sat, 27 Jun 2020 13:57:13 -0700 (PDT)
-Date:   Sat, 27 Jun 2020 13:57:13 -0700
-In-Reply-To: <000000000000f728fc05a90ce9c9@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e817ba05a91711b0@google.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in qrtr_endpoint_post
-From:   syzbot <syzbot+b8fe393f999a291a9ea6@syzkaller.appspotmail.com>
-To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BY5PR03CA0017.namprd03.prod.outlook.com (2603:10b6:a03:1e0::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21 via Frontend Transport; Sat, 27 Jun 2020 21:18:33 +0000
+X-Mailer: git-send-email 2.26.2
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 5b7d362e-7e1b-42de-d290-08d81adfa698
+X-MS-TrafficTypeDiagnostic: VI1PR05MB5134:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB51346D379121AC0CF57F3E75BE900@VI1PR05MB5134.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 0447DB1C71
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Y61vte1JyjRLszc2gKM/b9ebb25gSVYGWmGCTlCJNme6RzZvJiRzTomr6gIT8rVE6R4CWYnk9wHUkLFJ1Z+hh46NhlwV8FFqqIivdUaXTmyTCn9Ngb/RLKpHhq57o4edY6CkVq0wMKoxVWaCBBDjV1S38yx8RcNgWHMQOwGw3SlK/Z957npArS+JQKyGRPT3gXrZ386lABVWQ9lnVkma05idQjZcupJSmhfKMAHIOpVm+zu621DliF5OyJzLGcfQ22twKLKZEjj/L93WVwjByb1Ud5Kh07dAYiVu+TeGA6haeo/Mn+LI7mArGN0LtNfiZY5NBqzUH1FMPA6rRk5acul4RIsOJ41sGcIL62CF35kwzzXZJQqMwN5BA47N6+e8
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(136003)(39850400004)(346002)(396003)(66476007)(107886003)(478600001)(4326008)(316002)(6512007)(16526019)(6506007)(2616005)(1076003)(6486002)(956004)(6666004)(66556008)(8936002)(52116002)(86362001)(36756003)(5660300002)(66946007)(26005)(8676002)(83380400001)(2906002)(186003)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: RDvRNKK7TLBn+R2+6Semx84rf3p+oHmUyiTHdSmjDbTCgPKsOPXkVjpgf6FWB48bkqb1oZ7q7EHWoyNJA4FQrjbGhgaaL+cC9aEMd6874T5y0mxXw0jK0XCWnJPK8ImAasbnY07EWHUC+LEs2rTvCti6fFfXQS92GWWABR24daL54HjZbHZ7kQb5yPmh2mW91Hbnl0cNO4okNoteaRX2p9gTlQbbbJgci8NsXvXBr9aFzwaG5C2bBbHnSBOsuiPr6ebOy+lQan77wAVzjFTy5/y+p1uM6y3/0cEnxGZK10nfuDKum/ko2GZcIm2wcjUyshTkmlPTfhzo3D4XkFHAx57eV0rwcz2yXtuLPWv/NqwD7KEJu/jnxwaqdD2YN7sii/1JCjzvMY9wfOPvutGX+LFzbXOoSsLjsuFy8cC+ToDvBrssTNtmF7wvxzdKOjB9b/SSMftfjHBejgewgo9EkB3fPGzCJNZFiz3dr3AVoAg=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b7d362e-7e1b-42de-d290-08d81adfa698
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2020 21:18:35.0436
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sAPBlCdwT5jyp43TTU+28xhnhYO0E+IsgScGeoQriVFfWVw59XCyEbux+yDyRs4+Iah1iOzPs+dwzX9lHFkeMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5134
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+Hi Dave, Jakub
 
-HEAD commit:    1590a2e1 Merge tag 'acpi-5.8-rc3' of git://git.kernel.org/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=14b2b503100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=bf3aec367b9ab569
-dashboard link: https://syzkaller.appspot.com/bug?extid=b8fe393f999a291a9ea6
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=109e6b55100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13671a3d100000
+This is a re-spin of the previous kernel cycle mlx5 rx tls submission, From Tariq
+and Boris.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+b8fe393f999a291a9ea6@syzkaller.appspotmail.com
+Changes from previous iteration:
+1) Better handling of error flows in the resyc procedure.
+2) An improved TLS device API for Asynchronous Resync to replace "force resync"
+For this Tariq and Boris revert the old "force resync" API then add the new one,
+patch: ('Revert "net/tls: Add force_resync for driver resync"')
+Since there are no users for the "force resync" API it might be a good idea to also
+take this patch to net.
 
-==================================================================
-BUG: KASAN: slab-out-of-bounds in qrtr_endpoint_post+0xeeb/0x1010 net/qrtr/qrtr.c:462
-Read of size 2 at addr ffff88809de50c48 by task syz-executor531/6806
+For more information please see tag log below.
 
-CPU: 0 PID: 6806 Comm: syz-executor531 Not tainted 5.8.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xae/0x436 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
- qrtr_endpoint_post+0xeeb/0x1010 net/qrtr/qrtr.c:462
- qrtr_tun_write_iter+0xf5/0x180 net/qrtr/tun.c:92
- call_write_iter include/linux/fs.h:1907 [inline]
- do_iter_readv_writev+0x567/0x780 fs/read_write.c:694
- do_iter_write+0x188/0x5f0 fs/read_write.c:999
- compat_writev+0x1ea/0x390 fs/read_write.c:1352
- do_compat_pwritev64+0x180/0x1b0 fs/read_write.c:1401
- do_syscall_32_irqs_on+0x3f/0x60 arch/x86/entry/common.c:403
- __do_fast_syscall_32 arch/x86/entry/common.c:448 [inline]
- do_fast_syscall_32+0x7f/0x120 arch/x86/entry/common.c:474
- entry_SYSENTER_compat+0x6d/0x7c arch/x86/entry/entry_64_compat.S:138
-RIP: 0023:0xf7f8f569
-Code: Bad RIP value.
-RSP: 002b:00000000ffda5ffc EFLAGS: 00000292 ORIG_RAX: 000000000000014e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000020000440
-RDX: 0000000000000001 RSI: 0000000000000000 RDI: 00000000080bb528
-RBP: 0000000000000012 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+Please pull and let me know if there is any problem.
 
-Allocated by task 6806:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:494
- __do_kmalloc mm/slab.c:3656 [inline]
- __kmalloc+0x17a/0x340 mm/slab.c:3665
- kmalloc include/linux/slab.h:560 [inline]
- kzalloc include/linux/slab.h:669 [inline]
- qrtr_tun_write_iter+0x8a/0x180 net/qrtr/tun.c:83
- call_write_iter include/linux/fs.h:1907 [inline]
- do_iter_readv_writev+0x567/0x780 fs/read_write.c:694
- do_iter_write+0x188/0x5f0 fs/read_write.c:999
- compat_writev+0x1ea/0x390 fs/read_write.c:1352
- do_compat_pwritev64+0x180/0x1b0 fs/read_write.c:1401
- do_syscall_32_irqs_on+0x3f/0x60 arch/x86/entry/common.c:403
- __do_fast_syscall_32 arch/x86/entry/common.c:448 [inline]
- do_fast_syscall_32+0x7f/0x120 arch/x86/entry/common.c:474
- entry_SYSENTER_compat+0x6d/0x7c arch/x86/entry/entry_64_compat.S:138
+Please note that the series starts with a merge of mlx5-next branch,
+to resolve and avoid dependency with rdma tree.
 
-Freed by task 1:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- kasan_set_free_info mm/kasan/common.c:316 [inline]
- __kasan_slab_free+0xf5/0x140 mm/kasan/common.c:455
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x103/0x2c0 mm/slab.c:3757
- tomoyo_path_perm+0x234/0x3f0 security/tomoyo/file.c:842
- security_inode_getattr+0xcf/0x140 security/security.c:1278
- vfs_getattr fs/stat.c:121 [inline]
- vfs_statx+0x170/0x390 fs/stat.c:206
- vfs_lstat include/linux/fs.h:3301 [inline]
- __do_sys_newlstat+0x91/0x110 fs/stat.c:374
- do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Thanks,
+Saeed.
 
-The buggy address belongs to the object at ffff88809de50c40
- which belongs to the cache kmalloc-32 of size 32
-The buggy address is located 8 bytes inside of
- 32-byte region [ffff88809de50c40, ffff88809de50c60)
-The buggy address belongs to the page:
-page:ffffea0002779400 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88809de50fc1
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea000277e008 ffffea0002761c88 ffff8880aa0001c0
-raw: ffff88809de50fc1 ffff88809de50000 000000010000003f 0000000000000000
-page dumped because: kasan: bad access detected
+---
+The following changes since commit e396eccf0f1a6621d235340260f4d1f292de74f9:
 
-Memory state around the buggy address:
- ffff88809de50b00: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
- ffff88809de50b80: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
->ffff88809de50c00: fb fb fb fb fc fc fc fc 04 fc fc fc fc fc fc fc
-                                              ^
- ffff88809de50c80: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
- ffff88809de50d00: fb fb fb fb fc fc fc fc 00 01 fc fc fc fc fc fc
-==================================================================
+  Merge branch 'mlx5-next' of git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux (2020-06-27 14:00:13 -0700)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-tls-2020-06-26
+
+for you to fetch changes up to a29074367b347af9e19d36522f7ad9a7db4b9c28:
+
+  net/mlx5e: kTLS, Improve rx handler function call (2020-06-27 14:00:25 -0700)
+
+----------------------------------------------------------------
+mlx5-tls-2020-06-26
+
+1) Improve hardware layouts and structure for kTLS support
+
+2) Generalize ICOSQ (Internal Channel Operations Send Queue)
+Due to the asynchronous nature of adding new kTLS flows and handling
+HW asynchronous kTLS resync requests, the XSK ICOSQ was extended to
+support generic async operations, such as kTLS add flow and resync, in
+addition to the existing XSK usages.
+
+3) kTLS hardware flow steering and classification:
+The driver already has the means to classify TCP ipv4/6 flows to send them
+to the corresponding RSS HW engine, as reflected in patches 3 through 5,
+the series will add a steering layer that will hook to the driver's TCP
+classifiers and will match on well known kTLS connection, in case of a
+match traffic will be redirected to the kTLS decryption engine, otherwise
+traffic will continue flowing normally to the TCP RSS engine.
+
+3) kTLS add flow RX HW offload support
+New offload contexts post their static/progress params WQEs
+(Work Queue Element) to communicate the newly added kTLS contexts
+over the per-channel async ICOSQ.
+
+The Channel/RQ is selected according to the socket's rxq index.
+
+A new TLS-RX workqueue is used to allow asynchronous addition of
+steering rules, out of the NAPI context.
+It will be also used in a downstream patch in the resync procedure.
+
+Feature is OFF by default. Can be turned on by:
+$ ethtool -K <if> tls-hw-rx-offload on
+
+4) Added mlx5 kTLS sw stats and new counters are documented in
+Documentation/networking/tls-offload.rst
+rx_tls_ctx - number of TLS RX HW offload contexts added to device for
+decryption.
+
+rx_tls_ooo - number of RX packets which were part of a TLS stream
+but did not arrive in the expected order and triggered the resync
+procedure.
+
+rx_tls_del - number of TLS RX HW offload contexts deleted from device
+(connection has finished).
+
+rx_tls_err - number of RX packets which were part of a TLS stream
+ but were not decrypted due to unexpected error in the state machine.
+
+5) Asynchronous RX resync
+
+a. The NIC driver indicates that it would like to resync on some TLS
+record within the received packet (P), but the driver does not
+know (yet) which of the TLS records within the packet.
+At this stage, the NIC driver will query the device to find the exact
+TCP sequence for resync (tcpsn), however, the driver does not wait
+for the device to provide the response.
+
+b. Eventually, the device responds, and the driver provides the tcpsn
+within the resync packet to KTLS. Now, KTLS can check the tcpsn against
+any processed TLS records within packet P, and also against any record
+that is processed in the future within packet P.
+
+The asynchronous resync path simplifies the device driver, as it can
+save bits on the packet completion (32-bit TCP sequence), and pass this
+information on an asynchronous command instead.
+
+Performance:
+    CPU: Intel(R) Xeon(R) CPU E5-2687W v4 @ 3.00GHz, 24 cores, HT off
+    NIC: ConnectX-6 Dx 100GbE dual port
+
+    Goodput (app-layer throughput) comparison:
+    +---------------+-------+-------+---------+
+    | # connections |   1   |   4   |    8    |
+    +---------------+-------+-------+---------+
+    | SW (Gbps)     |  7.26 | 24.70 |   50.30 |
+    +---------------+-------+-------+---------+
+    | HW (Gbps)     | 18.50 | 64.30 |   92.90 |
+    +---------------+-------+-------+---------+
+    | Speedup       | 2.55x | 2.56x | 1.85x * |
+    +---------------+-------+-------+---------+
+
+    * After linerate is reached, diff is observed in CPU util
+
+----------------------------------------------------------------
+Boris Pismenny (3):
+      net/mlx5e: Receive flow steering framework for accelerated TCP flows
+      Revert "net/tls: Add force_resync for driver resync"
+      net/tls: Add asynchronous resync
+
+Saeed Mahameed (1):
+      net/mlx5e: API to manipulate TTC rules destinations
+
+Tariq Toukan (11):
+      net/mlx5e: Turn XSK ICOSQ into a general asynchronous one
+      net/mlx5e: Refactor build channel params
+      net/mlx5e: Accel, Expose flow steering API for rules add/del
+      net/mlx5e: kTLS, Improve TLS feature modularity
+      net/mlx5e: kTLS, Use kernel API to extract private offload context
+      net/mlx5e: kTLS, Add kTLS RX HW offload support
+      net/mlx5e: kTLS, Add kTLS RX resync support
+      net/mlx5e: kTLS, Add kTLS RX stats
+      net/mlx5e: Increase Async ICO SQ size
+      net/mlx5e: kTLS, Cleanup redundant capability check
+      net/mlx5e: kTLS, Improve rx handler function call
+
+ Documentation/networking/tls-offload.rst           |  18 +
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/accel/tls.h    |  19 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  23 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/fs.h    |  26 +-
+ .../net/ethernet/mellanox/mlx5/core/en/params.h    |  22 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  15 +
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |  53 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.c    |  12 +-
+ .../mellanox/mlx5/core/en_accel/en_accel.h         |  20 +
+ .../ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c  | 400 ++++++++++++
+ .../ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h  |  27 +
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls.c    | 123 ++--
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls.h    | 114 +---
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c | 670 +++++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 204 ++++---
+ .../mellanox/mlx5/core/en_accel/ktls_txrx.c        | 119 ++++
+ .../mellanox/mlx5/core/en_accel/ktls_txrx.h        |  42 ++
+ .../mellanox/mlx5/core/en_accel/ktls_utils.h       |  86 +++
+ .../net/ethernet/mellanox/mlx5/core/en_accel/tls.c |  26 +-
+ .../net/ethernet/mellanox/mlx5/core/en_accel/tls.h |  14 +-
+ .../mellanox/mlx5/core/en_accel/tls_rxtx.c         |  32 +-
+ .../mellanox/mlx5/core/en_accel/tls_rxtx.h         |  34 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c  |  34 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  84 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  68 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  41 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |  39 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |  25 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |   1 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c  |  12 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c       |   3 +-
+ include/net/tls.h                                  |  34 +-
+ net/tls/tls_device.c                               |  60 +-
+ 36 files changed, 2054 insertions(+), 454 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_utils.h
