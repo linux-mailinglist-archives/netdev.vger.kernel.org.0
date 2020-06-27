@@ -2,95 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28CCE20C407
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 22:24:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67E4A20C414
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 22:31:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726349AbgF0UYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 16:24:04 -0400
-Received: from sonic313-9.consmr.mail.ne1.yahoo.com ([66.163.185.32]:35890
-        "EHLO sonic313-9.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725900AbgF0UYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 16:24:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1593289443; bh=DPYuw2gUpgtMJzJhlH/AVmRGu2wSKCY1C+f8nOCoxu0=; h=Date:From:Reply-To:Subject:References:From:Subject; b=i5BaG78Awnbc5Uw+TBmbIHQ8R/A/bmaJ6uuKNz1Q5yiTj913mkKI1hdCsicJBSNNBuEzLnyq3UZanU5KUosw9fFGgiDFhA+negIu5vPQwbLGRVioWjvjE/Tz7RhakdPw6v8uMwdnV/Lnqz5ETjiumWXXKVvvmQlBrB6oEv4fDj30Mkywho1TMKg82rW/Me4CklHlUSLJgZ4YHx9RpoAKmZvGXO89a898jaKcTfuRDBJHFZNNk+eTxpFOK5sySov96qWth/sL5DjsmXGBT3noQeGEZY+ffwI98/6cbysSR+762P+7l/oiTAKG//gWu3tGRccKELTlpn7E1YL9ay8+yg==
-X-YMail-OSG: K6Zn8JsVM1lXOwX.FCrEdjzysdOVeDukyVo4CE2OaR_ULFkZp.IVuF1xpieZo2I
- ZF.r5N7eZPg_G2eF3BcGsEJjT9ZFwXK6EQ8YkBor4nX_3eSMqlwAEbbZknh1g5W7ZYlWMWLxxrKv
- RovwaI8z.clEtOLZadiOYoCuWDd1ur8ydAERcdBsQMf9Ac7BWJFdKh3UGlcrFrj5bogkUSiPeusU
- eYYmusjsQym6D3eb2v1xQ9uqI.kXKuWm3Z9NgobTmZOj6uoVuCt7KRaJN38VRkN.PW9qg4aOQxl3
- jK0tmCqIxr0d4dy_koMRl9ALXO6heam1WPhFgDCNeiywh_97FrGCtew.I6CsK9LoIwnf7.aGH4o5
- Z3IRSzXw8Q_UaFnv7N4Dr0ezPeCtIFn9fPuiyQP1Od_DnxOocJb4zW3Ppbx.I0NWCxI.kdxKLCpE
- W_TaIT3IY8mjokg24wdJBNNIamkZ5FW1tzpxIiZkhHfTRPIzWvXJa44ADu.Xrxar_G65_wdQPlJ_
- Uk3kJo4mG3.uVpNFCbEnc_SjpYQecs9I7QXb0Bb7yyrqXZCuLbCAK8wAeLHoxdRPyAR3.9DVtSl3
- 7M2HcfEPEf6G5L361Nu0GIHDFE.vr03EBEtIsDXBdXoIgU8UFrD1hEh8XCq.eaGWY2pMkyBdsYoa
- sphYg_izAdvag1WaD_u1PSznJvg0Ec4G8Y4X1RyI7AYbvypwFpOyFECjW3zAI7E62ageT39rQJT6
- Iuf8dI9X4yM7f18nj3Ra77J.he8I9RNbkFiON98A7v.7TggTQW1zFoHvjF_FXQuZgxBVDfLTHQs8
- 7uvKXnqT7dlqg1tOepBuDqqAhafha9UzqEzeo7Lge3wGpz_NzO2ZWRDfQoJ6cAf8FyU8rQd2pk4A
- .b_Y9jeQN12ET7UncaQfbOMRqFqSE27A2hQwbtTeKauBnkuHtq932HlDor.zphkpuf89fYMClA7V
- 7LTMnRgboUP3ciN4kSXWPAeYZj1GYLKZEyyNYBrET8wGyLCXcBp.wDos4znGkYCsuqDp_DJ_WMRe
- Yuy_63FGTL2m9pPKFLPvkKBtarJHID7_0u8z5VQvdT06bYtG4RNV3TvpsZSME19u5d2LtSsK5FOk
- 1RERQ2UVzz.7fT41kyOtifXI5.6ita7wFb4hYkLTIlpui7LUQDvygtDt7ykoqsOOwbcJo86baggT
- BcJN0slYlLrYtRFuRL.R8SdBU4eI2Eo8qxFffOslzRXFxME0htmJZ.7LhNt5NR8j7IYuRjcwa2XS
- FfdP1OpH5MJ_iQBZPKR6Uhj484VWIwaYmbnXAUeh.ijs4uqDIAcTsvZbE99z5wGyKzFu6bKB9Qid
- YGw--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ne1.yahoo.com with HTTP; Sat, 27 Jun 2020 20:24:03 +0000
-Date:   Sat, 27 Jun 2020 20:23:58 +0000 (UTC)
-From:   "Mina A. Brunel" <mrsminaabrunel2334@gmail.com>
-Reply-To: mrsminaabrunel57044@gmail.com
-Message-ID: <1391510444.4676429.1593289438432@mail.yahoo.com>
-Subject: My Dear in the lord
+        id S1726067AbgF0Uby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 16:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725900AbgF0Uby (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 16:31:54 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEEEC061794;
+        Sat, 27 Jun 2020 13:31:54 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id t7so6021720qvl.8;
+        Sat, 27 Jun 2020 13:31:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cJQanw1Sm8hwnATJTWZ5T87d463paNUhJgkC8Hl7E0E=;
+        b=hEJh7yY9E4qYRjNevS/zCPlzGDcwOQLghXYfGA8p/z8UwYcLgDuh3WmSm623l9uTCC
+         hyhJUL5d5FbMyIn6fA33oRNyD5HJ9lYWApGYAZfJT9X1uQTNVEE9hBYqhtwctwTSan6U
+         v5rEoYoHZ6/q8q6wCnlRh5azFy8q4hAC8e8Y7zlARr+3V+80GXDpqDNRShfC0I+sk9YQ
+         IBhpEwmz22oMsB4/NAZkCMa4dYK4dkfxtMnRuSsxsFokBydRROb8vCvawI6TwJR+gDjQ
+         2gfFIVMU9+MWEJcqAhDk35E6TEcy1ohLpRprwLdtULNZBMTH3TPavGFZF5oWHuJdJtGA
+         0jsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cJQanw1Sm8hwnATJTWZ5T87d463paNUhJgkC8Hl7E0E=;
+        b=VXW1r9gaeUOJgfFWNL+U+IvIsKb0c0gWOG/N7W4DVvNWaAJ0rWKQ8s2hCGg3Sda3lv
+         0OuBVYJeKuIjukcj3GMGUDS+95FwgV/a21nfvb7hC2LI7du6h3h4sgduSKnZamGMkUAB
+         N+hRwoGnByCi5y6osJPQDGVY9+Chx0fHtflNXnlv4PPGVVjVc/KGmll65Khb5DNdFWOL
+         d3Cd96vrLV10C08p5PZVlqfNT1hbvj4BWmPrtppmEolhJbfwBWdxqXQsT4T8RQjlQrSk
+         9qlYW9W+dDkAJsSdHwDpEO9KhjJ0g2OL8PTd0xjrHGKudF+lPfG1qus01d1657e0OMIE
+         EUFA==
+X-Gm-Message-State: AOAM530WpKGpiNM81ceVyD8885jveFFL5n9JoA39vdnN9UF0uJr826Hu
+        4t9oH8R5pBUoGjEjx0WrVA0/sTxs5ikSxWOk5JM=
+X-Google-Smtp-Source: ABdhPJztE1lvvidDrRF+BYsAwOY6JCfitsgajU9q8lmvMEGLRnkLPEnVEVavm0YJ+M3o8uzfP8ksBjC/XrLPsnOAsqE=
+X-Received: by 2002:a0c:f388:: with SMTP id i8mr8847755qvk.224.1593289913134;
+ Sat, 27 Jun 2020 13:31:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <1391510444.4676429.1593289438432.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16138 YMailNodin Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+References: <20200626175501.1459961-1-kafai@fb.com> <20200626175545.1462191-1-kafai@fb.com>
+ <CAEf4BzZ3Jb296zJ7bfsntk7v5fkynrBcKncGQgrSHJ2zqifgsA@mail.gmail.com> <20200627002302.3tqklvjxxuetjoxr@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200627002302.3tqklvjxxuetjoxr@kafai-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 27 Jun 2020 13:31:42 -0700
+Message-ID: <CAEf4BzZevDLp8Hzax3T8XzHLsMm85upCONULVVOEOyAxVGe4dA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 07/10] bpf: selftests: Restore netns after each test
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Lawrence Brakmo <brakmo@fb.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Networking <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 26, 2020 at 5:23 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Fri, Jun 26, 2020 at 03:45:04PM -0700, Andrii Nakryiko wrote:
+> > On Fri, Jun 26, 2020 at 10:56 AM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > It is common for networking tests creating its netns and making its own
+> > > setting under this new netns (e.g. changing tcp sysctl).  If the test
+> > > forgot to restore to the original netns, it would affect the
+> > > result of other tests.
+> > >
+> > > This patch saves the original netns at the beginning and then restores it
+> > > after every test.  Since the restore "setns()" is not expensive, it does it
+> > > on all tests without tracking if a test has created a new netns or not.
+> > >
+> > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > ---
+> > >  tools/testing/selftests/bpf/test_progs.c | 21 +++++++++++++++++++++
+> > >  tools/testing/selftests/bpf/test_progs.h |  2 ++
+> > >  2 files changed, 23 insertions(+)
+> > >
+> > > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+> > > index 54fa5fa688ce..b521ce366381 100644
+> > > --- a/tools/testing/selftests/bpf/test_progs.c
+> > > +++ b/tools/testing/selftests/bpf/test_progs.c
+> > > @@ -121,6 +121,24 @@ static void reset_affinity() {
+> > >         }
+> > >  }
+> > >
+> > > +static void save_netns(void)
+> > > +{
+> > > +       env.saved_netns_fd = open("/proc/self/ns/net", O_RDONLY);
+> > > +       if (env.saved_netns_fd == -1) {
+> > > +               perror("open(/proc/self/ns/net)");
+> > > +               exit(-1);
+> > > +       }
+> > > +}
+> > > +
+> > > +static void restore_netns(void)
+> > > +{
+> > > +       if (setns(env.saved_netns_fd, CLONE_NEWNET) == -1) {
+> > > +               stdio_restore();
+> > > +               perror("setns(CLONE_NEWNS)");
+> > > +               exit(-1);
+> > > +       }
+> > > +}
+> > > +
+> > >  void test__end_subtest()
+> > >  {
+> > >         struct prog_test_def *test = env.test;
+> > > @@ -643,6 +661,7 @@ int main(int argc, char **argv)
+> > >                 return -1;
+> > >         }
+> > >
+> > > +       save_netns();
+> >
+> > you should probably do this also after each sub-test in test__end_subtest()?
+> You mean restore_netns()?
 
+oops, yeah :)
 
-My Dear in the lord
+>
+> It is a tough call.
+> Some tests may only want to create a netns at the beginning for all the subtests
+> to use (e.g. sk_assign.c).  restore_netns() after each subtest may catch
+> tester in surprise that the netns is not in its full control while its
+> own test is running.
 
+Wouldn't it be better to update such self-tests to setns on each
+sub-test properly? It should be a simple code re-use exercise, unless
+I'm missing some other implications of having to do it before each
+sub-test?
 
-My name is Mrs. Mina A. Brunel I am a Norway Citizen who is living in Burki=
-na Faso, I am married to Mr. Brunel Patrice, a politicians who owns a small=
- gold company in Burkina Faso; He died of Leprosy and Radesyge, in year Feb=
-ruary 2010, During his lifetime he deposited the sum of =E2=82=AC 8.5 Milli=
-on Euro) Eight million, Five hundred thousand Euros in a bank in Ouagadougo=
-u the capital city of of Burkina in West Africa. The money was from the sal=
-e of his company and death benefits payment and entitlements of my deceased=
- husband by his company.
+The idea behind sub-test is (at least it was so far) that it's
+independent from other sub-tests and tests, and it's only co-located
+with other sub-tests for the purpose of code reuse and logical
+grouping. Which is why we reset CPU affinity, for instance.
 
-I am sending you this message with heavy tears in my eyes and great sorrow =
-in my heart, and also praying that it will reach you in good health because=
- I am not in good health, I sleep every night without knowing if I may be a=
-live to see the next day. I am suffering from long time cancer and presentl=
-y I am partially suffering from Leprosy, which has become difficult for me =
-to move around. I was married to my late husband for more than 6 years with=
-out having a child and my doctor confided that I have less chance to live, =
-having to know when the cup of death will come, I decided to contact you to=
- claim the fund since I don't have any relation I grew up from an orphanage=
- home.
+>
+> I think an individual test should have managed the netns properly within its
+> subtests already if it wants a correct test result.  It can unshare at the
+> beginning of each subtest to get a clean state (e.g. in patch 8).
+> test_progs.c only ensures a config made by an earlier test does
+> not affect the following tests.
 
-I have decided to donate this money for the support of helping Motherless b=
-abies/Less privileged/Widows and churches also to build the house of God be=
-cause I am dying and diagnosed with cancer for about 3 years ago. I have de=
-cided to donate from what I have inherited from my late husband to you for =
-the good work of Almighty God; I will be going in for an operation surgery =
-soon.
-
-Now I want you to stand as my next of kin to claim the funds for charity pu=
-rposes. Because of this money remains unclaimed after my death, the bank ex=
-ecutives or the government will take the money as unclaimed fund and maybe =
-use it for selfishness and worthless ventures, I need a very honest person =
-who can claim this money and use it for Charity works, for orphanages, wido=
-ws and also build schools and churches for less privilege that will be name=
-d after my late husband and my name.
-
-I need your urgent answer to know if you will be able to execute this proje=
-ct, and I will give you more information on how the fund will be transferre=
-d to your bank account or online banking.
-
-Thanks
-Mrs. Mina A. Brunel
+It's true that it gives more flexibility for test setup, but if we go
+that way, we should do it consistently for CPU affinity resetting and
+whatever else we do per-subtest. I wonder what your answers would be
+for the above questions. We can go either way, just let's be
+consistent.
