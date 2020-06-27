@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB80420C324
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 18:45:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A84020C33D
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 19:17:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726057AbgF0QpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 12:45:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
+        id S1725882AbgF0RRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 13:17:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725882AbgF0QpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 12:45:08 -0400
+        with ESMTP id S1725831AbgF0RRk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 13:17:40 -0400
 Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D85C03E979
-        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 09:45:08 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id j19so3061933ybj.1
-        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 09:45:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A607C061794
+        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 10:17:40 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id p204so2306461ybc.11
+        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 10:17:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=pGYuTB7Gxg8gZ0ohgXDiu6lF7XBieoWtYmjZGWoanV8=;
-        b=UfJuM87I21pr1UoCheQzK/rruP7k3+nndL1n6lixzQIal7DcsIimFGAxwK8JvR0Szz
-         GWl/4wmUcdKkePz/78A0ZYaDfkq5i924wz9zWVzLzxtuhzO3tWUmFLMnvGI6njxhd+hu
-         G20WrAFTV29W8fJ3FMR4yuKKJKL/o2HHtUCJMn+1m39z33A+UJ3Zuy1OHe6vdOfwAhu9
-         q7ewA/R882mfUpNzrkNfyjU/YEHQUr8DQ/OhOOOccqK+p43q+QNKty7UWImJ67Hu8hsO
-         cYlzMs0voM6GRcHOCcjcAqAK6ZDiXf2bvt9QQHDX4ZUKHXqPuGeeh6Sv7mR51XEUibuv
-         BJHw==
+        bh=H7HRMHL/+DTjLoiHGFta2cnT5jFeaabjVtDI5/tzLRM=;
+        b=D+xx+wbWhQg7qwWQrY02o1FjX9rHOSDmYHHkc+zkcuKLjfCGXm75iPdXhRtiVLkQTK
+         0/76sqEKXmtcflfVFEsKpWNvbw9l8nf+zFcc31bWgB21CUMoktMHRQISHEk+yNbsHAGw
+         B7q28TFJOZZ+Z/ZeA19fCUQVpS6q6iP3RdwGrwwXqPK4l4XuJJuamTJ7aXgKNmmorqZD
+         Pi5ZRnNeOxkkqZNvG8lahun2Jg77SwiwSypiV9LMQYKZ8ScjfmOilGCW8ISu+5bqUcOX
+         CrGrUcUkQDOtxmUBlr5HC0G7bDInIJdOKNSwNIBqoLlVzoTi+JkXbGPKJN9nY/Mo0vYK
+         6wRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pGYuTB7Gxg8gZ0ohgXDiu6lF7XBieoWtYmjZGWoanV8=;
-        b=qqcdUz9tgyrkMjN9HsE9DrC3dxRKHCusF0LPTCIPWywLb5KjflNCDv3iyFOdazE+o+
-         7W+YWDeOQHy5R7K0p9G/lrexgC7uPB+26QJS8XU00kpt09rG8/ype5J8AjM6T2kSFaxP
-         5HSiWwb2S3ETtmNttdcusVBRiRUHtcPQMZdpbG87NJxhsNtCL9cz35TujiQB6NZnpNGI
-         vdbXKi1NmBabtizhdn4lufKoxGMggilLBDkXH9N7zXUaLA0eXWD2AHprVwyfT+8/jqwP
-         FQl9p/EBdFjqMuMPuXN4+DB1aoQSYEbEv0BQLi/5oCD0u3vP81YbbdrmVgg4ye2XHf++
-         rIzw==
-X-Gm-Message-State: AOAM5323JnAquh/fiCIGIqWKxhwAq/BIfVbk64x8iT6+bTtC7KtMnU8j
-        OO7iZlgFaNptBOsy2vDvUkIL/HHcJXoA1eoXSG015A==
-X-Google-Smtp-Source: ABdhPJzkiBEMN7bNzBI+g5X8Invc3/JttoE2M+cex6nZJDJQrcq0RpYgAMWSDuZsZNFDgh0gTFpQ5t118wbhWIwHJYs=
-X-Received: by 2002:a25:d28e:: with SMTP id j136mr14480748ybg.408.1593276307441;
- Sat, 27 Jun 2020 09:45:07 -0700 (PDT)
+        bh=H7HRMHL/+DTjLoiHGFta2cnT5jFeaabjVtDI5/tzLRM=;
+        b=nYjLqLDjZXjI2yv4FiZP9nJCj6VKEw+GeECeIBUW7YEI/AcfdFmJcwQyTytdnRbF0g
+         EZyOByQjCY4zTuSj4PHN6KAfYSIPT+00/TC17DkuybZgUkv9FiW9TmQPQ6GfhzOACuJl
+         xMX0nR7mTyn8hbPcR6M221a9flTTbaORZuZrSx+cmTX5uyFXDBx9l9L4EAMQU2TNBOKL
+         qdUoEDud3D0BEEK5y7/wJe+MJAChkoZn29MACCey8npmFoZ5+eCDaxqtmpYy0MS2er6P
+         CWIORgyr993buBF+fzwasrI15gWK+iXyWDk/U82fPU80XgFzZl2fTU1cs0duNIncYZUR
+         tL7Q==
+X-Gm-Message-State: AOAM532V5lOdJblTJsr35a7nWuPWT9QN0CzRGXokoOmJ7BInkOOK5lnB
+        ysQtvUD4czdncPRfFc82LMlGB0MFSOllJkd6db2ORQ==
+X-Google-Smtp-Source: ABdhPJyUxDd/0eGg/6T5dIbyFaStHwrtmziggaD99Nd0s2L2YmqHvLcU6blNHwdwXA4pE8FTAwccPjm7kI15nm9HhdY=
+X-Received: by 2002:a25:b88d:: with SMTP id w13mr14325767ybj.520.1593278258192;
+ Sat, 27 Jun 2020 10:17:38 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200626175501.1459961-1-kafai@fb.com> <20200626175514.1460570-1-kafai@fb.com>
 In-Reply-To: <20200626175514.1460570-1-kafai@fb.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Sat, 27 Jun 2020 09:44:55 -0700
-Message-ID: <CANn89i+=bpj6p85MMT+6RvTq9Da1LFMnde5j5d8qgU062SM_NQ@mail.gmail.com>
+Date:   Sat, 27 Jun 2020 10:17:26 -0700
+Message-ID: <CANn89iK50rqOVy=PmKO-Fe1D-HsHjp4zj-feevouQ2hc1GAQ9Q@mail.gmail.com>
 Subject: Re: [PATCH bpf-next 02/10] tcp: bpf: Parse BPF experimental header option
 To:     Martin KaFai Lau <kafai@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
@@ -175,3 +175,28 @@ On Fri, Jun 26, 2020 at 10:55 AM Martin KaFai Lau <kafai@fb.com> wrote:
 > --
 > 2.24.1
 >
+
+(Sorry for the prior empty reply, accidentally click the wrong area)
+
+It seems strange that we want to add code in TCP stack only to cover a
+limited use case (kind 254 and 0xEB9F magic)
+
+For something like the work Petar Penkov did (to be able to generate
+SYNCOOKIES from XDP), we do not go through tcp_parse_options() and BPF
+program
+would have to implement its own parsing (without having an SKB at
+hand), probably calling a helper function, with no
+TCP_SKB_CB(skb)->bpf_hdr_opt_off.
+
+This patch is hard coding a specific option and will prevent anyone
+using private option(s) from using this infrastructure in the future,
+yet paying the extra overhead.
+
+TCP_SKB_CB(skb) is tight, I would prefer keeping the space in it for
+standard TCP stack features.
+
+If an optional BPF program needs to re-parse the TCP options to find a
+specific option, maybe the extra cost is noise (especially if this is
+only for SYN & SYNACK packets) ?
+
+Thanks
