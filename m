@@ -2,94 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94AD320C431
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 22:52:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B57F20C432
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 22:57:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725823AbgF0UwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 16:52:10 -0400
-Received: from mail-eopbgr150072.outbound.protection.outlook.com ([40.107.15.72]:43399
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725792AbgF0UwJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 27 Jun 2020 16:52:09 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UGi+27MTIXFBnvYW/48EFU7FNYuXMY/jEHC194hE+J6BmX87yEqiiHqJ++XV8H0KlcGJ3xSt0OtAnOOAxaNtXAqZUckK9dLDKBSy8pNIdOQ2/6p26UC1KgEtaqkEuzYBd4XAoyeDpwtfC2f1D+4Plg4fbGx42pmmsdt1rm7WhqZqHwhiVHKWewh2HCx6aPD0uo5YY9bmrbwLB4p2EFxASDS/IF3eBG2K629vcqXMp2pYrKVZnH0IQMgZ5pzztQbZQcgCzmFoQgsf/btbGwYGq3iKf1VoffkQ+FWVINf26i7v4Seg21LmTZFqQcmX1k3IGoybpyw6LK9fO/U06AGANQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mBBMtOM8jo76WxsiLpzFNYQ33b1SiT0KbF5pMbKBkls=;
- b=Y4l6wZAv+jDQmSGxP2I4PcfWk1n8Iw2qEFiuKofzYeUTwbfKH26/2ad1ydWFiB50oUHqU1OaSgb11+cNIZLljDHeqmpXuoAZ2fQ0i3UzN0h2fFbN8wRMUqowvsPYLoL9E1MuANguAypbLarNLpXDYtnh5f5pV4EHdszyJ6xp6cZ3ZbcUHsH2s1/28Okgn/dxbej2GNe0maM2ZiUcgsA5aRh7i3MIznkshy2o12oPb6r8jgUjdhJ7PCKg217DCL1Gxwh7imIVh5v7y+7cO2zkwQElZRKagBjgjOpkf6fU371rd4wqPAsgr2qVx72atGUwwtyc/CjZpOEd9JL7kHq+mg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mBBMtOM8jo76WxsiLpzFNYQ33b1SiT0KbF5pMbKBkls=;
- b=UPTggNCdv5AZgPjnplNXPJrxz1WB175lp4kVAYkOrk/suIECMF76EYhgOaPUaBrsMKwYA6xLrANC8zrnwgVSiRMrNqVlhdC21ugJkpNDn4aHBYikEius1v9g9RAz6PZsewcre3Ur0tToy7eKcjFmuVNP8m4kt6KRIQOJBIkh96Y=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB6591.eurprd05.prod.outlook.com (2603:10a6:803:102::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.25; Sat, 27 Jun
- 2020 20:52:04 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3131.026; Sat, 27 Jun 2020
- 20:52:04 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Leon Romanovsky <leonro@mellanox.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH mlx5-next 0/3] mlx5 next updates 2020-06-25
-Thread-Topic: [PATCH mlx5-next 0/3] mlx5 next updates 2020-06-25
-Thread-Index: AQHWS36eExRjwuaSM0K0EJH/t44pMajs8p+A
-Date:   Sat, 27 Jun 2020 20:52:03 +0000
-Message-ID: <6ac1d135036c439a2f862be54808d937808ea3f8.camel@mellanox.com>
-References: <20200626055612.99645-1-saeedm@mellanox.com>
-In-Reply-To: <20200626055612.99645-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.3 (3.36.3-1.fc32) 
-authentication-results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 834aaf28-2688-43a4-a5f8-08d81adbf280
-x-ms-traffictypediagnostic: VI1PR05MB6591:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB65912B56DBEFB8A5090E5962BE900@VI1PR05MB6591.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4714;
-x-forefront-prvs: 0447DB1C71
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: IWdUkzlu7OiKe1eslUhPW5XmfNrrUopMnEvl63UvOxpwNdHdCnpgy6RZ35A6LdUsy1Qj19w0zzhedl5u4O3jzzgb5NRbp45OZEeaZt//wIexYXXOggd5xHGYUjgqGjRfxmSFxauLz84FZsyOCKNutipHEmHX5jn5zGftH8cESDEI5trUXdxsoUXpe4PQJOGp4qRRqhMOB9nehwhQw9Ls4D6ZxmxkUZR3oKVyzaGvQ0bnbn4smGifbp3UjFicVPSChwvWyp24uUvl1Vt2jDd369fORe5rA9Pdp4keuiHerRD5ELSWz9AWtYchAguwlocEv5DmWH0gHp4TF5fM3rVvuQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39850400004)(346002)(136003)(366004)(376002)(66446008)(64756008)(66556008)(6862004)(71200400001)(6512007)(86362001)(6506007)(37006003)(8676002)(558084003)(478600001)(5660300002)(91956017)(36756003)(66476007)(8936002)(76116006)(66946007)(4326008)(186003)(450100002)(2616005)(26005)(54906003)(2906002)(6636002)(6486002)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 9OYI1HUWgtTRppq1cvN6ZFhf0wI8sEZurUhpKF0k6lQjlPh7fP0+zxcCd1tGXXO49gBfDfvskDgyfWmfjFcNkgv9zHJD3zFHJLgSoVtbEdEd6VnPpZJZbkW3xJu7A5/G583ZRvi7mXPOo9ICmhBdFpd1iY1YTEzZHNvSystPaD+M2uRZIug+uSwVvp3UfOvt9a2C+q5NaifI0JeXBpF7wMDsXDLRzcPhP6mJff/Ix42Y2vUdLQe1DZdK1Gwj8BqlXdd+9b3BZQooS5otZ020jnFUM9dUXGIP0USMruRsA4d6Nslk4RkGoNgj7ywLoBMUl/iBG4QPOfo52P17U2BucclG7b+OgZQqmhDCzSepJvtaYL8GTSf1StO122WB/JfNsPuEHOMhBo4lN+nWxTBvv1YRuQTWDU4VOS+hln/4LAD3FHQEVXoaLmx3r7M1fy95zkzQJoP1Peez/EAfyiwT3q8kp7Cd0wbUxtyLQsQtTbs=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <5A06DE71B2173F4D90FFD7AEF28B4C0A@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1725916AbgF0U5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 16:57:15 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:38208 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725792AbgF0U5O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Jun 2020 16:57:14 -0400
+Received: by mail-io1-f71.google.com with SMTP id l13so8590394ioj.5
+        for <netdev@vger.kernel.org>; Sat, 27 Jun 2020 13:57:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=5xC+1jVF3EFdPXee+JUcI1eZasghwwzg/7CHmkD9K6E=;
+        b=CGl4ZfLB9Ed91zreg4ep2FgxLk/fXN9Q7wocl+roWNyC2A5p0kXVLkLDV86ylr1h2t
+         f6Cwai2qBMmiWEcHZ1BGv2+8LsFcbh7rylXYM3XQQ98x/BUm6PLLqM9Q68wrh4ZDlq4e
+         JP9e/O1L4SqS88ZL+qxT1M4QZgYGhTyEuEu0qQe3+IWE0av9v18WzZg6Z7wviDnOQOsw
+         SL1axkYF4Rci/f3PM/a+5s7TNih9OzApYO1qIZfVwUQfPxo99P1L1cQ2XZPXaTR9UUqB
+         avCFV7//6qKrVOTXuKaEMEyzofjxvi5MTtc2tIJ2/e3ocAMnEJVFTEeR9BVuFQC/nnJx
+         eCFQ==
+X-Gm-Message-State: AOAM530JUPhElSwQJRufTb+OVY8qs+bHYtejDsLruvuVJcapD1e1e8eo
+        ZO4Z/s7SC3JkztfQShgTQcQfDqC4dUcNuxkHNkvAXco2w005
+X-Google-Smtp-Source: ABdhPJwC0WUoq/eVSmcIFNMSwad5MG1Yo/9RIyJjJ5tZC2biApe7rg9EZWQ+jQafOFyLt3cLG1YdRUB0zamotKn4uS2CwmFf28w5
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 834aaf28-2688-43a4-a5f8-08d81adbf280
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2020 20:52:03.8894
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EKlcgbGjwilofREJaeup7fiDcVDKseDpuxKt7pEfByAl5Z/HEsUzb5/jgTl4bf4/FrWZQ55jPiad5Hag4ig/IA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6591
+X-Received: by 2002:a02:c906:: with SMTP id t6mr9964423jao.35.1593291433317;
+ Sat, 27 Jun 2020 13:57:13 -0700 (PDT)
+Date:   Sat, 27 Jun 2020 13:57:13 -0700
+In-Reply-To: <000000000000f728fc05a90ce9c9@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e817ba05a91711b0@google.com>
+Subject: Re: KASAN: slab-out-of-bounds Read in qrtr_endpoint_post
+From:   syzbot <syzbot+b8fe393f999a291a9ea6@syzkaller.appspotmail.com>
+To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTA2LTI1IGF0IDIyOjU2IC0wNzAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToN
-Cj4gVGhpcyBzbWFsbCBwYXRjaHNldCBpbmNsdWRlcyAzIHBhdGNoZXMgdG8gbWx4NS1uZXh0IGJy
-YW5jaC4NCj4gDQo+IDEpIEluY2x1ZGUgZGlyZWN0aXZlcyBjbGVhbnVwIGZyb20gUGFyYXYuDQo+
-IDIpIFRMUyBIYXJkd2FyZSBsYXlvdXRzIGltcHJvdmVtZW50cyBmcm9tIFRhcmlxLg0KPiANCj4g
-VGhhbmtzLA0KPiBTYWVlZC4NCj4gDQoNClNlcmllcyBhcHBsaWVkIA0K
+syzbot has found a reproducer for the following crash on:
+
+HEAD commit:    1590a2e1 Merge tag 'acpi-5.8-rc3' of git://git.kernel.org/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14b2b503100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=bf3aec367b9ab569
+dashboard link: https://syzkaller.appspot.com/bug?extid=b8fe393f999a291a9ea6
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+userspace arch: i386
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=109e6b55100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13671a3d100000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+b8fe393f999a291a9ea6@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: slab-out-of-bounds in qrtr_endpoint_post+0xeeb/0x1010 net/qrtr/qrtr.c:462
+Read of size 2 at addr ffff88809de50c48 by task syz-executor531/6806
+
+CPU: 0 PID: 6806 Comm: syz-executor531 Not tainted 5.8.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xae/0x436 mm/kasan/report.c:383
+ __kasan_report mm/kasan/report.c:513 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
+ qrtr_endpoint_post+0xeeb/0x1010 net/qrtr/qrtr.c:462
+ qrtr_tun_write_iter+0xf5/0x180 net/qrtr/tun.c:92
+ call_write_iter include/linux/fs.h:1907 [inline]
+ do_iter_readv_writev+0x567/0x780 fs/read_write.c:694
+ do_iter_write+0x188/0x5f0 fs/read_write.c:999
+ compat_writev+0x1ea/0x390 fs/read_write.c:1352
+ do_compat_pwritev64+0x180/0x1b0 fs/read_write.c:1401
+ do_syscall_32_irqs_on+0x3f/0x60 arch/x86/entry/common.c:403
+ __do_fast_syscall_32 arch/x86/entry/common.c:448 [inline]
+ do_fast_syscall_32+0x7f/0x120 arch/x86/entry/common.c:474
+ entry_SYSENTER_compat+0x6d/0x7c arch/x86/entry/entry_64_compat.S:138
+RIP: 0023:0xf7f8f569
+Code: Bad RIP value.
+RSP: 002b:00000000ffda5ffc EFLAGS: 00000292 ORIG_RAX: 000000000000014e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000020000440
+RDX: 0000000000000001 RSI: 0000000000000000 RDI: 00000000080bb528
+RBP: 0000000000000012 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task 6806:
+ save_stack+0x1b/0x40 mm/kasan/common.c:48
+ set_track mm/kasan/common.c:56 [inline]
+ __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:494
+ __do_kmalloc mm/slab.c:3656 [inline]
+ __kmalloc+0x17a/0x340 mm/slab.c:3665
+ kmalloc include/linux/slab.h:560 [inline]
+ kzalloc include/linux/slab.h:669 [inline]
+ qrtr_tun_write_iter+0x8a/0x180 net/qrtr/tun.c:83
+ call_write_iter include/linux/fs.h:1907 [inline]
+ do_iter_readv_writev+0x567/0x780 fs/read_write.c:694
+ do_iter_write+0x188/0x5f0 fs/read_write.c:999
+ compat_writev+0x1ea/0x390 fs/read_write.c:1352
+ do_compat_pwritev64+0x180/0x1b0 fs/read_write.c:1401
+ do_syscall_32_irqs_on+0x3f/0x60 arch/x86/entry/common.c:403
+ __do_fast_syscall_32 arch/x86/entry/common.c:448 [inline]
+ do_fast_syscall_32+0x7f/0x120 arch/x86/entry/common.c:474
+ entry_SYSENTER_compat+0x6d/0x7c arch/x86/entry/entry_64_compat.S:138
+
+Freed by task 1:
+ save_stack+0x1b/0x40 mm/kasan/common.c:48
+ set_track mm/kasan/common.c:56 [inline]
+ kasan_set_free_info mm/kasan/common.c:316 [inline]
+ __kasan_slab_free+0xf5/0x140 mm/kasan/common.c:455
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x103/0x2c0 mm/slab.c:3757
+ tomoyo_path_perm+0x234/0x3f0 security/tomoyo/file.c:842
+ security_inode_getattr+0xcf/0x140 security/security.c:1278
+ vfs_getattr fs/stat.c:121 [inline]
+ vfs_statx+0x170/0x390 fs/stat.c:206
+ vfs_lstat include/linux/fs.h:3301 [inline]
+ __do_sys_newlstat+0x91/0x110 fs/stat.c:374
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+The buggy address belongs to the object at ffff88809de50c40
+ which belongs to the cache kmalloc-32 of size 32
+The buggy address is located 8 bytes inside of
+ 32-byte region [ffff88809de50c40, ffff88809de50c60)
+The buggy address belongs to the page:
+page:ffffea0002779400 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88809de50fc1
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea000277e008 ffffea0002761c88 ffff8880aa0001c0
+raw: ffff88809de50fc1 ffff88809de50000 000000010000003f 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88809de50b00: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+ ffff88809de50b80: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+>ffff88809de50c00: fb fb fb fb fc fc fc fc 04 fc fc fc fc fc fc fc
+                                              ^
+ ffff88809de50c80: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+ ffff88809de50d00: fb fb fb fb fc fc fc fc 00 01 fc fc fc fc fc fc
+==================================================================
+
