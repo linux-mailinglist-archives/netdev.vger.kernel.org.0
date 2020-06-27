@@ -2,93 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17C0420BD8F
-	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 03:27:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DB4520BD94
+	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 03:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726410AbgF0B1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Jun 2020 21:27:01 -0400
-Received: from smtprelay0248.hostedemail.com ([216.40.44.248]:60636 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726101AbgF0B1A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Jun 2020 21:27:00 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id D6152180A7FE6;
-        Sat, 27 Jun 2020 01:26:59 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 10,1,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2716:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3871:3872:3873:4250:4321:5007:6119:6742:7903:10004:10400:10848:10967:11026:11232:11473:11658:11914:12043:12296:12297:12438:12679:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21627:21990:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: soup87_3502c0226e5a
-X-Filterd-Recvd-Size: 2709
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf08.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 27 Jun 2020 01:26:57 +0000 (UTC)
-Message-ID: <552ee6083623bb7fe5e11f33cff654deed8e0982.camel@perches.com>
-Subject: Re: [net-next v3 11/15] iecm: Add splitq TX/RX
-From:   Joe Perches <joe@perches.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, Alice Michael <alice.michael@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Alan Brady <alan.brady@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Joshua Hay <joshua.a.hay@intel.com>,
-        Madhu Chittim <madhu.chittim@intel.com>,
-        Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
-        Donald Skidmore <donald.c.skidmore@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>
-Date:   Fri, 26 Jun 2020 18:26:56 -0700
-In-Reply-To: <20200626125806.0b1831a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
-         <20200626020737.775377-12-jeffrey.t.kirsher@intel.com>
-         <20200626125806.0b1831a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.2-0ubuntu1 
+        id S1726515AbgF0BaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Jun 2020 21:30:21 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:2550 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726101AbgF0BaU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Jun 2020 21:30:20 -0400
+Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.54])
+        by Forcepoint Email with ESMTP id 41F4623B295038994A6A;
+        Sat, 27 Jun 2020 09:30:15 +0800 (CST)
+Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
+ DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Sat, 27 Jun 2020 09:30:14 +0800
+Received: from [10.174.61.242] (10.174.61.242) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Sat, 27 Jun 2020 09:30:14 +0800
+Subject: Re: [PATCH net-next v2 1/5] hinic: add support to set and get pause
+ params
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
+References: <20200623142409.19081-1-luobin9@huawei.com>
+ <20200623142409.19081-2-luobin9@huawei.com>
+ <20200623145421.163d22fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "luobin (L)" <luobin9@huawei.com>
+Message-ID: <65424d07-7e87-5f1a-f82b-2badbf47b38c@huawei.com>
+Date:   Sat, 27 Jun 2020 09:30:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
+In-Reply-To: <20200623145421.163d22fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.61.242]
+X-ClientProxiedBy: dggeme709-chm.china.huawei.com (10.1.199.105) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-06-26 at 12:58 -0700, Jakub Kicinski wrote:
-> On Thu, 25 Jun 2020 19:07:33 -0700 Jeff Kirsher wrote:
-> > @@ -1315,7 +1489,18 @@ iecm_tx_splitq_clean(struct iecm_queue *tx_q, u16 end, int napi_budget,
-> >   */
-> >  static inline void iecm_tx_hw_tstamp(struct sk_buff *skb, u8 *desc_ts)
+On 2020/6/24 5:54, Jakub Kicinski wrote:
+> On Tue, 23 Jun 2020 22:24:05 +0800 Luo bin wrote:
+>> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+>> index e9e6f4c9309a..e69edb01fd9b 100644
+>> --- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
+>> +++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+>> @@ -467,6 +467,7 @@ int hinic_open(struct net_device *netdev)
+>>  	if (ret)
+>>  		netif_warn(nic_dev, drv, netdev,
+>>  			   "Failed to revert port state\n");
+>> +
 > 
-> Pretty sure you don't need the inline here. It's static function with
-> one caller.
+> Unrelated chunk, please drop.
 > 
-> >  {
-> > -	/* stub */
-> > +	struct skb_shared_hwtstamps hwtstamps;
-> > +	u64 tstamp;
-> > +
-> > +	/* Only report timestamp to stack if requested */
-> > +	if (!likely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
-> > +		return;
-
-Is this supposed to be unlikely?
-
-> > +	tstamp = (desc_ts[0] | (desc_ts[1] << 8) | (desc_ts[2] & 0x3F) << 16);
-
-btw: there are inconsistent parentheses for the ORs vs shifts here.
-
-I think this might read better as
-
-	tstamp = desc_ts[0] | (desc_ts[1] << 8) | ((desc_ts[2] & 0x3F) << 16);
-
-This is a u64 result, but the ORs are int
-
-23 bits of timestamp isn't very many at 100Gb.
-
-> > +	hwtstamps.hwtstamp =
-> > +		ns_to_ktime(tstamp << IECM_TW_TIME_STAMP_GRAN_512_DIV_S);
-> > +
-> > +	skb_tstamp_tx(skb, &hwtstamps);
-> >  }
+Will undo this.Thanks.
+>>  err_port_state:
+>>  	free_rxqs(nic_dev);
+>>  	if (nic_dev->flags & HINIC_RSS_ENABLE) {
+>> @@ -887,6 +888,26 @@ static void netdev_features_init(struct net_device *netdev)
+>>  	netdev->features = netdev->hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
+>>  }
+>>  
+>> +static void hinic_refresh_nic_cfg(struct hinic_dev *nic_dev)
+>> +{
+>> +	struct hinic_nic_cfg *nic_cfg = &nic_dev->hwdev->func_to_io.nic_cfg;
+>> +	struct hinic_pause_config pause_info = {0};
+>> +	struct hinic_port_cap port_cap = {0};
+>> +
+>> +	if (hinic_port_get_cap(nic_dev, &port_cap))
+>> +		return;
+>> +
+>> +	mutex_lock(&nic_cfg->cfg_mutex);
+>> +	if (nic_cfg->pause_set || !port_cap.autoneg_state) {
+>> +		nic_cfg->auto_neg = port_cap.autoneg_state;
+>> +		pause_info.auto_neg = nic_cfg->auto_neg;
+>> +		pause_info.rx_pause = nic_cfg->rx_pause;
+>> +		pause_info.tx_pause = nic_cfg->tx_pause;
+>> +		hinic_set_hw_pause_info(nic_dev->hwdev, &pause_info);
+>> +	}
+>> +	mutex_unlock(&nic_cfg->cfg_mutex);
+>> +}
+>> +
+>>  /**
+>>   * link_status_event_handler - link event handler
+>>   * @handle: nic device for the handler
+>> @@ -918,6 +939,9 @@ static void link_status_event_handler(void *handle, void *buf_in, u16 in_size,
+>>  
+>>  		up(&nic_dev->mgmt_lock);
+>>  
+>> +		if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
+>> +			hinic_refresh_nic_cfg(nic_dev);
+>> +
+>>  		netif_info(nic_dev, drv, nic_dev->netdev, "HINIC_Link is UP\n");
+>>  	} else {
+>>  		down(&nic_dev->mgmt_lock);
+>> @@ -950,26 +974,38 @@ static int set_features(struct hinic_dev *nic_dev,
+>>  	u32 csum_en = HINIC_RX_CSUM_OFFLOAD_EN;
+>>  	int err = 0;
+>>  
+>> -	if (changed & NETIF_F_TSO)
+>> +	if (changed & NETIF_F_TSO) {
+>>  		err = hinic_port_set_tso(nic_dev, (features & NETIF_F_TSO) ?
+>>  					 HINIC_TSO_ENABLE : HINIC_TSO_DISABLE);
+>> +		if (err)
+>> +			return err;
+>> +	}
+>>  
+>> -	if (changed & NETIF_F_RXCSUM)
+>> +	if (changed & NETIF_F_RXCSUM) {
+>>  		err = hinic_set_rx_csum_offload(nic_dev, csum_en);
+>> +		if (err)
+>> +			return err;
+>> +	}
+>>  
+>>  	if (changed & NETIF_F_LRO) {
+>>  		err = hinic_set_rx_lro_state(nic_dev,
+>>  					     !!(features & NETIF_F_LRO),
+>>  					     HINIC_LRO_RX_TIMER_DEFAULT,
+>>  					     HINIC_LRO_MAX_WQE_NUM_DEFAULT);
+>> +		if (err)
+>> +			return err;
+>>  	}
+>>  
+>> -	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
+>> +	if (changed & NETIF_F_HW_VLAN_CTAG_RX) {
+>>  		err = hinic_set_rx_vlan_offload(nic_dev,
+>>  						!!(features &
+>>  						   NETIF_F_HW_VLAN_CTAG_RX));
+>> +		if (err)
+>> +			return err;
+>> +	}
 > 
-> Why is there time stamp reading support if you have no ts_info
-> configuration on ethtool side at all and no PHC support?
+> I missed this on v1, but this looks broken, multiple features may be
+> changed at the same time. If user requests RXCSUM and LRO to be changed
+> and LRO change fails the RXCSUM will be left in a different state than
+> dev->features indicates.
+>  
+You're right. Will fix. Thank you.
+>> -	return err;
+>> +	/* enable pause and disable pfc by default */
+>> +	return hinic_dcb_set_pfc(nic_dev->hwdev, 0, 0);
+> 
+> Why do you disable PFC every time features are changed?
+>
+It can be optimized. Thanks.
 
+>> +int hinic_dcb_set_pfc(struct hinic_hwdev *hwdev, u8 pfc_en, u8 pfc_bitmap)
+> 
+> This is only ever called with 0, 0 as parameters.
+> .
+> 
+This function will be called with other parameters before long to support DCB.
+So I intend not to modify it.
