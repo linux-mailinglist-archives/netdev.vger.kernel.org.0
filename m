@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36F1C20C43E
+	by mail.lfdr.de (Postfix) with ESMTP id ECDBE20C43F
 	for <lists+netdev@lfdr.de>; Sat, 27 Jun 2020 23:18:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726316AbgF0VSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Jun 2020 17:18:46 -0400
+        id S1726449AbgF0VSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Jun 2020 17:18:51 -0400
 Received: from mail-eopbgr60076.outbound.protection.outlook.com ([40.107.6.76]:16519
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725912AbgF0VSq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 27 Jun 2020 17:18:46 -0400
+        id S1725907AbgF0VSt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Jun 2020 17:18:49 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AspD5riCKMJFyJ5Z4CkDMADxDKhy1rD30f+ngFjMIboI+eCj40jpk0+JC6AIla3AYkwAtD1Nmc8fptk7zD/iVnm27rumDOC7R7D2rSdOZ9sbnETJtfNzH/iqoyopxk/bs52I1eWSomENLSJs+UnHVB0bcIhAUFb6di++y5Da2KXGpGHMzRmJHdW94yERvPEB+z5RHoYiXexuxrtQkGzIBsaSwFwyUrEGOcv6Pnq5exiQ2YTZaZgA8w9bCrbin6M7elVAoFKbXpSONvw0kqJHjtLkyt6wMb82EHRT+GbVB+uXZEEK18L01pYLMa8XQoPQTq0jLNB2UbagsefxDypHcg==
+ b=Fo3v8kBB0BnGl3i8gjg9ajhBfbh90uJu6ffVZa2YlWYlUF693tG1JIwXr4LaGMhWgrWVoYmwEDCxJYu6A8NpxhUbOfSOGq7/nmsK1/JKq/YBngOqILhMAGO/wm9B86CWD2GOVYF0R6rAQxqx9vb8OCuN6yUMZ5Vnn5R/jrYYH8cIV/IkhBpPR5cqjPAZ2DYUheTMlYP2rTnENDRUTTpmQ2F8ZvYDeg4oIPjf9RJe6TbtHDRuz72EuZPdLFx9waVALjOh4MztoaY7uI0aJg7ArmcEcVYE9yvNWIEj+0jFEP2BxzXpwf2zuKHLfR1I8LdMFF/aLSTtxtQx2kUcZsQbRw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CgYhxh/c2KLaU7FwXqTLT6T3GOfNhEpIgRin46BOajU=;
- b=TXHQC6oe88+VIM8gTLouWKH2I12qG3n1tTt5YKlA2YMDOSQgXQZtVC3JxIJm7JLvR73rGmeyAnmfzxfYVT2C/4tkx9XTnk8gXFCFMp3o8M6pRh2lZcqc32remw66esqqiCOB3+2Ul3upmkge9pLpibQMX/ob/xrTD5ETybdO95xQ2DFmMRlKPOChxlNa2Cfe/Z2dl3WQqSdPERPU6fI29H/hS5kJ0DDB4DlcQNzQ6e4APa++nSFyPON7dzSpZzH19oVDMpnUqIqv5xK0gOsseBgAzdx0hvPHmiVqh8tsegwOe8kdqs5Avnwpe8MGm8R6HW4mPAYms7BhB3vBMz/lGw==
+ bh=YcTKo9GB/DW4Frmyq26xfVP4s5H3QDZUecc8m679fYk=;
+ b=LnKFj05jSK80llnTmloGChOnHOAoeVcUyeKcT+GHy388akjtygvz4sT0WXpWjIU0qUw3rJ1Pqo1j08CjgcEgGPVMsFtovIAjO4C6AU0dNnxJUq6ZpI+asTfF5oJ4hxwxRVE4CO1c6FZxUNp0g0rqTDqEYFh7BGO1bEsQxbmqQhkoCvcdc7Yh/ORfnkHi8ZrXej7O38N196QkcVBXkdI+Eaxi9Hkct3BrPYbjHIa0ZeY1S4EUo7kP9/NaK97Oom1ZDQK6HLNhl2qzsKgDmz8b5w3tVcG28OKWY0opyisLx++g80v0W0tB1TPyGkwqFVeN9QZGo3J1Efgv8uS/LJXung==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CgYhxh/c2KLaU7FwXqTLT6T3GOfNhEpIgRin46BOajU=;
- b=fIMxU/WouPZKloVy99g6dQY/QxN15sz/2i1MgHU6DGhpEqjblJu4/IGORYCBlj8lDgR0D0VKBGOQiwwzbay4Vc8EzYrJzJSTfxtT+bsk7qagv6CX62u78fDNoafJ5ZP3JyX+wvUerAvhauFE8uiGIyA0F1cVJnWGV9tgUBJ/S/U=
+ bh=YcTKo9GB/DW4Frmyq26xfVP4s5H3QDZUecc8m679fYk=;
+ b=UNM+fr7CbTRQnOpsd4cCN4rG+zLiLKVGd+ElAL6FEjNhKef33E7v8ZfVJh9n2pPPN/Q86jkJaaQztugf1gqoQ8qolYC+lulpmC2e6DYZjKZCwT08Dux3/2nI0oHlKol3Jy1/bg2VyWajTv68xL4iPqRPV56k0kgx2tau5vdT1fU=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB5134.eurprd05.prod.outlook.com (2603:10a6:803:ad::28) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Sat, 27 Jun
- 2020 21:18:37 +0000
+ 2020 21:18:39 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3131.026; Sat, 27 Jun 2020
- 21:18:37 +0000
+ 21:18:39 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@mellanox.com>,
         Maxim Mikityanskiy <maximmi@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 01/15] net/mlx5e: Turn XSK ICOSQ into a general asynchronous one
-Date:   Sat, 27 Jun 2020 14:17:13 -0700
-Message-Id: <20200627211727.259569-2-saeedm@mellanox.com>
+Subject: [net-next 02/15] net/mlx5e: Refactor build channel params
+Date:   Sat, 27 Jun 2020 14:17:14 -0700
+Message-Id: <20200627211727.259569-3-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200627211727.259569-1-saeedm@mellanox.com>
 References: <20200627211727.259569-1-saeedm@mellanox.com>
@@ -56,32 +56,32 @@ X-ClientProxiedBy: BY5PR03CA0017.namprd03.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR03CA0017.namprd03.prod.outlook.com (2603:10b6:a03:1e0::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21 via Frontend Transport; Sat, 27 Jun 2020 21:18:35 +0000
+Received: from smtp.office365.com (73.15.39.150) by BY5PR03CA0017.namprd03.prod.outlook.com (2603:10b6:a03:1e0::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21 via Frontend Transport; Sat, 27 Jun 2020 21:18:37 +0000
 X-Mailer: git-send-email 2.26.2
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: fe28a2c7-ece3-418d-42ab-08d81adfa7f0
+X-MS-Office365-Filtering-Correlation-Id: 927642dc-6938-42e9-dd1a-08d81adfa957
 X-MS-TrafficTypeDiagnostic: VI1PR05MB5134:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB51347467F596DAB5E97285D5BE900@VI1PR05MB5134.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB5134AE66A4F5335BE4D30B85BE900@VI1PR05MB5134.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
 X-Forefront-PRVS: 0447DB1C71
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7QojwTwuhY6W72P0+COgLFfW+Z7AEDQ07f/54LDfwbCwcqxNQDxmE0xrh903YM0tPx+4+uQxU/TqSUud+dR/gDIkGtk1npiJZkXFAByUNc+oxSfro1KGf3gapaeIxiAeozHGVOBGR73IGO/LLvI/Ll3EmxZLVoIpUxwklsT8KtLMBq1eWwJkV6WTncjfAW23wLkNBYfDGbmTmyrjSQXF9ukrNQIDgboMPS+z3nG7cPyDE2WtofP2BQ9zs/WH8lbrRiK9rgV31+PQY3T8+GVWJ8J8bLJhaO7WD9le4Cqzlv7BADXKLjPzv7p8nsmBaF6OsqrhrQM0fpFpnKpa8bFRJ52YpHkVHWpDkN6oiB4oF/yau3VBQ3ELEYkSPGZlTneW
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(136003)(39850400004)(346002)(396003)(66476007)(107886003)(54906003)(478600001)(30864003)(4326008)(316002)(6512007)(16526019)(6506007)(2616005)(1076003)(6486002)(956004)(6666004)(66556008)(8936002)(52116002)(86362001)(36756003)(5660300002)(66946007)(26005)(8676002)(83380400001)(2906002)(186003)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: t6vwFmESaS2OviTeYrdI//JN++A15SGkMzS7cBcVkpLOM2L7eSd4GGcXC7TQ9JPlSrgIvgWMz8scb2fMuh89OhWRKKBJGXyduc6rv0RxP9RiZB9nPccxH+r9VJLZZusu3o5oHIrON126sniMJfCF2toB6Vl8+ilj75tmDrwLAHaTkfkzS0Rbf/duePPM1YGgEJEgQfx7JGLzFwcAp9a3hndD6ckyrySGuk83UfdA6hFUssM+P/CvWmbqWUiLdzSpmB2+a2WJGxdFDJHQbVs92iDqsExtImeGvPZM9OaroPze+vNC4L3DadxqhBAfovezCb7+FMyVTOGVvRDG6C6TDi9dQSy9pa1s8pr6zGNB1snpAJ6wefxYoRGskPwencYEdZ5L1unXAZApFNGqNDoTaXSiOPSc3+ufa2pUAAN8HT3BJlEDKeY+c5tCTr8AqYVKJ/Su1sG2MPnt8Gd1L/7R80pHKasqwp2LdYtfNR7JJrg=
+X-Microsoft-Antispam-Message-Info: kAVfQF0CCILXpJrAqoKok8f1agjQ0a3nINjY+6o7DOh70K3+wJqzYWudiPnBDtIC0niXkZmx3pIl3xJn+TPs04JcM8uh6q3USOuOw7/InNOtTTH7o4ePmYIhSylBkKx3r2WtZbhqJtn7IZDHOttQf+wCBbmE080bM8/gGycI04udoIDBGxVRj+RLAw5WASOU3kzEmC7c7P1UDbjfUofEFRG8AJ6f/kt24W/ikcGpRehZCt8gRmRvt2xd3DQauIE1m1NudkgB6CzsVOL4/18tZDPGohdQUMU2Z9x+dVNjMAHOI6bOevkd5e50rgG5ioC5w7Pu7SBmMLvxJ8VBXxGZZs2UVkSc4+In/RORDy0l+f03JrIx8N57YcNPm8YC5XKQ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(136003)(39850400004)(346002)(396003)(66476007)(107886003)(54906003)(478600001)(4326008)(316002)(6512007)(16526019)(6506007)(2616005)(1076003)(6486002)(956004)(6666004)(66556008)(8936002)(52116002)(86362001)(36756003)(5660300002)(66946007)(26005)(8676002)(83380400001)(2906002)(186003)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 5U5VBsi/ryGxA/Z5w4IeVvRTsGZvwB1qAVCkKkevwXleKRcp9yN6wNXPn0qHstuc3Kq4hOzHiq7ZY3pv5132Vmq8J5i471Go6yucOLWq+ODrzPYTjy5/8YyPOMkYOY4tnj6SrWhO/auUoMfkOohA1WPGAItUjNPM6ktZENmw70W/8cNOHgPBderqEnWMAWERDxIIRdOlWjjizqzb7khkWIPn6zEEtG9eiOghFd6bxkLyyaolhCtR12mkoT5hLFsC8d4RsUvJDcc6tI73iyMTwPGVU6eK1VpLDJBmJ4mjPATaa0yyvpNQzCoaITSPlF1l74xzD2dXCeuWQseawYj8yOXfpQhZ+DgNns/PGumqy8R+hks+CtU3vtATccEhtMvE+pWIdfZgwmPettH5OynYO3uspjU9CQ4PNQ/VzxYMQj0gdOnWcKj96MRtD5SujmBsV1cM8UMSVCXEbiPlUMZpqfPIzjIcD/5dz/twzWQy62w=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe28a2c7-ece3-418d-42ab-08d81adfa7f0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 927642dc-6938-42e9-dd1a-08d81adfa957
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2020 21:18:37.2554
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jun 2020 21:18:39.6031
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lYXucCAJv3XY6LlLrMTPn2u6CIrlluA7Vdg5ele+khCdhFdijo67PvDcmKN/EmPs5+JxQfzYqud76JpwgOVfEg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: H+oOOwpjBJykLOgjuV2b17OIgjMxMkW9w3wDsED8Lz5wH4aa9pV9k9VyKEG7SFuzydfX0c3osTQQwXRt2321Ew==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5134
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -90,319 +90,220 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tariq Toukan <tariqt@mellanox.com>
 
-There is an upcoming demand (in downstream patches) for
-an ICOSQ to be populated out of the NAPI context, asynchronously.
-
-There is already an existing one serving XSK-related use case.
-In this patch, promote this ICOSQ to serve as general async ICOSQ,
-to be used for XSK and non-XSK flows.
-
-As part of this, the reg_umr bit of the SQ context is now set
-(if capable), as the general async ICOSQ should support possible
-posts of UMR WQEs.
+Take the CQ params into their respective RQ/SQ params.
+Split the params build of the different ICOSQs (sync and async),
+as they require different init values.
 
 Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
 Reviewed-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  8 ++--
- .../mellanox/mlx5/core/en/xsk/setup.c         | 47 ++-----------------
- .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   | 12 ++---
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 24 +++++++++-
- .../net/ethernet/mellanox/mlx5/core/en_txrx.c | 12 ++---
- 5 files changed, 42 insertions(+), 61 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en/params.h   | 22 +++++++-------
+ .../mellanox/mlx5/core/en/xsk/setup.c         |  6 ++--
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 30 ++++++++++---------
+ 3 files changed, 29 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 842db20493df..29265ca6050c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -651,9 +651,11 @@ struct mlx5e_channel {
- 	/* AF_XDP zero-copy */
- 	struct mlx5e_rq            xskrq;
- 	struct mlx5e_xdpsq         xsksq;
--	struct mlx5e_icosq         xskicosq;
--	/* xskicosq can be accessed from any CPU - the spinlock protects it. */
--	spinlock_t                 xskicosq_lock;
-+
-+	/* Async ICOSQ */
-+	struct mlx5e_icosq         async_icosq;
-+	/* async_icosq can be accessed from any CPU - the spinlock protects it. */
-+	spinlock_t                 async_icosq_lock;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+index 989d8f429438..a87273e801b2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
+@@ -11,33 +11,33 @@ struct mlx5e_xsk_param {
+ 	u16 chunk_size;
+ };
  
- 	/* data path - accessed per napi poll */
- 	struct irq_desc *irq_desc;
++struct mlx5e_cq_param {
++	u32                        cqc[MLX5_ST_SZ_DW(cqc)];
++	struct mlx5_wq_param       wq;
++	u16                        eq_ix;
++	u8                         cq_period_mode;
++};
++
+ struct mlx5e_rq_param {
++	struct mlx5e_cq_param      cqp;
+ 	u32                        rqc[MLX5_ST_SZ_DW(rqc)];
+ 	struct mlx5_wq_param       wq;
+ 	struct mlx5e_rq_frags_info frags_info;
+ };
+ 
+ struct mlx5e_sq_param {
++	struct mlx5e_cq_param      cqp;
+ 	u32                        sqc[MLX5_ST_SZ_DW(sqc)];
+ 	struct mlx5_wq_param       wq;
+ 	bool                       is_mpw;
+ };
+ 
+-struct mlx5e_cq_param {
+-	u32                        cqc[MLX5_ST_SZ_DW(cqc)];
+-	struct mlx5_wq_param       wq;
+-	u16                        eq_ix;
+-	u8                         cq_period_mode;
+-};
+-
+ struct mlx5e_channel_param {
+ 	struct mlx5e_rq_param      rq;
+-	struct mlx5e_sq_param      sq;
++	struct mlx5e_sq_param      txq_sq;
+ 	struct mlx5e_sq_param      xdp_sq;
+ 	struct mlx5e_sq_param      icosq;
+-	struct mlx5e_cq_param      rx_cq;
+-	struct mlx5e_cq_param      tx_cq;
+-	struct mlx5e_cq_param      icosq_cq;
++	struct mlx5e_sq_param      async_icosq;
+ };
+ 
+ static inline bool mlx5e_qid_get_ch_if_in_group(struct mlx5e_params *params,
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-index 2c80205dc939..1eb817e62830 100644
+index 1eb817e62830..cc46414773b5 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-@@ -34,31 +34,15 @@ bool mlx5e_validate_xsk_param(struct mlx5e_params *params,
- 	}
- }
- 
--static void mlx5e_build_xskicosq_param(struct mlx5e_priv *priv,
--				       u8 log_wq_size,
--				       struct mlx5e_sq_param *param)
--{
--	void *sqc = param->sqc;
--	void *wq = MLX5_ADDR_OF(sqc, sqc, wq);
--
--	mlx5e_build_sq_param_common(priv, param);
--
--	MLX5_SET(wq, wq, log_wq_sz, log_wq_size);
--}
--
- static void mlx5e_build_xsk_cparam(struct mlx5e_priv *priv,
- 				   struct mlx5e_params *params,
- 				   struct mlx5e_xsk_param *xsk,
- 				   struct mlx5e_channel_param *cparam)
+@@ -41,8 +41,6 @@ static void mlx5e_build_xsk_cparam(struct mlx5e_priv *priv,
  {
--	const u8 xskicosq_size = MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE;
--
  	mlx5e_build_rq_param(priv, params, xsk, &cparam->rq);
  	mlx5e_build_xdpsq_param(priv, params, &cparam->xdp_sq);
--	mlx5e_build_xskicosq_param(priv, xskicosq_size, &cparam->icosq);
- 	mlx5e_build_rx_cq_param(priv, params, xsk, &cparam->rx_cq);
- 	mlx5e_build_tx_cq_param(priv, params, &cparam->tx_cq);
--	mlx5e_build_ico_cq_param(priv, xskicosq_size, &cparam->icosq_cq);
+-	mlx5e_build_rx_cq_param(priv, params, xsk, &cparam->rx_cq);
+-	mlx5e_build_tx_cq_param(priv, params, &cparam->tx_cq);
  }
  
  int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
-@@ -66,7 +50,6 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
- 		   struct mlx5e_channel *c)
- {
- 	struct mlx5e_channel_param *cparam;
--	struct dim_cq_moder icocq_moder = {};
- 	int err;
+@@ -61,7 +59,7 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
  
- 	if (!mlx5e_validate_xsk_param(params, xsk, priv->mdev))
-@@ -100,31 +83,12 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ 	mlx5e_build_xsk_cparam(priv, params, xsk, cparam);
+ 
+-	err = mlx5e_open_cq(c, params->rx_cq_moderation, &cparam->rx_cq, &c->xskrq.cq);
++	err = mlx5e_open_cq(c, params->rx_cq_moderation, &cparam->rq.cqp, &c->xskrq.cq);
  	if (unlikely(err))
- 		goto err_close_tx_cq;
+ 		goto err_free_cparam;
  
--	err = mlx5e_open_cq(c, icocq_moder, &cparam->icosq_cq, &c->xskicosq.cq);
--	if (unlikely(err))
--		goto err_close_sq;
--
--	/* Create a dedicated SQ for posting NOPs whenever we need an IRQ to be
--	 * triggered and NAPI to be called on the correct CPU.
--	 */
--	err = mlx5e_open_icosq(c, params, &cparam->icosq, &c->xskicosq);
--	if (unlikely(err))
--		goto err_close_icocq;
--
- 	kvfree(cparam);
+@@ -69,7 +67,7 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ 	if (unlikely(err))
+ 		goto err_close_rx_cq;
  
--	spin_lock_init(&c->xskicosq_lock);
--
- 	set_bit(MLX5E_CHANNEL_STATE_XSK, c->state);
+-	err = mlx5e_open_cq(c, params->tx_cq_moderation, &cparam->tx_cq, &c->xsksq.cq);
++	err = mlx5e_open_cq(c, params->tx_cq_moderation, &cparam->xdp_sq.cqp, &c->xsksq.cq);
+ 	if (unlikely(err))
+ 		goto err_close_rq;
  
- 	return 0;
- 
--err_close_icocq:
--	mlx5e_close_cq(&c->xskicosq.cq);
--
--err_close_sq:
--	mlx5e_close_xdpsq(&c->xsksq);
--
- err_close_tx_cq:
- 	mlx5e_close_cq(&c->xsksq.cq);
- 
-@@ -148,32 +112,27 @@ void mlx5e_close_xsk(struct mlx5e_channel *c)
- 
- 	mlx5e_close_rq(&c->xskrq);
- 	mlx5e_close_cq(&c->xskrq.cq);
--	mlx5e_close_icosq(&c->xskicosq);
--	mlx5e_close_cq(&c->xskicosq.cq);
- 	mlx5e_close_xdpsq(&c->xsksq);
- 	mlx5e_close_cq(&c->xsksq.cq);
- 
- 	memset(&c->xskrq, 0, sizeof(c->xskrq));
- 	memset(&c->xsksq, 0, sizeof(c->xsksq));
--	memset(&c->xskicosq, 0, sizeof(c->xskicosq));
- }
- 
- void mlx5e_activate_xsk(struct mlx5e_channel *c)
- {
--	mlx5e_activate_icosq(&c->xskicosq);
- 	set_bit(MLX5E_RQ_STATE_ENABLED, &c->xskrq.state);
- 	/* TX queue is created active. */
- 
--	spin_lock(&c->xskicosq_lock);
--	mlx5e_trigger_irq(&c->xskicosq);
--	spin_unlock(&c->xskicosq_lock);
-+	spin_lock(&c->async_icosq_lock);
-+	mlx5e_trigger_irq(&c->async_icosq);
-+	spin_unlock(&c->async_icosq_lock);
- }
- 
- void mlx5e_deactivate_xsk(struct mlx5e_channel *c)
- {
- 	mlx5e_deactivate_rq(&c->xskrq);
- 	/* TX queue is disabled on close. */
--	mlx5e_deactivate_icosq(&c->xskicosq);
- }
- 
- static int mlx5e_redirect_xsk_rqt(struct mlx5e_priv *priv, u16 ix, u32 rqn)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-index 83dce9cdb8c2..e0b3c61af93e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-@@ -26,19 +26,19 @@ int mlx5e_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags)
- 		return -ENXIO;
- 
- 	if (!napi_if_scheduled_mark_missed(&c->napi)) {
--		/* To avoid WQE overrun, don't post a NOP if XSKICOSQ is not
-+		/* To avoid WQE overrun, don't post a NOP if async_icosq is not
- 		 * active and not polled by NAPI. Return 0, because the upcoming
- 		 * activate will trigger the IRQ for us.
- 		 */
--		if (unlikely(!test_bit(MLX5E_SQ_STATE_ENABLED, &c->xskicosq.state)))
-+		if (unlikely(!test_bit(MLX5E_SQ_STATE_ENABLED, &c->async_icosq.state)))
- 			return 0;
- 
--		if (test_and_set_bit(MLX5E_SQ_STATE_PENDING_XSK_TX, &c->xskicosq.state))
-+		if (test_and_set_bit(MLX5E_SQ_STATE_PENDING_XSK_TX, &c->async_icosq.state))
- 			return 0;
- 
--		spin_lock(&c->xskicosq_lock);
--		mlx5e_trigger_irq(&c->xskicosq);
--		spin_unlock(&c->xskicosq_lock);
-+		spin_lock(&c->async_icosq_lock);
-+		mlx5e_trigger_irq(&c->async_icosq);
-+		spin_unlock(&c->async_icosq_lock);
- 	}
- 
- 	return 0;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index a836a02a2116..72ce5808d583 100644
+index 72ce5808d583..11997c23dfb5 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -1817,10 +1817,14 @@ static int mlx5e_open_queues(struct mlx5e_channel *c,
+@@ -1675,7 +1675,7 @@ static int mlx5e_open_tx_cqs(struct mlx5e_channel *c,
+ 
+ 	for (tc = 0; tc < c->num_tc; tc++) {
+ 		err = mlx5e_open_cq(c, params->tx_cq_moderation,
+-				    &cparam->tx_cq, &c->sq[tc].cq);
++				    &cparam->txq_sq.cqp, &c->sq[tc].cq);
+ 		if (err)
+ 			goto err_close_tx_cqs;
+ 	}
+@@ -1707,7 +1707,7 @@ static int mlx5e_open_sqs(struct mlx5e_channel *c,
+ 		int txq_ix = c->ix + tc * params->num_channels;
+ 
+ 		err = mlx5e_open_txqsq(c, c->priv->tisn[c->lag_port][tc], txq_ix,
+-				       params, &cparam->sq, &c->sq[tc], tc);
++				       params, &cparam->txq_sq, &c->sq[tc], tc);
+ 		if (err)
+ 			goto err_close_sqs;
+ 	}
+@@ -1817,11 +1817,11 @@ static int mlx5e_open_queues(struct mlx5e_channel *c,
  	struct dim_cq_moder icocq_moder = {0, 0};
  	int err;
  
--	err = mlx5e_open_cq(c, icocq_moder, &cparam->icosq_cq, &c->icosq.cq);
-+	err = mlx5e_open_cq(c, icocq_moder, &cparam->icosq_cq, &c->async_icosq.cq);
+-	err = mlx5e_open_cq(c, icocq_moder, &cparam->icosq_cq, &c->async_icosq.cq);
++	err = mlx5e_open_cq(c, icocq_moder, &cparam->icosq.cqp, &c->async_icosq.cq);
  	if (err)
  		return err;
  
-+	err = mlx5e_open_cq(c, icocq_moder, &cparam->icosq_cq, &c->icosq.cq);
-+	if (err)
-+		goto err_close_async_icosq_cq;
-+
- 	err = mlx5e_open_tx_cqs(c, params, cparam);
+-	err = mlx5e_open_cq(c, icocq_moder, &cparam->icosq_cq, &c->icosq.cq);
++	err = mlx5e_open_cq(c, icocq_moder, &cparam->async_icosq.cqp, &c->icosq.cq);
+ 	if (err)
+ 		goto err_close_async_icosq_cq;
+ 
+@@ -1829,17 +1829,16 @@ static int mlx5e_open_queues(struct mlx5e_channel *c,
  	if (err)
  		goto err_close_icosq_cq;
-@@ -1841,10 +1845,16 @@ static int mlx5e_open_queues(struct mlx5e_channel *c,
  
- 	napi_enable(&c->napi);
+-	err = mlx5e_open_cq(c, params->tx_cq_moderation, &cparam->tx_cq, &c->xdpsq.cq);
++	err = mlx5e_open_cq(c, params->tx_cq_moderation, &cparam->xdp_sq.cqp, &c->xdpsq.cq);
+ 	if (err)
+ 		goto err_close_tx_cqs;
  
--	err = mlx5e_open_icosq(c, params, &cparam->icosq, &c->icosq);
-+	spin_lock_init(&c->async_icosq_lock);
-+
-+	err = mlx5e_open_icosq(c, params, &cparam->icosq, &c->async_icosq);
+-	err = mlx5e_open_cq(c, params->rx_cq_moderation, &cparam->rx_cq, &c->rq.cq);
++	err = mlx5e_open_cq(c, params->rx_cq_moderation, &cparam->rq.cqp, &c->rq.cq);
+ 	if (err)
+ 		goto err_close_xdp_tx_cqs;
+ 
+-	/* XDP SQ CQ params are same as normal TXQ sq CQ params */
+ 	err = c->xdp ? mlx5e_open_cq(c, params->tx_cq_moderation,
+-				     &cparam->tx_cq, &c->rq_xdpsq.cq) : 0;
++				     &cparam->xdp_sq.cqp, &c->rq_xdpsq.cq) : 0;
+ 	if (err)
+ 		goto err_close_rx_cq;
+ 
+@@ -1847,7 +1846,7 @@ static int mlx5e_open_queues(struct mlx5e_channel *c,
+ 
+ 	spin_lock_init(&c->async_icosq_lock);
+ 
+-	err = mlx5e_open_icosq(c, params, &cparam->icosq, &c->async_icosq);
++	err = mlx5e_open_icosq(c, params, &cparam->async_icosq, &c->async_icosq);
  	if (err)
  		goto err_disable_napi;
  
-+	err = mlx5e_open_icosq(c, params, &cparam->icosq, &c->icosq);
-+	if (err)
-+		goto err_close_async_icosq;
-+
- 	err = mlx5e_open_sqs(c, params, cparam);
- 	if (err)
- 		goto err_close_icosq;
-@@ -1879,6 +1889,9 @@ static int mlx5e_open_queues(struct mlx5e_channel *c,
- err_close_icosq:
- 	mlx5e_close_icosq(&c->icosq);
+@@ -2158,6 +2157,7 @@ void mlx5e_build_rq_param(struct mlx5e_priv *priv,
+ 	MLX5_SET(rqc, rqc, scatter_fcs,    params->scatter_fcs_en);
  
-+err_close_async_icosq:
-+	mlx5e_close_icosq(&c->async_icosq);
-+
- err_disable_napi:
- 	napi_disable(&c->napi);
- 
-@@ -1897,6 +1910,9 @@ static int mlx5e_open_queues(struct mlx5e_channel *c,
- err_close_icosq_cq:
- 	mlx5e_close_cq(&c->icosq.cq);
- 
-+err_close_async_icosq_cq:
-+	mlx5e_close_cq(&c->async_icosq.cq);
-+
- 	return err;
+ 	param->wq.buf_numa_node = dev_to_node(mdev->device);
++	mlx5e_build_rx_cq_param(priv, params, xsk, &param->cqp);
  }
  
-@@ -1908,6 +1924,7 @@ static void mlx5e_close_queues(struct mlx5e_channel *c)
- 		mlx5e_close_xdpsq(&c->rq_xdpsq);
- 	mlx5e_close_sqs(c);
- 	mlx5e_close_icosq(&c->icosq);
-+	mlx5e_close_icosq(&c->async_icosq);
- 	napi_disable(&c->napi);
- 	if (c->xdp)
- 		mlx5e_close_cq(&c->rq_xdpsq.cq);
-@@ -1915,6 +1932,7 @@ static void mlx5e_close_queues(struct mlx5e_channel *c)
- 	mlx5e_close_cq(&c->xdpsq.cq);
- 	mlx5e_close_tx_cqs(c);
- 	mlx5e_close_cq(&c->icosq.cq);
-+	mlx5e_close_cq(&c->async_icosq.cq);
+ static void mlx5e_build_drop_rq_param(struct mlx5e_priv *priv,
+@@ -2200,6 +2200,7 @@ static void mlx5e_build_sq_param(struct mlx5e_priv *priv,
+ 	mlx5e_build_sq_param_common(priv, param);
+ 	MLX5_SET(wq, wq, log_wq_sz, params->log_sq_size);
+ 	MLX5_SET(sqc, sqc, allow_swp, allow_swp);
++	mlx5e_build_tx_cq_param(priv, params, &param->cqp);
  }
  
- static u8 mlx5e_enumerate_lag_port(struct mlx5_core_dev *mdev, int ix)
-@@ -1995,6 +2013,7 @@ static void mlx5e_activate_channel(struct mlx5e_channel *c)
- 	for (tc = 0; tc < c->num_tc; tc++)
- 		mlx5e_activate_txqsq(&c->sq[tc]);
- 	mlx5e_activate_icosq(&c->icosq);
-+	mlx5e_activate_icosq(&c->async_icosq);
- 	mlx5e_activate_rq(&c->rq);
+ static void mlx5e_build_common_cq_param(struct mlx5e_priv *priv,
+@@ -2276,6 +2277,7 @@ void mlx5e_build_icosq_param(struct mlx5e_priv *priv,
  
- 	if (test_bit(MLX5E_CHANNEL_STATE_XSK, c->state))
-@@ -2009,6 +2028,7 @@ static void mlx5e_deactivate_channel(struct mlx5e_channel *c)
- 		mlx5e_deactivate_xsk(c);
+ 	MLX5_SET(wq, wq, log_wq_sz, log_wq_size);
+ 	MLX5_SET(sqc, sqc, reg_umr, MLX5_CAP_ETH(priv->mdev, reg_umr_sq));
++	mlx5e_build_ico_cq_param(priv, log_wq_size, &param->cqp);
+ }
  
- 	mlx5e_deactivate_rq(&c->rq);
-+	mlx5e_deactivate_icosq(&c->async_icosq);
- 	mlx5e_deactivate_icosq(&c->icosq);
- 	for (tc = 0; tc < c->num_tc; tc++)
- 		mlx5e_deactivate_txqsq(&c->sq[tc]);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-index 8480278f2ee2..e3dbab2a294c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-@@ -149,17 +149,17 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 	}
+ void mlx5e_build_xdpsq_param(struct mlx5e_priv *priv,
+@@ -2288,6 +2290,7 @@ void mlx5e_build_xdpsq_param(struct mlx5e_priv *priv,
+ 	mlx5e_build_sq_param_common(priv, param);
+ 	MLX5_SET(wq, wq, log_wq_sz, params->log_sq_size);
+ 	param->is_mpw = MLX5E_GET_PFLAG(params, MLX5E_PFLAG_XDP_TX_MPWQE);
++	mlx5e_build_tx_cq_param(priv, params, &param->cqp);
+ }
  
- 	mlx5e_poll_ico_cq(&c->icosq.cq);
-+	if (mlx5e_poll_ico_cq(&c->async_icosq.cq))
-+		/* Don't clear the flag if nothing was polled to prevent
-+		 * queueing more WQEs and overflowing the async ICOSQ.
-+		 */
-+		clear_bit(MLX5E_SQ_STATE_PENDING_XSK_TX, &c->async_icosq.state);
+ static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5e_params *params,
+@@ -2306,18 +2309,17 @@ static void mlx5e_build_channel_param(struct mlx5e_priv *priv,
+ 				      struct mlx5e_params *params,
+ 				      struct mlx5e_channel_param *cparam)
+ {
+-	u8 icosq_log_wq_sz;
++	u8 icosq_log_wq_sz, async_icosq_log_wq_sz;
  
- 	busy |= INDIRECT_CALL_2(rq->post_wqes,
- 				mlx5e_post_rx_mpwqes,
- 				mlx5e_post_rx_wqes,
- 				rq);
- 	if (xsk_open) {
--		if (mlx5e_poll_ico_cq(&c->xskicosq.cq))
--			/* Don't clear the flag if nothing was polled to prevent
--			 * queueing more WQEs and overflowing XSKICOSQ.
--			 */
--			clear_bit(MLX5E_SQ_STATE_PENDING_XSK_TX, &c->xskicosq.state);
- 		busy |= mlx5e_poll_xdpsq_cq(&xsksq->cq);
- 		busy_xsk |= mlx5e_napi_xsk_post(xsksq, xskrq);
- 	}
-@@ -189,11 +189,11 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
+ 	mlx5e_build_rq_param(priv, params, NULL, &cparam->rq);
  
- 	mlx5e_cq_arm(&rq->cq);
- 	mlx5e_cq_arm(&c->icosq.cq);
-+	mlx5e_cq_arm(&c->async_icosq.cq);
- 	mlx5e_cq_arm(&c->xdpsq.cq);
+ 	icosq_log_wq_sz = mlx5e_build_icosq_log_wq_sz(params, &cparam->rq);
++	async_icosq_log_wq_sz = MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE;
  
- 	if (xsk_open) {
- 		mlx5e_handle_rx_dim(xskrq);
--		mlx5e_cq_arm(&c->xskicosq.cq);
- 		mlx5e_cq_arm(&xsksq->cq);
- 		mlx5e_cq_arm(&xskrq->cq);
- 	}
+-	mlx5e_build_sq_param(priv, params, &cparam->sq);
++	mlx5e_build_sq_param(priv, params, &cparam->txq_sq);
+ 	mlx5e_build_xdpsq_param(priv, params, &cparam->xdp_sq);
+ 	mlx5e_build_icosq_param(priv, icosq_log_wq_sz, &cparam->icosq);
+-	mlx5e_build_rx_cq_param(priv, params, NULL, &cparam->rx_cq);
+-	mlx5e_build_tx_cq_param(priv, params, &cparam->tx_cq);
+-	mlx5e_build_ico_cq_param(priv, icosq_log_wq_sz, &cparam->icosq_cq);
++	mlx5e_build_icosq_param(priv, async_icosq_log_wq_sz, &cparam->async_icosq);
+ }
+ 
+ int mlx5e_open_channels(struct mlx5e_priv *priv,
 -- 
 2.26.2
 
