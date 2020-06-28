@@ -2,141 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A098620CA52
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 22:16:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD8A420CA50
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 22:16:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbgF1UQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 16:16:21 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:31207 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726685AbgF1UQV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 16:16:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593375379;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UORC3khSPgkKki06+WolbXfIYGTlBXEi1rqLOGOEVvU=;
-        b=N2frVJLvdCP0NYC2pvQi/aOY9RSLg54A/zRSqupjbKn86zGgT0O88iraxBmPRryHfjWrgL
-        zvx2oO2A8GNt5jIn1uDHxdSnGBvL5NfxEnylNtk1BVBfYSp1e6Nf0wUW7xMRnWS5dIfx+C
-        CO2zQKnzLDhHzrVeNPyr9WrtupU7HQQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-241-0HeNvHBmP-6eZiv6eQvr8g-1; Sun, 28 Jun 2020 16:16:14 -0400
-X-MC-Unique: 0HeNvHBmP-6eZiv6eQvr8g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B6EA804001;
-        Sun, 28 Jun 2020 20:16:12 +0000 (UTC)
-Received: from krava (unknown [10.40.192.56])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 5511F2857D;
-        Sun, 28 Jun 2020 20:16:09 +0000 (UTC)
-Date:   Sun, 28 Jun 2020 22:16:08 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v4 bpf-next 05/14] bpf: Remove btf_id helpers resolving
-Message-ID: <20200628201608.GG2988321@krava>
-References: <20200625221304.2817194-1-jolsa@kernel.org>
- <20200625221304.2817194-6-jolsa@kernel.org>
- <7480f7b2-01f0-f575-7e4f-cf3bde851c3f@fb.com>
+        id S1726737AbgF1UQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 16:16:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56206 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726699AbgF1UQU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 16:16:20 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33175C03E97A
+        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 13:16:20 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id 207so6799221pfu.3
+        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 13:16:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+7G1cJiL1IaJ+/+KocmI0bkRGjYWF6YUbbOVAYsF63s=;
+        b=p8g0DnAnbblnRq6Uq4Hsbr0IiZTuN2Rp65mtL+hgMHWaxsoGSb00VsNX5CczW4oA1F
+         IsV2y/l6REPdK8oUxv1WWuYhu3ihH5vrZ9kN88u5IWlDNNgn2VyUqPjho7sL5pgEFOYo
+         Q7SzlRUysBH3GI6t/EH6Weo1053EgNGy83WuIypjNG8BONmsspnozk3rwODuFRw6u5zE
+         b7/1lwJNdS2ScMuyr8eE4mF7PRkuk1cG2h6h0MBjIxZHNIwPrO1voUM8f98ktxkGh1/s
+         OUdZvXsZYGKRCh+Q4fdLI7rJuBwe/ahroTZr8vPFsPCojtkxJZuXJqhtXj4abU8/9ARt
+         OPDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+7G1cJiL1IaJ+/+KocmI0bkRGjYWF6YUbbOVAYsF63s=;
+        b=RpDE0GRQcUEXzt45usd392ERfbdSbgaKmrb/7tWR8zsggc2Q9b57OZma9FD4v5DVD2
+         iJR2hEoIAlBYPLQ7iLai19YU+ZgkeYJvwEC7sVxbE7EtPD0bfPSl7IeLdnG8VLbkL/WW
+         75jM38RiBlIZdkfF8Cx5Isx5vcU8JhxIY3wrpW5x2Lm+DPMllUy9hGegNL8GWPMp7GcL
+         FbTSCHIRsPiSS7Yytkzp/Piw5bCNUJKjd02VPk5eElI4ZN8SJ30KrsIvWvXx9FjV6Kqy
+         df97byw6nt2UpHHiRZZlFcfOQjg2nIYHap1nDmvbiEouS04gkjgj8T11aKP0HfHGzTIG
+         Uefw==
+X-Gm-Message-State: AOAM532z3OhY1wjqkWb/W9c2M9g7SvSd5tgS8bQ3HY4dARuQBPdIRATI
+        2Tw0qr7lxhpKSiAvMislmKMc7w==
+X-Google-Smtp-Source: ABdhPJyKqEy1028f1nQBTUzdkcwC6jZKH1WucOTYeo7/JSpqsOCcC4rMkiR51RJy5ARn7vKrtgK6kg==
+X-Received: by 2002:a63:d317:: with SMTP id b23mr7563957pgg.132.1593375379539;
+        Sun, 28 Jun 2020 13:16:19 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id s9sm27793405pgo.22.2020.06.28.13.16.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Jun 2020 13:16:19 -0700 (PDT)
+Date:   Sun, 28 Jun 2020 13:16:11 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Po Liu <po.liu@nxp.com>
+Cc:     dsahern@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, jhs@mojatatu.com,
+        vlad@buslov.dev, claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
+        alexandru.marginean@nxp.com
+Subject: Re: [iproute2-next] action police: make 'mtu' could be set
+ independently in police action
+Message-ID: <20200628131611.48a07e81@hermes.lan>
+In-Reply-To: <20200628014602.13002-1-po.liu@nxp.com>
+References: <20200628014602.13002-1-po.liu@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7480f7b2-01f0-f575-7e4f-cf3bde851c3f@fb.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 02:36:37PM -0700, Yonghong Song wrote:
+On Sun, 28 Jun 2020 09:46:02 +0800
+Po Liu <po.liu@nxp.com> wrote:
 
-SNIP
-
-> > -	}
-> > -
-> > -	t = btf_type_by_id(btf_vmlinux, t->type);
-> > -	if (!btf_type_is_ptr(t))
-> > -		return -EFAULT;
-> > -	t = btf_type_by_id(btf_vmlinux, t->type);
-> > -	if (!btf_type_is_func_proto(t))
-> > -		return -EFAULT;
-> > -
-> > -	args = (const struct btf_param *)(t + 1);
-> > -	if (arg >= btf_type_vlen(t)) {
-> > -		bpf_log(log, "bpf helper %s doesn't have %d-th argument\n",
-> > -			fnname, arg);
-> > +	if (WARN_ON_ONCE(!fn->btf_id))
+> Current police action must set 'rate' and 'burst'. 'mtu' parameter
+> set the max frame size and could be set alone without 'rate' and 'burst'
+> in some situation. Offloading to hardware for example, 'mtu' could limit
+> the flow max frame size.
 > 
-> The original code does not have this warning. It directly did
-> "ret = READ_ONCE(*btf_id);" after testing reg arg type ARG_PTR_TO_BTF_ID.
-
-not sure why I put it in there, it's probably enough guarded
-by arg_type having ARG_PTR_TO_BTF_ID, will remove
-
+> Signed-off-by: Po Liu <po.liu@nxp.com>
+> ---
+>  tc/m_police.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> >   		return -EINVAL;
-> > -	}
-> > -	t = btf_type_by_id(btf_vmlinux, args[arg].type);
-> > -	if (!btf_type_is_ptr(t) || !t->type) {
-> > -		/* anything but the pointer to struct is a helper config bug */
-> > -		bpf_log(log, "ARG_PTR_TO_BTF is misconfigured\n");
-> > -		return -EFAULT;
-> > -	}
-> > -	btf_id = t->type;
-> > -	t = btf_type_by_id(btf_vmlinux, t->type);
-> > -	/* skip modifiers */
-> > -	while (btf_type_is_modifier(t)) {
-> > -		btf_id = t->type;
-> > -		t = btf_type_by_id(btf_vmlinux, t->type);
-> > -	}
-> > -	if (!btf_type_is_struct(t)) {
-> > -		bpf_log(log, "ARG_PTR_TO_BTF is not a struct\n");
-> > -		return -EFAULT;
-> > -	}
-> > -	bpf_log(log, "helper %s arg%d has btf_id %d struct %s\n", fnname + 4,
-> > -		arg, btf_id, __btf_name_by_offset(btf_vmlinux, t->name_off));
-> > -	return btf_id;
-> > -}
-> > +	id = fn->btf_id[arg];
-> 
-> The corresponding BTF_ID definition here is:
->   BTF_ID_LIST(bpf_skb_output_btf_ids)
->   BTF_ID(struct, sk_buff)
-> 
-> The bpf helper writer needs to ensure proper declarations
-> of BTF_IDs like the above matching helpers definition.
-> Support we have arg1 and arg3 as BTF_ID. then the list
-> definition may be
-> 
->   BTF_ID_LIST(bpf_skb_output_btf_ids)
->   BTF_ID(struct, sk_buff)
->   BTF_ID(struct, __unused)
->   BTF_ID(struct, task_struct)
-> 
-> This probably okay, I guess.
+> diff --git a/tc/m_police.c b/tc/m_police.c
+> index a5bc20c0..89497f67 100644
+> --- a/tc/m_police.c
+> +++ b/tc/m_police.c
+> @@ -161,8 +161,8 @@ action_ctrl_ok:
+>  		return -1;
+>  
+>  	/* Must at least do late binding, use TB or ewma policing */
+> -	if (!rate64 && !avrate && !p.index) {
+> -		fprintf(stderr, "\"rate\" or \"avrate\" MUST be specified.\n");
+> +	if (!rate64 && !avrate && !p.index && !mtu) {
+> +		fprintf(stderr, "\"rate\" or \"avrate\" or \"mtu\"MUST be specified.\n");
 
-right, AFAIK we don't have such case yet, but would be good
-to be ready and have something like
+Missing blank.
+Your message will come out as:
+"rate" or "avrate" or "mtu"MUST be specified.
 
-  BTF_ID(struct, __unused)
 
-maybe adding new type for that will be better:
-
-  BTF_ID(none, unused)
-
-jirka
-
+The quotes aren't adding to the readability, why not just remove them instead.
