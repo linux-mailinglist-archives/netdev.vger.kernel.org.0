@@ -2,31 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C32220CAC1
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 23:36:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26EBF20CAC4
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 23:39:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726296AbgF1Vgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 17:36:41 -0400
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:59466 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726080AbgF1Vgk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 17:36:40 -0400
-Date:   Sun, 28 Jun 2020 21:36:35 +0000
+        id S1726432AbgF1Vji (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 17:39:38 -0400
+Received: from mail-40136.protonmail.ch ([185.70.40.136]:39794 "EHLO
+        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726188AbgF1Vji (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 17:39:38 -0400
+Date:   Sun, 28 Jun 2020 21:39:32 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail; t=1593380198;
-        bh=611E1eaCtuc3naAABWAMEtUCV7hXLVNANRYQvXdlbqY=;
+        s=protonmail; t=1593380376;
+        bh=J+OeX+4eyPga/gDUKZyWvFD1/UBFNesYDfkyLzSviPk=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=UTd3whxYh7s/isoSItdvlX/u0+p9RL1tVcT6cVqLmV2fM+2pWJuoK1mjbkgePAIsw
-         BUZPvL+CpRF38d64Kcpw5JohHQS+RklzXtrkPU19AVUJPhkHy7PD9Xbpwa/3UlhiLR
-         Itof7vPnT5j8WzLJkFsUprx+yvO6c7htKAWmok4o=
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        b=h0yz+74jcvHT2JlH2kc/rcdyAgp/W1PT/YirCwAx3Nn5DF25Or34G7rl28WYM9/Ak
+         h33pkI09EWXBU9XPAiIrd8Ttz3THvpzXuXDTr4t/+WkOgObnQ67a9Hi8XTgAA1kABa
+         YwigY3KMp3SGI9I3SXxiQBXpLZs9GgxvE3s1BCTY=
+To:     linux@armlinux.org.uk
 From:   Colton Lewis <colton.w.lewis@protonmail.com>
-Cc:     netdev@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        Colton Lewis <colton.w.lewis@protonmail.com>
 Reply-To: Colton Lewis <colton.w.lewis@protonmail.com>
-Subject: Re: [PATCH v3] net: phylink: correct trivial kernel-doc inconsistencies
-Message-ID: <6541539.18pcnM708K@laptop.coltonlewis.name>
-In-Reply-To: <20200628093634.GQ1551@shell.armlinux.org.uk>
-References: <20200621154248.GB338481@lunn.ch> <20200621155345.GV1551@shell.armlinux.org.uk> <3315816.iIbC2pHGDl@laptop.coltonlewis.name> <20200621234431.GZ1551@shell.armlinux.org.uk> <3034206.AJdgDx1Vlc@laptop.coltonlewis.name> <20200627235803.101718-1-colton.w.lewis@protonmail.com> <20200628093634.GQ1551@shell.armlinux.org.uk>
+Subject: [PATCH v4 1/2] net: core: correct trivial kernel-doc inconsistencies
+Message-ID: <20200628213912.116330-1-colton.w.lewis@protonmail.com>
+In-Reply-To: <3034206.AJdgDx1Vlc@laptop.coltonlewis.name>
+References: <20200621154248.GB338481@lunn.ch> <20200621155345.GV1551@shell.armlinux.org.uk> <3315816.iIbC2pHGDl@laptop.coltonlewis.name> <20200621234431.GZ1551@shell.armlinux.org.uk> <3034206.AJdgDx1Vlc@laptop.coltonlewis.name>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -39,19 +40,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> We seem to be having a communication breakdown.  In review to your
-> version 2 patch set, I said:
->=20
->    However, please drop all your changes for everything but the
->    "struct phylink_config" documentation change; I'm intending to change
->    all these method signatures, which means your changes will conflict.
->=20
-> But the changes still exist in version 3.  What gives?
+Silence documentation build warnings by correcting kernel-doc comments.
 
-You said *drop all your changes* for *everything but* the struct phylink_co=
-nfig change. I interpreted this to mean you wanted *only* struct phylink_co=
-nfig. In context of your previous comments, I might have guessed you meant =
-the opposite.
+./net/core/dev.c:7913: warning: Function parameter or member 'dev' not desc=
+ribed in 'netdev_get_xmit_slave'
 
+Signed-off-by: Colton Lewis <colton.w.lewis@protonmail.com>
+---
+ net/core/dev.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6bc2388141f6..cf20d286abfc 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -7898,6 +7898,7 @@ EXPORT_SYMBOL(netdev_bonding_info_change);
+=20
+ /**
+  * netdev_get_xmit_slave - Get the xmit slave of master device
++ * @dev: The device
+  * @skb: The packet
+  * @all_slaves: assume all the slaves are active
+  *
+--=20
+2.26.2
 
 
