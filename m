@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 263EE20CA29
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 21:55:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 320F120CA27
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 21:55:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727012AbgF1Tyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 15:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
+        id S1727069AbgF1Tyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 15:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726895AbgF1Txx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 15:53:53 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6556C03E979;
-        Sun, 28 Jun 2020 12:53:52 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id a1so14493018ejg.12;
-        Sun, 28 Jun 2020 12:53:52 -0700 (PDT)
+        with ESMTP id S1726907AbgF1Txy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 15:53:54 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB4BC03E979;
+        Sun, 28 Jun 2020 12:53:53 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id l12so14487870ejn.10;
+        Sun, 28 Jun 2020 12:53:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qtOiIEBPt4SkK7LL8W0wYi5N7Dg5qkNU6840uKUEEm4=;
-        b=A9erurEDtx3Izd4yjqKUT2sBp4YjmOLAX9WD0HsySrEbAcCR2AwWh3WkpY24KszSGN
-         eIgg1wHmHUUkISV7uen/EM4Q2e+qZCIi2yRVM08K5y/EUJJ4Tr+b2aMfybURblT2LypH
-         c+I59zjHnRYCLx+FhX9EQFyZ4dsR+9muLtMvv3OsgH/drf9i5zbSNXkRtPEr4rKYUXY8
-         y8T8oRqgy/Pm+T80+wPsBNa504Xsj/sUubxcjH+ZNAgvI4aC1njYu0uNiVx/5gSIaDFN
-         gXZK5QMo5eG7G7Ug5IClRYA7PbosJTZxmMx6U7lpNVonhseF8PFZWnqO1l7p1pxNwuQ9
-         DFsg==
+        bh=9BW29cs15R7y24DB/D3twWfQ+LOvEc1Her+NuICftwA=;
+        b=jEp23vW6KqKRrqBQt/cX+MQTam12WQdL1AQyBuNgvxSEDoWq2Ph1w4MmYxIe6XS4/7
+         +G5amB/Ru/D/ANYRS82Y8AunF0lkNwKgNNItKGiTaDy1Q0GD//TnAlOzwsQHO+F6sVix
+         eYAZz6y37wjr4RW5NWZJAKyE5Rakuc7c5/U727n48Uy/jT6kWm3tX8k8hYnPn65W5x9t
+         PBDUCras2XJ51sPocXMFT6bKdChBPpTYPU88W76lpYbbJcxRM/H6IqXm2mr3B7cmlKMH
+         54FHdyWSIR7iBa6IVUAl1XaJQ/EctrbC8j/ZUDINfjJC7KS+PU8ORT5SQnU2tMROec8a
+         owbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qtOiIEBPt4SkK7LL8W0wYi5N7Dg5qkNU6840uKUEEm4=;
-        b=iTlqk25AMXdkP5Fpt81jyfJ1xwKqytK6ysAmjm7eCABTxo3JTgnCxIazBLwzxEMM7l
-         2cxj+dYRSzI4FVZ+ZjP1F2FpIRmLb8iefszsCGgfBTQG8llxV5fxs2biBXOgkN2Slu9n
-         YU0BJgNzeCxjxtPSlJLqeqO5rrwHBVWmbQBXQFpHUGqm5w1teDOY6nUhLG8fIrqwIm+m
-         UFl78Y5AgXZPlfCcmA+uHmJIyFwitHNvdexbaoT9U37TpJawTEVRubyT5ANh1P4wU+na
-         D7Hb1U2tJuwdNYgEGMbf+9OvMAsQt5g/vdNEhRvnO3ElLDcrbTfMKifBXLw2sJQvqd+X
-         jdhg==
-X-Gm-Message-State: AOAM532HwzVkIXmk2QkcKkdTxvfHftSlWP5eBv9pbfOM6wTBldtpDMfP
-        XjBVmHbnZMVxHljFoIdWkfc=
-X-Google-Smtp-Source: ABdhPJx4fdMhx9d4maG/HXB+0DSLpVO6tt8V+9KbfZdFYn7d/6aQBr75kaorsK/y6gPWufzRTlIyyA==
-X-Received: by 2002:a17:906:90c1:: with SMTP id v1mr11026636ejw.481.1593374031509;
-        Sun, 28 Jun 2020 12:53:51 -0700 (PDT)
+        bh=9BW29cs15R7y24DB/D3twWfQ+LOvEc1Her+NuICftwA=;
+        b=DalvYHApuNNv8Qc4e0V6GBQTXpm0X+L4sj0TBObRAwV9RaBNrzC7cvG6nBzpUgoSZX
+         VweMg75fg1Mv2pskeF0lhAvZVXrpwE5tsVWJMYUcKJ8Sg7d+d6FLXeXbQJJo8C/vRETH
+         h/5fKaRsNQlP84zUUL2b2XoxCjChir0cnSqVvRJ8PKxAIBPRlHgPblUCrRk+neTu34I+
+         g1b3C5nQJ7UXGoirZ+Eif9aXNvetiVaw1WuepW0oTALUe5pyhLjWuBB6dznKYb/Iox9i
+         Aro8qiYWfhcAUdcXOoR15ggsUJ1nI37PZ/AAWlwbKPayTtbuktqWDGT7aPrGRtmBNyhH
+         HD0Q==
+X-Gm-Message-State: AOAM531GMU1IEQGf+JNxC3HzCeHQWa88SR8KOivGxSW7u9tDvxdo2bB2
+        WyRT1+mcs94Xsw4yNffgvbU=
+X-Google-Smtp-Source: ABdhPJxljGTAylajN15yJTYN/mmctJCm+3Mk4kmPFb6iW2GTymn73lHe735BvC/L9+y0wS0ICXjfiA==
+X-Received: by 2002:a17:906:8417:: with SMTP id n23mr11119322ejx.192.1593374032709;
+        Sun, 28 Jun 2020 12:53:52 -0700 (PDT)
 Received: from localhost.localdomain ([2a02:a03f:b7f9:7600:f145:9a83:6418:5a5c])
-        by smtp.gmail.com with ESMTPSA id z8sm15669531eju.106.2020.06.28.12.53.50
+        by smtp.gmail.com with ESMTPSA id z8sm15669531eju.106.2020.06.28.12.53.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Jun 2020 12:53:51 -0700 (PDT)
+        Sun, 28 Jun 2020 12:53:52 -0700 (PDT)
 From:   Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         oss-drivers@netronome.com, linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Subject: [PATCH 08/15] net: nfp: fix nfp_net_tx()'s return type
-Date:   Sun, 28 Jun 2020 21:53:30 +0200
-Message-Id: <20200628195337.75889-9-luc.vanoostenryck@gmail.com>
+Subject: [PATCH 09/15] net: pch_gbe: fix pch_gbe_xmit_frame()'s return type
+Date:   Sun, 28 Jun 2020 21:53:31 +0200
+Message-Id: <20200628195337.75889-10-luc.vanoostenryck@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200628195337.75889-1-luc.vanoostenryck@gmail.com>
 References: <20200628195337.75889-1-luc.vanoostenryck@gmail.com>
@@ -74,22 +74,22 @@ Fix this by returning 'netdev_tx_t' in this driver too.
 
 Signed-off-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 2 +-
+ drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index 0e0cc3d58bdc..83ff18140bfe 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -974,7 +974,7 @@ static int nfp_net_prep_tx_meta(struct sk_buff *skb, u64 tls_handle)
-  *
-  * Return: NETDEV_TX_OK on success.
+diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
+index 73ec195fbc30..23f7c76737c9 100644
+--- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
++++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
+@@ -2064,7 +2064,7 @@ static int pch_gbe_stop(struct net_device *netdev)
+  *	- NETDEV_TX_OK:   Normal end
+  *	- NETDEV_TX_BUSY: Error end
   */
--static int nfp_net_tx(struct sk_buff *skb, struct net_device *netdev)
-+static netdev_tx_t nfp_net_tx(struct sk_buff *skb, struct net_device *netdev)
+-static int pch_gbe_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
++static netdev_tx_t pch_gbe_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
  {
- 	struct nfp_net *nn = netdev_priv(netdev);
- 	const skb_frag_t *frag;
+ 	struct pch_gbe_adapter *adapter = netdev_priv(netdev);
+ 	struct pch_gbe_tx_ring *tx_ring = adapter->tx_ring;
 -- 
 2.27.0
 
