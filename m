@@ -2,118 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A95820C741
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 11:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F83E20C75D
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 12:15:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726204AbgF1Jgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 05:36:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43328 "EHLO
+        id S1726105AbgF1KPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 06:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725999AbgF1Jgl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 05:36:41 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D051C061794
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 02:36:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=83+6BDIj+Ob12W0XDWe5GEsVdyTtKIdFixTlJYKaQa8=; b=FZHh56fsSx9WEWtxQIpHhDeH9
-        dMWUZ5xEcXoMcSYp7IlXa9ETBY0CC2LbevO+ZI1HcRtsB8ZOPt67SvTjvHHnojw30yTEkDsJAUy9C
-        SDtZJnriVxSl7clOdJNCFR3NfT+kTbrgidIxAf8mdTleTCBpyCRiJa1Y4VnF1YeVwK4V+q3ut2Vn+
-        CRzmwAtwH9P/p/zmpFonnMpaGIIIxLj16bj6CRHQFUSB21F9p2iROKrimfLW5/SMJJ0W0/BLD1PrL
-        MV6sMpi1qBWCFPCScohCfymLByM+Fc4nnudKon/oHHDGxIFWHt1eUD3pA2jC0mIz9xVFyirUEbWAt
-        3Fzt43e6Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60802)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jpTjn-0006eY-Ks; Sun, 28 Jun 2020 10:36:35 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jpTjn-0005zf-4C; Sun, 28 Jun 2020 10:36:35 +0100
-Date:   Sun, 28 Jun 2020 10:36:35 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Colton Lewis <colton.w.lewis@protonmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH v3] net: phylink: correct trivial kernel-doc
- inconsistencies
-Message-ID: <20200628093634.GQ1551@shell.armlinux.org.uk>
-References: <20200621154248.GB338481@lunn.ch>
- <20200621155345.GV1551@shell.armlinux.org.uk>
- <3315816.iIbC2pHGDl@laptop.coltonlewis.name>
- <20200621234431.GZ1551@shell.armlinux.org.uk>
- <3034206.AJdgDx1Vlc@laptop.coltonlewis.name>
- <20200627235803.101718-1-colton.w.lewis@protonmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200627235803.101718-1-colton.w.lewis@protonmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        with ESMTP id S1725921AbgF1KPo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 06:15:44 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A36C061794;
+        Sun, 28 Jun 2020 03:15:44 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id ci15so627523pjb.5;
+        Sun, 28 Jun 2020 03:15:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=nVNoGcrbtjaZ4GttzC1leLHGKpRHUoIf6gW/P9mP5vA=;
+        b=NkVBj5s7iQjaU/Yi/VIF1GCpAlRoS9YzQUup5V0keAn4HP6JSzvKtWMoeuw7/NjxCR
+         kVa0P5nRWRBWFdhMKhnzLRPZ2guhokoclT7hwPFCbxdXoGvgJDvfLAl6qw6eFlOfgWV2
+         pw0iap4dSOew2fguilkjXjOdHRzNzTD46coY7v8QsgcLOe/OJUvcIclUoAj1fxuShHY6
+         m9Wd5Qs+v81CpOyZDlaLVz6I/4G4qWZSUaIBJwA9NNjIoGUwplKr/h/MhukL1pufwoof
+         BD7KZnLDH3qJMC8xw3FGHf7Jt0cZvT1S2a/St8XOZgabS3oPlXytB+E3hQNu1NWzgxOr
+         XpVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=nVNoGcrbtjaZ4GttzC1leLHGKpRHUoIf6gW/P9mP5vA=;
+        b=lZSQvDOpS65aO3YeOkZURVdJb2/p5CqQtuceDOKRk86ys7X4MW3KJX4jHh5lgg0glT
+         d1qKoRQVWA16pVu7C4SpHEpeG3RFU6ITfrTDvpbj07MDgYV/UoRDGSaR+dX5MlfwuVpL
+         qvs+99myVmvcKiVP5UVf/HBtdsBK+XCkC+MXx62dJF5GTmV9V+FaR5bSJwBchH/P7ivV
+         wSGy5/CcjEni/LkVMwcwdss4pAixoH2eIE3Qwd7ltF6GAXEiLVGkFftSaMeKC87BySw1
+         IWDoJqGwgPZDSfGOatTTeWcEeRFm7hIrc9DU4xvG+unGkkyUt0O1syqUHQgtFA6APKXw
+         oLrw==
+X-Gm-Message-State: AOAM532/0H8Jts57OAhDyTS+Iw6i02BZNx8sEjuAhbnRukqvgK/txctu
+        tr9ekxk5s0mhDCObw5Eg/8I=
+X-Google-Smtp-Source: ABdhPJwmCm+KA8TPGTItXEQGsWRFcivwHuxETSBomvcRw+LRBnNDFtU6wK4toHme/k1LWlzA0pDGAg==
+X-Received: by 2002:a17:90b:4306:: with SMTP id ih6mr11239323pjb.62.1593339343667;
+        Sun, 28 Jun 2020 03:15:43 -0700 (PDT)
+Received: from localhost ([43.224.245.180])
+        by smtp.gmail.com with ESMTPSA id s36sm26824208pgl.35.2020.06.28.03.15.42
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 28 Jun 2020 03:15:43 -0700 (PDT)
+From:   Geliang Tang <geliangtang@gmail.com>
+To:     Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] liquidio: use list_empty_careful in lio_list_delete_head
+Date:   Sun, 28 Jun 2020 18:14:13 +0800
+Message-Id: <cec4b86f5c19d84addb42a56f6dddbf045995431.1593339093.git.geliangtang@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 27, 2020 at 11:58:09PM +0000, Colton Lewis wrote:
-> Silence documentation build warnings by correcting kernel-doc
-> comments. In the case of pcs_{config,an_restart,link_up}, change the
-> declaration to a normal function since these only there for
-> documentation anyway.
-> 
-> ./include/linux/phylink.h:74: warning: Function parameter or member 'poll_fixed_state' not described in 'phylink_config'
-> ./include/linux/phylink.h:74: warning: Function parameter or member 'get_fixed_state' not described in 'phylink_config'
-> ./include/linux/phylink.h:336: warning: Function parameter or member 'pcs_config' not described in 'int'
-> ./include/linux/phylink.h:336: warning: Excess function parameter 'config' description in 'int'
-> ./include/linux/phylink.h:336: warning: Excess function parameter 'mode' description in 'int'
-> ./include/linux/phylink.h:336: warning: Excess function parameter 'interface' description in 'int'
-> ./include/linux/phylink.h:336: warning: Excess function parameter 'advertising' description in 'int'
-> ./include/linux/phylink.h:345: warning: Function parameter or member 'pcs_an_restart' not described in 'void'
-> ./include/linux/phylink.h:345: warning: Excess function parameter 'config' description in 'void'
-> ./include/linux/phylink.h:361: warning: Function parameter or member 'pcs_link_up' not described in 'void'
-> ./include/linux/phylink.h:361: warning: Excess function parameter 'config' description in 'void'
-> ./include/linux/phylink.h:361: warning: Excess function parameter 'mode' description in 'void'
-> ./include/linux/phylink.h:361: warning: Excess function parameter 'interface' description in 'void'
-> ./include/linux/phylink.h:361: warning: Excess function parameter 'speed' description in 'void'
-> ./include/linux/phylink.h:361: warning: Excess function parameter 'duplex' description in 'void'
-> 
-> Signed-off-by: Colton Lewis <colton.w.lewis@protonmail.com>
-> ---
->  include/linux/phylink.h | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-> index cc5b452a184e..24c52d9f63d6 100644
-> --- a/include/linux/phylink.h
-> +++ b/include/linux/phylink.h
-> @@ -62,6 +62,8 @@ enum phylink_op_type {
->   * @dev: a pointer to a struct device associated with the MAC
->   * @type: operation type of PHYLINK instance
->   * @pcs_poll: MAC PCS cannot provide link change interrupt
-> + * @poll_fixed_state: poll link state with @get_fixed_state
-> + * @get_fixed_state: read link state into struct phylink_link_state
->   */
->  struct phylink_config {
->  	struct device *dev;
-> @@ -331,7 +333,7 @@ void pcs_get_state(struct phylink_config *config,
->   *
->   * For most 10GBASE-R, there is no advertisement.
->   */
-> -int (*pcs_config)(struct phylink_config *config, unsigned int mode,
-> +int pcs_config(struct phylink_config *config, unsigned int mode,
->  		  phy_interface_t interface, const unsigned long *advertising);
+Use list_empty_careful() instead of open-coding.
 
-We seem to be having a communication breakdown.  In review to your
-version 2 patch set, I said:
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+---
+ drivers/net/ethernet/cavium/liquidio/octeon_network.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-   However, please drop all your changes for everything but the
-   "struct phylink_config" documentation change; I'm intending to change
-   all these method signatures, which means your changes will conflict.
-
-But the changes still exist in version 3.  What gives?
-
+diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_network.h b/drivers/net/ethernet/cavium/liquidio/octeon_network.h
+index 50201fc86dcf..ebe56bd8849b 100644
+--- a/drivers/net/ethernet/cavium/liquidio/octeon_network.h
++++ b/drivers/net/ethernet/cavium/liquidio/octeon_network.h
+@@ -612,7 +612,7 @@ static inline struct list_head *lio_list_delete_head(struct list_head *root)
+ {
+ 	struct list_head *node;
+ 
+-	if (root->prev == root && root->next == root)
++	if (list_empty_careful(root))
+ 		node = NULL;
+ 	else
+ 		node = root->next;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.17.1
+
