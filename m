@@ -2,90 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 804EC20C967
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 19:54:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3090320C96F
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 20:07:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbgF1RyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 13:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34432 "EHLO
+        id S1726666AbgF1SHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 14:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726585AbgF1RyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 13:54:02 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2235C03E979
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 10:54:02 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id a21so12547888oic.8
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 10:54:02 -0700 (PDT)
+        with ESMTP id S1726060AbgF1SHV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 14:07:21 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9775C03E979
+        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 11:07:21 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id d4so7262992pgk.4
+        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 11:07:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=/bJJuAbxLOI8ZB5kWrg6GnM3H9CKnk3zJ1in7nW69lY=;
-        b=E9Ts/NfyyqkhI/3JN80+WMMyHhBUAFxpz5DOjrtds+MGKbyP9sZCcoZKBrmp5/R4j8
-         JhmF6j7wmu9TOHduM6ctwRGA85wmU3d9Kwp2yyM08zYdRsyBY4UrzV09N841UsXuT8MD
-         Ghqm8YlhpZIbD7LTEboulcZhJdBwJwQevYAT/ucyib2MVJZXeFdNAPFgsTdAb8M4e/wH
-         Dcusd3iiGtc+6FOReLa8lD43YPSzN4DrMXL43J1xykzho89QfXGssH0A/uObOHw+bXV+
-         zO93cFXbkFEVAibibEJles19es8KfLgTIkk33oiabKiYQF7x4Z1KPNUi7K96G0o5FM0i
-         i0XA==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6tuyUOIxjyWqmJnamgu5030/ktbw/T7BcK6BoFh+6w4=;
+        b=fgRbYlHcbEyAsXiiRDjM23HJj3hb8WE6VsZiX/Hr3CJjGuVXv7iJYAf93hQ+O5WJCY
+         p3yNdC60sJ/dFwXur3n6gcgxDyYk8yGRGL62gjO8UT7ozUWjaOJb5dYwknmuWlvOcEsO
+         jy0RVEVAkDjxMLunk51GCgi9oMOl0rMSRkdc+//UC6zq6YcoA3Xnp/BzXZm0MhGuqndU
+         yrWCG6hl3Kx0pUc2rldNwAUE9kBRtui73SUgt3m77o8Zpf4Plx7xwavmDvugJTG8my9p
+         4Of+PTTI+8E0Tii8aPAPkIcXZkzNAQFs6Zn346Z0p2WzR49Qb0u+Bdb8t/+2lieDxG6H
+         IuTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=/bJJuAbxLOI8ZB5kWrg6GnM3H9CKnk3zJ1in7nW69lY=;
-        b=sPnIhOOyTQwP9ibTj4kmvZMzY2xPnA3piPsfQfu88WjvleRO0KSqGd51pp0JsXUF2l
-         mRK3nc8NEyn8u9tYb9BCB/0jVPMQpJsQaBMYx+IQcUVZXHS9Lxoc1DiFnzfH1bIbOfyE
-         xIm4L8JxwMwRoLWy6Zj/37SWO8wiDMp3m3j5TbdVw3l/fClWENB3r4+Vc4alIzav/sa8
-         ktgWCManknW3duosnsLMKA1UZC3RbROg+oIwj+H/D4XH4ezwCJKloDNC5lfYBkNnTNAl
-         VmtbiDojMq4FrqLSzPVu9XeSuhzguRJOZbLQiZrWKFvOTWE9rtfkwQZcc1uye8sly2Cd
-         EN9g==
-X-Gm-Message-State: AOAM533h8jNdhA/aDxJCKZ7RqCfAUXR17f7xXB/+8PqTI0VSXWYCExph
-        RZu4bn4++Q9cWyHsFObdh3/jgBL8Dt3npZsf+sM=
-X-Google-Smtp-Source: ABdhPJz4Qz/Ou7TGNdovrAVzt/kUsjCpGJSg7Lo660HzN2beMo2ym7RRYQ/zQL2Gr6yNPs0JD8B8fzFgDIDfGsna/0I=
-X-Received: by 2002:aca:d1a:: with SMTP id 26mr2764706oin.11.1593366842189;
- Sun, 28 Jun 2020 10:54:02 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6tuyUOIxjyWqmJnamgu5030/ktbw/T7BcK6BoFh+6w4=;
+        b=QCF5pIimofMmsVpxNDHvasB2W37b3DX13t8m7MAV31hVv5K9nX5CMfYULCvXiOG042
+         2+qfZwGjomT0J5Xp0by+DX8E4pYV69TJmkBI42ih+wQ3YCIUgYdf2jdIjRr99TZ00QsZ
+         QaSUabrFGhAVlxszucISHvLaQ+jA+4TskB1ve3t3CQ74q4AzKSFZzil0olgpyXK476l7
+         BtOAQNKArL/t+a/w6OXC6tLY9CfSdZwowVNdxAmeqNDTum6TK7IcwG3jfzdv1oJ2zinJ
+         kVify8TURVxtOc/3DsRYUKnHXzvKBHCS3MM2m3nF6rdGzYuTWJN/AZYvH5Nh0d0dZLAd
+         Cy7Q==
+X-Gm-Message-State: AOAM532j7vQkVSeH+oQSKO7glP7yKRd8v+L+ypQiIxKkV6GadxoyNPj2
+        TfdFp/991KkhwSk+KEgmBP0TSrmPqs0=
+X-Google-Smtp-Source: ABdhPJyPiLhUifFjYG/SZcvRgN4vsyMYBlrqcVyuakPUwUEcDSU7K2KSaY29hXEHYFTfrJSM1cXWgg==
+X-Received: by 2002:a63:7246:: with SMTP id c6mr7259769pgn.422.1593367641325;
+        Sun, 28 Jun 2020 11:07:21 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id t1sm3553064pgq.66.2020.06.28.11.07.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Jun 2020 11:07:21 -0700 (PDT)
+Date:   Sun, 28 Jun 2020 11:07:18 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     zhangnaru <zhangnaru@huawei.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] bridge-utils: Check parameters reasonable of path cost
+ and port priority
+Message-ID: <20200628110718.167fd9e1@hermes.lan>
+In-Reply-To: <3E3F5F15FD425047800B90FF7EEC401F581910@DGGEMI511-MBS.china.huawei.com>
+References: <3E3F5F15FD425047800B90FF7EEC401F581910@DGGEMI511-MBS.china.huawei.com>
 MIME-Version: 1.0
-Received: by 2002:ac9:27ee:0:0:0:0:0 with HTTP; Sun, 28 Jun 2020 10:54:01
- -0700 (PDT)
-Reply-To: mrjohnscottyounger35@gmail.com
-From:   John Scott Younger <mrszahraalkami@gmail.com>
-Date:   Sun, 28 Jun 2020 18:54:01 +0100
-Message-ID: <CALQpPg1FED8Jvemq5n4zP4O+X7MNvfrLBs6pLt7fU9DL9HUPLA@mail.gmail.com>
-Subject: Your attention to this news update.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Your attention to this news update.
+On Sun, 28 Jun 2020 12:24:14 +0000
+zhangnaru <zhangnaru@huawei.com> wrote:
 
-The report / analysis received from our correspondence shows that you
-have NOT received your PAYMENT, due to administrative injustice from
-unpatriotic and uncivil payment officials. Following the resolution of
-the U.S Department of State, you are mandated to kindly reinstate your
-fund acquisition details for accreditation.
+> Subject: [PATCH] bugfix-bridge-not-check-parameters
+> brtctl_cmd.c: check parameters reasonable of path cost and port priority
+> In function br_cmd_setpathcost and br_cmd_setportprio, check the input
+> parameters are within a reasonable range to prevent the obvious value
+> error before set path cost and port priority
+> 
+> Signed-off-by: liuqianya <liuqianya@huawei.com>
+> Signed-off-by: ZhangNaru <zhangnaru@huawei.com>
 
-Sequel to the joint /collaborative effort by United Nations and US
-Department of State, to review, nullify and release all STOP ORDER on
-beneficiary transferred sum and consignment HELD at custom port
-authorities. At this juncture, you are advised to forward information
-of agencies that has put a HOLD on your consignment or STOP ORDER on
-your transferred sum.
-
-This office is commission to investigate/rectify ISSUES affecting
-beneficiaries whose payment is HELD/STOP unjustly with the intent of
-demanding un-official fees/levies. Be informed that all administrative
-injustice imposed on beneficiaries by some dubious person(s) has come
-to the knowledge of oversight committee of United Nations and US
-Department of State.
-
-Thus our objective is to resolve all challenges facing release of your
-payment. Therefore get back to my office with the required information
-for assessment.
-
-Our in service,
-
-John Scott Younger
-Human Right Activist
-Tel:- + 44 770 002 8251
+Not sure it makes to put patches on a dead utility.
+Use the iproute2 bridge command instead.
