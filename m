@@ -2,118 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E58520C985
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 20:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FF8820C9B5
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 20:50:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726677AbgF1SYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 14:24:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
+        id S1726636AbgF1Suv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 14:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726060AbgF1SYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 14:24:31 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA20C03E979;
-        Sun, 28 Jun 2020 11:24:30 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id l63so7251100pge.12;
-        Sun, 28 Jun 2020 11:24:30 -0700 (PDT)
+        with ESMTP id S1726060AbgF1Suu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 14:50:50 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8579FC03E979;
+        Sun, 28 Jun 2020 11:50:50 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id u185so4902441pfu.1;
+        Sun, 28 Jun 2020 11:50:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=CDyu5XxyUZj+ZAwyaUkvNAVQsuKCLx90g4IgowK3j8I=;
-        b=l+uo/daZ87u8J02fhuKrKZ8vlZFo/Wbtdw+K+PcSpeOm6FqHH5j9T2OMnFHpJ81hdI
-         +HoR5VKjKg7xpFs+sH2qUId3aI1Nlp4QzNMELcUyYsSOOfoBTtPsZ2D+Cikf3DFZXoKN
-         VwyKEB224j9nnmQdgTcKNkF8ByrNj9TkJ4hlY+VMotyUBzwLEoUlutinMiyx+FWBNZ3w
-         Ishh1oANf+7PrukmhO1AAF2eCoOdnj3fg3ntCTUmLnxg/ODAGPcfjuiKmxIfBAg04oBE
-         QDqSGyN4YG/8GeNCv7DHZHV5zx777wd2YWmfpHqGXhwKr9ar+ZBwj03kZhQElxX/jYgc
-         c7bw==
+         :content-disposition:in-reply-to;
+        bh=gx2wECjHOxEOzUfN8Q6CXQ91pn7AF8OgVLiYblvY+JM=;
+        b=mYtPVH1ydS33aYq6KLc8fdGZFuFRbPxw0XQ5MF4ZPcC8twM8KbN+n72PEggEKmBs1c
+         LLyKeT0722rsVKg2XFtc1r9+Ddidu6oFi+Qr/rSeB3m9pbY4fxyG6Aw9N1OTGE6JaZcv
+         lldPRzb52clL76/7MYWxDFYtzXjFQTlovAi21YvODOqK6q8uwxMcEZxkEfR3yiJe8GT8
+         sgF+pFtX4RPQ8vLb0uL9uN66JUlkBDGPMGxXteqSEkBDskgZGHwcWYNv/qfa3Y6ePEAm
+         PBcMTIYDy2oggdrKxQ8sDEP5L/MJjzJ3r1fatYDuKpjRtNCHmz8koPnzZA5P3k67F6tm
+         3VlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=CDyu5XxyUZj+ZAwyaUkvNAVQsuKCLx90g4IgowK3j8I=;
-        b=tjokY503g00YNGbmfzBsZ+FmXvmE90wDmZBNUv0hiYw6C8/NQSI3WJk42S0rNBCAdO
-         eCwP3cwOqIVL1BInHd6Lvmf0s5Uk5HEnJLQK5RGlSdO1ou6K0bQM0bM238d63Ycs2qw/
-         PHZnljG7qFR13dcq8444TTfEJ2YybgxMrNzWvI8SltCGJRZSMqFpZvzaMMJIWaHmvvGp
-         7afoeT9OjW3oAsa2szcHeFFmOQAizmAbdZwoIC22aGenBFRNPYrvB0GuwfOJ2uy+qXp4
-         Z6I+DXoNzF7WSqA7YOJpLVRWglCx92sy3KT0XGO7JwkgQBrPrfrEbCu2INXAdpkGiYXq
-         itww==
-X-Gm-Message-State: AOAM5300lGP6MaaAxWs5gTpa8wKeMrS59qgz1gavwffS4s02OvSszxf5
-        8iaY16swxa3H0K9t6ZClGgp1le4F
-X-Google-Smtp-Source: ABdhPJwSNzlWjP1DUsgRh+08q+7nveKR42Nx/Wo/4AqB1IvjmJkx1UOu1LFvTIDKHXtoHfKECvtchg==
-X-Received: by 2002:aa7:9630:: with SMTP id r16mr5808749pfg.144.1593368670425;
-        Sun, 28 Jun 2020 11:24:30 -0700 (PDT)
+         :mime-version:content-disposition:in-reply-to;
+        bh=gx2wECjHOxEOzUfN8Q6CXQ91pn7AF8OgVLiYblvY+JM=;
+        b=gkM77+XpkrvjGqVK3FIqmVUMfqz86gWX2E2KwNDUWU3Qk8R+SJhqwabqmFjN0/ZI+b
+         mt2J3Qq6etPb2WGtGSeuWZZIK17Uomb7lVlkD6YpNyN3LKihb8EO4GdR31juwXs9KG/B
+         O5WyqQMoGHTld7NcqNhPbBEJDPkSuUmsZmIfhsRt5wqpoWyWOXCb4kqRFOFbOofanl0R
+         1OIJkC++o2mWNOFJcHcO7MWBNuHQpAd+ZoQJFX/9VCINV5q8i+YD54vBm5BP2Y3nbs7u
+         UWSxNJ8XvS/j3Z2+4/+dr4+o35XBaCJJwnBUJj4sv0fn1E8NINEFu2o4GZ/WqKl9vGDv
+         yNpQ==
+X-Gm-Message-State: AOAM532ac6z7eYyYMflhPVfEXeAKkG0JqsJ0C5WyMipCz3VoH7VnjAJQ
+        cgxzh3N/8J3y30OhjgQq2wsnK0v5
+X-Google-Smtp-Source: ABdhPJzKWcHOrp0hsF1+G7LI1H2UEiOMmoajmbPrSBmxsHCrumywJPGxRDTzTkuk3vz4j05EpTPQfg==
+X-Received: by 2002:a63:6c49:: with SMTP id h70mr7331735pgc.150.1593370249891;
+        Sun, 28 Jun 2020 11:50:49 -0700 (PDT)
 Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:616])
-        by smtp.gmail.com with ESMTPSA id y69sm32663688pfg.207.2020.06.28.11.24.28
+        by smtp.gmail.com with ESMTPSA id u20sm32991149pfk.91.2020.06.28.11.50.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Jun 2020 11:24:29 -0700 (PDT)
-Date:   Sun, 28 Jun 2020 11:24:27 -0700
+        Sun, 28 Jun 2020 11:50:49 -0700 (PDT)
+Date:   Sun, 28 Jun 2020 11:50:46 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>, kernel-team@fb.com,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Neal Cardwell <ncardwell@google.com>, netdev@vger.kernel.org,
-        Yuchung Cheng <ycheng@google.com>
-Subject: Re: [PATCH bpf-next 04/10] bpf: tcp: Allow bpf prog to write and
- parse BPF TCP header option
-Message-ID: <20200628182427.qt7vpjohwkxvixfi@ast-mbp.dhcp.thefacebook.com>
-References: <20200626175501.1459961-1-kafai@fb.com>
- <20200626175526.1461133-1-kafai@fb.com>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v4 bpf-next 05/14] bpf: Remove btf_id helpers resolving
+Message-ID: <20200628185046.vryhuc23f6yu5fy4@ast-mbp.dhcp.thefacebook.com>
+References: <20200625221304.2817194-1-jolsa@kernel.org>
+ <20200625221304.2817194-6-jolsa@kernel.org>
+ <7480f7b2-01f0-f575-7e4f-cf3bde851c3f@fb.com>
+ <CAEf4BzYPvNbYNBuqFDY8xCqSGTZ2G8HM=waq9b=qO9UYOUK7+A@mail.gmail.com>
+ <b9258020-cd38-b818-e3a9-4f6d9cdf6b88@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200626175526.1461133-1-kafai@fb.com>
+In-Reply-To: <b9258020-cd38-b818-e3a9-4f6d9cdf6b88@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 26, 2020 at 10:55:26AM -0700, Martin KaFai Lau wrote:
+On Fri, Jun 26, 2020 at 04:29:23PM -0700, Yonghong Song wrote:
+> > > > 
+> > > > -int btf_resolve_helper_id(struct bpf_verifier_log *log,
+> > > > -                       const struct bpf_func_proto *fn, int arg)
+> > > > -{
+> > > > -     int *btf_id = &fn->btf_id[arg];
+> > > > -     int ret;
+> > > > -
+> > > > -     if (fn->arg_type[arg] != ARG_PTR_TO_BTF_ID)
+> > > > +     if (!id || id > btf_vmlinux->nr_types)
+> > > >                return -EINVAL;
+> > > 
+> > > id == 0 if btf_id cannot be resolved by resolve_btfids, right?
+> > > when id may be greater than btf_vmlinux->nr_types? If resolve_btfids
+> > > application did incorrect transformation?
+> > > 
+> > > Anyway, this is to resolve helper meta btf_id. Even if you
+> > > return a btf_id > btf_vmlinux->nr_types, verifier will reject
+> > > since it will never be the same as the real parameter btf_id.
+> > > I would drop id > btf_vmlinux->nr_types here. This should never
+> > > happen for a correct tool. Even if it does, verifier will take
+> > > care of it.
+> > > 
+> > 
+> > I'd love to hear Alexei's thoughts about this change as well. Jiri
+> > removed not just BTF ID resolution, but also all the sanity checks.
+> > This now means more trust in helper definitions to not screw up
+> > anything. It's probably OK, but still something to consciously think
+> > about.
 > 
-> Parsing BPF Header Option
-> ─────────────────────────
-> 
-> As mentioned earlier, the received SYN/SYNACK/ACK during the 3WHS
-> will be available to some specific CB (e.g. the *_ESTABLISHED_CB)
-> 
-> For established connection, if the kernel finds a bpf header
-> option (i.e. option with kind:254 and magic:0xeB9F) and the
-> the "PARSE_HDR_OPT_CB_FLAG" flag is set,  the
-> bpf prog will be called in the "BPF_SOCK_OPS_PARSE_HDR_OPT_CB" op.
-> The received skb will be available through sock_ops->skb_data
-> and the bpf header option offset will also be specified
-> in sock_ops->skb_bpf_hdr_opt_off.
+> The kernel will have to trust the result. 
 
-TCP noob question:
-- can tcp header have two or more options with the same kind and magic?
-I scanned draft-ietf-tcpm-experimental-options-00.txt and it seems
-it's not prohibiting collisions.
-So should be ok?
-Why I'm asking... I think existing bpf_sock_ops style of running
-multiple bpf progs is gonna be awkward to use.
-Picking the max of bpf_reserve_hdr_opt() from many calls and let
-parent bpf progs override children written headers feels a bit hackish.
-I feel the users will thank us if we design the progs to be more
-isolated and independent somehow.
-I was thinking may be each bpf prog will bpf_reserve_hdr_opt()
-and bpf_store_hdr_opt() into their own option?
-Then during option writing side the tcp header will have two or more
-options with the same kind and magic.
-Obviously it creates a headache during parsing. Which bpf prog
-should be called for each option?
-
-I suspect tcp draft actually prefers all options to have unique kind+magic.
-Can we add an attribute to prog load time that will request particular magic ?
-Then only that _one_ program will be called for the given kind+magic.
-We can still have multiple progs attached to a cgroup (likely root cgroup)
-and different progs will take care of parsing and writing their own option.
-cgroup attaching side can make sure that multi progs have different magics.
-
-Saving multiple bpf_hdr_opt_off in patch 2 for different magics becomes
-problematic. So clearly the implementation complexity shots through the roof
-with above proposal, but it feels more flexible and more user friendly?
-Not a strong opinion. The feature is great as-is.
++1
+I think 'if (!id || id > btf_vmlinux->nr_types)' at run-time and
+other sanity checks I saw in other patches are unnecessary.
+resolve_btfids should do all checks and fail vmlinux linking.
+We trust gcc to generate correct assembly code in the first place
+and correct dwarf. We trust pahole do correct BTF conversion from
+dwarf and dedup. We should trust resolve_btfids.
+It's imo the simplest tool comparing to gcc.
+btf_parse_vmlinux() is doing basic sanity check of BTF mainly
+to populate 'struct btf *btf_vmlinux;' for further use.
+I think we can add a scan over resolved btfids to btf_parse_vmlinux()
+to make sure that all ids are within the range, but I don't think
+it's mandatory for this patch set. Would be a reasonable sanity
+check for the future. Of course, checking for sorted set_start/end
+is overkill. Basic simplest sanity is ok.
