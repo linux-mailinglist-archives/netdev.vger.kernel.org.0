@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0ADD20CA38
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 21:55:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFB8120CA24
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 21:55:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727116AbgF1TzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 15:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
+        id S1726891AbgF1Txw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 15:53:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726805AbgF1Txq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 15:53:46 -0400
+        with ESMTP id S1726824AbgF1Txr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 15:53:47 -0400
 Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4B3C03E97A;
-        Sun, 28 Jun 2020 12:53:45 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id w16so14530560ejj.5;
-        Sun, 28 Jun 2020 12:53:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6F4C03E979;
+        Sun, 28 Jun 2020 12:53:46 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id i14so14511919ejr.9;
+        Sun, 28 Jun 2020 12:53:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fPjGvKjCW6dK/yqgmCOTvyeAHLhCf44/++vEZ5RXXKU=;
-        b=N26PmMbXjO9VvHE1IPZi79DwLxnuHcB5r05bGLEldj5dLdZ8/+uUMXW5UJlY8EKCeo
-         ZMmXjyquOspJC5T1GH/7rnVhpHQ6BUzZsgrbjYosAtC09AAaxsisBWvGeYEznNR4rxYa
-         AF8F3IQaWucFKA7lsaczsbG6x+rXkXhYP9TFa26Q43ZuAX5IzMydqEA1GZAmYF7KBDRo
-         IHQbpFOMygcwpxirsSnfQw3+MBVWkXuOHAHo5B61fBkTb7K0aAVWeVZi9Stqc2jExS/y
-         iVrjDtrsc92VYFzBHquc+V5nRs12CRdpNYo+XwNknWk5Lounx4XtwVxRYrNOlGZYFKkY
-         Lziw==
+        bh=Lytj8JREnMITA3Qx/LJdVYiI5LTDssfwED1xOl5FxoM=;
+        b=s5sJzU+WEEpr1/XqsXUOXsZ9DleB4kE2Itb7EK9Sfi0VoP/AqFQGI+MLcqPnlR65MT
+         UJhYLCBCsgOHo1CfSN4DablGz78ThZgMvlq4sJceEM4kqx7lnE8eA9ixrBdVnPa4ZDO/
+         u12VYqMCP6Cmh0/ntMEzxo12eBiAfRrgOktn3JHB3M82qnIovlpkcNv0f5GQwphsoINY
+         1IrgAEuaMlJgrLXQCUivQTQ3QC47ObIOqo4ZLJKRQCapLEt43KxdqFzqaPz8tonp1Wy6
+         doCl3XS1oe7IorGTSnMGHkVVDA6vzPBAopIVuJYNhBtWGV2XidswvWOm5uRMquxQiVvE
+         73Cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fPjGvKjCW6dK/yqgmCOTvyeAHLhCf44/++vEZ5RXXKU=;
-        b=X5jkDFZEEnm0URzOsRvaUrrfhp3WvbQPKUymuXmW8m0HOiD54KJ8DsRYpsL+HMVMtx
-         iGT5Jrxx3aqLfxbuEg5nw1tenfjLVhU65RrJIY06HRYt73IvqHsXYUmpTmkfzNBmbta0
-         xTjen1WZv7vvumJizW1qrQEVdGzRYKKqyEMMw/j9yndV+wEe/dyWfhCohHPL2LQdPeUZ
-         HLGcwN6XqIwCYetEQCpRxOeF6G0bW6vsGOB1afx7M+QPoD+QCDUsWTieWhcwhRdsjO2P
-         sp8BTJ7y0e9Ptl4BKRxtCy0mDyG8+3E/w45K5OUcdICTVhVAQOcPWTX+b6rPVcbtZcFi
-         Z9Cg==
-X-Gm-Message-State: AOAM532Jw31Jt9M/h3qgKKSCQorkww1UK3HRXpp3jolc8c/foVTwZMen
-        VLcPty7Cx064AzOtfJWFIfE=
-X-Google-Smtp-Source: ABdhPJxxTdHTa56fOOFdq5+yu9QGRGlvURcWLD/3ueZenKrbEQKWCdITdgdnRJDxPaSpQH6u5op/Ng==
-X-Received: by 2002:a17:906:6410:: with SMTP id d16mr11845024ejm.376.1593374024492;
-        Sun, 28 Jun 2020 12:53:44 -0700 (PDT)
+        bh=Lytj8JREnMITA3Qx/LJdVYiI5LTDssfwED1xOl5FxoM=;
+        b=jgRncCqEDk9FuqT3GDS6xQzuwLAWQEVnw/TgHcPmqnPOl+DgvLlXMfhhvo75VNwj7Q
+         9bEFAW/7B8wqc07I7rW7CGYLdcnxGMjYZw9e0B3/jrn1yYExJ7SZD7vyWqlYc3oPmUin
+         +aAaltarHZax5IZ2nxpVpTxHQxxjPFgZfSFfk9fuo0Tv4OBwB9aMzaw6fA2MrBZY6hgE
+         fID1fprh9Zc6groc/Tz5QWCBPgjDFsYfXHPxQ0iHlQflpfUdbhsDMJLGcS7XMc9io55t
+         jaiOCBf/QpiGOGp8Cj4w8GScBpDQ/QIMjk+6pi7dxtfDU3aFLm6PugDpPXDsZacu1Mn9
+         OUsA==
+X-Gm-Message-State: AOAM532lnodzoVIrGwPDlOHHRyHua1A2s2DqFZjuqqGDXPse6F6gaWhg
+        mAyfBmr2JuneRivIhCIFcDQ=
+X-Google-Smtp-Source: ABdhPJyFGjpjxauvlOMVPeyy9QgZWnFiQZg1zetVmwhixDKXtyZ7aTWen5+dnV6Ij3PL3Tb51BHdlw==
+X-Received: by 2002:a17:907:72ca:: with SMTP id du10mr11055838ejc.78.1593374025363;
+        Sun, 28 Jun 2020 12:53:45 -0700 (PDT)
 Received: from localhost.localdomain ([2a02:a03f:b7f9:7600:f145:9a83:6418:5a5c])
-        by smtp.gmail.com with ESMTPSA id z8sm15669531eju.106.2020.06.28.12.53.43
+        by smtp.gmail.com with ESMTPSA id z8sm15669531eju.106.2020.06.28.12.53.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sun, 28 Jun 2020 12:53:44 -0700 (PDT)
 From:   Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
@@ -53,9 +53,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         oss-drivers@netronome.com, linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Subject: [PATCH 02/15] caif: fix caif_xmit()'s return type
-Date:   Sun, 28 Jun 2020 21:53:24 +0200
-Message-Id: <20200628195337.75889-3-luc.vanoostenryck@gmail.com>
+Subject: [PATCH 03/15] caif: fix cfspi_xmit()'s return type
+Date:   Sun, 28 Jun 2020 21:53:25 +0200
+Message-Id: <20200628195337.75889-4-luc.vanoostenryck@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200628195337.75889-1-luc.vanoostenryck@gmail.com>
 References: <20200628195337.75889-1-luc.vanoostenryck@gmail.com>
@@ -70,26 +70,36 @@ The method ndo_start_xmit() is defined as returning an 'netdev_tx_t',
 which is a typedef for an enum type, but the implementation in this
 driver returns an 'int'.
 
-Fix this by returning 'netdev_tx_t' in this driver too.
+Fix this by returning 'netdev_tx_t' in this driver too and
+returning NETDEV_TX_OK instead of 0 accordingly.
 
 Signed-off-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
 ---
- drivers/net/caif/caif_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/caif/caif_spi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
-index d737ceb61203..bcc14c5875bf 100644
---- a/drivers/net/caif/caif_serial.c
-+++ b/drivers/net/caif/caif_serial.c
-@@ -266,7 +266,7 @@ static int handle_tx(struct ser_device *ser)
- 	return tty_wr;
+diff --git a/drivers/net/caif/caif_spi.c b/drivers/net/caif/caif_spi.c
+index 63f2548f5b1b..7d5899626130 100644
+--- a/drivers/net/caif/caif_spi.c
++++ b/drivers/net/caif/caif_spi.c
+@@ -488,7 +488,7 @@ static void cfspi_xfer_done_cb(struct cfspi_ifc *ifc)
+ 	complete(&cfspi->comp);
  }
  
--static int caif_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t caif_xmit(struct sk_buff *skb, struct net_device *dev)
+-static int cfspi_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t cfspi_xmit(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct ser_device *ser;
+ 	struct cfspi *cfspi = NULL;
+ 	unsigned long flags;
+@@ -514,7 +514,7 @@ static int cfspi_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		cfspi->cfdev.flowctrl(cfspi->ndev, 0);
+ 	}
  
+-	return 0;
++	return NETDEV_TX_OK;
+ }
+ 
+ int cfspi_rxfrm(struct cfspi *cfspi, u8 *buf, size_t len)
 -- 
 2.27.0
 
