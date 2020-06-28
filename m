@@ -2,62 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A52A520C857
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 16:11:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D5EB20C891
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 16:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726473AbgF1OLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 10:11:06 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:35090 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726344AbgF1OLF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 10:11:05 -0400
-Received: by mail-il1-f197.google.com with SMTP id m14so10479082iln.2
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 07:11:05 -0700 (PDT)
+        id S1726594AbgF1OuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 10:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726426AbgF1OuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 10:50:06 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D2DC03E979;
+        Sun, 28 Jun 2020 07:50:05 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id o18so9621692eje.7;
+        Sun, 28 Jun 2020 07:50:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i1zigYgRRO0ONYXURNqrQgGhLyNX6ERoSrFBybbOwfo=;
+        b=nEhlXiHrnPi4V+nRv+KfSN0zz+t0kobmoVztNqOuEcqjB0YXMoCl4YvSWMXwPdGl6i
+         yPUpIpSEKcY/8VnhpN/hfEmphkSeDqRsYayaFW1T75UgjfGPmS6MjSLYueBCVsvxba5p
+         GTdfa66dYHoOC3pmmfKuxJQyDTAZPl2BTl7f7nHC0crQ0QF68OUlmLjFttVxO4akMS2L
+         R7RWnQJLeok2CoN5du4eCArkihMxwe+U10fy4L2+99fbZKRzY5awlIm+gG52BwD9ctVT
+         jyziXCK+kXpY5YI3YGpbt7XMGR1CMB0JVMrGRDzX6JORv8foEbl09SFFcrxLu8s3taT4
+         2T5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=e3mM+wVWZMbblXjHpKh3rVh40chIjEQjp+JbUdH4Rk8=;
-        b=rfk1UU9Kh3q5RDMeqladyA/9Teg1ioqoYTToXxbn5lpaNwN4Y+7XcHQYAim4GrDMek
-         p3PMHraaaJxP6R1/D6TqEGaWxSeVJXjyNZGaFclkiKHsXpqqw/5UWis6mK0T7HbppD4K
-         JckxLwowwNNIwvSe2oly5ToWGxYHrvFW+ZN0OSslA9C5tTN8sdCS7FJB2Ib8mrcRUMIP
-         Ho00ZbFv5SLxdYltDEnAQ9UlptMCYW1OLE+KRD+kgGD2Mew8jv4qv6Hs/sIUWTVRsrfB
-         okV4nRvboOFmB8EJHwcFxKdc+WHhRBVEmuXEcBpGX5rq/ocVy9bmMgTvuJP3smO82SBu
-         BL3g==
-X-Gm-Message-State: AOAM532fZ7g4vF+WQL5U3DRUJRdBx3xxxohzUY8GyhsQ1zEk2kyAnn53
-        BriOZpcFRh+qzcn8bqKhXZR/jfQ+wMv6emciF3AQ1bKCH2y7
-X-Google-Smtp-Source: ABdhPJz5MwNDHEotHDtTCu6kgkRqMjtTHZ3HOcTj8A4ZUaTiR/zkq5ulZ5jdY9rlNC6HnAnYr5pTa3pe9jMG8+5SS3I+fOL0zhJz
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i1zigYgRRO0ONYXURNqrQgGhLyNX6ERoSrFBybbOwfo=;
+        b=Zlq6aETGMWKsaJq9kSM/Nx+75gIDmfUepyJlDHBeRFNXgBF3nR3xevA8KvX4U1jn+a
+         Qgn6+uz3slkNzcgHtqu+4ylcbYM5z9bZFuv09PQ4/QmqaTQSMv4APgMd0LCieupu6ukO
+         vWIx8emsZuL9zG+NZuWEbIEviGCn4CYWg7iy86vhDTvkTjgl22OjC0wZ1KtiWrgLiq6g
+         QT2z8xkQRHkjoWklTdYjbeSEr83gCHcTBTff829CmPJShi+6ry2lvq2jLqVL9mbIKIv7
+         X9oD7PfW6gavsZjDp7V7DS0CKYwVyKdnoDky8PiPBSCdyGoxwYTCq7IOj8FjpXaJX1Iu
+         3Buw==
+X-Gm-Message-State: AOAM5309FSh1ckO6qAPihAB6hnmauW87HD0re9gFsi6olW3o9j9f8w3K
+        80tDONl31DgO/21ptO2tBzLskaZa
+X-Google-Smtp-Source: ABdhPJyhbKCsNh6t45fFwW3y8KDtdmQRNureOQv/4kYFR7sVB4xgCZel1lwDUkEMYtfHoiohspnBNQ==
+X-Received: by 2002:a17:906:1db1:: with SMTP id u17mr4994044ejh.72.1593355804429;
+        Sun, 28 Jun 2020 07:50:04 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.56.128])
+        by smtp.gmail.com with ESMTPSA id qc16sm6859768ejb.33.2020.06.28.07.50.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Jun 2020 07:50:03 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH net] lib: packing: add documentation for pbuflen argument
+Date:   Sun, 28 Jun 2020 17:49:35 +0300
+Message-Id: <20200628144935.700891-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:236:: with SMTP id f22mr13173946jaq.18.1593353465153;
- Sun, 28 Jun 2020 07:11:05 -0700 (PDT)
-Date:   Sun, 28 Jun 2020 07:11:05 -0700
-In-Reply-To: <CAM_iQpUHiSsfkT8tzwAg7CKYXQQ4ZsROxKZbHKv0LxwrPeM=Jw@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004ad07105a9258303@google.com>
-Subject: Re: possible deadlock in dev_mc_unsync
-From:   syzbot <syzbot+08e3d39f3eb8643216be@syzkaller.appspotmail.com>
-To:     ap420073@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Fixes sparse warning:
 
-syzbot has tested the proposed patch and the reproducer did not trigger crash:
+Function parameter or member 'pbuflen' not described in 'packing'
 
-Reported-and-tested-by: syzbot+08e3d39f3eb8643216be@syzkaller.appspotmail.com
+Fixes: 554aae35007e ("lib: Add support for generic packing operations")
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+Hi David, since the original "packing" submission went in through your
+tree, could you please take this patch as well?
 
-Tested on:
+ lib/packing.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-commit:         152c6a4d genetlink: get rid of family->attrbuf
-git tree:       https://github.com/congwang/linux.git net
-kernel config:  https://syzkaller.appspot.com/x/.config?x=bf3aec367b9ab569
-dashboard link: https://syzkaller.appspot.com/bug?extid=08e3d39f3eb8643216be
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+diff --git a/lib/packing.c b/lib/packing.c
+index 50d1e9f2f5a7..6ed72dccfdb5 100644
+--- a/lib/packing.c
++++ b/lib/packing.c
+@@ -73,6 +73,7 @@ static void adjust_for_msb_right_quirk(u64 *to_write, int *box_start_bit,
+  * @endbit: The index (in logical notation, compensated for quirks) where
+  *	    the packed value ends within pbuf. Must be smaller than, or equal
+  *	    to, startbit.
++ * @pbuflen: The length in bytes of the packed buffer pointed to by @pbuf.
+  * @op: If PACK, then uval will be treated as const pointer and copied (packed)
+  *	into pbuf, between startbit and endbit.
+  *	If UNPACK, then pbuf will be treated as const pointer and the logical
+-- 
+2.25.1
 
-Note: testing is done by a robot and is best-effort only.
