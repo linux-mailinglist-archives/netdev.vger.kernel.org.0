@@ -2,335 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6278D20C761
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 12:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1ECD20C76E
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 12:46:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726209AbgF1KSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 06:18:03 -0400
-Received: from smtprelay0032.hostedemail.com ([216.40.44.32]:35278 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725921AbgF1KSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 06:18:01 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id DB0A7100E7B42;
-        Sun, 28 Jun 2020 10:17:58 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:1:41:69:355:379:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1437:1515:1516:1518:1593:1594:1605:1730:1747:1777:1792:2393:2559:2562:2639:2828:3138:3139:3140:3141:3142:3865:3866:3870:4250:4321:5007:6119:7903:10004:10848:11026:11473:11657:11658:11914:12043:12296:12297:12438:12555:12760:12986:13019:13439:14096:14097:14394:14659:21080:21627:30054,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: fish10_56116cb26e65
-X-Filterd-Recvd-Size: 13992
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf18.hostedemail.com (Postfix) with ESMTPA;
-        Sun, 28 Jun 2020 10:17:57 +0000 (UTC)
-Message-ID: <0f24268338756bb54b4e44674db4aaf90f8a9fca.camel@perches.com>
-Subject: [PATCH] rtlwifi/*/dm.c: Use const in swing_table declarations
-From:   Joe Perches <joe@perches.com>
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Date:   Sun, 28 Jun 2020 03:17:56 -0700
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.2-0ubuntu1 
+        id S1726236AbgF1Kqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 06:46:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54000 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726224AbgF1Kqa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 06:46:30 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C663C061794
+        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 03:46:30 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id q90so6040309pjh.3
+        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 03:46:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=TTtXa32uJyWj3FRcxIy4EyMjKYs5SGNE53PC4IscXDE=;
+        b=jOulqLsVlrSWBX+LT1abjIINRCsX/cnP1J7x71HAzH4RQh1LbA26mGKdjTYlzEuE66
+         LRjwsaONRcYMhDptwHb8IDkOl0DRcpGcq7B8Sn5ZiKueMqAnaxCjHR1g6v+bqF0agYYN
+         o8gV0Sl4X9LYHf+XtkPII832oOzQltEuq8w1422UU/7kZf5T7SO/OB0CMZUgODXeYze7
+         Ma4iM7vAFfox2wL5l8DELr3nPu97fFH6MYV32hh1lDHqGznOCFs6Qgk2cE4uH0gWANAf
+         3RL/E2ImJugwvJbU2GvLbHXc7M2E9jZ7HW3ha7+hiDP2m0eWliXQ6TnEijyz0DmTnyVc
+         bIgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=TTtXa32uJyWj3FRcxIy4EyMjKYs5SGNE53PC4IscXDE=;
+        b=S3YCsiBps9Ea6FcywZvwBJpVWC80EKYz6sBk08Z0+ii79IA+mWdX/TOGMl/xVmwd5w
+         t3uvT3CFbn1w7tqZZxYdL80L3eQy1QgoXiTyhIGFnwSi3W9p7hAIPB8H5WVRwS2jvIu/
+         ytOmf0GP5/fFqBPZtPNMO8feBtECQ3MFTca+0l+/gNoaU2iYTCVj346kwrCmjHSoSuea
+         2EzMIMXSlEemXvboFpZB9ElJWrOFIsPje/QYqTPGRMLrzDu9OB5KIQdEHrbrc0rBOWor
+         RTIH+H50gOtM7oFeI+ll6vTTvIGysd7ZKA8dOzpgpflgNP/DhBAguoCF0Tu3vGOxEf2V
+         wjhQ==
+X-Gm-Message-State: AOAM530D6pPy1wuxlaYhsN3H5rGlldx7VxMr8aYLA4uOfDEprWUF2xud
+        93OsojK/I4VFUU/HNJnuw1pC9Flt8w==
+X-Google-Smtp-Source: ABdhPJySkC8UYu4uVLtRsEZKAK0N9fXaRefUcuzqmHHs2lLB4Wvq6N7U3XM0KIROl6KaHS9zGFVTyg==
+X-Received: by 2002:a17:90a:2dcb:: with SMTP id q11mr5157690pjm.135.1593341189484;
+        Sun, 28 Jun 2020 03:46:29 -0700 (PDT)
+Received: from Mani-XPS-13-9360 ([2409:4072:59f:de4a:a853:58c7:2fe6:68c8])
+        by smtp.gmail.com with ESMTPSA id j8sm2416598pfd.145.2020.06.28.03.46.25
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 28 Jun 2020 03:46:28 -0700 (PDT)
+Date:   Sun, 28 Jun 2020 16:16:23 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     bjorn.andersson@linaro.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: slab-out-of-bounds Read in qrtr_endpoint_post
+Message-ID: <20200628104623.GA3357@Mani-XPS-13-9360>
+References: <000000000000f728fc05a90ce9c9@google.com>
+ <000000000000e817ba05a91711b0@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000e817ba05a91711b0@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reduce data usage about 1KB by using const.
+Hi Bjorn,
 
-Signed-off-by: Joe Perches <joe@perches.com>
----
- .../net/wireless/realtek/rtlwifi/rtl8188ee/dm.c    |  4 +-
- .../net/wireless/realtek/rtlwifi/rtl8723be/dm.c    |  4 +-
- .../net/wireless/realtek/rtlwifi/rtl8821ae/dm.c    | 98 ++++++++++++----------
- 3 files changed, 56 insertions(+), 50 deletions(-)
+On Sat, Jun 27, 2020 at 01:57:13PM -0700, syzbot wrote:
+> syzbot has found a reproducer for the following crash on:
+> 
+> HEAD commit:    1590a2e1 Merge tag 'acpi-5.8-rc3' of git://git.kernel.org/..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=14b2b503100000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=bf3aec367b9ab569
+> dashboard link: https://syzkaller.appspot.com/bug?extid=b8fe393f999a291a9ea6
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> userspace arch: i386
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=109e6b55100000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13671a3d100000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+b8fe393f999a291a9ea6@syzkaller.appspotmail.com
+> 
+> ==================================================================
+> BUG: KASAN: slab-out-of-bounds in qrtr_endpoint_post+0xeeb/0x1010 net/qrtr/qrtr.c:462
+> Read of size 2 at addr ffff88809de50c48 by task syz-executor531/6806
+> 
+> CPU: 0 PID: 6806 Comm: syz-executor531 Not tainted 5.8.0-rc2-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x18f/0x20d lib/dump_stack.c:118
+>  print_address_description.constprop.0.cold+0xae/0x436 mm/kasan/report.c:383
+>  __kasan_report mm/kasan/report.c:513 [inline]
+>  kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
+>  qrtr_endpoint_post+0xeeb/0x1010 net/qrtr/qrtr.c:462
+>  qrtr_tun_write_iter+0xf5/0x180 net/qrtr/tun.c:92
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c
-index dceb04a9b3f5..1ffa188a65c9 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c
-@@ -870,11 +870,11 @@ static void dm_txpower_track_cb_therm(struct ieee80211_hw *hw)
- 	/*0.1 the following TWO tables decide the
- 	 *final index of OFDM/CCK swing table
- 	 */
--	s8 delta_swing_table_idx[2][15]  = {
-+	static const s8 delta_swing_table_idx[2][15]  = {
- 		{0, 0, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11},
- 		{0, 0, -1, -2, -3, -4, -4, -4, -4, -5, -7, -8, -9, -9, -10}
- 	};
--	u8 thermal_threshold[2][15] = {
-+	static const u8 thermal_threshold[2][15] = {
- 		{0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 27},
- 		{0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 25, 25, 25}
- 	};
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c
-index b13fd3c0c832..c9b3d9d09c48 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723be/dm.c
-@@ -736,11 +736,11 @@ static void rtl8723be_dm_txpower_tracking_callback_thermalmeter(
- 	u8 ofdm_min_index = 6;
- 	u8 index_for_channel = 0;
- 
--	s8 delta_swing_table_idx_tup_a[TXSCALE_TABLE_SIZE] = {
-+	static const s8 delta_swing_table_idx_tup_a[TXSCALE_TABLE_SIZE] = {
- 		0, 0, 1, 2, 2, 2, 3, 3, 3, 4,  5,
- 		5, 6, 6, 7, 7, 8, 8, 9, 9, 9, 10,
- 		10, 11, 11, 12, 12, 13, 14, 15};
--	s8 delta_swing_table_idx_tdown_a[TXSCALE_TABLE_SIZE] = {
-+	static const s8 delta_swing_table_idx_tdown_a[TXSCALE_TABLE_SIZE] = {
- 		0, 0, 1, 2, 2, 2, 3, 3, 3, 4,  5,
- 		5, 6, 6, 6, 6, 7, 7, 7, 8, 8,  9,
- 		9, 10, 10, 11, 12, 13, 14, 15};
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
-index f57e8794f0ec..b8e653eb8817 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
-@@ -115,47 +115,47 @@ static const u32 edca_setting_ul[PEER_MAX] = {
- 	0x5ea44f,	/* 7 MARV */
- };
- 
--static u8 rtl8818e_delta_swing_table_idx_24gb_p[] = {
-+static const u8 rtl8818e_delta_swing_table_idx_24gb_p[] = {
- 	0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 4, 4,
- 	4, 4, 4, 5, 5, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9};
- 
--static u8 rtl8818e_delta_swing_table_idx_24gb_n[] = {
-+static const u8 rtl8818e_delta_swing_table_idx_24gb_n[] = {
- 	0, 0, 0, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5, 6, 6,
- 	7, 7, 7, 7, 8, 8, 9, 9, 10, 10, 10, 11, 11, 11, 11};
- 
--static u8 rtl8812ae_delta_swing_table_idx_24gb_n[]  = {
-+static const u8 rtl8812ae_delta_swing_table_idx_24gb_n[]  = {
- 	0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6,
- 	6, 6, 7, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11};
- 
--static u8 rtl8812ae_delta_swing_table_idx_24gb_p[] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_24gb_p[] = {
- 	0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6,
- 	6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9};
- 
--static u8 rtl8812ae_delta_swing_table_idx_24ga_n[] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_24ga_n[] = {
- 	0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6,
- 	6, 6, 7, 8, 8, 9, 9, 9, 10, 10, 10, 10, 11, 11};
- 
--static u8 rtl8812ae_delta_swing_table_idx_24ga_p[] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_24ga_p[] = {
- 	0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6,
- 	6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9};
- 
--static u8 rtl8812ae_delta_swing_table_idx_24gcckb_n[] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_24gcckb_n[] = {
- 	0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6,
- 	6, 6, 7, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11};
- 
--static u8 rtl8812ae_delta_swing_table_idx_24gcckb_p[] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_24gcckb_p[] = {
- 	0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6,
- 	6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9};
- 
--static u8 rtl8812ae_delta_swing_table_idx_24gccka_n[] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_24gccka_n[] = {
- 	0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6,
- 	6, 6, 7, 8, 8, 9, 9, 9, 10, 10, 10, 10, 11, 11};
- 
--static u8 rtl8812ae_delta_swing_table_idx_24gccka_p[] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_24gccka_p[] = {
- 	0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6,
- 	6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9};
- 
--static u8 rtl8812ae_delta_swing_table_idx_5gb_n[][DEL_SW_IDX_SZ] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_5gb_n[][DEL_SW_IDX_SZ] = {
- 	{0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6, 7, 7,
- 	7, 8, 8, 9, 9, 9, 10, 10, 11, 11, 12, 12, 13},
- 	{0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7,
-@@ -164,7 +164,7 @@ static u8 rtl8812ae_delta_swing_table_idx_5gb_n[][DEL_SW_IDX_SZ] = {
- 	12, 12, 13, 14, 14, 14, 15, 16, 17, 17, 17, 18, 18, 18},
- };
- 
--static u8 rtl8812ae_delta_swing_table_idx_5gb_p[][DEL_SW_IDX_SZ] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_5gb_p[][DEL_SW_IDX_SZ] = {
- 	{0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6, 7, 7, 8,
- 	8, 9, 9, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11},
- 	{0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 7, 8,
-@@ -173,7 +173,7 @@ static u8 rtl8812ae_delta_swing_table_idx_5gb_p[][DEL_SW_IDX_SZ] = {
- 	9, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11},
- };
- 
--static u8 rtl8812ae_delta_swing_table_idx_5ga_n[][DEL_SW_IDX_SZ] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_5ga_n[][DEL_SW_IDX_SZ] = {
- 	{0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 7, 8,
- 	8, 9, 9, 10, 10, 11, 11, 12, 12, 12, 13, 13, 13},
- 	{0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 9,
-@@ -182,7 +182,7 @@ static u8 rtl8812ae_delta_swing_table_idx_5ga_n[][DEL_SW_IDX_SZ] = {
- 	12, 13, 14, 14, 15, 15, 15, 16, 16, 16, 17, 17, 18, 18},
- };
- 
--static u8 rtl8812ae_delta_swing_table_idx_5ga_p[][DEL_SW_IDX_SZ] = {
-+static const u8 rtl8812ae_delta_swing_table_idx_5ga_p[][DEL_SW_IDX_SZ] = {
- 	{0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5, 6, 7, 7, 8,
- 	8, 9, 9, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11},
- 	{0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 7, 8,
-@@ -191,39 +191,39 @@ static u8 rtl8812ae_delta_swing_table_idx_5ga_p[][DEL_SW_IDX_SZ] = {
- 	10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11},
- };
- 
--static u8 rtl8821ae_delta_swing_table_idx_24gb_n[] = {
-+static const u8 rtl8821ae_delta_swing_table_idx_24gb_n[] = {
- 	0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6,
- 	6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10};
- 
--static u8 rtl8821ae_delta_swing_table_idx_24gb_p[]  = {
-+static const u8 rtl8821ae_delta_swing_table_idx_24gb_p[]  = {
- 	0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8,
- 	8, 9, 9, 10, 10, 11, 11, 12, 12, 12, 12, 12, 12};
- 
--static u8 rtl8821ae_delta_swing_table_idx_24ga_n[]  = {
-+static const u8 rtl8821ae_delta_swing_table_idx_24ga_n[]  = {
- 	0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6,
- 	6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10};
- 
--static u8 rtl8821ae_delta_swing_table_idx_24ga_p[] = {
-+static const u8 rtl8821ae_delta_swing_table_idx_24ga_p[] = {
- 	0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8,
- 	8, 9, 9, 10, 10, 11, 11, 12, 12, 12, 12, 12, 12};
- 
--static u8 rtl8821ae_delta_swing_table_idx_24gcckb_n[] = {
-+static const u8 rtl8821ae_delta_swing_table_idx_24gcckb_n[] = {
- 	0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6,
- 	6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10};
- 
--static u8 rtl8821ae_delta_swing_table_idx_24gcckb_p[] = {
-+static const u8 rtl8821ae_delta_swing_table_idx_24gcckb_p[] = {
- 	0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8,
- 	8, 9, 9, 10, 10, 11, 11, 12, 12, 12, 12, 12, 12};
- 
--static u8 rtl8821ae_delta_swing_table_idx_24gccka_n[] = {
-+static const u8 rtl8821ae_delta_swing_table_idx_24gccka_n[] = {
- 	0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6,
- 	6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10};
- 
--static u8 rtl8821ae_delta_swing_table_idx_24gccka_p[] = {
-+static const u8 rtl8821ae_delta_swing_table_idx_24gccka_p[] = {
- 	0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8,
- 	8, 9, 9, 10, 10, 11, 11, 12, 12, 12, 12, 12, 12};
- 
--static u8 rtl8821ae_delta_swing_table_idx_5gb_n[][DEL_SW_IDX_SZ] = {
-+static const u8 rtl8821ae_delta_swing_table_idx_5gb_n[][DEL_SW_IDX_SZ] = {
- 	{0, 0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11,
- 	12, 12, 13, 14, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16},
- 	{0, 0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11,
-@@ -232,7 +232,7 @@ static u8 rtl8821ae_delta_swing_table_idx_5gb_n[][DEL_SW_IDX_SZ] = {
- 	12, 12, 13, 14, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16},
- };
- 
--static u8 rtl8821ae_delta_swing_table_idx_5gb_p[][DEL_SW_IDX_SZ] = {
-+static const u8 rtl8821ae_delta_swing_table_idx_5gb_p[][DEL_SW_IDX_SZ] = {
- 	{0, 0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11,
- 	12, 12, 13, 14, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16},
- 	{0, 0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11,
-@@ -241,7 +241,7 @@ static u8 rtl8821ae_delta_swing_table_idx_5gb_p[][DEL_SW_IDX_SZ] = {
- 	12, 12, 13, 14, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16},
- };
- 
--static u8 rtl8821ae_delta_swing_table_idx_5ga_n[][DEL_SW_IDX_SZ] = {
-+static const u8 rtl8821ae_delta_swing_table_idx_5ga_n[][DEL_SW_IDX_SZ] = {
- 	{0, 0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11,
- 	12, 12, 13, 14, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16},
- 	{0, 0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11,
-@@ -250,7 +250,7 @@ static u8 rtl8821ae_delta_swing_table_idx_5ga_n[][DEL_SW_IDX_SZ] = {
- 	12, 12, 13, 14, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16},
- };
- 
--static u8 rtl8821ae_delta_swing_table_idx_5ga_p[][DEL_SW_IDX_SZ] = {
-+static const u8 rtl8821ae_delta_swing_table_idx_5ga_p[][DEL_SW_IDX_SZ] = {
- 	{0, 0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11,
- 	12, 12, 13, 14, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16},
- 	{0, 0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11,
-@@ -962,8 +962,10 @@ static void rtl8821ae_dm_iq_calibrate(struct ieee80211_hw *hw)
- }
- 
- static void rtl8812ae_get_delta_swing_table(struct ieee80211_hw *hw,
--					    u8 **up_a, u8 **down_a,
--					    u8 **up_b, u8 **down_b)
-+					    const u8 **up_a,
-+					    const u8 **down_a,
-+					    const u8 **up_b,
-+					    const u8 **down_b)
- {
- 	struct rtl_priv *rtlpriv = rtl_priv(hw);
- 	struct rtl_phy *rtlphy = &rtlpriv->phy;
-@@ -1492,17 +1494,17 @@ void rtl8812ae_dm_txpower_tracking_callback_thermalmeter(
- 	/* 1. The following TWO tables decide
- 	 * the final index of OFDM/CCK swing table.
- 	 */
--	u8 *delta_swing_table_idx_tup_a;
--	u8 *delta_swing_table_idx_tdown_a;
--	u8 *delta_swing_table_idx_tup_b;
--	u8 *delta_swing_table_idx_tdown_b;
-+	const u8 *delta_swing_table_idx_tup_a;
-+	const u8 *delta_swing_table_idx_tdown_a;
-+	const u8 *delta_swing_table_idx_tup_b;
-+	const u8 *delta_swing_table_idx_tdown_b;
- 
- 	/*2. Initilization ( 7 steps in total )*/
- 	rtl8812ae_get_delta_swing_table(hw,
--		(u8 **)&delta_swing_table_idx_tup_a,
--		(u8 **)&delta_swing_table_idx_tdown_a,
--		(u8 **)&delta_swing_table_idx_tup_b,
--		(u8 **)&delta_swing_table_idx_tdown_b);
-+		&delta_swing_table_idx_tup_a,
-+		&delta_swing_table_idx_tdown_a,
-+		&delta_swing_table_idx_tup_b,
-+		&delta_swing_table_idx_tdown_b);
- 
- 	rtldm->txpower_trackinginit = true;
- 
-@@ -1830,8 +1832,11 @@ void rtl8812ae_dm_txpower_tracking_callback_thermalmeter(
- 		 "<===rtl8812ae_dm_txpower_tracking_callback_thermalmeter\n");
- }
- 
--static void rtl8821ae_get_delta_swing_table(struct ieee80211_hw *hw, u8 **up_a,
--					    u8 **down_a, u8 **up_b, u8 **down_b)
-+static void rtl8821ae_get_delta_swing_table(struct ieee80211_hw *hw,
-+					    const u8 **up_a,
-+					    const u8 **down_a,
-+					    const u8 **up_b,
-+					    const u8 **down_b)
- {
- 	struct rtl_priv *rtlpriv = rtl_priv(hw);
- 	struct rtl_phy *rtlphy = &rtlpriv->phy;
-@@ -2075,16 +2080,17 @@ void rtl8821ae_dm_txpower_tracking_callback_thermalmeter(
- 	/* 1. The following TWO tables decide the final
- 	 * index of OFDM/CCK swing table.
- 	 */
--	u8 *delta_swing_table_idx_tup_a;
--	u8 *delta_swing_table_idx_tdown_a;
--	u8 *delta_swing_table_idx_tup_b;
--	u8 *delta_swing_table_idx_tdown_b;
-+	const u8 *delta_swing_table_idx_tup_a;
-+	const u8 *delta_swing_table_idx_tdown_a;
-+	const u8 *delta_swing_table_idx_tup_b;
-+	const u8 *delta_swing_table_idx_tdown_b;
- 
- 	/*2. Initilization ( 7 steps in total )*/
--	rtl8821ae_get_delta_swing_table(hw, (u8 **)&delta_swing_table_idx_tup_a,
--					(u8 **)&delta_swing_table_idx_tdown_a,
--					(u8 **)&delta_swing_table_idx_tup_b,
--					(u8 **)&delta_swing_table_idx_tdown_b);
-+	rtl8821ae_get_delta_swing_table(hw,
-+					&delta_swing_table_idx_tup_a,
-+					&delta_swing_table_idx_tdown_a,
-+					&delta_swing_table_idx_tup_b,
-+					&delta_swing_table_idx_tdown_b);
- 
- 	rtldm->txpower_trackinginit = true;
- 
+Hmm. Is this due to the fact that we are not checking the length of the
+kbuf allocated in qrtr_tun_write_iter()? The length derived from
+'iov_iter_count(from)' gets used directly and that might be causing the
+out of bound access error here.
 
+Thanks,
+Mani
 
-
+>  call_write_iter include/linux/fs.h:1907 [inline]
+>  do_iter_readv_writev+0x567/0x780 fs/read_write.c:694
+>  do_iter_write+0x188/0x5f0 fs/read_write.c:999
+>  compat_writev+0x1ea/0x390 fs/read_write.c:1352
+>  do_compat_pwritev64+0x180/0x1b0 fs/read_write.c:1401
+>  do_syscall_32_irqs_on+0x3f/0x60 arch/x86/entry/common.c:403
+>  __do_fast_syscall_32 arch/x86/entry/common.c:448 [inline]
+>  do_fast_syscall_32+0x7f/0x120 arch/x86/entry/common.c:474
+>  entry_SYSENTER_compat+0x6d/0x7c arch/x86/entry/entry_64_compat.S:138
+> RIP: 0023:0xf7f8f569
+> Code: Bad RIP value.
+> RSP: 002b:00000000ffda5ffc EFLAGS: 00000292 ORIG_RAX: 000000000000014e
+> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000020000440
+> RDX: 0000000000000001 RSI: 0000000000000000 RDI: 00000000080bb528
+> RBP: 0000000000000012 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+> 
+> Allocated by task 6806:
+>  save_stack+0x1b/0x40 mm/kasan/common.c:48
+>  set_track mm/kasan/common.c:56 [inline]
+>  __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:494
+>  __do_kmalloc mm/slab.c:3656 [inline]
+>  __kmalloc+0x17a/0x340 mm/slab.c:3665
+>  kmalloc include/linux/slab.h:560 [inline]
+>  kzalloc include/linux/slab.h:669 [inline]
+>  qrtr_tun_write_iter+0x8a/0x180 net/qrtr/tun.c:83
+>  call_write_iter include/linux/fs.h:1907 [inline]
+>  do_iter_readv_writev+0x567/0x780 fs/read_write.c:694
+>  do_iter_write+0x188/0x5f0 fs/read_write.c:999
+>  compat_writev+0x1ea/0x390 fs/read_write.c:1352
+>  do_compat_pwritev64+0x180/0x1b0 fs/read_write.c:1401
+>  do_syscall_32_irqs_on+0x3f/0x60 arch/x86/entry/common.c:403
+>  __do_fast_syscall_32 arch/x86/entry/common.c:448 [inline]
+>  do_fast_syscall_32+0x7f/0x120 arch/x86/entry/common.c:474
+>  entry_SYSENTER_compat+0x6d/0x7c arch/x86/entry/entry_64_compat.S:138
+> 
+> Freed by task 1:
+>  save_stack+0x1b/0x40 mm/kasan/common.c:48
+>  set_track mm/kasan/common.c:56 [inline]
+>  kasan_set_free_info mm/kasan/common.c:316 [inline]
+>  __kasan_slab_free+0xf5/0x140 mm/kasan/common.c:455
+>  __cache_free mm/slab.c:3426 [inline]
+>  kfree+0x103/0x2c0 mm/slab.c:3757
+>  tomoyo_path_perm+0x234/0x3f0 security/tomoyo/file.c:842
+>  security_inode_getattr+0xcf/0x140 security/security.c:1278
+>  vfs_getattr fs/stat.c:121 [inline]
+>  vfs_statx+0x170/0x390 fs/stat.c:206
+>  vfs_lstat include/linux/fs.h:3301 [inline]
+>  __do_sys_newlstat+0x91/0x110 fs/stat.c:374
+>  do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> The buggy address belongs to the object at ffff88809de50c40
+>  which belongs to the cache kmalloc-32 of size 32
+> The buggy address is located 8 bytes inside of
+>  32-byte region [ffff88809de50c40, ffff88809de50c60)
+> The buggy address belongs to the page:
+> page:ffffea0002779400 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88809de50fc1
+> flags: 0xfffe0000000200(slab)
+> raw: 00fffe0000000200 ffffea000277e008 ffffea0002761c88 ffff8880aa0001c0
+> raw: ffff88809de50fc1 ffff88809de50000 000000010000003f 0000000000000000
+> page dumped because: kasan: bad access detected
+> 
+> Memory state around the buggy address:
+>  ffff88809de50b00: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+>  ffff88809de50b80: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+> >ffff88809de50c00: fb fb fb fb fc fc fc fc 04 fc fc fc fc fc fc fc
+>                                               ^
+>  ffff88809de50c80: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+>  ffff88809de50d00: fb fb fb fb fc fc fc fc 00 01 fc fc fc fc fc fc
+> ==================================================================
+> 
