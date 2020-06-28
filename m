@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBFA120CA19
+	by mail.lfdr.de (Postfix) with ESMTP id 6B1F020CA18
 	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 21:54:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726961AbgF1TyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 15:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52760 "EHLO
+        id S1726941AbgF1TyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 15:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726924AbgF1Tx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 15:53:56 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB5EC03E97A;
-        Sun, 28 Jun 2020 12:53:55 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id w6so14532413ejq.6;
-        Sun, 28 Jun 2020 12:53:55 -0700 (PDT)
+        with ESMTP id S1726834AbgF1Tx5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 15:53:57 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1966EC03E97B;
+        Sun, 28 Jun 2020 12:53:57 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id rk21so14544833ejb.2;
+        Sun, 28 Jun 2020 12:53:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lG9S6rgc6S6pXat0eM+7/QoqnspqcoylWLbEJTWZuTA=;
-        b=RSBTdQW8TfOZ6oE8hWinHSh4w1/3phHfHSs8L93fVaBW9cxnPtsmfMaT6lLhyyRm8t
-         N+in1akzVu4Si6Rr98Zq5kXDFEuPnOAkRKyAYd2KFzqvgZhljD+Jc1jeQFbhosUxQAqt
-         XTnEHXLuHDah/Q7O7jwN3gDxcF1x0RUPP8U5P5jho8nhkdg8t9DSkbpuCVaSl27CvYgY
-         Cy10Wr0TQ/B25KbZnuW7bxdb8fSMqvFcqPELJ5LQ+4bpkFuFA9hi8b6N0i2fWnwtoJSW
-         ViuQHhfJGCbe6c4Mm1tI8uSBFHAi9r1g+VVjoG6rry4KzLZtdfWUBa52JtJfA7tixpf+
-         jy9w==
+        bh=b9kv/WRpFNxhscBQ0mp9gvC658NN3RHBgTIAlVk4Lmo=;
+        b=QlgOiKYmjXAmGMVksdlwj06M102fXqaDHrqcbFl74zJlTv0xwj1vrhjvDDCDfemqft
+         6mtYiVK5Cy2YLkLDAggsCVYz2TBEjdEY3SdynA3TPdSYDiEKgzl6N+4KvgcSqqnEEX2I
+         0KVY7m6X7KpY1uyEJYGswOrrQ8N2NkJOhVybIV5Wu9eITZ2V36IjxYuP3qCvDnxvhs72
+         rLrxYLM0fI2ybFkfLpYv3x5GKiXyhXyAtI652hAsFc8TZZvCFOHmH8UCzkn4fIMJzNri
+         VWhyIpet71q6XZMlp3daV6QbWbIqqDVDqc9kuexHxB5sf9el04dpqWc1bS+EJH6AFihL
+         4SHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lG9S6rgc6S6pXat0eM+7/QoqnspqcoylWLbEJTWZuTA=;
-        b=mXkRsTs88/p2EO/7lgy3L3qNnh3/huF/wX8q3paDfCA1hpYG2jBZdO0JBuA8S6EPC/
-         FRxhw+ip4xb7KstBoKk+kinxVRSkQ8FRlYDLYvluKP6c2f/6BjwWRjBJT8d9FxTgJuuR
-         2i5Sc+loLYtOL62a4hPgzo5N0kPPtS7RXfVmqdcHoQtG1itAJcJOtu8v4NSuTJwr2rTr
-         XI+P58WR+C429atSfHdhCToA83+MJQgK29bApax5NRdzESuB2qEUz49aOdJHiQr6RJrC
-         dy8cgsmVYSRTlC59/AyAl4Zb8dNHU+swpdc+xzH4Bo+UpoiZjLlsXhyar3j4EGXRPZc4
-         NXMg==
-X-Gm-Message-State: AOAM530pPo2ccrsvXpqNdQmt/Rng1AmPmJWACwqStKm26FD+XaE+Wb1n
-        G7IHLWTAafZrSMLDBKrHdE4=
-X-Google-Smtp-Source: ABdhPJzFTsjHxDUS0X+9s1aMZdMme6m9QCTGIdVRVOluKrLNEQRpGod5gH/ba3CPWAvfc2zXf0iqaw==
-X-Received: by 2002:a17:906:7751:: with SMTP id o17mr11775877ejn.111.1593374034751;
-        Sun, 28 Jun 2020 12:53:54 -0700 (PDT)
+        bh=b9kv/WRpFNxhscBQ0mp9gvC658NN3RHBgTIAlVk4Lmo=;
+        b=IoK+G4MkCupjatW1uV0dStl7CMJLZX18jwZqUXCW8+MmdduoHgZZI5v+HmQSRUoW7Q
+         8b1s7mSNAgX5Gr76nFx7rxQCo+on71eclQtcIshcmTYPfX6ErURWRWC4i7l0Xe/rgVns
+         EomQhrsEWx4Mb439ENH29IYn+KY2iT2sP1GXmf2tEKX0tKdhmTu3/JRaweLmONGGcpNQ
+         bv/UyVSeETXkpiQ+7/qAbpsAEUWbvMmaZfmp+2lldYcXH0J6/LLlL5UeW9Q1/KGtBzsG
+         lA2aD2Yg+bGNDPXnK+tfsrVPOFBepcOemt6lKhCsQTEZKdkQN3pIyGLeMH79jg9luo3X
+         FiSA==
+X-Gm-Message-State: AOAM533IcZhuMw6i5s4uKz66tB8l5msfnA66/5LN+elmILuWBfdh1h3z
+        I01NK1tin7tIPmuZtz+tXUY=
+X-Google-Smtp-Source: ABdhPJwz+/sfJQ25wk8u3i0JEQcC45AjemvN/kuwHpDeY34B7oXVJ0M5WF3iVu1gHiUUWHZPdCMUZg==
+X-Received: by 2002:a17:906:ce32:: with SMTP id sd18mr11630711ejb.228.1593374035852;
+        Sun, 28 Jun 2020 12:53:55 -0700 (PDT)
 Received: from localhost.localdomain ([2a02:a03f:b7f9:7600:f145:9a83:6418:5a5c])
-        by smtp.gmail.com with ESMTPSA id z8sm15669531eju.106.2020.06.28.12.53.53
+        by smtp.gmail.com with ESMTPSA id z8sm15669531eju.106.2020.06.28.12.53.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Jun 2020 12:53:54 -0700 (PDT)
+        Sun, 28 Jun 2020 12:53:55 -0700 (PDT)
 From:   Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         oss-drivers@netronome.com, linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Subject: [PATCH 11/15] net: plip: fix plip_tx_packet()'s return type
-Date:   Sun, 28 Jun 2020 21:53:33 +0200
-Message-Id: <20200628195337.75889-12-luc.vanoostenryck@gmail.com>
+Subject: [PATCH 12/15] usbnet: ipheth: fix ipheth_tx()'s return type
+Date:   Sun, 28 Jun 2020 21:53:34 +0200
+Message-Id: <20200628195337.75889-13-luc.vanoostenryck@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200628195337.75889-1-luc.vanoostenryck@gmail.com>
 References: <20200628195337.75889-1-luc.vanoostenryck@gmail.com>
@@ -74,31 +74,22 @@ Fix this by returning 'netdev_tx_t' in this driver too.
 
 Signed-off-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
 ---
- drivers/net/plip/plip.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/usb/ipheth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/plip/plip.c b/drivers/net/plip/plip.c
-index e89cdebae6f1..d82016dcde3b 100644
---- a/drivers/net/plip/plip.c
-+++ b/drivers/net/plip/plip.c
-@@ -142,7 +142,7 @@ static void plip_timer_bh(struct work_struct *work);
- static void plip_interrupt(void *dev_id);
- 
- /* Functions for DEV methods */
--static int plip_tx_packet(struct sk_buff *skb, struct net_device *dev);
-+static netdev_tx_t plip_tx_packet(struct sk_buff *skb, struct net_device *dev);
- static int plip_hard_header(struct sk_buff *skb, struct net_device *dev,
-                             unsigned short type, const void *daddr,
- 			    const void *saddr, unsigned len);
-@@ -958,7 +958,7 @@ plip_interrupt(void *dev_id)
- 	spin_unlock_irqrestore(&nl->lock, flags);
+diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
+index c792d65dd7b4..b09b45382faf 100644
+--- a/drivers/net/usb/ipheth.c
++++ b/drivers/net/usb/ipheth.c
+@@ -358,7 +358,7 @@ static int ipheth_close(struct net_device *net)
+ 	return 0;
  }
  
--static int
-+static netdev_tx_t
- plip_tx_packet(struct sk_buff *skb, struct net_device *dev)
+-static int ipheth_tx(struct sk_buff *skb, struct net_device *net)
++static netdev_tx_t ipheth_tx(struct sk_buff *skb, struct net_device *net)
  {
- 	struct net_local *nl = netdev_priv(dev);
+ 	struct ipheth_device *dev = netdev_priv(net);
+ 	struct usb_device *udev = dev->udev;
 -- 
 2.27.0
 
