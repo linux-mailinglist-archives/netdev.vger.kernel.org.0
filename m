@@ -2,105 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67E1720CA4D
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 22:04:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A098620CA52
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 22:16:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726737AbgF1UEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 16:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726675AbgF1UEs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 16:04:48 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46E4C03E979
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 13:04:48 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id u12so11364363qth.12
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 13:04:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y1zn/fxfOmFeMHXh6Gk5ZdelSOYcZKVlBOAb2rVI9JA=;
-        b=EqfFC0dU0x9WmdbUtY9//oru81LC5z9OHEIZ/cE8DpHTbzHFsiXIulMEAgIgpIIaIP
-         GkRIO+PtS+PrpMmfhiVfor2iXBSbT3w4R+wEr27nFnuk076Fl8ZNGCaxEnAX4ab0dB8i
-         mc8IzAv35RgtJ4E7vi61uoy4bLdYiJy1l9O8CZWiIsVXOpR0+D7h+95vPps5OH9Scd/T
-         SblhjR97HBCCc5pbmHdlH5CpN3v8KFBvjJt3qBpBfwITW7f0G/XHzg1AISj3sTwjlFG6
-         apRaSMFFobh+TgUWCQ8ayJxtVbNhGeOQYQU+G2HAZok+redvJoqLxMkSifYHdXqYxR+1
-         EK6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y1zn/fxfOmFeMHXh6Gk5ZdelSOYcZKVlBOAb2rVI9JA=;
-        b=sZ7NAb5Ol2U2czyV0ya1QOaMTgYMc2ym1gd1S3csEnFW6zP3f9seORFcPevSOxoxhx
-         mXIEAyFKIhSvbdVGLX68O6rXU0VVVQYvNZIzY5Rky/LOwVhLSLdH87dd4dCIBxqhrl48
-         218zWX9CYXUi7PhOLG2qW/ISX+4sYmpz5Dn5dWL4lvF8MBndpbIsdlGY9BvWRdEXV3wb
-         fxFjR1cWoYVdfo4LsFLT6bqc/vxoZ0VPt44P0aNX7brYoAM5sHW9kMw3Bw9gYd12XKpg
-         DlMlAzqa/LduYmIQce2bWBgKVT1ho8NlOrZhDJMVwxqgeLIIbGCjSeBUX3CUtvbQWZAv
-         CvEw==
-X-Gm-Message-State: AOAM531cbaEeB6Ns/fWBCpgc9rvrykvqioRvtBeiA+12iD6AosNVdKYR
-        5XDus8Jf5/kP62hzvvUGgVZYM5Cw
-X-Google-Smtp-Source: ABdhPJywgbdAa9TZyDrQW1rYgmwAM5tLoQCj7uINeWaaKblg5e5v5ThX88v4Lpxr+qrhQ776SyuvNA==
-X-Received: by 2002:ac8:3438:: with SMTP id u53mr12966125qtb.102.1593374687512;
-        Sun, 28 Jun 2020 13:04:47 -0700 (PDT)
-Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
-        by smtp.gmail.com with ESMTPSA id g5sm16675873qta.46.2020.06.28.13.04.46
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 Jun 2020 13:04:46 -0700 (PDT)
-Received: by mail-yb1-f176.google.com with SMTP id e197so3388403yba.5
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 13:04:46 -0700 (PDT)
-X-Received: by 2002:a25:cf82:: with SMTP id f124mr21339639ybg.441.1593374686050;
- Sun, 28 Jun 2020 13:04:46 -0700 (PDT)
+        id S1726768AbgF1UQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 16:16:21 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:31207 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726685AbgF1UQV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 16:16:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593375379;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UORC3khSPgkKki06+WolbXfIYGTlBXEi1rqLOGOEVvU=;
+        b=N2frVJLvdCP0NYC2pvQi/aOY9RSLg54A/zRSqupjbKn86zGgT0O88iraxBmPRryHfjWrgL
+        zvx2oO2A8GNt5jIn1uDHxdSnGBvL5NfxEnylNtk1BVBfYSp1e6Nf0wUW7xMRnWS5dIfx+C
+        CO2zQKnzLDhHzrVeNPyr9WrtupU7HQQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-241-0HeNvHBmP-6eZiv6eQvr8g-1; Sun, 28 Jun 2020 16:16:14 -0400
+X-MC-Unique: 0HeNvHBmP-6eZiv6eQvr8g-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B6EA804001;
+        Sun, 28 Jun 2020 20:16:12 +0000 (UTC)
+Received: from krava (unknown [10.40.192.56])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 5511F2857D;
+        Sun, 28 Jun 2020 20:16:09 +0000 (UTC)
+Date:   Sun, 28 Jun 2020 22:16:08 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v4 bpf-next 05/14] bpf: Remove btf_id helpers resolving
+Message-ID: <20200628201608.GG2988321@krava>
+References: <20200625221304.2817194-1-jolsa@kernel.org>
+ <20200625221304.2817194-6-jolsa@kernel.org>
+ <7480f7b2-01f0-f575-7e4f-cf3bde851c3f@fb.com>
 MIME-Version: 1.0
-References: <20200626201330.325840-1-ndev@hwipl.net> <CAHmME9r7Q_+_3ePj4OzxZOkkrSdKA_THNjk6YjHxTQyNA2iaAw@mail.gmail.com>
- <CAHmME9pX30q1oWY3hpjK4u-1ApQP7RCA07BmhtRQx=dR85MS9A@mail.gmail.com> <CAHmME9oCHNSNAVTNtxO2Oz10iqj_D8JPmN8526FbQ8UoO0-iHw@mail.gmail.com>
-In-Reply-To: <CAHmME9oCHNSNAVTNtxO2Oz10iqj_D8JPmN8526FbQ8UoO0-iHw@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 28 Jun 2020 16:04:08 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdpU_2w9iU+Rtv8pUepOcwqHYaV1jYVfB6_K157E6CSZw@mail.gmail.com>
-Message-ID: <CA+FuTSdpU_2w9iU+Rtv8pUepOcwqHYaV1jYVfB6_K157E6CSZw@mail.gmail.com>
-Subject: Re: wireguard: problem sending via libpcap's packet socket
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Hans Wippel <ndev@hwipl.net>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7480f7b2-01f0-f575-7e4f-cf3bde851c3f@fb.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 27, 2020 at 1:58 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> Hi again Hans,
->
-> A few remarks: although gre implements header_ops, it looks like
-> various parts of the networking stack change behavior based on it. I'm
-> still analyzing that to understand the extent of the effects.
-> Something like <https://git.zx2c4.com/wireguard-linux/commit/?id=40c24fd379edc1668087111506ed3d0928052fe0>
-> would work, but I'm not thrilled by it. Further research is needed.
->
-> However, one thing I noticed is that other layer 3 tunnels don't seem
-> to be a fan of libpcap. For example, try injecting a packet into an
-> ipip interface. You'll hit exactly the same snag for skb->protocol==0.
+On Fri, Jun 26, 2020 at 02:36:37PM -0700, Yonghong Song wrote:
 
-Not setting skb protocol when sending over packet sockets causes many
-headaches. Besides packet_parse_headers, virtio_net_hdr_to_skb also
-tries to infer it.
+SNIP
 
-Packet sockets give various options to configure it explicitly: by
-choosing that protocol in socket(), bind() or, preferably, by passing
-it as argument to sendmsg. The socket/bind argument also configures
-the filter to receive packets, so for send-only sockets it is
-especially useful to choose ETH_P_NONE (0) there. This is not an
-"incorrect" option.
+> > -	}
+> > -
+> > -	t = btf_type_by_id(btf_vmlinux, t->type);
+> > -	if (!btf_type_is_ptr(t))
+> > -		return -EFAULT;
+> > -	t = btf_type_by_id(btf_vmlinux, t->type);
+> > -	if (!btf_type_is_func_proto(t))
+> > -		return -EFAULT;
+> > -
+> > -	args = (const struct btf_param *)(t + 1);
+> > -	if (arg >= btf_type_vlen(t)) {
+> > -		bpf_log(log, "bpf helper %s doesn't have %d-th argument\n",
+> > -			fnname, arg);
+> > +	if (WARN_ON_ONCE(!fn->btf_id))
+> 
+> The original code does not have this warning. It directly did
+> "ret = READ_ONCE(*btf_id);" after testing reg arg type ARG_PTR_TO_BTF_ID.
 
-Libpcap does have a pcap_set_protocol function, but it is fairly
-recent, so few processes will likely be using it. And again it is
-still not ideal if a socket is opened only for transmit.
+not sure why I put it in there, it's probably enough guarded
+by arg_type having ARG_PTR_TO_BTF_ID, will remove
 
-header_ops looks like the best approach to me, too. The protocol field
-needs to reflect the protocol of the *outer* packet, of course, but if
-I read wg_allowedips_lookup_dst correctly, wireguard maintains the
-same outer protocol as the inner protocol, no sit (6-in-4) and such.
+> 
+> >   		return -EINVAL;
+> > -	}
+> > -	t = btf_type_by_id(btf_vmlinux, args[arg].type);
+> > -	if (!btf_type_is_ptr(t) || !t->type) {
+> > -		/* anything but the pointer to struct is a helper config bug */
+> > -		bpf_log(log, "ARG_PTR_TO_BTF is misconfigured\n");
+> > -		return -EFAULT;
+> > -	}
+> > -	btf_id = t->type;
+> > -	t = btf_type_by_id(btf_vmlinux, t->type);
+> > -	/* skip modifiers */
+> > -	while (btf_type_is_modifier(t)) {
+> > -		btf_id = t->type;
+> > -		t = btf_type_by_id(btf_vmlinux, t->type);
+> > -	}
+> > -	if (!btf_type_is_struct(t)) {
+> > -		bpf_log(log, "ARG_PTR_TO_BTF is not a struct\n");
+> > -		return -EFAULT;
+> > -	}
+> > -	bpf_log(log, "helper %s arg%d has btf_id %d struct %s\n", fnname + 4,
+> > -		arg, btf_id, __btf_name_by_offset(btf_vmlinux, t->name_off));
+> > -	return btf_id;
+> > -}
+> > +	id = fn->btf_id[arg];
+> 
+> The corresponding BTF_ID definition here is:
+>   BTF_ID_LIST(bpf_skb_output_btf_ids)
+>   BTF_ID(struct, sk_buff)
+> 
+> The bpf helper writer needs to ensure proper declarations
+> of BTF_IDs like the above matching helpers definition.
+> Support we have arg1 and arg3 as BTF_ID. then the list
+> definition may be
+> 
+>   BTF_ID_LIST(bpf_skb_output_btf_ids)
+>   BTF_ID(struct, sk_buff)
+>   BTF_ID(struct, __unused)
+>   BTF_ID(struct, task_struct)
+> 
+> This probably okay, I guess.
+
+right, AFAIK we don't have such case yet, but would be good
+to be ready and have something like
+
+  BTF_ID(struct, __unused)
+
+maybe adding new type for that will be better:
+
+  BTF_ID(none, unused)
+
+jirka
+
