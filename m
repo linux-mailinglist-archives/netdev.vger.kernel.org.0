@@ -2,113 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE6F620C69D
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 09:05:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C86120C73F
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 11:34:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726083AbgF1HFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 03:05:00 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:56669 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725958AbgF1HFA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Jun 2020 03:05:00 -0400
-Received: from tarshish.tkos.co.il (unknown [10.0.8.3])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 4C4FF440777;
-        Sun, 28 Jun 2020 10:04:55 +0300 (IDT)
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Shmuel Hazan <sh@tkos.co.il>, Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH v2] net: phy: marvell10g: support XFI rate matching mode
-Date:   Sun, 28 Jun 2020 10:04:51 +0300
-Message-Id: <76ee08645fd35182911fd2bac2546e455c4b662c.1593327891.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726181AbgF1Jdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 05:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725999AbgF1Jdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 05:33:51 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FE1C061794;
+        Sun, 28 Jun 2020 02:33:51 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id q90so5999422pjh.3;
+        Sun, 28 Jun 2020 02:33:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=LEwMmf/h6lZz81fIQQa2n7X18h/c5NkeCjKyOlWnANI=;
+        b=EdDPlzS2qvIUX9+SjPT5OT0T1MGU7FgmxHZQAbtDEB/YDiK12wX032s0cZohPvg0R0
+         u+viQpH109w2IcQ7kXVXC5oC2cwH3JhOYCBj/YKNrKZppLw8L2hHby0cKK9pr/aaYXdx
+         aZx4QT7x3Ucszak8h16M1alJoVTTdBssMHLrcwh3NKaOsbgPD0dbamS+Bz/li+YEtTk/
+         JDr9JoQjZ2Z+bfeKMrGy5sQ3wjO+sDWZS28/2VJnPAx4FFsrRocYZPKkpH/9b/GARG9b
+         DKzS4xog2TkJ5sXftYBmTjURlLvynpO+I2erDPPTqQQFsfOFSYDszl89r9vMCDEMHrU2
+         RDUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=LEwMmf/h6lZz81fIQQa2n7X18h/c5NkeCjKyOlWnANI=;
+        b=Ci6Bkajm8AxE7jtbh2doZgtSOa+tgpKSVvXBFYhjIkGRQYj79pQSPEIrqiy+MLF1d8
+         nqR+osbdXPQ8eF/eCZ2ZPDxXWE3JKHWuzw85SYjiggE4CWOz24elunBfua2KjqdfbUBn
+         fgtA5R7D8/CRdiJaOkY5rZW23VgiBz8wFyIw6NEovqKeJncgdxvUZYHb3u5XP4Go/N6q
+         droSf+yX6Dgj6I3TCP3r+vSOubqWct7RiAss5hTs981u9WvNENdm+VSC59fRimHNDZzh
+         RYySAlky1qlUM7G86AeTm3a1NyZFm9On7hT0yLbOPu26rSMNKjbd75aZNHto3UgtorOn
+         /g+g==
+X-Gm-Message-State: AOAM530dOm2IYtlgSPJMHhMBq58xUh7BStq7aSWF8BOhX7SlFR5Utvxz
+        fqVLVG0zsh3Pykgva7lTouQ=
+X-Google-Smtp-Source: ABdhPJygDGz/63sV+KBU7HpjulPDckI6G5d8KlDuhFnjtfhMxwWSendOckHwlWRCg2L6mILwauUepw==
+X-Received: by 2002:a17:90a:21c6:: with SMTP id q64mr11765110pjc.172.1593336830705;
+        Sun, 28 Jun 2020 02:33:50 -0700 (PDT)
+Received: from localhost ([43.224.245.180])
+        by smtp.gmail.com with ESMTPSA id 27sm15938911pjg.19.2020.06.28.02.33.49
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 28 Jun 2020 02:33:50 -0700 (PDT)
+From:   Geliang Tang <geliangtang@gmail.com>
+To:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geliang Tang <geliangtang@gmail.com>, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] sctp: use list_is_singular in sctp_list_single_entry
+Date:   Sun, 28 Jun 2020 17:32:25 +0800
+Message-Id: <1ae93f6e86ea0baf9ffb4068caed46d951076d12.1593336592.git.geliangtang@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the hardware MACTYPE hardware configuration pins are set to "XFI
-with Rate Matching" the PHY interface operate at fixed 10Gbps speed. The
-MAC buffer packets in both directions to match various wire speeds.
+Use list_is_singular() instead of open-coding.
 
-Read the MAC Type field in the Port Control register, and set the MAC
-interface speed accordingly.
-
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 ---
-v2: Move rate matching state read to config_init (RMK)
----
- drivers/net/phy/marvell10g.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ include/net/sctp/sctp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index d4c2e62b2439..a7610eb55f30 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -80,6 +80,8 @@ enum {
- 	MV_V2_PORT_CTRL		= 0xf001,
- 	MV_V2_PORT_CTRL_SWRST	= BIT(15),
- 	MV_V2_PORT_CTRL_PWRDOWN = BIT(11),
-+	MV_V2_PORT_MAC_TYPE_MASK = 0x7,
-+	MV_V2_PORT_MAC_TYPE_RATE_MATCH = 0x6,
- 	/* Temperature control/read registers (88X3310 only) */
- 	MV_V2_TEMP_CTRL		= 0xf08a,
- 	MV_V2_TEMP_CTRL_MASK	= 0xc000,
-@@ -91,6 +93,7 @@ enum {
- 
- struct mv3310_priv {
- 	u32 firmware_ver;
-+	bool rate_match;
- 
- 	struct device *hwmon_dev;
- 	char *hwmon_name;
-@@ -458,7 +461,9 @@ static bool mv3310_has_pma_ngbaset_quirk(struct phy_device *phydev)
- 
- static int mv3310_config_init(struct phy_device *phydev)
+diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
+index f8bcb75bb044..e3bd198b00ae 100644
+--- a/include/net/sctp/sctp.h
++++ b/include/net/sctp/sctp.h
+@@ -412,7 +412,7 @@ static inline void sctp_skb_set_owner_r(struct sk_buff *skb, struct sock *sk)
+ /* Tests if the list has one and only one entry. */
+ static inline int sctp_list_single_entry(struct list_head *head)
  {
-+	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
- 	int err;
-+	int val;
- 
- 	/* Check that the PHY interface type is compatible */
- 	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
-@@ -475,6 +480,12 @@ static int mv3310_config_init(struct phy_device *phydev)
- 	if (err)
- 		return err;
- 
-+	val = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
-+	if (val < 0)
-+		return val;
-+	priv->rate_match = ((val & MV_V2_PORT_MAC_TYPE_MASK) ==
-+			MV_V2_PORT_MAC_TYPE_RATE_MATCH);
-+
- 	/* Enable EDPD mode - saving 600mW */
- 	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
+-	return (head->next != head) && (head->next == head->prev);
++	return list_is_singular(head);
  }
-@@ -581,6 +592,17 @@ static int mv3310_aneg_done(struct phy_device *phydev)
  
- static void mv3310_update_interface(struct phy_device *phydev)
- {
-+	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-+
-+	/* In "XFI with Rate Matching" mode the PHY interface is fixed at
-+	 * 10Gb. The PHY adapts the rate to actual wire speed with help of
-+	 * internal 16KB buffer.
-+	 */
-+	if (priv->rate_match) {
-+		phydev->interface = PHY_INTERFACE_MODE_10GBASER;
-+		return;
-+	}
-+
- 	if ((phydev->interface == PHY_INTERFACE_MODE_SGMII ||
- 	     phydev->interface == PHY_INTERFACE_MODE_2500BASEX ||
- 	     phydev->interface == PHY_INTERFACE_MODE_10GBASER) &&
+ static inline bool sctp_chunk_pending(const struct sctp_chunk *chunk)
 -- 
-2.27.0
+2.17.1
 
