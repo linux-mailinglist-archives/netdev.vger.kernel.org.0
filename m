@@ -2,292 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3769720C7F7
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 14:38:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 642D020C822
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 15:00:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbgF1Mhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 08:37:47 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:40098 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726374AbgF1Mh1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Jun 2020 08:37:27 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 77394CF1CCEAF9C73022;
-        Sun, 28 Jun 2020 20:37:21 +0800 (CST)
-Received: from localhost.localdomain (10.175.118.36) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.487.0; Sun, 28 Jun 2020 20:37:13 +0800
-From:   Luo bin <luobin9@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
-        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>
-Subject: [PATCH net-next v4 5/5] hinic: add support to get eeprom information
-Date:   Sun, 28 Jun 2020 20:36:24 +0800
-Message-ID: <20200628123624.600-6-luobin9@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200628123624.600-1-luobin9@huawei.com>
-References: <20200628123624.600-1-luobin9@huawei.com>
+        id S1726460AbgF1M72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 08:59:28 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:7373 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726316AbgF1M71 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 08:59:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1593349167; x=1624885167;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=C7iLwWRBNIiE1Z5P3HM5arpORAu2RBCVGY2pNOudQek=;
+  b=k9Faz/ErcmjkWIq9v7i35L4QF4TE/pat3vEvFPU0j93pNcX0RJbl652a
+   P1Qsfy3p4Kuv+itKIlgIvJxBojOpSx4WURFvbRYDPU4R/1qVIHOtQP3Qz
+   40ZvYwvGqDjs+bCQLHkSBF6EtH+wplBuJe5Km9/gCeJC9t2wzrutaXq9W
+   JCw1oIAm/BzHStW0ISP19g7HqyVTEor4/m8bwsl9UzT2OAJMXmIg2wgc0
+   b2uPoU6eJPQMQN4s4j/dDlomHZQak9QV6kranV6N2d3IUM9DljmGh9BTw
+   kKdOfwunQ/XGZF+fQMnmHAf6PwY/LBArDk5pRLWw+IcEKGKKkfBmpJAcz
+   w==;
+IronPort-SDR: WYb1sCuzIdr1wLYoPcho54i/r7QExhBNB8qS9MjO8GZ+yDtxmyNP2rai0bimIH0WjcAgJ1zxPr
+ IWY3Fh8x8ekRS+qJuIjgzAiqg/oTtZysn3F8xuSiKv7kPRlfah6+v574Uxg8HFC310Qw3+n5cG
+ Xx0rLLTTqzB3ey0DLtszq3Uj+wWnTAf2ylaFcURRNdRBcXA44rjexnH9DSmIAI2FKCZpo22ZIi
+ hA1lgR/cIqOj6RguSc6AQ7jFWTxLTPcU5bT8jAJ63YYtHhFF040sAANL4NBfREInpZSNW8Fbkg
+ aBo=
+X-IronPort-AV: E=Sophos;i="5.75,291,1589266800"; 
+   d="scan'208";a="81831637"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jun 2020 05:59:27 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Sun, 28 Jun 2020 05:59:26 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Sun, 28 Jun 2020 05:59:10 -0700
+Date:   Sun, 28 Jun 2020 14:59:25 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     David Miller <davem@davemloft.net>
+CC:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next v3 0/2] bridge: mrp: Extend MRP netlink
+ interface with IFLA_BRIDGE_MRP_CLEAR
+Message-ID: <20200628125925.gmc6ct34lnv6nrzu@soft-dev3.localdomain>
+References: <20200626073349.3495526-1-horatiu.vultur@microchip.com>
+ <20200626.130029.89317239393030387.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.118.36]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20200626.130029.89317239393030387.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-add support to get eeprom information from the plug-in module
-with ethtool -m cmd.
+The 06/26/2020 13:00, David Miller wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> From: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Date: Fri, 26 Jun 2020 09:33:47 +0200
+> 
+> > This patch series extends MRP netlink interface with IFLA_BRIDGE_MRP_CLEAR.
+> > To allow the userspace to clear all MRP instances when is started. The
+> > second patch in the series fix different sparse warnings.
+> >
+> > v3:
+> >   - add the second patch to fix sparse warnings
 
-Signed-off-by: Luo bin <luobin9@huawei.com>
----
- .../net/ethernet/huawei/hinic/hinic_ethtool.c | 69 ++++++++++++++++++
- .../net/ethernet/huawei/hinic/hinic_hw_dev.h  |  4 ++
- .../net/ethernet/huawei/hinic/hinic_port.c    | 72 +++++++++++++++++++
- .../net/ethernet/huawei/hinic/hinic_port.h    | 30 ++++++++
- 4 files changed, 175 insertions(+)
+Hi,
+> 
+> These changes are completely unrelated.
+> 
+> The sparse stuff should probably be submitted to 'net'.
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-index f012d136b7b6..a4a2a2d68f5c 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-@@ -25,6 +25,7 @@
- #include <linux/if_vlan.h>
- #include <linux/ethtool.h>
- #include <linux/vmalloc.h>
-+#include <linux/sfp.h>
- 
- #include "hinic_hw_qp.h"
- #include "hinic_hw_dev.h"
-@@ -1717,6 +1718,72 @@ static int hinic_set_phys_id(struct net_device *netdev,
- 	return err;
- }
- 
-+static int hinic_get_module_info(struct net_device *netdev,
-+				 struct ethtool_modinfo *modinfo)
-+{
-+	struct hinic_dev *nic_dev = netdev_priv(netdev);
-+	u8 sfp_type_ext;
-+	u8 sfp_type;
-+	int err;
-+
-+	err = hinic_get_sfp_type(nic_dev->hwdev, &sfp_type, &sfp_type_ext);
-+	if (err)
-+		return err;
-+
-+	switch (sfp_type) {
-+	case SFF8024_ID_SFP:
-+		modinfo->type = ETH_MODULE_SFF_8472;
-+		modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN;
-+		break;
-+	case SFF8024_ID_QSFP_8438:
-+		modinfo->type = ETH_MODULE_SFF_8436;
-+		modinfo->eeprom_len = ETH_MODULE_SFF_8436_MAX_LEN;
-+		break;
-+	case SFF8024_ID_QSFP_8436_8636:
-+		if (sfp_type_ext >= 0x3) {
-+			modinfo->type = ETH_MODULE_SFF_8636;
-+			modinfo->eeprom_len = ETH_MODULE_SFF_8636_MAX_LEN;
-+
-+		} else {
-+			modinfo->type = ETH_MODULE_SFF_8436;
-+			modinfo->eeprom_len = ETH_MODULE_SFF_8436_MAX_LEN;
-+		}
-+		break;
-+	case SFF8024_ID_QSFP28_8636:
-+		modinfo->type = ETH_MODULE_SFF_8636;
-+		modinfo->eeprom_len = ETH_MODULE_SFF_8636_MAX_LEN;
-+		break;
-+	default:
-+		netif_warn(nic_dev, drv, netdev,
-+			   "Optical module unknown: 0x%x\n", sfp_type);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int hinic_get_module_eeprom(struct net_device *netdev,
-+				   struct ethtool_eeprom *ee, u8 *data)
-+{
-+	struct hinic_dev *nic_dev = netdev_priv(netdev);
-+	u8 sfp_data[STD_SFP_INFO_MAX_SIZE];
-+	u16 len;
-+	int err;
-+
-+	if (!ee->len || ((ee->len + ee->offset) > STD_SFP_INFO_MAX_SIZE))
-+		return -EINVAL;
-+
-+	memset(data, 0, ee->len);
-+
-+	err = hinic_get_sfp_eeprom(nic_dev->hwdev, sfp_data, &len);
-+	if (err)
-+		return err;
-+
-+	memcpy(data, sfp_data + ee->offset, ee->len);
-+
-+	return 0;
-+}
-+
- static const struct ethtool_ops hinic_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS |
- 				     ETHTOOL_COALESCE_RX_MAX_FRAMES |
-@@ -1748,6 +1815,8 @@ static const struct ethtool_ops hinic_ethtool_ops = {
- 	.get_strings = hinic_get_strings,
- 	.self_test = hinic_diag_test,
- 	.set_phys_id = hinic_set_phys_id,
-+	.get_module_info = hinic_get_module_info,
-+	.get_module_eeprom = hinic_get_module_eeprom,
- };
- 
- static const struct ethtool_ops hinicvf_ethtool_ops = {
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-index 01fe94f2d4bc..958ea1a6a60d 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-@@ -130,9 +130,13 @@ enum hinic_port_cmd {
- 
- 	HINIC_PORT_CMD_SET_AUTONEG	= 219,
- 
-+	HINIC_PORT_CMD_GET_STD_SFP_INFO = 240,
-+
- 	HINIC_PORT_CMD_SET_LRO_TIMER	= 244,
- 
- 	HINIC_PORT_CMD_SET_VF_MAX_MIN_RATE = 249,
-+
-+	HINIC_PORT_CMD_GET_SFP_ABS	= 251,
- };
- 
- /* cmd of mgmt CPU message for HILINK module */
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-index 116ca1c877f2..ba358bbb74a2 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
-@@ -1323,3 +1323,75 @@ int hinic_reset_led_status(struct hinic_hwdev *hwdev, u8 port)
- 
- 	return err;
- }
-+
-+static bool hinic_if_sfp_absent(struct hinic_hwdev *hwdev)
-+{
-+	struct hinic_cmd_get_light_module_abs sfp_abs = {0};
-+	u16 out_size = sizeof(sfp_abs);
-+	u8 port_id = hwdev->port_id;
-+	int err;
-+
-+	sfp_abs.port_id = port_id;
-+	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_GET_SFP_ABS,
-+				 &sfp_abs, sizeof(sfp_abs), &sfp_abs,
-+				 &out_size);
-+	if (sfp_abs.status || err || !out_size) {
-+		dev_err(&hwdev->hwif->pdev->dev,
-+			"Failed to get port%d sfp absent status, err: %d, status: 0x%x, out size: 0x%x\n",
-+			port_id, err, sfp_abs.status, out_size);
-+		return true;
-+	}
-+
-+	return ((sfp_abs.abs_status == 0) ? false : true);
-+}
-+
-+int hinic_get_sfp_eeprom(struct hinic_hwdev *hwdev, u8 *data, u16 *len)
-+{
-+	struct hinic_cmd_get_std_sfp_info sfp_info = {0};
-+	u16 out_size = sizeof(sfp_info);
-+	u8 port_id;
-+	int err;
-+
-+	if (!hwdev || !data || !len)
-+		return -EINVAL;
-+
-+	port_id = hwdev->port_id;
-+
-+	if (hinic_if_sfp_absent(hwdev))
-+		return -ENXIO;
-+
-+	sfp_info.port_id = port_id;
-+	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_GET_STD_SFP_INFO,
-+				 &sfp_info, sizeof(sfp_info), &sfp_info,
-+				 &out_size);
-+	if (sfp_info.status || err || !out_size) {
-+		dev_err(&hwdev->hwif->pdev->dev,
-+			"Failed to get port%d sfp eeprom information, err: %d, status: 0x%x, out size: 0x%x\n",
-+			port_id, err, sfp_info.status, out_size);
-+		return -EIO;
-+	}
-+
-+	*len = min_t(u16, sfp_info.eeprom_len, STD_SFP_INFO_MAX_SIZE);
-+	memcpy(data, sfp_info.sfp_info, STD_SFP_INFO_MAX_SIZE);
-+
-+	return 0;
-+}
-+
-+int hinic_get_sfp_type(struct hinic_hwdev *hwdev, u8 *data0, u8 *data1)
-+{
-+	u8 sfp_data[STD_SFP_INFO_MAX_SIZE];
-+	u16 len;
-+	int err;
-+
-+	if (hinic_if_sfp_absent(hwdev))
-+		return -ENXIO;
-+
-+	err = hinic_get_sfp_eeprom(hwdev, sfp_data, &len);
-+	if (err)
-+		return err;
-+
-+	*data0 = sfp_data[0];
-+	*data1 = sfp_data[1];
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.h b/drivers/net/ethernet/huawei/hinic/hinic_port.h
-index 5c916875f295..0e444d2c02bb 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_port.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_port.h
-@@ -677,6 +677,32 @@ struct hinic_led_info {
- 	u8	reset;
- };
- 
-+#define STD_SFP_INFO_MAX_SIZE	640
-+
-+struct hinic_cmd_get_light_module_abs {
-+	u8 status;
-+	u8 version;
-+	u8 rsvd0[6];
-+
-+	u8 port_id;
-+	u8 abs_status; /* 0:present, 1:absent */
-+	u8 rsv[2];
-+};
-+
-+#define STD_SFP_INFO_MAX_SIZE	640
-+
-+struct hinic_cmd_get_std_sfp_info {
-+	u8 status;
-+	u8 version;
-+	u8 rsvd0[6];
-+
-+	u8 port_id;
-+	u8 wire_type;
-+	u16 eeprom_len;
-+	u32 rsvd;
-+	u8 sfp_info[STD_SFP_INFO_MAX_SIZE];
-+};
-+
- int hinic_port_add_mac(struct hinic_dev *nic_dev, const u8 *addr,
- 		       u16 vlan_id);
- 
-@@ -800,6 +826,10 @@ int hinic_reset_led_status(struct hinic_hwdev *hwdev, u8 port);
- int hinic_set_led_status(struct hinic_hwdev *hwdev, u8 port,
- 			 enum hinic_led_type type, enum hinic_led_mode mode);
- 
-+int hinic_get_sfp_type(struct hinic_hwdev *hwdev, u8 *data0, u8 *data1);
-+
-+int hinic_get_sfp_eeprom(struct hinic_hwdev *hwdev, u8 *data, u16 *len);
-+
- int hinic_open(struct net_device *netdev);
- 
- int hinic_close(struct net_device *netdev);
+I will send a patch for this to 'net'.
+
+> 
+> And I have to ask why you really need a clear operation. 
+
+Because we didn't have any way for the userspace to know what ports are
+part of the MRP ring. I thought the easiest way would be for the daemon
+to clear everything when is started.
+
+> Routing
+> daemons come up and see what routes are installed, and update their
+> internal SW tables to match.  This not only allows efficient restart
+> after a crash, but it also allows multiple daemons to work
+> cooperatively as an agent for the same forwarding/routing table.
+
+I think it would be possible to have something similar for the MRP
+daemon. But I still have problems to see how to have multiple MRP
+daemons running at the same time. Because each deamon implements MRP
+state machine. So for example if the link of one of the MRP ports is
+changing then each daemon is notified about this change so then each
+daemon will send some frames, and that would mean that we have duplicate
+frames in the network.
+
+> 
+> Your usage model limits one daemon to manage the table and that
+> limitation is completely unnecessary.
+> 
+> Furthermore, even in a one-daemon scenerio, it's wasteful to throw
+> away all the work the previous daemon did to load the MRP entries into
+> the bridge.
+> 
+> Thanks.
+> 
+
 -- 
-2.17.1
-
+/Horatiu
