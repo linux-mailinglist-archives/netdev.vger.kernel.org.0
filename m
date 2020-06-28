@@ -2,181 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1ECD20C76E
-	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 12:46:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B22420C7B0
+	for <lists+netdev@lfdr.de>; Sun, 28 Jun 2020 13:29:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726236AbgF1Kqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 06:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726224AbgF1Kqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 06:46:30 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C663C061794
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 03:46:30 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id q90so6040309pjh.3
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 03:46:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=TTtXa32uJyWj3FRcxIy4EyMjKYs5SGNE53PC4IscXDE=;
-        b=jOulqLsVlrSWBX+LT1abjIINRCsX/cnP1J7x71HAzH4RQh1LbA26mGKdjTYlzEuE66
-         LRjwsaONRcYMhDptwHb8IDkOl0DRcpGcq7B8Sn5ZiKueMqAnaxCjHR1g6v+bqF0agYYN
-         o8gV0Sl4X9LYHf+XtkPII832oOzQltEuq8w1422UU/7kZf5T7SO/OB0CMZUgODXeYze7
-         Ma4iM7vAFfox2wL5l8DELr3nPu97fFH6MYV32hh1lDHqGznOCFs6Qgk2cE4uH0gWANAf
-         3RL/E2ImJugwvJbU2GvLbHXc7M2E9jZ7HW3ha7+hiDP2m0eWliXQ6TnEijyz0DmTnyVc
-         bIgA==
+        id S1726279AbgF1L3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 07:29:18 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:53838 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726225AbgF1L3S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 07:29:18 -0400
+Received: by mail-il1-f198.google.com with SMTP id r4so10194671ilq.20
+        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 04:29:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=TTtXa32uJyWj3FRcxIy4EyMjKYs5SGNE53PC4IscXDE=;
-        b=S3YCsiBps9Ea6FcywZvwBJpVWC80EKYz6sBk08Z0+ii79IA+mWdX/TOGMl/xVmwd5w
-         t3uvT3CFbn1w7tqZZxYdL80L3eQy1QgoXiTyhIGFnwSi3W9p7hAIPB8H5WVRwS2jvIu/
-         ytOmf0GP5/fFqBPZtPNMO8feBtECQ3MFTca+0l+/gNoaU2iYTCVj346kwrCmjHSoSuea
-         2EzMIMXSlEemXvboFpZB9ElJWrOFIsPje/QYqTPGRMLrzDu9OB5KIQdEHrbrc0rBOWor
-         RTIH+H50gOtM7oFeI+ll6vTTvIGysd7ZKA8dOzpgpflgNP/DhBAguoCF0Tu3vGOxEf2V
-         wjhQ==
-X-Gm-Message-State: AOAM530D6pPy1wuxlaYhsN3H5rGlldx7VxMr8aYLA4uOfDEprWUF2xud
-        93OsojK/I4VFUU/HNJnuw1pC9Flt8w==
-X-Google-Smtp-Source: ABdhPJySkC8UYu4uVLtRsEZKAK0N9fXaRefUcuzqmHHs2lLB4Wvq6N7U3XM0KIROl6KaHS9zGFVTyg==
-X-Received: by 2002:a17:90a:2dcb:: with SMTP id q11mr5157690pjm.135.1593341189484;
-        Sun, 28 Jun 2020 03:46:29 -0700 (PDT)
-Received: from Mani-XPS-13-9360 ([2409:4072:59f:de4a:a853:58c7:2fe6:68c8])
-        by smtp.gmail.com with ESMTPSA id j8sm2416598pfd.145.2020.06.28.03.46.25
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 28 Jun 2020 03:46:28 -0700 (PDT)
-Date:   Sun, 28 Jun 2020 16:16:23 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     bjorn.andersson@linaro.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: slab-out-of-bounds Read in qrtr_endpoint_post
-Message-ID: <20200628104623.GA3357@Mani-XPS-13-9360>
-References: <000000000000f728fc05a90ce9c9@google.com>
- <000000000000e817ba05a91711b0@google.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=esH9pYBPT18QteRNwywg+df/d1ux0Pe9Ptz6+tlWA00=;
+        b=Jk3A7nZCyVleEPyI+6UAerIAE4ZMevn+oye+9wSkMI5jnxoWGRXa4igegGUpTFyfnx
+         t5lPNepwbpc3aDnhIt33FejcrVzoQXgu1gdhTN3eHS0C4RN0Yll8XXilEyu0osJJz0f8
+         INGPTsdc4nwu/mYWg8j3M0szNGoeHrMFQYiYnc1mqQaH17CQgiYouMrLyCi2AEhkKQYS
+         3ZDodvMJm/vdzimtVcNVJxa+uzkHqNp5Adx+oWABsef1ZWlbNgDQ2aMmHLdGg4GEpDv6
+         yZX4l7fRvyQVf/86f8JqBZGYz4DtNSI/qWB5ZhGwibukql4gwpATyKTNlHKvXSYldEj8
+         fe4Q==
+X-Gm-Message-State: AOAM5326IxCiqEqTvXF/4ekb+3s4Yhn9/5N72vK9EBM++ZVoEA//OSRS
+        KgP5AeVTLxgw1zBFYt4vA1Nhsj9SvU+gJnO6B5Iu9bED/K3Z
+X-Google-Smtp-Source: ABdhPJxpGcf5yUA8noMC/0MaagCzM6ZAWL9D190r3lVvw6xy+/6E9uPD9FjvhHT+JlVjAUr4Y/woSluACHEP/C4eId3ww2U+x0Qv
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000e817ba05a91711b0@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Received: by 2002:a5d:9313:: with SMTP id l19mr11900062ion.150.1593343757135;
+ Sun, 28 Jun 2020 04:29:17 -0700 (PDT)
+Date:   Sun, 28 Jun 2020 04:29:17 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a6348d05a9234041@google.com>
+Subject: WARNING in tracepoint_add_func
+From:   syzbot <syzbot+721aa903751db87aa244@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, mathieu.desnoyers@polymtl.ca,
+        mingo@elte.hu, netdev@vger.kernel.org, rostedt@goodmis.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bjorn,
+Hello,
 
-On Sat, Jun 27, 2020 at 01:57:13PM -0700, syzbot wrote:
-> syzbot has found a reproducer for the following crash on:
-> 
-> HEAD commit:    1590a2e1 Merge tag 'acpi-5.8-rc3' of git://git.kernel.org/..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14b2b503100000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=bf3aec367b9ab569
-> dashboard link: https://syzkaller.appspot.com/bug?extid=b8fe393f999a291a9ea6
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> userspace arch: i386
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=109e6b55100000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13671a3d100000
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+b8fe393f999a291a9ea6@syzkaller.appspotmail.com
-> 
-> ==================================================================
-> BUG: KASAN: slab-out-of-bounds in qrtr_endpoint_post+0xeeb/0x1010 net/qrtr/qrtr.c:462
-> Read of size 2 at addr ffff88809de50c48 by task syz-executor531/6806
-> 
-> CPU: 0 PID: 6806 Comm: syz-executor531 Not tainted 5.8.0-rc2-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x18f/0x20d lib/dump_stack.c:118
->  print_address_description.constprop.0.cold+0xae/0x436 mm/kasan/report.c:383
->  __kasan_report mm/kasan/report.c:513 [inline]
->  kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
->  qrtr_endpoint_post+0xeeb/0x1010 net/qrtr/qrtr.c:462
->  qrtr_tun_write_iter+0xf5/0x180 net/qrtr/tun.c:92
+syzbot found the following crash on:
 
-Hmm. Is this due to the fact that we are not checking the length of the
-kbuf allocated in qrtr_tun_write_iter()? The length derived from
-'iov_iter_count(from)' gets used directly and that might be causing the
-out of bound access error here.
+HEAD commit:    7a64135f libbpf: Adjust SEC short cut for expected attach ..
+git tree:       bpf
+console output: https://syzkaller.appspot.com/x/log.txt?x=142782e3100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=dcc6334acae363d4
+dashboard link: https://syzkaller.appspot.com/bug?extid=721aa903751db87aa244
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-Thanks,
-Mani
+Unfortunately, I don't have any reproducer for this crash yet.
 
->  call_write_iter include/linux/fs.h:1907 [inline]
->  do_iter_readv_writev+0x567/0x780 fs/read_write.c:694
->  do_iter_write+0x188/0x5f0 fs/read_write.c:999
->  compat_writev+0x1ea/0x390 fs/read_write.c:1352
->  do_compat_pwritev64+0x180/0x1b0 fs/read_write.c:1401
->  do_syscall_32_irqs_on+0x3f/0x60 arch/x86/entry/common.c:403
->  __do_fast_syscall_32 arch/x86/entry/common.c:448 [inline]
->  do_fast_syscall_32+0x7f/0x120 arch/x86/entry/common.c:474
->  entry_SYSENTER_compat+0x6d/0x7c arch/x86/entry/entry_64_compat.S:138
-> RIP: 0023:0xf7f8f569
-> Code: Bad RIP value.
-> RSP: 002b:00000000ffda5ffc EFLAGS: 00000292 ORIG_RAX: 000000000000014e
-> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000020000440
-> RDX: 0000000000000001 RSI: 0000000000000000 RDI: 00000000080bb528
-> RBP: 0000000000000012 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-> 
-> Allocated by task 6806:
->  save_stack+0x1b/0x40 mm/kasan/common.c:48
->  set_track mm/kasan/common.c:56 [inline]
->  __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:494
->  __do_kmalloc mm/slab.c:3656 [inline]
->  __kmalloc+0x17a/0x340 mm/slab.c:3665
->  kmalloc include/linux/slab.h:560 [inline]
->  kzalloc include/linux/slab.h:669 [inline]
->  qrtr_tun_write_iter+0x8a/0x180 net/qrtr/tun.c:83
->  call_write_iter include/linux/fs.h:1907 [inline]
->  do_iter_readv_writev+0x567/0x780 fs/read_write.c:694
->  do_iter_write+0x188/0x5f0 fs/read_write.c:999
->  compat_writev+0x1ea/0x390 fs/read_write.c:1352
->  do_compat_pwritev64+0x180/0x1b0 fs/read_write.c:1401
->  do_syscall_32_irqs_on+0x3f/0x60 arch/x86/entry/common.c:403
->  __do_fast_syscall_32 arch/x86/entry/common.c:448 [inline]
->  do_fast_syscall_32+0x7f/0x120 arch/x86/entry/common.c:474
->  entry_SYSENTER_compat+0x6d/0x7c arch/x86/entry/entry_64_compat.S:138
-> 
-> Freed by task 1:
->  save_stack+0x1b/0x40 mm/kasan/common.c:48
->  set_track mm/kasan/common.c:56 [inline]
->  kasan_set_free_info mm/kasan/common.c:316 [inline]
->  __kasan_slab_free+0xf5/0x140 mm/kasan/common.c:455
->  __cache_free mm/slab.c:3426 [inline]
->  kfree+0x103/0x2c0 mm/slab.c:3757
->  tomoyo_path_perm+0x234/0x3f0 security/tomoyo/file.c:842
->  security_inode_getattr+0xcf/0x140 security/security.c:1278
->  vfs_getattr fs/stat.c:121 [inline]
->  vfs_statx+0x170/0x390 fs/stat.c:206
->  vfs_lstat include/linux/fs.h:3301 [inline]
->  __do_sys_newlstat+0x91/0x110 fs/stat.c:374
->  do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> The buggy address belongs to the object at ffff88809de50c40
->  which belongs to the cache kmalloc-32 of size 32
-> The buggy address is located 8 bytes inside of
->  32-byte region [ffff88809de50c40, ffff88809de50c60)
-> The buggy address belongs to the page:
-> page:ffffea0002779400 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88809de50fc1
-> flags: 0xfffe0000000200(slab)
-> raw: 00fffe0000000200 ffffea000277e008 ffffea0002761c88 ffff8880aa0001c0
-> raw: ffff88809de50fc1 ffff88809de50000 000000010000003f 0000000000000000
-> page dumped because: kasan: bad access detected
-> 
-> Memory state around the buggy address:
->  ffff88809de50b00: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
->  ffff88809de50b80: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
-> >ffff88809de50c00: fb fb fb fb fc fc fc fc 04 fc fc fc fc fc fc fc
->                                               ^
->  ffff88809de50c80: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
->  ffff88809de50d00: fb fb fb fb fc fc fc fc 00 01 fc fc fc fc fc fc
-> ==================================================================
-> 
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+721aa903751db87aa244@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 16762 at kernel/tracepoint.c:243 tracepoint_add_func+0x254/0x880 kernel/tracepoint.c:243
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 16762 Comm: syz-executor.4 Not tainted 5.8.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:231
+ __warn.cold+0x20/0x45 kernel/panic.c:600
+ report_bug+0x1bd/0x210 lib/bug.c:198
+ exc_invalid_op+0x24d/0x400 arch/x86/kernel/traps.c:235
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:563
+RIP: 0010:tracepoint_add_func+0x254/0x880 kernel/tracepoint.c:243
+Code: 44 24 20 48 8b 5b 08 80 38 00 0f 85 6b 05 00 00 48 8b 44 24 08 48 3b 58 08 0f 85 2d ff ff ff 41 bc ef ff ff ff e8 4c 78 fe ff <0f> 0b e8 45 78 fe ff 44 89 e0 48 83 c4 38 5b 5d 41 5c 41 5d 41 5e
+RSP: 0018:ffffc90001497a98 EFLAGS: 00010216
+RAX: 000000000000199a RBX: ffffffff89b99040 RCX: ffffc90011df4000
+RDX: 0000000000040000 RSI: ffffffff8174d824 RDI: ffff8880979adb30
+RBP: ffffffff814f1b80 R08: 0000000000000000 R09: ffffffff89bf9867
+R10: 000000000000000a R11: 0000000000000000 R12: 00000000ffffffef
+R13: 0000000000000001 R14: dffffc0000000000 R15: ffff8880979adb10
+ tracepoint_probe_register_prio kernel/tracepoint.c:315 [inline]
+ tracepoint_probe_register+0x9c/0xe0 kernel/tracepoint.c:335
+ trace_event_reg+0x28f/0x350 kernel/trace/trace_events.c:304
+ perf_trace_event_reg kernel/trace/trace_event_perf.c:129 [inline]
+ perf_trace_event_init+0x532/0x9a0 kernel/trace/trace_event_perf.c:204
+ perf_trace_init+0x176/0x240 kernel/trace/trace_event_perf.c:228
+ perf_tp_event_init+0xa2/0x120 kernel/events/core.c:9330
+ perf_try_init_event+0x12a/0x560 kernel/events/core.c:10782
+ perf_init_event kernel/events/core.c:10834 [inline]
+ perf_event_alloc.part.0+0xdee/0x36f0 kernel/events/core.c:11110
+ perf_event_alloc kernel/events/core.c:11489 [inline]
+ __do_sys_perf_event_open+0x72c/0x2b50 kernel/events/core.c:11605
+ do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45cb19
+Code: Bad RIP value.
+RSP: 002b:00007f2d99608c78 EFLAGS: 00000246 ORIG_RAX: 000000000000012a
+RAX: ffffffffffffffda RBX: 00000000004fa640 RCX: 000000000045cb19
+RDX: 0000000000000000 RSI: ffffffffffffffff RDI: 0000000020000100
+RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffffffffffff R11: 0000000000000246 R12: 00000000ffffffff
+R13: 0000000000000841 R14: 00000000004cb320 R15: 00007f2d996096d4
+Kernel Offset: disabled
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
