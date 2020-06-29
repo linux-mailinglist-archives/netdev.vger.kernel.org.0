@@ -2,203 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E74320DD3D
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:50:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 473C420E043
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:56:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726961AbgF2SjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 14:39:20 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:32568 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726120AbgF2SjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:39:16 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05TB5ghl029788;
-        Mon, 29 Jun 2020 04:06:20 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0818;
- bh=NtX0T5CFmELPfbKTe7Qime63AOwMwqjGySKmn+kwvHc=;
- b=ppw5zcIiv9W6p4ZDPDrlZW4dtW+EDq0/v9pGFoEmYdZOyVS2Ulei8NjEC2yPCOp5oWjs
- bx7RCv8IaW8gdoZUomUXostcTG/8SL5crg7+kv2OlVgKb3kY85Uhf4rrjccL3Hv2qH8z
- bBqQ/XuFrfLaQGu/n9dai9C1br3CPh8XRNTcKPTCexVmTiF2RXF11zyfvMUTwirEj/cb
- 7x4uQbzXJlzjOg6awPYxsOPvEh3S+rXR62o2PzJEFrkVaqtmo4ySRhkDc1EfvKONYEwu
- vY2mfXk2lSPcLfPS3sXLXAckYEZoyWFoj6vSo5PcDAlHT4xjv1aWF+g29+46mv2cIMq+ vQ== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0a-0016f401.pphosted.com with ESMTP id 31y0wrtg06-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 29 Jun 2020 04:06:20 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 29 Jun
- 2020 04:06:19 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 29 Jun 2020 04:06:19 -0700
-Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
-        by maili.marvell.com (Postfix) with ESMTP id 0E41B3F703F;
-        Mon, 29 Jun 2020 04:06:15 -0700 (PDT)
-From:   Alexander Lobakin <alobakin@marvell.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Igor Russkikh <irusskikh@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        "Alexander Lobakin" <alobakin@marvell.com>,
-        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 6/6] net: qede: update copyright years
-Date:   Mon, 29 Jun 2020 14:05:12 +0300
-Message-ID: <20200629110512.1812-7-alobakin@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200629110512.1812-1-alobakin@marvell.com>
-References: <20200629110512.1812-1-alobakin@marvell.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-29_11:2020-06-29,2020-06-29 signatures=0
+        id S2389715AbgF2UoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 16:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731606AbgF2TOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:14:00 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7CEC00862F;
+        Mon, 29 Jun 2020 04:16:24 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: andrzej.p)
+        with ESMTPSA id D0FF72753E0
+From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+To:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Peter Kaestle <peter@piie.net>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Enrico Weigelt <info@metux.net>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        kernel@collabora.com
+Subject: [PATCH v6 00/11] Stop monitoring disabled devices
+Date:   Mon, 29 Jun 2020 13:16:04 +0200
+Message-Id: <20200629111615.18131-1-andrzej.p@collabora.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <CAHLCerO2XOOX9akEwaTu_cjSqRycFpNmoVxkSe36L8B4ALWidA@mail.gmail.com>
+References: <CAHLCerO2XOOX9akEwaTu_cjSqRycFpNmoVxkSe36L8B4ALWidA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set the actual copyright holder and years in all qede source files.
+A respin of v5 with these changes:
 
-Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
----
- drivers/net/ethernet/qlogic/qede/Makefile       | 1 +
- drivers/net/ethernet/qlogic/qede/qede.h         | 1 +
- drivers/net/ethernet/qlogic/qede/qede_dcbnl.c   | 5 +++--
- drivers/net/ethernet/qlogic/qede/qede_ethtool.c | 1 +
- drivers/net/ethernet/qlogic/qede/qede_filter.c  | 1 +
- drivers/net/ethernet/qlogic/qede/qede_fp.c      | 1 +
- drivers/net/ethernet/qlogic/qede/qede_main.c    | 1 +
- drivers/net/ethernet/qlogic/qede/qede_ptp.c     | 1 +
- drivers/net/ethernet/qlogic/qede/qede_ptp.h     | 1 +
- drivers/net/ethernet/qlogic/qede/qede_rdma.c    | 1 +
- 10 files changed, 12 insertions(+), 2 deletions(-)
+v5..v6:
+- staticized thermal_zone_device_set_mode() (kbuild test robot)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/Makefile b/drivers/net/ethernet/qlogic/qede/Makefile
-index 1d26ffc82290..a6e8d9fc8832 100644
---- a/drivers/net/ethernet/qlogic/qede/Makefile
-+++ b/drivers/net/ethernet/qlogic/qede/Makefile
-@@ -1,4 +1,5 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-+# Copyright (c) 2019-2020 Marvell International Ltd.
- 
- obj-$(CONFIG_QEDE) := qede.o
- 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index 8567f295a12f..591dd4051d06 100644
---- a/drivers/net/ethernet/qlogic/qede/qede.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qede NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QEDE_H_
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_dcbnl.c b/drivers/net/ethernet/qlogic/qede/qede_dcbnl.c
-index f6b7ee51e056..2763369bbc61 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_dcbnl.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_dcbnl.c
-@@ -1,7 +1,8 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qede NIC Driver
--* Copyright (c) 2015 QLogic Corporation
--*/
-+ * Copyright (c) 2015 QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-+ */
- 
- #include <linux/types.h>
- #include <linux/netdevice.h>
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-index 26acfb380dc3..d3fc7403d095 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qede NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/version.h>
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-index e03d6a957ceb..db17a675bd02 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qede NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/netdevice.h>
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-index c21d4c53121b..1c4ece0713f8 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qede NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/netdevice.h>
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 01c20b2d81e2..8cd27f8f1b3a 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qede NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/crash_dump.h>
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_ptp.c b/drivers/net/ethernet/qlogic/qede/qede_ptp.c
-index 797ce187d683..60a29a937a94 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_ptp.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_ptp.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qede NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include "qede_ptp.h"
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_ptp.h b/drivers/net/ethernet/qlogic/qede/qede_ptp.h
-index 00ff981efa66..1db0f021c645 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_ptp.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede_ptp.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qede NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QEDE_PTP_H_
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_rdma.c b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
-index 2228f1d1166f..769ec2f4d0b7 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qedr NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/pci.h>
+v4..v5:
+
+- EXPORT_SYMBOL -> EXPORT_SYMBOL_GPL (Daniel)
+- dropped unnecessary thermal_zone_device_enable() in int3400_thermal.c
+and in thermal_of.c (Bartlomiej)
+
+Andrzej Pietrasiewicz (11):
+  acpi: thermal: Fix error handling in the register function
+  thermal: Store thermal mode in a dedicated enum
+  thermal: Add current mode to thermal zone device
+  thermal: Store device mode in struct thermal_zone_device
+  thermal: remove get_mode() operation of drivers
+  thermal: Add mode helpers
+  thermal: Use mode helpers in drivers
+  thermal: Explicitly enable non-changing thermal zone devices
+  thermal: core: Stop polling DISABLED thermal devices
+  thermal: Simplify or eliminate unnecessary set_mode() methods
+  thermal: Rename set_mode() to change_mode()
+
+ drivers/acpi/thermal.c                        | 75 +++++----------
+ .../ethernet/chelsio/cxgb4/cxgb4_thermal.c    |  8 ++
+ .../ethernet/mellanox/mlxsw/core_thermal.c    | 91 ++++---------------
+ drivers/net/wireless/intel/iwlwifi/mvm/tt.c   |  9 +-
+ drivers/platform/x86/acerhdf.c                | 33 +++----
+ drivers/platform/x86/intel_mid_thermal.c      |  6 ++
+ drivers/power/supply/power_supply_core.c      |  9 +-
+ drivers/thermal/armada_thermal.c              |  6 ++
+ drivers/thermal/da9062-thermal.c              | 16 +---
+ drivers/thermal/dove_thermal.c                |  6 ++
+ drivers/thermal/hisi_thermal.c                |  6 +-
+ drivers/thermal/imx_thermal.c                 | 57 ++++--------
+ .../intel/int340x_thermal/int3400_thermal.c   | 38 ++------
+ .../int340x_thermal/int340x_thermal_zone.c    |  5 +
+ drivers/thermal/intel/intel_pch_thermal.c     |  5 +
+ .../thermal/intel/intel_quark_dts_thermal.c   | 34 ++-----
+ drivers/thermal/intel/intel_soc_dts_iosf.c    |  3 +
+ drivers/thermal/intel/x86_pkg_temp_thermal.c  |  6 ++
+ drivers/thermal/kirkwood_thermal.c            |  7 ++
+ drivers/thermal/rcar_thermal.c                |  9 +-
+ drivers/thermal/rockchip_thermal.c            |  6 +-
+ drivers/thermal/spear_thermal.c               |  7 ++
+ drivers/thermal/sprd_thermal.c                |  6 +-
+ drivers/thermal/st/st_thermal.c               |  5 +
+ drivers/thermal/thermal_core.c                | 76 ++++++++++++++--
+ drivers/thermal/thermal_of.c                  | 41 +--------
+ drivers/thermal/thermal_sysfs.c               | 37 +-------
+ include/linux/thermal.h                       | 19 +++-
+ 28 files changed, 275 insertions(+), 351 deletions(-)
+
+
+base-commit: 9ebcfadb0610322ac537dd7aa5d9cbc2b2894c68
 -- 
-2.25.1
+2.17.1
 
