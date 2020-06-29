@@ -2,124 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 568C020E101
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:58:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE53920E17E
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:59:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732273AbgF2Uvj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Jun 2020 16:51:39 -0400
-Received: from mga09.intel.com ([134.134.136.24]:9538 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731397AbgF2Uvh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 16:51:37 -0400
-IronPort-SDR: KGC9trzAZj8tlqEdtxStBgCI6c+leZkSudgZZBDurcPaLSIzW28R+/TmLwtT/1ezEKjQRiZ9aN
- OfeHJDOcCGSw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="147630893"
-X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; 
-   d="scan'208";a="147630893"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2020 13:51:35 -0700
-IronPort-SDR: fnhmaK0UHih/rpGhBgG8JDncDAI4lCB8e4BUrDG783kKNhRPjxZHU3LQhy+jWcWch6jYfWiI5K
- EJd0ayqzmIug==
-X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; 
-   d="scan'208";a="266296711"
-Received: from rramire2-mobl.amr.corp.intel.com (HELO localhost) ([10.213.184.115])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2020 13:51:33 -0700
-Content-Type: text/plain; charset="utf-8"
+        id S1729879AbgF2U41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 16:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731284AbgF2U4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 16:56:24 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EA5C061755
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 13:56:23 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id 145so14135336qke.9
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 13:56:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WFTfwahjL6M/BMfdmoNAC4ZI9pYs95htNH+KmmPwP78=;
+        b=GlGQ5Xw0sRdaKgZsmx12FDYNvtMcdDTQzMo9AwE7Pa0OFBOjmE9ErZo05c04ASqAyd
+         IVpIpHdiDmkc69Ga4qLfZR74Q8ZqWAfWCby5LJUtHTaf9j+UD/2lwliiyAp4zMBnosTJ
+         o+FRHnLkZshTaxC6stt3xpV2gwvUd5eBBPj2bpWQ929Xicig4/E9hoHY5cPddYYQaQJT
+         Ttjax0Shodn5+uHUPygcpcPHD7SKa1aCE8+fK3nGxeSasforXKowZbkktSMiHN1erUtR
+         qp80OwtB3yu5Z946ni3Ap7DyFIg1Gc1TXZhuM/8l7MhJH0EiVHPclDR1YBf2jhUeO2/g
+         l+hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WFTfwahjL6M/BMfdmoNAC4ZI9pYs95htNH+KmmPwP78=;
+        b=P3Hpg4lmbQuRDEgXLULqp606wqfwWcxTdf1gbWdRW80HOocTpa2Vrpvp27hWBW0zS1
+         UME/sGWk3Gd1bhq6eUYdYkamMP6sH3Yz3PdIIC2C8pv7F1VI5LDnPbfoQ307CBhxxTMe
+         ly6iPhsxbW5Z3tU4AxSXWXdFPVfindghLfH7AXU1/C3jm8rA8f0WxaFblJ667GKd//oY
+         3WpDjBZEPUMdcXzh/Mp/71e786O+nRSUSTJK1Pia4OEqBRsICTGtr20HQJKEBKHZD/MI
+         0VnlN22MIZn5wWohmU/qrvI6ncMUrGetSnBSxyVqsvAoG2iMjxUFhLku4Ass5+7ukJ+g
+         qHLQ==
+X-Gm-Message-State: AOAM532XD3ayGIoKnbdUQEWuSS2RSLGvLl+t+OU5FSjtOQdN2NXbipyY
+        5rTCkpqX2ydEtd7RQkpWZJlKQakF
+X-Google-Smtp-Source: ABdhPJzOri5f3xBBRRiczzwWXZc7yxGigihkZbZm0/Awd9kB+ku47f/5wUiy+2Vaos9nZus1TLQ1Ig==
+X-Received: by 2002:a37:a20d:: with SMTP id l13mr17508147qke.296.1593464182041;
+        Mon, 29 Jun 2020 13:56:22 -0700 (PDT)
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
+        by smtp.gmail.com with ESMTPSA id d135sm945039qkg.117.2020.06.29.13.56.21
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Jun 2020 13:56:21 -0700 (PDT)
+Received: by mail-yb1-f181.google.com with SMTP id k18so9005637ybm.13
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 13:56:21 -0700 (PDT)
+X-Received: by 2002:a25:cf82:: with SMTP id f124mr29287919ybg.441.1593464180352;
+ Mon, 29 Jun 2020 13:56:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20200626213035.45653c24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200627015431.3579234-1-jeffrey.t.kirsher@intel.com> <20200627015431.3579234-6-jeffrey.t.kirsher@intel.com> <20200626213035.45653c24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: Re: [net-next 05/13] igc: Check __IGC_PTP_TX_IN_PROGRESS instead of ptp_tx_skb
-From:   Andre Guedes <andre.guedes@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Aaron Brown <aaron.f.brown@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Date:   Mon, 29 Jun 2020 13:51:32 -0700
-Message-ID: <159346389229.30391.2954936254801502352@rramire2-mobl.amr.corp.intel.com>
-User-Agent: alot/0.9
+References: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com> <CALx6S37-efe081ZF5G6_rc+48axkvGRR3CN4j7khuDhrmyJvMA@mail.gmail.com>
+In-Reply-To: <CALx6S37-efe081ZF5G6_rc+48axkvGRR3CN4j7khuDhrmyJvMA@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 29 Jun 2020 16:55:42 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdd7BN-DHud5ZpyYce1r9dXvaGq-T2eXABhF1YL5u4h5Q@mail.gmail.com>
+Message-ID: <CA+FuTSdd7BN-DHud5ZpyYce1r9dXvaGq-T2eXABhF1YL5u4h5Q@mail.gmail.com>
+Subject: Re: [PATCH net-next] icmp: support rfc 4884
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-
-Quoting Jakub Kicinski (2020-06-26 21:30:35)
-> On Fri, 26 Jun 2020 18:54:23 -0700 Jeff Kirsher wrote:
-> > From: Andre Guedes <andre.guedes@intel.com>
-> > 
-> > The __IGC_PTP_TX_IN_PROGRESS flag indicates we have a pending Tx
-> > timestamp. In some places, instead of checking that flag, we check
-> > adapter->ptp_tx_skb. This patch fixes those places to use the flag.
-> > 
-> > Quick note about igc_ptp_tx_hwtstamp() change: when that function is
-> > called, adapter->ptp_tx_skb is expected to be valid always so we
-> > WARN_ON_ONCE() in case it is not.
-> > 
-> > Quick note about igc_ptp_suspend() change: when suspending, we don't
-> > really need to check if there is a pending timestamp. We can simply
-> > clear it unconditionally.
-> > 
-> > Signed-off-by: Andre Guedes <andre.guedes@intel.com>
-> > Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-> > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+On Mon, Jun 29, 2020 at 4:34 PM Tom Herbert <tom@herbertland.com> wrote:
+>
+> On Mon, Jun 29, 2020 at 12:23 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > From: Willem de Bruijn <willemb@google.com>
+> >
+> > ICMP messages may include an extension structure after the original
+> > datagram. RFC 4884 standardized this behavior.
+> >
+> > It introduces an explicit original datagram length field in the ICMP
+> > header to delineate the original datagram from the extension struct.
+> >
+> > Return this field when reading an ICMP error from the error queue.
+> >
+> > ICMPv6 by default already returns the entire 32-bit part of the header
+> > that includes this field by default. For consistency, do the exact
+> > same for ICMP. So far it only returns mtu on ICMP_FRAG_NEEDED and gw
+> > on ICMP_PARAMETERPROB.
+> >
+> > For backwards compatibility, make this optional, set by setsockopt
+> > SOL_IP/IP_RECVERR_RFC4884. For API documentation and feature test, see
+> > https://github.com/wdebruij/kerneltools/blob/master/tests/recv_icmp.c
+> >
+> > Alternative implementation to reading from the skb in ip_icmp_error
+> > is to pass the field from icmp_unreach, again analogous to ICMPv6. But
+> > this would require changes to every $proto_err() callback, which for
+> > ICMP_FRAG_NEEDED pass the u32 info arg to a pmtu update function.
+> >
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
 > > ---
-> >  drivers/net/ethernet/intel/igc/igc_ptp.c | 16 +++++++---------
-> >  1 file changed, 7 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
-> > index b1b23c6bf689..e65fdcf966b2 100644
-> > --- a/drivers/net/ethernet/intel/igc/igc_ptp.c
-> > +++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
-> > @@ -404,9 +404,6 @@ void igc_ptp_tx_hang(struct igc_adapter *adapter)
-> >       bool timeout = time_is_before_jiffies(adapter->ptp_tx_start +
-> >                                             IGC_PTP_TX_TIMEOUT);
-> >  
-> > -     if (!adapter->ptp_tx_skb)
-> > -             return;
-> > -
-> >       if (!test_bit(__IGC_PTP_TX_IN_PROGRESS, &adapter->state))
-> >               return;
-> >  
-> > @@ -435,6 +432,9 @@ static void igc_ptp_tx_hwtstamp(struct igc_adapter *adapter)
-> >       struct igc_hw *hw = &adapter->hw;
-> >       u64 regval;
-> >  
-> > +     if (WARN_ON_ONCE(!skb))
-> > +             return;
+> >  include/net/inet_sock.h |  1 +
+> >  include/uapi/linux/in.h |  1 +
+> >  net/ipv4/ip_sockglue.c  | 12 ++++++++++++
+> >  3 files changed, 14 insertions(+)
+> >
+> > diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+> > index a7ce00af6c44..a3702d1d4875 100644
+> > --- a/include/net/inet_sock.h
+> > +++ b/include/net/inet_sock.h
+> > @@ -225,6 +225,7 @@ struct inet_sock {
+> >                                 mc_all:1,
+> >                                 nodefrag:1;
+> >         __u8                    bind_address_no_port:1,
+> > +                               recverr_rfc4884:1,
+> >                                 defer_connect:1; /* Indicates that fastopen_connect is set
+> >                                                   * and cookie exists so we defer connect
+> >                                                   * until first data frame is written
+> > diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+> > index 8533bf07450f..3d0d8231dc19 100644
+> > --- a/include/uapi/linux/in.h
+> > +++ b/include/uapi/linux/in.h
+> > @@ -123,6 +123,7 @@ struct in_addr {
+> >  #define IP_CHECKSUM    23
+> >  #define IP_BIND_ADDRESS_NO_PORT        24
+> >  #define IP_RECVFRAGSIZE        25
+> > +#define IP_RECVERR_RFC4884     26
+> >
+> >  /* IP_MTU_DISCOVER values */
+> >  #define IP_PMTUDISC_DONT               0       /* Never send DF frames */
+> > diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+> > index 84ec3703c909..525140e3947c 100644
+> > --- a/net/ipv4/ip_sockglue.c
+> > +++ b/net/ipv4/ip_sockglue.c
+> > @@ -398,6 +398,9 @@ void ip_icmp_error(struct sock *sk, struct sk_buff *skb, int err,
+> >         if (!skb)
+> >                 return;
+> >
+> > +       if (inet_sk(sk)->recverr_rfc4884)
+> > +               info = ntohl(icmp_hdr(skb)->un.gateway);
 > > +
-> >       regval = rd32(IGC_TXSTMPL);
-> >       regval |= (u64)rd32(IGC_TXSTMPH) << 32;
-> >       igc_ptp_systim_to_hwtstamp(adapter, &shhwtstamps, regval);
-> > @@ -466,7 +466,7 @@ static void igc_ptp_tx_work(struct work_struct *work)
-> >       struct igc_hw *hw = &adapter->hw;
-> >       u32 tsynctxctl;
-> >  
-> > -     if (!adapter->ptp_tx_skb)
-> > +     if (!test_bit(__IGC_PTP_TX_IN_PROGRESS, &adapter->state))
-> >               return;
-> 
-> Not that reading ptp_tx_skb is particularly correct here, but I think
-> it's better. See how they get set:
-> 
->                 if (adapter->tstamp_config.tx_type == HWTSTAMP_TX_ON &&
->                     !test_and_set_bit_lock(__IGC_PTP_TX_IN_PROGRESS,
->                                            &adapter->state)) {
->                         skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
->                         tx_flags |= IGC_TX_FLAGS_TSTAMP;
-> 
->                         adapter->ptp_tx_skb = skb_get(skb);
->                         adapter->ptp_tx_start = jiffies;
-> 
-> bit is set first and other fields after. Since there is no locking here
-> we may just see the bit but none of the fields set.
+> Willem,
+>
+> Doesn't this assume that all received ICMP errors received on the
+> socket use the extended RFC4884 format once the option is set on the
+> socket?
+>
+> I think what we might need to do this properly is to switch on the
+> ICMP Type/Code to determine if the format is RFC4884. If it is then,
+> we can figure out where the appropriate info for the ICMP error is.
+> Good example of this is draft-ietf-6man-icmp-limits-08 currently on
+> the RFC editor queue. A code for destination unreachable is added for
+> "aggregate header limit exceeded". An RFC4884 format is used to
+> contain an ICMP extension that includes a pointer to the offending
+> byte (unlike parameter problem, destination unreachable doesn't have
+> Pointer in ICMP header).  So in this case it makes sense that the
+> kernel returns the Pointer in extended ICMP as the info.
 
-I see your point, but note that the code within the if-block and the code in
-igc_ptp_tx_work() don't execute concurrently. adapter->ptp_tx_work is scheduled
-only on a time-sync interrupt, which is triggered if IGC_TX_FLAGS_TSTAMP is
-set (so adapter->ptp_tx_skb is valid).
+This implementation matches the existing behavior of ICMPv6.
 
-- Andre
+You're right that the RFC 4884 length field is relevant only for a
+selection of ICMP types. For other types most of the bits are
+reserved. I don't see any issue with exposing those. Anything
+more fine grained will have to be extended for each
+additional feature such as the one you mention. I prefer to just make
+this information available once and for all. It really helped that it
+was already available on v6, for instance.
+
+
+
+
+> Tom
+>
+>
+> >         serr = SKB_EXT_ERR(skb);
+> >         serr->ee.ee_errno = err;
+> >         serr->ee.ee_origin = SO_EE_ORIGIN_ICMP;
+> > @@ -755,6 +758,7 @@ static int do_ip_setsockopt(struct sock *sk, int level,
+> >         case IP_RECVORIGDSTADDR:
+> >         case IP_CHECKSUM:
+> >         case IP_RECVFRAGSIZE:
+> > +       case IP_RECVERR_RFC4884:
+> >                 if (optlen >= sizeof(int)) {
+> >                         if (get_user(val, (int __user *) optval))
+> >                                 return -EFAULT;
+> > @@ -914,6 +918,11 @@ static int do_ip_setsockopt(struct sock *sk, int level,
+> >                 if (!val)
+> >                         skb_queue_purge(&sk->sk_error_queue);
+> >                 break;
+> > +       case IP_RECVERR_RFC4884:
+> > +               if (val != 0 && val != 1)
+> > +                       goto e_inval;
+> > +               inet->recverr_rfc4884 = val;
+> > +               break;
+> >         case IP_MULTICAST_TTL:
+> >                 if (sk->sk_type == SOCK_STREAM)
+> >                         goto e_inval;
+> > @@ -1588,6 +1597,9 @@ static int do_ip_getsockopt(struct sock *sk, int level, int optname,
+> >         case IP_RECVERR:
+> >                 val = inet->recverr;
+> >                 break;
+> > +       case IP_RECVERR_RFC4884:
+> > +               val = inet->recverr_rfc4884;
+> > +               break;
+> >         case IP_MULTICAST_TTL:
+> >                 val = inet->mc_ttl;
+> >                 break;
+> > --
+> > 2.27.0.212.ge8ba1cc988-goog
+> >
