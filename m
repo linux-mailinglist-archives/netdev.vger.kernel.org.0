@@ -2,92 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 838B120E4AB
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:05:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0510320E41A
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:04:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391127AbgF2V1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38384 "EHLO
+        id S1726712AbgF2VVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729057AbgF2Smo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:42:44 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D4BC031C73;
-        Mon, 29 Jun 2020 11:05:55 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id h28so13687243edz.0;
-        Mon, 29 Jun 2020 11:05:55 -0700 (PDT)
+        with ESMTP id S1729782AbgF2Sws (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:52:48 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E36C031C78;
+        Mon, 29 Jun 2020 11:13:19 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id e13so16136897qkg.5;
+        Mon, 29 Jun 2020 11:13:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hJ7bwzBcJdJpIqyIZcO1uCM9Pw8AFzZZQdo+BMkM/wI=;
-        b=SLRB44N0JiC73+18YWv4FOQgCRuo9RDcXbGvKQN9AK5bgYKeK4KBNdylz0TGW704q2
-         mVyX0kOwJ8f2lhJVD6O4pvcH9fRnRamZAQ4k2fOeJ9y2nqv801LHCj9c+V0sV41kCYsl
-         qOafEoFtNGiraeC+62ve5Q59dPv05KWkzenF6UtDAvTfLOJ8t0jMRpEZVgx7oYfji6dv
-         v2ilBNMlssGpE2qqwUoAIXeCwvBfO7RUGvFARu0t1xZvlEsmJvpyT37fMHmkjAwEf0ky
-         St6mxRNAtxjV6tDEOEMHg9zhX0rdM4wWf6P11Y2tCyzxsFdhqUS0nP/fBPyeSefcVE7V
-         Vjtg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=twS0SHJ0tpWW/RvveG6R48ty/BejMf4B4mz8JuPn66w=;
+        b=H97Sem+km39dRzORyaBMgYjQdrf0E87yvhB5vb1d3KG7EtSdQC/jT/udV4OSsrBPYS
+         FOz007h8GjgqkQ6XSQ5uZHIuWmtUoFD23nQ4eIB7XnoI+3DJYoPh46H+QhHRXPcp1o1j
+         RVuVKfu9Sh2xIO2d70XOemWpNc84ACJ53AfYVgqE+p2CF2yW2GQqecAFJu9OghkAIQgi
+         E0RhGFAiB9s8d7QimvKn0Vao3M0q1cnchey54wCRsitEFviVBLipbxvqbBquhMbrUATu
+         U+FymgZYhXxw1lGemyQq2TTzU8fVn/jU7SgnXpS2GHj9fRiymrvGhN+UZyIGYceCPHEL
+         AfnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hJ7bwzBcJdJpIqyIZcO1uCM9Pw8AFzZZQdo+BMkM/wI=;
-        b=gkEPeX7IT/kW6jasTz2HjoOAxirrQ7RhIbgyCGXVOkUGXsUEXvxbc/HRtzkbw+3YRg
-         XK6ZGcAErWq6Dxlo8K5ClZaAonN8X8OUjjoNRlU5TcEA5kF4aIdNFIP0TKZ7RYDqmkt0
-         /ju96LajN73bXeJmqNq+joOW9D72DSwJ0zjd1bzlwy/KPbwhHy9nSWDafDdH7ZLKhRLg
-         BhoFrqdN+RPPgtB/FXo1vPlko6qzglnWzXEAmE4BF7wbnrvsvSMnWCZ4wpvZorIgxdYL
-         rEaZPFr1jyiPUiZidlsap0qiwnM+o7HurCzkkLz5cCh1xt8hQbJLT1lcSoH8S3pNPMgy
-         9EIA==
-X-Gm-Message-State: AOAM533GFQoiVImqgCtrBYMl9GxcX8BTaicCKgE/ALswIzUyqBtET0G6
-        wCCTfOZPd+0i7aEw9dMeLBaSld6s
-X-Google-Smtp-Source: ABdhPJxCsPnKAQk2H0DnK6TPDN2TMKek+xOMmP/lSIUI54dR+E3eobWScl1UkHE91a2hvf1KvmltdA==
-X-Received: by 2002:aa7:c80d:: with SMTP id a13mr19225286edt.327.1593453954340;
-        Mon, 29 Jun 2020 11:05:54 -0700 (PDT)
-Received: from localhost.localdomain (p200300f137396800428d5cfffeb99db8.dip0.t-ipconnect.de. [2003:f1:3739:6800:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id w18sm232937ejc.62.2020.06.29.11.05.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 11:05:53 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     devicetree@vger.kernel.org, robh+dt@kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        marcel@holtmann.org, alistair@alistair23.me, anarsoul@gmail.com,
-        kuba@kernel.org, davem@davemloft.net,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH] dt-bindings: net: bluetooth: realtek: Fix uart-has-rtscts example
-Date:   Mon, 29 Jun 2020 20:05:45 +0200
-Message-Id: <20200629180545.2879272-1-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=twS0SHJ0tpWW/RvveG6R48ty/BejMf4B4mz8JuPn66w=;
+        b=KoSXbFlnYGpWBowpy0sUWV/7s/ZiXg4SsQRcH7ZUfijeMors7mmyCUkfX4RGCn32Ao
+         pMmQl7OxfqSjAyU1juW0K+lHlFOjnANV40zB2scDBpKCh2QUumP8lhd6hQFw8DcN9dJ+
+         nE1qmpHJjEQuFBMLmiudOBq4XEiXMI+6HBQ+Wj3VzfDCtxiv6VJqi+3vTAw4RP4fkeou
+         RltQl6UTqbj3p9bB9sa8Mii29RBTkwyJWb/YflVySRkIpXxsIDmYI/F0maYFZKo6WA9Z
+         sZe7M/m0kk1dl/0pw/bcGInTu/pC4rjt5UE26DmV8srW5OssrADUI+lMAQ8ksnMP8Csq
+         mM8w==
+X-Gm-Message-State: AOAM533V3nWeLDiBxagn256nQbvSOe+bWNMvTeCrXR+iQISCjLQAur6D
+        piZh3vZRd5LJMTRyP1gmHsKlZsNNnQrAA1Wx35s=
+X-Google-Smtp-Source: ABdhPJw/yYtDpU4X41/hDDEG4/K8emuKLEH++AyXZZZ9xr88Ao2OlH+ddshOxSY/LB+Js7NQ8FEIGok9UouZGj/aR3w=
+X-Received: by 2002:a37:7683:: with SMTP id r125mr13834622qkc.39.1593454398945;
+ Mon, 29 Jun 2020 11:13:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200626175501.1459961-1-kafai@fb.com> <20200626175545.1462191-1-kafai@fb.com>
+ <CAEf4BzZ3Jb296zJ7bfsntk7v5fkynrBcKncGQgrSHJ2zqifgsA@mail.gmail.com>
+ <20200627002302.3tqklvjxxuetjoxr@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZevDLp8Hzax3T8XzHLsMm85upCONULVVOEOyAxVGe4dA@mail.gmail.com> <20200629180035.huq42fif7wktfbja@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200629180035.huq42fif7wktfbja@kafai-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 29 Jun 2020 11:13:07 -0700
+Message-ID: <CAEf4Bzbke6B9Pf21xD0XXz_NGmuZMZcaWxbfgjdxBaNHc=zf1w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 07/10] bpf: selftests: Restore netns after each test
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Lawrence Brakmo <brakmo@fb.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Networking <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-uart-has-rtscts is a boolean property. These are defined as present
-(which means that this property evaluates to "true") or absent (which
-means that this property evaluates to "false"). Remove the numeric value
-from the example to make it comply with the boolean property bindings.
+On Mon, Jun 29, 2020 at 11:00 AM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Sat, Jun 27, 2020 at 01:31:42PM -0700, Andrii Nakryiko wrote:
+> > On Fri, Jun 26, 2020 at 5:23 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > On Fri, Jun 26, 2020 at 03:45:04PM -0700, Andrii Nakryiko wrote:
+> > > > On Fri, Jun 26, 2020 at 10:56 AM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > >
+> > > > > It is common for networking tests creating its netns and making its own
+> > > > > setting under this new netns (e.g. changing tcp sysctl).  If the test
+> > > > > forgot to restore to the original netns, it would affect the
+> > > > > result of other tests.
+> > > > >
+> > > > > This patch saves the original netns at the beginning and then restores it
+> > > > > after every test.  Since the restore "setns()" is not expensive, it does it
+> > > > > on all tests without tracking if a test has created a new netns or not.
+> > > > >
+> > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > ---
+> > > > >  tools/testing/selftests/bpf/test_progs.c | 21 +++++++++++++++++++++
+> > > > >  tools/testing/selftests/bpf/test_progs.h |  2 ++
+> > > > >  2 files changed, 23 insertions(+)
+> > > > >
+> > > > > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+> > > > > index 54fa5fa688ce..b521ce366381 100644
+> > > > > --- a/tools/testing/selftests/bpf/test_progs.c
+> > > > > +++ b/tools/testing/selftests/bpf/test_progs.c
+> > > > > @@ -121,6 +121,24 @@ static void reset_affinity() {
+> > > > >         }
+> > > > >  }
+> > > > >
+> > > > > +static void save_netns(void)
+> > > > > +{
+> > > > > +       env.saved_netns_fd = open("/proc/self/ns/net", O_RDONLY);
+> > > > > +       if (env.saved_netns_fd == -1) {
+> > > > > +               perror("open(/proc/self/ns/net)");
+> > > > > +               exit(-1);
+> > > > > +       }
+> > > > > +}
+> > > > > +
+> > > > > +static void restore_netns(void)
+> > > > > +{
+> > > > > +       if (setns(env.saved_netns_fd, CLONE_NEWNET) == -1) {
+> > > > > +               stdio_restore();
+> > > > > +               perror("setns(CLONE_NEWNS)");
+> > > > > +               exit(-1);
+> > > > > +       }
+> > > > > +}
+> > > > > +
+> > > > >  void test__end_subtest()
+> > > > >  {
+> > > > >         struct prog_test_def *test = env.test;
+> > > > > @@ -643,6 +661,7 @@ int main(int argc, char **argv)
+> > > > >                 return -1;
+> > > > >         }
+> > > > >
+> > > > > +       save_netns();
+> > > >
+> > > > you should probably do this also after each sub-test in test__end_subtest()?
+> > > You mean restore_netns()?
+> >
+> > oops, yeah :)
+> >
+> > >
+> > > It is a tough call.
+> > > Some tests may only want to create a netns at the beginning for all the subtests
+> > > to use (e.g. sk_assign.c).  restore_netns() after each subtest may catch
+> > > tester in surprise that the netns is not in its full control while its
+> > > own test is running.
+> >
+> > Wouldn't it be better to update such self-tests to setns on each
+> > sub-test properly? It should be a simple code re-use exercise, unless
+> > I'm missing some other implications of having to do it before each
+> > sub-test?
+> It should be simple, I think.  Haven't looked into details of each test.
+> However, I won't count re-running the same piece of code in a for-loop
+> as a re-use exercise ;)
+>
+> In my vm, a quick try in forcing sk_assign.c to reconfigure netns in each
+> subtest in the for loop increased the runtime from 1s to 8s.
+> I guess it is not a big deal for test_progs.
 
-Fixes: 1cc2d0e021f867 ("dt-bindings: net: bluetooth: Add rtl8723bs-bluetooth")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- Documentation/devicetree/bindings/net/realtek-bluetooth.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Oh, no, thank you very much, no one needs extra 7 seconds of
+test_progs run. Can you please remove reset_affinity() from sub-test
+clean up then, and consistently do clean ups only between tests?
 
-diff --git a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-index f15a5e5e4859..c488f24ed38f 100644
---- a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-+++ b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-@@ -44,7 +44,7 @@ examples:
-     uart1 {
-         pinctrl-names = "default";
-         pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
--        uart-has-rtscts = <1>;
-+        uart-has-rtscts;
- 
-         bluetooth {
-             compatible = "realtek,rtl8723bs-bt";
--- 
-2.27.0
-
+>
+> >
+> > The idea behind sub-test is (at least it was so far) that it's
+> > independent from other sub-tests and tests, and it's only co-located
+> > with other sub-tests for the purpose of code reuse and logical
+> > grouping. Which is why we reset CPU affinity, for instance.
+> >
+> > >
+> > > I think an individual test should have managed the netns properly within its
+> > > subtests already if it wants a correct test result.  It can unshare at the
+> > > beginning of each subtest to get a clean state (e.g. in patch 8).
+> > > test_progs.c only ensures a config made by an earlier test does
+> > > not affect the following tests.
+> >
+> > It's true that it gives more flexibility for test setup, but if we go
+> > that way, we should do it consistently for CPU affinity resetting and
+> > whatever else we do per-subtest. I wonder what your answers would be
+> > for the above questions. We can go either way, just let's be
+> > consistent.
+> Right, I also don't feel strongly about which way to go for netns.
+> I noticed reset_affinity().  cgroup cleanup is also per test though.
+> I think netns is more close to cgroup in terms of bpf prog is running under it,
+> so this patch picked the current way.
+>
+> If it is decided to stay with reset_affinity's way,  I can make netns change
+> to other tests (there are two if i grep properly).
+>
+> It seems there is no existing subtest requires to reset_affinity.
