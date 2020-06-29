@@ -2,127 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 309E920CB49
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 02:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5E0E20CBA0
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 04:03:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726699AbgF2Ave (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 20:51:34 -0400
-Received: from mail-eopbgr50053.outbound.protection.outlook.com ([40.107.5.53]:33923
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        id S1726413AbgF2CCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 22:02:54 -0400
+Received: from mail-eopbgr00043.outbound.protection.outlook.com ([40.107.0.43]:44357
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726465AbgF2Avd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Jun 2020 20:51:33 -0400
+        id S1726345AbgF2CCx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Jun 2020 22:02:53 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=alJ5kyhhKsFsN7s5q41PhMO9rUw83HhVouw530L1VLf2VW7T16DovQ2sgNr+yFVTTpCFH/mQv6LPuglVu4OCfT1xWeOFRuKRWQEuLLAlM8X3I95MdPh48/Ll+KFG7s+5Dd9ivDwDNQiVjAy9qFCk2dYvoXPLOQHBiebngQfAMMXThALLtmdVGZsYSBXr6EqJg2pe5sjxJUi/JVEl1T7M8O0GqzY0ts0nYq0kqizZ0FF2MX/I9u3T1yaRo9VlhS+9cwfTrRI5xVUu7UiQ+pMDpUbP6QTsLHizQlzHMc/DneHGIwRbSbQGxeqaYqALhYkT2If5/WCRloE0WtdLBSuayA==
+ b=cWKvMpwGYX5bL/biGoNGTUQI6gERmpf+pW8/WRBPN8b3O4COLr9Jvy7cwJlmTUkoYj8keaP/635f7BO20GGOacam73ZlFt1PKldFJ4mSy/5YynLjITrkHvzcrOfBP9Cyqk/+ppcJpDjPxliZ0Yb+76DOHnaBH9zyRtMszB9pUup04LueuzxkcvUM476Lw5q5X7CEAxjOWYOihgvBEB9n5Aiqlm6mSF19FfHveENj4ooYmq2IUCAI573tEgWGF3HhDinmQpeKCEClDZpOjX6rPVOGWAyvbHxfBj/LUV7nyTkCvzF+Cpdy+B8NrhQurnWPrCbwNf2tOcF2wvWuaa8ctQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2+d9Dm7P7h0MNcF3OL4DLIlCsm4Qgie7XIMFEvUFTEY=;
- b=DZx2GUNmTD9jaKlGR3M3WC/u2uUe+5xdf1Kq0c4KXWKMd7RABN60NpMXSAmSE5rZsWaV3AD6kcGOaCQClcCQbhHzHXWADutmynOsReViLR0JZ/3uciB0FJFThnlGFYT1f1v5V+3EiNxA9RNtxOQl/b0J1aawhe/Bu3VPHin/VHy4UvlReWVyJDgA5vzQkTl0FviXJ0pdEni5ji9yPhyI03sPw0hr2/pM9eRkzAc2JFNdVZyMzgJsksOeMotoiwFfK7d3PNJBSe9bSMVpxlF5DfHrKcvkxRqyz0YMUoLaN2kJ7RG58beOYkLIn5pK3Ge4u1Cwfc7HkO3iXiErlWiM7Q==
+ bh=KyJnTK4Oaadl1RzTmUj7fUB/LwuBe+UA5HccmP9kH6I=;
+ b=dXwKZGi2S8SLIE+ReydLtK5u2GXVhEuIH+QSSm7BnORvgbsWDjwvDtmh9DBmKbggkQjxPkZhYSaahiov3x+mBvLZN7ALTqNMEu6eSBd3ODtsARMpXhR5KlWM84T5HNdY8MYuvVXoCV+ub2wOmaaNpJUzcFITJNaeLEagvGaG55thcix9DbJHI6/H7A4gdDzekwtTJkRQm0rKsCdWTmxx4JpZDq2dqLErX87ucwlXHkgQPihnXIT0K6cN70fWcYHBCqSUg8pbTiGCGhUdVrZxsg7J94vJDmqJt7tT34MZhbEK2fQ/xI4ck48p9j2UM3JL9gZqTrGD1eaePrfNMQL5GQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2+d9Dm7P7h0MNcF3OL4DLIlCsm4Qgie7XIMFEvUFTEY=;
- b=FLloNrAC2dDVT/+sGWG21nCqrJBH+xVHOFUJskrkvizp3n2lL5kT/hUPh661J9Ydu8A3jdPEcjJPr+J2Ld7FHUT8ekeiQE6nOydc1hTtiqOV5ckS9paihBYJYkdbA0GEKlVZpCSptGHUwt/tt5eWemACoesGsGDrZtWaEiBXbUA=
+ bh=KyJnTK4Oaadl1RzTmUj7fUB/LwuBe+UA5HccmP9kH6I=;
+ b=sM0rT/hRbzV0uDh9R6oUOKm78aJR9yshxOVFO8TbHcD/qKOj0CbODTkHVUQEfQ6Nd0CxtZgtG15eITXuWjiXexB0Y+ymUf4fpNfNUHobZIAMZJb+0TbZAo1i5aMLZ9j0eHhf7gkP7Z1O3QvXStO0AGDrQo8tgdIDAWElmckGwig=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
 Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
- by VI1PR04MB7072.eurprd04.prod.outlook.com (2603:10a6:800:12c::15) with
+ by VI1PR04MB6030.eurprd04.prod.outlook.com (2603:10a6:803:f8::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20; Mon, 29 Jun
- 2020 00:51:30 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Mon, 29 Jun
+ 2020 02:02:49 +0000
 Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
  ([fe80::c1ea:5943:40e8:58f1]) by VE1PR04MB6496.eurprd04.prod.outlook.com
  ([fe80::c1ea:5943:40e8:58f1%3]) with mapi id 15.20.3131.026; Mon, 29 Jun 2020
- 00:51:30 +0000
+ 02:02:49 +0000
 From:   Po Liu <po.liu@nxp.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     "dsahern@gmail.com" <dsahern@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "vlad@buslov.dev" <vlad@buslov.dev>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>
-Subject: RE:  Re: [iproute2-next] action police: make 'mtu' could be set
- independently in police action
-Thread-Topic: Re: [iproute2-next] action police: make 'mtu' could be set
- independently in police action
-Thread-Index: AdZNr2sGREQ1dlt4QT2sFwRddjqD3A==
-Date:   Mon, 29 Jun 2020 00:51:30 +0000
-Message-ID: <VE1PR04MB6496EA762B0749A7CC92FBCE926E0@VE1PR04MB6496.eurprd04.prod.outlook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: networkplumber.org; dkim=none (message not signed)
- header.d=none;networkplumber.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [221.221.89.129]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 2b01e6ce-1cc9-4c53-70c1-08d81bc68ff5
-x-ms-traffictypediagnostic: VI1PR04MB7072:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB70728F2DE214C8A2A53E557E926E0@VI1PR04MB7072.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4714;
-x-forefront-prvs: 044968D9E1
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Ds0YHZ4jw+7oVEJ7Glcf9AsQ449b9rRp1JP0M0c/MQTr51BhAtwuA0WFjt1VvHGSHeI+s6zAhNahb4hKGqPLAfFmGmz/nHSAvUjzx0Ji9tSYQtarft29I/Vy6zGiUWrcuqHJYaIEe52nUFArmz/P0rHaqmXT+mSKKNMgLwZ2zKKjxgM9VOX+wPd77kOGY4TZ2zDaPyVbs/2wWhJShsKPVj8suTauK8yMJOadXIh5mtm7bDfPSqQwCrsz4MaKeFneVKzDICbqXNGbYBQf6BkFm4AWGitSYGquz5Cy30EQasBaoSEXnIrDDbU2K+gd3RaI9R+/fq5dISgmldEFawbWWA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(39860400002)(376002)(366004)(396003)(136003)(33656002)(8676002)(8936002)(71200400001)(7696005)(478600001)(316002)(6916009)(26005)(83380400001)(4326008)(66946007)(76116006)(2906002)(52536014)(54906003)(186003)(66556008)(86362001)(64756008)(66446008)(66476007)(6506007)(9686003)(53546011)(55016002)(5660300002)(44832011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: By8h9K6Zh1W5mIJb8jic/Weh/gBTl9rTG43pVE3lLUkghQ7FPJjkxipufh8+sG80Jtv/8OPuKVK3u/NJZohxXM2fJhKkwnU9bV1+jAym6kKYGRdKWyjxOmERBPpk4QI6/O5r6DqXpqYMRsPqmv5WkWFkIPESknYux46F5Pd4xhuzrW9rYRt+X+Vww/tkwg0oKp2Bp4aTxSb236QceyJCHV8NcXS3jg+2gCY3qb+bDFFKK2D+9UMeH+xLkSRbGVAyL99NZMJmI3bmV/+LHt0+ipKFHvB+66ZFwdpsvv6wuy8NQGsyeSAl8CsjEVGkDV5jHZA0jwm8/5JUZRZfSy1fmGvuYdXVvlkr3Gpf1UDFktij9+ZsbxVjuFpxOBoSRsk5MIG72vHkWhq2TclEXRxTJgUngJTr+sNmPUOT4n0ocmjpFk7cJsttEgmsNMf4DWrSvWanT1hHg9tvi60AmxEK+zKyKXdGSpTlZz2oazWevac=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+To:     dsahern@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, davem@davemloft.net, jhs@mojatatu.com,
+        vlad@buslov.dev, po.liu@nxp.com, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com, alexandru.marginean@nxp.com
+Subject: [v2,iproute2-next 1/2] action police: change the print message quotes style
+Date:   Mon, 29 Jun 2020 10:04:19 +0800
+Message-Id: <20200629020420.30412-1-po.liu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200628014602.13002-1-po.liu@nxp.com>
+References: <20200628014602.13002-1-po.liu@nxp.com>
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0164.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:28::20) To VE1PR04MB6496.eurprd04.prod.outlook.com
+ (2603:10a6:803:11c::29)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from tsn.ap.freescale.net (119.31.174.73) by SG2PR01CA0164.apcprd01.prod.exchangelabs.com (2603:1096:4:28::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20 via Frontend Transport; Mon, 29 Jun 2020 02:02:45 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [119.31.174.73]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 7530ae36-77d3-470d-a2c7-08d81bd085be
+X-MS-TrafficTypeDiagnostic: VI1PR04MB6030:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR04MB603019C3394D55C4F08F5B75926E0@VI1PR04MB6030.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Forefront-PRVS: 044968D9E1
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZVYPaglvU+TjapwrqKOAowxKYssCNQP//5P8n/XQqL0H79lMyOmR8/Bmca1tCEwjvcsUtGQz3UKmNGLSW7C51MNGSLEfuEg0YlyaGfYQYltunAlMA0ZDatkMzQ8JYgNzCz8alCOymoaHvWmbYhv2QEpHIJfbGgfVqB6G1+U879fsKkegu+ejgu/eP7O+/OZbeTaZbsSEzF7bT7Z+fyuxNn9ZvPWwa/brjoYx+j2gM1JzlgdZZRnhEBzwtjKgbSO3p/g8FNC2EBrzmidCNXgJ+Fz7QnbCVzAQ2HtC/QJNvnA40S0EXGaRE0asYPqbLD2DPYzm7L/kny88rAaJVLF7ZQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(136003)(346002)(376002)(39860400002)(1076003)(26005)(6486002)(16526019)(316002)(5660300002)(8936002)(83380400001)(186003)(44832011)(956004)(8676002)(2616005)(2906002)(36756003)(66476007)(66946007)(66556008)(6506007)(4326008)(6666004)(15650500001)(6512007)(478600001)(86362001)(52116002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: YS7cUVB8oqY6x0V4mrIUngQkYh5a8bVGOfmTL4yklLhTvPALweblmZYiXNVyLaYxObxtU3NCnmnmFKTxlPYJmc2l99+ghptb2DgUhkbApL9QMuCxxV1KR9cqagaND89zp8o5w86WfO/feEFZQUykfNiVhO2dAbzqlK4/xTqhO8ZJITmhd08GwwlkcDS+VarOZKgahTBn1aGPRuDH356Jbom2vrzm+HagiV7gtpQkN5lJbuDImvJutbn6AjPu8QspLNKI4kBl3kqlCSnq1mjoxgeoOBgRM6iEWhXz+zaIrKdGKToqE2NuYTdtAjR/+pn8PKKeW7IRn+vylOyFF2FaU9n/2GqJY0t/KHng3YJDqqS3rJfAy/kFnl0r/wkFuVZnvyuago7DRNnXI7wXo69YuCzOc5mdU7tNdpWePrlL0NahQUQnV+62g8cWtcczgYfrg46fWnnA88Upc8vMzhSvmEo4W/fWiVmfXKJCdxoIeM8=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7530ae36-77d3-470d-a2c7-08d81bd085be
 X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6496.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b01e6ce-1cc9-4c53-70c1-08d81bc68ff5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2020 00:51:30.4167
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2020 02:02:49.2840
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sRpTBM4+YYJNJTXqmK9LzmU82Q7jAwGrjAMJI6vVuP5Y9U+490JbvtiDj3h431a3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7072
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sAb7q9OIobMOV+EJyjSbUGGciqC6fwcFHKhBVXsYbRzoDB9h9/4VLL0973sOaBTq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6030
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU3RlcGhlbiwNCg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFN0
-ZXBoZW4gSGVtbWluZ2VyIDxzdGVwaGVuQG5ldHdvcmtwbHVtYmVyLm9yZz4NCj4gU2VudDogMjAy
-MMTqNtTCMjnI1SA0OjE2DQo+IFRvOiBQbyBMaXUgPHBvLmxpdUBueHAuY29tPg0KPiBDYzogZHNh
-aGVybkBnbWFpbC5jb207IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+IG5ldGRldkB2
-Z2VyLmtlcm5lbC5vcmc7IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGpoc0Btb2phdGF0dS5jb207DQo+
-IHZsYWRAYnVzbG92LmRldjsgQ2xhdWRpdSBNYW5vaWwgPGNsYXVkaXUubWFub2lsQG54cC5jb20+
-OyBWbGFkaW1pcg0KPiBPbHRlYW4gPHZsYWRpbWlyLm9sdGVhbkBueHAuY29tPjsgQWxleGFuZHJ1
-IE1hcmdpbmVhbg0KPiA8YWxleGFuZHJ1Lm1hcmdpbmVhbkBueHAuY29tPg0KPiBTdWJqZWN0OiBS
-ZTogW2lwcm91dGUyLW5leHRdIGFjdGlvbiBwb2xpY2U6IG1ha2UgJ210dScgY291bGQgYmUgc2V0
-DQo+IGluZGVwZW5kZW50bHkgaW4gcG9saWNlIGFjdGlvbg0KPiANCj4gT24gU3VuLCAyOCBKdW4g
-MjAyMCAwOTo0NjowMiArMDgwMA0KPiBQbyBMaXUgPHBvLmxpdUBueHAuY29tPiB3cm90ZToNCj4g
-DQo+ID4gQ3VycmVudCBwb2xpY2UgYWN0aW9uIG11c3Qgc2V0ICdyYXRlJyBhbmQgJ2J1cnN0Jy4g
-J210dScgcGFyYW1ldGVyIHNldA0KPiA+IHRoZSBtYXggZnJhbWUgc2l6ZSBhbmQgY291bGQgYmUg
-c2V0IGFsb25lIHdpdGhvdXQgJ3JhdGUnIGFuZCAnYnVyc3QnDQo+ID4gaW4gc29tZSBzaXR1YXRp
-b24uIE9mZmxvYWRpbmcgdG8gaGFyZHdhcmUgZm9yIGV4YW1wbGUsICdtdHUnIGNvdWxkDQo+ID4g
-bGltaXQgdGhlIGZsb3cgbWF4IGZyYW1lIHNpemUuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBQ
-byBMaXUgPHBvLmxpdUBueHAuY29tPg0KPiA+IC0tLQ0KPiA+ICB0Yy9tX3BvbGljZS5jIHwgNCAr
-Ky0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0p
-DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvdGMvbV9wb2xpY2UuYyBiL3RjL21fcG9saWNlLmMgaW5k
-ZXggYTViYzIwYzAuLjg5NDk3ZjY3DQo+ID4gMTAwNjQ0DQo+ID4gLS0tIGEvdGMvbV9wb2xpY2Uu
-Yw0KPiA+ICsrKyBiL3RjL21fcG9saWNlLmMNCj4gPiBAQCAtMTYxLDggKzE2MSw4IEBAIGFjdGlv
-bl9jdHJsX29rOg0KPiA+ICAgICAgICAgICAgICAgcmV0dXJuIC0xOw0KPiA+DQo+ID4gICAgICAg
-LyogTXVzdCBhdCBsZWFzdCBkbyBsYXRlIGJpbmRpbmcsIHVzZSBUQiBvciBld21hIHBvbGljaW5n
-ICovDQo+ID4gLSAgICAgaWYgKCFyYXRlNjQgJiYgIWF2cmF0ZSAmJiAhcC5pbmRleCkgew0KPiA+
-IC0gICAgICAgICAgICAgZnByaW50ZihzdGRlcnIsICJcInJhdGVcIiBvciBcImF2cmF0ZVwiIE1V
-U1QgYmUgc3BlY2lmaWVkLlxuIik7DQo+ID4gKyAgICAgaWYgKCFyYXRlNjQgJiYgIWF2cmF0ZSAm
-JiAhcC5pbmRleCAmJiAhbXR1KSB7DQo+ID4gKyAgICAgICAgICAgICBmcHJpbnRmKHN0ZGVyciwg
-IlwicmF0ZVwiIG9yIFwiYXZyYXRlXCIgb3IgXCJtdHVcIk1VU1QNCj4gPiArIGJlIHNwZWNpZmll
-ZC5cbiIpOw0KPiANCj4gTWlzc2luZyBibGFuay4NCj4gWW91ciBtZXNzYWdlIHdpbGwgY29tZSBv
-dXQgYXM6DQo+ICJyYXRlIiBvciAiYXZyYXRlIiBvciAibXR1Ik1VU1QgYmUgc3BlY2lmaWVkLg0K
-DQpHZXQgaXQuIFdpbGwgY29ycmVjdC4gDQpUaGFua3MhDQoNCj4gDQo+IA0KPiBUaGUgcXVvdGVz
-IGFyZW4ndCBhZGRpbmcgdG8gdGhlIHJlYWRhYmlsaXR5LCB3aHkgbm90IGp1c3QgcmVtb3ZlIHRo
-ZW0NCj4gaW5zdGVhZC4NCg0KV2lsbCByZW1vdmUgYWxsIHF1b3Rlcy4NCg0KQnIsDQpQbyBMaXUN
-Cg==
+Change the double quotes to single quotes in fprintf message to make it
+more readable.
+
+Signed-off-by: Po Liu <po.liu@nxp.com>
+---
+v1->v2 changes:
+- Patch new added
+
+ tc/m_police.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/tc/m_police.c b/tc/m_police.c
+index a5bc20c0..7eb47f8e 100644
+--- a/tc/m_police.c
++++ b/tc/m_police.c
+@@ -162,23 +162,23 @@ action_ctrl_ok:
+ 
+ 	/* Must at least do late binding, use TB or ewma policing */
+ 	if (!rate64 && !avrate && !p.index) {
+-		fprintf(stderr, "\"rate\" or \"avrate\" MUST be specified.\n");
++		fprintf(stderr, "'rate' or 'avrate' MUST be specified.\n");
+ 		return -1;
+ 	}
+ 
+ 	/* When the TB policer is used, burst is required */
+ 	if (rate64 && !buffer && !avrate) {
+-		fprintf(stderr, "\"burst\" requires \"rate\".\n");
++		fprintf(stderr, "'burst' requires 'rate'.\n");
+ 		return -1;
+ 	}
+ 
+ 	if (prate64) {
+ 		if (!rate64) {
+-			fprintf(stderr, "\"peakrate\" requires \"rate\".\n");
++			fprintf(stderr, "'peakrate' requires 'rate'.\n");
+ 			return -1;
+ 		}
+ 		if (!mtu) {
+-			fprintf(stderr, "\"mtu\" is required, if \"peakrate\" is requested.\n");
++			fprintf(stderr, "'mtu' is required, if 'peakrate' is requested.\n");
+ 			return -1;
+ 		}
+ 	}
+-- 
+2.17.1
+
