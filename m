@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5252A20E42E
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 690B320E3C2
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:03:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388601AbgF2VWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40032 "EHLO
+        id S2390758AbgF2VRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729742AbgF2Swn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:52:43 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868E8C031C54;
-        Mon, 29 Jun 2020 10:36:19 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id j12so8183231pfn.10;
-        Mon, 29 Jun 2020 10:36:19 -0700 (PDT)
+        with ESMTP id S1729799AbgF2Swu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:52:50 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C555C031C55;
+        Mon, 29 Jun 2020 10:36:25 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id gc15so1073975pjb.0;
+        Mon, 29 Jun 2020 10:36:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CZkAqgCCUyZIGNalJFNzQkMvhQ98PbVukaKm6LBtBnw=;
-        b=BRoJqKnzIZ14r5VSfz2GvyHmBQrCXaeQFISHO5MhmKwM+cQ4LkuCWFmuV2vLJ87hni
-         1WSQfDvX1KIPgOIq0GqBSOl0kijABUuIg90rOEn5mt5rB8WUxWRMB+Q1GGTGjsSPZhOj
-         5LyRcSRFbLG9ArQfDMA5IFsAug9TGGtsCFpIK30hOy+sYpdECEBzRy8WkR/bhwVZ5wUJ
-         WIHo4Y8Mutr6NTDJKF5id3d3RcbZCLkytOl4dp1D/tFNqEC/dKAUXi+mh6nz6xoJUTg1
-         rajzN+GCABHK1/kVgtFjmEvpVOC6P5laiMork/oGUt6rbY/JZagWjN21+VyL8Vq5BxTm
-         Ki3Q==
+        bh=oH+afjmFUre+9FJ85sDhmbIb/IC6g4po5tsZa9lvjsM=;
+        b=rhcfzUBdZrYWZ0sHoiAb+pQCRbbt+226eWoAbIQh/dBelFFF2BNxMv8Z03o+ww9vEF
+         0njS4vx+QTA7kDikSU3p2vnBDeL/zLIgATNSbHc+sHOVf+nxZP4SOjitWe7PimSe2Wc7
+         9lK39yie5GcJ3OIj4MXrhuab3ix0EFSWKtpXiA/q+SAr34tuf7p7J0krKegzpT1O6isf
+         9rXBVg3cmc8QtSuj4S/wt9vYBeST94PKM0JVxeWJprZcF1ZBoCL9ENN6lRtOm/0a0Jve
+         sH/Y/P3/0dBWvR1sHEy/+Gvvpb82pggJFVmGSjrSXXCja1uhlyiMpVTB0LaV4bfDsrXt
+         hZGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CZkAqgCCUyZIGNalJFNzQkMvhQ98PbVukaKm6LBtBnw=;
-        b=KWw1BEKzu//uIGiw64fmLVs9rLJZHtzRmuESBOel1/uHFYZtk69+dDAhJCF48uA7mK
-         tmcePYbzz+9kHv82lmHEwQUEg7MOCkd4lsq423wXdhIPClQSTvHH2tcvVrPoEMtNrh91
-         fiR2x5XVwXyKyOp0mUQ7IWy/9JVnh6mpwH6mqmS+iwC1ePbprwFqfMxbbROKV6RnidF5
-         raxVk6kRqn11yTOh/ocdpaU6+3DMsRCe2WgHUW2ewz18Jke2WjLMhuBlZ/O9zaLpp1Ef
-         e5+yioChBZEXuG0FwdNg+TWp8gw4qiVMVbiAfNFN5c4XefUqOLGewWMtr8LwnAdVAKMf
-         r2xQ==
-X-Gm-Message-State: AOAM533uMDycZ2xJSLwiI6INl2Xv+hMzeTOGjoISaxbE2kfyGFAtRWa5
-        iuX5/AjxmfGGdbaGZftcUU4=
-X-Google-Smtp-Source: ABdhPJw6r6FYtLR2yskuhsNB7yhjQGHKP1pPuiujo9QgEcD55HQaBUT/5cbXYo1xJIh7l0zxt+bZBg==
-X-Received: by 2002:a65:5649:: with SMTP id m9mr10983216pgs.279.1593452179043;
-        Mon, 29 Jun 2020 10:36:19 -0700 (PDT)
+        bh=oH+afjmFUre+9FJ85sDhmbIb/IC6g4po5tsZa9lvjsM=;
+        b=q3zrxs7rbUXp7Nrg/QiWkxaq8m2BahFSB5+0mXJUchVhSM3kuFFjGlBYpyuQnN2FN2
+         n7pXiEKaRD/VYCn1MiosParHUOfFDLnFSM3JOrv9YnM5OY2ohyxcIujlPEzbwjKH93pT
+         1hRC29Q7PgwplpKvfrfv6+Y0Rmxc103Gu5a1UzMEerdyXmWhrKkw4/KJIMLlAY8wYen3
+         iBjKGeI5EvP8ID8BUG/jkoW64Z59oEBAWWq4oNITd4U7Z1xTmmjEldWVmk3WY+keHyqe
+         IZ/fWpi5EQKh9K2vaUEcYCLMwTHxSAjI0QlgAl/zzXSF2bNNqbQ6zr0sl5EiOU1wif2u
+         fYxQ==
+X-Gm-Message-State: AOAM531Ppu28N4a7wPb6UITIeCxMUwkUKmDmU7BwKrmHR9jUN+lzzV30
+        91tt+ZfxWH8JSGcQmGSZcaE=
+X-Google-Smtp-Source: ABdhPJxtZ4sKjmRW7kbH4cvq0dzM/8o7VBvRSwL5z8xTWtmT0dEd5JqSzKl4aFPmf5zeUNao84LnLg==
+X-Received: by 2002:a17:902:469:: with SMTP id 96mr14163420ple.93.1593452184850;
+        Mon, 29 Jun 2020 10:36:24 -0700 (PDT)
 Received: from varodek.iballbatonwifi.com ([103.105.153.57])
-        by smtp.gmail.com with ESMTPSA id k23sm331461pgb.92.2020.06.29.10.36.14
+        by smtp.gmail.com with ESMTPSA id k23sm331461pgb.92.2020.06.29.10.36.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 10:36:18 -0700 (PDT)
+        Mon, 29 Jun 2020 10:36:24 -0700 (PDT)
 From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
@@ -58,9 +58,9 @@ Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         skhan@linuxfoundation.org
-Subject: [PATCH v2 1/4] qlge/qlge_main.c: use generic power management
-Date:   Mon, 29 Jun 2020 23:04:56 +0530
-Message-Id: <20200629173459.262075-2-vaibhavgupta40@gmail.com>
+Subject: [PATCH v2 2/4] staging/rtl8192e: use generic power management
+Date:   Mon, 29 Jun 2020 23:04:57 +0530
+Message-Id: <20200629173459.262075-3-vaibhavgupta40@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200629173459.262075-1-vaibhavgupta40@gmail.com>
 References: <20200629173459.262075-1-vaibhavgupta40@gmail.com>
@@ -71,6 +71,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The structure of working of PM hooks for source files is:
+    drivers/staging/rtl8192e/rtl8192e/rtl_pm.h   : callbacks declared
+    drivers/staging/rtl8192e/rtl8192e/rtl_pm.c   : callbacks defined
+    drivers/staging/rtl8192e/rtl8192e/rtl_core.c : callbacks used
+
 Drivers should not use legacy power management as they have to manage power
 states and related operations, for the device, themselves. This driver was
 handling them with the help of PCI helper functions like
@@ -80,98 +85,115 @@ With generic PM, all essentials will be handled by the PCI core. Driver
 needs to do only device-specific operations.
 
 The driver was also using pci_enable_wake(...,..., 0) to disable wake. Use
-device_wakeup_disable() instead.
+device_wakeup_disable() instead. Use device_set_wakeup_enable() where WOL
+is decided by the value of a variable during runtime.
 
 Compile-tested only.
 
 Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 ---
- drivers/staging/qlge/qlge_main.c | 38 +++++++++-----------------------
- 1 file changed, 10 insertions(+), 28 deletions(-)
+ drivers/staging/rtl8192e/rtl8192e/rtl_core.c |  5 ++--
+ drivers/staging/rtl8192e/rtl8192e/rtl_pm.c   | 26 ++++++--------------
+ drivers/staging/rtl8192e/rtl8192e/rtl_pm.h   |  4 +--
+ 3 files changed, 12 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 402edaeffe12..86d1b53da2c2 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -4763,9 +4763,9 @@ static const struct pci_error_handlers qlge_err_handler = {
- 	.resume = qlge_io_resume,
+diff --git a/drivers/staging/rtl8192e/rtl8192e/rtl_core.c b/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
+index a7cd4de65b28..dbcb8d0d9707 100644
+--- a/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
++++ b/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
+@@ -63,13 +63,14 @@ static int _rtl92e_pci_probe(struct pci_dev *pdev,
+ static void _rtl92e_pci_disconnect(struct pci_dev *pdev);
+ static irqreturn_t _rtl92e_irq(int irq, void *netdev);
+ 
++static SIMPLE_DEV_PM_OPS(rtl92e_pm_ops, rtl92e_suspend, rtl92e_resume);
++
+ static struct pci_driver rtl8192_pci_driver = {
+ 	.name = DRV_NAME,	/* Driver name   */
+ 	.id_table = rtl8192_pci_id_tbl,	/* PCI_ID table  */
+ 	.probe	= _rtl92e_pci_probe,	/* probe fn      */
+ 	.remove	 = _rtl92e_pci_disconnect,	/* remove fn */
+-	.suspend = rtl92e_suspend,	/* PM suspend fn */
+-	.resume = rtl92e_resume,                 /* PM resume fn  */
++	.driver.pm = &rtl92e_pm_ops,
  };
  
--static int qlge_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused qlge_suspend(struct device *dev_d)
+ static short _rtl92e_is_tx_queue_empty(struct net_device *dev);
+diff --git a/drivers/staging/rtl8192e/rtl8192e/rtl_pm.c b/drivers/staging/rtl8192e/rtl8192e/rtl_pm.c
+index cd3e17b41d6f..5575186caebd 100644
+--- a/drivers/staging/rtl8192e/rtl8192e/rtl_pm.c
++++ b/drivers/staging/rtl8192e/rtl8192e/rtl_pm.c
+@@ -10,9 +10,9 @@
+ #include "rtl_pm.h"
+ 
+ 
+-int rtl92e_suspend(struct pci_dev *pdev, pm_message_t state)
++int rtl92e_suspend(struct device *dev_d)
  {
--	struct net_device *ndev = pci_get_drvdata(pdev);
-+	struct net_device *ndev = dev_get_drvdata(dev_d);
- 	struct ql_adapter *qdev = netdev_priv(ndev);
- 	int err;
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct net_device *dev = dev_get_drvdata(dev_d);
+ 	struct r8192_priv *priv = rtllib_priv(dev);
+ 	u32	ulRegRead;
  
-@@ -4779,35 +4779,19 @@ static int qlge_suspend(struct pci_dev *pdev, pm_message_t state)
- 	}
- 
- 	ql_wol(qdev);
--	err = pci_save_state(pdev);
--	if (err)
--		return err;
--
+@@ -46,40 +46,28 @@ int rtl92e_suspend(struct pci_dev *pdev, pm_message_t state)
+ out_pci_suspend:
+ 	netdev_info(dev, "WOL is %s\n", priv->rtllib->bSupportRemoteWakeUp ?
+ 			    "Supported" : "Not supported");
+-	pci_save_state(pdev);
 -	pci_disable_device(pdev);
--
+-	pci_enable_wake(pdev, pci_choose_state(pdev, state),
+-			priv->rtllib->bSupportRemoteWakeUp ? 1 : 0);
 -	pci_set_power_state(pdev, pci_choose_state(pdev, state));
++	device_set_wakeup_enable(dev_d, priv->rtllib->bSupportRemoteWakeUp);
+ 
+ 	mdelay(20);
  
  	return 0;
  }
  
--#ifdef CONFIG_PM
--static int qlge_resume(struct pci_dev *pdev)
-+static int __maybe_unused qlge_resume(struct device *dev_d)
+-int rtl92e_resume(struct pci_dev *pdev)
++int rtl92e_resume(struct device *dev_d)
  {
--	struct net_device *ndev = pci_get_drvdata(pdev);
-+	struct net_device *ndev = dev_get_drvdata(dev_d);
- 	struct ql_adapter *qdev = netdev_priv(ndev);
- 	int err;
+-	struct net_device *dev = pci_get_drvdata(pdev);
++	struct pci_dev *pdev = to_pci_dev(dev_d);
++	struct net_device *dev = dev_get_drvdata(dev_d);
+ 	struct r8192_priv *priv = rtllib_priv(dev);
+-	int err;
+ 	u32 val;
+ 
+ 	netdev_info(dev, "================>r8192E resume call.\n");
  
 -	pci_set_power_state(pdev, PCI_D0);
--	pci_restore_state(pdev);
+-
 -	err = pci_enable_device(pdev);
 -	if (err) {
--		netif_err(qdev, ifup, qdev->ndev, "Cannot enable PCI device from suspend\n");
+-		netdev_err(dev, "pci_enable_device failed on resume\n");
 -		return err;
 -	}
--	pci_set_master(pdev);
-+	pci_set_master(to_pci_dev(dev_d));
+-	pci_restore_state(pdev);
  
--	pci_enable_wake(pdev, PCI_D3hot, 0);
--	pci_enable_wake(pdev, PCI_D3cold, 0);
+ 	pci_read_config_dword(pdev, 0x40, &val);
+ 	if ((val & 0x0000ff00) != 0)
+ 		pci_write_config_dword(pdev, 0x40, val & 0xffff00ff);
+ 
+-	pci_enable_wake(pdev, PCI_D0, 0);
 +	device_wakeup_disable(dev_d);
  
- 	if (netif_running(ndev)) {
- 		err = ql_adapter_up(qdev);
-@@ -4820,22 +4804,20 @@ static int qlge_resume(struct pci_dev *pdev)
+ 	if (priv->polling_timer_on == 0)
+ 		rtl92e_check_rfctrl_gpio_timer(&priv->gpio_polling_timer);
+diff --git a/drivers/staging/rtl8192e/rtl8192e/rtl_pm.h b/drivers/staging/rtl8192e/rtl8192e/rtl_pm.h
+index e58f2bcdb1dd..fd8611495975 100644
+--- a/drivers/staging/rtl8192e/rtl8192e/rtl_pm.h
++++ b/drivers/staging/rtl8192e/rtl8192e/rtl_pm.h
+@@ -10,7 +10,7 @@
+ #include <linux/types.h>
+ #include <linux/pci.h>
  
- 	return 0;
- }
--#endif /* CONFIG_PM */
+-int rtl92e_suspend(struct pci_dev *dev, pm_message_t state);
+-int rtl92e_resume(struct pci_dev *dev);
++int rtl92e_suspend(struct device *dev_d);
++int rtl92e_resume(struct device *dev_d);
  
- static void qlge_shutdown(struct pci_dev *pdev)
- {
--	qlge_suspend(pdev, PMSG_SUSPEND);
-+	qlge_suspend(&pdev->dev);
- }
- 
-+static SIMPLE_DEV_PM_OPS(qlge_pm_ops, qlge_suspend, qlge_resume);
-+
- static struct pci_driver qlge_driver = {
- 	.name = DRV_NAME,
- 	.id_table = qlge_pci_tbl,
- 	.probe = qlge_probe,
- 	.remove = qlge_remove,
--#ifdef CONFIG_PM
--	.suspend = qlge_suspend,
--	.resume = qlge_resume,
--#endif
-+	.driver.pm = &qlge_pm_ops,
- 	.shutdown = qlge_shutdown,
- 	.err_handler = &qlge_err_handler
- };
+ #endif
 -- 
 2.27.0
 
