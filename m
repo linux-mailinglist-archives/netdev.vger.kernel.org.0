@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8763920DFEE
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:55:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4A5A20DD96
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:51:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389304AbgF2UlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
+        id S1731706AbgF2TOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731680AbgF2TOI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:14:08 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51965C00E3C3
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:04:15 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id g75so15105280wme.5
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:04:15 -0700 (PDT)
+        with ESMTP id S1731654AbgF2TOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:14:04 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543B7C00E3C9
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:04:18 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id o2so15872710wmh.2
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:04:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nZJ9RrYkX//UjOI/5YYylQYoHuaDDR4YnVJY1VbZiK8=;
-        b=GHZrNXAbixM8hIlftssrgQxdDlC2R8smynvTThHUqsGw3QGlkt8NhoPhAOcQQGzRtw
-         8UiJW8UelWWaFm3hR3IBZDUiETIQ4cw/d0cKQJ2t1YCJDD+35seh4iu5J6/ZnfNA9Cf2
-         0PVuY8rWNQGb4TJy8iFdvM58AtK7sHgm7tkKp+d8JruntQqh4/uEGDPUikx3v8VCVX/X
-         t0nKty1pn7Dat78dI2BiItZ4JxBDOUehXZ0nt2E9AXLK4007faqBTbkxlHvbnLr9M2so
-         H+SDo8uHBGYBqIx7PHreVr5lgWWgBQR/mjyFndySyTN3eQfiaXuMtvjj/R5CALJQPX52
-         cZCQ==
+        bh=kk4GqzupyJ/zMhEjt50iMo8E42JSASWwyoRhFrVXFkw=;
+        b=s9kteNeXi1zTwB+iA/Da/H/SPwbWFgSRcTYjOhHXHWF3DK4DgkjnWLtB3kXWUYcT73
+         hrQ3sZLr45ONRMe37aZJiaJZqvsJkdNy022pJEVyvesHs/Usys8f1PNEbBh/x2TgLjW5
+         MzXNu61KMK8OAc8kI7zqSWj6yUSfkkAeWvduGtmpBPGg5zflFGTAloz+lI6SH8ZeyaF4
+         fgHItffrSY9r+xFcjDC7cJKNDoYT11AD7qfDTq0LviqPvjIASWNkM3GOYEhgZi13/HMO
+         nbFl97jRYhP8AwnmUe5P7dnadnS6u8YZj+1fWhK6Oe2uxf6rzW6Igdl90lnBrDHpjR5z
+         NqZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nZJ9RrYkX//UjOI/5YYylQYoHuaDDR4YnVJY1VbZiK8=;
-        b=plEnoWVD+SmIXxzhBPuiwgUWu/7DQGP/GFo80dBfnYsVRCsXMC5wfRiwwqy+ekw+/M
-         zpDwMkJTUKU++itbCKBOqLVazPcWCnGu6vjqXUKgLbjc9A2j7QcRZsNwF1LrR1H2UVJH
-         QKstSdtaWUkVlf3D8xnvB8AQGTe50qJxYmKwnyGT5wHYyeCCYoLJsybbpj1sK9y3j+ML
-         W4JzPd1iTRXHzyvfcE4bXm6O4ZBFKo47HvNiP7U50UHyGONWbm8wmKsSumKSrv+tm+v1
-         xSTrNj8TNZj5CAMDXSu0jwLldCeVeEERTTQiYhk41fSxCQlLT+VDc28oV/udY002sNGS
-         KZ7g==
-X-Gm-Message-State: AOAM532sN/4Dsj/URDx6BroHCry3lSZVDFxjTrLhxG1trx76EMcE7Tpo
-        ZQ+KEX0r9v7DG4mC6ZjrUifTXA==
-X-Google-Smtp-Source: ABdhPJxPsnR1q89EpF5XRsu5RI2Mrvn6hFviI2UQaVTUzem4LR886XkHZ07utmAJlfbggOLXkkyVfg==
-X-Received: by 2002:a7b:c381:: with SMTP id s1mr17268979wmj.25.1593432254093;
-        Mon, 29 Jun 2020 05:04:14 -0700 (PDT)
+        bh=kk4GqzupyJ/zMhEjt50iMo8E42JSASWwyoRhFrVXFkw=;
+        b=otCPH3vhhN5OCaNivrQ/zHC3z0JVI3N74Rbmr3AgyjiCrDqDYPka1NM8Y9VHOj1Jsh
+         YF95g3l+kyL/IadtkNaEzZi7nt6dYAtLR1n9H2r4LqePAzmZnmgm6uZ3LTZYTIzx2JE1
+         4ytiwESIM5NvOJUVKCppln2f8WLZ5MqwnrPA0kt5TDHxfxtuQ3hPVEPVRsDppH+5qDto
+         EdecS0Y8MXLYUXJ/WNp/52bx+yb/urTSn9Cqi6V3z10ocHqdyYhycg0/lwfl6395CR/5
+         dd+rweKpwy+YgIf8lKxgv/6WUfT7oxDf9DTHEq5abVAhT1OTWoGf0zXc0tAsYWrwNybM
+         m65g==
+X-Gm-Message-State: AOAM533KjVzJLjdc7YYxMRvj067oy0Fo6/6RLqk1OoIKkj6H2G8dalRY
+        2feEPzGfjx7u2EYhRA1uzyFHnA==
+X-Google-Smtp-Source: ABdhPJyWDqDeFgVInuObhpy/Ftb/2DR2R2EIJXvEfaNkWasvMTcTlNr2GvJFRYK1k6XxTkq/Wt9wfQ==
+X-Received: by 2002:a1c:cc0d:: with SMTP id h13mr17832883wmb.168.1593432256110;
+        Mon, 29 Jun 2020 05:04:16 -0700 (PDT)
 Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
-        by smtp.gmail.com with ESMTPSA id d81sm25274347wmc.0.2020.06.29.05.04.12
+        by smtp.gmail.com with ESMTPSA id d81sm25274347wmc.0.2020.06.29.05.04.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 05:04:13 -0700 (PDT)
+        Mon, 29 Jun 2020 05:04:15 -0700 (PDT)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -65,9 +65,9 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH v2 02/10] net: ethernet: ixgbe: don't call devm_mdiobus_free()
-Date:   Mon, 29 Jun 2020 14:03:38 +0200
-Message-Id: <20200629120346.4382-3-brgl@bgdev.pl>
+Subject: [PATCH v2 03/10] net: devres: rename the release callback of devm_register_netdev()
+Date:   Mon, 29 Jun 2020 14:03:39 +0200
+Message-Id: <20200629120346.4382-4-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.26.1
 In-Reply-To: <20200629120346.4382-1-brgl@bgdev.pl>
 References: <20200629120346.4382-1-brgl@bgdev.pl>
@@ -80,55 +80,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-The idea behind devres is that the release callbacks are called if
-probe fails. As we now check the return value of ixgbe_mii_bus_init(),
-we can drop the call devm_mdiobus_free() in error path as the release
-callback will be called automatically.
+Make it an explicit counterpart to devm_register_netdev() just like we
+do with devm_free_netdev() for better clarity.
 
 Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ net/devres.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
-index 2fb97967961c..7980d7265e10 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
-@@ -905,7 +905,6 @@ s32 ixgbe_mii_bus_init(struct ixgbe_hw *hw)
- 	struct pci_dev *pdev = adapter->pdev;
- 	struct device *dev = &adapter->netdev->dev;
- 	struct mii_bus *bus;
--	int err = -ENODEV;
- 
- 	bus = devm_mdiobus_alloc(dev);
- 	if (!bus)
-@@ -923,7 +922,7 @@ s32 ixgbe_mii_bus_init(struct ixgbe_hw *hw)
- 	case IXGBE_DEV_ID_X550EM_A_1G_T:
- 	case IXGBE_DEV_ID_X550EM_A_1G_T_L:
- 		if (!ixgbe_x550em_a_has_mii(hw))
--			goto ixgbe_no_mii_bus;
-+			return -ENODEV;
- 		bus->read = &ixgbe_x550em_a_mii_bus_read;
- 		bus->write = &ixgbe_x550em_a_mii_bus_write;
- 		break;
-@@ -948,15 +947,8 @@ s32 ixgbe_mii_bus_init(struct ixgbe_hw *hw)
- 	 */
- 	hw->phy.mdio.mode_support = MDIO_SUPPORTS_C45 | MDIO_SUPPORTS_C22;
- 
--	err = mdiobus_register(bus);
--	if (!err) {
--		adapter->mii_bus = bus;
--		return 0;
--	}
--
--ixgbe_no_mii_bus:
--	devm_mdiobus_free(dev, bus);
--	return err;
-+	adapter->mii_bus = bus;
-+	return mdiobus_register(bus);
+diff --git a/net/devres.c b/net/devres.c
+index 57a6a88d11f6..1f9be2133787 100644
+--- a/net/devres.c
++++ b/net/devres.c
+@@ -39,7 +39,7 @@ struct net_device *devm_alloc_etherdev_mqs(struct device *dev, int sizeof_priv,
  }
+ EXPORT_SYMBOL(devm_alloc_etherdev_mqs);
  
- /**
+-static void devm_netdev_release(struct device *dev, void *this)
++static void devm_unregister_netdev(struct device *dev, void *this)
+ {
+ 	struct net_device_devres *res = this;
+ 
+@@ -77,7 +77,7 @@ int devm_register_netdev(struct device *dev, struct net_device *ndev)
+ 				 netdev_devres_match, ndev)))
+ 		return -EINVAL;
+ 
+-	dr = devres_alloc(devm_netdev_release, sizeof(*dr), GFP_KERNEL);
++	dr = devres_alloc(devm_unregister_netdev, sizeof(*dr), GFP_KERNEL);
+ 	if (!dr)
+ 		return -ENOMEM;
+ 
 -- 
 2.26.1
 
