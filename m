@@ -2,380 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2042D20DF9C
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:55:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1974A20E05D
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389097AbgF2UiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
+        id S2389570AbgF2Upi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 16:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730543AbgF2TOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:14:20 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on0606.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0e::606])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6838C08ECBA;
-        Sun, 28 Jun 2020 23:52:48 -0700 (PDT)
+        with ESMTP id S1731574AbgF2TN5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:13:57 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on20619.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e1a::619])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782F3C08ED7F
+        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 23:57:15 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Gvw9fevGPMk9UFh+2ZqXyzQaeenmE/MM7R0ASGJjB5rDdYwlSopoAwprGLv08gjknP6QNC789l3FgHtjwb17nJgfrsQlIHXUed6ERrhVXiatyH43PO4KV62CDd97CrfPnc4BMcGKeRPAvfnrk+0Xu1nyKib9jyW8tlI27wr835+KWOjO49/SL7RDq7qxHWdjBnsfwjHcP27gjmUY1wxX6tgyr8UGH+3LcCgdAjyOogo3Nc15xZyhFL2mFCfczmgIX6dDwQ6ymAUWzxICU14awTURI/SyfouCbCiu5lNEslEsgl7txnYZXs0OqV3LhtZsMld52J7P7tyNagnwjo0mGw==
+ b=DynGssGpGiJ7oxcuhNNRkwEoaRgFJU0u93wVeIlGPJInuiLV7eJDKWDEpqv4sVyPO+JFOeZujkAQOX/q1FOG4YNwNLVIOOpw8JUonnwE/WGh8UdwENM5SJ6Zm/ErJ5yn9bzM4I+b+ofbcunSHezgWE7DtSYphp+6wXkRr5WiZ8GpmfqODe/gmc2Pc7ESPX967sXpX5E7bscrpCX4jI6xQ/1JASa3ynetQ2H0G/JwjejfN45H4OzIc2bSQGiAk9sPQ1cNBf2Iuf3CcPBpWdsIwPVnkAT8+myjQsN1AmTgfqBscgcyAg97VGOKuf+nOFWs35cJuEb3Labvpmj+T6Igtg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ll4w5NK/GNKhw/VP15ZbSLWg8ZMkq9pvTnsn4bB+cSs=;
- b=HGEVGZ9UlniRxcAk6F83FTjJX/j8a+zi+J2ytMJD2K8xyJXjIVcXpzdeeZT1VUeojfZLlsrcorwU9gtVhgLzBS3Mj+qlo0ayRV8w3gjAQGdAZUWbXw3m4tZmsjB/lhkYl3IktQfk+7JJlvzEZywfv4E6F2DFNnIzig4EbvIMQsqeJEufEcn660QtnjyyrHPaTWKPZmevluOlHDXQ8GwtSCVi8vDeP0hUwjV8TX1y/Me5gbo1wKb9h24S2z6cLNlmRLm4f7vo/AQtW+iar/DC+UVzV76YWG9IN0snltEC+DQDEAE02GdvpR6ifKNrLZZ6sNc9FlN0RQyehcif828tqg==
+ bh=jbuRl3Zky++ZyopSHu+jiaOBtUMyKdf8pdPKyMs1pNk=;
+ b=P7O4mnfrvFhxtpnvhqjX4Hv2+v/F+Wdo63JvwTedZNt38Tq9PJwI4pJnq8n2WCq9Sk1SZoA8GnDme7B6TaziCV4uIlbAlkDHapw4aTXvQDPyDT5EYj/EHcXuNbeq9cTiye/xr073hMlBm11XEf0sh4uZfv8oJ43RbFZkb8S6mBHQlXrC7mAlDlIu/acC4LqGdyvNO2ONmUMeYmVBzEnXV75/vNV84NuEVRCWFXEcIiq5zjrC0ScWHrtp11V+tFxjgQOEo3FwtVonf4IowZ9mSjce9H9MX5dftYR/tQUN0MwJmc5Oh19MwkaohejkZ1jpesF3Hkxb8cja/J7hSOwgvA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ll4w5NK/GNKhw/VP15ZbSLWg8ZMkq9pvTnsn4bB+cSs=;
- b=OT4GkilKBcs1cCtea9wiWoURlc4f1FKXyIgN0I30BSbfS8T3QUQ+/XyyKWTUYdSP3S6LPbHc3eeS5zl8XqbjHgeCEzrtnuBazBdCRtGapNPEU1V4ER7fnkx6+tIhbEa0ycu4m5sj8UGFNobF/iXjSWWQ26Mb5z7F0sbr85JWbjw=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
- by VI1PR04MB5087.eurprd04.prod.outlook.com (2603:10a6:803:5d::33) with
+ bh=jbuRl3Zky++ZyopSHu+jiaOBtUMyKdf8pdPKyMs1pNk=;
+ b=eIAx9S3+Ex/BbeJNSZkTdyPM5Mg9lxW80hZzm2TADhfMR3h64Wwj2+QfXjA9HAbKv4BSEa1jhu542/fNaDGD8/GLQEEcgaFaPasgrt2ZwSk4RWDW7G+sEaOjuFzvmfkyr1Rj6c9yAGBmFj2OT04vbDD5JRM4ZTuDWmyoNsq1xC8=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB5533.eurprd05.prod.outlook.com (2603:10a6:803:96::29) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.23; Mon, 29 Jun
- 2020 06:52:44 +0000
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::c1ea:5943:40e8:58f1]) by VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::c1ea:5943:40e8:58f1%3]) with mapi id 15.20.3131.026; Mon, 29 Jun 2020
- 06:52:44 +0000
-From:   Po Liu <po.liu@nxp.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        jiri@resnulli.us, vlad@buslov.dev, claudiu.manoil@nxp.com,
-        vladimir.oltean@nxp.com, alexandru.marginean@nxp.com,
-        michael.chan@broadcom.com, vishal@chelsio.com, saeedm@mellanox.com,
-        leon@kernel.org, jiri@mellanox.com, idosch@mellanox.com,
-        UNGLinuxDriver@microchip.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, simon.horman@netronome.com,
-        pablo@netfilter.org, moshe@mellanox.com, oss-drivers@netronome.com,
-        Po Liu <po.liu@nxp.com>
-Subject: [v2,net-next] net:qos: police action offloading parameter 'burst' change to the original value
-Date:   Mon, 29 Jun 2020 14:54:16 +0800
-Message-Id: <20200629065416.31111-1-po.liu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200629020420.30412-2-po.liu@nxp.com>
-References: <20200629020420.30412-2-po.liu@nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR01CA0171.apcprd01.prod.exchangelabs.com
- (2603:1096:4:28::27) To VE1PR04MB6496.eurprd04.prod.outlook.com
- (2603:10a6:803:11c::29)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Mon, 29 Jun
+ 2020 06:57:11 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3131.026; Mon, 29 Jun 2020
+ 06:57:11 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "tom@herbertland.com" <tom@herbertland.com>
+CC:     Boris Pismenny <borisp@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [net-next 04/15] net/mlx5e: Receive flow steering framework for
+ accelerated TCP flows
+Thread-Topic: [net-next 04/15] net/mlx5e: Receive flow steering framework for
+ accelerated TCP flows
+Thread-Index: AQHWTMiJt4V07rqGgkerTmfLrT/Xf6jtDM2AgAIepYA=
+Date:   Mon, 29 Jun 2020 06:57:11 +0000
+Message-ID: <90af87c36100323d8a28c70c0223c865a2bab266.camel@mellanox.com>
+References: <20200627211727.259569-1-saeedm@mellanox.com>
+         <20200627211727.259569-5-saeedm@mellanox.com>
+         <CALx6S37gn4mQx97xXUPpjW4Fm9NxOwfagunhygHrvaGS5Uxs4w@mail.gmail.com>
+In-Reply-To: <CALx6S37gn4mQx97xXUPpjW4Fm9NxOwfagunhygHrvaGS5Uxs4w@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.3 (3.36.3-1.fc32) 
+authentication-results: herbertland.com; dkim=none (message not signed)
+ header.d=none;herbertland.com; dmarc=none action=none
+ header.from=mellanox.com;
+x-originating-ip: [73.15.39.150]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b50da900-9453-4ae0-6802-08d81bf9a600
+x-ms-traffictypediagnostic: VI1PR05MB5533:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB5533918B17160F0D1665DC11BE6E0@VI1PR05MB5533.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 044968D9E1
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ctiKIGlUBUluyt2r3iSEuobQ0DyFOqPgVVhuuM+oiRhmVfK5cxLOBUmDd0G38N3qpU8JMXz4KCy6ykj4j4taGfKcEPQj3B863O9XtuihBLWTCBRm321GsaLot6AK0IXjbZvqMr9Wp+ddNfhRx/Xn6ezQFbLa7tfmS78WmCOiapKFkNBLYD5ltL+Mvrc0FamnXnGw3V5jlhNHSv4xdQF9GDjGYhjfwdkgwkbck0p8jFmWZKAYqECq64/A7sNukGTgTRgwj2dJd9JqKPVPSG+OJ6SoVkNy/+I653Va/OUg5O3UA4KTHLkSeJ1xrf41qE0DQZpLUD44LdVadjDewjPZuQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(136003)(366004)(376002)(346002)(6512007)(4326008)(36756003)(5660300002)(76116006)(91956017)(66946007)(71200400001)(66446008)(64756008)(66556008)(66476007)(316002)(6916009)(53546011)(6506007)(186003)(6486002)(86362001)(478600001)(54906003)(8936002)(8676002)(2906002)(26005)(2616005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 0Ru7Kg6g6yKcY6meHv1EeWu02nVdx6KPqiyJJqVk/zrHllsHyb2Fq/apC3KsUKX6EmpIfupEZQQxcbL35HU9LBJe+rvNawNeZswWgfgH+nKm/RnvL4PVdiL3kNbRKm3zts4MvzXmdkEvbVMjF6CScg87ZjKPrWgP3MzXjB+QQMcibzMgZkM2r3HHP8TXrJDWha8WZC5RmnZrr8qQuvoak1jchXd0tJgWBIwLarS9Ax8zP6YrDgiuNIH8kiKSOQAkNIh5CrPwNKCq7SItgg6HLAseQlZSpJxsh7MgyJ/WnnRZv9nlLC+nvAn9hao2+ukk+tuKGSx/GZpIQQs9JUbaTR+KILu8NXLtBWWn+XNVmT0v7xqY1zKrRywYOK3ay0J68QZGkMBOI8lnPk1FWL15QujQNUEvcXPVQDR77LdEs2k0EHGjArshxqSsXzbfXkhHa6XoCW9fdJSfTWvHY+YQzlK6/hXGm320QK2IgyUD+N4=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F70A46F215A5734BA193908F4AAB84E3@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from tsn.ap.freescale.net (119.31.174.73) by SG2PR01CA0171.apcprd01.prod.exchangelabs.com (2603:1096:4:28::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21 via Frontend Transport; Mon, 29 Jun 2020 06:52:36 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [119.31.174.73]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 1d057cd2-2270-4486-c2fe-08d81bf9066d
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5087:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5087AD93A3361D99930E1ABE926E0@VI1PR04MB5087.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1850;
-X-Forefront-PRVS: 044968D9E1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: e/ocylAh6PzcGKvxJFvFpImlPHLJ+fSfKj/ngmFTESYUeifOvyWF/fZPGi75GQSWr4bGo6vquu7430fPzv48YtFJwBQSvnVJNHKMtnqK1fqSj5e8+JSEpWo2aGXYW55DwZUvTSZQ8F5FiutDY6Sv5eqob1ogiy8r76S+cSYVDLmqbyT/8frnuKvnDniDLX6jkrVZf0kY2qdJlwRE4YjhWpAvtom5W2Z3pQ7me2RTv46PYCrlJHXKIhTgcwK6o3dVvrlmsKFvji/FGukAH3rzuOd7w8jnFNLJP5r4felSa/ufNiZbk9k89cadX2t5/gTh
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(366004)(396003)(136003)(346002)(39860400002)(66556008)(66476007)(478600001)(44832011)(8676002)(4326008)(30864003)(8936002)(66946007)(6666004)(2906002)(52116002)(1076003)(86362001)(26005)(7416002)(6506007)(16526019)(186003)(6512007)(316002)(956004)(6486002)(5660300002)(83380400001)(36756003)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 0YVj4dlEuSqZvZtS8fjfmZJ1GjWvIA2v6wpksah/6iLP/NSSSqx3stcov+Iqcf50UAvFrt2YNt/PT/eTVQy0DVI08t9Tz4RItWjrvjonx3JxyKxbVxI+LcUAa5DgZHS5f5J2sfae+fsKc9UQ18Dp08biD5lXF+F+D7UI4kgZHE+GLAG83jLsLwnyogyqQri7NiNonaq4ToppEkZqCfc0bKLQPwzd11oe6uubgq5tm7dzCqRzLJ+NgGgzDAv96l0bveIWyjwCWIGX+9RBOFL2rgnJFvwKm1xnx2YJqd6ktzat8bLQayImqZr1Ui8k9ar+Mz+jT5nZyFLKyeShJxNdXfZTjAh8Af3ELl6lu838VjTqSjou75uU1EdaZJvB+qaqZG3I/MDJJdORsxpxFjxdgKuXaRZnrR302uaw/r9wk7Cgo8G2zESmxjEptRzZw94iIVDTsR4tknMHKYq27+Isv6uI3F9e9PJMPLQOg6XL16s=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1d057cd2-2270-4486-c2fe-08d81bf9066d
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6496.eurprd04.prod.outlook.com
+X-OriginatorOrg: Mellanox.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2020 06:52:44.6685
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5102.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b50da900-9453-4ae0-6802-08d81bf9a600
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2020 06:57:11.7037
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rSIWRQpz48nI61X3tKi7LqNRHbPRTE67yIFETpUZ35RZg+ie4hwK+yYPWeFX3N9Q
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5087
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6Vj73Bwb9KIBYJNls4ln4sRw8zivPCFyi//Xh5NsoC2DuVwwTmR9OzRm2/xnEott+FQsRSwmPGfQL1lHUh8rdw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5533
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since 'tcfp_burst' with TICK factor, driver side always need to recover
-it to the original value, this patch moves the generic calculation and
-recover to the 'burst' original value before offloading to device driver.
-
-Signed-off-by: Po Liu <po.liu@nxp.com>
-Acked-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/ocelot/felix.c                |  4 +--
- drivers/net/dsa/sja1105/sja1105_flower.c      | 16 ++++------
- drivers/net/dsa/sja1105/sja1105_main.c        |  4 +--
- .../net/ethernet/freescale/enetc/enetc_qos.c  |  8 +----
- drivers/net/ethernet/mscc/ocelot_flower.c     |  4 +--
- drivers/net/ethernet/mscc/ocelot_net.c        |  4 +--
- .../ethernet/netronome/nfp/flower/qos_conf.c  |  6 ++--
- include/net/dsa.h                             |  2 +-
- include/net/flow_offload.h                    |  2 +-
- include/net/tc_act/tc_police.h                | 32 +++++++++++++++++--
- net/sched/cls_api.c                           |  2 +-
- 11 files changed, 48 insertions(+), 36 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 25046777c993..75020af7f7a4 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -746,9 +746,7 @@ static int felix_port_policer_add(struct dsa_switch *ds, int port,
- 	struct ocelot *ocelot = ds->priv;
- 	struct ocelot_policer pol = {
- 		.rate = div_u64(policer->rate_bytes_per_sec, 1000) * 8,
--		.burst = div_u64(policer->rate_bytes_per_sec *
--				 PSCHED_NS2TICKS(policer->burst),
--				 PSCHED_TICKS_PER_SEC),
-+		.burst = policer->burst,
- 	};
- 
- 	return ocelot_port_policer_add(ocelot, port, &pol);
-diff --git a/drivers/net/dsa/sja1105/sja1105_flower.c b/drivers/net/dsa/sja1105/sja1105_flower.c
-index 9ee8968610cd..12e76020bea3 100644
---- a/drivers/net/dsa/sja1105/sja1105_flower.c
-+++ b/drivers/net/dsa/sja1105/sja1105_flower.c
-@@ -31,7 +31,7 @@ static int sja1105_setup_bcast_policer(struct sja1105_private *priv,
- 				       struct netlink_ext_ack *extack,
- 				       unsigned long cookie, int port,
- 				       u64 rate_bytes_per_sec,
--				       s64 burst)
-+				       u32 burst)
- {
- 	struct sja1105_rule *rule = sja1105_rule_find(priv, cookie);
- 	struct sja1105_l2_policing_entry *policing;
-@@ -79,9 +79,8 @@ static int sja1105_setup_bcast_policer(struct sja1105_private *priv,
- 
- 	policing[rule->bcast_pol.sharindx].rate = div_u64(rate_bytes_per_sec *
- 							  512, 1000000);
--	policing[rule->bcast_pol.sharindx].smax = div_u64(rate_bytes_per_sec *
--							  PSCHED_NS2TICKS(burst),
--							  PSCHED_TICKS_PER_SEC);
-+	policing[rule->bcast_pol.sharindx].smax = burst;
-+
- 	/* TODO: support per-flow MTU */
- 	policing[rule->bcast_pol.sharindx].maxlen = VLAN_ETH_FRAME_LEN +
- 						    ETH_FCS_LEN;
-@@ -103,7 +102,7 @@ static int sja1105_setup_tc_policer(struct sja1105_private *priv,
- 				    struct netlink_ext_ack *extack,
- 				    unsigned long cookie, int port, int tc,
- 				    u64 rate_bytes_per_sec,
--				    s64 burst)
-+				    u32 burst)
- {
- 	struct sja1105_rule *rule = sja1105_rule_find(priv, cookie);
- 	struct sja1105_l2_policing_entry *policing;
-@@ -152,9 +151,8 @@ static int sja1105_setup_tc_policer(struct sja1105_private *priv,
- 
- 	policing[rule->tc_pol.sharindx].rate = div_u64(rate_bytes_per_sec *
- 						       512, 1000000);
--	policing[rule->tc_pol.sharindx].smax = div_u64(rate_bytes_per_sec *
--						       PSCHED_NS2TICKS(burst),
--						       PSCHED_TICKS_PER_SEC);
-+	policing[rule->tc_pol.sharindx].smax = burst;
-+
- 	/* TODO: support per-flow MTU */
- 	policing[rule->tc_pol.sharindx].maxlen = VLAN_ETH_FRAME_LEN +
- 						 ETH_FCS_LEN;
-@@ -177,7 +175,7 @@ static int sja1105_flower_policer(struct sja1105_private *priv, int port,
- 				  unsigned long cookie,
- 				  struct sja1105_key *key,
- 				  u64 rate_bytes_per_sec,
--				  s64 burst)
-+				  u32 burst)
- {
- 	switch (key->type) {
- 	case SJA1105_KEY_BCAST:
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 789b288cc78b..5079e4aeef80 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -3324,9 +3324,7 @@ static int sja1105_port_policer_add(struct dsa_switch *ds, int port,
- 	 */
- 	policing[port].rate = div_u64(512 * policer->rate_bytes_per_sec,
- 				      1000000);
--	policing[port].smax = div_u64(policer->rate_bytes_per_sec *
--				      PSCHED_NS2TICKS(policer->burst),
--				      PSCHED_TICKS_PER_SEC);
-+	policing[port].smax = policer->burst;
- 
- 	return sja1105_static_config_reload(priv, SJA1105_BEST_EFFORT_POLICING);
- }
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-index 4f670cbdf186..b8b336179d82 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-@@ -1241,8 +1241,6 @@ static int enetc_psfp_parse_clsflower(struct enetc_ndev_priv *priv,
- 	/* Flow meter and max frame size */
- 	if (entryp) {
- 		if (entryp->police.burst) {
--			u64 temp;
--
- 			fmi = kzalloc(sizeof(*fmi), GFP_KERNEL);
- 			if (!fmi) {
- 				err = -ENOMEM;
-@@ -1250,11 +1248,7 @@ static int enetc_psfp_parse_clsflower(struct enetc_ndev_priv *priv,
- 			}
- 			refcount_set(&fmi->refcount, 1);
- 			fmi->cir = entryp->police.rate_bytes_ps;
--			/* Convert to original burst value */
--			temp = entryp->police.burst * fmi->cir;
--			temp = div_u64(temp, 1000000000ULL);
--
--			fmi->cbs = temp;
-+			fmi->cbs = entryp->police.burst;
- 			fmi->index = entryp->police.index;
- 			filter->flags |= ENETC_PSFP_FLAGS_FMI;
- 			filter->fmi_index = fmi->index;
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index f2a85b06a6e7..ec1b6e2572ba 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -12,7 +12,6 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
- 				      struct ocelot_vcap_filter *filter)
- {
- 	const struct flow_action_entry *a;
--	s64 burst;
- 	u64 rate;
- 	int i;
- 
-@@ -35,8 +34,7 @@ static int ocelot_flower_parse_action(struct flow_cls_offload *f,
- 			filter->action = OCELOT_VCAP_ACTION_POLICE;
- 			rate = a->police.rate_bytes_ps;
- 			filter->pol.rate = div_u64(rate, 1000) * 8;
--			burst = rate * PSCHED_NS2TICKS(a->police.burst);
--			filter->pol.burst = div_u64(burst, PSCHED_TICKS_PER_SEC);
-+			filter->pol.burst = a->police.burst;
- 			break;
- 		default:
- 			return -EOPNOTSUPP;
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index 702b42543fb7..b69187c51fa6 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -74,9 +74,7 @@ static int ocelot_setup_tc_cls_matchall(struct ocelot_port_private *priv,
- 		}
- 
- 		pol.rate = (u32)div_u64(action->police.rate_bytes_ps, 1000) * 8;
--		pol.burst = (u32)div_u64(action->police.rate_bytes_ps *
--					 PSCHED_NS2TICKS(action->police.burst),
--					 PSCHED_TICKS_PER_SEC);
-+		pol.burst = action->police.burst;
- 
- 		err = ocelot_port_policer_add(ocelot, port, &pol);
- 		if (err) {
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-index bb327d48d1ab..d4ce8f9ef3cc 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-@@ -69,7 +69,8 @@ nfp_flower_install_rate_limiter(struct nfp_app *app, struct net_device *netdev,
- 	struct nfp_repr *repr;
- 	struct sk_buff *skb;
- 	u32 netdev_port_id;
--	u64 burst, rate;
-+	u32 burst;
-+	u64 rate;
- 
- 	if (!nfp_netdev_is_nfp_repr(netdev)) {
- 		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: qos rate limit offload not supported on higher level port");
-@@ -104,8 +105,7 @@ nfp_flower_install_rate_limiter(struct nfp_app *app, struct net_device *netdev,
- 	}
- 
- 	rate = action->police.rate_bytes_ps;
--	burst = div_u64(rate * PSCHED_NS2TICKS(action->police.burst),
--			PSCHED_TICKS_PER_SEC);
-+	burst = action->police.burst;
- 	netdev_port_id = nfp_repr_get_port_id(netdev);
- 
- 	skb = nfp_flower_cmsg_alloc(repr->app, sizeof(struct nfp_police_config),
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 50389772c597..4046ccd1945d 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -144,7 +144,7 @@ struct dsa_mall_mirror_tc_entry {
- 
- /* TC port policer entry */
- struct dsa_mall_policer_tc_entry {
--	s64 burst;
-+	u32 burst;
- 	u64 rate_bytes_per_sec;
- };
- 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 3bafb5124ac0..2dc25082eabf 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -233,7 +233,7 @@ struct flow_action_entry {
- 		} sample;
- 		struct {				/* FLOW_ACTION_POLICE */
- 			u32			index;
--			s64			burst;
-+			u32			burst;
- 			u64			rate_bytes_ps;
- 			u32			mtu;
- 		} police;
-diff --git a/include/net/tc_act/tc_police.h b/include/net/tc_act/tc_police.h
-index cd973b10ae8c..6d1e26b709b5 100644
---- a/include/net/tc_act/tc_police.h
-+++ b/include/net/tc_act/tc_police.h
-@@ -59,14 +59,42 @@ static inline u64 tcf_police_rate_bytes_ps(const struct tc_action *act)
- 	return params->rate.rate_bytes_ps;
- }
- 
--static inline s64 tcf_police_tcfp_burst(const struct tc_action *act)
-+static inline u32 tcf_police_burst(const struct tc_action *act)
- {
- 	struct tcf_police *police = to_police(act);
- 	struct tcf_police_params *params;
-+	u32 burst;
- 
- 	params = rcu_dereference_protected(police->params,
- 					   lockdep_is_held(&police->tcf_lock));
--	return params->tcfp_burst;
-+
-+	/*
-+	 *  "rate" bytes   "burst" nanoseconds
-+	 *  ------------ * -------------------
-+	 *    1 second          2^6 ticks
-+	 *
-+	 * ------------------------------------
-+	 *        NSEC_PER_SEC nanoseconds
-+	 *        ------------------------
-+	 *              2^6 ticks
-+	 *
-+	 *    "rate" bytes   "burst" nanoseconds            2^6 ticks
-+	 *  = ------------ * ------------------- * ------------------------
-+	 *      1 second          2^6 ticks        NSEC_PER_SEC nanoseconds
-+	 *
-+	 *   "rate" * "burst"
-+	 * = ---------------- bytes/nanosecond
-+	 *    NSEC_PER_SEC^2
-+	 *
-+	 *
-+	 *   "rate" * "burst"
-+	 * = ---------------- bytes/second
-+	 *     NSEC_PER_SEC
-+	 */
-+	burst = div_u64(params->tcfp_burst * params->rate.rate_bytes_ps,
-+			NSEC_PER_SEC);
-+
-+	return burst;
- }
- 
- static inline u32 tcf_police_tcfp_mtu(const struct tc_action *act)
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 5bfa6b985bb8..cf324807fc42 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3660,7 +3660,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 			tcf_sample_get_group(entry, act);
- 		} else if (is_tcf_police(act)) {
- 			entry->id = FLOW_ACTION_POLICE;
--			entry->police.burst = tcf_police_tcfp_burst(act);
-+			entry->police.burst = tcf_police_burst(act);
- 			entry->police.rate_bytes_ps =
- 				tcf_police_rate_bytes_ps(act);
- 			entry->police.mtu = tcf_police_tcfp_mtu(act);
--- 
-2.17.1
-
+T24gU2F0LCAyMDIwLTA2LTI3IGF0IDE1OjM0IC0wNzAwLCBUb20gSGVyYmVydCB3cm90ZToNCj4g
+T24gU2F0LCBKdW4gMjcsIDIwMjAgYXQgMjoxOSBQTSBTYWVlZCBNYWhhbWVlZCA8c2FlZWRtQG1l
+bGxhbm94LmNvbT4NCj4gd3JvdGU6DQo+ID4gRnJvbTogQm9yaXMgUGlzbWVubnkgPGJvcmlzcEBt
+ZWxsYW5veC5jb20+DQo+ID4gDQo+ID4gVGhlIGZyYW1ld29yayBhbGxvd3MgY3JlYXRpbmcgZmxv
+dyB0YWJsZXMgdG8gc3RlZXIgaW5jb21pbmcgdHJhZmZpYw0KPiA+IG9mDQo+ID4gVENQIHNvY2tl
+dHMgdG8gdGhlIGFjY2VsZXJhdGlvbiBUSVJzLg0KPiA+IFRoaXMgaXMgdXNlZCBpbiBkb3duc3Ry
+ZWFtIHBhdGNoZXMgZm9yIFRMUywgYW5kIHdpbGwgYmUgdXNlZCBpbiB0aGUNCj4gPiBmdXR1cmUg
+Zm9yIG90aGVyIG9mZmxvYWRzLg0KPiA+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IEJvcmlzIFBpc21l
+bm55IDxib3Jpc3BAbWVsbGFub3guY29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IFRhcmlxIFRvdWth
+biA8dGFyaXF0QG1lbGxhbm94LmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBTYWVlZCBNYWhhbWVl
+ZCA8c2FlZWRtQG1lbGxhbm94LmNvbT4NCj4gPiAtLS0NCj4gPiAgLi4uL25ldC9ldGhlcm5ldC9t
+ZWxsYW5veC9tbHg1L2NvcmUvTWFrZWZpbGUgIHwgICAyICstDQo+ID4gIC4uLi9uZXQvZXRoZXJu
+ZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuL2ZzLmggICB8ICAxMCArDQo+ID4gIC4uLi9tZWxsYW5v
+eC9tbHg1L2NvcmUvZW5fYWNjZWwvZnNfdGNwLmMgICAgICB8IDI4MA0KPiA+ICsrKysrKysrKysr
+KysrKysrKw0KPiA+ICAuLi4vbWVsbGFub3gvbWx4NS9jb3JlL2VuX2FjY2VsL2ZzX3RjcC5oICAg
+ICAgfCAgMTggKysNCj4gPiAgLi4uL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZnNf
+Y29yZS5jIHwgICA0ICstDQo+IA0KPiBTYWVlZCwNCj4gDQo+IFdoYXQgaXMgdGhlIHJlbGF0aW9u
+c2hpcCBiZXR3ZWVuIHRoaXMgYW5kIFJGUywgYWNjZWxlcmF0ZWQgUkZTLCBhbmQNCj4gbm93IFBU
+UT8gSXMgdGhpcyBzb21ldGhpbmcgdGhhdCB3ZSBjYW4gZ2VuZXJhbGl6ZSBpbiB0aGUgc3RhY2sg
+YW5kDQoNCkhpIFRvbSwNCg0KVGhpcyBpcyB2ZXJ5IHNpbWlsYXIgdG8gb3VyIGludGVybmFsIGFS
+RlMgSFcgdGFibGVzIGltcGxlbWVudGF0aW9uIGJ1dA0KaXMgb25seSBtZWFudCBmb3IgVENQIHN0
+YXRlLWZ1bGwgYWNjZWxlcmF0aW9uIGZpbHRlcmluZyBhbmQgcHJvY2Vzc2luZywNCm1haW5seSBm
+b3IgVExTIGVjcnlwdC9kZWNyeXB0IGluIGRvd25zdHJlYW0gcGF0Y2hlcyBhbmQgbnZtZSBhY2Nl
+bCBpbiBhDQpmdXR1cmUgc3VibWlzc2lvbi4NCg0Kd2hhdCB0aGlzIG1seDUgZnJhbWV3b3JrIGRv
+ZXMgZm9yIG5vdyBpcyBhZGQgYSBUQ1Agc3RlZXJpbmcgZmlsdGVyIGluDQp0aGUgSFcgYW5kIGF0
+dGFjaCBhbiBhY3Rpb24gdG8gaXQgIChmb3Igbm93IFJYIFRMUyBkZWNyeXB0KSBhbmQgdGhlbg0K
+Zm9yd2FyZCB0byByZWd1bGFyIFJTUyByeCBxdWV1ZS4gc2ltaWxhciB0byBhUkZTIHdoZXJlIHdl
+IGFkZCA1IHR1cGxlDQpmaWx0ZXIgaW4gdGhlIEhXIGFuZCB0aGUgYWN0aW9uIHdpbGwgYmUgZm9y
+d2FyZCB0byBzcGVjaWZpYyBDUFUgUlgNCnF1ZXVlIGluc3RlYWQgb2YgdGhlIGRlZmF1bHQgUlNT
+IHRhYmxlLg0KDQpGb3IgUFRRIGkgYW0gbm90IHJlYWxseSBzdXJlLCBzaW5jZSBpIGZlbHQgYSBi
+aXQgY29uZnVzZWQgd2hlbiBJIHJlYWQNCnRoZSBkb2MgYW5kIGkgY291bGRuJ3QgcmVhbGx5IHNl
+ZSBob3cgUFRRIGNyZWF0ZXMvYXNrcyBmb3IgZGVkaWNhdGVkDQpod2FyZHdhcmUgcXVldWVzL2Zp
+bHRlcnMsIGkgd2lsbCB0cnkgdG8gZ28gdGhyb3VnaCB0aGUgcGF0Y2hlcw0KdG9tb3Jyb3cuIA0K
+DQo+IHN1cHBvcnQgaW4gdGhlIGRyaXZlci9kZXZpY2Ugd2l0aCBhIHNpbXBsZSBpbnRlcmZhY2Ug
+bGlrZSB3ZSBkbyB3aXRoDQo+IGFSRlMgYW5kIG5kb19yeF9mbG93X3N0ZWVyPw0KPiANCg0KQ3Vy
+cmVudGx5IGp1c3QgbGlrZSB0aGUgYVJGUyBIVyB0YWJsZXMgd2hpY2ggYXJlIHByb2dyYW1tZWQg
+dmlhDQpuZG9fcnhfZmxvd19zdGVlciB0aGlzIFRDUCBGbG93IHRhYmxlIGlzIHByb2dyYW1tZWQg
+dmlhIA0KbmV0ZGV2LT50bHNkZXZfb3BzLT50bHNfZGV2X2FkZC9kZWwoKSwgZm9yIFRMUyBzb2Nr
+ZXRzIHRvIGJlIG9mZmxvYWRlZA0KdG8gSFcuDQoNCmFzIGltcGxlbWVudGVkIGluOg0KW25ldC1u
+ZXh0IDA4LzE1XSBuZXQvbWx4NWU6IGtUTFMsIEFkZCBrVExTIFJYIEhXIG9mZmxvYWQgc3VwcG9y
+dA0KDQpCdXQgeWVzIHRoZSBIVyBmaWx0ZXIgaXMgaXMgYWx3YXlzIHNpbWlsYXIsIG9ubHkgdGhl
+IGFjdGlvbnMgYXJlDQpkaWZmZXJlbnQgKGVuY3J5cHQgb3IgRm9yd2FyZCB0byBzcGVjaWZpYyBD
+UFUpLCANCg0KU28gbWF5YmUgYSB1bmlmaWVkIGdlbmVyaWMgbmRvIGNhbiB3b3JrIGZvciBUTFMs
+IGFSRlMsIFBUUSwgWFNLLA0KaW50ZWwncyBBRFEsIGFuZCBtYXliZSBtb3JlLiBBbHNvIG1ha2Ug
+aXQgZWFzaWVyIHRvIGludHJvZHVjZSBtb3JlIGZsb3cNCmJhc2VkIG9mZmxvYWRzIChmbG93cyB0
+aGF0IGRvIG5vdCBiZWxvbmcgdG8gdGhlIFRDIGxheWVyKSBzdWNoIGFzIG52bWUNCnplcm8gY29w
+eS4NCg0KVGhlcmUgd2VyZSBsb3RzIG9mIHRhbGtzIGFuZCBkaXNjdXNzaW9ucyBieSBNYWdudXMs
+IEplc3BlciwgQmpvcm4sDQpNYXhpbSBhbmQgbWFueSBvdGhlcnMgdG8gaW1wcm92ZSBuZXRkZXYg
+cXVldWUgbWFuYWdlbWVudCBhbmQgbWFrZQ0KbmV0d29ya2luZyBxdWV1ZXMgYSAiZmlyc3QgY2xh
+c3Mga2VybmVsIGNpdGl6ZW4iIEkgYmVsaWV2ZSBmbG93IGJhc2VkDQpmaWx0ZXJzIHNob3VsZCBi
+ZSBwYXJ0IG9mIHRoYXQgZWZmb3J0LCBhbmQgaSB0aGluayB5b3UgYWxyZWFkeSBhZGRyZXNzDQpz
+b21lIG9mIHRoaXMgaW4geW91ciBQVFEgc2VyaWVzLg0KDQotIFNhZWVkLg0KDQo=
