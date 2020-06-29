@@ -2,171 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CBA120E0CB
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:57:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C86D420E11D
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:58:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387776AbgF2Utu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
+        id S2389866AbgF2UwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 16:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731482AbgF2TNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:13:40 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31DD0C0086DE;
-        Mon, 29 Jun 2020 02:31:46 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id z5so8039614pgb.6;
-        Mon, 29 Jun 2020 02:31:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=U8LfJvZ8Suv0UU3L8Vq/myysU79XrKbzAI5mVt1upHA=;
-        b=UMnRMoplidwqa2axc+13CTf6GjvG/QKjq19NX5mr89r2PyhZPX2MmNwdhqGn5qo/AE
-         M/IV5z4/XD05V3cPZvLn0BS3/ArPV/QS+ZEH9j7MePFM4pBR9FEAf7VN6gytNgMOuzwd
-         LpJdF3e/tF391hQub1QawVUYlZHIIYXfYfAVpsYvXVu9lab+VFzIx3/ydCnJKYCUXEmR
-         VdWO4gpulSb43KzGvbLkwnqUkfIXscpggHyFGR/ixKo889mdkn9g1akJKYcwTJTY+HIS
-         VYxamiq6E56/6ub1rzvsawOCbz6kYBvFRVeo28EdhIndpB5xhclS+Eh+UmAAuX0JpzPp
-         egYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=U8LfJvZ8Suv0UU3L8Vq/myysU79XrKbzAI5mVt1upHA=;
-        b=mkQHfdvKLx3SYlrbGo5wZqvZQscv0ZW16Uyr2vuEJpbElvO84wlYkjcWTrZVPdHJlY
-         eWbPwPyNcsL7gD6JhrjrqxsCHxfDbr4DwSz4/deZVmfVspAp3IivN212DDPcH3i5Zyae
-         UpBI7o/QFV9plfNaQM+hDosjaWZdp2wxODRwFbgCck4caz+NQICDX/JCeClMO0glycwm
-         EddpX1RDM6r9GJLdrv6UZYOrvdeiYbIjBan3yy/NQF5l9GQ00NURJL2+42xioF+TluDb
-         uCl4hb5dQbDCMyJdc3kJ8QIMxCkAYcf2YSFHIZiGGEUGm6KgTwDUIG4dgiXIcn1/5k05
-         OB3g==
-X-Gm-Message-State: AOAM532G9bzmjJWiHy0DRt+vYNAIfsIiLFxm/DQLhMuQwS58eJXZdSbG
-        gh69ovekFAzttowPaQdynXE=
-X-Google-Smtp-Source: ABdhPJxCrwzkJMp9WcEN5z/vEr5Xrtqg4Z1I1sF8VTyeVMLmhzbwmlekF7t0Va8jyim44rh9w5wtUA==
-X-Received: by 2002:a63:b915:: with SMTP id z21mr9981906pge.145.1593423105725;
-        Mon, 29 Jun 2020 02:31:45 -0700 (PDT)
-Received: from varodek.localdomain ([106.210.40.90])
-        by smtp.gmail.com with ESMTPSA id q20sm2921286pfn.111.2020.06.29.02.31.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 02:31:45 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+        with ESMTP id S1731382AbgF2TN1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:13:27 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on061d.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0d::61d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A06C0086DF;
+        Mon, 29 Jun 2020 02:32:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UITaDtik3TgkNSQ9PzQddqgiFID8HTmXsFa7SuF5y8wwetNWL7HLjrzfL86Yln7BxiBlK9JoyrbbBrMtqZwAU66OKisp3xEPs+CTy7ZsMumn/sBaw5Bebd/apkce8dZjnQJy0bGTBG0ZVgL5Yp/5LNKvF7+PtbJqFv/IYe7m/Gpi5eTPI4xyxbhK0Lz+LVEohhtJ/ayJckb/OanlyZJ38tDtrupMST6cGn7joL6jDotYZsF9CPfZ4yDFYdPzi0+U0GlXy1T3Vn9m0shXlrZd4pMZOStIjkWvxxsUEV0BkjO73KUqbx38tbheSp11zpEu5RplrI+buckdnsqHB0McYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CH/NWJ7E5p/H1YBJoHen+4xqy2PxcClr8Q3yad6/QUE=;
+ b=E1M6x9WkPt+ySc0ZMX5StkYT2Ftwyz6Tb8PcjG30omfP0MtZVSaQEoPLN916QHmL+UExheC3A550f+akLDuqJhmPHKsSVYSy/vFNA18lZO9merWNw9tS7RJiKIhOvUVJOHv81NizNej7B478y+0/1gaai7JOoG+Df7udYFl+J//GOfTZbu0pEFx5774jppfXW7HgNTum24D5um0vzPwkBmTWkR89vuLyDYmGmBn3y1gxK2siZmDm6Txy7m+sBtS9q/9NGaIvMRQLGy08uX1LU1nZrlhNAwYjaytXrbOFby8aOv8UH3KF06jhtAKRzpGVQbJyII5udAA5GiVpYYBUAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CH/NWJ7E5p/H1YBJoHen+4xqy2PxcClr8Q3yad6/QUE=;
+ b=tcqw7Pe1GylBmb49HmLUyfpVMeVt1J0t9hjQSKiwOUMJYQr4xK4I7qYqHZvwfwDYBRSYIWh3Im8fE6kyJlD4kYXh4aTtoGxi/AB+M1uerqgLG9J0FDzvtU16+2SURePoy6YT6wDGq39spVfoTifM/l44HqwAkGYUae/jxBRyjmY=
+Authentication-Results: linux.intel.com; dkim=none (message not signed)
+ header.d=none;linux.intel.com; dmarc=none action=none
+ header.from=mellanox.com;
+Received: from DBBPR05MB6299.eurprd05.prod.outlook.com (2603:10a6:10:d1::21)
+ by DB8PR05MB6012.eurprd05.prod.outlook.com (2603:10a6:10:a7::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Mon, 29 Jun
+ 2020 09:32:48 +0000
+Received: from DBBPR05MB6299.eurprd05.prod.outlook.com
+ ([fe80::a406:4c1a:8fd0:d148]) by DBBPR05MB6299.eurprd05.prod.outlook.com
+ ([fe80::a406:4c1a:8fd0:d148%4]) with mapi id 15.20.3131.027; Mon, 29 Jun 2020
+ 09:32:48 +0000
+Subject: Re: [net-next 10/10] net/mlx5e: Add support for PCI relaxed ordering
 To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org
-Subject: [PATCH v1 5/5] e100: use generic power management
-Date:   Mon, 29 Jun 2020 14:59:43 +0530
-Message-Id: <20200629092943.227910-6-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200629092943.227910-1-vaibhavgupta40@gmail.com>
-References: <20200629092943.227910-1-vaibhavgupta40@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>, linux-pci@vger.kernel.org,
+        Alexander Duyck <alexander.h.duyck@linux.intel.com>
+References: <20200626201254.GA2932090@bjorn-Precision-5520>
+From:   Aya Levin <ayal@mellanox.com>
+Message-ID: <ca121a18-8c11-5830-9840-51f353c3ddd2@mellanox.com>
+Date:   Mon, 29 Jun 2020 12:32:44 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
+In-Reply-To: <20200626201254.GA2932090@bjorn-Precision-5520>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM4PR0101CA0067.eurprd01.prod.exchangelabs.com
+ (2603:10a6:200:41::35) To DBBPR05MB6299.eurprd05.prod.outlook.com
+ (2603:10a6:10:d1::21)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.11] (37.142.4.236) by AM4PR0101CA0067.eurprd01.prod.exchangelabs.com (2603:10a6:200:41::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21 via Frontend Transport; Mon, 29 Jun 2020 09:32:46 +0000
+X-Originating-IP: [37.142.4.236]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 1561de66-62a2-4208-ae24-08d81c0f62bd
+X-MS-TrafficTypeDiagnostic: DB8PR05MB6012:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB8PR05MB60126932478352CD5E5029FAB06E0@DB8PR05MB6012.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 044968D9E1
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Lf8zog0kvBIgeiDqIcP+4s4JA5/GbYuG6vTy1RcO1A70nA+Ul6Yk3GRo+dQaHOkZe/4e6ocTcU4J2G/GPucQYLmgYuAaDwKJESuHtj3mOv+3AwfIexIryxH0eR5g9zviSaaTwrEhyeSx1yKzmerjmtkesHB95CfGlA3KX+S9jESHeAE09GmqUX4ZjGqQudiA2xGed8oEfHfW1/wNnz92pgeLCb7HFk5COdIcX5OygH7eOhB90O/3/gnoKMrZAJq8YYG6hiPFEXV1fXfO9xd4sdJcfFBSfBCaFT9epJ2k/yKU9lXp0hV8/XdWo8DR6LbR3tsLcwQksN1kRIxk9P5B1yEDE6CRheRbYXX0nfPGBwZoTzWC5U8dtSFO1wcKYuS6
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBBPR05MB6299.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(346002)(39860400002)(136003)(376002)(366004)(478600001)(110136005)(5660300002)(54906003)(66476007)(66946007)(16576012)(66556008)(316002)(956004)(36756003)(52116002)(2616005)(8676002)(53546011)(83380400001)(86362001)(6486002)(8936002)(4326008)(26005)(31696002)(2906002)(31686004)(186003)(16526019)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: a+zqsYpsOAebAltFNQdfUEVgsY8H/2NJasDgb6cTTsRzp+x5B0ZHar0qDEJMagh6CJ5M/rh9leY/3NbQ+sDtgtVUaNiiiQz0PazAxgeKV1xFb+chwtqD4/P4xLyS4uAjD0d5J12cmWpdSRU2pBgTSlDtY7VJTMAQcBTYjZITy4dFhpuGH5vOL/MLEA4KEjci5fQshEMAPlUItnnmZAFcrMM91Q248p5ehgSo6NSsDnw3GiR+VllHXM49Q1vIs2nqslV+OdtEC4KCKMofxBfHYuo9SKkOEQWq2vJ4Ju/jcHHaT92qLE9SEHZrCtUw9GAW1xXIwqddfE6rwftYLbew9kqSLdtbEzp/Ep0c4EdXWFbDsTZ8CBvnwz7zQ/I9KHGz+QP5D9rhfgtuE1QY+fFtX8hWtlUDMUJYO1hfyh82jL79JIa/tehLCAhhX0uUby1xXwH5YSwobC67arhrS9vi7N2Tu6oaH0r0jnR558AP5W0=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1561de66-62a2-4208-ae24-08d81c0f62bd
+X-MS-Exchange-CrossTenant-AuthSource: DBBPR05MB6299.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2020 09:32:48.1639
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sq8iiErDYGcK49wZ2hqwsxKYWaCf+THS8SDhAm1VMljdkKAsKBbOIXiwRO6uDSHxfLhp9d+t9IVKspFeXyDbBA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB6012
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With legacy PM hooks, it was the responsibility of a driver to manage PCI
-states and also the device's power state. The generic approach is to let
-PCI core handle the work.
 
-e100_suspend() calls __e100_shutdown() to perform intermediate tasks.
-__e100_shutdown() calls pci_save_state() which is not recommended.
 
-e100_suspend() also calls __e100_power_off() which is calling PCI helper
-functions, pci_prepare_to_sleep(), pci_set_power_state(), along with
-pci_wake_from_d3(...,false). Hence, the functin call is removed and wol is
-disabled as earlier using device_wakeup_disable().
+On 6/26/2020 11:12 PM, Bjorn Helgaas wrote:
+> On Wed, Jun 24, 2020 at 10:22:58AM -0700, Jakub Kicinski wrote:
+>> On Wed, 24 Jun 2020 10:34:40 +0300 Aya Levin wrote:
+>>>>> I think Michal will rightly complain that this does not belong in
+>>>>> private flags any more. As (/if?) ARM deployments take a foothold
+>>>>> in DC this will become a common setting for most NICs.
+>>>>
+>>>> Initially we used pcie_relaxed_ordering_enabled() to
+>>>>    programmatically enable this on/off on boot but this seems to
+>>>> introduce some degradation on some Intel CPUs since the Intel Faulty
+>>>> CPUs list is not up to date. Aya is discussing this with Bjorn.
+>>> Adding Bjorn Helgaas
+>>
+>> I see. Simply using pcie_relaxed_ordering_enabled() and blacklisting
+>> bad CPUs seems far nicer from operational perspective. Perhaps Bjorn
+>> will chime in. Pushing the validation out to the user is not a great
+>> solution IMHO.
+> 
+> I'm totally lost, but maybe it doesn't matter because it looks like
+> David has pulled this series already.
+> 
+> There probably *should* be a PCI core interface to enable RO, but
+> there isn't one today.
+> 
+> pcie_relaxed_ordering_enabled() doesn't *enable* anything.  All it
+> does is tell you whether RO is already enabled.
+> 
+> This patch ([net-next 10/10] net/mlx5e: Add support for PCI relaxed
+> ordering) apparently adds a knob to control RO, but I can't connect
+> the dots.  It doesn't touch PCI_EXP_DEVCTL_RELAX_EN, and that symbol
+> doesn't occur anywhere in drivers/net except tg3, myri10ge, and niu.
+> 
+> And this whole series doesn't contain PCI_EXP_DEVCTL_RELAX_EN or
+> pcie_relaxed_ordering_enabled().
 
-Compile-tested only.
+I wanted to turn on RO on the ETH driver based on 
+pcie_relaxed_ordering_enabled().
+ From my experiments I see that pcie_relaxed_ordering_enabled() return 
+true on Intel(R) Xeon(R) CPU E5-2650 v3 @ 2.30GHz. This CPU is from 
+Haswell series which is known to have bug in RO implementation. In this 
+case, I expected pcie_relaxed_ordering_enabled() to return false, 
+shouldn't it?
 
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- drivers/net/ethernet/intel/e100.c | 31 +++++++++++++------------------
- 1 file changed, 13 insertions(+), 18 deletions(-)
+In addition, we are worried about future bugs in new CPUs which may 
+result in performance degradation while using RO, as long as the 
+function pcie_relaxed_ordering_enabled() will return true for these 
+CPUs. That's why we thought of adding the feature on our card with 
+default off and enable the user to set it.
 
-diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
-index 1b8d015ebfb0..7506fb5eca8f 100644
---- a/drivers/net/ethernet/intel/e100.c
-+++ b/drivers/net/ethernet/intel/e100.c
-@@ -2997,8 +2997,6 @@ static void __e100_shutdown(struct pci_dev *pdev, bool *enable_wake)
- 		e100_down(nic);
- 	netif_device_detach(netdev);
- 
--	pci_save_state(pdev);
--
- 	if ((nic->flags & wol_magic) | e100_asf(nic)) {
- 		/* enable reverse auto-negotiation */
- 		if (nic->phy == phy_82552_v) {
-@@ -3028,24 +3026,21 @@ static int __e100_power_off(struct pci_dev *pdev, bool wake)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM
--static int e100_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused e100_suspend(struct device *dev_d)
- {
- 	bool wake;
--	__e100_shutdown(pdev, &wake);
--	return __e100_power_off(pdev, wake);
-+	__e100_shutdown(to_pci_dev(dev_d), &wake);
-+
-+	device_wakeup_disable(dev_d);
-+
-+	return 0;
- }
- 
--static int e100_resume(struct pci_dev *pdev)
-+static int __maybe_unused e100_resume(struct device *dev_d)
- {
--	struct net_device *netdev = pci_get_drvdata(pdev);
-+	struct net_device *netdev = dev_get_drvdata(dev_d);
- 	struct nic *nic = netdev_priv(netdev);
- 
--	pci_set_power_state(pdev, PCI_D0);
--	pci_restore_state(pdev);
--	/* ack any pending wake events, disable PME */
--	pci_enable_wake(pdev, PCI_D0, 0);
--
- 	/* disable reverse auto-negotiation */
- 	if (nic->phy == phy_82552_v) {
- 		u16 smartspeed = mdio_read(netdev, nic->mii.phy_id,
-@@ -3062,7 +3057,6 @@ static int e100_resume(struct pci_dev *pdev)
- 
- 	return 0;
- }
--#endif /* CONFIG_PM */
- 
- static void e100_shutdown(struct pci_dev *pdev)
- {
-@@ -3150,16 +3144,17 @@ static const struct pci_error_handlers e100_err_handler = {
- 	.resume = e100_io_resume,
- };
- 
-+static SIMPLE_DEV_PM_OPS(e100_pm_ops, e100_suspend, e100_resume);
-+
- static struct pci_driver e100_driver = {
- 	.name =         DRV_NAME,
- 	.id_table =     e100_id_table,
- 	.probe =        e100_probe,
- 	.remove =       e100_remove,
--#ifdef CONFIG_PM
-+
- 	/* Power Management hooks */
--	.suspend =      e100_suspend,
--	.resume =       e100_resume,
--#endif
-+	.driver.pm =	&e100_pm_ops,
-+
- 	.shutdown =     e100_shutdown,
- 	.err_handler = &e100_err_handler,
- };
--- 
-2.27.0
-
+> 
+> I do have a couple emails from Aya, but they didn't include a patch
+> and I haven't quite figured out what the question was.
+> 
+>>>> So until we figure this out, will keep this off by default.
+>>>>
+>>>> for the private flags we want to keep them for performance analysis as
+>>>> we do with all other mlx5 special performance features and flags.
