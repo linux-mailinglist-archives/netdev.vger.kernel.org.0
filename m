@@ -2,222 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AB2D20D511
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:15:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E11520D3B4
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:13:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731799AbgF2TOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731042AbgF2TOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:14:20 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9F8C0086DC;
-        Mon, 29 Jun 2020 02:31:33 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id q17so7653368pfu.8;
-        Mon, 29 Jun 2020 02:31:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qe4WDxIQGl3f8nl5SssfB8C9vc9ueXmXwiDJGu9bR+U=;
-        b=gxKy2bwoStooFIbHMuvcV/ySW4DhExicwX6eDsJRMPKxT3EtXkkzy4XkPZ7XaBAXuL
-         dsCi0E0ZbCRPX9CA6lrQU0ga29adgeFdIRgXJjtuyloMTQnZ4IHAvGO42VKD1JSQtqx4
-         gLo9Ntqaqf1FDwUsl/4tvEBRQlNzQMViHgdFBu8rAY3E++k+ZFaYqfAy29nBtRRXcHPV
-         eudann+dY92ttd2o47kcoebTGocwMq5sNRKo9W31Bk+/Q/c5dQpujD1vq1Y+paMDOxPo
-         1pFGRPKNa+4nosY5izWIrVe17jk+JELQxI3GZoy1zTCNDM6Vc96RYfSi1wTwKKcqirt2
-         Nmug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qe4WDxIQGl3f8nl5SssfB8C9vc9ueXmXwiDJGu9bR+U=;
-        b=rHhUylfB0+RPFZiSSjJmQBIxNr5lywH5JSo4IVv6MZFeiqFkigZ/62CUL1CYBxdqeu
-         8jMuvKiW6ze/90NmNUv1Teqo3jRFj+fU2h5rsCMQAmuQXUPbu9iiDk9D97sU6GmsdUer
-         vTfAw94IuwYRXjCkJplRFKdqQ7NcNKzEbxOWvsge3jgzZF6SZQJHchAbAaOXfxUCCBo7
-         ndRl5w4tPZN0Usmm88+r9Q2jlsFPkrze8FWHjhB3tI75KePkCOO0Qm9X+h601TdTYG1a
-         IBFSm4BfgExY31zBfFValD7pd4CAyctnWhnQ/MyU+a1h5o6Ua7PZqg9vNHnVkiHWmxcO
-         LdSw==
-X-Gm-Message-State: AOAM531ZbAD+NsaYYOo5YjMXhYXECfHGt3i1xwl4aoIc26uDkNPIAWav
-        fLzTT83Am3sEqR/aAFNv+XDmGkLpRK8=
-X-Google-Smtp-Source: ABdhPJzc/HXeM2Z10CROTyp/Ia6gJiD+wH9o2SbtefVvniYcFcPJgHQUf/d2M3s4RdRVXyc6lOCjcA==
-X-Received: by 2002:a63:1e60:: with SMTP id p32mr9294309pgm.172.1593423093298;
-        Mon, 29 Jun 2020 02:31:33 -0700 (PDT)
-Received: from varodek.localdomain ([106.210.40.90])
-        by smtp.gmail.com with ESMTPSA id q20sm2921286pfn.111.2020.06.29.02.31.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 02:31:32 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org
-Subject: [PATCH v1 3/5] ixgbe: use generic power management
-Date:   Mon, 29 Jun 2020 14:59:41 +0530
-Message-Id: <20200629092943.227910-4-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200629092943.227910-1-vaibhavgupta40@gmail.com>
-References: <20200629092943.227910-1-vaibhavgupta40@gmail.com>
+        id S1730094AbgF2TB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:01:26 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48448 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728101AbgF2TBY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 15:01:24 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 7BA11AD8D;
+        Mon, 29 Jun 2020 09:44:40 +0000 (UTC)
+Date:   Mon, 29 Jun 2020 11:43:50 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     rostedt@goodmis.org, sergey.senozhatsky@gmail.com,
+        Linus Torvalds <torvalds@linux-foundation.org>, ast@kernel.org,
+        daniel@iogearbox.net, yhs@fb.com, andriin@fb.com,
+        arnaldo.melo@gmail.com, kafai@fb.com, songliubraving@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        linux@rasmusvillemoes.dk, joe@perches.com,
+        andriy.shevchenko@linux.intel.com, corbet@lwn.net,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH v3 bpf-next 4/8] printk: add type-printing %pT format
+ specifier which uses BTF
+Message-ID: <20200629094349.GQ8444@alley>
+References: <1592914031-31049-1-git-send-email-alan.maguire@oracle.com>
+ <1592914031-31049-5-git-send-email-alan.maguire@oracle.com>
+ <20200626101523.GM8444@alley>
+ <alpine.LRH.2.21.2006261147130.417@localhost>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.LRH.2.21.2006261147130.417@localhost>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With legacy PM hooks, it was the responsibility of a driver to manage PCI
-states and also the device's power state. The generic approach is to let
-PCI core handle the work.
+On Fri 2020-06-26 12:37:19, Alan Maguire wrote:
+> 
+> On Fri, 26 Jun 2020, Petr Mladek wrote:
+> 
+> > On Tue 2020-06-23 13:07:07, Alan Maguire wrote:
+> > > 
+> > >         printk(KERN_INFO "%pT", BTF_PTR_TYPE(skb, struct sk_buff));
+> > > 
+> > >   struct sk_buff *skb = alloc_skb(64, GFP_KERNEL);
+> > >   pr_info("%pT", BTF_PTR_TYPE(skb, struct sk_buff));
+> > > 
+> > > ...gives us:
+> > > 
+> > > (struct sk_buff){
+> > >  .transport_header = (__u16)65535,
+> > >  .mac_header = (__u16)65535,
+> > >  .end = (sk_buff_data_t)192,
+> > >  .head = (unsigned char *)0x000000006b71155a,
+> > >  .data = (unsigned char *)0x000000006b71155a,
+> > >  .truesize = (unsigned int)768,
+> > >  .users = (refcount_t){
+> > >   .refs = (atomic_t){
+> > >    .counter = (int)1,
+> > >   },
+> > >  },
+> > >  .extensions = (struct skb_ext *)0x00000000f486a130,
+> > > }
+> > > 
+> > > printk output is truncated at 1024 bytes.  For cases where overflow
+> > > is likely, the compact/no type names display modes may be used.
+> > 
+> > Hmm, this scares me:
+> > 
+> >    1. The long message and many lines are going to stretch printk
+> >       design in another dimensions.
+> > 
+> >    2. vsprintf() is important for debugging the system. It has to be
+> >       stable. But the btf code is too complex.
+> >
+> 
+> Right on both points, and there's no way around that really. Representing 
+> even small data structures will stretch us to or beyond the 1024 byte 
+> limit.  This can be mitigated by using compact display mode and not 
+> printing field names, but the output becomes hard to parse then.
+>
+> I think a better approach might be to start small, adding the core
+> btf_show functionality to BPF, allowing consumers to use it there,
+> perhaps via a custom helper.
 
-ixgbe_suspend() calls __ixgbe_shutdown() to perform intermediate tasks.
-__ixgbe_shutdown() modifies the value of "wake" (device should be wakeup
-enabled or not), responsible for controlling the flow of legacy PM.
+Sounds good to me.
 
-Since, PCI core has no idea about the value of "wake", new code for generic
-PM may produce unexpected results. Thus, use "device_set_wakeup_enable()"
-to wakeup-enable the device accordingly.
+> In the current model bpf_trace_printk() inherits the functionality
+> to display data from core printk, so a different approach would
+> be needed there.
 
-Compile-tested only.
+BTW: Even the trace buffer has a limitation, see BUF_MAX_DATA_SIZE
+in kernel/trace/ring_buffer.c. It is internally implemented as
+a list of memory pages, see the comments above RB_BUFFER_OFF
+definition.
 
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 61 +++++--------------
- 1 file changed, 15 insertions(+), 46 deletions(-)
+It is typically 4k. I think that you might hit this limit as well.
+We had to increase per-CPU buffers used by printk() in NMI context
+because 4k was not enough for some backtraces.
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 97a423ecf808..145296825e64 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -6861,32 +6861,20 @@ int ixgbe_close(struct net_device *netdev)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM
--static int ixgbe_resume(struct pci_dev *pdev)
-+static int __maybe_unused ixgbe_resume(struct device *dev_d)
- {
-+	struct pci_dev *pdev = to_pci_dev(dev_d);
- 	struct ixgbe_adapter *adapter = pci_get_drvdata(pdev);
- 	struct net_device *netdev = adapter->netdev;
- 	u32 err;
- 
- 	adapter->hw.hw_addr = adapter->io_addr;
--	pci_set_power_state(pdev, PCI_D0);
--	pci_restore_state(pdev);
--	/*
--	 * pci_restore_state clears dev->state_saved so call
--	 * pci_save_state to restore it.
--	 */
--	pci_save_state(pdev);
- 
--	err = pci_enable_device_mem(pdev);
--	if (err) {
--		e_dev_err("Cannot enable PCI device from suspend\n");
--		return err;
--	}
- 	smp_mb__before_atomic();
- 	clear_bit(__IXGBE_DISABLED, &adapter->state);
- 	pci_set_master(pdev);
- 
--	pci_wake_from_d3(pdev, false);
-+	device_wakeup_disable(dev_d);
- 
- 	ixgbe_reset(adapter);
- 
-@@ -6904,7 +6892,6 @@ static int ixgbe_resume(struct pci_dev *pdev)
- 
- 	return err;
- }
--#endif /* CONFIG_PM */
- 
- static int __ixgbe_shutdown(struct pci_dev *pdev, bool *enable_wake)
- {
-@@ -6913,9 +6900,6 @@ static int __ixgbe_shutdown(struct pci_dev *pdev, bool *enable_wake)
- 	struct ixgbe_hw *hw = &adapter->hw;
- 	u32 ctrl;
- 	u32 wufc = adapter->wol;
--#ifdef CONFIG_PM
--	int retval = 0;
--#endif
- 
- 	rtnl_lock();
- 	netif_device_detach(netdev);
-@@ -6926,12 +6910,6 @@ static int __ixgbe_shutdown(struct pci_dev *pdev, bool *enable_wake)
- 	ixgbe_clear_interrupt_scheme(adapter);
- 	rtnl_unlock();
- 
--#ifdef CONFIG_PM
--	retval = pci_save_state(pdev);
--	if (retval)
--		return retval;
--
--#endif
- 	if (hw->mac.ops.stop_link_on_d3)
- 		hw->mac.ops.stop_link_on_d3(hw);
- 
-@@ -6986,26 +6964,18 @@ static int __ixgbe_shutdown(struct pci_dev *pdev, bool *enable_wake)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM
--static int ixgbe_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused ixgbe_suspend(struct device *dev_d)
- {
-+	struct pci_dev *pdev = to_pci_dev(dev_d);
- 	int retval;
- 	bool wake;
- 
- 	retval = __ixgbe_shutdown(pdev, &wake);
--	if (retval)
--		return retval;
- 
--	if (wake) {
--		pci_prepare_to_sleep(pdev);
--	} else {
--		pci_wake_from_d3(pdev, false);
--		pci_set_power_state(pdev, PCI_D3hot);
--	}
-+	device_set_wakeup_enable(dev_d, wake);
- 
--	return 0;
-+	return retval;
- }
--#endif /* CONFIG_PM */
- 
- static void ixgbe_shutdown(struct pci_dev *pdev)
- {
-@@ -11489,16 +11459,15 @@ static const struct pci_error_handlers ixgbe_err_handler = {
- 	.resume = ixgbe_io_resume,
- };
- 
-+static SIMPLE_DEV_PM_OPS(ixgbe_pm_ops, ixgbe_suspend, ixgbe_resume);
-+
- static struct pci_driver ixgbe_driver = {
--	.name     = ixgbe_driver_name,
--	.id_table = ixgbe_pci_tbl,
--	.probe    = ixgbe_probe,
--	.remove   = ixgbe_remove,
--#ifdef CONFIG_PM
--	.suspend  = ixgbe_suspend,
--	.resume   = ixgbe_resume,
--#endif
--	.shutdown = ixgbe_shutdown,
-+	.name      = ixgbe_driver_name,
-+	.id_table  = ixgbe_pci_tbl,
-+	.probe     = ixgbe_probe,
-+	.remove    = ixgbe_remove,
-+	.driver.pm = &ixgbe_pm_ops,
-+	.shutdown  = ixgbe_shutdown,
- 	.sriov_configure = ixgbe_pci_sriov_configure,
- 	.err_handler = &ixgbe_err_handler
- };
--- 
-2.27.0
+So, using different approach would make sense even when using trace
+buffer.
 
+> Other consumers outside of BPF
+> could potentially avail of the show functionality directly via the btf_show
+> functions in the future, but at least it would have one consumer at the 
+> outset, and wouldn't present problems like these for printk.
+
+Sounds good to me.
+
+> > I would strongly prefer to keep this outside vsprintf and printk.
+> > Please, invert the logic and convert it into using separate printk()
+> > call for each printed line.
+> > 
+> 
+> I think the above is in line with what you're suggesting?
+
+Yes, as far as I understand it.
+
+> Yep, no way round this either. I'll try a different approach. Thanks for 
+> taking a look!
+
+Uff, thanks a lot for understanding. I hope that most of the code will
+be reusable in some form.
+
+Best Regards,
+Petr
