@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 690B320E3C2
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:03:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 590CE20E40A
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390758AbgF2VRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:17:50 -0400
+        id S2388789AbgF2VUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:20:21 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729799AbgF2Swu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:52:50 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C555C031C55;
-        Mon, 29 Jun 2020 10:36:25 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id gc15so1073975pjb.0;
-        Mon, 29 Jun 2020 10:36:25 -0700 (PDT)
+        with ESMTP id S1729781AbgF2Sws (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:52:48 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF6FC031C57;
+        Mon, 29 Jun 2020 10:36:37 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id t6so8635774pgq.1;
+        Mon, 29 Jun 2020 10:36:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oH+afjmFUre+9FJ85sDhmbIb/IC6g4po5tsZa9lvjsM=;
-        b=rhcfzUBdZrYWZ0sHoiAb+pQCRbbt+226eWoAbIQh/dBelFFF2BNxMv8Z03o+ww9vEF
-         0njS4vx+QTA7kDikSU3p2vnBDeL/zLIgATNSbHc+sHOVf+nxZP4SOjitWe7PimSe2Wc7
-         9lK39yie5GcJ3OIj4MXrhuab3ix0EFSWKtpXiA/q+SAr34tuf7p7J0krKegzpT1O6isf
-         9rXBVg3cmc8QtSuj4S/wt9vYBeST94PKM0JVxeWJprZcF1ZBoCL9ENN6lRtOm/0a0Jve
-         sH/Y/P3/0dBWvR1sHEy/+Gvvpb82pggJFVmGSjrSXXCja1uhlyiMpVTB0LaV4bfDsrXt
-         hZGQ==
+        bh=0fKzFmJ6swEgieVUVWwiawhKzRLACyYFxC8XDxv8xYs=;
+        b=R0fJ45LcAzqMEfB6noKVYodLWFah632V2+qcF0G9d0sHUN7n7MwsjReJlbHyOxFAgQ
+         Pyqf1TrIb5+jNNbE7Gu2zh7Pev/OIpQYVhr0G06pAc4EvZ3QZti8JaDPPh9JprJ6lqM7
+         tqLA5emrcXMH/+DvgiCyb8A/ClsuRUzKMnIbaTWBxp5GGslGGiGr9HKCHUy1PbvqS24j
+         60bvSOJ0Nj3W6JRhbdP6caRjgWiAIuXtyAUuqOPa4jCa9O05I1sFDK5lLIaDCRcZodQs
+         B0eEZH4anwaspISF1wAL0KJ23fKcs6Ri+fuakGDCBPHZtFTJikMOeCKnC+N8ARzFsldc
+         kSNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oH+afjmFUre+9FJ85sDhmbIb/IC6g4po5tsZa9lvjsM=;
-        b=q3zrxs7rbUXp7Nrg/QiWkxaq8m2BahFSB5+0mXJUchVhSM3kuFFjGlBYpyuQnN2FN2
-         n7pXiEKaRD/VYCn1MiosParHUOfFDLnFSM3JOrv9YnM5OY2ohyxcIujlPEzbwjKH93pT
-         1hRC29Q7PgwplpKvfrfv6+Y0Rmxc103Gu5a1UzMEerdyXmWhrKkw4/KJIMLlAY8wYen3
-         iBjKGeI5EvP8ID8BUG/jkoW64Z59oEBAWWq4oNITd4U7Z1xTmmjEldWVmk3WY+keHyqe
-         IZ/fWpi5EQKh9K2vaUEcYCLMwTHxSAjI0QlgAl/zzXSF2bNNqbQ6zr0sl5EiOU1wif2u
-         fYxQ==
-X-Gm-Message-State: AOAM531Ppu28N4a7wPb6UITIeCxMUwkUKmDmU7BwKrmHR9jUN+lzzV30
-        91tt+ZfxWH8JSGcQmGSZcaE=
-X-Google-Smtp-Source: ABdhPJxtZ4sKjmRW7kbH4cvq0dzM/8o7VBvRSwL5z8xTWtmT0dEd5JqSzKl4aFPmf5zeUNao84LnLg==
-X-Received: by 2002:a17:902:469:: with SMTP id 96mr14163420ple.93.1593452184850;
-        Mon, 29 Jun 2020 10:36:24 -0700 (PDT)
+        bh=0fKzFmJ6swEgieVUVWwiawhKzRLACyYFxC8XDxv8xYs=;
+        b=smNUO9Kknl4aB+epcEO3OvhfpqOYEzSnukU5Y8FOsTbHqEuOK4HUSAH0sOaZMol3pa
+         ZbysRAum9pevIeu/RoBsdy6BbPHkZyR42OHuxaP9QUwNOD25FvWkDCwkc5RlK1eFLw4z
+         Kor1VVJ4XEYoAiVX6paPq1xzU23BI3mcXrSuyd4ffz+QSct3XvpRExS9wCZ23vcv54/R
+         nfZRdR3zISxQcG86iCF/2rTUykT54JoOGM83r+vhE0TQ8yW3hH0al4uoY2AryDCGvna/
+         XTmadXJEMgbqbqq1uda6WxGElKIWiFAn5dcHKBJHgoxxqT99SwaC0i/fxrYTzNdaLsWj
+         7u3g==
+X-Gm-Message-State: AOAM530e5uElo1NSZYLHCxCvqMzR4Z8WAMgh1xVR78o8N1WD73djtKQ9
+        fZ16qRwMH0Dv8mblDvltrI0=
+X-Google-Smtp-Source: ABdhPJzX3W9pUE3rQzyWQqNZmLpVSpw6IGMNuc9exvw210citymSwYDDB32iKOYKjCaB5XfOf1cKHw==
+X-Received: by 2002:a63:4915:: with SMTP id w21mr5651899pga.134.1593452196587;
+        Mon, 29 Jun 2020 10:36:36 -0700 (PDT)
 Received: from varodek.iballbatonwifi.com ([103.105.153.57])
-        by smtp.gmail.com with ESMTPSA id k23sm331461pgb.92.2020.06.29.10.36.20
+        by smtp.gmail.com with ESMTPSA id k23sm331461pgb.92.2020.06.29.10.36.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 10:36:24 -0700 (PDT)
+        Mon, 29 Jun 2020 10:36:36 -0700 (PDT)
 From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
@@ -58,9 +58,9 @@ Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         skhan@linuxfoundation.org
-Subject: [PATCH v2 2/4] staging/rtl8192e: use generic power management
-Date:   Mon, 29 Jun 2020 23:04:57 +0530
-Message-Id: <20200629173459.262075-3-vaibhavgupta40@gmail.com>
+Subject: [PATCH v2 4/4] vt6655/device_main.c: use generic power management
+Date:   Mon, 29 Jun 2020 23:04:59 +0530
+Message-Id: <20200629173459.262075-5-vaibhavgupta40@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200629173459.262075-1-vaibhavgupta40@gmail.com>
 References: <20200629173459.262075-1-vaibhavgupta40@gmail.com>
@@ -71,11 +71,6 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The structure of working of PM hooks for source files is:
-    drivers/staging/rtl8192e/rtl8192e/rtl_pm.h   : callbacks declared
-    drivers/staging/rtl8192e/rtl8192e/rtl_pm.c   : callbacks defined
-    drivers/staging/rtl8192e/rtl8192e/rtl_core.c : callbacks used
-
 Drivers should not use legacy power management as they have to manage power
 states and related operations, for the device, themselves. This driver was
 handling them with the help of PCI helper functions like
@@ -85,115 +80,75 @@ With generic PM, all essentials will be handled by the PCI core. Driver
 needs to do only device-specific operations.
 
 The driver was also using pci_enable_wake(...,..., 0) to disable wake. Use
-device_wakeup_disable() instead. Use device_set_wakeup_enable() where WOL
-is decided by the value of a variable during runtime.
+device_wakeup_disable() instead.
 
 Compile-tested only.
 
 Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 ---
- drivers/staging/rtl8192e/rtl8192e/rtl_core.c |  5 ++--
- drivers/staging/rtl8192e/rtl8192e/rtl_pm.c   | 26 ++++++--------------
- drivers/staging/rtl8192e/rtl8192e/rtl_pm.h   |  4 +--
- 3 files changed, 12 insertions(+), 23 deletions(-)
+ drivers/staging/vt6655/device_main.c | 25 +++++++------------------
+ 1 file changed, 7 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/staging/rtl8192e/rtl8192e/rtl_core.c b/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
-index a7cd4de65b28..dbcb8d0d9707 100644
---- a/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
-+++ b/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
-@@ -63,13 +63,14 @@ static int _rtl92e_pci_probe(struct pci_dev *pdev,
- static void _rtl92e_pci_disconnect(struct pci_dev *pdev);
- static irqreturn_t _rtl92e_irq(int irq, void *netdev);
+diff --git a/drivers/staging/vt6655/device_main.c b/drivers/staging/vt6655/device_main.c
+index 41cbec4134b0..76de1fd568eb 100644
+--- a/drivers/staging/vt6655/device_main.c
++++ b/drivers/staging/vt6655/device_main.c
+@@ -1766,48 +1766,37 @@ vt6655_probe(struct pci_dev *pcid, const struct pci_device_id *ent)
  
-+static SIMPLE_DEV_PM_OPS(rtl92e_pm_ops, rtl92e_suspend, rtl92e_resume);
-+
- static struct pci_driver rtl8192_pci_driver = {
- 	.name = DRV_NAME,	/* Driver name   */
- 	.id_table = rtl8192_pci_id_tbl,	/* PCI_ID table  */
- 	.probe	= _rtl92e_pci_probe,	/* probe fn      */
- 	.remove	 = _rtl92e_pci_disconnect,	/* remove fn */
--	.suspend = rtl92e_suspend,	/* PM suspend fn */
--	.resume = rtl92e_resume,                 /* PM resume fn  */
-+	.driver.pm = &rtl92e_pm_ops,
- };
+ /*------------------------------------------------------------------*/
  
- static short _rtl92e_is_tx_queue_empty(struct net_device *dev);
-diff --git a/drivers/staging/rtl8192e/rtl8192e/rtl_pm.c b/drivers/staging/rtl8192e/rtl8192e/rtl_pm.c
-index cd3e17b41d6f..5575186caebd 100644
---- a/drivers/staging/rtl8192e/rtl8192e/rtl_pm.c
-+++ b/drivers/staging/rtl8192e/rtl8192e/rtl_pm.c
-@@ -10,9 +10,9 @@
- #include "rtl_pm.h"
- 
- 
--int rtl92e_suspend(struct pci_dev *pdev, pm_message_t state)
-+int rtl92e_suspend(struct device *dev_d)
+-#ifdef CONFIG_PM
+-static int vt6655_suspend(struct pci_dev *pcid, pm_message_t state)
++static int __maybe_unused vt6655_suspend(struct device *dev_d)
  {
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct r8192_priv *priv = rtllib_priv(dev);
- 	u32	ulRegRead;
+-	struct vnt_private *priv = pci_get_drvdata(pcid);
++	struct vnt_private *priv = dev_get_drvdata(dev_d);
+ 	unsigned long flags;
  
-@@ -46,40 +46,28 @@ int rtl92e_suspend(struct pci_dev *pdev, pm_message_t state)
- out_pci_suspend:
- 	netdev_info(dev, "WOL is %s\n", priv->rtllib->bSupportRemoteWakeUp ?
- 			    "Supported" : "Not supported");
--	pci_save_state(pdev);
--	pci_disable_device(pdev);
--	pci_enable_wake(pdev, pci_choose_state(pdev, state),
--			priv->rtllib->bSupportRemoteWakeUp ? 1 : 0);
--	pci_set_power_state(pdev, pci_choose_state(pdev, state));
-+	device_set_wakeup_enable(dev_d, priv->rtllib->bSupportRemoteWakeUp);
+ 	spin_lock_irqsave(&priv->lock, flags);
  
- 	mdelay(20);
+-	pci_save_state(pcid);
+-
+ 	MACbShutdown(priv);
  
+-	pci_disable_device(pcid);
+-
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+ 
+-	pci_set_power_state(pcid, pci_choose_state(pcid, state));
+-
  	return 0;
  }
  
--int rtl92e_resume(struct pci_dev *pdev)
-+int rtl92e_resume(struct device *dev_d)
+-static int vt6655_resume(struct pci_dev *pcid)
++static int __maybe_unused vt6655_resume(struct device *dev_d)
  {
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct pci_dev *pdev = to_pci_dev(dev_d);
-+	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct r8192_priv *priv = rtllib_priv(dev);
--	int err;
- 	u32 val;
- 
- 	netdev_info(dev, "================>r8192E resume call.\n");
- 
--	pci_set_power_state(pdev, PCI_D0);
--
--	err = pci_enable_device(pdev);
--	if (err) {
--		netdev_err(dev, "pci_enable_device failed on resume\n");
--		return err;
--	}
--	pci_restore_state(pdev);
- 
- 	pci_read_config_dword(pdev, 0x40, &val);
- 	if ((val & 0x0000ff00) != 0)
- 		pci_write_config_dword(pdev, 0x40, val & 0xffff00ff);
- 
--	pci_enable_wake(pdev, PCI_D0, 0);
+-	pci_set_power_state(pcid, PCI_D0);
+-	pci_enable_wake(pcid, PCI_D0, 0);
+-	pci_restore_state(pcid);
 +	device_wakeup_disable(dev_d);
  
- 	if (priv->polling_timer_on == 0)
- 		rtl92e_check_rfctrl_gpio_timer(&priv->gpio_polling_timer);
-diff --git a/drivers/staging/rtl8192e/rtl8192e/rtl_pm.h b/drivers/staging/rtl8192e/rtl8192e/rtl_pm.h
-index e58f2bcdb1dd..fd8611495975 100644
---- a/drivers/staging/rtl8192e/rtl8192e/rtl_pm.h
-+++ b/drivers/staging/rtl8192e/rtl8192e/rtl_pm.h
-@@ -10,7 +10,7 @@
- #include <linux/types.h>
- #include <linux/pci.h>
+ 	return 0;
+ }
+-#endif
  
--int rtl92e_suspend(struct pci_dev *dev, pm_message_t state);
--int rtl92e_resume(struct pci_dev *dev);
-+int rtl92e_suspend(struct device *dev_d);
-+int rtl92e_resume(struct device *dev_d);
+ MODULE_DEVICE_TABLE(pci, vt6655_pci_id_table);
  
- #endif
++static SIMPLE_DEV_PM_OPS(vt6655_pm_ops, vt6655_suspend, vt6655_resume);
++
+ static struct pci_driver device_driver = {
+ 	.name = DEVICE_NAME,
+ 	.id_table = vt6655_pci_id_table,
+ 	.probe = vt6655_probe,
+ 	.remove = vt6655_remove,
+-#ifdef CONFIG_PM
+-	.suspend = vt6655_suspend,
+-	.resume = vt6655_resume,
+-#endif
++	.driver.pm = &vt6655_pm_ops,
+ };
+ 
+ module_pci_driver(device_driver);
 -- 
 2.27.0
 
