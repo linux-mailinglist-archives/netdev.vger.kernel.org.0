@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 894DC20D75E
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:07:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BACFE20D742
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:07:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732262AbgF2T3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
+        id S1732765AbgF2T2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732709AbgF2T1m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:27:42 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01409C030F3E;
-        Mon, 29 Jun 2020 09:57:51 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id a6so14140026wmm.0;
-        Mon, 29 Jun 2020 09:57:50 -0700 (PDT)
+        with ESMTP id S1732758AbgF2T1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:27:49 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA5BC030F3F;
+        Mon, 29 Jun 2020 09:58:33 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id q5so17238582wru.6;
+        Mon, 29 Jun 2020 09:58:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BQzFhhy4PPK+wORzA0eq8X7nCm3stS5K4TwJi9mD/OU=;
-        b=UU3gMqGQIDDI4aV0Xe5aM83CVRlvInAiCH7amNVA9uDmhXzVxpFuk1FmMYKZM7OCPq
-         a4tPy0pbznEdYQw55lRvmJjvgWSsIc7aOxVebt9kZHI03PxoJP4moiQaIKd2tsdTOA/U
-         JnNxFFUR43OLdXU4VvUpzlUX8gBrFgskl8tYwFfefmN/6EVob1pxAVGGSjb+l0vDpJoE
-         1a0DQSEFESYn08TPLpotPXvSKci9hmgYmBodhIaYks6pt7ykXGzVHeNT2li7jOYsBXKz
-         48agFyMb16F0QjcuV8o6yQ9F0zbAjdFAwxQPL1C9mdfV583zS7X0Ou6E3pbFcUKXGDOC
-         eQLA==
+        bh=EXieR2sKCVcuynFXj2Dp91Rx/LX+vZuPzCYIluYGYqw=;
+        b=BdCW9dI6O2ID3uqf56vYmvG7S+fdM8QNerUMd1X2JionIRz+qIPUlM5rWCSvL/+UCt
+         zvwMhhwE/TXKbCYG9ID7I9ygUQH+8T9k9KYMvWu+JHNlTbJIFYwJIgVJs5BgGjKU86gf
+         kXrJckQyt3K2z59k0OFjRJxmE0ADLVeSmMYS17m3Rhvdan9zDd7VM8GaaUTAw9fApXHP
+         PE+lFtfE8xP6ROi7X2UXlG6lttCibWZW/LgUXkH+Sm/g9OgnJAeD57hVdtUg2iLX/Egu
+         W9ZG/B64qi8wc2xkGhqiFdCxoPVcr1rpqZi1VS2u4Kt5v/33rcpSfb2H78HjL/acb7KJ
+         4j8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=BQzFhhy4PPK+wORzA0eq8X7nCm3stS5K4TwJi9mD/OU=;
-        b=rEHiRwp8EeSh0IpAo7vSqLiC4bEN6Ttqd6oyd6HAQNsSLPLN40h7a8spc1s5UQ0uek
-         cEdd6kTt0uY8L0NgT0XNCztS2yGhHk+MHdiYhLmzNlek5pUUT7a9CuVVjBzs5kOwwbru
-         RqEK1fsB9YvC7zWID7yhkhbwU9ZX87Dq5xX0IM8bn7Gt28Hk9bfshAIrvdDJZTkpBoRc
-         s5PaoaAJNtAcRr+mcGAJfG8LAWkhm0SgiYuHJGGFDoxY2+22g8FCRtmywhAnxyzxRQMw
-         dhNnhuEcoV5zBuqmgm/YUShdCM59GeH8kb73W8VrfCIAsg7Ea9qQLmKlK4kGJbV2LrM+
-         z3cw==
-X-Gm-Message-State: AOAM533q0ehb269wRMVeNRodwDu4vCBgO6Dk80D2VoxAkTMw1CpE46WI
-        UDkF1xUzXMUHyonm9kFhI7M=
-X-Google-Smtp-Source: ABdhPJwfZU06pq3cZr3NXQLT/Ki5iwUmKfY9cklbAHtcV0HoBVmGm8eeONMeuclh5OLF4878sWZCdQ==
-X-Received: by 2002:a1c:19c5:: with SMTP id 188mr3212232wmz.124.1593449869667;
-        Mon, 29 Jun 2020 09:57:49 -0700 (PDT)
+        bh=EXieR2sKCVcuynFXj2Dp91Rx/LX+vZuPzCYIluYGYqw=;
+        b=Y6qXd1tzsxDusZrBWdyTDswgUD7jMetPOVu2H0z/PjeAq3NAneKzluS9TgbKKpq6Kv
+         0JtYP+N7nB4EmImABwZHygjSuMblZU+ZXcaB+Q5gdgw/L+l9kaTadNObBnUj9G7FTsFH
+         tABPbU6QlBBGtzurRaYaVrwyI9xIdofrUm1zm1jTt90cNWzs/RDkWrYlt59yJj4pbtAC
+         2RN9rDS42ZhzsikxcDlMhZBHSdEwvAfLYtaKjMQMxRDsAfUaRmMWAVUf+NiYQ4BNvKTO
+         jMIMFSbFS3jKVn7wyTGSCWkRpK1zCQaOfG3GSGWVCT5NxTwqOOiAgqjFOooTeI562oKF
+         IZFA==
+X-Gm-Message-State: AOAM531+4wOHS7mcs5MExaHM71hNodENrdTsa6jAEAaWfCGrNc0xqMKy
+        B5hOJTqixoLYxuoIH+xbqLg=
+X-Google-Smtp-Source: ABdhPJyJ5w3YtAo+uLmhSmj4foLwUKDf1M6Afay3gViElI8XhO8rG9IkHCGg5/fyGiENO61wD6cZDw==
+X-Received: by 2002:a5d:6802:: with SMTP id w2mr17172707wru.88.1593449912197;
+        Mon, 29 Jun 2020 09:58:32 -0700 (PDT)
 Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t4sm510754wmf.4.2020.06.29.09.57.45
+        by smtp.gmail.com with ESMTPSA id c20sm460651wrb.65.2020.06.29.09.58.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Jun 2020 09:57:49 -0700 (PDT)
-Subject: Re: [PATCH v2 01/10] net: ethernet: ixgbe: check the return value of
- ixgbe_mii_bus_init()
+        Mon, 29 Jun 2020 09:58:31 -0700 (PDT)
+Subject: Re: [PATCH v2 02/10] net: ethernet: ixgbe: don't call
+ devm_mdiobus_free()
 To:     Bartosz Golaszewski <brgl@bgdev.pl>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -68,14 +68,14 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
 References: <20200629120346.4382-1-brgl@bgdev.pl>
- <20200629120346.4382-2-brgl@bgdev.pl>
+ <20200629120346.4382-3-brgl@bgdev.pl>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <7e30d5fc-b6db-1c09-3515-e309da1eb0f5@gmail.com>
-Date:   Mon, 29 Jun 2020 09:57:44 -0700
+Message-ID: <daff86d4-f0f1-f4d8-2e7a-1535573f9ba1@gmail.com>
+Date:   Mon, 29 Jun 2020 09:58:26 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <20200629120346.4382-2-brgl@bgdev.pl>
+In-Reply-To: <20200629120346.4382-3-brgl@bgdev.pl>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -89,8 +89,10 @@ X-Mailing-List: netdev@vger.kernel.org
 On 6/29/2020 5:03 AM, Bartosz Golaszewski wrote:
 > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
-> This function may fail. Check its return value and propagate the error
-> code.
+> The idea behind devres is that the release callbacks are called if
+> probe fails. As we now check the return value of ixgbe_mii_bus_init(),
+> we can drop the call devm_mdiobus_free() in error path as the release
+> callback will be called automatically.
 > 
 > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
