@@ -2,231 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2A2A20E070
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:56:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16D2C20E0E9
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:57:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389737AbgF2UqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43372 "EHLO
+        id S1731436AbgF2Uur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 16:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731548AbgF2TNx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:13:53 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D81FC0085B1;
-        Mon, 29 Jun 2020 04:16:46 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: andrzej.p)
-        with ESMTPSA id B841D2A0F61
-From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-To:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
+        with ESMTP id S1731429AbgF2TNe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:13:34 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FDFC0D941F
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:04:12 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id b6so16252011wrs.11
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:04:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C3SFeAEvbOoZI/xpVJ8MO71Sd1LqnSCGoIeWQbxnMQg=;
+        b=W34A5EzIFj5HWi2O+Uu6ihBeBiDeWhpckbWrX2jnfqXAR3x0qNViaW+WgvnvpxwiWO
+         MGqgE1enmwmS0gQxdKT5NnCo8pT8qbnyks2TEEdLnPjFm0OCLBWs+QPHAs9eXm7uQdat
+         JWbhorZHQ3BtymX0aXM/lywfKu/bT8ZNk4SSMGwMY45YdISPCRJHVeIp8gOWUa6hI3x5
+         yl2q7FCGF3ftBuUSxFt5y3sPjglhVa+3G49n58H+eBi39BWD3W01vtmugl+iYZj5MxaS
+         mkrYBWhfSoM6r/EQlCIFuE/GmGSu3DIPQIVdw8C/+juCBxxelde4Yfeywt4RMER4CJbR
+         0+DA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C3SFeAEvbOoZI/xpVJ8MO71Sd1LqnSCGoIeWQbxnMQg=;
+        b=J7OXKUj+p65ZzXxZ/M9Bzb/wVEc3R9D/OBfLouIoVKqZ7DBCp+bSM3z2dZSFTUOtdQ
+         3noed5F8lyuvAT8TwudUhcQJ0UJh8KOwKr1WdcSyP7KULIHh56qdbEfApP6zm4JdAnBE
+         4W4dAL9hynqnVPVBcZX4XdExpXlDhEcMnwRrugMMrDa4ImJqn5bvORmjgPdxkehMET1g
+         JDa2QgDlyLYBTxaEZlxAFQ1nRDyY2wgTg44m7VNiZmJJI9oTgAUTc1yysozpeeUk7riw
+         8/8TxuWZDsOv4S9PDp8U2qQ6782enSRR1jM/6dtloxsmnQEP/gKQyJZEI7xQoleo+1Ip
+         X30Q==
+X-Gm-Message-State: AOAM532MjFHgmKLQ7qf4ajJXS7jI9fS40GNrNGawb/OP76crLDyRMePl
+        enfn9AY6VE7hTytkOjBOspevXw==
+X-Google-Smtp-Source: ABdhPJzvKPYK67MLNdl2CXmAriudaJFiLrZRmwhzT6FCEy4WwbiER21DP71IWFlJPEiw6dlp0MpaYQ==
+X-Received: by 2002:adf:e40e:: with SMTP id g14mr18038664wrm.271.1593432250982;
+        Mon, 29 Jun 2020 05:04:10 -0700 (PDT)
+Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
+        by smtp.gmail.com with ESMTPSA id d81sm25274347wmc.0.2020.06.29.05.04.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Jun 2020 05:04:10 -0700 (PDT)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        kernel@collabora.com
-Subject: [PATCH v6 11/11] thermal: Rename set_mode() to change_mode()
-Date:   Mon, 29 Jun 2020 13:16:15 +0200
-Message-Id: <20200629111615.18131-12-andrzej.p@collabora.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200629111615.18131-1-andrzej.p@collabora.com>
-References: <CAHLCerO2XOOX9akEwaTu_cjSqRycFpNmoVxkSe36L8B4ALWidA@mail.gmail.com>
- <20200629111615.18131-1-andrzej.p@collabora.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH v2 00/10] net: improve devres helpers
+Date:   Mon, 29 Jun 2020 14:03:36 +0200
+Message-Id: <20200629120346.4382-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.26.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-set_mode() is only called when tzd's mode is about to change. Actual
-setting is performed in thermal_core, in thermal_zone_device_set_mode().
-The meaning of set_mode() callback is actually to notify the driver about
-the mode being changed and giving the driver a chance to oppose such
-change.
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-To better reflect the purpose of the method rename it to change_mode()
+So it seems like there's no support for relaxing certain networking devres
+helpers to not require previously allocated structures to also be managed.
+However the way mdio devres variants are implemented is still wrong and I
+modified my series to address it while keeping the functions strict.
 
-Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-[for acerhdf]
-Acked-by: Peter Kaestle <peter@piie.net>
-Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
----
- drivers/platform/x86/acerhdf.c                          | 6 +++---
- drivers/thermal/imx_thermal.c                           | 8 ++++----
- drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 6 +++---
- drivers/thermal/intel/intel_quark_dts_thermal.c         | 6 +++---
- drivers/thermal/thermal_core.c                          | 4 ++--
- include/linux/thermal.h                                 | 2 +-
- 6 files changed, 16 insertions(+), 16 deletions(-)
+First two patches modify the ixgbe driver to get rid of the last user of
+devm_mdiobus_free().
 
-diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
-index 76323855c80c..f816a8a13039 100644
---- a/drivers/platform/x86/acerhdf.c
-+++ b/drivers/platform/x86/acerhdf.c
-@@ -413,8 +413,8 @@ static inline void acerhdf_enable_kernelmode(void)
-  *          the temperature and the fan.
-  * disabled: the BIOS takes control of the fan.
-  */
--static int acerhdf_set_mode(struct thermal_zone_device *thermal,
--			    enum thermal_device_mode mode)
-+static int acerhdf_change_mode(struct thermal_zone_device *thermal,
-+			       enum thermal_device_mode mode)
- {
- 	if (mode == THERMAL_DEVICE_DISABLED && kernelmode)
- 		acerhdf_revert_to_bios_mode();
-@@ -473,7 +473,7 @@ static struct thermal_zone_device_ops acerhdf_dev_ops = {
- 	.bind = acerhdf_bind,
- 	.unbind = acerhdf_unbind,
- 	.get_temp = acerhdf_get_ec_temp,
--	.set_mode = acerhdf_set_mode,
-+	.change_mode = acerhdf_change_mode,
- 	.get_trip_type = acerhdf_get_trip_type,
- 	.get_trip_hyst = acerhdf_get_trip_hyst,
- 	.get_trip_temp = acerhdf_get_trip_temp,
-diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
-index a02398118d88..9700ae39feb7 100644
---- a/drivers/thermal/imx_thermal.c
-+++ b/drivers/thermal/imx_thermal.c
-@@ -330,8 +330,8 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
- 	return 0;
- }
- 
--static int imx_set_mode(struct thermal_zone_device *tz,
--			enum thermal_device_mode mode)
-+static int imx_change_mode(struct thermal_zone_device *tz,
-+			   enum thermal_device_mode mode)
- {
- 	struct imx_thermal_data *data = tz->devdata;
- 	struct regmap *map = data->tempmon;
-@@ -447,7 +447,7 @@ static struct thermal_zone_device_ops imx_tz_ops = {
- 	.bind = imx_bind,
- 	.unbind = imx_unbind,
- 	.get_temp = imx_get_temp,
--	.set_mode = imx_set_mode,
-+	.change_mode = imx_change_mode,
- 	.get_trip_type = imx_get_trip_type,
- 	.get_trip_temp = imx_get_trip_temp,
- 	.get_crit_temp = imx_get_crit_temp,
-@@ -860,7 +860,7 @@ static int __maybe_unused imx_thermal_suspend(struct device *dev)
- 	 * Need to disable thermal sensor, otherwise, when thermal core
- 	 * try to get temperature before thermal sensor resume, a wrong
- 	 * temperature will be read as the thermal sensor is powered
--	 * down. This is done in set_mode() operation called from
-+	 * down. This is done in change_mode() operation called from
- 	 * thermal_zone_device_disable()
- 	 */
- 	ret = thermal_zone_device_disable(data->tz);
-diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-index ce49d3b100d5..d3732f624913 100644
---- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-+++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-@@ -377,8 +377,8 @@ static int int3400_thermal_get_temp(struct thermal_zone_device *thermal,
- 	return 0;
- }
- 
--static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
--				enum thermal_device_mode mode)
-+static int int3400_thermal_change_mode(struct thermal_zone_device *thermal,
-+				       enum thermal_device_mode mode)
- {
- 	struct int3400_thermal_priv *priv = thermal->devdata;
- 	int result = 0;
-@@ -399,7 +399,7 @@ static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
- 
- static struct thermal_zone_device_ops int3400_thermal_ops = {
- 	.get_temp = int3400_thermal_get_temp,
--	.set_mode = int3400_thermal_set_mode,
-+	.change_mode = int3400_thermal_change_mode,
- };
- 
- static struct thermal_zone_params int3400_thermal_params = {
-diff --git a/drivers/thermal/intel/intel_quark_dts_thermal.c b/drivers/thermal/intel/intel_quark_dts_thermal.c
-index e29c3e330b17..3eafc6b0e6c3 100644
---- a/drivers/thermal/intel/intel_quark_dts_thermal.c
-+++ b/drivers/thermal/intel/intel_quark_dts_thermal.c
-@@ -298,8 +298,8 @@ static int sys_get_curr_temp(struct thermal_zone_device *tzd,
- 	return 0;
- }
- 
--static int sys_set_mode(struct thermal_zone_device *tzd,
--				enum thermal_device_mode mode)
-+static int sys_change_mode(struct thermal_zone_device *tzd,
-+			   enum thermal_device_mode mode)
- {
- 	int ret;
- 
-@@ -319,7 +319,7 @@ static struct thermal_zone_device_ops tzone_ops = {
- 	.get_trip_type = sys_get_trip_type,
- 	.set_trip_temp = sys_set_trip_temp,
- 	.get_crit_temp = sys_get_crit_temp,
--	.set_mode = sys_set_mode,
-+	.change_mode = sys_change_mode,
- };
- 
- static void free_soc_dts(struct soc_sensor_entry *aux_entry)
-diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-index e613f5c07bad..a61e91513584 100644
---- a/drivers/thermal/thermal_core.c
-+++ b/drivers/thermal/thermal_core.c
-@@ -482,8 +482,8 @@ static int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
- 		return ret;
- 	}
- 
--	if (tz->ops->set_mode)
--		ret = tz->ops->set_mode(tz, mode);
-+	if (tz->ops->change_mode)
-+		ret = tz->ops->change_mode(tz, mode);
- 
- 	if (!ret)
- 		tz->mode = mode;
-diff --git a/include/linux/thermal.h b/include/linux/thermal.h
-index df013c39ba9b..b9efaa780d88 100644
---- a/include/linux/thermal.h
-+++ b/include/linux/thermal.h
-@@ -76,7 +76,7 @@ struct thermal_zone_device_ops {
- 		       struct thermal_cooling_device *);
- 	int (*get_temp) (struct thermal_zone_device *, int *);
- 	int (*set_trips) (struct thermal_zone_device *, int, int);
--	int (*set_mode) (struct thermal_zone_device *,
-+	int (*change_mode) (struct thermal_zone_device *,
- 		enum thermal_device_mode);
- 	int (*get_trip_type) (struct thermal_zone_device *, int,
- 		enum thermal_trip_type *);
+Patches 3, 4, 5 and 6 are mostly cosmetic.
+
+Patch 7 fixes the way devm_mdiobus_register() is implemented.
+
+Patches 8 & 9 provide a managed variant of of_mdiobus_register() and
+last patch uses it in mtk-star-emac driver.
+
+v1 -> v2:
+- drop the patch relaxing devm_register_netdev()
+- require struct mii_bus to be managed in devm_mdiobus_register() and
+  devm_of_mdiobus_register() but don't store that information in the
+  structure itself: use devres_find() instead
+
+Bartosz Golaszewski (10):
+  net: ethernet: ixgbe: check the return value of ixgbe_mii_bus_init()
+  net: ethernet: ixgbe: don't call devm_mdiobus_free()
+  net: devres: rename the release callback of devm_register_netdev()
+  Documentation: devres: add missing mdio helper
+  phy: un-inline devm_mdiobus_register()
+  phy: mdio: add kerneldoc for __devm_mdiobus_register()
+  net: phy: don't abuse devres in devm_mdiobus_register()
+  of: mdio: remove the 'extern' keyword from function declarations
+  of: mdio: provide devm_of_mdiobus_register()
+  net: ethernet: mtk-star-emac: use devm_of_mdiobus_register()
+
+ .../driver-api/driver-model/devres.rst        |   3 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   6 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c  |  14 +-
+ drivers/net/ethernet/mediatek/mtk_star_emac.c |  13 +-
+ drivers/net/ethernet/realtek/r8169_main.c     |   2 +-
+ drivers/net/phy/Makefile                      |   2 +
+ drivers/net/phy/mdio_bus.c                    |  73 ----------
+ drivers/net/phy/mdio_devres.c                 | 133 ++++++++++++++++++
+ include/linux/of_mdio.h                       |  40 +++---
+ include/linux/phy.h                           |  21 +--
+ net/devres.c                                  |   4 +-
+ 11 files changed, 174 insertions(+), 137 deletions(-)
+ create mode 100644 drivers/net/phy/mdio_devres.c
+
 -- 
-2.17.1
+2.26.1
 
