@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FF8F20DB0A
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:14:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC8420DB10
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:14:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388715AbgF2UC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
+        id S2388734AbgF2UDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 16:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388703AbgF2UCx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 16:02:53 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 704B3C061755;
-        Mon, 29 Jun 2020 13:02:53 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id b16so8333035pfi.13;
-        Mon, 29 Jun 2020 13:02:53 -0700 (PDT)
+        with ESMTP id S2388726AbgF2UDB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 16:03:01 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F77FC061755;
+        Mon, 29 Jun 2020 13:03:01 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id g67so7901092pgc.8;
+        Mon, 29 Jun 2020 13:03:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version:reply-to
-         :content-transfer-encoding;
-        bh=BzZHVC0iAgOjnmp+banoepd5A4N8/DrSMscTABsdBD0=;
-        b=gxQtO2x15mMvNYI3GfhGgpm7fHc4g2nms0huDE+15T7xCQEsuc78OuuetjDqsyn6tx
-         xt1bW8kG6CaMAQlYpXKV31hcSl+YsH6TVPlGZFoKlZvXii2v1a+tQaJaVk/ibhnpbAa/
-         LiUz1qO/nP3My6mMwN1cjB3duRmDtnh8HZ1S1z3v4KmqjYNKMkrYmU0vaXVnEj+gJIFK
-         fgoxxPpk8L+kTtAZGf3e7NwTCZ0Wsydn5eL0cttdGfXLNXbBdUjTbdRIrbz65uP6fxWQ
-         d0q1/6sLZKmlQQm98PX1njG2izxpGsj2HbZq/CLT+MWlt9h1KlF4iipkvuL4ZFHmam8G
-         3M7Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:reply-to:content-transfer-encoding;
+        bh=/gsLg2vrEv9v1DomZy+Al4WDSR7fwp7hS7EGj3MRF9E=;
+        b=OINhy7XmDGVCP+SCSbzALvV19PfCB1+fzui8uoh5RLBtHAbSruN0EHWC9b/6uIbRm1
+         L+FVanMWZn1CEAUoXFVDKdrBbbE9XrBHhkFyHRfo5GNJRDFlVHC1Mvtg6VxOQgTfBJKC
+         q8HKvfKEJNuCC/3M7yJcIME8PpytDnGvkhVy41csb0zX19TonjbGt569EEFGPJW3RkLR
+         FGccVh73zZBCSDuHtVuQeP7hKwZkT43hb34fsyXZET/MwMrjfVd1H9XZzi6ZzSX9cs2F
+         Cg7ZWHIj21mOZJJ01NpjDnByRY0zVlpPjpqx1lX22Vw9HORZOErV1JheyjkilTRf1P6e
+         rtbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :reply-to:content-transfer-encoding;
-        bh=BzZHVC0iAgOjnmp+banoepd5A4N8/DrSMscTABsdBD0=;
-        b=ki76yRQ+dO5qWM3T+rxfq9hGa0b2utMO6OsOvRFDRCiIb/DCEJZCa9zr6o5IxNVgZc
-         /+zkPLiGugbFTpSYnKw3nJGBFmt8yP+DvvHvOQ7ewVO4BDyghfQdqQLb6fWj85CNWrKn
-         1yYiy94pjszpOSc1AJr1GHtljCZyxdcMqJNr1c2u7bp64mp8zG7s3q9Ej+tLoZJ1q6iq
-         BwvMzkH2J/D965Rekua//+L8V3dizsmfJQaMwTcWlzPe4EUWEPsR0aAHKyqvmLFvY8VZ
-         SSRIUOFXWIvUOHzIvPo4L/7RYzAqqW5C7hHje/0GzQXIP147wqOgLCUdmso1W0MkItT7
-         ZMNA==
-X-Gm-Message-State: AOAM531MMRLDGSqXglXFxCJaW9G7COpBIR0BOlkFRjh+3r3YswQJlCzZ
-        k8jVVq9S5rPU3ISXlkySFj4=
-X-Google-Smtp-Source: ABdhPJytEAzHyixe1kECCeyJXTT86jjUfyrwVMZsO1pdGsd1R/rkhiznp9a2++5gEXsLfcS37CRmng==
-X-Received: by 2002:a63:7b15:: with SMTP id w21mr12350457pgc.386.1593460972852;
-        Mon, 29 Jun 2020 13:02:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:reply-to:content-transfer-encoding;
+        bh=/gsLg2vrEv9v1DomZy+Al4WDSR7fwp7hS7EGj3MRF9E=;
+        b=iwBPdSjfllY/70MaxHAxopCmmx1A2S5inXV+03QGzw287McKEM7yPLh/aK+ny9b+bd
+         13pwi3ShIEqsTCUxL4Jrs9kyrsPiyLKVrFPCZsUwrMF6VGBy01lPP0GjH1GyLN5RMcec
+         XvXP6BbdkC49pPs7+kPI1YlIgweT+CaD9EeRdd3n6EW28oMkIKt1B+JNks5bsbP2hJgP
+         VWZi7wZICh2A4PKsXp/uutwt/kY1jvm3tP00MydWceCjqxaDRPFGtqW1DfhsQ3nodOdm
+         pnIFgoUjWolN/QwzNcoTVwcKWgR7/RGb/q25kOjz8XZYh1+SVHBYEpo61ZEvst9Pi7BF
+         7mTA==
+X-Gm-Message-State: AOAM532P6ohkQuVJ0szkESq2835k5l2xc+2RiN4I4qQws+butbD1w9gD
+        c7YkaUHIpAzMp9mbp1/Frhc=
+X-Google-Smtp-Source: ABdhPJw10/Z46CoL3/bysljxRW4wxA98a7qm+xk5KD8WGDK3bO0ynrD6ip2gqGuMQzxANBrCH+9h6g==
+X-Received: by 2002:a63:c34e:: with SMTP id e14mr11367248pgd.55.1593460980873;
+        Mon, 29 Jun 2020 13:03:00 -0700 (PDT)
 Received: from localhost.localdomain ([131.107.160.194])
-        by smtp.gmail.com with ESMTPSA id j10sm531558pgh.28.2020.06.29.13.02.52
+        by smtp.gmail.com with ESMTPSA id j10sm531558pgh.28.2020.06.29.13.03.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 13:02:52 -0700 (PDT)
+        Mon, 29 Jun 2020 13:03:00 -0700 (PDT)
 From:   Andres Beltran <lkmlabelt@gmail.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org
 Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
         mikelley@microsoft.com, parri.andrea@gmail.com,
         Andres Beltran <lkmlabelt@gmail.com>,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v2 0/3] Drivers: hv: vmbus: vmbus_requestor data structure for VMBus hardening
-Date:   Mon, 29 Jun 2020 16:02:24 -0400
-Message-Id: <20200629200227.1518784-1-lkmlabelt@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH v2 3/3] hv_netvsc: Use vmbus_requestor to generate transaction IDs for VMBus hardening
+Date:   Mon, 29 Jun 2020 16:02:27 -0400
+Message-Id: <20200629200227.1518784-4-lkmlabelt@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200629200227.1518784-1-lkmlabelt@gmail.com>
+References: <20200629200227.1518784-1-lkmlabelt@gmail.com>
 MIME-Version: 1.0
 Reply-To: t-mabelt@microsoft.com
 Content-Transfer-Encoding: 8bit
@@ -70,47 +69,308 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, VMbus drivers use pointers into guest memory as request IDs
-for interactions with Hyper-V. To be more robust in the face of errors
-or malicious behavior from a compromised Hyper-V, avoid exposing
-guest memory addresses to Hyper-V. Also avoid Hyper-V giving back a
-bad request ID that is then treated as the address of a guest data
-structure with no validation. Instead, encapsulate these memory
-addresses and provide small integers as request IDs.
+Currently, pointers to guest memory are passed to Hyper-V as
+transaction IDs in netvsc. In the face of errors or malicious
+behavior in Hyper-V, netvsc should not expose or trust the transaction
+IDs returned by Hyper-V to be valid guest memory addresses. Instead,
+use small integers generated by vmbus_requestor as requests
+(transaction) IDs.
 
-The first patch creates the definitions for the data structure, provides
-helper methods to generate new IDs and retrieve data, and
-allocates/frees the memory needed for vmbus_requestor.
-
-The second and third patches make use of vmbus_requestor to send request
-IDs to Hyper-V in storvsc and netvsc respectively.
-
-Thanks.
-Andres Beltran
-
-Cc: linux-scsi@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: James E.J. Bottomley <jejb@linux.ibm.com>
-Cc: Martin K. Petersen <martin.petersen@oracle.com>
 Cc: David S. Miller <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
+---
+Changes in v2:
+	- Add casts to unsigned long to fix warnings on 32bit.
+	- Use an inline function to get the requestor size.
 
-Andres Beltran (3):
-  Drivers: hv: vmbus: Add vmbus_requestor data structure for VMBus
-    hardening
-  scsi: storvsc: Use vmbus_requestor to generate transaction IDs for
-    VMBus hardening
-  hv_netvsc: Use vmbus_requestor to generate transaction IDs for VMBus
-    hardening
+ drivers/net/hyperv/hyperv_net.h   | 13 +++++
+ drivers/net/hyperv/netvsc.c       | 79 +++++++++++++++++++++++++------
+ drivers/net/hyperv/rndis_filter.c |  1 +
+ include/linux/hyperv.h            |  1 +
+ 4 files changed, 80 insertions(+), 14 deletions(-)
 
- drivers/hv/channel.c              | 146 ++++++++++++++++++++++++++++++
- drivers/net/hyperv/hyperv_net.h   |  13 +++
- drivers/net/hyperv/netvsc.c       |  79 +++++++++++++---
- drivers/net/hyperv/rndis_filter.c |   1 +
- drivers/scsi/storvsc_drv.c        |  85 ++++++++++++++---
- include/linux/hyperv.h            |  22 +++++
- 6 files changed, 321 insertions(+), 25 deletions(-)
-
+diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+index abda736e7c7d..f43b614f2345 100644
+--- a/drivers/net/hyperv/hyperv_net.h
++++ b/drivers/net/hyperv/hyperv_net.h
+@@ -847,6 +847,19 @@ struct nvsp_message {
+ 
+ #define NETVSC_XDP_HDRM 256
+ 
++#define NETVSC_MIN_OUT_MSG_SIZE (sizeof(struct vmpacket_descriptor) + \
++				 sizeof(struct nvsp_message))
++#define NETVSC_MIN_IN_MSG_SIZE sizeof(struct vmpacket_descriptor)
++
++/* Estimated requestor size:
++ * out_ring_size/min_out_msg_size + in_ring_size/min_in_msg_size
++ */
++static inline u32 netvsc_rqstor_size(unsigned long ringbytes)
++{
++	return ringbytes / NETVSC_MIN_OUT_MSG_SIZE +
++	       ringbytes / NETVSC_MIN_IN_MSG_SIZE;
++}
++
+ struct multi_send_data {
+ 	struct sk_buff *skb; /* skb containing the pkt */
+ 	struct hv_netvsc_packet *pkt; /* netvsc pkt pending */
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index 41f5cf0bb997..79b907a29433 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -50,7 +50,7 @@ void netvsc_switch_datapath(struct net_device *ndev, bool vf)
+ 
+ 	vmbus_sendpacket(dev->channel, init_pkt,
+ 			       sizeof(struct nvsp_message),
+-			       (unsigned long)init_pkt,
++			       VMBUS_RQST_ID_NO_RESPONSE,
+ 			       VM_PKT_DATA_INBAND, 0);
+ }
+ 
+@@ -163,7 +163,7 @@ static void netvsc_revoke_recv_buf(struct hv_device *device,
+ 		ret = vmbus_sendpacket(device->channel,
+ 				       revoke_packet,
+ 				       sizeof(struct nvsp_message),
+-				       (unsigned long)revoke_packet,
++				       VMBUS_RQST_ID_NO_RESPONSE,
+ 				       VM_PKT_DATA_INBAND, 0);
+ 		/* If the failure is because the channel is rescinded;
+ 		 * ignore the failure since we cannot send on a rescinded
+@@ -213,7 +213,7 @@ static void netvsc_revoke_send_buf(struct hv_device *device,
+ 		ret = vmbus_sendpacket(device->channel,
+ 				       revoke_packet,
+ 				       sizeof(struct nvsp_message),
+-				       (unsigned long)revoke_packet,
++				       VMBUS_RQST_ID_NO_RESPONSE,
+ 				       VM_PKT_DATA_INBAND, 0);
+ 
+ 		/* If the failure is because the channel is rescinded;
+@@ -304,6 +304,7 @@ static int netvsc_init_buf(struct hv_device *device,
+ 	unsigned int buf_size;
+ 	size_t map_words;
+ 	int ret = 0;
++	u64 rqst_id;
+ 
+ 	/* Get receive buffer area. */
+ 	buf_size = device_info->recv_sections * device_info->recv_section_size;
+@@ -350,13 +351,22 @@ static int netvsc_init_buf(struct hv_device *device,
+ 
+ 	trace_nvsp_send(ndev, init_packet);
+ 
++	rqst_id = vmbus_next_request_id(&device->channel->requestor,
++					(unsigned long)init_packet);
++	if (rqst_id == VMBUS_RQST_ERROR) {
++		netdev_err(ndev, "No request id available\n");
++		goto cleanup;
++	}
++
+ 	/* Send the gpadl notification request */
+ 	ret = vmbus_sendpacket(device->channel, init_packet,
+ 			       sizeof(struct nvsp_message),
+-			       (unsigned long)init_packet,
++			       rqst_id,
+ 			       VM_PKT_DATA_INBAND,
+ 			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
+ 	if (ret != 0) {
++		/* Reclaim request ID to avoid leak of IDs */
++		vmbus_request_addr(&device->channel->requestor, rqst_id);
+ 		netdev_err(ndev,
+ 			"unable to send receive buffer's gpadl to netvsp\n");
+ 		goto cleanup;
+@@ -432,13 +442,22 @@ static int netvsc_init_buf(struct hv_device *device,
+ 
+ 	trace_nvsp_send(ndev, init_packet);
+ 
++	rqst_id = vmbus_next_request_id(&device->channel->requestor,
++					(unsigned long)init_packet);
++	if (rqst_id == VMBUS_RQST_ERROR) {
++		netdev_err(ndev, "No request id available\n");
++		goto cleanup;
++	}
++
+ 	/* Send the gpadl notification request */
+ 	ret = vmbus_sendpacket(device->channel, init_packet,
+ 			       sizeof(struct nvsp_message),
+-			       (unsigned long)init_packet,
++			       rqst_id,
+ 			       VM_PKT_DATA_INBAND,
+ 			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
+ 	if (ret != 0) {
++		/* Reclaim request ID to avoid leak of IDs */
++		vmbus_request_addr(&device->channel->requestor, rqst_id);
+ 		netdev_err(ndev,
+ 			   "unable to send send buffer's gpadl to netvsp\n");
+ 		goto cleanup;
+@@ -496,6 +515,7 @@ static int negotiate_nvsp_ver(struct hv_device *device,
+ {
+ 	struct net_device *ndev = hv_get_drvdata(device);
+ 	int ret;
++	u64 rqst_id;
+ 
+ 	memset(init_packet, 0, sizeof(struct nvsp_message));
+ 	init_packet->hdr.msg_type = NVSP_MSG_TYPE_INIT;
+@@ -503,15 +523,25 @@ static int negotiate_nvsp_ver(struct hv_device *device,
+ 	init_packet->msg.init_msg.init.max_protocol_ver = nvsp_ver;
+ 	trace_nvsp_send(ndev, init_packet);
+ 
++	rqst_id = vmbus_next_request_id(&device->channel->requestor,
++					(unsigned long)init_packet);
++	if (rqst_id == VMBUS_RQST_ERROR) {
++		netdev_err(ndev, "No request id available\n");
++		return -EAGAIN;
++	}
++
+ 	/* Send the init request */
+ 	ret = vmbus_sendpacket(device->channel, init_packet,
+ 			       sizeof(struct nvsp_message),
+-			       (unsigned long)init_packet,
++			       rqst_id,
+ 			       VM_PKT_DATA_INBAND,
+ 			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
+ 
+-	if (ret != 0)
++	if (ret != 0) {
++		/* Reclaim request ID to avoid leak of IDs */
++		vmbus_request_addr(&device->channel->requestor, rqst_id);
+ 		return ret;
++	}
+ 
+ 	wait_for_completion(&net_device->channel_init_wait);
+ 
+@@ -542,7 +572,7 @@ static int negotiate_nvsp_ver(struct hv_device *device,
+ 
+ 	ret = vmbus_sendpacket(device->channel, init_packet,
+ 				sizeof(struct nvsp_message),
+-				(unsigned long)init_packet,
++				VMBUS_RQST_ID_NO_RESPONSE,
+ 				VM_PKT_DATA_INBAND, 0);
+ 
+ 	return ret;
+@@ -599,7 +629,7 @@ static int netvsc_connect_vsp(struct hv_device *device,
+ 	/* Send the init request */
+ 	ret = vmbus_sendpacket(device->channel, init_packet,
+ 				sizeof(struct nvsp_message),
+-				(unsigned long)init_packet,
++				VMBUS_RQST_ID_NO_RESPONSE,
+ 				VM_PKT_DATA_INBAND, 0);
+ 	if (ret != 0)
+ 		goto cleanup;
+@@ -680,10 +710,19 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+ 				    const struct vmpacket_descriptor *desc,
+ 				    int budget)
+ {
+-	struct sk_buff *skb = (struct sk_buff *)(unsigned long)desc->trans_id;
++	struct sk_buff *skb;
+ 	struct net_device_context *ndev_ctx = netdev_priv(ndev);
+ 	u16 q_idx = 0;
+ 	int queue_sends;
++	u64 cmd_rqst;
++
++	cmd_rqst = vmbus_request_addr(&channel->requestor, (u64)desc->trans_id);
++	if (cmd_rqst == VMBUS_RQST_ERROR) {
++		netdev_err(ndev, "Incorrect transaction id\n");
++		return;
++	}
++
++	skb = (struct sk_buff *)(unsigned long)cmd_rqst;
+ 
+ 	/* Notify the layer above us */
+ 	if (likely(skb)) {
+@@ -822,7 +861,7 @@ static inline int netvsc_send_pkt(
+ 	struct net_device *ndev = hv_get_drvdata(device);
+ 	struct net_device_context *ndev_ctx = netdev_priv(ndev);
+ 	struct netdev_queue *txq = netdev_get_tx_queue(ndev, packet->q_idx);
+-	u64 req_id;
++	u64 rqst_id;
+ 	int ret;
+ 	u32 ring_avail = hv_get_avail_to_write_percent(&out_channel->outbound);
+ 
+@@ -838,13 +877,19 @@ static inline int netvsc_send_pkt(
+ 	else
+ 		rpkt->send_buf_section_size = packet->total_data_buflen;
+ 
+-	req_id = (ulong)skb;
+ 
+ 	if (out_channel->rescind)
+ 		return -ENODEV;
+ 
+ 	trace_nvsp_send_pkt(ndev, out_channel, rpkt);
+ 
++	rqst_id = vmbus_next_request_id(&out_channel->requestor,
++					(unsigned long)skb);
++	if (rqst_id == VMBUS_RQST_ERROR) {
++		ret = -EAGAIN;
++		goto ret_check;
++	}
++
+ 	if (packet->page_buf_cnt) {
+ 		if (packet->cp_partial)
+ 			pb += packet->rmsg_pgcnt;
+@@ -852,14 +897,15 @@ static inline int netvsc_send_pkt(
+ 		ret = vmbus_sendpacket_pagebuffer(out_channel,
+ 						  pb, packet->page_buf_cnt,
+ 						  &nvmsg, sizeof(nvmsg),
+-						  req_id);
++						  rqst_id);
+ 	} else {
+ 		ret = vmbus_sendpacket(out_channel,
+ 				       &nvmsg, sizeof(nvmsg),
+-				       req_id, VM_PKT_DATA_INBAND,
++				       rqst_id, VM_PKT_DATA_INBAND,
+ 				       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
+ 	}
+ 
++ret_check:
+ 	if (ret == 0) {
+ 		atomic_inc_return(&nvchan->queue_sends);
+ 
+@@ -868,9 +914,13 @@ static inline int netvsc_send_pkt(
+ 			ndev_ctx->eth_stats.stop_queue++;
+ 		}
+ 	} else if (ret == -EAGAIN) {
++		/* Reclaim request ID to avoid leak of IDs */
++		vmbus_request_addr(&out_channel->requestor, rqst_id);
+ 		netif_tx_stop_queue(txq);
+ 		ndev_ctx->eth_stats.stop_queue++;
+ 	} else {
++		/* Reclaim request ID to avoid leak of IDs */
++		vmbus_request_addr(&out_channel->requestor, rqst_id);
+ 		netdev_err(ndev,
+ 			   "Unable to send packet pages %u len %u, ret %d\n",
+ 			   packet->page_buf_cnt, packet->total_data_buflen,
+@@ -1422,6 +1472,7 @@ struct netvsc_device *netvsc_device_add(struct hv_device *device,
+ 		       netvsc_poll, NAPI_POLL_WEIGHT);
+ 
+ 	/* Open the channel */
++	device->channel->rqstor_size = netvsc_rqstor_size(netvsc_ring_bytes);
+ 	ret = vmbus_open(device->channel, netvsc_ring_bytes,
+ 			 netvsc_ring_bytes,  NULL, 0,
+ 			 netvsc_channel_cb, net_device->chan_table);
+diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+index b81ceba38218..10489ba44a09 100644
+--- a/drivers/net/hyperv/rndis_filter.c
++++ b/drivers/net/hyperv/rndis_filter.c
+@@ -1114,6 +1114,7 @@ static void netvsc_sc_open(struct vmbus_channel *new_sc)
+ 	/* Set the channel before opening.*/
+ 	nvchan->channel = new_sc;
+ 
++	new_sc->rqstor_size = netvsc_rqstor_size(netvsc_ring_bytes);
+ 	ret = vmbus_open(new_sc, netvsc_ring_bytes,
+ 			 netvsc_ring_bytes, NULL, 0,
+ 			 netvsc_channel_cb, nvchan);
+diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+index c509d20ab7db..d8194924983d 100644
+--- a/include/linux/hyperv.h
++++ b/include/linux/hyperv.h
+@@ -730,6 +730,7 @@ struct vmbus_requestor {
+ };
+ 
+ #define VMBUS_RQST_ERROR U64_MAX
++#define VMBUS_RQST_ID_NO_RESPONSE (U64_MAX - 1)
+ 
+ struct vmbus_device {
+ 	u16  dev_type;
 -- 
 2.25.1
 
