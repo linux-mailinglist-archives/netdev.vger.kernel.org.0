@@ -2,177 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFC2920D522
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0294B20D505
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:15:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731819AbgF2TO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
+        id S1731564AbgF2TNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731785AbgF2TOX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:14:23 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13D8C08EB2D
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 23:35:04 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id d4so7844640pgk.4
-        for <netdev@vger.kernel.org>; Sun, 28 Jun 2020 23:35:04 -0700 (PDT)
+        with ESMTP id S1731518AbgF2TNt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:13:49 -0400
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B42C08ED89
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 00:05:02 -0700 (PDT)
+Received: by mail-vs1-xe42.google.com with SMTP id f24so8680597vsg.1
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 00:05:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=z+O22eSdBiziSAVuDDS7XG6I9/0kxythtovwg9et7FE=;
-        b=JLXjn5AXL7uvYW4u85kiAbkGOr9/tMe0U8a6YBefK7INh4MJYzTaglRkhh1eGn4eQo
-         QdzQooFb9cxZfWs5TKD1cyhEyc6KA1a/QFvoyyWHjR6UiFk53IEU6NS2M5/mCLD3wG4m
-         /fGItnBkqipUqru5Sduaz2Vg0TdfDPdIcJgG0=
+        d=verdurent-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=O4CL5jT1tY8QD8FjAFdyHeuWe+dWBhI6iRrYPmWg+K0=;
+        b=ufgK5aOt+VEkKCf7cfv7S4ZtNXtnnmklYABTUv1VaPxOyVYlRF0W+WWMz74ZV08AGE
+         1s1vKmMq4KVk+MBoFIT07TOKURsUNbRQdevHqaQ1aWm8cwm+U1Imt2LTLVn76ZfauBCL
+         Jn8YnNOHw3ZvLP+IWIJlri1ht33n4/CzEON0vrJSMjbdw8TJtfW8X1tddfpQMfXgkCZi
+         BtT26G9ckLhBaXLHozdLJ9i2lXgOWfKOEveukc+nllrmwg/ZQ4vjc16Owk1GMoom+Uhd
+         EtZSUhps1bb5xV0fHsgJxXJI4qzTSeRxyn0KdrZYD00xOxK3NemGIoaULhoM5HjdHhpi
+         jOmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=z+O22eSdBiziSAVuDDS7XG6I9/0kxythtovwg9et7FE=;
-        b=McFdBLBTJHUQhYxQf9TGH2+5lxDu/fu+9iarBmuY0qUcJNP2Vs2pqDXDW6UmFdbeQT
-         1ysyv/swtVv1lZMWmw0tT2RqxMU8eWn1cG+D8Zq9qVeMHIVcvBeTuZjCBRTd++ujUaLh
-         4lFmo5x5haLlu27roO76fgT01A92Wf7okYKzc09vXLQkePV0+3uVOcv3EjrnkeOwpVxR
-         Wbzfs/uXzxr72DMUNZRywWH2Gvy5Xd6kpgPst72d7W53N8VW+0tPnDW/kaJ68Bl0v/dT
-         vzdHGPYnvozGahyIT+/HMC8MGzZH6WbbXqbFsXGGR/USmHuNkReFkrQ+uXFJZOm2UqX3
-         qazQ==
-X-Gm-Message-State: AOAM532rDu1QZOPvgMhs+ksb/dN5HdJ/NKyUB3wY4708NxPOZVbL4aPl
-        fO4bjOBrphPsDi6tjtphLscgZlx098A=
-X-Google-Smtp-Source: ABdhPJxviTuMIa9te1iuuYfySRbd/ozkmIrnqUygBirObmaHEDb7f8kWAvIVNZeWpRC3KY0W1gUF8g==
-X-Received: by 2002:aa7:8b43:: with SMTP id i3mr13992021pfd.7.1593412504449;
-        Sun, 28 Jun 2020 23:35:04 -0700 (PDT)
-Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i125sm28058416pgd.21.2020.06.28.23.35.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 28 Jun 2020 23:35:04 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 7/8] bnxt_en: clean up VLAN feature bit handling
-Date:   Mon, 29 Jun 2020 02:34:23 -0400
-Message-Id: <1593412464-503-8-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1593412464-503-1-git-send-email-michael.chan@broadcom.com>
-References: <1593412464-503-1-git-send-email-michael.chan@broadcom.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=O4CL5jT1tY8QD8FjAFdyHeuWe+dWBhI6iRrYPmWg+K0=;
+        b=g1MVTuqdq+Sr2ucy8VmNnebZC8rOhDHmXZ5RnA7+/JqOnhWRVzFntdtBE30USZ2JAe
+         0ZkU7PVTWWp1c7OVtW7eJz4rzTAVviZz5+jW2YgNUrf+23Ia32/IsGYnZYGFGkn8/tT/
+         sbOe6+eiM0GaH6F+lUXbVi5kHzVIHt4BfoowvCpEKB5fzXRLy41tVIi6c+iOe/zGSFlM
+         LkVlnEeEhpD1aR3GQe5PO6o+ixadkQpC5IsAXLp3NLylnZOyvM/wSEa4yneGdItHMSBQ
+         4GmRRb4GPNFfVsIt1itkqfxaN0fqEUe1j6H3hWY9N9cmQIOYHpTVJ0JzfNd8CkspkUV1
+         97AA==
+X-Gm-Message-State: AOAM532W7nNFFtPGIkLMIXepA9KyBT8ZyvH+AEeP5wwmgwmuohmR1QCx
+        z1g5y1KvMJsz66V8L3LxwwvLFPIgU1fpeqVdHxMU1g==
+X-Google-Smtp-Source: ABdhPJwExycQo0Z3q8vxfUV0tozODXEDNYpnqbSU0LS4IbWtPA6zbYd6g3HijjZDuNICJGxZ+gh7EBDX0w/h/Xyyvro=
+X-Received: by 2002:a05:6102:203:: with SMTP id z3mr2837721vsp.182.1593414301322;
+ Mon, 29 Jun 2020 00:05:01 -0700 (PDT)
+MIME-Version: 1.0
+References: <9cbffad6-69e4-0b33-4640-fde7c4f6a6e7@linaro.org>
+ <20200626173755.26379-1-andrzej.p@collabora.com> <20200626173755.26379-7-andrzej.p@collabora.com>
+In-Reply-To: <20200626173755.26379-7-andrzej.p@collabora.com>
+From:   Amit Kucheria <amit.kucheria@verdurent.com>
+Date:   Mon, 29 Jun 2020 12:34:50 +0530
+Message-ID: <CAHLCerO2XOOX9akEwaTu_cjSqRycFpNmoVxkSe36L8B4ALWidA@mail.gmail.com>
+Subject: Re: [PATCH v5 06/11] thermal: Add mode helpers
+To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Cc:     Linux PM list <linux-pm@vger.kernel.org>,
+        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        lakml <linux-arm-kernel@lists.infradead.org>,
+        linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Peter Kaestle <peter@piie.net>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Enrico Weigelt <info@metux.net>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        kernel@collabora.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+On Fri, Jun 26, 2020 at 11:08 PM Andrzej Pietrasiewicz
+<andrzej.p@collabora.com> wrote:
+>
+> Prepare for making the drivers not access tzd's private members.
+>
+> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+> Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+> [EXPORT_SYMBOL -> EXPORT_SYMBOL_GPL]
+> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+> ---
+>  drivers/thermal/thermal_core.c | 53 ++++++++++++++++++++++++++++++++++
+>  include/linux/thermal.h        | 13 +++++++++
+>  2 files changed, 66 insertions(+)
+>
+> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+> index 14d3b1b94c4f..3181295075b9 100644
+> --- a/drivers/thermal/thermal_core.c
+> +++ b/drivers/thermal/thermal_core.c
+> @@ -459,6 +459,59 @@ static void thermal_zone_device_reset(struct thermal_zone_device *tz)
+>         thermal_zone_device_init(tz);
+>  }
+>
+> +int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
+> +                                enum thermal_device_mode mode)
 
-The hardware VLAN offload feature on our NIC does not have separate
-knobs for handling customer and service tags on RX. Either offloading
-of both must be enabled or both must be disabled. Introduce definitions
-for the combined feature set in order to clean up the code and make
-this constraint more clear. Technically these features can be separately
-enabled on TX, however, since the default is to turn both on, the
-combined TX feature set is also introduced for code consistency.
+Should this be static?
 
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 34 ++++++++++++-------------------
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  5 +++++
- 2 files changed, 18 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index eb7f2d4..4f8fc28 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -1614,7 +1614,7 @@ static inline struct sk_buff *bnxt_tpa_end(struct bnxt *bp,
- 		skb_set_hash(skb, tpa_info->rss_hash, tpa_info->hash_type);
- 
- 	if ((tpa_info->flags2 & RX_CMP_FLAGS2_META_FORMAT_VLAN) &&
--	    (skb->dev->features & NETIF_F_HW_VLAN_CTAG_RX)) {
-+	    (skb->dev->features & BNXT_HW_FEATURE_VLAN_ALL_RX)) {
- 		u16 vlan_proto = tpa_info->metadata >>
- 			RX_CMP_FLAGS2_METADATA_TPID_SFT;
- 		u16 vtag = tpa_info->metadata & RX_CMP_FLAGS2_METADATA_TCI_MASK;
-@@ -1832,7 +1832,7 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
- 
- 	if ((rxcmp1->rx_cmp_flags2 &
- 	     cpu_to_le32(RX_CMP_FLAGS2_META_FORMAT_VLAN)) &&
--	    (skb->dev->features & NETIF_F_HW_VLAN_CTAG_RX)) {
-+	    (skb->dev->features & BNXT_HW_FEATURE_VLAN_ALL_RX)) {
- 		u32 meta_data = le32_to_cpu(rxcmp1->rx_cmp_meta_data);
- 		u16 vtag = meta_data & RX_CMP_FLAGS2_METADATA_TCI_MASK;
- 		u16 vlan_proto = meta_data >> RX_CMP_FLAGS2_METADATA_TPID_SFT;
-@@ -9913,24 +9913,16 @@ static netdev_features_t bnxt_fix_features(struct net_device *dev,
- 	/* Both CTAG and STAG VLAN accelaration on the RX side have to be
- 	 * turned on or off together.
- 	 */
--	vlan_features = features & (NETIF_F_HW_VLAN_CTAG_RX |
--				    NETIF_F_HW_VLAN_STAG_RX);
--	if (vlan_features != (NETIF_F_HW_VLAN_CTAG_RX |
--			      NETIF_F_HW_VLAN_STAG_RX)) {
--		if (dev->features & NETIF_F_HW_VLAN_CTAG_RX)
--			features &= ~(NETIF_F_HW_VLAN_CTAG_RX |
--				      NETIF_F_HW_VLAN_STAG_RX);
-+	vlan_features = features & BNXT_HW_FEATURE_VLAN_ALL_RX;
-+	if (vlan_features != BNXT_HW_FEATURE_VLAN_ALL_RX) {
-+		if (dev->features & BNXT_HW_FEATURE_VLAN_ALL_RX)
-+			features &= ~BNXT_HW_FEATURE_VLAN_ALL_RX;
- 		else if (vlan_features)
--			features |= NETIF_F_HW_VLAN_CTAG_RX |
--				    NETIF_F_HW_VLAN_STAG_RX;
-+			features |= BNXT_HW_FEATURE_VLAN_ALL_RX;
- 	}
- #ifdef CONFIG_BNXT_SRIOV
--	if (BNXT_VF(bp)) {
--		if (bp->vf.vlan) {
--			features &= ~(NETIF_F_HW_VLAN_CTAG_RX |
--				      NETIF_F_HW_VLAN_STAG_RX);
--		}
--	}
-+	if (BNXT_VF(bp) && bp->vf.vlan)
-+		features &= ~BNXT_HW_FEATURE_VLAN_ALL_RX;
- #endif
- 	return features;
- }
-@@ -9953,7 +9945,7 @@ static int bnxt_set_features(struct net_device *dev, netdev_features_t features)
- 	if (bp->flags & BNXT_FLAG_NO_AGG_RINGS)
- 		flags &= ~BNXT_FLAG_TPA;
- 
--	if (features & NETIF_F_HW_VLAN_CTAG_RX)
-+	if (features & BNXT_HW_FEATURE_VLAN_ALL_RX)
- 		flags |= BNXT_FLAG_STRIP_VLAN;
- 
- 	if (features & NETIF_F_NTUPLE)
-@@ -12041,8 +12033,8 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	dev->gso_partial_features = NETIF_F_GSO_UDP_TUNNEL_CSUM |
- 				    NETIF_F_GSO_GRE_CSUM;
- 	dev->vlan_features = dev->hw_features | NETIF_F_HIGHDMA;
--	dev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_CTAG_TX |
--			    NETIF_F_HW_VLAN_STAG_RX | NETIF_F_HW_VLAN_STAG_TX;
-+	dev->hw_features |= BNXT_HW_FEATURE_VLAN_ALL_RX |
-+			    BNXT_HW_FEATURE_VLAN_ALL_TX;
- 	if (BNXT_SUPPORTS_TPA(bp))
- 		dev->hw_features |= NETIF_F_GRO_HW;
- 	dev->features |= dev->hw_features | NETIF_F_HIGHDMA;
-@@ -12098,7 +12090,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	bnxt_fw_init_one_p3(bp);
- 
--	if (dev->hw_features & NETIF_F_HW_VLAN_CTAG_RX)
-+	if (dev->hw_features & BNXT_HW_FEATURE_VLAN_ALL_RX)
- 		bp->flags |= BNXT_FLAG_STRIP_VLAN;
- 
- 	rc = bnxt_init_int_mode(bp);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 5890913..13c4064 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1906,6 +1906,11 @@ struct bnxt {
- #define BNXT_PCIE_STATS_OFFSET(counter)			\
- 	(offsetof(struct pcie_ctx_hw_stats, counter) / 8)
- 
-+#define BNXT_HW_FEATURE_VLAN_ALL_RX				\
-+	(NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_STAG_RX)
-+#define BNXT_HW_FEATURE_VLAN_ALL_TX				\
-+	(NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX)
-+
- #define I2C_DEV_ADDR_A0				0xa0
- #define I2C_DEV_ADDR_A2				0xa2
- #define SFF_DIAG_SUPPORT_OFFSET			0x5c
--- 
-1.8.3.1
-
+> +{
+> +       int ret = 0;
+> +
+> +       mutex_lock(&tz->lock);
+> +
+> +       /* do nothing if mode isn't changing */
+> +       if (mode == tz->mode) {
+> +               mutex_unlock(&tz->lock);
+> +
+> +               return ret;
+> +       }
+> +
+> +       if (tz->ops->set_mode)
+> +               ret = tz->ops->set_mode(tz, mode);
+> +
+> +       if (!ret)
+> +               tz->mode = mode;
+> +
+> +       mutex_unlock(&tz->lock);
+> +
+> +       thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
+> +
+> +       return ret;
+> +}
+> +
+> +int thermal_zone_device_enable(struct thermal_zone_device *tz)
+> +{
+> +       return thermal_zone_device_set_mode(tz, THERMAL_DEVICE_ENABLED);
+> +}
+> +EXPORT_SYMBOL_GPL(thermal_zone_device_enable);
+> +
+> +int thermal_zone_device_disable(struct thermal_zone_device *tz)
+> +{
+> +       return thermal_zone_device_set_mode(tz, THERMAL_DEVICE_DISABLED);
+> +}
+> +EXPORT_SYMBOL_GPL(thermal_zone_device_disable);
+> +
+> +int thermal_zone_device_is_enabled(struct thermal_zone_device *tz)
+> +{
+> +       enum thermal_device_mode mode;
+> +
+> +       mutex_lock(&tz->lock);
+> +
+> +       mode = tz->mode;
+> +
+> +       mutex_unlock(&tz->lock);
+> +
+> +       return mode == THERMAL_DEVICE_ENABLED;
+> +}
+> +EXPORT_SYMBOL_GPL(thermal_zone_device_is_enabled);
+> +
+>  void thermal_zone_device_update(struct thermal_zone_device *tz,
+>                                 enum thermal_notify_event event)
+>  {
+> diff --git a/include/linux/thermal.h b/include/linux/thermal.h
+> index a808f6fa2777..df013c39ba9b 100644
+> --- a/include/linux/thermal.h
+> +++ b/include/linux/thermal.h
+> @@ -416,6 +416,9 @@ int thermal_zone_get_offset(struct thermal_zone_device *tz);
+>
+>  void thermal_cdev_update(struct thermal_cooling_device *);
+>  void thermal_notify_framework(struct thermal_zone_device *, int);
+> +int thermal_zone_device_enable(struct thermal_zone_device *tz);
+> +int thermal_zone_device_disable(struct thermal_zone_device *tz);
+> +int thermal_zone_device_is_enabled(struct thermal_zone_device *tz);
+>  #else
+>  static inline struct thermal_zone_device *thermal_zone_device_register(
+>         const char *type, int trips, int mask, void *devdata,
+> @@ -463,6 +466,16 @@ static inline void thermal_cdev_update(struct thermal_cooling_device *cdev)
+>  static inline void thermal_notify_framework(struct thermal_zone_device *tz,
+>         int trip)
+>  { }
+> +
+> +static inline int thermal_zone_device_enable(struct thermal_zone_device *tz)
+> +{ return -ENODEV; }
+> +
+> +static inline int thermal_zone_device_disable(struct thermal_zone_device *tz)
+> +{ return -ENODEV; }
+> +
+> +static inline int
+> +thermal_zone_device_is_enabled(struct thermal_zone_device *tz)
+> +{ return -ENODEV; }
+>  #endif /* CONFIG_THERMAL */
+>
+>  #endif /* __THERMAL_H__ */
+> --
+> 2.17.1
+>
