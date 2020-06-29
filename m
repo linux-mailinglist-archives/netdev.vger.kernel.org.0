@@ -2,88 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C26920DF8C
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:55:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6224B20E08F
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:57:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389532AbgF2Uht (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:37:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38250 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389516AbgF2Uhi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 16:37:38 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1BEAC206C0;
-        Mon, 29 Jun 2020 20:37:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593463057;
-        bh=A4qAEegdjdQF8sCEmQmfqgvlXcb7Q9mSn6ORmJRVuCw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wJxETq24q/IH4x86y58c6ypIbomeeuhOtJm3NmGD6GBjkCxRwx9OtlydfMX4u/uJs
-         ECzx/4oubZgluqZaTi0E+vGtNaa0Pgt/cvtWDYvdUBdfpllzpJfq3PkyJvfoHmMqGY
-         cGHP+MZgy1982CN7bA6mY8zUldXRTeTaEuZF7mpc=
-Date:   Mon, 29 Jun 2020 21:37:35 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, pierre-louis.bossart@linux.intel.com,
-        Fred Oh <fred.oh@linux.intel.com>
-Subject: Re: [net-next v4 11/12] ASoC: SOF: Create client driver for IPC test
-Message-ID: <20200629203735.GN5499@sirena.org.uk>
-References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
- <20200520070227.3392100-12-jeffrey.t.kirsher@intel.com>
- <20200520125611.GI31189@ziepe.ca>
- <b51ee1d61dbfbb8914d29338918ba49bff1b4b75.camel@linux.intel.com>
- <20200528001207.GR744@ziepe.ca>
- <d44a50f6a8af0162a5ff1a6d483adebf16d11256.camel@linux.intel.com>
- <20200528104545.GA3115014@kroah.com>
+        id S2389776AbgF2UrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 16:47:23 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:53523 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389767AbgF2UrV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 16:47:21 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id BF2445800BF;
+        Mon, 29 Jun 2020 16:47:19 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 29 Jun 2020 16:47:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=UQaBCYHdyLLUGT958
+        QbQSP1rtUNF8ar9qZIpu5Oor7M=; b=pKH/S5kVnvtjwQCdeJ3g9jdB1IaOHZtGz
+        BSFrxs/LsTHOCpOXKS2Dq+nHyvCJILy0MCwV5q+mTXGEkSmm3Ws+pIn6I/J5Iaca
+        ObzxXcKGi5RY4CHI4S84N5YixbCw1B7L6N3CrUM+ENE3nOlfwqv5WyLVYHlz1zr0
+        gbNd3OWeyDvDWcVedNaWrq2shP6olsCZP2r6Y5cQUdSbtZxmluM+n4dZXfUxmqMy
+        sraWpkyTUAoo6z8LOFDRk6olFBEQvKm56fNvRPz50kQk+hav1NpkKlEaxhOVqe25
+        nn7EqnrdzU4aQEuW+hwzCMMrDjdS3M9LJremoQL0Uz5GNRGrn5Dqw==
+X-ME-Sender: <xms:VVP6XpiNUMIqKiSV0TB2i5PzT2b4JMOiLKq3pY7uBt4flSAA9NVJDw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudelledgkeduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppedutdelrdeiiedrudelrddufeefnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:VVP6XuD1mLvy9QQ2NV5ZDAdhU_ur-h9aDw40nbfyvIYY88fNogV07w>
+    <xmx:VVP6XpFI6C4oWhOoEfTH8NhXlf7OxwTs-Xna8PRu0MaoFDLVuibHTg>
+    <xmx:VVP6XuSXqJKNytAblhhuvcYwU_ZQ-CNFIgFyh6ksicdrOjYz_ibZoA>
+    <xmx:V1P6Xll37jJrvSprb9YJh6w-sWSxAPZE2iZc3XVCocBjISGxgFxPGw>
+Received: from shredder.mtl.com (bzq-109-66-19-133.red.bezeqint.net [109.66.19.133])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4C6FB328005D;
+        Mon, 29 Jun 2020 16:47:14 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        petrm@mellanox.com, amitc@mellanox.com, mlxsw@mellanox.com,
+        mkubecek@suse.cz, jacob.e.keller@intel.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, linux@rempel-privat.de,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next v2 00/10] Add ethtool extended link state
+Date:   Mon, 29 Jun 2020 23:46:11 +0300
+Message-Id: <20200629204621.377239-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="LvAn5G4Ewe70kJ1i"
-Content-Disposition: inline
-In-Reply-To: <20200528104545.GA3115014@kroah.com>
-X-Cookie: Real programs don't eat cache.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Ido Schimmel <idosch@mellanox.com>
 
---LvAn5G4Ewe70kJ1i
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Amit says:
 
-On Thu, May 28, 2020 at 12:45:45PM +0200, Greg KH wrote:
-> On Wed, May 27, 2020 at 06:40:05PM -0700, Ranjani Sridharan wrote:
+Currently, device drivers can only indicate to user space if the network
+link is up or down, without additional information.
 
-> > Is your expectation that with the above changes, we should not be
-> > needing the MODULE_ALIAS() in the driver?
+This patch set provides an infrastructure that allows these drivers to
+expose more information to user space about the link state. The
+information can save users' time when trying to understand why a link is
+not operationally up, for example.
 
-> Yes, it should not be needed if you did everything properly in
-> mod_devicetable.h
+The above is achieved by extending the existing ethtool LINKSTATE_GET
+command with attributes that carry the extended state.
 
-It will also need a MODULE_DEVICE_TABLE() on _virtbus_id_table[] -
-MODULE_ALIAS() is functioning as a single entry one of those.
+For example, no link due to missing cable:
 
---LvAn5G4Ewe70kJ1i
-Content-Type: application/pgp-signature; name="signature.asc"
+$ ethtool ethX
+...
+Link detected: no (No cable)
 
------BEGIN PGP SIGNATURE-----
+Beside the general extended state, drivers can pass additional
+information about the link state using the sub-state field. For example:
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl76UQ4ACgkQJNaLcl1U
-h9BWAAf/fRxdGsXNZnoBwgtAPs2zyhokytXeuAyzCVRg9clh0PNlvvgPTMgQePc5
-XPp7Cku1999W0UXEAnSoXnLNBoW+7lmH4OpreZMXzTO7PaIHCdlcccVC5k/jk2rR
-lywNHnVyMUqm6p09DYc8utJyCE6xwtXjRegSAKpRVsj5gnfjMW9NvTjrlbxyTaWB
-lRQTgF9QTgbK1Dlvn50cs4pcDQ8SfyzeJ4C4AnJmXBA2LCYC6rtJD8ugQBfk4Ufh
-l0HnlUl/4cVtXCqRyuXAISz2xlgfoOhjtKvUN7MD15WSzn9InWSiiVVbfjRc5Ful
-Ggx7NtT4i2whG6ED0af4oUY7m7j5GA==
-=x4u3
------END PGP SIGNATURE-----
+$ ethtool ethX
+...
+Link detected: no (Autoneg, No partner detected)
 
---LvAn5G4Ewe70kJ1i--
+In the future the infrastructure can be extended - for example - to
+allow PHY drivers to report whether a downshift to a lower speed
+occurred. Something like:
+
+$ ethtool ethX
+...
+Link detected: yes (downshifted)
+
+Patch set overview:
+
+Patches #1-#3 move mlxsw ethtool code to a separate file
+Patches #4-#5 add the ethtool infrastructure for extended link state
+Patches #6-#7 add support of extended link state in the mlxsw driver
+Patches #8-#10 add test cases
+
+Changes since v1:
+
+* In documentation, show ETHTOOL_LINK_EXT_STATE_* and
+  ETHTOOL_LINK_EXT_SUBSTATE_* constants instead of user-space strings
+* Add `_CI_` to cable_issue substates to be consistent with
+  other substates
+* Keep the commit messages within 75 columns
+* Use u8 variable for __link_ext_substate
+* Document the meaning of -ENODATA in get_link_ext_state() callback
+  description
+* Do not zero data->link_ext_state_provided after getting an error
+* Use `ret` variable for error value
+
+Changes since RFC:
+
+* Move documentation patch before ethtool patch
+* Add nla_total_size() instead of sizeof() directly
+* Return an error code from linkstate_get_ext_state()
+* Remove SHORTED_CABLE, add CABLE_TEST_FAILURE instead
+* Check if the interface is administratively up before setting ext_state
+* Document all sub-states
+
+Amit Cohen (10):
+  mlxsw: spectrum_dcb: Rename mlxsw_sp_port_headroom_set()
+  mlxsw: Move ethtool_ops to spectrum_ethtool.c
+  mlxsw: spectrum_ethtool: Move mlxsw_sp_port_type_speed_ops structs
+  Documentation: networking: ethtool-netlink: Add link extended state
+  ethtool: Add link extended state
+  mlxsw: reg: Port Diagnostics Database Register
+  mlxsw: spectrum_ethtool: Add link extended state
+  selftests: forwarding: ethtool: Move different_speeds_get() to
+    ethtool_lib
+  selftests: forwarding: forwarding.config.sample: Add port with no
+    cable connected
+  selftests: forwarding: Add tests for ethtool extended state
+
+ Documentation/networking/ethtool-netlink.rst  |  128 +-
+ drivers/net/ethernet/mellanox/mlxsw/Makefile  |    3 +-
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |   51 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 1540 +--------------
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |   45 +
+ .../ethernet/mellanox/mlxsw/spectrum_dcb.c    |    6 +-
+ .../mellanox/mlxsw/spectrum_ethtool.c         | 1644 +++++++++++++++++
+ include/linux/ethtool.h                       |   23 +
+ include/uapi/linux/ethtool.h                  |   70 +
+ include/uapi/linux/ethtool_netlink.h          |    2 +
+ net/ethtool/linkstate.c                       |   52 +-
+ .../selftests/net/forwarding/ethtool.sh       |   17 -
+ .../net/forwarding/ethtool_extended_state.sh  |  102 +
+ .../selftests/net/forwarding/ethtool_lib.sh   |   17 +
+ .../net/forwarding/forwarding.config.sample   |    3 +
+ 15 files changed, 2140 insertions(+), 1563 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
+ create mode 100755 tools/testing/selftests/net/forwarding/ethtool_extended_state.sh
+
+-- 
+2.26.2
+
