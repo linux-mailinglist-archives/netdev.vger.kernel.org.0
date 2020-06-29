@@ -2,120 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2C3520CBA2
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 04:03:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E927C20CBAB
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 04:09:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbgF2CC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Jun 2020 22:02:58 -0400
-Received: from mail-eopbgr80053.outbound.protection.outlook.com ([40.107.8.53]:60993
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726345AbgF2CC5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Jun 2020 22:02:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=maJGTsTfIzF/Q9h+23lCIZiCR4OuhlTZ/NLXqNZ/fNvE9fZi/TJDo7B2FMPcHm8oDTiEFK5looaEmAkSA3Yx1g2cvQzdzd2K5WEZ8rrXtfLkICDPsbJkXU3lB72d6zOFa74haMR3t7vBEt8F8wPmtlfvr5tUHKNUJSN43T9EETsiOuCz/5/PLezMEw5wvScZ68NTOpJ47I8dPsxcu8LQImkO46TBFd7kB4EknDA+KxqXvmQysbmmvE5jrgIs8DtR3s0GEC4/5W6EP+B+WoMjbp90kzopiAVx14kE6cG/SJy34QsoijU7BTCUVbOu3fboEiF2arfW2737ygYQr1xYhg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I3jEr20mwdcV4t89uWUQHzQ9+TazWCvkuo4mo8Uaaeg=;
- b=VDQdN3mX5NLiB0JmsIbfxSDfoEF/6wo5uI80OBrzAVbQGO1ncxSaTcWx2dhOKdZpoNWQfzUahXMVOlripjShL8PuMn5VsbzaqmpDmY8p5Uh/QSDKCo/X2QnToLntRhUySgIteGW53fqryTb0VaBGbVIVGmWQCddzM45rZGEtbH5aM9fyDtrDoOp8rNX8pNTE7ADWW6PqAz3ZrRWlR45mnBXHooJIqDJMPVTIU5PaQf6lIHgJXo1D7TtSU6H0CVoMXR/OVBod8xUkw05uPLu/M7TL0c2Y2FY4U708JERZ268lxDSxQ8jwYUJoCjZ2TmzwPa2/aG22EJb+pbyMxfRK4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I3jEr20mwdcV4t89uWUQHzQ9+TazWCvkuo4mo8Uaaeg=;
- b=SQOg2QEcCRnT/YHtbRj0Aj0cmCmpY2u8TsB3+9ik4zaiqlmIqpCk3gGPw71dpujU2WDO2BT9U9HGdJDggH+1Dqd00Zd8p+VqKMRYUu3Mo9GtvFLaR9oI6rAikwtphXylScqXviqoU3WjN0iQ+xWGCUlf/RaOn0HPz4Y8tL/VT1Y=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
- by VI1PR04MB6030.eurprd04.prod.outlook.com (2603:10a6:803:f8::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Mon, 29 Jun
- 2020 02:02:53 +0000
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::c1ea:5943:40e8:58f1]) by VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::c1ea:5943:40e8:58f1%3]) with mapi id 15.20.3131.026; Mon, 29 Jun 2020
- 02:02:53 +0000
-From:   Po Liu <po.liu@nxp.com>
-To:     dsahern@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, davem@davemloft.net, jhs@mojatatu.com,
-        vlad@buslov.dev, po.liu@nxp.com, claudiu.manoil@nxp.com,
-        vladimir.oltean@nxp.com, alexandru.marginean@nxp.com
-Subject: [v2,iproute2-next 2/2] action police: make 'mtu' could be set independently in police action
-Date:   Mon, 29 Jun 2020 10:04:20 +0800
-Message-Id: <20200629020420.30412-2-po.liu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200629020420.30412-1-po.liu@nxp.com>
-References: <20200628014602.13002-1-po.liu@nxp.com>
- <20200629020420.30412-1-po.liu@nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR01CA0164.apcprd01.prod.exchangelabs.com
- (2603:1096:4:28::20) To VE1PR04MB6496.eurprd04.prod.outlook.com
- (2603:10a6:803:11c::29)
+        id S1726416AbgF2CJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Jun 2020 22:09:51 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:51967 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726071AbgF2CJv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Jun 2020 22:09:51 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 05T29OexC021234, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb06.realtek.com.tw[172.21.6.99])
+        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 05T29OexC021234
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 29 Jun 2020 10:09:24 +0800
+Received: from RTEXMB01.realtek.com.tw (172.21.6.94) by
+ RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 29 Jun 2020 10:09:24 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMB01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 29 Jun 2020 10:09:24 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::941:6388:7d34:5c44]) by
+ RTEXMB04.realtek.com.tw ([fe80::941:6388:7d34:5c44%3]) with mapi id
+ 15.01.1779.005; Mon, 29 Jun 2020 10:09:24 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "joe@perches.com" <joe@perches.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] rtlwifi/*/dm.c: Use const in swing_table declarations
+Thread-Topic: [PATCH] rtlwifi/*/dm.c: Use const in swing_table declarations
+Thread-Index: AQHWTTVpFYNDXI1US0K76Im0pij3zqjuU+2A
+Date:   Mon, 29 Jun 2020 02:09:24 +0000
+Message-ID: <1593396529.11412.6.camel@realtek.com>
+References: <0f24268338756bb54b4e44674db4aaf90f8a9fca.camel@perches.com>
+In-Reply-To: <0f24268338756bb54b4e44674db4aaf90f8a9fca.camel@perches.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.213]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C60DE3664BCAF343A683245842115205@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from tsn.ap.freescale.net (119.31.174.73) by SG2PR01CA0164.apcprd01.prod.exchangelabs.com (2603:1096:4:28::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20 via Frontend Transport; Mon, 29 Jun 2020 02:02:49 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [119.31.174.73]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: cd506474-2048-47cd-e2bf-08d81bd08875
-X-MS-TrafficTypeDiagnostic: VI1PR04MB6030:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB6030BB4757AB9563C660B206926E0@VI1PR04MB6030.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-Forefront-PRVS: 044968D9E1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RwuIDisFyYHFXK8QehrGOck5fXQYoc/2gOMsDVYDy7ftTOSaaU0m2y4jT/a1E9KuoRDe1sAKn5ASV2rtbLZ9KkrUJtxWL43ZSp34YtUxCmjHDm52v1jCaBINdGBHEwe+aldMqcB+dzsRMkbnQuHilKIf7cjHXYLRqzxzpftGFP4VGsGtLS17mouu6Q8/eH5Ug7TLM3ARzCH4K010q4vqjmx/zHkXc15ml/yQm+gCZkIZNnP6lYYEb8tly5Mz/lJP3j8i63HOOYbHTDItSgznmCI3HI/QPyCMgRV3QO3EQKhWZqtI6hn62On2qCtlH7aj0lQGklFlac9XGxbN0gweZw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(136003)(346002)(376002)(39860400002)(1076003)(26005)(6486002)(16526019)(316002)(4744005)(5660300002)(8936002)(83380400001)(186003)(44832011)(956004)(8676002)(2616005)(2906002)(36756003)(66476007)(66946007)(66556008)(6506007)(4326008)(6666004)(6512007)(478600001)(86362001)(52116002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: LBwXkEO8vEB1tMo9bciU6BmGEaqVqdFXyf2n6PwX6u0qhR4ViEgrlzJ6QzDO6DG7OwYK/Andv6uoncv8LUCmcsKRMXGjDNG9wLXyDVT/R2mZypHEu1IXlMObHAuAJj86F5aLEKE+arNCBuSHhqNL9N3v/VYDewa6jk+KcNVuDhWutSfvzJ5KVQJ1S8ooC8o/TRPs/rhUMqDo1E3qF0vBvbTle7dxM6rjiuMZllZFwj/Adhjxj8bk/nCGyHFahZo4cFSQuXLaUm+dyvLloHuUngU9qOnli0Z9f/18TPBYxIWsLfEIcz62+RzaqLVglqRyZlq5RDuc7TODn3NNooUEeSAG4jBO5vzN2XFcbK3tp9Pk28VhN7AcbU/omXILosMfxMHfhbMfzjY5ol+DHHwGv2J9535dp1W9+yxnQCq/iAT6zl+QZn4QDzPQ25EI/I5XZ5Nv7JqcNdzXWj2Eadl4EiibktQ9NoB5ROfBOE98d+s=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd506474-2048-47cd-e2bf-08d81bd08875
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6496.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2020 02:02:53.3737
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tP6LUuvPUjUPzNu6clG+fzpzFLARoq11xMYp4VD35socY93nlL56MFN01BOC4d5z
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6030
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current police action must set 'rate' and 'burst'. 'mtu' parameter
-set the max frame size and could be set alone without 'rate' and 'burst'
-in some situation. Offloading to hardware for example, 'mtu' could limit
-the flow max frame size.
-
-Signed-off-by: Po Liu <po.liu@nxp.com>
----
-v1->v2 changes:
-- fix the print message style and add space acked by Stephen Hemminger <stephen@networkplumber.org>
-
- tc/m_police.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tc/m_police.c b/tc/m_police.c
-index 7eb47f8e..83b25db4 100644
---- a/tc/m_police.c
-+++ b/tc/m_police.c
-@@ -161,8 +161,8 @@ action_ctrl_ok:
- 		return -1;
- 
- 	/* Must at least do late binding, use TB or ewma policing */
--	if (!rate64 && !avrate && !p.index) {
--		fprintf(stderr, "'rate' or 'avrate' MUST be specified.\n");
-+	if (!rate64 && !avrate && !p.index && !mtu) {
-+		fprintf(stderr, "'rate' or 'avrate' or 'mtu' MUST be specified.\n");
- 		return -1;
- 	}
- 
--- 
-2.17.1
-
+T24gU3VuLCAyMDIwLTA2LTI4IGF0IDAzOjE3IC0wNzAwLCBKb2UgUGVyY2hlcyB3cm90ZToNCg0K
+VXNlICdydGx3aWZpOicgYXMgc3ViamVjdCB0aXRsZSBwcmVmaXggaXMgZW5vdWdoLCBsaWtlcw0K
+wqAgcnRsd2lmaTogVXNlIGNvbnN0IGluIHN3aW5nX3RhYmxlIGRlY2xhcmF0aW9ucw0KDQo+IFJl
+ZHVjZSBkYXRhIHVzYWdlIGFib3V0IDFLQiBieSB1c2luZyBjb25zdC4NCj4gDQo+IFNpZ25lZC1v
+ZmYtYnk6IEpvZSBQZXJjaGVzIDxqb2VAcGVyY2hlcy5jb20+DQo+IC0tLQ0KPiDCoC4uLi9uZXQv
+d2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3J0bDgxODhlZS9kbS5jwqDCoMKgwqB8wqDCoDQgKy0N
+Cj4gwqAuLi4vbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9ydGw4NzIzYmUvZG0uY8KgwqDC
+oMKgfMKgwqA0ICstDQo+IMKgLi4uL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODgy
+MWFlL2RtLmPCoMKgwqDCoHwgOTggKysrKysrKysrKysrLS0tLS0tLS0tDQo+IC0NCj4gwqAzIGZp
+bGVzIGNoYW5nZWQsIDU2IGluc2VydGlvbnMoKyksIDUwIGRlbGV0aW9ucygtKQ0KPiANCj4gDQpb
+Li4uXQ0KPsKgDQo+IMKgDQo+IMKgc3RhdGljIHZvaWQgcnRsODgxMmFlX2dldF9kZWx0YV9zd2lu
+Z190YWJsZShzdHJ1Y3QgaWVlZTgwMjExX2h3ICpodywNCj4gLQkJCQkJwqDCoMKgwqB1OCAqKnVw
+X2EsIHU4ICoqZG93bl9hLA0KPiAtCQkJCQnCoMKgwqDCoHU4ICoqdXBfYiwgdTggKipkb3duX2Ip
+DQo+ICsJCQkJCcKgwqDCoMKgY29uc3QgdTggKip1cF9hLA0KPiArCQkJCQnCoMKgwqDCoGNvbnN0
+IHU4ICoqZG93bl9hLA0KPiArCQkJCQnCoMKgwqDCoGNvbnN0IHU4ICoqdXBfYiwNCj4gKwkJCQkJ
+wqDCoMKgwqBjb25zdCB1OCAqKmRvd25fYikNCj4gwqB7DQo+IMKgCXN0cnVjdCBydGxfcHJpdiAq
+cnRscHJpdiA9IHJ0bF9wcml2KGh3KTsNCj4gwqAJc3RydWN0IHJ0bF9waHkgKnJ0bHBoeSA9ICZy
+dGxwcml2LT5waHk7DQo+IA0KDQpQbGVhc2UgcmVtb3ZlIGJlbG93IHR5cGUgY2FzdGluZzrCoA0K
+DQpAQCAtMTg3MiwxMCArMTg3MiwxMCBAQCBzdGF0aWMgdm9pZCBydGw4ODIxYWVfZ2V0X2RlbHRh
+X3N3aW5nX3RhYmxlKHN0cnVjdA0KaWVlZTgwMjExX2h3ICpodywNCsKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgKnVwX2IgPSBydGw4ODIxYWVfZGVsdGFfc3dpbmdfdGFibGVfaWR4XzVn
+Yl9wWzJdOw0KwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAqZG93bl9iID0gcnRsODgy
+MWFlX2RlbHRhX3N3aW5nX3RhYmxlX2lkeF81Z2JfblsyXTsNCsKgwqDCoMKgwqDCoMKgwqB9IGVs
+c2Ugew0KLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqAqdXBfYSA9ICh1OCAqKXJ0bDg4MThlX2RlbHRh
+X3N3aW5nX3RhYmxlX2lkeF8yNGdiX3A7DQotwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCpkb3duX2Eg
+PSAodTggKilydGw4ODE4ZV9kZWx0YV9zd2luZ190YWJsZV9pZHhfMjRnYl9uOw0KLcKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAqdXBfYiA9ICh1OCAqKXJ0bDg4MThlX2RlbHRhX3N3aW5nX3RhYmxlX2lk
+eF8yNGdiX3A7DQotwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCpkb3duX2IgPSAodTggKilydGw4ODE4
+ZV9kZWx0YV9zd2luZ190YWJsZV9pZHhfMjRnYl9uOw0KK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCp1cF9hID0gcnRsODgxOGVfZGVsdGFfc3dpbmdfdGFibGVfaWR4XzI0Z2JfcDsNCivC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAqZG93bl9hID0gcnRsODgxOGVfZGVsdGFfc3dp
+bmdfdGFibGVfaWR4XzI0Z2JfbjsNCivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAqdXBf
+YiA9IHJ0bDg4MThlX2RlbHRhX3N3aW5nX3RhYmxlX2lkeF8yNGdiX3A7DQorwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgKmRvd25fYiA9IHJ0bDg4MThlX2RlbHRhX3N3aW5nX3RhYmxlX2lk
+eF8yNGdiX247DQrCoMKgwqDCoMKgwqDCoMKgfQ0KwqDCoMKgwqDCoMKgwqDCoHJldHVybjsNCsKg
+fQ0KDQoNClsuLi5d
