@@ -2,470 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06D7020DA1E
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0796220D850
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:09:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730840AbgF2Txq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:53:46 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:36515 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387633AbgF2Tk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:40:26 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20200629141512euoutp014476a8500afc73056f924656bbd23cbf~dCVb56w5a1551515515euoutp019;
-        Mon, 29 Jun 2020 14:15:12 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20200629141512euoutp014476a8500afc73056f924656bbd23cbf~dCVb56w5a1551515515euoutp019
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1593440112;
-        bh=kBmxCxko1n0VixxrYshWStpzD3SLUqQMwQ6SZhlpW6E=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=W/mrSocws91eBINJr1KdwuKJephAmo+1EullCY2Qhm3rh2p5JdCyI3DodeQDl2eN8
-         HMKTkIuvQfuyXXgdjQsz9n0IWw/YJP6M0pU4gGAEIaPiwx8kFOJeYAAfS39zPvvfgA
-         avkPv1k6fmZLYzmy3NRKq1Edn0J7C5qzKtkK4QPg=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20200629141512eucas1p20bc22ec128d8b32aa5190d1994d59678~dCVbr6k4A0811208112eucas1p2a;
-        Mon, 29 Jun 2020 14:15:12 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id C9.A6.06318.F67F9FE5; Mon, 29
-        Jun 2020 15:15:12 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20200629141511eucas1p1c17b80c2274499b052144cca9df99b9f~dCVa8y-fP2426724267eucas1p1u;
-        Mon, 29 Jun 2020 14:15:11 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20200629141511eusmtrp2538d466b6ad8029693c898646580da6c~dCVa7hPIe3219232192eusmtrp2X;
-        Mon, 29 Jun 2020 14:15:11 +0000 (GMT)
-X-AuditID: cbfec7f5-38bff700000018ae-71-5ef9f76fefb8
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 3B.7B.06314.F67F9FE5; Mon, 29
-        Jun 2020 15:15:11 +0100 (BST)
-Received: from [106.120.51.71] (unknown [106.120.51.71]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20200629141509eusmtip2e2ffb527aaf8c82b3c8390b8abad32a6~dCVZSG0bm1156011560eusmtip2K;
-        Mon, 29 Jun 2020 14:15:09 +0000 (GMT)
-Subject: Re: [PATCH v7 08/11] thermal: Explicitly enable non-changing
- thermal zone devices
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>, kernel@collabora.com
-From:   Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Message-ID: <c28f04b1-be65-58a8-8620-0a44ef74dbc7@samsung.com>
-Date:   Mon, 29 Jun 2020 16:15:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-        Thunderbird/60.8.0
+        id S2387499AbgF2TiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:38:05 -0400
+Received: from nat-hk.nvidia.com ([203.18.50.4]:52934 "EHLO nat-hk.nvidia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387479AbgF2Th7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 15:37:59 -0400
+Received: from hkpgpgate102.nvidia.com (Not Verified[10.18.92.9]) by nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5ef9f8050000>; Mon, 29 Jun 2020 22:17:41 +0800
+Received: from HKMAIL102.nvidia.com ([10.18.16.11])
+  by hkpgpgate102.nvidia.com (PGP Universal service);
+  Mon, 29 Jun 2020 07:17:41 -0700
+X-PGP-Universal: processed;
+        by hkpgpgate102.nvidia.com on Mon, 29 Jun 2020 07:17:41 -0700
+Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL102.nvidia.com
+ (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 29 Jun
+ 2020 14:17:41 +0000
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (104.47.46.55) by
+ HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 29 Jun 2020 14:17:41 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tm6oMebc6DLzGg8ZQiwfobSMbZxQWsy+LC+Q/IVueEcsAH26SnM+GMf7cQz2Q7TnDJdnHX0tVpm72n6barrZKvagjyo+lFYetRxAZqNZmR5vBS0gg3s1fmyvSuZWGjcX9PdDMG/kEU0zePypntvmXXVwwwZKoEPWYfEPprXMqwgk+ulA2bmOQUCGJyUXZp7rQ/HyxcMbzbCMUfPSvxphMMlluSIoOw3rKWDYLnUEIwi5Djh1L2gUsLMg7RwwRYtQIVt6V++PRHrQMM/yjG8wfs6HQlkPii+/S8IWbZHA6ij5mMzHAXXS85SLm5h+JO/mnY/914r5kOnXl9NT3dM5Ow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=s9T4kKwtuWxM8emLqgtOzDH90iXrg66I3lbFSG+kFxY=;
+ b=Z4fHoQffHCsU5xoKpQeLkK8EnXP340Ey8dCAlFART+KmTAczvSqPyWQnNQ8LeFxoSpMZvUIy7bDukjXDGnoTPIih4GoL0gv1RYMVchVODQOq912Ly+K3fttK36FR4nQuzb3gbml2XeemBZlFlw6ozDbHGcwO7aoUD2nHLyoBoQqShPbdF+msGD3B+4ND7h9kycA2p9a5oT3eghrAsTirUHNZ9ti06INVbAZBTHoq4zG3UcrF53rSqJsdQe/8n//NPoKmG36AxdNrv66EjJtBLYsqIB2V/7Ub2kLnD+fHUgcdK0TM93Aq4WrHUldJa8RDOwV5feVZ/foFI5Iy6Kr0mQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Authentication-Results: oracle.com; dkim=none (message not signed)
+ header.d=none;oracle.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4012.namprd12.prod.outlook.com (2603:10b6:5:1cc::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Mon, 29 Jun
+ 2020 14:17:38 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1d53:7cb4:c3d7:2b54]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1d53:7cb4:c3d7:2b54%6]) with mapi id 15.20.3131.027; Mon, 29 Jun 2020
+ 14:17:38 +0000
+Date:   Mon, 29 Jun 2020 11:17:35 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     <santosh.shilimkar@oracle.com>
+CC:     Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+274094e62023782eeb17@syzkaller.appspotmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <rds-devel@oss.oracle.com>,
+        <syzkaller-bugs@googlegroups.com>
+Subject: Re: general protection fault in rds_ib_add_one
+Message-ID: <20200629141735.GA264799@nvidia.com>
+References: <20200224103913.2776-1-hdanton@sina.com>
+ <8c0a6d58-fd96-ded0-d5ad-a8ffc8d7a620@oracle.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <8c0a6d58-fd96-ded0-d5ad-a8ffc8d7a620@oracle.com>
+X-ClientProxiedBy: MN2PR15CA0002.namprd15.prod.outlook.com
+ (2603:10b6:208:1b4::15) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-In-Reply-To: <20200629122925.21729-9-andrzej.p@collabora.com>
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA02TfUxbZRTG897PQiy5K0PegGhsMhcWhRmWeDK3OT8Wr4kJJmhizNatypUR
-        oSMtIFOzwTK+mg06sAIdGx8yaLtlQGGFDizaujHTrU4XcCgYKMUVpQhUs5UwasuFyH+/c87z
-        vM85f7wSUqZjEyTZqnxBrVLmyJloynoz6H4h72FQsfPRJALTrVUKHrqDBLRP/05BTX2IhO6S
-        KQIuBpKg8cfTFGhbdkKpdYKGqZF0KAvUUxDy/BWuvn0dxkoGCGj0FYLHaGChx32GBrPeRkGr
-        qYUB25SfgQ57NQLL9CgN2mUTCYGz3yO4NjtPwNJkOGjOOM5CZc85BM5rzQQ4y+003Gx+Eoa/
-        qqKhbuE8grt3D8LlQR8Jt10/0+CdqmLgcZ+FAl9vPLgG8uGb0p9I6LHoSRhtDlDQMXmd3f88
-        f/HK5/xMfyPN36s6S/D9E22I7zWNEbxxKZW3GSZYvse4g/96cJbgLeZKhh8fHWT4ebc73G87
-        yS/OeVn+jzonwesW/Mw7+IPoPZlCTnahoE7ddyT6aJvjDpNnOlS0MMQUo8q3tShKgrldeO7M
-        PKVF0RIZZ0R4pcrDisU/CM+cKkZiEUA4NDhBbFgCei0hDjoQDjwaWff7Eb40FkQRVSx3EAdm
-        hpgIb+XScNDqX3uX5LRS7H9gZyMDhtuNz5Wb1wxSbh+ub9HREaa4bfjGgGiO497HS5NOWtRs
-        wT80eKkIR3F78fkvR8gIk1w8/tXbRIj8DO7zN5KRMMwtReHaB/eRuPcb2Ne6ss6x+M/hXlbk
-        p3DI1kSIhqsIP67wrbv7EO6oXWVE1ct43L0cZkk4Ihl3Xk8V26/ixd8urLUxF4Pv+7eIS8Tg
-        GmsdKbaluKJMJqqfw13tXcxGrNZmInVIbth0mmHTOYZN5xj+z21GlBnFCwWa3CxBk6YSPk3R
-        KHM1BaqslI+O5VpQ+J+4Vof/7Uf2lQ8diJMg+RPSI+6gQkYrCzXHcx0IS0j5Vulrd1wKmTRT
-        efwzQX3ssLogR9A4UKKEksdL01pnD8m4LGW+8Ikg5AnqjSkhiUooRraZL27HJahKT3TrTv/y
-        rrk2RoitG9l+xVOU8bF3+bu9XW8NJRcW70kscz37prOzzfNe3Eu27TVJZK8yQ3qgIFuRuL99
-        0VG+q6JhOnNF4S1Kr854mq2+dyIluS5JrzlpbpAf6C5ratHfsqXbrXbXDeLvnG2XLr+i15/q
-        zwx1liTsRnJKc1T54g5SrVH+B+khGR4jBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUxTZxTH89y3FmKzS8XxhMxpajZfVyyIPRjATb/cD2TDLMtEEWnwBswo
-        Jb2lDk1EdKhU6cAAYiVYGCoF1NAKFIuytRtoqh2wyCIRpYIKEQhSN9ONl7XiEr79zjn/X05O
-        csSk1MxEig/m6HhtjipbxoRS7vmeJ59p3vrTNl++LwHL3XkK3nr8BFwZeULBuaoFEloKvQTU
-        +FZC9e8/UGCo3QxFbUM0eB9+BSd9VRQsPHsVqH7eCY8KHQRUj+nhWYNJBDbPWRoaKzooqLPU
-        MtDhnWTg6p0fEVhHBmgw/GMhwVfyK4LW8SkCZoYDiyYaHoug2FaGwNVqJsB16g4N3eYPoafS
-        SMP56YsIentToalzjIT77n4aRr1GBubarRSM3YwAt0MHt4v6SLBZK0gYMPsouDp8S/T5Jq6m
-        +Qj33F5Nc38YSwjOPlSPuJuWRwTXMBPFdZiGRJytYQP3U+c4wVkbixnu8UAnw015PIF+fQH3
-        emJUxL047yK40ulJJhnvkcdrNXk6fnWWRtAlyPYqIFquiAN59JY4uSJGuW9bdKwsKjH+AJ99
-        UM9roxLT5Vn1zgdMrmXf99NdzDFUnGRAIWLMbsG+CgMRZCl7GeH2p6EGJA70P8I9N/SLkeV4
-        dsDAGFBoIPIK4YXWBRQcLGdTscvbJwpyOBuD/W2TomCIZI0S7HjRLFo0XAjXOU68Mxh2Gy47
-        1fiOJWwirqotpYNMsZ/g3xxdTJBXsLuxy256nwnD9y6MUkEOYRPwxfKHZJBJdi2erel/zxF4
-        cPQSscircPtkNVmKpKYlummJYlqimJYoZkQ1onA+T1BnqgWFXFCphbycTHmGRm1Fge9s6/bb
-        7Ki/5WsnYsVItkyS7vGnSWmVXshXOxEWk7JwyY4H7jSp5IAq/zCv1ezX5mXzghPFBo4rIyNX
-        ZGgCv56j26+IVSghTqGMUcZsBVmE5DT7S6qUzVTp+O94PpfX/u8R4pDIY+jMkb+/2FEyOLXp
-        UIJtRvmtreevoU9vXGvSrK3p7yObyq8X3PZmNR990zxY2RdWML6nZc1zZ3r+yPGjtm7Nnx+A
-        Njm57kvdvaozJ7/RzQ8b1t3duL511a6w7W9S3HZnl+9l2Ny/fNKsfnxm68ZeKiOk4unOlPjC
-        sRS7wzecm/yxMFFplFFClkqxgdQKqv8AOs0WKrMDAAA=
-X-CMS-MailID: 20200629141511eucas1p1c17b80c2274499b052144cca9df99b9f
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20200629123004eucas1p2c714a621eb1c153d6cee952b033fecbe
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200629123004eucas1p2c714a621eb1c153d6cee952b033fecbe
-References: <20200629122925.21729-1-andrzej.p@collabora.com>
-        <CGME20200629123004eucas1p2c714a621eb1c153d6cee952b033fecbe@eucas1p2.samsung.com>
-        <20200629122925.21729-9-andrzej.p@collabora.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (156.34.48.30) by MN2PR15CA0002.namprd15.prod.outlook.com (2603:10b6:208:1b4::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20 via Frontend Transport; Mon, 29 Jun 2020 14:17:37 +0000
+Received: from jgg by mlx with local (Exim 4.93)        (envelope-from <jgg@nvidia.com>)        id 1jpubH-0016u6-VP; Mon, 29 Jun 2020 11:17:35 -0300
+X-Originating-IP: [156.34.48.30]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 12656af7-2c4d-4577-4ec2-08d81c372cf1
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4012:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB4012D3159965D52B1F072C0BC26E0@DM6PR12MB4012.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 044968D9E1
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MWwIm9Ncj4w2Hm9sEwqYIZZbNWIml+nTfyQbswtmjpj5PnyZd6So9fQ3dS/FJqIohUBP2WsLnYC6/d0/pZq9s4JewbJih200i4uzWtIKlfLKRKRMpn+RH+uGSnp1mhFG61XTPpvkJt/oXZvkr87b0thxcinEf7gdxJ440ahkYKz+OXcWbZA9h7xjVRowY3SeZl3WIDmCcR4Qvj9bfcMuXBGptkA98pi6BT6Gpy9F4YesjjkXDpsiAndLWwNe22CfAI6vwrEXurkV5MWjt2+2AppKbSbOk64L2tGEjqDezgSVMw44Xe/61yBNg0Ej59QpByEkqjT5jJpSCw3PoZ12OE2QChOs5KAJ6jX/ShAUHvAjO6to0uHXrA2D6Z5Cj2r9vn5gSH9J+3gVHECUsR3mD0DI2S6rFl2OHgxXwbMwNUFgIMgZgtrYZ8bkVZQM6nw4xpXlKU4ZWtd06u0tOBtlJ1dDwEs54zC4yrf12Hx1T74=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(346002)(136003)(376002)(39860400002)(9746002)(9786002)(83380400001)(53546011)(83080400001)(2906002)(7416002)(478600001)(33656002)(36756003)(5660300002)(2616005)(966005)(4326008)(6916009)(54906003)(26005)(66556008)(66946007)(66476007)(8676002)(86362001)(1076003)(186003)(8936002)(316002)(426003)(27376004)(99710200001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 5LB6YUswrAkxJQcn7zHgaf2b9YfsxbLWUToDUaUT0JESwxeu1/6i4yt4nCkWGaCH3On5xQE3kEnhmaPXiLbSQ85ujWmqx520xnQO5iL3qiDB0VydmrBFO02Ao7ckYeoQY3dJlWzdjTCqgkba1CXbUXFK49voMcxQEGUqFACsTUErTemZ7Hd+oQzTHjnSjOgCEWGHxjXSjlNZxJf+zrA903XGFENDsbk1fpXr1fXsqRGz+QMqbIHk6PjgKsZZG8+06hMVIX1mFKIkXU8OfR1DuCcLQef8frXxtYBh2iDT1dc5POqjJIs/s9bBQ1wiS+Enn/JIHOScc7ypt22K+hgdjXHKpA6sfAuU08M3+oNxqc0c8G89hdoKsDra8hma5IjU8RkPS9OEOYXndysSAArhSJ6oxw+VX4/czdvxSq1EM+KRQkDiive36xjRLnsIvKmsxKSvYmzm9iRLZslOzHkS5Rlr1urXUVTAyoR9l8Ty2cM=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12656af7-2c4d-4577-4ec2-08d81c372cf1
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2020 14:17:38.1272
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mpjRZzQ1Qj1NDNtri2l/zjwIBVgaEo5QDYYcOcouxQt2B89HjhyuBLYye3dmO81I
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4012
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1593440261; bh=s9T4kKwtuWxM8emLqgtOzDH90iXrg66I3lbFSG+kFxY=;
+        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+         ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
+         Subject:Message-ID:References:Content-Type:Content-Disposition:
+         In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
+         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
+         X-MS-TrafficTypeDiagnostic:X-Microsoft-Antispam-PRVS:
+         X-MS-Oob-TLC-OOBClassifiers:X-Forefront-PRVS:
+         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
+         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+         X-MS-Exchange-AntiSpam-MessageData:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+         X-MS-Exchange-CrossTenant-FromEntityHeader:
+         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+         X-MS-Exchange-CrossTenant-UserPrincipalName:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=APaCQTKdBxVfVeqTDugWheHhaxk+HxZqCGb7zZPHQkvZ96DPGm9LBIoNblPa3w5gB
+         dywBWRlamJjYWRbZTPqsFxAkn7RvFecPkOJJYj+TeoLk9lNeCVLB6fOvK1wIMKLSft
+         fDpNgZgTaXmPH1ycW9bBwEVQIzmIO2TePV8QarGGa/10o0yoplfHtPbWSdvLg8xfX1
+         FPxrHsOiHTDED0++L4JmiZxPKUj5CnzPjJFq3feZzoZtFV87DCTNO9+MOZna/u9Yhg
+         Z1O4cv36qJ24nuftpdM6i0UiU7jsQuCbFShaqnmh6JsdCle2iS89mOmqhiKWDkpnJj
+         PPzv2VAcCwqsQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 6/29/20 2:29 PM, Andrzej Pietrasiewicz wrote:
-> Some thermal zone devices never change their state, so they should be
-> always enabled.
+On Mon, Feb 24, 2020 at 09:51:01AM -0800, santosh.shilimkar@oracle.com wrote:
+> On 2/24/20 2:39 AM, Hillf Danton wrote:
+> > 
+> > On Mon, 24 Feb 2020 00:38:13 -0800
+> > > syzbot found the following crash on:
+> > > 
+> > > HEAD commit:    b0dd1eb2 Merge branch 'akpm' (patches from Andrew)
+> > > git tree:       upstream
+> > > console output: https://urldefense.com/v3/__https://syzkaller.appspot.com/x/log.txt?x=13db9de9e00000__;!!GqivPVa7Brio!O9xt2mwp7Vb5SndsHmi1c7ynTdDMNXebFTWfSklgQdlUqRdC218qPSAXMuDUauXTR6PmUg$
+> > > kernel config:  https://urldefense.com/v3/__https://syzkaller.appspot.com/x/.config?x=a6001be4097ab13c__;!!GqivPVa7Brio!O9xt2mwp7Vb5SndsHmi1c7ynTdDMNXebFTWfSklgQdlUqRdC218qPSAXMuDUauUIjkEraA$
+> > > dashboard link: https://urldefense.com/v3/__https://syzkaller.appspot.com/bug?extid=274094e62023782eeb17__;!!GqivPVa7Brio!O9xt2mwp7Vb5SndsHmi1c7ynTdDMNXebFTWfSklgQdlUqRdC218qPSAXMuDUauXEUExfYg$
+> > > compiler:       clang version 10.0.0 (https://urldefense.com/v3/__https://github.com/llvm/llvm-project/__;!!GqivPVa7Brio!O9xt2mwp7Vb5SndsHmi1c7ynTdDMNXebFTWfSklgQdlUqRdC218qPSAXMuDUauUcUeVf2A$  c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+> > > syz repro:      https://urldefense.com/v3/__https://syzkaller.appspot.com/x/repro.syz?x=10ad6a7ee00000__;!!GqivPVa7Brio!O9xt2mwp7Vb5SndsHmi1c7ynTdDMNXebFTWfSklgQdlUqRdC218qPSAXMuDUauX2w5ISoA$
+> > > C reproducer:   https://urldefense.com/v3/__https://syzkaller.appspot.com/x/repro.c?x=13da7a29e00000__;!!GqivPVa7Brio!O9xt2mwp7Vb5SndsHmi1c7ynTdDMNXebFTWfSklgQdlUqRdC218qPSAXMuDUauUf3qIVeQ$
+> > > 
+> > > Bisection is inconclusive: the first bad commit could be any of:
 > 
-> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-
-Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-
-Best regards,
---
-Bartlomiej Zolnierkiewicz
-Samsung R&D Institute Poland
-Samsung Electronics
-
-> ---
->  drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c       | 8 ++++++++
->  drivers/net/wireless/intel/iwlwifi/mvm/tt.c              | 9 ++++++++-
->  drivers/platform/x86/intel_mid_thermal.c                 | 6 ++++++
->  drivers/power/supply/power_supply_core.c                 | 9 +++++++--
->  drivers/thermal/armada_thermal.c                         | 6 ++++++
->  drivers/thermal/dove_thermal.c                           | 6 ++++++
->  .../thermal/intel/int340x_thermal/int340x_thermal_zone.c | 5 +++++
->  drivers/thermal/intel/intel_pch_thermal.c                | 5 +++++
->  drivers/thermal/intel/intel_soc_dts_iosf.c               | 3 +++
->  drivers/thermal/intel/x86_pkg_temp_thermal.c             | 6 ++++++
->  drivers/thermal/kirkwood_thermal.c                       | 7 +++++++
->  drivers/thermal/rcar_thermal.c                           | 9 ++++++++-
->  drivers/thermal/spear_thermal.c                          | 7 +++++++
->  drivers/thermal/st/st_thermal.c                          | 5 +++++
->  14 files changed, 87 insertions(+), 4 deletions(-)
+> [...]
 > 
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c
-> index 3de8a5e83b6c..e3510e9b21f3 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c
-> @@ -92,6 +92,14 @@ int cxgb4_thermal_init(struct adapter *adap)
->  		ch_thermal->tzdev = NULL;
->  		return ret;
->  	}
-> +
-> +	ret = thermal_zone_device_enable(ch_thermal->tzdev);
-> +	if (ret) {
-> +		dev_err(adap->pdev_dev, "Failed to enable thermal zone\n");
-> +		thermal_zone_device_unregister(adap->ch_thermal.tzdev);
-> +		return ret;
-> +	}
-> +
->  	return 0;
->  }
->  
-> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tt.c b/drivers/net/wireless/intel/iwlwifi/mvm/tt.c
-> index 418e59b7c671..0c95663bf9ed 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/mvm/tt.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/tt.c
-> @@ -733,7 +733,7 @@ static  struct thermal_zone_device_ops tzone_ops = {
->  
->  static void iwl_mvm_thermal_zone_register(struct iwl_mvm *mvm)
->  {
-> -	int i;
-> +	int i, ret;
->  	char name[16];
->  	static atomic_t counter = ATOMIC_INIT(0);
->  
-> @@ -759,6 +759,13 @@ static void iwl_mvm_thermal_zone_register(struct iwl_mvm *mvm)
->  		return;
->  	}
->  
-> +	ret = thermal_zone_device_enable(mvm->tz_device.tzone);
-> +	if (ret) {
-> +		IWL_DEBUG_TEMP(mvm, "Failed to enable thermal zone\n");
-> +		thermal_zone_device_unregister(mvm->tz_device.tzone);
-> +		return;
-> +	}
-> +
->  	/* 0 is a valid temperature,
->  	 * so initialize the array with S16_MIN which invalid temperature
->  	 */
-> diff --git a/drivers/platform/x86/intel_mid_thermal.c b/drivers/platform/x86/intel_mid_thermal.c
-> index f402e2e74a38..f12f4e7bd971 100644
-> --- a/drivers/platform/x86/intel_mid_thermal.c
-> +++ b/drivers/platform/x86/intel_mid_thermal.c
-> @@ -493,6 +493,12 @@ static int mid_thermal_probe(struct platform_device *pdev)
->  			ret = PTR_ERR(pinfo->tzd[i]);
->  			goto err;
->  		}
-> +		ret = thermal_zone_device_enable(pinfo->tzd[i]);
-> +		if (ret) {
-> +			kfree(td_info);
-> +			thermal_zone_device_unregister(pinfo->tzd[i]);
-> +			goto err;
-> +		}
->  	}
->  
->  	pinfo->pdev = pdev;
-> diff --git a/drivers/power/supply/power_supply_core.c b/drivers/power/supply/power_supply_core.c
-> index 02b37fe6061c..90e56736d479 100644
-> --- a/drivers/power/supply/power_supply_core.c
-> +++ b/drivers/power/supply/power_supply_core.c
-> @@ -939,7 +939,7 @@ static struct thermal_zone_device_ops psy_tzd_ops = {
->  
->  static int psy_register_thermal(struct power_supply *psy)
->  {
-> -	int i;
-> +	int i, ret;
->  
->  	if (psy->desc->no_thermal)
->  		return 0;
-> @@ -949,7 +949,12 @@ static int psy_register_thermal(struct power_supply *psy)
->  		if (psy->desc->properties[i] == POWER_SUPPLY_PROP_TEMP) {
->  			psy->tzd = thermal_zone_device_register(psy->desc->name,
->  					0, 0, psy, &psy_tzd_ops, NULL, 0, 0);
-> -			return PTR_ERR_OR_ZERO(psy->tzd);
-> +			if (IS_ERR(psy->tzd))
-> +				return PTR_ERR(psy->tzd);
-> +			ret = thermal_zone_device_enable(psy->tzd);
-> +			if (ret)
-> +				thermal_zone_device_unregister(psy->tzd);
-> +			return ret;
->  		}
->  	}
->  	return 0;
-> diff --git a/drivers/thermal/armada_thermal.c b/drivers/thermal/armada_thermal.c
-> index 7c447cd149e7..c2ebfb5be4b3 100644
-> --- a/drivers/thermal/armada_thermal.c
-> +++ b/drivers/thermal/armada_thermal.c
-> @@ -874,6 +874,12 @@ static int armada_thermal_probe(struct platform_device *pdev)
->  			return PTR_ERR(tz);
->  		}
->  
-> +		ret = thermal_zone_device_enable(tz);
-> +		if (ret) {
-> +			thermal_zone_device_unregister(tz);
-> +			return ret;
-> +		}
-> +
->  		drvdata->type = LEGACY;
->  		drvdata->data.tz = tz;
->  		platform_set_drvdata(pdev, drvdata);
-> diff --git a/drivers/thermal/dove_thermal.c b/drivers/thermal/dove_thermal.c
-> index 75901ced4a62..73182eb94bc0 100644
-> --- a/drivers/thermal/dove_thermal.c
-> +++ b/drivers/thermal/dove_thermal.c
-> @@ -153,6 +153,12 @@ static int dove_thermal_probe(struct platform_device *pdev)
->  		return PTR_ERR(thermal);
->  	}
->  
-> +	ret = thermal_zone_device_enable(thermal);
-> +	if (ret) {
-> +		thermal_zone_device_unregister(thermal);
-> +		return ret;
-> +	}
-> +
->  	platform_set_drvdata(pdev, thermal);
->  
->  	return 0;
-> diff --git a/drivers/thermal/intel/int340x_thermal/int340x_thermal_zone.c b/drivers/thermal/intel/int340x_thermal/int340x_thermal_zone.c
-> index 432213272f1e..6e479deff76b 100644
-> --- a/drivers/thermal/intel/int340x_thermal/int340x_thermal_zone.c
-> +++ b/drivers/thermal/intel/int340x_thermal/int340x_thermal_zone.c
-> @@ -259,9 +259,14 @@ struct int34x_thermal_zone *int340x_thermal_zone_add(struct acpi_device *adev,
->  		ret = PTR_ERR(int34x_thermal_zone->zone);
->  		goto err_thermal_zone;
->  	}
-> +	ret = thermal_zone_device_enable(int34x_thermal_zone->zone);
-> +	if (ret)
-> +		goto err_enable;
->  
->  	return int34x_thermal_zone;
->  
-> +err_enable:
-> +	thermal_zone_device_unregister(int34x_thermal_zone->zone);
->  err_thermal_zone:
->  	acpi_lpat_free_conversion_table(int34x_thermal_zone->lpat_table);
->  	kfree(int34x_thermal_zone->aux_trips);
-> diff --git a/drivers/thermal/intel/intel_pch_thermal.c b/drivers/thermal/intel/intel_pch_thermal.c
-> index 56401fd4708d..65702094f3d3 100644
-> --- a/drivers/thermal/intel/intel_pch_thermal.c
-> +++ b/drivers/thermal/intel/intel_pch_thermal.c
-> @@ -352,9 +352,14 @@ static int intel_pch_thermal_probe(struct pci_dev *pdev,
->  		err = PTR_ERR(ptd->tzd);
->  		goto error_cleanup;
->  	}
-> +	err = thermal_zone_device_enable(ptd->tzd);
-> +	if (err)
-> +		goto err_unregister;
->  
->  	return 0;
->  
-> +err_unregister:
-> +	thermal_zone_device_unregister(ptd->tzd);
->  error_cleanup:
->  	iounmap(ptd->hw_base);
->  error_release:
-> diff --git a/drivers/thermal/intel/intel_soc_dts_iosf.c b/drivers/thermal/intel/intel_soc_dts_iosf.c
-> index f75271b669c6..4f1a2f7c016c 100644
-> --- a/drivers/thermal/intel/intel_soc_dts_iosf.c
-> +++ b/drivers/thermal/intel/intel_soc_dts_iosf.c
-> @@ -329,6 +329,9 @@ static int add_dts_thermal_zone(int id, struct intel_soc_dts_sensor_entry *dts,
->  		ret = PTR_ERR(dts->tzone);
->  		goto err_ret;
->  	}
-> +	ret = thermal_zone_device_enable(dts->tzone);
-> +	if (ret)
-> +		goto err_enable;
->  
->  	ret = soc_dts_enable(id);
->  	if (ret)
-> diff --git a/drivers/thermal/intel/x86_pkg_temp_thermal.c b/drivers/thermal/intel/x86_pkg_temp_thermal.c
-> index a006b9fd1d72..b81c33202f41 100644
-> --- a/drivers/thermal/intel/x86_pkg_temp_thermal.c
-> +++ b/drivers/thermal/intel/x86_pkg_temp_thermal.c
-> @@ -363,6 +363,12 @@ static int pkg_temp_thermal_device_add(unsigned int cpu)
->  		kfree(zonedev);
->  		return err;
->  	}
-> +	err = thermal_zone_device_enable(zonedev->tzone);
-> +	if (err) {
-> +		thermal_zone_device_unregister(zonedev->tzone);
-> +		kfree(zonedev);
-> +		return err;
-> +	}
->  	/* Store MSR value for package thermal interrupt, to restore at exit */
->  	rdmsr(MSR_IA32_PACKAGE_THERM_INTERRUPT, zonedev->msr_pkg_therm_low,
->  	      zonedev->msr_pkg_therm_high);
-> diff --git a/drivers/thermal/kirkwood_thermal.c b/drivers/thermal/kirkwood_thermal.c
-> index 189b675cf14d..7fb6e476c82a 100644
-> --- a/drivers/thermal/kirkwood_thermal.c
-> +++ b/drivers/thermal/kirkwood_thermal.c
-> @@ -65,6 +65,7 @@ static int kirkwood_thermal_probe(struct platform_device *pdev)
->  	struct thermal_zone_device *thermal = NULL;
->  	struct kirkwood_thermal_priv *priv;
->  	struct resource *res;
-> +	int ret;
->  
->  	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
->  	if (!priv)
-> @@ -82,6 +83,12 @@ static int kirkwood_thermal_probe(struct platform_device *pdev)
->  			"Failed to register thermal zone device\n");
->  		return PTR_ERR(thermal);
->  	}
-> +	ret = thermal_zone_device_enable(thermal);
-> +	if (ret) {
-> +		thermal_zone_device_unregister(thermal);
-> +		dev_err(&pdev->dev, "Failed to enable thermal zone device\n");
-> +		return ret;
-> +	}
->  
->  	platform_set_drvdata(pdev, thermal);
->  
-> diff --git a/drivers/thermal/rcar_thermal.c b/drivers/thermal/rcar_thermal.c
-> index 46aeb28b4e90..787710bb88fe 100644
-> --- a/drivers/thermal/rcar_thermal.c
-> +++ b/drivers/thermal/rcar_thermal.c
-> @@ -550,12 +550,19 @@ static int rcar_thermal_probe(struct platform_device *pdev)
->  			priv->zone = devm_thermal_zone_of_sensor_register(
->  						dev, i, priv,
->  						&rcar_thermal_zone_of_ops);
-> -		else
-> +		else {
->  			priv->zone = thermal_zone_device_register(
->  						"rcar_thermal",
->  						1, 0, priv,
->  						&rcar_thermal_zone_ops, NULL, 0,
->  						idle);
-> +
-> +			ret = thermal_zone_device_enable(priv->zone);
-> +			if (ret) {
-> +				thermal_zone_device_unregister(priv->zone);
-> +				priv->zone = ERR_PTR(ret);
-> +			}
-> +		}
->  		if (IS_ERR(priv->zone)) {
->  			dev_err(dev, "can't register thermal zone\n");
->  			ret = PTR_ERR(priv->zone);
-> diff --git a/drivers/thermal/spear_thermal.c b/drivers/thermal/spear_thermal.c
-> index f68f581fd669..ee33ed692e4f 100644
-> --- a/drivers/thermal/spear_thermal.c
-> +++ b/drivers/thermal/spear_thermal.c
-> @@ -131,6 +131,11 @@ static int spear_thermal_probe(struct platform_device *pdev)
->  		ret = PTR_ERR(spear_thermal);
->  		goto disable_clk;
->  	}
-> +	ret = thermal_zone_device_enable(spear_thermal);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "Cannot enable thermal zone\n");
-> +		goto unregister_tzd;
-> +	}
->  
->  	platform_set_drvdata(pdev, spear_thermal);
->  
-> @@ -139,6 +144,8 @@ static int spear_thermal_probe(struct platform_device *pdev)
->  
->  	return 0;
->  
-> +unregister_tzd:
-> +	thermal_zone_device_unregister(spear_thermal);
->  disable_clk:
->  	clk_disable(stdev->clk);
->  
-> diff --git a/drivers/thermal/st/st_thermal.c b/drivers/thermal/st/st_thermal.c
-> index b928ca6a289b..1276b95604fe 100644
-> --- a/drivers/thermal/st/st_thermal.c
-> +++ b/drivers/thermal/st/st_thermal.c
-> @@ -246,11 +246,16 @@ int st_thermal_register(struct platform_device *pdev,
->  		ret = PTR_ERR(sensor->thermal_dev);
->  		goto sensor_off;
->  	}
-> +	ret = thermal_zone_device_enable(sensor->thermal_dev);
-> +	if (ret)
-> +		goto tzd_unregister;
->  
->  	platform_set_drvdata(pdev, sensor);
->  
->  	return 0;
->  
-> +tzd_unregister:
-> +	thermal_zone_device_unregister(sensor->thermal_dev);
->  sensor_off:
->  	st_thermal_sensor_off(sensor);
->  
-> 
+> > > 868df536 Merge branch 'odp_fixes' into rdma.git for-next
+> > > 
+> > > bisection log:  https://urldefense.com/v3/__https://syzkaller.appspot.com/x/bisect.txt?x=1542127ee00000__;!!GqivPVa7Brio!O9xt2mwp7Vb5SndsHmi1c7ynTdDMNXebFTWfSklgQdlUqRdC218qPSAXMuDUauVrB3NY9g$
+> > > 
+> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > Reported-by: syzbot+274094e62023782eeb17@syzkaller.appspotmail.com
+> > > 
+> > > batman_adv: batadv0: Interface activated: batadv_slave_1
+> > > infiniband syz1: set active
+> > > infiniband syz1: added vlan0
+> > > general protection fault, probably for non-canonical address 0xdffffc0000000086: 0000 [#1] PREEMPT SMP KASAN
+> > > KASAN: null-ptr-deref in range [0x0000000000000430-0x0000000000000437]
+> > > CPU: 0 PID: 8852 Comm: syz-executor043 Not tainted 5.6.0-rc2-syzkaller #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > RIP: 0010:dev_to_node include/linux/device.h:663 [inline]
+> > > RIP: 0010:rds_ib_add_one+0x81/0xe50 net/rds/ib.c:140
+> > > Code: b7 a8 06 00 00 4c 89 f0 48 c1 e8 03 42 80 3c 28 00 74 08 4c 89 f7 e8 0e e4 1d fa bb 30 04 00 00 49 03 1e 48 89 d8 48 c1 e8 03 <42> 8a 04 28 84 c0 0f 85 f0 0a 00 00 8b 1b 48 c7 c0 28 0c 09 89 48
+> > > RSP: 0018:ffffc90003087298 EFLAGS: 00010202
+> > > RAX: 0000000000000086 RBX: 0000000000000430 RCX: 0000000000000000
+> > > RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000001
+> > > RBP: ffffc900030872f0 R08: ffffffff87964c3c R09: ffffed1014fd109c
+> > > R10: ffffed1014fd109c R11: 0000000000000000 R12: 0000000000000000
+> > > R13: dffffc0000000000 R14: ffff8880a7e886a8 R15: ffff8880a7e88000
+> > > FS:  0000000000c3d880(0000) GS:ffff8880aea00000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 00007f0318ed0000 CR3: 00000000a3167000 CR4: 00000000001406f0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >   add_client_context+0x482/0x660 drivers/infiniband/core/device.c:681
+> > >   enable_device_and_get+0x15b/0x370 drivers/infiniband/core/device.c:1316
+> > >   ib_register_device+0x124d/0x15b0 drivers/infiniband/core/device.c:1382
+> > >   rxe_register_device+0x3f6/0x530 drivers/infiniband/sw/rxe/rxe_verbs.c:1231
+> > >   rxe_add+0x1373/0x14f0 drivers/infiniband/sw/rxe/rxe.c:302
+> > >   rxe_net_add+0x79/0xe0 drivers/infiniband/sw/rxe/rxe_net.c:539
+> > >   rxe_newlink+0x31/0x90 drivers/infiniband/sw/rxe/rxe.c:318
+> > >   nldev_newlink+0x403/0x4a0 drivers/infiniband/core/nldev.c:1538
+> > >   rdma_nl_rcv_msg drivers/infiniband/core/netlink.c:195 [inline]
+> > >   rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
+> > >   rdma_nl_rcv+0x701/0xa20 drivers/infiniband/core/netlink.c:259
+> > >   netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+> > >   netlink_unicast+0x766/0x920 net/netlink/af_netlink.c:1328
+> > >   netlink_sendmsg+0xa2b/0xd40 net/netlink/af_netlink.c:1917
+> > >   sock_sendmsg_nosec net/socket.c:652 [inline]
+> > >   sock_sendmsg net/socket.c:672 [inline]
+> > >   ____sys_sendmsg+0x4f7/0x7f0 net/socket.c:2343
+> > >   ___sys_sendmsg net/socket.c:2397 [inline]
+> > >   __sys_sendmsg+0x1ed/0x290 net/socket.c:2430
+> > >   __do_sys_sendmsg net/socket.c:2439 [inline]
+> > >   __se_sys_sendmsg net/socket.c:2437 [inline]
+> > >   __x64_sys_sendmsg+0x7f/0x90 net/socket.c:2437
+> > >   do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:294
+> > >   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> > 
+> > Fall back to NUMA_NO_NODE if needed.
+> > 
+> > +++ b/net/rds/ib.c
+> > @@ -137,7 +137,8 @@ static void rds_ib_add_one(struct ib_dev
+> >   		return;
+> >   	rds_ibdev = kzalloc_node(sizeof(struct rds_ib_device), GFP_KERNEL,
+> > -				 ibdev_to_node(device));
+> > +				 device->dev.parent ?
+> > +				 ibdev_to_node(device) : NUMA_NO_NODE);
+> >   	if (!rds_ibdev)
+> >   		return;
+> > 
+> This seems good. Can you please post it as properly formatted patch ?
+
+Reminder please, this still shows in the dashboards?
+
+Jason
