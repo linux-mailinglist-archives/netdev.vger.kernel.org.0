@@ -2,230 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 645E420D4FC
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:15:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD94320D52B
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731387AbgF2TN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:13:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43358 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730470AbgF2TNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:13:21 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5CAC02A55D
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 06:13:58 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id q7so4728318ljm.1
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 06:13:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=TfCiQsj7eLAgJkgdqyNua9eNocqBjHIR4U55rpcBbMo=;
-        b=pMov5REFrsQHKITMt04sAuX8FEVOZwePqo6yZc4K7DlywiyhX5hMAx6l/PMyRM/m9M
-         m8TESSaCK+auCDjgb8b1ARRSIR3e4Jd+X4mjVjQB8Vg+A+Q0xO4h9fsf+KjH89If87rz
-         FVb4EmaPRO1wgvUEPKST2pBGsFJsgNYXQY9uIMA0Bra3QEBLwvvUSKm/9o/y/DVW4JTD
-         HsFITXxqHF0K3/V2Vvz3Or9rPrs/rZFOiLuaeJJvmnpU3LZ2VYqk9kvRhsn/+E+kY2wb
-         V0I69/+Zjg6z+xJ34w6kBGrFXYgzofrXkT+zTw5kWL9qoa+fA51NIuW8+qXZ3IKIHhim
-         D5yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=TfCiQsj7eLAgJkgdqyNua9eNocqBjHIR4U55rpcBbMo=;
-        b=sJQGXSJP3LUom0SLldj70tRm1hC802uI1aneroH6KK4pnqhrGOp03AunUZdYTjU7Nc
-         tAM++oqcCFNTt7c0/9eV8gp2vMJTdqMOmlQ+bYFA6hpvHcIfjchyfB/Esxls0gD0SToH
-         N7WpC6GZvH3nMG5ns6QaIjFr5Yg/PVN+VDn25A5nOXkWxD7Ft1hT0gVey/RHZor7I6w9
-         wEQDbzy+mPbzA7RADGxKYAgEgHounhRj43P6DtkmFuFTC+9CZT5qqa0n9nrRY4HChpLa
-         TCUpoJAOH6cIMs0RM/sxzre7SIsHrUYe4LZFJMY+hWGRkuU2b3QrJVpASR+vQ4HI04lq
-         ZrAg==
-X-Gm-Message-State: AOAM530CEexnV86de2WuWkUnCNEU54BckdxSCYQbRB89pCPRmBnUp4jL
-        lVx9OFuMpkxyyOye3TUq9nSzOvFOLerVWA==
-X-Google-Smtp-Source: ABdhPJxEfdVbcLf/eCNLVvub1+kLBHeQpG6IBw6jP7Ve3K1lsVlaFtCZHEXxN1T423Td/hXmamSIXg==
-X-Received: by 2002:a2e:9b8d:: with SMTP id z13mr7889980lji.463.1593436437092;
-        Mon, 29 Jun 2020 06:13:57 -0700 (PDT)
-Received: from centos7-pv-guest.localdomain ([5.35.13.201])
-        by smtp.gmail.com with ESMTPSA id 16sm647916ljw.127.2020.06.29.06.13.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jun 2020 06:13:56 -0700 (PDT)
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-To:     netdev@vger.kernel.org
-Cc:     brouer@redhat.com, jgross@suse.com, wei.liu@kernel.org,
-        paul@xen.org, ilias.apalodimas@linaro.org
-Subject: [PATCH net-next v14 3/3] xen networking: add XDP offset adjustment to xen-netback
-Date:   Mon, 29 Jun 2020 16:13:29 +0300
-Message-Id: <1593436409-1101-4-git-send-email-kda@linux-powerpc.org>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1593436409-1101-1-git-send-email-kda@linux-powerpc.org>
-References: <1593436409-1101-1-git-send-email-kda@linux-powerpc.org>
+        id S1730542AbgF2TPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:15:16 -0400
+Received: from foss.arm.com ([217.140.110.172]:39030 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729378AbgF2TO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 15:14:56 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DE9CA14F6;
+        Mon, 29 Jun 2020 06:15:19 -0700 (PDT)
+Received: from [10.57.21.32] (unknown [10.57.21.32])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1043F3F73C;
+        Mon, 29 Jun 2020 06:15:18 -0700 (PDT)
+Subject: Re: the XSK buffer pool needs be to reverted
+To:     Christoph Hellwig <hch@lst.de>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+References: <20200626074725.GA21790@lst.de>
+ <20200626205412.xfe4lywdbmh3kmri@bsd-mbp> <20200627070236.GA11854@lst.de>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <e43ab7b9-22f5-75c3-c9e6-f1eb18d57148@arm.com>
+Date:   Mon, 29 Jun 2020 14:15:16 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
+MIME-Version: 1.0
+In-Reply-To: <20200627070236.GA11854@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the patch basically adds the offset adjustment and netfront
-state reading to make XDP work on netfront side.
+On 2020-06-27 08:02, Christoph Hellwig wrote:
+> On Fri, Jun 26, 2020 at 01:54:12PM -0700, Jonathan Lemon wrote:
+>> On Fri, Jun 26, 2020 at 09:47:25AM +0200, Christoph Hellwig wrote:
+>>>
+>>> Note that this is somewhat urgent, as various of the APIs that the code
+>>> is abusing are slated to go away for Linux 5.9, so this addition comes
+>>> at a really bad time.
+>>
+>> Could you elaborate on what is upcoming here?
+> 
+> Moving all these calls out of line, and adding a bypass flag to avoid
+> the indirect function call for IOMMUs in direct mapped mode.
+> 
+>> Also, on a semi-related note, are there limitations on how many pages
+>> can be left mapped by the iommu?  Some of the page pool work involves
+>> leaving the pages mapped instead of constantly mapping/unmapping them.
+> 
+> There are, but I think for all modern IOMMUs they are so big that they
+> don't matter.  Maintaines of the individual IOMMU drivers might know
+> more.
 
-Reviewed-by: Paul Durrant <paul@xen.org>
-Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
----
- drivers/net/xen-netback/common.h    |  4 ++++
- drivers/net/xen-netback/interface.c |  2 ++
- drivers/net/xen-netback/netback.c   |  7 +++++++
- drivers/net/xen-netback/rx.c        | 15 ++++++++++++++-
- drivers/net/xen-netback/xenbus.c    | 34 ++++++++++++++++++++++++++++++++++
- 5 files changed, 61 insertions(+), 1 deletion(-)
+Right - I don't know too much about older and more esoteric stuff like 
+POWER TCE, but for modern pagetable-based stuff like Intel VT-d, AMD-Vi, 
+and Arm SMMU, the only "limits" are such that legitimate DMA API use 
+should never get anywhere near them (you'd run out of RAM for actual 
+buffers long beforehand). The most vaguely-realistic concern might be a 
+pathological system topology where some old 32-bit PCI device doesn't 
+have ACS isolation from your high-performance NIC such that they have to 
+share an address space, where the NIC might happen to steal all the low 
+addresses and prevent the soundcard or whatever from being able to map a 
+usable buffer.
 
-diff --git a/drivers/net/xen-netback/common.h b/drivers/net/xen-netback/common.h
-index 05847eb..ae477f7 100644
---- a/drivers/net/xen-netback/common.h
-+++ b/drivers/net/xen-netback/common.h
-@@ -281,6 +281,9 @@ struct xenvif {
- 	u8 ipv6_csum:1;
- 	u8 multicast_control:1;
- 
-+	/* headroom requested by xen-netfront */
-+	u16 xdp_headroom;
-+
- 	/* Is this interface disabled? True when backend discovers
- 	 * frontend is rogue.
- 	 */
-@@ -395,6 +398,7 @@ static inline pending_ring_idx_t nr_pending_reqs(struct xenvif_queue *queue)
- irqreturn_t xenvif_interrupt(int irq, void *dev_id);
- 
- extern bool separate_tx_rx_irq;
-+extern bool provides_xdp_headroom;
- 
- extern unsigned int rx_drain_timeout_msecs;
- extern unsigned int rx_stall_timeout_msecs;
-diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
-index 0c8a02a..8af49728 100644
---- a/drivers/net/xen-netback/interface.c
-+++ b/drivers/net/xen-netback/interface.c
-@@ -483,6 +483,8 @@ struct xenvif *xenvif_alloc(struct device *parent, domid_t domid,
- 	vif->queues = NULL;
- 	vif->num_queues = 0;
- 
-+	vif->xdp_headroom = 0;
-+
- 	spin_lock_init(&vif->lock);
- 	INIT_LIST_HEAD(&vif->fe_mcast_addr);
- 
-diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
-index 315dfc6..6dfca72 100644
---- a/drivers/net/xen-netback/netback.c
-+++ b/drivers/net/xen-netback/netback.c
-@@ -96,6 +96,13 @@
- module_param_named(hash_cache_size, xenvif_hash_cache_size, uint, 0644);
- MODULE_PARM_DESC(hash_cache_size, "Number of flows in the hash cache");
- 
-+/* The module parameter tells that we have to put data
-+ * for xen-netfront with the XDP_PACKET_HEADROOM offset
-+ * needed for XDP processing
-+ */
-+bool provides_xdp_headroom = true;
-+module_param(provides_xdp_headroom, bool, 0644);
-+
- static void xenvif_idx_release(struct xenvif_queue *queue, u16 pending_idx,
- 			       u8 status);
- 
-diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
-index ef58870..ac034f6 100644
---- a/drivers/net/xen-netback/rx.c
-+++ b/drivers/net/xen-netback/rx.c
-@@ -258,6 +258,19 @@ static void xenvif_rx_next_skb(struct xenvif_queue *queue,
- 		pkt->extra_count++;
- 	}
- 
-+	if (queue->vif->xdp_headroom) {
-+		struct xen_netif_extra_info *extra;
-+
-+		extra = &pkt->extras[XEN_NETIF_EXTRA_TYPE_XDP - 1];
-+
-+		memset(extra, 0, sizeof(struct xen_netif_extra_info));
-+		extra->u.xdp.headroom = queue->vif->xdp_headroom;
-+		extra->type = XEN_NETIF_EXTRA_TYPE_XDP;
-+		extra->flags = 0;
-+
-+		pkt->extra_count++;
-+	}
-+
- 	if (skb->sw_hash) {
- 		struct xen_netif_extra_info *extra;
- 
-@@ -356,7 +369,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue *queue,
- 				struct xen_netif_rx_request *req,
- 				struct xen_netif_rx_response *rsp)
- {
--	unsigned int offset = 0;
-+	unsigned int offset = queue->vif->xdp_headroom;
- 	unsigned int flags;
- 
- 	do {
-diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index 286054b..7e62a6e 100644
---- a/drivers/net/xen-netback/xenbus.c
-+++ b/drivers/net/xen-netback/xenbus.c
-@@ -393,6 +393,24 @@ static void set_backend_state(struct backend_info *be,
- 	}
- }
- 
-+static void read_xenbus_frontend_xdp(struct backend_info *be,
-+				      struct xenbus_device *dev)
-+{
-+	struct xenvif *vif = be->vif;
-+	u16 headroom;
-+	int err;
-+
-+	err = xenbus_scanf(XBT_NIL, dev->otherend,
-+			   "xdp-headroom", "%hu", &headroom);
-+	if (err != 1) {
-+		vif->xdp_headroom = 0;
-+		return;
-+	}
-+	if (headroom > XEN_NETIF_MAX_XDP_HEADROOM)
-+		headroom = XEN_NETIF_MAX_XDP_HEADROOM;
-+	vif->xdp_headroom = headroom;
-+}
-+
- /**
-  * Callback received when the frontend's state changes.
-  */
-@@ -417,6 +435,11 @@ static void frontend_changed(struct xenbus_device *dev,
- 		set_backend_state(be, XenbusStateConnected);
- 		break;
- 
-+	case XenbusStateReconfiguring:
-+		read_xenbus_frontend_xdp(be, dev);
-+		xenbus_switch_state(dev, XenbusStateReconfigured);
-+		break;
-+
- 	case XenbusStateClosing:
- 		set_backend_state(be, XenbusStateClosing);
- 		break;
-@@ -947,6 +970,8 @@ static int read_xenbus_vif_flags(struct backend_info *be)
- 	vif->ipv6_csum = !!xenbus_read_unsigned(dev->otherend,
- 						"feature-ipv6-csum-offload", 0);
- 
-+	read_xenbus_frontend_xdp(be, dev);
-+
- 	return 0;
- }
- 
-@@ -1036,6 +1061,15 @@ static int netback_probe(struct xenbus_device *dev,
- 			goto abort_transaction;
- 		}
- 
-+		/* we can adjust a headroom for netfront XDP processing */
-+		err = xenbus_printf(xbt, dev->nodename,
-+				    "feature-xdp-headroom", "%d",
-+				    provides_xdp_headroom);
-+		if (err) {
-+			message = "writing feature-xdp-headroom";
-+			goto abort_transaction;
-+		}
-+
- 		/* We don't support rx-flip path (except old guests who
- 		 * don't grok this feature flag).
- 		 */
--- 
-1.8.3.1
+With an IOMMU, you typically really *want* to keep a full working set's 
+worth of pages mapped, since dma_map/unmap are expensive while dma_sync 
+is somewhere between relatively cheap and free. With no IOMMU it makes 
+no real difference from the DMA API perspective since map/unmap are 
+effectively no more than the equivalent sync operations anyway (I'm 
+assuming we're not talking about the kind of constrained hardware that 
+might need SWIOTLB).
 
+>> On a heavily loaded box with iommu enabled, it seems that quite often
+>> there is contention on the iova_lock.  Are there known issues in this
+>> area?
+> 
+> I'll have to defer to the IOMMU maintainers, and for that you'll need
+> to say what code you are using.  Current mainlaine doesn't even have
+> an iova_lock anywhere.
+
+Again I can't speak for non-mainstream stuff outside drivers/iommu, but 
+it's been over 4 years now since merging the initial scalability work 
+for the generic IOVA allocator there that focused on minimising lock 
+contention, and it's had considerable evaluation and tweaking since. But 
+if we can achieve the goal of efficiently recycling mapped buffers then 
+we shouldn't need to go anywhere near IOVA allocation either way except 
+when expanding the pool.
+
+Robin.
