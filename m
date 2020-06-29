@@ -2,212 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A471F20D914
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:10:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6A020DA46
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:13:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387933AbgF2ToB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:44:01 -0400
-Received: from mail.efficios.com ([167.114.26.124]:33194 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732797AbgF2Tn6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:43:58 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 57E8026BE90;
-        Mon, 29 Jun 2020 15:43:57 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id jKS2OsRBiPF4; Mon, 29 Jun 2020 15:43:56 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id E456326BE04;
-        Mon, 29 Jun 2020 15:43:56 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com E456326BE04
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1593459836;
-        bh=iP3PjzJ6XSqU6iD5jcFMqznuwbwfOTCeMrtF+SzoIxA=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=Zb+p9V5XcwPNNTTPWdcilNsn2aGU2lz7a7/PgtBKt1e2OjYnYtasalPhFQHv4ygdd
-         RkRpqOQNC5cXdmRmS+PZ+1R70E4ZmDs7Kr6tVw3oCykO7aRMtPklSP9nCYfccmzCjG
-         F2OOszRVIlpNIL5uFP2fU24d5we1PKVV4hiBKQULZhBQqUY9y7EnArJF+Blx+eNaVf
-         ooV5Bm2ZGojLC+Ntbfp1RjN3+t6syLAin22SMllmW5brKuATpfFUqnwjhk2EWNmQGm
-         l5o5b5rOJXwzFqhFaW60/Vp7e4OvpH0Iw4TnlBzKuxIKzi+iibJankV9mFCenWMIwS
-         tekm46Nbemxyg==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id QlU3a6Iszu31; Mon, 29 Jun 2020 15:43:56 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id D147626B9F3;
-        Mon, 29 Jun 2020 15:43:56 -0400 (EDT)
-Date:   Mon, 29 Jun 2020 15:43:56 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Jonathan Rajotte-Julien <joraj@efficios.com>
-Message-ID: <1132973300.15954.1593459836756.JavaMail.zimbra@efficios.com>
-In-Reply-To: <CANn89iL26OMWWAi18PqoQK4VBfFvRvxBJUioqXDk=8ZbKq_Efg@mail.gmail.com>
-References: <341326348.19635.1589398715534.JavaMail.zimbra@efficios.com> <CANn89i+GH2ukLZUcWYGquvKg66L9Vbto0FxyEt3pOJyebNxqBg@mail.gmail.com> <CANn89iL26OMWWAi18PqoQK4VBfFvRvxBJUioqXDk=8ZbKq_Efg@mail.gmail.com>
-Subject: Re: [regression] TCP_MD5SIG on established sockets
+        id S2388387AbgF2Tza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:55:30 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:39316 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388379AbgF2Tz2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:55:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1593460528; x=1624996528;
+  h=from:to:cc:subject:date:message-id:content-id:
+   content-transfer-encoding:mime-version;
+  bh=OswM2BcmFT4BuEGV7YRpAVEHcfYykLmQXhPyMkEpFkk=;
+  b=GndZEk3aEJywTbflelYfXQ3o+WxT3mdp5n1fFkxtZ7B/cKG1RoCBXYES
+   J0R8sKVp9NYX6Kk/0tZTFtK6NlrEJIlJxKqZ1KiRO8i5PWocbS2OX+eFL
+   eKFdLa6OAsloyJZbcYZcU8+7ttsb3AEtu4fxdVbcP/dXRi3v/VP7BpgD5
+   S4l314JZ2KZ8Tq3RTMLmE1GIIxvmk5OMJ0h9gOv5r3XKqKevVHT4OoDX+
+   WNsbCX/eW37Yg/zunOzLTM+4dXJnx0NdrMD8CDi8fU/wS6YJBDzBUTgug
+   V9qDnqZINU+B0GCZfG6BG30piC40stkUIINdrQfrkc15XhEjOTUBWcwEf
+   A==;
+IronPort-SDR: smoMjTTiQMXMNTefUP3IOJTExNeB4CMMnHYqdDBJqBV/5U/A46gNlyBghE/WkGQP/OaK/FWrcH
+ YctFwXqgGpx33J4qrA+Rn1juEJBSWTQFvI2314yFrNgN7xRv0zmfMDhkpSVOvtxuDaYUbxlM+B
+ g5lbTtMA7fPqCCSe5l1pqEVFaHxfoaCX5YQfG8UE2aH3x5n5t5QxWWz9I2ZTrkJVfZuds9rrIc
+ T1ZBzw+KEqSLB94FKxJCt2hbd6a25L0eUR/tkBIn6wUKcOfQV5IPdCbCLXLWJgMx9jhFTV6dRJ
+ D9w=
+X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; 
+   d="scan'208";a="80127819"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jun 2020 12:55:27 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 29 Jun 2020 12:55:09 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3 via Frontend
+ Transport; Mon, 29 Jun 2020 12:55:09 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LHyA4kLPA8yYI1B3bXqYchILpxfu30lUsAGlVDocg1ABtAJQZFA1jnppcwqCEE3R5V3Lj118lrRkwVyUwEQ+S3RwxX7Snsy/qwlBBoY/36NZks8Hw2pmFWtHqRA2Y+i49QcAu9ShAfxfxKu+ej+ApXsGLw1AoT1G0E5a4RReldXrhYZBFkkjby9YFy0o4t0+xaNOdPRdYhCHnq0l9iYlWI24VAdfUuUQ/hSm3O174nbyq6z56WUnvQGjStVOiC5pf/LJhk2vXb4y055tNzDc0PbYc3tItNo2zBEEWihdgscj5MKCZBmaiy6pqDA1FjZa222wjUgvSC2qY58vgsHBCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OswM2BcmFT4BuEGV7YRpAVEHcfYykLmQXhPyMkEpFkk=;
+ b=YkLtRTxOmVvuAzvmnF9XYvAIPHEcvdO6Cz4tgl9aTZ/0/q70u1qDsbVHPKodnwZEQqC9nF2U7/NGu+auRoNW7kRuqI7aSe6LavSi5V1jbiA7vwqGoBTa53wMAmH7Fu0j7Nw4NLplyY2mbD4MPvStv/SFULtHWrLvHYLgC4daoE0ukwHVd9NKS3Q86X8ANzcxtC11E4vGDjXxNJbtwLegSpedh+nqK4XZGYWznCx6AgUCvV7NDG6Zz8nGICpkSh/Paa0RYdKgqM/IECawzwrpHAPtVvT/PZHh272/rbU31wzei98odLQBYwsbM35VK9eHtaOlshodGtaWW7So89uhbw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OswM2BcmFT4BuEGV7YRpAVEHcfYykLmQXhPyMkEpFkk=;
+ b=bQcFfMMjdS+H2RcV0tKwjWAsu9LEPsVWtU/2acGx1DCK+TlTxZ8ZqKzKAPN1fO+gimwl42SFJ+wVIr2Hyjrv15D9/VfjSjmP6GQN5uft/BvB7kuwnNQEzQhOWQyU6Wmy7kCrdpdc6QpZDWkbtcV0Zr3fqqfKS00414SFI7tn3Xg=
+Received: from BY5PR11MB3927.namprd11.prod.outlook.com (2603:10b6:a03:186::21)
+ by BYAPR11MB3496.namprd11.prod.outlook.com (2603:10b6:a03:8b::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.23; Mon, 29 Jun
+ 2020 19:55:25 +0000
+Received: from BY5PR11MB3927.namprd11.prod.outlook.com
+ ([fe80::5993:d0ac:9849:d311]) by BY5PR11MB3927.namprd11.prod.outlook.com
+ ([fe80::5993:d0ac:9849:d311%7]) with mapi id 15.20.3131.027; Mon, 29 Jun 2020
+ 19:55:25 +0000
+From:   <Andre.Edich@microchip.com>
+To:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <steve.glendinning@shawell.net>
+CC:     <Parthiban.Veerasooran@microchip.com>
+Subject: [PATCH net-next 0/8] Add PAL support to smsc95xx
+Thread-Topic: [PATCH net-next 0/8] Add PAL support to smsc95xx
+Thread-Index: AQHWTk86EWJZAUL8ykWTeHSdNCeJ6g==
+Date:   Mon, 29 Jun 2020 19:55:24 +0000
+Message-ID: <c8fafa3198fcb0ba74d2190728075f108cfc5aa1.camel@microchip.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.3 
+authentication-results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=microchip.com;
+x-originating-ip: [93.202.178.57]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 91c3b23e-11d8-4bbb-da42-08d81c665d5b
+x-ms-traffictypediagnostic: BYAPR11MB3496:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR11MB3496A423139836042CA457ABEC6E0@BYAPR11MB3496.namprd11.prod.outlook.com>
+x-bypassexternaltag: True
+x-ms-oob-tlc-oobclassifiers: OLM:3383;
+x-forefront-prvs: 044968D9E1
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /cgcLdKuE3438ndCCho/FqMEor2LQmEzKiBznI7VJXovp4UtzJdqR+WM+3MUOCIE0WBfQgeZtouNjix0bTFmXqCc8izoXXYGUH7EEq35Rlr1/ui3exyc/UHPCK4DQcl+Nm05jhzM7E/ouuaWFnVymTOj51obUjtrD+oS4fZj55sZaHhxvwNWh7Dz1BPvNR0rc9ObU5DS9MfPVlUtBYiS9yIDromSSHtCZnSSghJ/VLVhQfczNCwhDkKc/1xZsevKx+KuNSixz5OREF1Q+7y5VfxfKdOQGrR4pe08oa3l/pPcqSF2O8no6ViXx4RWKnM5gNc40L8oSHDiGa/F+KzN7A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR11MB3927.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(136003)(396003)(39860400002)(376002)(346002)(91956017)(66946007)(76116006)(66446008)(64756008)(66476007)(66556008)(4326008)(6486002)(2616005)(6506007)(110136005)(4744005)(2906002)(5660300002)(186003)(8936002)(8676002)(71200400001)(107886003)(36756003)(83380400001)(478600001)(26005)(86362001)(316002)(6512007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: /TAdRe8o5rX63ShOq7e1GvSzhTGQub3Ky+W3uxubxXmOf5XoUmYfO/E9/mbvMGDR+ZCaslNQBrBeSgT3Yz5Bh8xB9zGHZT1juYiG3TrWM0+KOCQcb28dAOpDl4W/K2/s0mN4mkfwN37/10zxP44pxgac6O9mlmga4g4s5giKmjQ5UWFANXCUGKvffyBc5dS7raqmjPXC3YOzq8OsuYogrh/EEa1AQeDCNpHYNmNWz495aAGp2i0KWTWgrmMOIBrDfGByjZBarW/imnHdPZroZ3W/d6YZcBKOnlKu3yhwxtqHYCb4KkJdyBPj1KImw6j9qA09eFZO3WHX/btXKuYSueYnbrdwKTIv8kN/CAqE7EqsZ7zNoZBTjPi0ITXMurmo6tumwnfWGlzy6IQP8tdBHv3l73gHtWKk//SLlxjSzWNfPFRqvpJnzy4YoBR8KSoQ8g6IjszGG6ie8CEQzS9l+SwsyWAb3igweivD+XFk5U6oKr0aUHYI2Jj8ymOoQ+tQ
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <59EAC00B532BD34BB838FF17D0D8A15A@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_3945 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3928)
-Thread-Topic: TCP_MD5SIG on established sockets
-Thread-Index: 0Jvbhp6DCumjwNDk8z7Y2feQgYejnA==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR11MB3927.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 91c3b23e-11d8-4bbb-da42-08d81c665d5b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2020 19:55:24.9009
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ozNvppQDHzCAuUe90x+1A8ZHtlJbZ1XsTCF6VcvFWRY0zDV2J9DokU0E05278ivTQ/K4KgdfLmUbMxEMo4kjegFb3+TKM+sgzXSMoJbXM/4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3496
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On May 13, 2020, at 3:56 PM, Eric Dumazet edumazet@google.com wrote:
-
-> On Wed, May 13, 2020 at 12:49 PM Eric Dumazet <edumazet@google.com> wrote:
->>
->>
->> On Wed, May 13, 2020 at 12:38 PM Mathieu Desnoyers
->> <mathieu.desnoyers@efficios.com> wrote:
->> >
->> > Hi,
->> >
->> > I am reporting a regression with respect to use of TCP_MD5SIG/TCP_MD5SIG_EXT
->> > on established sockets. It is observed by a customer.
->> >
->> > This issue is introduced by this commit:
->> >
->> > commit 721230326891 "tcp: md5: reject TCP_MD5SIG or TCP_MD5SIG_EXT on
->> > established sockets"
->> >
->> > The intent of this commit appears to be to fix a use of uninitialized value in
->> > tcp_parse_options(). The change introduced by this commit is to disallow setting
->> > the TCP_MD5SIG{,_EXT} socket options on an established socket.
->> >
->> > The justification for this change appears in the commit message:
->> >
->> >    "I believe this was caused by a TCP_MD5SIG being set on live
->> >     flow.
->> >
->> >     This is highly unexpected, since TCP option space is limited.
->> >
->> >     For instance, presence of TCP MD5 option automatically disables
->> >     TCP TimeStamp option at SYN/SYNACK time, which we can not do
->> >     once flow has been established.
->> >
->> >     Really, adding/deleting an MD5 key only makes sense on sockets
->> >     in CLOSE or LISTEN state."
->> >
->> > However, reading through RFC2385 [1], this justification does not appear
->> > correct. Quoting to the RFC:
->> >
->> >    "This password never appears in the connection stream, and the actual
->> >     form of the password is up to the application. It could even change
->> >     during the lifetime of a particular connection so long as this change
->> >     was synchronized on both ends"
->> >
->> > The paragraph above clearly underlines that changing the MD5 signature of
->> > a live TCP socket is allowed.
->> >
->> > I also do not understand why it would be invalid to transition an established
->> > TCP socket from no-MD5 to MD5, or transition from MD5 to no-MD5. Quoting the
->> > RFC:
->> >
->> >   "The total header size is also an issue.  The TCP header specifies
->> >    where segment data starts with a 4-bit field which gives the total
->> >    size of the header (including options) in 32-byte words.  This means
->> >    that the total size of the header plus option must be less than or
->> >    equal to 60 bytes -- this leaves 40 bytes for options."
->> >
->> > The paragraph above seems to be the only indication that some TCP options
->> > cannot be combined on a given TCP socket: if the resulting header size does
->> > not fit. However, I do not see anything in the specification preventing any
->> > of the following use-cases on an established TCP socket:
->> >
->> > - Transition from no-MD5 to MD5,
->> > - Transition from MD5 to no-MD5,
->> > - Changing the MD5 key associated with a socket.
->> >
->> > As long as the resulting combination of options does not exceed the available
->> > header space.
->> >
->> > Can we please fix this KASAN report in a way that does not break user-space
->> > applications expectations about Linux' implementation of RFC2385 ?
-[...]
->> > [1] RFC2385: https://tools.ietf.org/html/rfc2385
->>
->>
->> I do not think we want to transition sockets in the middle. since
->> packets can be re-ordered in the network.
->>
->> MD5 is about security (and a loose form of it), so better make sure
->> all packets have it from the beginning of the flow.
->>
->> A flow with TCP TS on can not suddenly be sending packets without TCP TS.
->>
->> Clearly, trying to support this operation is a can of worms, I do not
->> want to maintain such atrocity.
->>
->> RFC can state whatever it wants, sometimes reality forces us to have
->> sane operations.
->>
->> Thanks.
->>
-> Also the RFC states :
-> 
-> "This password never appears in the connection stream, and the actual
->    form of the password is up to the application. It could even change
->    during the lifetime of a particular connection so long as this change
->    was synchronized on both ends"
-> 
-> It means the key can be changed, but this does not imply the option
-> can be turned on/off dynamically.
-> 
-
-The change discussed previously (introduced by commit 721230326891 "tcp:
-md5: reject TCP_MD5SIG or TCP_MD5SIG_EXT on established sockets") breaks
-user-space ABI. As an example, the following BGP application uses
-setsockopt TCP_MD5SIG on a live TCP socket:
-
-https://github.com/IPInfusion/SDN-IP
-
-In addition to break user-space, it also breaks network protocol
-expectations for network equipment vendors implementing RFC2385.
-Considering that the goal of these protocols is interaction between
-different network equipment, breaking compatibility on that side
-is unexpected as well. Requiring to bring down/up the connection
-just to change the TCP MD5 password is a no-go in networks with
-high availability requirements. Changing the BGP authentication
-password must be allowed without tearing down and re-establishing
-the TCP sockets. Otherwise it doesn't scale for large network
-operators to have to individually manage each individual TCP socket
-in their network. However, based on the feedback I received, it
-would be acceptable to tear-down the TCP connections and re-establish
-them when enabling or disabling the MD5 option.
-
-Here is a list of a few network vendors along with their behavior
-with respect to TCP MD5:
-
-- Cisco: Allows for password to be changed, but within the hold-down
-timer (~180 seconds).
-- Juniper: When password is initially set on active connection it will
-reset, but after that any subsequent password changes no network
-resets.
-- Nokia: No notes on if they flap the tcp connection or not.
-- Ericsson/RedBack: Allows for 2 password (old/new) to co-exist until
-both sides are ok with new passwords.
-- Meta-Switch: Expects the password to be set before a connection is
-attempted, but no further info on whether they reset the TCP
-connection on a change.
-- Avaya: Disable the neighbor, then set password, then re-enable.
-- Zebos: Would normally allow the change when socket connected.
-
-Thanks,
-
-Mathieu
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+VG8gYWxsb3cgdG8gcHJvYmUgZXh0ZXJuYWwgcGh5IGRyaXZlcnMsIHRoaXMgcGF0Y2hzZXQgYWRk
+cyB1c2Ugb2YNClBoeSBBYnN0cmFjdGlvbiBMYXllciB0byBzbXNjOTV4eCBkcml2ZXIuDQoNCkFu
+ZHJlIEVkaWNoICg4KToNCiAgc21zYzk1eHg6IGNoZWNrIHJldHVybiB2YWx1ZSBvZiBzbXNjOTV4
+eF9yZXNldA0KICBzbXNjOTV4eDogYXZvaWQgbWVtb3J5IGxlYWsgaW4gc21zYzk1eHhfYmluZA0K
+ICBzbXNjOTV4eDogYWRkIFBBTCBzdXBwb3J0IHRvIHVzZSBleHRlcm5hbCBQSFkgZHJpdmVycw0K
+ICBzbXNjOTV4eDogcmVtb3ZlIHJlZHVuZGFudCBsaW5rIHN0YXR1cyBjaGVja2luZw0KICBzbXNj
+OTV4eDogdXNlIFBBTCBmcmFtZXdvcmsgcmVhZC93cml0ZSBmdW5jdGlvbnMNCiAgc21zYzk1eHg6
+IHJlbW92ZSByZWR1bmRhbnQgZnVuY3Rpb24gYXJndW1lbnRzDQogIHNtc2M5NXh4OiB1c2UgUEhZ
+IGZyYW1ld29yayBpbnN0ZWFkIG9mIE1JSSBsaWJyYXJ5DQogIHNtc2M5NXh4OiB1c2UgdXNibmV0
+LT5kcml2ZXJfcHJpdg0KDQogZHJpdmVycy9uZXQvdXNiL3Ntc2M5NXh4LmMgfCAzOTQgKysrKysr
+KysrKysrKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLQ0KIDEgZmlsZSBjaGFuZ2VkLCAxODYgaW5z
+ZXJ0aW9ucygrKSwgMjA4IGRlbGV0aW9ucygtKQ0KDQo=
