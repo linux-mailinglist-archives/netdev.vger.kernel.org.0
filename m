@@ -2,76 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9210620D1C2
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 20:50:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4FE020D117
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 20:41:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727020AbgF2Snq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 14:43:46 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:18459 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726447AbgF2Snj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:43:39 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 5601E4200D;
-        Mon, 29 Jun 2020 17:16:19 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     paulb@mellanox.com
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net 2/2] net/sched: act_ct: add miss tcf_lastuse_update.
-Date:   Mon, 29 Jun 2020 17:16:18 +0800
-Message-Id: <1593422178-26949-2-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1593422178-26949-1-git-send-email-wenxu@ucloud.cn>
-References: <1593422178-26949-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSkJOQkJCQkxCQkxJQ09ZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkdIjULOBw*FRk5IREIHRceFA8wDTocVlZVSUlIKElZV1kJDh
-        ceCFlBWTU0KTY6NyQpLjc#WVdZFhoPEhUdFFlBWTQwWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PU06PTo5PTgwES0rKkgyFS8d
-        FxEaCy5VSlVKTkJIT0lJSkxCT05OVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUpDSUw3Bg++
-X-HM-Tid: 0a72ff5cec322086kuqy5601e4200d
+        id S1728036AbgF2Si2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 14:38:28 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:6782 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728022AbgF2Si0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 14:38:26 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 2C51613923748716BC46;
+        Mon, 29 Jun 2020 18:47:47 +0800 (CST)
+Received: from huawei.com (10.175.104.57) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Mon, 29 Jun 2020
+ 18:47:41 +0800
+From:   Li Heng <liheng40@huawei.com>
+To:     <vishal@chelsio.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <hariprasad@chelsio.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net: cxgb4: fix return error value in t4_prep_fw
+Date:   Mon, 29 Jun 2020 18:49:51 +0800
+Message-ID: <1593427791-41194-1-git-send-email-liheng40@huawei.com>
+X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.104.57]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+t4_prep_fw goto bye tag with positive return value when something
+bad happened and which can not free resource in adap_init0.
+so fix it to return negative value.
 
-When tcf_ct_act execute the tcf_lastuse_update should
-be update or the used stats never update
-
-filter protocol ip pref 3 flower chain 0
-filter protocol ip pref 3 flower chain 0 handle 0x1
-  eth_type ipv4
-  dst_ip 1.1.1.1
-  ip_flags frag/firstfrag
-  skip_hw
-  not_in_hw
- action order 1: ct zone 1 nat pipe
-  index 1 ref 1 bind 1 installed 103 sec used 103 sec
- Action statistics:
- Sent 151500 bytes 101 pkt (dropped 0, overlimits 0 requeues 0)
- backlog 0b 0p requeues 0
- cookie 4519c04dc64a1a295787aab13b6a50fb
-
-Signed-off-by: wenxu <wenxu@ucloud.cn>
+Fixes: 16e47624e76b ("cxgb4: Add new scheme to update T4/T5 firmware")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Li Heng <liheng40@huawei.com>
 ---
- net/sched/act_ct.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 2eaabdc..ec0250f 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -928,6 +928,8 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 	force = p->ct_action & TCA_CT_ACT_FORCE;
- 	tmpl = p->tmpl;
- 
-+	tcf_lastuse_update(&c->tcf_tm);
-+
- 	if (clear) {
- 		ct = nf_ct_get(skb, &ctinfo);
- 		if (ct) {
--- 
-1.8.3.1
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+index 2a3480f..9121cef 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+@@ -3493,7 +3493,7 @@ int t4_prep_fw(struct adapter *adap, struct fw_info *fw_info,
+ 	drv_fw = &fw_info->fw_hdr;
+
+ 	/* Read the header of the firmware on the card */
+-	ret = -t4_read_flash(adap, FLASH_FW_START,
++	ret = t4_read_flash(adap, FLASH_FW_START,
+ 			    sizeof(*card_fw) / sizeof(uint32_t),
+ 			    (uint32_t *)card_fw, 1);
+ 	if (ret == 0) {
+@@ -3522,8 +3522,8 @@ int t4_prep_fw(struct adapter *adap, struct fw_info *fw_info,
+ 		   should_install_fs_fw(adap, card_fw_usable,
+ 					be32_to_cpu(fs_fw->fw_ver),
+ 					be32_to_cpu(card_fw->fw_ver))) {
+-		ret = -t4_fw_upgrade(adap, adap->mbox, fw_data,
+-				     fw_size, 0);
++		ret = t4_fw_upgrade(adap, adap->mbox, fw_data,
++				    fw_size, 0);
+ 		if (ret != 0) {
+ 			dev_err(adap->pdev_dev,
+ 				"failed to install firmware: %d\n", ret);
+@@ -3554,7 +3554,7 @@ int t4_prep_fw(struct adapter *adap, struct fw_info *fw_info,
+ 			FW_HDR_FW_VER_MICRO_G(c), FW_HDR_FW_VER_BUILD_G(c),
+ 			FW_HDR_FW_VER_MAJOR_G(k), FW_HDR_FW_VER_MINOR_G(k),
+ 			FW_HDR_FW_VER_MICRO_G(k), FW_HDR_FW_VER_BUILD_G(k));
+-		ret = EINVAL;
++		ret = -EINVAL;
+ 		goto bye;
+ 	}
+
+--
+2.7.4
 
