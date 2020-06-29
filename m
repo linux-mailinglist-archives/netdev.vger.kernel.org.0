@@ -2,214 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0953520D41B
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:13:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72A5520D373
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:12:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730418AbgF2TFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:05:06 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:14018 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730202AbgF2TFE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:05:04 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05TIDaMw016105;
-        Mon, 29 Jun 2020 11:24:52 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=0YPyaq3Ct1YDSDvu1DP3vFrUjmnq3qH0P5QjysSJqZs=;
- b=X+yXXEOD3JmDbYJkSCtP7Vz7OXzKvmUO1hrgsM8Cw5FjZXVbWCzB9R2wq1sC329dxtUR
- ysnKjRuln5+dhNWwimzkP7WV0xpUMJVhFGh/hVrWInwYuIXvo8RJcSpNKO64Tpa1dbLj
- heytb1k5C/PTn6aQOHSOQjxXtI+4wLfWuRI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31xp3rdtrk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 29 Jun 2020 11:24:52 -0700
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+        id S1729091AbgF2S7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 14:59:01 -0400
+Received: from mga09.intel.com ([134.134.136.24]:65096 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730234AbgF2S64 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 14:58:56 -0400
+IronPort-SDR: i4sBOwB+P7IXJ+NGMhiRMN3mJhrARxwULclMog00oCPmHnJEpuTcvsiRJyPGoSFL1xZc+W76Qu
+ E9qVSZF6jzIQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="147580812"
+X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; 
+   d="scan'208";a="147580812"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2020 11:47:46 -0700
+IronPort-SDR: cmPIgizF64ELc0HKZ0rXvZpx3fAk8NNM+r7Ep1oltdDugg0+F/wGbwH+DWaRP2eu5z5XlFppXS
+ uk3yEFqYKw8A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; 
+   d="scan'208";a="355539779"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+  by orsmga001.jf.intel.com with ESMTP; 29 Jun 2020 11:47:46 -0700
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 29 Jun 2020 11:47:22 -0700
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 29 Jun 2020 11:24:51 -0700
+ 15.1.1713.5; Mon, 29 Jun 2020 11:47:20 -0700
+Received: from FMSEDG001.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Mon, 29 Jun 2020 11:47:20 -0700
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com (104.47.38.51) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server (TLS) id
+ 14.3.439.0; Mon, 29 Jun 2020 11:47:20 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IdE4sv12OclZiNLvsmgtkNmzmn1Rt0ePNCx67dBE9sbfXZFEkv7JGv3UNJDxIcMVHcnjOPR34aP+bcq2AgZqgGSUaC82yM4abqUCM1AhHuDSTlr/3R7iq0s1Pf0B0ELUTtEm2Ju2WJfUL3sUl8EuHBwPRDvdnmNty/ipa4R1DG3yYI62IZO2hFJ9J+L0WqAuE+Ci4cLUxNPQSmF++1x9iRi3/JvAiL1iQrT1QI8gdBVNFvY/4K/AccHu/j7TuB6OWf9qvQ/pUsf57cen0s3zISuKP/WwOd8Pucm5ZnV79NkBqvZbm6L/JHD94S59Ke4m5/0kC1bb8jGSx7yoC4sZMQ==
+ b=n1pSbdeBCtZYuj028q6D8PhVFgQyfC5TCHzNMk58NFbt2YzrptMOJC8/QQpSfoebmHvO8cs5VIYG9Ra4DQ5sdQ5MIxPGXWpnKN7RMQmHTTm1tBTOzHH8UMZ+TTwk2HdaAtAZ4dh06+9PNs5r4fteD9QIGQxPzgrneGkOTZE3rc8Mah1FKHHWQ1o35JJfncI315WiSzpue8eaDKfcmrldfYP66xyrQeyQNfOocdQT+7Q8USi3DbPYgBzhhU+TMKt42Jf/QUD6uoHktN3PL5+5Ihh7xtXuVoagqwrHhILN+wZ7ua5R9rYZuzFggHMT/vPd4aXs5KxcECC3QbKX2ZokAw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0YPyaq3Ct1YDSDvu1DP3vFrUjmnq3qH0P5QjysSJqZs=;
- b=A8PTw4h9CfXf8GN+rHjPl2k6nEen3jArrjpDUgh4zOPggwhdkGkIJR2OzzPez+0XSzSxSSpm1ibo8PJXHZGzLL8mQIjK7ljxH1XOqLEzW2LqV0gmg98dBAULmUEUIHitbAkvQ6x/1FH5BzxIzZv54dmVZ4LfosazKeRgHVnoGcHjcthViFZ7+8Fme4QAUTuKhRfAKX9fDwUQAOPpuxyU+bdPnv2/dhE6OiXgowrg2UjeF8xZWRUlDA0nBjRsCTaXeuAoYkzGTdgBTefpumva7APHhq665dtEvOqQlkcp9WT9XNGtTlaT6UbOKwBy2L4PKo5Dms6xIvwx07TlGl+dPw==
+ bh=J2WE8151XR1dP5UBYOkzqkw5Nr/d5hvBlxhoPiO5T/o=;
+ b=mzA3Qj5AbEVQ9ZZOPCC8intjk7eDHwDI0m9wx+oCVliSx7RyRneWHPHM++Y+bVDl2PZ2uIYCyy0cjoRcWndB4w/pvPbjK5KmxzXaUBK6RNKkNb6IZp0noL0Z9hJWb3O2nXgi2ws1IzYgfaaF6jYOimWfkUTiOVEPJhEzmGonc5t9u6jpBOHf2J1F3c8dzdSQNN6buePYeg63j+Fgj3YcnDScNE2g9akL9b80sWR0lIAba2hDXNM2VwWWz+frtJxr3KzhDXhV4TckOJYq9UUdBpLe46YI5A96sYMgw0In7cCgU0keva+0GzCx88kYQ/B1O4M3PB2p/HRpSdjvKAPJfw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0YPyaq3Ct1YDSDvu1DP3vFrUjmnq3qH0P5QjysSJqZs=;
- b=RRKmKT/6xJZdAXowbL9NDTBR12w2lzmizGreDoDyt+SKXV/ghH4GQUHXjkyDZmpP7mOBdHU+mLFpSWD8cg6dSSaqt3lOmKAOEjwpxtJMYylQ77pVJGK7XPtxIZ9hhMh9W+u9Zq30zzDSGk6qpeU2pWvAEPUttmE8lcLZJL04Wqs=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from CH2PR15MB3573.namprd15.prod.outlook.com (2603:10b6:610:e::28)
- by CH2PR15MB3575.namprd15.prod.outlook.com (2603:10b6:610:2::17) with
+ bh=J2WE8151XR1dP5UBYOkzqkw5Nr/d5hvBlxhoPiO5T/o=;
+ b=BckIn26dC/ARRNKE5QYZWGEZgWQlPgCCKfKZJEP7P5u63Hus904rAMnQPnxeIPMj+UIGWoCbB+ykCW7yO9t9kkgtV4BNWEuukZ364HfHrQYUoXh2BzqPIr+qrlNvwurcYuKxo0deaC1fMjlSCjToP+Zlq8+xeVt//GlodgquXlE=
+Received: from MW3PR11MB4522.namprd11.prod.outlook.com (2603:10b6:303:2d::8)
+ by MW3PR11MB4748.namprd11.prod.outlook.com (2603:10b6:303:2e::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.26; Mon, 29 Jun
- 2020 18:24:49 +0000
-Received: from CH2PR15MB3573.namprd15.prod.outlook.com
- ([fe80::b0ab:989:1165:107]) by CH2PR15MB3573.namprd15.prod.outlook.com
- ([fe80::b0ab:989:1165:107%5]) with mapi id 15.20.3131.026; Mon, 29 Jun 2020
- 18:24:49 +0000
-Date:   Mon, 29 Jun 2020 11:24:46 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Networking <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-Subject: Re: [PATCH bpf-next 07/10] bpf: selftests: Restore netns after each
- test
-Message-ID: <20200629182446.ij4a7ngat33b2omm@kafai-mbp.dhcp.thefacebook.com>
-References: <20200626175501.1459961-1-kafai@fb.com>
- <20200626175545.1462191-1-kafai@fb.com>
- <CAEf4BzZ3Jb296zJ7bfsntk7v5fkynrBcKncGQgrSHJ2zqifgsA@mail.gmail.com>
- <20200627002302.3tqklvjxxuetjoxr@kafai-mbp.dhcp.thefacebook.com>
- <CAEf4BzZevDLp8Hzax3T8XzHLsMm85upCONULVVOEOyAxVGe4dA@mail.gmail.com>
- <20200629180035.huq42fif7wktfbja@kafai-mbp.dhcp.thefacebook.com>
- <CAEf4Bzbke6B9Pf21xD0XXz_NGmuZMZcaWxbfgjdxBaNHc=zf1w@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bzbke6B9Pf21xD0XXz_NGmuZMZcaWxbfgjdxBaNHc=zf1w@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-ClientProxiedBy: BYAPR06CA0033.namprd06.prod.outlook.com
- (2603:10b6:a03:d4::46) To CH2PR15MB3573.namprd15.prod.outlook.com
- (2603:10b6:610:e::28)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.23; Mon, 29 Jun
+ 2020 18:47:18 +0000
+Received: from MW3PR11MB4522.namprd11.prod.outlook.com
+ ([fe80::4021:b214:94b3:3c50]) by MW3PR11MB4522.namprd11.prod.outlook.com
+ ([fe80::4021:b214:94b3:3c50%6]) with mapi id 15.20.3131.027; Mon, 29 Jun 2020
+ 18:47:17 +0000
+From:   "Brady, Alan" <alan.brady@intel.com>
+To:     Joe Perches <joe@perches.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Michael, Alice" <alice.michael@intel.com>,
+        "Burra, Phani R" <phani.r.burra@intel.com>,
+        "Hay, Joshua A" <joshua.a.hay@intel.com>,
+        "Chittim, Madhu" <madhu.chittim@intel.com>,
+        "Linga, Pavan Kumar" <pavan.kumar.linga@intel.com>,
+        "Skidmore, Donald C" <donald.c.skidmore@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        lkp <lkp@intel.com>
+Subject: RE: [net-next v3 15/15] idpf: Introduce idpf driver
+Thread-Topic: [net-next v3 15/15] idpf: Introduce idpf driver
+Thread-Index: AQHWS16dw6+5edmw8ECPFJMrnHofWajqPwEAgAW1mkA=
+Date:   Mon, 29 Jun 2020 18:47:17 +0000
+Message-ID: <MW3PR11MB4522BE337570E8A27D36C51E8F6E0@MW3PR11MB4522.namprd11.prod.outlook.com>
+References: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
+         <20200626020737.775377-16-jeffrey.t.kirsher@intel.com>
+ <b7101ba0cd470df3be74a970c2a2e50de43ed7e6.camel@perches.com>
+In-Reply-To: <b7101ba0cd470df3be74a970c2a2e50de43ed7e6.camel@perches.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+authentication-results: perches.com; dkim=none (message not signed)
+ header.d=none;perches.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [174.127.217.60]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6bb55cb2-214e-42c2-0935-08d81c5cd93a
+x-ms-traffictypediagnostic: MW3PR11MB4748:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW3PR11MB4748FAB6004D5D40E85AC7018F6E0@MW3PR11MB4748.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:519;
+x-forefront-prvs: 044968D9E1
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: lwfOZuJN62KVKc3MBwechER84dRqZFHw2jZWuB6/ZwTeBjuUqRFZPEPDxes+q+Amk4pBW/FIoGfiAU/FaLkIHL8UL5yq+n4A1InxPnAFfXcGzBk6Bxi4IGsCAtE7PcO8XFCTvwVf8PruIDBZhLqETiFweuOxvY+LNRis4oSq5wBAdsILv5E6rchWUYaEO6oK9N1FFbiKumz8QKxo6ZIzexNcd4LGtESyAeZ0N2KOkxhkO+PGUR56nCa/XaYH5CNtQdoJVxip/paCwrUO+EPQzNrWQ3mstgKW+VzdFj4lYUJyJCiiOj0BCJJ63mfEfs+2
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4522.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(396003)(346002)(136003)(376002)(52536014)(7696005)(6506007)(53546011)(2906002)(86362001)(478600001)(186003)(26005)(5660300002)(4326008)(316002)(83380400001)(71200400001)(110136005)(54906003)(66946007)(66556008)(64756008)(66476007)(8936002)(76116006)(33656002)(9686003)(66446008)(8676002)(107886003)(55016002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: tIyI5/lwVvymn56TKwIiFmb3VhbiGvWzKVtXwj1WkBRXOEhFRjZeQNcpWWKge45FDhr3BKIj92yVYiUhNKga+82tC3SizzL9b2rgFJ6RbtawP0BOHL1IeictqFB4L1Jd+uCuFv9uQOdjmJhKIHIog4MU8gsFrFsJz5P1nYs8iDA9uwRXmzdS3XqMVjH3r/rdRCxSeMv/aCpGJLcJX1llR6uZiWcGsfhYh6C4HQnlTKBlSN/AipaufX787T7Co4b/Xi89DX5dhMjPQ9TYxK9TNVJLGnSPqd09T6GpSgAzqWZ+8iLEez4wY9tfilEyn0wkeg4M+E0qJZXfR9M7NVcbXJSxEEaxxdSE12thMJyigSNbvvOP5MtlKso0N5H2p1DPjZ/m9bV0PxDeAOCKgpe+5ZimYptRUx7VhseLnvGTJLje4+B6dBquxDlnxpOqZ3iiJoZ0935KX5/MT3xuYw/d2WRGepvJBxmGXgMFOqRGfupQ8q71Vt8Y6vCscYhN1c4I
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:875e) by BYAPR06CA0033.namprd06.prod.outlook.com (2603:10b6:a03:d4::46) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.23 via Frontend Transport; Mon, 29 Jun 2020 18:24:47 +0000
-X-Originating-IP: [2620:10d:c090:400::5:875e]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e535d204-95f3-4917-fb4d-08d81c59b4f4
-X-MS-TrafficTypeDiagnostic: CH2PR15MB3575:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <CH2PR15MB3575912C80A8F16A481CF52AD56E0@CH2PR15MB3575.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-Forefront-PRVS: 044968D9E1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qguIUW3ce/Ktut1WRY1EUEiUvk/Lly0o3yCoTfGSJ4lZr0JpoLu/NN+Xi48YwDBnEn8FuHPY1uzTwA+Im4JGmDtQAzEcrB8R0UrcXgj21dVQPeCRu9AX0Kn0muHo2FQZuiB6Wq+Fq3sd4rb2b4DFMEWjGx87W7tC4Mv6azawCqzlUIdHYI/v1tjVtuFPqVV7cRhXSlSRCFsS2L/R6CWgIbxIBvnfc/cvMzzDyUGbsFmMEY3jzytJg7GRJ1dy7FClT2rxKtl4iy5WcFDEyi3CRJ/83ZPCL3sez5Fw3henMzBgRhKrv7bJIlFlNhb3280n7V/DvtlLIL42zxSq8x6D9w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR15MB3573.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(346002)(39860400002)(366004)(396003)(136003)(186003)(16526019)(86362001)(6506007)(53546011)(66556008)(66946007)(66476007)(1076003)(316002)(54906003)(9686003)(83380400001)(55016002)(5660300002)(8936002)(6916009)(478600001)(4326008)(2906002)(8676002)(7696005)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: F6rLD8QzUMlOFz6z6CdgVrKEBFid2JLAKu3VuX+kDzdauzRJvVA4aVHw4TGkWPEUH3TP6FOl8bbVlQx2wyMpnqDe6xLZIL44+D/KF6cjwT4a8VgpsxAo6N2881jYvPrzRv75mQ0wPz2KkA2WF6bFJam06FFQw7D2vruMw9Ns45YmRuuYoQsdGTWIt5POTdj65xIgtmiNfk3HzAQUqrThilLxBCrHfjvlJCVblKBZe3FRWAS7bVAdPZj4BE4YWDTpx4TRWFluw0juGPNA1tsqWXZ53SgaUBG0I3okvU8eV+z3OwkJCJOekY8xcoLorRmQB0HKgnxkLe307cDrtK++l873wPJzRrk1BJD+J0ed3N7btjnv6iO2iqZRneSHdLVqF8PIgaLiKaviTkAucBnG4vidB+XjBOqTUyMRvohQn/89GAUHUYyOSi0eB5VAmYmahMM6kjny6UBEM4MXgH8h9LGwUEaUmO81cAop5oTW5iAs2q2/MPhvV2tHJ0V9LNDLcTuEai2v11ZVEASsWKFh9g==
-X-MS-Exchange-CrossTenant-Network-Message-Id: e535d204-95f3-4917-fb4d-08d81c59b4f4
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR15MB3573.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2020 18:24:48.9374
+X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4522.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6bb55cb2-214e-42c2-0935-08d81c5cd93a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2020 18:47:17.8021
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YfNeIVzq8316EQk7BbE6NIH9ErtJ9T1w/8t/eytMfL8+fS/ssMUalxUtAy5eLNEQ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR15MB3575
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-06-29_21:2020-06-29,2020-06-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- adultscore=0 lowpriorityscore=0 mlxscore=0 malwarescore=0 bulkscore=0
- phishscore=0 spamscore=0 priorityscore=1501 suspectscore=0 clxscore=1015
- cotscore=-2147483648 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006290115
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vC0Ggq3s6LCJQ4R4T/zl/dUzrCwPScVon6I+nhdVYE7Ygj7WtnJYdoVFauimWimxPTi+TWGZ3Vr1bLRhMbfsWA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4748
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 11:13:07AM -0700, Andrii Nakryiko wrote:
-> On Mon, Jun 29, 2020 at 11:00 AM Martin KaFai Lau <kafai@fb.com> wrote:
+> -----Original Message-----
+> From: Joe Perches <joe@perches.com>
+> Sent: Thursday, June 25, 2020 8:36 PM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net
+> Cc: Brady, Alan <alan.brady@intel.com>; netdev@vger.kernel.org;
+> nhorman@redhat.com; sassmann@redhat.com; Michael, Alice
+> <alice.michael@intel.com>; Burra, Phani R <phani.r.burra@intel.com>; Hay,
+> Joshua A <joshua.a.hay@intel.com>; Chittim, Madhu
+> <madhu.chittim@intel.com>; Linga, Pavan Kumar
+> <pavan.kumar.linga@intel.com>; Skidmore, Donald C
+> <donald.c.skidmore@intel.com>; Brandeburg, Jesse
+> <jesse.brandeburg@intel.com>; Samudrala, Sridhar
+> <sridhar.samudrala@intel.com>; lkp <lkp@intel.com>
+> Subject: Re: [net-next v3 15/15] idpf: Introduce idpf driver
+>=20
+> On Thu, 2020-06-25 at 19:07 -0700, Jeff Kirsher wrote:
+> > From: Alan Brady <alan.brady@intel.com>
 > >
-> > On Sat, Jun 27, 2020 at 01:31:42PM -0700, Andrii Nakryiko wrote:
-> > > On Fri, Jun 26, 2020 at 5:23 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > > >
-> > > > On Fri, Jun 26, 2020 at 03:45:04PM -0700, Andrii Nakryiko wrote:
-> > > > > On Fri, Jun 26, 2020 at 10:56 AM Martin KaFai Lau <kafai@fb.com> wrote:
-> > > > > >
-> > > > > > It is common for networking tests creating its netns and making its own
-> > > > > > setting under this new netns (e.g. changing tcp sysctl).  If the test
-> > > > > > forgot to restore to the original netns, it would affect the
-> > > > > > result of other tests.
-> > > > > >
-> > > > > > This patch saves the original netns at the beginning and then restores it
-> > > > > > after every test.  Since the restore "setns()" is not expensive, it does it
-> > > > > > on all tests without tracking if a test has created a new netns or not.
-> > > > > >
-> > > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > > > > > ---
-> > > > > >  tools/testing/selftests/bpf/test_progs.c | 21 +++++++++++++++++++++
-> > > > > >  tools/testing/selftests/bpf/test_progs.h |  2 ++
-> > > > > >  2 files changed, 23 insertions(+)
-> > > > > >
-> > > > > > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-> > > > > > index 54fa5fa688ce..b521ce366381 100644
-> > > > > > --- a/tools/testing/selftests/bpf/test_progs.c
-> > > > > > +++ b/tools/testing/selftests/bpf/test_progs.c
-> > > > > > @@ -121,6 +121,24 @@ static void reset_affinity() {
-> > > > > >         }
-> > > > > >  }
-> > > > > >
-> > > > > > +static void save_netns(void)
-> > > > > > +{
-> > > > > > +       env.saved_netns_fd = open("/proc/self/ns/net", O_RDONLY);
-> > > > > > +       if (env.saved_netns_fd == -1) {
-> > > > > > +               perror("open(/proc/self/ns/net)");
-> > > > > > +               exit(-1);
-> > > > > > +       }
-> > > > > > +}
-> > > > > > +
-> > > > > > +static void restore_netns(void)
-> > > > > > +{
-> > > > > > +       if (setns(env.saved_netns_fd, CLONE_NEWNET) == -1) {
-> > > > > > +               stdio_restore();
-> > > > > > +               perror("setns(CLONE_NEWNS)");
-> > > > > > +               exit(-1);
-> > > > > > +       }
-> > > > > > +}
-> > > > > > +
-> > > > > >  void test__end_subtest()
-> > > > > >  {
-> > > > > >         struct prog_test_def *test = env.test;
-> > > > > > @@ -643,6 +661,7 @@ int main(int argc, char **argv)
-> > > > > >                 return -1;
-> > > > > >         }
-> > > > > >
-> > > > > > +       save_netns();
-> > > > >
-> > > > > you should probably do this also after each sub-test in test__end_subtest()?
-> > > > You mean restore_netns()?
-> > >
-> > > oops, yeah :)
-> > >
-> > > >
-> > > > It is a tough call.
-> > > > Some tests may only want to create a netns at the beginning for all the subtests
-> > > > to use (e.g. sk_assign.c).  restore_netns() after each subtest may catch
-> > > > tester in surprise that the netns is not in its full control while its
-> > > > own test is running.
-> > >
-> > > Wouldn't it be better to update such self-tests to setns on each
-> > > sub-test properly? It should be a simple code re-use exercise, unless
-> > > I'm missing some other implications of having to do it before each
-> > > sub-test?
-> > It should be simple, I think.  Haven't looked into details of each test.
-> > However, I won't count re-running the same piece of code in a for-loop
-> > as a re-use exercise ;)
-> >
-> > In my vm, a quick try in forcing sk_assign.c to reconfigure netns in each
-> > subtest in the for loop increased the runtime from 1s to 8s.
-> > I guess it is not a big deal for test_progs.
-> 
-> Oh, no, thank you very much, no one needs extra 7 seconds of
-> test_progs run. Can you please remove reset_affinity() from sub-test
-> clean up then, and consistently do clean ups only between tests?
-Sure.
+> > Utilizes the Intel Ethernet Common Module and provides a device
+> > specific implementation for data plane devices.
+> []
+> > diff --git a/drivers/net/ethernet/intel/idpf/idpf_main.c
+> > b/drivers/net/ethernet/intel/idpf/idpf_main.c
+> []
+> > @@ -0,0 +1,136 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/* Copyright (C) 2020 Intel Corporation */
+> > +
+> > +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> > +
+> > +#include "idpf_dev.h"
+> > +#include "idpf_devids.h"
+> > +
+> > +#define DRV_SUMMARY	"Intel(R) Data Plane Function Linux Driver"
+> > +static const char idpf_driver_string[] =3D DRV_SUMMARY; static const
+> > +char idpf_copyright[] =3D "Copyright (c) 2020, Intel Corporation.";
+> > +
+> > +MODULE_AUTHOR("Intel Corporation, <linux.nics@intel.com>");
+> > +MODULE_DESCRIPTION(DRV_SUMMARY); MODULE_LICENSE("GPL v2");
+> []
+> > +static int __init idpf_module_init(void) {
+> > +	int status;
+> > +
+> > +	pr_info("%s", idpf_driver_string);
+>=20
+> missing format terminating newline.
+>=20
+> > +	pr_info("%s\n", idpf_copyright);
+>=20
+>=20
 
-reset_affinity() has already been called after each test, so should be
-fine as is.
+
+Will fix, thanks.
+
+Alan
