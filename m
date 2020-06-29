@@ -2,97 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD94320D52B
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:16:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B18320D3F7
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:13:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730542AbgF2TPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:15:16 -0400
-Received: from foss.arm.com ([217.140.110.172]:39030 "EHLO foss.arm.com"
+        id S1730603AbgF2TDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:03:36 -0400
+Received: from mga12.intel.com ([192.55.52.136]:9632 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729378AbgF2TO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 15:14:56 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DE9CA14F6;
-        Mon, 29 Jun 2020 06:15:19 -0700 (PDT)
-Received: from [10.57.21.32] (unknown [10.57.21.32])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1043F3F73C;
-        Mon, 29 Jun 2020 06:15:18 -0700 (PDT)
-Subject: Re: the XSK buffer pool needs be to reverted
-To:     Christoph Hellwig <hch@lst.de>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-References: <20200626074725.GA21790@lst.de>
- <20200626205412.xfe4lywdbmh3kmri@bsd-mbp> <20200627070236.GA11854@lst.de>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <e43ab7b9-22f5-75c3-c9e6-f1eb18d57148@arm.com>
-Date:   Mon, 29 Jun 2020 14:15:16 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1730590AbgF2TDb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 15:03:31 -0400
+IronPort-SDR: LwE34Gs+AV+xokjb3JndDrLgxWFdQYFDnQfGmEkhIUuDm+zdREct9rAW8Pew3uqAO3uU/20UGf
+ dW/vm24w2Ufw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="125593307"
+X-IronPort-AV: E=Sophos;i="5.75,294,1589266800"; 
+   d="scan'208";a="125593307"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2020 06:39:04 -0700
+IronPort-SDR: GOBMqQlGojLcDdG+5mlKFZRG9gJ8QV2ZkbkGgaSD2pc2JsK2FTpzVwlf29Xfp9W1iEJ4QONxVB
+ TPoq3jVsldWw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,294,1589266800"; 
+   d="scan'208";a="313048269"
+Received: from unknown (HELO btopel-mobl.ger.intel.com) ([10.252.54.90])
+  by fmsmga002.fm.intel.com with ESMTP; 29 Jun 2020 06:39:02 -0700
+Subject: Re: add an API to check if a streamming mapping needs sync calls
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200629130359.2690853-1-hch@lst.de>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <b97104e1-433c-8e35-59c6-b4dad047464c@intel.com>
+Date:   Mon, 29 Jun 2020 15:39:01 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200627070236.GA11854@lst.de>
+In-Reply-To: <20200629130359.2690853-1-hch@lst.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-06-27 08:02, Christoph Hellwig wrote:
-> On Fri, Jun 26, 2020 at 01:54:12PM -0700, Jonathan Lemon wrote:
->> On Fri, Jun 26, 2020 at 09:47:25AM +0200, Christoph Hellwig wrote:
->>>
->>> Note that this is somewhat urgent, as various of the APIs that the code
->>> is abusing are slated to go away for Linux 5.9, so this addition comes
->>> at a really bad time.
->>
->> Could you elaborate on what is upcoming here?
+On 2020-06-29 15:03, Christoph Hellwig wrote:
+> Hi all,
 > 
-> Moving all these calls out of line, and adding a bypass flag to avoid
-> the indirect function call for IOMMUs in direct mapped mode.
+> this series lifts the somewhat hacky checks in the XSK code if a DMA
+> streaming mapping needs dma_sync_single_for_{device,cpu} calls to the
+> DMA API.
+>
+
+Thanks a lot for working on, and fixing this, Christoph!
+
+I took the series for a spin, and there are (obviously) no performance
+regressions.
+
+Would the patches go through the net/bpf trees or somewhere else?
+
+For the series:
+Tested-by: Björn Töpel <bjorn.topel@intel.com>
+Acked-by: Björn Töpel <bjorn.topel@intel.com>
+
+
+Björn
+
 > 
->> Also, on a semi-related note, are there limitations on how many pages
->> can be left mapped by the iommu?  Some of the page pool work involves
->> leaving the pages mapped instead of constantly mapping/unmapping them.
+> Diffstat:
+>   Documentation/core-api/dma-api.rst |    8 +++++
+>   include/linux/dma-direct.h         |    1
+>   include/linux/dma-mapping.h        |    5 +++
+>   include/net/xsk_buff_pool.h        |    6 ++--
+>   kernel/dma/direct.c                |    6 ++++
+>   kernel/dma/mapping.c               |   10 ++++++
+>   net/xdp/xsk_buff_pool.c            |   54 ++-----------------------------------
+>   7 files changed, 37 insertions(+), 53 deletions(-)
 > 
-> There are, but I think for all modern IOMMUs they are so big that they
-> don't matter.  Maintaines of the individual IOMMU drivers might know
-> more.
-
-Right - I don't know too much about older and more esoteric stuff like 
-POWER TCE, but for modern pagetable-based stuff like Intel VT-d, AMD-Vi, 
-and Arm SMMU, the only "limits" are such that legitimate DMA API use 
-should never get anywhere near them (you'd run out of RAM for actual 
-buffers long beforehand). The most vaguely-realistic concern might be a 
-pathological system topology where some old 32-bit PCI device doesn't 
-have ACS isolation from your high-performance NIC such that they have to 
-share an address space, where the NIC might happen to steal all the low 
-addresses and prevent the soundcard or whatever from being able to map a 
-usable buffer.
-
-With an IOMMU, you typically really *want* to keep a full working set's 
-worth of pages mapped, since dma_map/unmap are expensive while dma_sync 
-is somewhere between relatively cheap and free. With no IOMMU it makes 
-no real difference from the DMA API perspective since map/unmap are 
-effectively no more than the equivalent sync operations anyway (I'm 
-assuming we're not talking about the kind of constrained hardware that 
-might need SWIOTLB).
-
->> On a heavily loaded box with iommu enabled, it seems that quite often
->> there is contention on the iova_lock.  Are there known issues in this
->> area?
-> 
-> I'll have to defer to the IOMMU maintainers, and for that you'll need
-> to say what code you are using.  Current mainlaine doesn't even have
-> an iova_lock anywhere.
-
-Again I can't speak for non-mainstream stuff outside drivers/iommu, but 
-it's been over 4 years now since merging the initial scalability work 
-for the generic IOVA allocator there that focused on minimising lock 
-contention, and it's had considerable evaluation and tweaking since. But 
-if we can achieve the goal of efficiently recycling mapped buffers then 
-we shouldn't need to go anywhere near IOVA allocation either way except 
-when expanding the pool.
-
-Robin.
