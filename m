@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2AC520E73E
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:10:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5BB220E742
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391575AbgF2Vzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41600 "EHLO
+        id S2391567AbgF2Vzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391559AbgF2Vz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 17:55:27 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93BAC061755
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:55:27 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id v8so18771442iox.2
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:55:27 -0700 (PDT)
+        with ESMTP id S1730664AbgF2Vz2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 17:55:28 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B97C03E97A
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:55:28 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id k23so18810445iom.10
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:55:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zQuQWfZzfj1SDZzBIXoKjjE4U7nBLLgIi6SIHAdQ+GA=;
-        b=nGp01w2niKYCt4PaDR03fsVvxKd2eC+s3Q3ZlNqyypP7ldsPagswtGN9KUM4XpbMIS
-         Aa9+EGXM/XCYpLzhGgRDKGbNqzrCnxV387ZzSl/TfHcNQM0o3SykBipxtAeYnbQJbo1z
-         h/C+KpByaLay7PG11dGkPSCVyYbYjkGT1aGqC84lQ90RyZg1H/i8zJd4M8ZfZh64WFbQ
-         B7L//WshF43JDl7GAWd1uVvioE2U6lJSsSNNpRIHQ9dJMwXqBVDGEB5Nhbjsz44aJ4ly
-         Odk/LQmZSPI3hCI8zXjT9mK+fzzOArU9EY9PiorANBPUC4Bjq5gnpn4UcexJh7T7mGOR
-         1Plg==
+        bh=GAS+84BNIbLsBoPOP/ylzzb5xE9wpBU8i+/yA5WKgjE=;
+        b=vCB2v743azwgqIowwzMAL+FtFFnERCwnY4oOtaXtn/0AWpKfwQozXTOuvxZaeims5T
+         /JHKXdvlkmZGH1iDgnbJm9z6+TlkiAxMvLhUj0n2qq2R2YHlvn7VZfK3CE338lUhQdJb
+         +U6WfvRQVWHVXW3sbb0JehxokRLyoZX8cXiIwtVW5amZ8JI3fj1iilw5nyUjdUbA80XS
+         YWqGo/VPcvYEHxQdPYI66tKrbGa/ly8JDC5QQX+ggIKv06FcEb53o6BHO17sulG7hDij
+         irXBHpCpdjKMjNBMepk4tee6oDf7BGSLEaAUVbdZFvU5YsVyFw8Wz17YUhWI+g8E41sx
+         2orw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zQuQWfZzfj1SDZzBIXoKjjE4U7nBLLgIi6SIHAdQ+GA=;
-        b=W2ArHTczmlivaxMY89jnrBHUnF+GXE0kjEaPeuHnHw1zKKf2qxcw6BfzF79fRml2nO
-         6rV8iH0Pq48M28v/zAYCwpklX6drpdUxYeiTnq30RxG7iIJpf+U8LvWYCRb33TbAJSKw
-         jbcTSDZp4i7HLaSe2lA+qwXs9jsIp/SNAQqcfsKJUMLLlv40VN1J5jVGjOf4e6jNtj8R
-         PvkKYYiLuSn/+Nu+GSrmSe3Kwj8V5C64IaVJIb1VoY+lyipWBqfkt80oj5OvfzCQ/7pC
-         radcdyaOv16eAF7z8BHrKUL9LuYtMh64Th+KhmtVxo0hiW4f8nZqzjpqm+yH4zNo0Egt
-         bNwQ==
-X-Gm-Message-State: AOAM5320D0PVfSlFGnM7YxIpoiRVl0TqX+XutOyxZrOJGvNGLet9GiZF
-        kX5evFwZdHkW/+E0g1uWDHWL6A==
-X-Google-Smtp-Source: ABdhPJxGwvvKmc1/Mw85Jidwdd9tp3bG583KjI33LYk6uebsjpDlj/Bf8q7fbeentimbgNbROGtx3Q==
-X-Received: by 2002:a05:6602:491:: with SMTP id y17mr18551373iov.72.1593467727042;
+        bh=GAS+84BNIbLsBoPOP/ylzzb5xE9wpBU8i+/yA5WKgjE=;
+        b=nwzQm17UqyErpGhYcCtSY5gYfvx3bMtqmZzEgiMXl2taX9zx7y6wy4I0FaQXD23niN
+         2wPv5aa2vLhXvlEd/my9OgzWBMLEgz/k1bvfTFtKYLFUrA024EPY7dsXJUSRdK8i1Z/M
+         A97yOkJoBUxt0q7ja+f56kNzwoXkNaPzZJMKbOU/HOKD56h/Eux4qngjBfYsU2dNAFXg
+         auOhwvPB7d7bP/PrKnxhwsJ30eFHUTpZfRs5XCZTXSr0YDHHKC7kIC/YgneLx1X3CrhO
+         pton9dUfz6kXVDQbhlLcmU6CzUKga5LLsyo8BUFa9OAt8WZHXHL6b4OKYLH9xjrwZe3B
+         +rsw==
+X-Gm-Message-State: AOAM531Q6fI+8OlygV5IjvnpllE6a9nvGBe2MCFD/SOyP6rVM65QATrq
+        DBDLUOp5jrqH4mbRJfVAqQbuRw==
+X-Google-Smtp-Source: ABdhPJxtc/vNa2b5B1A6esGMHU2utCpIh9sjRihbXsDi5a/z89JN0fabDW9BPEye3gCT3OA7bTk4QQ==
+X-Received: by 2002:a02:5e88:: with SMTP id h130mr20329835jab.116.1593467727986;
         Mon, 29 Jun 2020 14:55:27 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id a187sm543221iog.2.2020.06.29.14.55.26
+        by smtp.gmail.com with ESMTPSA id a187sm543221iog.2.2020.06.29.14.55.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 14:55:26 -0700 (PDT)
+        Mon, 29 Jun 2020 14:55:27 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/3] net: ipa: rework ipa_aggr_granularity_val()
-Date:   Mon, 29 Jun 2020 16:55:21 -0500
-Message-Id: <20200629215523.1196263-2-elder@linaro.org>
+Subject: [PATCH net-next 2/3] net: ipa: reduce aggregation time limit
+Date:   Mon, 29 Jun 2020 16:55:22 -0500
+Message-Id: <20200629215523.1196263-3-elder@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200629215523.1196263-1-elder@linaro.org>
 References: <20200629215523.1196263-1-elder@linaro.org>
@@ -65,73 +65,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The timer used for aggregation makes use of an internal 32 KHz clock.
-The granularity of the timer is programmed by a field whose value is
-computed by ipa_aggr_granularity_val().  Redefine the way that value
-is computed by using a new TIMER_FREQUENCY constant representing the
-underlying clock frequency.
+Halve the time limit used when aggregation is enabled on an RX
+endpoint, to half a millisecond.
 
-Add two BUILD_BUG_ON() calls to ensure the value used is valid.
+Use DIV_ROUND_CLOSEST() to compute the value that represents the
+time period, to get better accuracy in the event the time limit is
+not an even multiple of the granularity.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_main.c |  5 +++++
- drivers/net/ipa/ipa_reg.h  | 17 ++++++++---------
- 2 files changed, 13 insertions(+), 9 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index 76d5108b8403..27a869df3a4b 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -674,6 +674,11 @@ static void ipa_validate_build(void)
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index 9f50d0d11704..93449366d7d8 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -36,7 +36,7 @@
+ #define IPA_ENDPOINT_QMAP_METADATA_MASK		0x000000ff /* host byte order */
  
- 	/* This is used as a divisor */
- 	BUILD_BUG_ON(!IPA_AGGR_GRANULARITY);
+ #define IPA_ENDPOINT_RESET_AGGR_RETRY_MAX	3
+-#define IPA_AGGR_TIME_LIMIT_DEFAULT		1000	/* microseconds */
++#define IPA_AGGR_TIME_LIMIT_DEFAULT		500	/* microseconds */
+ 
+ /** enum ipa_status_opcode - status element opcode hardware values */
+ enum ipa_status_opcode {
+@@ -583,9 +583,11 @@ static void ipa_endpoint_init_aggr(struct ipa_endpoint *endpoint)
+ 			val |= u32_encode_bits(IPA_GENERIC, AGGR_TYPE_FMASK);
+ 			val |= u32_encode_bits(aggr_size,
+ 					       AGGR_BYTE_LIMIT_FMASK);
 +
-+	/* Aggregation granularity value can't be 0, and must fit */
-+	BUILD_BUG_ON(!ipa_aggr_granularity_val(IPA_AGGR_GRANULARITY));
-+	BUILD_BUG_ON(ipa_aggr_granularity_val(IPA_AGGR_GRANULARITY) >
-+			field_max(AGGR_GRANULARITY));
- #endif /* IPA_VALIDATE */
- }
- 
-diff --git a/drivers/net/ipa/ipa_reg.h b/drivers/net/ipa/ipa_reg.h
-index 0a688d8c1d7c..7ae8015798ae 100644
---- a/drivers/net/ipa/ipa_reg.h
-+++ b/drivers/net/ipa/ipa_reg.h
-@@ -190,24 +190,23 @@ static inline u32 ipa_reg_bcr_val(enum ipa_version version)
- 	return 0x00000000;
- }
- 
--
- #define IPA_REG_LOCAL_PKT_PROC_CNTXT_BASE_OFFSET	0x000001e8
- 
- #define IPA_REG_AGGR_FORCE_CLOSE_OFFSET			0x000001ec
- /* ipa->available defines the valid bits in the AGGR_FORCE_CLOSE register */
- 
-+/* The internal inactivity timer clock is used for the aggregation timer */
-+#define TIMER_FREQUENCY	32000	/* 32 KHz inactivity timer clock */
+ 			limit = IPA_AGGR_TIME_LIMIT_DEFAULT;
+-			val |= u32_encode_bits(limit / IPA_AGGR_GRANULARITY,
+-					       AGGR_TIME_LIMIT_FMASK);
++			limit = DIV_ROUND_CLOSEST(limit, IPA_AGGR_GRANULARITY);
++			val |= u32_encode_bits(limit, AGGR_TIME_LIMIT_FMASK);
 +
- #define IPA_REG_COUNTER_CFG_OFFSET			0x000001f0
- #define AGGR_GRANULARITY			GENMASK(8, 4)
--/* Compute the value to use in the AGGR_GRANULARITY field representing
-- * the given number of microseconds (up to 1 millisecond).
-- *	x = (32 * usec) / 1000 - 1
-+/* Compute the value to use in the AGGR_GRANULARITY field representing the
-+ * given number of microseconds.  The value is one less than the number of
-+ * timer ticks in the requested period.  Zero not a valid granularity value.
-  */
--static inline u32 ipa_aggr_granularity_val(u32 microseconds)
-+static inline u32 ipa_aggr_granularity_val(u32 usec)
- {
--	/* assert(microseconds >= 16); (?) */
--	/* assert(microseconds <= 1015); */
--
--	return DIV_ROUND_CLOSEST(32 * microseconds, 1000) - 1;
-+	return DIV_ROUND_CLOSEST(usec * TIMER_FREQUENCY, USEC_PER_SEC) - 1;
- }
- 
- #define IPA_REG_TX_CFG_OFFSET				0x000001fc
+ 			val |= u32_encode_bits(0, AGGR_PKT_LIMIT_FMASK);
+ 			if (endpoint->data->rx.aggr_close_eof)
+ 				val |= AGGR_SW_EOF_ACTIVE_FMASK;
 -- 
 2.25.1
 
