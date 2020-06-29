@@ -2,167 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A0BD20D33B
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:12:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A15620D36E
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729314AbgF2S4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 14:56:54 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:16510 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729537AbgF2S4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:56:52 -0400
-Received: from localhost ([10.193.187.21])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 05TBtGTP010730;
-        Mon, 29 Jun 2020 04:55:17 -0700
-From:   Nirranjan Kirubaharan <nirranjan@chelsio.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     nirranjan@chelsio.com, dt@chelsio.com
-Subject: [PATCH net-next] cxgb4vf: configure ports accessible by the VF
-Date:   Mon, 29 Jun 2020 17:25:13 +0530
-Message-Id: <20200629115513.537757-1-nirranjan@chelsio.com>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1729851AbgF2S6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 14:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730167AbgF2S5p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:57:45 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B18DC00F80D;
+        Mon, 29 Jun 2020 05:29:57 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: andrzej.p)
+        with ESMTPSA id 7130E2A2D9E
+From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+To:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Peter Kaestle <peter@piie.net>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Enrico Weigelt <info@metux.net>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        kernel@collabora.com, kernel test robot <lkp@intel.com>
+Subject: [PATCH v7 06/11] thermal: Add mode helpers
+Date:   Mon, 29 Jun 2020 14:29:20 +0200
+Message-Id: <20200629122925.21729-7-andrzej.p@collabora.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200629122925.21729-1-andrzej.p@collabora.com>
+References: <20200629122925.21729-1-andrzej.p@collabora.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Find ports accessible by the VF, based on the index of the
-mac address stored for the VF in the adapter. If no mac address
-is stored for the VF, use the port mask provided by firmware.
+Prepare for making the drivers not access tzd's private members.
 
-Signed-off-by: Nirranjan Kirubaharan <nirranjan@chelsio.com>
+Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+[staticize thermal_zone_device_set_mode()]
+Signed-off-by: kernel test robot <lkp@intel.com>
 ---
- .../ethernet/chelsio/cxgb4vf/cxgb4vf_main.c   | 47 +++++++++++++++----
- .../ethernet/chelsio/cxgb4vf/t4vf_common.h    |  2 +-
- .../net/ethernet/chelsio/cxgb4vf/t4vf_hw.c    |  6 +--
- 3 files changed, 43 insertions(+), 12 deletions(-)
+ drivers/thermal/thermal_core.c | 53 ++++++++++++++++++++++++++++++++++
+ include/linux/thermal.h        | 13 +++++++++
+ 2 files changed, 66 insertions(+)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-index a7641be9094f..dbe8ee7e0e21 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-@@ -2916,6 +2916,39 @@ static const struct net_device_ops cxgb4vf_netdev_ops	= {
- #endif
- };
+diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+index 14d3b1b94c4f..f02c57c986f0 100644
+--- a/drivers/thermal/thermal_core.c
++++ b/drivers/thermal/thermal_core.c
+@@ -459,6 +459,59 @@ static void thermal_zone_device_reset(struct thermal_zone_device *tz)
+ 	thermal_zone_device_init(tz);
+ }
  
-+/**
-+ *	cxgb4vf_get_port_mask - Get port mask for the VF based on mac
-+ *				address stored on the adapter
-+ *	@adapter: The adapter
-+ *
-+ *	Find the the port mask for the VF based on the index of mac
-+ *	address stored in the adapter. If no mac address is stored on
-+ *	the adapter for the VF, use the port mask received from the
-+ *	firmware.
-+ */
-+static unsigned int cxgb4vf_get_port_mask(struct adapter *adapter)
++static int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
++					enum thermal_device_mode mode)
 +{
-+	unsigned int naddr = 1, pidx = 0;
-+	unsigned int pmask, rmask = 0;
-+	u8 mac[ETH_ALEN];
-+	int err;
++	int ret = 0;
 +
-+	pmask = adapter->params.vfres.pmask;
-+	while (pmask) {
-+		if (pmask & 1) {
-+			err = t4vf_get_vf_mac_acl(adapter, pidx, &naddr, mac);
-+			if (!err && !is_zero_ether_addr(mac))
-+				rmask |= (1 << pidx);
-+		}
-+		pmask >>= 1;
-+		pidx++;
++	mutex_lock(&tz->lock);
++
++	/* do nothing if mode isn't changing */
++	if (mode == tz->mode) {
++		mutex_unlock(&tz->lock);
++
++		return ret;
 +	}
-+	if (!rmask)
-+		rmask = adapter->params.vfres.pmask;
 +
-+	return rmask;
++	if (tz->ops->set_mode)
++		ret = tz->ops->set_mode(tz, mode);
++
++	if (!ret)
++		tz->mode = mode;
++
++	mutex_unlock(&tz->lock);
++
++	thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
++
++	return ret;
 +}
 +
- /*
-  * "Probe" a device: initialize a device and construct all kernel and driver
-  * state needed to manage the device.  This routine is called "init_one" in
-@@ -2924,13 +2957,12 @@ static const struct net_device_ops cxgb4vf_netdev_ops	= {
- static int cxgb4vf_pci_probe(struct pci_dev *pdev,
- 			     const struct pci_device_id *ent)
++int thermal_zone_device_enable(struct thermal_zone_device *tz)
++{
++	return thermal_zone_device_set_mode(tz, THERMAL_DEVICE_ENABLED);
++}
++EXPORT_SYMBOL_GPL(thermal_zone_device_enable);
++
++int thermal_zone_device_disable(struct thermal_zone_device *tz)
++{
++	return thermal_zone_device_set_mode(tz, THERMAL_DEVICE_DISABLED);
++}
++EXPORT_SYMBOL_GPL(thermal_zone_device_disable);
++
++int thermal_zone_device_is_enabled(struct thermal_zone_device *tz)
++{
++	enum thermal_device_mode mode;
++
++	mutex_lock(&tz->lock);
++
++	mode = tz->mode;
++
++	mutex_unlock(&tz->lock);
++
++	return mode == THERMAL_DEVICE_ENABLED;
++}
++EXPORT_SYMBOL_GPL(thermal_zone_device_is_enabled);
++
+ void thermal_zone_device_update(struct thermal_zone_device *tz,
+ 				enum thermal_notify_event event)
  {
--	int pci_using_dac;
--	int err, pidx;
--	unsigned int pmask;
- 	struct adapter *adapter;
--	struct port_info *pi;
- 	struct net_device *netdev;
--	unsigned int pf;
-+	struct port_info *pi;
-+	unsigned int pmask;
-+	int pci_using_dac;
-+	int err, pidx;
+diff --git a/include/linux/thermal.h b/include/linux/thermal.h
+index a808f6fa2777..df013c39ba9b 100644
+--- a/include/linux/thermal.h
++++ b/include/linux/thermal.h
+@@ -416,6 +416,9 @@ int thermal_zone_get_offset(struct thermal_zone_device *tz);
  
- 	/*
- 	 * Initialize generic PCI device state.
-@@ -3073,8 +3105,7 @@ static int cxgb4vf_pci_probe(struct pci_dev *pdev,
- 	/*
- 	 * Allocate our "adapter ports" and stitch everything together.
- 	 */
--	pmask = adapter->params.vfres.pmask;
--	pf = t4vf_get_pf_from_vf(adapter);
-+	pmask = cxgb4vf_get_port_mask(adapter);
- 	for_each_port(adapter, pidx) {
- 		int port_id, viid;
- 		u8 mac[ETH_ALEN];
-@@ -3157,7 +3188,7 @@ static int cxgb4vf_pci_probe(struct pci_dev *pdev,
- 			goto err_free_dev;
- 		}
+ void thermal_cdev_update(struct thermal_cooling_device *);
+ void thermal_notify_framework(struct thermal_zone_device *, int);
++int thermal_zone_device_enable(struct thermal_zone_device *tz);
++int thermal_zone_device_disable(struct thermal_zone_device *tz);
++int thermal_zone_device_is_enabled(struct thermal_zone_device *tz);
+ #else
+ static inline struct thermal_zone_device *thermal_zone_device_register(
+ 	const char *type, int trips, int mask, void *devdata,
+@@ -463,6 +466,16 @@ static inline void thermal_cdev_update(struct thermal_cooling_device *cdev)
+ static inline void thermal_notify_framework(struct thermal_zone_device *tz,
+ 	int trip)
+ { }
++
++static inline int thermal_zone_device_enable(struct thermal_zone_device *tz)
++{ return -ENODEV; }
++
++static inline int thermal_zone_device_disable(struct thermal_zone_device *tz)
++{ return -ENODEV; }
++
++static inline int
++thermal_zone_device_is_enabled(struct thermal_zone_device *tz)
++{ return -ENODEV; }
+ #endif /* CONFIG_THERMAL */
  
--		err = t4vf_get_vf_mac_acl(adapter, pf, &naddr, mac);
-+		err = t4vf_get_vf_mac_acl(adapter, port_id, &naddr, mac);
- 		if (err) {
- 			dev_err(&pdev->dev,
- 				"unable to determine MAC ACL address, "
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/t4vf_common.h b/drivers/net/ethernet/chelsio/cxgb4vf/t4vf_common.h
-index 57cfd10a99ec..03777145efec 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/t4vf_common.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/t4vf_common.h
-@@ -415,7 +415,7 @@ int t4vf_eth_eq_free(struct adapter *, unsigned int);
- int t4vf_update_port_info(struct port_info *pi);
- int t4vf_handle_fw_rpl(struct adapter *, const __be64 *);
- int t4vf_prep_adapter(struct adapter *);
--int t4vf_get_vf_mac_acl(struct adapter *adapter, unsigned int pf,
-+int t4vf_get_vf_mac_acl(struct adapter *adapter, unsigned int port,
- 			unsigned int *naddr, u8 *addr);
- int t4vf_get_vf_vlan_acl(struct adapter *adapter);
- 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/t4vf_hw.c b/drivers/net/ethernet/chelsio/cxgb4vf/t4vf_hw.c
-index a31b87390b50..cd8f9a481d73 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/t4vf_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/t4vf_hw.c
-@@ -2187,14 +2187,14 @@ int t4vf_prep_adapter(struct adapter *adapter)
-  *	t4vf_get_vf_mac_acl - Get the MAC address to be set to
-  *			      the VI of this VF.
-  *	@adapter: The adapter
-- *	@pf: The pf associated with vf
-+ *	@port: The port associated with vf
-  *	@naddr: the number of ACL MAC addresses returned in addr
-  *	@addr: Placeholder for MAC addresses
-  *
-  *	Find the MAC address to be set to the VF's VI. The requested MAC address
-  *	is from the host OS via callback in the PF driver.
-  */
--int t4vf_get_vf_mac_acl(struct adapter *adapter, unsigned int pf,
-+int t4vf_get_vf_mac_acl(struct adapter *adapter, unsigned int port,
- 			unsigned int *naddr, u8 *addr)
- {
- 	struct fw_acl_mac_cmd cmd;
-@@ -2212,7 +2212,7 @@ int t4vf_get_vf_mac_acl(struct adapter *adapter, unsigned int pf,
- 	if (cmd.nmac < *naddr)
- 		*naddr = cmd.nmac;
- 
--	switch (pf) {
-+	switch (port) {
- 	case 3:
- 		memcpy(addr, cmd.macaddr3, sizeof(cmd.macaddr3));
- 		break;
+ #endif /* __THERMAL_H__ */
 -- 
-2.26.2
+2.17.1
 
