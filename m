@@ -2,94 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 521D120DFE3
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:55:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B26820DD81
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:50:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731701AbgF2Ukk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731697AbgF2TOK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:14:10 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C475C008602
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 03:14:59 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id rk21so16008007ejb.2
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 03:14:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=rBLLrnf5msSWldk/b9lKXdnjWlfnslhZkR3ph4+G37c=;
-        b=Yhfu/lQGE+ZHGF8Z/+StZlzzyxAua0lxbuBTS9KoiTdOaDZsUPxRqF6kYsvYZd+2+Q
-         9zAUErqzDAfVi8ISMnV5CtOa63u0JH1TSl0hrKjYvcamuUt4EnVt2mWt3urPTNz4PZAu
-         75YZwrn3xCZ296LbUjpKfqh037I6zvoPnHbLAXw577/+qXlZ4qC9mzleQw+2JJo+6PrL
-         oEmDi5waRBRYgbWRnLEEKTkLNffrfzok6ZRNrgdl2bhc6W6DQNKuVMuJauX1wqXMyMGL
-         YDvBhLjiPOUteQ7ZcaNIIVGz22kdUA9uMgTKCa77fFLd6EqdczAwgQLAoAJs9EjW3mWB
-         DFUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=rBLLrnf5msSWldk/b9lKXdnjWlfnslhZkR3ph4+G37c=;
-        b=rF85h5BhXYv0HMsVcw3N/jAfQ3OmDuQJMwJeSu+7rpSPwKxHvjWJ1YzPTfEW5u52Hf
-         44HHm5C4kGuQuntmnZx/mOvVG/MW/3CuC07qJt673Fe4/t4ab5nqeCXbTlPaaL7mYW3T
-         4prfOv2JUHuhv9p/7NOg+tZLGnr8oIb3U/Y5MS9p2cP9OJZktAGRWWxcrQxHoj79ljJU
-         e9YzRmfTqJRQubi8znln+7yaPzLgPb8BhNVCCBc+zQGbnsQW/M+qlluLWp6Y3mzPYhgJ
-         wXTJPCrxmvzW+xjccBnJgxQkE49xG+45jfHC36HyFUwtdzlPFyNKQMIoAioPux0TUOa3
-         X2Ag==
-X-Gm-Message-State: AOAM530Ke+ozvwJY+xawcAoQaZMvCsL2t/3pAN+qVuXkHtD/WiaEdfaC
-        XH24G1insn88Ex1cryse8DcCCwoYgUSnHO5AivtQwg==
-X-Google-Smtp-Source: ABdhPJwW2DNml27tKusy65ml6m+5kJ8hXABy0Zt7Q+wJ+tv5k5+b/0XYtXu1L0pwYrUTiyvBcGgot+M804Rgvqs3DTE=
-X-Received: by 2002:a17:906:5f98:: with SMTP id a24mr12818959eju.241.1593425697892;
- Mon, 29 Jun 2020 03:14:57 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a50:3a1b:0:0:0:0:0 with HTTP; Mon, 29 Jun 2020 03:14:57
- -0700 (PDT)
-X-Originating-IP: [5.35.13.201]
-In-Reply-To: <20200626090519.7efbd06f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <1593171639-8136-1-git-send-email-kda@linux-powerpc.org>
- <1593171639-8136-3-git-send-email-kda@linux-powerpc.org> <20200626090519.7efbd06f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Mon, 29 Jun 2020 13:14:57 +0300
-Message-ID: <CAOJe8K35osOCKOhrLCKGKns7Hu0M+EAP6TUvwbpsgS_B7Vi2jQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v13 2/3] xen networking: add basic XDP support
- for xen-netfront
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, brouer@redhat.com, jgross@suse.com,
-        wei.liu@kernel.org, paul@xen.org, ilias.apalodimas@linaro.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1730011AbgF2S7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 14:59:48 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:35558 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729867AbgF2S7p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 14:59:45 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 1063C20103B;
+        Mon, 29 Jun 2020 12:40:05 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 04775200191;
+        Mon, 29 Jun 2020 12:40:05 +0200 (CEST)
+Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id CA566205D4;
+        Mon, 29 Jun 2020 12:40:04 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next 2/2] dpaa2-eth: add software counter for Tx frames converted to S/G
+Date:   Mon, 29 Jun 2020 13:39:54 +0300
+Message-Id: <20200629103954.18021-3-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200629103954.18021-1-ioana.ciornei@nxp.com>
+References: <20200629103954.18021-1-ioana.ciornei@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/26/20, Jakub Kicinski <kuba@kernel.org> wrote:
-> On Fri, 26 Jun 2020 14:40:38 +0300 Denis Kirjanov wrote:
->> The patch adds a basic XDP processing to xen-netfront driver.
->>
->> We ran an XDP program for an RX response received from netback
->> driver. Also we request xen-netback to adjust data offset for
->> bpf_xdp_adjust_head() header space for custom headers.
->>
->> synchronization between frontend and backend parts is done
->> by using xenbus state switching:
->> Reconfiguring -> Reconfigured- > Connected
->>
->> UDP packets drop rate using xdp program is around 310 kpps
->> using ./pktgen_sample04_many_flows.sh and 160 kpps without the patch.
->>
->> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
->
-> Still here:
->
-> drivers/net/xen-netfront.c: In function xennet_xdp_xmit_one:
-> drivers/net/xen-netfront.c:581:31: warning: variable tx set but not used
-> [-Wunused-but-set-variable]
->   581 |  struct xen_netif_tx_request *tx;
->       |                               ^~
-Hi Jakub,
+With the previous commit, in case of insufficient SKB headroom on the Tx
+path instead of reallocing the SKB we now send a S/G frame descriptor.
+Export the number of occurences of this case as a per CPU counter (in
+debugfs) and a total number in the ethtool statistics - "tx converted sg
+frames'.
 
-Ohh... going to send a fixed version.
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c | 7 ++++---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c         | 2 ++
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h         | 3 +++
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c     | 2 ++
+ 4 files changed, 11 insertions(+), 3 deletions(-)
 
-Thanks.
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
+index 5cb357c74dec..56d9927fbfda 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
+@@ -19,14 +19,14 @@ static int dpaa2_dbg_cpu_show(struct seq_file *file, void *offset)
+ 	int i;
+ 
+ 	seq_printf(file, "Per-CPU stats for %s\n", priv->net_dev->name);
+-	seq_printf(file, "%s%16s%16s%16s%16s%16s%16s%16s%16s\n",
++	seq_printf(file, "%s%16s%16s%16s%16s%16s%16s%16s%16s%16s\n",
+ 		   "CPU", "Rx", "Rx Err", "Rx SG", "Tx", "Tx Err", "Tx conf",
+-		   "Tx SG", "Enq busy");
++		   "Tx SG", "Tx converted to SG", "Enq busy");
+ 
+ 	for_each_online_cpu(i) {
+ 		stats = per_cpu_ptr(priv->percpu_stats, i);
+ 		extras = per_cpu_ptr(priv->percpu_extras, i);
+-		seq_printf(file, "%3d%16llu%16llu%16llu%16llu%16llu%16llu%16llu%16llu\n",
++		seq_printf(file, "%3d%16llu%16llu%16llu%16llu%16llu%16llu%16llu%16llu%16llu\n",
+ 			   i,
+ 			   stats->rx_packets,
+ 			   stats->rx_errors,
+@@ -35,6 +35,7 @@ static int dpaa2_dbg_cpu_show(struct seq_file *file, void *offset)
+ 			   stats->tx_errors,
+ 			   extras->tx_conf_frames,
+ 			   extras->tx_sg_frames,
++			   extras->tx_converted_sg_frames,
+ 			   extras->tx_portal_busy);
+ 	}
+ 
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 4a264b75c035..bc1f1e0117b6 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -960,6 +960,8 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
+ 		err = build_sg_fd_single_buf(priv, skb, &fd);
+ 		percpu_extras->tx_sg_frames++;
+ 		percpu_extras->tx_sg_bytes += skb->len;
++		percpu_extras->tx_converted_sg_frames++;
++		percpu_extras->tx_converted_sg_bytes += skb->len;
+ 	} else {
+ 		err = build_single_fd(priv, skb, &fd);
+ 	}
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index 9e4ceb92f240..9138a35a68f9 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -285,6 +285,9 @@ struct dpaa2_eth_drv_stats {
+ 	__u64	tx_sg_bytes;
+ 	__u64	rx_sg_frames;
+ 	__u64	rx_sg_bytes;
++	/* Linear skbs sent as a S/G FD due to insufficient headroom */
++	__u64	tx_converted_sg_frames;
++	__u64	tx_converted_sg_bytes;
+ 	/* Enqueues retried due to portal busy */
+ 	__u64	tx_portal_busy;
+ };
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+index c4cbbcaa9a3f..8356f1fbbee1 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+@@ -45,6 +45,8 @@ static char dpaa2_ethtool_extras[][ETH_GSTRING_LEN] = {
+ 	"[drv] tx sg bytes",
+ 	"[drv] rx sg frames",
+ 	"[drv] rx sg bytes",
++	"[drv] tx converted sg frames",
++	"[drv] tx converted sg bytes",
+ 	"[drv] enqueue portal busy",
+ 	/* Channel stats */
+ 	"[drv] dequeue portal busy",
+-- 
+2.25.1
+
