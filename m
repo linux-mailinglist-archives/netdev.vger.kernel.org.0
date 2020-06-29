@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3101A20E02C
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:56:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45D9920E0CD
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:57:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389688AbgF2Un3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
+        id S1731482AbgF2Utv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 16:49:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726637AbgF2TOC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:14:02 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3562C00E3D0
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:04:18 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id l17so15140289wmj.0
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:04:18 -0700 (PDT)
+        with ESMTP id S1731485AbgF2TNk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:13:40 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34BF5C00E3D7
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:04:20 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id o2so15872789wmh.2
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:04:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vANIsXo74NzXiDIyR10LVPoVvN0SF3cCppVREngNaSg=;
-        b=nQ9byLrDn58wjHMhoadRsTTETa0UhC6JF4a46q+PYUs7UZGZeUDV+Ialz0dd7h+UZR
-         mhqFHyY0EbcDbESld8SYOxPhwBLpUwtVkb7pnzsNitFSbO7EEfGSOy2q2y7CP79Hex0H
-         1b+M8CdLjEStcijSVXMq80kujGFckpNmUPo54ebhhky847n6l7blHRFboEfpPZTyy81E
-         MMdTQ19QQn9i1JzgLPdR6Txwa+fNw+Wy8dARSM1y/DGypJ0Whb8UBnHg8y/LnybqbSGv
-         f43pJWnxIJUXGw1WzhE2J9N+9sBt5Oq9JRyYdz9w5VzjVb+Gsr45rKUvPRAqZkU/fFCF
-         warw==
+        bh=hztYQwCZoivzm5mGWlL7y58+THNI2tIqMQL/obqgBh8=;
+        b=wrrcCV/eHtEzwZIw9VBAP2zQ1gydhl0t9E8l473TWC1k05eOBumji4Os1tiblAIJzO
+         4wOzef0hZPVEX5d6XcKMyCLmyT1b7YyADt6ahskiop6YYNc4kCYECitUEPTZ2F+fGW7i
+         6y8Uvfl5xMLYsCcJdugcnS3YtHoCINKs3ujOoex6Br78sdsqIuKWAPmqQBMdtMgzZc4Z
+         IgDmjSTOStUefzpm8hIuT/c2k0/+8rBOE6qocp0QN+rhvRzXyv46oLIUH3XFLdMSc0fo
+         EpUTI/q2/srGjYzlHBIkYZyaLKmmyxTE0lK2PPy6VX9gggVCK384yzLHsG9blwPMptuJ
+         bl8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vANIsXo74NzXiDIyR10LVPoVvN0SF3cCppVREngNaSg=;
-        b=aFFVkBbLxbLdVEqYHGqB0eavrX5t1yGJEvhPMRUZIUy7LgqBbEvDs2aTP5ZTfMrOEb
-         Yf3atoTBarefPi1vXb4ivh3KrC/HkMLV1qvV2bezTDigspLQbPwszbG7poFjN3qpqYF+
-         4WydIEeHHL1FU2hmZLivaJmCa+HfYd3BFphIEt8NQnUC0rCl1g/q8DffghSIgn3jE/C4
-         zW8IXNLT6ipM0xN7OZ9gg+FzJFNEOCEcCKC5awbc3fNYnnmDNnYDGnTrdw8gAdry9bXb
-         svJjjidcsp5c1v6SECHD5EgQqHkEf4P4cDj4VVaKglKByG8cdjes+3fjsc6tNlPVZrCY
-         Us3Q==
-X-Gm-Message-State: AOAM531o34W8Y/hj3Cad/XSFewZ/NQe+ARl7aDQyqFKa/KuhhPQyBDZ1
-        bsI0WWNfW3WLeBg6L2mQVcglPQ==
-X-Google-Smtp-Source: ABdhPJzzIpHdKMTQ6SjqhWeqI//sR8Iftgms6VcGQcyabxIbGKuFkf8bRkm3ckDgSAITcNYh0w9Y4Q==
-X-Received: by 2002:a7b:c746:: with SMTP id w6mr17250018wmk.171.1593432257471;
-        Mon, 29 Jun 2020 05:04:17 -0700 (PDT)
+        bh=hztYQwCZoivzm5mGWlL7y58+THNI2tIqMQL/obqgBh8=;
+        b=l2MCWeKyiDrPLDuh2kCfURm8iuJoo7Kznb6FejSgSDbqaIrOOOzcH6eur1ZSYElxtS
+         PvhzWYf4IPLWdVcY6gRMAT/Q+HDt2ORrJ/iOXxYfAruwB54BkQPtGTbpQXoCrV4paxPa
+         vZlFsLjCeRy6UoD5vPooe27JZFQ5hlgjZFIvUPJw6Grmbx8FZUXiuKXbNCrtCHjIeoZH
+         TRC6z1evkUQFoQalFJaOQvwL82GMGOfyQraITf7WlCLtCudo+zfNmJpYZkKIGg5c5bsL
+         j1/qZU6P5RavB69wpwtNbeqG77oSd01XiNv/GlImE9HQs3pGeIQ1okk5uh3Lv3F7x0HE
+         3nUQ==
+X-Gm-Message-State: AOAM530qMCXeHTMQ2UqmevVPW8j70U5L0EDoHesA5q+FfW1wMp0Cwfh+
+        VV/qUQK6jonBbKdszXL45J2w9w==
+X-Google-Smtp-Source: ABdhPJwFYLtezxZPsklmDvGqxvDLuEveoshSgJPr77DKJtvQVHg9COcCXF74kUionqbzZntdIBqycg==
+X-Received: by 2002:a7b:cc8b:: with SMTP id p11mr17633011wma.180.1593432258934;
+        Mon, 29 Jun 2020 05:04:18 -0700 (PDT)
 Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
-        by smtp.gmail.com with ESMTPSA id d81sm25274347wmc.0.2020.06.29.05.04.16
+        by smtp.gmail.com with ESMTPSA id d81sm25274347wmc.0.2020.06.29.05.04.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 05:04:16 -0700 (PDT)
+        Mon, 29 Jun 2020 05:04:18 -0700 (PDT)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -65,9 +65,9 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH v2 04/10] Documentation: devres: add missing mdio helper
-Date:   Mon, 29 Jun 2020 14:03:40 +0200
-Message-Id: <20200629120346.4382-5-brgl@bgdev.pl>
+Subject: [PATCH v2 05/10] phy: un-inline devm_mdiobus_register()
+Date:   Mon, 29 Jun 2020 14:03:41 +0200
+Message-Id: <20200629120346.4382-6-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.26.1
 In-Reply-To: <20200629120346.4382-1-brgl@bgdev.pl>
 References: <20200629120346.4382-1-brgl@bgdev.pl>
@@ -80,26 +80,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-We have a devres variant of mdiobus_register() but it's not listed in
-devres.rst. Add it under other mdio devm functions.
+Functions should only be static inline if they're very short. This
+devres helper is already over 10 lines and it will grow soon as we'll
+be improving upon its approach. Pull it into mdio_devres.c.
 
 Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 ---
- Documentation/driver-api/driver-model/devres.rst | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/Makefile      |  2 +-
+ drivers/net/phy/mdio_devres.c | 18 ++++++++++++++++++
+ include/linux/phy.h           | 15 ++-------------
+ 3 files changed, 21 insertions(+), 14 deletions(-)
+ create mode 100644 drivers/net/phy/mdio_devres.c
 
-diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
-index e0b58c392e4f..5463fc8a60c1 100644
---- a/Documentation/driver-api/driver-model/devres.rst
-+++ b/Documentation/driver-api/driver-model/devres.rst
-@@ -343,6 +343,7 @@ MDIO
-   devm_mdiobus_alloc()
-   devm_mdiobus_alloc_size()
-   devm_mdiobus_free()
-+  devm_mdiobus_register()
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index dc9e53b511d6..896afdcac437 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -3,7 +3,7 @@
  
- MEM
-   devm_free_pages()
+ libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o \
+ 				   linkmode.o
+-mdio-bus-y			+= mdio_bus.o mdio_device.o
++mdio-bus-y			+= mdio_bus.o mdio_device.o mdio_devres.o
+ 
+ ifdef CONFIG_MDIO_DEVICE
+ obj-y				+= mdio-boardinfo.o
+diff --git a/drivers/net/phy/mdio_devres.c b/drivers/net/phy/mdio_devres.c
+new file mode 100644
+index 000000000000..f0b4b6cfe5e3
+--- /dev/null
++++ b/drivers/net/phy/mdio_devres.c
+@@ -0,0 +1,18 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#include <linux/phy.h>
++
++int __devm_mdiobus_register(struct mii_bus *bus, struct module *owner)
++{
++	int ret;
++
++	if (!bus->is_managed)
++		return -EPERM;
++
++	ret = __mdiobus_register(bus, owner);
++	if (!ret)
++		bus->is_managed_registered = 1;
++
++	return ret;
++}
++EXPORT_SYMBOL(__devm_mdiobus_register);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index b693b609b2f5..4935867f024b 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -313,20 +313,9 @@ static inline struct mii_bus *mdiobus_alloc(void)
+ }
+ 
+ int __mdiobus_register(struct mii_bus *bus, struct module *owner);
++int __devm_mdiobus_register(struct mii_bus *bus, struct module *owner);
+ #define mdiobus_register(bus) __mdiobus_register(bus, THIS_MODULE)
+-static inline int devm_mdiobus_register(struct mii_bus *bus)
+-{
+-	int ret;
+-
+-	if (!bus->is_managed)
+-		return -EPERM;
+-
+-	ret = mdiobus_register(bus);
+-	if (!ret)
+-		bus->is_managed_registered = 1;
+-
+-	return ret;
+-}
++#define devm_mdiobus_register(bus) __devm_mdiobus_register(bus, THIS_MODULE)
+ 
+ void mdiobus_unregister(struct mii_bus *bus);
+ void mdiobus_free(struct mii_bus *bus);
 -- 
 2.26.1
 
