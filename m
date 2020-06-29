@@ -2,89 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5456920E461
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:05:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21F8820E412
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:04:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391023AbgF2VYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:24:45 -0400
-Received: from mx.aristanetworks.com ([162.210.129.12]:27801 "EHLO
-        smtp.aristanetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390666AbgF2VYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 17:24:39 -0400
-X-Greylist: delayed 395 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Jun 2020 17:24:38 EDT
-Received: from us180.sjc.aristanetworks.com (us180.sjc.aristanetworks.com [172.25.230.4])
-        by smtp.aristanetworks.com (Postfix) with ESMTP id DB96540186E;
-        Mon, 29 Jun 2020 14:18:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1593465481;
-        bh=6rzpagTEz/0c76jqpV4RCeaagtLY9blrBtt6YCEHTrw=;
-        h=Date:To:Subject:From:From;
-        b=T7f3fBEHpUZytdu2dNWE4IOyY2k7FnzrY+o/OenHEBt9S58mhUR6c/sbUsE90U9um
-         63HFFog4ODYUbrqhwyMkQ343mLRQk+Czh8yoTjh+Pm4O/tpDpKx1PT5w0q3r/QyAGr
-         PRGBqfHrx/7eQB71w/KdbZrJZxIr5UEq0GjbQ3HrBZw1K2F0Y7AaHSuAJ6ig3TLcg8
-         3RNjXFcd9utZlJ6YFi3eUfn/ZX64DNvg+C6tvNfESlrjJjI6SFLQJWFKnw+HEH4hQR
-         r0evEFRhEBprt3Jv6Zxm+wdSvOgEYxn+fHauuuUYP52erWnuWY0rL1ObWwXLXZka/8
-         DrkZaIFaGJmGA==
-Received: by us180.sjc.aristanetworks.com (Postfix, from userid 10189)
-        id C3D7095C0900; Mon, 29 Jun 2020 14:18:01 -0700 (PDT)
-Date:   Mon, 29 Jun 2020 14:18:01 -0700
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, kuba@kernel.org,
-        davem@davemloft.net, jeffrey.t.kirsher@intel.com,
-        fruggeri@arista.com
-Subject: [PATCH] igb: reinit_locked() should be called with rtnl_lock
-User-Agent: Heirloom mailx 12.5 7/5/10
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-Id: <20200629211801.C3D7095C0900@us180.sjc.aristanetworks.com>
-From:   fruggeri@arista.com (Francesco Ruggeri)
+        id S1732406AbgF2VUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729630AbgF2VUm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 17:20:42 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99509C061755
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:20:42 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id x9so15840453ila.3
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:20:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k9X5dybqaVmMEEJzafl+2Yy/3Ah4viLAbYdipucnxNE=;
+        b=xU4SqTJsR5K2nU/Hq/r1oQCau9qdyOcri4idnrHedfFv/IaFTLgLpC9hCKGPZTGehT
+         br6vMc31FtZp/PWGgNZLKpykZJCZ78fhrVNsEqVXEITGVmtgDoCoDDgGSbkRLHX9gEH/
+         ufD4CjKBvIIOBJfTRxcjiNCKIeDWZlb0ssAuRGNI4BS0onFJIMHoBgBoDmengw5PtUn9
+         5fA/QJpqtaTnyvXXKpuxnfRLArEU/HQal5zcuoP42d9t7dDQU/7XVelaBvrssonbGyso
+         ak81S933mYQ84GvIAMsEySdnJaUquZdHLm+qI4smCyxe/Qu5N/tTgy+QHnl3MVPEA1Yd
+         FgHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k9X5dybqaVmMEEJzafl+2Yy/3Ah4viLAbYdipucnxNE=;
+        b=EHYWXpMFDEzN2dSsAMMJ+OKC1JJZFa/6gaLvpxgDSTnfFMv52MuYdsLSHDcFVScYPh
+         7cuyUsN3JlbYGE0CjXar7KxcnChPmvBEpW4liSd4g18ZsDizS4C8KGHdUo4u7r8fc9Rx
+         HNogP5EwYFshhPvS7R33Cr9uedgu4RMDSrR9y21yG09so27lHColeKuWshAX3V+Aaeyq
+         grKYbiPvO0cy//rfOmjD64X2hp2HR00dKLWqKuf06RhnkdDxO7y2PWKfPHMoymXz+oAv
+         PcyI6yzj3uZrOAZIsqmSW/etiICwnIR2UKlrR9xwj6QYkNTfs/cm7TSzBPgEKJ7Wdk/t
+         Esog==
+X-Gm-Message-State: AOAM532OOb8lk5vXNY6/05gNYFzc8DHvaJ8ppZz01XZXfZVMnWCbuT4C
+        eW55fIr9xICqKjQZvTnIZa8+pw==
+X-Google-Smtp-Source: ABdhPJzuizx7XBfffMEnD7aMQLwY3iu4C0VXUbe+vkcmBBPe5UAzmK1GVE4kasiCFR9JWaBCL6rUfg==
+X-Received: by 2002:a92:cd04:: with SMTP id z4mr18150914iln.165.1593465641962;
+        Mon, 29 Jun 2020 14:20:41 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id f18sm564588ilj.15.2020.06.29.14.20.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Jun 2020 14:20:41 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net 0/3] net: ipa: three bug fixes
+Date:   Mon, 29 Jun 2020 16:20:35 -0500
+Message-Id: <20200629212038.1153054-1-elder@linaro.org>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We observed a panic in igb_reset_task caused by this race condition
-when doing a reboot -f:
+This series contains three bug fixes for the Qualcomm IPA driver.
+In practice these bugs are unlikke.y to be harmful, but they do
+represent incorrect code.
 
-	kworker			reboot -f
+					-Alex
 
-	igb_reset_task
-	igb_reinit_locked
-	igb_down
-	napi_synchronize
-				__igb_shutdown
-				igb_clear_interrupt_scheme
-				igb_free_q_vectors
-				igb_free_q_vector
-				adapter->q_vector[v_idx] = NULL;
-	napi_disable
-	Panics trying to access
-	adapter->q_vector[v_idx].napi_state
+Alex Elder (3):
+  net: ipa: always check for stopped channel
+  net: ipa: no checksum offload for SDM845 LAN RX
+  net: ipa: introduce ipa_cmd_tag_process()
 
-This commit applies to igb the same changes that were applied to ixgbe
-in commit 8f4c5c9fb87a ("ixgbe: reinit_locked() should be called with
-rtnl_lock") and commit 88adce4ea8f9 ("ixgbe: fix possible race in
-reset subtask").
+ drivers/net/ipa/gsi.c             | 16 +++++++---------
+ drivers/net/ipa/ipa_cmd.c         | 15 +++++++++++++++
+ drivers/net/ipa/ipa_cmd.h         |  8 ++++++++
+ drivers/net/ipa/ipa_data-sdm845.c |  1 -
+ drivers/net/ipa/ipa_endpoint.c    |  2 ++
+ 5 files changed, 32 insertions(+), 10 deletions(-)
 
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 8bb3db2cbd41..b79a78e102f3 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -6224,9 +6224,11 @@ static void igb_reset_task(struct work_struct *work)
- 	struct igb_adapter *adapter;
- 	adapter = container_of(work, struct igb_adapter, reset_task);
- 
-+	rtnl_lock();
- 	igb_dump(adapter);
- 	netdev_err(adapter->netdev, "Reset adapter\n");
- 	igb_reinit_locked(adapter);
-+	rtnl_unlock();
- }
- 
- /**
+-- 
+2.25.1
 
