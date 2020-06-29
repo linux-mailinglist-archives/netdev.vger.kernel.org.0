@@ -2,142 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B7B20E48C
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:05:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE67020E507
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390754AbgF2V0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
+        id S2390815AbgF2Vbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729478AbgF2V03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 17:26:29 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171FCC061755
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:26:29 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id f6so3176073ioj.5
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:26:29 -0700 (PDT)
+        with ESMTP id S2390997AbgF2Vbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 17:31:36 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13C1C061755
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:31:36 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id r22so16681892qke.13
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:31:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GEehQF5Dq7lIZlTVWZjKtKY7k4OY7nbzWNuwJEp3uCA=;
-        b=ln3G7483aQUSMwb9MRnm/mfwRP3UHJuE105pebnyrPDCjv3wJ4pCVD26yDO9MGgq5k
-         JjOHnqka6eTMXuxzgLdfJTsujakPMVePod6/HmfOJ61u+hS+IDwOaDZF9BGst5Aax8C/
-         MfKpSn++e97BcIr5Fi/3kwaxO3cjW1Fj39y2DwgsifHxvtjIq7+Sg5Fb+QO54agRz9Ck
-         FfN1QUpDzCD9MP+grFDi2NpElVVvO9WZMnXjTs9SOBJ9vrcBFicpqfxdtP9jSQxfgshY
-         u7dQQHNmmdVfHy7EBpisqyh4qOF7S6cFAGIkVZQPezKT2j7GmC+f2Jj04WW8ALq6bFFh
-         UjPw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nWE+TNE6F1yNQQeNoGPvqASJQY9T5zVirRn69LubCcQ=;
+        b=g0w/Rs3Lx/oMweDy+BP/tBfLZQJGCLiqT790cG+SBfjb7DISQOPiy4TW6AcNdKHpU7
+         PCC3ZbxAlSPGV0ubEaEDTJp0d7pXyLMOIvwGeRFoxkmCvDCbHfjVnxOsNMAlytF3Wk93
+         tQYZsTJWZqktSizeUNU5GscGWcoeVkw7hf827T5snBCckXMmybj49JhFCai8GXX5gtwQ
+         JFHgUXlC50Q5RUZPxMIhYFzMNkgBoxoTSmtQf2iPgH4ZT9JtuzcvYD3ksV6Z7krXpSG2
+         KBW6RAkO1anTj83DOI0bMZs2jnxcECM/B4j7QjmMxDvWNjaVw90/MQ8NZm/u5GPyM1KP
+         esSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GEehQF5Dq7lIZlTVWZjKtKY7k4OY7nbzWNuwJEp3uCA=;
-        b=cDPkmxtjWmsAqzHV0E44x8lW9XxxAWD0CzkV4vs2zFVYCHSvsNZCgnyNYvbaoGEVMP
-         NCStMSbTfysSjnd1t31K7ehNNqkc2vV6DdxfuBNqUXMIfMQagqzc774rLguIHJFJ7Pnf
-         VZAO1jMO+7IinvzZILMROgOBZcjHRvqB+0c/d/rUJqRqYzteTJpjixKGUccDBcHSInPZ
-         Rn73w2OVaf4auus6/Ta8w5e8FNz2lhEE37ET+sxAORWU1buWYVnHgPO16h66rIIlH4AJ
-         xxnahH4HnzLQKv7ToRzwaUDIU05P37MpovyW+XTYSm65WGJEa3+AG/nkUE5FiE5Pj4DS
-         3B7g==
-X-Gm-Message-State: AOAM530Wve9rsF6+a7pHekh6VUJv0wJuMsO1BQGPEFDcelwEoZMSCXvn
-        wCdKgeeAzCsl4geT4MZqPAC6XQ==
-X-Google-Smtp-Source: ABdhPJyqGlTk+siacmrLQja4dnmISvt+kPShXhh1/tbjp1nVBC+JbEMzt0kXUAxvx0gAMKiG4jlseQ==
-X-Received: by 2002:a02:83c3:: with SMTP id j3mr19486288jah.81.1593465988443;
-        Mon, 29 Jun 2020 14:26:28 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id j17sm589053ilq.7.2020.06.29.14.26.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 14:26:27 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 3/3] net: ipa: introduce ipa_cmd_tag_process()
-Date:   Mon, 29 Jun 2020 16:26:25 -0500
-Message-Id: <20200629212625.1153600-1-elder@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200629212038.1153054-1-elder@linaro.org>
-References: 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nWE+TNE6F1yNQQeNoGPvqASJQY9T5zVirRn69LubCcQ=;
+        b=DZbjYtbz8nrNjSw/dv/rLp3y5os1lgQhBFD1Ne6XcNIZCvcCQ55C4V1vq4E8v/em4d
+         RRpc7stJYV+hvWkqGJo2HbxwNMosdxiDr+xH0z0wVeU09u2QR+r9kLvmcikEBFlxmVRf
+         CZYd+c5k87Hn39+J00EgHBhGMDFx0Hc4WxWUxiz8eipelbLDLuKSowBxMFr1TIrgmzVE
+         siNVyKANYLUsPP53ZXOPCX4lOXJw2HVQza85Wwsxqf3MMuWx0qSeO5e0dXrICcaHT1Y9
+         tmu8HMn5cMOq/hLE3ddzE8BY5xmX3npTIAcvBRAxpGb4+JqGpWm9ClSZja235FJA7H0/
+         jA+Q==
+X-Gm-Message-State: AOAM532dSENIbLrSeCrSQoA+6oi1uljvuoxq2jHQGK+APJBnSS9DwBd/
+        zqDKhsyVfclDKYs8KgP53FgRHcn0
+X-Google-Smtp-Source: ABdhPJz0c7l6dGhN09l66jw8c9pcUXP+3Ia6WNqF/bu7OxhL896bCtHkSAwbBv+Op+WB2BiXHfYm6w==
+X-Received: by 2002:ae9:ef04:: with SMTP id d4mr16812037qkg.41.1593466294667;
+        Mon, 29 Jun 2020 14:31:34 -0700 (PDT)
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
+        by smtp.gmail.com with ESMTPSA id g1sm1354505qko.70.2020.06.29.14.31.33
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Jun 2020 14:31:33 -0700 (PDT)
+Received: by mail-yb1-f173.google.com with SMTP id 187so9079018ybq.2
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:31:33 -0700 (PDT)
+X-Received: by 2002:a25:df81:: with SMTP id w123mr26901318ybg.428.1593466293047;
+ Mon, 29 Jun 2020 14:31:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com> <cb763bc5-b361-891a-94e9-be2385ddcbe0@gmail.com>
+In-Reply-To: <cb763bc5-b361-891a-94e9-be2385ddcbe0@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 29 Jun 2020 17:30:55 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfgz54uQbzrMr1Q0cAg2Vs1TFjyOb_+jjKUPoKAb=R-fw@mail.gmail.com>
+Message-ID: <CA+FuTSfgz54uQbzrMr1Q0cAg2Vs1TFjyOb_+jjKUPoKAb=R-fw@mail.gmail.com>
+Subject: Re: [PATCH net-next] icmp: support rfc 4884
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create a new function ipa_cmd_tag_process() that simply allocates a
-transaction, adds a tag process command to it to clear the hardware
-pipeline, and commits the transaction.
+On Mon, Jun 29, 2020 at 5:15 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 6/29/20 9:57 AM, Willem de Bruijn wrote:
+> > From: Willem de Bruijn <willemb@google.com>
+> >
+> > ICMP messages may include an extension structure after the original
+> > datagram. RFC 4884 standardized this behavior.
+> >
+> > It introduces an explicit original datagram length field in the ICMP
+> > header to delineate the original datagram from the extension struct.
+> >
+> > Return this field when reading an ICMP error from the error queue.
+>
+> RFC mentions a 'length' field of 8 bits, your patch chose to export the whole
+> second word of icmp header.
+>
+> Why is this field mapped to a prior one (icmp_hdr(skb)->un.gateway) ?
+>
+> Should we add an element in the union to make this a little bit more explicit/readable ?
+>
+> diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+> index 5589eeb791ca580bb182e1dc38c05eab1c75adb9..427ed5a6765316a4c1e2fa06f3b6618447c01564 100644
+> --- a/include/uapi/linux/icmp.h
+> +++ b/include/uapi/linux/icmp.h
+> @@ -76,6 +76,7 @@ struct icmphdr {
+>                 __be16  sequence;
+>         } echo;
+>         __be32  gateway;
+> +       __be32  second_word; /* RFC 4884 4.[123] : <unused:8>,<length:8>,<mtu:16> */
+>         struct {
+>                 __be16  __unused;
+>                 __be16  mtu;
 
-Call it in from ipa_endpoint_suspend(), after suspending the modem
-endpoints but before suspending the AP command TX and AP LAN RX
-endpoints (which are used by the tag sequence).
+Okay. How about a variant of the existing struct frag?
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_cmd.c      | 15 +++++++++++++++
- drivers/net/ipa/ipa_cmd.h      |  8 ++++++++
- drivers/net/ipa/ipa_endpoint.c |  2 ++
- 3 files changed, 25 insertions(+)
+@@ -80,6 +80,11 @@ struct icmphdr {
+                __be16  __unused;
+                __be16  mtu;
+        } frag;
++       struct {
++               __u8    __unused;
++               __u8    length;
++               __be16  mtu;
++       } rfc_4884;
+        __u8    reserved[4];
+   } un;
 
-diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-index c9ab865e7290..d92dd3f09b73 100644
---- a/drivers/net/ipa/ipa_cmd.c
-+++ b/drivers/net/ipa/ipa_cmd.c
-@@ -586,6 +586,21 @@ u32 ipa_cmd_tag_process_count(void)
- 	return 4;
- }
- 
-+void ipa_cmd_tag_process(struct ipa *ipa)
-+{
-+	u32 count = ipa_cmd_tag_process_count();
-+	struct gsi_trans *trans;
-+
-+	trans = ipa_cmd_trans_alloc(ipa, count);
-+	if (trans) {
-+		ipa_cmd_tag_process_add(trans);
-+		gsi_trans_commit_wait(trans);
-+	} else {
-+		dev_err(&ipa->pdev->dev,
-+			"error allocating %u entry tag transaction\n", count);
-+	}
-+}
-+
- static struct ipa_cmd_info *
- ipa_cmd_info_alloc(struct ipa_endpoint *endpoint, u32 tre_count)
- {
-diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
-index e440aa69c8b5..1a646e0264a0 100644
---- a/drivers/net/ipa/ipa_cmd.h
-+++ b/drivers/net/ipa/ipa_cmd.h
-@@ -171,6 +171,14 @@ void ipa_cmd_tag_process_add(struct gsi_trans *trans);
-  */
- u32 ipa_cmd_tag_process_count(void);
- 
-+/**
-+ * ipa_cmd_tag_process() - Perform a tag process
-+ *
-+ * @Return:	The number of elements to allocate in a transaction
-+ *		to hold tag process commands
-+ */
-+void ipa_cmd_tag_process(struct ipa *ipa);
-+
- /**
-  * ipa_cmd_trans_alloc() - Allocate a transaction for the command TX endpoint
-  * @ipa:	IPA pointer
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 9f50d0d11704..9e58e495d373 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1450,6 +1450,8 @@ void ipa_endpoint_suspend(struct ipa *ipa)
- 	if (ipa->modem_netdev)
- 		ipa_modem_suspend(ipa->modem_netdev);
- 
-+	ipa_cmd_tag_process(ipa);
-+
- 	ipa_endpoint_suspend_one(ipa->name_map[IPA_ENDPOINT_AP_LAN_RX]);
- 	ipa_endpoint_suspend_one(ipa->name_map[IPA_ENDPOINT_AP_COMMAND_TX]);
- }
--- 
-2.25.1
+ };
 
+>
+>
+> >
+> > ICMPv6 by default already returns the entire 32-bit part of the header
+> > that includes this field by default. For consistency, do the exact
+> > same for ICMP. So far it only returns mtu on ICMP_FRAG_NEEDED and gw
+> > on ICMP_PARAMETERPROB.
+> >
+> > For backwards compatibility, make this optional, set by setsockopt
+> > SOL_IP/IP_RECVERR_RFC4884. For API documentation and feature test, see
+> > https://github.com/wdebruij/kerneltools/blob/master/tests/recv_icmp.c
+> >
+> > Alternative implementation to reading from the skb in ip_icmp_error
+> > is to pass the field from icmp_unreach, again analogous to ICMPv6. But
+> > this would require changes to every $proto_err() callback, which for
+> > ICMP_FRAG_NEEDED pass the u32 info arg to a pmtu update function.
+> >
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > ---
+> >  include/net/inet_sock.h |  1 +
+> >  include/uapi/linux/in.h |  1 +
+> >  net/ipv4/ip_sockglue.c  | 12 ++++++++++++
+> >  3 files changed, 14 insertions(+)
+> >
+> > diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+> > index a7ce00af6c44..a3702d1d4875 100644
+> > --- a/include/net/inet_sock.h
+> > +++ b/include/net/inet_sock.h
+> > @@ -225,6 +225,7 @@ struct inet_sock {
+> >                               mc_all:1,
+> >                               nodefrag:1;
+> >       __u8                    bind_address_no_port:1,
+> > +                             recverr_rfc4884:1,
+> >                               defer_connect:1; /* Indicates that fastopen_connect is set
+> >                                                 * and cookie exists so we defer connect
+> >                                                 * until first data frame is written
+> > diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+> > index 8533bf07450f..3d0d8231dc19 100644
+> > --- a/include/uapi/linux/in.h
+> > +++ b/include/uapi/linux/in.h
+> > @@ -123,6 +123,7 @@ struct in_addr {
+> >  #define IP_CHECKSUM  23
+> >  #define IP_BIND_ADDRESS_NO_PORT      24
+> >  #define IP_RECVFRAGSIZE      25
+> > +#define IP_RECVERR_RFC4884   26
+> >
+> >  /* IP_MTU_DISCOVER values */
+> >  #define IP_PMTUDISC_DONT             0       /* Never send DF frames */
+> > diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+> > index 84ec3703c909..525140e3947c 100644
+> > --- a/net/ipv4/ip_sockglue.c
+> > +++ b/net/ipv4/ip_sockglue.c
+> > @@ -398,6 +398,9 @@ void ip_icmp_error(struct sock *sk, struct sk_buff *skb, int err,
+> >       if (!skb)
+> >               return;
+> >
+> > +     if (inet_sk(sk)->recverr_rfc4884)
+> > +             info = ntohl(icmp_hdr(skb)->un.gateway);
+>
+> ntohl(icmp_hdr(skb)->un.second_word);
+>
+> > +
+> >       serr = SKB_EXT_ERR(skb);
+> >       serr->ee.ee_errno = err;
+> >       serr->ee.ee_origin = SO_EE_ORIGIN_ICMP;
+> > @@ -755,6 +758,7 @@ static int do_ip_setsockopt(struct sock *sk, int level,
+> >       case IP_RECVORIGDSTADDR:
+> >       case IP_CHECKSUM:
+> >       case IP_RECVFRAGSIZE:
+> > +     case IP_RECVERR_RFC4884:
+> >               if (optlen >= sizeof(int)) {
+> >                       if (get_user(val, (int __user *) optval))
+> >                               return -EFAULT;
+> > @@ -914,6 +918,11 @@ static int do_ip_setsockopt(struct sock *sk, int level,
+> >               if (!val)
+> >                       skb_queue_purge(&sk->sk_error_queue);
+> >               break;
+> > +     case IP_RECVERR_RFC4884:
+> > +             if (val != 0 && val != 1)
+> > +                     goto e_inval;
+> > +             inet->recverr_rfc4884 = val;
+> > +             break;
+> >       case IP_MULTICAST_TTL:
+> >               if (sk->sk_type == SOCK_STREAM)
+> >                       goto e_inval;
+> > @@ -1588,6 +1597,9 @@ static int do_ip_getsockopt(struct sock *sk, int level, int optname,
+> >       case IP_RECVERR:
+> >               val = inet->recverr;
+> >               break;
+> > +     case IP_RECVERR_RFC4884:
+> > +             val = inet->recverr_rfc4884;
+> > +             break;
+> >       case IP_MULTICAST_TTL:
+> >               val = inet->mc_ttl;
+> >               break;
+> >
