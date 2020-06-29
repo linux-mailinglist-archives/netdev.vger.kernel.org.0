@@ -2,180 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB20420D2E4
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:11:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE7520D431
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:14:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729838AbgF2SxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 14:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
+        id S1730727AbgF2TGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:06:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729809AbgF2Sww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:52:52 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138C3C031C56;
-        Mon, 29 Jun 2020 10:36:31 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id j4so7371199plk.3;
-        Mon, 29 Jun 2020 10:36:31 -0700 (PDT)
+        with ESMTP id S1730529AbgF2TCn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:02:43 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B5BC031C5E;
+        Mon, 29 Jun 2020 10:44:03 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id 67so4131721pfg.5;
+        Mon, 29 Jun 2020 10:44:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vn4Ze0UHW0gH8hUyyrUyOwtMgWZD0FLbsTJZBjBZlPg=;
-        b=dq6Iz0+aaIFnA9xfIUo3OTkmycb/JjV8HMmEDmn8ZTxUXMwHyODbmJGuqd48pjdZtE
-         scsfoRB4g0aOsgRye+uIfb1qcbarrNkQAxmSOOhRIdrOPh0YJ15RMS+HIl1NV+Ae+K+Y
-         tKkWKlCBLZhaG2ojpEhfItEig0uEZt+lkW+5UoEP+YMdwc76QZuRneQ+Y1q80OdKT+Om
-         RI1k6qEFibH9xLVTJl283GjNtA93dH6n18+abrmCn49udkeOQdP/b18npO6tNdR+BWHg
-         33ZFZvjqfJ+8s5bTzM6hLUguBERZq15r2kU0pJyLm8rPuCWhrgbAo3Kn1CH6uxm8PhUY
-         Xjbw==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=zajKLFBWYvbR/dn70eWOQZrMNaJGoW21UItsytAj4Pg=;
+        b=tUchiO1ZmHPcMUQ6nb6f+GBa4GwRs+UmAyEev+2pWA7R/2ylJcq4ZTXHOQeyLtbtKC
+         7YJaKxcjh5GVMzls4Q0y2vp3h7D94xr91HPZHTYdn3HRQgzE3dF8791jm9A3v6tBOYqe
+         WN40ApOIzVoFRQK49V44l03voWX+TUL36q1dDsY4yrM2g6KHfASEnDkSdp5miGCDrg3+
+         PqVW30sWMvrXokrQORmke/VQMfqTpNs7Ifvm3EwToEa83E23Sy5TQACWtjB4RMpJgQPl
+         5SmtFPk5qWymIYKBXzKyeUZl7u0NABgETrEC4t95CUwAH4Rcq+4JnrfPp4X4iM/CKla8
+         k0ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vn4Ze0UHW0gH8hUyyrUyOwtMgWZD0FLbsTJZBjBZlPg=;
-        b=MsCaWxsvSqg2FOLx/5h/DyCXz2ZcZi+I4Uc2g6TjTy46XNViQuJ/ioWw/Z9/P0wczj
-         OMES8Nb3v1/oxDP8Wg0b5wvxlyKLnoWSVCTOUcWTL6s38ty/lC+XOQL6ZCqP306ZVdis
-         aoJilgN6wLC3MqKuyaS8paaxhrK8qN7WyHm0YWslEXZtqDy/4RRrNL4U5G+oTkkVIGVx
-         ltISkSYs4dzU6JC/x2+B6NH6pNm4hN1Zf/Y2VfG0nVSJRCp9nYjVeV9pnRfMSTWysMki
-         u4dLwYC0LsWm0hkuMi6V5fFeIxV3oegmkImFe7J3Yic/wN2YXiK3qxjdKiWR5bPiNel2
-         baOg==
-X-Gm-Message-State: AOAM533jQ2GoqUWXno0vnWGM5eq5SWZmqpmJ2ge7HRLhyDIdtNete9RO
-        p1jybRG5zkgvd6rRNHeI4Ug=
-X-Google-Smtp-Source: ABdhPJwRo2/RMbT2HVDCkUK8Mm685UCzSBabdPrAch068FvmtZcJlRqvHG199c47RcmRwAAhYGoN/A==
-X-Received: by 2002:a17:90a:6acb:: with SMTP id b11mr7747760pjm.71.1593452190549;
-        Mon, 29 Jun 2020 10:36:30 -0700 (PDT)
-Received: from varodek.iballbatonwifi.com ([103.105.153.57])
-        by smtp.gmail.com with ESMTPSA id k23sm331461pgb.92.2020.06.29.10.36.26
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=zajKLFBWYvbR/dn70eWOQZrMNaJGoW21UItsytAj4Pg=;
+        b=Hiyg0VM7FzFORSv7WbPWk/zWDfzusT9C853x3QcYrGF7uSB/PlrwIkjfMc8BqteZPi
+         D4w1WwunePVvphKkDXbkdZ1KPgSKMM1kC8xRVVGZ88xjj5r20t3RtsBQ/Xm3gn6QXfOw
+         jGOGeI4JmWLhBq5c1tyjr1wrobWBaxWmLOArhMTTo2VUA9xEgUzG1Otot38bWyooYI39
+         vWZN5BX18fE66alc6jSYnRmvQocfSicozZ3by9E6WChqQExTvlI3BWQ94u4m9MzoR25h
+         BvMm6y+GvyfH/JrsDX7w1ALlQtzzD9U8Rwab6YZszybK+6+gWH5PwFIudxWed2P6BB+U
+         h2Cg==
+X-Gm-Message-State: AOAM533Vqzx7Cl9NrhPmxMljb5ImMXuuZ3ljDs6nuyTFrzllL1Cb2aAz
+        hieoQKu/lihXeBu8EtCNIns=
+X-Google-Smtp-Source: ABdhPJzBcLLzwLTBp+SADDEiJRBUHsSxdEdo7/SpaPcZ8T2RJtU5PzmMtmzfSCa+VgpSvypvEpCRVA==
+X-Received: by 2002:a63:d74c:: with SMTP id w12mr11600066pgi.260.1593452642988;
+        Mon, 29 Jun 2020 10:44:02 -0700 (PDT)
+Received: from localhost ([160.16.113.140])
+        by smtp.gmail.com with ESMTPSA id j2sm202778pjf.4.2020.06.29.10.44.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 10:36:30 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
+        Mon, 29 Jun 2020 10:44:02 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
+Date:   Tue, 30 Jun 2020 01:43:52 +0800
+To:     Benjamin Poirier <benjamin.poirier@gmail.com>
+Cc:     devel@driverdev.osuosl.org, joe@perches.com,
+        dan.carpenter@oracle.com, gregkh@linuxfoundation.org,
         Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org
-Subject: [PATCH v2 3/4] rts5208/rtsx.c: use generic power management
-Date:   Mon, 29 Jun 2020 23:04:58 +0530
-Message-Id: <20200629173459.262075-4-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200629173459.262075-1-vaibhavgupta40@gmail.com>
-References: <20200629173459.262075-1-vaibhavgupta40@gmail.com>
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/4] staging: qlge: replace pr_err with netdev_err
+Message-ID: <20200629174352.euw4lckze2k7xtbm@Rk>
+References: <20200627145857.15926-1-coiby.xu@gmail.com>
+ <20200627145857.15926-5-coiby.xu@gmail.com>
+ <20200629053004.GA6165@f3>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200629053004.GA6165@f3>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers should not use legacy power management as they have to manage power
-states and related operations, for the device, themselves. This driver was
-handling them with the help of PCI helper functions like
-pci_save/restore_state(), pci_enable/disable_device(), etc.
+On Mon, Jun 29, 2020 at 02:30:04PM +0900, Benjamin Poirier wrote:
+>On 2020-06-27 22:58 +0800, Coiby Xu wrote:
+>[...]
+>>  void ql_dump_qdev(struct ql_adapter *qdev)
+>>  {
+>> @@ -1611,99 +1618,100 @@ void ql_dump_qdev(struct ql_adapter *qdev)
+>>  #ifdef QL_CB_DUMP
+>>  void ql_dump_wqicb(struct wqicb *wqicb)
+>>  {
+>> -	pr_err("Dumping wqicb stuff...\n");
+>> -	pr_err("wqicb->len = 0x%x\n", le16_to_cpu(wqicb->len));
+>> -	pr_err("wqicb->flags = %x\n", le16_to_cpu(wqicb->flags));
+>> -	pr_err("wqicb->cq_id_rss = %d\n",
+>> -	       le16_to_cpu(wqicb->cq_id_rss));
+>> -	pr_err("wqicb->rid = 0x%x\n", le16_to_cpu(wqicb->rid));
+>> -	pr_err("wqicb->wq_addr = 0x%llx\n",
+>> -	       (unsigned long long)le64_to_cpu(wqicb->addr));
+>> -	pr_err("wqicb->wq_cnsmr_idx_addr = 0x%llx\n",
+>> -	       (unsigned long long)le64_to_cpu(wqicb->cnsmr_idx_addr));
+>> +	netdev_err(qdev->ndev, "Dumping wqicb stuff...\n");
+>
+>drivers/staging/qlge/qlge_dbg.c:1621:13: error: ‘qdev’ undeclared (first use in this function); did you mean ‘cdev’?
+> 1621 |  netdev_err(qdev->ndev, "Dumping wqicb stuff...\n");
+>      |             ^~~~
+>      |             cdev
+>
+>[...]
+>and many more like that
+>
+>Anyways, qlge_dbg.h is a dumpster. It has hundreds of lines of code
+>bitrotting away in ifdef land. See this comment from David Miller on the
+>topic of ifdef'ed debugging code:
+>https://lore.kernel.org/netdev/20200303.145916.1506066510928020193.davem@davemloft.net/
 
-With generic PM, all essentials will be handled by the PCI core. Driver
-needs to do only device-specific operations.
+Thank you for spotting this problem! This issue could be fixed by
+passing qdev to ql_dump_wqicb. Or are you suggesting we completely
+remove qlge_dbg since it's only for the purpose of debugging the driver
+by the developer?
 
-The driver was also using pci_enable_wake(...,..., 0) to disable wake. Use
-device_wakeup_disable() instead.
+Btw, I'm curious how you make this compiling error occur. Do you manually trigger
+it via "QL_CB_DUMP=1 make M=drivers/staging/qlge" or use some automate
+tools?
 
-Compile-tested only.
-
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- drivers/staging/rts5208/rtsx.c | 30 ++++++++----------------------
- 1 file changed, 8 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/staging/rts5208/rtsx.c b/drivers/staging/rts5208/rtsx.c
-index be0053c795b7..6ca90694db8b 100644
---- a/drivers/staging/rts5208/rtsx.c
-+++ b/drivers/staging/rts5208/rtsx.c
-@@ -258,12 +258,12 @@ static int rtsx_acquire_irq(struct rtsx_dev *dev)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM
- /*
-  * power management
-  */
--static int rtsx_suspend(struct pci_dev *pci, pm_message_t state)
-+static int __maybe_unused rtsx_suspend(struct device *dev_d)
- {
-+	struct pci_dev *pci = to_pci_dev(dev_d);
- 	struct rtsx_dev *dev = pci_get_drvdata(pci);
- 	struct rtsx_chip *chip;
- 
-@@ -285,10 +285,7 @@ static int rtsx_suspend(struct pci_dev *pci, pm_message_t state)
- 	if (chip->msi_en)
- 		pci_disable_msi(pci);
- 
--	pci_save_state(pci);
--	pci_enable_wake(pci, pci_choose_state(pci, state), 1);
--	pci_disable_device(pci);
--	pci_set_power_state(pci, pci_choose_state(pci, state));
-+	device_wakeup_enable(dev_d);
- 
- 	/* unlock the device pointers */
- 	mutex_unlock(&dev->dev_mutex);
-@@ -296,8 +293,9 @@ static int rtsx_suspend(struct pci_dev *pci, pm_message_t state)
- 	return 0;
- }
- 
--static int rtsx_resume(struct pci_dev *pci)
-+static int __maybe_unused rtsx_resume(struct device *dev_d)
- {
-+	struct pci_dev *pci = to_pci_dev(dev_d);
- 	struct rtsx_dev *dev = pci_get_drvdata(pci);
- 	struct rtsx_chip *chip;
- 
-@@ -309,16 +307,6 @@ static int rtsx_resume(struct pci_dev *pci)
- 	/* lock the device pointers */
- 	mutex_lock(&dev->dev_mutex);
- 
--	pci_set_power_state(pci, PCI_D0);
--	pci_restore_state(pci);
--	if (pci_enable_device(pci) < 0) {
--		dev_err(&dev->pci->dev,
--			"%s: pci_enable_device failed, disabling device\n",
--			CR_DRIVER_NAME);
--		/* unlock the device pointers */
--		mutex_unlock(&dev->dev_mutex);
--		return -EIO;
--	}
- 	pci_set_master(pci);
- 
- 	if (chip->msi_en) {
-@@ -340,7 +328,6 @@ static int rtsx_resume(struct pci_dev *pci)
- 
- 	return 0;
- }
--#endif /* CONFIG_PM */
- 
- static void rtsx_shutdown(struct pci_dev *pci)
- {
-@@ -999,16 +986,15 @@ static const struct pci_device_id rtsx_ids[] = {
- 
- MODULE_DEVICE_TABLE(pci, rtsx_ids);
- 
-+static SIMPLE_DEV_PM_OPS(rtsx_pm_ops, rtsx_suspend, rtsx_resume);
-+
- /* pci_driver definition */
- static struct pci_driver rtsx_driver = {
- 	.name = CR_DRIVER_NAME,
- 	.id_table = rtsx_ids,
- 	.probe = rtsx_probe,
- 	.remove = rtsx_remove,
--#ifdef CONFIG_PM
--	.suspend = rtsx_suspend,
--	.resume = rtsx_resume,
--#endif
-+	.driver.pm = &rtsx_pm_ops,
- 	.shutdown = rtsx_shutdown,
- };
- 
--- 
-2.27.0
-
+--
+Best regards,
+Coiby
