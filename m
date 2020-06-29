@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D8D520E411
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:04:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F8A020E414
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:04:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732646AbgF2VUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35984 "EHLO
+        id S2390922AbgF2VUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:20:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732287AbgF2VUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 17:20:43 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A13DC061755
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:20:43 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id f6so3160733ioj.5
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:20:43 -0700 (PDT)
+        with ESMTP id S2390659AbgF2VUp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 17:20:45 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65D6C03E979
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:20:44 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id s21so666941ilk.5
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:20:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5NzyDp4mBovD0FjYRR3tCmdZlivRdkEwWwtmv1riTuY=;
-        b=HamVpoW1/0IkR9G49C+/CBrniF24a3GIZ9p6TtnYlbSO4Jpx8uu5WJQGFRbkvKSq8+
-         j6kHhPKvjPGELtsFcvX674UMr9vz1yt16f77C9fqv3dSurKPtFE28qBjLKqruB7Xho2X
-         tdlAVlQJ8FrLryNHSqhfuXOSG72GQYAucZyrHocMCCzVbIpl1LfYZfpUIxUpkfrxIHPW
-         b2iUXuTJqVakaOT/xk2KnXKL9hh6lMOoKk5FYHtdHBmftDgFtgePg8K8CguTarT7UImA
-         uEem5KM/ZKPBDW6O4Gpn1aoLYlJzQ3N/jjs+rPwztmOdvXYJ3bN/6sRaReYvD/dMZOWF
-         YpWw==
+        bh=ikmoMwgWrI1HSTvIu3OsRZsmkzSggb5efR8I4lGwKfU=;
+        b=sNLU/2+B0nxI/itWKc1EQzh6GK7KMZMGj5NLUcnvhUyQrjoZJUGpniCudLZIxJRNH6
+         lu6+5OQe+k6rqJZ1/QFthfraObsnIne4IodPSIBP05ya0avWoVWlC85uVgbF2DzYo6eK
+         ZZucb9PINrN62vWvBTLNTRqpmIeyx5BVy2PKB+Xoipglj1h7B3SZshMox+7qySHR2N5H
+         XMjGf4qMiAd2WR8jXGaee1sSeSzEQ7Diyzhm1Jg5n2fHjGD3I8VSFpdPBMaszoT2OW1c
+         bXlVYGy3kcIsLw2YMc999fZ9kWiT9JUAAJSO22+X8FmWmDdqDkKpbPLd9TezaY7+nS0D
+         +apw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5NzyDp4mBovD0FjYRR3tCmdZlivRdkEwWwtmv1riTuY=;
-        b=RqZ8PgUNjGZq/vAH7Md84bnN7cVvy2mUvAlimijAOi5HtVOokt6yqi95wFH+0DFZ9c
-         tAcECF7AkhI5n84ARBHL3lpBvAhmWBB2hOve3bEYkLs1Zi/SVC5NN93Btb2p+TwPpFUJ
-         QoE1U7KfRyTJMyOI/yqNVKCJBWzIGGBg0553NtJv2Js7hOE5SBM9lenpmZjmreyvvVo1
-         V/5DQ9iGhMCWmBqyIsHy/jzyeYbpqIdWUeJmEuQasLNN6BUqc5phc7JjqGiKd5phEthk
-         rgoS8Ajcc8RkIReDaaZWQ7FK/kGbyFluuTVLVYEFX7hghJ4Ze7NpNer1ulIDVBqU8/Rm
-         hlwQ==
-X-Gm-Message-State: AOAM532s+MJZxE21aTj6Q3XrseZxN6tTvjI1ixubjkaWY5SmJjb4XGR5
-        Mwplvgur+4d+h/EsageX8bk4vQ==
-X-Google-Smtp-Source: ABdhPJxvNitkIu0iE4zz7boXfb9eCDNNtZDZcvpcxTVgpXrBh0jYQMvaTJ9iT7sBkjWuhlLVyitA6A==
-X-Received: by 2002:a05:6602:134d:: with SMTP id i13mr19247613iov.113.1593465642955;
-        Mon, 29 Jun 2020 14:20:42 -0700 (PDT)
+        bh=ikmoMwgWrI1HSTvIu3OsRZsmkzSggb5efR8I4lGwKfU=;
+        b=t9ufcqFwAn1rBvoZv4LLAIzEhhXJdQ//dPL4MMT6Y3MkYu51ty/K+MXVB/3R2Pv2J1
+         2wSCJW94kyeA3rLM6xbOJPaQVp3awPs3fqdUw3z+2UvUUrDSg47zV/6AvNP3pohdshza
+         mpHcweu3HVf7IBrtEmwQHxDlc6dO/x7josX6f25zAhASlKNNQg+Pl9BxVAbzSYnIHPfv
+         2aMemMPC+/IWXcUOCFAMuUdYpOb0vbMk3HlFAf5R/kxKOTAf259sXd1fvt2znpNp2Ao8
+         kArj3yEQspnLmnGCp8iAN2aR1TL33vwyi7B+MLLOFPuSbyQN9XtSwuZ8PELPbaJ+yojm
+         8deQ==
+X-Gm-Message-State: AOAM532xQA3G3fQbP8hJmdhqV+bUIcCa5vi7HFUv0ZB9JF2pSC9EnQLP
+        i1AX7zn5yLV+Z9Gavk2eGLdMcA==
+X-Google-Smtp-Source: ABdhPJzaAN/WcKfob045owqNeJnOq0QdhsRI7nvnbKBceIkYWSW5Vf6REkPoEjNAFbKHvMTEj0l51w==
+X-Received: by 2002:a92:d843:: with SMTP id h3mr18802430ilq.255.1593465644108;
+        Mon, 29 Jun 2020 14:20:44 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id f18sm564588ilj.15.2020.06.29.14.20.42
+        by smtp.gmail.com with ESMTPSA id f18sm564588ilj.15.2020.06.29.14.20.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 14:20:42 -0700 (PDT)
+        Mon, 29 Jun 2020 14:20:43 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 1/3] net: ipa: always check for stopped channel
-Date:   Mon, 29 Jun 2020 16:20:36 -0500
-Message-Id: <20200629212038.1153054-2-elder@linaro.org>
+Subject: [PATCH net 2/3] net: ipa: no checksum offload for SDM845 LAN RX
+Date:   Mon, 29 Jun 2020 16:20:37 -0500
+Message-Id: <20200629212038.1153054-3-elder@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200629212038.1153054-1-elder@linaro.org>
 References: <20200629212038.1153054-1-elder@linaro.org>
@@ -65,57 +65,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In gsi_channel_stop(), there's a check to see if the channel might
-have entered STOPPED state since a previous call, which might have
-timed out before stopping completed.
+The AP LAN RX endpoint should not have download checksum offload
+enabled.
 
-That check actually belongs in gsi_channel_stop_command(), which is
-called repeatedly by gsi_channel_stop() for RX channels.
+The receive handler does properly accomodate the trailer that's
+added by the hardware, but we ignore it.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/gsi.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/net/ipa/ipa_data-sdm845.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index 55226b264e3c..ac7e5a04c8ac 100644
---- a/drivers/net/ipa/gsi.c
-+++ b/drivers/net/ipa/gsi.c
-@@ -500,6 +500,13 @@ static int gsi_channel_stop_command(struct gsi_channel *channel)
- 	int ret;
- 
- 	state = gsi_channel_state(channel);
-+
-+	/* Channel could have entered STOPPED state since last call
-+	 * if it timed out.  If so, we're done.
-+	 */
-+	if (state == GSI_CHANNEL_STATE_STOPPED)
-+		return 0;
-+
- 	if (state != GSI_CHANNEL_STATE_STARTED &&
- 	    state != GSI_CHANNEL_STATE_STOP_IN_PROC)
- 		return -EINVAL;
-@@ -789,20 +796,11 @@ int gsi_channel_start(struct gsi *gsi, u32 channel_id)
- int gsi_channel_stop(struct gsi *gsi, u32 channel_id)
- {
- 	struct gsi_channel *channel = &gsi->channel[channel_id];
--	enum gsi_channel_state state;
- 	u32 retries;
- 	int ret;
- 
- 	gsi_channel_freeze(channel);
- 
--	/* Channel could have entered STOPPED state since last call if the
--	 * STOP command timed out.  We won't stop a channel if stopping it
--	 * was successful previously (so we still want the freeze above).
--	 */
--	state = gsi_channel_state(channel);
--	if (state == GSI_CHANNEL_STATE_STOPPED)
--		return 0;
--
- 	/* RX channels might require a little time to enter STOPPED state */
- 	retries = channel->toward_ipa ? 0 : GSI_CHANNEL_STOP_RX_RETRIES;
- 
+diff --git a/drivers/net/ipa/ipa_data-sdm845.c b/drivers/net/ipa/ipa_data-sdm845.c
+index 52d4b84e0dac..de2768d71ab5 100644
+--- a/drivers/net/ipa/ipa_data-sdm845.c
++++ b/drivers/net/ipa/ipa_data-sdm845.c
+@@ -44,7 +44,6 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
+ 		.endpoint = {
+ 			.seq_type	= IPA_SEQ_INVALID,
+ 			.config = {
+-				.checksum	= true,
+ 				.aggregation	= true,
+ 				.status_enable	= true,
+ 				.rx = {
 -- 
 2.25.1
 
