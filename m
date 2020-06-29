@@ -2,136 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08D2820E501
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15E4520E528
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391251AbgF2VbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:31:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50580 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391253AbgF2VbR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 17:31:17 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CF20C2073E;
-        Mon, 29 Jun 2020 21:31:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593466276;
-        bh=6Rquy2N+77cv5G2ToRAuJ74ccl4EYoOwpisZ9ZJ0xXs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LQ1rQ5tzXc9vh13lSW1B+8EyuhW0MwgV4UtHEFLVj54wVAcBPYWS6xdDXnlJCMCya
-         ZED3HCEpxcxmk0YequHC2/IFM41TrSXLCZjoqJhI2vHsCUL2p2bbCta3Rpdng2pspM
-         S67NU/+x9pZy4WEMvQvndESMOeKKO4CsrFBC9tfc=
-Date:   Mon, 29 Jun 2020 14:31:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Brady, Alan" <alan.brady@intel.com>
-Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Michael, Alice" <alice.michael@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Burra, Phani R" <phani.r.burra@intel.com>,
-        "Hay, Joshua A" <joshua.a.hay@intel.com>,
-        "Chittim, Madhu" <madhu.chittim@intel.com>,
-        "Linga, Pavan Kumar" <pavan.kumar.linga@intel.com>,
-        "Skidmore, Donald C" <donald.c.skidmore@intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Subject: Re: [net-next v3 13/15] iecm: Add ethtool
-Message-ID: <20200629143114.64fca33e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <MW3PR11MB45223CBE134055CC3A4EA3958F6E0@MW3PR11MB4522.namprd11.prod.outlook.com>
-References: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
-        <20200626020737.775377-14-jeffrey.t.kirsher@intel.com>
-        <20200626122742.20b47bb8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <MW3PR11MB45223CBE134055CC3A4EA3958F6E0@MW3PR11MB4522.namprd11.prod.outlook.com>
+        id S1728866AbgF2VdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:33:25 -0400
+Received: from mail-bn8nam11on2123.outbound.protection.outlook.com ([40.107.236.123]:57921
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727104AbgF2VdS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 17:33:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Wzz5qr+ho1e7m8icAD9m9QxXCY2d2aT2NQPbdNkhEOFPJ0Cv+Wy4SLhdCcOB3afYexD6H4jizmN8qUusvxZqlw1Av2zCAs+Ow1dSBaKfWGcCZS9nlKHraKmz0QWcNlHHvHbgvCzjzP2OycGK6lDF+fVQJJiJDqktk6i2dOT7wXVQADpx6UAEpouCtWNU5LwNAduFlzkXCORIHJUreocqsWljNWhhFr2Jf9LCTeE6UEb1N4K4Hg4tnmYJDBRm8osVI0W8ktLUN5cNF7TBGVNc1FL2cPYGpsjDetgWH4+SyorZoOF89NAo7SqtzIAv/AINH29QXRxQ4H7ChV2zsc9nUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nYrnzxJcU8btIwH52PEAVCH0DUAGG2ywYc0GpEvYX+A=;
+ b=IN6/e3uvV7AdO/rXYgyeqFH7QRDc1bp3B0zOflawR7udRNrfzq8dX0e0rssmcMxUa2wcX9x6cHZSa8axQmLuiXNzFw6JKOs3sj0uDHG2iH1pdbENcE9B/TutS76dRyMVkgIchgyI6XSxwTyL0htitE+EZLZPcbwk+CdiDfnHja0fG8SgqyeBPiyQ3YJDm3QysZngy2kL6WyDd3l8NyT98lojGTz9vO9VavI326Gdb45leEVPi7zFj+lU2bnPW+lU41o44arJviZNXnsyreO2JvpYZQ12jGZB2vI6NcA1qmZStpAVyGOwoj/Hd1yrbmN/ZT0ET+v/KHKtxf56T/xCMw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nYrnzxJcU8btIwH52PEAVCH0DUAGG2ywYc0GpEvYX+A=;
+ b=XyCXBNdvjlMo2vYcVgWLCRu17EEWyhbaVldDNbEpZgQUetlbKCCvnH/xT0tqclfcdGKtHScMqhhNQyDDCDshdTPXyh9ooDrjoTWUoBn3tXLRq5Ys02qFz+tmU9A3DO3+pLmRpa7JV+naY0UmwlvQHyw+hFs5W4rd6NARVuahnOI=
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
+ (2603:10b6:207:30::18) by MN2PR21MB1502.namprd21.prod.outlook.com
+ (2603:10b6:208:20b::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.1; Mon, 29 Jun
+ 2020 21:33:16 +0000
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::421:be5d:ef2e:26d2]) by BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::421:be5d:ef2e:26d2%3]) with mapi id 15.20.3174.001; Mon, 29 Jun 2020
+ 21:33:15 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Andres Beltran <t-mabelt@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2 3/3] hv_netvsc: Use vmbus_requestor to generate
+ transaction IDs for VMBus hardening
+Thread-Topic: [PATCH v2 3/3] hv_netvsc: Use vmbus_requestor to generate
+ transaction IDs for VMBus hardening
+Thread-Index: AQHWTlBOt5wFAhylskCGZqmzM/7PA6jwHLwg
+Date:   Mon, 29 Jun 2020 21:33:15 +0000
+Message-ID: <BL0PR2101MB0930DB73E3B5A89DD3E55481CA6E0@BL0PR2101MB0930.namprd21.prod.outlook.com>
+References: <20200629200227.1518784-1-lkmlabelt@gmail.com>
+ <20200629200227.1518784-4-lkmlabelt@gmail.com>
+In-Reply-To: <20200629200227.1518784-4-lkmlabelt@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-06-29T21:33:14Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=9edf559a-a80f-4927-b0c3-955bfc01ee57;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
+authentication-results: microsoft.com; dkim=none (message not signed)
+ header.d=none;microsoft.com; dmarc=none action=none
+ header.from=microsoft.com;
+x-originating-ip: [96.61.83.132]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: cce00089-f3d2-4439-d2b8-08d81c7408a2
+x-ms-traffictypediagnostic: MN2PR21MB1502:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR21MB1502B797D725F0B00A3CAE75CA6E0@MN2PR21MB1502.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3631;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1upvecUw1LzG7CfIDxqgy15QxscDOxGbbMef1tN4ZPLxtsiFoGSmBtfCWwL5RhwFAoN/FWMcvXdozGBvRzUv3jWVzE5X1HlE5UQHMOhU9sDVfJKh2xXtObNsp1T9SbqmaGSHJYvf8GxU5/UWzcphG/6ZLqftFJ40Iue6fTHS+03ekt0CyIr8QEyVHUp3kMImsbexUKsOuOliE0OKClsyyf6NqnhuK79+/YCc68AKuAKBYzGErft6S5ENZycslrdzLVQn5oKnjRN4wdu8S/o/aebCso5vZWdwol3Z7KPS3I8p+OsWgCIVKQ50LsjtYu98K7cuMbieXQUFcZbt/o/Mmw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB0930.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(346002)(366004)(396003)(376002)(39860400002)(66946007)(9686003)(4326008)(76116006)(5660300002)(316002)(54906003)(110136005)(33656002)(4744005)(55016002)(66476007)(71200400001)(2906002)(66556008)(66446008)(64756008)(7696005)(26005)(6506007)(52536014)(8990500004)(478600001)(82960400001)(53546011)(186003)(86362001)(8676002)(10290500003)(83380400001)(8936002)(82950400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: YAUupRnuA5XO6E10eFCnln9xT/C8uPFk/9qoJPemZDK2Y4AFGJjLLO02HO/tR8VuTQGcY16FYvs9X64aDLqF8w7gKXvLb39A2ELDKDvopaNPiZd3jLq3lgJQerMXKjfREFuXXRqbMlQRnpXLMmNWXfWctTzTlwvKgS5zZs/ctUNslCJmUHBaol+Ov/bmqWRONI4F5aeaTrczYrc0RoVyJAzGSdAJcWCPkug6SwRDXVEmEr0F4GQ7eAqBRJTwpC4wEWj3DwiG4z3qdBQCIcdTPOpPvBMMlZlBtbZu8bJWhoDx95rhqneriOxDc55OA+VRaxvO/hQOKpAvtB4irTnMlsdwUJUZtXhxiwxsYXoqNPhX1V9PNwqsHXH6uthIVRe5x6XcSWTcSSo3gZ327BVTm1qDDMPHtdE7enDr6Um5OGnFEL33ZK4XUla1WxZtoR/qVUls3NCVDw3berkZCxD573TkE5uXQe/5agLUhDaSGkw=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB0930.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cce00089-f3d2-4439-d2b8-08d81c7408a2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2020 21:33:15.9078
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rYZmrx28L4ya1nj0K1AmyIN3Cp0iul/FFEmzx1n0uR4lxwdP/EUsuJqIHP6fQBnDuX0mRtQnwcpqqFuhlRXicg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1502
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Jun 2020 21:00:57 +0000 Brady, Alan wrote:
-> > > +/* Helper macro to define an iecm_stat structure with proper size and type.
-> > > + * Use this when defining constant statistics arrays. Note that
-> > > +@_type expects
-> > > + * only a type name and is used multiple times.
-> > > + */
-> > > +#define IECM_STAT(_type, _name, _stat) { \
-> > > +	.stat_string = _name, \
-> > > +	.sizeof_stat = sizeof_field(_type, _stat), \
-> > > +	.stat_offset = offsetof(_type, _stat) \ }
-> > > +
-> > > +/* Helper macro for defining some statistics related to queues */
-> > > +#define IECM_QUEUE_STAT(_name, _stat) \
-> > > +	IECM_STAT(struct iecm_queue, _name, _stat)
-> > > +
-> > > +/* Stats associated with a Tx queue */ static const struct iecm_stats
-> > > +iecm_gstrings_tx_queue_stats[] = {
-> > > +	IECM_QUEUE_STAT("%s-%u.packets", q_stats.tx.packets),
-> > > +	IECM_QUEUE_STAT("%s-%u.bytes", q_stats.tx.bytes), };
-> > > +
-> > > +/* Stats associated with an Rx queue */ static const struct
-> > > +iecm_stats iecm_gstrings_rx_queue_stats[] = {
-> > > +	IECM_QUEUE_STAT("%s-%u.packets", q_stats.rx.packets),
-> > > +	IECM_QUEUE_STAT("%s-%u.bytes", q_stats.rx.bytes),
-> > > +	IECM_QUEUE_STAT("%s-%u.generic_csum", q_stats.rx.generic_csum),
-> > > +	IECM_QUEUE_STAT("%s-%u.basic_csum", q_stats.rx.basic_csum),  
-> > 
-> > What's basic and generic? perhaps given them the Linux names?  
-> 
-> I believe these should be hw_csum for basic_csum and csum_valid for generic_csum, will fix.
 
-I was thinking of just saying csum_complete and csum_unnecessary.
 
-But generic_sum doesn't seem to be incremented in this patch, so hard
-to tell what it is :S
+> -----Original Message-----
+> From: Andres Beltran <lkmlabelt@gmail.com>
+> Sent: Monday, June 29, 2020 4:02 PM
+> To: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
+> <haiyangz@microsoft.com>; Stephen Hemminger <sthemmin@microsoft.com>;
+> wei.liu@kernel.org
+> Cc: linux-hyperv@vger.kernel.org; linux-kernel@vger.kernel.org; Michael
+> Kelley <mikelley@microsoft.com>; parri.andrea@gmail.com; Andres Beltran
+> <lkmlabelt@gmail.com>; David S . Miller <davem@davemloft.net>; Jakub
+> Kicinski <kuba@kernel.org>; netdev@vger.kernel.org
+> Subject: [PATCH v2 3/3] hv_netvsc: Use vmbus_requestor to generate
+> transaction IDs for VMBus hardening
+>=20
+> Currently, pointers to guest memory are passed to Hyper-V as
+> transaction IDs in netvsc. In the face of errors or malicious
+> behavior in Hyper-V, netvsc should not expose or trust the transaction
+> IDs returned by Hyper-V to be valid guest memory addresses. Instead,
+> use small integers generated by vmbus_requestor as requests
+> (transaction) IDs.
+>=20
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
 
-> > > +	q->itr.target_itr = coalesce_usecs;
-> > > +	if (use_adaptive_coalesce)
-> > > +		q->itr.target_itr |= IECM_ITR_DYNAMIC;
-> > > +	/* Update of static/dynamic ITR will be taken care when interrupt is
-> > > +	 * fired
-> > > +	 */
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +/**
-> > > + * iecm_set_q_coalesce - set ITR values for specific queue
-> > > + * @vport: vport associated to the queue that need updating
-> > > + * @ec: coalesce settings to program the device with
-> > > + * @q_num: update ITR/INTRL (coalesce) settings for this queue
-> > > +number/index
-> > > + * @is_rxq: is queue type Rx
-> > > + *
-> > > + * Return 0 on success, and negative on failure  */ static int
-> > > +iecm_set_q_coalesce(struct iecm_vport *vport, struct ethtool_coalesce *ec,
-> > > +		    int q_num, bool is_rxq)
-> > > +{
-> > > +	if (is_rxq) {
-> > > +		struct iecm_queue *rxq = iecm_find_rxq(vport, q_num);
-> > > +
-> > > +		if (rxq && __iecm_set_q_coalesce(ec, rxq))
-> > > +			return -EINVAL;
-> > > +	} else {
-> > > +		struct iecm_queue *txq = iecm_find_txq(vport, q_num);
-> > > +
-> > > +		if (txq && __iecm_set_q_coalesce(ec, txq))
-> > > +			return -EINVAL;
-> > > +	}  
-> > 
-> > What's the point? Callers always call this function with tx, then rx.
-> > Just set both.  
-> 
-> As I understand it's possible to have a different number of TX and RX
-> queues.  Theoretically iecm_find_Xq will just return NULL if there's
-> no queue for some index so we could do both, but then we have to
-> figure which one is greater etc etc.  It seems less error prone and
-> clearer to me to just call it for the queues we need to.  We can make
-> this iecm_set_q_coalesce function a little less terse, perhaps that
-> is sufficient?
+Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
 
-I don't feel strongly about this one, up to you.
+
