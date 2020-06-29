@@ -2,922 +2,578 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88A4820D33C
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:12:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EAE520D516
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:15:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730071AbgF2S46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 14:56:58 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:46810 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729973AbgF2S4z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:56:55 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05TB5U67029745;
-        Mon, 29 Jun 2020 04:06:10 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0818;
- bh=pXfcYFlk4yzhecT45c9aGQETTu/YSBhjEE5jo5AaoJQ=;
- b=E16JxOGxxFkXtqxvVcWwweEYNEZbE2ABic/r/Dz9j+YOrqNQLrlTzqi1fzY9NOEcPND9
- tFjAbq9igF275k1tnib9W/cZ+rdmR95OwV82ImxgmbkLwYVc1L3yE5GPl8XdXUUQzvCn
- pIlUyeiv+x1KjZ1/Pg5nISdNn2Qanq013ytLssNZxtzuKa2KUK9unbh/B90eoz5Pfm1E
- 3x2WZumsbIx7cIonnbsAVqah7zb9A1rEKxMLJubUq/+VJqgc5fAItnxYUcyBa9yP+7gG
- 2EL+uoH95lvCdiFxFxnvd2CL2XiVvmyy7rhBa/vUHwv4980qxUJTT+0sbIvayRp7ugn7 qw== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0a-0016f401.pphosted.com with ESMTP id 31y0wrtfyc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 29 Jun 2020 04:06:10 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 29 Jun
- 2020 04:06:09 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 29 Jun 2020 04:06:08 -0700
-Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
-        by maili.marvell.com (Postfix) with ESMTP id D77493F703F;
-        Mon, 29 Jun 2020 04:06:05 -0700 (PDT)
-From:   Alexander Lobakin <alobakin@marvell.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Igor Russkikh <irusskikh@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        "Alexander Lobakin" <alobakin@marvell.com>,
-        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 3/6] net: qed: update copyright years
-Date:   Mon, 29 Jun 2020 14:05:09 +0300
-Message-ID: <20200629110512.1812-4-alobakin@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200629110512.1812-1-alobakin@marvell.com>
-References: <20200629110512.1812-1-alobakin@marvell.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-29_11:2020-06-29,2020-06-29 signatures=0
+        id S1731816AbgF2TOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731749AbgF2TOY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:14:24 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2648C0085EE;
+        Mon, 29 Jun 2020 04:16:31 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: andrzej.p)
+        with ESMTPSA id 42CE12A0F61
+From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+To:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Peter Kaestle <peter@piie.net>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Enrico Weigelt <info@metux.net>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        kernel@collabora.com
+Subject: [PATCH v6 04/11] thermal: Store device mode in struct thermal_zone_device
+Date:   Mon, 29 Jun 2020 13:16:08 +0200
+Message-Id: <20200629111615.18131-5-andrzej.p@collabora.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200629111615.18131-1-andrzej.p@collabora.com>
+References: <CAHLCerO2XOOX9akEwaTu_cjSqRycFpNmoVxkSe36L8B4ALWidA@mail.gmail.com>
+ <20200629111615.18131-1-andrzej.p@collabora.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set the actual copyright holder and years in all qed source files.
+Prepare for eliminating get_mode().
 
-Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+[for acerhdf]
+Acked-by: Peter Kaestle <peter@piie.net>
+Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Reviewed-by: Amit Kucheria <amit.kucheria@linaro.org>
 ---
- drivers/net/ethernet/qlogic/qed/Makefile            | 1 +
- drivers/net/ethernet/qlogic/qed/qed.h               | 1 +
- drivers/net/ethernet/qlogic/qed/qed_cxt.c           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_cxt.h           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_dcbx.c          | 1 +
- drivers/net/ethernet/qlogic/qed/qed_dcbx.h          | 1 +
- drivers/net/ethernet/qlogic/qed/qed_debug.c         | 1 +
- drivers/net/ethernet/qlogic/qed/qed_debug.h         | 1 +
- drivers/net/ethernet/qlogic/qed/qed_dev.c           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_dev_api.h       | 1 +
- drivers/net/ethernet/qlogic/qed/qed_fcoe.c          | 1 +
- drivers/net/ethernet/qlogic/qed/qed_fcoe.h          | 1 +
- drivers/net/ethernet/qlogic/qed/qed_hsi.h           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_hw.c            | 1 +
- drivers/net/ethernet/qlogic/qed/qed_hw.h            | 1 +
- drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c | 1 +
- drivers/net/ethernet/qlogic/qed/qed_init_ops.c      | 1 +
- drivers/net/ethernet/qlogic/qed/qed_init_ops.h      | 1 +
- drivers/net/ethernet/qlogic/qed/qed_int.c           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_int.h           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_iscsi.c         | 1 +
- drivers/net/ethernet/qlogic/qed/qed_iscsi.h         | 1 +
- drivers/net/ethernet/qlogic/qed/qed_iwarp.c         | 1 +
- drivers/net/ethernet/qlogic/qed/qed_iwarp.h         | 1 +
- drivers/net/ethernet/qlogic/qed/qed_l2.c            | 1 +
- drivers/net/ethernet/qlogic/qed/qed_l2.h            | 1 +
- drivers/net/ethernet/qlogic/qed/qed_ll2.c           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_ll2.h           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_main.c          | 1 +
- drivers/net/ethernet/qlogic/qed/qed_mcp.c           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_mcp.h           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_mng_tlv.c       | 1 +
- drivers/net/ethernet/qlogic/qed/qed_ooo.c           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_ooo.h           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_ptp.c           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_rdma.c          | 1 +
- drivers/net/ethernet/qlogic/qed/qed_rdma.h          | 1 +
- drivers/net/ethernet/qlogic/qed/qed_reg_addr.h      | 1 +
- drivers/net/ethernet/qlogic/qed/qed_roce.c          | 1 +
- drivers/net/ethernet/qlogic/qed/qed_roce.h          | 1 +
- drivers/net/ethernet/qlogic/qed/qed_selftest.c      | 1 +
- drivers/net/ethernet/qlogic/qed/qed_selftest.h      | 1 +
- drivers/net/ethernet/qlogic/qed/qed_sp.h            | 1 +
- drivers/net/ethernet/qlogic/qed/qed_sp_commands.c   | 1 +
- drivers/net/ethernet/qlogic/qed/qed_spq.c           | 1 +
- drivers/net/ethernet/qlogic/qed/qed_sriov.c         | 1 +
- drivers/net/ethernet/qlogic/qed/qed_sriov.h         | 1 +
- drivers/net/ethernet/qlogic/qed/qed_vf.c            | 1 +
- include/linux/qed/common_hsi.h                      | 1 +
- include/linux/qed/eth_common.h                      | 1 +
- include/linux/qed/fcoe_common.h                     | 1 +
- include/linux/qed/iscsi_common.h                    | 1 +
- include/linux/qed/iwarp_common.h                    | 1 +
- include/linux/qed/qed_chain.h                       | 1 +
- include/linux/qed/qed_eth_if.h                      | 1 +
- include/linux/qed/qed_fcoe_if.h                     | 1 +
- include/linux/qed/qed_if.h                          | 1 +
- include/linux/qed/qed_iov_if.h                      | 1 +
- include/linux/qed/qed_iscsi_if.h                    | 1 +
- include/linux/qed/qed_ll2_if.h                      | 1 +
- include/linux/qed/qed_rdma_if.h                     | 1 +
- include/linux/qed/qede_rdma.h                       | 1 +
- include/linux/qed/rdma_common.h                     | 1 +
- include/linux/qed/roce_common.h                     | 1 +
- include/linux/qed/storage_common.h                  | 1 +
- include/linux/qed/tcp_common.h                      | 1 +
- 66 files changed, 66 insertions(+)
+ drivers/acpi/thermal.c                        | 18 ++++++----------
+ .../ethernet/mellanox/mlxsw/core_thermal.c    | 21 +++++++------------
+ drivers/platform/x86/acerhdf.c                | 15 ++++++-------
+ drivers/thermal/da9062-thermal.c              |  6 ++----
+ drivers/thermal/imx_thermal.c                 | 17 +++++++--------
+ .../intel/int340x_thermal/int3400_thermal.c   | 12 +++--------
+ .../thermal/intel/intel_quark_dts_thermal.c   | 16 +++++++-------
+ drivers/thermal/thermal_of.c                  | 10 +++------
+ 8 files changed, 44 insertions(+), 71 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/Makefile b/drivers/net/ethernet/qlogic/qed/Makefile
-index cee566faba2f..4176bbf2a22b 100644
---- a/drivers/net/ethernet/qlogic/qed/Makefile
-+++ b/drivers/net/ethernet/qlogic/qed/Makefile
-@@ -1,4 +1,5 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-+# Copyright (c) 2019-2020 Marvell International Ltd.
+diff --git a/drivers/acpi/thermal.c b/drivers/acpi/thermal.c
+index fb46070c66d8..4ba273f49d87 100644
+--- a/drivers/acpi/thermal.c
++++ b/drivers/acpi/thermal.c
+@@ -172,7 +172,6 @@ struct acpi_thermal {
+ 	struct acpi_thermal_trips trips;
+ 	struct acpi_handle_list devices;
+ 	struct thermal_zone_device *thermal_zone;
+-	enum thermal_device_mode mode;
+ 	int kelvin_offset;	/* in millidegrees */
+ 	struct work_struct thermal_check_work;
+ };
+@@ -500,7 +499,7 @@ static void acpi_thermal_check(void *data)
+ {
+ 	struct acpi_thermal *tz = data;
  
- obj-$(CONFIG_QED) := qed.o
+-	if (tz->mode != THERMAL_DEVICE_ENABLED)
++	if (tz->thermal_zone->mode != THERMAL_DEVICE_ENABLED)
+ 		return;
  
-diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
-index 52130dcbfe4c..68fe745c9b99 100644
---- a/drivers/net/ethernet/qlogic/qed/qed.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
+ 	thermal_zone_device_update(tz->thermal_zone,
+@@ -529,12 +528,7 @@ static int thermal_get_temp(struct thermal_zone_device *thermal, int *temp)
+ static int thermal_get_mode(struct thermal_zone_device *thermal,
+ 				enum thermal_device_mode *mode)
+ {
+-	struct acpi_thermal *tz = thermal->devdata;
+-
+-	if (!tz)
+-		return -EINVAL;
+-
+-	*mode = tz->mode;
++	*mode = thermal->mode;
+ 
+ 	return 0;
+ }
+@@ -556,11 +550,11 @@ static int thermal_set_mode(struct thermal_zone_device *thermal,
+ 	if (mode == THERMAL_DEVICE_DISABLED)
+ 		pr_warn("thermal zone will be disabled\n");
+ 
+-	if (mode != tz->mode) {
+-		tz->mode = mode;
++	if (mode != tz->thermal_zone->mode) {
++		tz->thermal_zone->mode = mode;
+ 		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+ 			"%s kernel ACPI thermal control\n",
+-			tz->mode == THERMAL_DEVICE_ENABLED ?
++			tz->thermal_zone->mode == THERMAL_DEVICE_ENABLED ?
+ 			"Enable" : "Disable"));
+ 		acpi_thermal_check(tz);
+ 	}
+@@ -912,7 +906,7 @@ static int acpi_thermal_register_thermal_zone(struct acpi_thermal *tz)
+ 		goto remove_dev_link;
+ 	}
+ 
+-	tz->mode = THERMAL_DEVICE_ENABLED;
++	tz->thermal_zone->mode = THERMAL_DEVICE_ENABLED;
+ 
+ 	dev_info(&tz->device->dev, "registered as thermal_zone%d\n",
+ 		 tz->thermal_zone->id);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+index 05f8d5a92862..51667ed99c21 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+@@ -98,7 +98,6 @@ struct mlxsw_thermal_module {
+ 	struct mlxsw_thermal *parent;
+ 	struct thermal_zone_device *tzdev;
+ 	struct mlxsw_thermal_trip trips[MLXSW_THERMAL_NUM_TRIPS];
+-	enum thermal_device_mode mode;
+ 	int module; /* Module or gearbox number */
+ };
+ 
+@@ -110,7 +109,6 @@ struct mlxsw_thermal {
+ 	struct thermal_cooling_device *cdevs[MLXSW_MFCR_PWMS_MAX];
+ 	u8 cooling_levels[MLXSW_THERMAL_MAX_STATE + 1];
+ 	struct mlxsw_thermal_trip trips[MLXSW_THERMAL_NUM_TRIPS];
+-	enum thermal_device_mode mode;
+ 	struct mlxsw_thermal_module *tz_module_arr;
+ 	u8 tz_module_num;
+ 	struct mlxsw_thermal_module *tz_gearbox_arr;
+@@ -280,9 +278,7 @@ static int mlxsw_thermal_unbind(struct thermal_zone_device *tzdev,
+ static int mlxsw_thermal_get_mode(struct thermal_zone_device *tzdev,
+ 				  enum thermal_device_mode *mode)
+ {
+-	struct mlxsw_thermal *thermal = tzdev->devdata;
+-
+-	*mode = thermal->mode;
++	*mode = tzdev->mode;
+ 
+ 	return 0;
+ }
+@@ -299,9 +295,9 @@ static int mlxsw_thermal_set_mode(struct thermal_zone_device *tzdev,
+ 	else
+ 		tzdev->polling_delay = 0;
+ 
++	tzdev->mode = mode;
+ 	mutex_unlock(&tzdev->lock);
+ 
+-	thermal->mode = mode;
+ 	thermal_zone_device_update(tzdev, THERMAL_EVENT_UNSPECIFIED);
+ 
+ 	return 0;
+@@ -468,9 +464,7 @@ static int mlxsw_thermal_module_unbind(struct thermal_zone_device *tzdev,
+ static int mlxsw_thermal_module_mode_get(struct thermal_zone_device *tzdev,
+ 					 enum thermal_device_mode *mode)
+ {
+-	struct mlxsw_thermal_module *tz = tzdev->devdata;
+-
+-	*mode = tz->mode;
++	*mode = tzdev->mode;
+ 
+ 	return 0;
+ }
+@@ -488,9 +482,10 @@ static int mlxsw_thermal_module_mode_set(struct thermal_zone_device *tzdev,
+ 	else
+ 		tzdev->polling_delay = 0;
+ 
++	tzdev->mode = mode;
++
+ 	mutex_unlock(&tzdev->lock);
+ 
+-	tz->mode = mode;
+ 	thermal_zone_device_update(tzdev, THERMAL_EVENT_UNSPECIFIED);
+ 
+ 	return 0;
+@@ -780,7 +775,7 @@ mlxsw_thermal_module_tz_init(struct mlxsw_thermal_module *module_tz)
+ 		return err;
+ 	}
+ 
+-	module_tz->mode = THERMAL_DEVICE_ENABLED;
++	module_tz->tzdev->mode = THERMAL_DEVICE_ENABLED;
+ 	return 0;
+ }
+ 
+@@ -896,7 +891,7 @@ mlxsw_thermal_gearbox_tz_init(struct mlxsw_thermal_module *gearbox_tz)
+ 	if (IS_ERR(gearbox_tz->tzdev))
+ 		return PTR_ERR(gearbox_tz->tzdev);
+ 
+-	gearbox_tz->mode = THERMAL_DEVICE_ENABLED;
++	gearbox_tz->tzdev->mode = THERMAL_DEVICE_ENABLED;
+ 	return 0;
+ }
+ 
+@@ -1065,7 +1060,7 @@ int mlxsw_thermal_init(struct mlxsw_core *core,
+ 	if (err)
+ 		goto err_unreg_modules_tzdev;
+ 
+-	thermal->mode = THERMAL_DEVICE_ENABLED;
++	thermal->tzdev->mode = THERMAL_DEVICE_ENABLED;
+ 	*p_thermal = thermal;
+ 	return 0;
+ 
+diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
+index 9d1030b1a4f4..6f21015e5fd9 100644
+--- a/drivers/platform/x86/acerhdf.c
++++ b/drivers/platform/x86/acerhdf.c
+@@ -68,7 +68,6 @@ static int kernelmode = 1;
+ #else
+ static int kernelmode;
+ #endif
+-static enum thermal_device_mode thermal_mode;
+ 
+ static unsigned int interval = 10;
+ static unsigned int fanon = 60000;
+@@ -398,15 +397,16 @@ static inline void acerhdf_revert_to_bios_mode(void)
+ {
+ 	acerhdf_change_fanstate(ACERHDF_FAN_AUTO);
+ 	kernelmode = 0;
+-	thermal_mode = THERMAL_DEVICE_DISABLED;
+-	if (thz_dev)
++	if (thz_dev) {
++		thz_dev->mode = THERMAL_DEVICE_DISABLED;
+ 		thz_dev->polling_delay = 0;
++	}
+ 	pr_notice("kernel mode fan control OFF\n");
+ }
+ static inline void acerhdf_enable_kernelmode(void)
+ {
+ 	kernelmode = 1;
+-	thermal_mode = THERMAL_DEVICE_ENABLED;
++	thz_dev->mode = THERMAL_DEVICE_ENABLED;
+ 
+ 	thz_dev->polling_delay = interval*1000;
+ 	thermal_zone_device_update(thz_dev, THERMAL_EVENT_UNSPECIFIED);
+@@ -419,7 +419,7 @@ static int acerhdf_get_mode(struct thermal_zone_device *thermal,
+ 	if (verbose)
+ 		pr_notice("kernel mode fan control %d\n", kernelmode);
+ 
+-	*mode = thermal_mode;
++	*mode = thermal->mode;
+ 
+ 	return 0;
+ }
+@@ -741,8 +741,6 @@ static int __init acerhdf_register_thermal(void)
+ 	if (IS_ERR(cl_dev))
+ 		return -EINVAL;
+ 
+-	thermal_mode = kernelmode ?
+-		THERMAL_DEVICE_ENABLED : THERMAL_DEVICE_DISABLED;
+ 	thz_dev = thermal_zone_device_register("acerhdf", 2, 0, NULL,
+ 					      &acerhdf_dev_ops,
+ 					      &acerhdf_zone_params, 0,
+@@ -750,6 +748,9 @@ static int __init acerhdf_register_thermal(void)
+ 	if (IS_ERR(thz_dev))
+ 		return -EINVAL;
+ 
++	thz_dev->mode = kernelmode ?
++		THERMAL_DEVICE_ENABLED : THERMAL_DEVICE_DISABLED;
++
+ 	if (strcmp(thz_dev->governor->name,
+ 				acerhdf_zone_params.governor_name)) {
+ 		pr_err("Didn't get thermal governor %s, perhaps not compiled into thermal subsystem.\n",
+diff --git a/drivers/thermal/da9062-thermal.c b/drivers/thermal/da9062-thermal.c
+index c32709badeda..a14c7981c7c7 100644
+--- a/drivers/thermal/da9062-thermal.c
++++ b/drivers/thermal/da9062-thermal.c
+@@ -49,7 +49,6 @@ struct da9062_thermal {
+ 	struct da9062 *hw;
+ 	struct delayed_work work;
+ 	struct thermal_zone_device *zone;
+-	enum thermal_device_mode mode;
+ 	struct mutex lock; /* protection for da9062_thermal temperature */
+ 	int temperature;
+ 	int irq;
+@@ -124,8 +123,7 @@ static irqreturn_t da9062_thermal_irq_handler(int irq, void *data)
+ static int da9062_thermal_get_mode(struct thermal_zone_device *z,
+ 				   enum thermal_device_mode *mode)
+ {
+-	struct da9062_thermal *thermal = z->devdata;
+-	*mode = thermal->mode;
++	*mode = z->mode;
+ 	return 0;
+ }
+ 
+@@ -233,7 +231,6 @@ static int da9062_thermal_probe(struct platform_device *pdev)
+ 
+ 	thermal->config = match->data;
+ 	thermal->hw = chip;
+-	thermal->mode = THERMAL_DEVICE_ENABLED;
+ 	thermal->dev = &pdev->dev;
+ 
+ 	INIT_DELAYED_WORK(&thermal->work, da9062_thermal_poll_on);
+@@ -248,6 +245,7 @@ static int da9062_thermal_probe(struct platform_device *pdev)
+ 		ret = PTR_ERR(thermal->zone);
+ 		goto err;
+ 	}
++	thermal->zone->mode = THERMAL_DEVICE_ENABLED;
+ 
+ 	dev_dbg(&pdev->dev,
+ 		"TJUNC temperature polling period set at %d ms\n",
+diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
+index e761c9b42217..9a1114d721b6 100644
+--- a/drivers/thermal/imx_thermal.c
++++ b/drivers/thermal/imx_thermal.c
+@@ -197,7 +197,6 @@ struct imx_thermal_data {
+ 	struct cpufreq_policy *policy;
+ 	struct thermal_zone_device *tz;
+ 	struct thermal_cooling_device *cdev;
+-	enum thermal_device_mode mode;
+ 	struct regmap *tempmon;
+ 	u32 c1, c2; /* See formula in imx_init_calib() */
+ 	int temp_passive;
+@@ -256,7 +255,7 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
+ 	bool wait;
+ 	u32 val;
+ 
+-	if (data->mode == THERMAL_DEVICE_ENABLED) {
++	if (tz->mode == THERMAL_DEVICE_ENABLED) {
+ 		/* Check if a measurement is currently in progress */
+ 		regmap_read(map, soc_data->temp_data, &val);
+ 		wait = !(val & soc_data->temp_valid_mask);
+@@ -283,7 +282,7 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
+ 
+ 	regmap_read(map, soc_data->temp_data, &val);
+ 
+-	if (data->mode != THERMAL_DEVICE_ENABLED) {
++	if (tz->mode != THERMAL_DEVICE_ENABLED) {
+ 		regmap_write(map, soc_data->sensor_ctrl + REG_CLR,
+ 			     soc_data->measure_temp_mask);
+ 		regmap_write(map, soc_data->sensor_ctrl + REG_SET,
+@@ -334,9 +333,7 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
+ static int imx_get_mode(struct thermal_zone_device *tz,
+ 			enum thermal_device_mode *mode)
+ {
+-	struct imx_thermal_data *data = tz->devdata;
+-
+-	*mode = data->mode;
++	*mode = tz->mode;
+ 
+ 	return 0;
+ }
+@@ -376,7 +373,7 @@ static int imx_set_mode(struct thermal_zone_device *tz,
+ 		}
+ 	}
+ 
+-	data->mode = mode;
++	tz->mode = mode;
+ 	thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
+ 
+ 	return 0;
+@@ -831,7 +828,7 @@ static int imx_thermal_probe(struct platform_device *pdev)
+ 		     data->socdata->measure_temp_mask);
+ 
+ 	data->irq_enabled = true;
+-	data->mode = THERMAL_DEVICE_ENABLED;
++	data->tz->mode = THERMAL_DEVICE_ENABLED;
+ 
+ 	ret = devm_request_threaded_irq(&pdev->dev, data->irq,
+ 			imx_thermal_alarm_irq, imx_thermal_alarm_irq_thread,
+@@ -885,7 +882,7 @@ static int __maybe_unused imx_thermal_suspend(struct device *dev)
+ 		     data->socdata->measure_temp_mask);
+ 	regmap_write(map, data->socdata->sensor_ctrl + REG_SET,
+ 		     data->socdata->power_down_mask);
+-	data->mode = THERMAL_DEVICE_DISABLED;
++	data->tz->mode = THERMAL_DEVICE_DISABLED;
+ 	clk_disable_unprepare(data->thermal_clk);
+ 
+ 	return 0;
+@@ -905,7 +902,7 @@ static int __maybe_unused imx_thermal_resume(struct device *dev)
+ 		     data->socdata->power_down_mask);
+ 	regmap_write(map, data->socdata->sensor_ctrl + REG_SET,
+ 		     data->socdata->measure_temp_mask);
+-	data->mode = THERMAL_DEVICE_ENABLED;
++	data->tz->mode = THERMAL_DEVICE_ENABLED;
+ 
+ 	return 0;
+ }
+diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+index e84faaadff87..f65b2fc09198 100644
+--- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
++++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+@@ -48,7 +48,6 @@ struct int3400_thermal_priv {
+ 	struct acpi_device *adev;
+ 	struct platform_device *pdev;
+ 	struct thermal_zone_device *thermal;
+-	enum thermal_device_mode mode;
+ 	int art_count;
+ 	struct art *arts;
+ 	int trt_count;
+@@ -381,12 +380,7 @@ static int int3400_thermal_get_temp(struct thermal_zone_device *thermal,
+ static int int3400_thermal_get_mode(struct thermal_zone_device *thermal,
+ 				enum thermal_device_mode *mode)
+ {
+-	struct int3400_thermal_priv *priv = thermal->devdata;
+-
+-	if (!priv)
+-		return -EINVAL;
+-
+-	*mode = priv->mode;
++	*mode = thermal->mode;
+ 
+ 	return 0;
+ }
+@@ -404,8 +398,8 @@ static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
+ 	    mode != THERMAL_DEVICE_DISABLED)
+ 		return -EINVAL;
+ 
+-	if (mode != priv->mode) {
+-		priv->mode = mode;
++	if (mode != thermal->mode) {
++		thermal->mode = mode;
+ 		result = int3400_thermal_run_osc(priv->adev->handle,
+ 						priv->current_uuid_index,
+ 						mode == THERMAL_DEVICE_ENABLED);
+diff --git a/drivers/thermal/intel/intel_quark_dts_thermal.c b/drivers/thermal/intel/intel_quark_dts_thermal.c
+index d704fc104cfd..d77cb3df5ade 100644
+--- a/drivers/thermal/intel/intel_quark_dts_thermal.c
++++ b/drivers/thermal/intel/intel_quark_dts_thermal.c
+@@ -103,7 +103,6 @@ struct soc_sensor_entry {
+ 	bool locked;
+ 	u32 store_ptps;
+ 	u32 store_dts_enable;
+-	enum thermal_device_mode mode;
+ 	struct thermal_zone_device *tzone;
+ };
+ 
+@@ -128,7 +127,7 @@ static int soc_dts_enable(struct thermal_zone_device *tzd)
+ 		return ret;
+ 
+ 	if (out & QRK_DTS_ENABLE_BIT) {
+-		aux_entry->mode = THERMAL_DEVICE_ENABLED;
++		tzd->mode = THERMAL_DEVICE_ENABLED;
+ 		return 0;
+ 	}
+ 
+@@ -139,9 +138,9 @@ static int soc_dts_enable(struct thermal_zone_device *tzd)
+ 		if (ret)
+ 			return ret;
+ 
+-		aux_entry->mode = THERMAL_DEVICE_ENABLED;
++		tzd->mode = THERMAL_DEVICE_ENABLED;
+ 	} else {
+-		aux_entry->mode = THERMAL_DEVICE_DISABLED;
++		tzd->mode = THERMAL_DEVICE_DISABLED;
+ 		pr_info("DTS is locked. Cannot enable DTS\n");
+ 		ret = -EPERM;
+ 	}
+@@ -161,7 +160,7 @@ static int soc_dts_disable(struct thermal_zone_device *tzd)
+ 		return ret;
+ 
+ 	if (!(out & QRK_DTS_ENABLE_BIT)) {
+-		aux_entry->mode = THERMAL_DEVICE_DISABLED;
++		tzd->mode = THERMAL_DEVICE_DISABLED;
+ 		return 0;
+ 	}
+ 
+@@ -173,9 +172,9 @@ static int soc_dts_disable(struct thermal_zone_device *tzd)
+ 		if (ret)
+ 			return ret;
+ 
+-		aux_entry->mode = THERMAL_DEVICE_DISABLED;
++		tzd->mode = THERMAL_DEVICE_DISABLED;
+ 	} else {
+-		aux_entry->mode = THERMAL_DEVICE_ENABLED;
++		tzd->mode = THERMAL_DEVICE_ENABLED;
+ 		pr_info("DTS is locked. Cannot disable DTS\n");
+ 		ret = -EPERM;
+ 	}
+@@ -312,8 +311,7 @@ static int sys_get_curr_temp(struct thermal_zone_device *tzd,
+ static int sys_get_mode(struct thermal_zone_device *tzd,
+ 				enum thermal_device_mode *mode)
+ {
+-	struct soc_sensor_entry *aux_entry = tzd->devdata;
+-	*mode = aux_entry->mode;
++	*mode = tzd->mode;
+ 	return 0;
+ }
+ 
+diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
+index ddf88dbe7ba2..c495b1e48ef2 100644
+--- a/drivers/thermal/thermal_of.c
++++ b/drivers/thermal/thermal_of.c
+@@ -51,7 +51,6 @@ struct __thermal_bind_params {
+ 
+ /**
+  * struct __thermal_zone - internal representation of a thermal zone
+- * @mode: current thermal zone device mode (enabled/disabled)
+  * @passive_delay: polling interval while passive cooling is activated
+  * @polling_delay: zone polling interval
+  * @slope: slope of the temperature adjustment curve
+@@ -65,7 +64,6 @@ struct __thermal_bind_params {
   */
  
- #ifndef _QED_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_cxt.c b/drivers/net/ethernet/qlogic/qed/qed_cxt.c
-index 3985dd746ca2..e72d25854d79 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_cxt.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_cxt.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
+ struct __thermal_zone {
+-	enum thermal_device_mode mode;
+ 	int passive_delay;
+ 	int polling_delay;
+ 	int slope;
+@@ -272,9 +270,7 @@ static int of_thermal_unbind(struct thermal_zone_device *thermal,
+ static int of_thermal_get_mode(struct thermal_zone_device *tz,
+ 			       enum thermal_device_mode *mode)
+ {
+-	struct __thermal_zone *data = tz->devdata;
+-
+-	*mode = data->mode;
++	*mode = tz->mode;
+ 
+ 	return 0;
+ }
+@@ -296,7 +292,7 @@ static int of_thermal_set_mode(struct thermal_zone_device *tz,
+ 
+ 	mutex_unlock(&tz->lock);
+ 
+-	data->mode = mode;
++	tz->mode = mode;
+ 	thermal_zone_device_update(tz, THERMAL_EVENT_UNSPECIFIED);
+ 
+ 	return 0;
+@@ -979,7 +975,6 @@ __init *thermal_of_build_thermal_zone(struct device_node *np)
+ 
+ finish:
+ 	of_node_put(child);
+-	tz->mode = THERMAL_DEVICE_DISABLED;
+ 
+ 	return tz;
+ 
+@@ -1134,6 +1129,7 @@ int __init of_parse_thermal_zones(void)
+ 			of_thermal_free_zone(tz);
+ 			/* attempting to build remaining zones still */
+ 		}
++		zone->mode = THERMAL_DEVICE_DISABLED;
+ 	}
+ 	of_node_put(np);
  
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_cxt.h b/drivers/net/ethernet/qlogic/qed/qed_cxt.h
-index 05b28919653a..8b64495f8745 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_cxt.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_cxt.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_CXT_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dcbx.c b/drivers/net/ethernet/qlogic/qed/qed_dcbx.c
-index a72523298307..9f16a3a66007 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dcbx.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dcbx.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dcbx.h b/drivers/net/ethernet/qlogic/qed/qed_dcbx.h
-index 537d60de4e2b..ba5f3927034c 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dcbx.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dcbx.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_DCBX_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-index 8b14e6852daf..45cbe1c87106 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015 QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/module.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.h b/drivers/net/ethernet/qlogic/qed/qed_debug.h
-index 685696878ec2..e71af82d3200 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_debug.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_debug.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015 QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_DEBUGFS_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index fa7c10e8aa7a..74142896b707 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev_api.h b/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-index 1f2122c699cc..395d4932c262 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_DEV_API_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_fcoe.c b/drivers/net/ethernet/qlogic/qed/qed_fcoe.c
-index 91d6cdf4abe8..a10e57bba6b9 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_fcoe.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_fcoe.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_fcoe.h b/drivers/net/ethernet/qlogic/qed/qed_fcoe.h
-index bf324736c7cb..13c5ccfe06e7 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_fcoe.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_fcoe.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_FCOE_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_hsi.h b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
-index ebbca7d999a4..d7e70625bdc4 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_hsi.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_HSI_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_hw.c b/drivers/net/ethernet/qlogic/qed/qed_hw.c
-index bdbb8fa8d399..e8c777f30207 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_hw.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_hw.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_hw.h b/drivers/net/ethernet/qlogic/qed/qed_hw.h
-index 68f44b747565..6a61b88b544d 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_hw.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_hw.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_HW_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c b/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c
-index 72ff2e5c5f24..1eb48ea80484 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_init_ops.c b/drivers/net/ethernet/qlogic/qed/qed_init_ops.c
-index 74c425640d67..736702fb81b5 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_init_ops.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_init_ops.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_init_ops.h b/drivers/net/ethernet/qlogic/qed/qed_init_ops.h
-index cf33c41e0952..a573c8921982 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_init_ops.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_init_ops.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_INIT_OPS_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.c b/drivers/net/ethernet/qlogic/qed/qed_int.c
-index be336d47c934..297983d66e2f 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_int.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_int.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.h b/drivers/net/ethernet/qlogic/qed/qed_int.h
-index 6fca82f6c7fa..aea04b121586 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_int.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_int.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_INT_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_iscsi.c b/drivers/net/ethernet/qlogic/qed/qed_iscsi.c
-index 164b4d953b67..f9d9e21cb66b 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_iscsi.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_iscsi.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_iscsi.h b/drivers/net/ethernet/qlogic/qed/qed_iscsi.h
-index 8b6518a31b7e..d6af7ea19bbb 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_iscsi.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_iscsi.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_ISCSI_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-index 7fac39744275..b7a0a717ee6d 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/if_ether.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.h b/drivers/net/ethernet/qlogic/qed/qed_iwarp.h
-index 83ca05cd74d7..c3872cd9457f 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_IWARP_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.c b/drivers/net/ethernet/qlogic/qed/qed_l2.c
-index 750098e60c64..03dc804c92a9 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_l2.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_l2.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.h b/drivers/net/ethernet/qlogic/qed/qed_l2.h
-index dce39f5a87ca..8eceeebb1a7b 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_l2.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_l2.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_L2_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.c b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-index 47da6d4e226c..cce6fd27c042 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_ll2.h b/drivers/net/ethernet/qlogic/qed/qed_ll2.h
-index c0d13bd6c3a6..8356c7d4a193 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_ll2.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_ll2.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_LL2_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index d00335cc145b..0cd6b8bf023a 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/stddef.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-index c17b140aa7ae..25433d162a54 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.h b/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-index 351a13215ddd..d77b4c262cff 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_MCP_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_mng_tlv.c b/drivers/net/ethernet/qlogic/qed/qed_mng_tlv.c
-index 56b7567d7a60..1dd01e0373ab 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_mng_tlv.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_mng_tlv.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-+/* Copyright (c) 2019-2020 Marvell International Ltd. */
- 
- #include <linux/types.h>
- #include <asm/byteorder.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_ooo.c b/drivers/net/ethernet/qlogic/qed/qed_ooo.c
-index d01f91f7f661..88353aa404dc 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_ooo.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_ooo.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_ooo.h b/drivers/net/ethernet/qlogic/qed/qed_ooo.h
-index 2731c392a3f4..3a7e1b59d6fc 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_ooo.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_ooo.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_OOO_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_ptp.c b/drivers/net/ethernet/qlogic/qed/qed_ptp.c
-index f10ddf9d1704..3bd2f8c961c9 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_ptp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_ptp.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-index 9a3541f159dc..59d916693654 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.h b/drivers/net/ethernet/qlogic/qed/qed_rdma.h
-index a20397a395cf..fba43adbb68e 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_rdma.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_RDMA_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_reg_addr.h b/drivers/net/ethernet/qlogic/qed/qed_reg_addr.h
-index bdfd90748042..9db22be42476 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_reg_addr.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_reg_addr.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef REG_ADDR_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-index 1e03d66e33d1..d5db07db65b1 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.h b/drivers/net/ethernet/qlogic/qed/qed_roce.h
-index 9178904bf0e9..3a4a2d72a826 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_roce.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_roce.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_ROCE_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_selftest.c b/drivers/net/ethernet/qlogic/qed/qed_selftest.c
-index d24ee1ea8d3c..6e70781ab87c 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_selftest.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_selftest.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2016  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/crc32.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_selftest.h b/drivers/net/ethernet/qlogic/qed/qed_selftest.h
-index d8121fd39bc1..e27dd9a4547e 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_selftest.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_selftest.h
-@@ -1,4 +1,5 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-+/* Copyright (c) 2019-2020 Marvell International Ltd. */
- 
- #ifndef _QED_SELFTEST_API_H
- #define _QED_SELFTEST_API_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sp.h b/drivers/net/ethernet/qlogic/qed/qed_sp.h
-index 4f646e101074..35539e951bee 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sp.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sp.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_SP_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c b/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
-index 23d630b37199..745d76d13732 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sp_commands.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_spq.c b/drivers/net/ethernet/qlogic/qed/qed_spq.c
-index 18c59981cab7..ee89a8f4f585 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_spq.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_spq.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/types.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-index 6d3c6d4f6308..fcf4d82da161 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/etherdevice.h>
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.h b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-index 43dfaf410332..552892c45670 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_SRIOV_H
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_vf.c b/drivers/net/ethernet/qlogic/qed/qed_vf.c
-index c800f8812492..72a38d53d33f 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_vf.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_vf.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #include <linux/crc32.h>
-diff --git a/include/linux/qed/common_hsi.h b/include/linux/qed/common_hsi.h
-index 294d01eae5cb..977807e1be53 100644
---- a/include/linux/qed/common_hsi.h
-+++ b/include/linux/qed/common_hsi.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2016  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _COMMON_HSI_H
-diff --git a/include/linux/qed/eth_common.h b/include/linux/qed/eth_common.h
-index a9566ef3c2ce..cd1207ad4ada 100644
---- a/include/linux/qed/eth_common.h
-+++ b/include/linux/qed/eth_common.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef __ETH_COMMON__
-diff --git a/include/linux/qed/fcoe_common.h b/include/linux/qed/fcoe_common.h
-index a669d7d84284..68eda1c21cde 100644
---- a/include/linux/qed/fcoe_common.h
-+++ b/include/linux/qed/fcoe_common.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015 QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef __FCOE_COMMON__
-diff --git a/include/linux/qed/iscsi_common.h b/include/linux/qed/iscsi_common.h
-index 7ca89fb9247f..157019f716f1 100644
---- a/include/linux/qed/iscsi_common.h
-+++ b/include/linux/qed/iscsi_common.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef __ISCSI_COMMON__
-diff --git a/include/linux/qed/iwarp_common.h b/include/linux/qed/iwarp_common.h
-index 23583e644257..14f9e4c0ddd9 100644
---- a/include/linux/qed/iwarp_common.h
-+++ b/include/linux/qed/iwarp_common.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef __IWARP_COMMON__
-diff --git a/include/linux/qed/qed_chain.h b/include/linux/qed/qed_chain.h
-index e6e25197f7cb..92cdc79e5019 100644
---- a/include/linux/qed/qed_chain.h
-+++ b/include/linux/qed/qed_chain.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_CHAIN_H
-diff --git a/include/linux/qed/qed_eth_if.h b/include/linux/qed/qed_eth_if.h
-index 7803dedbcb52..812a4d751163 100644
---- a/include/linux/qed/qed_eth_if.h
-+++ b/include/linux/qed/qed_eth_if.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_ETH_IF_H
-diff --git a/include/linux/qed/qed_fcoe_if.h b/include/linux/qed/qed_fcoe_if.h
-index 65d0317ef67e..16752eca5cbd 100644
---- a/include/linux/qed/qed_fcoe_if.h
-+++ b/include/linux/qed/qed_fcoe_if.h
-@@ -1,4 +1,5 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-+/* Copyright (c) 2019-2020 Marvell International Ltd. */
- 
- #ifndef _QED_FCOE_IF_H
- #define _QED_FCOE_IF_H
-diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
-index 4a36608ff3a8..5ca081cd2ed9 100644
---- a/include/linux/qed/qed_if.h
-+++ b/include/linux/qed/qed_if.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_IF_H
-diff --git a/include/linux/qed/qed_iov_if.h b/include/linux/qed/qed_iov_if.h
-index c2ca8196def9..8e31a28e51b9 100644
---- a/include/linux/qed/qed_iov_if.h
-+++ b/include/linux/qed/qed_iov_if.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_IOV_IF_H
-diff --git a/include/linux/qed/qed_iscsi_if.h b/include/linux/qed/qed_iscsi_if.h
-index 89912c6c440c..04180d9af560 100644
---- a/include/linux/qed/qed_iscsi_if.h
-+++ b/include/linux/qed/qed_iscsi_if.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_ISCSI_IF_H
-diff --git a/include/linux/qed/qed_ll2_if.h b/include/linux/qed/qed_ll2_if.h
-index 79cac277e38b..2f64ed79cee9 100644
---- a/include/linux/qed/qed_ll2_if.h
-+++ b/include/linux/qed/qed_ll2_if.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_LL2_IF_H
-diff --git a/include/linux/qed/qed_rdma_if.h b/include/linux/qed/qed_rdma_if.h
-index 041a5b005a82..f464d85e88a4 100644
---- a/include/linux/qed/qed_rdma_if.h
-+++ b/include/linux/qed/qed_rdma_if.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef _QED_RDMA_IF_H
-diff --git a/include/linux/qed/qede_rdma.h b/include/linux/qed/qede_rdma.h
-index 20ed7f2c55bb..072da2f6da37 100644
---- a/include/linux/qed/qede_rdma.h
-+++ b/include/linux/qed/qede_rdma.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qedr NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef QEDE_ROCE_H
-diff --git a/include/linux/qed/rdma_common.h b/include/linux/qed/rdma_common.h
-index 3e3f01136c06..bab078b25834 100644
---- a/include/linux/qed/rdma_common.h
-+++ b/include/linux/qed/rdma_common.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef __RDMA_COMMON__
-diff --git a/include/linux/qed/roce_common.h b/include/linux/qed/roce_common.h
-index 89065f023813..ccddd7a96b67 100644
---- a/include/linux/qed/roce_common.h
-+++ b/include/linux/qed/roce_common.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef __ROCE_COMMON__
-diff --git a/include/linux/qed/storage_common.h b/include/linux/qed/storage_common.h
-index 34f069c79067..91896e8793bf 100644
---- a/include/linux/qed/storage_common.h
-+++ b/include/linux/qed/storage_common.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef __STORAGE_COMMON__
-diff --git a/include/linux/qed/tcp_common.h b/include/linux/qed/tcp_common.h
-index 925e7cb7a582..2b2c87d10e0a 100644
---- a/include/linux/qed/tcp_common.h
-+++ b/include/linux/qed/tcp_common.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
- /* QLogic qed NIC Driver
-  * Copyright (c) 2015-2017  QLogic Corporation
-+ * Copyright (c) 2019-2020 Marvell International Ltd.
-  */
- 
- #ifndef __TCP_COMMON__
 -- 
-2.25.1
+2.17.1
 
