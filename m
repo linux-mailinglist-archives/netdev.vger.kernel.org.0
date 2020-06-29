@@ -2,143 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3576620E308
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:02:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D2A220E389
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:03:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730004AbgF2VK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:10:57 -0400
-Received: from www.zeus03.de ([194.117.254.33]:59296 "EHLO mail.zeus03.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388231AbgF2VKg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 17:10:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=1R5VbfyjnCD0CmpFWZBQGlSYfWm+
-        NoLCMYa6SRuHNZI=; b=DuUNS0rIyBlqryiO1lADl4AQ5JfcuOPcJDV2IVFGM+pG
-        BxMC/hkT5dkyCGF6Q1HTk4aJwCOLxenQqr8CAwZ8iWxCG9hxIYJYDosJU+dNoPJO
-        Wze1Y9QWn06Sop7cYVo1anfQUotBy+ag5oUFAmqaYsB6C/ClU4FdFIxQ5eTRYoo=
-Received: (qmail 2172219 invoked from network); 29 Jun 2020 23:10:30 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 29 Jun 2020 23:10:30 +0200
-X-UD-Smtp-Session: l3s3148p1@IvsbfT+pqsMgAwDPXwOPAI5mQFP60fXe
-Date:   Mon, 29 Jun 2020 23:10:27 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     "Alexander A. Klimov" <grandmaster@al2klimov.de>
-Cc:     corbet@lwn.net, aaro.koskinen@iki.fi, tony@atomide.com,
-        linux@armlinux.org.uk, daniel@zonque.org, haojian.zhuang@gmail.com,
-        robert.jarzmik@free.fr, kgene@kernel.org, krzk@kernel.org,
-        dmitry.torokhov@gmail.com, lee.jones@linaro.org,
-        ulf.hansson@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        b.zolnierkie@samsung.com, j.neuschaefer@gmx.net,
-        mchehab+samsung@kernel.org, gustavo@embeddedor.com,
-        gregkh@linuxfoundation.org, yanaijie@huawei.com,
-        daniel.vetter@ffwll.ch, rafael.j.wysocki@intel.com,
-        Julia.Lawall@inria.fr, linus.walleij@linaro.org,
-        viresh.kumar@linaro.org, arnd@arndb.de, jani.nikula@intel.com,
-        yuehaibing@huawei.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH] Remove handhelds.org links and email addresses
-Message-ID: <20200629211027.GA1481@kunai>
-References: <20200629203121.7892-1-grandmaster@al2klimov.de>
+        id S2390488AbgF2VPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727983AbgF2VO6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 17:14:58 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F139EC061755
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:14:57 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id a14so3864231pfi.2
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 14:14:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jBLxWz7MJ/wrxKHzf9hck26CtoS+jskY1v23ZWdEq/M=;
+        b=Gt8mSXR/r1BZN1Zux60DRK3Z3JbUYvW+FgmeXmFJkd3Y1VsRnkOzS/4JahR87LwZR6
+         yi+BMk4GzFhofoXUA5A8VgiVaiQ4306b99PSAVr6E0sRO29AUEjndzPdJv0JYDSANMjC
+         N30GF+ZxFY2HpOml/6Hnmk+Q6HmyRNAeAdTTSpC9OJFdybnccw0SqjqZCsy/Fr1BOLJq
+         p2atooZOHQ7x3XzhZWS4OqP4MKnJnHWtAWJrHLatGtoJSkBAhwN+kJb4Garpch/QTtbB
+         CR+CYKQxlbQMs1Uo3Z2Ca/voLMJv6D6Hbw9TfPsmPS35Izuh63RDAc01pTZJMa+3W53G
+         OX5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jBLxWz7MJ/wrxKHzf9hck26CtoS+jskY1v23ZWdEq/M=;
+        b=f/jMjIni1pRUKzGz1D2BdGBqYIiPNLrTPCYbjJDI7zKwxdMhTuc3dxiM+ou2mECaWp
+         AMFb/xY30MqKLos6X9aZtAkUETPE+3Mnrt9lbyyLqufl7L5nnIOfZ3f/iq4drKHiC+Pw
+         9ZbZoq6nX+sVmGSYShCkM0en79jnFq5lk3yU1An4hrOUOgYHML5t0mrbfFeNT340oHcf
+         vu/2+4IQ7DNhM8NDJqIHZgn5oJZhLBSQqRVt8vvk/WFGRlR5H210ViG3F0xXs0I4PLQq
+         /9iLnHlaAFyep3aw5NxvVuifwVyhIgjExdQF2eSOEWo1MJDC4/wor950o4WS9d7C7tRo
+         mAyw==
+X-Gm-Message-State: AOAM533tQ+M4jK3T/8s2AupEUSjV2GNIQMYlzkq69GtnKvJ8guWUOQ94
+        ctqbemf3xCAuFcCyxatK50g=
+X-Google-Smtp-Source: ABdhPJzqva0abS/sKc9/XEZoHU9M3pLhPtyyD3AJZlmhX4EB83ang81oPxtyxVicGIBK21FWxJH6Gg==
+X-Received: by 2002:a63:d208:: with SMTP id a8mr11816521pgg.351.1593465297517;
+        Mon, 29 Jun 2020 14:14:57 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id z3sm537285pfz.38.2020.06.29.14.14.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Jun 2020 14:14:56 -0700 (PDT)
+Subject: Re: [PATCH net-next] icmp: support rfc 4884
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>
+References: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <cb763bc5-b361-891a-94e9-be2385ddcbe0@gmail.com>
+Date:   Mon, 29 Jun 2020 14:14:55 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="G4iJoqBmSsgzjUCe"
-Content-Disposition: inline
-In-Reply-To: <20200629203121.7892-1-grandmaster@al2klimov.de>
+In-Reply-To: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---G4iJoqBmSsgzjUCe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-Hi Alexander,
+On 6/29/20 9:57 AM, Willem de Bruijn wrote:
+> From: Willem de Bruijn <willemb@google.com>
+> 
+> ICMP messages may include an extension structure after the original
+> datagram. RFC 4884 standardized this behavior.
+> 
+> It introduces an explicit original datagram length field in the ICMP
+> header to delineate the original datagram from the extension struct.
+> 
+> Return this field when reading an ICMP error from the error queue.
 
-thanks for trying to fix this, yet I have some doubts.
+RFC mentions a 'length' field of 8 bits, your patch chose to export the whole
+second word of icmp header.
 
-On Mon, Jun 29, 2020 at 10:31:21PM +0200, Alexander A. Klimov wrote:
-> Rationale:
-> https://lore.kernel.org/linux-doc/20200626110706.7b5d4a38@lwn.net/
+Why is this field mapped to a prior one (icmp_hdr(skb)->un.gateway) ?
 
-I think we need some text here. Clicking on a link to understand what a
-patch is about is not comfortable. You can add the link with a Link: tag
-for additional information.
+Should we add an element in the union to make this a little bit more explicit/readable ?
 
-Removing stale email addresses may have some value, but removing...
-
->  Compaq's Bootldr + John Dorsey's patch for Assabet support
-> -(http://www.handhelds.org/Compaq/bootldr.html)
-
-... information like this is not good. 'Wayback machine' still has
-copies in case someone wants to look at where the infos came from.
-
-> - * Copyright 2004-2005  Phil Blundell <pb@handhelds.org>
-> + * Copyright 2004-2005  Phil Blundell
-
-This is an OK case in my book...
-
-
-> -MODULE_AUTHOR("Phil Blundell <pb@handhelds.org>");
-> +MODULE_AUTHOR("Phil Blundell");
-
-... same here ...
-
-> @@ -435,7 +435,6 @@
->                             case a PCI bridge (DEC chip 21152). The value of
->                             'pb' is now only initialized if a de4x5 chip is
->                             present.
-> -                           <france@handhelds.org>
-
-This is kind of a signature and should be kept IMO.
-
->   * 2001/07/23: <rmk@arm.linux.org.uk>
-> - *	- Hand merge version from handhelds.org CVS tree.  See patch
-> + *	- Hand merge version from CVS tree.  See patch
-
-That information may be useful.
+diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+index 5589eeb791ca580bb182e1dc38c05eab1c75adb9..427ed5a6765316a4c1e2fa06f3b6618447c01564 100644
+--- a/include/uapi/linux/icmp.h
++++ b/include/uapi/linux/icmp.h
+@@ -76,6 +76,7 @@ struct icmphdr {
+                __be16  sequence;
+        } echo;
+        __be32  gateway;
++       __be32  second_word; /* RFC 4884 4.[123] : <unused:8>,<length:8>,<mtu:16> */
+        struct {
+                __be16  __unused;
+                __be16  mtu;
 
 
->  /* SPDX-License-Identifier: GPL-2.0-only */
->  /* -*- linux-c -*-
-> - *
-> - * (C) 2003 zecke@handhelds.org
 
-Removing copyright is a bad idea.
+> 
+> ICMPv6 by default already returns the entire 32-bit part of the header
+> that includes this field by default. For consistency, do the exact
+> same for ICMP. So far it only returns mtu on ICMP_FRAG_NEEDED and gw
+> on ICMP_PARAMETERPROB.
+> 
+> For backwards compatibility, make this optional, set by setsockopt
+> SOL_IP/IP_RECVERR_RFC4884. For API documentation and feature test, see
+> https://github.com/wdebruij/kerneltools/blob/master/tests/recv_icmp.c
+> 
+> Alternative implementation to reading from the skb in ip_icmp_error
+> is to pass the field from icmp_unreach, again analogous to ICMPv6. But
+> this would require changes to every $proto_err() callback, which for
+> ICMP_FRAG_NEEDED pass the u32 info arg to a pmtu update function.
+> 
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
+> ---
+>  include/net/inet_sock.h |  1 +
+>  include/uapi/linux/in.h |  1 +
+>  net/ipv4/ip_sockglue.c  | 12 ++++++++++++
+>  3 files changed, 14 insertions(+)
+> 
+> diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+> index a7ce00af6c44..a3702d1d4875 100644
+> --- a/include/net/inet_sock.h
+> +++ b/include/net/inet_sock.h
+> @@ -225,6 +225,7 @@ struct inet_sock {
+>  				mc_all:1,
+>  				nodefrag:1;
+>  	__u8			bind_address_no_port:1,
+> +				recverr_rfc4884:1,
+>  				defer_connect:1; /* Indicates that fastopen_connect is set
+>  						  * and cookie exists so we defer connect
+>  						  * until first data frame is written
+> diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+> index 8533bf07450f..3d0d8231dc19 100644
+> --- a/include/uapi/linux/in.h
+> +++ b/include/uapi/linux/in.h
+> @@ -123,6 +123,7 @@ struct in_addr {
+>  #define IP_CHECKSUM	23
+>  #define IP_BIND_ADDRESS_NO_PORT	24
+>  #define IP_RECVFRAGSIZE	25
+> +#define IP_RECVERR_RFC4884	26
+>  
+>  /* IP_MTU_DISCOVER values */
+>  #define IP_PMTUDISC_DONT		0	/* Never send DF frames */
+> diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+> index 84ec3703c909..525140e3947c 100644
+> --- a/net/ipv4/ip_sockglue.c
+> +++ b/net/ipv4/ip_sockglue.c
+> @@ -398,6 +398,9 @@ void ip_icmp_error(struct sock *sk, struct sk_buff *skb, int err,
+>  	if (!skb)
+>  		return;
+>  
+> +	if (inet_sk(sk)->recverr_rfc4884)
+> +		info = ntohl(icmp_hdr(skb)->un.gateway);
 
-Probably some comment blocks are cruft meanwhile and can be removed as a
-whole. That can be discussed. But removing only the handhelds.org part
-makes most parts worse IMHO.
+ntohl(icmp_hdr(skb)->un.second_word);
 
-Thanks and happy hacking,
-
-   Wolfram
-
-
---G4iJoqBmSsgzjUCe
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl76WMAACgkQFA3kzBSg
-KbZgWA/+IxRkb15JXVvwYM1c4ReuUiEUrJ0KOI0M0XELe0YWelDrhgcOtSC0ozRT
-lTt8uizNNBK4bsRpoo+ghjZvNELOeMx+4VsVtMM+IoXXxIKha1jSJ1hqFDsBcCP0
-urAvhdaNyC+TWmEM2H98eb5JfdSxKxrzjIMs4tTBlZOBnu+wAoiDZv4mPf/y1bGv
-L33lwlFG6tkWpVX2veVNoTg04TG0LupAtXUyiI+Hnxt7srbugymQs0iwtd5sCt2R
-AG+BmuN5zmUS5cISCL6p1uXSxVRrs3FI02dwU7m5yvBfvHHSGVsx+f9wPpnpqNc8
-1I3oAR+Ct2K3lvu3uLBY2xDL4WbTmPobmzGLXbwB8ksPC/B1TV5LC/+TI2F+c+gk
-ROaTdQqzt4H0wfzNFOzYT8zGyZOoiPFro7jxCcH9CZjbkeDi19sJt7TQ6I1B0I9+
-bSTAb7s3yWhzUypFHzdR0PT97e8zeiK/xJUTbPkvv+JsDZZvPht423X7CYEUjaCo
-sPQ5UuDSfS4xT25PBabjhNeunmODzCE/+DrtbOSuM5AV63TOoVMB8zWBoJH17emH
-mRgD29xeEITWlq/fBWcPWIjgFDVanjDPYIW2/jnGqm7RLTaw703ajQSbD/7ELOAB
-84gr1NpIeJuhMnRnB11nHCJsUWnRqvl2rt7lretb/tFUB8LhGFE=
-=FQ9k
------END PGP SIGNATURE-----
-
---G4iJoqBmSsgzjUCe--
+> +
+>  	serr = SKB_EXT_ERR(skb);
+>  	serr->ee.ee_errno = err;
+>  	serr->ee.ee_origin = SO_EE_ORIGIN_ICMP;
+> @@ -755,6 +758,7 @@ static int do_ip_setsockopt(struct sock *sk, int level,
+>  	case IP_RECVORIGDSTADDR:
+>  	case IP_CHECKSUM:
+>  	case IP_RECVFRAGSIZE:
+> +	case IP_RECVERR_RFC4884:
+>  		if (optlen >= sizeof(int)) {
+>  			if (get_user(val, (int __user *) optval))
+>  				return -EFAULT;
+> @@ -914,6 +918,11 @@ static int do_ip_setsockopt(struct sock *sk, int level,
+>  		if (!val)
+>  			skb_queue_purge(&sk->sk_error_queue);
+>  		break;
+> +	case IP_RECVERR_RFC4884:
+> +		if (val != 0 && val != 1)
+> +			goto e_inval;
+> +		inet->recverr_rfc4884 = val;
+> +		break;
+>  	case IP_MULTICAST_TTL:
+>  		if (sk->sk_type == SOCK_STREAM)
+>  			goto e_inval;
+> @@ -1588,6 +1597,9 @@ static int do_ip_getsockopt(struct sock *sk, int level, int optname,
+>  	case IP_RECVERR:
+>  		val = inet->recverr;
+>  		break;
+> +	case IP_RECVERR_RFC4884:
+> +		val = inet->recverr_rfc4884;
+> +		break;
+>  	case IP_MULTICAST_TTL:
+>  		val = inet->mc_ttl;
+>  		break;
+> 
