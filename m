@@ -2,103 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A10F420E902
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 01:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6064220E916
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 01:15:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728843AbgF2XAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 19:00:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51592 "EHLO
+        id S1728643AbgF2XHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 19:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728027AbgF2XAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 19:00:02 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E773C03E979
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 16:00:01 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id q8so19008392iow.7
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 16:00:01 -0700 (PDT)
+        with ESMTP id S1728354AbgF2XHB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 19:07:01 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E02C061755
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 16:07:01 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id x11so7678752plo.7
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 16:07:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pZa6Qls2X0ZJVuIfRFknbeFzAtLwAloZxzpTgo+EE2A=;
-        b=jQnwiZcMysSH3kzi4acPuwbS4lnWtsZ+KFY3OGi9cCaDoS2N2VlCOScZLRsHNCSapH
-         65vNA4m+3gvQSqWBu54Qj+J+RCaWvOdsNfgHikxGdiyPAo6vRJZUwl7YJgc9hbSVBIyE
-         oEraom2DARq9ESZyKlwcs5EhJntf9PZMab+0ziopNffpDrY+EUmjz9YI/4mctTM3MTgZ
-         fGOIEXvzcZQKSlW8eBvIDTwImBSfEbmCANy9xyrsGo9WGCabA5UtIdPrLNjZyQ2sepWC
-         s9ZW0oX6alEDC+c0BIGhPRYaSNLGqTeSAeJtb5Ml3kaUDgUvXyF++u9TLDH9HURUO+13
-         7ZwA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=c5+7n7Tl91EMgeAeFXBB2YJKWmCgRJlGZJPJh/GR5aE=;
+        b=ZzwvErTpElN8evrf6bXdRHdTtK3SbNRHgFElMkDSQRGQPX+5fdlAstwbQr89DBGhYK
+         k6Rv5CD0/25+eeJBkEoi+tEkNf/b7SxAalDytu+AHElMJ3y/+9kmMOMMPCTQu9Oax65D
+         LxiMm7xcQdA0XhibL6rW2anfDs7ciEJNnPZdy73ZXzy3+2dTDVeav/Z+eEu4CnJKB/zP
+         orW+VtocCeaKLAKUh/fIO8LK/kGUKUmoOL2zcJxNuGvONjx3Tg6nWDaMrkfRPzJ05Bjw
+         LLuB/KNeUPbFq27HQRfujWQGrS2g2Q0LOCzoXsgQ05q7YFckDiJo5eYVRWbbHJpZLuWp
+         b6RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pZa6Qls2X0ZJVuIfRFknbeFzAtLwAloZxzpTgo+EE2A=;
-        b=JrNcJ7q6InjQ8nfP1op0oSnDq9tymfpLuPMWVq5EfIxCyyzvX64kvDDjsJvQ9u+Ubw
-         20WK5O8osUnnFJlrEI3EP7o6gb+iuFV3lUpzPRTwkBwQghUWcvibvprrNSBENKK+bz5D
-         oUs31t4Nz6ja3qzbk0SL+3UCdyBdvxd/7a43yMfslXHBYCvnfPmkpdAFPafAGJgss2rC
-         u6tq5YwB3ekL+olt5gb7uHfxhYWsG6UXpsyiisPNC019py3NAKFoz58FjlVHb2X10h/d
-         JdK/X+YObvW96nayTG2vDcvozHdWp5AgRyXUH2kyvbF+Tj4csu66YbEq/7ggcnVGMRQj
-         TESA==
-X-Gm-Message-State: AOAM5320Uq0FVOFCB6MBLWjIIBwr+veq2aGtpHGJ4cX0h2XD2Icm5yvw
-        8eZ2DTpJH/DkNbIWaPafRn0COw==
-X-Google-Smtp-Source: ABdhPJxDbty9v4iWJpRzF3Phr/1Y/1T/ffPCEf9zLLh065Jg6UsWpebPuzbkPmz2I5e/276TKPok5A==
-X-Received: by 2002:a6b:8ed4:: with SMTP id q203mr19020310iod.193.1593471600739;
-        Mon, 29 Jun 2020 16:00:00 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id g1sm688406ilk.51.2020.06.29.16.00.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 16:00:00 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.93)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jq2kp-001Obs-4j; Mon, 29 Jun 2020 19:59:59 -0300
-Date:   Mon, 29 Jun 2020 19:59:59 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, Takashi Iwai <tiwai@suse.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-Message-ID: <20200629225959.GF25301@ziepe.ca>
-References: <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
- <20200521233437.GF17583@ziepe.ca>
- <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
- <20200523062351.GD3156699@kroah.com>
- <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
- <20200524063519.GB1369260@kroah.com>
- <fe44419b-924c-b183-b761-78771b7d506d@linux.intel.com>
- <s5h5zcistpb.wl-tiwai@suse.de>
- <20200527071733.GB52617@kroah.com>
- <20200629203317.GM5499@sirena.org.uk>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=c5+7n7Tl91EMgeAeFXBB2YJKWmCgRJlGZJPJh/GR5aE=;
+        b=ZMvfkc58Yu4PU+Bk8QJwsn9g00xKi2YrnuG8N0tOkkh0Pzp1NjazQj0yl7e5cXWpgQ
+         dSbVVHgYV7u3pqrsuCkVgPr7AcMegyJ/OuMbkKokPxXsGrPiPCbBw1D0YRg1i5E3kujL
+         ADX2TFpY5tKwOxxDIEnPx7rGT/eNvEDdxoR3sbfOrFjKn+fJl7h/Yse76yEgz+PzFKyz
+         tQAt0lBesKmwYhbR4Vt5iiN+XKcxI2odwlJxEt9WYf2ZkzLU+gCJ2EWVYHjV9oV4i+fi
+         e4vv0igSZAhGLIeps9NEHT/a05wTDP2tW4fh9ASD5fNdvkapBd1XJA6lvzVz5pkrbCId
+         Yuuw==
+X-Gm-Message-State: AOAM532AGhEXd2xvt6ISVw4PP4aKgbNAadUj4dNe4XtiJK4O2Qsa5TLs
+        TK+s5k2Tc5MFyBVc+GecSvfBb0PW
+X-Google-Smtp-Source: ABdhPJxWDNSm9znZTXbKMGWk3K4ghZ8aowKPBtKjOgrVl2sVAMt5wh/XqwKnPegMXI/8GD8yS7VyvA==
+X-Received: by 2002:a17:902:fe04:: with SMTP id g4mr5147096plj.66.1593472021059;
+        Mon, 29 Jun 2020 16:07:01 -0700 (PDT)
+Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id np5sm471488pjb.43.2020.06.29.16.06.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Jun 2020 16:07:00 -0700 (PDT)
+Subject: Re: [PATCH net-next] icmp: support rfc 4884
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+References: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com>
+ <cb763bc5-b361-891a-94e9-be2385ddcbe0@gmail.com>
+ <CA+FuTSfgz54uQbzrMr1Q0cAg2Vs1TFjyOb_+jjKUPoKAb=R-fw@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <f713198c-5ff7-677e-a739-c0bec4a93bd6@gmail.com>
+Date:   Mon, 29 Jun 2020 16:06:58 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200629203317.GM5499@sirena.org.uk>
+In-Reply-To: <CA+FuTSfgz54uQbzrMr1Q0cAg2Vs1TFjyOb_+jjKUPoKAb=R-fw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 09:33:17PM +0100, Mark Brown wrote:
-> On Wed, May 27, 2020 at 09:17:33AM +0200, Greg KH wrote:
+
+
+On 6/29/20 2:30 PM, Willem de Bruijn wrote:
+> On Mon, Jun 29, 2020 at 5:15 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>>
+>>
+>> On 6/29/20 9:57 AM, Willem de Bruijn wrote:
+>>> From: Willem de Bruijn <willemb@google.com>
+>>>
+>>> ICMP messages may include an extension structure after the original
+>>> datagram. RFC 4884 standardized this behavior.
+>>>
+>>> It introduces an explicit original datagram length field in the ICMP
+>>> header to delineate the original datagram from the extension struct.
+>>>
+>>> Return this field when reading an ICMP error from the error queue.
+>>
+>> RFC mentions a 'length' field of 8 bits, your patch chose to export the whole
+>> second word of icmp header.
+>>
+>> Why is this field mapped to a prior one (icmp_hdr(skb)->un.gateway) ?
+>>
+>> Should we add an element in the union to make this a little bit more explicit/readable ?
+>>
+>> diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+>> index 5589eeb791ca580bb182e1dc38c05eab1c75adb9..427ed5a6765316a4c1e2fa06f3b6618447c01564 100644
+>> --- a/include/uapi/linux/icmp.h
+>> +++ b/include/uapi/linux/icmp.h
+>> @@ -76,6 +76,7 @@ struct icmphdr {
+>>                 __be16  sequence;
+>>         } echo;
+>>         __be32  gateway;
+>> +       __be32  second_word; /* RFC 4884 4.[123] : <unused:8>,<length:8>,<mtu:16> */
+>>         struct {
+>>                 __be16  __unused;
+>>                 __be16  mtu;
 > 
-> > Ok, that's good to hear.  But platform devices should never be showing
-> > up as a child of a PCI device.  In the "near future" when we get the
-> > virtual bus code merged, we can convert any existing users like this to
-> > the new code.
+> Okay. How about a variant of the existing struct frag?
 > 
-> What are we supposed to do with things like PCI attached FPGAs and ASICs
-> in that case?  They can have host visible devices with physical
-> resources like MMIO ranges and interrupts without those being split up
-> neatly as PCI subfunctions - the original use case for MFD was such
-> ASICs, there's a few PCI drivers in there now. 
+> @@ -80,6 +80,11 @@ struct icmphdr {
+>                 __be16  __unused;
+>                 __be16  mtu;
+>         } frag;
+> +       struct {
+> +               __u8    __unused;
+> +               __u8    length;
+> +               __be16  mtu;
+> +       } rfc_4884;
+>         __u8    reserved[4];
+>    } un;
+> 
 
-Greg has been pretty clear that MFD shouldn't have been used on top of
-PCI drivers.
+Sure, but my point was later in the code :
 
-In a sense virtual bus is pretty much MFD v2.
+>>> +     if (inet_sk(sk)->recverr_rfc4884)
+>>> +             info = ntohl(icmp_hdr(skb)->un.gateway);
+>>
+>> ntohl(icmp_hdr(skb)->un.second_word);
 
-Jason
+If you leave there "info = ntohl(icmp_hdr(skb)->un.gateway)" it is a bit hard for someone
+reading linux kernel code to understand why we do this.
+
+
