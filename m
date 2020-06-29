@@ -2,174 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B26520E138
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:58:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DC5620E261
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:00:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389798AbgF2UxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:53:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
+        id S2390265AbgF2VEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729427AbgF2TNX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:13:23 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BBFC0A8886;
-        Mon, 29 Jun 2020 00:27:04 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id k71so4181982pje.0;
-        Mon, 29 Jun 2020 00:27:04 -0700 (PDT)
+        with ESMTP id S1731110AbgF2TMo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:12:44 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08FFC0A893D
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 00:42:26 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id y13so8503005lfe.9
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 00:42:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HuX7n6s8ATp5pxRd5kQnUjstgno5Nwe0RMXtqfQUla8=;
-        b=pDYnSRCZpVu5I32x0Nxg7b5RiMinhvu1m7ig/sDS2DrilwV6kc2H4SU63qswuVuFBt
-         K/uom57uGLSY35+dmoXdmbHCDfFTs7W4mGzMza/dJ4DTaLLV9U7BSuXZ4JXiy6V40ok8
-         9ZEd3epiKLqcrZ6NKhOhq0xg2xL6kY5wGvKgUuVzvEwlAeMWNVQbJf2jVRaQ17OnLRtR
-         krQBf4tRpZj7oxUgIgnPdh0bpbJM3t3K51JELfBHuojT+qhn/tjAoxmnnunpu8FImfY7
-         uj4h6e1EF+R2+bPpJHoFESVLSLIo7IVFXy/uDCW2QHbjeFH+aaUIjCkp9ED705ODvjyV
-         R6Xw==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=dehoAPWG1C4zFRAsM2Hgz51wnypP3bkZmHH0inC/SE4=;
+        b=HfRHaYe1bLPiZrP3enkwPCpjwaVwCHWeRiz6TUInU4PWdR2CQVF7DKY4T13zP/B4K4
+         0EaxCRhvHXARTsFJKg9BnUm3QshCsc8n2IqVG/rX6v/vgukiSK8MnTL+wENyeG88SaLn
+         PqCaBwQ0rgrxjbUKT+S/rYT2c3iQoxOIOO3Wk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HuX7n6s8ATp5pxRd5kQnUjstgno5Nwe0RMXtqfQUla8=;
-        b=mAxryTpLc2Rr5gbJboel0LQcspYpGexUvfKw2HQu3/jvBX4sgCNGXtZ1Bgj6vmL/bq
-         3YoV6Yrk6u0xSh13SM5GLpf7a5n3OdRjj0VY6fqCAV+Z7jwVlxXkTI457CFyKWRpAouz
-         L8x2epc9wlAQ5icMpNPAXVlzv17xBeyaWDoOubJLfAaNyT0JgahUID1NofyIvOZeTGLH
-         yikjusct9ConGk8TziNilAtHBACmNgpTrSQurvfEcIvWqxxzdhnxeGzTssDA04UeU+/U
-         aXy9XnFUwBmPDzUKOuma0+yhTwBnb91a9e41bFwwUFcT+PfTC1zlYP8lXzbvRH/Dm75y
-         3Pug==
-X-Gm-Message-State: AOAM530CvM1d245ujwb5Rykh2VIWKCFp0h7VE1WWu0hNt4IYknww6bGw
-        Or8Tr/bqjiXwjnIPYQgB61E=
-X-Google-Smtp-Source: ABdhPJxs3S103RJgDrdJ4wsL1LPaeZPraLcWPGBS916dR7B+qMtjNVhw3ONbUNamXhwngvDLgfGvxQ==
-X-Received: by 2002:a17:902:7204:: with SMTP id ba4mr11861705plb.250.1593415624288;
-        Mon, 29 Jun 2020 00:27:04 -0700 (PDT)
-Received: from varodek.iballbatonwifi.com ([103.105.153.57])
-        by smtp.gmail.com with ESMTPSA id q10sm34637627pfk.86.2020.06.29.00.26.59
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=dehoAPWG1C4zFRAsM2Hgz51wnypP3bkZmHH0inC/SE4=;
+        b=aI4pJbcyxG+E2XtCUuguGdd6fmMUdnf3B5cSmi+rjoKVQVoP6qS7h00j3Qew31QzYR
+         9p5s9jCGrWL0OUb5LMBGRNUD8X9DSLlsBnXSSdj37BGa4KJ0op10PyFv98kBC6lI8B4h
+         Tk5hD/8nQSE9hg/3GBhhYOdzaekHdbKIe0nvAA5gG2P+USkz1jP1Y3eqFdCqpeUKfVrf
+         cbK8yIYp2mLiKNoFLk/jfNaQW8/gVKU3dbjRY3YuL/CMrROcju5FU64/5GetagdQSPPw
+         anlAoXHxnII0n8YAKC1MlpzBtVhWPQaIFw+spLylLvEKcwuSDQlEMpxcVk5LgcZq6R5n
+         y6Yg==
+X-Gm-Message-State: AOAM531fRLnhBoGfv2CnO/DAddn5lHhUR1huVczDglMkoYM4OYvvdARV
+        CXpP4LGrp5xAprf4O4gs1GDB+Q==
+X-Google-Smtp-Source: ABdhPJwrtWoK6TAjkCMcGUSuVkzv9DxW/3FrqZvLStmAWpY/6EKvwNcFbQyy9OA4Sq7EnCigTcNxqA==
+X-Received: by 2002:a05:6512:3398:: with SMTP id h24mr8399914lfg.135.1593416545225;
+        Mon, 29 Jun 2020 00:42:25 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id e29sm7826437lfc.51.2020.06.29.00.42.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 00:27:03 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org, linux-wireless@vger.kernel.org
-Subject: [PATCH v1 2/2] ipw2200: use generic power management
-Date:   Mon, 29 Jun 2020 12:55:25 +0530
-Message-Id: <20200629072525.156154-3-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200629072525.156154-1-vaibhavgupta40@gmail.com>
-References: <20200629072525.156154-1-vaibhavgupta40@gmail.com>
+        Mon, 29 Jun 2020 00:42:24 -0700 (PDT)
+References: <159312606846.18340.6821004346409614051.stgit@john-XPS-13-9370> <159312679888.18340.15248924071966273998.stgit@john-XPS-13-9370>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     kafai@fb.com, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [bpf PATCH v2 2/3] bpf, sockmap: RCU dereferenced psock may be used outside RCU block
+In-reply-to: <159312679888.18340.15248924071966273998.stgit@john-XPS-13-9370>
+Date:   Mon, 29 Jun 2020 09:42:23 +0200
+Message-ID: <87d05imi74.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With legacy PM, drivers themselves were responsible for managing the
-device's power states and takes care of register states.
+On Fri, Jun 26, 2020 at 01:13 AM CEST, John Fastabend wrote:
+> If an ingress verdict program specifies message sizes greater than
+> skb->len and there is an ENOMEM error due to memory pressure we
+> may call the rcv_msg handler outside the strp_data_ready() caller
+> context. This is because on an ENOMEM error the strparser will
+> retry from a workqueue. The caller currently protects the use of
+> psock by calling the strp_data_ready() inside a rcu_read_lock/unlock
+> block.
+>
+> But, in above workqueue error case the psock is accessed outside
+> the read_lock/unlock block of the caller. So instead of using
+> psock directly we must do a look up against the sk again to
+> ensure the psock is available.
+>
+> There is an an ugly piece here where we must handle
+> the case where we paused the strp and removed the psock. On
+> psock removal we first pause the strparser and then remove
+> the psock. If the strparser is paused while an skb is
+> scheduled on the workqueue the skb will be dropped on the
+> flow and kfree_skb() is called. If the workqueue manages
+> to get called before we pause the strparser but runs the rcvmsg
+> callback after the psock is removed we will hit the unlikely
+> case where we run the sockmap rcvmsg handler but do not have
+> a psock. For now we will follow strparser logic and drop the
+> skb on the floor with skb_kfree(). This is ugly because the
+> data is dropped. To date this has not caused problems in practice
+> because either the application controlling the sockmap is
+> coordinating with the datapath so that skbs are "flushed"
+> before removal or we simply wait for the sock to be closed before
+> removing it.
+>
+> This patch fixes the describe RCU bug and dropping the skb doesn't
+> make things worse. Future patches will improve this by allowing
+> the normal case where skbs are not merged to skip the strparser
+> altogether. In practice many (most?) use cases have no need to
+> merge skbs so its both a code complexity hit as seen above and
+> a performance issue. For example, in the Cilium case we always
+> set the strparser up to return sbks 1:1 without any merging and
+> have avoided above issues.
+>
+> Fixes: e91de6afa81c1 ("bpf: Fix running sk_skb program types with ktls")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
 
-After upgrading to the generic structure, PCI core will take care of
-required tasks and drivers should do only device-specific operations.
-
-The driver was invoking PCI helper functions like pci_save/restore_state(),
-pci_enable/disable_device() and pci_set_power_state(), which is not
-recommended.
-
-Compile-tested only.
-
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- drivers/net/wireless/intel/ipw2x00/ipw2200.c | 30 +++++---------------
- 1 file changed, 7 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-index 661e63bfc892..39ff3a426092 100644
---- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-+++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-@@ -11838,10 +11838,9 @@ static void ipw_pci_remove(struct pci_dev *pdev)
- 	free_firmware();
- }
- 
--#ifdef CONFIG_PM
--static int ipw_pci_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused ipw_pci_suspend(struct device *dev_d)
- {
--	struct ipw_priv *priv = pci_get_drvdata(pdev);
-+	struct ipw_priv *priv = dev_get_drvdata(dev_d);
- 	struct net_device *dev = priv->net_dev;
- 
- 	printk(KERN_INFO "%s: Going into suspend...\n", dev->name);
-@@ -11852,33 +11851,20 @@ static int ipw_pci_suspend(struct pci_dev *pdev, pm_message_t state)
- 	/* Remove the PRESENT state of the device */
- 	netif_device_detach(dev);
- 
--	pci_save_state(pdev);
--	pci_disable_device(pdev);
--	pci_set_power_state(pdev, pci_choose_state(pdev, state));
--
- 	priv->suspend_at = ktime_get_boottime_seconds();
- 
- 	return 0;
- }
- 
--static int ipw_pci_resume(struct pci_dev *pdev)
-+static int __maybe_unused ipw_pci_resume(struct device *dev_d)
- {
-+	struct pci_dev *pdev = to_pci_dev(dev_d);
- 	struct ipw_priv *priv = pci_get_drvdata(pdev);
- 	struct net_device *dev = priv->net_dev;
--	int err;
- 	u32 val;
- 
- 	printk(KERN_INFO "%s: Coming out of suspend...\n", dev->name);
- 
--	pci_set_power_state(pdev, PCI_D0);
--	err = pci_enable_device(pdev);
--	if (err) {
--		printk(KERN_ERR "%s: pci_enable_device failed on resume\n",
--		       dev->name);
--		return err;
--	}
--	pci_restore_state(pdev);
--
- 	/*
- 	 * Suspend/Resume resets the PCI configuration space, so we have to
- 	 * re-disable the RETRY_TIMEOUT register (0x41) to keep PCI Tx retries
-@@ -11900,7 +11886,6 @@ static int ipw_pci_resume(struct pci_dev *pdev)
- 
- 	return 0;
- }
--#endif
- 
- static void ipw_pci_shutdown(struct pci_dev *pdev)
- {
-@@ -11912,16 +11897,15 @@ static void ipw_pci_shutdown(struct pci_dev *pdev)
- 	pci_disable_device(pdev);
- }
- 
-+static SIMPLE_DEV_PM_OPS(ipw_pci_pm_ops, ipw_pci_suspend, ipw_pci_resume);
-+
- /* driver initialization stuff */
- static struct pci_driver ipw_driver = {
- 	.name = DRV_NAME,
- 	.id_table = card_ids,
- 	.probe = ipw_pci_probe,
- 	.remove = ipw_pci_remove,
--#ifdef CONFIG_PM
--	.suspend = ipw_pci_suspend,
--	.resume = ipw_pci_resume,
--#endif
-+	.driver.pm = &ipw_pci_pm_ops,
- 	.shutdown = ipw_pci_shutdown,
- };
- 
--- 
-2.27.0
-
+LGTM. Sorry for the delay, needed to make sure I understand this.
