@@ -2,55 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84D7220D6C5
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:06:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 555A820D7E0
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:08:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732246AbgF2TXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45294 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731733AbgF2TXo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:23:44 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54149C061755;
-        Mon, 29 Jun 2020 12:23:44 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D4CB7121110A7;
-        Mon, 29 Jun 2020 12:23:41 -0700 (PDT)
-Date:   Mon, 29 Jun 2020 12:23:37 -0700 (PDT)
-Message-Id: <20200629.122337.481071276474268044.davem@davemloft.net>
-To:     rao.shoaib@oracle.com
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        ka-cheong.poon@oracle.com, david.edmondson@oracle.com
-Subject: Re: [PATCH v1] rds: If one path needs re-connection, check all and
- re-connect
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <ba7da46b-a84d-142f-90e2-6b0be6899fbf@oracle.com>
-References: <20200626183438.20188-1-rao.shoaib@oracle.com>
-        <20200626.163100.603726050168307590.davem@davemloft.net>
-        <ba7da46b-a84d-142f-90e2-6b0be6899fbf@oracle.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 29 Jun 2020 12:23:42 -0700 (PDT)
+        id S1731562AbgF2Tdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:33:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42512 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730482AbgF2TdT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 15:33:19 -0400
+Received: from localhost (mobile-166-170-222-206.mycingular.net [166.170.222.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BA31A206E2;
+        Mon, 29 Jun 2020 19:33:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593459199;
+        bh=S0YdjtPRSSlnoNdihph14QS32xSkaKxF4OYCSio0GLE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=opm5/3ZKjNT8OrAL+IyGlJIOqrB869sIflfMIebZ+o5mNYTqOegs/4sBzCzNYVZxI
+         Jm+XxAYDkrNFpAmyh04dupvYYCtLyFxJUJqAWShS8dXKFcBeH9nBs+z+ruWIQA5Yo6
+         EgXpkLslb1j2PttdG0sCiQRzqTqZ5B3NV2QBzujM=
+Date:   Mon, 29 Jun 2020 14:33:16 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Aya Levin <ayal@mellanox.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>, linux-pci@vger.kernel.org,
+        Alexander Duyck <alexander.h.duyck@linux.intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ding Tianhong <dingtianhong@huawei.com>,
+        Casey Leedom <leedom@chelsio.com>
+Subject: Re: [net-next 10/10] net/mlx5e: Add support for PCI relaxed ordering
+Message-ID: <20200629193316.GA3283437@bjorn-Precision-5520>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ca121a18-8c11-5830-9840-51f353c3ddd2@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rao Shoaib <rao.shoaib@oracle.com>
-Date: Mon, 29 Jun 2020 10:55:28 -0700
+[+cc Ashok, Ding, Casey]
 
-> This was coded in this unusual way because the code is agnostic to the
-> underlying transport. Unfortunately, IB transport does not
-> initialize/use this field where as TCP does and counts starting from
-> one.
+On Mon, Jun 29, 2020 at 12:32:44PM +0300, Aya Levin wrote:
+> I wanted to turn on RO on the ETH driver based on
+> pcie_relaxed_ordering_enabled().
+> From my experiments I see that pcie_relaxed_ordering_enabled() return true
+> on Intel(R) Xeon(R) CPU E5-2650 v3 @ 2.30GHz. This CPU is from Haswell
+> series which is known to have bug in RO implementation. In this case, I
+> expected pcie_relaxed_ordering_enabled() to return false, shouldn't it?
 
-Ok, please resubmit, I didn't understand that the conn->c_npaths
-could be zero.
+Is there an erratum for this?  How do we know this device has a bug
+in relaxed ordering?
 
-Thank you.
+> In addition, we are worried about future bugs in new CPUs which may result
+> in performance degradation while using RO, as long as the function
+> pcie_relaxed_ordering_enabled() will return true for these CPUs. 
+
+I'm worried about this too.  I do not want to add a Device ID to the
+quirk_relaxedordering_disable() list for every new Intel CPU.  That's
+a huge hassle and creates a real problem for old kernels running on
+those new CPUs, because things might work "most of the time" but not
+always.
+
+Maybe we need to prevent the use of relaxed ordering for *all* Intel
+CPUs.
+
+> That's why
+> we thought of adding the feature on our card with default off and enable the
+> user to set it.
+
+Bjorn
