@@ -2,338 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C99BA20E603
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59F7D20E554
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:07:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726790AbgF2Vnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727853AbgF2Sht (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:37:49 -0400
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42012C00F838
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:48:03 -0700 (PDT)
-Received: by mail-vs1-xe44.google.com with SMTP id m25so9149053vsp.8
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:48:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=verdurent-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sinEnS6z0XptgBEvEcK3MVQ+LTLUCuUM67IGB48+uOQ=;
-        b=yXWQZyxv3Tuid2rMLdkiiqPqO771/LUhGpTuZO7tN1lCQvALpqAXD6QDLbcVJdR2DJ
-         /NPqfsSrNnYOgvRHpQaNAZ4aqjyp4oHfKnfhjmq78WXV1756CXcVm/4dWP1AzJuA5/ox
-         7ywP5FU8VnODuq75PVQVtv6u5sRujs0EY8pIwLtzjNllqTpxdu6/FoOHTmQBWiC390jn
-         Bcn1nz/GPyqqn5oBysRBz+SFvJwLZS7HNAF9/m+gIqbPsvCOfzMJIASBApYkdAR3eaU5
-         ogssMmkIDK2r6MXGaicZV0/WI5tfJ6n2VqmdQHmHpapNFZtQZ24bkM0owtL2IkL9jPv2
-         j2Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sinEnS6z0XptgBEvEcK3MVQ+LTLUCuUM67IGB48+uOQ=;
-        b=HG5sU8X9r16mfwxhvHRPcQEee3viKxxUUMaeaKhsEbdnIlzVYOG6+TmVkfBxh9fivy
-         Yw1narxiu95rCE2x/Rc3l0OeYZLQgiwk4P3f8ESWA2MXnnAAjCQLPjyfXMpVJ/2LUL+6
-         Qxe+DIt3EVoLyWgYOs7fWRYmO2A43lfBXtJBuTufeUaFBr7VJp2z6BkZNVPZQysvz4KP
-         HDNr9+NgpQeDkFQ+B6AyqgfsZAFx0cZYvhk8yirFOOLKRMh9DuPdBnqI3erYZHAVJUba
-         31zkhJHghcvfa4GsKtIKCOu6dWZyGui88RZLKM4y9A4VAXOo6W/tx5M858QtO8QheVvm
-         Ok4g==
-X-Gm-Message-State: AOAM533DpbUniXc6+/FqgLXLYKxSylzCT7w57HBEhXCSdUMsUc+Fbq/9
-        H9Lb/r+UN+be/N/QC7gRAv7BqW+MA4AxnC9p5NQWZZX2gkcqeA==
-X-Google-Smtp-Source: ABdhPJz5y4gYixUUu743AouZ4iPhyVkpUcLHjnbxyNRQtJI4Joc90JTCn7lsZ28Q7GeTrTlI2ZxCvGHDHBtVZEeY4WU=
-X-Received: by 2002:a67:7f04:: with SMTP id a4mr5835962vsd.9.1593434882284;
- Mon, 29 Jun 2020 05:48:02 -0700 (PDT)
+        id S2403770AbgF2Vfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:35:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60648 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728494AbgF2Skq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 14:40:46 -0400
+Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7DBD6206A1;
+        Mon, 29 Jun 2020 12:56:09 +0000 (UTC)
+Date:   Mon, 29 Jun 2020 08:56:08 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     syzbot <syzbot+721aa903751db87aa244@syzkaller.appspotmail.com>
+Cc:     linux-kernel@vger.kernel.org, mathieu.desnoyers@polymtl.ca,
+        mingo@elte.hu, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>
+Subject: Re: WARNING in tracepoint_add_func
+Message-ID: <20200629085608.42ede213@oasis.local.home>
+In-Reply-To: <000000000000a6348d05a9234041@google.com>
+References: <000000000000a6348d05a9234041@google.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20200629122925.21729-1-andrzej.p@collabora.com> <20200629122925.21729-11-andrzej.p@collabora.com>
-In-Reply-To: <20200629122925.21729-11-andrzej.p@collabora.com>
-From:   Amit Kucheria <amit.kucheria@verdurent.com>
-Date:   Mon, 29 Jun 2020 18:17:51 +0530
-Message-ID: <CAHLCerMixUyWRoTrDhzYoaVGL31Qg0+v+J_4j4j1ui6qGyehdA@mail.gmail.com>
-Subject: Re: [PATCH v7 10/11] thermal: Simplify or eliminate unnecessary
- set_mode() methods
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Cc:     Linux PM list <linux-pm@vger.kernel.org>,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        lakml <linux-arm-kernel@lists.infradead.org>,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        kernel@collabora.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 6:00 PM Andrzej Pietrasiewicz
-<andrzej.p@collabora.com> wrote:
->
-> Setting polling_delay is now done at thermal_core level (by not polling
-> DISABLED devices), so no need to repeat this code.
->
-> int340x: Checking for an impossible enum value is unnecessary.
-> acpi/thermal: It only prints debug messages.
->
-> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-> [for acerhdf]
-> Acked-by: Peter Kaestle <peter@piie.net>
-> Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 
-Reviewed-by: Amit Kucheria <amit.kucheria@linaro.org>
+Cc'd Frederic and Peter.
 
+-- Steve
+
+
+On Sun, 28 Jun 2020 04:29:17 -0700
+syzbot <syzbot+721aa903751db87aa244@syzkaller.appspotmail.com> wrote:
+
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    7a64135f libbpf: Adjust SEC short cut for expected attach ..
+> git tree:       bpf
+> console output: https://syzkaller.appspot.com/x/log.txt?x=142782e3100000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=dcc6334acae363d4
+> dashboard link: https://syzkaller.appspot.com/bug?extid=721aa903751db87aa244
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> 
+> Unfortunately, I don't have any reproducer for this crash yet.
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+721aa903751db87aa244@syzkaller.appspotmail.com
+> 
+> ------------[ cut here ]------------
+> WARNING: CPU: 1 PID: 16762 at kernel/tracepoint.c:243 tracepoint_add_func+0x254/0x880 kernel/tracepoint.c:243
+> Kernel panic - not syncing: panic_on_warn set ...
+> CPU: 1 PID: 16762 Comm: syz-executor.4 Not tainted 5.8.0-rc1-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x18f/0x20d lib/dump_stack.c:118
+>  panic+0x2e3/0x75c kernel/panic.c:231
+>  __warn.cold+0x20/0x45 kernel/panic.c:600
+>  report_bug+0x1bd/0x210 lib/bug.c:198
+>  exc_invalid_op+0x24d/0x400 arch/x86/kernel/traps.c:235
+>  asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:563
+> RIP: 0010:tracepoint_add_func+0x254/0x880 kernel/tracepoint.c:243
+> Code: 44 24 20 48 8b 5b 08 80 38 00 0f 85 6b 05 00 00 48 8b 44 24 08 48 3b 58 08 0f 85 2d ff ff ff 41 bc ef ff ff ff e8 4c 78 fe ff <0f> 0b e8 45 78 fe ff 44 89 e0 48 83 c4 38 5b 5d 41 5c 41 5d 41 5e
+> RSP: 0018:ffffc90001497a98 EFLAGS: 00010216
+> RAX: 000000000000199a RBX: ffffffff89b99040 RCX: ffffc90011df4000
+> RDX: 0000000000040000 RSI: ffffffff8174d824 RDI: ffff8880979adb30
+> RBP: ffffffff814f1b80 R08: 0000000000000000 R09: ffffffff89bf9867
+> R10: 000000000000000a R11: 0000000000000000 R12: 00000000ffffffef
+> R13: 0000000000000001 R14: dffffc0000000000 R15: ffff8880979adb10
+>  tracepoint_probe_register_prio kernel/tracepoint.c:315 [inline]
+>  tracepoint_probe_register+0x9c/0xe0 kernel/tracepoint.c:335
+>  trace_event_reg+0x28f/0x350 kernel/trace/trace_events.c:304
+>  perf_trace_event_reg kernel/trace/trace_event_perf.c:129 [inline]
+>  perf_trace_event_init+0x532/0x9a0 kernel/trace/trace_event_perf.c:204
+>  perf_trace_init+0x176/0x240 kernel/trace/trace_event_perf.c:228
+>  perf_tp_event_init+0xa2/0x120 kernel/events/core.c:9330
+>  perf_try_init_event+0x12a/0x560 kernel/events/core.c:10782
+>  perf_init_event kernel/events/core.c:10834 [inline]
+>  perf_event_alloc.part.0+0xdee/0x36f0 kernel/events/core.c:11110
+>  perf_event_alloc kernel/events/core.c:11489 [inline]
+>  __do_sys_perf_event_open+0x72c/0x2b50 kernel/events/core.c:11605
+>  do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> RIP: 0033:0x45cb19
+> Code: Bad RIP value.
+> RSP: 002b:00007f2d99608c78 EFLAGS: 00000246 ORIG_RAX: 000000000000012a
+> RAX: ffffffffffffffda RBX: 00000000004fa640 RCX: 000000000045cb19
+> RDX: 0000000000000000 RSI: ffffffffffffffff RDI: 0000000020000100
+> RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
+> R10: ffffffffffffffff R11: 0000000000000246 R12: 00000000ffffffff
+> R13: 0000000000000841 R14: 00000000004cb320 R15: 00007f2d996096d4
+> Kernel Offset: disabled
+> 
+> 
 > ---
->  drivers/acpi/thermal.c                        | 26 ----------------
->  .../ethernet/mellanox/mlxsw/core_thermal.c    | 30 -------------------
->  drivers/platform/x86/acerhdf.c                |  3 --
->  drivers/thermal/imx_thermal.c                 |  6 ----
->  .../intel/int340x_thermal/int3400_thermal.c   |  4 ---
->  drivers/thermal/thermal_of.c                  | 18 -----------
->  6 files changed, 87 deletions(-)
->
-> diff --git a/drivers/acpi/thermal.c b/drivers/acpi/thermal.c
-> index 52b6cda1bcc3..29a2b73fe035 100644
-> --- a/drivers/acpi/thermal.c
-> +++ b/drivers/acpi/thermal.c
-> @@ -525,31 +525,6 @@ static int thermal_get_temp(struct thermal_zone_device *thermal, int *temp)
->         return 0;
->  }
->
-> -static int thermal_set_mode(struct thermal_zone_device *thermal,
-> -                               enum thermal_device_mode mode)
-> -{
-> -       struct acpi_thermal *tz = thermal->devdata;
-> -
-> -       if (!tz)
-> -               return -EINVAL;
-> -
-> -       if (mode != THERMAL_DEVICE_DISABLED &&
-> -           mode != THERMAL_DEVICE_ENABLED)
-> -               return -EINVAL;
-> -       /*
-> -        * enable/disable thermal management from ACPI thermal driver
-> -        */
-> -       if (mode == THERMAL_DEVICE_DISABLED)
-> -               pr_warn("thermal zone will be disabled\n");
-> -
-> -       ACPI_DEBUG_PRINT((ACPI_DB_INFO,
-> -               "%s kernel ACPI thermal control\n",
-> -               mode == THERMAL_DEVICE_ENABLED ?
-> -               "Enable" : "Disable"));
-> -
-> -       return 0;
-> -}
-> -
->  static int thermal_get_trip_type(struct thermal_zone_device *thermal,
->                                  int trip, enum thermal_trip_type *type)
->  {
-> @@ -836,7 +811,6 @@ static struct thermal_zone_device_ops acpi_thermal_zone_ops = {
->         .bind = acpi_thermal_bind_cooling_device,
->         .unbind = acpi_thermal_unbind_cooling_device,
->         .get_temp = thermal_get_temp,
-> -       .set_mode = thermal_set_mode,
->         .get_trip_type = thermal_get_trip_type,
->         .get_trip_temp = thermal_get_trip_temp,
->         .get_crit_temp = thermal_get_crit_temp,
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> index 4fb73d0fd167..8fa286ccdd6b 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> @@ -275,19 +275,6 @@ static int mlxsw_thermal_unbind(struct thermal_zone_device *tzdev,
->         return 0;
->  }
->
-> -static int mlxsw_thermal_set_mode(struct thermal_zone_device *tzdev,
-> -                                 enum thermal_device_mode mode)
-> -{
-> -       struct mlxsw_thermal *thermal = tzdev->devdata;
-> -
-> -       if (mode == THERMAL_DEVICE_ENABLED)
-> -               tzdev->polling_delay = thermal->polling_delay;
-> -       else
-> -               tzdev->polling_delay = 0;
-> -
-> -       return 0;
-> -}
-> -
->  static int mlxsw_thermal_get_temp(struct thermal_zone_device *tzdev,
->                                   int *p_temp)
->  {
-> @@ -387,7 +374,6 @@ static int mlxsw_thermal_trend_get(struct thermal_zone_device *tzdev,
->  static struct thermal_zone_device_ops mlxsw_thermal_ops = {
->         .bind = mlxsw_thermal_bind,
->         .unbind = mlxsw_thermal_unbind,
-> -       .set_mode = mlxsw_thermal_set_mode,
->         .get_temp = mlxsw_thermal_get_temp,
->         .get_trip_type  = mlxsw_thermal_get_trip_type,
->         .get_trip_temp  = mlxsw_thermal_get_trip_temp,
-> @@ -445,20 +431,6 @@ static int mlxsw_thermal_module_unbind(struct thermal_zone_device *tzdev,
->         return err;
->  }
->
-> -static int mlxsw_thermal_module_mode_set(struct thermal_zone_device *tzdev,
-> -                                        enum thermal_device_mode mode)
-> -{
-> -       struct mlxsw_thermal_module *tz = tzdev->devdata;
-> -       struct mlxsw_thermal *thermal = tz->parent;
-> -
-> -       if (mode == THERMAL_DEVICE_ENABLED)
-> -               tzdev->polling_delay = thermal->polling_delay;
-> -       else
-> -               tzdev->polling_delay = 0;
-> -
-> -       return 0;
-> -}
-> -
->  static int mlxsw_thermal_module_temp_get(struct thermal_zone_device *tzdev,
->                                          int *p_temp)
->  {
-> @@ -574,7 +546,6 @@ static int mlxsw_thermal_module_trend_get(struct thermal_zone_device *tzdev,
->  static struct thermal_zone_device_ops mlxsw_thermal_module_ops = {
->         .bind           = mlxsw_thermal_module_bind,
->         .unbind         = mlxsw_thermal_module_unbind,
-> -       .set_mode       = mlxsw_thermal_module_mode_set,
->         .get_temp       = mlxsw_thermal_module_temp_get,
->         .get_trip_type  = mlxsw_thermal_module_trip_type_get,
->         .get_trip_temp  = mlxsw_thermal_module_trip_temp_get,
-> @@ -612,7 +583,6 @@ static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
->  static struct thermal_zone_device_ops mlxsw_thermal_gearbox_ops = {
->         .bind           = mlxsw_thermal_module_bind,
->         .unbind         = mlxsw_thermal_module_unbind,
-> -       .set_mode       = mlxsw_thermal_module_mode_set,
->         .get_temp       = mlxsw_thermal_gearbox_temp_get,
->         .get_trip_type  = mlxsw_thermal_module_trip_type_get,
->         .get_trip_temp  = mlxsw_thermal_module_trip_temp_get,
-> diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
-> index 8fe0ecb6a626..76323855c80c 100644
-> --- a/drivers/platform/x86/acerhdf.c
-> +++ b/drivers/platform/x86/acerhdf.c
-> @@ -397,8 +397,6 @@ static inline void acerhdf_revert_to_bios_mode(void)
->  {
->         acerhdf_change_fanstate(ACERHDF_FAN_AUTO);
->         kernelmode = 0;
-> -       if (thz_dev)
-> -               thz_dev->polling_delay = 0;
->
->         pr_notice("kernel mode fan control OFF\n");
->  }
-> @@ -406,7 +404,6 @@ static inline void acerhdf_enable_kernelmode(void)
->  {
->         kernelmode = 1;
->
-> -       thz_dev->polling_delay = interval*1000;
->         pr_notice("kernel mode fan control ON\n");
->  }
->
-> diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
-> index 53abb1be1cba..a02398118d88 100644
-> --- a/drivers/thermal/imx_thermal.c
-> +++ b/drivers/thermal/imx_thermal.c
-> @@ -338,9 +338,6 @@ static int imx_set_mode(struct thermal_zone_device *tz,
->         const struct thermal_soc_data *soc_data = data->socdata;
->
->         if (mode == THERMAL_DEVICE_ENABLED) {
-> -               tz->polling_delay = IMX_POLLING_DELAY;
-> -               tz->passive_delay = IMX_PASSIVE_DELAY;
-> -
->                 regmap_write(map, soc_data->sensor_ctrl + REG_CLR,
->                              soc_data->power_down_mask);
->                 regmap_write(map, soc_data->sensor_ctrl + REG_SET,
-> @@ -356,9 +353,6 @@ static int imx_set_mode(struct thermal_zone_device *tz,
->                 regmap_write(map, soc_data->sensor_ctrl + REG_SET,
->                              soc_data->power_down_mask);
->
-> -               tz->polling_delay = 0;
-> -               tz->passive_delay = 0;
-> -
->                 if (data->irq_enabled) {
->                         disable_irq(data->irq);
->                         data->irq_enabled = false;
-> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> index 3c0397a29b8c..ce49d3b100d5 100644
-> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> @@ -386,10 +386,6 @@ static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
->         if (!priv)
->                 return -EINVAL;
->
-> -       if (mode != THERMAL_DEVICE_ENABLED &&
-> -           mode != THERMAL_DEVICE_DISABLED)
-> -               return -EINVAL;
-> -
->         if (mode != thermal->mode)
->                 result = int3400_thermal_run_osc(priv->adev->handle,
->                                                 priv->current_uuid_index,
-> diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
-> index 43a516a35d64..69ef12f852b7 100644
-> --- a/drivers/thermal/thermal_of.c
-> +++ b/drivers/thermal/thermal_of.c
-> @@ -267,22 +267,6 @@ static int of_thermal_unbind(struct thermal_zone_device *thermal,
->         return 0;
->  }
->
-> -static int of_thermal_set_mode(struct thermal_zone_device *tz,
-> -                              enum thermal_device_mode mode)
-> -{
-> -       struct __thermal_zone *data = tz->devdata;
-> -
-> -       if (mode == THERMAL_DEVICE_ENABLED) {
-> -               tz->polling_delay = data->polling_delay;
-> -               tz->passive_delay = data->passive_delay;
-> -       } else {
-> -               tz->polling_delay = 0;
-> -               tz->passive_delay = 0;
-> -       }
-> -
-> -       return 0;
-> -}
-> -
->  static int of_thermal_get_trip_type(struct thermal_zone_device *tz, int trip,
->                                     enum thermal_trip_type *type)
->  {
-> @@ -374,8 +358,6 @@ static int of_thermal_get_crit_temp(struct thermal_zone_device *tz,
->  }
->
->  static struct thermal_zone_device_ops of_thermal_ops = {
-> -       .set_mode = of_thermal_set_mode,
-> -
->         .get_trip_type = of_thermal_get_trip_type,
->         .get_trip_temp = of_thermal_get_trip_temp,
->         .set_trip_temp = of_thermal_set_trip_temp,
-> --
-> 2.17.1
->
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
