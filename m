@@ -2,75 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E06920D2D9
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:11:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B98C20D375
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 21:12:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729826AbgF2Sw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 14:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729811AbgF2Sww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:52:52 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A52C030F12;
-        Mon, 29 Jun 2020 09:23:11 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 422C622F00;
-        Mon, 29 Jun 2020 18:23:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1593447787;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=X18uV1euoyAr2LBLs5EZ6JIf3ILwv/cAekPE3bunnnY=;
-        b=FX+Q+Kq9mgGQO43EUJ7QgOHxnwIyR7cj6O+Z5kdqFf2q+28H+jsC3RQbTT/EAMAvA35c75
-        UmAkVEDS+V4CpGVqtJ5J0N+KoRtTiutk9CKsM7inGwUPKXaWtOr7Z5czNYAJaP1do3F0SS
-        4iCb2lASXK3mstjI+DiAmDggAlgbJ4E=
+        id S1729485AbgF2S7E convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Jun 2020 14:59:04 -0400
+Received: from mga09.intel.com ([134.134.136.24]:65099 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726960AbgF2S6y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 14:58:54 -0400
+IronPort-SDR: eKoD8V2wqTWUE0QfvlcDWBj2fUJGp1JQFAZEWCcOdd9RB6Iz2k79WYN3SDqzCHfZ5x5HJtYUrS
+ TCxYV5wPo5rQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="147558727"
+X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; 
+   d="scan'208";a="147558727"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2020 10:18:48 -0700
+IronPort-SDR: PfovTJ7ctRVVTVNzrBgATY6YChrZ/17qHIHtYJnPMMZEpZLRlO/kZ9uRGO0xFF6kZv7z2obVoF
+ C6l1q1l38H6w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; 
+   d="scan'208";a="424885466"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by orsmga004.jf.intel.com with ESMTP; 29 Jun 2020 10:18:47 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.199]) by
+ ORSMSX106.amr.corp.intel.com ([169.254.1.104]) with mapi id 14.03.0439.000;
+ Mon, 29 Jun 2020 10:18:47 -0700
+From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Heiner Kallweit" <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: RE: [PATCH v2 02/10] net: ethernet: ixgbe: don't call
+ devm_mdiobus_free()
+Thread-Topic: [PATCH v2 02/10] net: ethernet: ixgbe: don't call
+ devm_mdiobus_free()
+Thread-Index: AQHWTg2KqoUStuk1GEW2zcU3EcxbWKjv1lQw
+Date:   Mon, 29 Jun 2020 17:18:46 +0000
+Message-ID: <61CC2BC414934749BD9F5BF3D5D940449874064D@ORSMSX112.amr.corp.intel.com>
+References: <20200629120346.4382-1-brgl@bgdev.pl>
+ <20200629120346.4382-3-brgl@bgdev.pl>
+In-Reply-To: <20200629120346.4382-3-brgl@bgdev.pl>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.138]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 29 Jun 2020 18:23:07 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org,
-        dl-linux-imx <linux-imx@nxp.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
-In-Reply-To: <e38cf40b-ead3-81de-0be7-18cca5ca1a0c@pengutronix.de>
-References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
- <20200416093126.15242-2-qiangqing.zhang@nxp.com>
- <DB8PR04MB6795F7E28A9964A121A06140E6D80@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <d5579883c7e9ab3489ec08a73c407982@walle.cc>
- <39b5d77bda519c4d836f44a554890bae@walle.cc>
- <e38cf40b-ead3-81de-0be7-18cca5ca1a0c@pengutronix.de>
-User-Agent: Roundcube Webmail/1.4.6
-Message-ID: <9dc13a697c246a5c7c53bdd89df7d3c7@walle.cc>
-X-Sender: michael@walle.cc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
-
-> I've cleaned up the patches a bit, can you test this branch:
+> -----Original Message-----
+> From: Bartosz Golaszewski <brgl@bgdev.pl>
+> Sent: Monday, June 29, 2020 05:04
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; David S . Miller
+> <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; John Crispin
+> <john@phrozen.org>; Sean Wang <sean.wang@mediatek.com>; Mark Lee
+> <Mark-MC.Lee@mediatek.com>; Matthias Brugger
+> <matthias.bgg@gmail.com>; Heiner Kallweit <hkallweit1@gmail.com>; Andrew
+> Lunn <andrew@lunn.ch>; Florian Fainelli <f.fainelli@gmail.com>; Russell King
+> <linux@armlinux.org.uk>; Rob Herring <robh+dt@kernel.org>; Frank Rowand
+> <frowand.list@gmail.com>
+> Cc: linux-kernel@vger.kernel.org; netdev@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; linux-mediatek@lists.infradead.org;
+> devicetree@vger.kernel.org; Bartosz Golaszewski
+> <bgolaszewski@baylibre.com>
+> Subject: [PATCH v2 02/10] net: ethernet: ixgbe: don't call
+> devm_mdiobus_free()
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/log/?h=flexcan
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> 
+> The idea behind devres is that the release callbacks are called if probe fails. As
+> we now check the return value of ixgbe_mii_bus_init(), we can drop the call
+> devm_mdiobus_free() in error path as the release callback will be called
+> automatically.
+> 
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+ 
+Acked-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 
-This is working, but as Joakim already said, CAN-FD ISO mode is missing.
-It defaults to non-ISO mode, which is even worse, IMHO.
-
-But I've also noticed a difference between the original patch and the
-one in that branch. When FD mode is enabled the original patch checks
-the priv->can.controlmode [1], the patch in the branch looks at
-priv->can.ctrlmode_supported instead [2], is that correct?
-
--michael
-
-[1] 
-https://lore.kernel.org/netdev/20190712075926.7357-4-qiangqing.zhang@nxp.com/
-[2] 
-https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/tree/drivers/net/can/flexcan.c?h=flexcan&id=5f097cd65cb2b42b88e6e1eb186f6a8f0c90559b#n1341
+> ---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c | 14 +++-----------
+>  1 file changed, 3 insertions(+), 11 deletions(-)
