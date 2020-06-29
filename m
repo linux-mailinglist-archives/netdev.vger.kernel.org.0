@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BD6B20D92E
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDF5E20D9B9
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:12:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388029AbgF2TpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:45:14 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54968 "EHLO
+        id S2388267AbgF2TuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:50:05 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:51736 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387819AbgF2Tkp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:40:45 -0400
+        by vger.kernel.org with ESMTP id S2387741AbgF2Tkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:40:36 -0400
 Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4C057209264
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 13:35:45 +0000 (UTC)
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 3409E2009F;
-        Mon, 29 Jun 2020 13:35:45 +0000 (UTC)
-Received: from us4-mdac16-53.at1.mdlocal (unknown [10.110.48.102])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id E669F800D3;
-        Mon, 29 Jun 2020 13:35:44 +0000 (UTC)
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D289E20951C
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 13:35:56 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B70BB20054;
+        Mon, 29 Jun 2020 13:35:56 +0000 (UTC)
+Received: from us4-mdac16-31.at1.mdlocal (unknown [10.110.49.215])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id AF567800D2;
+        Mon, 29 Jun 2020 13:35:56 +0000 (UTC)
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.9])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E8D6C40071;
-        Mon, 29 Jun 2020 13:35:43 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.104])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2F21D40079;
+        Mon, 29 Jun 2020 13:35:56 +0000 (UTC)
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4018258012A;
-        Mon, 29 Jun 2020 13:35:37 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EB769B8009F;
+        Mon, 29 Jun 2020 13:35:55 +0000 (UTC)
 Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
  (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 29 Jun
- 2020 14:35:28 +0100
+ 2020 14:35:36 +0100
 From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH v2 net-next 10/15] sfc: commonise FC advertising
+Subject: [PATCH v2 net-next 11/15] sfc: track which BAR is mapped
 To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>
 References: <3750523f-1c2f-628d-1f71-39b355cf6661@solarflare.com>
-Message-ID: <f3ad7330-b61e-634b-2e0a-bf4919e5463d@solarflare.com>
-Date:   Mon, 29 Jun 2020 14:35:25 +0100
+Message-ID: <ca672397-22ea-19c2-9066-d10cb365ba97@solarflare.com>
+Date:   Mon, 29 Jun 2020 14:35:33 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -50,127 +50,159 @@ X-Originating-IP: [10.17.20.203]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25510.003
-X-TM-AS-Result: No-0.954600-8.000000-10
-X-TMASE-MatchedRID: oKlKY1QNFwah9oPbMj7PPPCoOvLLtsMhP6Tki+9nU38HZBaLwEXlKGlF
-        7OhYLlcthIhJxBzgKNa1w7fWeJeZa5fHSmcYT/h1uoibJpHRrFn3/H7adAffkleIuu+Gkot8kg3
-        cPb9+H4R9JkPUJMTfJk4RWc6tg0JKlQHiGh4j0EoWqJ/PBjhtWo6ESGgCXvgoVzlS2D8whfCjxY
-        yRBa/qJQPTK4qtAgwIPcCXjNqUmkUnRE+fI6etkr2PjCgusxjy/Dsr7oOrq5ijp9qM2Ot4Xta86
-        edqgJ0dgk3bIVLBoPHDcJllsoD3iSnY6MPYRUW6xclag+p13qntvECbBKmimTHCqV7rv9Y1QDMF
-        uK2P9FjtoWavEW7HRE3Z8jKJCdR0Rfwnj+uLV5w=
+X-TM-AS-Result: No-4.243300-8.000000-10
+X-TMASE-MatchedRID: 1eBVS6kWC5nxUUqAQjZLciyKzJY7d2nb3V4UShoTXafg+jsHnpr1WG41
+        Eag8oZOh8XVI39JCRnSjfNAVYAJRAr+Q0YdVmuyWnFVnNmvv47tLXPA26IG0hN9RlPzeVuQQsHl
+        rSGNSOmYR8rhkwHMdrBchBqsrRYEQL36i8o633SBQ+S0N05fR+9xWLypmYlZzqPGqHIPGZiNNH9
+        H34pgEaNKGOTerCvX3s9tvwbbix8KKhA2hG2DTq6oNIG7S1SGvrP7zBZ710YZF/5XzBv3ecp/p6
+        742jA2BabKVIfM/3xbzXMT1mj8mC1+L4kKGn3opFOawCcdiU0NKRaXN2yYjHmRkNDqHE6hJvphV
+        FiQ+RgKKsuZhl84RTlrVfJFK4nvRF2y1NgZbB62eAiCmPx4NwLTrdaH1ZWqCGtkvK5L7RXEXvQk
+        Gi3tjz46HM5rqDwqtTcutWOyMfnKVqKBItvbl0vnuMjAEtM092i+ZJz6vurKLJiCMv16bGw==
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--0.954600-8.000000
+X-TMASE-Result: 10--4.243300-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25510.003
-X-MDID: 1593437744-iuYeKDMVBxgY
+X-MDID: 1593437756-p4ZgRtG3OtIN
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+EF100 needs to map multiple BARs (sequentially, not concurrently) in
+ order to read the Function Control Window during probe.
+
 Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- drivers/net/ethernet/sfc/efx.c        | 24 ------------------------
- drivers/net/ethernet/sfc/efx.h        |  3 ---
- drivers/net/ethernet/sfc/efx_common.c | 24 ++++++++++++++++++++++++
- drivers/net/ethernet/sfc/efx_common.h |  3 +++
- 4 files changed, 27 insertions(+), 27 deletions(-)
+ drivers/net/ethernet/sfc/efx.c        |  4 ++--
+ drivers/net/ethernet/sfc/efx_common.c | 19 ++++++++++++-------
+ drivers/net/ethernet/sfc/efx_common.h |  2 +-
+ drivers/net/ethernet/sfc/net_driver.h |  3 +++
+ 4 files changed, 18 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-index 256807c28ff7..474cfce5c042 100644
+index 474cfce5c042..86639b1e4e5c 100644
 --- a/drivers/net/ethernet/sfc/efx.c
 +++ b/drivers/net/ethernet/sfc/efx.c
-@@ -133,30 +133,6 @@ static int efx_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **xdpfs,
-  *
-  **************************************************************************/
+@@ -1074,7 +1074,7 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
  
--/* Equivalent to efx_link_set_advertising with all-zeroes, except does not
-- * force the Autoneg bit on.
-- */
--void efx_link_clear_advertising(struct efx_nic *efx)
--{
--	bitmap_zero(efx->link_advertising, __ETHTOOL_LINK_MODE_MASK_NBITS);
--	efx->wanted_fc &= ~(EFX_FC_TX | EFX_FC_RX);
--}
--
--void efx_link_set_wanted_fc(struct efx_nic *efx, u8 wanted_fc)
--{
--	efx->wanted_fc = wanted_fc;
--	if (efx->link_advertising[0]) {
--		if (wanted_fc & EFX_FC_RX)
--			efx->link_advertising[0] |= (ADVERTISED_Pause |
--						     ADVERTISED_Asym_Pause);
--		else
--			efx->link_advertising[0] &= ~(ADVERTISED_Pause |
--						      ADVERTISED_Asym_Pause);
--		if (wanted_fc & EFX_FC_TX)
--			efx->link_advertising[0] ^= ADVERTISED_Asym_Pause;
--	}
--}
--
- static void efx_fini_port(struct efx_nic *efx);
+ 	efx_pci_remove_main(efx);
  
- static int efx_probe_port(struct efx_nic *efx)
-diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/efx.h
-index 66dcab140449..8aadec02407c 100644
---- a/drivers/net/ethernet/sfc/efx.h
-+++ b/drivers/net/ethernet/sfc/efx.h
-@@ -216,9 +216,6 @@ static inline void efx_schedule_channel_irq(struct efx_channel *channel)
- 	efx_schedule_channel(channel);
- }
+-	efx_fini_io(efx, efx->type->mem_bar(efx));
++	efx_fini_io(efx);
+ 	netif_dbg(efx, drv, efx->net_dev, "shutdown successful\n");
  
--void efx_link_clear_advertising(struct efx_nic *efx);
--void efx_link_set_wanted_fc(struct efx_nic *efx, u8);
--
- static inline void efx_device_detach_sync(struct efx_nic *efx)
- {
- 	struct net_device *dev = efx->net_dev;
+ 	efx_fini_struct(efx);
+@@ -1342,7 +1342,7 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
+ 	return 0;
+ 
+  fail3:
+-	efx_fini_io(efx, efx->type->mem_bar(efx));
++	efx_fini_io(efx);
+  fail2:
+ 	efx_fini_struct(efx);
+  fail1:
 diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
-index 1799ff9a45d9..02459d90afb0 100644
+index 02459d90afb0..36c0ab57d3bd 100644
 --- a/drivers/net/ethernet/sfc/efx_common.c
 +++ b/drivers/net/ethernet/sfc/efx_common.c
-@@ -383,6 +383,30 @@ static void efx_stop_datapath(struct efx_nic *efx)
-  *
-  **************************************************************************/
+@@ -953,6 +953,8 @@ int efx_init_struct(struct efx_nic *efx,
+ 	INIT_WORK(&efx->mac_work, efx_mac_work);
+ 	init_waitqueue_head(&efx->flush_wq);
  
-+/* Equivalent to efx_link_set_advertising with all-zeroes, except does not
-+ * force the Autoneg bit on.
-+ */
-+void efx_link_clear_advertising(struct efx_nic *efx)
-+{
-+	bitmap_zero(efx->link_advertising, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	efx->wanted_fc &= ~(EFX_FC_TX | EFX_FC_RX);
-+}
++	efx->mem_bar = UINT_MAX;
 +
-+void efx_link_set_wanted_fc(struct efx_nic *efx, u8 wanted_fc)
-+{
-+	efx->wanted_fc = wanted_fc;
-+	if (efx->link_advertising[0]) {
-+		if (wanted_fc & EFX_FC_RX)
-+			efx->link_advertising[0] |= (ADVERTISED_Pause |
-+						     ADVERTISED_Asym_Pause);
-+		else
-+			efx->link_advertising[0] &= ~(ADVERTISED_Pause |
-+						      ADVERTISED_Asym_Pause);
-+		if (wanted_fc & EFX_FC_TX)
-+			efx->link_advertising[0] ^= ADVERTISED_Asym_Pause;
-+	}
-+}
+ 	rc = efx_init_channels(efx);
+ 	if (rc)
+ 		goto fail;
+@@ -996,7 +998,9 @@ int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
+ 	struct pci_dev *pci_dev = efx->pci_dev;
+ 	int rc;
+ 
+-	netif_dbg(efx, probe, efx->net_dev, "initialising I/O\n");
++	efx->mem_bar = UINT_MAX;
 +
- static void efx_start_port(struct efx_nic *efx)
++	netif_dbg(efx, probe, efx->net_dev, "initialising I/O bar=%d\n", bar);
+ 
+ 	rc = pci_enable_device(pci_dev);
+ 	if (rc) {
+@@ -1038,21 +1042,21 @@ int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
+ 	rc = pci_request_region(pci_dev, bar, "sfc");
+ 	if (rc) {
+ 		netif_err(efx, probe, efx->net_dev,
+-			  "request for memory BAR failed\n");
++			  "request for memory BAR[%d] failed\n", bar);
+ 		rc = -EIO;
+ 		goto fail3;
+ 	}
+-
++	efx->mem_bar = bar;
+ 	efx->membase = ioremap(efx->membase_phys, mem_map_size);
+ 	if (!efx->membase) {
+ 		netif_err(efx, probe, efx->net_dev,
+-			  "could not map memory BAR at %llx+%x\n",
++			  "could not map memory BAR[%d] at %llx+%x\n", bar,
+ 			  (unsigned long long)efx->membase_phys, mem_map_size);
+ 		rc = -ENOMEM;
+ 		goto fail4;
+ 	}
+ 	netif_dbg(efx, probe, efx->net_dev,
+-		  "memory BAR at %llx+%x (virtual %p)\n",
++		  "memory BAR[%d] at %llx+%x (virtual %p)\n", bar,
+ 		  (unsigned long long)efx->membase_phys, mem_map_size,
+ 		  efx->membase);
+ 
+@@ -1068,7 +1072,7 @@ int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
+ 	return rc;
+ }
+ 
+-void efx_fini_io(struct efx_nic *efx, int bar)
++void efx_fini_io(struct efx_nic *efx)
  {
- 	netif_dbg(efx, ifup, efx->net_dev, "start port\n");
+ 	netif_dbg(efx, drv, efx->net_dev, "shutting down I/O\n");
+ 
+@@ -1078,8 +1082,9 @@ void efx_fini_io(struct efx_nic *efx, int bar)
+ 	}
+ 
+ 	if (efx->membase_phys) {
+-		pci_release_region(efx->pci_dev, bar);
++		pci_release_region(efx->pci_dev, efx->mem_bar);
+ 		efx->membase_phys = 0;
++		efx->mem_bar = UINT_MAX;
+ 	}
+ 
+ 	/* Don't disable bus-mastering if VFs are assigned */
 diff --git a/drivers/net/ethernet/sfc/efx_common.h b/drivers/net/ethernet/sfc/efx_common.h
-index fa2fc681e7f9..c522a5be43d2 100644
+index c522a5be43d2..93a017aafb9f 100644
 --- a/drivers/net/ethernet/sfc/efx_common.h
 +++ b/drivers/net/ethernet/sfc/efx_common.h
-@@ -18,6 +18,9 @@ int efx_init_struct(struct efx_nic *efx, struct pci_dev *pci_dev,
+@@ -13,7 +13,7 @@
+ 
+ int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
+ 		unsigned int mem_map_size);
+-void efx_fini_io(struct efx_nic *efx, int bar);
++void efx_fini_io(struct efx_nic *efx);
+ int efx_init_struct(struct efx_nic *efx, struct pci_dev *pci_dev,
  		    struct net_device *net_dev);
  void efx_fini_struct(struct efx_nic *efx);
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index 7bc4d1cbb398..e0b84b2e3bd2 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -961,6 +961,7 @@ struct efx_async_filter_insertion {
+  * @vpd_sn: Serial number read from VPD
+  * @xdp_rxq_info_failed: Have any of the rx queues failed to initialise their
+  *      xdp_rxq_info structures?
++ * @mem_bar: The BAR that is mapped into membase.
+  * @monitor_work: Hardware monitor workitem
+  * @biu_lock: BIU (bus interface unit) lock
+  * @last_irq_cpu: Last CPU to handle a possible test interrupt.  This
+@@ -1137,6 +1138,8 @@ struct efx_nic {
+ 	char *vpd_sn;
+ 	bool xdp_rxq_info_failed;
  
-+void efx_link_clear_advertising(struct efx_nic *efx);
-+void efx_link_set_wanted_fc(struct efx_nic *efx, u8);
++	unsigned int mem_bar;
 +
- void efx_start_all(struct efx_nic *efx);
- void efx_stop_all(struct efx_nic *efx);
+ 	/* The following fields may be written more often */
  
+ 	struct delayed_work monitor_work ____cacheline_aligned_in_smp;
 
