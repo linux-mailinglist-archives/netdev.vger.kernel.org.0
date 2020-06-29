@@ -2,209 +2,414 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A010320D774
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:07:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AB9E20D68A
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:05:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732799AbgF2TaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:30:06 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:21565 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732679AbgF2TaF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:30:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593459003;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z6+oaXja9HYNA11D8Y9elA5ILqWARmH2B/IS+reKTJ4=;
-        b=cg+sRQp35lVu+lgV3/K7SZevPzgoOj9RIu8jFAcvlSmhUN5AMGH1lITgddZoHwsuPte2hz
-        VlHXUFDqSzBMPcWmwTQbcad8c7lMPSGUQelc9S6kdJLIcksOYf376DuQpSMNie/P/0crjB
-        e6YccVzyYuC7fDuzwA1xi1TvXzN/llU=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-368-4Z-W0ZT4P1qE24rKjqm3kA-1; Mon, 29 Jun 2020 06:27:31 -0400
-X-MC-Unique: 4Z-W0ZT4P1qE24rKjqm3kA-1
-Received: by mail-qv1-f70.google.com with SMTP id g17so9744824qvw.0
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 03:27:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Z6+oaXja9HYNA11D8Y9elA5ILqWARmH2B/IS+reKTJ4=;
-        b=U0quJmNt+KLkNCX9M2mH8MgbmVZhAneI4OvOsEq9TS6lLwcbQhz9YvhbxClyXZ2Bxy
-         c123sR6C2wubcEodtE75ElzL4Ebtep5F7TDwtVybFG7oaH59b5d0ChNxF621E1ZvyPUy
-         Gmjn2mh3NuwTHsSWD61lJ+fIBBM5JOKFyxwg5abdmaB6MeeLxrTC0RDu4Gs8BOcDKHBL
-         RgHafVb3kxvwYp9/jok+sTPN7JPquqaudcPbNU02/VPegxmR5C2yui3oeb5PZfWANclv
-         Nyjircp+xzd9SNuEFmoOmZANrCCEU/pdev8Mn4X47bL3408OnPm9z+6hkntsy/Z6yyAS
-         wPZA==
-X-Gm-Message-State: AOAM533zaSapKrVKfvVrBEXIHD/O/3cERQ2P0r1MMOz5tTr2vjsyg17P
-        ZvgGhD7hCkt8Gy7GC7fhv9UvOczNqM6Q4lNYptvKONgfOQkQRvPIelv+CeeAhPM4VzlN0fiixX4
-        CuyVgntAR388uO0Un
-X-Received: by 2002:a37:58c7:: with SMTP id m190mr14610523qkb.265.1593426450264;
-        Mon, 29 Jun 2020 03:27:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwmy/bG4Pg09Mn1EgRJbvvGviGUF7K/UsQIiuG7K5ejVVvqgIpuZqmUtdT3N2oGlbmIw1r+iQ==
-X-Received: by 2002:a37:58c7:: with SMTP id m190mr14610504qkb.265.1593426449922;
-        Mon, 29 Jun 2020 03:27:29 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id s128sm3829995qkd.108.2020.06.29.03.27.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 03:27:29 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B7D8D1808CF; Mon, 29 Jun 2020 12:27:27 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Davide Caratti <dcaratti@redhat.com>,
-        David Miller <davem@davemloft.net>
-Cc:     cake@lists.bufferbloat.net, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: Re: [Cake] [PATCH net-next 1/5] sch_cake: fix IP protocol handling in the presence of VLAN tags
-In-Reply-To: <ee1936f7382461fda0e3e7f03f7dd12cf506891c.camel@redhat.com>
-References: <159308610282.190211.9431406149182757758.stgit@toke.dk> <159308610390.190211.17831843954243284203.stgit@toke.dk> <20200625.122945.321093402617646704.davem@davemloft.net> <87k0zuj50u.fsf@toke.dk> <240fc14da96a6212a98dd9ef43b4777a9f28f250.camel@redhat.com> <87h7uyhtuz.fsf@toke.dk> <ee1936f7382461fda0e3e7f03f7dd12cf506891c.camel@redhat.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 29 Jun 2020 12:27:27 +0200
-Message-ID: <87zh8mgoa8.fsf@toke.dk>
+        id S1731932AbgF2TVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:21:09 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:26142 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726078AbgF2TVG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:21:06 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05TB5W9C029754;
+        Mon, 29 Jun 2020 04:06:17 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0818;
+ bh=OH9aer3J1GSf82LNXO61/2zVdbXA+VwaY6PFfQp2rK0=;
+ b=w53KbBWBieZxMvk1LFSg4heNqbGDNFFsMks4KV5qgaIe9E9l+bwxfCDsfFHNjV4CQSno
+ 7qMnrT/mEeJAZX+zhYnCtOgNbtVjzA2UKQNK943NiicrjSny4zx58TrpP+mL+blvrLby
+ 6uApJMosER5+E229KksUY7oiUzSbLrrhAsQE+9YwCi86+ziCipYAahGEu+3aA/m6XKP1
+ nlipYFqUtOtNnCbO0MHBwvfj6tBC7YGPpknnhr0FDEDj3uJK83kOilesrMfLikU7MFU1
+ tHPZBg2KPoakTG004PiAqdd35BWEcNUgb8eRRCIcatbR9h9ihfIiEkFSm8IITFNEr7i1 Lw== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 31y0wrtg02-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 29 Jun 2020 04:06:16 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 29 Jun
+ 2020 04:06:16 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 29 Jun
+ 2020 04:06:15 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 29 Jun 2020 04:06:15 -0700
+Received: from NN-LT0049.marvell.com (NN-LT0049.marvell.com [10.193.54.6])
+        by maili.marvell.com (Postfix) with ESMTP id 9DD073F7041;
+        Mon, 29 Jun 2020 04:06:12 -0700 (PDT)
+From:   Alexander Lobakin <alobakin@marvell.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Igor Russkikh <irusskikh@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        "Alexander Lobakin" <alobakin@marvell.com>,
+        <GR-everest-linux-l2@marvell.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next 5/6] net: qede: convert to SPDX License Identifiers
+Date:   Mon, 29 Jun 2020 14:05:11 +0300
+Message-ID: <20200629110512.1812-6-alobakin@marvell.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200629110512.1812-1-alobakin@marvell.com>
+References: <20200629110512.1812-1-alobakin@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-06-29_11:2020-06-29,2020-06-29 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Davide Caratti <dcaratti@redhat.com> writes:
+QLogic QED drivers source code is dual licensed under
+GPL-2.0/BSD-3-Clause.
+Remove all the boilerplates in the existing code and replace it with the
+correct SPDX tag.
 
-> hi Toke,
->
-> thanks for answering.
->
-> On Fri, 2020-06-26 at 14:52 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Davide Caratti <dcaratti@redhat.com> writes:
->
-> [...]
->
->> >=20
->> > >  I guess I can trying going through them all and figuring out if
->> > > there's a more generic solution.
->> >=20
->> > For sch_cake, I think that the qdisc shouldn't look at the IP header w=
-hen
->> > it schedules packets having a VLAN tag.
->> >=20
->> > Probably, when tc_skb_protocol() returns ETH_P_8021Q or ETH_P_8021AD, =
-we
->> > should look at the VLAN priority (PCP) bits (and that's something that
->> > cake doesn't do currently - but I have a small patch in my stash that
->> > implements this: please let me know if you are interested in seeing it=
- :)
->> > ).
->> >=20
->> > Then, to ensure that the IP precedence is respected, even with differe=
-nt
->> > VLAN tags, users should explicitly configure TC filters that "map" the
->> > DSCP value to a PCP value. This would ensure that configured priority =
-is
->> > respected by the scheduler, and would also be flexible enough to allow
->> > different "mappings".
->>=20
->> I think you have this the wrong way around :)
->>=20
->> I.e., classifying based on VLAN priority is even more esoteric than
->> using diffserv markings,
->
-> is it so uncommon? I knew that almost every wifi card did something
-> similar with 802.11 'access categories'. More generally, I'm not sure if
-> it's ok to ignore any QoS information present in the L2 header. Anyway,
->
->> so that should not be the default. Making it
->> the default would also make the behaviour change for the same traffic if
->> there's a VLAN tag present, which is bound to confuse people. I suppose
->> it could be an option, but not really sure that's needed, since as you
->> say you could just implement it with your own TC filters...
->
-> you caught me :) ,
->
-> I wrote that patch in my stash to fix cake on my home router, where voice
-> and data are encapsulated in IP over PPPoE over VLANs, and different
-> services go over different VLAN ids (one VLAN dedicated for voice, the
-> other one for data) [1]. The quickest thing I did was: to prioritize
-> packets having VLAN id equal to 1035.
->
-> Now that I look at cake code again (where again means: after almost 1
-> year) it would be probably better to assign skb->priority using flower +
-> act_skbedit, and then prioritize in the qdisc: if I read the code well,
-> this would avoid voice and data falling into the same traffic class (that
-> was my original problem).
->
-> please note: I didn't try this patch - but I think that even with this
-> code I would have voice and data mixed together, because there is PPPoE
-> between VLAN and IP.
->
->> > Sure, my proposal does not cover the problem of mangling the CE bit
->> > inside VLAN-tagged packets, i.e. if we should understand if qdiscs
->> > should allow it or not.
->>=20
->> Hmm, yeah, that's the rub, isn't it? I think this is related to this
->> commit, which first introduced tc_skb_protocol():
->>=20
->> d8b9605d2697 ("net: sched: fix skb->protocol use in case of accelerated =
-vlan path")
->>=20
->> That commit at least made the behaviour consistent across
->> accelerated/non-accelerated VLANs. However, the patch description
->> asserts that 'tc code .. expects vlan protocol type [in skb->protocol]'.
->> Looking at the various callers, I'm not actually sure that's true, in
->> the sense that most of the callers don't handle VLAN ethertypes at all,
->> but expects to find an IP header. This is the case for at least:
->>=20
->> - act_ctinfo
->> - act_skbedit
->> - cls_flow
->> - em_ipset
->> - em_ipt
->> - sch_cake
->> - sch_dsmark
->
-> sure, I'm not saying it's not possible to look inside IP headers. What I
-> understood from Cong's replies [2], and he sort-of convinced me, was: when
-> I have IP and one or more VLAN tags, no matter whether it is accelerated
-> or not, it should be sufficient to access the IP header daisy-chaining
-> 'act_vlan pop actions' -> access to the IP header -> ' act_vlan push
-> actions (in the reversed order).
->
-> oh well, that's still not sufficient in my home router because of PPPoE. I
-> should practice with cls_bpf more seriously :-)=20
->
-> or write act_pppoe.c :D
->
->> In fact the only caller that explicitly handles a VLAN ethertype seems
->> to be act_csum; and that handles it in a way that also just skips the
->> VLAN headers, albeit by skb_pull()'ing the header.
->
->
->> cls_api, em_meta and sch_teql don't explicitly handle it; but returning
->> the VLAN ethertypes to those does seem to make sense, since they just
->> pass the value somewhere else.
->>=20
->> So my suggestion would be to add a new helper that skips the VLAN tags
->> and finds the L3 ethertype (i.e., basically cake_skb_proto() as
->> introduced in this patch), then switch all the callers listed above, as
->> well as the INET_ECN_set_ce() over to using that. Maybe something like
->> 'skb_l3_protocol()' which could go into skbuff.h itself, so the ECN code
->> can also find it?
->
-> for setting the CE bit, that's understandable - in one way or the other,
-> the behaviour should be made consistent.
->
->> Any objections to this? It's not actually clear to me how the discussion
->> you quoted above landed; but this will at least make things consistent
->> across all the different actions/etc.
->
-> well, it just didn't "land". But I agree, inconsistency here can make some
-> TC configurations "unreliable" (i.e., they don't do the job they were
-> configured for).
+Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
+Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qede/qede.h       | 30 ++-----------------
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   | 30 ++-----------------
+ .../net/ethernet/qlogic/qede/qede_filter.c    | 30 ++-----------------
+ drivers/net/ethernet/qlogic/qede/qede_fp.c    | 30 ++-----------------
+ drivers/net/ethernet/qlogic/qede/qede_main.c  | 30 ++-----------------
+ drivers/net/ethernet/qlogic/qede/qede_ptp.c   | 30 ++-----------------
+ drivers/net/ethernet/qlogic/qede/qede_ptp.h   | 30 ++-----------------
+ drivers/net/ethernet/qlogic/qede/qede_rdma.c  | 30 ++-----------------
+ 8 files changed, 16 insertions(+), 224 deletions(-)
 
-Right, I'll send a patch to try to make all this consistent :)
-
--Toke
+diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
+index 8857da1208d7..8567f295a12f 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede.h
++++ b/drivers/net/ethernet/qlogic/qede/qede.h
+@@ -1,34 +1,8 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+ /* QLogic qede NIC Driver
+  * Copyright (c) 2015-2017  QLogic Corporation
+- *
+- * This software is available to you under a choice of one of two
+- * licenses.  You may choose to be licensed under the terms of the GNU
+- * General Public License (GPL) Version 2, available from the file
+- * COPYING in the main directory of this source tree, or the
+- * OpenIB.org BSD license below:
+- *
+- *     Redistribution and use in source and binary forms, with or
+- *     without modification, are permitted provided that the following
+- *     conditions are met:
+- *
+- *      - Redistributions of source code must retain the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer.
+- *
+- *      - Redistributions in binary form must reproduce the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer in the documentation and /or other materials
+- *        provided with the distribution.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+- * SOFTWARE.
+  */
++
+ #ifndef _QEDE_H_
+ #define _QEDE_H_
+ #include <linux/compiler.h>
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
+index 24cc68391ac4..26acfb380dc3 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
+@@ -1,34 +1,8 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+ /* QLogic qede NIC Driver
+  * Copyright (c) 2015-2017  QLogic Corporation
+- *
+- * This software is available to you under a choice of one of two
+- * licenses.  You may choose to be licensed under the terms of the GNU
+- * General Public License (GPL) Version 2, available from the file
+- * COPYING in the main directory of this source tree, or the
+- * OpenIB.org BSD license below:
+- *
+- *     Redistribution and use in source and binary forms, with or
+- *     without modification, are permitted provided that the following
+- *     conditions are met:
+- *
+- *      - Redistributions of source code must retain the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer.
+- *
+- *      - Redistributions in binary form must reproduce the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer in the documentation and /or other materials
+- *        provided with the distribution.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+- * SOFTWARE.
+  */
++
+ #include <linux/version.h>
+ #include <linux/types.h>
+ #include <linux/netdevice.h>
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+index fe72bb6c9455..e03d6a957ceb 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+@@ -1,34 +1,8 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+ /* QLogic qede NIC Driver
+  * Copyright (c) 2015-2017  QLogic Corporation
+- *
+- * This software is available to you under a choice of one of two
+- * licenses.  You may choose to be licensed under the terms of the GNU
+- * General Public License (GPL) Version 2, available from the file
+- * COPYING in the main directory of this source tree, or the
+- * OpenIB.org BSD license below:
+- *
+- *     Redistribution and use in source and binary forms, with or
+- *     without modification, are permitted provided that the following
+- *     conditions are met:
+- *
+- *      - Redistributions of source code must retain the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer.
+- *
+- *      - Redistributions in binary form must reproduce the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer in the documentation and /or other materials
+- *        provided with the distribution.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+- * SOFTWARE.
+  */
++
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+ #include <net/udp_tunnel.h>
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+index 7598ebe0962a..c21d4c53121b 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+@@ -1,34 +1,8 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+ /* QLogic qede NIC Driver
+  * Copyright (c) 2015-2017  QLogic Corporation
+- *
+- * This software is available to you under a choice of one of two
+- * licenses.  You may choose to be licensed under the terms of the GNU
+- * General Public License (GPL) Version 2, available from the file
+- * COPYING in the main directory of this source tree, or the
+- * OpenIB.org BSD license below:
+- *
+- *     Redistribution and use in source and binary forms, with or
+- *     without modification, are permitted provided that the following
+- *     conditions are met:
+- *
+- *      - Redistributions of source code must retain the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer.
+- *
+- *      - Redistributions in binary form must reproduce the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer in the documentation and /or other materials
+- *        provided with the distribution.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+- * SOFTWARE.
+  */
++
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+ #include <linux/skbuff.h>
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+index 29e285430f99..01c20b2d81e2 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_main.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+@@ -1,34 +1,8 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+ /* QLogic qede NIC Driver
+  * Copyright (c) 2015-2017  QLogic Corporation
+- *
+- * This software is available to you under a choice of one of two
+- * licenses.  You may choose to be licensed under the terms of the GNU
+- * General Public License (GPL) Version 2, available from the file
+- * COPYING in the main directory of this source tree, or the
+- * OpenIB.org BSD license below:
+- *
+- *     Redistribution and use in source and binary forms, with or
+- *     without modification, are permitted provided that the following
+- *     conditions are met:
+- *
+- *      - Redistributions of source code must retain the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer.
+- *
+- *      - Redistributions in binary form must reproduce the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer in the documentation and /or other materials
+- *        provided with the distribution.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+- * SOFTWARE.
+  */
++
+ #include <linux/crash_dump.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_ptp.c b/drivers/net/ethernet/qlogic/qede/qede_ptp.c
+index cd5841a9415e..797ce187d683 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_ptp.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_ptp.c
+@@ -1,34 +1,8 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+ /* QLogic qede NIC Driver
+  * Copyright (c) 2015-2017  QLogic Corporation
+- *
+- * This software is available to you under a choice of one of two
+- * licenses.  You may choose to be licensed under the terms of the GNU
+- * General Public License (GPL) Version 2, available from the file
+- * COPYING in the main directory of this source tree, or the
+- * OpenIB.org BSD license below:
+- *
+- *     Redistribution and use in source and binary forms, with or
+- *     without modification, are permitted provided that the following
+- *     conditions are met:
+- *
+- *      - Redistributions of source code must retain the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer.
+- *
+- *      - Redistributions in binary form must reproduce the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer in the documentation and /or other materials
+- *        provided with the distribution.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+- * SOFTWARE.
+  */
++
+ #include "qede_ptp.h"
+ #define QEDE_PTP_TX_TIMEOUT (2 * HZ)
+ 
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_ptp.h b/drivers/net/ethernet/qlogic/qede/qede_ptp.h
+index 89c7f3cf3ee2..00ff981efa66 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_ptp.h
++++ b/drivers/net/ethernet/qlogic/qede/qede_ptp.h
+@@ -1,34 +1,8 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+ /* QLogic qede NIC Driver
+  * Copyright (c) 2015-2017  QLogic Corporation
+- *
+- * This software is available to you under a choice of one of two
+- * licenses.  You may choose to be licensed under the terms of the GNU
+- * General Public License (GPL) Version 2, available from the file
+- * COPYING in the main directory of this source tree, or the
+- * OpenIB.org BSD license below:
+- *
+- *     Redistribution and use in source and binary forms, with or
+- *     without modification, are permitted provided that the following
+- *     conditions are met:
+- *
+- *      - Redistributions of source code must retain the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer.
+- *
+- *      - Redistributions in binary form must reproduce the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer in the documentation and /or other materials
+- *        provided with the distribution.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+- * SOFTWARE.
+  */
++
+ #ifndef _QEDE_PTP_H_
+ #define _QEDE_PTP_H_
+ 
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_rdma.c b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
+index 668ccc9d49f8..2228f1d1166f 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_rdma.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
+@@ -1,34 +1,8 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+ /* QLogic qedr NIC Driver
+  * Copyright (c) 2015-2017  QLogic Corporation
+- *
+- * This software is available to you under a choice of one of two
+- * licenses.  You may choose to be licensed under the terms of the GNU
+- * General Public License (GPL) Version 2, available from the file
+- * COPYING in the main directory of this source tree, or the
+- * OpenIB.org BSD license below:
+- *
+- *     Redistribution and use in source and binary forms, with or
+- *     without modification, are permitted provided that the following
+- *     conditions are met:
+- *
+- *      - Redistributions of source code must retain the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer.
+- *
+- *      - Redistributions in binary form must reproduce the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer in the documentation and /or other materials
+- *        provided with the distribution.
+- *
+- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+- * SOFTWARE.
+  */
++
+ #include <linux/pci.h>
+ #include <linux/netdevice.h>
+ #include <linux/list.h>
+-- 
+2.25.1
 
