@@ -2,97 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6980F20E624
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E25BF20E41E
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 00:04:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404031AbgF2Vop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 17:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
+        id S2390672AbgF2VVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 17:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727811AbgF2Shp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:37:45 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DFC5C031415;
-        Mon, 29 Jun 2020 10:19:56 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id k1so7359191pls.2;
-        Mon, 29 Jun 2020 10:19:56 -0700 (PDT)
+        with ESMTP id S1729762AbgF2Swn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:52:43 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E75C031C53;
+        Mon, 29 Jun 2020 10:36:13 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id k71so4843467pje.0;
+        Mon, 29 Jun 2020 10:36:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jpuhbA135WXku8iFW2x2VvwuaDgLtebbBEPR7YXw648=;
-        b=pyiSRomZfO/v5T2TO4PBu72bMxJtvlvYt9qn0So/n2vOJYsgca9/r25apCJ18O7EDf
-         vMfcp3cOVV4rme9OvMqo4DoUTOCALh92vvYyuW/kq7eVEZkajTgshIYvr6szi5sOUp98
-         fKrhTrRne6uAZt8ZSE1vZsLqQrJynXAP4nSJsO1UAdlErlGfFyohaWi2RuTHux7PGM4w
-         iTuXu8hG5PMzmB+tz/SO5gSusxCCQHv/uC0RZk5Z39E9g9c9/58mKt8U15k5+y7S0MSk
-         M0p9mDLrAq7H1AShxkuLAcd1zTKgsv4JK+vlwR4egy1rNiWkdYDLNysTunTFO091fvMJ
-         eexA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=G0sYP00DyHcgSiz/UpCj0vFSMqhUdJtVPzxSy22jFRs=;
+        b=X8/CAFiDKcy1LRoopU/VXQqrF/ZXGGSBw4D5FArGbTOu2n4JamyvFgiWlugGFsqSWM
+         /9xVgVu+f/ncxxEz0VlzZr31y1FxZzC8Jc+sF648c86tQga2eom8sl6/lfJxOcC2zbt3
+         nfj2/wL562qfy3sqaGoUnWITVNcwjvE/Df3g3LcC+6PyutlOA9UrYFg+s4HWkAao31gd
+         sjRuHnBD8imlkO9/NQEO6ZY6sbgFNfk5G7L7A3OtSQhS5yHQ7ZRroV6u+Zz/9N2L7ACz
+         SpWvD/+s2hgECa2/k9Apgoa1nwhlGvHGZNScfJzhTUsFEHyivbspJCM5V40cttfUNNBU
+         ti3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jpuhbA135WXku8iFW2x2VvwuaDgLtebbBEPR7YXw648=;
-        b=em5G4BuCSDIaw0sZG0oC4/WKcOJ9WIdpVI9QF3zRS90wnsESiIY0OfL5naUbI860Co
-         7bJ47vY96I7KK4JM7vo1Bt9N6P0v8ae6g6JK/vE2nejMcbjjtdoBPDbhxHeq9qOE2hPb
-         vn3m43qNjYO2H0jLNtmrTlZ6Gt+O7JVMQZ9BmcTPPi3yZFxm1dXIqYjvqT8Gdq1zZDaf
-         jqV0bpHPP0KHDZrVFDcLmPyZ0jbD9YP43jYIwploF6ybpxDAlxPTVHnEN/S79lL0tPNT
-         IsRDj7fGbRJ+NpOxW3XNXXUApJxwQtlm7iecB1uwqXoWI6ydDIVUvJhdSXoEnuQaxOw7
-         HGGw==
-X-Gm-Message-State: AOAM532G6Z1EtzD8DV7ksPjQFKeDKU605i5luoefhacHf/xXoMC+RDKT
-        yRScJ5Xqwz+SAHNsH/YxuKc=
-X-Google-Smtp-Source: ABdhPJycUnUhTacxELkkzMTHqJCc1AEZ6djKxUQSXRPs+TD5RBzndAEK/awekMblZLe8/TYOxfN4dQ==
-X-Received: by 2002:a17:90a:d48a:: with SMTP id s10mr1743434pju.116.1593451196167;
-        Mon, 29 Jun 2020 10:19:56 -0700 (PDT)
-Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u128sm257548pfu.148.2020.06.29.10.19.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Jun 2020 10:19:55 -0700 (PDT)
-Subject: Re: [PATCH v2 06/10] phy: mdio: add kerneldoc for
- __devm_mdiobus_register()
-To:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-References: <20200629120346.4382-1-brgl@bgdev.pl>
- <20200629120346.4382-7-brgl@bgdev.pl>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <1ad2dbe6-ed87-4be0-f431-b5f223b9dd6c@gmail.com>
-Date:   Mon, 29 Jun 2020 10:19:53 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.9.0
+        bh=G0sYP00DyHcgSiz/UpCj0vFSMqhUdJtVPzxSy22jFRs=;
+        b=Cv8md3T3U6bAAFwBDFW/aoTHCQEgBk9+dmmJjSO3rUL4uWF0sHOE+irZcUVwl5sNG+
+         p5eUWxkLE68mXQVC/vf4G2tGdiEy6NL3WViZSHOUdhizm1eeQUjHS7pdBVFn38xVbe/X
+         M4d28H0eit8i+WLaFh2T1Xe5UI+VUtE6g5xpZdHkcID6CdUJSn4LQwKONFw9mF8JEGYd
+         KX31kHP0CWZKnJX5F//DW3p1YbTWebUiziS2eNcOKNA2lij0jx5pcpmouJyN4MiBt9aR
+         UzWTmh9SBN/3P3b1K1ieLGAP2o4lUer8NPoIJrA7Cxs5jMJyU25OAiNCiilW9RWQDMPR
+         9x3Q==
+X-Gm-Message-State: AOAM531ub9V0scIXKbvkB73yJci0lITm9RB40McHcGdWADMhzW8YJZH4
+        qVhUqHv7DxJxeR5iAyrRcwU=
+X-Google-Smtp-Source: ABdhPJytPqaMuxgD0wTHbLQsj7ArRGy3HFUVO8WFw4oHOZsTmYK70wTx5FpJaZY3EXhIhz/1MrYa7A==
+X-Received: by 2002:a17:90a:ac14:: with SMTP id o20mr11765030pjq.185.1593452173081;
+        Mon, 29 Jun 2020 10:36:13 -0700 (PDT)
+Received: from varodek.iballbatonwifi.com ([103.105.153.57])
+        by smtp.gmail.com with ESMTPSA id k23sm331461pgb.92.2020.06.29.10.36.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Jun 2020 10:36:12 -0700 (PDT)
+From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
+        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        skhan@linuxfoundation.org
+Subject: [PATCH v2 0/4] drivers/staging: use generic power management
+Date:   Mon, 29 Jun 2020 23:04:55 +0530
+Message-Id: <20200629173459.262075-1-vaibhavgupta40@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20200629120346.4382-7-brgl@bgdev.pl>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Linux Kernel Mentee: Remove Legacy Power Management.
 
+The purpose of this patch series is to remove legacy power management callbacks
+from amd ethernet drivers.
 
-On 6/29/2020 5:03 AM, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> 
-> This function is not documented. Add a short kerneldoc description.
-> 
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+The callbacks performing suspend() and resume() operations are still calling
+pci_save_state(), pci_set_power_state(), etc. and handling the power management
+themselves, which is not recommended.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+The conversion requires the removal of the those function calls and change the
+callback definition accordingly and make use of dev_pm_ops structure.
+
+All patches are compile-tested only.
+
+v2: An error was reported by kbuild in v1. pci_set_master() function call in
+drivers/staging/qlge/qlge_main.c, inside qlge_resume(), was passing argument
+which got deprecated after upgrade to generic PM. The error is fixed in v2.
+
+Vaibhav Gupta (4):
+  qlge/qlge_main.c: use generic power management
+  staging/rtl8192e: use generic power management
+  rts5208/rtsx.c: use generic power management
+  vt6655/device_main.c: use generic power management
+
+ drivers/staging/qlge/qlge_main.c             | 38 ++++++--------------
+ drivers/staging/rtl8192e/rtl8192e/rtl_core.c |  5 +--
+ drivers/staging/rtl8192e/rtl8192e/rtl_pm.c   | 26 ++++----------
+ drivers/staging/rtl8192e/rtl8192e/rtl_pm.h   |  4 +--
+ drivers/staging/rts5208/rtsx.c               | 30 +++++-----------
+ drivers/staging/vt6655/device_main.c         | 25 ++++---------
+ 6 files changed, 37 insertions(+), 91 deletions(-)
+
 -- 
-Florian
+2.27.0
+
