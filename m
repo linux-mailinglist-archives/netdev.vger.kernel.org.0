@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1C4720D798
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:07:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A689720D8C4
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 22:10:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733118AbgF2TbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 15:31:17 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:45068 "EHLO
+        id S1732195AbgF2Tl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 15:41:26 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:56754 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1733097AbgF2TbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:31:14 -0400
+        by vger.kernel.org with ESMTP id S1729673AbgF2TlY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:41:24 -0400
 Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 2815A4DE6B
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 13:35:06 +0000 (UTC)
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 186612008C;
-        Mon, 29 Jun 2020 13:35:06 +0000 (UTC)
-Received: from us4-mdac16-8.at1.mdlocal (unknown [10.110.49.190])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 16A1D600A1;
-        Mon, 29 Jun 2020 13:35:06 +0000 (UTC)
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 38FA641B92
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 13:35:25 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 23BAD200C9;
+        Mon, 29 Jun 2020 13:35:25 +0000 (UTC)
+Received: from us4-mdac16-54.at1.mdlocal (unknown [10.110.50.14])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 697ED800BF;
+        Mon, 29 Jun 2020 13:35:24 +0000 (UTC)
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.105])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9F147220075;
-        Mon, 29 Jun 2020 13:35:05 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.109])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id F198840077;
+        Mon, 29 Jun 2020 13:35:23 +0000 (UTC)
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 51BEC9C008D;
-        Mon, 29 Jun 2020 13:35:05 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9E8D2B40099;
+        Mon, 29 Jun 2020 13:35:23 +0000 (UTC)
 Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
  (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 29 Jun
- 2020 14:35:00 +0100
+ 2020 14:35:18 +0100
 From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH v2 net-next 07/15] sfc: commonise ethtool link handling
- functions
+Subject: [PATCH v2 net-next 09/15] sfc: commonise other ethtool bits
 To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>
 References: <3750523f-1c2f-628d-1f71-39b355cf6661@solarflare.com>
-Message-ID: <a8b267e3-5131-4725-914d-1053d2bba67b@solarflare.com>
-Date:   Mon, 29 Jun 2020 14:34:50 +0100
+Message-ID: <76e739e3-9ec3-44eb-f726-4ae367720d08@solarflare.com>
+Date:   Mon, 29 Jun 2020 14:35:15 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -51,411 +50,281 @@ X-Originating-IP: [10.17.20.203]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25510.003
-X-TM-AS-Result: No-3.765800-8.000000-10
-X-TMASE-MatchedRID: jgNy+cJhIFHjtwtQtmXE5bsHVDDM5xAP1JP9NndNOkUGmHr1eMxt2UAc
-        6DyoS2rIj6kCfX0Edc6tL1mMSnuv1/LETRWl+wGPpqbreSinCdPcVi8qZmJWc1eIuu+Gkot8/zS
-        kYr7c6qBfaf9viEQZNB5pG1lPrPh8ZH34p2+CxhLVsW2YGqoUtAqiBO2qhCIGdLv/+WrG6tOcXp
-        v2z7jW5eMecwql2rDBIgh5J3RnkhW39BLh6Bkc7mY+xOrx57jW4OB3iDG6ikmKIo9dsR2z7unQI
-        3/RZPRqTI35t8Xee++50l7unAEmSUohWBZ4QV+6SVHYMTQ1F1rMMe1W2YBpiiNGK7UC7ElMfWlr
-        04vVSkq4oPkqxH17jOvcAbd0RotA9XUyefCCihBSFqtD2wqeMR+26QzoWaY2jj2Kah8Ix0ajxYy
-        RBa/qJQPTK4qtAgwIPcCXjNqUmkVYF3qW3Je6+1x79brRFeOJz990DXiZa2uCdkuQ7bDbtPVZdG
-        GWa93Ccp7PsyhSWy5C3J2x4m/IiNt7a6FqVNALbBJwm7psm1bqgKuj261VqDHCqV7rv9Y1QDMFu
-        K2P9FjtoWavEW7HRE3Z8jKJCdR04mqLFh5vfmx+3BndfXUhXQ==
+X-TM-AS-Result: No-2.706000-8.000000-10
+X-TMASE-MatchedRID: fuBbsyL8JiaiUxusi3FJ7aiUivh0j2Pv6VTG9cZxEjJwGpdgNQ0JrHIo
+        zGa69omdrdoLblq9S5ra/g/NGTW3Mnab6P5ygEs+NVRz+HwqL4KikZBjlts/cmww+4tkH8hH4nq
+        pTUaab810p/zdXT5B89Qd9rLjD5L4qBkiu618z01yAOhmFi1q9gqiBO2qhCIGdLv/+WrG6tOcXp
+        v2z7jW5TNom9IXV8Jm56/YecsCTdHCpGfpWZNAsv9XRIMLUOjQD+jls0cSwJOrj76PS+omiCJ1Y
+        T6M2y/pq6zKW70eycORk6XtYogiau9c69BWUTGwC24oEZ6SpSmb4wHqRpnaDnRCcFDRICKLECCj
+        uJQTz5c8mab1SpvDK4tZHmvFqVxfhZyTLVRCk4mBottJSfe7kwO0aZpSlQ4xTQHu68rL/pzcX1L
+        lthoqdO19DVI++epMmpVdReMayPPYX68FmWzgr7JqpzuBzRvlw2tMTSg0x74=
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.765800-8.000000
+X-TMASE-Result: 10--2.706000-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25510.003
-X-MDID: 1593437706-3nrpcOUyLmur
+X-MDID: 1593437724-Dsc7yRYu5FlE
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Link speeds, FEC, and autonegotiation are all things EF100 will share.
+A few more ethtool handlers which EF100 will share.
 
 Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- drivers/net/ethernet/sfc/ethtool.c        | 148 ----------------------
- drivers/net/ethernet/sfc/ethtool_common.c | 146 +++++++++++++++++++++
- drivers/net/ethernet/sfc/ethtool_common.h |  12 +-
- 3 files changed, 157 insertions(+), 149 deletions(-)
+ drivers/net/ethernet/sfc/ethtool.c        | 93 -----------------------
+ drivers/net/ethernet/sfc/ethtool_common.c | 93 +++++++++++++++++++++++
+ drivers/net/ethernet/sfc/ethtool_common.h |  8 ++
+ 3 files changed, 101 insertions(+), 93 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
-index 04e88d05e8ff..55413d451ac3 100644
+index 5e0051b94ae7..48a96ed6b7d0 100644
 --- a/drivers/net/ethernet/sfc/ethtool.c
 +++ b/drivers/net/ethernet/sfc/ethtool.c
-@@ -54,58 +54,6 @@ static int efx_ethtool_phys_id(struct net_device *net_dev,
- 	return 0;
+@@ -68,54 +68,6 @@ static void efx_ethtool_get_regs(struct net_device *net_dev,
+ 	efx_nic_get_regs(efx, buf);
  }
  
--/* This must be called with rtnl_lock held. */
--static int
--efx_ethtool_get_link_ksettings(struct net_device *net_dev,
--			       struct ethtool_link_ksettings *cmd)
+-static void efx_ethtool_self_test(struct net_device *net_dev,
+-				  struct ethtool_test *test, u64 *data)
 -{
 -	struct efx_nic *efx = netdev_priv(net_dev);
--	struct efx_link_state *link_state = &efx->link_state;
--	u32 supported;
+-	struct efx_self_tests *efx_tests;
+-	bool already_up;
+-	int rc = -ENOMEM;
 -
--	mutex_lock(&efx->mac_lock);
--	efx->phy_op->get_link_ksettings(efx, cmd);
--	mutex_unlock(&efx->mac_lock);
+-	efx_tests = kzalloc(sizeof(*efx_tests), GFP_KERNEL);
+-	if (!efx_tests)
+-		goto fail;
 -
--	/* Both MACs support pause frames (bidirectional and respond-only) */
--	ethtool_convert_link_mode_to_legacy_u32(&supported,
--						cmd->link_modes.supported);
--
--	supported |= SUPPORTED_Pause | SUPPORTED_Asym_Pause;
--
--	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
--						supported);
--
--	if (LOOPBACK_INTERNAL(efx)) {
--		cmd->base.speed = link_state->speed;
--		cmd->base.duplex = link_state->fd ? DUPLEX_FULL : DUPLEX_HALF;
+-	if (efx->state != STATE_READY) {
+-		rc = -EBUSY;
+-		goto out;
 -	}
 -
--	return 0;
--}
+-	netif_info(efx, drv, efx->net_dev, "starting %sline testing\n",
+-		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
 -
--/* This must be called with rtnl_lock held. */
--static int
--efx_ethtool_set_link_ksettings(struct net_device *net_dev,
--			       const struct ethtool_link_ksettings *cmd)
--{
--	struct efx_nic *efx = netdev_priv(net_dev);
--	int rc;
--
--	/* GMAC does not support 1000Mbps HD */
--	if ((cmd->base.speed == SPEED_1000) &&
--	    (cmd->base.duplex != DUPLEX_FULL)) {
--		netif_dbg(efx, drv, efx->net_dev,
--			  "rejecting unsupported 1000Mbps HD setting\n");
--		return -EINVAL;
+-	/* We need rx buffers and interrupts. */
+-	already_up = (efx->net_dev->flags & IFF_UP);
+-	if (!already_up) {
+-		rc = dev_open(efx->net_dev, NULL);
+-		if (rc) {
+-			netif_err(efx, drv, efx->net_dev,
+-				  "failed opening device.\n");
+-			goto out;
+-		}
 -	}
 -
--	mutex_lock(&efx->mac_lock);
--	rc = efx->phy_op->set_link_ksettings(efx, cmd);
--	mutex_unlock(&efx->mac_lock);
--	return rc;
--}
+-	rc = efx_selftest(efx, efx_tests, test->flags);
 -
- static int efx_ethtool_get_regs_len(struct net_device *net_dev)
- {
- 	return efx_nic_get_regs_len(netdev_priv(net_dev));
-@@ -168,14 +116,6 @@ static void efx_ethtool_self_test(struct net_device *net_dev,
- 		test->flags |= ETH_TEST_FL_FAILED;
- }
- 
--/* Restart autonegotiation */
--static int efx_ethtool_nway_reset(struct net_device *net_dev)
--{
--	struct efx_nic *efx = netdev_priv(net_dev);
+-	if (!already_up)
+-		dev_close(efx->net_dev);
 -
--	return mdio45_nway_restart(&efx->mdio);
+-	netif_info(efx, drv, efx->net_dev, "%s %sline self-tests\n",
+-		   rc == 0 ? "passed" : "failed",
+-		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
+-
+-out:
+-	efx_ethtool_fill_self_tests(efx, efx_tests, NULL, data);
+-	kfree(efx_tests);
+-fail:
+-	if (rc)
+-		test->flags |= ETH_TEST_FL_FAILED;
 -}
 -
  /*
   * Each channel has a single IRQ and moderation timer, started by any
   * completion (or other event).  Unless the module parameter
-@@ -300,64 +240,6 @@ static int efx_ethtool_set_ringparam(struct net_device *net_dev,
- 	return efx_realloc_channels(efx, ring->rx_pending, txq_entries);
+@@ -255,18 +207,6 @@ static int efx_ethtool_set_wol(struct net_device *net_dev,
+ 	return efx->type->set_wol(efx, wol->wolopts);
  }
  
--static int efx_ethtool_set_pauseparam(struct net_device *net_dev,
--				      struct ethtool_pauseparam *pause)
+-static int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
 -{
 -	struct efx_nic *efx = netdev_priv(net_dev);
--	u8 wanted_fc, old_fc;
--	u32 old_adv;
--	int rc = 0;
+-	int rc;
 -
--	mutex_lock(&efx->mac_lock);
+-	rc = efx->type->map_reset_flags(flags);
+-	if (rc < 0)
+-		return rc;
 -
--	wanted_fc = ((pause->rx_pause ? EFX_FC_RX : 0) |
--		     (pause->tx_pause ? EFX_FC_TX : 0) |
--		     (pause->autoneg ? EFX_FC_AUTO : 0));
--
--	if ((wanted_fc & EFX_FC_TX) && !(wanted_fc & EFX_FC_RX)) {
--		netif_dbg(efx, drv, efx->net_dev,
--			  "Flow control unsupported: tx ON rx OFF\n");
--		rc = -EINVAL;
--		goto out;
--	}
--
--	if ((wanted_fc & EFX_FC_AUTO) && !efx->link_advertising[0]) {
--		netif_dbg(efx, drv, efx->net_dev,
--			  "Autonegotiation is disabled\n");
--		rc = -EINVAL;
--		goto out;
--	}
--
--	/* Hook for Falcon bug 11482 workaround */
--	if (efx->type->prepare_enable_fc_tx &&
--	    (wanted_fc & EFX_FC_TX) && !(efx->wanted_fc & EFX_FC_TX))
--		efx->type->prepare_enable_fc_tx(efx);
--
--	old_adv = efx->link_advertising[0];
--	old_fc = efx->wanted_fc;
--	efx_link_set_wanted_fc(efx, wanted_fc);
--	if (efx->link_advertising[0] != old_adv ||
--	    (efx->wanted_fc ^ old_fc) & EFX_FC_AUTO) {
--		rc = efx->phy_op->reconfigure(efx);
--		if (rc) {
--			netif_err(efx, drv, efx->net_dev,
--				  "Unable to advertise requested flow "
--				  "control setting\n");
--			goto out;
--		}
--	}
--
--	/* Reconfigure the MAC. The PHY *may* generate a link state change event
--	 * if the user just changed the advertised capabilities, but there's no
--	 * harm doing this twice */
--	efx_mac_reconfigure(efx);
--
--out:
--	mutex_unlock(&efx->mac_lock);
--
--	return rc;
+-	return efx_reset(efx, rc);
 -}
 -
- static void efx_ethtool_get_wol(struct net_device *net_dev,
- 				struct ethtool_wolinfo *wol)
+ static int efx_ethtool_get_ts_info(struct net_device *net_dev,
+ 				   struct ethtool_ts_info *ts_info)
  {
-@@ -1104,36 +986,6 @@ static int efx_ethtool_get_module_info(struct net_device *net_dev,
- 	return ret;
+@@ -281,39 +221,6 @@ static int efx_ethtool_get_ts_info(struct net_device *net_dev,
+ 	return 0;
  }
  
--static int efx_ethtool_get_fecparam(struct net_device *net_dev,
--				    struct ethtool_fecparam *fecparam)
+-static int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
+-					 struct ethtool_eeprom *ee,
+-					 u8 *data)
 -{
 -	struct efx_nic *efx = netdev_priv(net_dev);
--	int rc;
+-	int ret;
 -
--	if (!efx->phy_op || !efx->phy_op->get_fecparam)
+-	if (!efx->phy_op || !efx->phy_op->get_module_eeprom)
 -		return -EOPNOTSUPP;
+-
 -	mutex_lock(&efx->mac_lock);
--	rc = efx->phy_op->get_fecparam(efx, fecparam);
+-	ret = efx->phy_op->get_module_eeprom(efx, ee, data);
 -	mutex_unlock(&efx->mac_lock);
 -
--	return rc;
+-	return ret;
 -}
 -
--static int efx_ethtool_set_fecparam(struct net_device *net_dev,
--				    struct ethtool_fecparam *fecparam)
+-static int efx_ethtool_get_module_info(struct net_device *net_dev,
+-				       struct ethtool_modinfo *modinfo)
 -{
 -	struct efx_nic *efx = netdev_priv(net_dev);
--	int rc;
+-	int ret;
 -
--	if (!efx->phy_op || !efx->phy_op->get_fecparam)
+-	if (!efx->phy_op || !efx->phy_op->get_module_info)
 -		return -EOPNOTSUPP;
+-
 -	mutex_lock(&efx->mac_lock);
--	rc = efx->phy_op->set_fecparam(efx, fecparam);
+-	ret = efx->phy_op->get_module_info(efx, modinfo);
 -	mutex_unlock(&efx->mac_lock);
 -
--	return rc;
+-	return ret;
 -}
 -
  const struct ethtool_ops efx_ethtool_ops = {
  	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
  				     ETHTOOL_COALESCE_USECS_IRQ |
 diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
-index b8d281ab6c7a..b91961126eeb 100644
+index d7d8795eb1d3..c96595e50234 100644
 --- a/drivers/net/ethernet/sfc/ethtool_common.c
 +++ b/drivers/net/ethernet/sfc/ethtool_common.c
-@@ -124,6 +124,14 @@ void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable)
+@@ -125,6 +125,54 @@ void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable)
  	efx->msg_enable = msg_enable;
  }
  
-+/* Restart autonegotiation */
-+int efx_ethtool_nway_reset(struct net_device *net_dev)
++void efx_ethtool_self_test(struct net_device *net_dev,
++			   struct ethtool_test *test, u64 *data)
 +{
 +	struct efx_nic *efx = netdev_priv(net_dev);
++	struct efx_self_tests *efx_tests;
++	bool already_up;
++	int rc = -ENOMEM;
 +
-+	return mdio45_nway_restart(&efx->mdio);
-+}
++	efx_tests = kzalloc(sizeof(*efx_tests), GFP_KERNEL);
++	if (!efx_tests)
++		goto fail;
 +
- void efx_ethtool_get_pauseparam(struct net_device *net_dev,
- 				struct ethtool_pauseparam *pause)
- {
-@@ -134,6 +142,64 @@ void efx_ethtool_get_pauseparam(struct net_device *net_dev,
- 	pause->autoneg = !!(efx->wanted_fc & EFX_FC_AUTO);
- }
- 
-+int efx_ethtool_set_pauseparam(struct net_device *net_dev,
-+			       struct ethtool_pauseparam *pause)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+	u8 wanted_fc, old_fc;
-+	u32 old_adv;
-+	int rc = 0;
-+
-+	mutex_lock(&efx->mac_lock);
-+
-+	wanted_fc = ((pause->rx_pause ? EFX_FC_RX : 0) |
-+		     (pause->tx_pause ? EFX_FC_TX : 0) |
-+		     (pause->autoneg ? EFX_FC_AUTO : 0));
-+
-+	if ((wanted_fc & EFX_FC_TX) && !(wanted_fc & EFX_FC_RX)) {
-+		netif_dbg(efx, drv, efx->net_dev,
-+			  "Flow control unsupported: tx ON rx OFF\n");
-+		rc = -EINVAL;
++	if (efx->state != STATE_READY) {
++		rc = -EBUSY;
 +		goto out;
 +	}
 +
-+	if ((wanted_fc & EFX_FC_AUTO) && !efx->link_advertising[0]) {
-+		netif_dbg(efx, drv, efx->net_dev,
-+			  "Autonegotiation is disabled\n");
-+		rc = -EINVAL;
-+		goto out;
-+	}
++	netif_info(efx, drv, efx->net_dev, "starting %sline testing\n",
++		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
 +
-+	/* Hook for Falcon bug 11482 workaround */
-+	if (efx->type->prepare_enable_fc_tx &&
-+	    (wanted_fc & EFX_FC_TX) && !(efx->wanted_fc & EFX_FC_TX))
-+		efx->type->prepare_enable_fc_tx(efx);
-+
-+	old_adv = efx->link_advertising[0];
-+	old_fc = efx->wanted_fc;
-+	efx_link_set_wanted_fc(efx, wanted_fc);
-+	if (efx->link_advertising[0] != old_adv ||
-+	    (efx->wanted_fc ^ old_fc) & EFX_FC_AUTO) {
-+		rc = efx->phy_op->reconfigure(efx);
++	/* We need rx buffers and interrupts. */
++	already_up = (efx->net_dev->flags & IFF_UP);
++	if (!already_up) {
++		rc = dev_open(efx->net_dev, NULL);
 +		if (rc) {
 +			netif_err(efx, drv, efx->net_dev,
-+				  "Unable to advertise requested flow "
-+				  "control setting\n");
++				  "failed opening device.\n");
 +			goto out;
 +		}
 +	}
 +
-+	/* Reconfigure the MAC. The PHY *may* generate a link state change event
-+	 * if the user just changed the advertised capabilities, but there's no
-+	 * harm doing this twice */
-+	efx_mac_reconfigure(efx);
++	rc = efx_selftest(efx, efx_tests, test->flags);
++
++	if (!already_up)
++		dev_close(efx->net_dev);
++
++	netif_info(efx, drv, efx->net_dev, "%s %sline self-tests\n",
++		   rc == 0 ? "passed" : "failed",
++		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
 +
 +out:
-+	mutex_unlock(&efx->mac_lock);
-+
-+	return rc;
++	efx_ethtool_fill_self_tests(efx, efx_tests, NULL, data);
++	kfree(efx_tests);
++fail:
++	if (rc)
++		test->flags |= ETH_TEST_FL_FAILED;
 +}
 +
- /**
-  * efx_fill_test - fill in an individual self-test entry
-  * @test_index:		Index of the test
-@@ -455,3 +521,83 @@ void efx_ethtool_get_stats(struct net_device *net_dev,
- 
- 	efx_ptp_update_stats(efx, data);
+ /* Restart autonegotiation */
+ int efx_ethtool_nway_reset(struct net_device *net_dev)
+ {
+@@ -1273,3 +1321,48 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+ 	mutex_unlock(&efx->rss_lock);
+ 	return rc;
  }
 +
-+/* This must be called with rtnl_lock held. */
-+int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
-+				   struct ethtool_link_ksettings *cmd)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+	struct efx_link_state *link_state = &efx->link_state;
-+	u32 supported;
-+
-+	mutex_lock(&efx->mac_lock);
-+	efx->phy_op->get_link_ksettings(efx, cmd);
-+	mutex_unlock(&efx->mac_lock);
-+
-+	/* Both MACs support pause frames (bidirectional and respond-only) */
-+	ethtool_convert_link_mode_to_legacy_u32(&supported,
-+						cmd->link_modes.supported);
-+
-+	supported |= SUPPORTED_Pause | SUPPORTED_Asym_Pause;
-+
-+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
-+						supported);
-+
-+	if (LOOPBACK_INTERNAL(efx)) {
-+		cmd->base.speed = link_state->speed;
-+		cmd->base.duplex = link_state->fd ? DUPLEX_FULL : DUPLEX_HALF;
-+	}
-+
-+	return 0;
-+}
-+
-+/* This must be called with rtnl_lock held. */
-+int efx_ethtool_set_link_ksettings(struct net_device *net_dev,
-+				   const struct ethtool_link_ksettings *cmd)
++int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
 +{
 +	struct efx_nic *efx = netdev_priv(net_dev);
 +	int rc;
 +
-+	/* GMAC does not support 1000Mbps HD */
-+	if ((cmd->base.speed == SPEED_1000) &&
-+	    (cmd->base.duplex != DUPLEX_FULL)) {
-+		netif_dbg(efx, drv, efx->net_dev,
-+			  "rejecting unsupported 1000Mbps HD setting\n");
-+		return -EINVAL;
-+	}
++	rc = efx->type->map_reset_flags(flags);
++	if (rc < 0)
++		return rc;
 +
-+	mutex_lock(&efx->mac_lock);
-+	rc = efx->phy_op->set_link_ksettings(efx, cmd);
-+	mutex_unlock(&efx->mac_lock);
-+	return rc;
++	return efx_reset(efx, rc);
 +}
 +
-+int efx_ethtool_get_fecparam(struct net_device *net_dev,
-+			     struct ethtool_fecparam *fecparam)
++int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
++				  struct ethtool_eeprom *ee,
++				  u8 *data)
 +{
 +	struct efx_nic *efx = netdev_priv(net_dev);
-+	int rc;
++	int ret;
 +
-+	if (!efx->phy_op || !efx->phy_op->get_fecparam)
++	if (!efx->phy_op || !efx->phy_op->get_module_eeprom)
 +		return -EOPNOTSUPP;
++
 +	mutex_lock(&efx->mac_lock);
-+	rc = efx->phy_op->get_fecparam(efx, fecparam);
++	ret = efx->phy_op->get_module_eeprom(efx, ee, data);
 +	mutex_unlock(&efx->mac_lock);
 +
-+	return rc;
++	return ret;
 +}
 +
-+int efx_ethtool_set_fecparam(struct net_device *net_dev,
-+			     struct ethtool_fecparam *fecparam)
++int efx_ethtool_get_module_info(struct net_device *net_dev,
++				struct ethtool_modinfo *modinfo)
 +{
 +	struct efx_nic *efx = netdev_priv(net_dev);
-+	int rc;
++	int ret;
 +
-+	if (!efx->phy_op || !efx->phy_op->get_fecparam)
++	if (!efx->phy_op || !efx->phy_op->get_module_info)
 +		return -EOPNOTSUPP;
++
 +	mutex_lock(&efx->mac_lock);
-+	rc = efx->phy_op->set_fecparam(efx, fecparam);
++	ret = efx->phy_op->get_module_info(efx, modinfo);
 +	mutex_unlock(&efx->mac_lock);
 +
-+	return rc;
++	return ret;
 +}
 diff --git a/drivers/net/ethernet/sfc/ethtool_common.h b/drivers/net/ethernet/sfc/ethtool_common.h
-index fa624313f330..eaa1fd9157f8 100644
+index 024a78ce0905..7bfbbd08a1ef 100644
 --- a/drivers/net/ethernet/sfc/ethtool_common.h
 +++ b/drivers/net/ethernet/sfc/ethtool_common.h
-@@ -15,8 +15,11 @@ void efx_ethtool_get_drvinfo(struct net_device *net_dev,
+@@ -15,6 +15,8 @@ void efx_ethtool_get_drvinfo(struct net_device *net_dev,
  			     struct ethtool_drvinfo *info);
  u32 efx_ethtool_get_msglevel(struct net_device *net_dev);
  void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable);
-+int efx_ethtool_nway_reset(struct net_device *net_dev);
++void efx_ethtool_self_test(struct net_device *net_dev,
++			   struct ethtool_test *test, u64 *data);
+ int efx_ethtool_nway_reset(struct net_device *net_dev);
  void efx_ethtool_get_pauseparam(struct net_device *net_dev,
  				struct ethtool_pauseparam *pause);
-+int efx_ethtool_set_pauseparam(struct net_device *net_dev,
-+			       struct ethtool_pauseparam *pause);
- int efx_ethtool_fill_self_tests(struct efx_nic *efx,
- 				struct efx_self_tests *tests,
- 				u8 *strings, u64 *data);
-@@ -26,5 +29,12 @@ void efx_ethtool_get_strings(struct net_device *net_dev, u32 string_set,
- void efx_ethtool_get_stats(struct net_device *net_dev,
- 			   struct ethtool_stats *stats __attribute__ ((unused)),
- 			   u64 *data);
--
-+int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
-+				   struct ethtool_link_ksettings *out);
-+int efx_ethtool_set_link_ksettings(struct net_device *net_dev,
-+				   const struct ethtool_link_ksettings *settings);
-+int efx_ethtool_get_fecparam(struct net_device *net_dev,
-+			     struct ethtool_fecparam *fecparam);
-+int efx_ethtool_set_fecparam(struct net_device *net_dev,
-+			     struct ethtool_fecparam *fecparam);
+@@ -53,4 +55,10 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+ 				 const u32 *indir, const u8 *key,
+ 				 const u8 hfunc, u32 *rss_context,
+ 				 bool delete);
++int efx_ethtool_reset(struct net_device *net_dev, u32 *flags);
++int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
++				  struct ethtool_eeprom *ee,
++				  u8 *data);
++int efx_ethtool_get_module_info(struct net_device *net_dev,
++				struct ethtool_modinfo *modinfo);
  #endif
 
