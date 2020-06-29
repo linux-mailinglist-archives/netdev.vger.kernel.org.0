@@ -2,263 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07AB120D11C
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 20:41:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49FAC20D23F
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 20:51:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728050AbgF2Sil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 14:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37588 "EHLO
+        id S1729375AbgF2Srv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 14:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727957AbgF2SiB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:38:01 -0400
-Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA0AC02A542
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:49:02 -0700 (PDT)
-Received: by mail-ua1-x941.google.com with SMTP id z47so5267138uad.5
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 05:49:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=verdurent-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/czzbe3TtUcJIflJ99q2lIskXBgVNXfpcq83W982SW4=;
-        b=WeSAP/a5lZp6nQMEdDIM8axmsEfnvdtP2chd3VGBSckQwa2U21YukiLtyPPobyXRuz
-         qYvGnoJy2SUKgfnYrOr3jRhoupwpMs3QX+xGwrqTeAtGDEL8iTdjC6PN+tFU5iplVnnH
-         3ucRfvHL7WjJ+gtGhev0U+/hV5HrD3ymzqRKeQrv4+5ImAO6zhR9vLGZVRJQqMfrVxZw
-         uToRn6fmJ1MVQd0H0L4UGrVpsm529MFKG1jOf/g8cOtAWlx/5fXAYzhwDiBp5fWyHkNG
-         fKlGAU5e05jHLGweiiNV7g/5A5MRWrfBh7NP6PF2Tq8mI41CfWsoaTZ3omYxPZGLOXHS
-         jCbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/czzbe3TtUcJIflJ99q2lIskXBgVNXfpcq83W982SW4=;
-        b=GkewiVKAsjCaxecxg0m0F4Ctmngqd2UuKq9Zpw946nfHOaWve8sobFcu/WcqNgjeR3
-         OyOSRBU5ZctRzOYWM/yjNLvyBsIdGsmFiEiBc3xWrXeWU2HyAY57XRtwsBEVJNpwiMtD
-         8fZ1ME5Ho7n5ArGN61k0dWWHLWh6pTEObKZmMISqlgdICmM9aMEd+GvgxJCHzOHxzcWI
-         BD3uMnN9xNBM8j2A2ErqtUBjAZPnQhZ3yohpm25LWPaH7QWmxJ7p7oxUFMtoBFEFCUoc
-         Z5r5v7LJRQY9BLg+u+d/x5zZZbsUHm/dGo/8gQWmbV1lzEVr+KchkPgfj2oLL8+9fJSZ
-         sIqw==
-X-Gm-Message-State: AOAM532d2KL6+z0HypeULaxvhm33LxPdtqGAoMRmG1cGHjuSEK3UjceO
-        JH+Iu3Fyy8Dn4R95l28TOBiY/4N1D8D53Xsx9KW3EQ==
-X-Google-Smtp-Source: ABdhPJykO05gG5Bb+nA0Vnr/X3v2J1XSrulYz3voXHdt/RxIAbgJ9ID8IoL5WSwYX4Qy51z7VQCupXXNmThb4Z9Upd0=
-X-Received: by 2002:ab0:232:: with SMTP id 47mr10473617uas.48.1593434941649;
- Mon, 29 Jun 2020 05:49:01 -0700 (PDT)
+        with ESMTP id S1729360AbgF2Srq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 14:47:46 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA80C02E2C2;
+        Mon, 29 Jun 2020 06:58:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=qWyNxceE1HxDR9dXe27zL2Runx7nsY5emtD94N5b97s=; b=YN5nfLhHtwAS5bza4algxyhr3
+        6ldxxk2+Hq3tRFjkQMCxV8cQsvoEhWZt9/PN9SG8360DvtYKHX1oxrz3Ur9oAM5hhskUF4KiYfEWX
+        CSFMYP7pm9SOn8nnSVcTO46vMYVSiqGsSBiLR5HvhrUTWss1B7chmVvaXYnYJ+UCY00CoUT4lW5Ej
+        b4f7DRoLGKoGp1FICS/Fq59Ku4k14U9e/ndBjLuJhoCUTHXxQ4cLt0DBRd8i8K02b8A3YtRXjflsx
+        6qw9FNQTxUBiG/PsY9W93rkyr36N60B6TZtbC5ly3vYr2Le3wHaFJL5kKKTQjpNvtGnHkIkl0NXY/
+        JRlhlr9VA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33104)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jpuJ4-0007h0-CS; Mon, 29 Jun 2020 14:58:46 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jpuJ0-0007AW-Al; Mon, 29 Jun 2020 14:58:42 +0100
+Date:   Mon, 29 Jun 2020 14:58:42 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florinel Iordache <florinel.iordache@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 4/7] net: phy: add backplane kr driver support
+Message-ID: <20200629135842.GU1551@shell.armlinux.org.uk>
+References: <1592832924-31733-1-git-send-email-florinel.iordache@nxp.com>
+ <1592832924-31733-5-git-send-email-florinel.iordache@nxp.com>
+ <20200622142430.GP279339@lunn.ch>
+ <AM6PR04MB397677E90EFBD9749D01B061EC970@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <7b12d7f1-9e36-e3ee-7a51-d8d8628e2e6f@gmail.com>
 MIME-Version: 1.0
-References: <20200629122925.21729-1-andrzej.p@collabora.com> <20200629122925.21729-12-andrzej.p@collabora.com>
-In-Reply-To: <20200629122925.21729-12-andrzej.p@collabora.com>
-From:   Amit Kucheria <amit.kucheria@verdurent.com>
-Date:   Mon, 29 Jun 2020 18:18:50 +0530
-Message-ID: <CAHLCerONdxx=x_ykO=JjpM5AB08ZX3ukhKVWgPARcS5V7q80Gw@mail.gmail.com>
-Subject: Re: [PATCH v7 11/11] thermal: Rename set_mode() to change_mode()
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Cc:     Linux PM list <linux-pm@vger.kernel.org>,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        lakml <linux-arm-kernel@lists.infradead.org>,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        kernel@collabora.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7b12d7f1-9e36-e3ee-7a51-d8d8628e2e6f@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 6:00 PM Andrzej Pietrasiewicz
-<andrzej.p@collabora.com> wrote:
->
-> set_mode() is only called when tzd's mode is about to change. Actual
-> setting is performed in thermal_core, in thermal_zone_device_set_mode().
-> The meaning of set_mode() callback is actually to notify the driver about
-> the mode being changed and giving the driver a chance to oppose such
-> change.
->
-> To better reflect the purpose of the method rename it to change_mode()
->
-> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-> [for acerhdf]
-> Acked-by: Peter Kaestle <peter@piie.net>
-> Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+On Fri, Jun 26, 2020 at 12:02:05PM -0700, Florian Fainelli wrote:
+> On 6/22/20 8:08 AM, Madalin Bucur (OSS) wrote:
+> > Hi Andrew, the reasons behind this selection:
+> > 
+> > - the PCS that is controlled by the backplane driver belongs to the PHY
+> > layer so the representation as a PHY device is legitimate
+> 
+> That argument makes sense.
 
-Reviewed-by: Amit Kucheria <amit.kucheria@linaro.org>
+It doesn't when you also are subjected to other parts of NXP arguing
+that the PCS is tightly bound inside the SoC and therefore should be
+effectively a library - as has been discussed in the threads about
+the Lynx PCS.
 
-> ---
->  drivers/platform/x86/acerhdf.c                          | 6 +++---
->  drivers/thermal/imx_thermal.c                           | 8 ++++----
->  drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 6 +++---
->  drivers/thermal/intel/intel_quark_dts_thermal.c         | 6 +++---
->  drivers/thermal/thermal_core.c                          | 4 ++--
->  include/linux/thermal.h                                 | 2 +-
->  6 files changed, 16 insertions(+), 16 deletions(-)
->
-> diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
-> index 76323855c80c..f816a8a13039 100644
-> --- a/drivers/platform/x86/acerhdf.c
-> +++ b/drivers/platform/x86/acerhdf.c
-> @@ -413,8 +413,8 @@ static inline void acerhdf_enable_kernelmode(void)
->   *          the temperature and the fan.
->   * disabled: the BIOS takes control of the fan.
->   */
-> -static int acerhdf_set_mode(struct thermal_zone_device *thermal,
-> -                           enum thermal_device_mode mode)
-> +static int acerhdf_change_mode(struct thermal_zone_device *thermal,
-> +                              enum thermal_device_mode mode)
->  {
->         if (mode == THERMAL_DEVICE_DISABLED && kernelmode)
->                 acerhdf_revert_to_bios_mode();
-> @@ -473,7 +473,7 @@ static struct thermal_zone_device_ops acerhdf_dev_ops = {
->         .bind = acerhdf_bind,
->         .unbind = acerhdf_unbind,
->         .get_temp = acerhdf_get_ec_temp,
-> -       .set_mode = acerhdf_set_mode,
-> +       .change_mode = acerhdf_change_mode,
->         .get_trip_type = acerhdf_get_trip_type,
->         .get_trip_hyst = acerhdf_get_trip_hyst,
->         .get_trip_temp = acerhdf_get_trip_temp,
-> diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
-> index a02398118d88..9700ae39feb7 100644
-> --- a/drivers/thermal/imx_thermal.c
-> +++ b/drivers/thermal/imx_thermal.c
-> @@ -330,8 +330,8 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
->         return 0;
->  }
->
-> -static int imx_set_mode(struct thermal_zone_device *tz,
-> -                       enum thermal_device_mode mode)
-> +static int imx_change_mode(struct thermal_zone_device *tz,
-> +                          enum thermal_device_mode mode)
->  {
->         struct imx_thermal_data *data = tz->devdata;
->         struct regmap *map = data->tempmon;
-> @@ -447,7 +447,7 @@ static struct thermal_zone_device_ops imx_tz_ops = {
->         .bind = imx_bind,
->         .unbind = imx_unbind,
->         .get_temp = imx_get_temp,
-> -       .set_mode = imx_set_mode,
-> +       .change_mode = imx_change_mode,
->         .get_trip_type = imx_get_trip_type,
->         .get_trip_temp = imx_get_trip_temp,
->         .get_crit_temp = imx_get_crit_temp,
-> @@ -860,7 +860,7 @@ static int __maybe_unused imx_thermal_suspend(struct device *dev)
->          * Need to disable thermal sensor, otherwise, when thermal core
->          * try to get temperature before thermal sensor resume, a wrong
->          * temperature will be read as the thermal sensor is powered
-> -        * down. This is done in set_mode() operation called from
-> +        * down. This is done in change_mode() operation called from
->          * thermal_zone_device_disable()
->          */
->         ret = thermal_zone_device_disable(data->tz);
-> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> index ce49d3b100d5..d3732f624913 100644
-> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> @@ -377,8 +377,8 @@ static int int3400_thermal_get_temp(struct thermal_zone_device *thermal,
->         return 0;
->  }
->
-> -static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
-> -                               enum thermal_device_mode mode)
-> +static int int3400_thermal_change_mode(struct thermal_zone_device *thermal,
-> +                                      enum thermal_device_mode mode)
->  {
->         struct int3400_thermal_priv *priv = thermal->devdata;
->         int result = 0;
-> @@ -399,7 +399,7 @@ static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
->
->  static struct thermal_zone_device_ops int3400_thermal_ops = {
->         .get_temp = int3400_thermal_get_temp,
-> -       .set_mode = int3400_thermal_set_mode,
-> +       .change_mode = int3400_thermal_change_mode,
->  };
->
->  static struct thermal_zone_params int3400_thermal_params = {
-> diff --git a/drivers/thermal/intel/intel_quark_dts_thermal.c b/drivers/thermal/intel/intel_quark_dts_thermal.c
-> index e29c3e330b17..3eafc6b0e6c3 100644
-> --- a/drivers/thermal/intel/intel_quark_dts_thermal.c
-> +++ b/drivers/thermal/intel/intel_quark_dts_thermal.c
-> @@ -298,8 +298,8 @@ static int sys_get_curr_temp(struct thermal_zone_device *tzd,
->         return 0;
->  }
->
-> -static int sys_set_mode(struct thermal_zone_device *tzd,
-> -                               enum thermal_device_mode mode)
-> +static int sys_change_mode(struct thermal_zone_device *tzd,
-> +                          enum thermal_device_mode mode)
->  {
->         int ret;
->
-> @@ -319,7 +319,7 @@ static struct thermal_zone_device_ops tzone_ops = {
->         .get_trip_type = sys_get_trip_type,
->         .set_trip_temp = sys_set_trip_temp,
->         .get_crit_temp = sys_get_crit_temp,
-> -       .set_mode = sys_set_mode,
-> +       .change_mode = sys_change_mode,
->  };
->
->  static void free_soc_dts(struct soc_sensor_entry *aux_entry)
-> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-> index e613f5c07bad..a61e91513584 100644
-> --- a/drivers/thermal/thermal_core.c
-> +++ b/drivers/thermal/thermal_core.c
-> @@ -482,8 +482,8 @@ static int thermal_zone_device_set_mode(struct thermal_zone_device *tz,
->                 return ret;
->         }
->
-> -       if (tz->ops->set_mode)
-> -               ret = tz->ops->set_mode(tz, mode);
-> +       if (tz->ops->change_mode)
-> +               ret = tz->ops->change_mode(tz, mode);
->
->         if (!ret)
->                 tz->mode = mode;
-> diff --git a/include/linux/thermal.h b/include/linux/thermal.h
-> index df013c39ba9b..b9efaa780d88 100644
-> --- a/include/linux/thermal.h
-> +++ b/include/linux/thermal.h
-> @@ -76,7 +76,7 @@ struct thermal_zone_device_ops {
->                        struct thermal_cooling_device *);
->         int (*get_temp) (struct thermal_zone_device *, int *);
->         int (*set_trips) (struct thermal_zone_device *, int, int);
-> -       int (*set_mode) (struct thermal_zone_device *,
-> +       int (*change_mode) (struct thermal_zone_device *,
->                 enum thermal_device_mode);
->         int (*get_trip_type) (struct thermal_zone_device *, int,
->                 enum thermal_trip_type *);
-> --
-> 2.17.1
->
+> > - the PHY driver provides the state machine that is required, not using
+> > this representation backplane would need to add a separate, duplicate
+> > state machine
+> 
+> Which is entirely permissible according to the PHY library
+> documentation, not that we have seen many people do it though, even less
+> so when the PHY driver is providing the state machine.
+
+It seems the PHYlib state machine is getting smaller and smaller
+as we move forward; phy_state_machine() is now looking very bare
+compared to what it used to look like.  I think it's not that far
+off being eliminated.
+
+> > - the limitation, that only one PHY layer entity can be managed by the
+> > PHYLib, is a known limitation that always existed, is not introduced by
+> > the backplane support; the unsupported scenario with a backplane connection
+> > to a PHY entity that needs to be managed relates to that limitation and
+> > a solution for it should not be added through the backplane support
+> > - afaik, Russell and Ioana are discussing the PCS representation in the
+> > context of PHYLink, this submission is using PHYLib. If we are to discuss
+> > about the PCS representation, it's the problem of the simplistic "one device
+> > in the PHY layer" issue that needs to be addressed to have a proper PCS
+> > representation at all times.
+> 
+> So would not it make sense for the PCS representation to be settled and
+> then add the backplane driver implementation such that there is no
+> double work happening for Florinel and for reviewers and the PCS
+> implementation als factors in the backplane use case and requirements?
+
+Yes, that is my assessment; there's a lot of work going on in different
+areas in QoriQ networking, and it seems people are pulling things in
+quite diverse directions.
+
+If we're not careful, we're going to end up with the Lynx PCS being
+implemented one way, and backplane PCS being implemented completely
+differently and preventing any hope of having a backplane PCS
+connected to a conventional copper PHY.
+
+I think folk at NXP need to stop, stand back, and look at the bigger
+picture about how they want to integrate all these individual,
+independent strands of development into the kernel, and come up with
+a common approach that also satisfies the mainline kernel, rather
+than having individual discussions with mainline kernel maintainers
+on public lists.  What I'm saying is, it isn't our job to co-ordinate
+between the different parts of NXP - that's fairly and squarely
+NXP's problem to sort out themselves.
+
+So, I think, further progress in public on backplane support needs to
+wait until we have the general situation for PCS resolved.
+
+Makes sense?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
