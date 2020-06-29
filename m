@@ -2,173 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE21120E91D
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 01:15:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B948520E926
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 01:15:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729263AbgF2XLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 19:11:16 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:45308 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728734AbgF2XLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 19:11:14 -0400
-Received: by mail-io1-f70.google.com with SMTP id d64so11867347iof.12
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 16:11:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=scxQ3olKSlbD2dbdxyeSE7jRyJ9lJyRe3hVz8jvF9ow=;
-        b=HJRti17zdZhxdBex203Yk6CiN3d1FPIqU2VVxb+bAzePcMjh+Jcjzky/kao2XLyQPA
-         Ail2bCHpIbrVXcJByNllWdFJaiD+9/QRqMPLXAAexpyH34Av4EOmHdZHOUuzV16Gr4DP
-         vrKowi71cNvFgnz87/fkHVzOeN0NV0UHWplw99ev/EBhWyfaBzkZuaNQ5npP6t2HyhVP
-         LSzQyrRj5D+ysRJljg/UhcjbV2yk38iO00XyAmE18w+7e2Fosx3axu6ZQBHGGkfCW4YU
-         1QJRXa1Gy2/028JLgynMECx/DiF/RXa1j64CFVPK/TSxCccCF0UTrSc0IrrO0augVoC9
-         kkAw==
-X-Gm-Message-State: AOAM530xneMXFFmod2m4HZMIxqp/IgVg+piv06HtQTQHduEq/zzEITCj
-        aWeKpS3IHx1tPCgmoJKdORBs6lDyhCUYUB/XLTOXpR42zVD3
-X-Google-Smtp-Source: ABdhPJx6hW4JpWu7xneEQCiHNeHEXyoCY16K9PPGVpQTWUp1dg1xDaKn7ah0VhFOgIgt4YT/p0ew9JG20fSp4FFidx1Smbq0Ak8v
+        id S1729559AbgF2XNa convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Jun 2020 19:13:30 -0400
+Received: from mga05.intel.com ([192.55.52.43]:15324 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726254AbgF2XNa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 19:13:30 -0400
+IronPort-SDR: riSHhY+paipn6zx3cv4g7/mqJoCjdNMfM3u91ENFQSMnyPo5t3mj27Rkz35CW0I0R/wqwKfgMl
+ e5TKwi9vhoMA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="230947114"
+X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; 
+   d="scan'208";a="230947114"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2020 16:13:29 -0700
+IronPort-SDR: RAjKt3WZpFXx7hlBV7yLxlW8MF8VY5sxzDH2OkYePH/FJ1yuAlD9ozl6M72YlAIAPqFyctJiR1
+ 6ng62zwRVNEg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; 
+   d="scan'208";a="480957969"
+Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
+  by fmsmga005.fm.intel.com with ESMTP; 29 Jun 2020 16:13:28 -0700
+Received: from orsmsx161.amr.corp.intel.com (10.22.240.84) by
+ ORSMSX103.amr.corp.intel.com (10.22.225.130) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 29 Jun 2020 16:13:28 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.199]) by
+ ORSMSX161.amr.corp.intel.com ([169.254.4.100]) with mapi id 14.03.0439.000;
+ Mon, 29 Jun 2020 16:13:28 -0700
+From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>, Mark Brown <broonie@kernel.org>
+CC:     Greg KH <gregkh@linuxfoundation.org>, Takashi Iwai <tiwai@suse.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        "Ranjani Sridharan" <ranjani.sridharan@linux.intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        Fred Oh <fred.oh@linux.intel.com>
+Subject: RE: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
+ client
+Thread-Topic: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
+ client
+Thread-Index: AQHWLnSiAGSTMkhab0e5z+5I+qwHCaixZBKAgAIdMYCAACf0gIAA+ieAgAEKhICAAN72gIAAtpOAgAOUdACAAAYyAIABKCWAgDS7Q4CAACj9gP//jcrw
+Date:   Mon, 29 Jun 2020 23:13:27 +0000
+Message-ID: <61CC2BC414934749BD9F5BF3D5D940449874174D@ORSMSX112.amr.corp.intel.com>
+References: <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
+ <20200521233437.GF17583@ziepe.ca>
+ <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
+ <20200523062351.GD3156699@kroah.com>
+ <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
+ <20200524063519.GB1369260@kroah.com>
+ <fe44419b-924c-b183-b761-78771b7d506d@linux.intel.com>
+ <s5h5zcistpb.wl-tiwai@suse.de> <20200527071733.GB52617@kroah.com>
+ <20200629203317.GM5499@sirena.org.uk> <20200629225959.GF25301@ziepe.ca>
+In-Reply-To: <20200629225959.GF25301@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.138]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:13cd:: with SMTP id v13mr9732535ilj.15.1593472272869;
- Mon, 29 Jun 2020 16:11:12 -0700 (PDT)
-Date:   Mon, 29 Jun 2020 16:11:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c8af7205a9412c5b@google.com>
-Subject: KASAN: use-after-free Read in dev_get_by_name
-From:   syzbot <syzbot+86e957379663a156cd31@syzkaller.appspotmail.com>
-To:     Jason@zx2c4.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, wireguard@lists.zx2c4.com
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    4e99b321 Merge tag 'nfs-for-5.8-2' of git://git.linux-nfs...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1013cb29100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=20c907630cbdbe5
-dashboard link: https://syzkaller.appspot.com/bug?extid=86e957379663a156cd31
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1689e8f5100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144f07bb100000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+86e957379663a156cd31@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: use-after-free in strnlen+0x63/0x80 lib/string.c:561
-Read of size 1 at addr ffff88809f3e9c18 by task syz-executor276/7264
-
-CPU: 0 PID: 7264 Comm: syz-executor276 Not tainted 5.8.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1f0/0x31e lib/dump_stack.c:118
- print_address_description+0x66/0x5a0 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report+0x132/0x1d0 mm/kasan/report.c:530
- strnlen+0x63/0x80 lib/string.c:561
- dev_name_hash net/core/dev.c:208 [inline]
- netdev_name_node_lookup_rcu net/core/dev.c:290 [inline]
- dev_get_by_name_rcu net/core/dev.c:883 [inline]
- dev_get_by_name+0x9b/0x2a0 net/core/dev.c:905
- lookup_interface drivers/net/wireguard/netlink.c:63 [inline]
- wg_get_device_start+0x1fb/0x2d0 drivers/net/wireguard/netlink.c:203
- genl_start+0x390/0x570 net/netlink/genetlink.c:556
- __netlink_dump_start+0x3d2/0x700 net/netlink/af_netlink.c:2343
- genl_family_rcv_msg_dumpit net/netlink/genetlink.c:638 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:733 [inline]
- genl_rcv_msg+0xb03/0xe00 net/netlink/genetlink.c:753
- netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2469
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:764
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
- do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x44a809
-Code: Bad RIP value.
-RSP: 002b:00007fed6f920da8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000006dbc28 RCX: 000000000044a809
-RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000004
-RBP: 00000000006dbc20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000006dbc2c
-R13: 0000000000000000 R14: 0000000000316777 R15: 0000000000000000
-
-Allocated by task 7265:
- save_stack mm/kasan/common.c:48 [inline]
- set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc+0x103/0x140 mm/kasan/common.c:494
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0xde/0x4f0 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1083 [inline]
- netlink_alloc_large_skb net/netlink/af_netlink.c:1175 [inline]
- netlink_sendmsg+0x7b2/0xd70 net/netlink/af_netlink.c:1893
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
- do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 7265:
- save_stack mm/kasan/common.c:48 [inline]
- set_track mm/kasan/common.c:56 [inline]
- kasan_set_free_info mm/kasan/common.c:316 [inline]
- __kasan_slab_free+0x114/0x170 mm/kasan/common.c:455
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x10a/0x220 mm/slab.c:3757
- skb_release_all net/core/skbuff.c:664 [inline]
- __kfree_skb+0x56/0x1c0 net/core/skbuff.c:678
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x78e/0x940 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x519/0x800 net/socket.c:2352
- ___sys_sendmsg net/socket.c:2406 [inline]
- __sys_sendmsg+0x2b1/0x360 net/socket.c:2439
- do_syscall_64+0x73/0xe0 arch/x86/entry/common.c:359
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The buggy address belongs to the object at ffff88809f3e9c00
- which belongs to the cache kmalloc-512 of size 512
-The buggy address is located 24 bytes inside of
- 512-byte region [ffff88809f3e9c00, ffff88809f3e9e00)
-The buggy address belongs to the page:
-page:ffffea00027cfa40 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea000294b388 ffffea00029e4388 ffff8880aa400a80
-raw: 0000000000000000 ffff88809f3e9000 0000000100000004 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff88809f3e9b00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88809f3e9b80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88809f3e9c00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                            ^
- ffff88809f3e9c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88809f3e9d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@ziepe.ca>
+> Sent: Monday, June 29, 2020 16:00
+> To: Mark Brown <broonie@kernel.org>
+> Cc: Greg KH <gregkh@linuxfoundation.org>; Takashi Iwai <tiwai@suse.de>;
+> Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>; Ranjani Sridharan
+> <ranjani.sridharan@linux.intel.com>; Kirsher, Jeffrey T
+> <jeffrey.t.kirsher@intel.com>; davem@davemloft.net; netdev@vger.kernel.org;
+> linux-rdma@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
+> Fred Oh <fred.oh@linux.intel.com>
+> Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
+> client
+> 
+> On Mon, Jun 29, 2020 at 09:33:17PM +0100, Mark Brown wrote:
+> > On Wed, May 27, 2020 at 09:17:33AM +0200, Greg KH wrote:
+> >
+> > > Ok, that's good to hear.  But platform devices should never be
+> > > showing up as a child of a PCI device.  In the "near future" when we
+> > > get the virtual bus code merged, we can convert any existing users
+> > > like this to the new code.
+> >
+> > What are we supposed to do with things like PCI attached FPGAs and
+> > ASICs in that case?  They can have host visible devices with physical
+> > resources like MMIO ranges and interrupts without those being split up
+> > neatly as PCI subfunctions - the original use case for MFD was such
+> > ASICs, there's a few PCI drivers in there now.
+> 
+> Greg has been pretty clear that MFD shouldn't have been used on top of PCI
+> drivers.
+> 
+> In a sense virtual bus is pretty much MFD v2.
+ 
+With the big distinction that MFD uses Platform bus/devices, which is why we could not
+use MFD as a solution, and virtbus does not.
