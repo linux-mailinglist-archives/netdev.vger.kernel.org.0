@@ -2,582 +2,1478 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D855E20E03A
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D868620DF5C
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:54:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389712AbgF2UoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731616AbgF2TOA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:14:00 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABACCC02A55C
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 06:13:57 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id u25so9065254lfm.1
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 06:13:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=f86XsbLFPHW5FRlMLQfG/EUFlh2eFsYeP0Dr13LtpZo=;
-        b=kvvpd+j/pPI9lVowp7LWMspV/iymGEfrJNIny4KO/h3jw+ORx/0TInntLUgdtEpcTS
-         Iwv8ZbWtis5QfTTy+/zQUlQ9bzxY9osKQm4BL05Bd8lCD2SQ3poCeebtkNRJKiBVF0tx
-         8Cc7b4uhCMEvtfoj3BCAdbgmXQ1XidT1dnCIuyn1qAtdEjb2+hAsmnM160Nvwx2YAVrY
-         G2FXPDvweER6F4b2d84t3FvvNkVcr1qp6CgVnYkMdhHP1hcDIE4+ccwRDlcvnrO+lbGD
-         26L7ghwHe4HwUgPm+9jp3yPWN68dba5n2dwkJLrUhqeaZJWrkqXKww6Ny8Yeew5OtIjX
-         eVvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=f86XsbLFPHW5FRlMLQfG/EUFlh2eFsYeP0Dr13LtpZo=;
-        b=B6qwP3JhxLD1qAvfKSgi2dZ5j7RvzyIsgE3KboT4ggD9EFiWcUjN2Y/L15a0pnz+MG
-         xH8FVa7PuzO6LyinoDGk0F9oAB2qu3W+s8sqDazrNO83Afo+2C8O1eDpNHrKcrDzaOs8
-         K1YaZlpydtoIRvkxdwVjlvFanZTrhtSAllfKc4Ej0TpzB7uEZv948OLvQeMsXsR9ixHp
-         E7Rxl0ODlTsiDX6PFSJPNRF8pb8DeCVZd6YUHi3zdgCGzBoEjfkBQA1WF/ngk90BQ3zo
-         45GUqnwvmM+HJIuYxoBjLI+WzXqnQvrgnjgZ1x9/TPxYXzOOzCH6SndYN4Un1qCst9Pj
-         MK9g==
-X-Gm-Message-State: AOAM533Sui/duZgQQcv/sKG+0nKAPFHIr4kIhKLGmk0H3obdTzVgakBm
-        k4TwfCJh2aKkkz3oMhNri20qpM2ybInVxQ==
-X-Google-Smtp-Source: ABdhPJw3TumAEtKi7Se7jzE2e1aHIdGHeaOlx1qjBcEczhjrg96MONXLZHDT/IehIc5bR1A6+1Y9jA==
-X-Received: by 2002:a19:48d3:: with SMTP id v202mr9362161lfa.202.1593436435823;
-        Mon, 29 Jun 2020 06:13:55 -0700 (PDT)
-Received: from centos7-pv-guest.localdomain ([5.35.13.201])
-        by smtp.gmail.com with ESMTPSA id 16sm647916ljw.127.2020.06.29.06.13.55
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jun 2020 06:13:55 -0700 (PDT)
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-To:     netdev@vger.kernel.org
-Cc:     brouer@redhat.com, jgross@suse.com, wei.liu@kernel.org,
-        paul@xen.org, ilias.apalodimas@linaro.org
-Subject: [PATCH net-next v14 2/3] xen networking: add basic XDP support for xen-netfront
-Date:   Mon, 29 Jun 2020 16:13:28 +0300
-Message-Id: <1593436409-1101-3-git-send-email-kda@linux-powerpc.org>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1593436409-1101-1-git-send-email-kda@linux-powerpc.org>
-References: <1593436409-1101-1-git-send-email-kda@linux-powerpc.org>
+        id S2389401AbgF2UfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 16:35:10 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:37140 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732188AbgF2TVd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 15:21:33 -0400
+Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 964E820D08C
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 13:35:15 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 84CDF2008F;
+        Mon, 29 Jun 2020 13:35:15 +0000 (UTC)
+Received: from us4-mdac16-9.at1.mdlocal (unknown [10.110.49.191])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 78892800AC;
+        Mon, 29 Jun 2020 13:35:15 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.74])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C879640072;
+        Mon, 29 Jun 2020 13:35:14 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 01D6B8009A;
+        Mon, 29 Jun 2020 13:35:14 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 29 Jun
+ 2020 14:35:09 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH v2 net-next 08/15] sfc: commonise ethtool NFC and RXFH/RSS
+ functions
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+References: <3750523f-1c2f-628d-1f71-39b355cf6661@solarflare.com>
+Message-ID: <78e4130f-ce16-2c36-94e8-4ebb35e814aa@solarflare.com>
+Date:   Mon, 29 Jun 2020 14:35:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+In-Reply-To: <3750523f-1c2f-628d-1f71-39b355cf6661@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25510.003
+X-TM-AS-Result: No-5.888900-8.000000-10
+X-TMASE-MatchedRID: DYXSdc7newLjtwtQtmXE5bsHVDDM5xAP1JP9NndNOkUGmHr1eMxt2UAc
+        6DyoS2rIj6kCfX0Edc5el/ldITy+ZL4v11zmWaeKB7TqRAYVohaZ2scyRQcer+OeTF42zeolptN
+        rryJ4UEhkKUy0+G4/sdGor5sS4O17HWlGy04g9z5HQFjzAbvJEBXytXp9UuwEydmEN0UhdkTELY
+        2kh2BC5anpXO4yFxgnA7Kl5ovdLNNmz7PUJFt/VkNsgQWRiIpM2zgw5RT/BrYRGC0rW8q1XaKkU
+        0t47vZI3k5E0nKWebAQH1/5RooS5oir9MqcjAA9zNIobH2DzGGqdpuEuCeGaFfLpI8fOvDuTx9j
+        hIf/nmy43+Y7Msub/rPnrzlTZe0ReNwp7qZDbQe+hCRkqj3j0zFcf92WG8u/R2YNIFh+clHBZqE
+        dJyZjPVqz8mWYrj0fTXZ1AfIjADTCFdW8OB9PNxfae1/VAFhlUGKOMTReNj6KXNybanokT8ESQx
+        QDVVJ146vFa+4Exm5vU4DrAss84DcpdZ3fQiLdOX/V8P8ail1yZ8zcONpAscRB0bsfrpPInfebC
+        PtgykCUTGVAhB5EbQ==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.888900-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25510.003
+X-MDID: 1593437715-XTxqgOjZy4EM
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The patch adds a basic XDP processing to xen-netfront driver.
+EF100 will share EF10's model of filtering, hashing and spreading.
 
-We ran an XDP program for an RX response received from netback
-driver. Also we request xen-netback to adjust data offset for
-bpf_xdp_adjust_head() header space for custom headers.
-
-synchronization between frontend and backend parts is done
-by using xenbus state switching:
-Reconfiguring -> Reconfigured- > Connected
-
-UDP packets drop rate using xdp program is around 310 kpps
-using ./pktgen_sample04_many_flows.sh and 160 kpps without the patch.
-
-Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- drivers/net/Kconfig        |   1 +
- drivers/net/xen-netfront.c | 336 +++++++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 327 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/sfc/ethtool.c        | 672 ----------------------
+ drivers/net/ethernet/sfc/ethtool_common.c | 672 ++++++++++++++++++++++
+ drivers/net/ethernet/sfc/ethtool_common.h |  16 +
+ 3 files changed, 688 insertions(+), 672 deletions(-)
 
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 9a49c4c..717abf4 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -495,6 +495,7 @@ config XEN_NETDEV_FRONTEND
- 	tristate "Xen network device frontend driver"
- 	depends on XEN
- 	select XEN_XENBUS_FRONTEND
-+	select PAGE_POOL
- 	default y
- 	help
- 	  This driver provides support for Xen paravirtual network
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 482c6c8..468f3f6 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -44,6 +44,9 @@
- #include <linux/mm.h>
- #include <linux/slab.h>
- #include <net/ip.h>
-+#include <linux/bpf.h>
-+#include <net/page_pool.h>
-+#include <linux/bpf_trace.h>
- 
- #include <xen/xen.h>
- #include <xen/xenbus.h>
-@@ -102,6 +105,8 @@ struct netfront_queue {
- 	char name[QUEUE_NAME_SIZE]; /* DEVNAME-qN */
- 	struct netfront_info *info;
- 
-+	struct bpf_prog __rcu *xdp_prog;
-+
- 	struct napi_struct napi;
- 
- 	/* Split event channels support, tx_* == rx_* when using
-@@ -144,6 +149,9 @@ struct netfront_queue {
- 	struct sk_buff *rx_skbs[NET_RX_RING_SIZE];
- 	grant_ref_t gref_rx_head;
- 	grant_ref_t grant_rx_ref[NET_RX_RING_SIZE];
-+
-+	struct page_pool *page_pool;
-+	struct xdp_rxq_info xdp_rxq;
- };
- 
- struct netfront_info {
-@@ -159,6 +167,10 @@ struct netfront_info {
- 	struct netfront_stats __percpu *rx_stats;
- 	struct netfront_stats __percpu *tx_stats;
- 
-+	/* XDP state */
-+	bool netback_has_xdp_headroom;
-+	bool netfront_xdp_enabled;
-+
- 	atomic_t rx_gso_checksum_fixup;
- };
- 
-@@ -265,8 +277,8 @@ static struct sk_buff *xennet_alloc_one_rx_buffer(struct netfront_queue *queue)
- 	if (unlikely(!skb))
- 		return NULL;
- 
--	page = alloc_page(GFP_ATOMIC | __GFP_NOWARN);
--	if (!page) {
-+	page = page_pool_dev_alloc_pages(queue->page_pool);
-+	if (unlikely(!page)) {
- 		kfree_skb(skb);
- 		return NULL;
- 	}
-@@ -560,6 +572,66 @@ static u16 xennet_select_queue(struct net_device *dev, struct sk_buff *skb,
- 	return queue_idx;
+diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
+index 55413d451ac3..5e0051b94ae7 100644
+--- a/drivers/net/ethernet/sfc/ethtool.c
++++ b/drivers/net/ethernet/sfc/ethtool.c
+@@ -267,678 +267,6 @@ static int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
+ 	return efx_reset(efx, rc);
  }
  
-+static int xennet_xdp_xmit_one(struct net_device *dev,
-+			       struct netfront_queue *queue,
-+			       struct xdp_frame *xdpf)
-+{
-+	struct netfront_info *np = netdev_priv(dev);
-+	struct netfront_stats *tx_stats = this_cpu_ptr(np->tx_stats);
-+	int notify;
-+
-+	xennet_make_first_txreq(queue, NULL,
-+				virt_to_page(xdpf->data),
-+				offset_in_page(xdpf->data),
-+				xdpf->len);
-+
-+	RING_PUSH_REQUESTS_AND_CHECK_NOTIFY(&queue->tx, notify);
-+	if (notify)
-+		notify_remote_via_irq(queue->tx_irq);
-+
-+	u64_stats_update_begin(&tx_stats->syncp);
-+	tx_stats->bytes += xdpf->len;
-+	tx_stats->packets++;
-+	u64_stats_update_end(&tx_stats->syncp);
-+
-+	xennet_tx_buf_gc(queue);
-+
-+	return 0;
-+}
-+
-+static int xennet_xdp_xmit(struct net_device *dev, int n,
-+			   struct xdp_frame **frames, u32 flags)
-+{
-+	unsigned int num_queues = dev->real_num_tx_queues;
-+	struct netfront_info *np = netdev_priv(dev);
-+	struct netfront_queue *queue = NULL;
-+	unsigned long irq_flags;
-+	int drops = 0;
-+	int i, err;
-+
-+	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-+		return -EINVAL;
-+
-+	queue = &np->queues[smp_processor_id() % num_queues];
-+
-+	spin_lock_irqsave(&queue->tx_lock, irq_flags);
-+	for (i = 0; i < n; i++) {
-+		struct xdp_frame *xdpf = frames[i];
-+
-+		if (!xdpf)
-+			continue;
-+		err = xennet_xdp_xmit_one(dev, queue, xdpf);
-+		if (err) {
-+			xdp_return_frame_rx_napi(xdpf);
-+			drops++;
-+		}
-+	}
-+	spin_unlock_irqrestore(&queue->tx_lock, irq_flags);
-+
-+	return n - drops;
-+}
-+
-+
- #define MAX_XEN_SKB_FRAGS (65536 / XEN_PAGE_SIZE + 1)
- 
- static netdev_tx_t xennet_start_xmit(struct sk_buff *skb, struct net_device *dev)
-@@ -778,23 +850,82 @@ static int xennet_get_extras(struct netfront_queue *queue,
- 	return err;
- }
- 
-+static u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
-+		   struct xen_netif_rx_response *rx, struct bpf_prog *prog,
-+		   struct xdp_buff *xdp, bool *need_xdp_flush)
-+{
-+	struct xdp_frame *xdpf;
-+	u32 len = rx->status;
-+	u32 act = XDP_PASS;
-+	int err;
-+
-+	xdp->data_hard_start = page_address(pdata);
-+	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
-+	xdp_set_data_meta_invalid(xdp);
-+	xdp->data_end = xdp->data + len;
-+	xdp->rxq = &queue->xdp_rxq;
-+	xdp->frame_sz = XEN_PAGE_SIZE - XDP_PACKET_HEADROOM;
-+
-+	act = bpf_prog_run_xdp(prog, xdp);
-+	switch (act) {
-+	case XDP_TX:
-+		get_page(pdata);
-+		xdpf = xdp_convert_buff_to_frame(xdp);
-+		err = xennet_xdp_xmit(queue->info->netdev, 1, &xdpf, 0);
-+		if (unlikely(err < 0))
-+			trace_xdp_exception(queue->info->netdev, prog, act);
-+		break;
-+	case XDP_REDIRECT:
-+		get_page(pdata);
-+		err = xdp_do_redirect(queue->info->netdev, xdp, prog);
-+		*need_xdp_flush = true;
-+		if (unlikely(err))
-+			trace_xdp_exception(queue->info->netdev, prog, act);
-+		break;
-+	case XDP_PASS:
-+	case XDP_DROP:
-+		break;
-+
-+	case XDP_ABORTED:
-+		trace_xdp_exception(queue->info->netdev, prog, act);
-+		break;
-+
-+	default:
-+		bpf_warn_invalid_xdp_action(act);
-+	}
-+
-+	return act;
-+}
-+
- static int xennet_get_responses(struct netfront_queue *queue,
- 				struct netfront_rx_info *rinfo, RING_IDX rp,
--				struct sk_buff_head *list)
-+				struct sk_buff_head *list,
-+				bool *need_xdp_flush)
- {
- 	struct xen_netif_rx_response *rx = &rinfo->rx;
--	struct xen_netif_extra_info *extras = rinfo->extras;
--	struct device *dev = &queue->info->netdev->dev;
-+	int max = XEN_NETIF_NR_SLOTS_MIN + (rx->status <= RX_COPY_THRESHOLD);
- 	RING_IDX cons = queue->rx.rsp_cons;
- 	struct sk_buff *skb = xennet_get_rx_skb(queue, cons);
-+	struct xen_netif_extra_info *extras = rinfo->extras;
- 	grant_ref_t ref = xennet_get_rx_ref(queue, cons);
--	int max = XEN_NETIF_NR_SLOTS_MIN + (rx->status <= RX_COPY_THRESHOLD);
-+	struct device *dev = &queue->info->netdev->dev;
-+	struct bpf_prog *xdp_prog;
-+	struct xdp_buff xdp;
-+	unsigned long ret;
- 	int slots = 1;
- 	int err = 0;
--	unsigned long ret;
-+	u32 verdict;
- 
- 	if (rx->flags & XEN_NETRXF_extra_info) {
- 		err = xennet_get_extras(queue, extras, rp);
-+		if (!err) {
-+			if (extras[XEN_NETIF_EXTRA_TYPE_XDP - 1].type) {
-+				struct xen_netif_extra_info *xdp;
-+
-+				xdp = &extras[XEN_NETIF_EXTRA_TYPE_XDP - 1];
-+				rx->offset = xdp->u.xdp.headroom;
-+			}
-+		}
- 		cons = queue->rx.rsp_cons;
- 	}
- 
-@@ -827,9 +958,24 @@ static int xennet_get_responses(struct netfront_queue *queue,
- 
- 		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
- 
--		__skb_queue_tail(list, skb);
+-/* MAC address mask including only I/G bit */
+-static const u8 mac_addr_ig_mask[ETH_ALEN] __aligned(2) = {0x01, 0, 0, 0, 0, 0};
 -
-+		rcu_read_lock();
-+		xdp_prog = rcu_dereference(queue->xdp_prog);
-+		if (xdp_prog) {
-+			if (!(rx->flags & XEN_NETRXF_more_data)) {
-+				/* currently only a single page contains data */
-+				verdict = xennet_run_xdp(queue,
-+							 skb_frag_page(&skb_shinfo(skb)->frags[0]),
-+							 rx, xdp_prog, &xdp, need_xdp_flush);
-+				if (verdict != XDP_PASS)
-+					err = -EINVAL;
-+			} else {
-+				/* drop the frame */
-+				err = -EINVAL;
-+			}
-+		}
-+		rcu_read_unlock();
- next:
-+		__skb_queue_tail(list, skb);
- 		if (!(rx->flags & XEN_NETRXF_more_data))
- 			break;
+-#define IP4_ADDR_FULL_MASK	((__force __be32)~0)
+-#define IP_PROTO_FULL_MASK	0xFF
+-#define PORT_FULL_MASK		((__force __be16)~0)
+-#define ETHER_TYPE_FULL_MASK	((__force __be16)~0)
+-
+-static inline void ip6_fill_mask(__be32 *mask)
+-{
+-	mask[0] = mask[1] = mask[2] = mask[3] = ~(__be32)0;
+-}
+-
+-static int efx_ethtool_get_class_rule(struct efx_nic *efx,
+-				      struct ethtool_rx_flow_spec *rule,
+-				      u32 *rss_context)
+-{
+-	struct ethtool_tcpip4_spec *ip_entry = &rule->h_u.tcp_ip4_spec;
+-	struct ethtool_tcpip4_spec *ip_mask = &rule->m_u.tcp_ip4_spec;
+-	struct ethtool_usrip4_spec *uip_entry = &rule->h_u.usr_ip4_spec;
+-	struct ethtool_usrip4_spec *uip_mask = &rule->m_u.usr_ip4_spec;
+-	struct ethtool_tcpip6_spec *ip6_entry = &rule->h_u.tcp_ip6_spec;
+-	struct ethtool_tcpip6_spec *ip6_mask = &rule->m_u.tcp_ip6_spec;
+-	struct ethtool_usrip6_spec *uip6_entry = &rule->h_u.usr_ip6_spec;
+-	struct ethtool_usrip6_spec *uip6_mask = &rule->m_u.usr_ip6_spec;
+-	struct ethhdr *mac_entry = &rule->h_u.ether_spec;
+-	struct ethhdr *mac_mask = &rule->m_u.ether_spec;
+-	struct efx_filter_spec spec;
+-	int rc;
+-
+-	rc = efx_filter_get_filter_safe(efx, EFX_FILTER_PRI_MANUAL,
+-					rule->location, &spec);
+-	if (rc)
+-		return rc;
+-
+-	if (spec.dmaq_id == EFX_FILTER_RX_DMAQ_ID_DROP)
+-		rule->ring_cookie = RX_CLS_FLOW_DISC;
+-	else
+-		rule->ring_cookie = spec.dmaq_id;
+-
+-	if ((spec.match_flags & EFX_FILTER_MATCH_ETHER_TYPE) &&
+-	    spec.ether_type == htons(ETH_P_IP) &&
+-	    (spec.match_flags & EFX_FILTER_MATCH_IP_PROTO) &&
+-	    (spec.ip_proto == IPPROTO_TCP || spec.ip_proto == IPPROTO_UDP) &&
+-	    !(spec.match_flags &
+-	      ~(EFX_FILTER_MATCH_ETHER_TYPE | EFX_FILTER_MATCH_OUTER_VID |
+-		EFX_FILTER_MATCH_LOC_HOST | EFX_FILTER_MATCH_REM_HOST |
+-		EFX_FILTER_MATCH_IP_PROTO |
+-		EFX_FILTER_MATCH_LOC_PORT | EFX_FILTER_MATCH_REM_PORT))) {
+-		rule->flow_type = ((spec.ip_proto == IPPROTO_TCP) ?
+-				   TCP_V4_FLOW : UDP_V4_FLOW);
+-		if (spec.match_flags & EFX_FILTER_MATCH_LOC_HOST) {
+-			ip_entry->ip4dst = spec.loc_host[0];
+-			ip_mask->ip4dst = IP4_ADDR_FULL_MASK;
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_REM_HOST) {
+-			ip_entry->ip4src = spec.rem_host[0];
+-			ip_mask->ip4src = IP4_ADDR_FULL_MASK;
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_LOC_PORT) {
+-			ip_entry->pdst = spec.loc_port;
+-			ip_mask->pdst = PORT_FULL_MASK;
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_REM_PORT) {
+-			ip_entry->psrc = spec.rem_port;
+-			ip_mask->psrc = PORT_FULL_MASK;
+-		}
+-	} else if ((spec.match_flags & EFX_FILTER_MATCH_ETHER_TYPE) &&
+-	    spec.ether_type == htons(ETH_P_IPV6) &&
+-	    (spec.match_flags & EFX_FILTER_MATCH_IP_PROTO) &&
+-	    (spec.ip_proto == IPPROTO_TCP || spec.ip_proto == IPPROTO_UDP) &&
+-	    !(spec.match_flags &
+-	      ~(EFX_FILTER_MATCH_ETHER_TYPE | EFX_FILTER_MATCH_OUTER_VID |
+-		EFX_FILTER_MATCH_LOC_HOST | EFX_FILTER_MATCH_REM_HOST |
+-		EFX_FILTER_MATCH_IP_PROTO |
+-		EFX_FILTER_MATCH_LOC_PORT | EFX_FILTER_MATCH_REM_PORT))) {
+-		rule->flow_type = ((spec.ip_proto == IPPROTO_TCP) ?
+-				   TCP_V6_FLOW : UDP_V6_FLOW);
+-		if (spec.match_flags & EFX_FILTER_MATCH_LOC_HOST) {
+-			memcpy(ip6_entry->ip6dst, spec.loc_host,
+-			       sizeof(ip6_entry->ip6dst));
+-			ip6_fill_mask(ip6_mask->ip6dst);
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_REM_HOST) {
+-			memcpy(ip6_entry->ip6src, spec.rem_host,
+-			       sizeof(ip6_entry->ip6src));
+-			ip6_fill_mask(ip6_mask->ip6src);
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_LOC_PORT) {
+-			ip6_entry->pdst = spec.loc_port;
+-			ip6_mask->pdst = PORT_FULL_MASK;
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_REM_PORT) {
+-			ip6_entry->psrc = spec.rem_port;
+-			ip6_mask->psrc = PORT_FULL_MASK;
+-		}
+-	} else if (!(spec.match_flags &
+-		     ~(EFX_FILTER_MATCH_LOC_MAC | EFX_FILTER_MATCH_LOC_MAC_IG |
+-		       EFX_FILTER_MATCH_REM_MAC | EFX_FILTER_MATCH_ETHER_TYPE |
+-		       EFX_FILTER_MATCH_OUTER_VID))) {
+-		rule->flow_type = ETHER_FLOW;
+-		if (spec.match_flags &
+-		    (EFX_FILTER_MATCH_LOC_MAC | EFX_FILTER_MATCH_LOC_MAC_IG)) {
+-			ether_addr_copy(mac_entry->h_dest, spec.loc_mac);
+-			if (spec.match_flags & EFX_FILTER_MATCH_LOC_MAC)
+-				eth_broadcast_addr(mac_mask->h_dest);
+-			else
+-				ether_addr_copy(mac_mask->h_dest,
+-						mac_addr_ig_mask);
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_REM_MAC) {
+-			ether_addr_copy(mac_entry->h_source, spec.rem_mac);
+-			eth_broadcast_addr(mac_mask->h_source);
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_ETHER_TYPE) {
+-			mac_entry->h_proto = spec.ether_type;
+-			mac_mask->h_proto = ETHER_TYPE_FULL_MASK;
+-		}
+-	} else if (spec.match_flags & EFX_FILTER_MATCH_ETHER_TYPE &&
+-		   spec.ether_type == htons(ETH_P_IP) &&
+-		   !(spec.match_flags &
+-		     ~(EFX_FILTER_MATCH_ETHER_TYPE | EFX_FILTER_MATCH_OUTER_VID |
+-		       EFX_FILTER_MATCH_LOC_HOST | EFX_FILTER_MATCH_REM_HOST |
+-		       EFX_FILTER_MATCH_IP_PROTO))) {
+-		rule->flow_type = IPV4_USER_FLOW;
+-		uip_entry->ip_ver = ETH_RX_NFC_IP4;
+-		if (spec.match_flags & EFX_FILTER_MATCH_IP_PROTO) {
+-			uip_mask->proto = IP_PROTO_FULL_MASK;
+-			uip_entry->proto = spec.ip_proto;
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_LOC_HOST) {
+-			uip_entry->ip4dst = spec.loc_host[0];
+-			uip_mask->ip4dst = IP4_ADDR_FULL_MASK;
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_REM_HOST) {
+-			uip_entry->ip4src = spec.rem_host[0];
+-			uip_mask->ip4src = IP4_ADDR_FULL_MASK;
+-		}
+-	} else if (spec.match_flags & EFX_FILTER_MATCH_ETHER_TYPE &&
+-		   spec.ether_type == htons(ETH_P_IPV6) &&
+-		   !(spec.match_flags &
+-		     ~(EFX_FILTER_MATCH_ETHER_TYPE | EFX_FILTER_MATCH_OUTER_VID |
+-		       EFX_FILTER_MATCH_LOC_HOST | EFX_FILTER_MATCH_REM_HOST |
+-		       EFX_FILTER_MATCH_IP_PROTO))) {
+-		rule->flow_type = IPV6_USER_FLOW;
+-		if (spec.match_flags & EFX_FILTER_MATCH_IP_PROTO) {
+-			uip6_mask->l4_proto = IP_PROTO_FULL_MASK;
+-			uip6_entry->l4_proto = spec.ip_proto;
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_LOC_HOST) {
+-			memcpy(uip6_entry->ip6dst, spec.loc_host,
+-			       sizeof(uip6_entry->ip6dst));
+-			ip6_fill_mask(uip6_mask->ip6dst);
+-		}
+-		if (spec.match_flags & EFX_FILTER_MATCH_REM_HOST) {
+-			memcpy(uip6_entry->ip6src, spec.rem_host,
+-			       sizeof(uip6_entry->ip6src));
+-			ip6_fill_mask(uip6_mask->ip6src);
+-		}
+-	} else {
+-		/* The above should handle all filters that we insert */
+-		WARN_ON(1);
+-		return -EINVAL;
+-	}
+-
+-	if (spec.match_flags & EFX_FILTER_MATCH_OUTER_VID) {
+-		rule->flow_type |= FLOW_EXT;
+-		rule->h_ext.vlan_tci = spec.outer_vid;
+-		rule->m_ext.vlan_tci = htons(0xfff);
+-	}
+-
+-	if (spec.flags & EFX_FILTER_FLAG_RX_RSS) {
+-		rule->flow_type |= FLOW_RSS;
+-		*rss_context = spec.rss_context;
+-	}
+-
+-	return rc;
+-}
+-
+-static int
+-efx_ethtool_get_rxnfc(struct net_device *net_dev,
+-		      struct ethtool_rxnfc *info, u32 *rule_locs)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-	u32 rss_context = 0;
+-	s32 rc = 0;
+-
+-	switch (info->cmd) {
+-	case ETHTOOL_GRXRINGS:
+-		info->data = efx->n_rx_channels;
+-		return 0;
+-
+-	case ETHTOOL_GRXFH: {
+-		struct efx_rss_context *ctx = &efx->rss_context;
+-		__u64 data;
+-
+-		mutex_lock(&efx->rss_lock);
+-		if (info->flow_type & FLOW_RSS && info->rss_context) {
+-			ctx = efx_find_rss_context_entry(efx, info->rss_context);
+-			if (!ctx) {
+-				rc = -ENOENT;
+-				goto out_unlock;
+-			}
+-		}
+-
+-		data = 0;
+-		if (!efx_rss_active(ctx)) /* No RSS */
+-			goto out_setdata_unlock;
+-
+-		switch (info->flow_type & ~FLOW_RSS) {
+-		case UDP_V4_FLOW:
+-		case UDP_V6_FLOW:
+-			if (ctx->rx_hash_udp_4tuple)
+-				data = (RXH_L4_B_0_1 | RXH_L4_B_2_3 |
+-					RXH_IP_SRC | RXH_IP_DST);
+-			else
+-				data = RXH_IP_SRC | RXH_IP_DST;
+-			break;
+-		case TCP_V4_FLOW:
+-		case TCP_V6_FLOW:
+-			data = (RXH_L4_B_0_1 | RXH_L4_B_2_3 |
+-				RXH_IP_SRC | RXH_IP_DST);
+-			break;
+-		case SCTP_V4_FLOW:
+-		case SCTP_V6_FLOW:
+-		case AH_ESP_V4_FLOW:
+-		case AH_ESP_V6_FLOW:
+-		case IPV4_FLOW:
+-		case IPV6_FLOW:
+-			data = RXH_IP_SRC | RXH_IP_DST;
+-			break;
+-		default:
+-			break;
+-		}
+-out_setdata_unlock:
+-		info->data = data;
+-out_unlock:
+-		mutex_unlock(&efx->rss_lock);
+-		return rc;
+-	}
+-
+-	case ETHTOOL_GRXCLSRLCNT:
+-		info->data = efx_filter_get_rx_id_limit(efx);
+-		if (info->data == 0)
+-			return -EOPNOTSUPP;
+-		info->data |= RX_CLS_LOC_SPECIAL;
+-		info->rule_cnt =
+-			efx_filter_count_rx_used(efx, EFX_FILTER_PRI_MANUAL);
+-		return 0;
+-
+-	case ETHTOOL_GRXCLSRULE:
+-		if (efx_filter_get_rx_id_limit(efx) == 0)
+-			return -EOPNOTSUPP;
+-		rc = efx_ethtool_get_class_rule(efx, &info->fs, &rss_context);
+-		if (rc < 0)
+-			return rc;
+-		if (info->fs.flow_type & FLOW_RSS)
+-			info->rss_context = rss_context;
+-		return 0;
+-
+-	case ETHTOOL_GRXCLSRLALL:
+-		info->data = efx_filter_get_rx_id_limit(efx);
+-		if (info->data == 0)
+-			return -EOPNOTSUPP;
+-		rc = efx_filter_get_rx_ids(efx, EFX_FILTER_PRI_MANUAL,
+-					   rule_locs, info->rule_cnt);
+-		if (rc < 0)
+-			return rc;
+-		info->rule_cnt = rc;
+-		return 0;
+-
+-	default:
+-		return -EOPNOTSUPP;
+-	}
+-}
+-
+-static inline bool ip6_mask_is_full(__be32 mask[4])
+-{
+-	return !~(mask[0] & mask[1] & mask[2] & mask[3]);
+-}
+-
+-static inline bool ip6_mask_is_empty(__be32 mask[4])
+-{
+-	return !(mask[0] | mask[1] | mask[2] | mask[3]);
+-}
+-
+-static int efx_ethtool_set_class_rule(struct efx_nic *efx,
+-				      struct ethtool_rx_flow_spec *rule,
+-				      u32 rss_context)
+-{
+-	struct ethtool_tcpip4_spec *ip_entry = &rule->h_u.tcp_ip4_spec;
+-	struct ethtool_tcpip4_spec *ip_mask = &rule->m_u.tcp_ip4_spec;
+-	struct ethtool_usrip4_spec *uip_entry = &rule->h_u.usr_ip4_spec;
+-	struct ethtool_usrip4_spec *uip_mask = &rule->m_u.usr_ip4_spec;
+-	struct ethtool_tcpip6_spec *ip6_entry = &rule->h_u.tcp_ip6_spec;
+-	struct ethtool_tcpip6_spec *ip6_mask = &rule->m_u.tcp_ip6_spec;
+-	struct ethtool_usrip6_spec *uip6_entry = &rule->h_u.usr_ip6_spec;
+-	struct ethtool_usrip6_spec *uip6_mask = &rule->m_u.usr_ip6_spec;
+-	u32 flow_type = rule->flow_type & ~(FLOW_EXT | FLOW_RSS);
+-	struct ethhdr *mac_entry = &rule->h_u.ether_spec;
+-	struct ethhdr *mac_mask = &rule->m_u.ether_spec;
+-	enum efx_filter_flags flags = 0;
+-	struct efx_filter_spec spec;
+-	int rc;
+-
+-	/* Check that user wants us to choose the location */
+-	if (rule->location != RX_CLS_LOC_ANY)
+-		return -EINVAL;
+-
+-	/* Range-check ring_cookie */
+-	if (rule->ring_cookie >= efx->n_rx_channels &&
+-	    rule->ring_cookie != RX_CLS_FLOW_DISC)
+-		return -EINVAL;
+-
+-	/* Check for unsupported extensions */
+-	if ((rule->flow_type & FLOW_EXT) &&
+-	    (rule->m_ext.vlan_etype || rule->m_ext.data[0] ||
+-	     rule->m_ext.data[1]))
+-		return -EINVAL;
+-
+-	if (efx->rx_scatter)
+-		flags |= EFX_FILTER_FLAG_RX_SCATTER;
+-	if (rule->flow_type & FLOW_RSS)
+-		flags |= EFX_FILTER_FLAG_RX_RSS;
+-
+-	efx_filter_init_rx(&spec, EFX_FILTER_PRI_MANUAL, flags,
+-			   (rule->ring_cookie == RX_CLS_FLOW_DISC) ?
+-			   EFX_FILTER_RX_DMAQ_ID_DROP : rule->ring_cookie);
+-
+-	if (rule->flow_type & FLOW_RSS)
+-		spec.rss_context = rss_context;
+-
+-	switch (flow_type) {
+-	case TCP_V4_FLOW:
+-	case UDP_V4_FLOW:
+-		spec.match_flags = (EFX_FILTER_MATCH_ETHER_TYPE |
+-				    EFX_FILTER_MATCH_IP_PROTO);
+-		spec.ether_type = htons(ETH_P_IP);
+-		spec.ip_proto = flow_type == TCP_V4_FLOW ? IPPROTO_TCP
+-							 : IPPROTO_UDP;
+-		if (ip_mask->ip4dst) {
+-			if (ip_mask->ip4dst != IP4_ADDR_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_LOC_HOST;
+-			spec.loc_host[0] = ip_entry->ip4dst;
+-		}
+-		if (ip_mask->ip4src) {
+-			if (ip_mask->ip4src != IP4_ADDR_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_REM_HOST;
+-			spec.rem_host[0] = ip_entry->ip4src;
+-		}
+-		if (ip_mask->pdst) {
+-			if (ip_mask->pdst != PORT_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_LOC_PORT;
+-			spec.loc_port = ip_entry->pdst;
+-		}
+-		if (ip_mask->psrc) {
+-			if (ip_mask->psrc != PORT_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_REM_PORT;
+-			spec.rem_port = ip_entry->psrc;
+-		}
+-		if (ip_mask->tos)
+-			return -EINVAL;
+-		break;
+-
+-	case TCP_V6_FLOW:
+-	case UDP_V6_FLOW:
+-		spec.match_flags = (EFX_FILTER_MATCH_ETHER_TYPE |
+-				    EFX_FILTER_MATCH_IP_PROTO);
+-		spec.ether_type = htons(ETH_P_IPV6);
+-		spec.ip_proto = flow_type == TCP_V6_FLOW ? IPPROTO_TCP
+-							 : IPPROTO_UDP;
+-		if (!ip6_mask_is_empty(ip6_mask->ip6dst)) {
+-			if (!ip6_mask_is_full(ip6_mask->ip6dst))
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_LOC_HOST;
+-			memcpy(spec.loc_host, ip6_entry->ip6dst, sizeof(spec.loc_host));
+-		}
+-		if (!ip6_mask_is_empty(ip6_mask->ip6src)) {
+-			if (!ip6_mask_is_full(ip6_mask->ip6src))
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_REM_HOST;
+-			memcpy(spec.rem_host, ip6_entry->ip6src, sizeof(spec.rem_host));
+-		}
+-		if (ip6_mask->pdst) {
+-			if (ip6_mask->pdst != PORT_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_LOC_PORT;
+-			spec.loc_port = ip6_entry->pdst;
+-		}
+-		if (ip6_mask->psrc) {
+-			if (ip6_mask->psrc != PORT_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_REM_PORT;
+-			spec.rem_port = ip6_entry->psrc;
+-		}
+-		if (ip6_mask->tclass)
+-			return -EINVAL;
+-		break;
+-
+-	case IPV4_USER_FLOW:
+-		if (uip_mask->l4_4_bytes || uip_mask->tos || uip_mask->ip_ver ||
+-		    uip_entry->ip_ver != ETH_RX_NFC_IP4)
+-			return -EINVAL;
+-		spec.match_flags = EFX_FILTER_MATCH_ETHER_TYPE;
+-		spec.ether_type = htons(ETH_P_IP);
+-		if (uip_mask->ip4dst) {
+-			if (uip_mask->ip4dst != IP4_ADDR_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_LOC_HOST;
+-			spec.loc_host[0] = uip_entry->ip4dst;
+-		}
+-		if (uip_mask->ip4src) {
+-			if (uip_mask->ip4src != IP4_ADDR_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_REM_HOST;
+-			spec.rem_host[0] = uip_entry->ip4src;
+-		}
+-		if (uip_mask->proto) {
+-			if (uip_mask->proto != IP_PROTO_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_IP_PROTO;
+-			spec.ip_proto = uip_entry->proto;
+-		}
+-		break;
+-
+-	case IPV6_USER_FLOW:
+-		if (uip6_mask->l4_4_bytes || uip6_mask->tclass)
+-			return -EINVAL;
+-		spec.match_flags = EFX_FILTER_MATCH_ETHER_TYPE;
+-		spec.ether_type = htons(ETH_P_IPV6);
+-		if (!ip6_mask_is_empty(uip6_mask->ip6dst)) {
+-			if (!ip6_mask_is_full(uip6_mask->ip6dst))
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_LOC_HOST;
+-			memcpy(spec.loc_host, uip6_entry->ip6dst, sizeof(spec.loc_host));
+-		}
+-		if (!ip6_mask_is_empty(uip6_mask->ip6src)) {
+-			if (!ip6_mask_is_full(uip6_mask->ip6src))
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_REM_HOST;
+-			memcpy(spec.rem_host, uip6_entry->ip6src, sizeof(spec.rem_host));
+-		}
+-		if (uip6_mask->l4_proto) {
+-			if (uip6_mask->l4_proto != IP_PROTO_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_IP_PROTO;
+-			spec.ip_proto = uip6_entry->l4_proto;
+-		}
+-		break;
+-
+-	case ETHER_FLOW:
+-		if (!is_zero_ether_addr(mac_mask->h_dest)) {
+-			if (ether_addr_equal(mac_mask->h_dest,
+-					     mac_addr_ig_mask))
+-				spec.match_flags |= EFX_FILTER_MATCH_LOC_MAC_IG;
+-			else if (is_broadcast_ether_addr(mac_mask->h_dest))
+-				spec.match_flags |= EFX_FILTER_MATCH_LOC_MAC;
+-			else
+-				return -EINVAL;
+-			ether_addr_copy(spec.loc_mac, mac_entry->h_dest);
+-		}
+-		if (!is_zero_ether_addr(mac_mask->h_source)) {
+-			if (!is_broadcast_ether_addr(mac_mask->h_source))
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_REM_MAC;
+-			ether_addr_copy(spec.rem_mac, mac_entry->h_source);
+-		}
+-		if (mac_mask->h_proto) {
+-			if (mac_mask->h_proto != ETHER_TYPE_FULL_MASK)
+-				return -EINVAL;
+-			spec.match_flags |= EFX_FILTER_MATCH_ETHER_TYPE;
+-			spec.ether_type = mac_entry->h_proto;
+-		}
+-		break;
+-
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	if ((rule->flow_type & FLOW_EXT) && rule->m_ext.vlan_tci) {
+-		if (rule->m_ext.vlan_tci != htons(0xfff))
+-			return -EINVAL;
+-		spec.match_flags |= EFX_FILTER_MATCH_OUTER_VID;
+-		spec.outer_vid = rule->h_ext.vlan_tci;
+-	}
+-
+-	rc = efx_filter_insert_filter(efx, &spec, true);
+-	if (rc < 0)
+-		return rc;
+-
+-	rule->location = rc;
+-	return 0;
+-}
+-
+-static int efx_ethtool_set_rxnfc(struct net_device *net_dev,
+-				 struct ethtool_rxnfc *info)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-
+-	if (efx_filter_get_rx_id_limit(efx) == 0)
+-		return -EOPNOTSUPP;
+-
+-	switch (info->cmd) {
+-	case ETHTOOL_SRXCLSRLINS:
+-		return efx_ethtool_set_class_rule(efx, &info->fs,
+-						  info->rss_context);
+-
+-	case ETHTOOL_SRXCLSRLDEL:
+-		return efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_MANUAL,
+-						 info->fs.location);
+-
+-	default:
+-		return -EOPNOTSUPP;
+-	}
+-}
+-
+-static u32 efx_ethtool_get_rxfh_indir_size(struct net_device *net_dev)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-
+-	if (efx->n_rx_channels == 1)
+-		return 0;
+-	return ARRAY_SIZE(efx->rss_context.rx_indir_table);
+-}
+-
+-static u32 efx_ethtool_get_rxfh_key_size(struct net_device *net_dev)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-
+-	return efx->type->rx_hash_key_size;
+-}
+-
+-static int efx_ethtool_get_rxfh(struct net_device *net_dev, u32 *indir, u8 *key,
+-				u8 *hfunc)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-	int rc;
+-
+-	rc = efx->type->rx_pull_rss_config(efx);
+-	if (rc)
+-		return rc;
+-
+-	if (hfunc)
+-		*hfunc = ETH_RSS_HASH_TOP;
+-	if (indir)
+-		memcpy(indir, efx->rss_context.rx_indir_table,
+-		       sizeof(efx->rss_context.rx_indir_table));
+-	if (key)
+-		memcpy(key, efx->rss_context.rx_hash_key,
+-		       efx->type->rx_hash_key_size);
+-	return 0;
+-}
+-
+-static int efx_ethtool_set_rxfh(struct net_device *net_dev, const u32 *indir,
+-				const u8 *key, const u8 hfunc)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-
+-	/* Hash function is Toeplitz, cannot be changed */
+-	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
+-		return -EOPNOTSUPP;
+-	if (!indir && !key)
+-		return 0;
+-
+-	if (!key)
+-		key = efx->rss_context.rx_hash_key;
+-	if (!indir)
+-		indir = efx->rss_context.rx_indir_table;
+-
+-	return efx->type->rx_push_rss_config(efx, true, indir, key);
+-}
+-
+-static int efx_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
+-					u8 *key, u8 *hfunc, u32 rss_context)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-	struct efx_rss_context *ctx;
+-	int rc = 0;
+-
+-	if (!efx->type->rx_pull_rss_context_config)
+-		return -EOPNOTSUPP;
+-
+-	mutex_lock(&efx->rss_lock);
+-	ctx = efx_find_rss_context_entry(efx, rss_context);
+-	if (!ctx) {
+-		rc = -ENOENT;
+-		goto out_unlock;
+-	}
+-	rc = efx->type->rx_pull_rss_context_config(efx, ctx);
+-	if (rc)
+-		goto out_unlock;
+-
+-	if (hfunc)
+-		*hfunc = ETH_RSS_HASH_TOP;
+-	if (indir)
+-		memcpy(indir, ctx->rx_indir_table, sizeof(ctx->rx_indir_table));
+-	if (key)
+-		memcpy(key, ctx->rx_hash_key, efx->type->rx_hash_key_size);
+-out_unlock:
+-	mutex_unlock(&efx->rss_lock);
+-	return rc;
+-}
+-
+-static int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+-					const u32 *indir, const u8 *key,
+-					const u8 hfunc, u32 *rss_context,
+-					bool delete)
+-{
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-	struct efx_rss_context *ctx;
+-	bool allocated = false;
+-	int rc;
+-
+-	if (!efx->type->rx_push_rss_context_config)
+-		return -EOPNOTSUPP;
+-	/* Hash function is Toeplitz, cannot be changed */
+-	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
+-		return -EOPNOTSUPP;
+-
+-	mutex_lock(&efx->rss_lock);
+-
+-	if (*rss_context == ETH_RXFH_CONTEXT_ALLOC) {
+-		if (delete) {
+-			/* alloc + delete == Nothing to do */
+-			rc = -EINVAL;
+-			goto out_unlock;
+-		}
+-		ctx = efx_alloc_rss_context_entry(efx);
+-		if (!ctx) {
+-			rc = -ENOMEM;
+-			goto out_unlock;
+-		}
+-		ctx->context_id = EFX_MCDI_RSS_CONTEXT_INVALID;
+-		/* Initialise indir table and key to defaults */
+-		efx_set_default_rx_indir_table(efx, ctx);
+-		netdev_rss_key_fill(ctx->rx_hash_key, sizeof(ctx->rx_hash_key));
+-		allocated = true;
+-	} else {
+-		ctx = efx_find_rss_context_entry(efx, *rss_context);
+-		if (!ctx) {
+-			rc = -ENOENT;
+-			goto out_unlock;
+-		}
+-	}
+-
+-	if (delete) {
+-		/* delete this context */
+-		rc = efx->type->rx_push_rss_context_config(efx, ctx, NULL, NULL);
+-		if (!rc)
+-			efx_free_rss_context_entry(ctx);
+-		goto out_unlock;
+-	}
+-
+-	if (!key)
+-		key = ctx->rx_hash_key;
+-	if (!indir)
+-		indir = ctx->rx_indir_table;
+-
+-	rc = efx->type->rx_push_rss_context_config(efx, ctx, indir, key);
+-	if (rc && allocated)
+-		efx_free_rss_context_entry(ctx);
+-	else
+-		*rss_context = ctx->user_id;
+-out_unlock:
+-	mutex_unlock(&efx->rss_lock);
+-	return rc;
+-}
+-
+ static int efx_ethtool_get_ts_info(struct net_device *net_dev,
+ 				   struct ethtool_ts_info *ts_info)
+ {
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
+index b91961126eeb..d7d8795eb1d3 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.c
++++ b/drivers/net/ethernet/sfc/ethtool_common.c
+@@ -13,6 +13,7 @@
+ #include "mcdi.h"
+ #include "nic.h"
+ #include "selftest.h"
++#include "rx_common.h"
+ #include "ethtool_common.h"
  
-@@ -998,6 +1144,7 @@ static int xennet_poll(struct napi_struct *napi, int budget)
- 	struct sk_buff_head errq;
- 	struct sk_buff_head tmpq;
- 	int err;
-+	bool need_xdp_flush = false;
+ struct efx_sw_stat_desc {
+@@ -601,3 +602,674 @@ int efx_ethtool_set_fecparam(struct net_device *net_dev,
  
- 	spin_lock(&queue->rx_lock);
- 
-@@ -1014,7 +1161,8 @@ static int xennet_poll(struct napi_struct *napi, int budget)
- 		memcpy(rx, RING_GET_RESPONSE(&queue->rx, i), sizeof(*rx));
- 		memset(extras, 0, sizeof(rinfo.extras));
- 
--		err = xennet_get_responses(queue, &rinfo, rp, &tmpq);
-+		err = xennet_get_responses(queue, &rinfo, rp, &tmpq,
-+					   &need_xdp_flush);
- 
- 		if (unlikely(err)) {
- err:
-@@ -1060,6 +1208,8 @@ static int xennet_poll(struct napi_struct *napi, int budget)
- 		i = ++queue->rx.rsp_cons;
- 		work_done++;
- 	}
-+	if (need_xdp_flush)
-+		xdp_do_flush();
- 
- 	__skb_queue_purge(&errq);
- 
-@@ -1261,6 +1411,101 @@ static void xennet_poll_controller(struct net_device *dev)
+ 	return rc;
  }
- #endif
- 
-+#define NETBACK_XDP_HEADROOM_DISABLE	0
-+#define NETBACK_XDP_HEADROOM_ENABLE	1
 +
-+static int talk_to_netback_xdp(struct netfront_info *np, int xdp)
++/* MAC address mask including only I/G bit */
++static const u8 mac_addr_ig_mask[ETH_ALEN] __aligned(2) = {0x01, 0, 0, 0, 0, 0};
++
++#define IP4_ADDR_FULL_MASK	((__force __be32)~0)
++#define IP_PROTO_FULL_MASK	0xFF
++#define PORT_FULL_MASK		((__force __be16)~0)
++#define ETHER_TYPE_FULL_MASK	((__force __be16)~0)
++
++static inline void ip6_fill_mask(__be32 *mask)
 +{
-+	int err;
-+	unsigned short headroom;
-+
-+	headroom = xdp ? XDP_PACKET_HEADROOM : 0;
-+	err = xenbus_printf(XBT_NIL, np->xbdev->nodename,
-+			    "xdp-headroom", "%hu",
-+			    headroom);
-+	if (err)
-+		pr_warn("Error writing xdp-headroom\n");
-+
-+	return err;
++	mask[0] = mask[1] = mask[2] = mask[3] = ~(__be32)0;
 +}
 +
-+static int xennet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
-+			  struct netlink_ext_ack *extack)
++static int efx_ethtool_get_class_rule(struct efx_nic *efx,
++				      struct ethtool_rx_flow_spec *rule,
++				      u32 *rss_context)
 +{
-+	unsigned long max_mtu = XEN_PAGE_SIZE - XDP_PACKET_HEADROOM;
-+	struct netfront_info *np = netdev_priv(dev);
-+	struct bpf_prog *old_prog;
-+	unsigned int i, err;
++	struct ethtool_tcpip4_spec *ip_entry = &rule->h_u.tcp_ip4_spec;
++	struct ethtool_tcpip4_spec *ip_mask = &rule->m_u.tcp_ip4_spec;
++	struct ethtool_usrip4_spec *uip_entry = &rule->h_u.usr_ip4_spec;
++	struct ethtool_usrip4_spec *uip_mask = &rule->m_u.usr_ip4_spec;
++	struct ethtool_tcpip6_spec *ip6_entry = &rule->h_u.tcp_ip6_spec;
++	struct ethtool_tcpip6_spec *ip6_mask = &rule->m_u.tcp_ip6_spec;
++	struct ethtool_usrip6_spec *uip6_entry = &rule->h_u.usr_ip6_spec;
++	struct ethtool_usrip6_spec *uip6_mask = &rule->m_u.usr_ip6_spec;
++	struct ethhdr *mac_entry = &rule->h_u.ether_spec;
++	struct ethhdr *mac_mask = &rule->m_u.ether_spec;
++	struct efx_filter_spec spec;
++	int rc;
 +
-+	if (dev->mtu > max_mtu) {
-+		netdev_warn(dev, "XDP requires MTU less than %lu\n", max_mtu);
++	rc = efx_filter_get_filter_safe(efx, EFX_FILTER_PRI_MANUAL,
++					rule->location, &spec);
++	if (rc)
++		return rc;
++
++	if (spec.dmaq_id == EFX_FILTER_RX_DMAQ_ID_DROP)
++		rule->ring_cookie = RX_CLS_FLOW_DISC;
++	else
++		rule->ring_cookie = spec.dmaq_id;
++
++	if ((spec.match_flags & EFX_FILTER_MATCH_ETHER_TYPE) &&
++	    spec.ether_type == htons(ETH_P_IP) &&
++	    (spec.match_flags & EFX_FILTER_MATCH_IP_PROTO) &&
++	    (spec.ip_proto == IPPROTO_TCP || spec.ip_proto == IPPROTO_UDP) &&
++	    !(spec.match_flags &
++	      ~(EFX_FILTER_MATCH_ETHER_TYPE | EFX_FILTER_MATCH_OUTER_VID |
++		EFX_FILTER_MATCH_LOC_HOST | EFX_FILTER_MATCH_REM_HOST |
++		EFX_FILTER_MATCH_IP_PROTO |
++		EFX_FILTER_MATCH_LOC_PORT | EFX_FILTER_MATCH_REM_PORT))) {
++		rule->flow_type = ((spec.ip_proto == IPPROTO_TCP) ?
++				   TCP_V4_FLOW : UDP_V4_FLOW);
++		if (spec.match_flags & EFX_FILTER_MATCH_LOC_HOST) {
++			ip_entry->ip4dst = spec.loc_host[0];
++			ip_mask->ip4dst = IP4_ADDR_FULL_MASK;
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_REM_HOST) {
++			ip_entry->ip4src = spec.rem_host[0];
++			ip_mask->ip4src = IP4_ADDR_FULL_MASK;
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_LOC_PORT) {
++			ip_entry->pdst = spec.loc_port;
++			ip_mask->pdst = PORT_FULL_MASK;
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_REM_PORT) {
++			ip_entry->psrc = spec.rem_port;
++			ip_mask->psrc = PORT_FULL_MASK;
++		}
++	} else if ((spec.match_flags & EFX_FILTER_MATCH_ETHER_TYPE) &&
++	    spec.ether_type == htons(ETH_P_IPV6) &&
++	    (spec.match_flags & EFX_FILTER_MATCH_IP_PROTO) &&
++	    (spec.ip_proto == IPPROTO_TCP || spec.ip_proto == IPPROTO_UDP) &&
++	    !(spec.match_flags &
++	      ~(EFX_FILTER_MATCH_ETHER_TYPE | EFX_FILTER_MATCH_OUTER_VID |
++		EFX_FILTER_MATCH_LOC_HOST | EFX_FILTER_MATCH_REM_HOST |
++		EFX_FILTER_MATCH_IP_PROTO |
++		EFX_FILTER_MATCH_LOC_PORT | EFX_FILTER_MATCH_REM_PORT))) {
++		rule->flow_type = ((spec.ip_proto == IPPROTO_TCP) ?
++				   TCP_V6_FLOW : UDP_V6_FLOW);
++		if (spec.match_flags & EFX_FILTER_MATCH_LOC_HOST) {
++			memcpy(ip6_entry->ip6dst, spec.loc_host,
++			       sizeof(ip6_entry->ip6dst));
++			ip6_fill_mask(ip6_mask->ip6dst);
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_REM_HOST) {
++			memcpy(ip6_entry->ip6src, spec.rem_host,
++			       sizeof(ip6_entry->ip6src));
++			ip6_fill_mask(ip6_mask->ip6src);
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_LOC_PORT) {
++			ip6_entry->pdst = spec.loc_port;
++			ip6_mask->pdst = PORT_FULL_MASK;
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_REM_PORT) {
++			ip6_entry->psrc = spec.rem_port;
++			ip6_mask->psrc = PORT_FULL_MASK;
++		}
++	} else if (!(spec.match_flags &
++		     ~(EFX_FILTER_MATCH_LOC_MAC | EFX_FILTER_MATCH_LOC_MAC_IG |
++		       EFX_FILTER_MATCH_REM_MAC | EFX_FILTER_MATCH_ETHER_TYPE |
++		       EFX_FILTER_MATCH_OUTER_VID))) {
++		rule->flow_type = ETHER_FLOW;
++		if (spec.match_flags &
++		    (EFX_FILTER_MATCH_LOC_MAC | EFX_FILTER_MATCH_LOC_MAC_IG)) {
++			ether_addr_copy(mac_entry->h_dest, spec.loc_mac);
++			if (spec.match_flags & EFX_FILTER_MATCH_LOC_MAC)
++				eth_broadcast_addr(mac_mask->h_dest);
++			else
++				ether_addr_copy(mac_mask->h_dest,
++						mac_addr_ig_mask);
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_REM_MAC) {
++			ether_addr_copy(mac_entry->h_source, spec.rem_mac);
++			eth_broadcast_addr(mac_mask->h_source);
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_ETHER_TYPE) {
++			mac_entry->h_proto = spec.ether_type;
++			mac_mask->h_proto = ETHER_TYPE_FULL_MASK;
++		}
++	} else if (spec.match_flags & EFX_FILTER_MATCH_ETHER_TYPE &&
++		   spec.ether_type == htons(ETH_P_IP) &&
++		   !(spec.match_flags &
++		     ~(EFX_FILTER_MATCH_ETHER_TYPE | EFX_FILTER_MATCH_OUTER_VID |
++		       EFX_FILTER_MATCH_LOC_HOST | EFX_FILTER_MATCH_REM_HOST |
++		       EFX_FILTER_MATCH_IP_PROTO))) {
++		rule->flow_type = IPV4_USER_FLOW;
++		uip_entry->ip_ver = ETH_RX_NFC_IP4;
++		if (spec.match_flags & EFX_FILTER_MATCH_IP_PROTO) {
++			uip_mask->proto = IP_PROTO_FULL_MASK;
++			uip_entry->proto = spec.ip_proto;
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_LOC_HOST) {
++			uip_entry->ip4dst = spec.loc_host[0];
++			uip_mask->ip4dst = IP4_ADDR_FULL_MASK;
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_REM_HOST) {
++			uip_entry->ip4src = spec.rem_host[0];
++			uip_mask->ip4src = IP4_ADDR_FULL_MASK;
++		}
++	} else if (spec.match_flags & EFX_FILTER_MATCH_ETHER_TYPE &&
++		   spec.ether_type == htons(ETH_P_IPV6) &&
++		   !(spec.match_flags &
++		     ~(EFX_FILTER_MATCH_ETHER_TYPE | EFX_FILTER_MATCH_OUTER_VID |
++		       EFX_FILTER_MATCH_LOC_HOST | EFX_FILTER_MATCH_REM_HOST |
++		       EFX_FILTER_MATCH_IP_PROTO))) {
++		rule->flow_type = IPV6_USER_FLOW;
++		if (spec.match_flags & EFX_FILTER_MATCH_IP_PROTO) {
++			uip6_mask->l4_proto = IP_PROTO_FULL_MASK;
++			uip6_entry->l4_proto = spec.ip_proto;
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_LOC_HOST) {
++			memcpy(uip6_entry->ip6dst, spec.loc_host,
++			       sizeof(uip6_entry->ip6dst));
++			ip6_fill_mask(uip6_mask->ip6dst);
++		}
++		if (spec.match_flags & EFX_FILTER_MATCH_REM_HOST) {
++			memcpy(uip6_entry->ip6src, spec.rem_host,
++			       sizeof(uip6_entry->ip6src));
++			ip6_fill_mask(uip6_mask->ip6src);
++		}
++	} else {
++		/* The above should handle all filters that we insert */
++		WARN_ON(1);
 +		return -EINVAL;
 +	}
 +
-+	if (!np->netback_has_xdp_headroom)
-+		return 0;
-+
-+	xenbus_switch_state(np->xbdev, XenbusStateReconfiguring);
-+
-+	err = talk_to_netback_xdp(np, prog ? NETBACK_XDP_HEADROOM_ENABLE :
-+				  NETBACK_XDP_HEADROOM_DISABLE);
-+	if (err)
-+		return err;
-+
-+	/* avoid the race with XDP headroom adjustment */
-+	wait_event(module_wq,
-+		   xenbus_read_driver_state(np->xbdev->otherend) ==
-+		   XenbusStateReconfigured);
-+	np->netfront_xdp_enabled = true;
-+
-+	old_prog = rtnl_dereference(np->queues[0].xdp_prog);
-+
-+	if (prog)
-+		bpf_prog_add(prog, dev->real_num_tx_queues);
-+
-+	for (i = 0; i < dev->real_num_tx_queues; ++i)
-+		rcu_assign_pointer(np->queues[i].xdp_prog, prog);
-+
-+	if (old_prog)
-+		for (i = 0; i < dev->real_num_tx_queues; ++i)
-+			bpf_prog_put(old_prog);
-+
-+	xenbus_switch_state(np->xbdev, XenbusStateConnected);
-+
-+	return 0;
-+}
-+
-+static u32 xennet_xdp_query(struct net_device *dev)
-+{
-+	unsigned int num_queues = dev->real_num_tx_queues;
-+	struct netfront_info *np = netdev_priv(dev);
-+	const struct bpf_prog *xdp_prog;
-+	struct netfront_queue *queue;
-+	unsigned int i;
-+
-+	for (i = 0; i < num_queues; ++i) {
-+		queue = &np->queues[i];
-+		xdp_prog = rtnl_dereference(queue->xdp_prog);
-+		if (xdp_prog)
-+			return xdp_prog->aux->id;
++	if (spec.match_flags & EFX_FILTER_MATCH_OUTER_VID) {
++		rule->flow_type |= FLOW_EXT;
++		rule->h_ext.vlan_tci = spec.outer_vid;
++		rule->m_ext.vlan_tci = htons(0xfff);
 +	}
 +
-+	return 0;
++	if (spec.flags & EFX_FILTER_FLAG_RX_RSS) {
++		rule->flow_type |= FLOW_RSS;
++		*rss_context = spec.rss_context;
++	}
++
++	return rc;
 +}
 +
-+static int xennet_xdp(struct net_device *dev, struct netdev_bpf *xdp)
++int efx_ethtool_get_rxnfc(struct net_device *net_dev,
++			  struct ethtool_rxnfc *info, u32 *rule_locs)
 +{
-+	switch (xdp->command) {
-+	case XDP_SETUP_PROG:
-+		return xennet_xdp_set(dev, xdp->prog, xdp->extack);
-+	case XDP_QUERY_PROG:
-+		xdp->prog_id = xennet_xdp_query(dev);
++	struct efx_nic *efx = netdev_priv(net_dev);
++	u32 rss_context = 0;
++	s32 rc = 0;
++
++	switch (info->cmd) {
++	case ETHTOOL_GRXRINGS:
++		info->data = efx->n_rx_channels;
 +		return 0;
++
++	case ETHTOOL_GRXFH: {
++		struct efx_rss_context *ctx = &efx->rss_context;
++		__u64 data;
++
++		mutex_lock(&efx->rss_lock);
++		if (info->flow_type & FLOW_RSS && info->rss_context) {
++			ctx = efx_find_rss_context_entry(efx, info->rss_context);
++			if (!ctx) {
++				rc = -ENOENT;
++				goto out_unlock;
++			}
++		}
++
++		data = 0;
++		if (!efx_rss_active(ctx)) /* No RSS */
++			goto out_setdata_unlock;
++
++		switch (info->flow_type & ~FLOW_RSS) {
++		case UDP_V4_FLOW:
++		case UDP_V6_FLOW:
++			if (ctx->rx_hash_udp_4tuple)
++				data = (RXH_L4_B_0_1 | RXH_L4_B_2_3 |
++					RXH_IP_SRC | RXH_IP_DST);
++			else
++				data = RXH_IP_SRC | RXH_IP_DST;
++			break;
++		case TCP_V4_FLOW:
++		case TCP_V6_FLOW:
++			data = (RXH_L4_B_0_1 | RXH_L4_B_2_3 |
++				RXH_IP_SRC | RXH_IP_DST);
++			break;
++		case SCTP_V4_FLOW:
++		case SCTP_V6_FLOW:
++		case AH_ESP_V4_FLOW:
++		case AH_ESP_V6_FLOW:
++		case IPV4_FLOW:
++		case IPV6_FLOW:
++			data = RXH_IP_SRC | RXH_IP_DST;
++			break;
++		default:
++			break;
++		}
++out_setdata_unlock:
++		info->data = data;
++out_unlock:
++		mutex_unlock(&efx->rss_lock);
++		return rc;
++	}
++
++	case ETHTOOL_GRXCLSRLCNT:
++		info->data = efx_filter_get_rx_id_limit(efx);
++		if (info->data == 0)
++			return -EOPNOTSUPP;
++		info->data |= RX_CLS_LOC_SPECIAL;
++		info->rule_cnt =
++			efx_filter_count_rx_used(efx, EFX_FILTER_PRI_MANUAL);
++		return 0;
++
++	case ETHTOOL_GRXCLSRULE:
++		if (efx_filter_get_rx_id_limit(efx) == 0)
++			return -EOPNOTSUPP;
++		rc = efx_ethtool_get_class_rule(efx, &info->fs, &rss_context);
++		if (rc < 0)
++			return rc;
++		if (info->fs.flow_type & FLOW_RSS)
++			info->rss_context = rss_context;
++		return 0;
++
++	case ETHTOOL_GRXCLSRLALL:
++		info->data = efx_filter_get_rx_id_limit(efx);
++		if (info->data == 0)
++			return -EOPNOTSUPP;
++		rc = efx_filter_get_rx_ids(efx, EFX_FILTER_PRI_MANUAL,
++					   rule_locs, info->rule_cnt);
++		if (rc < 0)
++			return rc;
++		info->rule_cnt = rc;
++		return 0;
++
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static inline bool ip6_mask_is_full(__be32 mask[4])
++{
++	return !~(mask[0] & mask[1] & mask[2] & mask[3]);
++}
++
++static inline bool ip6_mask_is_empty(__be32 mask[4])
++{
++	return !(mask[0] | mask[1] | mask[2] | mask[3]);
++}
++
++static int efx_ethtool_set_class_rule(struct efx_nic *efx,
++				      struct ethtool_rx_flow_spec *rule,
++				      u32 rss_context)
++{
++	struct ethtool_tcpip4_spec *ip_entry = &rule->h_u.tcp_ip4_spec;
++	struct ethtool_tcpip4_spec *ip_mask = &rule->m_u.tcp_ip4_spec;
++	struct ethtool_usrip4_spec *uip_entry = &rule->h_u.usr_ip4_spec;
++	struct ethtool_usrip4_spec *uip_mask = &rule->m_u.usr_ip4_spec;
++	struct ethtool_tcpip6_spec *ip6_entry = &rule->h_u.tcp_ip6_spec;
++	struct ethtool_tcpip6_spec *ip6_mask = &rule->m_u.tcp_ip6_spec;
++	struct ethtool_usrip6_spec *uip6_entry = &rule->h_u.usr_ip6_spec;
++	struct ethtool_usrip6_spec *uip6_mask = &rule->m_u.usr_ip6_spec;
++	u32 flow_type = rule->flow_type & ~(FLOW_EXT | FLOW_RSS);
++	struct ethhdr *mac_entry = &rule->h_u.ether_spec;
++	struct ethhdr *mac_mask = &rule->m_u.ether_spec;
++	enum efx_filter_flags flags = 0;
++	struct efx_filter_spec spec;
++	int rc;
++
++	/* Check that user wants us to choose the location */
++	if (rule->location != RX_CLS_LOC_ANY)
++		return -EINVAL;
++
++	/* Range-check ring_cookie */
++	if (rule->ring_cookie >= efx->n_rx_channels &&
++	    rule->ring_cookie != RX_CLS_FLOW_DISC)
++		return -EINVAL;
++
++	/* Check for unsupported extensions */
++	if ((rule->flow_type & FLOW_EXT) &&
++	    (rule->m_ext.vlan_etype || rule->m_ext.data[0] ||
++	     rule->m_ext.data[1]))
++		return -EINVAL;
++
++	if (efx->rx_scatter)
++		flags |= EFX_FILTER_FLAG_RX_SCATTER;
++	if (rule->flow_type & FLOW_RSS)
++		flags |= EFX_FILTER_FLAG_RX_RSS;
++
++	efx_filter_init_rx(&spec, EFX_FILTER_PRI_MANUAL, flags,
++			   (rule->ring_cookie == RX_CLS_FLOW_DISC) ?
++			   EFX_FILTER_RX_DMAQ_ID_DROP : rule->ring_cookie);
++
++	if (rule->flow_type & FLOW_RSS)
++		spec.rss_context = rss_context;
++
++	switch (flow_type) {
++	case TCP_V4_FLOW:
++	case UDP_V4_FLOW:
++		spec.match_flags = (EFX_FILTER_MATCH_ETHER_TYPE |
++				    EFX_FILTER_MATCH_IP_PROTO);
++		spec.ether_type = htons(ETH_P_IP);
++		spec.ip_proto = flow_type == TCP_V4_FLOW ? IPPROTO_TCP
++							 : IPPROTO_UDP;
++		if (ip_mask->ip4dst) {
++			if (ip_mask->ip4dst != IP4_ADDR_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_LOC_HOST;
++			spec.loc_host[0] = ip_entry->ip4dst;
++		}
++		if (ip_mask->ip4src) {
++			if (ip_mask->ip4src != IP4_ADDR_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_REM_HOST;
++			spec.rem_host[0] = ip_entry->ip4src;
++		}
++		if (ip_mask->pdst) {
++			if (ip_mask->pdst != PORT_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_LOC_PORT;
++			spec.loc_port = ip_entry->pdst;
++		}
++		if (ip_mask->psrc) {
++			if (ip_mask->psrc != PORT_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_REM_PORT;
++			spec.rem_port = ip_entry->psrc;
++		}
++		if (ip_mask->tos)
++			return -EINVAL;
++		break;
++
++	case TCP_V6_FLOW:
++	case UDP_V6_FLOW:
++		spec.match_flags = (EFX_FILTER_MATCH_ETHER_TYPE |
++				    EFX_FILTER_MATCH_IP_PROTO);
++		spec.ether_type = htons(ETH_P_IPV6);
++		spec.ip_proto = flow_type == TCP_V6_FLOW ? IPPROTO_TCP
++							 : IPPROTO_UDP;
++		if (!ip6_mask_is_empty(ip6_mask->ip6dst)) {
++			if (!ip6_mask_is_full(ip6_mask->ip6dst))
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_LOC_HOST;
++			memcpy(spec.loc_host, ip6_entry->ip6dst, sizeof(spec.loc_host));
++		}
++		if (!ip6_mask_is_empty(ip6_mask->ip6src)) {
++			if (!ip6_mask_is_full(ip6_mask->ip6src))
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_REM_HOST;
++			memcpy(spec.rem_host, ip6_entry->ip6src, sizeof(spec.rem_host));
++		}
++		if (ip6_mask->pdst) {
++			if (ip6_mask->pdst != PORT_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_LOC_PORT;
++			spec.loc_port = ip6_entry->pdst;
++		}
++		if (ip6_mask->psrc) {
++			if (ip6_mask->psrc != PORT_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_REM_PORT;
++			spec.rem_port = ip6_entry->psrc;
++		}
++		if (ip6_mask->tclass)
++			return -EINVAL;
++		break;
++
++	case IPV4_USER_FLOW:
++		if (uip_mask->l4_4_bytes || uip_mask->tos || uip_mask->ip_ver ||
++		    uip_entry->ip_ver != ETH_RX_NFC_IP4)
++			return -EINVAL;
++		spec.match_flags = EFX_FILTER_MATCH_ETHER_TYPE;
++		spec.ether_type = htons(ETH_P_IP);
++		if (uip_mask->ip4dst) {
++			if (uip_mask->ip4dst != IP4_ADDR_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_LOC_HOST;
++			spec.loc_host[0] = uip_entry->ip4dst;
++		}
++		if (uip_mask->ip4src) {
++			if (uip_mask->ip4src != IP4_ADDR_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_REM_HOST;
++			spec.rem_host[0] = uip_entry->ip4src;
++		}
++		if (uip_mask->proto) {
++			if (uip_mask->proto != IP_PROTO_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_IP_PROTO;
++			spec.ip_proto = uip_entry->proto;
++		}
++		break;
++
++	case IPV6_USER_FLOW:
++		if (uip6_mask->l4_4_bytes || uip6_mask->tclass)
++			return -EINVAL;
++		spec.match_flags = EFX_FILTER_MATCH_ETHER_TYPE;
++		spec.ether_type = htons(ETH_P_IPV6);
++		if (!ip6_mask_is_empty(uip6_mask->ip6dst)) {
++			if (!ip6_mask_is_full(uip6_mask->ip6dst))
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_LOC_HOST;
++			memcpy(spec.loc_host, uip6_entry->ip6dst, sizeof(spec.loc_host));
++		}
++		if (!ip6_mask_is_empty(uip6_mask->ip6src)) {
++			if (!ip6_mask_is_full(uip6_mask->ip6src))
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_REM_HOST;
++			memcpy(spec.rem_host, uip6_entry->ip6src, sizeof(spec.rem_host));
++		}
++		if (uip6_mask->l4_proto) {
++			if (uip6_mask->l4_proto != IP_PROTO_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_IP_PROTO;
++			spec.ip_proto = uip6_entry->l4_proto;
++		}
++		break;
++
++	case ETHER_FLOW:
++		if (!is_zero_ether_addr(mac_mask->h_dest)) {
++			if (ether_addr_equal(mac_mask->h_dest,
++					     mac_addr_ig_mask))
++				spec.match_flags |= EFX_FILTER_MATCH_LOC_MAC_IG;
++			else if (is_broadcast_ether_addr(mac_mask->h_dest))
++				spec.match_flags |= EFX_FILTER_MATCH_LOC_MAC;
++			else
++				return -EINVAL;
++			ether_addr_copy(spec.loc_mac, mac_entry->h_dest);
++		}
++		if (!is_zero_ether_addr(mac_mask->h_source)) {
++			if (!is_broadcast_ether_addr(mac_mask->h_source))
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_REM_MAC;
++			ether_addr_copy(spec.rem_mac, mac_entry->h_source);
++		}
++		if (mac_mask->h_proto) {
++			if (mac_mask->h_proto != ETHER_TYPE_FULL_MASK)
++				return -EINVAL;
++			spec.match_flags |= EFX_FILTER_MATCH_ETHER_TYPE;
++			spec.ether_type = mac_entry->h_proto;
++		}
++		break;
++
 +	default:
 +		return -EINVAL;
 +	}
-+}
 +
- static const struct net_device_ops xennet_netdev_ops = {
- 	.ndo_open            = xennet_open,
- 	.ndo_stop            = xennet_close,
-@@ -1272,6 +1517,8 @@ static void xennet_poll_controller(struct net_device *dev)
- 	.ndo_fix_features    = xennet_fix_features,
- 	.ndo_set_features    = xennet_set_features,
- 	.ndo_select_queue    = xennet_select_queue,
-+	.ndo_bpf            = xennet_xdp,
-+	.ndo_xdp_xmit	    = xennet_xdp_xmit,
- #ifdef CONFIG_NET_POLL_CONTROLLER
- 	.ndo_poll_controller = xennet_poll_controller,
- #endif
-@@ -1331,6 +1578,7 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
- 	SET_NETDEV_DEV(netdev, &dev->dev);
- 
- 	np->netdev = netdev;
-+	np->netfront_xdp_enabled = false;
- 
- 	netif_carrier_off(netdev);
- 
-@@ -1419,6 +1667,8 @@ static void xennet_disconnect_backend(struct netfront_info *info)
- 		queue->rx_ring_ref = GRANT_INVALID_REF;
- 		queue->tx.sring = NULL;
- 		queue->rx.sring = NULL;
-+
-+		page_pool_destroy(queue->page_pool);
- 	}
- }
- 
-@@ -1754,6 +2004,51 @@ static void xennet_destroy_queues(struct netfront_info *info)
- 	info->queues = NULL;
- }
- 
-+
-+
-+static int xennet_create_page_pool(struct netfront_queue *queue)
-+{
-+	int err;
-+	struct page_pool_params pp_params = {
-+		.order = 0,
-+		.flags = 0,
-+		.pool_size = NET_RX_RING_SIZE,
-+		.nid = NUMA_NO_NODE,
-+		.dev = &queue->info->netdev->dev,
-+		.offset = XDP_PACKET_HEADROOM,
-+		.max_len = XEN_PAGE_SIZE - XDP_PACKET_HEADROOM,
-+	};
-+
-+	queue->page_pool = page_pool_create(&pp_params);
-+	if (IS_ERR(queue->page_pool)) {
-+		err = PTR_ERR(queue->page_pool);
-+		queue->page_pool = NULL;
-+		return err;
++	if ((rule->flow_type & FLOW_EXT) && rule->m_ext.vlan_tci) {
++		if (rule->m_ext.vlan_tci != htons(0xfff))
++			return -EINVAL;
++		spec.match_flags |= EFX_FILTER_MATCH_OUTER_VID;
++		spec.outer_vid = rule->h_ext.vlan_tci;
 +	}
 +
-+	err = xdp_rxq_info_reg(&queue->xdp_rxq, queue->info->netdev,
-+			       queue->id);
-+	if (err) {
-+		netdev_err(queue->info->netdev, "xdp_rxq_info_reg failed\n");
-+		goto err_free_pp;
-+	}
++	rc = efx_filter_insert_filter(efx, &spec, true);
++	if (rc < 0)
++		return rc;
 +
-+	err = xdp_rxq_info_reg_mem_model(&queue->xdp_rxq,
-+					 MEM_TYPE_PAGE_POOL, queue->page_pool);
-+	if (err) {
-+		netdev_err(queue->info->netdev, "xdp_rxq_info_reg_mem_model failed\n");
-+		goto err_unregister_rxq;
-+	}
++	rule->location = rc;
 +	return 0;
-+
-+err_unregister_rxq:
-+	xdp_rxq_info_unreg(&queue->xdp_rxq);
-+err_free_pp:
-+	page_pool_destroy(queue->page_pool);
-+	queue->page_pool = NULL;
-+	return err;
 +}
 +
- static int xennet_create_queues(struct netfront_info *info,
- 				unsigned int *num_queues)
- {
-@@ -1779,6 +2074,14 @@ static int xennet_create_queues(struct netfront_info *info,
- 			break;
- 		}
- 
-+		/* use page pool recycling instead of buddy allocator */
-+		ret = xennet_create_page_pool(queue);
-+		if (ret < 0) {
-+			dev_err(&info->xbdev->dev, "can't allocate page pool\n");
-+			*num_queues = i;
-+			return ret;
-+		}
++int efx_ethtool_set_rxnfc(struct net_device *net_dev,
++			  struct ethtool_rxnfc *info)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
 +
- 		netif_napi_add(queue->info->netdev, &queue->napi,
- 			       xennet_poll, 64);
- 		if (netif_running(info->netdev))
-@@ -1825,6 +2128,17 @@ static int talk_to_netback(struct xenbus_device *dev,
- 		goto out_unlocked;
- 	}
- 
-+	info->netback_has_xdp_headroom = xenbus_read_unsigned(info->xbdev->otherend,
-+							      "feature-xdp-headroom", 0);
-+	if (info->netback_has_xdp_headroom) {
-+		/* set the current xen-netfront xdp state */
-+		err = talk_to_netback_xdp(info, info->netfront_xdp_enabled ?
-+					  NETBACK_XDP_HEADROOM_ENABLE :
-+					  NETBACK_XDP_HEADROOM_DISABLE);
-+		if (err)
-+			goto out_unlocked;
++	if (efx_filter_get_rx_id_limit(efx) == 0)
++		return -EOPNOTSUPP;
++
++	switch (info->cmd) {
++	case ETHTOOL_SRXCLSRLINS:
++		return efx_ethtool_set_class_rule(efx, &info->fs,
++						  info->rss_context);
++
++	case ETHTOOL_SRXCLSRLDEL:
++		return efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_MANUAL,
++						 info->fs.location);
++
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++u32 efx_ethtool_get_rxfh_indir_size(struct net_device *net_dev)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++
++	if (efx->n_rx_channels == 1)
++		return 0;
++	return ARRAY_SIZE(efx->rss_context.rx_indir_table);
++}
++
++u32 efx_ethtool_get_rxfh_key_size(struct net_device *net_dev)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++
++	return efx->type->rx_hash_key_size;
++}
++
++int efx_ethtool_get_rxfh(struct net_device *net_dev, u32 *indir, u8 *key,
++			 u8 *hfunc)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++	int rc;
++
++	rc = efx->type->rx_pull_rss_config(efx);
++	if (rc)
++		return rc;
++
++	if (hfunc)
++		*hfunc = ETH_RSS_HASH_TOP;
++	if (indir)
++		memcpy(indir, efx->rss_context.rx_indir_table,
++		       sizeof(efx->rss_context.rx_indir_table));
++	if (key)
++		memcpy(key, efx->rss_context.rx_hash_key,
++		       efx->type->rx_hash_key_size);
++	return 0;
++}
++
++int efx_ethtool_set_rxfh(struct net_device *net_dev, const u32 *indir,
++			 const u8 *key, const u8 hfunc)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++
++	/* Hash function is Toeplitz, cannot be changed */
++	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
++		return -EOPNOTSUPP;
++	if (!indir && !key)
++		return 0;
++
++	if (!key)
++		key = efx->rss_context.rx_hash_key;
++	if (!indir)
++		indir = efx->rss_context.rx_indir_table;
++
++	return efx->type->rx_push_rss_config(efx, true, indir, key);
++}
++
++int efx_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
++				 u8 *key, u8 *hfunc, u32 rss_context)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++	struct efx_rss_context *ctx;
++	int rc = 0;
++
++	if (!efx->type->rx_pull_rss_context_config)
++		return -EOPNOTSUPP;
++
++	mutex_lock(&efx->rss_lock);
++	ctx = efx_find_rss_context_entry(efx, rss_context);
++	if (!ctx) {
++		rc = -ENOENT;
++		goto out_unlock;
++	}
++	rc = efx->type->rx_pull_rss_context_config(efx, ctx);
++	if (rc)
++		goto out_unlock;
++
++	if (hfunc)
++		*hfunc = ETH_RSS_HASH_TOP;
++	if (indir)
++		memcpy(indir, ctx->rx_indir_table, sizeof(ctx->rx_indir_table));
++	if (key)
++		memcpy(key, ctx->rx_hash_key, efx->type->rx_hash_key_size);
++out_unlock:
++	mutex_unlock(&efx->rss_lock);
++	return rc;
++}
++
++int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
++				 const u32 *indir, const u8 *key,
++				 const u8 hfunc, u32 *rss_context,
++				 bool delete)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++	struct efx_rss_context *ctx;
++	bool allocated = false;
++	int rc;
++
++	if (!efx->type->rx_push_rss_context_config)
++		return -EOPNOTSUPP;
++	/* Hash function is Toeplitz, cannot be changed */
++	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
++		return -EOPNOTSUPP;
++
++	mutex_lock(&efx->rss_lock);
++
++	if (*rss_context == ETH_RXFH_CONTEXT_ALLOC) {
++		if (delete) {
++			/* alloc + delete == Nothing to do */
++			rc = -EINVAL;
++			goto out_unlock;
++		}
++		ctx = efx_alloc_rss_context_entry(efx);
++		if (!ctx) {
++			rc = -ENOMEM;
++			goto out_unlock;
++		}
++		ctx->context_id = EFX_MCDI_RSS_CONTEXT_INVALID;
++		/* Initialise indir table and key to defaults */
++		efx_set_default_rx_indir_table(efx, ctx);
++		netdev_rss_key_fill(ctx->rx_hash_key, sizeof(ctx->rx_hash_key));
++		allocated = true;
++	} else {
++		ctx = efx_find_rss_context_entry(efx, *rss_context);
++		if (!ctx) {
++			rc = -ENOENT;
++			goto out_unlock;
++		}
 +	}
 +
- 	rtnl_lock();
- 	if (info->queues)
- 		xennet_destroy_queues(info);
-@@ -1959,6 +2273,8 @@ static int xennet_connect(struct net_device *dev)
- 	err = talk_to_netback(np->xbdev, np);
- 	if (err)
- 		return err;
-+	if (np->netback_has_xdp_headroom)
-+		pr_info("backend supports XDP headroom\n");
- 
- 	/* talk_to_netback() sets the correct number of queues */
- 	num_queues = dev->real_num_tx_queues;
--- 
-1.8.3.1
++	if (delete) {
++		/* delete this context */
++		rc = efx->type->rx_push_rss_context_config(efx, ctx, NULL, NULL);
++		if (!rc)
++			efx_free_rss_context_entry(ctx);
++		goto out_unlock;
++	}
++
++	if (!key)
++		key = ctx->rx_hash_key;
++	if (!indir)
++		indir = ctx->rx_indir_table;
++
++	rc = efx->type->rx_push_rss_context_config(efx, ctx, indir, key);
++	if (rc && allocated)
++		efx_free_rss_context_entry(ctx);
++	else
++		*rss_context = ctx->user_id;
++out_unlock:
++	mutex_unlock(&efx->rss_lock);
++	return rc;
++}
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.h b/drivers/net/ethernet/sfc/ethtool_common.h
+index eaa1fd9157f8..024a78ce0905 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.h
++++ b/drivers/net/ethernet/sfc/ethtool_common.h
+@@ -37,4 +37,20 @@ int efx_ethtool_get_fecparam(struct net_device *net_dev,
+ 			     struct ethtool_fecparam *fecparam);
+ int efx_ethtool_set_fecparam(struct net_device *net_dev,
+ 			     struct ethtool_fecparam *fecparam);
++int efx_ethtool_get_rxnfc(struct net_device *net_dev,
++			  struct ethtool_rxnfc *info, u32 *rule_locs);
++int efx_ethtool_set_rxnfc(struct net_device *net_dev,
++			  struct ethtool_rxnfc *info);
++u32 efx_ethtool_get_rxfh_indir_size(struct net_device *net_dev);
++u32 efx_ethtool_get_rxfh_key_size(struct net_device *net_dev);
++int efx_ethtool_get_rxfh(struct net_device *net_dev, u32 *indir, u8 *key,
++			 u8 *hfunc);
++int efx_ethtool_set_rxfh(struct net_device *net_dev,
++			 const u32 *indir, const u8 *key, const u8 hfunc);
++int efx_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
++				 u8 *key, u8 *hfunc, u32 rss_context);
++int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
++				 const u32 *indir, const u8 *key,
++				 const u8 hfunc, u32 *rss_context,
++				 bool delete);
+ #endif
+
 
