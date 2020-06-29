@@ -2,98 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE1DF20DE04
-	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:51:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1415720DE96
+	for <lists+netdev@lfdr.de>; Mon, 29 Jun 2020 23:53:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387685AbgF2UVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 16:21:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55924 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733231AbgF2UVu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 16:21:50 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2389115AbgF2U1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 16:27:05 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:55754 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1732681AbgF2U1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 16:27:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593462422;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=O7ZVTsrBJ+O5RqXyvN0KbuxHOv/sVXGRb+pXDm71DxU=;
+        b=cOl8DDV+Ez8csd0hSL4WYyX0T8XYexvOynzWy0didwqzwYs1vCJg5YGVIdM/CDeLBkZ+Op
+        7Pek/oL31m0aB1wreefUGvmxEvi6NTKsQEt4E4GKJzhIocsDkDpUqdEMvZyBvKnkogQCHF
+        BWG/Dzkh6C0rVDdejMZ0W8VGc2ufcuA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-5-Y94fP-RpOw6N_ZA-Vo8D-w-1; Mon, 29 Jun 2020 16:26:46 -0400
+X-MC-Unique: Y94fP-RpOw6N_ZA-Vo8D-w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9C2A520656;
-        Mon, 29 Jun 2020 20:21:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593462110;
-        bh=Wm+YESFJcpViZAr4qYBsI74xigVMywcJeqqC9gzvxeI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TUpETRWboHnTBwcDMrfnza+BQZPI7s5C8lPLGNNYZZijNJ42CY/x3L3jDFPx95d14
-         3zm25PK4YMR9gsbbGSkOC+yWujyjavvJ4inPLDDtTHArO99kWYcRM81xMMu56dslAO
-         0tuHRtoahjaj0bWoxjqiFGFI5hIft8DUs2Q+KFOg=
-Date:   Mon, 29 Jun 2020 21:21:47 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-Message-ID: <20200629202147.GL5499@sirena.org.uk>
-References: <20200520070227.3392100-1-jeffrey.t.kirsher@intel.com>
- <20200520070227.3392100-11-jeffrey.t.kirsher@intel.com>
- <20200520125437.GH31189@ziepe.ca>
- <08fa562783e8a47f857d7f96859ab3617c47e81c.camel@linux.intel.com>
- <20200521233437.GF17583@ziepe.ca>
- <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
- <20200523062351.GD3156699@kroah.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6DDF3EC1A1;
+        Mon, 29 Jun 2020 20:26:44 +0000 (UTC)
+Received: from new-host-5.redhat.com (unknown [10.40.194.100])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9FA6D7BEBB;
+        Mon, 29 Jun 2020 20:26:42 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        mptcp@lists.01.org
+Subject: [PATCH net-next 0/6] MPTCP: improve fallback to TCP
+Date:   Mon, 29 Jun 2020 22:26:19 +0200
+Message-Id: <cover.1593461586.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kkRamCq5m5VQq0L6"
-Content-Disposition: inline
-In-Reply-To: <20200523062351.GD3156699@kroah.com>
-X-Cookie: Real programs don't eat cache.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+there are situations where MPTCP sockets should fall-back to regular TCP:
+this series reworks the fallback code to pursue the following goals:
 
---kkRamCq5m5VQq0L6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+1) cleanup the non fallback code, removing most of 'if (<fallback>)' in
+   the data path
+2) improve performance for non-fallback sockets, avoiding locks in poll()
 
-On Sat, May 23, 2020 at 08:23:51AM +0200, Greg KH wrote:
+further work will also leverage on this changes to achieve:
 
-> Then fix that problem there.  The audio card should not be being created
-> as a platform device, as that is not what it is.  And even if it was,
-> the probe should not complete, it should clean up after itself and error
-> out.
+a) more consistent behavior of gestockopt()/setsockopt() on passive sockets
+   after fallback
+b) support for "infinite maps" as per RFC8684, section 3.7
 
-To be clear ASoC sound cards are physical devices which exist in the
-real world.
+the series is made of the following items:
 
-> That's not a driver core issue, sounds like a subsystem error handling
-> issue that needs to be resolved.
+- patch 1 lets sendmsg() / recvmsg() / poll() use the main socket also
+  after fallback
+- patch 2 fixes 'simultaneous connect' scenario after fallback. The
+  problem was present also before the rework, but the fix is much easier
+  to implement after patch 1
+- patch 3, 4, 5 are clean-ups for code that is no more needed after the
+  fallback rework
+- patch 6 fixes a race condition between close() and poll(). The problem
+  was theoretically present before the rework, but it became almost
+  systematic after patch 1
 
-It's not a subsystem issue, it's an issue with the half baked support
-for enumerating modern audio hardware on ACPI systems.  Unfortunately
-we have to enumerate hardware based on having data tables instantiated
-via DMI information for the system which doesn't work well with a
-generic kernel like Linux, on Windows they're per-machine custom
-drivers.  There is some effort at putting some of the data into ACPI
-tables on newer systems which is helping a lot but it's partial.
+Davide Caratti (2):
+  net: mptcp: improve fallback to TCP
+  mptcp: fallback in case of simultaneous connect
 
---kkRamCq5m5VQq0L6
-Content-Type: application/pgp-signature; name="signature.asc"
+Paolo Abeni (4):
+  mptcp: check for plain TCP sock at accept time
+  mptcp: create first subflow at msk creation time
+  mptcp: __mptcp_tcp_fallback() returns a struct sock
+  mptcp: close poll() races
 
------BEGIN PGP SIGNATURE-----
+ net/mptcp/options.c  |   9 +-
+ net/mptcp/protocol.c | 267 ++++++++++++++-----------------------------
+ net/mptcp/protocol.h |  43 +++++++
+ net/mptcp/subflow.c  |  57 ++++++---
+ 4 files changed, 175 insertions(+), 201 deletions(-)
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl76TVsACgkQJNaLcl1U
-h9CQrgf7BpeSXqlMlGzmpfyBgHml15ESL9g0bxg68JHwjagQzM7YUOfJuRngm9EG
-8f02Did+AcKCWWsBBqM149B7limSXwFRwpevkEjRr537mBurrykkdmrg1kaoa7ns
-9smrJCToelUsTzpF/ZPR5p8fTJlpdGigeBPlNrNmkfQfFVVIhoYv48IFrL7pOcmP
-zCsox1mNHSoEY6uOI+4z7VIR+CgPYKqSiOzcYWL+0SRRRthg1V5ZGmOVlQkI+I57
-s8Q/s18HNWc0myEjxyvuftHUes1wLAGXQY/H33UkX+mXCCfHYLhKkhxRdFym4eLf
-s008ZvzdSdMY/uuAP6HkCp/DacLdXA==
-=Uiek
------END PGP SIGNATURE-----
+-- 
+2.26.2
 
---kkRamCq5m5VQq0L6--
