@@ -2,62 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D557E20FCEE
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 21:46:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B77E620FD1A
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 21:53:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728332AbgF3TqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 15:46:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38498 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726072AbgF3TqD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 15:46:03 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F057206B6;
-        Tue, 30 Jun 2020 19:46:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593546362;
-        bh=QMyCzvGFsLO9Q1LIK+HEWCjd4MbNixcUFuoCig4zNlg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sdBn33KKTKLrPFnOuLiQowbvqd1qdlofSKeHKxyqKrG8GlDEaVkia9uR1TShG78E4
-         Lvi0rd14tycxNOpiIH+rQHdcO83Ynr8FOyDDrMsr0POvf7gf58CynrHrDC9GpeUzG3
-         XPb1Xgl0PvNmZs6dl472AFLHPjox29EcZ2Aava/0=
-Date:   Tue, 30 Jun 2020 12:46:01 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com,
-        vishal@chelsio.com, dt@chelsio.com
-Subject: Re: [PATCH net-next v3 0/3] cxgb4: add mirror action support for
- TC-MATCHALL
-Message-ID: <20200630124601.548a52f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <cover.1593521119.git.rahul.lakkireddy@chelsio.com>
-References: <cover.1593521119.git.rahul.lakkireddy@chelsio.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1728830AbgF3Two (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 15:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47056 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727109AbgF3Twn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 15:52:43 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A7D5C061755;
+        Tue, 30 Jun 2020 12:52:43 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E4E2D12755EF3;
+        Tue, 30 Jun 2020 12:52:42 -0700 (PDT)
+Date:   Tue, 30 Jun 2020 12:52:42 -0700 (PDT)
+Message-Id: <20200630.125242.1142404098102885415.davem@davemloft.net>
+To:     f.fainelli@gmail.com
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: Improve subordinate PHY error
+ message
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200630044313.26698-1-f.fainelli@gmail.com>
+References: <20200630044313.26698-1-f.fainelli@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Jun 2020 12:52:43 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Jun 2020 18:41:27 +0530 Rahul Lakkireddy wrote:
-> This series of patches add support to mirror all ingress traffic
-> for TC-MATCHALL ingress offload.
-> 
-> Patch 1 adds support to dynamically create a mirror Virtual Interface
-> (VI) that accepts all mirror ingress traffic when mirror action is
-> set in TC-MATCHALL offload.
-> 
-> Patch 2 adds support to allocate mirror Rxqs and setup RSS for the
-> mirror VI.
-> 
-> Patch 3 adds support to replicate all the main VI configuration to
-> mirror VI. This includes replicating MTU, promiscuous mode,
-> all-multicast mode, and enabled netdev Rx feature offloads.
+From: Florian Fainelli <f.fainelli@gmail.com>
+Date: Mon, 29 Jun 2020 21:43:13 -0700
 
-Based on what you described:
+> It is not very informative to know the DSA master device when a
+> subordinate network device fails to get its PHY setup. Provide the
+> device name and capitalize PHY while we are it.
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-
-:)
+Applied, thanks.
