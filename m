@@ -2,47 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B1620F9A9
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 18:41:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8023020F9AA
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 18:42:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732049AbgF3QlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 12:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45746 "EHLO
+        id S1733041AbgF3QmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 12:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730657AbgF3QlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 12:41:13 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37EADC061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 09:41:13 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id w6so21335214ejq.6
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 09:41:13 -0700 (PDT)
+        with ESMTP id S1729257AbgF3QmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 12:42:14 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3623C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 09:42:13 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id t7so9551939qvl.8
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 09:42:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=axHn6LRtyZJBHNWbeR20C2RlYPRHp97OcdNvSnh/Jg8=;
-        b=HscU4g3DfR+CdopW0M2P+3Z/86kdtIu7UOvGCm/uhid10trY5TCUg/hyruOIPWCUMe
-         2NBdXub4hjWVsuD/zs3n9dmUMlRwqmV1IUnmE1ILhTef/99QiOYVgyUVQ3d7uyOx3Pp/
-         jnqLcdkhNQ0k10qw8CriE97Tdvj6yhHoIf3aQegXMUcVfL13JH19nLVZCPO8SnSJW6bj
-         xYsMQzbkmUPPi7aGKyCXVZHdI0hjQxY0y4c2pGu2DgI54gPjuPzvK6gHoSe8mSlF/EPk
-         JowhGt3ycTkmFYXOXOjP5gpXt0fBpaWEvXYL2loiyenCEXDdUWqMHqAs9qunctWYtgRz
-         upkA==
+        bh=SadgmInxZZ0jg2UL0WoaLXzMgM4PHV5878bDDnVb0lg=;
+        b=NpppUpp8wQw7NO9S/h0gs52tCHqLheUlxdtIFNT5ZtrjkgVpKr0RNs7/l4xZ4q0QJR
+         aRebbI3qKzA42xn/dlYBTrwaqP+xv9oLjWfCQFpZWWH7o1vj2TciHUYKoBuqbbWyVyTR
+         HqUGRk9/zCem5RznCAXSqeTz1fNMAjBCKkBEw/CXD+zodJzDzyUJZHARyVvN5zlKekq5
+         KHV6L8g+krtJuf0u5buUUWagRABpCyevTHtGdtq3XDhmwjKeMw3telIq4/CIkXP+7/cN
+         dQAZMDV6+Id+ycBW2pVK40IJLUgbu1V2VutA14Q05SLVk1gVt7YP2N4vmxZW1IHbL9Ha
+         X1Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=axHn6LRtyZJBHNWbeR20C2RlYPRHp97OcdNvSnh/Jg8=;
-        b=LrEL0jJTiwgvI75Hn1my27Px1G4kdWmZw9VAqJQ/Lz0CaCNQPlNmAYz1G/R64TsbVM
-         USx5fbVsJx4X2QQ4NnpoL6rtRDfTIbEGMmqeeQK0FFNOE29ZzhMQtJg46AuCMFvZsBHq
-         bRkHCJ+iGW/p2258UOQzdzm4hmNrcD5sLt5uF1NClDuksJhEDwDjA8KwwxwMV+HAgQqt
-         uejw7BnGMUl4vFGrmPQBXB4OWaLtT8BLpruOriQhabeojm3yz6rh6R4/mLNmLcFee22b
-         ZgpIFt9Z1Zv6M/rGbxIi/htNUTqsWcZY+XcN1JQNNctf68BJZgeZ7teCaaV/qaWdDBGk
-         l5Qg==
-X-Gm-Message-State: AOAM530ge3bW4ZZygbkF6Re7oGYOse+LNcd91RNnzQMD59itd6e31+jq
-        gLkiD1Tjuz+bFfK7azZLRHvfLXdmXDC1yfpGhc9mNOi2ZFc=
-X-Google-Smtp-Source: ABdhPJyuishr9i3ZjuUJVlvjLpkzEamk9fLNeElI2O2Hzw47ecrTdT1kgiwqePcCCu76uQqzPOwIFJt7oW/AFxChao0=
-X-Received: by 2002:a17:906:95d6:: with SMTP id n22mr19034658ejy.138.1593535271827;
- Tue, 30 Jun 2020 09:41:11 -0700 (PDT)
+        bh=SadgmInxZZ0jg2UL0WoaLXzMgM4PHV5878bDDnVb0lg=;
+        b=rch59lir4xPrrQPerckE06sof4Tu+QBpzjwFQKLL8CkvZoo4fuEwm2j9gVeSr5gyR9
+         ZjpDcLcNiMuLnL6eimWgkobwLCFE6T1TiEIb0yszEJpWgml7xyMKBBncxgII6coANmAv
+         bKfpMEH0ZAy+F0USvJZPGUzkz8SrJSXQ4zyRVKesYxISlT1D+KhkH7pdWo4XQjplFJrx
+         m+6uIt2elUwiZRW/8bwDqHB2BJT6sY9wtxaB1aqU0eJJ9uPWkmY+QjwyhgTBCFbAiWTZ
+         r5ja+6vKqhMAngbzPq6LGaYPiQu7bX1+FE+LTmuuv21Y2wYvnjTvry7hw4/rDKosUUUA
+         4XtQ==
+X-Gm-Message-State: AOAM531Az1iLdURqoBVOhO6kYULQ6CyUOwtRE/ztrIY/DwXPyRiPEQBb
+        U4TlcWYFjMDxbubdYY0AvFnN1Qlx
+X-Google-Smtp-Source: ABdhPJzajLERW0vPPvrmKyhRyn+6StuKrtDTWxxTO/hnEIGOb5gZcNkPfZsP6PPueV5VV1ofl5We1g==
+X-Received: by 2002:ad4:4a64:: with SMTP id cn4mr20722981qvb.199.1593535332609;
+        Tue, 30 Jun 2020 09:42:12 -0700 (PDT)
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
+        by smtp.gmail.com with ESMTPSA id o21sm3479456qtt.25.2020.06.30.09.42.11
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Jun 2020 09:42:12 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id j19so7393072ybj.1
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 09:42:11 -0700 (PDT)
+X-Received: by 2002:a25:cf82:: with SMTP id f124mr35868118ybg.441.1593535331257;
+ Tue, 30 Jun 2020 09:42:11 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com>
  <cb763bc5-b361-891a-94e9-be2385ddcbe0@gmail.com> <CA+FuTSfgz54uQbzrMr1Q0cAg2Vs1TFjyOb_+jjKUPoKAb=R-fw@mail.gmail.com>
@@ -50,12 +59,14 @@ References: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com>
  <CA+FuTSddo8Nsj4ri3gC0tDm7Oe4nrvCqyxkj14QWswUs4vNHLw@mail.gmail.com>
  <CAF=yD-JDvo=OB+f4Sg8MDxPSiUEe7FVN_pkOZ6EUfuZTr4eEwQ@mail.gmail.com> <322c9715-8ad0-a9b3-9970-087b53ecacdb@gmail.com>
 In-Reply-To: <322c9715-8ad0-a9b3-9970-087b53ecacdb@gmail.com>
-From:   Tom Herbert <tom@herbertland.com>
-Date:   Tue, 30 Jun 2020 09:41:00 -0700
-Message-ID: <CALx6S37QCUanU0Cpe+mCedoiceLyxX58O2jdrv+g64YQTUj2sw@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 30 Jun 2020 12:41:34 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdHoMg=unJhBSFAMcJ0RJ0oiVqpCe=zpNEipCdApoWYhw@mail.gmail.com>
+Message-ID: <CA+FuTSdHoMg=unJhBSFAMcJ0RJ0oiVqpCe=zpNEipCdApoWYhw@mail.gmail.com>
 Subject: Re: [PATCH net-next] icmp: support rfc 4884
 To:     Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Tom Herbert <tom@herbertland.com>,
         Network Development <netdev@vger.kernel.org>,
         David Miller <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
@@ -64,7 +75,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 9:16 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+On Tue, Jun 30, 2020 at 12:16 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
 >
 >
@@ -181,48 +192,33 @@ On Tue, Jun 30, 2020 at 9:16 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
 > as an explicit ancillary message in ip_recv_error() ?
 >
 > Really this is all about documentation and providing stable API.
+
+Understood. Of course happy to discuss alternatives, as it does set
+things in stone.
+
 >
-Actually, I think we may have a subtle bug here.
-
-RFC4884 appends the ICMP extension to the original datagram. The RFC
-describes backwards compatibility in section 5. To be backwards
-compatible with legacy implementations that don't know how to parse
-the extension, and in particular to find the length of the original
-datagram in the data, the requirement is that at the original datagram
-is at least 128 bytes long and it seems to assume no ICMP application
-need to parse beyond that. But parsing beyond 128 bytes is possible,
-consider that the original datagram was UDP/IPv6 with an extension
-header such that the UDP header is offset beyond 128 bytes in the
-packet. If we don't take this into account, the UDP ports for socket
-lookup would be incorrect.
-
-To fix this, we could check the Length field per the types that
-support extensions as described in RFC4884. If it's non-zero then
-assume the extension is present, so before processing the original
-datagram, e.g. performing socket lookup, trim the skb to the length of
-the orignal datagram.
-
-Tom
-
 > Possible alternative would be to add an union over ee_pad
 >
 > Legacy applications would always get 0 for ee_pad/ee_length, while
 > applications enabling IP_RECVERR_RFC4884 would access the wire value.
->
->
-> diff --git a/include/uapi/linux/errqueue.h b/include/uapi/linux/errqueue.h
-> index ca5cb3e3c6df745aa4c886ba7b4f88179fa22d86..509a5a6ccc555705ef867d7580553d289d559786 100644
-> --- a/include/uapi/linux/errqueue.h
-> +++ b/include/uapi/linux/errqueue.h
-> @@ -10,7 +10,10 @@ struct sock_extended_err {
->         __u8    ee_origin;
->         __u8    ee_type;
->         __u8    ee_code;
-> -       __u8    ee_pad;
-> +       union {
-> +               __u8    ee_pad;
-> +               __u8    ee_length; /* RFC 4884 (see IP_RECVERR_RFC4884) */
-> +       };
->         __u32   ee_info;
->         __u32   ee_data;
->  };
+
+And leave __u32 ee_data free for other uses.
+
+I find it much more intuitive to just unconditionally pass the 32 bit
+data that an application may need to be able to decode any ICMP
+message (along with ee_type + ee_code), rather than start defining
+ee_pad + ee_data fields in context dependent ways.
+
+As for ICMP_FRAG_NEEDED now 24 of the 32 bits are defined, something
+will inevitably find a use for the remaining 8 bits, and then we need
+another kernel feature.
+
+Also, if going down this path I will have to add the same for IPv6,
+while it already exposes all this information userspace needs in
+ee_info.
+
+That said, if consensus is that the kernel should make more of an
+effort to return this data in a structured form, and it is limited to
+32 bits overall, the ee_pad/ee_len union for this case has my
+preference. CMSG parsing adds a lot of boilerplate to each
+application.
