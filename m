@@ -2,95 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6D3120EB38
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 04:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7768A20EB41
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 04:05:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726972AbgF3CBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 22:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725988AbgF3CBg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 22:01:36 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC92CC061755
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 19:01:36 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id k186so697139pgd.0
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 19:01:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=f6s3+N/l/0WDWgpGCsMT7CS1cyhKwDX+i+e3H53/NZM=;
-        b=LNo4xNXX5SB3XJISmo8hPXGRZxgjTFMarzQ8kCsx+2u9Wk3UfeyspSEZTfg6r9hgQe
-         /yWySpgKFpazbvHhkqjl0jcNE0fdky2s02SfkpieStmCBSGM8v/r2BjHPohP60BgQyRJ
-         H/jCmFYwwbMnU33TCY5wXleSLP/hQfhpLx5fpmb+D1rxYIm5coZjKYQNcFygUpVYTQ+8
-         jPKb+65LizZFd+MZOZMny9ZkpK0lZ5uKQN6ogkvcpFJislTNxLrWeJPObM4202yr4M7j
-         BCrGn0gLX9pg7Hk6Rbpi8h2XP1lR6asx56SYnD74LCbCwcHsKSNiWzhjb/r6FgFyTNIA
-         CHZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=f6s3+N/l/0WDWgpGCsMT7CS1cyhKwDX+i+e3H53/NZM=;
-        b=deo7rf78ZQcsryQHASnr4S7NxKOO3ZV99qjEIu54U17PDr7TVeVn6MUV9f4/c96oX7
-         PLtdGo8kY6K7/BbImcT6GhrcOIybwDbnY81QfsacDvDu2yteVRmd1uVV1YW5KrKgWVj8
-         6yerih+j9AocygV1DScmNeigBBIj6wasLEGQ8GktGwb9h75cWOV56F38oqu3AAareYJn
-         /9FXX2Nra9lt81C8ThTAmMwav7jlNgJQmQFtQoy7/88RPlnS04ORDaC/Ui1dDPcoCI1v
-         JzZtqs+v1zxADPMfwthdiT02md6KK+app7YxjC5bQGHc+7se80Xt3se7PmHN9yy5ZZDl
-         4gsQ==
-X-Gm-Message-State: AOAM531NyAGqFPXREeh6hqyWI2ZEhIGeYbChwdxHzjU3zILT3LovTIS2
-        4ASFEuodBi0UZ8h2SMfdvTMuo2kb4USp
-X-Google-Smtp-Source: ABdhPJzCPyph4t3rTCmtmFMOoHBXalKCKdUAnE4hIAYzsaxRU2yOuVE9dYk8RzazctH0y70bnZpR3C+HMofB
-X-Received: by 2002:a05:6a00:148c:: with SMTP id v12mr16632789pfu.171.1593482496248;
- Mon, 29 Jun 2020 19:01:36 -0700 (PDT)
-Date:   Mon, 29 Jun 2020 19:01:32 -0700
-Message-Id: <20200630020132.2332374-1-ysseung@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.27.0.212.ge8ba1cc988-goog
-Subject: [PATCH net-next] tcp: call tcp_ack_tstamp() when not fully acked
-From:   Yousuk Seung <ysseung@google.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Yousuk Seung <ysseung@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726813AbgF3CFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 22:05:47 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:2960 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726266AbgF3CFr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 22:05:47 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 05U23JTw023278
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 19:05:46 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=AQbyH6FhX7YokLQGzHLfntIs/WN/l6/Es650iL5gwoo=;
+ b=Yk6FfY4JxRpwscSoPQneiDznSQ1VEchqMR4c57Y2xVTaG4ljY64U1zYd8fhPd8V45gp8
+ t9NqafVf2pG3Jwu+jSEW/eobT5J15iWgmrgERuIq8K6GVfQEYyYDj7SR1XwSuxaKVIsm
+ VxxpIoa3fwb2jo5+ZBrfZXTdKVFze5Y9iho= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 31ykcj2kbh-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 19:05:46 -0700
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 29 Jun 2020 19:05:44 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 92E072EC3BFB; Mon, 29 Jun 2020 19:05:40 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] libbpf: make bpf_endian co-exist with vmlinux.h
+Date:   Mon, 29 Jun 2020 19:05:38 -0700
+Message-ID: <20200630020539.787781-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-06-29_21:2020-06-29,2020-06-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ mlxlogscore=405 clxscore=1015 suspectscore=8 lowpriorityscore=0
+ adultscore=0 spamscore=0 bulkscore=0 impostorscore=0 cotscore=-2147483648
+ mlxscore=0 malwarescore=0 priorityscore=1501 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006300013
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When skb is coalesced tcp_ack_tstamp() still needs to be called when not
-fully acked in tcp_clean_rtx_queue(), otherwise SCM_TSTAMP_ACK
-timestamps may never be fired. Since the original patch series had
-dependent commits, this patch fixes the issue instead of reverting by
-restoring calls to tcp_ack_tstamp() when skb is not fully acked.
+Copy over few #defines from UAPI swab.h header to make all the rest of
+bpf_endian.h work and not rely on any extra headers. This way it can be u=
+sed
+both with linux header includes, as well with a vmlinux.h. This has been
+a frequent complaint from users, that need this header.
 
-Fixes: fdb7eb21ddd3 ("tcp: stamp SCM_TSTAMP_ACK later in tcp_clean_rtx_queue())
-Signed-off-by: Yousuk Seung <ysseung@google.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- net/ipv4/tcp_input.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ tools/lib/bpf/bpf_endian.h | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 8479b84f0a7f..12c26c9565b7 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -3172,8 +3172,11 @@ static int tcp_clean_rtx_queue(struct sock *sk, u32 prior_fack,
- 	if (likely(between(tp->snd_up, prior_snd_una, tp->snd_una)))
- 		tp->snd_up = tp->snd_una;
- 
--	if (skb && (TCP_SKB_CB(skb)->sacked & TCPCB_SACKED_ACKED))
--		flag |= FLAG_SACK_RENEGING;
-+	if (skb) {
-+		tcp_ack_tstamp(sk, skb, prior_snd_una);
-+		if (TCP_SKB_CB(skb)->sacked & TCPCB_SACKED_ACKED)
-+			flag |= FLAG_SACK_RENEGING;
-+	}
- 
- 	if (likely(first_ackt) && !(flag & FLAG_RETRANS_DATA_ACKED)) {
- 		seq_rtt_us = tcp_stamp_us_delta(tp->tcp_mstamp, first_ackt);
--- 
-2.27.0.212.ge8ba1cc988-goog
+diff --git a/tools/lib/bpf/bpf_endian.h b/tools/lib/bpf/bpf_endian.h
+index fbe28008450f..a4be8a70845c 100644
+--- a/tools/lib/bpf/bpf_endian.h
++++ b/tools/lib/bpf/bpf_endian.h
+@@ -2,8 +2,26 @@
+ #ifndef __BPF_ENDIAN__
+ #define __BPF_ENDIAN__
+=20
+-#include <linux/stddef.h>
+-#include <linux/swab.h>
++/* copied from include/uapi/linux/swab.h */
++#define ___constant_swab16(x) ((__u16)(				\
++	(((__u16)(x) & (__u16)0x00ffU) << 8) |			\
++	(((__u16)(x) & (__u16)0xff00U) >> 8)))
++
++#define ___constant_swab32(x) ((__u32)(				\
++	(((__u32)(x) & (__u32)0x000000ffUL) << 24) |		\
++	(((__u32)(x) & (__u32)0x0000ff00UL) <<  8) |		\
++	(((__u32)(x) & (__u32)0x00ff0000UL) >>  8) |		\
++	(((__u32)(x) & (__u32)0xff000000UL) >> 24)))
++
++#define ___constant_swab64(x) ((__u64)(				\
++	(((__u64)(x) & (__u64)0x00000000000000ffULL) << 56) |	\
++	(((__u64)(x) & (__u64)0x000000000000ff00ULL) << 40) |	\
++	(((__u64)(x) & (__u64)0x0000000000ff0000ULL) << 24) |	\
++	(((__u64)(x) & (__u64)0x00000000ff000000ULL) <<  8) |	\
++	(((__u64)(x) & (__u64)0x000000ff00000000ULL) >>  8) |	\
++	(((__u64)(x) & (__u64)0x0000ff0000000000ULL) >> 24) |	\
++	(((__u64)(x) & (__u64)0x00ff000000000000ULL) >> 40) |	\
++	(((__u64)(x) & (__u64)0xff00000000000000ULL) >> 56)))
+=20
+ /* LLVM's BPF target selects the endianness of the CPU
+  * it compiles on, or the user specifies (bpfel/bpfeb),
+--=20
+2.24.1
 
