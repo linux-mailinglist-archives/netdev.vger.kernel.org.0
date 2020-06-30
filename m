@@ -2,87 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 717F420EBE4
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 05:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF92D20EC00
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 05:31:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728949AbgF3DQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 23:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34614 "EHLO
+        id S1729100AbgF3Dbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 23:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728882AbgF3DQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 23:16:56 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C06C061755
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 20:16:56 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id d18so9148815edv.6
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 20:16:56 -0700 (PDT)
+        with ESMTP id S1729037AbgF3Dbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 23:31:44 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90570C061755;
+        Mon, 29 Jun 2020 20:31:44 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id z2so14593407qts.5;
+        Mon, 29 Jun 2020 20:31:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HIhXs0z2Yz9q8SXuvfQIG3USXq8HsaDkLvr70l/G3I4=;
-        b=gPuLGz37hfJGF5lG51PxLb/0hDtGcGIzZLhHUx6r9O8yHqS8YPtLrPTjyTRvjJ2L7F
-         bvSbLRvQsBANWPSwNH3cmbW7JemXPkY6X2OK0gIYvM/KFT84DFCg+VbO/opUpY61HJSf
-         eRF/v5OvWD8TFl/dZiLXYq7gMt9U93eXxPDEh7EFAGQz3IucishFDRILbVyJH60RBwJt
-         7oCD/h3qhcnRAtitn66RptmizT3OTYwOuOIXilrb+Zse20Saq8LNovBSwltx7FbPshnR
-         Wl/XT6riU1/gGmrepnPHfIijn5ppmJ5xLGz6cv95m8z31jDjqiFcjJEaBsRCJbf1q5M+
-         +SGg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5v2qbSgvYFYLL4nXDhogeZKd+1461LNxvZOE6jg3PCs=;
+        b=QxJ98V3GBzeDpSYq5LUJGDXiN7jCXibwwMESDNYez7oBJkc0Bor+ecU8LeUM1Hs3jJ
+         EkZ0oInYqiaQyxnxOUpNsNLMpvb35sD0Ci5ATzYsGaQfuAzzD1d4CVY+qbb/975gmCi1
+         3VdsQnn7WmYUDXu40wJUosjFT5h8NSKwpwBhR0IfcHMXo9Itz7/ARxHDCE0Dodqw2wxQ
+         pbHJtBW3Ys8dHBKL/DaApzFI9i2NPHlrjC3IA3uHW2YHvhhYudnRe2gV7hLpvSiFUb4c
+         g8aVZM62Z32yeLhdefUANZTHzMRuAtE5ULZmHgDoLgK3YvsPAlu6pwY+s1f2gkD5jfoY
+         iusw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HIhXs0z2Yz9q8SXuvfQIG3USXq8HsaDkLvr70l/G3I4=;
-        b=Jny5VTnRkhcMPUx2URNGPOIhETV7wpMYSCgcoAkr37M4OnnjbC/vSEKj9ynYSLecSt
-         THouPWCoDfre2h5zvp082tD3SdbqwP+f2W96A4oje3NnaPUOMPsSn46qu1r/Vnac5rCz
-         hhZWQq6Qb8Dt/i6u31aIK3Vz0jEWffzKg6liIuJ6VgWrXnMfOEiJ/9ScCOIbr+M7fkBa
-         hvUs2+a9i5A9waHGkkSBnhEzFq+87qj6Dg4E7bkj4zif7ZQqjFq0kMpIpbQg4UxKkQjy
-         pBIUGrc7tWi4+wvTZGHDuBouCDWK1D8kUsfizfsvaZ+DcUFkgf6GsWCxV4AGSiMXrvQG
-         Lz2w==
-X-Gm-Message-State: AOAM533MICRJcU9lRTBdnnSkW6PsO502DjPnikShDp4T+W0pWS0xTEpH
-        P+9j+PG+ckxG7dauyNrIV+o=
-X-Google-Smtp-Source: ABdhPJzmw3UJJaDnVUQ255d9jfCP95a5ljXul+wz48Ml4p5YSJEGfGNEh9rk20sXI5269/gfkjFu+g==
-X-Received: by 2002:aa7:db57:: with SMTP id n23mr20507094edt.235.1593487014882;
-        Mon, 29 Jun 2020 20:16:54 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id m6sm914520ejq.85.2020.06.29.20.16.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Jun 2020 20:16:54 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/8] Add PAL support to smsc95xx
-To:     Andrew Lunn <andrew@lunn.ch>, Andre.Edich@microchip.com
-Cc:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        steve.glendinning@shawell.net, Parthiban.Veerasooran@microchip.com
-References: <c8fafa3198fcb0ba74d2190728075f108cfc5aa1.camel@microchip.com>
- <20200630013356.GG597495@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <fee052b8-dadb-5a63-7b97-8d2da00ab798@gmail.com>
-Date:   Mon, 29 Jun 2020 20:16:49 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5v2qbSgvYFYLL4nXDhogeZKd+1461LNxvZOE6jg3PCs=;
+        b=LDjdRCyZgrpiX94zNq37C+n0f6WUOM4EiG8e8vOVbLIqSoJABR2h/1s9MY8K6x7F5q
+         jWgZoJymgaIRWFodcls0akIY8pZphxekwuy7g4gnD5HmZRA6UviLmWdTQ+Yjjiwbm0ga
+         wHmnFDl2Pds8JYA4HCTI0JWc3NVTsxpQFkWB2Qeg3gmMSMOOpa716XV6lLCY1ThH4aaN
+         P+PdbNQYO0QvIPc/CpzAKfn9GLkVUeAJ02+jrV6CrQ31U4PNsHbhaDxWdNBpOe2dOtQP
+         znXg+rfWjhZ1klnFvjS6Rq/WiQXZBSfHjtr+0exIneNDQeK3SKOyhCohg73BQ9PCSj5J
+         oHKw==
+X-Gm-Message-State: AOAM532Q2PNwDUy4QD7dN+8ZzyMxIRIdzYo9prTLA0vHXAcQrv6sVLvT
+        GVbWVdBr69DxFqom8VftxeRlGhmuyYwaiEUKtlU=
+X-Google-Smtp-Source: ABdhPJw0KNjTZEZnsb2ejWJxWQi/vGZNRBiFNuvycwFnIjTcXMpEvDwpZ6r+DpoSbEP1ra2Jc1k6MfWKxUw2kFu0NGs=
+X-Received: by 2002:ac8:19c4:: with SMTP id s4mr14640168qtk.117.1593487903781;
+ Mon, 29 Jun 2020 20:31:43 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200630013356.GG597495@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200630003441.42616-1-alexei.starovoitov@gmail.com>
+ <20200630003441.42616-2-alexei.starovoitov@gmail.com> <CAEf4BzaLJ619mcN9pBQkupkJOcFfXWiuM8oy0Qjezy65Rpd_vA@mail.gmail.com>
+ <CAEf4BzZ4oEbONjbW5D5rngeiuT-BzREMKBz9H_=gzfdvBbvMOQ@mail.gmail.com> <20200630025613.scvhmqootlnxp7sx@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200630025613.scvhmqootlnxp7sx@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 29 Jun 2020 20:31:32 -0700
+Message-ID: <CAEf4BzYjFUJq9ODZgHx6XpoE7JXGrkKqMpaARs7wshxCrU0daw@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 1/5] bpf: Remove redundant synchronize_rcu.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jun 29, 2020 at 7:56 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Mon, Jun 29, 2020 at 06:08:48PM -0700, Andrii Nakryiko wrote:
+> > On Mon, Jun 29, 2020 at 5:58 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Mon, Jun 29, 2020 at 5:35 PM Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > From: Alexei Starovoitov <ast@kernel.org>
+> > > >
+> > > > bpf_free_used_maps() or close(map_fd) will trigger map_free callback.
+> > > > bpf_free_used_maps() is called after bpf prog is no longer executing:
+> > > > bpf_prog_put->call_rcu->bpf_prog_free->bpf_free_used_maps.
+> > > > Hence there is no need to call synchronize_rcu() to protect map elements.
+> > > >
+> > > > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> > > > ---
+> > >
+> > > Seems correct. And nice that maps don't have to care about this anymore.
+> > >
+> >
+> > Actually, what about the map-in-map case?
+> >
+> > What if you had an array-of-maps with an inner map element. It is the
+> > last reference to that map. Now you have two BPF prog executions in
+> > parallel. One looked up that inner map and is updating it at the
+> > moment. Another execution at the same time deletes that map. That
+> > deletion will call bpf_map_put(), which without synchronize_rcu() will
+> > free memory. All the while the former BPF program execution is still
+> > working with that map.
+>
+> The delete of that inner map can only be done via sys_bpf() and there
+> we do maybe_wait_bpf_programs() exactly to avoid this kind of problems.
+> It's also necessary for user space. When the user is doing map_update/delete
+> of inner map as soon as syscall returns the user can process
+> old map with guarantees that no bpf prog is touching inner map.
 
-
-On 6/29/2020 6:33 PM, Andrew Lunn wrote:
-> On Mon, Jun 29, 2020 at 07:55:24PM +0000, Andre.Edich@microchip.com wrote:
->> To allow to probe external phy drivers, this patchset adds use of
->> Phy Abstraction Layer to smsc95xx driver.
-> 
-> This is version 2 correct? Please put v2 in the Subject line.
-> 
-> Also, list here, what has changed since v1.
-
-Andre, when  you resubmit, please also configure your email client or
-git send-email/format-patch such that every patch is in reply to the
-cover letter, this makes it a lot easier with email threading for
-reviewing your changes. Thank you.
--- 
-Florian
+Ah, that's what I missed. I also constantly forget that map-in-map
+can't be updated from BPF side. Thanks!
