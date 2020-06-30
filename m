@@ -2,61 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E743220EA20
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 926AE20EA26
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:30:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727907AbgF3ATb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 20:19:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36012 "EHLO mail.kernel.org"
+        id S1728021AbgF3AV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 20:21:59 -0400
+Received: from mga05.intel.com ([192.55.52.43]:20412 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727076AbgF3ATa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 20:19:30 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9961D20780;
-        Tue, 30 Jun 2020 00:19:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593476370;
-        bh=9qVCeHAHxaZVZSH/Vi5Wb0DoeBYZSLCEpzs84yBcdro=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tYmX0Bu/WiUzqyLNKnS48cwzZjFsGdPZsLjrNBtM+uIuf6AbdWth45zkaz+LDcfuU
-         dPpHoogGLv/s23JgTHRG94QK+L5mBooGpJDog1x0sludgGO3xQokyDgg5GHi02tg0q
-         +mvawro/6o62Ld++o+PKVoY0QvD4FWw8/Sm8sC7U=
-Date:   Mon, 29 Jun 2020 17:19:27 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andre Guedes <andre.guedes@intel.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Aaron Brown <aaron.f.brown@intel.com>
-Subject: Re: [net-next 05/13] igc: Check __IGC_PTP_TX_IN_PROGRESS instead of
- ptp_tx_skb
-Message-ID: <20200629171927.7b2629c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <159347562079.35713.11550779660753529150@shabnaja-mobl.amr.corp.intel.com>
-References: <20200627015431.3579234-1-jeffrey.t.kirsher@intel.com>
-        <20200627015431.3579234-6-jeffrey.t.kirsher@intel.com>
-        <20200626213035.45653c24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <159346389229.30391.2954936254801502352@rramire2-mobl.amr.corp.intel.com>
-        <20200629151117.63b466c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <159347562079.35713.11550779660753529150@shabnaja-mobl.amr.corp.intel.com>
+        id S1726065AbgF3AV7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 20:21:59 -0400
+IronPort-SDR: G0U9B2AkfWgXyWNqYl+EKxtRqaxJwda23axaSjTtXVfXNHrSIOlz2OBu4qB5zeFYjxt7acUV3t
+ pEePcGqkww1g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="230957941"
+X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; 
+   d="scan'208";a="230957941"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2020 17:21:57 -0700
+IronPort-SDR: uFo1DjG2lFl3tWiiThk/w1Pa3wYAvMyqFCs9B2cLu5NLrbfBM82rcdEwHqkNv2MoqRiq+RpfWh
+ buypqklnGrTw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; 
+   d="scan'208";a="266335275"
+Received: from pl-dbox.sh.intel.com (HELO intel.com) ([10.239.159.39])
+  by fmsmga008.fm.intel.com with ESMTP; 29 Jun 2020 17:21:54 -0700
+Date:   Tue, 30 Jun 2020 08:21:52 +0800
+From:   Philip Li <philip.li@intel.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     kernel test robot <lkp@intel.com>,
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>, bjorn@helgaas.com,
+        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kbuild-all@lists.01.org, devel@driverdev.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        skhan@linuxfoundation.org
+Subject: Re: [kbuild-all] Re: [PATCH v1 1/4] qlge/qlge_main.c: use genric
+ power management
+Message-ID: <20200630002152.GA15435@intel.com>
+References: <202006300026.hCr1U7Sc%lkp@intel.com>
+ <20200629173116.GA3269550@bjorn-Precision-5520>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200629173116.GA3269550@bjorn-Precision-5520>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Jun 2020 17:07:00 -0700 Andre Guedes wrote:
-> > What if timeout happens, igc_ptp_tx_hang() starts cleaning up and then
-> > irq gets delivered half way through? Perhaps we should just add a spin
-> > lock around the ptp_tx_s* fields?  
+On Mon, Jun 29, 2020 at 12:31:16PM -0500, Bjorn Helgaas wrote:
+> Vaibhav: s/genric/generic/ in the subject
 > 
-> Yep, I think this other scenario is possible indeed, and we should probably
-> protect ptp_tx_s* with a lock. Thanks for pointing that out. In fact, it seems
-> this issue can happen even with current net-next code.
+> On Tue, Jun 30, 2020 at 12:09:36AM +0800, kernel test robot wrote:
+> > Hi Vaibhav,
+> > 
+> > Thank you for the patch! Yet something to improve:
+> > 
+> > [auto build test ERROR on staging/staging-testing]
+> > [also build test ERROR on v5.8-rc3 next-20200629]
+> > [If your patch is applied to the wrong git tree, kindly drop us a note.
+> > And when submitting patch, we suggest to use  as documented in
+> > https://git-scm.com/docs/git-format-patch]
+> > 
+> > url:    https://github.com/0day-ci/linux/commits/Vaibhav-Gupta/drivers-staging-use-generic-power-management/20200629-163141
+> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git 347fa58ff5558075eec98725029c443c80ffbf4a
+> > config: x86_64-rhel-7.6 (attached as .config)
+> > compiler: gcc-9 (Debian 9.3.0-13) 9.3.0
+> > reproduce (this is a W=1 build):
+> >         # save the attached .config to linux build tree
+> >         make W=1 ARCH=x86_64 
+> > 
+> > If you fix the issue, kindly add following tag as appropriate
+> > Reported-by: kernel test robot <lkp@intel.com>
 > 
-> Since that issue is not introduced by this patch, would it be OK we move forward
-> with it, and fix the issue in a separate patch?
+> If the patch has already been merged and we need an incremental patch
+> that fixes *only* the build issue, I think it's fine to add a
+> "Reported-by" tag.
+> 
+> But if this patch hasn't been merged anywhere, I think adding the
+> "Reported-by" tag would be pointless and distracting.  This report
+> should result in a v2 posting of the patch with the build issue fixed.
+> 
+> There will be no evidence of the problem in the v2 patch.  The patch
+> itself contains other changes unrelated to the build issue, so
+> "Reported-by" makes so sense for them.  I would treat this as just
+> another review comment, and we don't usually credit those in the
+> commit log (though it's nice if they're mentioned in the v2 cover
+> letter so reviewers know what changed and why).
+> 
+> Is there any chance kbuild could be made smart enough to suggest the
+> tag only when it finds an issue in some list of published trees?
+Thanks a lot for the suggestion. As of now, this is a recommendation,
+and user may judge based on own situation to add "as appropriate".
+Meanwhile, we will continue making the bot better.
 
-Fine by me.
+> 
+> > All errors (new ones prefixed by >>):
+> > 
+> >    drivers/staging/qlge/qlge_main.c: In function 'qlge_resume':
+> > >> drivers/staging/qlge/qlge_main.c:4793:17: error: 'pdev' undeclared (first use in this function); did you mean 'qdev'?
+> >     4793 |  pci_set_master(pdev);
+> >          |                 ^~~~
+> >          |                 qdev
+> > ...
+> _______________________________________________
+> kbuild-all mailing list -- kbuild-all@lists.01.org
+> To unsubscribe send an email to kbuild-all-leave@lists.01.org
