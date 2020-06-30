@@ -2,87 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D8F20F456
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 14:15:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B2DD20F4EB
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 14:44:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387589AbgF3MPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 08:15:43 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:45820 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387554AbgF3MPn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 08:15:43 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4475520064;
-        Tue, 30 Jun 2020 12:15:42 +0000 (UTC)
-Received: from us4-mdac16-18.at1.mdlocal (unknown [10.110.49.200])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 45BA28009B;
-        Tue, 30 Jun 2020 12:15:42 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.48.236])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D628240072;
-        Tue, 30 Jun 2020 12:15:41 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9819F400092;
-        Tue, 30 Jun 2020 12:15:41 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 30 Jun
- 2020 13:15:37 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 14/14] sfc: don't call tx_remove if there isn't one
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-References: <14a93b71-3d4e-4663-82be-a2281cd1105e@solarflare.com>
-Message-ID: <ad8f6f86-b910-a95b-3c00-7dc4e40bb8f7@solarflare.com>
-Date:   Tue, 30 Jun 2020 13:15:34 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S2387852AbgF3Mou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 08:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37366 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387836AbgF3Mos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 08:44:48 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1697C03E979
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 05:44:48 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id f23so20816887iof.6
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 05:44:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b0Qug6jhcczxjVenUp7X4KAwgvvTxVc+J2oudLK16OE=;
+        b=GmuZE7TVcNTtE02ICiPc8MOgbiCVEaUlJaGhANqsATTiNLE3ez86zpcik4vMXOV5il
+         KEAq36panVyu7+0GtxhXIaZT+T9BhXketVaTwSmTJRRtSrxKQv/WCUmyrhZ3CSYS29N7
+         +qNz6G3XLs0dGwSaXTczUy/33cjgrlKmhEi9c7EipHXlmvRhWmuyUPTkcwDD1/6OGu1i
+         Kc3GNFSMd30GYSc1MDNz76L/ufjAGY90K8wh5aUT0hOvJbieJwQLwXiAGdOJtkcm+qGH
+         NJqH5AgbvgS6y0CYPJAAT5KRqugLCb+9bU3/Ivz12hW7lI+wnli9/xGAtD4HJYgoV5HZ
+         2Svg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b0Qug6jhcczxjVenUp7X4KAwgvvTxVc+J2oudLK16OE=;
+        b=YGiumsaBbJke+bHbw+zsD03/BtFrfP9K0SPNkYK+iAtwsSFY99wcE9tKiRU+L2Yk45
+         bT1wr54tHo3oMIPONoLwEHsy+XSSflArgJ2aaVvwil/v8OdiP67egPjwGugUvK24kSxy
+         f5fy3BTOZ9IJR6NQ2o5VgvR12YIf6DkHmv2xf9Yoz9uMIghOitAPkrKA4ud0uBIhJLVR
+         +PiKu6df/D1EMyak/u8kHILZOeltRMG2Iuvqtb2ZLsf+O7IXtjk8PMt7K6Rio4o8atcM
+         FL17BgXY703ZZSL20YwbAmRj1OSYKmUpuwlqAwK/qwwbOhmVEbLpmGDv92/cssbQ6xs8
+         DMuw==
+X-Gm-Message-State: AOAM531Vq3LpKcyK8hmdV6VBvDPAlY0sMr4JiHBDOBU3iE2cgGTtERl9
+        lhVP5wW4Rp8c1IClXtOhzmSHXA==
+X-Google-Smtp-Source: ABdhPJzbMB6YN2qrnMFfnuWVN3o9Qbc4Z5zSlE8lD2VmkFISTbPUk/aZIGANuOERNVrSUn02WcVhPQ==
+X-Received: by 2002:a05:6638:236:: with SMTP id f22mr22745582jaq.18.1593521087853;
+        Tue, 30 Jun 2020 05:44:47 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id t83sm1697536ilb.47.2020.06.30.05.44.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Jun 2020 05:44:47 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v2 0/3] net: ipa: three bug fixes
+Date:   Tue, 30 Jun 2020 07:44:41 -0500
+Message-Id: <20200630124444.1240107-1-elder@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <14a93b71-3d4e-4663-82be-a2281cd1105e@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25512.003
-X-TM-AS-Result: No-3.215400-8.000000-10
-X-TMASE-MatchedRID: hjMKqWyETKjeG4FwcWqAS+IfK/Jd5eHmL7DjpoDqNZn5LkL/TyFZzf4T
-        wyrKMcsB8XVI39JCRnSjfNAVYAJRApzAN0sNcMp5PwKTD1v8YV5MkOX0UoduuVVkJxysad/IeOb
-        QA+fBlTa4S8oXrr4cwZGTpe1iiCJq71zr0FZRMbCWlioo2ZbGwdmzcdRxL+xwKrauXd3MZDW7QQ
-        xQFaxnamFPw+K9Y325gj+ZU6tsmO0+GJfKOACjECkSttBQAxqAEWjVFlwkXrpAjnF0AvWM2fzm0
-        XVRv19NFKkxYu/4iTnTZWvGSfVMiUODDY5/BuEsoxrk6Q2mIeSJ+wv7oJjhGclmajRS8yWxQwym
-        txuJ6y0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.215400-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25512.003
-X-MDID: 1593519342-jctUjcFHGZ6j
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-EF100 won't have an efx->type->tx_remove method, because there's
- nothing for it to do.  So make the call conditional.
+This series contains three bug fixes for the Qualcomm IPA driver.
+In practice these bugs are unlikke.y to be harmful, but they do
+represent incorrect code.
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/nic_common.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Version 2 adds "Fixes" tags to two of the patches and fixes a typo
+in one (found by checkpatch.pl).
 
-diff --git a/drivers/net/ethernet/sfc/nic_common.h b/drivers/net/ethernet/sfc/nic_common.h
-index 197ecac5e005..fd474d9e55e4 100644
---- a/drivers/net/ethernet/sfc/nic_common.h
-+++ b/drivers/net/ethernet/sfc/nic_common.h
-@@ -163,7 +163,8 @@ static inline void efx_nic_init_tx(struct efx_tx_queue *tx_queue)
- }
- static inline void efx_nic_remove_tx(struct efx_tx_queue *tx_queue)
- {
--	tx_queue->efx->type->tx_remove(tx_queue);
-+	if (tx_queue->efx->type->tx_remove)
-+		tx_queue->efx->type->tx_remove(tx_queue);
- }
- static inline void efx_nic_push_buffers(struct efx_tx_queue *tx_queue)
- {
+					-Alex
+
+Alex Elder (3):
+  net: ipa: always check for stopped channel
+  net: ipa: no checksum offload for SDM845 LAN RX
+  net: ipa: introduce ipa_cmd_tag_process()
+
+ drivers/net/ipa/gsi.c             | 16 +++++++---------
+ drivers/net/ipa/ipa_cmd.c         | 15 +++++++++++++++
+ drivers/net/ipa/ipa_cmd.h         |  8 ++++++++
+ drivers/net/ipa/ipa_data-sdm845.c |  1 -
+ drivers/net/ipa/ipa_endpoint.c    |  2 ++
+ 5 files changed, 32 insertions(+), 10 deletions(-)
+
+-- 
+2.25.1
+
