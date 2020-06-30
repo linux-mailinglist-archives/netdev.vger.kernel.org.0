@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39D7420F60C
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 15:46:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2777620F60E
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 15:46:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388327AbgF3Npq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 09:45:46 -0400
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:12146 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726876AbgF3Npn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 09:45:43 -0400
+        id S2388346AbgF3Npx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 09:45:53 -0400
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:12907 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388321AbgF3Npq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 09:45:46 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1593524742; x=1625060742;
+  t=1593524746; x=1625060746;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=CBHDKe17OWh23IN1qsZyil4P/7Q7BPKQEEmOkyRy9rQ=;
-  b=xEp+wHV4fvK0o/6oYkYh0Qj+EGQ8rhiA5SceXKydEI+2lTvnvoX8GMzW
-   HbIf4g+ZBSmJgZ+1chBEvmpy6Elun3P4mI7tdCc/RrMF9Na6jRyVaZLzs
-   uaOtba5byecB9KqthicvSL4ZzeczIqa6mLZ03/XtcVGmqWGH6mDNSRIVB
-   yWiM7erC7WoYrz9c2bxfuw/gnO0q16IQf/iiVhh1BQ83i5tL2VcGOad8d
-   MziOvqL+SHPCiaN5BCaLYwFXvJQyRX7xROOMWiFlzEq786+UnDQjxf8CB
-   YB74OcMBq+r8moqRdh5fHBOj0auSpzEY4M0KFzKyJ+6OnjEvzgCIeU6I+
-   Q==;
-IronPort-SDR: ShV7w/bvt3WeZxL/eZIO1kIlTteNSSGYWuUcZTJUjhLUu1YktFFvJO9iLU4slq8+YB3dd/xLsS
- 3TX7Qhxtt6ShRTWPx04rrxeMTUH3QutjCmDsPN/igcfVtC9WvkL6XXfsJ8n+uQvEgozzq+Egxr
- PAPnlidYFS10Of8gqwIdhCM1OtWb1VUHyg2XJ5e4yVaA1Z4BST5Wf1epqiUPQSMeg0luJ5juOh
- ABfTZGgmfsAX+eJm2n83iSZXeBruBxEl4GFbFhY3i5Tem20pVJW5QRb1qA/v08tNhk8hA6ywxK
- hJI=
+  bh=ReYzEMP1WNRGlHS75E1G5y1MYQS2lAxtN7u/5noQe8c=;
+  b=fEIYUKYjgkApIk42mWUkvesyzRkozpJgR8AeFMBj7CPVDtrmseVOl5hI
+   /X9Wd9AlwihaZE+q56yZWZpPjT1fo7bLYlz98FDcyoN4xminCyv/PCfjQ
+   oA+yu4NreRy/z/qtVhrh9J4yKOEXobr9fnW2/IPGrG6x13UtpVt136MkM
+   qeXNVOMaI0UQ1X6XhXi7NSdN9Pw+mtTicQ2OdrUmAJ/f9G3dRtV8qX76t
+   yu6olBwbyxxQHaaqw3WFmMNU/ykwGzlP2cht+upO0gESIRy7HI5BROk2m
+   7Nu7IfJdI17GdOB+piDpHgkA38Lx+frN/qN1Ptkfmmw6qNfBVwSn2qjgC
+   g==;
+IronPort-SDR: Ffvde+VwBMKF/E2XbQ5VJUdj8loBqfWUtY/YzJDHYQYmvCR74i8hiftHRAVckCUu3VrnCwAMac
+ HXbAQ6+DyO4zJafSlOOiFGaVoS2NX91HncaKNw//iG5rbATp9H9XBLYIox3U2YpxZ/hd4V1/6S
+ GRgiWkCl7qKSPFmEY1LPMWH2JaqemDuvTafoq7+D2uxiYQMRloPEsOyHU6YVx4Mg3cSEJdME2r
+ K04Hb8oNp64NOJga8DLWxkuVed/62ovfdBXZwxQpVbETgKWcTbF5E4iOxsnNo5HoyMpXVRipBO
+ RoA=
 X-IronPort-AV: E=Sophos;i="5.75,297,1589266800"; 
-   d="scan'208";a="85638706"
+   d="scan'208";a="78274323"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2020 06:45:42 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2020 06:45:45 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 30 Jun 2020 06:45:42 -0700
+ 15.1.1979.3; Tue, 30 Jun 2020 06:45:27 -0700
 Received: from soft-dev3.localdomain (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Tue, 30 Jun 2020 06:45:39 -0700
+ 15.1.1979.3 via Frontend Transport; Tue, 30 Jun 2020 06:45:42 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
         <davem@davemloft.net>, <kuba@kernel.org>, <jiri@mellanox.com>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
 CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 1/3] bridge: uapi: mrp: Extend MRP attributes to get the status
-Date:   Tue, 30 Jun 2020 15:44:22 +0200
-Message-ID: <20200630134424.4114086-2-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 2/3] bridge: mrp: Add br_mrp_fill_info
+Date:   Tue, 30 Jun 2020 15:44:23 +0200
+Message-ID: <20200630134424.4114086-3-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200630134424.4114086-1-horatiu.vultur@microchip.com>
 References: <20200630134424.4114086-1-horatiu.vultur@microchip.com>
@@ -60,51 +60,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add MRP attribute IFLA_BRIDGE_MRP_INFO to allow the userspace to get the
-current state of the MRP instances. This is a nested attribute that
-contains other attributes like, ring id, index of primary and secondary
-port, priority, ring state, ring role.
+Add the function br_mrp_fill_info which populates the MRP attributes
+regarding the status of each MRP instance.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- include/uapi/linux/if_bridge.h | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ net/bridge/br_mrp_netlink.c | 57 +++++++++++++++++++++++++++++++++++++
+ net/bridge/br_private.h     |  7 +++++
+ 2 files changed, 64 insertions(+)
 
-diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index caa6914a3e53a..c114c1c2bd533 100644
---- a/include/uapi/linux/if_bridge.h
-+++ b/include/uapi/linux/if_bridge.h
-@@ -166,6 +166,7 @@ enum {
- 	IFLA_BRIDGE_MRP_RING_STATE,
- 	IFLA_BRIDGE_MRP_RING_ROLE,
- 	IFLA_BRIDGE_MRP_START_TEST,
-+	IFLA_BRIDGE_MRP_INFO,
- 	__IFLA_BRIDGE_MRP_MAX,
- };
+diff --git a/net/bridge/br_mrp_netlink.c b/net/bridge/br_mrp_netlink.c
+index 34b3a8776991f..c7dd0cc5b90e5 100644
+--- a/net/bridge/br_mrp_netlink.c
++++ b/net/bridge/br_mrp_netlink.c
+@@ -304,6 +304,63 @@ int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
+ 	return 0;
+ }
  
-@@ -228,6 +229,22 @@ enum {
- 
- #define IFLA_BRIDGE_MRP_START_TEST_MAX (__IFLA_BRIDGE_MRP_START_TEST_MAX - 1)
- 
-+enum {
-+	IFLA_BRIDGE_MRP_INFO_UNSPEC,
-+	IFLA_BRIDGE_MRP_INFO_RING_ID,
-+	IFLA_BRIDGE_MRP_INFO_P_IFINDEX,
-+	IFLA_BRIDGE_MRP_INFO_S_IFINDEX,
-+	IFLA_BRIDGE_MRP_INFO_PRIO,
-+	IFLA_BRIDGE_MRP_INFO_RING_STATE,
-+	IFLA_BRIDGE_MRP_INFO_RING_ROLE,
-+	IFLA_BRIDGE_MRP_INFO_TEST_INTERVAL,
-+	IFLA_BRIDGE_MRP_INFO_TEST_MAX_MISS,
-+	IFLA_BRIDGE_MRP_INFO_TEST_MONITOR,
-+	__IFLA_BRIDGE_MRP_INFO_MAX,
-+};
++int br_mrp_fill_info(struct sk_buff *skb, struct net_bridge *br)
++{
++	struct nlattr *tb, *mrp_tb;
++	struct br_mrp *mrp;
 +
-+#define IFLA_BRIDGE_MRP_INFO_MAX (__IFLA_BRIDGE_MRP_INFO_MAX - 1)
++	mrp_tb = nla_nest_start_noflag(skb, IFLA_BRIDGE_MRP);
++	if (!mrp_tb)
++		return -EMSGSIZE;
 +
- struct br_mrp_instance {
- 	__u32 ring_id;
- 	__u32 p_ifindex;
++	list_for_each_entry(mrp, &br->mrp_list, list) {
++		tb = nla_nest_start_noflag(skb, IFLA_BRIDGE_MRP_INFO);
++		if (!tb)
++			goto nla_info_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_MRP_INFO_RING_ID,
++				mrp->ring_id))
++			goto nla_put_failure;
++		if (nla_put_u32(skb, IFLA_BRIDGE_MRP_INFO_P_IFINDEX,
++				mrp->p_port->dev->ifindex))
++			goto nla_put_failure;
++		if (nla_put_u32(skb, IFLA_BRIDGE_MRP_INFO_S_IFINDEX,
++				mrp->s_port->dev->ifindex))
++			goto nla_put_failure;
++		if (nla_put_u16(skb, IFLA_BRIDGE_MRP_INFO_PRIO,
++				mrp->prio))
++			goto nla_put_failure;
++		if (nla_put_u32(skb, IFLA_BRIDGE_MRP_INFO_RING_STATE,
++				mrp->ring_state))
++			goto nla_put_failure;
++		if (nla_put_u32(skb, IFLA_BRIDGE_MRP_INFO_RING_ROLE,
++				mrp->ring_role))
++			goto nla_put_failure;
++		if (nla_put_u32(skb, IFLA_BRIDGE_MRP_INFO_TEST_INTERVAL,
++				mrp->test_interval))
++			goto nla_put_failure;
++		if (nla_put_u32(skb, IFLA_BRIDGE_MRP_INFO_TEST_MAX_MISS,
++				mrp->test_max_miss))
++			goto nla_put_failure;
++		if (nla_put_u32(skb, IFLA_BRIDGE_MRP_INFO_TEST_MONITOR,
++				mrp->test_monitor))
++			goto nla_put_failure;
++
++		nla_nest_end(skb, tb);
++	}
++	nla_nest_end(skb, mrp_tb);
++
++	return 0;
++
++nla_put_failure:
++	nla_nest_cancel(skb, tb);
++
++nla_info_failure:
++	nla_nest_cancel(skb, mrp_tb);
++
++	return -EMSGSIZE;
++}
++
+ int br_mrp_port_open(struct net_device *dev, u8 loc)
+ {
+ 	struct net_bridge_port *p;
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 6a7d8e218ae7e..65d2c163a24ab 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -1317,6 +1317,7 @@ int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
+ int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb);
+ bool br_mrp_enabled(struct net_bridge *br);
+ void br_mrp_port_del(struct net_bridge *br, struct net_bridge_port *p);
++int br_mrp_fill_info(struct sk_buff *skb, struct net_bridge *br);
+ #else
+ static inline int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
+ 			       struct nlattr *attr, int cmd,
+@@ -1339,6 +1340,12 @@ static inline void br_mrp_port_del(struct net_bridge *br,
+ 				   struct net_bridge_port *p)
+ {
+ }
++
++static inline int br_mrp_fill_info(struct sk_buff *skb, struct net_bridge *br)
++{
++	return 0;
++}
++
+ #endif
+ 
+ /* br_netlink.c */
 -- 
 2.27.0
 
