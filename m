@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FC6F20F185
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 11:24:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D25E20F186
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 11:24:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731936AbgF3JYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 05:24:49 -0400
+        id S1731941AbgF3JYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 05:24:53 -0400
 Received: from mail-eopbgr80078.outbound.protection.outlook.com ([40.107.8.78]:21154
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727059AbgF3JYs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 05:24:48 -0400
+        id S1731810AbgF3JYw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jun 2020 05:24:52 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=maJH7vj+SJ8IsmAto71Kbib8Xk4N9/wZFV2g84CtPOlI11lMoEQwwoz56Gr1Pp2uxa0smsTz+aXLXvBC+3S4/vyvpTFGJaxhtXUfWRj2mwZ3vWmE/1dfQXhEk16XAbSZhzmesiw98DdygOJuuTdUeK7ktKjtHnsk26jyPpqfHepV/I6+iX6Q5R8zBaw8WSA0ke4EDafzN1ocHCBPiAvIrKgrJJXBIyAzcRgyLp1g5TAeIAZzlgVkX4jEx8ejdUe3utkJHpgYC9E7eeHiU9ptmOXFclE7tcWF1i0+clIbXgsP3k9knVPX34EbRj3huCmgwJACg85w+mNjH7AwFncHyA==
+ b=W0q3RNVcwIQ/XU04iwdepf7M5yxoeC8X2ICIB+uw86X+gVglG6wXXRF0nJWSTHXytFUSj6z2Xg90jozSlAkkMcr5PLtuj7LnW+4nRuAVP8W4pI1pNeN7FQTulQhU9BiCISmtWFI1DDB7k4hmci7CmXjXF1RkkEUlPaH20mzx94wM+wKvUvfhrG6lZj+Je4mkGHcMISzkhHyLfvXciDttjFoyJqw75BW0TyU+GiRa3uk6XB1v25s+P+toc4L7kpdbJB6Ci1Zda/4e+AnoxDgIftsMvEzxLIB2sAVXXuEWwoRHtmGuEYGDCL8isCMUYjdoBCqpxn68V213weMmKJPQVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xQZkl1cM2JTNdxRxXpcNlGaL//AR5O5qmePpU8H+w98=;
- b=TXwt53IQ01oMHk4cqq8c53Nx/QA27ijE7T5yH1UpTWfGsECIp7mLgptFkszIw44llZwpgC6lJ1RzJ134lX7xRqsemt8IEi5Vj1vrjP9xUv5DlbwtdSPKeE1926Q0AzU02glxHNurMg8LPnWBCjlJguKewevVcWSeIxNeGyeqHdwwAzmYee6litt4YVYEKrItarpsCYZo8B+95cHZ85vAFNHw4HLkCUbwasv1F8C6OfwYbAk0IhsefSx0vZNxKkxGTuIJsSQ/p/eU4//1Ni6PLlyDGyjG1u4v9f+r3/3XRalfRxxJ6IRLC6NIHwL1OUZqyOzERKIafSQtWayAi2jQSA==
+ bh=draxkPE8kLDEA/7Jru9hLV8Rk/y575zkCvmEYpw4yRk=;
+ b=BdSJbkMRJIAF25XkGHntMK1sVow1O7u2BxbD7Udq9OD/jjXOS4gDJkkmsCK3q0CEgvIyiTfZeW+5zxLQldmpjMG5POBRIk8DoDuC1qhQC2bIVjvayUDNHGvn33h09/N0ct/nL9DIKHa228IDEBN07YJqQfsTmeTf6567YVr6g1SyR/Gm0qCu/CY35RzyKk4U9XoJoHp7vpTfXLP1txNKsDcQV1gOCoXtdHZOBQK+n/oXawwTDqC+MO7Deyyfegoh6fSoy/2fJrLwayxToN5Y0twqEKfeer2KA3XNsdi5L2VBXo+/ltp/jtvW8nlZq8ClRQTG4Wr7gCEqhQ2lvFMGpg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xQZkl1cM2JTNdxRxXpcNlGaL//AR5O5qmePpU8H+w98=;
- b=OGhFi4GzLmsKqcPBeAidoPqqXkHNshUbrgYC6lXgRHby/ybX+XmTYQb3l7G4jUJ+TTjzdnBOHDtbGgctt17G1JNO4z14413/4GNNTG1atn3ex6+iSqg3XQK/U7i54gdj2niw5gbxAJmFT/7i0rhqA27wdNdecvUjGNVeKQznhRQ=
+ bh=draxkPE8kLDEA/7Jru9hLV8Rk/y575zkCvmEYpw4yRk=;
+ b=af1L5VPzANRygZlc9iV1EljPL1a28aloMpDxh6THekjWXrMCUaV5CoJfSFIZjrLa3M6AJFRLqDygZGG93puQfCMZx5Md1zv5WGAbdFiVx/IVt52RvfuvACZtbANXyIoO1hzhWbugbLq8xGKR/NvcTfAePyM6qtm+6/DBJY67LcQ=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none
  header.from=mellanox.com;
@@ -34,19 +34,19 @@ Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
  (2603:10a6:208:1b::25) by AM0PR05MB4450.eurprd05.prod.outlook.com
  (2603:10a6:208:61::32) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.23; Tue, 30 Jun
- 2020 09:24:40 +0000
+ 2020 09:24:41 +0000
 Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
  ([fe80::2534:ddc7:1744:fea9]) by AM0PR0502MB3826.eurprd05.prod.outlook.com
  ([fe80::2534:ddc7:1744:fea9%7]) with mapi id 15.20.3131.027; Tue, 30 Jun 2020
- 09:24:40 +0000
+ 09:24:41 +0000
 From:   Amit Cohen <amitc@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     mkubecek@suse.cz, davem@davemloft.net, o.rempel@pengutronix.de,
         andrew@lunn.ch, f.fainelli@gmail.com, jacob.e.keller@intel.com,
         mlxsw@mellanox.com, Amit Cohen <amitc@mellanox.com>
-Subject: [PATCH ethtool 2/3] common: add infrastructure to convert kernel values to userspace strings
-Date:   Tue, 30 Jun 2020 12:24:11 +0300
-Message-Id: <20200630092412.11432-3-amitc@mellanox.com>
+Subject: [PATCH ethtool 3/3] netlink: settings: expand linkstate_reply_cb() to support link extended state
+Date:   Tue, 30 Jun 2020 12:24:12 +0300
+Message-Id: <20200630092412.11432-4-amitc@mellanox.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200630092412.11432-1-amitc@mellanox.com>
 References: <20200630092412.11432-1-amitc@mellanox.com>
@@ -56,242 +56,126 @@ X-ClientProxiedBy: AM0PR03CA0044.eurprd03.prod.outlook.com (2603:10a6:208::21)
  To AM0PR0502MB3826.eurprd05.prod.outlook.com (2603:10a6:208:1b::25)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by AM0PR03CA0044.eurprd03.prod.outlook.com (2603:10a6:208::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20 via Frontend Transport; Tue, 30 Jun 2020 09:24:39 +0000
+Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by AM0PR03CA0044.eurprd03.prod.outlook.com (2603:10a6:208::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20 via Frontend Transport; Tue, 30 Jun 2020 09:24:40 +0000
 X-Mailer: git-send-email 2.20.1
 X-Originating-IP: [37.142.13.130]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 8258003f-db77-4c42-5149-08d81cd76a49
+X-MS-Office365-Filtering-Correlation-Id: b9a336ea-509d-4cdc-9484-08d81cd76b1f
 X-MS-TrafficTypeDiagnostic: AM0PR05MB4450:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB4450C053474A129248CA19FBD76F0@AM0PR05MB4450.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1186;
+X-Microsoft-Antispam-PRVS: <AM0PR05MB44504FF33C48621B4E2E45E2D76F0@AM0PR05MB4450.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:605;
 X-Forefront-PRVS: 0450A714CB
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: a0mvBhusUzTDYZKFOfaZJfpjZ6zPVo3bvKiTKcCm/uuG1YgBHcw+iXl8dreXlfpB5FrKrAoSFM71S426yOGn/+Zy/LlsPmLJ1JfRjVDnOq+9d0rSefkkCmBXgAJjcTejUCa7YdRj/tLcJcL/E543k4JAewCkEgEnha363plhHVnmTmgB2g0UfHk98sbpH09NbKFw4u4Nil2y8egalROUm/wtqVpaPxlaZHZ1Y8LNzqNqjz9gYAJIPyov7MRdw8xqmbUIiXQbEnpumUBADIUfKJlZdQObWcVOe2NM1otywh1eNnsw1590gymE9EF6bCq8PeX89M/NsApXdOBJm2knCQ==
+X-Microsoft-Antispam-Message-Info: 7cOl3uhaF7W42OPfjQsFbcPY/OG9SBnHi9b4pIUAawmUonrXB9R79O41OYqy14gxG5+7k2+qWkfIeojAqfYcws/BEhmL30NLKBz0VjAUTh5X7Ye+Wzm4kPWyM/k6jbayGuR6mT5FnFhdM1W1mdJcQBcSUNHMZgMwbDP2iqeCx2dpaOJgkgDMjeKVupqPa2OIWuT0LBNDDjIjTvKhoCHv8z+SNhSKI0DqGkI7NGd9VC6V9RB2aZvZ/GsCbMti/+IxDVffkAGYXa4K2Vx2GDDtZuyZeSRkOdu0TjItQmi2cvT4ROSFroomAljBXNi1ddkgZaWKuUrbqCUDGVJNnhjpTg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0502MB3826.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(396003)(346002)(136003)(39860400002)(52116002)(478600001)(2616005)(956004)(4326008)(2906002)(5660300002)(8936002)(316002)(6512007)(6916009)(66476007)(66556008)(8676002)(66946007)(6666004)(107886003)(86362001)(26005)(6506007)(186003)(83380400001)(36756003)(6486002)(1076003)(16526019);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: Hks1sdLo2th/2tGbHDo3BTesxPGATv++XFeFE33hhjEpkr54ZzmyU4oYXpIPApXLNkrwxN5/sg4oeTZExJVjT43a8P8lQBfr1cbnB+YHY5a2eYIBnH7Trcp3ETZMc5qJIP5kwemykDhk65ScEO0ixe4UEzRtjPYfVcqpnnNXNY2OczSwWp2qihrl4C8xThs/ZwheDl/hNgLtebSMLXvXbLuaAWh2B/Z5vzjCcJuZ9hFjFQxgwLPIORPkNcF0cy/vHP5RiIpFMF8Ljk6CtEcTdfA8dhFvWUZbjAAdjMGC1ZRkxknCqJsMvtcABE9ooNHb8bWiCQExF1OjPgbOKbB3hBsaLq679XYBfPvq6hvKdSwSJzFGFn5+/qXyV+Wli+h4cHjt2/VIhQfgkSZJAHCf/8+D2nTqYpZjzH/grFWgQvpqvcEO0AaRM3n4DmFx8iiHwrjlIm2FC/EH5r0gY557rT0caT/X/p1Uvej1I7UKSzU=
+X-MS-Exchange-AntiSpam-MessageData: uz39bqdG805el6lknooNRlAvM8LR/6lbmI1Z29ofdq+vFcQSLaq37gDfZolOTrWfQI8/H6fj4Wq/zxqg6VtLf+30SfDuECKvHvRmteiVnbBK5+1X2E86nxHsB4ufwLRABhVOhr3Mt4lWNlIeXKYzFXiQw2+JMMUBPCEsyvnOOjezRuViXjPEG9WesjXh33/6V4GNlSspqRUQTwmQ9oaC1G+tRP4qPv4SL7m5spgPb3dCVsGdaQ6utUdYw+Qfo+y0K8w3UCxmbXLIpaWzjR4cj+TLjqDMDdKucXrniA1zoyeu2gmZ1SWRf+M5w/I+7yLS1OMl9m79M6kOe77zliJNv/GoTsW453cH9A0Nx5wXNCvKlyGfH3SG6wnk187nbJXvs3JpVqascaEPbL2ZxN1WVhWdxlGIri2ydmLcu120kxGZctO0ZHTyI8cLWc1dqoAUHlnpAfx3f3HM3ouWTMJENJohpIec26p3sgBHakcnKAw=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8258003f-db77-4c42-5149-08d81cd76a49
+X-MS-Exchange-CrossTenant-Network-Message-Id: b9a336ea-509d-4cdc-9484-08d81cd76b1f
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR0502MB3826.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2020 09:24:40.2149
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2020 09:24:41.6131
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9wLjnpV40lHzcOttGvi9j5KPhDZD2Ysk8EKk6ays6t9HoxPoR9z7nNFXsXNRIFhSzB3xZD+vM+iuuHXenl7Tqg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: JU4688LJ0RSD/8F7hgHm/OJGQ9wKaqji1qsygCLGmAkOX48/JufNas0/z+3zG/rRL8xSHyXKsua/lxBPbL5daQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4450
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add enums and functions to covert extended state values sent from kernel to
-appropriate strings to expose in userspace.
+Print extended state in addition to link state.
+
+In case that extended state is not provided, print state only.
+If extended substate is provided in addition to the extended state,
+print it also.
 
 Signed-off-by: Amit Cohen <amitc@mellanox.com>
 ---
- common.c | 171 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- common.h |   2 +
- 2 files changed, 173 insertions(+)
+ netlink/settings.c | 59 +++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 56 insertions(+), 3 deletions(-)
 
-diff --git a/common.c b/common.c
-index 2630e73..ac848f7 100644
---- a/common.c
-+++ b/common.c
-@@ -127,6 +127,177 @@ static char *unparse_wolopts(int wolopts)
- 	return buf;
+diff --git a/netlink/settings.c b/netlink/settings.c
+index 35ba2f5..a4d1908 100644
+--- a/netlink/settings.c
++++ b/netlink/settings.c
+@@ -604,6 +604,57 @@ int linkinfo_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 	return MNL_CB_OK;
  }
  
-+enum link_ext_state {
-+	ETHTOOL_LINK_EXT_STATE_AUTONEG,
-+	ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
-+	ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
-+	ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY,
-+	ETHTOOL_LINK_EXT_STATE_NO_CABLE,
-+	ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE,
-+	ETHTOOL_LINK_EXT_STATE_EEPROM_ISSUE,
-+	ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE,
-+	ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED,
-+	ETHTOOL_LINK_EXT_STATE_OVERHEAT,
-+};
-+
-+enum link_ext_substate_autoneg {
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_PARTNER_DETECTED = 1,
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_ACK_NOT_RECEIVED,
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_NEXT_PAGE_EXCHANGE_FAILED,
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_PARTNER_DETECTED_FORCE_MODE,
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_FEC_MISMATCH_DURING_OVERRIDE,
-+	ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_HCD,
-+};
-+
-+enum link_ext_substate_link_training {
-+	ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_FRAME_LOCK_NOT_ACQUIRED = 1,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_INHIBIT_TIMEOUT,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_PARTNER_DID_NOT_SET_RECEIVER_READY,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LT_REMOTE_FAULT,
-+};
-+
-+enum link_ext_substate_link_logical_mismatch {
-+	ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_BLOCK_LOCK = 1,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_AM_LOCK,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_GET_ALIGN_STATUS,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LLM_FC_FEC_IS_NOT_LOCKED,
-+	ETHTOOL_LINK_EXT_SUBSTATE_LLM_RS_FEC_IS_NOT_LOCKED,
-+};
-+
-+enum link_ext_substate_bad_signal_integrity {
-+	ETHTOOL_LINK_EXT_SUBSTATE_BSI_LARGE_NUMBER_OF_PHYSICAL_ERRORS = 1,
-+	ETHTOOL_LINK_EXT_SUBSTATE_BSI_UNSUPPORTED_RATE,
-+};
-+
-+enum ethtool_link_ext_substate_cable_issue {
-+	ETHTOOL_LINK_EXT_SUBSTATE_CI_UNSUPPORTED_CABLE = 1,
-+	ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE,
-+};
-+
-+const char *link_ext_state_get(uint8_t link_ext_state_val)
++int linkstate_link_ext_substate_print(const struct nlattr *tb[],
++				      struct nl_context *nlctx, uint8_t link_val,
++				      uint8_t link_ext_state_val,
++				      const char *link_ext_state_str)
 +{
-+	switch (link_ext_state_val) {
-+	case ETHTOOL_LINK_EXT_STATE_AUTONEG:
-+		return "Autoneg";
-+	case ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE:
-+		return "Link training failure";
-+	case ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH:
-+		return "Logical mismatch";
-+	case ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY:
-+		return "Bad signal integrity";
-+	case ETHTOOL_LINK_EXT_STATE_NO_CABLE:
-+		return "No cable";
-+	case ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE:
-+		return "Cable issue";
-+	case ETHTOOL_LINK_EXT_STATE_EEPROM_ISSUE:
-+		return "EEPROM issue";
-+	case ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE:
-+		return "Calibration failure";
-+	case ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED:
-+		return "Power budget exceeded";
-+	case ETHTOOL_LINK_EXT_STATE_OVERHEAT:
-+		return "Overheat";
-+	default:
-+		return NULL;
-+	}
++	uint8_t link_ext_substate_val;
++	const char *link_ext_substate_str;
++
++	if (!tb[ETHTOOL_A_LINKSTATE_EXT_SUBSTATE])
++		return -ENODATA;
++
++	link_ext_substate_val = mnl_attr_get_u8(tb[ETHTOOL_A_LINKSTATE_EXT_SUBSTATE]);
++
++	link_ext_substate_str = link_ext_substate_get(link_ext_state_val, link_ext_substate_val);
++	if (!link_ext_substate_str)
++		return -ENODATA;
++
++	print_banner(nlctx);
++	printf("\tLink detected: %s (%s, %s)\n", link_val ? "yes" : "no",
++	       link_ext_state_str, link_ext_substate_str);
++
++	return 0;
 +}
 +
-+static const char *autoneg_link_ext_substate_get(uint8_t link_ext_substate_val)
++int linkstate_link_ext_state_print(const struct nlattr *tb[],
++				   struct nl_context *nlctx, uint8_t link_val)
 +{
-+	switch (link_ext_substate_val) {
-+	case ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_PARTNER_DETECTED:
-+		return "No partner detected";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_AN_ACK_NOT_RECEIVED:
-+		return "Ack not received";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_AN_NEXT_PAGE_EXCHANGE_FAILED:
-+		return "Next page exchange failed";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_PARTNER_DETECTED_FORCE_MODE:
-+		return "No partner detected during force mode";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_AN_FEC_MISMATCH_DURING_OVERRIDE:
-+		return "FEC mismatch during override";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_HCD:
-+		return "No HCD";
-+	default:
-+		return NULL;
++	uint8_t link_ext_state_val;
++	const char *link_ext_state_str;
++	int ret;
++
++	if (!tb[ETHTOOL_A_LINKSTATE_EXT_STATE])
++		return -ENODATA;
++
++	link_ext_state_val = mnl_attr_get_u8(tb[ETHTOOL_A_LINKSTATE_EXT_STATE]);
++
++	link_ext_state_str = link_ext_state_get(link_ext_state_val);
++	if (!link_ext_state_str)
++		return -ENODATA;
++
++	ret = linkstate_link_ext_substate_print(tb, nlctx, link_val, link_ext_state_val,
++						link_ext_state_str);
++	if (ret < 0) {
++		print_banner(nlctx);
++		printf("\tLink detected: %s (%s)\n", link_val ? "yes" : "no",
++		       link_ext_state_str);
 +	}
++
++	return 0;
 +}
 +
-+static const char *link_training_link_ext_substate_get(uint8_t link_ext_substate_val)
-+{
-+	switch (link_ext_substate_val) {
-+	case ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_FRAME_LOCK_NOT_ACQUIRED:
-+		return "KR frame lock not acquired";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_INHIBIT_TIMEOUT:
-+		return "KR link inhibit timeout";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_LINK_PARTNER_DID_NOT_SET_RECEIVER_READY:
-+		return "KR Link partner did not set receiver ready";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_LT_REMOTE_FAULT:
-+		return "Remote side is not ready yet";
-+	default:
-+		return NULL;
-+	}
-+}
-+
-+static const char *link_logical_mismatch_link_ext_substate_get(uint8_t link_ext_substate_val)
-+{
-+	switch (link_ext_substate_val) {
-+	case ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_BLOCK_LOCK:
-+		return "PCS did not acquire block lock";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_AM_LOCK:
-+		return "PCS did not acquire AM lock";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_GET_ALIGN_STATUS:
-+		return "PCS did not get align_status";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_LLM_FC_FEC_IS_NOT_LOCKED:
-+		return "FC FEC is not locked";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_LLM_RS_FEC_IS_NOT_LOCKED:
-+		return "RS FEC is not locked";
-+	default:
-+		return NULL;
-+	}
-+}
-+
-+static const char *bad_signal_integrity_link_ext_substate_get(uint8_t link_ext_substate_val)
-+{
-+	switch (link_ext_substate_val) {
-+	case ETHTOOL_LINK_EXT_SUBSTATE_BSI_LARGE_NUMBER_OF_PHYSICAL_ERRORS:
-+		return "Large number of physical errors";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_BSI_UNSUPPORTED_RATE:
-+		return "Unsupported rate";
-+	default:
-+		return NULL;
-+	}
-+}
-+
-+static const char *cable_issue_link_ext_substate_get(uint8_t link_ext_substate_val)
-+{
-+	switch (link_ext_substate_val) {
-+	case ETHTOOL_LINK_EXT_SUBSTATE_CI_UNSUPPORTED_CABLE:
-+		return "Unsupported cable";
-+	case ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE:
-+		return "Cable test failure";
-+	default:
-+		return NULL;
-+	}
-+}
-+
-+const char *link_ext_substate_get(uint8_t link_ext_state_val, uint8_t link_ext_substate_val)
-+{
-+	switch (link_ext_state_val) {
-+	case ETHTOOL_LINK_EXT_STATE_AUTONEG:
-+		return autoneg_link_ext_substate_get(link_ext_substate_val);
-+	case ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE:
-+		return link_training_link_ext_substate_get(link_ext_substate_val);
-+	case ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH:
-+		return link_logical_mismatch_link_ext_substate_get(link_ext_substate_val);
-+	case ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY:
-+		return bad_signal_integrity_link_ext_substate_get(link_ext_substate_val);
-+	case ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE:
-+		return cable_issue_link_ext_substate_get(link_ext_substate_val);
-+	default:
-+		return NULL;
-+	}
-+}
-+
- int dump_wol(struct ethtool_wolinfo *wol)
+ int linkstate_reply_cb(const struct nlmsghdr *nlhdr, void *data)
  {
- 	fprintf(stdout, "	Supports Wake-on: %s\n",
-diff --git a/common.h b/common.h
-index b74fdfa..26bec2f 100644
---- a/common.h
-+++ b/common.h
-@@ -39,6 +39,8 @@ struct off_flag_def {
- extern const struct off_flag_def off_flag_def[OFF_FLAG_DEF_SIZE];
+ 	const struct nlattr *tb[ETHTOOL_A_LINKSTATE_MAX + 1] = {};
+@@ -622,9 +673,11 @@ int linkstate_reply_cb(const struct nlmsghdr *nlhdr, void *data)
  
- void print_flags(const struct flag_info *info, unsigned int n_info, u32 value);
-+const char *link_ext_state_get(uint8_t link_ext_state_val);
-+const char *link_ext_substate_get(uint8_t link_ext_state_val, uint8_t link_ext_substate_val);
- int dump_wol(struct ethtool_wolinfo *wol);
- void dump_mdix(u8 mdix, u8 mdix_ctrl);
+ 	if (tb[ETHTOOL_A_LINKSTATE_LINK]) {
+ 		uint8_t val = mnl_attr_get_u8(tb[ETHTOOL_A_LINKSTATE_LINK]);
+-
+-		print_banner(nlctx);
+-		printf("\tLink detected: %s\n", val ? "yes" : "no");
++		ret = linkstate_link_ext_state_print(tb, nlctx, val);
++		if (ret < 0) {
++			print_banner(nlctx);
++			printf("\tLink detected: %s\n", val ? "yes" : "no");
++		}
+ 	}
  
+ 	if (tb[ETHTOOL_A_LINKSTATE_SQI]) {
 -- 
 2.20.1
 
