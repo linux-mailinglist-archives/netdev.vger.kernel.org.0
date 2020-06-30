@@ -2,178 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03EDB20FFDF
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 00:07:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EB4220FFF9
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 00:18:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726294AbgF3WHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 18:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39840 "EHLO
+        id S1726146AbgF3WSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 18:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725862AbgF3WHV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 18:07:21 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA011C061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:07:20 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id j202so10872372ybg.6
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:07:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=691b3xWfqIBa1A1wsIV3iMy/Zs9rJUYoT5w1uX/0Ctk=;
-        b=W96sXiTMhMyQM40ezkwKcWl+p3JTm44BhAl41PNAbXajbsh/879d3cx2+T9sAzP+XT
-         JInNu1eWE2g6KkBE9tWdwMFUn4Pb3EcbVu481NVBBPvKEyHQ9QoxwM5YglPpX6lXnIa2
-         pCX/l1f+52YbVGxWAoTB0TLJ7xIOrob1omaNexPwajinFg79X46+HciWQip+quBCUA7d
-         7Wn6PSer4JQVFVWgV6S5CbxtVzbWXivtUynxAMqr83qN0NCEdJYl1utckMyy6yd37CC2
-         q3lAflfTPwKgL9c2XUdrhu/z1niqzutO7Ohw/g9g029a+f9PrqJeiB3eBWejrqvRHozr
-         Ntbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=691b3xWfqIBa1A1wsIV3iMy/Zs9rJUYoT5w1uX/0Ctk=;
-        b=ZKpWDOe2sVuO5UMqC3+B+3a5LuPkS1KMNutXJz1N8vceykuSTX2e/QS6rDV+uNBZnb
-         0WEUhI6k2oZX1GUGWrOfNayw3Ke3zI7rvZwhGiRpWXYcknwB/KBHW+znz6rR7vtQqO5s
-         f9A+4+PZt7qgHRe+NjqlS1MUQE/5958+FTnoE2AJvA6iBmn1L8EJzgi4knt+zipeLal/
-         qedtdlPk3qX9T1bESfBtbT32oT262LcSntkJsi50EMTgCfr2P7mTjlqc4WgHPEYsnjpd
-         u9WHaGzv90X6vh/SfJetdj1fHeTrefdLnYAfsYXyjjWGtqdHe48dRtf0WT115ugCUYXC
-         PB9Q==
-X-Gm-Message-State: AOAM533jAp/T/TFVG9BgCYA5Rm7FS3krEnycpUxXdKlOn1AioX7nOIcO
-        vepajKFVwu8g9RJXy2+DeWV83e9LlJH3s1MAf35YCg==
-X-Google-Smtp-Source: ABdhPJzkTS1NFp9xnWmvdli40oBisekjgROtD4WCRD1u3n3F6Pj+65dZ+aHyhk2C+MrAMHUg/GQrEl59+6qXz/hixL8=
-X-Received: by 2002:a25:ec0d:: with SMTP id j13mr35035984ybh.364.1593554839938;
- Tue, 30 Jun 2020 15:07:19 -0700 (PDT)
+        with ESMTP id S1725862AbgF3WSc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 18:18:32 -0400
+X-Greylist: delayed 319 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 30 Jun 2020 15:18:31 PDT
+Received: from mx.0dd.nl (mx.0dd.nl [IPv6:2a04:52c0:101:921::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E360AC061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:18:31 -0700 (PDT)
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd00::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id 650AD5FB74;
+        Wed,  1 Jul 2020 00:13:09 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="LYRwAQNl";
+        dkim-atps=neutral
+Received: from www (unknown [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id D3E635CFF4B;
+        Wed,  1 Jul 2020 00:13:08 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com D3E635CFF4B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1593555188;
+        bh=XTz0paxDM1Yi/a4RKZgjoWq9yHuQiv0XHkCP5Yc5vec=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LYRwAQNlHvUjtPqTdIyGmY9340SKNB1TOccXYW6WYMAhE6xz4F/gL3N5QDhGTg+EY
+         /kz2wpEv2zp1KAD3XhRR9X8HtqBLj6/bZF5hbZEsfI1kfebVdimq4fy4qMlxxV9lIn
+         qNjxbdqgJky0aHQmXIxP17NyaNJOBRYOjFIED/egIEjhHIAfeRN88Llne4/UbkWQTc
+         O0ibsqCPM/cJL/WZMr77o6fxwvmP8NVpm/LKyfuvesef8aXJENJh6HDu5UK8DnGrIX
+         /Lnl95JaUpNT1kEQXACtr5ob62tpfWXUY0JlMw2/z2oPDqZoO9g7Kt9hG0Rbq20KGJ
+         BfnW7Bu+gqjRA==
+Received: from dns.lan.vdorst.com (dns.lan.vdorst.com [192.168.2.250]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Tue, 30 Jun 2020 22:13:08 +0000
+Date:   Tue, 30 Jun 2020 22:13:08 +0000
+Message-ID: <20200630221308.Horde.maavwLQud2YnxIT-0uQAH4l@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH RFC net-next] net: mtk_eth_soc: use resolved link config
+ for PCS PHY
+References: <E1jqDIk-0004m5-0L@rmk-PC.armlinux.org.uk>
+ <20200630104613.GB1551@shell.armlinux.org.uk>
+In-Reply-To: <20200630104613.GB1551@shell.armlinux.org.uk>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-References: <CAHk-=wjEghg5_pX_GhNP+BfcUK6CRZ+4mh3bciitm9JwXvR7aQ@mail.gmail.com>
- <312079189.17903.1593549293094.JavaMail.zimbra@efficios.com>
- <CANn89iJ+rkMrLrHrKXO-57frXNb32epB93LYLRuHX00uWc-0Uw@mail.gmail.com>
- <20200630.134429.1590957032456466647.davem@davemloft.net> <CANn89i+b-LeaPvaaHvj0yc0mJ2qwZ0981fQHVp0+sqXYp=kdkA@mail.gmail.com>
- <474095696.17969.1593551866537.JavaMail.zimbra@efficios.com>
- <CANn89iKK2+pznYZoKZzdCu4qkA7BjJZFqc6ABof4iaS-T-9_aw@mail.gmail.com> <CANn89i+_DUrKROb1Zkk_nmngkD=oy9UjbxwnkgyzGB=z+SKg3g@mail.gmail.com>
-In-Reply-To: <CANn89i+_DUrKROb1Zkk_nmngkD=oy9UjbxwnkgyzGB=z+SKg3g@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 30 Jun 2020 15:07:08 -0700
-Message-ID: <CANn89iJJ_WR-jGQogU3-arjD6=xcU9VWzJYSOLbyD94JQo-zAQ@mail.gmail.com>
-Subject: Re: [regression] TCP_MD5SIG on established sockets
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Jonathan Rajotte-Julien <joraj@efficios.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 2:54 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Tue, Jun 30, 2020 at 2:23 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Tue, Jun 30, 2020 at 2:17 PM Mathieu Desnoyers
-> > <mathieu.desnoyers@efficios.com> wrote:
-> > >
-> > > ----- On Jun 30, 2020, at 4:56 PM, Eric Dumazet edumazet@google.com wrote:
-> > >
-> > > > On Tue, Jun 30, 2020 at 1:44 PM David Miller <davem@davemloft.net> wrote:
-> > > >>
-> > > >> From: Eric Dumazet <edumazet@google.com>
-> > > >> Date: Tue, 30 Jun 2020 13:39:27 -0700
-> > > >>
-> > > >> > The (C) & (B) case are certainly doable.
-> > > >> >
-> > > >> > A) case is more complex, I have no idea of breakages of various TCP
-> > > >> > stacks if a flow got SACK
-> > > >> > at some point (in 3WHS) but suddenly becomes Reno.
-> > > >>
-> > > >> I agree that C and B are the easiest to implement without having to
-> > > >> add complicated code to handle various negotiated TCP option
-> > > >> scenerios.
-> > > >>
-> > > >> It does seem to be that some entities do A, or did I misread your
-> > > >> behavioral analysis of various implementations Mathieu?
-> > > >>
-> > > >> Thanks.
-> > > >
-> > > > Yes, another question about Mathieu cases is do determine the behavior
-> > > > of all these stacks vs :
-> > > > SACK option
-> > > > TCP TS option.
-> > >
-> > > I will ask my customer's networking team to investigate these behaviors,
-> > > which will allow me to prepare a thorough reply to the questions raised
-> > > by Eric and David. I expect to have an answer within 2-3 weeks at most.
-> > >
-> > > Thank you!
-> >
-> >
-> > Great, I am working on adding back support for (B) & (C) by the end of
-> > this week.
->
-> Note that the security issue (of sending uninit bytes to the wire) has
-> been independently fixed with [1]
->
-> This means syzbot was able to have MD5+TS+SACK  ~6 months ago.
->
-> It seems we (linux) do not enable this combination for PASSIVE flows,
-> (according to tcp_synack_options()),
-> but  for ACTIVE flows we do nothing special.
->
-> So maybe code in tcp_synack_options() should be mirrored to
-> tcp_syn_options() for consistency.
-> (disabling TS if  both MD5 and SACK are enabled)
+Hi Russel and Sean,
 
-Oh well, tcp_syn_options() is supposed to have the same logic.
+Quoting Russell King - ARM Linux admin <linux@armlinux.org.uk>:
 
-Maybe we have an issue with SYNCOOKIES (with MD5 + TS + SACK)
+> On Tue, Jun 30, 2020 at 11:15:42AM +0100, Russell King wrote:
+>> The SGMII PCS PHY needs to be updated with the link configuration in
+>> the mac_link_up() call rather than in mac_config().  However,
+>> mtk_sgmii_setup_mode_force() programs the SGMII block during
+>> mac_config() when using 802.3z interface modes with the link
+>> configuration.
+>>
+>> Split that functionality from mtk_sgmii_setup_mode_force(), moving it
+>> to a new mtk_sgmii_link_up() function, and call it from mac_link_up().
+>>
+>> This does not look correct to me: 802.3z modes operate at a fixed
+>> speed.  The contents of mtk_sgmii_link_up() look more appropriate for
+>> SGMII mode, but the original code definitely did not call
+>> mtk_sgmii_setup_mode_force() for SGMII mode but only 802.3z mode.
+>>
+>> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+>> ---
+>> René, can you assist with this patch please - I really think there are
+>> problems with the existing code.  You call mtk_sgmii_setup_mode_force()
+>> in a block which is conditionalised as:
+>>
+>> 	if (state->interface == PHY_INTERFACE_MODE_SGMII ||
+>> 	    phy_interface_mode_is_8023z(state->interface)) {
+>> ...
+>> 		if (state->interface != PHY_INTERFACE_MODE_SGMII)
+>> 			err = mtk_sgmii_setup_mode_force(eth->sgmii, sid,
+>> 							 state);
+>>
+>> Hence, mtk_sgmii_setup_mode_force() is only called for 1000BASE-X and
+>> 2500BASE-X, which do not support anything but their native speeds.
+>> Yet, mtk_sgmii_setup_mode_force() tries to program the SGMII for 10M
+>> and 100M.
+>>
+>> Note that this patch is more about moving uses of state->{speed,duplex}
+>> into mac_link_up(), rather than fixing this problem, but I don't think
+>> the addition in mtk_mac_link_up(), nor mtk_sgmii_link_up() is of any
+>> use.
+>
+> My Coccinelle script just found this use of state->{speed,duplex} still
+> remaining:
+>
+>                         if (MTK_HAS_CAPS(mac->hw->soc->caps,
+>                                          MTK_TRGMII_MT7621_CLK)) {
+> ...
+>                         } else {
+>                                 if (state->interface !=
+>                                     PHY_INTERFACE_MODE_TRGMII)
+>                                         mtk_gmac0_rgmii_adjust(mac->hw,
+>                                                                state->speed);
+>
+> which also needs to be eliminated.  Can that also be moved to
+> mtk_mac_link_up()?
 
-Nice can of worms.
+I know, you have pointed that out before. But I don't know how to fix
+mtk_gmac0_rgmii_adjust(). This function changes the PLL of the MAC.  
+But without
+documentation I am not sure what all the bits are used for.
+
+Begin April I had a conversation with Sean about this. I also  
+explained what the
+issue was. AFAIK he was going to take care of this issue.
+
+Sean did you had time to resolve this issue?
+
+Greats,
+
+René
 
 >
-> [1]
+> Thanks.
 >
-> commit 9424e2e7ad93ffffa88f882c9bc5023570904b55
-> Author: Eric Dumazet <edumazet@google.com>
-> Date:   Thu Dec 5 10:10:15 2019 -0800
+>>
+>> Thanks.
+>>
+>>  drivers/net/ethernet/mediatek/mtk_eth_soc.c |  9 ++++-
+>>  drivers/net/ethernet/mediatek/mtk_eth_soc.h |  3 +-
+>>  drivers/net/ethernet/mediatek/mtk_sgmii.c   | 37 +++++++++++++++------
+>>  3 files changed, 36 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c  
+>> b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+>> index 20db302d31ce..ef9ec3b6a5c8 100644
+>> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+>> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+>> @@ -326,7 +326,7 @@ static void mtk_mac_config(struct  
+>> phylink_config *config, unsigned int mode,
+>>  		/* Setup SGMIISYS with the determined property */
+>>  		if (state->interface != PHY_INTERFACE_MODE_SGMII)
+>>  			err = mtk_sgmii_setup_mode_force(eth->sgmii, sid,
+>> -							 state);
+>> +							 state->interface);
+>>  		else if (phylink_autoneg_inband(mode))
+>>  			err = mtk_sgmii_setup_mode_an(eth->sgmii, sid);
+>>
+>> @@ -423,6 +423,13 @@ static void mtk_mac_link_up(struct  
+>> phylink_config *config,
+>>  					   phylink_config);
+>>  	u32 mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
+>>
+>> +	if (phy_interface_mode_is_8023z(interface)) {
+>> +		/* Decide how GMAC and SGMIISYS be mapped */
+>> +		int sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?
+>> +			   0 : mac->id;
+>> +		mtk_sgmii_link_up(eth->sgmii, sid, speed, duplex);
+>> +	}
+>> +
+>>  	mcr &= ~(MAC_MCR_SPEED_100 | MAC_MCR_SPEED_1000 |
+>>  		 MAC_MCR_FORCE_DPX | MAC_MCR_FORCE_TX_FC |
+>>  		 MAC_MCR_FORCE_RX_FC);
+>> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h  
+>> b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+>> index 454cfcd465fd..6f4b99bb7bfb 100644
+>> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+>> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+>> @@ -932,7 +932,8 @@ int mtk_sgmii_init(struct mtk_sgmii *ss, struct  
+>> device_node *np,
+>>  		   u32 ana_rgc3);
+>>  int mtk_sgmii_setup_mode_an(struct mtk_sgmii *ss, int id);
+>>  int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
+>> -			       const struct phylink_link_state *state);
+>> +			       phy_interface_t interface);
+>> +void mtk_sgmii_link_up(struct mtk_sgmii *ss, int id, int speed,  
+>> int duplex);
+>>  void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id);
+>>
+>>  int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id);
+>> diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c  
+>> b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+>> index 32d83421226a..372c85c830b5 100644
+>> --- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
+>> +++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+>> @@ -60,7 +60,7 @@ int mtk_sgmii_setup_mode_an(struct mtk_sgmii *ss, int id)
+>>  }
+>>
+>>  int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
+>> -			       const struct phylink_link_state *state)
+>> +			       phy_interface_t interface)
+>>  {
+>>  	unsigned int val;
+>>
+>> @@ -69,7 +69,7 @@ int mtk_sgmii_setup_mode_force(struct mtk_sgmii  
+>> *ss, int id,
+>>
+>>  	regmap_read(ss->regmap[id], ss->ana_rgc3, &val);
+>>  	val &= ~RG_PHY_SPEED_MASK;
+>> -	if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
+>> +	if (interface == PHY_INTERFACE_MODE_2500BASEX)
+>>  		val |= RG_PHY_SPEED_3_125G;
+>>  	regmap_write(ss->regmap[id], ss->ana_rgc3, val);
+>>
+>> @@ -78,11 +78,33 @@ int mtk_sgmii_setup_mode_force(struct mtk_sgmii  
+>> *ss, int id,
+>>  	val &= ~SGMII_AN_ENABLE;
+>>  	regmap_write(ss->regmap[id], SGMSYS_PCS_CONTROL_1, val);
+>>
+>> +	if (interface == PHY_INTERFACE_MODE_1000BASEX ||
+>> +	    interface == PHY_INTERFACE_MODE_2500BASEX) {
+>> +		/* SGMII force mode setting */
+>> +		regmap_read(ss->regmap[id], SGMSYS_SGMII_MODE, &val);
+>> +		val &= ~SGMII_IF_MODE_MASK;
+>> +		val |= SGMII_SPEED_1000;
+>> +		val |= SGMII_DUPLEX_FULL;
+>> +		regmap_write(ss->regmap[id], SGMSYS_SGMII_MODE, val);
+>> +	}
+>> +
+>> +	/* Release PHYA power down state */
+>> +	regmap_read(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, &val);
+>> +	val &= ~SGMII_PHYA_PWD;
+>> +	regmap_write(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, val);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +void mtk_sgmii_link_up(struct mtk_sgmii *ss, int id, int speed, int duplex)
+>> +{
+>> +	unsigned int val;
+>> +
+>>  	/* SGMII force mode setting */
+>>  	regmap_read(ss->regmap[id], SGMSYS_SGMII_MODE, &val);
+>>  	val &= ~SGMII_IF_MODE_MASK;
+>>
+>> -	switch (state->speed) {
+>> +	switch (speed) {
+>>  	case SPEED_10:
+>>  		val |= SGMII_SPEED_10;
+>>  		break;
+>> @@ -95,17 +117,10 @@ int mtk_sgmii_setup_mode_force(struct  
+>> mtk_sgmii *ss, int id,
+>>  		break;
+>>  	}
+>>
+>> -	if (state->duplex == DUPLEX_FULL)
+>> +	if (duplex == DUPLEX_FULL)
+>>  		val |= SGMII_DUPLEX_FULL;
+>>
+>>  	regmap_write(ss->regmap[id], SGMSYS_SGMII_MODE, val);
+>> -
+>> -	/* Release PHYA power down state */
+>> -	regmap_read(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, &val);
+>> -	val &= ~SGMII_PHYA_PWD;
+>> -	regmap_write(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, val);
+>> -
+>> -	return 0;
+>>  }
+>>
+>>  void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id)
+>> --
+>> 2.20.1
+>>
+>>
 >
->     tcp: md5: fix potential overestimation of TCP option space
->
->     Back in 2008, Adam Langley fixed the corner case of packets for flows
->     having all of the following options : MD5 TS SACK
->
->     Since MD5 needs 20 bytes, and TS needs 12 bytes, no sack block
->     can be cooked from the remaining 8 bytes.
->
->     tcp_established_options() correctly sets opts->num_sack_blocks
->     to zero, but returns 36 instead of 32.
->
->     This means TCP cooks packets with 4 extra bytes at the end
->     of options, containing unitialized bytes.
->
->     Fixes: 33ad798c924b ("tcp: options clean up")
->     Signed-off-by: Eric Dumazet <edumazet@google.com>
->     Reported-by: syzbot <syzkaller@googlegroups.com>
->     Acked-by: Neal Cardwell <ncardwell@google.com>
->     Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
->
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index be6d22b8190fa375074062032105879270af4be5..b184f03d743715ef4b2d166ceae651529be77953
-> 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -755,8 +755,9 @@ static unsigned int tcp_established_options(struct
-> sock *sk, struct sk_buff *skb
->                         min_t(unsigned int, eff_sacks,
->                               (remaining - TCPOLEN_SACK_BASE_ALIGNED) /
->                               TCPOLEN_SACK_PERBLOCK);
-> -               size += TCPOLEN_SACK_BASE_ALIGNED +
-> -                       opts->num_sack_blocks * TCPOLEN_SACK_PERBLOCK;
-> +               if (likely(opts->num_sack_blocks))
-> +                       size += TCPOLEN_SACK_BASE_ALIGNED +
-> +                               opts->num_sack_blocks * TCPOLEN_SACK_PERBLOCK;
->         }
->
->         return size;
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+
+
