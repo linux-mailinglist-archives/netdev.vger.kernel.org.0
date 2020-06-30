@@ -2,171 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9434920F071
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 10:26:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A8720F07B
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 10:28:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731400AbgF3I0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 04:26:35 -0400
-Received: from mail-eopbgr60083.outbound.protection.outlook.com ([40.107.6.83]:60928
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728064AbgF3I0d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 04:26:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lfLE0eWKvwR0AHL/fy72FqtrfIvS8SNDz9RPvEdeBVPYA89SlwqeXYquXdp4mzGi1uijFV5R995uYYkcj3XlrGKWWBiM9Qk7DLGzP8+14TQIYhCYUN/c+k8QsXY7eKTp8lF6bFwW5+cIhurK33oMqC5fh65FYwyH/iklgWCHku19vt5yo7Cl1PLN6nYrW0RWFV8abYi1NqcD96Zcnsl0yL0uFoXAoHP7FGZlYxMjj4WEYKCUifyfTL40gEgny8xwBkyyPhH2STEL6Ks4F4a9WEN+IzsfIVuT6WgUiivUwi2UOnG8RBQ/qPhlXLNB9VMCAYEpTbzWCVEE1xHHEJ1osQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RxBVkApgYSbizHs6JnecJv7aWfC2raB1/8JV7tY6vu8=;
- b=lFHKCjSqiOz2TYVtEqMyuDXIPZaz/GXJpzBxZNcrr6iZyfho2aIb/Gbx2jQkIr58pm4izPlMu9OE7yn2AtQ8pp5FQDROTiGkBwzrdg7/gi8TyQJpcOPJEKlDTsWk+imlTc28QTaZRzE3owkBD4IFTUwC5cvnmesoH7w3cN00MRwZ5Byxz4oSBKvsgH/znjFTY+xQPJV3YEnMQieDhCVGlDVv/Kizd8htTH0qU6knMoWJvhcblpdkD1AFpjYkwxvy9H0jWGn1lkJ9Wzv4a4MdFUdg6NkAWIPIujiki26LqI6vCd/rw/2uCyBC0sfSG0MwJLQGknWRtg6aCCIWDQKCBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RxBVkApgYSbizHs6JnecJv7aWfC2raB1/8JV7tY6vu8=;
- b=P4ubI2h3EgtFQRjQT3/aulQfantL454zyRBAcJ7iygdZPRI0LlaLjBcvs8FD+m66tNxLjz2/iNMYT5Y8IeD6wnbgNUSHekMnTP+p9ayTTVGMqwxZRBksHDCTNRTxR3SaP/nX4nZm7I63heWHcplCkRki6msm9SMKeapMyzpQ8S4=
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18) by AM7PR04MB6903.eurprd04.prod.outlook.com
- (2603:10a6:20b:10d::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20; Tue, 30 Jun
- 2020 08:26:28 +0000
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3131.027; Tue, 30 Jun 2020
- 08:26:28 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>,
-        David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH net-next] net: ethernet: fec: prevent tx
- starvation under high rx load
-Thread-Topic: [EXT] Re: [PATCH net-next] net: ethernet: fec: prevent tx
- starvation under high rx load
-Thread-Index: AQHWSyWV3hyWvPwI+E6K+muw3DPNvajtkJeQgAI97gCAAOkCsIAAEuSAgAAPKTA=
-Date:   Tue, 30 Jun 2020 08:26:28 +0000
-Message-ID: <AM6PR0402MB3607E5066DA857CD4D9B33A3FF6F0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
-References: <AM6PR0402MB36075CF372D7A31932E32B60FF6F0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
- <C3U9EFL9CA15.QDKTU9Y4EZXM@wkz-x280>
-In-Reply-To: <C3U9EFL9CA15.QDKTU9Y4EZXM@wkz-x280>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: waldekranz.com; dkim=none (message not signed)
- header.d=none;waldekranz.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.67]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 0cdf06fa-7451-4dab-1ea7-08d81ccf4923
-x-ms-traffictypediagnostic: AM7PR04MB6903:
-x-microsoft-antispam-prvs: <AM7PR04MB6903904AEE5B3AD592A8CFCCFF6F0@AM7PR04MB6903.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0450A714CB
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: BCVJalf2Kcabr+dgyMc94GigfDG0zERnkpRRBowzDbMwqQ//c0L+9jn23kpiCYyRo4jpV8xEVksXPr2ETHkbsJTx732EHlIfqPALwlRzgLxZDfCcsfkURNKPRyiXbBDucXv9A8FwnsSN6iOZ+PmB7+2N/EX++5AwU9crQ3BIshIyp76aWFx7PoDznTRBqZRIWWPfZ5C1ZHbfIz9qb4LH4Q17vbqUSUhFUGqXhWz5FrnIa3HQKm18rWxgxre8xEoFXpgDfB42TVLV3tqaXb7rRphwVs9UD/7FN3EEPUPExREt+4qmDjnS9d/0VI1WIk8B+UW5GtBYaCJgx8LzoUc9eCE2FDaRinfYtI5Ar1wokLVG2o0f7A8y/XZsNb6QUbrvx7norbDvO2bOg3PVKYiJdg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(366004)(396003)(376002)(346002)(86362001)(6506007)(5660300002)(83380400001)(76116006)(52536014)(66556008)(66476007)(66946007)(66446008)(64756008)(55016002)(71200400001)(9686003)(966005)(316002)(478600001)(4326008)(110136005)(8676002)(8936002)(83080400001)(26005)(45080400002)(33656002)(7696005)(2906002)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 7sz+7szDfR5V7yHTS1lsKXqw/zHi9492f+u9mFlwIMYYKuy7t5RtscwoYNVWC+V5YtdSGfgNHL4UJHnPsWyxZh1ltszDfHzertfe2b6kJ2G9ciONm3imPYQEYlpizbPlcEHP8/r04IqW1x+hxBfKhJW2qQVziF/X/XzaP1krhWBqENkXSkW70b1BaCr5ZTMespH46sQv0LvkLOusIABr1QymAZrRHpnT0+KavZc4UvXcicc5LrjpeRrk92GTAo35pJc0EM2mQRSM1V4dIJtJYiV+6eELusKYAd5ii0EcfzTz/Dik/W4FuMyyf8nAXa8f4z0jjRIKOxgWOt3vqabsH5ej42h+5RYN/BhYkKwHTgUwFUyChWxpbSa9LKU031tg8a0BBGIdZiHs14QuuNyB7e+mlUb8FSbTmyXSiR2o2AUyGw4FQF4I0wkNePG730B6B2WSJhbI3V6b5y+ucX3kK0jt0OBB/oB4kD6RwsS94AWbuCGY5jbkEtJ8kiVxDuj5
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1731469AbgF3I2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 04:28:00 -0400
+Received: from simonwunderlich.de ([79.140.42.25]:44300 "EHLO
+        simonwunderlich.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731393AbgF3I1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 04:27:54 -0400
+Received: from kero.packetmixer.de (p4fd575ab.dip0.t-ipconnect.de [79.213.117.171])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by simonwunderlich.de (Postfix) with ESMTPSA id 87C3C6205B;
+        Tue, 30 Jun 2020 10:27:51 +0200 (CEST)
+From:   Simon Wunderlich <sw@simonwunderlich.de>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
+        Simon Wunderlich <sw@simonwunderlich.de>
+Subject: [PATCH 0/4] pull request for net-next: batman-adv 2020-06-26
+Date:   Tue, 30 Jun 2020 10:27:27 +0200
+Message-Id: <20200630082731.2397-1-sw@simonwunderlich.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3607.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0cdf06fa-7451-4dab-1ea7-08d81ccf4923
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2020 08:26:28.2798
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: uKS78AMnl7pH3Rq3DvUHTbPEsi3hmi6FFi9WLzPMNLB4+VslZQNJX5geLNVOCjjPt5kxrXCmywRcmTEeyjqC9g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6903
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogVG9iaWFzIFdhbGRla3JhbnogPHRvYmlhc0B3YWxkZWtyYW56LmNvbT4gU2VudDogVHVl
-c2RheSwgSnVuZSAzMCwgMjAyMCAzOjMxIFBNDQo+IE9uIFR1ZSBKdW4gMzAsIDIwMjAgYXQgODoy
-NyBBTSBDRVNULCBBbmR5IER1YW4gd3JvdGU6DQo+ID4gRnJvbTogVG9iaWFzIFdhbGRla3Jhbnog
-PHRvYmlhc0B3YWxkZWtyYW56LmNvbT4gU2VudDogVHVlc2RheSwgSnVuZQ0KPiA+IDMwLA0KPiA+
-IDIwMjAgMTI6MjkgQU0NCj4gPiA+IE9uIFN1biBKdW4gMjgsIDIwMjAgYXQgODoyMyBBTSBDRVNU
-LCBBbmR5IER1YW4gd3JvdGU6DQo+ID4gPiA+IEkgbmV2ZXIgc2VlbSBiYW5kd2lkdGggdGVzdCBj
-YXVzZSBuZXRkZXYgd2F0Y2hkb2cgdHJpcC4NCj4gPiA+ID4gQ2FuIHlvdSBkZXNjcmliZSB0aGUg
-cmVwcm9kdWNlIHN0ZXBzIG9uIHRoZSBjb21taXQsIHRoZW4gd2UgY2FuDQo+ID4gPiA+IHJlcHJv
-ZHVjZSBpdCBvbiBteSBsb2NhbC4gVGhhbmtzLg0KPiA+ID4NCj4gPiA+IE15IHNldHVwIHVzZXMg
-YSBpLk1YOE0gTmFubyBFVksgY29ubmVjdGVkIHRvIGFuIGV0aGVybmV0IHN3aXRjaCwgYnV0DQo+
-ID4gPiBjYW4gZ2V0IHRoZSBzYW1lIHJlc3VsdHMgd2l0aCBhIGRpcmVjdCBjb25uZWN0aW9uIHRv
-IGEgUEMuDQo+ID4gPg0KPiA+ID4gT24gdGhlIGlNWCwgY29uZmlndXJlIHR3byBWTEFOcyBvbiB0
-b3Agb2YgdGhlIEZFQyBhbmQgZW5hYmxlIElQdjQNCj4gPiA+IGZvcndhcmRpbmcuDQo+ID4gPg0K
-PiA+ID4gT24gdGhlIFBDLCBjb25maWd1cmUgdHdvIFZMQU5zIGFuZCBwdXQgdGhlbSBpbiBkaWZm
-ZXJlbnQgbmFtZXNwYWNlcy4NCj4gPiA+IEZyb20gb25lIG5hbWVzcGFjZSwgdXNlIHRyYWZnZW4g
-dG8gZ2VuZXJhdGUgYSBmbG93IHRoYXQgdGhlIGlNWCB3aWxsDQo+ID4gPiByb3V0ZSBmcm9tIHRo
-ZSBmaXJzdCBWTEFOIHRvIHRoZSBzZWNvbmQgYW5kIHRoZW4gYmFjayB0b3dhcmRzIHRoZQ0KPiA+
-ID4gc2Vjb25kIG5hbWVzcGFjZSBvbiB0aGUgUEMuDQo+ID4gPg0KPiA+ID4gU29tZXRoaW5nIGxp
-a2U6DQo+ID4gPg0KPiA+ID4gICAgIHsNCj4gPiA+ICAgICAgICAgZXRoKHNhPVBDX01BQywgZGE9
-SU1YX01BQyksDQo+ID4gPiAgICAgICAgIGlwdjQoc2FkZHI9MTAuMC4yLjIsIGRhZGRyPTEwLjAu
-My4yLCB0dGw9MikNCj4gPiA+ICAgICAgICAgdWRwKHNwPTEsIGRwPTIpLA0KPiA+ID4gICAgICAg
-ICAiSGVsbG8gd29ybGQiDQo+ID4gPiAgICAgfQ0KPiA+ID4NCj4gPiA+IFdhaXQgYSBjb3VwbGUg
-b2Ygc2Vjb25kcyBhbmQgdGhlbiB5b3UnbGwgc2VlIHRoZSBvdXRwdXQgZnJvbSBmZWNfZHVtcC4N
-Cj4gPiA+DQo+ID4gPiBJbiB0aGUgc2FtZSBzZXR1cCBJIGFsc28gc2VlIGEgd2VpcmQgaXNzdWUg
-d2hlbiBydW5uaW5nIGEgVENQIGZsb3cNCj4gPiA+IHVzaW5nIGlwZXJmMy4gTW9zdCBvZiB0aGUg
-dGltZSAofjcwJSkgd2hlbiBpIHN0YXJ0IHRoZSBpcGVyZjMgY2xpZW50DQo+ID4gPiBJJ2xsIHNl
-ZSB+NDUwTWJwcyBvZiB0aHJvdWdocHV0LiBJbiB0aGUgb3RoZXIgY2FzZSAofjMwJSkgSSdsbCBz
-ZWUNCj4gPiA+IH43OTBNYnBzLiBUaGUgc3lzdGVtIGlzICJzdGFibHkgYmktbW9kYWwiLCBpLmUu
-IHdoaWNoZXZlciByYXRlIGlzDQo+ID4gPiByZWFjaGVkIGluIHRoZSBiZWdpbm5pbmcgaXMgdGhl
-biBzdXN0YWluZWQgZm9yIGFzIGxvbmcgYXMgdGhlIHNlc3Npb24gaXMga2VwdA0KPiBhbGl2ZS4N
-Cj4gPiA+DQo+ID4gPiBJJ3ZlIGluc2VydGVkIHNvbWUgdHJhY2Vwb2ludHMgaW4gdGhlIGRyaXZl
-ciB0byB0cnkgdG8gdW5kZXJzdGFuZA0KPiA+ID4gd2hhdCdzIGdvaW5nDQo+ID4gPiBvbjoNCj4g
-PiA+IGh0dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD1o
-dHRwcyUzQSUyRiUyRnN2DQo+ID4gPiBnc2hhDQo+IHJlLmNvbSUyRmklMkZNVnAuc3ZnJmFtcDtk
-YXRhPTAyJTdDMDElN0NmdWdhbmcuZHVhbiU0MG54cC5jb20lDQo+ID4gPg0KPiA3QzEyODU0ZTIx
-ZWExMjRiNGNjMmUwMDhkODFjNTlkNjE4JTdDNjg2ZWExZDNiYzJiNGM2ZmE5MmNkOTljNWMNCj4g
-PiA+DQo+IDMwMTYzNSU3QzAlN0MwJTdDNjM3MjkwNTE5NDUzNjU2MDEzJmFtcDtzZGF0YT1ieTRT
-aE9rbVRhUmtGZkUNCj4gPiA+IDB4SmtyVHB0QyUyQjJlZ0ZmOWlNNEU1aHg0amlTVSUzRCZhbXA7
-cmVzZXJ2ZWQ9MA0KPiA+ID4NCj4gPiA+IFdoYXQgSSBjYW4ndCBmaWd1cmUgb3V0IGlzIHdoeSB0
-aGUgVHggYnVmZmVycyBzZWVtIHRvIGJlIGNvbGxlY3RlZA0KPiA+ID4gYXQgYSBtdWNoIHNsb3dl
-ciByYXRlIGluIHRoZSBzbG93IGNhc2UgKHRvcCBpbiB0aGUgcGljdHVyZSkuIElmIHdlDQo+ID4g
-PiBmYWxsIGJlaGluZCBpbiBvbmUgTkFQSSBwb2xsLCB3ZSBzaG91bGQgY2F0Y2ggdXAgYXQgdGhl
-IG5leHQgY2FsbCAod2hpY2ggd2UNCj4gY2FuIHNlZSBpbiB0aGUgZmFzdCBjYXNlKS4NCj4gPiA+
-IEJ1dCBpbiB0aGUgc2xvdyBjYXNlIHdlIGtlZXAgZmFsbGluZyBmdXJ0aGVyIGFuZCBmdXJ0aGVy
-IGJlaGluZA0KPiA+ID4gdW50aWwgd2UgZnJlZXplIHRoZSBxdWV1ZS4gSXMgdGhpcyBzb21ldGhp
-bmcgeW91J3ZlIGV2ZXIgb2JzZXJ2ZWQ/IEFueQ0KPiBpZGVhcz8NCj4gPg0KPiA+IEJlZm9yZSwg
-b3VyIGNhc2VzIGRvbid0IHJlcHJvZHVjZSB0aGUgaXNzdWUsIGNwdSByZXNvdXJjZSBoYXMgYmV0
-dGVyDQo+ID4gYmFuZHdpZHRoIHRoYW4gZXRoZXJuZXQgdURNQSB0aGVuIHRoZXJlIGhhdmUgY2hh
-bmNlIHRvIGNvbXBsZXRlDQo+ID4gY3VycmVudCBOQVBJLiBUaGUgbmV4dCwgd29ya190eCBnZXQg
-dGhlIHVwZGF0ZSwgbmV2ZXIgY2F0Y2ggdGhlIGlzc3VlLg0KPiANCj4gSXQgYXBwZWFycyBpdCBo
-YXMgbm90aGluZyB0byBkbyB3aXRoIHJvdXRpbmcgYmFjayBvdXQgdGhyb3VnaCB0aGUgc2FtZQ0K
-PiBpbnRlcmZhY2UuDQo+IA0KPiBJIGdldCB0aGUgc2FtZSBiaS1tb2RhbCBiZWhhdmlvciBpZiBq
-dXN0IHJ1biB0aGUgaXBlcmYzIHNlcnZlciBvbiB0aGUgaU1YIGFuZA0KPiB0aGVuIGhhdmUgaXQg
-YmUgdGhlIHRyYW5zbWl0dGluZyBwYXJ0LCBpLmUuIG9uIHRoZSBQQyBJIHJ1bjoNCj4gDQo+ICAg
-ICBpcGVyZjMgLWMgJElNWF9JUCAtUg0KPiANCj4gSSB3b3VsZCBiZSB2ZXJ5IGludGVyZXN0aW5n
-IHRvIHNlZSB3aGF0IG51bWJlcnMgeW91IHNlZSBpbiB0aGlzIHNjZW5hcmlvLg0KSSBqdXN0IGhh
-dmUgb24gaW14OG1uIGV2ayBpbiBteSBoYW5kcywgYW5kIHJ1biB0aGUgY2FzZSwgdGhlIG51bWJl
-cnMgaXMgfjk0ME1icHMNCmFzIGJlbG93Lg0KDQpyb290QGlteDhtbmV2azp+IyBpcGVyZjMgLXMN
-Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tDQpTZXJ2ZXIgbGlzdGVuaW5nIG9uIDUyMDENCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQpBY2NlcHRlZCBjb25uZWN0aW9uIGZy
-b20gMTAuMTkyLjI0Mi4xMzIsIHBvcnQgNDM0MDINClsgIDVdIGxvY2FsIDEwLjE5Mi4yNDIuOTYg
-cG9ydCA1MjAxIGNvbm5lY3RlZCB0byAxMC4xOTIuMjQyLjEzMiBwb3J0IDQzNDA0DQpbIElEXSBJ
-bnRlcnZhbCAgICAgICAgICAgVHJhbnNmZXIgICAgIEJpdHJhdGUgICAgICAgICBSZXRyICBDd25k
-DQpbICA1XSAgIDAuMDAtMS4wMCAgIHNlYyAgIDEwOSBNQnl0ZXMgICA5MTMgTWJpdHMvc2VjICAg
-IDAgICAgNDI4IEtCeXRlcw0KWyAgNV0gICAxLjAwLTIuMDAgICBzZWMgICAxMTIgTUJ5dGVzICAg
-OTQzIE1iaXRzL3NlYyAgICAwICAgIDQ0NyBLQnl0ZXMNClsgIDVdICAgMi4wMC0zLjAwICAgc2Vj
-ICAgMTEyIE1CeXRlcyAgIDk0MSBNYml0cy9zZWMgICAgMCAgICA0NzIgS0J5dGVzDQpbICA1XSAg
-IDMuMDAtNC4wMCAgIHNlYyAgIDExMyBNQnl0ZXMgICA5NDQgTWJpdHMvc2VjICAgIDAgICAgNDcy
-IEtCeXRlcw0KWyAgNV0gICA0LjAwLTUuMDAgICBzZWMgICAxMTIgTUJ5dGVzICAgOTQyIE1iaXRz
-L3NlYyAgICAwICAgIDQ3MiBLQnl0ZXMNClsgIDVdICAgNS4wMC02LjAwICAgc2VjICAgMTEyIE1C
-eXRlcyAgIDkzNiBNYml0cy9zZWMgICAgMCAgICA0NzIgS0J5dGVzDQpbICA1XSAgIDYuMDAtNy4w
-MCAgIHNlYyAgIDExMyBNQnl0ZXMgICA5NDUgTWJpdHMvc2VjICAgIDAgICAgNDcyIEtCeXRlcw0K
-WyAgNV0gICA3LjAwLTguMDAgICBzZWMgICAxMTIgTUJ5dGVzICAgOTQ0IE1iaXRzL3NlYyAgICAw
-ICAgIDQ3MiBLQnl0ZXMNClsgIDVdICAgOC4wMC05LjAwICAgc2VjICAgMTEyIE1CeXRlcyAgIDk0
-MSBNYml0cy9zZWMgICAgMCAgICA0NzIgS0J5dGVzDQpbICA1XSAgIDkuMDAtMTAuMDAgIHNlYyAg
-IDExMiBNQnl0ZXMgICA5NDAgTWJpdHMvc2VjICAgIDAgICAgNDcyIEtCeXRlcw0KWyAgNV0gIDEw
-LjAwLTEwLjA0ICBzZWMgIDQuMTYgTUJ5dGVzICAgODczIE1iaXRzL3NlYyAgICAwICAgIDQ3MiBL
-Qnl0ZXMNCi0gLSAtIC0gLSAtIC0gLSAtIC0gLSAtIC0gLSAtIC0gLSAtIC0gLSAtIC0gLSAtIC0N
-ClsgSURdIEludGVydmFsICAgICAgICAgICBUcmFuc2ZlciAgICAgQml0cmF0ZSAgICAgICAgIFJl
-dHINClsgIDVdICAgMC4wMC0xMC4wNCAgc2VjICAxLjEwIEdCeXRlcyAgIDkzOSBNYml0cy9zZWMg
-ICAgMCAgICAgICAgICAgICBzZW5kZXINCg==
+Hi David,
+
+here is a little feature/cleanup pull request of batman-adv to go into net-next.
+
+Please pull or let me know of any problem!
+
+Thank you,
+      Simon
+
+The following changes since commit b3a9e3b9622ae10064826dccb4f7a52bd88c7407:
+
+  Linux 5.8-rc1 (2020-06-14 12:45:04 -0700)
+
+are available in the Git repository at:
+
+  git://git.open-mesh.org/linux-merge.git tags/batadv-next-for-davem-20200630
+
+for you to fetch changes up to 3bda14d09dc5789a895ab02b7dcfcec19b0a65b3:
+
+  batman-adv: Introduce a configurable per interface hop penalty (2020-06-26 10:37:11 +0200)
+
+----------------------------------------------------------------
+This feature/cleanup patchset includes the following patches:
+
+ - bump version strings, by Simon Wunderlich
+
+ - update mailing list URL, by Sven Eckelmann
+
+ - fix typos and grammar in documentation, by Sven Eckelmann
+
+ - introduce a configurable per interface hop penalty,
+   by Linus Luessing
+
+----------------------------------------------------------------
+Linus Lüssing (1):
+      batman-adv: Introduce a configurable per interface hop penalty
+
+Simon Wunderlich (1):
+      batman-adv: Start new development cycle
+
+Sven Eckelmann (2):
+      batman-adv: Switch mailing list subscription page
+      batman-adv: Fix typos and grammar in documentation
+
+ Documentation/networking/batman-adv.rst |  8 +++---
+ include/uapi/linux/batadv_packet.h      | 50 ++++++++++++++++-----------------
+ include/uapi/linux/batman_adv.h         |  7 +++--
+ net/batman-adv/bat_iv_ogm.c             | 25 +++++++++--------
+ net/batman-adv/bat_v_elp.c              | 10 +++----
+ net/batman-adv/bat_v_ogm.c              | 27 +++++++++++-------
+ net/batman-adv/bridge_loop_avoidance.c  |  6 ++--
+ net/batman-adv/distributed-arp-table.c  |  2 +-
+ net/batman-adv/fragmentation.c          |  6 ++--
+ net/batman-adv/hard-interface.c         | 16 ++++++-----
+ net/batman-adv/log.h                    |  6 ++--
+ net/batman-adv/main.c                   |  2 +-
+ net/batman-adv/main.h                   |  8 +++---
+ net/batman-adv/multicast.c              | 21 +++++++-------
+ net/batman-adv/netlink.c                | 14 +++++++--
+ net/batman-adv/network-coding.c         | 14 ++++-----
+ net/batman-adv/originator.c             |  8 +++---
+ net/batman-adv/routing.c                |  4 +--
+ net/batman-adv/send.c                   |  4 +--
+ net/batman-adv/soft-interface.c         |  2 +-
+ net/batman-adv/tp_meter.c               | 12 ++++----
+ net/batman-adv/translation-table.c      | 10 +++----
+ net/batman-adv/tvlv.c                   |  4 +--
+ net/batman-adv/types.h                  | 18 ++++++++----
+ 24 files changed, 156 insertions(+), 128 deletions(-)
