@@ -2,113 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8176220EF5B
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 09:32:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE05820EF9D
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 09:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731019AbgF3HcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 03:32:19 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:53666 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730089AbgF3HcT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 03:32:19 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id D375CF28A4BA8919D1DB;
-        Tue, 30 Jun 2020 15:32:16 +0800 (CST)
-Received: from [127.0.0.1] (10.174.178.46) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Tue, 30 Jun 2020
- 15:32:13 +0800
-Subject: Re: [net-next 10/10] net/mlx5e: Add support for PCI relaxed ordering
-To:     "Raj, Ashok" <ashok.raj@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>
-CC:     Aya Levin <ayal@mellanox.com>, Jakub Kicinski <kuba@kernel.org>,
-        "Saeed Mahameed" <saeedm@mellanox.com>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        <linux-pci@vger.kernel.org>,
-        Alexander Duyck <alexander.h.duyck@linux.intel.com>,
-        Casey Leedom <leedom@chelsio.com>
-References: <ca121a18-8c11-5830-9840-51f353c3ddd2@mellanox.com>
- <20200629193316.GA3283437@bjorn-Precision-5520>
- <20200629195759.GA255688@otc-nc-03>
-From:   Ding Tianhong <dingtianhong@huawei.com>
-Message-ID: <edad6af6-c7b9-c6ae-9002-71a92bcd81ee@huawei.com>
-Date:   Tue, 30 Jun 2020 15:32:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-In-Reply-To: <20200629195759.GA255688@otc-nc-03>
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.46]
-X-CFilter-Loop: Reflected
+        id S1731077AbgF3Hgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 03:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731033AbgF3Hgo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 03:36:44 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616F8C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 00:36:44 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id f2so8136614plr.8
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 00:36:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=nyPZ+yhG/9MphYqV/w1vI/pXRqBdFZ9sH6U6Ou9xjKk=;
+        b=jYRcYPrRgFjn32GQm6HOGtJYgUzsBKSVkew2BYXl3tPDiDoAaFGwy+b83BZsF9WeYu
+         02scE/Hz9HwCvJom8nLcJw+mJIJwd4xudUUAQqu4MNyhlZbpHjtfdPfLOfno9Le0gIje
+         8XBH9qdDwtdr4Yzds6mrtX7lttBl0U1LggslOG09PBs/kohmJOtQKsFFiuFzUVnIFcIh
+         /vKVvksEEBR4gAICjCMZC73yByEePl7UKyG27HLS/ia2LaBME3o5ayjMDNcB8YNry3qR
+         LeNYaf11hzJbIjLQFDiYzI/UVq8XY6jzhs+gKrBwmOSglK60WCq9TAH8wVc0uLdV5pmr
+         Eo4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=nyPZ+yhG/9MphYqV/w1vI/pXRqBdFZ9sH6U6Ou9xjKk=;
+        b=S276FECk9J/eBrVzKWjz4CEmF4+PTd6hCLHdxNp1McE4vCSVBFK/aRZAOfZ8Da7Mjs
+         d59BeDR991ypIGoFj7McntNoc0EsFV/p/i45cw480haWy47oyVc8z+6IQmJWHcUeFA65
+         cNuW/XH6cl8qtIXTAMqqA+VdayMMlT+RHMXNkmrCHPVDPv+JmDW11C48HUDKySKtaWD3
+         Vfac+AQZPqgDBv78vyoO4FDP4QDvj3Nda/Frs4LtsOXbgzYK/kz6VS1sarKWrzuhr5mn
+         MdkAXT1pOp7VLhx5r5DR3jo/5laQHiDrU3ZLOV2dNvU10iglbtV486HF8WuIoGJCUn3w
+         IN7g==
+X-Gm-Message-State: AOAM531EcgR5kirMAfpwJp+UkwhQxAsjvklxOCdl9GViduOg01YXoE8Z
+        JtQb5EdhJzq0FnsaXO61sm3kwHda
+X-Google-Smtp-Source: ABdhPJxlgmkv6H4Dw4bOtF/kP0BfoXa7/XcKTfQLvM0Xh/DLg4xhqzY1W7+OcleR++cdj+Tj28Gx5A==
+X-Received: by 2002:a17:902:3:: with SMTP id 3mr15289675pla.120.1593502603597;
+        Tue, 30 Jun 2020 00:36:43 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id j5sm1684066pgi.42.2020.06.30.00.36.42
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 30 Jun 2020 00:36:42 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCHv2 ipsec-next 00/10] xfrm: support ipip and ipv6 tunnels in vti and xfrmi
+Date:   Tue, 30 Jun 2020 15:36:25 +0800
+Message-Id: <cover.1593502515.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Now ipip and ipv6 tunnels processing is supported by xfrm4/6_tunnel,
+but not in vti and xfrmi. This feature is needed by processing those
+uncompressed small fragments and packets when using comp protocol.
+It means vti and xfrmi won't be able to accept small fragments or
+packets when using comp protocol, which is not expected.
+
+xfrm4/6_tunnel eventually calls xfrm_input() to process ipip and ipv6
+tunnels with an ipip/ipv6-proto state (a child state of comp-proto
+state), and vti and xfrmi should do the same.
+
+The extra things for vti to do is:
+
+  - vti_input() should be called before xfrm_input() to set
+    XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4/6 = tunnel. [A]
+
+  - vti_rcv_cb() should be called after xfrm_input() to update
+    the skb->dev. [B]
+
+And the extra things for xfrmi to do is:
+
+   - The ipip/ipv6-proto state should be assigned if_id from its
+     parent's state. [C]
+
+   - xfrmi_rcv_cb() should be called after xfrm_input() to update
+     the skb->dev. [D]
 
 
-ÔÚ 2020/6/30 3:57, Raj, Ashok Ð´µÀ:
-> Hi Bjorn
-> 
-> 
-> On Mon, Jun 29, 2020 at 02:33:16PM -0500, Bjorn Helgaas wrote:
->> [+cc Ashok, Ding, Casey]
->>
->> On Mon, Jun 29, 2020 at 12:32:44PM +0300, Aya Levin wrote:
->>> I wanted to turn on RO on the ETH driver based on
->>> pcie_relaxed_ordering_enabled().
->>> From my experiments I see that pcie_relaxed_ordering_enabled() return true
->>> on Intel(R) Xeon(R) CPU E5-2650 v3 @ 2.30GHz. This CPU is from Haswell
->>> series which is known to have bug in RO implementation. In this case, I
->>> expected pcie_relaxed_ordering_enabled() to return false, shouldn't it?
->>
->> Is there an erratum for this?  How do we know this device has a bug
->> in relaxed ordering?
-> 
-> https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-optimization-reference-manual.html
-> 
-> For some reason they weren't documented in the errata, but under
-> Optimization manual :-)
-> 
-> Table 3-7. Intel Processor CPU RP Device IDs for Processors Optimizing PCIe
-> Performance
-> Processor CPU RP Device IDs
-> Intel Xeon processors based on Broadwell microarchitecture 6F01H-6F0EH
-> Intel Xeon processors based on Haswell microarchitecture 2F01H-2F0EH
-> 
-> These are the two that were listed in the manual. drivers/pci/quirks.c also
-> has an eloborate list of root ports where relaxed_ordering is disabled. Did
-> you check if its not already covered here?
-> 
-> Send lspci if its not already covered by this table.
-> 
+Patch 4-7 does the things in [A].
 
-Looks like the chip series is not in the errta list, but it is really difficult to distinguish and test.
+To implement [B] and [D], patch 1-3 is to build a callback function
+for xfrm4/6_tunnel, which can be called after xfrm_input(), similar
+to xfrm4/6_protocol's .cb_handler. vti and xfrmi only needs to give
+their own callback function in patch 4-7 and 9-10, which already
+exists: vti_rcv_cb() and xfrmi_rcv_cb().
 
-> 
->>
->>> In addition, we are worried about future bugs in new CPUs which may result
->>> in performance degradation while using RO, as long as the function
->>> pcie_relaxed_ordering_enabled() will return true for these CPUs. 
->>
->> I'm worried about this too.  I do not want to add a Device ID to the
->> quirk_relaxedordering_disable() list for every new Intel CPU.  That's
->> a huge hassle and creates a real problem for old kernels running on
->> those new CPUs, because things might work "most of the time" but not
->> always.
-> 
-> I'll check when this is fixed, i was told newer ones should work properly.
-> But I'll confirm.
-> 
+Patch 8 is to do the thing in [C] by assigning child tunnel's if_id
+from its parent tunnel.
 
-Maybe prevent the Relax Ordering for all Intel CPUs is a better soluton, looks like
-it will not break anything.
+With the whole patch series, the segments or packets with any size
+can work with ipsec comp proto on vti and xfrmi.
 
-Ding
-> 
-> .
-> 
+v1->v2:
+  - See Patch 2-3.
+
+Xin Long (10):
+  xfrm: add is_ipip to struct xfrm_input_afinfo
+  tunnel4: add cb_handler to struct xfrm_tunnel
+  tunnel6: add tunnel6_input_afinfo for ipip and ipv6 tunnels
+  ip_vti: support IPIP tunnel processing with .cb_handler
+  ip_vti: support IPIP6 tunnel processing
+  ip6_vti: support IP6IP6 tunnel processing with .cb_handler
+  ip6_vti: support IP6IP tunnel processing
+  ipcomp: assign if_id to child tunnel from parent tunnel
+  xfrm: interface: support IP6IP6 and IP6IP tunnels processing with
+    .cb_handler
+  xfrm: interface: support IPIP and IPIP6 tunnels processing with
+    .cb_handler
+
+ include/net/xfrm.h        |  5 ++++-
+ net/ipv4/ip_vti.c         | 49 +++++++++++++++++++-----------------------
+ net/ipv4/ipcomp.c         |  1 +
+ net/ipv4/tunnel4.c        | 35 +++++++++++++++++++++++++++++-
+ net/ipv6/ip6_vti.c        | 31 +++++++++++++++++++++++++++
+ net/ipv6/ipcomp6.c        |  1 +
+ net/ipv6/tunnel6.c        | 34 +++++++++++++++++++++++++++++
+ net/xfrm/xfrm_input.c     | 24 +++++++++++----------
+ net/xfrm/xfrm_interface.c | 54 +++++++++++++++++++++++++++++++++++++++++++++++
+ 9 files changed, 194 insertions(+), 40 deletions(-)
+
+-- 
+2.1.0
 
