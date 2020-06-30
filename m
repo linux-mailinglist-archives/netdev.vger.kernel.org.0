@@ -2,97 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED0F20EBE1
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 05:15:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 717F420EBE4
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 05:17:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729037AbgF3DPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 23:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S1728949AbgF3DQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 23:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727826AbgF3DPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 23:15:05 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F5AC061755
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 20:15:05 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id o22so3815648pjw.2
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 20:15:05 -0700 (PDT)
+        with ESMTP id S1728882AbgF3DQ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 23:16:56 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C06C061755
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 20:16:56 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id d18so9148815edv.6
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 20:16:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lnvoY3haB0lkXFUtpPBEotF++tFsvMyqqAyM4Qg1MaQ=;
-        b=XWeAl/Q1DUptQJdejIDggTu9F0H4AtRUlR9s9MxsEwBtXR7JAE3kLeX11fTCj/Dycr
-         hNBqrh5b7MRiUYB5pQgEbL71EsKqbhYN8g63BKt1LHdu4lI8vK0prJ1YAISUG7K2RqVS
-         hcvNXEbx1VMxIGtqRnzQ+tKyAcStwdn8W3PgQ=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HIhXs0z2Yz9q8SXuvfQIG3USXq8HsaDkLvr70l/G3I4=;
+        b=gPuLGz37hfJGF5lG51PxLb/0hDtGcGIzZLhHUx6r9O8yHqS8YPtLrPTjyTRvjJ2L7F
+         bvSbLRvQsBANWPSwNH3cmbW7JemXPkY6X2OK0gIYvM/KFT84DFCg+VbO/opUpY61HJSf
+         eRF/v5OvWD8TFl/dZiLXYq7gMt9U93eXxPDEh7EFAGQz3IucishFDRILbVyJH60RBwJt
+         7oCD/h3qhcnRAtitn66RptmizT3OTYwOuOIXilrb+Zse20Saq8LNovBSwltx7FbPshnR
+         Wl/XT6riU1/gGmrepnPHfIijn5ppmJ5xLGz6cv95m8z31jDjqiFcjJEaBsRCJbf1q5M+
+         +SGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=lnvoY3haB0lkXFUtpPBEotF++tFsvMyqqAyM4Qg1MaQ=;
-        b=Ayq2pZ+Lkv4zo6Gn+I6Wvxi4DgYMlhE8bExbpuhLRnR4N4f+CTpU/agvLWjf2qzgc8
-         I82hp8Vs/BUWmIWIJOck/FK6TkURpTrtLw8Z/4/jH1S5eDosVFankZasiavpXdPY43fC
-         o813GP6O+AVvclhG80YzteW2RJXsPzJiGb390dISantYUvWyZRdVZrnzeJAUBiR3JpJi
-         wsoGKIEINaANlar7JRT2JenJrcq8YvEe99XA3fyd5FUga1MRmAXPBH/a0cRxehTEuEru
-         CJrN0uOJRda7+lDa08BaYa5FKlXU7Nw3pFM3UOlFB1B+x1lNgSha4S8QFendFT6wfFgq
-         UtTQ==
-X-Gm-Message-State: AOAM532vRJdV0w10xgM0ysyyu8xDfNczCMn+9rKg5S3r9hXRQH49jiYP
-        rKrifMmmwezwn60yPBsAq0oJAA==
-X-Google-Smtp-Source: ABdhPJyCaY4RyJ36oOm/AkJtdEmCYXpSXmi7dv53zIUgI3DXuKN9uF2aD+jKbihSx6VE2FF7bgv16w==
-X-Received: by 2002:a17:902:a513:: with SMTP id s19mr15417102plq.140.1593486905209;
-        Mon, 29 Jun 2020 20:15:05 -0700 (PDT)
-Received: from mcchou0.mtv.corp.google.com ([2620:15c:202:201:de4a:3eff:fe75:1314])
-        by smtp.gmail.com with ESMTPSA id x66sm54166pgb.12.2020.06.29.20.15.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jun 2020 20:15:04 -0700 (PDT)
-From:   Miao-chen Chou <mcchou@chromium.org>
-To:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Alain Michaud <alainm@chromium.org>, pavel@ucw.cz,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v1] Bluetooth: Fix kernel oops triggered by hci_adv_monitors_clear()
-Date:   Mon, 29 Jun 2020 20:15:00 -0700
-Message-Id: <20200629201441.v1.1.I162e3c6c4f4d963250c37733c3428329110c5989@changeid>
-X-Mailer: git-send-email 2.26.2
+        bh=HIhXs0z2Yz9q8SXuvfQIG3USXq8HsaDkLvr70l/G3I4=;
+        b=Jny5VTnRkhcMPUx2URNGPOIhETV7wpMYSCgcoAkr37M4OnnjbC/vSEKj9ynYSLecSt
+         THouPWCoDfre2h5zvp082tD3SdbqwP+f2W96A4oje3NnaPUOMPsSn46qu1r/Vnac5rCz
+         hhZWQq6Qb8Dt/i6u31aIK3Vz0jEWffzKg6liIuJ6VgWrXnMfOEiJ/9ScCOIbr+M7fkBa
+         hvUs2+a9i5A9waHGkkSBnhEzFq+87qj6Dg4E7bkj4zif7ZQqjFq0kMpIpbQg4UxKkQjy
+         pBIUGrc7tWi4+wvTZGHDuBouCDWK1D8kUsfizfsvaZ+DcUFkgf6GsWCxV4AGSiMXrvQG
+         Lz2w==
+X-Gm-Message-State: AOAM533MICRJcU9lRTBdnnSkW6PsO502DjPnikShDp4T+W0pWS0xTEpH
+        P+9j+PG+ckxG7dauyNrIV+o=
+X-Google-Smtp-Source: ABdhPJzmw3UJJaDnVUQ255d9jfCP95a5ljXul+wz48Ml4p5YSJEGfGNEh9rk20sXI5269/gfkjFu+g==
+X-Received: by 2002:aa7:db57:: with SMTP id n23mr20507094edt.235.1593487014882;
+        Mon, 29 Jun 2020 20:16:54 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id m6sm914520ejq.85.2020.06.29.20.16.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Jun 2020 20:16:54 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/8] Add PAL support to smsc95xx
+To:     Andrew Lunn <andrew@lunn.ch>, Andre.Edich@microchip.com
+Cc:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        steve.glendinning@shawell.net, Parthiban.Veerasooran@microchip.com
+References: <c8fafa3198fcb0ba74d2190728075f108cfc5aa1.camel@microchip.com>
+ <20200630013356.GG597495@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <fee052b8-dadb-5a63-7b97-8d2da00ab798@gmail.com>
+Date:   Mon, 29 Jun 2020 20:16:49 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200630013356.GG597495@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This fixes the kernel oops by removing unnecessary background scan
-update from hci_adv_monitors_clear() which shouldn't invoke any work
-queue.
 
-The following test was performed.
-- Run "rmmod btusb" and verify that no kernel oops is triggered.
 
-Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Reviewed-by: Alain Michaud <alainm@chromium.org>
----
+On 6/29/2020 6:33 PM, Andrew Lunn wrote:
+> On Mon, Jun 29, 2020 at 07:55:24PM +0000, Andre.Edich@microchip.com wrote:
+>> To allow to probe external phy drivers, this patchset adds use of
+>> Phy Abstraction Layer to smsc95xx driver.
+> 
+> This is version 2 correct? Please put v2 in the Subject line.
+> 
+> Also, list here, what has changed since v1.
 
- net/bluetooth/hci_core.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 5577cf9e2c7cd..77615161c7d72 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3005,8 +3005,6 @@ void hci_adv_monitors_clear(struct hci_dev *hdev)
- 		hci_free_adv_monitor(monitor);
- 
- 	idr_destroy(&hdev->adv_monitors_idr);
--
--	hci_update_background_scan(hdev);
- }
- 
- void hci_free_adv_monitor(struct adv_monitor *monitor)
+Andre, when  you resubmit, please also configure your email client or
+git send-email/format-patch such that every patch is in reply to the
+cover letter, this makes it a lot easier with email threading for
+reviewing your changes. Thank you.
 -- 
-2.26.2
-
+Florian
