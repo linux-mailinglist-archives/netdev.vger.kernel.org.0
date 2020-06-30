@@ -2,49 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0518E21003E
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 00:54:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90407210045
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 00:58:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726371AbgF3Wyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 18:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47150 "EHLO
+        id S1726245AbgF3W6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 18:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726117AbgF3Wyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 18:54:36 -0400
+        with ESMTP id S1725994AbgF3W6E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 18:58:04 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE3CC061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:54:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809CDC061755;
+        Tue, 30 Jun 2020 15:58:04 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 15D39127BE225;
-        Tue, 30 Jun 2020 15:54:36 -0700 (PDT)
-Date:   Tue, 30 Jun 2020 15:54:35 -0700 (PDT)
-Message-Id: <20200630.155435.865055112637817286.davem@davemloft.net>
-To:     nirranjan@chelsio.com
-Cc:     netdev@vger.kernel.org, dt@chelsio.com
-Subject: Re: [PATCH net-next] cxgb4vf: configure ports accessible by the VF
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0DA8E127BE238;
+        Tue, 30 Jun 2020 15:58:02 -0700 (PDT)
+Date:   Tue, 30 Jun 2020 15:58:02 -0700 (PDT)
+Message-Id: <20200630.155802.2190042564289803175.davem@davemloft.net>
+To:     brgl@bgdev.pl
+Cc:     jeffrey.t.kirsher@intel.com, kuba@kernel.org, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        matthias.bgg@gmail.com, hkallweit1@gmail.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, linux@armlinux.org.uk, robh+dt@kernel.org,
+        frowand.list@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        bgolaszewski@baylibre.com
+Subject: Re: [PATCH v2 00/10] net: improve devres helpers
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200629115513.537757-1-nirranjan@chelsio.com>
-References: <20200629115513.537757-1-nirranjan@chelsio.com>
+In-Reply-To: <20200629120346.4382-1-brgl@bgdev.pl>
+References: <20200629120346.4382-1-brgl@bgdev.pl>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Jun 2020 15:54:36 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Jun 2020 15:58:03 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nirranjan Kirubaharan <nirranjan@chelsio.com>
-Date: Mon, 29 Jun 2020 17:25:13 +0530
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Mon, 29 Jun 2020 14:03:36 +0200
 
-> Find ports accessible by the VF, based on the index of the
-> mac address stored for the VF in the adapter. If no mac address
-> is stored for the VF, use the port mask provided by firmware.
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
-> Signed-off-by: Nirranjan Kirubaharan <nirranjan@chelsio.com>
+> So it seems like there's no support for relaxing certain networking devres
+> helpers to not require previously allocated structures to also be managed.
+> However the way mdio devres variants are implemented is still wrong and I
+> modified my series to address it while keeping the functions strict.
+> 
+> First two patches modify the ixgbe driver to get rid of the last user of
+> devm_mdiobus_free().
+> 
+> Patches 3, 4, 5 and 6 are mostly cosmetic.
+> 
+> Patch 7 fixes the way devm_mdiobus_register() is implemented.
+> 
+> Patches 8 & 9 provide a managed variant of of_mdiobus_register() and
+> last patch uses it in mtk-star-emac driver.
+> 
+> v1 -> v2:
+> - drop the patch relaxing devm_register_netdev()
+> - require struct mii_bus to be managed in devm_mdiobus_register() and
+>   devm_of_mdiobus_register() but don't store that information in the
+>   structure itself: use devres_find() instead
 
-Applied.
+Series applied, thank you.
