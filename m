@@ -2,192 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7117E20FC32
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:50:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E0420FC40
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:53:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726534AbgF3Sus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 14:50:48 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46663 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725994AbgF3Suq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:50:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593543044;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=QB1TMaXvn2cR8bVKHMvuvCeNoQ0tyqqqqnWujcCz9Q4=;
-        b=HCYrmOywNz2apmaOnS61DbVtZ9uPfkKG4kGEaucZ6/Ku1P9f93lQhNESFH0/HjUBz67psV
-        aH6+/W/NZDGCU9SdBZ8LUczJdc2vlHnqanZKx4BgPH/ZuKbHc0z0799jNz+d1pkloXnHN0
-        rVYjjmXsiQRs6cvKUd4Jl8+u6PcIKjY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-99-RJetcWMkO8eIhycmtigLsQ-1; Tue, 30 Jun 2020 14:50:40 -0400
-X-MC-Unique: RJetcWMkO8eIhycmtigLsQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D1C6C18FE861;
-        Tue, 30 Jun 2020 18:50:35 +0000 (UTC)
-Received: from hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com (hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com [10.16.210.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CD6655DAA0;
-        Tue, 30 Jun 2020 18:50:30 +0000 (UTC)
-From:   Jarod Wilson <jarod@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>, Huy Nguyen <huyn@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH net-next] bonding: allow xfrm offload setup post-module-load
-Date:   Tue, 30 Jun 2020 14:49:41 -0400
-Message-Id: <20200630184941.65165-1-jarod@redhat.com>
+        id S1727945AbgF3Sx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 14:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725805AbgF3Sx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:53:28 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01290C061755;
+        Tue, 30 Jun 2020 11:53:28 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id c1so2608431pja.5;
+        Tue, 30 Jun 2020 11:53:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9a0KwjQKMXeAV0nmdFY4OU1EqQ+K6gG9zwvOGO0m7oY=;
+        b=FDEQSjqTgu366Cmpoe/K7Mruj9tpRq7LoXw9jdlhHi1IR3z0BeG9SQvho/CMVVpCYS
+         8SOBDUqTdJ75qXLppN+n6pSxkZBMsIdboBrz4UcVpnI4vzWbuYSntX2/XZ3f9hVXG7pL
+         wNqQBavZyM6mMWngEES4TCzeasKUTtbWxTe8HVa+UNsCKjXQhKo2XwDbp9U6plnTnTFP
+         efC8y66n3/a4mynK7Lj8OmUkvVSa7n+fTS+VlrazMYBlaYS9rIwQTLtryg51TJyaXLxy
+         P5kI+JsoZr9VqLasIMawyJOE1GagNsUheLQd8UWYchi5GDV7N+yfhfUKhV8AptCGyfMm
+         b7Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9a0KwjQKMXeAV0nmdFY4OU1EqQ+K6gG9zwvOGO0m7oY=;
+        b=XTpYLrI8QnQ0ZWms1pUkiYPLhnGmFSHE3crbeAMhUCHlNy9N5OXEXKNo3ne/cPpfjo
+         pys0KSiumXe90dIXPBsZwBKN/o+jBxx+61BZu2zdotLiRxZetoNfoEcbkSA06VSCpd4e
+         Tmw9b6OQFXyR0R+2ZL6D0EtupzaCOh1LdQJZ5vcR4gRyECjj9H53vjx3MuYBRRbSIrKS
+         lNdxBjiPVIR729rKb4Gg5wHiW9tEgzfWWqEF4ErLQInmY1WcI1DvF9ChnBBrrSeaU9y4
+         nd4LJRSWZPS15NjuHHqo7MWlYa445MlwZ3Ilxu/JEpqezoEOjdfhR5AjBmuHFWgwHkSc
+         9UBw==
+X-Gm-Message-State: AOAM533ybfh53iCh8btzdQaiiVEcTrLHEUbpOVqVJm61rfB/oP4du6LH
+        OH1OpzAWLFLvYr8kgwzs29rCU7XO
+X-Google-Smtp-Source: ABdhPJylpo/EGhb/o3iGo5RoCCDB4zOEi7S+7YnFv8RtZuwMJny/kQMiC6wMsggV6/SvI7/J3Xky5w==
+X-Received: by 2002:a17:902:9346:: with SMTP id g6mr18596160plp.19.1593543207464;
+        Tue, 30 Jun 2020 11:53:27 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e083])
+        by smtp.gmail.com with ESMTPSA id bf11sm2909278pjb.48.2020.06.30.11.53.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Jun 2020 11:53:26 -0700 (PDT)
+Date:   Tue, 30 Jun 2020 11:53:24 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH RFC v3 bpf-next 2/4] bpf: Add bpf_copy_from_user() helper.
+Message-ID: <20200630185324.5elry5u3ctaohszx@ast-mbp.dhcp.thefacebook.com>
+References: <20200611222340.24081-1-alexei.starovoitov@gmail.com>
+ <20200611222340.24081-3-alexei.starovoitov@gmail.com>
+ <CAEf4BzYbvuZoQb7Sz4Q7McyEA4khHm5RaQPR3bL67owLoyv1RQ@mail.gmail.com>
+ <CAADnVQ+ubYj8yA1_cO3aw-trShTHBRMJxSvZrLW75i8fM=mpvQ@mail.gmail.com>
+ <CAEf4BzbfXajuL-1VLBUJsC3P796s2hk9oYGveYG5QnS2=YoN-A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbfXajuL-1VLBUJsC3P796s2hk9oYGveYG5QnS2=YoN-A@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At the moment, bonding xfrm crypto offload can only be set up if the bonding
-module is loaded with active-backup mode already set. We need to be able to
-make this work with bonds set to AB after the bonding driver has already
-been loaded.
+On Tue, Jun 30, 2020 at 11:23:07AM -0700, Andrii Nakryiko wrote:
+> On Mon, Jun 29, 2020 at 5:28 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Thu, Jun 18, 2020 at 3:33 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > > > + *
+> > > > + * int bpf_copy_from_user(void *dst, u32 size, const void *user_ptr)
+> > >
+> > > Can we also add bpf_copy_str_from_user (or bpf_copy_from_user_str,
+> > > whichever makes more sense) as well?
+> >
+> > Those would have to wait. I think strings need better long term design.
+> > That would be separate patches.
+> 
+> I agree that it would be nice to have better support for strings, long
+> term, but that's beside the point.
+> 
+> I think bpf_copy_from_user_str() is a must have right now as a
+> sleepable counterpart to bpf_probe_read_user_str(), just like
+> bpf_copy_from_user() is a sleepable variant of bpf_probe_read_user().
+> Look at progs/strobemeta.h, it does bpf_probe_read_user_str() to get
+> user-space zero-terminated strings. It's well defined interface and
+> behavior. There is nothing extra needed beyond a sleepable variant of
+> bpf_probe_read_user_str() to allow Strobemeta reliably fetch data from
+> user-space from inside a sleepable BPF program.
 
-So what's done here is:
-
-1) move #define BOND_XFRM_FEATURES to net/bonding.h so it can be used
-by both bond_main.c and bond_options.c
-2) set BOND_XFRM_FEATURES in bond_dev->hw_features universally, rather than
-only when loading in AB mode
-3) wire up xfrmdev_ops universally too
-4) disable BOND_XFRM_FEATURES in bond_dev->features if not AB
-5) exit early (non-AB case) from bond_ipsec_offload_ok, to prevent a
-performance hit from traversing into the underlying drivers
-5) toggle BOND_XFRM_FEATURES in bond_dev->wanted_features and call
-netdev_change_features() from bond_option_mode_set()
-
-In my local testing, I can change bonding modes back and forth on the fly,
-have hardware offload work when I'm in AB, and see no performance penalty
-to non-AB software encryption, despite having xfrm bits all wired up for
-all modes now.
-
-Fixes: 18cb261afd7b ("bonding: support hardware encryption offload to slaves")
-Reported-by: Huy Nguyen <huyn@mellanox.com>
-CC: Saeed Mahameed <saeedm@mellanox.com>
-CC: Jay Vosburgh <j.vosburgh@gmail.com>
-CC: Veaceslav Falico <vfalico@gmail.com>
-CC: Andy Gospodarek <andy@greyhouse.net>
-CC: "David S. Miller" <davem@davemloft.net>
-CC: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-CC: Jakub Kicinski <kuba@kernel.org>
-CC: Steffen Klassert <steffen.klassert@secunet.com>
-CC: Herbert Xu <herbert@gondor.apana.org.au>
-CC: netdev@vger.kernel.org
-CC: intel-wired-lan@lists.osuosl.org
-Signed-off-by: Jarod Wilson <jarod@redhat.com>
----
- drivers/net/bonding/bond_main.c    | 19 ++++++++++---------
- drivers/net/bonding/bond_options.c |  8 ++++++++
- include/net/bonding.h              |  5 +++++
- 3 files changed, 23 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index b3479584cc16..2adf6ce20a38 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -434,6 +434,9 @@ static bool bond_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *xs)
- 	struct slave *curr_active = rtnl_dereference(bond->curr_active_slave);
- 	struct net_device *slave_dev = curr_active->dev;
- 
-+	if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
-+		return true;
-+
- 	if (!(slave_dev->xfrmdev_ops
- 	      && slave_dev->xfrmdev_ops->xdo_dev_offload_ok)) {
- 		slave_warn(bond_dev, slave_dev, "%s: no slave xdo_dev_offload_ok\n", __func__);
-@@ -1218,11 +1221,6 @@ static netdev_features_t bond_fix_features(struct net_device *dev,
- #define BOND_ENC_FEATURES	(NETIF_F_HW_CSUM | NETIF_F_SG | \
- 				 NETIF_F_RXCSUM | NETIF_F_ALL_TSO)
- 
--#ifdef CONFIG_XFRM_OFFLOAD
--#define BOND_XFRM_FEATURES	(NETIF_F_HW_ESP | NETIF_F_HW_ESP_TX_CSUM | \
--				 NETIF_F_GSO_ESP)
--#endif /* CONFIG_XFRM_OFFLOAD */
--
- #define BOND_MPLS_FEATURES	(NETIF_F_HW_CSUM | NETIF_F_SG | \
- 				 NETIF_F_ALL_TSO)
- 
-@@ -4654,8 +4652,7 @@ void bond_setup(struct net_device *bond_dev)
- 
- #ifdef CONFIG_XFRM_OFFLOAD
- 	/* set up xfrm device ops (only supported in active-backup right now) */
--	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
--		bond_dev->xfrmdev_ops = &bond_xfrmdev_ops;
-+	bond_dev->xfrmdev_ops = &bond_xfrmdev_ops;
- 	bond->xs = NULL;
- #endif /* CONFIG_XFRM_OFFLOAD */
- 
-@@ -4678,11 +4675,15 @@ void bond_setup(struct net_device *bond_dev)
- 
- 	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
- #ifdef CONFIG_XFRM_OFFLOAD
--	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
--		bond_dev->hw_features |= BOND_XFRM_FEATURES;
-+	bond_dev->hw_features |= BOND_XFRM_FEATURES;
- #endif /* CONFIG_XFRM_OFFLOAD */
- 	bond_dev->features |= bond_dev->hw_features;
- 	bond_dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
-+#ifdef CONFIG_XFRM_OFFLOAD
-+	/* Disable XFRM features if this isn't an active-backup config */
-+	if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
-+		bond_dev->features &= ~BOND_XFRM_FEATURES;
-+#endif /* CONFIG_XFRM_OFFLOAD */
- }
- 
- /* Destroy a bonding device.
-diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
-index ddb3916d3506..9abfaae1c6f7 100644
---- a/drivers/net/bonding/bond_options.c
-+++ b/drivers/net/bonding/bond_options.c
-@@ -767,6 +767,14 @@ static int bond_option_mode_set(struct bonding *bond,
- 	if (newval->value == BOND_MODE_ALB)
- 		bond->params.tlb_dynamic_lb = 1;
- 
-+#ifdef CONFIG_XFRM_OFFLOAD
-+	if (newval->value == BOND_MODE_ACTIVEBACKUP)
-+		bond->dev->wanted_features |= BOND_XFRM_FEATURES;
-+	else
-+		bond->dev->wanted_features &= ~BOND_XFRM_FEATURES;
-+	netdev_change_features(bond->dev);
-+#endif /* CONFIG_XFRM_OFFLOAD */
-+
- 	/* don't cache arp_validate between modes */
- 	bond->params.arp_validate = BOND_ARP_VALIDATE_NONE;
- 	bond->params.mode = newval->value;
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index a00e1764e9b1..7d132cc1e584 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -86,6 +86,11 @@
- #define bond_for_each_slave_rcu(bond, pos, iter) \
- 	netdev_for_each_lower_private_rcu((bond)->dev, pos, iter)
- 
-+#ifdef CONFIG_XFRM_OFFLOAD
-+#define BOND_XFRM_FEATURES (NETIF_F_HW_ESP | NETIF_F_HW_ESP_TX_CSUM | \
-+			    NETIF_F_GSO_ESP)
-+#endif /* CONFIG_XFRM_OFFLOAD */
-+
- #ifdef CONFIG_NET_POLL_CONTROLLER
- extern atomic_t netpoll_block_tx;
- 
--- 
-2.20.1
-
+short answer: may be.
+long answer: I'm not sure that bpf_probe_read_user_str() is such a great interface.
+Copy pasting something just because it exists and already known is imo not
+the best approach.
+I believe KP is thinking about string chunking logic to be able
+to pass many null terminated strings from bpf prog to user space.
+envvars is such example. It's one giant array of strings separated
+by zeros. The semantics of bpf_probe_read_user_str() may or may not
+be a good fit.
+strobemeta is 'cheating' with strings by doing max bound on all of them.
+For tracing applications like strobemeta it's ok, but for lsm it's not.
+Hence I'd like to see an api that solves lsm case along with strobemeta case.
