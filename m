@@ -2,185 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 600BD20EE06
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 08:07:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DD4920EE22
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 08:13:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728836AbgF3GHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 02:07:51 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:1514 "EHLO
+        id S1729975AbgF3GNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 02:13:30 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2030 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728506AbgF3GHt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 02:07:49 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05U61tGr028880
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:07:48 -0700
+        by vger.kernel.org with ESMTP id S1729768AbgF3GN3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 02:13:29 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05U69fhN010176;
+        Mon, 29 Jun 2020 23:13:11 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=q7qW3J2JQaE057qj6hFj2gzPwTp9dGWKC6KPKKNW9ak=;
- b=VzXZ7sSTuF+h/kbuFjwv8+/n9vXe25gzsEu0KCcsiOWzOxMTV2PG1W1zYlb8LApJjLhV
- Yb6o6Vaj6hmPqeBWvHdsHv8dlKCXSfHpkR5uZI7Ja4gXIOPgRu7GOGGf7UXfPMqYwDK1
- zFKhl9VSuw0+yYeFKMzt1HleO+cdl0XbYwc= 
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=G/LTA8/tr1XeAuPn/CYyO1wzo8UsYLi2qKprVIc8HFc=;
+ b=DBtKiDo3vL1Qc4dQ2vRCfYVP4JUuVXHN2ACpU72oY8AltbslWinktMj4FUjkRdmVU1Yw
+ mvxUn7qZ4+QF/KuQj0qoUlKZ+eXCAupOGW6GVHvfutV20g7Eb5u+1eGcYHf/NtzPqQpL
+ PEp/CtHZgsLlp20I8ile9hCxL+/142HZTj8= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 31xntbreyb-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:07:48 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+        by mx0a-00082601.pphosted.com with ESMTP id 31xp3rgcj1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 29 Jun 2020 23:13:10 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 29 Jun 2020 23:07:47 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id D432A2EC2E95; Mon, 29 Jun 2020 23:07:46 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+ 15.1.1979.3; Mon, 29 Jun 2020 23:13:10 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CTuixb2lQE3SM2KL9Gs5rZ2PhcKuGFFNESYLdxVqwHQfyhFxiy4sTyLViVCOaVLgBPhhDCc21NIiyzmhgN6BdxvYD5BLeLr1gOtr5In5wiMgsbYBk2lR9O5p4dyKLABLrY09Q+YyIiYHRsnORDekKK6ZXtE99fwwWJuZ0IcH9iRaq0Y4P4tlKdoe67+T2YX4ga2tDM7GR8XwDLFQRHFkYq4Zje/Q1rc/7rhifrgZU6hzfjeDL0RquNySOBDC42j+MoxhHu+LFdbTf4jErGHlWQTyTeC6cHMeNZyMrzaEydipnVzgZaWo7Mx+DRxrqXvx/YtAjSLtSMTCzn6JXXsuAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G/LTA8/tr1XeAuPn/CYyO1wzo8UsYLi2qKprVIc8HFc=;
+ b=Ydr18lJEu6m7D0PP8sSeyS1lyXBAPqpcbjKRZ6agJe8xvJOzEkwdYDv9lC0fOVsbfrqhEae61PkcSFa22bF8wlnwXjyo4hT0+MPWuMqJw71ytyBh3gu0a5pW1b3eBEY+s4ALtEACvn11Tcz1pvDON7u1ahvGEzTHx2GH2VAVGoFGq5FNRtm7uPPuDBf+da1LR/vfLLJZ//2IhYgDQEPUiw5MSB0JV/bjKUOYMBPXaT9favtLiWfR5WYno77Rtjto0dBEas/eA3j9Fk98vPiIcMwzZx1Vw3vhh+gSgg0uhqxxc9cEGKpYAsEQyEPGHJ9qT4Gwm8Pj0mYBEtbXaTsy+Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G/LTA8/tr1XeAuPn/CYyO1wzo8UsYLi2qKprVIc8HFc=;
+ b=aJkev7ao7MFwijoHW3zae5OIeEC19xT+YkTLKcsP+rGxXPEER4nT1IAY8uTD7j9slarKGuVgbI/EWm+x6qlRlw1p1iCVvToQbbCamDvJtYxhTmtjGTFKrG7efrMRyFsUFZSCoyOyFOpugea1MrWtuQIsIskr20/x3JBvnQcJ4cg=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2647.namprd15.prod.outlook.com (2603:10b6:a03:153::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.23; Tue, 30 Jun
+ 2020 06:12:53 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::543:b185:ef4a:7e8]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::543:b185:ef4a:7e8%5]) with mapi id 15.20.3131.027; Tue, 30 Jun 2020
+ 06:12:52 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
         Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 2/2] selftests/bpf: add byte swapping selftest
-Date:   Mon, 29 Jun 2020 23:07:39 -0700
-Message-ID: <20200630060739.1722733-3-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200630060739.1722733-1-andriin@fb.com>
-References: <20200630060739.1722733-1-andriin@fb.com>
-MIME-Version: 1.0
+Subject: Re: [PATCH v4 bpf-next 2/4] bpf: introduce helper
+ bpf_get_task_stack()
+Thread-Topic: [PATCH v4 bpf-next 2/4] bpf: introduce helper
+ bpf_get_task_stack()
+Thread-Index: AQHWTdpOOeBrZxmplkiL+hzLkKWLhajwj1OAgAAf8QA=
+Date:   Tue, 30 Jun 2020 06:12:52 +0000
+Message-ID: <9FF7383E-2D6B-4B6C-B996-50347E0A2F94@fb.com>
+References: <20200629055530.3244342-1-songliubraving@fb.com>
+ <20200629055530.3244342-3-songliubraving@fb.com>
+ <CAADnVQJUdLKmdMu_eAX3ZGjf5K8GMkow+KoBSTTqy6CftgmdTw@mail.gmail.com>
+In-Reply-To: <CAADnVQJUdLKmdMu_eAX3ZGjf5K8GMkow+KoBSTTqy6CftgmdTw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.80.23.2.2)
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+x-originating-ip: [2620:10d:c091:480::1:4392]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0d34432f-d6aa-4622-bfd8-08d81cbc9f92
+x-ms-traffictypediagnostic: BYAPR15MB2647:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB2647B91FED26CC16F2CA1494B36F0@BYAPR15MB2647.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0450A714CB
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: N5KGiBufJ3bRFeKQrf6zsYWv8wl6PBJns8yVCspUFiQR3fXtOGaIuUfX39sjQzqLMDdNJypv99jVBkF9QDPBaXnhFiGUKYiyluOLp8WLnbXYwRFpXA+k7VcON7i3uEuIK1D7ff3OQKZqxTRMMuWuTdCElKJbX0R0kE/UhaPrLlphnQ7XuejSs7NEHtX+A2rotMsBZRx53mApgYwKsr1r2uxbkgzEmA/JAmYL44o47Vn0YYaKe8RhlicfEljvB2jlin8pb06zEStXHFtqKaTCSH88HSwVFCquGlMX0Ujz2TldasguXIk+dktoEaZy+27O
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(39860400002)(366004)(396003)(136003)(376002)(86362001)(33656002)(36756003)(6506007)(83380400001)(6512007)(54906003)(53546011)(478600001)(5660300002)(6486002)(4326008)(91956017)(316002)(76116006)(71200400001)(6916009)(66446008)(66556008)(66946007)(66476007)(2616005)(186003)(8936002)(8676002)(64756008)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: TzTrex1WHYYOV13ozNCuBncNoaEJ2LeQjzzZsf+vRzVgMa7uj6Fvs37Aq+EQ7MSjEz90/8rHAEE2T2a/PclWKdjd+jYqMA7+YpKHaI7VVWnum1TxcySjDivqRSUZAPVbztYzMUeD0ltrRzxPDizxeVo1obVlF4nE5nz4vG8bHOWDX3N594U2w7ePDcsVP7abgFaGXSdqeHXG9fey3h37Z5sRABA+z7kMqDXjRVx7MiNxRj4mq2euraIrqkrx/FzN6cBXXbSSESvjsuroBoznsOIRF3ZAJeG/+nU3Zv5zJHiXS/PoeOJPL5SEpCvzc9TNr35exdI4e3BCez5Krwug5sHlepfe7WMPKuhZCrP24KMRAemwafIPyebnamKFlweiiM+/sGFx61O4YT/SMWDv2whWqSlZOsr2N5wXLntu6VOsPx4Ahv/yH68KH93WvaWT1dRH+8X/TXzheCJoJ4XX5ndLVPJ7uS8eybXbtnd7WN8fze+SCwPpOCEeWz0rpHlSBH7dSiOGIh6cZQdxej7i7w==
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4959B192D5F99C47B5A07ECE53AC44B8@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d34432f-d6aa-4622-bfd8-08d81cbc9f92
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2020 06:12:52.7830
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: o/o73N+pminW8SdR+7GmsDfHrcVyq2sr4/r+bjLbk9+lxkr6bDQnQW41QfqZblRkq9yiRRjS7ndgeYTGF8HYwA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2647
+X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-06-30_01:2020-06-30,2020-06-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- cotscore=-2147483648 lowpriorityscore=0 mlxscore=0 clxscore=1015
- bulkscore=0 spamscore=0 suspectscore=8 impostorscore=0 priorityscore=1501
- adultscore=0 mlxlogscore=942 phishscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006300046
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ adultscore=0 lowpriorityscore=0 mlxscore=0 malwarescore=0 bulkscore=0
+ phishscore=0 spamscore=0 priorityscore=1501 suspectscore=0 clxscore=1015
+ cotscore=-2147483648 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006300047
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add simple selftest validating byte swap built-ins and compile-time macro=
-s.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../testing/selftests/bpf/prog_tests/endian.c | 53 +++++++++++++++++++
- .../testing/selftests/bpf/progs/test_endian.c | 37 +++++++++++++
- 2 files changed, 90 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/endian.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_endian.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/endian.c b/tools/test=
-ing/selftests/bpf/prog_tests/endian.c
-new file mode 100644
-index 000000000000..1a11612ace6c
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/endian.c
-@@ -0,0 +1,53 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include <test_progs.h>
-+#include "test_endian.skel.h"
-+
-+static int duration;
-+
-+#define IN16 0x1234
-+#define IN32 0x12345678U
-+#define IN64 0x123456789abcdef0ULL
-+
-+#define OUT16 0x3412
-+#define OUT32 0x78563412U
-+#define OUT64 0xf0debc9a78563412ULL
-+
-+void test_endian(void)
-+{
-+	struct test_endian* skel;
-+	struct test_endian__bss *bss;
-+	int err;
-+
-+	skel =3D test_endian__open_and_load();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		return;
-+	bss =3D skel->bss;
-+
-+	bss->in16 =3D IN16;
-+	bss->in32 =3D IN32;
-+	bss->in64 =3D IN64;
-+
-+	err =3D test_endian__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	usleep(1);
-+
-+	CHECK(bss->out16 !=3D OUT16, "out16", "got 0x%llx !=3D exp 0x%llx\n",
-+	      (__u64)bss->out16, (__u64)OUT16);
-+	CHECK(bss->out32 !=3D OUT32, "out32", "got 0x%llx !=3D exp 0x%llx\n",
-+	      (__u64)bss->out32, (__u64)OUT32);
-+	CHECK(bss->out64 !=3D OUT64, "out16", "got 0x%llx !=3D exp 0x%llx\n",
-+	      (__u64)bss->out64, (__u64)OUT64);
-+
-+	CHECK(bss->const16 !=3D OUT16, "const16", "got 0x%llx !=3D exp 0x%llx\n=
-",
-+	      (__u64)bss->const16, (__u64)OUT16);
-+	CHECK(bss->const32 !=3D OUT32, "const32", "got 0x%llx !=3D exp 0x%llx\n=
-",
-+	      (__u64)bss->const32, (__u64)OUT32);
-+	CHECK(bss->const64 !=3D OUT64, "const64", "got 0x%llx !=3D exp 0x%llx\n=
-",
-+	      (__u64)bss->const64, (__u64)OUT64);
-+cleanup:
-+	test_endian__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_endian.c b/tools/test=
-ing/selftests/bpf/progs/test_endian.c
-new file mode 100644
-index 000000000000..1d37d93102a7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_endian.c
-@@ -0,0 +1,37 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+#define IN16 0x1234
-+#define IN32 0x12345678U
-+#define IN64 0x123456789abcdef0ULL
-+
-+__u16 in16;
-+__u32 in32;
-+__u64 in64;
-+
-+__u16 out16;
-+__u32 out32;
-+__u64 out64;
-+
-+__u16 const16;
-+__u32 const32;
-+__u64 const64;
-+
-+SEC("raw_tp/sys_enter")
-+int sys_enter(const void *ctx)
-+{
-+	out16 =3D __builtin_bswap16(in16);
-+	out32 =3D __builtin_bswap32(in32);
-+	out64 =3D __builtin_bswap64(in64);
-+	const16 =3D ___bpf_swab16(IN16);
-+	const32 =3D ___bpf_swab32(IN32);
-+	const64 =3D ___bpf_swab64(IN64);
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") =3D "GPL";
---=20
-2.24.1
+> On Jun 29, 2020, at 9:18 PM, Alexei Starovoitov <alexei.starovoitov@gmail=
+.com> wrote:
+>=20
+> On Sun, Jun 28, 2020 at 10:58 PM Song Liu <songliubraving@fb.com> wrote:
+>>=20
+>> Introduce helper bpf_get_task_stack(), which dumps stack trace of given
+>> task. This is different to bpf_get_stack(), which gets stack track of
+>> current task. One potential use case of bpf_get_task_stack() is to call
+>> it from bpf_iter__task and dump all /proc/<pid>/stack to a seq_file.
+>>=20
+>> bpf_get_task_stack() uses stack_trace_save_tsk() instead of
+>> get_perf_callchain() for kernel stack. The benefit of this choice is tha=
+t
+>> stack_trace_save_tsk() doesn't require changes in arch/. The downside of
+>> using stack_trace_save_tsk() is that stack_trace_save_tsk() dumps the
+>> stack trace to unsigned long array. For 32-bit systems, we need to
+>> translate it to u64 array.
+>>=20
+>> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>> Signed-off-by: Song Liu <songliubraving@fb.com>
+>=20
+> It doesn't apply:
+> Applying: bpf: Introduce helper bpf_get_task_stack()
+> Using index info to reconstruct a base tree...
+> error: patch failed: kernel/bpf/stackmap.c:471
+> error: kernel/bpf/stackmap.c: patch does not apply
+> error: Did you hand edit your patch?
+> It does not apply to blobs recorded in its index.
+> Patch failed at 0002 bpf: Introduce helper bpf_get_task_stack()
+
+Hmm.. seems "git format-patch -b" (--ignore-space-change) breaks it:
+
+# without -b, works fine
+
+$ git format-patch HEAD~1
+0001-bpf-introduce-helper-bpf_get_task_stack.patch
+$ git reset --hard HEAD~1
+HEAD is now at c385fe4fbd7bc perf: expose get/put_callchain_entry()
+$ git am ./0001-bpf-introduce-helper-bpf_get_task_stack.patch
+Applying: bpf: introduce helper bpf_get_task_stack()
+
+
+# with -b, doesn't apply :(
+
+$ git format-patch -b HEAD~1
+0001-bpf-introduce-helper-bpf_get_task_stack.patch
+$ git reset --hard HEAD~1
+HEAD is now at c385fe4fbd7bc perf: expose get/put_callchain_entry()
+$ git am ./0001-bpf-introduce-helper-bpf_get_task_stack.patch
+Applying: bpf: introduce helper bpf_get_task_stack()
+error: patch failed: kernel/bpf/stackmap.c:471
+error: kernel/bpf/stackmap.c: patch does not apply
+Patch failed at 0001 bpf: introduce helper bpf_get_task_stack()
+hint: Use 'git am --show-current-patch' to see the failed patch
+When you have resolved this problem, run "git am --continue".
+If you prefer to skip this patch, run "git am --skip" instead.
+To restore the original branch and stop patching, run "git am --abort".
+
+Let me see how to fix it...
 
