@@ -2,201 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF91A20EAC3
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:21:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEF2B20EACC
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:21:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727889AbgF3BRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 21:17:50 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:36919 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726612AbgF3BRt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 21:17:49 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id ff2a2235;
-        Tue, 30 Jun 2020 00:58:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=JKTunggZ6BIJW3mIWp7h9mZGZHg=; b=ZD6ev6
-        XBdl2lw+g15z7JsW2iuNaNJOsSxpjk0ZHM05DsOrTF3NVrSOodg6+zGMfxL/h6QC
-        mOzX0ESO/powuZmKCGMF1ROgPR/mPVtTRSjaGb2kemlu5Pi1CgZPQM38C7QDflT4
-        gfFyHcF78mQ9+wo/mfqIsuZgXId9pht9vN60rgpc0rP+3JBl+DAI85y1fCQ4376d
-        dapJ/pGogcEwDVDRHdswfkwBvO+R1oxQloJZJi+vGNW+4bcTMtCv9V/lJ9yXbbp5
-        yqfIEfPEPjsKfCRbZ/qPM4vLBc4FhiBxwSKe6Cdav4aBupTsdLTslNzpzkK25SyS
-        GY+kNqNHhs1rkTOA==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 76f8b7de (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Tue, 30 Jun 2020 00:58:00 +0000 (UTC)
-Received: by mail-il1-f170.google.com with SMTP id w9so16208093ilk.13;
-        Mon, 29 Jun 2020 18:17:43 -0700 (PDT)
-X-Gm-Message-State: AOAM531p7VlgFMi6SsxoHy5DG811hbCG3EYZAPVElPo9T1lxCJrgKlk3
-        oK20Fxb4lY8TpGSR1c41CYdxIhCMwRlu57bu+dI=
-X-Google-Smtp-Source: ABdhPJwq4zRLfzdALEdewCyt3e7rgf/QpkJOSOD5+E1XWlCvpJnBE5lXlTd8rRNe3l2/AyITAn497qjbYI8T6AyFg2A=
-X-Received: by 2002:a92:9ed5:: with SMTP id s82mr278885ilk.231.1593479862886;
- Mon, 29 Jun 2020 18:17:42 -0700 (PDT)
+        id S1728246AbgF3BSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 21:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726436AbgF3BSt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 21:18:49 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612B8C061755;
+        Mon, 29 Jun 2020 18:18:49 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id c30so13292050qka.10;
+        Mon, 29 Jun 2020 18:18:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d8tAMwICXqgKPvOzjahMVAzDJDS8NleEPw2GGyNN/2U=;
+        b=ndhXs9yeqlT5U78P3dbddL3NvAwigxMvkx+Cr4dXlaa0XLnw6aZtgVEcLm9xEuyjDw
+         1Yd+a6c9qHnfnF52G+M77lp+WdVZX3mS8FWu33cpQEmBPoMjx0CCyrLGdM+ktClczjI3
+         qmwvRKCvS0jP5FEwGmqatU5EYT1gSahpwCO8JH7tx2eFsfsCHlexWTNOAoiRwDx0VWuI
+         h4PV/cdMrpQQMkU8u6cWIftVa4TTp/s7I2FkQxf6Q0mmBs/iNWYQzYbOjIbu0W2sFoLx
+         pZmvRQZZP4cHytcPEAUvH6DCdR8zHcEd0ew+KlWAQqA0PA4qCPsJ8lDDYtZCtG8JMZ32
+         8TlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d8tAMwICXqgKPvOzjahMVAzDJDS8NleEPw2GGyNN/2U=;
+        b=Fz+ninBzr1kDlrTMrdMT1kaoNyEwB6SREZEuErkJDq4zkwAn7+BD3DAoP4ihSdOTmK
+         UJgboBZdVOW+2nGiGctc8RHex6QW1o/xWmAe2aVy2Xk7pS3sO2NPHsCTOBghJtOdIhZn
+         26wuAqkAoq6A52metpSMvBsr2rjf0480FfEiMrWbzxM9umr2s5NTVBHo97ODRjuPPhRL
+         pwYO4gQC+wrYWnqlJd5PCCQIpi80F6b+2WyV6gYAe42vG0xXL89Nnvq1BEO4MkKSxEYX
+         Ku+lArFdQl5HZZRjZcsK0Gpc0hkXXpvrNAGtGvZ9Uc9+gMRZc2WQznqjDGvsRJRQGJO9
+         es9w==
+X-Gm-Message-State: AOAM531V5g6No2VmueODUDUc7n2oM/jh4wuu5NYSCtAcCDVxM7chgHsW
+        FrIZjy+Mpjq88hH2QyKIVO2Z06nCe8x15Zzuux8=
+X-Google-Smtp-Source: ABdhPJxA/2GwwRG+MrzupQDYE8NUyQBkIhjOFFypsT4PBrge/kfCAJG2fCTXx5+N9/Jim+6xApq4RFES1UPnBrDlb00=
+X-Received: by 2002:a37:270e:: with SMTP id n14mr16635482qkn.92.1593479928606;
+ Mon, 29 Jun 2020 18:18:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <0000000000006eb8b705a9426b8b@google.com>
-In-Reply-To: <0000000000006eb8b705a9426b8b@google.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 29 Jun 2020 19:17:31 -0600
-X-Gmail-Original-Message-ID: <CAHmME9qOR4h7hsQ4_QuztPN+6w4KcoaYNs75yJn=L3S2Mhq9rA@mail.gmail.com>
-Message-ID: <CAHmME9qOR4h7hsQ4_QuztPN+6w4KcoaYNs75yJn=L3S2Mhq9rA@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Read in netdev_name_node_lookup_rcu
-To:     syzbot <syzbot+a82be85e09cd5df398fe@syzkaller.appspotmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>
+References: <20200630003441.42616-1-alexei.starovoitov@gmail.com> <20200630003441.42616-4-alexei.starovoitov@gmail.com>
+In-Reply-To: <20200630003441.42616-4-alexei.starovoitov@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 29 Jun 2020 18:18:37 -0700
+Message-ID: <CAEf4BzZ_ZGkMXRYV7VeudCVs=A3xY=1Mz97GLbbazXv-KUcnRw@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 3/5] bpf: Add bpf_copy_from_user() helper.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Cong,
-
-I'm wondering if the below error is related to what you've been
-looking at yesterday. AFAICT, there's a simple UaF on the attrbuf
-passed to the start method. I recall recently you were working on the
-locking in genetlink's family buffers and wound up mallocing some
-things, so it seems like this might be related. See below.
-
-Regards,
-Jason
-
-On Mon, Jun 29, 2020 at 6:40 PM syzbot
-<syzbot+a82be85e09cd5df398fe@syzkaller.appspotmail.com> wrote:
+On Mon, Jun 29, 2020 at 5:35 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Hello,
+> From: Alexei Starovoitov <ast@kernel.org>
 >
-> syzbot found the following crash on:
+> Sleepable BPF programs can now use copy_from_user() to access user memory.
 >
-> HEAD commit:    1590a2e1 Merge tag 'acpi-5.8-rc3' of git://git.kernel.org/..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1664afad100000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=bf3aec367b9ab569
-> dashboard link: https://syzkaller.appspot.com/bug?extid=a82be85e09cd5df398fe
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14a1bf1d100000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1514a06b100000
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+a82be85e09cd5df398fe@syzkaller.appspotmail.com
->
-> ==================================================================
-> BUG: KASAN: use-after-free in strnlen+0x64/0x70 lib/string.c:561
-> Read of size 1 at addr ffff8880933b8c18 by task syz-executor821/6893
->
-> CPU: 0 PID: 6893 Comm: syz-executor821 Not tainted 5.8.0-rc2-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x18f/0x20d lib/dump_stack.c:118
->  print_address_description.constprop.0.cold+0xae/0x436 mm/kasan/report.c:383
->  __kasan_report mm/kasan/report.c:513 [inline]
->  kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
->  strnlen+0x64/0x70 lib/string.c:561
->  strnlen include/linux/string.h:339 [inline]
->  dev_name_hash net/core/dev.c:208 [inline]
->  netdev_name_node_lookup_rcu+0x22/0x150 net/core/dev.c:290
->  dev_get_by_name_rcu net/core/dev.c:883 [inline]
->  dev_get_by_name+0x7b/0x1e0 net/core/dev.c:905
->  lookup_interface drivers/net/wireguard/netlink.c:63 [inline]
->  wg_get_device_start+0x2e4/0x3f0 drivers/net/wireguard/netlink.c:203
->  genl_start+0x342/0x6e0 net/netlink/genetlink.c:556
->  __netlink_dump_start+0x585/0x900 net/netlink/af_netlink.c:2343
->  genl_family_rcv_msg_dumpit+0x2ac/0x310 net/netlink/genetlink.c:638
->  genl_family_rcv_msg net/netlink/genetlink.c:733 [inline]
->  genl_rcv_msg+0x797/0x9e0 net/netlink/genetlink.c:753
->  netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
->  genl_rcv+0x24/0x40 net/netlink/genetlink.c:764
->  netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
->  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1329
->  netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
->  sock_sendmsg_nosec net/socket.c:652 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:672
->  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
->  ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
->  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
->  do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x445299
-> Code: Bad RIP value.
-> RSP: 002b:00007ffd1e794308 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000445299
-> RDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003
-> RBP: 0000000000082a5d R08: 0000000000000000 R09: 00000000004002e0
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000402430
-> R13: 00000000004024c0 R14: 0000000000000000 R15: 0000000000000000
->
-> Allocated by task 6894:
->  save_stack+0x1b/0x40 mm/kasan/common.c:48
->  set_track mm/kasan/common.c:56 [inline]
->  __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:494
->  __kmalloc_reserve net/core/skbuff.c:142 [inline]
->  __alloc_skb+0xae/0x550 net/core/skbuff.c:210
->  alloc_skb include/linux/skbuff.h:1083 [inline]
->  netlink_alloc_large_skb net/netlink/af_netlink.c:1175 [inline]
->  netlink_sendmsg+0x94f/0xd90 net/netlink/af_netlink.c:1893
->  sock_sendmsg_nosec net/socket.c:652 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:672
->  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
->  ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
->  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
->  do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> Freed by task 6894:
->  save_stack+0x1b/0x40 mm/kasan/common.c:48
->  set_track mm/kasan/common.c:56 [inline]
->  kasan_set_free_info mm/kasan/common.c:316 [inline]
->  __kasan_slab_free+0xf5/0x140 mm/kasan/common.c:455
->  __cache_free mm/slab.c:3426 [inline]
->  kfree+0x103/0x2c0 mm/slab.c:3757
->  skb_free_head net/core/skbuff.c:590 [inline]
->  skb_release_data+0x6d9/0x910 net/core/skbuff.c:610
->  skb_release_all net/core/skbuff.c:664 [inline]
->  __kfree_skb net/core/skbuff.c:678 [inline]
->  consume_skb net/core/skbuff.c:837 [inline]
->  consume_skb+0xc2/0x160 net/core/skbuff.c:831
->  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
->  netlink_unicast+0x53b/0x7d0 net/netlink/af_netlink.c:1329
->  netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1918
->  sock_sendmsg_nosec net/socket.c:652 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:672
->  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2352
->  ___sys_sendmsg+0xf3/0x170 net/socket.c:2406
->  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
->  do_syscall_64+0x60/0xe0 arch/x86/entry/common.c:359
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> The buggy address belongs to the object at ffff8880933b8c00
->  which belongs to the cache kmalloc-512 of size 512
-> The buggy address is located 24 bytes inside of
->  512-byte region [ffff8880933b8c00, ffff8880933b8e00)
-> The buggy address belongs to the page:
-> page:ffffea00024cee00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0
-> flags: 0xfffe0000000200(slab)
-> raw: 00fffe0000000200 ffffea0002a1da08 ffffea0002763a08 ffff8880aa000a80
-> raw: 0000000000000000 ffff8880933b8000 0000000100000004 0000000000000000
-> page dumped because: kasan: bad access detected
->
-> Memory state around the buggy address:
->  ffff8880933b8b00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->  ffff8880933b8b80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> >ffff8880933b8c00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                             ^
->  ffff8880933b8c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff8880933b8d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ==================================================================
->
->
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 > ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>  include/linux/bpf.h            |  1 +
+>  include/uapi/linux/bpf.h       | 11 ++++++++++-
+>  kernel/bpf/helpers.c           | 22 ++++++++++++++++++++++
+>  kernel/trace/bpf_trace.c       |  2 ++
+>  tools/include/uapi/linux/bpf.h | 11 ++++++++++-
+>  5 files changed, 45 insertions(+), 2 deletions(-)
 >
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> syzbot can test patches for this bug, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index e2b1581b2195..c9f27d5fdb7c 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1657,6 +1657,7 @@ extern const struct bpf_func_proto bpf_skc_to_tcp_sock_proto;
+>  extern const struct bpf_func_proto bpf_skc_to_tcp_timewait_sock_proto;
+>  extern const struct bpf_func_proto bpf_skc_to_tcp_request_sock_proto;
+>  extern const struct bpf_func_proto bpf_skc_to_udp6_sock_proto;
+> +extern const struct bpf_func_proto bpf_copy_from_user_proto;
+>
+>  const struct bpf_func_proto *bpf_tracing_func_proto(
+>         enum bpf_func_id func_id, const struct bpf_prog *prog);
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 73f9e3f84b77..6b347454dedc 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3293,6 +3293,13 @@ union bpf_attr {
+>   *             Dynamically cast a *sk* pointer to a *udp6_sock* pointer.
+>   *     Return
+>   *             *sk* if casting is valid, or NULL otherwise.
+> + *
+> + * long bpf_copy_from_user(void *dst, u32 size, const void *user_ptr)
+> + *     Description
+> + *             Read *size* bytes from user space address *user_ptr* and store
+> + *             the data in *dst*. This is a wrapper of copy_from_user().
+> + *     Return
+> + *             0 on success, or a negative error in case of failure.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3435,7 +3442,9 @@ union bpf_attr {
+>         FN(skc_to_tcp_sock),            \
+>         FN(skc_to_tcp_timewait_sock),   \
+>         FN(skc_to_tcp_request_sock),    \
+> -       FN(skc_to_udp6_sock),
+> +       FN(skc_to_udp6_sock),           \
+> +       FN(copy_from_user),             \
+> +       /* */
+
+Thank you for this! Those trivial merge conflicts due to '\' were
+really annoying.
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+[...]
