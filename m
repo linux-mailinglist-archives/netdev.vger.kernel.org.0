@@ -2,98 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E71A20FFFA
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 00:19:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E936210003
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 00:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726163AbgF3WTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 18:19:07 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:41758 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725862AbgF3WTG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 18:19:06 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05UMJ1GN027166
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:19:06 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=8AUQoL8VZdPMjrzGs9W0ynOrf4sulTk8NHwCUowyXxk=;
- b=STK6u+OCujBJfTYwfD1AXXrcDcAPep1ugBBjLcJ4WgrSzTkf4Y4EckaciuH0DwdcNEBE
- ci1cjxws2t9VHlSh6gaDhqQV+JcmUHizZbqjKpuh8H4evyDrps1e+Oo4gj1VceqF8emv
- DJmw/22X9xmCaT4ptbU5iHaLEYFIEiu8hJc= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 31xp39cfdt-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:19:06 -0700
-Received: from intmgw004.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 30 Jun 2020 15:18:37 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 0FAA6294379D; Tue, 30 Jun 2020 15:18:33 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <netdev@vger.kernel.org>
-CC:     David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
-        Willem de Bruijn <willemb@google.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH net] ipv4: tcp: Fix SO_MARK in RST and ACK packet
-Date:   Tue, 30 Jun 2020 15:18:33 -0700
-Message-ID: <20200630221833.740761-1-kafai@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726182AbgF3WWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 18:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbgF3WWq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 18:22:46 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BBFC03E979
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:22:46 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id i25so22891690iog.0
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:22:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xB0Br0JyKgL2Z3Eg66kuCiZe8XAzg3Ju64hrrs0TqDo=;
+        b=iRhHIBpQMDu2Z1UnGsiLNTtgvog7P6HpOOo97rRipmrU2j6wW3e9l93eRcvgORCAmw
+         2h2++TGR8lHFv/FJeyA69mteeuF9Sf1EB6LADRy4FaX8gMX+oHdMonO6QbNbh/VD19LK
+         NarowRTRxwo/JQ9AOQLd8ZARBFLt3VSM9HKOx82Z0hT2q4jBBrtJPWoNxus6E1yWSw22
+         NpD3nvKtNvnMd81vscjP+allw0WTsnwkKNgwehphZ1EmLMTvQtQpigpTmAbjecmi9XrB
+         6aHCyk+byhWuoSgI2kZCl1kEXhD74RKF2r+vrjEBw2/q/4IUAVPbjcNM9cPsDs5jIlWE
+         3e3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xB0Br0JyKgL2Z3Eg66kuCiZe8XAzg3Ju64hrrs0TqDo=;
+        b=fSkVW7+d2zEJ+5nbV1O21a58DhPIf9Np0QM5MQ4vRFWfkuGX45TmWfnyfSvbehx+uH
+         7BT4P/qn+NxyffHzzIq+HHAiC6/wXTLtY6HzSnY4Obj4jgFMkaGIqErc722UtGO0r/n5
+         Dl4xN+Uibo/uynCjUUGje1pSHGBe+38xkbzfMPuWko8Qi+pG5Ccx+2n47YYEOHMPK/pY
+         MpFQ13iLkKqZNJF8zK5CVx5D3ZgksnrOTFpGaMxxrllFVdYXEqI45emC/zXsMASOvgO/
+         qN0UA6ioulWn6XIEwrA7Q3OVY+moXELXURCjG7Z8p9I3jsCnOlEuWK7vJXOt4gWCWUfe
+         j8Kg==
+X-Gm-Message-State: AOAM5315+CDOlFq9QXLXttxvfEyorEGkKAnjUiWFg8gsgu/eGItO1CgE
+        5KBD/NAsywU7oUu+ziMGa9FFlMBEjvTujAErjno=
+X-Google-Smtp-Source: ABdhPJxQqOIQEqy0t6zgdBDzJNL8eA1MrydwXSFKYn2Nt13w7Lcf8VElQ8SZIamqnGoUEp9uQIJij+Jq8g0DCEoac/I=
+X-Received: by 2002:a05:6602:1225:: with SMTP id z5mr24052710iot.64.1593555765488;
+ Tue, 30 Jun 2020 15:22:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-06-30_06:2020-06-30,2020-06-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- impostorscore=0 phishscore=0 cotscore=-2147483648 malwarescore=0
- lowpriorityscore=0 mlxscore=0 suspectscore=1 clxscore=1015
- priorityscore=1501 bulkscore=0 spamscore=0 mlxlogscore=853 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006300153
-X-FB-Internal: deliver
+References: <20200618193611.GE24694@carbon.DHCP.thefacebook.com>
+ <CAM_iQpWuNnHqNHKz5FMgAXoqQ5qGDEtNbBKDXpmpeNSadCZ-1w@mail.gmail.com>
+ <4f17229e-1843-5bfc-ea2f-67ebaa9056da@huawei.com> <CAM_iQpVKqFi00ohqPARxaDw2UN1m6CtjqsmBAP-pcK0GT2p_fQ@mail.gmail.com>
+ <459be87d-0272-9ea9-839a-823b01e354b6@huawei.com> <35480172-c77e-fb67-7559-04576f375ea6@huawei.com>
+ <CAM_iQpXpZd6ZaQyQifWOHSnqgAgdu1qP+fF_Na7rQ_H1vQ6eig@mail.gmail.com>
+ <20200623222137.GA358561@carbon.lan> <b3a5298d-3c4e-ba51-7045-9643c3986054@neo-zeon.de>
+ <CAM_iQpU1ji2x9Pgb6Xs7Kqoh3mmFRN3R9GKf5QoVUv82mZb8hg@mail.gmail.com> <20200627234127.GA36944@carbon.DHCP.thefacebook.com>
+In-Reply-To: <20200627234127.GA36944@carbon.DHCP.thefacebook.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 30 Jun 2020 15:22:34 -0700
+Message-ID: <CAM_iQpWk4x7U_ci1WTf6BG=E3yYETBUk0yxMNSz6GuWFXfhhJw@mail.gmail.com>
+Subject: Re: [Patch net] cgroup: fix cgroup_sk_alloc() for sk_clone_lock()
+To:     Roman Gushchin <guro@fb.com>
+Cc:     Cameron Berkenpas <cam@neo-zeon.de>, Zefan Li <lizefan@huawei.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Lu Fengqi <lufq.fnst@cn.fujitsu.com>,
+        =?UTF-8?Q?Dani=C3=ABl_Sonck?= <dsonck92@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Tejun Heo <tj@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When testing a recent kernel (5.6 in our case), the skb->mark of the
-IPv4 TCP RST pkt does not carry the mark from sk->sk_mark.  It is
-discovered by the bpf@tc that depends on skb->mark to work properly.
-The same bpf prog has been working in the earlier kernel version.
-After reverting commit c6af0c227a22 ("ip: support SO_MARK cmsg"),
-the skb->mark is set and seen by bpf@tc properly.
+On Sat, Jun 27, 2020 at 4:41 PM Roman Gushchin <guro@fb.com> wrote:
+>
+> On Fri, Jun 26, 2020 at 10:58:14AM -0700, Cong Wang wrote:
+> > On Thu, Jun 25, 2020 at 10:23 PM Cameron Berkenpas <cam@neo-zeon.de> wrote:
+> > >
+> > > Hello,
+> > >
+> > > Somewhere along the way I got the impression that it generally takes
+> > > those affected hours before their systems lock up. I'm (generally) able
+> > > to reproduce this issue much faster than that. Regardless, I can help test.
+> > >
+> > > Are there any patches that need testing or is this all still pending
+> > > discussion around the  best way to resolve the issue?
+> >
+> > Yes. I come up with a (hopefully) much better patch in the attachment.
+> > Can you help to test it? You need to unapply the previous patch before
+> > applying this one.
+> >
+> > (Just in case of any confusion: I still believe we should check NULL on
+> > top of this refcnt fix. But it should be a separate patch.)
+> >
+> > Thank you!
+>
+> Not opposing the patch, but the Fixes tag is still confusing me.
+> Do we have an explanation for what's wrong with 4bfc0bb2c60e?
+>
+> It looks like we have cgroup_bpf_get()/put() exactly where we have
+> cgroup_get()/put(), so it would be nice to understand what's different
+> if the problem is bpf-related.
 
-We have noticed that in IPv4 TCP RST but it should also
-happen to the ACK based on tcp_v4_send_ack() is also depending
-on ip_send_unicast_reply().
+Hmm, I think it is Zefan who believes cgroup refcnt is fine, the bug
+is just in cgroup bpf refcnt, in our previous discussion.
 
-This patch tries to fix it by initializing the ipc.sockc.mark to
-fl4.flowi4_mark.
+Although I agree cgroup refcnt is buggy too, it may not necessarily
+cause any real problem, otherwise we would receive bug report
+much earlier than just recently, right?
 
-Fixes: c6af0c227a22 ("ip: support SO_MARK cmsg")
-Cc: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- net/ipv4/ip_output.c | 1 +
- 1 file changed, 1 insertion(+)
+If the Fixes tag is confusing, I can certainly remove it, but this also
+means the patch will not be backported to stable. I am fine either
+way, this crash is only reported after Zefan's recent change anyway.
 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 090d3097ee15..033512f719ec 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1703,6 +1703,7 @@ void ip_send_unicast_reply(struct sock *sk, struct =
-sk_buff *skb,
- 	sk->sk_bound_dev_if =3D arg->bound_dev_if;
- 	sk->sk_sndbuf =3D sysctl_wmem_default;
- 	sk->sk_mark =3D fl4.flowi4_mark;
-+	ipc.sockc.mark =3D fl4.flowi4_mark;
- 	err =3D ip_append_data(sk, &fl4, ip_reply_glue_bits, arg->iov->iov_base=
-,
- 			     len, 0, &ipc, &rt, MSG_DONTWAIT);
- 	if (unlikely(err)) {
---=20
-2.24.1
-
+Thanks.
