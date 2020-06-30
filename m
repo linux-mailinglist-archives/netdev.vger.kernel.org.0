@@ -2,142 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FD292100B5
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 01:47:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4CB72100B6
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 01:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726771AbgF3XrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 19:47:04 -0400
-Received: from mail.efficios.com ([167.114.26.124]:40824 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbgF3XrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 19:47:03 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 7D56E2C835C;
-        Tue, 30 Jun 2020 19:47:02 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id mVbGtM213tMx; Tue, 30 Jun 2020 19:47:02 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 3D9402C8472;
-        Tue, 30 Jun 2020 19:47:02 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 3D9402C8472
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1593560822;
-        bh=JZpBaj1ngv5v+CLHHxDDQ/dBFJ7ch0A+FK5gLZG1eeg=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=SbZfL5de2C5rucrJg2qMWP+VSKH32IzOjpAfVWvqRSltOkB4OhH9Hk3MJuoaRS9oz
-         WdoJc9tiwqil1FzuhXwhfXV0fjqXm0ihtb0UlxY0zjYVOQ/dEbOAgLXPp0FMMO1ECD
-         fAhvMnzycc1cw2PMOZpuD8R66xgreJQGRcb9jw9sgjG2qQXjz9tcwfzuqqOAHWsktq
-         XAo5UcfqIJn5lBs0E0NjbHyWRxcZKPKpuuEq8Fbd6gFucfBM+DKq/7ZB+nkEf9eb6h
-         wz0Boz+jnjVnqtRx+ShKVkg9RrhVrHylYTk+sqbTTM0QvsWofcoJKkbtiuhfxibY4s
-         0t2iQvStn/oiQ==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id cDiSwPo_NedY; Tue, 30 Jun 2020 19:47:02 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 2B8072C846F;
-        Tue, 30 Jun 2020 19:47:02 -0400 (EDT)
-Date:   Tue, 30 Jun 2020 19:47:02 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <1359584061.18162.1593560822147.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20200630234101.3259179-1-edumazet@google.com>
-References: <20200630234101.3259179-1-edumazet@google.com>
-Subject: Re: [PATCH net] tcp: md5: add missing memory barriers in
- tcp_md5_do_add()/tcp_md5_hash_key()
+        id S1726352AbgF3Xsg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 30 Jun 2020 19:48:36 -0400
+Received: from mga09.intel.com ([134.134.136.24]:38186 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725930AbgF3Xsg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jun 2020 19:48:36 -0400
+IronPort-SDR: kyfeCkNGdB6DocWAPROF3jT6vvssDhQVCYK7VqIojGudmiKqJGac4aNXVA9TfCkm3Y2Jt97uNQ
+ by77mECisxnw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="147963079"
+X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; 
+   d="scan'208";a="147963079"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2020 16:48:35 -0700
+IronPort-SDR: 860S8/qvonx+Ubh2OeY76LmVfC9d7NEz685YiHoMkgJmYDumnAEaHiOdHCYe33EArZRbrxVLIi
+ s1r7uKwCTnKw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; 
+   d="scan'208";a="266606512"
+Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
+  by fmsmga008.fm.intel.com with ESMTP; 30 Jun 2020 16:48:35 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.199]) by
+ ORSMSX110.amr.corp.intel.com ([169.254.10.232]) with mapi id 14.03.0439.000;
+ Tue, 30 Jun 2020 16:48:35 -0700
+From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "Brady, Alan" <alan.brady@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Michael, Alice" <alice.michael@intel.com>,
+        "Burra, Phani R" <phani.r.burra@intel.com>,
+        "Hay, Joshua A" <joshua.a.hay@intel.com>,
+        "Chittim, Madhu" <madhu.chittim@intel.com>,
+        "Linga, Pavan Kumar" <pavan.kumar.linga@intel.com>,
+        "Skidmore, Donald C" <donald.c.skidmore@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        lkp <lkp@intel.com>
+Subject: RE: [net-next v3 15/15] idpf: Introduce idpf driver
+Thread-Topic: [net-next v3 15/15] idpf: Introduce idpf driver
+Thread-Index: AQHWS16TPBESI1lj00iHdVXe4L8dEajrtIUAgAYkvMA=
+Date:   Tue, 30 Jun 2020 23:48:34 +0000
+Message-ID: <61CC2BC414934749BD9F5BF3D5D9404498743241@ORSMSX112.amr.corp.intel.com>
+References: <20200626020737.775377-1-jeffrey.t.kirsher@intel.com>
+        <20200626020737.775377-16-jeffrey.t.kirsher@intel.com>
+ <20200626115236.7f36d379@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200626115236.7f36d379@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_3945 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3928)
-Thread-Topic: md5: add missing memory barriers in tcp_md5_do_add()/tcp_md5_hash_key()
-Thread-Index: 1T3kxl1XAVoSg61Ydxf+0IxBAFdIfA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On Jun 30, 2020, at 7:41 PM, Eric Dumazet edumazet@google.com wrote:
-
-> MD5 keys are read with RCU protection, and tcp_md5_do_add()
-> might update in-place a prior key.
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Friday, June 26, 2020 11:53
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Cc: davem@davemloft.net; Brady, Alan <alan.brady@intel.com>;
+> netdev@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
+> Michael, Alice <alice.michael@intel.com>; Burra, Phani R
+> <phani.r.burra@intel.com>; Hay, Joshua A <joshua.a.hay@intel.com>;
+> Chittim, Madhu <madhu.chittim@intel.com>; Linga, Pavan Kumar
+> <pavan.kumar.linga@intel.com>; Skidmore, Donald C
+> <donald.c.skidmore@intel.com>; Brandeburg, Jesse
+> <jesse.brandeburg@intel.com>; Samudrala, Sridhar
+> <sridhar.samudrala@intel.com>; lkp <lkp@intel.com>
+> Subject: Re: [net-next v3 15/15] idpf: Introduce idpf driver
 > 
-> Normally, typical RCU updates would allocate a new piece
-> of memory. In this case only key->key and key->keylen might
-> be updated, and we do not care if an incoming packet could
-> see the old key, the new one, or some intermediate value,
-> since changing the key on a live flow is known to be problematic
-> anyway.
-
-What makes it acceptable to observe an intermediate bogus key during the
-transition ?
-
-Thanks,
-
-Mathieu
-
+> On Thu, 25 Jun 2020 19:07:37 -0700 Jeff Kirsher wrote:
+> > +MODULE_AUTHOR("Intel Corporation, <linux.nics@intel.com>");
 > 
-> We only want to make sure that in the case key->keylen
-> is changed, cpus in tcp_md5_hash_key() wont try to use
-> uninitialized data, or crash because key->keylen was
-> read twice to feed sg_init_one() and ahash_request_set_crypt()
-> 
-> Fixes: 9ea88a153001 ("tcp: md5: check md5 signature without socket lock")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> ---
-> net/ipv4/tcp.c      | 7 +++++--
-> net/ipv4/tcp_ipv4.c | 3 +++
-> 2 files changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index
-> 810cc164f795f8e1e8ca747ed5df51bb20fec8a2..f111660453241692a17c881dd6dc2910a1236263
-> 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -4033,10 +4033,13 @@ EXPORT_SYMBOL(tcp_md5_hash_skb_data);
-> 
-> int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct tcp_md5sig_key
-> *key)
-> {
-> +	u8 keylen = key->keylen;
-> 	struct scatterlist sg;
-> 
-> -	sg_init_one(&sg, key->key, key->keylen);
-> -	ahash_request_set_crypt(hp->md5_req, &sg, NULL, key->keylen);
-> +	smp_rmb(); /* paired with smp_wmb() in tcp_md5_do_add() */
-> +
-> +	sg_init_one(&sg, key->key, keylen);
-> +	ahash_request_set_crypt(hp->md5_req, &sg, NULL, keylen);
-> 	return crypto_ahash_update(hp->md5_req);
-> }
-> EXPORT_SYMBOL(tcp_md5_hash_key);
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index
-> ad6435ba6d72ffd8caf783bb25cad7ec151d6909..99916fcc15ca0be12c2c133ff40516f79e6fdf7f
-> 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -1113,6 +1113,9 @@ int tcp_md5_do_add(struct sock *sk, const union
-> tcp_md5_addr *addr,
-> 	if (key) {
-> 		/* Pre-existing entry - just update that one. */
-> 		memcpy(key->key, newkey, newkeylen);
-> +
-> +		smp_wmb(); /* pairs with smp_rmb() in tcp_md5_hash_key() */
-> +
-> 		key->keylen = newkeylen;
-> 		return 0;
-> 	}
-> --
-> 2.27.0.212.ge8ba1cc988-goog
+> Corporations do not author things, people do. Please drop this.
 
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+Your statement makes sense and I know that we have done this historically, like several other drivers (not saying it is right).  The thought process was that our drivers are not written by just one or two people, but more like 20+ developers.  So should we list all 20+ people that wrote the drivers, or just choose one person?  Also what happens when that person no longer works at Intel and the email is no longer vaild, should we constantly update the MODULE_AUTHOR() to reflect valid employees working on the driver?  That is the reason we were using "Intel Corporation" and a valid email that will always be good for support questions.
+
