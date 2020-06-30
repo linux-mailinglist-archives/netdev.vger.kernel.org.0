@@ -2,65 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6141820FCA2
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 21:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06B1120FCB6
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 21:24:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727079AbgF3TVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 15:21:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42180 "EHLO
+        id S1727904AbgF3TY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 15:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726704AbgF3TVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 15:21:22 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B10C061755;
-        Tue, 30 Jun 2020 12:21:22 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8D75F1273208E;
-        Tue, 30 Jun 2020 12:21:17 -0700 (PDT)
-Date:   Tue, 30 Jun 2020 12:21:14 -0700 (PDT)
-Message-Id: <20200630.122114.69420116631257185.davem@davemloft.net>
-To:     elder@linaro.org
-Cc:     kuba@kernel.org, evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/5] net: ipa: head-of-line block registers
- are RX only
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <825816f3-5797-bbcf-571b-c6a7a6821397@linaro.org>
-References: <7c438ee3-8ff0-0ee1-2a0a-fa458d982e11@linaro.org>
-        <20200629.180305.1550276438848153234.davem@davemloft.net>
-        <825816f3-5797-bbcf-571b-c6a7a6821397@linaro.org>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Jun 2020 12:21:17 -0700 (PDT)
+        with ESMTP id S1727826AbgF3TY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 15:24:56 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5791C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 12:24:55 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1jqLsD-0001iv-Sr; Tue, 30 Jun 2020 21:24:53 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     <mptcp@lists.01.org>
+Subject: [PATCH net-next 0/2] mptcp: add receive buffer auto-tuning
+Date:   Tue, 30 Jun 2020 21:24:43 +0200
+Message-Id: <20200630192445.18333-1-fw@strlen.de>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
-Date: Mon, 29 Jun 2020 20:09:58 -0500
+First patch extends the test script to allow for reproducible results.
+Second patch adds receive auto-tuning.  Its based on what TCP is doing,
+only difference is that we use the largest RTT of any of the subflows
+and that we will update all subflows with the new value.
 
-> But the reason I was
-> considering it conditional on a config option is that Qualcomm
-> has a crash analysis tool that expects a BUG() call to stop the
-> system so its instant state can be captured.  I don't use this
-> tool, and I might be mistaken about what's required.
+Else, we get spurious packet drops because the mptcp work queue might
+not be able to move packets from subflow socket to master socket
+fast enough.  Without the adjustment, TCP may drop the packets because
+the subflow socket is over its rcvbuffer limit.
 
-A Qualcomm debugging tool with poorly choosen expectations does not
-determine how we do things in the kernel.
+Florian Westphal (2):
+      selftests: mptcp: add option to specify size of file to transfer
+      mptcp: add receive buffer auto-tuning
 
-> What I would *really* like to do is have a way to gracefully
-> shut down just the IPA driver when an unexpected condition occurs,
-> so I can stop everything without crashing the system.  But doing
-> that in a way that works in all cases is Hard.
+ net/mptcp/protocol.c                               | 123 +++++++++++++++++++--
+ net/mptcp/protocol.h                               |   7 ++
+ net/mptcp/subflow.c                                |   5 +-
+ tools/testing/selftests/net/mptcp/mptcp_connect.sh |  52 ++++++---
+ 4 files changed, 166 insertions(+), 21 deletions(-)
 
-Users would like their system and the IPA device to continue, even
-if in a reduced functionality manner, if possible.
-
-Doing things to make that less likely to be possible is undesirable.
