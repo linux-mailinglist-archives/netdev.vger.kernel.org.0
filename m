@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2CF20ED36
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 07:12:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0030720ED43
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 07:14:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726667AbgF3FMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 01:12:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
+        id S1727995AbgF3FOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 01:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725372AbgF3FMH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 01:12:07 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16FCC061755;
-        Mon, 29 Jun 2020 22:12:06 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id b185so6899792qkg.1;
-        Mon, 29 Jun 2020 22:12:06 -0700 (PDT)
+        with ESMTP id S1725845AbgF3FOa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 01:14:30 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57F5C061755;
+        Mon, 29 Jun 2020 22:14:30 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id u17so14716026qtq.1;
+        Mon, 29 Jun 2020 22:14:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zGplCeeRJoAyufaAlmCwLaugI8cgJNgw65k+WGYRnHA=;
-        b=CpaXFVZlpVAXY2yH4khkp6NrDgW+8cSR+mkXcCmZImtrEnz10ZfMcUyIE+Oa6YZJbx
-         Y82mJWbMxqnTuZVk9FIoW02+m7lGS4PS1XC2CveJStF/mntg1lvksz5gh/e0zqZ6apue
-         ITDcHi8vp2RAEJHdKkl0+BdgoG6ZOKuXFj8gMXYImGWjRUuOu8COqR49s235LF5YNJem
-         i99VgA+b51Ijl4m3PIJro1P7RVOOUv35GyZEWPXf9T3cVKmJp3M6xaxE1MF/3R7n7QvC
-         05W6unvmdHIGvwjc8Jy/IkJUSm2U6T8CnCUJx8AziCX7ST+Ol31BMepNQJI7sfXq5UVz
-         WS+Q==
+        bh=2nmhZc8pm0sRpbKQTG6rJbFvpc1bwe11GwaDWI19db4=;
+        b=i/diRNn5XBW4i77XeaTs269iAH5xXndnrlMJKEQKp+Gx4gsv2DkDDLXvMhbakaizPm
+         EZpLxLI+zCSyZXFTh8NDvbrOIEuFXtU8OP6ktu8/ANxVmJqJOAALZJq9gbWp4Nyd9Xvh
+         9xWnyCdpODnxGHI7ud6A6+IMk+QPRKuFdHpaLsknwgCx4VGrewz/2gCRgo47IUACZt4V
+         /sXMVHzieroBwzCcEyv6/hnUYBMr2ZGfSslaQNUoBYOdhO5pGbwlChJDFraNCpKmhBN3
+         Bhj3KwRJYnf68qHdNibfTLmXU6uM+PpCNzt6UOJ7nU40p0GDTeV3CrQcehDX0EcsN9ew
+         mZwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zGplCeeRJoAyufaAlmCwLaugI8cgJNgw65k+WGYRnHA=;
-        b=IMDmiXW2hDmbQ1UiIzYyEC8sj0164KHGFYAanCT4EPyQhtJol/aTM2nfcVSq4O2c4O
-         xDCnz4/XBYXl9aTFMqOXFulmqtPXNExBymyT9v5meUFJkM3lFZcX4fq/Fe7OrMFV28Fc
-         NNULUZEZdqpKmdVa3uBUkTaS2beMphAZCNkje7RCrj4zC8ox0XLtU1ZXztwK3SX46G/m
-         AQvbXwSe7yF5fio0e2x5MUyfI+nhZ7m0RV66dfPymuoH4xDMBMyII2C+l/etpS1yekwC
-         GLJO71ycbXsITQ9h880K+iEVz7uYzXWAdlj2M4/S5RmcI5fbwdRnYf08mAlEdxJKs+RD
-         gpjQ==
-X-Gm-Message-State: AOAM530kWCXyJJOKEcfORIJJyABMcd0slUqH3kQANw82ySn1CKuNpYTk
-        GNyURcj3l1fzyt1znIIqdLFvkNnqeQqfVBSbSZA=
-X-Google-Smtp-Source: ABdhPJz0krLS9xLR59lh5jFL00U1uqURjzBGWNKJW3rhcljp7ogIRQ09FsQg4w2EQ9bCjer9GYc+y2CCC1/lk9O0XHo=
-X-Received: by 2002:a37:270e:: with SMTP id n14mr17217715qkn.92.1593493925876;
- Mon, 29 Jun 2020 22:12:05 -0700 (PDT)
+        bh=2nmhZc8pm0sRpbKQTG6rJbFvpc1bwe11GwaDWI19db4=;
+        b=dBOoh8JbytAB+4xh+h45neR6mxjNtlHYbJUV7lKeQpEnws5Zzy4mBf5Ax8q14Mw48H
+         4KgEWKdp1rPPMO7bNiBWvPBCHUWy2yPmBT/Gtn+30kAoBpU/6EEWeJ8gNQ8/qiJCwD6N
+         /D0JKHJytfdTA2lW3N/kYt1kDBAXwGvna6qZ2zrqXg+kQDSoZXHNMKJMq5dhys7bkVgX
+         5WLUrpEBSIpBwFsVOYYug8kTR/5IEwZgOQL7fSoycrJgaV4I3ig1f9ID0z0TGyUsm7Rb
+         N+cBCMKe0ylGbyFFGCfwU9xx58p7i4T5htlPXSicJYsSedFSdNR22CY6gB7px1inbfti
+         9AEA==
+X-Gm-Message-State: AOAM5336jmQySeSDZF9RmtNvRWZ7FeiVuFG4KYdNXq7Ie6BRjqKZIyuZ
+        FxuVxtKMAz3FCK7Swhky8WmK20NO8IGpIP0TYi0=
+X-Google-Smtp-Source: ABdhPJwUCKD48jXksKVUbAXS7zaohoSu3rOdKkoxfjUmSsb79rUG4NRk8rEJVMt/WhbIS2BG+q4jPZ5azzUqrPjiCwA=
+X-Received: by 2002:aed:2cc5:: with SMTP id g63mr19052303qtd.59.1593494069918;
+ Mon, 29 Jun 2020 22:14:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200629221746.4033122-1-andriin@fb.com> <CAADnVQLkPPxvFV4ZftGeTNWfhtVnGR+Y8NAYZUmuyOcU_M_Y8g@mail.gmail.com>
-In-Reply-To: <CAADnVQLkPPxvFV4ZftGeTNWfhtVnGR+Y8NAYZUmuyOcU_M_Y8g@mail.gmail.com>
+References: <20200630043343.53195-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20200630043343.53195-1-alexei.starovoitov@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 29 Jun 2020 22:11:54 -0700
-Message-ID: <CAEf4BzaMt-b=Td2A+XmjzcYF0-TrwnbosyDk3Tr+3cztpar=dw@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: enforce BPF ringbuf size to be the power of 2
+Date:   Mon, 29 Jun 2020 22:14:18 -0700
+Message-ID: <CAEf4BzYG2drMiUvjgAF5vgdjAo5+N3zL+5TTvCoUUK=Z3ErVwA@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 0/5] bpf: Introduce minimal support for
+ sleepable progs
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -62,53 +63,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 9:47 PM Alexei Starovoitov
+On Mon, Jun 29, 2020 at 9:34 PM Alexei Starovoitov
 <alexei.starovoitov@gmail.com> wrote:
 >
-> On Mon, Jun 29, 2020 at 3:19 PM Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > BPF ringbuf assumes the size to be a multiple of page size and the power of
-> > 2 value. The latter is important to avoid division while calculating position
-> > inside the ring buffer and using (N-1) mask instead. This patch fixes omission
-> > to enforce power-of-2 size rule.
-> >
-> > Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it")
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  kernel/bpf/ringbuf.c | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-> > index 180414bb0d3e..dcc8e8b9df10 100644
-> > --- a/kernel/bpf/ringbuf.c
-> > +++ b/kernel/bpf/ringbuf.c
-> > @@ -132,7 +132,7 @@ static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t data_sz, int numa_node)
-> >  {
-> >         struct bpf_ringbuf *rb;
-> >
-> > -       if (!data_sz || !PAGE_ALIGNED(data_sz))
-> > +       if (!is_power_of_2(data_sz) || !PAGE_ALIGNED(data_sz))
-> >                 return ERR_PTR(-EINVAL);
+> From: Alexei Starovoitov <ast@kernel.org>
 >
-> What's the point checking the same value in two different places?
-> The check below did that already.
-
-I was initially treating bpf_ringbuf_alloc() as a sort of internal API
-that some other code (outside of BPF map) might want to use. But I'll
-drop for now, it can always be added later.
-
+> v4->v5:
+> - addressed Andrii's feedback.
 >
-> >  #ifdef CONFIG_64BIT
-> > @@ -166,7 +166,8 @@ static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
-> >                 return ERR_PTR(-EINVAL);
-> >
-> >         if (attr->key_size || attr->value_size ||
-> > -           attr->max_entries == 0 || !PAGE_ALIGNED(attr->max_entries))
-> > +           !is_power_of_2(attr->max_entries) ||
-> > +           !PAGE_ALIGNED(attr->max_entries))
-> >                 return ERR_PTR(-EINVAL);
-> >
-> >         rb_map = kzalloc(sizeof(*rb_map), GFP_USER);
-> > --
-> > 2.24.1
-> >
+> v3->v4:
+> - fixed synchronize_rcu_tasks_trace() usage and accelerated with synchronize_rcu_mult().
+> - removed redundant synchronize_rcu(). Otherwise it won't be clear why
+>   synchronize_rcu_tasks_trace() is not needed in free_map callbacks.
+> - improved test coverage.
+>
+> v2->v3:
+> - switched to rcu_trace
+> - added bpf_copy_from_user
+>
+> Here is 'perf report' differences:
+> sleepable with SRCU:
+>    3.86%  bench     [k] __srcu_read_unlock
+>    3.22%  bench     [k] __srcu_read_lock
+>    0.92%  bench     [k] bpf_prog_740d4210cdcd99a3_bench_trigger_fentry_sleep
+>    0.50%  bench     [k] bpf_trampoline_10297
+>    0.26%  bench     [k] __bpf_prog_exit_sleepable
+>    0.21%  bench     [k] __bpf_prog_enter_sleepable
+>
+> sleepable with RCU_TRACE:
+>    0.79%  bench     [k] bpf_prog_740d4210cdcd99a3_bench_trigger_fentry_sleep
+>    0.72%  bench     [k] bpf_trampoline_10381
+>    0.31%  bench     [k] __bpf_prog_exit_sleepable
+>    0.29%  bench     [k] __bpf_prog_enter_sleepable
+>
+> non-sleepable with RCU:
+>    0.88%  bench     [k] bpf_prog_740d4210cdcd99a3_bench_trigger_fentry
+>    0.84%  bench     [k] bpf_trampoline_10297
+>    0.13%  bench     [k] __bpf_prog_enter
+>    0.12%  bench     [k] __bpf_prog_exit
+>
+> Happy to confirm that rcu_trace overhead is negligible.
+>
+> v1->v2:
+> - split fmod_ret fix into separate patch
+> - added blacklist
+>
+> v1:
+> This patch set introduces the minimal viable support for sleepable bpf programs.
+> In this patch only fentry/fexit/fmod_ret and lsm progs can be sleepable.
+> Only array and pre-allocated hash and lru maps allowed.
+>
+> Alexei Starovoitov (5):
+>   bpf: Remove redundant synchronize_rcu.
+>   bpf: Introduce sleepable BPF programs
+>   bpf: Add bpf_copy_from_user() helper.
+>   libbpf: support sleepable progs
+>   selftests/bpf: Add sleepable tests
+>
+>  arch/x86/net/bpf_jit_comp.c                   | 32 +++++----
+>  include/linux/bpf.h                           |  4 ++
+>  include/uapi/linux/bpf.h                      | 19 +++++-
+>  init/Kconfig                                  |  1 +
+>  kernel/bpf/arraymap.c                         | 10 +--
+>  kernel/bpf/hashtab.c                          | 20 +++---
+>  kernel/bpf/helpers.c                          | 22 +++++++
+>  kernel/bpf/lpm_trie.c                         |  5 --
+>  kernel/bpf/queue_stack_maps.c                 |  7 --
+>  kernel/bpf/reuseport_array.c                  |  2 -
+>  kernel/bpf/ringbuf.c                          |  7 --
+>  kernel/bpf/stackmap.c                         |  3 -
+>  kernel/bpf/syscall.c                          | 13 +++-
+>  kernel/bpf/trampoline.c                       | 28 +++++++-
+>  kernel/bpf/verifier.c                         | 62 ++++++++++++++++-
+>  kernel/trace/bpf_trace.c                      |  2 +
+>  tools/include/uapi/linux/bpf.h                | 19 +++++-
+>  tools/lib/bpf/libbpf.c                        | 25 ++++++-
+>  tools/testing/selftests/bpf/bench.c           |  2 +
+>  .../selftests/bpf/benchs/bench_trigger.c      | 17 +++++
+>  .../selftests/bpf/prog_tests/test_lsm.c       |  9 +++
+>  tools/testing/selftests/bpf/progs/lsm.c       | 66 ++++++++++++++++++-
+>  .../selftests/bpf/progs/trigger_bench.c       |  7 ++
+>  23 files changed, 315 insertions(+), 67 deletions(-)
+>
+> --
+> 2.23.0
+>
+
+For the series:
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
