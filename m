@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 081FC20FB8C
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FDB920FB70
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:12:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733134AbgF3SRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 14:17:19 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:36953 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726736AbgF3SRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:17:18 -0400
-Received: by mail-ed1-f65.google.com with SMTP id g20so16886070edm.4;
-        Tue, 30 Jun 2020 11:17:16 -0700 (PDT)
+        id S2390635AbgF3SMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 14:12:21 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:41985 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726831AbgF3SMV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:12:21 -0400
+Received: by mail-ed1-f67.google.com with SMTP id z17so17098087edr.9;
+        Tue, 30 Jun 2020 11:12:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=y5Mt3w62B3XQY5/QbJq7kcGTRM0kicJutPXBswps/no=;
-        b=LixeDIWeBO2lXyjxh7/Jrnlr6UUty9VwyYbRtnI1VgxGIelaNVVqk08FScFtmw4+PO
-         v1iXrN26gf8mFnd8lE7aNSl++IFff5vq8S3hMAvAxKVI5h1alkcx/Hw0LPaYrOjBRMGO
-         wqRUFZcpYCTud9ep/yyi8ZUUl73nGfNgkK0O6Y1QGMk3eI+t4kk/xqTPcJ0iYKTA9occ
-         A+4xdJbEwxL4AGlHeQAPH86Y9VjpoDUC+UUNXxwj8DS7EUPY+ctjS4spxRHfTeUTuBbz
-         nc4y1Hhj09Ovl0/zTZ450hWKcE9vxT5pfKrQ4vyhzfXYqK1mWM8wkJ7v2itQIs+HR/Me
-         Bt7Q==
-X-Gm-Message-State: AOAM532YAkER3VLqlLnu82LQp9woWQfmiqlT/NBf2XK/msqMQ1Dlj7kj
-        V7NJizv3oVKndFxumwpxLY6mLVvF9pB8wA==
-X-Google-Smtp-Source: ABdhPJygbteH4H2nIDkfpYZxCZ8uRZYxp+ahdHSeCt3jc1NsBgprYHwwComNsOJMHASjwjgb5C2K7w==
-X-Received: by 2002:a17:906:7283:: with SMTP id b3mr20095438ejl.163.1593540577182;
-        Tue, 30 Jun 2020 11:09:37 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zsPbjoVXLMKo7otPkywLiwQyR35vOhEsRAVtfPQ7uPY=;
+        b=DbCLAfANaokVMLcXSIPHJdPkx3sXggTDQ2+SVpmTC+ZW2DLgBY8Tlw6SXFWb0VePv5
+         ZJF12n3Tw4MtKJ+2Llj8fmqABqTZ4yZVksDYI13vlrMVrg2nLXddo03NLJieCilVx8+q
+         6tlW2px88usxYPrrdbrSFKA75DWYS+HBjbvrp0KDEwQCk2UZVU9WIdYYu1HcyVtuBc1k
+         mFFi26mXEK7tQWMADs00B6cySZRvl1iaX5JCvM3q1HuX7JpUkewBGDA0t5Ef4wWGhTxu
+         fBcVixZ3NnIPF8w0QxzxaZTluNifTQBNCZCSlKH4OQH87yn6sEavt1s9Bo1vwMWCxrn9
+         dltg==
+X-Gm-Message-State: AOAM532+9iR+r8NMtR3eCcmI3nz1oJfGb8qGT6/hHd2w4T/eNO8M7xqh
+        bRbd5wtpFXNUmGIpnnkeDS25QEgX/POqKw==
+X-Google-Smtp-Source: ABdhPJxrAiH+SpkpE10q05cEUE9UfKQlAad8K9TRGDbh31tMzmP3hTDAjpmReDtpFz6tUnrpj3Xq+g==
+X-Received: by 2002:aa7:c590:: with SMTP id g16mr25037526edq.5.1593540736863;
+        Tue, 30 Jun 2020 11:12:16 -0700 (PDT)
 Received: from msft-t490s.lan ([2001:b07:5d26:7f46:d7c1:f090:1563:f81f])
-        by smtp.gmail.com with ESMTPSA id d13sm2492313ejj.95.2020.06.30.11.09.35
+        by smtp.gmail.com with ESMTPSA id d13sm2492313ejj.95.2020.06.30.11.12.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2020 11:09:36 -0700 (PDT)
+        Tue, 30 Jun 2020 11:12:16 -0700 (PDT)
 From:   Matteo Croce <mcroce@linux.microsoft.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
@@ -43,10 +43,12 @@ Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
         Stefan Chulski <stefanc@marvell.com>,
         Marcin Wojtas <mw@semihalf.com>, maxime.chevallier@bootlin.com,
         antoine.tenart@bootlin.com, thomas.petazzoni@bootlin.com
-Subject: [PATCH net-next 0/4] mvpp2: XDP support
-Date:   Tue, 30 Jun 2020 20:09:26 +0200
-Message-Id: <20200630180930.87506-1-mcroce@linux.microsoft.com>
+Subject: [PATCH net-next 1/4] mvpp2: refactor BM pool init percpu code
+Date:   Tue, 30 Jun 2020 20:09:27 +0200
+Message-Id: <20200630180930.87506-2-mcroce@linux.microsoft.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200630180930.87506-1-mcroce@linux.microsoft.com>
+References: <20200630180930.87506-1-mcroce@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -56,34 +58,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Matteo Croce <mcroce@microsoft.com>
 
-Add XDP support to mvpp2. This series converts the driver to the
-page_pool API for RX buffer management, and adds native XDP support.
+In mvpp2_swf_bm_pool_init_percpu(), a reference to a struct
+mvpp2_bm_pool is obtained traversing multiple structs, when a
+local variable already points to the same object.
 
-These are the performance numbers, as measured by Sven:
+Fix it and, while at it, give the variable a meaningful name.
 
-SKB fwd page pool:
-Rx bps     390.38 Mbps
-Rx pps     762.46 Kpps
+Signed-off-by: Matteo Croce <mcroce@microsoft.com>
+---
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 23 +++++++++----------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-XDP fwd:
-Rx bps     1.39 Gbps
-Rx pps     2.72 Mpps
-
-XDP Drop:
-eth0: 12.9 Mpps
-eth1: 4.1 Mpps
-
-Matteo Croce (4):
-  mvpp2: refactor BM pool init percpu code
-  mvpp2: use page_pool allocator
-  mvpp2: add basic XDP support
-  mvpp2: XDP TX support
-
- drivers/net/ethernet/marvell/Kconfig          |   1 +
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |  49 +-
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 600 ++++++++++++++++--
- 3 files changed, 588 insertions(+), 62 deletions(-)
-
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 212fc3b54310..027de7291f92 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -907,28 +907,27 @@ static int mvpp2_swf_bm_pool_init_shared(struct mvpp2_port *port)
+ /* Initialize pools for swf, percpu buffers variant */
+ static int mvpp2_swf_bm_pool_init_percpu(struct mvpp2_port *port)
+ {
+-	struct mvpp2_bm_pool *p;
++	struct mvpp2_bm_pool *bm_pool;
+ 	int i;
+ 
+ 	for (i = 0; i < port->nrxqs; i++) {
+-		p = mvpp2_bm_pool_use_percpu(port, MVPP2_BM_SHORT, i,
+-					     mvpp2_pools[MVPP2_BM_SHORT].pkt_size);
+-		if (!p)
++		bm_pool = mvpp2_bm_pool_use_percpu(port, MVPP2_BM_SHORT, i,
++						   mvpp2_pools[MVPP2_BM_SHORT].pkt_size);
++		if (!bm_pool)
+ 			return -ENOMEM;
+ 
+-		port->priv->bm_pools[i].port_map |= BIT(port->id);
+-		mvpp2_rxq_short_pool_set(port, i, port->priv->bm_pools[i].id);
++		bm_pool->port_map |= BIT(port->id);
++		mvpp2_rxq_short_pool_set(port, i, bm_pool->id);
+ 	}
+ 
+ 	for (i = 0; i < port->nrxqs; i++) {
+-		p = mvpp2_bm_pool_use_percpu(port, MVPP2_BM_LONG, i + port->nrxqs,
+-					     mvpp2_pools[MVPP2_BM_LONG].pkt_size);
+-		if (!p)
++		bm_pool = mvpp2_bm_pool_use_percpu(port, MVPP2_BM_LONG, i + port->nrxqs,
++						   mvpp2_pools[MVPP2_BM_LONG].pkt_size);
++		if (!bm_pool)
+ 			return -ENOMEM;
+ 
+-		port->priv->bm_pools[i + port->nrxqs].port_map |= BIT(port->id);
+-		mvpp2_rxq_long_pool_set(port, i,
+-					port->priv->bm_pools[i + port->nrxqs].id);
++		bm_pool->port_map |= BIT(port->id);
++		mvpp2_rxq_long_pool_set(port, i, bm_pool->id);
+ 	}
+ 
+ 	port->pool_long = NULL;
 -- 
 2.26.2
 
