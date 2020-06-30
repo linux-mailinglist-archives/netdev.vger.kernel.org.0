@@ -2,170 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B84720F671
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 15:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43C4520F6B6
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 16:07:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387431AbgF3N5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 09:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
+        id S1730836AbgF3OHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 10:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731327AbgF3N5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 09:57:38 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C276C061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 06:57:38 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id a8so15111556edy.1
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 06:57:38 -0700 (PDT)
+        with ESMTP id S1729341AbgF3OHR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 10:07:17 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B84CC061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 07:07:17 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id f5so6845453ljj.10
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 07:07:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7AUJ86Dv5H0LjEHbc2oQNE/3QwNEb+p/2GO8ru7Wx18=;
-        b=Ffh6zb2MpBn/US69pMpQYauwvLQw7IrM/tHCZauzu7+ZR9XqxJ8koMCDLDJv04Gru2
-         dYRZv7tX9CXNtZlRGhJyzLV+HNPZHVqS6efLq3zjRE3FLaFGc4Sx4pNqqfbxOE30++wx
-         Eeb6s2vPcMlcS8GL5EWOEbYqGnnammxbrP4ucpc2iIaGpOPh3OUpuD4MEbjNOLOBVSv1
-         LZ5P8RxAB+Hym8X9su4VeoVXQmtIQ9Oy6LjBcM78t1IIS9dkEROm5G9LRmYxbE+Nvl+T
-         ibcJIIyd3c3LIpn/HtqyP54KjzUxTiooWWRB7pHs4K3XUAODF31xnTchnFuzZx24f3s8
-         iQkg==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:cc:subject:from:to:date:message-id
+         :in-reply-to;
+        bh=VkFSa0Hx6McRxiDsvWegC7LNRphnK9bu5b8QB4H6uKA=;
+        b=V8/N8HEiMXoCSAOmm75vGg21vieEl+Q0qwC2zgNMUylD31LurkJo33merXcZQ702Hy
+         wunnsUcRnl8HuocFENPjFC3DnbX6FKgAvJ300iUV0QT4uQvNHWPUsTX+RcNDvAGoE8P+
+         /eGBkj8AI9sWcX58WFM0+rHUpHd6DMt4hHvHI6/oZBnTixaSmSFN/wQMfboUrVZ8PE6N
+         9g+HoJNuZACAezU3LSheV/EljZvxkfXDiuY80khzxwRfJIiOKNjc6dPBJeDtmRpbOY3F
+         +jg+gZOcadmfMHg3MNsqHwSJ9u6q799j5SGEwyNbtlc8+J0z8FM9JuIibEVPvZRyavWU
+         1tkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7AUJ86Dv5H0LjEHbc2oQNE/3QwNEb+p/2GO8ru7Wx18=;
-        b=A81L7GTcw22XYK+wXQalFb/4tjPe1zluYh8Zk/iYElbB08qlDV5AGJ1zXMaHZHYM8a
-         MbcVrbsq95Goqq2FimA3BS9Zyv0B4+cmTEndUd1oU8EdvSRCxyViEbMcuMyloExkdmAZ
-         SQTo7An/4GOlFm1oT1TvzbJc6pwZcD8pGC6N9Wr4ch/sBxaTDyoXRbYqIa/ilAao7Pdt
-         Cxz2mlzZbjMvGUbajdRErbuUK2tYQJLAgQwQEsmrlaPg6n2oZN+upbjRhEg/aIZ3J/Gp
-         u7kAzyLMNdCxqxckhmhTuY4jsPidz+WoVLvfEs/5YGjYzrMiJVLiXv4JC5uSZkNcJj36
-         3Sdw==
-X-Gm-Message-State: AOAM532FNjPPNZmumLVcF81JIJqcivWCgpowgToIZaYn5+sWfBGPbdQV
-        AZctXDW4+ghJjgkprLbv8BM6pERaZ7Dh8ioHxdh0+x7u
-X-Google-Smtp-Source: ABdhPJzVp9+lEtly+KCAfIL36Q2ZTMGWaRFbZECvIy8UsR1j6n1mOT/UvLwXNp+U4pgL3gicFhBOQNM7QWvwiM/dVV0=
-X-Received: by 2002:a05:6402:21c2:: with SMTP id bi2mr22899668edb.296.1593525456889;
- Tue, 30 Jun 2020 06:57:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com>
- <cb763bc5-b361-891a-94e9-be2385ddcbe0@gmail.com> <CA+FuTSfgz54uQbzrMr1Q0cAg2Vs1TFjyOb_+jjKUPoKAb=R-fw@mail.gmail.com>
- <f713198c-5ff7-677e-a739-c0bec4a93bd6@gmail.com> <CALx6S37vDy=0rCC7FPrgfi9NUr0w9dVvtRQ3LhiZ7GqoX4xBPw@mail.gmail.com>
- <CA+FuTSddo8Nsj4ri3gC0tDm7Oe4nrvCqyxkj14QWswUs4vNHLw@mail.gmail.com>
-In-Reply-To: <CA+FuTSddo8Nsj4ri3gC0tDm7Oe4nrvCqyxkj14QWswUs4vNHLw@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 30 Jun 2020 09:57:00 -0400
-Message-ID: <CAF=yD-JDvo=OB+f4Sg8MDxPSiUEe7FVN_pkOZ6EUfuZTr4eEwQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] icmp: support rfc 4884
-To:     Tom Herbert <tom@herbertland.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:content-transfer-encoding:cc:subject:from:to
+         :date:message-id:in-reply-to;
+        bh=VkFSa0Hx6McRxiDsvWegC7LNRphnK9bu5b8QB4H6uKA=;
+        b=sganxyezkG5DrkUaDnbZNAUMzFOn3Ib+z//3j2pUgUGQcVn6FBvT9FW8C1RvZL8TmI
+         I8c0gLlU0daZPXoKenaLNsjOmMza08A9QpqpUNRnKECkYlGxzFFq0xra/VT8w6OV6LCt
+         RtAU+Tq8W+vztcdJ0tkwtQgPBxaCmCoWjjg9wjvNEf32E/b1Qj4IEJ2iJPZQiiaIroLy
+         ua31WI3F9thju/ls6lcFC/lBSeUrTgHgpfB5Y6CQlHYCdT09SzzTu1tCj7bDiGd/OWQU
+         GxdJbXpemVM+03JeZokJV8x4WIEXwP4hF+48xLOtGkIoZu+9KqmqaRD2PySUbgUFqxcL
+         eNlQ==
+X-Gm-Message-State: AOAM530lNK9HCf8xwv1lRTjLe1FZZU+USIX1lUD8XqWllsVZx59hhFfF
+        n61BTNnb9mvJoU0anPG45WW84npwh9g=
+X-Google-Smtp-Source: ABdhPJwx+ggJQrdkcp71Ibd5M0djtSGPf1tKJXfLVJ3y6pVRM0GchpE0eO9BgDfS5GWqnBv2WOcWyQ==
+X-Received: by 2002:a2e:b5ab:: with SMTP id f11mr10532555ljn.438.1593526035357;
+        Tue, 30 Jun 2020 07:07:15 -0700 (PDT)
+Received: from localhost (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id v20sm847212lfe.46.2020.06.30.07.07.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Jun 2020 07:07:14 -0700 (PDT)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH net-next] net: ethernet: fec: prevent tx
+ starvation under high rx load
+From:   "Tobias Waldekranz" <tobias@waldekranz.com>
+To:     "Andy Duan" <fugang.duan@nxp.com>,
+        "David Miller" <davem@davemloft.net>
+Date:   Tue, 30 Jun 2020 15:45:51 +0200
+Message-Id: <C3UHDOU16UJF.1HSCO9KJ9CIRG@wkz-x280>
+In-Reply-To: <AM6PR0402MB36074675DB9DBCD9788DCE9BFF6F0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 10:19 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Mon, Jun 29, 2020 at 8:37 PM Tom Herbert <tom@herbertland.com> wrote:
-> >
-> > On Mon, Jun 29, 2020 at 4:07 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > >
-> > >
-> > >
-> > > On 6/29/20 2:30 PM, Willem de Bruijn wrote:
-> > > > On Mon, Jun 29, 2020 at 5:15 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > > >>
-> > > >>
-> > > >>
-> > > >> On 6/29/20 9:57 AM, Willem de Bruijn wrote:
-> > > >>> From: Willem de Bruijn <willemb@google.com>
-> > > >>>
-> > > >>> ICMP messages may include an extension structure after the original
-> > > >>> datagram. RFC 4884 standardized this behavior.
-> > > >>>
-> > > >>> It introduces an explicit original datagram length field in the ICMP
-> > > >>> header to delineate the original datagram from the extension struct.
-> > > >>>
-> > > >>> Return this field when reading an ICMP error from the error queue.
-> > > >>
-> > > >> RFC mentions a 'length' field of 8 bits, your patch chose to export the whole
-> > > >> second word of icmp header.
-> > > >>
-> > > >> Why is this field mapped to a prior one (icmp_hdr(skb)->un.gateway) ?
-> > > >>
-> > > >> Should we add an element in the union to make this a little bit more explicit/readable ?
-> > > >>
-> > > >> diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
-> > > >> index 5589eeb791ca580bb182e1dc38c05eab1c75adb9..427ed5a6765316a4c1e2fa06f3b6618447c01564 100644
-> > > >> --- a/include/uapi/linux/icmp.h
-> > > >> +++ b/include/uapi/linux/icmp.h
-> > > >> @@ -76,6 +76,7 @@ struct icmphdr {
-> > > >>                 __be16  sequence;
-> > > >>         } echo;
-> > > >>         __be32  gateway;
-> > > >> +       __be32  second_word; /* RFC 4884 4.[123] : <unused:8>,<length:8>,<mtu:16> */
-> > > >>         struct {
-> > > >>                 __be16  __unused;
-> > > >>                 __be16  mtu;
-> > > >
-> > > > Okay. How about a variant of the existing struct frag?
-> > > >
-> > > > @@ -80,6 +80,11 @@ struct icmphdr {
-> > > >                 __be16  __unused;
-> > > >                 __be16  mtu;
-> > > >         } frag;
-> > > > +       struct {
-> > > > +               __u8    __unused;
-> > > > +               __u8    length;
-> > > > +               __be16  mtu;
-> > > > +       } rfc_4884;
-> > > >         __u8    reserved[4];
-> > > >    } un;
-> > > >
-> > >
-> > > Sure, but my point was later in the code :
-> > >
-> > > >>> +     if (inet_sk(sk)->recverr_rfc4884)
-> > > >>> +             info = ntohl(icmp_hdr(skb)->un.gateway);
-> > > >>
-> > > >> ntohl(icmp_hdr(skb)->un.second_word);
-> > >
-> > > If you leave there "info = ntohl(icmp_hdr(skb)->un.gateway)" it is a bit hard for someone
-> > > reading linux kernel code to understand why we do this.
-> > >
-> > It's also potentially problematic. The other bits are Unused, which
-> > isn't the same thing as necessarily being zero. Userspace might assume
-> > that info is the length without checking its bounded.
->
-> It shouldn't. The icmp type and code are passed in sock_extended_err
-> as ee_type and ee_code. So it can demultiplex the meaning of the rest
-> of the icmp header.
->
-> It just needs access to the other 32-bits, which indeed are context
-> sensitive. It makes more sense to me to let userspace demultiplex this
-> in one place, rather than demultiplex in the kernel and define a new,
-> likely no simpler, data structure to share with userspace.
->
-> Specific to RFC 4884, the 8-bit length field coexists with the
-> 16-bit mtu field in case of ICMP_FRAG_NEEDED, so we cannot just pass
-> the first as ee_info in RFC 4884 mode. sock_extended_err additionally
-> has ee_data, but after that we're out of fields, too, so this approach
-> is not very future proof to additional ICMP extensions.
->
-> On your previous point, it might be useful to define struct rfc_4884
-> equivalent outside struct icmphdr, so that an application can easily
-> cast to that. RFC 4884 itself does not define any extension objects.
-> That is out of scope there, and in my opinion, here. Again, better
-> left to userspace. Especially because as it describes, it standardized
-> the behavior after observing non-compliant, but existing in the wild,
-> proprietary extension variants. Users may have to change how they
-> interpret the fields based on what they have deployed.
+On Tue Jun 30, 2020 at 11:47 AM CEST, Andy Duan wrote:
+> Tobias, sorry, I am not running the net tree, I run the linux-imx tree:
+> https://source.codeaurora.org/external/imx/linux-imx/refs/heads
+> branch=EF=BC=9Aimx_5.4.24_2.1.0
+> But the data follow is the same as net tree.
 
-As this just shares the raw icmp header data, I should probably
-change the name to something less specific to RFC 4884.
+I've now built the same kernel. On this one the issue does not occur,
+consistent throughput of ~940Mbps just like you're seeing.
 
-Since it would also help with decoding other extensions, such as
-the one you mention in  draft-ietf-6man-icmp-limits-08.
-
-Unfortunately I cannot simply reserve IP_RECVERR with integer 2.
-Perhaps IP_RECVERR_EXINFO.
+Now moving to mainline 5.4 to rule out any NXP changes first, then
+start bisecting.
