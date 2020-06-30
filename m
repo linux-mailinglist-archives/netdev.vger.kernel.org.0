@@ -2,106 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EA7120EC0B
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 05:35:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A88E20EC0E
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 05:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729167AbgF3DfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 23:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37380 "EHLO
+        id S1729182AbgF3DfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 23:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728949AbgF3DfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 23:35:05 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF7BC061755;
-        Mon, 29 Jun 2020 20:35:05 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id el4so4589829qvb.13;
-        Mon, 29 Jun 2020 20:35:05 -0700 (PDT)
+        with ESMTP id S1728949AbgF3DfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 23:35:15 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7DEC061755;
+        Mon, 29 Jun 2020 20:35:15 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id f6so4833856pjq.5;
+        Mon, 29 Jun 2020 20:35:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ODjqhnM4EYauxP5u1z5d0rzCDxBUPQowO18e+pMY0SA=;
-        b=erdada7PFEBW59urx/AnQDu2eoz35PvlLaYuNToWB4L05zO0AXNgG4NsKZU1SREmN1
-         fwA2l0PiNmlevZU00vBMjEM0Mouwn0j+lSdiTeE5ncdkXmf2SGo5U/8xO3FHVQPzSJFR
-         wuxMVcDPie2daaRv6BxNMWRDH3MjdRn/ofa6gcWf3y0D/BE0SOKCXtx6RQXVtw270zk9
-         dGVyW4ENjDooxYaGShabaxQiVE0KlSA9P8WInHVYWqP3YCTtHn4kFkm7Jvgr1vc0fZxq
-         36caEqRE9AzDSmFs5r6bjoFzL8n8owZBmqw3zBcnAl4RFZX4FVw9pxa6qWUe6/RR0I5V
-         MmyQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zXTJu9jT8dNH6yUHWppqC/x9/GobYCOn1TeUoW6Oe2g=;
+        b=iWqkTxL71XRvSS4sU9MEVbqA0zX3uK25gZRe1sW9ZdLlE61oG0fvWpzgRwjcwfnaem
+         WaxWZ99FgYDjEnRPhfzU+F3nInUIUTE4fhtgNg24sTypdCimPlOUBSsLt/ccMagoixS6
+         CAykD0pAOZf3w8Snk6K9GUZXaaqSXFhnD1LLkFbD9TotXkovGM/NwLe4sF5zJi6OjsfX
+         16hQlBDJr1hr/kgKa3oUu8gkgEq+JJHH7XWhkklfk/mVtxjo146pqMqq6BukMrlJuaLE
+         m6J7sm2c5w73jB9GwcJoa06c/FrXW0+ySJGyaO0LEGXRp6V87ZE/HmJPjrTcxZsu7IqE
+         YtBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ODjqhnM4EYauxP5u1z5d0rzCDxBUPQowO18e+pMY0SA=;
-        b=T0Q6iTBJWAJEECzW6wx3J111tQnUwGCjxhDr3SiBwKsgX0F6RyCe9UlK9/zuM+atYM
-         iHZdgKrMpiWHI40O8SqAcZUEDpai9XooKBdZEWJERPqXxeKt4l5f8JCKqLNuDKFp/+kn
-         7bYTWrQqkoFqtxUz2n6HGfOmbpCnfbn8qJ8tHfEIpXIe1cNYlFBBEu2m6Nn/oxBLeg21
-         1PQpOqiT5+8o6CWlAOUzJCZrHx0P/KB0rDlNC6WSWnQPLeCcBWhCct7wilgs6X36Le9+
-         E9vBBKW60JyPYRzXjia4Bnf25/kbTLB8Trx0Ej84tTsnmeololuvPuX3LZFH0ecYYqEs
-         M5bg==
-X-Gm-Message-State: AOAM533ej2yG1w1mrj8O6+QmPQKDSlicp2wlNsCDfsPNikpjR7n+rxmH
-        3yotQkmQXi6c2wsALQY+NLo9lJQinfmfY1Wclqg=
-X-Google-Smtp-Source: ABdhPJzubhJZqUrz7rlamhHpg26uiu7O5tWj/66gVCsSrNs4O2SM+SeL8FAYH6WyOODS6VmdwdYRsm8S8PsLGiSZlOQ=
-X-Received: by 2002:a05:6214:bce:: with SMTP id ff14mr18077847qvb.196.1593488105100;
- Mon, 29 Jun 2020 20:35:05 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zXTJu9jT8dNH6yUHWppqC/x9/GobYCOn1TeUoW6Oe2g=;
+        b=Z5x+tgdb2RzWOXGjJCIRdrAGNVr69oBwCYOnOHHI7nA6itKH7V50bJMEmPINTz3xv8
+         7ET50Q0r1snPSzQrdIEWYjMhTakLM6MkckIS808xJo4Q08DACXW+7/3kA2Vhy+64nmyN
+         1hWT1fAmgFZnVt+fSs6//A/u5oPBeWoBdAYYV21wDbl7NNU54iELGqThdn6/JAuUBaRG
+         4nSzaGK2C8uE2jYUPlO650x4WfRRwrmB2TTh90aEF2yn/9Ws3aAePAv3C77qKhm0htHC
+         zU70sU6FgyIDY7I4Mik0z9d8EoeSc/VS5XtiFVmhfviTgYiNwPQ6lVsK9Yt6inhl0rMt
+         HAPw==
+X-Gm-Message-State: AOAM530qqFzicyDoBcW3w+wnTxDJps1DNh+ReZUrXa8ixlphoQ7DmIfz
+        pFP8V+p+GmxsQQdn8JuyBRDGJYeg
+X-Google-Smtp-Source: ABdhPJyuqES7YHE+dO2Q8QxVIJmIRCcLH32v79l4dg9XowoMVoc7ZffBzaLSjZusbAPAt/dJiMi3bA==
+X-Received: by 2002:a17:90a:7409:: with SMTP id a9mr20442046pjg.107.1593488114205;
+        Mon, 29 Jun 2020 20:35:14 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 125sm911379pff.130.2020.06.29.20.35.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Jun 2020 20:35:13 -0700 (PDT)
+Subject: Re: [PATCH] of: of_mdio: count number of regitered phys
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, robh+dt@kernel.org,
+        frowand.list@gmail.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1593415596-9487-1-git-send-email-claudiu.beznea@microchip.com>
+ <20200630004543.GB597495@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <6b022bcc-a670-da1d-5f5a-bdf4af667652@gmail.com>
+Date:   Mon, 29 Jun 2020 20:35:11 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200630003441.42616-1-alexei.starovoitov@gmail.com>
- <20200630003441.42616-6-alexei.starovoitov@gmail.com> <CAEf4BzaH367tNd77puOvwrDHCeGqoNAHPYxdy4tXtWghXqyFSQ@mail.gmail.com>
- <20200630030653.fkgp43sz5gqi426y@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200630030653.fkgp43sz5gqi426y@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 29 Jun 2020 20:34:54 -0700
-Message-ID: <CAEf4BzZqWTdSOnko1g9HKiqzbD8_xL+4tN8znoaNO6suq_LbAQ@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 5/5] selftests/bpf: Add sleepable tests
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200630004543.GB597495@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 8:06 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Mon, Jun 29, 2020 at 06:25:38PM -0700, Andrii Nakryiko wrote:
-> >
-> > > +
-> > > +SEC("fentry.s/__x64_sys_setdomainname")
-> > > +int BPF_PROG(test_sys_setdomainname, struct pt_regs *regs)
-> > > +{
-> > > +       int buf = 0;
-> > > +       long ret;
-> > > +
-> > > +       ret = bpf_copy_from_user(&buf, sizeof(buf), (void *)regs->di);
-> > > +       if (regs->si == -2 && ret == 0 && buf == 1234)
-> > > +               copy_test++;
-> > > +       if (regs->si == -3 && ret == -EFAULT)
-> > > +               copy_test++;
-> > > +       if (regs->si == -4 && ret == -EFAULT)
-> > > +               copy_test++;
-> >
-> > regs->si and regs->di won't compile on non-x86 arches, better to use
-> > PT_REGS_PARM1() and PT_REGS_PARM2() from bpf_tracing.h.
->
-> the test is x86 only due to:
-> +SEC("fentry.s/__x64_sys_setdomainname")
 
-Right, but here I'm talking about compilation error because pt_regs
-don't have si, di fields on other arches. __x64 just won't attach in
-runtime, which is not a big deal if you are ignoring this particular
-test.
 
->
-> I guess we can move samples/bpf/trace_common.h into libbpf as well
-> to clean the whole thing up. Something for later patches.
+On 6/29/2020 5:45 PM, Andrew Lunn wrote:
+> On Mon, Jun 29, 2020 at 10:26:36AM +0300, Claudiu Beznea wrote:
+>> In case of_mdiobus_register_phy()/of_mdiobus_register_device()
+>> returns -ENODEV for all PHYs in device tree or for all scanned
+>> PHYs there is a chance that of_mdiobus_register() to
+>> return success code although no PHY devices were registered.
+>> Add a counter that increments every time a PHY was registered
+>> to avoid the above scenario.
+> 
+> Hi Claudiu
+> 
+> There is a danger here this will break something. Without this patch,
+> an empty bus is O.K. But with this patch, a bus without a PHY is a
+> problem.
+> 
+> Take for example FEC. It often comes in pairs. Each has an MDIO
+> bus. But to save pins, there are some designs which place two PHYs on
+> one bus, leaving the other empty. The driver unconditionally calls
+> of_mdiobus_register() and if it returns an error, it will error out
+> the probe. So i would not be too surprised if you get reports of
+> missing interfaces with this patch.
 
-trace_common.h works only for the latest kernels. Before some version
-(don't remember which version precisely), __x64 shouldn't be added.
-Which makes this header not a good candidate for inclusion to libbpf.
-BCC does this dynamically in runtime based on kallsyms, which I'm not
-a big fan of doing as well. So let's punt trace_common.h for better
-times :)
+Agreed, the potential for breakage here is too high especially given
+this is fixing a hypothetical problem rather an an actual one. Even if
+we were taking this from the angle of power management, runtime PM
+should ensure that a MDIO bus with no slave, or no activity gets runtime
+suspended.
+-- 
+Florian
