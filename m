@@ -2,106 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A41AE20ECCA
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 06:47:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDB6820ECEE
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 06:51:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729247AbgF3ErY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 00:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48450 "EHLO
+        id S1729559AbgF3EvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 00:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbgF3ErX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 00:47:23 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA00C061755;
-        Mon, 29 Jun 2020 21:47:23 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id h19so20850308ljg.13;
-        Mon, 29 Jun 2020 21:47:23 -0700 (PDT)
+        with ESMTP id S1729247AbgF3EvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 00:51:12 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3327C061755
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 21:51:11 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id r22so17425788qke.13
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 21:51:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=arista.com; s=googlenew;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=daIZyTHIPdbyeKvYiblnWQv2KSo0hTAfj7ReUORgrLs=;
-        b=BN9xTgwT7WfcP+fNoc3TcEc47SGCNW9ReSYwNbOsturRTrtitOlcrHfZ02fygnEymJ
-         ZFzq0uPZOFrqfo4tZjtTyebRKhKBlSqtWy/DssXL6Xo2PlptuwK5/PajMWE6zhA7HQ3p
-         /uocEvOJdsr4wXSBsK1r0Hx6uqMSbEed3t7vH1GwH2C+h5cSj8x0qSqK5JsARWQl5C6Q
-         VOxhNGW5Eccvu9JbN09lXLpnKBuijRfyj4lrbe6jyRFhGyS3yFLS68xaK1jojvcgpMQR
-         9Wb8uPZmOMAlw86o61yu0n5cvpl+BnSNo/6bolixNBW3MhyTL+O9f4fYCgTSF2iLYuPT
-         hARg==
+        bh=zCaps0loQaEmR/b2P5B3LXujzdso5k67v4HcTYc+GR8=;
+        b=SzPJFfIcOzkcEYGA5v9ELeSfWERhjHPdjUj+Nvn1dSi0ZNyXp3B5TJjdq6S8/qq6NM
+         MObyQPupwPQ94gzOYT3piiHl/suxo+twRdybak+evrIGY2afwXFKaJg0T2TdJa+QWGbY
+         Tu2zbOgHLVwAHmYeDTm8zzrCFZrA+V8rG9G3dt53CdRnL+F/ou52CAMIEjcJUMMgW2uY
+         AFXgTEzAQdXPos6Zngn1kQjD4qX+FMMb6JQnuN4azoc5ArC5CeKxSSbXcAWfkFeU3xeY
+         7BfZKszqNNDiHTTGuFHPDefnVeq2lygo+b/kAKQuh6Yl4yTwamXJwBfOOOHKISJdJKTZ
+         jA8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=daIZyTHIPdbyeKvYiblnWQv2KSo0hTAfj7ReUORgrLs=;
-        b=k21ZmvSiSJyHIS5wiatcunVU65Cl4ND1EVF+XjotpMaunvaldVfLxy26vC+qdgc6zb
-         P20/kZC2K4HIroEZWocmq3OLUVOWCpc5dit3x2hjXFVLotDhXZBSk1lbMR8cDU8lNA+W
-         VblSXFEt+c5o+T1hXaAHe90a5H+wFIojTmcwbu5XjqZLL76Zomg44TaFMptWkb63+vQo
-         r9/DlyEy4elVBvVSwZisEoX4M6JTUWH9qWwr6DOds+Qa46ur8OfzRFkCqAF1QBpp1Vi8
-         JS/ou6FQ3RLrtZfIUFgu9424nj07FBHc2X4VQ1nK1uBC5FhzevsAmgldBYJR4lhjsIZR
-         /N1w==
-X-Gm-Message-State: AOAM5307zJFRGsBJ8JEmWctNNWZ7vMB8LybAehT3yISzF6Zws/GqXVbQ
-        5o2y0/E4Sjo8uqse0jWRN4bQDRxOYwIXlucip24=
-X-Google-Smtp-Source: ABdhPJyjO5UTeapZ72OBuwf5s91n7OeqMekNU+F8BIaXduWkUAIHWcjnZe9o5qr9xaqi9XzOSdZjvE+IstpfKrb2+1Q=
-X-Received: by 2002:a2e:8357:: with SMTP id l23mr5622422ljh.290.1593492441463;
- Mon, 29 Jun 2020 21:47:21 -0700 (PDT)
+        bh=zCaps0loQaEmR/b2P5B3LXujzdso5k67v4HcTYc+GR8=;
+        b=fiLv+rXVxSIinvF6uDHmaR6Yra/efa7miPMX6Zu3lh5uuU+kdGgf624kFKKztg4osE
+         n5TpYi1Z/8AjM2Psko7zo3XtBpw6g5KrbtA8aHrnT1Bq+T+/nUqncLcP0E4MxMyGVw9Z
+         RD9/O76tyukRxkvWPhrp2G+/7R8dKj7ZbzxUVq0Km9jsiT8Fj7nW9QxS8V4w1RXIMvSF
+         ITbBx51Py0HTI9dVv/PWW08Ain9JWD589868dsTWnREHQG3LPH2p6bIqLoL7zvaMLkZJ
+         L0H+bHeA8hQOm0cUaWr+WAc7qn45ZUvyUVaL2vPeAYrTCk9PK5ct9s/QvRBZwFnXiGFF
+         qbNA==
+X-Gm-Message-State: AOAM530gL47GJhWYSvxUdtDf5TqAuIRJ3F0L0WF+Twp20Xzt3I7MfJ5Y
+        RuEfbuhBpW+MskaKBklJWttpDbmiIwD0lLiXYUzI1g==
+X-Google-Smtp-Source: ABdhPJw17VDeB/8CSFZtI1dZDGngtZx5LKNRhxlkstFd7Z07UhFZgOrAGsTMwXB66P4UhkkHf9YFAHtAUqayNpl+n6Q=
+X-Received: by 2002:a05:620a:1273:: with SMTP id b19mr18111737qkl.10.1593492670843;
+ Mon, 29 Jun 2020 21:51:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200629221746.4033122-1-andriin@fb.com>
-In-Reply-To: <20200629221746.4033122-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 29 Jun 2020 21:47:10 -0700
-Message-ID: <CAADnVQLkPPxvFV4ZftGeTNWfhtVnGR+Y8NAYZUmuyOcU_M_Y8g@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: enforce BPF ringbuf size to be the power of 2
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
+References: <20200629211801.C3D7095C0900@us180.sjc.aristanetworks.com> <20200629171612.49efbdaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200629171612.49efbdaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Francesco Ruggeri <fruggeri@arista.com>
+Date:   Mon, 29 Jun 2020 21:50:59 -0700
+Message-ID: <CA+HUmGjHQPUh1frfy5E28Om9WTVr0W+UQVDsm99beC_mbTeMog@mail.gmail.com>
+Subject: Re: [PATCH] igb: reinit_locked() should be called with rtnl_lock
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org,
+        David Miller <davem@davemloft.net>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 3:19 PM Andrii Nakryiko <andriin@fb.com> wrote:
+> Would you mind adding a fixes tag here? Probably:
 >
-> BPF ringbuf assumes the size to be a multiple of page size and the power of
-> 2 value. The latter is important to avoid division while calculating position
-> inside the ring buffer and using (N-1) mask instead. This patch fixes omission
-> to enforce power-of-2 size rule.
->
-> Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  kernel/bpf/ringbuf.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-> index 180414bb0d3e..dcc8e8b9df10 100644
-> --- a/kernel/bpf/ringbuf.c
-> +++ b/kernel/bpf/ringbuf.c
-> @@ -132,7 +132,7 @@ static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t data_sz, int numa_node)
->  {
->         struct bpf_ringbuf *rb;
->
-> -       if (!data_sz || !PAGE_ALIGNED(data_sz))
-> +       if (!is_power_of_2(data_sz) || !PAGE_ALIGNED(data_sz))
->                 return ERR_PTR(-EINVAL);
+> Fixes: 9d5c824399de ("igb: PCI-Express 82575 Gigabit Ethernet driver")
 
-What's the point checking the same value in two different places?
-The check below did that already.
+That seems to be the commit that introduced the driver in 2.6.25.
+I am not familiar with the history of the driver to tell if this was a day 1
+problem or if it became an issue later.
 
->  #ifdef CONFIG_64BIT
-> @@ -166,7 +166,8 @@ static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
->                 return ERR_PTR(-EINVAL);
 >
->         if (attr->key_size || attr->value_size ||
-> -           attr->max_entries == 0 || !PAGE_ALIGNED(attr->max_entries))
-> +           !is_power_of_2(attr->max_entries) ||
-> +           !PAGE_ALIGNED(attr->max_entries))
->                 return ERR_PTR(-EINVAL);
->
->         rb_map = kzalloc(sizeof(*rb_map), GFP_USER);
-> --
-> 2.24.1
->
+> And as a matter of fact it looks like e1000e and e1000 have the same
+> bug :/ Would you mind checking all Intel driver producing matches for
+> all the affected ones?
+
+Do you mean identify all Intel drivers that may have the same issue?
+
+Francesco
