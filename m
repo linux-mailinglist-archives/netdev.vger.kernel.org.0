@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3683220ECA2
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 06:33:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79B8B20ECA4
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 06:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726710AbgF3Eds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 00:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46340 "EHLO
+        id S1727024AbgF3Edu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 00:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726268AbgF3Edr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 00:33:47 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649F4C061755;
-        Mon, 29 Jun 2020 21:33:47 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id i4so8948687pjd.0;
-        Mon, 29 Jun 2020 21:33:47 -0700 (PDT)
+        with ESMTP id S1726268AbgF3Edu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 00:33:50 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC2DC061755;
+        Mon, 29 Jun 2020 21:33:50 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id f6so4885929pjq.5;
+        Mon, 29 Jun 2020 21:33:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=YJEZJNUqA4+NkEDurnjYTYANxLG0Cw6C3owASw7BzMk=;
-        b=dn7VKS282aYitnl5WXpBMkxo4aWnBRxqrHeAHS5dH9p6attgk7Ats1rbo5J5QY43mn
-         aSSer9WxYj5Moqz6bEOP29W56ojLrxJyJs79tWiOd0LMo0BNHAJLNMQKgsSac7kw4d5t
-         E7no8pXupLcrONOUs5XiVOXtluCJJDKBSJk38rkTf2AytU5XLHijdAIqWNAQmRtigez/
-         n9wIaKGD/gO3GtOEPSJVo55+ijkMRD/D91ZVmiPlHFRQ/V36ZXuvEinkhcTm8EUmDmED
-         sH/ciVyAXFNqXbLsQPPloOJnyczbkGPmRc5Gr6J1quVDB3hOigbkR2of+Ro1/X6lk9hP
-         DM/w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=7OTv1ekDxOAnqvhvLmGu2MGZBJLyFM7F84Ei7ka2OxY=;
+        b=Wnkog++K/Pwsv+TKBNIDdJfTnoPA8wv4Yxk62/EvCdKl6VKugl13cbdqT3JkRJA3/s
+         UzBdl6mNHjWCB6+f8RdhLM2E8n64y16FU8KaLvQl57IvBC+4E/64o6uE/j3DimA7P4vw
+         rrNohMZuZVxK7s91fhT/YlpD/Oo29OlyeOn2BA70UbjLtabCVKpuWmPTfbrlVrOC0i3l
+         4oFOalceYAkGOTeasrrDQoT/28/S+pYY4f1NIdQNrhDawaUt1GlsnUR+10/g0poFLrH5
+         i8IgdN8fiqJPSaCsgYInw6h+rr3RsnEJOkh7D85IA8orZm9ef8Ofhm2eSIXMNmRsG5U0
+         ospQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=YJEZJNUqA4+NkEDurnjYTYANxLG0Cw6C3owASw7BzMk=;
-        b=Wll12zbrV9uaH6kQW9sDCsdPejdB1ZKA5ig7Nj2RKQ13zmIYZrhOWCImKM7KD+Ctga
-         I3ie/9epH3r2MxuEXvnd3OO41RobNP7XnORK9un+h+qeb0Uw5hF9XWUOSZAYkjC1mSBL
-         jUu6YiyAyjavZ9QJ2ZtozTLMrM88tSMglZxmes7hBVcU2IAVvqUJt6eswyq9jc+DlByU
-         7bWNaRYBoJRetSFpohLse0nWK5scDTzpAyslsW3ZWXz7Gi1IbLdTiW/Hn+QyMfs+gnZ2
-         qZ7iIc1ERRPKLqHhjx1rIAi/N3uwf2VWLPldZCw5ohGPxYU990RPjUWKR7z7fpvTrqc+
-         e3hA==
-X-Gm-Message-State: AOAM533HvmHwCRh2gaGmbUgYdchopnUO4jSfTXz7QjK3pMzaVbFdkpHR
-        GrAkSURTVim9L09N/39UlIQ=
-X-Google-Smtp-Source: ABdhPJylDXTpxg7S7jnxT51KNDy3sPjAg9m+A+KvN2OyIUgonciPi1+A3rJRKMMW6LgXEoV0cSfMIA==
-X-Received: by 2002:a17:90a:1544:: with SMTP id y4mr20213329pja.130.1593491626794;
-        Mon, 29 Jun 2020 21:33:46 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=7OTv1ekDxOAnqvhvLmGu2MGZBJLyFM7F84Ei7ka2OxY=;
+        b=iSLj4S6AfzKWiRZEgk1vVVZA6qN0m7dk/yucLc90Oo2Bsgwe5CXbAE48ogY80tqJvD
+         5EZ6KQXElpTqNvbUkHkFGMUbC1AyA4M466M/+Of1Bkit0qhEi1dPoRhiipegKhanpG2y
+         GrbYonT4zI5Pt7vbH4eSe4WckdSRtwTJn31P0kaAqa5BeM8fnn+mLpriPeUWZRxUjxvE
+         96nMzabTQyqToqRQ0MW1wyU+kEaotUMKS7PhQYtH/1OPpIFnIPASNxEffQYQiqMz0M7v
+         guvJiz3Cmpu+dSIMo7jb/ErXNLkFJ8Eab3f2jZWw0a66+Xf2pJC0fPyvInn0iI7VUSMB
+         e6KQ==
+X-Gm-Message-State: AOAM533KWxTffxgWPnNhYLIeinDXINFz0rE0gPAFvsBhgVgJdc3+p/Q2
+        uxIEaSEnqmbgapifrt/N4VE=
+X-Google-Smtp-Source: ABdhPJw4ndWwIwDJ1NfzWndUi1csB+EhAyYpdIQGvl2303qKafRr437PWu4naoK2h1q/kkuy8NGL+g==
+X-Received: by 2002:a17:902:c252:: with SMTP id 18mr9579984plg.39.1593491629653;
+        Mon, 29 Jun 2020 21:33:49 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id 21sm1111234pfv.43.2020.06.29.21.33.44
+        by smtp.gmail.com with ESMTPSA id 21sm1111234pfv.43.2020.06.29.21.33.46
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jun 2020 21:33:45 -0700 (PDT)
+        Mon, 29 Jun 2020 21:33:47 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, paulmck@kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v5 bpf-next 0/5] bpf: Introduce minimal support for sleepable progs
-Date:   Mon, 29 Jun 2020 21:33:38 -0700
-Message-Id: <20200630043343.53195-1-alexei.starovoitov@gmail.com>
+Subject: [PATCH v5 bpf-next 1/5] bpf: Remove redundant synchronize_rcu.
+Date:   Mon, 29 Jun 2020 21:33:39 -0700
+Message-Id: <20200630043343.53195-2-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
+In-Reply-To: <20200630043343.53195-1-alexei.starovoitov@gmail.com>
+References: <20200630043343.53195-1-alexei.starovoitov@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -60,83 +63,152 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-v4->v5:
-- addressed Andrii's feedback.
+bpf_free_used_maps() or close(map_fd) will trigger map_free callback.
+bpf_free_used_maps() is called after bpf prog is no longer executing:
+bpf_prog_put->call_rcu->bpf_prog_free->bpf_free_used_maps.
+Hence there is no need to call synchronize_rcu() to protect map elements.
 
-v3->v4:
-- fixed synchronize_rcu_tasks_trace() usage and accelerated with synchronize_rcu_mult().
-- removed redundant synchronize_rcu(). Otherwise it won't be clear why
-  synchronize_rcu_tasks_trace() is not needed in free_map callbacks.
-- improved test coverage.
+Note that hash_of_maps and array_of_maps update/delete inner maps via
+sys_bpf() that calls maybe_wait_bpf_programs() and synchronize_rcu().
 
-v2->v3:
-- switched to rcu_trace
-- added bpf_copy_from_user
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+---
+ kernel/bpf/arraymap.c         | 9 ---------
+ kernel/bpf/hashtab.c          | 8 +++-----
+ kernel/bpf/lpm_trie.c         | 5 -----
+ kernel/bpf/queue_stack_maps.c | 7 -------
+ kernel/bpf/reuseport_array.c  | 2 --
+ kernel/bpf/ringbuf.c          | 7 -------
+ kernel/bpf/stackmap.c         | 3 ---
+ 7 files changed, 3 insertions(+), 38 deletions(-)
 
-Here is 'perf report' differences:
-sleepable with SRCU:
-   3.86%  bench     [k] __srcu_read_unlock
-   3.22%  bench     [k] __srcu_read_lock
-   0.92%  bench     [k] bpf_prog_740d4210cdcd99a3_bench_trigger_fentry_sleep
-   0.50%  bench     [k] bpf_trampoline_10297
-   0.26%  bench     [k] __bpf_prog_exit_sleepable
-   0.21%  bench     [k] __bpf_prog_enter_sleepable
-
-sleepable with RCU_TRACE:
-   0.79%  bench     [k] bpf_prog_740d4210cdcd99a3_bench_trigger_fentry_sleep
-   0.72%  bench     [k] bpf_trampoline_10381
-   0.31%  bench     [k] __bpf_prog_exit_sleepable
-   0.29%  bench     [k] __bpf_prog_enter_sleepable
-
-non-sleepable with RCU:
-   0.88%  bench     [k] bpf_prog_740d4210cdcd99a3_bench_trigger_fentry
-   0.84%  bench     [k] bpf_trampoline_10297
-   0.13%  bench     [k] __bpf_prog_enter
-   0.12%  bench     [k] __bpf_prog_exit
-
-Happy to confirm that rcu_trace overhead is negligible.
-
-v1->v2:
-- split fmod_ret fix into separate patch
-- added blacklist
-
-v1:
-This patch set introduces the minimal viable support for sleepable bpf programs.
-In this patch only fentry/fexit/fmod_ret and lsm progs can be sleepable.
-Only array and pre-allocated hash and lru maps allowed.
-
-Alexei Starovoitov (5):
-  bpf: Remove redundant synchronize_rcu.
-  bpf: Introduce sleepable BPF programs
-  bpf: Add bpf_copy_from_user() helper.
-  libbpf: support sleepable progs
-  selftests/bpf: Add sleepable tests
-
- arch/x86/net/bpf_jit_comp.c                   | 32 +++++----
- include/linux/bpf.h                           |  4 ++
- include/uapi/linux/bpf.h                      | 19 +++++-
- init/Kconfig                                  |  1 +
- kernel/bpf/arraymap.c                         | 10 +--
- kernel/bpf/hashtab.c                          | 20 +++---
- kernel/bpf/helpers.c                          | 22 +++++++
- kernel/bpf/lpm_trie.c                         |  5 --
- kernel/bpf/queue_stack_maps.c                 |  7 --
- kernel/bpf/reuseport_array.c                  |  2 -
- kernel/bpf/ringbuf.c                          |  7 --
- kernel/bpf/stackmap.c                         |  3 -
- kernel/bpf/syscall.c                          | 13 +++-
- kernel/bpf/trampoline.c                       | 28 +++++++-
- kernel/bpf/verifier.c                         | 62 ++++++++++++++++-
- kernel/trace/bpf_trace.c                      |  2 +
- tools/include/uapi/linux/bpf.h                | 19 +++++-
- tools/lib/bpf/libbpf.c                        | 25 ++++++-
- tools/testing/selftests/bpf/bench.c           |  2 +
- .../selftests/bpf/benchs/bench_trigger.c      | 17 +++++
- .../selftests/bpf/prog_tests/test_lsm.c       |  9 +++
- tools/testing/selftests/bpf/progs/lsm.c       | 66 ++++++++++++++++++-
- .../selftests/bpf/progs/trigger_bench.c       |  7 ++
- 23 files changed, 315 insertions(+), 67 deletions(-)
-
+diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+index ec5cd11032aa..c66e8273fccd 100644
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -386,13 +386,6 @@ static void array_map_free(struct bpf_map *map)
+ {
+ 	struct bpf_array *array = container_of(map, struct bpf_array, map);
+ 
+-	/* at this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
+-	 * so the programs (can be more than one that used this map) were
+-	 * disconnected from events. Wait for outstanding programs to complete
+-	 * and free the array
+-	 */
+-	synchronize_rcu();
+-
+ 	if (array->map.map_type == BPF_MAP_TYPE_PERCPU_ARRAY)
+ 		bpf_array_free_percpu(array);
+ 
+@@ -546,8 +539,6 @@ static void fd_array_map_free(struct bpf_map *map)
+ 	struct bpf_array *array = container_of(map, struct bpf_array, map);
+ 	int i;
+ 
+-	synchronize_rcu();
+-
+ 	/* make sure it's empty */
+ 	for (i = 0; i < array->map.max_entries; i++)
+ 		BUG_ON(array->ptrs[i] != NULL);
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index acd06081d81d..d4378d7d442b 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -1290,12 +1290,10 @@ static void htab_map_free(struct bpf_map *map)
+ {
+ 	struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
+ 
+-	/* at this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
+-	 * so the programs (can be more than one that used this map) were
+-	 * disconnected from events. Wait for outstanding critical sections in
+-	 * these programs to complete
++	/* bpf_free_used_maps() or close(map_fd) will trigger this map_free callback.
++	 * bpf_free_used_maps() is called after bpf prog is no longer executing.
++	 * There is no need to synchronize_rcu() here to protect map elements.
+ 	 */
+-	synchronize_rcu();
+ 
+ 	/* some of free_htab_elem() callbacks for elements of this map may
+ 	 * not have executed. Wait for them.
+diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
+index 1abd4e3f906d..44474bf3ab7a 100644
+--- a/kernel/bpf/lpm_trie.c
++++ b/kernel/bpf/lpm_trie.c
+@@ -589,11 +589,6 @@ static void trie_free(struct bpf_map *map)
+ 	struct lpm_trie_node __rcu **slot;
+ 	struct lpm_trie_node *node;
+ 
+-	/* Wait for outstanding programs to complete
+-	 * update/lookup/delete/get_next_key and free the trie.
+-	 */
+-	synchronize_rcu();
+-
+ 	/* Always start at the root and walk down to a node that has no
+ 	 * children. Then free that node, nullify its reference in the parent
+ 	 * and start over.
+diff --git a/kernel/bpf/queue_stack_maps.c b/kernel/bpf/queue_stack_maps.c
+index 80c66a6d7c54..44184f82916a 100644
+--- a/kernel/bpf/queue_stack_maps.c
++++ b/kernel/bpf/queue_stack_maps.c
+@@ -101,13 +101,6 @@ static void queue_stack_map_free(struct bpf_map *map)
+ {
+ 	struct bpf_queue_stack *qs = bpf_queue_stack(map);
+ 
+-	/* at this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
+-	 * so the programs (can be more than one that used this map) were
+-	 * disconnected from events. Wait for outstanding critical sections in
+-	 * these programs to complete
+-	 */
+-	synchronize_rcu();
+-
+ 	bpf_map_area_free(qs);
+ }
+ 
+diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
+index a09922f656e4..3625c4fcc65c 100644
+--- a/kernel/bpf/reuseport_array.c
++++ b/kernel/bpf/reuseport_array.c
+@@ -96,8 +96,6 @@ static void reuseport_array_free(struct bpf_map *map)
+ 	struct sock *sk;
+ 	u32 i;
+ 
+-	synchronize_rcu();
+-
+ 	/*
+ 	 * ops->map_*_elem() will not be able to access this
+ 	 * array now. Hence, this function only races with
+diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
+index dbf37aff4827..13a8d3967e07 100644
+--- a/kernel/bpf/ringbuf.c
++++ b/kernel/bpf/ringbuf.c
+@@ -215,13 +215,6 @@ static void ringbuf_map_free(struct bpf_map *map)
+ {
+ 	struct bpf_ringbuf_map *rb_map;
+ 
+-	/* at this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
+-	 * so the programs (can be more than one that used this map) were
+-	 * disconnected from events. Wait for outstanding critical sections in
+-	 * these programs to complete
+-	 */
+-	synchronize_rcu();
+-
+ 	rb_map = container_of(map, struct bpf_ringbuf_map, map);
+ 	bpf_ringbuf_free(rb_map->rb);
+ 	kfree(rb_map);
+diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
+index 27dc9b1b08a5..071f98d0f7c6 100644
+--- a/kernel/bpf/stackmap.c
++++ b/kernel/bpf/stackmap.c
+@@ -604,9 +604,6 @@ static void stack_map_free(struct bpf_map *map)
+ {
+ 	struct bpf_stack_map *smap = container_of(map, struct bpf_stack_map, map);
+ 
+-	/* wait for bpf programs to complete before freeing stack map */
+-	synchronize_rcu();
+-
+ 	bpf_map_area_free(smap->elems);
+ 	pcpu_freelist_destroy(&smap->freelist);
+ 	bpf_map_area_free(smap);
 -- 
 2.23.0
 
