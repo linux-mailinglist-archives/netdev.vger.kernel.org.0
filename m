@@ -2,121 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D71CA20FCE4
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 21:42:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B586A20FCE6
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 21:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728327AbgF3Tml (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 15:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
+        id S1728318AbgF3Tnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 15:43:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728318AbgF3Tmk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 15:42:40 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870E5C061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 12:42:40 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id e11so19862048qkm.3
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 12:42:40 -0700 (PDT)
+        with ESMTP id S1728209AbgF3Tnl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 15:43:41 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA53C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 12:43:40 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id f8so11737838ljc.2
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 12:43:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=r5n7pL7VM0Y1jkZSxrLT4x8SIzFlroDFfeH9QkRPXGw=;
-        b=elzHcaxlxQVF9fzr6kOluOzZ5TQnbm0IQmYCYriI8xy/Am97hlFvHbFBGYmlxbjDpF
-         DKajG+B5X1I4faKbqwXhAkYRI6RcsbJt6yHgMH2t6bdo299owNMWwmM9W5tI0QMwXn81
-         DK41L78w2Dwx4e4r2EhViqz3Wi/1WEUOmJxRQ=
+        bh=YsqwdRQFFt3HHRK3xFxPD0d+PNk+87DZe2KkR3X05O4=;
+        b=HT7tCbAjQS+Z4+G4SyrMS3j9InGiewKytjMCpTGPeocEMilLSzDoOCC3XIhxcrkAg+
+         95aSOjncCnTsTDEsFE4ITphAp+kV64NzgNuu7AJHEnDGSpko+cWd1wtiBEiZjGsxn1A2
+         1DjW+cPmNaM7JVxpleTXfH6VRMPkgVOO6wr8Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=r5n7pL7VM0Y1jkZSxrLT4x8SIzFlroDFfeH9QkRPXGw=;
-        b=olil5gOcgpLUse2kklhhvaEsZY/DybY36Phv9GI4SeWW5QIpxzIxris7UdpcwJug8S
-         U0jtSx52mGqZ0ZW7fY88DgHZ0/MC97+n7aqDGCEdxNxmk/XK8Qso9zS/Th7wbdHjEKfr
-         IwIvjUjWgl5++o/mGUuGj6owfrmoDIFFFtrMBtwiNNxJkvuAuc6fNYUynIEtXtlBQS+u
-         /UvEWS4ZbXh7gMWYdVW3gQjNXz8kPtfH8z3JByW+wNNBRzNkUQ9yf7cCwlHFH/gtgh3E
-         haWWLBWKjbmc4rtQB0pfuf5omlNjt6ynB50uARk3NLRelUzP65I2BBnws9YE2Nri+T/n
-         GlZg==
-X-Gm-Message-State: AOAM530BWMghJMWktpdvNeZKlpVIkHp0ymCsbWzx15jLE3/SxMvaLocN
-        gyBf/CzGJ2YrS3zI09UkSsx2y6X4RWL/lad284wUVp2a
-X-Google-Smtp-Source: ABdhPJz5wzIVRfu80lNyQBbxeqdAmHPHLB9Z155Uviy//9Sp3O2sx/cTGx3JjuCg0dkuUqKvDMsjnUWhLCf9r5GVy+A=
-X-Received: by 2002:a37:2c41:: with SMTP id s62mr15308765qkh.165.1593546159506;
- Tue, 30 Jun 2020 12:42:39 -0700 (PDT)
+        bh=YsqwdRQFFt3HHRK3xFxPD0d+PNk+87DZe2KkR3X05O4=;
+        b=LSUFM5sMymI9FqxhX7vOaHXfHGcBZuTqMGayOKqCQ8TPVquSemhkxY87Cl7/fcGjmk
+         p1dFjUAzxcL5V8OKaHS7H+MQdOfKve1M0TyRJIO2xHHvLPnvfeks3srYy09idV0BzLA8
+         hDTNWowB/NnxsNcu3EGf4uSRZt/gRtb1yHDXpPOwn+t0s7MCSKuw6kkKpinAtt9cD7U3
+         eDLWV0CCMOO8Ns1tNGcseqedJFEpAlj5cOnH2SVmeGhAAagl+xVkZWOeAR/fJCF7gx2t
+         KrBeTYpDZRLAc2nw8NL9rYsdmdeLxkoN422x1ZEoLSes26sp9eb+sFwkXY2F7kRmqWuk
+         g3Dw==
+X-Gm-Message-State: AOAM530EEPgB0Jpi6NfCdwCWJDD85I44h0m03AfAdBVt7a41ME3b6mk7
+        PzEIJ53su1yOP1CDD+G3byC+XjMZu1o=
+X-Google-Smtp-Source: ABdhPJwUwNWulH8exo+AtmG70Qs+DVMupzBP3HLEybu0Dluu6QYtFA9tBLMtftSMhrvmKUjUIAOIrw==
+X-Received: by 2002:a05:651c:118f:: with SMTP id w15mr11542652ljo.211.1593546218877;
+        Tue, 30 Jun 2020 12:43:38 -0700 (PDT)
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
+        by smtp.gmail.com with ESMTPSA id v3sm1033309ljj.110.2020.06.30.12.43.37
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Jun 2020 12:43:38 -0700 (PDT)
+Received: by mail-lj1-f169.google.com with SMTP id f8so11737706ljc.2
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 12:43:37 -0700 (PDT)
+X-Received: by 2002:a2e:991:: with SMTP id 139mr10946115ljj.314.1593546217407;
+ Tue, 30 Jun 2020 12:43:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <1593412464-503-1-git-send-email-michael.chan@broadcom.com>
- <1593412464-503-7-git-send-email-michael.chan@broadcom.com>
- <20200629170618.2b265417@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACKFLin7DSADqfm8BjQxtM2sYZZV6Ycq_oHPT0+e53xpCoi1xA@mail.gmail.com> <20200630120517.2237bb87@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200630120517.2237bb87@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Tue, 30 Jun 2020 12:42:28 -0700
-Message-ID: <CACKFLi=062ODBJ5yoR5Pe6hvCuOXyJ-reoUp7HhrbdB0nvstPQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 6/8] bnxt_en: Implement ethtool -X to set
- indirection table.
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
+References: <341326348.19635.1589398715534.JavaMail.zimbra@efficios.com>
+ <CANn89i+GH2ukLZUcWYGquvKg66L9Vbto0FxyEt3pOJyebNxqBg@mail.gmail.com>
+ <CANn89iL26OMWWAi18PqoQK4VBfFvRvxBJUioqXDk=8ZbKq_Efg@mail.gmail.com>
+ <1132973300.15954.1593459836756.JavaMail.zimbra@efficios.com> <CANn89iJ4nh6VRsMt_rh_YwC-pn=hBqsP-LD9ykeRTnDC-P5iog@mail.gmail.com>
+In-Reply-To: <CANn89iJ4nh6VRsMt_rh_YwC-pn=hBqsP-LD9ykeRTnDC-P5iog@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 30 Jun 2020 12:43:21 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh=CEzD+xevqpJnOJ9w72=bEMjDNmKdovoR5GnESJBdqA@mail.gmail.com>
+Message-ID: <CAHk-=wh=CEzD+xevqpJnOJ9w72=bEMjDNmKdovoR5GnESJBdqA@mail.gmail.com>
+Subject: Re: [regression] TCP_MD5SIG on established sockets
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Jonathan Rajotte-Julien <joraj@efficios.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 12:05 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Mon, Jun 29, 2020 at 1:47 PM Eric Dumazet <edumazet@google.com> wrote:
 >
-> On Mon, 29 Jun 2020 17:38:33 -0700 Michael Chan wrote:
-> > On Mon, Jun 29, 2020 at 5:06 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Mon, 29 Jun 2020 02:34:22 -0400 Michael Chan wrote:
-> > > > With the new infrastructure in place, we can now support the setting of
-> > > > the indirection table from ethtool.
-> > > >
-> > > > The user-configured indirection table will need to be reset to default
-> > > > if we are unable to reserve the requested number of RX rings or if the
-> > > > RSS table size changes.
-> > > >
-> > > > Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-> > >
-> > > Hm. Clearing IFF_RXFH_CONFIGURED seems wrong. The user has clearly
-> > > requested a RSS mapping, if it can't be maintained driver should
-> > > return an error from the operation which attempts to change the ring
-> > > count.
-> >
-> > Right.  In this case the user has requested non default RSS map and is
-> > now attempting to change rings.  We have a first level check by
-> > calling bnxt_check_rings().  Firmware will tell us if the requested
-> > rings are available or not.  If not, we will return error and the
-> > existing rings and RSS map will be kept.  This should be the expected
-> > outcome in most cases.
-> >
-> > In rare cases, firmware can return success during bnxt_check_rings()
-> > but during the actual ring reservation, it fails to reserve all the
-> > rings it promised were available earlier.  In this case, we fall back
-> > and accept the fewer rings and set the RSS map to default.  I have
-> > never seen this scenario but we need to put the code in just in case
-> > it happens.  It should be rare.
->
-> What's the expected application flow? Every time the application
-> makes a change to NIC settings it has to re-validate that some of
-> the previous configuration didn't get lost? I don't see the driver
-> returning the error if FW gave it less rings than requested. There
-> isn't even a warning printed..
+> If you want to be able to _change_ md5 key, this is fine by me, please
+> send a patch.
 
-In bnxt_set_channels(), if bnxt_check_rings() returns error, we will
-print a warning and return error.  This applies whether we have a user
-defined RSS map or not.
+Eric, if this change breaks existing users, then it gets reverted.
+That's just fundamental.
 
-If the RSS table size changes (only newer chips will change the RSS
-table size when the rings cross some thresholds), the current code
-always goes back to default RSS map.  But I think you prefer to keep
-the user-defined RSS map and the rings and return error from
-bnxt_set_channels().  This I can easily change.
+No RFC's are in the lreast relevant when compared to "this broke
+existing users".
 
-I think I misunderstood your original question.  There is another code
-path that will change the RSS map to default if we cannot reserve the
-number of rings from firmware that were promised earlier from
-bnxt_check_rings().  I was referring to this code path earlier.
+If you're not willing to do the work to fix it, I will revert that
+commit. Because that's how it works - you can't ask other people to
+fix the breakage you introduced.
 
->
-> I'd prefer if the driver wrapped the rss indexes, and printed a
-> warning, but left the config intact. And IMO set_channels should
-> return an error.
+It really is that simple. We do not allow developers to break things
+and then step away and say "not my problem".
 
-Right.  I think it is clear now.  I will make this change in v2 plus
-the other feedback you provided.  Thanks.
+         Linus
