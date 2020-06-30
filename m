@@ -2,142 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE3C20FC2B
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:49:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7117E20FC32
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:50:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727847AbgF3St3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 14:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726493AbgF3St1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:49:27 -0400
-Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D835C03E979
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 11:49:27 -0700 (PDT)
-Received: by mail-qk1-x74a.google.com with SMTP id m67so14064251qkb.17
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 11:49:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=LEHppYXCQPcRgd0zlbLe7CmHbNbqX0AwBnt1nKT8kmo=;
-        b=gDKmgaxn/Cl6wcc1lPhuw4d+qqZAEQfqpIWDlxkB2OP7eOtiDx3WCaV9AFMCtBGcEW
-         6y4r4V13gqh1xMTARtmFL7ye+2ccgbPwchESgvOexvYAy6hhtgrGLCKG6QC3Vkrev2y+
-         IcxsPM4HEFx4vUl3Trmszcq2jN0HtzaH7vyAMM+/hVR7gCA6JLkndlLF4fRw/mi2fYa/
-         rqJwYliZI3TiCxV3OBUl6aFdha/b4dwy17RorxyAwRczDrSXGLV+oykGuVWj1ZNTPbvv
-         I1GjO7O7ckRnbMSSppCivAiy/2XvKnfWVijFknFlTXq65JbU2aUhnsfHnxvk6sQUTHLf
-         fWoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=LEHppYXCQPcRgd0zlbLe7CmHbNbqX0AwBnt1nKT8kmo=;
-        b=JGtysfnG2gF+J8ov0PRs42YWlg7PPK60mtRSuUUppwP1/8sGD7J/TEX8Pj0euBsT3H
-         O86wZ+jbTVQ3XGUxY/n9GMwCr9Xq8IYTLfSGOaESC4BC3ZuVrp4wKH/2KuH2xGFo42h9
-         g7sKbWl3h5kK1FeqtzR0pJStRY55Ot5Eu5TNIL9WjiGUFlu+8IlSYlDRmhY9/FtVrSkD
-         dWx+6W4OW9Lvccewlbd+Gp4KYXjt0hkVY28lLNx/Pv8W1uhuCsFlQvBPUnEmwjjFnUu+
-         4f//KfEPShCS9lW3+6vAOXzXDUnkvUHyMZMPODPa2aBvMkn8Q2o2FqLBcF9gZdmn3Mc6
-         4BDw==
-X-Gm-Message-State: AOAM532R8oMW3HdgmbgLeTaZnBxdMyJ6ETt3LejYgjzgrcyt++vLUS1m
-        FdauqfUEhSQhpx8Hk5CA45w6N6dGoj1LiEsxdw3eMafhBS5U+IR+uW0AIQy0rHaXCPYZ8fjWEho
-        Q9WwWADzMFsujI6g4W7D5Vel8afUX+38oUDeye2tPnXjYxsbU8yBeZUsDw9uldQ==
-X-Google-Smtp-Source: ABdhPJwRys7ufIj6Wc7BHqYbfXPqG7SI1+88BKjiZMcxuVaaHmLS3yYhRz/blmSR7Scygm3uV5jRzePkDzQ=
-X-Received: by 2002:ad4:4105:: with SMTP id i5mr11143826qvp.170.1593542965986;
- Tue, 30 Jun 2020 11:49:25 -0700 (PDT)
-Date:   Tue, 30 Jun 2020 11:49:22 -0700
-Message-Id: <20200630184922.455439-1-haoluo@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.27.0.212.ge8ba1cc988-goog
-Subject: [PATCH bpf-next] selftests/bpf: Switch test_vmlinux to use hrtimer_range_start_ns.
-From:   Hao Luo <haoluo@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        linux-kselftest@vger.kernel.org
-Cc:     sdf@google.com, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726534AbgF3Sus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 14:50:48 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46663 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725994AbgF3Suq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:50:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593543044;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=QB1TMaXvn2cR8bVKHMvuvCeNoQ0tyqqqqnWujcCz9Q4=;
+        b=HCYrmOywNz2apmaOnS61DbVtZ9uPfkKG4kGEaucZ6/Ku1P9f93lQhNESFH0/HjUBz67psV
+        aH6+/W/NZDGCU9SdBZ8LUczJdc2vlHnqanZKx4BgPH/ZuKbHc0z0799jNz+d1pkloXnHN0
+        rVYjjmXsiQRs6cvKUd4Jl8+u6PcIKjY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-99-RJetcWMkO8eIhycmtigLsQ-1; Tue, 30 Jun 2020 14:50:40 -0400
+X-MC-Unique: RJetcWMkO8eIhycmtigLsQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D1C6C18FE861;
+        Tue, 30 Jun 2020 18:50:35 +0000 (UTC)
+Received: from hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com (hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com [10.16.210.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CD6655DAA0;
+        Tue, 30 Jun 2020 18:50:30 +0000 (UTC)
+From:   Jarod Wilson <jarod@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jarod Wilson <jarod@redhat.com>, Huy Nguyen <huyn@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Subject: [PATCH net-next] bonding: allow xfrm offload setup post-module-load
+Date:   Tue, 30 Jun 2020 14:49:41 -0400
+Message-Id: <20200630184941.65165-1-jarod@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The test_vmlinux test uses hrtimer_nanosleep as hook to test tracing
-programs. But it seems Clang may have done an aggressive optimization,
-causing fentry and kprobe to not hook on this function properly on a
-Clang build kernel.
+At the moment, bonding xfrm crypto offload can only be set up if the bonding
+module is loaded with active-backup mode already set. We need to be able to
+make this work with bonds set to AB after the bonding driver has already
+been loaded.
 
-A possible fix is switching to use a more reliable function, e.g. the
-ones exported to kernel modules such as hrtimer_range_start_ns. After
-we switch to using hrtimer_range_start_ns, the test passes again even
-on a clang build kernel.
+So what's done here is:
 
-Tested:
- In a clang build kernel, the test fail even when the flags
- {fentry, kprobe}_called are set unconditionally in handle__kprobe()
- and handle__fentry(), which implies the programs do not hook on
- hrtimer_nanosleep() properly. This could be because clang's code
- transformation is too aggressive.
+1) move #define BOND_XFRM_FEATURES to net/bonding.h so it can be used
+by both bond_main.c and bond_options.c
+2) set BOND_XFRM_FEATURES in bond_dev->hw_features universally, rather than
+only when loading in AB mode
+3) wire up xfrmdev_ops universally too
+4) disable BOND_XFRM_FEATURES in bond_dev->features if not AB
+5) exit early (non-AB case) from bond_ipsec_offload_ok, to prevent a
+performance hit from traversing into the underlying drivers
+5) toggle BOND_XFRM_FEATURES in bond_dev->wanted_features and call
+netdev_change_features() from bond_option_mode_set()
 
- test_vmlinux:PASS:skel_open 0 nsec
- test_vmlinux:PASS:skel_attach 0 nsec
- test_vmlinux:PASS:tp 0 nsec
- test_vmlinux:PASS:raw_tp 0 nsec
- test_vmlinux:PASS:tp_btf 0 nsec
- test_vmlinux:FAIL:kprobe not called
- test_vmlinux:FAIL:fentry not called
+In my local testing, I can change bonding modes back and forth on the fly,
+have hardware offload work when I'm in AB, and see no performance penalty
+to non-AB software encryption, despite having xfrm bits all wired up for
+all modes now.
 
- After we switch to hrtimer_range_start_ns, the test passes.
-
- test_vmlinux:PASS:skel_open 0 nsec
- test_vmlinux:PASS:skel_attach 0 nsec
- test_vmlinux:PASS:tp 0 nsec
- test_vmlinux:PASS:raw_tp 0 nsec
- test_vmlinux:PASS:tp_btf 0 nsec
- test_vmlinux:PASS:kprobe 0 nsec
- test_vmlinux:PASS:fentry 0 nsec
-
-Signed-off-by: Hao Luo <haoluo@google.com>
+Fixes: 18cb261afd7b ("bonding: support hardware encryption offload to slaves")
+Reported-by: Huy Nguyen <huyn@mellanox.com>
+CC: Saeed Mahameed <saeedm@mellanox.com>
+CC: Jay Vosburgh <j.vosburgh@gmail.com>
+CC: Veaceslav Falico <vfalico@gmail.com>
+CC: Andy Gospodarek <andy@greyhouse.net>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+CC: Jakub Kicinski <kuba@kernel.org>
+CC: Steffen Klassert <steffen.klassert@secunet.com>
+CC: Herbert Xu <herbert@gondor.apana.org.au>
+CC: netdev@vger.kernel.org
+CC: intel-wired-lan@lists.osuosl.org
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
 ---
- tools/testing/selftests/bpf/progs/test_vmlinux.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/net/bonding/bond_main.c    | 19 ++++++++++---------
+ drivers/net/bonding/bond_options.c |  8 ++++++++
+ include/net/bonding.h              |  5 +++++
+ 3 files changed, 23 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/test_vmlinux.c b/tools/testing/selftests/bpf/progs/test_vmlinux.c
-index 5611b564d3b1..29fa09d6a6c6 100644
---- a/tools/testing/selftests/bpf/progs/test_vmlinux.c
-+++ b/tools/testing/selftests/bpf/progs/test_vmlinux.c
-@@ -63,20 +63,20 @@ int BPF_PROG(handle__tp_btf, struct pt_regs *regs, long id)
- 	return 0;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index b3479584cc16..2adf6ce20a38 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -434,6 +434,9 @@ static bool bond_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *xs)
+ 	struct slave *curr_active = rtnl_dereference(bond->curr_active_slave);
+ 	struct net_device *slave_dev = curr_active->dev;
+ 
++	if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
++		return true;
++
+ 	if (!(slave_dev->xfrmdev_ops
+ 	      && slave_dev->xfrmdev_ops->xdo_dev_offload_ok)) {
+ 		slave_warn(bond_dev, slave_dev, "%s: no slave xdo_dev_offload_ok\n", __func__);
+@@ -1218,11 +1221,6 @@ static netdev_features_t bond_fix_features(struct net_device *dev,
+ #define BOND_ENC_FEATURES	(NETIF_F_HW_CSUM | NETIF_F_SG | \
+ 				 NETIF_F_RXCSUM | NETIF_F_ALL_TSO)
+ 
+-#ifdef CONFIG_XFRM_OFFLOAD
+-#define BOND_XFRM_FEATURES	(NETIF_F_HW_ESP | NETIF_F_HW_ESP_TX_CSUM | \
+-				 NETIF_F_GSO_ESP)
+-#endif /* CONFIG_XFRM_OFFLOAD */
+-
+ #define BOND_MPLS_FEATURES	(NETIF_F_HW_CSUM | NETIF_F_SG | \
+ 				 NETIF_F_ALL_TSO)
+ 
+@@ -4654,8 +4652,7 @@ void bond_setup(struct net_device *bond_dev)
+ 
+ #ifdef CONFIG_XFRM_OFFLOAD
+ 	/* set up xfrm device ops (only supported in active-backup right now) */
+-	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
+-		bond_dev->xfrmdev_ops = &bond_xfrmdev_ops;
++	bond_dev->xfrmdev_ops = &bond_xfrmdev_ops;
+ 	bond->xs = NULL;
+ #endif /* CONFIG_XFRM_OFFLOAD */
+ 
+@@ -4678,11 +4675,15 @@ void bond_setup(struct net_device *bond_dev)
+ 
+ 	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
+ #ifdef CONFIG_XFRM_OFFLOAD
+-	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
+-		bond_dev->hw_features |= BOND_XFRM_FEATURES;
++	bond_dev->hw_features |= BOND_XFRM_FEATURES;
+ #endif /* CONFIG_XFRM_OFFLOAD */
+ 	bond_dev->features |= bond_dev->hw_features;
+ 	bond_dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
++#ifdef CONFIG_XFRM_OFFLOAD
++	/* Disable XFRM features if this isn't an active-backup config */
++	if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
++		bond_dev->features &= ~BOND_XFRM_FEATURES;
++#endif /* CONFIG_XFRM_OFFLOAD */
  }
  
--SEC("kprobe/hrtimer_nanosleep")
--int BPF_KPROBE(handle__kprobe,
--	       ktime_t rqtp, enum hrtimer_mode mode, clockid_t clockid)
-+SEC("kprobe/hrtimer_start_range_ns")
-+int BPF_KPROBE(handle__kprobe, struct hrtimer *timer, ktime_t tim, u64 delta_ns,
-+	       const enum hrtimer_mode mode)
- {
--	if (rqtp == MY_TV_NSEC)
-+	if (tim == MY_TV_NSEC)
- 		kprobe_called = true;
- 	return 0;
- }
+ /* Destroy a bonding device.
+diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+index ddb3916d3506..9abfaae1c6f7 100644
+--- a/drivers/net/bonding/bond_options.c
++++ b/drivers/net/bonding/bond_options.c
+@@ -767,6 +767,14 @@ static int bond_option_mode_set(struct bonding *bond,
+ 	if (newval->value == BOND_MODE_ALB)
+ 		bond->params.tlb_dynamic_lb = 1;
  
--SEC("fentry/hrtimer_nanosleep")
--int BPF_PROG(handle__fentry,
--	     ktime_t rqtp, enum hrtimer_mode mode, clockid_t clockid)
-+SEC("fentry/hrtimer_start_range_ns")
-+int BPF_PROG(handle__fentry, struct hrtimer *timer, ktime_t tim, u64 delta_ns,
-+	     const enum hrtimer_mode mode)
- {
--	if (rqtp == MY_TV_NSEC)
-+	if (tim == MY_TV_NSEC)
- 		fentry_called = true;
- 	return 0;
- }
++#ifdef CONFIG_XFRM_OFFLOAD
++	if (newval->value == BOND_MODE_ACTIVEBACKUP)
++		bond->dev->wanted_features |= BOND_XFRM_FEATURES;
++	else
++		bond->dev->wanted_features &= ~BOND_XFRM_FEATURES;
++	netdev_change_features(bond->dev);
++#endif /* CONFIG_XFRM_OFFLOAD */
++
+ 	/* don't cache arp_validate between modes */
+ 	bond->params.arp_validate = BOND_ARP_VALIDATE_NONE;
+ 	bond->params.mode = newval->value;
+diff --git a/include/net/bonding.h b/include/net/bonding.h
+index a00e1764e9b1..7d132cc1e584 100644
+--- a/include/net/bonding.h
++++ b/include/net/bonding.h
+@@ -86,6 +86,11 @@
+ #define bond_for_each_slave_rcu(bond, pos, iter) \
+ 	netdev_for_each_lower_private_rcu((bond)->dev, pos, iter)
+ 
++#ifdef CONFIG_XFRM_OFFLOAD
++#define BOND_XFRM_FEATURES (NETIF_F_HW_ESP | NETIF_F_HW_ESP_TX_CSUM | \
++			    NETIF_F_GSO_ESP)
++#endif /* CONFIG_XFRM_OFFLOAD */
++
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ extern atomic_t netpoll_block_tx;
+ 
 -- 
-2.27.0.212.ge8ba1cc988-goog
+2.20.1
 
