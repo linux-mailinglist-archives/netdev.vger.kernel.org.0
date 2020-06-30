@@ -2,118 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D63D20F2C1
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 12:31:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BEAB20F2EE
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 12:46:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732521AbgF3Kbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 06:31:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52614 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732238AbgF3Kbo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 06:31:44 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5661020771;
-        Tue, 30 Jun 2020 10:31:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593513103;
-        bh=EqH2nGMcU9Sb0Kq3vXWL9ycwgwr+UuyAQkBZrQIcICA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vf7ejJWSl4ZfeteEaD86rXPRMQ/c/5puqzv7RFS327zwDfCY9e1RJaTmA3XH7Klh+
-         9F+gI9Rjp5RHvnn0Nd8zT/NMB8UiBC+c90ZFOVBhMb4TPr78FoOSQZIX3rLaLBsRKx
-         YbZNE+yUe/8PNfjB52VoyY8NmzucdcOqSbXNLADY=
-Date:   Tue, 30 Jun 2020 11:31:41 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, Takashi Iwai <tiwai@suse.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>,
-        lee.jones@linaro.org
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-Message-ID: <20200630103141.GA5272@sirena.org.uk>
-References: <20200521233437.GF17583@ziepe.ca>
- <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
- <20200523062351.GD3156699@kroah.com>
- <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
- <20200524063519.GB1369260@kroah.com>
- <fe44419b-924c-b183-b761-78771b7d506d@linux.intel.com>
- <s5h5zcistpb.wl-tiwai@suse.de>
- <20200527071733.GB52617@kroah.com>
- <20200629203317.GM5499@sirena.org.uk>
- <20200629225959.GF25301@ziepe.ca>
+        id S1732602AbgF3KqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 06:46:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732510AbgF3KqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 06:46:20 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C4EC061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 03:46:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=0qjw1REKDZVNx9wNKUKiw4AETjSrlEI8JC9HU0Yze0A=; b=oog/wZqOcdaZXocWWlkudM8uk
+        DoLSbh3Em1NfhhOWX9JAXASGirK1qBcsK4GpjPYjpczo0RnsO5FZoRuKeG52OD5wqAuXjU2SFIrJi
+        fZjfjpTwDqroVV2b0ctcuxGZB57/FZMG5pOjSkN/G/2ransy3DqF7pGiaL0zFwOM/izWLtoELz/EG
+        2nx2rvKSD8O4K09SsfFoNgvLu7WWgexDbB9NaqfTX/7J945t53nUJQCEWGxnQgglAtlPTl9Xbg/mc
+        JoI2V1D4qgmszn78syagJ06Eq80x7I/Ko11iV+EqjZnVpTgB17YO3QxmSTyXhvY88vesfGz/RPIsH
+        BK3AxgvCQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33504)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jqDmK-0000QS-As; Tue, 30 Jun 2020 11:46:16 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jqDmH-00087X-J2; Tue, 30 Jun 2020 11:46:13 +0100
+Date:   Tue, 30 Jun 2020 11:46:13 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH RFC net-next] net: mtk_eth_soc: use resolved link config
+ for PCS PHY
+Message-ID: <20200630104613.GB1551@shell.armlinux.org.uk>
+References: <E1jqDIk-0004m5-0L@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="bp/iNruPH9dso1Pn"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20200629225959.GF25301@ziepe.ca>
-X-Cookie: Walk softly and carry a megawatt laser.
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <E1jqDIk-0004m5-0L@rmk-PC.armlinux.org.uk>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jun 30, 2020 at 11:15:42AM +0100, Russell King wrote:
+> The SGMII PCS PHY needs to be updated with the link configuration in
+> the mac_link_up() call rather than in mac_config().  However,
+> mtk_sgmii_setup_mode_force() programs the SGMII block during
+> mac_config() when using 802.3z interface modes with the link
+> configuration.
+> 
+> Split that functionality from mtk_sgmii_setup_mode_force(), moving it
+> to a new mtk_sgmii_link_up() function, and call it from mac_link_up().
+> 
+> This does not look correct to me: 802.3z modes operate at a fixed
+> speed.  The contents of mtk_sgmii_link_up() look more appropriate for
+> SGMII mode, but the original code definitely did not call
+> mtk_sgmii_setup_mode_force() for SGMII mode but only 802.3z mode.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+> René, can you assist with this patch please - I really think there are
+> problems with the existing code.  You call mtk_sgmii_setup_mode_force()
+> in a block which is conditionalised as:
+> 
+> 	if (state->interface == PHY_INTERFACE_MODE_SGMII ||
+> 	    phy_interface_mode_is_8023z(state->interface)) {
+> ...
+> 		if (state->interface != PHY_INTERFACE_MODE_SGMII)
+> 			err = mtk_sgmii_setup_mode_force(eth->sgmii, sid,
+> 							 state);
+> 
+> Hence, mtk_sgmii_setup_mode_force() is only called for 1000BASE-X and
+> 2500BASE-X, which do not support anything but their native speeds.
+> Yet, mtk_sgmii_setup_mode_force() tries to program the SGMII for 10M
+> and 100M.
+> 
+> Note that this patch is more about moving uses of state->{speed,duplex}
+> into mac_link_up(), rather than fixing this problem, but I don't think
+> the addition in mtk_mac_link_up(), nor mtk_sgmii_link_up() is of any
+> use.
 
---bp/iNruPH9dso1Pn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+My Coccinelle script just found this use of state->{speed,duplex} still
+remaining:
 
-On Mon, Jun 29, 2020 at 07:59:59PM -0300, Jason Gunthorpe wrote:
-> On Mon, Jun 29, 2020 at 09:33:17PM +0100, Mark Brown wrote:
-> > On Wed, May 27, 2020 at 09:17:33AM +0200, Greg KH wrote:
+                        if (MTK_HAS_CAPS(mac->hw->soc->caps,
+                                         MTK_TRGMII_MT7621_CLK)) {
+...
+                        } else {
+                                if (state->interface !=
+                                    PHY_INTERFACE_MODE_TRGMII)
+                                        mtk_gmac0_rgmii_adjust(mac->hw,
+                                                               state->speed);
 
-> > > Ok, that's good to hear.  But platform devices should never be showing
-> > > up as a child of a PCI device.  In the "near future" when we get the
-> > > virtual bus code merged, we can convert any existing users like this =
-to
-> > > the new code.
+which also needs to be eliminated.  Can that also be moved to
+mtk_mac_link_up()?
 
-> > What are we supposed to do with things like PCI attached FPGAs and ASICs
-> > in that case?  They can have host visible devices with physical
-> > resources like MMIO ranges and interrupts without those being split up
-> > neatly as PCI subfunctions - the original use case for MFD was such
-> > ASICs, there's a few PCI drivers in there now.=20
+Thanks.
 
-> Greg has been pretty clear that MFD shouldn't have been used on top of
-> PCI drivers.
+> 
+> Thanks.
+> 
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.c |  9 ++++-
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.h |  3 +-
+>  drivers/net/ethernet/mediatek/mtk_sgmii.c   | 37 +++++++++++++++------
+>  3 files changed, 36 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> index 20db302d31ce..ef9ec3b6a5c8 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> @@ -326,7 +326,7 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
+>  		/* Setup SGMIISYS with the determined property */
+>  		if (state->interface != PHY_INTERFACE_MODE_SGMII)
+>  			err = mtk_sgmii_setup_mode_force(eth->sgmii, sid,
+> -							 state);
+> +							 state->interface);
+>  		else if (phylink_autoneg_inband(mode))
+>  			err = mtk_sgmii_setup_mode_an(eth->sgmii, sid);
+>  
+> @@ -423,6 +423,13 @@ static void mtk_mac_link_up(struct phylink_config *config,
+>  					   phylink_config);
+>  	u32 mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
+>  
+> +	if (phy_interface_mode_is_8023z(interface)) {
+> +		/* Decide how GMAC and SGMIISYS be mapped */
+> +		int sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?
+> +			   0 : mac->id;
+> +		mtk_sgmii_link_up(eth->sgmii, sid, speed, duplex);
+> +	}
+> +
+>  	mcr &= ~(MAC_MCR_SPEED_100 | MAC_MCR_SPEED_1000 |
+>  		 MAC_MCR_FORCE_DPX | MAC_MCR_FORCE_TX_FC |
+>  		 MAC_MCR_FORCE_RX_FC);
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> index 454cfcd465fd..6f4b99bb7bfb 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> @@ -932,7 +932,8 @@ int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *np,
+>  		   u32 ana_rgc3);
+>  int mtk_sgmii_setup_mode_an(struct mtk_sgmii *ss, int id);
+>  int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
+> -			       const struct phylink_link_state *state);
+> +			       phy_interface_t interface);
+> +void mtk_sgmii_link_up(struct mtk_sgmii *ss, int id, int speed, int duplex);
+>  void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id);
+>  
+>  int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id);
+> diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> index 32d83421226a..372c85c830b5 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> @@ -60,7 +60,7 @@ int mtk_sgmii_setup_mode_an(struct mtk_sgmii *ss, int id)
+>  }
+>  
+>  int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
+> -			       const struct phylink_link_state *state)
+> +			       phy_interface_t interface)
+>  {
+>  	unsigned int val;
+>  
+> @@ -69,7 +69,7 @@ int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
+>  
+>  	regmap_read(ss->regmap[id], ss->ana_rgc3, &val);
+>  	val &= ~RG_PHY_SPEED_MASK;
+> -	if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
+> +	if (interface == PHY_INTERFACE_MODE_2500BASEX)
+>  		val |= RG_PHY_SPEED_3_125G;
+>  	regmap_write(ss->regmap[id], ss->ana_rgc3, val);
+>  
+> @@ -78,11 +78,33 @@ int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
+>  	val &= ~SGMII_AN_ENABLE;
+>  	regmap_write(ss->regmap[id], SGMSYS_PCS_CONTROL_1, val);
+>  
+> +	if (interface == PHY_INTERFACE_MODE_1000BASEX ||
+> +	    interface == PHY_INTERFACE_MODE_2500BASEX) {
+> +		/* SGMII force mode setting */
+> +		regmap_read(ss->regmap[id], SGMSYS_SGMII_MODE, &val);
+> +		val &= ~SGMII_IF_MODE_MASK;
+> +		val |= SGMII_SPEED_1000;
+> +		val |= SGMII_DUPLEX_FULL;
+> +		regmap_write(ss->regmap[id], SGMSYS_SGMII_MODE, val);
+> +	}
+> +
+> +	/* Release PHYA power down state */
+> +	regmap_read(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, &val);
+> +	val &= ~SGMII_PHYA_PWD;
+> +	regmap_write(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, val);
+> +
+> +	return 0;
+> +}
+> +
+> +void mtk_sgmii_link_up(struct mtk_sgmii *ss, int id, int speed, int duplex)
+> +{
+> +	unsigned int val;
+> +
+>  	/* SGMII force mode setting */
+>  	regmap_read(ss->regmap[id], SGMSYS_SGMII_MODE, &val);
+>  	val &= ~SGMII_IF_MODE_MASK;
+>  
+> -	switch (state->speed) {
+> +	switch (speed) {
+>  	case SPEED_10:
+>  		val |= SGMII_SPEED_10;
+>  		break;
+> @@ -95,17 +117,10 @@ int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
+>  		break;
+>  	}
+>  
+> -	if (state->duplex == DUPLEX_FULL)
+> +	if (duplex == DUPLEX_FULL)
+>  		val |= SGMII_DUPLEX_FULL;
+>  
+>  	regmap_write(ss->regmap[id], SGMSYS_SGMII_MODE, val);
+> -
+> -	/* Release PHYA power down state */
+> -	regmap_read(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, &val);
+> -	val &= ~SGMII_PHYA_PWD;
+> -	regmap_write(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, val);
+> -
+> -	return 0;
+>  }
+>  
+>  void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id)
+> -- 
+> 2.20.1
+> 
+> 
 
-The proposed bus lacks resource handling, an equivalent of
-platform_get_resource() and friends for example, which would be needed
-for use with physical devices.  Both that and the name suggest that it's
-for virtual devices.
-
-> In a sense virtual bus is pretty much MFD v2.
-
-Copying in Lee since I'm not sure he's aware of this, it's quite a
-recent thing...  MFD is a layer above AFAICT, it's not a bus but rather
-a combination of helpers for registering subdevices and a place for
-drivers for core functionality of devices which have multiple features.
-
-The reason the MFDs use platform devices is that they end up having to
-have all the features of platform devices - originally people were
-making virtual buses for them but the code duplication is real so
-everyone (including Greg) decided to just use what was there already.
-
---bp/iNruPH9dso1Pn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl77FIoACgkQJNaLcl1U
-h9D5xQf/Zvz/1EGl9pnsXeFwL4gfvhIO78L2JdKTopOVxmy7G9U1NfRcBQzxWAiO
-UdcO8crWix6I4OGsciUIk/cLMZGFyAok0XGsh2aBsP7ccBp+Bcky6+/AjYv70qXf
-IWBoVCnuSvcvSwU0DFjn2wEiKsKmhTu9LglNgAOYK/z8FrzXBTBdXLuQn4FDOaPQ
-C38CUkYaaBvaEwJMh3n1AHz+Fxx9ausTFLqiaLnOXmPBBwlNVWgpxnAypbUhk37a
-bk9h2Li8Sngm/d+BHL9SkermlDGi9Mjk4jGMrBH7dYxwnvh9mPMyAmRBX7kauYOH
-Ikmo4NiOrTvWc85hjj1dxJDsdnP7Rw==
-=wONO
------END PGP SIGNATURE-----
-
---bp/iNruPH9dso1Pn--
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
