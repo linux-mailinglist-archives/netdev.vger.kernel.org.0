@@ -2,135 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80D6020F612
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 15:46:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3D7220F61E
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 15:47:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388357AbgF3NqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 09:46:00 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:24581 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726876AbgF3Npu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 09:45:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1593524749; x=1625060749;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VjgLRTFAQQXiSnYU+FqcPS5U5gonGnZE5EKr2nGUPtg=;
-  b=FEOMT7UW6LXvBHAK0lvByMdT9iyQJSMWxSeJN/fmiezwerLGkopUXqTs
-   vIh+4o2yHw14GTGHdzj6ZE98FbpcpP6UVlRNJ5nbQU/4YqU0h7jAWpcJQ
-   quunuU8wM88cCj0LxKC8zjNdd67kP9QyI8WV8SesAru3oxj1DhxSw90fR
-   mvEoKCd3XKUB6gKmraAgo+7QA1f7Yoq/4h3BBSUQxR5ux+98rgvwIfJZO
-   g4lVS3nzDN4nJ7rZVFIljO6rGXudgo23LkgUpw1tQ9nlcxOg+Z/ykkD1u
-   TK90M9lwN0HIoIVjvn2NFP0LbJRavPU6s5PIHZZCN8ZtCz4pjWQBOH4Rs
-   A==;
-IronPort-SDR: 5ygEpwWPXOr7Wu4DXeUlN2lTcfdOUhKsXzVZRXphi76hYgwZQfN8mEvK+6tu5Igs+9YSqlHyHd
- Vn1FR/4QQXlFBPBT/s9AZmW9Xtqoxv0tduCD9L/9AkcGhtLPfm0cTOA6x/M/86gO/TUV5ktWbC
- CmvVAYmHCSSp9PZ2mTH6QoKsHmLRuDw3Z5U+cYCHPezdv7nk7gTDb6KzorjN6OdWD3Xh05S4/r
- w0IbANCcXxPq8ckh3QyME03AyQKNfGKv0mHFRBBT8hV5IFppTnt8+vTjH8Bfw7M9Yz0GIg4f6N
- Pyo=
-X-IronPort-AV: E=Sophos;i="5.75,297,1589266800"; 
-   d="scan'208";a="82064270"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2020 06:45:48 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 30 Jun 2020 06:45:30 -0700
-Received: from soft-dev3.localdomain (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Tue, 30 Jun 2020 06:45:45 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <jiri@mellanox.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 3/3] bridge: Extend br_fill_ifinfo to return MPR status
-Date:   Tue, 30 Jun 2020 15:44:24 +0200
-Message-ID: <20200630134424.4114086-4-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200630134424.4114086-1-horatiu.vultur@microchip.com>
-References: <20200630134424.4114086-1-horatiu.vultur@microchip.com>
+        id S2388084AbgF3Nri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 09:47:38 -0400
+Received: from www62.your-server.de ([213.133.104.62]:36798 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726876AbgF3Nri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 09:47:38 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jqGbZ-00070l-Fh; Tue, 30 Jun 2020 15:47:21 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jqGbZ-0003zd-6p; Tue, 30 Jun 2020 15:47:21 +0200
+Subject: Re: [PATCH net] xsk: remove cheap_dma optimization
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        konrad.wilk@oracle.com, iommu@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        maximmi@mellanox.com, magnus.karlsson@intel.com,
+        jonathan.lemon@gmail.com
+References: <20200626134358.90122-1-bjorn.topel@gmail.com>
+ <c60dfb5a-2bf3-20bd-74b3-6b5e215f73f8@iogearbox.net>
+ <20200627070406.GB11854@lst.de>
+ <88d27e1b-dbda-301c-64ba-2391092e3236@intel.com>
+ <e879bcc8-5f7d-b1b3-9b66-1032dec6245d@iogearbox.net>
+ <81aec200-c1a0-6d57-e3b6-26dad30790b8@intel.com>
+ <903c646c-dc74-a15c-eb33-e1b67bc7da0d@iogearbox.net>
+ <20200630050712.GA26840@lst.de>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7bd1f3ad-f1c7-6f8c-ef14-ec450050edf2@iogearbox.net>
+Date:   Tue, 30 Jun 2020 15:47:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <20200630050712.GA26840@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25858/Mon Jun 29 15:30:49 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch extends the function br_fill_ifinfo to return also the MRP
-status for each instance on a bridge. It also adds a new filter
-RTEXT_FILTER_MRP to return the MRP status only when this is set, not to
-interfer with the vlans. The MRP status is return only on the bridge
-interfaces.
+On 6/30/20 7:07 AM, Christoph Hellwig wrote:
+> On Mon, Jun 29, 2020 at 05:18:38PM +0200, Daniel Borkmann wrote:
+>> On 6/29/20 5:10 PM, Björn Töpel wrote:
+>>> On 2020-06-29 15:52, Daniel Borkmann wrote:
+>>>>
+>>>> Ok, fair enough, please work with DMA folks to get this properly integrated and
+>>>> restored then. Applied, thanks!
+>>>
+>>> Daniel, you were too quick! Please revert this one; Christoph just submitted a 4-patch-series that addresses both the DMA API, and the perf regression!
+>>
+>> Nice, tossed from bpf tree then! (Looks like it didn't land on the bpf list yet,
+>> but seems other mails are currently stuck as well on vger. I presume it will be
+>> routed to Linus via Christoph?)
+> 
+> I send the patches to the bpf list, did you get them now that vger
+> is unclogged?  Thinking about it the best route might be through
+> bpf/net, so if that works for you please pick it up.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- include/uapi/linux/rtnetlink.h |  1 +
- net/bridge/br_netlink.c        | 29 ++++++++++++++++++++++++++++-
- 2 files changed, 29 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 879e64950a0a2..9b814c92de123 100644
---- a/include/uapi/linux/rtnetlink.h
-+++ b/include/uapi/linux/rtnetlink.h
-@@ -778,6 +778,7 @@ enum {
- #define RTEXT_FILTER_BRVLAN	(1 << 1)
- #define RTEXT_FILTER_BRVLAN_COMPRESSED	(1 << 2)
- #define	RTEXT_FILTER_SKIP_STATS	(1 << 3)
-+#define RTEXT_FILTER_MRP	(1 << 4)
- 
- /* End of information exported to user level */
- 
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 240e260e3461c..6ecb7c7453dcb 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -453,6 +453,32 @@ static int br_fill_ifinfo(struct sk_buff *skb,
- 		rcu_read_unlock();
- 		if (err)
- 			goto nla_put_failure;
-+
-+		nla_nest_end(skb, af);
-+	}
-+
-+	if (filter_mask & RTEXT_FILTER_MRP) {
-+		struct nlattr *af;
-+		int err;
-+
-+		/* RCU needed because of the VLAN locking rules (rcu || rtnl) */
-+		rcu_read_lock();
-+		if (!br_mrp_enabled(br) || port) {
-+			rcu_read_unlock();
-+			goto done;
-+		}
-+		af = nla_nest_start_noflag(skb, IFLA_AF_SPEC);
-+		if (!af) {
-+			rcu_read_unlock();
-+			goto nla_put_failure;
-+		}
-+
-+		err = br_mrp_fill_info(skb, br);
-+
-+		rcu_read_unlock();
-+		if (err)
-+			goto nla_put_failure;
-+
- 		nla_nest_end(skb, af);
- 	}
- 
-@@ -516,7 +542,8 @@ int br_getlink(struct sk_buff *skb, u32 pid, u32 seq,
- 	struct net_bridge_port *port = br_port_get_rtnl(dev);
- 
- 	if (!port && !(filter_mask & RTEXT_FILTER_BRVLAN) &&
--	    !(filter_mask & RTEXT_FILTER_BRVLAN_COMPRESSED))
-+	    !(filter_mask & RTEXT_FILTER_BRVLAN_COMPRESSED) &&
-+	    !(filter_mask & RTEXT_FILTER_MRP))
- 		return 0;
- 
- 	return br_fill_ifinfo(skb, port, pid, seq, RTM_NEWLINK, nlflags,
--- 
-2.27.0
-
+Yeah, that's fine, I just applied your series to the bpf tree. Thanks!
