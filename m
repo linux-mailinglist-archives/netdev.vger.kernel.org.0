@@ -2,84 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B80620FBF5
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:45:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DE3C20FC2B
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:49:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726179AbgF3SpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 14:45:13 -0400
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:61133 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725930AbgF3SpM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:45:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1593542712; x=1625078712;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gVXFKwkoilJ+WRsAX2ilDSQvX1wsECjHxbakjfFTTiA=;
-  b=tGZFtzXvjzO9lbqNel/0gcYL4b4H+zhgg3c4Dnt4UZCgiT2VgKFm448F
-   RGSERHcKSG9aisUbyRWvhi6+ZI468HnjmvF3E1JgyUnRKbnINzecotvNV
-   EOBBooR4ItH4rowB2QvtgbYMkz1bcCy7xLMV0rO9Dwx6bqajdQKMh+b2L
-   XGqHl395ojo/leeoyk+9XOuQBtD9lSMsnJ6YUvx5asBl4v5OEnytjF3Ly
-   /K1wxhHF5Nwuo718zhvP0Sd9NUDSUzlw8FgyRuXM6Yzu76Txs66COEgHO
-   VOiE17X4BZkO/zmJrQmigt+KPJi1tfg+JJ9Rnk76+rs/yeSjqd6Ey8mcd
-   Q==;
-IronPort-SDR: B2IzWVA38/w48UWB3itF4A+Rwr6HJm/1RLFOSZ1jh39DRujU3c63OwDplG43A2Tbp2nc5hoNrz
- Q5KdOLy+yOLRAA4y0rrUYrDsk2evMj9CnJcr3+92gd9QLctf+O+80XTKTEiXCSq6hvhrqFw8ep
- 6BkF3fRKu6/AGsvBMp7b1qD46yAVTV42KfDZEI657Qbg8LSn/k7C8lyVgszI6rwAjNcnzt0khD
- 5HTDUhLIQENl3UyPtxLlx4dmMmgDUmFpeLIffoAg+i1Hm70/VWNsjhmjWEPtGkIxXMilVAzEkc
- YQE=
-X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; 
-   d="scan'208";a="17608615"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Jun 2020 11:45:11 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 30 Jun 2020 11:45:11 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 30 Jun 2020 11:45:11 -0700
-Date:   Tue, 30 Jun 2020 20:45:09 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
-        <davem@davemloft.net>, <jiri@mellanox.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next 2/3] bridge: mrp: Add br_mrp_fill_info
-Message-ID: <20200630184509.oliwf3ui4gxno756@soft-dev3.localdomain>
-References: <20200630134424.4114086-1-horatiu.vultur@microchip.com>
- <20200630134424.4114086-3-horatiu.vultur@microchip.com>
- <20200630091243.124869e2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200630091243.124869e2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1727847AbgF3St3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 14:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726493AbgF3St1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:49:27 -0400
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D835C03E979
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 11:49:27 -0700 (PDT)
+Received: by mail-qk1-x74a.google.com with SMTP id m67so14064251qkb.17
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 11:49:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=LEHppYXCQPcRgd0zlbLe7CmHbNbqX0AwBnt1nKT8kmo=;
+        b=gDKmgaxn/Cl6wcc1lPhuw4d+qqZAEQfqpIWDlxkB2OP7eOtiDx3WCaV9AFMCtBGcEW
+         6y4r4V13gqh1xMTARtmFL7ye+2ccgbPwchESgvOexvYAy6hhtgrGLCKG6QC3Vkrev2y+
+         IcxsPM4HEFx4vUl3Trmszcq2jN0HtzaH7vyAMM+/hVR7gCA6JLkndlLF4fRw/mi2fYa/
+         rqJwYliZI3TiCxV3OBUl6aFdha/b4dwy17RorxyAwRczDrSXGLV+oykGuVWj1ZNTPbvv
+         I1GjO7O7ckRnbMSSppCivAiy/2XvKnfWVijFknFlTXq65JbU2aUhnsfHnxvk6sQUTHLf
+         fWoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=LEHppYXCQPcRgd0zlbLe7CmHbNbqX0AwBnt1nKT8kmo=;
+        b=JGtysfnG2gF+J8ov0PRs42YWlg7PPK60mtRSuUUppwP1/8sGD7J/TEX8Pj0euBsT3H
+         O86wZ+jbTVQ3XGUxY/n9GMwCr9Xq8IYTLfSGOaESC4BC3ZuVrp4wKH/2KuH2xGFo42h9
+         g7sKbWl3h5kK1FeqtzR0pJStRY55Ot5Eu5TNIL9WjiGUFlu+8IlSYlDRmhY9/FtVrSkD
+         dWx+6W4OW9Lvccewlbd+Gp4KYXjt0hkVY28lLNx/Pv8W1uhuCsFlQvBPUnEmwjjFnUu+
+         4f//KfEPShCS9lW3+6vAOXzXDUnkvUHyMZMPODPa2aBvMkn8Q2o2FqLBcF9gZdmn3Mc6
+         4BDw==
+X-Gm-Message-State: AOAM532R8oMW3HdgmbgLeTaZnBxdMyJ6ETt3LejYgjzgrcyt++vLUS1m
+        FdauqfUEhSQhpx8Hk5CA45w6N6dGoj1LiEsxdw3eMafhBS5U+IR+uW0AIQy0rHaXCPYZ8fjWEho
+        Q9WwWADzMFsujI6g4W7D5Vel8afUX+38oUDeye2tPnXjYxsbU8yBeZUsDw9uldQ==
+X-Google-Smtp-Source: ABdhPJwRys7ufIj6Wc7BHqYbfXPqG7SI1+88BKjiZMcxuVaaHmLS3yYhRz/blmSR7Scygm3uV5jRzePkDzQ=
+X-Received: by 2002:ad4:4105:: with SMTP id i5mr11143826qvp.170.1593542965986;
+ Tue, 30 Jun 2020 11:49:25 -0700 (PDT)
+Date:   Tue, 30 Jun 2020 11:49:22 -0700
+Message-Id: <20200630184922.455439-1-haoluo@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.212.ge8ba1cc988-goog
+Subject: [PATCH bpf-next] selftests/bpf: Switch test_vmlinux to use hrtimer_range_start_ns.
+From:   Hao Luo <haoluo@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        linux-kselftest@vger.kernel.org
+Cc:     sdf@google.com, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Hao Luo <haoluo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 06/30/2020 09:12, Jakub Kicinski wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On Tue, 30 Jun 2020 15:44:23 +0200 Horatiu Vultur wrote:
-> > Add the function br_mrp_fill_info which populates the MRP attributes
-> > regarding the status of each MRP instance.
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> 
-> This adds warnings when built with W=1 C=1:
+The test_vmlinux test uses hrtimer_nanosleep as hook to test tracing
+programs. But it seems Clang may have done an aggressive optimization,
+causing fentry and kprobe to not hook on this function properly on a
+Clang build kernel.
 
-The warnings at line 316 will be fixed once net will be merged into
-net-next. But I need to fix the others.
+A possible fix is switching to use a more reliable function, e.g. the
+ones exported to kernel modules such as hrtimer_range_start_ns. After
+we switch to using hrtimer_range_start_ns, the test passes again even
+on a clang build kernel.
 
-> 
-> net/bridge/br_mrp_netlink.c:316:9: warning: dereference of noderef expression
-> net/bridge/br_mrp_netlink.c:325:36: warning: dereference of noderef expression
-> net/bridge/br_mrp_netlink.c:328:36: warning: dereference of noderef expression
-> net/bridge/br_mrp_netlink.c:316:9: warning: dereference of noderef expression
+Tested:
+ In a clang build kernel, the test fail even when the flags
+ {fentry, kprobe}_called are set unconditionally in handle__kprobe()
+ and handle__fentry(), which implies the programs do not hook on
+ hrtimer_nanosleep() properly. This could be because clang's code
+ transformation is too aggressive.
 
+ test_vmlinux:PASS:skel_open 0 nsec
+ test_vmlinux:PASS:skel_attach 0 nsec
+ test_vmlinux:PASS:tp 0 nsec
+ test_vmlinux:PASS:raw_tp 0 nsec
+ test_vmlinux:PASS:tp_btf 0 nsec
+ test_vmlinux:FAIL:kprobe not called
+ test_vmlinux:FAIL:fentry not called
+
+ After we switch to hrtimer_range_start_ns, the test passes.
+
+ test_vmlinux:PASS:skel_open 0 nsec
+ test_vmlinux:PASS:skel_attach 0 nsec
+ test_vmlinux:PASS:tp 0 nsec
+ test_vmlinux:PASS:raw_tp 0 nsec
+ test_vmlinux:PASS:tp_btf 0 nsec
+ test_vmlinux:PASS:kprobe 0 nsec
+ test_vmlinux:PASS:fentry 0 nsec
+
+Signed-off-by: Hao Luo <haoluo@google.com>
+---
+ tools/testing/selftests/bpf/progs/test_vmlinux.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/progs/test_vmlinux.c b/tools/testing/selftests/bpf/progs/test_vmlinux.c
+index 5611b564d3b1..29fa09d6a6c6 100644
+--- a/tools/testing/selftests/bpf/progs/test_vmlinux.c
++++ b/tools/testing/selftests/bpf/progs/test_vmlinux.c
+@@ -63,20 +63,20 @@ int BPF_PROG(handle__tp_btf, struct pt_regs *regs, long id)
+ 	return 0;
+ }
+ 
+-SEC("kprobe/hrtimer_nanosleep")
+-int BPF_KPROBE(handle__kprobe,
+-	       ktime_t rqtp, enum hrtimer_mode mode, clockid_t clockid)
++SEC("kprobe/hrtimer_start_range_ns")
++int BPF_KPROBE(handle__kprobe, struct hrtimer *timer, ktime_t tim, u64 delta_ns,
++	       const enum hrtimer_mode mode)
+ {
+-	if (rqtp == MY_TV_NSEC)
++	if (tim == MY_TV_NSEC)
+ 		kprobe_called = true;
+ 	return 0;
+ }
+ 
+-SEC("fentry/hrtimer_nanosleep")
+-int BPF_PROG(handle__fentry,
+-	     ktime_t rqtp, enum hrtimer_mode mode, clockid_t clockid)
++SEC("fentry/hrtimer_start_range_ns")
++int BPF_PROG(handle__fentry, struct hrtimer *timer, ktime_t tim, u64 delta_ns,
++	     const enum hrtimer_mode mode)
+ {
+-	if (rqtp == MY_TV_NSEC)
++	if (tim == MY_TV_NSEC)
+ 		fentry_called = true;
+ 	return 0;
+ }
 -- 
-/Horatiu
+2.27.0.212.ge8ba1cc988-goog
+
