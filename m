@@ -2,76 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2D0820FDA2
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 22:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 256C920FDAD
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 22:30:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729439AbgF3U15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 16:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52448 "EHLO
+        id S1729486AbgF3Uar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 16:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726051AbgF3U15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 16:27:57 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D419C061755;
-        Tue, 30 Jun 2020 13:27:57 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 57BE912778958;
-        Tue, 30 Jun 2020 13:27:54 -0700 (PDT)
-Date:   Tue, 30 Jun 2020 13:27:53 -0700 (PDT)
-Message-Id: <20200630.132753.950744279782703849.davem@davemloft.net>
-To:     netdev@vger.kernel.org
-CC:     linux-wireless@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        bpf@vger.kernel.org, xdp-newbies@vger.kernel.org
-Subject: LPC 2020 Networking and BPF Track CFP
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Jun 2020 13:27:54 -0700 (PDT)
+        with ESMTP id S1726051AbgF3Uaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 16:30:46 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E211EC03E979
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 13:30:45 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id m16so10744943ybf.4
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 13:30:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hbndbL/42Lj3+0S0TLvtcAj80v30sW3yhJRu17Ph6zg=;
+        b=srxxOCIJovcrNRpTPb+vPoi7ULhN9VgUvdErE5TP3DfGhwyIFPB5X6g/ztxdOGr8Us
+         cpjIkRDzkeH2jZw3D/wftckIEerLd5rUdvtUl/8LL7o4CvGcZbSKsdi+WaWM/qnxhKCd
+         boIWgG2TNdAWNBWCHz2xUim+xon2BGB9X2PErs/zMBI/HKpUPXRX84z8HRxjpZoFyw7A
+         GRglbCa0bCmzMh4akDcfXLnK7oVF8/P6yxO8QApOOeMLhhaF9eUr5Q3XjeEze4ATPnqG
+         ikdD5qaYLJKTBX9M7QaAARpIER+Zh5xgTueSnTdX8NYLpWJN3CQq0kE8IPbrNVGNSHgn
+         da3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hbndbL/42Lj3+0S0TLvtcAj80v30sW3yhJRu17Ph6zg=;
+        b=BeIDtCjM9ipwLYfqVj8/AcxUzCAxC2NTKaDodd+MtKTodtorh61TVxgaSM0XjsDhWC
+         a56xYS2XcSa3eZjDeZtJyAtGkqc5swjUzv7a1HpZsHamP+sjm39VvW+2IjMh0ixDROM8
+         89laUzgwRcDNZZ7Suzfk3WemrswJgDkleuT2r+guaMou7fpsYB3DjG7gYZ/IEHKqAFFM
+         43hdQLudJfzQXPfoNKOASjhtM9tWQS9ItFgMEqeQ7llWineSHlq+ToSZpGrkwbJSnOPY
+         F23tbNDQIynRWmbEw+yc2VhjcZq6KIQ3yLqXf/0Y+rWLfidYKkm78DK4dI/8GGwdG8a5
+         im7Q==
+X-Gm-Message-State: AOAM530zvfdUH0vec0eHjSe7zrdUafEBWJ+evKjpzRoEXuN1N3g7T4wl
+        brXI9cFvH63A++h0Xp4/aOrCgJJkrOWzXytsjvkeyI5Q
+X-Google-Smtp-Source: ABdhPJxNvCwjAE5cOI2IQkuy3+eSCuJzg/Oj6+537Ld+qP6KKGMKhW1Nd2SL7YrZZVP+Kg19OaW36nzhlXVEm+D0/5s=
+X-Received: by 2002:a25:81c2:: with SMTP id n2mr14190731ybm.520.1593549044541;
+ Tue, 30 Jun 2020 13:30:44 -0700 (PDT)
+MIME-Version: 1.0
+References: <1132973300.15954.1593459836756.JavaMail.zimbra@efficios.com>
+ <CANn89iJ4nh6VRsMt_rh_YwC-pn=hBqsP-LD9ykeRTnDC-P5iog@mail.gmail.com>
+ <CAHk-=wh=CEzD+xevqpJnOJ9w72=bEMjDNmKdovoR5GnESJBdqA@mail.gmail.com> <20200630.132112.1161418939084868350.davem@davemloft.net>
+In-Reply-To: <20200630.132112.1161418939084868350.davem@davemloft.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 30 Jun 2020 13:30:33 -0700
+Message-ID: <CANn89iKUUJsEfwp2L0pwKdCP3Rx-o=6uM+1bUhT5Cc2p0p7XqA@mail.gmail.com>
+Subject: Re: [regression] TCP_MD5SIG on established sockets
+To:     David Miller <davem@davemloft.net>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Jonathan Rajotte-Julien <joraj@efficios.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jun 30, 2020 at 1:21 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Linus Torvalds <torvalds@linux-foundation.org>
+> Date: Tue, 30 Jun 2020 12:43:21 -0700
+>
+> > If you're not willing to do the work to fix it, I will revert that
+> > commit.
+>
+> Please let me handle this situation instead of making threats, this
+> just got reported.
+>
+> Thank you.
+>
 
-This is a call for proposals for the networking and bpf track at the
-Linux Plumbers Conference on the wider internet, which will be
-happening on August 24th-28th, 2020.
+Also keep in mind the commit fixed a security issue, since we were
+sending on the wire
+garbage bytes from the kernel.
 
-This year the technical committee is comprised of:
+We can not simply revert it and hope for the best.
 
-David S. Miller <davem@davemloft.net>
-Alexei Starovoitov <ast@kernel.org>
-Daniel Borkmann <daniel@iogearbox.net>
-Jakub Sitnicki <jakub@cloudflare.com>
-Paolo Abeni <pabeni@redhat.com>
-Jakub Kicinski <kuba@kernel.org>
-Michal Kubecek <mkubecek@suse.cz>
-Sabrina Dubroca <sd@queasysnail.net>
-
-We are seeking talks of 40 minutes in length (including Q & A),
-optionally accompanied by papers of 2 to 10 pages in length.  The
-papers, while not required, are very strongly encouraged by the
-committee.  The submitters intention to provide a paper will be taken
-into consideration as a criteria when deciding which proposals to
-accept.
-
-Any kind of advanced networking and/or bpf related topic will be
-considered.
-
-Please submit your proposals on the LPC website at:
-
-	https://www.linuxplumbersconf.org/event/7/abstracts/#submit-abstract
-
-And be sure to select "Networking & BPF Summit" in the Track
-pulldown menu.
-
-Proposals must be submitted by August 2nd, and submitters will be
-notified of acceptance by August 9th.
-
-Final slides and papers (as PDF) are due on August 24th, the first day of
-the conference.
+I find quite alarming vendors still use TCP MD5 "for security
+reasons", but none of them have contributed to it in linux kernel
+since 2018
+(Time of the 'buggy patch')
