@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF65B20F42F
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 14:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0195D20F436
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 14:12:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387459AbgF3MMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 08:12:02 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54194 "EHLO
+        id S2387490AbgF3MM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 08:12:28 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:56870 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387454AbgF3MMB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 08:12:01 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 5BDAE200A8;
-        Tue, 30 Jun 2020 12:12:00 +0000 (UTC)
-Received: from us4-mdac16-4.at1.mdlocal (unknown [10.110.49.155])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 5946A800A3;
-        Tue, 30 Jun 2020 12:12:00 +0000 (UTC)
+        by vger.kernel.org with ESMTP id S2387472AbgF3MM1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 08:12:27 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D2F07200AC;
+        Tue, 30 Jun 2020 12:12:25 +0000 (UTC)
+Received: from us4-mdac16-50.at1.mdlocal (unknown [10.110.50.133])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D10136009B;
+        Tue, 30 Jun 2020 12:12:25 +0000 (UTC)
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.6])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EAB56100070;
-        Tue, 30 Jun 2020 12:11:59 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.32])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 705DD220078;
+        Tue, 30 Jun 2020 12:12:25 +0000 (UTC)
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id B477DB0006F;
-        Tue, 30 Jun 2020 12:11:59 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 35DF228007B;
+        Tue, 30 Jun 2020 12:12:25 +0000 (UTC)
 Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
  (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 30 Jun
- 2020 13:11:55 +0100
+ 2020 13:12:20 +0100
 From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 06/14] sfc: commonise efx_sync_rx_buffer()
+Subject: [PATCH net-next 07/14] sfc: commonise TSO fallback code
 To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>
 References: <14a93b71-3d4e-4663-82be-a2281cd1105e@solarflare.com>
-Message-ID: <a24c7a15-1106-d729-b343-8b614f35771a@solarflare.com>
-Date:   Tue, 30 Jun 2020 13:11:52 +0100
+Message-ID: <2a94b533-79de-646a-8038-5d2ddd22816d@solarflare.com>
+Date:   Tue, 30 Jun 2020 13:12:17 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -47,68 +47,115 @@ X-Originating-IP: [10.17.20.203]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25512.003
-X-TM-AS-Result: No-2.817000-8.000000-10
-X-TMASE-MatchedRID: i/wEjRUPNdw2jeY+Udg/IiNHByyOpYYCeouvej40T4gd0WOKRkwsh1ym
-        Rv3NQjsEfGzuoVn0Vs6PQi9XuOWoOC5Ara2x6EWaVnzlQiaE21pn+sA9+u1YLUdmDSBYfnJR0iS
-        XG6dWPltI7SJ3puSczPMVfR6ftjhyCWJZymXNAFfN+qWlu2ZxaFfot81W1F7ImyiLZetSf8nJ4y
-        0wP1A6AEl4W8WVUOR/joczmuoPCq282n7Zd4+UgqF3emSwFdKg4SIH9obs/OYjrQ4EF2+AYladX
-        xz39LQshEiMiWktaVrkAfuaaNhoZjwz5NiQARnDy3QqIPj9h6UXxY6mau8LG3IJh4dBcU42f4hp
-        TpoBF9JqxGCSzFD9Mq9DVtyhkQKh
+X-TM-AS-Result: No-6.922600-8.000000-10
+X-TMASE-MatchedRID: qQUFOL0tEEFJhDcRXZUUxqiUivh0j2Pv6VTG9cZxEjJwGpdgNQ0JrHIo
+        zGa69omdrdoLblq9S5ra/g/NGTW3MjmzjEr3tKb/k3rl+MaNgxDUIkoTEP0J+UkrZ4mFjTbDS1J
+        WS+txB/9gQfB04A8o2U+A1TkNxPExROB90vNXRhrykdOisNw8yrfHCp+e+coekaEC8FJraL9vAl
+        nua0Nm7c5dU83Z+Lu0kZOl7WKIImrvXOvQVlExsAtuKBGekqUpI/NGWt0UYPAUCKGKnUyAIpvk2
+        F+OwpbyhfORTzTn8nVRMZmpY155jmioXxLS6UzT
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.817000-8.000000
+X-TMASE-Result: 10--6.922600-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25512.003
-X-MDID: 1593519120-684b-3KR0NUb
+X-MDID: 1593519145-7q7DNRRhQIVu
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ef100 RX path will also need to DMA-sync RX buffers.
+ef100 will need this if it gets GSO skbs it can't handle (e.g. too long
+ header length).
 
 Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- drivers/net/ethernet/sfc/rx.c        | 8 --------
- drivers/net/ethernet/sfc/rx_common.h | 9 +++++++++
- 2 files changed, 9 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/sfc/tx.c        | 28 ----------------------------
+ drivers/net/ethernet/sfc/tx_common.c | 27 +++++++++++++++++++++++++++
+ drivers/net/ethernet/sfc/tx_common.h |  2 +-
+ 3 files changed, 28 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
-index c73b933a9101..59a43d586967 100644
---- a/drivers/net/ethernet/sfc/rx.c
-+++ b/drivers/net/ethernet/sfc/rx.c
-@@ -40,14 +40,6 @@
- #define EFX_RX_MAX_FRAGS DIV_ROUND_UP(EFX_MAX_FRAME_LEN(EFX_MAX_MTU), \
- 				      EFX_RX_USR_BUF_SIZE)
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+index 19b58563cb78..ed20f6aef435 100644
+--- a/drivers/net/ethernet/sfc/tx.c
++++ b/drivers/net/ethernet/sfc/tx.c
+@@ -268,34 +268,6 @@ static int efx_enqueue_skb_pio(struct efx_tx_queue *tx_queue,
+ }
+ #endif /* EFX_USE_PIO */
  
--static inline void efx_sync_rx_buffer(struct efx_nic *efx,
--				      struct efx_rx_buffer *rx_buf,
--				      unsigned int len)
+-/*
+- * Fallback to software TSO.
+- *
+- * This is used if we are unable to send a GSO packet through hardware TSO.
+- * This should only ever happen due to per-queue restrictions - unsupported
+- * packets should first be filtered by the feature flags.
+- *
+- * Returns 0 on success, error code otherwise.
+- */
+-static int efx_tx_tso_fallback(struct efx_tx_queue *tx_queue,
+-			       struct sk_buff *skb)
 -{
--	dma_sync_single_for_cpu(&efx->pci_dev->dev, rx_buf->dma_addr, len,
--				DMA_FROM_DEVICE);
+-	struct sk_buff *segments, *next;
+-
+-	segments = skb_gso_segment(skb, 0);
+-	if (IS_ERR(segments))
+-		return PTR_ERR(segments);
+-
+-	dev_consume_skb_any(skb);
+-
+-	skb_list_walk_safe(segments, skb, next) {
+-		skb_mark_not_on_list(skb);
+-		efx_enqueue_skb(tx_queue, skb);
+-	}
+-
+-	return 0;
 -}
 -
- static void efx_rx_packet__check_len(struct efx_rx_queue *rx_queue,
- 				     struct efx_rx_buffer *rx_buf,
- 				     int len)
-diff --git a/drivers/net/ethernet/sfc/rx_common.h b/drivers/net/ethernet/sfc/rx_common.h
-index 1672d74f30e2..207ccd8ba062 100644
---- a/drivers/net/ethernet/sfc/rx_common.h
-+++ b/drivers/net/ethernet/sfc/rx_common.h
-@@ -57,6 +57,15 @@ void efx_init_rx_buffer(struct efx_rx_queue *rx_queue,
- 			unsigned int page_offset,
- 			u16 flags);
- void efx_unmap_rx_buffer(struct efx_nic *efx, struct efx_rx_buffer *rx_buf);
+ /*
+  * Add a socket buffer to a TX queue
+  *
+diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/ethernet/sfc/tx_common.c
+index 70876df1da69..9a005e7c2c68 100644
+--- a/drivers/net/ethernet/sfc/tx_common.c
++++ b/drivers/net/ethernet/sfc/tx_common.c
+@@ -405,3 +405,30 @@ unsigned int efx_tx_max_skb_descs(struct efx_nic *efx)
+ 
+ 	return max_descs;
+ }
 +
-+static inline void efx_sync_rx_buffer(struct efx_nic *efx,
-+				      struct efx_rx_buffer *rx_buf,
-+				      unsigned int len)
++/*
++ * Fallback to software TSO.
++ *
++ * This is used if we are unable to send a GSO packet through hardware TSO.
++ * This should only ever happen due to per-queue restrictions - unsupported
++ * packets should first be filtered by the feature flags.
++ *
++ * Returns 0 on success, error code otherwise.
++ */
++int efx_tx_tso_fallback(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
 +{
-+	dma_sync_single_for_cpu(&efx->pci_dev->dev, rx_buf->dma_addr, len,
-+				DMA_FROM_DEVICE);
-+}
++	struct sk_buff *segments, *next;
 +
- void efx_free_rx_buffers(struct efx_rx_queue *rx_queue,
- 			 struct efx_rx_buffer *rx_buf,
- 			 unsigned int num_bufs);
++	segments = skb_gso_segment(skb, 0);
++	if (IS_ERR(segments))
++		return PTR_ERR(segments);
++
++	dev_consume_skb_any(skb);
++
++	skb_list_walk_safe(segments, skb, next) {
++		skb_mark_not_on_list(skb);
++		efx_enqueue_skb(tx_queue, skb);
++	}
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/sfc/tx_common.h b/drivers/net/ethernet/sfc/tx_common.h
+index 99cf7ce2f36c..82e2e291317d 100644
+--- a/drivers/net/ethernet/sfc/tx_common.h
++++ b/drivers/net/ethernet/sfc/tx_common.h
+@@ -38,5 +38,5 @@ int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+ 		    unsigned int segment_count);
+ 
+ unsigned int efx_tx_max_skb_descs(struct efx_nic *efx);
+-
++int efx_tx_tso_fallback(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
+ #endif
 
