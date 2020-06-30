@@ -2,89 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A6C020EBD5
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 05:09:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0496020EBD7
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 05:10:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728901AbgF3DJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 23:09:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        id S1728945AbgF3DKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 23:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727826AbgF3DJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 23:09:13 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8D8C061755;
-        Mon, 29 Jun 2020 20:09:13 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id y18so7892643plr.4;
-        Mon, 29 Jun 2020 20:09:13 -0700 (PDT)
+        with ESMTP id S1727826AbgF3DKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 23:10:11 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7ECDC061755
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 20:10:10 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id v8so19375155iox.2
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 20:10:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yIL3pkgO7uguBS0Jchh/RFoabjs9MnJHyOUQXijWmz0=;
-        b=gd2p+7jm+EwIpMpUiiFHKh7ffy7TwZWNYBJfguNNhwmbRCJOMNsrUy+0hqMrT7WEpr
-         edSr4OPpyxau1NUygY81zODg6zTmWG5QqWcud5RYqDVLxe7N0C5JKPKSBsgaFql0guUT
-         8sjFZTFqgFzbckuWxyi3j93H5qr1F5Nj2XNXsaPRhltuEL1X1q60YNtGzGxqHUQM6qMq
-         bP12SU9uU5UH/WL5apgoJcwMrVwIz3V+ARnNPWm3He6jdTdKZ3372tde0B/AF/g3Eou+
-         xTiYmhh7bfAt4R9ap4rDrjI0BO3A4JU9iKQgoGZHwEoxluDYDXaD1WB0CcMw5uD+7lts
-         2MXw==
+        d=oneconvergence-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5sTuKDfyl1mkdOI/db2xp+PNOUs7h6lOfuJTwBwFcKk=;
+        b=IZXVWHGTshI0giL308Wjk/oSFrYoVtDqtW0nMdcmh4nKQUUwclb8g/hz9oXQHByZgn
+         bLn7JpZyRA4OBdJOVayqr8vM1oQYksB89D97/mHxxgbdlkcUQf/DMxldJL2RR5UGQXR3
+         sh2tbIEh24ChP/WsY+Fk8HTrKOsH4vXnfSiam6ovDIJoq3b1CPngus2iEs7wl08JURWk
+         NRJo8bnT7LtMmeCE0MhIu9ZWJ5wwErDP5owEAdUN+fDPg2XDOg5bmKWJzvLgSigde6uu
+         V1/tolDuJHGt2uK9R8djtdPKIyUNY5hsT7PvCVzspX+wQw8kikfYhJzgpB7zk4HdVnif
+         Iqxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yIL3pkgO7uguBS0Jchh/RFoabjs9MnJHyOUQXijWmz0=;
-        b=iWVMeniM3RwGZaqDUk4r6mR9askgEGkbfY2fYc4JBUOfREdGo3yLeKa9j8NTaXw+ej
-         xODcKglJ3ymp+ybkBQJkcSmZVIg+MRYeUWAa0M3bnqny3zsl1XAih80Om4/R45LjV6Tc
-         Fu2ULw0345N75meHW6R72iXROOT1uxMErhDcpfdyzODp43rigVxtcfZvQgQlZK/AacUF
-         p3CyuxoMyna73FToBNTXQKDd7elF0FKDuU3cSJl5kJpZSgsU8mnizKYm15ziS6WFqpiO
-         kgcmGjtJEOHntSBXQpr9hLDAUvSd9hqcg8RXbYgIW2NjvzcOOmKOfES8UJ7tV+eQb1tZ
-         B1ug==
-X-Gm-Message-State: AOAM531GmsF+4g8DTHzKNSvOqvw4VJmODjO3ewpf42S3Ne7Tx66L6h8o
-        6oSEhEowci3viJ/7mPXybp8=
-X-Google-Smtp-Source: ABdhPJyrmHljxjXHTh3KGBLamDCoAN2P0O74c3j86Mq4H69p3BsFkiju3uI2R9htartSnYma6qasXQ==
-X-Received: by 2002:a17:90a:a68:: with SMTP id o95mr5530237pjo.64.1593486553103;
-        Mon, 29 Jun 2020 20:09:13 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:140c])
-        by smtp.gmail.com with ESMTPSA id s15sm899659pfm.129.2020.06.29.20.09.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2020 20:09:12 -0700 (PDT)
-Date:   Mon, 29 Jun 2020 20:09:10 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next] libbpf: make bpf_endian co-exist with vmlinux.h
-Message-ID: <20200630030910.p7xnbnywofvzcr7r@ast-mbp.dhcp.thefacebook.com>
-References: <20200630020539.787781-1-andriin@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5sTuKDfyl1mkdOI/db2xp+PNOUs7h6lOfuJTwBwFcKk=;
+        b=KHUwQjAL+MIWa6olG1ruDMNRgWWb/qKb3zqphy5pO4OjUQswcionXbBaTLYG3teGwa
+         ODrRVuId95AM4GUCDOF97vcMbfrd3kZpvBERTSDk539CYNAWNxGleSX9vAp+YV1ewsFN
+         XVc8tUnHxuLjr42/SGGoYh3QR02ismafPfqEXQLR4NgskHe7iQSnvThXye/fwvDbNWx7
+         cR+Nego3Oksn3h8ANvCvtYDxSrXGUD3lX1o+pz/Xlzg4BvJn9U+aHc22Na46ndzPhiYo
+         c5j4YJMJm7/ztPxnHfDzZ4sXU4yB/wPNJGBM4Va5k+lp1Yaj8bhSC4BUHJeq7JZ/kzum
+         0daQ==
+X-Gm-Message-State: AOAM532UTFhXAvPFCvE3jn1wxZ2HB9CLYKDbBe3rHjFy01rc/cKtLoyz
+        SBjmke0oSrZuisewfziXLNG3XaQXNblpi+zy3rPSNA==
+X-Google-Smtp-Source: ABdhPJzgZHCMW1GV81qT63Kl0Fu3cTF7qm0Lpa1TXZ0ibwyptpfYUPHPue1oPDmKL4iEMMTG/gj+mUCapzvBqc71jmk=
+X-Received: by 2002:a02:7f89:: with SMTP id r131mr20586284jac.98.1593486609920;
+ Mon, 29 Jun 2020 20:10:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200630020539.787781-1-andriin@fb.com>
+References: <20200619094156.31184-1-satish.d@oneconvergence.com> <20200619.131233.353256561480957986.davem@davemloft.net>
+In-Reply-To: <20200619.131233.353256561480957986.davem@davemloft.net>
+From:   Satish <satish.d@oneconvergence.com>
+Date:   Tue, 30 Jun 2020 08:39:54 +0530
+Message-ID: <CAO+9nP5M2so3QnDPK+ucWG4J5764mbZ+eQ2aKrb9QmOLX7Yo=g@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/3] cls_flower: Offload unmasked key
+To:     David Miller <davem@davemloft.net>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, xiyou.wangcong@gmail.com,
+        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Simon Horman <simon.horman@netronome.com>, kesavac@gmail.com,
+        Prathibha Nagooru <prathibha.nagooru@oneconvergence.com>,
+        Intiyaz Basha <intiyaz.basha@oneconvergence.com>,
+        Jai Rana <jai.rana@oneconvergence.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 07:05:38PM -0700, Andrii Nakryiko wrote:
-> Copy over few #defines from UAPI swab.h header to make all the rest of
-> bpf_endian.h work and not rely on any extra headers. This way it can be used
-> both with linux header includes, as well with a vmlinux.h. This has been
-> a frequent complaint from users, that need this header.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/lib/bpf/bpf_endian.h | 22 ++++++++++++++++++++--
->  1 file changed, 20 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/lib/bpf/bpf_endian.h b/tools/lib/bpf/bpf_endian.h
-> index fbe28008450f..a4be8a70845c 100644
-> --- a/tools/lib/bpf/bpf_endian.h
-> +++ b/tools/lib/bpf/bpf_endian.h
-> @@ -2,8 +2,26 @@
->  #ifndef __BPF_ENDIAN__
->  #define __BPF_ENDIAN__
->  
-> -#include <linux/stddef.h>
-> -#include <linux/swab.h>
-> +/* copied from include/uapi/linux/swab.h */
+Hi David,
 
-You cannot just copy due to different licenses.
+Thank you so much for providing your review comments. We decided to
+withdraw this patch for the time being. We'll resubmit this patch
+addressing all your comments with the driver code in future".
+
+
+On Sat, Jun 20, 2020 at 1:42 AM David Miller <davem@davemloft.net> wrote:
+>
+>
+> You are giving no context on what hardware and with what driver
+> your changes make a difference for.
+>
+> This kind of context and information is required in order for
+> anyone to understand your changes.
+>
+> We're not accepting these changes until you explain all of this.
+>
+> Thank you.
