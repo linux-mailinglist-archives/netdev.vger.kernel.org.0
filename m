@@ -2,75 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D7220F61E
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 15:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4E5120F668
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 15:57:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388084AbgF3Nri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 09:47:38 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36798 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726876AbgF3Nri (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 09:47:38 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jqGbZ-00070l-Fh; Tue, 30 Jun 2020 15:47:21 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jqGbZ-0003zd-6p; Tue, 30 Jun 2020 15:47:21 +0200
-Subject: Re: [PATCH net] xsk: remove cheap_dma optimization
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        konrad.wilk@oracle.com, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        maximmi@mellanox.com, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com
-References: <20200626134358.90122-1-bjorn.topel@gmail.com>
- <c60dfb5a-2bf3-20bd-74b3-6b5e215f73f8@iogearbox.net>
- <20200627070406.GB11854@lst.de>
- <88d27e1b-dbda-301c-64ba-2391092e3236@intel.com>
- <e879bcc8-5f7d-b1b3-9b66-1032dec6245d@iogearbox.net>
- <81aec200-c1a0-6d57-e3b6-26dad30790b8@intel.com>
- <903c646c-dc74-a15c-eb33-e1b67bc7da0d@iogearbox.net>
- <20200630050712.GA26840@lst.de>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7bd1f3ad-f1c7-6f8c-ef14-ec450050edf2@iogearbox.net>
-Date:   Tue, 30 Jun 2020 15:47:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1731518AbgF3Nzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 09:55:40 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:60192 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727796AbgF3Nzj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 09:55:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593525337;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oua9djGTVgruEnJiWoMKHY+ClWCYhuYwu/zgOvxdE70=;
+        b=HAeyXUxH2zffbGvJOJzySVjXxclAJh0iTmNFYCVdFYpfnzm9P7edw+bfRXZHIL9dnVoGnK
+        wvUeR1Dns1g15geddnfjbtxZ2Mk+t50z4kDElaliRJGZO8WRia8OZXOEcrOQ3Dwosg3miE
+        8qDz4FcNd20oFU/W4P2qLcQRCeHTQSg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-259-tIqZfSkhPWmg-FRGzWqsPw-1; Tue, 30 Jun 2020 09:55:31 -0400
+X-MC-Unique: tIqZfSkhPWmg-FRGzWqsPw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EE5818C0302;
+        Tue, 30 Jun 2020 13:54:55 +0000 (UTC)
+Received: from krava (unknown [10.40.192.137])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 7037673FEA;
+        Tue, 30 Jun 2020 13:54:50 +0000 (UTC)
+Date:   Tue, 30 Jun 2020 15:54:49 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v4 bpf-next 07/14] bpf: Allow nested BTF object to be
+ refferenced by BTF object + offset
+Message-ID: <20200630135449.GA3071036@krava>
+References: <20200625221304.2817194-1-jolsa@kernel.org>
+ <20200625221304.2817194-8-jolsa@kernel.org>
+ <CAEf4Bzb+Oey2pQMJvBpRR6dVqFDeV+OtyQVoCvk-1rmvb6XYPA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200630050712.GA26840@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25858/Mon Jun 29 15:30:49 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bzb+Oey2pQMJvBpRR6dVqFDeV+OtyQVoCvk-1rmvb6XYPA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/30/20 7:07 AM, Christoph Hellwig wrote:
-> On Mon, Jun 29, 2020 at 05:18:38PM +0200, Daniel Borkmann wrote:
->> On 6/29/20 5:10 PM, Björn Töpel wrote:
->>> On 2020-06-29 15:52, Daniel Borkmann wrote:
->>>>
->>>> Ok, fair enough, please work with DMA folks to get this properly integrated and
->>>> restored then. Applied, thanks!
->>>
->>> Daniel, you were too quick! Please revert this one; Christoph just submitted a 4-patch-series that addresses both the DMA API, and the perf regression!
->>
->> Nice, tossed from bpf tree then! (Looks like it didn't land on the bpf list yet,
->> but seems other mails are currently stuck as well on vger. I presume it will be
->> routed to Linus via Christoph?)
+On Mon, Jun 29, 2020 at 06:52:21PM -0700, Andrii Nakryiko wrote:
+> On Thu, Jun 25, 2020 at 4:49 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > Adding btf_struct_address function that takes 2 BTF objects
+> > and offset as arguments and checks whether object A is nested
+> > in object B on given offset.
+> >
+> > This function will be used when checking the helper function
+> > PTR_TO_BTF_ID arguments. If the argument has an offset value,
+> > the btf_struct_address will check if the final address is
+> > the expected BTF ID.
+> >
+> > This way we can access nested BTF objects under PTR_TO_BTF_ID
+> > pointer type and pass them to helpers, while they still point
+> > to valid kernel BTF objects.
+> >
+> > Using btf_struct_access to implement new btf_struct_address
+> > function, because it already walks down the given BTF object.
+> >
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
 > 
-> I send the patches to the bpf list, did you get them now that vger
-> is unclogged?  Thinking about it the best route might be through
-> bpf/net, so if that works for you please pick it up.
+> This logic is very hard to follow. Each type I try to review it, I get
+> lost very fast. TBH, this access_data struct is not just not helpful,
+> but actually just complicates everything.
 
-Yeah, that's fine, I just applied your series to the bpf tree. Thanks!
+yea, it's one of the reasons I added extra function for that in first version
+
+> 
+> I'll get to this tomorrow morning with fresh brains and will try to do
+> another pass.
+> 
+> [...]
+> 
+> >  int btf_resolve_helper_id(struct bpf_verifier_log *log,
+> >                           const struct bpf_func_proto *fn, int arg)
+> >  {
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 7de98906ddf4..da7351184295 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -3808,6 +3808,7 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+> >         struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
+> >         enum bpf_reg_type expected_type, type = reg->type;
+> >         enum bpf_arg_type arg_type = fn->arg_type[arg];
+> > +       const struct btf_type *btf_type;
+> >         int err = 0;
+> >
+> >         if (arg_type == ARG_DONTCARE)
+> > @@ -3887,24 +3888,34 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+> >                 expected_type = PTR_TO_BTF_ID;
+> >                 if (type != expected_type)
+> >                         goto err_type;
+> > -               if (!fn->check_btf_id) {
+> > -                       if (reg->btf_id != meta->btf_id) {
+> > -                               verbose(env, "Helper has type %s got %s in R%d\n",
+> > +               if (reg->off) {
+> 
+> 
+> This non-zero offset only logic looks fishy, tbh. What if the struct
+> you are trying to access is at offset zero? E.g., bpf_link is pretty
+> much always a first field of whatever specific link struct it is
+> contained within. The fact that we allow only non-zero offsets for
+> such use case looks like an arbitrary limitation.
+
+right, that's mistake, I was after path under struct file,
+and did not realize this needs to be generic
+
+thanks,
+jirka
+
+> 
+> > +                       btf_type = btf_type_by_id(btf_vmlinux, reg->btf_id);
+> > +                       if (btf_struct_address(&env->log, btf_type, reg->off, meta->btf_id)) {
+> > +                               verbose(env, "Helper has type %s got %s in R%d, off %d\n",
+> >                                         kernel_type_name(meta->btf_id),
+> > +                                       kernel_type_name(reg->btf_id), regno, reg->off);
+> > +                               return -EACCES;
+> > +                       }
+> 
+> [...]
+> 
+
