@@ -2,69 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A80720F935
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 18:14:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B4C020F94F
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 18:21:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732186AbgF3QOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 12:14:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42428 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728998AbgF3QOS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 12:14:18 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 89906206C3;
-        Tue, 30 Jun 2020 16:14:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593533657;
-        bh=jntt+cXMESpI5BxIVrqn9RiSFOWddabQ9CFYmAAcv8E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=zkVQxTij0JqqWK98C4Shl4XcjRXWJTB/3lpgkz/xNfmZ/SLJWNXE/5HDqT1KiSm8O
-         t8oxWLhO6TDUPN6v0mCXLULTmnRPiMgDBFS0MsEFofHq+sRfDD/1FTXpPdr8fSPkoS
-         WWuIfcVhZldMzRQXsIlTYN56z0GsLpH5yq/6r6c0=
-Date:   Tue, 30 Jun 2020 09:14:15 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net-next 3/3] net: dsa/bcm_sf2: move pause mode setting
- into mac_link_up()
-Message-ID: <20200630091415.649a3e88@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <E1jqDUw-0004uL-Ip@rmk-PC.armlinux.org.uk>
-References: <20200630102751.GA1551@shell.armlinux.org.uk>
-        <E1jqDUw-0004uL-Ip@rmk-PC.armlinux.org.uk>
+        id S2387425AbgF3QVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 12:21:15 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:20704 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726736AbgF3QVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 12:21:15 -0400
+X-Greylist: delayed 356 seconds by postgrey-1.27 at vger.kernel.org; Tue, 30 Jun 2020 12:21:13 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1593534072;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=UQbMuL5GteFYcEkQVqGEO+2ozDFITfnMDX6You1TvZU=;
+        b=jk5DchApm8GpDQjKpzBfcfoN1S9ys3DkJE8UgDhBZdE6Qn78RmZxNQNd43APAVTNuE
+        HjcjbCQskPG1lKUQxeZBIDzu4SZUntJRm2oL4UScwRJpem2Oq6mxatb9I21/viCqLi03
+        XrY3/GSi/0Glh11CeATcP9CRNFj4b2DY9AkAOBHYPEbXa2BmnDluWRxu4Ioial7vPQDr
+        6a7caZBG8SUi8WMB3zbJmi86NOpR6e7or1Y5ZpMwgUh5hmizrNLSs7tcYhs8UyVLtPT4
+        Nn4HZ2j9+//NpYViUpoZLguzu6E4/QQ7GJoPV1Ly/sp+PnzE8i0dp/RIeLonf4C+kUG+
+        EvhA==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJV8h7kyA="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+        by smtp.strato.de (RZmta 46.10.5 DYNA|AUTH)
+        with ESMTPSA id R09ac6w5UGF6I1A
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Tue, 30 Jun 2020 18:15:06 +0200 (CEST)
+Subject: Re: [PATCH 2/2] can: flexcan: add support for ISO CAN-FD
+To:     Michael Walle <michael@walle.cc>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+References: <20200629181809.25338-1-michael@walle.cc>
+ <20200629181809.25338-3-michael@walle.cc>
+ <DB8PR04MB679504980A67DB8B1EEC8386E66F0@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <a42e035c8ee3334a721a089b5f8f0580@walle.cc>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <5f6e0843-8504-e941-b6a3-1dc8599db39e@hartkopp.net>
+Date:   Tue, 30 Jun 2020 18:15:01 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <a42e035c8ee3334a721a089b5f8f0580@walle.cc>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Jun 2020 11:28:18 +0100 Russell King wrote:
-> @@ -662,6 +655,22 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
->  		else
->  			offset = CORE_STS_OVERRIDE_GMIIP2_PORT(port);
->  
-> +		if (interface == PHY_INTERFACE_MODE_RGMII ||
-> +		    interface == PHY_INTERFACE_MODE_RGMII_TXID ||
-> +		    interface == PHY_INTERFACE_MODE_MII ||
-> +		    interface == PHY_INTERFACE_MODE_REVMII) {
-> +			reg = reg_readl(priv, REG_RGMII_CNTRL_P(port));
-> +			reg &= ~(RX_PAUSE_EN | TX_PAUSE_EN);
-> +
-> +			if (tx_pause)
-> +				reg |= TX_PAUSE_EN;
-> +			if (rx_pause)
-> +				reg |= RX_PAUSE_EN;
-> +
-> +			reg_writel(priv, reg, REG_RGMII_CNTRL_P(port));
-> +		}
-> +
-> +
 
-nit: double new line
+
+On 30.06.20 07:53, Michael Walle wrote:
+> [+ Oliver]
+> 
+> Hi Joakim,
+> 
+> Am 2020-06-30 04:42, schrieb Joakim Zhang:
+>>> -----Original Message-----
+>>> From: Michael Walle <michael@walle.cc>
+>>> Sent: 2020年6月30日 2:18
+>>> To: linux-can@vger.kernel.org; netdev@vger.kernel.org;
+>>> linux-kernel@vger.kernel.org
+>>> Cc: Wolfgang Grandegger <wg@grandegger.com>; Marc Kleine-Budde
+>>> <mkl@pengutronix.de>; David S . Miller <davem@davemloft.net>; Jakub
+>>> Kicinski <kuba@kernel.org>; Joakim Zhang <qiangqing.zhang@nxp.com>;
+>>> dl-linux-imx <linux-imx@nxp.com>; Michael Walle <michael@walle.cc>
+>>> Subject: [PATCH 2/2] can: flexcan: add support for ISO CAN-FD
+>>>
+>>> Up until now, the controller used non-ISO CAN-FD mode, although it 
+>>> supports it.
+>>> Add support for ISO mode, too. By default the hardware is in non-ISO 
+>>> mode and
+>>> an enable bit has to be explicitly set.
+>>>
+>>> Signed-off-by: Michael Walle <michael@walle.cc>
+>>> ---
+>>>  drivers/net/can/flexcan.c | 19 ++++++++++++++++---
+>>>  1 file changed, 16 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c index
+>>> 183e094f8d66..a92d3cdf4195 100644
+>>> --- a/drivers/net/can/flexcan.c
+>>> +++ b/drivers/net/can/flexcan.c
+>>> @@ -94,6 +94,7 @@
+>>>  #define FLEXCAN_CTRL2_MRP        BIT(18)
+>>>  #define FLEXCAN_CTRL2_RRS        BIT(17)
+>>>  #define FLEXCAN_CTRL2_EACEN        BIT(16)
+>>> +#define FLEXCAN_CTRL2_ISOCANFDEN    BIT(12)
+>>>
+>>>  /* FLEXCAN memory error control register (MECR) bits */
+>>>  #define FLEXCAN_MECR_ECRWRDIS        BIT(31)
+>>> @@ -1344,14 +1345,25 @@ static int flexcan_chip_start(struct net_device
+>>> *dev)
+>>>      else
+>>>          reg_mcr |= FLEXCAN_MCR_SRX_DIS;
+>>>
+>>> -    /* MCR - CAN-FD */
+>>> -    if (priv->can.ctrlmode & CAN_CTRLMODE_FD)
+>>> +    /* MCR, CTRL2
+>>> +     *
+>>> +     * CAN-FD mode
+>>> +     * ISO CAN-FD mode
+>>> +     */
+>>> +    reg_ctrl2 = priv->read(&regs->ctrl2);
+>>> +    if (priv->can.ctrlmode & CAN_CTRLMODE_FD) {
+>>>          reg_mcr |= FLEXCAN_MCR_FDEN;
+>>> -    else
+>>> +        reg_ctrl2 |= FLEXCAN_CTRL2_ISOCANFDEN;
+>>> +    } else {
+>>>          reg_mcr &= ~FLEXCAN_MCR_FDEN;
+>>> +    }
+>>> +
+>>> +    if (priv->can.ctrlmode & CAN_CTRLMODE_FD_NON_ISO)
+>>> +        reg_ctrl2 &= ~FLEXCAN_CTRL2_ISOCANFDEN;
+>>
+>>
+> 
+> [..]
+>> ip link set can0 up type can bitrate 1000000 dbitrate 5000000 fd on
+>> ip link set can0 up type can bitrate 1000000 dbitrate 5000000 fd on \
+>>    fd-non-iso on
+> 
+> vs.
+> 
+>> ip link set can0 up type can bitrate 1000000 dbitrate 5000000 
+>> fd-non-iso on
+> 
+> I haven't found anything if CAN_CTRLMODE_FD_NON_ISO depends on
+> CAN_CTRLMODE_FD. I.e. wether CAN_CTRLMODE_FD_NON_ISO can only be set if
+> CAN_CTRLMODE_FD is also set.
+> 
+> Only the following piece of code, which might be a hint that you
+> have to set CAN_CTRLMODE_FD if you wan't to use CAN_CTRLMODE_FD_NON_ISO:
+> 
+> drivers/net/can/dev.c:
+>    /* do not check for static fd-non-iso if 'fd' is disabled */
+>    if (!(maskedflags & CAN_CTRLMODE_FD))
+>            ctrlstatic &= ~CAN_CTRLMODE_FD_NON_ISO;
+> 
+> If CAN_CTRLMODE_FD_NON_ISO can be set without CAN_CTRLMODE_FD, what
+> should be the mode if both are set at the same time?
+
+CAN_CTRLMODE_FD_NON_ISO is only relevant when CAN_CTRLMODE_FD is set.
+
+So in the example from above
+
+ip link set can0 up type can bitrate 1000000 dbitrate 5000000 fd-non-iso on
+
+either the setting of 'dbitrate 5000000' and 'fd-non-iso on' is pointless.
+
+When switching to FD-mode with 'fd on' the FD relevant settings need to 
+be applied.
+
+FD ISO is the default.
+
+Did this help or did I get anything wrong?
+
+Best,
+Oliver
