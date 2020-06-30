@@ -2,126 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5EA120F9F4
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 18:56:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 738D220FA0B
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 19:00:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389924AbgF3Q4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 12:56:19 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:35770 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729867AbgF3Q4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 12:56:19 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: andrzej.p)
-        with ESMTPSA id 9B6B92A1B1F
-Subject: Re: [PATCH v7 00/11] Stop monitoring disabled devices
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        kernel@collabora.com
-References: <20200629122925.21729-1-andrzej.p@collabora.com>
- <aab40d90-3f72-657c-5e14-e53a34c4b420@linaro.org>
- <3d03d1a2-ac06-b69b-93cb-e0203be62c10@collabora.com>
- <47111821-d691-e71d-d740-e4325e290fa4@linaro.org>
- <be9b7ee3-cad0-e462-126d-08de9b226285@collabora.com>
- <4353a939-3f5e-8369-5bc0-ad8162b5ffc7@linaro.org>
-From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Message-ID: <a531d80f-afd1-2dec-6c77-ed984e97595c@collabora.com>
-Date:   Tue, 30 Jun 2020 18:56:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S2389944AbgF3RAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 13:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48732 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727850AbgF3RAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 13:00:31 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E81C061755;
+        Tue, 30 Jun 2020 10:00:31 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id AC28422F53;
+        Tue, 30 Jun 2020 19:00:26 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1593536427;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UDbH7pLz+12WxuhpnPo2DJiE1S7gV9ax36puEK6+/QY=;
+        b=oc98M6IfaUjWWnZvhfzupxBBG5qhZ9Uk28Ad8ZN4cLXuQ+UU3G4zUr1YS0/Y9L9rJwGDlN
+        Mfa5ibwsl2C4NvLtQc8g3+FBXRJRBGVZzCxlRaUevToaAUiU2k/jGWkOhO7jP61kjTRqxL
+        sDWxJ1RonQP9IApCA+hxEbLXmn3B3pQ=
 MIME-Version: 1.0
-In-Reply-To: <4353a939-3f5e-8369-5bc0-ad8162b5ffc7@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
+Date:   Tue, 30 Jun 2020 19:00:26 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH 2/2] can: flexcan: add support for ISO CAN-FD
+In-Reply-To: <5f6e0843-8504-e941-b6a3-1dc8599db39e@hartkopp.net>
+References: <20200629181809.25338-1-michael@walle.cc>
+ <20200629181809.25338-3-michael@walle.cc>
+ <DB8PR04MB679504980A67DB8B1EEC8386E66F0@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <a42e035c8ee3334a721a089b5f8f0580@walle.cc>
+ <5f6e0843-8504-e941-b6a3-1dc8599db39e@hartkopp.net>
+User-Agent: Roundcube Webmail/1.4.6
+Message-ID: <e5b56262c291422160e822e4a378dd2c@walle.cc>
+X-Sender: michael@walle.cc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Am 2020-06-30 18:15, schrieb Oliver Hartkopp:
+> On 30.06.20 07:53, Michael Walle wrote:
+>> [+ Oliver]
+>> 
+>> Hi Joakim,
+>> 
+>> Am 2020-06-30 04:42, schrieb Joakim Zhang:
+>>>> -----Original Message-----
+>>>> From: Michael Walle <michael@walle.cc>
+>>>> Sent: 2020年6月30日 2:18
+>>>> To: linux-can@vger.kernel.org; netdev@vger.kernel.org;
+>>>> linux-kernel@vger.kernel.org
+>>>> Cc: Wolfgang Grandegger <wg@grandegger.com>; Marc Kleine-Budde
+>>>> <mkl@pengutronix.de>; David S . Miller <davem@davemloft.net>; Jakub
+>>>> Kicinski <kuba@kernel.org>; Joakim Zhang <qiangqing.zhang@nxp.com>;
+>>>> dl-linux-imx <linux-imx@nxp.com>; Michael Walle <michael@walle.cc>
+>>>> Subject: [PATCH 2/2] can: flexcan: add support for ISO CAN-FD
+>>>> 
+>>>> Up until now, the controller used non-ISO CAN-FD mode, although it 
+>>>> supports it.
+>>>> Add support for ISO mode, too. By default the hardware is in non-ISO 
+>>>> mode and
+>>>> an enable bit has to be explicitly set.
+>>>> 
+>>>> Signed-off-by: Michael Walle <michael@walle.cc>
+>>>> ---
+>>>>  drivers/net/can/flexcan.c | 19 ++++++++++++++++---
+>>>>  1 file changed, 16 insertions(+), 3 deletions(-)
+>>>> 
+>>>> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c 
+>>>> index
+>>>> 183e094f8d66..a92d3cdf4195 100644
+>>>> --- a/drivers/net/can/flexcan.c
+>>>> +++ b/drivers/net/can/flexcan.c
+>>>> @@ -94,6 +94,7 @@
+>>>>  #define FLEXCAN_CTRL2_MRP        BIT(18)
+>>>>  #define FLEXCAN_CTRL2_RRS        BIT(17)
+>>>>  #define FLEXCAN_CTRL2_EACEN        BIT(16)
+>>>> +#define FLEXCAN_CTRL2_ISOCANFDEN    BIT(12)
+>>>> 
+>>>>  /* FLEXCAN memory error control register (MECR) bits */
+>>>>  #define FLEXCAN_MECR_ECRWRDIS        BIT(31)
+>>>> @@ -1344,14 +1345,25 @@ static int flexcan_chip_start(struct 
+>>>> net_device
+>>>> *dev)
+>>>>      else
+>>>>          reg_mcr |= FLEXCAN_MCR_SRX_DIS;
+>>>> 
+>>>> -    /* MCR - CAN-FD */
+>>>> -    if (priv->can.ctrlmode & CAN_CTRLMODE_FD)
+>>>> +    /* MCR, CTRL2
+>>>> +     *
+>>>> +     * CAN-FD mode
+>>>> +     * ISO CAN-FD mode
+>>>> +     */
+>>>> +    reg_ctrl2 = priv->read(&regs->ctrl2);
+>>>> +    if (priv->can.ctrlmode & CAN_CTRLMODE_FD) {
+>>>>          reg_mcr |= FLEXCAN_MCR_FDEN;
+>>>> -    else
+>>>> +        reg_ctrl2 |= FLEXCAN_CTRL2_ISOCANFDEN;
+>>>> +    } else {
+>>>>          reg_mcr &= ~FLEXCAN_MCR_FDEN;
+>>>> +    }
+>>>> +
+>>>> +    if (priv->can.ctrlmode & CAN_CTRLMODE_FD_NON_ISO)
+>>>> +        reg_ctrl2 &= ~FLEXCAN_CTRL2_ISOCANFDEN;
 
-W dniu 30.06.2020 o 17:53, Daniel Lezcano pisze:
-> On 30/06/2020 17:29, Andrzej Pietrasiewicz wrote:
->> Hi Daniel,
->>
->> W dniu 30.06.2020 o 16:53, Daniel Lezcano pisze:
->>> On 30/06/2020 15:43, Andrzej Pietrasiewicz wrote:
->>>> Hi Daniel,
->>>>
->>>> I am reading the logs and can't find anything specific to thermal.
->>>>
->>>> What I can see is
->>>>
->>>> "random: crng init done"
->>>>
->>>> with large times (~200s) and then e.g.
->>>>
->>>> 'auto-login-action timed out after 283 seconds'
->>>>
->>>> I'm looking at e.g.
->>>> https://storage.kernelci.org/thermal/testing/v5.8-rc3-11-gf5e50bf4d3ef/arm/multi_v7_defconfig/gcc-8/lab-baylibre/baseline-imx6q-sabrelite.html
->>>>
->>>>
->>
->> f5e50bf4d3ef is PATCH 11/11. Does the problem happen at PATCH 1-10/11?
->> PATCH 11/11 renames a method and the code compiles, so it seems
->> unlikely that this is causing problems. One should never say never,
->> though ;)
-> 
-> The sha1 is just the HEAD for the kernel reference. The regression
-> happens with your series, somewhere.
-> 
->> The reported failure is not due to some test failing but rather due
->> to timeout logging into the test system. Could it be that there is
->> some other problem?
-> 
-> I did reproduce:
-> 
-> v5.8-rc3 + series => imx6 hang at boot time
-> v5.8-rc3 => imx6 boots correctly
-> 
+[1]
 
-I kindly ask for a bisect.
+>> [..]
+>>> ip link set can0 up type can bitrate 1000000 dbitrate 5000000 fd on
+>>> ip link set can0 up type can bitrate 1000000 dbitrate 5000000 fd on \
+>>>    fd-non-iso on
+>> 
+>> vs.
+>> 
+>>> ip link set can0 up type can bitrate 1000000 dbitrate 5000000 
+>>> fd-non-iso on
+>> 
+>> I haven't found anything if CAN_CTRLMODE_FD_NON_ISO depends on
+>> CAN_CTRLMODE_FD. I.e. wether CAN_CTRLMODE_FD_NON_ISO can only be set 
+>> if
+>> CAN_CTRLMODE_FD is also set.
+>> 
+>> Only the following piece of code, which might be a hint that you
+>> have to set CAN_CTRLMODE_FD if you wan't to use 
+>> CAN_CTRLMODE_FD_NON_ISO:
+>> 
+>> drivers/net/can/dev.c:
+>>    /* do not check for static fd-non-iso if 'fd' is disabled */
+>>    if (!(maskedflags & CAN_CTRLMODE_FD))
+>>            ctrlstatic &= ~CAN_CTRLMODE_FD_NON_ISO;
+>> 
+>> If CAN_CTRLMODE_FD_NON_ISO can be set without CAN_CTRLMODE_FD, what
+>> should be the mode if both are set at the same time?
+> 
+> CAN_CTRLMODE_FD_NON_ISO is only relevant when CAN_CTRLMODE_FD is set.
+> 
+> So in the example from above
+> 
+> ip link set can0 up type can bitrate 1000000 dbitrate 5000000 
+> fd-non-iso on
+> 
+> either the setting of 'dbitrate 5000000' and 'fd-non-iso on' is 
+> pointless.
+> 
+> When switching to FD-mode with 'fd on' the FD relevant settings need
+> to be applied.
+> 
+> FD ISO is the default.
+> 
+> Did this help or did I get anything wrong?
 
-Andrzej
+Thanks for the explanation. Yes this helped a great deal and this
+patch should be correct; it sets ISO mode if CAN_CTRLMODE_FD is set
+and masks it again if CAN_CTRLMODE_FD_NON_ISO is set. See [1].
 
+-michael
