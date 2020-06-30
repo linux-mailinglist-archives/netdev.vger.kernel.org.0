@@ -2,61 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F09720EA43
+	by mail.lfdr.de (Postfix) with ESMTP id D448820EA44
 	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:34:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728122AbgF3Ad5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 20:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37874 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbgF3Ad5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 20:33:57 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA7BAC061755;
-        Mon, 29 Jun 2020 17:33:56 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id BF8E6127C1B86;
-        Mon, 29 Jun 2020 17:33:54 -0700 (PDT)
-Date:   Mon, 29 Jun 2020 17:33:53 -0700 (PDT)
-Message-Id: <20200629.173353.2205232220417102627.davem@davemloft.net>
-To:     po.liu@nxp.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        jiri@resnulli.us, vlad@buslov.dev, claudiu.manoil@nxp.com,
-        vladimir.oltean@nxp.com, alexandru.marginean@nxp.com,
-        michael.chan@broadcom.com, vishal@chelsio.com, saeedm@mellanox.com,
-        leon@kernel.org, jiri@mellanox.com, idosch@mellanox.com,
-        UNGLinuxDriver@microchip.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, simon.horman@netronome.com,
-        pablo@netfilter.org, moshe@mellanox.com, oss-drivers@netronome.com
-Subject: Re: [v2,net-next] net:qos: police action offloading parameter
- 'burst' change to the original value
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200629065416.31111-1-po.liu@nxp.com>
-References: <20200629020420.30412-2-po.liu@nxp.com>
-        <20200629065416.31111-1-po.liu@nxp.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1728584AbgF3AeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 20:34:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38676 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726315AbgF3AeN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 20:34:13 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 20561206A5;
+        Tue, 30 Jun 2020 00:34:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593477253;
+        bh=3b0CchttCHk7S9cUv8SQ7oES4by+SHi6lhcJZMgV3t8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Fv+fN1gBcXHLghttleF2LQSQFpYjJPSnclLFp5oTYtVLcHBbjCJLebWVy+W+MAgib
+         35TGEC0o/WeXhnvf/AGJae8sth8xDcFxRaTTXhcfbmrq7e93ZhszwWXuYZJKwi3viu
+         5XrMqmnlXS7CjaKOwKFo5gMYcOIj/Ytv4l/+tXXM=
+Date:   Mon, 29 Jun 2020 17:34:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nirranjan@chelsio.com,
+        vishal@chelsio.com, dt@chelsio.com
+Subject: Re: [PATCH net-next v2 1/3] cxgb4: add mirror action to TC-MATCHALL
+ offload
+Message-ID: <20200629173411.01ec967c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e02bf5f7ba6b6088a7844d9dec55e98af00c2cfc.1593469163.git.rahul.lakkireddy@chelsio.com>
+References: <cover.1593469163.git.rahul.lakkireddy@chelsio.com>
+        <e02bf5f7ba6b6088a7844d9dec55e98af00c2cfc.1593469163.git.rahul.lakkireddy@chelsio.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 29 Jun 2020 17:33:55 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Po Liu <po.liu@nxp.com>
-Date: Mon, 29 Jun 2020 14:54:16 +0800
+On Tue, 30 Jun 2020 04:19:51 +0530 Rahul Lakkireddy wrote:
+> +	if (refcount_read(&pi->vi_mirror_refcnt) > 1) {
+> +		refcount_dec(&pi->vi_mirror_refcnt);
+> +		goto out_unlock;
+> +	}
 
-> Since 'tcfp_burst' with TICK factor, driver side always need to recover
-> it to the original value, this patch moves the generic calculation and
-> recover to the 'burst' original value before offloading to device driver.
-> 
-> Signed-off-by: Po Liu <po.liu@nxp.com>
-> Acked-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-Applied, thank you.
+Please remove the use of refcount_t if you're doing this, otherwise a
+person looking at this code will waste time trying to validate if this
+clearly bogus use of refcount_t is harmless or not.
