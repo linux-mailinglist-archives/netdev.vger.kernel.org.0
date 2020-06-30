@@ -2,150 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D37D720EB21
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:55:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7359520EB2E
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726342AbgF3Byn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 21:54:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726003AbgF3Bym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 21:54:42 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFD7C061755;
-        Mon, 29 Jun 2020 18:54:42 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id u17so14500826qtq.1;
-        Mon, 29 Jun 2020 18:54:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CvphssloF01xi3Q7XYZt+Pl7trcIGdQwWIvxrzOy9NE=;
-        b=m68gKPZ0Y83T98hVDxcgTcmLJxbymiFZjTYPxwWka1Uku0hWazgl8EB/lr257WJp6A
-         JGdwn0elmHRMrumySX2n1+02xOf0ljJYuCCrD3jNiiMDDBzS3bFQvJS26yp2/r2fAd6Q
-         iTcF+Q8wrS0hPaLjuqICgL9mOT1MVwW9HnT9CfCxIT999twhgPcs23q2LIoF71jG+jdA
-         2ypdMwE0oNjU6PpH4Z7a7dPkHYlhy4Agscb8tH2HM7o3ZMpxWUWP7YVkhyXmbesRYRd9
-         Jli43gZEg+2NvHyRzeogxA3MGmvwPgr1CNk8j0nxDRdnQORCkdjetUXE6cniMj8p1oXQ
-         5p2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CvphssloF01xi3Q7XYZt+Pl7trcIGdQwWIvxrzOy9NE=;
-        b=gwoy7zL6Ogq8WHKSU0S8c4O//jfOQTCpoZ8Yxvun2m0Ma4QH8BVJRvSC/1AAiW6t7B
-         6rpqiAwiANIXPU+Q51F+ADDNNlLbWo8LOc8DcyzwtxvclbV70X4wKqcG6pY+DZXTAaGf
-         oNj5iFJUA2UVOLGfVKVvCSvhxEoeWYDtvFmQsIvcwRLAV6JcJyCfGZAf59fgg7VrZn8Z
-         cL4eN5j9DXPIuR/hH/dIAhsZuoMPnz7CWQYwBiE6Y5c1rSFho9fIAujZui9Gg1cmtBA2
-         TMW2dSpD2QP6Lt0qFOlKUrxX3ucuI9ob9QC1o2WUZKlZuMVfHVn05vRbc87hoMWD+yAf
-         JMBQ==
-X-Gm-Message-State: AOAM530ElgW2Gc9hw9/H+pq2G+TnZhJTwpPh5qTLovC1mwSguJ3TrEL5
-        hMc0Ze2a23h2qlSQ9C7mkeuT/LpdcSY5aksDTzU=
-X-Google-Smtp-Source: ABdhPJxhYdE3N3DLu7s2mN5efVqNKNiIP9Q7BxaHj4EtPmsH0+LZCmEL3hWKqVvLp55fIEHn0ImP1pHipzAGCCqVdRM=
-X-Received: by 2002:aed:2cc5:: with SMTP id g63mr18558349qtd.59.1593482081916;
- Mon, 29 Jun 2020 18:54:41 -0700 (PDT)
+        id S1726887AbgF3B7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 21:59:03 -0400
+Received: from ozlabs.org ([203.11.71.1]:53729 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725988AbgF3B7C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 21:59:02 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 49wnb64C6Xz9sDX;
+        Tue, 30 Jun 2020 11:58:58 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1593482340;
+        bh=5cPu6wsgH/MuuN6WquTB5OoBViBaqpyzg6+ERh6fgFE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e/vudEKGo+PonMu/StaXpztVkrHZTgpNNCOQdpuRl+K0wWRVC5BhqogqLWsZx2mrb
+         C7r2dLyhWo6GIOBlS8LK7z5R6Qn3LUuJuQ0hnW8xS3Tdq/4RWzfJ6UA1p1m5gXt0+J
+         zcscJDAXN4nK4LKPLNunInxFkogcybp1KfSsFxAODCTWELQpTI3Ml6Mmvf2TNG/H9x
+         TEIIydptycgC0LuPGh4O7iIcWhFgTZqVG3jE9Ux2Hax1XXHkKq3kICLvOaw4mtXK4e
+         kA0lak9ejHWHnHmlxFXx/zmJh/4Qm2frNJy6CZMJ1XcGi1IH0c/HikegiCswzALfQZ
+         qSQfhGMHAVSKg==
+Date:   Tue, 30 Jun 2020 11:58:57 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org
+Subject: Re: linux-next: build failures after merge of the vfs tree
+Message-ID: <20200630115857.48eab55d@canb.auug.org.au>
+In-Reply-To: <20200618100851.0f77ed52@canb.auug.org.au>
+References: <20200616103330.2df51a58@canb.auug.org.au>
+        <20200616103440.35a80b4b@canb.auug.org.au>
+        <20200616010502.GA28834@gondor.apana.org.au>
+        <20200616033849.GL23230@ZenIV.linux.org.uk>
+        <20200616143807.GA1359@gondor.apana.org.au>
+        <20200617165715.577aa76d@canb.auug.org.au>
+        <20200617070316.GA30348@gondor.apana.org.au>
+        <20200617173102.2b91c32d@canb.auug.org.au>
+        <20200617073845.GA20077@gondor.apana.org.au>
+        <20200618100851.0f77ed52@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20200625221304.2817194-1-jolsa@kernel.org>
-In-Reply-To: <20200625221304.2817194-1-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 29 Jun 2020 18:54:30 -0700
-Message-ID: <CAEf4BzbMND3VGxzqYU38agbTd+EVquD7J1Spx9LeR=569qMyEg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 00/14] bpf: Add d_path helper
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/_0FRHZJ7r_fvKJCjf8vCyNz";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 25, 2020 at 4:47 PM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> hi,
-> adding d_path helper to return full path for 'path' object.
->
-> In a preparation for that, this patchset also adds support for BTF ID
-> whitelists, because d_path can't be called from any probe due to its
-> locks usage. The whitelists allow verifier to check if the caller is
-> one of the functions from the whitelist.
->
-> The whitelist is implemented in a generic way. This patchset introduces
-> macros that allow to define lists of BTF IDs, which are compiled in
-> the kernel image in a new .BTF.ids ELF section.
->
-> The generic way of BTF ID lists allows us to use them in other places
-> in kernel (than just for whitelists), that could use static BTF ID
-> values compiled in and it's also implemented in this patchset.
->
-> I originally added and used 'file_path' helper, which did the same,
-> but used 'struct file' object. Then realized that file_path is just
-> a wrapper for d_path, so we'd cover more calling sites if we add
-> d_path helper and allowed resolving BTF object within another object,
-> so we could call d_path also with file pointer, like:
->
->   bpf_d_path(&file->f_path, buf, size);
->
-> This feature is mainly to be able to add dpath (filepath originally)
-> function to bpftrace:
->
->   # bpftrace -e 'kfunc:vfs_open { printf("%s\n", dpath(args->path)); }'
->
-> v4 changes:
->   - added ID sanity checks in btf_resolve_helper_id [Andrii]
->   - resolve bpf_ctx_convert via BTF_ID [Andrii]
->   - keep bpf_access_type in btf_struct_access [Andrii]
->   - rename whitelist to se and use struct btf_id_set [Andrii]
->   - several fixes for d_path prog/verifier tests [Andrii]
->   - added union and typedefs types support [Andrii]
->   - rename btfid to resolve_btfids [Andrii]
->   - fix segfault in resolve_btfids [John]
->   - rename section from .BTF_ids .BTF.ids (following .BTF.ext example)
->   - add .BTF.ids section info into btf.rst [John]
->   - updated over letter with more details [John]
->
-> Also available at:
->   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
->   bpf/d_path
->
-> thanks,
-> jirka
->
->
-> ---
+--Sig_/_0FRHZJ7r_fvKJCjf8vCyNz
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Have you considered splitting this series into two? One with BTF ID
-resolution and corresponding patches. I'm pretty confident in that one
-and it seems ready (with some minor selftest changes). Then,
-separately, d_path and that sub-struct address logic. That one depends
-on the first one, but shouldn't really block BTF ID resolution from
-going in sooner.
+Hi all,
 
-> Jiri Olsa (14):
->       bpf: Add resolve_btfids tool to resolve BTF IDs in ELF object
->       bpf: Compile resolve_btfids tool at kernel compilation start
->       bpf: Add BTF_ID_LIST/BTF_ID macros
->       bpf: Resolve BTF IDs in vmlinux image
->       bpf: Remove btf_id helpers resolving
->       bpf: Use BTF_ID to resolve bpf_ctx_convert struct
->       bpf: Allow nested BTF object to be refferenced by BTF object + offset
->       bpf: Add BTF_SET_START/END macros
->       bpf: Add info about .BTF.ids section to btf.rst
->       bpf: Add d_path helper
->       tools headers: Adopt verbatim copy of btf_ids.h from kernel sources
->       selftests/bpf: Add verifier test for d_path helper
->       selftests/bpf: Add test for d_path helper
->       selftests/bpf: Add test for resolve_btfids
+On Thu, 18 Jun 2020 10:08:51 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
 >
+> On Wed, 17 Jun 2020 17:38:45 +1000 Herbert Xu <herbert@gondor.apana.org.a=
+u> wrote:
+> >
+> > On Wed, Jun 17, 2020 at 05:31:02PM +1000, Stephen Rothwell wrote: =20
+> > > > >=20
+> > > > > Presumably another include needed:
+> > > > >=20
+> > > > > arch/s390/lib/test_unwind.c:49:2: error: implicit declaration of =
+function 'kmalloc' [-Werror=3Dimplicit-function-declaration]
+> > > > > arch/s390/lib/test_unwind.c:99:2: error: implicit declaration of =
+function 'kfree' [-Werror=3Dimplicit-function-declaration]     =20
+> > >=20
+> > > And more (these are coming from other's builds):
+> > >=20
+> > >   drivers/remoteproc/qcom_q6v5_mss.c:772:3: error: implicit declarati=
+on of function 'kfree' [-Werror,-Wimplicit-function-declaration]
+> > >   drivers/remoteproc/qcom_q6v5_mss.c:808:2: error: implicit declarati=
+on of function 'kfree' [-Werror,-Wimplicit-function-declaration]
+> > >   drivers/remoteproc/qcom_q6v5_mss.c:1195:2: error: implicit declarat=
+ion of function 'kfree' [-Werror,-Wimplicit-function-declaration]
+> > >=20
+> > > They may have other causes as they are full linux-next builds (not ju=
+st
+> > > after the merge of the vfs tree), but the timing is suspicious.   =20
+> >=20
+> > OK, here's a patch for both of these together:
+> >=20
+> > diff --git a/arch/s390/lib/test_unwind.c b/arch/s390/lib/test_unwind.c
+> > index 32b7a30b2485..eb382ceaa116 100644
+> > --- a/arch/s390/lib/test_unwind.c
+> > +++ b/arch/s390/lib/test_unwind.c
+> > @@ -9,6 +9,7 @@
+> >  #include <linux/kallsyms.h>
+> >  #include <linux/kthread.h>
+> >  #include <linux/module.h>
+> > +#include <linux/slab.h>
+> >  #include <linux/string.h>
+> >  #include <linux/kprobes.h>
+> >  #include <linux/wait.h>
+> > diff --git a/drivers/remoteproc/qcom_q6v5_mss.c b/drivers/remoteproc/qc=
+om_q6v5_mss.c
+> > index feb70283b6a2..903b2bb97e12 100644
+> > --- a/drivers/remoteproc/qcom_q6v5_mss.c
+> > +++ b/drivers/remoteproc/qcom_q6v5_mss.c
+> > @@ -26,6 +26,7 @@
+> >  #include <linux/reset.h>
+> >  #include <linux/soc/qcom/mdt_loader.h>
+> >  #include <linux/iopoll.h>
+> > +#include <linux/slab.h>
+> > =20
+> >  #include "remoteproc_internal.h"
+> >  #include "qcom_common.h" =20
+>=20
+> I have applied those 2 by hand for today.
 
-[...]
+I am still applying the above patch.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/_0FRHZJ7r_fvKJCjf8vCyNz
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl76nGEACgkQAVBC80lX
+0GwBRggAgNcS26D8ioFjQ+eNTgaE+rGhw30ZcyikBkrj04MMls4rzmaAWMeVp/Qe
+DH+A2nj0Zra8LQMNH8ZmhIa+HgluH2acwYvWvZ3a4oTDpVQ5riaszprgkXqiDEwT
+x/L4gIt7ixHcqNwN4MO8unnR0jeV+vNprU+R1vAW6/il67qyo1TiSRvmngk+YyYX
+H8sNoU12xjCGPvRvPOZWiSJ5svT8yncbmDtDJipDfwutsADfpkd6PFHwsf/wYo/H
+Ljesigk7smwLbFZ74e0vVMQOS8ID4Q4WtACI961uzQEIaniuIY97MbG1IwZDLD3M
+kW4NQ3htlcdGMWGgaVshjCxs/hwNgA==
+=ROmu
+-----END PGP SIGNATURE-----
+
+--Sig_/_0FRHZJ7r_fvKJCjf8vCyNz--
