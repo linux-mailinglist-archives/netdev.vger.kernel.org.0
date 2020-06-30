@@ -2,269 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF80520F15C
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 11:15:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60E6E20F183
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 11:24:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731910AbgF3JPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 05:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729866AbgF3JPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 05:15:38 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8D5C061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 02:15:38 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id h22so14429825lji.9
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 02:15:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=content-transfer-encoding:cc:subject:from:to:date:message-id
-         :in-reply-to;
-        bh=T3joqHkLHraTuPnWCUoikewNR5I9EBQzqVSvwFZJcPs=;
-        b=it2VVlrzKIINX7HF+K2rxW25mK/HfuPt4hiXOSueskjBJb3YCQCXQSbcNJb052BRue
-         asbFsl8nDKhL48oYu8dPeeq1a7UkSrH/hEv3oh5PqJHWd6iMtubgEskiRE3bMEHjOP6v
-         cAbr+L2lLAqPR4GH5xYCxBDG5gxfrVOcDG5X2dg/cxEgk/hxFFuEubShUp4Io7d5+X2M
-         vjhChobhXPuKL6Oa8CtfSHKZm6gxcCzOryxXB//vrwHvokKL06lm2H87VS7fd3L5T8T8
-         +DCPSq6lFl41iyrMM8imvUiANk1cu6R1KwdV9sbiL6a/FtTM5z5XImmu/hrnv83PqbXu
-         aEQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:cc:subject:from:to
-         :date:message-id:in-reply-to;
-        bh=T3joqHkLHraTuPnWCUoikewNR5I9EBQzqVSvwFZJcPs=;
-        b=fHymqeaMDgS/zYwvUIE5LAZCPOV0phWfMXdX1YrJ0GGblWsUakmb93iziI+o2brSWc
-         bAmyMYlc5ZNhiTF7w4UG8iUbdvkSR0nsiAi3cPhfWUBxPY0MSA+9iAnCLlwbamH3U5lF
-         M4sVTnWvAdtiLUBJNZNd9zpEV6952OYLzWwAjHuFRekyfzIoC6ciXEMJwkwtXWAZt2eo
-         z+DEQYpvxC8CD/0nhl5nE43egBf6vuyxb7xms2udEthag8UUbIw67x4wsWlpCoDYyWnN
-         Hz8nYiSHeSr7A7Gcte4yGGUQeLUU2O1CqYCrr7K+gKHZnh3SZYSZQ2cV7lSLzdqNaMjS
-         edyA==
-X-Gm-Message-State: AOAM530+niZYLkOcL6BWR0aIie/R2+FVVzxG+Hi1LD8nXYsnaRxH0mzp
-        non1fNyb2JH2BRQuJc1dAfdacZKt3X0=
-X-Google-Smtp-Source: ABdhPJzsJO66ERK+SkhY9RezunPsooCP0WoxrtX8UoejWTzGxYZuUwCnEJHqgKO+bXGvi1PTjoPHFw==
-X-Received: by 2002:a2e:b554:: with SMTP id a20mr9370132ljn.108.1593508536491;
-        Tue, 30 Jun 2020 02:15:36 -0700 (PDT)
-Received: from localhost (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id q13sm597642lfb.55.2020.06.30.02.15.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Jun 2020 02:15:34 -0700 (PDT)
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH net-next] net: ethernet: fec: prevent tx
- starvation under high rx load
-From:   "Tobias Waldekranz" <tobias@waldekranz.com>
-To:     "Andy Duan" <fugang.duan@nxp.com>,
-        "David Miller" <davem@davemloft.net>
-Date:   Tue, 30 Jun 2020 11:12:30 +0200
-Message-Id: <C3UBKDYGF8HW.TITR4KSQBHBQ@wkz-x280>
-In-Reply-To: <AM6PR0402MB3607C60F2C8E7B3E63906B6AFF6F0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+        id S1731902AbgF3JYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 05:24:42 -0400
+Received: from mail-eopbgr80078.outbound.protection.outlook.com ([40.107.8.78]:21154
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727059AbgF3JYl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jun 2020 05:24:41 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=T3hZpwnxTL+yihq1Sv8HjvvVAaa/dYNTn+ehN+Pb8nbAHq35/BEaAbjWmRHaoEImyhafKyo12IYwR20N9G8Gxa15gO/0iTqhgKEvZ7tupY6Vmd6zqZy05RCGPkpk1Ufoi2hbjzf8ngmyV3tVGSDk9EYKHBjSsIBFpWOPIFUjXdM3uC+dKSInV4mvCSDBkWejBUpwqh/s+HhYATDrgfC3ZfzWdcVa/4q7F8xrE91Bd8iyPJXuebHgtAbjN6KbkmCVCw0oHn6kwwEU8GMNEBu4xvP2B4GPAwcE2PwUsm8RLWVJspU5CwTEzZ3W7Fy+EB2/6MBFYR6fHTcRBnsg6lxeMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hd4UfzDkO8UEgpBon4xguzEYb/6b2h9e4KkQ3mjoefA=;
+ b=I7owQaB46guxhWp89L0KjpYwg0JNNQmaNdaPf7uZ3GMmDedSYEtAqIt/OGYKlDoPVAHNNln7jYjMWwbmfJiLD/WuDR4GUyl/cx3DKuVSzqtBmZUBUNpuXmRrv5UheMavIQ/ABi8lLzptWsb3HJvFAOnScEiM+ZY8Kj3dwNTbs5KEW3GIhMrMILXtjk5m1TjxTyUjwnXLccdhc2oSUVQzhq6fONxnquPpmdCM7pq9kX4huwpLgkuG3s0zvGk5NxcHaAAPFxuaPQc4f4yHfy+Eu8v85hWRM2kJW/p/2whWSASNI2dqEgtNrV7zlSsSSpHHJDpg61D8xxqGvGyod/uAKQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hd4UfzDkO8UEgpBon4xguzEYb/6b2h9e4KkQ3mjoefA=;
+ b=r+yWBqLHXD06w2UmBu+A+CQNIZXJViClk2Ysjhf93vxnoYKJPlXiGP2KkZQpOVYNronqQ9umhveB+XK+Cdfpp6ZaCbrgFXzKXgv+CN6Xy9kA+Q7Xb2JUj6RksXQW8R5Aj2/GMZ9ahZmFwlRRJUIbhhJceQM2qprSc64+6giezsE=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=mellanox.com;
+Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
+ (2603:10a6:208:1b::25) by AM0PR05MB4450.eurprd05.prod.outlook.com
+ (2603:10a6:208:61::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.23; Tue, 30 Jun
+ 2020 09:24:37 +0000
+Received: from AM0PR0502MB3826.eurprd05.prod.outlook.com
+ ([fe80::2534:ddc7:1744:fea9]) by AM0PR0502MB3826.eurprd05.prod.outlook.com
+ ([fe80::2534:ddc7:1744:fea9%7]) with mapi id 15.20.3131.027; Tue, 30 Jun 2020
+ 09:24:37 +0000
+From:   Amit Cohen <amitc@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     mkubecek@suse.cz, davem@davemloft.net, o.rempel@pengutronix.de,
+        andrew@lunn.ch, f.fainelli@gmail.com, jacob.e.keller@intel.com,
+        mlxsw@mellanox.com, Amit Cohen <amitc@mellanox.com>
+Subject: [PATCH ethtool 0/3] Add extended link state
+Date:   Tue, 30 Jun 2020 12:24:09 +0300
+Message-Id: <20200630092412.11432-1-amitc@mellanox.com>
+X-Mailer: git-send-email 2.20.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR03CA0044.eurprd03.prod.outlook.com (2603:10a6:208::21)
+ To AM0PR0502MB3826.eurprd05.prod.outlook.com (2603:10a6:208:1b::25)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by AM0PR03CA0044.eurprd03.prod.outlook.com (2603:10a6:208::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.20 via Frontend Transport; Tue, 30 Jun 2020 09:24:35 +0000
+X-Mailer: git-send-email 2.20.1
+X-Originating-IP: [37.142.13.130]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 8783b729-0d4b-4bcf-cf4b-08d81cd7685d
+X-MS-TrafficTypeDiagnostic: AM0PR05MB4450:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR05MB445097B6D45FB7ABB7C0A6D1D76F0@AM0PR05MB4450.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-Forefront-PRVS: 0450A714CB
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nVZAnJExzqxcqq1GKMoDmPAtECnOgB8zWrAWw8m2CgoKaptFLhEn0RHPhxIrmKqSikdMwTslV+qJrjSwNaa25hsGYy9bir+bVScH0zzwjcFv4jo6bXNA1RdeHYOPdBXentpxCdhbN39J0bna7m9va4mvNtsm3fU6wPABfhX8CCC9UavByUYpFo/YP4hCHVio+fgPzbaWFqiB1IicoWbpL5m9s/dSfOuG4ZAPdTiVnfboVnulafDlIoA1sh6+AyZN5FXoJOePtrpjAumK6ylA8KnxbaRU3/oF4nGMku3VPEEqmHzlrUqJVwyeaPEB/FiCau3+438/J+2qccIq4YaJMQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0502MB3826.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(396003)(346002)(136003)(39860400002)(52116002)(478600001)(2616005)(956004)(4326008)(2906002)(5660300002)(8936002)(316002)(6512007)(6916009)(66476007)(66556008)(8676002)(66946007)(6666004)(107886003)(86362001)(26005)(6506007)(186003)(83380400001)(36756003)(6486002)(1076003)(16526019);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: i1g5L1tYZR1P1k8wvY9LxqOUQnfaYiZIaWJO/0YwdH5tjynMHUuDud0K3AOM/YTIaYxpTQ8VZDS8OUPPagYjiXh/DH02cZ5ZBgkLz1hfeOtuIt2SIQsjj3ZR9b+5+7okAyvvVx5G4juOD1G2ME75l3/0t8bRHVE4nUPbrVvo4iv4SPaNDeGavh0vTSGsW/OfWeS6sBF/aowO+TnbeJT4rHcBpZUpVoJ0LRpQzBuywaD6muCPo/Wq/Kqoj7SJjddmi9wV9m6764CYU/JXTMWark4wIHW9/SPjfXLdRoOhDWoVYFCxbNQD7kNGBepswaWCWjQOVW1p8ii7AbxnTg1OA2Fg4C7NzltM1OuBK90f0IXyrR6UFWzrwq7FCRPCmQdNoHqO10fsucfkzkWkDSNo7P2dHI+Tk7zIZDsZv7r4SIlpFIIZG8lDkJaYDrBq7tYbVt6blYbfgAyHNJpbnoFUV84kPlybKrcQMCyLGAdo/S8=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8783b729-0d4b-4bcf-cf4b-08d81cd7685d
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR0502MB3826.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2020 09:24:36.9668
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: U8rmUeLht8K3gzPprTv/lG5kT5TpeeUTXPjmnJnJjIxhPipLWJ5sEnxsiILaw8KHfXYfVoYcnYM4kJV7vVWV7A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4450
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue Jun 30, 2020 at 11:02 AM CEST, Andy Duan wrote:
-> From: Tobias Waldekranz <tobias@waldekranz.com> Sent: Tuesday, June 30,
-> 2020 4:56 PM
-> > On Tue Jun 30, 2020 at 10:26 AM CEST, Andy Duan wrote:
-> > > From: Tobias Waldekranz <tobias@waldekranz.com> Sent: Tuesday, June
-> > > 30,
-> > > 2020 3:31 PM
-> > > > On Tue Jun 30, 2020 at 8:27 AM CEST, Andy Duan wrote:
-> > > > > From: Tobias Waldekranz <tobias@waldekranz.com> Sent: Tuesday,
-> > > > > June 30,
-> > > > > 2020 12:29 AM
-> > > > > > On Sun Jun 28, 2020 at 8:23 AM CEST, Andy Duan wrote:
-> > > > > > > I never seem bandwidth test cause netdev watchdog trip.
-> > > > > > > Can you describe the reproduce steps on the commit, then we
-> > > > > > > can reproduce it on my local. Thanks.
-> > > > > >
-> > > > > > My setup uses a i.MX8M Nano EVK connected to an ethernet switch=
-,
-> > > > > > but can get the same results with a direct connection to a PC.
-> > > > > >
-> > > > > > On the iMX, configure two VLANs on top of the FEC and enable
-> > > > > > IPv4 forwarding.
-> > > > > >
-> > > > > > On the PC, configure two VLANs and put them in different
-> > namespaces.
-> > > > > > From one namespace, use trafgen to generate a flow that the iMX
-> > > > > > will route from the first VLAN to the second and then back
-> > > > > > towards the second namespace on the PC.
-> > > > > >
-> > > > > > Something like:
-> > > > > >
-> > > > > >     {
-> > > > > >         eth(sa=3DPC_MAC, da=3DIMX_MAC),
-> > > > > >         ipv4(saddr=3D10.0.2.2, daddr=3D10.0.3.2, ttl=3D2)
-> > > > > >         udp(sp=3D1, dp=3D2),
-> > > > > >         "Hello world"
-> > > > > >     }
-> > > > > >
-> > > > > > Wait a couple of seconds and then you'll see the output from
-> > fec_dump.
-> > > > > >
-> > > > > > In the same setup I also see a weird issue when running a TCP
-> > > > > > flow using iperf3. Most of the time (~70%) when i start the
-> > > > > > iperf3 client I'll see ~450Mbps of throughput. In the other cas=
-e
-> > > > > > (~30%) I'll see ~790Mbps. The system is "stably bi-modal", i.e.
-> > > > > > whichever rate is reached in the beginning is then sustained fo=
-r
-> > > > > > as long as the session is kept
-> > > > alive.
-> > > > > >
-> > > > > > I've inserted some tracepoints in the driver to try to
-> > > > > > understand what's going
-> > > > > > on:
-> > > > > > https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%=
-2F%
-> > > > > > 2Fsv
-> > > > > > gsha
-> > > >
-> > re.com%2Fi%2FMVp.svg&amp;data=3D02%7C01%7Cfugang.duan%40nxp.com%
-> > > > > >
-> > > >
-> > 7C12854e21ea124b4cc2e008d81c59d618%7C686ea1d3bc2b4c6fa92cd99c5c
-> > > > > >
-> > > >
-> > 301635%7C0%7C0%7C637290519453656013&amp;sdata=3Dby4ShOkmTaRkFfE
-> > > > > > 0xJkrTptC%2B2egFf9iM4E5hx4jiSU%3D&amp;reserved=3D0
-> > > > > >
-> > > > > > What I can't figure out is why the Tx buffers seem to be
-> > > > > > collected at a much slower rate in the slow case (top in the
-> > > > > > picture). If we fall behind in one NAPI poll, we should catch u=
-p
-> > > > > > at the next call (which we
-> > > > can see in the fast case).
-> > > > > > But in the slow case we keep falling further and further behind
-> > > > > > until we freeze the queue. Is this something you've ever
-> > > > > > observed? Any
-> > > > ideas?
-> > > > >
-> > > > > Before, our cases don't reproduce the issue, cpu resource has
-> > > > > better bandwidth than ethernet uDMA then there have chance to
-> > > > > complete current NAPI. The next, work_tx get the update, never ca=
-tch
-> > the issue.
-> > > >
-> > > > It appears it has nothing to do with routing back out through the
-> > > > same interface.
-> > > >
-> > > > I get the same bi-modal behavior if just run the iperf3 server on
-> > > > the iMX and then have it be the transmitting part, i.e. on the PC I=
- run:
-> > > >
-> > > >     iperf3 -c $IMX_IP -R
-> > > >
-> > > > I would be very interesting to see what numbers you see in this sce=
-nario.
-> > > I just have on imx8mn evk in my hands, and run the case, the numbers
-> > > is ~940Mbps as below.
-> > >
-> > > root@imx8mnevk:~# iperf3 -s
-> > > -----------------------------------------------------------
-> > > Server listening on 5201
-> > > -----------------------------------------------------------
-> > > Accepted connection from 10.192.242.132, port 43402 [ 5] local
-> > > 10.192.242.96 port 5201 connected to 10.192.242.132 port
-> > > 43404
-> > > [ ID] Interval Transfer Bitrate Retr Cwnd [ 5] 0.00-1.00 sec 109
-> > > MBytes 913 Mbits/sec 0 428 KBytes [ 5] 1.00-2.00 sec 112 MBytes 943
-> > > Mbits/sec 0 447 KBytes [ 5] 2.00-3.00 sec 112 MBytes 941 Mbits/sec 0
-> > > 472 KBytes [ 5] 3.00-4.00 sec 113 MBytes 944 Mbits/sec 0 472 KBytes [
-> > > 5] 4.00-5.00 sec 112 MBytes 942 Mbits/sec 0 472 KBytes [ 5] 5.00-6.00
-> > > sec 112 MBytes 936 Mbits/sec 0 472 KBytes [ 5] 6.00-7.00 sec 113
-> > > MBytes 945 Mbits/sec 0 472 KBytes [ 5] 7.00-8.00 sec 112 MBytes 944
-> > > Mbits/sec 0 472 KBytes [ 5] 8.00-9.00 sec 112 MBytes 941 Mbits/sec 0
-> > > 472 KBytes [ 5] 9.00-10.00 sec 112 MBytes 940 Mbits/sec 0 472 KBytes =
-[
-> > > 5] 10.00-10.04 sec 4.16 MBytes 873 Mbits/sec 0 472 KBytes
-> > > - - - - - - - - - - - - - - - - - - - - - - - - - [ ID] Interval
-> > > Transfer Bitrate Retr [ 5] 0.00-10.04 sec 1.10 GBytes 939 Mbits/sec 0
-> > > sender
-> >=20
-> > Are you running the client with -R so that the iMX is the transmitter?
-> > What if you run the test multiple times, do you get the same result eac=
-h time?
->
-> Of course, PC command like: iperf3 -c 10.192.242.96 -R
-> Yes, the same result for each time.
+Currently, device drivers can only indicate to user space if the network
+link is up or down, without additional information.
 
-Very strange, I've now reduced my setup to a simple direct connection
-between iMX and PC and I still see the same issue:
+This patch set expand link-state to allow these drivers to expose more
+information to user space about the link state. The information can save
+users' time when trying to understand why a link is not operationally up,
+for example.
 
-for i in $(seq 5); do iperf3 -c 10.0.2.1 -R -t2; sleep 1; done
-Connecting to host 10.0.2.1, port 5201
-Reverse mode, remote host 10.0.2.1 is sending
-[  5] local 10.0.2.2 port 53978 connected to 10.0.2.1 port 5201
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-1.00   sec   110 MBytes   919 Mbits/sec
-[  5]   1.00-2.00   sec   112 MBytes   941 Mbits/sec    0   0.00 Bytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-2.04   sec   223 MBytes   918 Mbits/sec    0             sende=
-r
-[  5]   0.00-2.00   sec   222 MBytes   930 Mbits/sec                  recei=
-ver
+The above is achieved by extending the existing ethtool LINKSTATE_GET
+command with attributes that carry the extended state.
 
-iperf Done.
-Connecting to host 10.0.2.1, port 5201
-Reverse mode, remote host 10.0.2.1 is sending
-[  5] local 10.0.2.2 port 53982 connected to 10.0.2.1 port 5201
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-1.00   sec  55.8 MBytes   468 Mbits/sec
-[  5]   1.00-2.00   sec  56.3 MBytes   472 Mbits/sec    0   0.00 Bytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-2.04   sec   113 MBytes   464 Mbits/sec    0             sende=
-r
-[  5]   0.00-2.00   sec   112 MBytes   470 Mbits/sec                  recei=
-ver
+For example, no link due to missing cable:
 
-iperf Done.
-Connecting to host 10.0.2.1, port 5201
-Reverse mode, remote host 10.0.2.1 is sending
-[  5] local 10.0.2.2 port 53986 connected to 10.0.2.1 port 5201
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-1.00   sec  55.7 MBytes   467 Mbits/sec
-[  5]   1.00-2.00   sec  56.3 MBytes   472 Mbits/sec    0   0.00 Bytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-2.04   sec   113 MBytes   464 Mbits/sec    0             sende=
-r
-[  5]   0.00-2.00   sec   112 MBytes   470 Mbits/sec                  recei=
-ver
+$ ethtool ethX
+...
+Link detected: no (No cable)
 
-iperf Done.
-Connecting to host 10.0.2.1, port 5201
-Reverse mode, remote host 10.0.2.1 is sending
-[  5] local 10.0.2.2 port 53990 connected to 10.0.2.1 port 5201
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-1.00   sec   110 MBytes   920 Mbits/sec
-[  5]   1.00-2.00   sec   112 MBytes   942 Mbits/sec    0   0.00 Bytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-2.04   sec   223 MBytes   919 Mbits/sec    0             sende=
-r
-[  5]   0.00-2.00   sec   222 MBytes   931 Mbits/sec                  recei=
-ver
+Beside the general extended state, drivers can pass additional
+information about the link state using the sub-state field. For example:
 
-iperf Done.
-Connecting to host 10.0.2.1, port 5201
-Reverse mode, remote host 10.0.2.1 is sending
-[  5] local 10.0.2.2 port 53994 connected to 10.0.2.1 port 5201
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-1.00   sec   110 MBytes   920 Mbits/sec
-[  5]   1.00-2.00   sec   112 MBytes   941 Mbits/sec    0   0.00 Bytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-2.04   sec   223 MBytes   918 Mbits/sec    0             sende=
-r
-[  5]   0.00-2.00   sec   222 MBytes   931 Mbits/sec                  recei=
-ver
+$ ethtool ethX
+...
+Link detected: no (Autoneg, No partner detected)
 
-iperf Done.
+Amit Cohen (3):
+  netlink: expand ETHTOOL_LINKSTATE with extended state attributes
+  common: add infrastructure to convert kernel values to userspace
+    strings
+  netlink: settings: expand linkstate_reply_cb() to support link
+    extended state
 
-Which kernel version are you running? I'm on be74294ffa24 plus the
-starvation fix in this patch.
+ common.c                     | 171 +++++++++++++++++++++++++++++++++++
+ common.h                     |   2 +
+ netlink/desc-ethtool.c       |   2 +
+ netlink/settings.c           |  59 +++++++++++-
+ uapi/linux/ethtool_netlink.h |   2 +
+ 5 files changed, 233 insertions(+), 3 deletions(-)
+
+-- 
+2.20.1
+
