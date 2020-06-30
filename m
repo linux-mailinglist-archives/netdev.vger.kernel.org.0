@@ -2,129 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD97320EE76
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 08:29:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EFBA20EEB0
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 08:41:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730367AbgF3G25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 02:28:57 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13146 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730096AbgF3G24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 02:28:56 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05U6StX8018789
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:28:56 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=ATAIZRyF5LF5Ymt6TlkUCcEq7zggg+i+C8LAuUJjSjU=;
- b=fY7q+dyrU9O3KHHf1c7Dkel+wQFs1sj9DvNCBMuaxaShpdAzRCEKa7QAoVLxxRwtOEnJ
- e8dDtpYsgQn9xmnvbe1HuUVONKA0vlnYw6ygCU7LEXRGma+K8i8CIKan7U1LD9rKPzsY
- 4S/N6Qfows/1fJs8wnBKfw8X78I1W5dnPPQ= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 31xp398gmb-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:28:55 -0700
-Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 29 Jun 2020 23:28:55 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 593F062E51C7; Mon, 29 Jun 2020 23:28:50 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Song Liu <songliubraving@fb.com>
-Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <peterz@infradead.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <kernel-team@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@chromium.org>, Song Liu <songliubraving@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v5 bpf-next 0/4] bpf: introduce bpf_get_task_stack()
-Date:   Mon, 29 Jun 2020 23:28:42 -0700
-Message-ID: <20200630062846.664389-1-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1730438AbgF3Glu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 02:41:50 -0400
+Received: from condef-02.nifty.com ([202.248.20.67]:37176 "EHLO
+        condef-02.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730434AbgF3Glt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 02:41:49 -0400
+X-Greylist: delayed 416 seconds by postgrey-1.27 at vger.kernel.org; Tue, 30 Jun 2020 02:41:48 EDT
+Received: from conssluserg-01.nifty.com ([10.126.8.80])by condef-02.nifty.com with ESMTP id 05U6VLE1009899;
+        Tue, 30 Jun 2020 15:31:21 +0900
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id 05U6UgIb011232;
+        Tue, 30 Jun 2020 15:30:42 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 05U6UgIb011232
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1593498643;
+        bh=hWw/PnfkqdzxZlXBfdr5ZsRULyy797gdejQ+pX6AzaU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ZhAbYh7zx1kczWaedEG6cKzY69GueVLOcznv9ldVPHTsWHek3NL2YwuGkV7kFDLGb
+         rQ5l8dVh5CvsJuOb1srMpPqZWRgRMoK9XMkZ+kR8BOisxy5RRixhan8Di1eMdS70DG
+         eXQL+diXuQWzA+yu+sapyFhsvHF+sDUGvy0dwyOe4lFIey6+M+3iBzGbIEMBOiJsv5
+         pBK5sCVtscl3TgYquXJkI/OjtavekrEye92GSHIP/NYQ2KuOvgWq8W2KHHerjjRxJ0
+         bUo+IVFBqiZNVhF17AEz79MgMIj/ZkC4gM/aET2SMUSqSNo7cOdqmefnUN+yB7YAVx
+         jHxb8KRPbWGUw==
+X-Nifty-SrcIP: [209.85.222.51]
+Received: by mail-ua1-f51.google.com with SMTP id z47so6122322uad.5;
+        Mon, 29 Jun 2020 23:30:42 -0700 (PDT)
+X-Gm-Message-State: AOAM5325Udae0HlR72Y6pRI2WvJ7cLJfoiMJc/1E7rjJpBkfJAtOedQ1
+        gG6+3TxHQwzkxEoWy7dJZ5cRf6wxdqQgm/irAKA=
+X-Google-Smtp-Source: ABdhPJw4WXNDTVroElfgeqLVDMNI7bd4mrYrp5LWdLRuCY5G094o1kEYH5ERVBEamOeUfiHOcfZYY7koTqlFDLQ6t3M=
+X-Received: by 2002:ab0:156d:: with SMTP id p42mr13408863uae.121.1593498641294;
+ Mon, 29 Jun 2020 23:30:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-06-30_01:2020-06-30,2020-06-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- impostorscore=0 phishscore=0 cotscore=-2147483648 malwarescore=0
- lowpriorityscore=0 mlxscore=0 suspectscore=0 clxscore=1015
- priorityscore=1501 bulkscore=0 spamscore=0 mlxlogscore=999 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006300048
-X-FB-Internal: deliver
+References: <20200423073929.127521-1-masahiroy@kernel.org> <20200423073929.127521-5-masahiroy@kernel.org>
+ <20200608115628.osizkpo76cgn2ci7@lion.mk-sys.cz>
+In-Reply-To: <20200608115628.osizkpo76cgn2ci7@lion.mk-sys.cz>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 30 Jun 2020 15:30:04 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARGKCyWbfWUOX3nLLOBS3gi1QU3acdXLPVK4C+ErMDLpA@mail.gmail.com>
+Message-ID: <CAK7LNARGKCyWbfWUOX3nLLOBS3gi1QU3acdXLPVK4C+ErMDLpA@mail.gmail.com>
+Subject: Re: [PATCH 04/16] net: bpfilter: use 'userprogs' syntax to build bpfilter_umh
+To:     Michal Kubecek <mkubecek@suse.cz>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Sam Ravnborg <sam@ravnborg.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This set introduces a new helper bpf_get_task_stack(). The primary use ca=
-se
-is to dump all /proc/*/stack to seq_file via bpf_iter__task.
+Hi Michal, Alexei,
 
-A few different approaches have been explored and compared:
+On Mon, Jun 8, 2020 at 8:56 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+>
+> On Thu, Apr 23, 2020 at 04:39:17PM +0900, Masahiro Yamada wrote:
+> > The user mode helper should be compiled for the same architecture as
+> > the kernel.
+> >
+> > This Makefile reuses the 'hostprogs' syntax by overriding HOSTCC with CC.
+> >
+> > Now that Kbuild provides the syntax 'userprogs', use it to fix the
+> > Makefile mess.
+> >
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > Reported-by: kbuild test robot <lkp@intel.com>
+> > ---
+> >
+> >  net/bpfilter/Makefile | 11 ++++-------
+> >  1 file changed, 4 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/net/bpfilter/Makefile b/net/bpfilter/Makefile
+> > index 36580301da70..6ee650c6badb 100644
+> > --- a/net/bpfilter/Makefile
+> > +++ b/net/bpfilter/Makefile
+> > @@ -3,17 +3,14 @@
+> >  # Makefile for the Linux BPFILTER layer.
+> >  #
+> >
+> > -hostprogs := bpfilter_umh
+> > +userprogs := bpfilter_umh
+> >  bpfilter_umh-objs := main.o
+> > -KBUILD_HOSTCFLAGS += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
+> > -HOSTCC := $(CC)
+> > +user-ccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
+> >
+> > -ifeq ($(CONFIG_BPFILTER_UMH), y)
+> > -# builtin bpfilter_umh should be compiled with -static
+> > +# builtin bpfilter_umh should be linked with -static
+> >  # since rootfs isn't mounted at the time of __init
+> >  # function is called and do_execv won't find elf interpreter
+> > -KBUILD_HOSTLDFLAGS += -static
+> > -endif
+> > +bpfilter_umh-ldflags += -static
+> >
+> >  $(obj)/bpfilter_umh_blob.o: $(obj)/bpfilter_umh
+>
+> Hello,
+>
+> I just noticed that this patch (now in mainline as commit 8a2cc0505cc4)
+> drops the test if CONFIG_BPFILTER_UMH is "y" so that -static is now
+> passed to the linker even if bpfilter_umh is built as a module which
+> wasn't the case in v5.7.
+>
+> This is not mentioned in the commit message and the comment still says
+> "*builtin* bpfilter_umh should be linked with -static" so this change
+> doesn't seem to be intentional. Did I miss something?
+>
+> Michal Kubecek
 
-  1. A simple wrapper around stack_trace_save_tsk(), as v1 [1].
+I was away for a while from this because I saw long discussion in
+"net/bpfilter: Remove this broken and apparently unmaintained"
 
-     This approach introduces new syntax, which is different to existing
-     helper bpf_get_stack(). Therefore, this is not ideal.
 
-  2. Extend get_perf_callchain() to support "task" as argument.
+Please let me resume this topic now.
 
-     This approach reuses most of bpf_get_stack(). However, extending
-     get_perf_callchain() requires non-trivial changes to architecture
-     specific code. Which is error prone.
 
-  3. Current (v2) approach, leverages most of existing bpf_get_stack(), a=
-nd
-     uses stack_trace_save_tsk() to handle architecture specific logic.
+The original behavior of linking umh was like this:
+  - If CONFIG_BPFILTER_UMH=y, bpfilter_umh was linked with -static
+  - If CONFIG_BPFILTER_UMH=m, bpfilter_umh was linked without -static
 
-[1] https://lore.kernel.org/netdev/20200623070802.2310018-1-songliubravin=
-g@fb.com/
 
-Changes v4 =3D> v5:
-1. Rebase and work around git-am issue. (Alexei)
-2. Update commit log for 4/4. (Yonghong)
 
-Changes v3 =3D> v4:
-1. Simplify the selftests with bpf_iter.h. (Yonghong)
-2. Add example output to commit log of 4/4. (Yonghong)
+Restoring the original behavior will add more complexity because
+now we have CONFIG_CC_CAN_LINK and CONFIG_CC_CAN_LINK_STATIC
+since commit b1183b6dca3e0d5
 
-Changes v2 =3D> v3:
-1. Rebase on top of bpf-next. (Yonghong)
-2. Sanitize get_callchain_entry(). (Peter)
-3. Use has_callchain_buf for bpf_get_task_stack. (Andrii)
-4. Other small clean up. (Yonghong, Andrii).
+If CONFIG_BPFILTER_UMH=y, we need to check CONFIG_CC_CAN_LINK_STATIC.
+If CONFIG_BPFILTER_UMH=m, we need to check CONFIG_CC_CAN_LINK.
+This would make the Kconfig dependency logic too complicated.
 
-Changes v1 =3D> v2:
-1. Reuse most of bpf_get_stack() logic. (Andrii)
-2. Fix unsigned long vs. u64 mismatch for 32-bit systems. (Yonghong)
-3. Add %pB support in bpf_trace_printk(). (Daniel)
-4. Fix buffer size to bytes.
 
-Song Liu (4):
-  perf: expose get/put_callchain_entry()
-  bpf: introduce helper bpf_get_task_stack()
-  bpf: allow %pB in bpf_seq_printf() and bpf_trace_printk()
-  selftests/bpf: add bpf_iter test with bpf_get_task_stack()
+To make it simpler, I'd like to suggest two options.
 
- include/linux/bpf.h                           |  1 +
- include/linux/perf_event.h                    |  2 +
- include/uapi/linux/bpf.h                      | 36 ++++++++-
- kernel/bpf/stackmap.c                         | 77 ++++++++++++++++++-
- kernel/bpf/verifier.c                         |  4 +-
- kernel/events/callchain.c                     | 13 ++--
- kernel/trace/bpf_trace.c                      | 12 ++-
- scripts/bpf_helpers_doc.py                    |  2 +
- tools/include/uapi/linux/bpf.h                | 36 ++++++++-
- .../selftests/bpf/prog_tests/bpf_iter.c       | 17 ++++
- .../selftests/bpf/progs/bpf_iter_task_stack.c | 37 +++++++++
- 11 files changed, 221 insertions(+), 16 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_stack=
-.c
 
---
-2.24.1
+
+Idea 1:
+
+  Always use -static irrespective of whether
+  CONFIG_BPFILTER_UMH is y or m.
+
+  Add two more lines to clarify this
+  in the comment in net/bpfilter/Makefile:
+
+  # builtin bpfilter_umh should be linked with -static
+  # since rootfs isn't mounted at the time of __init
+  # function is called and do_execv won't find elf interpreter.
+  # Static linking is not required when bpfilter is modular, but
+  # we always pass -static to keep the 'depends on' in Kconfig simple.
+
+
+
+Idea 2:
+
+   Allow umh to become only modular,
+   and drop -static flag entirely.
+
+   If you look at net/bpfilter/Kconfig,
+   BPFILTER_UMH already has 'default m'.
+   So, I assume the most expected use-case
+   is modular.
+
+   My suggestion is to replace 'default m' with 'depends on m'.
+
+   config BPFILTER_UMH
+           tristate "bpfilter kernel module with user mode helper"
+           depends on CC_CAN_LINK
+           depends on m
+
+   Then BPFILTER_UMH will be restricted to either m or n.
+   Link umh dynamically because we can expect rootfs
+   is already mounted for the module case.
+
+
+
+
+
+
+Comments are appreciated.
+
+
+-- 
+Best Regards
+Masahiro Yamada
