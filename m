@@ -2,107 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 498AE210009
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 00:27:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2F8A21001E
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 00:38:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726268AbgF3W1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 18:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42952 "EHLO
+        id S1726171AbgF3Wip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 18:38:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726139AbgF3W1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 18:27:38 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36435C061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:27:38 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id h5so21699032wrc.7
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:27:38 -0700 (PDT)
+        with ESMTP id S1725763AbgF3Wio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 18:38:44 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BCDC061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:38:44 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id h39so10930076ybj.3
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 15:38:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=t2W9sF6t8aHND3NKsdczT5+GvITCXwwid4kHS/FGw4g=;
-        b=TuSr0Suc2mf0yuNUx5pUBAICnlOznAAWSYdbrv6+4I+fhZ0zdZxqDahar9EwcWKcon
-         SnKv6A0YG67fFOcSiQGJuVNNcZfSipcA+Vkp/9hbLnxmVxlULLoPJVUQypMNXgwHUdP6
-         T6t6XtiKPgmRACIonf79vuW4DGZbVdtu+Qdzl4EWm9GFad3uiKVXtwWCzRhzU0zg4Tls
-         U2jTyNZYijAhzeXRA9zDcCdqz5QcnBCu5ykj3mKs/DIlhAyD+ajJvh6PdnpKxYOwYgEb
-         48E4XWS4jKWe0f6Fysvn0acYKrUwWoZyS6PNIQst0TJ/mWoxseCO7GmnzPmMwOulacWs
-         fHLg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GUMmR1bCbl8Toix//XFEea01nhUYad+cjY3JyG8gXsE=;
+        b=C1qW1/fZTX+3AmLLkkwA9JHG+ginoQf0GbKzdeNuuEjqGb2cWzJBLVIq9rGQerTqUC
+         7VMZE9UZZ/3qo88odW+ZD50UtQ4nDN2BnruoxiNp5j//JsQTA24kV9+EeJxbu1Io7OHc
+         wSnZ74IuTToY93nms4/buEo1719ZjA/KBvC1sWozlCLnqtsQUkdcWaw1vXg5VdK+RoTo
+         kNIAUtWYl0/tXOjyN7F4fEjTTVNPePZzRWkFMNQV1SuQOhGo7c4LwVJ8O+4Lqc+lvs+3
+         HqYV+24GjuPvDelt6NBeg2tVwbVX61FkkU6B/TEzsod4cSYlhkC+RRBT9QAryuWIY9If
+         QBrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=t2W9sF6t8aHND3NKsdczT5+GvITCXwwid4kHS/FGw4g=;
-        b=Guk6wPNk4z1hz0/coraEBzIrkd5VxZ8QqQ56E3hsCG3TR4RcbBq4kR50WStDq1ocOx
-         ZLQl3+5F/GFpvjf+NZPpt48G+wChqXIDCoi8PsQcu5beW7qlRBZp4IHfSRUs5HjloMzp
-         Rq1Sz1KQhw1LHlIGBkPfByiGFXr207bV8FD/C+Z01vvmjq/POaSP5mbxc0U3C97ByvxC
-         zUppzNPXo49gsUEBNg8Xm4I7vkgYQ+bYJ0YFgpSw4ru6qrnBGLQHCWxzahHBxWO+jVud
-         PkWuhfNppE8lMPXrAGoyJoPh0LR2Zd3Yc37/tmYfV9lZZw2pLzY00wyD23JuNJ4pI/AE
-         djHw==
-X-Gm-Message-State: AOAM531dFtFANc2BgS0fYRriqmVc0yI8hHGDLSJ6FtnvL1JluzlcJgSH
-        onHH1sqC0idcwwN8oA7xMaRWpuP1RJ3qtA==
-X-Google-Smtp-Source: ABdhPJxLGRmqIcbfJuYfIbAOt7DqWucCENT9jx2d50pqrOCQSgMdByGH3FY+1lAcGVzkTMgBzam4jw==
-X-Received: by 2002:adf:f14e:: with SMTP id y14mr23731792wro.151.1593556056863;
-        Tue, 30 Jun 2020 15:27:36 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:35a0:f979:fc54:add0? ([2a01:e0a:410:bb00:35a0:f979:fc54:add0])
-        by smtp.gmail.com with ESMTPSA id 33sm5198043wri.16.2020.06.30.15.27.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Jun 2020 15:27:35 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH v3] IPv4: Tunnel: Fix effective path mtu calculation
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Oliver Herms <oliver.peter.herms@gmail.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org
-References: <20200625224435.GA2325089@tws>
- <20200629232235.6047a9c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <99564f5c-07e4-df0d-893d-40757a0f2167@6wind.com>
- <20200630103335.63de7098@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <86c71cc0-462c-2365-00ea-7f9e79c204b7@6wind.com>
-Date:   Wed, 1 Jul 2020 00:27:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GUMmR1bCbl8Toix//XFEea01nhUYad+cjY3JyG8gXsE=;
+        b=CMt4llc11WlsoEzXjnjgN1Q+kGditZEIOhP5ahhJRM9QeAA0nRYs9xTiLBUmhofv88
+         ydn5f251wmg7cDGtMed6hKBX6njQ3JBHJnLApDENwwmWosfsVH7EJ2CfGgdyV4t0jkZC
+         IquTuSwZdCOZYOIVlV3AF4y1iAtCNSwu5EoOOxcnALuw+AP3il/jQzWDEV7M97kmZZu+
+         NitBLZpMuZVhLNNKJnw1VfTpMVMqh3M+7O7tvnL2ZNuNHFeiDfTSlpbARXpXdHPbojeN
+         hoXqZgd9UUBXelSh9AZvA3zYjbuyFVU619iaIzwFLXIq3AEm8i02U4eZ+7JLmqGVLmP8
+         9yiA==
+X-Gm-Message-State: AOAM530mfWu2NofEsOaJs6jlLHD8beg2ROjrWYN8dF9IEG6p//rkPPN4
+        69Rw6fjLfRN5UVl0a+536XgWnkWlYwgx5/Q7PXoQ3A==
+X-Google-Smtp-Source: ABdhPJy9Pb5IHmIWcD95/roK2Wg/B531qJsb0LdE7Uv/xxSdLITRGFilp+pp5r1gmUm2NadF7LEK+QTm9hBN9d+oNt8=
+X-Received: by 2002:a25:b7cc:: with SMTP id u12mr22224608ybj.173.1593556723565;
+ Tue, 30 Jun 2020 15:38:43 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200630103335.63de7098@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CAHk-=wjEghg5_pX_GhNP+BfcUK6CRZ+4mh3bciitm9JwXvR7aQ@mail.gmail.com>
+ <312079189.17903.1593549293094.JavaMail.zimbra@efficios.com>
+ <CANn89iJ+rkMrLrHrKXO-57frXNb32epB93LYLRuHX00uWc-0Uw@mail.gmail.com>
+ <20200630.134429.1590957032456466647.davem@davemloft.net> <CANn89i+b-LeaPvaaHvj0yc0mJ2qwZ0981fQHVp0+sqXYp=kdkA@mail.gmail.com>
+ <474095696.17969.1593551866537.JavaMail.zimbra@efficios.com>
+ <CANn89iKK2+pznYZoKZzdCu4qkA7BjJZFqc6ABof4iaS-T-9_aw@mail.gmail.com>
+ <CANn89i+_DUrKROb1Zkk_nmngkD=oy9UjbxwnkgyzGB=z+SKg3g@mail.gmail.com> <CANn89iJJ_WR-jGQogU3-arjD6=xcU9VWzJYSOLbyD94JQo-zAQ@mail.gmail.com>
+In-Reply-To: <CANn89iJJ_WR-jGQogU3-arjD6=xcU9VWzJYSOLbyD94JQo-zAQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 30 Jun 2020 15:38:31 -0700
+Message-ID: <CANn89iLPqtJG0iESCHF+RcOjo95ukan1oSzjkPjoSJgKpO2wSQ@mail.gmail.com>
+Subject: Re: [regression] TCP_MD5SIG on established sockets
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Jonathan Rajotte-Julien <joraj@efficios.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 30/06/2020 à 19:33, Jakub Kicinski a écrit :
-> On Tue, 30 Jun 2020 17:51:41 +0200 Nicolas Dichtel wrote:
->> Le 30/06/2020 à 08:22, Jakub Kicinski a écrit :
->> [snip]
->>> My understanding is that for a while now tunnels are not supposed to use
->>> dev->hard_header_len to reserve skb space, and use dev->needed_headroom, 
->>> instead. sit uses hard_header_len and doesn't even copy needed_headroom
->>> of the lower device.  
->>
->> I missed this. I was wondering why IPv6 tunnels uses hard_header_len, if there
->> was a "good" reason:
->>
->> $ git grep "hard_header_len.*=" net/ipv6/
->> net/ipv6/ip6_tunnel.c:                  dev->hard_header_len =
->> tdev->hard_header_len + t_hlen;
->> net/ipv6/ip6_tunnel.c:  dev->hard_header_len = LL_MAX_HEADER + t_hlen;
->> net/ipv6/sit.c:         dev->hard_header_len = tdev->hard_header_len +
->> sizeof(struct iphdr);
->> net/ipv6/sit.c: dev->hard_header_len    = LL_MAX_HEADER + t_hlen;
->>
->> A cleanup would be nice ;-)
-> 
-> I did some archaeological investigatin' yesterday, and I saw
-> c95b819ad75b ("gre: Use needed_headroom") which converted GRE.
-Thanks for the pointer.
+On Tue, Jun 30, 2020 at 3:07 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Tue, Jun 30, 2020 at 2:54 PM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > On Tue, Jun 30, 2020 at 2:23 PM Eric Dumazet <edumazet@google.com> wrote:
+> > >
+> > > On Tue, Jun 30, 2020 at 2:17 PM Mathieu Desnoyers
+> > > <mathieu.desnoyers@efficios.com> wrote:
+> > > >
+> > > > ----- On Jun 30, 2020, at 4:56 PM, Eric Dumazet edumazet@google.com wrote:
+> > > >
+> > > > > On Tue, Jun 30, 2020 at 1:44 PM David Miller <davem@davemloft.net> wrote:
+> > > > >>
+> > > > >> From: Eric Dumazet <edumazet@google.com>
+> > > > >> Date: Tue, 30 Jun 2020 13:39:27 -0700
+> > > > >>
+> > > > >> > The (C) & (B) case are certainly doable.
+> > > > >> >
+> > > > >> > A) case is more complex, I have no idea of breakages of various TCP
+> > > > >> > stacks if a flow got SACK
+> > > > >> > at some point (in 3WHS) but suddenly becomes Reno.
+> > > > >>
+> > > > >> I agree that C and B are the easiest to implement without having to
+> > > > >> add complicated code to handle various negotiated TCP option
+> > > > >> scenerios.
+> > > > >>
+> > > > >> It does seem to be that some entities do A, or did I misread your
+> > > > >> behavioral analysis of various implementations Mathieu?
+> > > > >>
+> > > > >> Thanks.
+> > > > >
+> > > > > Yes, another question about Mathieu cases is do determine the behavior
+> > > > > of all these stacks vs :
+> > > > > SACK option
+> > > > > TCP TS option.
+> > > >
+> > > > I will ask my customer's networking team to investigate these behaviors,
+> > > > which will allow me to prepare a thorough reply to the questions raised
+> > > > by Eric and David. I expect to have an answer within 2-3 weeks at most.
+> > > >
+> > > > Thank you!
+> > >
+> > >
+> > > Great, I am working on adding back support for (B) & (C) by the end of
+> > > this week.
+> >
+> > Note that the security issue (of sending uninit bytes to the wire) has
+> > been independently fixed with [1]
+> >
+> > This means syzbot was able to have MD5+TS+SACK  ~6 months ago.
+> >
+> > It seems we (linux) do not enable this combination for PASSIVE flows,
+> > (according to tcp_synack_options()),
+> > but  for ACTIVE flows we do nothing special.
+> >
+> > So maybe code in tcp_synack_options() should be mirrored to
+> > tcp_syn_options() for consistency.
+> > (disabling TS if  both MD5 and SACK are enabled)
+>
+> Oh well, tcp_syn_options() is supposed to have the same logic.
+>
+> Maybe we have an issue with SYNCOOKIES (with MD5 + TS + SACK)
+>
+> Nice can of worms.
+>
 
-> Then I think Pravin used GRE as a base for better ip_tunnel infra 
-> and the no-hard_header_len-abuse gospel has spread to other IPv4
-> tunnels. AFAICT IPv6 tunnels were not as lucky, and SIT just got
-> missed in the IPV4 conversion..
-Yep, I agree with you, it's probably "historical".
+For updates of keys, it seems existing code lacks some RCU care.
+
+MD5 keys use RCU for lookups/hashes, but the replacement of a key does
+not allocate a new piece of memory.
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 810cc164f795f8e1e8ca747ed5df51bb20fec8a2..ecc0e3fabce8b03bef823cbfc5c1b0a9e24df124
+100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4034,9 +4034,12 @@ EXPORT_SYMBOL(tcp_md5_hash_skb_data);
+ int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct
+tcp_md5sig_key *key)
+ {
+        struct scatterlist sg;
++       u8 keylen = key->keylen;
+
+-       sg_init_one(&sg, key->key, key->keylen);
+-       ahash_request_set_crypt(hp->md5_req, &sg, NULL, key->keylen);
++       smp_rmb(); /* paired with smp_wmb() in tcp_md5_do_add() */
++
++       sg_init_one(&sg, key->key, keylen);
++       ahash_request_set_crypt(hp->md5_req, &sg, NULL, keylen);
+        return crypto_ahash_update(hp->md5_req);
+ }
+ EXPORT_SYMBOL(tcp_md5_hash_key);
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index ad6435ba6d72ffd8caf783bb25cad7ec151d6909..99916fcc15ca0be12c2c133ff40516f79e6fdf7f
+100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1113,6 +1113,9 @@ int tcp_md5_do_add(struct sock *sk, const union
+tcp_md5_addr *addr,
+        if (key) {
+                /* Pre-existing entry - just update that one. */
+                memcpy(key->key, newkey, newkeylen);
++
++               smp_wmb(); /* pairs with smp_rmb() in tcp_md5_hash_key() */
++
+                key->keylen = newkeylen;
+                return 0;
+        }
