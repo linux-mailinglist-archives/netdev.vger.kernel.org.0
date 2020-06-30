@@ -2,107 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEA5620F8F8
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 17:57:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEA5E20F8FF
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 18:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389820AbgF3P5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 11:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
+        id S1732292AbgF3QBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 12:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730478AbgF3P5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 11:57:17 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B22AC061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 08:57:16 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id j12so9595968pfn.10
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 08:57:16 -0700 (PDT)
+        with ESMTP id S1728192AbgF3QBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 12:01:19 -0400
+Received: from mail-vk1-xa41.google.com (mail-vk1-xa41.google.com [IPv6:2607:f8b0:4864:20::a41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8946C061755;
+        Tue, 30 Jun 2020 09:01:18 -0700 (PDT)
+Received: by mail-vk1-xa41.google.com with SMTP id r7so4681034vkf.0;
+        Tue, 30 Jun 2020 09:01:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eHFecfuBTnSHKQrrpNWliNJAbNKXJIY0nzYCS+o9aV8=;
-        b=bIMaiKPY3B+9krvbyX8cOOWUqkRKRuQAilOsXjD7UhVdTQ2vw2pNUGgbje6p89lqpD
-         ktxsEmai7d4EiqPy7BTmzYLEM/PIGPp2JJ5GboXRK4aCpdgfjObqhlo4vpYRDQ41OAWd
-         1tN1Uukr+E3j5Bu8VX9Rn6VFBk88iwsc7pFstWE9CjXFP+EAwQS/CQd3YVIvqjyDOqLt
-         Bz8+XRz/g01604XX95RrMrNtww1jibFk709Cj9HyZFwCxHM99Db4i1u0GcaHpRwgCu6S
-         Gz7em1lDxOMAa7Uy/MJTxb3OYCfCwkce7yUVsU40D2lWZRRsaHIMpNVTh8MixSWoyIPy
-         XV+A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IW7S+HDCp7B0Ek61OydG5Z6g/ROgWTAggp3+J+Law08=;
+        b=JgT/qC1EPb348NcHOxxcFkMaZthCEoisS79dWr0Kr6P8PapHQy0RWxPxraRWWj+fM9
+         P4JDlKUq+fRUCygFl8cJZa0Jfopry7aqt+5lqZta3gXWjRp1SEFIOVRHBjgral0h9XWT
+         FeZUwElCap7gIUAXRcmXrjVyGNaY2GsNbqLKZ9uQtztDqjrNrKgcZQ+i91NdBJLUlLgb
+         pFuxVQqdkBt43OqEQ8bG6tpIiH+8oZPXR2JdTZO7nE5b9rLXM1rMDFJQ2w+OgR/58gfs
+         wTG76UYEFI03zw7LRE1oAIiSYuPUnVCj1kKCH7NvY4VY13P3YBmWqFhkj0+mjsIJPVhC
+         Z9iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eHFecfuBTnSHKQrrpNWliNJAbNKXJIY0nzYCS+o9aV8=;
-        b=Yrg3imbGHf/k5wbfVKrlbQ3KfcFkMDpwKCl4siPdbC/tdy+SLiIOO+Z3K/cmzcmz5w
-         svlz8SPlmYIrXbcc/vlinZIsqL8+raeB5V+GktrrwNsA+/2SpIWqGayjTjyV+aCAWCtV
-         AE6iV2Ei/RpIfZ8lMm7F2JF3W5WNRwc0PMKlWZGcbJq109ztUXIRMrbYySgoKYF3OJwO
-         M+xAnvg/XmNXP93Bnzyo8i+KqXBZ1hTep/I0nfK0zJNNsfTa/21utdRrXpLJGUReEbnM
-         EWQ6Kae7UiGcrzpBnKfCfZOZMquVlGOPw4UU5K3IHqbbBoJWBaa+hmZYe2xPxaD6GEY1
-         b5zA==
-X-Gm-Message-State: AOAM531IhwfFnVMrpFtSA1WJxogUwM6XvQSp3N/Nj0FRtSyWu8eV1HPu
-        rzqY65RM02hDz6Ujgv62iTCJuOnZ
-X-Google-Smtp-Source: ABdhPJy5BonEj1vBTctmWsYeAuGUyEcuHgNh7sVuzbgRLgDT32Lti+SWsmBLI6d6IM5cyJYLqJ09HQ==
-X-Received: by 2002:a63:d74c:: with SMTP id w12mr15920268pgi.260.1593532635497;
-        Tue, 30 Jun 2020 08:57:15 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id j2sm2721928pjf.4.2020.06.30.08.57.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Jun 2020 08:57:14 -0700 (PDT)
-Subject: Re: [PATCH net] net/sched: act_mirred: fix fragment the packet after
- defrag in act_ct
-To:     wenxu@ucloud.cn, paulb@mellanox.com
-Cc:     netdev@vger.kernel.org
-References: <1593485646-14989-1-git-send-email-wenxu@ucloud.cn>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <b01df9df-4b46-ea62-9591-66c720a2a4ab@gmail.com>
-Date:   Tue, 30 Jun 2020 08:57:13 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IW7S+HDCp7B0Ek61OydG5Z6g/ROgWTAggp3+J+Law08=;
+        b=OrQR5PV25PByEX+CgJ1Iz1n1wfKL8HB4F6mOj2dttH5v/bQ5q0lpl3V7SWzLeuNX+d
+         yZh8rHxW/+3Gs4kjo6diX2e2vGIwhPd4zY3i4kpPtYhq3Mf06PiD5kFqEE8nyb/ypomV
+         0mvHpke557C6l1HVjC60X+vN73uB94KVh60wKSdWhtuLMpI5XEJXkF2goC3XQdeBByAc
+         HmtNBd1jRunHwdQXpR1zCprORLX1ErjHp+1fDiz1jF38I4h2jdy64JGoEkQpizO71Gul
+         NQei9M4SRDEXMi2IqzFWa59s0ZLUCpsG1ff9hI3aAIczc06zCr10hhdVWE0PVTVPGeBS
+         si8w==
+X-Gm-Message-State: AOAM532RUgu/JFkbFtHtgmCNuBhzi8UjL3CLHlbjzznSGJfhBQtyWjCg
+        nQGrfuKVJJR3371TVUzuIzzgcamCMNXtZ9rKvTs=
+X-Google-Smtp-Source: ABdhPJxgpBwp7SLfHhtmOXQng4CIxyB+mnTVugkIZvO3UlRMg8zEfMYz5P+Rz4uQbijCoX8HFf2xiPhV3ca8pqMhR78=
+X-Received: by 2002:a1f:9e8a:: with SMTP id h132mr14995446vke.14.1593532877997;
+ Tue, 30 Jun 2020 09:01:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1593485646-14989-1-git-send-email-wenxu@ucloud.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200528032134.13752-1-hexie3605@gmail.com> <20200601.113206.2297277969426428314.davem@davemloft.net>
+In-Reply-To: <20200601.113206.2297277969426428314.davem@davemloft.net>
+From:   Xie He <hexie3605@gmail.com>
+Date:   Tue, 30 Jun 2020 09:01:07 -0700
+Message-ID: <CANJFnSS3XQqa4_Tnur+OhsF-sbCQyP7QBdaikDuUFmuF1ti3rw@mail.gmail.com>
+Subject: Re: [PATCH] drivers/net/wan/lapbether.c: Fixed kernel panic when used
+ with AF_PACKET sockets
+To:     David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: David Miller <davem@davemloft.net>
+Date: Mon, Jun 1, 2020 at 11:32 AM -0700
+>
+> From: Xie He <hexie3605@gmail.com>
+> Date: Wed, 27 May 2020 20:21:33 -0700
+>
+> > When we use "AF_PACKET" sockets to send data directly over LAPB over
+> > Ethernet using this driver, the kernel will panic because of
+> > insufficient header space allocated in the "sk_buff" struct.
+> >
+> > The header space needs 18 bytes because:
+> >   the lapbether driver will remove a pseudo header of 1 byte;
+> >   the lapb module will prepend the LAPB header of 2 or 3 bytes;
+> >   the lapbether driver will prepend a length field of 2 bytes and the
+> > Ethernet header of 14 bytes.
+> >
+> > So -1 + 3 + 16 = 18.
+> >
+> > Signed-off-by: Xie He <hexie3605@gmail.com>
+>
+> This is not the real problem.
+>
+> The real problem is that this is a stacked, layered, device and the
+> lapbether driver does not take the inner device's header length into
+> consideration.  It should take this from the child device's netdev
+> structure rather than use constants.
+>
+> Your test case will still fail when lapbether is stacked on top of a
+> VLAN device or similar, even with your changes.
 
+Thank you for your email! I'm sorry I didn't see your email previously
+because of problems with my mailbox.
 
-On 6/29/20 7:54 PM, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
-> 
-> The fragment packets do defrag in act_ct module. The reassembled packet
-> over the mtu in the act_mirred. This big packet should be fragmented
-> to send out.
-> 
-> Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
-> This patch is based on
-> http://patchwork.ozlabs.org/project/netdev/patch/1593422178-26949-1-git-send-email-wenxu@ucloud.cn/
-> 
->  include/net/sch_generic.h |   6 +-
->  net/sched/act_ct.c        |   7 ++-
->  net/sched/act_mirred.c    | 157 ++++++++++++++++++++++++++++++++++++++++++++--
->  3 files changed, 158 insertions(+), 12 deletions(-)
-> 
-> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-> index c510b03..3597244 100644
-> --- a/include/net/sch_generic.h
-> +++ b/include/net/sch_generic.h
-> @@ -384,6 +384,7 @@ struct qdisc_skb_cb {
->  	};
->  #define QDISC_CB_PRIV_LEN 20
->  	unsigned char		data[QDISC_CB_PRIV_LEN];
-> +	u16			mru;
->  };
-> 
-
-
-Wow, this change is potentially a big problem.
-
-Explain why act_ct/act_mirred need to pollute qdisc_skb_cb 
-
-
+Yes, you are right. I'll use better ways to improve this and re-submit
+my patch. Thanks for pointing this out.
