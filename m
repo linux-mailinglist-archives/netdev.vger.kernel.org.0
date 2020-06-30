@@ -2,117 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9062320F2B0
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 12:28:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D63D20F2C1
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 12:31:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732541AbgF3K2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 06:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732315AbgF3K2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 06:28:20 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF73FC061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 03:28:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=DzSnXWgUABjf2oGFBkHyHwE7ni0HkRZQ1U5rSdRu1sU=; b=uczM9wyWfr6hlAXpjn4mpKgxTi
-        MEpm7k1Punobu1CgnrZHFHrd56ySUc3YSavngUZNZYLOsal4p+qgustBeLo9vE7E+bxEegw/55uWq
-        VybZh8NLvqI7leUeGyXuQQpRLypAKXpEbC08e64+PcsAySD2aIgYjCzWboM9n/dcxzplj1OoMiE38
-        szkShfFLAh6jSGRFbZUqOED8M4Z7jDYzH6V4H/BQM77fC87cAtYTndf1uXx0R2v/qFy9OMUXraiE+
-        ihJ7INDIKFqrrS5VHH6EvzYL4Y8NU1o/EOpO1peRCgO4vmJtSxGcOtEi78iNMyQORbk1YpoOi0TZU
-        k17odkaQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:45958 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jqDUw-0000Pm-PM; Tue, 30 Jun 2020 11:28:18 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jqDUw-0004uL-Ip; Tue, 30 Jun 2020 11:28:18 +0100
-In-Reply-To: <20200630102751.GA1551@shell.armlinux.org.uk>
-References: <20200630102751.GA1551@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/3] net: dsa/bcm_sf2: move pause mode setting into
- mac_link_up()
+        id S1732521AbgF3Kbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 06:31:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52614 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732238AbgF3Kbo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jun 2020 06:31:44 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5661020771;
+        Tue, 30 Jun 2020 10:31:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593513103;
+        bh=EqH2nGMcU9Sb0Kq3vXWL9ycwgwr+UuyAQkBZrQIcICA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vf7ejJWSl4ZfeteEaD86rXPRMQ/c/5puqzv7RFS327zwDfCY9e1RJaTmA3XH7Klh+
+         9F+gI9Rjp5RHvnn0Nd8zT/NMB8UiBC+c90ZFOVBhMb4TPr78FoOSQZIX3rLaLBsRKx
+         YbZNE+yUe/8PNfjB52VoyY8NmzucdcOqSbXNLADY=
+Date:   Tue, 30 Jun 2020 11:31:41 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, Takashi Iwai <tiwai@suse.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>,
+        lee.jones@linaro.org
+Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
+ client
+Message-ID: <20200630103141.GA5272@sirena.org.uk>
+References: <20200521233437.GF17583@ziepe.ca>
+ <7abfbda8-2b4b-5301-6a86-1696d4898525@linux.intel.com>
+ <20200523062351.GD3156699@kroah.com>
+ <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
+ <20200524063519.GB1369260@kroah.com>
+ <fe44419b-924c-b183-b761-78771b7d506d@linux.intel.com>
+ <s5h5zcistpb.wl-tiwai@suse.de>
+ <20200527071733.GB52617@kroah.com>
+ <20200629203317.GM5499@sirena.org.uk>
+ <20200629225959.GF25301@ziepe.ca>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bp/iNruPH9dso1Pn"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jqDUw-0004uL-Ip@rmk-PC.armlinux.org.uk>
-Date:   Tue, 30 Jun 2020 11:28:18 +0100
+In-Reply-To: <20200629225959.GF25301@ziepe.ca>
+X-Cookie: Walk softly and carry a megawatt laser.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bcm_sf2 only appears to support pause modes on RGMII interfaces (the
-enable bits are in the RGMII control register.)  Setup the pause modes
-for RGMII connections.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/bcm_sf2.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+--bp/iNruPH9dso1Pn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 062e6efad53f..45e4d40d7e25 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -587,18 +587,11 @@ static void bcm_sf2_sw_mac_config(struct dsa_switch *ds, int port,
- 	reg = reg_readl(priv, REG_RGMII_CNTRL_P(port));
- 	reg &= ~ID_MODE_DIS;
- 	reg &= ~(PORT_MODE_MASK << PORT_MODE_SHIFT);
--	reg &= ~(RX_PAUSE_EN | TX_PAUSE_EN);
- 
- 	reg |= port_mode;
- 	if (id_mode_dis)
- 		reg |= ID_MODE_DIS;
- 
--	if (state->pause & MLO_PAUSE_TXRX_MASK) {
--		if (state->pause & MLO_PAUSE_TX)
--			reg |= TX_PAUSE_EN;
--		reg |= RX_PAUSE_EN;
--	}
--
- 	reg_writel(priv, reg, REG_RGMII_CNTRL_P(port));
- }
- 
-@@ -662,6 +655,22 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
- 		else
- 			offset = CORE_STS_OVERRIDE_GMIIP2_PORT(port);
- 
-+		if (interface == PHY_INTERFACE_MODE_RGMII ||
-+		    interface == PHY_INTERFACE_MODE_RGMII_TXID ||
-+		    interface == PHY_INTERFACE_MODE_MII ||
-+		    interface == PHY_INTERFACE_MODE_REVMII) {
-+			reg = reg_readl(priv, REG_RGMII_CNTRL_P(port));
-+			reg &= ~(RX_PAUSE_EN | TX_PAUSE_EN);
-+
-+			if (tx_pause)
-+				reg |= TX_PAUSE_EN;
-+			if (rx_pause)
-+				reg |= RX_PAUSE_EN;
-+
-+			reg_writel(priv, reg, REG_RGMII_CNTRL_P(port));
-+		}
-+
-+
- 		reg = SW_OVERRIDE | LINK_STS;
- 		switch (speed) {
- 		case SPEED_1000:
--- 
-2.20.1
+On Mon, Jun 29, 2020 at 07:59:59PM -0300, Jason Gunthorpe wrote:
+> On Mon, Jun 29, 2020 at 09:33:17PM +0100, Mark Brown wrote:
+> > On Wed, May 27, 2020 at 09:17:33AM +0200, Greg KH wrote:
 
+> > > Ok, that's good to hear.  But platform devices should never be showing
+> > > up as a child of a PCI device.  In the "near future" when we get the
+> > > virtual bus code merged, we can convert any existing users like this =
+to
+> > > the new code.
+
+> > What are we supposed to do with things like PCI attached FPGAs and ASICs
+> > in that case?  They can have host visible devices with physical
+> > resources like MMIO ranges and interrupts without those being split up
+> > neatly as PCI subfunctions - the original use case for MFD was such
+> > ASICs, there's a few PCI drivers in there now.=20
+
+> Greg has been pretty clear that MFD shouldn't have been used on top of
+> PCI drivers.
+
+The proposed bus lacks resource handling, an equivalent of
+platform_get_resource() and friends for example, which would be needed
+for use with physical devices.  Both that and the name suggest that it's
+for virtual devices.
+
+> In a sense virtual bus is pretty much MFD v2.
+
+Copying in Lee since I'm not sure he's aware of this, it's quite a
+recent thing...  MFD is a layer above AFAICT, it's not a bus but rather
+a combination of helpers for registering subdevices and a place for
+drivers for core functionality of devices which have multiple features.
+
+The reason the MFDs use platform devices is that they end up having to
+have all the features of platform devices - originally people were
+making virtual buses for them but the code duplication is real so
+everyone (including Greg) decided to just use what was there already.
+
+--bp/iNruPH9dso1Pn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl77FIoACgkQJNaLcl1U
+h9D5xQf/Zvz/1EGl9pnsXeFwL4gfvhIO78L2JdKTopOVxmy7G9U1NfRcBQzxWAiO
+UdcO8crWix6I4OGsciUIk/cLMZGFyAok0XGsh2aBsP7ccBp+Bcky6+/AjYv70qXf
+IWBoVCnuSvcvSwU0DFjn2wEiKsKmhTu9LglNgAOYK/z8FrzXBTBdXLuQn4FDOaPQ
+C38CUkYaaBvaEwJMh3n1AHz+Fxx9ausTFLqiaLnOXmPBBwlNVWgpxnAypbUhk37a
+bk9h2Li8Sngm/d+BHL9SkermlDGi9Mjk4jGMrBH7dYxwnvh9mPMyAmRBX7kauYOH
+Ikmo4NiOrTvWc85hjj1dxJDsdnP7Rw==
+=wONO
+-----END PGP SIGNATURE-----
+
+--bp/iNruPH9dso1Pn--
