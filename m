@@ -2,65 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE39120EA17
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:30:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0F2520EA19
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:30:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728085AbgF3APU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 20:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35032 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726945AbgF3APT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 20:15:19 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4436C061755
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 17:15:19 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0FA0D127BE19B;
-        Mon, 29 Jun 2020 17:15:19 -0700 (PDT)
-Date:   Mon, 29 Jun 2020 17:15:18 -0700 (PDT)
-Message-Id: <20200629.171518.1550876065840430180.davem@davemloft.net>
-To:     petrm@mellanox.com
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, xiyou.wangcong@gmail.com,
-        eric.dumazet@gmail.com, jiri@mellanox.com, idosch@mellanox.com
-Subject: Re: [PATCH net-next v1 0/5] TC: Introduce qevents
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <cover.1593209494.git.petrm@mellanox.com>
-References: <cover.1593209494.git.petrm@mellanox.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1728246AbgF3AQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 20:16:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35194 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726706AbgF3AQP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 20:16:15 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6EA4420780;
+        Tue, 30 Jun 2020 00:16:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593476174;
+        bh=YEvv5diFUttT1gpPIdbEXdjcPTFEm+AiupFO+TUtfH4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XPXqq8DUdenZiS+DwJWNxHyP0PHSj5hz3BKC9AFazNswmFWU7b1djg3mXyCO/Jjy2
+         cXWQivbSaTX2pfpK+vBr4skTWvNFQE8h++g5/b0OyHVCUWuBOrDSbWaVQabpOQ7shf
+         z6d9vvOY40vIWl5AHdqhZq7XbdUDZ5SF3tXb7iiA=
+Date:   Mon, 29 Jun 2020 17:16:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     fruggeri@arista.com (Francesco Ruggeri)
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, davem@davemloft.net,
+        jeffrey.t.kirsher@intel.com
+Subject: Re: [PATCH] igb: reinit_locked() should be called with rtnl_lock
+Message-ID: <20200629171612.49efbdaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200629211801.C3D7095C0900@us180.sjc.aristanetworks.com>
+References: <20200629211801.C3D7095C0900@us180.sjc.aristanetworks.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 29 Jun 2020 17:15:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
-Date: Sat, 27 Jun 2020 01:45:24 +0300
-
-> The Spectrum hardware allows execution of one of several actions as a
-> result of queue management decisions: tail-dropping, early-dropping,
-> marking a packet, or passing a configured latency threshold or buffer
-> size. Such packets can be mirrored, trapped, or sampled.
+On Mon, 29 Jun 2020 14:18:01 -0700 Francesco Ruggeri wrote:
+> We observed a panic in igb_reset_task caused by this race condition
+> when doing a reboot -f:
 > 
-> Modeling the action to be taken as simply a TC action is very attractive,
-> but it is not obvious where to put these actions. At least with ECN marking
-> one could imagine a tree of qdiscs and classifiers that effectively
-> accomplishes this task, albeit in an impractically complex manner. But
-> there is just no way to match on dropped-ness of a packet, let alone
-> dropped-ness due to a particular reason.
+> 	kworker			reboot -f
 > 
-> To allow configuring user-defined actions as a result of inner workings of
-> a qdisc, this patch set introduces a concept of qevents. Those are attach
-> points for TC blocks, where filters can be put that are executed as the
-> packet hits well-defined points in the qdisc algorithms. The attached
-> blocks can be shared, in a manner similar to clsact ingress and egress
-> blocks, arbitrary classifiers with arbitrary actions can be put on them,
-> etc.
- ...
+> 	igb_reset_task
+> 	igb_reinit_locked
+> 	igb_down
+> 	napi_synchronize
+> 				__igb_shutdown
+> 				igb_clear_interrupt_scheme
+> 				igb_free_q_vectors
+> 				igb_free_q_vector
+> 				adapter->q_vector[v_idx] = NULL;
+> 	napi_disable
+> 	Panics trying to access
+> 	adapter->q_vector[v_idx].napi_state
+> 
+> This commit applies to igb the same changes that were applied to ixgbe
+> in commit 8f4c5c9fb87a ("ixgbe: reinit_locked() should be called with
+> rtnl_lock") and commit 88adce4ea8f9 ("ixgbe: fix possible race in
+> reset subtask").
+> 
+> Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
 
-Series applied, thank you.
+Thanks for the patch..
+
+Would you mind adding a fixes tag here? Probably:
+
+Fixes: 9d5c824399de ("igb: PCI-Express 82575 Gigabit Ethernet driver")
+
+And as a matter of fact it looks like e1000e and e1000 have the same
+bug :/ Would you mind checking all Intel driver producing matches for
+all the affected ones?
