@@ -2,203 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03FE520FE3B
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 22:55:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DCA720FE41
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 22:56:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726507AbgF3UzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 16:55:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34570 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726097AbgF3UzZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 16:55:25 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CFE49206C0;
-        Tue, 30 Jun 2020 20:55:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593550523;
-        bh=8/jfzl09QncvCdMs7Y7cl0VwPtLXwxjLIFP2mihj2kM=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=i+u9BBRpzJ4mw+mQCTJHn6sDG4S9opjeqrd7nDBKby95kKy9q/nBd51wzOERXCV3a
-         Em9A/pdsu7B7iBubS611V11b+hnoXxjzp00oHZ/Pk7vG7c16kVGXmuyYCZgpIvJ4Sh
-         zYSvrg8cnrxjG9Wj63zc8/SXvHEkYqULeFHl3hbo=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id B0AE43522640; Tue, 30 Jun 2020 13:55:23 -0700 (PDT)
-Date:   Tue, 30 Jun 2020 13:55:23 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v5 bpf-next 1/5] bpf: Remove redundant synchronize_rcu.
-Message-ID: <20200630205523.GJ9247@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200630043343.53195-1-alexei.starovoitov@gmail.com>
- <20200630043343.53195-2-alexei.starovoitov@gmail.com>
+        id S1726893AbgF3U4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 16:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726385AbgF3U4X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 16:56:23 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03482C03E979
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 13:56:23 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id s1so10765304ybo.7
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 13:56:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lTz7GqcDwurWAANYbVdiGG5v7StqCSKnvTD7ZYiQAT4=;
+        b=Zo5pyCgoQQhsEk+lR79XTHQe/3DF+GG97O9/mQ3PYTb4SUZ40fjJrZoVgJd+IOH5VX
+         CLN7PDArP5pqpykX2PomyAxddIFF0fzfSSPSl09d2ZuieD7QrEHw9WWcURjmi4Y38PsK
+         S6NETrYKOyvK85MEc9aIo7wOiq/M5d0gPj5WH1yG8Ajs67NOBMZ82AYJICY06eSZW11m
+         q5QLcmfjBVgUqanwxd4u0Q6yPJ+DHRKApaFsNUcOR+UjdTo0QK3jVczenT4pRpEvzp8E
+         1SyA9BXHyeN70WbNaDvJE8GMPicyyq2B5iy7ApGc9k7VMfh/Lz1RxwFaa5xuMWAHeSDa
+         bJOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lTz7GqcDwurWAANYbVdiGG5v7StqCSKnvTD7ZYiQAT4=;
+        b=EzMg1CNqo/Xqj3vmY+0pY42J1D4WqXn0EKHvy6QWdf4KIcsXE5Ckq2RlyouqeZepDW
+         ocxoIEuzn0q47tRPIKramOJTqn0sHs9cdCL2o/jYtpx+uYvfagJyDdKiw1ISvh66P1ck
+         +kMtDWbmozNUXsXb5fRQt2SL85My28ZZR10jH6ZcCHKKpkUwhdhaLnb7JPKmjZ2vMBDP
+         +QM8ycTLevQfsSDkb9e9328xmR4Je0JbFOxmfMxJODt6c7Vl8bYCJMVr3XNtT81+yxXB
+         0D88624LkyOEA8VCN1MEaM5o7Fxub+DYwpa9+zB6UF77YPMHXPZeZztxffoqP+wtDkkG
+         D6OA==
+X-Gm-Message-State: AOAM531JX0b1vwYt7XDgRnZdGo1nJYkUL8XNQXzSHIrMfmE+/I4C1/3L
+        6/u9Ld+U6E8tRJfavj3Rr0Jj/SKaru6ym6rVC/uyog==
+X-Google-Smtp-Source: ABdhPJzTJIY/4bZuSGrofTXLrB83Ak49AR2hs1sGOhNuXjZkCj6/L3gA+M0RjOasX0deVY7WAFybgHRMeiMUpfyWKzE=
+X-Received: by 2002:a25:941:: with SMTP id u1mr39107661ybm.274.1593550581808;
+ Tue, 30 Jun 2020 13:56:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200630043343.53195-2-alexei.starovoitov@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <CAHk-=wjEghg5_pX_GhNP+BfcUK6CRZ+4mh3bciitm9JwXvR7aQ@mail.gmail.com>
+ <312079189.17903.1593549293094.JavaMail.zimbra@efficios.com>
+ <CANn89iJ+rkMrLrHrKXO-57frXNb32epB93LYLRuHX00uWc-0Uw@mail.gmail.com> <20200630.134429.1590957032456466647.davem@davemloft.net>
+In-Reply-To: <20200630.134429.1590957032456466647.davem@davemloft.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 30 Jun 2020 13:56:10 -0700
+Message-ID: <CANn89i+b-LeaPvaaHvj0yc0mJ2qwZ0981fQHVp0+sqXYp=kdkA@mail.gmail.com>
+Subject: Re: [regression] TCP_MD5SIG on established sockets
+To:     David Miller <davem@davemloft.net>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Jonathan Rajotte-Julien <joraj@efficios.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 09:33:39PM -0700, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
-> 
-> bpf_free_used_maps() or close(map_fd) will trigger map_free callback.
-> bpf_free_used_maps() is called after bpf prog is no longer executing:
-> bpf_prog_put->call_rcu->bpf_prog_free->bpf_free_used_maps.
-> Hence there is no need to call synchronize_rcu() to protect map elements.
-> 
-> Note that hash_of_maps and array_of_maps update/delete inner maps via
-> sys_bpf() that calls maybe_wait_bpf_programs() and synchronize_rcu().
-> 
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
+On Tue, Jun 30, 2020 at 1:44 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+> Date: Tue, 30 Jun 2020 13:39:27 -0700
+>
+> > The (C) & (B) case are certainly doable.
+> >
+> > A) case is more complex, I have no idea of breakages of various TCP
+> > stacks if a flow got SACK
+> > at some point (in 3WHS) but suddenly becomes Reno.
+>
+> I agree that C and B are the easiest to implement without having to
+> add complicated code to handle various negotiated TCP option
+> scenerios.
+>
+> It does seem to be that some entities do A, or did I misread your
+> behavioral analysis of various implementations Mathieu?
+>
+> Thanks.
 
-From an RCU perspective:
-
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-
-> ---
->  kernel/bpf/arraymap.c         | 9 ---------
->  kernel/bpf/hashtab.c          | 8 +++-----
->  kernel/bpf/lpm_trie.c         | 5 -----
->  kernel/bpf/queue_stack_maps.c | 7 -------
->  kernel/bpf/reuseport_array.c  | 2 --
->  kernel/bpf/ringbuf.c          | 7 -------
->  kernel/bpf/stackmap.c         | 3 ---
->  7 files changed, 3 insertions(+), 38 deletions(-)
-> 
-> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-> index ec5cd11032aa..c66e8273fccd 100644
-> --- a/kernel/bpf/arraymap.c
-> +++ b/kernel/bpf/arraymap.c
-> @@ -386,13 +386,6 @@ static void array_map_free(struct bpf_map *map)
->  {
->  	struct bpf_array *array = container_of(map, struct bpf_array, map);
->  
-> -	/* at this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
-> -	 * so the programs (can be more than one that used this map) were
-> -	 * disconnected from events. Wait for outstanding programs to complete
-> -	 * and free the array
-> -	 */
-> -	synchronize_rcu();
-> -
->  	if (array->map.map_type == BPF_MAP_TYPE_PERCPU_ARRAY)
->  		bpf_array_free_percpu(array);
->  
-> @@ -546,8 +539,6 @@ static void fd_array_map_free(struct bpf_map *map)
->  	struct bpf_array *array = container_of(map, struct bpf_array, map);
->  	int i;
->  
-> -	synchronize_rcu();
-> -
->  	/* make sure it's empty */
->  	for (i = 0; i < array->map.max_entries; i++)
->  		BUG_ON(array->ptrs[i] != NULL);
-> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> index acd06081d81d..d4378d7d442b 100644
-> --- a/kernel/bpf/hashtab.c
-> +++ b/kernel/bpf/hashtab.c
-> @@ -1290,12 +1290,10 @@ static void htab_map_free(struct bpf_map *map)
->  {
->  	struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
->  
-> -	/* at this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
-> -	 * so the programs (can be more than one that used this map) were
-> -	 * disconnected from events. Wait for outstanding critical sections in
-> -	 * these programs to complete
-> +	/* bpf_free_used_maps() or close(map_fd) will trigger this map_free callback.
-> +	 * bpf_free_used_maps() is called after bpf prog is no longer executing.
-> +	 * There is no need to synchronize_rcu() here to protect map elements.
->  	 */
-> -	synchronize_rcu();
->  
->  	/* some of free_htab_elem() callbacks for elements of this map may
->  	 * not have executed. Wait for them.
-> diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
-> index 1abd4e3f906d..44474bf3ab7a 100644
-> --- a/kernel/bpf/lpm_trie.c
-> +++ b/kernel/bpf/lpm_trie.c
-> @@ -589,11 +589,6 @@ static void trie_free(struct bpf_map *map)
->  	struct lpm_trie_node __rcu **slot;
->  	struct lpm_trie_node *node;
->  
-> -	/* Wait for outstanding programs to complete
-> -	 * update/lookup/delete/get_next_key and free the trie.
-> -	 */
-> -	synchronize_rcu();
-> -
->  	/* Always start at the root and walk down to a node that has no
->  	 * children. Then free that node, nullify its reference in the parent
->  	 * and start over.
-> diff --git a/kernel/bpf/queue_stack_maps.c b/kernel/bpf/queue_stack_maps.c
-> index 80c66a6d7c54..44184f82916a 100644
-> --- a/kernel/bpf/queue_stack_maps.c
-> +++ b/kernel/bpf/queue_stack_maps.c
-> @@ -101,13 +101,6 @@ static void queue_stack_map_free(struct bpf_map *map)
->  {
->  	struct bpf_queue_stack *qs = bpf_queue_stack(map);
->  
-> -	/* at this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
-> -	 * so the programs (can be more than one that used this map) were
-> -	 * disconnected from events. Wait for outstanding critical sections in
-> -	 * these programs to complete
-> -	 */
-> -	synchronize_rcu();
-> -
->  	bpf_map_area_free(qs);
->  }
->  
-> diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
-> index a09922f656e4..3625c4fcc65c 100644
-> --- a/kernel/bpf/reuseport_array.c
-> +++ b/kernel/bpf/reuseport_array.c
-> @@ -96,8 +96,6 @@ static void reuseport_array_free(struct bpf_map *map)
->  	struct sock *sk;
->  	u32 i;
->  
-> -	synchronize_rcu();
-> -
->  	/*
->  	 * ops->map_*_elem() will not be able to access this
->  	 * array now. Hence, this function only races with
-> diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-> index dbf37aff4827..13a8d3967e07 100644
-> --- a/kernel/bpf/ringbuf.c
-> +++ b/kernel/bpf/ringbuf.c
-> @@ -215,13 +215,6 @@ static void ringbuf_map_free(struct bpf_map *map)
->  {
->  	struct bpf_ringbuf_map *rb_map;
->  
-> -	/* at this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
-> -	 * so the programs (can be more than one that used this map) were
-> -	 * disconnected from events. Wait for outstanding critical sections in
-> -	 * these programs to complete
-> -	 */
-> -	synchronize_rcu();
-> -
->  	rb_map = container_of(map, struct bpf_ringbuf_map, map);
->  	bpf_ringbuf_free(rb_map->rb);
->  	kfree(rb_map);
-> diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
-> index 27dc9b1b08a5..071f98d0f7c6 100644
-> --- a/kernel/bpf/stackmap.c
-> +++ b/kernel/bpf/stackmap.c
-> @@ -604,9 +604,6 @@ static void stack_map_free(struct bpf_map *map)
->  {
->  	struct bpf_stack_map *smap = container_of(map, struct bpf_stack_map, map);
->  
-> -	/* wait for bpf programs to complete before freeing stack map */
-> -	synchronize_rcu();
-> -
->  	bpf_map_area_free(smap->elems);
->  	pcpu_freelist_destroy(&smap->freelist);
->  	bpf_map_area_free(smap);
-> -- 
-> 2.23.0
-> 
+Yes, another question about Mathieu cases is do determine the behavior
+of all these stacks vs :
+SACK option
+TCP TS option.
