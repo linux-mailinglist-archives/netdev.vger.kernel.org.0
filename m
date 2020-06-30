@@ -2,168 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D317520EB66
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 04:19:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 138F920EB72
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 04:26:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727016AbgF3CTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 22:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54066 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725988AbgF3CTP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 22:19:15 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055EFC061755
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 19:19:15 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id e12so14472681qtr.9
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 19:19:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rtGevn5rgGHhDa4eV3zCSsDCKQR+raUIp4lYg2I37J4=;
-        b=jyHvLS0PmaN21fjbETeyn/yPy5eoACCRmwRaemWQq4xVOJcq3MVyQM9U6iWV/uLEFW
-         SO6N2crhWPpduYhenwhtd1/exsXWT7Zzf2wgHlJ7BRqL3CRu4sDiAEn0QhYBFpFiy4sz
-         7zu+zx2u2Lyddj4lIa2nK5z9D+PT+mZaWpeLNU0fSOc5vzOMBqpiGg9WsYbNQZWLZc0a
-         IQ/Yq7YtkA2VKoKjqRFj9yCgkjkQqFXbd5CVdRo/lDWlFs06HJGMwRmL8m1jYusO8K9T
-         7r2RpVU3oNwlHeK1t2nJfgy/A9W5QtJjpIzNSJlDiBcZdJD5hBuL7yvCMrYKqrs8yQfi
-         1ZGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rtGevn5rgGHhDa4eV3zCSsDCKQR+raUIp4lYg2I37J4=;
-        b=NpV+Z6/rjBt5SVWawto8UloPhNhs30SReodabPxsCUClUWz5RKmHGbY8oVRA+okNfr
-         Bavl/n+OU1BJ1tJR30+TlDwNcHuRqdX3uRS3UFq/dYCVbmWDxqvIGv4Lxc9saBBsc43w
-         /tibz8hLWvswXncofCsUDtCQAz2fyhAS5ocdlMnNQOOXwmOBeLwIpV0Ugp/fXE9RZ6mO
-         SXJ/WiplKnrCYioi1Q6wVJsD31jy4aVDsIjHwnz/P9HMazmUuedCNfUx1HdrnKqjHchG
-         sbfBKbuimevD5g+RlDQa7NPN5BWtOvIMmcczqnO7b3i1XIoJDQxNTFL4xWIiY/n2LnaT
-         aN9w==
-X-Gm-Message-State: AOAM531X3T0QjPtHnGk2P1AgWhyFGMCKAHIPwtunpAqTdlsxbxaviNDX
-        /hf9B0RuEvab1f4QZUC9jSVLjwYT
-X-Google-Smtp-Source: ABdhPJxwSsxCQulXU00d83R0guw/BPS+njgnVrZFh62Ko4/hYBqfBodVuDlcW1DhddVOZtZbiIxwAw==
-X-Received: by 2002:ac8:f8b:: with SMTP id b11mr19087194qtk.361.1593483553447;
-        Mon, 29 Jun 2020 19:19:13 -0700 (PDT)
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
-        by smtp.gmail.com with ESMTPSA id p7sm1814677qki.61.2020.06.29.19.19.12
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Jun 2020 19:19:12 -0700 (PDT)
-Received: by mail-yb1-f172.google.com with SMTP id j19so6321075ybj.1
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 19:19:12 -0700 (PDT)
-X-Received: by 2002:a25:be02:: with SMTP id h2mr30746440ybk.315.1593483551816;
- Mon, 29 Jun 2020 19:19:11 -0700 (PDT)
+        id S1728469AbgF3C0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 22:26:00 -0400
+Received: from mail-eopbgr20063.outbound.protection.outlook.com ([40.107.2.63]:21819
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726288AbgF3C0A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 22:26:00 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Kwjj02VDP9oyH3e52pS160mceLrt/ivmlLPIhFICzpTXM80Up240rEHBX3S7tLMYl71KDhxHH9XXODk9rwimJK7lhxFZDn/l+K7TvZd7ie64w23KvX8Vh6udfUtwsjq9YHqBSHWlMtXRBNY6IX4VV4B2pyE2FJZDF2ZVGu8aSvnMpptadtXFzGESTOxU2uO5QkZ06/HPuiQOFb2BKNqWFIf7s94hyfksIeUZAiBbTsHXbPk1qYnE6pMdGXmd3Tf7+sWpChkIpNjuM9KcaOWGPT8jh7+crPjFGqQzdIgpnHcfDuF2P8BtFQSpjEzajb/F/H/5y1uxu0wGX9cOpCbLPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MLgBkoX+IoNPKwwiKOxi4du9zgOjWScKafzuwSi6N5A=;
+ b=XqaJKXyWEVK4piWXlc72noR4gH+6ZIcC/hO2GlN1f7VgR45wI/lK/ltIaCPovT829rNMxU3Y1k7PapFNu8E520sYoGnEF4q7TJToYfK5rGNYZOFC1heKcPafK0M8cGpVawv99MPJb10kno63VT+RGuN1zzCf/C035NPlDZrq6Eh8Ku+AGZvy5Id5xplm1GOTbwc5t2Ni6FOifBxAfXKxy+XSltPDSQuS/IYIqkVZqEgW/+L/4xdW7rXEWEy0+2jvgN9xutztHd2tAREqJuunIfRPwAIHOZ8JhmhkRhPWt5ellRHK4bp+PUSjLYtCCYHr4Poby7EaOInD3uFDqBOF4Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MLgBkoX+IoNPKwwiKOxi4du9zgOjWScKafzuwSi6N5A=;
+ b=MRTTen/EwJcJ6iI2c+e7ziGYko+fglb8ecjVY23xyZ+4D+d3SlHd9FyTXBSHtbLrNaRCQ9iA04PDacMjKzcN7NKNv3CrzZeV+tCkp+7u4awH//gXEhjSD2iVp3cs2QZ0m8428O1lxhJDJbPBoEuXeBR7vx714HZ1xKj7jrjMysM=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB8PR04MB6969.eurprd04.prod.outlook.com (2603:10a6:10:11b::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Tue, 30 Jun
+ 2020 02:25:56 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::7564:54a2:a35e:1066]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::7564:54a2:a35e:1066%9]) with mapi id 15.20.3131.027; Tue, 30 Jun 2020
+ 02:25:56 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Michael Walle <michael@walle.cc>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+CC:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
+Thread-Topic: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
+Thread-Index: AQHWE9It45mk5G6f2ES/KFIAprd1aah7fVCAgEnofYCAJE1mgIAABUIAgAaDC4CAAJkbAA==
+Date:   Tue, 30 Jun 2020 02:25:56 +0000
+Message-ID: <DB8PR04MB6795751DBB178E1EDF74136FE66F0@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
+ <20200416093126.15242-2-qiangqing.zhang@nxp.com>
+ <DB8PR04MB6795F7E28A9964A121A06140E6D80@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <d5579883c7e9ab3489ec08a73c407982@walle.cc>
+ <39b5d77bda519c4d836f44a554890bae@walle.cc>
+ <e38cf40b-ead3-81de-0be7-18cca5ca1a0c@pengutronix.de>
+ <9dc13a697c246a5c7c53bdd89df7d3c7@walle.cc>
+In-Reply-To: <9dc13a697c246a5c7c53bdd89df7d3c7@walle.cc>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: walle.cc; dkim=none (message not signed)
+ header.d=none;walle.cc; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 494d7fbd-6cb1-412f-b47a-08d81c9ceb6f
+x-ms-traffictypediagnostic: DB8PR04MB6969:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB8PR04MB69699604C58A8B0A2D78F2D6E66F0@DB8PR04MB6969.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0450A714CB
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +zMkYlIqfUozMdo9//SREYkHtNKkNA+SxnBiulHzEmbLhZFblbuSH7K6pnvLF4JAWZnn4QlEaF5jmIV/IVw4QBU8mh0euPRSCXCx0/I5vQoyr0sCC/8HsKP1mVnfVGZ0TNm/6vTcjFcKZk+i49hj1lg1mX7lnI3HVEGFytu4TNjiGp+4bOf7OwGR0BnqnkRuhU7qSg5M/xuaNuI3cvAhuF1oBPI7Zmz9eryMBjgCYwmtBq65NqjhcLjmRnTIisdiBZ8HeB28byIOMpGV+MVr2vmOu5glRA6oHSkldZZyxs3e3YiRx1QjJ18XWWhnL7jrStSEcdRxca88GB6qCIkMbpheCuOwiaECBMm4tmYAt2SGS+B7njx8UmA2AsumqtgrVKZH9i46KN1RccuJwbSdjA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(366004)(136003)(396003)(39860400002)(86362001)(478600001)(7696005)(8936002)(54906003)(110136005)(186003)(26005)(83080400001)(966005)(45080400002)(8676002)(2906002)(52536014)(66946007)(76116006)(4326008)(66446008)(64756008)(66556008)(66476007)(71200400001)(83380400001)(33656002)(55016002)(5660300002)(9686003)(6506007)(316002)(53546011);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: /+9HyV/aYnezwwGAygnTlPoKepd2L06EMCN7x/JCQszi0tcDJt/mtwipCEcoUuufZZOozVzs07R/9tHcaUyrrdLtBMzu6YpE9HN2kA7dJP0FK2E5t0hFu9U6NkYVEwKcScnqTBjm1zXC1FZg9fDD8H/pJxpaWvdrVb7xEepkjKOrXGQkuo1e8HwXN3//n38dPxNARWjC02B+movgSocWaskHi5N1e0DrdDQf7lsGANpqdHhfWYwEc8+rNXd4u6lz7m0uAIP3z90h5ypC75VYi4ZLQe6YKdEF8ZduYI6fGRWlJKsBQ6kIxWkbKZ21b1bmbP8nI9/JHIfqy4/p7PX7IXkZyyS6wlvtQO2J8/SdsKhUD//3cWWnWs5Qzb7fI1RIrjshvY28PnPm8u1BupK52Hgtevw79AozQl445fHEVmoQFODEPHUhXBsAKogYxQphRZWdIdgren13etG+BdBDMqgLyKs50Jy2j2/zXs11y8Q=
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com>
- <cb763bc5-b361-891a-94e9-be2385ddcbe0@gmail.com> <CA+FuTSfgz54uQbzrMr1Q0cAg2Vs1TFjyOb_+jjKUPoKAb=R-fw@mail.gmail.com>
- <f713198c-5ff7-677e-a739-c0bec4a93bd6@gmail.com> <CALx6S37vDy=0rCC7FPrgfi9NUr0w9dVvtRQ3LhiZ7GqoX4xBPw@mail.gmail.com>
-In-Reply-To: <CALx6S37vDy=0rCC7FPrgfi9NUr0w9dVvtRQ3LhiZ7GqoX4xBPw@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 29 Jun 2020 22:18:34 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSddo8Nsj4ri3gC0tDm7Oe4nrvCqyxkj14QWswUs4vNHLw@mail.gmail.com>
-Message-ID: <CA+FuTSddo8Nsj4ri3gC0tDm7Oe4nrvCqyxkj14QWswUs4vNHLw@mail.gmail.com>
-Subject: Re: [PATCH net-next] icmp: support rfc 4884
-To:     Tom Herbert <tom@herbertland.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 494d7fbd-6cb1-412f-b47a-08d81c9ceb6f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2020 02:25:56.2371
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 80UARGXm/8L4HLjIvOtrIzzBc4G+seBy7koBlUYCAd85M9yCsgjUx8kmxHNnMCR37cjXvAb8CnMCB2QB/DywLw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6969
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 8:37 PM Tom Herbert <tom@herbertland.com> wrote:
->
-> On Mon, Jun 29, 2020 at 4:07 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >
-> >
-> >
-> > On 6/29/20 2:30 PM, Willem de Bruijn wrote:
-> > > On Mon, Jun 29, 2020 at 5:15 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > >>
-> > >>
-> > >>
-> > >> On 6/29/20 9:57 AM, Willem de Bruijn wrote:
-> > >>> From: Willem de Bruijn <willemb@google.com>
-> > >>>
-> > >>> ICMP messages may include an extension structure after the original
-> > >>> datagram. RFC 4884 standardized this behavior.
-> > >>>
-> > >>> It introduces an explicit original datagram length field in the ICMP
-> > >>> header to delineate the original datagram from the extension struct.
-> > >>>
-> > >>> Return this field when reading an ICMP error from the error queue.
-> > >>
-> > >> RFC mentions a 'length' field of 8 bits, your patch chose to export the whole
-> > >> second word of icmp header.
-> > >>
-> > >> Why is this field mapped to a prior one (icmp_hdr(skb)->un.gateway) ?
-> > >>
-> > >> Should we add an element in the union to make this a little bit more explicit/readable ?
-> > >>
-> > >> diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
-> > >> index 5589eeb791ca580bb182e1dc38c05eab1c75adb9..427ed5a6765316a4c1e2fa06f3b6618447c01564 100644
-> > >> --- a/include/uapi/linux/icmp.h
-> > >> +++ b/include/uapi/linux/icmp.h
-> > >> @@ -76,6 +76,7 @@ struct icmphdr {
-> > >>                 __be16  sequence;
-> > >>         } echo;
-> > >>         __be32  gateway;
-> > >> +       __be32  second_word; /* RFC 4884 4.[123] : <unused:8>,<length:8>,<mtu:16> */
-> > >>         struct {
-> > >>                 __be16  __unused;
-> > >>                 __be16  mtu;
-> > >
-> > > Okay. How about a variant of the existing struct frag?
-> > >
-> > > @@ -80,6 +80,11 @@ struct icmphdr {
-> > >                 __be16  __unused;
-> > >                 __be16  mtu;
-> > >         } frag;
-> > > +       struct {
-> > > +               __u8    __unused;
-> > > +               __u8    length;
-> > > +               __be16  mtu;
-> > > +       } rfc_4884;
-> > >         __u8    reserved[4];
-> > >    } un;
-> > >
-> >
-> > Sure, but my point was later in the code :
-> >
-> > >>> +     if (inet_sk(sk)->recverr_rfc4884)
-> > >>> +             info = ntohl(icmp_hdr(skb)->un.gateway);
-> > >>
-> > >> ntohl(icmp_hdr(skb)->un.second_word);
-> >
-> > If you leave there "info = ntohl(icmp_hdr(skb)->un.gateway)" it is a bit hard for someone
-> > reading linux kernel code to understand why we do this.
-> >
-> It's also potentially problematic. The other bits are Unused, which
-> isn't the same thing as necessarily being zero. Userspace might assume
-> that info is the length without checking its bounded.
-
-It shouldn't. The icmp type and code are passed in sock_extended_err
-as ee_type and ee_code. So it can demultiplex the meaning of the rest
-of the icmp header.
-
-It just needs access to the other 32-bits, which indeed are context
-sensitive. It makes more sense to me to let userspace demultiplex this
-in one place, rather than demultiplex in the kernel and define a new,
-likely no simpler, data structure to share with userspace.
-
-Specific to RFC 4884, the 8-bit length field coexists with the
-16-bit mtu field in case of ICMP_FRAG_NEEDED, so we cannot just pass
-the first as ee_info in RFC 4884 mode. sock_extended_err additionally
-has ee_data, but after that we're out of fields, too, so this approach
-is not very future proof to additional ICMP extensions.
-
-On your previous point, it might be useful to define struct rfc_4884
-equivalent outside struct icmphdr, so that an application can easily
-cast to that. RFC 4884 itself does not define any extension objects.
-That is out of scope there, and in my opinion, here. Again, better
-left to userspace. Especially because as it describes, it standardized
-the behavior after observing non-compliant, but existing in the wild,
-proprietary extension variants. Users may have to change how they
-interpret the fields based on what they have deployed.
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1pY2hhZWwgV2FsbGUgPG1p
+Y2hhZWxAd2FsbGUuY2M+DQo+IFNlbnQ6IDIwMjDE6jbUwjMwyNUgMDoyMw0KPiBUbzogTWFyYyBL
+bGVpbmUtQnVkZGUgPG1rbEBwZW5ndXRyb25peC5kZT4NCj4gQ2M6IEpvYWtpbSBaaGFuZyA8cWlh
+bmdxaW5nLnpoYW5nQG54cC5jb20+OyBsaW51eC1jYW5Admdlci5rZXJuZWwub3JnOw0KPiBkbC1s
+aW51eC1pbXggPGxpbnV4LWlteEBueHAuY29tPjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBT
+dWJqZWN0OiBSZTogW1BBVENIIGxpbnV4LWNhbi1uZXh0L2ZsZXhjYW5dIGNhbjogZmxleGNhbjog
+Zml4IFREQyBmZWF0dXJlDQo+IA0KPiBIaSBNYXJjLA0KPiANCj4gPiBJJ3ZlIGNsZWFuZWQgdXAg
+dGhlIHBhdGNoZXMgYSBiaXQsIGNhbiB5b3UgdGVzdCB0aGlzIGJyYW5jaDoNCj4gPg0KPiA+IGh0
+dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD1odHRwcyUz
+QSUyRiUyRmdpdC4NCj4gPg0KPiBrZXJuZWwub3JnJTJGcHViJTJGc2NtJTJGbGludXglMkZrZXJu
+ZWwlMkZnaXQlMkZta2wlMkZsaW51eC1jYW4tbmV4dC5nDQo+ID4NCj4gaXQlMkZsb2clMkYlM0Zo
+JTNEZmxleGNhbiZhbXA7ZGF0YT0wMiU3QzAxJTdDcWlhbmdxaW5nLnpoYW5nJTQwbngNCj4gcC5j
+b20NCj4gPiAlN0M3YzFkMGVmN2Q4MTM0YzFhMDFkZDA4ZDgxYzQ4YjU1YyU3QzY4NmVhMWQzYmMy
+YjRjNmZhOTJjZDk5YzUNCj4gYzMwMTYzNQ0KPiA+ICU3QzAlN0MxJTdDNjM3MjkwNDQ1OTI1MTUx
+NjU0JmFtcDtzZGF0YT1xWWFNNmdVb1hFRCUyRmNkSGhSDQo+IGt6WnI5RDFldjh0DQo+ID4gZklu
+MmJqN2tuQVpWYVZ3JTNEJmFtcDtyZXNlcnZlZD0wDQo+IA0KPiBUaGlzIGlzIHdvcmtpbmcsIGJ1
+dCBhcyBKb2FraW0gYWxyZWFkeSBzYWlkLCBDQU4tRkQgSVNPIG1vZGUgaXMgbWlzc2luZy4NCj4g
+SXQgZGVmYXVsdHMgdG8gbm9uLUlTTyBtb2RlLCB3aGljaCBpcyBldmVuIHdvcnNlLCBJTUhPLg0K
+PiANCj4gQnV0IEkndmUgYWxzbyBub3RpY2VkIGEgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSBvcmln
+aW5hbCBwYXRjaCBhbmQgdGhlIG9uZSBpbiB0aGF0DQo+IGJyYW5jaC4gV2hlbiBGRCBtb2RlIGlz
+IGVuYWJsZWQgdGhlIG9yaWdpbmFsIHBhdGNoIGNoZWNrcyB0aGUNCj4gcHJpdi0+Y2FuLmNvbnRy
+b2xtb2RlIFsxXSwgdGhlIHBhdGNoIGluIHRoZSBicmFuY2ggbG9va3MgYXQNCj4gcHJpdi0+Y2Fu
+LmN0cmxtb2RlX3N1cHBvcnRlZCBpbnN0ZWFkIFsyXSwgaXMgdGhhdCBjb3JyZWN0Pw0KDQoNCkhp
+IE1hcmMsIE1pY2hhZWwsDQoNCkkgaGF2ZSBhbHNvIG5vdGljZWQgdGhpcyBkaWZmZXJlbmNlLCBh
+bHRob3VnaCB0aGlzIGNvdWxkIG5vdCBicmVhayBmdW5jdGlvbiwgYnV0IElNTywgdXNpbmcgcHJp
+di0+Y2FuLmN0cmxtb2RlIHNob3VsZCBiZSBiZXR0ZXIuDQoNClNvbWUgbml0cGlja3M6DQoxKSBD
+YW4gd2UgdXNlIHVuaWZvcm0gY2hlY2sgZm9yIEhXIHdoaWNoIHN1cHBvcnRzIENBTiBGRCBpbiB0
+aGUgZHJpdmVyLCB1c2luZyBwcml2LT5jYW4uY3RybG1vZGVfc3VwcG9ydGVkIGluc3RlYWQgb2Yg
+cXVpcmtzPw0KLS0tIGEvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYw0KKysrIGIvZHJpdmVycy9u
+ZXQvY2FuL2ZsZXhjYW4uYw0KQEAgLTEzOTIsNyArMTM5Miw3IEBAIHN0YXRpYyBpbnQgZmxleGNh
+bl9jaGlwX3N0YXJ0KHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpDQogICAgICAgICAgICAgICAgcHJp
+di0+d3JpdGUocmVnX2N0cmwyLCAmcmVncy0+Y3RybDIpOw0KICAgICAgICB9DQoNCi0gICAgICAg
+aWYgKChwcml2LT5kZXZ0eXBlX2RhdGEtPnF1aXJrcyAmIEZMRVhDQU5fUVVJUktfU1VQUE9SVF9G
+RCkpIHsNCisgICAgICAgaWYgKHByaXYtPmNhbi5jdHJsbW9kZV9zdXBwb3J0ZWQgJiBDQU5fQ1RS
+TE1PREVfRkQpIHsNCiAgICAgICAgICAgICAgICB1MzIgcmVnX2ZkY3RybDsNCg0KICAgICAgICAg
+ICAgICAgIHJlZ19mZGN0cmwgPSBwcml2LT5yZWFkKCZyZWdzLT5mZGN0cmwpOw0KDQpBbHNvIGRl
+bGV0ZSB0aGUgcmVkdW5kYW50IHBhcmVudGhlc2VzIGhlcmUuDQoNCjIpIENsZWFuIHRpbWluZyBy
+ZWdpc3Rlci4NCi0tLSBhL2RyaXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMNCisrKyBiL2RyaXZlcnMv
+bmV0L2Nhbi9mbGV4Y2FuLmMNCkBAIC0xMTY3LDYgKzExNjcsMTQgQEAgc3RhdGljIHZvaWQgZmxl
+eGNhbl9zZXRfYml0dGltaW5nX2NidChjb25zdCBzdHJ1Y3QgbmV0X2RldmljZSAqZGV2KQ0KICAg
+ICAgICBzdHJ1Y3QgZmxleGNhbl9yZWdzIF9faW9tZW0gKnJlZ3MgPSBwcml2LT5yZWdzOw0KICAg
+ICAgICB1MzIgcmVnX2NidCwgcmVnX2ZkY3RybDsNCg0KKyAgICAgICByZWdfY2J0ID0gcHJpdi0+
+cmVhZCgmcmVncy0+Y2J0KTsNCisgICAgICAgcmVnX2NidCAmPSB+KEZMRVhDQU5fQ0JUX0JURiB8
+DQorICAgICAgICAgICAgICAgRklFTERfUFJFUChGTEVYQ0FOX0NCVF9FUFJFU0RJVl9NQVNLLCAw
+eDNmZikgfA0KKyAgICAgICAgICAgICAgIEZJRUxEX1BSRVAoRkxFWENBTl9DQlRfRVJKV19NQVNL
+LCAweDFmKSB8DQorICAgICAgICAgICAgICAgRklFTERfUFJFUChGTEVYQ0FOX0NCVF9FUFJPUFNF
+R19NQVNLLCAweDNmKSB8DQorICAgICAgICAgICAgICAgRklFTERfUFJFUChGTEVYQ0FOX0NCVF9F
+UFNFRzFfTUFTSywgMHgxZikgfA0KKyAgICAgICAgICAgICAgIEZJRUxEX1BSRVAoRkxFWENBTl9D
+QlRfRVBTRUcyX01BU0ssIDB4MWYpKTsNCisNCiAgICAgICAgLyogQ0JUICovDQogICAgICAgIC8q
+IENCVFtFUFNFRzFdIGlzIDUgYml0IGxvbmcgYW5kIENCVFtFUFJPUFNFR10gaXMgNiBiaXQNCiAg
+ICAgICAgICogbG9uZy4gVGhlIGNhbl9jYWxjX2JpdHRpbWluZygpIHRyaWVzIHRvIGRpdmlkZSB0
+aGUgdHNlZzENCkBAIC0xMTkyLDYgKzEyMDAsMTMgQEAgc3RhdGljIHZvaWQgZmxleGNhbl9zZXRf
+Yml0dGltaW5nX2NidChjb25zdCBzdHJ1Y3QgbmV0X2RldmljZSAqZGV2KQ0KICAgICAgICBpZiAo
+cHJpdi0+Y2FuLmN0cmxtb2RlICYgQ0FOX0NUUkxNT0RFX0ZEKSB7DQogICAgICAgICAgICAgICAg
+dTMyIHJlZ19mZGNidDsNCg0KKyAgICAgICAgICAgICAgIHJlZ19mZGNidCA9IHByaXYtPnJlYWQo
+JnJlZ3MtPmZkY2J0KTsNCisgICAgICAgICAgICAgICByZWdfZmRjYnQgJj0gfihGSUVMRF9QUkVQ
+KEZMRVhDQU5fRkRDQlRfRlBSRVNESVZfTUFTSywgMHgzZmYpIHwNCisgICAgICAgICAgICAgICAg
+ICAgICAgIEZJRUxEX1BSRVAoRkxFWENBTl9GRENCVF9GUkpXX01BU0ssIDB4NykgfA0KKyAgICAg
+ICAgICAgICAgICAgICAgICAgRklFTERfUFJFUChGTEVYQ0FOX0ZEQ0JUX0ZQUk9QU0VHX01BU0ss
+IDB4MWYpIHwNCisgICAgICAgICAgICAgICAgICAgICAgIEZJRUxEX1BSRVAoRkxFWENBTl9GRENC
+VF9GUFNFRzFfTUFTSywgMHg3KSB8DQorICAgICAgICAgICAgICAgICAgICAgICBGSUVMRF9QUkVQ
+KEZMRVhDQU5fRkRDQlRfRlBTRUcyX01BU0ssIDB4NykpOw0KKw0KICAgICAgICAgICAgICAgIGlm
+IChidC0+YnJwICE9IGRidC0+YnJwKQ0KICAgICAgICAgICAgICAgICAgICAgICAgbmV0ZGV2X3dh
+cm4oZGV2LCAiRGF0YSBicnA9JWQgYW5kIGJycD0lZCBkb24ndCBtYXRjaCwgdGhpcyBtYXkgcmVz
+dWx0IGluIGEgcGhhc2UgZXJyb3IuIENvbnNpZGVyIHVzaW5nIGRpZmZlcmVudCBiaXRyYXRlIGFu
+ZC9vciBkYXRhIGJpdHJhdGUuXG4iLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgZGJ0LT5icnAsIGJ0LT5icnApOw0KDQoNClRoaXMgaXMganVzdCBteSBzdWdnZXN0aW9uLCB0
+byBzZWUgaWYgaXQgaXMgcmVhc29uYWJsZS4NCg0KQmVzdCBSZWdhcmRzLA0KSm9ha2ltIFpoYW5n
+DQo+IC1taWNoYWVsDQo+IA0KPiBbMV0NCj4gaHR0cHM6Ly9ldXIwMS5zYWZlbGlua3MucHJvdGVj
+dGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGbG9yZS5rZXINCj4gbmVsLm9yZyUy
+Rm5ldGRldiUyRjIwMTkwNzEyMDc1OTI2LjczNTctNC1xaWFuZ3FpbmcuemhhbmclNDBueHAuY29t
+JQ0KPiAyRiZhbXA7ZGF0YT0wMiU3QzAxJTdDcWlhbmdxaW5nLnpoYW5nJTQwbnhwLmNvbSU3Qzdj
+MWQwZWY3ZDgxMzRjDQo+IDFhMDFkZDA4ZDgxYzQ4YjU1YyU3QzY4NmVhMWQzYmMyYjRjNmZhOTJj
+ZDk5YzVjMzAxNjM1JTdDMCU3QzElNw0KPiBDNjM3MjkwNDQ1OTI1MTUxNjU0JmFtcDtzZGF0YT1o
+cUYyM2FQV1ZFUHNJdUd2eGlpcm5FZFQ2S0hPVUxGJTJGDQo+IHFCaTdGYUZZM3RnJTNEJmFtcDty
+ZXNlcnZlZD0wDQo+IFsyXQ0KPiBodHRwczovL2V1cjAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91
+dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkZnaXQua2Vybg0KPiBlbC5vcmclMkZwdWIlMkZz
+Y20lMkZsaW51eCUyRmtlcm5lbCUyRmdpdCUyRm1rbCUyRmxpbnV4LWNhbi1uZXh0LmdpdCUyDQo+
+IEZ0cmVlJTJGZHJpdmVycyUyRm5ldCUyRmNhbiUyRmZsZXhjYW4uYyUzRmglM0RmbGV4Y2FuJTI2
+aWQlM0Q1ZjA5N2MNCj4gZDY1Y2IyYjQyYjg4ZTZlMWViMTg2ZjZhOGYwYzkwNTU5YiUyM24xMzQx
+JmFtcDtkYXRhPTAyJTdDMDElN0NxaQ0KPiBhbmdxaW5nLnpoYW5nJTQwbnhwLmNvbSU3QzdjMWQw
+ZWY3ZDgxMzRjMWEwMWRkMDhkODFjNDhiNTVjJTdDNjg2DQo+IGVhMWQzYmMyYjRjNmZhOTJjZDk5
+YzVjMzAxNjM1JTdDMCU3QzElN0M2MzcyOTA0NDU5MjUxNTE2NTQmYW1wOw0KPiBzZGF0YT1HV0E3
+U3FEQTl0U2k5bXVkS1JDNEcybnJMVzRGaldKR1hpZkplOGMzVjBRJTNEJmFtcDtyZXNlcnYNCj4g
+ZWQ9MA0K
