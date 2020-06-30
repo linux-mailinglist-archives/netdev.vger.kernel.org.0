@@ -2,125 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5885B20EDF6
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 08:01:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E01E820EE0A
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 08:08:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729381AbgF3GBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 02:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbgF3GBr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 02:01:47 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC8AC061755
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:01:47 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 1E8DA22FE6;
-        Tue, 30 Jun 2020 08:01:42 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1593496905;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ss/fN8bdlHeLUI21akf/rjF8LLkIC3ZorFmfKARH7KI=;
-        b=U8QC24JSniMs1bbdBDXNrMW8W/dQ2l5R0o8PBb5ytNR+eA9KKyMfG8BzdgkqmYLFvm3ChY
-        ZLUbEUxUkLZCa3OSfseOL/tJjD3G3/ahA2biAoEZCTY0wHyauSaGNjt14l1+gAQoeke/Kf
-        Ogh/FgnlQuVd9ZF4YyrHmp64CeUAQ70=
+        id S1729732AbgF3GIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 02:08:01 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:43682 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728928AbgF3GH6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 02:07:58 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05U62tPF020627
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:07:58 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=M5svxqH6uhV+FNE/9Q7eNpbXYlHAwQzJOULDSHajGAE=;
+ b=fs2b43lX6vAk+5c2B1905qvRhIaNXjlVpAwHzQr5EH1fpYarTNDQGJMVkVaqgH3ibHWt
+ Z0t2sVdYarUKBt+gcTQP0D+2TKyCWMGjQPuah+U0wHn7TFLt4T4tYXhm+8awwiCZhT0g
+ ui0AbsC2KLkER9fAWWNa7ojb6BMPYvKFEkw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 31xp398eur-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:07:57 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 29 Jun 2020 23:07:50 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 86D4D2EC2E95; Mon, 29 Jun 2020 23:07:42 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 0/2] Make bpf_endian.h compatible with vmlinux.h
+Date:   Mon, 29 Jun 2020 23:07:37 -0700
+Message-ID: <20200630060739.1722733-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 30 Jun 2020 08:01:41 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next v3 0/9] net: phy: add Lynx PCS MDIO module
-In-Reply-To: <CA+h21hq146U6Zb38Nrc=BKwMu4esNtpK5g79oojxVmGs5gLcYg@mail.gmail.com>
-References: <20200621225451.12435-1-ioana.ciornei@nxp.com>
- <20200622092944.GB1551@shell.armlinux.org.uk>
- <CA+h21hq146U6Zb38Nrc=BKwMu4esNtpK5g79oojxVmGs5gLcYg@mail.gmail.com>
-User-Agent: Roundcube Webmail/1.4.6
-Message-ID: <0a2c0e6ea53be6c77875022916fbb33d@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-06-30_01:2020-06-30,2020-06-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ impostorscore=0 phishscore=0 cotscore=-2147483648 malwarescore=0
+ lowpriorityscore=0 mlxscore=0 suspectscore=8 clxscore=1015
+ priorityscore=1501 bulkscore=0 spamscore=0 mlxlogscore=596 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006300046
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+Change libbpf's bpf_endian.h header to be compatible when used with syste=
+m
+headers and when using just vmlinux.h. This is a frequent request for use=
+rs
+writing BPF CO-RE applications. Do this by re-implementing byte swap
+compile-time macros. Also add simple tests validating correct results bot=
+h for
+byte-swapping built-ins and macros.
 
-Am 2020-06-22 11:34, schrieb Vladimir Oltean:
-> On Mon, 22 Jun 2020 at 12:29, Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
->> 
->> On Mon, Jun 22, 2020 at 01:54:42AM +0300, Ioana Ciornei wrote:
->> > Add support for the Lynx PCS as a separate module in drivers/net/phy/.
->> > The advantage of this structure is that multiple ethernet or switch
->> > drivers used on NXP hardware (ENETC, Felix DSA switch etc) can share the
->> > same implementation of PCS configuration and runtime management.
->> >
->> > The PCS is represented as an mdio_device and the callbacks exported are
->> > highly tied with PHYLINK and can't be used without it.
->> >
->> > The first 3 patches add some missing pieces in PHYLINK and the locked
->> > mdiobus write accessor. Next, the Lynx PCS MDIO module is added as a
->> > standalone module. The majority of the code is extracted from the Felix
->> > DSA driver. The last patch makes the necessary changes in the Felix
->> > driver in order to use the new common PCS implementation.
->> >
->> > At the moment, USXGMII (only with in-band AN and speeds up to 2500),
->> > SGMII, QSGMII (with and without in-band AN) and 2500Base-X (only w/o
->> > in-band AN) are supported by the Lynx PCS MDIO module since these were
->> > also supported by Felix and no functional change is intended at this
->> > time.
->> 
->> Overall, I think we need to sort out the remaining changes in phylink
->> before moving forward with this patch set - I've made some progress
->> with Florian and the Broadcom DSA switches late last night.  I'm now
->> working on updating the felix DSA driver.
->> 
-> 
-> What needs to be done in the felix driver that is not part of this
-> series? Maybe you could review this instead?
-> 
->> There's another reason - having looked at the work I did with this
->> same PHY, I think you are missing configuration of the link timer,
->> which is different in SGMII and 1000BASE-X.  Please can you look at
->> the code I came up with?  "dpaa2-mac: add 1000BASE-X/SGMII PCS 
->> support".
->> 
->> Thanks.
->> 
-> 
-> felix does not have support code for 1000base-x, so I think it's
-> natural to not clutter this series with things like that.
-> Things like USXGMII up to 10G, 10GBase-R, are also missing, for much
-> of the same reason - we wanted to make no functional change to the
-> existing code, precisely because we wanted it to go in quickly. There
-> are multiple things that are waiting for it:
-> - Michael Walle's enetc patches are going to use pcs-lynx
+Andrii Nakryiko (2):
+  libbpf: make bpf_endian co-exist with vmlinux.h
+  selftests/bpf: add byte swapping selftest
 
-How likely is it that this will be sorted out before the 5.9 merge
-window will be closed? The thing is, we have boards out in the
-wild which have a non-working ethernet with their stock bootloader
-and which depend on the following patch series to get that fixed:
+ tools/lib/bpf/bpf_endian.h                    | 43 ++++++++++++---
+ .../testing/selftests/bpf/prog_tests/endian.c | 53 +++++++++++++++++++
+ .../testing/selftests/bpf/progs/test_endian.c | 37 +++++++++++++
+ 3 files changed, 125 insertions(+), 8 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/endian.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_endian.c
 
-https://lore.kernel.org/netdev/20200528063847.27704-1-michael@walle.cc/
+--=20
+2.24.1
 
-Thus, if this is going to take longer, I'd do a respin of that
-series. We already missed the 5.8 release and I don't know if
-a "Fixes:" tag (or a CC stable) is appropriate here because it
-is kind of a new functionality.
-
--michael
