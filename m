@@ -2,119 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 553B7210085
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 01:41:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C04EA210087
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 01:41:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726283AbgF3XlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 19:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
+        id S1726425AbgF3XlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 19:41:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725930AbgF3XlF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 19:41:05 -0400
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D041C061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 16:41:05 -0700 (PDT)
-Received: by mail-qv1-xf4a.google.com with SMTP id w18so14862507qvd.16
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 16:41:05 -0700 (PDT)
+        with ESMTP id S1725930AbgF3XlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 19:41:20 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B4FC061755;
+        Tue, 30 Jun 2020 16:41:20 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id o22so5148692pjw.2;
+        Tue, 30 Jun 2020 16:41:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=qKAEXHGOkFXex5c7r1EBg/D4TNJkEbIG9k4XF0JPjuU=;
-        b=pmyyxCbHpGFF/swWcGTTjtpKTFzLZuXOWsKOUXg29SGZWSeTKV3t3oF5gF2Zq73/iU
-         Q/mEJ2k5punmH8r2vzYDacRNqw9xnRpG+WECqoygwrC2/XquLwLtshvT6OLqNgjFy9Zy
-         vA75mZWrxfX+TXjU9LAThYQKeFiK/PFc7EzyabdSiRuXOMQgyfPkTG6uv+0xp9M+Gu00
-         x+dbPW167zeRkz+Lp+Juq77rdTE1eD4lVv5yvPHiHkcieCbFQkBvKSWB9nYTN0ufYBNP
-         FnvqyRRkK6zEZwdn/1fQRn3tC7+1WC3JIMVlegWC03GfmKyHJDnk+d3VeFlsbt+mfgFF
-         Bsgg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=546eyQZzdn5dQ5fv+SxUu0FgZG591hjvbFsj/UlLnBo=;
+        b=lnz2fqgGhmgGVgtoRUETlZRJHWPONNa+KVRMofgll+5Xz2UGVIuL3lg1xcaTipGfIa
+         NIYgkgN457aNQRntT5cK41WgPo8f0ZYIymmXx01EQhQhdHNixVegl7VMDqPfkypeOoPs
+         Aa3TMAxQSh/xGrhHPp56KJo63MP8UbU7RTUhhQQVwxZceCEUGzqJmDhZZTqLRRqPpjbC
+         As1xxPkfQ+/QYvxbSL3mNSy7bfMPQrT10B7SYZi/n8BUHTH7e/bUz1brvk3mZpfEyJkg
+         RMqmIlroIG8zpevGr5/EN4r8cfQmz/wP8if6CXvoMPgUCZL5VnohGqyICnY1wQglhu9t
+         RycQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=qKAEXHGOkFXex5c7r1EBg/D4TNJkEbIG9k4XF0JPjuU=;
-        b=Gi+ZrJxx9XEcXHZu+BznjEqV6tYiCJRkMHWCx6+8JHnhQYzNXNXvB/Gn0kQOiTL0l3
-         s8iykd6WqQeXEh2CzLieNdYpVhP2nzwHqm+OfH3VvgZPyiifOYnt4Tb7MXLI072kjHuE
-         PqSyXUVlnrTqX+fggUp2zh7SPBYfTkTCFIwzQO4FKIYpclTqqbypm2VR/ZaDihB+hVzD
-         PboFnw+dZvy/rpPkyejEE2Qpifql6WfF7+WaK/T3GE/b78wNHSE+/YL7wxsdDwVqfl1x
-         J7wCOFmvO33x21zY/7idb113j0iFZMcAUQkMtvEjKZYv9LENLctoy8L7MK3o6ehg3AvI
-         PWtg==
-X-Gm-Message-State: AOAM530d3XAsaqHfBnEJPQEq8VRceVZNSkTgs9ohk0dkijmyP/9hP9pB
-        olU5mXr427WPPAXyZ5JFS6GT+vbKQt5QZw==
-X-Google-Smtp-Source: ABdhPJy9nbYdwE009T3ltQc40+v0m1zdQczbDugNjtqt5cBdIQU1EsfcP15wFdHuRumlmdc/CdJs3n4OBiWW0w==
-X-Received: by 2002:a05:6214:13c6:: with SMTP id cg6mr22876994qvb.160.1593560464226;
- Tue, 30 Jun 2020 16:41:04 -0700 (PDT)
-Date:   Tue, 30 Jun 2020 16:41:01 -0700
-Message-Id: <20200630234101.3259179-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.27.0.212.ge8ba1cc988-goog
-Subject: [PATCH net] tcp: md5: add missing memory barriers in tcp_md5_do_add()/tcp_md5_hash_key()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=546eyQZzdn5dQ5fv+SxUu0FgZG591hjvbFsj/UlLnBo=;
+        b=BphZ1ndaXMz/dTkIjDuRyBk2f1GP74YiW2yHk9wZa1ZZ8esH0sbVkBgCHR3zQ1oksE
+         VgIzs4rl8BOBnDrzrpNwEZgJqxCFRKXV8OZiWyWpeK9HyNuvDFVn4rXEx1diXNZrnq1p
+         jGi6Jrr94qAmp70mpZ+/ZdC+YCMH7ouIvzaEQ/hGOtN+4wX82rD+EsYizTWb7WV2QvOa
+         QGC428N2GO2f9/7gNql617RsAeMN1kNiEAt6BRcpWRx66nmbUtwY3AywtHQRZWP7XQMy
+         pNDRa9eg5YomVQ3rg+BEojMCRqjJXoHeKhwuFolGM3BcxES3wvDhphSOBOoMkXKE6HAJ
+         DSRA==
+X-Gm-Message-State: AOAM532oTdCBx3JUrW0SehnCaoQLekvKilzGP8d0sbkMUcFPohzm0hUQ
+        Ku1OEybfy+AaT/KGVTjcIjg=
+X-Google-Smtp-Source: ABdhPJyxWh+/D3J665jbjoRLmIrHsRP+/hFmZwcwsbrJ1l1YbnPNB+2q+Ip3swgXEpwJZq2RFXutpw==
+X-Received: by 2002:a17:90b:94f:: with SMTP id dw15mr13087287pjb.209.1593560480189;
+        Tue, 30 Jun 2020 16:41:20 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e083])
+        by smtp.gmail.com with ESMTPSA id c27sm3380300pfj.163.2020.06.30.16.41.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Jun 2020 16:41:19 -0700 (PDT)
+Date:   Tue, 30 Jun 2020 16:41:17 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     davem@davemloft.net, paulmck@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v5 bpf-next 2/5] bpf: Introduce sleepable BPF programs
+Message-ID: <20200630234117.arqmjpbivy5fhhmk@ast-mbp.dhcp.thefacebook.com>
+References: <20200630043343.53195-1-alexei.starovoitov@gmail.com>
+ <20200630043343.53195-3-alexei.starovoitov@gmail.com>
+ <d0c6b6a6-7b82-e620-8ced-8a1acfaf6f6d@iogearbox.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d0c6b6a6-7b82-e620-8ced-8a1acfaf6f6d@iogearbox.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MD5 keys are read with RCU protection, and tcp_md5_do_add()
-might update in-place a prior key.
+On Wed, Jul 01, 2020 at 01:26:44AM +0200, Daniel Borkmann wrote:
+> On 6/30/20 6:33 AM, Alexei Starovoitov wrote:
+> [...]
+> > +/* list of non-sleepable kernel functions that are otherwise
+> > + * available to attach by bpf_lsm or fmod_ret progs.
+> > + */
+> > +static int check_sleepable_blacklist(unsigned long addr)
+> > +{
+> > +#ifdef CONFIG_BPF_LSM
+> > +	if (addr == (long)bpf_lsm_task_free)
+> > +		return -EINVAL;
+> > +#endif
+> > +#ifdef CONFIG_SECURITY
+> > +	if (addr == (long)security_task_free)
+> > +		return -EINVAL;
+> > +#endif
+> > +	return 0;
+> > +}
+> 
+> Would be nice to have some sort of generic function annotation to describe
+> that code cannot sleep inside of it, and then filter based on that. Anyway,
+> is above from manual code inspection?
 
-Normally, typical RCU updates would allocate a new piece
-of memory. In this case only key->key and key->keylen might
-be updated, and we do not care if an incoming packet could
-see the old key, the new one, or some intermediate value,
-since changing the key on a live flow is known to be problematic
-anyway.
+yep. all manual. I don't think there is a way to automate it.
+At least I cannot think of one.
 
-We only want to make sure that in the case key->keylen
-is changed, cpus in tcp_md5_hash_key() wont try to use
-uninitialized data, or crash because key->keylen was
-read twice to feed sg_init_one() and ahash_request_set_crypt()
+> What about others like security_sock_rcv_skb() for example which could be
+> bh_lock_sock()'ed (or, generally hooks running in softirq context)?
 
-Fixes: 9ea88a153001 ("tcp: md5: check md5 signature without socket lock")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
----
- net/ipv4/tcp.c      | 7 +++++--
- net/ipv4/tcp_ipv4.c | 3 +++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ahh. it's in running in bh at that point? then it should be added to blacklist.
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 810cc164f795f8e1e8ca747ed5df51bb20fec8a2..f111660453241692a17c881dd6dc2910a1236263 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4033,10 +4033,13 @@ EXPORT_SYMBOL(tcp_md5_hash_skb_data);
- 
- int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct tcp_md5sig_key *key)
- {
-+	u8 keylen = key->keylen;
- 	struct scatterlist sg;
- 
--	sg_init_one(&sg, key->key, key->keylen);
--	ahash_request_set_crypt(hp->md5_req, &sg, NULL, key->keylen);
-+	smp_rmb(); /* paired with smp_wmb() in tcp_md5_do_add() */
-+
-+	sg_init_one(&sg, key->key, keylen);
-+	ahash_request_set_crypt(hp->md5_req, &sg, NULL, keylen);
- 	return crypto_ahash_update(hp->md5_req);
- }
- EXPORT_SYMBOL(tcp_md5_hash_key);
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index ad6435ba6d72ffd8caf783bb25cad7ec151d6909..99916fcc15ca0be12c2c133ff40516f79e6fdf7f 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1113,6 +1113,9 @@ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
- 	if (key) {
- 		/* Pre-existing entry - just update that one. */
- 		memcpy(key->key, newkey, newkeylen);
-+
-+		smp_wmb(); /* pairs with smp_rmb() in tcp_md5_hash_key() */
-+
- 		key->keylen = newkeylen;
- 		return 0;
- 	}
--- 
-2.27.0.212.ge8ba1cc988-goog
-
+The rough idea I had is to try all lsm_* and security_* hooks with all
+debug kernel flags and see which ones will complain. Then add them to blacklist.
+Unfortunately I'm completely swamped and cannot promise to do that
+in the coming months.
+So either we wait for somebody to do due diligence or land it knowing
+that blacklist is incomplete and fix it up one by one.
+I think the folks who're waiting on sleepable work would prefer the latter.
+I'm fine whichever way.
