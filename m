@@ -2,613 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0C5F20FB82
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:15:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8123120FB76
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:13:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390725AbgF3SOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 14:14:49 -0400
-Received: from mail-ej1-f67.google.com ([209.85.218.67]:34043 "EHLO
-        mail-ej1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730017AbgF3SOs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:14:48 -0400
-Received: by mail-ej1-f67.google.com with SMTP id y10so21614268eje.1;
-        Tue, 30 Jun 2020 11:14:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=y/I9lxA8TnppKpHWyJ953K6Ajo6KrVHdtGBG6Hewqz0=;
-        b=NA5/M7ArobCCItM5Ph8hx+RGl/z+kZ184xsqBkSuVSM9zwiTufJdyVOLLqtXfQIEqz
-         T2+cG33Fsz13LCx5uhSIL9VqcDHcR72SvtwuP5QxIeR/eYElHcWdturBEa+IcUtYnisF
-         4hb8GMFIZu8hBV7Md6SJriPAaSj4Cv9+dVMm4LKSLVBlze8DxqOcLsYvYWG97IN7gct0
-         x0+wIacS6SRPKAOennSpIzcej6iQhshd2quxfAiNNfxB3KqaTw1/8p7vRsLz5gE7siGp
-         KHFYpBbrWGif7Je5mlYcuMjN+n3NtGfFRC9I61S9nUhVF0P+ubRXUkx1piZl+LUzzwMA
-         k6Mw==
-X-Gm-Message-State: AOAM530svlbWYSt26w7MJiGRMmR5SaT5TgK8i6zzY+SEGUK9s9GOdtTM
-        /OTk9sP+tE/peUAdcQHWMGFTGZgrZoYOCg==
-X-Google-Smtp-Source: ABdhPJx+uY4G2ulZBUIugDtsnT+eEUEtt1pm5DyXas/v24eaxdeyBrVp9aDyRNhUowlWHHzNIPo9Mg==
-X-Received: by 2002:a17:906:eb93:: with SMTP id mh19mr18859098ejb.552.1593540880947;
-        Tue, 30 Jun 2020 11:14:40 -0700 (PDT)
-Received: from msft-t490s.lan ([2001:b07:5d26:7f46:d7c1:f090:1563:f81f])
-        by smtp.gmail.com with ESMTPSA id d13sm2492313ejj.95.2020.06.30.11.14.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2020 11:14:40 -0700 (PDT)
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Stefan Chulski <stefanc@marvell.com>,
-        Marcin Wojtas <mw@semihalf.com>, maxime.chevallier@bootlin.com,
-        antoine.tenart@bootlin.com, thomas.petazzoni@bootlin.com
-Subject: [PATCH net-next 4/4] mvpp2: XDP TX support
-Date:   Tue, 30 Jun 2020 20:09:30 +0200
-Message-Id: <20200630180930.87506-5-mcroce@linux.microsoft.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200630180930.87506-1-mcroce@linux.microsoft.com>
-References: <20200630180930.87506-1-mcroce@linux.microsoft.com>
+        id S2390663AbgF3SNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 14:13:36 -0400
+Received: from mail-dm6nam11on2127.outbound.protection.outlook.com ([40.107.223.127]:54208
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726831AbgF3SNf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jun 2020 14:13:35 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jEXFDrjVviZeSoEAcP7mGFTW+WRFKLtd3yBfPatr/qQGYCfhwZN5PBK7THi9RNvv8izSZyrPa9pooQjIQ7aaUCz7vspSX2zVJ9i0y24EvB0rhRG3AR0o41cRnDtQjwjtKzSmTfzYnVNjHBmhVqw/P/l5P2EkkW149Z7z7TucfxI/5DRI+xshzGFV/r7iReqcHtRmw/PNY73fzKP52ohaFkvlrAFkYpZHrtHqqkhDvhyXt3Y18yFhhR1yiaaE+ST7XrKl7F/Fp75iyTMsqexl1qJqwkwYCr/OWtewO2DXNhH13GirIAtvOBjK07CY8JrS+YYwbcE887bZZSB1u5DfCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ci+eMdOPSubnsTlUv4P8HpKDkQzSkexc1lODC7isFJ8=;
+ b=DSAMRU6ysSJmIJzec6BCS5wYrPycd/kxe3kZsBmmRKW4G3kIp/ia9U1Xuf8XsfFMYRt7G0meCewljRExH/jjDXoyY8/yvZT+tLt+rc+67WxONYGaboVkTx5pyB/NbBW/r0D9PZZ4GV7LlGk9I4GM7N4+c+B+HNdh6iFPXVWUkWBuFNS+BWPpoLdUQuo2WE4PH9zk29ddg5JhNUPW8yEe3FSe3Pkkd4BnT7t0t0s9eCK9THMsqjxqOdlI+Dccl7IOwxKlPKN5fHq1AfTO9CMqT01yZlDAMKXB6RkxzwCc6ZDg2JeGAGdlVhLH5pRyn2kTBhQ/wVq0ODSs63eOSFASBQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ci+eMdOPSubnsTlUv4P8HpKDkQzSkexc1lODC7isFJ8=;
+ b=V/xCwuh46c+3vtzt1yeAQ5FYX5wzpdp2b0/LrsnjeV0oTmOF977aNw9dDDXMOKZUovlDR5Z1IU7LwjIJ535yyIbCw61x13apeS7B/jMMV8iheeJzPepMvFhKmiYUQ3ZYIhpCSCMQZLboM2lQICPIKeLagBvqzMl5JgM2t1SUrkw=
+Received: from MW2PR2101MB1052.namprd21.prod.outlook.com (2603:10b6:302:a::16)
+ by MW2PR2101MB1850.namprd21.prod.outlook.com (2603:10b6:302:3::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.2; Tue, 30 Jun
+ 2020 18:13:31 +0000
+Received: from MW2PR2101MB1052.namprd21.prod.outlook.com
+ ([fe80::fc14:3ca6:8a8:7407]) by MW2PR2101MB1052.namprd21.prod.outlook.com
+ ([fe80::fc14:3ca6:8a8:7407%8]) with mapi id 15.20.3174.001; Tue, 30 Jun 2020
+ 18:13:31 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Andres Beltran <lkmlabelt@gmail.com>
+CC:     Andres Beltran <t-mabelt@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        Saruhan Karademir <skarade@microsoft.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: RE: [PATCH v3 0/3] Drivers: hv: vmbus: vmbus_requestor data structure
+ for VMBus hardening
+Thread-Topic: [PATCH v3 0/3] Drivers: hv: vmbus: vmbus_requestor data
+ structure for VMBus hardening
+Thread-Index: AQHWTvOf4ttKaLwwGECv5rK/oufMBqjxZnGAgAAPS4A=
+Date:   Tue, 30 Jun 2020 18:13:31 +0000
+Message-ID: <MW2PR2101MB1052E024460AE69A546183B2D76F0@MW2PR2101MB1052.namprd21.prod.outlook.com>
+References: <20200630153200.1537105-1-lkmlabelt@gmail.com>
+ <20200630101621.0f4d9dba@hermes.lan>
+In-Reply-To: <20200630101621.0f4d9dba@hermes.lan>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-06-30T18:13:30Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=1962cb0b-609d-47c4-83e0-cfb0c0e4623c;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
+authentication-results: networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=none action=none
+ header.from=microsoft.com;
+x-originating-ip: [24.22.167.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 41f87a0c-fa8a-4053-0428-08d81d214beb
+x-ms-traffictypediagnostic: MW2PR2101MB1850:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW2PR2101MB18509E4BE6E7A368A700C5C1D76F0@MW2PR2101MB1850.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SO1NAwTq02ut+DZhAxqO2xbFIpc2ITQptowoi8BMjzdQy790GwDmb95c0zRrV6PYIBxwpgMY2DXTrnVeuRKRx4Zet9KBUSryWVTMP8XPCwQkrtHCMByR5d0XczM0lJLooKi3kYX/ssyH3ZTDxnD2Zy2v7zX36neDPmjIjEV91fXF/mFEJeEOI+EaBOaXNTLABBu4Mz1lAA5vcuR5j8GDi3AtYkdRIQRLPhSlKtoNdx2oXzGs30ZXKs9RCt+hLa5dlDVwYaCxU8+cmHnshh7osvACUilQFWfANRiPyXdjplIiNyDb6502YtwpesZUS82ESs24LU/1rxh03EpJM2uf5Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR2101MB1052.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(376002)(396003)(346002)(39860400002)(366004)(10290500003)(316002)(33656002)(54906003)(83380400001)(110136005)(86362001)(26005)(478600001)(71200400001)(82950400001)(82960400001)(6506007)(52536014)(2906002)(66946007)(55016002)(7696005)(8676002)(9686003)(8936002)(76116006)(186003)(66476007)(8990500004)(4326008)(7416002)(5660300002)(64756008)(66446008)(66556008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: KV8VeQuvq1LtOEo/fcLIq1XrDgtJpnevzjQywIoGWznbxdy/rR3Za8DEhdEh4pc2vy6j/IHWs/kJHklzeW8cIew5wDtXbLXXFE+x/R6QATCyf8oTJRalbfdODFypx+Z4hJve/NeeXhycLx+tpwE6VuYDyhIMKb0DnBGcJXOLIHJbMbzX+sFf0kKpWXZWOp+4Ycf90bnCEC28ffeh2o6X0oFtGQy6ssy/BtNLhVWeXFRCQPNoJ/FQhFJKN6TcnAf4qcM7WSQfebxH/Q11j0Rqpj3Bu488owalrCmPgv+eCkxEMJtgupgiX6fEyfPN5smJqLoQfy9LOUEy5Cdm21k0rw0VoBBHl+s4HIfKlxc+L1GVxKhaOLYrU/9jHrPzvvf4CSIHszbLoSwWDLIfcse3RjCaYK59DyM9b5a54724ibSP6+LUi/6Byp3UNGvT8Z1nmdJRowQcgxuXICve9985L51+nkz9YWJBKDyJc8/2MB76HKDotFfmG4USsbp5Od81
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW2PR2101MB1052.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 41f87a0c-fa8a-4053-0428-08d81d214beb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2020 18:13:31.6315
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 40K+/kjZoyTmEVRCRbfh/laAQ2kBfp8jJ8+u43YRU6gRo6kx0qEqo4Nh/Ai67D5okJMOgmkXEk4gAi70sWbUCFapWSXMG7f1V6U4bYPgKIc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1850
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@microsoft.com>
+From: Stephen Hemminger <stephen@networkplumber.org>  Sent: Tuesday, June 3=
+0, 2020 10:16 AM
+>=20
+> On Tue, 30 Jun 2020 11:31:57 -0400
+> Andres Beltran <lkmlabelt@gmail.com> wrote:
+>=20
+> > Currently, VMbus drivers use pointers into guest memory as request IDs
+> > for interactions with Hyper-V. To be more robust in the face of errors
+> > or malicious behavior from a compromised Hyper-V, avoid exposing
+> > guest memory addresses to Hyper-V. Also avoid Hyper-V giving back a
+> > bad request ID that is then treated as the address of a guest data
+> > structure with no validation. Instead, encapsulate these memory
+> > addresses and provide small integers as request IDs.
+> >
+> > The first patch creates the definitions for the data structure, provide=
+s
+> > helper methods to generate new IDs and retrieve data, and
+> > allocates/frees the memory needed for vmbus_requestor.
+> >
+> > The second and third patches make use of vmbus_requestor to send reques=
+t
+> > IDs to Hyper-V in storvsc and netvsc respectively.
+> >
+> > Thanks.
+> > Andres Beltran
+> >
+> > Tested-by: Andrea Parri <parri.andrea@gmail.com>
+> >
+> > Cc: linux-scsi@vger.kernel.org
+> > Cc: netdev@vger.kernel.org
+> > Cc: James E.J. Bottomley <jejb@linux.ibm.com>
+> > Cc: Martin K. Petersen <martin.petersen@oracle.com>
+> > Cc: David S. Miller <davem@davemloft.net>
+> >
+> > Andres Beltran (3):
+> >   Drivers: hv: vmbus: Add vmbus_requestor data structure for VMBus
+> >     hardening
+> >   scsi: storvsc: Use vmbus_requestor to generate transaction IDs for
+> >     VMBus hardening
+> >   hv_netvsc: Use vmbus_requestor to generate transaction IDs for VMBus
+> >     hardening
+> >
+> >  drivers/hv/channel.c              | 154 ++++++++++++++++++++++++++++++
+> >  drivers/net/hyperv/hyperv_net.h   |  13 +++
+> >  drivers/net/hyperv/netvsc.c       |  79 ++++++++++++---
+> >  drivers/net/hyperv/rndis_filter.c |   1 +
+> >  drivers/scsi/storvsc_drv.c        |  85 ++++++++++++++---
+> >  include/linux/hyperv.h            |  22 +++++
+> >  6 files changed, 329 insertions(+), 25 deletions(-)
+> >
+>=20
+> How does this interact with use of the vmbus in usermode by DPDK through
+> hv_uio_generic?
+> Will it still work?
 
-Add the transmit part of XDP support, which includes:
-- support for XDP_TX in mvpp2_xdp()
-- .ndo_xdp_xmit hook for AF_XDP and XDP_REDIRECT with mvpp2 as destination
+This new mechanism for generating requestIDs to pass to Hyper-V is
+available for VMbus drivers to use, but drivers that have not been updated
+to use it are unaffected.  So hv_uio_generic will work as it always has.
 
-mvpp2_xdp_submit_frame() is a generic function which is called by
-mvpp2_xdp_xmit_back() when doing XDP_TX, and by mvpp2_xdp_xmit when
-doing AF_XDP or XDP_REDIRECT target.
-
-The buffer allocation has been reworked to be able to map the buffers
-as DMA_FROM_DEVICE or DMA_BIDIRECTIONAL depending if a BPF program
-is loaded or not.
-
-Co-developed-by: Sven Auhagen <sven.auhagen@voleatech.de>
-Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
-Signed-off-by: Matteo Croce <mcroce@microsoft.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |  13 +-
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 312 +++++++++++++++---
- 2 files changed, 280 insertions(+), 45 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index f351e41c9da6..c52955b33fab 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -1082,9 +1082,20 @@ struct mvpp2_rx_desc {
- 	};
- };
- 
-+enum mvpp2_tx_buf_type {
-+	MVPP2_TYPE_SKB,
-+	MVPP2_TYPE_XDP_TX,
-+	MVPP2_TYPE_XDP_NDO,
-+};
-+
- struct mvpp2_txq_pcpu_buf {
-+	enum mvpp2_tx_buf_type type;
-+
- 	/* Transmitted SKB */
--	struct sk_buff *skb;
-+	union {
-+		struct xdp_frame *xdpf;
-+		struct sk_buff *skb;
-+	};
- 
- 	/* Physical address of transmitted buffer */
- 	dma_addr_t dma;
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 864d4789a0b3..ffc2a220613d 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -97,7 +97,8 @@ static inline u32 mvpp2_cpu_to_thread(struct mvpp2 *priv, int cpu)
- }
- 
- static struct page_pool *
--mvpp2_create_page_pool(struct device *dev, int num, int len)
-+mvpp2_create_page_pool(struct device *dev, int num, int len,
-+		       enum dma_data_direction dma_dir)
- {
- 	struct page_pool_params pp_params = {
- 		/* internal DMA mapping in page_pool */
-@@ -105,7 +106,7 @@ mvpp2_create_page_pool(struct device *dev, int num, int len)
- 		.pool_size = num,
- 		.nid = NUMA_NO_NODE,
- 		.dev = dev,
--		.dma_dir = DMA_FROM_DEVICE,
-+		.dma_dir = dma_dir,
- 		.offset = MVPP2_SKB_HEADROOM,
- 		.max_len = len,
- 	};
-@@ -299,12 +300,17 @@ static void mvpp2_txq_inc_get(struct mvpp2_txq_pcpu *txq_pcpu)
- 
- static void mvpp2_txq_inc_put(struct mvpp2_port *port,
- 			      struct mvpp2_txq_pcpu *txq_pcpu,
--			      struct sk_buff *skb,
--			      struct mvpp2_tx_desc *tx_desc)
-+			      void *data,
-+			      struct mvpp2_tx_desc *tx_desc,
-+			      enum mvpp2_tx_buf_type buf_type)
- {
- 	struct mvpp2_txq_pcpu_buf *tx_buf =
- 		txq_pcpu->buffs + txq_pcpu->txq_put_index;
--	tx_buf->skb = skb;
-+	tx_buf->type = buf_type;
-+	if (buf_type == MVPP2_TYPE_SKB)
-+		tx_buf->skb = data;
-+	else
-+		tx_buf->xdpf = data;
- 	tx_buf->size = mvpp2_txdesc_size_get(port, tx_desc);
- 	tx_buf->dma = mvpp2_txdesc_dma_addr_get(port, tx_desc) +
- 		mvpp2_txdesc_offset_get(port, tx_desc);
-@@ -528,9 +534,6 @@ static int mvpp2_bm_pool_destroy(struct device *dev, struct mvpp2 *priv,
- 	int buf_num;
- 	u32 val;
- 
--	if (priv->percpu_pools)
--		page_pool_destroy(priv->page_pool[bm_pool->id]);
--
- 	buf_num = mvpp2_check_hw_buf_num(priv, bm_pool);
- 	mvpp2_bm_bufs_free(dev, priv, bm_pool, buf_num);
- 
-@@ -546,6 +549,9 @@ static int mvpp2_bm_pool_destroy(struct device *dev, struct mvpp2 *priv,
- 	val |= MVPP2_BM_STOP_MASK;
- 	mvpp2_write(priv, MVPP2_BM_POOL_CTRL_REG(bm_pool->id), val);
- 
-+	if (priv->percpu_pools)
-+		page_pool_destroy(priv->page_pool[bm_pool->id]);
-+
- 	dma_free_coherent(dev, bm_pool->size_bytes,
- 			  bm_pool->virt_addr,
- 			  bm_pool->dma_addr);
-@@ -581,9 +587,19 @@ static int mvpp2_bm_pools_init(struct device *dev, struct mvpp2 *priv)
- 
- static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
- {
-+	enum dma_data_direction dma_dir = DMA_FROM_DEVICE;
- 	int i, err, poolnum = MVPP2_BM_POOLS_NUM;
-+	struct mvpp2_port *port;
- 
- 	if (priv->percpu_pools) {
-+		for (i = 0; i < priv->port_count; i++) {
-+			port = priv->port_list[i];
-+			if (port->xdp_prog) {
-+				dma_dir = DMA_BIDIRECTIONAL;
-+				break;
-+			}
-+		}
-+
- 		poolnum = mvpp2_get_nrxqs(priv) * 2;
- 		for (i = 0; i < poolnum; i++) {
- 			/* the pool in use */
-@@ -592,7 +608,8 @@ static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
- 			priv->page_pool[i] =
- 				mvpp2_create_page_pool(dev,
- 						       mvpp2_pools[pn].buf_num,
--						       mvpp2_pools[pn].pkt_size);
-+						       mvpp2_pools[pn].pkt_size,
-+						       dma_dir);
- 			if (IS_ERR(priv->page_pool[i]))
- 				return PTR_ERR(priv->page_pool[i]);
- 		}
-@@ -2319,11 +2336,15 @@ static void mvpp2_txq_bufs_free(struct mvpp2_port *port,
- 		struct mvpp2_txq_pcpu_buf *tx_buf =
- 			txq_pcpu->buffs + txq_pcpu->txq_get_index;
- 
--		if (!IS_TSO_HEADER(txq_pcpu, tx_buf->dma))
-+		if (!IS_TSO_HEADER(txq_pcpu, tx_buf->dma) &&
-+		    tx_buf->type != MVPP2_TYPE_XDP_TX)
- 			dma_unmap_single(port->dev->dev.parent, tx_buf->dma,
- 					 tx_buf->size, DMA_TO_DEVICE);
--		if (tx_buf->skb)
-+		if (tx_buf->type == MVPP2_TYPE_SKB && tx_buf->skb)
- 			dev_kfree_skb_any(tx_buf->skb);
-+		else if (tx_buf->type == MVPP2_TYPE_XDP_TX ||
-+			 tx_buf->type == MVPP2_TYPE_XDP_NDO)
-+			xdp_return_frame(tx_buf->xdpf);
- 
- 		mvpp2_txq_inc_get(txq_pcpu);
- 	}
-@@ -2809,7 +2830,7 @@ static int mvpp2_setup_rxqs(struct mvpp2_port *port)
- static int mvpp2_setup_txqs(struct mvpp2_port *port)
- {
- 	struct mvpp2_tx_queue *txq;
--	int queue, err, cpu;
-+	int queue, err;
- 
- 	for (queue = 0; queue < port->ntxqs; queue++) {
- 		txq = port->txqs[queue];
-@@ -2818,8 +2839,8 @@ static int mvpp2_setup_txqs(struct mvpp2_port *port)
- 			goto err_cleanup;
- 
- 		/* Assign this queue to a CPU */
--		cpu = queue % num_present_cpus();
--		netif_set_xps_queue(port->dev, cpumask_of(cpu), queue);
-+		if (queue < num_possible_cpus())
-+			netif_set_xps_queue(port->dev, cpumask_of(queue), queue);
- 	}
- 
- 	if (port->has_tx_irqs) {
-@@ -3038,6 +3059,165 @@ static u32 mvpp2_skb_tx_csum(struct mvpp2_port *port, struct sk_buff *skb)
- 	return MVPP2_TXD_L4_CSUM_NOT | MVPP2_TXD_IP_CSUM_DISABLE;
- }
- 
-+static void mvpp2_xdp_finish_tx(struct mvpp2_port *port, u16 txq_id, int nxmit, int nxmit_byte)
-+{
-+	unsigned int thread = mvpp2_cpu_to_thread(port->priv, smp_processor_id());
-+	struct mvpp2_pcpu_stats *stats = per_cpu_ptr(port->stats, thread);
-+	struct mvpp2_tx_queue *aggr_txq;
-+	struct mvpp2_txq_pcpu *txq_pcpu;
-+	struct mvpp2_tx_queue *txq;
-+	struct netdev_queue *nq;
-+
-+	txq = port->txqs[txq_id];
-+	txq_pcpu = per_cpu_ptr(txq->pcpu, thread);
-+	nq = netdev_get_tx_queue(port->dev, txq_id);
-+	aggr_txq = &port->priv->aggr_txqs[thread];
-+
-+	txq_pcpu->reserved_num -= nxmit;
-+	txq_pcpu->count += nxmit;
-+	aggr_txq->count += nxmit;
-+
-+	/* Enable transmit */
-+	wmb();
-+	mvpp2_aggr_txq_pend_desc_add(port, nxmit);
-+
-+	if (txq_pcpu->count >= txq_pcpu->stop_threshold)
-+		netif_tx_stop_queue(nq);
-+
-+	u64_stats_update_begin(&stats->syncp);
-+	stats->tx_bytes += nxmit_byte;
-+	stats->tx_packets += nxmit;
-+	u64_stats_update_end(&stats->syncp);
-+
-+	/* Finalize TX processing */
-+	if (!port->has_tx_irqs && txq_pcpu->count >= txq->done_pkts_coal)
-+		mvpp2_txq_done(port, txq, txq_pcpu);
-+}
-+
-+static int
-+mvpp2_xdp_submit_frame(struct mvpp2_port *port, u16 txq_id,
-+		       struct xdp_frame *xdpf, bool dma_map)
-+{
-+	struct mvpp2_tx_desc *tx_desc;
-+	struct mvpp2_tx_queue *aggr_txq;
-+	struct mvpp2_tx_queue *txq;
-+	struct mvpp2_txq_pcpu *txq_pcpu;
-+	dma_addr_t dma_addr;
-+	u32 tx_cmd = MVPP2_TXD_L4_CSUM_NOT | MVPP2_TXD_IP_CSUM_DISABLE |
-+		     MVPP2_TXD_F_DESC | MVPP2_TXD_L_DESC;
-+	enum mvpp2_tx_buf_type buf_type;
-+	int ret = MVPP2_XDP_TX;
-+
-+	unsigned int thread = mvpp2_cpu_to_thread(port->priv, smp_processor_id());
-+
-+	txq = port->txqs[txq_id];
-+	txq_pcpu = per_cpu_ptr(txq->pcpu, thread);
-+	aggr_txq = &port->priv->aggr_txqs[thread];
-+
-+	/* Check number of available descriptors */
-+	if (mvpp2_aggr_desc_num_check(port, aggr_txq, 1) ||
-+	    mvpp2_txq_reserved_desc_num_proc(port, txq, txq_pcpu, 1)) {
-+		ret = MVPP2_XDP_DROPPED;
-+		goto out;
-+	}
-+
-+	/* Get a descriptor for the first part of the packet */
-+	tx_desc = mvpp2_txq_next_desc_get(aggr_txq);
-+	mvpp2_txdesc_txq_set(port, tx_desc, txq->id);
-+	mvpp2_txdesc_size_set(port, tx_desc, xdpf->len);
-+
-+	if (dma_map) {
-+		/* XDP_REDIRECT or AF_XDP */
-+		dma_addr = dma_map_single(port->dev->dev.parent, xdpf->data,
-+					  xdpf->len, DMA_TO_DEVICE);
-+
-+		if (unlikely(dma_mapping_error(port->dev->dev.parent, dma_addr))) {
-+			mvpp2_txq_desc_put(txq);
-+			ret = MVPP2_XDP_DROPPED;
-+			goto out;
-+		}
-+
-+		buf_type = MVPP2_TYPE_XDP_NDO;
-+	} else {
-+		/* XDP_TX */
-+		struct page *page = virt_to_page(xdpf->data);
-+
-+		dma_addr = page_pool_get_dma_addr(page) +
-+			   sizeof(*xdpf) + xdpf->headroom;
-+		dma_sync_single_for_device(port->dev->dev.parent, dma_addr,
-+					   xdpf->len, DMA_BIDIRECTIONAL);
-+
-+		buf_type = MVPP2_TYPE_XDP_TX;
-+	}
-+
-+	mvpp2_txdesc_dma_addr_set(port, tx_desc, dma_addr);
-+
-+	mvpp2_txdesc_cmd_set(port, tx_desc, tx_cmd);
-+	mvpp2_txq_inc_put(port, txq_pcpu, xdpf, tx_desc, buf_type);
-+
-+out:
-+	return ret;
-+}
-+
-+static int
-+mvpp2_xdp_xmit_back(struct mvpp2_port *port, struct xdp_buff *xdp)
-+{
-+	struct xdp_frame *xdpf;
-+	u16 txq_id;
-+	int ret;
-+
-+	xdpf = xdp_convert_buff_to_frame(xdp);
-+	if (unlikely(!xdpf))
-+		return MVPP2_XDP_DROPPED;
-+
-+	/* The first of the TX queues are used for XPS,
-+	 * the second half for XDP_TX
-+	 */
-+	txq_id = mvpp2_cpu_to_thread(port->priv, smp_processor_id()) + (port->ntxqs / 2);
-+
-+	ret = mvpp2_xdp_submit_frame(port, txq_id, xdpf, false);
-+	if (ret == MVPP2_XDP_TX)
-+		mvpp2_xdp_finish_tx(port, txq_id, 1, xdpf->len);
-+
-+	return ret;
-+}
-+
-+static int
-+mvpp2_xdp_xmit(struct net_device *dev, int num_frame,
-+	       struct xdp_frame **frames, u32 flags)
-+{
-+	struct mvpp2_port *port = netdev_priv(dev);
-+	int i, nxmit_byte = 0, nxmit = num_frame;
-+	u32 ret;
-+	u16 txq_id;
-+
-+	if (unlikely(test_bit(0, &port->state)))
-+		return -ENETDOWN;
-+
-+	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-+		return -EINVAL;
-+
-+	/* The first of the TX queues are used for XPS,
-+	 * the second half for XDP_TX
-+	 */
-+	txq_id = mvpp2_cpu_to_thread(port->priv, smp_processor_id()) + (port->ntxqs / 2);
-+
-+	for (i = 0; i < num_frame; i++) {
-+		ret = mvpp2_xdp_submit_frame(port, txq_id, frames[i], true);
-+		if (ret == MVPP2_XDP_TX) {
-+			nxmit_byte += frames[i]->len;
-+		} else {
-+			xdp_return_frame_rx_napi(frames[i]);
-+			nxmit--;
-+		}
-+	}
-+
-+	if (nxmit > 0)
-+		mvpp2_xdp_finish_tx(port, txq_id, nxmit, nxmit_byte);
-+
-+	return nxmit;
-+}
-+
- static int
- mvpp2_run_xdp(struct mvpp2_port *port, struct mvpp2_rx_queue *rxq,
- 	      struct bpf_prog *prog, struct xdp_buff *xdp,
-@@ -3068,6 +3248,13 @@ mvpp2_run_xdp(struct mvpp2_port *port, struct mvpp2_rx_queue *rxq,
- 			ret = MVPP2_XDP_REDIR;
- 		}
- 		break;
-+	case XDP_TX:
-+		ret = mvpp2_xdp_xmit_back(port, xdp);
-+		if (ret != MVPP2_XDP_TX) {
-+			page = virt_to_head_page(xdp->data);
-+			page_pool_put_page(pp, page, sync, true);
-+		}
-+		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
- 		fallthrough;
-@@ -3089,6 +3276,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 		    int rx_todo, struct mvpp2_rx_queue *rxq)
- {
- 	struct net_device *dev = port->dev;
-+	enum dma_data_direction dma_dir;
- 	struct bpf_prog *xdp_prog;
- 	struct xdp_buff xdp;
- 	int rx_received;
-@@ -3138,13 +3326,19 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 		if (rx_status & MVPP2_RXD_ERR_SUMMARY)
- 			goto err_drop_frame;
- 
-+		if (port->priv->percpu_pools) {
-+			pp = port->priv->page_pool[pool];
-+			dma_dir = page_pool_get_dma_dir(pp);
-+		} else {
-+			dma_dir = DMA_FROM_DEVICE;
-+		}
-+
- 		dma_sync_single_for_cpu(dev->dev.parent, dma_addr,
- 					rx_bytes + MVPP2_MH_SIZE,
--					DMA_FROM_DEVICE);
--		prefetch(data);
-+					dma_dir);
- 
--		if (port->priv->percpu_pools)
--			pp = port->priv->page_pool[pool];
-+		/* Prefetch header */
-+		prefetch(data);
- 
- 		if (bm_pool->frag_size > PAGE_SIZE)
- 			frag_size = 0;
-@@ -3217,6 +3411,9 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 
- 	rcu_read_unlock();
- 
-+	if (xdp_ret & MVPP2_XDP_REDIR)
-+		xdp_do_flush_map();
-+
- 	if (rcvd_pkts) {
- 		struct mvpp2_pcpu_stats *stats = this_cpu_ptr(port->stats);
- 
-@@ -3283,11 +3480,11 @@ static int mvpp2_tx_frag_process(struct mvpp2_port *port, struct sk_buff *skb,
- 			/* Last descriptor */
- 			mvpp2_txdesc_cmd_set(port, tx_desc,
- 					     MVPP2_TXD_L_DESC);
--			mvpp2_txq_inc_put(port, txq_pcpu, skb, tx_desc);
-+			mvpp2_txq_inc_put(port, txq_pcpu, skb, tx_desc, MVPP2_TYPE_SKB);
- 		} else {
- 			/* Descriptor in the middle: Not First, Not Last */
- 			mvpp2_txdesc_cmd_set(port, tx_desc, 0);
--			mvpp2_txq_inc_put(port, txq_pcpu, NULL, tx_desc);
-+			mvpp2_txq_inc_put(port, txq_pcpu, NULL, tx_desc, MVPP2_TYPE_SKB);
- 		}
- 	}
- 
-@@ -3325,7 +3522,7 @@ static inline void mvpp2_tso_put_hdr(struct sk_buff *skb,
- 	mvpp2_txdesc_cmd_set(port, tx_desc, mvpp2_skb_tx_csum(port, skb) |
- 					    MVPP2_TXD_F_DESC |
- 					    MVPP2_TXD_PADDING_DISABLE);
--	mvpp2_txq_inc_put(port, txq_pcpu, NULL, tx_desc);
-+	mvpp2_txq_inc_put(port, txq_pcpu, NULL, tx_desc, MVPP2_TYPE_SKB);
- }
- 
- static inline int mvpp2_tso_put_data(struct sk_buff *skb,
-@@ -3354,14 +3551,14 @@ static inline int mvpp2_tso_put_data(struct sk_buff *skb,
- 	if (!left) {
- 		mvpp2_txdesc_cmd_set(port, tx_desc, MVPP2_TXD_L_DESC);
- 		if (last) {
--			mvpp2_txq_inc_put(port, txq_pcpu, skb, tx_desc);
-+			mvpp2_txq_inc_put(port, txq_pcpu, skb, tx_desc, MVPP2_TYPE_SKB);
- 			return 0;
- 		}
- 	} else {
- 		mvpp2_txdesc_cmd_set(port, tx_desc, 0);
- 	}
- 
--	mvpp2_txq_inc_put(port, txq_pcpu, NULL, tx_desc);
-+	mvpp2_txq_inc_put(port, txq_pcpu, NULL, tx_desc, MVPP2_TYPE_SKB);
- 	return 0;
- }
- 
-@@ -3474,12 +3671,12 @@ static netdev_tx_t mvpp2_tx(struct sk_buff *skb, struct net_device *dev)
- 		/* First and Last descriptor */
- 		tx_cmd |= MVPP2_TXD_F_DESC | MVPP2_TXD_L_DESC;
- 		mvpp2_txdesc_cmd_set(port, tx_desc, tx_cmd);
--		mvpp2_txq_inc_put(port, txq_pcpu, skb, tx_desc);
-+		mvpp2_txq_inc_put(port, txq_pcpu, skb, tx_desc, MVPP2_TYPE_SKB);
- 	} else {
- 		/* First but not Last */
- 		tx_cmd |= MVPP2_TXD_F_DESC | MVPP2_TXD_PADDING_DISABLE;
- 		mvpp2_txdesc_cmd_set(port, tx_desc, tx_cmd);
--		mvpp2_txq_inc_put(port, txq_pcpu, NULL, tx_desc);
-+		mvpp2_txq_inc_put(port, txq_pcpu, NULL, tx_desc, MVPP2_TYPE_SKB);
- 
- 		/* Continue with other skb fragments */
- 		if (mvpp2_tx_frag_process(port, skb, aggr_txq, txq)) {
-@@ -4158,6 +4355,39 @@ static int mvpp2_change_mtu(struct net_device *dev, int mtu)
- 	return err;
- }
- 
-+static int mvpp2_check_pagepool_dma(struct mvpp2_port *port)
-+{
-+	enum dma_data_direction dma_dir = DMA_FROM_DEVICE;
-+	struct mvpp2 *priv = port->priv;
-+	struct page_pool *page_pool;
-+	int err = -1, i;
-+
-+	if (!priv->percpu_pools) {
-+		netdev_warn(port->dev, "can not change pagepool it is not enabled");
-+	} else {
-+		for (i = 0; i < priv->port_count; i++) {
-+			port = priv->port_list[i];
-+			if (port->xdp_prog) {
-+				dma_dir = DMA_BIDIRECTIONAL;
-+				break;
-+			}
-+		}
-+
-+		if (!priv->page_pool)
-+			return -ENOMEM;
-+
-+		/* All pools are equal in terms of dma direction */
-+		page_pool = priv->page_pool[0];
-+
-+		if (page_pool->p.dma_dir != dma_dir) {
-+			netdev_info(port->dev, "Changing pagepool dma to %d\n", dma_dir);
-+			err = mvpp2_bm_switch_buffers(priv, true);
-+		}
-+	}
-+
-+	return err;
-+}
-+
- static void
- mvpp2_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
- {
-@@ -4268,13 +4498,16 @@ static int mvpp2_xdp_setup(struct mvpp2_port *port, struct netdev_bpf *bpf)
- 		return -EOPNOTSUPP;
- 	}
- 
--	/* device is up and bpf is added/removed, must setup the RX queues */
--	if (running && reset) {
--		mvpp2_stop_dev(port);
--		mvpp2_cleanup_rxqs(port);
--		mvpp2_cleanup_txqs(port);
-+	if (port->ntxqs < num_possible_cpus() * 2) {
-+		netdev_err(port->dev, "XDP_TX needs twice the CPU TX queues, but only %d queues available.\n",
-+			   port->ntxqs);
-+		return -EOPNOTSUPP;
- 	}
- 
-+	/* device is up and bpf is added/removed, must setup the RX queues */
-+	if (running && reset)
-+		mvpp2_stop(port->dev);
-+
- 	old_prog = xchg(&port->xdp_prog, prog);
- 	if (old_prog)
- 		bpf_prog_put(old_prog);
-@@ -4284,21 +4517,11 @@ static int mvpp2_xdp_setup(struct mvpp2_port *port, struct netdev_bpf *bpf)
- 		return 0;
- 
- 	/* device was up, restore the link */
--	if (running) {
--		int ret = mvpp2_setup_rxqs(port);
--
--		if (ret) {
--			netdev_err(port->dev, "mvpp2_setup_rxqs failed\n");
--			return ret;
--		}
--		ret = mvpp2_setup_txqs(port);
--		if (ret) {
--			netdev_err(port->dev, "mvpp2_setup_txqs failed\n");
--			return ret;
--		}
-+	if (running)
-+		mvpp2_open(port->dev);
- 
--		mvpp2_start_dev(port);
--	}
-+	/* Check Page Pool DMA Direction */
-+	mvpp2_check_pagepool_dma(port);
- 
- 	return 0;
- }
-@@ -4669,6 +4892,7 @@ static const struct net_device_ops mvpp2_netdev_ops = {
- 	.ndo_vlan_rx_kill_vid	= mvpp2_vlan_rx_kill_vid,
- 	.ndo_set_features	= mvpp2_set_features,
- 	.ndo_bpf		= mvpp2_xdp,
-+	.ndo_xdp_xmit		= mvpp2_xdp_xmit,
- };
- 
- static const struct ethtool_ops mvpp2_eth_tool_ops = {
--- 
-2.26.2
+Michael
 
