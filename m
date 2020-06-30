@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8375120EAE5
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:29:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D76D520EAE8
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:29:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728667AbgF3B2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 21:28:02 -0400
-Received: from mga11.intel.com ([192.55.52.93]:52168 "EHLO mga11.intel.com"
+        id S1728720AbgF3B2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 21:28:07 -0400
+Received: from mga11.intel.com ([192.55.52.93]:52175 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728565AbgF3B15 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 21:27:57 -0400
-IronPort-SDR: WxmfAI/Osl85/lT79jxuJJetZ5LMwfeO9sLY/Aw85zupnmnoXZ15ByYhPxIcottKg954QRYUTs
- aJHrUJoxqliQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="144305922"
+        id S1728397AbgF3B2B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 21:28:01 -0400
+IronPort-SDR: 8AjA2aVsJIDCgTtuNisIShcaaDeGw9+j31MO4Y7YSshb0gSivJaPloBLbp5x8hBUXGDqsAbohf
+ xmnLqWvURxZQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="144305923"
 X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; 
-   d="scan'208";a="144305922"
+   d="scan'208";a="144305923"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2020 18:27:50 -0700
-IronPort-SDR: 1uBmo99MyL570fXgm9ch5RKNs7uCA/2kcRJYxpW2NOaSuZUVQPplIbeyCoI4ntLK0uy4Yx2Ofm
- ERgBKa9ajtPg==
+IronPort-SDR: H+TRayY7gPbLxZlq/py9AwafjVbniK3xHXmGTK73ZWcUa33mJnaLGOLeA3pBMSzbf8uvAJwdC1
+ ZqpGxqcc6f+A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; 
-   d="scan'208";a="425017695"
+   d="scan'208";a="425017699"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga004.jf.intel.com with ESMTP; 29 Jun 2020 18:27:50 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
+Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v2 02/13] igc: Add initial LTR support
-Date:   Mon, 29 Jun 2020 18:27:37 -0700
-Message-Id: <20200630012748.518705-3-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v2 03/13] igc: Clean up Rx timestamping logic
+Date:   Mon, 29 Jun 2020 18:27:38 -0700
+Message-Id: <20200630012748.518705-4-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200630012748.518705-1-jeffrey.t.kirsher@intel.com>
 References: <20200630012748.518705-1-jeffrey.t.kirsher@intel.com>
@@ -46,213 +46,180 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Andre Guedes <andre.guedes@intel.com>
 
-The LTR message on the PCIe inform the requested latency
-on which the PCIe must become active to the downstream
-PCIe port of the system.
-This patch provide recommended LTR parameters by i225
-specification.
+Differently from I210, I225 doesn't report Rx timestamps via the TS bit
+Rx descriptor + RXSTMPL/RXSTMPH registers mechanism. Rx timestamps are
+reported in the packet buffer only, which is implemented by igc_ptp_rx_
+pktstamp(). So this patch removes igc_ptp_rx_rgtstamp() and all code
+related to it, copied from igb driver.
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Signed-off-by: Andre Guedes <andre.guedes@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_defines.h |  27 +++++
- drivers/net/ethernet/intel/igc/igc_i225.c    | 100 +++++++++++++++++++
- drivers/net/ethernet/intel/igc/igc_i225.h    |   1 +
- drivers/net/ethernet/intel/igc/igc_mac.c     |   5 +
- drivers/net/ethernet/intel/igc/igc_regs.h    |   6 ++
- 5 files changed, 139 insertions(+)
+ drivers/net/ethernet/intel/igc/igc.h         |  3 --
+ drivers/net/ethernet/intel/igc/igc_defines.h |  2 -
+ drivers/net/ethernet/intel/igc/igc_main.c    | 12 ++----
+ drivers/net/ethernet/intel/igc/igc_ptp.c     | 44 +-------------------
+ drivers/net/ethernet/intel/igc/igc_regs.h    |  2 -
+ 5 files changed, 5 insertions(+), 58 deletions(-)
 
+diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
+index 9c57afad6afe..3070dfdb7eb4 100644
+--- a/drivers/net/ethernet/intel/igc/igc.h
++++ b/drivers/net/ethernet/intel/igc/igc.h
+@@ -210,8 +210,6 @@ struct igc_adapter {
+ 	struct sk_buff *ptp_tx_skb;
+ 	struct hwtstamp_config tstamp_config;
+ 	unsigned long ptp_tx_start;
+-	unsigned long last_rx_ptp_check;
+-	unsigned long last_rx_timestamp;
+ 	unsigned int ptp_flags;
+ 	/* System time value lock */
+ 	spinlock_t tmreg_lock;
+@@ -549,7 +547,6 @@ void igc_ptp_init(struct igc_adapter *adapter);
+ void igc_ptp_reset(struct igc_adapter *adapter);
+ void igc_ptp_suspend(struct igc_adapter *adapter);
+ void igc_ptp_stop(struct igc_adapter *adapter);
+-void igc_ptp_rx_rgtstamp(struct igc_q_vector *q_vector, struct sk_buff *skb);
+ void igc_ptp_rx_pktstamp(struct igc_q_vector *q_vector, void *va,
+ 			 struct sk_buff *skb);
+ int igc_ptp_set_ts_config(struct net_device *netdev, struct ifreq *ifr);
 diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
-index ee7fa1c062a0..ed0e560daaae 100644
+index ed0e560daaae..f1f464967f87 100644
 --- a/drivers/net/ethernet/intel/igc/igc_defines.h
 +++ b/drivers/net/ethernet/intel/igc/igc_defines.h
-@@ -521,4 +521,31 @@
- #define IGC_EEER_LPI_FC			0x00040000 /* EEER Ena on Flow Cntrl */
- #define IGC_EEE_SU_LPI_CLK_STP		0x00800000 /* EEE LPI Clock Stop */
+@@ -323,7 +323,6 @@
  
-+/* LTR defines */
-+#define IGC_LTRC_EEEMS_EN		0x00000020 /* Enable EEE LTR max send */
-+#define IGC_RXPBS_SIZE_I225_MASK	0x0000003F /* Rx packet buffer size */
-+#define IGC_TW_SYSTEM_1000_MASK		0x000000FF
-+/* Minimum time for 100BASE-T where no data will be transmit following move out
-+ * of EEE LPI Tx state
-+ */
-+#define IGC_TW_SYSTEM_100_MASK		0x0000FF00
-+#define IGC_TW_SYSTEM_100_SHIFT		8
-+#define IGC_DMACR_DMAC_EN		0x80000000 /* Enable DMA Coalescing */
-+#define IGC_DMACR_DMACTHR_MASK		0x00FF0000
-+#define IGC_DMACR_DMACTHR_SHIFT		16
-+/* Reg val to set scale to 1024 nsec */
-+#define IGC_LTRMINV_SCALE_1024		2
-+/* Reg val to set scale to 32768 nsec */
-+#define IGC_LTRMINV_SCALE_32768		3
-+/* Reg val to set scale to 1024 nsec */
-+#define IGC_LTRMAXV_SCALE_1024		2
-+/* Reg val to set scale to 32768 nsec */
-+#define IGC_LTRMAXV_SCALE_32768		3
-+#define IGC_LTRMINV_LTRV_MASK		0x000003FF /* LTR minimum value */
-+#define IGC_LTRMAXV_LTRV_MASK		0x000003FF /* LTR maximum value */
-+#define IGC_LTRMINV_LSNP_REQ		0x00008000 /* LTR Snoop Requirement */
-+#define IGC_LTRMINV_SCALE_SHIFT		10
-+#define IGC_LTRMAXV_LSNP_REQ		0x00008000 /* LTR Snoop Requirement */
-+#define IGC_LTRMAXV_SCALE_SHIFT		10
-+
- #endif /* _IGC_DEFINES_H_ */
-diff --git a/drivers/net/ethernet/intel/igc/igc_i225.c b/drivers/net/ethernet/intel/igc/igc_i225.c
-index 3a4e982edb67..8b67d9b49a83 100644
---- a/drivers/net/ethernet/intel/igc/igc_i225.c
-+++ b/drivers/net/ethernet/intel/igc/igc_i225.c
-@@ -544,3 +544,103 @@ s32 igc_set_eee_i225(struct igc_hw *hw, bool adv2p5G, bool adv1G,
+ /* Advanced Receive Descriptor bit definitions */
+ #define IGC_RXDADV_STAT_TSIP	0x08000 /* timestamp in packet */
+-#define IGC_RXDADV_STAT_TS	0x10000 /* Pkt was time stamped */
  
- 	return IGC_SUCCESS;
- }
-+
-+/* igc_set_ltr_i225 - Set Latency Tolerance Reporting thresholds
-+ * @hw: pointer to the HW structure
-+ * @link: bool indicating link status
-+ *
-+ * Set the LTR thresholds based on the link speed (Mbps), EEE, and DMAC
-+ * settings, otherwise specify that there is no LTR requirement.
-+ */
-+s32 igc_set_ltr_i225(struct igc_hw *hw, bool link)
-+{
-+	u32 tw_system, ltrc, ltrv, ltr_min, ltr_max, scale_min, scale_max;
-+	u16 speed, duplex;
-+	s32 size;
-+
-+	/* If we do not have link, LTR thresholds are zero. */
-+	if (link) {
-+		hw->mac.ops.get_speed_and_duplex(hw, &speed, &duplex);
-+
-+		/* Check if using copper interface with EEE enabled or if the
-+		 * link speed is 10 Mbps.
-+		 */
-+		if (hw->dev_spec._base.eee_enable &&
-+		    speed != SPEED_10) {
-+			/* EEE enabled, so send LTRMAX threshold. */
-+			ltrc = rd32(IGC_LTRC) |
-+			       IGC_LTRC_EEEMS_EN;
-+			wr32(IGC_LTRC, ltrc);
-+
-+			/* Calculate tw_system (nsec). */
-+			if (speed == SPEED_100) {
-+				tw_system = ((rd32(IGC_EEE_SU) &
-+					     IGC_TW_SYSTEM_100_MASK) >>
-+					     IGC_TW_SYSTEM_100_SHIFT) * 500;
-+			} else {
-+				tw_system = (rd32(IGC_EEE_SU) &
-+					     IGC_TW_SYSTEM_1000_MASK) * 500;
-+			}
-+		} else {
-+			tw_system = 0;
-+		}
-+
-+		/* Get the Rx packet buffer size. */
-+		size = rd32(IGC_RXPBS) &
-+		       IGC_RXPBS_SIZE_I225_MASK;
-+
-+		/* Calculations vary based on DMAC settings. */
-+		if (rd32(IGC_DMACR) & IGC_DMACR_DMAC_EN) {
-+			size -= (rd32(IGC_DMACR) &
-+				 IGC_DMACR_DMACTHR_MASK) >>
-+				 IGC_DMACR_DMACTHR_SHIFT;
-+			/* Convert size to bits. */
-+			size *= 1024 * 8;
-+		} else {
-+			/* Convert size to bytes, subtract the MTU, and then
-+			 * convert the size to bits.
-+			 */
-+			size *= 1024;
-+			size *= 8;
-+		}
-+
-+		if (size < 0) {
-+			hw_dbg("Invalid effective Rx buffer size %d\n",
-+			       size);
-+			return -IGC_ERR_CONFIG;
-+		}
-+
-+		/* Calculate the thresholds. Since speed is in Mbps, simplify
-+		 * the calculation by multiplying size/speed by 1000 for result
-+		 * to be in nsec before dividing by the scale in nsec. Set the
-+		 * scale such that the LTR threshold fits in the register.
-+		 */
-+		ltr_min = (1000 * size) / speed;
-+		ltr_max = ltr_min + tw_system;
-+		scale_min = (ltr_min / 1024) < 1024 ? IGC_LTRMINV_SCALE_1024 :
-+			    IGC_LTRMINV_SCALE_32768;
-+		scale_max = (ltr_max / 1024) < 1024 ? IGC_LTRMAXV_SCALE_1024 :
-+			    IGC_LTRMAXV_SCALE_32768;
-+		ltr_min /= scale_min == IGC_LTRMINV_SCALE_1024 ? 1024 : 32768;
-+		ltr_min -= 1;
-+		ltr_max /= scale_max == IGC_LTRMAXV_SCALE_1024 ? 1024 : 32768;
-+		ltr_max -= 1;
-+
-+		/* Only write the LTR thresholds if they differ from before. */
-+		ltrv = rd32(IGC_LTRMINV);
-+		if (ltr_min != (ltrv & IGC_LTRMINV_LTRV_MASK)) {
-+			ltrv = IGC_LTRMINV_LSNP_REQ | ltr_min |
-+			       (scale_min << IGC_LTRMINV_SCALE_SHIFT);
-+			wr32(IGC_LTRMINV, ltrv);
-+		}
-+
-+		ltrv = rd32(IGC_LTRMAXV);
-+		if (ltr_max != (ltrv & IGC_LTRMAXV_LTRV_MASK)) {
-+			ltrv = IGC_LTRMAXV_LSNP_REQ | ltr_max |
-+			       (scale_min << IGC_LTRMAXV_SCALE_SHIFT);
-+			wr32(IGC_LTRMAXV, ltrv);
-+		}
-+	}
-+
-+	return IGC_SUCCESS;
-+}
-diff --git a/drivers/net/ethernet/intel/igc/igc_i225.h b/drivers/net/ethernet/intel/igc/igc_i225.h
-index 04759e076a9e..dae47e4f16b0 100644
---- a/drivers/net/ethernet/intel/igc/igc_i225.h
-+++ b/drivers/net/ethernet/intel/igc/igc_i225.h
-@@ -11,5 +11,6 @@ s32 igc_init_nvm_params_i225(struct igc_hw *hw);
- bool igc_get_flash_presence_i225(struct igc_hw *hw);
- s32 igc_set_eee_i225(struct igc_hw *hw, bool adv2p5G, bool adv1G,
- 		     bool adv100M);
-+s32 igc_set_ltr_i225(struct igc_hw *hw, bool link);
+ #define IGC_RXDEXT_STATERR_CE		0x01000000
+ #define IGC_RXDEXT_STATERR_SE		0x02000000
+@@ -384,7 +383,6 @@
+ #define IGC_FTQF_MASK_PROTO_BP	0x10000000
  
- #endif
-diff --git a/drivers/net/ethernet/intel/igc/igc_mac.c b/drivers/net/ethernet/intel/igc/igc_mac.c
-index 410aeb01de5c..bc077f230f17 100644
---- a/drivers/net/ethernet/intel/igc/igc_mac.c
-+++ b/drivers/net/ethernet/intel/igc/igc_mac.c
-@@ -417,6 +417,11 @@ s32 igc_check_for_copper_link(struct igc_hw *hw)
- 		hw_dbg("Error configuring flow control\n");
+ /* Time Sync Receive Control bit definitions */
+-#define IGC_TSYNCRXCTL_VALID		0x00000001  /* Rx timestamp valid */
+ #define IGC_TSYNCRXCTL_TYPE_MASK	0x0000000E  /* Rx type mask */
+ #define IGC_TSYNCRXCTL_TYPE_L2_V2	0x00
+ #define IGC_TSYNCRXCTL_TYPE_L4_V1	0x02
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 7e4d56c7b4c4..1b71f63d0e86 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -1479,9 +1479,9 @@ static inline void igc_rx_hash(struct igc_ring *ring,
+  * @rx_desc: pointer to the EOP Rx descriptor
+  * @skb: pointer to current skb being populated
+  *
+- * This function checks the ring, descriptor, and packet information in
+- * order to populate the hash, checksum, VLAN, timestamp, protocol, and
+- * other fields within the skb.
++ * This function checks the ring, descriptor, and packet information in order
++ * to populate the hash, checksum, VLAN, protocol, and other fields within the
++ * skb.
+  */
+ static void igc_process_skb_fields(struct igc_ring *rx_ring,
+ 				   union igc_adv_rx_desc *rx_desc,
+@@ -1491,10 +1491,6 @@ static void igc_process_skb_fields(struct igc_ring *rx_ring,
  
- out:
-+	/* Now that we are aware of our link settings, we can set the LTR
-+	 * thresholds.
-+	 */
-+	ret_val = igc_set_ltr_i225(hw, link);
-+
- 	return ret_val;
+ 	igc_rx_checksum(rx_ring, rx_desc, skb);
+ 
+-	if (igc_test_staterr(rx_desc, IGC_RXDADV_STAT_TS) &&
+-	    !igc_test_staterr(rx_desc, IGC_RXDADV_STAT_TSIP))
+-		igc_ptp_rx_rgtstamp(rx_ring->q_vector, skb);
+-
+ 	skb_record_rx_queue(skb, rx_ring->queue_index);
+ 
+ 	skb->protocol = eth_type_trans(skb, rx_ring->netdev);
+@@ -1975,7 +1971,7 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
+ 		/* probably a little skewed due to removing CRC */
+ 		total_bytes += skb->len;
+ 
+-		/* populate checksum, timestamp, VLAN, and protocol */
++		/* populate checksum, VLAN, and protocol */
+ 		igc_process_skb_fields(rx_ring, rx_desc, skb);
+ 
+ 		napi_gro_receive(&q_vector->napi, skb);
+diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
+index 0d746f8588c8..82e6c6c962d5 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ptp.c
++++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
+@@ -205,46 +205,6 @@ void igc_ptp_rx_pktstamp(struct igc_q_vector *q_vector, void *va,
+ 		ktime_sub_ns(skb_hwtstamps(skb)->hwtstamp, adjust);
  }
  
+-/**
+- * igc_ptp_rx_rgtstamp - retrieve Rx timestamp stored in register
+- * @q_vector: Pointer to interrupt specific structure
+- * @skb: Buffer containing timestamp and packet
+- *
+- * This function is meant to retrieve a timestamp from the internal registers
+- * of the adapter and store it in the skb.
+- */
+-void igc_ptp_rx_rgtstamp(struct igc_q_vector *q_vector,
+-			 struct sk_buff *skb)
+-{
+-	struct igc_adapter *adapter = q_vector->adapter;
+-	struct igc_hw *hw = &adapter->hw;
+-	u64 regval;
+-
+-	/* If this bit is set, then the RX registers contain the time
+-	 * stamp. No other packet will be time stamped until we read
+-	 * these registers, so read the registers to make them
+-	 * available again. Because only one packet can be time
+-	 * stamped at a time, we know that the register values must
+-	 * belong to this one here and therefore we don't need to
+-	 * compare any of the additional attributes stored for it.
+-	 *
+-	 * If nothing went wrong, then it should have a shared
+-	 * tx_flags that we can turn into a skb_shared_hwtstamps.
+-	 */
+-	if (!(rd32(IGC_TSYNCRXCTL) & IGC_TSYNCRXCTL_VALID))
+-		return;
+-
+-	regval = rd32(IGC_RXSTMPL);
+-	regval |= (u64)rd32(IGC_RXSTMPH) << 32;
+-
+-	igc_ptp_systim_to_hwtstamp(adapter, skb_hwtstamps(skb), regval);
+-
+-	/* Update the last_rx_timestamp timer in order to enable watchdog check
+-	 * for error case of latched timestamp on a dropped packet.
+-	 */
+-	adapter->last_rx_timestamp = jiffies;
+-}
+-
+ /**
+  * igc_ptp_enable_tstamp_rxqueue - Enable RX timestamp for a queue
+  * @rx_ring: Pointer to RX queue
+@@ -419,11 +379,9 @@ static int igc_ptp_set_timestamp_mode(struct igc_adapter *adapter,
+ 	}
+ 	wrfl();
+ 
+-	/* clear TX/RX time stamp registers, just to be sure */
++	/* clear TX time stamp registers, just to be sure */
+ 	regval = rd32(IGC_TXSTMPL);
+ 	regval = rd32(IGC_TXSTMPH);
+-	regval = rd32(IGC_RXSTMPL);
+-	regval = rd32(IGC_RXSTMPH);
+ 
+ 	return 0;
+ }
 diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
-index 75e040a5d46f..97f9b928509f 100644
+index 97f9b928509f..d53f49833db5 100644
 --- a/drivers/net/ethernet/intel/igc/igc_regs.h
 +++ b/drivers/net/ethernet/intel/igc/igc_regs.h
-@@ -253,6 +253,12 @@
- #define IGC_IPCNFG	0x0E38 /* Internal PHY Configuration */
- #define IGC_EEE_SU	0x0E34 /* EEE Setup */
+@@ -228,8 +228,6 @@
+ #define IGC_SYSTIMR	0x0B6F8  /* System time register Residue */
+ #define IGC_TIMINCA	0x0B608  /* Increment attributes register - RW */
  
-+/* LTR registers */
-+#define IGC_LTRC	0x01A0 /* Latency Tolerance Reporting Control */
-+#define IGC_DMACR	0x02508 /* DMA Coalescing Control Register */
-+#define IGC_LTRMINV	0x5BB0 /* LTR Minimum Value */
-+#define IGC_LTRMAXV	0x5BB4 /* LTR Maximum Value */
-+
- /* forward declaration */
- struct igc_hw;
- u32 igc_rd32(struct igc_hw *hw, u32 reg);
+-#define IGC_RXSTMPL	0x0B624  /* Rx timestamp Low - RO */
+-#define IGC_RXSTMPH	0x0B628  /* Rx timestamp High - RO */
+ #define IGC_TXSTMPL	0x0B618  /* Tx timestamp value Low - RO */
+ #define IGC_TXSTMPH	0x0B61C  /* Tx timestamp value High - RO */
+ 
 -- 
 2.26.2
 
