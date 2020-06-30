@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A237E20EA4C
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:36:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F07DB20EA4F
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:36:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728714AbgF3Aew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 20:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38016 "EHLO
+        id S1728746AbgF3Aey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 20:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728666AbgF3Aet (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 20:34:49 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12100C061755;
-        Mon, 29 Jun 2020 17:34:49 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id bj10so2527385plb.11;
-        Mon, 29 Jun 2020 17:34:49 -0700 (PDT)
+        with ESMTP id S1726081AbgF3Aev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 20:34:51 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC00EC061755;
+        Mon, 29 Jun 2020 17:34:50 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id a14so4059240pfi.2;
+        Mon, 29 Jun 2020 17:34:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=igi9Ux/uF2vKBCpKY1XhMsw8zdcNmQAGvREJKju2bhg=;
-        b=dj1/ved9LUFqnHXa9k1AG22ZJ2o6DwgZj3NLQikpwvD9KMfY6wiEk/mQADanuZM+80
-         kkexlQU4qKm14Y8J8tZwDDJJ9daNGnauqgBoNj+s1sbvUtqK1udT6X15QD6r13uQOyV0
-         DAJfNrhgzcLGejIFkQPcuc0Joglp2eEr7aktFsjPwCaHZcjFhvMwSYwslz901vtqC4xe
-         eBtdSHd+jRy5K/OtQqPKb8BVJKLbpco+I6/yDwA9EtEPK5FdLAFtyWwElDSjHZhJx3A1
-         YtsHOFn9qlGZmNIJDviIv1tV+iz8WOea5eNy6G52O8RD1F5Fyd2TSlr+3LgNT9/HQHWg
-         5fDA==
+        bh=I5Dv5raHq6PKZyEpvvq0aeWAhucJ0jOmmbBdZJh0B1Y=;
+        b=JN/fgGfSacZedbz7M6C4AVLeRNaVJ1u34NkbjTO25zboFUppPjiG6noVCx8Qp95+SF
+         cV+IomRwr+KXtDN+hLZLgeR9X1wXUOBWkBIcmshCCzocZTkZ0HdT1k9AV4JQxaqVrOO+
+         Y5I8vwHSOMnLdSUTGKz/CZsRVL7fBJO/OA8DApXw1mAWxEGn9QudInMbavNALgO+rS6T
+         kuyz5xbFeFwmBK9rIzirzuB0YniHl5A03L7RrPqn0eg4QPXiVSc+pKAfRXzYoXjuMKqo
+         fN7t4jlkLL4xUCAlj8snTFlxmpvuL+VbWUUu6r7Bcwq5iYqQ5tYhAkezOl1XqpEW6UOa
+         0KcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=igi9Ux/uF2vKBCpKY1XhMsw8zdcNmQAGvREJKju2bhg=;
-        b=ujX6EAeKnZWVECw+QRbZLllcYr0679CrB6SW1I13ZHNndB9TpG68mku+R+yWTN/7xL
-         tHKjHtjb++NWDICE5qXILVeYtRWshuM4md0ZtLNS5n1vhLIIVOOMwzn9fvTq5nGxorNQ
-         zpfFvqDTGDX51iiYf6HGi8KRY7st4AUN3hB4c5Ul14RC7nK5cQGtxuO9Qu737eDEb6n2
-         AHkGBdu/HpkuPJgW+0xNDVjz1z6heNKqloOZ7zT7FrhXb6jCsUNY/nQDKQF9KGjecECh
-         IqLjUElI3Zu1ptYVZoQj0VFFJp86MAeLGfn1BgK9WnkchsEXaFGGWdlZ4qxjawulsphj
-         UwRA==
-X-Gm-Message-State: AOAM533bg63aMBvLuPr+59HNyUT//yQ3o+lUTdpvzEd8+SiLt0EZDcJF
-        XSE5qJFkLWRxdY/7005yDVM=
-X-Google-Smtp-Source: ABdhPJy70rm3E3AFmGvRBHOOUiBwkx/1jmL3pT+O4eg2U19OBIVYlnX+9fzEfl5skfIcGj6L4qr36g==
-X-Received: by 2002:a17:90b:e01:: with SMTP id ge1mr19828124pjb.20.1593477288616;
-        Mon, 29 Jun 2020 17:34:48 -0700 (PDT)
+        bh=I5Dv5raHq6PKZyEpvvq0aeWAhucJ0jOmmbBdZJh0B1Y=;
+        b=Otoc6we04sUsr1q7c58a/y3i0BrfKyjqT39AOLmImSRbcsWzlLDTkkpZTz0TRD2tSI
+         iTYdtzO4EXEZOeNwNRlLzXif8+TZG1WpeHKOI+NsZ7vxWeFURH1O+bbpOhGerQs0zTGN
+         /V6vYsPjr2EJtto0Ad6iIsZqqIpJ9+RYADqc9sHzj8LRX/MdtpIvdhOL4sCulEJLfHGR
+         Q3ijv3e+GEvbX7ZWvfzmIc1CwjD1Qkjt5rjocgyMWwBo23lVVpcss+vwt2q/ZvizHvvx
+         PwoozFkiKOnfRgKCFj70sgYponJITaEkHtpg2DvYmoIdYtQ4RNGXdHFXLmTAtH95sK+F
+         h5GQ==
+X-Gm-Message-State: AOAM532pdb4fx2HQJfXd2q8iGDiGYoInzpwm9EowFK3zNdHUri0Mw5Me
+        8FEz780DqCtcV6uG6eiE6IA=
+X-Google-Smtp-Source: ABdhPJxEBXo9jjcxOH6c8+M2Yxex416nTtfVGPrjI/baQv0WNsJZ9+hMSmfjYDTv+IqRea3XzQSuTQ==
+X-Received: by 2002:a63:dd42:: with SMTP id g2mr13253436pgj.442.1593477290305;
+        Mon, 29 Jun 2020 17:34:50 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id b4sm700658pfo.137.2020.06.29.17.34.47
+        by smtp.gmail.com with ESMTPSA id b4sm700658pfo.137.2020.06.29.17.34.48
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Jun 2020 17:34:47 -0700 (PDT)
+        Mon, 29 Jun 2020 17:34:49 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, paulmck@kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v4 bpf-next 3/5] bpf: Add bpf_copy_from_user() helper.
-Date:   Mon, 29 Jun 2020 17:34:39 -0700
-Message-Id: <20200630003441.42616-4-alexei.starovoitov@gmail.com>
+Subject: [PATCH v4 bpf-next 4/5] libbpf: support sleepable progs
+Date:   Mon, 29 Jun 2020 17:34:40 -0700
+Message-Id: <20200630003441.42616-5-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
 In-Reply-To: <20200630003441.42616-1-alexei.starovoitov@gmail.com>
 References: <20200630003441.42616-1-alexei.starovoitov@gmail.com>
@@ -63,133 +63,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-Sleepable BPF programs can now use copy_from_user() to access user memory.
+Pass request to load program as sleepable via ".s" suffix in the section name.
+If it happens in the future that all map types and helpers are allowed with
+BPF_F_SLEEPABLE flag "fmod_ret/" and "lsm/" can be aliased to "fmod_ret.s/" and
+"lsm.s/" to make all lsm and fmod_ret programs sleepable by default. The fentry
+and fexit programs would always need to have sleepable vs non-sleepable
+distinction, since not all fentry/fexit progs will be attached to sleepable
+kernel functions.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: KP Singh <kpsingh@google.com>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 ---
- include/linux/bpf.h            |  1 +
- include/uapi/linux/bpf.h       | 11 ++++++++++-
- kernel/bpf/helpers.c           | 22 ++++++++++++++++++++++
- kernel/trace/bpf_trace.c       |  2 ++
- tools/include/uapi/linux/bpf.h | 11 ++++++++++-
- 5 files changed, 45 insertions(+), 2 deletions(-)
+ tools/lib/bpf/libbpf.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index e2b1581b2195..c9f27d5fdb7c 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1657,6 +1657,7 @@ extern const struct bpf_func_proto bpf_skc_to_tcp_sock_proto;
- extern const struct bpf_func_proto bpf_skc_to_tcp_timewait_sock_proto;
- extern const struct bpf_func_proto bpf_skc_to_tcp_request_sock_proto;
- extern const struct bpf_func_proto bpf_skc_to_udp6_sock_proto;
-+extern const struct bpf_func_proto bpf_copy_from_user_proto;
- 
- const struct bpf_func_proto *bpf_tracing_func_proto(
- 	enum bpf_func_id func_id, const struct bpf_prog *prog);
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 73f9e3f84b77..6b347454dedc 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3293,6 +3293,13 @@ union bpf_attr {
-  *		Dynamically cast a *sk* pointer to a *udp6_sock* pointer.
-  *	Return
-  *		*sk* if casting is valid, or NULL otherwise.
-+ *
-+ * long bpf_copy_from_user(void *dst, u32 size, const void *user_ptr)
-+ * 	Description
-+ * 		Read *size* bytes from user space address *user_ptr* and store
-+ * 		the data in *dst*. This is a wrapper of copy_from_user().
-+ * 	Return
-+ * 		0 on success, or a negative error in case of failure.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3435,7 +3442,9 @@ union bpf_attr {
- 	FN(skc_to_tcp_sock),		\
- 	FN(skc_to_tcp_timewait_sock),	\
- 	FN(skc_to_tcp_request_sock),	\
--	FN(skc_to_udp6_sock),
-+	FN(skc_to_udp6_sock),		\
-+	FN(copy_from_user),		\
-+	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index be43ab3e619f..5cc7425ee476 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -601,6 +601,28 @@ const struct bpf_func_proto bpf_event_output_data_proto =  {
- 	.arg5_type      = ARG_CONST_SIZE_OR_ZERO,
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 4ea7f4f1a691..c2f054fde30f 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -209,6 +209,7 @@ struct bpf_sec_def {
+ 	bool is_exp_attach_type_optional;
+ 	bool is_attachable;
+ 	bool is_attach_btf;
++	bool is_sleepable;
+ 	attach_fn_t attach_fn;
  };
  
-+BPF_CALL_3(bpf_copy_from_user, void *, dst, u32, size,
-+	   const void __user *, user_ptr)
-+{
-+	int ret = copy_from_user(dst, user_ptr, size);
-+
-+	if (unlikely(ret)) {
-+		memset(dst, 0, size);
-+		ret = -EFAULT;
-+	}
-+
-+	return ret;
-+}
-+
-+const struct bpf_func_proto bpf_copy_from_user_proto = {
-+	.func		= bpf_copy_from_user,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_UNINIT_MEM,
-+	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
-+	.arg3_type	= ARG_ANYTHING,
-+};
-+
- const struct bpf_func_proto bpf_get_current_task_proto __weak;
- const struct bpf_func_proto bpf_probe_read_user_proto __weak;
- const struct bpf_func_proto bpf_probe_read_user_str_proto __weak;
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 5d59dda5f661..96121fa7f7e6 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1137,6 +1137,8 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_ringbuf_query_proto;
- 	case BPF_FUNC_jiffies64:
- 		return &bpf_jiffies64_proto;
-+	case BPF_FUNC_copy_from_user:
-+		return prog->aux->sleepable ? &bpf_copy_from_user_proto : NULL;
- 	default:
- 		return NULL;
- 	}
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 73f9e3f84b77..6b347454dedc 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3293,6 +3293,13 @@ union bpf_attr {
-  *		Dynamically cast a *sk* pointer to a *udp6_sock* pointer.
-  *	Return
-  *		*sk* if casting is valid, or NULL otherwise.
-+ *
-+ * long bpf_copy_from_user(void *dst, u32 size, const void *user_ptr)
-+ * 	Description
-+ * 		Read *size* bytes from user space address *user_ptr* and store
-+ * 		the data in *dst*. This is a wrapper of copy_from_user().
-+ * 	Return
-+ * 		0 on success, or a negative error in case of failure.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3435,7 +3442,9 @@ union bpf_attr {
- 	FN(skc_to_tcp_sock),		\
- 	FN(skc_to_tcp_timewait_sock),	\
- 	FN(skc_to_tcp_request_sock),	\
--	FN(skc_to_udp6_sock),
-+	FN(skc_to_udp6_sock),		\
-+	FN(copy_from_user),		\
-+	/* */
+@@ -5626,6 +5627,8 @@ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+ 			/* couldn't guess, but user might manually specify */
+ 			continue;
  
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
++		if (prog->sec_def->is_sleepable)
++			prog->prog_flags |= BPF_F_SLEEPABLE;
+ 		bpf_program__set_type(prog, prog->sec_def->prog_type);
+ 		bpf_program__set_expected_attach_type(prog,
+ 				prog->sec_def->expected_attach_type);
+@@ -6893,6 +6896,21 @@ static const struct bpf_sec_def section_defs[] = {
+ 		.expected_attach_type = BPF_TRACE_FEXIT,
+ 		.is_attach_btf = true,
+ 		.attach_fn = attach_trace),
++	SEC_DEF("fentry.s/", TRACING,
++		.expected_attach_type = BPF_TRACE_FENTRY,
++		.is_attach_btf = true,
++		.is_sleepable = true,
++		.attach_fn = attach_trace),
++	SEC_DEF("fmod_ret.s/", TRACING,
++		.expected_attach_type = BPF_MODIFY_RETURN,
++		.is_attach_btf = true,
++		.is_sleepable = true,
++		.attach_fn = attach_trace),
++	SEC_DEF("fexit.s/", TRACING,
++		.expected_attach_type = BPF_TRACE_FEXIT,
++		.is_attach_btf = true,
++		.is_sleepable = true,
++		.attach_fn = attach_trace),
+ 	SEC_DEF("freplace/", EXT,
+ 		.is_attach_btf = true,
+ 		.attach_fn = attach_trace),
+@@ -6900,6 +6918,11 @@ static const struct bpf_sec_def section_defs[] = {
+ 		.is_attach_btf = true,
+ 		.expected_attach_type = BPF_LSM_MAC,
+ 		.attach_fn = attach_lsm),
++	SEC_DEF("lsm.s/", LSM,
++		.is_attach_btf = true,
++		.is_sleepable = true,
++		.expected_attach_type = BPF_LSM_MAC,
++		.attach_fn = attach_lsm),
+ 	SEC_DEF("iter/", TRACING,
+ 		.expected_attach_type = BPF_TRACE_ITER,
+ 		.is_attach_btf = true,
+@@ -7614,7 +7637,7 @@ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+ 
+ 		prog->prog_ifindex = attr->ifindex;
+ 		prog->log_level = attr->log_level;
+-		prog->prog_flags = attr->prog_flags;
++		prog->prog_flags |= attr->prog_flags;
+ 		if (!first_prog)
+ 			first_prog = prog;
+ 	}
 -- 
 2.23.0
 
