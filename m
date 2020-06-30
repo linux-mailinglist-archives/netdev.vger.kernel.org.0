@@ -2,174 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E69EE20EE74
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 08:29:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD97320EE76
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 08:29:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730361AbgF3G2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 02:28:45 -0400
-Received: from mail-eopbgr70051.outbound.protection.outlook.com ([40.107.7.51]:15492
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730183AbgF3G2o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 02:28:44 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kD1D11AnZiRWJ/viKLwa00gHnjxsxfskVQxg0HXPLTQep7IaAZbMUV+BzcCKD5Grx58M9hVlkpYrYGbXjMAgqxf2fIPXVEW25+jiKAM9gF4Vh53JyULgt4uUBGXxyD+oH7tGe/yqs/Xk7hUfM658xL13lcDSOQvvmvi8S8D/v/lhe+zyMJEjtFmbrlLoJANeI+Ng+2r+lXtQDVhH7TncHkoizFpSBvOs+Wz1gc6bBwVyFl4Ti0nmFZGXqTO42u3hUnI8vezL+cKk7W4x2GE985VoZJK/RGEiISP8rV44tZxERqUW9XV33UD2PIilqbtJt0ZdGbE+YlVexUwNsJmlnQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nREQFEoZ/pRFU21TyTVo/ID7wYtbCMIleuMnZcODtg4=;
- b=CdbFFlVOME2cmzGoxe3Ij5py0VvdNifrQerxYLmzSy3AXinIuUFn1iQ5cpxpLbOnYrxq3YTt4FQrMIXMSycw3mrYHmSrtC2KgokJA/NmiwWdLU3vn+Afv/HI7NVswseR0e8Wd0+7sqm7Fqt0QWFzYo4tpJlJqrtrh3ppNfYK+HWUSk9oPSDwYuUEoLEO0HgBH/LGzFqwtlt2OnjtquJApUahRq7TOsRZXK5mTm7N1ySIyn4z9BBQXEAO7wPt143k91N66qapt/b/EK8f3bK4c1An62yoX6SzENC1vIVIQQa5FYezxmqHBFPuuWOwI6eJysszrBnGM6SLr9q9qNrFow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nREQFEoZ/pRFU21TyTVo/ID7wYtbCMIleuMnZcODtg4=;
- b=sbC+J8DaO+tV12RxiE1cgvfhU90Hbnq+Uof4/bhgB/w/hCu6sMjkrRN4xm80K221bOE49hkE1A6C9JeAWgLczjAk+UatSkIAX/V80/PBAXXPTC9XSMZaE0RjA/dwM326LQpbNfQCsO94dEY2FzN/OSW+X+wo2bPCOJ0/HJedVh0=
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18) by AM5PR04MB3076.eurprd04.prod.outlook.com
- (2603:10a6:206:5::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.26; Tue, 30 Jun
- 2020 06:28:40 +0000
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3131.027; Tue, 30 Jun 2020
- 06:28:40 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] [PATCH net] net: ethernet: fec: prevent tx starvation under
- high rx load
-Thread-Topic: [EXT] [PATCH net] net: ethernet: fec: prevent tx starvation
- under high rx load
-Thread-Index: AQHWTknFHMHqp68YKUK5XJTc9NGIyqjwspVg
-Date:   Tue, 30 Jun 2020 06:28:40 +0000
-Message-ID: <AM6PR0402MB3607A57923BA5997C79E9082FF6F0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
-References: <20200629191601.5169-1-tobias@waldekranz.com>
-In-Reply-To: <20200629191601.5169-1-tobias@waldekranz.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: waldekranz.com; dkim=none (message not signed)
- header.d=none;waldekranz.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.67]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 12751b33-f3c2-43bd-e9f7-08d81cbed430
-x-ms-traffictypediagnostic: AM5PR04MB3076:
-x-microsoft-antispam-prvs: <AM5PR04MB3076D4888C980687F07BE69DFF6F0@AM5PR04MB3076.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3631;
-x-forefront-prvs: 0450A714CB
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: GkmuurxHiw3j/sIc6JPzxpGYMXmmUz496BdjkYO3yiSvRVD4ZsV1duXjA366hc3HFdyqSCP2g12Xmfc9SQbHJp0N1XpMBk3ls6A2gYNQaTdiGGaOs9htiYGZTo95bqJT/VDpcOZeRBWWawJXtJcDsRd068Pw2Kbnx/SXwc+OmFk5+g6a7KRwtZyfA86XYvVsq3XkGiYW+NVZQud8HU8MvkdFQsTi+9NWKUZuX4G+ZVYyLVukzxz9C4YMNbCpOOD6onpqrYW0zbBMVe+4SBfFnFMJTmhPiL3cBnOaNu/p26DCVsYdU7jBERrZxfBwrgvZ1rlcGVUfEFbZdzuVAlzoBg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(346002)(366004)(376002)(136003)(52536014)(76116006)(5660300002)(55016002)(66946007)(66446008)(64756008)(66556008)(66476007)(186003)(7696005)(6506007)(9686003)(316002)(26005)(110136005)(4326008)(71200400001)(2906002)(8676002)(8936002)(478600001)(33656002)(83380400001)(86362001)(66574015);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: PIO6LHm1ywKFOkFB05yqt4xuYYO1TNR6MTeYDVn70V41OUJait77VZxo7vl6vqfXEpHykjmxGj+p3v/BeXHOB8ggPbcl9KMn7zFfRyOL0Vrs9DRthXX1ScrmYu6epdUSrJ0Ij8jsPvr9hG/I9FQEYlOBHTl40sipqnzfg+vcCLR82sJNArzkg+Z8jtRpoFlKF5/hMOn90QvxxhJYeBaUFehHpimXfr4q63GEBFqYeOzP6Z0+HQfbGRMbPRA8zVJA+PLxYVVk+CjlOSIT76jUIDT/ssTt8RqZniZ8R9WdqCqNaZsBH7ALk5JK3Ec/yoeeYWRja8+D+czNfCNfiKtxewo6CW1VWs+u3i6BXNlOxsr5AHB4IChWLk3xU4/IW55bzSz2nIdBhXLa9V1QEJyV2z7SW6B/w9BhTAeyLWKXqN/kmbJw/9Zi4/niNVl27FpcsT6QgESPQjQ+ZuYSsE7Cs9niQWE7F5GVn62qHLHkM3o=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1730367AbgF3G25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 02:28:57 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13146 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730096AbgF3G24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 02:28:56 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05U6StX8018789
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:28:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=ATAIZRyF5LF5Ymt6TlkUCcEq7zggg+i+C8LAuUJjSjU=;
+ b=fY7q+dyrU9O3KHHf1c7Dkel+wQFs1sj9DvNCBMuaxaShpdAzRCEKa7QAoVLxxRwtOEnJ
+ e8dDtpYsgQn9xmnvbe1HuUVONKA0vlnYw6ygCU7LEXRGma+K8i8CIKan7U1LD9rKPzsY
+ 4S/N6Qfows/1fJs8wnBKfw8X78I1W5dnPPQ= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 31xp398gmb-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:28:55 -0700
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 29 Jun 2020 23:28:55 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 593F062E51C7; Mon, 29 Jun 2020 23:28:50 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Song Liu <songliubraving@fb.com>
+Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <peterz@infradead.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <kernel-team@fb.com>, <john.fastabend@gmail.com>,
+        <kpsingh@chromium.org>, Song Liu <songliubraving@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v5 bpf-next 0/4] bpf: introduce bpf_get_task_stack()
+Date:   Mon, 29 Jun 2020 23:28:42 -0700
+Message-ID: <20200630062846.664389-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3607.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 12751b33-f3c2-43bd-e9f7-08d81cbed430
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2020 06:28:40.1466
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: AyAES7JuFNNriVNkueYOGa06Z8AjEkWfnUpNegdsqpoOVyDhq8aQoNGTPVZ+WDp07vmb+hQAFOE0Adrad1Abrg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR04MB3076
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-06-30_01:2020-06-30,2020-06-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ impostorscore=0 phishscore=0 cotscore=-2147483648 malwarescore=0
+ lowpriorityscore=0 mlxscore=0 suspectscore=0 clxscore=1015
+ priorityscore=1501 bulkscore=0 spamscore=0 mlxlogscore=999 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006300048
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com> Sent: Tuesday, June 30, 202=
-0 3:16 AM
-> In the ISR, we poll the event register for the queues in need of service =
-and
-> then enter polled mode. After this point, the event register will never b=
-e read
-> again until we exit polled mode.
->=20
-> In a scenario where a UDP flow is routed back out through the same interf=
-ace,
-> i.e. "router-on-a-stick" we'll typically only see an rx queue event initi=
-ally.
-> Once we start to process the incoming flow we'll be locked polled mode, b=
-ut
-> we'll never clean the tx rings since that event is never caught.
->=20
-> Eventually the netdev watchdog will trip, causing all buffers to be dropp=
-ed and
-> then the process starts over again.
->=20
-> By adding a poll of the active events at each NAPI call, we avoid the
-> starvation.
->=20
-> Fixes: 4d494cdc92b3 ("net: fec: change data structure to support
-> multiqueue")
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+This set introduces a new helper bpf_get_task_stack(). The primary use ca=
+se
+is to dump all /proc/*/stack to seq_file via bpf_iter__task.
 
-Acked-by: Fugang Duan <fugang.duan@nxp.com>
-> ---
->  drivers/net/ethernet/freescale/fec_main.c | 22 +++++++++++++---------
->  1 file changed, 13 insertions(+), 9 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c
-> b/drivers/net/ethernet/freescale/fec_main.c
-> index 2d0d313ee7c5..f6e25c2d2c8c 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -1617,8 +1617,17 @@ fec_enet_rx(struct net_device *ndev, int
-> budget)  }
->=20
->  static bool
-> -fec_enet_collect_events(struct fec_enet_private *fep, uint int_events)
-> +fec_enet_collect_events(struct fec_enet_private *fep)
->  {
-> +       uint int_events;
-> +
-> +       int_events =3D readl(fep->hwp + FEC_IEVENT);
-> +
-> +       /* Don't clear MDIO events, we poll for those */
-> +       int_events &=3D ~FEC_ENET_MII;
-> +
-> +       writel(int_events, fep->hwp + FEC_IEVENT);
-> +
->         if (int_events =3D=3D 0)
->                 return false;
->=20
-> @@ -1644,16 +1653,9 @@ fec_enet_interrupt(int irq, void *dev_id)  {
->         struct net_device *ndev =3D dev_id;
->         struct fec_enet_private *fep =3D netdev_priv(ndev);
-> -       uint int_events;
->         irqreturn_t ret =3D IRQ_NONE;
->=20
-> -       int_events =3D readl(fep->hwp + FEC_IEVENT);
-> -
-> -       /* Don't clear MDIO events, we poll for those */
-> -       int_events &=3D ~FEC_ENET_MII;
-> -
-> -       writel(int_events, fep->hwp + FEC_IEVENT);
-> -       fec_enet_collect_events(fep, int_events);
-> +       fec_enet_collect_events(fep);
->=20
->         if ((fep->work_tx || fep->work_rx) && fep->link) {
->                 ret =3D IRQ_HANDLED;
-> @@ -1674,6 +1676,8 @@ static int fec_enet_rx_napi(struct napi_struct
-> *napi, int budget)
->         struct fec_enet_private *fep =3D netdev_priv(ndev);
->         int pkts;
->=20
-> +       fec_enet_collect_events(fep);
-> +
->         pkts =3D fec_enet_rx(ndev, budget);
->=20
->         fec_enet_tx(ndev);
-> --
-> 2.17.1
+A few different approaches have been explored and compared:
 
+  1. A simple wrapper around stack_trace_save_tsk(), as v1 [1].
+
+     This approach introduces new syntax, which is different to existing
+     helper bpf_get_stack(). Therefore, this is not ideal.
+
+  2. Extend get_perf_callchain() to support "task" as argument.
+
+     This approach reuses most of bpf_get_stack(). However, extending
+     get_perf_callchain() requires non-trivial changes to architecture
+     specific code. Which is error prone.
+
+  3. Current (v2) approach, leverages most of existing bpf_get_stack(), a=
+nd
+     uses stack_trace_save_tsk() to handle architecture specific logic.
+
+[1] https://lore.kernel.org/netdev/20200623070802.2310018-1-songliubravin=
+g@fb.com/
+
+Changes v4 =3D> v5:
+1. Rebase and work around git-am issue. (Alexei)
+2. Update commit log for 4/4. (Yonghong)
+
+Changes v3 =3D> v4:
+1. Simplify the selftests with bpf_iter.h. (Yonghong)
+2. Add example output to commit log of 4/4. (Yonghong)
+
+Changes v2 =3D> v3:
+1. Rebase on top of bpf-next. (Yonghong)
+2. Sanitize get_callchain_entry(). (Peter)
+3. Use has_callchain_buf for bpf_get_task_stack. (Andrii)
+4. Other small clean up. (Yonghong, Andrii).
+
+Changes v1 =3D> v2:
+1. Reuse most of bpf_get_stack() logic. (Andrii)
+2. Fix unsigned long vs. u64 mismatch for 32-bit systems. (Yonghong)
+3. Add %pB support in bpf_trace_printk(). (Daniel)
+4. Fix buffer size to bytes.
+
+Song Liu (4):
+  perf: expose get/put_callchain_entry()
+  bpf: introduce helper bpf_get_task_stack()
+  bpf: allow %pB in bpf_seq_printf() and bpf_trace_printk()
+  selftests/bpf: add bpf_iter test with bpf_get_task_stack()
+
+ include/linux/bpf.h                           |  1 +
+ include/linux/perf_event.h                    |  2 +
+ include/uapi/linux/bpf.h                      | 36 ++++++++-
+ kernel/bpf/stackmap.c                         | 77 ++++++++++++++++++-
+ kernel/bpf/verifier.c                         |  4 +-
+ kernel/events/callchain.c                     | 13 ++--
+ kernel/trace/bpf_trace.c                      | 12 ++-
+ scripts/bpf_helpers_doc.py                    |  2 +
+ tools/include/uapi/linux/bpf.h                | 36 ++++++++-
+ .../selftests/bpf/prog_tests/bpf_iter.c       | 17 ++++
+ .../selftests/bpf/progs/bpf_iter_task_stack.c | 37 +++++++++
+ 11 files changed, 221 insertions(+), 16 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_stack=
+.c
+
+--
+2.24.1
