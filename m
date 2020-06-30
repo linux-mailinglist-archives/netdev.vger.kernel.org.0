@@ -2,64 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEBBC20FCCA
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 21:31:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB50C20FCCD
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 21:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728134AbgF3Ta7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 15:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43676 "EHLO
+        id S1728141AbgF3TfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 15:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728065AbgF3Ta7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 15:30:59 -0400
+        with ESMTP id S1727883AbgF3TfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 15:35:02 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D85EC061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 12:30:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C31C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 12:35:02 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0373812736417;
-        Tue, 30 Jun 2020 12:30:58 -0700 (PDT)
-Date:   Tue, 30 Jun 2020 12:30:58 -0700 (PDT)
-Message-Id: <20200630.123058.875499975377948138.davem@davemloft.net>
-To:     Jason@zx2c4.com
-Cc:     netdev@vger.kernel.org, ndev@hwipl.net
-Subject: Re: [PATCH net v2 0/8] support AF_PACKET for layer 3 devices
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 421321273AA1A;
+        Tue, 30 Jun 2020 12:35:01 -0700 (PDT)
+Date:   Tue, 30 Jun 2020 12:34:59 -0700 (PDT)
+Message-Id: <20200630.123459.1290794918414333048.davem@davemloft.net>
+To:     jeffrey.t.kirsher@intel.com
+Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com
+Subject: Re: [net-next v2 00/13][pull request] 1GbE Intel Wired LAN Driver
+ Updates 2020-06-29
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200630010625.469202-1-Jason@zx2c4.com>
-References: <20200630010625.469202-1-Jason@zx2c4.com>
+In-Reply-To: <20200630012748.518705-1-jeffrey.t.kirsher@intel.com>
+References: <20200630012748.518705-1-jeffrey.t.kirsher@intel.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Jun 2020 12:30:59 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 30 Jun 2020 12:35:01 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date: Mon, 29 Jun 2020 19:06:17 -0600
+From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Date: Mon, 29 Jun 2020 18:27:35 -0700
 
-> Hans reported that packets injected by a correct-looking and trivial
-> libpcap-based program were not being accepted by wireguard. In
-> investigating that, I noticed that a few devices weren't properly
-> handling AF_PACKET-injected packets, and so this series introduces a bit
-> of shared infrastructure to support that.
- ...
-> This patchset addresses the issue by first adding a layer 3 header parse
-> function, much akin to the existing one for layer 2 packets, and then
-> adds a shared header_ops structure that, also much akin to the existing
-> one for layer 2 packets. Then it wires it up to a few immediate places
-> that stuck out as requiring it, and does a bit of cleanup.
+> This series contains updates to only the igc driver.
 > 
-> This patchset seems like it's fixing real bugs, so it might be
-> appropriate for stable. But they're also very old bugs, so if you'd
-> rather not backport to stable, that'd make sense to me too.
+> Sasha added Energy Efficient Ethernet (EEE) support and Latency Tolerance
+> Reporting (LTR) support for the igc driver. Added Low Power Idle (LPI)
+> counters and cleaned up unused TCP segmentation counters. Removed
+> igc_power_down_link() and call igc_power_down_phy_copper_base()
+> directly. Removed unneeded copper media check. 
+> 
+> Andre cleaned up timestamping by removing un-supported features and
+> duplicate code for i225. Fixed the timestamp check on the proper flag
+> instead of the skb for pending transmit timestamps. Refactored
+> igc_ptp_set_timestamp_mode() to simply the flow.
+> 
+> v2: Removed the log message in patch 1 as suggested by David Miller.
+>     Note: The locking issue Jakub Kicinski saw in patch 5, currently
+>     exists in the current net-next tree, so Andre will resolve the
+>     locking issue in a follow-on patch.
+> 
+> The following are changes since commit b8483ecaf72ee9059dcca5de969781028a550f89:
+>   liquidio: use list_empty_careful in lio_list_delete_head
+> and are available in the git repository at:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
 
-Series applied, thanks Jason.
-
-I think for now I'll defer on a -stable submission for this work.  But
-in the future maybe we can reconsider.
-
-Thanks.
+Pulled, thanks Jeff.
