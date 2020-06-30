@@ -2,145 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3C8720F12B
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 11:08:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF80520F15C
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 11:15:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731831AbgF3JIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 05:08:38 -0400
-Received: from sitav-80046.hsr.ch ([152.96.80.46]:50342 "EHLO
-        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731666AbgF3JIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 05:08:37 -0400
-Received: from [IPv6:2a01:8b81:5404:6500:3c25:5ba3:e8b1:1f22] (unknown [IPv6:2a01:8b81:5404:6500:3c25:5ba3:e8b1:1f22])
-        by mail.strongswan.org (Postfix) with ESMTPSA id E1087401B3;
-        Tue, 30 Jun 2020 11:08:34 +0200 (CEST)
-Subject: Re: [PATCH ipsec] xfrm: state: match with both mark and mask on user
- interfaces
-To:     Xin Long <lucien.xin@gmail.com>, netdev@vger.kernel.org
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <hadi@cyberus.ca>,
-        Sabrina Dubroca <sd@queasysnail.net>
-References: <4aaead9f8306859eb652b90582f23295792e9d15.1593497708.git.lucien.xin@gmail.com>
-From:   Tobias Brunner <tobias@strongswan.org>
-Autocrypt: addr=tobias@strongswan.org; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <d510d172-c605-725d-e6bc-e6462a3718ab@strongswan.org>
-Date:   Tue, 30 Jun 2020 11:08:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <4aaead9f8306859eb652b90582f23295792e9d15.1593497708.git.lucien.xin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1731910AbgF3JPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 05:15:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729866AbgF3JPi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 05:15:38 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8D5C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 02:15:38 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id h22so14429825lji.9
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 02:15:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:cc:subject:from:to:date:message-id
+         :in-reply-to;
+        bh=T3joqHkLHraTuPnWCUoikewNR5I9EBQzqVSvwFZJcPs=;
+        b=it2VVlrzKIINX7HF+K2rxW25mK/HfuPt4hiXOSueskjBJb3YCQCXQSbcNJb052BRue
+         asbFsl8nDKhL48oYu8dPeeq1a7UkSrH/hEv3oh5PqJHWd6iMtubgEskiRE3bMEHjOP6v
+         cAbr+L2lLAqPR4GH5xYCxBDG5gxfrVOcDG5X2dg/cxEgk/hxFFuEubShUp4Io7d5+X2M
+         vjhChobhXPuKL6Oa8CtfSHKZm6gxcCzOryxXB//vrwHvokKL06lm2H87VS7fd3L5T8T8
+         +DCPSq6lFl41iyrMM8imvUiANk1cu6R1KwdV9sbiL6a/FtTM5z5XImmu/hrnv83PqbXu
+         aEQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:cc:subject:from:to
+         :date:message-id:in-reply-to;
+        bh=T3joqHkLHraTuPnWCUoikewNR5I9EBQzqVSvwFZJcPs=;
+        b=fHymqeaMDgS/zYwvUIE5LAZCPOV0phWfMXdX1YrJ0GGblWsUakmb93iziI+o2brSWc
+         bAmyMYlc5ZNhiTF7w4UG8iUbdvkSR0nsiAi3cPhfWUBxPY0MSA+9iAnCLlwbamH3U5lF
+         M4sVTnWvAdtiLUBJNZNd9zpEV6952OYLzWwAjHuFRekyfzIoC6ciXEMJwkwtXWAZt2eo
+         z+DEQYpvxC8CD/0nhl5nE43egBf6vuyxb7xms2udEthag8UUbIw67x4wsWlpCoDYyWnN
+         Hz8nYiSHeSr7A7Gcte4yGGUQeLUU2O1CqYCrr7K+gKHZnh3SZYSZQ2cV7lSLzdqNaMjS
+         edyA==
+X-Gm-Message-State: AOAM530+niZYLkOcL6BWR0aIie/R2+FVVzxG+Hi1LD8nXYsnaRxH0mzp
+        non1fNyb2JH2BRQuJc1dAfdacZKt3X0=
+X-Google-Smtp-Source: ABdhPJzsJO66ERK+SkhY9RezunPsooCP0WoxrtX8UoejWTzGxYZuUwCnEJHqgKO+bXGvi1PTjoPHFw==
+X-Received: by 2002:a2e:b554:: with SMTP id a20mr9370132ljn.108.1593508536491;
+        Tue, 30 Jun 2020 02:15:36 -0700 (PDT)
+Received: from localhost (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id q13sm597642lfb.55.2020.06.30.02.15.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Jun 2020 02:15:34 -0700 (PDT)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH net-next] net: ethernet: fec: prevent tx
+ starvation under high rx load
+From:   "Tobias Waldekranz" <tobias@waldekranz.com>
+To:     "Andy Duan" <fugang.duan@nxp.com>,
+        "David Miller" <davem@davemloft.net>
+Date:   Tue, 30 Jun 2020 11:12:30 +0200
+Message-Id: <C3UBKDYGF8HW.TITR4KSQBHBQ@wkz-x280>
+In-Reply-To: <AM6PR0402MB3607C60F2C8E7B3E63906B6AFF6F0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Xin,
+On Tue Jun 30, 2020 at 11:02 AM CEST, Andy Duan wrote:
+> From: Tobias Waldekranz <tobias@waldekranz.com> Sent: Tuesday, June 30,
+> 2020 4:56 PM
+> > On Tue Jun 30, 2020 at 10:26 AM CEST, Andy Duan wrote:
+> > > From: Tobias Waldekranz <tobias@waldekranz.com> Sent: Tuesday, June
+> > > 30,
+> > > 2020 3:31 PM
+> > > > On Tue Jun 30, 2020 at 8:27 AM CEST, Andy Duan wrote:
+> > > > > From: Tobias Waldekranz <tobias@waldekranz.com> Sent: Tuesday,
+> > > > > June 30,
+> > > > > 2020 12:29 AM
+> > > > > > On Sun Jun 28, 2020 at 8:23 AM CEST, Andy Duan wrote:
+> > > > > > > I never seem bandwidth test cause netdev watchdog trip.
+> > > > > > > Can you describe the reproduce steps on the commit, then we
+> > > > > > > can reproduce it on my local. Thanks.
+> > > > > >
+> > > > > > My setup uses a i.MX8M Nano EVK connected to an ethernet switch=
+,
+> > > > > > but can get the same results with a direct connection to a PC.
+> > > > > >
+> > > > > > On the iMX, configure two VLANs on top of the FEC and enable
+> > > > > > IPv4 forwarding.
+> > > > > >
+> > > > > > On the PC, configure two VLANs and put them in different
+> > namespaces.
+> > > > > > From one namespace, use trafgen to generate a flow that the iMX
+> > > > > > will route from the first VLAN to the second and then back
+> > > > > > towards the second namespace on the PC.
+> > > > > >
+> > > > > > Something like:
+> > > > > >
+> > > > > >     {
+> > > > > >         eth(sa=3DPC_MAC, da=3DIMX_MAC),
+> > > > > >         ipv4(saddr=3D10.0.2.2, daddr=3D10.0.3.2, ttl=3D2)
+> > > > > >         udp(sp=3D1, dp=3D2),
+> > > > > >         "Hello world"
+> > > > > >     }
+> > > > > >
+> > > > > > Wait a couple of seconds and then you'll see the output from
+> > fec_dump.
+> > > > > >
+> > > > > > In the same setup I also see a weird issue when running a TCP
+> > > > > > flow using iperf3. Most of the time (~70%) when i start the
+> > > > > > iperf3 client I'll see ~450Mbps of throughput. In the other cas=
+e
+> > > > > > (~30%) I'll see ~790Mbps. The system is "stably bi-modal", i.e.
+> > > > > > whichever rate is reached in the beginning is then sustained fo=
+r
+> > > > > > as long as the session is kept
+> > > > alive.
+> > > > > >
+> > > > > > I've inserted some tracepoints in the driver to try to
+> > > > > > understand what's going
+> > > > > > on:
+> > > > > > https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%=
+2F%
+> > > > > > 2Fsv
+> > > > > > gsha
+> > > >
+> > re.com%2Fi%2FMVp.svg&amp;data=3D02%7C01%7Cfugang.duan%40nxp.com%
+> > > > > >
+> > > >
+> > 7C12854e21ea124b4cc2e008d81c59d618%7C686ea1d3bc2b4c6fa92cd99c5c
+> > > > > >
+> > > >
+> > 301635%7C0%7C0%7C637290519453656013&amp;sdata=3Dby4ShOkmTaRkFfE
+> > > > > > 0xJkrTptC%2B2egFf9iM4E5hx4jiSU%3D&amp;reserved=3D0
+> > > > > >
+> > > > > > What I can't figure out is why the Tx buffers seem to be
+> > > > > > collected at a much slower rate in the slow case (top in the
+> > > > > > picture). If we fall behind in one NAPI poll, we should catch u=
+p
+> > > > > > at the next call (which we
+> > > > can see in the fast case).
+> > > > > > But in the slow case we keep falling further and further behind
+> > > > > > until we freeze the queue. Is this something you've ever
+> > > > > > observed? Any
+> > > > ideas?
+> > > > >
+> > > > > Before, our cases don't reproduce the issue, cpu resource has
+> > > > > better bandwidth than ethernet uDMA then there have chance to
+> > > > > complete current NAPI. The next, work_tx get the update, never ca=
+tch
+> > the issue.
+> > > >
+> > > > It appears it has nothing to do with routing back out through the
+> > > > same interface.
+> > > >
+> > > > I get the same bi-modal behavior if just run the iperf3 server on
+> > > > the iMX and then have it be the transmitting part, i.e. on the PC I=
+ run:
+> > > >
+> > > >     iperf3 -c $IMX_IP -R
+> > > >
+> > > > I would be very interesting to see what numbers you see in this sce=
+nario.
+> > > I just have on imx8mn evk in my hands, and run the case, the numbers
+> > > is ~940Mbps as below.
+> > >
+> > > root@imx8mnevk:~# iperf3 -s
+> > > -----------------------------------------------------------
+> > > Server listening on 5201
+> > > -----------------------------------------------------------
+> > > Accepted connection from 10.192.242.132, port 43402 [ 5] local
+> > > 10.192.242.96 port 5201 connected to 10.192.242.132 port
+> > > 43404
+> > > [ ID] Interval Transfer Bitrate Retr Cwnd [ 5] 0.00-1.00 sec 109
+> > > MBytes 913 Mbits/sec 0 428 KBytes [ 5] 1.00-2.00 sec 112 MBytes 943
+> > > Mbits/sec 0 447 KBytes [ 5] 2.00-3.00 sec 112 MBytes 941 Mbits/sec 0
+> > > 472 KBytes [ 5] 3.00-4.00 sec 113 MBytes 944 Mbits/sec 0 472 KBytes [
+> > > 5] 4.00-5.00 sec 112 MBytes 942 Mbits/sec 0 472 KBytes [ 5] 5.00-6.00
+> > > sec 112 MBytes 936 Mbits/sec 0 472 KBytes [ 5] 6.00-7.00 sec 113
+> > > MBytes 945 Mbits/sec 0 472 KBytes [ 5] 7.00-8.00 sec 112 MBytes 944
+> > > Mbits/sec 0 472 KBytes [ 5] 8.00-9.00 sec 112 MBytes 941 Mbits/sec 0
+> > > 472 KBytes [ 5] 9.00-10.00 sec 112 MBytes 940 Mbits/sec 0 472 KBytes =
+[
+> > > 5] 10.00-10.04 sec 4.16 MBytes 873 Mbits/sec 0 472 KBytes
+> > > - - - - - - - - - - - - - - - - - - - - - - - - - [ ID] Interval
+> > > Transfer Bitrate Retr [ 5] 0.00-10.04 sec 1.10 GBytes 939 Mbits/sec 0
+> > > sender
+> >=20
+> > Are you running the client with -R so that the iMX is the transmitter?
+> > What if you run the test multiple times, do you get the same result eac=
+h time?
+>
+> Of course, PC command like: iperf3 -c 10.192.242.96 -R
+> Yes, the same result for each time.
 
-> Similar to commit 4f47e8ab6ab79 ("xfrm: policy: match with both mark and
-> mask on user interfaces"), this patch is to match both mark and mask for
-> state on these user interfaces:
-> 
->   xfrm_state_lookup_byaddr_user
->   xfrm_state_lookup_user
->   xfrm_state_update
->   xfrm_state_find
->   xfrm_state_add
->       __xfrm_state_lookup_byaddr(struct xfrm_mark)
->       __xfrm_state_lookup(struct xfrm_mark)
->   xfrm_find_acq_byseq
->   xfrm_stateonly_find
-> 
->           mark.v == x->mark.v && mark.m == x->mark.m
+Very strange, I've now reduced my setup to a simple direct connection
+between iMX and PC and I still see the same issue:
 
-I generally agree with matching marks/masks exactly for operations from
-userland, and it doesn't introduce any issues in our test suite.
-However, xfrm_state_find() is used to find an outbound state based on
-the templates in a policy and the marks on both, so it's not directly
-userland-facing.  Before this change, the mask configured on the state
-was a applied to the policy's mark/mask and then compared to the state's
-mark.  Now, the mark and mask both must match exactly:
+for i in $(seq 5); do iperf3 -c 10.0.2.1 -R -t2; sleep 1; done
+Connecting to host 10.0.2.1, port 5201
+Reverse mode, remote host 10.0.2.1 is sending
+[  5] local 10.0.2.2 port 53978 connected to 10.0.2.1 port 5201
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec   110 MBytes   919 Mbits/sec
+[  5]   1.00-2.00   sec   112 MBytes   941 Mbits/sec    0   0.00 Bytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-2.04   sec   223 MBytes   918 Mbits/sec    0             sende=
+r
+[  5]   0.00-2.00   sec   222 MBytes   930 Mbits/sec                  recei=
+ver
 
-> @@ -1051,7 +1061,6 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
->  	int acquire_in_progress = 0;
->  	int error = 0;
->  	struct xfrm_state *best = NULL;
-> -	u32 mark = pol->mark.v & pol->mark.m;
->  	unsigned short encap_family = tmpl->encap_family;
->  	unsigned int sequence;
->  	struct km_event c;
-> @@ -1065,7 +1074,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
->  	hlist_for_each_entry_rcu(x, net->xfrm.state_bydst + h, bydst) {
->  		if (x->props.family == encap_family &&
->  		    x->props.reqid == tmpl->reqid &&
-> -		    (mark & x->mark.m) == x->mark.v &&
-> +		    (pol->mark.v == x->mark.v && pol->mark.m == x->mark.m) &&
->  		    x->if_id == if_id &&
->  		    !(x->props.flags & XFRM_STATE_WILDRECV) &&
->  		    xfrm_state_addr_check(x, daddr, saddr, encap_family) &&
-> @@ -1082,7 +1091,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
->  	hlist_for_each_entry_rcu(x, net->xfrm.state_bydst + h_wildcard, bydst) {
->  		if (x->props.family == encap_family &&
->  		    x->props.reqid == tmpl->reqid &&
-> -		    (mark & x->mark.m) == x->mark.v &&
-> +		    (pol->mark.v == x->mark.v && pol->mark.m == x->mark.m) &&
->  		    x->if_id == if_id &&
->  		    !(x->props.flags & XFRM_STATE_WILDRECV) &&
->  		    xfrm_addr_equal(&x->id.daddr, daddr, encap_family) &&
+iperf Done.
+Connecting to host 10.0.2.1, port 5201
+Reverse mode, remote host 10.0.2.1 is sending
+[  5] local 10.0.2.2 port 53982 connected to 10.0.2.1 port 5201
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec  55.8 MBytes   468 Mbits/sec
+[  5]   1.00-2.00   sec  56.3 MBytes   472 Mbits/sec    0   0.00 Bytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-2.04   sec   113 MBytes   464 Mbits/sec    0             sende=
+r
+[  5]   0.00-2.00   sec   112 MBytes   470 Mbits/sec                  recei=
+ver
 
-While this should usually not be a problem for strongSwan, as we set the
-same mark/value on both states and corresponding policies (although the
-latter can be disabled as users may want to install policies themselves
-or via another daemon e.g. for MIPv6), it might be a limitation for some
-use cases.  The current code allows sharing states with multiple
-policies whose mark/mask doesn't match exactly (i.e. depended on the
-masks of both).  I wonder if anybody uses it like this, and how others
-think about it.
+iperf Done.
+Connecting to host 10.0.2.1, port 5201
+Reverse mode, remote host 10.0.2.1 is sending
+[  5] local 10.0.2.2 port 53986 connected to 10.0.2.1 port 5201
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec  55.7 MBytes   467 Mbits/sec
+[  5]   1.00-2.00   sec  56.3 MBytes   472 Mbits/sec    0   0.00 Bytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-2.04   sec   113 MBytes   464 Mbits/sec    0             sende=
+r
+[  5]   0.00-2.00   sec   112 MBytes   470 Mbits/sec                  recei=
+ver
 
-Regards,
-Tobias
+iperf Done.
+Connecting to host 10.0.2.1, port 5201
+Reverse mode, remote host 10.0.2.1 is sending
+[  5] local 10.0.2.2 port 53990 connected to 10.0.2.1 port 5201
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec   110 MBytes   920 Mbits/sec
+[  5]   1.00-2.00   sec   112 MBytes   942 Mbits/sec    0   0.00 Bytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-2.04   sec   223 MBytes   919 Mbits/sec    0             sende=
+r
+[  5]   0.00-2.00   sec   222 MBytes   931 Mbits/sec                  recei=
+ver
+
+iperf Done.
+Connecting to host 10.0.2.1, port 5201
+Reverse mode, remote host 10.0.2.1 is sending
+[  5] local 10.0.2.2 port 53994 connected to 10.0.2.1 port 5201
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec   110 MBytes   920 Mbits/sec
+[  5]   1.00-2.00   sec   112 MBytes   941 Mbits/sec    0   0.00 Bytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-2.04   sec   223 MBytes   918 Mbits/sec    0             sende=
+r
+[  5]   0.00-2.00   sec   222 MBytes   931 Mbits/sec                  recei=
+ver
+
+iperf Done.
+
+Which kernel version are you running? I'm on be74294ffa24 plus the
+starvation fix in this patch.
