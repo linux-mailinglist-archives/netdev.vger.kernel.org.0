@@ -2,179 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 138F920EB72
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 04:26:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AEDF20EB7D
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 04:31:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728469AbgF3C0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 22:26:00 -0400
-Received: from mail-eopbgr20063.outbound.protection.outlook.com ([40.107.2.63]:21819
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        id S1728544AbgF3Cb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 22:31:29 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:6882 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726288AbgF3C0A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 22:26:00 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kwjj02VDP9oyH3e52pS160mceLrt/ivmlLPIhFICzpTXM80Up240rEHBX3S7tLMYl71KDhxHH9XXODk9rwimJK7lhxFZDn/l+K7TvZd7ie64w23KvX8Vh6udfUtwsjq9YHqBSHWlMtXRBNY6IX4VV4B2pyE2FJZDF2ZVGu8aSvnMpptadtXFzGESTOxU2uO5QkZ06/HPuiQOFb2BKNqWFIf7s94hyfksIeUZAiBbTsHXbPk1qYnE6pMdGXmd3Tf7+sWpChkIpNjuM9KcaOWGPT8jh7+crPjFGqQzdIgpnHcfDuF2P8BtFQSpjEzajb/F/H/5y1uxu0wGX9cOpCbLPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MLgBkoX+IoNPKwwiKOxi4du9zgOjWScKafzuwSi6N5A=;
- b=XqaJKXyWEVK4piWXlc72noR4gH+6ZIcC/hO2GlN1f7VgR45wI/lK/ltIaCPovT829rNMxU3Y1k7PapFNu8E520sYoGnEF4q7TJToYfK5rGNYZOFC1heKcPafK0M8cGpVawv99MPJb10kno63VT+RGuN1zzCf/C035NPlDZrq6Eh8Ku+AGZvy5Id5xplm1GOTbwc5t2Ni6FOifBxAfXKxy+XSltPDSQuS/IYIqkVZqEgW/+L/4xdW7rXEWEy0+2jvgN9xutztHd2tAREqJuunIfRPwAIHOZ8JhmhkRhPWt5ellRHK4bp+PUSjLYtCCYHr4Poby7EaOInD3uFDqBOF4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MLgBkoX+IoNPKwwiKOxi4du9zgOjWScKafzuwSi6N5A=;
- b=MRTTen/EwJcJ6iI2c+e7ziGYko+fglb8ecjVY23xyZ+4D+d3SlHd9FyTXBSHtbLrNaRCQ9iA04PDacMjKzcN7NKNv3CrzZeV+tCkp+7u4awH//gXEhjSD2iVp3cs2QZ0m8428O1lxhJDJbPBoEuXeBR7vx714HZ1xKj7jrjMysM=
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB8PR04MB6969.eurprd04.prod.outlook.com (2603:10a6:10:11b::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Tue, 30 Jun
- 2020 02:25:56 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::7564:54a2:a35e:1066]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::7564:54a2:a35e:1066%9]) with mapi id 15.20.3131.027; Tue, 30 Jun 2020
- 02:25:56 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Michael Walle <michael@walle.cc>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-CC:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
-Thread-Topic: [PATCH linux-can-next/flexcan] can: flexcan: fix TDC feature
-Thread-Index: AQHWE9It45mk5G6f2ES/KFIAprd1aah7fVCAgEnofYCAJE1mgIAABUIAgAaDC4CAAJkbAA==
-Date:   Tue, 30 Jun 2020 02:25:56 +0000
-Message-ID: <DB8PR04MB6795751DBB178E1EDF74136FE66F0@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20200416093126.15242-1-qiangqing.zhang@nxp.com>
- <20200416093126.15242-2-qiangqing.zhang@nxp.com>
- <DB8PR04MB6795F7E28A9964A121A06140E6D80@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <d5579883c7e9ab3489ec08a73c407982@walle.cc>
- <39b5d77bda519c4d836f44a554890bae@walle.cc>
- <e38cf40b-ead3-81de-0be7-18cca5ca1a0c@pengutronix.de>
- <9dc13a697c246a5c7c53bdd89df7d3c7@walle.cc>
-In-Reply-To: <9dc13a697c246a5c7c53bdd89df7d3c7@walle.cc>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: walle.cc; dkim=none (message not signed)
- header.d=none;walle.cc; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 494d7fbd-6cb1-412f-b47a-08d81c9ceb6f
-x-ms-traffictypediagnostic: DB8PR04MB6969:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB69699604C58A8B0A2D78F2D6E66F0@DB8PR04MB6969.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0450A714CB
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +zMkYlIqfUozMdo9//SREYkHtNKkNA+SxnBiulHzEmbLhZFblbuSH7K6pnvLF4JAWZnn4QlEaF5jmIV/IVw4QBU8mh0euPRSCXCx0/I5vQoyr0sCC/8HsKP1mVnfVGZ0TNm/6vTcjFcKZk+i49hj1lg1mX7lnI3HVEGFytu4TNjiGp+4bOf7OwGR0BnqnkRuhU7qSg5M/xuaNuI3cvAhuF1oBPI7Zmz9eryMBjgCYwmtBq65NqjhcLjmRnTIisdiBZ8HeB28byIOMpGV+MVr2vmOu5glRA6oHSkldZZyxs3e3YiRx1QjJ18XWWhnL7jrStSEcdRxca88GB6qCIkMbpheCuOwiaECBMm4tmYAt2SGS+B7njx8UmA2AsumqtgrVKZH9i46KN1RccuJwbSdjA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(366004)(136003)(396003)(39860400002)(86362001)(478600001)(7696005)(8936002)(54906003)(110136005)(186003)(26005)(83080400001)(966005)(45080400002)(8676002)(2906002)(52536014)(66946007)(76116006)(4326008)(66446008)(64756008)(66556008)(66476007)(71200400001)(83380400001)(33656002)(55016002)(5660300002)(9686003)(6506007)(316002)(53546011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: /+9HyV/aYnezwwGAygnTlPoKepd2L06EMCN7x/JCQszi0tcDJt/mtwipCEcoUuufZZOozVzs07R/9tHcaUyrrdLtBMzu6YpE9HN2kA7dJP0FK2E5t0hFu9U6NkYVEwKcScnqTBjm1zXC1FZg9fDD8H/pJxpaWvdrVb7xEepkjKOrXGQkuo1e8HwXN3//n38dPxNARWjC02B+movgSocWaskHi5N1e0DrdDQf7lsGANpqdHhfWYwEc8+rNXd4u6lz7m0uAIP3z90h5ypC75VYi4ZLQe6YKdEF8ZduYI6fGRWlJKsBQ6kIxWkbKZ21b1bmbP8nI9/JHIfqy4/p7PX7IXkZyyS6wlvtQO2J8/SdsKhUD//3cWWnWs5Qzb7fI1RIrjshvY28PnPm8u1BupK52Hgtevw79AozQl445fHEVmoQFODEPHUhXBsAKogYxQphRZWdIdgren13etG+BdBDMqgLyKs50Jy2j2/zXs11y8Q=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1728206AbgF3Cb3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 22:31:29 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 3AD7F8AA1A967F251270;
+        Tue, 30 Jun 2020 10:31:27 +0800 (CST)
+Received: from localhost.localdomain (10.175.118.36) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 30 Jun 2020 10:31:19 +0800
+From:   Luo bin <luobin9@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
+        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>
+Subject: [PATCH net-next] hinic: remove unused but set variable
+Date:   Tue, 30 Jun 2020 10:30:34 +0800
+Message-ID: <20200630023034.9281-1-luobin9@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 494d7fbd-6cb1-412f-b47a-08d81c9ceb6f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2020 02:25:56.2371
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 80UARGXm/8L4HLjIvOtrIzzBc4G+seBy7koBlUYCAd85M9yCsgjUx8kmxHNnMCR37cjXvAb8CnMCB2QB/DywLw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6969
+Content-Type: text/plain
+X-Originating-IP: [10.175.118.36]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1pY2hhZWwgV2FsbGUgPG1p
-Y2hhZWxAd2FsbGUuY2M+DQo+IFNlbnQ6IDIwMjDE6jbUwjMwyNUgMDoyMw0KPiBUbzogTWFyYyBL
-bGVpbmUtQnVkZGUgPG1rbEBwZW5ndXRyb25peC5kZT4NCj4gQ2M6IEpvYWtpbSBaaGFuZyA8cWlh
-bmdxaW5nLnpoYW5nQG54cC5jb20+OyBsaW51eC1jYW5Admdlci5rZXJuZWwub3JnOw0KPiBkbC1s
-aW51eC1pbXggPGxpbnV4LWlteEBueHAuY29tPjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBT
-dWJqZWN0OiBSZTogW1BBVENIIGxpbnV4LWNhbi1uZXh0L2ZsZXhjYW5dIGNhbjogZmxleGNhbjog
-Zml4IFREQyBmZWF0dXJlDQo+IA0KPiBIaSBNYXJjLA0KPiANCj4gPiBJJ3ZlIGNsZWFuZWQgdXAg
-dGhlIHBhdGNoZXMgYSBiaXQsIGNhbiB5b3UgdGVzdCB0aGlzIGJyYW5jaDoNCj4gPg0KPiA+IGh0
-dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD1odHRwcyUz
-QSUyRiUyRmdpdC4NCj4gPg0KPiBrZXJuZWwub3JnJTJGcHViJTJGc2NtJTJGbGludXglMkZrZXJu
-ZWwlMkZnaXQlMkZta2wlMkZsaW51eC1jYW4tbmV4dC5nDQo+ID4NCj4gaXQlMkZsb2clMkYlM0Zo
-JTNEZmxleGNhbiZhbXA7ZGF0YT0wMiU3QzAxJTdDcWlhbmdxaW5nLnpoYW5nJTQwbngNCj4gcC5j
-b20NCj4gPiAlN0M3YzFkMGVmN2Q4MTM0YzFhMDFkZDA4ZDgxYzQ4YjU1YyU3QzY4NmVhMWQzYmMy
-YjRjNmZhOTJjZDk5YzUNCj4gYzMwMTYzNQ0KPiA+ICU3QzAlN0MxJTdDNjM3MjkwNDQ1OTI1MTUx
-NjU0JmFtcDtzZGF0YT1xWWFNNmdVb1hFRCUyRmNkSGhSDQo+IGt6WnI5RDFldjh0DQo+ID4gZklu
-MmJqN2tuQVpWYVZ3JTNEJmFtcDtyZXNlcnZlZD0wDQo+IA0KPiBUaGlzIGlzIHdvcmtpbmcsIGJ1
-dCBhcyBKb2FraW0gYWxyZWFkeSBzYWlkLCBDQU4tRkQgSVNPIG1vZGUgaXMgbWlzc2luZy4NCj4g
-SXQgZGVmYXVsdHMgdG8gbm9uLUlTTyBtb2RlLCB3aGljaCBpcyBldmVuIHdvcnNlLCBJTUhPLg0K
-PiANCj4gQnV0IEkndmUgYWxzbyBub3RpY2VkIGEgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSBvcmln
-aW5hbCBwYXRjaCBhbmQgdGhlIG9uZSBpbiB0aGF0DQo+IGJyYW5jaC4gV2hlbiBGRCBtb2RlIGlz
-IGVuYWJsZWQgdGhlIG9yaWdpbmFsIHBhdGNoIGNoZWNrcyB0aGUNCj4gcHJpdi0+Y2FuLmNvbnRy
-b2xtb2RlIFsxXSwgdGhlIHBhdGNoIGluIHRoZSBicmFuY2ggbG9va3MgYXQNCj4gcHJpdi0+Y2Fu
-LmN0cmxtb2RlX3N1cHBvcnRlZCBpbnN0ZWFkIFsyXSwgaXMgdGhhdCBjb3JyZWN0Pw0KDQoNCkhp
-IE1hcmMsIE1pY2hhZWwsDQoNCkkgaGF2ZSBhbHNvIG5vdGljZWQgdGhpcyBkaWZmZXJlbmNlLCBh
-bHRob3VnaCB0aGlzIGNvdWxkIG5vdCBicmVhayBmdW5jdGlvbiwgYnV0IElNTywgdXNpbmcgcHJp
-di0+Y2FuLmN0cmxtb2RlIHNob3VsZCBiZSBiZXR0ZXIuDQoNClNvbWUgbml0cGlja3M6DQoxKSBD
-YW4gd2UgdXNlIHVuaWZvcm0gY2hlY2sgZm9yIEhXIHdoaWNoIHN1cHBvcnRzIENBTiBGRCBpbiB0
-aGUgZHJpdmVyLCB1c2luZyBwcml2LT5jYW4uY3RybG1vZGVfc3VwcG9ydGVkIGluc3RlYWQgb2Yg
-cXVpcmtzPw0KLS0tIGEvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYw0KKysrIGIvZHJpdmVycy9u
-ZXQvY2FuL2ZsZXhjYW4uYw0KQEAgLTEzOTIsNyArMTM5Miw3IEBAIHN0YXRpYyBpbnQgZmxleGNh
-bl9jaGlwX3N0YXJ0KHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpDQogICAgICAgICAgICAgICAgcHJp
-di0+d3JpdGUocmVnX2N0cmwyLCAmcmVncy0+Y3RybDIpOw0KICAgICAgICB9DQoNCi0gICAgICAg
-aWYgKChwcml2LT5kZXZ0eXBlX2RhdGEtPnF1aXJrcyAmIEZMRVhDQU5fUVVJUktfU1VQUE9SVF9G
-RCkpIHsNCisgICAgICAgaWYgKHByaXYtPmNhbi5jdHJsbW9kZV9zdXBwb3J0ZWQgJiBDQU5fQ1RS
-TE1PREVfRkQpIHsNCiAgICAgICAgICAgICAgICB1MzIgcmVnX2ZkY3RybDsNCg0KICAgICAgICAg
-ICAgICAgIHJlZ19mZGN0cmwgPSBwcml2LT5yZWFkKCZyZWdzLT5mZGN0cmwpOw0KDQpBbHNvIGRl
-bGV0ZSB0aGUgcmVkdW5kYW50IHBhcmVudGhlc2VzIGhlcmUuDQoNCjIpIENsZWFuIHRpbWluZyBy
-ZWdpc3Rlci4NCi0tLSBhL2RyaXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMNCisrKyBiL2RyaXZlcnMv
-bmV0L2Nhbi9mbGV4Y2FuLmMNCkBAIC0xMTY3LDYgKzExNjcsMTQgQEAgc3RhdGljIHZvaWQgZmxl
-eGNhbl9zZXRfYml0dGltaW5nX2NidChjb25zdCBzdHJ1Y3QgbmV0X2RldmljZSAqZGV2KQ0KICAg
-ICAgICBzdHJ1Y3QgZmxleGNhbl9yZWdzIF9faW9tZW0gKnJlZ3MgPSBwcml2LT5yZWdzOw0KICAg
-ICAgICB1MzIgcmVnX2NidCwgcmVnX2ZkY3RybDsNCg0KKyAgICAgICByZWdfY2J0ID0gcHJpdi0+
-cmVhZCgmcmVncy0+Y2J0KTsNCisgICAgICAgcmVnX2NidCAmPSB+KEZMRVhDQU5fQ0JUX0JURiB8
-DQorICAgICAgICAgICAgICAgRklFTERfUFJFUChGTEVYQ0FOX0NCVF9FUFJFU0RJVl9NQVNLLCAw
-eDNmZikgfA0KKyAgICAgICAgICAgICAgIEZJRUxEX1BSRVAoRkxFWENBTl9DQlRfRVJKV19NQVNL
-LCAweDFmKSB8DQorICAgICAgICAgICAgICAgRklFTERfUFJFUChGTEVYQ0FOX0NCVF9FUFJPUFNF
-R19NQVNLLCAweDNmKSB8DQorICAgICAgICAgICAgICAgRklFTERfUFJFUChGTEVYQ0FOX0NCVF9F
-UFNFRzFfTUFTSywgMHgxZikgfA0KKyAgICAgICAgICAgICAgIEZJRUxEX1BSRVAoRkxFWENBTl9D
-QlRfRVBTRUcyX01BU0ssIDB4MWYpKTsNCisNCiAgICAgICAgLyogQ0JUICovDQogICAgICAgIC8q
-IENCVFtFUFNFRzFdIGlzIDUgYml0IGxvbmcgYW5kIENCVFtFUFJPUFNFR10gaXMgNiBiaXQNCiAg
-ICAgICAgICogbG9uZy4gVGhlIGNhbl9jYWxjX2JpdHRpbWluZygpIHRyaWVzIHRvIGRpdmlkZSB0
-aGUgdHNlZzENCkBAIC0xMTkyLDYgKzEyMDAsMTMgQEAgc3RhdGljIHZvaWQgZmxleGNhbl9zZXRf
-Yml0dGltaW5nX2NidChjb25zdCBzdHJ1Y3QgbmV0X2RldmljZSAqZGV2KQ0KICAgICAgICBpZiAo
-cHJpdi0+Y2FuLmN0cmxtb2RlICYgQ0FOX0NUUkxNT0RFX0ZEKSB7DQogICAgICAgICAgICAgICAg
-dTMyIHJlZ19mZGNidDsNCg0KKyAgICAgICAgICAgICAgIHJlZ19mZGNidCA9IHByaXYtPnJlYWQo
-JnJlZ3MtPmZkY2J0KTsNCisgICAgICAgICAgICAgICByZWdfZmRjYnQgJj0gfihGSUVMRF9QUkVQ
-KEZMRVhDQU5fRkRDQlRfRlBSRVNESVZfTUFTSywgMHgzZmYpIHwNCisgICAgICAgICAgICAgICAg
-ICAgICAgIEZJRUxEX1BSRVAoRkxFWENBTl9GRENCVF9GUkpXX01BU0ssIDB4NykgfA0KKyAgICAg
-ICAgICAgICAgICAgICAgICAgRklFTERfUFJFUChGTEVYQ0FOX0ZEQ0JUX0ZQUk9QU0VHX01BU0ss
-IDB4MWYpIHwNCisgICAgICAgICAgICAgICAgICAgICAgIEZJRUxEX1BSRVAoRkxFWENBTl9GRENC
-VF9GUFNFRzFfTUFTSywgMHg3KSB8DQorICAgICAgICAgICAgICAgICAgICAgICBGSUVMRF9QUkVQ
-KEZMRVhDQU5fRkRDQlRfRlBTRUcyX01BU0ssIDB4NykpOw0KKw0KICAgICAgICAgICAgICAgIGlm
-IChidC0+YnJwICE9IGRidC0+YnJwKQ0KICAgICAgICAgICAgICAgICAgICAgICAgbmV0ZGV2X3dh
-cm4oZGV2LCAiRGF0YSBicnA9JWQgYW5kIGJycD0lZCBkb24ndCBtYXRjaCwgdGhpcyBtYXkgcmVz
-dWx0IGluIGEgcGhhc2UgZXJyb3IuIENvbnNpZGVyIHVzaW5nIGRpZmZlcmVudCBiaXRyYXRlIGFu
-ZC9vciBkYXRhIGJpdHJhdGUuXG4iLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgZGJ0LT5icnAsIGJ0LT5icnApOw0KDQoNClRoaXMgaXMganVzdCBteSBzdWdnZXN0aW9uLCB0
-byBzZWUgaWYgaXQgaXMgcmVhc29uYWJsZS4NCg0KQmVzdCBSZWdhcmRzLA0KSm9ha2ltIFpoYW5n
-DQo+IC1taWNoYWVsDQo+IA0KPiBbMV0NCj4gaHR0cHM6Ly9ldXIwMS5zYWZlbGlua3MucHJvdGVj
-dGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGbG9yZS5rZXINCj4gbmVsLm9yZyUy
-Rm5ldGRldiUyRjIwMTkwNzEyMDc1OTI2LjczNTctNC1xaWFuZ3FpbmcuemhhbmclNDBueHAuY29t
-JQ0KPiAyRiZhbXA7ZGF0YT0wMiU3QzAxJTdDcWlhbmdxaW5nLnpoYW5nJTQwbnhwLmNvbSU3Qzdj
-MWQwZWY3ZDgxMzRjDQo+IDFhMDFkZDA4ZDgxYzQ4YjU1YyU3QzY4NmVhMWQzYmMyYjRjNmZhOTJj
-ZDk5YzVjMzAxNjM1JTdDMCU3QzElNw0KPiBDNjM3MjkwNDQ1OTI1MTUxNjU0JmFtcDtzZGF0YT1o
-cUYyM2FQV1ZFUHNJdUd2eGlpcm5FZFQ2S0hPVUxGJTJGDQo+IHFCaTdGYUZZM3RnJTNEJmFtcDty
-ZXNlcnZlZD0wDQo+IFsyXQ0KPiBodHRwczovL2V1cjAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91
-dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkZnaXQua2Vybg0KPiBlbC5vcmclMkZwdWIlMkZz
-Y20lMkZsaW51eCUyRmtlcm5lbCUyRmdpdCUyRm1rbCUyRmxpbnV4LWNhbi1uZXh0LmdpdCUyDQo+
-IEZ0cmVlJTJGZHJpdmVycyUyRm5ldCUyRmNhbiUyRmZsZXhjYW4uYyUzRmglM0RmbGV4Y2FuJTI2
-aWQlM0Q1ZjA5N2MNCj4gZDY1Y2IyYjQyYjg4ZTZlMWViMTg2ZjZhOGYwYzkwNTU5YiUyM24xMzQx
-JmFtcDtkYXRhPTAyJTdDMDElN0NxaQ0KPiBhbmdxaW5nLnpoYW5nJTQwbnhwLmNvbSU3QzdjMWQw
-ZWY3ZDgxMzRjMWEwMWRkMDhkODFjNDhiNTVjJTdDNjg2DQo+IGVhMWQzYmMyYjRjNmZhOTJjZDk5
-YzVjMzAxNjM1JTdDMCU3QzElN0M2MzcyOTA0NDU5MjUxNTE2NTQmYW1wOw0KPiBzZGF0YT1HV0E3
-U3FEQTl0U2k5bXVkS1JDNEcybnJMVzRGaldKR1hpZkplOGMzVjBRJTNEJmFtcDtyZXNlcnYNCj4g
-ZWQ9MA0K
+remove unused but set variable to avoid auto build test WARNING
+
+Signed-off-by: Luo bin <luobin9@huawei.com>
+Reported-by: kernel test robot <lkp@intel.com>
+---
+ .../net/ethernet/huawei/hinic/hinic_ethtool.c  | 18 ------------------
+ .../net/ethernet/huawei/hinic/hinic_sriov.c    |  2 --
+ 2 files changed, 20 deletions(-)
+
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+index a4a2a2d68f5c..cb5ebae54f73 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+@@ -749,12 +749,9 @@ static int __set_hw_coal_param(struct hinic_dev *nic_dev,
+ static int __hinic_set_coalesce(struct net_device *netdev,
+ 				struct ethtool_coalesce *coal, u16 queue)
+ {
+-	struct hinic_intr_coal_info *ori_rx_intr_coal = NULL;
+-	struct hinic_intr_coal_info *ori_tx_intr_coal = NULL;
+ 	struct hinic_dev *nic_dev = netdev_priv(netdev);
+ 	struct hinic_intr_coal_info rx_intr_coal = {0};
+ 	struct hinic_intr_coal_info tx_intr_coal = {0};
+-	char obj_str[OBJ_STR_MAX_LEN] = {0};
+ 	bool set_rx_coal = false;
+ 	bool set_tx_coal = false;
+ 	int err;
+@@ -779,21 +776,6 @@ static int __hinic_set_coalesce(struct net_device *netdev,
+ 		set_tx_coal = true;
+ 	}
+ 
+-	if (queue == COALESCE_ALL_QUEUE) {
+-		ori_rx_intr_coal = &nic_dev->rx_intr_coalesce[0];
+-		ori_tx_intr_coal = &nic_dev->tx_intr_coalesce[0];
+-		err = snprintf(obj_str, OBJ_STR_MAX_LEN, "for netdev");
+-	} else {
+-		ori_rx_intr_coal = &nic_dev->rx_intr_coalesce[queue];
+-		ori_tx_intr_coal = &nic_dev->tx_intr_coalesce[queue];
+-		err = snprintf(obj_str, OBJ_STR_MAX_LEN, "for queue %d", queue);
+-	}
+-	if (err <= 0 || err >= OBJ_STR_MAX_LEN) {
+-		netif_err(nic_dev, drv, netdev, "Failed to snprintf string, function return(%d) and dest_len(%d)\n",
+-			  err, OBJ_STR_MAX_LEN);
+-		return -EFAULT;
+-	}
+-
+ 	/* setting coalesce timer or pending limit to zero will disable
+ 	 * coalesce
+ 	 */
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
+index f5c7c1f48542..caf7e81e3f62 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
+@@ -1060,9 +1060,7 @@ static int hinic_init_vf_infos(struct hinic_func_to_io *nic_io, u16 vf_id)
+ static void hinic_clear_vf_infos(struct hinic_dev *nic_dev, u16 vf_id)
+ {
+ 	struct vf_data_storage *vf_infos;
+-	u16 func_id;
+ 
+-	func_id = hinic_glb_pf_vf_offset(nic_dev->hwdev->hwif) + vf_id;
+ 	vf_infos = nic_dev->hwdev->func_to_io.vf_infos + HW_VF_ID_TO_OS(vf_id);
+ 	if (vf_infos->pf_set_mac)
+ 		hinic_port_del_mac(nic_dev, vf_infos->vf_mac_addr, 0);
+-- 
+2.17.1
+
