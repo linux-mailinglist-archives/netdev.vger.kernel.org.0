@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5A7020EAA6
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:07:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B91120EAA8
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:07:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728070AbgF3BGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 21:06:48 -0400
+        id S1728134AbgF3BGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 21:06:52 -0400
 Received: from mail.zx2c4.com ([192.95.5.64]:60171 "EHLO mail.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728002AbgF3BGo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 21:06:44 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id bef50b85;
-        Tue, 30 Jun 2020 00:46:59 +0000 (UTC)
+        id S1728024AbgF3BGp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 21:06:45 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id e00a5875;
+        Tue, 30 Jun 2020 00:47:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
         :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=wplZDiGCa+tCNFlT7tJltU1KK
-        XA=; b=ZLiZhqeFSg8qWscgoLPL/k+jTUteh5vV7+UPEnqrHZr7uz/OrMHHQQ4on
-        GR8XUG3avxiLesNm797RrjS96R3lpLOMoUVEqoEJb6H1QoFolyXZaD/jUPqI1SQA
-        dAtH3J89EV00cHIiUiHAfJIGG+lwTMBNcLCWQpEn2f0v8N54tfgXQ1jCtVYIXvVD
-        aN5HsSvj3z1c4y9N7i8FIx1iBaUWOxrQDTtANB0Ty/BFxdRyTfPHnmR/yAsH5MQj
-        4SMvDTqwcwqf854fca8SO6hG9jrD6F4uwsdfMmGo6ExUQu4FeiF6oFUD9SmUfmk5
-        6fVP/KI6RO+kfoOMpZqoLGbQhUzSQ==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1ffb52d8 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Tue, 30 Jun 2020 00:46:58 +0000 (UTC)
+        :content-transfer-encoding; s=mail; bh=yhbQ52i5catljqOFAhcNxV2L/
+        vc=; b=TLrlpmwaTRb9+gAnZoo7lj3ktt+WOh3dfJLrxQ0tZCHikMcQktsTZKL4D
+        VwXy59ZAnPCXP+xnvTrBnwtwfRW3M80+KMwO2Y1prKw0kq2sJmw6jeTI/26XUKBJ
+        GUlvrzwlww9JJKrcoBeGDfo6CObNpqtaCQA82jVbXvb4131zHxWXtXv0VICDWPXh
+        I1/zRq/X4imqDTz0DTic3IvMfqSr6dkluYAME0EZpPgY2hqfKic+UqeVzffBTaYz
+        qdVHIwE3D1XS2GY/V43wEYLrPe3NJnnalYyzl5sne07OY+/0uEhRLnJ/VFg1fajE
+        t7rFoFZYjz3/J6IfgrpUHfAJvIqng==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 35fbf544 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 30 Jun 2020 00:47:00 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
         Hans Wippel <ndev@hwipl.net>
-Subject: [PATCH net v2 4/8] wireguard: queueing: make use of ip_tunnel_parse_protocol
-Date:   Mon, 29 Jun 2020 19:06:21 -0600
-Message-Id: <20200630010625.469202-5-Jason@zx2c4.com>
+Subject: [PATCH net v2 5/8] tun: implement header_ops->parse_protocol for AF_PACKET
+Date:   Mon, 29 Jun 2020 19:06:22 -0600
+Message-Id: <20200630010625.469202-6-Jason@zx2c4.com>
 In-Reply-To: <20200630010625.469202-1-Jason@zx2c4.com>
 References: <20200630010625.469202-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -40,69 +40,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that wg_examine_packet_protocol has been added for general
-consumption as ip_tunnel_parse_protocol, it's possible to remove
-wg_examine_packet_protocol and simply use the new
-ip_tunnel_parse_protocol function directly.
+The tun driver passes up skb->protocol to userspace in the form of PI headers.
+For AF_PACKET injection, we need to support its call chain of:
+
+    packet_sendmsg -> packet_snd -> packet_parse_headers ->
+      dev_parse_header_protocol -> parse_protocol
+
+Without a valid parse_protocol, this returns zero, and the tun driver
+then gives userspace bogus values that it can't deal with.
+
+Note that this isn't the case with tap, because tap already benefits
+from the shared infrastructure for ethernet headers. But with tun,
+there's nothing.
 
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/net/wireguard/queueing.h | 19 ++-----------------
- drivers/net/wireguard/receive.c  |  2 +-
- 2 files changed, 3 insertions(+), 18 deletions(-)
+ drivers/net/tun.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
-index c58df439dbbe..dfb674e03076 100644
---- a/drivers/net/wireguard/queueing.h
-+++ b/drivers/net/wireguard/queueing.h
-@@ -11,6 +11,7 @@
- #include <linux/skbuff.h>
- #include <linux/ip.h>
- #include <linux/ipv6.h>
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 858b012074bd..7adeb91bd368 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -62,6 +62,7 @@
+ #include <net/rtnetlink.h>
+ #include <net/sock.h>
+ #include <net/xdp.h>
 +#include <net/ip_tunnels.h>
+ #include <linux/seq_file.h>
+ #include <linux/uio.h>
+ #include <linux/skb_array.h>
+@@ -1351,6 +1352,7 @@ static void tun_net_init(struct net_device *dev)
+ 	switch (tun->flags & TUN_TYPE_MASK) {
+ 	case IFF_TUN:
+ 		dev->netdev_ops = &tun_netdev_ops;
++		dev->header_ops = &ip_tunnel_header_ops;
  
- struct wg_device;
- struct wg_peer;
-@@ -65,25 +66,9 @@ struct packet_cb {
- #define PACKET_CB(skb) ((struct packet_cb *)((skb)->cb))
- #define PACKET_PEER(skb) (PACKET_CB(skb)->keypair->entry.peer)
- 
--/* Returns either the correct skb->protocol value, or 0 if invalid. */
--static inline __be16 wg_examine_packet_protocol(struct sk_buff *skb)
--{
--	if (skb_network_header(skb) >= skb->head &&
--	    (skb_network_header(skb) + sizeof(struct iphdr)) <=
--		    skb_tail_pointer(skb) &&
--	    ip_hdr(skb)->version == 4)
--		return htons(ETH_P_IP);
--	if (skb_network_header(skb) >= skb->head &&
--	    (skb_network_header(skb) + sizeof(struct ipv6hdr)) <=
--		    skb_tail_pointer(skb) &&
--	    ipv6_hdr(skb)->version == 6)
--		return htons(ETH_P_IPV6);
--	return 0;
--}
--
- static inline bool wg_check_packet_protocol(struct sk_buff *skb)
- {
--	__be16 real_protocol = wg_examine_packet_protocol(skb);
-+	__be16 real_protocol = ip_tunnel_parse_protocol(skb);
- 	return real_protocol && skb->protocol == real_protocol;
- }
- 
-diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
-index 9b2ab6fc91cd..2c9551ea6dc7 100644
---- a/drivers/net/wireguard/receive.c
-+++ b/drivers/net/wireguard/receive.c
-@@ -387,7 +387,7 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
- 	 */
- 	skb->ip_summed = CHECKSUM_UNNECESSARY;
- 	skb->csum_level = ~0; /* All levels */
--	skb->protocol = wg_examine_packet_protocol(skb);
-+	skb->protocol = ip_tunnel_parse_protocol(skb);
- 	if (skb->protocol == htons(ETH_P_IP)) {
- 		len = ntohs(ip_hdr(skb)->tot_len);
- 		if (unlikely(len < sizeof(struct iphdr)))
+ 		/* Point-to-Point TUN Device */
+ 		dev->hard_header_len = 0;
 -- 
 2.27.0
 
