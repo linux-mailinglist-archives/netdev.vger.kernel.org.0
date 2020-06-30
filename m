@@ -2,73 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA35920FAA0
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 19:33:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 025E020FAE4
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 19:39:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387785AbgF3Rdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 13:33:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47632 "EHLO mail.kernel.org"
+        id S2390499AbgF3RjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 13:39:23 -0400
+Received: from mga05.intel.com ([192.55.52.43]:49435 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729737AbgF3Rdh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 13:33:37 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E6D0E206C0;
-        Tue, 30 Jun 2020 17:33:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593538417;
-        bh=PTVQwDhqBogVrxNM1m/WH0c9T7IaWZ0jHbdd3KIyCeU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SX1tRtlZP88m3MA2I/H3vRKncp43ZQkHu3hxRiQ3l5I+ZZ4OU0WfSp+UHuWAaQsRJ
-         R4ZHAoN1cUk5dK94sCm+NCvWqxflUskOomeh9ZsQpt5jyEXLGwx/+Sk0k0gRBORuTk
-         aQnTjxHc+FQdmllLZrdS2+9HmXJcpKOIapcujehI=
-Date:   Tue, 30 Jun 2020 10:33:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     Oliver Herms <oliver.peter.herms@gmail.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org
-Subject: Re: [PATCH v3] IPv4: Tunnel: Fix effective path mtu calculation
-Message-ID: <20200630103335.63de7098@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <99564f5c-07e4-df0d-893d-40757a0f2167@6wind.com>
-References: <20200625224435.GA2325089@tws>
-        <20200629232235.6047a9c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <99564f5c-07e4-df0d-893d-40757a0f2167@6wind.com>
+        id S2390480AbgF3RjW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jun 2020 13:39:22 -0400
+IronPort-SDR: NUkpxRcbK4eJyWr1d+QoxqFICnBSeOP2Y+UX94tPtYfc7O5Ta1aAOez/NmkNH15cvR9XAYmfUq
+ 5v8sD9u7Aftg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="231195932"
+X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; 
+   d="scan'208";a="231195932"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2020 10:39:22 -0700
+IronPort-SDR: L6EId5qT51KGH5GFqnQ/979P1WLnmyPf0ZcB0YH6cJ9izbwcBgQ0Igv6z/g7Xo4nWh93NfLgIj
+ V7OurEywGuAQ==
+X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; 
+   d="scan'208";a="277498854"
+Received: from ptcotton-mobl1.amr.corp.intel.com ([10.254.108.236])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2020 10:39:21 -0700
+Date:   Tue, 30 Jun 2020 10:39:20 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@ptcotton-mobl1.amr.corp.intel.com
+To:     Paolo Abeni <pabeni@redhat.com>
+cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next] mptcp: do nonce initialization at subflow
+ creation time
+In-Reply-To: <cc811b8707d488492fb8e33ed651aab456de6f72.1593527763.git.pabeni@redhat.com>
+Message-ID: <alpine.OSX.2.23.453.2006301034001.27064@ptcotton-mobl1.amr.corp.intel.com>
+References: <cc811b8707d488492fb8e33ed651aab456de6f72.1593527763.git.pabeni@redhat.com>
+User-Agent: Alpine 2.23 (OSX 453 2020-06-18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Jun 2020 17:51:41 +0200 Nicolas Dichtel wrote:
-> Le 30/06/2020 =C3=A0 08:22, Jakub Kicinski a =C3=A9crit=C2=A0:
-> [snip]
-> > My understanding is that for a while now tunnels are not supposed to use
-> > dev->hard_header_len to reserve skb space, and use dev->needed_headroom=
-,=20
-> > instead. sit uses hard_header_len and doesn't even copy needed_headroom
-> > of the lower device. =20
->=20
-> I missed this. I was wondering why IPv6 tunnels uses hard_header_len, if =
-there
-> was a "good" reason:
->=20
-> $ git grep "hard_header_len.*=3D" net/ipv6/
-> net/ipv6/ip6_tunnel.c:                  dev->hard_header_len =3D
-> tdev->hard_header_len + t_hlen;
-> net/ipv6/ip6_tunnel.c:  dev->hard_header_len =3D LL_MAX_HEADER + t_hlen;
-> net/ipv6/sit.c:         dev->hard_header_len =3D tdev->hard_header_len +
-> sizeof(struct iphdr);
-> net/ipv6/sit.c: dev->hard_header_len    =3D LL_MAX_HEADER + t_hlen;
->=20
-> A cleanup would be nice ;-)
 
-I did some archaeological investigatin' yesterday, and I saw
-c95b819ad75b ("gre: Use needed_headroom") which converted GRE.
-Then I think Pravin used GRE as a base for better ip_tunnel infra=20
-and the no-hard_header_len-abuse gospel has spread to other IPv4
-tunnels. AFAICT IPv6 tunnels were not as lucky, and SIT just got
-missed in the IPV4 conversion..
+On Tue, 30 Jun 2020, Paolo Abeni wrote:
+
+> This clean-up the code a bit, reduces the number of
+> used hooks and indirect call requested, and allow
+> better error reporting from __mptcp_subflow_connect()
+>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
+> net/mptcp/subflow.c | 54 +++++++++++++++++----------------------------
+> 1 file changed, 20 insertions(+), 34 deletions(-)
+>
+
+Thanks Paolo, cleanup looks good and it's nice to not rely on the 
+rebuild_header hook for this initialization.
+
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+
+--
+Mat Martineau
+Intel
