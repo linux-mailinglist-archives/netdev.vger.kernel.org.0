@@ -2,179 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43FED20FE4D
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 23:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A91A20FE7F
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 23:08:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgF3VAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 17:00:11 -0400
-Received: from www62.your-server.de ([213.133.104.62]:43670 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726739AbgF3VAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 17:00:11 -0400
-Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jqNMP-0000mb-0F; Tue, 30 Jun 2020 23:00:09 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2020-06-30
-Date:   Tue, 30 Jun 2020 23:00:08 +0200
-Message-Id: <20200630210008.16989-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1728833AbgF3VIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 17:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726084AbgF3VIN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 17:08:13 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4E5C061755;
+        Tue, 30 Jun 2020 14:08:13 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id k5so469525pjg.3;
+        Tue, 30 Jun 2020 14:08:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mOueOrU/MztlC+Mzo/PRCS1EQQCyJoQy2Oc5pG3fIVA=;
+        b=OAc2dXOYyTgHX8CbckWVMX+g5e2DIRNsIh3tm9tesxal8k1M2pmB3ehGHr2b0TlLNb
+         udnji61Gjyx7Dz5dnC2lmVyBGt5/LTNLtk8Q2lXc4br5QvNGFT+ZP8IglhemBw/i+OQC
+         Bu2/DsMDzAgb/pSfxO+wBEhSU49MdgK00/wd9e/z7hOvepqfovUgWZ8t4Xh6bD4PlyN/
+         EgAFNYlkI/SOPBDZ6oK09ELznXM/GK7qIxFMANKqKlhSava+gus//XIq7z1SDC5HvlZl
+         HJ2ra9VjWALHcWzm6CQcIUc5KSx/z0pEz96UhsNAkkd6HRNnu4X4iGHBXSCi6eMoT1dA
+         mbLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mOueOrU/MztlC+Mzo/PRCS1EQQCyJoQy2Oc5pG3fIVA=;
+        b=kbZKyLaqvAvCuy4aOAdmcmprqn2fGFzm3psB6B/L4KyTXIBVv+pW2Nt2BrRLKjg/pi
+         MN91DJGPaY0a87wuQF7HldDZxkJeQceQr5OB+CApbd1BDd0TMXGEuWjezOMkzeQUVSCt
+         DToKh92GC9ksrxOWVzFgtecuvuu5k3DamwOhcBglJZnSRrX/e31m5Vf3LazZAN2o1nZS
+         PRkuHgVtzM/8Fi80SIJ69huq1YlnbfBQ+RqHYEHUT7X6L6KaoRvt0CjvBnKZkX1ZzGea
+         spZAfZ0LYYo+u1vggrGHxjIbJZQ9UP02n/at5EQCEEwuZzomoGTXd/mIuW2rMKPIt5Nf
+         0Ujw==
+X-Gm-Message-State: AOAM532P/+IkTMBlloO/+dw+6AfmBVA6mXCR2x5GZE/8O6eqbyYTFCN8
+        LtDOlJTIAz2m1H+DGv2tegoMzL6R
+X-Google-Smtp-Source: ABdhPJx0zpNbTsl97R86OZuv72rXcejwkzxEuv8JklwnYbg1G+787xwpu7eZxV3mMuOa/SQBU4kxKQ==
+X-Received: by 2002:a17:902:aa0c:: with SMTP id be12mr19635013plb.45.1593550868913;
+        Tue, 30 Jun 2020 14:01:08 -0700 (PDT)
+Received: from localhost.localdomain ([2604:1380:1000:7a00::1])
+        by smtp.gmail.com with ESMTPSA id c19sm3070079pjs.11.2020.06.30.14.01.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Jun 2020 14:01:08 -0700 (PDT)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        Don Fry <pcnet32@frontier.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH net-next 1/2] amd8111e: Mark PM functions as __maybe_unused
+Date:   Tue, 30 Jun 2020 14:00:33 -0700
+Message-Id: <20200630210034.3624587-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-Patchwork-Bot: notify
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25859/Tue Jun 30 15:38:05 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+In certain configurations without power management support, the
+following warnings happen:
 
-The following pull-request contains BPF updates for your *net* tree.
+../drivers/net/ethernet/amd/amd8111e.c:1623:12: warning:
+'amd8111e_resume' defined but not used [-Wunused-function]
+ 1623 | static int amd8111e_resume(struct device *dev_d)
+      |            ^~~~~~~~~~~~~~~
+../drivers/net/ethernet/amd/amd8111e.c:1584:12: warning:
+'amd8111e_suspend' defined but not used [-Wunused-function]
+ 1584 | static int amd8111e_suspend(struct device *dev_d)
+      |            ^~~~~~~~~~~~~~~~
 
-We've added 28 non-merge commits during the last 9 day(s) which contain
-a total of 35 files changed, 486 insertions(+), 232 deletions(-).
+Mark these functions as __maybe_unused to make it clear to the compiler
+that this is going to happen based on the configuration, which is the
+standard for these types of functions.
 
-The main changes are:
+Fixes: 2caf751fe080 ("amd8111e: Convert to generic power management")
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ drivers/net/ethernet/amd/amd8111e.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-1) Fix an incorrect verifier branch elimination for PTR_TO_BTF_ID pointer
-   types, from Yonghong Song.
+diff --git a/drivers/net/ethernet/amd/amd8111e.c b/drivers/net/ethernet/amd/amd8111e.c
+index c6591b33abcc..5d389a984394 100644
+--- a/drivers/net/ethernet/amd/amd8111e.c
++++ b/drivers/net/ethernet/amd/amd8111e.c
+@@ -1581,7 +1581,7 @@ static void amd8111e_tx_timeout(struct net_device *dev, unsigned int txqueue)
+ 		netif_wake_queue(dev);
+ }
+ 
+-static int amd8111e_suspend(struct device *dev_d)
++static int __maybe_unused amd8111e_suspend(struct device *dev_d)
+ {
+ 	struct net_device *dev = dev_get_drvdata(dev_d);
+ 	struct amd8111e_priv *lp = netdev_priv(dev);
+@@ -1620,7 +1620,7 @@ static int amd8111e_suspend(struct device *dev_d)
+ 	return 0;
+ }
+ 
+-static int amd8111e_resume(struct device *dev_d)
++static int __maybe_unused amd8111e_resume(struct device *dev_d)
+ {
+ 	struct net_device *dev = dev_get_drvdata(dev_d);
+ 	struct amd8111e_priv *lp = netdev_priv(dev);
 
-2) Fix UAPI for sockmap and flow_dissector progs that were ignoring various
-   arguments passed to BPF_PROG_{ATTACH,DETACH}, from Lorenz Bauer & Jakub Sitnicki.
+base-commit: ff91e9292fc5aafd9ee1dc44c03cff69a3b0f39f
+-- 
+2.27.0
 
-3) Fix broken AF_XDP DMA hacks that are poking into dma-direct and swiotlb
-   internals and integrate it properly into DMA core, from Christoph Hellwig.
-
-4) Fix RCU splat from recent changes to avoid skipping ingress policy when
-   kTLS is enabled, from John Fastabend.
-
-5) Fix BPF ringbuf map to enforce size to be the power of 2 in order for its
-   position masking to work, from Andrii Nakryiko.
-
-6) Fix regression from CAP_BPF work to re-allow CAP_SYS_ADMIN for loading
-   of network programs, from Maciej Żenczykowski.
-
-7) Fix libbpf section name prefix for devmap progs, from Jesper Dangaard Brouer.
-
-8) Fix formatting in UAPI documentation for BPF helpers, from Quentin Monnet.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Andrii Nakryiko, Jakub Sitnicki, John Fastabend, John Stultz, kernel 
-test robot, Martin KaFai Lau, Song Liu, Wenbo Zhang, Yonghong Song
-
-----------------------------------------------------------------
-
-The following changes since commit b0c34bde72a59c05e826bf0a5aeca0d73f38f791:
-
-  MAINTAINERS: update email address for Felix Fietkau (2020-06-22 12:57:11 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to d923021c2ce12acb50dc7086a1bf66eed82adf6a:
-
-  bpf: Add tests for PTR_TO_BTF_ID vs. null comparison (2020-06-30 22:21:29 +0200)
-
-----------------------------------------------------------------
-Alexei Starovoitov (3):
-      Merge branch 'fix-sockmap'
-      Merge branch 'bpf-multi-prog-prep'
-      Merge branch 'fix-sockmap-flow_dissector-uapi'
-
-Andrii Nakryiko (3):
-      libbpf: Forward-declare bpf_stats_type for systems with outdated UAPI headers
-      libbpf: Fix CO-RE relocs against .text section
-      bpf: Enforce BPF ringbuf size to be the power of 2
-
-Christoph Hellwig (4):
-      dma-mapping: Add a new dma_need_sync API
-      xsk: Replace the cheap_dma flag with a dma_need_sync flag
-      xsk: Remove a double pool->dev assignment in xp_dma_map
-      xsk: Use dma_need_sync instead of reimplenting it
-
-Jakub Sitnicki (5):
-      flow_dissector: Pull BPF program assignment up to bpf-netns
-      bpf, netns: Keep attached programs in bpf_prog_array
-      bpf, netns: Keep a list of attached bpf_link's
-      selftests/bpf: Test updating flow_dissector link with same program
-      bpf, netns: Fix use-after-free in pernet pre_exit callback
-
-Jesper Dangaard Brouer (1):
-      libbpf: Adjust SEC short cut for expected attach type BPF_XDP_DEVMAP
-
-John Fastabend (4):
-      bpf: Do not allow btf_ctx_access with __int128 types
-      bpf, sockmap: RCU splat with redirect and strparser error or TLS
-      bpf, sockmap: RCU dereferenced psock may be used outside RCU block
-      bpf, sockmap: Add ingres skb tests that utilize merge skbs
-
-Lorenz Bauer (6):
-      bpf: flow_dissector: Check value of unused flags to BPF_PROG_ATTACH
-      bpf: flow_dissector: Check value of unused flags to BPF_PROG_DETACH
-      bpf: sockmap: Check value of unused args to BPF_PROG_ATTACH
-      bpf: sockmap: Require attach_bpf_fd when detaching a program
-      selftests: bpf: Pass program and target_fd in flow_dissector_reattach
-      selftests: bpf: Pass program to bpf_prog_detach in flow_dissector
-
-Maciej Żenczykowski (1):
-      bpf: Restore behaviour of CAP_SYS_ADMIN allowing the loading of networking bpf programs
-
-Quentin Monnet (1):
-      bpf: Fix formatting in documentation for BPF helpers
-
-Yonghong Song (3):
-      bpf: Set the number of exception entries properly for subprograms
-      bpf: Fix an incorrect branch elimination by verifier
-      bpf: Add tests for PTR_TO_BTF_ID vs. null comparison
-
- Documentation/core-api/dma-api.rst                 |   8 +
- include/linux/bpf-netns.h                          |   5 +-
- include/linux/bpf.h                                |  13 +-
- include/linux/btf.h                                |   5 +
- include/linux/dma-direct.h                         |   1 +
- include/linux/dma-mapping.h                        |   5 +
- include/linux/skmsg.h                              |  13 ++
- include/net/flow_dissector.h                       |   3 +-
- include/net/netns/bpf.h                            |   7 +-
- include/net/xsk_buff_pool.h                        |   6 +-
- include/uapi/linux/bpf.h                           |  41 ++---
- kernel/bpf/btf.c                                   |   4 +-
- kernel/bpf/net_namespace.c                         | 194 ++++++++++++++-------
- kernel/bpf/ringbuf.c                               |  18 +-
- kernel/bpf/syscall.c                               |   8 +-
- kernel/bpf/verifier.c                              |  13 +-
- kernel/dma/direct.c                                |   6 +
- kernel/dma/mapping.c                               |  10 ++
- net/bpf/test_run.c                                 |  19 +-
- net/core/flow_dissector.c                          |  32 ++--
- net/core/skmsg.c                                   |  23 ++-
- net/core/sock_map.c                                |  53 +++++-
- net/xdp/xsk_buff_pool.c                            |  54 +-----
- tools/include/uapi/linux/bpf.h                     |  41 ++---
- tools/lib/bpf/bpf.h                                |   2 +
- tools/lib/bpf/libbpf.c                             |  10 +-
- .../selftests/bpf/prog_tests/fentry_fexit.c        |   2 +-
- .../selftests/bpf/prog_tests/flow_dissector.c      |   4 +-
- .../bpf/prog_tests/flow_dissector_reattach.c       |  44 +++--
- .../testing/selftests/bpf/progs/bpf_iter_netlink.c |   2 +-
- tools/testing/selftests/bpf/progs/fentry_test.c    |  22 +++
- tools/testing/selftests/bpf/progs/fexit_test.c     |  22 +++
- .../selftests/bpf/progs/test_sockmap_kern.h        |   8 +-
- .../bpf/progs/test_xdp_with_devmap_helpers.c       |   2 +-
- tools/testing/selftests/bpf/test_sockmap.c         |  18 ++
- 35 files changed, 486 insertions(+), 232 deletions(-)
