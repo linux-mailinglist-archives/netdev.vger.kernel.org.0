@@ -2,162 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27EF120FC57
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:56:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAEF920FC58
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:57:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726527AbgF3S4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 14:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38400 "EHLO
+        id S1726385AbgF3S5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 14:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726207AbgF3S4x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:56:53 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CFFC061755;
-        Tue, 30 Jun 2020 11:56:53 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id d27so16449896qtg.4;
-        Tue, 30 Jun 2020 11:56:53 -0700 (PDT)
+        with ESMTP id S1726028AbgF3S5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:57:18 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF19BC061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 11:57:17 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id b15so17197514edy.7
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 11:57:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sUF9Il/pSDyAZQVgl1Ud+wt1XwsXNcGx+wtvr8PJZjg=;
-        b=nvigHTtKlNw4oZi7/n8smKEHlBfgqb+WZHJf39U5hjIGVcfM9OLcstboBbsJMc8oVH
-         cU4PKnn4NdTbPvUIDdY2t7SnOAsIrrt2g/HUqoH1NiQmaQe7GH2wLGWVD63KoI/B9G1A
-         FbLLxWPxdy+8LNqnofu+5fkxDqlRWnDzK+ziykwPvQQvC49K/3Mr/he40U9WTvrdBHrk
-         XRRnM8H/1NWQ/PGzWhlCGYyxT1iCx9T0yhkUc3Q4d46ONbGB3oF7dmFV4W7QKU3XKV5R
-         ihFF9pmalt0PLk1apP6w9vWBP/kW0BjVUt2+QsCp7vU59LCuMc8Iyl4zgLdX2uahPjT+
-         2nQw==
+        bh=zCoYtnZeT2/chOsMLedboMjom3LOXrBZI5STKJWRMfg=;
+        b=tbhK3DhrIIc11P6cnwuotaGox1xwmlP5VfY3shZXXeSid350lucHFc+rJ1k2kfhHzJ
+         IkxrPZjwGGenXKdkwPsxQQzy5qj6/q5CqhqDF5gC1Fz+XJfOpMfxcBskirJiCPh7S6ps
+         wmW9Ti/HW00430lGMRiDeWSELECW8iFB3174LgnTP+5XIpJV1cCFfi6EqriZz3o77JZB
+         JddbpN6MlndDmYMLNszJb8to6dwuhg3LVzo8LWUQET4AUKjISMjP8NNH3aycHDneXkIi
+         sf1HB8HY4evuMbecIq0A3RCe9BnDNqa/R6bUacKMBXO6boD+X4K/i/WHy9PNcOoOFYtD
+         NQKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sUF9Il/pSDyAZQVgl1Ud+wt1XwsXNcGx+wtvr8PJZjg=;
-        b=hb2lXpWSAKZLzdMwIEc/rKnBtLiwNb2tcnteEYI9S2ZVCitLENaGwpEZbLccNZzEyS
-         Ve/DTnvrqLrZMPPM4KAtucVSvd1P9Mf1cNVZFDNC2O0ycojqUYgU3yr5yKyazSKH20YF
-         aLFPsTB+gewb3OKG01itqvl/oxvuIdejMmDfQzQHt8O5Y4DYOn0ZQBMf8Jt5cEuRAMdH
-         hrDCVTebgCslhCmSdoHrYZkWDZOPqvqAUkWzi02nW0pMxyf13JkR1KEZpp740TGvcpb1
-         Al5wXJX5VNDqF8IG+v7Ydo5FmSheD38ZUw/i0c9O8fEKZrA9cB7wvkiYxDQuw25pG+GC
-         Bzjg==
-X-Gm-Message-State: AOAM533LIRIF0AMIW1JV7Gukl3TlJxi03PhQDauHtpm6ceZiIAdzwwXb
-        cSgg5ZxbvWWDZIkG+T+DJ8Gp5j28+fNbinm4vYQ=
-X-Google-Smtp-Source: ABdhPJwjx5ivE1Zad1jKqmtm24kdtGn6jOIclWUVzrv3C5fO4j58Tq8K7frWKgEccj3QvAKw7JGoHMMiEvJsA/NZIe8=
-X-Received: by 2002:ac8:1991:: with SMTP id u17mr21476724qtj.93.1593543412321;
- Tue, 30 Jun 2020 11:56:52 -0700 (PDT)
+        bh=zCoYtnZeT2/chOsMLedboMjom3LOXrBZI5STKJWRMfg=;
+        b=uS2WgwDU/KVg1elzG7gcPhdRnoyPgZS2Tz9Pgp7iP6eeZPyTQlrcp6e5nbEV6CWczM
+         61Ug4Bzj/TH900P3tml8izMVzVQnCro4QqqGuC/+hXBbO7Q2cPagFniZAoDW69fPQQOU
+         FnCdak/SIeK5xl+d2Qb+TYW94iHrNo8Ffb7r/JzdptkdPHs5xbvSBrWBL7qK+sCvb5mE
+         adDrNl2KOi+OpXfzmTmcePBnI8ZuTpsFCEtjzolCjpAK5p1+rt6DEok4OrepafnT1bY7
+         cJ3AS4Vh0mvZGG31+zyVNiuWLywjmQ6dwdL5eWRLRCJWxnLiQRj9nGXBZ4sNGy4T9GgR
+         oNlA==
+X-Gm-Message-State: AOAM531bYqUQcJj4NEWSGgr30eZalohGiewH+0RTE2JadKHkYqmIto13
+        AM69ZhvLllSN3C1HIYrmhTsZNyT2aIJD8QPaRhg9gQ==
+X-Google-Smtp-Source: ABdhPJxd/R+B16rG0rEETVZvDVGgDMx8tZ1m7Su/55CDbwPMsXCpmzARfRWO1P4/8TiZ2lIbRezsrheBeDT3qgPeo3I=
+X-Received: by 2002:aa7:d049:: with SMTP id n9mr17567534edo.39.1593543436531;
+ Tue, 30 Jun 2020 11:57:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200630164541.1329993-1-jakub@cloudflare.com>
-In-Reply-To: <20200630164541.1329993-1-jakub@cloudflare.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 30 Jun 2020 11:56:41 -0700
-Message-ID: <CAEf4BzYZ0CM0F+xZD8pB1nw+BNfw9bbQqjWA57jhAe_OKJ+gvQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf, netns: Fix use-after-free in pernet
- pre_exit callback
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
+References: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com>
+ <cb763bc5-b361-891a-94e9-be2385ddcbe0@gmail.com> <CA+FuTSfgz54uQbzrMr1Q0cAg2Vs1TFjyOb_+jjKUPoKAb=R-fw@mail.gmail.com>
+ <f713198c-5ff7-677e-a739-c0bec4a93bd6@gmail.com> <CALx6S37vDy=0rCC7FPrgfi9NUr0w9dVvtRQ3LhiZ7GqoX4xBPw@mail.gmail.com>
+ <CA+FuTSddo8Nsj4ri3gC0tDm7Oe4nrvCqyxkj14QWswUs4vNHLw@mail.gmail.com>
+ <CAF=yD-JDvo=OB+f4Sg8MDxPSiUEe7FVN_pkOZ6EUfuZTr4eEwQ@mail.gmail.com>
+ <322c9715-8ad0-a9b3-9970-087b53ecacdb@gmail.com> <CALx6S37QCUanU0Cpe+mCedoiceLyxX58O2jdrv+g64YQTUj2sw@mail.gmail.com>
+ <CA+FuTSf-mHHPksCvvTU3B+Hr_aEzj1KjfS3ksCbHxXfXQrOd_w@mail.gmail.com>
+In-Reply-To: <CA+FuTSf-mHHPksCvvTU3B+Hr_aEzj1KjfS3ksCbHxXfXQrOd_w@mail.gmail.com>
+From:   Tom Herbert <tom@herbertland.com>
+Date:   Tue, 30 Jun 2020 11:57:05 -0700
+Message-ID: <CALx6S34-MzDyqbA64iFiPZmBVOrdg-tg+ZEzswGdKM9_Y0wAPw@mail.gmail.com>
+Subject: Re: [PATCH net-next] icmp: support rfc 4884
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 11:33 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+On Tue, Jun 30, 2020 at 9:52 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
 >
-> Iterating over BPF links attached to network namespace in pre_exit hook is
-> not safe, even if there is just one. Once link gets auto-detached, that is
-> its back-pointer to net object is set to NULL, the link can be released and
-> freed without waiting on netns_bpf_mutex, effectively causing the list
-> element we are operating on to be freed.
+> On Tue, Jun 30, 2020 at 12:41 PM Tom Herbert <tom@herbertland.com> wrote:
+> >
+> > On Tue, Jun 30, 2020 at 9:16 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > >
+> > >
+> > >
+> > > On 6/30/20 6:57 AM, Willem de Bruijn wrote:
+> > > > On Mon, Jun 29, 2020 at 10:19 PM Willem de Bruijn
+> > > > <willemdebruijn.kernel@gmail.com> wrote:
+> > > >>
+> > > >> On Mon, Jun 29, 2020 at 8:37 PM Tom Herbert <tom@herbertland.com> wrote:
+> > > >>>
+> > > >>> On Mon, Jun 29, 2020 at 4:07 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > > >>>>
+> > > >>>>
+> > > >>>>
+> > > >>>> On 6/29/20 2:30 PM, Willem de Bruijn wrote:
+> > > >>>>> On Mon, Jun 29, 2020 at 5:15 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > > >>>>>>
+> > > >>>>>>
+> > > >>>>>>
+> > > >>>>>> On 6/29/20 9:57 AM, Willem de Bruijn wrote:
+> > > >>>>>>> From: Willem de Bruijn <willemb@google.com>
+> > > >>>>>>>
+> > > >>>>>>> ICMP messages may include an extension structure after the original
+> > > >>>>>>> datagram. RFC 4884 standardized this behavior.
+> > > >>>>>>>
+> > > >>>>>>> It introduces an explicit original datagram length field in the ICMP
+> > > >>>>>>> header to delineate the original datagram from the extension struct.
+> > > >>>>>>>
+> > > >>>>>>> Return this field when reading an ICMP error from the error queue.
+> > > >>>>>>
+> > > >>>>>> RFC mentions a 'length' field of 8 bits, your patch chose to export the whole
+> > > >>>>>> second word of icmp header.
+> > > >>>>>>
+> > > >>>>>> Why is this field mapped to a prior one (icmp_hdr(skb)->un.gateway) ?
+> > > >>>>>>
+> > > >>>>>> Should we add an element in the union to make this a little bit more explicit/readable ?
+> > > >>>>>>
+> > > >>>>>> diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+> > > >>>>>> index 5589eeb791ca580bb182e1dc38c05eab1c75adb9..427ed5a6765316a4c1e2fa06f3b6618447c01564 100644
+> > > >>>>>> --- a/include/uapi/linux/icmp.h
+> > > >>>>>> +++ b/include/uapi/linux/icmp.h
+> > > >>>>>> @@ -76,6 +76,7 @@ struct icmphdr {
+> > > >>>>>>                 __be16  sequence;
+> > > >>>>>>         } echo;
+> > > >>>>>>         __be32  gateway;
+> > > >>>>>> +       __be32  second_word; /* RFC 4884 4.[123] : <unused:8>,<length:8>,<mtu:16> */
+> > > >>>>>>         struct {
+> > > >>>>>>                 __be16  __unused;
+> > > >>>>>>                 __be16  mtu;
+> > > >>>>>
+> > > >>>>> Okay. How about a variant of the existing struct frag?
+> > > >>>>>
+> > > >>>>> @@ -80,6 +80,11 @@ struct icmphdr {
+> > > >>>>>                 __be16  __unused;
+> > > >>>>>                 __be16  mtu;
+> > > >>>>>         } frag;
+> > > >>>>> +       struct {
+> > > >>>>> +               __u8    __unused;
+> > > >>>>> +               __u8    length;
+> > > >>>>> +               __be16  mtu;
+> > > >>>>> +       } rfc_4884;
+> > > >>>>>         __u8    reserved[4];
+> > > >>>>>    } un;
+> > > >>>>>
+> > > >>>>
+> > > >>>> Sure, but my point was later in the code :
+> > > >>>>
+> > > >>>>>>> +     if (inet_sk(sk)->recverr_rfc4884)
+> > > >>>>>>> +             info = ntohl(icmp_hdr(skb)->un.gateway);
+> > > >>>>>>
+> > > >>>>>> ntohl(icmp_hdr(skb)->un.second_word);
+> > > >>>>
+> > > >>>> If you leave there "info = ntohl(icmp_hdr(skb)->un.gateway)" it is a bit hard for someone
+> > > >>>> reading linux kernel code to understand why we do this.
+> > > >>>>
+> > > >>> It's also potentially problematic. The other bits are Unused, which
+> > > >>> isn't the same thing as necessarily being zero. Userspace might assume
+> > > >>> that info is the length without checking its bounded.
+> > > >>
+> > > >> It shouldn't. The icmp type and code are passed in sock_extended_err
+> > > >> as ee_type and ee_code. So it can demultiplex the meaning of the rest
+> > > >> of the icmp header.
+> > > >>
+> > > >> It just needs access to the other 32-bits, which indeed are context
+> > > >> sensitive. It makes more sense to me to let userspace demultiplex this
+> > > >> in one place, rather than demultiplex in the kernel and define a new,
+> > > >> likely no simpler, data structure to share with userspace.
+> > > >>
+> > > >> Specific to RFC 4884, the 8-bit length field coexists with the
+> > > >> 16-bit mtu field in case of ICMP_FRAG_NEEDED, so we cannot just pass
+> > > >> the first as ee_info in RFC 4884 mode. sock_extended_err additionally
+> > > >> has ee_data, but after that we're out of fields, too, so this approach
+> > > >> is not very future proof to additional ICMP extensions.
+> > > >>
+> > > >> On your previous point, it might be useful to define struct rfc_4884
+> > > >> equivalent outside struct icmphdr, so that an application can easily
+> > > >> cast to that. RFC 4884 itself does not define any extension objects.
+> > > >> That is out of scope there, and in my opinion, here. Again, better
+> > > >> left to userspace. Especially because as it describes, it standardized
+> > > >> the behavior after observing non-compliant, but existing in the wild,
+> > > >> proprietary extension variants. Users may have to change how they
+> > > >> interpret the fields based on what they have deployed.
+> > > >
+> > > > As this just shares the raw icmp header data, I should probably
+> > > > change the name to something less specific to RFC 4884.
+> > > >
+> > > > Since it would also help with decoding other extensions, such as
+> > > > the one you mention in  draft-ietf-6man-icmp-limits-08.
+> > > >
+> > > > Unfortunately I cannot simply reserve IP_RECVERR with integer 2.
+> > > > Perhaps IP_RECVERR_EXINFO.
+> > > >
+> > >
+> > > Perhaps let the icmp header as is, but provides the extra information
+> > > as an explicit ancillary message in ip_recv_error() ?
+> > >
+> > > Really this is all about documentation and providing stable API.
+> > >
+> > Actually, I think we may have a subtle bug here.
+> >
+> > RFC4884 appends the ICMP extension to the original datagram. The RFC
+> > describes backwards compatibility in section 5. To be backwards
+> > compatible with legacy implementations that don't know how to parse
+> > the extension, and in particular to find the length of the original
+> > datagram in the data, the requirement is that at the original datagram
+> > is at least 128 bytes long and it seems to assume no ICMP application
+> > need to parse beyond that. But parsing beyond 128 bytes is possible,
+> > consider that the original datagram was UDP/IPv6 with an extension
+> > header such that the UDP header is offset beyond 128 bytes in the
+> > packet. If we don't take this into account, the UDP ports for socket
+> > lookup would be incorrect.
+> >
+> > To fix this, we could check the Length field per the types that
+> > support extensions as described in RFC4884. If it's non-zero then
+> > assume the extension is present, so before processing the original
+> > datagram, e.g. performing socket lookup, trim the skb to the length of
+> > the orignal datagram.
 >
-> This leads to use-after-free when trying to access the next element on the
-> list, as reported by KASAN. Bug can be triggered by destroying a network
-> namespace, while also releasing a link attached to this network namespace.
+> This is somewhat orthogonal to this patch.
 >
-> | ==================================================================
-> | BUG: KASAN: use-after-free in netns_bpf_pernet_pre_exit+0xd9/0x130
-> | Read of size 8 at addr ffff888119e0d778 by task kworker/u8:2/177
-> |
-> | CPU: 3 PID: 177 Comm: kworker/u8:2 Not tainted 5.8.0-rc1-00197-ga0c04c9d1008-dirty #776
-> | Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
-> | Workqueue: netns cleanup_net
-> | Call Trace:
-> |  dump_stack+0x9e/0xe0
-> |  print_address_description.constprop.0+0x3a/0x60
-> |  ? netns_bpf_pernet_pre_exit+0xd9/0x130
-> |  kasan_report.cold+0x1f/0x40
-> |  ? netns_bpf_pernet_pre_exit+0xd9/0x130
-> |  netns_bpf_pernet_pre_exit+0xd9/0x130
-> |  cleanup_net+0x30b/0x5b0
-> |  ? unregister_pernet_device+0x50/0x50
-> |  ? rcu_read_lock_bh_held+0xb0/0xb0
-> |  ? _raw_spin_unlock_irq+0x24/0x50
-> |  process_one_work+0x4d1/0xa10
-> |  ? lock_release+0x3e0/0x3e0
-> |  ? pwq_dec_nr_in_flight+0x110/0x110
-> |  ? rwlock_bug.part.0+0x60/0x60
-> |  worker_thread+0x7a/0x5c0
-> |  ? process_one_work+0xa10/0xa10
-> |  kthread+0x1e3/0x240
-> |  ? kthread_create_on_node+0xd0/0xd0
-> |  ret_from_fork+0x1f/0x30
-> |
-> | Allocated by task 280:
-> |  save_stack+0x1b/0x40
-> |  __kasan_kmalloc.constprop.0+0xc2/0xd0
-> |  netns_bpf_link_create+0xfe/0x650
-> |  __do_sys_bpf+0x153a/0x2a50
-> |  do_syscall_64+0x59/0x300
-> |  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> |
-> | Freed by task 198:
-> |  save_stack+0x1b/0x40
-> |  __kasan_slab_free+0x12f/0x180
-> |  kfree+0xed/0x350
-> |  process_one_work+0x4d1/0xa10
-> |  worker_thread+0x7a/0x5c0
-> |  kthread+0x1e3/0x240
-> |  ret_from_fork+0x1f/0x30
-> |
-> | The buggy address belongs to the object at ffff888119e0d700
-> |  which belongs to the cache kmalloc-192 of size 192
-> | The buggy address is located 120 bytes inside of
-> |  192-byte region [ffff888119e0d700, ffff888119e0d7c0)
-> | The buggy address belongs to the page:
-> | page:ffffea0004678340 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0
-> | flags: 0x2fffe0000000200(slab)
-> | raw: 02fffe0000000200 ffffea00045ba8c0 0000000600000006 ffff88811a80ea80
-> | raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
-> | page dumped because: kasan: bad access detected
-> |
-> | Memory state around the buggy address:
-> |  ffff888119e0d600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> |  ffff888119e0d680: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-> | >ffff888119e0d700: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> |                                                                 ^
-> |  ffff888119e0d780: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-> |  ffff888119e0d800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> | ==================================================================
+> You are suggesting proactively protecting applications that do not
+> know how to parse RFC 4884 compliant packets by truncating
+> those unless the application sets the new setsockopt?
 >
-> Remove the "fast-path" for releasing a link that got auto-detached by a
-> dying network namespace to fix it. This way as long as link is on the list
-> and netns_bpf mutex is held, we have a guarantee that link memory can be
-> accessed.
->
-> An alternative way to fix this issue would be to safely iterate over the
-> list of links and ensure there is no access to link object after detaching
-> it. But, at the moment, optimizing synchronization overhead on link release
-> without a workload in mind seems like an overkill.
->
-> Fixes: 7233adc8b69b ("bpf, netns: Keep a list of attached bpf_link's")
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
+No, the bug is a bit more insidious. The problem is that it's possible
+to misdirect an ICMP error to the wrong socket. If that can happen and
+leads to adverse side effects then it's a bug. Grant it, in normal
+conditions this is probably exceeding rare, but we can't discount the
+possibility and this sounds like the sort of thing that could be used
+in some twisted DOS attack.
 
-Heh, that's a tricky one. Yeah, I agree, the fast path isn't important
-and doing everything strictly under lock is better.
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  kernel/bpf/net_namespace.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
+> I'm afraid that might break legacy applications that currently do
+> expect extension objects. They already can in case of ICMPv6.
+> And unfortunately they can try in an unsafe manner by parsing
+> the original datagram for ICMPv4, too.
 >
+I suspect there's more legacy applications that don't understand the
+extensions so the risk of misinterpreting the packet data with
+extensions exists for them.
 
-[...]
+> ICMPv6 differs from ICMP in that it suggests forwarding as much
+> of the "invoking" packet as possible without exceeding the min
+> MTU (1280B).
+>
+> RFC 4884 mentions the minimum 128 B for ICMP but not for
+> ICMPv6. It specifically keeps the wording about forwarding as
+> much as possible.
+
+Out of curiosity, are you implementing this patch for a specific use
+case in mind or just for completeness?
+
+Thanks,
+Tom
