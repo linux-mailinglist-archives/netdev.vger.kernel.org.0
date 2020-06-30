@@ -2,182 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7E4820F117
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 11:02:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3C8720F12B
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 11:08:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731763AbgF3JCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 05:02:30 -0400
-Received: from mail-eopbgr140042.outbound.protection.outlook.com ([40.107.14.42]:25472
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731591AbgF3JC3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 05:02:29 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f/e8P+h4IpgxnPcAwzYOK3D+hkAqdsHEiqC/YbMj6z8RBkqnJ9Pgnw/Ii+xOFyp5NUjiWsIr11ZQyNA4JDS0c9M6tcQ62DwodLXY16YG9+ntVg0aXiUwwgGwHS5OMUy6ZqEJIEaeSnOG99kjLChuPugHQ2p/8Kki7O6sH7/K3d8Zv7MCc08gyifo99455p8thpW4GIOoI+382Ht66Op8eqjmkk2I/WgQqLfbccChWEkA0wPFMbJQeTFDTNfGfrBxsiqfbjt0+GZ/dx/1mW9FBLXOAL+62qpGJFVsv3Tu/HdA6FjQi18YuWJKyTdQHszbVLhTFRfLp4AfibTW0rzjRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HfunRT+yLkOysYnmxMaP2WdgTwC25/prsUQJg6Je0+w=;
- b=UKFssczjYg/xLthWl8r6bqzc381ILQw9cc/KXMplgCZQIJCi6z7nGEhzMbBcKXn5VjGKAzZU0CO/ljZkjFUT5sSems8c43CwZi9m3exeQ9c0fY25jbDdgBxpMDXhNQugVPvWOuvt8ATsrgaFOJFw9QpQqVCCmfLbfhNX+oL/fwwmc2SQVp7NNT4AEYT+EXWIbiF8qWNu0Nc2soDvyq3IHHGGGcYZdvqa77g6Bwqu7WfDYZgzzoJtagZUZ/MXqVGrVGG40koRenvtiQ9yzJpSQfuiFSxNyfFSPXE+OCnnNu7wryWsGJj+jV5m2Ive0pzEAI/ehK/6KLazDjoLashnHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HfunRT+yLkOysYnmxMaP2WdgTwC25/prsUQJg6Je0+w=;
- b=bu76cM08QQkEDGPL4cwKfdI/uJOXHINcMB0hTKqXu962nBU8pTRmlVKYb3ERZkBoWGdoaTnDfZSjgsskHBqI/yHFinvQAyrlBrcU3FgC2h4lIQFYbf9WDoSh7CSQQsoiIi3Zhxf0GEXnSf81MxhZ2tNI3UvfzM2T4Re2ev7Izsc=
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18) by AM6PR04MB4949.eurprd04.prod.outlook.com
- (2603:10a6:20b:f::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.24; Tue, 30 Jun
- 2020 09:02:24 +0000
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3131.027; Tue, 30 Jun 2020
- 09:02:24 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>,
-        David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH net-next] net: ethernet: fec: prevent tx
- starvation under high rx load
-Thread-Topic: [EXT] Re: [PATCH net-next] net: ethernet: fec: prevent tx
- starvation under high rx load
-Thread-Index: AQHWSyWV3hyWvPwI+E6K+muw3DPNvajtkJeQgAI97gCAAOkCsIAAEuSAgAAPKTCAAAipAIAAAXzg
-Date:   Tue, 30 Jun 2020 09:02:24 +0000
-Message-ID: <AM6PR0402MB3607C60F2C8E7B3E63906B6AFF6F0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
-References: <AM6PR0402MB3607E5066DA857CD4D9B33A3FF6F0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
- <C3UB7PGXY0YN.1CF0AAIPSG6EI@wkz-x280>
-In-Reply-To: <C3UB7PGXY0YN.1CF0AAIPSG6EI@wkz-x280>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: waldekranz.com; dkim=none (message not signed)
- header.d=none;waldekranz.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.67]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 98b6759b-1072-4acc-ca2b-08d81cd44e55
-x-ms-traffictypediagnostic: AM6PR04MB4949:
-x-microsoft-antispam-prvs: <AM6PR04MB4949B07F549895686F8642FDFF6F0@AM6PR04MB4949.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0450A714CB
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: henAKSefIm9oc8EhO75/AUt7vIgNDtdioxqZWVcGeFwk+Z7NuwauosXa2MnKg7ezJiNrqPiwk9o6jUu69IwxFiEsI00XUhljW5VhXdP5p8XjglAm3AN3pNv/ez4DrQ0WpZ3ZkUUYXT9+w8JihPP61xLzsJ/u7PeItNbC11dohc+4h0ZWVO65fhw31mFYMylVLC7rC3oNhY/RBCi9Sfynx0gqjfVNnsdhlPRO6ad0ehCx86LqqHQegxuYRg8hy0lFtk8og2WpPaqiDK0HBhhoYq7nHBVYnYs8qxcj4uwoTfYIExi3aD+kjpcjckD+0Hnd+/uR3UXpOekYIHka3pKjC3odVgyLCZZO+OWLj/jziEDzKBbnzpSqt7kLADwVDLTYJj4oWh+EK/n6gF3KKdm4LQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(136003)(366004)(346002)(376002)(478600001)(9686003)(8936002)(186003)(26005)(45080400002)(6506007)(55016002)(5660300002)(71200400001)(83380400001)(52536014)(76116006)(66946007)(64756008)(66476007)(66556008)(110136005)(66446008)(86362001)(316002)(8676002)(33656002)(4326008)(7696005)(2906002)(966005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: vHCtjfkftA0vVBb/QUNiw+iPwN2nLSXdWgLkztNleY5ICWIpfGAejjoj1mwPPt5v061NkaktaA8sQSKInTFC1U3HEccPiI85jJNfjFGzOw066z7+2UgjTM9wjzEVQtY8Fi2R99AqoWz5tkwyzdFggrbgkJDLSLEWNFDEr1C5zNdmFOefBHmqeRnEzWiH3djzEn9Ojlk6s0ItLNGTSfeGNfdUcbqGHFhfvuFDsZ3hcagL4QMbT2o2IVLZvBZ9VD6WUkoDNobIwNB/4D82rrBzsSpxyvqj1oXFdPr62Sjn1UAcv8aWP0A/zfrMGL4rGkyCWTu4uAmkAqundpMFAx/WoVX2gBtyTNT/fTdymxF2Kr5Y0qW3LWMvzmd5Z/Ag5Rl/K3fL50ch67AGWBHuhgzoiTfapPhj/T9DN3gEMfus3b+md2YvIdWzfwIxCOJfYarNwC0QUxNMY1xrntCZuTWRvfLTJ3anrYwwfl1bUKw4MG7mXni0M+nEkh6667VXJFP9
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1731831AbgF3JIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 05:08:38 -0400
+Received: from sitav-80046.hsr.ch ([152.96.80.46]:50342 "EHLO
+        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731666AbgF3JIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 05:08:37 -0400
+Received: from [IPv6:2a01:8b81:5404:6500:3c25:5ba3:e8b1:1f22] (unknown [IPv6:2a01:8b81:5404:6500:3c25:5ba3:e8b1:1f22])
+        by mail.strongswan.org (Postfix) with ESMTPSA id E1087401B3;
+        Tue, 30 Jun 2020 11:08:34 +0200 (CEST)
+Subject: Re: [PATCH ipsec] xfrm: state: match with both mark and mask on user
+ interfaces
+To:     Xin Long <lucien.xin@gmail.com>, netdev@vger.kernel.org
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <hadi@cyberus.ca>,
+        Sabrina Dubroca <sd@queasysnail.net>
+References: <4aaead9f8306859eb652b90582f23295792e9d15.1593497708.git.lucien.xin@gmail.com>
+From:   Tobias Brunner <tobias@strongswan.org>
+Autocrypt: addr=tobias@strongswan.org; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <d510d172-c605-725d-e6bc-e6462a3718ab@strongswan.org>
+Date:   Tue, 30 Jun 2020 11:08:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3607.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 98b6759b-1072-4acc-ca2b-08d81cd44e55
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2020 09:02:24.5535
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: CbqEJNR2APog3q51pv1mP2ywY4w0kmIGMRr8DWKd2BJNsDJH95Y6NLkUq6BPQjYitN5YnMFQRtCXNd5bEWFc5g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4949
+In-Reply-To: <4aaead9f8306859eb652b90582f23295792e9d15.1593497708.git.lucien.xin@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogVG9iaWFzIFdhbGRla3JhbnogPHRvYmlhc0B3YWxkZWtyYW56LmNvbT4gU2VudDogVHVl
-c2RheSwgSnVuZSAzMCwgMjAyMCA0OjU2IFBNDQo+IE9uIFR1ZSBKdW4gMzAsIDIwMjAgYXQgMTA6
-MjYgQU0gQ0VTVCwgQW5keSBEdWFuIHdyb3RlOg0KPiA+IEZyb206IFRvYmlhcyBXYWxkZWtyYW56
-IDx0b2JpYXNAd2FsZGVrcmFuei5jb20+IFNlbnQ6IFR1ZXNkYXksIEp1bmUNCj4gPiAzMCwNCj4g
-PiAyMDIwIDM6MzEgUE0NCj4gPiA+IE9uIFR1ZSBKdW4gMzAsIDIwMjAgYXQgODoyNyBBTSBDRVNU
-LCBBbmR5IER1YW4gd3JvdGU6DQo+ID4gPiA+IEZyb206IFRvYmlhcyBXYWxkZWtyYW56IDx0b2Jp
-YXNAd2FsZGVrcmFuei5jb20+IFNlbnQ6IFR1ZXNkYXksDQo+ID4gPiA+IEp1bmUgMzAsDQo+ID4g
-PiA+IDIwMjAgMTI6MjkgQU0NCj4gPiA+ID4gPiBPbiBTdW4gSnVuIDI4LCAyMDIwIGF0IDg6MjMg
-QU0gQ0VTVCwgQW5keSBEdWFuIHdyb3RlOg0KPiA+ID4gPiA+ID4gSSBuZXZlciBzZWVtIGJhbmR3
-aWR0aCB0ZXN0IGNhdXNlIG5ldGRldiB3YXRjaGRvZyB0cmlwLg0KPiA+ID4gPiA+ID4gQ2FuIHlv
-dSBkZXNjcmliZSB0aGUgcmVwcm9kdWNlIHN0ZXBzIG9uIHRoZSBjb21taXQsIHRoZW4gd2UNCj4g
-PiA+ID4gPiA+IGNhbiByZXByb2R1Y2UgaXQgb24gbXkgbG9jYWwuIFRoYW5rcy4NCj4gPiA+ID4g
-Pg0KPiA+ID4gPiA+IE15IHNldHVwIHVzZXMgYSBpLk1YOE0gTmFubyBFVksgY29ubmVjdGVkIHRv
-IGFuIGV0aGVybmV0IHN3aXRjaCwNCj4gPiA+ID4gPiBidXQgY2FuIGdldCB0aGUgc2FtZSByZXN1
-bHRzIHdpdGggYSBkaXJlY3QgY29ubmVjdGlvbiB0byBhIFBDLg0KPiA+ID4gPiA+DQo+ID4gPiA+
-ID4gT24gdGhlIGlNWCwgY29uZmlndXJlIHR3byBWTEFOcyBvbiB0b3Agb2YgdGhlIEZFQyBhbmQg
-ZW5hYmxlDQo+ID4gPiA+ID4gSVB2NCBmb3J3YXJkaW5nLg0KPiA+ID4gPiA+DQo+ID4gPiA+ID4g
-T24gdGhlIFBDLCBjb25maWd1cmUgdHdvIFZMQU5zIGFuZCBwdXQgdGhlbSBpbiBkaWZmZXJlbnQN
-Cj4gbmFtZXNwYWNlcy4NCj4gPiA+ID4gPiBGcm9tIG9uZSBuYW1lc3BhY2UsIHVzZSB0cmFmZ2Vu
-IHRvIGdlbmVyYXRlIGEgZmxvdyB0aGF0IHRoZSBpTVgNCj4gPiA+ID4gPiB3aWxsIHJvdXRlIGZy
-b20gdGhlIGZpcnN0IFZMQU4gdG8gdGhlIHNlY29uZCBhbmQgdGhlbiBiYWNrDQo+ID4gPiA+ID4g
-dG93YXJkcyB0aGUgc2Vjb25kIG5hbWVzcGFjZSBvbiB0aGUgUEMuDQo+ID4gPiA+ID4NCj4gPiA+
-ID4gPiBTb21ldGhpbmcgbGlrZToNCj4gPiA+ID4gPg0KPiA+ID4gPiA+ICAgICB7DQo+ID4gPiA+
-ID4gICAgICAgICBldGgoc2E9UENfTUFDLCBkYT1JTVhfTUFDKSwNCj4gPiA+ID4gPiAgICAgICAg
-IGlwdjQoc2FkZHI9MTAuMC4yLjIsIGRhZGRyPTEwLjAuMy4yLCB0dGw9MikNCj4gPiA+ID4gPiAg
-ICAgICAgIHVkcChzcD0xLCBkcD0yKSwNCj4gPiA+ID4gPiAgICAgICAgICJIZWxsbyB3b3JsZCIN
-Cj4gPiA+ID4gPiAgICAgfQ0KPiA+ID4gPiA+DQo+ID4gPiA+ID4gV2FpdCBhIGNvdXBsZSBvZiBz
-ZWNvbmRzIGFuZCB0aGVuIHlvdSdsbCBzZWUgdGhlIG91dHB1dCBmcm9tDQo+IGZlY19kdW1wLg0K
-PiA+ID4gPiA+DQo+ID4gPiA+ID4gSW4gdGhlIHNhbWUgc2V0dXAgSSBhbHNvIHNlZSBhIHdlaXJk
-IGlzc3VlIHdoZW4gcnVubmluZyBhIFRDUA0KPiA+ID4gPiA+IGZsb3cgdXNpbmcgaXBlcmYzLiBN
-b3N0IG9mIHRoZSB0aW1lICh+NzAlKSB3aGVuIGkgc3RhcnQgdGhlDQo+ID4gPiA+ID4gaXBlcmYz
-IGNsaWVudCBJJ2xsIHNlZSB+NDUwTWJwcyBvZiB0aHJvdWdocHV0LiBJbiB0aGUgb3RoZXIgY2Fz
-ZQ0KPiA+ID4gPiA+ICh+MzAlKSBJJ2xsIHNlZSB+NzkwTWJwcy4gVGhlIHN5c3RlbSBpcyAic3Rh
-Ymx5IGJpLW1vZGFsIiwgaS5lLg0KPiA+ID4gPiA+IHdoaWNoZXZlciByYXRlIGlzIHJlYWNoZWQg
-aW4gdGhlIGJlZ2lubmluZyBpcyB0aGVuIHN1c3RhaW5lZCBmb3INCj4gPiA+ID4gPiBhcyBsb25n
-IGFzIHRoZSBzZXNzaW9uIGlzIGtlcHQNCj4gPiA+IGFsaXZlLg0KPiA+ID4gPiA+DQo+ID4gPiA+
-ID4gSSd2ZSBpbnNlcnRlZCBzb21lIHRyYWNlcG9pbnRzIGluIHRoZSBkcml2ZXIgdG8gdHJ5IHRv
-DQo+ID4gPiA+ID4gdW5kZXJzdGFuZCB3aGF0J3MgZ29pbmcNCj4gPiA+ID4gPiBvbjoNCj4gPiA+
-ID4gPiBodHRwczovL2V1cjAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91dGxvb2suY29tLz91cmw9
-aHR0cHMlM0ElMkYlDQo+ID4gPiA+ID4gMkZzdg0KPiA+ID4gPiA+IGdzaGENCj4gPiA+DQo+IHJl
-LmNvbSUyRmklMkZNVnAuc3ZnJmFtcDtkYXRhPTAyJTdDMDElN0NmdWdhbmcuZHVhbiU0MG54cC5j
-b20lDQo+ID4gPiA+ID4NCj4gPiA+DQo+IDdDMTI4NTRlMjFlYTEyNGI0Y2MyZTAwOGQ4MWM1OWQ2
-MTglN0M2ODZlYTFkM2JjMmI0YzZmYTkyY2Q5OWM1Yw0KPiA+ID4gPiA+DQo+ID4gPg0KPiAzMDE2
-MzUlN0MwJTdDMCU3QzYzNzI5MDUxOTQ1MzY1NjAxMyZhbXA7c2RhdGE9Ynk0U2hPa21UYVJrRmZF
-DQo+ID4gPiA+ID4gMHhKa3JUcHRDJTJCMmVnRmY5aU00RTVoeDRqaVNVJTNEJmFtcDtyZXNlcnZl
-ZD0wDQo+ID4gPiA+ID4NCj4gPiA+ID4gPiBXaGF0IEkgY2FuJ3QgZmlndXJlIG91dCBpcyB3aHkg
-dGhlIFR4IGJ1ZmZlcnMgc2VlbSB0byBiZQ0KPiA+ID4gPiA+IGNvbGxlY3RlZCBhdCBhIG11Y2gg
-c2xvd2VyIHJhdGUgaW4gdGhlIHNsb3cgY2FzZSAodG9wIGluIHRoZQ0KPiA+ID4gPiA+IHBpY3R1
-cmUpLiBJZiB3ZSBmYWxsIGJlaGluZCBpbiBvbmUgTkFQSSBwb2xsLCB3ZSBzaG91bGQgY2F0Y2gg
-dXANCj4gPiA+ID4gPiBhdCB0aGUgbmV4dCBjYWxsICh3aGljaCB3ZQ0KPiA+ID4gY2FuIHNlZSBp
-biB0aGUgZmFzdCBjYXNlKS4NCj4gPiA+ID4gPiBCdXQgaW4gdGhlIHNsb3cgY2FzZSB3ZSBrZWVw
-IGZhbGxpbmcgZnVydGhlciBhbmQgZnVydGhlciBiZWhpbmQNCj4gPiA+ID4gPiB1bnRpbCB3ZSBm
-cmVlemUgdGhlIHF1ZXVlLiBJcyB0aGlzIHNvbWV0aGluZyB5b3UndmUgZXZlcg0KPiA+ID4gPiA+
-IG9ic2VydmVkPyBBbnkNCj4gPiA+IGlkZWFzPw0KPiA+ID4gPg0KPiA+ID4gPiBCZWZvcmUsIG91
-ciBjYXNlcyBkb24ndCByZXByb2R1Y2UgdGhlIGlzc3VlLCBjcHUgcmVzb3VyY2UgaGFzDQo+ID4g
-PiA+IGJldHRlciBiYW5kd2lkdGggdGhhbiBldGhlcm5ldCB1RE1BIHRoZW4gdGhlcmUgaGF2ZSBj
-aGFuY2UgdG8NCj4gPiA+ID4gY29tcGxldGUgY3VycmVudCBOQVBJLiBUaGUgbmV4dCwgd29ya190
-eCBnZXQgdGhlIHVwZGF0ZSwgbmV2ZXIgY2F0Y2gNCj4gdGhlIGlzc3VlLg0KPiA+ID4NCj4gPiA+
-IEl0IGFwcGVhcnMgaXQgaGFzIG5vdGhpbmcgdG8gZG8gd2l0aCByb3V0aW5nIGJhY2sgb3V0IHRo
-cm91Z2ggdGhlDQo+ID4gPiBzYW1lIGludGVyZmFjZS4NCj4gPiA+DQo+ID4gPiBJIGdldCB0aGUg
-c2FtZSBiaS1tb2RhbCBiZWhhdmlvciBpZiBqdXN0IHJ1biB0aGUgaXBlcmYzIHNlcnZlciBvbg0K
-PiA+ID4gdGhlIGlNWCBhbmQgdGhlbiBoYXZlIGl0IGJlIHRoZSB0cmFuc21pdHRpbmcgcGFydCwg
-aS5lLiBvbiB0aGUgUEMgSSBydW46DQo+ID4gPg0KPiA+ID4gICAgIGlwZXJmMyAtYyAkSU1YX0lQ
-IC1SDQo+ID4gPg0KPiA+ID4gSSB3b3VsZCBiZSB2ZXJ5IGludGVyZXN0aW5nIHRvIHNlZSB3aGF0
-IG51bWJlcnMgeW91IHNlZSBpbiB0aGlzIHNjZW5hcmlvLg0KPiA+IEkganVzdCBoYXZlIG9uIGlt
-eDhtbiBldmsgaW4gbXkgaGFuZHMsIGFuZCBydW4gdGhlIGNhc2UsIHRoZSBudW1iZXJzDQo+ID4g
-aXMgfjk0ME1icHMgYXMgYmVsb3cuDQo+ID4NCj4gPiByb290QGlteDhtbmV2azp+IyBpcGVyZjMg
-LXMNCj4gPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLQ0KPiA+IFNlcnZlciBsaXN0ZW5pbmcgb24gNTIwMQ0KPiA+IC0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+ID4gQWNj
-ZXB0ZWQgY29ubmVjdGlvbiBmcm9tIDEwLjE5Mi4yNDIuMTMyLCBwb3J0IDQzNDAyIFsgNV0gbG9j
-YWwNCj4gPiAxMC4xOTIuMjQyLjk2IHBvcnQgNTIwMSBjb25uZWN0ZWQgdG8gMTAuMTkyLjI0Mi4x
-MzIgcG9ydA0KPiA+IDQzNDA0DQo+ID4gWyBJRF0gSW50ZXJ2YWwgVHJhbnNmZXIgQml0cmF0ZSBS
-ZXRyIEN3bmQgWyA1XSAwLjAwLTEuMDAgc2VjIDEwOQ0KPiA+IE1CeXRlcyA5MTMgTWJpdHMvc2Vj
-IDAgNDI4IEtCeXRlcyBbIDVdIDEuMDAtMi4wMCBzZWMgMTEyIE1CeXRlcyA5NDMNCj4gPiBNYml0
-cy9zZWMgMCA0NDcgS0J5dGVzIFsgNV0gMi4wMC0zLjAwIHNlYyAxMTIgTUJ5dGVzIDk0MSBNYml0
-cy9zZWMgMA0KPiA+IDQ3MiBLQnl0ZXMgWyA1XSAzLjAwLTQuMDAgc2VjIDExMyBNQnl0ZXMgOTQ0
-IE1iaXRzL3NlYyAwIDQ3MiBLQnl0ZXMgWw0KPiA+IDVdIDQuMDAtNS4wMCBzZWMgMTEyIE1CeXRl
-cyA5NDIgTWJpdHMvc2VjIDAgNDcyIEtCeXRlcyBbIDVdIDUuMDAtNi4wMA0KPiA+IHNlYyAxMTIg
-TUJ5dGVzIDkzNiBNYml0cy9zZWMgMCA0NzIgS0J5dGVzIFsgNV0gNi4wMC03LjAwIHNlYyAxMTMN
-Cj4gPiBNQnl0ZXMgOTQ1IE1iaXRzL3NlYyAwIDQ3MiBLQnl0ZXMgWyA1XSA3LjAwLTguMDAgc2Vj
-IDExMiBNQnl0ZXMgOTQ0DQo+ID4gTWJpdHMvc2VjIDAgNDcyIEtCeXRlcyBbIDVdIDguMDAtOS4w
-MCBzZWMgMTEyIE1CeXRlcyA5NDEgTWJpdHMvc2VjIDANCj4gPiA0NzIgS0J5dGVzIFsgNV0gOS4w
-MC0xMC4wMCBzZWMgMTEyIE1CeXRlcyA5NDAgTWJpdHMvc2VjIDAgNDcyIEtCeXRlcyBbDQo+ID4g
-NV0gMTAuMDAtMTAuMDQgc2VjIDQuMTYgTUJ5dGVzIDg3MyBNYml0cy9zZWMgMCA0NzIgS0J5dGVz
-DQo+ID4gLSAtIC0gLSAtIC0gLSAtIC0gLSAtIC0gLSAtIC0gLSAtIC0gLSAtIC0gLSAtIC0gLSBb
-IElEXSBJbnRlcnZhbA0KPiA+IFRyYW5zZmVyIEJpdHJhdGUgUmV0ciBbIDVdIDAuMDAtMTAuMDQg
-c2VjIDEuMTAgR0J5dGVzIDkzOSBNYml0cy9zZWMgMA0KPiA+IHNlbmRlcg0KPiANCj4gQXJlIHlv
-dSBydW5uaW5nIHRoZSBjbGllbnQgd2l0aCAtUiBzbyB0aGF0IHRoZSBpTVggaXMgdGhlIHRyYW5z
-bWl0dGVyPw0KPiBXaGF0IGlmIHlvdSBydW4gdGhlIHRlc3QgbXVsdGlwbGUgdGltZXMsIGRvIHlv
-dSBnZXQgdGhlIHNhbWUgcmVzdWx0IGVhY2ggdGltZT8NCg0KT2YgY291cnNlLCBQQyBjb21tYW5k
-IGxpa2U6IGlwZXJmMyAtYyAxMC4xOTIuMjQyLjk2IC1SDQpZZXMsIHRoZSBzYW1lIHJlc3VsdCBm
-b3IgZWFjaCB0aW1lLg0K
+Hi Xin,
+
+> Similar to commit 4f47e8ab6ab79 ("xfrm: policy: match with both mark and
+> mask on user interfaces"), this patch is to match both mark and mask for
+> state on these user interfaces:
+> 
+>   xfrm_state_lookup_byaddr_user
+>   xfrm_state_lookup_user
+>   xfrm_state_update
+>   xfrm_state_find
+>   xfrm_state_add
+>       __xfrm_state_lookup_byaddr(struct xfrm_mark)
+>       __xfrm_state_lookup(struct xfrm_mark)
+>   xfrm_find_acq_byseq
+>   xfrm_stateonly_find
+> 
+>           mark.v == x->mark.v && mark.m == x->mark.m
+
+I generally agree with matching marks/masks exactly for operations from
+userland, and it doesn't introduce any issues in our test suite.
+However, xfrm_state_find() is used to find an outbound state based on
+the templates in a policy and the marks on both, so it's not directly
+userland-facing.  Before this change, the mask configured on the state
+was a applied to the policy's mark/mask and then compared to the state's
+mark.  Now, the mark and mask both must match exactly:
+
+> @@ -1051,7 +1061,6 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+>  	int acquire_in_progress = 0;
+>  	int error = 0;
+>  	struct xfrm_state *best = NULL;
+> -	u32 mark = pol->mark.v & pol->mark.m;
+>  	unsigned short encap_family = tmpl->encap_family;
+>  	unsigned int sequence;
+>  	struct km_event c;
+> @@ -1065,7 +1074,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+>  	hlist_for_each_entry_rcu(x, net->xfrm.state_bydst + h, bydst) {
+>  		if (x->props.family == encap_family &&
+>  		    x->props.reqid == tmpl->reqid &&
+> -		    (mark & x->mark.m) == x->mark.v &&
+> +		    (pol->mark.v == x->mark.v && pol->mark.m == x->mark.m) &&
+>  		    x->if_id == if_id &&
+>  		    !(x->props.flags & XFRM_STATE_WILDRECV) &&
+>  		    xfrm_state_addr_check(x, daddr, saddr, encap_family) &&
+> @@ -1082,7 +1091,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+>  	hlist_for_each_entry_rcu(x, net->xfrm.state_bydst + h_wildcard, bydst) {
+>  		if (x->props.family == encap_family &&
+>  		    x->props.reqid == tmpl->reqid &&
+> -		    (mark & x->mark.m) == x->mark.v &&
+> +		    (pol->mark.v == x->mark.v && pol->mark.m == x->mark.m) &&
+>  		    x->if_id == if_id &&
+>  		    !(x->props.flags & XFRM_STATE_WILDRECV) &&
+>  		    xfrm_addr_equal(&x->id.daddr, daddr, encap_family) &&
+
+While this should usually not be a problem for strongSwan, as we set the
+same mark/value on both states and corresponding policies (although the
+latter can be disabled as users may want to install policies themselves
+or via another daemon e.g. for MIPv6), it might be a limitation for some
+use cases.  The current code allows sharing states with multiple
+policies whose mark/mask doesn't match exactly (i.e. depended on the
+masks of both).  I wonder if anybody uses it like this, and how others
+think about it.
+
+Regards,
+Tobias
