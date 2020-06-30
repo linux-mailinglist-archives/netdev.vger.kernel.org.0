@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4653320E9F8
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E35D20EA00
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728260AbgF3AJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 20:09:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60760 "EHLO mail.kernel.org"
+        id S1728472AbgF3AKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 20:10:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33472 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728220AbgF3AJO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 20:09:14 -0400
+        id S1726182AbgF3AKs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 20:10:48 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ACBB320780;
-        Tue, 30 Jun 2020 00:09:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1701820780;
+        Tue, 30 Jun 2020 00:10:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593475754;
-        bh=qWOHGgpcP/+e/wuOBkP4VH0IjHDw9w2ffR+dS1tYc/4=;
+        s=default; t=1593475848;
+        bh=yFS0VJadwhKck6VDo5N1DabnFiD0iq24T0FTT68BaQI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Y9EYGWXG2LBIlQFHESd5r0hHX5j5SIX5rF0YBNAFKftpr5COq6AlUg536oV4ofxrv
-         ndf8Ug61ANgtNlDI8H09C7an1ECADL4FkTNMa1lCuAf8mKM0WupKBBYEHkls2BawGI
-         YkuqHcZjJNIi+7wRoBKZLE+Iw0WKJZdvqSJdBDm0=
-Date:   Mon, 29 Jun 2020 17:09:12 -0700
+        b=alcA1coVQsr2zF44KCWnETZZRs0osgtGigVDpRiyAXIpcaLxZA1WrM416Z+lzjP/G
+         UchNn4pGeVK3cw8bzt3+9jdhOLA0uUyvPETsTGufDVEb+MygmmFIFtYV8aEHRauVOx
+         VJG8tTSUlDvf7GKaEyFBCl1vEdOZ1q1wFKH0TP64=
+Date:   Mon, 29 Jun 2020 17:10:46 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Alex Elder <elder@linaro.org>
 Cc:     davem@davemloft.net, evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] net: ipa: always report GSI state errors
-Message-ID: <20200629170912.39188c5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200629213738.1180618-2-elder@linaro.org>
-References: <20200629213738.1180618-1-elder@linaro.org>
-        <20200629213738.1180618-2-elder@linaro.org>
+Subject: Re: [PATCH net 2/3] net: ipa: no checksum offload for SDM845 LAN RX
+Message-ID: <20200629171046.4b3ed68c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200629212038.1153054-3-elder@linaro.org>
+References: <20200629212038.1153054-1-elder@linaro.org>
+        <20200629212038.1153054-3-elder@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,27 +42,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Jun 2020 16:37:36 -0500 Alex Elder wrote:
-> We check the state of an event ring or channel both before and after
-> any GSI command issued that will change that state.  In most--but
-> not all--cases, if the state is something different than expected we
-> report an error message.
+On Mon, 29 Jun 2020 16:20:37 -0500 Alex Elder wrote:
+> The AP LAN RX endpoint should not have download checksum offload
+> enabled.
 > 
-> Add error messages where missing, so that all unexpected states
-> provide information about what went wrong.  Drop the parentheses
-> around the state value shown in all cases.
+> The receive handler does properly accomodate the trailer that's
+> added by the hardware, but we ignore it.
 > 
 > Signed-off-by: Alex Elder <elder@linaro.org>
 
-nit:
+For this net series - would you mind adding Fixes tags to each patch?
 
-CHECK: Alignment should match open parenthesis
-#105: FILE: drivers/net/ipa/gsi.c:1673:
-+		dev_warn(dev,
-+			"limiting to %u channels; hardware supports %u\n",
+Also checkpatch sayeth:
 
-CHECK: Alignment should match open parenthesis
-#120: FILE: drivers/net/ipa/gsi.c:1685:
-+		dev_warn(dev,
-+			"limiting to %u event rings; hardware supports %u\n",
+WARNING: 'accomodate' may be misspelled - perhaps 'accommodate'?
+#10: 
+The receive handler does properly accomodate the trailer that's
 
