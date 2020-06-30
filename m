@@ -2,129 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 256F920F676
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 15:58:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B84720F671
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 15:57:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732182AbgF3N6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 09:58:51 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:43072 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728306AbgF3N6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 09:58:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593525529;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vrr9+UDr/nL1jLcaePhj7X9mSwa+9jdHrZ+GGReV/Jo=;
-        b=T6LZm19osFJBFP9ZYqIKvWS7PdHhBkA0/Lh0CSx54L2ThmZfqXvVywpxeFKAoIB8NBSLgk
-        ov1MYXkxh5zo3/SNJYnE1rk0OlSA0G8qnyvpaonaar0ZR7jBhvAkrBsgq6nC9fnhNRBpU3
-        Nfuy5Dv9kUm/5k7rSDVQ/zOug5fAiNg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-201-89yaZnypPKmKN1Pax-Ichg-1; Tue, 30 Jun 2020 09:58:43 -0400
-X-MC-Unique: 89yaZnypPKmKN1Pax-Ichg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6782E15676;
-        Tue, 30 Jun 2020 13:55:43 +0000 (UTC)
-Received: from krava (unknown [10.40.192.137])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 84EAA60C81;
-        Tue, 30 Jun 2020 13:55:39 +0000 (UTC)
-Date:   Tue, 30 Jun 2020 15:55:38 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v4 bpf-next 00/14] bpf: Add d_path helper
-Message-ID: <20200630135538.GB3071036@krava>
-References: <20200625221304.2817194-1-jolsa@kernel.org>
- <CAEf4BzbMND3VGxzqYU38agbTd+EVquD7J1Spx9LeR=569qMyEg@mail.gmail.com>
+        id S2387431AbgF3N5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 09:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731327AbgF3N5i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 09:57:38 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C276C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 06:57:38 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id a8so15111556edy.1
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 06:57:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7AUJ86Dv5H0LjEHbc2oQNE/3QwNEb+p/2GO8ru7Wx18=;
+        b=Ffh6zb2MpBn/US69pMpQYauwvLQw7IrM/tHCZauzu7+ZR9XqxJ8koMCDLDJv04Gru2
+         dYRZv7tX9CXNtZlRGhJyzLV+HNPZHVqS6efLq3zjRE3FLaFGc4Sx4pNqqfbxOE30++wx
+         Eeb6s2vPcMlcS8GL5EWOEbYqGnnammxbrP4ucpc2iIaGpOPh3OUpuD4MEbjNOLOBVSv1
+         LZ5P8RxAB+Hym8X9su4VeoVXQmtIQ9Oy6LjBcM78t1IIS9dkEROm5G9LRmYxbE+Nvl+T
+         ibcJIIyd3c3LIpn/HtqyP54KjzUxTiooWWRB7pHs4K3XUAODF31xnTchnFuzZx24f3s8
+         iQkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7AUJ86Dv5H0LjEHbc2oQNE/3QwNEb+p/2GO8ru7Wx18=;
+        b=A81L7GTcw22XYK+wXQalFb/4tjPe1zluYh8Zk/iYElbB08qlDV5AGJ1zXMaHZHYM8a
+         MbcVrbsq95Goqq2FimA3BS9Zyv0B4+cmTEndUd1oU8EdvSRCxyViEbMcuMyloExkdmAZ
+         SQTo7An/4GOlFm1oT1TvzbJc6pwZcD8pGC6N9Wr4ch/sBxaTDyoXRbYqIa/ilAao7Pdt
+         Cxz2mlzZbjMvGUbajdRErbuUK2tYQJLAgQwQEsmrlaPg6n2oZN+upbjRhEg/aIZ3J/Gp
+         u7kAzyLMNdCxqxckhmhTuY4jsPidz+WoVLvfEs/5YGjYzrMiJVLiXv4JC5uSZkNcJj36
+         3Sdw==
+X-Gm-Message-State: AOAM532FNjPPNZmumLVcF81JIJqcivWCgpowgToIZaYn5+sWfBGPbdQV
+        AZctXDW4+ghJjgkprLbv8BM6pERaZ7Dh8ioHxdh0+x7u
+X-Google-Smtp-Source: ABdhPJzVp9+lEtly+KCAfIL36Q2ZTMGWaRFbZECvIy8UsR1j6n1mOT/UvLwXNp+U4pgL3gicFhBOQNM7QWvwiM/dVV0=
+X-Received: by 2002:a05:6402:21c2:: with SMTP id bi2mr22899668edb.296.1593525456889;
+ Tue, 30 Jun 2020 06:57:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbMND3VGxzqYU38agbTd+EVquD7J1Spx9LeR=569qMyEg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <20200629165731.1553050-1-willemdebruijn.kernel@gmail.com>
+ <cb763bc5-b361-891a-94e9-be2385ddcbe0@gmail.com> <CA+FuTSfgz54uQbzrMr1Q0cAg2Vs1TFjyOb_+jjKUPoKAb=R-fw@mail.gmail.com>
+ <f713198c-5ff7-677e-a739-c0bec4a93bd6@gmail.com> <CALx6S37vDy=0rCC7FPrgfi9NUr0w9dVvtRQ3LhiZ7GqoX4xBPw@mail.gmail.com>
+ <CA+FuTSddo8Nsj4ri3gC0tDm7Oe4nrvCqyxkj14QWswUs4vNHLw@mail.gmail.com>
+In-Reply-To: <CA+FuTSddo8Nsj4ri3gC0tDm7Oe4nrvCqyxkj14QWswUs4vNHLw@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 30 Jun 2020 09:57:00 -0400
+Message-ID: <CAF=yD-JDvo=OB+f4Sg8MDxPSiUEe7FVN_pkOZ6EUfuZTr4eEwQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] icmp: support rfc 4884
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 06:54:30PM -0700, Andrii Nakryiko wrote:
-> On Thu, Jun 25, 2020 at 4:47 PM Jiri Olsa <jolsa@kernel.org> wrote:
+On Mon, Jun 29, 2020 at 10:19 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Mon, Jun 29, 2020 at 8:37 PM Tom Herbert <tom@herbertland.com> wrote:
 > >
-> > hi,
-> > adding d_path helper to return full path for 'path' object.
-> >
-> > In a preparation for that, this patchset also adds support for BTF ID
-> > whitelists, because d_path can't be called from any probe due to its
-> > locks usage. The whitelists allow verifier to check if the caller is
-> > one of the functions from the whitelist.
-> >
-> > The whitelist is implemented in a generic way. This patchset introduces
-> > macros that allow to define lists of BTF IDs, which are compiled in
-> > the kernel image in a new .BTF.ids ELF section.
-> >
-> > The generic way of BTF ID lists allows us to use them in other places
-> > in kernel (than just for whitelists), that could use static BTF ID
-> > values compiled in and it's also implemented in this patchset.
-> >
-> > I originally added and used 'file_path' helper, which did the same,
-> > but used 'struct file' object. Then realized that file_path is just
-> > a wrapper for d_path, so we'd cover more calling sites if we add
-> > d_path helper and allowed resolving BTF object within another object,
-> > so we could call d_path also with file pointer, like:
-> >
-> >   bpf_d_path(&file->f_path, buf, size);
-> >
-> > This feature is mainly to be able to add dpath (filepath originally)
-> > function to bpftrace:
-> >
-> >   # bpftrace -e 'kfunc:vfs_open { printf("%s\n", dpath(args->path)); }'
-> >
-> > v4 changes:
-> >   - added ID sanity checks in btf_resolve_helper_id [Andrii]
-> >   - resolve bpf_ctx_convert via BTF_ID [Andrii]
-> >   - keep bpf_access_type in btf_struct_access [Andrii]
-> >   - rename whitelist to se and use struct btf_id_set [Andrii]
-> >   - several fixes for d_path prog/verifier tests [Andrii]
-> >   - added union and typedefs types support [Andrii]
-> >   - rename btfid to resolve_btfids [Andrii]
-> >   - fix segfault in resolve_btfids [John]
-> >   - rename section from .BTF_ids .BTF.ids (following .BTF.ext example)
-> >   - add .BTF.ids section info into btf.rst [John]
-> >   - updated over letter with more details [John]
-> >
-> > Also available at:
-> >   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-> >   bpf/d_path
-> >
-> > thanks,
-> > jirka
-> >
-> >
-> > ---
-> 
-> Have you considered splitting this series into two? One with BTF ID
-> resolution and corresponding patches. I'm pretty confident in that one
-> and it seems ready (with some minor selftest changes). Then,
-> separately, d_path and that sub-struct address logic. That one depends
-> on the first one, but shouldn't really block BTF ID resolution from
-> going in sooner.
+> > On Mon, Jun 29, 2020 at 4:07 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > >
+> > >
+> > >
+> > > On 6/29/20 2:30 PM, Willem de Bruijn wrote:
+> > > > On Mon, Jun 29, 2020 at 5:15 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > > >>
+> > > >>
+> > > >>
+> > > >> On 6/29/20 9:57 AM, Willem de Bruijn wrote:
+> > > >>> From: Willem de Bruijn <willemb@google.com>
+> > > >>>
+> > > >>> ICMP messages may include an extension structure after the original
+> > > >>> datagram. RFC 4884 standardized this behavior.
+> > > >>>
+> > > >>> It introduces an explicit original datagram length field in the ICMP
+> > > >>> header to delineate the original datagram from the extension struct.
+> > > >>>
+> > > >>> Return this field when reading an ICMP error from the error queue.
+> > > >>
+> > > >> RFC mentions a 'length' field of 8 bits, your patch chose to export the whole
+> > > >> second word of icmp header.
+> > > >>
+> > > >> Why is this field mapped to a prior one (icmp_hdr(skb)->un.gateway) ?
+> > > >>
+> > > >> Should we add an element in the union to make this a little bit more explicit/readable ?
+> > > >>
+> > > >> diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+> > > >> index 5589eeb791ca580bb182e1dc38c05eab1c75adb9..427ed5a6765316a4c1e2fa06f3b6618447c01564 100644
+> > > >> --- a/include/uapi/linux/icmp.h
+> > > >> +++ b/include/uapi/linux/icmp.h
+> > > >> @@ -76,6 +76,7 @@ struct icmphdr {
+> > > >>                 __be16  sequence;
+> > > >>         } echo;
+> > > >>         __be32  gateway;
+> > > >> +       __be32  second_word; /* RFC 4884 4.[123] : <unused:8>,<length:8>,<mtu:16> */
+> > > >>         struct {
+> > > >>                 __be16  __unused;
+> > > >>                 __be16  mtu;
+> > > >
+> > > > Okay. How about a variant of the existing struct frag?
+> > > >
+> > > > @@ -80,6 +80,11 @@ struct icmphdr {
+> > > >                 __be16  __unused;
+> > > >                 __be16  mtu;
+> > > >         } frag;
+> > > > +       struct {
+> > > > +               __u8    __unused;
+> > > > +               __u8    length;
+> > > > +               __be16  mtu;
+> > > > +       } rfc_4884;
+> > > >         __u8    reserved[4];
+> > > >    } un;
+> > > >
+> > >
+> > > Sure, but my point was later in the code :
+> > >
+> > > >>> +     if (inet_sk(sk)->recverr_rfc4884)
+> > > >>> +             info = ntohl(icmp_hdr(skb)->un.gateway);
+> > > >>
+> > > >> ntohl(icmp_hdr(skb)->un.second_word);
+> > >
+> > > If you leave there "info = ntohl(icmp_hdr(skb)->un.gateway)" it is a bit hard for someone
+> > > reading linux kernel code to understand why we do this.
+> > >
+> > It's also potentially problematic. The other bits are Unused, which
+> > isn't the same thing as necessarily being zero. Userspace might assume
+> > that info is the length without checking its bounded.
+>
+> It shouldn't. The icmp type and code are passed in sock_extended_err
+> as ee_type and ee_code. So it can demultiplex the meaning of the rest
+> of the icmp header.
+>
+> It just needs access to the other 32-bits, which indeed are context
+> sensitive. It makes more sense to me to let userspace demultiplex this
+> in one place, rather than demultiplex in the kernel and define a new,
+> likely no simpler, data structure to share with userspace.
+>
+> Specific to RFC 4884, the 8-bit length field coexists with the
+> 16-bit mtu field in case of ICMP_FRAG_NEEDED, so we cannot just pass
+> the first as ee_info in RFC 4884 mode. sock_extended_err additionally
+> has ee_data, but after that we're out of fields, too, so this approach
+> is not very future proof to additional ICMP extensions.
+>
+> On your previous point, it might be useful to define struct rfc_4884
+> equivalent outside struct icmphdr, so that an application can easily
+> cast to that. RFC 4884 itself does not define any extension objects.
+> That is out of scope there, and in my opinion, here. Again, better
+> left to userspace. Especially because as it describes, it standardized
+> the behavior after observing non-compliant, but existing in the wild,
+> proprietary extension variants. Users may have to change how they
+> interpret the fields based on what they have deployed.
 
-ok, will split it and send the first part for now
+As this just shares the raw icmp header data, I should probably
+change the name to something less specific to RFC 4884.
 
-jirka
+Since it would also help with decoding other extensions, such as
+the one you mention in  draft-ietf-6man-icmp-limits-08.
 
+Unfortunately I cannot simply reserve IP_RECVERR with integer 2.
+Perhaps IP_RECVERR_EXINFO.
