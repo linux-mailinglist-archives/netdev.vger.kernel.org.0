@@ -2,89 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C84B320EAEC
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:29:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70D7920EAF4
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:33:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728754AbgF3B2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 21:28:19 -0400
-Received: from mga02.intel.com ([134.134.136.20]:7475 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728456AbgF3B1y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 21:27:54 -0400
-IronPort-SDR: kaHpfaveOMdIPUEDkRGf65C9pwOxFy8tAldDCw494Cq7WfzRGUtf/DxZEMI2LT2P2yRSpdItYv
- fMM9lvNHCvzQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="134413755"
-X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; 
-   d="scan'208";a="134413755"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2020 18:27:51 -0700
-IronPort-SDR: ZLf6CNytQCwXJd8Q3IB4PxEVhJyqFFJagyY3z7sH1W8V5CihlU4u2gcaEW3p4tMunfD+Lqjcks
- 8q3/z9fPn93A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; 
-   d="scan'208";a="425017727"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by orsmga004.jf.intel.com with ESMTP; 29 Jun 2020 18:27:50 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v2 13/13] igc: Remove checking media type during MAC initialization
-Date:   Mon, 29 Jun 2020 18:27:48 -0700
-Message-Id: <20200630012748.518705-14-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200630012748.518705-1-jeffrey.t.kirsher@intel.com>
-References: <20200630012748.518705-1-jeffrey.t.kirsher@intel.com>
+        id S1728008AbgF3Bas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 21:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726448AbgF3Bar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 21:30:47 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FC0C061755;
+        Mon, 29 Jun 2020 18:30:47 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id e12so14410764qtr.9;
+        Mon, 29 Jun 2020 18:30:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dOGR8hfE5pfDKep9Mqg3hepFuNgQ9D1wxskAbD0pMtc=;
+        b=E7xI3aw7cJccxN5XFRiaCO7lXcjhNLvl5eakHBk+yyxfyciob/mojWg2VW5PFiGSR3
+         CSev9VeVLW2sKePbf+wJuEL7PZ15OYeBiILorTSu2W9SGn+vfulWIvNA5BshUoeHrr6n
+         iU4/huKvqawvredIaenoR+lV36ZdCcWVk7DlGuH1iIGBfJMtd+jzvO1AyAE2F1CRoHLp
+         A5WVlk0mI+wQIcg3ye4rb7i4hxutl0+sePix6BUrhArFjdYUlQS5oXWjzUS1DcXtwR/d
+         qIB9eghwNp+x7M2dw+ZicP0XTFppFEU74ot9K/DZbdnbKpUZAGPPGzbYmGVTOXQeDc4v
+         fohQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dOGR8hfE5pfDKep9Mqg3hepFuNgQ9D1wxskAbD0pMtc=;
+        b=T3pIvLOAaKFRTWpa/7cfiW8QfXpoO9/YHaAoad9LiHv4IXqfdpiyPnnLRbn1GHBQjI
+         1TLTHSuQqffGAbClDM5zGfBgse+E2MHiZs2/F2/Md6nlkyfB6CXztrki0Hkfw27XnIEW
+         fAc8wdXz4+rnttG8nGEuJdHNdLsFwGh/bSFmI3WUEKwcvPJm3VqV8T91qPX+SRZ6onTM
+         F0qg5llI7L7p0/uDEbDULm1GAVi7r7rh0elc0uOEp6QSxAq7WtOkXA9GRuo7ONpoV/ei
+         mx0C+RVwTMPR2zsooiuYLXH0sZS+CB5JD4VrMREUoNefwkV9Uyyh2bheAJ7OSq3Hxrp4
+         6nkA==
+X-Gm-Message-State: AOAM532+xWBL13fXKjK6QEi/Z/zrFStYJlvW27XmIQLUlCHp9Hh+T71/
+        NI3M/6HZajaJRwybcZ77ndcccO4GU7K1UFL+1as=
+X-Google-Smtp-Source: ABdhPJzKK3ONmicq5i6xgBpJhETJk59U6cml8/uywYVQ9f4X2J67eBA6ynDTDJbpUVBZGUlySXibB0DxxFlOam/S5vs=
+X-Received: by 2002:ac8:4714:: with SMTP id f20mr18488045qtp.141.1593480646786;
+ Mon, 29 Jun 2020 18:30:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200625221304.2817194-1-jolsa@kernel.org> <20200625221304.2817194-13-jolsa@kernel.org>
+In-Reply-To: <20200625221304.2817194-13-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 29 Jun 2020 18:30:35 -0700
+Message-ID: <CAEf4BzbywtRY_u8wyEZMaFNCY88Axip91VUkDCX94pPYKS-HrA@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 12/14] selftests/bpf: Add verifier test for
+ d_path helper
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+On Thu, Jun 25, 2020 at 4:48 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Adding verifier test for attaching tracing program and
+> calling d_path helper from within and testing that it's
+> allowed for dentry_open function and denied for 'd_path'
+> function with appropriate error.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
 
-i225 device support only copper mode.
-There is no point to check media type in the
-igc_config_fc_after_link_up() method.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/igc/igc_mac.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+>  tools/testing/selftests/bpf/test_verifier.c   | 19 +++++++++-
+>  tools/testing/selftests/bpf/verifier/d_path.c | 37 +++++++++++++++++++
+>  2 files changed, 55 insertions(+), 1 deletion(-)
+>  create mode 100644 tools/testing/selftests/bpf/verifier/d_path.c
+>
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_mac.c b/drivers/net/ethernet/intel/igc/igc_mac.c
-index 9a5e44ef45f4..b47e7b0a6398 100644
---- a/drivers/net/ethernet/intel/igc/igc_mac.c
-+++ b/drivers/net/ethernet/intel/igc/igc_mac.c
-@@ -468,10 +468,8 @@ s32 igc_config_fc_after_link_up(struct igc_hw *hw)
- 	 * so we had to force link.  In this case, we need to force the
- 	 * configuration of the MAC to match the "fc" parameter.
- 	 */
--	if (mac->autoneg_failed) {
--		if (hw->phy.media_type == igc_media_type_copper)
--			ret_val = igc_force_mac_fc(hw);
--	}
-+	if (mac->autoneg_failed)
-+		ret_val = igc_force_mac_fc(hw);
- 
- 	if (ret_val) {
- 		hw_dbg("Error forcing flow control settings\n");
-@@ -483,7 +481,7 @@ s32 igc_config_fc_after_link_up(struct igc_hw *hw)
- 	 * has completed, and if so, how the PHY and link partner has
- 	 * flow control configured.
- 	 */
--	if (hw->phy.media_type == igc_media_type_copper && mac->autoneg) {
-+	if (mac->autoneg) {
- 		/* Read the MII Status Register and check to see if AutoNeg
- 		 * has completed.  We read this twice because this reg has
- 		 * some "sticky" (latched) bits.
--- 
-2.26.2
-
+[...]
