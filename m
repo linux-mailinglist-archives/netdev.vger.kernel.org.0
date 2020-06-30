@@ -2,103 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2857320EA9E
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:07:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E92C920EAA2
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 03:07:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727972AbgF3BDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 21:03:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42446 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726560AbgF3BD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 21:03:28 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412A1C061755
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 18:03:28 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id c16so19230532ioi.9
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 18:03:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aUKINyRCcoVQnAAUj66cT/hdbbLTmUEKaTLIk1C+bzY=;
-        b=WJHrQSYEfA4X5EFmtDe9jbFY9aZT+nTWxDMZmLz0AUJd15mGOahtGNLjk99YVgkTH9
-         s7wnYkYxZHIC/XH1BgzLNVOwdfmGbH2dziAeeT4RMpwQLqTc3Pm9ynDKXP/ZKJKfzlEM
-         8nzFjlzMGmqsQsv5gkLAnHGFSckgHoMIiB0lGhkafhJu7/cZaL+7HZ98ZvCsvjGv+YnQ
-         rphuYOZuh7qKZEwcSy4Yvil11mSh5dYO+8UIXVVzTMfzv2Mt/hHf9GC8Dni3ISp8IGE+
-         5QEzlxRacR+HWGiur2eobXSrbwsN2JQYEN8QhSaOjmRRK6GAxVFI5RbOKHYJP95dmc6o
-         Lruw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aUKINyRCcoVQnAAUj66cT/hdbbLTmUEKaTLIk1C+bzY=;
-        b=t3MJ5MbRBd0mnbcVB5+XQuGjWkVkNrHZiN6RPOgcfdsDSWeSeqo1pCzLuMjG9KifXO
-         3a0ls8hp6Scs9XGhjlLNnyI+UZPpDZCw0BJUh5MIdTae7R5gxQLJWDWMu0E68KZ6TeFb
-         x6o751Tr5q89yGGcV6xLWUViVj3Oz+Rn715RzGiQ6AuEr2hDiXo/pgR9oBvAHI37Zyhl
-         ssH04Ls2Rq7hFv0NXynNjVuegxdlxfv2QlJvMmAo5YxXrhUf7NDgrZFnAXUODG5jzLFr
-         S0O1Nhy0/rTALkIPqVI+fKEEMJ5wJEYfDOjagrwYQ/lmZGhSb/k2at0DyXqlOnnMfpf7
-         Q8aw==
-X-Gm-Message-State: AOAM531IQkpr3extHZcg2ygCnuCp7nu6K1mw9nIwt5xjk6VJxHOJkJto
-        XQYoL7h2LxoCjqoPjDnv+UJPZw==
-X-Google-Smtp-Source: ABdhPJwentt0cKMDEsu9rT9oUSTBpWdmkqFUmo628dp6U8zA96yEiANErt1telr45qCiv8IDu94fBw==
-X-Received: by 2002:a6b:661a:: with SMTP id a26mr19625657ioc.197.1593479007622;
-        Mon, 29 Jun 2020 18:03:27 -0700 (PDT)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id v13sm715255iox.12.2020.06.29.18.03.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Jun 2020 18:03:27 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/3] net: ipa: always report GSI state errors
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200629213738.1180618-1-elder@linaro.org>
- <20200629213738.1180618-2-elder@linaro.org>
- <20200629170912.39188c5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <6b5baacc-3ae0-e801-1db7-d40dae560094@linaro.org>
-Date:   Mon, 29 Jun 2020 20:03:26 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1726972AbgF3BGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 21:06:39 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:60171 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726015AbgF3BGi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Jun 2020 21:06:38 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id ffe5bafe;
+        Tue, 30 Jun 2020 00:46:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
+        :subject:date:message-id:mime-version:content-transfer-encoding;
+         s=mail; bh=pcdEcHq2EHJ9Jo2oCVv8b+FFYOU=; b=PP4owy4SNSn4h5qrf7HV
+        ympk1/YKUGUbYgCnRqadMhJ9tN26GQi563/RyjeQ9T8CUiXc0XCtERYzA16vE0Sf
+        4HvMlCIBNnsAGtdOH06AKNlTmXHBCCmP9jApD450gU8+E42aAeobAOvCkiiGgdp7
+        GLtd3GwHA/cXuxMSUWjKNh5p0InXKJUFIgHxX5FSeFaz49fGK9NnGqS7CcOf/DH9
+        C2sTo9dUw+RghHt6Bn3IyAllioKF0CIDMFk7hZFmrV5VhjvyobdIjuDBBoYB3eAG
+        YqQxn1DNwuo0xEun2s144c2z9ocO1f2rVQQ/2a8kh13Hf6D1mvAQaxGBG4QYLXnQ
+        JA==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 12c8e05a (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 30 Jun 2020 00:46:52 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Hans Wippel <ndev@hwipl.net>
+Subject: [PATCH net v2 0/8] support AF_PACKET for layer 3 devices
+Date:   Mon, 29 Jun 2020 19:06:17 -0600
+Message-Id: <20200630010625.469202-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-In-Reply-To: <20200629170912.39188c5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/29/20 7:09 PM, Jakub Kicinski wrote:
-> On Mon, 29 Jun 2020 16:37:36 -0500 Alex Elder wrote:
->> We check the state of an event ring or channel both before and after
->> any GSI command issued that will change that state.  In most--but
->> not all--cases, if the state is something different than expected we
->> report an error message.
->>
->> Add error messages where missing, so that all unexpected states
->> provide information about what went wrong.  Drop the parentheses
->> around the state value shown in all cases.
->>
->> Signed-off-by: Alex Elder <elder@linaro.org>
-> 
-> nit:
+Hans reported that packets injected by a correct-looking and trivial
+libpcap-based program were not being accepted by wireguard. In
+investigating that, I noticed that a few devices weren't properly
+handling AF_PACKET-injected packets, and so this series introduces a bit
+of shared infrastructure to support that.
 
-Sorry about that.  I'll fix this and run checkpatch on v2.
+The basic problem begins with socket(AF_PACKET, SOCK_RAW,
+htons(ETH_P_ALL)) sockets. When sendto is called, AF_PACKET examines the
+headers of the packet with this logic:
 
-Thanks for your quick review.
-					-Alex
+static void packet_parse_headers(struct sk_buff *skb, struct socket *sock)
+{
+    if ((!skb->protocol || skb->protocol == htons(ETH_P_ALL)) &&
+        sock->type == SOCK_RAW) {
+        skb_reset_mac_header(skb);
+        skb->protocol = dev_parse_header_protocol(skb);
+    }
 
-> CHECK: Alignment should match open parenthesis
-> #105: FILE: drivers/net/ipa/gsi.c:1673:
-> +		dev_warn(dev,
-> +			"limiting to %u channels; hardware supports %u\n",
-> 
-> CHECK: Alignment should match open parenthesis
-> #120: FILE: drivers/net/ipa/gsi.c:1685:
-> +		dev_warn(dev,
-> +			"limiting to %u event rings; hardware supports %u\n",
-> 
+    skb_probe_transport_header(skb);
+}
 
+The middle condition there triggers, and we jump to
+dev_parse_header_protocol. Note that this is the only caller of
+dev_parse_header_protocol in the kernel, and I assume it was designed
+for this purpose:
+
+static inline __be16 dev_parse_header_protocol(const struct sk_buff *skb)
+{
+    const struct net_device *dev = skb->dev;
+
+    if (!dev->header_ops || !dev->header_ops->parse_protocol)
+        return 0;
+    return dev->header_ops->parse_protocol(skb);
+}
+
+Since AF_PACKET already knows which netdev the packet is going to, the
+dev_parse_header_protocol function can see if that netdev has a way it
+prefers to figure out the protocol from the header. This, again, is the
+only use of parse_protocol in the kernel. At the moment, it's only used
+with ethernet devices, via eth_header_parse_protocol. This makes sense,
+as mostly people are used to AF_PACKET-injecting ethernet frames rather
+than layer 3 frames. But with nothing in place for layer 3 netdevs, this
+function winds up returning 0, and skb->protocol then is set to 0, and
+then by the time it hits the netdev's ndo_start_xmit, the driver doesn't
+know what to do with it.
+
+This is a problem because drivers very much rely on skb->protocol being
+correct, and routinely reject packets where it's incorrect. That's why
+having this parsing happen for injected packets is quite important. In
+wireguard, ipip, and ipip6, for example, packets from AF_PACKET are just
+dropped entirely. For tun devices, it's sort of uglier, with the tun
+"packet information" header being passed to userspace containing a bogus
+protocol value. Some userspace programs are ill-equipped to deal with
+that. (But of course, that doesn't happen with tap devices, which
+benefit from the similar shared infrastructure for layer 2 netdevs,
+further motiviating this patchset for layer 3 netdevs.)
+
+This patchset addresses the issue by first adding a layer 3 header parse
+function, much akin to the existing one for layer 2 packets, and then
+adds a shared header_ops structure that, also much akin to the existing
+one for layer 2 packets. Then it wires it up to a few immediate places
+that stuck out as requiring it, and does a bit of cleanup.
+
+This patchset seems like it's fixing real bugs, so it might be
+appropriate for stable. But they're also very old bugs, so if you'd
+rather not backport to stable, that'd make sense to me too.
+
+Jason A. Donenfeld (8):
+  net: ip_tunnel: add header_ops for layer 3 devices
+  net: ipip: implement header_ops->parse_protocol for AF_PACKET
+  wireguard: implement header_ops->parse_protocol for AF_PACKET
+  wireguard: queueing: make use of ip_tunnel_parse_protocol
+  tun: implement header_ops->parse_protocol for AF_PACKET
+  net: vti: implement header_ops->parse_protocol for AF_PACKET
+  net: sit: implement header_ops->parse_protocol for AF_PACKET
+  net: xfrmi: implement header_ops->parse_protocol for AF_PACKET
+
+ drivers/net/tun.c                |  2 ++
+ drivers/net/wireguard/device.c   |  1 +
+ drivers/net/wireguard/queueing.h | 19 ++-----------------
+ drivers/net/wireguard/receive.c  |  2 +-
+ include/net/ip_tunnels.h         |  3 +++
+ net/ipv4/ip_tunnel_core.c        | 18 ++++++++++++++++++
+ net/ipv4/ip_vti.c                |  1 +
+ net/ipv4/ipip.c                  |  1 +
+ net/ipv6/ip6_tunnel.c            |  1 +
+ net/ipv6/ip6_vti.c               |  1 +
+ net/ipv6/sit.c                   |  1 +
+ net/xfrm/xfrm_interface.c        |  2 ++
+ 12 files changed, 34 insertions(+), 18 deletions(-)
+
+Cc: Hans Wippel <ndev@hwipl.net>
+-- 
+2.27.0
