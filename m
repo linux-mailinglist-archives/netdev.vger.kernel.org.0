@@ -2,133 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 925E620F740
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 16:29:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DA9220F760
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 16:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389025AbgF3O3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 10:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727960AbgF3O3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 10:29:42 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E89F9C061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 07:29:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=oBBZnA4EqspW3zROe8d1roBQQMSI1CyoMEk2p9ddlWs=; b=K56i1HSnOXH8uVlrpH5yeVt25L
-        lCmLe8kVy/NundfLB0O5CSbCmNSv6RpZezoeBgsChU78uo+TncnDCs3r9Lu2DQfKsro3yB1mDtgjk
-        d8LiNhehqiZezxR4tDDoi4ICyFHzsvqzucyZC0tHNVIY/TOuWrN+ue9zSosavIEQ9ljkNJDepMIkM
-        gcuXXd9RxcVo43780iolnC5jIjXLGRR4GFQ52Sp5DzXfIe8SX+p5YjC0hjPt/Kolg2xCWN6ZzpK11
-        Djk/Ovw5xJ04WyZdRZMPp0qM5XOWZ8vXOXNL1pdJg91SaB/A6YyA5zmoku16qk8vcYahqkXh2cgJW
-        1IuN1XWQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:47284 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jqHGT-0000gN-TJ; Tue, 30 Jun 2020 15:29:37 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jqHGT-0006Qb-Ld; Tue, 30 Jun 2020 15:29:37 +0100
-In-Reply-To: <20200630142754.GC1551@shell.armlinux.org.uk>
-References: <20200630142754.GC1551@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "michael@walle.cc" <michael@walle.cc>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH RFC net-next 13/13] net: phylink: add interface to configure
- clause 22 PCS PHY
+        id S2389045AbgF3Oiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 10:38:46 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:41096 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726672AbgF3Oip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 10:38:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593527924;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=B6CrHqng17Pxk6mV6y2tawGhe70QMZC9ySlLvQupB5M=;
+        b=OO8asWKtD8FAiXMwrSrlCUPGCqRSpde0G2Yhva7mP43wAQmJOyw0EhUYLjk2ptz2SMoq4l
+        EY42yJ5if20q1cLT4/yyDSUrliyfak46d15/miWaMSFa+l7KIzEY3fIV3m66lJZY83w5bI
+        aTESwaFEw88NYykEcTmtpxihcqQsr3w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-ZOUlLuFmPiqE1vJ7duEfXw-1; Tue, 30 Jun 2020 10:38:38 -0400
+X-MC-Unique: ZOUlLuFmPiqE1vJ7duEfXw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 728BB1902EBE;
+        Tue, 30 Jun 2020 14:38:37 +0000 (UTC)
+Received: from linux.fritz.box.com (ovpn-113-78.ams2.redhat.com [10.36.113.78])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 19F1A77F59;
+        Tue, 30 Jun 2020 14:38:35 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     mptcp@lists.01.org, "David S. Miller" <davem@davemloft.net>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next] mptcp: do nonce initialization at subflow creation time
+Date:   Tue, 30 Jun 2020 16:38:26 +0200
+Message-Id: <cc811b8707d488492fb8e33ed651aab456de6f72.1593527763.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jqHGT-0006Qb-Ld@rmk-PC.armlinux.org.uk>
-Date:   Tue, 30 Jun 2020 15:29:37 +0100
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/phylink.c | 37 +++++++++++++++++++++++++++++++++++++
- include/linux/phylink.h   |  3 +++
- 2 files changed, 40 insertions(+)
+This clean-up the code a bit, reduces the number of
+used hooks and indirect call requested, and allow
+better error reporting from __mptcp_subflow_connect()
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index fbc8591b474b..d6c5e900a2f1 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -2435,6 +2435,43 @@ int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/mptcp/subflow.c | 54 +++++++++++++++++----------------------------
+ 1 file changed, 20 insertions(+), 34 deletions(-)
+
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 548f9e347ff5..664aa9158363 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -29,34 +29,6 @@ static void SUBFLOW_REQ_INC_STATS(struct request_sock *req,
+ 	MPTCP_INC_STATS(sock_net(req_to_sk(req)), field);
  }
- EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_set_advertisement);
  
-+/**
-+ * phylink_mii_c22_pcs_config() - configure clause 22 PCS
-+ * @pcs: a pointer to a &struct mdio_device.
-+ * @mode: link autonegotiation mode
-+ * @interface: the PHY interface mode being configured
-+ * @advertising: the ethtool advertisement mask
-+ *
-+ * Configure a Clause 22 PCS PHY with the appropriate negotiation
-+ * parameters for the @mode, @interface and @advertising parameters.
-+ * Returns negative error number on failure, zero if the advertisement
-+ * has not changed, or positive if there is a change.
-+ */
-+int phylink_mii_c22_pcs_config(struct mdio_device *pcs, unsigned int mode,
-+			       phy_interface_t interface,
-+			       const unsigned long *advertising)
-+{
-+	bool changed;
-+	u16 bmcr;
-+	int ret;
-+
-+	ret = phylink_mii_c22_pcs_set_advertisement(pcs, interface,
-+						    advertising);
-+	if (ret < 0)
-+		return ret;
-+
-+	changed = ret > 0;
-+
-+	bmcr = mode == MLO_AN_INBAND ? BMCR_ANENABLE : 0;
-+	ret = mdiobus_modify(pcs->bus, pcs->addr, MII_BMCR,
-+			     BMCR_ANENABLE, bmcr);
-+	if (ret < 0)
-+		return ret;
-+
-+	return changed ? 1 : 0;
-+}
-+EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_config);
-+
- /**
-  * phylink_mii_c22_pcs_an_restart() - restart 802.3z autonegotiation
-  * @pcs: a pointer to a &struct mdio_device.
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index 057f78263a46..1aad2aea4610 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -478,6 +478,9 @@ void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
- int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
- 					  phy_interface_t interface,
- 					  const unsigned long *advertising);
-+int phylink_mii_c22_pcs_config(struct mdio_device *pcs, unsigned int mode,
-+			       phy_interface_t interface,
-+			       const unsigned long *advertising);
- void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs);
+-static int subflow_rebuild_header(struct sock *sk)
+-{
+-	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+-	int local_id;
+-
+-	if (subflow->request_join && !subflow->local_nonce) {
+-		struct mptcp_sock *msk = (struct mptcp_sock *)subflow->conn;
+-
+-		pr_debug("subflow=%p", sk);
+-
+-		do {
+-			get_random_bytes(&subflow->local_nonce, sizeof(u32));
+-		} while (!subflow->local_nonce);
+-
+-		if (subflow->local_id)
+-			goto out;
+-
+-		local_id = mptcp_pm_get_local_id(msk, (struct sock_common *)sk);
+-		if (local_id < 0)
+-			return -EINVAL;
+-
+-		subflow->local_id = local_id;
+-	}
+-
+-out:
+-	return subflow->icsk_af_ops->rebuild_header(sk);
+-}
+-
+ static void subflow_req_destructor(struct request_sock *req)
+ {
+ 	struct mptcp_subflow_request_sock *subflow_req = mptcp_subflow_rsk(req);
+@@ -984,7 +956,9 @@ int __mptcp_subflow_connect(struct sock *sk, int ifindex,
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+ 	struct mptcp_subflow_context *subflow;
+ 	struct sockaddr_storage addr;
++	int local_id = loc->id;
+ 	struct socket *sf;
++	struct sock *ssk;
+ 	u32 remote_token;
+ 	int addrlen;
+ 	int err;
+@@ -996,7 +970,20 @@ int __mptcp_subflow_connect(struct sock *sk, int ifindex,
+ 	if (err)
+ 		return err;
  
- void phylink_mii_c45_pcs_get_state(struct mdio_device *pcs,
+-	subflow = mptcp_subflow_ctx(sf->sk);
++	ssk = sf->sk;
++	subflow = mptcp_subflow_ctx(ssk);
++	do {
++		get_random_bytes(&subflow->local_nonce, sizeof(u32));
++	} while (!subflow->local_nonce);
++
++	if (!local_id) {
++		err = mptcp_pm_get_local_id(msk, (struct sock_common *)ssk);
++		if (err < 0)
++			goto failed;
++
++		local_id = err;
++	}
++
+ 	subflow->remote_key = msk->remote_key;
+ 	subflow->local_key = msk->local_key;
+ 	subflow->token = msk->token;
+@@ -1007,15 +994,16 @@ int __mptcp_subflow_connect(struct sock *sk, int ifindex,
+ 	if (loc->family == AF_INET6)
+ 		addrlen = sizeof(struct sockaddr_in6);
+ #endif
+-	sf->sk->sk_bound_dev_if = ifindex;
++	ssk->sk_bound_dev_if = ifindex;
+ 	err = kernel_bind(sf, (struct sockaddr *)&addr, addrlen);
+ 	if (err)
+ 		goto failed;
+ 
+ 	mptcp_crypto_key_sha(subflow->remote_key, &remote_token, NULL);
+-	pr_debug("msk=%p remote_token=%u", msk, remote_token);
++	pr_debug("msk=%p remote_token=%u local_id=%d", msk, remote_token,
++		 local_id);
+ 	subflow->remote_token = remote_token;
+-	subflow->local_id = loc->id;
++	subflow->local_id = local_id;
+ 	subflow->request_join = 1;
+ 	subflow->request_bkup = 1;
+ 	mptcp_info2sockaddr(remote, &addr);
+@@ -1288,7 +1276,6 @@ void __init mptcp_subflow_init(void)
+ 	subflow_specific.conn_request = subflow_v4_conn_request;
+ 	subflow_specific.syn_recv_sock = subflow_syn_recv_sock;
+ 	subflow_specific.sk_rx_dst_set = subflow_finish_connect;
+-	subflow_specific.rebuild_header = subflow_rebuild_header;
+ 
+ #if IS_ENABLED(CONFIG_MPTCP_IPV6)
+ 	subflow_request_sock_ipv6_ops = tcp_request_sock_ipv6_ops;
+@@ -1298,7 +1285,6 @@ void __init mptcp_subflow_init(void)
+ 	subflow_v6_specific.conn_request = subflow_v6_conn_request;
+ 	subflow_v6_specific.syn_recv_sock = subflow_syn_recv_sock;
+ 	subflow_v6_specific.sk_rx_dst_set = subflow_finish_connect;
+-	subflow_v6_specific.rebuild_header = subflow_rebuild_header;
+ 
+ 	subflow_v6m_specific = subflow_v6_specific;
+ 	subflow_v6m_specific.queue_xmit = ipv4_specific.queue_xmit;
 -- 
-2.20.1
+2.26.2
 
