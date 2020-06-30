@@ -2,90 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B20E20FBA8
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:23:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08B4220FBBE
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 20:32:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390760AbgF3SXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 14:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33208 "EHLO
+        id S2390799AbgF3Scw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 14:32:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731903AbgF3SXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:23:19 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92770C061755;
-        Tue, 30 Jun 2020 11:23:19 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id q22so9837983qtl.2;
-        Tue, 30 Jun 2020 11:23:19 -0700 (PDT)
+        with ESMTP id S1729676AbgF3Scv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 14:32:51 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51C01C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 11:32:51 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id k6so21163726wrn.3
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 11:32:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JknV3P4BTVwlCM56AtpVNp/VcjTCfHkbE8MWsb/faRY=;
-        b=WjGXWkphztHMh2J2y/jaISF+dY442qtl8dP5GxodeiNWjUZLVkqL1Ky6GSZrC00Z+z
-         mG95Q2Rd8jQ9BhHOvbU4i9+tt9bvl96lcw0woebCj0IRvmloopCBKEZgA40p037ss6Cb
-         n4GjaHykqmvHVFnvypMVRbdg4kR0SU3HAvgNKMQoxuW3WxffXbgtXy1B4boitdERx9by
-         MI8zhBjKUU4yS0hZYDEXq6/SCeQIQkyNz1CQx+FTpR9N53Qp1zG4fVicSJhr4f+ansgo
-         E1wXsRhzZJhlvjcjm9AJGbMQLOVdGwBKVzPXEOIMEfc3kKhbAwfHexohWErHDuODUFI+
-         9k6g==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ywqGbLaOZJRaK/+jksBEOPLIHvYcYsOtOSjWtzE6UO8=;
+        b=AxjCW+o+X1qxGzDAgR1X/eSREpJGmFqbBxanCFdgjW2mDk+C3t8fb0uxaDkTYnqVbs
+         jbRRdvoM9J/Cz3S4oKG5wJ91PhfMuUO0wWjgB7GtEjIKrLPDwFfr5D7HCD52XEDPHZqb
+         MXbxMMRChbKssgcOObCiq4FgM7/uSBKS99ELYxUrugQPxiZS13riSa3XKv1U0UwesTBo
+         Dm2Df5C2W4hf1LFxKZ8YcnEJ0scCrkdkTcJH1Z/2ZrHJ8gOacgs8cWMF8K4AQ0muuuCQ
+         UzLvztGc5rJbq1uP9NgB0z0MHJm50mUt5k8CLQUCVdE07EmXFWJVhwLUgfBuv9yeJgo/
+         5S0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JknV3P4BTVwlCM56AtpVNp/VcjTCfHkbE8MWsb/faRY=;
-        b=s8pXGk4CrrKY3kMW/py88jD0NP+bxe2uSoDPWbBRfO760KVXRmmmxwEIiM0gew6j8R
-         h33hktM2SSUkmEkn3X+W6YMi6hQXDa+YBzbnB4xsNgxvpy2tpmR8jv9Kf5SX/yHPDvv2
-         MIrGDbMNzCcRtZBHhjDhymS1sf9K/aT8YiP66PZkO9K7a+xPOPMG9c+K+IT0IssGh8xb
-         egXJe010tzL8yLMAC0KiucB6s+vbD5sht0En2634XQM5ew8esCuGo/KRUjTWFkqJy4v6
-         MUeil3UH5tzrya1PquISZcIZMhD+D/SDyMhTbVhlr3EhX8xpcXjMRsSbWYDZPymgFX2m
-         UxYA==
-X-Gm-Message-State: AOAM531V6yhJQJjiaEAkPkD2o1XQpCTGFaIPW0oiZLgtjcXp46B+mVF1
-        Fy4fMXAyPcmxl7vvX6QHXrVfyuzEcj45oNGqOcQ=
-X-Google-Smtp-Source: ABdhPJwdxPBEQICS9m6dUwQIDXQap4z+XC1q4MlWgMstgV9qHWWCcnWd40WgztGbifb8nAt0c6lq09Sf0CaPYpH6vNA=
-X-Received: by 2002:ac8:1991:: with SMTP id u17mr21347226qtj.93.1593541398844;
- Tue, 30 Jun 2020 11:23:18 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ywqGbLaOZJRaK/+jksBEOPLIHvYcYsOtOSjWtzE6UO8=;
+        b=GvVkXVTGSLfOR4JvhwuHJG88OQnCHr1CvPbL1ix1M8ch9kJKfbRw9Q1V25OsQhOgsx
+         T2NzTzaAOSgDaurnXWiQCpKphqAg4BI07+j5apAUcYB+U8qLWFT9RQ3jUAfxHHdnvrQl
+         KT59gu4EFp+vfyI1iaOs8vIusk9+n4QQnXau3+SGQZ2t8TlxJ4PL0jCJmgf1ZZ/fKYrN
+         DcZVGsAzvWrtETvWsAiejcKY8js0kCkVE13xsMW6kQ4I+1HtXwoAPe5S86x+aH4T7rz+
+         edZbhsAhLPesd+wYa3CuDGkxiFTxwQ/enFaeuIhTRyZUhPlNaB49gNibypQgwOdLHkC5
+         v5Sg==
+X-Gm-Message-State: AOAM531mQAdRscbw/NSNi2u+oYmXqS0ZQA/Ra15kk1/QmN9B9107XLpr
+        We+TQu8jswXv05V/QgFYk88p9nbd
+X-Google-Smtp-Source: ABdhPJzF4oR4NSl967h1beTfRJnH2RJLPqJhbucvZ+h4jyywB0LzNMfZx8eTZoYzL3exSK/fUQG2VA==
+X-Received: by 2002:adf:c185:: with SMTP id x5mr24981769wre.403.1593541969839;
+        Tue, 30 Jun 2020 11:32:49 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id z16sm4446440wrr.35.2020.06.30.11.32.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Jun 2020 11:32:49 -0700 (PDT)
+Subject: Re: [PATCH RFC net-next 03/13] net: phylink: rearrange resolve
+ mac_config() call
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+References: <20200630142754.GC1551@shell.armlinux.org.uk>
+ <E1jqHFe-0006OT-0k@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <3196df83-66ae-de68-54cd-c75b54cfd956@gmail.com>
+Date:   Tue, 30 Jun 2020 11:32:45 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200611222340.24081-1-alexei.starovoitov@gmail.com>
- <20200611222340.24081-3-alexei.starovoitov@gmail.com> <CAEf4BzYbvuZoQb7Sz4Q7McyEA4khHm5RaQPR3bL67owLoyv1RQ@mail.gmail.com>
- <CAADnVQ+ubYj8yA1_cO3aw-trShTHBRMJxSvZrLW75i8fM=mpvQ@mail.gmail.com>
-In-Reply-To: <CAADnVQ+ubYj8yA1_cO3aw-trShTHBRMJxSvZrLW75i8fM=mpvQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 30 Jun 2020 11:23:07 -0700
-Message-ID: <CAEf4BzbfXajuL-1VLBUJsC3P796s2hk9oYGveYG5QnS2=YoN-A@mail.gmail.com>
-Subject: Re: [PATCH RFC v3 bpf-next 2/4] bpf: Add bpf_copy_from_user() helper.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <E1jqHFe-0006OT-0k@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 5:28 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Jun 18, 2020 at 3:33 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> > > + *
-> > > + * int bpf_copy_from_user(void *dst, u32 size, const void *user_ptr)
-> >
-> > Can we also add bpf_copy_str_from_user (or bpf_copy_from_user_str,
-> > whichever makes more sense) as well?
->
-> Those would have to wait. I think strings need better long term design.
-> That would be separate patches.
 
-I agree that it would be nice to have better support for strings, long
-term, but that's beside the point.
 
-I think bpf_copy_from_user_str() is a must have right now as a
-sleepable counterpart to bpf_probe_read_user_str(), just like
-bpf_copy_from_user() is a sleepable variant of bpf_probe_read_user().
-Look at progs/strobemeta.h, it does bpf_probe_read_user_str() to get
-user-space zero-terminated strings. It's well defined interface and
-behavior. There is nothing extra needed beyond a sleepable variant of
-bpf_probe_read_user_str() to allow Strobemeta reliably fetch data from
-user-space from inside a sleepable BPF program.
+On 6/30/2020 7:28 AM, Russell King wrote:
+> Use a boolean to indicate whether mac_config() should be called during
+> a resolution. This allows resolution to have a single location where
+> mac_config() will be called, which will allow us to make decisions
+> about how and what we do.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
