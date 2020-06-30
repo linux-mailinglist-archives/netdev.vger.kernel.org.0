@@ -2,83 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A10E20EC06
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 05:34:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EA7120EC0B
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 05:35:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729085AbgF3DeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 23:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37210 "EHLO
+        id S1729167AbgF3DfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 23:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729037AbgF3DeA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 23:34:00 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1DFC061755;
-        Mon, 29 Jun 2020 20:34:00 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id l9so16416188ilq.12;
-        Mon, 29 Jun 2020 20:34:00 -0700 (PDT)
+        with ESMTP id S1728949AbgF3DfF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 23:35:05 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF7BC061755;
+        Mon, 29 Jun 2020 20:35:05 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id el4so4589829qvb.13;
+        Mon, 29 Jun 2020 20:35:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Gft05NxUENPXKFTcU3ULPY4HOvG0ZoW35LjzI7t7EsQ=;
-        b=kTIZrS2bbkCQ7MC1Ioc4nlAADj9SYiWwivDlq+RB9twRHHGlKmStcPpftWwWfKDgkW
-         qehPwSB7++lnbpHwmWjCwq8j+4rRGMXKWs/ecVJnrN+/Jzk2iD/DhYlC31M3uVYfF+4m
-         ZZ+mSTpTWV/e56wJ/Z6LsuAwinf8vUBo34Z5Bfmwym0/tKElIpzxXGju1TQtUZce8i7b
-         4K3oaXAEaQ5hZvjfcR/BoPVAx28M1K25LJtQPvgQHCcIh3gEzKnECQ+1tyhHlRkn7yus
-         DN/YOyHoxRE+2Isv02nB7xMYrxYxGs68Cjwr00Qd9IkCmEwNqpTKiCIfUf6/Phed+XHE
-         nm8w==
+        bh=ODjqhnM4EYauxP5u1z5d0rzCDxBUPQowO18e+pMY0SA=;
+        b=erdada7PFEBW59urx/AnQDu2eoz35PvlLaYuNToWB4L05zO0AXNgG4NsKZU1SREmN1
+         fwA2l0PiNmlevZU00vBMjEM0Mouwn0j+lSdiTeE5ncdkXmf2SGo5U/8xO3FHVQPzSJFR
+         wuxMVcDPie2daaRv6BxNMWRDH3MjdRn/ofa6gcWf3y0D/BE0SOKCXtx6RQXVtw270zk9
+         dGVyW4ENjDooxYaGShabaxQiVE0KlSA9P8WInHVYWqP3YCTtHn4kFkm7Jvgr1vc0fZxq
+         36caEqRE9AzDSmFs5r6bjoFzL8n8owZBmqw3zBcnAl4RFZX4FVw9pxa6qWUe6/RR0I5V
+         MmyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Gft05NxUENPXKFTcU3ULPY4HOvG0ZoW35LjzI7t7EsQ=;
-        b=ZACU2EXOgCXCi1b8j0KTg2s0ywY4TSE1j7f6PtoU7O/8wXDi3PhfIWcD1EV5NS8b8X
-         USmtalIq/xoxHUYqntOCWV30I8yOmSP9o/ch5+pPcqPpN13q9DU0XGypTQWsuXIJO/DT
-         /vY6LYz48A50o7if69jpdAfRNsRPOSBAZaPA+iH0LzedYEevUGQvniDFO2mDVTZ9AKHW
-         efkyu3dZ9GD3TR+VrvErKZkfRprMvm/+huOFTbz9IDr2yh3Uy9+x8axqpdNyAcxMIGKY
-         T4L3vWdM2KBq8A65Nj6dVvbBGtvzQIDkca0iy59uGVqbYA/D8W+HJenIulPeCbpPNTsm
-         njCQ==
-X-Gm-Message-State: AOAM532YWlLvhSblSlN/K30Ow08LZG6JGr3f9obCW33LhaKUG4NhO2zP
-        xZWWki/WpTPJV60nNUmpQ85I31LNwdzP7jV+lJE=
-X-Google-Smtp-Source: ABdhPJyNp5+HJ0f+g9oh5UeEYmKAPB5B8NvhjqDCBPZP8YaYPdsIM43A+IrZRf4hWcPMLl/aAlqnUN7pmuqqW5P2zI4=
-X-Received: by 2002:a05:6e02:147:: with SMTP id j7mr724676ilr.22.1593488039570;
- Mon, 29 Jun 2020 20:33:59 -0700 (PDT)
+        bh=ODjqhnM4EYauxP5u1z5d0rzCDxBUPQowO18e+pMY0SA=;
+        b=T0Q6iTBJWAJEECzW6wx3J111tQnUwGCjxhDr3SiBwKsgX0F6RyCe9UlK9/zuM+atYM
+         iHZdgKrMpiWHI40O8SqAcZUEDpai9XooKBdZEWJERPqXxeKt4l5f8JCKqLNuDKFp/+kn
+         7bYTWrQqkoFqtxUz2n6HGfOmbpCnfbn8qJ8tHfEIpXIe1cNYlFBBEu2m6Nn/oxBLeg21
+         1PQpOqiT5+8o6CWlAOUzJCZrHx0P/KB0rDlNC6WSWnQPLeCcBWhCct7wilgs6X36Le9+
+         E9vBBKW60JyPYRzXjia4Bnf25/kbTLB8Trx0Ej84tTsnmeololuvPuX3LZFH0ecYYqEs
+         M5bg==
+X-Gm-Message-State: AOAM533ej2yG1w1mrj8O6+QmPQKDSlicp2wlNsCDfsPNikpjR7n+rxmH
+        3yotQkmQXi6c2wsALQY+NLo9lJQinfmfY1Wclqg=
+X-Google-Smtp-Source: ABdhPJzubhJZqUrz7rlamhHpg26uiu7O5tWj/66gVCsSrNs4O2SM+SeL8FAYH6WyOODS6VmdwdYRsm8S8PsLGiSZlOQ=
+X-Received: by 2002:a05:6214:bce:: with SMTP id ff14mr18077847qvb.196.1593488105100;
+ Mon, 29 Jun 2020 20:35:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <0000000000006eb8b705a9426b8b@google.com> <CAHmME9qOR4h7hsQ4_QuztPN+6w4KcoaYNs75yJn=L3S2Mhq9rA@mail.gmail.com>
-In-Reply-To: <CAHmME9qOR4h7hsQ4_QuztPN+6w4KcoaYNs75yJn=L3S2Mhq9rA@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 29 Jun 2020 20:33:48 -0700
-Message-ID: <CAM_iQpVxrUinOBjqaw4U5u9PZZSTDY=FgSAsBxMju8uu=F5jfQ@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Read in netdev_name_node_lookup_rcu
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     syzbot <syzbot+a82be85e09cd5df398fe@syzkaller.appspotmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>
+References: <20200630003441.42616-1-alexei.starovoitov@gmail.com>
+ <20200630003441.42616-6-alexei.starovoitov@gmail.com> <CAEf4BzaH367tNd77puOvwrDHCeGqoNAHPYxdy4tXtWghXqyFSQ@mail.gmail.com>
+ <20200630030653.fkgp43sz5gqi426y@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200630030653.fkgp43sz5gqi426y@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 29 Jun 2020 20:34:54 -0700
+Message-ID: <CAEf4BzZqWTdSOnko1g9HKiqzbD8_xL+4tN8znoaNO6suq_LbAQ@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 5/5] selftests/bpf: Add sleepable tests
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 29, 2020 at 6:17 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+On Mon, Jun 29, 2020 at 8:06 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Hey Cong,
+> On Mon, Jun 29, 2020 at 06:25:38PM -0700, Andrii Nakryiko wrote:
+> >
+> > > +
+> > > +SEC("fentry.s/__x64_sys_setdomainname")
+> > > +int BPF_PROG(test_sys_setdomainname, struct pt_regs *regs)
+> > > +{
+> > > +       int buf = 0;
+> > > +       long ret;
+> > > +
+> > > +       ret = bpf_copy_from_user(&buf, sizeof(buf), (void *)regs->di);
+> > > +       if (regs->si == -2 && ret == 0 && buf == 1234)
+> > > +               copy_test++;
+> > > +       if (regs->si == -3 && ret == -EFAULT)
+> > > +               copy_test++;
+> > > +       if (regs->si == -4 && ret == -EFAULT)
+> > > +               copy_test++;
+> >
+> > regs->si and regs->di won't compile on non-x86 arches, better to use
+> > PT_REGS_PARM1() and PT_REGS_PARM2() from bpf_tracing.h.
+>
+> the test is x86 only due to:
+> +SEC("fentry.s/__x64_sys_setdomainname")
 
-Hi, Jason
+Right, but here I'm talking about compilation error because pt_regs
+don't have si, di fields on other arches. __x64 just won't attach in
+runtime, which is not a big deal if you are ignoring this particular
+test.
 
 >
-> I'm wondering if the below error is related to what you've been
-> looking at yesterday. AFAICT, there's a simple UaF on the attrbuf
-> passed to the start method. I recall recently you were working on the
-> locking in genetlink's family buffers and wound up mallocing some
-> things, so it seems like this might be related. See below.
+> I guess we can move samples/bpf/trace_common.h into libbpf as well
+> to clean the whole thing up. Something for later patches.
 
-Yeah, very likely it is the same bug I have fixed. I will close
-this together with others.
-
-Thanks.
+trace_common.h works only for the latest kernels. Before some version
+(don't remember which version precisely), __x64 shouldn't be added.
+Which makes this header not a good candidate for inclusion to libbpf.
+BCC does this dynamically in runtime based on kallsyms, which I'm not
+a big fan of doing as well. So let's punt trace_common.h for better
+times :)
