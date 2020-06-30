@@ -2,387 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABDF420EEC8
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 08:48:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BDA720EECB
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 08:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730481AbgF3Gs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 02:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38928 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730367AbgF3Gs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 02:48:27 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276FAC03E979
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:48:27 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id b6so18892581wrs.11
-        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 23:48:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XLMDo1UsxYJMELotpDQ5hxq+PK7DJHzcb1+KFvP8aG0=;
-        b=RW58M7OS7OlArVG0kvfUEakS2s5DQF2UyPiSnvoqoWFzkI9MOXX2LqKxVSAex0N/pd
-         YSwfgrU3vEo3/E1r2s0cCuclbQWayqu6bo1pDLXfV10T/BTp69V/js6AY0dVpbZZb+FX
-         +hr6o9+cjzIchZ1TF3glX0unPfcIQPTX6i/Be5GOFmxe+XP8YhbCpDwH/kQgdj9NQXMA
-         18zwOSPbADnMs4HbkNHkuY0xmLnqV1dVUkNeJD+rdHQYZq5C3fCmYvFmf9WOskxO56xJ
-         ondtmjKbGKkc5SOb/sJnijswm2WRDh3K8xA+EuWG7uAVGTDeWPqkLlKv9V9JdX6x5cfu
-         e7ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XLMDo1UsxYJMELotpDQ5hxq+PK7DJHzcb1+KFvP8aG0=;
-        b=dlHdAncRkaJR0Kc2CDrxsIqlRr9/ElVzrqiTvJb6x0BoOLldShqGLXIK+qlnjLmm6c
-         jg2gyuAwdz2Zfrp3sM8XB9CrQBvtbQKq/aGm2Wa7RI6juUK57ZJGK6KIh+tpkvBcq7Kg
-         m3pZ0m++lBMioQQBAqYRNLho94DUQUDyJ58js26st8sg67j3MgtxFwwsGVT9Qn+Yr7Z1
-         PgzVoae3YZpmmHlsTvV6HzAfmldi8Ci3Unww9G7sE7rW+za5UGiv/MwnvtCBT1nzcY7i
-         OWlt2z3X2cwNduWJqVwp/96IXkugXueUUYXp6e/543kxEhEiceamYeNnry6m1TFTBfsw
-         gsxA==
-X-Gm-Message-State: AOAM532L6vz7r4AEltYUWm2kcJfXqdMFFT5c12GbfC0YbmYG06p5jLaz
-        cIEV6Tw9NKh0xo4JmLeANdpyIhxC+ADqLQvOBYIxGw==
-X-Google-Smtp-Source: ABdhPJxiGj2ce46YgeKfjo94LZhKWI+q485fKc5qIAWiIvNhlJ340b0LY5hRzmpr5wIz0Dofd/lpkoZQ/Feh/YDnlNA=
-X-Received: by 2002:adf:828b:: with SMTP id 11mr21950031wrc.58.1593499705514;
- Mon, 29 Jun 2020 23:48:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200627105437.453053-1-apusaka@google.com> <20200627185320.RFC.v1.1.Icea550bb064a24b89f2217cf19e35b4480a31afd@changeid>
- <91CFE951-262A-4E83-8550-25445AE84B5A@holtmann.org>
-In-Reply-To: <91CFE951-262A-4E83-8550-25445AE84B5A@holtmann.org>
-From:   Archie Pusaka <apusaka@google.com>
-Date:   Tue, 30 Jun 2020 14:48:14 +0800
-Message-ID: <CAJQfnxFSfbUbPLVC-be41TqNXzr_6hLq2z=u521HL+BqxLHn_Q@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 1/2] Bluetooth: queue ACL packets if no handle is found
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        id S1730514AbgF3Gsp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 30 Jun 2020 02:48:45 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:49677 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730386AbgF3Gsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 02:48:45 -0400
+Received: from marcel-macpro.fritz.box (p5b3d2638.dip0.t-ipconnect.de [91.61.38.56])
+        by mail.holtmann.org (Postfix) with ESMTPSA id B1EA0CECE3;
+        Tue, 30 Jun 2020 08:58:37 +0200 (CEST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [RFC PATCH v1 2/2] Bluetooth: queue L2CAP conn req if encryption
+ is needed
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CABBYNZ+tYaUiCqO9n33OiXLyxKGbgfbZCvXHQ39U-77yT+_WXQ@mail.gmail.com>
+Date:   Tue, 30 Jun 2020 08:48:42 +0200
+Cc:     Archie Pusaka <apusaka@google.com>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
         chromeos-bluetooth-upstreaming 
         <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
         Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <981D8546-AFFB-41F6-93A4-E0CF63CD66CE@holtmann.org>
+References: <20200627105437.453053-1-apusaka@google.com>
+ <20200627185320.RFC.v1.2.I7363a6e528433d88c5240b67cbda5a88a107f56c@changeid>
+ <9117B008-7B6C-48E1-B6B6-087531652C70@holtmann.org>
+ <CABBYNZ+jbOJGutuP_4B8YFaysiR6pGa-pCE65AEFZAXg_EV9Kg@mail.gmail.com>
+ <3860C10A-DA02-49F0-9EDF-13BFF3C6C197@holtmann.org>
+ <CABBYNZ+tYaUiCqO9n33OiXLyxKGbgfbZCvXHQ39U-77yT+_WXQ@mail.gmail.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
+Hi Luiz,
 
-On Mon, 29 Jun 2020 at 14:40, Marcel Holtmann <marcel@holtmann.org> wrote:
->
-> Hi Archie,
->
-> > There is a possibility that an ACL packet is received before we
-> > receive the HCI connect event for the corresponding handle. If this
-> > happens, we discard the ACL packet.
-> >
-> > Rather than just ignoring them, this patch provides a queue for
-> > incoming ACL packet without a handle. The queue is processed when
-> > receiving a HCI connection event. If 2 seconds elapsed without
-> > receiving the HCI connection event, assume something bad happened
-> > and discard the queued packet.
-> >
-> > Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> > Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
->
-> so two things up front. I want to hide this behind a HCI_QUIRK_OUT_OF_ORD=
-ER_ACL that a transport driver has to set first. Frankly if this kind of ou=
-t-of-order happens on UART or SDIO transports, then something is obviously =
-going wrong. I have no plan to fix up after a fully serialized transport.
->
-> Secondly, if a transport sets HCI_QUIRK_OUT_OF_ORDER_ACL, then I want thi=
-s off by default. You can enable it via an experimental setting. The reason=
- here is that we have to make it really hard and fail as often as possible =
-so that hardware manufactures and spec writers realize that something is fu=
-ndamentally broken here.
->
-> I have no problem in running the code and complaining loudly in case the =
-quirk has been set. Just injecting the packets can only happen if bluetooth=
-d explicitly enabled it.
+>>>>> It is possible to receive an L2CAP conn req for an encrypted
+>>>>> connection, before actually receiving the HCI change encryption
+>>>>> event. If this happened, the received L2CAP packet will be ignored.
+>>> 
+>>> How is this possible? Or you are referring to a race between the ACL
+>>> and Event endpoint where the Encryption Change is actually pending to
+>>> be processed but we end up processing the ACL data first.
+>> 
+>> you get the ACL packet with the L2CAP_Connect_Req in it and then the HCI Encryption Change event. However over the air they go in the different order. It is specific to the USB transport and nothing is going to fix this. The USB transport design is borked. You can only do bandaids.
+>> 
+>>>>> This patch queues the L2CAP packet and process them after the
+>>>>> expected HCI event is received. If after 2 seconds we still don't
+>>>>> receive it, then we assume something bad happened and discard the
+>>>>> queued packets.
+>>>> 
+>>>> as with the other patch, this should be behind the same quirk and experimental setting for exactly the same reasons.
+>>>> 
+>>>>> 
+>>>>> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+>>>>> Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+>>>>> 
+>>>>> ---
+>>>>> 
+>>>>> include/net/bluetooth/bluetooth.h |  6 +++
+>>>>> include/net/bluetooth/l2cap.h     |  6 +++
+>>>>> net/bluetooth/hci_event.c         |  3 ++
+>>>>> net/bluetooth/l2cap_core.c        | 87 +++++++++++++++++++++++++++----
+>>>>> 4 files changed, 91 insertions(+), 11 deletions(-)
+>>>>> 
+>>>>> diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
+>>>>> index 7ee8041af803..e64278401084 100644
+>>>>> --- a/include/net/bluetooth/bluetooth.h
+>>>>> +++ b/include/net/bluetooth/bluetooth.h
+>>>>> @@ -335,7 +335,11 @@ struct l2cap_ctrl {
+>>>>>     u16     reqseq;
+>>>>>     u16     txseq;
+>>>>>     u8      retries;
+>>>>> +     u8      rsp_code;
+>>>>> +     u8      amp_id;
+>>>>> +     __u8    ident;
+>>>>>     __le16  psm;
+>>>>> +     __le16  scid;
+>>>>>     bdaddr_t bdaddr;
+>>>>>     struct l2cap_chan *chan;
+>>>>> };
+>>>> 
+>>>> I would not bother trying to make this work with CREATE_CHAN_REQ. That is if you want to setup a L2CAP channel that can be moved between BR/EDR and AMP controllers and in that case you have to read the L2CAP information and features first. Meaning there will have been unencrypted ACL packets. This problem only exists if the remote side doesn’t request any version information first.
+>>>> 
+>>>>> @@ -374,6 +378,8 @@ struct bt_skb_cb {
+>>>>>             struct hci_ctrl hci;
+>>>>>     };
+>>>>> };
+>>>>> +static_assert(sizeof(struct bt_skb_cb) <= sizeof(((struct sk_buff *)0)->cb));
+>>>>> +
+>>>>> #define bt_cb(skb) ((struct bt_skb_cb *)((skb)->cb))
+>>>>> 
+>>>>> #define hci_skb_pkt_type(skb) bt_cb((skb))->pkt_type
+>>>>> diff --git a/include/net/bluetooth/l2cap.h b/include/net/bluetooth/l2cap.h
+>>>>> index 8f1e6a7a2df8..f8f6dec96f12 100644
+>>>>> --- a/include/net/bluetooth/l2cap.h
+>>>>> +++ b/include/net/bluetooth/l2cap.h
+>>>>> @@ -58,6 +58,7 @@
+>>>>> #define L2CAP_MOVE_ERTX_TIMEOUT               msecs_to_jiffies(60000)
+>>>>> #define L2CAP_WAIT_ACK_POLL_PERIOD    msecs_to_jiffies(200)
+>>>>> #define L2CAP_WAIT_ACK_TIMEOUT                msecs_to_jiffies(10000)
+>>>>> +#define L2CAP_PEND_ENC_CONN_TIMEOUT  msecs_to_jiffies(2000)
+>>>>> 
+>>>>> #define L2CAP_A2MP_DEFAULT_MTU                670
+>>>>> 
+>>>>> @@ -700,6 +701,9 @@ struct l2cap_conn {
+>>>>>     struct mutex            chan_lock;
+>>>>>     struct kref             ref;
+>>>>>     struct list_head        users;
+>>>>> +
+>>>>> +     struct delayed_work     remove_pending_encrypt_conn;
+>>>>> +     struct sk_buff_head     pending_conn_q;
+>>>>> };
+>>>>> 
+>>>>> struct l2cap_user {
+>>>>> @@ -1001,4 +1005,6 @@ void l2cap_conn_put(struct l2cap_conn *conn);
+>>>>> int l2cap_register_user(struct l2cap_conn *conn, struct l2cap_user *user);
+>>>>> void l2cap_unregister_user(struct l2cap_conn *conn, struct l2cap_user *user);
+>>>>> 
+>>>>> +void l2cap_process_pending_encrypt_conn(struct hci_conn *hcon);
+>>>>> +
+>>>>> #endif /* __L2CAP_H */
+>>>>> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+>>>>> index 108c6c102a6a..8cefc51a5ca4 100644
+>>>>> --- a/net/bluetooth/hci_event.c
+>>>>> +++ b/net/bluetooth/hci_event.c
+>>>>> @@ -3136,6 +3136,9 @@ static void hci_encrypt_change_evt(struct hci_dev *hdev, struct sk_buff *skb)
+>>>>> 
+>>>>> unlock:
+>>>>>     hci_dev_unlock(hdev);
+>>>>> +
+>>>>> +     if (conn && !ev->status && ev->encrypt)
+>>>>> +             l2cap_process_pending_encrypt_conn(conn);
+>>>>> }
+>>>>> 
+>>>>> static void hci_change_link_key_complete_evt(struct hci_dev *hdev,
+>>>>> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+>>>>> index 35d2bc569a2d..fc6fe2c80c46 100644
+>>>>> --- a/net/bluetooth/l2cap_core.c
+>>>>> +++ b/net/bluetooth/l2cap_core.c
+>>>>> @@ -62,6 +62,10 @@ static void l2cap_send_disconn_req(struct l2cap_chan *chan, int err);
+>>>>> static void l2cap_tx(struct l2cap_chan *chan, struct l2cap_ctrl *control,
+>>>>>                  struct sk_buff_head *skbs, u8 event);
+>>>>> 
+>>>>> +static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
+>>>>> +                                     u8 ident, u8 *data, u8 rsp_code,
+>>>>> +                                     u8 amp_id, bool queue_if_fail);
+>>>>> +
+>>>>> static inline u8 bdaddr_type(u8 link_type, u8 bdaddr_type)
+>>>>> {
+>>>>>     if (link_type == LE_LINK) {
+>>>>> @@ -1902,6 +1906,8 @@ static void l2cap_conn_del(struct hci_conn *hcon, int err)
+>>>>>     if (conn->info_state & L2CAP_INFO_FEAT_MASK_REQ_SENT)
+>>>>>             cancel_delayed_work_sync(&conn->info_timer);
+>>>>> 
+>>>>> +     cancel_delayed_work_sync(&conn->remove_pending_encrypt_conn);
+>>>>> +
+>>>>>     hcon->l2cap_data = NULL;
+>>>>>     conn->hchan = NULL;
+>>>>>     l2cap_conn_put(conn);
+>>>>> @@ -2023,6 +2029,55 @@ static void l2cap_retrans_timeout(struct work_struct *work)
+>>>>>     l2cap_chan_put(chan);
+>>>>> }
+>>>>> 
+>>>>> +static void l2cap_add_pending_encrypt_conn(struct l2cap_conn *conn,
+>>>>> +                                        struct l2cap_conn_req *req,
+>>>>> +                                        u8 ident, u8 rsp_code, u8 amp_id)
+>>>>> +{
+>>>>> +     struct sk_buff *skb = bt_skb_alloc(0, GFP_KERNEL);
+>>>>> +
+>>>>> +     bt_cb(skb)->l2cap.psm = req->psm;
+>>>>> +     bt_cb(skb)->l2cap.scid = req->scid;
+>>>>> +     bt_cb(skb)->l2cap.ident = ident;
+>>>>> +     bt_cb(skb)->l2cap.rsp_code = rsp_code;
+>>>>> +     bt_cb(skb)->l2cap.amp_id = amp_id;
+>>>>> +
+>>>>> +     skb_queue_tail(&conn->pending_conn_q, skb);
+>>>>> +     queue_delayed_work(conn->hcon->hdev->workqueue,
+>>>>> +                        &conn->remove_pending_encrypt_conn,
+>>>>> +                        L2CAP_PEND_ENC_CONN_TIMEOUT);
+>>>>> +}
+>>>>> +
+>>>>> +void l2cap_process_pending_encrypt_conn(struct hci_conn *hcon)
+>>>>> +{
+>>>>> +     struct sk_buff *skb;
+>>>>> +     struct l2cap_conn *conn = hcon->l2cap_data;
+>>>>> +
+>>>>> +     if (!conn)
+>>>>> +             return;
+>>>>> +
+>>>>> +     while ((skb = skb_dequeue(&conn->pending_conn_q))) {
+>>>>> +             struct l2cap_conn_req req;
+>>>>> +             u8 ident, rsp_code, amp_id;
+>>>>> +
+>>>>> +             req.psm = bt_cb(skb)->l2cap.psm;
+>>>>> +             req.scid = bt_cb(skb)->l2cap.scid;
+>>>>> +             ident = bt_cb(skb)->l2cap.ident;
+>>>>> +             rsp_code = bt_cb(skb)->l2cap.rsp_code;
+>>>>> +             amp_id = bt_cb(skb)->l2cap.amp_id;
+>>>>> +
+>>>>> +             l2cap_connect(conn, ident, (u8 *)&req, rsp_code, amp_id, false);
+>>>>> +             kfree_skb(skb);
+>>>>> +     }
+>>>>> +}
+>>>>> +
+>>>>> +static void l2cap_remove_pending_encrypt_conn(struct work_struct *work)
+>>>>> +{
+>>>>> +     struct l2cap_conn *conn = container_of(work, struct l2cap_conn,
+>>>>> +                                         remove_pending_encrypt_conn.work);
+>>>>> +
+>>>>> +     l2cap_process_pending_encrypt_conn(conn->hcon);
+>>>>> +}
+>>>>> +
+>>>>> static void l2cap_streaming_send(struct l2cap_chan *chan,
+>>>>>                              struct sk_buff_head *skbs)
+>>>>> {
+>>>>> @@ -4076,8 +4131,8 @@ static inline int l2cap_command_rej(struct l2cap_conn *conn,
+>>>>> }
+>>>>> 
+>>>>> static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
+>>>>> -                                     struct l2cap_cmd_hdr *cmd,
+>>>>> -                                     u8 *data, u8 rsp_code, u8 amp_id)
+>>>>> +                                     u8 ident, u8 *data, u8 rsp_code,
+>>>>> +                                     u8 amp_id, bool queue_if_fail)
+>>>>> {
+>>>>>     struct l2cap_conn_req *req = (struct l2cap_conn_req *) data;
+>>>>>     struct l2cap_conn_rsp rsp;
+>>>>> @@ -4103,8 +4158,15 @@ static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
+>>>>>     /* Check if the ACL is secure enough (if not SDP) */
+>>>>>     if (psm != cpu_to_le16(L2CAP_PSM_SDP) &&
+>>>>>         !hci_conn_check_link_mode(conn->hcon)) {
+>>>>> -             conn->disc_reason = HCI_ERROR_AUTH_FAILURE;
+>>>>> -             result = L2CAP_CR_SEC_BLOCK;
+>>>>> +             if (!queue_if_fail) {
+>>>>> +                     conn->disc_reason = HCI_ERROR_AUTH_FAILURE;
+>>>>> +                     result = L2CAP_CR_SEC_BLOCK;
+>>>>> +                     goto response;
+>>>>> +             }
+>>>>> +
+>>>>> +             l2cap_add_pending_encrypt_conn(conn, req, ident, rsp_code,
+>>>>> +                                            amp_id);
+>>>>> +             result = L2CAP_CR_PEND;
+>>>>>             goto response;
+>>>>>     }
+>>>> 
+>>>> So I am actually wondering if the approach is not better to send back a pending to the connect request like we do for everything else. And then proceed with getting our remote L2CAP information. If these come back in encrypted, then we can assume that we actually had encryption enabled and proceed with a L2CAP connect response saying that all is fine.
+>>> 
+>>> I wonder if we should resolve this by having different queues in
+>>> hci_recv_frame (e.g. hdev->evt_rx), that way we can dequeue the HCI
+>>> events before ACL so we first update the HCI states before start
+>>> processing the L2CAP data, thoughts? Something like this:
+>>> 
+>>> https://gist.github.com/Vudentz/464fb0065a73e5c99bdb66cd2c5a1a2d
+>> 
+>> No. We need to keep things serialized. We actually have to reject unencrypted packets.
+>> 
+>> So whatever we do needs to be behind a quirk and an explicit opt-in.
+> 
+> While I agree we are just working around the real issue, Id guess
+> processing the event before ACL would work (I haven't tested it yet)
+> much better than leaving this up to the L2CAP layer since that
+> requires a timer in order for us to e.g. accept/reject the connection
+> request, also since this problem is known to affect other events as
+> well (e.g. data for ATT coming before Connection Complete) I guess
+> using the time the kernel takes to schedule the rx_work as the window
+> where we would assume the packets arrived 'at same time' so we can
+> resolve the conflicts between endpoints. On top of this we could
+> perhaps consider using a delayed work for rx_work so the driver can
+> actually tune up what is the time window (perhaps for USB that should
+> be the polling interval) where we would consider events and data that
+> have arrived at same time.
 
-Got it.
+I am not following this argumentation. The drivers call hci_recv_frame and they get all put into the rx_q. The processing of that queue doesn’t change the order. So for the core, it is all serialized as it is suppose to be. That means the timing of when rx_work is irrelevant to this discussion.
 
->
->
-> >
-> > ---
-> >
-> > include/net/bluetooth/hci_core.h |  8 +++
-> > net/bluetooth/hci_core.c         | 84 +++++++++++++++++++++++++++++---
-> > net/bluetooth/hci_event.c        |  2 +
-> > 3 files changed, 88 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/h=
-ci_core.h
-> > index 836dc997ff94..b69ecdd0d15a 100644
-> > --- a/include/net/bluetooth/hci_core.h
-> > +++ b/include/net/bluetooth/hci_core.h
-> > @@ -270,6 +270,9 @@ struct adv_monitor {
-> > /* Default authenticated payload timeout 30s */
-> > #define DEFAULT_AUTH_PAYLOAD_TIMEOUT   0x0bb8
-> >
-> > +/* Time to keep ACL packets without a corresponding handle queued (2s)=
- */
-> > +#define PENDING_ACL_TIMEOUT          msecs_to_jiffies(2000)
-> > +
->
-> Do we have some btmon traces with timestamps. Isn=E2=80=99t a second enou=
-gh? Actually 2 seconds is an awful long time.
+But I agree that I want to fix this without having to use timers and I think that is possible. And of course it is in opt-in. Long term we need to fix the USB transport to proper serialize things. Please keep in mind that all other transports don’t have this problem.
 
-When this happens in the test lab, the HCI connect event is about
-0.002 second behind the first ACL packet. We can change this if
-required.
+> Or are you saying that the conflict resolution I proposed would
+> actually break things? I could picture any event that if it were
+> processed before the data at such a short time window would, note here
+> I'm talking about miliseconds not seconds so it is not that this will
+> be doing much reordering and if we go with delayed work it should be
+> relatively simple to add a Kconfig option(build-time)/module(runtime)
+> parameter to btusb to configure the interface were we would do such
+> reordering which the default could be 0 in which case we can just keep
+> queuing everything on rx_q.
 
->
-> > struct amp_assoc {
-> >       __u16   len;
-> >       __u16   offset;
-> > @@ -538,6 +541,9 @@ struct hci_dev {
-> >       struct delayed_work     rpa_expired;
-> >       bdaddr_t                rpa;
-> >
-> > +     struct delayed_work     remove_pending_acl;
-> > +     struct sk_buff_head     pending_acl_q;
-> > +
->
-> can we name this ooo_q and move it to the other queues in this struct. Un=
-less we want to add a Kconfig option around it, we don=E2=80=99t need to ke=
-ep it here.
+The not-encrypted issues worries me the the most. You need to opt-in and accept the risk. If you are unlucky, you might fail qualification because of this.
 
-Ack.
+Regards
 
->
-> > #if IS_ENABLED(CONFIG_BT_LEDS)
-> >       struct led_trigger      *power_led;
-> > #endif
-> > @@ -1773,6 +1779,8 @@ void hci_le_start_enc(struct hci_conn *conn, __le=
-16 ediv, __le64 rand,
-> > void hci_copy_identity_address(struct hci_dev *hdev, bdaddr_t *bdaddr,
-> >                              u8 *bdaddr_type);
-> >
-> > +void hci_process_pending_acl(struct hci_dev *hdev, struct hci_conn *co=
-nn);
-> > +
-> > #define SCO_AIRMODE_MASK       0x0003
-> > #define SCO_AIRMODE_CVSD       0x0000
-> > #define SCO_AIRMODE_TRANSP     0x0003
-> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> > index 7959b851cc63..30780242c267 100644
-> > --- a/net/bluetooth/hci_core.c
-> > +++ b/net/bluetooth/hci_core.c
-> > @@ -1786,6 +1786,7 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> >       skb_queue_purge(&hdev->rx_q);
-> >       skb_queue_purge(&hdev->cmd_q);
-> >       skb_queue_purge(&hdev->raw_q);
-> > +     skb_queue_purge(&hdev->pending_acl_q);
-> >
-> >       /* Drop last sent command */
-> >       if (hdev->sent_cmd) {
-> > @@ -3518,6 +3519,78 @@ static int hci_suspend_notifier(struct notifier_=
-block *nb, unsigned long action,
-> >       return NOTIFY_STOP;
-> > }
-> >
-> > +static void hci_add_pending_acl(struct hci_dev *hdev, struct sk_buff *=
-skb)
-> > +{
-> > +     skb_queue_tail(&hdev->pending_acl_q, skb);
-> > +
-> > +     queue_delayed_work(hdev->workqueue, &hdev->remove_pending_acl,
-> > +                        PENDING_ACL_TIMEOUT);
-> > +}
-> > +
-> > +void hci_process_pending_acl(struct hci_dev *hdev, struct hci_conn *co=
-nn)
-> > +{
-> > +     struct sk_buff *skb, *tmp;
-> > +     struct hci_acl_hdr *hdr;
-> > +     u16 handle, flags;
-> > +     bool reset_timer =3D false;
-> > +
-> > +     skb_queue_walk_safe(&hdev->pending_acl_q, skb, tmp) {
-> > +             hdr =3D (struct hci_acl_hdr *)skb->data;
-> > +             handle =3D __le16_to_cpu(hdr->handle);
-> > +             flags  =3D hci_flags(handle);
-> > +             handle =3D hci_handle(handle);
-> > +
-> > +             if (handle !=3D conn->handle)
-> > +                     continue;
-> > +
-> > +             __skb_unlink(skb, &hdev->pending_acl_q);
-> > +             skb_pull(skb, HCI_ACL_HDR_SIZE);
-> > +
-> > +             l2cap_recv_acldata(conn, skb, flags);
-> > +             reset_timer =3D true;
-> > +     }
-> > +
-> > +     if (reset_timer)
-> > +             mod_delayed_work(hdev->workqueue, &hdev->remove_pending_a=
-cl,
-> > +                              PENDING_ACL_TIMEOUT);
-> > +}
-> > +
-> > +/* Remove the oldest pending ACL, and all pending ACLs with the same h=
-andle */
-> > +static void hci_remove_pending_acl(struct work_struct *work)
-> > +{
-> > +     struct hci_dev *hdev;
-> > +     struct sk_buff *skb, *tmp;
-> > +     struct hci_acl_hdr *hdr;
-> > +     u16 handle, oldest_handle;
-> > +
-> > +     hdev =3D container_of(work, struct hci_dev, remove_pending_acl.wo=
-rk);
-> > +     skb =3D skb_dequeue(&hdev->pending_acl_q);
-> > +
-> > +     if (!skb)
-> > +             return;
-> > +
-> > +     hdr =3D (struct hci_acl_hdr *)skb->data;
-> > +     oldest_handle =3D hci_handle(__le16_to_cpu(hdr->handle));
-> > +     kfree_skb(skb);
-> > +
-> > +     bt_dev_err(hdev, "ACL packet for unknown connection handle %d",
-> > +                oldest_handle);
-> > +
-> > +     skb_queue_walk_safe(&hdev->pending_acl_q, skb, tmp) {
-> > +             hdr =3D (struct hci_acl_hdr *)skb->data;
-> > +             handle =3D hci_handle(__le16_to_cpu(hdr->handle));
-> > +
-> > +             if (handle =3D=3D oldest_handle) {
-> > +                     __skb_unlink(skb, &hdev->pending_acl_q);
-> > +                     kfree_skb(skb);
-> > +             }
-> > +     }
-> > +
-> > +     if (!skb_queue_empty(&hdev->pending_acl_q))
-> > +             queue_delayed_work(hdev->workqueue, &hdev->remove_pending=
-_acl,
-> > +                                PENDING_ACL_TIMEOUT);
-> > +}
-> > +
->
-> So I am wondering if we make this too complicated. Since generally speaki=
-ng we can only have a single HCI connect complete anyway at a time. No matt=
-er if the controller serializes it for us or we do it for the controller. S=
-o hci_conn_add could just process the queue for packets with its handle and=
- then flush it. And it can flush it no matter what since whatever other pac=
-kets are in the queue, they can not be valid.
->
-> That said, we wouldn=E2=80=99t even need to check the packet handles at a=
-ll. We just needed to flag them as already out-of-order queued once and han=
-d them back into the rx_q at the top. Then the would be processed as usual.=
- Already ooo packets would cause the same error as before if it is for a no=
-n-existing handle and others would end up being processed.
->
-> For me this means we just need another queue to park the packets until hc=
-i_conn_add gets called. I might have missed something, but I am looking for=
- the least invasive option for this and least code duplication.
+Marcel
 
-I'm not aware of the fact that we can only have a single HCI connect
-complete event at any time. Is this also true even if two / more
-peripherals connect at the same time?
-I was under the impression that if we have device A and B both are
-connecting to us at the same time, we might receive the packets in
-this order:
-(1) ACL A
-(2) ACL B
-(3) HCI conn evt B
-(4) HCI conn evt A
-Hence the queue and the handle check.
-
->
-> > /* Alloc HCI device */
-> > struct hci_dev *hci_alloc_dev(void)
-> > {
-> > @@ -3610,10 +3683,12 @@ struct hci_dev *hci_alloc_dev(void)
-> >       INIT_WORK(&hdev->suspend_prepare, hci_prepare_suspend);
-> >
-> >       INIT_DELAYED_WORK(&hdev->power_off, hci_power_off);
-> > +     INIT_DELAYED_WORK(&hdev->remove_pending_acl, hci_remove_pending_a=
-cl);
-> >
-> >       skb_queue_head_init(&hdev->rx_q);
-> >       skb_queue_head_init(&hdev->cmd_q);
-> >       skb_queue_head_init(&hdev->raw_q);
-> > +     skb_queue_head_init(&hdev->pending_acl_q);
-> >
-> >       init_waitqueue_head(&hdev->req_wait_q);
-> >       init_waitqueue_head(&hdev->suspend_wait_q);
-> > @@ -4662,8 +4737,6 @@ static void hci_acldata_packet(struct hci_dev *hd=
-ev, struct sk_buff *skb)
-> >       struct hci_conn *conn;
-> >       __u16 handle, flags;
-> >
-> > -     skb_pull(skb, HCI_ACL_HDR_SIZE);
-> > -
-> >       handle =3D __le16_to_cpu(hdr->handle);
-> >       flags  =3D hci_flags(handle);
-> >       handle =3D hci_handle(handle);
-> > @@ -4678,17 +4751,16 @@ static void hci_acldata_packet(struct hci_dev *=
-hdev, struct sk_buff *skb)
-> >       hci_dev_unlock(hdev);
-> >
-> >       if (conn) {
-> > +             skb_pull(skb, HCI_ACL_HDR_SIZE);
-> > +
-> >               hci_conn_enter_active_mode(conn, BT_POWER_FORCE_ACTIVE_OF=
-F);
-> >
-> >               /* Send to upper protocol */
-> >               l2cap_recv_acldata(conn, skb, flags);
-> >               return;
-> >       } else {
-> > -             bt_dev_err(hdev, "ACL packet for unknown connection handl=
-e %d",
-> > -                        handle);
-> > +             hci_add_pending_acl(hdev, skb);
->
-> So here I want to keep being verbose. If no quirk is set, then this has t=
-o stay as an error. In case the quirk is set, then this should still warn t=
-hat we are queuing up a packet. It is not an expected behavior.
-
-Ack.
-
->
-> >       }
-> > -
-> > -     kfree_skb(skb);
-> > }
-> >
-> > /* SCO data packet */
-> > diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> > index e060fc9ebb18..108c6c102a6a 100644
-> > --- a/net/bluetooth/hci_event.c
-> > +++ b/net/bluetooth/hci_event.c
-> > @@ -2627,6 +2627,8 @@ static void hci_conn_complete_evt(struct hci_dev =
-*hdev, struct sk_buff *skb)
-> >                       hci_send_cmd(hdev, HCI_OP_CHANGE_CONN_PTYPE, size=
-of(cp),
-> >                                    &cp);
-> >               }
-> > +
-> > +             hci_process_pending_acl(hdev, conn);
->
-> Can we just do this in hci_conn_add() when we create the connection objec=
-t?
-
-Yes, we can.
-
->
-> >       } else {
-> >               conn->state =3D BT_CLOSED;
-> >               if (conn->type =3D=3D ACL_LINK)
-> > --
-> > 2.27.0.212.ge8ba1cc988-goog
-> >
->
-> Regards
->
-> Marcel
->
-
-Thanks,
-Archie
