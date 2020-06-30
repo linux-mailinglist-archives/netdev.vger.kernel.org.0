@@ -2,60 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E35D20EA00
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:14:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE39120EA17
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 02:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728472AbgF3AKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Jun 2020 20:10:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33472 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726182AbgF3AKs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Jun 2020 20:10:48 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1701820780;
-        Tue, 30 Jun 2020 00:10:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593475848;
-        bh=yFS0VJadwhKck6VDo5N1DabnFiD0iq24T0FTT68BaQI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=alcA1coVQsr2zF44KCWnETZZRs0osgtGigVDpRiyAXIpcaLxZA1WrM416Z+lzjP/G
-         UchNn4pGeVK3cw8bzt3+9jdhOLA0uUyvPETsTGufDVEb+MygmmFIFtYV8aEHRauVOx
-         VJG8tTSUlDvf7GKaEyFBCl1vEdOZ1q1wFKH0TP64=
-Date:   Mon, 29 Jun 2020 17:10:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 2/3] net: ipa: no checksum offload for SDM845 LAN RX
-Message-ID: <20200629171046.4b3ed68c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200629212038.1153054-3-elder@linaro.org>
-References: <20200629212038.1153054-1-elder@linaro.org>
-        <20200629212038.1153054-3-elder@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1728085AbgF3APU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Jun 2020 20:15:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35032 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726945AbgF3APT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Jun 2020 20:15:19 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4436C061755
+        for <netdev@vger.kernel.org>; Mon, 29 Jun 2020 17:15:19 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0FA0D127BE19B;
+        Mon, 29 Jun 2020 17:15:19 -0700 (PDT)
+Date:   Mon, 29 Jun 2020 17:15:18 -0700 (PDT)
+Message-Id: <20200629.171518.1550876065840430180.davem@davemloft.net>
+To:     petrm@mellanox.com
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, xiyou.wangcong@gmail.com,
+        eric.dumazet@gmail.com, jiri@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net-next v1 0/5] TC: Introduce qevents
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <cover.1593209494.git.petrm@mellanox.com>
+References: <cover.1593209494.git.petrm@mellanox.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 29 Jun 2020 17:15:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Jun 2020 16:20:37 -0500 Alex Elder wrote:
-> The AP LAN RX endpoint should not have download checksum offload
-> enabled.
+From: Petr Machata <petrm@mellanox.com>
+Date: Sat, 27 Jun 2020 01:45:24 +0300
+
+> The Spectrum hardware allows execution of one of several actions as a
+> result of queue management decisions: tail-dropping, early-dropping,
+> marking a packet, or passing a configured latency threshold or buffer
+> size. Such packets can be mirrored, trapped, or sampled.
 > 
-> The receive handler does properly accomodate the trailer that's
-> added by the hardware, but we ignore it.
+> Modeling the action to be taken as simply a TC action is very attractive,
+> but it is not obvious where to put these actions. At least with ECN marking
+> one could imagine a tree of qdiscs and classifiers that effectively
+> accomplishes this task, albeit in an impractically complex manner. But
+> there is just no way to match on dropped-ness of a packet, let alone
+> dropped-ness due to a particular reason.
 > 
-> Signed-off-by: Alex Elder <elder@linaro.org>
+> To allow configuring user-defined actions as a result of inner workings of
+> a qdisc, this patch set introduces a concept of qevents. Those are attach
+> points for TC blocks, where filters can be put that are executed as the
+> packet hits well-defined points in the qdisc algorithms. The attached
+> blocks can be shared, in a manner similar to clsact ingress and egress
+> blocks, arbitrary classifiers with arbitrary actions can be put on them,
+> etc.
+ ...
 
-For this net series - would you mind adding Fixes tags to each patch?
-
-Also checkpatch sayeth:
-
-WARNING: 'accomodate' may be misspelled - perhaps 'accommodate'?
-#10: 
-The receive handler does properly accomodate the trailer that's
-
+Series applied, thank you.
