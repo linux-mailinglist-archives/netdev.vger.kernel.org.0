@@ -2,225 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0440020F26A
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 12:15:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F09720F289
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 12:21:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732376AbgF3KPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 06:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
+        id S1732444AbgF3KVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 06:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732333AbgF3KPq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 06:15:46 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19531C061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 03:15:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=8rNKPO1NOa9ahIBYcklwrdMurx7H2sX2mi3XN4cm/FA=; b=iArVTnpRzuCj0tNK01fn1VJ8rO
-        pBuHechmhBMVEhKk+k97ORuW7R8yU/7MMUKcWuYFC6OK511EbGrqpPLqW/AmXYsVv9NUoXSRq/4Ir
-        VgUk8+fZUdIJiiSysWy8hX27qOCrSC4AERwMEhM8fGYsP2lvWD2dkfRWgLHi/Rexa52MU/2TlNgnc
-        4OvvUDVqYCAm60DrpsIvMJoeRuk44uTlTkdIARoNLlrP9/YF+lf9PRdGZ7VG9/0Hl8JjNQ9D3Lc0S
-        XKDwFHmIXi4ClzcRxxobm857iH3BMgDS4XE0UN+hBD2iWfrzcmPa2V6YSnz7LaNdIlm7rk/ih9tdF
-        b+tj+x0A==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:45896 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jqDIk-0000Ng-7z; Tue, 30 Jun 2020 11:15:42 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jqDIk-0004m5-0L; Tue, 30 Jun 2020 11:15:42 +0100
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH RFC net-next] net: mtk_eth_soc: use resolved link config for PCS
- PHY
+        with ESMTP id S1732155AbgF3KVR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 06:21:17 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4475AC061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 03:21:17 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id d15so15645065edm.10
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 03:21:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VDEcFLz30YqPWeehCdfH/9zObPX50Jf3Ja84tGxEzEE=;
+        b=uMRIGpKFwE90ZHUaUsOj7aMJPHeHNRnnWv+b2sfPgt15HzPSULS04y8JPnx5P7d8e9
+         SnBQ+hO9CH/nqRnR1hrymCxQeafsvtgi0S782kZ4F0jnuuohaL6mDFtOKVjFhbK/JTcQ
+         mDAh4976N2ghQ8mCW2hAwn5uIDHVtpzZ2NtQIJSuIMtzatPxFVwiEuH8mUOHkFeSkYBR
+         U9mOwSjBWvKrJnEggJzEORLoW4IT4fHoyZxAgJU7TYfnNA3z8Hckrgxlt6Ci7hFuaEa5
+         kcjV4yD9d3tLVTvWMqTG5ay6r9HVbDv7YyXDsguaWsr1vRVn5zb6lau4U5T6jmZ/zmE+
+         7HGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VDEcFLz30YqPWeehCdfH/9zObPX50Jf3Ja84tGxEzEE=;
+        b=G3bQWUdHEYYRlVUkQpL2qcVFjfozQK2GJ4X0SNH5uuLs4wy6QzdhxfI7jHk2V8L44r
+         EFrNMFCpqsmPPeX/+jCgPuavj8KCsXLENhr/fzcHsC5MaBTojAO1/gpWfoOoUT1ra4yW
+         eL1gKY9spn6LGsey5H1yX46ZK1B9+0geAoD7HtxHxOQ98qGLCoCcHKhRSIP9uNXH4vXi
+         zeIc7eMnoHkzrgOjr+OmTocuOVu5gREwQDK6ytnIZOXHN9AhUnCb+fQjRfWJctxzPsE1
+         xL2MboB0Pj9aB93BXxanHiQ1lv+/sgo8EkH7sx5FpK4+n7uXYUhGzvhYulWBdXLhYefB
+         hHSA==
+X-Gm-Message-State: AOAM532QWbhVbNOyExvB05fBlKkGO5J4tQDq+z/y1t1e5Hu1t07ilRnq
+        2rlTULvBaFQk97BOacL6E4o=
+X-Google-Smtp-Source: ABdhPJwgBOg0ryeL1g+r8dTcBokZ9U1MRaHtsxBXWtDN8TsFV5tybkgJmdZub/q696c3nRHCGWWG1w==
+X-Received: by 2002:a50:9dc4:: with SMTP id l4mr22916367edk.52.1593512475945;
+        Tue, 30 Jun 2020 03:21:15 -0700 (PDT)
+Received: from ?IPv6:2a0f:6480:3:1:a1d3:9662:48a:6b14? ([2a0f:6480:3:1:a1d3:9662:48a:6b14])
+        by smtp.gmail.com with ESMTPSA id q7sm1725137ejo.22.2020.06.30.03.21.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Jun 2020 03:21:15 -0700 (PDT)
+Subject: Re: [PATCH v3] IPv4: Tunnel: Fix effective path mtu calculation
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org
+References: <20200625224435.GA2325089@tws>
+ <20200629232235.6047a9c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Oliver Herms <oliver.peter.herms@gmail.com>
+Message-ID: <20e25b9c-db3c-e6cd-f383-aa4ac84a2177@gmail.com>
+Date:   Tue, 30 Jun 2020 12:21:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jqDIk-0004m5-0L@rmk-PC.armlinux.org.uk>
-Date:   Tue, 30 Jun 2020 11:15:42 +0100
+In-Reply-To: <20200629232235.6047a9c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SGMII PCS PHY needs to be updated with the link configuration in
-the mac_link_up() call rather than in mac_config().  However,
-mtk_sgmii_setup_mode_force() programs the SGMII block during
-mac_config() when using 802.3z interface modes with the link
-configuration.
+On 30.06.20 08:22, Jakub Kicinski wrote:
+> On Fri, 26 Jun 2020 00:44:35 +0200 Oliver Herms wrote:
+>> The calculation of the effective tunnel mtu, that is used to create
+>> mtu exceptions if necessary, is currently not done correctly. This
+>> leads to unnecessary entries in the IPv6 route cache for any
+>> packet send through the tunnel.
+>>
+>> The root cause is, that "dev->hard_header_len" is subtracted from the
+>> tunnel destionations path mtu. Thus subtracting too much, if
+>> dev->hard_header_len is filled in. This is that case for SIT tunnels
+>> where hard_header_len is the underlyings dev hard_header_len (e.g. 14
+>> for ethernet) + 20 bytes IP header (see net/ipv6/sit.c:1091).
+> 
+> It seems like SIT possibly got missed in evolution of the ip_tunnel
+> code? It seems to duplicate a lot of code, including pmtu checking.
+> Doesn't call ip_tunnel_init()...
 
-Split that functionality from mtk_sgmii_setup_mode_force(), moving it
-to a new mtk_sgmii_link_up() function, and call it from mac_link_up().
+Are you open for patches cleaning this up?
 
-This does not look correct to me: 802.3z modes operate at a fixed
-speed.  The contents of mtk_sgmii_link_up() look more appropriate for
-SGMII mode, but the original code definitely did not call
-mtk_sgmii_setup_mode_force() for SGMII mode but only 802.3z mode.
+> 
+> My understanding is that for a while now tunnels are not supposed to use
+> dev->hard_header_len to reserve skb space, and use dev->needed_headroom, 
+> instead. sit uses hard_header_len and doesn't even copy needed_headroom
+> of the lower device.
+> 
+>> However, the MTU of the path is exclusive of the ethernet header
+>> and the 20 bytes for the IP header are being subtracted separately
+>> already. Thus hard_header_len is removed from this calculation.
+>>
+>> For IPIP and GRE tunnels this doesn't change anything as
+>> hard_header_len is zero in those cases anyways.
+> 
+> This statement is definitely not true. Please see the calls to
+> ether_setup() in ip_gre.c, and the implementation of this function
+Right. I have to admit I've only checked for L3 tunnels using printk
+on dev->hard_header_len. Showing 0 for IPIP and GRE.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
-René, can you assist with this patch please - I really think there are
-problems with the existing code.  You call mtk_sgmii_setup_mode_force()
-in a block which is conditionalised as:
-
-	if (state->interface == PHY_INTERFACE_MODE_SGMII ||
-	    phy_interface_mode_is_8023z(state->interface)) {
-...
-		if (state->interface != PHY_INTERFACE_MODE_SGMII)
-			err = mtk_sgmii_setup_mode_force(eth->sgmii, sid,
-							 state);
-
-Hence, mtk_sgmii_setup_mode_force() is only called for 1000BASE-X and
-2500BASE-X, which do not support anything but their native speeds.
-Yet, mtk_sgmii_setup_mode_force() tries to program the SGMII for 10M
-and 100M.
-
-Note that this patch is more about moving uses of state->{speed,duplex}
-into mac_link_up(), rather than fixing this problem, but I don't think
-the addition in mtk_mac_link_up(), nor mtk_sgmii_link_up() is of any
-use.
-
-Thanks.
-
- drivers/net/ethernet/mediatek/mtk_eth_soc.c |  9 ++++-
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  3 +-
- drivers/net/ethernet/mediatek/mtk_sgmii.c   | 37 +++++++++++++++------
- 3 files changed, 36 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 20db302d31ce..ef9ec3b6a5c8 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -326,7 +326,7 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
- 		/* Setup SGMIISYS with the determined property */
- 		if (state->interface != PHY_INTERFACE_MODE_SGMII)
- 			err = mtk_sgmii_setup_mode_force(eth->sgmii, sid,
--							 state);
-+							 state->interface);
- 		else if (phylink_autoneg_inband(mode))
- 			err = mtk_sgmii_setup_mode_an(eth->sgmii, sid);
- 
-@@ -423,6 +423,13 @@ static void mtk_mac_link_up(struct phylink_config *config,
- 					   phylink_config);
- 	u32 mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
- 
-+	if (phy_interface_mode_is_8023z(interface)) {
-+		/* Decide how GMAC and SGMIISYS be mapped */
-+		int sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?
-+			   0 : mac->id;
-+		mtk_sgmii_link_up(eth->sgmii, sid, speed, duplex);
-+	}
-+
- 	mcr &= ~(MAC_MCR_SPEED_100 | MAC_MCR_SPEED_1000 |
- 		 MAC_MCR_FORCE_DPX | MAC_MCR_FORCE_TX_FC |
- 		 MAC_MCR_FORCE_RX_FC);
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 454cfcd465fd..6f4b99bb7bfb 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -932,7 +932,8 @@ int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *np,
- 		   u32 ana_rgc3);
- int mtk_sgmii_setup_mode_an(struct mtk_sgmii *ss, int id);
- int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
--			       const struct phylink_link_state *state);
-+			       phy_interface_t interface);
-+void mtk_sgmii_link_up(struct mtk_sgmii *ss, int id, int speed, int duplex);
- void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id);
- 
- int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id);
-diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-index 32d83421226a..372c85c830b5 100644
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -60,7 +60,7 @@ int mtk_sgmii_setup_mode_an(struct mtk_sgmii *ss, int id)
- }
- 
- int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
--			       const struct phylink_link_state *state)
-+			       phy_interface_t interface)
- {
- 	unsigned int val;
- 
-@@ -69,7 +69,7 @@ int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
- 
- 	regmap_read(ss->regmap[id], ss->ana_rgc3, &val);
- 	val &= ~RG_PHY_SPEED_MASK;
--	if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
-+	if (interface == PHY_INTERFACE_MODE_2500BASEX)
- 		val |= RG_PHY_SPEED_3_125G;
- 	regmap_write(ss->regmap[id], ss->ana_rgc3, val);
- 
-@@ -78,11 +78,33 @@ int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
- 	val &= ~SGMII_AN_ENABLE;
- 	regmap_write(ss->regmap[id], SGMSYS_PCS_CONTROL_1, val);
- 
-+	if (interface == PHY_INTERFACE_MODE_1000BASEX ||
-+	    interface == PHY_INTERFACE_MODE_2500BASEX) {
-+		/* SGMII force mode setting */
-+		regmap_read(ss->regmap[id], SGMSYS_SGMII_MODE, &val);
-+		val &= ~SGMII_IF_MODE_MASK;
-+		val |= SGMII_SPEED_1000;
-+		val |= SGMII_DUPLEX_FULL;
-+		regmap_write(ss->regmap[id], SGMSYS_SGMII_MODE, val);
-+	}
-+
-+	/* Release PHYA power down state */
-+	regmap_read(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, &val);
-+	val &= ~SGMII_PHYA_PWD;
-+	regmap_write(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, val);
-+
-+	return 0;
-+}
-+
-+void mtk_sgmii_link_up(struct mtk_sgmii *ss, int id, int speed, int duplex)
-+{
-+	unsigned int val;
-+
- 	/* SGMII force mode setting */
- 	regmap_read(ss->regmap[id], SGMSYS_SGMII_MODE, &val);
- 	val &= ~SGMII_IF_MODE_MASK;
- 
--	switch (state->speed) {
-+	switch (speed) {
- 	case SPEED_10:
- 		val |= SGMII_SPEED_10;
- 		break;
-@@ -95,17 +117,10 @@ int mtk_sgmii_setup_mode_force(struct mtk_sgmii *ss, int id,
- 		break;
- 	}
- 
--	if (state->duplex == DUPLEX_FULL)
-+	if (duplex == DUPLEX_FULL)
- 		val |= SGMII_DUPLEX_FULL;
- 
- 	regmap_write(ss->regmap[id], SGMSYS_SGMII_MODE, val);
--
--	/* Release PHYA power down state */
--	regmap_read(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, &val);
--	val &= ~SGMII_PHYA_PWD;
--	regmap_write(ss->regmap[id], SGMSYS_QPHY_PWR_STATE_CTRL, val);
--
--	return 0;
- }
- 
- void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id)
--- 
-2.20.1
-
+So shall I file a patch that changes hard_header_len for SIT tunnels to 0?
