@@ -2,107 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6860220FEA2
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 23:24:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C9A520FEB6
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 23:26:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728716AbgF3VYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 17:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
+        id S1730699AbgF3V0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 17:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726847AbgF3VX5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 17:23:57 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21037C03E979
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 14:23:57 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id 187so10831078ybq.2
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 14:23:57 -0700 (PDT)
+        with ESMTP id S1730694AbgF3V0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 17:26:34 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138CBC061755;
+        Tue, 30 Jun 2020 14:26:34 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id 80so20159881qko.7;
+        Tue, 30 Jun 2020 14:26:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=U30OFkrejSXAU09n9FsbqbkjUpt98e9QYxgvQQIe3VE=;
-        b=KDvS/FCwcnss0qNhjm0NpFuNqkT7h3+EZ/xTBejWNC8QggWOPRJWUE8lGjmgzgV4F6
-         CKf3p9gg6ckn82XV/hd/V6dkDn08v8XcOCSJNKHFSXuHZNiKaGjrHXGn9sSJe5aHXe/Q
-         D63Zq9xMzVygOREvAxd6d6vzeRwiewKn26ZbEYxBhF4Q03S4e1eGmpulMnWYQXIqJash
-         L6mFduHsYhmW8O6cCcAtlc8hH/CUI6t++Qs3AdOOw2bnPAejcIGYeXT3CVGzGOHseQMo
-         igumKYVCtgwRFuysW54R/kDb77jbtnUaDF2s95dLKfDnxwIx9NYnkdJedHJHsAu+jU02
-         Rhjw==
+        bh=u6QrfK0w5ybbH9fi34xXU8b52YrlyrA/11EhFWPjHcY=;
+        b=CqI5q8x8tEfzpcgQJRXsrlzwKqVx+wSi8n79eup4ry7b6IboG8x3Mo5ta+oAtr6eao
+         1am7Wn0i/Uv0SJ6VTpa5eBmBnp+9xy/x+bEisQE5ZlhxVjJWCyOa4cDwY+hue3zb2+j5
+         j+h6l6giCeAFx5TefdU1ML9TNV4SFpFD91ZvzwAxHPj2Gm2frJI+s+JacWMiAKVnNHVp
+         OhoZhO5O6ui0V4njxE3Pg+SFDtt9Rpo5cKZZQ3UNYJRgXEdJW08Sx82AIQrZI7uouNUw
+         sM1Vt2FerL4pXP5AQu6BVts9FOnYKboA+BPb8w2Ed3J7+aD5NlhNJRkvTxi9d/tLDKnk
+         51Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=U30OFkrejSXAU09n9FsbqbkjUpt98e9QYxgvQQIe3VE=;
-        b=idL6EtEYd9JKz+NF1v82FZK4r0ZU2dL1x0/upCAgxlkpwMzK4SCUWbqtPUuiqqHPuR
-         gn2El+/xwI7iRrq+rbbrBSUpcS7QN2bdmbjVAN1aheZhmtbUiaM9NuSFlTECzSgoWdHv
-         0b3YDIXf8v78pR0qvD3ncIYzMvRiHpYya53aY6UnWC+j0Nixi+GzVbUxeWhkkXpA6+S1
-         Z2+OC33Nmy5Hpfv4Ri1A0O62fc4QIzbDbP5jtp0emvOSNx0yXGGy1h6jtrNwLrDrLoPH
-         JIkCehnBuQAgAtumJdcPIFuuUXDcTyVXY2iE0IoWwwsRb3ftbUB3BU9cOz0a3S7Sci4w
-         /lFw==
-X-Gm-Message-State: AOAM5328DoGzUfd9+2KWFxUhva8gKTqgm727wYpJy+42GqP1ak9LUKCp
-        e/JZpJmilyUB95bm8veQfLy8xlccB3JkUsjuB1cKsAxM
-X-Google-Smtp-Source: ABdhPJwvRiGn2p72OxM41uEpcwGeHq27tY+8sROq1FeyItQfz0F+5TMDBnzWOnk7yXafVjj9vG5ep+wApKq2Y25+RlU=
-X-Received: by 2002:a25:ec0d:: with SMTP id j13mr34790409ybh.364.1593552235823;
- Tue, 30 Jun 2020 14:23:55 -0700 (PDT)
+        bh=u6QrfK0w5ybbH9fi34xXU8b52YrlyrA/11EhFWPjHcY=;
+        b=UI5tSun2jrcj88D91B5J+fXwmpgUmN4QPlAoVvU1yfoh6qojEXvIPeReH2VtywhZVA
+         Y5zurzQBlj/4d6A3iJDMtefGhSrRF3hdwYcu8LqeA15Kt8R2pO2FAVVO5bxI0uaCnVN+
+         +pBsgNmcV32++UiZRDLrHSK02IOA8RDvPz/00o5VNAXZz/yV6KdKhsoCV6A7GJXh/VX+
+         c4o3xmTs66YJS9Bo3Wm8PsDPmsNk8D3QgqhnIhXQ4tTG/qBV/rcRlacXiCFfSkXS3hyr
+         qIgbzoNymK0g3LJSrcwOBV7s7oPeROGJLqA7sOqvb1HP7fGBySDGh6QHAAaQUpIyZnft
+         5Cdg==
+X-Gm-Message-State: AOAM533fNLeFO3C1E+TGEqnfKYaajboPX3feKrQ0PuZYCnQq3EFdqrxU
+        o8Me8C+ga3RtBMkSudhkKUNbgtrHu4mZJur83Zk=
+X-Google-Smtp-Source: ABdhPJzNTMwPYp9iv+oRxOsQCp2yESwoibyek38j7BPYdMXfXDzKD6C5b60bb9+VFoBgf+eNaEiI78MjsxtvU5aRFpY=
+X-Received: by 2002:a37:270e:: with SMTP id n14mr20807794qkn.92.1593552393299;
+ Tue, 30 Jun 2020 14:26:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAHk-=wjEghg5_pX_GhNP+BfcUK6CRZ+4mh3bciitm9JwXvR7aQ@mail.gmail.com>
- <312079189.17903.1593549293094.JavaMail.zimbra@efficios.com>
- <CANn89iJ+rkMrLrHrKXO-57frXNb32epB93LYLRuHX00uWc-0Uw@mail.gmail.com>
- <20200630.134429.1590957032456466647.davem@davemloft.net> <CANn89i+b-LeaPvaaHvj0yc0mJ2qwZ0981fQHVp0+sqXYp=kdkA@mail.gmail.com>
- <474095696.17969.1593551866537.JavaMail.zimbra@efficios.com>
-In-Reply-To: <474095696.17969.1593551866537.JavaMail.zimbra@efficios.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 30 Jun 2020 14:23:44 -0700
-Message-ID: <CANn89iKK2+pznYZoKZzdCu4qkA7BjJZFqc6ABof4iaS-T-9_aw@mail.gmail.com>
-Subject: Re: [regression] TCP_MD5SIG on established sockets
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Jonathan Rajotte-Julien <joraj@efficios.com>
+References: <20200630184922.455439-1-haoluo@google.com>
+In-Reply-To: <20200630184922.455439-1-haoluo@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 30 Jun 2020 14:26:21 -0700
+Message-ID: <CAEf4BzaH3TJWMsNHFPUTgEotErX0WS8R8ds1LYs6eXvLy1YbxQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Switch test_vmlinux to use hrtimer_range_start_ns.
+To:     Hao Luo <haoluo@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 2:17 PM Mathieu Desnoyers
-<mathieu.desnoyers@efficios.com> wrote:
+On Tue, Jun 30, 2020 at 1:47 PM Hao Luo <haoluo@google.com> wrote:
 >
-> ----- On Jun 30, 2020, at 4:56 PM, Eric Dumazet edumazet@google.com wrote:
+> The test_vmlinux test uses hrtimer_nanosleep as hook to test tracing
+> programs. But it seems Clang may have done an aggressive optimization,
+> causing fentry and kprobe to not hook on this function properly on a
+> Clang build kernel.
 >
-> > On Tue, Jun 30, 2020 at 1:44 PM David Miller <davem@davemloft.net> wrote:
-> >>
-> >> From: Eric Dumazet <edumazet@google.com>
-> >> Date: Tue, 30 Jun 2020 13:39:27 -0700
-> >>
-> >> > The (C) & (B) case are certainly doable.
-> >> >
-> >> > A) case is more complex, I have no idea of breakages of various TCP
-> >> > stacks if a flow got SACK
-> >> > at some point (in 3WHS) but suddenly becomes Reno.
-> >>
-> >> I agree that C and B are the easiest to implement without having to
-> >> add complicated code to handle various negotiated TCP option
-> >> scenerios.
-> >>
-> >> It does seem to be that some entities do A, or did I misread your
-> >> behavioral analysis of various implementations Mathieu?
-> >>
-> >> Thanks.
-> >
-> > Yes, another question about Mathieu cases is do determine the behavior
-> > of all these stacks vs :
-> > SACK option
-> > TCP TS option.
+> A possible fix is switching to use a more reliable function, e.g. the
+> ones exported to kernel modules such as hrtimer_range_start_ns. After
+> we switch to using hrtimer_range_start_ns, the test passes again even
+> on a clang build kernel.
 >
-> I will ask my customer's networking team to investigate these behaviors,
-> which will allow me to prepare a thorough reply to the questions raised
-> by Eric and David. I expect to have an answer within 2-3 weeks at most.
+> Tested:
+>  In a clang build kernel, the test fail even when the flags
+>  {fentry, kprobe}_called are set unconditionally in handle__kprobe()
+>  and handle__fentry(), which implies the programs do not hook on
+>  hrtimer_nanosleep() properly. This could be because clang's code
+>  transformation is too aggressive.
 >
-> Thank you!
+>  test_vmlinux:PASS:skel_open 0 nsec
+>  test_vmlinux:PASS:skel_attach 0 nsec
+>  test_vmlinux:PASS:tp 0 nsec
+>  test_vmlinux:PASS:raw_tp 0 nsec
+>  test_vmlinux:PASS:tp_btf 0 nsec
+>  test_vmlinux:FAIL:kprobe not called
+>  test_vmlinux:FAIL:fentry not called
+>
+>  After we switch to hrtimer_range_start_ns, the test passes.
+>
+>  test_vmlinux:PASS:skel_open 0 nsec
+>  test_vmlinux:PASS:skel_attach 0 nsec
+>  test_vmlinux:PASS:tp 0 nsec
+>  test_vmlinux:PASS:raw_tp 0 nsec
+>  test_vmlinux:PASS:tp_btf 0 nsec
+>  test_vmlinux:PASS:kprobe 0 nsec
+>  test_vmlinux:PASS:fentry 0 nsec
+>
+> Signed-off-by: Hao Luo <haoluo@google.com>
+> ---
+
+Took me a bit of jumping around to find how it is related to nanosleep
+call :) But seems like it's unconditionally called, so should be fine.
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
 
-Great, I am working on adding back support for (B) & (C) by the end of
-this week.
+>  tools/testing/selftests/bpf/progs/test_vmlinux.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+>
+
+[...]
