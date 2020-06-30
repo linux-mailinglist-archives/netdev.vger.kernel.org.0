@@ -2,150 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC81220FA35
-	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 19:11:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0F1F20FA39
+	for <lists+netdev@lfdr.de>; Tue, 30 Jun 2020 19:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390067AbgF3RLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 13:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50474 "EHLO
+        id S2390070AbgF3RMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 13:12:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387434AbgF3RLp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 13:11:45 -0400
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 034B1C03E97A
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 10:11:46 -0700 (PDT)
-Received: by mail-oi1-x242.google.com with SMTP id l63so17118008oih.13
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 10:11:45 -0700 (PDT)
+        with ESMTP id S1729963AbgF3RMV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 13:12:21 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F143C061755;
+        Tue, 30 Jun 2020 10:12:21 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id dr13so21439137ejc.3;
+        Tue, 30 Jun 2020 10:12:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gateworks-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v6lSgVeA93DCHghp99iRZTr3CJQ2lDjyf7D10bnB+3k=;
-        b=XapPMAEZS4jVctBmBZKJ8vCZ/i7L2ArM2qhXywE0k7b3PIebPTicElaNmHrU6W9qP9
-         KryFgnIsW3mIajUuQTWIANDkKsxjraFzxOXjENAPYxn9E9LNlBU7rVdVrXL9aeO07daw
-         NgA7TdbDqL3gfOgHer+ux7BsiunM7luK3x1hK+cEq6++OtzPQlLvu9cuFhbdqZdxvM61
-         q4AvOI+Sj5+Np4trqhtHcODJbI9Bzpx0qzwA6NgBcjBy3EdT7LrmKJ2yXXQjMxh6+hi/
-         ARhEcdhI3B1pheABqRHIwfyyoFkdUrkOQUWIZvPSdebim7NQ4fPXVXMxQPjJNtwOcFcm
-         XFcw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hLjY+FiejsKCHtdjZ2X5AG1Wh8QL9+hOBzArfxVt15s=;
+        b=qBp9Bkd+bZcKlIGx6Z9Kc30AXs6nEXO8oRuh2kHPe1me1YuqwxMpQQotWwJAoWvdS8
+         a6Mrxv1/phr4YSLPV7NPqwEAA3wKuJl455FYOqK3Y9pKm+4+z1ts+0MCd579LepC7xO+
+         0pd40N8nWIiy/44TDVRRzJ2NA0CY2DvN8dYUCczzJxlpv8y7l5RCWWO07FrsN+leH/F1
+         QxE4Tf7DCfGHyvEi32QPMwoG5cbIsx1s3q+R5ejMn0kFe4A+gZbC1bFYO0aSj25kA0sO
+         1Ie5WDR/Cco30yQ/hSHaklpDnkrCo1/XoWkEHeZJNRdGvzVHjR3/VwNx2aIfxA6ghRFN
+         GlKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v6lSgVeA93DCHghp99iRZTr3CJQ2lDjyf7D10bnB+3k=;
-        b=KQRwR6wWc7NJ49iv+5MO5ro72hHp5fgrjZjHJ6udlcX2blbU7RLUcMdE8OlSKVfvSB
-         HbGkzTls3rbMTlJyhioNkIG5FC6fYjSXI/k78Atp9rD/HQI2heUn0p9Q2DK6ntDhB8l9
-         RJQ7Qty+5+pt8QukLiFRs+Qzxt9UaCmheFQMdBQwiVS9hA3lNEK1Z7BMN1/HU59jGq11
-         xDvKixiNzmuU5ncP1gAMltrJpxOb022S5gtNLnbLx0uqk2pHo2azODa6wHyOSTE33z65
-         +c+EACN/VefKSx9YOtzoDbXpYKA7hDHWFnKUFf5tel0/isWct9lIUJGEt9hPlR+hjVBo
-         IxUQ==
-X-Gm-Message-State: AOAM531jrs3TzzG6pwCgN9SWLXcgis5RP3e5yfmG1Co1cZxtggtfoMJs
-        LgUW2pRfncY0hlkySoKARx1Jwaqh45VX/11W76LLjA==
-X-Google-Smtp-Source: ABdhPJwHLEvL13OlN1nVnjnXqgKuzVl9BoGBJtcpUVch4pSGN04fvG8FxhoUt07tRL3aiCftdAEvDahNYUF5Q+8jts4=
-X-Received: by 2002:aca:c0d5:: with SMTP id q204mr6340821oif.142.1593537104734;
- Tue, 30 Jun 2020 10:11:44 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hLjY+FiejsKCHtdjZ2X5AG1Wh8QL9+hOBzArfxVt15s=;
+        b=r4DxTuqW/0XtQQ4OaGXYkAJtSb4hdeEX46mAMJIstl5VIo6qC4p/BKAlbRWFWDMgaB
+         rAGmkITpep3MAIzusoyYd8q4DRW62oouyeVsmAMHlF4l736FVoBd6O4L7ka1BybxcHg7
+         xJmdjG13MTcHPbPxSFOLEc7Hy2UfXYzVG3EuPJNh3g0xWp99/pGXUe6XLBBjattuCEgB
+         Dp0Q6VKY3Nh0vlWjYzGs5patbp27uJyOaJRNWW55lJasZs/KCsEvN2JDVOcr6+pSfTOJ
+         Hu2KTzmftRhoiYkiiGM6jLaFAAEtvKdCCBtDT5OCQhT9H0tFFC7PxWIRuSuzPnDczSPy
+         eiqA==
+X-Gm-Message-State: AOAM533+XmDZqMGEI1L5Nbe0E7GVSEd6S6+4VHGNZxffyrmK/432/W6P
+        pXGNg9I5RemuQjoZZH1llHw=
+X-Google-Smtp-Source: ABdhPJy/WiZXMjLukD00/Pj3vPe0LoKDdDGPP1BLeXkJAELpuKNhsZYuZ/vw/t2EYG6lMRHMuhnqMQ==
+X-Received: by 2002:a17:906:178b:: with SMTP id t11mr8136eje.489.1593537140016;
+        Tue, 30 Jun 2020 10:12:20 -0700 (PDT)
+Received: from andrea (ip-213-220-210-175.net.upcbroadband.cz. [213.220.210.175])
+        by smtp.gmail.com with ESMTPSA id g8sm3704441edk.13.2020.06.30.10.12.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Jun 2020 10:12:19 -0700 (PDT)
+Date:   Tue, 30 Jun 2020 19:12:13 +0200
+From:   Andrea Parri <parri.andrea@gmail.com>
+To:     t-mabelt@microsoft.com
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mikelley@microsoft.com,
+        skarade@microsoft.com, Andres Beltran <lkmlabelt@gmail.com>,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v3 0/3] Drivers: hv: vmbus: vmbus_requestor data
+ structure for VMBus hardening
+Message-ID: <20200630171213.GA12948@andrea>
+References: <20200630153200.1537105-1-lkmlabelt@gmail.com>
 MIME-Version: 1.0
-References: <1590679677-2678-1-git-send-email-tharvey@gateworks.com>
-In-Reply-To: <1590679677-2678-1-git-send-email-tharvey@gateworks.com>
-From:   Tim Harvey <tharvey@gateworks.com>
-Date:   Tue, 30 Jun 2020 10:11:33 -0700
-Message-ID: <CAJ+vNU1sEqo4ty68-9LeKFd4oY-qKiEt7_unp-1oCjX=+XQr7g@mail.gmail.com>
-Subject: Re: [PATCH] can: mcp251x: add support for half duplex controllers
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?B?VGltbyBTY2hsw7zDn2xlcg==?= <schluessler@krause.de>,
-        "Gustavo A . R . Silva" <gustavo@embeddedor.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200630153200.1537105-1-lkmlabelt@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 28, 2020 at 8:28 AM Tim Harvey <tharvey@gateworks.com> wrote:
->
-> Some SPI host controllers do not support full-duplex SPI and are
-> marked as such via the SPI_CONTROLLER_HALF_DUPLEX controller flag.
->
-> For such controllers use half duplex transactions but retain full
-> duplex transactions for the controllers that can handle those.
->
-> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
-> ---
->  drivers/net/can/spi/mcp251x.c | 34 +++++++++++++++++++++++++++-------
->  1 file changed, 27 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
-> index 5009ff2..203ef20 100644
-> --- a/drivers/net/can/spi/mcp251x.c
-> +++ b/drivers/net/can/spi/mcp251x.c
-> @@ -290,8 +290,12 @@ static u8 mcp251x_read_reg(struct spi_device *spi, u8 reg)
->         priv->spi_tx_buf[0] = INSTRUCTION_READ;
->         priv->spi_tx_buf[1] = reg;
->
-> -       mcp251x_spi_trans(spi, 3);
-> -       val = priv->spi_rx_buf[2];
-> +       if (spi->controller->flags & SPI_CONTROLLER_HALF_DUPLEX) {
-> +               spi_write_then_read(spi, priv->spi_tx_buf, 2, &val, 1);
-> +       } else {
-> +               mcp251x_spi_trans(spi, 3);
-> +               val = priv->spi_rx_buf[2];
-> +       }
->
->         return val;
->  }
-> @@ -303,10 +307,18 @@ static void mcp251x_read_2regs(struct spi_device *spi, u8 reg, u8 *v1, u8 *v2)
->         priv->spi_tx_buf[0] = INSTRUCTION_READ;
->         priv->spi_tx_buf[1] = reg;
->
-> -       mcp251x_spi_trans(spi, 4);
-> +       if (spi->controller->flags & SPI_CONTROLLER_HALF_DUPLEX) {
-> +               u8 val[2] = { 0 };
->
-> -       *v1 = priv->spi_rx_buf[2];
-> -       *v2 = priv->spi_rx_buf[3];
-> +               spi_write_then_read(spi, priv->spi_tx_buf, 2, val, 2);
-> +               *v1 = val[0];
-> +               *v2 = val[1];
-> +       } else {
-> +               mcp251x_spi_trans(spi, 4);
-> +
-> +               *v1 = priv->spi_rx_buf[2];
-> +               *v2 = priv->spi_rx_buf[3];
-> +       }
->  }
->
->  static void mcp251x_write_reg(struct spi_device *spi, u8 reg, u8 val)
-> @@ -409,8 +421,16 @@ static void mcp251x_hw_rx_frame(struct spi_device *spi, u8 *buf,
->                         buf[i] = mcp251x_read_reg(spi, RXBCTRL(buf_idx) + i);
->         } else {
->                 priv->spi_tx_buf[RXBCTRL_OFF] = INSTRUCTION_READ_RXB(buf_idx);
-> -               mcp251x_spi_trans(spi, SPI_TRANSFER_BUF_LEN);
-> -               memcpy(buf, priv->spi_rx_buf, SPI_TRANSFER_BUF_LEN);
-> +               if (spi->controller->flags & SPI_CONTROLLER_HALF_DUPLEX) {
-> +                       spi_write_then_read(spi, priv->spi_tx_buf, 1,
-> +                                           priv->spi_rx_buf,
-> +                                           SPI_TRANSFER_BUF_LEN);
-> +                       memcpy(buf + 1, priv->spi_rx_buf,
-> +                              SPI_TRANSFER_BUF_LEN - 1);
-> +               } else {
-> +                       mcp251x_spi_trans(spi, SPI_TRANSFER_BUF_LEN);
-> +                       memcpy(buf, priv->spi_rx_buf, SPI_TRANSFER_BUF_LEN);
-> +               }
->         }
->  }
->
-> --
-> 2.7.4
->
+On Tue, Jun 30, 2020 at 11:31:57AM -0400, Andres Beltran wrote:
+> Currently, VMbus drivers use pointers into guest memory as request IDs
+> for interactions with Hyper-V. To be more robust in the face of errors
+> or malicious behavior from a compromised Hyper-V, avoid exposing
+> guest memory addresses to Hyper-V. Also avoid Hyper-V giving back a
+> bad request ID that is then treated as the address of a guest data
+> structure with no validation. Instead, encapsulate these memory
+> addresses and provide small integers as request IDs.
+> 
+> The first patch creates the definitions for the data structure, provides
+> helper methods to generate new IDs and retrieve data, and
+> allocates/frees the memory needed for vmbus_requestor.
+> 
+> The second and third patches make use of vmbus_requestor to send request
+> IDs to Hyper-V in storvsc and netvsc respectively.
+> 
+> Thanks.
+> Andres Beltran
+> 
+> Tested-by: Andrea Parri <parri.andrea@gmail.com>
 
-Marc / Wolfgang,
+Em, I don't expect the changes introduced since v1 to have any observable
+effects, but I really don't know: I should be able to complete my testing
+of this by tomorrow or so; for now, please just ignore this tag.
 
-Any feedback on this?
+Thanks,
+  Andrea
 
-Best Regards,
 
-Tim
+> 
+> Cc: linux-scsi@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: James E.J. Bottomley <jejb@linux.ibm.com>
+> Cc: Martin K. Petersen <martin.petersen@oracle.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> 
+> Andres Beltran (3):
+>   Drivers: hv: vmbus: Add vmbus_requestor data structure for VMBus
+>     hardening
+>   scsi: storvsc: Use vmbus_requestor to generate transaction IDs for
+>     VMBus hardening
+>   hv_netvsc: Use vmbus_requestor to generate transaction IDs for VMBus
+>     hardening
+> 
+>  drivers/hv/channel.c              | 154 ++++++++++++++++++++++++++++++
+>  drivers/net/hyperv/hyperv_net.h   |  13 +++
+>  drivers/net/hyperv/netvsc.c       |  79 ++++++++++++---
+>  drivers/net/hyperv/rndis_filter.c |   1 +
+>  drivers/scsi/storvsc_drv.c        |  85 ++++++++++++++---
+>  include/linux/hyperv.h            |  22 +++++
+>  6 files changed, 329 insertions(+), 25 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
