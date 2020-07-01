@@ -2,129 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F09FD210770
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 11:06:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E1202107D2
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 11:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728812AbgGAJGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 05:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56858 "EHLO
+        id S1729164AbgGAJQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 05:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726946AbgGAJGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 05:06:10 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182CBC061755
-        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 02:06:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=tSP9r2YD+sw/XJ3d30snTRWvcBmchQVVbxQfZKRVN/o=; b=eVUMFAmXU9h2HIr2xQQlSrMN1
-        xFQF/Bc0NpWD6KYnqg6aTlnyFRGLal1k6KMc1Dt57+mx3IA/yJYb7VGomyLXI9LBxgu/ip+9+UfnO
-        NkaX7lCjfPFz9hMXZFanJwMlUszxFFjz3dFKHLSerFOUIBtr1cuhM8vNl1utlThZRfPHVYIPDMiDZ
-        qSjS3ZtSWl1YemUitXxCqL0ax/exG+mJx8n/GhHcq/Ny5g84AgQ6G7FU03156Hig4T7IwIe//4s/q
-        HiD5lrbNXm1MTzSlM/Qj7gYGPNCYDdxb9nxClQZmFlRLOjZF2MFmVaeP4pm1jci1pWMCg4gWhjLUl
-        ozge/mKiw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33908)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jqYgy-0001SV-Ja; Wed, 01 Jul 2020 10:06:08 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jqYgx-0000e1-Ag; Wed, 01 Jul 2020 10:06:07 +0100
-Date:   Wed, 1 Jul 2020 10:06:07 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Shmuel Hazan <sh@tkos.co.il>
-Subject: Re: [PATCH v2] net: phy: marvell10g: support XFI rate matching mode
-Message-ID: <20200701090607.GI1551@shell.armlinux.org.uk>
-References: <76ee08645fd35182911fd2bac2546e455c4b662c.1593327891.git.baruch@tkos.co.il>
- <20200629092224.GS1551@shell.armlinux.org.uk>
- <87v9j7em1r.fsf@tarshish>
+        with ESMTP id S1728776AbgGAJQH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 05:16:07 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CDBC061755
+        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 02:16:07 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id q15so21610228wmj.2
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 02:16:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZU8SA1O8Jv6Te10+ekIri7BfJviqp+FfrfyfU+sHV5I=;
+        b=PArRIUIP3oLxFSKLYX84rMRie9XkyLd9uwGa84vRBkwRCfxG6u/Ciol2bf46f65mKr
+         gS/uBH5bVkxwk2INmeY9XdXQleq5AZogmib5AvlUZ7ZO3JaeRR0MsvgT16jCV2MFJyu6
+         4HLt4K4YsiEgaSv63OhHurhWFuNZU5xblW+6k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZU8SA1O8Jv6Te10+ekIri7BfJviqp+FfrfyfU+sHV5I=;
+        b=mn/Q8Q+fU6vG8thThZNQ2BhHLF/iJT7aWibIDAzNGp9PbCQNEwWySm9T751zCCtkya
+         AZ3CjQaQx+yRzKI2D+Cg9RmwP3rWM3kVD/xufdDH46UMcvOdduJgDrmIW9EDSpeM5yAb
+         roIs5jZ5+aZVeg9Ue+d0aLTf3+z24R/9CAopTDvEf+exA0iKO6hzXO59V87MOrSd1krj
+         KAyo2gSFZszRf7Vi3sa2Jy+6/5w1Es5uxOkOVHbS+fLSQfscHiJygIthYMQXxnfGHs3u
+         LrXmlzOC3NHlf0S6uqNrINv9KkanesrzSfzGSwEBeh7W44gKnzPMSMSPd+nQj5jlXEwf
+         SkOw==
+X-Gm-Message-State: AOAM533Ju6gwH0I9ui4T0ajhuFXmpP6kQjE8Eh4arh70w6sEpTVCI+t1
+        XFXIBXxrJt4Pm2gGE7ccwppKFU+3zaYsIZompUpdNg==
+X-Google-Smtp-Source: ABdhPJyqhKkeC3WFoi3duBSAsO8e02uwCpFbGA/A+tGFkJAdC9zXZ1MHmQJaNg81SWF7ip1T+T0ahSMkEw6XtxE5KGA=
+X-Received: by 2002:a7b:c84d:: with SMTP id c13mr25620717wml.170.1593594965921;
+ Wed, 01 Jul 2020 02:16:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87v9j7em1r.fsf@tarshish>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200630043343.53195-1-alexei.starovoitov@gmail.com>
+ <20200630043343.53195-3-alexei.starovoitov@gmail.com> <d0c6b6a6-7b82-e620-8ced-8a1acfaf6f6d@iogearbox.net>
+ <20200630234117.arqmjpbivy5fhhmk@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200630234117.arqmjpbivy5fhhmk@ast-mbp.dhcp.thefacebook.com>
+From:   KP Singh <kpsingh@chromium.org>
+Date:   Wed, 1 Jul 2020 11:15:55 +0200
+Message-ID: <CACYkzJ5kGxxA1E70EKah_hWbsb7hoUy8s_Y__uCeSyYxVezaBA@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 2/5] bpf: Introduce sleepable BPF programs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>, paulmck@kernel.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 01, 2020 at 10:23:12AM +0300, Baruch Siach wrote:
-> Hi Russell,
-> 
-> On Mon, Jun 29 2020, Russell King - ARM Linux admin wrote:
-> > Then there's the whole question of what phydev->speed etc should be set
-> > to - the media speed or the host side link speed with the PHY, and then
-> > how the host side should configure itself.  At least the 88E6390x
-> > switch will force itself to the media side speed using that while in
-> > XAUI mode, resulting in a non-functioning speed.  So should the host
-> > side force itself to 10G whenever in something like XAUI mode?
-> 
-> How does the switch discover the media side speed? Is there some sort of
-> in-band information exchange?
+On Wed, Jul 1, 2020 at 1:41 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Jul 01, 2020 at 01:26:44AM +0200, Daniel Borkmann wrote:
+> > On 6/30/20 6:33 AM, Alexei Starovoitov wrote:
+> > [...]
+> > > +/* list of non-sleepable kernel functions that are otherwise
+> > > + * available to attach by bpf_lsm or fmod_ret progs.
+> > > + */
+> > > +static int check_sleepable_blacklist(unsigned long addr)
+> > > +{
+> > > +#ifdef CONFIG_BPF_LSM
+> > > +   if (addr == (long)bpf_lsm_task_free)
+> > > +           return -EINVAL;
+> > > +#endif
+> > > +#ifdef CONFIG_SECURITY
+> > > +   if (addr == (long)security_task_free)
+> > > +           return -EINVAL;
+> > > +#endif
+> > > +   return 0;
+> > > +}
+> >
+> > Would be nice to have some sort of generic function annotation to describe
+> > that code cannot sleep inside of it, and then filter based on that. Anyway,
+> > is above from manual code inspection?
+>
+> yep. all manual. I don't think there is a way to automate it.
+> At least I cannot think of one.
+>
+> > What about others like security_sock_rcv_skb() for example which could be
+> > bh_lock_sock()'ed (or, generally hooks running in softirq context)?
+>
+> ahh. it's in running in bh at that point? then it should be added to blacklist.
+>
+> The rough idea I had is to try all lsm_* and security_* hooks with all
+> debug kernel flags and see which ones will complain. Then add them to blacklist.
+> Unfortunately I'm completely swamped and cannot promise to do that
+> in the coming months.
+> So either we wait for somebody to do due diligence or land it knowing
+> that blacklist is incomplete and fix it up one by one.
+> I think the folks who're waiting on sleepable work would prefer the latter.
+> I'm fine whichever way.
 
-The media-side results are passed via phydev->speed and phydev->duplex,
-and therefore will be passed through phylink. mvpp2 will ignore them
-for 10GBASE-R as it has separate MACs - XLG and GMAC, but 88E6390x, it's
-just one.  Consequently, it's possible that the port mode is in XAUI,
-but you can force the speed to (e.g.) 100M.
+Chiming in since I belong to the folks who are waiting on sleepable BPF patches:
 
-What I know from what I can do with this media-side broken 88X3310, is
-that it will pass data if the 88E6390x is forced to 10G, but not if it's
-forced to 100M.
+1. Let's obviously add security_sock_rcv_skb to the list.
+2. I can help in combing through the LSM hooks (at least the comments)
+     to look for any other obvious candidates.
+3. I think it's okay (for us) for this list to be a WIP and build on it with
+    proper warnings (in the changelog / comments).
+4. To make it easier for figuring out which hooks cannot sleep,
+     It would be nice if we could:
 
-We're moving from a situation where MAC drivers can expect (with either
-phylib or phylink):
+    * Have a helper say, bool bpf_cant_sleep(), available when
+       DEBUG_ATOMIC_SLEEP is enabled.
+    * Attach LSM programs to all hooks which call this helper and gather data.
+    * Let this run on dev machines, run workloads which use the LSM hooks .
 
-	interface = <some 10G interface>
-	speed is always 10G
-	duplex is always full
+4. Finally, once we do the hard work. We can also think of augmenting the
+    LSM_HOOK macro to have structured access to whether a hook is sleepable
+    or not (instead of relying on comments).
 
-to:
-
-	interface = <some 10G interface>
-	speed is 10, 100, 1G or 10G
-	duplex is half or full
-
-So, adding rate-matching brings with it a non-obvious change in the API
-of phylib and phylink:
-
-* what do the phydev->{speed,duplex,pause,asym_pause} represent - the
-  media side parameters or the PHY to MAC parameters?
-* what do the "speed, duplex, pause" passed into mac_link_up() refer to,
-  the media side, or the link side?
-  
-Both of those need to be properly documented and explained.
-
-The next two points, I haven't re-read the 3310 datasheet.
-
-We also need to consider a situation which is less obvious: if the PHY
-is operating in rate matching mode, doesn't generate pause frames
-itself as its rate matching buffers fill, but the media side negotiated
-for pause frames.  Should we be advertising no support for pause frames
-in this case?  Will the PHY pass pause frames through as a priority?
-Consider that in a 16k outbound buffer, there could be up to 10 full
-sized frames queued, so if the link partner is asking us to stop
-sending, it could take up to 10 frames before we actually stop.
-
-What are the requirements for half duplex in rate matching mode - is
-that handled internally by the PHY, or do we need to disable all half
-duplex advertisements in the PHY. When rate matching, the PHY can no
-longer signal the MAC when a collision occurs, as it would normally
-do without rate matching.
-
-I think I've covered everything, but may have missed something. I do
-think we need documentation updated before we should accept this patch
-so that we have the phylib and phylink behaviour in this case clearly
-defined from the outset.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+- KP
