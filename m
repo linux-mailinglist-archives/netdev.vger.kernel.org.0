@@ -2,121 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BEAC2110C8
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 18:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5F2F2110FF
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 18:47:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732361AbgGAQgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 12:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
+        id S1732508AbgGAQrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 12:47:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731394AbgGAQgy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 12:36:54 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2397C08C5C1;
-        Wed,  1 Jul 2020 09:36:53 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id b92so11264611pjc.4;
-        Wed, 01 Jul 2020 09:36:53 -0700 (PDT)
+        with ESMTP id S1732161AbgGAQrO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 12:47:14 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A21EC08C5C1;
+        Wed,  1 Jul 2020 09:47:14 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id w73so9807989ila.11;
+        Wed, 01 Jul 2020 09:47:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GgioNzSta8sSjK2l1P/5dr6v68UV138xyv8W1eB/1gY=;
-        b=V58Y5n//HCW652zIm/606vN7NhzBHLyRDKhGIc/xUqQezqiMAawldBH7AbpsuNbD7L
-         ieU3j0zkzxEKToD+T8zCXhgulCOB/M0Pma6lbBBBnUgcVTSz1Mv92Z/DvbRRicm3aOaT
-         n6B1AtyclpiP/ZjsppnLteXfFNqA9uwK8+VgAfubP6zaU2sZxxwtXRSnLnfegE3e5aBS
-         0nSpYYxh+Fq+ayrLiGOgPG9AM7MJeZ80vovNLjuwNCX6W+Bnku1CV2n0o2mu5vKLl527
-         Vbe6HCxKSIh1Q8tfjBMTd5fXJHdwmsMmmoeU6NlyRyX48LRNf2UGRI78g0r7xaFvg2MX
-         /Ngg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=cgXOYeOBav3lpCc6RnkxnTtxmQ18prKpm12TGEbwf+o=;
+        b=hzE0PsmcjXmfaB3rUYvH7zJ6hDATURfLwN+3G+b5VACszlph4RLjh3fdr9km+bIy6W
+         T+P/x8649noHlVIIyegFH72mxYYGAc/IAOLGfeVlWSfwxwIUvIm3SMXyx6g4wOlzyIgU
+         pWRGx7S+jTL1gHJNAW2zwQ55R00XUnHqt6dgO6YProoBoS6rgTuSo+uAVr3D3eG+3Doh
+         FPA1QRbHBGvyYDiPWWWC1BC+Q748dlZzVN2foYrSFETFTOQzwJBe4Ut3Xt5PA/QnKJ2s
+         bwG8TVjIdibU3DJTeFiegHt5nhrepQbNCuqcvaDQSj/bknwnyMtGOewtkwtrbX6/xSl1
+         sKfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GgioNzSta8sSjK2l1P/5dr6v68UV138xyv8W1eB/1gY=;
-        b=dqScTTL7HyPigq9pNdPpz1IADP5aOCQjKJ2AnpMeT6lnT6goda5Ee0SrgiR/3J7EOo
-         PJ8AprYt54Wk4H2ztHpig/twNWIgMhiGsZD1r0RtWLobzkZn1wjwpbTU4Pr54gQYe2ey
-         wcJbQH7yhmgEIfwRCw7buRpQokxZsXGqlXXKL8wIumyLF7IVN4E7pzbHk4ADA6CIw+ES
-         dj8FHDk0nl6T3ePR4OAEbXBXjxlq29MreAKvygmkp7AIK1sZ2abhM/s+WwlbTQfgLSWv
-         7jTH5E/NRi6phmLf2pD6tyWXpRv9dLgMP7Fg9l0JgAn9nOOj5KA6Ta6Bg6B0i7thgO5c
-         gFFQ==
-X-Gm-Message-State: AOAM532vgZF7D5Wx+HE4TK3ncu2Lt1Kp/XNKjhx0dZHQykAPeE+vlkA2
-        nU7VPYJa9Ba9x3EwdWCc80I=
-X-Google-Smtp-Source: ABdhPJy+3zrMbkxQP0lAB9c1Mv2U7SWy+vkKt0J4REeA/Z+IDhJFrMwnA4UP8i6s+3ZYUdIV8sejyg==
-X-Received: by 2002:a17:90a:1b42:: with SMTP id q60mr5761677pjq.78.1593621413431;
-        Wed, 01 Jul 2020 09:36:53 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:7882])
-        by smtp.gmail.com with ESMTPSA id y12sm6357791pfm.158.2020.07.01.09.36.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jul 2020 09:36:52 -0700 (PDT)
-Date:   Wed, 1 Jul 2020 09:36:50 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Anton Protopopov <a.s.protopopov@gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] Strip away modifiers from BPF skeleton
- global variables
-Message-ID: <20200701163650.qoxr5xgjmz5mpzgn@ast-mbp.dhcp.thefacebook.com>
-References: <20200701064527.3158178-1-andriin@fb.com>
- <CAADnVQLGQB9MeOpT0vGpbwV4Ye7j1A9bJVQzF-krWQY_gNfcpA@mail.gmail.com>
- <CAEf4BzbtPBLXU9OKCxeqOKr2WkUHz3P8zO6hD-602htLr21RvQ@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=cgXOYeOBav3lpCc6RnkxnTtxmQ18prKpm12TGEbwf+o=;
+        b=iJrfcqcqIVcxNq70d3kl4hyttsZAbBeCuv/IS7ClH49S2JW4exMgQxTS3gVeuVY1Ao
+         25mP3oYg3jXkIKa/W38/AttHfQDueSZRFmk96yTb9M21KRNUJr23CYY8NSYoShK2jZqY
+         CREz12KgPhmONTDHRgHDlZsQgImkm7/FPj2mPhO4e6QvGahZ7XGKNNMdjIm/mPRpKM61
+         VyyaI6rfyN61wxHapnlMe6tbo8N74kO4YEA6d+UJXKxex9GLtszUK9VCO2wyD3JG3UAK
+         0NqE3hi23YczXdoneBCVBZAeVBHZdmE1/XD66eY49pGYjYoSJDDIc47PUU7nELZmJtLz
+         TT9w==
+X-Gm-Message-State: AOAM532XgYFGqkyc1L7EXV3DWteB5JhBmBHqUwUk0ea7estpsshGZgSv
+        qbgMz7NTGAqB2ezwDCYYsvDusJSUkLI9PsedY8o=
+X-Google-Smtp-Source: ABdhPJxQMuxh0yObmiT7znRD89rOc/Jnm1QPfqG6yx5gFLYz5iKQuXIQ8XqSVqRPYiFMJCAeJGIkuiVVAgkzhYE0vQ0=
+X-Received: by 2002:a92:5ecf:: with SMTP id f76mr9021204ilg.6.1593622033598;
+ Wed, 01 Jul 2020 09:47:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbtPBLXU9OKCxeqOKr2WkUHz3P8zO6hD-602htLr21RvQ@mail.gmail.com>
+References: <20200701125938.639447-1-vaibhavgupta40@gmail.com>
+ <20200701125938.639447-5-vaibhavgupta40@gmail.com> <20200701085805.4dac84fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200701085805.4dac84fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Vaibhav Gupta <vaibhav.varodek@gmail.com>
+Date:   Wed, 1 Jul 2020 22:15:35 +0530
+Message-ID: <CAPBsFfBb5Z6xVpo3A-0M0BDqgWqLFaQWcT0j7S+Q2wz375BZ4g@mail.gmail.com>
+Subject: Re: [PATCH v1 04/11] ena_netdev: use generic power management
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
+        "David S. Miller" <davem@davemloft.net>,
+        David Dillow <dave@thedillows.org>,
+        Ion Badulescu <ionut@badula.org>,
+        Netanel Belgazal <netanel@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        Guy Tzalik <gtzalik@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Zorik Machulsky <zorik@amazon.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Denis Kirjanov <kda@linux-powerpc.org>,
+        Ajit Khaparde <ajit.khaparde@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Jon Mason <jdmason@kudzu.us>, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        skhan@linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 01, 2020 at 09:08:45AM -0700, Andrii Nakryiko wrote:
-> On Wed, Jul 1, 2020 at 8:02 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
+On Wed, 1 Jul 2020 at 21:28, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed,  1 Jul 2020 18:29:31 +0530 Vaibhav Gupta wrote:
+> > With legacy PM, drivers themselves were responsible for managing the
+> > device's power states and takes care of register states.
 > >
-> > On Tue, Jun 30, 2020 at 11:46 PM Andrii Nakryiko <andriin@fb.com> wrote:
-> > >
-> > > Fix bpftool logic of stripping away const/volatile modifiers for all global
-> > > variables during BPF skeleton generation. See patch #1 for details on when
-> > > existing logic breaks and why it's important. Support special .strip_mods=true
-> > > mode in btf_dump. Add selftests validating that everything works as expected.
+> > After upgrading to the generic structure, PCI core will take care of
+> > required tasks and drivers should do only device-specific operations.
 > >
-> > Why bother with the flag?
-> 
-> You mean btf_dump should do this always? That's a bit too invasive a
-> change, I don't like it.
-> 
-> > It looks like bugfix to me.
-> 
-> It can be considered a bug fix for bpftool's skeleton generation, but
-> it depends on non-trivial changes in libbpf, which are not bug fix per
-> se, so should probably better go through bpf-next.
+> > Compile-tested only.
+> >
+> > Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+>
+> This one produces a warning on a W=3D1 build:
+>
+> drivers/net/ethernet/amazon/ena/ena_netdev.c:4464:26: warning: =E2=80=98e=
+na_pm_ops=E2=80=99 defined but not used [-Wunused-const-variable=3D]
+>   4464 | static SIMPLE_DEV_PM_OPS(ena_pm_ops, ena_suspend, ena_resume);
+I forgot to bind it inside "static struct pci_driver ena_pci_driver" :
+      .driver.pm =3D &ena_pm_ops,
 
-I'm not following.
-Without tweaking opts and introducing new flag the actual fix is only
-two hunks in patch 1:
+I am sending v2 of this particular patch.
 
-@@ -1045,6 +1050,10 @@ static void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
-
- 	stack_start = d->decl_stack_cnt;
- 	for (;;) {
-+		t = btf__type_by_id(d->btf, id);
-+		if (btf_is_mod(t))
-+			goto skip_mod;
-+
- 		err = btf_dump_push_decl_stack_id(d, id);
- 		if (err < 0) {
- 			/*
-@@ -1056,12 +1065,11 @@ static void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
- 			d->decl_stack_cnt = stack_start;
- 			return;
- 		}
--
-+skip_mod:
- 		/* VOID */
- 		if (id == 0)
- 			break;
-
--		t = btf__type_by_id(d->btf, id);
-
+--Vaibhav Gupta
