@@ -2,110 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDAA0211671
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 01:02:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6706421166F
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 01:02:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726607AbgGAXCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 19:02:49 -0400
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:36619 "EHLO
-        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726213AbgGAXCt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 19:02:49 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id EBDC17F2;
-        Wed,  1 Jul 2020 19:02:47 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 01 Jul 2020 19:02:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kdrag0n.dev; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=fm1; bh=1YAscWT5Mz6u+VNH7WtgDonrRp
-        slfYO5bYDazpLN3U8=; b=BOfrmMmC/i27YrdqadTyWQ29h3hFFoPqQxIPzoaOZT
-        t/z9TYlLOKq5dAkCsYA/mApCKR4iSmhgcWjvs4BXrc9tzlH2n7L0leJ5GhGmc7di
-        PtQYWhvDlbgtj0v+wnY4nz0xD598DzSOcgoSw3uoVJTvggsYKKqm9xS1khq1kr8s
-        H1NYdZpYcUZTdaQRMDlf3el9nhkH5QqLo+ITbdZXBt4l8sGxCZ+XP3AhgQzdqTLi
-        g1CdgSv5WxnPk3d7fLFybRf5x2ocZYZ0fzUFZSoYE7LMEpbWgHsbgLtJ4WNQT3nO
-        xylzQWNsrY0xR7YLMt7x2kktca7zJRfV6AY1d7/DfZCA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=1YAscWT5Mz6u+VNH7
-        WtgDonrRpslfYO5bYDazpLN3U8=; b=kXcmCArL1NphLT0/LvDuxgrtSv/gcpg3q
-        mKrEdfSjf/1ytbnxXxYQEg0bQZ9vLFVpap48pVxSdeTrfoMd2AVmPSfzSNnsjBkZ
-        mKz6LTLujS76kDsYY7XuPz2W6LcrzzL+RE9iy8rVhODiI13JkNtzT9sQK1OuSk8J
-        p1qYC7x9WohwzQQ7MafshTLomlcz4DFHHZ14K8673fkFGMYssoMLPYY3CB2ml4Ci
-        nuTCtTfZ5cGY4cd9ulRvSPJfp1xXtBJTPzfTepCC5o6jm469szt5nhWjGk4PNt3z
-        oeuul1G+Xxxlp8EK8AlYEInp31a9oIlDbCnPZGQSeDdgYGpv63+eQ==
-X-ME-Sender: <xms:Fxb9Xu07M2EUCikYS8vqjlzn8ECw7wmwjTFPqu6008x4hc4ElTMiwQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrtdefgdduiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhnhicunfhi
-    nhcuoegurghnnhihsehkughrrghgtdhnrdguvghvqeenucggtffrrghtthgvrhhnpefhie
-    fhgfelgfdufedvudelvdefvdefgfeiueeufeegteffudekgefhvedtieefteenucfkphep
-    udegledrvdegkedrfeekrdduudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpegurghnnhihsehkughrrghgtdhnrdguvghv
-X-ME-Proxy: <xmx:Fxb9XhGOGXdJ4w96guThX0cdsViLA9offS20zh_0AMQal-0vo_JC3g>
-    <xmx:Fxb9Xm4bkVjxs2R8zH2Agf20eZPz5YEYan1XZycJUbOB0Mm0OiPTGA>
-    <xmx:Fxb9Xv3tuAYFy2yuMg1OwmD3UwCuKVVHIsT95KdH2HwglkFm8Mi4Kw>
-    <xmx:Fxb9XlgPIsIsHBlJNY2SmoS7QxSnv81fEmKh2iTugxqZAYoxqBs5ZA>
-Received: from pinwheel.localdomain (vsrv_sea01.kdrag0n.dev [149.248.38.11])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2DF7A328005A;
-        Wed,  1 Jul 2020 19:02:46 -0400 (EDT)
-From:   Danny Lin <danny@kdrag0n.dev>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Danny Lin <danny@kdrag0n.dev>
-Subject: [PATCH] net: sched: Allow changing default qdisc to FQ-PIE
-Date:   Wed,  1 Jul 2020 16:01:52 -0700
-Message-Id: <20200701230152.445957-1-danny@kdrag0n.dev>
-X-Mailer: git-send-email 2.27.0
+        id S1726413AbgGAXCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 19:02:37 -0400
+Received: from www62.your-server.de ([213.133.104.62]:43310 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726213AbgGAXCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 19:02:36 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jqlkJ-0007yr-JA; Thu, 02 Jul 2020 01:02:27 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jqlkJ-000J0J-B6; Thu, 02 Jul 2020 01:02:27 +0200
+Subject: Re: [PATCH v5 bpf-next 5/9] bpf: cpumap: add the possibility to
+ attach an eBPF program to cpumap
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, brouer@redhat.com,
+        toke@redhat.com, lorenzo.bianconi@redhat.com, dsahern@kernel.org,
+        andrii.nakryiko@gmail.com
+References: <cover.1593521029.git.lorenzo@kernel.org>
+ <a6bb83a429f3b073e97f81ec3935b8ebe89fbd71.1593521030.git.lorenzo@kernel.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <cb2f7b80-7c0f-4f96-6285-87cc615c7484@iogearbox.net>
+Date:   Thu, 2 Jul 2020 01:02:26 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <a6bb83a429f3b073e97f81ec3935b8ebe89fbd71.1593521030.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25860/Wed Jul  1 15:40:06 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to fq_codel and the other qdiscs that can set as default,
-fq_pie is also suitable for general use without explicit configuration,
-which makes it a valid choice for this.
+On 6/30/20 2:49 PM, Lorenzo Bianconi wrote:
+[...]
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 52d71525c2ff..0ac7b11302c2 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -226,6 +226,7 @@ enum bpf_attach_type {
+>   	BPF_CGROUP_INET4_GETSOCKNAME,
+>   	BPF_CGROUP_INET6_GETSOCKNAME,
+>   	BPF_XDP_DEVMAP,
+> +	BPF_XDP_CPUMAP,
+>   	__MAX_BPF_ATTACH_TYPE
+>   };
+>   
+> @@ -3819,6 +3820,10 @@ struct bpf_devmap_val {
+>    */
+>   struct bpf_cpumap_val {
+>   	__u32 qsize;	/* queue size to remote target CPU */
+> +	union {
+> +		int   fd;	/* prog fd on map write */
+> +		__u32 id;	/* prog id on map read */
+> +	} bpf_prog;
+>   };
+>   
+>   enum sk_action {
+> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+> index 7e8eec4f7089..32f627bfc67c 100644
+> --- a/kernel/bpf/cpumap.c
+> +++ b/kernel/bpf/cpumap.c
+> @@ -67,6 +67,7 @@ struct bpf_cpu_map_entry {
+>   	struct rcu_head rcu;
+>   
+>   	struct bpf_cpumap_val value;
+> +	struct bpf_prog *prog;
+>   };
+>   
+>   struct bpf_cpu_map {
+> @@ -81,6 +82,7 @@ static int bq_flush_to_queue(struct xdp_bulk_queue *bq);
+>   
+>   static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+>   {
+> +	u32 value_size = attr->value_size;
+>   	struct bpf_cpu_map *cmap;
+>   	int err = -ENOMEM;
+>   	u64 cost;
+> @@ -91,7 +93,9 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+>   
+>   	/* check sanity of attributes */
+>   	if (attr->max_entries == 0 || attr->key_size != 4 ||
+> -	    attr->value_size != 4 || attr->map_flags & ~BPF_F_NUMA_NODE)
+> +	    (value_size != offsetofend(struct bpf_cpumap_val, qsize) &&
+> +	     value_size != offsetofend(struct bpf_cpumap_val, bpf_prog.fd)) ||
+> +	    attr->map_flags & ~BPF_F_NUMA_NODE)
+>   		return ERR_PTR(-EINVAL);
+>   
+>   	cmap = kzalloc(sizeof(*cmap), GFP_USER);
+> @@ -221,6 +225,64 @@ static void put_cpu_map_entry(struct bpf_cpu_map_entry *rcpu)
+>   	}
+>   }
+>   
+> +static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_map_entry *rcpu,
+> +				    void **frames, int n,
+> +				    struct xdp_cpumap_stats *stats)
+> +{
+> +	struct xdp_rxq_info rxq;
+> +	struct bpf_prog *prog;
+> +	struct xdp_buff xdp;
+> +	int i, nframes = 0;
+> +
+> +	if (!rcpu->prog)
+> +		return n;
+> +
+> +	rcu_read_lock();
+> +
+> +	xdp_set_return_frame_no_direct();
+> +	xdp.rxq = &rxq;
+> +
+> +	prog = READ_ONCE(rcpu->prog);
 
-This is useful in situations where a painless out-of-the-box solution
-for reducing bufferbloat is desired but fq_codel is not necessarily the
-best choice. For example, fq_pie can be better for DASH streaming, but
-there could be more cases where it's the better choice of the two simple
-AQMs available in the kernel.
+What purpose does the READ_ONCE() have here, also given you don't use it in above check?
+Since upon map update you realloc, repopulate and then xchg() the rcpu entry itself, there
+is never the case where you xchg() or WRITE_ONCE() the rcpu->prog, so what does READ_ONCE()
+serve in this context? Imho, it should probably just be deleted and plain rcpu->prog used
+to avoid confusion.
 
-Signed-off-by: Danny Lin <danny@kdrag0n.dev>
----
- net/sched/Kconfig | 4 ++++
- 1 file changed, 4 insertions(+)
+> +	for (i = 0; i < n; i++) {
+> +		struct xdp_frame *xdpf = frames[i];
+> +		u32 act;
+> +		int err;
+> +
+> +		rxq.dev = xdpf->dev_rx;
+> +		rxq.mem = xdpf->mem;
+> +		/* TODO: report queue_index to xdp_rxq_info */
+> +
+> +		xdp_convert_frame_to_buff(xdpf, &xdp);
+> +
+> +		act = bpf_prog_run_xdp(prog, &xdp);
+> +		switch (act) {
+> +		case XDP_PASS:
+> +			err = xdp_update_frame_from_buff(&xdp, xdpf);
+> +			if (err < 0) {
+> +				xdp_return_frame(xdpf);
+> +				stats->drop++;
+> +			} else {
+> +				frames[nframes++] = xdpf;
+> +				stats->pass++;
+> +			}
+> +			break;
+> +		default:
+> +			bpf_warn_invalid_xdp_action(act);
+> +			/* fallthrough */
+> +		case XDP_DROP:
+> +			xdp_return_frame(xdpf);
+> +			stats->drop++;
+> +			break;
+> +		}
+> +	}
+> +
+> +	xdp_clear_return_frame_no_direct();
+> +
+> +	rcu_read_unlock();
+> +
+> +	return nframes;
+> +}
+[...]
+> +bool cpu_map_prog_allowed(struct bpf_map *map)
+> +{
+> +	return map->map_type == BPF_MAP_TYPE_CPUMAP &&
+> +	       map->value_size != offsetofend(struct bpf_cpumap_val, qsize);
+> +}
+> +
+> +static int __cpu_map_load_bpf_program(struct bpf_cpu_map_entry *rcpu, int fd)
+> +{
+> +	struct bpf_prog *prog;
+> +
+> +	prog = bpf_prog_get_type_dev(fd, BPF_PROG_TYPE_XDP, false);
 
-diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-index 84badf00647e..a3b37d88800e 100644
---- a/net/sched/Kconfig
-+++ b/net/sched/Kconfig
-@@ -468,6 +468,9 @@ choice
- 	config DEFAULT_FQ_CODEL
- 		bool "Fair Queue Controlled Delay" if NET_SCH_FQ_CODEL
- 
-+	config DEFAULT_FQ_PIE
-+		bool "Flow Queue Proportional Integral controller Enhanced" if NET_SCH_FQ_PIE
-+
- 	config DEFAULT_SFQ
- 		bool "Stochastic Fair Queue" if NET_SCH_SFQ
- 
-@@ -480,6 +483,7 @@ config DEFAULT_NET_SCH
- 	default "pfifo_fast" if DEFAULT_PFIFO_FAST
- 	default "fq" if DEFAULT_FQ
- 	default "fq_codel" if DEFAULT_FQ_CODEL
-+	default "fq_pie" if DEFAULT_FQ_PIE
- 	default "sfq" if DEFAULT_SFQ
- 	default "pfifo_fast"
- endif
--- 
-2.27.0
+Nit: why the _dev variant; just use bpf_prog_get_type()?
 
+> +	if (IS_ERR(prog))
+> +		return PTR_ERR(prog);
+> +
+> +	if (prog->expected_attach_type != BPF_XDP_CPUMAP) {
+> +		bpf_prog_put(prog);
+> +		return -EINVAL;
+> +	}
+> +
+> +	rcpu->value.bpf_prog.id = prog->aux->id;
+> +	rcpu->prog = prog;
+> +
+> +	return 0;
+> +}
+> +
