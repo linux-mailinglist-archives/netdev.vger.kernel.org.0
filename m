@@ -2,75 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DF712115CD
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 00:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 242322115D7
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 00:23:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727861AbgGAWXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 18:23:13 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39652 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727853AbgGAWXM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 18:23:12 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jql8H-0004G6-Ql; Thu, 02 Jul 2020 00:23:09 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jql8H-000NNc-L5; Thu, 02 Jul 2020 00:23:09 +0200
-Subject: Re: [PATCH bpf-next] tools/bpftool: turn off -Wnested-externs warning
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
-References: <20200701212816.2072340-1-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <73e6534d-dc3c-7ecf-f10f-218707c6bb2a@iogearbox.net>
-Date:   Thu, 2 Jul 2020 00:23:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727997AbgGAWXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 18:23:50 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:60322 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726235AbgGAWXt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 18:23:49 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 582AB60064;
+        Wed,  1 Jul 2020 22:23:49 +0000 (UTC)
+Received: from us4-mdac16-42.ut7.mdlocal (unknown [10.7.64.24])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 561A7800A7;
+        Wed,  1 Jul 2020 22:23:49 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.197])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E7CE028005C;
+        Wed,  1 Jul 2020 22:23:48 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 99B02A40063;
+        Wed,  1 Jul 2020 22:23:48 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 1 Jul 2020
+ 23:23:43 +0100
+Subject: Re: [PATCH net-next 12/15] sfc_ef100: add EF100 to NIC-revision
+ enumeration
+To:     David Miller <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <linux-net-drivers@solarflare.com>, <netdev@vger.kernel.org>
+References: <3fa88508-024e-2d33-0629-bf63b558b515@solarflare.com>
+ <f03e0e84-4c8f-8e1e-a0c4-d8454daf9813@solarflare.com>
+ <20200701121131.56e456c3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200701.124422.999920966272100417.davem@davemloft.net>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <44dabf26-0d49-c577-5991-20d76fb4ccb6@solarflare.com>
+Date:   Wed, 1 Jul 2020 23:23:40 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200701212816.2072340-1-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+In-Reply-To: <20200701.124422.999920966272100417.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25860/Wed Jul  1 15:40:06 2020)
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25514.003
+X-TM-AS-Result: No-2.584500-8.000000-10
+X-TMASE-MatchedRID: nVQUmLJJeybmLzc6AOD8DfHkpkyUphL98t+pfhBMObxjLp8Cm8vwF2ly
+        s1PDhWLo3gYRJJy72hx4zRiY9YYLzhTOvWmMwr3dt0cS/uxH87CytgTwfkaifThdESD0qLXT2aN
+        pX9oFsVJX5t7w06f3W06BPtjxzOZHRBvTx4d8VQW0pXj1GkAfe30tCKdnhB58ZYJ9vPJ1vSDefx
+        4FmMaZTOTCMddcL/gjro1URZJFbJtQfLIM/SfyxM2nrB0Xp0dn1YtrpwZG51KVPbgBAjzlIyBjT
+        Gz+/FDP8/9N8BL5xdVWlOwCnCxJH6GdecHppIrmapzhjzu5IvCFcgJc+QNMwu8bJovJYm8FYupx
+        0XjSQPLDOFVmKqGJ4bPn3tFon6UK
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.584500-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25514.003
+X-MDID: 1593642229-fMYr9sNinkmL
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/1/20 11:28 PM, Andrii Nakryiko wrote:
-> Turn off -Wnested-externs to avoid annoying warnings in BUILD_BUG_ON macro when
-> compiling bpftool:
-> 
-> In file included from /data/users/andriin/linux/tools/include/linux/build_bug.h:5,
->                   from /data/users/andriin/linux/tools/include/linux/kernel.h:8,
->                   from /data/users/andriin/linux/kernel/bpf/disasm.h:10,
->                   from /data/users/andriin/linux/kernel/bpf/disasm.c:8:
-> /data/users/andriin/linux/kernel/bpf/disasm.c: In function ‘__func_get_name’:
-> /data/users/andriin/linux/tools/include/linux/compiler.h:37:38: warning: nested extern declaration of ‘__compiletime_assert_0’ [-Wnested-externs]
->    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->                                        ^~~~~~~~~~~~~~~~~~~~~
-> /data/users/andriin/linux/tools/include/linux/compiler.h:16:15: note: in definition of macro ‘__compiletime_assert’
->     extern void prefix ## suffix(void) __compiletime_error(msg); \
->                 ^~~~~~
-> /data/users/andriin/linux/tools/include/linux/compiler.h:37:2: note: in expansion of macro ‘_compiletime_assert’
->    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->    ^~~~~~~~~~~~~~~~~~~
-> /data/users/andriin/linux/tools/include/linux/build_bug.h:39:37: note: in expansion of macro ‘compiletime_assert’
->   #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->                                       ^~~~~~~~~~~~~~~~~~
-> /data/users/andriin/linux/tools/include/linux/build_bug.h:50:2: note: in expansion of macro ‘BUILD_BUG_ON_MSG’
->    BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->    ^~~~~~~~~~~~~~~~
-> /data/users/andriin/linux/kernel/bpf/disasm.c:20:2: note: in expansion of macro ‘BUILD_BUG_ON’
->    BUILD_BUG_ON(ARRAY_SIZE(func_id_str) != __BPF_FUNC_MAX_ID);
->    ^~~~~~~~~~~~
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On 01/07/2020 20:44, David Miller wrote:
+> Or is this code used as a library by two "drivers"?
+Yes, it is; there will be a second module 'sfc_ef100.ko'which this
+ file will be linked into and which will set efx->type to one with
+ an EF100 revision.
 
-Lgtm, thanks for fixing, applied!
+Although tbh I have been wondering about another approach to
+ ethtool_get_drvinfo: we could have a const char [] in each driver's
+ non-common parts, holding KBUILD_MODNAME, which ethtool_common.c
+ could just reference, rather than looking at efx->type->revision
+ and relying on the rest of the driver to set it up right.
+Since it looks like I'll need to respin this series anyway, I'll try
+ that and see if it works — it seems cleaner to me.
+
+-ed
