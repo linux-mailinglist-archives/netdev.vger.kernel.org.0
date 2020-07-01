@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 729AE211619
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 00:34:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8863B211624
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 00:34:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728029AbgGAWe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 18:34:28 -0400
+        id S1728150AbgGAWev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 18:34:51 -0400
 Received: from mga18.intel.com ([134.134.136.126]:25457 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726667AbgGAWe0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727997AbgGAWe0 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 1 Jul 2020 18:34:26 -0400
-IronPort-SDR: LaSgor6DsQchfjKuQF4UBAwyvU2J+S/ak/YRB7s2cBcTW2tPHi3KwFQoYZFldpgtf9x1fXN0OV
- NXIjE8Mxi5+Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9669"; a="134178600"
+IronPort-SDR: hlCSZohL1Wq7xn80mAk0makbzTltk4RHOQHi5DGScQroYeWvuryXp3E1c5+Pjhp/8VBEhVEHkX
+ /r4LbwbokTwA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9669"; a="134178602"
 X-IronPort-AV: E=Sophos;i="5.75,302,1589266800"; 
-   d="scan'208";a="134178600"
+   d="scan'208";a="134178602"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2020 15:34:22 -0700
-IronPort-SDR: YrMpDwSmN0BIrnLMg9EKFtQ0+x0pxcrGhV9CT8hmvqUIzubnKubzkMiGmuxkNb+5vj/6AZuWAV
- 1pZqbOy9MA8w==
+IronPort-SDR: 1rFacyJiOe2WHeti+wll9PfoSRMOzIS0DXVrZqo2GhNb0sP/MOk3yHs3rDjwf+svggCQz23U0L
+ hKwLvbmWrrng==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,302,1589266800"; 
-   d="scan'208";a="455276106"
+   d="scan'208";a="455276111"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga005.jf.intel.com with ESMTP; 01 Jul 2020 15:34:22 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         jeffrey.t.kirsher@intel.com, anthony.nguyen@intel.com,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [net-next 03/12] iavf: fix error return code in iavf_init_get_resources()
-Date:   Wed,  1 Jul 2020 15:34:03 -0700
-Message-Id: <20200701223412.2675606-4-anthony.l.nguyen@intel.com>
+Subject: [net-next 04/12] i40e: optimize AF_XDP Tx completion path
+Date:   Wed,  1 Jul 2020 15:34:04 -0700
+Message-Id: <20200701223412.2675606-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200701223412.2675606-1-anthony.l.nguyen@intel.com>
 References: <20200701223412.2675606-1-anthony.l.nguyen@intel.com>
@@ -47,35 +48,200 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Fix to return negative error code -ENOMEM from the error handling
-case instead of 0, as done elsewhere in this function.
+Improve the performance of the AF_XDP zero-copy Tx completion
+path. When there are no XDP buffers being sent using XDP_TX or
+XDP_REDIRECT, we do not have go through the SW ring to clean up any
+entries since the AF_XDP path does not use these. In these cases, just
+fast forward the next-to-use counter and skip going through the SW
+ring. The limit on the maximum number of entries to complete is also
+removed since the algorithm is now O(1). To simplify the code path, the
+maximum number of entries to complete for the XDP path is therefore
+also increased from 256 to 512 (the default number of Tx HW
+descriptors). This should be fine since the completion in the XDP path
+is faster than in the SKB path that has 256 as the maximum number.
 
-Fixes: b66c7bc1cd4d ("iavf: Refactor init state machine")
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+This patch provides around 4% throughput improvement for the l2fwd
+application in xdpsock on my machine.
+
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c |  3 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c  | 43 +++++++++++----------
+ drivers/net/ethernet/intel/i40e/i40e_xsk.h  |  3 +-
+ 4 files changed, 27 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 78bd9e3df3ac..b90ad1abbabb 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -1852,8 +1852,10 @@ static int iavf_init_get_resources(struct iavf_adapter *adapter)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index 7e22a4ef582b..aad4326ab0c9 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -2580,7 +2580,7 @@ int i40e_napi_poll(struct napi_struct *napi, int budget)
+ 	 */
+ 	i40e_for_each_ring(ring, q_vector->tx) {
+ 		bool wd = ring->xsk_umem ?
+-			  i40e_clean_xdp_tx_irq(vsi, ring, budget) :
++			  i40e_clean_xdp_tx_irq(vsi, ring) :
+ 			  i40e_clean_tx_irq(vsi, ring, budget);
  
- 	adapter->rss_key = kzalloc(adapter->rss_key_size, GFP_KERNEL);
- 	adapter->rss_lut = kzalloc(adapter->rss_lut_size, GFP_KERNEL);
--	if (!adapter->rss_key || !adapter->rss_lut)
-+	if (!adapter->rss_key || !adapter->rss_lut) {
-+		err = -ENOMEM;
- 		goto err_mem;
-+	}
- 	if (RSS_AQ(adapter))
- 		adapter->aq_required |= IAVF_FLAG_AQ_CONFIGURE_RSS;
- 	else
+ 		if (!wd) {
+@@ -3538,6 +3538,7 @@ static int i40e_xmit_xdp_ring(struct xdp_frame *xdpf,
+ 	 */
+ 	smp_wmb();
+ 
++	xdp_ring->xdp_tx_active++;
+ 	i++;
+ 	if (i == xdp_ring->count)
+ 		i = 0;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.h b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+index 8d3c9d37e42e..4036893d6825 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+@@ -347,6 +347,7 @@ struct i40e_ring {
+ 	/* used in interrupt processing */
+ 	u16 next_to_use;
+ 	u16 next_to_clean;
++	u16 xdp_tx_active;
+ 
+ 	u8 atr_sample_rate;
+ 	u8 atr_count;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index 8e489ed54138..744861dc7acd 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -378,6 +378,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+  **/
+ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+ {
++	unsigned int sent_frames = 0, total_bytes = 0;
+ 	struct i40e_tx_desc *tx_desc = NULL;
+ 	struct i40e_tx_buffer *tx_bi;
+ 	bool work_done = true;
+@@ -408,6 +409,9 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+ 				   | I40E_TX_DESC_CMD_EOP,
+ 				   0, desc.len, 0);
+ 
++		sent_frames++;
++		total_bytes += tx_bi->bytecount;
++
+ 		xdp_ring->next_to_use++;
+ 		if (xdp_ring->next_to_use == xdp_ring->count)
+ 			xdp_ring->next_to_use = 0;
+@@ -420,6 +424,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+ 		i40e_xdp_ring_update_tail(xdp_ring);
+ 
+ 		xsk_umem_consume_tx_done(xdp_ring->xsk_umem);
++		i40e_update_tx_stats(xdp_ring, sent_frames, total_bytes);
+ 	}
+ 
+ 	return !!budget && work_done;
+@@ -434,6 +439,7 @@ static void i40e_clean_xdp_tx_buffer(struct i40e_ring *tx_ring,
+ 				     struct i40e_tx_buffer *tx_bi)
+ {
+ 	xdp_return_frame(tx_bi->xdpf);
++	tx_ring->xdp_tx_active--;
+ 	dma_unmap_single(tx_ring->dev,
+ 			 dma_unmap_addr(tx_bi, dma),
+ 			 dma_unmap_len(tx_bi, len), DMA_TO_DEVICE);
+@@ -447,27 +453,25 @@ static void i40e_clean_xdp_tx_buffer(struct i40e_ring *tx_ring,
+  *
+  * Returns true if cleanup/tranmission is done.
+  **/
+-bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
+-			   struct i40e_ring *tx_ring, int napi_budget)
++bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring)
+ {
+-	unsigned int ntc, total_bytes = 0, budget = vsi->work_limit;
+-	u32 i, completed_frames, frames_ready, xsk_frames = 0;
++	unsigned int ntc, budget = vsi->work_limit;
+ 	struct xdp_umem *umem = tx_ring->xsk_umem;
++	u32 i, completed_frames, xsk_frames = 0;
+ 	u32 head_idx = i40e_get_head(tx_ring);
+-	bool work_done = true, xmit_done;
+ 	struct i40e_tx_buffer *tx_bi;
++	bool xmit_done;
+ 
+ 	if (head_idx < tx_ring->next_to_clean)
+ 		head_idx += tx_ring->count;
+-	frames_ready = head_idx - tx_ring->next_to_clean;
++	completed_frames = head_idx - tx_ring->next_to_clean;
+ 
+-	if (frames_ready == 0) {
++	if (completed_frames == 0)
+ 		goto out_xmit;
+-	} else if (frames_ready > budget) {
+-		completed_frames = budget;
+-		work_done = false;
+-	} else {
+-		completed_frames = frames_ready;
++
++	if (likely(!tx_ring->xdp_tx_active)) {
++		xsk_frames = completed_frames;
++		goto skip;
+ 	}
+ 
+ 	ntc = tx_ring->next_to_clean;
+@@ -475,18 +479,18 @@ bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
+ 	for (i = 0; i < completed_frames; i++) {
+ 		tx_bi = &tx_ring->tx_bi[ntc];
+ 
+-		if (tx_bi->xdpf)
++		if (tx_bi->xdpf) {
+ 			i40e_clean_xdp_tx_buffer(tx_ring, tx_bi);
+-		else
++			tx_bi->xdpf = NULL;
++		} else {
+ 			xsk_frames++;
+-
+-		tx_bi->xdpf = NULL;
+-		total_bytes += tx_bi->bytecount;
++		}
+ 
+ 		if (++ntc >= tx_ring->count)
+ 			ntc = 0;
+ 	}
+ 
++skip:
+ 	tx_ring->next_to_clean += completed_frames;
+ 	if (unlikely(tx_ring->next_to_clean >= tx_ring->count))
+ 		tx_ring->next_to_clean -= tx_ring->count;
+@@ -494,8 +498,7 @@ bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
+ 	if (xsk_frames)
+ 		xsk_umem_complete_tx(umem, xsk_frames);
+ 
+-	i40e_arm_wb(tx_ring, vsi, budget);
+-	i40e_update_tx_stats(tx_ring, completed_frames, total_bytes);
++	i40e_arm_wb(tx_ring, vsi, completed_frames);
+ 
+ out_xmit:
+ 	if (xsk_umem_uses_need_wakeup(tx_ring->xsk_umem))
+@@ -503,7 +506,7 @@ bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
+ 
+ 	xmit_done = i40e_xmit_zc(tx_ring, budget);
+ 
+-	return work_done && xmit_done;
++	return xmit_done;
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.h b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+index ea919a7d60ec..c524c142127f 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+@@ -15,8 +15,7 @@ int i40e_xsk_umem_setup(struct i40e_vsi *vsi, struct xdp_umem *umem,
+ bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 cleaned_count);
+ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget);
+ 
+-bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
+-			   struct i40e_ring *tx_ring, int napi_budget);
++bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi, struct i40e_ring *tx_ring);
+ int i40e_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags);
+ int i40e_alloc_rx_bi_zc(struct i40e_ring *rx_ring);
+ void i40e_clear_rx_bi_zc(struct i40e_ring *rx_ring);
 -- 
 2.26.2
 
