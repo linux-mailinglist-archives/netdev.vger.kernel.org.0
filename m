@@ -2,120 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F01C5210276
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 05:22:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEEF5210290
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 05:37:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726053AbgGADWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 23:22:39 -0400
-Received: from mail-eopbgr20062.outbound.protection.outlook.com ([40.107.2.62]:62270
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725862AbgGADWj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 23:22:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k1DKFMaImQg93dRSHK4eJoKPyV6rpNzTHdHKoo64tSsaz60sXpctCvN9fNlAe+TxQl31oTX1C/kAnaN3UITZ24mTA6zWOqGnTiuX5YVWRycLUtfJhj7kh5pFaNZOnGGxU+Utdriz/fGYx0JOhYgxd08YSNkVc1SR2HmdaJwNIw4jGxA+bS3CJzCiwJiTv1wxG3WtqIu94sT9Fm96Wbq4dQA/8M/F1J8XdMd/TB1e0Hb7ttsRX8oFanG4GnGUnutI089cCMm4V04c3A3MwCjaE06Q5t6hKcPGMCVibyxLC3KS6ZvD7NKxeX1D8ewFZBH8KOHUwV72v9ehtx+IFMJEBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iZVYJ7wydWnY8f9v9DlnsypJXbZCOEM3qSd8CD5gjbo=;
- b=J+i+hjsqZGOyFxwwhGyZZqAgnKbwi5eRqRgV8b+VmPThhE3ESKW97L5MPSsTMmQtWAaLmqiS6Z7+E3zogGCz+1BkdEEaaAOR9Ga7i/2UXOhTHdEzOKYqoPuR0E7vhAOdwctSc37W8AFHKiYhrSusPe3oaGT+YXfKA/4tY71z+kIcPDlr3rt52DIp1qFj/hgxfLNXz8dj+Oa03FRiE3AdP/As/jbWEyd1o5VaENbf8ufi4tJ1f0vUACb2KHzZz229D1ADje096m8zCfLIVmWzxmxFjujJo8bmPeW7uMs30vwSd0QpKBu3CtegaC71A2HxfuPXedYTh1VCqp14n//KMg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iZVYJ7wydWnY8f9v9DlnsypJXbZCOEM3qSd8CD5gjbo=;
- b=doTgNtc9aHYdvYPtJzWMJ7t4hFpgbbmGzAcOzoH/c0CT95lXdni0ruAIrFjakOl99YZYTPcag2b3AOs0A7J+tpxIHwJfoUGSzOWOPBhjB3f7DnJHV4b5xmvP3p3a3XHzgu4rhI2IwBOJuUFs9k4ebHLBTAuG4VLNI/uqAP25grI=
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- (2603:10a6:209:12::18) by AM5PR0402MB2932.eurprd04.prod.outlook.com
- (2603:10a6:203:9c::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Wed, 1 Jul
- 2020 03:22:35 +0000
-Received: from AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1]) by AM6PR0402MB3607.eurprd04.prod.outlook.com
- ([fe80::35f8:f020:9b47:9aa1%7]) with mapi id 15.20.3131.030; Wed, 1 Jul 2020
- 03:22:35 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     David Miller <davem@davemloft.net>,
-        "tobias@waldekranz.com" <tobias@waldekranz.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH net] net: ethernet: fec: prevent tx starvation
- under high rx load
-Thread-Topic: [EXT] Re: [PATCH net] net: ethernet: fec: prevent tx starvation
- under high rx load
-Thread-Index: AQHWTlDvbOQDqevPPEa7enA8dpldvqjwtekAgADe+gCAAHuGAA==
-Date:   Wed, 1 Jul 2020 03:22:35 +0000
-Message-ID: <AM6PR0402MB3607AC71BEDBE8784F8970D0FF6C0@AM6PR0402MB3607.eurprd04.prod.outlook.com>
-References: <20200629.130731.932623918439489841.davem@davemloft.net>
-        <C3U8BLV1WZ9R.1SDRQTA6XXRPB@wkz-x280>
- <20200630.125802.533305649716945637.davem@davemloft.net>
-In-Reply-To: <20200630.125802.533305649716945637.davem@davemloft.net>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.67]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 943f2684-3782-4461-f0d3-08d81d6dfff0
-x-ms-traffictypediagnostic: AM5PR0402MB2932:
-x-microsoft-antispam-prvs: <AM5PR0402MB2932C2FB0A0878D9B322AD4FFF6C0@AM5PR0402MB2932.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 04519BA941
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VpBGkIae+Wm+cfVqtaGS4t9+OJPkY8wZ3nw9/77HJcJRLFaEfuBFO4J6rTbWl8te4VR3urmO670mqMV3VLQela2gAVngmqOeTy25J9yBbGH4UYhodhITsP9DWojoTcjXAN/CVVrqqKjXui1Mjih53ooDcwezww6B6AY0aoNP0bogGtxyiZ59rukXvrIrNj+aWAs/Q0wFJWHjKqB7HMM9nJgEX0zHGCy9lU0omIZ/GSgZbY2AnT0j4HzFDzKI+SJvksB7y7Nt2uoVgXvxOE0fl9dinEIx3x6x3fTu/1+TIrGacyK30inEV7nHHeB+mcpp
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3607.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(136003)(346002)(396003)(376002)(33656002)(4326008)(52536014)(83380400001)(478600001)(9686003)(2906002)(76116006)(66476007)(66556008)(66946007)(66446008)(64756008)(71200400001)(86362001)(7696005)(5660300002)(55016002)(186003)(26005)(8676002)(8936002)(6506007)(316002)(110136005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 4uwK2x5i8dq+qaw7jbVbx2OTug05ynITD3SzBUYDHE8p3kJGZlgDl6m4gUkTv+WeHm5mFt7rZn832yFyV+V+jwxFZZPgwa5yWdVshMvebO0UBzVR9u4rBJq8SIqXWvzZErAzdSRKpaYv4xhUdqQxFXw91aO22RR9/LpfV9+Xon0VuRqJAhyE0PjpDOHDjwuML1muZPZMeUD5znDLuN3LWJkmAaSYtxl9r6yyx6ImPWbf2s85uq6scBTxptAjyG+dvB8kL5sYxvnaLuNTfTQ1613oreHwjykb+x6EOkIixvSpMXPFXBuAnic5MOsD/8aNpV8tmCVP93K3HYdFvUY0fy65Mw0Z3Y5lUZHpkcTnWAB6V1FH0j2t9I2ramk4m8S9f+yDM+IhwoR1VLXbFVU/MeySduE+jJpVDH2AjPcEElLTYqjcydyspCKBy3x4OAkancZBAq6knluVvff73r8o2BksiK4iGaW/Boo96D3Oi5LfdBwcqsbqpjhPswXg28z1
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726594AbgGADhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 23:37:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33948 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725886AbgGADhE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 23:37:04 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18385C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 20:37:04 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id s1so11229886ybo.7
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 20:37:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s3Jq5zLzpbl6Zv3uYHByFe0ZmS4s3FezoDHzT/nIYcQ=;
+        b=MKVnDFITxci7XZwoiI2Qwlr/n6NcWOarH7ex0rhrRXAfYSXZBOstF2ROLvMxeiCDkc
+         UvKCz9Vdfr3s6ws1b6KY39kujwl9Y+TbQTAKz56nj1bk/C9IF2K6EBy38VjZXAulUqWK
+         AXJ4iNasKw/tA0z0uJKYC562PRFKvOkQYrCA1z5o3WqyeBxbM9+1OvbWg8a6pnJX07jK
+         wYkVEeKcmJ5kTb8zi2yOJlT3dY3ns0Df9MbjnkETH48l7DsBe6CveAhPuY/etE2WmxRB
+         CvSJ+ybMGJjV86LvWAFyYC/wRUypUW7ajimzh0ksVFxcPavrKl8HATU2xMMdOdfj2nPA
+         hpEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s3Jq5zLzpbl6Zv3uYHByFe0ZmS4s3FezoDHzT/nIYcQ=;
+        b=cXyIzegNid+gGjzHFDRRVCKvi8gRm5lwD6KEXMf2ywqh/9n3YWQtymAxOOzZ/LCSZ7
+         nKZUuyK3Op96wlZjMtLyFuGYs5IPi/6hKqn7JMQXr6c9+44pY0ucIy6Sy7jb+kXI7Yas
+         ZOT0KI9bqilbTztRhc0+r/aIOxYVmGDtfMSd9+W6X8GGjxo+xCfpfNESQvoDtZKR+61Y
+         Waiwu6UUjaTv99ZSJC0mmJKdvXvFqhIn/U5RRXkhhOV/zKCKaLyo1txyw2zx0tkkFMrh
+         EWLwORGi9ObA5GEeOM1Z5WILUdhAXzcIcvmxRjOPpNsv+2OWv2BR6KdFKZ9g+74KpNRt
+         7ceQ==
+X-Gm-Message-State: AOAM5326Ppnd+idXjGKJI779ZPXY/KezkdmCAAvwpdLf7iq6Ut94uoEg
+        OTLD9y7xUkNO2w3/Cin4uV/vWDCtLYFxxM9gG8L7AQ==
+X-Google-Smtp-Source: ABdhPJzptl+ZwuKHWxBxEUKXN0tTbaalbFddIAtD50sheOjj7wa+/JmdyFI74aYBGH2qjkuBhjY6U5OjoVwYPi/KA6U=
+X-Received: by 2002:a25:b7cc:: with SMTP id u12mr23794552ybj.173.1593574623004;
+ Tue, 30 Jun 2020 20:37:03 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3607.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 943f2684-3782-4461-f0d3-08d81d6dfff0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2020 03:22:35.4593
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: A9rjgEfrieICDvXWzHoWEqQ5t20AMwQ9wRwBhUHOcVilBrdvdl45zwmK+d//XjGtWbrewR0xoTkBq4qsSJxAQQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0402MB2932
+References: <CANn89iLPqtJG0iESCHF+RcOjo95ukan1oSzjkPjoSJgKpO2wSQ@mail.gmail.com>
+ <20200701020211.GA6875@gondor.apana.org.au> <CANn89iKP-evuLxeLo6p_98T+FuJ-J5YaMTRG230nqj3R=43tVA@mail.gmail.com>
+ <20200701022241.GA7167@gondor.apana.org.au> <CANn89iLKZQAtpejcLHmOu3dsrGf5eyFfHc8JqoMNYisRPWQ8kQ@mail.gmail.com>
+ <20200701025843.GA7254@gondor.apana.org.au>
+In-Reply-To: <20200701025843.GA7254@gondor.apana.org.au>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 30 Jun 2020 20:36:51 -0700
+Message-ID: <CANn89iKnf6=RFd-XRjPv=qaU8P-LGCBcw6JU5Ywwb16gU2iQqQ@mail.gmail.com>
+Subject: Re: [regression] TCP_MD5SIG on established sockets
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        David Miller <davem@davemloft.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Jonathan Rajotte-Julien <joraj@efficios.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller <davem@davemloft.net> Sent: Wednesday, July 1, 2020 3:58=
- AM
-> From: "Tobias Waldekranz" <tobias@waldekranz.com>
-> Date: Tue, 30 Jun 2020 08:39:58 +0200
->=20
-> > On Mon Jun 29, 2020 at 3:07 PM CEST, David Miller wrote:
-> >> I don't see how this can happen since you process the TX queue
-> >> unconditionally every NAPI pass, regardless of what bits you see set
-> >> in the IEVENT register.
-> >>
-> >> Or don't you? Oh, I see, you don't:
-> >>
-> >> for_each_set_bit(queue_id, &fep->work_tx, FEC_ENET_MAX_TX_QS) {
-> >>
-> >> That's the problem. Just unconditionally process the TX work
-> >> regardless of what is in IEVENT. That whole ->tx_work member and the
-> >> code that uses it can just be deleted. fec_enet_collect_events() can
-> >> just return a boolean saying whether there is any RX or TX work at all=
-.
+On Tue, Jun 30, 2020 at 7:59 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>
+> On Tue, Jun 30, 2020 at 07:30:43PM -0700, Eric Dumazet wrote:
 > >
-> > Maybe Andy could chime in here, but I think the ->tx_work construction
-> > is load bearing. It seems to me like that is the only thing stopping
-> > us from trying to process non-existing queues on older versions of the
-> > silicon which only has a single queue.
->=20
-> Then iterate over "actually existing" queues.
-Yes, the iterate over real queues, but only bit2 has the chance to be set, =
-so it
-Is compatible with single queue.
+> > I made this clear in the changelog, do we want comments all over the places ?
+> > Do not get me wrong, we had this bug for years and suddenly this is a
+> > big deal...
+>
+> I thought you were adding a new pair of smp_rmb/smp_wmb.  If they
+> already exist in the code then I agree it's not a big deal.  But
+> adding a new pair of bogus smp_Xmb's is bad for maintenance.
+>
 
+If I knew so many people were excited about TCP / MD5, I would have
+posted all my patches on lkml ;)
+
+Without the smp_wmb() we would still need something to prevent KMSAN
+from detecting that we read uninitialized bytes,
+if key->keylen is increased.  (initial content of key->key[] is garbage)
+
+Something like this :
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index f111660453241692a17c881dd6dc2910a1236263..c3af8180c7049d5c4987bf5c67e4aff2ed6967c9
+100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4033,11 +4033,9 @@ EXPORT_SYMBOL(tcp_md5_hash_skb_data);
+
+ int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct
+tcp_md5sig_key *key)
+ {
+-       u8 keylen = key->keylen;
++       u8 keylen = READ_ONCE(key->keylen); /* paired with
+WRITE_ONCE() in tcp_md5_do_add */
+        struct scatterlist sg;
+
+-       smp_rmb(); /* paired with smp_wmb() in tcp_md5_do_add() */
+-
+        sg_init_one(&sg, key->key, keylen);
+        ahash_request_set_crypt(hp->md5_req, &sg, NULL, keylen);
+        return crypto_ahash_update(hp->md5_req);
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 99916fcc15ca0be12c2c133ff40516f79e6fdf7f..0d08e0134335a21d23702e6a5c24a0f2b3c61c6f
+100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1114,9 +1114,13 @@ int tcp_md5_do_add(struct sock *sk, const union
+tcp_md5_addr *addr,
+                /* Pre-existing entry - just update that one. */
+                memcpy(key->key, newkey, newkeylen);
+
+-               smp_wmb(); /* pairs with smp_rmb() in tcp_md5_hash_key() */
++               /* Pairs with READ_ONCE() in tcp_md5_hash_key().
++                * Also note that a reader could catch new key->keylen value
++                * but old key->key[], this is the reason we use __GFP_ZERO
++                * at sock_kmalloc() time below these lines.
++                */
++               WRITE_ONCE(key->keylen, newkeylen);
+
+-               key->keylen = newkeylen;
+                return 0;
+        }
+
+@@ -1132,7 +1136,7 @@ int tcp_md5_do_add(struct sock *sk, const union
+tcp_md5_addr *addr,
+                rcu_assign_pointer(tp->md5sig_info, md5sig);
+        }
+
+-       key = sock_kmalloc(sk, sizeof(*key), gfp);
++       key = sock_kmalloc(sk, sizeof(*key), gfp | __GFP_ZERO);
+        if (!key)
+                return -ENOMEM;
+        if (!tcp_alloc_md5sig_pool()) {
