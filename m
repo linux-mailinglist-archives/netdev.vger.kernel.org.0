@@ -2,108 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A24D9210A39
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 13:22:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18567210A47
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 13:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730274AbgGALWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 07:22:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32924 "EHLO mail.kernel.org"
+        id S1730234AbgGAL2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 07:28:02 -0400
+Received: from mail.intenta.de ([178.249.25.132]:41692 "EHLO mail.intenta.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730234AbgGALWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 07:22:09 -0400
-Received: from ziggy.cz (unknown [213.195.114.138])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4A67C20702;
-        Wed,  1 Jul 2020 11:22:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593602528;
-        bh=S1NAV77dXwv+fjwoqyD9mo/JlNrWtWQH78lHIrJHCRA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=oSO9TszIlrcVn+okb5AAX78/ETthqH1FmT2U+ld2nI39STpo0xmVnUM1NsXTTlPVo
-         k6S182Y6hNn284JH0svEkZikLvr5bOP8qVu1K6raiVyLBPr+OKaK9/HgARfWT2Qn8W
-         zMol/oRSi/kXaGFAwPZW24eO3GE9kWGV/OUt/7cI=
-From:   matthias.bgg@kernel.org
-To:     arend.vanspriel@broadcom.com, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     brcm80211-dev-list.pdl@broadcom.com, mbrugger@suse.com,
-        netdev@vger.kernel.org, chi-hsien.lin@cypress.com,
-        linux-wireless@vger.kernel.org, hante.meuleman@broadcom.com,
-        linux-kernel@vger.kernel.org, hdegoede@redhat.com,
-        wright.feng@cypress.com, matthias.bgg@kernel.org,
-        brcm80211-dev-list@cypress.com, franky.lin@broadcom.com
-Subject: [PATCH v3] brcmfmac: Transform compatible string for FW loading
-Date:   Wed,  1 Jul 2020 13:22:00 +0200
-Message-Id: <20200701112201.6449-1-matthias.bgg@kernel.org>
-X-Mailer: git-send-email 2.27.0
+        id S1730159AbgGAL2B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Jul 2020 07:28:01 -0400
+X-Greylist: delayed 337 seconds by postgrey-1.27 at vger.kernel.org; Wed, 01 Jul 2020 07:28:01 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
+        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Subject:CC:To:From:Date; bh=a0P1npTuZMmjzXtpmaWShlW8svumYAOukhwxaeZSHAk=;
+        b=BIuFLY9Q60knadZHy2EnID1H6f+EpLqFQ0jPPqljbHEZdROa8s+DfnhpdaH3KCiykZTn52pyNoLnoWYHc0N92MDXlwVR+JPxYvb6MY8E7KYy6ullCGtjnXljTXPY1xwqTmNCxv5lf4wft5eTle2XMF07GNCmOPKr8e6IRj8xO31MZFggOPAGqQeGSZqi6B1ESCS+mMzuEbQCARrdQOEjQ/5t7p9pwvYYvIIAJtqjZBs/sgfLBvgy+zF6K6TCi5ccGyeEzJgdMtVerzSCq5/Sf2Gnfc4KhMCFs8Z7E8Ny9EyRYjoQ9dzP1EqZDi4jN97fZ4ChYHEV40Gk49PuafF0rQ==;
+Date:   Wed, 1 Jul 2020 13:22:20 +0200
+From:   Helmut Grohne <helmut.grohne@intenta.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH] net: dsa: microchip: enable ksz9893 via i2c in the ksz9477
+ driver
+Message-ID: <20200701112216.GA8098@laureti-dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
+ (10.10.16.48)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthias Brugger <mbrugger@suse.com>
+The KSZ9893 3-Port Gigabit Ethernet Switch can be controlled via SPI,
+I²C or MDIO (very limited and not supported by this driver). While there
+is already a compatible entry for the SPI bus, it was missing for I²C.
 
-The driver relies on the compatible string from DT to determine which
-FW configuration file it should load. The DTS spec allows for '/' as
-part of the compatible string. We change this to '-' so that we will
-still be able to load the config file, even when the compatible has a
-'/'. This fixes explicitly the firmware loading for
-"solidrun,cubox-i/q".
-
-Signed-off-by: Matthias Brugger <mbrugger@suse.com>
-
+Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
 ---
+ drivers/net/dsa/microchip/ksz9477_i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes in v3:
-- use len variable to store length of string (Hans de Goede)
-- fix for loop to stop on first NULL-byte (Hans de Goede)
-
-Changes in v2:
-- use strscpy instead of strncpy (Hans de Goede)
-- use strlen(tmp) + 1 for allocation (Hans de Goede, kernel test robot)
-
- .../wireless/broadcom/brcm80211/brcmfmac/of.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-index b886b56a5e5a..a7554265f95f 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-@@ -17,7 +17,6 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
- {
- 	struct brcmfmac_sdio_pd *sdio = &settings->bus.sdio;
- 	struct device_node *root, *np = dev->of_node;
--	struct property *prop;
- 	int irq;
- 	u32 irqf;
- 	u32 val;
-@@ -25,8 +24,22 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
- 	/* Set board-type to the first string of the machine compatible prop */
- 	root = of_find_node_by_path("/");
- 	if (root) {
--		prop = of_find_property(root, "compatible", NULL);
--		settings->board_type = of_prop_next_string(prop, NULL);
-+		int i, len;
-+		char *board_type;
-+		const char *tmp;
-+
-+		of_property_read_string_index(root, "compatible", 0, &tmp);
-+
-+		/* get rid of '/' in the compatible string to be able to find the FW */
-+		len = strlen(tmp) + 1;
-+		board_type = devm_kzalloc(dev, len, GFP_KERNEL);
-+		strscpy(board_type, tmp, len);
-+		for (i = 0; i < board_type[i]; i++) {
-+			if (board_type[i] == '/')
-+				board_type[i] = '-';
-+		}
-+		settings->board_type = board_type;
-+
- 		of_node_put(root);
- 	}
- 
+diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
+index fdffd9e0c518..2805839e5c55 100644
+--- a/drivers/net/dsa/microchip/ksz9477_i2c.c
++++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
+@@ -79,6 +79,7 @@ MODULE_DEVICE_TABLE(i2c, ksz9477_i2c_id);
+ static const struct of_device_id ksz9477_dt_ids[] = {
+ 	{ .compatible = "microchip,ksz9477" },
+ 	{ .compatible = "microchip,ksz9897" },
++	{ .compatible = "microchip,ksz9893" },
+ 	{ .compatible = "microchip,ksz9567" },
+ 	{},
+ };
 -- 
-2.27.0
+2.20.1
 
