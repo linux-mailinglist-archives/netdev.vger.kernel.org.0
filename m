@@ -2,95 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5145E210BCE
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 15:09:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BF29210BF2
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 15:17:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730878AbgGANJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 09:09:19 -0400
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:32587 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729402AbgGANJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 09:09:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1593608956; x=1625144956;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=s42Du4fy5NBs3k4rUKT5UAKJ01NC2TLYOSaV8P+ljQQ=;
-  b=1oqn7WJuxl1pv2fGShyUhWEtKNyqT/ueAfEZeLuMl4OzZc+L1rhEHCDo
-   gLZGfiPTL6CJKsUUNmKLO4mzZdTH/9Mc5odDTowxsnmx7Pgs+vz1PuHXe
-   JeeWfkkLQT1VYtBlqOtPqXeglcjQhTBIIc8gBNavqiHl6AKARgF+vyZpD
-   5I9mr8bQTghHboNuTlMIHwvZ4gM/YckHeL3cjUMiV0tKIjyO1za8tTaS2
-   fa3jmYhjHuw1XmyoSgcefkKuxjQQPDNSDY5vZ8Jm15XXqjFJ6xe3935wP
-   JBhtJSNR7aOfl8sRvGwoXB0G/COCB1rx1b8+Dia18EjyWSGU/StCxMzOb
-   Q==;
-IronPort-SDR: TUbdAMFTwHMlnO7qwylfeSNJJtIZwk6Ja71BbbAuQxP86iVDFZj+77afZHCPQJEB+MWop7O0kg
- t5GzuI3Gdj6Qaz7WRpvQ20hFlSgjNbhgshgBSI9YigCI/WelxXMph1itrlJl3/HK18jf0lLIKU
- k/W9jmyBHAZu00zw+DZdTG2qY/vGDI0/31Mk0yn/VERMVyJQ7IrMddSZzm4f0GnkZGb/Pjyzgf
- bEE1a2Ad2LzzCwo5KOcD8Gl+rl4QrftX2cDmtzf48v8JalE8L8HwBHnrt0KgqX1Ey6avzt83mG
- fiM=
-X-IronPort-AV: E=Sophos;i="5.75,300,1589266800"; 
-   d="scan'208";a="81529538"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2020 06:09:11 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 1 Jul 2020 06:09:10 -0700
-Received: from m18063-ThinkPad-T460p.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Wed, 1 Jul 2020 06:09:07 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH net-next 4/4] net: macb: remove is_udp variable
-Date:   Wed, 1 Jul 2020 16:08:51 +0300
-Message-ID: <1593608931-3718-5-git-send-email-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1593608931-3718-1-git-send-email-claudiu.beznea@microchip.com>
-References: <1593608931-3718-1-git-send-email-claudiu.beznea@microchip.com>
+        id S1730876AbgGANQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 09:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729326AbgGANQa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 09:16:30 -0400
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68539C03E97A;
+        Wed,  1 Jul 2020 06:16:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=TzymcoRAO2UgBPJ0ZOVe0YcF3uo0oF1NDuUFLaqpiJ4=; b=m07W1h5vKC5SMjGqugevcSkZLL
+        cghSRDU80En08ElqHsdloYVWrm+t5xNIDXw3uEFkYvRKBmgeSXmJBSHmntBOCX5QknNMtoBDAr7ei
+        4eJ/47+c7xhbLklKkziuiyz+0amNouPoO6VrsNrv2Yuz5vYw6QKPYgtpt1Mip+w1Lwxn/L9wZ32hS
+        N9Z16wQ/bg9GZxvTrdj47Xpuq6nmCOJN0Mp9aBJLE4iisjeXId4XVGHmyq3FNI1vH90P0pvWzyFXv
+        2M7T/9D65rSS1Rt1mp62jWY2VZsb1xAMSm3fBPFq9ogG91g5kh4OXBxsTRvjZcKVVHlRTFP3xsDxH
+        llEXk/xQ==;
+Received: from [2601:1c0:6280:3f0::19c2]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jqcbD-0005v1-IE; Wed, 01 Jul 2020 13:16:27 +0000
+Subject: Re: [net-next PATCH v2 2/3] Documentation: ACPI: DSD: Document MDIO
+ PHY
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>
+Cc:     netdev@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux.cj@gmail.com, Len Brown <lenb@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        linux-kernel@vger.kernel.org
+References: <20200701061233.31120-1-calvin.johnson@oss.nxp.com>
+ <20200701061233.31120-3-calvin.johnson@oss.nxp.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <7f7a4876-0c80-dc54-5653-b268c685caae@infradead.org>
+Date:   Wed, 1 Jul 2020 06:16:19 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200701061233.31120-3-calvin.johnson@oss.nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove is_udp variable that is used in only one place and use
-ip_hdr(skb)->protocol == IPPROTO_UDP check instead.
+On 6/30/20 11:12 PM, Calvin Johnson wrote:
+> Introduce ACPI mechanism to get PHYs registered on a MDIO bus and
+> provide them to be connected to MAC.
+> 
+> An ACPI node property "mdio-handle" is introduced to reference the
+> MDIO bus on which PHYs are registered with autoprobing method used
+> by mdiobus_register().
+> 
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> ---
+> 
+> Changes in v2: None
+> 
+>  Documentation/firmware-guide/acpi/dsd/phy.rst | 40 +++++++++++++++++++
+>  1 file changed, 40 insertions(+)
+>  create mode 100644 Documentation/firmware-guide/acpi/dsd/phy.rst
+> 
+> diff --git a/Documentation/firmware-guide/acpi/dsd/phy.rst b/Documentation/firmware-guide/acpi/dsd/phy.rst
+> new file mode 100644
+> index 000000000000..78dcb0cacc7e
+> --- /dev/null
+> +++ b/Documentation/firmware-guide/acpi/dsd/phy.rst
+> @@ -0,0 +1,40 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +
+> +=========================
+> +MDIO bus and PHYs in ACPI
+> +=========================
+> +
+> +The PHYs on a mdiobus are probed and registered using mdiobus_register().
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+            on an mdiobus (?)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 3603ab707e0f..4e7317747f54 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1933,7 +1933,7 @@ static netdev_tx_t macb_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	unsigned long flags;
- 	unsigned int desc_cnt, nr_frags, frag_size, f;
- 	unsigned int hdrlen;
--	bool is_lso, is_udp = 0;
-+	bool is_lso;
- 	netdev_tx_t ret = NETDEV_TX_OK;
- 
- 	if (macb_clear_csum(skb)) {
-@@ -1949,10 +1949,8 @@ static netdev_tx_t macb_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	is_lso = (skb_shinfo(skb)->gso_size != 0);
- 
- 	if (is_lso) {
--		is_udp = !!(ip_hdr(skb)->protocol == IPPROTO_UDP);
--
- 		/* length of headers */
--		if (is_udp)
-+		if (ip_hdr(skb)->protocol == IPPROTO_UDP)
- 			/* only queue eth + ip headers separately for UDP */
- 			hdrlen = skb_transport_offset(skb);
- 		else
+> +Later, for connecting these PHYs to MAC, the PHYs registered on the
+> +mdiobus have to be referenced.
+> +
+> +For each MAC node, a property "mdio-handle" is used to reference the
+> +MDIO bus on which the PHYs are registered. On getting hold of the MDIO
+> +bus, use find_phy_device() to get the PHY connected to the MAC.
+> +
+> +
+> +An example of this is show below::
+
+                         shown
+
+> +
+> +	Scope(\_SB.MCE0.PR17) // 1G
+
+
 -- 
-2.7.4
+~Randy
 
