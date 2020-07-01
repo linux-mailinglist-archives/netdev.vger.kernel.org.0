@@ -2,244 +2,452 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43AE621088D
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 11:46:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46A8B21088E
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 11:47:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729727AbgGAJqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 05:46:44 -0400
-Received: from foss.arm.com ([217.140.110.172]:51402 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729236AbgGAJqo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 05:46:44 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2CA5231B;
-        Wed,  1 Jul 2020 02:46:43 -0700 (PDT)
-Received: from [10.57.21.32] (unknown [10.57.21.32])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1E66D3F68F;
-        Wed,  1 Jul 2020 02:46:41 -0700 (PDT)
-Subject: Re: the XSK buffer pool needs be to reverted
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <20200626074725.GA21790@lst.de>
- <20200626205412.xfe4lywdbmh3kmri@bsd-mbp> <20200627070236.GA11854@lst.de>
- <e43ab7b9-22f5-75c3-c9e6-f1eb18d57148@arm.com>
- <20200630190832.vvirrpkmyev2inlh@bsd-mbp.dhcp.thefacebook.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <d47d08a1-fb9f-d02a-a4a2-fe5fbe0d3b52@arm.com>
-Date:   Wed, 1 Jul 2020 10:46:40 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1729731AbgGAJrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 05:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729339AbgGAJrl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 05:47:41 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2569C061755
+        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 02:47:40 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id d15so19038605edm.10
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 02:47:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xN3N0yJoHpxLk1q5urtQBUh3D13rBZt5Bc2k5+XyyJc=;
+        b=leD3XwjCJo8o7D8TOyP5zPLdM3gXbDq8ZYsAE4pEkug9sC4cWDgsQ7hGYpk/TeG8Ur
+         sz74+PSluNHyLrj2R4XrQq92vnrkOo+H6jMMpPtq0SYdcr2dax+CfSTd+zykSRVIkWoX
+         HgKZodKBJFpErVSecUCVQ8+tYSb1CtXAw+u/XYwV709/OYRboxnsE7Y4dxtgtA3HqWuF
+         mXExPz+/smmcnaDLFqprIodbrBHf3RFIIinOEKLD1vCRctrVoyY6IXqdcZXwSGoYqeh7
+         P4Is64veaC5D2rpZORJR35ZeEKPksxWcrmsZETW5c1Zlu+gSVLP847WSbKr1EUjOEo2g
+         575g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xN3N0yJoHpxLk1q5urtQBUh3D13rBZt5Bc2k5+XyyJc=;
+        b=d21AVD0Vqg9Yv1wCWJW2/UMKqc+vHO75N2/s55KduQkheIrfcR9pIxgFf986/0yDPH
+         dXC+MB5xKhYxNXl1Zq58z03nWVM1OI830bcA3aD+LkXTiHYCzIyZmqqp9QqBLATl5WWN
+         n+VWqrBHAUqu6gBj+DWIhQU7039YN/IsjjKUJmRJGJLYlt1go8zvMHnmkOiCFXX8qM3Q
+         xNEDLjb8Tpsthu0aXeKgK7D8e93bS2EhctJXD7ffEiH8UdhtaPIGZrsHi7i42snAgA+E
+         RVR9eCzqUJOQLk9pxrGu0qru7JpRd64wcW6ZLQa5PQKAtxJ2TywWGgJO56Ac2Efgr0D8
+         UX4w==
+X-Gm-Message-State: AOAM531Y0TP2iHr1xbk19u16Q3BGVgaseqlCsrizMYRo9TcTJ8On5hzr
+        SQYaYYj+XfIw7/ClUzls3G2dEQ==
+X-Google-Smtp-Source: ABdhPJwC034GCQOb6vaOym+EWN4Y+Wf1UpqzF3wYnNWdKKA3jpnh4aDsuMBdEJXf+stRVinvMah5rQ==
+X-Received: by 2002:aa7:c305:: with SMTP id l5mr22487607edq.163.1593596859526;
+        Wed, 01 Jul 2020 02:47:39 -0700 (PDT)
+Received: from localhost (ip-89-176-225-229.net.upcbroadband.cz. [89.176.225.229])
+        by smtp.gmail.com with ESMTPSA id d22sm4183637ejc.90.2020.07.01.02.47.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jul 2020 02:47:39 -0700 (PDT)
+Date:   Wed, 1 Jul 2020 11:47:38 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Michal Kubecek <mkubecek@suse.cz>, moshe@mellanox.com
+Subject: Re: [RFC v2 net-next] devlink: Add reset subcommand.
+Message-ID: <20200701094738.GD2181@nanopsycho>
+References: <1593516846-28189-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <20200630125353.GA2181@nanopsycho>
+ <CAACQVJqxLhmO=UiCMh_pv29WP7Qi4bAZdpU9NDk3Wq8TstM5zA@mail.gmail.com>
+ <20200701055144.GB2181@nanopsycho>
+ <CAACQVJqac3JGY_w2zp=thveG5Hjw9tPGagHPvfr2DM3xL4j_zg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200630190832.vvirrpkmyev2inlh@bsd-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAACQVJqac3JGY_w2zp=thveG5Hjw9tPGagHPvfr2DM3xL4j_zg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-06-30 20:08, Jonathan Lemon wrote:
-> On Mon, Jun 29, 2020 at 02:15:16PM +0100, Robin Murphy wrote:
->> On 2020-06-27 08:02, Christoph Hellwig wrote:
->>> On Fri, Jun 26, 2020 at 01:54:12PM -0700, Jonathan Lemon wrote:
->>>> On Fri, Jun 26, 2020 at 09:47:25AM +0200, Christoph Hellwig wrote:
->>>>>
->>>>> Note that this is somewhat urgent, as various of the APIs that the code
->>>>> is abusing are slated to go away for Linux 5.9, so this addition comes
->>>>> at a really bad time.
->>>>
->>>> Could you elaborate on what is upcoming here?
->>>
->>> Moving all these calls out of line, and adding a bypass flag to avoid
->>> the indirect function call for IOMMUs in direct mapped mode.
->>>
->>>> Also, on a semi-related note, are there limitations on how many pages
->>>> can be left mapped by the iommu?  Some of the page pool work involves
->>>> leaving the pages mapped instead of constantly mapping/unmapping them.
->>>
->>> There are, but I think for all modern IOMMUs they are so big that they
->>> don't matter.  Maintaines of the individual IOMMU drivers might know
->>> more.
+Wed, Jul 01, 2020 at 11:25:50AM CEST, vasundhara-v.volam@broadcom.com wrote:
+>On Wed, Jul 1, 2020 at 11:21 AM Jiri Pirko <jiri@resnulli.us> wrote:
 >>
->> Right - I don't know too much about older and more esoteric stuff like POWER
->> TCE, but for modern pagetable-based stuff like Intel VT-d, AMD-Vi, and Arm
->> SMMU, the only "limits" are such that legitimate DMA API use should never
->> get anywhere near them (you'd run out of RAM for actual buffers long
->> beforehand). The most vaguely-realistic concern might be a pathological
->> system topology where some old 32-bit PCI device doesn't have ACS isolation
->> from your high-performance NIC such that they have to share an address
->> space, where the NIC might happen to steal all the low addresses and prevent
->> the soundcard or whatever from being able to map a usable buffer.
+>> Tue, Jun 30, 2020 at 05:15:18PM CEST, vasundhara-v.volam@broadcom.com wrote:
+>> >On Tue, Jun 30, 2020 at 6:23 PM Jiri Pirko <jiri@resnulli.us> wrote:
+>> >>
+>> >> Tue, Jun 30, 2020 at 01:34:06PM CEST, vasundhara-v.volam@broadcom.com wrote:
+>> >> >Advanced NICs support live reset of some of the hardware
+>> >> >components, that resets the device immediately with all the
+>> >> >host drivers loaded.
+>> >> >
+>> >> >Add devlink reset subcommand to support live and deferred modes
+>> >> >of reset. It allows to reset the hardware components of the
+>> >> >entire device and supports the following fields:
+>> >> >
+>> >> >component:
+>> >> >----------
+>> >> >1. MGMT : Management processor.
+>> >> >2. DMA : DMA engine.
+>> >> >3. RAM : RAM shared between multiple components.
+>> >> >4. AP : Application processor.
+>> >> >5. ROCE : RoCE management processor.
+>> >> >6. All : All possible components.
+>> >> >
+>> >> >Drivers are allowed to reset only a subset of requested components.
+>> >>
+>> >> I don't understand why would user ever want to do this. He does not care
+>> >> about some magic hw entities. He just expects the hw to work. I don't
+>> >> undestand the purpose of exposing something like this. Could you please
+>> >> explain in details? Thanks!
+>> >>
+>> >If a user requests multiple components and if the driver is only able
+>> >to honor a subset, the driver will return the components unset which
+>> >it is able to reset.  For example, if a user requests MGMT, RAM and
+>> >ROCE components to be reset and driver resets only MGMT and ROCE.
+>> >Driver will unset only MGMT and ROCE bits and notifies the user that
+>> >RAM is not reset.
+>> >
+>> >This will be useful for drivers to reset only a subset of components
+>> >requested instead of returning error or silently doing only a subset
+>> >of components.
+>> >
+>> >Also, this will be helpful as user will not know the components
+>> >supported by different vendors.
 >>
->> With an IOMMU, you typically really *want* to keep a full working set's
->> worth of pages mapped, since dma_map/unmap are expensive while dma_sync is
->> somewhere between relatively cheap and free. With no IOMMU it makes no real
->> difference from the DMA API perspective since map/unmap are effectively no
->> more than the equivalent sync operations anyway (I'm assuming we're not
->> talking about the kind of constrained hardware that might need SWIOTLB).
+>> Your reply does not seem to be related to my question :/
+>I thought that you were referring to: "Drivers are allowed to reset
+>only a subset of requested components."
+>
+>or were you referring to components? If yes, the user can select the
+>components that he wants to go for reset. This will be useful in the
+>case where, if the user flashed only a certain component and he wants
+>to reset that particular component. For example, in the case of SOC
+>there are 2 components: MGMT and AP. If a user flashes only
+>application processor, he can choose to reset only application
+>processor.
+
+We already have notion of "a component" in "devlink dev flash". I think
+that the reset component name should be in-sync with the flash.
+
+Thinking about it a bit more, we can extend the flash command by "reset"
+attribute that would indicate use wants to do flash&reset right away.
+
+Also, thinking how this all aligns with "devlink dev reload" which we
+currently have. The purpose of it is to re-instantiate driver instances,
+but in case of mlxsw it means friggering FW reset as well.
+
+Moshe (cced) is now working on "devlink dev reload" extension that would
+allow user to ask for a certain level of reload: driver instances only,
+fw reset too, live fw patching, etc.
+
+Not sure how this overlaps with your intentions. I think it would be
+great to see Moshe's RFC here as well so we can aligh the efforts.
+
+
+>
 >>
->>>> On a heavily loaded box with iommu enabled, it seems that quite often
->>>> there is contention on the iova_lock.  Are there known issues in this
->>>> area?
->>>
->>> I'll have to defer to the IOMMU maintainers, and for that you'll need
->>> to say what code you are using.  Current mainlaine doesn't even have
->>> an iova_lock anywhere.
 >>
->> Again I can't speak for non-mainstream stuff outside drivers/iommu, but it's
->> been over 4 years now since merging the initial scalability work for the
->> generic IOVA allocator there that focused on minimising lock contention, and
->> it's had considerable evaluation and tweaking since. But if we can achieve
->> the goal of efficiently recycling mapped buffers then we shouldn't need to
->> go anywhere near IOVA allocation either way except when expanding the pool.
-> 
-> 
-> I'm running a set of patches which uses the page pool to try and keep
-> all the RX buffers mapped as the skb goes up the stack, returning the
-> pages to the pool when the skb is freed.
-> 
-> On a dual-socket 12-core Intel machine (48 processors), and 256G of
-> memory, when iommu is enabled, I see the following from 'perf top -U',
-> as the hottest function being run:
-> 
-> -   43.42%  worker      [k] queued_spin_lock_slowpath
->     - 43.42% queued_spin_lock_slowpath
->        - 41.69% _raw_spin_lock_irqsave
->           + 41.39% alloc_iova
->           + 0.28% iova_magazine_free_pfns
->        + 1.07% lock_sock_nested
-> 
-> Which likely is heavy contention on the iovad->iova_rbtree_lock.
-> (This is on a 5.6 based system, BTW).  More scripts and data are below.
-> Is there a way to reduce the contention here?
-
-Hmm, how big are your DMA mappings? If you're still hitting the rbtree a 
-lot, that most likely implies that either you're making giant IOVA 
-allocations that are too big to be cached, or you're allocating/freeing 
-IOVAs in a pathological pattern that defeats the whole magazine cache 
-mechanism (It's optimised for relatively-balanced allocation and freeing 
-of sizes up order 6). On a further hunch, does the 
-"intel_iommu=forcedac" option make any difference at all?
-
-Either way if this persists after some initial warm-up period, it 
-further implies that the page pool is not doing its job properly (or at 
-least in the way I would have expected). The alloc_iova() call is part 
-of the dma_map_*() overhead, and if the aim is to keep pages mapped then 
-that should only be called relatively infrequently. The optimal 
-behaviour would be to dma_map() new clean pages as they are added to the 
-pool, use dma_sync() when they are claimed and returned by the driver, 
-and only dma_unmap() if they're actually freed back to the page 
-allocator. And if you're still seeing a lot of dma_map/unmap time after 
-that, then the pool itself is churning pages and clearly needs its 
-size/thresholds tuning.
-
-Robin.
-
-> 
-> 
-> 
-> The following quick and dirty [and possibly wrong] .bpf script was used
-> to try and find the time spent in __alloc_and_insert_iova_range():
-> 
-> kprobe:alloc_iova_fast
-> {
->          @fast = count();
-> }
-> 
-> kprobe:alloc_iova
-> {
->          @iova_start[tid] = nsecs;
->          @iova = count();
-> }
-> 
-> kretprobe:alloc_iova / @iova_start[tid] /
-> {
->          @alloc_h = hist(nsecs - @iova_start[tid] - @mem_delta[tid]);
->          delete(@iova_start[tid]);
->          delete(@mem_delta[tid]);
-> }
-> 
-> kprobe:alloc_iova_mem / @iova_start[tid] /
-> {
->          @mem_start[tid] = nsecs;
-> }
-> 
-> kretprobe:alloc_iova_mem / @mem_start[tid] /
-> {
->          @mem_delta[tid] = nsecs - @mem_start[tid];
->          delete(@mem_start[tid]);
-> }
-> 
-> kprobe:iova_insert_rbtree / @iova_start[tid] /
-> {
->          @rb_start[tid] = nsecs;
->          @rbtree = count();
-> }
-> 
-> kretprobe:iova_insert_rbtree / @rb_start[tid] /
-> {
->          @insert_h = hist(nsecs - @rb_start[tid]);
->          delete(@rb_start[tid]);
-> }
-> 
-> interval:s:2
-> {
->          print(@fast);
->          print(@iova);
->          print(@rbtree);
->          print(@alloc_h);
->          print(@insert_h);
->          printf("--------\n");
-> }
-> 
-> I see the following results.
-> 
-> @fast: 1989223
-> @iova: 725269
-> @rbtree: 689306
-> 
-> @alloc_h:
-> [64, 128)              2 |                                                    |
-> [128, 256)           118 |                                                    |
-> [256, 512)           983 |                                                    |
-> [512, 1K)           3816 |@@                                                  |
-> [1K, 2K)           10557 |@@@@@@                                              |
-> [2K, 4K)           19540 |@@@@@@@@@@@@                                        |
-> [4K, 8K)           31294 |@@@@@@@@@@@@@@@@@@@                                 |
-> [8K, 16K)          38112 |@@@@@@@@@@@@@@@@@@@@@@@                             |
-> [16K, 32K)         46948 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@                        |
-> [32K, 64K)         69728 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@         |
-> [64K, 128K)        83797 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ |
-> [128K, 256K)       84317 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-> [256K, 512K)       82962 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ |
-> [512K, 1M)         72751 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
-> [1M, 2M)           49191 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                      |
-> [2M, 4M)           26591 |@@@@@@@@@@@@@@@@                                    |
-> [4M, 8M)           15559 |@@@@@@@@@                                           |
-> [8M, 16M)          12283 |@@@@@@@                                             |
-> [16M, 32M)         18266 |@@@@@@@@@@@                                         |
-> [32M, 64M)         22539 |@@@@@@@@@@@@@                                       |
-> [64M, 128M)         3005 |@                                                   |
-> [128M, 256M)          41 |                                                    |
-> [256M, 512M)           0 |                                                    |
-> [512M, 1G)             0 |                                                    |
-> [1G, 2G)               0 |                                                    |
-> [2G, 4G)             101 |                                                    |
-> 
-> @insert_h:
-> [128, 256)          2380 |                                                    |
-> [256, 512)         70043 |@@@@@@@@                                            |
-> [512, 1K)         431263 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-> [1K, 2K)          182804 |@@@@@@@@@@@@@@@@@@@@@@                              |
-> [2K, 4K)            2742 |                                                    |
-> [4K, 8K)              43 |                                                    |
-> [8K, 16K)             25 |                                                    |
-> [16K, 32K)             0 |                                                    |
-> [32K, 64K)             0 |                                                    |
-> [64K, 128K)            0 |                                                    |
-> [128K, 256K)           6 |                                                    |
-> 
-> 
+>> >
+>> >Thanks,
+>> >Vasundhara
+>> >
+>> >>
+>> >> >
+>> >> >width:
+>> >> >------
+>> >> >1. single - single host.
+>> >> >2. multi  - Multi host.
+>> >> >
+>> >> >mode:
+>> >> >-----
+>> >> >1. deferred - Reset will happen after unloading all the host drivers
+>> >> >              on the device. This is be default reset type, if user
+>> >> >              does not specify the type.
+>> >> >2. live - Reset will happen immediately with all host drivers loaded
+>> >> >          in real time. If the live reset is not supported, driver
+>> >> >          will return the error.
+>> >> >
+>> >> >This patch is a proposal in continuation to discussion to the
+>> >> >following thread:
+>> >> >
+>> >> >"[PATCH v3 net-next 0/6] bnxt_en: Add 'enable_live_dev_reset' and 'allow_live_dev_reset' generic devlink params."
+>> >> >
+>> >> >and here is the URL to the patch series:
+>> >> >
+>> >> >https://patchwork.ozlabs.org/project/netdev/list/?series=180426&state=*
+>> >> >
+>> >> >If the proposal looks good, I will re-send the whole patchset
+>> >> >including devlink changes and driver usage.
+>> >> >
+>> >> >Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+>> >> >Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+>> >> >---
+>> >> >v2:
+>> >> >- Switch RAM and AP component definitions.
+>> >> >- Remove IRQ, FILTER, OFFLOAD, MAC, PHY components as they are port
+>> >> >specific components.
+>> >> >- Rename function to host in width parameter.
+>> >> >---
+>> >> > Documentation/networking/devlink/devlink-reset.rst | 50 +++++++++++++
+>> >> > include/net/devlink.h                              |  2 +
+>> >> > include/uapi/linux/devlink.h                       | 46 ++++++++++++
+>> >> > net/core/devlink.c                                 | 85 ++++++++++++++++++++++
+>> >> > 4 files changed, 183 insertions(+)
+>> >> > create mode 100644 Documentation/networking/devlink/devlink-reset.rst
+>> >> >
+>> >> >diff --git a/Documentation/networking/devlink/devlink-reset.rst b/Documentation/networking/devlink/devlink-reset.rst
+>> >> >new file mode 100644
+>> >> >index 0000000..652800d
+>> >> >--- /dev/null
+>> >> >+++ b/Documentation/networking/devlink/devlink-reset.rst
+>> >> >@@ -0,0 +1,50 @@
+>> >> >+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> >> >+
+>> >> >+.. _devlink_reset:
+>> >> >+
+>> >> >+=============
+>> >> >+Devlink reset
+>> >> >+=============
+>> >> >+
+>> >> >+The ``devlink-reset`` API allows reset the hardware components of the device. After the reset,
+>> >> >+device loads the pending updated firmware image.
+>> >> >+Example use::
+>> >> >+
+>> >> >+  $ devlink dev reset pci/0000:05:00.0 components COMPONENTS
+>> >> >+
+>> >> >+Note that user can mention multiple components.
+>> >> >+
+>> >> >+================
+>> >> >+Reset components
+>> >> >+================
+>> >> >+
+>> >> >+List of available components::
+>> >> >+
+>> >> >+``DEVLINK_RESET_COMP_MGMT`` - Management processor.
+>> >> >+``DEVLINK_RESET_COMP_DMA`` - DMA engine.
+>> >> >+``DEVLINK_RESET_COMP_RAM`` - RAM shared between multiple components.
+>> >> >+``DEVLINK_RESET_COMP_AP``   - Application processor.
+>> >> >+``DEVLINK_RESET_COMP_ROCE`` - RoCE management processor.
+>> >> >+``DEVLINK_RESET_COMP_ALL``  - All components.
+>> >> >+
+>> >> >+===========
+>> >> >+Reset width
+>> >> >+===========
+>> >> >+
+>> >> >+List of available widths::
+>> >> >+
+>> >> >+``DEVLINK_RESET_WIDTH_SINGLE`` - Device is used by single dedicated host.
+>> >> >+``DEVLINK_RESET_WIDTH_MULTI``  - Device is shared across multiple hosts.
+>> >> >+
+>> >> >+Note that if user specifies DEVLINK_RESET_WIDTH_SINGLE in a multi-host environment, driver returns
+>> >> >+error if it does not support resetting a single host.
+>> >> >+
+>> >> >+===========
+>> >> >+Reset modes
+>> >> >+===========
+>> >> >+
+>> >> >+List of available reset modes::
+>> >> >+
+>> >> >+``DEVLINK_RESET_MODE_DEFERRED``  - Reset happens after all host drivers are unloaded on the device.
+>> >> >+``DEVLINK_RESET_MODE_LIVE``      - Reset happens immediately, with all loaded host drivers in real
+>> >> >+                                   time.
+>> >> >diff --git a/include/net/devlink.h b/include/net/devlink.h
+>> >> >index 428f55f..a71c8f5 100644
+>> >> >--- a/include/net/devlink.h
+>> >> >+++ b/include/net/devlink.h
+>> >> >@@ -1129,6 +1129,8 @@ struct devlink_ops {
+>> >> >       int (*port_function_hw_addr_set)(struct devlink *devlink, struct devlink_port *port,
+>> >> >                                        const u8 *hw_addr, int hw_addr_len,
+>> >> >                                        struct netlink_ext_ack *extack);
+>> >> >+      int (*reset)(struct devlink *devlink, u32 *components, u8 width, u8 mode,
+>> >> >+                   struct netlink_ext_ack *extack);
+>> >> > };
+>> >> >
+>> >> > static inline void *devlink_priv(struct devlink *devlink)
+>> >> >diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+>> >> >index 87c83a8..6f32c00 100644
+>> >> >--- a/include/uapi/linux/devlink.h
+>> >> >+++ b/include/uapi/linux/devlink.h
+>> >> >@@ -122,6 +122,9 @@ enum devlink_command {
+>> >> >       DEVLINK_CMD_TRAP_POLICER_NEW,
+>> >> >       DEVLINK_CMD_TRAP_POLICER_DEL,
+>> >> >
+>> >> >+      DEVLINK_CMD_RESET,
+>> >> >+      DEVLINK_CMD_RESET_STATUS,       /* notification only */
+>> >> >+
+>> >> >       /* add new commands above here */
+>> >> >       __DEVLINK_CMD_MAX,
+>> >> >       DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
+>> >> >@@ -265,6 +268,44 @@ enum devlink_trap_type {
+>> >> >       DEVLINK_TRAP_TYPE_CONTROL,
+>> >> > };
+>> >> >
+>> >> >+/**
+>> >> >+ * enum devlink_reset_component - Reset components.
+>> >> >+ * @DEVLINK_RESET_COMP_MGMT: Management processor.
+>> >> >+ * @DEVLINK_RESET_COMP_DMA: DMA engine.
+>> >> >+ * @DEVLINK_RESET_COMP_RAM: RAM shared between multiple components.
+>> >> >+ * @DEVLINK_RESET_COMP_AP: Application processor.
+>> >> >+ * @DEVLINK_RESET_COMP_ROCE: RoCE management processor.
+>> >> >+ * @DEVLINK_RESET_COMP_ALL: All components.
+>> >> >+ */
+>> >> >+enum devlink_reset_component {
+>> >> >+      DEVLINK_RESET_COMP_MGMT         = (1 << 0),
+>> >> >+      DEVLINK_RESET_COMP_DMA          = (1 << 1),
+>> >> >+      DEVLINK_RESET_COMP_RAM          = (1 << 2),
+>> >> >+      DEVLINK_RESET_COMP_AP           = (1 << 3),
+>> >> >+      DEVLINK_RESET_COMP_ROCE         = (1 << 4),
+>> >> >+      DEVLINK_RESET_COMP_ALL          = 0xffffffff,
+>> >> >+};
+>> >> >+
+>> >> >+/**
+>> >> >+ * enum devlink_reset_width - Number of hosts effected by reset.
+>> >> >+ * @DEVLINK_RESET_WIDTH_SINGLE: Device is used by single dedicated host.
+>> >> >+ * @DEVLINK_RESET_WIDTH_MULTI: Device is shared across multiple hosts.
+>> >> >+ */
+>> >> >+enum devlink_reset_width {
+>> >> >+      DEVLINK_RESET_WIDTH_SINGLE      = 0,
+>> >> >+      DEVLINK_RESET_WIDTH_MULTI       = 1,
+>> >> >+};
+>> >> >+
+>> >> >+/**
+>> >> >+ * enum devlink_reset_mode - Modes of reset.
+>> >> >+ * @DEVLINK_RESET_MODE_DEFERRED: Reset will happen after host drivers are unloaded.
+>> >> >+ * @DEVLINK_RESET_MODE_LIVE: All host drivers also will be reset without reloading manually.
+>> >> >+ */
+>> >> >+enum devlink_reset_mode {
+>> >> >+      DEVLINK_RESET_MODE_DEFERRED     = 0,
+>> >> >+      DEVLINK_RESET_MODE_LIVE         = 1,
+>> >> >+};
+>> >> >+
+>> >> > enum {
+>> >> >       /* Trap can report input port as metadata */
+>> >> >       DEVLINK_ATTR_TRAP_METADATA_TYPE_IN_PORT,
+>> >> >@@ -455,6 +496,11 @@ enum devlink_attr {
+>> >> >
+>> >> >       DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER,  /* string */
+>> >> >
+>> >> >+      DEVLINK_ATTR_RESET_COMPONENTS,          /* u32 */
+>> >> >+      DEVLINK_ATTR_RESET_WIDTH,               /* u8 */
+>> >> >+      DEVLINK_ATTR_RESET_MODE,                /* u8 */
+>> >> >+      DEVLINK_ATTR_RESET_STATUS_MSG,          /* string */
+>> >> >+
+>> >> >       /* add new attributes above here, update the policy in devlink.c */
+>> >> >
+>> >> >       __DEVLINK_ATTR_MAX,
+>> >> >diff --git a/net/core/devlink.c b/net/core/devlink.c
+>> >> >index 6ae3680..c0eebc5 100644
+>> >> >--- a/net/core/devlink.c
+>> >> >+++ b/net/core/devlink.c
+>> >> >@@ -6797,6 +6797,82 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+>> >> >       return devlink_trap_policer_set(devlink, policer_item, info);
+>> >> > }
+>> >> >
+>> >> >+static int devlink_nl_reset_fill(struct sk_buff *msg, struct devlink *devlink,
+>> >> >+                               const char *status_msg, u32 components)
+>> >> >+{
+>> >> >+      void *hdr;
+>> >> >+
+>> >> >+      hdr = genlmsg_put(msg, 0, 0, &devlink_nl_family, 0, DEVLINK_CMD_RESET_STATUS);
+>> >> >+      if (!hdr)
+>> >> >+              return -EMSGSIZE;
+>> >> >+
+>> >> >+      if (devlink_nl_put_handle(msg, devlink))
+>> >> >+              goto nla_put_failure;
+>> >> >+
+>> >> >+      if (status_msg && nla_put_string(msg, DEVLINK_ATTR_RESET_STATUS_MSG, status_msg))
+>> >> >+              goto nla_put_failure;
+>> >> >+
+>> >> >+      if (nla_put_u32(msg, DEVLINK_ATTR_RESET_COMPONENTS, components))
+>> >> >+              goto nla_put_failure;
+>> >> >+
+>> >> >+      genlmsg_end(msg, hdr);
+>> >> >+      return 0;
+>> >> >+
+>> >> >+nla_put_failure:
+>> >> >+      genlmsg_cancel(msg, hdr);
+>> >> >+      return -EMSGSIZE;
+>> >> >+}
+>> >> >+
+>> >> >+static void __devlink_reset_notify(struct devlink *devlink, const char *status_msg, u32 components)
+>> >> >+{
+>> >> >+      struct sk_buff *msg;
+>> >> >+      int err;
+>> >> >+
+>> >> >+      msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+>> >> >+      if (!msg)
+>> >> >+              return;
+>> >> >+
+>> >> >+      err = devlink_nl_reset_fill(msg, devlink, status_msg, components);
+>> >> >+      if (err)
+>> >> >+              goto out;
+>> >> >+
+>> >> >+      genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink), msg, 0,
+>> >> >+                              DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
+>> >> >+      return;
+>> >> >+
+>> >> >+out:
+>> >> >+      nlmsg_free(msg);
+>> >> >+}
+>> >> >+
+>> >> >+static int devlink_nl_cmd_reset(struct sk_buff *skb, struct genl_info *info)
+>> >> >+{
+>> >> >+      struct devlink *devlink = info->user_ptr[0];
+>> >> >+      u32 components, req_comps;
+>> >> >+      struct nlattr *nla_type;
+>> >> >+      u8 width, mode;
+>> >> >+      int err;
+>> >> >+
+>> >> >+      if (!devlink->ops->reset)
+>> >> >+              return -EOPNOTSUPP;
+>> >> >+
+>> >> >+      if (!info->attrs[DEVLINK_ATTR_RESET_COMPONENTS])
+>> >> >+              return -EINVAL;
+>> >> >+      components = nla_get_u32(info->attrs[DEVLINK_ATTR_RESET_COMPONENTS]);
+>> >> >+
+>> >> >+      nla_type = info->attrs[DEVLINK_ATTR_RESET_WIDTH];
+>> >> >+      width = nla_type ? nla_get_u8(nla_type) : DEVLINK_RESET_WIDTH_SINGLE;
+>> >> >+
+>> >> >+      nla_type = info->attrs[DEVLINK_ATTR_RESET_MODE];
+>> >> >+      mode = nla_type ? nla_get_u8(nla_type) : DEVLINK_RESET_MODE_DEFERRED;
+>> >> >+
+>> >> >+      req_comps = components;
+>> >> >+      __devlink_reset_notify(devlink, "Reset request", components);
+>> >> >+      err = devlink->ops->reset(devlink, &components, width, mode, info->extack);
+>> >> >+      __devlink_reset_notify(devlink, "Components reset", req_comps & ~components);
+>> >> >+
+>> >> >+      return err;
+>> >> >+}
+>> >> >+
+>> >> > static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
+>> >> >       [DEVLINK_ATTR_UNSPEC] = { .strict_start_type =
+>> >> >               DEVLINK_ATTR_TRAP_POLICER_ID },
+>> >> >@@ -6842,6 +6918,9 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+>> >> >       [DEVLINK_ATTR_TRAP_POLICER_RATE] = { .type = NLA_U64 },
+>> >> >       [DEVLINK_ATTR_TRAP_POLICER_BURST] = { .type = NLA_U64 },
+>> >> >       [DEVLINK_ATTR_PORT_FUNCTION] = { .type = NLA_NESTED },
+>> >> >+      [DEVLINK_ATTR_RESET_COMPONENTS] = { .type = NLA_U32 },
+>> >> >+      [DEVLINK_ATTR_RESET_WIDTH] = { .type = NLA_U8 },
+>> >> >+      [DEVLINK_ATTR_RESET_MODE] = { .type = NLA_U8 },
+>> >> > };
+>> >> >
+>> >> > static const struct genl_ops devlink_nl_ops[] = {
+>> >> >@@ -7190,6 +7269,12 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+>> >> >               .flags = GENL_ADMIN_PERM,
+>> >> >               .internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
+>> >> >       },
+>> >> >+      {
+>> >> >+              .cmd = DEVLINK_CMD_RESET,
+>> >> >+              .doit = devlink_nl_cmd_reset,
+>> >> >+              .flags = GENL_ADMIN_PERM,
+>> >> >+              .internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
+>> >> >+      },
+>> >> > };
+>> >> >
+>> >> > static struct genl_family devlink_nl_family __ro_after_init = {
+>> >> >--
+>> >> >1.8.3.1
+>> >> >
