@@ -2,376 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0955A2100EC
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 02:12:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FAFE2100F4
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 02:23:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726871AbgGAAMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 20:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726739AbgGAAMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 20:12:36 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B532C061755;
-        Tue, 30 Jun 2020 17:12:36 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id g17so9157050plq.12;
-        Tue, 30 Jun 2020 17:12:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:reply-to:content-transfer-encoding;
-        bh=UTlbzHQf2Pt7NXvozmhu+uSU24tC0DJSovtexfEAZTs=;
-        b=vfSPXdsgeBTqMZ64kCcVAiVVz78vG/y/CVKcjfMKgyd1BK+vsG7aUPcj60Jsqu0BC3
-         Zo6Wqv6otPjRGrglLAwurGsrbhMV7FnorK9UPRjOul8id7F+wJxKM9xxnxnSBEM87J02
-         BnFQ77BQvuTTgFekARP9JpnEgQ8bvzoyzK2+LEE0jYMTXWSIl7H8mX1xLnnpAUoBkUJr
-         YOJeTT9WenKLvvYkiquBAandCxX4+rHtQWUzBsMANUJwlgrUWUeXY2kIgUfqH1hVpLGL
-         utVm5MXncLJiKrBKJGKyDWMxbiXjWjLblmLn+8p6CoRsXyovHdEcOQydfs0OFhtp5ANw
-         WWUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:reply-to:content-transfer-encoding;
-        bh=UTlbzHQf2Pt7NXvozmhu+uSU24tC0DJSovtexfEAZTs=;
-        b=LY+hlYg2ixDrE/839bPwrQRKBPjW5z+tI98iUw+zo5VaYuHPjG8MPVauIxI/EUdp3O
-         535LlzHx1oPlW1EcGuQ1Xc67pJwUeerKoEtTMj3/KU7/pN2VwLr9DehOVFvyzyUeMWoL
-         QdcPSfgq76iF1JlTDPechiGMZlTrIFsJiAhKTXo/rdLIJiesWu1rUycX745MEjkbe2Zh
-         Tls9tyqmNLpRdRtw2HZPcBq8SXwirwf8PnGvVeBp2WbrBoP4KWOHk9wmaOdBUaop8Gcb
-         ZyaxnDuusGzdpoaRfk9L4t2kHLs3uMWEDSESDh/BGboxHRekL/ebKGx0wvF3hNYdDEf/
-         /1cA==
-X-Gm-Message-State: AOAM533sAogWsdr1PHmI4vltLkE7O9JnH1EFm6NeaO2510ls3jpHiJ62
-        JKzqwG+O0uRnHy7+GiTncaU=
-X-Google-Smtp-Source: ABdhPJxhf2VXIUHE0ie4njgnOHa2Bkpv+I7dB4JLrozgy5pSaYOQEOyZEf2uMXH3dZlb1W7ULg05CA==
-X-Received: by 2002:a17:902:507:: with SMTP id 7mr19420524plf.186.1593562355539;
-        Tue, 30 Jun 2020 17:12:35 -0700 (PDT)
-Received: from localhost.localdomain ([131.107.147.194])
-        by smtp.gmail.com with ESMTPSA id t2sm3268588pja.1.2020.06.30.17.12.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2020 17:12:35 -0700 (PDT)
-From:   Andres Beltran <lkmlabelt@gmail.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org
-Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mikelley@microsoft.com, parri.andrea@gmail.com,
-        Andres Beltran <lkmlabelt@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH v4 3/3] hv_netvsc: Use vmbus_requestor to generate transaction IDs for VMBus hardening
-Date:   Tue, 30 Jun 2020 20:12:21 -0400
-Message-Id: <20200701001221.2540-4-lkmlabelt@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200701001221.2540-1-lkmlabelt@gmail.com>
-References: <20200701001221.2540-1-lkmlabelt@gmail.com>
+        id S1726131AbgGAAXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 20:23:37 -0400
+Received: from mga14.intel.com ([192.55.52.115]:29056 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725930AbgGAAXh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jun 2020 20:23:37 -0400
+IronPort-SDR: HI6dHNhhyJa6Im1B7hOpxnNoAQzZecdJmM3u0h53Zo/+1BTlHS9ULZS3+3i4OkbxKHHGESoebO
+ kLu9R+C1WKNw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="145492574"
+X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; 
+   d="scan'208";a="145492574"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2020 17:23:28 -0700
+IronPort-SDR: 3YEcXvcgzhdBZ18cVHzBmEK5+85Oohp+ALaDy7WV50RSu+eMW5gbM63XevMSG27NG5oJSkISPo
+ 3KEPT9L7XOvg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; 
+   d="scan'208";a="355942861"
+Received: from samudral-mobl.amr.corp.intel.com (HELO [10.212.255.238]) ([10.212.255.238])
+  by orsmga001.jf.intel.com with ESMTP; 30 Jun 2020 17:23:27 -0700
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Subject: Re: ADQ - comparison to aRFS, clarifications on NAPI ID, binding with
+ busy-polling
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     Amritha Nambiar <amritha.nambiar@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Tom Herbert <tom@herbertland.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <e13faf29-5db3-91a2-4a95-c2cd8c2d15fe@mellanox.com>
+ <807a300e-47aa-dba3-7d6d-e14422a0d869@intel.com>
+ <AM6PR05MB5974D512D3205C247B07D0C7D1930@AM6PR05MB5974.eurprd05.prod.outlook.com>
+Message-ID: <6ca520df-2668-992a-2717-c0501f1d2a89@intel.com>
+Date:   Tue, 30 Jun 2020 17:23:27 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Reply-To: t-mabelt@microsoft.com
+In-Reply-To: <AM6PR05MB5974D512D3205C247B07D0C7D1930@AM6PR05MB5974.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, pointers to guest memory are passed to Hyper-V as
-transaction IDs in netvsc. In the face of errors or malicious
-behavior in Hyper-V, netvsc should not expose or trust the transaction
-IDs returned by Hyper-V to be valid guest memory addresses. Instead,
-use small integers generated by vmbus_requestor as requests
-(transaction) IDs.
 
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
----
-Changes in v2:
-        - Add casts to unsigned long to fix warnings on 32bit.
-        - Use an inline function to get the requestor size.
 
- drivers/net/hyperv/hyperv_net.h   | 13 +++++
- drivers/net/hyperv/netvsc.c       | 79 +++++++++++++++++++++++++------
- drivers/net/hyperv/rndis_filter.c |  1 +
- include/linux/hyperv.h            |  1 +
- 4 files changed, 80 insertions(+), 14 deletions(-)
+On 6/26/2020 5:48 AM, Maxim Mikityanskiy wrote:
+> Thanks a lot for your reply! It was really helpful. I have a few
+> comments, please see below.
+> 
+> On 2020-06-24 23:21, Samudrala, Sridhar wrote:
+>>
+>>
+>> On 6/17/2020 6:15 AM, Maxim Mikityanskiy wrote:
+>>> Hi,
+>>>
+>>> I discovered Intel ADQ feature [1] that allows to boost performance by
+>>> picking dedicated queues for application traffic. We did some
+>>> research, and I got some level of understanding how it works, but I
+>>> have some questions, and I hope you could answer them.
+>>>
+>>> 1. SO_INCOMING_NAPI_ID usage. In my understanding, every connection
+>>> has a key (sk_napi_id) that is unique to the NAPI where this
+>>> connection is handled, and the application uses that key to choose a
+>>> handler thread from the thread pool. If we have a one-to-one
+>>> relationship between application threads and NAPI IDs of connections,
+>>> each application thread will handle only traffic from a single NAPI.
+>>> Is my understanding correct?
+>>
+>> Yes. It is correct and recommended with the current implementation.
+>>
+>>>
+>>> 1.1. I wonder how the application thread gets scheduled on the same
+>>> core that NAPI runs at. It currently only works with busy_poll, so
+>>> when the application initiates busy polling (calls epoll), does the
+>>> Linux scheduler move the thread to the right CPU? Do we have to have a
+>>> strict one-to-one relationship between threads and NAPIs, or can one
+>>> thread handle multiple NAPIs? When the data arrives, does the
+>>> scheduler run the application thread on the same CPU that NAPI ran on?
+>>
+>> The app thread can do busypoll from any core and there is no requirement
+>> that the scheduler needs to move the thread to a specific CPU.
+>>
+>> If the NAPI processing happens via interrupts, the scheduler could move
+>> the app thread to the same CPU that NAPI ran on.
+>>
+>>>
+>>> 1.2. I see that SO_INCOMING_NAPI_ID is tightly coupled with busy_poll.
+>>> It is enabled only if CONFIG_NET_RX_BUSY_POLL is set. Is there a real
+>>> reason why it can't be used without busy_poll? In other words, if we
+>>> modify the kernel to drop this requirement, will the kernel still
+>>> schedule the application thread on the same CPU as NAPI when busy_poll
+>>> is not used?
+>>
+>> It should be OK to remove this restriction, but requires enabling this
+>> in skb_mark_napi_id() and sk_mark_napi_id() too.
+>>
+>>>
+>>> 2. Can you compare ADQ to aRFS+XPS? aRFS provides a way to steer
+>>> traffic to the application's CPU in an automatic fashion, and xps_rxqs
+>>> can be used to transmit from the corresponding queues. This setup
+>>> doesn't need manual configuration of TCs and is not limited to 4
+>>> applications. The difference of ADQ is that (in my understanding) it
+>>> moves the application to the RX CPU, while aRFS steers the traffic to
+>>> the RX queue handled my the application's CPU. Is there any advantage
+>>> of ADQ over aRFS, that I failed to find?
+>>
+>> aRFS+XPS ties app thread to a cpu,
+> 
+> Well, not exactly. To pin the app thread to a CPU, one uses
+> taskset/sched_setaffinity, while aRFS+XPS pick a queue that corresponds
+> to that CPU.
 
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index abda736e7c7d..f43b614f2345 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -847,6 +847,19 @@ struct nvsp_message {
- 
- #define NETVSC_XDP_HDRM 256
- 
-+#define NETVSC_MIN_OUT_MSG_SIZE (sizeof(struct vmpacket_descriptor) + \
-+				 sizeof(struct nvsp_message))
-+#define NETVSC_MIN_IN_MSG_SIZE sizeof(struct vmpacket_descriptor)
-+
-+/* Estimated requestor size:
-+ * out_ring_size/min_out_msg_size + in_ring_size/min_in_msg_size
-+ */
-+static inline u32 netvsc_rqstor_size(unsigned long ringbytes)
-+{
-+	return ringbytes / NETVSC_MIN_OUT_MSG_SIZE +
-+	       ringbytes / NETVSC_MIN_IN_MSG_SIZE;
-+}
-+
- struct multi_send_data {
- 	struct sk_buff *skb; /* skb containing the pkt */
- 	struct hv_netvsc_packet *pkt; /* netvsc pkt pending */
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index 41f5cf0bb997..79b907a29433 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -50,7 +50,7 @@ void netvsc_switch_datapath(struct net_device *ndev, bool vf)
- 
- 	vmbus_sendpacket(dev->channel, init_pkt,
- 			       sizeof(struct nvsp_message),
--			       (unsigned long)init_pkt,
-+			       VMBUS_RQST_ID_NO_RESPONSE,
- 			       VM_PKT_DATA_INBAND, 0);
- }
- 
-@@ -163,7 +163,7 @@ static void netvsc_revoke_recv_buf(struct hv_device *device,
- 		ret = vmbus_sendpacket(device->channel,
- 				       revoke_packet,
- 				       sizeof(struct nvsp_message),
--				       (unsigned long)revoke_packet,
-+				       VMBUS_RQST_ID_NO_RESPONSE,
- 				       VM_PKT_DATA_INBAND, 0);
- 		/* If the failure is because the channel is rescinded;
- 		 * ignore the failure since we cannot send on a rescinded
-@@ -213,7 +213,7 @@ static void netvsc_revoke_send_buf(struct hv_device *device,
- 		ret = vmbus_sendpacket(device->channel,
- 				       revoke_packet,
- 				       sizeof(struct nvsp_message),
--				       (unsigned long)revoke_packet,
-+				       VMBUS_RQST_ID_NO_RESPONSE,
- 				       VM_PKT_DATA_INBAND, 0);
- 
- 		/* If the failure is because the channel is rescinded;
-@@ -304,6 +304,7 @@ static int netvsc_init_buf(struct hv_device *device,
- 	unsigned int buf_size;
- 	size_t map_words;
- 	int ret = 0;
-+	u64 rqst_id;
- 
- 	/* Get receive buffer area. */
- 	buf_size = device_info->recv_sections * device_info->recv_section_size;
-@@ -350,13 +351,22 @@ static int netvsc_init_buf(struct hv_device *device,
- 
- 	trace_nvsp_send(ndev, init_packet);
- 
-+	rqst_id = vmbus_next_request_id(&device->channel->requestor,
-+					(unsigned long)init_packet);
-+	if (rqst_id == VMBUS_RQST_ERROR) {
-+		netdev_err(ndev, "No request id available\n");
-+		goto cleanup;
-+	}
-+
- 	/* Send the gpadl notification request */
- 	ret = vmbus_sendpacket(device->channel, init_packet,
- 			       sizeof(struct nvsp_message),
--			       (unsigned long)init_packet,
-+			       rqst_id,
- 			       VM_PKT_DATA_INBAND,
- 			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
- 	if (ret != 0) {
-+		/* Reclaim request ID to avoid leak of IDs */
-+		vmbus_request_addr(&device->channel->requestor, rqst_id);
- 		netdev_err(ndev,
- 			"unable to send receive buffer's gpadl to netvsp\n");
- 		goto cleanup;
-@@ -432,13 +442,22 @@ static int netvsc_init_buf(struct hv_device *device,
- 
- 	trace_nvsp_send(ndev, init_packet);
- 
-+	rqst_id = vmbus_next_request_id(&device->channel->requestor,
-+					(unsigned long)init_packet);
-+	if (rqst_id == VMBUS_RQST_ERROR) {
-+		netdev_err(ndev, "No request id available\n");
-+		goto cleanup;
-+	}
-+
- 	/* Send the gpadl notification request */
- 	ret = vmbus_sendpacket(device->channel, init_packet,
- 			       sizeof(struct nvsp_message),
--			       (unsigned long)init_packet,
-+			       rqst_id,
- 			       VM_PKT_DATA_INBAND,
- 			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
- 	if (ret != 0) {
-+		/* Reclaim request ID to avoid leak of IDs */
-+		vmbus_request_addr(&device->channel->requestor, rqst_id);
- 		netdev_err(ndev,
- 			   "unable to send send buffer's gpadl to netvsp\n");
- 		goto cleanup;
-@@ -496,6 +515,7 @@ static int negotiate_nvsp_ver(struct hv_device *device,
- {
- 	struct net_device *ndev = hv_get_drvdata(device);
- 	int ret;
-+	u64 rqst_id;
- 
- 	memset(init_packet, 0, sizeof(struct nvsp_message));
- 	init_packet->hdr.msg_type = NVSP_MSG_TYPE_INIT;
-@@ -503,15 +523,25 @@ static int negotiate_nvsp_ver(struct hv_device *device,
- 	init_packet->msg.init_msg.init.max_protocol_ver = nvsp_ver;
- 	trace_nvsp_send(ndev, init_packet);
- 
-+	rqst_id = vmbus_next_request_id(&device->channel->requestor,
-+					(unsigned long)init_packet);
-+	if (rqst_id == VMBUS_RQST_ERROR) {
-+		netdev_err(ndev, "No request id available\n");
-+		return -EAGAIN;
-+	}
-+
- 	/* Send the init request */
- 	ret = vmbus_sendpacket(device->channel, init_packet,
- 			       sizeof(struct nvsp_message),
--			       (unsigned long)init_packet,
-+			       rqst_id,
- 			       VM_PKT_DATA_INBAND,
- 			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
- 
--	if (ret != 0)
-+	if (ret != 0) {
-+		/* Reclaim request ID to avoid leak of IDs */
-+		vmbus_request_addr(&device->channel->requestor, rqst_id);
- 		return ret;
-+	}
- 
- 	wait_for_completion(&net_device->channel_init_wait);
- 
-@@ -542,7 +572,7 @@ static int negotiate_nvsp_ver(struct hv_device *device,
- 
- 	ret = vmbus_sendpacket(device->channel, init_packet,
- 				sizeof(struct nvsp_message),
--				(unsigned long)init_packet,
-+				VMBUS_RQST_ID_NO_RESPONSE,
- 				VM_PKT_DATA_INBAND, 0);
- 
- 	return ret;
-@@ -599,7 +629,7 @@ static int netvsc_connect_vsp(struct hv_device *device,
- 	/* Send the init request */
- 	ret = vmbus_sendpacket(device->channel, init_packet,
- 				sizeof(struct nvsp_message),
--				(unsigned long)init_packet,
-+				VMBUS_RQST_ID_NO_RESPONSE,
- 				VM_PKT_DATA_INBAND, 0);
- 	if (ret != 0)
- 		goto cleanup;
-@@ -680,10 +710,19 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
- 				    const struct vmpacket_descriptor *desc,
- 				    int budget)
- {
--	struct sk_buff *skb = (struct sk_buff *)(unsigned long)desc->trans_id;
-+	struct sk_buff *skb;
- 	struct net_device_context *ndev_ctx = netdev_priv(ndev);
- 	u16 q_idx = 0;
- 	int queue_sends;
-+	u64 cmd_rqst;
-+
-+	cmd_rqst = vmbus_request_addr(&channel->requestor, (u64)desc->trans_id);
-+	if (cmd_rqst == VMBUS_RQST_ERROR) {
-+		netdev_err(ndev, "Incorrect transaction id\n");
-+		return;
-+	}
-+
-+	skb = (struct sk_buff *)(unsigned long)cmd_rqst;
- 
- 	/* Notify the layer above us */
- 	if (likely(skb)) {
-@@ -822,7 +861,7 @@ static inline int netvsc_send_pkt(
- 	struct net_device *ndev = hv_get_drvdata(device);
- 	struct net_device_context *ndev_ctx = netdev_priv(ndev);
- 	struct netdev_queue *txq = netdev_get_tx_queue(ndev, packet->q_idx);
--	u64 req_id;
-+	u64 rqst_id;
- 	int ret;
- 	u32 ring_avail = hv_get_avail_to_write_percent(&out_channel->outbound);
- 
-@@ -838,13 +877,19 @@ static inline int netvsc_send_pkt(
- 	else
- 		rpkt->send_buf_section_size = packet->total_data_buflen;
- 
--	req_id = (ulong)skb;
- 
- 	if (out_channel->rescind)
- 		return -ENODEV;
- 
- 	trace_nvsp_send_pkt(ndev, out_channel, rpkt);
- 
-+	rqst_id = vmbus_next_request_id(&out_channel->requestor,
-+					(unsigned long)skb);
-+	if (rqst_id == VMBUS_RQST_ERROR) {
-+		ret = -EAGAIN;
-+		goto ret_check;
-+	}
-+
- 	if (packet->page_buf_cnt) {
- 		if (packet->cp_partial)
- 			pb += packet->rmsg_pgcnt;
-@@ -852,14 +897,15 @@ static inline int netvsc_send_pkt(
- 		ret = vmbus_sendpacket_pagebuffer(out_channel,
- 						  pb, packet->page_buf_cnt,
- 						  &nvmsg, sizeof(nvmsg),
--						  req_id);
-+						  rqst_id);
- 	} else {
- 		ret = vmbus_sendpacket(out_channel,
- 				       &nvmsg, sizeof(nvmsg),
--				       req_id, VM_PKT_DATA_INBAND,
-+				       rqst_id, VM_PKT_DATA_INBAND,
- 				       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
- 	}
- 
-+ret_check:
- 	if (ret == 0) {
- 		atomic_inc_return(&nvchan->queue_sends);
- 
-@@ -868,9 +914,13 @@ static inline int netvsc_send_pkt(
- 			ndev_ctx->eth_stats.stop_queue++;
- 		}
- 	} else if (ret == -EAGAIN) {
-+		/* Reclaim request ID to avoid leak of IDs */
-+		vmbus_request_addr(&out_channel->requestor, rqst_id);
- 		netif_tx_stop_queue(txq);
- 		ndev_ctx->eth_stats.stop_queue++;
- 	} else {
-+		/* Reclaim request ID to avoid leak of IDs */
-+		vmbus_request_addr(&out_channel->requestor, rqst_id);
- 		netdev_err(ndev,
- 			   "Unable to send packet pages %u len %u, ret %d\n",
- 			   packet->page_buf_cnt, packet->total_data_buflen,
-@@ -1422,6 +1472,7 @@ struct netvsc_device *netvsc_device_add(struct hv_device *device,
- 		       netvsc_poll, NAPI_POLL_WEIGHT);
- 
- 	/* Open the channel */
-+	device->channel->rqstor_size = netvsc_rqstor_size(netvsc_ring_bytes);
- 	ret = vmbus_open(device->channel, netvsc_ring_bytes,
- 			 netvsc_ring_bytes,  NULL, 0,
- 			 netvsc_channel_cb, net_device->chan_table);
-diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-index b81ceba38218..10489ba44a09 100644
---- a/drivers/net/hyperv/rndis_filter.c
-+++ b/drivers/net/hyperv/rndis_filter.c
-@@ -1114,6 +1114,7 @@ static void netvsc_sc_open(struct vmbus_channel *new_sc)
- 	/* Set the channel before opening.*/
- 	nvchan->channel = new_sc;
- 
-+	new_sc->rqstor_size = netvsc_rqstor_size(netvsc_ring_bytes);
- 	ret = vmbus_open(new_sc, netvsc_ring_bytes,
- 			 netvsc_ring_bytes, NULL, 0,
- 			 netvsc_channel_cb, nvchan);
-diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-index c509d20ab7db..d8194924983d 100644
---- a/include/linux/hyperv.h
-+++ b/include/linux/hyperv.h
-@@ -730,6 +730,7 @@ struct vmbus_requestor {
- };
- 
- #define VMBUS_RQST_ERROR U64_MAX
-+#define VMBUS_RQST_ID_NO_RESPONSE (U64_MAX - 1)
- 
- struct vmbus_device {
- 	u16  dev_type;
--- 
-2.25.1
+Yes. I should have said XPS-cpus ties app thread to a cpu and aRFS maps 
+that cpu to rx queue.
 
+> 
+>> whereas ADQ ties app thread to a napi
+>> id which in turn ties to a queue(s)
+> 
+> So, basically, both technologies result in making NAPI and the app run
+> on the same CPU. The difference that I see is that ADQ forces NAPI
+> processing (in busy polling) on the app's CPU, while aRFS steers the
+> traffic to a queue, whose NAPI runs on the app's CPU. The effect is the
+> same, but ADQ requires busy polling. Is my understanding correct?
+
+'busy polling' is not a requirement. It is possible to use ADQ receive 
+filters with XPS based on rx queues to make NAPI and the app run on the 
+same CPU without busy polling.
+
+> 
+>> ADQ also provides 2 levels of filtering compared to aRFS+XPS. The first
+>> level of filtering selects a queue-set associated with the application
+>> and the second level filter or RSS will select a queue within that queue
+>> set associated with an app thread.
+> 
+> This difference looks important. So, ADQ reserves a dedicated set of
+> queues solely for the application use.
+> 
+>> The current interface to configure ADQ limits us to support upto 16
+>> application specific queue sets(TC_MAX_QUEUE)
+> 
+>   From the commit message:
+> 
+> https://patchwork.ozlabs.org/project/netdev/patch/20180214174539.11392-5-jeffrey.t.kirsher@intel.com/
+> 
+> I got that i40e supports up to 4 groups. Has this limitation been
+> lifted, or are you saying that 16 is the limitation of mqprio, while the
+> driver may support fewer? Or is it different for different Intel drivers?
+
+Yes. That patch is enabling support for ADQ in a VF and it is currently 
+limited to 4 queue groups. But 16 is tc mqprio interface limitation.
+
+> 
+>>
+>>
+>>>
+>>> 3. At [1], you mention that ADQ can be used to create separate RSS
+>>> sets.   Could you elaborate about the API used? Does the tc mqprio
+>>> configuration also affect RSS? Can it be turned on/off?
+>>
+>> Yes. tc mqprio allows to create queue-sets per application and the
+>> driver configures RSS per queue-set.
+>>
+>>>
+>>> 4. How is tc flower used in context of ADQ? Does the user need to
+>>> reflect the configuration in both mqprio qdisc (for TX) and tc flower
+>>> (for RX)? It looks like tc flower maps incoming traffic to TCs, but
+>>> what is the mechanism of mapping TCs to RX queues?
+>>
+>> tc mqprio is used to map TCs to RX queues
+> 
+> OK, I got how the configuration works now, thanks! Though I'm not sure
+> mqprio is the best API to configure the RX side. I thought it's supposed
+> to configure the TX queues. Looks more like a hack to me.
+> 
+> Ethtool RSS context API (look for "context" in man ethtool) seems more
+> appropriate for the RX side for this purpose.
+
+Thanks, we will explore if ethtool will work for us. We went with mqprio 
+so that we can configure both TX/RX queue-sets together rather than 
+splitting the configuration into 2 steps.
+
+> 
+> Thanks,
+> Max
+> 
+>> tc flower is used to configure the first level of filter to redirect
+>> packets to a queue set associated with an application.
+>>
+>>>
+>>> I really hope you will be able to shed more light on this feature to
+>>> increase my awareness on how to use it and to compare it with aRFS.
+>>
+>> Hope this helps and we will go over in more detail in our netdev session.
+>>
+>>>
+>>> Thanks,
+>>> Max
+>>>
+>>> [1]:
+>>> https://netdevconf.info/0x14/session.html?talk-ADQ-for-system-level-network-io-performance-improvements
+>>>
+> 
