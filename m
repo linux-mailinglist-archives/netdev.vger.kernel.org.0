@@ -2,161 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D49211513
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 23:26:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0410211514
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 23:26:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727057AbgGAV0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 17:26:17 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:15880 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726469AbgGAV0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 17:26:17 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 061L0o3j058789
-        for <netdev@vger.kernel.org>; Wed, 1 Jul 2020 17:26:15 -0400
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 320wmnqkce-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 17:26:15 -0400
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 061LKQvg003199
-        for <netdev@vger.kernel.org>; Wed, 1 Jul 2020 21:26:14 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma03dal.us.ibm.com with ESMTP id 31wwr946ew-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 21:26:14 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 061LQCor50397530
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 1 Jul 2020 21:26:13 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DF5826A04D;
-        Wed,  1 Jul 2020 21:26:12 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A56326A054;
-        Wed,  1 Jul 2020 21:26:12 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.163.56.155])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed,  1 Jul 2020 21:26:12 +0000 (GMT)
-From:   Cristobal Forno <cforno12@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     tlfalcon@linux.ibm.com, Cristobal Forno <cforno12@linux.ibm.com>
-Subject: [PATCH] ibmvnic: store RX and TX subCRQ handle array in ibmvnic_adapter struct
-Date:   Wed,  1 Jul 2020 16:25:53 -0500
-Message-Id: <20200701212553.70956-1-cforno12@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
+        id S1726972AbgGAV04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 17:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726469AbgGAV0z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 17:26:55 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ECFBC08C5C1
+        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 14:26:55 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id t11so9663075qvk.1
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 14:26:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oqXgEWRYfr8PyQKbFzO30c6DKlqOYjcDaNgRmiO8M6k=;
+        b=ZotYLaaY6bOe2OvPV1GxlCJFeVdYF4kqzZzMxPKLrTbWGjKTc3nCKbdkD3F9SjjAdP
+         314MwTNO2MdG4gNomvIJHqPOiJBexoTpVroOf86x29eL16iliDsjdnC/SwbXZu1kt2Xw
+         nXxMqaceOcJJlps3bHhhZH2TqZpq5IEPRgr2LctX3Bf/uV28kyKw0vX8JbOxX9NbN1qL
+         b5uI5qAVjLYpkhp5pdsnXxpyGvxsU0sxNS2vL6fEADNxy30cL1p3rGW4+9dLYNxcsmQH
+         h61K1Gvbr6zCGi1z66zp1zOt2MpAsReYJANLY1ccHenmIA4dLWOLXs5EWDsYnzklst4S
+         ZRAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oqXgEWRYfr8PyQKbFzO30c6DKlqOYjcDaNgRmiO8M6k=;
+        b=IdBLfk8Ti0lgwzVNXHohdFaMrt+ZMVGHXKuQgKSUcQ78bFpJhK/VB0BW2C50sFHY/L
+         Vb+ZDtWvafdtZ8ALyzQD7FsYOCqbpuWVU0Xn27BwcdV5+myJUTVGMQrDYe9dyv2z0sF3
+         pt0bgXo9eAODFdIMuCSQaG/OS4b5Nb+vxdKGtTwwEATU0JqUWipTpL9qbLyx/KmcO+gn
+         jNwQG0cHWrF/LM+E5Mc7LHy39wei6NoLM+5okFCSY6i1/FmKUOXqEbddFt3MRXIn4FQj
+         Fr5PBcuxTST5BiIjXwK3Y5szXQcYaVbnftn+43von+SxF+ASLrRLsjknvBEg6Yarh2w0
+         zFYw==
+X-Gm-Message-State: AOAM530rLhoqp4yfF1Zyw1tQEcIMx8RMwvXJ4X1LBVVFrrZQG84rfsJ4
+        +AFFvtf/jniQZ237y/QXsXu/xEiM
+X-Google-Smtp-Source: ABdhPJzKL7YtxEHNm6D4p71MYKYuJD1wx/Q3IxnSfA1i8xJnft54BuBhWBiFD7nFWbAfMaRkTqvb1Q==
+X-Received: by 2002:a0c:aa9b:: with SMTP id f27mr27578361qvb.9.1593638814030;
+        Wed, 01 Jul 2020 14:26:54 -0700 (PDT)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id i57sm7704379qte.75.2020.07.01.14.26.53
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jul 2020 14:26:53 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id y17so10581871ybm.12
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 14:26:52 -0700 (PDT)
+X-Received: by 2002:a25:be02:: with SMTP id h2mr45767743ybk.315.1593638812347;
+ Wed, 01 Jul 2020 14:26:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-01_12:2020-07-01,2020-07-01 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- impostorscore=0 adultscore=0 cotscore=-2147483648 suspectscore=3
- phishscore=0 priorityscore=1501 mlxscore=0 spamscore=0 bulkscore=0
- mlxlogscore=650 lowpriorityscore=0 clxscore=1011 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2007010143
+References: <20200701200006.2414835-1-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20200701200006.2414835-1-willemdebruijn.kernel@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 1 Jul 2020 17:26:15 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSerdsJAPSVnNC5DWZzoCHfCB6RO3ZSOxOLmesE5w4bytg@mail.gmail.com>
+Message-ID: <CA+FuTSerdsJAPSVnNC5DWZzoCHfCB6RO3ZSOxOLmesE5w4bytg@mail.gmail.com>
+Subject: Re: [PATCH net] ip: Fix SO_MARK in RST, ACK and ICMP packets
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, Martin Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the driver reads RX and TX subCRQ handle array directly from
-a DMA-mapped buffer address when it needs to make a H_SEND_SUBCRQ
-hcall. This patch stores that information in the ibmvnic_sub_crq_queue
-structure instead of reading from the buffer received at login.
+On Wed, Jul 1, 2020 at 4:00 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> From: Willem de Bruijn <willemb@google.com>
+>
+> When no full socket is available, skbs are sent over a per-netns
+> control socket. Its sk_mark is temporarily adjusted to match that
+> of the real (request or timewait) socket or to reflect an incoming
+> skb, so that the outgoing skb inherits this in __ip_make_skb.
+>
+> Introduction of the socket cookie mark field broke this. Now the
+> skb is set through the cookie and cork:
+>
+> <caller>                # init sockc.mark from sk_mark or cmsg
+> ip_append_data
+>   ip_setup_cork         # convert sockc.mark to cork mark
+> ip_push_pending_frames
+>   ip_finish_skb
+>     __ip_make_skb       # set skb->mark to cork mark
+>
+> But I missed these special control sockets. Update all callers of
+> __ip(6)_make_skb that were originally missed.
+>
+> For IPv6, the same two icmp(v6) paths are affected. The third
+> case is not, as commit 92e55f412cff ("tcp: don't annotate
+> mark on control socket from tcp_v6_send_response()") replaced
+> the ctl_sk->sk_mark with passing the mark field directly as a
+> function argument. That commit predates the commit that
+> introduced the bug.
+>
+> Fixes: c6af0c227a22 ("ip: support SO_MARK cmsg")
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
+> Reported-by: Martin KaFai Lau <kafai@fb.com>
 
-Signed-off-by: Cristobal Forno <cforno12@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 27 ++++++++++++++++++++-------
- drivers/net/ethernet/ibm/ibmvnic.h |  1 +
- 2 files changed, 21 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 0fd7eae25fe9..ca0d88aab6da 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -305,6 +305,7 @@ static void deactivate_rx_pools(struct ibmvnic_adapter *adapter)
- static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
- 			      struct ibmvnic_rx_pool *pool)
- {
-+	u64 *handle_array = adapter->rx_scrq[pool->index]->handle_array;
- 	int count = pool->size - atomic_read(&pool->available);
- 	struct device *dev = &adapter->vdev->dev;
- 	int buffers_added = 0;
-@@ -314,7 +315,6 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
- 	unsigned int offset;
- 	dma_addr_t dma_addr;
- 	unsigned char *dst;
--	u64 *handle_array;
- 	int shift = 0;
- 	int index;
- 	int i;
-@@ -322,10 +322,6 @@ static void replenish_rx_pool(struct ibmvnic_adapter *adapter,
- 	if (!pool->active)
- 		return;
- 
--	handle_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
--				      be32_to_cpu(adapter->login_rsp_buf->
--				      off_rxadd_subcrqs));
--
- 	for (i = 0; i < count; ++i) {
- 		skb = alloc_skb(pool->buff_size, GFP_ATOMIC);
- 		if (!skb) {
-@@ -1553,8 +1549,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 
- 	tx_scrq = adapter->tx_scrq[queue_num];
- 	txq = netdev_get_tx_queue(netdev, skb_get_queue_mapping(skb));
--	handle_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
--		be32_to_cpu(adapter->login_rsp_buf->off_txsubm_subcrqs));
-+	handle_array = tx_scrq->handle_array;
- 
- 	index = tx_pool->free_map[tx_pool->consumer_index];
- 
-@@ -4292,6 +4287,8 @@ static int handle_login_rsp(union ibmvnic_crq *login_rsp_crq,
- 	struct net_device *netdev = adapter->netdev;
- 	struct ibmvnic_login_rsp_buffer *login_rsp = adapter->login_rsp_buf;
- 	struct ibmvnic_login_buffer *login = adapter->login_buf;
-+	int num_tx_pools;
-+	int num_rx_pools;
- 	int i;
- 
- 	dma_unmap_single(dev, adapter->login_buf_token, adapter->login_buf_sz,
-@@ -4326,6 +4323,22 @@ static int handle_login_rsp(union ibmvnic_crq *login_rsp_crq,
- 		ibmvnic_remove(adapter->vdev);
- 		return -EIO;
- 	}
-+
-+	num_tx_pools = be32_to_cpu(adapter->login_rsp_buf->num_txsubm_subcrqs);
-+	num_rx_pools = be32_to_cpu(adapter->login_rsp_buf->num_rxadd_subcrqs);
-+
-+	for (i = 0; i < num_tx_pools; i++)
-+		adapter->tx_scrq[i]->handle_array =
-+			(u64 *)((u8 *)(adapter->login_rsp_buf) +
-+				be32_to_cpu(adapter->login_rsp_buf->
-+					    off_txsubm_subcrqs));
-+
-+	for (i = 0; i < num_rx_pools; i++)
-+		adapter->rx_scrq[i]->handle_array =
-+			(u64 *)((u8 *)(adapter->login_rsp_buf) +
-+				be32_to_cpu(adapter->login_rsp_buf->
-+					    off_rxadd_subcrqs));
-+
- 	release_login_buffer(adapter);
- 	complete(&adapter->init_done);
- 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index f8416e1d4cf0..e51c72d1e357 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -875,6 +875,7 @@ struct ibmvnic_sub_crq_queue {
- 	struct ibmvnic_adapter *adapter;
- 	atomic_t used;
- 	char name[32];
-+	u64 *handle_array;
- };
- 
- struct ibmvnic_long_term_buff {
--- 
-2.27.0
-
+I spotted another missing case, in ping_v6_sendmsg. Will have to send a v2.
