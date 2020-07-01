@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5578210DCD
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 16:33:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE6D210DCE
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 16:33:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731555AbgGAOdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 10:33:40 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:45505 "EHLO
+        id S1731564AbgGAOdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 10:33:44 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:46597 "EHLO
         new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730852AbgGAOdj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 10:33:39 -0400
+        by vger.kernel.org with ESMTP id S1730852AbgGAOdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 10:33:43 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A0C0B5801C9;
-        Wed,  1 Jul 2020 10:33:38 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 34A495801C9;
+        Wed,  1 Jul 2020 10:33:42 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 01 Jul 2020 10:33:38 -0400
+  by compute4.internal (MEProxy); Wed, 01 Jul 2020 10:33:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=CKB81sVn7LVGi7YGxvPZPTqi/QZ8f8g/H8KfzgWFx7Q=; b=obx9Kft9
-        hH95zHE4yFa9pXbPLtIOvUj9fDgwueP4cKp7U593Nk0+ey8Du9k71ge6IaMUu7yI
-        ZlCHKN0wDB72nqTen9KJNRvtvhKt2UKIYtWsvfQSyVCqx7OnMGhXI9uus5tQwaB2
-        k20d2hWMDyOlXN0zc4g1GjWNt29VedQV+3EqjDFNk/NvP8mOv4iAdyhRfBPCcm/o
-        QUzjda2KQiFKTEoKZOqYMaIl5vL3S92GbtqsL+ohM92qVyx1urVRmmc+uXBS3Lq6
-        QCj77vvoUgM2z2aTFHSpz/igVNUEakhq62SB370BAlQwrhJKKHT3/BIZxA9I4Sdd
-        uf9A8DD1kP1gxQ==
-X-ME-Sender: <xms:wp78Xr3xOAd4-Mv_kPQiVpe55I_l1QxNtk_pVR_RgSuCNm5TDbUAVA>
+        fm3; bh=KByeDUx1KIK3n5ob59WlTdPPc+JPNn2D1x5FI//XCSo=; b=cP2k7ybH
+        LKfo7/m8bGD574iSlrBTIQhYjQ3wp0aoqoSRg122jbs8bn/02tFF5T2yjc15+kNP
+        CIMk7ywKtfUPpC68ARTzBENB+i7ScbXv4wsS7KYHqTm3oqkV6L8Peoj7TFwa/FOv
+        ETGQZKRoqyLrSVzQMWxjV11ZaKFRMdyedQGbG4t68HMVlsbThqag5rO2CWFwrOPv
+        av8Y5tzteG4l3iYsY93Qd+YsPxrgyGvx1EMkJrPSuTJeD9s4Yyhuh1vHyM8QcQCZ
+        +vIivlsrzbTQFIZBUA7bEDu8yKfK2awmiWiYfRiTI8GWBMzdV/LMqSfIdtKyn3WV
+        fmBkdKEqix8vUQ==
+X-ME-Sender: <xms:xZ78Xkmbf7yNzRHkIno0PuLt_RqhlkVjBBye0s8aTs_PW3ib4XL6yA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrtddvgdejlecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepudelfedrgeejrdduieehrddvhedu
-    necuvehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepjeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:wp78XqHXoERwnZ1NqqObtsaQ4VSyRvtC7wudC8Emfhif6kKm2SzDPw>
-    <xmx:wp78Xr7NAhiDUio41008q-Brs-vT1lE782D9ZgZ2ovd5f3aEp3ximw>
-    <xmx:wp78Xg26FXIH0vislDy3Ay2DVqNUZ-7kgG6G9oDqu6pHLPN7AgwJFQ>
-    <xmx:wp78Xm92QALeV8sbDEn2qs-9F1Vum5VJcnpV80Mp30A5G3uim5A0Zw>
+X-ME-Proxy: <xmx:xZ78Xj3QGqXT-gHBOyHxXCNUmxJmZ5BWHayl-x6mITZ4PTT_V34rDQ>
+    <xmx:xZ78XirQHTmkJN-SES1Qi_BpmK_j9o4sQhTyGF91pNBZcCtX54qq_w>
+    <xmx:xZ78XgnKUrJ6aYfc62WVI8yD6oaWK0T6EarkDMGQpboFdeK4QoHlbw>
+    <xmx:xp78XrvX1ppDUdc2am1JuXh_RjUwAqrG4CPA1NQAssO0iRnD_8-ALg>
 Received: from shredder.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 5A59F3280067;
-        Wed,  1 Jul 2020 10:33:35 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id ADC403280060;
+        Wed,  1 Jul 2020 10:33:38 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
@@ -51,9 +51,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
         vivien.didelot@gmail.com, f.fainelli@gmail.com,
         danieller@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 7/9] devlink: Add a new devlink port split ability attribute and pass to netlink
-Date:   Wed,  1 Jul 2020 17:32:49 +0300
-Message-Id: <20200701143251.456693-8-idosch@idosch.org>
+Subject: [PATCH net-next v2 8/9] devlink: Move input checks from driver to devlink
+Date:   Wed,  1 Jul 2020 17:32:50 +0300
+Message-Id: <20200701143251.456693-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200701143251.456693-1-idosch@idosch.org>
 References: <20200701143251.456693-1-idosch@idosch.org>
@@ -66,98 +66,119 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Danielle Ratson <danieller@mellanox.com>
 
-Add a new attribute that indicates the split ability of devlink port.
+Currently, all the input checks are done in driver.
 
-Drivers are expected to set it via devlink_port_attrs_set(), before
-registering the port.
+After adding the split capability to devlink port, move the checks to
+devlink.
 
 Signed-off-by: Danielle Ratson <danieller@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c       | 1 +
- drivers/net/ethernet/netronome/nfp/nfp_devlink.c | 1 +
- include/net/devlink.h                            | 4 +++-
- include/uapi/linux/devlink.h                     | 1 +
- net/core/devlink.c                               | 3 +++
- 5 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c  | 17 ++---------------
+ .../net/ethernet/netronome/nfp/nfp_devlink.c    |  5 +----
+ net/core/devlink.c                              | 17 +++++++++++++++++
+ 3 files changed, 20 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index f85f5d88d331..8b3791d73c99 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -2135,6 +2135,7 @@ static int __mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 9cd2dc3afb13..eeeafd1d82ce 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -2236,13 +2236,6 @@ static int mlxsw_sp_port_split(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 		return -EINVAL;
+ 	}
  
- 	attrs.split = split;
- 	attrs.lanes = lanes;
-+	attrs.splittable = splittable;
- 	attrs.flavour = flavour;
- 	attrs.phys.port_number = port_number;
- 	attrs.phys.split_subport_number = split_port_subnumber;
+-	/* Split ports cannot be split. */
+-	if (mlxsw_sp_port->split) {
+-		netdev_err(mlxsw_sp_port->dev, "Port cannot be split further\n");
+-		NL_SET_ERR_MSG_MOD(extack, "Port cannot be split further");
+-		return -EINVAL;
+-	}
+-
+ 	max_width = mlxsw_core_module_max_width(mlxsw_core,
+ 						mlxsw_sp_port->mapping.module);
+ 	if (max_width < 0) {
+@@ -2251,19 +2244,13 @@ static int mlxsw_sp_port_split(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 		return max_width;
+ 	}
+ 
+-	/* Split port with non-max and 1 module width cannot be split. */
+-	if (mlxsw_sp_port->mapping.width != max_width || max_width == 1) {
++	/* Split port with non-max cannot be split. */
++	if (mlxsw_sp_port->mapping.width != max_width) {
+ 		netdev_err(mlxsw_sp_port->dev, "Port cannot be split\n");
+ 		NL_SET_ERR_MSG_MOD(extack, "Port cannot be split");
+ 		return -EINVAL;
+ 	}
+ 
+-	if (count == 1 || !is_power_of_2(count) || count > max_width) {
+-		netdev_err(mlxsw_sp_port->dev, "Invalid split count\n");
+-		NL_SET_ERR_MSG_MOD(extack, "Invalid split count");
+-		return -EINVAL;
+-	}
+-
+ 	offset = mlxsw_sp_local_ports_offset(mlxsw_core, count, max_width);
+ 	if (offset < 0) {
+ 		netdev_err(mlxsw_sp_port->dev, "Cannot obtain local port offset\n");
 diff --git a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-index 71f4e624b3db..b6a10565309a 100644
+index b6a10565309a..be52510d446b 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
 +++ b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-@@ -367,6 +367,7 @@ int nfp_devlink_port_register(struct nfp_app *app, struct nfp_port *port)
- 		return ret;
+@@ -70,9 +70,6 @@ nfp_devlink_port_split(struct devlink *devlink, unsigned int port_index,
+ 	unsigned int lanes;
+ 	int ret;
  
- 	attrs.split = eth_port.is_split;
-+	attrs.splittable = !attrs.split;
- 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
- 	attrs.phys.port_number = eth_port.label_port;
- 	attrs.phys.split_subport_number = eth_port.label_subport;
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 91752b79bb29..59e4103e2a91 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -68,12 +68,14 @@ struct devlink_port_pci_vf_attrs {
-  * struct devlink_port_attrs - devlink port object
-  * @flavour: flavour of the port
-  * @split: indicates if this is split port
-+ * @splittable: indicates if the port can be split.
-  * @lanes: maximum number of lanes the port supports.
-  *	   0 value is not passed to netlink and valid number is a power of 2.
-  * @switch_id: if the port is part of switch, this is buffer with ID, otherwise this is NULL
-  */
- struct devlink_port_attrs {
--	u8 split:1;
-+	u8 split:1,
-+	   splittable:1;
- 	u32 lanes;
- 	enum devlink_port_flavour flavour;
- 	struct netdev_phys_item_id switch_id;
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index f741ab8d9cf0..cfef4245ea5a 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -456,6 +456,7 @@ enum devlink_attr {
- 	DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER,	/* string */
+-	if (count < 2)
+-		return -EINVAL;
+-
+ 	mutex_lock(&pf->lock);
  
- 	DEVLINK_ATTR_PORT_LANES,			/* u32 */
-+	DEVLINK_ATTR_PORT_SPLITTABLE,			/* u8 */
+ 	rtnl_lock();
+@@ -81,7 +78,7 @@ nfp_devlink_port_split(struct devlink *devlink, unsigned int port_index,
+ 	if (ret)
+ 		goto out;
  
- 	/* add new attributes above here, update the policy in devlink.c */
- 
+-	if (eth_port.is_split || eth_port.port_lanes % count) {
++	if (eth_port.port_lanes % count) {
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 7f26d1054974..94c797b74378 100644
+index 94c797b74378..1adfbf63331a 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -534,6 +534,8 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
- 		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_LANES, attrs->lanes))
- 			return -EMSGSIZE;
- 	}
-+	if (nla_put_u8(msg, DEVLINK_ATTR_PORT_SPLITTABLE, attrs->splittable))
-+		return -EMSGSIZE;
- 	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_FLAVOUR, attrs->flavour))
- 		return -EMSGSIZE;
- 	switch (devlink_port->attrs.flavour) {
-@@ -7547,6 +7549,7 @@ void devlink_port_attrs_set(struct devlink_port *devlink_port,
- 	ret = __devlink_port_attrs_set(devlink_port, attrs->flavour);
- 	if (ret)
- 		return;
-+	WARN_ON(attrs->splittable && attrs->split);
+@@ -940,6 +940,7 @@ static int devlink_nl_cmd_port_split_doit(struct sk_buff *skb,
+ 					  struct genl_info *info)
+ {
+ 	struct devlink *devlink = info->user_ptr[0];
++	struct devlink_port *devlink_port;
+ 	u32 port_index;
+ 	u32 count;
+ 
+@@ -947,8 +948,24 @@ static int devlink_nl_cmd_port_split_doit(struct sk_buff *skb,
+ 	    !info->attrs[DEVLINK_ATTR_PORT_SPLIT_COUNT])
+ 		return -EINVAL;
+ 
++	devlink_port = devlink_port_get_from_info(devlink, info);
+ 	port_index = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
+ 	count = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_SPLIT_COUNT]);
++
++	if (!devlink_port->attrs.splittable) {
++		/* Split ports cannot be split. */
++		if (devlink_port->attrs.split)
++			NL_SET_ERR_MSG_MOD(info->extack, "Port cannot be split further");
++		else
++			NL_SET_ERR_MSG_MOD(info->extack, "Port cannot be split");
++		return -EINVAL;
++	}
++
++	if (count < 2 || !is_power_of_2(count) || count > devlink_port->attrs.lanes) {
++		NL_SET_ERR_MSG_MOD(info->extack, "Invalid split count");
++		return -EINVAL;
++	}
++
+ 	return devlink_port_split(devlink, port_index, count, info->extack);
  }
- EXPORT_SYMBOL_GPL(devlink_port_attrs_set);
  
 -- 
 2.26.2
