@@ -2,112 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0D54210931
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 12:23:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD27621092C
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 12:23:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729914AbgGAKXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 06:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40620 "EHLO
+        id S1729900AbgGAKXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 06:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729781AbgGAKXm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 06:23:42 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D919C061755;
-        Wed,  1 Jul 2020 03:23:42 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id j19so4628361pgm.11;
-        Wed, 01 Jul 2020 03:23:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XlyOreYcq7l3PbaTN7d7mPxu6E5D6MEe46NhFAGwU6E=;
-        b=Hv3t7+iuMbkQLI/nvjRpT8LkUq23BXDfCK9qAIxtbwGDzsm27zbq6qFP8dofmINNVe
-         KKEPgdIceIfx7gsmAn9SQi/UUWWKZwo+DjvYnn7/5C/yeLCJ4rDPgPvBJfNwFOHtybxZ
-         XShxPE39LUaQ0fRe+ahUp/yn+IsriZJWpvw/9w3gERmxozRAsmpNZ08kwK2xvxaGyxww
-         zwmwlgsv5JLPoyBmDm04n5BQajIAgjboGLr/SD63PycmODS6rwb3g/sVbYWCED4Ng9IO
-         /x16kmrkmBt1s2drY7QFf1odm1rfgVMyZMWDNHAZHPlKx/MwA773XfFMnXtFDeTAz3xg
-         jIHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XlyOreYcq7l3PbaTN7d7mPxu6E5D6MEe46NhFAGwU6E=;
-        b=bSsiEBq/FH0eDw1jWgWm3mXIdrt10hlvKSAhbLzX1QHtyL2y0Yz5f2Udn6YaNfOoOn
-         yHWw3kSY9Og6lor6oTxTaiFU7dZNW4byIu9aA3Ohv9I6UZ3ZRe+E8aW3a6WYqZ1kvn7W
-         L6aZ2ui4zDgFaB5AA15Vlas3NvgR9yRx4ZAIeYxFFUNQatqLNBGN2d4udGfIk6IOqoI3
-         J/YIRgoVo/e9i3ph5OvKiifMjgbfB9LKOIPB51emuWNHGgOMChMPDPb6QpRpARH/9/RN
-         Sx54NBFSB+y61GMuHlB0z9GPR8oUAvoaioexEwwk7GkEBB+HOcFA8nhFURqUICRm4mpp
-         yYNQ==
-X-Gm-Message-State: AOAM531KnMLMttqt2QsfmzYWKaGkmTPUAEIrx9CZuCOiwRmxx8zpHjQa
-        CuHxS3P/3MuNh8+BCrtj0aqLM1Zg+bIERBYlK3M=
-X-Google-Smtp-Source: ABdhPJx0SLfaSW02C8p6MHec9QZP/GgouZWuLhNL6jXiQPupAa6Coi1OYPtqiFf5YIPDoIvWF5rcwi96zputH6jNHgQ=
-X-Received: by 2002:a63:a05f:: with SMTP id u31mr13486486pgn.4.1593599021934;
- Wed, 01 Jul 2020 03:23:41 -0700 (PDT)
+        with ESMTP id S1729781AbgGAKXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 06:23:38 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248D4C03E979;
+        Wed,  1 Jul 2020 03:23:38 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: andrzej.p)
+        with ESMTPSA id 339872A530D
+Subject: Re: [PATCH v7 00/11] Stop monitoring disabled devices
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Peter Kaestle <peter@piie.net>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Enrico Weigelt <info@metux.net>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        kernel@collabora.com
+References: <20200629122925.21729-1-andrzej.p@collabora.com>
+ <aab40d90-3f72-657c-5e14-e53a34c4b420@linaro.org>
+ <3d03d1a2-ac06-b69b-93cb-e0203be62c10@collabora.com>
+ <47111821-d691-e71d-d740-e4325e290fa4@linaro.org>
+ <be9b7ee3-cad0-e462-126d-08de9b226285@collabora.com>
+ <4353a939-3f5e-8369-5bc0-ad8162b5ffc7@linaro.org>
+ <a531d80f-afd1-2dec-6c77-ed984e97595c@collabora.com>
+ <db1ff4e1-cbf8-89b3-5d64-b91a1fd88a41@linaro.org>
+From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Message-ID: <73942aea-ae79-753c-fe90-d4a99423d548@collabora.com>
+Date:   Wed, 1 Jul 2020 12:23:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200701061233.31120-1-calvin.johnson@oss.nxp.com> <20200701061233.31120-2-calvin.johnson@oss.nxp.com>
-In-Reply-To: <20200701061233.31120-2-calvin.johnson@oss.nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 1 Jul 2020 13:23:28 +0300
-Message-ID: <CAHp75VdhuPsx0Kz8=NHxf6KtC0ff9oJWkSMEdNsLeMznEGLnqQ@mail.gmail.com>
-Subject: Re: [net-next PATCH v2 1/3] net: phy: introduce find_phy_device()
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux.cj@gmail.com, "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <db1ff4e1-cbf8-89b3-5d64-b91a1fd88a41@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 1, 2020 at 9:13 AM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
->
-> The PHYs on a mdiobus are probed and registered using mdiobus_register().
-> Later, for connecting these PHYs to MAC, the PHYs registered on the
-> mdiobus have to be referenced.
->
-> For each MAC node, a property "mdio-handle" is used to reference the
-> MDIO bus on which the PHYs are registered. On getting hold of the MDIO
-> bus, use find_phy_device() to get the PHY connected to the MAC.
+Hi,
 
-...
+W dniu 30.06.2020 o 20:33, Daniel Lezcano pisze:
+> On 30/06/2020 18:56, Andrzej Pietrasiewicz wrote:
+>> Hi,
+>>
+>> W dniu 30.06.2020 o 17:53, Daniel Lezcano pisze:
+>>> On 30/06/2020 17:29, Andrzej Pietrasiewicz wrote:
+>>>> Hi Daniel,
+>>>>
+>>>> W dniu 30.06.2020 o 16:53, Daniel Lezcano pisze:
+>>>>> On 30/06/2020 15:43, Andrzej Pietrasiewicz wrote:
+>>>>>> Hi Daniel,
+>>>>>>
+>>>>>> I am reading the logs and can't find anything specific to thermal.
+>>>>>>
+>>>>>> What I can see is
+>>>>>>
+>>>>>> "random: crng init done"
+>>>>>>
+>>>>>> with large times (~200s) and then e.g.
+>>>>>>
+>>>>>> 'auto-login-action timed out after 283 seconds'
+>>>>>>
+>>>>>> I'm looking at e.g.
+>>>>>> https://storage.kernelci.org/thermal/testing/v5.8-rc3-11-gf5e50bf4d3ef/arm/multi_v7_defconfig/gcc-8/lab-baylibre/baseline-imx6q-sabrelite.html
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>
+>>>> f5e50bf4d3ef is PATCH 11/11. Does the problem happen at PATCH 1-10/11?
+>>>> PATCH 11/11 renames a method and the code compiles, so it seems
+>>>> unlikely that this is causing problems. One should never say never,
+>>>> though ;)
+>>>
+>>> The sha1 is just the HEAD for the kernel reference. The regression
+>>> happens with your series, somewhere.
+>>>
+>>>> The reported failure is not due to some test failing but rather due
+>>>> to timeout logging into the test system. Could it be that there is
+>>>> some other problem?
+>>>
+>>> I did reproduce:
+>>>
+>>> v5.8-rc3 + series => imx6 hang at boot time
+>>> v5.8-rc3 => imx6 boots correctly
+>>>
 
-> +       struct platform_device *pdev;
+What did you reproduce? Timeout logging in to the test system or a "real" 
+failure of a test?
 
-This...
+>>
+>> I kindly ask for a bisect.
+> 
+> I will give a try but it is a very long process as the board is running
+> on kernelci.
+> 
+> I was not able to reproduce it on imx7 despite it is the same sensor :/
+> 
+> 
 
-> +       fwnode_mdio = fwnode_find_reference(fwnode, "mdio-handle", 0);
-> +       dev = bus_find_device_by_fwnode(&platform_bus_type, fwnode_mdio);
+Could it be that the thermal sensors somehow contribute to entropy and after
+the series is applied on some machines it takes more time to gather enough
+entropy?
 
-> +       if (IS_ERR_OR_NULL(dev))
-
-IS_ERR()?!
-
-> +               return NULL;
-
-> +       pdev =  to_platform_device(dev);
-> +       mdio = platform_get_drvdata(pdev);
-
-...and this can be simple:
-
-mdio = dev_get_drvdata(dev);
-
-> +       err = fwnode_property_read_u32(fwnode, "phy-channel", &addr);
-> +       if (err < 0 || addr < 0 || addr >= PHY_MAX_ADDR)
-> +               return NULL;
-
--- 
-With Best Regards,
-Andy Shevchenko
+Andrzej
