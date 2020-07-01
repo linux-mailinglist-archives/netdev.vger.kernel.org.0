@@ -2,152 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8F79210AC8
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 14:12:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 591B8210AF3
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 14:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730161AbgGAMMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 08:12:53 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:32647 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730190AbgGAMMw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 08:12:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593605570;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XaTa3j8pv7Vv7FPlkaiUQ9sgC3qOTtEDpxvgOBhKsTg=;
-        b=g1IhNHcXbN5nQBCSYjdknycNKG0isAGvE70ctxi+6uNEB4S4HuIWIvMTTfe2Zig3FyWZsl
-        a7v4wv2aE6rmrz7ehpUgr+JiXNBIxSlKXT5YKojIUUOG2ITowUxTnsqVrVbIT5UJkADJ5u
-        AMdZNJyZLrc9d+6spxLRN2oR5CpR0f4=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-481-kQzCYPkRM0CMU_Ayo6HYPA-1; Wed, 01 Jul 2020 08:12:48 -0400
-X-MC-Unique: kQzCYPkRM0CMU_Ayo6HYPA-1
-Received: by mail-ej1-f71.google.com with SMTP id yh3so8143611ejb.16
-        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 05:12:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XaTa3j8pv7Vv7FPlkaiUQ9sgC3qOTtEDpxvgOBhKsTg=;
-        b=ZEQGxy4bB/W5Ja6VRZMlyNzbqAQoXqHTrP2Se2Sw6HW5gu2ny7DDFV8mh25Afv4Egy
-         Vwd6RzQvpVaiVj0vpcdReXmpZ75ffDAZDhf56dEs+MZTvKeKGsSP10Tn69hBncasAfT6
-         cTqrjRPy7/bzeMkHWwEsv8eQQvYPb0Jh7nL2R4cAgy3Ttr680vzIg3FDohHENOjFtlvZ
-         PnaLJO/05x6tocBy+sTOHsES4unQszdx5xpHnc1Z81cEDFjnExu+qPnBrSme73cwoIrC
-         ZH8m7vCLCIoUFOxHVU8bay4+a6Mf0HQNN2TbZoZ3omanDMvI+ghoyt5mTs2s9q0uPf7R
-         NNcg==
-X-Gm-Message-State: AOAM531Ue2kot1+uRIQPjf7m9DToJnfSgrSS62y6TRuwoAn48YkOb5fD
-        D5+1RFswFI4DfoeZA0JjjewdmKAVC4k5Jy0sv1l57uZnfMYJKVw1xahfTD7QCWAcmFxBeQx/q6z
-        JYTubg7CTUtWuucD0
-X-Received: by 2002:aa7:d3c8:: with SMTP id o8mr21964630edr.294.1593605567573;
-        Wed, 01 Jul 2020 05:12:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJybKmn9TXwxpznNvmXkc/EDdW74VObauZauv68Wmlu4ixsBkY7JPtu25PXyzIRbA9DwPCxw9g==
-X-Received: by 2002:aa7:d3c8:: with SMTP id o8mr21964601edr.294.1593605567361;
-        Wed, 01 Jul 2020 05:12:47 -0700 (PDT)
-Received: from x1.localdomain ([2a0e:5700:4:11:334c:7e36:8d57:40cb])
-        by smtp.gmail.com with ESMTPSA id cz2sm5763973edb.82.2020.07.01.05.12.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jul 2020 05:12:46 -0700 (PDT)
-Subject: Re: [PATCH v3] brcmfmac: Transform compatible string for FW loading
-To:     matthias.bgg@kernel.org, arend.vanspriel@broadcom.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     brcm80211-dev-list.pdl@broadcom.com, mbrugger@suse.com,
-        netdev@vger.kernel.org, chi-hsien.lin@cypress.com,
-        linux-wireless@vger.kernel.org, hante.meuleman@broadcom.com,
-        linux-kernel@vger.kernel.org, wright.feng@cypress.com,
-        brcm80211-dev-list@cypress.com, franky.lin@broadcom.com
-References: <20200701112201.6449-1-matthias.bgg@kernel.org>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <eaf0f098-c73c-10b5-2d75-b35a5fc8dbb4@redhat.com>
-Date:   Wed, 1 Jul 2020 14:12:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1730556AbgGAMTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 08:19:46 -0400
+Received: from mail.efficios.com ([167.114.26.124]:50208 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730063AbgGAMTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 08:19:46 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id A354A2CD6E7;
+        Wed,  1 Jul 2020 08:19:42 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 2FJk1-xrNm4E; Wed,  1 Jul 2020 08:19:42 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 4A8AD2CD572;
+        Wed,  1 Jul 2020 08:19:42 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 4A8AD2CD572
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1593605982;
+        bh=YXoF5PUmxWXzp2LmHg4Wgh13FE3P4zYYtwXrHzfqq3Y=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=sG39cyUal96uC6mVyehepRr4pm1czvIHFsUGOd53n/dOX2qwq+HAY1AYOll43FKKK
+         aLuZoGCMngJoRBScUGKntC5NT2sInb2Eh8EG2FT8QXfZVR4/kojqte6y6KA83fzKVL
+         WFgTHC3EULUyItFTiDhFMGZgVgN9jjWwoNoge6dDRMkSxcq/587EsdxMPEJi9RtYul
+         PPSZGqHYpt3+gngE0EmiaxVZr6Gx1mJQeLWvBcW2zWhTOWd/bZ9RyHfuA9YUMzNiNU
+         nW+fcJm7c+MLyrTZaCM/0+juW8g5yPVmeI9N43OiiPOGCGvDyxqG6ceJ2/RfFq/OlS
+         K5lGL6JG5BUow==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 8b3X4FPEW-Fj; Wed,  1 Jul 2020 08:19:42 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 3BB862CD987;
+        Wed,  1 Jul 2020 08:19:42 -0400 (EDT)
+Date:   Wed, 1 Jul 2020 08:19:42 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Jonathan Rajotte-Julien <joraj@efficios.com>
+Message-ID: <338284155.18826.1593605982156.JavaMail.zimbra@efficios.com>
+In-Reply-To: <CANn89iKnf6=RFd-XRjPv=qaU8P-LGCBcw6JU5Ywwb16gU2iQqQ@mail.gmail.com>
+References: <CANn89iLPqtJG0iESCHF+RcOjo95ukan1oSzjkPjoSJgKpO2wSQ@mail.gmail.com> <20200701020211.GA6875@gondor.apana.org.au> <CANn89iKP-evuLxeLo6p_98T+FuJ-J5YaMTRG230nqj3R=43tVA@mail.gmail.com> <20200701022241.GA7167@gondor.apana.org.au> <CANn89iLKZQAtpejcLHmOu3dsrGf5eyFfHc8JqoMNYisRPWQ8kQ@mail.gmail.com> <20200701025843.GA7254@gondor.apana.org.au> <CANn89iKnf6=RFd-XRjPv=qaU8P-LGCBcw6JU5Ywwb16gU2iQqQ@mail.gmail.com>
+Subject: Re: [regression] TCP_MD5SIG on established sockets
 MIME-Version: 1.0
-In-Reply-To: <20200701112201.6449-1-matthias.bgg@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_3945 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3928)
+Thread-Topic: TCP_MD5SIG on established sockets
+Thread-Index: DVmdKoIdfg8hNWwm7FgIos17cuNI0g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+----- On Jun 30, 2020, at 11:36 PM, Eric Dumazet edumazet@google.com wrote:
 
-On 7/1/20 1:22 PM, matthias.bgg@kernel.org wrote:
-> From: Matthias Brugger <mbrugger@suse.com>
+> On Tue, Jun 30, 2020 at 7:59 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>>
+>> On Tue, Jun 30, 2020 at 07:30:43PM -0700, Eric Dumazet wrote:
+>> >
+>> > I made this clear in the changelog, do we want comments all over the places ?
+>> > Do not get me wrong, we had this bug for years and suddenly this is a
+>> > big deal...
+>>
+>> I thought you were adding a new pair of smp_rmb/smp_wmb.  If they
+>> already exist in the code then I agree it's not a big deal.  But
+>> adding a new pair of bogus smp_Xmb's is bad for maintenance.
+>>
 > 
-> The driver relies on the compatible string from DT to determine which
-> FW configuration file it should load. The DTS spec allows for '/' as
-> part of the compatible string. We change this to '-' so that we will
-> still be able to load the config file, even when the compatible has a
-> '/'. This fixes explicitly the firmware loading for
-> "solidrun,cubox-i/q".
+> If I knew so many people were excited about TCP / MD5, I would have
+> posted all my patches on lkml ;)
 > 
-> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+> Without the smp_wmb() we would still need something to prevent KMSAN
+> from detecting that we read uninitialized bytes,
+> if key->keylen is increased.  (initial content of key->key[] is garbage)
 > 
-> ---
-> 
-> Changes in v3:
-> - use len variable to store length of string (Hans de Goede)
-> - fix for loop to stop on first NULL-byte (Hans de Goede)
-> 
-> Changes in v2:
-> - use strscpy instead of strncpy (Hans de Goede)
-> - use strlen(tmp) + 1 for allocation (Hans de Goede, kernel test robot)
+> Something like this :
 
-v3 looks good to me:
+The approach below looks good to me, but you'll also need to annotate
+both tcp_md5_hash_key and tcp_md5_do_add with __no_kcsan or use
+data_race(expr) to let the concurrency sanitizer know that there is
+a known data race which is there on purpose (triggered by memcpy in tcp_md5_do_add
+and somewhere within crypto_ahash_update). See Documentation/dev-tools/kcsan.rst
+for details.
 
-Reviewed-by: Hans deGoede <hdegoede@redhat.com>
+Thanks,
 
-Regards,
-
-Hans
-
+Mathieu
 
 > 
->   .../wireless/broadcom/brcm80211/brcmfmac/of.c | 19 ++++++++++++++++---
->   1 file changed, 16 insertions(+), 3 deletions(-)
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index
+> f111660453241692a17c881dd6dc2910a1236263..c3af8180c7049d5c4987bf5c67e4aff2ed6967c9
+> 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -4033,11 +4033,9 @@ EXPORT_SYMBOL(tcp_md5_hash_skb_data);
 > 
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-> index b886b56a5e5a..a7554265f95f 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-> @@ -17,7 +17,6 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
->   {
->   	struct brcmfmac_sdio_pd *sdio = &settings->bus.sdio;
->   	struct device_node *root, *np = dev->of_node;
-> -	struct property *prop;
->   	int irq;
->   	u32 irqf;
->   	u32 val;
-> @@ -25,8 +24,22 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
->   	/* Set board-type to the first string of the machine compatible prop */
->   	root = of_find_node_by_path("/");
->   	if (root) {
-> -		prop = of_find_property(root, "compatible", NULL);
-> -		settings->board_type = of_prop_next_string(prop, NULL);
-> +		int i, len;
-> +		char *board_type;
-> +		const char *tmp;
-> +
-> +		of_property_read_string_index(root, "compatible", 0, &tmp);
-> +
-> +		/* get rid of '/' in the compatible string to be able to find the FW */
-> +		len = strlen(tmp) + 1;
-> +		board_type = devm_kzalloc(dev, len, GFP_KERNEL);
-> +		strscpy(board_type, tmp, len);
-> +		for (i = 0; i < board_type[i]; i++) {
-> +			if (board_type[i] == '/')
-> +				board_type[i] = '-';
-> +		}
-> +		settings->board_type = board_type;
-> +
->   		of_node_put(root);
->   	}
->   
+> int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct
+> tcp_md5sig_key *key)
+> {
+> -       u8 keylen = key->keylen;
+> +       u8 keylen = READ_ONCE(key->keylen); /* paired with
+> WRITE_ONCE() in tcp_md5_do_add */
+>        struct scatterlist sg;
 > 
+> -       smp_rmb(); /* paired with smp_wmb() in tcp_md5_do_add() */
+> -
+>        sg_init_one(&sg, key->key, keylen);
+>        ahash_request_set_crypt(hp->md5_req, &sg, NULL, keylen);
+>        return crypto_ahash_update(hp->md5_req);
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index
+> 99916fcc15ca0be12c2c133ff40516f79e6fdf7f..0d08e0134335a21d23702e6a5c24a0f2b3c61c6f
+> 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -1114,9 +1114,13 @@ int tcp_md5_do_add(struct sock *sk, const union
+> tcp_md5_addr *addr,
+>                /* Pre-existing entry - just update that one. */
+>                memcpy(key->key, newkey, newkeylen);
+> 
+> -               smp_wmb(); /* pairs with smp_rmb() in tcp_md5_hash_key() */
+> +               /* Pairs with READ_ONCE() in tcp_md5_hash_key().
+> +                * Also note that a reader could catch new key->keylen value
+> +                * but old key->key[], this is the reason we use __GFP_ZERO
+> +                * at sock_kmalloc() time below these lines.
+> +                */
+> +               WRITE_ONCE(key->keylen, newkeylen);
+> 
+> -               key->keylen = newkeylen;
+>                return 0;
+>        }
+> 
+> @@ -1132,7 +1136,7 @@ int tcp_md5_do_add(struct sock *sk, const union
+> tcp_md5_addr *addr,
+>                rcu_assign_pointer(tp->md5sig_info, md5sig);
+>        }
+> 
+> -       key = sock_kmalloc(sk, sizeof(*key), gfp);
+> +       key = sock_kmalloc(sk, sizeof(*key), gfp | __GFP_ZERO);
+>        if (!key)
+>                return -ENOMEM;
+>         if (!tcp_alloc_md5sig_pool()) {
 
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
