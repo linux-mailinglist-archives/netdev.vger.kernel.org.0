@@ -2,89 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9929211483
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 22:39:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 939E62114A6
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 23:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726958AbgGAUjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 16:39:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54896 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725535AbgGAUjX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 16:39:23 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 395DA20760;
-        Wed,  1 Jul 2020 20:39:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593635962;
-        bh=Mv90pdTDmmCVPBQ+ilKuLGK6rDI94hGPVOU6z7qxgNo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vn7yonK6UORJ8OJ5CLMTZ2+x/gvdycGSabhl28wLOeWEfNZZtkdKMc0I9L12/I0dk
-         bB9jRJM9ZAsrHrmNUN0Xe9QCw5cG+b24CXLz5B4CAtKfE3rFp/wnozWmeRUhlpAwyP
-         D81gDHxv1SI3ntiRTx4ygWm8AtJKSXVEdFaatGao=
-Date:   Wed, 1 Jul 2020 21:39:20 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>, x86@kernel.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-mm@kvack.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH v2 08/16] spi: davinci: Remove uninitialized_var() usage
-Message-ID: <20200701203920.GC3776@sirena.org.uk>
-References: <20200620033007.1444705-1-keescook@chromium.org>
- <20200620033007.1444705-9-keescook@chromium.org>
+        id S1726255AbgGAVBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 17:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725535AbgGAVBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 17:01:20 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D881C08C5C1;
+        Wed,  1 Jul 2020 14:01:20 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id g13so19587597qtv.8;
+        Wed, 01 Jul 2020 14:01:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dfjEswI4f5ZfjSVMaT2VMATewg6pW92LXU97L+Hb8kE=;
+        b=TjuF+vQF/XkqDZ1l9gZLylVT9+Rq+0LO67iJSbfO5NonZr0chOjYH7UFT27V4Bn0By
+         z3nybExvRPNcG7YCjMRbgVrpCrML4m0YaS+dFivSet5FdWaFhi2dBD/6Tw46u2wVAuUD
+         Y11Z2EvRsGfcPK53ltJJSRjeEu8LS6jh8OJggqPk+oL/TM4tTCAgS11ZHr2I9TBuRv0d
+         hJhuqkYcdUFZqfxJZeBKDJyy8xc0efAYHdhlU+kBhsZy5lho7KeflHaAcj0hRp4z9xsg
+         Ooae6gZgt4SlB8jk+3xQ1vs3iE9yRbxlKE4zeBNeG5gHJ9Mb6y/K4JN/+IfwVna6HdY5
+         Y+SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dfjEswI4f5ZfjSVMaT2VMATewg6pW92LXU97L+Hb8kE=;
+        b=i/i/nNX/Nxt9iR5SJRA55m3QsxQtFq0HKUCQymjp8XuyKnzwf1MBPa+TThyDSR9lod
+         FD15TTVdx4OwTfPLi026ePi80wGskOVOycoHQ271wiBmuLbHVl+6I2JAwmK2Q8cmyOP3
+         JzMEZan8s/olexLmy+R73SqKUjyLXNDQI28ww27KNL8IlKtiDJa9hJ43xETZzNjK7a2u
+         5s2gHjq/EEOKkhVqYXijVCRUA8kMPj+yAp8bkhCG+PtgoYtSBxH2i5DV6xaTrcqB+ioR
+         W9onr1nOnLU6EMHVyN9vJDrnPEapE9ow4RFrbKObhVKCDmYcTCf21xUbQ6WYHSeT693u
+         aX5w==
+X-Gm-Message-State: AOAM533L2qfEOThhhHfGvEHfFlBwV9ORDHDD1qcVZLwb59Pjx/3n2lsl
+        A7E+oa844iy1rLU3wrp9C9IKu2j8tObYKGqPBYg=
+X-Google-Smtp-Source: ABdhPJxXCAp0AoVWZI9q/uHwKapEjiWQYSEyVqJb2yZTfvMXZqVNP5fq3ed7qqSwMkN1PptoITlhTSX4Cd1zxFAOseE=
+X-Received: by 2002:aed:2cc5:: with SMTP id g63mr27896945qtd.59.1593637279196;
+ Wed, 01 Jul 2020 14:01:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="/Uq4LBwYP4y1W6pO"
-Content-Disposition: inline
-In-Reply-To: <20200620033007.1444705-9-keescook@chromium.org>
-X-Cookie: "Ahead warp factor 1"
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200701201307.855717-1-sdf@google.com> <20200701201307.855717-5-sdf@google.com>
+In-Reply-To: <20200701201307.855717-5-sdf@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 1 Jul 2020 14:01:08 -0700
+Message-ID: <CAEf4BzYqQ_mSpadEoj2SD8QM8CSmfaiprERBjub2tGa6NxKvNQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 4/4] selftests/bpf: test BPF_CGROUP_INET_SOCK_RELEASE
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 1, 2020 at 1:14 PM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> Simple test that enforces a single SOCK_DGRAM socker per cgroup.
+>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  .../selftests/bpf/prog_tests/udp_limit.c      | 72 +++++++++++++++++++
+>  tools/testing/selftests/bpf/progs/udp_limit.c | 42 +++++++++++
+>  2 files changed, 114 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/udp_limit.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/udp_limit.c
+>
 
---/Uq4LBwYP4y1W6pO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+[...]
 
-On Fri, Jun 19, 2020 at 08:29:59PM -0700, Kees Cook wrote:
-> Using uninitialized_var() is dangerous as it papers over real bugs[1]
-> (or can in the future), and suppresses unrelated compiler warnings (e.g.
-> "unused variable"). If the compiler thinks it is uninitialized, either
-> simply initialize the variable or make compiler changes. As a precursor
-> to removing[2] this[3] macro[4], just remove this variable since it was
-> actually unused:
+> +       fd1 = socket(AF_INET, SOCK_DGRAM, 0);
+> +       if (CHECK(fd1 < 0, "fd1", "errno %d", errno))
+> +               goto close_skeleton;
+> +
+> +       fd2 = socket(AF_INET, SOCK_DGRAM, 0);
+> +       if (CHECK(fd2 >= 0, "fd2", "errno %d", errno))
 
-Please copy maintainers on patches :(
+close(fd2);
 
-Acked-by: Mark Brown <broonie@kernel.org>
+> +               goto close_fd1;
+> +
 
---/Uq4LBwYP4y1W6pO
-Content-Type: application/pgp-signature; name="signature.asc"
+[...]
 
------BEGIN PGP SIGNATURE-----
+> +close_fd1:
+> +       close(fd1);
+> +close_skeleton:
+> +       udp_limit__destroy(skel);
+> +close_cgroup_fd:
+> +       close(cgroup_fd);
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl789HcACgkQJNaLcl1U
-h9AfDgf/RKZyImjLhB9HvSTTPElSdnVo2uGyMkLMGX5E2rrBkIm+JRHNqfloV/46
-Mx7zbEttRmKiYixfSdmsDpbg56ljycPfGBLHIZxfW4p4HDkXI2rwNl6yNQwAFGfS
-xREw+xp//6eFOklwHHWspFdXjwvYVwxwCJbntC3mxtA44GrP1RcSNdlYSRlLMUqE
-b4V1aHQtulWHWcA6qc3e7e3VH7t/F4vy9AftF3S8ckIbrmZO6+HfcvGjITyILn0T
-0ReKIdfQ/UEHEeGXnai1E9efkWymKRW43Frx6JRO6Sd4KhBeHGohovlQ3mhKLfdg
-vH1jBuQdhXfJWc+yprXAcHmpsHpQZw==
-=XnWw
------END PGP SIGNATURE-----
+nit: choosing between close_fd1 and close_skeleton (which also
+alternates!) is hard to keep track of. When clean up gets one step
+beyond trivial, I usually just initialize variables properly and do
+clean up for all exit scenario in one block:
 
---/Uq4LBwYP4y1W6pO--
+if (fd1 >= 0)
+    close(fd1);
+udp_limit__destroy(skel);
+close(cgroup_fd);
+
+It also makes later extensions simpler.
+
+
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/udp_limit.c b/tools/testing/selftests/bpf/progs/udp_limit.c
+> new file mode 100644
+> index 000000000000..af1154bfb946
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/udp_limit.c
+> @@ -0,0 +1,42 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +#include <sys/socket.h>
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +int invocations, in_use;
+
+uninitialized globals can leads to libbpf refusing to load them (due
+to COM section), Daniel just recently had this problem. So better to
+always zero-initialize them.
+
+[...]
