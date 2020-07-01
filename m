@@ -2,115 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CA5A21045F
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 09:00:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BB6C2104AC
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 09:13:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727945AbgGAG73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 02:59:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55186 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726144AbgGAG73 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 02:59:29 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0445120663;
-        Wed,  1 Jul 2020 06:59:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593586768;
-        bh=4jKtzZ1ko40boFbo3mjqHjL+8suyK1q4OV3g1eDS5lA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QghhqMlZjaCgN1+/PNq0GTU/AgNQx7L1iD7YN81Rp+TEvVl8a6tgXTyLEpRwIQJ3V
-         zic4udlUPfSFw878t/1qKr6QKbbdT51K2TMjgl89n6QO8yCeXhE7Vi8T0yT+vuJyPT
-         hbjXm6rI34VUdtEfP1dJH+k1kT25CtY6Mv3rFTr0=
-Date:   Wed, 1 Jul 2020 08:59:15 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Mark Brown <broonie@kernel.org>,
-        Takashi Iwai <tiwai@suse.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, Fred Oh <fred.oh@linux.intel.com>,
-        lee.jones@linaro.org
-Subject: Re: [net-next v4 10/12] ASoC: SOF: Introduce descriptors for SOF
- client
-Message-ID: <20200701065915.GF2044019@kroah.com>
-References: <57185aae-e1c9-4380-7801-234a13deebae@linux.intel.com>
- <20200524063519.GB1369260@kroah.com>
- <fe44419b-924c-b183-b761-78771b7d506d@linux.intel.com>
- <s5h5zcistpb.wl-tiwai@suse.de>
- <20200527071733.GB52617@kroah.com>
- <20200629203317.GM5499@sirena.org.uk>
- <20200629225959.GF25301@ziepe.ca>
- <20200630103141.GA5272@sirena.org.uk>
- <20200630113245.GG25301@ziepe.ca>
- <936d8b1cbd7a598327e1b247441fa055d7083cb6.camel@linux.intel.com>
+        id S1728084AbgGAHNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 03:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727945AbgGAHNP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 03:13:15 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA7FC03E979
+        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 00:13:15 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id m16so11468964ybf.4
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 00:13:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=8LAzAiQJxImzDJ0y6vnsDTSb4b/uaAsNN5wGkmBPsdE=;
+        b=YHAY0FLQzI+OtzsCG7icEtn7SJnrV6VWPel6aM42PNiE6gazlxC5FejmJrkQp9etea
+         dnTKxPe6F81Sx0qD/MHLd5Utvr1tnGxgmyGw8iHWHPZ0n7YEgvk+hseWMhnl14JJV136
+         2MIaOOGAe//OpP8zxxe+Fe7dLfGLqqiqsju18BYrKQRoLmSCFC1HEXF8LJpKOsid9Mi/
+         WgnXPWPej0RhXEF1kJCfpTCJBmx5soUzLbBJLZy3rBgfNhOzLsw6GPN0WSKlcEJ2YF1T
+         iNmUQcCIqOYN3+QacKj2JqRGjVU3h8Zqh1NUOz/NurfiSCz1VQ3wIm+J+KPL9GwkycbR
+         iGLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=8LAzAiQJxImzDJ0y6vnsDTSb4b/uaAsNN5wGkmBPsdE=;
+        b=M9TuvxZmil/4DKjlzkL7wZGim3tW4iuQooj8V1tXXlXhd72x8+Dceh1ZVrG8QF8Y8F
+         931v3IPcyNtHQVkaIONrPozGQS0q1DhVPUHAGf2zSYwEc4CKJLw6LySoDbhnZ5U5/ZZF
+         krVGWZoJ7/KDI1VryKXUrIoqspQx7+KZ3zZxy9sVGA5yz937WpUHdJXQSAvDs2qXJJ5f
+         rNah+Zs9YdwSlxb+itIsKopyR/9hciTRshELcU0jve0QzkEihtcpg8eK62DvxZnQEmi6
+         +V/fpbxnQrOFSIm9o0CUFxYlObsLKfsQZMlsZD2mWb4lUnbjSCznMNW5/NxmKDG1BJVo
+         aW2g==
+X-Gm-Message-State: AOAM531m8FgQwnjBct3uFDRFMpauFyqqVfPIfAqECgMuWX/iQBSFhuSQ
+        UjYWCDJmMU7lRk1qKIo403OuyDyaRbvjnKrmNWc=
+X-Google-Smtp-Source: ABdhPJyXD7qwjNg/Qqn387LepZo8E4mpXSaBAob67+H39SYusaQgdnA/39+HH6xxhXRwCRmlEWcYuwYaxCy+CZe/dp8=
+X-Received: by 2002:a25:e8b:: with SMTP id 133mr39876178ybo.102.1593587594859;
+ Wed, 01 Jul 2020 00:13:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <936d8b1cbd7a598327e1b247441fa055d7083cb6.camel@linux.intel.com>
+Received: by 2002:a25:c050:0:0:0:0:0 with HTTP; Wed, 1 Jul 2020 00:13:14 -0700 (PDT)
+Reply-To: peterjoe2002@hotmail.com
+From:   Peter Joe <peterjoe1102@gmail.com>
+Date:   Wed, 1 Jul 2020 09:13:14 +0200
+Message-ID: <CAHnmTzTMatvMj+PZ+UrXDtg1=ubFHUmZVELgTW3oL1pBu4PWZQ@mail.gmail.com>
+Subject: Regards
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 10:24:04AM -0700, Ranjani Sridharan wrote:
-> On Tue, 2020-06-30 at 08:32 -0300, Jason Gunthorpe wrote:
-> > On Tue, Jun 30, 2020 at 11:31:41AM +0100, Mark Brown wrote:
-> > > On Mon, Jun 29, 2020 at 07:59:59PM -0300, Jason Gunthorpe wrote:
-> > > > On Mon, Jun 29, 2020 at 09:33:17PM +0100, Mark Brown wrote:
-> > > > > On Wed, May 27, 2020 at 09:17:33AM +0200, Greg KH wrote:
-> > > > > > Ok, that's good to hear.  But platform devices should never
-> > > > > > be showing
-> > > > > > up as a child of a PCI device.  In the "near future" when we
-> > > > > > get the
-> > > > > > virtual bus code merged, we can convert any existing users
-> > > > > > like this to
-> > > > > > the new code.
-> > > > > What are we supposed to do with things like PCI attached FPGAs
-> > > > > and ASICs
-> > > > > in that case?  They can have host visible devices with physical
-> > > > > resources like MMIO ranges and interrupts without those being
-> > > > > split up
-> > > > > neatly as PCI subfunctions - the original use case for MFD was
-> > > > > such
-> > > > > ASICs, there's a few PCI drivers in there now. 
-> > > > Greg has been pretty clear that MFD shouldn't have been used on
-> > > > top of
-> > > > PCI drivers.
-> > > 
-> > > The proposed bus lacks resource handling, an equivalent of
-> > > platform_get_resource() and friends for example, which would be
-> > > needed
-> > > for use with physical devices.  Both that and the name suggest that
-> > > it's
-> > > for virtual devices.
-> > 
-> > Resource handling is only useful if the HW has a hard distinction
-> > between it's functional blocks. This scheme is intended for devices
-> > where that doesn't exist. The driver that attaches to the PCI device
-> > and creates the virtual devices is supposed to provide SW
-> > abstractions
-> > for the other drivers to sit on.
-> >  
-> > I'm not sure why we are calling it virtual bus.
-> Hi Jason,
-> 
-> We're addressing the naming in the next version as well. We've had
-> several people reject the name virtual bus and we've narrowed in on
-> "ancillary bus" for the new name suggesting that we have the core
-> device that is attached to the primary bus and one or more sub-devices
-> that are attached to the ancillary bus. Please let us know what you
-> think of it.
+Dear,
 
-I'm thinking that the primary person who keeps asking you to create this
-"virtual bus" was not upset about that name, nor consulted, so why are
-you changing this?  :(
+Did you receive the message i sent to you?
 
-Right now this feels like the old technique of "keep throwing crap at a
-maintainer until they get so sick of it that they do the work
-themselves..."
-
-greg k-h
+Regards,
+Peter Joe
