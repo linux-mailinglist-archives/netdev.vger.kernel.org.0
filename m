@@ -2,184 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84AA8210987
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 12:38:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07D2A210994
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 12:43:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730017AbgGAKiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 06:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729180AbgGAKiM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 06:38:12 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF3FC061755;
-        Wed,  1 Jul 2020 03:38:12 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id k5so1292816pjg.3;
-        Wed, 01 Jul 2020 03:38:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ay25oY07NOmbixOtBMWVYmhszlZHF/YFooJn+9Ipub8=;
-        b=E3KJ5G+nJ16g2CKalAuxGYpIOXxRdvvUoZBAYhyZdpv1+IRV/XdKVlrlD/ncMJRTlM
-         DQ72k5hr87hRV6RXLAwuL0790w3F/9VpHdyKak8P3gAr4vL0bnnvRfkHCl153pcBlZlT
-         b949Mmca2xjQ1NN6hqPGbAhdfzdioAVYoI7N8sWwqjUZKIjBX++yC14jJWEJapL25zIg
-         JV+HaXJ6VCDCO46HoGxHHd3AEAaMEQgvQ19V4JAKlCR0Yl2BH0JMq5i3Xp9kRdJQllZz
-         0Qa/D+Lit+3fpJeSg7DP9T5mpOAmjziidgetbF6OK0weRP6/2PZ02EEZ9Qn96+dWXfO0
-         pY5g==
+        id S1730045AbgGAKnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 06:43:52 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:52085 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729939AbgGAKnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 06:43:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593600229;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iJDnIere4ckUlcqu2vjyvbJB29ysZfytbrXR/5K7PEs=;
+        b=RALVUCmR9gp9sRHt4CA64SI+z5ffw291dGk7Ikx7LlRTHOmpv0Xg6c+rIwP8uAaqtw2Q9B
+        xKxhUsRqw5qygzGw+CtObK5ZErRCfX2zvkHBRsMsev8yLq8Yoxm2Pb1M8LZ/4TWwEAUuQI
+        GktTFF3ih0DxhtHN66GpDAdooZXs6No=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-415-lmhtQ01RNoqVVs0bor4ndA-1; Wed, 01 Jul 2020 06:43:47 -0400
+X-MC-Unique: lmhtQ01RNoqVVs0bor4ndA-1
+Received: by mail-qk1-f200.google.com with SMTP id k16so3525376qkh.12
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 03:43:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ay25oY07NOmbixOtBMWVYmhszlZHF/YFooJn+9Ipub8=;
-        b=WajHG/pkmYpDNAsT10bBQ3pI2lNAxKiHh3wWYCiLwcq/FmZ0V1DTGcjK7pdcL+e5zj
-         8Fk4N/zfPEtX+eHEt++1sFAQKzOAGlhnmzJzRfcEqRKZjYx7GViCXeiY0V0VnpLHO67K
-         4Nv4wuJQzc1XMN7iKCHcMZiShhSRCp5PZvRkYcA0fNMTjXrV9ohIff/E3xCDnWt5HqQM
-         BcZyps9ciAnCkC6QYtND83TpTYVwUW8UFlaT6fT2ZmvX+v8FutRpl4PI+NGVVAZymNiD
-         /GMk9DV/UMObCJc90dOBTDIzHR/PJC0V56g91P6hxViSdLTG2X7OZbQ6fxqhImR/G6ef
-         IYeQ==
-X-Gm-Message-State: AOAM531j0eM1EdFDkTqwAqu6ZO2wRpQwX8AzGGOZ3U+2MXTxa1tMC+jT
-        j5wsWo4LK9YDqGqQp6Nn7a7ThCZfGG/jgTh3XwqOKJ7Zr9g=
-X-Google-Smtp-Source: ABdhPJy7/D67hf5+MecXjYgpK9V7/RtGhKxzUBqStKpQiE9aKsQkiguOqWHY1pYzUUFZFqZ4rfpaxiOcOPlMiEWsdRQ=
-X-Received: by 2002:a17:90a:a393:: with SMTP id x19mr490320pjp.228.1593599891781;
- Wed, 01 Jul 2020 03:38:11 -0700 (PDT)
+        bh=iJDnIere4ckUlcqu2vjyvbJB29ysZfytbrXR/5K7PEs=;
+        b=GafPOl8sloGtlpcF55xcjUWQGemYbGH8EtsyDwEkfkpqh/zq/aEbwa7BYILBBzE+F9
+         y0AszYwVXGVJh7PEo5jYtW4geC4cngO0Uca6wJtDJebCzBx6QwjYmSQKAovqAfIsCNsx
+         85mv/iHdHucIMyLd4Eyqv6VLDoGGFd5/6Fhv9j6+O/xsFw6s6SRj+0AGFtFjUZ2LBM2f
+         PUNM5ur9WXZ8c2toYofSG/tXLqMaZB0palAvkybBvJtzphv2JU0bk/Ndbm9qX1doI5e/
+         JKB6gB9PlUGowb+p33F0gXoyo1WkJSJ0UtimSQVbLi8R2Fevgs52k9Iq+ExkdxQu5/9+
+         MK/g==
+X-Gm-Message-State: AOAM532Cy0+CQDxdwtXkLK8XGsWYmlMHfEDj/rF4LgNlkJZT3b4q51El
+        i33k77vd7xxCKethU8fYLXRTnSp29QvWQX4CuJYYoQsGD+8W01PPAyDR+TxdqHgrvkPkJi5hFvh
+        Wus6O4sJo3xzZdnu9e+0bNtqgbrg4tQYR
+X-Received: by 2002:a05:620a:11b3:: with SMTP id c19mr24282750qkk.203.1593600226407;
+        Wed, 01 Jul 2020 03:43:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxA+6E7kiqCtAV/8nSkNYVRZ2RneWi1RECnUnttFwOq2tXRpiCh8ne4TffX0pRmGxcg2IGuMwNPewmLwloiNcE=
+X-Received: by 2002:a05:620a:11b3:: with SMTP id c19mr24282729qkk.203.1593600226047;
+ Wed, 01 Jul 2020 03:43:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200701061233.31120-1-calvin.johnson@oss.nxp.com> <20200701061233.31120-4-calvin.johnson@oss.nxp.com>
-In-Reply-To: <20200701061233.31120-4-calvin.johnson@oss.nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 1 Jul 2020 13:37:58 +0300
-Message-ID: <CAHp75VdMdefZpRh5hE0pWTAYoA-VJepTCrCHD-MYZa9P_aqk6w@mail.gmail.com>
-Subject: Re: [net-next PATCH v2 3/3] net: dpaa2-mac: Add ACPI support for
- DPAA2 MAC driver
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jon <jon@solid-run.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux.cj@gmail.com, "David S. Miller" <davem@davemloft.net>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20200611113404.17810-1-mst@redhat.com> <20200611113404.17810-3-mst@redhat.com>
+ <20200611152257.GA1798@char.us.oracle.com> <CAJaqyWdwXMX0JGhmz6soH2ZLNdaH6HEdpBM8ozZzX9WUu8jGoQ@mail.gmail.com>
+ <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com>
+ <20200622114622-mutt-send-email-mst@kernel.org> <CAJaqyWfrf94Gc-DMaXO+f=xC8eD3DVCD9i+x1dOm5W2vUwOcGQ@mail.gmail.com>
+ <20200622122546-mutt-send-email-mst@kernel.org> <CAJaqyWfbouY4kEXkc6sYsbdCAEk0UNsS5xjqEdHTD7bcTn40Ow@mail.gmail.com>
+In-Reply-To: <CAJaqyWfbouY4kEXkc6sYsbdCAEk0UNsS5xjqEdHTD7bcTn40Ow@mail.gmail.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Wed, 1 Jul 2020 12:43:09 +0200
+Message-ID: <CAJaqyWefMHPguj8ZGCuccTn0uyKxF9ZTEi2ASLtDSjGNb1Vwsg@mail.gmail.com>
+Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 1, 2020 at 9:13 AM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
+On Tue, Jun 23, 2020 at 6:15 PM Eugenio Perez Martin
+<eperezma@redhat.com> wrote:
 >
-> Modify dpaa2_mac_connect() to support ACPI along with DT.
-> Modify dpaa2_mac_get_node() to get the dpmac fwnode from either
-> DT or ACPI.
-> Replace of_get_phy_mode with fwnode_get_phy_mode to get
-> phy-mode for a dpmac_node.
-> Define and use helper function find_phy_device() to find phy_dev
-> that is later connected to mac->phylink.
+> On Mon, Jun 22, 2020 at 6:29 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Mon, Jun 22, 2020 at 06:11:21PM +0200, Eugenio Perez Martin wrote:
+> > > On Mon, Jun 22, 2020 at 5:55 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > >
+> > > > On Fri, Jun 19, 2020 at 08:07:57PM +0200, Eugenio Perez Martin wrote:
+> > > > > On Mon, Jun 15, 2020 at 2:28 PM Eugenio Perez Martin
+> > > > > <eperezma@redhat.com> wrote:
+> > > > > >
+> > > > > > On Thu, Jun 11, 2020 at 5:22 PM Konrad Rzeszutek Wilk
+> > > > > > <konrad.wilk@oracle.com> wrote:
+> > > > > > >
+> > > > > > > On Thu, Jun 11, 2020 at 07:34:19AM -0400, Michael S. Tsirkin wrote:
+> > > > > > > > As testing shows no performance change, switch to that now.
+> > > > > > >
+> > > > > > > What kind of testing? 100GiB? Low latency?
+> > > > > > >
+> > > > > >
+> > > > > > Hi Konrad.
+> > > > > >
+> > > > > > I tested this version of the patch:
+> > > > > > https://lkml.org/lkml/2019/10/13/42
+> > > > > >
+> > > > > > It was tested for throughput with DPDK's testpmd (as described in
+> > > > > > http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html)
+> > > > > > and kernel pktgen. No latency tests were performed by me. Maybe it is
+> > > > > > interesting to perform a latency test or just a different set of tests
+> > > > > > over a recent version.
+> > > > > >
+> > > > > > Thanks!
+> > > > >
+> > > > > I have repeated the tests with v9, and results are a little bit different:
+> > > > > * If I test opening it with testpmd, I see no change between versions
+> > > >
+> > > >
+> > > > OK that is testpmd on guest, right? And vhost-net on the host?
+> > > >
+> > >
+> > > Hi Michael.
+> > >
+> > > No, sorry, as described in
+> > > http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html.
+> > > But I could add to test it in the guest too.
+> > >
+> > > These kinds of raw packets "bursts" do not show performance
+> > > differences, but I could test deeper if you think it would be worth
+> > > it.
+> >
+> > Oh ok, so this is without guest, with virtio-user.
+> > It might be worth checking dpdk within guest too just
+> > as another data point.
+> >
+>
+> Ok, I will do it!
+>
+> > > > > * If I forward packets between two vhost-net interfaces in the guest
+> > > > > using a linux bridge in the host:
+> > > >
+> > > > And here I guess you mean virtio-net in the guest kernel?
+> > >
+> > > Yes, sorry: Two virtio-net interfaces connected with a linux bridge in
+> > > the host. More precisely:
+> > > * Adding one of the interfaces to another namespace, assigning it an
+> > > IP, and starting netserver there.
+> > > * Assign another IP in the range manually to the other virtual net
+> > > interface, and start the desired test there.
+> > >
+> > > If you think it would be better to perform then differently please let me know.
+> >
+> >
+> > Not sure why you bother with namespaces since you said you are
+> > using L2 bridging. I guess it's unimportant.
+> >
+>
+> Sorry, I think I should have provided more context about that.
+>
+> The only reason to use namespaces is to force the traffic of these
+> netperf tests to go through the external bridge. To test netperf
+> different possibilities than the testpmd (or pktgen or others "blast
+> of frames unconditionally" tests).
+>
+> This way, I make sure that is the same version of everything in the
+> guest, and is a little bit easier to manage cpu affinity, start and
+> stop testing...
+>
+> I could use a different VM for sending and receiving, but I find this
+> way a faster one and it should not introduce a lot of noise. I can
+> test with two VM if you think that this use of network namespace
+> introduces too much noise.
+>
+> Thanks!
+>
+> > > >
+> > > > >   - netperf UDP_STREAM shows a performance increase of 1.8, almost
+> > > > > doubling performance. This gets lower as frame size increase.
 
-...
+Regarding UDP_STREAM:
+* with event_idx=on: The performance difference is reduced a lot if
+applied affinity properly (manually assigning CPU on host/guest and
+setting IRQs on guest), making them perform equally with and without
+the patch again. Maybe the batching makes the scheduler perform
+better.
 
->  #include "dpaa2-eth.h"
->  #include "dpaa2-mac.h"
+> > > > >   - rests of the test goes noticeably worse: UDP_RR goes from ~6347
+> > > > > transactions/sec to 5830
 
-> +#include <linux/acpi.h>
-> +#include <linux/platform_device.h>
+* Regarding UDP_RR, TCP_STREAM, and TCP_RR, proper CPU pinning makes
+them perform similarly again, only a very small performance drop
+observed. It could be just noise.
+** All of them perform better than vanilla if event_idx=off, not sure
+why. I can try to repeat them if you suspect that can be a test
+failure.
 
-Can we put (more) generic headers atop of (more) private ones?
+* With testpmd and event_idx=off, if I send from the VM to host, I see
+a performance increment especially in small packets. The buf api also
+increases performance compared with only batching: Sending the minimum
+packet size in testpmd makes pps go from 356kpps to 473 kpps. Sending
+1024 length UDP-PDU makes it go from 570kpps to 64 kpps.
 
-...
+Something strange I observe in these tests: I get more pps the bigger
+the transmitted buffer size is. Not sure why.
 
-> +       struct fwnode_handle *fsl_mc_fwnode = dev->parent->parent->fwnode;
+** Sending from the host to the VM does not make a big change with the
+patches in small packets scenario (minimum, 64 bytes, about 645
+without the patch, ~625 with batch and batch+buf api). If the packets
+are bigger, I can see a performance increase: with 256 bits, it goes
+from 590kpps to about 600kpps, and in case of 1500 bytes payload it
+gets from 348kpps to 528kpps, so it is clearly an improvement.
 
-dev_fwnode() please.
+* with testpmd and event_idx=on, batching+buf api perform similarly in
+both directions.
 
-> +       struct fwnode_handle *dpmacs, *dpmac = NULL;
-> +       struct device *fsl_mc = dev->parent->parent;
+All of testpmd tests were performed with no linux bridge, just a
+host's tap interface (<interface type='ethernet'> in xml), with a
+testpmd txonly and another in rxonly forward mode, and using the
+receiving side packets/bytes data. Guest's rps, xps and interrupts,
+and host's vhost threads affinity were also tuned in each test to
+schedule both testpmd and vhost in different processors.
 
-So. something like
-       struct device *fsl_mc = dev->parent->parent;
-       struct fwnode_handle *fsl_mc_fwnode = dev_fwnode(fsl_mc);
+I will send the v10 RFC with the small changes requested by Stefan and Jason.
 
-...
+Thanks!
 
-> +               dpmacs = device_get_named_child_node(fsl_mc, "dpmacs");
 
-If you have fwnode, why to use device_* API?
-               dpmacs = fwnode_get_named_child_node(fsl_mc_fwnode, "dpmacs");
 
-> +               if (!dpmacs)
-> +                       return NULL;
-> +
-> +               while ((dpmac = fwnode_get_next_child_node(dpmacs, dpmac))) {
-> +                       err = fwnode_property_read_u32(dpmac, "reg", &id);
-> +                       if (err)
-> +                               continue;
-> +                       if (id == dpmac_id)
-> +                               return dpmac;
-> +               }
 
-...
 
-> +       } else if (is_acpi_node(fsl_mc_fwnode)) {
 
-is_acpi_device_node() ?
 
-> +               adev = acpi_find_child_device(ACPI_COMPANION(dev->parent),
-> +                                             dpmac_id, false);
-> +               if (adev)
+> > > >
+> > > > OK so it seems plausible that we still have a bug where an interrupt
+> > > > is delayed. That is the main difference between pmd and virtio.
+> > > > Let's try disabling event index, and see what happens - that's
+> > > > the trickiest part of interrupts.
+> > > >
+> > >
+> > > Got it, will get back with the results.
+> > >
+> > > Thank you very much!
+> > >
+> > > >
+> > > >
+> > > > >   - TCP_STREAM goes from ~10.7 gbps to ~7Gbps
+> > > > >   - TCP_RR from 6223.64 transactions/sec to 5739.44
+> > > >
+> >
 
-> +                       return (&adev->fwnode);
-
-No need to have parentheses. Don't we have some special macro to get
-fwnode out of ACPI device?
-
-...
-
-> +       err = fwnode_get_phy_mode(dpmac_node);
-> +       if (err > 0)
-> +               return err;
-
-Positive?! Why? What's going on here?
-
-...
-
-> +       if (is_of_node(dpmac_node))
-> +               err = phylink_of_phy_connect(mac->phylink,
-> +                                            to_of_node(dpmac_node), 0);
-> +       else if (is_acpi_node(dpmac_node)) {
-> +               phy_dev = find_phy_device(dpmac_node);
-> +               if (IS_ERR(phy_dev))
-> +                       goto err_phylink_destroy;
-> +               err = phylink_connect_phy(mac->phylink, phy_dev);
-
-Can't you rather provide phylink_fwnode_connect_phy API and drop this
-conditional tree entirely?
-
-...
-
-> +       if (is_of_node(dpmac_node))
-
-Redundant.
-
-> +               of_node_put(to_of_node(dpmac_node));
-
-Honestly, looking at this code, I think one needs a bit more time to
-get into fwnode paradigm and APIs.
-
-...
-
-> +       if (is_of_node(dpmac_node))
-
-Ditto.
-
-> +               of_node_put(to_of_node(dpmac_node));
-
--- 
-With Best Regards,
-Andy Shevchenko
