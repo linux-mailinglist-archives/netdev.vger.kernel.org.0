@@ -2,156 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC48210F75
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 17:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0753A210F7B
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 17:39:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732016AbgGAPie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 11:38:34 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24298 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1731803AbgGAPid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 11:38:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593617911;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Py/4SXH4WezveNFYu/+AP+Bhfed8tqRk59vhVofy0v8=;
-        b=LmBQU4KppqXekRt9X1jkQ4GHSIcVKCv3VWP18LJeCRfiaR6t1UoivGSXb13BTWCU/jpxO8
-        dgpZVRKHWv28lZXh+Q/4M1LFCqWtW1814TI7tnGMOZU0Zy1ip4slk3NnvYqKsesKKrbfuf
-        2D0VStaJIeI3vt68tqMAd+L7VnXRzLE=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-68-5eTBrKpQMdGd5Bi0ngFmFA-1; Wed, 01 Jul 2020 11:38:29 -0400
-X-MC-Unique: 5eTBrKpQMdGd5Bi0ngFmFA-1
-Received: by mail-ed1-f72.google.com with SMTP id y66so14205849ede.19
-        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 08:38:29 -0700 (PDT)
+        id S1732100AbgGAPjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 11:39:05 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:46205 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731815AbgGAPjD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 11:39:03 -0400
+Received: by mail-pf1-f196.google.com with SMTP id b16so11141325pfi.13;
+        Wed, 01 Jul 2020 08:39:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Py/4SXH4WezveNFYu/+AP+Bhfed8tqRk59vhVofy0v8=;
-        b=DnhJVFwuLOPLzUaGlin/P65VxpXVhTA9Id1lkqGY+C3cE3l7oTfG+nYIfE4f4/kwIs
-         oAO9GXzbPR0Z45837vJXdlgDbwRcdvGdToyq9JX6NsowxyyF6bZJ0uvIFY+neV6gzItM
-         NqgVizRr98p0WbQA+ytwLEobiH/F5enjMWPmntFm5hO9E4aFrf8TaGR5gB9x7XBTKGDX
-         cSl1T8BB82sJOoxi+LE0htcvZZ9qkD5OzjkU8XTJhABjeOwFEtPO7Y1+r6Spxc2ILxaT
-         /QgCQF76bpv/p0cBtJNMyqog8OQjX9Opaff2GIzhlN93jPrYC1eufqIIy2Yt7xSExCTo
-         9bbg==
-X-Gm-Message-State: AOAM532Eq7V+5xQOGIg2M+ydxlFm9H/NGx6zL1Oo8E6fXejMT4EX7kRz
-        e3B8K9kHnwZGxfRLzPVC3+oUmx0FdeLLQ4ZoeHL2Hl15VobECGc1Yeg5DK8HyPTy23vtqmyW/TR
-        2IhzM7Kt3Km0LLG4A
-X-Received: by 2002:a17:906:a081:: with SMTP id q1mr18682461ejy.499.1593617908049;
-        Wed, 01 Jul 2020 08:38:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy54o6ziuAtiZt1wxVzc00dbD4erN4UwBHRUGEg3DjhuOuIzpxwfUP54vl+2dn0vnK85F/E9Q==
-X-Received: by 2002:a17:906:a081:: with SMTP id q1mr18682427ejy.499.1593617907763;
-        Wed, 01 Jul 2020 08:38:27 -0700 (PDT)
-Received: from x1.localdomain ([2a0e:5700:4:11:334c:7e36:8d57:40cb])
-        by smtp.gmail.com with ESMTPSA id d12sm6806675edx.80.2020.07.01.08.38.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jul 2020 08:38:27 -0700 (PDT)
-Subject: Re: [PATCH] brcmfmac: expose firmware config files through modinfo
-To:     matthias.bgg@kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Chung-Hsien Hsu <stanley.hsu@cypress.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Double Lo <double.lo@cypress.com>,
-        Frank Kao <frank.kao@cypress.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
-        netdev@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Matthias Brugger <mbrugger@suse.com>,
-        Saravanan Shanmugham <saravanan.shanmugham@cypress.com>,
-        brcm80211-dev-list@cypress.com, linux-kernel@vger.kernel.org,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Soeren Moch <smoch@web.de>
-References: <20200701153123.25602-1-matthias.bgg@kernel.org>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <338e3cff-dfa0-c588-cf53-a160d75af2ee@redhat.com>
-Date:   Wed, 1 Jul 2020 17:38:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AZesbQnE9xZtAvlp8hgGkQiaXBzVdBqKAV0FPQQ6oZs=;
+        b=lgnO2u1MArWinys5+t5FLanYeZvQaGvwmrH7PjH3hehbJoNyDwgCJsA0dVXc/Dgzt7
+         sTZ5G80nXFJVak54UI4jSEV8Mn7f7YRFL/HY3lyNba4tMXTqFperQcF0BMb1PJAZjRId
+         KCcUG69SffNThv8FDjooggmKiooQjgIikCnDWzfGAfV/d3vrHT6ScyHLsM4wrhM+fgs/
+         0+Tzb/M/a0cAqz6t/QCp9d2m4moXI9XAWgHO7vCXXkqOh2PAmOiyDar0um6w/CyM00o8
+         eejj6Vxb/UU8bSYSwlhSnswCXFuf7ircU+qbN5oaamWlKXt00aXyIZRsN3rpMCj+5/KO
+         SZng==
+X-Gm-Message-State: AOAM531rgLOw6E99NqCUB1IpbwbjLCXFLO91gFS5srjNlnuxD3nCS2fR
+        qtWHoyIM+Vn/TS9yFQehcSM=
+X-Google-Smtp-Source: ABdhPJwcc1ftRiobDwYJoEvcTEgwjxcf5bDCUJdlkJWOMFVXK83NcGgXQfCysyiX5lkFdVIUl46mrA==
+X-Received: by 2002:aa7:9906:: with SMTP id z6mr25183903pff.60.1593617941931;
+        Wed, 01 Jul 2020 08:39:01 -0700 (PDT)
+Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
+        by smtp.gmail.com with ESMTPSA id i196sm6357971pgc.55.2020.07.01.08.39.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jul 2020 08:39:00 -0700 (PDT)
+Received: by 42.do-not-panic.com (Postfix, from userid 1000)
+        id 76FA2403DC; Wed,  1 Jul 2020 15:38:59 +0000 (UTC)
+Date:   Wed, 1 Jul 2020 15:38:59 +0000
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>, ast@kernel.org,
+        axboe@kernel.dk, bfields@fieldses.org,
+        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
+        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
+        davem@davemloft.net, dhowells@redhat.com,
+        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
+        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
+        keyrings@vger.kernel.org, kuba@kernel.org,
+        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
+        philipp.reisner@linbit.com, ravenexp@gmail.com,
+        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
+        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
+        netdev@vger.kernel.org, markward@linux.ibm.com, mcgrof@kernel.org,
+        linux-s390 <linux-s390@vger.kernel.org>
+Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
+ seems to break linux bridge on s390x (bisected)
+Message-ID: <20200701153859.GT4332@42.do-not-panic.com>
+References: <ea41e2a9-61f7-aec1-79e5-7b08b6dd5119@de.ibm.com>
+ <4e27098e-ac8d-98f0-3a9a-ea25242e24ec@de.ibm.com>
+ <4d8fbcea-a892-3453-091f-d57c03f9aa90@de.ibm.com>
+ <1263e370-7cee-24d8-b98c-117bf7c90a83@de.ibm.com>
+ <20200626025410.GJ4332@42.do-not-panic.com>
+ <20200630175704.GO13911@42.do-not-panic.com>
+ <b24d8dae-1872-ba2c-acd4-ed46c0781317@de.ibm.com>
+ <a6792135-3285-0861-014e-3db85ea251dc@i-love.sakura.ne.jp>
+ <20200701135324.GS4332@42.do-not-panic.com>
+ <8d714a23-bac4-7631-e5fc-f97c20a46083@i-love.sakura.ne.jp>
 MIME-Version: 1.0
-In-Reply-To: <20200701153123.25602-1-matthias.bgg@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8d714a23-bac4-7631-e5fc-f97c20a46083@i-love.sakura.ne.jp>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 7/1/20 5:31 PM, matthias.bgg@kernel.org wrote:
-> From: Matthias Brugger <mbrugger@suse.com>
+On Wed, Jul 01, 2020 at 11:08:57PM +0900, Tetsuo Handa wrote:
+> On 2020/07/01 22:53, Luis Chamberlain wrote:
+> >> Well, it is not br_stp_call_user() but br_stp_start() which is expecting
+> >> to set sub_info->retval for both KWIFEXITED() case and KWIFSIGNALED() case.
+> >> That is, sub_info->retval needs to carry raw value (i.e. without "umh: fix
+> >> processed error when UMH_WAIT_PROC is used" will be the correct behavior).
+> > 
+> > br_stp_start() doesn't check for the raw value, it just checks for err
+> > or !err. So the patch, "umh: fix processed error when UMH_WAIT_PROC is
+> > used" propagates the correct error now.
 > 
-> Apart from a firmware binary the chip needs a config file used by the
-> FW. Add the config files to modinfo so that they can be read by
-> userspace.
+> No. If "/sbin/bridge-stp virbr0 start" terminated due to e.g. SIGSEGV
+> (for example, by inserting "kill -SEGV $$" into right after "#!/bin/sh" line),
+> br_stp_start() needs to select BR_KERNEL_STP path. We can't assume that
+> /sbin/bridge-stp is always terminated by exit() syscall (and hence we can't
+> ignore KWIFSIGNALED() case in call_usermodehelper_exec_sync()).
 
-The configfile firmware filename is dynamically generated, just adding the list
-of all currently shipped ones is not really helpful and this is going to get
-out of sync with what we actually have in linux-firmware.
+Ah, well that would be a different fix required, becuase again,
+br_stp_start() does not untangle the correct error today really.
+I also I think it would be odd odd that SIGSEGV or another signal 
+is what was terminating Christian's bridge stp call, but let's
+find out!
 
-I must honestly say that I'm not a fan of this, I guess you are trying to
-get some tool which builds a minimal image, such as an initrd generator
-to add these files to the image ?
+Note we pass 0 to the options to wait so the mistake here could indeed
+be that we did not need KWIFSIGNALED(). I was afraid of this prospect...
+as it other implications.
 
-I do not immediately have a better idea, but IMHO the solution
-this patch proposes is not a good one, so nack from me for this change.
+It means we either *open code* all callers, or we handle this in a
+unified way on the umh. And if we do handle this in a unified way, it
+then begs the question as to *what* do we pass for the signals case and
+continued case. Below we just pass the signal, and treat continued as
+OK, but treating continued as OK would also be a *new* change as well.
 
-Regards,
+For instance (this goes just boot tested, but Christian if you can
+try this as well that would be appreciated):
 
-Hans
-
-
-
-> 
-> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
-> 
-> ---
-> 
->   .../wireless/broadcom/brcm80211/brcmfmac/sdio.c  | 16 ++++++++++++++++
->   1 file changed, 16 insertions(+)
-> 
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> index 310d8075f5d7..ba18df6d8d94 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> @@ -624,6 +624,22 @@ BRCMF_FW_DEF(4359, "brcmfmac4359-sdio");
->   BRCMF_FW_DEF(4373, "brcmfmac4373-sdio");
->   BRCMF_FW_DEF(43012, "brcmfmac43012-sdio");
->   
-> +/* firmware config files */
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac4330-sdio.Prowise-PT301.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43340-sdio.meegopad-t08.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43340-sdio.pov-tab-p1006w-data.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43362-sdio.cubietech,cubietruck.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430a0-sdio.jumper-ezpad-mini3.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430a0-sdio.ONDA-V80 PLUS.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430-sdio.AP6212.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430-sdio.Hampoo-D2D3_Vi8A1.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430-sdio.MUR1DX.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43455-sdio.MINIX-NEO Z83-4.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac4356-pcie.gpd-win-pocket.txt");
-> +
->   static const struct brcmf_firmware_mapping brcmf_sdio_fwnames[] = {
->   	BRCMF_FW_ENTRY(BRCM_CC_43143_CHIP_ID, 0xFFFFFFFF, 43143),
->   	BRCMF_FW_ENTRY(BRCM_CC_43241_CHIP_ID, 0x0000001F, 43241B0),
-> 
-
+diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
+index bba06befbff5..d1898f5dd1fc 100644
+--- a/include/linux/sched/task.h
++++ b/include/linux/sched/task.h
+@@ -105,10 +105,12 @@ extern long kernel_wait4(pid_t, int __user *, int, struct rusage *);
+ 
+ /* Only add helpers for actual use cases in the kernel */
+ #define KWEXITSTATUS(status)		(__KWEXITSTATUS(status))
++#define KWTERMSIG(status)		(__KWTERMSIG(status))
++#define KWSTOPSIG(status)		(__KWSTOPSIG(status))
+ #define KWIFEXITED(status)		(__KWIFEXITED(status))
+-
+-/* Nonzero if STATUS indicates normal termination.  */
+-#define __KWIFEXITED(status)     (__KWTERMSIG(status) == 0)
++#define KWIFSIGNALED(status)		(__KWIFSIGNALED(status))
++#define KWIFSTOPPED(status)		(__KWIFSTOPPED(status))
++#define KWIFCONTINUED(status)		(__KWIFCONTINUED(status))
+ 
+ /* If KWIFEXITED(STATUS), the low-order 8 bits of the status.  */
+ #define __KWEXITSTATUS(status)   (((status) & 0xff00) >> 8)
+@@ -116,6 +118,24 @@ extern long kernel_wait4(pid_t, int __user *, int, struct rusage *);
+ /* If KWIFSIGNALED(STATUS), the terminating signal.  */
+ #define __KWTERMSIG(status)      ((status) & 0x7f)
+ 
++/* If KWIFSTOPPED(STATUS), the signal that stopped the child.  */
++#define __KWSTOPSIG(status)      __KWEXITSTATUS(status)
++
++/* Nonzero if STATUS indicates normal termination.  */
++#define __KWIFEXITED(status)     (__KWTERMSIG(status) == 0)
++
++/* Nonzero if STATUS indicates termination by a signal.  */
++#define __KWIFSIGNALED(status) \
++	(((signed char) (((status) & 0x7f) + 1) >> 1) > 0)
++
++/* Nonzero if STATUS indicates the child is stopped.  */
++#define __KWIFSTOPPED(status)    (((status) & 0xff) == 0x7f)
++
++/* Nonzero if STATUS indicates the child continued after a stop. */
++#define __KWIFCONTINUED(status) ((status) == __KW_CONTINUED)
++
++#define __KW_CONTINUED		0xffff
++
+ extern void free_task(struct task_struct *tsk);
+ 
+ /* sched_exec is called by processes performing an exec */
+diff --git a/kernel/umh.c b/kernel/umh.c
+index f81e8698e36e..c98fb1ed90c9 100644
+--- a/kernel/umh.c
++++ b/kernel/umh.c
+@@ -156,6 +156,18 @@ static void call_usermodehelper_exec_sync(struct subprocess_info *sub_info)
+ 		 */
+ 		if (KWIFEXITED(ret))
+ 			sub_info->retval = KWEXITSTATUS(ret);
++		/*
++		 * Do we really want to be passing the signal, or do we pass
++		 * a single error code for all cases?
++		 */
++		else if (KWIFSIGNALED(ret))
++			sub_info->retval = KWTERMSIG(ret);
++		/* Same here */
++		else if (KWIFSTOPPED((ret)))
++			sub_info->retval = KWSTOPSIG(ret);
++		/* And are we really sure we want this? */
++		else if (KWIFCONTINUED((ret)))
++			sub_info->retval = 0;
+ 	}
+ 
+ 	/* Restore default kernel sig handler */
