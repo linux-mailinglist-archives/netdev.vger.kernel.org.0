@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED52B210DCB
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 16:33:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6751F210DCC
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 16:33:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731539AbgGAOde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 10:33:34 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:51369 "EHLO
+        id S1731473AbgGAOdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 10:33:37 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:35193 "EHLO
         new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730852AbgGAOdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 10:33:33 -0400
+        by vger.kernel.org with ESMTP id S1730852AbgGAOdh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 10:33:37 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 311A55801C9;
-        Wed,  1 Jul 2020 10:33:32 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 872C95801C9;
+        Wed,  1 Jul 2020 10:33:35 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 01 Jul 2020 10:33:32 -0400
+  by compute4.internal (MEProxy); Wed, 01 Jul 2020 10:33:35 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=m+dQ/jpzyNeWzyaL4ZdzLM6JDCSZfctQGAth1HeHczo=; b=YgFaQ4rS
-        QPuFr/anGqR3HYy7QItYo23/hCyVlYkKfK+sHobEruwLKFgZ3C0NXDfxuP7SD+tx
-        oyfwOCbC/ppicFuAMdQnlEBc9PsCn9KkkAOvzQtA4vudL+fuDuWucNGa9HNd+zCb
-        Kg8D49TIN+GxJUxVQrY+KNn3ibF9XKyTcDdv7tLhoq2+XBkyDSLTgK2u4VvyiqDE
-        yoYUceb4iNzdbUt/Dtvm1u4e+4r+Z9RiH4ae7msJ43O07N7uV12iHUFLn9d+UE5X
-        ddgI+rYjV1tTFvNPOMsCc1rZz1eJno5B3lzhF1qgCkIyCLCr7owFGneJRgd67TUg
-        wto5yIP95mzPqQ==
-X-ME-Sender: <xms:vJ78XjH8OcxvfvFA1w2QVu1CpipT3BWv5T75OfYBowsa__PdswpWaw>
+        fm3; bh=HCpzzRCZrdEpg8MSd1C+6PECzgZQklCT45ikPFxw74g=; b=Yr2W+zjQ
+        3MINU2T20YT6Fsh/RfEApDQN3EXppUmzISeeMSKt2DSYj7HivPON2kO4XkyeCB1A
+        u4NL6p+XaEITDM4XyXaNjg1TjjIhob6PDLQfnhEEj148idG/YYTALCe3oF7dZY72
+        Q9yVEF24KGgqZfUB95sm4vsPrRrXYlNW3fETrZ6W0D7dPI3/1eeWfvGuThYLDEJh
+        pBw55mT9J/vT3iGsHymt9IKyJ9hJBqtAMJoU+bgM6NrS0YLezp1E0boSglg+2WjK
+        sFHOO3t4QtcvwY01oSAuKRsLFQwSmeaT2pUCmR/IByIwsOh5s1LMq/YYtlM9ovoB
+        I+W1gvfoLTxaHQ==
+X-ME-Sender: <xms:v578Xn6FxzkD4-lPceUGGPXHPhvoDMmwJkfxymTchEt8RvFO7I3JhQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrtddvgdejlecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepudelfedrgeejrdduieehrddvhedu
-    necuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:vJ78XgWDZlARMfcfbu2nKygv3aggUkmAujbw5tx5F2U3CXtgEx3tmg>
-    <xmx:vJ78XlKfWGs9seqAi6JAZVEEp8sKJMZWjZ16A68l18JVc8_FJmqktQ>
-    <xmx:vJ78XhHuWpRdKe2msfjBG8O-uEUgmrETivOwHzEjBUUvUSssDS4uiw>
-    <xmx:vJ78XiMJ3mXpceYCqI3gUXFmcS9_Lg6LGfE2r7fYpY6YX5lMUuk1Eg>
+X-ME-Proxy: <xmx:v578Xs4mAXjjRghqvLNI2-Dvk8EB0MIZAkeYV2luplo8zfTVGOw72A>
+    <xmx:v578XufxooKYOKhrySay0f1KrMgN87CT7oplvl1h6P5SuGkTt6KCRQ>
+    <xmx:v578XoL1jZyKV1LGT8imQM5g_k1JOJ7IfSTl9TmbXLuUK1rQc_BdlA>
+    <xmx:v578XoA7ZgiquQNswsVK_nPDu7PwBKTFBVu--toiYPYKElNVjfUkBg>
 Received: from shredder.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8DE04328005D;
-        Wed,  1 Jul 2020 10:33:28 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 395BF3280065;
+        Wed,  1 Jul 2020 10:33:32 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
@@ -51,9 +51,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
         vivien.didelot@gmail.com, f.fainelli@gmail.com,
         danieller@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 5/9] devlink: Add a new devlink port lanes attribute and pass to netlink
-Date:   Wed,  1 Jul 2020 17:32:47 +0300
-Message-Id: <20200701143251.456693-6-idosch@idosch.org>
+Subject: [PATCH net-next v2 6/9] mlxsw: Set port split ability attribute in driver
+Date:   Wed,  1 Jul 2020 17:32:48 +0300
+Message-Id: <20200701143251.456693-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200701143251.456693-1-idosch@idosch.org>
 References: <20200701143251.456693-1-idosch@idosch.org>
@@ -66,82 +66,142 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Danielle Ratson <danieller@mellanox.com>
 
-Add a new devlink port attribute that indicates the port's number of lanes.
+Currently, port attributes like flavour, port number and whether the port
+was split are set when initializing a port.
 
-Drivers are expected to set it via devlink_port_attrs_set(), before
-registering the port.
-
-The attribute is not passed to user space in case the number of lanes is
-invalid (0).
+Set the split ability of the port as well, based on port_mapping->width
+field and split attribute of devlink port in spectrum, so that it could be
+easily passed to devlink in the next patch.
 
 Signed-off-by: Danielle Ratson <danieller@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c | 1 +
- include/net/devlink.h                      | 3 +++
- include/uapi/linux/devlink.h               | 2 ++
- net/core/devlink.c                         | 4 ++++
- 4 files changed, 10 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/core.c     | 9 +++++----
+ drivers/net/ethernet/mellanox/mlxsw/core.h     | 5 ++---
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c  | 4 ++--
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 4 +++-
+ drivers/net/ethernet/mellanox/mlxsw/switchib.c | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/switchx2.c | 2 +-
+ 6 files changed, 14 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index f44cb1a537f3..6cde196f6b70 100644
+index 6cde196f6b70..f85f5d88d331 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/core.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -2134,6 +2134,7 @@ static int __mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
+@@ -2122,7 +2122,7 @@ static int __mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 				  enum devlink_port_flavour flavour,
+ 				  u32 port_number, bool split,
+ 				  u32 split_port_subnumber,
+-				  u32 lanes,
++				  bool splittable, u32 lanes,
+ 				  const unsigned char *switch_id,
+ 				  unsigned char switch_id_len)
+ {
+@@ -2161,14 +2161,15 @@ static void __mlxsw_core_port_fini(struct mlxsw_core *mlxsw_core, u8 local_port)
+ int mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 			 u32 port_number, bool split,
+ 			 u32 split_port_subnumber,
+-			 u32 lanes,
++			 bool splittable, u32 lanes,
+ 			 const unsigned char *switch_id,
+ 			 unsigned char switch_id_len)
+ {
+ 	return __mlxsw_core_port_init(mlxsw_core, local_port,
+ 				      DEVLINK_PORT_FLAVOUR_PHYSICAL,
+ 				      port_number, split, split_port_subnumber,
+-				      lanes, switch_id, switch_id_len);
++				      splittable, lanes,
++				      switch_id, switch_id_len);
+ }
+ EXPORT_SYMBOL(mlxsw_core_port_init);
+ 
+@@ -2189,7 +2190,7 @@ int mlxsw_core_cpu_port_init(struct mlxsw_core *mlxsw_core,
+ 
+ 	err = __mlxsw_core_port_init(mlxsw_core, MLXSW_PORT_CPU_PORT,
+ 				     DEVLINK_PORT_FLAVOUR_CPU,
+-				     0, false, 0, 0,
++				     0, false, 0, false, 0,
+ 				     switch_id, switch_id_len);
+ 	if (err)
+ 		return err;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index b5c02e6e6865..7d6b0a232789 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -191,9 +191,8 @@ void mlxsw_core_lag_mapping_clear(struct mlxsw_core *mlxsw_core,
+ 
+ void *mlxsw_core_port_driver_priv(struct mlxsw_core_port *mlxsw_core_port);
+ int mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u8 local_port,
+-			 u32 port_number, bool split,
+-			 u32 split_port_subnumber,
+-			 u32 lanes,
++			 u32 port_number, bool split, u32 split_port_subnumber,
++			 bool splittable, u32 lanes,
+ 			 const unsigned char *switch_id,
+ 			 unsigned char switch_id_len);
+ void mlxsw_core_port_fini(struct mlxsw_core *mlxsw_core, u8 local_port);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+index f9c9d7baf3be..c010db2c9dba 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+@@ -164,8 +164,8 @@ mlxsw_m_port_create(struct mlxsw_m *mlxsw_m, u8 local_port, u8 module)
  	int err;
  
- 	attrs.split = split;
-+	attrs.lanes = lanes;
- 	attrs.flavour = flavour;
- 	attrs.phys.port_number = port_number;
- 	attrs.phys.split_subport_number = split_port_subnumber;
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 8f9db991192d..91752b79bb29 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -68,10 +68,13 @@ struct devlink_port_pci_vf_attrs {
-  * struct devlink_port_attrs - devlink port object
-  * @flavour: flavour of the port
-  * @split: indicates if this is split port
-+ * @lanes: maximum number of lanes the port supports.
-+ *	   0 value is not passed to netlink and valid number is a power of 2.
-  * @switch_id: if the port is part of switch, this is buffer with ID, otherwise this is NULL
-  */
- struct devlink_port_attrs {
- 	u8 split:1;
-+	u32 lanes;
- 	enum devlink_port_flavour flavour;
- 	struct netdev_phys_item_id switch_id;
- 	union {
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 87c83a82991b..f741ab8d9cf0 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -455,6 +455,8 @@ enum devlink_attr {
+ 	err = mlxsw_core_port_init(mlxsw_m->core, local_port,
+-				   module + 1, false, 0, 0,
+-				   mlxsw_m->base_mac,
++				   module + 1, false, 0, false,
++				   0, mlxsw_m->base_mac,
+ 				   sizeof(mlxsw_m->base_mac));
+ 	if (err) {
+ 		dev_err(mlxsw_m->bus_info->dev, "Port %d: Failed to init core port\n",
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 35d677e0911e..9cd2dc3afb13 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -1735,12 +1735,14 @@ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u8 local_port,
+ 	struct mlxsw_sp_port *mlxsw_sp_port;
+ 	u32 lanes = port_mapping->width;
+ 	struct net_device *dev;
++	bool splittable;
+ 	int err;
  
- 	DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER,	/* string */
++	splittable = lanes > 1 && !split;
+ 	err = mlxsw_core_port_init(mlxsw_sp->core, local_port,
+ 				   port_mapping->module + 1, split,
+ 				   port_mapping->lane / lanes,
+-				   lanes,
++				   splittable, lanes,
+ 				   mlxsw_sp->base_mac,
+ 				   sizeof(mlxsw_sp->base_mac));
+ 	if (err) {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchib.c b/drivers/net/ethernet/mellanox/mlxsw/switchib.c
+index 1b446e6071b2..1e561132eb1e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/switchib.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/switchib.c
+@@ -281,7 +281,7 @@ static int mlxsw_sib_port_create(struct mlxsw_sib *mlxsw_sib, u8 local_port,
+ 	int err;
  
-+	DEVLINK_ATTR_PORT_LANES,			/* u32 */
-+
- 	/* add new attributes above here, update the policy in devlink.c */
+ 	err = mlxsw_core_port_init(mlxsw_sib->core, local_port,
+-				   module + 1, false, 0, 0,
++				   module + 1, false, 0, false, 0,
+ 				   mlxsw_sib->hw_id, sizeof(mlxsw_sib->hw_id));
+ 	if (err) {
+ 		dev_err(mlxsw_sib->bus_info->dev, "Port %d: Failed to init core port\n",
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+index ac4cd7c23439..6f9a725662fb 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/switchx2.c
+@@ -1107,7 +1107,7 @@ static int mlxsw_sx_port_eth_create(struct mlxsw_sx *mlxsw_sx, u8 local_port,
+ 	int err;
  
- 	__DEVLINK_ATTR_MAX,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 266936c38357..7f26d1054974 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -530,6 +530,10 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
- 
- 	if (!devlink_port->attrs_set)
- 		return 0;
-+	if (attrs->lanes) {
-+		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_LANES, attrs->lanes))
-+			return -EMSGSIZE;
-+	}
- 	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_FLAVOUR, attrs->flavour))
- 		return -EMSGSIZE;
- 	switch (devlink_port->attrs.flavour) {
+ 	err = mlxsw_core_port_init(mlxsw_sx->core, local_port,
+-				   module + 1, false, 0, 0,
++				   module + 1, false, 0, false, 0,
+ 				   mlxsw_sx->hw_id, sizeof(mlxsw_sx->hw_id));
+ 	if (err) {
+ 		dev_err(mlxsw_sx->bus_info->dev, "Port %d: Failed to init core port\n",
 -- 
 2.26.2
 
