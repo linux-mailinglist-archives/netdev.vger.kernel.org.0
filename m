@@ -2,98 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 517E6210919
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 12:18:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0D54210931
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 12:23:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729878AbgGAKR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 06:17:59 -0400
-Received: from mga05.intel.com ([192.55.52.43]:65263 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729226AbgGAKRy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 06:17:54 -0400
-IronPort-SDR: UA7j/NGZc672E0pj279sLbEV3EM8ayOjoZr8CDync9Uh8LCi3f0vUmjR1XQMwhWN8ddVrZFHPB
- WVnJrnxbD/og==
-X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="231405050"
-X-IronPort-AV: E=Sophos;i="5.75,299,1589266800"; 
-   d="scan'208";a="231405050"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2020 03:17:54 -0700
-IronPort-SDR: 5MoAoKthMtffAjAf4xbx0GXdGvaC7TB4m9gWvV0bQ0XO+4ddVOvXKSxFN+AdHJEQMv2szwRaNc
- OGuQIuRAbGYg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,299,1589266800"; 
-   d="scan'208";a="481542314"
-Received: from unknown (HELO btopel-mobl.ger.intel.com) ([10.249.43.154])
-  by fmsmga005.fm.intel.com with ESMTP; 01 Jul 2020 03:17:51 -0700
-Subject: Re: [PATCH net] xsk: remove cheap_dma optimization
-To:     Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     maximmi@mellanox.com, konrad.wilk@oracle.com,
-        jonathan.lemon@gmail.com, linux-kernel@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, magnus.karlsson@intel.com
-References: <20200626134358.90122-1-bjorn.topel@gmail.com>
- <c60dfb5a-2bf3-20bd-74b3-6b5e215f73f8@iogearbox.net>
- <20200627070406.GB11854@lst.de>
- <88d27e1b-dbda-301c-64ba-2391092e3236@intel.com>
- <878626a2-6663-0d75-6339-7b3608aa4e42@arm.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <b8e1ef0d-20ae-0ea1-3c29-fc8db96e2afb@intel.com>
-Date:   Wed, 1 Jul 2020 12:17:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1729914AbgGAKXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 06:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40620 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729781AbgGAKXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 06:23:42 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D919C061755;
+        Wed,  1 Jul 2020 03:23:42 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id j19so4628361pgm.11;
+        Wed, 01 Jul 2020 03:23:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XlyOreYcq7l3PbaTN7d7mPxu6E5D6MEe46NhFAGwU6E=;
+        b=Hv3t7+iuMbkQLI/nvjRpT8LkUq23BXDfCK9qAIxtbwGDzsm27zbq6qFP8dofmINNVe
+         KKEPgdIceIfx7gsmAn9SQi/UUWWKZwo+DjvYnn7/5C/yeLCJ4rDPgPvBJfNwFOHtybxZ
+         XShxPE39LUaQ0fRe+ahUp/yn+IsriZJWpvw/9w3gERmxozRAsmpNZ08kwK2xvxaGyxww
+         zwmwlgsv5JLPoyBmDm04n5BQajIAgjboGLr/SD63PycmODS6rwb3g/sVbYWCED4Ng9IO
+         /x16kmrkmBt1s2drY7QFf1odm1rfgVMyZMWDNHAZHPlKx/MwA773XfFMnXtFDeTAz3xg
+         jIHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XlyOreYcq7l3PbaTN7d7mPxu6E5D6MEe46NhFAGwU6E=;
+        b=bSsiEBq/FH0eDw1jWgWm3mXIdrt10hlvKSAhbLzX1QHtyL2y0Yz5f2Udn6YaNfOoOn
+         yHWw3kSY9Og6lor6oTxTaiFU7dZNW4byIu9aA3Ohv9I6UZ3ZRe+E8aW3a6WYqZ1kvn7W
+         L6aZ2ui4zDgFaB5AA15Vlas3NvgR9yRx4ZAIeYxFFUNQatqLNBGN2d4udGfIk6IOqoI3
+         J/YIRgoVo/e9i3ph5OvKiifMjgbfB9LKOIPB51emuWNHGgOMChMPDPb6QpRpARH/9/RN
+         Sx54NBFSB+y61GMuHlB0z9GPR8oUAvoaioexEwwk7GkEBB+HOcFA8nhFURqUICRm4mpp
+         yYNQ==
+X-Gm-Message-State: AOAM531KnMLMttqt2QsfmzYWKaGkmTPUAEIrx9CZuCOiwRmxx8zpHjQa
+        CuHxS3P/3MuNh8+BCrtj0aqLM1Zg+bIERBYlK3M=
+X-Google-Smtp-Source: ABdhPJx0SLfaSW02C8p6MHec9QZP/GgouZWuLhNL6jXiQPupAa6Coi1OYPtqiFf5YIPDoIvWF5rcwi96zputH6jNHgQ=
+X-Received: by 2002:a63:a05f:: with SMTP id u31mr13486486pgn.4.1593599021934;
+ Wed, 01 Jul 2020 03:23:41 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <878626a2-6663-0d75-6339-7b3608aa4e42@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200701061233.31120-1-calvin.johnson@oss.nxp.com> <20200701061233.31120-2-calvin.johnson@oss.nxp.com>
+In-Reply-To: <20200701061233.31120-2-calvin.johnson@oss.nxp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 1 Jul 2020 13:23:28 +0300
+Message-ID: <CAHp75VdhuPsx0Kz8=NHxf6KtC0ff9oJWkSMEdNsLeMznEGLnqQ@mail.gmail.com>
+Subject: Re: [net-next PATCH v2 1/3] net: phy: introduce find_phy_device()
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Jon <jon@solid-run.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux.cj@gmail.com, "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-06-29 17:41, Robin Murphy wrote:
-> On 2020-06-28 18:16, Björn Töpel wrote:
-[...]>
->> Somewhat related to the DMA API; It would have performance benefits for
->> AF_XDP if the DMA range of the mapped memory was linear, i.e. by IOMMU
->> utilization. I've started hacking a thing a little bit, but it would be
->> nice if such API was part of the mapping core.
->>
->> Input: array of pages Output: array of dma addrs (and obviously dev,
->> flags and such)
->>
->> For non-IOMMU len(array of pages) == len(array of dma addrs)
->> For best-case IOMMU len(array of dma addrs) == 1 (large linear space)
->>
->> But that's for later. :-)
-> 
-> FWIW you will typically get that behaviour from IOMMU-based 
-> implementations of dma_map_sg() right now, although it's not strictly 
-> guaranteed. If you can weather some additional setup cost of calling 
-> sg_alloc_table_from_pages() plus walking the list after mapping to test 
-> whether you did get a contiguous result, you could start taking 
-> advantage of it as some of the dma-buf code in DRM and v4l2 does already 
-> (although those cases actually treat it as a strict dependency rather 
-> than an optimisation).
-> 
-> I'm inclined to agree that if we're going to see more of these cases, a 
-> new API call that did formally guarantee a DMA-contiguous mapping 
-> (either via IOMMU or bounce buffering) or failure might indeed be handy.
+On Wed, Jul 1, 2020 at 9:13 AM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
 >
+> The PHYs on a mdiobus are probed and registered using mdiobus_register().
+> Later, for connecting these PHYs to MAC, the PHYs registered on the
+> mdiobus have to be referenced.
+>
+> For each MAC node, a property "mdio-handle" is used to reference the
+> MDIO bus on which the PHYs are registered. On getting hold of the MDIO
+> bus, use find_phy_device() to get the PHY connected to the MAC.
 
-I forgot to reply to this one! My current hack is using the iommu code 
-directly, similar to what vfio-pci does (hopefully not gutting the API 
-this time ;-)).
+...
 
-Your approach sound much nicer, and easier. I'll try that out! Thanks a 
-lot for the pointers, and I might be back with more questions.
+> +       struct platform_device *pdev;
 
+This...
 
-Cheers,
-Björn
+> +       fwnode_mdio = fwnode_find_reference(fwnode, "mdio-handle", 0);
+> +       dev = bus_find_device_by_fwnode(&platform_bus_type, fwnode_mdio);
 
-> Robin.
+> +       if (IS_ERR_OR_NULL(dev))
+
+IS_ERR()?!
+
+> +               return NULL;
+
+> +       pdev =  to_platform_device(dev);
+> +       mdio = platform_get_drvdata(pdev);
+
+...and this can be simple:
+
+mdio = dev_get_drvdata(dev);
+
+> +       err = fwnode_property_read_u32(fwnode, "phy-channel", &addr);
+> +       if (err < 0 || addr < 0 || addr >= PHY_MAX_ADDR)
+> +               return NULL;
+
+-- 
+With Best Regards,
+Andy Shevchenko
