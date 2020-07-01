@@ -2,151 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42A40210899
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 11:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0427F2108D1
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 12:02:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729683AbgGAJvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 05:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729109AbgGAJvh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 05:51:37 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6009CC061755
-        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 02:51:36 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id r12so23061256wrj.13
-        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 02:51:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=0kXRdSJAJ2w4NQlFklwwTlNh4niyvAaA7nq0nb1Nl9w=;
-        b=TKjUYKLX6JQ1Vx3Tgm8MEFxB00Q/s6wjCbaTl6fB6p1083zS9fGrr4QNE60EbE+zh8
-         pqjBvxntdr4CRSOS3SAQ5HMGPVXCmQICT0jLF8ETNh5N3vS88001cu6PLG5DhRuQDNFy
-         uiPqZRC0HChlt9qzVlENXWvQ+YJJv3gw+PoCo=
+        id S1729689AbgGAKCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 06:02:06 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:53480 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729339AbgGAKCG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 06:02:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593597724;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fyxg+Ji0zQrI7znU85VBdvoQ2fhrXxY8f/1fcLyLeJ0=;
+        b=YJ89t1rXU0mwaLgBr6sfZ6qPf714/jcadlleFORW6lZ9fKFR3686kWLvpaFMMfA7B012px
+        n0ZrfdLpGSjWTaPwkBr7yFasJs3R+lsI5jUOzDxzMdJ0u84GDyo7Yd2SwOqrgk4lNNpI2J
+        ae4HrqGxhhLrIL+AOvWJU2nfDyHBiDU=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-32-IWwmh9exO9iVhuT9BL_eaQ-1; Wed, 01 Jul 2020 06:02:03 -0400
+X-MC-Unique: IWwmh9exO9iVhuT9BL_eaQ-1
+Received: by mail-wr1-f69.google.com with SMTP id a18so20030353wrm.14
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 03:02:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0kXRdSJAJ2w4NQlFklwwTlNh4niyvAaA7nq0nb1Nl9w=;
-        b=m5O15DWN17XsHCIQ97ydKPR92JfsUk9+gPwQHeY1BOkwyY1P6LhmKLxKuaeyNyCWpA
-         wRKd+0prgaY++KN1K1khwwohGODxJly3M7yiZfMgkik5hmgMrSFWr0eCksOyN6FglX3U
-         QHztn+FKLj+SN168f1zUkdjUODH9PEvB1cuN2XWytdSCQ8pq6+YmtzRVLFvFoHsqakAc
-         jfdD40RjoWZ9sOKfOgQywAerUybfrc9k6X78ebikacrBlkAIQnuLhhW856HYA1MfcSZe
-         SkRfOX9Oqz5sBIuUDqDijTsSpNPgPo6JWpyARpF1zxvXn0cXC9hhLQupcXgAjQIMabfh
-         Is4Q==
-X-Gm-Message-State: AOAM5328qmatIloRg3nFm4gdvC0ch0rIL11eZr9G5IIQ/eTN09jNcfj6
-        Ky5HEvQF2TdHBr9MAJ4TgwX2ujNgwBPzUA==
-X-Google-Smtp-Source: ABdhPJwuwimRu1nf6gCK1pRymKF3cc10Mgf7AOZ3RL+DeuwqswesPCQkj9zAM+M+TJdQcO1li9fJ6Q==
-X-Received: by 2002:a05:6000:1107:: with SMTP id z7mr25496107wrw.355.1593597095035;
-        Wed, 01 Jul 2020 02:51:35 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id n125sm6614837wme.30.2020.07.01.02.51.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jul 2020 02:51:34 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 3/3] bridge: Extend br_fill_ifinfo to return
- MPR status
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        roopa@cumulusnetworks.com, davem@davemloft.net, kuba@kernel.org,
-        jiri@mellanox.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        UNGLinuxDriver@microchip.com
-References: <20200701072239.520807-1-horatiu.vultur@microchip.com>
- <20200701072239.520807-4-horatiu.vultur@microchip.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <a861340c-8d80-6cff-39ec-1a80ee578813@cumulusnetworks.com>
-Date:   Wed, 1 Jul 2020 12:51:32 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fyxg+Ji0zQrI7znU85VBdvoQ2fhrXxY8f/1fcLyLeJ0=;
+        b=pOD6ITJ4iEIEFh1cSdksz+a743bD4IukkHS1iE2h2A3DRyFZdVo6T8cWn71xg1oV72
+         CgRcsbphU2ZGPSak5rbrhaCSwMZLe3mdM93oWz3skXTN3TszGueO/mcGUpWodXVFYPyh
+         n7FuaXjFkeHu8L0QH9CAhGT8hJOC5nXsv2uoO1FzyIltrDI9Uo9rdkiFejO5LxkNu/Gs
+         Phb+35jRYIr1mP69ILrShrPIkkB5oNLKfifVWo22C+O3PLSIQCYCNN9MLOpYr0XrD6JR
+         fv5QntzsgWIYYY1RLoGYEeS9L0j7SdqPJoVr23k1XSnM+vZZuVBPoYwr3FfBCQ9kRJ6p
+         ZlSw==
+X-Gm-Message-State: AOAM531nbxuYU3AyFAS4Ciqs85aJQoBR4IA6MNzIzqo4wwo5xyr7r4SU
+        IYLWW++rwH6cgLH+SeisKFuPanbYvJgr7XFdbNbq/jwt+peBqZ/PwTyBGIek+wox0a4anh3/4O4
+        Y/Q1QntyisGDmTcJy
+X-Received: by 2002:a5d:6990:: with SMTP id g16mr17775553wru.131.1593597721880;
+        Wed, 01 Jul 2020 03:02:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxaLkNNY2PFBcdWh7z+i2muEDeNV0SFL3xWpfilNonnOr01o+NHCg68vUn9kh0HctYjz3JADg==
+X-Received: by 2002:a5d:6990:: with SMTP id g16mr17775535wru.131.1593597721627;
+        Wed, 01 Jul 2020 03:02:01 -0700 (PDT)
+Received: from pc-3.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
+        by smtp.gmail.com with ESMTPSA id v66sm6847252wme.13.2020.07.01.03.02.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jul 2020 03:02:01 -0700 (PDT)
+Date:   Wed, 1 Jul 2020 12:01:59 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Andrea Claudi <aclaudi@redhat.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH iproute2] tc: flower: support multiple MPLS LSE match
+Message-ID: <20200701100159.GA18417@pc-3.home>
+References: <4c364e19b552a746489dd978677d7b25cee913cf.1592563668.git.gnault@redhat.com>
+ <CAPpH65ymT_peXCvG5+fKYD0ZpNk5=M-=-4Hp9BiXqVBu66cz=g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200701072239.520807-4-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPpH65ymT_peXCvG5+fKYD0ZpNk5=M-=-4Hp9BiXqVBu66cz=g@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/07/2020 10:22, Horatiu Vultur wrote:
-> This patch extends the function br_fill_ifinfo to return also the MRP
-> status for each instance on a bridge. It also adds a new filter
-> RTEXT_FILTER_MRP to return the MRP status only when this is set, not to
-> interfer with the vlans. The MRP status is return only on the bridge
-> interfaces.
+On Wed, Jul 01, 2020 at 11:17:56AM +0200, Andrea Claudi wrote:
+> On Fri, Jun 19, 2020 at 12:51 PM Guillaume Nault <gnault@redhat.com> wrote:
+> >
+> > +.BI depth " DEPTH"
+> > +The depth of the Label Stack Entry to consider. Depth starts at 1 (the
+> > +outermost Label Stack Entry). The maximum usable depth may be limitted by the
 > 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  include/uapi/linux/rtnetlink.h |  1 +
->  net/bridge/br_netlink.c        | 29 ++++++++++++++++++++++++++++-
->  2 files changed, 29 insertions(+), 1 deletion(-)
+> limited
+
+Looks like I forgot the spell-checking step before submitting :/
+
+> > +static int flower_parse_mpls(int *argc_p, char ***argv_p, struct nlmsghdr *nlh)
+> > +{
+> > +       struct rtattr *mpls_attr;
+> > +       char **argv = *argv_p;
+> > +       int argc = *argc_p;
+> > +
+> > +       mpls_attr = addattr_nest(nlh, MAX_MSG,
+> > +                                TCA_FLOWER_KEY_MPLS_OPTS | NLA_F_NESTED);
+> > +
+> > +       while (argc > 0) {
+> > +               if (matches(*argv, "lse") == 0) {
+> > +                       NEXT_ARG();
+> > +                       if (flower_parse_mpls_lse(&argc, &argv, nlh) < 0)
+> > +                               return -1;
+> > +               } else {
+> > +                       break;
+> > +               }
+> > +       }
 > 
-> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-> index 879e64950a0a2..9b814c92de123 100644
-> --- a/include/uapi/linux/rtnetlink.h
-> +++ b/include/uapi/linux/rtnetlink.h
-> @@ -778,6 +778,7 @@ enum {
->  #define RTEXT_FILTER_BRVLAN	(1 << 1)
->  #define RTEXT_FILTER_BRVLAN_COMPRESSED	(1 << 2)
->  #define	RTEXT_FILTER_SKIP_STATS	(1 << 3)
-> +#define RTEXT_FILTER_MRP	(1 << 4)
->  
->  /* End of information exported to user level */
->  
-> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-> index 240e260e3461c..6ecb7c7453dcb 100644
-> --- a/net/bridge/br_netlink.c
-> +++ b/net/bridge/br_netlink.c
-> @@ -453,6 +453,32 @@ static int br_fill_ifinfo(struct sk_buff *skb,
->  		rcu_read_unlock();
->  		if (err)
->  			goto nla_put_failure;
-> +
-> +		nla_nest_end(skb, af);
-> +	}
-> +
-> +	if (filter_mask & RTEXT_FILTER_MRP) {
-> +		struct nlattr *af;
-> +		int err;
-> +
-> +		/* RCU needed because of the VLAN locking rules (rcu || rtnl) */
-> +		rcu_read_lock();
-
-If you're using RCU, then in the previous patch (02) you should be using RCU primitives
-to walk the list and deref the ports.
-Alternatively if you rely on rtnl only then drop these RCU locks here as they're misleading.
-
-I'd prefer to just use RCU for it in case we drop rtnl one day when dumping.
-
-> +		if (!br_mrp_enabled(br) || port) {
-> +			rcu_read_unlock();
-> +			goto done;
-> +		}
-> +		af = nla_nest_start_noflag(skb, IFLA_AF_SPEC);
-> +		if (!af) {
-> +			rcu_read_unlock();
-> +			goto nla_put_failure;
-> +		}
-> +
-> +		err = br_mrp_fill_info(skb, br);
-> +
-> +		rcu_read_unlock();
-> +		if (err)
-> +			goto nla_put_failure;
-> +
->  		nla_nest_end(skb, af);
->  	}
->  
-> @@ -516,7 +542,8 @@ int br_getlink(struct sk_buff *skb, u32 pid, u32 seq,
->  	struct net_bridge_port *port = br_port_get_rtnl(dev);
->  
->  	if (!port && !(filter_mask & RTEXT_FILTER_BRVLAN) &&
-> -	    !(filter_mask & RTEXT_FILTER_BRVLAN_COMPRESSED))
-> +	    !(filter_mask & RTEXT_FILTER_BRVLAN_COMPRESSED) &&
-> +	    !(filter_mask & RTEXT_FILTER_MRP))
->  		return 0;
->  
->  	return br_fill_ifinfo(skb, port, pid, seq, RTM_NEWLINK, nlflags,
+> This can probably be simplified to:
 > 
+> while (argc > 0 && matches(*argv, "lse") == 0) {
+>     NEXT_ARG();
+>     if (flower_parse_mpls_lse(&argc, &argv, nlh) < 0)
+>         return -1;
+> }
+
+I wanted to use the same loop construct as is commonly used for parsing
+options in iproute2. I find it easier to verify code correctness when
+the same construct is used consistently.
+Also this allows to easily add new keywords in the future, even though
+I can't see a need for that at the moment.
+
+I'll keep my original while() loop for the moment, unless more voices
+speak against it.
+
+Thanks a lot for the review!
 
