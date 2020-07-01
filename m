@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD24E210B80
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 15:01:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEF7A210BA4
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 15:05:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730793AbgGANBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 09:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
+        id S1730853AbgGANCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 09:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730271AbgGANBf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 09:01:35 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F088C03E979;
-        Wed,  1 Jul 2020 06:01:35 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id b92so11021604pjc.4;
-        Wed, 01 Jul 2020 06:01:35 -0700 (PDT)
+        with ESMTP id S1730812AbgGANCQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 09:02:16 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3372C03E979;
+        Wed,  1 Jul 2020 06:02:15 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id j12so10972350pfn.10;
+        Wed, 01 Jul 2020 06:02:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2OLtDqAl4GQ2i7cTj9ta2eBmWz0EGmYq4wIiRHp9/FE=;
-        b=E1v7YWBnZy/6D8OpTUzwkwr/HwxzEV2bD0PivosnKEP8vNMQ18ZyF5/DN+iiB8ZJ0z
-         R1jtKjOfwTFc5KkQJfIRkRFWoFNAEyWs0QHabsAWYTacOFSEpKynq5XgeQNcZWTz6V6Y
-         IWJWTq7jbnWGBh2wyg1t4XurPAdXJE+FtWOT09GtxUID8EhFotqerSHwXkQPk8umaREf
-         7BYLTVoi3Ama+5QeSK0ZFnKAbR9BkyTNaT6JANWVXLl12MjzdhDZ57Wcru2eQbHo0fGW
-         8Jpxi1juIN1vaUAhCcqHfCI/1Wm05Y6gTrg5FxDCiq9ePpnidLForpbC+x6+tOnp11C3
-         iz5g==
+        bh=9tRb3lcQnQNyqSPd2RUudBp4K9fTszNeoadKdLTyh8Y=;
+        b=np+tZ2jmuroP/ACE0gq1rtk344QwU0PDDtd4OKhwpzFSam+YeQkJVTobzT4asxV+N7
+         5vaGxInqgUw8SDFu5i1qyGtpI2AsSF7tU1r5HUplZJXXqNNCQFxiVx6c1K62JoesC+lb
+         IESzdLyjcNrtj6s1tx9XuoJ7VGlCVp1uMJetLO/uuNy1A+f15CJ9kX2aJ1jkv8wVJqiJ
+         19vIDyRXhqxIYm0Tsw1DONPxTKciIHCVznpsu43eNBexgFCX9IgSkNBTa7XGxpDEu0of
+         oqmgR/KVPPF2UwVV/jC3pZpvR+W0ZVP6t78UzeE2mts3jbb2aF+Gpi28hCDewFe7mxPS
+         dTdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2OLtDqAl4GQ2i7cTj9ta2eBmWz0EGmYq4wIiRHp9/FE=;
-        b=A3uEzM+QRHpsMbf6CnvCmAa83FWOjWTkFx9bAz/GKYm0xIne4PZWvcqJ1ALl6NmaIO
-         33VMh6VLig0aRO1wZ4DPjPPyidhoGlCDd/7ycIquSz4wyP5+ZvzzxnIr70eZpHcktwVv
-         tlsTnAq0OKBsVKnt5ZgdqsfyLkNHvS/M6Ld3uwnhX4RyNxCH/Moj5ngVpU+pPDiac2SW
-         LL4/NUfHgWJIWzM7eWQp3s6kA/Zu1yi7Rxf82y/l7E7m6so/vfqBrabOUwO7X/p+vDlV
-         inGlTA+CH/P/Sf0GuQeq9Y6KD8eYqrmEKwAgTahWZQah6hdQzlKfxry4hmiVBV7YifUK
-         nmeA==
-X-Gm-Message-State: AOAM533SdG/88bINZN1SHVJ29cJBYNj5t4dy3Zhj/8zssUbV5SMJaTS+
-        KowT4U/5cQ5WvwBvEkyjsEc=
-X-Google-Smtp-Source: ABdhPJxdUIQH7axNy8voJMnTkC/MVwjwPe+tBk8ZMmR8fhHtut3Jt9z85yF0t1uUIMkD74vPyuj5Nw==
-X-Received: by 2002:a17:90b:1491:: with SMTP id js17mr28856528pjb.118.1593608494762;
-        Wed, 01 Jul 2020 06:01:34 -0700 (PDT)
+        bh=9tRb3lcQnQNyqSPd2RUudBp4K9fTszNeoadKdLTyh8Y=;
+        b=EYxJynkrXq7RTubYLiFBKI29Xm9v7s+6qLJD+kQlIJz006DGTyxTmdywMotrr7BL4b
+         aH6WcsYQ6YlIs3d1qLy2GgDtcqRkLI5MDDrJqotm2Taq953TD7bsMSzG0viLZ0toAPEI
+         C3wZVD3RUBIznxZ4Fzgrth8JgjdWTJF3FmiXuZSwwfJ/PvcULqgCTsZtOX5kBRt5s3O1
+         siWe7mhY643T+C2EESjJw/07ct/P6SHvHy6n6PpuEf2kDxnPGcZUBmT0Ycnx8Xzw3sSr
+         1QiVGyniCdydZhKwZUdeZwscfuXyAUx7JMVffwnrMF47iNezL3jKvFmDXxe5/NnvUKUm
+         Z0uw==
+X-Gm-Message-State: AOAM530NuAtwhw+5mp3QzbXoaqDTrLYVfqQA2W+BZORwjHQ3oxNbcPk4
+        M10GaKbWx0vkfZGUjvrK0NM=
+X-Google-Smtp-Source: ABdhPJyT6cyR4U2w3jPNfEUYdKRro/S6z/7KSlQcbw2ykn1BefH2zY4ZVM7WN33ZYy9Cnhb1jiYZqA==
+X-Received: by 2002:a63:441c:: with SMTP id r28mr18102161pga.372.1593608534913;
+        Wed, 01 Jul 2020 06:02:14 -0700 (PDT)
 Received: from varodek.iballbatonwifi.com ([103.105.153.57])
-        by smtp.gmail.com with ESMTPSA id d9sm6070908pgv.45.2020.07.01.06.01.13
+        by smtp.gmail.com with ESMTPSA id d9sm6070908pgv.45.2020.07.01.06.01.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jul 2020 06:01:34 -0700 (PDT)
+        Wed, 01 Jul 2020 06:02:14 -0700 (PDT)
 From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
@@ -73,9 +73,9 @@ Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         skhan@linuxfoundation.org
-Subject: [PATCH v1 01/11] typhoon: use generic power management
-Date:   Wed,  1 Jul 2020 18:29:28 +0530
-Message-Id: <20200701125938.639447-2-vaibhavgupta40@gmail.com>
+Subject: [PATCH v1 02/11] ne2k-pci: use generic power management
+Date:   Wed,  1 Jul 2020 18:29:29 +0530
+Message-Id: <20200701125938.639447-3-vaibhavgupta40@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200701125938.639447-1-vaibhavgupta40@gmail.com>
 References: <20200701125938.639447-1-vaibhavgupta40@gmail.com>
@@ -87,174 +87,83 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 With legacy PM, drivers themselves were responsible for managing the
-device's power states and takes care of register states. And they use PCI
-helper functions to do it.
+device's power states and takes care of register states.
 
 After upgrading to the generic structure, PCI core will take care of
 required tasks and drivers should do only device-specific operations.
 
-In this driver:
-typhoon_resume() calls typhoon_wakeup() which then calls PCI helper
-functions pci_set_power_state() and pci_restore_state(). The only other
-function, using typhoon_wakeup() is typhoon_open().
-
-Thus remove the pci_*() calls from tyhpoon_wakeup() and place them in
-typhoon_open(), maintaining the order, to retain the normal behavior of
-the function
-
-Now, typhoon_suspend() calls typhoon_sleep() which then calls PCI helper
-functions pci_enable_wake(), pci_disable_device() and
-pci_set_power_state(). Other functions:
- - typhoon_open()
- - typhoon_close()
- - typhoon_init_one()
-are also invoking typhoon_sleep(). Thus, in this case, cannot simply
-move PCI helper functions call.
-
-Hence, define a new function typhoon_sleep_early() which will do all the
-operations, which typhoon_sleep() was doing before calling PCI helper
-functions. Now typhoon_sleep() will call typhoon_sleep_early() to do
-those tasks, hence, the behavior for _open(), _close and _init_one() remain
-unchanged. And typhon_suspend() only requires typhoon_sleep_early().
+Thus, there is no need to call the PCI helper functions like
+pci_enable/disable_device(), pci_save/restore_sate() and
+pci_set_power_state().
 
 Compile-tested only.
 
 Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 ---
- drivers/net/ethernet/3com/typhoon.c | 53 +++++++++++++++++------------
- 1 file changed, 32 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/8390/ne2k-pci.c | 29 ++++++----------------------
+ 1 file changed, 6 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/3com/typhoon.c b/drivers/net/ethernet/3com/typhoon.c
-index 5ed33c2c4742..d3b30bacc94e 100644
---- a/drivers/net/ethernet/3com/typhoon.c
-+++ b/drivers/net/ethernet/3com/typhoon.c
-@@ -1801,9 +1801,8 @@ typhoon_free_rx_rings(struct typhoon *tp)
- }
- 
- static int
--typhoon_sleep(struct typhoon *tp, pci_power_t state, __le16 events)
-+typhoon_sleep_early(struct typhoon *tp, __le16 events)
- {
--	struct pci_dev *pdev = tp->pdev;
- 	void __iomem *ioaddr = tp->ioaddr;
- 	struct cmd_desc xp_cmd;
- 	int err;
-@@ -1832,20 +1831,29 @@ typhoon_sleep(struct typhoon *tp, pci_power_t state, __le16 events)
- 	 */
- 	netif_carrier_off(tp->dev);
- 
-+	return 0;
-+}
-+
-+static int
-+typhoon_sleep(struct typhoon *tp, pci_power_t state, __le16 events)
-+{
-+	int err;
-+
-+	err = typhoon_sleep_early(tp, events);
-+
-+	if (err)
-+		return err;
-+
- 	pci_enable_wake(tp->pdev, state, 1);
--	pci_disable_device(pdev);
--	return pci_set_power_state(pdev, state);
-+	pci_disable_device(tp->pdev);
-+	return pci_set_power_state(tp->pdev, state);
- }
- 
- static int
- typhoon_wakeup(struct typhoon *tp, int wait_type)
- {
--	struct pci_dev *pdev = tp->pdev;
- 	void __iomem *ioaddr = tp->ioaddr;
- 
--	pci_set_power_state(pdev, PCI_D0);
--	pci_restore_state(pdev);
--
- 	/* Post 2.x.x versions of the Sleep Image require a reset before
- 	 * we can download the Runtime Image. But let's not make users of
- 	 * the old firmware pay for the reset.
-@@ -2049,6 +2057,9 @@ typhoon_open(struct net_device *dev)
- 	if (err)
- 		goto out;
- 
-+	pci_set_power_state(tp->pdev, PCI_D0);
-+	pci_restore_state(tp->pdev);
-+
- 	err = typhoon_wakeup(tp, WaitSleep);
- 	if (err < 0) {
- 		netdev_err(dev, "unable to wakeup device\n");
-@@ -2114,11 +2125,10 @@ typhoon_close(struct net_device *dev)
- 	return 0;
+diff --git a/drivers/net/ethernet/8390/ne2k-pci.c b/drivers/net/ethernet/8390/ne2k-pci.c
+index 77d78b4c59c4..e500f0c05725 100644
+--- a/drivers/net/ethernet/8390/ne2k-pci.c
++++ b/drivers/net/ethernet/8390/ne2k-pci.c
+@@ -699,30 +699,18 @@ static void ne2k_pci_remove_one(struct pci_dev *pdev)
+ 	pci_disable_device(pdev);
  }
  
 -#ifdef CONFIG_PM
--static int
--typhoon_resume(struct pci_dev *pdev)
-+static int __maybe_unused
-+typhoon_resume(struct device *dev_d)
+-static int ne2k_pci_suspend(struct pci_dev *pdev, pm_message_t state)
++static int __maybe_unused ne2k_pci_suspend(struct device *dev_d)
  {
 -	struct net_device *dev = pci_get_drvdata(pdev);
 +	struct net_device *dev = dev_get_drvdata(dev_d);
- 	struct typhoon *tp = netdev_priv(dev);
  
- 	/* If we're down, resume when we are upped.
-@@ -2144,9 +2154,10 @@ typhoon_resume(struct pci_dev *pdev)
- 	return -EBUSY;
- }
+ 	netif_device_detach(dev);
+-	pci_save_state(pdev);
+-	pci_disable_device(pdev);
+-	pci_set_power_state(pdev, pci_choose_state(pdev, state));
  
--static int
--typhoon_suspend(struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused
-+typhoon_suspend(struct device *dev_d)
- {
-+	struct pci_dev *pdev = to_pci_dev(dev_d);
- 	struct net_device *dev = pci_get_drvdata(pdev);
- 	struct typhoon *tp = netdev_priv(dev);
- 	struct cmd_desc xp_cmd;
-@@ -2190,18 +2201,19 @@ typhoon_suspend(struct pci_dev *pdev, pm_message_t state)
- 		goto need_resume;
- 	}
- 
--	if (typhoon_sleep(tp, pci_choose_state(pdev, state), tp->wol_events) < 0) {
-+	if (typhoon_sleep_early(tp, tp->wol_events) < 0) {
- 		netdev_err(dev, "unable to put card to sleep\n");
- 		goto need_resume;
- 	}
- 
-+	device_wakeup_enable(dev_d);
-+
  	return 0;
- 
- need_resume:
--	typhoon_resume(pdev);
-+	typhoon_resume(dev_d);
- 	return -EBUSY;
- }
--#endif
- 
- static int
- typhoon_test_mmio(struct pci_dev *pdev)
-@@ -2533,15 +2545,14 @@ typhoon_remove_one(struct pci_dev *pdev)
- 	free_netdev(dev);
  }
  
-+static SIMPLE_DEV_PM_OPS(typhoon_pm_ops, typhoon_suspend, typhoon_resume);
-+
- static struct pci_driver typhoon_driver = {
- 	.name		= KBUILD_MODNAME,
- 	.id_table	= typhoon_pci_tbl,
- 	.probe		= typhoon_init_one,
- 	.remove		= typhoon_remove_one,
+-static int ne2k_pci_resume(struct pci_dev *pdev)
++static int __maybe_unused ne2k_pci_resume(struct device *dev_d)
+ {
+-	struct net_device *dev = pci_get_drvdata(pdev);
+-	int rc;
+-
+-	pci_set_power_state(pdev, PCI_D0);
+-	pci_restore_state(pdev);
+-
+-	rc = pci_enable_device(pdev);
+-	if (rc)
+-		return rc;
++	struct net_device *dev = dev_get_drvdata(dev_d);
+ 
+ 	NS8390_init(dev, 1);
+ 	netif_device_attach(dev);
+@@ -730,19 +718,14 @@ static int ne2k_pci_resume(struct pci_dev *pdev)
+ 	return 0;
+ }
+ 
+-#endif /* CONFIG_PM */
+-
++static SIMPLE_DEV_PM_OPS(ne2k_pci_pm_ops, ne2k_pci_suspend, ne2k_pci_resume);
+ 
+ static struct pci_driver ne2k_driver = {
+ 	.name		= DRV_NAME,
+ 	.probe		= ne2k_pci_init_one,
+ 	.remove		= ne2k_pci_remove_one,
+ 	.id_table	= ne2k_pci_tbl,
 -#ifdef CONFIG_PM
--	.suspend	= typhoon_suspend,
--	.resume		= typhoon_resume,
+-	.suspend	= ne2k_pci_suspend,
+-	.resume		= ne2k_pci_resume,
 -#endif
-+	.driver.pm	= &typhoon_pm_ops,
+-
++	.driver.pm	= &ne2k_pci_pm_ops,
  };
  
- static int __init
+ 
 -- 
 2.27.0
 
