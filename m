@@ -2,174 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7049B21111E
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 18:52:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 924E6211191
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 19:06:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732584AbgGAQvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 12:51:41 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:59557 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732578AbgGAQvj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 12:51:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1593622299; x=1625158299;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KtFvv4njZRd4RUyqHqCrtp8f+r4C5L+zEXOcmypW9aY=;
-  b=hjQlQBiXXwe6X91Juq0GhrCpk9/OWtCqC8k1eT64+BtfnIZ7uC6F4vb/
-   CW26FoWQBL6Fgpf0m+qEr1HvEZQee+sLeaq5acDBX8tovhaBn2e/2JbOd
-   tk2MrPEknDHAghvPjB3xE+D+agn3yC3LRvOUpLonmNGpddyc2Ez+skUDw
-   CoFwarinbNWD2WuFAld5js6vt04BRE8HwqalHLnUqWZOWpI8hCRLAH7GB
-   2YBZs5XW/eL0llAoaBS4gSPHYEdHUCjXr9xdU+HN7mLT6mQPPUdAjnvss
-   LcRFJQa05dvxFImWZxqPXbi3EjG0IA7AMgE5mNPcFw3j/xvhaQHmqiyMv
-   w==;
-IronPort-SDR: 8RLMovVziAW+boUG/RB7ra2K2nTbM7GMGiexCzt67DidZVnC4U6A5RbOaWQfbIWpjXEHHD7cyo
- r9TkqjwUaiT6PPnBObeoAsYN8MSxT40QB2BB0AbkEXzuG8v8qQggD6PkoxWTu+OOm9vvJhiOMz
- rJAwiuQko8zGGT0oRqbrH2zFHDs20WMxLmBbkAF5C7ZG5jRzqJDwSrce/KMOVj4WY5OFKyIFyB
- WNCb/xKdgC4obd1uZoDNLwo0ZsMFuip0YA2UKp0rhRet3CjdMIDRDTRWYB8S91tio2RHFDGyWN
- dAM=
+        id S1732674AbgGARFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 13:05:46 -0400
+Received: from mga14.intel.com ([192.55.52.115]:54332 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732571AbgGARFq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Jul 2020 13:05:46 -0400
+IronPort-SDR: LIg/NOIpTWDzcSDnlEGPt3m6UgjUuUX6e99g/tI2xaOgkG/in8f0MkOKNRyNDWRrXxZ6hnoA5T
+ BnrztApnaqgQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9669"; a="145732846"
 X-IronPort-AV: E=Sophos;i="5.75,301,1589266800"; 
-   d="scan'208";a="82247352"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2020 09:51:39 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 1 Jul 2020 09:51:19 -0700
-Received: from rob-ult-m19940.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Wed, 1 Jul 2020 09:51:15 -0700
-From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Subject: [PATCH 2/2] net: dsa: microchip: split adjust_link() in phylink_mac_link_{up|down}()
-Date:   Wed, 1 Jul 2020 19:51:28 +0300
-Message-ID: <20200701165128.1213447-2-codrin.ciubotariu@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200701165128.1213447-1-codrin.ciubotariu@microchip.com>
-References: <20200701165128.1213447-1-codrin.ciubotariu@microchip.com>
+   d="scan'208";a="145732846"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2020 10:05:45 -0700
+IronPort-SDR: op1p91vP7Aji6w6cG4g8NXGlTt9ntr2dQj7oNlPw8l5K462ki+VM/9VjEUAaMCDoKgllWmtSqQ
+ M6crB717YNWQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,301,1589266800"; 
+   d="scan'208";a="277837013"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+  by orsmga003.jf.intel.com with ESMTP; 01 Jul 2020 10:05:45 -0700
+Received: from fmsmsx125.amr.corp.intel.com (10.18.125.40) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 1 Jul 2020 10:00:09 -0700
+Received: from FMSEDG002.ED.cps.intel.com (10.1.192.134) by
+ FMSMSX125.amr.corp.intel.com (10.18.125.40) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 1 Jul 2020 09:59:54 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.176)
+ by edgegateway.intel.com (192.55.55.69) with Microsoft SMTP Server (TLS) id
+ 14.3.439.0; Wed, 1 Jul 2020 09:59:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lnmj9RQHd+I5oFX1Y8Jk2C/3fLxyrIngJHbpOoMxi+kDJjU9HBuo75SaHfVT+nogHXK4YlKhjVbxfGgMy1zEVlwPiFOaHVWsHQ6t6VTexV3odFgE2t2RiyZ9CF/7ssUFTVKj3Xi6cAdj16Hk1uPCxt/9EV2Uv8pShfIlFv9nOUpRLwxjcWlxeTxdnia3l7Lgy4z1p+6gdp1bjUHM137Z4h1HniO91Mal914DB0kOxX5P79BAJYFC0kIPNgP+lkmbeFD5/og1dkYnwRAh714DVXaxrq879TnaKZ6Lcm6udTojZU35Lof+J/dnV14AJw1Nl1atEpAI1+w/Vu9NmNzZSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7wgyQvCo9YQbnney/gruQnzj4O2i5NZ4oDOKsDRuzyA=;
+ b=W2RVLVxYZ7l8zMUSByLvUtDo8Hx0J6Za9bHnJ3PtQQErY/WMK4zQcRzUSDs069p5CX0cZ6sO7U/9wh940ao8EFFNfA7GiXpZJY8myrHlEj1QPFH0xExwhYlZxivBj+Yyj5kgjkfabZGPO96mZexvJsY3nFzodZt/HnG6lJ0+s4nQggU4RqdO6+2e57DMWLvwRJK2FUKZdRhwOKwmt4P5dwVbAzGp2RqkL1ShBSVgl8NbDYnGR7PGZnO1Uk4E9dvD+DgLntTnp+ZvYqf4dh1x8nxualCl3VTcq8Vnjm7TvFKYZmtK/XCARin+8ZJWNDsQvY1Dcfbxe20Uiuw9YJCb+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7wgyQvCo9YQbnney/gruQnzj4O2i5NZ4oDOKsDRuzyA=;
+ b=rQqQTutmIo4/BpxTqIs0/F2zIEUtcweG+Z9tjoMmA2Q1niajssFw1VBzft/boH6rlnRB6Ov71vJaAyWfFctNOlrAP9/d+NY5I9julWvk4PH4oKJXJW+8jMlQafrG6UK9zreqaX4msa7xNKUvt3Fui76DuOiDg0At7L0QjovNY7Q=
+Received: from BN6PR1101MB2145.namprd11.prod.outlook.com
+ (2603:10b6:405:51::10) by BN8PR11MB3698.namprd11.prod.outlook.com
+ (2603:10b6:408:8a::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.21; Wed, 1 Jul
+ 2020 16:59:48 +0000
+Received: from BN6PR1101MB2145.namprd11.prod.outlook.com
+ ([fe80::c908:e244:e85:3362]) by BN6PR1101MB2145.namprd11.prod.outlook.com
+ ([fe80::c908:e244:e85:3362%9]) with mapi id 15.20.3131.028; Wed, 1 Jul 2020
+ 16:59:48 +0000
+From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [Intel-wired-lan] [PATCH v1 1/5] iavf: use generic power
+ management
+Thread-Topic: [Intel-wired-lan] [PATCH v1 1/5] iavf: use generic power
+ management
+Thread-Index: AQHWTfgrmiUZ62k5Tk23/CCLp/c1+qjy9eDg
+Date:   Wed, 1 Jul 2020 16:59:47 +0000
+Message-ID: <BN6PR1101MB21456FB6DC435BF22390B8478C6C0@BN6PR1101MB2145.namprd11.prod.outlook.com>
+References: <20200629092943.227910-1-vaibhavgupta40@gmail.com>
+ <20200629092943.227910-2-vaibhavgupta40@gmail.com>
+In-Reply-To: <20200629092943.227910-2-vaibhavgupta40@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+authentication-results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.55.52.219]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e3251fbc-685a-4ac6-5ce1-08d81de02999
+x-ms-traffictypediagnostic: BN8PR11MB3698:
+x-microsoft-antispam-prvs: <BN8PR11MB36985E4F6343EBCCED0412E38C6C0@BN8PR11MB3698.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1360;
+x-forefront-prvs: 04519BA941
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uwtzu3URZ5Wi83TcRFO1FBKGd9rTRcEJrkSOYncBYxCGQNVC3L7RKx0K0HlR/c1gp2Bz+7rBHoGsr4ziULP+FoRbEVTPS7irjuC6aKUVNaO5EFuZIGS2Z8lkJna3dOCmVDRZ0/jGDKYZgT9/54bke//GGBbNMHDHmdo8oRNUsYfDy5ltrCLVcxLqMLmw+a4N2c1637GTw8mOklM0rQyf2aUC4dxdiDApxg9rujdplrfhmMnrG/ZeP7rkqFCg++gqESBc0HKtjWzjlSasr1rS0DxV/R/cCrBPMnkDeiMqc2XrkU355roOXv12b8rV/X+LrgB6hgrTnq8REuBDLs4TFgB2zS5433dGfQQtmTUU5BOMmx0ZFRRa7y4A8m78ZvCt
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR1101MB2145.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(366004)(376002)(396003)(346002)(2906002)(55016002)(9686003)(8676002)(86362001)(52536014)(33656002)(478600001)(26005)(5660300002)(186003)(6506007)(316002)(8936002)(66446008)(7696005)(66556008)(76116006)(66946007)(53546011)(64756008)(110136005)(66476007)(71200400001)(83380400001)(41533002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: uODgLvqRtQXeGm10s3BVl0yV5QmM1JYr9DhHiWJ6jWVAu9iMfgIcm/uBhvjbE02HA+ckqLgYOGLJ/ftRV3kJy5v9y0DNMVSaJRMvSFMDh8uetHw9m6dyNMMVw70qWNybSvtH3yzXjTp6Yy4pkSqmrz1npAy9j/N1b/yJVJ22FKHhqS4vhmMQVhzelC5G9OqUMqXWSUwGfnbnA437xcy7E4lfm7zSrsBkXFvEZLFMiy/4R6JvWb/zKeF9XB0hv8ioercA+vy8BM8hny4XLmTcrlgiHyhh2cSH6TLBs2QMHNzCUUPa+/npXYaQiECsv6RhoUR5xeTJRbspIPUVUOh1XCcf2wyeEASaXjzATfS8S4889L6mO8hMYoK3LtfzJODPea9LfFkYjJBNEunKtuVnJbVT6cGRXNxRZnLWn3xenz6I95ZfMawxyrQyOraOkK7dZvbWkzMtV333bs8x68l5MKKnwXBjPEVwrvwM7L8wK7c=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN6PR1101MB2145.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e3251fbc-685a-4ac6-5ce1-08d81de02999
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2020 16:59:47.9142
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: R6jF0UhxuEvld2OLRguGqIx+RVyb9q6+84SY15DYXhgoIkocefl9mgQthwjkqPnuA0dl0Kk8Qgs/iqjnT1ndG55jqMf2gELbGOH32Jf2MFg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3698
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DSA subsystem moved to phylink and adjust_link() became deprecated in
-the process. This patch removes adjust_link from the KSZ DSA switches and
-adds phylink_mac_link_up() and phylink_mac_link_down().
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Vaibhav Gupta
+> Sent: Monday, June 29, 2020 2:30 AM
+> To: Bjorn Helgaas <helgaas@kernel.org>; Bjorn Helgaas
+> <bhelgaas@google.com>; bjorn@helgaas.com; Vaibhav Gupta
+> <vaibhav.varodek@gmail.com>; David S. Miller <davem@davemloft.net>;
+> Jakub Kicinski <kuba@kernel.org>; Kirsher, Jeffrey T
+> <jeffrey.t.kirsher@intel.com>
+> Cc: Vaibhav Gupta <vaibhavgupta40@gmail.com>; netdev@vger.kernel.org;
+> linux-kernel@vger.kernel.org; intel-wired-lan@lists.osuosl.org;
+> skhan@linuxfoundation.org; linux-kernel-
+> mentees@lists.linuxfoundation.org
+> Subject: [Intel-wired-lan] [PATCH v1 1/5] iavf: use generic power
+> management
+>=20
+> With the support of generic PM callbacks, drivers no longer need to use
+> legacy .suspend() and .resume() in which they had to maintain PCI states
+> changes and device's power state themselves. The required operations are
+> done by PCI core.
+>=20
+> PCI drivers are not expected to invoke PCI helper functions like
+> pci_save/restore_state(), pci_enable/disable_device(),
+> pci_set_power_state(), etc. Their tasks are completed by PCI core itself.
+>=20
+> Compile-tested only.
+>=20
+> Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
+> ---
+>  drivers/net/ethernet/intel/iavf/iavf_main.c | 45 ++++++---------------
+>  1 file changed, 12 insertions(+), 33 deletions(-)
 
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795.c    |  3 ++-
- drivers/net/dsa/microchip/ksz9477.c    |  3 ++-
- drivers/net/dsa/microchip/ksz_common.c | 32 ++++++++++++++++----------
- drivers/net/dsa/microchip/ksz_common.h |  7 ++++--
- 4 files changed, 29 insertions(+), 16 deletions(-)
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index b0227b0e31e6..d07231d1def5 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1111,7 +1111,8 @@ static const struct dsa_switch_ops ksz8795_switch_ops = {
- 	.setup			= ksz8795_setup,
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
--	.adjust_link		= ksz_adjust_link,
-+	.phylink_mac_link_down	= ksz_mac_link_down,
-+	.phylink_mac_link_up	= ksz_mac_link_up,
- 	.port_enable		= ksz_enable_port,
- 	.port_disable		= ksz_disable_port,
- 	.get_strings		= ksz8795_get_strings,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 833cf3763000..162f2bd84774 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1399,7 +1399,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.setup			= ksz9477_setup,
- 	.phy_read		= ksz9477_phy_read16,
- 	.phy_write		= ksz9477_phy_write16,
--	.adjust_link		= ksz_adjust_link,
-+	.phylink_mac_link_down	= ksz_mac_link_down,
-+	.phylink_mac_link_up	= ksz_mac_link_up,
- 	.port_enable		= ksz_enable_port,
- 	.port_disable		= ksz_disable_port,
- 	.get_strings		= ksz9477_get_strings,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 4a41f0c7dbbc..a35d6ba8dd8a 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -135,26 +135,34 @@ int ksz_phy_write16(struct dsa_switch *ds, int addr, int reg, u16 val)
- }
- EXPORT_SYMBOL_GPL(ksz_phy_write16);
- 
--void ksz_adjust_link(struct dsa_switch *ds, int port,
--		     struct phy_device *phydev)
-+void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
-+		       phy_interface_t interface)
- {
- 	struct ksz_device *dev = ds->priv;
- 	struct ksz_port *p = &dev->ports[port];
- 
- 	/* Read all MIB counters when the link is going down. */
--	if (!phydev->link) {
--		p->read = true;
--		schedule_delayed_work(&dev->mib_read, 0);
--	}
-+	p->read = true;
-+	schedule_delayed_work(&dev->mib_read, 0);
-+
-+	mutex_lock(&dev->dev_mutex);
-+	dev->live_ports &= ~(1 << port);
-+	mutex_unlock(&dev->dev_mutex);
-+}
-+EXPORT_SYMBOL_GPL(ksz_mac_link_down);
-+
-+void ksz_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
-+		     phy_interface_t interface, struct phy_device *phydev,
-+		     int speed, int duplex, bool tx_pause, bool rx_pause)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	/* Remember which port is connected and active. */
- 	mutex_lock(&dev->dev_mutex);
--	if (!phydev->link)
--		dev->live_ports &= ~(1 << port);
--	else
--		/* Remember which port is connected and active. */
--		dev->live_ports |= (1 << port) & dev->on_ports;
-+	dev->live_ports |= (1 << port) & dev->on_ports;
- 	mutex_unlock(&dev->dev_mutex);
- }
--EXPORT_SYMBOL_GPL(ksz_adjust_link);
-+EXPORT_SYMBOL_GPL(ksz_mac_link_up);
- 
- int ksz_sset_count(struct dsa_switch *ds, int port, int sset)
- {
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 785702514a46..b1c468713609 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -160,8 +160,11 @@ void ksz_init_mib_timer(struct ksz_device *dev);
- 
- int ksz_phy_read16(struct dsa_switch *ds, int addr, int reg);
- int ksz_phy_write16(struct dsa_switch *ds, int addr, int reg, u16 val);
--void ksz_adjust_link(struct dsa_switch *ds, int port,
--		     struct phy_device *phydev);
-+void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
-+		       phy_interface_t interface);
-+void ksz_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
-+		     phy_interface_t interface, struct phy_device *phydev,
-+		     int speed, int duplex, bool tx_pause, bool rx_pause);
- int ksz_sset_count(struct dsa_switch *ds, int port, int sset);
- void ksz_get_ethtool_stats(struct dsa_switch *ds, int port, uint64_t *buf);
- int ksz_port_bridge_join(struct dsa_switch *ds, int port,
--- 
-2.25.1
 
