@@ -2,85 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F3D9210196
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 03:37:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CFA02101A9
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 03:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726171AbgGABhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 21:37:40 -0400
-Received: from mga03.intel.com ([134.134.136.65]:16759 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725763AbgGABhk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 21:37:40 -0400
-IronPort-SDR: sPe5BzAq1rJ5hMC7z/1QmZwZgCIbqZUhkUiCtF2+1dRO6D4JT5XP0CZjlezPQAP9417AlPXmVZ
- iR3TGT6ABSbA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="146421455"
-X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; 
-   d="scan'208";a="146421455"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2020 18:37:39 -0700
-IronPort-SDR: FOJdSSvScAe75If4MbAG6v6N7rHXGbSuz6DnceNDVl62rpQjZfMjteVk5kpb/KhnRSZzSVdD8G
- fHpFOeUPX5fg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; 
-   d="scan'208";a="454819319"
-Received: from orsmsx109.amr.corp.intel.com ([10.22.240.7])
-  by orsmga005.jf.intel.com with ESMTP; 30 Jun 2020 18:37:39 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.199]) by
- ORSMSX109.amr.corp.intel.com ([169.254.11.7]) with mapi id 14.03.0439.000;
- Tue, 30 Jun 2020 18:37:39 -0700
-From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-To:     Francesco Ruggeri <fruggeri@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-CC:     open list <linux-kernel@vger.kernel.org>,
+        id S1726155AbgGABxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 21:53:42 -0400
+Received: from mail.efficios.com ([167.114.26.124]:48614 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725805AbgGABxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 21:53:42 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 314002C9491;
+        Tue, 30 Jun 2020 21:53:41 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id QL88lQyBuVQy; Tue, 30 Jun 2020 21:53:40 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id D709D2C9490;
+        Tue, 30 Jun 2020 21:53:40 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com D709D2C9490
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1593568420;
+        bh=kKtLxAKcMdpuvU+NHR+2J7R0xy72FxtwVWbCjPoaSMo=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=MZ3wBiy9dVQTj5vwd3IGWioJ4DBCdGtOqkKQBzJRCLF8aIGqjUTvvDL65DBBVJqaD
+         qdih11ifB6Uu26COY/eyYtFlPw3Kkzt7GTu4qqkidVcguSXiWXwWyXHKnPXtpbEAbX
+         gyiQCOi3gduaq92iuh5hAMwdV26lNt4DoRGCjGudJ6uAuWba+6Zd6TlpxCRxDcqS3U
+         axBWc/aKzNEP5sMnz4fnaqfjXe+sellICY0oRU/gc9NV9C8HwK0UlzkBfyqTsUwZSj
+         Q//h88LspLAwaq9lOVJ5kqp0C0SttA/eCvdeFmYy82wcg0JxXUKRbrqHraCFueBBBo
+         cyRujbwE3d+JQ==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 4p48m_a1Ze3O; Tue, 30 Jun 2020 21:53:40 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id CAC3F2C958A;
+        Tue, 30 Jun 2020 21:53:40 -0400 (EDT)
+Date:   Tue, 30 Jun 2020 21:53:40 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Hideaki Yoshifuji <hideaki.yoshifuji@miraclelinux.com>,
+        "David S. Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: RE: [PATCH] igb: reinit_locked() should be called with rtnl_lock
-Thread-Topic: [PATCH] igb: reinit_locked() should be called with rtnl_lock
-Thread-Index: AQHWTlrL81g79hVuZ0aaoDgUuhrbt6jwv/UAgABMxoCAAOZwIA==
-Date:   Wed, 1 Jul 2020 01:37:39 +0000
-Message-ID: <61CC2BC414934749BD9F5BF3D5D940449874358A@ORSMSX112.amr.corp.intel.com>
-References: <20200629211801.C3D7095C0900@us180.sjc.aristanetworks.com>
- <20200629171612.49efbdaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CA+HUmGjHQPUh1frfy5E28Om9WTVr0W+UQVDsm99beC_mbTeMog@mail.gmail.com>
-In-Reply-To: <CA+HUmGjHQPUh1frfy5E28Om9WTVr0W+UQVDsm99beC_mbTeMog@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Message-ID: <873522637.18316.1593568420718.JavaMail.zimbra@efficios.com>
+In-Reply-To: <CANn89i+_hjeqTyOzQjqPzGVMJRjgYRnQ1bZ6Qyh=gbE6TgRAMg@mail.gmail.com>
+References: <20200630234101.3259179-1-edumazet@google.com> <CAPA1RqChMXe-o_eqc3VN3vT7wtY3Bz-SKzp6ZU2PQ3SykACgXA@mail.gmail.com> <CANn89i+_hjeqTyOzQjqPzGVMJRjgYRnQ1bZ6Qyh=gbE6TgRAMg@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: md5: add missing memory barriers in
+ tcp_md5_do_add()/tcp_md5_hash_key()
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_3945 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3928)
+Thread-Topic: md5: add missing memory barriers in tcp_md5_do_add()/tcp_md5_hash_key()
+Thread-Index: NbJBppXmzbuP+VNEiRy+FFHg7lrRFg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBGcmFuY2VzY28gUnVnZ2VyaSA8
-ZnJ1Z2dlcmlAYXJpc3RhLmNvbT4NCj4gU2VudDogTW9uZGF5LCBKdW5lIDI5LCAyMDIwIDIxOjUx
-DQo+IFRvOiBKYWt1YiBLaWNpbnNraSA8a3ViYUBrZXJuZWwub3JnPg0KPiBDYzogb3BlbiBsaXN0
-IDxsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnPjsgbmV0ZGV2DQo+IDxuZXRkZXZAdmdlci5r
-ZXJuZWwub3JnPjsgaW50ZWwtd2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmc7IERhdmlkIE1pbGxl
-cg0KPiA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IEtpcnNoZXIsIEplZmZyZXkgVCA8amVmZnJleS50
-LmtpcnNoZXJAaW50ZWwuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIXSBpZ2I6IHJlaW5pdF9s
-b2NrZWQoKSBzaG91bGQgYmUgY2FsbGVkIHdpdGggcnRubF9sb2NrDQo+IA0KPiA+IFdvdWxkIHlv
-dSBtaW5kIGFkZGluZyBhIGZpeGVzIHRhZyBoZXJlPyBQcm9iYWJseToNCj4gPg0KPiA+IEZpeGVz
-OiA5ZDVjODI0Mzk5ZGUgKCJpZ2I6IFBDSS1FeHByZXNzIDgyNTc1IEdpZ2FiaXQgRXRoZXJuZXQg
-ZHJpdmVyIikNCj4gDQo+IFRoYXQgc2VlbXMgdG8gYmUgdGhlIGNvbW1pdCB0aGF0IGludHJvZHVj
-ZWQgdGhlIGRyaXZlciBpbiAyLjYuMjUuDQo+IEkgYW0gbm90IGZhbWlsaWFyIHdpdGggdGhlIGhp
-c3Rvcnkgb2YgdGhlIGRyaXZlciB0byB0ZWxsIGlmIHRoaXMgd2FzIGEgZGF5IDENCj4gcHJvYmxl
-bSBvciBpZiBpdCBiZWNhbWUgYW4gaXNzdWUgbGF0ZXIuDQo+IA0KPiA+DQo+ID4gQW5kIGFzIGEg
-bWF0dGVyIG9mIGZhY3QgaXQgbG9va3MgbGlrZSBlMTAwMGUgYW5kIGUxMDAwIGhhdmUgdGhlIHNh
-bWUNCj4gPiBidWcgOi8gV291bGQgeW91IG1pbmQgY2hlY2tpbmcgYWxsIEludGVsIGRyaXZlciBw
-cm9kdWNpbmcgbWF0Y2hlcyBmb3INCj4gPiBhbGwgdGhlIGFmZmVjdGVkIG9uZXM/DQo+IA0KPiBE
-byB5b3UgbWVhbiBpZGVudGlmeSBhbGwgSW50ZWwgZHJpdmVycyB0aGF0IG1heSBoYXZlIHRoZSBz
-YW1lIGlzc3VlPw0KPiANCg0KRG8gbm90IHdvcnJ5IGFib3V0IHRoZSBvdGhlciBJbnRlbCBkcml2
-ZXJzLCBJIGhhdmUgb3VyIGRldmVsb3BlcnMgbG9va2luZyBhdCBlYWNoIG9mIG91ciBkcml2ZXJz
-IGZvciB0aGUgbG9ja2luZyBpc3N1ZS4NCg0KQERhdmlkIE1pbGxlciAtIEkgYW0gcGlja2luZyB1
-cCB0aGlzIHBhdGNoDQo=
+----- On Jun 30, 2020, at 8:55 PM, Eric Dumazet edumazet@google.com wrote:
+
+> On Tue, Jun 30, 2020 at 5:53 PM Hideaki Yoshifuji
+> <hideaki.yoshifuji@miraclelinux.com> wrote:
+>>
+>> Hi,
+>>
+>> 2020=E5=B9=B47=E6=9C=881=E6=97=A5(=E6=B0=B4) 8:41 Eric Dumazet <edumazet=
+@google.com>:
+>> :
+>> > We only want to make sure that in the case key->keylen
+>> > is changed, cpus in tcp_md5_hash_key() wont try to use
+>> > uninitialized data, or crash because key->keylen was
+>> > read twice to feed sg_init_one() and ahash_request_set_crypt()
+>> >
+>> > Fixes: 9ea88a153001 ("tcp: md5: check md5 signature without socket loc=
+k")
+>> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+>> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+>> > ---
+>> >  net/ipv4/tcp.c      | 7 +++++--
+>> >  net/ipv4/tcp_ipv4.c | 3 +++
+>> >  2 files changed, 8 insertions(+), 2 deletions(-)
+>> >
+>> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+>> > index
+>> > 810cc164f795f8e1e8ca747ed5df51bb20fec8a2..f111660453241692a17c881dd6dc=
+2910a1236263
+>> > 100644
+>> > --- a/net/ipv4/tcp.c
+>> > +++ b/net/ipv4/tcp.c
+>> > @@ -4033,10 +4033,13 @@ EXPORT_SYMBOL(tcp_md5_hash_skb_data);
+>> >
+>> >  int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct tcp_md5=
+sig_key
+>> >  *key)
+>> >  {
+>> > +       u8 keylen =3D key->keylen;
+>> >         struct scatterlist sg;
+>>
+>> ACCESS_ONCE here, no?
+>=20
+> Not needed, the smp_rmb() barrier is stronger.
+
+ACCESS_ONCE() is now deprecated in favor of READ_ONCE()/WRITE_ONCE(),
+which are needed here. smp_rmb()/smp_wmb() are needed in addition, but
+have a different purpose. smp_rmb() only guarantees ordering, but does
+nothing to prevent the compiler from turning the load into something
+unexpected. Likewise for WRITE_ONCE. See linux/compiler.h READ_ONCE and
+WRITE_ONCE comment:
+
+"2) Ensuring that the compiler does not fold, spindle, or otherwise
+mutilate accesses that either do not require ordering or that interact
+with an explicit memory barrier or atomic instruction that provides the
+required ordering."
+
+Thanks,
+
+Mathieu
+
+
+--=20
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
