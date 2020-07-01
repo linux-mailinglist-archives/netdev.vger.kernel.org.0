@@ -2,88 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AFBC2115A8
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 00:13:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFA592115BA
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 00:17:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726404AbgGAWN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 18:13:27 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:55152 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725771AbgGAWNZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 18:13:25 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 214B660067;
-        Wed,  1 Jul 2020 22:13:25 +0000 (UTC)
-Received: from us4-mdac16-42.ut7.mdlocal (unknown [10.7.64.24])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 1FA648009B;
-        Wed,  1 Jul 2020 22:13:25 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.32])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8A069280052;
-        Wed,  1 Jul 2020 22:13:24 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 27E03B4006A;
-        Wed,  1 Jul 2020 22:13:24 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 1 Jul 2020
- 23:13:17 +0100
-Subject: Re: [PATCH net-next 01/15] sfc: support setting MTU even if not
- privileged to configure MAC fully
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-References: <3fa88508-024e-2d33-0629-bf63b558b515@solarflare.com>
- <db235d46-96b0-ee6d-f09b-774e6fd9a072@solarflare.com>
- <20200701120311.4821118c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <3b76efb6-4b02-a26d-5284-65ab37b79ef5@solarflare.com>
-Date:   Wed, 1 Jul 2020 23:13:13 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726767AbgGAWRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 18:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725771AbgGAWRV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 18:17:21 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5076BC08C5C1;
+        Wed,  1 Jul 2020 15:17:21 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id z24so4210425ljn.8;
+        Wed, 01 Jul 2020 15:17:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0hjOP2xWJYBFB1lJ44pZ1iwrgg794l/jK5E/p4AXI4Y=;
+        b=Xgu2wjxM8gR3RdyappZ8oWPk1hZNwzaHxbRsdwv1ih9IYYRvRIqKdKk+NPPFJMIgGf
+         tuGmbf6th2afvmfrQgZ17KsSvoXzw3M/DdERL+haWnWYQ/yivIh04Il/0SVpOwIJChfl
+         nXaI+90956OkrqnzY6idFn3fR1CkNiI5oxM4OI6aNVN+5CqeuerOXeXz9wcOK4mEwFS2
+         U56SI4t7ivgqYcuMz2DZjhfloweXi09Cjg5M/y/YDMDXPgOxjXBlw2JdLi09TJrwyhFJ
+         day/jgYuHZH1a/2z0VXf3QdBEoV+fYkMqyeFxhJwrcFsfZvEJ/UtDGJgzS0li4MLQMx+
+         A5Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0hjOP2xWJYBFB1lJ44pZ1iwrgg794l/jK5E/p4AXI4Y=;
+        b=tEggY2p9BWi6NCXwIeCK+9b1GLianUnoRbEoDcSz6TiF5G4PFWKBogJSjTHCFzUZdz
+         jA0x0HknrpKx5kOH9UJ8bERPQ7cor4LnZXZKFfEWRRWp+x4xnS80aIUKRqKJdNMt0Q4d
+         klGwKrqNFq/2RYk8pDKtqZW5Hxh/jUqBY13nJfZHXUnel06iGS8Kl3j9u+0S0ZUOvfGW
+         1/L9vq66m0ZY6BVj5n+SiUXrK9T5oekQLkD2gtF6Aaf6LiBryn2VgOb1x/QkvQe1aG2v
+         WPs8/LEEL9JLPXySfxgVi4GC79K8x/BcMwhqryQW4xNqQRF0pfmCWVVCjSlpNGpP8EsU
+         Ou9g==
+X-Gm-Message-State: AOAM533A/LUpocLk4YMG6jg1Ofl17r70xz+ituTUXxEWG19TwBz8owyw
+        8bjVbOpX6utFYI24JR0SEKLYw+PU4D8FdcWEDqg=
+X-Google-Smtp-Source: ABdhPJy5vPSx7u8xpYmsgb/HuUaDybMaWgfQGMlx4w2etWh/E2gQtbxZbUoCO0Vwt7DaK6VEGMyi7t2ve6zYyr4FuE8=
+X-Received: by 2002:a2e:9bc3:: with SMTP id w3mr6345365ljj.121.1593641839001;
+ Wed, 01 Jul 2020 15:17:19 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200701120311.4821118c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25514.003
-X-TM-AS-Result: No-1.491700-8.000000-10
-X-TMASE-MatchedRID: 9zTThWtzImvmLzc6AOD8DfHkpkyUphL9amDMhjMSdnni7ECA5q90ucuO
-        qs00obe3SU7wejPT3bUF3u5AqD4V8mdOuIGC/rzd4h8r8l3l4eaXGEdoE+kH/+D3XFrJfgvzEeW
-        UGBiCoDXI5DUFqV7Gem5DnVO9k1z2unowF76PGIqgKqg7YGylCHzjW7ke067QK4YqHgCSopXUiz
-        ka+GYZvOeU+JIba2eRX7bicKxRIU2No+PRbWqfRK6NVEWSRWybTmgOlgQOHKHXJrRH1FpaKlQyy
-        yBNOQGh050hSzxZ7gL1YPY7DGI2dI6nWUBpvSabjzBRM5OTcfNarF5J9mYpZI1hLYwC7nFxhXIC
-        XPkDTMLvGyaLyWJvBWLqcdF40kDywzhVZiqhieGz597RaJ+lCg==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.491700-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25514.003
-X-MDID: 1593641605-1YyOPCC_wjC3
+References: <20200701175315.1161242-1-haoluo@google.com> <aab03e4b-2779-3b71-44ea-735a7b92a70f@fb.com>
+In-Reply-To: <aab03e4b-2779-3b71-44ea-735a7b92a70f@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 1 Jul 2020 15:17:07 -0700
+Message-ID: <CAADnVQK5o1uhJOXLKAbf9Hp_Y0fVsowD3DwRWwBd_++KTTOJHw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] selftests/bpf: Switch test_vmlinux to use hrtimer_range_start_ns.
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Hao Luo <haoluo@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/07/2020 20:03, Jakub Kicinski wrote:
-> On Wed, 1 Jul 2020 15:51:25 +0100 Edward Cree wrote:
->> Unprivileged functions (such as VFs) may set their MTU by use of the
->>  'control' field of MC_CMD_SET_MAC_EXT, as used in efx_mcdi_set_mtu().
->> If calling efx_ef10_mac_reconfigure() from efx_change_mtu(), the NIC
->>  supports the above (SET_MAC_ENHANCED capability), and regular
->>  efx_mcdi_set_mac() fails EPERM, then fall back to efx_mcdi_set_mtu().
-> Is there no way of checking the permission the function has before
-> issuing the firmware call?
-We could condition on the LINKCTRL flag from the MC_CMD_DRV_ATTACH
- response we get at start of day; but usually in this driver we've
- tried to follow the EAFP principle rather than embedding knowledge
- of the firmware's permissions model into the driver.
-I suppose it might make sense to go straight to efx_mcdi_set_mtu()
- in the mtu_only && SET_MAC_ENHANCED case, use efx_mcdi_set_mac()
- otherwise, and thus never have a fallback from one to the other.
-WDYT?
+On Wed, Jul 1, 2020 at 11:04 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 7/1/20 10:53 AM, Hao Luo wrote:
+> > The test_vmlinux test uses hrtimer_nanosleep as hook to test tracing
+> > programs. But in a kernel built by clang, which performs more aggresive
+> > inlining, that function gets inlined into its caller SyS_nanosleep.
+> > Therefore, even though fentry and kprobe do hook on the function,
+> > they aren't triggered by the call to nanosleep in the test.
+> >
+> > A possible fix is switching to use a function that is less likely to
+> > be inlined, such as hrtimer_range_start_ns. The EXPORT_SYMBOL functions
+> > shouldn't be inlined based on the description of [1], therefore safe
+> > to use for this test. Also the arguments of this function include the
+> > duration of sleep, therefore suitable for test verification.
+> >
+> > [1] af3b56289be1 time: don't inline EXPORT_SYMBOL functions
+> >
+> > Tested:
+> >   In a clang build kernel, before this change, the test fails:
+> >
+> >   test_vmlinux:PASS:skel_open 0 nsec
+> >   test_vmlinux:PASS:skel_attach 0 nsec
+> >   test_vmlinux:PASS:tp 0 nsec
+> >   test_vmlinux:PASS:raw_tp 0 nsec
+> >   test_vmlinux:PASS:tp_btf 0 nsec
+> >   test_vmlinux:FAIL:kprobe not called
+> >   test_vmlinux:FAIL:fentry not called
+> >
+> >   After switching to hrtimer_range_start_ns, the test passes:
+> >
+> >   test_vmlinux:PASS:skel_open 0 nsec
+> >   test_vmlinux:PASS:skel_attach 0 nsec
+> >   test_vmlinux:PASS:tp 0 nsec
+> >   test_vmlinux:PASS:raw_tp 0 nsec
+> >   test_vmlinux:PASS:tp_btf 0 nsec
+> >   test_vmlinux:PASS:kprobe 0 nsec
+> >   test_vmlinux:PASS:fentry 0 nsec
+> >
+> > Signed-off-by: Hao Luo <haoluo@google.com>
+> > Acked-by: Andrii Nakryiko <andriin@fb.com>
+>
+> Thanks!
+> Acked-by: Yonghong Song <yhs@fb.com>
 
--ed
+Applied. Thanks
