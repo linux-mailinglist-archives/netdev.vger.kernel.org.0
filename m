@@ -2,147 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5188A2100D1
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 02:01:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 627142100D5
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 02:05:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726356AbgGAABe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 20:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
+        id S1726084AbgGAAFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 20:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725930AbgGAABe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 20:01:34 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C28C03E979
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 17:01:33 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id d13so11014549ybk.8
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 17:01:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XKc0i29ur8bZ3QP5tHtJmPHNVBdp2DJUaH455nkGk4s=;
-        b=GDMwtKQ+H/jIvrSzz12y4L6SpqnTjq6z16AaR9iUU/G80hyILg7zCLy8m/9ECUJPcz
-         /Jr4LSIFh0xiTXtiH4+dzVwzmNoC2mNW0f2ZwiHzBYeN2rnNPDFeVd7Q0cSynOMxPaar
-         p64b73DOlTJf8SxO5xsnR9UsOUJVdYJQLM9yWP1WUZvCylChUXX67KJ8dKVtufyzq9rb
-         5/N0moL9Yhk8Vh9rqWTyIHh9k+2jKEEByttbH1Ww166ld0CzLMdNTXHMobgYIA96gJOJ
-         BT3GHsN0NTZS8qQONc/Z4oEU2ifY8LDigwIzT+wanKzBSNKD7DbZyIRT0Oy9FpFqJnBr
-         Xjng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XKc0i29ur8bZ3QP5tHtJmPHNVBdp2DJUaH455nkGk4s=;
-        b=jhQeoMci6JuND1ip10m3079o34kGOJQszn6C9XDV225S+u/pbmQh4rVqf3jZVb+gIh
-         lFbwAf6RpxnV/NzZDUzAWL9cN+NE1gcLgudBcKNLw+/Q0ka+eygw7qTjFf8OlFYRRRe7
-         njgVlGo8DPQ6GYsnvywaeQDXRPgHsmmJagkDk0e7zRxZlo0t/jTqU4PBGcB4YA3oB+NK
-         WqaWNtCc1ifT1C5oe3JpNR92bf7n7JNLA+EH5FQIdCtp618KF54Y5i+vWmtVjOgyTXhH
-         CmsFXukCZEZ1mt44E3yFrOs7JX/AbJxp6cXkD2JUR3YzMHH2SzGckyxGa+ad2kDBeW1h
-         4ATw==
-X-Gm-Message-State: AOAM531LcxLydd8TnrQSoAxsWWSf2VT+SGZ5gbco1MHLEKjCjInKJpTG
-        kQwWDH/FNY1qw4QZB2nJUTOTJUwDnY+pqmuFKg3bZA==
-X-Google-Smtp-Source: ABdhPJzwiaAEoJlLUXgcx2Je5sfgdYP4Cc3XmW/lp0GaOLJvy1YnkiYPkJ/Z8tot1orkQMc/4IM9t5rSuo3ymSVkN9w=
-X-Received: by 2002:a25:b7cc:: with SMTP id u12mr22675401ybj.173.1593561692346;
- Tue, 30 Jun 2020 17:01:32 -0700 (PDT)
+        with ESMTP id S1725862AbgGAAFe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 20:05:34 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92ED7C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 17:05:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=TBNd1SkmeXFu9UrYhNDqssdxJjXXZqfWFt/EARCEABQ=; b=wV/O8AXTSKB+fKSrD8U6Ei27W
+        G5ggh3Gq7zKRmgVjes1rdNili9DYylq9He9Z+xN7XPXZPvrQI/PVg2SoYLbKC8MUoywL7XXw4JvLs
+        TDRiQ3/QaC1bqnO+M+b0MhxfIueP+4RsALGzGhSfhTYXeTGwuM28V0K/mmC6ptuOA6LcJvTgMrYov
+        BLWaWZOYgAbIlaI55tJExdFAyaR/G2B9JRyWOw69HbRXp5pMnXayyQBmcxnDr3Hoph5HqmmyJ4Sk8
+        YBxVsiI8UV2np+d7D9x1ZyPGl+t+gJqKfw/cxS80IqiNAvD2SPxsOa3Jze1R33h+ltPl+taKIsSRE
+        P+tS4fmdA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33754)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jqQFi-00015m-5b; Wed, 01 Jul 2020 01:05:26 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jqQFe-0000Bs-13; Wed, 01 Jul 2020 01:05:22 +0100
+Date:   Wed, 1 Jul 2020 01:05:22 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH RFC net-next] net: mtk_eth_soc: use resolved link config
+ for PCS PHY
+Message-ID: <20200701000521.GH1551@shell.armlinux.org.uk>
+References: <E1jqDIk-0004m5-0L@rmk-PC.armlinux.org.uk>
+ <20200630104613.GB1551@shell.armlinux.org.uk>
+ <20200630221308.Horde.maavwLQud2YnxIT-0uQAH4l@www.vdorst.com>
 MIME-Version: 1.0
-References: <CAHk-=wjEghg5_pX_GhNP+BfcUK6CRZ+4mh3bciitm9JwXvR7aQ@mail.gmail.com>
- <20200630.134429.1590957032456466647.davem@davemloft.net> <CANn89i+b-LeaPvaaHvj0yc0mJ2qwZ0981fQHVp0+sqXYp=kdkA@mail.gmail.com>
- <474095696.17969.1593551866537.JavaMail.zimbra@efficios.com>
- <CANn89iKK2+pznYZoKZzdCu4qkA7BjJZFqc6ABof4iaS-T-9_aw@mail.gmail.com>
- <CANn89i+_DUrKROb1Zkk_nmngkD=oy9UjbxwnkgyzGB=z+SKg3g@mail.gmail.com>
- <CANn89iJJ_WR-jGQogU3-arjD6=xcU9VWzJYSOLbyD94JQo-zAQ@mail.gmail.com>
- <CANn89iLPqtJG0iESCHF+RcOjo95ukan1oSzjkPjoSJgKpO2wSQ@mail.gmail.com> <416125262.18159.1593560661355.JavaMail.zimbra@efficios.com>
-In-Reply-To: <416125262.18159.1593560661355.JavaMail.zimbra@efficios.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 30 Jun 2020 17:01:20 -0700
-Message-ID: <CANn89iKjggLK8u=E-1guVUuvO4cV3JY4bXcw63We1rNqTyWixA@mail.gmail.com>
-Subject: Re: [regression] TCP_MD5SIG on established sockets
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     paulmck <paulmck@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Jonathan Rajotte-Julien <joraj@efficios.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200630221308.Horde.maavwLQud2YnxIT-0uQAH4l@www.vdorst.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 4:44 PM Mathieu Desnoyers
-<mathieu.desnoyers@efficios.com> wrote:
->
-> ----- On Jun 30, 2020, at 6:38 PM, Eric Dumazet edumazet@google.com wrote:
-> [...]
-> >
-> > For updates of keys, it seems existing code lacks some RCU care.
-> >
-> > MD5 keys use RCU for lookups/hashes, but the replacement of a key does
-> > not allocate a new piece of memory.
->
-> How is that RCU-safe ?
->
-> Based on what I see here:
->
-> tcp_md5_do_add() has a comment stating:
->
-> "/* This can be called on a newly created socket, from other files */"
->
-> which appears to be untrue if this can indeed be called on a live socket.
+On Tue, Jun 30, 2020 at 10:13:08PM +0000, René van Dorst wrote:
+> Hi Russel and Sean,
+> 
+> Quoting Russell King - ARM Linux admin <linux@armlinux.org.uk>:
+> 
+> > On Tue, Jun 30, 2020 at 11:15:42AM +0100, Russell King wrote:
+> > > The SGMII PCS PHY needs to be updated with the link configuration in
+> > > the mac_link_up() call rather than in mac_config().  However,
+> > > mtk_sgmii_setup_mode_force() programs the SGMII block during
+> > > mac_config() when using 802.3z interface modes with the link
+> > > configuration.
+> > > 
+> > > Split that functionality from mtk_sgmii_setup_mode_force(), moving it
+> > > to a new mtk_sgmii_link_up() function, and call it from mac_link_up().
+> > > 
+> > > This does not look correct to me: 802.3z modes operate at a fixed
+> > > speed.  The contents of mtk_sgmii_link_up() look more appropriate for
+> > > SGMII mode, but the original code definitely did not call
+> > > mtk_sgmii_setup_mode_force() for SGMII mode but only 802.3z mode.
+> > > 
+> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > > ---
+> > > René, can you assist with this patch please - I really think there are
+> > > problems with the existing code.  You call mtk_sgmii_setup_mode_force()
+> > > in a block which is conditionalised as:
+> > > 
+> > > 	if (state->interface == PHY_INTERFACE_MODE_SGMII ||
+> > > 	    phy_interface_mode_is_8023z(state->interface)) {
+> > > ...
+> > > 		if (state->interface != PHY_INTERFACE_MODE_SGMII)
+> > > 			err = mtk_sgmii_setup_mode_force(eth->sgmii, sid,
+> > > 							 state);
+> > > 
+> > > Hence, mtk_sgmii_setup_mode_force() is only called for 1000BASE-X and
+> > > 2500BASE-X, which do not support anything but their native speeds.
+> > > Yet, mtk_sgmii_setup_mode_force() tries to program the SGMII for 10M
+> > > and 100M.
+> > > 
+> > > Note that this patch is more about moving uses of state->{speed,duplex}
+> > > into mac_link_up(), rather than fixing this problem, but I don't think
+> > > the addition in mtk_mac_link_up(), nor mtk_sgmii_link_up() is of any
+> > > use.
+> > 
+> > My Coccinelle script just found this use of state->{speed,duplex} still
+> > remaining:
+> > 
+> >                         if (MTK_HAS_CAPS(mac->hw->soc->caps,
+> >                                          MTK_TRGMII_MT7621_CLK)) {
+> > ...
+> >                         } else {
+> >                                 if (state->interface !=
+> >                                     PHY_INTERFACE_MODE_TRGMII)
+> >                                         mtk_gmac0_rgmii_adjust(mac->hw,
+> >                                                                state->speed);
+> > 
+> > which also needs to be eliminated.  Can that also be moved to
+> > mtk_mac_link_up()?
+> 
+> I know, you have pointed that out before. But I don't know how to fix
+> mtk_gmac0_rgmii_adjust(). This function changes the PLL of the MAC. But
+> without documentation I am not sure what all the bits are used for.
 
-"This can be called" is not the same than "this is always called for
-newly created socket"
+I'd forgotten...
 
->
-> The path for pre-existing keys does:
->
->         key = tcp_md5_do_lookup_exact(sk, addr, family, prefixlen, l3index);
->         if (key) {
->                 /* Pre-existing entry - just update that one. */
->                 memcpy(key->key, newkey, newkeylen);
->                 key->keylen = newkeylen;
->                 return 0;
->         }
->
-> AFAIU, this works only if you assume there are no concurrent readers
-> accessing key->key, else they can see a corrupted key.
+> Begin April I had a conversation with Sean about this. I also explained what
+> the issue was. AFAIK he was going to take care of this issue.
+> 
+> Sean did you had time to resolve this issue?
 
-This is fine.
+Well, I think the code as it stands is quite broken.
 
->
-> The change you are proposing adds smp_wmb/smp_rmb to pair stores
-> to key before key_len with loads of key_len before key. I'm not sure
-> what this is trying to achieve, and how it prevents the readers from
-> observing a corrupted state if the key is updated on a live socket ?
+If we start a bit earlier in mtk_mac_config(), we have this:
 
+        if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
+            mac->interface != state->interface) {
 
+which prevents us entering this block unless the interface mode has
+changed and we are not MT7628.  This block of code includes the two
+calls to mtk_gmac0_rgmii_adjust(), which are dependent on
+state->speed.
 
-By definition if you change the MD5 key on a socket while packets are
-flying, the incoming packet could either
+Since mac->interface starts off as PHY_INTERFACE_MODE_NA, the first
+time we head into mtk_mac_config(), the interface mode will be
+different, and we will enter this block of code, maybe calling down
+into mtk_gmac0_rgmii_adjust() if appropriate.
 
-1) See old key (packet is dropped)
-2) See new key.
+The first call will be via phylink_start(), which will call it with
+the initial configuration - the link will be down, and state->speed
+will be SPEED_UNKNOWN.  So, the various tests inside
+mtk_gmac0_rgmii_adjust() for speed == SPEED_1000 will all be false,
+meaning it'll program it as if for 10M or 100M speeds.
 
-So any other decision (catching intermediate state) is really not an
-issue, since you already accepted the fact that a packet could be
-dropped,
-and TCP will retransmit.
+When the link comes up, yes, mtk_mac_config() will be called again
+with the link parameters, but state->interface will now match
+mac->interface - so the block of code containing the call to
+mtk_gmac0_rgmii_adjust() will not be entered, and so none of that
+code gets executed when the link comes up/down.
 
-TCP MD5 implementation does not support multiple keys  for one flow,
-you can not have both old and new keys being checked.
+Now, if I dig out object 8ddbb8dcf032 from the git repository, which
+was the state of the file immedately prior to the phylink conversion,
+I find:
 
+static void mtk_phy_link_adjust(struct net_device *dev)
+{
 
->
-> Based on my understanding, this path which deals with pre-existing keys
-> in-place should only ever be used when there are no concurrent readers,
-> else a new memory allocation would be needed to guarantee that readers
-> always observe a valid copy.
+This is the function that phylib would call when the link comes up
+or down.  It tests for MTK_RESETTING, starts preparing a value for
+mcr, and then:
 
-This is not _needed,_ and since memory allocations can fail, we would
-potentially break applications
-assuming that changing MD5 key would never fail.
+        if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_GMAC1_TRGMII) && !mac->id) {
+                if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_TRGMII_MT7621_CLK)) {
+                        if (mt7621_gmac0_rgmii_adjust(mac->hw,
+                                                      dev->phydev->interface))
+                                return;
+                } else {
+                        if (!mac->trgmii)
+                                mtk_gmac0_rgmii_adjust(mac->hw,
+                                                       dev->phydev->speed);
+                }
+        }
 
-Patch has been sent for review on netdev@ (
-https://patchwork.ozlabs.org/project/netdev/patch/20200630234101.3259179-1-edumazet@google.com/
-)
+It then finishes creating a value for mcr, before writing it to the
+register, and printing the link status to the kernel log.
+
+Hence, mtk_gmac0_rgmii_adjust() would've been called every time there's
+a change of link state, and is expected to be passed the current speed.
+
+There seems to be a difference in behaviour between the pre-phylink and
+post-phylink drivers, and I think moving mtk_gmac0_rgmii_adjust() into
+mtk_mac_link_up() would be a definite improvement, possibly even a
+regression fix.
+
+However, it would be reasonable to assume that there should be reports
+that mtk_eth_soc doesn't work if this were the case.  So... odd.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
