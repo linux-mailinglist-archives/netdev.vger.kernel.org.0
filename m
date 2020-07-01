@@ -2,82 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DA6E210DC1
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 16:32:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13402210DC6
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 16:33:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731382AbgGAOcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 10:32:15 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:46262 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731328AbgGAOcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 10:32:14 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 98FA42005F;
-        Wed,  1 Jul 2020 14:32:13 +0000 (UTC)
-Received: from us4-mdac16-67.at1.mdlocal (unknown [10.110.49.162])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9754C8009B;
-        Wed,  1 Jul 2020 14:32:13 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.12])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2F2E140078;
-        Wed,  1 Jul 2020 14:32:13 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E7F3740084;
-        Wed,  1 Jul 2020 14:32:12 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 1 Jul 2020
- 15:32:07 +0100
-Subject: Re: [PATCH net-next] sfc: remove udp_tnl_has_port
-To:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <mhabets@solarflare.com>,
-        <linux-net-drivers@solarflare.com>
-References: <20200630225038.1190589-1-kuba@kernel.org>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <29d3564b-6bcc-9df7-f6a9-3d3867390e15@solarflare.com>
-Date:   Wed, 1 Jul 2020 15:32:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1731490AbgGAOdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 10:33:18 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:58571 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730852AbgGAOdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 10:33:17 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 114095801C9;
+        Wed,  1 Jul 2020 10:33:16 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Wed, 01 Jul 2020 10:33:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Cz4VrOPf6EhDp/M08
+        Oo+4M7ZgRKUYlxQe8lttXVDxaE=; b=XFRlIBDjwY0QJm4nIFhvA1H/IBTeQkDbw
+        gJI4tgbzchei9fPJKHH+mIh2LHNvLtnDhXRTHj5yU2FnBQtfxqNZkYuE0gFywjS4
+        IiEjQVWYyh29HrerU2OeRHhUAbBsWFHxSA+6Xm7TVO82rlsSQ1PhgShFwGlFUvsC
+        2zZdQv3prYN03Qckp2WBh8mqS82CeAKrc5dcHBFqAXd68ASJn2edupaZzZSlAqmL
+        YkHPgOVCeFGr1NGDDPWyOlzfiLkIpcmk3IJ4yAMtl6yoSkhKwHivxeTYmePD9WQD
+        GHFktYFdNoym0JCIzkBvUsE/f6SlT7vSPalZcILEnaBC3QRhuZDmw==
+X-ME-Sender: <xms:qp78Xu7MLQkS3uk6CdpK0IJLcOBhevTTWjEqmetzYUti2ZcGgdpKSg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrtddvgdejlecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
+    ffieekgeehveefvdegledvffduhfenucfkphepudelfedrgeejrdduieehrddvhedunecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:qp78Xn4x_KUaonEt4w5WVMyGdX6Nqz88N_Fy5QP-PqyGHDjsX113Dw>
+    <xmx:qp78XteeYByhFGsiLWKPphInMyiKVdkPaLiz5_QJ2TrVNXcBxbcrzw>
+    <xmx:qp78XrI38AgsYSxaRr_Ak6IOocPFKmAuSjWt9KB0Hk4KWMAJw6q_9A>
+    <xmx:rJ78XvAFpCLjCKTgJfAlhfabJTBq5Y6ji9I8T35nPk0Q0w8QqJuCUg>
+Received: from shredder.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 552E7328005E;
+        Wed,  1 Jul 2020 10:33:11 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, michael.chan@broadcom.com,
+        jeffrey.t.kirsher@intel.com, saeedm@mellanox.com, leon@kernel.org,
+        jiri@mellanox.com, snelson@pensando.io, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        danieller@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next v2 0/9] devlink: Expose port split attributes
+Date:   Wed,  1 Jul 2020 17:32:42 +0300
+Message-Id: <20200701143251.456693-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200630225038.1190589-1-kuba@kernel.org>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25514.003
-X-TM-AS-Result: No-2.094600-8.000000-10
-X-TMASE-MatchedRID: cgbqQT5W8hfmLzc6AOD8DfHkpkyUphL9L7DjpoDqNZmA6UrbM3j3qQVF
-        HBHRPrhRNealxAIT8MXkv2xupLQ6wpcLewwAa76fC4s/hE51YdUrXO/DnwR5yxW+93iqRvX7pIs
-        onG6IBJKVta6x57a423qFMKsSZiAboycGiHkOAtBntBdRwfYtoWiatLqAxumkmyiLZetSf8kir3
-        kOMJmHTBQabjOuIvShC24oEZ6SpSmcfuxsiY4QFC9oQZZd6fZpel0W6peXu3nvZm6DDMsy8pK59
-        x+vTIv4B6G9fuGZE4dJLeZHuU4g/EACbK/alPw7iOh5UN/BWNwW9N7A+/IhX4fMZMegLDIeGU0p
-        Knas+RbnCJftFZkZizYJYNFU00e7YDttQUGqHZU=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.094600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25514.003
-X-MDID: 1593613933-I_4v6SRVpqdP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/06/2020 23:50, Jakub Kicinski wrote:
-> Nothing seems to have ever been calling this.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-That was intended to be used by encap offloads (TX csum and TSO), which
- we only recently realised we hadn't upstreamed the rest of; the
- udp_tnl_has_port method would be called from our ndo_features_check().
-I'll try to get to upstreaming that support after ef100 is in, hopefully
- within this cycle, but if you don't want this dead code lying around in
- the meantime then have an
-Acked-by: Edward Cree <ecree@solarflare.com>
- and I can revert it when I add the code that calls it.
-(And don't worry, ef100 doesn't use ugly port-based offloads; it does
- proper CHECKSUM_PARTIAL and GSO_PARTIAL, so it won't have this stuff.)
+From: Ido Schimmel <idosch@mellanox.com>
 
--ed
+Danielle says:
+
+Currently, user space has no way of knowing if a port can be split and
+into how many ports. Among other things, this makes it impossible to
+write generic tests for port split functionality.
+
+Therefore, this set exposes two new devlink port attributes to user
+space: Number of lanes and whether the port can be split or not.
+
+Patch set overview:
+
+Patches #1-#4 cleanup 'struct devlink_port_attrs' and reduce the number
+of parameters passed between drivers and devlink via
+devlink_port_attrs_set()
+
+Patch #5 adds devlink port lanes attributes
+
+Patches #6-#7 add devlink port splittable attribute
+
+Patch #8 exploits the fact that devlink is now aware of port's number of
+lanes and whether the port can be split or not and moves some checks
+from drivers to devlink
+
+Patch #9 adds a port split test
+
+Changes since v1:
+* Rename 'width' attribute to 'lanes'
+* Add 'splittable' attribute
+* Move checks from drivers to devlink
+
+Danielle Ratson (9):
+  devlink: Move set attribute of devlink_port_attrs to devlink_port
+  devlink: Move switch_port attribute of devlink_port_attrs to
+    devlink_port
+  devlink: Replace devlink_port_attrs_set parameters with a struct
+  mlxsw: Set number of port lanes attribute in driver
+  devlink: Add a new devlink port lanes attribute and pass to netlink
+  mlxsw: Set port split ability attribute in driver
+  devlink: Add a new devlink port split ability attribute and pass to
+    netlink
+  devlink: Move input checks from driver to devlink
+  selftests: net: Add port split test
+
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  13 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |   6 +-
+ .../ethernet/mellanox/mlx5/core/en/devlink.c  |  19 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  20 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  18 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |   4 +-
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c |   4 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  23 +-
+ .../net/ethernet/mellanox/mlxsw/switchib.c    |   2 +-
+ .../net/ethernet/mellanox/mlxsw/switchx2.c    |   2 +-
+ .../net/ethernet/netronome/nfp/nfp_devlink.c  |  17 +-
+ .../ethernet/pensando/ionic/ionic_devlink.c   |   5 +-
+ drivers/net/netdevsim/dev.c                   |  14 +-
+ include/net/devlink.h                         |  31 ++-
+ include/uapi/linux/devlink.h                  |   3 +
+ net/core/devlink.c                            |  90 +++---
+ net/dsa/dsa2.c                                |  17 +-
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/devlink_port_split.py       | 259 ++++++++++++++++++
+ 19 files changed, 416 insertions(+), 132 deletions(-)
+ create mode 100755 tools/testing/selftests/net/devlink_port_split.py
+
+-- 
+2.26.2
+
