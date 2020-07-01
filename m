@@ -2,69 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 696E2211319
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 20:54:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD15C21132F
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 21:03:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726353AbgGASyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 14:54:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57176 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725812AbgGASyG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 14:54:06 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 38B382082F;
-        Wed,  1 Jul 2020 18:54:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593629645;
-        bh=arBC5kWWmGGAhW6RNfJv8Y2OBNwQSad7ArFxPPrM1oc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CrsVPpcE017F4ZIljB1ve0ssfLcCe9U/yI2GOH6Q3ykBlrtwcM6mQXbS05SNg8HXp
-         cmvAJIddOH4fYuQGDbTIDFWtiQoYXCcSHJ4NBugHRed71tPW36eLlM2DBt4R5XVcC1
-         EtI20F4FtzPWJgHfoeCiCtmhneIG+M69FIODibHw=
-Date:   Wed, 1 Jul 2020 11:54:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        michael.chan@broadcom.com, jeffrey.t.kirsher@intel.com,
-        saeedm@mellanox.com, leon@kernel.org, jiri@mellanox.com,
-        snelson@pensando.io, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, danieller@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next v2 5/9] devlink: Add a new devlink port lanes
- attribute and pass to netlink
-Message-ID: <20200701115403.75b13480@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200701143251.456693-6-idosch@idosch.org>
-References: <20200701143251.456693-1-idosch@idosch.org>
-        <20200701143251.456693-6-idosch@idosch.org>
+        id S1726287AbgGATDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 15:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725875AbgGATDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 15:03:13 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF82C08C5C1
+        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 12:03:13 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id 22so23669523wmg.1
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 12:03:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=so1euM2fxDT+DX28tgZVhFo90Lj+9P/xsDqh/XdCdfc=;
+        b=JLUOkeV4i1KbRUZhMOVyfEvKT+Iyb8ml2KaKI0oJmJKN7mj4A0rSIqeLLyrG1ZMf4N
+         UIbUp2+YDRRu0eiMYOmfTY1T6s2yX1TbnY7SGNmlfUY4wlg5ZENRaSOVSqSJr2g/t8l/
+         nfFysOnLP+rAAPrS6Oj1UnAqvFg/9vyV2J8WY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=so1euM2fxDT+DX28tgZVhFo90Lj+9P/xsDqh/XdCdfc=;
+        b=j0cZDV1WKnsf+OCJS/aUmTCyzG8BuWY3S/iTIqoMqnthzeWnE0vKKn3IgrzJiW57uw
+         bwq/w0iOu4+WD9bAW/bvLnGtrzYJKXM84krYJMrS8+yzWMUtYHx6Xj84zE+X/oDnKdLx
+         whclYpqjfSR0LKWIm43oiEHtp7DaKlAtoNahctIjk5HWdq8hhNeuEYOrTG/ZAdjiINDA
+         UxC3hEhRl54ChHtCqofvl//wqu67Ug4R3qYEHrZ2L/ghSGbr4vK8N5DNVRcPhvXi9Rev
+         MbwRedRbXhTeAfaYSFPbFKSLUuxukJXawgf2tS5TLkdiux990r2FwQCtTTkRDGReIXt2
+         uHrw==
+X-Gm-Message-State: AOAM533WpxTxOxdFAcdtLRcjlsPQDLAYVHDPaIkeGEeVUNFavjhKk7Sk
+        SsOqhSH8qvw+rP8sf7OILWiw4jSIOdsrIQeBmX63kw==
+X-Google-Smtp-Source: ABdhPJxwNmEPoFaL06Rornt7vySFMlJsTTRjX+UYFCeW+7miP86iZt/KyebJUuSMkWDk64em74XssKewY8xID/MsCCQ=
+X-Received: by 2002:a05:600c:2317:: with SMTP id 23mr28928523wmo.72.1593630191577;
+ Wed, 01 Jul 2020 12:03:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200630043343.53195-1-alexei.starovoitov@gmail.com>
+ <20200630043343.53195-3-alexei.starovoitov@gmail.com> <d0c6b6a6-7b82-e620-8ced-8a1acfaf6f6d@iogearbox.net>
+ <20200630234117.arqmjpbivy5fhhmk@ast-mbp.dhcp.thefacebook.com>
+ <1e9d88c9-c5f2-6def-7afc-aca47a88f4b0@iogearbox.net> <CAADnVQKF4z1kGduHdoRdNqmFQSoQ+b9skyb7n23YQj7X0qx8TA@mail.gmail.com>
+In-Reply-To: <CAADnVQKF4z1kGduHdoRdNqmFQSoQ+b9skyb7n23YQj7X0qx8TA@mail.gmail.com>
+From:   KP Singh <kpsingh@chromium.org>
+Date:   Wed, 1 Jul 2020 21:03:00 +0200
+Message-ID: <CACYkzJ4286FaB4k7ZF7UdU5q_UTAy_M4QyWGEXXGPu8pVeX3LA@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 2/5] bpf: Introduce sleepable BPF programs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  1 Jul 2020 17:32:47 +0300 Ido Schimmel wrote:
-> diff --git a/include/net/devlink.h b/include/net/devlink.h
-> index 8f9db991192d..91752b79bb29 100644
-> --- a/include/net/devlink.h
-> +++ b/include/net/devlink.h
-> @@ -68,10 +68,13 @@ struct devlink_port_pci_vf_attrs {
->   * struct devlink_port_attrs - devlink port object
->   * @flavour: flavour of the port
->   * @split: indicates if this is split port
-> + * @lanes: maximum number of lanes the port supports.
-> + *	   0 value is not passed to netlink and valid number is a power of 2.
+On Wed, Jul 1, 2020 at 5:14 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Jul 1, 2020 at 2:17 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> > ("bpf: Replace cant_sleep() with cant_migrate()"). So perhaps one way to catch
+> > bugs for sleepable progs is to add a __might_sleep() into __bpf_prog_enter_sleepable()
+>
+> that's a good idea.
+>
+> > in order to trigger the assertion generally for DEBUG_ATOMIC_SLEEP configured
+> > kernels when we're in non-sleepable sections? Still not perfect since the code
+> > needs to be exercised first but better than nothing at all.
+> >
+> > >> What about others like security_sock_rcv_skb() for example which could be
+> > >> bh_lock_sock()'ed (or, generally hooks running in softirq context)?
+> > >
+> > > ahh. it's in running in bh at that point? then it should be added to blacklist.
+> >
+> > Yep.
+>
+> I'm assuming KP will take care of it soon.
 
-Why power of two? what about 100G R10?
+I found one other hook, file_send_sigiotask, which mentions
+"Note that this hook is sometimes called from interrupt." So I think
+we should add it to the list as well.
 
->   * @switch_id: if the port is part of switch, this is buffer with ID, otherwise this is NULL
->   */
->  struct devlink_port_attrs {
->  	u8 split:1;
-> +	u32 lanes;
->  	enum devlink_port_flavour flavour;
->  	struct netdev_phys_item_id switch_id;
->  	union {
+Given some more due diligence done here
+and Daniel's proposal of adding __might_sleep() to
+the __bpf_prog_enter_sleepable() we should be able to
+iterate on finding other non-sleepable hooks (if they exist)
+and eventually augmenting the LSM_HOOK macro for a
+more structured way to store this information.
+
+- KP
+
+> If not I'll come back to this set some time in August.
+>
+> In the meantime I've pushed patch 1 that removes redundant sync_rcu to bpf-next,
+> since it's independent and it benefits from being in the tree as much
+> as possible.
