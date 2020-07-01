@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFA52210148
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 03:08:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CC5F210147
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 03:08:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726283AbgGABIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 21:08:21 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40556 "EHLO vps0.lunn.ch"
+        id S1726244AbgGABIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 21:08:18 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40550 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726142AbgGABIQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Jun 2020 21:08:16 -0400
+        id S1726065AbgGABIR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Jun 2020 21:08:17 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1jqREQ-00344n-UO; Wed, 01 Jul 2020 03:08:10 +0200
+        id 1jqREQ-00344q-W4; Wed, 01 Jul 2020 03:08:11 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Michal Kubecek <mkubecek@suse.cz>
 Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH ethtool v4 1/6] Add cable test support
-Date:   Wed,  1 Jul 2020 03:07:38 +0200
-Message-Id: <20200701010743.730606-2-andrew@lunn.ch>
+Subject: [PATCH ethtool v4 2/6] Add cable test TDR support
+Date:   Wed,  1 Jul 2020 03:07:39 +0200
+Message-Id: <20200701010743.730606-3-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200701010743.730606-1-andrew@lunn.ch>
 References: <20200701010743.730606-1-andrew@lunn.ch>
@@ -31,189 +31,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for starting a cable test, and report the results.
-
-This code does not follow the usual patterns because of the way the
-kernel reports the results of the cable test. It can take a number of
-seconds for cable testing to occur. So the action request messages is
-immediately acknowledges, and the test is then performed asynchronous.
-Once the test has completed, the results are returned as a
-notification.
-
-This means the command starts as usual. It then monitors multicast
-messages until it receives the results.
+Add support for accessing the cable test time domain reflectromatry
+data. Add a new command --cable-test-tdr, and support for dumping the
+data which is returned.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- Makefile.am          |   2 +-
- ethtool.c            |   5 +
- netlink/cable_test.c | 266 +++++++++++++++++++++++++++++++++++++++++++
+ ethtool.c            |   8 ++
+ netlink/cable_test.c | 296 +++++++++++++++++++++++++++++++++++++++++++
  netlink/extapi.h     |   2 +
  netlink/monitor.c    |   4 +
- netlink/netlink.h    |   3 +-
- 6 files changed, 280 insertions(+), 2 deletions(-)
- create mode 100644 netlink/cable_test.c
+ netlink/netlink.h    |   2 +
+ netlink/parser.c     |  42 ++++++
+ netlink/parser.h     |   4 +
+ 7 files changed, 358 insertions(+)
 
-diff --git a/Makefile.am b/Makefile.am
-index 63c3fb3..a818cf8 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -35,7 +35,7 @@ ethtool_SOURCES += \
- 		  netlink/channels.c netlink/coalesce.c netlink/pause.c \
- 		  netlink/eee.c netlink/tsinfo.c \
- 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
--		  netlink/desc-rtnl.c \
-+		  netlink/desc-rtnl.c netlink/cable_test.c \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
- 		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
 diff --git a/ethtool.c b/ethtool.c
-index 8522d6b..a616943 100644
+index a616943..a6bb9ac 100644
 --- a/ethtool.c
 +++ b/ethtool.c
-@@ -5482,6 +5482,11 @@ static const struct option args[] = {
- 		.xhelp	= "The supported sub commands include --show-coalesce, --coalesce"
- 			  "             [queue_mask %x] SUB_COMMAND\n",
+@@ -5487,6 +5487,14 @@ static const struct option args[] = {
+ 		.nlfunc	= nl_cable_test,
+ 		.help	= "Perform a cable test",
  	},
 +	{
-+		.opts	= "--cable-test",
-+		.nlfunc	= nl_cable_test,
-+		.help	= "Perform a cable test",
++		.opts	= "--cable-test-tdr",
++		.nlfunc	= nl_cable_test_tdr,
++		.help	= "Print cable test time domain reflectrometery data",
++		.xhelp	= "		[ first N ]\n"
++			  "		[ last N ]\n"
++			  "		[ step N ]\n"
 +	},
  	{
  		.opts	= "-h|--help",
  		.no_dev	= true,
 diff --git a/netlink/cable_test.c b/netlink/cable_test.c
-new file mode 100644
-index 0000000..a961654
---- /dev/null
+index a961654..1672f55 100644
+--- a/netlink/cable_test.c
 +++ b/netlink/cable_test.c
-@@ -0,0 +1,266 @@
-+/*
-+ * cable_test.c - netlink implementation of cable test command
-+ *
-+ * Implementation of ethtool --cable-test <dev>
-+ */
+@@ -11,6 +11,7 @@
+ #include "../internal.h"
+ #include "../common.h"
+ #include "netlink.h"
++#include "parser.h"
+ 
+ struct cable_test_context {
+ 	bool breakout;
+@@ -264,3 +265,298 @@ int nl_cable_test(struct cmd_context *ctx)
+ 		ret = nl_cable_test_process_results(ctx);
+ 	return ret;
+ }
 +
-+#include <errno.h>
-+#include <string.h>
-+#include <stdio.h>
-+
-+#include "../internal.h"
-+#include "../common.h"
-+#include "netlink.h"
-+
-+struct cable_test_context {
-+	bool breakout;
-+};
-+
-+static int nl_get_cable_test_result(const struct nlattr *nest, uint8_t *pair,
-+				    uint16_t *code)
++static int nl_get_cable_test_tdr_amplitude(const struct nlattr *nest,
++					   uint8_t *pair, int16_t *mV)
 +{
-+	const struct nlattr *tb[ETHTOOL_A_CABLE_RESULT_MAX+1] = {};
++	const struct nlattr *tb[ETHTOOL_A_CABLE_AMPLITUDE_MAX+1] = {};
++	DECLARE_ATTR_TB_INFO(tb);
++	uint16_t mV_unsigned;
++	int ret;
++
++	ret = mnl_attr_parse_nested(nest, attr_cb, &tb_info);
++	if (ret < 0 ||
++	    !tb[ETHTOOL_A_CABLE_AMPLITUDE_PAIR] ||
++	    !tb[ETHTOOL_A_CABLE_AMPLITUDE_mV])
++		return -EFAULT;
++
++	*pair = mnl_attr_get_u8(tb[ETHTOOL_A_CABLE_AMPLITUDE_PAIR]);
++	mV_unsigned = mnl_attr_get_u16(tb[ETHTOOL_A_CABLE_AMPLITUDE_mV]);
++	*mV = (int16_t)(mV_unsigned);
++
++	return 0;
++}
++
++static int nl_get_cable_test_tdr_pulse(const struct nlattr *nest, uint16_t *mV)
++{
++	const struct nlattr *tb[ETHTOOL_A_CABLE_PULSE_MAX+1] = {};
 +	DECLARE_ATTR_TB_INFO(tb);
 +	int ret;
 +
 +	ret = mnl_attr_parse_nested(nest, attr_cb, &tb_info);
 +	if (ret < 0 ||
-+	    !tb[ETHTOOL_A_CABLE_RESULT_PAIR] ||
-+	    !tb[ETHTOOL_A_CABLE_RESULT_CODE])
++	    !tb[ETHTOOL_A_CABLE_PULSE_mV])
 +		return -EFAULT;
 +
-+	*pair = mnl_attr_get_u8(tb[ETHTOOL_A_CABLE_RESULT_PAIR]);
-+	*code = mnl_attr_get_u8(tb[ETHTOOL_A_CABLE_RESULT_CODE]);
++	*mV = mnl_attr_get_u16(tb[ETHTOOL_A_CABLE_PULSE_mV]);
 +
 +	return 0;
 +}
 +
-+static int nl_get_cable_test_fault_length(const struct nlattr *nest,
-+					  uint8_t *pair, unsigned int *cm)
++static int nl_get_cable_test_tdr_step(const struct nlattr *nest,
++				      uint32_t *first, uint32_t *last,
++				      uint32_t *step)
 +{
-+	const struct nlattr *tb[ETHTOOL_A_CABLE_FAULT_LENGTH_MAX+1] = {};
++	const struct nlattr *tb[ETHTOOL_A_CABLE_STEP_MAX+1] = {};
 +	DECLARE_ATTR_TB_INFO(tb);
 +	int ret;
 +
 +	ret = mnl_attr_parse_nested(nest, attr_cb, &tb_info);
 +	if (ret < 0 ||
-+	    !tb[ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR] ||
-+	    !tb[ETHTOOL_A_CABLE_FAULT_LENGTH_CM])
++	    !tb[ETHTOOL_A_CABLE_STEP_FIRST_DISTANCE] ||
++	    !tb[ETHTOOL_A_CABLE_STEP_LAST_DISTANCE] ||
++	    !tb[ETHTOOL_A_CABLE_STEP_STEP_DISTANCE])
 +		return -EFAULT;
 +
-+	*pair = mnl_attr_get_u8(tb[ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR]);
-+	*cm = mnl_attr_get_u32(tb[ETHTOOL_A_CABLE_FAULT_LENGTH_CM]);
++	*first = mnl_attr_get_u32(tb[ETHTOOL_A_CABLE_STEP_FIRST_DISTANCE]);
++	*last = mnl_attr_get_u32(tb[ETHTOOL_A_CABLE_STEP_LAST_DISTANCE]);
++	*step = mnl_attr_get_u32(tb[ETHTOOL_A_CABLE_STEP_STEP_DISTANCE]);
 +
 +	return 0;
 +}
 +
-+static char *nl_code2txt(uint16_t code)
++static int nl_cable_test_tdr_ntf_attr(struct nlattr *evattr)
 +{
-+	switch (code) {
-+	case ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC:
-+	default:
-+		return "Unknown";
-+	case ETHTOOL_A_CABLE_RESULT_CODE_OK:
-+		return "OK";
-+	case ETHTOOL_A_CABLE_RESULT_CODE_OPEN:
-+		return "Open Circuit";
-+	case ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT:
-+		return "Short within Pair";
-+	case ETHTOOL_A_CABLE_RESULT_CODE_CROSS_SHORT:
-+		return "Short to another pair";
-+	}
-+}
-+
-+static char *nl_pair2txt(uint8_t pair)
-+{
-+	switch (pair) {
-+	case ETHTOOL_A_CABLE_PAIR_A:
-+		return "Pair A";
-+	case ETHTOOL_A_CABLE_PAIR_B:
-+		return "Pair B";
-+	case ETHTOOL_A_CABLE_PAIR_C:
-+		return "Pair C";
-+	case ETHTOOL_A_CABLE_PAIR_D:
-+		return "Pair D";
-+	default:
-+		return "Unexpected pair";
-+	}
-+}
-+
-+static int nl_cable_test_ntf_attr(struct nlattr *evattr)
-+{
-+	unsigned int cm;
-+	uint16_t code;
++	uint32_t first, last, step;
 +	uint8_t pair;
 +	int ret;
 +
 +	switch (mnl_attr_get_type(evattr)) {
-+	case ETHTOOL_A_CABLE_NEST_RESULT:
-+		ret = nl_get_cable_test_result(evattr, &pair, &code);
++	case ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE: {
++		int16_t mV;
++
++		ret = nl_get_cable_test_tdr_amplitude(
++			evattr, &pair, &mV);
 +		if (ret < 0)
 +			return ret;
 +
-+		printf("Pair: %s, result: %s\n", nl_pair2txt(pair),
-+		       nl_code2txt(code));
++		printf("Pair: %s, amplitude %4d\n", nl_pair2txt(pair), mV);
 +		break;
++	}
++	case ETHTOOL_A_CABLE_TDR_NEST_PULSE: {
++		uint16_t mV;
 +
-+	case ETHTOOL_A_CABLE_NEST_FAULT_LENGTH:
-+		ret = nl_get_cable_test_fault_length(evattr, &pair, &cm);
++		ret = nl_get_cable_test_tdr_pulse(evattr, &mV);
 +		if (ret < 0)
 +			return ret;
 +
-+		printf("Pair: %s, fault length: %0.2fm\n",
-+		       nl_pair2txt(pair), (float)cm / 100);
++		printf("TDR pulse %dmV\n", mV);
++		break;
++	}
++	case ETHTOOL_A_CABLE_TDR_NEST_STEP:
++		ret = nl_get_cable_test_tdr_step(evattr, &first, &last, &step);
++		if (ret < 0)
++			return ret;
++
++		printf("Step configuration, %.2f-%.2f meters in %.2fm steps\n",
++		       (float)first / 100, (float)last /  100,
++		       (float)step /  100);
 +		break;
 +	}
 +	return 0;
 +}
 +
-+static void cable_test_ntf_nest(const struct nlattr *nest)
++static void cable_test_tdr_ntf_nest(const struct nlattr *nest)
 +{
 +	struct nlattr *pos;
 +	int ret;
 +
 +	mnl_attr_for_each_nested(pos, nest) {
-+		ret = nl_cable_test_ntf_attr(pos);
++		ret = nl_cable_test_tdr_ntf_attr(pos);
 +		if (ret < 0)
 +			return;
 +	}
@@ -222,9 +197,9 @@ index 0000000..a961654
 +/* Returns MNL_CB_STOP when the test is complete. Used when executing
 + * a test, but not suitable for monitor.
 + */
-+static int cable_test_ntf_stop_cb(const struct nlmsghdr *nlhdr, void *data)
++int cable_test_tdr_ntf_stop_cb(const struct nlmsghdr *nlhdr, void *data)
 +{
-+	const struct nlattr *tb[ETHTOOL_A_CABLE_TEST_NTF_MAX + 1] = {};
++	const struct nlattr *tb[ETHTOOL_A_CABLE_TEST_TDR_NTF_MAX + 1] = {};
 +	u8 status = ETHTOOL_A_CABLE_TEST_NTF_STATUS_UNSPEC;
 +	struct cable_test_context *ctctx;
 +	struct nl_context *nlctx = data;
@@ -241,7 +216,7 @@ index 0000000..a961654
 +	if (ret < 0)
 +		return err_ret;
 +
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_CABLE_TEST_HEADER]);
++	nlctx->devname = get_dev_name(tb[ETHTOOL_A_CABLE_TEST_TDR_HEADER]);
 +	if (!dev_ok(nlctx))
 +		return err_ret;
 +
@@ -250,19 +225,19 @@ index 0000000..a961654
 +
 +	switch (status) {
 +	case ETHTOOL_A_CABLE_TEST_NTF_STATUS_STARTED:
-+		printf("Cable test started for device %s.\n",
++		printf("Cable test TDR started for device %s.\n",
 +		       nlctx->devname);
 +		break;
 +	case ETHTOOL_A_CABLE_TEST_NTF_STATUS_COMPLETED:
-+		printf("Cable test completed for device %s.\n",
++		printf("Cable test TDR completed for device %s.\n",
 +		       nlctx->devname);
 +		break;
 +	default:
 +		break;
 +	}
 +
-+	if (tb[ETHTOOL_A_CABLE_TEST_NTF_NEST])
-+		cable_test_ntf_nest(tb[ETHTOOL_A_CABLE_TEST_NTF_NEST]);
++	if (tb[ETHTOOL_A_CABLE_TEST_TDR_NTF_NEST])
++		cable_test_tdr_ntf_nest(tb[ETHTOOL_A_CABLE_TEST_TDR_NTF_NEST]);
 +
 +	if (status == ETHTOOL_A_CABLE_TEST_NTF_STATUS_COMPLETED) {
 +		if (ctctx)
@@ -273,12 +248,12 @@ index 0000000..a961654
 +	return MNL_CB_OK;
 +}
 +
-+/* Wrapper around cable_test_ntf_stop_cb() which does not return STOP,
-+ * used for monitor
++/* Wrapper around cable_test_tdr_ntf_stop_cb() which does not return
++ * STOP, used for monitor
 + */
-+int cable_test_ntf_cb(const struct nlmsghdr *nlhdr, void *data)
++int cable_test_tdr_ntf_cb(const struct nlmsghdr *nlhdr, void *data)
 +{
-+	int status = cable_test_ntf_stop_cb(nlhdr, data);
++	int status = cable_test_tdr_ntf_stop_cb(nlhdr, data);
 +
 +	if (status == MNL_CB_STOP)
 +		status = MNL_CB_OK;
@@ -286,20 +261,23 @@ index 0000000..a961654
 +	return status;
 +}
 +
-+static int nl_cable_test_results_cb(const struct nlmsghdr *nlhdr, void *data)
++static int nl_cable_test_tdr_results_cb(const struct nlmsghdr *nlhdr,
++					void *data)
 +{
 +	const struct genlmsghdr *ghdr = (const struct genlmsghdr *)(nlhdr + 1);
 +
-+	if (ghdr->cmd != ETHTOOL_MSG_CABLE_TEST_NTF)
++	if (ghdr->cmd != ETHTOOL_MSG_CABLE_TEST_TDR_NTF)
 +		return MNL_CB_OK;
 +
-+	return cable_test_ntf_stop_cb(nlhdr, data);
++	cable_test_tdr_ntf_cb(nlhdr, data);
++
++	return MNL_CB_STOP;
 +}
 +
 +/* Receive the broadcasted messages until we get the cable test
 + * results
 + */
-+static int nl_cable_test_process_results(struct cmd_context *ctx)
++static int nl_cable_test_tdr_process_results(struct cmd_context *ctx)
 +{
 +	struct nl_context *nlctx = ctx->nlctx;
 +	struct nl_socket *nlsk = nlctx->ethnl_socket;
@@ -314,7 +292,7 @@ index 0000000..a961654
 +	nlctx->cmd_private = &ctctx;
 +
 +	while (!ctctx.breakout) {
-+		err = nlsock_process_reply(nlsk, nl_cable_test_results_cb,
++		err = nlsock_process_reply(nlsk, nl_cable_test_tdr_results_cb,
 +					   nlctx);
 +		if (err)
 +			return err;
@@ -323,12 +301,47 @@ index 0000000..a961654
 +	return err;
 +}
 +
-+int nl_cable_test(struct cmd_context *ctx)
++static const struct param_parser tdr_params[] = {
++	{
++		.arg		= "first",
++		.type		= ETHTOOL_A_CABLE_TEST_TDR_CFG_FIRST,
++		.group		= ETHTOOL_A_CABLE_TEST_TDR_CFG,
++		.handler	= nl_parse_direct_m2cm,
++	},
++	{
++		.arg		= "last",
++		.type		= ETHTOOL_A_CABLE_TEST_TDR_CFG_LAST,
++		.group		= ETHTOOL_A_CABLE_TEST_TDR_CFG,
++		.handler	= nl_parse_direct_m2cm,
++	},
++	{
++		.arg		= "step",
++		.type		= ETHTOOL_A_CABLE_TEST_TDR_CFG_STEP,
++		.group		= ETHTOOL_A_CABLE_TEST_TDR_CFG,
++		.handler	= nl_parse_direct_m2cm,
++	},
++	{
++		.arg		= "pair",
++		.type		= ETHTOOL_A_CABLE_TEST_TDR_CFG_PAIR,
++		.group		= ETHTOOL_A_CABLE_TEST_TDR_CFG,
++		.handler	= nl_parse_direct_u8,
++	},
++	{}
++};
++
++int nl_cable_test_tdr(struct cmd_context *ctx)
 +{
 +	struct nl_context *nlctx = ctx->nlctx;
 +	struct nl_socket *nlsk = nlctx->ethnl_socket;
 +	uint32_t grpid = nlctx->ethnl_mongrp;
++	struct nl_msg_buff *msgbuff;
 +	int ret;
++
++	nlctx->cmd = "--cable-test-tdr";
++	nlctx->argp = ctx->argp;
++	nlctx->argc = ctx->argc;
++	nlctx->devname = ctx->devname;
++	msgbuff = &nlsk->msgbuff;
 +
 +	/* Join the multicast group so we can receive the results in a
 +	 * race free way.
@@ -343,74 +356,149 @@ index 0000000..a961654
 +	if (ret < 0)
 +		return ret;
 +
-+	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_CABLE_TEST_ACT,
-+				      ETHTOOL_A_CABLE_TEST_HEADER, 0);
++	ret = msg_init(nlctx, msgbuff, ETHTOOL_MSG_CABLE_TEST_TDR_ACT,
++		       NLM_F_REQUEST | NLM_F_ACK);
++	if (ret < 0)
++		return 2;
++
++	if (ethnla_fill_header(msgbuff, ETHTOOL_A_CABLE_TEST_TDR_HEADER,
++			       ctx->devname, 0))
++		return -EMSGSIZE;
++
++	ret = nl_parser(nlctx, tdr_params, NULL, PARSER_GROUP_NEST);
 +	if (ret < 0)
 +		return ret;
 +
 +	ret = nlsock_sendmsg(nlsk, NULL);
 +	if (ret < 0)
-+		fprintf(stderr, "Cannot start cable test\n");
++		fprintf(stderr, "Cannot start cable test TDR\n");
 +	else
-+		ret = nl_cable_test_process_results(ctx);
++		ret = nl_cable_test_tdr_process_results(ctx);
 +	return ret;
 +}
 diff --git a/netlink/extapi.h b/netlink/extapi.h
-index 1b39ed9..a2293c1 100644
+index a2293c1..c5bfde9 100644
 --- a/netlink/extapi.h
 +++ b/netlink/extapi.h
-@@ -35,6 +35,7 @@ int nl_spause(struct cmd_context *ctx);
- int nl_geee(struct cmd_context *ctx);
+@@ -36,6 +36,7 @@ int nl_geee(struct cmd_context *ctx);
  int nl_seee(struct cmd_context *ctx);
  int nl_tsinfo(struct cmd_context *ctx);
-+int nl_cable_test(struct cmd_context *ctx);
+ int nl_cable_test(struct cmd_context *ctx);
++int nl_cable_test_tdr(struct cmd_context *ctx);
  int nl_monitor(struct cmd_context *ctx);
  
  void nl_monitor_usage(void);
-@@ -74,6 +75,7 @@ static inline void nl_monitor_usage(void)
- #define nl_geee			NULL
+@@ -76,6 +77,7 @@ static inline void nl_monitor_usage(void)
  #define nl_seee			NULL
  #define nl_tsinfo		NULL
-+#define nl_cable_test		NULL
+ #define nl_cable_test		NULL
++#define nl_cable_test_tdr	NULL
  
  #endif /* ETHTOOL_ENABLE_NETLINK */
  
 diff --git a/netlink/monitor.c b/netlink/monitor.c
-index 18d4efd..1af11ee 100644
+index 1af11ee..280fd0b 100644
 --- a/netlink/monitor.c
 +++ b/netlink/monitor.c
-@@ -59,6 +59,10 @@ static struct {
- 		.cmd	= ETHTOOL_MSG_EEE_NTF,
- 		.cb	= eee_reply_cb,
+@@ -63,6 +63,10 @@ static struct {
+ 		.cmd	= ETHTOOL_MSG_CABLE_TEST_NTF,
+ 		.cb	= cable_test_ntf_cb,
  	},
 +	{
-+		.cmd	= ETHTOOL_MSG_CABLE_TEST_NTF,
-+		.cb	= cable_test_ntf_cb,
++		.cmd	= ETHTOOL_MSG_CABLE_TEST_TDR_NTF,
++		.cb	= cable_test_tdr_ntf_cb,
 +	},
  };
  
  static void clear_filter(struct nl_context *nlctx)
 diff --git a/netlink/netlink.h b/netlink/netlink.h
-index fe53fd0..2a2b60e 100644
+index 2a2b60e..d330c21 100644
 --- a/netlink/netlink.h
 +++ b/netlink/netlink.h
-@@ -78,6 +78,8 @@ int channels_reply_cb(const struct nlmsghdr *nlhdr, void *data);
- int coalesce_reply_cb(const struct nlmsghdr *nlhdr, void *data);
- int pause_reply_cb(const struct nlmsghdr *nlhdr, void *data);
+@@ -80,6 +80,8 @@ int pause_reply_cb(const struct nlmsghdr *nlhdr, void *data);
  int eee_reply_cb(const struct nlmsghdr *nlhdr, void *data);
-+int cable_test_reply_cb(const struct nlmsghdr *nlhdr, void *data);
-+int cable_test_ntf_cb(const struct nlmsghdr *nlhdr, void *data);
+ int cable_test_reply_cb(const struct nlmsghdr *nlhdr, void *data);
+ int cable_test_ntf_cb(const struct nlmsghdr *nlhdr, void *data);
++int cable_test_tdr_reply_cb(const struct nlmsghdr *nlhdr, void *data);
++int cable_test_tdr_ntf_cb(const struct nlmsghdr *nlhdr, void *data);
  
  /* dump helpers */
  
-@@ -108,7 +110,6 @@ static inline void show_bool(const struct nlattr *attr, const char *label)
+diff --git a/netlink/parser.c b/netlink/parser.c
+index bd3526f..67134f1 100644
+--- a/netlink/parser.c
++++ b/netlink/parser.c
+@@ -54,6 +54,22 @@ static bool __prefix_0x(const char *p)
+ 	return p[0] == '0' && (p[1] == 'x' || p[1] == 'X');
  }
  
- /* misc */
--
- static inline void copy_devname(char *dst, const char *src)
++static float parse_float(const char *arg, float *result, float min,
++			 float max)
++{
++	char *endptr;
++	float val;
++
++	if (!arg || !arg[0])
++		return -EINVAL;
++	val = strtof(arg, &endptr);
++	if (*endptr || val < min || val > max)
++		return -EINVAL;
++
++	*result = val;
++	return 0;
++}
++
+ static int __parse_u32(const char *arg, uint32_t *result, uint32_t min,
+ 		       uint32_t max, int base)
  {
- 	strncpy(dst, src, ALTIFNAMSIZ);
+@@ -211,6 +227,32 @@ int nl_parse_direct_u8(struct nl_context *nlctx, uint16_t type,
+ 	return (type && ethnla_put_u8(msgbuff, type, val)) ? -EMSGSIZE : 0;
+ }
+ 
++/* Parser handler for float meters and convert it to cm. Generates
++ * NLA_U32 or fills an uint32_t.
++ */
++int nl_parse_direct_m2cm(struct nl_context *nlctx, uint16_t type,
++			 const void *data, struct nl_msg_buff *msgbuff,
++			 void *dest)
++{
++	const char *arg = *nlctx->argp;
++	float meters;
++	uint32_t cm;
++	int ret;
++
++	nlctx->argp++;
++	nlctx->argc--;
++	ret = parse_float(arg, &meters, 0, 150);
++	if (ret < 0) {
++		parser_err_invalid_value(nlctx, arg);
++		return ret;
++	}
++
++	cm = (uint32_t)(meters * 100);
++	if (dest)
++		*(uint32_t *)dest = cm;
++	return (type && ethnla_put_u32(msgbuff, type, cm)) ? -EMSGSIZE : 0;
++}
++
+ /* Parser handler for (tri-state) bool. Expects "name on|off", generates
+  * NLA_U8 which is 1 for "on" and 0 for "off".
+  */
+diff --git a/netlink/parser.h b/netlink/parser.h
+index 3cc26d2..fd55bc7 100644
+--- a/netlink/parser.h
++++ b/netlink/parser.h
+@@ -111,6 +111,10 @@ int nl_parse_direct_u32(struct nl_context *nlctx, uint16_t type,
+ int nl_parse_direct_u8(struct nl_context *nlctx, uint16_t type,
+ 		       const void *data, struct nl_msg_buff *msgbuff,
+ 		       void *dest);
++/* NLA_U32 represented as float number of meters, converted to cm. */
++int nl_parse_direct_m2cm(struct nl_context *nlctx, uint16_t type,
++			 const void *data, struct nl_msg_buff *msgbuff,
++			 void *dest);
+ /* NLA_U8 represented as on | off */
+ int nl_parse_u8bool(struct nl_context *nlctx, uint16_t type, const void *data,
+ 		    struct nl_msg_buff *msgbuff, void *dest);
 -- 
 2.27.0
 
