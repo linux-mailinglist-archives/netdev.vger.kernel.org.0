@@ -2,129 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB9E2210BC3
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 15:07:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46459210BBE
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 15:06:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730264AbgGANHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 09:07:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37998 "EHLO
+        id S1728712AbgGANGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 09:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729326AbgGANHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 09:07:24 -0400
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E01CC03E979;
-        Wed,  1 Jul 2020 06:07:24 -0700 (PDT)
-Received: by mail-vs1-xe44.google.com with SMTP id x13so8498135vsx.13;
-        Wed, 01 Jul 2020 06:07:24 -0700 (PDT)
+        with ESMTP id S1728367AbgGANGy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 09:06:54 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D95C03E97A
+        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 06:06:53 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id d15so19642702edm.10
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 06:06:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9kY42uCxSEDlX3revzJlre4DMiKVmK9aSIfC5G3GPgA=;
-        b=IPLWvNg7xB9YDM41H4ZIbj7pUqpJxUUf6bQlgAewZm6nplKA41D08FBB6ZmVpl00hv
-         1h+98jspt/qOxgN/IOGAdiraQORCgx6+eTXMLcvsObveq6YxaLQzGRoIS1+gYz+g3ypJ
-         egzNj6LteW7RypdcXqYLo83H8hljw7imwE/Io8SDLj0yzw59kpbmu3IGNJTE+N8ytWzQ
-         QtDFmf6AVvM9xZHYGHbPZcjBT4xcpppoTf9uDSfzW2g3le6OMvaIfFVsb/StEGLeHV19
-         PlOpVAr035HOKZb/Ey9XbFG56mgoNFl7iwrDna4FbkGdQDP/0Ps8pAzUAo/8wqzfFack
-         Xq8g==
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Wd8wIUrS0456MwTk/SUgUrxYCu2AOW/qWk9t9J64btw=;
+        b=a+jKZaWfW7ug8WaGI1cTqoOla1mXa9kb0RodqQPga7XkTvjpRsoWlXgvIvdXmeS6sV
+         /AKdQk53TmtjP5yPT0wjEhji6LUrEKZZ9u0IsWeOUaKVinzO85Rvuj8zEdtD/J3YSU1J
+         W0UPuet6/q2Dvc9+W+U393z4LHba7mC+gpE0LPnhJri7KhCgzvbsGFzWXQkDnz6Fc+H8
+         0KD/N9x1FTn2CgZvHwu4xmhnaSQoLlKAsr/YH23sM4qKeZsBGSKRzqtiM+hHPtarDq1w
+         3RZSsQrG978hrlDUik6NASx1vRDl047YN86gd5paLHlWwQZoLldL980JQGUfcPg56C9g
+         uoxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9kY42uCxSEDlX3revzJlre4DMiKVmK9aSIfC5G3GPgA=;
-        b=PH1uGWKPYM8p77ge1YeicFDXf3AccYU3Pq/3gu1ngg9xZZFP1FJgVQ12wQF6sH+JP6
-         TFJZNQvDIsulvVSVEgFEmkMrElJVgsxR7vUBoIHOq8x+AMDWOdyhJTRZVLUFZiyCbK4z
-         JZ4+8OnlNOpTNpF8u9ci6yBXq/Pws94EMl2pUkhX4f9P1eKsvIN8q9T2R8+DNUMAeDeH
-         5GsfAyuvB9W9/mzO3uiwMTWxJAdEDO83GiZ8oXYHb1s+iw/WZbGMEt2uo1fYRfyIv4bn
-         PJ9x3WGduchvqzegi0F/X1kCmiSag5yektr6djEC2JklSqZ+7GPFekAZqhnSgXiwLHJh
-         ZgEQ==
-X-Gm-Message-State: AOAM532zBwiGvcThdP7/RatFyMSYJzm0i/7xRwhRJ1Z2VNM4kir/vbX8
-        qyUcuguq77xN/HiYAlfVG75JDwBYJ6CLkEu24KwYClTi5zg=
-X-Google-Smtp-Source: ABdhPJyjFR0M9l39zpGcHnZCjLQxaJLckOeJB2AHY8OMZvl0LFDxshpp3vzcWIusjEU3RwjC/7CX1ccvr+3v8bFzROg=
-X-Received: by 2002:a67:1d02:: with SMTP id d2mr3728739vsd.138.1593608843614;
- Wed, 01 Jul 2020 06:07:23 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Wd8wIUrS0456MwTk/SUgUrxYCu2AOW/qWk9t9J64btw=;
+        b=nIt6/tz3MnZke/gJiu6+YDMtJYHdPJylHTNJUYR5opCyod7C4E/BzZTeQltB3nk80d
+         lRWxN5f5y+6TP03dEEpxLsnGNsWvwejUfxd6HC1c1eiGn65af5kt8SVmI9u1PE96KoFb
+         JC8jNnbLVWeDxhmJZ2ceTJw8fmCJWPiKQS85GeNjO/wHtLf4dRJctbygslTxU/3dCXPU
+         xCOZwcsNLpa+17zPvgcmL1BIXFZGHtU4olZtf+6ljsjzlOqsE4xnlR+iyJrRAU0eLXPh
+         POUs1XsxGyFbxn3jiCF2bfRLm5+EDLqhGXkUH80ElkZZONi1ia0u+qvMs75QjHJ9hBBi
+         9yeg==
+X-Gm-Message-State: AOAM533vetxzknPxppw9cZQOk1TYNTGR/MzuY1qqCLYMN207HJpnVnSM
+        hPIJLIYhoNkOIl0D/DwMS3Gt4X1V5Z8=
+X-Google-Smtp-Source: ABdhPJzmgtQ6RayagjPq0oip89sEoJ2zbx/GqpUShmT8ndS7xK7HxJx+LUofhq10Choy/lSFyF5JNw==
+X-Received: by 2002:a50:ba8b:: with SMTP id x11mr29784069ede.201.1593608812313;
+        Wed, 01 Jul 2020 06:06:52 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([81.246.10.41])
+        by smtp.gmail.com with ESMTPSA id b4sm6020172edx.96.2020.07.01.06.06.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jul 2020 06:06:51 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/2] selftests: mptcp: add option to specify size
+ of file to transfer
+To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
+Cc:     mptcp@lists.01.org
+References: <20200630192445.18333-1-fw@strlen.de>
+ <20200630192445.18333-2-fw@strlen.de>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <1943d2bb-fc60-4614-07db-e56d7e3a824d@tessares.net>
+Date:   Wed, 1 Jul 2020 15:06:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200701125938.639447-1-vaibhavgupta40@gmail.com>
-In-Reply-To: <20200701125938.639447-1-vaibhavgupta40@gmail.com>
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-Date:   Wed, 1 Jul 2020 18:35:45 +0530
-Message-ID: <CAP+cEOM5D3TZhysX=nrwJzSC6MLF1u7yVu6RqZJ3hGc3V=_5=g@mail.gmail.com>
-Subject: Re: [PATCH v1 00/11] net: ethernet: use generic power management
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Dillow <dave@thedillows.org>,
-        Ion Badulescu <ionut@badula.org>,
-        Netanel Belgazal <netanel@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Guy Tzalik <gtzalik@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Zorik Machulsky <zorik@amazon.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Denis Kirjanov <kda@linux-powerpc.org>,
-        Ajit Khaparde <ajit.khaparde@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Jon Mason <jdmason@kudzu.us>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200630192445.18333-2-fw@strlen.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 1, 2020 at 6:31 PM Vaibhav Gupta <vaibhavgupta40@gmail.com> wrote:
->
-> Linux Kernel Mentee: Remove Legacy Power Management.
->
-> The purpose of this patch series is to remove legacy power management callbacks
-> from amd ethernet drivers.
-s/amd/net
---Vaibhav Gupta
->
-> The callbacks performing suspend() and resume() operations are still calling
-> pci_save_state(), pci_set_power_state(), etc. and handling the power management
-> themselves, which is not recommended.
->
-> The conversion requires the removal of the those function calls and change the
-> callback definition accordingly and make use of dev_pm_ops structure.
->
-> All patches are compile-tested only.
->
-> Vaibhav Gupta (11):
->   typhoon: use generic power management
->   ne2k-pci: use generic power management
->   starfire: use generic power management
->   ena_netdev: use generic power management
->   liquidio: use generic power management
->   sundance: use generic power management
->   benet: use generic power management
->   mlx4: use generic power management
->   ksz884x: use generic power management
->   vxge: use generic power management
->   natsemi: use generic power management
->
->  drivers/net/ethernet/3com/typhoon.c           | 53 +++++++++++--------
->  drivers/net/ethernet/8390/ne2k-pci.c          | 29 +++-------
->  drivers/net/ethernet/adaptec/starfire.c       | 23 +++-----
->  drivers/net/ethernet/amazon/ena/ena_netdev.c  | 21 +++-----
->  .../net/ethernet/cavium/liquidio/lio_main.c   | 31 ++---------
->  drivers/net/ethernet/dlink/sundance.c         | 27 +++-------
->  drivers/net/ethernet/emulex/benet/be_main.c   | 22 +++-----
->  drivers/net/ethernet/mellanox/mlx4/main.c     | 11 ++--
->  drivers/net/ethernet/micrel/ksz884x.c         | 25 ++++-----
->  drivers/net/ethernet/natsemi/natsemi.c        | 26 +++------
->  .../net/ethernet/neterion/vxge/vxge-main.c    | 14 ++---
->  11 files changed, 100 insertions(+), 182 deletions(-)
->
-> --
-> 2.27.0
->
+Hi Florian,
+
+On 30/06/2020 21:24, Florian Westphal wrote:
+> The script generates two random files that are then sent via tcp and
+> mptcp connections.
+> 
+> In order to compare throughput over consecutive runs add an option
+> to provide the file size on the command line: "-f 128000".
+> 
+> Also add an option, -t, to enable tcp tests. This is useful to
+> compare throughput of mptcp connections and tcp connections.
+> 
+> Example: run tests with a 4mb file size, 300ms delay 0.01% loss,
+> default gso/tso/gro settings and with large write/blocking io:
+> 
+> mptcp_connect.sh -t -f $((4 * 1024 * 1024)) -d 300 -l 0.01%  -r 0 -e "" -m mmap
+> 
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+
+Thank you for the patch! The new '-t' option was also very helpful when 
+investigating the issue 6 on Github!
+
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+
+Cheers,
+Matt
+--
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
