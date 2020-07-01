@@ -2,505 +2,422 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4181E2107DC
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 11:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1052F2107FF
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 11:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729044AbgGAJSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 05:18:15 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46422 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726715AbgGAJSO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 05:18:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593595091;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nc4cNJ5h9M69SOAPlod+D1avCCpHp3GlMPE9w+Jhm68=;
-        b=MhdVlde6wGCv/vR9Se0nUqdl0wALt0SFPktOdt9HCF5xGozfB6Kk/kmxL+llhweBxH+ihJ
-        eXPoWLefMVBWP6rFeiDk4cPDuxadj8HI0JdMx3b83mQEp7cXUHqfnB7vczj6tagWAGUMKM
-        3H9Pw1glCWjEwjonglSlT3H/X4jYE/M=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-349-cQ5ET2QpOC-gT5KOiH04SA-1; Wed, 01 Jul 2020 05:18:09 -0400
-X-MC-Unique: cQ5ET2QpOC-gT5KOiH04SA-1
-Received: by mail-ed1-f72.google.com with SMTP id a21so19051570edy.1
-        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 02:18:09 -0700 (PDT)
+        id S1729260AbgGAJ0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 05:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729063AbgGAJ0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 05:26:03 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD2EC061755
+        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 02:26:03 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id 9so26082167ljv.5
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 02:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KtUZ+THtOmRuGASFFnr8wYt90aVq+k8AAo0coxZpX7A=;
+        b=ZCp/MWDWRy/8MteAVpC7Eny40/CoAREDyuJQK9Yi2Zg1j9mjz8XB/lqAAVty7ijXrR
+         JDyxcTS6ZLR/mqwYSx8XOoysG+u3OFrFjzWuzqBh29LtWz7JOqqI+rcnISYooJsCRQcp
+         MLHsqnNNFtYynXQxW6V4KQfNwUAxqhgHMCJ5Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nc4cNJ5h9M69SOAPlod+D1avCCpHp3GlMPE9w+Jhm68=;
-        b=qpt00pRNjZsoPZsOK4ayIAb+oRvv+AS4FghzTboSXJL0U8izHhLQDXEWnBFEG4cLi0
-         SOoeDsFO+SOgcVb3UBPDIdYT3C1HjyCCD1/3eShzmqku4VpwrSkLUgfIuhw7viZ+7rWK
-         qnW1UwEon1k+QiJzUDc2jnKFddhJoA8ElnzkJFG7LOXioQd4/9Uialu8p6tYMrPHOIDL
-         4PNAb576ESqBHqHqhB69v3LKwdgA7Vyoi727YX0A+8oJX6iXYIkkh+MwcP2K9z+uJxCU
-         rhiCDyECGNAzNhWZgSEQEKLEq8eQB+3LbDWQZVBC7KfN7k7ubqwvSa0Deki6Pp3TIqOy
-         r5Bg==
-X-Gm-Message-State: AOAM530K1fEelc+kjQUGMaonQ+36rwR1KwRz59aIpIQocBS/D/BssiaN
-        +aXNZrrdkkcFY2MRnbfZ0kqcnA+SEfeN5DvHUKpMc4dnkd90MEH5HN2N493usvJlFcoyK9KLsIt
-        Q1WlvQxuWX2b/WK554bXwdudQm0PnMN5T
-X-Received: by 2002:aa7:c5d4:: with SMTP id h20mr27292701eds.115.1593595088396;
-        Wed, 01 Jul 2020 02:18:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyF21IQMMSdqLnAtHOZR91k+9GXXg7CKgxYqF3qgeU2SlHjUQh3VgR4yJIidbK9Zom+IyAknxq+a2FCzMsWhTM=
-X-Received: by 2002:aa7:c5d4:: with SMTP id h20mr27292682eds.115.1593595088037;
- Wed, 01 Jul 2020 02:18:08 -0700 (PDT)
+        bh=KtUZ+THtOmRuGASFFnr8wYt90aVq+k8AAo0coxZpX7A=;
+        b=jMETeNITwzaiiCykI6aLjHWUtBEpHVTyxbvR8CatC5PAyEpITalplqCFbzhW6mdo52
+         HYPabi/Dv3eppldsjkzH7GxNmxBfjaU5g5tOwovLdGvc+uwTggVwaIh1s+y2G/dOrqtO
+         dHERmkWFTlodVA3FOceQ+c7Xd9OyqcqiyL71m2mEMkR1cHEhXQ/cXJub2R5wFcW/oErq
+         G6RdlpEa/vPAbLZZhrkkYPp59sWGPa0AxssV6bqThrWkt3eE6VKd3+qv8rSYXLzgBYtZ
+         Wqb2+ybFYvJAYB3/81EdafwBdwn0GLHeWFrXJNLqJuk4cF0VY+POUHpMMvBX3UmpSt7E
+         EcCg==
+X-Gm-Message-State: AOAM533h/uB1akBltPzp3tk4hsKBQ/uc7dBO7ax17OkRHVvC3H0HN5fD
+        /Ix6l/Iv+Caf86iCnfa/DgA6ZoF8Pppoc6kTL/eilw==
+X-Google-Smtp-Source: ABdhPJxK5kEch4061qcDdeM4Ki/y2ng5OIFWgK+EbvO2xaNhhCTrVd4NqieLOJwxKDV5mBNxuFzns3aSnYfQ1uVM4dA=
+X-Received: by 2002:a2e:95d6:: with SMTP id y22mr4654515ljh.316.1593595561417;
+ Wed, 01 Jul 2020 02:26:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <4c364e19b552a746489dd978677d7b25cee913cf.1592563668.git.gnault@redhat.com>
-In-Reply-To: <4c364e19b552a746489dd978677d7b25cee913cf.1592563668.git.gnault@redhat.com>
-From:   Andrea Claudi <aclaudi@redhat.com>
-Date:   Wed, 1 Jul 2020 11:17:56 +0200
-Message-ID: <CAPpH65ymT_peXCvG5+fKYD0ZpNk5=M-=-4Hp9BiXqVBu66cz=g@mail.gmail.com>
-Subject: Re: [PATCH iproute2] tc: flower: support multiple MPLS LSE match
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        linux-netdev <netdev@vger.kernel.org>
+References: <1593516846-28189-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <20200630125353.GA2181@nanopsycho> <CAACQVJqxLhmO=UiCMh_pv29WP7Qi4bAZdpU9NDk3Wq8TstM5zA@mail.gmail.com>
+ <20200701055144.GB2181@nanopsycho>
+In-Reply-To: <20200701055144.GB2181@nanopsycho>
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Date:   Wed, 1 Jul 2020 14:55:50 +0530
+Message-ID: <CAACQVJqac3JGY_w2zp=thveG5Hjw9tPGagHPvfr2DM3xL4j_zg@mail.gmail.com>
+Subject: Re: [RFC v2 net-next] devlink: Add reset subcommand.
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Michal Kubecek <mkubecek@suse.cz>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 19, 2020 at 12:51 PM Guillaume Nault <gnault@redhat.com> wrote:
+On Wed, Jul 1, 2020 at 11:21 AM Jiri Pirko <jiri@resnulli.us> wrote:
 >
-> Add the new "mpls" keyword that can be used to match MPLS fields in
-> arbitrary Label Stack Entries.
-> LSEs are introduced by the "lse" keyword and followed by LSE options:
-> "depth", "label", "tc", "bos" and "ttl". The depth is manadtory, the
-> other options are optionals.
+> Tue, Jun 30, 2020 at 05:15:18PM CEST, vasundhara-v.volam@broadcom.com wrote:
+> >On Tue, Jun 30, 2020 at 6:23 PM Jiri Pirko <jiri@resnulli.us> wrote:
+> >>
+> >> Tue, Jun 30, 2020 at 01:34:06PM CEST, vasundhara-v.volam@broadcom.com wrote:
+> >> >Advanced NICs support live reset of some of the hardware
+> >> >components, that resets the device immediately with all the
+> >> >host drivers loaded.
+> >> >
+> >> >Add devlink reset subcommand to support live and deferred modes
+> >> >of reset. It allows to reset the hardware components of the
+> >> >entire device and supports the following fields:
+> >> >
+> >> >component:
+> >> >----------
+> >> >1. MGMT : Management processor.
+> >> >2. DMA : DMA engine.
+> >> >3. RAM : RAM shared between multiple components.
+> >> >4. AP : Application processor.
+> >> >5. ROCE : RoCE management processor.
+> >> >6. All : All possible components.
+> >> >
+> >> >Drivers are allowed to reset only a subset of requested components.
+> >>
+> >> I don't understand why would user ever want to do this. He does not care
+> >> about some magic hw entities. He just expects the hw to work. I don't
+> >> undestand the purpose of exposing something like this. Could you please
+> >> explain in details? Thanks!
+> >>
+> >If a user requests multiple components and if the driver is only able
+> >to honor a subset, the driver will return the components unset which
+> >it is able to reset.  For example, if a user requests MGMT, RAM and
+> >ROCE components to be reset and driver resets only MGMT and ROCE.
+> >Driver will unset only MGMT and ROCE bits and notifies the user that
+> >RAM is not reset.
+> >
+> >This will be useful for drivers to reset only a subset of components
+> >requested instead of returning error or silently doing only a subset
+> >of components.
+> >
+> >Also, this will be helpful as user will not know the components
+> >supported by different vendors.
 >
-> For example, the following filter drops MPLS packets having two labels,
-> where the first label is 21 and has TTL 64 and the second label is 22:
->
-> $ tc filter add dev ethX ingress proto mpls_uc flower mpls \
->     lse depth 1 label 21 ttl 64 \
->     lse depth 2 label 22 bos 1 \
->     action drop
->
-> Signed-off-by: Guillaume Nault <gnault@redhat.com>
-> ---
->  man/man8/tc-flower.8 |  73 +++++++++++++-
->  tc/f_flower.c        | 221 +++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 292 insertions(+), 2 deletions(-)
->
-> diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-> index 4d32ff1b..693be571 100644
-> --- a/man/man8/tc-flower.8
-> +++ b/man/man8/tc-flower.8
-> @@ -46,6 +46,8 @@ flower \- flow based traffic control filter
->  .IR PRIORITY " | "
->  .BR cvlan_ethtype " { " ipv4 " | " ipv6 " | "
->  .IR ETH_TYPE " } | "
-> +.B mpls
-> +.IR LSE_LIST " | "
->  .B mpls_label
->  .IR LABEL " | "
->  .B mpls_tc
-> @@ -96,7 +98,24 @@ flower \- flow based traffic control filter
->  }
->  .IR OPTIONS " | "
->  .BR ip_flags
-> -.IR IP_FLAGS
-> +.IR IP_FLAGS " }"
-> +
-> +.ti -8
-> +.IR LSE_LIST " := [ " LSE_LIST " ] " LSE
-> +
-> +.ti -8
-> +.IR LSE " := "
-> +.B lse depth
-> +.IR DEPTH " { "
-> +.B label
-> +.IR LABEL " | "
-> +.B tc
-> +.IR TC " | "
-> +.B bos
-> +.IR BOS " | "
-> +.B ttl
-> +.IR TTL " }"
-> +
->  .SH DESCRIPTION
->  The
->  .B flower
-> @@ -182,6 +201,56 @@ Match on QinQ layer three protocol.
->  may be either
->  .BR ipv4 ", " ipv6
->  or an unsigned 16bit value in hexadecimal format.
-> +
-> +.TP
-> +.BI mpls " LSE_LIST"
-> +Match on the MPLS label stack.
-> +.I LSE_LIST
-> +is a list of Label Stack Entries, each introduced by the
-> +.BR lse " keyword."
-> +This option can't be used together with the standalone
-> +.BR mpls_label ", " mpls_tc ", " mpls_bos " and " mpls_ttl " options."
-> +.RS
-> +.TP
-> +.BI lse " LSE_OPTIONS"
-> +Match on an MPLS Label Stack Entry.
-> +.I LSE_OPTIONS
-> +is a list of options that describe the properties of the LSE to match.
-> +.RS
-> +.TP
-> +.BI depth " DEPTH"
-> +The depth of the Label Stack Entry to consider. Depth starts at 1 (the
-> +outermost Label Stack Entry). The maximum usable depth may be limitted by the
+> Your reply does not seem to be related to my question :/
+I thought that you were referring to: "Drivers are allowed to reset
+only a subset of requested components."
 
-limited
+or were you referring to components? If yes, the user can select the
+components that he wants to go for reset. This will be useful in the
+case where, if the user flashed only a certain component and he wants
+to reset that particular component. For example, in the case of SOC
+there are 2 components: MGMT and AP. If a user flashes only
+application processor, he can choose to reset only application
+processor.
 
-> +kernel. This option is mandatory.
-> +.I DEPTH
-> +is an unsigned 8 bit value in decimal format.
-> +.TP
-> +.BI label " LABEL"
-> +Match on the MPLS Label field at the specified
-> +.BR depth .
-> +.I LABEL
-> +is an unsigned 20 bit value in decimal format.
-> +.TP
-> +.BI tc " TC"
-> +Match on the MPLS Traffic Class field at the specified
-> +.BR depth .
-> +.I TC
-> +is an unsigned 3 bit value in decimal format.
-> +.TP
-> +.BI bos " BOS"
-> +Match on the MPLS Bottom Of Stack field at the specified
-> +.BR depth .
-> +.I BOS
-> +is a 1 bit value in decimal format.
-> +.TP
-> +.BI ttl " TTL"
-> +Match on the MPLS Time To Live field at the specified
-> +.BR depth .
-> +.I TTL
-> +is an unsigned 8 bit value in decimal format.
-> +.RE
-> +.RE
-> +
->  .TP
->  .BI mpls_label " LABEL"
->  Match the label id in the outermost MPLS label stack entry.
-> @@ -393,7 +462,7 @@ on the matches of the next lower layer. Precisely, layer one and two matches
->  (\fBindev\fR,  \fBdst_mac\fR and \fBsrc_mac\fR)
->  have no dependency,
->  MPLS and layer three matches
-> -(\fBmpls_label\fR, \fBmpls_tc\fR, \fBmpls_bos\fR, \fBmpls_ttl\fR,
-> +(\fBmpls\fR, \fBmpls_label\fR, \fBmpls_tc\fR, \fBmpls_bos\fR, \fBmpls_ttl\fR,
->  \fBip_proto\fR, \fBdst_ip\fR, \fBsrc_ip\fR, \fBarp_tip\fR, \fBarp_sip\fR,
->  \fBarp_op\fR, \fBarp_tha\fR, \fBarp_sha\fR and \fBip_flags\fR)
->  depend on the
-> diff --git a/tc/f_flower.c b/tc/f_flower.c
-> index fc136911..00c919fd 100644
-> --- a/tc/f_flower.c
-> +++ b/tc/f_flower.c
-> @@ -59,6 +59,7 @@ static void explain(void)
->                 "                       ip_proto [tcp | udp | sctp | icmp | icmpv6 | IP-PROTO ] |\n"
->                 "                       ip_tos MASKED-IP_TOS |\n"
->                 "                       ip_ttl MASKED-IP_TTL |\n"
-> +               "                       mpls LSE-LIST |\n"
->                 "                       mpls_label LABEL |\n"
->                 "                       mpls_tc TC |\n"
->                 "                       mpls_bos BOS |\n"
-> @@ -89,6 +90,8 @@ static void explain(void)
->                 "                       ct_label MASKED_CT_LABEL |\n"
->                 "                       ct_mark MASKED_CT_MARK |\n"
->                 "                       ct_zone MASKED_CT_ZONE }\n"
-> +               "       LSE-LIST := [ LSE-LIST ] LSE\n"
-> +               "       LSE := lse depth DEPTH { label LABEL | tc TC | bos BOS | ttl TTL }\n"
->                 "       FILTERID := X:Y:Z\n"
->                 "       MASKED_LLADDR := { LLADDR | LLADDR/MASK | LLADDR/BITS }\n"
->                 "       MASKED_CT_STATE := combination of {+|-} and flags trk,est,new\n"
-> @@ -1199,11 +1202,127 @@ static int flower_parse_enc_opts_erspan(char *str, struct nlmsghdr *n)
->         return 0;
->  }
 >
-> +static int flower_parse_mpls_lse(int *argc_p, char ***argv_p,
-> +                                struct nlmsghdr *nlh)
-> +{
-> +       struct rtattr *lse_attr;
-> +       char **argv = *argv_p;
-> +       int argc = *argc_p;
-> +       __u8 depth = 0;
-> +       int ret;
-> +
-> +       lse_attr = addattr_nest(nlh, MAX_MSG,
-> +                               TCA_FLOWER_KEY_MPLS_OPTS_LSE | NLA_F_NESTED);
-> +
-> +       while (argc > 0) {
-> +               if (matches(*argv, "depth") == 0) {
-> +                       NEXT_ARG();
-> +                       ret = get_u8(&depth, *argv, 10);
-> +                       if (ret < 0 || depth < 1) {
-> +                               fprintf(stderr, "Illegal \"depth\"\n");
-> +                               return -1;
-> +                       }
-> +                       addattr8(nlh, MAX_MSG,
-> +                                TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH, depth);
-> +               } else if (matches(*argv, "label") == 0) {
-> +                       __u32 label;
-> +
-> +                       NEXT_ARG();
-> +                       ret = get_u32(&label, *argv, 10);
-> +                       if (ret < 0 ||
-> +                           label & ~(MPLS_LS_LABEL_MASK >> MPLS_LS_LABEL_SHIFT)) {
-> +                               fprintf(stderr, "Illegal \"label\"\n");
-> +                               return -1;
-> +                       }
-> +                       addattr32(nlh, MAX_MSG,
-> +                                 TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL, label);
-> +               } else if (matches(*argv, "tc") == 0) {
-> +                       __u8 tc;
-> +
-> +                       NEXT_ARG();
-> +                       ret = get_u8(&tc, *argv, 10);
-> +                       if (ret < 0 ||
-> +                           tc & ~(MPLS_LS_TC_MASK >> MPLS_LS_TC_SHIFT)) {
-> +                               fprintf(stderr, "Illegal \"tc\"\n");
-> +                               return -1;
-> +                       }
-> +                       addattr8(nlh, MAX_MSG, TCA_FLOWER_KEY_MPLS_OPT_LSE_TC,
-> +                                tc);
-> +               } else if (matches(*argv, "bos") == 0) {
-> +                       __u8 bos;
-> +
-> +                       NEXT_ARG();
-> +                       ret = get_u8(&bos, *argv, 10);
-> +                       if (ret < 0 || bos & ~(MPLS_LS_S_MASK >> MPLS_LS_S_SHIFT)) {
-> +                               fprintf(stderr, "Illegal \"bos\"\n");
-> +                               return -1;
-> +                       }
-> +                       addattr8(nlh, MAX_MSG, TCA_FLOWER_KEY_MPLS_OPT_LSE_BOS,
-> +                                bos);
-> +               } else if (matches(*argv, "ttl") == 0) {
-> +                       __u8 ttl;
-> +
-> +                       NEXT_ARG();
-> +                       ret = get_u8(&ttl, *argv, 10);
-> +                       if (ret < 0 || ttl & ~(MPLS_LS_TTL_MASK >> MPLS_LS_TTL_SHIFT)) {
-> +                               fprintf(stderr, "Illegal \"ttl\"\n");
-> +                               return -1;
-> +                       }
-> +                       addattr8(nlh, MAX_MSG, TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL,
-> +                                ttl);
-> +               } else {
-> +                       break;
-> +               }
-> +               argc--; argv++;
-> +       }
-> +
-> +       if (!depth) {
-> +               missarg("depth");
-> +               return -1;
-> +       }
-> +
-> +       addattr_nest_end(nlh, lse_attr);
-> +
-> +       *argc_p = argc;
-> +       *argv_p = argv;
-> +
-> +       return 0;
-> +}
-> +
-> +static int flower_parse_mpls(int *argc_p, char ***argv_p, struct nlmsghdr *nlh)
-> +{
-> +       struct rtattr *mpls_attr;
-> +       char **argv = *argv_p;
-> +       int argc = *argc_p;
-> +
-> +       mpls_attr = addattr_nest(nlh, MAX_MSG,
-> +                                TCA_FLOWER_KEY_MPLS_OPTS | NLA_F_NESTED);
-> +
-> +       while (argc > 0) {
-> +               if (matches(*argv, "lse") == 0) {
-> +                       NEXT_ARG();
-> +                       if (flower_parse_mpls_lse(&argc, &argv, nlh) < 0)
-> +                               return -1;
-> +               } else {
-> +                       break;
-> +               }
-> +       }
-
-This can probably be simplified to:
-
-while (argc > 0 && matches(*argv, "lse") == 0) {
-    NEXT_ARG();
-    if (flower_parse_mpls_lse(&argc, &argv, nlh) < 0)
-        return -1;
-}
-
-> +
-> +       addattr_nest_end(nlh, mpls_attr);
-> +
-> +       *argc_p = argc;
-> +       *argv_p = argv;
-> +
-> +       return 0;
-> +}
-> +
->  static int flower_parse_opt(struct filter_util *qu, char *handle,
->                             int argc, char **argv, struct nlmsghdr *n)
->  {
->         int ret;
->         struct tcmsg *t = NLMSG_DATA(n);
-> +       bool mpls_format_old = false;
-> +       bool mpls_format_new = false;
->         struct rtattr *tail;
->         __be16 eth_type = TC_H_MIN(t->tcm_info);
->         __be16 vlan_ethtype = 0;
-> @@ -1381,6 +1500,23 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
->                                                  &cvlan_ethtype, n);
->                         if (ret < 0)
->                                 return -1;
-> +               } else if (matches(*argv, "mpls") == 0) {
-> +                       NEXT_ARG();
-> +                       if (eth_type != htons(ETH_P_MPLS_UC) &&
-> +                           eth_type != htons(ETH_P_MPLS_MC)) {
-> +                               fprintf(stderr,
-> +                                       "Can't set \"mpls\" if ethertype isn't MPLS\n");
-> +                               return -1;
-> +                       }
-> +                       if (mpls_format_old) {
-> +                               fprintf(stderr,
-> +                                       "Can't set \"mpls\" if \"mpls_label\", \"mpls_tc\", \"mpls_bos\" or \"mpls_ttl\" is set\n");
-> +                               return -1;
-> +                       }
-> +                       mpls_format_new = true;
-> +                       if (flower_parse_mpls(&argc, &argv, n) < 0)
-> +                               return -1;
-> +                       continue;
->                 } else if (matches(*argv, "mpls_label") == 0) {
->                         __u32 label;
 >
-> @@ -1391,6 +1527,12 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
->                                         "Can't set \"mpls_label\" if ethertype isn't MPLS\n");
->                                 return -1;
->                         }
-> +                       if (mpls_format_new) {
-> +                               fprintf(stderr,
-> +                                       "Can't set \"mpls_label\" if \"mpls\" is set\n");
-> +                               return -1;
-> +                       }
-> +                       mpls_format_old = true;
->                         ret = get_u32(&label, *argv, 10);
->                         if (ret < 0 || label & ~(MPLS_LS_LABEL_MASK >> MPLS_LS_LABEL_SHIFT)) {
->                                 fprintf(stderr, "Illegal \"mpls_label\"\n");
-> @@ -1407,6 +1549,12 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
->                                         "Can't set \"mpls_tc\" if ethertype isn't MPLS\n");
->                                 return -1;
->                         }
-> +                       if (mpls_format_new) {
-> +                               fprintf(stderr,
-> +                                       "Can't set \"mpls_tc\" if \"mpls\" is set\n");
-> +                               return -1;
-> +                       }
-> +                       mpls_format_old = true;
->                         ret = get_u8(&tc, *argv, 10);
->                         if (ret < 0 || tc & ~(MPLS_LS_TC_MASK >> MPLS_LS_TC_SHIFT)) {
->                                 fprintf(stderr, "Illegal \"mpls_tc\"\n");
-> @@ -1423,6 +1571,12 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
->                                         "Can't set \"mpls_bos\" if ethertype isn't MPLS\n");
->                                 return -1;
->                         }
-> +                       if (mpls_format_new) {
-> +                               fprintf(stderr,
-> +                                       "Can't set \"mpls_bos\" if \"mpls\" is set\n");
-> +                               return -1;
-> +                       }
-> +                       mpls_format_old = true;
->                         ret = get_u8(&bos, *argv, 10);
->                         if (ret < 0 || bos & ~(MPLS_LS_S_MASK >> MPLS_LS_S_SHIFT)) {
->                                 fprintf(stderr, "Illegal \"mpls_bos\"\n");
-> @@ -1439,6 +1593,12 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
->                                         "Can't set \"mpls_ttl\" if ethertype isn't MPLS\n");
->                                 return -1;
->                         }
-> +                       if (mpls_format_new) {
-> +                               fprintf(stderr,
-> +                                       "Can't set \"mpls_ttl\" if \"mpls\" is set\n");
-> +                               return -1;
-> +                       }
-> +                       mpls_format_old = true;
->                         ret = get_u8(&ttl, *argv, 10);
->                         if (ret < 0 || ttl & ~(MPLS_LS_TTL_MASK >> MPLS_LS_TTL_SHIFT)) {
->                                 fprintf(stderr, "Illegal \"mpls_ttl\"\n");
-> @@ -2316,6 +2476,66 @@ static void flower_print_u32(const char *name, struct rtattr *attr)
->         print_uint(PRINT_ANY, name, namefrm, rta_getattr_u32(attr));
->  }
->
-> +static void flower_print_mpls_opt_lse(const char *name, struct rtattr *lse)
-> +{
-> +       struct rtattr *tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX + 1];
-> +       struct rtattr *attr;
-> +
-> +       if (lse->rta_type != (TCA_FLOWER_KEY_MPLS_OPTS_LSE | NLA_F_NESTED)) {
-> +               fprintf(stderr, "rta_type 0x%x, expecting 0x%x (0x%x & 0x%x)\n",
-> +                      lse->rta_type,
-> +                      TCA_FLOWER_KEY_MPLS_OPTS_LSE & NLA_F_NESTED,
-> +                      TCA_FLOWER_KEY_MPLS_OPTS_LSE, NLA_F_NESTED);
-> +               return;
-> +       }
-> +
-> +       parse_rtattr(tb, TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX, RTA_DATA(lse),
-> +                    RTA_PAYLOAD(lse));
-> +
-> +       print_nl();
-> +       open_json_array(PRINT_ANY, name);
-> +       attr = tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH];
-> +       if (attr)
-> +               print_hhu(PRINT_ANY, "depth", " depth %u",
-> +                         rta_getattr_u8(attr));
-> +       attr = tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL];
-> +       if (attr)
-> +               print_uint(PRINT_ANY, "label", " label %u",
-> +                          rta_getattr_u32(attr));
-> +       attr = tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_TC];
-> +       if (attr)
-> +               print_hhu(PRINT_ANY, "tc", " tc %u", rta_getattr_u8(attr));
-> +       attr = tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_BOS];
-> +       if (attr)
-> +               print_hhu(PRINT_ANY, "bos", " bos %u", rta_getattr_u8(attr));
-> +       attr = tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL];
-> +       if (attr)
-> +               print_hhu(PRINT_ANY, "ttl", " ttl %u", rta_getattr_u8(attr));
-> +       close_json_array(PRINT_JSON, NULL);
-> +}
-> +
-> +static void flower_print_mpls_opts(const char *name, struct rtattr *attr)
-> +{
-> +       struct rtattr *lse;
-> +       int rem;
-> +
-> +       if (!attr || !(attr->rta_type & NLA_F_NESTED))
-> +               return;
-> +
-> +       print_nl();
-> +       open_json_array(PRINT_ANY, name);
-> +       rem = RTA_PAYLOAD(attr);
-> +       lse = RTA_DATA(attr);
-> +       while (RTA_OK(lse, rem)) {
-> +               flower_print_mpls_opt_lse("    lse", lse);
-> +               lse = RTA_NEXT(lse, rem);
-> +       };
-> +       if (rem)
-> +               fprintf(stderr, "!!!Deficit %d, rta_len=%d\n",
-> +                       rem, lse->rta_len);
-> +       close_json_array(PRINT_JSON, NULL);
-> +}
-> +
->  static void flower_print_arp_op(const char *name,
->                                 struct rtattr *op_attr,
->                                 struct rtattr *mask_attr)
-> @@ -2430,6 +2650,7 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
->         flower_print_ip_attr("ip_ttl", tb[TCA_FLOWER_KEY_IP_TTL],
->                             tb[TCA_FLOWER_KEY_IP_TTL_MASK]);
->
-> +       flower_print_mpls_opts("  mpls", tb[TCA_FLOWER_KEY_MPLS_OPTS]);
->         flower_print_u32("mpls_label", tb[TCA_FLOWER_KEY_MPLS_LABEL]);
->         flower_print_u8("mpls_tc", tb[TCA_FLOWER_KEY_MPLS_TC]);
->         flower_print_u8("mpls_bos", tb[TCA_FLOWER_KEY_MPLS_BOS]);
-> --
-> 2.21.3
->
-
+> >
+> >Thanks,
+> >Vasundhara
+> >
+> >>
+> >> >
+> >> >width:
+> >> >------
+> >> >1. single - single host.
+> >> >2. multi  - Multi host.
+> >> >
+> >> >mode:
+> >> >-----
+> >> >1. deferred - Reset will happen after unloading all the host drivers
+> >> >              on the device. This is be default reset type, if user
+> >> >              does not specify the type.
+> >> >2. live - Reset will happen immediately with all host drivers loaded
+> >> >          in real time. If the live reset is not supported, driver
+> >> >          will return the error.
+> >> >
+> >> >This patch is a proposal in continuation to discussion to the
+> >> >following thread:
+> >> >
+> >> >"[PATCH v3 net-next 0/6] bnxt_en: Add 'enable_live_dev_reset' and 'allow_live_dev_reset' generic devlink params."
+> >> >
+> >> >and here is the URL to the patch series:
+> >> >
+> >> >https://patchwork.ozlabs.org/project/netdev/list/?series=180426&state=*
+> >> >
+> >> >If the proposal looks good, I will re-send the whole patchset
+> >> >including devlink changes and driver usage.
+> >> >
+> >> >Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+> >> >Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+> >> >---
+> >> >v2:
+> >> >- Switch RAM and AP component definitions.
+> >> >- Remove IRQ, FILTER, OFFLOAD, MAC, PHY components as they are port
+> >> >specific components.
+> >> >- Rename function to host in width parameter.
+> >> >---
+> >> > Documentation/networking/devlink/devlink-reset.rst | 50 +++++++++++++
+> >> > include/net/devlink.h                              |  2 +
+> >> > include/uapi/linux/devlink.h                       | 46 ++++++++++++
+> >> > net/core/devlink.c                                 | 85 ++++++++++++++++++++++
+> >> > 4 files changed, 183 insertions(+)
+> >> > create mode 100644 Documentation/networking/devlink/devlink-reset.rst
+> >> >
+> >> >diff --git a/Documentation/networking/devlink/devlink-reset.rst b/Documentation/networking/devlink/devlink-reset.rst
+> >> >new file mode 100644
+> >> >index 0000000..652800d
+> >> >--- /dev/null
+> >> >+++ b/Documentation/networking/devlink/devlink-reset.rst
+> >> >@@ -0,0 +1,50 @@
+> >> >+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >> >+
+> >> >+.. _devlink_reset:
+> >> >+
+> >> >+=============
+> >> >+Devlink reset
+> >> >+=============
+> >> >+
+> >> >+The ``devlink-reset`` API allows reset the hardware components of the device. After the reset,
+> >> >+device loads the pending updated firmware image.
+> >> >+Example use::
+> >> >+
+> >> >+  $ devlink dev reset pci/0000:05:00.0 components COMPONENTS
+> >> >+
+> >> >+Note that user can mention multiple components.
+> >> >+
+> >> >+================
+> >> >+Reset components
+> >> >+================
+> >> >+
+> >> >+List of available components::
+> >> >+
+> >> >+``DEVLINK_RESET_COMP_MGMT`` - Management processor.
+> >> >+``DEVLINK_RESET_COMP_DMA`` - DMA engine.
+> >> >+``DEVLINK_RESET_COMP_RAM`` - RAM shared between multiple components.
+> >> >+``DEVLINK_RESET_COMP_AP``   - Application processor.
+> >> >+``DEVLINK_RESET_COMP_ROCE`` - RoCE management processor.
+> >> >+``DEVLINK_RESET_COMP_ALL``  - All components.
+> >> >+
+> >> >+===========
+> >> >+Reset width
+> >> >+===========
+> >> >+
+> >> >+List of available widths::
+> >> >+
+> >> >+``DEVLINK_RESET_WIDTH_SINGLE`` - Device is used by single dedicated host.
+> >> >+``DEVLINK_RESET_WIDTH_MULTI``  - Device is shared across multiple hosts.
+> >> >+
+> >> >+Note that if user specifies DEVLINK_RESET_WIDTH_SINGLE in a multi-host environment, driver returns
+> >> >+error if it does not support resetting a single host.
+> >> >+
+> >> >+===========
+> >> >+Reset modes
+> >> >+===========
+> >> >+
+> >> >+List of available reset modes::
+> >> >+
+> >> >+``DEVLINK_RESET_MODE_DEFERRED``  - Reset happens after all host drivers are unloaded on the device.
+> >> >+``DEVLINK_RESET_MODE_LIVE``      - Reset happens immediately, with all loaded host drivers in real
+> >> >+                                   time.
+> >> >diff --git a/include/net/devlink.h b/include/net/devlink.h
+> >> >index 428f55f..a71c8f5 100644
+> >> >--- a/include/net/devlink.h
+> >> >+++ b/include/net/devlink.h
+> >> >@@ -1129,6 +1129,8 @@ struct devlink_ops {
+> >> >       int (*port_function_hw_addr_set)(struct devlink *devlink, struct devlink_port *port,
+> >> >                                        const u8 *hw_addr, int hw_addr_len,
+> >> >                                        struct netlink_ext_ack *extack);
+> >> >+      int (*reset)(struct devlink *devlink, u32 *components, u8 width, u8 mode,
+> >> >+                   struct netlink_ext_ack *extack);
+> >> > };
+> >> >
+> >> > static inline void *devlink_priv(struct devlink *devlink)
+> >> >diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+> >> >index 87c83a8..6f32c00 100644
+> >> >--- a/include/uapi/linux/devlink.h
+> >> >+++ b/include/uapi/linux/devlink.h
+> >> >@@ -122,6 +122,9 @@ enum devlink_command {
+> >> >       DEVLINK_CMD_TRAP_POLICER_NEW,
+> >> >       DEVLINK_CMD_TRAP_POLICER_DEL,
+> >> >
+> >> >+      DEVLINK_CMD_RESET,
+> >> >+      DEVLINK_CMD_RESET_STATUS,       /* notification only */
+> >> >+
+> >> >       /* add new commands above here */
+> >> >       __DEVLINK_CMD_MAX,
+> >> >       DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
+> >> >@@ -265,6 +268,44 @@ enum devlink_trap_type {
+> >> >       DEVLINK_TRAP_TYPE_CONTROL,
+> >> > };
+> >> >
+> >> >+/**
+> >> >+ * enum devlink_reset_component - Reset components.
+> >> >+ * @DEVLINK_RESET_COMP_MGMT: Management processor.
+> >> >+ * @DEVLINK_RESET_COMP_DMA: DMA engine.
+> >> >+ * @DEVLINK_RESET_COMP_RAM: RAM shared between multiple components.
+> >> >+ * @DEVLINK_RESET_COMP_AP: Application processor.
+> >> >+ * @DEVLINK_RESET_COMP_ROCE: RoCE management processor.
+> >> >+ * @DEVLINK_RESET_COMP_ALL: All components.
+> >> >+ */
+> >> >+enum devlink_reset_component {
+> >> >+      DEVLINK_RESET_COMP_MGMT         = (1 << 0),
+> >> >+      DEVLINK_RESET_COMP_DMA          = (1 << 1),
+> >> >+      DEVLINK_RESET_COMP_RAM          = (1 << 2),
+> >> >+      DEVLINK_RESET_COMP_AP           = (1 << 3),
+> >> >+      DEVLINK_RESET_COMP_ROCE         = (1 << 4),
+> >> >+      DEVLINK_RESET_COMP_ALL          = 0xffffffff,
+> >> >+};
+> >> >+
+> >> >+/**
+> >> >+ * enum devlink_reset_width - Number of hosts effected by reset.
+> >> >+ * @DEVLINK_RESET_WIDTH_SINGLE: Device is used by single dedicated host.
+> >> >+ * @DEVLINK_RESET_WIDTH_MULTI: Device is shared across multiple hosts.
+> >> >+ */
+> >> >+enum devlink_reset_width {
+> >> >+      DEVLINK_RESET_WIDTH_SINGLE      = 0,
+> >> >+      DEVLINK_RESET_WIDTH_MULTI       = 1,
+> >> >+};
+> >> >+
+> >> >+/**
+> >> >+ * enum devlink_reset_mode - Modes of reset.
+> >> >+ * @DEVLINK_RESET_MODE_DEFERRED: Reset will happen after host drivers are unloaded.
+> >> >+ * @DEVLINK_RESET_MODE_LIVE: All host drivers also will be reset without reloading manually.
+> >> >+ */
+> >> >+enum devlink_reset_mode {
+> >> >+      DEVLINK_RESET_MODE_DEFERRED     = 0,
+> >> >+      DEVLINK_RESET_MODE_LIVE         = 1,
+> >> >+};
+> >> >+
+> >> > enum {
+> >> >       /* Trap can report input port as metadata */
+> >> >       DEVLINK_ATTR_TRAP_METADATA_TYPE_IN_PORT,
+> >> >@@ -455,6 +496,11 @@ enum devlink_attr {
+> >> >
+> >> >       DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER,  /* string */
+> >> >
+> >> >+      DEVLINK_ATTR_RESET_COMPONENTS,          /* u32 */
+> >> >+      DEVLINK_ATTR_RESET_WIDTH,               /* u8 */
+> >> >+      DEVLINK_ATTR_RESET_MODE,                /* u8 */
+> >> >+      DEVLINK_ATTR_RESET_STATUS_MSG,          /* string */
+> >> >+
+> >> >       /* add new attributes above here, update the policy in devlink.c */
+> >> >
+> >> >       __DEVLINK_ATTR_MAX,
+> >> >diff --git a/net/core/devlink.c b/net/core/devlink.c
+> >> >index 6ae3680..c0eebc5 100644
+> >> >--- a/net/core/devlink.c
+> >> >+++ b/net/core/devlink.c
+> >> >@@ -6797,6 +6797,82 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+> >> >       return devlink_trap_policer_set(devlink, policer_item, info);
+> >> > }
+> >> >
+> >> >+static int devlink_nl_reset_fill(struct sk_buff *msg, struct devlink *devlink,
+> >> >+                               const char *status_msg, u32 components)
+> >> >+{
+> >> >+      void *hdr;
+> >> >+
+> >> >+      hdr = genlmsg_put(msg, 0, 0, &devlink_nl_family, 0, DEVLINK_CMD_RESET_STATUS);
+> >> >+      if (!hdr)
+> >> >+              return -EMSGSIZE;
+> >> >+
+> >> >+      if (devlink_nl_put_handle(msg, devlink))
+> >> >+              goto nla_put_failure;
+> >> >+
+> >> >+      if (status_msg && nla_put_string(msg, DEVLINK_ATTR_RESET_STATUS_MSG, status_msg))
+> >> >+              goto nla_put_failure;
+> >> >+
+> >> >+      if (nla_put_u32(msg, DEVLINK_ATTR_RESET_COMPONENTS, components))
+> >> >+              goto nla_put_failure;
+> >> >+
+> >> >+      genlmsg_end(msg, hdr);
+> >> >+      return 0;
+> >> >+
+> >> >+nla_put_failure:
+> >> >+      genlmsg_cancel(msg, hdr);
+> >> >+      return -EMSGSIZE;
+> >> >+}
+> >> >+
+> >> >+static void __devlink_reset_notify(struct devlink *devlink, const char *status_msg, u32 components)
+> >> >+{
+> >> >+      struct sk_buff *msg;
+> >> >+      int err;
+> >> >+
+> >> >+      msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+> >> >+      if (!msg)
+> >> >+              return;
+> >> >+
+> >> >+      err = devlink_nl_reset_fill(msg, devlink, status_msg, components);
+> >> >+      if (err)
+> >> >+              goto out;
+> >> >+
+> >> >+      genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink), msg, 0,
+> >> >+                              DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
+> >> >+      return;
+> >> >+
+> >> >+out:
+> >> >+      nlmsg_free(msg);
+> >> >+}
+> >> >+
+> >> >+static int devlink_nl_cmd_reset(struct sk_buff *skb, struct genl_info *info)
+> >> >+{
+> >> >+      struct devlink *devlink = info->user_ptr[0];
+> >> >+      u32 components, req_comps;
+> >> >+      struct nlattr *nla_type;
+> >> >+      u8 width, mode;
+> >> >+      int err;
+> >> >+
+> >> >+      if (!devlink->ops->reset)
+> >> >+              return -EOPNOTSUPP;
+> >> >+
+> >> >+      if (!info->attrs[DEVLINK_ATTR_RESET_COMPONENTS])
+> >> >+              return -EINVAL;
+> >> >+      components = nla_get_u32(info->attrs[DEVLINK_ATTR_RESET_COMPONENTS]);
+> >> >+
+> >> >+      nla_type = info->attrs[DEVLINK_ATTR_RESET_WIDTH];
+> >> >+      width = nla_type ? nla_get_u8(nla_type) : DEVLINK_RESET_WIDTH_SINGLE;
+> >> >+
+> >> >+      nla_type = info->attrs[DEVLINK_ATTR_RESET_MODE];
+> >> >+      mode = nla_type ? nla_get_u8(nla_type) : DEVLINK_RESET_MODE_DEFERRED;
+> >> >+
+> >> >+      req_comps = components;
+> >> >+      __devlink_reset_notify(devlink, "Reset request", components);
+> >> >+      err = devlink->ops->reset(devlink, &components, width, mode, info->extack);
+> >> >+      __devlink_reset_notify(devlink, "Components reset", req_comps & ~components);
+> >> >+
+> >> >+      return err;
+> >> >+}
+> >> >+
+> >> > static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
+> >> >       [DEVLINK_ATTR_UNSPEC] = { .strict_start_type =
+> >> >               DEVLINK_ATTR_TRAP_POLICER_ID },
+> >> >@@ -6842,6 +6918,9 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+> >> >       [DEVLINK_ATTR_TRAP_POLICER_RATE] = { .type = NLA_U64 },
+> >> >       [DEVLINK_ATTR_TRAP_POLICER_BURST] = { .type = NLA_U64 },
+> >> >       [DEVLINK_ATTR_PORT_FUNCTION] = { .type = NLA_NESTED },
+> >> >+      [DEVLINK_ATTR_RESET_COMPONENTS] = { .type = NLA_U32 },
+> >> >+      [DEVLINK_ATTR_RESET_WIDTH] = { .type = NLA_U8 },
+> >> >+      [DEVLINK_ATTR_RESET_MODE] = { .type = NLA_U8 },
+> >> > };
+> >> >
+> >> > static const struct genl_ops devlink_nl_ops[] = {
+> >> >@@ -7190,6 +7269,12 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+> >> >               .flags = GENL_ADMIN_PERM,
+> >> >               .internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
+> >> >       },
+> >> >+      {
+> >> >+              .cmd = DEVLINK_CMD_RESET,
+> >> >+              .doit = devlink_nl_cmd_reset,
+> >> >+              .flags = GENL_ADMIN_PERM,
+> >> >+              .internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
+> >> >+      },
+> >> > };
+> >> >
+> >> > static struct genl_family devlink_nl_family __ro_after_init = {
+> >> >--
+> >> >1.8.3.1
+> >> >
