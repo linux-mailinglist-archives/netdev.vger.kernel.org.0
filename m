@@ -2,203 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 627142100D5
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 02:05:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 311AE2100DA
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 02:07:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726084AbgGAAFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Jun 2020 20:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58008 "EHLO
+        id S1726135AbgGAAG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Jun 2020 20:06:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725862AbgGAAFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 20:05:34 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92ED7C061755
-        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 17:05:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=TBNd1SkmeXFu9UrYhNDqssdxJjXXZqfWFt/EARCEABQ=; b=wV/O8AXTSKB+fKSrD8U6Ei27W
-        G5ggh3Gq7zKRmgVjes1rdNili9DYylq9He9Z+xN7XPXZPvrQI/PVg2SoYLbKC8MUoywL7XXw4JvLs
-        TDRiQ3/QaC1bqnO+M+b0MhxfIueP+4RsALGzGhSfhTYXeTGwuM28V0K/mmC6ptuOA6LcJvTgMrYov
-        BLWaWZOYgAbIlaI55tJExdFAyaR/G2B9JRyWOw69HbRXp5pMnXayyQBmcxnDr3Hoph5HqmmyJ4Sk8
-        YBxVsiI8UV2np+d7D9x1ZyPGl+t+gJqKfw/cxS80IqiNAvD2SPxsOa3Jze1R33h+ltPl+taKIsSRE
-        P+tS4fmdA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33754)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jqQFi-00015m-5b; Wed, 01 Jul 2020 01:05:26 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jqQFe-0000Bs-13; Wed, 01 Jul 2020 01:05:22 +0100
-Date:   Wed, 1 Jul 2020 01:05:22 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH RFC net-next] net: mtk_eth_soc: use resolved link config
- for PCS PHY
-Message-ID: <20200701000521.GH1551@shell.armlinux.org.uk>
-References: <E1jqDIk-0004m5-0L@rmk-PC.armlinux.org.uk>
- <20200630104613.GB1551@shell.armlinux.org.uk>
- <20200630221308.Horde.maavwLQud2YnxIT-0uQAH4l@www.vdorst.com>
+        with ESMTP id S1725862AbgGAAGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Jun 2020 20:06:55 -0400
+Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBD0C061755
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 17:06:55 -0700 (PDT)
+Received: by mail-vs1-xe44.google.com with SMTP id r5so12265122vso.11
+        for <netdev@vger.kernel.org>; Tue, 30 Jun 2020 17:06:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ljeanCVomM9pm7YqGsm40u2yOhEfwYZjVfL5sMIeFvE=;
+        b=oIi2JFEv5Rzvgj01VOi5im5BDpG8PBOTCR2Gw/jkmGUZ56w9OrfB3MYqilO6LH+HiZ
+         Ou+iBDqd+74Fl6JYiVdYj6rV7qyR/n915XQ347lsXgEzS4pUKmAv+OfxvXRfj/LT3TF3
+         LwIZ9VJhGFcPgKdG1BgMRIxMKKb06K6GGJjD7MHwML0XQJtVI3Hl2+RcdgGk9kurlx7K
+         5MOgJOMav82M89YEaW7Q6XwOAY0uIdZWuTjcxn48Qj/rCAkvP6kT6PqXkPQS22NXM9QD
+         nnlNuJx67KyNukV7ztxVjj8VLzxPjetLaUKP+l8Vx4Aevz1XCpFO/EBxgexS679k/Bjt
+         ll2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ljeanCVomM9pm7YqGsm40u2yOhEfwYZjVfL5sMIeFvE=;
+        b=MMZm/Jrs/45rG6AhbsxMYCbS3Hm6siTGVVjmGkAHLJNioCyp1UPkZmdE4qoI+28h6w
+         HelNcxxV6dKRjFxleKxO9FDMhCN0zDE3BR1TwFxcve81hbQOPjSJdyy76joSWlmvJSWA
+         isWuTIldozgvl5MQJD0MamGRTwwKgaNlCeI+OJ/YwbUuyIDY+qb9KPnjaP6FWmjQEAJR
+         /1MU+7bpXSiqm3FSER691LNpkZ3MaE432FRCqEcdswJMyR8bgZhGhWySRvrYAKOLZ/jT
+         ju60ux308TjQnYTOqbnx0kthlvpe2UIgK19wcxrqI0kcUlNAfOr7y8cp+5KhsEcwLHL3
+         LaTw==
+X-Gm-Message-State: AOAM531eQ8ObtoPc3JAB4phnRfb3fVTdsT7m9khFxGa0zk5xDilMKnZs
+        UPQDhLchPX5E9s3MFU4QwwgkJCRCqymOvaLvhqiCND3Meg==
+X-Google-Smtp-Source: ABdhPJzAqs6cElenC01gUzsDtsvwsJx2nGOZyUnKLNyoFEReEJBd3v4RZOf8Kpet7WG3DkYwTUeEJgqFnJo+tuGZ3pM=
+X-Received: by 2002:a67:f04:: with SMTP id 4mr17254670vsp.112.1593562014487;
+ Tue, 30 Jun 2020 17:06:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200630221308.Horde.maavwLQud2YnxIT-0uQAH4l@www.vdorst.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200630184922.455439-1-haoluo@google.com> <49df8306-ecc7-b979-d887-b023275e4842@fb.com>
+ <CA+khW7iJu2tzcz36XzL6gBq4poq+5Qt0vbrmPRdYuvC-c5U4_A@mail.gmail.com>
+In-Reply-To: <CA+khW7iJu2tzcz36XzL6gBq4poq+5Qt0vbrmPRdYuvC-c5U4_A@mail.gmail.com>
+From:   Bill Wendling <morbo@google.com>
+Date:   Tue, 30 Jun 2020 17:06:43 -0700
+Message-ID: <CAGG=3QWo9J4LVePVH4JVD+Y364q-R-BwpR5rxemXzBR6SqbnVg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Switch test_vmlinux to use hrtimer_range_start_ns.
+To:     Hao Luo <haoluo@google.com>
+Cc:     Yonghong Song <yhs@fb.com>, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        linux-kselftest@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 10:13:08PM +0000, René van Dorst wrote:
-> Hi Russel and Sean,
-> 
-> Quoting Russell King - ARM Linux admin <linux@armlinux.org.uk>:
-> 
-> > On Tue, Jun 30, 2020 at 11:15:42AM +0100, Russell King wrote:
-> > > The SGMII PCS PHY needs to be updated with the link configuration in
-> > > the mac_link_up() call rather than in mac_config().  However,
-> > > mtk_sgmii_setup_mode_force() programs the SGMII block during
-> > > mac_config() when using 802.3z interface modes with the link
-> > > configuration.
-> > > 
-> > > Split that functionality from mtk_sgmii_setup_mode_force(), moving it
-> > > to a new mtk_sgmii_link_up() function, and call it from mac_link_up().
-> > > 
-> > > This does not look correct to me: 802.3z modes operate at a fixed
-> > > speed.  The contents of mtk_sgmii_link_up() look more appropriate for
-> > > SGMII mode, but the original code definitely did not call
-> > > mtk_sgmii_setup_mode_force() for SGMII mode but only 802.3z mode.
-> > > 
-> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > > ---
-> > > René, can you assist with this patch please - I really think there are
-> > > problems with the existing code.  You call mtk_sgmii_setup_mode_force()
-> > > in a block which is conditionalised as:
-> > > 
-> > > 	if (state->interface == PHY_INTERFACE_MODE_SGMII ||
-> > > 	    phy_interface_mode_is_8023z(state->interface)) {
-> > > ...
-> > > 		if (state->interface != PHY_INTERFACE_MODE_SGMII)
-> > > 			err = mtk_sgmii_setup_mode_force(eth->sgmii, sid,
-> > > 							 state);
-> > > 
-> > > Hence, mtk_sgmii_setup_mode_force() is only called for 1000BASE-X and
-> > > 2500BASE-X, which do not support anything but their native speeds.
-> > > Yet, mtk_sgmii_setup_mode_force() tries to program the SGMII for 10M
-> > > and 100M.
-> > > 
-> > > Note that this patch is more about moving uses of state->{speed,duplex}
-> > > into mac_link_up(), rather than fixing this problem, but I don't think
-> > > the addition in mtk_mac_link_up(), nor mtk_sgmii_link_up() is of any
-> > > use.
-> > 
-> > My Coccinelle script just found this use of state->{speed,duplex} still
-> > remaining:
-> > 
-> >                         if (MTK_HAS_CAPS(mac->hw->soc->caps,
-> >                                          MTK_TRGMII_MT7621_CLK)) {
-> > ...
-> >                         } else {
-> >                                 if (state->interface !=
-> >                                     PHY_INTERFACE_MODE_TRGMII)
-> >                                         mtk_gmac0_rgmii_adjust(mac->hw,
-> >                                                                state->speed);
-> > 
-> > which also needs to be eliminated.  Can that also be moved to
-> > mtk_mac_link_up()?
-> 
-> I know, you have pointed that out before. But I don't know how to fix
-> mtk_gmac0_rgmii_adjust(). This function changes the PLL of the MAC. But
-> without documentation I am not sure what all the bits are used for.
+On Tue, Jun 30, 2020 at 3:48 PM Hao Luo <haoluo@google.com> wrote:
+>
+> On Tue, Jun 30, 2020 at 1:37 PM Yonghong Song <yhs@fb.com> wrote:
+> >
+> > On 6/30/20 11:49 AM, Hao Luo wrote:
+> > > The test_vmlinux test uses hrtimer_nanosleep as hook to test tracing
+> > > programs. But it seems Clang may have done an aggressive optimization,
+> > > causing fentry and kprobe to not hook on this function properly on a
+> > > Clang build kernel.
+> >
+> > Could you explain why it does not on clang built kernel? How did you
+> > build the kernel? Did you use [thin]lto?
+> >
+> > hrtimer_nanosleep is a global function who is called in several
+> > different files. I am curious how clang optimization can make
+> > function disappear, or make its function signature change, or
+> > rename the function?
+> >
+>
+> Yonghong,
+>
+> We didn't enable LTO. It also puzzled me. But I can confirm those
+> fentry/kprobe test failures via many different experiments I've done.
+> After talking to my colleague on kernel compiling tools (Bill, cc'ed),
+> we suspected this could be because of clang's aggressive inlining. We
+> also noticed that all the callsites of hrtimer_nanosleep() are tail
+> calls.
+>
+> For a better explanation, I can reach out to the people who are more
+> familiar to clang in the compiler team to see if they have any
+> insights. This may not be of high priority for them though.
+>
+Hi Yonghong,
 
-I'd forgotten...
+Clang is generally more aggressive at inlining than gcc. So even
+though hrtimer_nanosleep is a global function, clang goes ahead and
+inlines it into the "nanosleep" syscall, which is in the same file.
+(We're not currently using {Thin}LTO, so this won't happen in
+functions outside of kernel/time/hrtimer.c.) Note that if gcc were to
+change it's inlining heuristics so that it inlined more aggressively,
+you would be faced with a similar issue.
 
-> Begin April I had a conversation with Sean about this. I also explained what
-> the issue was. AFAIK he was going to take care of this issue.
-> 
-> Sean did you had time to resolve this issue?
+If you would like to test that it calls hrtimer_nanosleep() and not
+another function, it might be best to call a syscall not defined in
+hrtimer.c, e.g. clock_nanosleep().
 
-Well, I think the code as it stands is quite broken.
-
-If we start a bit earlier in mtk_mac_config(), we have this:
-
-        if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
-            mac->interface != state->interface) {
-
-which prevents us entering this block unless the interface mode has
-changed and we are not MT7628.  This block of code includes the two
-calls to mtk_gmac0_rgmii_adjust(), which are dependent on
-state->speed.
-
-Since mac->interface starts off as PHY_INTERFACE_MODE_NA, the first
-time we head into mtk_mac_config(), the interface mode will be
-different, and we will enter this block of code, maybe calling down
-into mtk_gmac0_rgmii_adjust() if appropriate.
-
-The first call will be via phylink_start(), which will call it with
-the initial configuration - the link will be down, and state->speed
-will be SPEED_UNKNOWN.  So, the various tests inside
-mtk_gmac0_rgmii_adjust() for speed == SPEED_1000 will all be false,
-meaning it'll program it as if for 10M or 100M speeds.
-
-When the link comes up, yes, mtk_mac_config() will be called again
-with the link parameters, but state->interface will now match
-mac->interface - so the block of code containing the call to
-mtk_gmac0_rgmii_adjust() will not be entered, and so none of that
-code gets executed when the link comes up/down.
-
-Now, if I dig out object 8ddbb8dcf032 from the git repository, which
-was the state of the file immedately prior to the phylink conversion,
-I find:
-
-static void mtk_phy_link_adjust(struct net_device *dev)
-{
-
-This is the function that phylib would call when the link comes up
-or down.  It tests for MTK_RESETTING, starts preparing a value for
-mcr, and then:
-
-        if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_GMAC1_TRGMII) && !mac->id) {
-                if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_TRGMII_MT7621_CLK)) {
-                        if (mt7621_gmac0_rgmii_adjust(mac->hw,
-                                                      dev->phydev->interface))
-                                return;
-                } else {
-                        if (!mac->trgmii)
-                                mtk_gmac0_rgmii_adjust(mac->hw,
-                                                       dev->phydev->speed);
-                }
-        }
-
-It then finishes creating a value for mcr, before writing it to the
-register, and printing the link status to the kernel log.
-
-Hence, mtk_gmac0_rgmii_adjust() would've been called every time there's
-a change of link state, and is expected to be passed the current speed.
-
-There seems to be a difference in behaviour between the pre-phylink and
-post-phylink drivers, and I think moving mtk_gmac0_rgmii_adjust() into
-mtk_mac_link_up() would be a definite improvement, possibly even a
-regression fix.
-
-However, it would be reasonable to assume that there should be reports
-that mtk_eth_soc doesn't work if this were the case.  So... odd.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+-bw
