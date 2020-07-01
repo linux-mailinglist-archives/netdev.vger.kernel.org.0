@@ -2,160 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 591B8210AF3
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 14:19:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1304E210AFA
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 14:21:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730556AbgGAMTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 08:19:46 -0400
-Received: from mail.efficios.com ([167.114.26.124]:50208 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730063AbgGAMTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 08:19:46 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id A354A2CD6E7;
-        Wed,  1 Jul 2020 08:19:42 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 2FJk1-xrNm4E; Wed,  1 Jul 2020 08:19:42 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 4A8AD2CD572;
-        Wed,  1 Jul 2020 08:19:42 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 4A8AD2CD572
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1593605982;
-        bh=YXoF5PUmxWXzp2LmHg4Wgh13FE3P4zYYtwXrHzfqq3Y=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=sG39cyUal96uC6mVyehepRr4pm1czvIHFsUGOd53n/dOX2qwq+HAY1AYOll43FKKK
-         aLuZoGCMngJoRBScUGKntC5NT2sInb2Eh8EG2FT8QXfZVR4/kojqte6y6KA83fzKVL
-         WFgTHC3EULUyItFTiDhFMGZgVgN9jjWwoNoge6dDRMkSxcq/587EsdxMPEJi9RtYul
-         PPSZGqHYpt3+gngE0EmiaxVZr6Gx1mJQeLWvBcW2zWhTOWd/bZ9RyHfuA9YUMzNiNU
-         nW+fcJm7c+MLyrTZaCM/0+juW8g5yPVmeI9N43OiiPOGCGvDyxqG6ceJ2/RfFq/OlS
-         K5lGL6JG5BUow==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 8b3X4FPEW-Fj; Wed,  1 Jul 2020 08:19:42 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 3BB862CD987;
-        Wed,  1 Jul 2020 08:19:42 -0400 (EDT)
-Date:   Wed, 1 Jul 2020 08:19:42 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Jonathan Rajotte-Julien <joraj@efficios.com>
-Message-ID: <338284155.18826.1593605982156.JavaMail.zimbra@efficios.com>
-In-Reply-To: <CANn89iKnf6=RFd-XRjPv=qaU8P-LGCBcw6JU5Ywwb16gU2iQqQ@mail.gmail.com>
-References: <CANn89iLPqtJG0iESCHF+RcOjo95ukan1oSzjkPjoSJgKpO2wSQ@mail.gmail.com> <20200701020211.GA6875@gondor.apana.org.au> <CANn89iKP-evuLxeLo6p_98T+FuJ-J5YaMTRG230nqj3R=43tVA@mail.gmail.com> <20200701022241.GA7167@gondor.apana.org.au> <CANn89iLKZQAtpejcLHmOu3dsrGf5eyFfHc8JqoMNYisRPWQ8kQ@mail.gmail.com> <20200701025843.GA7254@gondor.apana.org.au> <CANn89iKnf6=RFd-XRjPv=qaU8P-LGCBcw6JU5Ywwb16gU2iQqQ@mail.gmail.com>
-Subject: Re: [regression] TCP_MD5SIG on established sockets
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        id S1730552AbgGAMVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 08:21:54 -0400
+Received: from mout.kundenserver.de ([212.227.17.10]:42117 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728137AbgGAMVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 08:21:53 -0400
+Received: from kiste ([79.246.96.6]) by mrelayeu.kundenserver.de (mreue106
+ [212.227.15.183]) with ESMTPSA (Nemesis) id 1MVdUQ-1jP08r04Dk-00Raj1; Wed, 01
+ Jul 2020 14:19:53 +0200
+Date:   Wed, 1 Jul 2020 14:19:49 +0200
+From:   Hans Wippel <ndev@hwipl.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Hans Wippel <ndev@hwipl.net>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: wireguard: problem sending via libpcap's packet socket
+Message-Id: <20200701141949.b9ed27c6547a2db29a5977d8@hwipl.net>
+In-Reply-To: <CAHmME9rZieNAYeeK90HLoaoeKJEv5vE9MHfn-q5zFY8_ebNqxw@mail.gmail.com>
+References: <20200626201330.325840-1-ndev@hwipl.net>
+        <CAHmME9r7Q_+_3ePj4OzxZOkkrSdKA_THNjk6YjHxTQyNA2iaAw@mail.gmail.com>
+        <CAHmME9pX30q1oWY3hpjK4u-1ApQP7RCA07BmhtRQx=dR85MS9A@mail.gmail.com>
+        <CAHmME9oCHNSNAVTNtxO2Oz10iqj_D8JPmN8526FbQ8UoO0-iHw@mail.gmail.com>
+        <CA+FuTSdpU_2w9iU+Rtv8pUepOcwqHYaV1jYVfB6_K157E6CSZw@mail.gmail.com>
+        <CAHmME9rZieNAYeeK90HLoaoeKJEv5vE9MHfn-q5zFY8_ebNqxw@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-unknown-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_3945 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3928)
-Thread-Topic: TCP_MD5SIG on established sockets
-Thread-Index: DVmdKoIdfg8hNWwm7FgIos17cuNI0g==
+X-Provags-ID: V03:K1:sXYTEldYeq9B8wzQpk97273kxAkcaDamhW4TOkP0MEyzCY6IAHc
+ SNs4X0YboLjyBJzQn7IJcKo0ruiyu5UOrLZd8bltPnH46xy/I0NnTMpN0cZBDjHXk/7wTAu
+ T2jH1rfRJEnfdvOBTLz7bjhbejCJ3cZu9CNNJ0QuHa+s8IUxI+Wg6PgxNmm3qOo2+ziHaWm
+ rQj6TiWbX/oWcIQg0f9/Q==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+aeDD0wKsLw=:W1DWRRQN9z6dBBM8AzGXtW
+ pLlQVx5FypOByAizqlNtr5E0CNusuD9sOF/c7+wLIsKzMQJQC6r3OOdEjKigF4cYm+1jNDHqQ
+ JmB/HbXKKNYXUf5GsiAyUfG0Aecbx0G69Mw09yCTx/dGJPuzSyReIaHvEymT+qB1qkCHXCNWz
+ t0sANLNUaCeYFcwvcyGPr8xg7Fvr5nIvE+7E5fhY+PgZiKRAxWky0CnLutmzq4Ju7VxreeQmx
+ N1RuL6XiT8Gu7WbBUCuaSKfHydA0XBD4J7uNA5Fj9aeHa9T6PAqTDXkBPrf9Q67ILK1EXtDGW
+ TIhN349yUTmtvQ0RXMLRs3xCh7NuARNJs7raxBrsR31WEVtVByCQey4eoCSicFejGpQpJIVWU
+ 2C1esKsVAaa5cfNi+5+8M0SsSh/QKPAUK6+2KWJ6GL2I29Fi/IVhs/A6X2+ONE+4JbewPijxC
+ cDCBLdK1YFM8IIvK1BZ2WNWneRvuY/ro6tJkFWirSUcIxeYpIM3hDz5nP4I1adcVQVnoiMLli
+ 5jstJ8nHWKJN+huC1kvaz1AMCYBNRsQq5imV4klqNlWdFV8SPgEj7mRdkcmxy7EPy4ox33Hj1
+ +sAJG//ZTqrJi/xBUwn00Mg1ThjJEwFpkuhTnBfjhvCOq5UuPnccKS4bRx0wtszstSD/wF4C1
+ AGiSy1Eo/sB0r6p8EDBKgP7g6QQ/tYsub5ltx0Gy7+3sHqNbM0OJ9xzuIMosEsk4OIlqOmBVp
+ fyPHsLar9scBcfKDWJ+sRzZ8MimTlrYOOnGJODF/qi4S1vxUQkzYO4HS6DS/0PXsi3LyjqLj/
+ I7QXzd0rPYlM68s+i7EnvTI8UTgeVwpHVU2Ke6NMq2+24Efj+UpCDTEhF9EXChNZdCMqaiV
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On Jun 30, 2020, at 11:36 PM, Eric Dumazet edumazet@google.com wrote:
+On Tue, 30 Jun 2020 21:05:27 -0600
+"Jason A. Donenfeld" <Jason@zx2c4.com> wrote:
 
-> On Tue, Jun 30, 2020 at 7:59 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
->>
->> On Tue, Jun 30, 2020 at 07:30:43PM -0700, Eric Dumazet wrote:
->> >
->> > I made this clear in the changelog, do we want comments all over the places ?
->> > Do not get me wrong, we had this bug for years and suddenly this is a
->> > big deal...
->>
->> I thought you were adding a new pair of smp_rmb/smp_wmb.  If they
->> already exist in the code then I agree it's not a big deal.  But
->> adding a new pair of bogus smp_Xmb's is bad for maintenance.
->>
+> On Sun, Jun 28, 2020 at 2:04 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Sat, Jun 27, 2020 at 1:58 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> > >
+> > > Hi again Hans,
+> > >
+> > > A few remarks: although gre implements header_ops, it looks like
+> > > various parts of the networking stack change behavior based on it. I'm
+> > > still analyzing that to understand the extent of the effects.
+> > > Something like <https://git.zx2c4.com/wireguard-linux/commit/?id=40c24fd379edc1668087111506ed3d0928052fe0>
+> > > would work, but I'm not thrilled by it. Further research is needed.
+> > >
+> > > However, one thing I noticed is that other layer 3 tunnels don't seem
+> > > to be a fan of libpcap. For example, try injecting a packet into an
+> > > ipip interface. You'll hit exactly the same snag for skb->protocol==0.
+> >
+> > Not setting skb protocol when sending over packet sockets causes many
+> > headaches. Besides packet_parse_headers, virtio_net_hdr_to_skb also
+> > tries to infer it.
+> >
+> > Packet sockets give various options to configure it explicitly: by
+> > choosing that protocol in socket(), bind() or, preferably, by passing
+> > it as argument to sendmsg. The socket/bind argument also configures
+> > the filter to receive packets, so for send-only sockets it is
+> > especially useful to choose ETH_P_NONE (0) there. This is not an
+> > "incorrect" option.
+> >
+> > Libpcap does have a pcap_set_protocol function, but it is fairly
+> > recent, so few processes will likely be using it. And again it is
+> > still not ideal if a socket is opened only for transmit.
+> >
+> > header_ops looks like the best approach to me, too. The protocol field
+> > needs to reflect the protocol of the *outer* packet, of course, but if
+> > I read wg_allowedips_lookup_dst correctly, wireguard maintains the
+> > same outer protocol as the inner protocol, no sit (6-in-4) and such.
 > 
-> If I knew so many people were excited about TCP / MD5, I would have
-> posted all my patches on lkml ;)
+> WireGuard does allow 6-in-4 and 4-in-6 actually. But parse_protocol is
+> only ever called on the inner packet. The only code paths leading to
+> it are af_packet-->ndo_start_xmit, and ndo_start_xmit examines
+> skb->protocol of that inner packet, which means it entirely concerns
+> the inner packet. And generally, for wireguard, userspace only ever
+> deals with the inner packet. That inner packet then gets encrypted and
+> poked at in strange ways, and then the encrypted blob of sludge gets
+> put into a udp packet and sent some place. So I'm quite sure that the
+> behavior just committed is right.
 > 
-> Without the smp_wmb() we would still need something to prevent KMSAN
-> from detecting that we read uninitialized bytes,
-> if key->keylen is increased.  (initial content of key->key[] is garbage)
+> And from writing a few libpcap examples, things seem to be working
+> very well, including Hans' example.
 > 
-> Something like this :
+> Hans - if you want to try out davem's net.git tree, you can see if
+> this is working properly for you.
 
-The approach below looks good to me, but you'll also need to annotate
-both tcp_md5_hash_key and tcp_md5_do_add with __no_kcsan or use
-data_race(expr) to let the concurrency sanitizer know that there is
-a known data race which is there on purpose (triggered by memcpy in tcp_md5_do_add
-and somewhere within crypto_ahash_update). See Documentation/dev-tools/kcsan.rst
-for details.
-
-Thanks,
-
-Mathieu
-
-> 
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index
-> f111660453241692a17c881dd6dc2910a1236263..c3af8180c7049d5c4987bf5c67e4aff2ed6967c9
-> 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -4033,11 +4033,9 @@ EXPORT_SYMBOL(tcp_md5_hash_skb_data);
-> 
-> int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct
-> tcp_md5sig_key *key)
-> {
-> -       u8 keylen = key->keylen;
-> +       u8 keylen = READ_ONCE(key->keylen); /* paired with
-> WRITE_ONCE() in tcp_md5_do_add */
->        struct scatterlist sg;
-> 
-> -       smp_rmb(); /* paired with smp_wmb() in tcp_md5_do_add() */
-> -
->        sg_init_one(&sg, key->key, keylen);
->        ahash_request_set_crypt(hp->md5_req, &sg, NULL, keylen);
->        return crypto_ahash_update(hp->md5_req);
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index
-> 99916fcc15ca0be12c2c133ff40516f79e6fdf7f..0d08e0134335a21d23702e6a5c24a0f2b3c61c6f
-> 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -1114,9 +1114,13 @@ int tcp_md5_do_add(struct sock *sk, const union
-> tcp_md5_addr *addr,
->                /* Pre-existing entry - just update that one. */
->                memcpy(key->key, newkey, newkeylen);
-> 
-> -               smp_wmb(); /* pairs with smp_rmb() in tcp_md5_hash_key() */
-> +               /* Pairs with READ_ONCE() in tcp_md5_hash_key().
-> +                * Also note that a reader could catch new key->keylen value
-> +                * but old key->key[], this is the reason we use __GFP_ZERO
-> +                * at sock_kmalloc() time below these lines.
-> +                */
-> +               WRITE_ONCE(key->keylen, newkeylen);
-> 
-> -               key->keylen = newkeylen;
->                return 0;
->        }
-> 
-> @@ -1132,7 +1136,7 @@ int tcp_md5_do_add(struct sock *sk, const union
-> tcp_md5_addr *addr,
->                rcu_assign_pointer(tp->md5sig_info, md5sig);
->        }
-> 
-> -       key = sock_kmalloc(sk, sizeof(*key), gfp);
-> +       key = sock_kmalloc(sk, sizeof(*key), gfp | __GFP_ZERO);
->        if (!key)
->                return -ENOMEM;
->         if (!tcp_alloc_md5sig_pool()) {
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+I just tested it and everything seems to work now. Thanks :)
+  Hans
