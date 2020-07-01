@@ -2,238 +2,292 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07D2A210994
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 12:43:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 283972109A4
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 12:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730045AbgGAKnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 06:43:52 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:52085 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729939AbgGAKnv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 06:43:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593600229;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iJDnIere4ckUlcqu2vjyvbJB29ysZfytbrXR/5K7PEs=;
-        b=RALVUCmR9gp9sRHt4CA64SI+z5ffw291dGk7Ikx7LlRTHOmpv0Xg6c+rIwP8uAaqtw2Q9B
-        xKxhUsRqw5qygzGw+CtObK5ZErRCfX2zvkHBRsMsev8yLq8Yoxm2Pb1M8LZ/4TWwEAUuQI
-        GktTFF3ih0DxhtHN66GpDAdooZXs6No=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-415-lmhtQ01RNoqVVs0bor4ndA-1; Wed, 01 Jul 2020 06:43:47 -0400
-X-MC-Unique: lmhtQ01RNoqVVs0bor4ndA-1
-Received: by mail-qk1-f200.google.com with SMTP id k16so3525376qkh.12
-        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 03:43:46 -0700 (PDT)
+        id S1729978AbgGAKrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 06:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729791AbgGAKrk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 06:47:40 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA618C061755
+        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 03:47:39 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id z17so19209134edr.9
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 03:47:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vSklkYPAVI6KSNJ+MvH80HtarGkvnPtlhTFK8HmSrD4=;
+        b=p3zvdKRMwSxhnFuOU4eFM8WaImx6d0F+UZdv1g+PnAvtj7Gcrxjy0J5BNtVlOHDhzd
+         y2sVPq+7053iuTa/e7bkDvjMh4SyPekpE0lKoLup5GRUvXKrSVqpD5mJ1g2X+LNV3C3p
+         G+GzNMGd+WxcEpl5EIaeCiFfVp+rSHv3/znr4ybmZLGRgOskoVwYNnQJd/SMrZNJT0JN
+         T/wHKWWVdZ2AHkpSV4y6Sri9az82fnBsFrgENmETHkurasR1ZnneKIWMB07w5Qk/eSsL
+         HWiTtJuISIIB8xzqh083Xsz7qw9ucsnXQp2SbV7PUY0mDed3Wh7foGnr0kj2E+Fa7mRh
+         +aww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=iJDnIere4ckUlcqu2vjyvbJB29ysZfytbrXR/5K7PEs=;
-        b=GafPOl8sloGtlpcF55xcjUWQGemYbGH8EtsyDwEkfkpqh/zq/aEbwa7BYILBBzE+F9
-         y0AszYwVXGVJh7PEo5jYtW4geC4cngO0Uca6wJtDJebCzBx6QwjYmSQKAovqAfIsCNsx
-         85mv/iHdHucIMyLd4Eyqv6VLDoGGFd5/6Fhv9j6+O/xsFw6s6SRj+0AGFtFjUZ2LBM2f
-         PUNM5ur9WXZ8c2toYofSG/tXLqMaZB0palAvkybBvJtzphv2JU0bk/Ndbm9qX1doI5e/
-         JKB6gB9PlUGowb+p33F0gXoyo1WkJSJ0UtimSQVbLi8R2Fevgs52k9Iq+ExkdxQu5/9+
-         MK/g==
-X-Gm-Message-State: AOAM532Cy0+CQDxdwtXkLK8XGsWYmlMHfEDj/rF4LgNlkJZT3b4q51El
-        i33k77vd7xxCKethU8fYLXRTnSp29QvWQX4CuJYYoQsGD+8W01PPAyDR+TxdqHgrvkPkJi5hFvh
-        Wus6O4sJo3xzZdnu9e+0bNtqgbrg4tQYR
-X-Received: by 2002:a05:620a:11b3:: with SMTP id c19mr24282750qkk.203.1593600226407;
-        Wed, 01 Jul 2020 03:43:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxA+6E7kiqCtAV/8nSkNYVRZ2RneWi1RECnUnttFwOq2tXRpiCh8ne4TffX0pRmGxcg2IGuMwNPewmLwloiNcE=
-X-Received: by 2002:a05:620a:11b3:: with SMTP id c19mr24282729qkk.203.1593600226047;
- Wed, 01 Jul 2020 03:43:46 -0700 (PDT)
+        bh=vSklkYPAVI6KSNJ+MvH80HtarGkvnPtlhTFK8HmSrD4=;
+        b=VAEXQPAvw3DhyFy8WDMzISSaurguAuGVUvREhYti3W4VP2Y6v6x7qw5QFpQ72BC2OQ
+         phOC49uYzyPGxSczScHp65uuKH5bsm04EIUDbMQKomDUR/aoxM2edQ6BhyzJhi2Q+kHW
+         dtRjz/AGOb9+M+M7fUj1fEDIZywEsG1HT9ZfZN1J65ZaxY9sB5A0Ci+I+piDUip6YUk2
+         cAPCfYiU/+nXvNnwbllsua5kq6zH40zR9/4fTL4iMbuSvJ7a532Kyhv7vZCC3aq0yuOi
+         KlcoPl+h5pHIObBRavFf62joBN6Tvi4A6EZAXikn3v+KXc/mEo5extfmkyYMDCBNJBkZ
+         OMVQ==
+X-Gm-Message-State: AOAM533fcFdb7zNSYY1eLdTiV1UiytbVKGA/4JnTn2HEt4bmissuS5r7
+        sbU/fFDoGZmt5apZdlP7rzNtQgZBuBN0mJk5f/E=
+X-Google-Smtp-Source: ABdhPJzIf8GG0DSV4GP+kS41+DL81dTDf87/8XYgJMWjNw6UwUH8JUii+r5bYUC7mGRS2/jYJ/qhKwtzKNl4WtPl33M=
+X-Received: by 2002:a05:6402:2d7:: with SMTP id b23mr15954988edx.145.1593600458472;
+ Wed, 01 Jul 2020 03:47:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200611113404.17810-1-mst@redhat.com> <20200611113404.17810-3-mst@redhat.com>
- <20200611152257.GA1798@char.us.oracle.com> <CAJaqyWdwXMX0JGhmz6soH2ZLNdaH6HEdpBM8ozZzX9WUu8jGoQ@mail.gmail.com>
- <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com>
- <20200622114622-mutt-send-email-mst@kernel.org> <CAJaqyWfrf94Gc-DMaXO+f=xC8eD3DVCD9i+x1dOm5W2vUwOcGQ@mail.gmail.com>
- <20200622122546-mutt-send-email-mst@kernel.org> <CAJaqyWfbouY4kEXkc6sYsbdCAEk0UNsS5xjqEdHTD7bcTn40Ow@mail.gmail.com>
-In-Reply-To: <CAJaqyWfbouY4kEXkc6sYsbdCAEk0UNsS5xjqEdHTD7bcTn40Ow@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 1 Jul 2020 12:43:09 +0200
-Message-ID: <CAJaqyWefMHPguj8ZGCuccTn0uyKxF9ZTEi2ASLtDSjGNb1Vwsg@mail.gmail.com>
-Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
+References: <20200630142754.GC1551@shell.armlinux.org.uk> <E1jqHGO-0006QN-Hw@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1jqHGO-0006QN-Hw@rmk-PC.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 1 Jul 2020 13:47:27 +0300
+Message-ID: <CA+h21hokR=966wRCWctN+gNALjZmr3tXU1D4uHhoFDwos7vNdQ@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next 12/13] net: phylink: add struct phylink_pcs
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 6:15 PM Eugenio Perez Martin
-<eperezma@redhat.com> wrote:
+Hi Russell,
+
+On Tue, 30 Jun 2020 at 17:29, Russell King <rmk+kernel@armlinux.org.uk> wrote:
 >
-> On Mon, Jun 22, 2020 at 6:29 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Mon, Jun 22, 2020 at 06:11:21PM +0200, Eugenio Perez Martin wrote:
-> > > On Mon, Jun 22, 2020 at 5:55 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Fri, Jun 19, 2020 at 08:07:57PM +0200, Eugenio Perez Martin wrote:
-> > > > > On Mon, Jun 15, 2020 at 2:28 PM Eugenio Perez Martin
-> > > > > <eperezma@redhat.com> wrote:
-> > > > > >
-> > > > > > On Thu, Jun 11, 2020 at 5:22 PM Konrad Rzeszutek Wilk
-> > > > > > <konrad.wilk@oracle.com> wrote:
-> > > > > > >
-> > > > > > > On Thu, Jun 11, 2020 at 07:34:19AM -0400, Michael S. Tsirkin wrote:
-> > > > > > > > As testing shows no performance change, switch to that now.
-> > > > > > >
-> > > > > > > What kind of testing? 100GiB? Low latency?
-> > > > > > >
-> > > > > >
-> > > > > > Hi Konrad.
-> > > > > >
-> > > > > > I tested this version of the patch:
-> > > > > > https://lkml.org/lkml/2019/10/13/42
-> > > > > >
-> > > > > > It was tested for throughput with DPDK's testpmd (as described in
-> > > > > > http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html)
-> > > > > > and kernel pktgen. No latency tests were performed by me. Maybe it is
-> > > > > > interesting to perform a latency test or just a different set of tests
-> > > > > > over a recent version.
-> > > > > >
-> > > > > > Thanks!
-> > > > >
-> > > > > I have repeated the tests with v9, and results are a little bit different:
-> > > > > * If I test opening it with testpmd, I see no change between versions
-> > > >
-> > > >
-> > > > OK that is testpmd on guest, right? And vhost-net on the host?
-> > > >
-> > >
-> > > Hi Michael.
-> > >
-> > > No, sorry, as described in
-> > > http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html.
-> > > But I could add to test it in the guest too.
-> > >
-> > > These kinds of raw packets "bursts" do not show performance
-> > > differences, but I could test deeper if you think it would be worth
-> > > it.
-> >
-> > Oh ok, so this is without guest, with virtio-user.
-> > It might be worth checking dpdk within guest too just
-> > as another data point.
-> >
+> Add a way for MAC PCS to have private data while keeping independence
+> from struct phylink_config, which is used for the MAC itself. We need
+> this independence as we will have stand-alone code for PCS that is
+> independent of the MAC.  Introduce struct phylink_pcs, which is
+> designed to be embedded in a driver private data structure.
 >
-> Ok, I will do it!
+> This structure does not include a mdio_device as there are PCS
+> implementations such as the Marvell DSA and network drivers where this
+> is not necessary.
 >
-> > > > > * If I forward packets between two vhost-net interfaces in the guest
-> > > > > using a linux bridge in the host:
-> > > >
-> > > > And here I guess you mean virtio-net in the guest kernel?
-> > >
-> > > Yes, sorry: Two virtio-net interfaces connected with a linux bridge in
-> > > the host. More precisely:
-> > > * Adding one of the interfaces to another namespace, assigning it an
-> > > IP, and starting netserver there.
-> > > * Assign another IP in the range manually to the other virtual net
-> > > interface, and start the desired test there.
-> > >
-> > > If you think it would be better to perform then differently please let me know.
-> >
-> >
-> > Not sure why you bother with namespaces since you said you are
-> > using L2 bridging. I guess it's unimportant.
-> >
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/net/phy/phylink.c | 25 ++++++++++++++++------
+>  include/linux/phylink.h   | 45 ++++++++++++++++++++++++++-------------
+>  2 files changed, 48 insertions(+), 22 deletions(-)
 >
-> Sorry, I think I should have provided more context about that.
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index a31a00fb4974..fbc8591b474b 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -43,6 +43,7 @@ struct phylink {
+>         const struct phylink_mac_ops *mac_ops;
+>         const struct phylink_pcs_ops *pcs_ops;
+>         struct phylink_config *config;
+> +       struct phylink_pcs *pcs;
+>         struct device *dev;
+>         unsigned int old_link_state:1;
 >
-> The only reason to use namespaces is to force the traffic of these
-> netperf tests to go through the external bridge. To test netperf
-> different possibilities than the testpmd (or pktgen or others "blast
-> of frames unconditionally" tests).
+> @@ -427,7 +428,7 @@ static void phylink_mac_pcs_an_restart(struct phylink *pl)
+>             phy_interface_mode_is_8023z(pl->link_config.interface) &&
+>             phylink_autoneg_inband(pl->cur_link_an_mode)) {
+>                 if (pl->pcs_ops)
+> -                       pl->pcs_ops->pcs_an_restart(pl->config);
+> +                       pl->pcs_ops->pcs_an_restart(pl->pcs);
+>                 else
+>                         pl->mac_ops->mac_an_restart(pl->config);
+>         }
+> @@ -453,7 +454,7 @@ static void phylink_change_interface(struct phylink *pl, bool restart,
+>         phylink_mac_config(pl, state);
 >
-> This way, I make sure that is the same version of everything in the
-> guest, and is a little bit easier to manage cpu affinity, start and
-> stop testing...
+>         if (pl->pcs_ops) {
+> -               err = pl->pcs_ops->pcs_config(pl->config, pl->cur_link_an_mode,
+> +               err = pl->pcs_ops->pcs_config(pl->pcs, pl->cur_link_an_mode,
+>                                               state->interface,
+>                                               state->advertising,
+>                                               !!(pl->link_config.pause &
+> @@ -533,7 +534,7 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
+>         state->link = 1;
 >
-> I could use a different VM for sending and receiving, but I find this
-> way a faster one and it should not introduce a lot of noise. I can
-> test with two VM if you think that this use of network namespace
-> introduces too much noise.
+>         if (pl->pcs_ops)
+> -               pl->pcs_ops->pcs_get_state(pl->config, state);
+> +               pl->pcs_ops->pcs_get_state(pl->pcs, state);
+>         else
+>                 pl->mac_ops->mac_pcs_get_state(pl->config, state);
+>  }
+> @@ -604,7 +605,7 @@ static void phylink_link_up(struct phylink *pl,
+>         pl->cur_interface = link_state.interface;
 >
-> Thanks!
+>         if (pl->pcs_ops && pl->pcs_ops->pcs_link_up)
+> -               pl->pcs_ops->pcs_link_up(pl->config, pl->cur_link_an_mode,
+> +               pl->pcs_ops->pcs_link_up(pl->pcs, pl->cur_link_an_mode,
+>                                          pl->cur_interface,
+>                                          link_state.speed, link_state.duplex);
 >
-> > > >
-> > > > >   - netperf UDP_STREAM shows a performance increase of 1.8, almost
-> > > > > doubling performance. This gets lower as frame size increase.
+> @@ -863,11 +864,19 @@ struct phylink *phylink_create(struct phylink_config *config,
+>  }
+>  EXPORT_SYMBOL_GPL(phylink_create);
+>
+> -void phylink_add_pcs(struct phylink *pl, const struct phylink_pcs_ops *ops)
+> +/**
+> + * phylink_set_pcs() - set the current PCS for phylink to use
+> + * @pl: a pointer to a &struct phylink returned from phylink_create()
+> + * @pcs: a pointer to the &struct phylink_pcs
+> + *
+> + * Bind the MAC PCS to phylink.
+> + */
+> +void phylink_set_pcs(struct phylink *pl, struct phylink_pcs *pcs)
+>  {
+> -       pl->pcs_ops = ops;
+> +       pl->pcs = pcs;
+> +       pl->pcs_ops = pcs->ops;
+>  }
+> -EXPORT_SYMBOL_GPL(phylink_add_pcs);
+> +EXPORT_SYMBOL_GPL(phylink_set_pcs);
+>
+>  /**
+>   * phylink_destroy() - cleanup and destroy the phylink instance
+> @@ -1212,6 +1221,8 @@ void phylink_start(struct phylink *pl)
+>                 break;
+>         case MLO_AN_INBAND:
+>                 poll |= pl->config->pcs_poll;
+> +               if (pl->pcs)
+> +                       poll |= pl->pcs->poll;
 
-Regarding UDP_STREAM:
-* with event_idx=on: The performance difference is reduced a lot if
-applied affinity properly (manually assigning CPU on host/guest and
-setting IRQs on guest), making them perform equally with and without
-the patch again. Maybe the batching makes the scheduler perform
-better.
+Do we see a need for yet another way to request phylink to poll the
+PCS for link status?
 
-> > > > >   - rests of the test goes noticeably worse: UDP_RR goes from ~6347
-> > > > > transactions/sec to 5830
+>                 break;
+>         }
+>         if (poll)
+> diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+> index 2f1315f32113..057f78263a46 100644
+> --- a/include/linux/phylink.h
+> +++ b/include/linux/phylink.h
+> @@ -321,6 +321,21 @@ void mac_link_up(struct phylink_config *config, struct phy_device *phy,
+>                  int speed, int duplex, bool tx_pause, bool rx_pause);
+>  #endif
+>
+> +struct phylink_pcs_ops;
+> +
+> +/**
+> + * struct phylink_pcs - PHYLINK PCS instance
+> + * @ops: a pointer to the &struct phylink_pcs_ops structure
+> + * @poll: poll the PCS for link changes
+> + *
+> + * This structure is designed to be embedded within the PCS private data,
+> + * and will be passed between phylink and the PCS.
+> + */
+> +struct phylink_pcs {
+> +       const struct phylink_pcs_ops *ops;
+> +       bool poll;
+> +};
+> +
+>  /**
+>   * struct phylink_pcs_ops - MAC PCS operations structure.
+>   * @pcs_get_state: read the current MAC PCS link state from the hardware.
+> @@ -330,21 +345,21 @@ void mac_link_up(struct phylink_config *config, struct phy_device *phy,
+>   *               (where necessary).
+>   */
+>  struct phylink_pcs_ops {
+> -       void (*pcs_get_state)(struct phylink_config *config,
+> +       void (*pcs_get_state)(struct phylink_pcs *pcs,
+>                               struct phylink_link_state *state);
+> -       int (*pcs_config)(struct phylink_config *config, unsigned int mode,
+> +       int (*pcs_config)(struct phylink_pcs *pcs, unsigned int mode,
+>                           phy_interface_t interface,
+>                           const unsigned long *advertising,
+>                           bool permit_pause_to_mac);
+> -       void (*pcs_an_restart)(struct phylink_config *config);
+> -       void (*pcs_link_up)(struct phylink_config *config, unsigned int mode,
+> +       void (*pcs_an_restart)(struct phylink_pcs *pcs);
+> +       void (*pcs_link_up)(struct phylink_pcs *pcs, unsigned int mode,
+>                             phy_interface_t interface, int speed, int duplex);
+>  };
+>
+>  #if 0 /* For kernel-doc purposes only. */
+>  /**
+>   * pcs_get_state() - Read the current inband link state from the hardware
+> - * @config: a pointer to a &struct phylink_config.
+> + * @pcs: a pointer to a &struct phylink_pcs.
+>   * @state: a pointer to a &struct phylink_link_state.
+>   *
+>   * Read the current inband link state from the MAC PCS, reporting the
+> @@ -357,12 +372,12 @@ struct phylink_pcs_ops {
+>   * When present, this overrides mac_pcs_get_state() in &struct
+>   * phylink_mac_ops.
+>   */
+> -void pcs_get_state(struct phylink_config *config,
+> +void pcs_get_state(struct phylink_pcs *pcs,
+>                    struct phylink_link_state *state);
+>
+>  /**
+>   * pcs_config() - Configure the PCS mode and advertisement
+> - * @config: a pointer to a &struct phylink_config.
+> + * @pcs: a pointer to a &struct phylink_pcs.
+>   * @mode: one of %MLO_AN_FIXED, %MLO_AN_PHY, %MLO_AN_INBAND.
+>   * @interface: interface mode to be used
+>   * @advertising: adertisement ethtool link mode mask
+> @@ -382,21 +397,21 @@ void pcs_get_state(struct phylink_config *config,
+>   *
+>   * For most 10GBASE-R, there is no advertisement.
+>   */
+> -int (*pcs_config)(struct phylink_config *config, unsigned int mode,
+> -                 phy_interface_t interface, const unsigned long *advertising);
+> +int pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+> +              phy_interface_t interface, const unsigned long *advertising);
+>
+>  /**
+>   * pcs_an_restart() - restart 802.3z BaseX autonegotiation
+> - * @config: a pointer to a &struct phylink_config.
+> + * @pcs: a pointer to a &struct phylink_pcs.
+>   *
+>   * When PCS ops are present, this overrides mac_an_restart() in &struct
+>   * phylink_mac_ops.
+>   */
+> -void (*pcs_an_restart)(struct phylink_config *config);
+> +void pcs_an_restart(struct phylink_pcs *pcs);
+>
+>  /**
+>   * pcs_link_up() - program the PCS for the resolved link configuration
+> - * @config: a pointer to a &struct phylink_config.
+> + * @pcs: a pointer to a &struct phylink_pcs.
+>   * @mode: link autonegotiation mode
+>   * @interface: link &typedef phy_interface_t mode
+>   * @speed: link speed
+> @@ -407,14 +422,14 @@ void (*pcs_an_restart)(struct phylink_config *config);
+>   * mode without in-band AN needs to be manually configured for the link
+>   * and duplex setting. Otherwise, this should be a no-op.
+>   */
+> -void (*pcs_link_up)(struct phylink_config *config, unsigned int mode,
+> -                   phy_interface_t interface, int speed, int duplex);
+> +void pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
+> +                phy_interface_t interface, int speed, int duplex);
+>  #endif
+>
+>  struct phylink *phylink_create(struct phylink_config *, struct fwnode_handle *,
+>                                phy_interface_t iface,
+>                                const struct phylink_mac_ops *mac_ops);
+> -void phylink_add_pcs(struct phylink *, const struct phylink_pcs_ops *ops);
+> +void phylink_set_pcs(struct phylink *, struct phylink_pcs *pcs);
+>  void phylink_destroy(struct phylink *);
+>
+>  int phylink_connect_phy(struct phylink *, struct phy_device *);
+> --
+> 2.20.1
+>
 
-* Regarding UDP_RR, TCP_STREAM, and TCP_RR, proper CPU pinning makes
-them perform similarly again, only a very small performance drop
-observed. It could be just noise.
-** All of them perform better than vanilla if event_idx=off, not sure
-why. I can try to repeat them if you suspect that can be a test
-failure.
-
-* With testpmd and event_idx=off, if I send from the VM to host, I see
-a performance increment especially in small packets. The buf api also
-increases performance compared with only batching: Sending the minimum
-packet size in testpmd makes pps go from 356kpps to 473 kpps. Sending
-1024 length UDP-PDU makes it go from 570kpps to 64 kpps.
-
-Something strange I observe in these tests: I get more pps the bigger
-the transmitted buffer size is. Not sure why.
-
-** Sending from the host to the VM does not make a big change with the
-patches in small packets scenario (minimum, 64 bytes, about 645
-without the patch, ~625 with batch and batch+buf api). If the packets
-are bigger, I can see a performance increase: with 256 bits, it goes
-from 590kpps to about 600kpps, and in case of 1500 bytes payload it
-gets from 348kpps to 528kpps, so it is clearly an improvement.
-
-* with testpmd and event_idx=on, batching+buf api perform similarly in
-both directions.
-
-All of testpmd tests were performed with no linux bridge, just a
-host's tap interface (<interface type='ethernet'> in xml), with a
-testpmd txonly and another in rxonly forward mode, and using the
-receiving side packets/bytes data. Guest's rps, xps and interrupts,
-and host's vhost threads affinity were also tuned in each test to
-schedule both testpmd and vhost in different processors.
-
-I will send the v10 RFC with the small changes requested by Stefan and Jason.
-
-Thanks!
-
-
-
-
-
-
-
-> > > >
-> > > > OK so it seems plausible that we still have a bug where an interrupt
-> > > > is delayed. That is the main difference between pmd and virtio.
-> > > > Let's try disabling event index, and see what happens - that's
-> > > > the trickiest part of interrupts.
-> > > >
-> > >
-> > > Got it, will get back with the results.
-> > >
-> > > Thank you very much!
-> > >
-> > > >
-> > > >
-> > > > >   - TCP_STREAM goes from ~10.7 gbps to ~7Gbps
-> > > > >   - TCP_RR from 6223.64 transactions/sec to 5739.44
-> > > >
-> >
-
+Thank you,
+-Vladimir
