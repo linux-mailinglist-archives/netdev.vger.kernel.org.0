@@ -2,135 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 517F22104E7
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 09:23:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 361362104E9
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 09:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728245AbgGAHXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 03:23:05 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:25100 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728215AbgGAHXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 03:23:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1593588183; x=1625124183;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VjgLRTFAQQXiSnYU+FqcPS5U5gonGnZE5EKr2nGUPtg=;
-  b=PA2WT8RffrGKQEJwPK/FWhtNyaexD7QNqsdwR76Ltf92icZfgA3cYa/m
-   9QcEVTE7nEXmp2J2JEsBWiVbsrFL5Rf/mX6fR9adoqSY8c6RB+tBAi+ON
-   2ZT15xNDUKDWVKTQWac4HHSCNXdF/h546KWIAfj3FXnjxrSJ8mMs/N9tt
-   Hw7Ve16wXG1YwX3yQ5Qvq0upjf5QkJk7RjOqTSr1tCq95etccA8bjZ/Yk
-   UPmfLR4UBk1IWALX2lJ1rHGPOOz4yLlt/oFgocrFmy4vmXN0CwH6d/bMI
-   s1cZvg9WKrPNrNrLtdcmn/TtTCihPUrObI/0DJjoJX3WShx+8mdpkP4zu
-   w==;
-IronPort-SDR: FCy9FZHsX/Mc3hOW+u56FTK4CIBtnlDSZXW4jABO0OLzzkKnYj/a65UooUV22/Twc4nRjf2DZ+
- xs7d4B2zdrQrlqsV7qrbBDTJmpMC9JwObgS2M8zpTQGeBELJlGCaai577K5UCj3K50l5LIEVAe
- h0BHvt0zfionf3U/n19Jm8qGeyJgLxA8H0Rr8BdlDI37FHmZVunx2NGweRKnHkGVZrKSQHDKgZ
- 3UAyGxwSnbfbOO/d6DSbYlFh6Fia+4PtJ244I8RQQCH9UDRxgwsvNtFGMnVnGyEIGC/9IB043g
- +24=
-X-IronPort-AV: E=Sophos;i="5.75,299,1589266800"; 
-   d="scan'208";a="80314221"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Jul 2020 00:23:01 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 1 Jul 2020 00:23:01 -0700
-Received: from soft-dev3.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Wed, 1 Jul 2020 00:22:39 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <nikolay@cumulusnetworks.com>, <roopa@cumulusnetworks.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <jiri@mellanox.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2 3/3] bridge: Extend br_fill_ifinfo to return MPR status
-Date:   Wed, 1 Jul 2020 09:22:39 +0200
-Message-ID: <20200701072239.520807-4-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200701072239.520807-1-horatiu.vultur@microchip.com>
-References: <20200701072239.520807-1-horatiu.vultur@microchip.com>
+        id S1728258AbgGAHXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 03:23:17 -0400
+Received: from guitar.tcltek.co.il ([192.115.133.116]:57311 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728215AbgGAHXQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Jul 2020 03:23:16 -0400
+Received: from tarshish (unknown [10.0.8.3])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 1CD4B44075D;
+        Wed,  1 Jul 2020 10:23:13 +0300 (IDT)
+References: <76ee08645fd35182911fd2bac2546e455c4b662c.1593327891.git.baruch@tkos.co.il> <20200629092224.GS1551@shell.armlinux.org.uk>
+User-agent: mu4e 1.4.10; emacs 26.3
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Shmuel Hazan <sh@tkos.co.il>
+Subject: Re: [PATCH v2] net: phy: marvell10g: support XFI rate matching mode
+In-reply-to: <20200629092224.GS1551@shell.armlinux.org.uk>
+Date:   Wed, 01 Jul 2020 10:23:12 +0300
+Message-ID: <87v9j7em1r.fsf@tarshish>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch extends the function br_fill_ifinfo to return also the MRP
-status for each instance on a bridge. It also adds a new filter
-RTEXT_FILTER_MRP to return the MRP status only when this is set, not to
-interfer with the vlans. The MRP status is return only on the bridge
-interfaces.
+Hi Russell,
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- include/uapi/linux/rtnetlink.h |  1 +
- net/bridge/br_netlink.c        | 29 ++++++++++++++++++++++++++++-
- 2 files changed, 29 insertions(+), 1 deletion(-)
+On Mon, Jun 29 2020, Russell King - ARM Linux admin wrote:
+> On Sun, Jun 28, 2020 at 10:04:51AM +0300, Baruch Siach wrote:
+>> When the hardware MACTYPE hardware configuration pins are set to "XFI
+>> with Rate Matching" the PHY interface operate at fixed 10Gbps speed. The
+>> MAC buffer packets in both directions to match various wire speeds.
+>> 
+>> Read the MAC Type field in the Port Control register, and set the MAC
+>> interface speed accordingly.
+>> 
+>> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+>> ---
+>> v2: Move rate matching state read to config_init (RMK)
+>
+> Not quite what I was after, but it'll do for now.
 
-diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 879e64950a0a2..9b814c92de123 100644
---- a/include/uapi/linux/rtnetlink.h
-+++ b/include/uapi/linux/rtnetlink.h
-@@ -778,6 +778,7 @@ enum {
- #define RTEXT_FILTER_BRVLAN	(1 << 1)
- #define RTEXT_FILTER_BRVLAN_COMPRESSED	(1 << 2)
- #define	RTEXT_FILTER_SKIP_STATS	(1 << 3)
-+#define RTEXT_FILTER_MRP	(1 << 4)
- 
- /* End of information exported to user level */
- 
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 240e260e3461c..6ecb7c7453dcb 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -453,6 +453,32 @@ static int br_fill_ifinfo(struct sk_buff *skb,
- 		rcu_read_unlock();
- 		if (err)
- 			goto nla_put_failure;
-+
-+		nla_nest_end(skb, af);
-+	}
-+
-+	if (filter_mask & RTEXT_FILTER_MRP) {
-+		struct nlattr *af;
-+		int err;
-+
-+		/* RCU needed because of the VLAN locking rules (rcu || rtnl) */
-+		rcu_read_lock();
-+		if (!br_mrp_enabled(br) || port) {
-+			rcu_read_unlock();
-+			goto done;
-+		}
-+		af = nla_nest_start_noflag(skb, IFLA_AF_SPEC);
-+		if (!af) {
-+			rcu_read_unlock();
-+			goto nla_put_failure;
-+		}
-+
-+		err = br_mrp_fill_info(skb, br);
-+
-+		rcu_read_unlock();
-+		if (err)
-+			goto nla_put_failure;
-+
- 		nla_nest_end(skb, af);
- 	}
- 
-@@ -516,7 +542,8 @@ int br_getlink(struct sk_buff *skb, u32 pid, u32 seq,
- 	struct net_bridge_port *port = br_port_get_rtnl(dev);
- 
- 	if (!port && !(filter_mask & RTEXT_FILTER_BRVLAN) &&
--	    !(filter_mask & RTEXT_FILTER_BRVLAN_COMPRESSED))
-+	    !(filter_mask & RTEXT_FILTER_BRVLAN_COMPRESSED) &&
-+	    !(filter_mask & RTEXT_FILTER_MRP))
- 		return 0;
- 
- 	return br_fill_ifinfo(skb, port, pid, seq, RTM_NEWLINK, nlflags,
+Thanks for you review.
+
+> My only system which has a 3310 PHY and is configured for rate matching
+> (using an XAUI interface, mode 1) seems to be sick - the 3310 no longer
+> correctly negotiates on the media side (will only link at 100M/Half and
+> only passes traffic in one direction), which makes any development with
+> it rather difficult.  Either the media side drivers have failed or the
+> magnetics.
+>
+> I was also hoping for some discussion, as I bought up a few points
+> about the 3310's rate matching - unless you have the version with
+> MACsec, the PHY expects the host side to rate limit the egress rate to
+> the media rate and will _not_ send pause frames.  If you have MACsec,
+> and the MACsec hardware is enabled (although may not be encrypting),
+> then the PHY will send pause frames to the host as the internal buffer
+> fills.
+
+Flow control is disabled anyway in my use case (vpp).
+
+> Then there's the whole question of what phydev->speed etc should be set
+> to - the media speed or the host side link speed with the PHY, and then
+> how the host side should configure itself.  At least the 88E6390x
+> switch will force itself to the media side speed using that while in
+> XAUI mode, resulting in a non-functioning speed.  So should the host
+> side force itself to 10G whenever in something like XAUI mode?
+
+How does the switch discover the media side speed? Is there some sort of
+in-band information exchange?
+
+> What do we do about the egress rate - ignore that statement and hope
+> that the 3310 doesn't create bad packets on the wire if we fill up its
+> internal buffer?
+
+I will keep that in mind when stress testing the network. We might need
+a way to set IPG on the MAC side if the MAC supports that (mvpp2 in this
+case).
+
+baruch
+
+>>  drivers/net/phy/marvell10g.c | 22 ++++++++++++++++++++++
+>>  1 file changed, 22 insertions(+)
+>> 
+>> diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+>> index d4c2e62b2439..a7610eb55f30 100644
+>> --- a/drivers/net/phy/marvell10g.c
+>> +++ b/drivers/net/phy/marvell10g.c
+>> @@ -80,6 +80,8 @@ enum {
+>>  	MV_V2_PORT_CTRL		= 0xf001,
+>>  	MV_V2_PORT_CTRL_SWRST	= BIT(15),
+>>  	MV_V2_PORT_CTRL_PWRDOWN = BIT(11),
+>> +	MV_V2_PORT_MAC_TYPE_MASK = 0x7,
+>> +	MV_V2_PORT_MAC_TYPE_RATE_MATCH = 0x6,
+>>  	/* Temperature control/read registers (88X3310 only) */
+>>  	MV_V2_TEMP_CTRL		= 0xf08a,
+>>  	MV_V2_TEMP_CTRL_MASK	= 0xc000,
+>> @@ -91,6 +93,7 @@ enum {
+>>  
+>>  struct mv3310_priv {
+>>  	u32 firmware_ver;
+>> +	bool rate_match;
+>>  
+>>  	struct device *hwmon_dev;
+>>  	char *hwmon_name;
+>> @@ -458,7 +461,9 @@ static bool mv3310_has_pma_ngbaset_quirk(struct phy_device *phydev)
+>>  
+>>  static int mv3310_config_init(struct phy_device *phydev)
+>>  {
+>> +	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
+>>  	int err;
+>> +	int val;
+>>  
+>>  	/* Check that the PHY interface type is compatible */
+>>  	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
+>> @@ -475,6 +480,12 @@ static int mv3310_config_init(struct phy_device *phydev)
+>>  	if (err)
+>>  		return err;
+>>  
+>> +	val = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
+>> +	if (val < 0)
+>> +		return val;
+>> +	priv->rate_match = ((val & MV_V2_PORT_MAC_TYPE_MASK) ==
+>> +			MV_V2_PORT_MAC_TYPE_RATE_MATCH);
+>> +
+>>  	/* Enable EDPD mode - saving 600mW */
+>>  	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
+>>  }
+>> @@ -581,6 +592,17 @@ static int mv3310_aneg_done(struct phy_device *phydev)
+>>  
+>>  static void mv3310_update_interface(struct phy_device *phydev)
+>>  {
+>> +	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
+>> +
+>> +	/* In "XFI with Rate Matching" mode the PHY interface is fixed at
+>> +	 * 10Gb. The PHY adapts the rate to actual wire speed with help of
+>> +	 * internal 16KB buffer.
+>> +	 */
+>> +	if (priv->rate_match) {
+>> +		phydev->interface = PHY_INTERFACE_MODE_10GBASER;
+>> +		return;
+>> +	}
+>> +
+>>  	if ((phydev->interface == PHY_INTERFACE_MODE_SGMII ||
+>>  	     phydev->interface == PHY_INTERFACE_MODE_2500BASEX ||
+>>  	     phydev->interface == PHY_INTERFACE_MODE_10GBASER) &&
+>> -- 
+>> 2.27.0
+>> 
+>> 
+
+
 -- 
-2.27.0
-
+                                                     ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
