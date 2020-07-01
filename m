@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8118F210B98
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 15:03:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E3B6210B9A
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 15:03:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730914AbgGANCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 09:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37232 "EHLO
+        id S1730928AbgGANCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 09:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730744AbgGANCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 09:02:41 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6A8C03E979;
-        Wed,  1 Jul 2020 06:02:40 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id x8so8997622plm.10;
-        Wed, 01 Jul 2020 06:02:40 -0700 (PDT)
+        with ESMTP id S1730744AbgGANCt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 09:02:49 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868C2C03E979;
+        Wed,  1 Jul 2020 06:02:49 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id p3so11689039pgh.3;
+        Wed, 01 Jul 2020 06:02:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZlRjk8zT4O+JvT0opsFaP8uu4DQA96Rwf9GDzwtwPpA=;
-        b=VdMhGiBHDnabiz1ww0We+D9xZ9YmY5AgbsQKaGxp9X4Hm+abCnEeOrBoKe9mrC6FqR
-         fd37KpKkysUAQZKj0HvlRzy/TKTaWWRJdNeU+gmE003f0d2NX0eeXVLmhdIS+1TBWYEG
-         GCXU4tkesPB14EFk24cDw5pNcAjFXBb1+c7BIwnOiOvATlEljHlIUHHOhV11o3gbITdf
-         8/Xn6tZuC5M9hXWrg/4XdKc4tgeEMJCKJonU236n/rFn5A+fPS4xogqADs63+ml2Wgx5
-         8suHPkakVKL2fM3/0Y7sl1tqUE/T2gYYWyw4FexMnIbajICuyWfnAKEwc1EAP455rKsc
-         3YNQ==
+        bh=GxBM9njwc9t+8wZt245O1720nVEKK0kOwVAxz9sX+f4=;
+        b=E8x39Fr5eOXD+lvhdVdIYJZUjHwCPfPjh9s8afGYaGwdfF9LGGiDosxKMlHtPSdlai
+         4vICc1ddM3/RDbNvPeFDuR2Es5u/ozrZDvV/CrIi2DtIhwBOXhh0UWqBAIEj7+7fQO/T
+         ToUp2cU7mZnlbR1wbQ7ZTMsY7YmqJRVYAC7Ww0nYwaC6cl4Yxwbvr8Kos4OAEORmTzTO
+         GEd4KzeTKDom0SdZU0VMQsB7UsP3Gr2NgUhrWJmDNuseXtHDC6cDKLmtx5/d24SCpIsF
+         E7ohljt1W4EGTgxzVW0YhExDcfKEq0/Qr0gFL981Ft1ytvn70HOU+W6O02gxfrL2tMUO
+         e8gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZlRjk8zT4O+JvT0opsFaP8uu4DQA96Rwf9GDzwtwPpA=;
-        b=hfPjqaoTrXMLI6zEPX9Wz5oo3olikyFMkHhsvHxL3ScYM1/biCOI+FvOlRf5ZHzHsQ
-         c2SzJPo/ELZHGyilgpvKSGvmJKC1j0jfLM1YLW3YV1/RQlJdgzS6U8VT2cgc35fqLZ61
-         S8030fsCSXHPgNMARskh+5vXpbvn3stMxNGZMEbk5yohjLcKGRdquyia8vDrWz/TOZho
-         JwPodI5L07rpnxsvU0avh1iBrXykadtmo7oonhYXRw4N1J6oq805vfIDop0R674jc5HJ
-         5l2bEoiA83P7IjgRABbafRZ3KxHoiCCC1rX5cBx2vzKvXFbEu8JmWjmKMZIhj44sMuHM
-         Nt0A==
-X-Gm-Message-State: AOAM532M1D/5sqNCJrBt6Puhq44Vt4/+ZzPeAe2EZQyoVWjWV38bY8K5
-        noNkWzneIyrXG/ZSn2Hdh4A=
-X-Google-Smtp-Source: ABdhPJyW6WI+g29dTNawJ1+miqNXQEfKV65sxS6eTTaCmhAfO21hyaIO5yGGqu9+kNECK2Glk9Y4ZQ==
-X-Received: by 2002:a17:90a:9b82:: with SMTP id g2mr26144757pjp.187.1593608560269;
-        Wed, 01 Jul 2020 06:02:40 -0700 (PDT)
+        bh=GxBM9njwc9t+8wZt245O1720nVEKK0kOwVAxz9sX+f4=;
+        b=QsT9dB4MelUPksEBTACjne4zUCXn10lxZu45LVigAAYwMyxsVgFD6VqSOq6XfXIcz0
+         SXrpHaTI0UN4dMEI9e7Mj0CGz26XQncmggsFrSzNvZDnz0wBmnpLOI8O6DfDzS3wjzD4
+         +B+a/hReRg3Jv6vvEsCTKFkleomPokVf5c7ZTjHxZjozCLR1F5iZnagVibBrc24DMgEj
+         fHWgc2HY+wsCeU2C0X3LerCq34rH/ZcdMnEVgeaZATLxK7mCzx0vGiAO1iLWNT5Tq0e1
+         Y435Ox3okW16ZL15z1JRUliAD/vCqb+BAQlyIv/8aEC6ESFyA7URSuj2US41oMDuDoxm
+         dUkg==
+X-Gm-Message-State: AOAM531kxYBgt39k5FTyPTHJWIej3Doti6fP8qjfjQVqpJceGM9xHNHO
+        UzJHiCr/gOsipdEFwuEhRWI=
+X-Google-Smtp-Source: ABdhPJxcjJk8LSveiZ5+SpT0XFa0GpHtb6e9ktduqAI563qQExBRxsecPBKk59ONk3hjy9yEw04fQQ==
+X-Received: by 2002:aa7:8f08:: with SMTP id x8mr8291854pfr.41.1593608568921;
+        Wed, 01 Jul 2020 06:02:48 -0700 (PDT)
 Received: from varodek.iballbatonwifi.com ([103.105.153.57])
-        by smtp.gmail.com with ESMTPSA id d9sm6070908pgv.45.2020.07.01.06.02.33
+        by smtp.gmail.com with ESMTPSA id d9sm6070908pgv.45.2020.07.01.06.02.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jul 2020 06:02:39 -0700 (PDT)
+        Wed, 01 Jul 2020 06:02:48 -0700 (PDT)
 From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
 To:     Bjorn Helgaas <helgaas@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
@@ -73,9 +73,9 @@ Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         skhan@linuxfoundation.org
-Subject: [PATCH v1 05/11] liquidio: use generic power management
-Date:   Wed,  1 Jul 2020 18:29:32 +0530
-Message-Id: <20200701125938.639447-6-vaibhavgupta40@gmail.com>
+Subject: [PATCH v1 06/11] sundance: use generic power management
+Date:   Wed,  1 Jul 2020 18:29:33 +0530
+Message-Id: <20200701125938.639447-7-vaibhavgupta40@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200701125938.639447-1-vaibhavgupta40@gmail.com>
 References: <20200701125938.639447-1-vaibhavgupta40@gmail.com>
@@ -86,78 +86,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers should not use legacy power management as they have to manage power
-states and related operations, for the device, themselves. This driver was
-handling them with the help of PCI helper functions.
+With legacy PM, drivers themselves were responsible for managing the
+device's power states and takes care of register states.
 
-With generic PM, all essentials will be handled by the PCI core. Driver
-needs to do only device-specific operations.
+After upgrading to the generic structure, PCI core will take care of
+required tasks and drivers should do only device-specific operations.
 
-The driver defined empty-body .suspend() and .resume() callbacks earlier.
-They can now be define NULL and bind with "struct dev_pm_ops" variable.
+Thus, there is no need to call the PCI helper functions like
+pci_enable/disable_device(), pci_save/restore_sate() and
+pci_set_power_state().
 
 Compile-tested only.
 
 Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
 ---
- .../net/ethernet/cavium/liquidio/lio_main.c   | 31 +++----------------
- 1 file changed, 5 insertions(+), 26 deletions(-)
+ drivers/net/ethernet/dlink/sundance.c | 27 ++++++++-------------------
+ 1 file changed, 8 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/cavium/liquidio/lio_main.c b/drivers/net/ethernet/cavium/liquidio/lio_main.c
-index 66d31c018c7e..19689d72bc4e 100644
---- a/drivers/net/ethernet/cavium/liquidio/lio_main.c
-+++ b/drivers/net/ethernet/cavium/liquidio/lio_main.c
-@@ -405,27 +405,8 @@ static void liquidio_pcie_resume(struct pci_dev *pdev __attribute__((unused)))
- 	/* Nothing to be done here. */
+diff --git a/drivers/net/ethernet/dlink/sundance.c b/drivers/net/ethernet/dlink/sundance.c
+index dc566fcc3ba9..ca97e321082d 100644
+--- a/drivers/net/ethernet/dlink/sundance.c
++++ b/drivers/net/ethernet/dlink/sundance.c
+@@ -1928,11 +1928,9 @@ static void sundance_remove1(struct pci_dev *pdev)
+ 	}
  }
  
 -#ifdef CONFIG_PM
--/**
-- * \brief called when suspending
-- * @param pdev Pointer to PCI device
-- * @param state state to suspend to
-- */
--static int liquidio_suspend(struct pci_dev *pdev __attribute__((unused)),
--			    pm_message_t state __attribute__((unused)))
--{
--	return 0;
--}
 -
--/**
-- * \brief called when resuming
-- * @param pdev Pointer to PCI device
-- */
--static int liquidio_resume(struct pci_dev *pdev __attribute__((unused)))
--{
--	return 0;
--}
--#endif
-+#define liquidio_suspend NULL
-+#define liquidio_resume NULL
+-static int sundance_suspend(struct pci_dev *pci_dev, pm_message_t state)
++static int __maybe_unused sundance_suspend(struct device *dev_d)
+ {
+-	struct net_device *dev = pci_get_drvdata(pci_dev);
++	struct net_device *dev = dev_get_drvdata(dev_d);
+ 	struct netdev_private *np = netdev_priv(dev);
+ 	void __iomem *ioaddr = np->base;
  
- /* For PCI-E Advanced Error Recovery (AER) Interface */
- static const struct pci_error_handlers liquidio_err_handler = {
-@@ -451,17 +432,15 @@ static const struct pci_device_id liquidio_pci_tbl[] = {
- };
- MODULE_DEVICE_TABLE(pci, liquidio_pci_tbl);
+@@ -1942,30 +1940,24 @@ static int sundance_suspend(struct pci_dev *pci_dev, pm_message_t state)
+ 	netdev_close(dev);
+ 	netif_device_detach(dev);
  
-+static SIMPLE_DEV_PM_OPS(liquidio_pm_ops, liquidio_suspend, liquidio_resume);
+-	pci_save_state(pci_dev);
+ 	if (np->wol_enabled) {
+ 		iowrite8(AcceptBroadcast | AcceptMyPhys, ioaddr + RxMode);
+ 		iowrite16(RxEnable, ioaddr + MACCtrl1);
+ 	}
+-	pci_enable_wake(pci_dev, pci_choose_state(pci_dev, state),
+-			np->wol_enabled);
+-	pci_set_power_state(pci_dev, pci_choose_state(pci_dev, state));
 +
- static struct pci_driver liquidio_pci_driver = {
- 	.name		= "LiquidIO",
- 	.id_table	= liquidio_pci_tbl,
- 	.probe		= liquidio_probe,
- 	.remove		= liquidio_remove,
- 	.err_handler	= &liquidio_err_handler,    /* For AER */
++	device_set_wakeup_enable(dev_d, np->wol_enabled);
+ 
+ 	return 0;
+ }
+ 
+-static int sundance_resume(struct pci_dev *pci_dev)
++static int __maybe_unused sundance_resume(struct device *dev_d)
+ {
+-	struct net_device *dev = pci_get_drvdata(pci_dev);
++	struct net_device *dev = dev_get_drvdata(dev_d);
+ 	int err = 0;
+ 
+ 	if (!netif_running(dev))
+ 		return 0;
+ 
+-	pci_set_power_state(pci_dev, PCI_D0);
+-	pci_restore_state(pci_dev);
+-	pci_enable_wake(pci_dev, PCI_D0, 0);
 -
+ 	err = netdev_open(dev);
+ 	if (err) {
+ 		printk(KERN_ERR "%s: Can't resume interface!\n",
+@@ -1979,17 +1971,14 @@ static int sundance_resume(struct pci_dev *pci_dev)
+ 	return err;
+ }
+ 
+-#endif /* CONFIG_PM */
++static SIMPLE_DEV_PM_OPS(sundance_pm_ops, sundance_suspend, sundance_resume);
+ 
+ static struct pci_driver sundance_driver = {
+ 	.name		= DRV_NAME,
+ 	.id_table	= sundance_pci_tbl,
+ 	.probe		= sundance_probe1,
+ 	.remove		= sundance_remove1,
 -#ifdef CONFIG_PM
--	.suspend	= liquidio_suspend,
--	.resume		= liquidio_resume,
--#endif
-+	.driver.pm	= &liquidio_pm_ops,
- #ifdef CONFIG_PCI_IOV
- 	.sriov_configure = liquidio_enable_sriov,
- #endif
+-	.suspend	= sundance_suspend,
+-	.resume		= sundance_resume,
+-#endif /* CONFIG_PM */
++	.driver.pm	= &sundance_pm_ops,
+ };
+ 
+ static int __init sundance_init(void)
 -- 
 2.27.0
 
