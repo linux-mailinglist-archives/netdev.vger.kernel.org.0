@@ -2,148 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D2042109B3
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 12:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66164210A21
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 13:12:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730013AbgGAKwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 06:52:42 -0400
-Received: from mail-eopbgr10085.outbound.protection.outlook.com ([40.107.1.85]:59639
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729892AbgGAKwl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 06:52:41 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NW1LES3bko6TdZThp8edZUlUr8sJ7GLs9fd1weXSNT2Oay+QJdzug3T6cL9Oo+Oj/Vu2xG9BpqDAAepYWdMM1cGqA8QeJOcrYwaEIXMZebD5a4LXkQJz9/XD8dztfaRGPHwKyre4lKs0lU+TjuTiBtgwKWpT2e7Ul3rmoo5meNiAEeR4vdNBJYxEJKWJt+7Z4j2NWyFQIVb36uIuR1msRTwqguv/KbxOV457RXOMf/tVIx2DvV3r5rvGwdrHHQ92eYPDOAWxISc0BAU5K0bV+ND/QaavvI0PFAoT2fp13I15EB94mxSE9W3bOWiENMhnyq70Yhup7L7qdYUJc0DV2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MvRDwUxgmC1R3FW+6zkHtWM8y0KBsSqMTj52ckanlrI=;
- b=fDuJpNZcjpDE+EL4HsuYGnnH/qyqiWsK/tH45pYLen9QnU9XQazd8ww5nCIQ/eKPPZsPPy19p6oLHFhZHuzDfFNBApolEVv/Aldoxz6DYg+NOC2r7OIxbcu+6Q492GtT7U1Bkk8Aj8LmoAxOoWGGgXE1dIkDfq5OiNp3QizbbtDHzHxNqt8vbCZP6oomYMAb6WA/Fvj5gr67K+7OFr7HEYSqGZNE6vXNSD0uPY4P7qATL0uJr8U4lNTvXkr59VEEQJ6Cns9Y7CZLn1pGpxY85/t2mEKVOHwgOFf0HLEakp6lb7uUuAMoydOS2Sv/Uh0YLHSVRn92Yo2AQVC+CIRpRA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MvRDwUxgmC1R3FW+6zkHtWM8y0KBsSqMTj52ckanlrI=;
- b=fAelNiPQTlr4ekna9fqM8BrbcjxtDptAiGJmGT6bd2jhQvDuwgFs0d76UJKVtE9gQanAw9MOo1O7xJ5JNwI99B7/5mNaVpcwMpy3rwB5u7wOaanHpraU2UblfJ6FdyFQfEAfx0byYDmBaNhaWghYAasd0lvF1nHhmgVIE0BY3bE=
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VI1PR04MB4575.eurprd04.prod.outlook.com
- (2603:10a6:803:6b::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20; Wed, 1 Jul
- 2020 10:52:37 +0000
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::e5d7:ec32:1cfe:71f0]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::e5d7:ec32:1cfe:71f0%7]) with mapi id 15.20.3131.028; Wed, 1 Jul 2020
- 10:52:37 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-CC:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "michael@walle.cc" <michael@walle.cc>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH RFC net-next 13/13] net: phylink: add interface to
- configure clause 22 PCS PHY
-Thread-Topic: [PATCH RFC net-next 13/13] net: phylink: add interface to
- configure clause 22 PCS PHY
-Thread-Index: AQHWTurl2oCy8tTUCkWxykUjCsBK9ajyjSRg
-Date:   Wed, 1 Jul 2020 10:52:37 +0000
-Message-ID: <VI1PR0402MB3871E5BCC2C7473BF67539E0E06C0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
-References: <20200630142754.GC1551@shell.armlinux.org.uk>
- <E1jqHGT-0006Qb-Ld@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1jqHGT-0006Qb-Ld@rmk-PC.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [5.12.124.72]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f4caa694-0314-4a78-d16a-08d81dacde3a
-x-ms-traffictypediagnostic: VI1PR04MB4575:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB4575D2229395310220F38621E06C0@VI1PR04MB4575.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 04519BA941
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /Du8U9ni+PR/6sx6XrBUWjsfpp669trquEWfuol5BaLhmopUsyAuAjwuYkvmXDnZZlI4lZJW2nYh9QutbOZYvmUnXRbes7KTd/X89gddAUAgjNheCXBbNokyWbRP1ol31r4AIz0NyfSAMrM46c59ya0+lfyQ8vzehFeT2Up2Yy+S5acxXA8LezdVIzNlz4lsug+7Lk7W0AKamB2Kqjxw7YtTofmmXmZE9bXH2Rgojg0F63tQzuNYJLRBtY4SND++RDIW69uamuDtSUXw9NR8WkP1FUwvmA5pPXwYpoZ04vYHlr8XDx4G+b581eSXkH6oEyeeNFeb0Sm3aL7++jhoRw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(136003)(376002)(396003)(39860400002)(366004)(83380400001)(6506007)(5660300002)(55016002)(8676002)(9686003)(2906002)(64756008)(7696005)(66446008)(54906003)(110136005)(52536014)(76116006)(26005)(4326008)(71200400001)(33656002)(66556008)(316002)(66476007)(8936002)(66946007)(186003)(478600001)(44832011)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: YO2zktGX/001oCwaqk8dLk7xFhs/Jr6PdxLQJq9QZUsMHgiw9LkKD3jYxy1P6qpK+DPPHvHaie1rein5A9orhDR1qRJEs4J6zYN2bgN6WxtRBDjSr9K29h84MsYAGLULabJfTYsnw+WVThfaMY5nJgNvQHokj3bCOZA70cQvajh070Nzxh34+N4MVC6jstrXGcmp8Isw0oIKS9EGpUyJZSYpj1T5klpwKGGPeHZlXUiubLiD9bJkWiE2fD/9tsUgAeqb7mAQjOFaZAQyv3KG8hMbvDouG4m78sHm10b3jKPw4ElGM2BTGumd6gnIO8nGmBrLydc0x/iOpZ93av2t+8yprrtqEPOPXs4wBmlZukI64H5SmrqV02njtn+wdVxfRBK7/8/j9vtJWe+zKVRekc/8YxarcmxDPLHQZVL3+RTd5ElDMkN880bGjFOsJNQJGH630h/8KlpgEj5PYdUomFaDE3f/PaxNr46jQywjrNg=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1730199AbgGALMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 07:12:08 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:52689 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730054AbgGALMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 07:12:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593601925;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Yexujkd7auN9ITgPnwA4kXggvTeorMC1CWNzXOrWnvM=;
+        b=hx51FY+InFYWb/b2mFr5WLS/uXogj8g60xIVikBVxUDik2o3QdsQ5tR5UrEmSPQ+ZI4iU5
+        zaYmKu/8wywh2GkGQ/fKYXoo8C2WRILj7TwMYMVbBFjMhT6i82G5actO6Smhx2RwyszOTb
+        wWgHQ0IqXbCxy0NVkUi9Cvj4pqAmemk=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-446-VFS_VbANMmaUqY9tPewVCQ-1; Wed, 01 Jul 2020 07:12:03 -0400
+X-MC-Unique: VFS_VbANMmaUqY9tPewVCQ-1
+Received: by mail-wm1-f72.google.com with SMTP id y204so11663535wmd.2
+        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 04:12:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Yexujkd7auN9ITgPnwA4kXggvTeorMC1CWNzXOrWnvM=;
+        b=QdlGWPHPzJT7E2qdFwbAj4KTnOwipXVQ3ByUCNe1JqQxkMMJK1jw/DZq2YXfovLwoP
+         uDvDzsGnqp8KSw1/H+S6ISNh4926tbW3hQkyBOzfbwLstz+AgH1zYSQvRJU8cbcdovkX
+         11tnaH0Os/qxaKQAWhAN46/2zHX7szJN0BnMMcD5i1MGp6Ad2KR+TZnseBElX6Upd2Qz
+         qj6z69NwtyzaCsP+J5n9m6MFDhe+NFKvS3vg16ZFJmHaDrRZ+DzuEyqHSa/YtXPR3XB6
+         vH7yetYaJ/tPnlA88R24BLOCfGQ2de8Jas3l5kAZixbP3ckKda3LIJTqPA2XiQ/vW5tc
+         3QRg==
+X-Gm-Message-State: AOAM530CdlcPOf97O5SrgoV0SYwJ7LhBhWVusSf0qenHUSjzFj9rToFO
+        576IYdjKFfPl1y4Bm6UHYZPzOWic5rKib1fLxFPaKFQu1+BhcUkx9eI4UAEK05XPUWniu/wcqwM
+        AnC9CCPfwyNsmTGXf
+X-Received: by 2002:a1c:398b:: with SMTP id g133mr25236184wma.76.1593601922472;
+        Wed, 01 Jul 2020 04:12:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxQMUaayG0vDg3RNtuezDlgxdvof9uLCFzLvN6HKEyQRgj3zoZo7nehIzUAAPphqwvJnljolw==
+X-Received: by 2002:a1c:398b:: with SMTP id g133mr25236149wma.76.1593601922091;
+        Wed, 01 Jul 2020 04:12:02 -0700 (PDT)
+Received: from redhat.com (bzq-79-182-31-92.red.bezeqint.net. [79.182.31.92])
+        by smtp.gmail.com with ESMTPSA id 140sm1930942wmb.15.2020.07.01.04.11.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jul 2020 04:12:01 -0700 (PDT)
+Date:   Wed, 1 Jul 2020 07:11:57 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eugenio Perez Martin <eperezma@redhat.com>
+Cc:     Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>
+Subject: Re: [PATCH RFC v8 02/11] vhost: use batched get_vq_desc version
+Message-ID: <20200701071041-mutt-send-email-mst@kernel.org>
+References: <20200611113404.17810-1-mst@redhat.com>
+ <20200611113404.17810-3-mst@redhat.com>
+ <20200611152257.GA1798@char.us.oracle.com>
+ <CAJaqyWdwXMX0JGhmz6soH2ZLNdaH6HEdpBM8ozZzX9WUu8jGoQ@mail.gmail.com>
+ <CAJaqyWdwgy0fmReOgLfL4dAv-E+5k_7z3d9M+vHqt0aO2SmOFg@mail.gmail.com>
+ <20200622114622-mutt-send-email-mst@kernel.org>
+ <CAJaqyWfrf94Gc-DMaXO+f=xC8eD3DVCD9i+x1dOm5W2vUwOcGQ@mail.gmail.com>
+ <20200622122546-mutt-send-email-mst@kernel.org>
+ <CAJaqyWfbouY4kEXkc6sYsbdCAEk0UNsS5xjqEdHTD7bcTn40Ow@mail.gmail.com>
+ <CAJaqyWefMHPguj8ZGCuccTn0uyKxF9ZTEi2ASLtDSjGNb1Vwsg@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f4caa694-0314-4a78-d16a-08d81dacde3a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2020 10:52:37.1553
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zgmzqoIdjyeh8VYZltg5UfVvg/QPsI6Byg45u8RC3c9ZSNvMW9onAhEiKuLyXaXBLuaFA32rWVf/I94hjvfgHg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4575
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJaqyWefMHPguj8ZGCuccTn0uyKxF9ZTEi2ASLtDSjGNb1Vwsg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBTdWJqZWN0OiBbUEFUQ0ggUkZDIG5ldC1uZXh0IDEzLzEzXSBuZXQ6IHBoeWxpbms6IGFkZCBp
-bnRlcmZhY2UgdG8gY29uZmlndXJlDQo+IGNsYXVzZSAyMiBQQ1MgUEhZDQo+IA0KPiBTaWduZWQt
-b2ZmLWJ5OiBSdXNzZWxsIEtpbmcgPHJtaytrZXJuZWxAYXJtbGludXgub3JnLnVrPg0KPiAtLS0N
-Cg0KUmV2aWV3ZWQtYnk6IElvYW5hIENpb3JuZWkgPGlvYW5hLmNpb3JuZWlAbnhwLmNvbT4NCg0K
-DQo+ICBkcml2ZXJzL25ldC9waHkvcGh5bGluay5jIHwgMzcgKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKw0KPiAgaW5jbHVkZS9saW51eC9waHlsaW5rLmggICB8ICAzICsrKw0K
-PiAgMiBmaWxlcyBjaGFuZ2VkLCA0MCBpbnNlcnRpb25zKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy9uZXQvcGh5L3BoeWxpbmsuYyBiL2RyaXZlcnMvbmV0L3BoeS9waHlsaW5rLmMgaW5k
-ZXgNCj4gZmJjODU5MWI0NzRiLi5kNmM1ZTkwMGEyZjEgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMv
-bmV0L3BoeS9waHlsaW5rLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvcGh5L3BoeWxpbmsuYw0KPiBA
-QCAtMjQzNSw2ICsyNDM1LDQzIEBAIGludCBwaHlsaW5rX21paV9jMjJfcGNzX3NldF9hZHZlcnRp
-c2VtZW50KHN0cnVjdA0KPiBtZGlvX2RldmljZSAqcGNzLCAgfQ0KPiBFWFBPUlRfU1lNQk9MX0dQ
-TChwaHlsaW5rX21paV9jMjJfcGNzX3NldF9hZHZlcnRpc2VtZW50KTsNCj4gDQo+ICsvKioNCj4g
-KyAqIHBoeWxpbmtfbWlpX2MyMl9wY3NfY29uZmlnKCkgLSBjb25maWd1cmUgY2xhdXNlIDIyIFBD
-Uw0KPiArICogQHBjczogYSBwb2ludGVyIHRvIGEgJnN0cnVjdCBtZGlvX2RldmljZS4NCj4gKyAq
-IEBtb2RlOiBsaW5rIGF1dG9uZWdvdGlhdGlvbiBtb2RlDQo+ICsgKiBAaW50ZXJmYWNlOiB0aGUg
-UEhZIGludGVyZmFjZSBtb2RlIGJlaW5nIGNvbmZpZ3VyZWQNCj4gKyAqIEBhZHZlcnRpc2luZzog
-dGhlIGV0aHRvb2wgYWR2ZXJ0aXNlbWVudCBtYXNrDQo+ICsgKg0KPiArICogQ29uZmlndXJlIGEg
-Q2xhdXNlIDIyIFBDUyBQSFkgd2l0aCB0aGUgYXBwcm9wcmlhdGUgbmVnb3RpYXRpb24NCj4gKyAq
-IHBhcmFtZXRlcnMgZm9yIHRoZSBAbW9kZSwgQGludGVyZmFjZSBhbmQgQGFkdmVydGlzaW5nIHBh
-cmFtZXRlcnMuDQo+ICsgKiBSZXR1cm5zIG5lZ2F0aXZlIGVycm9yIG51bWJlciBvbiBmYWlsdXJl
-LCB6ZXJvIGlmIHRoZSBhZHZlcnRpc2VtZW50DQo+ICsgKiBoYXMgbm90IGNoYW5nZWQsIG9yIHBv
-c2l0aXZlIGlmIHRoZXJlIGlzIGEgY2hhbmdlLg0KPiArICovDQo+ICtpbnQgcGh5bGlua19taWlf
-YzIyX3Bjc19jb25maWcoc3RydWN0IG1kaW9fZGV2aWNlICpwY3MsIHVuc2lnbmVkIGludCBtb2Rl
-LA0KPiArCQkJICAgICAgIHBoeV9pbnRlcmZhY2VfdCBpbnRlcmZhY2UsDQo+ICsJCQkgICAgICAg
-Y29uc3QgdW5zaWduZWQgbG9uZyAqYWR2ZXJ0aXNpbmcpIHsNCj4gKwlib29sIGNoYW5nZWQ7DQo+
-ICsJdTE2IGJtY3I7DQo+ICsJaW50IHJldDsNCj4gKw0KPiArCXJldCA9IHBoeWxpbmtfbWlpX2My
-Ml9wY3Nfc2V0X2FkdmVydGlzZW1lbnQocGNzLCBpbnRlcmZhY2UsDQo+ICsJCQkJCQkgICAgYWR2
-ZXJ0aXNpbmcpOw0KPiArCWlmIChyZXQgPCAwKQ0KPiArCQlyZXR1cm4gcmV0Ow0KPiArDQo+ICsJ
-Y2hhbmdlZCA9IHJldCA+IDA7DQo+ICsNCj4gKwlibWNyID0gbW9kZSA9PSBNTE9fQU5fSU5CQU5E
-ID8gQk1DUl9BTkVOQUJMRSA6IDA7DQo+ICsJcmV0ID0gbWRpb2J1c19tb2RpZnkocGNzLT5idXMs
-IHBjcy0+YWRkciwgTUlJX0JNQ1IsDQo+ICsJCQkgICAgIEJNQ1JfQU5FTkFCTEUsIGJtY3IpOw0K
-PiArCWlmIChyZXQgPCAwKQ0KPiArCQlyZXR1cm4gcmV0Ow0KPiArDQo+ICsJcmV0dXJuIGNoYW5n
-ZWQgPyAxIDogMDsNCj4gK30NCj4gK0VYUE9SVF9TWU1CT0xfR1BMKHBoeWxpbmtfbWlpX2MyMl9w
-Y3NfY29uZmlnKTsNCj4gKw0KPiAgLyoqDQo+ICAgKiBwaHlsaW5rX21paV9jMjJfcGNzX2FuX3Jl
-c3RhcnQoKSAtIHJlc3RhcnQgODAyLjN6IGF1dG9uZWdvdGlhdGlvbg0KPiAgICogQHBjczogYSBw
-b2ludGVyIHRvIGEgJnN0cnVjdCBtZGlvX2RldmljZS4NCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUv
-bGludXgvcGh5bGluay5oIGIvaW5jbHVkZS9saW51eC9waHlsaW5rLmggaW5kZXgNCj4gMDU3Zjc4
-MjYzYTQ2Li4xYWFkMmFlYTQ2MTAgMTAwNjQ0DQo+IC0tLSBhL2luY2x1ZGUvbGludXgvcGh5bGlu
-ay5oDQo+ICsrKyBiL2luY2x1ZGUvbGludXgvcGh5bGluay5oDQo+IEBAIC00NzgsNiArNDc4LDkg
-QEAgdm9pZCBwaHlsaW5rX21paV9jMjJfcGNzX2dldF9zdGF0ZShzdHJ1Y3QgbWRpb19kZXZpY2UN
-Cj4gKnBjcywgIGludCBwaHlsaW5rX21paV9jMjJfcGNzX3NldF9hZHZlcnRpc2VtZW50KHN0cnVj
-dCBtZGlvX2RldmljZSAqcGNzLA0KPiAgCQkJCQkgIHBoeV9pbnRlcmZhY2VfdCBpbnRlcmZhY2Us
-DQo+ICAJCQkJCSAgY29uc3QgdW5zaWduZWQgbG9uZyAqYWR2ZXJ0aXNpbmcpOw0KPiAraW50IHBo
-eWxpbmtfbWlpX2MyMl9wY3NfY29uZmlnKHN0cnVjdCBtZGlvX2RldmljZSAqcGNzLCB1bnNpZ25l
-ZCBpbnQgbW9kZSwNCj4gKwkJCSAgICAgICBwaHlfaW50ZXJmYWNlX3QgaW50ZXJmYWNlLA0KPiAr
-CQkJICAgICAgIGNvbnN0IHVuc2lnbmVkIGxvbmcgKmFkdmVydGlzaW5nKTsNCj4gIHZvaWQgcGh5
-bGlua19taWlfYzIyX3Bjc19hbl9yZXN0YXJ0KHN0cnVjdCBtZGlvX2RldmljZSAqcGNzKTsNCj4g
-DQo+ICB2b2lkIHBoeWxpbmtfbWlpX2M0NV9wY3NfZ2V0X3N0YXRlKHN0cnVjdCBtZGlvX2Rldmlj
-ZSAqcGNzLA0KPiAtLQ0KPiAyLjIwLjENCg0K
+On Wed, Jul 01, 2020 at 12:43:09PM +0200, Eugenio Perez Martin wrote:
+> On Tue, Jun 23, 2020 at 6:15 PM Eugenio Perez Martin
+> <eperezma@redhat.com> wrote:
+> >
+> > On Mon, Jun 22, 2020 at 6:29 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > >
+> > > On Mon, Jun 22, 2020 at 06:11:21PM +0200, Eugenio Perez Martin wrote:
+> > > > On Mon, Jun 22, 2020 at 5:55 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > >
+> > > > > On Fri, Jun 19, 2020 at 08:07:57PM +0200, Eugenio Perez Martin wrote:
+> > > > > > On Mon, Jun 15, 2020 at 2:28 PM Eugenio Perez Martin
+> > > > > > <eperezma@redhat.com> wrote:
+> > > > > > >
+> > > > > > > On Thu, Jun 11, 2020 at 5:22 PM Konrad Rzeszutek Wilk
+> > > > > > > <konrad.wilk@oracle.com> wrote:
+> > > > > > > >
+> > > > > > > > On Thu, Jun 11, 2020 at 07:34:19AM -0400, Michael S. Tsirkin wrote:
+> > > > > > > > > As testing shows no performance change, switch to that now.
+> > > > > > > >
+> > > > > > > > What kind of testing? 100GiB? Low latency?
+> > > > > > > >
+> > > > > > >
+> > > > > > > Hi Konrad.
+> > > > > > >
+> > > > > > > I tested this version of the patch:
+> > > > > > > https://lkml.org/lkml/2019/10/13/42
+> > > > > > >
+> > > > > > > It was tested for throughput with DPDK's testpmd (as described in
+> > > > > > > http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html)
+> > > > > > > and kernel pktgen. No latency tests were performed by me. Maybe it is
+> > > > > > > interesting to perform a latency test or just a different set of tests
+> > > > > > > over a recent version.
+> > > > > > >
+> > > > > > > Thanks!
+> > > > > >
+> > > > > > I have repeated the tests with v9, and results are a little bit different:
+> > > > > > * If I test opening it with testpmd, I see no change between versions
+> > > > >
+> > > > >
+> > > > > OK that is testpmd on guest, right? And vhost-net on the host?
+> > > > >
+> > > >
+> > > > Hi Michael.
+> > > >
+> > > > No, sorry, as described in
+> > > > http://doc.dpdk.org/guides/howto/virtio_user_as_exceptional_path.html.
+> > > > But I could add to test it in the guest too.
+> > > >
+> > > > These kinds of raw packets "bursts" do not show performance
+> > > > differences, but I could test deeper if you think it would be worth
+> > > > it.
+> > >
+> > > Oh ok, so this is without guest, with virtio-user.
+> > > It might be worth checking dpdk within guest too just
+> > > as another data point.
+> > >
+> >
+> > Ok, I will do it!
+> >
+> > > > > > * If I forward packets between two vhost-net interfaces in the guest
+> > > > > > using a linux bridge in the host:
+> > > > >
+> > > > > And here I guess you mean virtio-net in the guest kernel?
+> > > >
+> > > > Yes, sorry: Two virtio-net interfaces connected with a linux bridge in
+> > > > the host. More precisely:
+> > > > * Adding one of the interfaces to another namespace, assigning it an
+> > > > IP, and starting netserver there.
+> > > > * Assign another IP in the range manually to the other virtual net
+> > > > interface, and start the desired test there.
+> > > >
+> > > > If you think it would be better to perform then differently please let me know.
+> > >
+> > >
+> > > Not sure why you bother with namespaces since you said you are
+> > > using L2 bridging. I guess it's unimportant.
+> > >
+> >
+> > Sorry, I think I should have provided more context about that.
+> >
+> > The only reason to use namespaces is to force the traffic of these
+> > netperf tests to go through the external bridge. To test netperf
+> > different possibilities than the testpmd (or pktgen or others "blast
+> > of frames unconditionally" tests).
+> >
+> > This way, I make sure that is the same version of everything in the
+> > guest, and is a little bit easier to manage cpu affinity, start and
+> > stop testing...
+> >
+> > I could use a different VM for sending and receiving, but I find this
+> > way a faster one and it should not introduce a lot of noise. I can
+> > test with two VM if you think that this use of network namespace
+> > introduces too much noise.
+> >
+> > Thanks!
+> >
+> > > > >
+> > > > > >   - netperf UDP_STREAM shows a performance increase of 1.8, almost
+> > > > > > doubling performance. This gets lower as frame size increase.
+> 
+> Regarding UDP_STREAM:
+> * with event_idx=on: The performance difference is reduced a lot if
+> applied affinity properly (manually assigning CPU on host/guest and
+> setting IRQs on guest), making them perform equally with and without
+> the patch again. Maybe the batching makes the scheduler perform
+> better.
+> 
+> > > > > >   - rests of the test goes noticeably worse: UDP_RR goes from ~6347
+> > > > > > transactions/sec to 5830
+> 
+> * Regarding UDP_RR, TCP_STREAM, and TCP_RR, proper CPU pinning makes
+> them perform similarly again, only a very small performance drop
+> observed. It could be just noise.
+> ** All of them perform better than vanilla if event_idx=off, not sure
+> why. I can try to repeat them if you suspect that can be a test
+> failure.
+> 
+> * With testpmd and event_idx=off, if I send from the VM to host, I see
+> a performance increment especially in small packets. The buf api also
+> increases performance compared with only batching: Sending the minimum
+> packet size in testpmd makes pps go from 356kpps to 473 kpps. Sending
+> 1024 length UDP-PDU makes it go from 570kpps to 64 kpps.
+> 
+> Something strange I observe in these tests: I get more pps the bigger
+> the transmitted buffer size is. Not sure why.
+> 
+> ** Sending from the host to the VM does not make a big change with the
+> patches in small packets scenario (minimum, 64 bytes, about 645
+> without the patch, ~625 with batch and batch+buf api). If the packets
+> are bigger, I can see a performance increase: with 256 bits, it goes
+> from 590kpps to about 600kpps, and in case of 1500 bytes payload it
+> gets from 348kpps to 528kpps, so it is clearly an improvement.
+> 
+> * with testpmd and event_idx=on, batching+buf api perform similarly in
+> both directions.
+> 
+> All of testpmd tests were performed with no linux bridge, just a
+> host's tap interface (<interface type='ethernet'> in xml), with a
+> testpmd txonly and another in rxonly forward mode, and using the
+> receiving side packets/bytes data. Guest's rps, xps and interrupts,
+> and host's vhost threads affinity were also tuned in each test to
+> schedule both testpmd and vhost in different processors.
+> 
+> I will send the v10 RFC with the small changes requested by Stefan and Jason.
+> 
+> Thanks!
+> 
+
+OK so there's a chance you are seeing effects of an aggressive power
+management. which tuned profile are you using? It might be helpful
+to disable PM/frequency scaling.
+
+
+> 
+> 
+> 
+> 
+> 
+> > > > >
+> > > > > OK so it seems plausible that we still have a bug where an interrupt
+> > > > > is delayed. That is the main difference between pmd and virtio.
+> > > > > Let's try disabling event index, and see what happens - that's
+> > > > > the trickiest part of interrupts.
+> > > > >
+> > > >
+> > > > Got it, will get back with the results.
+> > > >
+> > > > Thank you very much!
+> > > >
+> > > > >
+> > > > >
+> > > > > >   - TCP_STREAM goes from ~10.7 gbps to ~7Gbps
+> > > > > >   - TCP_RR from 6223.64 transactions/sec to 5739.44
+> > > > >
+> > >
+
