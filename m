@@ -2,89 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7B53211595
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 00:04:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AFBC2115A8
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 00:13:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726937AbgGAWEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 18:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36770 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726144AbgGAWEO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 18:04:14 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A593C08C5C1;
-        Wed,  1 Jul 2020 15:04:14 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id dm19so15202055edb.13;
-        Wed, 01 Jul 2020 15:04:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iFf+nz1PIcWLglG4iJr5ZGTsWCrjow9npmRMAWBEENw=;
-        b=YvEIfAV0Igjy0O0J0IYztMsG1KekvK4sHRwUPH8yQojQAFQtDJq89FSEVpW8aN0rPi
-         tgk38NR2HLoMn3VsPGa53Cz6akmXIziT/l1Qyt+jinp5ovJXM/NaRQ3paHG4yTTQ9HZF
-         b5SerZOayYtHcFu7cz4k7INgp+8Iq3gUTeW4aMy2/nyAgTq0135jzdQPeg9vZ+q2Rte7
-         KglE19fUB/F/RK0eZ29tA0nosomgdlMdLcQ28CheiQoL0rGfNoOQsunr1YlMvq/67hUV
-         0p3osMJIp7sJ/vp4MXdAu3Lr/dxkItDqSLni+dzAJRfVPEdB5uUL1pgabFzKmpy5gWiH
-         p7mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iFf+nz1PIcWLglG4iJr5ZGTsWCrjow9npmRMAWBEENw=;
-        b=i4epEh9hGjUODK3TM0NSXVJlW3cSyHJPTVmzZWq3GWzmDxK+PPHPnvjdQB/laKCV/R
-         ldERs5HaMTdmyKwXw2Ta1GMTGRgAKcdHMqFkKPxgPdtkgzqWrjC+SjjtXK9QCuN50i33
-         sE83zWSqEB1dJ+ovppI9M++85zr4fdgptFDugaboFU8alwRNQ82Q87JtP8oLzWBR11Sa
-         XejtzoMeQKa44wouqmdIcpb4DN4RixtZSRXB1dAE52EDJv7le4U4nYGLqNsycr9C6KQ1
-         8kgTbbJBhtDS6YJSxcmvM09t0gaq19OcmAdRSpRDqodXOlZVGzwKHJNNzdC4J9qstZzc
-         xW+Q==
-X-Gm-Message-State: AOAM5333Vuo8JcmHlrP7G0S/meHifTyFIHOALxloWxIJyEZyLxAYHSHo
-        Zs+n8hX9UppfZPexyu0sihZ+uSM9se6G9/QskpU=
-X-Google-Smtp-Source: ABdhPJx2uiQuAv8NKlOX1yDPenefz1yRqEZ83yzQi/GqTFtCmxYidN1mAmQmElJusOWegGptOzISl7YuQL0KmMJw1cw=
-X-Received: by 2002:a05:6402:2d7:: with SMTP id b23mr19223958edx.145.1593641053052;
- Wed, 01 Jul 2020 15:04:13 -0700 (PDT)
+        id S1726404AbgGAWN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 18:13:27 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:55152 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725771AbgGAWNZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 18:13:25 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 214B660067;
+        Wed,  1 Jul 2020 22:13:25 +0000 (UTC)
+Received: from us4-mdac16-42.ut7.mdlocal (unknown [10.7.64.24])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 1FA648009B;
+        Wed,  1 Jul 2020 22:13:25 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.32])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8A069280052;
+        Wed,  1 Jul 2020 22:13:24 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 27E03B4006A;
+        Wed,  1 Jul 2020 22:13:24 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 1 Jul 2020
+ 23:13:17 +0100
+Subject: Re: [PATCH net-next 01/15] sfc: support setting MTU even if not
+ privileged to configure MAC fully
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+References: <3fa88508-024e-2d33-0629-bf63b558b515@solarflare.com>
+ <db235d46-96b0-ee6d-f09b-774e6fd9a072@solarflare.com>
+ <20200701120311.4821118c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <3b76efb6-4b02-a26d-5284-65ab37b79ef5@solarflare.com>
+Date:   Wed, 1 Jul 2020 23:13:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20200701213433.9217-1-michael@walle.cc> <20200701215310.GL1551@shell.armlinux.org.uk>
-In-Reply-To: <20200701215310.GL1551@shell.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 2 Jul 2020 01:04:02 +0300
-Message-ID: <CA+h21hotHbN1xpZcnTMftXesgz7T6sEGCCPzFKdtG1NfMxguLg@mail.gmail.com>
-Subject: Re: [PATCH RESEND net-next v3 0/3] net: enetc: remove bootloader dependency
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Michael Walle <michael@walle.cc>, netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Alex Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Heiko Thiery <heiko.thiery@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200701120311.4821118c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25514.003
+X-TM-AS-Result: No-1.491700-8.000000-10
+X-TMASE-MatchedRID: 9zTThWtzImvmLzc6AOD8DfHkpkyUphL9amDMhjMSdnni7ECA5q90ucuO
+        qs00obe3SU7wejPT3bUF3u5AqD4V8mdOuIGC/rzd4h8r8l3l4eaXGEdoE+kH/+D3XFrJfgvzEeW
+        UGBiCoDXI5DUFqV7Gem5DnVO9k1z2unowF76PGIqgKqg7YGylCHzjW7ke067QK4YqHgCSopXUiz
+        ka+GYZvOeU+JIba2eRX7bicKxRIU2No+PRbWqfRK6NVEWSRWybTmgOlgQOHKHXJrRH1FpaKlQyy
+        yBNOQGh050hSzxZ7gL1YPY7DGI2dI6nWUBpvSabjzBRM5OTcfNarF5J9mYpZI1hLYwC7nFxhXIC
+        XPkDTMLvGyaLyWJvBWLqcdF40kDywzhVZiqhieGz597RaJ+lCg==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--1.491700-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25514.003
+X-MDID: 1593641605-1YyOPCC_wjC3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Jul 2020 at 00:53, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> fixing up almost every driver the best I can with the exception of two -
-> felix DSA and Mediatek.
->
-> I'm not going to wait for Felix or Mediatek.  As I say, I've given
-> plenty of warning, and it's only a _suspicion_ of breakage on my
-> side.
->
+On 01/07/2020 20:03, Jakub Kicinski wrote:
+> On Wed, 1 Jul 2020 15:51:25 +0100 Edward Cree wrote:
+>> Unprivileged functions (such as VFs) may set their MTU by use of the
+>>  'control' field of MC_CMD_SET_MAC_EXT, as used in efx_mcdi_set_mtu().
+>> If calling efx_ef10_mac_reconfigure() from efx_change_mtu(), the NIC
+>>  supports the above (SET_MAC_ENHANCED capability), and regular
+>>  efx_mcdi_set_mac() fails EPERM, then fall back to efx_mcdi_set_mtu().
+> Is there no way of checking the permission the function has before
+> issuing the firmware call?
+We could condition on the LINKCTRL flag from the MC_CMD_DRV_ATTACH
+ response we get at start of day; but usually in this driver we've
+ tried to follow the EAFP principle rather than embedding knowledge
+ of the firmware's permissions model into the driver.
+I suppose it might make sense to go straight to efx_mcdi_set_mtu()
+ in the mtu_only && SET_MAC_ENHANCED case, use efx_mcdi_set_mac()
+ otherwise, and thus never have a fallback from one to the other.
+WDYT?
 
-What do you mean "I'm not going to wait for Felix"?
-https://patchwork.ozlabs.org/project/netdev/patch/20200625152331.3784018-5-olteanv@gmail.com/
-We left it at:
-
-> I'm not going to review patch 7
-> tonight because of this fiasco.  To pissed off to do a decent job, so
-> you're just going to have to wait.
-
-So, I was actively waiting for you to review it ever since, just like
-you said, so I could send a v2. Were you waiting for anything?
-
-Thank you,
--Vladimir
+-ed
