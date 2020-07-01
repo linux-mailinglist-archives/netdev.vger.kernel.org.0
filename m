@@ -2,126 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B85EB211302
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 20:47:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DF44211308
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 20:48:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726895AbgGASre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 14:47:34 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39065 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726746AbgGASr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 14:47:29 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from lariel@mellanox.com)
-        with SMTP; 1 Jul 2020 21:47:25 +0300
-Received: from gen-l-vrt-029.mtl.labs.mlnx (gen-l-vrt-029.mtl.labs.mlnx [10.237.29.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 061IlPe4000637;
-        Wed, 1 Jul 2020 21:47:25 +0300
-From:   Ariel Levkovich <lariel@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jiri@resnulli.us, kuba@kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        Ariel Levkovich <lariel@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next v2 3/3] net/sched: cls_flower: Add hash info to flow classification
-Date:   Wed,  1 Jul 2020 21:47:19 +0300
-Message-Id: <20200701184719.8421-4-lariel@mellanox.com>
-X-Mailer: git-send-email 2.25.2
-In-Reply-To: <20200701184719.8421-1-lariel@mellanox.com>
-References: <20200701184719.8421-1-lariel@mellanox.com>
+        id S1726967AbgGASsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 14:48:04 -0400
+Received: from mail.efficios.com ([167.114.26.124]:49214 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726353AbgGASsD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 14:48:03 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id C92982D081E;
+        Wed,  1 Jul 2020 14:48:02 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id WE28IPmKqPVb; Wed,  1 Jul 2020 14:48:02 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 91E542D063C;
+        Wed,  1 Jul 2020 14:48:02 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 91E542D063C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1593629282;
+        bh=jPJf1t11tMCjLzzbHUSYa57pLxkdYR8V0YYimbQsobA=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=hjxXQ9liGnG5eblHUiGCKYg1iC7Lkk4nP96pFmiqPNui6pfhLhQxfct+LsDlI0/o1
+         SDy2w7RU0rq8oi6ndd7AAM2RNAe3VAm+zTy2os0+MYADAwiiz38fb5YFgIHuvUjcb9
+         2tUlAfWLUxIAdPtKHRPp5sSjD2We3koQH1Al87okennJ1FjXb9p7jzJPoBvrKfClVB
+         +DOTkT1EDuSxNTeaMQY5A1lg6kBI1SFeEaSA/BB11wxPYzBaOJ5sKaCXVUgrxhn8Fe
+         uzyNel0PRHNDKgLWLX2u5+bABKL9PAwnMjwOXF8kDwVponcSoQ+vCJ6EXOblXcoQsW
+         V2Q9U2FWuQUag==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id qFHZfI0J3C4G; Wed,  1 Jul 2020 14:48:02 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 7F47D2D081D;
+        Wed,  1 Jul 2020 14:48:02 -0400 (EDT)
+Date:   Wed, 1 Jul 2020 14:48:02 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Marco Elver <elver@google.com>
+Message-ID: <1217308675.19634.1593629282429.JavaMail.zimbra@efficios.com>
+In-Reply-To: <20200701184304.3685065-1-edumazet@google.com>
+References: <20200701184304.3685065-1-edumazet@google.com>
+Subject: Re: [PATCH v2 net] tcp: md5: refine
+ tcp_md5_do_add()/tcp_md5_hash_key() barriers
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_3945 (ZimbraWebClient - FF77 (Linux)/8.8.15_GA_3928)
+Thread-Topic: md5: refine tcp_md5_do_add()/tcp_md5_hash_key() barriers
+Thread-Index: MAFzPZ1D6yNcSEGENEFCP+r8MMkfZQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding new cls flower keys for hash value and hash
-mask and dissect the hash info from the skb into
-the flow key towards flow classication.
+----- On Jul 1, 2020, at 2:43 PM, Eric Dumazet edumazet@google.com wrote:
 
-Signed-off-by: Ariel Levkovich <lariel@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
----
- include/uapi/linux/pkt_cls.h |  3 +++
- net/sched/cls_flower.c       | 16 ++++++++++++++++
- 2 files changed, 19 insertions(+)
+> My prior fix went a bit too far, according to Herbert and Mathieu.
+> 
+> Since we accept that concurrent TCP MD5 lookups might see inconsistent
+> keys, we can use READ_ONCE()/WRITE_ONCE() instead of smp_rmb()/smp_wmb()
+> 
+> Clearing all key->key[] is needed to avoid possible KMSAN reports,
+> if key->keylen is increased. Since tcp_md5_do_add() is not fast path,
+> using __GFP_ZERO to clear all struct tcp_md5sig_key is simpler.
+> 
+> data_race() was added in linux-5.8 and will prevent KCSAN reports,
+> this can safely be removed in stable backports, if data_race() is
+> not yet backported.
+> 
+> v2: use data_race() both in tcp_md5_hash_key() and tcp_md5_do_add()
+> 
+> Fixes: 6a2febec338d ("tcp: md5: add missing memory barriers in
+> tcp_md5_do_add()/tcp_md5_hash_key()")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 2fd93389d091..ef145320ee99 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -579,6 +579,9 @@ enum {
- 
- 	TCA_FLOWER_KEY_MPLS_OPTS,
- 
-+	TCA_FLOWER_KEY_HASH,		/* u32 */
-+	TCA_FLOWER_KEY_HASH_MASK,	/* u32 */
-+
- 	__TCA_FLOWER_MAX,
- };
- 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index b2da37286082..ff739e0d86fc 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -64,6 +64,7 @@ struct fl_flow_key {
- 		};
- 	} tp_range;
- 	struct flow_dissector_key_ct ct;
-+	struct flow_dissector_key_hash hash;
- } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
- 
- struct fl_flow_mask_range {
-@@ -318,6 +319,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 		skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
- 				    fl_ct_info_to_flower_map,
- 				    ARRAY_SIZE(fl_ct_info_to_flower_map));
-+		skb_flow_dissect_hash(skb, &mask->dissector, &skb_key);
- 		skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
- 
- 		f = fl_mask_lookup(mask, &skb_key);
-@@ -694,6 +696,9 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
- 	[TCA_FLOWER_KEY_CT_LABELS_MASK]	= { .type = NLA_BINARY,
- 					    .len = 128 / BITS_PER_BYTE },
- 	[TCA_FLOWER_FLAGS]		= { .type = NLA_U32 },
-+	[TCA_FLOWER_KEY_HASH]		= { .type = NLA_U32 },
-+	[TCA_FLOWER_KEY_HASH_MASK]	= { .type = NLA_U32 },
-+
- };
- 
- static const struct nla_policy
-@@ -1625,6 +1630,10 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 
- 	fl_set_key_ip(tb, true, &key->enc_ip, &mask->enc_ip);
- 
-+	fl_set_key_val(tb, &key->hash.hash, TCA_FLOWER_KEY_HASH,
-+		       &mask->hash.hash, TCA_FLOWER_KEY_HASH_MASK,
-+		       sizeof(key->hash.hash));
-+
- 	if (tb[TCA_FLOWER_KEY_ENC_OPTS]) {
- 		ret = fl_set_enc_opt(tb, key, mask, extack);
- 		if (ret)
-@@ -1739,6 +1748,8 @@ static void fl_init_dissector(struct flow_dissector *dissector,
- 			     FLOW_DISSECTOR_KEY_ENC_OPTS, enc_opts);
- 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
- 			     FLOW_DISSECTOR_KEY_CT, ct);
-+	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
-+			     FLOW_DISSECTOR_KEY_HASH, hash);
- 
- 	skb_flow_dissector_init(dissector, keys, cnt);
- }
-@@ -2959,6 +2970,11 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
- 	if (fl_dump_key_flags(skb, key->control.flags, mask->control.flags))
- 		goto nla_put_failure;
- 
-+	if (fl_dump_key_val(skb, &key->hash.hash, TCA_FLOWER_KEY_HASH,
-+			     &mask->hash.hash, TCA_FLOWER_KEY_HASH_MASK,
-+			     sizeof(key->hash.hash)))
-+		goto nla_put_failure;
-+
- 	return 0;
- 
- nla_put_failure:
+Reviewed-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+
+Thanks !
+
+Mathieu
+
 -- 
-2.25.2
-
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
