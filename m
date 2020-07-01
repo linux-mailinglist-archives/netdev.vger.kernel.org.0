@@ -2,151 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21A172112F0
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 20:43:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E4D2112F3
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 20:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726287AbgGASnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 14:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbgGASnH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 14:43:07 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903E3C08C5C1
-        for <netdev@vger.kernel.org>; Wed,  1 Jul 2020 11:43:07 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id p4so18555850pgf.10
-        for <netdev@vger.kernel.org>; Wed, 01 Jul 2020 11:43:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=HV2qrYCyXvlD69oT1pEv+4sNYrnZj8gZpQMVRjXCOPI=;
-        b=hF1ZlytJwh83DLeWvU6UMwIJP7NmpUIncOK+jSkQ3TQfl+14DVTw5u8WbVCr+yhT+f
-         ubosHXJGw0lPWCypFBhkoPf5oAkJwpHKtLwHSLcJUnUVw5Ya+esVMdlVn7bc4ciP3xLJ
-         AAIOjLxzGz01Jyud7vQg7yVzRDcN52OLIVB3dW5unq8ZPV/UO/KxREPAnV5UZ0/DNs15
-         kW4Z0VZo1Um0Rwh1zKVjYKSWbr9nM+KO432OqBcxEFNHeAubiFUBkzhVcwGhse+5uJ9y
-         OT9ci6B6xVO3Lywjor7AmAvAmDQtIQ4pTTdkyogek3ny3oqFhKJP9I/rNNGJoPjVZCwt
-         lNbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=HV2qrYCyXvlD69oT1pEv+4sNYrnZj8gZpQMVRjXCOPI=;
-        b=Jst9lPFkHrnOnJ1R+NtlgLE9yhw/96+VePxRgiLTW51dzekmMaauJkrhseE5Hy/u4l
-         0SWVngwN5E50hv9tyjF82tHzrCsGNozRBD3avPwHWPZ2Xa+SyJ3F1wggX269Lhauq20h
-         k8rz7jvyhfxB+Urlqyi9dibetpChsA3SniLzzZVbTSMN0onnDq+eO9h9A8m8qfT2uSZ1
-         BhssanipFxcYJHLz7jLkFJ0NM/vGAe1sqj7eakELrbd7NmFWP0xfj0A0iklTZbuPWupc
-         n0fOmP7NT1Zp+P1FuhFy/0HPF4hVTMTrGN3xCJWFf4R3eCjj7Zs0NJGu/qyCoWmGLQLY
-         PaqA==
-X-Gm-Message-State: AOAM531nfHNErNsDPyeBiD+gX+gnGyua0MdtytkaFVSVsC/oDkH0Hu7r
-        w4rhvNqPwKbQIo3KV6Ux1dmTTe77SIJL6A==
-X-Google-Smtp-Source: ABdhPJw5Taa/aqT0x7QtkeB8qcO9VsAojCB7QqR3NwxeG7BWf23lM709fKXFLGMvo/reNUfYTzrUwm/sWzd0Hg==
-X-Received: by 2002:a63:a119:: with SMTP id b25mr20652616pgf.10.1593628987044;
- Wed, 01 Jul 2020 11:43:07 -0700 (PDT)
-Date:   Wed,  1 Jul 2020 11:43:04 -0700
-Message-Id: <20200701184304.3685065-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.27.0.212.ge8ba1cc988-goog
-Subject: [PATCH v2 net] tcp: md5: refine tcp_md5_do_add()/tcp_md5_hash_key() barriers
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Marco Elver <elver@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726793AbgGASnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 14:43:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53630 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725440AbgGASnj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Jul 2020 14:43:39 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A191920748;
+        Wed,  1 Jul 2020 18:43:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593629018;
+        bh=AheonDyc1SUNlyr/mAtc9oDOgXtIJLRjOmJ1noRfKjo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XCapj1yTaxQv1jvNS9aEtGh3UkQUzKdNvK2gslvoMwHX0dZCpxW3XvF9YB+FkTi0C
+         VhvEpByz5YCT2sfKDOd2aysWtoiqW9Ds7cY761520zKAnTbKd6cv3EUegW18bmsWK6
+         kJ8K+Yn5H7jBNHg5JEli3BFIA1Gm74KjkgJvn2tA=
+Date:   Wed, 1 Jul 2020 11:43:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <mhabets@solarflare.com>, <linux-net-drivers@solarflare.com>
+Subject: Re: [PATCH net-next] sfc: remove udp_tnl_has_port
+Message-ID: <20200701114336.62b57cc4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <29d3564b-6bcc-9df7-f6a9-3d3867390e15@solarflare.com>
+References: <20200630225038.1190589-1-kuba@kernel.org>
+        <29d3564b-6bcc-9df7-f6a9-3d3867390e15@solarflare.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My prior fix went a bit too far, according to Herbert and Mathieu.
+On Wed, 1 Jul 2020 15:32:03 +0100 Edward Cree wrote:
+> On 30/06/2020 23:50, Jakub Kicinski wrote:
+> > Nothing seems to have ever been calling this.
+> >
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org> =20
+> That was intended to be used by encap offloads (TX csum and TSO), which
+> =C2=A0we only recently realised we hadn't upstreamed the rest of; the
+> =C2=A0udp_tnl_has_port method would be called from our ndo_features_check=
+().
+> I'll try to get to upstreaming that support after ef100 is in, hopefully
+> =C2=A0within this cycle, but if you don't want this dead code lying aroun=
+d in
+> =C2=A0the meantime then have an
+> Acked-by: Edward Cree <ecree@solarflare.com>
+> =C2=A0and I can revert it when I add the code that calls it.
+> (And don't worry, ef100 doesn't use ugly port-based offloads; it does
+> =C2=A0proper CHECKSUM_PARTIAL and GSO_PARTIAL, so it won't have this stuf=
+f.)
 
-Since we accept that concurrent TCP MD5 lookups might see inconsistent
-keys, we can use READ_ONCE()/WRITE_ONCE() instead of smp_rmb()/smp_wmb()
+There's a number of drivers which try to match the UDP ports. That
+seems fragile to me. Is it actually required for HW to operate
+correctly?=20
 
-Clearing all key->key[] is needed to avoid possible KMSAN reports,
-if key->keylen is increased. Since tcp_md5_do_add() is not fast path,
-using __GFP_ZERO to clear all struct tcp_md5sig_key is simpler.
-
-data_race() was added in linux-5.8 and will prevent KCSAN reports,
-this can safely be removed in stable backports, if data_race() is
-not yet backported.
-
-v2: use data_race() both in tcp_md5_hash_key() and tcp_md5_do_add()
-
-Fixes: 6a2febec338d ("tcp: md5: add missing memory barriers in tcp_md5_do_add()/tcp_md5_hash_key()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Marco Elver <elver@google.com>
----
- net/ipv4/tcp.c      |  8 ++++----
- net/ipv4/tcp_ipv4.c | 19 ++++++++++++++-----
- 2 files changed, 18 insertions(+), 9 deletions(-)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index f111660453241692a17c881dd6dc2910a1236263..c33f7c6aff8eea81d374644cd251bd2b96292651 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4033,14 +4033,14 @@ EXPORT_SYMBOL(tcp_md5_hash_skb_data);
- 
- int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct tcp_md5sig_key *key)
- {
--	u8 keylen = key->keylen;
-+	u8 keylen = READ_ONCE(key->keylen); /* paired with WRITE_ONCE() in tcp_md5_do_add */
- 	struct scatterlist sg;
- 
--	smp_rmb(); /* paired with smp_wmb() in tcp_md5_do_add() */
--
- 	sg_init_one(&sg, key->key, keylen);
- 	ahash_request_set_crypt(hp->md5_req, &sg, NULL, keylen);
--	return crypto_ahash_update(hp->md5_req);
-+
-+	/* We use data_race() because tcp_md5_do_add() might change key->key under us */
-+	return data_race(crypto_ahash_update(hp->md5_req));
- }
- EXPORT_SYMBOL(tcp_md5_hash_key);
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 99916fcc15ca0be12c2c133ff40516f79e6fdf7f..04bfcbbfee83aadf5bca0332275c57113abdbc75 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1111,12 +1111,21 @@ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
- 
- 	key = tcp_md5_do_lookup_exact(sk, addr, family, prefixlen, l3index);
- 	if (key) {
--		/* Pre-existing entry - just update that one. */
--		memcpy(key->key, newkey, newkeylen);
-+		/* Pre-existing entry - just update that one.
-+		 * Note that the key might be used concurrently.
-+		 * data_race() is telling kcsan that we do not care of
-+		 * key mismatches, since changing MD5 key on live flows
-+		 * can lead to packet drops.
-+		 */
-+		data_race(memcpy(key->key, newkey, newkeylen));
- 
--		smp_wmb(); /* pairs with smp_rmb() in tcp_md5_hash_key() */
-+		/* Pairs with READ_ONCE() in tcp_md5_hash_key().
-+		 * Also note that a reader could catch new key->keylen value
-+		 * but old key->key[], this is the reason we use __GFP_ZERO
-+		 * at sock_kmalloc() time below these lines.
-+		 */
-+		WRITE_ONCE(key->keylen, newkeylen);
- 
--		key->keylen = newkeylen;
- 		return 0;
- 	}
- 
-@@ -1132,7 +1141,7 @@ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
- 		rcu_assign_pointer(tp->md5sig_info, md5sig);
- 	}
- 
--	key = sock_kmalloc(sk, sizeof(*key), gfp);
-+	key = sock_kmalloc(sk, sizeof(*key), gfp | __GFP_ZERO);
- 	if (!key)
- 		return -ENOMEM;
- 	if (!tcp_alloc_md5sig_pool()) {
--- 
-2.27.0.212.ge8ba1cc988-goog
-
+Aren't the ports per ns in the kernel? There's no guarantee that some
+other netns won't send a TSO skb and whatever other UDP encap.
