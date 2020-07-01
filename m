@@ -2,247 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF3D211536
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 23:35:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A297A21152B
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 23:33:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727926AbgGAVfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 17:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727856AbgGAVfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 17:35:05 -0400
-Received: from mout0.freenet.de (mout0.freenet.de [IPv6:2001:748:100:40::2:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86269C08C5C1;
-        Wed,  1 Jul 2020 14:35:05 -0700 (PDT)
-Received: from [195.4.92.165] (helo=mjail2.freenet.de)
-        by mout0.freenet.de with esmtpa (ID viktor.jaegerskuepper@freenet.de) (port 25) (Exim 4.92 #3)
-        id 1jqkNi-0007b5-Gv; Wed, 01 Jul 2020 23:35:02 +0200
-Received: from [::1] (port=37846 helo=mjail2.freenet.de)
-        by mjail2.freenet.de with esmtpa (ID viktor.jaegerskuepper@freenet.de) (Exim 4.92 #3)
-        id 1jqkNi-0007cY-Fc; Wed, 01 Jul 2020 23:35:02 +0200
-Received: from sub5.freenet.de ([195.4.92.124]:55734)
-        by mjail2.freenet.de with esmtpa (ID viktor.jaegerskuepper@freenet.de) (Exim 4.92 #3)
-        id 1jqkLO-00079j-GP; Wed, 01 Jul 2020 23:32:38 +0200
-Received: from p200300e70725c1007461df5dd0c38276.dip0.t-ipconnect.de ([2003:e7:725:c100:7461:df5d:d0c3:8276]:59406 helo=[127.0.0.1])
-        by sub5.freenet.de with esmtpsa (ID viktor.jaegerskuepper@freenet.de) (TLSv1.2:ECDHE-RSA-CHACHA20-POLY1305:256) (port 465) (Exim 4.92 #3)
-        id 1jqkLN-0001xg-LJ; Wed, 01 Jul 2020 23:32:38 +0200
-Subject: [PATCH v2] Revert "ath9k: Fix general protection fault in
- ath9k_hif_usb_rx_cb"
-To:     Roman Mamedov <rm@romanrm.net>, Kalle Valo <kvalo@codeaurora.org>
-Cc:     Qiujun Huang <hqjagain@gmail.com>, ath9k-devel@qca.qualcomm.com,
-        davem@davemloft.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        anenbupt@gmail.com, syzkaller-bugs@googlegroups.com
-References: <20200404041838.10426-1-hqjagain@gmail.com>
- <20200404041838.10426-6-hqjagain@gmail.com> <20200621020428.6417d6fb@natsu>
- <87lfkff9qe.fsf@codeaurora.org>
- <53940af0-d156-3117-ac86-2f3ccaee9513@freenet.de>
- <20200702005603.495c5d98@natsu>
-From:   =?UTF-8?B?VmlrdG9yIErDpGdlcnNrw7xwcGVy?= 
-        <viktor_jaegerskuepper@freenet.de>
-Message-ID: <09616727-e09a-73af-7ee0-33d59278ff44@freenet.de>
-Date:   Wed, 1 Jul 2020 23:32:28 +0200
+        id S1726897AbgGAVdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 17:33:13 -0400
+Received: from mout.gmx.net ([212.227.17.22]:36437 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726144AbgGAVdN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Jul 2020 17:33:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1593639185;
+        bh=7Dmer/kIdAF/sNdgBXoZDRdban2LAdrRox+8TCtrFzc=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=kf8zv/7Vqt9PFXUbwxdYHYNmnO4xq8U1xm0wqVFfXAWBgyB/D3J+oabdcsn913ZDj
+         g/9Tm/DWHJD01ogzom5/4ugtasJp0mRJvWAVM/27RB355/+gQ1XD8nXz/6pIk6Gm2h
+         +cx9voMyvhLP5l/gSh50/n7QxSHhDRdYve+bYu2o=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from mx-linux-amd ([79.242.178.121]) by mail.gmx.com (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MTAFb-1jNRPC36MR-00UYlf; Wed, 01
+ Jul 2020 23:33:05 +0200
+Date:   Wed, 1 Jul 2020 23:33:02 +0200
+From:   Armin Wolf <W_Armin@gmx.de>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [RFC PATCH 2/2 net-next] 8390: Miscellaneous cleanups
+Message-ID: <11046a4a36d173c265f92588076b92b768e2fae9.1593627376.git.W_Armin@gmx.de>
+References: <cover.1593627376.git.W_Armin@gmx.de>
 MIME-Version: 1.0
-In-Reply-To: <20200702005603.495c5d98@natsu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US-large
-Content-Transfer-Encoding: 8bit
-X-Originated-At: 2003:e7:725:c100:7461:df5d:d0c3:8276!59406
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1593627376.git.W_Armin@gmx.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Provags-ID: V03:K1:HbZUcZ+zpNdzLNTdjM5kYqWQ0RpWEmOwwBKizCpngwS1DnMTap/
+ fDIqyblggdi+bebEg3l1mG8fYD+H5yRtvBT7I5hdQW8hwcnl3j9OlrgNb+WETHwxPc0A0I+
+ 2OPaSK+gckYav+40BFt8OfJjD8JyOuPZVBxcsF99QwsGI9rY9D99T//QRCIDleKpi+B3tBp
+ zVxp3hwtPwpaRc9ShPEpg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:xA0h/Zqkgkg=:ZMDfA5AbzfN7IIdU8kTivt
+ PZ8q5QBzAGhQfJuGobsDTzso2TK7UfH5d0oaMr9KbvzwFUL1kCF9sfFESTZsQa+DiqJKWUOsb
+ fTfwUbXLAqBdjRV6kubswB4f+YF5uRz6u2mvt+Eprw23PuTeQk+luMqNvY6MoyRghsDz8nFJY
+ upXq2Llyv0Gs5A7A3hOcPIqMJAclZtMpkaorxN2zjQMGIdsX6B8ItdLqgjM+ooQdwKE22gFDu
+ 66/8sXCAKxw/2nl+kSZzz6sW1gcASdVga+qY33laDTIbQU6yrF21YIIw9S4gqNusEDAXA5Q4/
+ WIMBVppzZCBFUF3oV2TavCMajw4twiOmfWK9M37jGCT/bQpPKdW9FVTlacGT0UUt8oC2SOu8w
+ WZpH+HIkXDeG5VQW39C0pascXx+HrkALkJma3JsXGOU4LLIUvBmXU0hm3UquxXntxkSPiGVOk
+ KFlcIJBNtPbfz63AvVzNqvZQdPoowZnLruUSW2brMXZN/LUNmDGNjEFWs07zpakAozF2GfchV
+ SB2rdcAJFG7uvtS6DNz36M/NbMF/GfqTh+eRU3kGKCKxycqrmQeWykXIdJB2MNpOw83QgQwns
+ RVG7cAy+0W9pdNtwg7diTBk0DjyGKDZXRiqSPMfOXDJ53zojzgJJXnaMEytSBGvJTnz14Iu4I
+ y6f8UUBR4uAc8NPi2wGYqVhYH5grjOwuauyiUkrt/npLA0vwUu0Nyg/K/6vCfmtcApM8TQnGI
+ T1dWQ/1DxKd4vNnBVjHemVvtkBGb5GK0lrHLBFpbkT4zr5D7IUIwWsFy3aOzjQBlmjL2FCcQj
+ Z9GJs+4EjXe80MCt0lR1dEj4+gH9r/3IkqJO4+ewqZHBv74JOwvXCy8DOF3OdDjLgyNYZoBVx
+ VfogZSqMU7bWF0fDJMvfYspZqLKcERKWsthXqSmTdJ9Juif2y3lJJrHukZhYAD35EfxGOrL+W
+ 5mnWU0+IHm2hxtXglDo6i3CumrfqXxa9fCQpuw1SNH8ZTzqbl2KryM4z10wxu4KqS0vnPeE0M
+ uUY2whrSMZPs9wyjigA4xlsostpfhJ/GJoDoo/YWZtFCPwA6BrqvsVnG3aR/RkdohjuLanWLv
+ xZT9caJDNCYPrvytKh8k+qHUXztXiOs7SizbeFU4ke+tIe4h4bDKjyXv9JGJ2bJCfLVjOGL0p
+ BwMR7SceUNCeqZPrgpq0I6X8PqT2sM3oq/kFDXp1nGlA/EWBc41atzYqfOpXcSX0PeSnQ3OW+
+ BkgOfi8tDQh5sy1EO
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 2bbcaaee1fcb ("ath9k: Fix general protection fault
-in ath9k_hif_usb_rx_cb") because the driver gets stuck like this:
+Replace version string with MODULE_* macros.
 
-  [    5.778803] usb 1-5: Manufacturer: ATHEROS
-  [   21.697488] usb 1-5: ath9k_htc: Firmware ath9k_htc/htc_9271-1.4.0.fw requested
-  [   21.701377] usbcore: registered new interface driver ath9k_htc
-  [   22.053705] usb 1-5: ath9k_htc: Transferred FW: ath9k_htc/htc_9271-1.4.0.fw, size: 51008
-  [   22.306182] ath9k_htc 1-5:1.0: ath9k_htc: HTC initialized with 33 credits
-  [  115.708513] ath9k_htc: Failed to initialize the device
-  [  115.708683] usb 1-5: ath9k_htc: USB layer deinitialized
+Include necessary librarys formerly present in lib8390.c.
 
-Reported-by: Roman Mamedov <rm@romanrm.net>
-Ref: https://bugzilla.kernel.org/show_bug.cgi?id=208251
-Fixes: 2bbcaaee1fcb ("ath9k: Fix general protection fault in ath9k_hif_usb_rx_cb")
-Tested-by: Viktor Jägersküpper <viktor_jaegerskuepper@freenet.de>
-Signed-off-by: Viktor Jägersküpper <viktor_jaegerskuepper@freenet.de>
----
-Changes:
-  - Use correct line indentations (Thanks, Roman!)
-  - Use shorter commit reference in commit log
----
- drivers/net/wireless/ath/ath9k/hif_usb.c | 48 ++++++------------------
- drivers/net/wireless/ath/ath9k/hif_usb.h |  5 ---
- 2 files changed, 11 insertions(+), 42 deletions(-)
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+=2D--
+ drivers/net/ethernet/8390/8390.c | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index 4ed21dad6a8e..6049d3766c64 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -643,9 +643,9 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 
- static void ath9k_hif_usb_rx_cb(struct urb *urb)
+diff --git a/drivers/net/ethernet/8390/8390.c b/drivers/net/ethernet/8390/=
+8390.c
+index 0e0aa4016858..aabb637c1fbf 100644
+=2D-- a/drivers/net/ethernet/8390/8390.c
++++ b/drivers/net/ethernet/8390/8390.c
+@@ -1,11 +1,26 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+-/* 8390 core for usual drivers */
+
+-static const char version[] =3D
+-    "8390.c:v1.10cvs 9/23/94 Donald Becker (becker@cesdis.gsfc.nasa.gov)\=
+n";
++#define DRV_NAME "8390"
++#define DRV_DESCRIPTION "8390 core for usual drivers"
++#define DRV_AUTHOR "Donald Becker (becker@cesdis.gsfc.nasa.gov)"
++#define DRV_VERSION "1.10cvs"
++#define DRV_RELDATE "9/23/1994"
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/export.h>
++
++#include <linux/netdevice.h>
++#include <linux/etherdevice.h>
+
+ #include "lib8390.c"
+
++MODULE_AUTHOR(DRV_AUTHOR);
++MODULE_DESCRIPTION(DRV_DESCRIPTION);
++MODULE_VERSION(DRV_VERSION);
++MODULE_LICENSE("GPL");
++
+ int ei_open(struct net_device *dev)
  {
--	struct rx_buf *rx_buf = (struct rx_buf *)urb->context;
--	struct hif_device_usb *hif_dev = rx_buf->hif_dev;
--	struct sk_buff *skb = rx_buf->skb;
-+	struct sk_buff *skb = (struct sk_buff *) urb->context;
-+	struct hif_device_usb *hif_dev =
-+		usb_get_intfdata(usb_ifnum_to_if(urb->dev, 0));
- 	int ret;
- 
- 	if (!skb)
-@@ -685,15 +685,14 @@ static void ath9k_hif_usb_rx_cb(struct urb *urb)
- 	return;
- free:
- 	kfree_skb(skb);
--	kfree(rx_buf);
- }
- 
- static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
+ 	return __ei_open(dev);
+@@ -64,7 +79,7 @@ const struct net_device_ops ei_netdev_ops =3D {
+ 	.ndo_get_stats		=3D ei_get_stats,
+ 	.ndo_set_rx_mode	=3D ei_set_multicast_list,
+ 	.ndo_validate_addr	=3D eth_validate_addr,
+-	.ndo_set_mac_address 	=3D eth_mac_addr,
++	.ndo_set_mac_address	=3D eth_mac_addr,
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ 	.ndo_poll_controller	=3D ei_poll,
+ #endif
+@@ -74,6 +89,7 @@ EXPORT_SYMBOL(ei_netdev_ops);
+ struct net_device *__alloc_ei_netdev(int size)
  {
--	struct rx_buf *rx_buf = (struct rx_buf *)urb->context;
--	struct hif_device_usb *hif_dev = rx_buf->hif_dev;
--	struct sk_buff *skb = rx_buf->skb;
-+	struct sk_buff *skb = (struct sk_buff *) urb->context;
- 	struct sk_buff *nskb;
-+	struct hif_device_usb *hif_dev =
-+		usb_get_intfdata(usb_ifnum_to_if(urb->dev, 0));
- 	int ret;
- 
- 	if (!skb)
-@@ -751,7 +750,6 @@ static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
- 	return;
- free:
- 	kfree_skb(skb);
--	kfree(rx_buf);
- 	urb->context = NULL;
- }
- 
-@@ -797,7 +795,7 @@ static int ath9k_hif_usb_alloc_tx_urbs(struct hif_device_usb *hif_dev)
- 	init_usb_anchor(&hif_dev->mgmt_submitted);
- 
- 	for (i = 0; i < MAX_TX_URB_NUM; i++) {
--		tx_buf = kzalloc(sizeof(*tx_buf), GFP_KERNEL);
-+		tx_buf = kzalloc(sizeof(struct tx_buf), GFP_KERNEL);
- 		if (!tx_buf)
- 			goto err;
- 
-@@ -834,9 +832,8 @@ static void ath9k_hif_usb_dealloc_rx_urbs(struct hif_device_usb *hif_dev)
- 
- static int ath9k_hif_usb_alloc_rx_urbs(struct hif_device_usb *hif_dev)
- {
--	struct rx_buf *rx_buf = NULL;
--	struct sk_buff *skb = NULL;
- 	struct urb *urb = NULL;
-+	struct sk_buff *skb = NULL;
- 	int i, ret;
- 
- 	init_usb_anchor(&hif_dev->rx_submitted);
-@@ -844,12 +841,6 @@ static int ath9k_hif_usb_alloc_rx_urbs(struct hif_device_usb *hif_dev)
- 
- 	for (i = 0; i < MAX_RX_URB_NUM; i++) {
- 
--		rx_buf = kzalloc(sizeof(*rx_buf), GFP_KERNEL);
--		if (!rx_buf) {
--			ret = -ENOMEM;
--			goto err_rxb;
--		}
--
- 		/* Allocate URB */
- 		urb = usb_alloc_urb(0, GFP_KERNEL);
- 		if (urb == NULL) {
-@@ -864,14 +855,11 @@ static int ath9k_hif_usb_alloc_rx_urbs(struct hif_device_usb *hif_dev)
- 			goto err_skb;
- 		}
- 
--		rx_buf->hif_dev = hif_dev;
--		rx_buf->skb = skb;
--
- 		usb_fill_bulk_urb(urb, hif_dev->udev,
- 				  usb_rcvbulkpipe(hif_dev->udev,
- 						  USB_WLAN_RX_PIPE),
- 				  skb->data, MAX_RX_BUF_SIZE,
--				  ath9k_hif_usb_rx_cb, rx_buf);
-+				  ath9k_hif_usb_rx_cb, skb);
- 
- 		/* Anchor URB */
- 		usb_anchor_urb(urb, &hif_dev->rx_submitted);
-@@ -897,8 +885,6 @@ static int ath9k_hif_usb_alloc_rx_urbs(struct hif_device_usb *hif_dev)
- err_skb:
- 	usb_free_urb(urb);
- err_urb:
--	kfree(rx_buf);
--err_rxb:
- 	ath9k_hif_usb_dealloc_rx_urbs(hif_dev);
- 	return ret;
- }
-@@ -910,21 +896,14 @@ static void ath9k_hif_usb_dealloc_reg_in_urbs(struct hif_device_usb *hif_dev)
- 
- static int ath9k_hif_usb_alloc_reg_in_urbs(struct hif_device_usb *hif_dev)
- {
--	struct rx_buf *rx_buf = NULL;
--	struct sk_buff *skb = NULL;
- 	struct urb *urb = NULL;
-+	struct sk_buff *skb = NULL;
- 	int i, ret;
- 
- 	init_usb_anchor(&hif_dev->reg_in_submitted);
- 
- 	for (i = 0; i < MAX_REG_IN_URB_NUM; i++) {
- 
--		rx_buf = kzalloc(sizeof(*rx_buf), GFP_KERNEL);
--		if (!rx_buf) {
--			ret = -ENOMEM;
--			goto err_rxb;
--		}
--
- 		/* Allocate URB */
- 		urb = usb_alloc_urb(0, GFP_KERNEL);
- 		if (urb == NULL) {
-@@ -939,14 +918,11 @@ static int ath9k_hif_usb_alloc_reg_in_urbs(struct hif_device_usb *hif_dev)
- 			goto err_skb;
- 		}
- 
--		rx_buf->hif_dev = hif_dev;
--		rx_buf->skb = skb;
--
- 		usb_fill_int_urb(urb, hif_dev->udev,
- 				  usb_rcvintpipe(hif_dev->udev,
- 						  USB_REG_IN_PIPE),
- 				  skb->data, MAX_REG_IN_BUF_SIZE,
--				  ath9k_hif_usb_reg_in_cb, rx_buf, 1);
-+				  ath9k_hif_usb_reg_in_cb, skb, 1);
- 
- 		/* Anchor URB */
- 		usb_anchor_urb(urb, &hif_dev->reg_in_submitted);
-@@ -972,8 +948,6 @@ static int ath9k_hif_usb_alloc_reg_in_urbs(struct hif_device_usb *hif_dev)
- err_skb:
- 	usb_free_urb(urb);
- err_urb:
--	kfree(rx_buf);
--err_rxb:
- 	ath9k_hif_usb_dealloc_reg_in_urbs(hif_dev);
- 	return ret;
- }
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.h b/drivers/net/wireless/ath/ath9k/hif_usb.h
-index 5985aa15ca93..a94e7e1c86e9 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.h
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.h
-@@ -86,11 +86,6 @@ struct tx_buf {
- 	struct list_head list;
- };
- 
--struct rx_buf {
--	struct sk_buff *skb;
--	struct hif_device_usb *hif_dev;
--};
--
- #define HIF_USB_TX_STOP  BIT(0)
- #define HIF_USB_TX_FLUSH BIT(1)
- 
---
-2.27.0
+ 	struct net_device *dev =3D ____alloc_ei_netdev(size);
++
+ 	if (dev)
+ 		dev->netdev_ops =3D &ei_netdev_ops;
+ 	return dev;
+@@ -100,4 +116,3 @@ static void __exit ns8390_module_exit(void)
+ module_init(ns8390_module_init);
+ module_exit(ns8390_module_exit);
+ #endif /* MODULE */
+-MODULE_LICENSE("GPL");
+=2D-
+2.20.1
+
