@@ -2,297 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21D46211000
-	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 18:01:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6147F21101D
+	for <lists+netdev@lfdr.de>; Wed,  1 Jul 2020 18:04:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732275AbgGAQB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 12:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728534AbgGAQB2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 12:01:28 -0400
-X-Greylist: delayed 316 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Jul 2020 09:01:28 PDT
-Received: from mout0.freenet.de (mout0.freenet.de [IPv6:2001:748:100:40::2:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BABC08C5C1;
-        Wed,  1 Jul 2020 09:01:28 -0700 (PDT)
-Received: from [195.4.92.164] (helo=mjail1.freenet.de)
-        by mout0.freenet.de with esmtpa (ID viktor.jaegerskuepper@freenet.de) (port 25) (Exim 4.92 #3)
-        id 1jqf5k-000148-HV; Wed, 01 Jul 2020 17:56:08 +0200
-Received: from [::1] (port=45056 helo=mjail1.freenet.de)
-        by mjail1.freenet.de with esmtpa (ID viktor.jaegerskuepper@freenet.de) (Exim 4.92 #3)
-        id 1jqf5k-0001yC-Fa; Wed, 01 Jul 2020 17:56:08 +0200
-Received: from sub5.freenet.de ([195.4.92.124]:37220)
-        by mjail1.freenet.de with esmtpa (ID viktor.jaegerskuepper@freenet.de) (Exim 4.92 #3)
-        id 1jqf3C-0008Rg-9L; Wed, 01 Jul 2020 17:53:30 +0200
-Received: from p200300e70725c1007461df5dd0c38276.dip0.t-ipconnect.de ([2003:e7:725:c100:7461:df5d:d0c3:8276]:56922 helo=[127.0.0.1])
-        by sub5.freenet.de with esmtpsa (ID viktor.jaegerskuepper@freenet.de) (TLSv1.2:ECDHE-RSA-CHACHA20-POLY1305:256) (port 465) (Exim 4.92 #3)
-        id 1jqf3C-0003YH-0o; Wed, 01 Jul 2020 17:53:30 +0200
-Subject: [PATCH] Revert "ath9k: Fix general protection fault in
- ath9k_hif_usb_rx_cb"
-To:     Kalle Valo <kvalo@codeaurora.org>, Roman Mamedov <rm@romanrm.net>
-Cc:     Qiujun Huang <hqjagain@gmail.com>, ath9k-devel@qca.qualcomm.com,
-        davem@davemloft.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        anenbupt@gmail.com, syzkaller-bugs@googlegroups.com
-References: <20200404041838.10426-1-hqjagain@gmail.com>
- <20200404041838.10426-6-hqjagain@gmail.com> <20200621020428.6417d6fb@natsu>
- <87lfkff9qe.fsf@codeaurora.org>
-From:   =?UTF-8?B?VmlrdG9yIErDpGdlcnNrw7xwcGVy?= 
-        <viktor_jaegerskuepper@freenet.de>
-Message-ID: <53940af0-d156-3117-ac86-2f3ccaee9513@freenet.de>
-Date:   Wed, 1 Jul 2020 17:53:27 +0200
+        id S1732340AbgGAQDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 12:03:53 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:58346 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731672AbgGAQDw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 12:03:52 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 061FXIr2051668;
+        Wed, 1 Jul 2020 12:02:08 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 320pw7p9df-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 01 Jul 2020 12:02:08 -0400
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 061Fn0CP132425;
+        Wed, 1 Jul 2020 12:02:07 -0400
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 320pw7p9bn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 01 Jul 2020 12:02:06 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 061FtZi0007012;
+        Wed, 1 Jul 2020 16:02:04 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 31wwr8d42q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 01 Jul 2020 16:02:04 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 061G21gZ7995686
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 1 Jul 2020 16:02:01 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A96A74C046;
+        Wed,  1 Jul 2020 16:02:01 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EDFFB4C044;
+        Wed,  1 Jul 2020 16:01:59 +0000 (GMT)
+Received: from oc7455500831.ibm.com (unknown [9.145.75.158])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  1 Jul 2020 16:01:59 +0000 (GMT)
+Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
+ seems to break linux bridge on s390x (bisected)
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>, ast@kernel.org,
+        axboe@kernel.dk, bfields@fieldses.org,
+        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
+        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
+        davem@davemloft.net, dhowells@redhat.com,
+        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
+        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
+        keyrings@vger.kernel.org, kuba@kernel.org,
+        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
+        philipp.reisner@linbit.com, ravenexp@gmail.com,
+        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
+        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
+        netdev@vger.kernel.org, markward@linux.ibm.com,
+        linux-s390 <linux-s390@vger.kernel.org>
+References: <4d8fbcea-a892-3453-091f-d57c03f9aa90@de.ibm.com>
+ <1263e370-7cee-24d8-b98c-117bf7c90a83@de.ibm.com>
+ <20200626025410.GJ4332@42.do-not-panic.com>
+ <20200630175704.GO13911@42.do-not-panic.com>
+ <b24d8dae-1872-ba2c-acd4-ed46c0781317@de.ibm.com>
+ <a6792135-3285-0861-014e-3db85ea251dc@i-love.sakura.ne.jp>
+ <20200701135324.GS4332@42.do-not-panic.com>
+ <8d714a23-bac4-7631-e5fc-f97c20a46083@i-love.sakura.ne.jp>
+ <20200701153859.GT4332@42.do-not-panic.com>
+ <f9f0f868-e511-990a-2a74-1806ac0cb7ac@de.ibm.com>
+ <20200701155819.GU4332@42.do-not-panic.com>
+From:   Christian Borntraeger <borntraeger@de.ibm.com>
+Autocrypt: addr=borntraeger@de.ibm.com; prefer-encrypt=mutual; keydata=
+ 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
+ nS4h0HDFPrrp1C2EMVYIQrMokWvlFZbCpsdYbBI=
+Message-ID: <eb0b2ec2-52db-81a4-11b0-c0112b39a7aa@de.ibm.com>
+Date:   Wed, 1 Jul 2020 18:01:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <87lfkff9qe.fsf@codeaurora.org>
+In-Reply-To: <20200701155819.GU4332@42.do-not-panic.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US-large
-Content-Transfer-Encoding: 8bit
-X-Originated-At: 2003:e7:725:c100:7461:df5d:d0c3:8276!56922
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-01_08:2020-07-01,2020-07-01 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
+ mlxlogscore=999 cotscore=-2147483648 phishscore=0 mlxscore=0
+ suspectscore=0 bulkscore=0 spamscore=0 priorityscore=1501 malwarescore=0
+ clxscore=1011 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2007010110
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo writes:
-> Roman Mamedov <rm@romanrm.net> writes:
-> 
->> On Sat,  4 Apr 2020 12:18:38 +0800
->> Qiujun Huang <hqjagain@gmail.com> wrote:
+
+
+On 01.07.20 17:58, Luis Chamberlain wrote:
+[...]
+
+>>>
+>>> Ah, well that would be a different fix required, becuase again,
+>>> br_stp_start() does not untangle the correct error today really.
+>>> I also I think it would be odd odd that SIGSEGV or another signal 
+>>> is what was terminating Christian's bridge stp call, but let's
+>>> find out!
+>>>
+>>> Note we pass 0 to the options to wait so the mistake here could indeed
+>>> be that we did not need KWIFSIGNALED(). I was afraid of this prospect...
+>>> as it other implications.
+>>>
+>>> It means we either *open code* all callers, or we handle this in a
+>>> unified way on the umh. And if we do handle this in a unified way, it
+>>> then begs the question as to *what* do we pass for the signals case and
+>>> continued case. Below we just pass the signal, and treat continued as
+>>> OK, but treating continued as OK would also be a *new* change as well.
+>>>
+>>> For instance (this goes just boot tested, but Christian if you can
+>>> try this as well that would be appreciated):
 >>
->>> In ath9k_hif_usb_rx_cb interface number is assumed to be 0.
->>> usb_ifnum_to_if(urb->dev, 0)
->>> But it isn't always true.
->>>
->>> The case reported by syzbot:
->>> https://lore.kernel.org/linux-usb/000000000000666c9c05a1c05d12@google.com
->>> usb 2-1: new high-speed USB device number 2 using dummy_hcd
->>> usb 2-1: config 1 has an invalid interface number: 2 but max is 0
->>> usb 2-1: config 1 has no interface number 0
->>> usb 2-1: New USB device found, idVendor=0cf3, idProduct=9271, bcdDevice=
->>> 1.08
->>> usb 2-1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
->>> general protection fault, probably for non-canonical address
->>> 0xdffffc0000000015: 0000 [#1] SMP KASAN
->>> KASAN: null-ptr-deref in range [0x00000000000000a8-0x00000000000000af]
->>> CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.6.0-rc5-syzkaller #0
->>>
->>> Call Trace
->>> __usb_hcd_giveback_urb+0x29a/0x550 drivers/usb/core/hcd.c:1650
->>> usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1716
->>> dummy_timer+0x1258/0x32ae drivers/usb/gadget/udc/dummy_hcd.c:1966
->>> call_timer_fn+0x195/0x6f0 kernel/time/timer.c:1404
->>> expire_timers kernel/time/timer.c:1449 [inline]
->>> __run_timers kernel/time/timer.c:1773 [inline]
->>> __run_timers kernel/time/timer.c:1740 [inline]
->>> run_timer_softirq+0x5f9/0x1500 kernel/time/timer.c:1786
->>> __do_softirq+0x21e/0x950 kernel/softirq.c:292
->>> invoke_softirq kernel/softirq.c:373 [inline]
->>> irq_exit+0x178/0x1a0 kernel/softirq.c:413
->>> exiting_irq arch/x86/include/asm/apic.h:546 [inline]
->>> smp_apic_timer_interrupt+0x141/0x540 arch/x86/kernel/apic/apic.c:1146
->>> apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
->>>
->>> Reported-and-tested-by: syzbot+40d5d2e8a4680952f042@syzkaller.appspotmail.com
->>> Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
 >>
->> This causes complete breakage of ath9k operation across all the stable kernel
->> series it got backported to, and I guess the mainline as well. Please see:
->> https://bugzilla.kernel.org/show_bug.cgi?id=208251
->> https://bugzilla.redhat.com/show_bug.cgi?id=1848631
+>> Does not help, the bridge stays in DOWN state. 
 > 
-> So there's no fix for this? I was under impression that someone fixed
-> this, but maybe I'm mixing with something else.
-> 
-> If this is not fixed can someone please submit a patch to revert the
-> offending commit (or commits) so that we get ath9k working again?
-> 
+> OK thanks for testing, that was fast! Does your code go through the
+> STP kernel path or userpath? If it is taking the STP kernel path
+> then this is not the real culprit to your issue then.
 
-This reverts commit 2bbcaaee1fcbd83272e29f31e2bb7e70d8c49e05 ("ath9k: Fix general protection fault
-in ath9k_hif_usb_rx_cb") because the driver gets stuck like this:
+I have no idea and I cannot look into this right now. I can test
+patches as compile,reboot and test is almost no effort.
 
-  [    5.778803] usb 1-5: Manufacturer: ATHEROS
-  [   21.697488] usb 1-5: ath9k_htc: Firmware ath9k_htc/htc_9271-1.4.0.fw requested
-  [   21.701377] usbcore: registered new interface driver ath9k_htc
-  [   22.053705] usb 1-5: ath9k_htc: Transferred FW: ath9k_htc/htc_9271-1.4.0.fw, size: 51008
-  [   22.306182] ath9k_htc 1-5:1.0: ath9k_htc: HTC initialized with 33 credits
-  [  115.708513] ath9k_htc: Failed to initialize the device
-  [  115.708683] usb 1-5: ath9k_htc: USB layer deinitialized
+FWIW, this is just the network of a KVM guest of libvirts default network
+no longer working, maybe you can reproduce this on x86 as well?
 
-Reported-by: Roman Mamedov <rm@romanrm.net>
-Ref: https://bugzilla.kernel.org/show_bug.cgi?id=208251
-Fixes: 2bbcaaee1fcb ("ath9k: Fix general protection fault in ath9k_hif_usb_rx_cb")
-Tested-by: Viktor Jägersküpper <viktor_jaegerskuepper@freenet.de>
-Signed-off-by: Viktor Jägersküpper <viktor_jaegerskuepper@freenet.de>
----
-
-I couldn't find any fix for this, so here is the patch which reverts the
-offending commit. I have tested it with 5.8.0-rc3 and with 5.7.4.
-
-Feel free to change the commit message if it is necessary or appropriate, I am
-just a user affected by this bug.
-
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index 4ed21dad6a8e..6049d3766c64 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -643,9 +643,9 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 
- static void ath9k_hif_usb_rx_cb(struct urb *urb)
- {
--       struct rx_buf *rx_buf = (struct rx_buf *)urb->context;
--       struct hif_device_usb *hif_dev = rx_buf->hif_dev;
--       struct sk_buff *skb = rx_buf->skb;
-+       struct sk_buff *skb = (struct sk_buff *) urb->context;
-+       struct hif_device_usb *hif_dev =
-+               usb_get_intfdata(usb_ifnum_to_if(urb->dev, 0));
-        int ret;
- 
-        if (!skb)
-@@ -685,15 +685,14 @@ static void ath9k_hif_usb_rx_cb(struct urb *urb)
-        return;
- free:
-        kfree_skb(skb);
--       kfree(rx_buf);
- }
- 
- static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
- {
--       struct rx_buf *rx_buf = (struct rx_buf *)urb->context;
--       struct hif_device_usb *hif_dev = rx_buf->hif_dev;
--       struct sk_buff *skb = rx_buf->skb;
-+       struct sk_buff *skb = (struct sk_buff *) urb->context;
-        struct sk_buff *nskb;
-+       struct hif_device_usb *hif_dev =
-+               usb_get_intfdata(usb_ifnum_to_if(urb->dev, 0));
-        int ret;
- 
-        if (!skb)
-@@ -751,7 +750,6 @@ static void ath9k_hif_usb_reg_in_cb(struct urb *urb)
-        return;
- free:
-        kfree_skb(skb);
--       kfree(rx_buf);
-        urb->context = NULL;
- }
- 
-@@ -797,7 +795,7 @@ static int ath9k_hif_usb_alloc_tx_urbs(struct hif_device_usb *hif_dev)
-        init_usb_anchor(&hif_dev->mgmt_submitted);
- 
-        for (i = 0; i < MAX_TX_URB_NUM; i++) {
--               tx_buf = kzalloc(sizeof(*tx_buf), GFP_KERNEL);
-+               tx_buf = kzalloc(sizeof(struct tx_buf), GFP_KERNEL);
-                if (!tx_buf)
-                        goto err;
- 
-@@ -834,9 +832,8 @@ static void ath9k_hif_usb_dealloc_rx_urbs(struct hif_device_usb *hif_dev)
- 
- static int ath9k_hif_usb_alloc_rx_urbs(struct hif_device_usb *hif_dev)
- {
--       struct rx_buf *rx_buf = NULL;
--       struct sk_buff *skb = NULL;
-        struct urb *urb = NULL;
-+       struct sk_buff *skb = NULL;
-        int i, ret;
- 
-        init_usb_anchor(&hif_dev->rx_submitted);
-@@ -844,12 +841,6 @@ static int ath9k_hif_usb_alloc_rx_urbs(struct hif_device_usb *hif_dev)
- 
-        for (i = 0; i < MAX_RX_URB_NUM; i++) {
- 
--               rx_buf = kzalloc(sizeof(*rx_buf), GFP_KERNEL);
--               if (!rx_buf) {
--                       ret = -ENOMEM;
--                       goto err_rxb;
--               }
--
-                /* Allocate URB */
-                urb = usb_alloc_urb(0, GFP_KERNEL);
-                if (urb == NULL) {
-@@ -864,14 +855,11 @@ static int ath9k_hif_usb_alloc_rx_urbs(struct hif_device_usb *hif_dev)
-                        goto err_skb;
-                }
- 
--               rx_buf->hif_dev = hif_dev;
--               rx_buf->skb = skb;
--
-                usb_fill_bulk_urb(urb, hif_dev->udev,
-                                  usb_rcvbulkpipe(hif_dev->udev,
-                                                  USB_WLAN_RX_PIPE),
-                                  skb->data, MAX_RX_BUF_SIZE,
--                                 ath9k_hif_usb_rx_cb, rx_buf);
-+                                 ath9k_hif_usb_rx_cb, skb);
- 
-                /* Anchor URB */
-                usb_anchor_urb(urb, &hif_dev->rx_submitted);
-@@ -897,8 +885,6 @@ static int ath9k_hif_usb_alloc_rx_urbs(struct hif_device_usb *hif_dev)
- err_skb:
-        usb_free_urb(urb);
- err_urb:
--       kfree(rx_buf);
--err_rxb:
-        ath9k_hif_usb_dealloc_rx_urbs(hif_dev);
-        return ret;
- }
-@@ -910,21 +896,14 @@ static void ath9k_hif_usb_dealloc_reg_in_urbs(struct hif_device_usb *hif_dev)
- 
- static int ath9k_hif_usb_alloc_reg_in_urbs(struct hif_device_usb *hif_dev)
- {
--       struct rx_buf *rx_buf = NULL;
--       struct sk_buff *skb = NULL;
-        struct urb *urb = NULL;
-+       struct sk_buff *skb = NULL;
-        int i, ret;
- 
-        init_usb_anchor(&hif_dev->reg_in_submitted);
- 
-        for (i = 0; i < MAX_REG_IN_URB_NUM; i++) {
- 
--               rx_buf = kzalloc(sizeof(*rx_buf), GFP_KERNEL);
--               if (!rx_buf) {
--                       ret = -ENOMEM;
--                       goto err_rxb;
--               }
--
-                /* Allocate URB */
-                urb = usb_alloc_urb(0, GFP_KERNEL);
-                if (urb == NULL) {
-@@ -939,14 +918,11 @@ static int ath9k_hif_usb_alloc_reg_in_urbs(struct hif_device_usb *hif_dev)
-                        goto err_skb;
-                }
- 
--               rx_buf->hif_dev = hif_dev;
--               rx_buf->skb = skb;
--
-                usb_fill_int_urb(urb, hif_dev->udev,
-                                  usb_rcvintpipe(hif_dev->udev,
-                                                  USB_REG_IN_PIPE),
-                                  skb->data, MAX_REG_IN_BUF_SIZE,
--                                 ath9k_hif_usb_reg_in_cb, rx_buf, 1);
-+                                 ath9k_hif_usb_reg_in_cb, skb, 1);
- 
-                /* Anchor URB */
-                usb_anchor_urb(urb, &hif_dev->reg_in_submitted);
-@@ -972,8 +948,6 @@ static int ath9k_hif_usb_alloc_reg_in_urbs(struct hif_device_usb *hif_dev)
- err_skb:
-        usb_free_urb(urb);
- err_urb:
--       kfree(rx_buf);
--err_rxb:
-        ath9k_hif_usb_dealloc_reg_in_urbs(hif_dev);
-        return ret;
- }
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.h b/drivers/net/wireless/ath/ath9k/hif_usb.h
-index 5985aa15ca93..a94e7e1c86e9 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.h
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.h
-@@ -86,11 +86,6 @@ struct tx_buf {
-        struct list_head list;
- };
- 
--struct rx_buf {
--       struct sk_buff *skb;
--       struct hif_device_usb *hif_dev;
--};
--
- #define HIF_USB_TX_STOP  BIT(0)
- #define HIF_USB_TX_FLUSH BIT(1)
- 
