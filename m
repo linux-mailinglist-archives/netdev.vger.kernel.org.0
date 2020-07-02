@@ -2,101 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B4C3211E75
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 10:24:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97521211F02
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 10:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728855AbgGBIYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 04:24:34 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:59768 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728755AbgGBIYF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 04:24:05 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0628Nt6b082238;
-        Thu, 2 Jul 2020 03:23:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1593678235;
-        bh=2Ps3sR9VF/LqByb34nV2fM7x0C723HV4lrdTJSaPtuA=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=iCY0E9W7YtWImyjACut0NGZBKOpaf22G78SdPYYg8vG5CI0IfbPCrAZ/V5/Wqr0ek
-         8lX40jte/wRY2JN8ardU2oSSftFNtSPIesQSJizfY8pkyhecWg5VidgZWPsuJ9vn10
-         7CU7+V1dA0D5K+DoWGKlSxkziCwP9B9jOImc4hIc=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628NtLg087605;
-        Thu, 2 Jul 2020 03:23:55 -0500
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 2 Jul
- 2020 03:23:54 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 2 Jul 2020 03:23:54 -0500
-Received: from a0393678ub.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0628LiYY006145;
-        Thu, 2 Jul 2020 03:23:49 -0500
-From:   Kishon Vijay Abraham I <kishon@ti.com>
-To:     Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>
-CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-ntb@googlegroups.com>,
-        <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-Subject: [RFC PATCH 22/22] NTB: Describe ntb_virtio and ntb_vhost client in the documentation
-Date:   Thu, 2 Jul 2020 13:51:43 +0530
-Message-ID: <20200702082143.25259-23-kishon@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200702082143.25259-1-kishon@ti.com>
-References: <20200702082143.25259-1-kishon@ti.com>
+        id S1727924AbgGBIkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 04:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726442AbgGBIki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 04:40:38 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED39C08C5C1;
+        Thu,  2 Jul 2020 01:40:38 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id x3so6704178pfo.9;
+        Thu, 02 Jul 2020 01:40:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=AeaSQtniWWM8/+wvy+sNNOb5mUXTofHpZfTaKxLBkbQ=;
+        b=kTA4ijKUtPHNOdbN4/HxBECG3ezs51LEBwwhOeipwdFlT36npD9ZKZ2+qmhO1450ps
+         RL/Dem+OAh+3tbDe+BCkAOcuyXCFAninLQcVRea4hlxR8Fe8uo+nCvtfq43NJ4DEWYEU
+         w7kD9FGt7st0z+uIplB/Es5l7RQh+PlaC/kdZYNPFDSFSNi7AkenrrEvglQ5w8OxS4m4
+         3Oc53SufLILp0GEgwJd5+5xHMJ46N+lTccv22o8rFf+ecZLfK1R62Mk33tEai8Uhmphu
+         PRJVK3NE87HKldsnSF6D1Q35G8Pl9eo3VO0GzolZHZhzztTA6xqNcO1wSY1BvfxLxtnL
+         /E/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=AeaSQtniWWM8/+wvy+sNNOb5mUXTofHpZfTaKxLBkbQ=;
+        b=uRaZ9ci+rMRWfys6hSH8Vlcs+vHX4wHlQKwvhvctu9AHQMZk3Mciwk7FmlFf3FLgNo
+         ACDvx4GgaGA3eVOKTajI18okM8IcKNHng7ArJZpJBR/GslSJZBvUaaHflqTLJk9dNqkj
+         2kjijBWHmdXdJREfRQLudPVoig1gg7wB1MyWY4YkikPZ7Gg7Ok6bPcszhyx6iSv5QsOc
+         qYGTTfbMJJat9DY+sgVjbAlib06Op5QeyXhzsPq82NHSEelyyDwI91NisXG2TX4871Hv
+         8y1cQjo+fOLY4JuZI9ehXkV9tTDIZCbmbox/v2qEHpQitjxT6Llg/+t7pCSUJK6ZWvj8
+         h9Gw==
+X-Gm-Message-State: AOAM530y2NIiHTynDlcj+gRvaewyKWvDgkm9TJS2casWpgs+sy2dOtn1
+        7drIx6j4QXwft+uJsZgNWgg=
+X-Google-Smtp-Source: ABdhPJz/MSY1IXTrNWGABV1mCQ83a+iIMGDqFayYtGn8InuPZTa1IJZ+Y39vR35ar8BjH5EGMNm9nA==
+X-Received: by 2002:a62:c584:: with SMTP id j126mr4164201pfg.213.1593679237913;
+        Thu, 02 Jul 2020 01:40:37 -0700 (PDT)
+Received: from blackclown ([103.88.83.142])
+        by smtp.gmail.com with ESMTPSA id ia13sm7153883pjb.42.2020.07.02.01.40.34
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 02 Jul 2020 01:40:37 -0700 (PDT)
+Date:   Thu, 2 Jul 2020 14:10:22 +0530
+From:   Suraj Upadhyay <usuraj35@gmail.com>
+To:     manishc@marvell.com, gregkh@linuxfoundation.org
+Cc:     GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH] staging: qlge: qlge_ethtool.c: Proper indentation.
+Message-ID: <20200702084022.GA1586@blackclown>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="45Z9DzgjV8m4Oswq"
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a blurb in Documentation/ntb.txt to describe the ntb_virtio and
-ntb_vhost client
 
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+--45Z9DzgjV8m4Oswq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Remove extra indentations from if-statement.
+
+Signed-off-by: Suraj Upadhyay <usuraj35@gmail.com>
 ---
- Documentation/driver-api/ntb.rst | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/staging/qlge/qlge_ethtool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/driver-api/ntb.rst b/Documentation/driver-api/ntb.rst
-index 87d1372da879..f84b81625397 100644
---- a/Documentation/driver-api/ntb.rst
-+++ b/Documentation/driver-api/ntb.rst
-@@ -227,6 +227,17 @@ test client is interacted with through the debugfs filesystem:
- 	specified peer. That peer's interrupt's occurrence file
- 	should be incremented.
- 
-+NTB Vhost Client (ntb\_vhost) and NTB Virtio Client (ntb\_virtio)
-+------------------------------------------------------------------
-+
-+When two hosts are connected via NTB, one of the hosts should use NTB Vhost
-+Client and the other host should use NTB Virtio Client. The NTB Vhost client
-+interfaces with the Linux Vhost Framework and lets it to be used with any
-+vhost client driver. The NTB Virtio client interfaces with the Linux Virtio
-+Framework and lets it to be used with any virtio client driver. The Vhost
-+client driver and Virtio client driver creates a logic cink to exchange data
-+with each other.
-+
- NTB Hardware Drivers
- ====================
- 
--- 
+diff --git a/drivers/staging/qlge/qlge_ethtool.c b/drivers/staging/qlge/qlg=
+e_ethtool.c
+index 949abd53a7a9..16fcdefa9687 100644
+--- a/drivers/staging/qlge/qlge_ethtool.c
++++ b/drivers/staging/qlge/qlge_ethtool.c
+@@ -528,8 +528,8 @@ void ql_check_lb_frame(struct ql_adapter *qdev,
+ 	if ((*(skb->data + 3) =3D=3D 0xFF) &&
+ 	    (*(skb->data + frame_size / 2 + 10) =3D=3D 0xBE) &&
+ 	    (*(skb->data + frame_size / 2 + 12) =3D=3D 0xAF)) {
+-			atomic_dec(&qdev->lb_count);
+-			return;
++		atomic_dec(&qdev->lb_count);
++		return;
+ 	}
+ }
+=20
+--=20
 2.17.1
 
+
+--45Z9DzgjV8m4Oswq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE7AbCa0kOsMJ4cx0j+gRsbIfe744FAl79nW0ACgkQ+gRsbIfe
+746epxAAqhB9h48Tx5kPCpUxqOqszOxrTaar0H8mC+KqZmVXOyjquvNRKpeV6Lg/
+D5ImRvLVMkWzMu7hqxFY0S89Mg/CQznGJJeaBaU8WyVfR7UJJOTk5mlRDMPc5IlW
+E++xnUQtf786os2G7DZBYoBWGompSWFVb8/aI+nef9yBPaUSJVmxcp3HNM+UW3pb
+Sl0h7oiHfHVDSgvV1mWNurUSX9u6sGutK0DXPkeeJEbt33x3GPRNcKbIDTH19mfA
+GHYY+aE+xpLim9Jt9oVFjR2d/Q2YGz7bgxoQaEIBmRpHU4xTPKwph31cTmO/e6PJ
+ebHHsFaeEQVIEWYoSKZI+1fi1FY2NWk8ySnbclCqG/itFLCDlXomV9rhBeEYT0KY
+xEEPZYTtmTuECjPuDAyw5ii7KwTDWE0ja2rqrt515kEr5uV5RCHNucmzUn9kH6+3
+HLsk8JfzQU2y1uCwI8QfXSF5nSJSOFp4QWoScF5vHvhpC3u4TSQELzXv7iyunXNV
+Cy2OBT9HgdK+HF/XvmyQ/dQUHkAH+UB5sif8Pdjod7z+KKnqjTO1vHR7sCqTjrUO
+wB/zIJWiSd4mz4aMoDiLyoHE9HiBLvDFbSwF2ueqGGEEGMQv9nn7EG7FaGN9vQ1P
+cSpXrKQ2zwfG2HrLjZ7SB5bAx26rhnd/cCgvwvzveuQlfhOnUIM=
+=blIl
+-----END PGP SIGNATURE-----
+
+--45Z9DzgjV8m4Oswq--
