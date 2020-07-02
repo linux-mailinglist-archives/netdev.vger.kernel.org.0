@@ -2,107 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 628BB211B15
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 06:28:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFBCC211B1A
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 06:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726361AbgGBE2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 00:28:25 -0400
-Received: from www262.sakura.ne.jp ([202.181.97.72]:58243 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbgGBE2Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 00:28:24 -0400
-Received: from fsav105.sakura.ne.jp (fsav105.sakura.ne.jp [27.133.134.232])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 0624QsOL032532;
-        Thu, 2 Jul 2020 13:26:54 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav105.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav105.sakura.ne.jp);
- Thu, 02 Jul 2020 13:26:54 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav105.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 0624Qsh8032529
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
-        Thu, 2 Jul 2020 13:26:54 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
- seems to break linux bridge on s390x (bisected)
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>, ast@kernel.org,
-        axboe@kernel.dk, bfields@fieldses.org,
-        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
-        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
-        davem@davemloft.net, dhowells@redhat.com,
-        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
-        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
-        keyrings@vger.kernel.org, kuba@kernel.org,
-        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
-        philipp.reisner@linbit.com, ravenexp@gmail.com,
-        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
-        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
-        netdev@vger.kernel.org, markward@linux.ibm.com,
-        linux-s390 <linux-s390@vger.kernel.org>
-References: <ea41e2a9-61f7-aec1-79e5-7b08b6dd5119@de.ibm.com>
- <4e27098e-ac8d-98f0-3a9a-ea25242e24ec@de.ibm.com>
- <4d8fbcea-a892-3453-091f-d57c03f9aa90@de.ibm.com>
- <1263e370-7cee-24d8-b98c-117bf7c90a83@de.ibm.com>
- <20200626025410.GJ4332@42.do-not-panic.com>
- <20200630175704.GO13911@42.do-not-panic.com>
- <b24d8dae-1872-ba2c-acd4-ed46c0781317@de.ibm.com>
- <a6792135-3285-0861-014e-3db85ea251dc@i-love.sakura.ne.jp>
- <20200701135324.GS4332@42.do-not-panic.com>
- <8d714a23-bac4-7631-e5fc-f97c20a46083@i-love.sakura.ne.jp>
- <20200701153859.GT4332@42.do-not-panic.com>
-From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Message-ID: <e3f3e501-2cb7-b683-4b85-2002b7603244@i-love.sakura.ne.jp>
-Date:   Thu, 2 Jul 2020 13:26:53 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726513AbgGBE3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 00:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725857AbgGBE3s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 00:29:48 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72030C08C5C1;
+        Wed,  1 Jul 2020 21:29:48 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id z5so12826590pgb.6;
+        Wed, 01 Jul 2020 21:29:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jUm6E77m5P4a+BM3+YaHgq+ITExt67rKXnpDKt5YS1I=;
+        b=hpKvcG6qEqukV5QTmexCdK73ZvzYWQhPLrjrq49aep6EIMD29V8sTH1HaiHCcGqu34
+         IYvdKcY+L/q3Lzn98WRrNiw5E6PQ+xgEl9yAwsqi/UQF4TqbMV60RFVSwd8XWUXJY2vX
+         Eip7OyCMe/bBkxj+urccVQszHySlOWrTswx++Us0U9YUmMqIuPGiD9F08uCb2xv5zu+N
+         8GnnpDrjqOOgUDvOIDxCAVkCoQJHRbDDA1/4wVA7ixRFToTdX7gyoZSTyUrGvCVwkH+w
+         alDXe92xj/LPSebSrXGZLYz5euoIylKgwUr7VhMhoaTewuogFsfwA7k7RSIxGa7zejZ0
+         3J3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jUm6E77m5P4a+BM3+YaHgq+ITExt67rKXnpDKt5YS1I=;
+        b=TkaPG7SE1m+RUCyO9a3xzVfBO73qD4B9/EjGnEBZC9lz0msAm04PXSmlZ4XPjGXX2I
+         flgbqpmrL9ZP/JZzbZODK6skyvak4rU6rJvs0/qCDZPo+4kG6MAefjSjBFfw4pdmItPi
+         EzN2jrxsadtoKAJ5TSpSioaoqWwbqwH1ClHmB1xPlSC15uB+A2UhV5DBqeMdWJp7yHdE
+         x9NCd9h+gqVvn5W3udW8WDmklb26QGExtoh0MiPOGHxWzZUQ738rrssSzj13jg5NbGI8
+         19PJGAvnAhxs5aFiSL57GvZLuFnqCWF5QY+AdO/tbKjo2pabde41834Ix9f7z+hAKwbK
+         L6/A==
+X-Gm-Message-State: AOAM530e3Xrc+pCVdAhjyfGPfMbrjzHsbvE4PXWvEsNanG5H4VB0zfJ0
+        VahKMBF+F0Vbo5P9TtXodjHs0hQH
+X-Google-Smtp-Source: ABdhPJwvR7pOaepK24rQhaa+zvd3HSWeEKeskS1L5CvOvDra0LrUn9Mepu5J8jhPDy6AWat3EZowGQ==
+X-Received: by 2002:a63:34c3:: with SMTP id b186mr22836965pga.173.1593664187530;
+        Wed, 01 Jul 2020 21:29:47 -0700 (PDT)
+Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id np5sm6806248pjb.43.2020.07.01.21.29.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jul 2020 21:29:46 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next 0/4] net: ethtool: Untangle PHYLIB dependency
+Date:   Wed,  1 Jul 2020 21:29:38 -0700
+Message-Id: <20200702042942.76674-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200701153859.GT4332@42.do-not-panic.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/07/02 0:38, Luis Chamberlain wrote:
-> @@ -156,6 +156,18 @@ static void call_usermodehelper_exec_sync(struct subprocess_info *sub_info)
->  		 */
->  		if (KWIFEXITED(ret))
->  			sub_info->retval = KWEXITSTATUS(ret);
-> +		/*
-> +		 * Do we really want to be passing the signal, or do we pass
-> +		 * a single error code for all cases?
-> +		 */
-> +		else if (KWIFSIGNALED(ret))
-> +			sub_info->retval = KWTERMSIG(ret);
+Hi all,
 
-No, this is bad. Caller of usermode helper is unable to distinguish exit(9)
-and e.g. SIGKILL'ed by the OOM-killer. Please pass raw exit status value.
+This patch series untangles the ethtool netlink dependency with PHYLIB
+which exists because the cable test feature calls directly into PHY
+library functions. The approach taken here is to utilize a new set of
+net_device_ops function pointers which are automatically set to the PHY
+library variants when a network device driver attaches to a PHY device.
 
-I feel that caller of usermode helper should not use exit status value.
-For example, call_sbin_request_key() is checking
+Florian Fainelli (4):
+  net: Add cable test netdevice operations
+  net: phy: Change cable test arguments to net_device
+  net: phy: Automatically set-up cable test netdev_ops
+  net: ethtool: Remove PHYLIB dependency
 
-  test_bit(KEY_FLAG_USER_CONSTRUCT, &key->flags) || key_validate(key) < 0
+ drivers/net/phy/phy.c        | 18 ++++++++++++++----
+ drivers/net/phy/phy_device.c | 32 ++++++++++++++++++++++++++++++++
+ include/linux/netdevice.h    | 14 ++++++++++++++
+ include/linux/phy.h          | 10 ++++++----
+ net/Kconfig                  |  1 -
+ net/ethtool/cabletest.c      | 12 ++++++++----
+ 6 files changed, 74 insertions(+), 13 deletions(-)
 
-condition (if usermode helper was invoked) in order to "ignore any errors from
-userspace if the key was instantiated".
-
-> +		/* Same here */
-> +		else if (KWIFSTOPPED((ret)))
-> +			sub_info->retval = KWSTOPSIG(ret);
-> +		/* And are we really sure we want this? */
-> +		else if (KWIFCONTINUED((ret)))
-> +			sub_info->retval = 0;
->  	}
->  
->  	/* Restore default kernel sig handler */
-> 
+-- 
+2.25.1
 
