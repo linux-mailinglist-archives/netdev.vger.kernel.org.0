@@ -2,80 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98320212AC5
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 19:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58C15212AC9
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 19:04:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726997AbgGBREA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 13:04:00 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:24158 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726796AbgGBREA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 13:04:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593709439;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1/9+KeCe2WNKRx5vGEhbWsRnptSfm4e+Ye8oXhAjQ3Q=;
-        b=KFXqoJqZbBes1oBuVyjldSPzvPVd4KLQD9W/LbxpSuxuf4MxcHHXn4F8rsUPqi5/YZPgI8
-        oyckzlPGxydR4qpuyBPF2dC9g1ptmDw+KjAmU2z66RTlg38rkATlRvBEx91BLFfg3tcCbs
-        vdqAdgAWtTlU/+h8wXoML1FTLQEWBjk=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-438-DNAoBlm_MtSyDR7RqQJgrQ-1; Thu, 02 Jul 2020 13:03:57 -0400
-X-MC-Unique: DNAoBlm_MtSyDR7RqQJgrQ-1
-Received: by mail-wr1-f69.google.com with SMTP id y18so7300592wrq.4
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 10:03:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1/9+KeCe2WNKRx5vGEhbWsRnptSfm4e+Ye8oXhAjQ3Q=;
-        b=VrlfKu3nl6hNcoMqFhH0y/v+ItD9TSPrGhqRFxbXDx4ql50I4tYG5d+n0MrO10W+zZ
-         zfmthYBPF5wbj/4Fuvi/5PhLg6+/MueXLhk32d4kN/2jE97hWKENKK0BtCnKFeqhX2WZ
-         Q2cS6tVsukYRyJWSbsZ4PBD/LrRsyCHhXOnGVdBQxbkHjh92bPjVHMO+FvFtKJI2eHmf
-         QvxNuHtW0i9BWjsGnN+p3+9soVHmuH3A050I7t/ECzEsFOxGHoZtihZzYDcYfd8odd8R
-         RRuHfzUjYSYrgBq4zYPVllnlxTUnFuqLBSboTmgoZWaLDLAIInxp5p28936lBKrhrVjP
-         u57A==
-X-Gm-Message-State: AOAM530PdW1zvTuQiAyVmOfTDFIOLNf0sed4OmgbhEMbPgY7jC6uCtV3
-        260y/Yrx6Q/GWoLgx+lggy8bre6dRQlFLB0DFMECZ6tTP6YsPwuC8peXpbxtcaNHrE1QrS9q7p7
-        K4eCe99F/IJksl75t
-X-Received: by 2002:adf:de12:: with SMTP id b18mr34952269wrm.390.1593709435982;
-        Thu, 02 Jul 2020 10:03:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyjhFO5Y0TK4WBf6GhhQXOvIYIvPLHxortlGPCab91KqGbpv7BwU6YwmGJNlDW8QPOkqJimmA==
-X-Received: by 2002:adf:de12:: with SMTP id b18mr34952254wrm.390.1593709435778;
-        Thu, 02 Jul 2020 10:03:55 -0700 (PDT)
-Received: from pc-2.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
-        by smtp.gmail.com with ESMTPSA id 1sm10943923wmf.0.2020.07.02.10.03.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2020 10:03:55 -0700 (PDT)
-Date:   Thu, 2 Jul 2020 19:03:53 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] ip link: initial support for bareudp devices
-Message-ID: <20200702170353.GA7852@pc-2.home>
-References: <f3401f1acfce2f472abe6f89fe059a5fade148a3.1593630794.git.gnault@redhat.com>
- <20200702160221.GA3720@martin-VirtualBox>
+        id S1726876AbgGBREf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 13:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726726AbgGBREf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 13:04:35 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02315C08C5C1
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 10:04:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=PgyClYHxo3bbaos+uvGMWh80u21ZZ1e/ac468pFLTJU=; b=tMRjPTO2FZmj5pO/YAS2Fev5R
+        nc0RQugKrps1TBtGbpGNoq+ZOnc2DIS/3HpAAAEYCuYoOPCaG4K7d/hX/X+XEIfcuMxuYvtEqViOa
+        jexSPry3ZRPUFraNCLVt9vhsCnrNk4/lC8VoRK4T0jz5+8g176kq+224hz11uKNLS0Gux7vuNdaTt
+        /G2lCFVbODrigBYb62KKVOwM8X9bZsgVDvY/FcyLhTXWW0CLcSHLSr7sl1z4l++UHz3QEifBPnz0O
+        d8CNrnPuCES/tr+20hizwTA2a9j0BnGHeRwvTEqB91KXyJE/VzmXxpC2KgasFHYErrpc3mlkjoSMi
+        KPD23G4AA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34460)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jr2dV-00038m-LJ; Thu, 02 Jul 2020 18:04:33 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jr2dV-0001vn-Ap; Thu, 02 Jul 2020 18:04:33 +0100
+Date:   Thu, 2 Jul 2020 18:04:33 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org
+Subject: Re: 2500base-x capable sfp copper module?
+Message-ID: <20200702170433.GO1551@shell.armlinux.org.uk>
+References: <20200702182120.6d11bf70@dellmb.labs.office.nic.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20200702160221.GA3720@martin-VirtualBox>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200702182120.6d11bf70@dellmb.labs.office.nic.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 02, 2020 at 09:32:21PM +0530, Martin Varghese wrote:
-> On Wed, Jul 01, 2020 at 09:45:04PM +0200, Guillaume Nault wrote:
+On Thu, Jul 02, 2020 at 06:21:20PM +0200, Marek Behún wrote:
+> We are trying to find a copper SFP module capable of 2.5G speeds for
+> Turris Omnia (2500base-x is max for SERDES on Omnia).
 > 
-> I couldnt apply the patch to master.Could you please confirm if it was rebased to the master
+> We have tried MikroTik S+RJ10, which is a 10G capable copper SFP
+> module. But this module does not export access (via I2C) to its internal
+> PHY (which should be Marvell 88X3310).
 
-Hi Martin,
+That seems to follow on from the S-RJ01, which uses an Atheros 803x
+PHY but also doesn't allow access to it.  It seems that MikroTik
+products don't offer much flexibility, and are likely designed for
+use in their own products rather than general use.
 
-Yes, it's based on the latest iproute2 master branch.
-I can apply it with "git am" without any problem.
+> Without access to the PHY it seems that the host side of the SFP is
+> configured at 10G and we are unable to change it to 2500base-x.
 
-Which command did you use?
+The problem here is that we have no idea what the module supports.
+It may be possible to use the quirk stuff I added for GPON to detect
+the MikroTik module, and enable the other speeds.  We would then
+have to add the ability to switch not only between 1000base-X and
+2500base-X, but all the other modes as well via ethtool.  And then,
+lastly, you would have to manually set the interface, guessing what
+speed the module would want.
 
+That doesn't sound like a good solution.
+
+I can only assume that Mikrotik have implemented some kind of auto-
+detection - maybe they have hardware in their switches that is
+capable of analysing the serdes lines from the module.
+
+> We have another module, Rollball RTSFP-10G, which contains the same
+> PHY, but this is visible on the I2C bus at address 0x56.
+> For some reason I am unable to access registers of the PHY via clause
+> 45 protocol. The code in drivers/net/phy/mdio-i2c.c always returns
+> 0xffff when reading via clause 45.
+
+The 88x3310 does not support I2C, it only supports MDIO.  So, for it
+to appear on the I2C bus, there must be some kind of vendor specific
+protocol conversion going on, most likely a small dumb MCU from what
+I read in various public SFP+ datasheets.
+
+The modules that mdio-i2c.c has been tested with so far have done the
+"sensible" thing of clock-stretching the I2C bus while they access the
+PHY.  This means that using the _safe_ i2c_transfer() is possible, just
+as we do for Clause 22 PHYs.  I term this safe, because the bus remains
+owned during the whole cycle, so there's no chance something else (e.g.
+i2c tools) will get in the way and potentially disrupt the access.
+
+However, a number of copper SFP+ datasheets (which seem to be derived
+from the same source - as can be seen from the graphics and layout)
+require a 1ms delay between the I2C "mdio address write" message and
+the I2C "mdio read" message.  That prevents i2c_transfer() being used
+for the entire access - it has to be done as two separate accesses with
+a delay inbetween - which likely will make PHY accesses rather slow
+when you compare that normally, a clause 45 access may take around 25
+or so microseconds, possibly faster.
+
+As I don't have any modules that require that, I only ever noted that
+such modules exist, but never implemented the split-access with a delay,
+especially as it would require a fair number of code changes to mdio-i2c.
+
+Note that mdelay(1) may not be sufficient (the *delay() functions are
+_not_ guaranteed to wait at least the requested delay).
+
+> When accessing via clause 22, the registers are visible, but we are
+> unable to change to 2500base-x with these registers.
+
+There has been talk in phylib about adding support to access a clause
+45 PHY register set through clause 22 cycles via the clause 45
+registers contained therein - but I don't think that went anywhere.
+
+> Do you think this is a problem of how the SFP module is
+> wired/programmed?
+
+It's likely to be due to the missing 1ms delay.
+
+> Do you know of 2500base-x capable copper SFP module which would work?
+> Maybe one based on the same Marvell PHY, but such that the clause 45
+> register access works?
+
+The only copper module that's capable of 10G, 5G, 2.5G, 1G, 100M that I
+have is a Methode DM7052 which has a Broadcom PHY on it, which behaves
+as I mention above (clock stretching, without the need for a delay.)
+
+The other 2.5G capable modules I have are Avago AFBR-57R5AEZ
+fibrechannel modules designed to operate up to 4300M baud, which is
+more than enough bandwidth to cover 2500base-X - but obviously no PHY
+being fibre modules.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
