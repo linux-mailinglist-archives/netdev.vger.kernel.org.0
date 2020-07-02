@@ -2,121 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFA10212479
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:22:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2056E21246E
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729205AbgGBNWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 09:22:17 -0400
-Received: from out03.mta.xmission.com ([166.70.13.233]:35486 "EHLO
-        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726560AbgGBNWQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 09:22:16 -0400
-Received: from in01.mta.xmission.com ([166.70.13.51])
-        by out03.mta.xmission.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.90_1)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1jqzAL-0004mh-WB; Thu, 02 Jul 2020 07:22:14 -0600
-Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=x220.xmission.com)
-        by in01.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.87)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1jqzAK-0002tm-HL; Thu, 02 Jul 2020 07:22:13 -0600
-From:   ebiederm@xmission.com (Eric W. Biederman)
-To:     Matt Bennett <matt.bennett@alliedtelesis.co.nz>
-Cc:     netdev@vger.kernel.org, zbr@ioremap.net,
-        linux-kernel@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>
-References: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz>
-Date:   Thu, 02 Jul 2020 08:17:38 -0500
-In-Reply-To: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz> (Matt
-        Bennett's message of "Thu, 2 Jul 2020 12:26:30 +1200")
-Message-ID: <87h7uqukct.fsf@x220.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1726343AbgGBNTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 09:19:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728995AbgGBNTe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 09:19:34 -0400
+Received: from mail-oo1-xc41.google.com (mail-oo1-xc41.google.com [IPv6:2607:f8b0:4864:20::c41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E898C08C5DC
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 06:19:34 -0700 (PDT)
+Received: by mail-oo1-xc41.google.com with SMTP id 127so2013281ooc.9
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 06:19:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iOC9p2ltWwXHvAFEqW4H8uFiYBl/a/OoaiyNBhl5HDM=;
+        b=LdnDpCN91y+PzRzStpy6FbV2GV1AFTRr5ZMI9uKO36ieRddFFclpqfrjUk4sDUU4qS
+         LiPk/fwXWST8ny0e3RGuC1JCICLuFD68jSGffv9WF/VPBwAcuigjxCTmiAYlZvy+/4vI
+         hbCczVlG5V4qUkF03ZbdsEtBmud4coStzypz8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iOC9p2ltWwXHvAFEqW4H8uFiYBl/a/OoaiyNBhl5HDM=;
+        b=bWTrhUfXF8xxBcu12oSdauoqE/P+1Xbci3sk2xJDrri0ES6uXJyNc0QDcYZ8tqF1MZ
+         2WWeS6qFHmOcq6QrGPeDcRwuFzdh/aYkuvE++u8ec9SmNs4ZHXynGJlU9fC1aGRKD7qJ
+         wZ6lUel77+BB94CJcDvKz27FhfXDEYRB2IhPzpYAAAnw0EXc5XPZbQsFUBSiha88y/Io
+         ZNUxQvDwF7wZtfEB9sX7aDO7EnLk45RMZXfydL+jKVMqFsJvd3vKGZe7tP2O+7vnWwrJ
+         Pmn6FSAyah/1fN9Rkl+9Zazf1XvN2Il69pbdTbDYc+Y0MsUcvIVr9vjue3CMLHJf2HwR
+         03Og==
+X-Gm-Message-State: AOAM532auNPBTyvxJwLndda42Lj8daE+hWZdYJfm2mpISvyPJPheOKbN
+        L9EDIb+AQxx3rBZD0JGMzCUU6+K+DXIME+ywG5+wXg==
+X-Google-Smtp-Source: ABdhPJy77WA1Q2qeZOc1WTppu8d2jB4NSJm4Cm/Y/Hi+0Ul0gzgT7JP30HpeBXc7LbuqaInZj2UnSGvYAune/TPdF3I=
+X-Received: by 2002:a4a:ba8b:: with SMTP id d11mr27352037oop.80.1593695973648;
+ Thu, 02 Jul 2020 06:19:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1jqzAK-0002tm-HL;;;mid=<87h7uqukct.fsf@x220.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX19v+BspXknwer4bSqp3IVqIJsTE2IxbID4=
-X-SA-Exim-Connect-IP: 68.227.160.95
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa05.xmission.com
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=8.0 tests=ALL_TRUSTED,BAYES_00,
-        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,XMNoVowels,XMSubLong,
-        XM_B_SpammyTLD autolearn=disabled version=3.4.2
-X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-        * -3.0 BAYES_00 BODY: Bayes spam probability is 0 to 1%
-        *      [score: 0.0000]
-        *  1.5 XMNoVowels Alpha-numberic number with no vowels
-        *  0.7 XMSubLong Long Subject
-        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
-        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
-        *      [sa05 0; Body=1 Fuz1=1 Fuz2=1]
-        *  1.0 XM_B_SpammyTLD Contains uncommon/spammy TLD
-X-Spam-DCC: ; sa05 0; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: ;Matt Bennett <matt.bennett@alliedtelesis.co.nz>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 835 ms - load_scoreonly_sql: 0.07 (0.0%),
-        signal_user_changed: 11 (1.4%), b_tie_ro: 10 (1.2%), parse: 1.12
-        (0.1%), extract_message_metadata: 18 (2.1%), get_uri_detail_list: 1.82
-        (0.2%), tests_pri_-1000: 7 (0.8%), tests_pri_-950: 1.38 (0.2%),
-        tests_pri_-900: 1.14 (0.1%), tests_pri_-90: 258 (31.0%), check_bayes:
-        239 (28.6%), b_tokenize: 7 (0.8%), b_tok_get_all: 7 (0.8%),
-        b_comp_prob: 2.5 (0.3%), b_tok_touch_all: 218 (26.1%), b_finish: 1.15
-        (0.1%), tests_pri_0: 437 (52.4%), check_dkim_signature: 1.20 (0.1%),
-        check_dkim_adsp: 4.1 (0.5%), poll_dns_idle: 69 (8.2%), tests_pri_10:
-        2.2 (0.3%), tests_pri_500: 94 (11.2%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: [PATCH 0/5] RFC: connector: Add network namespace awareness
-X-Spam-Flag: No
-X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+References: <20200702092416.11961-1-jakub@cloudflare.com> <20200702092416.11961-5-jakub@cloudflare.com>
+ <CACAyw9-6OCPqg3eoPOPeKYy=kBNVJT8-qbLh6QOo=8aEV6pWjw@mail.gmail.com> <87mu4inky6.fsf@cloudflare.com>
+In-Reply-To: <87mu4inky6.fsf@cloudflare.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Thu, 2 Jul 2020 14:19:22 +0100
+Message-ID: <CACAyw98MsdcVkFPpXatr3F6j6F79KuTqcpwpB6TNpLBVuGKJTQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 04/16] inet: Run SK_LOOKUP BPF program on
+ socket lookup
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Matt Bennett <matt.bennett@alliedtelesis.co.nz> writes:
-
-> Previously the connector functionality could only be used by processes running in the
-> default network namespace. This meant that any process that uses the connector functionality
-> could not operate correctly when run inside a container. This is a draft patch series that
-> attempts to now allow this functionality outside of the default network namespace.
+On Thu, 2 Jul 2020 at 13:46, Jakub Sitnicki <jakub@cloudflare.com> wrote:
 >
-> I see this has been discussed previously [1], but am not sure how my changes relate to all
-> of the topics discussed there and/or if there are any unintended side effects from my draft
-> changes.
-
-Is there a piece of software that uses connector that you want to get
-working in containers?
-
-I am curious what the motivation is because up until now there has been
-nothing very interesting using this functionality.  So it hasn't been
-worth anyone's time to make the necessary changes to the code.
-
-Eric
-
-
-> Thanks.
+> On Thu, Jul 02, 2020 at 12:27 PM CEST, Lorenz Bauer wrote:
+> > On Thu, 2 Jul 2020 at 10:24, Jakub Sitnicki <jakub@cloudflare.com> wrote:
+> >>
+> >> Run a BPF program before looking up a listening socket on the receive path.
+> >> Program selects a listening socket to yield as result of socket lookup by
+> >> calling bpf_sk_assign() helper and returning BPF_REDIRECT (7) code.
+> >>
+> >> Alternatively, program can also fail the lookup by returning with
+> >> BPF_DROP (1), or let the lookup continue as usual with BPF_OK (0) on
+> >> return. Other return values are treated the same as BPF_OK.
+> >
+> > I'd prefer if other values were treated as BPF_DROP, with other semantics
+> > unchanged. Otherwise we won't be able to introduce new semantics
+> > without potentially breaking user code.
 >
-> [1] https://marc.info/?l=linux-kernel&m=150806196728365&w=2
+> That might be surprising or even risky. If you attach a badly written
+> program that say returns a negative value, it will drop all TCP SYNs and
+> UDP traffic.
+
+I think if you do that all bets are off anyways. No use in trying to stagger on.
+Being stricter here will actually make it easier to for a developer to ensure
+that their program is doing the right thing.
+
+My point about future extensions also still stands.
+
 >
-> Matt Bennett (5):
->   connector: Use task pid helpers
->   connector: Use 'current_user_ns' function
->   connector: Ensure callback entry is released
->   connector: Prepare for supporting multiple namespaces
->   connector: Create connector per namespace
+> >
+> >>
+> >> This lets the user match packets with listening sockets freely at the last
+> >> possible point on the receive path, where we know that packets are destined
+> >> for local delivery after undergoing policing, filtering, and routing.
+> >>
+> >> With BPF code selecting the socket, directing packets destined to an IP
+> >> range or to a port range to a single socket becomes possible.
+> >>
+> >> In case multiple programs are attached, they are run in series in the order
+> >> in which they were attached. The end result gets determined from return
+> >> code from each program according to following rules.
+> >>
+> >>  1. If any program returned BPF_REDIRECT and selected a valid socket, this
+> >>     socket will be used as result of the lookup.
+> >>  2. If more than one program returned BPF_REDIRECT and selected a socket,
+> >>     last selection takes effect.
+> >>  3. If any program returned BPF_DROP and none returned BPF_REDIRECT, the
+> >>     socket lookup will fail with -ECONNREFUSED.
+> >>  4. If no program returned neither BPF_DROP nor BPF_REDIRECT, socket lookup
+> >>     continues to htable-based lookup.
+> >>
+> >> Suggested-by: Marek Majkowski <marek@cloudflare.com>
+> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> >> ---
+> >>
+> >> Notes:
+> >>     v3:
+> >>     - Use a static_key to minimize the hook overhead when not used. (Alexei)
+> >>     - Adapt for running an array of attached programs. (Alexei)
+> >>     - Adapt for optionally skipping reuseport selection. (Martin)
+> >>
+> >>  include/linux/bpf.h        | 29 ++++++++++++++++++++++++++++
+> >>  include/linux/filter.h     | 39 ++++++++++++++++++++++++++++++++++++++
+> >>  kernel/bpf/net_namespace.c | 32 ++++++++++++++++++++++++++++++-
+> >>  net/core/filter.c          |  2 ++
+> >>  net/ipv4/inet_hashtables.c | 31 ++++++++++++++++++++++++++++++
+> >>  5 files changed, 132 insertions(+), 1 deletion(-)
+> >>
 >
->  Documentation/driver-api/connector.rst |   6 +-
->  drivers/connector/cn_proc.c            | 110 +++++++-------
->  drivers/connector/cn_queue.c           |   9 +-
->  drivers/connector/connector.c          | 192 ++++++++++++++++++++-----
->  drivers/hv/hv_fcopy.c                  |   1 +
->  drivers/hv/hv_utils_transport.c        |   6 +-
->  drivers/md/dm-log-userspace-transfer.c |   6 +-
->  drivers/video/fbdev/uvesafb.c          |   8 +-
->  drivers/w1/w1_netlink.c                |  19 +--
->  include/linux/connector.h              |  38 +++--
->  include/net/net_namespace.h            |   4 +
->  kernel/exit.c                          |   2 +-
->  samples/connector/cn_test.c            |   6 +-
->  13 files changed, 286 insertions(+), 121 deletions(-)
+> [...]
+>
+> >> diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
+> >> index 090166824ca4..a7768feb3ade 100644
+> >> --- a/kernel/bpf/net_namespace.c
+> >> +++ b/kernel/bpf/net_namespace.c
+> >> @@ -25,6 +25,28 @@ struct bpf_netns_link {
+> >>  /* Protects updates to netns_bpf */
+> >>  DEFINE_MUTEX(netns_bpf_mutex);
+> >>
+> >> +static void netns_bpf_attach_type_disable(enum netns_bpf_attach_type type)
+> >
+> > Nit: maybe netns_bpf_attach_type_dec()? Disable sounds like it happens
+> > unconditionally.
+>
+> attach_type_dec()/_inc() seems a bit cryptic, since it's not the attach
+> type we are incrementing/decrementing.
+>
+> But I was considering _need()/_unneed(), which would follow an existing
+> example, if you think that improves things.
+
+SGTM!
+
+>
+> >
+> >> +{
+> >> +       switch (type) {
+> >> +       case NETNS_BPF_SK_LOOKUP:
+> >> +               static_branch_dec(&bpf_sk_lookup_enabled);
+> >> +               break;
+> >> +       default:
+> >> +               break;
+> >> +       }
+> >> +}
+> >> +
+> >> +static void netns_bpf_attach_type_enable(enum netns_bpf_attach_type type)
+> >> +{
+> >> +       switch (type) {
+> >> +       case NETNS_BPF_SK_LOOKUP:
+> >> +               static_branch_inc(&bpf_sk_lookup_enabled);
+> >> +               break;
+> >> +       default:
+> >> +               break;
+> >> +       }
+> >> +}
+> >> +
+> >>  /* Must be called with netns_bpf_mutex held. */
+> >>  static void netns_bpf_run_array_detach(struct net *net,
+> >>                                        enum netns_bpf_attach_type type)
+> >> @@ -93,6 +115,9 @@ static void bpf_netns_link_release(struct bpf_link *link)
+> >>         if (!net)
+> >>                 goto out_unlock;
+> >>
+> >> +       /* Mark attach point as unused */
+> >> +       netns_bpf_attach_type_disable(type);
+> >> +
+> >>         /* Remember link position in case of safe delete */
+> >>         idx = link_index(net, type, net_link);
+> >>         list_del(&net_link->node);
+> >> @@ -416,6 +441,9 @@ static int netns_bpf_link_attach(struct net *net, struct bpf_link *link,
+> >>                                         lockdep_is_held(&netns_bpf_mutex));
+> >>         bpf_prog_array_free(run_array);
+> >>
+> >> +       /* Mark attach point as used */
+> >> +       netns_bpf_attach_type_enable(type);
+> >> +
+> >>  out_unlock:
+> >>         mutex_unlock(&netns_bpf_mutex);
+> >>         return err;
+> >> @@ -491,8 +519,10 @@ static void __net_exit netns_bpf_pernet_pre_exit(struct net *net)
+> >>         mutex_lock(&netns_bpf_mutex);
+> >>         for (type = 0; type < MAX_NETNS_BPF_ATTACH_TYPE; type++) {
+> >>                 netns_bpf_run_array_detach(net, type);
+> >> -               list_for_each_entry(net_link, &net->bpf.links[type], node)
+> >> +               list_for_each_entry(net_link, &net->bpf.links[type], node) {
+> >>                         net_link->net = NULL; /* auto-detach link */
+> >> +                       netns_bpf_attach_type_disable(type);
+> >> +               }
+> >>                 if (net->bpf.progs[type])
+> >>                         bpf_prog_put(net->bpf.progs[type]);
+> >>         }
+> >> diff --git a/net/core/filter.c b/net/core/filter.c
+>
+> [...]
+
+
+
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
