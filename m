@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B4E621172A
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 02:28:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 798CD211728
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 02:28:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728087AbgGBA1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 20:27:54 -0400
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:47387 "EHLO
+        id S1728108AbgGBA15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 20:27:57 -0400
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:47390 "EHLO
         gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727997AbgGBA1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 20:27:52 -0400
+        with ESMTP id S1728055AbgGBA1z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jul 2020 20:27:55 -0400
 Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 7E74A891B2;
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 71F9D891B1;
         Thu,  2 Jul 2020 12:27:48 +1200 (NZST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
         s=mail181024; t=1593649668;
-        bh=PbG3zai94Ohizr4Q4kemkoNqTWs/ORC9UHU6HKJkVfo=;
+        bh=cKZK0oZ+9VJXdiISqhSuGIRNylTJNp79SGvvvDuiK4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=wJqyiUuDNPsQ4b1Lqz1FZRIO0RzVYJXvS2qsiv5ZD+TNSSrZZVrJVdpKMsNah4ioV
-         rEqhAdj1fCP1rPV9JjdYUtkY9b6jBLmHQnWbcqq6JqBqGG2y/IkjUwHj5EJchos1cO
-         4zbSCUqm9FiYKBzCruHi9R0oV56L4IChRf2Kel8CXImN8JTs6a6XBEoyIUoDMf/Bit
-         jfJo2QcGF3aLhU9ErMpOy4RIsWmsiQKJYqPJwgoVhx+GSJAnG5KBJ2P17VINj9L/LM
-         K4UeGWX1nGeD724G7A5aGrCTDiIpyKsBBXBXvtygqQWggW8rLSwexDbVstlWLtXtY3
-         dRLAFvG1AV3NA==
+        b=NsJMGjkCgUOE6SQ34PJpQwERX8fZYMX+HyPsndQUQhQrHrulmIrRNI6SEAGMjU0fO
+         QysjQ/TUSTbJjKtVduWc4KNql8bCOULftj7o2Tpd/EsUXVpSvFy2GnoOtDuaGNsAKw
+         r/7Bo/i0tE+LeYLvD4lvRJmFSotrCf3v9IYq28ParTw8rpzoE18gljCuOXP4BOXKD5
+         hfTeVUNdxR9v8SDP01HT2SsWvtGtv4jMkLQP3fAnUyXidfA9T2wZ6J5GyNJdGwz0Su
+         w+cFIgdNTcJH0UatPVdj6AyHPCJgCGp1S4Q77xESVIriHlR+aqrsMwWXVPREEwwdgp
+         nnTeqy7akIg6w==
 Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5efd2a030001>; Thu, 02 Jul 2020 12:27:47 +1200
+        id <B5efd2a040000>; Thu, 02 Jul 2020 12:27:48 +1200
 Received: from mattb-dl.ws.atlnz.lc (mattb-dl.ws.atlnz.lc [10.33.25.34])
-        by smtp (Postfix) with ESMTP id 4419B13EDDC;
+        by smtp (Postfix) with ESMTP id BF6D913EDDC;
         Thu,  2 Jul 2020 12:27:46 +1200 (NZST)
 Received: by mattb-dl.ws.atlnz.lc (Postfix, from userid 1672)
-        id C1D7D4A02A3; Thu,  2 Jul 2020 12:27:47 +1200 (NZST)
+        id 493534A02A3; Thu,  2 Jul 2020 12:27:48 +1200 (NZST)
 From:   Matt Bennett <matt.bennett@alliedtelesis.co.nz>
 To:     netdev@vger.kernel.org
 Cc:     zbr@ioremap.net, ebiederm@xmission.com,
         linux-kernel@vger.kernel.org,
         Matt Bennett <matt.bennett@alliedtelesis.co.nz>
-Subject: [PATCH 4/5] connector: Prepare for supporting multiple namespaces
-Date:   Thu,  2 Jul 2020 12:26:34 +1200
-Message-Id: <20200702002635.8169-5-matt.bennett@alliedtelesis.co.nz>
+Subject: [PATCH 5/5] connector: Create connector per namespace
+Date:   Thu,  2 Jul 2020 12:26:35 +1200
+Message-Id: <20200702002635.8169-6-matt.bennett@alliedtelesis.co.nz>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz>
 References: <20200702002635.8169-1-matt.bennett@alliedtelesis.co.nz>
@@ -52,496 +52,573 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend the existing function definitions / call sites to start
-passing the network namespace. For now we still only pass the
-default namespace.
+Move to storing the connector instance per network namespace. In doing
+so the ability to use the connector functionality outside the default
+namespace is now available.
 
 Signed-off-by: Matt Bennett <matt.bennett@alliedtelesis.co.nz>
 ---
- Documentation/driver-api/connector.rst |  6 +++---
- drivers/connector/cn_proc.c            |  5 +++--
- drivers/connector/cn_queue.c           |  5 +++--
- drivers/connector/connector.c          | 21 ++++++++++++---------
- drivers/hv/hv_utils_transport.c        |  6 ++++--
- drivers/md/dm-log-userspace-transfer.c |  6 ++++--
- drivers/video/fbdev/uvesafb.c          |  8 +++++---
- drivers/w1/w1_netlink.c                | 19 +++++++++++--------
- include/linux/connector.h              | 24 ++++++++++++++++--------
- samples/connector/cn_test.c            |  6 ++++--
- 10 files changed, 65 insertions(+), 41 deletions(-)
+ drivers/connector/cn_proc.c   |  49 ++++++----
+ drivers/connector/connector.c | 171 ++++++++++++++++++++++++++++------
+ drivers/hv/hv_fcopy.c         |   1 +
+ include/linux/connector.h     |  14 ++-
+ include/net/net_namespace.h   |   4 +
+ kernel/exit.c                 |   2 +-
+ 6 files changed, 190 insertions(+), 51 deletions(-)
 
-diff --git a/Documentation/driver-api/connector.rst b/Documentation/drive=
-r-api/connector.rst
-index c100c7482289..4fb1f73d76ad 100644
---- a/Documentation/driver-api/connector.rst
-+++ b/Documentation/driver-api/connector.rst
-@@ -25,9 +25,9 @@ handling, etc...  The Connector driver allows any kerne=
-lspace agents to use
- netlink based networking for inter-process communication in a significan=
-tly
- easier way::
-=20
--  int cn_add_callback(struct cb_id *id, char *name, void (*callback) (st=
-ruct cn_msg *, struct netlink_skb_parms *));
--  void cn_netlink_send_multi(struct cn_msg *msg, u16 len, u32 portid, u3=
-2 __group, int gfp_mask);
--  void cn_netlink_send(struct cn_msg *msg, u32 portid, u32 __group, int =
-gfp_mask);
-+  int cn_add_callback(struct cb_id *id, char *name, void (*callback) (st=
-ruct net *, struct cn_msg *, struct netlink_skb_parms *));
-+  void cn_netlink_send_multi(struct net *net, struct cn_msg *msg, u16 le=
-n, u32 portid, u32 __group, int gfp_mask);
-+  void cn_netlink_send(struct net *net, struct cn_msg *msg, u32 portid, =
-u32 __group, int gfp_mask);
-=20
-   struct cb_id
-   {
 diff --git a/drivers/connector/cn_proc.c b/drivers/connector/cn_proc.c
-index d90aea555a21..9202be177a30 100644
+index 9202be177a30..661d921fd146 100644
 --- a/drivers/connector/cn_proc.c
 +++ b/drivers/connector/cn_proc.c
-@@ -16,6 +16,7 @@
- #include <linux/ptrace.h>
+@@ -17,6 +17,7 @@
  #include <linux/atomic.h>
  #include <linux/pid_namespace.h>
-+#include <net/net_namespace.h>
+ #include <net/net_namespace.h>
++#include <linux/netlink.h>
 =20
  #include <linux/cn_proc.h>
  #include <linux/local_lock.h>
-@@ -61,7 +62,7 @@ static inline void send_msg(struct cn_msg *msg)
+@@ -37,7 +38,6 @@ static inline struct cn_msg *buffer_to_cn_msg(__u8 *buf=
+fer)
+ 	return (struct cn_msg *)(buffer + 4);
+ }
+=20
+-static atomic_t proc_event_num_listeners =3D ATOMIC_INIT(0);
+ static struct cb_id cn_proc_event_id =3D { CN_IDX_PROC, CN_VAL_PROC };
+=20
+ /* local_event.count is used as the sequence number of the netlink messa=
+ge */
+@@ -51,6 +51,9 @@ static DEFINE_PER_CPU(struct local_event, local_event) =
+=3D {
+=20
+ static inline void send_msg(struct cn_msg *msg)
+ {
++	int ret =3D 0;
++	struct net *net =3D current->nsproxy->net_ns;
++
+ 	local_lock(&local_event.lock);
+=20
+ 	msg->seq =3D __this_cpu_inc_return(local_event.count) - 1;
+@@ -62,7 +65,9 @@ static inline void send_msg(struct cn_msg *msg)
  	 *
  	 * If cn_netlink_send() fails, the data is not sent.
  	 */
--	cn_netlink_send(msg, 0, CN_IDX_PROC, GFP_NOWAIT);
-+	cn_netlink_send(&init_net, msg, 0, CN_IDX_PROC, GFP_NOWAIT);
+-	cn_netlink_send(&init_net, msg, 0, CN_IDX_PROC, GFP_NOWAIT);
++	ret =3D cn_netlink_send(net, msg, 0, CN_IDX_PROC, GFP_NOWAIT);
++	if (ret =3D=3D -ESRCH && netlink_has_listeners(net->cdev.nls, CN_IDX_PR=
+OC) =3D=3D 0)
++		atomic_set(&(net->cdev.proc_event_num_listeners), 0);
 =20
  	local_unlock(&local_event.lock);
  }
-@@ -343,7 +344,7 @@ static void cn_proc_ack(int err, int rcvd_seq, int rc=
+@@ -73,8 +78,9 @@ void proc_fork_connector(struct task_struct *task)
+ 	struct proc_event *ev;
+ 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
+ 	struct task_struct *parent;
++	struct net *net =3D current->nsproxy->net_ns;
+=20
+-	if (atomic_read(&proc_event_num_listeners) < 1)
++	if (atomic_read(&(net->cdev.proc_event_num_listeners)) < 1)
+ 		return;
+=20
+ 	msg =3D buffer_to_cn_msg(buffer);
+@@ -102,8 +108,9 @@ void proc_exec_connector(struct task_struct *task)
+ 	struct cn_msg *msg;
+ 	struct proc_event *ev;
+ 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
++	struct net *net =3D current->nsproxy->net_ns;
+=20
+-	if (atomic_read(&proc_event_num_listeners) < 1)
++	if (atomic_read(&(net->cdev.proc_event_num_listeners)) < 1)
+ 		return;
+=20
+ 	msg =3D buffer_to_cn_msg(buffer);
+@@ -127,8 +134,9 @@ void proc_id_connector(struct task_struct *task, int =
+which_id)
+ 	struct proc_event *ev;
+ 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
+ 	const struct cred *cred;
++	struct net *net =3D current->nsproxy->net_ns;
+=20
+-	if (atomic_read(&proc_event_num_listeners) < 1)
++	if (atomic_read(&(net->cdev.proc_event_num_listeners)) < 1)
+ 		return;
+=20
+ 	msg =3D buffer_to_cn_msg(buffer);
+@@ -164,8 +172,9 @@ void proc_sid_connector(struct task_struct *task)
+ 	struct cn_msg *msg;
+ 	struct proc_event *ev;
+ 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
++	struct net *net =3D current->nsproxy->net_ns;
+=20
+-	if (atomic_read(&proc_event_num_listeners) < 1)
++	if (atomic_read(&(net->cdev.proc_event_num_listeners)) < 1)
+ 		return;
+=20
+ 	msg =3D buffer_to_cn_msg(buffer);
+@@ -188,8 +197,9 @@ void proc_ptrace_connector(struct task_struct *task, =
+int ptrace_id)
+ 	struct cn_msg *msg;
+ 	struct proc_event *ev;
+ 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
++	struct net *net =3D current->nsproxy->net_ns;
+=20
+-	if (atomic_read(&proc_event_num_listeners) < 1)
++	if (atomic_read(&(net->cdev.proc_event_num_listeners)) < 1)
+ 		return;
+=20
+ 	msg =3D buffer_to_cn_msg(buffer);
+@@ -220,8 +230,9 @@ void proc_comm_connector(struct task_struct *task)
+ 	struct cn_msg *msg;
+ 	struct proc_event *ev;
+ 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
++	struct net *net =3D current->nsproxy->net_ns;
+=20
+-	if (atomic_read(&proc_event_num_listeners) < 1)
++	if (atomic_read(&(net->cdev.proc_event_num_listeners)) < 1)
+ 		return;
+=20
+ 	msg =3D buffer_to_cn_msg(buffer);
+@@ -246,8 +257,9 @@ void proc_coredump_connector(struct task_struct *task=
+)
+ 	struct proc_event *ev;
+ 	struct task_struct *parent;
+ 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
++	struct net *net =3D current->nsproxy->net_ns;
+=20
+-	if (atomic_read(&proc_event_num_listeners) < 1)
++	if (atomic_read(&(net->cdev.proc_event_num_listeners)) < 1)
+ 		return;
+=20
+ 	msg =3D buffer_to_cn_msg(buffer);
+@@ -279,8 +291,9 @@ void proc_exit_connector(struct task_struct *task)
+ 	struct proc_event *ev;
+ 	struct task_struct *parent;
+ 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
++	struct net *net =3D current->nsproxy->net_ns;
+=20
+-	if (atomic_read(&proc_event_num_listeners) < 1)
++	if (atomic_read(&(net->cdev.proc_event_num_listeners)) < 1)
+ 		return;
+=20
+ 	msg =3D buffer_to_cn_msg(buffer);
+@@ -321,8 +334,9 @@ static void cn_proc_ack(int err, int rcvd_seq, int rc=
 vd_ack)
-  * cn_proc_mcast_ctl
-  * @data: message sent from userspace via the connector
-  */
--static void cn_proc_mcast_ctl(struct cn_msg *msg,
-+static void cn_proc_mcast_ctl(struct net *net, struct cn_msg *msg,
- 			      struct netlink_skb_parms *nsp)
- {
- 	enum proc_cn_mcast_op *mc_op =3D NULL;
-diff --git a/drivers/connector/cn_queue.c b/drivers/connector/cn_queue.c
-index a82ceeb37f26..22fdd2b149af 100644
---- a/drivers/connector/cn_queue.c
-+++ b/drivers/connector/cn_queue.c
-@@ -16,11 +16,12 @@
- #include <linux/suspend.h>
- #include <linux/connector.h>
- #include <linux/delay.h>
-+#include <net/net_namespace.h>
+ 	struct cn_msg *msg;
+ 	struct proc_event *ev;
+ 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
++	struct net *net =3D current->nsproxy->net_ns;
 =20
- static struct cn_callback_entry *
- cn_queue_alloc_callback_entry(struct cn_queue_dev *dev, const char *name=
-,
- 			      struct cb_id *id,
--			      void (*callback)(struct cn_msg *,
-+			      void (*callback)(struct net *, struct cn_msg *,
- 					       struct netlink_skb_parms *))
- {
- 	struct cn_callback_entry *cbq;
-@@ -58,7 +59,7 @@ int cn_cb_equal(struct cb_id *i1, struct cb_id *i2)
+-	if (atomic_read(&proc_event_num_listeners) < 1)
++	if (atomic_read(&(net->cdev.proc_event_num_listeners)) < 1)
+ 		return;
 =20
- int cn_queue_add_callback(struct cn_queue_dev *dev, const char *name,
- 			  struct cb_id *id,
--			  void (*callback)(struct cn_msg *,
-+			  void (*callback)(struct net *, struct cn_msg *,
- 					   struct netlink_skb_parms *))
- {
- 	struct cn_callback_entry *cbq, *__cbq;
+ 	msg =3D buffer_to_cn_msg(buffer);
+@@ -353,13 +367,10 @@ static void cn_proc_mcast_ctl(struct net *net, stru=
+ct cn_msg *msg,
+ 	if (msg->len !=3D sizeof(*mc_op))
+ 		return;
+=20
+-	/*=20
+-	 * Events are reported with respect to the initial pid
+-	 * and user namespaces so ignore requestors from
+-	 * other namespaces.
++	/*
++	 * Events are reported with respect to network namespaces.
+ 	 */
+-	if ((current_user_ns() !=3D &init_user_ns) ||
+-	    (task_active_pid_ns(current) !=3D &init_pid_ns))
++	if (current->nsproxy->net_ns !=3D net)
+ 		return;
+=20
+ 	/* Can only change if privileged. */
+@@ -371,10 +382,10 @@ static void cn_proc_mcast_ctl(struct net *net, stru=
+ct cn_msg *msg,
+ 	mc_op =3D (enum proc_cn_mcast_op *)msg->data;
+ 	switch (*mc_op) {
+ 	case PROC_CN_MCAST_LISTEN:
+-		atomic_inc(&proc_event_num_listeners);
++		atomic_inc(&(net->cdev.proc_event_num_listeners));
+ 		break;
+ 	case PROC_CN_MCAST_IGNORE:
+-		atomic_dec(&proc_event_num_listeners);
++		atomic_dec(&(net->cdev.proc_event_num_listeners));
+ 		break;
+ 	default:
+ 		err =3D EINVAL;
 diff --git a/drivers/connector/connector.c b/drivers/connector/connector.=
 c
-index 2d22d6bf52f2..82fcaa4d8be3 100644
+index 82fcaa4d8be3..30efcf39751f 100644
 --- a/drivers/connector/connector.c
 +++ b/drivers/connector/connector.c
-@@ -58,8 +58,8 @@ static int cn_already_initialized;
-  * The message is sent to, the portid if given, the group if given, both=
- if
-  * both, or if both are zero then the group is looked up and sent there.
-  */
--int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid, u32 __=
-group,
--	gfp_t gfp_mask)
-+int cn_netlink_send_mult(struct net *net, struct cn_msg *msg, u16 len,
-+			 u32 portid, u32 __group, gfp_t gfp_mask)
- {
- 	struct cn_callback_entry *__cbq;
- 	unsigned int size;
-@@ -118,17 +118,18 @@ int cn_netlink_send_mult(struct cn_msg *msg, u16 le=
-n, u32 portid, u32 __group,
- EXPORT_SYMBOL_GPL(cn_netlink_send_mult);
+@@ -26,9 +26,7 @@ MODULE_AUTHOR("Evgeniy Polyakov <zbr@ioremap.net>");
+ MODULE_DESCRIPTION("Generic userspace <-> kernelspace connector.");
+ MODULE_ALIAS_NET_PF_PROTO(PF_NETLINK, NETLINK_CONNECTOR);
 =20
- /* same as cn_netlink_send_mult except msg->len is used for len */
--int cn_netlink_send(struct cn_msg *msg, u32 portid, u32 __group,
--	gfp_t gfp_mask)
-+int cn_netlink_send(struct net *net, struct cn_msg *msg, u32 portid,
-+		    u32 __group, gfp_t gfp_mask)
- {
--	return cn_netlink_send_mult(msg, msg->len, portid, __group, gfp_mask);
-+	return cn_netlink_send_mult(net, msg, msg->len, portid, __group,
-+				    gfp_mask);
- }
- EXPORT_SYMBOL_GPL(cn_netlink_send);
+-static struct cn_dev cdev;
+-
+-static int cn_already_initialized;
++static DEFINE_MUTEX(cn_mutex);
 =20
  /*
-  * Callback helper - queues work and setup destructor for given data.
-  */
--static int cn_call_callback(struct sk_buff *skb)
-+static int cn_call_callback(struct net *net, struct sk_buff *skb)
+  * Sends mult (multiple) cn_msg at a time.
+@@ -66,10 +64,13 @@ int cn_netlink_send_mult(struct net *net, struct cn_m=
+sg *msg, u16 len,
+ 	struct sk_buff *skb;
+ 	struct nlmsghdr *nlh;
+ 	struct cn_msg *data;
+-	struct cn_dev *dev =3D &cdev;
++	struct cn_dev *dev =3D &(net->cdev);
+ 	u32 group =3D 0;
+ 	int found =3D 0;
+=20
++	if (!msg || len < 0)
++		return -EINVAL;
++
+ 	if (portid || __group) {
+ 		group =3D __group;
+ 	} else {
+@@ -133,7 +134,7 @@ static int cn_call_callback(struct net *net, struct s=
+k_buff *skb)
  {
  	struct nlmsghdr *nlh;
  	struct cn_callback_entry *i, *cbq =3D NULL;
-@@ -153,7 +154,7 @@ static int cn_call_callback(struct sk_buff *skb)
- 	spin_unlock_bh(&dev->cbdev->queue_lock);
-=20
- 	if (cbq !=3D NULL) {
--		cbq->callback(msg, nsp);
-+		cbq->callback(net, msg, nsp);
- 		kfree_skb(skb);
- 		cn_queue_release_callback(cbq);
- 		err =3D 0;
-@@ -172,6 +173,8 @@ static void cn_rx_skb(struct sk_buff *skb)
+-	struct cn_dev *dev =3D &cdev;
++	struct cn_dev *dev =3D &net->cdev;
+ 	struct cn_msg *msg =3D nlmsg_data(nlmsg_hdr(skb));
+ 	struct netlink_skb_parms *nsp =3D &NETLINK_CB(skb);
+ 	int err =3D -ENODEV;
+@@ -168,7 +169,7 @@ static int cn_call_callback(struct net *net, struct s=
+k_buff *skb)
+  *
+  * It checks skb, netlink header and msg sizes, and calls callback helpe=
+r.
+  */
+-static void cn_rx_skb(struct sk_buff *skb)
++static void __cn_rx_skb(struct sk_buff *skb)
+ {
  	struct nlmsghdr *nlh;
  	int len, err;
-=20
-+	struct net *net =3D sock_net(skb->sk);
-+
- 	if (skb->len >=3D NLMSG_HDRLEN) {
- 		nlh =3D nlmsg_hdr(skb);
- 		len =3D nlmsg_len(nlh);
-@@ -181,7 +184,7 @@ static void cn_rx_skb(struct sk_buff *skb)
- 		    len > CONNECTOR_MAX_MSG_SIZE)
- 			return;
-=20
--		err =3D cn_call_callback(skb_get(skb));
-+		err =3D cn_call_callback(net, skb_get(skb));
- 		if (err < 0)
- 			kfree_skb(skb);
+@@ -190,6 +191,13 @@ static void cn_rx_skb(struct sk_buff *skb)
  	}
-@@ -194,7 +197,7 @@ static void cn_rx_skb(struct sk_buff *skb)
-  * May sleep.
-  */
- int cn_add_callback(struct cb_id *id, const char *name,
--		    void (*callback)(struct cn_msg *,
-+		    void (*callback)(struct net *, struct cn_msg *,
+ }
+=20
++static void cn_rx_skb(struct sk_buff *skb)
++{
++	mutex_lock(&cn_mutex);
++	__cn_rx_skb(skb);
++	mutex_unlock(&cn_mutex);
++}
++
+ /*
+  * Callback add routing - adds callback with given ID and name.
+  * If there is registered callback with the same ID it will not be added=
+.
+@@ -200,20 +208,47 @@ int cn_add_callback(struct cb_id *id, const char *n=
+ame,
+ 		    void (*callback)(struct net *, struct cn_msg *,
  				     struct netlink_skb_parms *))
  {
- 	int err;
-diff --git a/drivers/hv/hv_utils_transport.c b/drivers/hv/hv_utils_transp=
-ort.c
-index eb2833d2b5d0..1a67efe59e91 100644
---- a/drivers/hv/hv_utils_transport.c
-+++ b/drivers/hv/hv_utils_transport.c
-@@ -8,6 +8,7 @@
- #include <linux/slab.h>
- #include <linux/fs.h>
- #include <linux/poll.h>
-+#include <net/net_namespace.h>
+-	int err;
+-	struct cn_dev *dev =3D &cdev;
+-
+-	if (!cn_already_initialized)
+-		return -EAGAIN;
++	int err =3D -EINVAL;
++	struct net *net =3D NULL;
++	struct cn_dev *dev =3D NULL;
 =20
- #include "hyperv_vmbus.h"
- #include "hv_utils_transport.h"
-@@ -181,7 +182,8 @@ static int hvt_op_release(struct inode *inode, struct=
- file *file)
+-	err =3D cn_queue_add_callback(dev->cbdev, name, id, callback);
+-	if (err)
++	if (!id || !name || !callback)
+ 		return err;
+=20
+-	return 0;
++	down_read(&net_rwsem);
++	for_each_net(net) {
++		dev =3D &net->cdev;
++		err =3D cn_queue_add_callback(dev->cbdev, name, id, callback);
++		if (err)
++			break;
++	}
++
++	if (err) {
++		for_each_net(net) {
++			dev =3D &net->cdev;
++			cn_queue_del_callback(dev->cbdev, id);
++		}
++	}
++	up_read(&net_rwsem);
++
++	return err;
+ }
+ EXPORT_SYMBOL_GPL(cn_add_callback);
+=20
++int cn_add_callback_one(struct net *net, struct cb_id *id, const char *n=
+ame,
++			void (*callback)(struct net *, struct cn_msg *,
++					 struct netlink_skb_parms *))
++{
++	struct cn_dev *dev =3D NULL;
++
++	if (!net || !id || !name || !callback)
++		return -EINVAL;
++
++	dev =3D &(net->cdev);
++	return cn_queue_add_callback(dev->cbdev, name, id, callback);
++}
++EXPORT_SYMBOL_GPL(cn_add_callback_one);
++
+ /*
+  * Callback remove routing - removes callback
+  * with given ID.
+@@ -224,15 +259,25 @@ EXPORT_SYMBOL_GPL(cn_add_callback);
+  */
+ void cn_del_callback(struct cb_id *id)
+ {
+-	struct cn_dev *dev =3D &cdev;
++	struct net *net =3D NULL;
++	struct cn_dev *dev =3D NULL;
++
++	if (!id)
++		return;
+=20
+-	cn_queue_del_callback(dev->cbdev, id);
++	down_read(&net_rwsem);
++	for_each_net(net) {
++		dev =3D &net->cdev;
++		cn_queue_del_callback(dev->cbdev, id);
++	}
++	up_read(&net_rwsem);
+ }
+ EXPORT_SYMBOL_GPL(cn_del_callback);
+=20
+ static int __maybe_unused cn_proc_show(struct seq_file *m, void *v)
+ {
+-	struct cn_queue_dev *dev =3D cdev.cbdev;
++	struct net *net =3D seq_file_single_net(m);
++	struct cn_queue_dev *dev =3D net->cdev.cbdev;
+ 	struct cn_callback_entry *cbq;
+=20
+ 	seq_printf(m, "Name            ID\n");
+@@ -251,15 +296,62 @@ static int __maybe_unused cn_proc_show(struct seq_f=
+ile *m, void *v)
  	return 0;
  }
 =20
--static void hvt_cn_callback(struct cn_msg *msg, struct netlink_skb_parms=
- *nsp)
-+static void hvt_cn_callback(struct net *net, struct cn_msg *msg,
-+			    struct netlink_skb_parms *nsp)
+-static int cn_init(void)
++static int init_cn_net(struct net *net)
++{
++	int ret =3D 0;
++	struct cn_dev *init_dev =3D &(init_net.cdev);
++	struct cn_queue_dev *cbdev =3D init_dev->cbdev;
++
++	struct cn_callback_entry *cbq =3D NULL;
++	struct cn_callback_entry_ex *cbq_ex =3D NULL;
++	struct cn_callback_entry_ex *tmp =3D NULL;
++	LIST_HEAD(head);
++
++	if (!net)
++		return -EINVAL;
++
++	spin_lock_bh(&cbdev->queue_lock);
++	list_for_each_entry(cbq, &cbdev->queue_list, callback_entry) {
++		cbq_ex =3D kmalloc(sizeof(*cbq_ex), GFP_ATOMIC);
++		if (!cbq_ex) {
++			ret =3D -ENOMEM;
++			break;
++		}
++		INIT_LIST_HEAD(&(cbq_ex->list));
++
++		memcpy(&cbq_ex->id, &(cbq->id.id), sizeof(struct cb_id));
++		memcpy(cbq_ex->name, &(cbq->id.name), CN_CBQ_NAMELEN);
++		cbq_ex->callback =3D  cbq->callback;
++
++		list_add_tail(&(cbq_ex->list), &head);
++	}
++	spin_unlock_bh(&cbdev->queue_lock);
++
++	if (ret < 0) {
++		list_for_each_entry_safe(cbq_ex, tmp, &head, list) {
++			kfree(cbq_ex);
++		}
++	} else {
++		list_for_each_entry_safe(cbq_ex, tmp, &head, list) {
++			cn_add_callback_one(net, &(cbq_ex->id), cbq_ex->name,
++					    cbq_ex->callback);
++			kfree(cbq_ex);
++		}
++	}
++
++	return ret;
++}
++
++static int __net_init cn_init(struct net *net)
  {
- 	struct hvutil_transport *hvt, *hvt_found =3D NULL;
+-	struct cn_dev *dev =3D &cdev;
++	int ret =3D 0;
++	struct cn_dev *dev =3D &net->cdev;
+ 	struct netlink_kernel_cfg cfg =3D {
+ 		.groups	=3D CN_NETLINK_USERS + 0xf,
+ 		.input	=3D cn_rx_skb,
+ 	};
 =20
-@@ -231,7 +233,7 @@ int hvutil_transport_send(struct hvutil_transport *hv=
-t, void *msg, int len,
- 		cn_msg->id.val =3D hvt->cn_id.val;
- 		cn_msg->len =3D len;
- 		memcpy(cn_msg->data, msg, len);
--		ret =3D cn_netlink_send(cn_msg, 0, 0, GFP_ATOMIC);
-+		ret =3D cn_netlink_send(&init_net, cn_msg, 0, 0, GFP_ATOMIC);
- 		kfree(cn_msg);
- 		/*
- 		 * We don't know when netlink messages are delivered but unlike
-diff --git a/drivers/md/dm-log-userspace-transfer.c b/drivers/md/dm-log-u=
-serspace-transfer.c
-index fdf8ec304f8d..0e835acf14da 100644
---- a/drivers/md/dm-log-userspace-transfer.c
-+++ b/drivers/md/dm-log-userspace-transfer.c
-@@ -12,6 +12,7 @@
- #include <linux/connector.h>
- #include <linux/device-mapper.h>
- #include <linux/dm-log-userspace.h>
-+#include <net/net_namespace.h>
+-	dev->nls =3D netlink_kernel_create(&init_net, NETLINK_CONNECTOR, &cfg);
++	dev->nls =3D netlink_kernel_create(net, NETLINK_CONNECTOR, &cfg);
+ 	if (!dev->nls)
+ 		return -EIO;
 =20
- #include "dm-log-userspace-transfer.h"
-=20
-@@ -66,7 +67,7 @@ static int dm_ulog_sendto_server(struct dm_ulog_request=
- *tfr)
- 	msg->seq =3D tfr->seq;
- 	msg->len =3D sizeof(struct dm_ulog_request) + tfr->data_size;
-=20
--	r =3D cn_netlink_send(msg, 0, 0, gfp_any());
-+	r =3D cn_netlink_send(&init_net, msg, 0, 0, gfp_any());
-=20
- 	return r;
- }
-@@ -130,7 +131,8 @@ static int fill_pkg(struct cn_msg *msg, struct dm_ulo=
-g_request *tfr)
-  * This is the connector callback that delivers data
-  * that was sent from userspace.
-  */
--static void cn_ulog_callback(struct cn_msg *msg, struct netlink_skb_parm=
-s *nsp)
-+static void cn_ulog_callback(struct net *net, struct cn_msg *msg,
-+			     struct netlink_skb_parms *nsp)
- {
- 	struct dm_ulog_request *tfr =3D (struct dm_ulog_request *)(msg + 1);
-=20
-diff --git a/drivers/video/fbdev/uvesafb.c b/drivers/video/fbdev/uvesafb.=
-c
-index def14ac0ebe1..f9b6ed7b97f2 100644
---- a/drivers/video/fbdev/uvesafb.c
-+++ b/drivers/video/fbdev/uvesafb.c
-@@ -25,6 +25,7 @@
- #include <linux/slab.h>
- #include <video/edid.h>
- #include <video/uvesafb.h>
-+#include <net/net_namespace.h>
- #ifdef CONFIG_X86
- #include <video/vga.h>
- #endif
-@@ -69,7 +70,8 @@ static DEFINE_MUTEX(uvfb_lock);
-  * find the kernel part of the task struct, copy the registers and
-  * the buffer contents and then complete the task.
-  */
--static void uvesafb_cn_callback(struct cn_msg *msg, struct netlink_skb_p=
-arms *nsp)
-+static void uvesafb_cn_callback(struct net *net, struct cn_msg *msg,
-+				struct netlink_skb_parms *nsp)
- {
- 	struct uvesafb_task *utask;
- 	struct uvesafb_ktask *task;
-@@ -194,7 +196,7 @@ static int uvesafb_exec(struct uvesafb_ktask *task)
- 	uvfb_tasks[seq] =3D task;
- 	mutex_unlock(&uvfb_lock);
-=20
--	err =3D cn_netlink_send(m, 0, 0, GFP_KERNEL);
-+	err =3D cn_netlink_send(&init_net, m, 0, 0, GFP_KERNEL);
- 	if (err =3D=3D -ESRCH) {
- 		/*
- 		 * Try to start the userspace helper if sending
-@@ -206,7 +208,7 @@ static int uvesafb_exec(struct uvesafb_ktask *task)
- 			pr_err("make sure that the v86d helper is installed and executable\n"=
-);
- 		} else {
- 			v86d_started =3D 1;
--			err =3D cn_netlink_send(m, 0, 0, gfp_any());
-+			err =3D cn_netlink_send(&init_net, m, 0, 0, gfp_any());
- 			if (err =3D=3D -ENOBUFS)
- 				err =3D 0;
- 		}
-diff --git a/drivers/w1/w1_netlink.c b/drivers/w1/w1_netlink.c
-index fa490aa4407c..246844b61613 100644
---- a/drivers/w1/w1_netlink.c
-+++ b/drivers/w1/w1_netlink.c
-@@ -7,6 +7,7 @@
- #include <linux/skbuff.h>
- #include <linux/netlink.h>
- #include <linux/connector.h>
-+#include <net/net_namespace.h>
-=20
- #include "w1_internal.h"
- #include "w1_netlink.h"
-@@ -64,8 +65,8 @@ static void w1_unref_block(struct w1_cb_block *block)
- 	if (atomic_sub_return(1, &block->refcnt) =3D=3D 0) {
- 		u16 len =3D w1_reply_len(block);
- 		if (len) {
--			cn_netlink_send_mult(block->first_cn, len,
--				block->portid, 0, GFP_KERNEL);
-+			cn_netlink_send_mult(&init_net, block->first_cn, len,
-+					     block->portid, 0, GFP_KERNEL);
- 		}
- 		kfree(block);
+@@ -268,25 +360,44 @@ static int cn_init(void)
+ 		netlink_kernel_release(dev->nls);
+ 		return -EINVAL;
  	}
-@@ -83,7 +84,8 @@ static void w1_reply_make_space(struct w1_cb_block *blo=
-ck, u16 space)
++	atomic_set(&(dev->proc_event_num_listeners), 0);
+=20
+-	cn_already_initialized =3D 1;
++	ret =3D init_cn_net(net);
++	if (ret < 0) {
++		cn_queue_free_dev(dev->cbdev);
++		netlink_kernel_release(dev->nls);
++		return ret;
++	}
+=20
+-	proc_create_single("connector", S_IRUGO, init_net.proc_net, cn_proc_sho=
+w);
++	proc_create_net_single("connector", 0444, net->proc_net, cn_proc_show,
++			       NULL);
+=20
+ 	return 0;
+ }
+=20
+-static void cn_fini(void)
++static void __net_exit cn_fini(struct net *net)
  {
- 	u16 len =3D w1_reply_len(block);
- 	if (len + space >=3D block->maxlen) {
--		cn_netlink_send_mult(block->first_cn, len, block->portid, 0, GFP_KERNE=
-L);
-+		cn_netlink_send_mult(&init_net, block->first_cn, len,
-+				     block->portid, 0, GFP_KERNEL);
- 		block->first_cn->len =3D 0;
- 		block->cn =3D NULL;
- 		block->msg =3D NULL;
-@@ -201,7 +203,7 @@ static void w1_netlink_send_error(struct cn_msg *cn, =
-struct w1_netlink_msg *msg,
- 	packet.cn.len =3D sizeof(packet.msg);
- 	packet.msg.len =3D 0;
- 	packet.msg.status =3D (u8)-error;
--	cn_netlink_send(&packet.cn, portid, 0, GFP_KERNEL);
-+	cn_netlink_send(&init_net, &packet.cn, portid, 0, GFP_KERNEL);
+-	struct cn_dev *dev =3D &cdev;
+-
+-	cn_already_initialized =3D 0;
+-
+-	remove_proc_entry("connector", init_net.proc_net);
++	struct cn_dev *dev =3D &net->cdev;
+=20
++	remove_proc_entry("connector", net->proc_net);
+ 	cn_queue_free_dev(dev->cbdev);
+ 	netlink_kernel_release(dev->nls);
  }
 =20
- /**
-@@ -228,7 +230,7 @@ void w1_netlink_send(struct w1_master *dev, struct w1=
-_netlink_msg *msg)
- 	memcpy(&packet.msg, msg, sizeof(*msg));
- 	packet.msg.len =3D 0;
+-subsys_initcall(cn_init);
+-module_exit(cn_fini);
++static struct pernet_operations cn_netlink_net_ops =3D {
++	.init =3D cn_init,
++	.exit =3D cn_fini,
++};
++
++static int __init connector_init(void)
++{
++	return register_pernet_subsys(&cn_netlink_net_ops);
++}
++
++static void __exit connector_exit(void)
++{
++	unregister_pernet_subsys(&cn_netlink_net_ops);
++}
++
++subsys_initcall(connector_init);
++module_exit(connector_exit);
+diff --git a/drivers/hv/hv_fcopy.c b/drivers/hv/hv_fcopy.c
+index 5040d7e0cd9e..a7151296af5c 100644
+--- a/drivers/hv/hv_fcopy.c
++++ b/drivers/hv/hv_fcopy.c
+@@ -13,6 +13,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/hyperv.h>
+ #include <linux/sched.h>
++#include <linux/slab.h>
+ #include <asm/hyperv-tlfs.h>
 =20
--	cn_netlink_send(&packet.cn, 0, 0, GFP_KERNEL);
-+	cn_netlink_send(&init_net, &packet.cn, 0, 0, GFP_KERNEL);
- }
-=20
- static void w1_send_slave(struct w1_master *dev, u64 rn)
-@@ -421,7 +423,7 @@ static int w1_process_command_root(struct cn_msg *req=
-_cn, u32 portid)
- 	mutex_lock(&w1_mlock);
- 	list_for_each_entry(dev, &w1_masters, w1_master_entry) {
- 		if (cn->len + sizeof(*id) > PAGE_SIZE - sizeof(struct cn_msg)) {
--			cn_netlink_send(cn, portid, 0, GFP_KERNEL);
-+			cn_netlink_send(&init_net, cn, portid, 0, GFP_KERNEL);
- 			cn->len =3D sizeof(struct w1_netlink_msg);
- 			msg->len =3D 0;
- 			id =3D (u32 *)msg->data;
-@@ -432,7 +434,7 @@ static int w1_process_command_root(struct cn_msg *req=
-_cn, u32 portid)
- 		cn->len +=3D sizeof(*id);
- 		id++;
- 	}
--	cn_netlink_send(cn, portid, 0, GFP_KERNEL);
-+	cn_netlink_send(&init_net, cn, portid, 0, GFP_KERNEL);
- 	mutex_unlock(&w1_mlock);
-=20
- 	kfree(cn);
-@@ -532,7 +534,8 @@ static void w1_list_count_cmds(struct w1_netlink_msg =
-*msg, int *cmd_count,
- 	}
- }
-=20
--static void w1_cn_callback(struct cn_msg *cn, struct netlink_skb_parms *=
-nsp)
-+static void w1_cn_callback(struct net *net, struct cn_msg *cn,
-+			   struct netlink_skb_parms *nsp)
- {
- 	struct w1_netlink_msg *msg =3D (struct w1_netlink_msg *)(cn + 1);
- 	struct w1_slave *sl;
+ #include "hyperv_vmbus.h"
 diff --git a/include/linux/connector.h b/include/linux/connector.h
-index cb732643471b..8e9385eb18f8 100644
+index 8e9385eb18f8..17febd6946ce 100644
 --- a/include/linux/connector.h
 +++ b/include/linux/connector.h
-@@ -40,7 +40,8 @@ struct cn_callback_entry {
- 	struct cn_queue_dev *pdev;
+@@ -14,11 +14,14 @@
+ #include <linux/list.h>
+ #include <linux/workqueue.h>
 =20
- 	struct cn_callback_id id;
--	void (*callback) (struct cn_msg *, struct netlink_skb_parms *);
-+	void (*callback)(struct net *, struct cn_msg *,
-+			 struct netlink_skb_parms *);
+-#include <net/sock.h>
+ #include <uapi/linux/connector.h>
 =20
+ #define CN_CBQ_NAMELEN		32
+=20
++struct net;
++struct sock;
++struct netlink_skb_parms;
++
+ struct cn_queue_dev {
+ 	atomic_t refcnt;
+ 	unsigned char name[CN_CBQ_NAMELEN];
+@@ -46,11 +49,20 @@ struct cn_callback_entry {
  	u32 seq, group;
  };
-@@ -62,10 +63,12 @@ struct cn_dev {
-  *		in-kernel users.
-  * @name:	connector's callback symbolic name.
-  * @callback:	connector's callback.
-- * 		parameters are %cn_msg and the sender's credentials
-+ *		parameters are network namespace, %cn_msg and
-+ *		the sender's credentials
-  */
- int cn_add_callback(struct cb_id *id, const char *name,
--		    void (*callback)(struct cn_msg *, struct netlink_skb_parms *));
-+		    void (*callback)(struct net *, struct cn_msg *,
-+				     struct netlink_skb_parms *));
- /**
-  * cn_del_callback() - Unregisters new callback with connector core.
-  *
-@@ -75,8 +78,9 @@ void cn_del_callback(struct cb_id *id);
 =20
++struct cn_callback_entry_ex {
++	struct list_head list;
++	struct cb_id id;
++	unsigned char name[CN_CBQ_NAMELEN];
++	void (*callback)(struct net *net, struct cn_msg *cn_msg,
++			 struct netlink_skb_parms *nsp);
++};
++
+ struct cn_dev {
+ 	struct cb_id id;
 =20
- /**
-- * cn_netlink_send_mult - Sends message to the specified groups.
-+ * cn_netlink_send_mult - Sends messages to the specified groups.
-  *
-+ * @net:	network namespace
-  * @msg: 	message header(with attached data).
-  * @len:	Number of @msg to be sent.
-  * @portid:	destination port.
-@@ -96,11 +100,13 @@ void cn_del_callback(struct cb_id *id);
-  *
-  * If there are no listeners for given group %-ESRCH can be returned.
-  */
--int cn_netlink_send_mult(struct cn_msg *msg, u16 len, u32 portid, u32 gr=
-oup, gfp_t gfp_mask);
-+int cn_netlink_send_mult(struct net *net, struct cn_msg *msg, u16 len,
-+			 u32 portid, u32 group, gfp_t gfp_mask);
+ 	u32 seq, groups;
+ 	struct sock *nls;
++	atomic_t proc_event_num_listeners;
 =20
- /**
-- * cn_netlink_send_mult - Sends message to the specified groups.
-+ * cn_netlink_send - Sends message to the specified groups.
-  *
-+ * @net:	network namespace
-  * @msg:	message header(with attached data).
-  * @portid:	destination port.
-  *		If non-zero the message will be sent to the given port,
-@@ -119,11 +125,13 @@ int cn_netlink_send_mult(struct cn_msg *msg, u16 le=
-n, u32 portid, u32 group, gfp
-  *
-  * If there are no listeners for given group %-ESRCH can be returned.
-  */
--int cn_netlink_send(struct cn_msg *msg, u32 portid, u32 group, gfp_t gfp=
-_mask);
-+int cn_netlink_send(struct net *net, struct cn_msg *msg, u32 portid, u32=
- group,
-+		    gfp_t gfp_mask);
+ 	struct cn_queue_dev *cbdev;
+ };
+diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+index 2ee5901bec7a..312972fb2dcc 100644
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -38,6 +38,7 @@
+ #include <linux/idr.h>
+ #include <linux/skbuff.h>
+ #include <linux/notifier.h>
++#include <linux/connector.h>
 =20
- int cn_queue_add_callback(struct cn_queue_dev *dev, const char *name,
- 			  struct cb_id *id,
--			  void (*callback)(struct cn_msg *, struct netlink_skb_parms *));
-+			  void (*callback)(struct net *, struct cn_msg *,
-+					   struct netlink_skb_parms *));
- void cn_queue_del_callback(struct cn_queue_dev *dev, struct cb_id *id);
- void cn_queue_release_callback(struct cn_callback_entry *);
+ struct user_namespace;
+ struct proc_dir_entry;
+@@ -187,6 +188,9 @@ struct net {
+ #endif
+ #if IS_ENABLED(CONFIG_CRYPTO_USER)
+ 	struct sock		*crypto_nlsk;
++#endif
++#if IS_ENABLED(CONFIG_CONNECTOR)
++	struct cn_dev		cdev;
+ #endif
+ 	struct sock		*diag_nlsk;
+ } __randomize_layout;
+diff --git a/kernel/exit.c b/kernel/exit.c
+index 727150f28103..976fd6032024 100644
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -788,6 +788,7 @@ void __noreturn do_exit(long code)
 =20
-diff --git a/samples/connector/cn_test.c b/samples/connector/cn_test.c
-index 0958a171d048..9eaf40bbd714 100644
---- a/samples/connector/cn_test.c
-+++ b/samples/connector/cn_test.c
-@@ -16,13 +16,15 @@
- #include <linux/timer.h>
+ 	tsk->exit_code =3D code;
+ 	taskstats_exit(tsk, group_dead);
++	proc_exit_connector(tsk);
 =20
- #include <linux/connector.h>
-+#include <net/net_namespace.h>
+ 	exit_mm();
 =20
- static struct cb_id cn_test_id =3D { CN_NETLINK_USERS + 3, 0x456 };
- static char cn_test_name[] =3D "cn_test";
- static struct sock *nls;
- static struct timer_list cn_test_timer;
+@@ -824,7 +825,6 @@ void __noreturn do_exit(long code)
 =20
--static void cn_test_callback(struct cn_msg *msg, struct netlink_skb_parm=
-s *nsp)
-+static void cn_test_callback(struct net *net, struct cn_msg *msg,
-+			     struct netlink_skb_parms *nsp)
- {
- 	pr_info("%s: %lu: idx=3D%x, val=3D%x, seq=3D%u, ack=3D%u, len=3D%d: %s.=
-\n",
- 	        __func__, jiffies, msg->id.idx, msg->id.val,
-@@ -132,7 +134,7 @@ static void cn_test_timer_func(struct timer_list *unu=
-sed)
-=20
- 		memcpy(m + 1, data, m->len);
-=20
--		cn_netlink_send(m, 0, 0, GFP_ATOMIC);
-+		cn_netlink_send(&init_net, m, 0, 0, GFP_ATOMIC);
- 		kfree(m);
- 	}
-=20
+ 	exit_tasks_rcu_start();
+ 	exit_notify(tsk, group_dead);
+-	proc_exit_connector(tsk);
+ 	mpol_put_task_policy(tsk);
+ #ifdef CONFIG_FUTEX
+ 	if (unlikely(current->pi_state_cache))
 --=20
 2.27.0
 
