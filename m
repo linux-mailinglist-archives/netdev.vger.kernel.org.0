@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 129772118A5
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 03:36:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89B1B211950
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 03:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728875AbgGBBZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jul 2020 21:25:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56666 "EHLO mail.kernel.org"
+        id S1729596AbgGBBdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jul 2020 21:33:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56904 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728853AbgGBBZk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jul 2020 21:25:40 -0400
+        id S1728947AbgGBBZu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Jul 2020 21:25:50 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1F00620B1F;
-        Thu,  2 Jul 2020 01:25:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CB69E20748;
+        Thu,  2 Jul 2020 01:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593653139;
-        bh=72+uB+LKQB1wmd6QaomoiOLsV95GspFvxEglGh3T3AQ=;
+        s=default; t=1593653149;
+        bh=49qUf6Pee7v1XrKB0RGEegsA3cDs8+wRd1v2gKqYmWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=khpkV+ab3+zoEIH3OkFoDuVZv82D6Q7BhfxG7Tpdb5FUUafE1q9vTjTQjz6fXcWOe
-         B9QonVtdlGLDVNJ3WA16sFnJRo6qZNTfAKeuJDhi2hbBqx6zdbY+YmMxph9gYGs+7f
-         Qfq/lHHiVlI3KYbusOwUJIB8NArk1JqEr5jsJglI=
+        b=vetaCrAMRBh614OpIH0OmNr3lu2Mb3IAsFoiaSXk0pjVOOb8bzJFtOUKjxMeooflp
+         pGUstptsUUBvVZwJGoliFa7xLf2hczIPXLZ8JGrLPt9gaBaQq2f8nK4d06p4suwg8g
+         eAyrLfJlYvKyOvsnj+ntMgFTCMkgBVfvvvg8Jk1s=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jeremy Kerr <jk@ozlabs.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 12/40] net: usb: ax88179_178a: fix packet alignment padding
-Date:   Wed,  1 Jul 2020 21:23:33 -0400
-Message-Id: <20200702012402.2701121-12-sashal@kernel.org>
+Cc:     Ciara Loftus <ciara.loftus@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 20/40] ixgbe: protect ring accesses with READ- and WRITE_ONCE
+Date:   Wed,  1 Jul 2020 21:23:41 -0400
+Message-Id: <20200702012402.2701121-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200702012402.2701121-1-sashal@kernel.org>
 References: <20200702012402.2701121-1-sashal@kernel.org>
@@ -44,72 +46,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeremy Kerr <jk@ozlabs.org>
+From: Ciara Loftus <ciara.loftus@intel.com>
 
-[ Upstream commit e869e7a17798d85829fa7d4f9bbe1eebd4b2d3f6 ]
+[ Upstream commit f140ad9fe2ae16f385f8fe4dc9cf67bb4c51d794 ]
 
-Using a AX88179 device (0b95:1790), I see two bytes of appended data on
-every RX packet. For example, this 48-byte ping, using 0xff as a
-payload byte:
+READ_ONCE should be used when reading rings prior to accessing the
+statistics pointer. Introduce this as well as the corresponding WRITE_ONCE
+usage when allocating and freeing the rings, to ensure protected access.
 
-  04:20:22.528472 IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 2447, seq 1, length 64
-	0x0000:  000a cd35 ea50 000a cd35 ea4f 0800 4500
-	0x0010:  0054 c116 4000 4001 f63e c0a8 0101 c0a8
-	0x0020:  0102 0800 b633 098f 0001 87ea cd5e 0000
-	0x0030:  0000 dcf2 0600 0000 0000 ffff ffff ffff
-	0x0040:  ffff ffff ffff ffff ffff ffff ffff ffff
-	0x0050:  ffff ffff ffff ffff ffff ffff ffff ffff
-	0x0060:  ffff 961f
-
-Those last two bytes - 96 1f - aren't part of the original packet.
-
-In the ax88179 RX path, the usbnet rx_fixup function trims a 2-byte
-'alignment pseudo header' from the start of the packet, and sets the
-length from a per-packet field populated by hardware. It looks like that
-length field *includes* the 2-byte header; the current driver assumes
-that it's excluded.
-
-This change trims the 2-byte alignment header after we've set the packet
-length, so the resulting packet length is correct. While we're moving
-the comment around, this also fixes the spelling of 'pseudo'.
-
-Signed-off-by: Jeremy Kerr <jk@ozlabs.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/ax88179_178a.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  | 12 ++++++------
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 14 +++++++++++---
+ 2 files changed, 17 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index daa54486ab094..df2f7cc6dc03a 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1387,10 +1387,10 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 		}
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+index cc3196ae5aea8..636e6e840afa2 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+@@ -923,7 +923,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+ 		ring->queue_index = txr_idx;
  
- 		if (pkt_cnt == 0) {
--			/* Skip IP alignment psudo header */
--			skb_pull(skb, 2);
- 			skb->len = pkt_len;
--			skb_set_tail_pointer(skb, pkt_len);
-+			/* Skip IP alignment pseudo header */
-+			skb_pull(skb, 2);
-+			skb_set_tail_pointer(skb, skb->len);
- 			skb->truesize = pkt_len + sizeof(struct sk_buff);
- 			ax88179_rx_checksum(skb, pkt_hdr);
- 			return 1;
-@@ -1399,8 +1399,9 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 		ax_skb = skb_clone(skb, GFP_ATOMIC);
- 		if (ax_skb) {
- 			ax_skb->len = pkt_len;
--			ax_skb->data = skb->data + 2;
--			skb_set_tail_pointer(ax_skb, pkt_len);
-+			/* Skip IP alignment pseudo header */
-+			skb_pull(ax_skb, 2);
-+			skb_set_tail_pointer(ax_skb, ax_skb->len);
- 			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
- 			ax88179_rx_checksum(ax_skb, pkt_hdr);
- 			usbnet_skb_return(dev, ax_skb);
+ 		/* assign ring to adapter */
+-		adapter->tx_ring[txr_idx] = ring;
++		WRITE_ONCE(adapter->tx_ring[txr_idx], ring);
+ 
+ 		/* update count and index */
+ 		txr_count--;
+@@ -950,7 +950,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+ 		set_ring_xdp(ring);
+ 
+ 		/* assign ring to adapter */
+-		adapter->xdp_ring[xdp_idx] = ring;
++		WRITE_ONCE(adapter->xdp_ring[xdp_idx], ring);
+ 
+ 		/* update count and index */
+ 		xdp_count--;
+@@ -993,7 +993,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+ 		ring->queue_index = rxr_idx;
+ 
+ 		/* assign ring to adapter */
+-		adapter->rx_ring[rxr_idx] = ring;
++		WRITE_ONCE(adapter->rx_ring[rxr_idx], ring);
+ 
+ 		/* update count and index */
+ 		rxr_count--;
+@@ -1022,13 +1022,13 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
+ 
+ 	ixgbe_for_each_ring(ring, q_vector->tx) {
+ 		if (ring_is_xdp(ring))
+-			adapter->xdp_ring[ring->queue_index] = NULL;
++			WRITE_ONCE(adapter->xdp_ring[ring->queue_index], NULL);
+ 		else
+-			adapter->tx_ring[ring->queue_index] = NULL;
++			WRITE_ONCE(adapter->tx_ring[ring->queue_index], NULL);
+ 	}
+ 
+ 	ixgbe_for_each_ring(ring, q_vector->rx)
+-		adapter->rx_ring[ring->queue_index] = NULL;
++		WRITE_ONCE(adapter->rx_ring[ring->queue_index], NULL);
+ 
+ 	adapter->q_vector[v_idx] = NULL;
+ 	napi_hash_del(&q_vector->napi);
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index edaa0bffa5c35..5336bfcd2d701 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -7064,7 +7064,10 @@ void ixgbe_update_stats(struct ixgbe_adapter *adapter)
+ 	}
+ 
+ 	for (i = 0; i < adapter->num_rx_queues; i++) {
+-		struct ixgbe_ring *rx_ring = adapter->rx_ring[i];
++		struct ixgbe_ring *rx_ring = READ_ONCE(adapter->rx_ring[i]);
++
++		if (!rx_ring)
++			continue;
+ 		non_eop_descs += rx_ring->rx_stats.non_eop_descs;
+ 		alloc_rx_page += rx_ring->rx_stats.alloc_rx_page;
+ 		alloc_rx_page_failed += rx_ring->rx_stats.alloc_rx_page_failed;
+@@ -7085,15 +7088,20 @@ void ixgbe_update_stats(struct ixgbe_adapter *adapter)
+ 	packets = 0;
+ 	/* gather some stats to the adapter struct that are per queue */
+ 	for (i = 0; i < adapter->num_tx_queues; i++) {
+-		struct ixgbe_ring *tx_ring = adapter->tx_ring[i];
++		struct ixgbe_ring *tx_ring = READ_ONCE(adapter->tx_ring[i]);
++
++		if (!tx_ring)
++			continue;
+ 		restart_queue += tx_ring->tx_stats.restart_queue;
+ 		tx_busy += tx_ring->tx_stats.tx_busy;
+ 		bytes += tx_ring->stats.bytes;
+ 		packets += tx_ring->stats.packets;
+ 	}
+ 	for (i = 0; i < adapter->num_xdp_queues; i++) {
+-		struct ixgbe_ring *xdp_ring = adapter->xdp_ring[i];
++		struct ixgbe_ring *xdp_ring = READ_ONCE(adapter->xdp_ring[i]);
+ 
++		if (!xdp_ring)
++			continue;
+ 		restart_queue += xdp_ring->tx_stats.restart_queue;
+ 		tx_busy += xdp_ring->tx_stats.tx_busy;
+ 		bytes += xdp_ring->stats.bytes;
 -- 
 2.25.1
 
