@@ -2,62 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 279FC21299F
+	by mail.lfdr.de (Postfix) with ESMTP id 3DA162129A1
 	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 18:35:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726777AbgGBQec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 12:34:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44222 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726715AbgGBQec (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jul 2020 12:34:32 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jr2AK-003Le7-P9; Thu, 02 Jul 2020 18:34:24 +0200
-Date:   Thu, 2 Jul 2020 18:34:24 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/4] net: ethtool: Untangle PHYLIB dependency
-Message-ID: <20200702163424.GG752507@lunn.ch>
-References: <20200702042942.76674-1-f.fainelli@gmail.com>
- <20200702155652.ivokudjptoect6ch@lion.mk-sys.cz>
+        id S1726831AbgGBQek (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 12:34:40 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54240 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726715AbgGBQei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 12:34:38 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A565F200A8;
+        Thu,  2 Jul 2020 16:34:36 +0000 (UTC)
+Received: from us4-mdac16-47.at1.mdlocal (unknown [10.110.50.130])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A386B800A3;
+        Thu,  2 Jul 2020 16:34:36 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.74])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 1BADC100072;
+        Thu,  2 Jul 2020 16:34:36 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C98FA80069;
+        Thu,  2 Jul 2020 16:34:35 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 2 Jul 2020
+ 17:34:30 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH v2 net-next 15/16] sfc_ef100: NVRAM selftest support code
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+References: <52336e78-8f45-7401-9827-6c1fea38656d@solarflare.com>
+Message-ID: <d30d7f2b-2908-f069-904b-166aed40e9e6@solarflare.com>
+Date:   Thu, 2 Jul 2020 17:34:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200702155652.ivokudjptoect6ch@lion.mk-sys.cz>
+In-Reply-To: <52336e78-8f45-7401-9827-6c1fea38656d@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25516.003
+X-TM-AS-Result: No-6.226100-8.000000-10
+X-TMASE-MatchedRID: PNGnErQK3eV09yt1Yp3gn6iUivh0j2Pv6VTG9cZxEjJwGpdgNQ0JrHIo
+        zGa69omdrdoLblq9S5qq24siXERPcYgPQuqHpFiEGjzBgnFZvQ5KRaXN2yYjHmww+4tkH8hHwv9
+        AibJlKnA5ZnFyGLAQwHqZ7YfJvYp/zD8138PYfo6Ev7VboZWYm+HCwRwMNQUWOK4yXNWF4bALxV
+        psU9MI5NyDhrL0dj2eb44manJ1+nJjAM4vu3dHIfXG/YkcGRwfI5rZlsanIIWa+dyjmvhrc6PFj
+        JEFr+olA9Mriq0CDAg9wJeM2pSaRSAHAopEd76vRz6j+v+cepKk3UH1IPKZIm6xNzGXas/iAEN3
+        nQXTk+AVwGJ6wzwqPQ==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--6.226100-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25516.003
+X-MDID: 1593707676-BiLIVurga28n
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 02, 2020 at 05:56:52PM +0200, Michal Kubecek wrote:
-> On Wed, Jul 01, 2020 at 09:29:38PM -0700, Florian Fainelli wrote:
-> > Hi all,
-> > 
-> > This patch series untangles the ethtool netlink dependency with PHYLIB
-> > which exists because the cable test feature calls directly into PHY
-> > library functions. The approach taken here is to utilize a new set of
-> > net_device_ops function pointers which are automatically set to the PHY
-> > library variants when a network device driver attaches to a PHY device.
-> 
-> I'm not sure about the idea of creating a copy of netdev_ops for each
-> device using phylib. First, there would be some overhead (just checked
-> my 5.8-rc3 kernel, struct netdev_ops is 632 bytes). Second, there is
-> quite frequent pattern of comparing dev->netdev_ops against known
-> constants to check if a network device is of certain type; I can't say
-> for sure if it is also used with devices using phylib in existing code
-> but it feels risky.
+We have yet another new scheme for NVRAM, and a corresponding new MCDI.
 
-I agree with Michal here. I don't like this.
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/mcdi.c | 62 +++++++++++++++++++++++++++++++++
+ drivers/net/ethernet/sfc/mcdi.h |  1 +
+ 2 files changed, 63 insertions(+)
 
-I think we need phylib to register a set of ops with ethtool when it
-loads. It would also allow us to clean up phy_ethtool_get_strings(),
-phy_ethtool_get_sset_count(), phy_ethtool_get_stats().
+diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
+index 244fb621d17b..6c49740a178e 100644
+--- a/drivers/net/ethernet/sfc/mcdi.c
++++ b/drivers/net/ethernet/sfc/mcdi.c
+@@ -1621,6 +1621,35 @@ int efx_mcdi_nvram_types(struct efx_nic *efx, u32 *nvram_types_out)
+ 	return rc;
+ }
+ 
++/* This function finds types using the new NVRAM_PARTITIONS mcdi. */
++static int efx_new_mcdi_nvram_types(struct efx_nic *efx, u32 *number,
++				    u32 *nvram_types)
++{
++	efx_dword_t *outbuf = kzalloc(MC_CMD_NVRAM_PARTITIONS_OUT_LENMAX_MCDI2,
++				      GFP_KERNEL);
++	size_t outlen;
++	int rc;
++
++	if (!outbuf)
++		return -ENOMEM;
++
++	BUILD_BUG_ON(MC_CMD_NVRAM_PARTITIONS_IN_LEN != 0);
++
++	rc = efx_mcdi_rpc(efx, MC_CMD_NVRAM_PARTITIONS, NULL, 0,
++			  outbuf, MC_CMD_NVRAM_PARTITIONS_OUT_LENMAX_MCDI2, &outlen);
++	if (rc)
++		goto fail;
++
++	*number = MCDI_DWORD(outbuf, NVRAM_PARTITIONS_OUT_NUM_PARTITIONS);
++
++	memcpy(nvram_types, MCDI_PTR(outbuf, NVRAM_PARTITIONS_OUT_TYPE_ID),
++	       *number * sizeof(u32));
++
++fail:
++	kfree(outbuf);
++	return rc;
++}
++
+ int efx_mcdi_nvram_info(struct efx_nic *efx, unsigned int type,
+ 			size_t *size_out, size_t *erase_size_out,
+ 			bool *protected_out)
+@@ -1674,6 +1703,39 @@ static int efx_mcdi_nvram_test(struct efx_nic *efx, unsigned int type)
+ 	}
+ }
+ 
++/* This function tests nvram partitions using the new mcdi partition lookup scheme */
++int efx_new_mcdi_nvram_test_all(struct efx_nic *efx)
++{
++	u32 *nvram_types = kzalloc(MC_CMD_NVRAM_PARTITIONS_OUT_LENMAX_MCDI2,
++				   GFP_KERNEL);
++	unsigned int number;
++	int rc, i;
++
++	if (!nvram_types)
++		return -ENOMEM;
++
++	rc = efx_new_mcdi_nvram_types(efx, &number, nvram_types);
++	if (rc)
++		goto fail;
++
++	/* Require at least one check */
++	rc = -EAGAIN;
++
++	for (i = 0; i < number; i++) {
++		if (nvram_types[i] == NVRAM_PARTITION_TYPE_PARTITION_MAP ||
++		    nvram_types[i] == NVRAM_PARTITION_TYPE_DYNAMIC_CONFIG)
++			continue;
++
++		rc = efx_mcdi_nvram_test(efx, nvram_types[i]);
++		if (rc)
++			goto fail;
++	}
++
++fail:
++	kfree(nvram_types);
++	return rc;
++}
++
+ int efx_mcdi_nvram_test_all(struct efx_nic *efx)
+ {
+ 	u32 nvram_types;
+diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
+index 10f064f761a5..e053adfe82b0 100644
+--- a/drivers/net/ethernet/sfc/mcdi.h
++++ b/drivers/net/ethernet/sfc/mcdi.h
+@@ -345,6 +345,7 @@ int efx_mcdi_nvram_types(struct efx_nic *efx, u32 *nvram_types_out);
+ int efx_mcdi_nvram_info(struct efx_nic *efx, unsigned int type,
+ 			size_t *size_out, size_t *erase_size_out,
+ 			bool *protected_out);
++int efx_new_mcdi_nvram_test_all(struct efx_nic *efx);
+ int efx_mcdi_nvram_test_all(struct efx_nic *efx);
+ int efx_mcdi_handle_assertion(struct efx_nic *efx);
+ void efx_mcdi_set_id_led(struct efx_nic *efx, enum efx_led_mode mode);
 
-      Andrew
