@@ -2,102 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3F01211B0E
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 06:26:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 628BB211B15
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 06:28:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726120AbgGBE0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 00:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbgGBE0D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 00:26:03 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0E7C08C5C1;
-        Wed,  1 Jul 2020 21:26:03 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id j10so20261642qtq.11;
-        Wed, 01 Jul 2020 21:26:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PaY40v1MJNPlf27pHh51B9hv4Zqb30lQdG8/nYOAwRE=;
-        b=JViK+uY6kyqL83sprf9gSzle9bJ94OMWuE82MP/X0QJR2iX+GSEjf7auW87VeMrDIV
-         4LoUWVqZd0pgnA1r35pKcgJWmNC20jMaR5Kzg8sCYhXP8sj19ymE7EaW1iPEES+CZ9aj
-         cMxyEAEN839HrolhbQ39QwvCwtI4ZPx5DLHGxPJxe7ZFb03tWHxBraPTZ1FkMaiVmB6T
-         +BcxOqU8UbVeQbdynNFUZ8lywAV88F1Lr3X2nWoPpAcY5l7RNOeWq8acLjGaUcFy1HxM
-         GaYtqh7XY4JTxLD8zXcVugNcThWB3jZ98JFyrCAKUx1B0IUss9un6TQl87Cm7THWvcPU
-         ZJ5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PaY40v1MJNPlf27pHh51B9hv4Zqb30lQdG8/nYOAwRE=;
-        b=JPh5+2ZShdYfiLspFCuy3My3w2Ogz5zaPigBs/S+AmsqiR8hqT+rXv7FPyLbybNHan
-         wcyrRUWiKVu3iYLkJrx90t740yM9/igrHGOPtiYPB2uhongsKRlLH7vnvwxOPl/50l57
-         QuU0LD0YSTqnt8Nc/LDxKkGPgD1Y4KbKsRKw5czEDTWgV3HLMYhcZdQSsgUaXS0G9S2T
-         TBoYvgsHMbHykprgpJ2hP5NQT3OSAbZQUBJAz+osG4tyKIv2byZbsGJdQoq1nYmhYFAz
-         5im9XajfgzTuuQh2WdyRXxS6OHHvXbLnkzgLjYJ8woQlxlf3RO+fD0I6l6dcWmyvndLI
-         xHuQ==
-X-Gm-Message-State: AOAM533pFNjfvN5i7+QrqlLX9WeLDMPBipSLnem+2kYsUW2+W/YitjLZ
-        sTS/FzJbXC0GXkAcSjJ+d0Kur3gd9IkzwtvZP4Q=
-X-Google-Smtp-Source: ABdhPJzz/VJ2C8tzZ8zm+gpsj2fJ+Um8f6F9IyDdYN7OVCp0vUW1jeyrtMJ/mWR1mh+AzQzljqIZD6pZ2nfIcKvP+24=
-X-Received: by 2002:ac8:345c:: with SMTP id v28mr312976qtb.171.1593663962416;
- Wed, 01 Jul 2020 21:26:02 -0700 (PDT)
+        id S1726361AbgGBE2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 00:28:25 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:58243 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725857AbgGBE2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 00:28:24 -0400
+Received: from fsav105.sakura.ne.jp (fsav105.sakura.ne.jp [27.133.134.232])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 0624QsOL032532;
+        Thu, 2 Jul 2020 13:26:54 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav105.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav105.sakura.ne.jp);
+ Thu, 02 Jul 2020 13:26:54 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav105.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 0624Qsh8032529
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
+        Thu, 2 Jul 2020 13:26:54 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: linux-next: umh: fix processed error when UMH_WAIT_PROC is used
+ seems to break linux bridge on s390x (bisected)
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>, ast@kernel.org,
+        axboe@kernel.dk, bfields@fieldses.org,
+        bridge@lists.linux-foundation.org, chainsaw@gentoo.org,
+        christian.brauner@ubuntu.com, chuck.lever@oracle.com,
+        davem@davemloft.net, dhowells@redhat.com,
+        gregkh@linuxfoundation.org, jarkko.sakkinen@linux.intel.com,
+        jmorris@namei.org, josh@joshtriplett.org, keescook@chromium.org,
+        keyrings@vger.kernel.org, kuba@kernel.org,
+        lars.ellenberg@linbit.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, nikolay@cumulusnetworks.com,
+        philipp.reisner@linbit.com, ravenexp@gmail.com,
+        roopa@cumulusnetworks.com, serge@hallyn.com, slyfox@gentoo.org,
+        viro@zeniv.linux.org.uk, yangtiezhu@loongson.cn,
+        netdev@vger.kernel.org, markward@linux.ibm.com,
+        linux-s390 <linux-s390@vger.kernel.org>
+References: <ea41e2a9-61f7-aec1-79e5-7b08b6dd5119@de.ibm.com>
+ <4e27098e-ac8d-98f0-3a9a-ea25242e24ec@de.ibm.com>
+ <4d8fbcea-a892-3453-091f-d57c03f9aa90@de.ibm.com>
+ <1263e370-7cee-24d8-b98c-117bf7c90a83@de.ibm.com>
+ <20200626025410.GJ4332@42.do-not-panic.com>
+ <20200630175704.GO13911@42.do-not-panic.com>
+ <b24d8dae-1872-ba2c-acd4-ed46c0781317@de.ibm.com>
+ <a6792135-3285-0861-014e-3db85ea251dc@i-love.sakura.ne.jp>
+ <20200701135324.GS4332@42.do-not-panic.com>
+ <8d714a23-bac4-7631-e5fc-f97c20a46083@i-love.sakura.ne.jp>
+ <20200701153859.GT4332@42.do-not-panic.com>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <e3f3e501-2cb7-b683-4b85-2002b7603244@i-love.sakura.ne.jp>
+Date:   Thu, 2 Jul 2020 13:26:53 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20200702021646.90347-1-danieltimlee@gmail.com> <20200702021646.90347-3-danieltimlee@gmail.com>
-In-Reply-To: <20200702021646.90347-3-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 1 Jul 2020 21:25:51 -0700
-Message-ID: <CAEf4BzbtsHdRWWu__ri17e8PMRW-RcNc1g3okH8+U9RW=BVdig@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/4] samples: bpf: refactor BPF map in map test
- with libbpf
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200701153859.GT4332@42.do-not-panic.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 1, 2020 at 7:17 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> From commit 646f02ffdd49 ("libbpf: Add BTF-defined map-in-map
-> support"), a way to define internal map in BTF-defined map has been
-> added.
->
-> Instead of using previous 'inner_map_idx' definition, the structure to
-> be used for the inner map can be directly defined using array directive.
->
->     __array(values, struct inner_map)
->
-> This commit refactors map in map test program with libbpf by explicitly
-> defining inner map with BTF-defined format.
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  samples/bpf/Makefile               |  2 +-
->  samples/bpf/test_map_in_map_kern.c | 85 +++++++++++++++---------------
->  samples/bpf/test_map_in_map_user.c | 53 +++++++++++++++++--
->  3 files changed, 91 insertions(+), 49 deletions(-)
->
+On 2020/07/02 0:38, Luis Chamberlain wrote:
+> @@ -156,6 +156,18 @@ static void call_usermodehelper_exec_sync(struct subprocess_info *sub_info)
+>  		 */
+>  		if (KWIFEXITED(ret))
+>  			sub_info->retval = KWEXITSTATUS(ret);
+> +		/*
+> +		 * Do we really want to be passing the signal, or do we pass
+> +		 * a single error code for all cases?
+> +		 */
+> +		else if (KWIFSIGNALED(ret))
+> +			sub_info->retval = KWTERMSIG(ret);
 
-[...]
+No, this is bad. Caller of usermode helper is unable to distinguish exit(9)
+and e.g. SIGKILL'ed by the OOM-killer. Please pass raw exit status value.
 
-> -       if (load_bpf_file(filename)) {
-> -               printf("%s", bpf_log_buf);
-> -               return 1;
-> +       prog = bpf_object__find_program_by_name(obj, "trace_sys_connect");
-> +       if (libbpf_get_error(prog)) {
+I feel that caller of usermode helper should not use exit status value.
+For example, call_sbin_request_key() is checking
 
-still wrong, just `if (!prog)`
+  test_bit(KEY_FLAG_USER_CONSTRUCT, &key->flags) || key_validate(key) < 0
 
-> +               printf("finding a prog in obj file failed\n");
-> +               goto cleanup;
-> +       }
-> +
+condition (if usermode helper was invoked) in order to "ignore any errors from
+userspace if the key was instantiated".
 
-[...]
+> +		/* Same here */
+> +		else if (KWIFSTOPPED((ret)))
+> +			sub_info->retval = KWSTOPSIG(ret);
+> +		/* And are we really sure we want this? */
+> +		else if (KWIFCONTINUED((ret)))
+> +			sub_info->retval = 0;
+>  	}
+>  
+>  	/* Restore default kernel sig handler */
+> 
+
