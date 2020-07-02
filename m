@@ -2,234 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B89E0212BC9
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 20:00:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0DAF212BF4
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 20:13:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727984AbgGBSA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 14:00:27 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:30866 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727935AbgGBSA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 14:00:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1593712825;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9RTAPOlUHkOQw9eYA5K/tFkatYM1nQfJUmd/xyhvdU8=;
-        b=RHqeV+9i0N6zcezDs8QZqjL45VcGYQ5A9Q0ytt+p/GFa6I+7QQPoi0ZQ3pIckArWv/ZuJQ
-        gPDQQ1rI3MkVVTBBsH3Sb1/DOKSQONSrs+i8zEbQy/KETeXK8M8v5RsZLQMTKcKXr3VzWi
-        1j4GXkPAUrOZMBqsS8E3JSigOsvMrDc=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-224-2tecgtsWNpaaXRVuCLxCJw-1; Thu, 02 Jul 2020 14:00:23 -0400
-X-MC-Unique: 2tecgtsWNpaaXRVuCLxCJw-1
-Received: by mail-ed1-f69.google.com with SMTP id d3so15788857edq.14
-        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 11:00:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9RTAPOlUHkOQw9eYA5K/tFkatYM1nQfJUmd/xyhvdU8=;
-        b=in9MZVPuwnVAtS74q+ASlbHtVr2LhscuqykTd7TS3V5Gz9Jxda+7hcXuIpzw5rb+i5
-         5HsK5n3KL77DZ0x78Ts4dvbtgOsjKgjRB3oU/+omvaRysqa2l1jSYcm3glGdXCmfKIZN
-         2x5uk/J8xfpLvaERKkTh5na1uth95VI53zSGcxqUs0sDe4tU05TCw8LaCh+x8BWwgHrd
-         hOcssupizt3i7XHNZQoQh+9/4N04yf41WcgnpsKvtuhG8EjpUfdGZ20w3TwsORNGoEiF
-         XrNXqf+sJYFV7RlwwvET2k1Y/gXD8op0ouPbPUSERi/MgNfKomM93pvsx0SVTXGZMJhV
-         UDJQ==
-X-Gm-Message-State: AOAM530JS0ldlZ7OeThRZWC1+idKixDDFetZOds8NVjP9jSvuvVBQyAP
-        Fu0Afx5gnZZv4u+oS9J6+DdNkc3FFLMThNlxl4bVPlg362UWgBr7YsLsc5UxahvOp1kNBdmi/hR
-        Hd1r5ktguVdgNj1sl
-X-Received: by 2002:a17:906:7c3:: with SMTP id m3mr27739734ejc.30.1593712822204;
-        Thu, 02 Jul 2020 11:00:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzoAanT6l1qUnuzAmJ14QQOgQttXkiEZaoXRw3XHTH4UmRAk7NzoBTFrhoAQmSqdLtzxCypVA==
-X-Received: by 2002:a17:906:7c3:: with SMTP id m3mr27739678ejc.30.1593712821894;
-        Thu, 02 Jul 2020 11:00:21 -0700 (PDT)
-Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
-        by smtp.gmail.com with ESMTPSA id qc16sm7399458ejb.33.2020.07.02.11.00.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jul 2020 11:00:21 -0700 (PDT)
-Subject: Re: [PATCH] brcmfmac: expose firmware config files through modinfo
-To:     Matthias Brugger <mbrugger@suse.com>, matthias.bgg@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Chung-Hsien Hsu <stanley.hsu@cypress.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Double Lo <double.lo@cypress.com>,
-        Frank Kao <frank.kao@cypress.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
-        netdev@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Saravanan Shanmugham <saravanan.shanmugham@cypress.com>,
-        brcm80211-dev-list@cypress.com, linux-kernel@vger.kernel.org,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Soeren Moch <smoch@web.de>
-References: <20200701153123.25602-1-matthias.bgg@kernel.org>
- <338e3cff-dfa0-c588-cf53-a160d75af2ee@redhat.com>
- <1013c7e6-f1fb-af0c-fe59-4d6cd612f959@suse.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <35066b13-9fe2-211d-2ba8-5eb903b46bf7@redhat.com>
-Date:   Thu, 2 Jul 2020 20:00:19 +0200
+        id S1728010AbgGBSMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 14:12:52 -0400
+Received: from mx0b-00190b01.pphosted.com ([67.231.157.127]:55856 "EHLO
+        mx0b-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726349AbgGBSMv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 14:12:51 -0400
+Received: from pps.filterd (m0122330.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 062I6xWf021265;
+        Thu, 2 Jul 2020 19:08:46 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=dHBJESfsfuoreJg+hXrfxFFWunh4+79b75TiWxqM97A=;
+ b=g383Rgq9sti6Bn+cu+UTO/3GFFBS8CFYQnf7IglyV8CnzwDzucMDpgzOWgQa9bZz7p6W
+ W9gqs9cX+NufeX/UECsCx0pdFW7NMGfqCRzE5a5zQ+pQTclvgGgPOxKYoA/7h+vNU9FL
+ owC9M0AjwCaQua1A63VIxxLHxQaFTRg8j3mA0D6N9y9u6l5h3Zrx6xlB2bLDCz35H4mR
+ 775TeCH9PfRc81WY8k7cEg8ot4zybMhYHtqjpJxIpAgSnOHlEXzbGZPxuHk4Q2KVP9ye
+ r8vZsJFX8v5fivTU8goxhBSUcrleOBnpZFwdAeww0N5OVD7iBvfEQSs+bMRE2kT90gk1 QA== 
+Received: from prod-mail-ppoint6 (prod-mail-ppoint6.akamai.com [184.51.33.61] (may be forged))
+        by mx0b-00190b01.pphosted.com with ESMTP id 31xkj2nbpr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 02 Jul 2020 19:08:46 +0100
+Received: from pps.filterd (prod-mail-ppoint6.akamai.com [127.0.0.1])
+        by prod-mail-ppoint6.akamai.com (8.16.0.42/8.16.0.42) with SMTP id 062I69SV014747;
+        Thu, 2 Jul 2020 14:08:45 -0400
+Received: from prod-mail-relay19.dfw02.corp.akamai.com ([172.27.165.173])
+        by prod-mail-ppoint6.akamai.com with ESMTP id 31x1ey2v9p-1;
+        Thu, 02 Jul 2020 14:08:45 -0400
+Received: from [0.0.0.0] (prod-ssh-gw01.bos01.corp.akamai.com [172.27.119.138])
+        by prod-mail-relay19.dfw02.corp.akamai.com (Postfix) with ESMTP id 268F26036B;
+        Thu,  2 Jul 2020 18:08:44 +0000 (GMT)
+Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
+To:     Paolo Abeni <pabeni@redhat.com>,
+        Jonas Bonn <jonas.bonn@netrounds.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Michael Zhivich <mzhivich@akamai.com>,
+        David Miller <davem@davemloft.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
+ <20200623134259.8197-1-mzhivich@akamai.com>
+ <1849b74f-163c-8cfa-baa5-f653159fefd4@akamai.com>
+ <CAM_iQpX1+dHB0kJF8gRfuDeAb9TsA9mB9H_Og8n8Hr19+EMLJA@mail.gmail.com>
+ <CAM_iQpWjQiG-zVs+e-V=8LvTFbRwgC4y4eoGERjezfAT0Fmm8g@mail.gmail.com>
+ <7fd86d97-6785-0b5f-1e95-92bc1da9df35@netrounds.com>
+ <500b4843cb7c425ea5449fe199095edd5f7feb0c.camel@redhat.com>
+From:   Josh Hunt <johunt@akamai.com>
+Message-ID: <25ca46e4-a8c1-1c88-d6a9-603289ff44c3@akamai.com>
+Date:   Thu, 2 Jul 2020 11:08:43 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <1013c7e6-f1fb-af0c-fe59-4d6cd612f959@suse.com>
+In-Reply-To: <500b4843cb7c425ea5449fe199095edd5f7feb0c.camel@redhat.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-02_09:2020-07-02,2020-07-02 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 mlxscore=0
+ adultscore=0 malwarescore=0 mlxlogscore=999 suspectscore=2 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2007020123
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-07-02_09:2020-07-02,2020-07-02 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 malwarescore=0
+ priorityscore=1501 cotscore=-2147483648 mlxlogscore=999 phishscore=0
+ bulkscore=0 suspectscore=2 impostorscore=0 adultscore=0 mlxscore=0
+ clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2007020123
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 7/1/20 5:46 PM, Matthias Brugger wrote:
-> Hi Hans,
+On 7/2/20 2:45 AM, Paolo Abeni wrote:
+> Hi all,
 > 
-> On 01/07/2020 17:38, Hans de Goede wrote:
->> Hi,
+> On Thu, 2020-07-02 at 08:14 +0200, Jonas Bonn wrote:
+>> Hi Cong,
 >>
->> On 7/1/20 5:31 PM, matthias.bgg@kernel.org wrote:
->>> From: Matthias Brugger <mbrugger@suse.com>
+>> On 01/07/2020 21:58, Cong Wang wrote:
+>>> On Wed, Jul 1, 2020 at 9:05 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>>>> On Tue, Jun 30, 2020 at 2:08 PM Josh Hunt <johunt@akamai.com> wrote:
+>>>>> Do either of you know if there's been any development on a fix for this
+>>>>> issue? If not we can propose something.
+>>>>
+>>>> If you have a reproducer, I can look into this.
 >>>
->>> Apart from a firmware binary the chip needs a config file used by the
->>> FW. Add the config files to modinfo so that they can be read by
->>> userspace.
+>>> Does the attached patch fix this bug completely?
 >>
->> The configfile firmware filename is dynamically generated, just adding the list
->> of all currently shipped ones is not really helpful and this is going to get
->> out of sync with what we actually have in linux-firmware.
-> 
-> I'm aware of this, and I agree.
-> 
+>> It's easier to comment if you inline the patch, but after taking a quick
+>> look it seems too simplistic.
 >>
->> I must honestly say that I'm not a fan of this, I guess you are trying to
->> get some tool which builds a minimal image, such as an initrd generator
->> to add these files to the image ?
+>> i)  Are you sure you haven't got the return values on qdisc_run reversed?
+> 
+> qdisc_run() returns true if it was able to acquire the seq lock. We
+> need to take special action in the opposite case, so Cong's patch LGTM
+> from a functional PoV.
+> 
+>> ii) There's a "bypass" path that skips the enqueue/dequeue operation if
+>> the queue is empty; that needs a similar treatment:  after releasing
+>> seqlock it needs to ensure that another packet hasn't been enqueued
+>> since it last checked.
+> 
+> That has been reverted with
+> commit 379349e9bc3b42b8b2f8f7a03f64a97623fff323
+> 
+> ---
+>> diff --git a/net/core/dev.c b/net/core/dev.c
+>> index 90b59fc50dc9..c7e48356132a 100644
+>> --- a/net/core/dev.c
+>> +++ b/net/core/dev.c
+>> @@ -3744,7 +3744,8 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 >>
+>>   	if (q->flags & TCQ_F_NOLOCK) {
+>>   		rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
+>> -		qdisc_run(q);
+>> +		if (!qdisc_run(q) && rc == NET_XMIT_SUCCESS)
+>> +			__netif_schedule(q);
 > 
-> Yes exactly.
-> 
->> I do not immediately have a better idea, but IMHO the solution
->> this patch proposes is not a good one, so nack from me for this change.
->>
-> 
-> Another path we could go is add a wildcard string instead, for example:
-> MODULE_FIRMWARE("brcm/brcmfmac43455-sdio.*.txt");
+> I fear the __netif_schedule() call may cause performance regression to
+> the point of making a revert of TCQ_F_NOLOCK preferable. I'll try to
+> collect some data.
 
-I was thinking about the same lines, but I'm afraid some user-space
-utils may blow up if we introduce this, which is why I did not suggest
-it in my previous email.
+Initial results with Cong's patch look promising, so far no stalls. We 
+will let it run over the long weekend and report back on Tuesday.
 
-> AFAIK there is no driver in the kernel that does this. I checked with our dracut
-> developer and right now dracut can't cope with that.
+Paolo - I have concerns about possible performance regression with the 
+change as well. If you can gather some data that would be great. If 
+things look good with our low throughput test over the weekend we can 
+also try assessing performance next week.
 
-Can't cope as in tries to add "/lib/firmware/brcm/brcmfmac43455-sdio.*.txt"
-and then skips it (as it does for other missing firmware files); or can't
-cope as in blows-up and aborts without leaving a valid initrd behind.
-
-If is the former, that is fine, if it is the latter that is a problem.
-
-> But he will try to
-> implement that in the future.
-> 
-> So my idea was to maintain that list for now and switch to the wildcard approach
-> once we have dracut support that.
-
-So lets assume that the wildcard approach is ok and any initrd tools looking at
-the MODULE_FIRMWARE metadata either accidentally do what we want; or fail
-gracefully.  Then if we temporarily add the long MODULE_FIRMWARE list now, those
-which fail gracefully will start doing the right thing (except they add too
-much firmware), and later on we cannot remove all the non wildcard
-MODULE_FIRMWARE list entries because that will cause a regression.
-
-Because of this I'm not a fan of temporarily fixing this like this. Using wifi
-inside the initrd is very much a cornercase anyways, so I think users can
-use a workaround by dropping an /etc/dracut.conf.d file adding the necessary
-config file for now.
-
-As for the long run, I was thinking that even with regular firmware files
-we are adding too much firmware to host-specific initrds since we add all
-the firmwares listed with MODULE_FIRMWARE, and typically only a few are
-actually necessary.
-
-We could modify the firmware_loader code under drivers/base/firmware_loader
-to keep a list of all files loaded since boot; and export that somewhere
-under /sys, then dracut could use that list in host-only mode and we get
-a smaller initrd. One challenge with this approach though is firmware files
-which are necessary for a new kernel, but not used by the running kernel ...
-I'm afraid I do not have a good answer to that.
-
-Regards,
-
-Hans
-
-
-
-
-
-
-
->>> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
->>>
->>> ---
->>>
->>>    .../wireless/broadcom/brcm80211/brcmfmac/sdio.c  | 16 ++++++++++++++++
->>>    1 file changed, 16 insertions(+)
->>>
->>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->>> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->>> index 310d8075f5d7..ba18df6d8d94 100644
->>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
->>> @@ -624,6 +624,22 @@ BRCMF_FW_DEF(4359, "brcmfmac4359-sdio");
->>>    BRCMF_FW_DEF(4373, "brcmfmac4373-sdio");
->>>    BRCMF_FW_DEF(43012, "brcmfmac43012-sdio");
->>>    +/* firmware config files */
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
->>> "brcm/brcmfmac4330-sdio.Prowise-PT301.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
->>> "brcm/brcmfmac43340-sdio.meegopad-t08.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
->>> "brcm/brcmfmac43340-sdio.pov-tab-p1006w-data.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
->>> "brcm/brcmfmac43362-sdio.cubietech,cubietruck.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
->>> "brcm/brcmfmac43430a0-sdio.jumper-ezpad-mini3.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430a0-sdio.ONDA-V80
->>> PLUS.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430-sdio.AP6212.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
->>> "brcm/brcmfmac43430-sdio.Hampoo-D2D3_Vi8A1.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430-sdio.MUR1DX.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
->>> "brcm/brcmfmac43430-sdio.raspberrypi,3-model-b.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43455-sdio.MINIX-NEO
->>> Z83-4.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
->>> "brcm/brcmfmac43455-sdio.raspberrypi,3-model-b-plus.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
->>> "brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.txt");
->>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH
->>> "brcm/brcmfmac4356-pcie.gpd-win-pocket.txt");
->>> +
->>>    static const struct brcmf_firmware_mapping brcmf_sdio_fwnames[] = {
->>>        BRCMF_FW_ENTRY(BRCM_CC_43143_CHIP_ID, 0xFFFFFFFF, 43143),
->>>        BRCMF_FW_ENTRY(BRCM_CC_43241_CHIP_ID, 0x0000001F, 43241B0),
->>>
->>
-> 
-
+Josh
