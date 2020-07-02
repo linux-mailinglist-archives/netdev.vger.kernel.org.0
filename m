@@ -2,84 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C0CB211FA0
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:17:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8AC1211F78
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 11:08:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728152AbgGBJRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 05:17:55 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:15955 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726858AbgGBJRz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 05:17:55 -0400
-Received: from [192.168.188.14] (unknown [106.75.220.2])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id A34F241F43;
-        Thu,  2 Jul 2020 17:17:51 +0800 (CST)
-Subject: Re: [PATCH net 1/2] net/sched: act_ct: fix restore the qdisc_skb_cb
- after defrag
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-References: <1593422178-26949-1-git-send-email-wenxu@ucloud.cn>
- <20200701.152116.1519098438346883237.davem@davemloft.net>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <89404b82-71b8-c94d-1e0b-11e3755da0b3@ucloud.cn>
-Date:   Thu, 2 Jul 2020 17:17:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728323AbgGBJIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 05:08:06 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:6804 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726362AbgGBJIG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jul 2020 05:08:06 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 0DE9EB761AB513D54E7F;
+        Thu,  2 Jul 2020 17:08:04 +0800 (CST)
+Received: from kernelci-master.huawei.com (10.175.101.6) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 2 Jul 2020 17:07:57 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     Hulk Robot <hulkci@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
+        "Sumit Semwal" <sumit.semwal@linaro.org>,
+        zhong jiang <zhongjiang@huawei.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linaro-mm-sig@lists.linaro.org>
+Subject: [PATCH net-next] ksz884x: mark pcidev_suspend() as __maybe_unused
+Date:   Thu, 2 Jul 2020 17:18:10 +0800
+Message-ID: <20200702091810.4999-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20200701.152116.1519098438346883237.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSEhIS0tLS01IQ0JNSkNZV1koWU
-        FJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkdIjULOBw4FUopIiQLDUoeTA8vOjocVlZVQ05CKElZV1kJDh
-        ceCFlBWTU0KTY6NyQpLjc#WVdZFhoPEhUdFFlBWTQwWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NCo6Ghw5Gj8dOhUBSA0DTkg0
-        PT4KC09VSlVKTkJITUNKT0xKQ01JVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
-        TlVJSUtVSVlXWQgBWUFJTENINwY+
-X-HM-Tid: 0a730ed168ff2086kuqya34f241f43
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In certain configurations without power management support, gcc report
+the following warning:
 
-On 7/2/2020 6:21 AM, David Miller wrote:
-> From: wenxu@ucloud.cn
-> Date: Mon, 29 Jun 2020 17:16:17 +0800
->
->> From: wenxu <wenxu@ucloud.cn>
->>
->> The fragment packets do defrag in tcf_ct_handle_fragments
->> will clear the skb->cb which make the qdisc_skb_cb clear
->> too and set the pkt_len to 0. The bytes always 0 when dump
->> the filter. And it also update the pkt_len after all the
->> fragments finish the defrag to one packet and make the
->> following action counter correct.
->>
->> filter protocol ip pref 2 flower chain 0 handle 0x2
->>   eth_type ipv4
->>   dst_ip 1.1.1.1
->>   ip_flags frag/firstfrag
->>   skip_hw
->>   not_in_hw
->>  action order 1: ct zone 1 nat pipe
->>   index 2 ref 1 bind 1 installed 11 sec used 11 sec
->>  Action statistics:
->>  Sent 0 bytes 11 pkt (dropped 0, overlimits 0 requeues 0)
->>  backlog 0b 0p requeues 0
->>  cookie e04106c2ac41769b278edaa9b5309960
->>
->> Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
->> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> This is a much larger and serious problem IMHO.  And this fix is
-> not sufficient.
->
-> Nothing can clobber the qdisc_skb_cb like this in these packet flows
-> otherwise we will have serious crashes and problems.  Some packet
-> schedulers store pointers in the qdisc CB private area, for example.
-Why store all the cb private and restore it can't total fix this?
->
-> We need to somehow elide the CB clear when packets are defragmented by
-> connection tracking.
-you means add new function like ip_defrag_nocb for qdisc cb case?
->
+drivers/net/ethernet/micrel/ksz884x.c:7182:12: warning:
+ 'pcidev_suspend' defined but not used [-Wunused-function]
+ 7182 | static int pcidev_suspend(struct device *dev_d)
+      |            ^~~~~~~~~~~~~~
+
+Mark pcidev_suspend() as __maybe_unused to make it clear.
+
+Fixes: 64120615d140 ("ksz884x: use generic power management")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+ drivers/net/ethernet/micrel/ksz884x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
+index 24901342ecc0..2ce7304d3753 100644
+--- a/drivers/net/ethernet/micrel/ksz884x.c
++++ b/drivers/net/ethernet/micrel/ksz884x.c
+@@ -7179,7 +7179,7 @@ static int __maybe_unused pcidev_resume(struct device *dev_d)
+ 	return 0;
+ }
+ 
+-static int pcidev_suspend(struct device *dev_d)
++static int __maybe_unused pcidev_suspend(struct device *dev_d)
+ {
+ 	int i;
+ 	struct platform_info *info = dev_get_drvdata(dev_d);
+
