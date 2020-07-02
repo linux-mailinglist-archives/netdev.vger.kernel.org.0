@@ -2,161 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A20C21250A
-	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:44:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 688F7212529
+	for <lists+netdev@lfdr.de>; Thu,  2 Jul 2020 15:47:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729337AbgGBNoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jul 2020 09:44:37 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:18606 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729222AbgGBNog (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 09:44:36 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5efde45e0001>; Thu, 02 Jul 2020 06:42:54 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 02 Jul 2020 06:44:35 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 02 Jul 2020 06:44:35 -0700
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 2 Jul
- 2020 13:44:24 +0000
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
- HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Thu, 2 Jul 2020 13:44:24 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l0h/yz/kRGPPt5DTDMrsWE/K82MyrFwJJ5UyMRjN3rR0kscjVaCxCEd218qzV1n6U2hWvSqgwcWZs+es7wlXYyldxwuluCwv6PziJOsOt6vzxYlypEsrT1ooV9GqUQBDBk0rXCzjeH9sObTKwKIlUXY+kwte2TYgyvjxTasmY5hBufPpURcoLf/JqUYkPLbLkmtbPE+6/jo35Odnvs2Wc9WrSPTlP+7P2GNWAFrUWt1AKAekJPUIsHOKsiNq1u6kn8OuLVAHhoEQHgsCxe7q0291g5FQzZ4fZgJ52QjrNGrcLwvk4Ii/HIp+Bb72MUMjLZY1G5A9rEDWoIlMEvVcgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8jSqbFz+nDSD8uIBcoBoLV4Oh0iwmoUixtVUtEnMWeU=;
- b=Br+SsAv8XGwFxo2X/vKC0DFYBxT+ZL5Yp8/6dxDVrYb8HeHL3RzczLPpOwBuTdGxlWr9tkwnLN3hO0VWypHBZydKG68A10QT5oXwr118i70TFCbAP9pCqO7tqV5d3xlYxTQk+nIXQSJC84o3rjVVxrLffntQTlG43TC1/D4O66qR5C+TfD/FbKM/9dAXDF/oyZ5h1k+1xhfI900fZeHav6evS/9m9msr1aIg8xdfIuJ6aQcLnpoxDgjRWSI84FYDSGfGDjU22OFroONf5pksRP/5bHmsZlwxlLs7r+7RW6/iRIohPEw9LyV5/UZZraEJVbFnn0vyGi34JSjJFFp2Vw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB3402.namprd12.prod.outlook.com (2603:10b6:5:3b::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.27; Thu, 2 Jul
- 2020 13:44:23 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1d53:7cb4:c3d7:2b54]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1d53:7cb4:c3d7:2b54%6]) with mapi id 15.20.3153.027; Thu, 2 Jul 2020
- 13:44:23 +0000
-Date:   Thu, 2 Jul 2020 10:44:17 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Wei Yongjun <weiyongjun1@huawei.com>
-CC:     Hulk Robot <hulkci@huawei.com>, Tariq Toukan <tariqt@mellanox.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH net-next] mlx4: Mark PM functions as __maybe_unused
-Message-ID: <20200702134417.GA689088@nvidia.com>
-References: <20200702091946.5144-1-weiyongjun1@huawei.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200702091946.5144-1-weiyongjun1@huawei.com>
-X-ClientProxiedBy: MN2PR03CA0001.namprd03.prod.outlook.com
- (2603:10b6:208:23a::6) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1729424AbgGBNrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jul 2020 09:47:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729051AbgGBNrp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jul 2020 09:47:45 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905FEC08C5C1
+        for <netdev@vger.kernel.org>; Thu,  2 Jul 2020 06:47:45 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id a6so28499090wrm.4
+        for <netdev@vger.kernel.org>; Thu, 02 Jul 2020 06:47:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZwC2KofFJKO2Kz1ZnDpUC9vH2nMKW6u7oZXxLzQv40I=;
+        b=dmiLcwDhJk1NQcYlu03OuKMtUIE/NeC2LLeLbrwxiWP/CQWVh678undWuJpSMFfWKt
+         pqJQFbXDS3SmeqvEKXm69oZpdNbYtPr6K3bey6rLz4r9xng9TFETrFIQ4hIDCxrfauBv
+         GRYt0qlTOeZ49+GYrf+gmLrcYXd/cnfabq6G/6qUAp59taYwc4gBHa3cG+n+S7WK2WBM
+         bGRllAgbervVwDtmS+KJwhmnJnQLcCPvhcoveFej6391OZEALA4RpW2ZaSp+wxwu9qX6
+         lLqF4S+Po6BfziWbngftEcLQyKYRo1r1AtxgL+iQTjhEXqpcEujdUBJ/nnzFqdttjO26
+         +8Ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZwC2KofFJKO2Kz1ZnDpUC9vH2nMKW6u7oZXxLzQv40I=;
+        b=H/y8BWTPK+iDPSuSxXFHHkSQzjSr45LIEseocyCXpMj2SY9YUTaLCSh0HeRLYZ58l5
+         n0MY+wLIYmqUKwGeUmXT8Gl/kGsiwq75mzvGPwaOs0iT74VCqGbWzToBg0tf6J4xiGBG
+         1defMC9A+d+f50bjksq8kmsQjPabzFZsDHJhtYkUyfMUQLba0PHgaIo9j8+nqN7Mg7QF
+         gZvhwsHjfOBoczO0Q9J2IT1u+QHXW0HTGl7tUBpjUy5G5xdLjApyF3JkUA+aZPBquJ/p
+         GwU5RsJhX9BxXmKf0kFNhcJTSKwmb/37JDCd43v+Y6Moxeoo9poNxNgCsp0pKLCOlW5t
+         UfOg==
+X-Gm-Message-State: AOAM530YALUI38xNl3aycsjEiTtRhMhUkflxZjjvOnAromnXw5MAT6RH
+        MrL7G3Tdm1ERd0GB4zCnYkvUug==
+X-Google-Smtp-Source: ABdhPJxkjl0IEjS3JqN7KaPO6L0oyFA19XXhKeCpfVTk+YyOUUQhs0LWqu5F2t0O0dXW3DG2OnPg/w==
+X-Received: by 2002:adf:c44d:: with SMTP id a13mr32528906wrg.205.1593697663121;
+        Thu, 02 Jul 2020 06:47:43 -0700 (PDT)
+Received: from ?IPv6:2a01:e34:ed2f:f020:c88a:7b2b:a4a1:46d0? ([2a01:e34:ed2f:f020:c88a:7b2b:a4a1:46d0])
+        by smtp.googlemail.com with ESMTPSA id g16sm11988699wrh.91.2020.07.02.06.47.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jul 2020 06:47:42 -0700 (PDT)
+Subject: Re: [PATCH v7 00/11] Stop monitoring disabled devices
+To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Peter Kaestle <peter@piie.net>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Enrico Weigelt <info@metux.net>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        kernel@collabora.com
+References: <20200629122925.21729-1-andrzej.p@collabora.com>
+ <aab40d90-3f72-657c-5e14-e53a34c4b420@linaro.org>
+ <3d03d1a2-ac06-b69b-93cb-e0203be62c10@collabora.com>
+ <47111821-d691-e71d-d740-e4325e290fa4@linaro.org>
+ <be9b7ee3-cad0-e462-126d-08de9b226285@collabora.com>
+ <4353a939-3f5e-8369-5bc0-ad8162b5ffc7@linaro.org>
+ <a531d80f-afd1-2dec-6c77-ed984e97595c@collabora.com>
+ <db1ff4e1-cbf8-89b3-5d64-b91a1fd88a41@linaro.org>
+ <73942aea-ae79-753c-fe90-d4a99423d548@collabora.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <374dddd9-b600-3a30-d6c3-8cfcefc944d9@linaro.org>
+Date:   Thu, 2 Jul 2020 15:47:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (193.47.165.251) by MN2PR03CA0001.namprd03.prod.outlook.com (2603:10b6:208:23a::6) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20 via Frontend Transport; Thu, 2 Jul 2020 13:44:22 +0000
-Received: from jgg by mlx with local (Exim 4.93)        (envelope-from <jgg@nvidia.com>)        id 1jqzVh-002tJ8-Os; Thu, 02 Jul 2020 10:44:17 -0300
-X-Originating-IP: [193.47.165.251]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b4608b16-1459-4aa3-1398-08d81e8e0724
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3402:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3402C2BBF8C1150DF7FE5D8CC26D0@DM6PR12MB3402.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-Forefront-PRVS: 0452022BE1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wcjQDUbPwo7WM0G40riAfEJ5BMx4mDy3vE4VyKMinPuPxnBqiFX3hGKjI/yYkolfwx7wCKXIk3M1vxftaNyaTjQpXoZfuNKk3jVy+kTQV9monAuFFvzzEwzxZuEw3lEybKXxBcpcWAQqc2gmqzqxMO1ixk7D/Z4XJCUchqV0vK5it4eWjOowu6pL0f8XkHb+2HwWzxRvSay04U/kq7nrax9QOr1h4Ji2Db7JeZUyrXz/lmvIl+48r8Ly6EVNstSbWE2E+AltqVzzJHJ6ieoaJ/u66kqAaN4BshHJOANyPnYDoKrUzB6lk/KbebXdC2wmSTG4R+fUc2RHH9DiuEZQq4QmySgkjWa13yexY4aro7uXxGcD1goELl/WUJdhYSPK
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(136003)(346002)(376002)(396003)(39860400002)(4326008)(186003)(26005)(316002)(478600001)(54906003)(9746002)(83380400001)(8676002)(33656002)(8936002)(9786002)(2616005)(426003)(2906002)(6916009)(36756003)(66946007)(66556008)(66476007)(1076003)(86362001)(5660300002)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: +s2YuA6YLivAGDVCepf5t2gB937Z+3w5I6ryFRFsVFc/di/0eN/+e/KfZbFIIL3GKuX9oVlwnllGn91OnW2Vv/TeQEp05dMW+5ZqpGCcB4kETQzL0V4leSYvYMFrz9XVECfrj7nH/FbBzbuGjC5OLGTmJZBu65ZTsIGVsLPD1AYC7W1B4hI5TExZt/QYIiIdFbaetOomFfP3vealzfFc0AIFg+4rZUWJBjh89JVV5JrRASBajFSeHeBR8ZA1jgRN56V2MVHuIvKeQNf6voiXltx5l3IOHhuUJXZcMGQz1FWXs6LZmZFchvGh8ys1CaHmwr13y3SvDpLTpJUDnsxMkcKouBeO1CSb5EEuVYZeL+mIDPH0GkWd37sffJMpz3O9fIf2cXu6VgdiuHQYEACXb34Qlhu1zCMCELgqrZerCj/XSlmQhtUXz1ocSSysJXTV111OqnkwVKflt8sDV4JBWCmApylZ/et5mPSq+9BVDVddxaRVWCsR7yYBzLwqpNO7
-X-MS-Exchange-CrossTenant-Network-Message-Id: b4608b16-1459-4aa3-1398-08d81e8e0724
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jul 2020 13:44:23.2406
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h2oekHBVj8+EOmLCWcNwZ6KFLWub3EIkyeiCnQ6pOTJdb6BUBZiMKbqzdnq7/SJG
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3402
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1593697374; bh=8jSqbFz+nDSD8uIBcoBoLV4Oh0iwmoUixtVUtEnMWeU=;
-        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
-         ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
-         Subject:Message-ID:References:Content-Type:Content-Disposition:
-         In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
-         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
-         X-MS-TrafficTypeDiagnostic:X-Microsoft-Antispam-PRVS:
-         X-MS-Oob-TLC-OOBClassifiers:X-Forefront-PRVS:
-         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
-         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-         X-MS-Exchange-AntiSpam-MessageData:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-         X-MS-Exchange-CrossTenant-FromEntityHeader:
-         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-         X-MS-Exchange-CrossTenant-UserPrincipalName:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=n6YqNFDf59OtUnMWBV0Rr+O0YH96cbGDgazw7ZrOuUfOivVc5dxsFZLUXLoOVK0SW
-         8r04sX7zr61pWhQGaL0zEVwAgwNF9EnniNMTWQctqyCbJCazmPPFibwgWvj5HJwUCt
-         9bjUI8PvZWPJejLVX5BWb0tzPAFHpiO3jaTfAhDJBlMOwLSS2xOBJHvpvi4jG6vLeH
-         A74pon2sXpvhWPcy9dSzt4RU4JQXjJ1rfXuyijCZ08OZvnPwVNFBgCiwEJmGroDYDO
-         hWEWMhy2D/YmuQvFdre6bM5iLwULlu1IwyB8loCk0QP+aoq6N1SS8bC/AQu8yV7Ukz
-         bh4JPcWw7S4XQ==
+In-Reply-To: <73942aea-ae79-753c-fe90-d4a99423d548@collabora.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 02, 2020 at 05:19:46PM +0800, Wei Yongjun wrote:
-> In certain configurations without power management support, the
-> following warnings happen:
+On 01/07/2020 12:23, Andrzej Pietrasiewicz wrote:
+> Hi,
 > 
-> drivers/net/ethernet/mellanox/mlx4/main.c:4388:12:
->  warning: 'mlx4_resume' defined but not used [-Wunused-function]
->  4388 | static int mlx4_resume(struct device *dev_d)
->       |            ^~~~~~~~~~~
-> drivers/net/ethernet/mellanox/mlx4/main.c:4373:12: warning:
->  'mlx4_suspend' defined but not used [-Wunused-function]
->  4373 | static int mlx4_suspend(struct device *dev_d)
->       |            ^~~~~~~~~~~~
->       
-> Mark these functions as __maybe_unused to make it clear to the
-> compiler that this is going to happen based on the configuration,
-> which is the standard for these types of functions.
-> 
-> Fixes: 0e3e206a3e12 ("mlx4: use generic power management")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
->  drivers/net/ethernet/mellanox/mlx4/main.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-> index 4cae7db8d49c..954c22c79f6b 100644
-> +++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-> @@ -4370,7 +4370,7 @@ static const struct pci_error_handlers mlx4_err_handler = {
->  	.resume		= mlx4_pci_resume,
->  };
->  
-> -static int mlx4_suspend(struct device *dev_d)
-> +static int __maybe_unused mlx4_suspend(struct device *dev_d)
->  {
+> W dniu 30.06.2020 o 20:33, Daniel Lezcano pisze:
+>> On 30/06/2020 18:56, Andrzej Pietrasiewicz wrote:
+>>> Hi,
+>>>
+>>> W dniu 30.06.2020 o 17:53, Daniel Lezcano pisze:
+>>>> On 30/06/2020 17:29, Andrzej Pietrasiewicz wrote:
+>>>>> Hi Daniel,
+>>>>>
+>>>>> W dniu 30.06.2020 o 16:53, Daniel Lezcano pisze:
+>>>>>> On 30/06/2020 15:43, Andrzej Pietrasiewicz wrote:
+>>>>>>> Hi Daniel,
+>>>>>>>
+>>>>>>> I am reading the logs and can't find anything specific to thermal.
+>>>>>>>
+>>>>>>> What I can see is
+>>>>>>>
+>>>>>>> "random: crng init done"
+>>>>>>>
+>>>>>>> with large times (~200s) and then e.g.
+>>>>>>>
+>>>>>>> 'auto-login-action timed out after 283 seconds'
+>>>>>>>
+>>>>>>> I'm looking at e.g.
+>>>>>>> https://storage.kernelci.org/thermal/testing/v5.8-rc3-11-gf5e50bf4d3ef/arm/multi_v7_defconfig/gcc-8/lab-baylibre/baseline-imx6q-sabrelite.html
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>
+>>>>> f5e50bf4d3ef is PATCH 11/11. Does the problem happen at PATCH 1-10/11?
+>>>>> PATCH 11/11 renames a method and the code compiles, so it seems
+>>>>> unlikely that this is causing problems. One should never say never,
+>>>>> though ;)
+>>>>
+>>>> The sha1 is just the HEAD for the kernel reference. The regression
+>>>> happens with your series, somewhere.
+>>>>
+>>>>> The reported failure is not due to some test failing but rather due
+>>>>> to timeout logging into the test system. Could it be that there is
+>>>>> some other problem?
+>>>>
+>>>> I did reproduce:
+>>>>
+>>>> v5.8-rc3 + series => imx6 hang at boot time
+>>>> v5.8-rc3 => imx6 boots correctly
 
-This seems like a poor idea, every place using SIMPLE_DEV_PM_OPS would
-need this annotation.
+So finally I succeeded to reproduce it on my imx7 locally. The sensor
+was failing to initialize for another reason related to the legacy
+cooling device, this is why it is not appearing on the imx7.
 
-Seems better to add something to the macro, IMHO
+I can now git-bisect :)
 
-Jason
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
